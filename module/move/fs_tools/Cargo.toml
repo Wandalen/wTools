@@ -52,8 +52,8 @@ name = "fs_tools_smoke_test"
 path = "tests/smoke_test.rs"
 
 [[example]]
-name = "fs_tools_trivial_sample"
-path = "examples/fs_tools_trivial_sample/src/main.rs"
+name = "fs_tools_trivial"
+path = "examples/fs_tools_trivial/src/main.rs"
 
 [dependencies]
 

@@ -53,8 +53,8 @@ path = "tests/video/video_experiment_tests.rs"
 # path = "tests/_integration_test/smoke_test.rs"
 
 # [[example]]
-# name = "video_experiment_trivial_sample"
-# path = "examples/video_experiment_trivial_sample/src/main.rs"
+# name = "video_experiment_trivial"
+# path = "examples/video_experiment_trivial/src/main.rs"
 
 [dependencies]
 wtools = { workspace = true }

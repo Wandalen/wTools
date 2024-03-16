@@ -1,7 +1,7 @@
-// #![ deny( rust_2018_idioms ) ]
-// #![ deny( missing_debug_implementations ) ]
-// #![ deny( missing_docs ) ]
 
+include!( "../../../../module/step/meta/src/module/terminal.rs" );
+
+#[ allow( unused_imports ) ]
 use impls_index as TheModule;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;

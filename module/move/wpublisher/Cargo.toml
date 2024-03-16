@@ -56,8 +56,8 @@ name = "publisher_smoke_test"
 path = "tests/smoke_test.rs"
 
 [[example]]
-name = "wpublisher_trivial_sample"
-path = "examples/wpublisher_trivial_sample/src/main.rs"
+name = "wpublisher_trivial"
+path = "examples/wpublisher_trivial/src/main.rs"
 
 [dependencies]
 wtools = { workspace = true }

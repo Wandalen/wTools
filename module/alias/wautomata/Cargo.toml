@@ -52,8 +52,8 @@ path = "tests/wautomata_tests.rs"
 # path = "tests/_integration_test/smoke_test.rs"
 
 # [[example]]
-# name = "wautomata_trivial_sample"
-# path = "examples/wautomata_trivial_sample/src/main.rs"
+# name = "wautomata_trivial"
+# path = "examples/wautomata_trivial/src/main.rs"
 
 [dependencies]
 automata_tools = { workspace = true, features = [ "full" ] }

@@ -18,7 +18,7 @@ Some possible use cases are:
 
 ## Sample  :: show crate content
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ```rust
 use crates_tools::*;

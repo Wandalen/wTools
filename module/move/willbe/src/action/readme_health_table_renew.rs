@@ -132,7 +132,7 @@ mod private
     // include docs column flag
     include_docs: bool,
     // include sample column flag
-    include_sample: bool,
+    include: bool,
   }
 
   impl From< HashMap< String, query::Value > > for TableParameters
@@ -142,7 +142,7 @@ mod private
       let include_branches = value.get( "with_branches" ).map( | v | bool::from( v ) ).unwrap_or( true );
       let include_stability = value.get( "with_stability" ).map( | v | bool::from( v ) ).unwrap_or( true );
       let include_docs = value.get( "with_docs" ).map( | v | bool::from( v ) ).unwrap_or( true );
-      let include_sample = value.get( "with_gitpod" ).map( | v | bool::from( v ) ).unwrap_or( true );
+      let include = value.get( "with_gitpod" ).map( | v | bool::from( v ) ).unwrap_or( true );
       let b_p = value.get( "1" );
       let base_path = if let Some( query::Value::String( path ) ) = value.get( "path" ).or( b_p )
       {
@@ -152,7 +152,7 @@ mod private
       {
         "./"
       };
-      Self { base_path: base_path.to_string(), include_branches, include_stability, include_docs, include_sample }
+      Self { base_path: base_path.to_string(), include_branches, include_stability, include_docs, include }
     }
   }
 
@@ -368,9 +368,9 @@ mod private
     {
       rou.push_str( &format!( "[![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{}) | ", &module_name ) );
     }
-    if table_parameters.include_sample
+    if table_parameters.include
     {
-      rou.push_str( &format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/{}) | ", &module_name, &module_name, parameters.core_url ) );
+      rou.push_str( &format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial/{}) | ", &module_name, &module_name, parameters.core_url ) );
     }
     format!( "{rou}\n" )
   }
@@ -418,7 +418,7 @@ mod private
       separator.push_str( ":----:|" );
     }
 
-    if table_parameters.include_sample
+    if table_parameters.include
     {
       header.push_str( " Sample |" );
       separator.push_str( ":------:|" );

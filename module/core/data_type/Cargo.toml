@@ -75,8 +75,8 @@ dt_interval = [ "interval_adapter/enabled" ]
 # path = "tests/_integration_test/smoke_test.rs"
 #
 # [[example]]
-# name = "data_type_trivial_sample"
-# path = "examples/data_type_trivial_sample/src/main.rs"
+# name = "data_type_trivial"
+# path = "examples/data_type_trivial/src/main.rs"
 
 [dependencies]
 

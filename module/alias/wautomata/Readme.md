@@ -8,7 +8,7 @@ Implementation of automata.
 
 ## Sample
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ``` rust sample test
 use wautomata::*;

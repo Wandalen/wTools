@@ -66,46 +66,46 @@ vectorized_from = []
 # path = "tests/_integration_test/smoke_test.rs"
 
 # [[example]]
-# name = "type_constructor_trivial_sample"
-# path = "examples/type_constructor_trivial_sample/src/main.rs"
+# name = "type_constructor_trivial"
+# path = "examples/type_constructor_trivial/src/main.rs"
 #
 # [[example]]
-# name = "type_constructor_derive_and_attr_sample"
-# path = "examples/type_constructor_derive_and_attr_sample/src/main.rs"
+# name = "type_constructor_derive_and_attr"
+# path = "examples/type_constructor_derive_and_attr/src/main.rs"
 #
 # [[example]]
-# name = "type_constructor_struct_sample"
-# path = "examples/type_constructor_struct_sample/src/main.rs"
+# name = "type_constructor_struct"
+# path = "examples/type_constructor_struct/src/main.rs"
 #
 # [[example]]
-# name = "type_constructor_parametrized_element_sample"
-# path = "examples/type_constructor_parametrized_element_sample/src/main.rs"
+# name = "type_constructor_parametrized_element"
+# path = "examples/type_constructor_parametrized_element/src/main.rs"
 #
 # [[example]]
-# name = "type_constructor_parametrized_tuple_sample"
-# path = "examples/type_constructor_parametrized_tuple_sample/src/main.rs"
+# name = "type_constructor_parametrized_tuple"
+# path = "examples/type_constructor_parametrized_tuple/src/main.rs"
 #
 # [[example]]
-# name = "type_constructor_multiple_sample"
-# path = "examples/type_constructor_multiple_sample/src/main.rs"
+# name = "type_constructor_multiple"
+# path = "examples/type_constructor_multiple/src/main.rs"
 # required-features = [ "many" ]
 #
 # [[example]]
-# name = "type_constructor_without_macro_sample"
-# path = "examples/type_constructor_without_macro_sample/src/main.rs"
+# name = "type_constructor_without_macro"
+# path = "examples/type_constructor_without_macro/src/main.rs"
 # required-features = [ "many" ]
 #
 # [[example]]
-# name = "type_constructor_pair_sample"
-# path = "examples/type_constructor_pair_sample/src/main.rs"
+# name = "type_constructor_pair"
+# path = "examples/type_constructor_pair/src/main.rs"
 #
 # [[example]]
-# name = "type_constructor_homopair_sample"
-# path = "examples/type_constructor_homopair_sample/src/main.rs"
+# name = "type_constructor_homopair"
+# path = "examples/type_constructor_homopair/src/main.rs"
 #
 # [[example]]
-# name = "type_constructor_many_sample"
-# path = "examples/type_constructor_many_sample/src/main.rs"
+# name = "type_constructor_many"
+# path = "examples/type_constructor_many/src/main.rs"
 # required-features = [ "many" ]
 
 [dependencies]

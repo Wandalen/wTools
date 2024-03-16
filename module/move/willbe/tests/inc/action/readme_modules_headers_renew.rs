@@ -19,7 +19,7 @@ fn arrange( source : &str ) -> assert_fs::TempDir
 // [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)
 // [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleTestModulePush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleTestModulePush.yml)
 // [![docs.rs](https://img.shields.io/docsrs/test_module?color=e3e8f0&logo=docs.rs)](https://docs.rs/test_module)
-// [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftest_module_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20test_module_trivial_sample/https://github.com/Wandalen/wTools)
+// [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftest_module_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20test_module_trivial/https://github.com/Wandalen/wTools)
 // [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 #[ test ]
 fn tags_should_stay()
@@ -91,7 +91,7 @@ fn gitpod()
   _ = file.read_to_string( &mut actual ).unwrap();
 
   // Assert
-  assert!( actual.contains( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftest_module_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20test_module_trivial_sample/https://github.com/Wandalen/wTools)" ) );
+  assert!( actual.contains( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftest_module_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20test_module_trivial/https://github.com/Wandalen/wTools)" ) );
 }
 
 #[ test ]

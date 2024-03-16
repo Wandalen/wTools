@@ -7,7 +7,7 @@ ___
 
 ### Basic use-case
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ``` rust
 ```

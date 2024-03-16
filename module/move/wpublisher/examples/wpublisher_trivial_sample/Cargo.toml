@@ -1,5 +1,5 @@
 [package]
-name = "wpublisher_trivial_sample"
+name = "wpublisher_trivial"
 version = "0.0.0"
 edition = "2021"
 publish = false

@@ -4,7 +4,7 @@ use TheModule::action;
 
 use std::io::Read;
 use willbe::path::AbsolutePath;
-  
+
 
 fn arrange( source : &str ) -> assert_fs::TempDir
 {
@@ -92,7 +92,7 @@ fn gitpod_cell()
   _ = file.read_to_string( &mut actual ).unwrap();
 
   // Assert
-  assert!( actual.contains( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftest_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20test_trivial_sample/https://github.com/Username/test)" ) );
+  assert!( actual.contains( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftest_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20test_trivial/https://github.com/Username/test)" ) );
 }
 
 #[ test ]

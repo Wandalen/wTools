@@ -7,7 +7,7 @@ ___
 
 ### Basic use-case
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ```rust
 use {{template_blank}}::*;
@@ -28,6 +28,6 @@ cargo add {{template_blank}}
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cargo run --example {{template_blank}}_trivial_sample
+cargo run --example {{template_blank}}_trivial
 cargo run
 ```

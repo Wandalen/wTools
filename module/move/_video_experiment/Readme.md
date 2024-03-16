@@ -6,7 +6,7 @@ Video generation example.
 
 ### Basic use-case
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ```rust
 use video_experiment::*;

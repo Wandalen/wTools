@@ -197,5 +197,5 @@ fn sample_cell()
   let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
-  assert!( actual.contains( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F_willbe_variadic_tag_configurations_c_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20_willbe_variadic_tag_configurations_c_trivial_sample/https://github.com/SomeName/SomeCrate/C)" ) );
+  assert!( actual.contains( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F_willbe_variadic_tag_configurations_c_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20_willbe_variadic_tag_configurations_c_trivial/https://github.com/SomeName/SomeCrate/C)" ) );
 }

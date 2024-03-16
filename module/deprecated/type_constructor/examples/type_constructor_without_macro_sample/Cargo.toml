@@ -1,5 +1,5 @@
 [package]
-name = "type_constructor_without_macro_sample"
+name = "type_constructor_without_macro"
 version = "0.0.0"
 edition = "2021"
 publish = false

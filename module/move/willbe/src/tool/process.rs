@@ -20,51 +20,6 @@ pub( crate ) mod private
     error::{ anyhow::Context, Result },
   };
 
-
-  /// Process command output.
-  #[ derive( Debug, Clone, Default ) ]
-  pub struct CmdReport
-  {
-    /// Command that was executed.
-    pub command : String,
-    /// Path where command was executed.
-    pub path : PathBuf,
-    /// Stdout.
-    pub out : String,
-    /// Stderr.
-    pub err : String,
-  }
-
-  impl std::fmt::Display for CmdReport
-  {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
-    {
-      // Trim prevents writing unnecessary whitespace or empty lines
-      f.write_fmt( format_args!( "> {}\n", self.command ) )?;
-      if !self.out.trim().is_empty()
-      {
-        f.write_fmt( format_args!( "  {}\n", self.out.replace( '\n', "\n  " ) ) )?;
-      }
-      if !self.err.trim().is_empty()
-      {
-        f.write_fmt( format_args!( "  path : {}\n  {}\n", self.path.display(), self.err.replace( '\n', "\n  " ) ) )?;
-      }
-
-      Ok( () )
-    }
-  }
-
-  /// Option for `run` function
-  #[ derive( Debug, Former ) ]
-  pub struct RunOptions
-  {
-    application : PathBuf,
-    args : Vec< OsString >,
-    path : PathBuf,
-    #[ default( false ) ]
-    join_steam : bool,
-  }
-
   ///
   /// Executes an external process using the system shell.
   ///
@@ -114,6 +69,50 @@ pub( crate ) mod private
     run( options )
   }
 
+  /// Process command output.
+  #[ derive( Debug, Clone, Default ) ]
+  pub struct CmdReport
+  {
+    /// Command that was executed.
+    pub command : String,
+    /// Path where command was executed.
+    pub path : PathBuf,
+    /// Stdout.
+    pub out : String,
+    /// Stderr.
+    pub err : String,
+  }
+
+  impl std::fmt::Display for CmdReport
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
+      // Trim prevents writing unnecessary whitespace or empty lines
+      f.write_fmt( format_args!( "> {}\n", self.command ) )?;
+      if !self.out.trim().is_empty()
+      {
+        f.write_fmt( format_args!( "  {}\n", self.out.replace( '\n', "\n  " ) ) )?;
+      }
+      if !self.err.trim().is_empty()
+      {
+        f.write_fmt( format_args!( "  path : {}\n  {}\n", self.path.display(), self.err.replace( '\n', "\n  " ) ) )?;
+      }
+
+      Ok( () )
+    }
+  }
+
+  /// Option for `run` function
+  #[ derive( Debug, Former ) ]
+  pub struct RunOptions
+  {
+    application : PathBuf,
+    args : Vec< OsString >,
+    path : PathBuf,
+    #[ default( false ) ]
+    join_steam : bool,
+  }
+
   ///
   /// Executes an external process in a specified directory without using a shell.
   ///
@@ -129,9 +128,11 @@ pub( crate ) mod private
   /// # Errors:
   /// Returns an error if the process fails to spawn, complete, or if output
   /// cannot be decoded as UTF-8.
-  pub fn run( options : RunOptions ) -> Result< CmdReport, (CmdReport, Error ) >
+  pub fn run( options : RunOptions ) -> Result< CmdReport, ( CmdReport, Error ) >
   {
-    let ( application, path ) : ( &Path, &Path ) = ( options.application.as_ref(), options.path.as_ref() );
+    let application : &Path = options.application.as_ref();
+    let path : &Path = options.path.as_ref();
+
     if options.join_steam
     {
       let output = cmd( application.as_os_str(), &options.args )

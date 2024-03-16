@@ -1,5 +1,5 @@
 [package]
-name = "fs_tools_trivial_sample"
+name = "fs_tools_trivial"
 version = "0.0.0"
 edition = "2021"
 publish = false

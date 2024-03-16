@@ -8,7 +8,7 @@ Collection of general purpose tools for solving problems. Fundamentally extend t
 
 ### Basic use-case :: implements
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ```rust ignore
 use std_tools::prelude::*;
@@ -29,7 +29,7 @@ Type constructor does exactly that and auto-implement traits From, Into, Deref a
 
 Macro [types](https://docs.rs/type_constructor/latest/type_constructor/types/macro.types.html) is responsible for generating code for Single, Pair, Homopair, Many. Each type constructor has its own keyword for that, but Pair and Homopair use the same keyword difference in a number of constituent types. It is possible to define all types at once:
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ```rust ignore
 use std_tools::prelude::*;
