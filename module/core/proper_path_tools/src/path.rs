@@ -265,11 +265,11 @@ pub( crate ) mod private
   /// ```
 
   #[ cfg( feature = "path_unique_folder_name" ) ]
-  pub fn unique_folder_name() -> Result< String, SystemTimeError >
+  pub fn unique_folder_name() -> Result< String, std::time::SystemTimeError >
   {
     use std::
     {
-      time::{ SystemTime, UNIX_EPOCH, SystemTimeError },
+      time::{ SystemTime, UNIX_EPOCH },
     };
 
     // Thread-local static variable for a counter
