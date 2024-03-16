@@ -7,7 +7,7 @@ use former::{ ComponentSet, SetWithType };
 /// Options1
 ///
 
-#[ derive( Debug, Default, PartialEq ) ]
+#[ derive( Debug, Default, PartialEq, TheModule::ComponentSet, TheModule::ComponentsSet ) ]
 pub struct Options1
 {
   field1 : i32,
@@ -51,6 +51,24 @@ pub struct Options2
 {
   field1 : i32,
   field2 : String,
+}
+
+impl From< &Options2 > for i32
+{
+  #[ inline( always ) ]
+  fn from( src : &Options2 ) -> Self
+  {
+    src.field1.clone()
+  }
+}
+
+impl From< &Options2 > for String
+{
+  #[ inline( always ) ]
+  fn from( src : &Options2 ) -> Self
+  {
+    src.field2.clone()
+  }
 }
 
 //

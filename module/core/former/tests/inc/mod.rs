@@ -69,25 +69,22 @@ mod subformer_basic_manual;
 #[ cfg( not( feature = "no_std" ) ) ]
 mod subformer_basic;
 
-#[ cfg( all( feature = "derive_component_from", feature = "derive_component_set" ) ) ]
-mod components_composite_manual;
-#[ cfg( all( feature = "derive_component_from", feature = "derive_component_set" ) ) ]
-mod components_composite;
-
 #[ cfg( feature = "derive_component_from" ) ]
 mod components_component_from_manual;
 #[ cfg( feature = "derive_component_from" ) ]
 mod components_component_from;
-
 #[ cfg( feature = "derive_component_set" ) ]
 mod components_component_set_manual;
 #[ cfg( feature = "derive_component_set" ) ]
 mod components_component_set;
-
 #[ cfg( all( feature = "derive_component_set", feature = "derive_components_set" ) ) ]
 mod components_components_set_manual;
 #[ cfg( all( feature = "derive_component_set", feature = "derive_components_set" ) ) ]
 mod components_components_set;
+#[ cfg( all( feature = "derive_component_from", feature = "derive_component_set" ) ) ]
+mod components_composite_manual;
+#[ cfg( all( feature = "derive_component_from", feature = "derive_component_set" ) ) ]
+mod components_composite;
 
 only_for_terminal_module!
 {

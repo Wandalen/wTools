@@ -32,7 +32,7 @@ enabled = [ "macro_tools/enabled", "iter_tools/enabled" ]
 
 derive_former = []
 derive_component_set = []
-derive_components_set = [ "derive_component_set" ]
+derive_components_set = [ "derive_component_set", "convert_case" ]
 derive_component_from = []
 derive_from_components = []
 
@@ -42,6 +42,7 @@ proc-macro = true
 [dependencies]
 macro_tools = { workspace = true }
 iter_tools = { workspace = true }
+convert_case = { version = "0.6.0", default-features = false, optional = true, features = [] }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }

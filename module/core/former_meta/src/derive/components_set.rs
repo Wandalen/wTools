@@ -10,6 +10,7 @@ use iter_tools::{ Itertools, process_results };
 
 pub fn components_set( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
+  use convert_case::{ Case, Casing };
   let original_input = input.clone();
   let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
   let has_debug = attr::has_debug( parsed.item.attrs.iter() )?;
@@ -18,6 +19,8 @@ pub fn components_set( input : proc_macro::TokenStream ) -> Result< proc_macro2:
   let item_name = parsed.item_name;
   let trait_name = format!( "{}ComponentsSet", item_name );
   let trait_ident = syn::Ident::new( &trait_name, item_name.span() );
+  let method_name = format!( "{}_set", item_name.to_string().to_case( Case::Snake ) );
+  let method_ident = syn::Ident::new( &method_name, item_name.span() );
 
   // fields
   let ( bounds1, bounds2, component_sets ) : ( Vec< _ >, Vec< _ >, Vec< _ > ) = parsed.fields.iter().map( | field |
@@ -46,7 +49,7 @@ pub fn components_set( input : proc_macro::TokenStream ) -> Result< proc_macro2:
     where
       #trait_bounds,
     {
-      fn components_set( &mut self, component : IntoT );
+      fn #method_ident( &mut self, component : IntoT );
     }
 
     impl< T, IntoT > #trait_ident< IntoT > for T
@@ -55,7 +58,7 @@ pub fn components_set( input : proc_macro::TokenStream ) -> Result< proc_macro2:
     {
       #[ inline( always ) ]
       #[ doc = #doc ]
-      fn components_set( &mut self, component : IntoT )
+      fn #method_ident( &mut self, component : IntoT )
       {
         #component_sets
       }

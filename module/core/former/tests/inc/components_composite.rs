@@ -15,7 +15,7 @@ use former::{ ComponentSet, SetWithType };
     PartialEq,
     TheModule::ComponentFrom,
     TheModule::ComponentSet,
-    // TheModule::ComponentsSet,
+    TheModule::ComponentsSet,
     // TheModule::FromComponents,
   )
 ]

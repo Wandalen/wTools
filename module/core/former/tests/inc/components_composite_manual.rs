@@ -76,6 +76,39 @@ where
 }
 
 ///
+/// Options1ComponentsSet.
+///
+
+pub trait Options1ComponentsSet< IntoT >
+where
+  IntoT : Into< i32 >,
+  IntoT : Into< String >,
+  IntoT : Into< f32 >,
+  IntoT : Clone,
+{
+  fn options_1_set( &mut self, component : IntoT );
+}
+
+impl< T, IntoT > Options1ComponentsSet< IntoT > for T
+where
+  T : former::ComponentSet< i32, IntoT >,
+  T : former::ComponentSet< String, IntoT >,
+  T : former::ComponentSet< f32, IntoT >,
+  IntoT : Into< i32 >,
+  IntoT : Into< String >,
+  IntoT : Into< f32 >,
+  IntoT : Clone,
+{
+  #[ inline( always ) ]
+  fn options_1_set( &mut self, component : IntoT )
+  {
+    former::ComponentSet::< i32, _ >::set( self, component.clone() );
+    former::ComponentSet::< String, _ >::set( self, component.clone() );
+    former::ComponentSet::< f32, _ >::set( self, component.clone() );
+  }
+}
+
+///
 /// Options2
 ///
 
@@ -136,7 +169,7 @@ where
   IntoT : Into< String >,
   IntoT : Clone,
 {
-  fn components_set( &mut self, component : IntoT );
+  fn options_2_set( &mut self, component : IntoT );
 }
 
 impl< T, IntoT > Options2ComponentsSet< IntoT > for T
@@ -148,7 +181,7 @@ where
   IntoT : Clone,
 {
   #[ inline( always ) ]
-  fn components_set( &mut self, component : IntoT )
+  fn options_2_set( &mut self, component : IntoT )
   {
     former::ComponentSet::< i32, _ >::set( self, component.clone() );
     former::ComponentSet::< String, _ >::set( self, component.clone() );
