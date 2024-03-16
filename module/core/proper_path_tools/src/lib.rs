@@ -4,8 +4,14 @@
 #![ doc( html_root_url = "https://docs.rs/proper_path_tools/latest/proper_path_tools/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-/// Function description.
 #[ cfg( feature = "enabled" ) ]
-pub fn f1()
+use mod_interface::mod_interface;
+
+#[ cfg( feature = "enabled" ) ]
+mod_interface!
 {
+
+  /// Basic functionality.
+  layer path;
+
 }

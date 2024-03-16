@@ -2,26 +2,16 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/error_tools/latest/error_tools/" ) ]
-// #![ deny( rust_2018_idioms ) ]
-// #![ deny( missing_debug_implementations ) ]
-// #![ deny( missing_docs ) ]
-
-//!
-//! Basic exceptions handling mechanism.
-//!
-
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
-#[ cfg( feature = "enabled" ) ]
+
 /// Assertions.
+#[ cfg( feature = "enabled" ) ]
 pub mod assert;
+
 /// Alias for std::error::BasicError.
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( not( feature = "no_std" ) ) ]
 pub mod error;
-// /// An alias for std::result::Result.
-// #[ cfg( feature = "enabled" ) ]
-// #[ cfg( not( feature = "no_std" ) ) ]
-// pub mod result;
 
 /// Dependencies.
 #[ cfg( feature = "enabled" ) ]
@@ -65,13 +55,7 @@ pub mod for_app
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use protected::*;
-// pub use protected::BasicError;
-// #[ cfg( not( feature = "no_std" ) ) ]
-// #[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-// pub use protected::Error;
 
-// qqq : cover by simple test /* aaa : Dmytro : added trivial test routines in test suite `assert` */
 /// Protected namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 pub mod protected
@@ -81,8 +65,8 @@ pub mod protected
   pub use super::orphan::*;
 }
 
-#[ cfg( feature = "enabled" ) ]
 /// Shared with parent namespace of the module
+#[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
 
@@ -95,8 +79,8 @@ pub mod orphan
 
 }
 
-#[ cfg( feature = "enabled" ) ]
 /// Exposed namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
   #[ doc( inline ) ]
@@ -111,18 +95,10 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::error::exposed::*;
 
-  // #[ cfg( not( feature = "no_std" ) ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::result::exposed::*;
-  // #[ cfg( not( feature = "no_std" ) ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::error::BasicError;
 }
 
-#[ cfg( feature = "enabled" ) ]
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
 }
