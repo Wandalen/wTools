@@ -28,7 +28,7 @@ all-features = false
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-enabled = []
+enabled = [ "macro_tools/enabled" ]
 
 [lib]
 proc-macro = true
