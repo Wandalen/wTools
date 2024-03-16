@@ -51,8 +51,6 @@ pub struct Options2
   field2 : String,
 }
 
-
-
 //
 
 impl< T > From< T > for Options2
