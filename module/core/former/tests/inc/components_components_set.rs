@@ -46,62 +46,11 @@ impl From< &Options1 > for f32
 /// Options2
 ///
 
-#[ derive( Debug, Default, PartialEq ) ]
+#[ derive( Debug, Default, PartialEq, TheModule::ComponentSet, TheModule::ComponentsSet ) ]
 pub struct Options2
 {
   field1 : i32,
   field2 : String,
-}
-
-impl< IntoT > former::ComponentSet< i32, IntoT > for Options2
-where
-  IntoT : Into< i32 >,
-{
-  #[ inline( always ) ]
-  fn set( &mut self, component : IntoT )
-  {
-    self.field1 = component.into().clone();
-  }
-}
-
-impl< IntoT > former::ComponentSet< String, IntoT > for Options2
-where
-  IntoT : Into< String >,
-{
-  #[ inline( always ) ]
-  fn set( &mut self, component : IntoT )
-  {
-    self.field2 = component.into().clone();
-  }
-}
-
-///
-/// Options2ComponentsSet.
-///
-
-pub trait Options2ComponentsSet< IntoT >
-where
-  IntoT : Into< i32 >,
-  IntoT : Into< String >,
-  IntoT : Clone,
-{
-  fn components_set( &mut self, component : IntoT );
-}
-
-impl< T, IntoT > Options2ComponentsSet< IntoT > for T
-where
-  T : former::ComponentSet< i32, IntoT >,
-  T : former::ComponentSet< String, IntoT >,
-  IntoT : Into< i32 >,
-  IntoT : Into< String >,
-  IntoT : Clone,
-{
-  #[ inline( always ) ]
-  fn components_set( &mut self, component : IntoT )
-  {
-    former::ComponentSet::< i32, _ >::set( self, component.clone() );
-    former::ComponentSet::< String, _ >::set( self, component.clone() );
-  }
 }
 
 //

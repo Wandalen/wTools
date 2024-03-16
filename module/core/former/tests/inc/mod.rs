@@ -86,8 +86,8 @@ mod components_component_set;
 
 #[ cfg( all( feature = "derive_component_set", feature = "derive_components_set" ) ) ]
 mod components_components_set_manual;
-// #[ cfg( all( feature = "derive_component_set", feature = "derive_components_set" ) ) ]
-// mod components_components_set;
+#[ cfg( all( feature = "derive_component_set", feature = "derive_components_set" ) ) ]
+mod components_components_set;
 
 only_for_terminal_module!
 {

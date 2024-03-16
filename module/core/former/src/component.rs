@@ -38,6 +38,7 @@
 /// obj.set( "New Name" );
 /// assert_eq!( obj.name, "New Name" );
 /// ```
+#[ cfg( any( feature = "derive_component_set", feature = "derive_components_set" ) ) ]
 pub trait ComponentSet< T, IntoT >
 where
   IntoT : Into< T >,
@@ -88,6 +89,7 @@ where
 /// ```
 ///
 
+#[ cfg( any( feature = "derive_component_set", feature = "derive_components_set" ) ) ]
 pub trait SetWithType
 {
   /// Function to set value of a component by its type.
@@ -97,6 +99,7 @@ pub trait SetWithType
     Self : ComponentSet< T, IntoT >;
 }
 
+#[ cfg( any( feature = "derive_component_set", feature = "derive_components_set" ) ) ]
 impl< S > SetWithType for S
 {
 
