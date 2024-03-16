@@ -120,13 +120,13 @@ mod private
     if temp
     {
 
-      let mut unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name_generate().map_err( | e | ( reports.clone(), e ) )? );
+      let mut unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name().map_err( | e | ( reports.clone(), e ) )? );
 
       let mut temp_dir = env::temp_dir().join( unique_name );
 
       while temp_dir.exists()
       {
-        unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name_generate().map_err( | e | ( reports.clone(), e ) )? );
+        unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name().map_err( | e | ( reports.clone(), e ) )? );
         temp_dir = env::temp_dir().join( unique_name );
       }
 

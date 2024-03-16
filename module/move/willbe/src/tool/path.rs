@@ -80,6 +80,7 @@ pub( crate ) mod private
   {
     std::fs::metadata( path ).is_ok()
   }
+  // qqq : for Petro : for Bohdan : bad. move out
 
   /// Check if path has a glob.
   #[ allow( dead_code ) ]
@@ -127,8 +128,8 @@ pub( crate ) mod private
     Ok( path )
   }
 
-  /// Generate name based on system time  
-  pub fn unique_folder_name_generate() -> crate::wtools::error::Result< String >
+  /// Generate name based on system time
+  pub fn unique_folder_name() -> crate::wtools::error::Result< String >
   {
     let timestamp = SystemTime::now()
     .duration_since( UNIX_EPOCH )?
@@ -144,7 +145,7 @@ crate::mod_interface!
   protected use glob_is;
   protected use valid_is;
   protected use canonicalize;
-  protected use unique_folder_name_generate;
+  protected use unique_folder_name;
 
   protected use AbsolutePath;
 }
