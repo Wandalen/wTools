@@ -137,7 +137,7 @@ features = [ "enabled" ]
 # default-features = false
 
 [workspace.dependencies.fundamental_data_type]
-version = "~0.1.6"
+version = "~0.2.0"
 path = "module/alias/fundamental_data_type"
 default-features = false
 
