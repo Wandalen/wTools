@@ -262,7 +262,7 @@ default-features = false
 ## time
 
 [workspace.dependencies.time_tools]
-version = "~0.1.5"
+version = "~0.2.0"
 path = "module/core/time_tools"
 default-features = false
 
