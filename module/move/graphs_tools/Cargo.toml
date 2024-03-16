@@ -34,7 +34,7 @@ full = [
 ]
 no_std = []
 use_alloc = []
-enabled = []
+enabled = [ "meta_tools/enabled", "iter_tools/enabled", "data_type/enabled", "strs_tools/enabled" ]
 
 [dependencies]
 indexmap = "~1.8"
@@ -42,7 +42,7 @@ meta_tools = { workspace = true, features = [ "default" ] }
 iter_tools = { workspace = true, features = [ "default" ] }
 data_type = { workspace = true, features = [ "default" ] }
 strs_tools = { workspace = true, features = [ "default" ] }
-type_constructor ={ workspace = true, features = [ "default" ] }
+# type_constructor ={ workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }

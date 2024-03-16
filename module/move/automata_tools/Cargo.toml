@@ -23,14 +23,6 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-# exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/graph/automata_tools_lib.rs",
-  "/rust/impl/graph/automata",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
 
 [features]
 default = [ "enabled" ]
@@ -40,25 +32,7 @@ no_std = []
 use_alloc = []
 enabled = []
 
-[lib]
-name = "automata_tools"
-path = "src/graph/automata_tools_lib.rs"
-
-[[test]]
-name = "automata_tools_test"
-path = "tests/graph/automata_tools_tests.rs"
-
-[[test]]
-name = "automata_tools_smoke_test"
-path = "tests/smoke_test.rs"
-
-[[example]]
-name = "automata_tools_trivial_sample"
-path = "examples/automata_tools_trivial_sample/src/main.rs"
-
 [dependencies]
-graphs_tools = { workspace = true, features = [ "full" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
-# wtools = { workspace = true }

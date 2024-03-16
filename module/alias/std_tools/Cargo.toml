@@ -311,26 +311,26 @@ dt = [ "wtools/dt" ]
 dt_default = [
   "dt",
   "dt_either",
-  "dt_type_constructor",
-  "dt_make",
-  "dt_vectorized_from",
+  # "dt_type_constructor",
+  # "dt_make",
+  # "dt_vectorized_from",
   "dt_interval",
 ]
 dt_full = [
   "dt",
   "dt_either",
-  "dt_type_constructor",
-  "dt_make",
-  "dt_vectorized_from",
+  # "dt_type_constructor",
+  # "dt_make",
+  # "dt_vectorized_from",
   "dt_interval",
 ]
 dt_no_std = [ "wtools/dt_no_std" ]
 dt_use_alloc = [ "wtools/dt_use_alloc" ]
 
 dt_either = [ "dt", "wtools/dt_either" ]
-dt_type_constructor = [ "dt", "wtools/dt_type_constructor" ]
-dt_make = [ "dt", "wtools/dt_make" ]
-dt_vectorized_from = [ "dt", "wtools/dt_vectorized_from" ]
+# dt_type_constructor = [ "dt", "wtools/dt_type_constructor" ]
+# dt_make = [ "dt", "wtools/dt_make" ]
+# dt_vectorized_from = [ "dt", "wtools/dt_vectorized_from" ]
 dt_interval = [ "dt", "wtools/dt_interval" ]
 
 # diagnostics

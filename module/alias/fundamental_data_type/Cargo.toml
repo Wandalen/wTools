@@ -12,7 +12,7 @@ documentation = "https://docs.rs/fundamental_data_type"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/fundamental_data_type"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/fundamental_data_type"
 description = """
-Fundamental data types and type constructors, like Single, Pair, Many.
+A collection of derive macros designed to enhance STD.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
@@ -24,46 +24,21 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-include = [
-  "/rust/impl/dt/type_constructor/fundamental_data_type_lib.rs",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
-
 [features]
 default = [
-  "type_constructor/default",
-  "make",
-  # "use_std",
+  "derive_tools/default",
 ]
 full = [
-  "type_constructor/full",
-  "make",
-  # "use_std",
-  # "use_alloc",
+  "derive_tools/full",
 ]
-# use_std = []
 no_std = []
 use_alloc = []
 enabled = []
 
-make = [ "type_constructor/make" ]
-
-[lib]
-name = "fundamental_data_type"
-path = "src/dt/type_constructor/fundamental_data_type_lib.rs"
-
-[[test]]
-name = "fundamental_data_type_test"
-path = "tests/fundamental_data_type_tests.rs"
-
-# [[test]]
-# name = "fundamental_data_type_smoke_test"
-# path = "tests/_integration_test/smoke_test.rs"
+# qqq : reexport features of depdendencies
 
 [dependencies]
-type_constructor = { workspace = true }
+derive_tools = { workspace = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }

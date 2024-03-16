@@ -131,10 +131,10 @@ path = "module/core/reflect_tools_meta"
 default-features = false
 features = [ "enabled" ]
 
-[workspace.dependencies.type_constructor]
-version = "~0.3.0"
-path = "module/core/type_constructor"
-default-features = false
+# [workspace.dependencies.type_constructor]
+# version = "~0.3.0"
+# path = "module/core/type_constructor"
+# default-features = false
 
 [workspace.dependencies.fundamental_data_type]
 version = "~0.1.6"

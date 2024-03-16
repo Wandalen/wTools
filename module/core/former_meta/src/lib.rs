@@ -764,6 +764,7 @@ pub fn components_assign( input : proc_macro::TokenStream ) -> proc_macro::Token
 /// automatically generating the necessary `From< &Options1 >` implementation for `Options2`, facilitating
 /// an easy conversion between these types based on their compatible fields.
 ///
+
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_from_components" ) ]
 #[ proc_macro_derive( FromComponents, attributes( debug ) ) ]
