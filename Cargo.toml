@@ -276,7 +276,7 @@ path = "module/core/typing_tools"
 default-features = false
 
 [workspace.dependencies.implements]
-version = "~0.6.0"
+version = "~0.7.0"
 path = "module/core/implements"
 default-features = false
 
