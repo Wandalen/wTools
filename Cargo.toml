@@ -242,7 +242,7 @@ default-features = false
 # path = "module/core/woptions_runtime"
 
 
-## proc macro tools
+## macro tools
 
 [workspace.dependencies.macro_tools]
 version = "~0.20.0"
@@ -258,6 +258,7 @@ default-features = false
 version = "~0.1.1"
 path = "module/alias/wproc_macro"
 default-features = false
+
 
 ## time
 
@@ -307,7 +308,7 @@ version = "~0.4.0"
 path = "module/alias/werror"
 
 
-## strs
+## string tools
 
 [workspace.dependencies.strs_tools]
 version = "~0.10.0"
@@ -318,12 +319,29 @@ default-features = false
 version = "~0.2.0"
 path = "module/alias/wstring_tools"
 
-
-## fs
+## fs tools / path tools
 
 [workspace.dependencies.fs_tools]
 version = "~0.1.0"
-path = "module/move/fs_tools"
+path = "module/core/fs_tools"
+default-features = false
+
+[workspace.dependencies.file_tools]
+version = "~0.1.0"
+path = "module/alias/file_tools"
+default-features = false
+
+[workspace.dependencies.proper_path_tools]
+version = "~0.2.0"
+path = "module/core/proper_path_tools"
+default-features = false
+
+
+## process tools
+
+[workspace.dependencies.process_tools]
+version = "~0.1.0"
+path = "module/core/process_tools"
 default-features = false
 
 
@@ -341,13 +359,9 @@ path = "module/core/test_tools"
 version = "~0.4.0"
 path = "module/alias/wtest_basic"
 
-## willbe
 
-[workspace.dependencies.willbe]
-version = "~0.8.0"
-path = "module/move/willbe"
 
-## graphs
+## graphs tools
 
 [workspace.dependencies.graphs_tools]
 version = "~0.2.0"
@@ -379,6 +393,13 @@ version = "~0.1.1"
 path = "module/move/wcensor"
 
 
+## willbe
+
+[workspace.dependencies.willbe]
+version = "~0.8.0"
+path = "module/move/willbe"
+
+
 ## lang
 
 [workspace.dependencies.wlang]
@@ -390,7 +411,7 @@ path = "module/move/wlang"
 
 [workspace.dependencies.wpublisher]
 version = "~0.2.0"
-path = "module/move/wpublisher"
+path = "module/move/wpublisher_xxx"
 
 
 ## plot

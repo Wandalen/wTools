@@ -5,9 +5,7 @@
 
 Collection of algorithms and structures to handle processes properly.
 
-### Basic use-case
-
-<!-- {{# generate.module{} #}} -->
+<!-- ### Basic use-case
 
 ```rust
 use process_tools::*;
@@ -30,4 +28,4 @@ git clone https://github.com/Wandalen/wTools
 cd wTools
 cargo run --example process_tools_trivial
 cargo run
-```
+``` -->

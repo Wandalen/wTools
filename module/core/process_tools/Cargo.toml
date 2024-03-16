@@ -28,9 +28,26 @@ default = [ "enabled" ]
 full = [ "enabled" ]
 no_std = []
 use_alloc = []
-enabled = []
+enabled = [
+  "mod_interface/enabled",
+  "former/enabled",
+  "proper_path_tools/enabled",
+  "error_tools/enabled",
+  "iter_tools/enabled",
+]
 
 [dependencies]
+mod_interface = { workspace = true }
+former = { workspace = true, features = [ "derive_former" ] }
+proper_path_tools = { workspace = true }
+error_tools = { workspace = true, features = [ "error_for_app" ] }
+# qqq : xxx : rid off error_for_app
+iter_tools = { workspace = true }
+
+## external
+duct = "0.13.7"
+
 
 [dev-dependencies]
 test_tools = { workspace = true }
+assert_fs = { version = "1.1.1" }

@@ -5,6 +5,7 @@
 
 ___
 
+<!--
 ### Basic use-case
 
 ```rust
@@ -29,3 +30,4 @@ cd wTools
 cargo run --example {{template_blank}}_trivial
 cargo run
 ```
+-->
