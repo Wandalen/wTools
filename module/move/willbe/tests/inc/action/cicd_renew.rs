@@ -78,7 +78,7 @@ fn default_case()
   };
 
   // Act
-  _ = action::workflow_renew( &temp ).unwrap();
+  _ = action::cicd_renew( &temp ).unwrap();
 
   // Assert
   let mut file = File::open( file_path ).unwrap();

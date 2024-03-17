@@ -20,7 +20,7 @@ mod private
 
   // qqq : for Petro : should return Report and typed error in Result
   /// Generate workflows for modules in .github/workflows directory.
-  pub fn workflow_renew( base_path : &Path ) -> Result< () >
+  pub fn cicd_renew( base_path : &Path ) -> Result< () >
   {
     let workspace_cache = Workspace::with_crate_dir( AbsolutePath::try_from( base_path )?.try_into()? )?;
     let packages = workspace_cache.packages()?;
@@ -242,5 +242,5 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use workflow_renew;
+  exposed use cicd_renew;
 }

@@ -161,10 +161,10 @@ pub( crate ) mod private
       .end()
 
     // qqq : is it right?
-    .command( "workflow.renew" )
-      .hint( "generate a workflow for the workspace" )
+    .command( "cicd.renew" )
+      .hint( "generate a CI/CD for the workspace" )
       .long_hint( "this command generates a development workflow for the entire workspace inferred from the current directory. The workflow outlines the build steps, dependencies, test processes, and more for all modules within the workspace." )
-      .routine( command::workflow_renew )
+      .routine( command::cicd_renew )
       .end()
 
     .command( "workspace.renew" )
@@ -239,7 +239,7 @@ crate::mod_interface!
   /// Run all tests
   layer test;
   /// Generate workflow
-  layer workflow_renew;
+  layer cicd_renew;
   /// Workspace new
   layer workspace_renew;
   /// Deploy new
