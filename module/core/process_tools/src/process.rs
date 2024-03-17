@@ -28,7 +28,7 @@ pub( crate ) mod private
 //   ///
 //   /// # Parameters:
 //   /// - `exec_path`: The command line string to execute in the shell.
-//   /// - `current_path`: The working directory path where the command is executed.
+//   /// - `current_path`: The working directory current_path where the command is executed.
 //   ///
 //   /// # Returns:
 //   /// A `Result` containing a `Report` on success, which includes the command's output,
@@ -61,9 +61,9 @@ pub( crate ) mod private
 //       ( "sh", [ "-c", exec_path ] )
 //     };
 //     let options = Run::former()
-//     .application( program )
+//     .bin_path( program )
 //     .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-//     .path( current_path )
+//     .current_path( current_path )
 //     .form();
 //     // xxx : qqq : for Petro : implement run for former та для Run
 //     run( options )
@@ -73,9 +73,9 @@ pub( crate ) mod private
   /// Executes an external process in a specified directory without using a shell.
   ///
   /// # Arguments:
-  /// - `application`: Path to the executable application.
-  /// - `args`: Command-line arguments for the application.
-  /// - `path`: Directory path to run the application in.
+  /// - `bin_path`: Path to the executable bin_path.
+  /// - `args`: Command-line arguments for the bin_path.
+  /// - `current_path`: Directory current_path to run the bin_path in.
   ///
   /// # Returns:
   /// A `Result` containing `Report` on success, detailing execution output,
@@ -89,20 +89,20 @@ pub( crate ) mod private
   // qqq : for Petro : write example
   pub fn run( options : Run ) -> Result< Report, Report >
   {
-    let application : &Path = options.application.as_ref();
-    let path : &Path = options.path.as_ref();
+    let bin_path : &Path = options.bin_path.as_ref();
+    let current_path : &Path = options.current_path.as_ref();
 
     let mut report = Report
     {
-      command : format!( "{} {}", application.display(), options.args.iter().map( | a | a.to_string_lossy() ).join( " " ) ),
-      path : path.to_path_buf(),
+      command : format!( "{} {}", bin_path.display(), options.args.iter().map( | a | a.to_string_lossy() ).join( " " ) ),
+      current_path : current_path.to_path_buf(),
       .. Report::default()
     };
 
-    let output = if options.joining_steams
+    let output = if options.joining_streams
     {
-      let output = cmd( application.as_os_str(), &options.args )
-      .dir( path )
+      let output = cmd( bin_path.as_os_str(), &options.args )
+      .dir( current_path )
       .stderr_to_stdout()
       .stdout_capture()
       .unchecked()
@@ -117,11 +117,11 @@ pub( crate ) mod private
     }
     else
     {
-      let child = Command::new( application )
+      let child = Command::new( bin_path )
       .args( &options.args )
       .stdout( Stdio::piped() )
       .stderr( Stdio::piped() )
-      .current_dir( path )
+      .current_dir( current_path )
       .spawn()
       .context( "failed to spawn process" )
       .map_err( | e |
@@ -186,11 +186,11 @@ pub( crate ) mod private
   #[ derive( Debug, Former ) ]
   pub struct Run
   {
-    application : PathBuf,
+    bin_path : PathBuf,
+    current_path : PathBuf,
     args : Vec< OsString >,
-    path : PathBuf,
     #[ default( false ) ]
-    joining_steams : bool,
+    joining_streams : bool,
   }
 
   /// Process command output.
@@ -200,7 +200,7 @@ pub( crate ) mod private
     /// Command that was executed.
     pub command : String,
     /// Path where command was executed.
-    pub path : PathBuf,
+    pub current_path : PathBuf,
     /// Stdout.
     pub out : String,
     /// Stderr.
@@ -216,11 +216,11 @@ pub( crate ) mod private
       Report
       {
         command : self.command.clone(),
-        path : self.path.clone(),
+        current_path : self.current_path.clone(),
         out : self.out.clone(),
         err : self.err.clone(),
-        // error : Error::new( self.error ),
         error : self.error.as_ref().map_err( | e | Error::msg( e.to_string() ) ).copied(),
+        // error : self.error.as_ref().map_err( | e | Error::new( e ) ).copied(),
       }
     }
   }
@@ -232,7 +232,7 @@ pub( crate ) mod private
       Report
       {
         command : Default::default(),
-        path : PathBuf::new(),
+        current_path : PathBuf::new(),
         out : Default::default(),
         err : Default::default(),
         error : Ok( () ),
@@ -245,7 +245,7 @@ pub( crate ) mod private
     {
       // Trim prevents writing unnecessary whitespace or empty lines
       f.write_fmt( format_args!( "> {}\n", self.command ) )?;
-      f.write_fmt( format_args!( "  @ {}\n\n", self.path.display() ) )?;
+      f.write_fmt( format_args!( "  @ {}\n\n", self.current_path.display() ) )?;
 
       if !self.out.trim().is_empty()
       {

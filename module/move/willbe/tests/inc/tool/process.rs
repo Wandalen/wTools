@@ -32,7 +32,7 @@ fn err_out_err()
   .application( path_to_exe( &assets_path.join( "err_out_test" ).join( "err_out_err.rs" ), temp.path() ) )
   .args( args.to_vec() )
   .path( temp.to_path_buf() )
-  .joining_steams( true )
+  .joining_streams( true )
   .form();
 
   let report = process::run( options ).unwrap().out;
@@ -54,7 +54,7 @@ fn out_err_out()
   .application( path_to_exe( &assets_path.join( "err_out_test" ).join( "out_err_out.rs" ), temp.path() ) )
   .args( args.to_vec() )
   .path( temp.to_path_buf() )
-  .joining_steams( true )
+  .joining_streams( true )
   .form();
   let report = process::run( options ).unwrap().out;
 

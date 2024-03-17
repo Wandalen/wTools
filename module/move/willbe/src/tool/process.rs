@@ -110,7 +110,7 @@ pub( crate ) mod private
     args : Vec< OsString >,
     path : PathBuf,
     #[ default( false ) ]
-    joining_steams : bool,
+    joining_streams : bool,
   }
 
   ///
@@ -133,7 +133,7 @@ pub( crate ) mod private
     let application : &Path = options.application.as_ref();
     let path : &Path = options.path.as_ref();
 
-    if options.joining_steams
+    if options.joining_streams
     {
       let output = cmd( application.as_os_str(), &options.args )
       .dir( path )

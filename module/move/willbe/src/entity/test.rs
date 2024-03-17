@@ -104,7 +104,7 @@ mod private
       .application( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .path( path.as_ref().to_path_buf() )
-      .joining_steams( true )
+      .joining_streams( true )
       .form();
       process::run( options )
     }
