@@ -16,6 +16,8 @@ mod private
     DependencyKind,
     Package
   };
+  // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
+
   use convert_case::{ Case, Casing };
   use toml_edit::Document;
   use regex::bytes::Regex;

@@ -3,6 +3,7 @@ mod private
   use crate::*;
   use std::collections::{ BTreeSet, HashSet };
   use cargo_metadata::Package;
+  // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
   use error_tools::for_app::{ bail, Result };
   use wtools::iter::Itertools;
 
@@ -45,7 +46,7 @@ mod private
 
   pub fn features_powerset
   (
-    package : &Package, 
+    package : &Package,
     power : usize,
     exclude_features : &[ String ],
     include_features : &[ String ],
@@ -64,7 +65,7 @@ mod private
     .filter( | f | !exclude_features.contains( f ) && (include_features.contains(f) || include_features.is_empty()) )
     .cloned()
     .collect();
-    
+
     if esimate_with( filtered_features.len(), power, with_all_features, with_none_features, enabled_features, package.features.len() ) > variants_cap as usize
     {
       bail!( "Feature powerset longer then cap." )
@@ -83,12 +84,12 @@ mod private
         features_powerset.insert( subset );
       }
     }
-    
+
     if with_all_features
     {
       features_powerset.insert( filtered_features );
     }
-    
+
     if with_none_features
     {
       features_powerset.insert( [].into_iter().collect() );

@@ -22,6 +22,7 @@ mod private
     for_app::{ Error, Context },
     err
   };
+  // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
   use cargo_metadata::
   {
     Dependency,

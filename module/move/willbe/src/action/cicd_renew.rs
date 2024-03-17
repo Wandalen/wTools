@@ -10,6 +10,7 @@ mod private
     collections::BTreeMap
   };
   use cargo_metadata::Package;
+  // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
 
   use convert_case::{ Casing, Case };
   use toml_edit::Document;

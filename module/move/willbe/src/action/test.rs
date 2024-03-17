@@ -11,6 +11,8 @@ mod private
   // qqq : for Petro : https://github.com/obox-systems/conventions/blob/master/code_style.md#importing-structuring-std-imports
 
   use cargo_metadata::Package;
+  // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
+
   // qqq : for Petro : don't use Package directly. rid it off for the whole willbe
 
   // qqq : for Petro : should not be such combinations full,no_std

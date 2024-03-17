@@ -14,6 +14,7 @@ mod private
   use std::ffi::OsString;
   use std::path::PathBuf;
   use cargo_metadata::Package;
+  // qqq : for Petro : don't use cargo_metadata directly, use facade
   use colored::Colorize;
   use rayon::ThreadPoolBuilder;
   use process::Report;
