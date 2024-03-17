@@ -128,7 +128,9 @@ mod private
     }
   }
 
+  // qqq : for Viktor : should not be required
   impl TemplateFiles for DeployTemplateFiles {}
+  // qqq : for Viktor : should not be required
   impl IntoIterator for DeployTemplateFiles
   {
     type Item = TemplateFileDescriptor;
