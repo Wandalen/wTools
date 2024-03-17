@@ -11,6 +11,11 @@ mod private
   use wca::Value;
   use std::collections::HashMap;
 
+  // qqq : for Viktor : is that trait really necessary?
+  // Template
+  // DeployTemplate
+  // DeployTemplateFiles
+
   /// Trait for creating a template for a file structure.
   pub trait Template< F > : Sized
   where
@@ -30,7 +35,7 @@ mod private
     /// Relative path for parameter values storage.
     fn parameter_storage( &self ) -> &Path;
 
-    /// 
+    ///
     fn template_name( &self ) -> &'static str;
 
     /// Loads provided parameters from previous run.
@@ -124,7 +129,7 @@ mod private
       self.descriptors.iter().filter( | d | d.is_mandatory ).map( | d | d.parameter.as_str() ).collect()
     }
   }
-  
+
   /// Parameter description.
   #[ derive( Debug, Default, Former ) ]
   pub struct TemplateParameterDescriptor
@@ -138,7 +143,8 @@ mod private
     End : former::ToSuperFormer< TemplateParameters, Context >,
   {
     #[ inline( always ) ]
-    pub fn parameter( self, name : &str ) -> TemplateParameterDescriptorFormer< Self, impl former::ToSuperFormer< TemplateParameterDescriptor, Self > >
+    pub fn parameter( self, name : &str ) ->
+    TemplateParameterDescriptorFormer< Self, impl former::ToSuperFormer< TemplateParameterDescriptor, Self > >
     {
       let on_end = | descriptor : TemplateParameterDescriptor, super_former : core::option::Option< Self > | -> Self
       {
@@ -173,20 +179,20 @@ mod private
         | ( key, value ) |
         {
           let value = value.as_ref().map
-            (
-              | value |
+          (
+            | value |
+            {
+              match value
               {
-                match value
-                {
-                  Value::String( val ) => val.to_string(),
-                  Value::Number( val ) => val.to_string(),
-                  Value::Path( _ ) => "unsupported".to_string(),
-                  Value::Bool( val ) => val.to_string(),
-                  Value::List( _ ) => "unsupported".to_string(),
-                }
+                Value::String( val ) => val.to_string(),
+                Value::Number( val ) => val.to_string(),
+                Value::Path( _ ) => "unsupported".to_string(),
+                Value::Bool( val ) => val.to_string(),
+                Value::List( _ ) => "unsupported".to_string(),
               }
-            )
-            .unwrap_or( "___UNSPECIFIED___".to_string() );
+            }
+          )
+          .unwrap_or( "___UNSPECIFIED___".to_string() );
           ( key.to_owned(), value )
         }
       )
@@ -229,7 +235,8 @@ mod private
 
   impl TemplateFileDescriptor
   {
-    fn contents< FS : FileSystemPort >( &self, fs : &FS, path : &PathBuf, values : &TemplateValues ) -> Result< String >
+    fn contents< FS : FileSystemPort >( &self, fs : &FS, path : &PathBuf, values : &TemplateValues )
+    -> Result< String >
     {
       let contents = if self.is_template
       {
@@ -283,9 +290,10 @@ mod private
       fs.write( &instruction )?;
       Ok( () )
     }
+
   }
 
-  /// Determines how the template file should be written. 
+  /// Determines how the template file should be written.
   #[ derive( Debug, Default ) ]
   pub enum WriteMode
   {
@@ -293,10 +301,10 @@ mod private
     #[default]
     Rewrite,
     /// Attempts to extend existing toml files.
-    /// 
+    ///
     /// If files exists it searches for the same top-level items (tables, values)
     /// and replaces them with template defined ones.
-    /// If file does not exist it creates a new one with contents provided by the template. 
+    /// If file does not exist it creates a new one with contents provided by the template.
     TomlExtend
   }
 
@@ -358,6 +366,7 @@ mod private
     fn read( &self, instruction : &FileReadInstruction ) -> Result< Vec< u8 > >;
   }
 
+  // qqq : xxx : why not public?
   struct FileSystem;
   impl FileSystemPort for FileSystem
   {
@@ -371,13 +380,13 @@ mod private
       }
       fs::write( path, data ).context( "Failed creating and writing to file" )
     }
-    
+
     fn read( &self, instruction : &FileReadInstruction ) -> Result< Vec< u8 > >
     {
       let FileReadInstruction { path } = instruction;
       fs::read( path ).context( "Failed reading a file" )
     }
-    
+
   }
 }
 
