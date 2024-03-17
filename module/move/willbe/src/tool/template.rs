@@ -12,9 +12,9 @@ mod private
   use std::collections::HashMap;
 
   // qqq : for Viktor : is that trait really necessary?
-  // Template
-  // DeployTemplate
-  // DeployTemplateFiles
+  // Template - remove
+  // DeployTemplate - move here
+  // DeployTemplateFiles - remove
 
   /// Trait for creating a template for a file structure.
   pub trait Template< F > : Sized
