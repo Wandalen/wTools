@@ -1,4 +1,4 @@
-name : wlang
+name : proper_path_tools
 
 on : push
 
@@ -7,11 +7,11 @@ env :
 
 jobs :
 
-  # wlang
+  # proper_path_tools
 
   test :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
-      manifest_path : 'module/blank/wlang/Cargo.toml'
-      module_name : 'wlang'
+      manifest_path : 'module/core/proper_path_tools/Cargo.toml'
+      module_name : 'proper_path_tools'
       commit_message : ${{ github.event.head_commit.message }}
