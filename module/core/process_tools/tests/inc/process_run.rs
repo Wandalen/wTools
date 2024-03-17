@@ -7,9 +7,14 @@ use std::
   process::Command,
 };
 
+#[ path = "../tool/asset.rs" ]
+mod asset;
+
 // xxx : qqq : ?
 pub fn path_to_exe( name : &Path, temp_path : &Path ) -> PathBuf
 {
+
+  // dbg!( name );
 
   _ = Command::new( "rustc" )
   .current_dir( temp_path )
@@ -20,16 +25,16 @@ pub fn path_to_exe( name : &Path, temp_path : &Path ) -> PathBuf
   PathBuf::from( temp_path )
   .join( name.file_name().unwrap() )
   .with_extension( EXE_EXTENSION )
+
 }
 
 #[ test ]
 fn err_out_err()
 {
   let temp = assert_fs::TempDir::new().unwrap();
-  let crate_path = Path::new( env!( "CARGO_MANIFEST_DIR" ) );
-  let assets_path = crate_path.join( Path::new( ASSET_PATH ) );
+  let assets_path = asset::path().unwrap();
 
-  dbg!( path_to_exe( &assets_path.join( "err_out_test" ).join( "err_out_err.rs" ), temp.path() ) );
+  // dbg!( path_to_exe( &assets_path.join( "err_out_test" ).join( "err_out_err.rs" ), temp.path() ) );
 
   let options = process::Run::former()
   .bin_path( path_to_exe( &assets_path.join( "err_out_test" ).join( "err_out_err.rs" ), temp.path() ) )
@@ -48,8 +53,7 @@ fn err_out_err()
 fn out_err_out()
 {
   let temp = assert_fs::TempDir::new().unwrap();
-  let crate_path = Path::new( env!( "CARGO_MANIFEST_DIR" ) );
-  let assets_path = crate_path.join( Path::new( ASSET_PATH ) );
+  let assets_path = asset::path().unwrap();
 
   let options = process::Run::former()
   .bin_path( path_to_exe( &assets_path.join( "err_out_test" ).join( "out_err_out.rs" ), temp.path() ) )

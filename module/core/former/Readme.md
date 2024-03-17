@@ -68,9 +68,9 @@ fn main()
  }
  ```
 
+<!-- xxx : regenerate -->
 <details>
 <summary>The code above will be expanded to this</summary>
-
 ```rust
 fn main()
 {
@@ -98,20 +98,20 @@ fn main()
   }
 
   pub struct UserProfileFormer<
-    __FormerContext = UserProfile,
-    __FormerEnd = former::ReturnContainer,
+    FormerContext = UserProfile,
+    FormerEnd = former::ReturnContainer,
   >
   where
-    __FormerEnd : former::ToSuperFormer< UserProfile, __FormerContext >,
+    FormerEnd : former::ToSuperFormer< UserProfile, FormerContext >,
   {
     container : UserProfileFormerContainer,
-    context : Option< __FormerContext >,
-    on_end : Option< __FormerEnd >,
+    context : Option< FormerContext >,
+    on_end : Option< FormerEnd >,
   }
 
-  impl< __FormerContext, __FormerEnd > UserProfileFormer< __FormerContext, __FormerEnd >
+  impl< FormerContext, FormerEnd > UserProfileFormer< FormerContext, FormerEnd >
   where
-    __FormerEnd : former::ToSuperFormer< UserProfile, __FormerContext >,
+    FormerEnd : former::ToSuperFormer< UserProfile, FormerContext >,
   {
     pub fn form( mut self ) -> UserProfile
     {
@@ -184,8 +184,8 @@ fn main()
     }
 
     pub fn begin(
-      context : Option< __FormerContext >,
-      on_end : __FormerEnd,
+      context : Option< FormerContext >,
+      on_end : FormerEnd,
     ) -> Self
     {
       Self
@@ -196,7 +196,7 @@ fn main()
       }
     }
 
-    pub fn end( mut self ) -> __FormerContext
+    pub fn end( mut self ) -> FormerContext
     {
       let on_end = self.on_end.take().unwrap();
       let context = self.context.take();

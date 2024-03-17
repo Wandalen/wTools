@@ -302,7 +302,7 @@ fn field_none_map( field : &FormerField< '_ > ) -> TokenStream
 
 ///
 /// Generate field of the former for a field of the structure
-/// 
+///
 /// Used to generate a Container
 ///
 /// ### Basic use-case. of output
@@ -506,7 +506,7 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 ///   self.container.int_1 = ::core::option::Option::Some( src.into() );
 ///   self
 /// }
-/// 
+///
 /// /// #[ doc = "Setter for the 'int_1' field." ]
 /// #[ inline ]
 /// pub fn int_1_alias< Src >( mut self, src : Src ) -> Self
@@ -567,7 +567,7 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< TokenStream >
 /// Generate a single setter for the 'field_ident' with the 'setter_name' name.
 ///
 /// Used as a helper function for field_setter_map(), which generates all alias setters
-/// 
+///
 /// # Example of output
 /// ```ignore
 /// #[ doc = "Setter for the 'int_1' field." ]
@@ -800,7 +800,7 @@ pub fn performer< 'a >
 
 ///
 /// Generate the whole Former ecosystem
-/// 
+///
 /// Output examples can be found in [docs to former crate](https://docs.rs/former/latest/former/)
 ///
 
@@ -814,6 +814,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     Err( err ) => return Err( err ),
   };
   let has_debug = attr::has_debug( ast.attrs.iter() )?;
+  let example_of_custom_setter = false;
 
 
   /* names */
@@ -1043,7 +1044,27 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   if has_debug
   {
-    diag::debug_report_print( "derive : Former",original_input, &result );
+    diag::debug_report_print( "derive : Former", original_input, &result );
+  }
+
+  if example_of_custom_setter
+  {
+    let _example =
+r#"
+impl< FormerContext, FormerEnd > UserProfileFormer< FormerContext, FormerEnd >
+where
+  FormerEnd : former::ToSuperFormer< UserProfile, FormerContext >,
+{
+  pub fn age< Src >( mut self, src : Src ) -> Self
+  where
+    Src : Into< i32 >,
+  {
+    debug_assert!( self.age.is_none() );
+    self.container.age = ::core::option::Option::Some( src.into() );
+    self
+  }
+}
+"#;
   }
 
   Ok( result )

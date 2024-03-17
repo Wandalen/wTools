@@ -103,6 +103,8 @@ pub( crate ) mod private
       let test_name = format!( "{}{}", self.dependency_name, self.test_postfix );
       // println!( "test_name:{test_name}" );
 
+      // dbg!( &test_path );
+
       let output = std::process::Command::new( "cargo" )
       .current_dir( &test_path )
       .args([ "new", "--bin", &test_name ])
