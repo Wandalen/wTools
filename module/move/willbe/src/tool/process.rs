@@ -196,6 +196,7 @@ pub( crate ) mod private
   }
 }
 
+
 crate::mod_interface!
 {
   protected use Report;
