@@ -11,7 +11,9 @@ mod private
     sync::{ Arc, Mutex },
     path::Path,
   };
+  use std::collections::HashMap;
   use std::ffi::OsString;
+  use std::fmt::Display;
   use std::path::PathBuf;
   use cargo_metadata::Package;
   // qqq : for Petro : don't use cargo_metadata directly, use facade
@@ -24,19 +26,204 @@ mod private
   use former::Former;
   use channel::Channel;
   use optimization::Optimization;
-
+  
+  /// Represents a variant for testing purposes.
+  #[ derive( Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Former ) ]
+  pub struct TestVariant
+  {
+    /// Represents the channel for the test variant.
+    channel : Channel,
+    /// Represents the optimization setting for the test variant.
+    optimization : Optimization,
+    /// Contains additional features or characteristics of the test variant.
+    features : BTreeSet< String >,
+  }
+  
+  /// Global test plan
+  #[ derive( Debug ) ]
+  pub struct TestPlan
+  {
+    packages_plan : Vec< TestPackagePlan >,
+  }
+  
+  impl Display for TestPlan
+  {
+    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result 
+    {
+      writeln!( f, "Plan: " )?;
+      for plan in &self.packages_plan 
+      {
+        writeln!( f, "{plan}" )?;
+      }
+      Ok( () )
+    }
+  }
+  
+  impl TestPlan
+  {
+    /// Create plan from params:
+    /// `packages` - List of packages which will be tested
+    /// `channels` - A set of Cargo channels that are to be tested.
+    /// `power` - An integer value indicating the power or intensity of testing.
+    /// `include_features` - A vector of strings, each representing a feature to be included during testing.
+    /// `exclude_features` - A vector of strings, each representing a feature to be excluded during testing.
+    /// `optimizations` - A set of optimizations (Release & Debug)
+    /// `enabled_features` - A slice of features names to always include in each subset of powerset.
+    /// `with_all_features` - If it's true - add to powerset one subset which contains all features.
+    /// `with_none_features` - If it's true - add to powerset one empty subset.
+    /// `variants_cap` - Maximum of subset in powerset
+    pub fn try_from
+    ( 
+      packages : &[ Package ], 
+      channels : &HashSet< Channel >, 
+      power : u32, 
+      include_features : Vec< String >, 
+      exclude_features : Vec< String >,
+      optimizations : &HashSet< Optimization >,
+      enabled_features : Vec< String >,
+      with_all_features : bool,
+      with_none_features : bool,
+      variants_cap : u32,
+    ) -> Result< Self >
+    {
+      let mut packages_plan = vec![];
+      for package in packages 
+      {
+        packages_plan.push
+        (
+          TestPackagePlan::try_from
+          (
+            package, 
+            channels, 
+            power, 
+            include_features.as_slice(), 
+            exclude_features.as_slice(), 
+            optimizations, 
+            enabled_features.as_slice(), with_all_features, with_none_features, variants_cap
+          )? 
+        );
+      }
+      Ok
+      (
+        Self
+        {
+          packages_plan
+        }
+      )
+    }
+  }
+  
+  #[ derive( Debug ) ]
+  pub struct TestPackagePlan
+  {
+    package : PathBuf,
+    test_variants : BTreeSet< TestVariant >,
+  }
+  
+  impl Display for TestPackagePlan
+  {
+    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result 
+    {
+      writeln!( f, "Package : {}\nThe tests will be executed using the following configurations :", self.package.file_name().unwrap().to_string_lossy() )?;
+      for variant in &self.test_variants 
+      {
+        let feature = if variant.features.is_empty() { "".to_string() } else { variant.features.iter().join( "," ) };
+        writeln!( f, "  [ optimization : {} | channel : {} | feature : [ {feature} ] ]", variant.optimization, variant.channel )?;
+      }
+      Ok( () )
+    }
+  }
+  
+  impl TestPackagePlan
+  {
+    /// Create plan from params:
+    /// `packages` - Package which will be tested
+    /// `channels` - A set of Cargo channels that are to be tested.
+    /// `power` - An integer value indicating the power or intensity of testing.
+    /// `include_features` - A vector of strings, each representing a feature to be included during testing.
+    /// `exclude_features` - A vector of strings, each representing a feature to be excluded during testing.
+    /// `optimizations` - A set of optimizations (Release & Debug)
+    /// `enabled_features` - A slice of features names to always include in each subset of powerset.
+    /// `with_all_features` - If it's true - add to powerset one subset which contains all features.
+    /// `with_none_features` - If it's true - add to powerset one empty subset.
+    /// `variants_cap` - Maximum of subset in powerset
+    fn try_from
+    ( 
+      package : &Package,
+      channels : &HashSet< Channel >,
+      power : u32,
+      include_features : &[ String ],
+      exclude_features : &[ String ],
+      optimizations : &HashSet< Optimization >,
+      enabled_features : &[ String ],
+      with_all_features : bool,
+      with_none_features : bool,
+      variants_cap : u32,
+    ) -> Result< Self >
+    {
+      let dir = package.manifest_path.parent().unwrap().as_std_path().to_path_buf();
+      let mut test_variants = BTreeSet::new();
+      let features_powerset = features::features_powerset
+      (
+        package,
+        power as usize,
+        exclude_features,
+        include_features,
+        enabled_features,
+        with_all_features,
+        with_none_features,
+        variants_cap,
+      )?;
+      for optimization in optimizations
+      {
+        for channel in channels
+        {
+          for feature in &features_powerset
+          {
+            test_variants.insert
+            ( 
+              TestVariant
+              { 
+                channel: channel.clone(), 
+                optimization: optimization.clone(), 
+                features: feature.clone(), 
+              }
+            );
+          }
+        }
+      }
+      Ok
+      ( 
+        Self 
+        { 
+          package: dir, 
+          test_variants, 
+        } 
+      )
+    }
+  }
+  
+  #[ derive( Debug ) ]
+  pub struct PackageTestOptions< 'a >
+  {
+    temp_path : Option< PathBuf >,
+    plan : &'a TestPackagePlan,
+    dry : bool,
+  }
+  
   /// Represents the options for the test.
   #[ derive( Debug, Former, Clone ) ]
   pub struct SingleTestOptions
   {
-    // qqq : for Petro : poor description
-    /// Specifies the release channels for rust.
+    // aaa : for Petro : poor description
+    // aaa : add link to rust doc
+    /// Specifies the release channels for rust. More details : https://rust-lang.github.io/rustup/concepts/channels.html#:~:text=Rust%20is%20released%20to%20three,releases%20are%20made%20every%20night.
     channel : Channel,
     /// Specifies the optimization for rust.
     optimization : Optimization,
     /// Determines whether to use default features in the test.
     /// Enabled by default.
-    #[ default( false ) ]
+    #[ default( true ) ]
     with_default_features : bool,
     /// Determines whether to use all available features in the test.
     /// Disabled by default.
@@ -46,13 +233,19 @@ mod private
     enable_features : BTreeSet< String >,
     /// Temp directory path
     temp_directory_path : Option< PathBuf >,
-    // qqq : for Petro : why dry not here?
+    /// A boolean indicating whether to perform a dry run or not.
+    dry : bool,
+    /// RUST_BACKTRACE
+    #[ default( true ) ]
+    backtrace : bool,
   }
 
   impl SingleTestOptions
   {
     fn as_rustup_args( &self ) -> Vec< String >
     {
+      debug_assert!( !self.with_default_features );// qqq : remove
+      debug_assert!( !self.with_all_features );// qqq : remove
       [ "run".into(), self.channel.to_string(), "cargo".into(), "test".into() ]
       .into_iter()
       .chain( if self.optimization == Optimization::Release { Some( "--release".into() ) } else { None } )
@@ -78,15 +271,16 @@ mod private
   ///
   /// Returns a `Result` containing a `Report` if the command is executed successfully,
   /// or an error if the command fails to execute.
-  pub fn _run< P >( path : P, options : SingleTestOptions, dry : bool ) -> Result< Report, ( Report, Error ) >
+  pub fn _run< P >( path : P, options : SingleTestOptions ) -> Result< Report, ( Report, Error ) >
   where
     P : AsRef< Path >
   {
     let ( program, args ) = ( "rustup", options.as_rustup_args() );
     // qqq : for Petro : rustup ???
-    // qqq : for Petro : RUST_BACKTRACE=1 ?? //  add to SingleTestOptions, by default true
+    // aaa : for Petro : RUST_BACKTRACE=1 ?? //  add to SingleTestOptions, by default true
+    // aaa : add 
 
-    if dry
+    if options.dry
     {
       Ok
       (
@@ -101,52 +295,42 @@ mod private
     }
     else
     {
+      let envs = if options.backtrace { [( "RUST_BACKTRACE".to_string(), "full".to_string() )].into_iter().collect() } else { HashMap::new() };
       let options = process::Run::former()
       .application( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .path( path.as_ref().to_path_buf() )
       .joining_streams( true )
+      .env_variable( envs )
       .form();
       process::run( options )
     }
   }
 
   /// `TestOptions` is a structure used to store the arguments for tests.
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Former ) ]
   pub struct TestOptions
   {
-    /// `channels` - A set of Cargo channels that are to be tested.
-    pub channels : HashSet< Channel >,
+    /// Plan for testing
+    pub plan : TestPlan,
 
     /// `concurrent` - A usize value indicating how much test`s can be run at the same time.
     pub concurrent : u32,
 
-    /// `power` - An integer value indicating the power or intensity of testing.
-    pub power : u32,
-
-    /// `include_features` - A vector of strings, each representing a feature to be included during testing.
-    pub include_features : Vec< String >,
-
-    /// `exclude_features` - A vector of strings, each representing a feature to be excluded during testing.
-    pub exclude_features : Vec< String >,
-
     /// `temp_path` - path to temp directory.
     pub temp_path : Option< PathBuf >,
+    
+    /// A boolean indicating whether to perform a dry run or not.
+    pub dry : bool,
+  }
 
-    ///  optimizations
-    pub optimizations : HashSet< Optimization >,
-
-    /// todo
-    pub enabled_features : Vec< String >,
-
-    /// todo
-    pub with_all_features : bool,
-
-    /// todo
-    pub with_none_features : bool,
-
-    /// todo
-    pub variants_cap : u32,
+  impl TestOptionsFormer
+  {
+    pub fn option_temp(  mut self, value : impl Into< Option< PathBuf > > ) -> Self
+    {
+      self.container.temp_path = value.into();
+      self
+    }
   }
 
 
@@ -171,11 +355,11 @@ mod private
     ///   for which the tests were run, and the values are nested `BTreeMap` where the keys are
     ///   feature names and the values are `Report` structs representing the test results for
     ///   the specific feature and channel.
-    pub tests : BTreeMap< Optimization, BTreeMap< Channel, BTreeMap< String, Result< Report, Report > > > >,
-    // qqq : for Petro : rid off map of map of map, keep flat map // add new entity TestVariant {opt, channel, features}
+    pub tests : BTreeMap< TestVariant, Result< Report, Report > > ,
+    // qqq : for Petro : rid off map of map of map, keep flat map
   }
 
-  impl std::fmt::Display for TestReport
+  impl Display for TestReport
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
@@ -185,49 +369,51 @@ mod private
       }
       let mut failed = 0;
       let mut success = 0;
-      writeln!(f, "{} {}\n", "\n=== Module".bold(), self.package_name.bold() )?;
+      writeln!( f, "{} {}\n", "\n=== Module".bold(), self.package_name.bold() )?;
       if self.tests.is_empty()
       {
         writeln!( f, "unlucky" )?;
         return Ok( () );
       }
-
-      // qqq : for Petro : bad, DRY
-      for( optimization, channels ) in self.tests.iter().sorted_by( | a, b | a.0.cmp( b.0 ) )
+      for ( variant, result) in &self.tests
       {
-        for( channel, features ) in channels.iter().sorted_by( | a, b | a.0.cmp( b.0 ) ) {
-          for( feature, result ) in features
+        let feat = variant.features.iter().join( ", " );
+        let feature = if variant.features.is_empty() { "" } else { feat.as_str() };
+        // if tests failed or if build failed
+        match result
+        {
+          Ok( _ ) =>
           {
-            let feature = if feature.is_empty() { "-" } else { feature };
-            // if tests failed or if build failed
-            match result
-            {
-              Ok(_) =>
-              {
-                success += 1;
-                writeln!( f, "  [ {} | {} | {} ]: ✅  successful", optimization, channel, feature )?;
-              }
-              Err(result) =>
-              {
-                let mut out = result.out.replace("\n", "\n      ");
-                out.push_str("\n");
-                failed += 1;
-                write!( f, "  [ {} | {} | {} ]: ❌  failed\n  \n{out}", optimization, channel, feature )?;
-              }
-            }
+            success += 1;
+            writeln!( f, "  [ {} | {} | [{}] ]: ✅  successful", variant.optimization, variant.channel, feature )?;
+          }
+          Err( result) =>
+          {
+            let mut out = result.out.replace("\n", "\n      ");
+            out.push_str("\n");
+            failed += 1;
+            write!( f, "  [ {} | {} | [{}] ]: ❌  failed\n  \n{out}", variant.optimization, variant.channel, feature )?;
           }
         }
       }
-      if success == failed + success
-      {
-        writeln!( f, "  ✅  All passed {success} / {}", failed + success )?;
-      }
-      else
-      {
-        writeln!( f, "  ❌  Not all passed {success} / {}", failed + success )?;
-      }
+      // aaa : for Petro : bad, DRY
+      // aaa : replace with method
+      writeln!( f, "  {}", generate_summary_message(failed, success ) )?;
 
       Ok( () )
+    }
+  }
+
+
+  fn generate_summary_message( failed : i32, success : i32 ) -> String
+  {
+    if success == failed + success
+    {
+      format!( "✅  All passed {success} / {}", failed + success )
+    }
+    else
+    {
+      format!( "❌  Not all passed {success} / {}", failed + success )
     }
   }
 
@@ -284,14 +470,7 @@ mod private
         }
       }
       writeln!( f, "Global report" )?;
-      if self.succses_reports.len() == self.failure_reports.len() + self.succses_reports.len()
-      {
-        writeln!( f, "  ✅  All passed {} / {}", self.succses_reports.len(),  self.succses_reports.len() )?;
-      }
-      else
-      {
-        writeln!( f, "  ❌  Not all passed {} / {}", self.succses_reports.len(),  self.failure_reports.len() + self.succses_reports.len() )?;
-      }
+      writeln!( f, "  {}", generate_summary_message( self.failure_reports.len() as i32, self.succses_reports.len() as i32 ) )?;
 
       Ok( () )
     }
@@ -299,74 +478,54 @@ mod private
 
   /// `tests_run` is a function that runs tests on a given package with specified arguments.
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
-  pub fn run( args : &TestOptions, package : &Package, dry : bool ) -> Result< TestReport, ( TestReport, Error ) >
+  pub fn run( options : &PackageTestOptions< '_ > ) -> Result< TestReport, ( TestReport, Error ) >
   {
-    // let exclude = args.exclude_features.iter().cloned().collect();
     let mut report = TestReport::default();
-    report.dry = dry;
-    report.package_name = package.name.clone();
-    let features_powerset = features::features_powerset
-      (
-        package,
-        args.power as usize,
-        &args.exclude_features,
-        &args.include_features,
-        &args.enabled_features,
-        args.with_all_features,
-        args.with_none_features,
-        args.variants_cap,
-      ).map_err( | e | ( report.clone(), e.into() ) )?;
+    report.dry = options.dry;
     let report = Arc::new( Mutex::new( report ) );
+    let dir = options.plan.package.clone();
 
-    print_temp_report( &package.name, &args.optimizations, &args.channels, &features_powerset );
     rayon::scope
     (
       | s |
       {
-        let dir = package.manifest_path.parent().unwrap();
-        // qqq : for Petro : bad, DRY
-        for optimization in args.optimizations.clone()
+        for variant in &options.plan.test_variants 
         {
-          for channel in args.channels.clone()
-          {
-            for feature in &features_powerset
-            {
-              let r = report.clone();
-              s.spawn
-              (
-                move | _ |
-                {
-                  let mut args_t = SingleTestOptions::former()
-                  .channel( channel )
-                  .optimization( optimization )
-                  .with_default_features( false )
-                  .with_all_features( false )
-                  .enable_features( feature.clone() );
+          let TestVariant{ channel, optimization, features } = variant;
+          let r = report.clone();
+          let dir = dir.clone();
+          s.spawn
+          (
+            move | _ |
+              {
+                let mut args_t = SingleTestOptions::former()
+                .channel( *channel )
+                .optimization( *optimization )
+                .with_default_features( false )
+                .enable_features( features.clone() )
+                .dry( options.dry );
 
-                  if let Some( p ) = args.temp_path.clone()
-                  {
-                    let path = p.join( format!( "{}_{}_{}_{}", package.name.clone(), optimization, channel, feature.iter().join( "," ) ) );
-                    std::fs::create_dir_all( &path ).unwrap();
-                    args_t = args_t.temp_directory_path( path );
-                  }
-                  let cmd_rep = _run(dir, args_t.form(), dry);
-                  r
-                  .lock()
-                  .unwrap()
-                  .tests
-                  .entry( optimization )
-                  .or_default()
-                  .entry( channel )
-                  .or_default()
-                  .insert
-                  (
-                    feature.iter().join( "," ),
-                    cmd_rep.map_err( | e | e.0 )
+                if let Some( p ) = options.temp_path.clone()
+                {
+                  let path = p.join
+                  ( 
+                    format!
+                    (
+                      "{}_{}_{}_{}", 
+                      options.plan.package.file_name().unwrap().to_string_lossy(), 
+                      optimization, 
+                      channel, 
+                      features.iter().join( "," ) 
+                    ) 
                   );
+                  std::fs::create_dir_all( &path ).unwrap();
+                  args_t = args_t.temp_directory_path( path );
                 }
-              );
-            }
-          }
+                
+                let cmd_rep = _run( dir, args_t.form() );
+                r.lock().unwrap().tests.insert( variant.clone(), cmd_rep.map_err( | e | e.0 ) );
+              }
+          );
         }
       }
     );
@@ -376,31 +535,30 @@ mod private
     let at_least_one_failed = report
     .tests
     .iter()
-    .flat_map( | ( _, channel ) | channel.iter().map( | ( _, features ) | features ) )
-    .flat_map( | features | features.iter().map( | ( _, result ) | result ) )
-    .any( | result | result.is_err() );
+    .any( | ( _, result ) | result.is_err() );
     if at_least_one_failed { Err( ( report, format_err!( "Some tests was failed" ) ) ) } else { Ok( report ) }
   }
 
   /// Run tests for given packages.
-  pub fn tests_run( args : &TestOptions, packages : &[ Package ], dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
+  pub fn tests_run( args : &TestOptions ) -> Result< TestsReport, ( TestsReport, Error ) >
   {
     let mut report = TestsReport::default();
-    report.dry = dry;
+    report.dry = args.dry;
     let report = Arc::new( Mutex::new( report ) );
     let pool = ThreadPoolBuilder::new().use_current_thread().num_threads( args.concurrent as usize ).build().unwrap();
     pool.scope
     (
       | s |
       {
-        for package in packages
+        for plan in &args.plan.packages_plan
         {
           let report = report.clone();
           s.spawn
           (
             move | _ |
             {
-              match run( &args, package, dry )
+              let test_package_options = PackageTestOptions{ temp_path : args.temp_path.clone(), plan, dry : args.dry };
+              match run( &test_package_options )
               {
                 Ok( r ) =>
                 {
@@ -426,31 +584,16 @@ mod private
       Err(( report, format_err!( "Some tests was failed" ) ))
     }
   }
-
-  // qqq : for Petro : should be entity `struct Plan {}`
-  // qqq : for Petro : no! Plan should inplement Display
-  fn print_temp_report( package_name : &str, optimizations : &HashSet< Optimization >, channels : &HashSet< Channel >, features : &HashSet< BTreeSet< String > > )
-  {
-    println!( "Package : {}\nThe tests will be executed using the following configurations :", package_name );
-    for optimization in optimizations.iter().sorted()
-    {
-      for channel in channels.iter().sorted()
-      {
-        for feature in features
-        {
-          let feature = if feature.is_empty() { "-".to_string() } else { feature.iter().join( "," ) };
-          println!( "  [ optimization : {optimization} | channel : {channel} | feature : {feature} ]" );
-        }
-      }
-    }
-  }
 }
 
 crate::mod_interface!
 {
 
   protected use SingleTestOptions;
+  protected use TestVariant;
   protected use _run;
+  
+  protected use TestPlan;
 
   protected use TestOptions;
   protected use TestReport;
