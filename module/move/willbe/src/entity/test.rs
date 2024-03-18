@@ -295,7 +295,7 @@ mod private
     }
     else
     {
-      let envs = if options.backtrace { [( "RUST_BACKTRACE".to_string(), "1".to_string() )].into_iter().collect() } else { HashMap::new() };
+      let envs = if options.backtrace { [( "RUST_BACKTRACE".to_string(), "full".to_string() )].into_iter().collect() } else { HashMap::new() };
       let options = process::Run::former()
       .application( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
