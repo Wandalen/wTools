@@ -125,7 +125,7 @@ mod private
       this = if let Some( v ) = value.get_owned( "exclude" ) { this.exclude::< Vec< String > >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "with_debug" ) { this.dry::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "with_release" ) { this.dry::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "enabled" ) { this.exclude::< Vec< String > >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "enabled_features" ) { this.enabled_features::< Vec< String > >( v ) } else { this };
 
       Ok( this.form() )
     }
