@@ -15,7 +15,7 @@ pub struct TemplateParameterDescriptor
 pub struct TemplateParameters
 {
   #[ subformer( the_module::VectorSubformer ) ]
-  #[ subformer( the_module::VectorSubformer ) ]
+  // #[ subformer_vec => parameter => parameter( name ) ]
   descriptors : Vec< TemplateParameterDescriptor >
 }
 
