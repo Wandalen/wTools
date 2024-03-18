@@ -1,4 +1,4 @@
-use crate::TheModule::version::Version;
+use crate::the_module::version::Version;
 use std::str::FromStr;
 
 #[ test ]

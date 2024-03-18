@@ -14,7 +14,6 @@ pub struct Item2
 }
 
 impl AsMuchAsPossibleNoDelimiter for Item2 {}
-// xxx : qqq : introduce trait
 
 //
 
@@ -72,7 +71,7 @@ impl quote::ToTokens for Items2
       {
         ( as $Name2 : ident ) =>
         {
-          ::impls_index::fn_rename!
+          impls_index::fn_rename!
           {
             @Name { $Name2 }
             @Fn

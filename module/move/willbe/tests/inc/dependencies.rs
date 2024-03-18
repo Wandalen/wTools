@@ -2,8 +2,8 @@ use super::*;
 
 use assert_fs::prelude::*;
 use assert_fs::TempDir;
-use TheModule::Workspace;
-use TheModule::package::{ dependencies, DependenciesOptions, DependenciesSort };
+use the_module::Workspace;
+use the_module::package::{ dependencies, DependenciesOptions, DependenciesSort };
 use willbe::CrateDir;
 use willbe::package::Package;
 use willbe::path::AbsolutePath;
@@ -16,7 +16,7 @@ fn arrange( asset_name : &str ) -> ( TempDir, Workspace )
   let mut metadata = Workspace::with_crate_dir( path ).unwrap();
 
   let root_path = metadata.load().unwrap().workspace_root().unwrap();
-  let assets_relative_path = std::path::Path::new( ASSETS_PATH );
+  let assets_relative_path = std::path::Path::new( ASSET_PATH );
   let assets_path = root_path.join( "module" ).join( "move" ).join( "willbe" ).join( assets_relative_path );
   let temp = TempDir::new().unwrap();
   temp.copy_from( assets_path.join( asset_name ), &[ "**" ] ).unwrap();

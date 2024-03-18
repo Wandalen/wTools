@@ -6,7 +6,7 @@ use super::*;
 fn std_from_and_into_derive()
 {
   #[ allow( unused_imports ) ]
-  use TheModule::exposed::*;
+  use the_module::exposed::*;
 
   #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
   struct StructNamedFields
@@ -36,7 +36,7 @@ fn std_from_and_into_derive()
 fn auto_from_std_from_and_into()
 {
   #[ allow( unused_imports ) ]
-  use TheModule::exposed::*;
+  use the_module::exposed::*;
 
   #[ derive( Debug, PartialEq, Default ) ]
   struct StructNamedFields
@@ -47,7 +47,7 @@ fn auto_from_std_from_and_into()
 
   //
 
-  // impl TheModule::wtools::From_2< i32, i32 > for StructNamedFields
+  // impl the_module::wtools::From_2< i32, i32 > for StructNamedFields
   // {
   //   fn from_2( a : i32, b : i32 ) -> Self { Self{ a, b } }
   // }

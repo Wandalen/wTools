@@ -1,6 +1,6 @@
 
 // #[ allow( unused_imports ) ]
-// use inc::wtest as TheModule;
+// use inc::wtest as the_module;
 // #[ allow( unused_imports ) ]
 // use test_tools::exposed::*;
 

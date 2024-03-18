@@ -2,7 +2,7 @@
 
 # Module :: former
 
-[![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleFormerPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleFormerPush.yml) [![docs.rs](https://img.shields.io/docsrs/former?color=e3e8f0&logo=docs.rs)](https://docs.rs/former) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Fformer_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20former_trivial_sample/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+[![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleFormerPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleFormerPush.yml) [![docs.rs](https://img.shields.io/docsrs/former?color=e3e8f0&logo=docs.rs)](https://docs.rs/former) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Fformer_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20former_trivial/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 
 A flexible and extensible implementation of the builder pattern.
 
@@ -68,242 +68,217 @@ fn main()
  }
  ```
 
+<!-- xxx : regenerate -->
 <details>
 <summary>The code above will be expanded to this</summary>
-
 ```rust
-fn main() {
-    use former::Former;
-    #[perform(fn greet_user())]
-    pub struct UserProfile {
-        #[default(1)]
-        age: i32,
-        username: String,
-        #[alias(bio)]
-        bio_optional: Option<String>,
+fn main()
+{
+  pub struct UserProfile
+  {
+    age : i32,
+    username : String,
+    bio_optional : Option< String >,
+  }
+
+  impl UserProfile
+  {
+    pub fn former() -> UserProfileFormer< UserProfile, former::ReturnContainer >
+    {
+      UserProfileFormer::< UserProfile, former::ReturnContainer >::new()
     }
-    #[automatically_derived]
-    impl ::core::fmt::Debug for UserProfile {
-        #[inline]
-        fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-            ::core::fmt::Formatter::debug_struct_field3_finish(
-                f,
-                "UserProfile",
-                "age",
-                &self.age,
-                "username",
-                &self.username,
-                "bio_optional",
-                &&self.bio_optional,
-            )
+  }
+
+  #[ derive( Default ) ]
+  pub struct UserProfileFormerContainer
+  {
+    pub age : Option< i32 >,
+    pub username : Option< String >,
+    pub bio_optional : Option< String >,
+  }
+
+  pub struct UserProfileFormer<
+    FormerContext = UserProfile,
+    FormerEnd = former::ReturnContainer,
+  >
+  where
+    FormerEnd : former::ToSuperFormer< UserProfile, FormerContext >,
+  {
+    container : UserProfileFormerContainer,
+    context : Option< FormerContext >,
+    on_end : Option< FormerEnd >,
+  }
+
+  impl< FormerContext, FormerEnd > UserProfileFormer< FormerContext, FormerEnd >
+  where
+    FormerEnd : former::ToSuperFormer< UserProfile, FormerContext >,
+  {
+    pub fn form( mut self ) -> UserProfile
+    {
+      let age = if self.container.age.is_some()
+      {
+        self.container.age.take().unwrap()
+      }
+      else
+      {
+        (1).into()
+      };
+      let username = if self.container.username.is_some()
+      {
+        self.container.username.take().unwrap()
+      }
+      else
+      {
+        {
+          trait MaybeDefault< T >
+          {
+            fn maybe_default( self : &Self ) -> T
+            {
+              {
+                panic!( "Field \'username\' isn\'t initialized" );
+              }
+            }
+          }
+
+          impl< T > MaybeDefault< T > for &core::marker::PhantomData< T > {}
+
+          impl< T > MaybeDefault< T > for core::marker::PhantomData< T >
+          where
+            T : ::core::default::Default,
+            {
+              fn maybe_default( self : &Self ) -> T
+              {
+                T::default()
+              }
+            }
+
+          ( &core::marker::PhantomData::< String > ).maybe_default()
         }
-    }
-    #[automatically_derived]
-    impl ::core::marker::StructuralPartialEq for UserProfile {}
-    #[automatically_derived]
-    impl ::core::cmp::PartialEq for UserProfile {
-        #[inline]
-        fn eq(&self, other: &UserProfile) -> bool {
-            self.age == other.age
-                && self.username == other.username
-                && self.bio_optional == other.bio_optional
-        }
-    }
-    #[automatically_derived]
-    impl UserProfile {
-        #[inline(always)]
-        pub fn former() -> UserProfileFormer<UserProfile, former::ReturnContainer> {
-            UserProfileFormer::<UserProfile, former::ReturnContainer>::new()
-        }
+      };
+      let bio_optional = if self.container.bio_optional.is_some()
+      {
+        Some( self.container.bio_optional.take().unwrap() )
+      }
+      else
+      {
+        None
+      };
+      let result = UserProfile
+      {
+        age,
+        username,
+        bio_optional,
+      };
+      return result;
     }
 
-    pub struct UserProfileFormerContainer {
-        pub age: ::core::option::Option<i32>,
-        pub username: ::core::option::Option<String>,
-        pub bio_optional: Option<String>,
-    }
-    impl core::default::Default for UserProfileFormerContainer {
-        #[inline(always)]
-        fn default() -> Self {
-            Self {
-                age: ::core::option::Option::None,
-                username: ::core::option::Option::None,
-                bio_optional: ::core::option::Option::None,
-            }
-        }
+    pub fn perform( self ) -> UserProfile
+    {
+      let result = self.form();
+      return result.greet_user();
     }
 
-    #[automatically_derived]
-    pub struct UserProfileFormer<
-        __FormerContext = UserProfile,
-        __FormerEnd = former::ReturnContainer,
-    >
-    where
-        __FormerEnd: former::ToSuperFormer<UserProfile, __FormerContext>,
+    pub fn new() -> UserProfileFormer< UserProfile, former::ReturnContainer >
     {
-        container: UserProfileFormerContainer,
-        context: core::option::Option<__FormerContext>,
-        on_end: core::option::Option<__FormerEnd>,
+      UserProfileFormer::< UserProfile, former::ReturnContainer >::begin( None, former::ReturnContainer )
     }
-    #[automatically_derived]
-    impl<__FormerContext, __FormerEnd> UserProfileFormer<__FormerContext, __FormerEnd>
-    where
-        __FormerEnd: former::ToSuperFormer<UserProfile, __FormerContext>,
+
+    pub fn begin(
+      context : Option< FormerContext >,
+      on_end : FormerEnd,
+    ) -> Self
     {
-        #[inline(always)]
-        pub fn form(mut self) -> UserProfile {
-            let age = if self.container.age.is_some() {
-                self.container.age.take().unwrap()
-            } else {
-                (1).into()
-            };
-            let username = if self.container.username.is_some() {
-                self.container.username.take().unwrap()
-            } else {
-                {
-                    trait MaybeDefault<T> {
-                        fn maybe_default(self: &Self) -> T {
-                            {
-                                ::core::panicking::panic_fmt(format_args!(
-                                    "Field \'username\' isn\'t initialized"
-                                ));
-                            }
-                        }
-                    }
-                    impl<T> MaybeDefault<T> for &::core::marker::PhantomData<T> {}
-                    impl<T> MaybeDefault<T> for ::core::marker::PhantomData<T>
-                    where
-                        T: ::core::default::Default,
-                    {
-                        fn maybe_default(self: &Self) -> T {
-                            T::default()
-                        }
-                    }
-                    (&::core::marker::PhantomData::<String>).maybe_default()
-                }
-            };
-            let bio_optional = if self.container.bio_optional.is_some() {
-                ::core::option::Option::Some(self.container.bio_optional.take().unwrap())
-            } else {
-                ::core::option::Option::None
-            };
-            let result = UserProfile {
-                age,
-                username,
-                bio_optional,
-            };
-            return result;
-        }
-        #[inline(always)]
-        pub fn perform(self) -> UserProfile {
-            let result = self.form();
-            return result.greet_user();
-        }
-        #[inline(always)]
-        pub fn new() -> UserProfileFormer<UserProfile, former::ReturnContainer> {
-            UserProfileFormer::<UserProfile, former::ReturnContainer>::begin(
-                None,
-                former::ReturnContainer,
-            )
-        }
-        #[inline(always)]
-        pub fn begin(context: core::option::Option<__FormerContext>, on_end: __FormerEnd) -> Self {
-            Self {
-                container: core::default::Default::default(),
-                context: context,
-                on_end: ::core::option::Option::Some(on_end),
-            }
-        }
-        #[inline(always)]
-        pub fn end(mut self) -> __FormerContext {
-            let on_end = self.on_end.take().unwrap();
-            let context = self.context.take();
-            let container = self.form();
-            on_end.call(container, context)
-        }
-        #[inline]
-        pub fn age<Src>(mut self, src: Src) -> Self
-        where
-            Src: ::core::convert::Into<i32>,
-        {
-            if true {
-                if !self.container.age.is_none() {
-                    ::core::panicking::panic("assertion failed: self.container.age.is_none()")
-                }
-            }
-            self.container.age = ::core::option::Option::Some(src.into());
-            self
-        }
-        #[inline]
-        pub fn username<Src>(mut self, src: Src) -> Self
-        where
-            Src: ::core::convert::Into<String>,
-        {
-            if true {
-                if !self.container.username.is_none() {
-                    ::core::panicking::panic("assertion failed: self.container.username.is_none()")
-                }
-            }
-            self.container.username = ::core::option::Option::Some(src.into());
-            self
-        }
-        #[inline]
-        pub fn bio_optional<Src>(mut self, src: Src) -> Self
-        where
-            Src: ::core::convert::Into<String>,
-        {
-            if true {
-                if !self.container.bio_optional.is_none() {
-                    ::core::panicking::panic(
-                        "assertion failed: self.container.bio_optional.is_none()",
-                    )
-                }
-            }
-            self.container.bio_optional = ::core::option::Option::Some(src.into());
-            self
-        }
-        #[inline]
-        pub fn bio<Src>(mut self, src: Src) -> Self
-        where
-            Src: ::core::convert::Into<String>,
-        {
-            if true {
-                if !self.container.bio_optional.is_none() {
-                    ::core::panicking::panic(
-                        "assertion failed: self.container.bio_optional.is_none()",
-                    )
-                }
-            }
-            self.container.bio_optional = ::core::option::Option::Some(src.into());
-            self
-        }
+      Self
+      {
+        container : Default::default(),
+        context : context,
+        on_end : Some( on_end ),
+      }
     }
-    impl UserProfile {
-        fn greet_user(self) -> Self {
-            {
-                ::std::io::_print(format_args!("Hello, {0}\n", self.username));
-            };
-            self
-        }
+
+    pub fn end( mut self ) -> FormerContext
+    {
+      let on_end = self.on_end.take().unwrap();
+      let context = self.context.take();
+      let container = self.form();
+      on_end.call( container, context )
     }
-    let profile = UserProfile::former()
-        .age(30)
-        .username("JohnDoe".to_string())
-        .bio_optional("Software Developer".to_string())
-        .form();
-    match &profile {
-        tmp => {
-            {
-                ::std::io::_eprint(format_args!(
-                    "[{0}:{1}:{2}] {3} = {4:#?}\n",
-                    "src/main.rs", 34u32, 3u32, "&profile", &tmp,
-                ));
-            };
-            tmp
+
+    pub fn age< Src >( mut self, src : Src ) -> Self
+    where
+      Src : Into< i32 >,
+    {
+      if true
+      {
+        if !self.container.age.is_none()
+        {
+          panic!( "assertion failed: self.container.age.is_none()" )
         }
-    };
+      }
+      self.container.age = Some( src.into() );
+      self
+    }
+
+    pub fn username<Src>( mut self, src : Src ) -> Self
+    where
+      Src : Into< String >,
+    {
+      if true
+      {
+        if !self.container.username.is_none()
+        {
+          panic!( "assertion failed: self.container.username.is_none()" )
+        }
+      }
+      self.container.username = Some( src.into() );
+      self
+    }
+    pub fn bio_optional< Src >( mut self, src : Src ) -> Self
+    where
+      Src : Into< String >,
+    {
+      if true
+      {
+        if !self.container.bio_optional.is_none()
+        {
+          panic!( "assertion failed: self.container.bio_optional.is_none()" )
+        }
+      }
+      self.container.bio_optional = Some( src.into() );
+      self
+    }
+
+    pub fn bio< Src >( mut self, src : Src ) -> Self
+    where
+      Src : Into< String >,
+    {
+      if true
+      {
+        if !self.container.bio_optional.is_none()
+        {
+          panic!( "assertion failed: self.container.bio_optional.is_none()" )
+        }
+      }
+      self.container.bio_optional = Some( src.into() );
+      self
+    }
+  }
+
+  impl UserProfile
+  {
+    fn greet_user( self ) -> Self
+    {
+      println!( "Hello, {}", self.username );
+      self
+    }
+  }
+
+  let profile = UserProfile::former()
+  .age( 30 )
+  .username( "JohnDoe".to_string() )
+  .bio_optional( "Software Developer".to_string() )
+  .form();
 }
-
 ```
 
 </details>

@@ -1,6 +1,6 @@
 [package]
 name = "test_tools"
-version = "0.6.0"
+version = "0.8.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -31,7 +31,6 @@ all-features = false
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-# use_std = []
 no_std = []
 use_alloc = []
 enabled = []
@@ -56,6 +55,7 @@ mem_tools = { workspace = true, features = [ "full" ] }
 typing_tools = { workspace = true, features = [ "full" ] }
 data_type = { workspace = true, features = [ "full" ] }
 diagnostics_tools = { workspace = true, features = [ "full" ] }
+process_tools = { workspace = true, features = [ "full" ] }
 
 [build-dependencies]
 rustc_version = "0.4"

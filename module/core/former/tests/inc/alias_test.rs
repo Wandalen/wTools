@@ -9,7 +9,7 @@ tests_impls!
 {
   fn test_alias()
   {
-    #[ derive( Debug, PartialEq, TheModule::Former ) ]
+    #[ derive( Debug, PartialEq, the_module::Former ) ]
     pub struct AliasTestStruct
     {
       #[ alias( first_field ) ]

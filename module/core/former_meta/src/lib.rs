@@ -18,10 +18,12 @@ mod derive
   pub mod former;
   #[ cfg( feature = "derive_component_from" ) ]
   pub mod component_from;
-  #[ cfg( feature = "derive_set_component" ) ]
-  pub mod set_component;
-  #[ cfg( feature = "derive_set_components" ) ]
-  pub mod set_components;
+  #[ cfg( feature = "derive_from_components" ) ]
+  pub mod from_components;
+  #[ cfg( feature = "derive_component_assign" ) ]
+  pub mod component_assign;
+  #[ cfg( all( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
+  pub mod components_assign;
 
 }
 
@@ -55,13 +57,13 @@ mod derive
 ///   {
 ///     #[default(1)]
 ///     age : i32,
-///     
+///
 ///     username : String,
-///     
+///
 ///     #[alias(bio)]
 ///     bio_optional : Option< String >, // Fields could be optional
 ///   }
-/// 
+///
 ///   impl UserProfile
 ///   {
 ///     fn greet_user(self) -> Self
@@ -104,7 +106,7 @@ mod derive
 ///     username : String,
 ///     bio_optional : Option< String >, // Fields could be optional
 ///   }
-/// 
+///
 ///   impl UserProfile
 ///   {
 ///     fn greet_user(self) -> Self
@@ -237,7 +239,7 @@ mod derive
 ///       self.container.bio_optional = Some( src.into() );
 ///       self
 ///     }
-/// 
+///
 ///     #[inline]
 ///     pub fn bio< Src >( mut self, src : Src ) -> Self
 ///     where
@@ -268,7 +270,7 @@ mod derive
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_former" ) ]
-#[ proc_macro_derive( Former, attributes( debug, perform, default, setter, subformer, alias, doc ) ) ]
+#[ proc_macro_derive( Former, attributes( debug, perform, default, setter, subformer, alias, doc, embed ) ) ]
 pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::former::former( input );
@@ -332,10 +334,10 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
   }
 }
 
-/// Derives the `SetComponent` trait for struct fields, allowing each field to be set
+/// Derives the `ComponentAssign` trait for struct fields, allowing each field to be set
 /// with a value that can be converted into the field's type.
 ///
-/// This macro facilitates the automatic implementation of the `SetComponent` trait for all
+/// This macro facilitates the automatic implementation of the `ComponentAssign` trait for all
 /// fields within a struct, leveraging the power of Rust's type system to ensure type safety
 /// and conversion logic. It is particularly useful for builder patterns or mutating instances
 /// of data structures in a fluent and ergonomic manner.
@@ -346,16 +348,16 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 ///
 /// # Conditions
 ///
-/// - This macro is only enabled when the `derive_set_component` feature is active in your `Cargo.toml`.
+/// - This macro is only enabled when the `derive_component_assign` feature is active in your `Cargo.toml`.
 ///
 /// # Input Code Example
 ///
-/// Given a struct definition annotated with `#[ derive( SetComponent ) ]` :
+/// Given a struct definition annotated with `#[ derive( ComponentAssign ) ]` :
 ///
 /// ```rust
-/// use former::SetComponent;
+/// use former::ComponentAssign;
 ///
-/// #[ derive( Default, PartialEq, Debug, former::SetComponent ) ]
+/// #[ derive( Default, PartialEq, Debug, former::ComponentAssign ) ]
 /// struct Person
 /// {
 ///   age : i32,
@@ -363,8 +365,8 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 /// }
 ///
 /// let mut person : Person = Default::default();
-/// person.set( 13 );
-/// person.set( "John" );
+/// person.assign( 13 );
+/// person.assign( "John" );
 /// assert_eq!( person, Person { age : 13, name : "John".to_string() } );
 /// ```
 ///
@@ -373,7 +375,7 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 /// The procedural macro generates the following implementations for `Person` :
 ///
 /// ```rust
-/// use former::SetComponent;
+/// use former::ComponentAssign;
 ///
 /// #[ derive( Default, PartialEq, Debug ) ]
 /// struct Person
@@ -382,40 +384,40 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 ///   name : String,
 /// }
 ///
-/// impl< IntoT > SetComponent< i32, IntoT > for Person
+/// impl< IntoT > ComponentAssign< i32, IntoT > for Person
 /// where
 ///   IntoT : Into< i32 >,
 /// {
-///   fn set( &mut self, component : IntoT )
+///   fn assign( &mut self, component : IntoT )
 ///   {
 ///     self.age = component.into();
 ///   }
 /// }
 ///
-/// impl< IntoT > SetComponent< String, IntoT > for Person
+/// impl< IntoT > ComponentAssign< String, IntoT > for Person
 /// where
 ///   IntoT : Into< String >,
 /// {
-///   fn set( &mut self, component : IntoT )
+///   fn assign( &mut self, component : IntoT )
 ///   {
 ///     self.name = component.into();
 ///   }
 /// }
 ///
 /// let mut person : Person = Default::default();
-/// person.set( 13 );
-/// person.set( "John" );
+/// person.assign( 13 );
+/// person.assign( "John" );
 /// assert_eq!( person, Person { age : 13, name : "John".to_string() } );
 /// ```
 /// This allows any type that can be converted into an `i32` or `String` to be set as
 /// the value of the `age` or `name` fields of `Person` instances, respectively.
 
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_set_component" ) ]
-#[ proc_macro_derive( SetComponent, attributes( debug ) ) ]
-pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+#[ cfg( feature = "derive_component_assign" ) ]
+#[ proc_macro_derive( ComponentAssign, attributes( debug ) ) ]
+pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = derive::set_component::set_component( input );
+  let result = derive::component_assign::component_assign( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -424,10 +426,10 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 }
 
 ///
-/// Derives the `SetComponents` trait for a struct, enabling `components_set` which set all fields at once.
+/// Derives the `ComponentsAssign` trait for a struct, enabling `components_assign` which set all fields at once.
 ///
 /// This will work only if every field can be acquired from the passed value.
-/// In other words, the type passed as an argument to `components_set` must implement Into<T> for each field type.
+/// In other words, the type passed as an argument to `components_assign` must implement Into<T> for each field type.
 ///
 /// # Attributes
 ///
@@ -435,8 +437,8 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///
 /// # Conditions
 ///
-/// - This macro is only enabled when the `derive_set_components` feature is active in your `Cargo.toml`.
-/// - The type must implement `SetComponent` (`derive( SetComponent )`)
+/// - This macro is only enabled when the `derive_components_assign` feature is active in your `Cargo.toml`.
+/// - The type must implement `ComponentAssign` (`derive( ComponentAssign )`)
 ///
 /// # Limitations
 /// This trait cannot be derived, if the struct has fields with identical types
@@ -446,9 +448,9 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// An example when we encapsulate parameters passed to a function in a struct.
 ///
 /// ```rust
-/// use former::{ SetComponent, SetComponents };
+/// use former::{ ComponentAssign, ComponentsAssign };
 ///
-/// #[ derive( Default, SetComponent, SetComponents ) ]
+/// #[ derive( Default, ComponentAssign, ComponentsAssign ) ]
 /// struct BigOpts
 /// {
 ///   cond : bool,
@@ -456,7 +458,7 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///   str : String,
 /// }
 ///
-/// #[ derive( Default, SetComponent, SetComponents ) ]
+/// #[ derive( Default, ComponentAssign, ComponentsAssign ) ]
 /// struct SmallerOpts
 /// {
 ///   cond: bool,
@@ -498,15 +500,15 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// take_big_opts( &options1 );
 ///
 /// let mut options2 = SmallerOpts::default();
-/// options2.components_set( &options1 );
+/// options2.smaller_opts_assign( &options1 );
 /// take_smaller_opts( &options2 );
 /// ```
 ///
 /// Which expands approximately into :
 ///
 /// ```rust
-/// use former::{ SetComponent, SetComponents };
-/// 
+/// use former::{ ComponentAssign, ComponentsAssign };
+///
 /// #[derive(Default)]
 /// struct BigOpts
 /// {
@@ -514,62 +516,62 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///   int : i32,
 ///   str : String,
 /// }
-/// 
-/// impl< IntoT > SetComponent< bool, IntoT > for BigOpts
+///
+/// impl< IntoT > ComponentAssign< bool, IntoT > for BigOpts
 /// where
 ///   IntoT : Into< bool >,
 /// {
-///   fn set( &mut self, component : IntoT )
+///   fn assign( &mut self, component : IntoT )
 ///   {
 ///     self.cond = component.into();
 ///   }
 /// }
-/// 
-/// impl< IntoT > SetComponent< i32, IntoT > for BigOpts
+///
+/// impl< IntoT > ComponentAssign< i32, IntoT > for BigOpts
 /// where
 ///   IntoT : Into< i32 >,
 /// {
-///   fn set( &mut self, component : IntoT )
+///   fn assign( &mut self, component : IntoT )
 ///   {
 ///     self.int = component.into();
 ///   }
 /// }
-/// 
-/// impl< IntoT > SetComponent< String, IntoT > for BigOpts
+///
+/// impl< IntoT > ComponentAssign< String, IntoT > for BigOpts
 /// where
 ///   IntoT : Into< String >,
 /// {
-///   fn set( &mut self, component : IntoT )
+///   fn assign( &mut self, component : IntoT )
 ///   {
 ///     self.str = component.into();
 ///   }
 /// }
-/// 
-/// pub trait BigOptsSetComponents< IntoT >
+///
+/// pub trait BigOptsComponentsAssign< IntoT >
 /// where
 ///   IntoT : Into< bool >,
 ///   IntoT : Into< i32 >,
 ///   IntoT : Into< String >,
 ///   IntoT : Clone,
 /// {
-///   fn components_set( &mut self, component : IntoT );
+///   fn components_assign( &mut self, component : IntoT );
 /// }
-/// 
-/// impl< T, IntoT > BigOptsSetComponents< IntoT > for T
+///
+/// impl< T, IntoT > BigOptsComponentsAssign< IntoT > for T
 /// where
-///   T : former::SetComponent< bool, IntoT >,
-///   T : former::SetComponent< i32, IntoT >,
-///   T : former::SetComponent< String, IntoT >,
+///   T : former::ComponentAssign< bool, IntoT >,
+///   T : former::ComponentAssign< i32, IntoT >,
+///   T : former::ComponentAssign< String, IntoT >,
 ///   IntoT : Into< bool >,
 ///   IntoT : Into< i32 >,
 ///   IntoT : Into< String >,
 ///   IntoT : Clone,
 /// {
-///   fn components_set( &mut self, component : IntoT )
+///   fn components_assign( &mut self, component : IntoT )
 ///   {
-///     former::SetComponent::< bool, _ >::set( self, component.clone() );
-///     former::SetComponent::< i32, _ >::set( self, component.clone() );
-///     former::SetComponent::< String, _ >::set( self, component.clone() );
+///     former::ComponentAssign::< bool, _ >::assign( self, component.clone() );
+///     former::ComponentAssign::< i32, _ >::assign( self, component.clone() );
+///     former::ComponentAssign::< String, _ >::assign( self, component.clone() );
 ///   }
 /// }
 ///
@@ -580,47 +582,47 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 ///   int : i32,
 /// }
 ///
-/// impl< IntoT > SetComponent< bool, IntoT > for SmallerOpts
+/// impl< IntoT > ComponentAssign< bool, IntoT > for SmallerOpts
 /// where
 ///   IntoT : Into< bool >,
 /// {
-///   fn set( &mut self, component : IntoT )
+///   fn assign( &mut self, component : IntoT )
 ///   {
 ///     self.cond = component.into();
 ///   }
 /// }
 ///
-/// impl< IntoT > SetComponent< i32, IntoT > for SmallerOpts
+/// impl< IntoT > ComponentAssign< i32, IntoT > for SmallerOpts
 /// where
 ///     IntoT : Into< i32 >,
 /// {
-///   fn set( &mut self, component : IntoT )
+///   fn assign( &mut self, component : IntoT )
 ///   {
 ///     self.int = component.into();
 ///   }
 /// }
 ///
-/// pub trait SmallerOptsSetComponents< IntoT >
+/// pub trait SmallerOptsComponentsAssign< IntoT >
 /// where
 ///   IntoT : Into< bool >,
 ///   IntoT : Into< i32 >,
 ///   IntoT : Clone,
 /// {
-///   fn components_set( &mut self, component : IntoT );
+///   fn smaller_opts_assign( &mut self, component : IntoT );
 /// }
 ///
-/// impl< T, IntoT > SmallerOptsSetComponents< IntoT > for T
+/// impl< T, IntoT > SmallerOptsComponentsAssign< IntoT > for T
 /// where
-///   T : former::SetComponent< bool, IntoT >,
-///   T : former::SetComponent< i32, IntoT >,
+///   T : former::ComponentAssign< bool, IntoT >,
+///   T : former::ComponentAssign< i32, IntoT >,
 ///   IntoT : Into< bool >,
 ///   IntoT : Into< i32 >,
 ///   IntoT : Clone,
 /// {
-///   fn components_set( &mut self, component : IntoT )
+///   fn smaller_opts_assign( &mut self, component : IntoT )
 ///   {
-///     former::SetComponent::< bool, _ >::set( self, component.clone() );
-///     former::SetComponent::< i32, _ >::set( self, component.clone() );
+///     former::ComponentAssign::< bool, _ >::assign( self, component.clone() );
+///     former::ComponentAssign::< i32, _ >::assign( self, component.clone() );
 ///   }
 /// }
 ///
@@ -658,16 +660,117 @@ pub fn set_component( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
 /// };
 /// take_big_opts( &options1 );
 /// let mut options2 = SmallerOpts::default();
-/// options2.components_set( &options1 );
+/// options2.smaller_opts_assign( &options1 );
 /// take_smaller_opts( &options2 );
 /// ```
 ///
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_set_components" ) ]
-#[ proc_macro_derive( SetComponents, attributes( debug ) ) ]
-pub fn set_components( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+#[ cfg( all( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
+#[ proc_macro_derive( ComponentsAssign, attributes( debug ) ) ]
+pub fn components_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = derive::set_components::set_components( input );
+  let result = derive::components_assign::components_assign( input );
+  match result
+  {
+    Ok( stream ) => stream.into(),
+    Err( err ) => err.to_compile_error().into(),
+  }
+}
+
+/// A procedural macro to automatically derive the `From<T>` trait implementation for a struct,
+/// enabling instances of one type to be converted from instances of another type.
+///
+/// It is part of type-based forming approach which requires each field having an unique type. Each field
+/// of the target struct must be capable of being individually converted from the source type `T`.
+/// This macro simplifies the implementation of type conversions, particularly useful for
+/// constructing a struct from another type with compatible fields. The source type `T` must
+/// implement `Into< FieldType >` for each field type of the target struct.
+///
+/// # Attributes
+///
+/// - `debug`: Optional. Enables debug printing during macro expansion.
+///
+/// # Requirements
+///
+/// - Available only when the feature flags `enabled` and `derive_from_components`
+///   are activated in your Cargo.toml. It's activated by default.
+///
+/// # Examples
+///
+/// Given the structs `Options1` and `Options2`, where `Options2` is a subset of `Options1`:
+///
+/// ```rust
+/// use former::FromComponents;
+///
+/// #[ derive( Debug, Default, PartialEq ) ]
+/// pub struct Options1
+/// {
+///   field1 : i32,
+///   field2 : String,
+///   field3 : f32,
+/// }
+///
+/// impl From< &Options1 > for i32
+/// {
+///   #[ inline( always ) ]
+///   fn from( src : &Options1 ) -> Self
+///   {
+///     src.field1.clone()
+///   }
+/// }
+///
+/// impl From< &Options1 > for String
+/// {
+///   #[ inline( always ) ]
+///   fn from( src : &Options1 ) -> Self
+///   {
+///     src.field2.clone()
+///   }
+/// }
+///
+/// impl From< &Options1 > for f32
+/// {
+///   #[ inline( always ) ]
+///   fn from( src : &Options1 ) -> Self
+///   {
+///     src.field3.clone()
+///   }
+/// }
+///
+/// #[ derive( Debug, Default, PartialEq, FromComponents ) ]
+/// pub struct Options2
+/// {
+///   field1 : i32,
+///   field2 : String,
+/// }
+///
+/// let o1 = Options1 { field1 : 42, field2 : "Hello, world!".to_string(), field3 : 13.01 };
+///
+/// // Demonstrating conversion from Options1 to Options2
+/// let o2 : Options2 = Into::< Options2 >::into( &o1 );
+/// let expected = Options2 { field1 : 42, field2 : "Hello, world!".to_string() };
+/// assert_eq!( o2, expected );
+///
+/// // Alternative way using `.into()`
+/// let o2 : Options2 = ( &o1 ).into();
+/// assert_eq!( o2, expected );
+///
+/// // Alternative way using `.from()`
+/// let o2 = Options2::from( &o1 );
+/// assert_eq!( o2, expected );
+/// ```
+///
+/// This demonstrates how `Options2` can be derived from `Options1` using the `FromComponents` macro,
+/// automatically generating the necessary `From< &Options1 >` implementation for `Options2`, facilitating
+/// an easy conversion between these types based on their compatible fields.
+///
+
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_from_components" ) ]
+#[ proc_macro_derive( FromComponents, attributes( debug ) ) ]
+pub fn from_components( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+{
+  let result = derive::from_components::from_components( input );
   match result
   {
     Ok( stream ) => stream.into(),

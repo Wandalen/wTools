@@ -11,7 +11,6 @@ use error_tools::Result;
 async fn add_config_file() -> Result< () >
 {
   let path = PathBuf::from( "./tests/fixtures/test_config.toml" );
-  //println!("{:?}", res);
   let path = path.canonicalize().expect( "Invalid path" );
 
   let config = Config::default()
@@ -20,12 +19,12 @@ async fn add_config_file() -> Result< () >
   ;
 
   let feed_storage = FeedStorage::init_storage( config ).await?;
-  unitore::executor::endpoints::config::add_config( feed_storage.clone(), &wca::Args( vec![ wca::Value::Path( path ) ] ) ).await?;
+  unitore::executor::actions::config::add_config( feed_storage.clone(), &wca::Args( vec![ wca::Value::Path( path ) ] ) ).await?;
 
   let mut manager = FeedManager::new( feed_storage );
   let res = manager.storage.get_all_feeds().await?;
 
-  let feeds_links = res.selected_entries.selected_rows
+  let feeds_links = res.0.selected_rows
   .iter()
   .map( | feed | String::from( feed[ 1 ].clone() ) )
   .collect::< Vec< _ > >()

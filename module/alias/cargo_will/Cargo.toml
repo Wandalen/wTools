@@ -1,6 +1,6 @@
 [package]
 name = "cargo_will"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -43,6 +43,3 @@ serde = "1.0"
 assert_cmd = "2.0"
 petgraph = "~0.6"
 cargo_metadata = "~0.14"
-
-# aaa : for Petro : make it working
-# aaa : now it`s working

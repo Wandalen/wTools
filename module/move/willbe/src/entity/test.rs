@@ -14,23 +14,24 @@ mod private
   use std::ffi::OsString;
   use std::path::PathBuf;
   use cargo_metadata::Package;
+  // qqq : for Petro : don't use cargo_metadata directly, use facade
   use colored::Colorize;
   use rayon::ThreadPoolBuilder;
-  use process::CmdReport;
+  use process::Report;
   use wtools::error::anyhow::{ Error, format_err };
   use wtools::iter::Itertools;
   use wtools::error::Result;
   use former::Former;
   use channel::Channel;
   use optimization::Optimization;
-  
+
   pub struct TestPackagePlan
   {
     package : PathBuf,
     test_variants : BTreeSet< TestVariant >,
     temp_directory_path : Option< PathBuf >,
   }
-  
+
   /// Represents a variant for testing purposes.
   #[ derive( Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Former ) ]
   pub struct TestVariant
@@ -94,21 +95,21 @@ mod private
   ///
   /// # Returns
   ///
-  /// Returns a `Result` containing a `CmdReport` if the command is executed successfully,
+  /// Returns a `Result` containing a `Report` if the command is executed successfully,
   /// or an error if the command fails to execute.
-  pub fn _run< P >( path : P, options : SingleTestOptions, dry : bool ) -> Result< CmdReport, ( CmdReport, Error ) >
+  pub fn _run< P >( path : P, options : SingleTestOptions, dry : bool ) -> Result< Report, ( Report, Error ) >
   where
     P : AsRef< Path >
   {
     let ( program, args ) = ( "rustup", options.as_rustup_args() );
     // qqq : for Petro : rustup ???
-    // qqq : for Petro : RUST_BACKTRACE=1 ??
+    // qqq : for Petro : RUST_BACKTRACE=1 ?? //  add to SingleTestOptions, by default true
 
     if dry
     {
       Ok
       (
-        CmdReport
+        Report
         {
           command : format!( "{program} {}", args.join( " " ) ),
           path : path.as_ref().to_path_buf(),
@@ -119,11 +120,11 @@ mod private
     }
     else
     {
-      let options = process::RunOptions::former()
+      let options = process::Run::former()
       .application( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .path( path.as_ref().to_path_buf() )
-      .join_steam( true )
+      .joining_streams( true )
       .form();
       process::run( options )
     }
@@ -153,6 +154,18 @@ mod private
 
     ///  optimizations
     pub optimizations : HashSet< Optimization >,
+
+    /// todo
+    pub enabled_features : Vec< String >,
+
+    /// todo
+    pub with_all_features : bool,
+
+    /// todo
+    pub with_none_features : bool,
+
+    /// todo
+    pub variants_cap : u32,
   }
 
 
@@ -175,9 +188,9 @@ mod private
     pub package_name : String, /* qqq : for Petro : bad, reuse newtype */
     /// A `BTreeMap` where the keys are `channel::Channel` enums representing the channels
     ///   for which the tests were run, and the values are nested `BTreeMap` where the keys are
-    ///   feature names and the values are `CmdReport` structs representing the test results for
+    ///   feature names and the values are `Report` structs representing the test results for
     ///   the specific feature and channel.
-    pub tests : BTreeMap< TestVariant, Result< CmdReport, CmdReport > > ,
+    pub tests : BTreeMap< TestVariant, Result< Report, Report > > ,
     // qqq : for Petro : rid off map of map of map, keep flat map
   }
 
@@ -197,7 +210,7 @@ mod private
         writeln!( f, "unlucky" )?;
         return Ok( () );
       }
-      for ( variant, result) in &self.tests 
+      for ( variant, result) in &self.tests
       {
         let feature = if variant.features.is_empty() { "-" } else { &variant.features };
         // if tests failed or if build failed
@@ -225,14 +238,14 @@ mod private
     }
   }
 
-  
-  fn generate_summary_message( failed : i32, success : i32 ) -> String 
+
+  fn generate_summary_message( failed : i32, success : i32 ) -> String
   {
     if success == failed + success
     {
       format!( "✅  All passed {success} / {}", failed + success )
-    } 
-    else 
+    }
+    else
     {
       format!( "❌  Not all passed {success} / {}", failed + success )
     }
@@ -266,7 +279,7 @@ mod private
       if self.dry
       {
         writeln!( f, "\nYou can execute the plan with 'will .test dry : 0'." )?;
-        // qqq : for Petro : bad. should be exact command with exact parameters
+        // qqq : for Petro : bad. should be exact command with exact parameters / при виклику зовнішніх команд повинен бути вивід у консоль про цей виклик і його аргументи за виключенням коли ційлий блок виводу прихований (у моєму випадку при фейлі)
         return Ok( () )
       }
       if self.succses_reports.is_empty() && self.failure_reports.is_empty()
@@ -297,7 +310,6 @@ mod private
     }
   }
 
-  // qqq : for Petro : ?
   /// `tests_run` is a function that runs tests on a given package with specified arguments.
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
   pub fn run( args : &TestOptions, package : &Package, dry : bool ) -> Result< TestReport, ( TestReport, Error ) >
@@ -306,15 +318,18 @@ mod private
     let mut report = TestReport::default();
     report.dry = dry;
     report.package_name = package.name.clone();
-    let report = Arc::new( Mutex::new( report ) );
-
     let features_powerset = features::features_powerset
-    (
-      package,
-      args.power as usize,
-      &args.exclude_features,
-      &args.include_features
-    );
+      (
+        package,
+        args.power as usize,
+        &args.exclude_features,
+        &args.include_features,
+        &args.enabled_features,
+        args.with_all_features,
+        args.with_none_features,
+        args.variants_cap,
+      ).map_err( | e | ( report.clone(), e.into() ) )?;
+    let report = Arc::new( Mutex::new( report ) );
 
     print_temp_report( &package.name, &args.optimizations, &args.channels, &features_powerset );
     rayon::scope
@@ -413,7 +428,7 @@ mod private
 
   // qqq : for Petro : should be entity `struct Plan {}`
   // qqq : for Petro : no! Plan should inplement Display
-  fn print_temp_report( package_name : &str, optimizations : &HashSet< Optimization >, channels : &HashSet< channel::Channel >, features : &HashSet< BTreeSet< String > > )
+  fn print_temp_report( package_name : &str, optimizations : &HashSet< Optimization >, channels : &HashSet< Channel >, features : &HashSet< BTreeSet< String > > )
   {
     println!( "Package : {}\nThe tests will be executed using the following configurations :", package_name );
     for optimization in optimizations.iter().sorted()

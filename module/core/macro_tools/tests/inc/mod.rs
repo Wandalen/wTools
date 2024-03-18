@@ -6,7 +6,7 @@ use test_tools::exposed::*;
 
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
-use TheModule::exposed::*;
+use the_module::exposed::*;
 
 #[ cfg( feature = "enabled" ) ]
 mod attr_test;

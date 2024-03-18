@@ -3,7 +3,7 @@ use std::io::Write;
 use std::path::{ Path, PathBuf };
 use assert_fs::TempDir;
 
-use crate::TheModule::*;
+use crate::the_module::*;
 use action::test::{test, TestsCommandOptions};
 use path::AbsolutePath;
 use channel::*;
@@ -11,7 +11,7 @@ use optimization::*;
 use willbe::test::TestVariant;
 
 #[ test ]
-// if the test fails => the report is returned as an error ( Err(CmdReport) )
+// if the test fails => the report is returned as an error ( Err(Report) )
 fn fail_test()
 {
   let temp = TempDir::new().unwrap();
@@ -21,7 +21,8 @@ fn fail_test()
   .toml_file( "" )
   .test_file( r#"
     #[test]
-    fn should_fail() {
+    fn should_fail()
+    {
       panic!()
     }
   "#)
@@ -38,17 +39,26 @@ fn fail_test()
   let rep = test( args, false ).unwrap_err().0;
   println!( "========= OUTPUT =========\n{}\n==========================", rep );
 
+<<<<<<< HEAD
   let no_features = rep
   .failure_reports[ 0 ]
   .tests.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Stable ).features( "" ).form() )
   .unwrap();
   
+=======
+  let stable = rep.failure_reports[ 0 ]
+  .tests.get( &Optimization::Debug )
+  .unwrap()
+  .get( &Channel::Stable )
+  .unwrap();
+  let no_features = stable.get( "" ).unwrap();
+>>>>>>> 9d731c0ea50ac4143e3a9ffa4fc8346c454dead0
   assert!( no_features.is_err() );
   assert!( no_features.clone().unwrap_err().out.contains( "failures" ) );
 }
 
 #[ test ]
-// if a compilation error occurred => the report is returned as an error ( Err(CmdReport) )
+// if a compilation error occurred => the report is returned as an error ( Err(Report) )
 fn fail_build()
 {
   let temp = TempDir::new().unwrap();

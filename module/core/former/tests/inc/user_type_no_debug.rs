@@ -32,7 +32,7 @@ tests_impls!
       on : bool
     }
 
-    #[ derive( PartialEq, TheModule::Former ) ]
+    #[ derive( PartialEq, the_module::Former ) ]
     pub struct Device
     {
       device : String,

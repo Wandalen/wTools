@@ -15,7 +15,7 @@ mod private
 
   impl std::fmt::Display for Optimization
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result 
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
       match self
       {
@@ -25,6 +25,7 @@ mod private
     }
   }
 }
+// qqq : for Petro : why is it here?
 
 crate::mod_interface!
 {

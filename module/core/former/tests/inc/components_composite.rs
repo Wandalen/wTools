@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
-use former::{ SetComponent, SetWithType };
+use former::{ ComponentAssign, AssignWithType };
 
 ///
 /// Options1
@@ -13,13 +13,12 @@ use former::{ SetComponent, SetWithType };
     Debug,
     Default,
     PartialEq,
-    TheModule::ComponentFrom,
-    TheModule::SetComponent,
-    // TheModule::SetComponents,
-    // TheModule::FromComponents,
+    the_module::ComponentFrom,
+    the_module::ComponentAssign,
+    the_module::ComponentsAssign,
+    the_module::FromComponents,
   )
 ]
-// #[ debug ]
 // qqq : make these traits working for generic struct, use `split_for_impl`
 pub struct Options1
 {
@@ -38,13 +37,12 @@ pub struct Options1
     Debug,
     Default,
     PartialEq,
-    TheModule::ComponentFrom,
-    TheModule::SetComponent,
-    TheModule::SetComponents,
-    // TheModule::FromComponents,
+    the_module::ComponentFrom,
+    the_module::ComponentAssign,
+    the_module::ComponentsAssign,
+    the_module::FromComponents,
   )
 ]
-// #[ debug ]
 pub struct Options2
 {
   field1 : i32,
@@ -53,24 +51,24 @@ pub struct Options2
 
 //
 
-impl< T > From< T > for Options2
-where
-  T : Into< i32 >,
-  T : Into< String >,
-  T : Clone,
-{
-  #[ inline( always ) ]
-  fn from( src : T ) -> Self
-  {
-    let field1 = Into::< i32 >::into( src.clone() );
-    let field2 = Into::< String >::into( src.clone() );
-    Options2
-    {
-      field1,
-      field2,
-    }
-  }
-}
+// impl< T > From< T > for Options2
+// where
+//   T : Into< i32 >,
+//   T : Into< String >,
+//   T : Clone,
+// {
+//   #[ inline( always ) ]
+//   fn from( src : T ) -> Self
+//   {
+//     let field1 = Into::< i32 >::into( src.clone() );
+//     let field2 = Into::< String >::into( src.clone() );
+//     Options2
+//     {
+//       field1,
+//       field2,
+//     }
+//   }
+// }
 
 //
 

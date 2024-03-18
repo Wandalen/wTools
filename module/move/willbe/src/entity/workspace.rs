@@ -98,7 +98,11 @@ mod private
     /// Returns list of all packages
     pub fn packages( &self ) -> Result< &[ Package ], WorkspaceError >
     {
-      self.metadata.as_ref().ok_or_else( || WorkspaceError::MetadataError ).map( | metadata | metadata.packages.as_slice() )
+      self
+      .metadata
+      .as_ref()
+      .ok_or_else( || WorkspaceError::MetadataError )
+      .map( | metadata | metadata.packages.as_slice() )
     }
 
     /// Returns the path to workspace root

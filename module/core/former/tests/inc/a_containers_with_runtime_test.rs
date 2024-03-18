@@ -4,7 +4,7 @@ use super::*;
 // use std::collections::HashMap;
 // use std::collections::HashSet;
 
-#[ derive( Debug, PartialEq, TheModule::Former ) ]
+#[ derive( Debug, PartialEq, the_module::Former ) ]
 pub struct Struct1
 {
   #[ subformer( former::VectorSubformer ) ]

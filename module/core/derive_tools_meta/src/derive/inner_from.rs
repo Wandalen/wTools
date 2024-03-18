@@ -9,7 +9,7 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
   let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
   let field_types = parsed.field_types();
   let field_names = parsed.field_names();
-  let item_name = parsed.item_name;
+  let item_name = parsed.item_name.clone();
   let result =
   match ( field_types.len(), field_names )
   {
@@ -47,7 +47,13 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
   Ok( result )
 }
 
-fn from_impl_named( item_name: syn::Ident, field_type: &syn::Type, field_name: &syn::Ident ) -> proc_macro2::TokenStream
+// qqq  : document, add example of generated code
+fn from_impl_named
+(
+  item_name : syn::Ident,
+  field_type : &syn::Type,
+  field_name : &syn::Ident,
+) -> proc_macro2::TokenStream
 {
   qt!
   {
@@ -67,7 +73,12 @@ fn from_impl_named( item_name: syn::Ident, field_type: &syn::Type, field_name: &
   }
 }
 
-fn from_impl( item_name: syn::Ident, field_type: &syn::Type ) -> proc_macro2::TokenStream
+// qqq  : document, add example of generated code
+fn from_impl
+(
+  item_name : syn::Ident,
+  field_type : &syn::Type,
+) -> proc_macro2::TokenStream
 {
   qt!
   {
@@ -86,10 +97,11 @@ fn from_impl( item_name: syn::Ident, field_type: &syn::Type ) -> proc_macro2::To
   }
 }
 
+// qqq  : document, add example of generated code
 fn from_impl_multiple_fields
 (
   item_name : syn::Ident,
-  field_types : &Vec< syn::Type >,
+  field_types : &Vec< &syn::Type >,
   params : &Vec< proc_macro2::TokenStream >,
 ) -> proc_macro2::TokenStream
 {
@@ -111,6 +123,7 @@ fn from_impl_multiple_fields
   }
 }
 
+// qqq  : document, add example of generated code
 fn unit( item_name : syn::Ident ) -> proc_macro2::TokenStream
 {
   qt!

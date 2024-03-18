@@ -12,7 +12,7 @@ tests_impls!
       uint : u32,
     }
 
-    #[ derive( Debug, PartialEq, TheModule::Former ) ]
+    #[ derive( Debug, PartialEq, the_module::Former ) ]
     pub struct Struct2
     {
       user : UserType,

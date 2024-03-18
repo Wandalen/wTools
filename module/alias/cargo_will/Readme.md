@@ -20,7 +20,7 @@ Utility to publish multi-crate and multi-workspace environments and maintain the
 
 ### To install
 
-```bash
+``` bash
 cargo install cargo_will
 will .
 ```

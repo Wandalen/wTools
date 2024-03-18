@@ -1,7 +1,7 @@
 
 
 #[ test ]
-fn component_set()
+fn component_assign()
 {
 
   let o1 = Options1 { field1 : 42, field2 : "Hello, world!".to_string(), field3 : 13.01 };

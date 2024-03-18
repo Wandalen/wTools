@@ -7,7 +7,7 @@ ___
 
 ### Basic use-case
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ```rust
 use willbe_old::*;
@@ -28,6 +28,6 @@ cargo add willbe
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd examples/willbe_trivial_sample
+cd examples/willbe_trivial
 cargo run
 ```
