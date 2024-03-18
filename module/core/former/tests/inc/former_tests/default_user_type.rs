@@ -20,6 +20,8 @@ tests_impls!
     }
     let command = Struct2::former().form();
 
+    // assert!( false );
+
     let expected = Struct2
     {
       user : UserType { int : 0, uint : 0 },

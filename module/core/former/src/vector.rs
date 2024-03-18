@@ -63,7 +63,7 @@ where
 
   /// Form current former into target structure.
   #[ inline( always ) ]
-  fn form( mut self ) -> Container
+  pub fn form( mut self ) -> Container
   {
     let container = if self.container.is_some()
     {
@@ -77,22 +77,22 @@ where
     container
   }
 
-  /// Initializes a new `VectorSubformer` instance, starting with an empty container.
-  /// This function serves as the entry point for the builder pattern.
-  ///
-  /// # Returns
-  /// A new instance of `VectorSubformer` with an empty internal container.
-  ///
-  #[ inline( always ) ]
-  pub fn new() -> VectorSubformer< E, Container, Container, impl ToSuperFormer< Container, Container > >
-  {
-    VectorSubformer::begin
-    (
-      None,
-      None,
-      crate::ReturnContainer,
-    )
-  }
+  // /// Initializes a new `VectorSubformer` instance, starting with an empty container.
+  // /// This function serves as the entry point for the builder pattern.
+  // ///
+  // /// # Returns
+  // /// A new instance of `VectorSubformer` with an empty internal container.
+  // ///
+  // #[ inline( always ) ]
+  // pub fn new() -> VectorSubformer< E, Container, Container, impl ToSuperFormer< Container, Container > >
+  // {
+  //   VectorSubformer::begin
+  //   (
+  //     None,
+  //     None,
+  //     crate::ReturnContainer,
+  //   )
+  // }
 
   /// Begins the building process, optionally initializing with a context and container.
   #[ inline( always ) ]
@@ -109,10 +109,6 @@ where
       container,
       on_end : Some( on_end ),
       _phantom : core::marker::PhantomData,
-      // context,
-      // container,
-      // on_end,
-      // _phantom : core::marker::PhantomData,
     }
   }
 
@@ -132,6 +128,30 @@ where
   {
     self.container = Some( vector );
     self
+  }
+
+}
+
+impl< E, Container > VectorSubformer< E, Container, Container, crate::ReturnContainer >
+where
+  Container : VectorLike< E > + core::default::Default,
+{
+
+  /// Initializes a new `VectorSubformer` instance, starting with an empty container.
+  /// This function serves as the entry point for the builder pattern.
+  ///
+  /// # Returns
+  /// A new instance of `VectorSubformer` with an empty internal container.
+  ///
+  #[ inline( always ) ]
+  pub fn new() -> Self
+  {
+    Self::begin
+    (
+      None,
+      None,
+      crate::ReturnContainer,
+    )
   }
 
 }

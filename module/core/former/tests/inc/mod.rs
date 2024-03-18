@@ -17,25 +17,23 @@ mod former_tests
 
   mod attribute_default_container;
   mod attribute_default_primitive;
-  mod former_hashmap_without_parameter;
-  mod former_vector_without_parameter;
+  mod attribute_perform;
+  mod attribute_setter;
+  mod attribute_alias;
 
   mod string_slice_manual;
   mod string_slice;
-
+  mod unsigned_primitive_types;
   mod default_user_type;
   mod user_type_no_default;
   mod user_type_no_debug;
 
-  mod alias;
+  mod name_collision_former_hashmap_without_parameter;
+  mod name_collision_former_vector_without_parameter;
   mod name_collisions;
   mod name_collision_context;
   mod name_collision_end;
   mod name_collision_on_end;
-  mod unsigned_primitive_types;
-
-  mod attribute_perform;
-  mod attribute_setter;
 
   #[ cfg( not( feature = "no_std" ) ) ]
   mod parametrized_struct_manual;
@@ -48,6 +46,8 @@ mod former_tests
   mod subformer_basic_manual;
   #[ cfg( not( feature = "no_std" ) ) ]
   mod subformer_basic;
+  mod subformer_vec;
+  mod subformer_shortcut;
 
 }
 

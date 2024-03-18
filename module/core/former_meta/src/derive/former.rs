@@ -1003,6 +1003,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
           former::ReturnContainer,
         )
       }
+      // xxx : should be stand-alone. look VectorSubformer
 
       ///
       /// Begin the process of forming. Expects context of forming to return it after forming.
