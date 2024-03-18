@@ -14,17 +14,25 @@ pub struct TemplateParameterDescriptor
 #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 pub struct TemplateParameters
 {
+  // #[ debug = the_module::VectorSubformer, parameter, parameter( name ) ]
   #[ subformer( the_module::VectorSubformer ) ]
-  // #[ subformer_vec => parameter => parameter( name ) ]
-  descriptors : Vec< TemplateParameterDescriptor >
+  descriptors : Vec< TemplateParameterDescriptor >,
+
+  // #[ subformer_setter = the_module::VectorSubformer ]
+  // pub fn parameter( self, name : &str )
+  // {
+  //   parameter( name )
+  // }
+
 }
 
 impl< Context, End > TemplateParametersFormer< Context, End >
 where
   End : former::ToSuperFormer< TemplateParameters, Context >,
 {
+
   #[ inline( always ) ]
-  pub fn parameter( self, name : &str ) ->
+  pub fn _parameter( self ) ->
   TemplateParameterDescriptorFormer< Self, impl former::ToSuperFormer< TemplateParameterDescriptor, Self > >
   {
     let on_end = | descriptor : TemplateParameterDescriptor, super_former : core::option::Option< Self > | -> Self
@@ -40,8 +48,16 @@ where
       }
       super_former
     };
-    TemplateParameterDescriptorFormer::begin( Some( self ), on_end ).parameter( name )
+    TemplateParameterDescriptorFormer::begin( Some( self ), on_end )
   }
+
+  #[ inline( always ) ]
+  pub fn parameter( self, name : &str ) ->
+  TemplateParameterDescriptorFormer< Self, impl former::ToSuperFormer< TemplateParameterDescriptor, Self > >
+  {
+    self._parameter().parameter( name )
+  }
+
 }
 
 #[ test ]
