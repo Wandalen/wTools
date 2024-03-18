@@ -158,11 +158,12 @@ mod private
     let test_options_former = TestOptions::former()
     .concurrent( concurrent )
     .plan( plan )
-    .option_temp( temp_path );
+    .option_temp( temp_path )
+    .dry( dry );
     
     
     let options = test_options_former.form();
-    let result = tests_run( &options, dry );
+    let result = tests_run( &options );
     
     if temp
     {

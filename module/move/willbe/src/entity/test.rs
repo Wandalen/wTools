@@ -207,6 +207,7 @@ mod private
   {
     temp_path : Option< PathBuf >,
     plan : &'a TestPackagePlan,
+    dry : bool,
   }
   
   /// Represents the options for the test.
@@ -231,7 +232,8 @@ mod private
     enable_features : BTreeSet< String >,
     /// Temp directory path
     temp_directory_path : Option< PathBuf >,
-    // qqq : for Petro : why dry not here?
+    /// A boolean indicating whether to perform a dry run or not.
+    dry : bool,
   }
 
   impl SingleTestOptions
@@ -265,7 +267,7 @@ mod private
   ///
   /// Returns a `Result` containing a `Report` if the command is executed successfully,
   /// or an error if the command fails to execute.
-  pub fn _run< P >( path : P, options : SingleTestOptions, dry : bool ) -> Result< Report, ( Report, Error ) >
+  pub fn _run< P >( path : P, options : SingleTestOptions ) -> Result< Report, ( Report, Error ) >
   where
     P : AsRef< Path >
   {
@@ -273,7 +275,7 @@ mod private
     // qqq : for Petro : rustup ???
     // qqq : for Petro : RUST_BACKTRACE=1 ?? //  add to SingleTestOptions, by default true
 
-    if dry
+    if options.dry
     {
       Ok
       (
@@ -310,6 +312,9 @@ mod private
 
     /// `temp_path` - path to temp directory.
     pub temp_path : Option< PathBuf >,
+    
+    /// A boolean indicating whether to perform a dry run or not.
+    pub dry : bool,
   }
 
   impl TestOptionsFormer
@@ -466,10 +471,10 @@ mod private
 
   /// `tests_run` is a function that runs tests on a given package with specified arguments.
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
-  pub fn run( options : &PackageTestOptions< '_ >, dry : bool ) -> Result< TestReport, ( TestReport, Error ) >
+  pub fn run( options : &PackageTestOptions< '_ > ) -> Result< TestReport, ( TestReport, Error ) >
   {
     let mut report = TestReport::default();
-    report.dry = dry;
+    report.dry = options.dry;
     let report = Arc::new( Mutex::new( report ) );
     let dir = options.plan.package.clone();
 
@@ -490,7 +495,8 @@ mod private
                 .channel( *channel )
                 .optimization( *optimization )
                 .with_default_features( false )
-                .enable_features( features.clone() );
+                .enable_features( features.clone() )
+                .dry( options.dry );
 
                 if let Some( p ) = options.temp_path.clone()
                 {
@@ -509,7 +515,7 @@ mod private
                   args_t = args_t.temp_directory_path( path );
                 }
                 
-                let cmd_rep = _run( dir, args_t.form(), dry);
+                let cmd_rep = _run( dir, args_t.form() );
                 r.lock().unwrap().tests.insert( variant.clone(), cmd_rep.map_err( | e | e.0 ) );
               }
           );
@@ -527,10 +533,10 @@ mod private
   }
 
   /// Run tests for given packages.
-  pub fn tests_run( args : &TestOptions, dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
+  pub fn tests_run( args : &TestOptions ) -> Result< TestsReport, ( TestsReport, Error ) >
   {
     let mut report = TestsReport::default();
-    report.dry = dry;
+    report.dry = args.dry;
     let report = Arc::new( Mutex::new( report ) );
     let pool = ThreadPoolBuilder::new().use_current_thread().num_threads( args.concurrent as usize ).build().unwrap();
     pool.scope
@@ -544,8 +550,8 @@ mod private
           (
             move | _ |
             {
-              let test_package_options = PackageTestOptions{ temp_path : args.temp_path.clone(), plan };
-              match run( &test_package_options, dry )
+              let test_package_options = PackageTestOptions{ temp_path : args.temp_path.clone(), plan, dry : args.dry };
+              match run( &test_package_options )
               {
                 Ok( r ) =>
                 {
