@@ -80,7 +80,7 @@ mod private
     #[ default( false ) ]
     with_none_features : bool,
     optimizations : HashSet< optimization::Optimization >,
-    #[ default( 200u32 ) ]
+    #[ default( 1000u32 ) ]
     variants_cap : u32,
   }
 
@@ -100,7 +100,6 @@ mod private
     {
       return Err(( reports, format_err!( "Missing toolchain(-s) that was required : [{}]. Try to install it with `rustup install {{toolchain name}}` command(-s)", channels_diff.into_iter().join( ", " ) ) ))
     }
-
     reports.dry = dry;
     let TestsCommandOptions
     {
@@ -117,11 +116,27 @@ mod private
       optimizations,
       variants_cap,
     } = args;
+    
     let packages = needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?;
 
-    if temp
-    {
+    let plan = TestPlan::try_from
+    ( 
+      &packages, 
+      &channels, 
+      power, 
+      include_features, 
+      exclude_features, 
+      &optimizations, 
+      enabled_features,
+      with_all_features, 
+      with_none_features,
+      variants_cap,
+    ).map_err( | e | ( reports.clone(), e ) )?;
+    
+    println!( "{plan}" );
 
+    let temp_path =  if temp
+    {
       let mut unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name().map_err( | e | ( reports.clone(), e ) )? );
 
       let mut temp_dir = env::temp_dir().join( unique_name );
@@ -133,49 +148,28 @@ mod private
       }
 
       fs::create_dir( &temp_dir ).map_err( | e | ( reports.clone(), e.into() ) )?;
-
-      let t_args = TestOptions
-      {
-        channels,
-        concurrent,
-        power,
-        include_features,
-        exclude_features,
-        temp_path: Some( temp_dir.clone() ),
-        enabled_features,
-        with_all_features,
-        with_none_features,
-        optimizations,
-        variants_cap,
-      };
-
-      let report = tests_run( &t_args, &packages, dry );
-
-      fs::remove_dir_all( &temp_dir ).map_err( | e | ( reports.clone(), e.into() ) )?;
-      // qqq : for Petro : why not RAII?
-
-      report
+      Some( temp_dir )
     }
     else
     {
-      let t_args = TestOptions
-      {
-        channels,
-        concurrent,
-        power,
-        include_features,
-        exclude_features,
-        temp_path: None,
-        optimizations,
-        enabled_features,
-        with_all_features,
-        with_none_features,
-        variants_cap,
-      };
-      // qqq : for Petro : DRY
-
-      tests_run( &t_args, &packages, dry )
+      None
+    };
+    
+    let test_options_former = TestOptions::former()
+    .concurrent( concurrent )
+    .plan( plan )
+    .option_temp( temp_path );
+    
+    
+    let options = test_options_former.form();
+    let result = tests_run( &options, dry );
+    
+    if temp
+    {
+      fs::remove_dir_all( options.temp_path.unwrap() ).map_err( | e | ( reports.clone(), e.into() ) )?;
     }
+    
+    result 
   }
 
   fn needed_packages( path : AbsolutePath ) -> Result< Vec< Package > >

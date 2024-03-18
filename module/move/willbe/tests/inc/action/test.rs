@@ -1,4 +1,5 @@
-use std::fs::{ self, File };
+use std::collections::BTreeSet;
+use std::fs::{self, File };
 use std::io::Write;
 use std::path::{ Path, PathBuf };
 use assert_fs::TempDir;
@@ -39,20 +40,11 @@ fn fail_test()
   let rep = test( args, false ).unwrap_err().0;
   println!( "========= OUTPUT =========\n{}\n==========================", rep );
 
-<<<<<<< HEAD
   let no_features = rep
   .failure_reports[ 0 ]
-  .tests.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Stable ).features( "" ).form() )
+  .tests.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Stable ).features( BTreeSet::default() ).form() )
   .unwrap();
   
-=======
-  let stable = rep.failure_reports[ 0 ]
-  .tests.get( &Optimization::Debug )
-  .unwrap()
-  .get( &Channel::Stable )
-  .unwrap();
-  let no_features = stable.get( "" ).unwrap();
->>>>>>> 9d731c0ea50ac4143e3a9ffa4fc8346c454dead0
   assert!( no_features.is_err() );
   assert!( no_features.clone().unwrap_err().out.contains( "failures" ) );
 }
@@ -88,7 +80,7 @@ fn fail_build()
 
   let no_features = rep
   .failure_reports[ 0 ]
-  .tests.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Stable ).features( "" ).form() )
+  .tests.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Stable ).features( BTreeSet::default() ).form() )
   .unwrap();
 
   assert!( no_features.clone().unwrap_err().out.contains( "error" ) && no_features.clone().unwrap_err().out.contains( "achtung" ) );
@@ -178,10 +170,10 @@ fn plan()
   .form();
 
   let rep = test( args, true ).unwrap().succses_reports[ 0 ].clone().tests;
-  assert!( rep.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Stable ).features( "" ).form() ).is_some() );
-  assert!( rep.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Nightly ).features( "" ).form() ).is_some() );
-  assert!( rep.get( &TestVariant::former().optimization( Optimization::Release ).channel( Channel::Stable ).features( "" ).form() ).is_some() );
-  assert!( rep.get( &TestVariant::former().optimization( Optimization::Release ).channel( Channel::Nightly ).features( "" ).form() ).is_some() );
+  assert!( rep.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Stable ).features( BTreeSet::default() ).form() ).is_some() );
+  assert!( rep.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Nightly ).features( BTreeSet::default() ).form() ).is_some() );
+  assert!( rep.get( &TestVariant::former().optimization( Optimization::Release ).channel( Channel::Stable ).features( BTreeSet::default() ).form() ).is_some() );
+  assert!( rep.get( &TestVariant::former().optimization( Optimization::Release ).channel( Channel::Nightly ).features( BTreeSet::default() ).form() ).is_some() );
 }
 
 #[ derive( Debug ) ]
