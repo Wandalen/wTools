@@ -11,6 +11,7 @@ mod private
     sync::{ Arc, Mutex },
     path::Path,
   };
+  use std::collections::HashMap;
   use std::ffi::OsString;
   use std::fmt::Display;
   use std::path::PathBuf;
@@ -234,6 +235,9 @@ mod private
     temp_directory_path : Option< PathBuf >,
     /// A boolean indicating whether to perform a dry run or not.
     dry : bool,
+    /// RUST_BACKTRACE
+    #[ default( true ) ]
+    backtrace : bool,
   }
 
   impl SingleTestOptions
@@ -273,7 +277,8 @@ mod private
   {
     let ( program, args ) = ( "rustup", options.as_rustup_args() );
     // qqq : for Petro : rustup ???
-    // qqq : for Petro : RUST_BACKTRACE=1 ?? //  add to SingleTestOptions, by default true
+    // aaa : for Petro : RUST_BACKTRACE=1 ?? //  add to SingleTestOptions, by default true
+    // aaa : add 
 
     if options.dry
     {
@@ -290,11 +295,13 @@ mod private
     }
     else
     {
+      let envs = if options.backtrace { [( "RUST_BACKTRACE".to_string(), "1".to_string() )].into_iter().collect() } else { HashMap::new() };
       let options = process::Run::former()
       .application( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .path( path.as_ref().to_path_buf() )
       .joining_streams( true )
+      .env_variable( envs )
       .form();
       process::run( options )
     }

@@ -9,6 +9,7 @@ pub( crate ) mod private
     path::{ Path, PathBuf },
     process::{ Command, Stdio },
   };
+  use std::collections::HashMap;
   use std::ffi::OsString;
   use duct::cmd;
   use error_tools::err;
@@ -111,6 +112,7 @@ pub( crate ) mod private
     path : PathBuf,
     #[ default( false ) ]
     joining_streams : bool,
+    env_variable : HashMap< String, String >,
   }
 
   ///
@@ -132,13 +134,15 @@ pub( crate ) mod private
   {
     let application : &Path = options.application.as_ref();
     let path : &Path = options.path.as_ref();
-
+    let mut envs : HashMap< String, String > = std::env::vars().collect();
+    envs.extend( options.env_variable );
     if options.joining_streams
     {
       let output = cmd( application.as_os_str(), &options.args )
       .dir( path )
       .stderr_to_stdout()
       .stdout_capture()
+      .full_env( envs )
       .unchecked()
       .run()
       .map_err( | e | ( Default::default(), e.into() ) )?;
@@ -164,6 +168,7 @@ pub( crate ) mod private
     {
       let child = Command::new( application )
       .args( &options.args )
+      .envs( envs )
       .stdout( Stdio::piped() )
       .stderr( Stdio::piped() )
       .current_dir( path )
