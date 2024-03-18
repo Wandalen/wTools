@@ -26,15 +26,32 @@ all-features = false
 
 [features]
 
-default = [ "enabled", "derive_former", "derive_component_from", "derive_component_assign", "derive_components_assign", "derive_from_components" ]
-full = [ "enabled", "derive_former", "derive_component_from", "derive_component_assign", "derive_components_assign", "derive_from_components" ]
+default = [
+  "enabled",
+  "derive_former",
+  "derive_components",
+  "derive_component_from",
+  "derive_component_assign",
+  "derive_components_assign",
+  "derive_from_components",
+]
+full = [
+  "enabled",
+  "derive_former",
+  "derive_components",
+  "derive_component_from",
+  "derive_component_assign",
+  "derive_components_assign",
+  "derive_from_components",
+]
 enabled = [ "macro_tools/enabled", "iter_tools/enabled" ]
 
 derive_former = []
+derive_components = []
 derive_component_assign = []
-derive_components_assign = [ "derive_component_assign", "convert_case" ]
-derive_component_from = []
-derive_from_components = []
+derive_components_assign = [ "derive_components", "derive_component_assign", "convert_case" ]
+derive_component_from = [ "derive_components" ]
+derive_from_components = [ "derive_components" ]
 
 [lib]
 proc-macro = true

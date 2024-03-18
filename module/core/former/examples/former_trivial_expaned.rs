@@ -161,7 +161,8 @@ fn main()
     }
 
     #[ inline( always ) ]
-    pub fn begin(
+    pub fn begin
+    (
       context : Option< FormerContext >,
       on_end : FormerEnd,
     ) -> Self

@@ -11,6 +11,7 @@ use std::
 mod asset;
 
 // xxx : qqq : ?
+/// Poorly named function
 pub fn path_to_exe( name : &Path, temp_path : &Path ) -> PathBuf
 {
 

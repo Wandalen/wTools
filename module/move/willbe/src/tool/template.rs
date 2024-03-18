@@ -77,7 +77,7 @@ mod private
       let values = self.get_values();
       self
       .parameters()
-      .get_mandatory()
+      .list_mandatory()
       .into_iter()
       .filter( | key | values.0.get( *key ).map( | val | val.as_ref() ).flatten().is_none() )
       .collect()
@@ -124,7 +124,7 @@ mod private
     }
 
     /// Get a list of all mandatory parameters.
-    pub fn get_mandatory( &self ) -> Vec< &str >
+    pub fn list_mandatory( &self ) -> Vec< &str >
     {
       self.descriptors.iter().filter( | d | d.is_mandatory ).map( | d | d.parameter.as_str() ).collect()
     }
@@ -135,7 +135,7 @@ mod private
   pub struct TemplateParameterDescriptor
   {
     parameter : String,
-    is_mandatory : bool
+    is_mandatory : bool,
   }
 
   impl< Context, End > TemplateParametersFormer< Context, End >
@@ -388,6 +388,7 @@ mod private
     }
 
   }
+
 }
 
 //

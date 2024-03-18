@@ -16,6 +16,7 @@ pub( crate ) mod private
   };
 
   // xxx : qqq : ?
+  /// poorly described function
   pub fn path_to_exe( temp_path : &Path, name : &Path,  ) -> PathBuf
   {
 

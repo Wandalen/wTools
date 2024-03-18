@@ -23,8 +23,8 @@ tests_impls!
     a_id!( former.container.int_optional_1, None );
     a_id!( former.container.string_optional_1, None );
     a_id!( former.context, None );
-    a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( former::ReturnContainer ) ) );
-    let former2 = Struct1Former::< Struct1, former::ReturnContainer >::new();
+    a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnContainer ) ) );
+    let former2 = Struct1Former::< Struct1, the_module::ReturnContainer >::new();
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
 
     let command = Struct1::former().form();
