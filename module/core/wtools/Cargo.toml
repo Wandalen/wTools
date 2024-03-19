@@ -319,9 +319,9 @@ dt_default = [
   "data_type/default",
   "dt_either",
   "dt_prelude",
-  "dt_type_constructor",
-  "dt_make",
-  "dt_vectorized_from",
+  # "dt_type_constructor",
+  # "dt_make",
+  # "dt_vectorized_from",
   "dt_interval",
 ]
 dt_full = [
@@ -330,20 +330,21 @@ dt_full = [
   "data_type/full",
   "dt_either",
   "dt_prelude",
-  "dt_type_constructor",
-  "dt_make",
-  "dt_vectorized_from",
+  # "dt_type_constructor",
+  # "dt_make",
+  # "dt_vectorized_from",
   "dt_interval",
 ]
-dt_no_std = [ "dt", "data_type/no_std" ]
+
+# dt_no_std = [ "dt", "data_type/no_std" ]
 # dt_use_std = [ "dt", "data_type/use_std" ]
 dt_use_alloc = [ "dt", "data_type/use_alloc" ]
 
 dt_either = [ "dt", "data_type/dt_either" ]
 dt_prelude = [ "dt", "data_type/dt_prelude" ]
-dt_type_constructor = [ "dt", "data_type/dt_type_constructor" ]
-dt_make = [ "dt", "data_type/dt_make" ]
-dt_vectorized_from = [ "dt", "data_type/dt_vectorized_from" ]
+# dt_type_constructor = [ "dt", "data_type/dt_type_constructor" ]
+# dt_make = [ "dt", "data_type/dt_make" ]
+# dt_vectorized_from = [ "dt", "data_type/dt_vectorized_from" ]
 dt_interval = [ "dt", "data_type/dt_interval" ]
 
 # diagnostics
@@ -371,8 +372,7 @@ diagnostics_compiletime_assertions = [ "diagnostics_tools/diagnostics_compiletim
 
 nightly = [] # must be empty
 
-# # use_std = []
-no_std = []
+# no_std = []
 use_alloc = []
 enabled = []
 

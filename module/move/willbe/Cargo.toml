@@ -1,6 +1,6 @@
 [package]
 name = "willbe"
-version = "0.7.0"
+version = "0.8.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -16,14 +16,14 @@ Utility to publish multi-crate and multi-workspace environments and maintain the
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
-default-run = "main"
-include = [
-  "/src",
-  "/template",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
+default-run = "will"
+# include = [
+#   "/src",
+#   "/template",
+#   "/Cargo.toml",
+#   "/Readme.md",
+#   "/License",
+# ]
 
 [lints]
 workspace = true

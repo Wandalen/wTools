@@ -1,3 +1,4 @@
+# Hetzner API token
 variable "HCLOUD_TOKEN" {
   sensitive = true
 }
@@ -22,6 +23,7 @@ variable "IMAGE_NAME" {
   description = "name of the webapp image"
 }
 
+# Google Cloud Platform credentials
 data "local_sensitive_file" "service_account_creds" {
   filename = "${path.module}/../../key/service_account.json"
 }

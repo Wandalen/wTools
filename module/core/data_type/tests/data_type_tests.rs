@@ -5,7 +5,7 @@
 // #![ feature( trace_macros ) ]
 
 #[ allow( unused_imports ) ]
-use data_type as TheModule;
+use data_type as the_module;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 

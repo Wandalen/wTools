@@ -2,7 +2,7 @@
 
 # Module :: for_each
 
-[![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleForEachPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleForEachPush.yml) [![docs.rs](https://img.shields.io/docsrs/for_each?color=e3e8f0&logo=docs.rs)](https://docs.rs/for_each) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ffor_each_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20for_each_trivial_sample/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+[![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleForEachPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleForEachPush.yml) [![docs.rs](https://img.shields.io/docsrs/for_each?color=e3e8f0&logo=docs.rs)](https://docs.rs/for_each) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ffor_each_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20for_each_trivial/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 
 Apply a macro for each element of a list.
 
@@ -22,7 +22,7 @@ Macro `for_each` may be called either in function-style way or in map-style way.
 Pass name of macro to apply to elements as the first arguments and elements after the macro name.
 Use comma as delimiter.
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ```rust
 use for_each::for_each;
@@ -41,7 +41,7 @@ Use keys @Prefix @Postfix @Each to pass options as entries of a map.
 Options @Prefix and @Postfix are optional and their entries could be omitted, but entry @Each is mandatory.
 Order of options should always be @Prefix, @Postfix, @Each.
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ```rust
 use for_each::for_each;
@@ -69,7 +69,7 @@ dbg!( "prefix".to_string() + "c" + "postfix" );
 Both prefix and postfix have to be token tree ( `tt` ). But if you need something more complex put it into braces `{ ... }`.
 Macros `for_each` will remove outermost braces. Braces are optional in case of prefix/postfix is a single token.
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ```rust
 use for_each::for_each;
@@ -93,7 +93,7 @@ dbg!( "prefix".to_string() + "c" + "3" + "postfix" );
 Callback macro is optional.
 Use map call style and omit path to callback macro with keyword `where` to invoke `for_each` without a callback.
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ```rust
 use for_each::for_each;
@@ -119,7 +119,7 @@ cargo add for_each
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd examples/for_each_trivial_sample
+cd examples/for_each_trivial
 cargo run
 ```
 <!-- xxx : qqq2 : fix each example instruction -->

@@ -16,6 +16,8 @@
 //! This approach abstracts away the need for manually implementing a builder for each struct, making code more readable and maintainable.
 //!
 
+#![ allow( dead_code ) ]
+
 #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
 fn main(){}
 
@@ -159,7 +161,8 @@ fn main()
     }
 
     #[ inline( always ) ]
-    pub fn begin(
+    pub fn begin
+    (
       context : Option< FormerContext >,
       on_end : FormerEnd,
     ) -> Self

@@ -123,8 +123,23 @@ pub( crate ) mod private
         .optional( true )
         .end()
       .property( "power" )
-        .hint( "Defines the depth of feature combination testing. Default is `1`." )
+        .hint( "Defines the depth of feature combination testing. Default is `2`." )
         .kind( Type::Number )
+        .optional( true )
+        .end()
+      .property( "enabled_features")
+        .hint( "This features will be always present in feature's combinations.")
+        .kind( Type::List( Type::String.into(), ',' ) )
+        .optional( true )
+        .end()
+      .property( "with_all_features" )
+        .hint( "Will be only one combination of features ( with all possible features )." )
+        .kind( Type::Bool )
+        .optional( true )
+        .end()
+      .property( "with_none_features" )
+        .hint( "Will be only one combination of features ( without features )." )
+        .kind( Type::Bool )
         .optional( true )
         .end()
       .property( "with_release" )
@@ -137,14 +152,19 @@ pub( crate ) mod private
         .kind( Type::Bool )
         .optional( true )
         .end()
+      .property( "variants_cap" )
+        .hint( "Regulates the number of possible combinations")
+        .kind( Type::Number )
+        .optional( true )
+        .end()
       .routine( command::test )
       .end()
 
     // qqq : is it right?
-    .command( "workflow.renew" )
-      .hint( "generate a workflow for the workspace" )
+    .command( "cicd.renew" )
+      .hint( "generate a CI/CD for the workspace" )
       .long_hint( "this command generates a development workflow for the entire workspace inferred from the current directory. The workflow outlines the build steps, dependencies, test processes, and more for all modules within the workspace." )
-      .routine( command::workflow_renew )
+      .routine( command::cicd_renew )
       .end()
 
     .command( "workspace.renew" )
@@ -219,7 +239,7 @@ crate::mod_interface!
   /// Run all tests
   layer test;
   /// Generate workflow
-  layer workflow_renew;
+  layer cicd_renew;
   /// Workspace new
   layer workspace_renew;
   /// Deploy new

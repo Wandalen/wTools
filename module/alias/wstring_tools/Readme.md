@@ -8,7 +8,7 @@ Tools to manipulate strings.
 
 ### Basic use-case
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ```rust
 #[ cfg( all( feature = "split", feature = "use_std" ) ) ]

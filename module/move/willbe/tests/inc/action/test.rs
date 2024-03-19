@@ -1,12 +1,185 @@
-use std::fs::{ self, File };
+use std::collections::BTreeSet;
+use std::fs::{self, File };
 use std::io::Write;
 use std::path::{ Path, PathBuf };
 use assert_fs::TempDir;
 
-use crate::TheModule::*;
+use crate::the_module::*;
 use action::test::{test, TestsCommandOptions};
 use path::AbsolutePath;
-use willbe::channel::Channel;
+use channel::*;
+use optimization::*;
+use willbe::test::TestVariant;
+
+#[ test ]
+// if the test fails => the report is returned as an error ( Err(Report) )
+fn fail_test()
+{
+  let temp = TempDir::new().unwrap();
+  let temp = &temp;
+
+  let project = ProjectBuilder::new( "fail_test" )
+  .toml_file( "[features]\nenabled = []" )
+  .test_file( r#"
+    #[test]
+    fn should_fail()
+    {
+      panic!()
+    }
+  "#)
+  .build( temp )
+  .unwrap();
+  let abs = AbsolutePath::try_from( project ).unwrap();
+
+  let args = TestsCommandOptions::former()
+  .dir( abs )
+  .channels([ Channel::Stable ])
+  .optimizations([ Optimization::Debug ])
+  .with_none_features( true )
+  .form();
+
+  let rep = test( args, false ).unwrap_err().0;
+  println!( "========= OUTPUT =========\n{}\n==========================", rep );
+
+  let no_features = rep
+  .failure_reports[ 0 ]
+  .tests.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Stable ).features( BTreeSet::default() ).form() )
+  .unwrap();
+
+  assert!( no_features.is_err() );
+  assert!( no_features.clone().unwrap_err().out.contains( "failures" ) );
+}
+
+#[ test ]
+// if a compilation error occurred => the report is returned as an error ( Err(Report) )
+fn fail_build()
+{
+  let temp = TempDir::new().unwrap();
+  let temp = &temp;
+
+  let project = ProjectBuilder::new( "fail_build" )
+  .lib_file( "compile_error!( \"achtung\" );" )
+  .toml_file( "[features]\nenabled = []" )
+  .test_file( r#"
+    #[test]
+    fn should_pass() {
+      assert!(true);
+    }
+  "#)
+  .build( temp )
+  .unwrap();
+  let abs = AbsolutePath::try_from( project ).unwrap();
+
+  let args = TestsCommandOptions::former()
+  .dir( abs )
+  .channels([ Channel::Stable ])
+  .optimizations([ Optimization::Debug ])
+  .with_none_features( true )
+  .form();
+
+  let rep = test( args, false ).unwrap_err().0;
+  println!( "========= OUTPUT =========\n{}\n==========================", rep );
+
+  let no_features = rep
+  .failure_reports[ 0 ]
+  .tests.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Stable ).features( BTreeSet::default() ).form() )
+  .unwrap();
+
+  assert!( no_features.clone().unwrap_err().out.contains( "error" ) && no_features.clone().unwrap_err().out.contains( "achtung" ) );
+}
+
+#[ test ]
+// if there are 3 members in the workspace (two of them pass the tests and one of them fails) => the global report will contain 2 successful reports and 1 defeats
+fn call_from_workspace_root()
+{
+  let temp = TempDir::new().unwrap();
+  let temp = &temp;
+
+  let fail_project = ProjectBuilder::new( "fail_test" )
+  .toml_file( "[features]\nenabled = []" )
+  .test_file( r#"
+  #[test]
+  fn should_fail123() {
+    panic!()
+  }
+  "#);
+
+  let pass_project = ProjectBuilder::new( "apass_test" )
+  .toml_file( "[features]\nenabled = []" )
+  .test_file( r#"
+  #[test]
+  fn should_pass() {
+    assert_eq!(1,1);
+  }
+  "#);
+
+  let pass_project2 = ProjectBuilder::new( "pass_test2" )
+  .toml_file( "[features]\nenabled = []" )
+  .test_file( r#"
+  #[test]
+  fn should_pass() {
+    assert_eq!(1,1);
+  }
+  "#);
+
+  let workspace = WorkspaceBuilder::new()
+  .member( fail_project )
+  .member( pass_project )
+  .member( pass_project2 )
+  .build( temp );
+
+  // from workspace root
+  let abs = AbsolutePath::try_from( workspace.clone() ).unwrap();
+
+  let args = TestsCommandOptions::former()
+  .dir( abs )
+  .concurrent( 1u32 )
+  .channels([ Channel::Stable ])
+  .optimizations([ optimization::Optimization::Debug ])
+  .with_none_features( true )
+  .form();
+
+
+  let rep = test( args, false );
+  let rep = rep.unwrap_err().0;
+
+
+  assert_eq!( rep.failure_reports.len(), 1 );
+  assert_eq!( rep.succses_reports.len(), 2 );
+}
+
+#[ test ]
+fn plan()
+{
+  let temp = TempDir::new().unwrap();
+  let temp = &temp;
+
+  let project = ProjectBuilder::new( "plan_test" )
+  .toml_file( "[features]\nenabled = []" )
+  .test_file( r#"
+  #[test]
+  fn should_pass() {
+    assert!(true);
+  }
+  "#)
+  .build( temp )
+  .unwrap();
+  let abs = AbsolutePath::try_from( project ).unwrap();
+
+  let args = TestsCommandOptions::former()
+  .dir( abs )
+  .channels([ Channel::Stable, Channel::Nightly ])
+  .optimizations([ Optimization::Debug, Optimization::Release ])
+  .with_none_features( true )
+  .form();
+
+  let rep = test( args, true ).unwrap().succses_reports[ 0 ].clone().tests;
+
+  assert!( rep.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Stable ).features( BTreeSet::default() ).form() ).is_some() );
+  assert!( rep.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Nightly ).features( BTreeSet::default() ).form() ).is_some() );
+  assert!( rep.get( &TestVariant::former().optimization( Optimization::Release ).channel( Channel::Stable ).features( BTreeSet::default() ).form() ).is_some() );
+  assert!( rep.get( &TestVariant::former().optimization( Optimization::Release ).channel( Channel::Nightly ).features( BTreeSet::default() ).form() ).is_some() );
+}
 
 #[ derive( Debug ) ]
 pub struct ProjectBuilder
@@ -106,183 +279,10 @@ impl WorkspaceBuilder
     fs::create_dir_all( project_path.join( "modules" ) ).unwrap();
     let mut file = File::create( project_path.join( "Cargo.toml" ) ).unwrap();
     write!( file, "{}", self.toml_content ).unwrap();
-    for member in self.members {
+    for member in self.members 
+    {
       member.build( project_path.join( "modules" ).join( &member.name ) ).unwrap();
     }
     project_path.into()
   }
-}
-
-
-#[ test ]
-// if the test fails => the report is returned as an error ( Err(CmdReport) )
-fn fail_test()
-{
-  let temp = TempDir::new().unwrap();
-  let temp = &temp;
-
-  let project = ProjectBuilder::new( "fail_test" )
-  .toml_file( "" )
-  .test_file( r#"
-    #[test]
-    fn should_fail() {
-      panic!()
-    }
-  "#)
-  .build( temp )
-  .unwrap();
-  let abs = AbsolutePath::try_from( project ).unwrap();
-
-  let args = TestsCommandOptions::former()
-  .dir( abs )
-  .channels([ channel::Channel::Stable ])
-  .optimizations([ optimization::Optimization::Debug ])
-  .form();
-
-  let rep = test( args, false ).unwrap_err().0;
-  println!( "========= OUTPUT =========\n{}\n==========================", rep );
-
-  let stable = rep.failure_reports[0].tests.get( &optimization::Optimization::Debug ).unwrap().get( &channel::Channel::Stable ).unwrap();
-  let no_features = stable.get( "" ).unwrap();
-  assert!( no_features.is_err() );
-  assert!( no_features.clone().unwrap_err().out.contains( "failures" ) );
-}
-
-#[ test ]
-// if a compilation error occurred => the report is returned as an error ( Err(CmdReport) )
-fn fail_build()
-{
-  let temp = TempDir::new().unwrap();
-  let temp = &temp;
-
-  let project = ProjectBuilder::new( "fail_build" )
-  .lib_file( "compile_error!( \"achtung\" );" )
-  .toml_file( "" )
-  .test_file( r#"
-    #[test]
-    fn should_pass() {
-      assert!(true);
-    }
-  "#)
-  .build( temp )
-  .unwrap();
-  let abs = AbsolutePath::try_from( project ).unwrap();
-
-  let args = TestsCommandOptions::former()
-  .dir( abs )
-  .channels([ channel::Channel::Stable ])
-  .optimizations([ optimization::Optimization::Debug ])
-  .form();
-
-  let rep = test( args, false ).unwrap_err().0;
-  println!( "========= OUTPUT =========\n{}\n==========================", rep );
-
-  let stable = rep.failure_reports[ 0 ].tests.get( &optimization::Optimization::Debug ).unwrap().get( &channel::Channel::Stable ).unwrap();
-  let no_features = stable.get( "" ).unwrap();
-
-  assert!( no_features.clone().unwrap_err().out.contains( "error" ) && no_features.clone().unwrap_err().out.contains( "achtung" ) );
-}
-
-#[ test ]
-// if there are 3 members in the workspace (two of them pass the tests and one of them fails) => the global report will contain 2 successful reports and 1 defeats
-fn call_from_workspace_root()
-{
-  let temp = TempDir::new().unwrap();
-  let temp = &temp;
-
-  let fail_project = ProjectBuilder::new( "fail_test" )
-  .toml_file( "" )
-  .test_file( r#"
-  #[test]
-  fn should_fail123() {
-    panic!()
-  }
-  "#);
-
-  let pass_project = ProjectBuilder::new( "apass_test" )
-  .toml_file( "" )
-  .test_file( r#"
-  #[test]
-  fn should_pass() {
-    assert_eq!(1,1);
-  }
-  "#);
-
-  let pass_project2 = ProjectBuilder::new( "pass_test2" )
-  .toml_file( "" )
-  .test_file( r#"
-  #[test]
-  fn should_pass() {
-    assert_eq!(1,1);
-  }
-  "#);
-
-  let workspace = WorkspaceBuilder::new()
-  .member( fail_project )
-  .member( pass_project )
-  .member( pass_project2 )
-  .build( temp );
-
-  // from workspace root
-  let abs = AbsolutePath::try_from( workspace.clone() ).unwrap();
-
-  let args = TestsCommandOptions::former()
-  .dir( abs )
-  .concurrent( 1u32 )
-  .channels([ channel::Channel::Stable ])
-  .optimizations([ optimization::Optimization::Debug ])
-  .form();
-
-
-  let rep = test( args, false );
-  let rep = rep.unwrap_err().0;
-
-
-  assert_eq!( rep.failure_reports.len(), 1 );
-  assert_eq!( rep.succses_reports.len(), 2 );
-}
-
-#[ test ]
-fn plan()
-{
-  let temp = TempDir::new().unwrap();
-  let temp = &temp;
-
-  let project = ProjectBuilder::new( "plan_test" )
-  .toml_file( "" )
-  .test_file( r#"
-  #[test]
-  fn should_pass() {
-    assert!(true);
-  }
-  "#)
-  .build( temp )
-  .unwrap();
-  let abs = AbsolutePath::try_from( project ).unwrap();
-
-  let args = TestsCommandOptions::former()
-  .dir( abs )
-  .channels([ channel::Channel::Stable, channel::Channel::Nightly ])
-  .optimizations([ optimization::Optimization::Debug, optimization::Optimization::Release ])
-  .form();
-
-  let rep = test( args, true ).unwrap().succses_reports[ 0 ].clone();
-
-  assert!( rep.tests.contains_key( &optimization::Optimization::Debug ) );
-  let debug = rep.tests.get( &optimization::Optimization::Debug ).unwrap().clone();
-  assert!( debug.contains_key( &Channel::Stable ) );
-  assert!( debug.contains_key( &Channel::Nightly ) );
-  let stable = debug.get( &Channel::Stable ).unwrap().clone();
-  assert!( stable.contains_key( "" ) );
-  let nightly = debug.get( &Channel::Nightly ).unwrap().clone();
-  assert!(nightly.contains_key( "" ));
-
-  assert!( rep.tests.contains_key( &optimization::Optimization::Release ) );
-  let release = rep.tests.get( &optimization::Optimization::Release ).unwrap().clone();
-  assert!( release.contains_key( &Channel::Stable ) );
-  assert!( release.contains_key( &Channel::Nightly ) );
-  let stable = release.get( &Channel::Stable ).unwrap().clone();
-  assert!( stable.contains_key( "" ) );
-  let nightly = debug.get( &Channel::Nightly ).unwrap().clone();
-  assert!( nightly.contains_key( "" ) );
 }

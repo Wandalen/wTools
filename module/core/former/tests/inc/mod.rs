@@ -1,89 +1,87 @@
+#[ allow( unused_imports ) ]
 use super::*;
 
 #[ cfg( feature = "derive_former" ) ]
-mod a_primitives_manual_test;
-#[ cfg( feature = "derive_former" ) ]
-mod a_containers_without_runtime_manual_test;
-#[ cfg( feature = "derive_former" ) ]
-mod a_containers_without_runtime_test;
-#[ cfg( feature = "derive_former" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
-mod a_containers_with_runtime_manual_test;
-#[ cfg( feature = "derive_former" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
-mod a_containers_with_runtime_test ;
+mod former_tests
+{
+  #[ allow( unused_imports ) ]
+  use super::*;
 
-#[ cfg( feature = "derive_former" ) ]
-mod attribute_default_container;
-#[ cfg( feature = "derive_former" ) ]
-mod attribute_default_primitive;
-#[ cfg( feature = "derive_former" ) ]
-mod former_hashmap_without_parameter;
-#[ cfg( feature = "derive_former" ) ]
-mod former_vector_without_parameter;
+  mod a_primitives_manual;
+  mod a_containers_without_runtime_manual;
+  mod a_containers_without_runtime;
+  #[ cfg( not( feature = "no_std" ) ) ]
+  mod a_containers_with_runtime_manual;
+  #[ cfg( not( feature = "no_std" ) ) ]
+  mod a_containers_with_runtime ;
 
-#[ cfg( feature = "derive_former" ) ]
-mod string_slice_manual_test;
-#[ cfg( feature = "derive_former" ) ]
-mod string_slice_test;
+  mod attribute_default_container;
+  mod attribute_default_primitive;
+  mod attribute_perform;
+  mod attribute_setter;
+  mod attribute_alias;
 
-#[ cfg( feature = "derive_former" ) ]
-mod default_user_type;
-#[ cfg( feature = "derive_former" ) ]
-mod user_type_no_default;
-#[ cfg( feature = "derive_former" ) ]
-mod user_type_no_debug;
+  mod string_slice_manual;
+  mod string_slice;
+  mod unsigned_primitive_types;
+  mod default_user_type;
+  mod user_type_no_default;
+  mod user_type_no_debug;
 
-#[ cfg( feature = "derive_former" ) ]
-mod alias_test;
-#[ cfg( feature = "derive_former" ) ]
-mod name_collisions;
-#[ cfg( feature = "derive_former" ) ]
-mod name_collision_context;
-#[ cfg( feature = "derive_former" ) ]
-mod name_collision_end;
-#[ cfg( feature = "derive_former" ) ]
-mod name_collision_on_end;
-#[ cfg( feature = "derive_former" ) ]
-mod unsigned_primitive_types;
+  mod name_collision_former_hashmap_without_parameter;
+  mod name_collision_former_vector_without_parameter;
+  mod name_collisions;
+  mod name_collision_context;
+  mod name_collision_end;
+  mod name_collision_on_end;
 
-#[ cfg( feature = "derive_former" ) ]
-mod attribute_perform;
-#[ cfg( feature = "derive_former" ) ]
-mod attribute_setter;
+  #[ cfg( not( feature = "no_std" ) ) ]
+  mod parametrized_struct_manual;
+  #[ cfg( not( feature = "no_std" ) ) ]
+  mod parametrized_struct_imm;
+  #[ cfg( not( feature = "no_std" ) ) ]
+  mod parametrized_struct_where;
 
-#[ cfg( feature = "derive_former" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
-mod parametrized_struct_manual;
-#[ cfg( feature = "derive_former" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
-mod parametrized_struct_imm;
-#[ cfg( feature = "derive_former" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
-mod parametrized_struct_where;
+  #[ cfg( not( feature = "no_std" ) ) ]
+  mod subformer_basic_manual;
+  #[ cfg( not( feature = "no_std" ) ) ]
+  mod subformer_basic;
+  mod subformer_vec;
+  mod subformer_shortcut;
 
-#[ cfg( feature = "derive_former" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
-mod subformer_basic_manual;
-#[ cfg( feature = "derive_former" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
-mod subformer_basic;
+}
 
-#[ cfg( feature = "derive_component_from" ) ]
-mod components_component_from_manual;
-#[ cfg( feature = "derive_component_from" ) ]
-mod components_component_from;
+#[ cfg( feature = "derive_components" ) ]
+mod components_tests
+{
+  use super::*;
 
-#[ cfg( feature = "derive_set_component" ) ]
-mod components_set_component_manual;
-#[ cfg( feature = "derive_set_component" ) ]
-mod components_set_component;
+  #[ cfg( feature = "derive_component_from" ) ]
+  mod component_from_manual;
+  #[ cfg( feature = "derive_component_from" ) ]
+  mod component_from;
 
-#[ cfg( all( feature = "derive_component_from", feature = "derive_set_component" ) ) ]
-mod components_composite_manual;
-#[ cfg( all( feature = "derive_component_from", feature = "derive_set_component" ) ) ]
-mod components_composite;
+  #[ cfg( feature = "derive_component_assign" ) ]
+  mod component_assign_manual;
+  #[ cfg( feature = "derive_component_assign" ) ]
+  mod component_assign;
 
+  #[ cfg( all( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
+  mod components_assign_manual;
+  #[ cfg( all( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
+  mod components_assign;
+
+  #[ cfg( all( feature = "derive_from_components" ) ) ]
+  mod from_components_manual;
+  #[ cfg( all( feature = "derive_from_components" ) ) ]
+  mod from_components;
+
+  #[ cfg( all( feature = "derive_component_from", feature = "derive_component_assign", feature = "derive_components_assign", feature = "derive_from_components" ) ) ]
+  mod composite_manual;
+  #[ cfg( all( feature = "derive_component_from", feature = "derive_component_assign", feature = "derive_components_assign", feature = "derive_from_components" ) ) ]
+  mod composite;
+
+}
 
 only_for_terminal_module!
 {
@@ -91,7 +89,6 @@ only_for_terminal_module!
   // stable have different information about error
   // that's why these tests are active only for nightly
   #[ test_tools::nightly ]
-  #[ cfg( feature = "derive_former" ) ]
   #[ test ]
   fn former_trybuild()
   {

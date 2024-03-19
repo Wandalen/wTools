@@ -14,7 +14,7 @@ This is alias for [module::implements](https://github.com/Wandalen/wTools/tree/m
 
 ### Basic use-case
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ```rust
 use instance_of::*;

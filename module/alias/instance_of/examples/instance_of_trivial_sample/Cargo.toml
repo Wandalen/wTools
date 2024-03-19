@@ -1,5 +1,5 @@
 [package]
-name = "meta_instance_of_trivial_sample"
+name = "meta_instance_of_trivial"
 version = "0.0.0"
 edition = "2021"
 publish = false

@@ -5,7 +5,7 @@ mod private
 
   use std::path::PathBuf;
   use former::Former;
-  use process::CmdReport;
+  use process::Report;
   use wtools::error::Result;
 
   /// Represents pack options
@@ -50,7 +50,7 @@ mod private
     track_caller,
     tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
   )]
-  pub fn pack( args : PackOptions ) -> Result< CmdReport >
+  pub fn pack( args : PackOptions ) -> Result< Report >
   {
     let ( program, options ) = ( "cargo", args.to_pack_args() );
 
@@ -58,7 +58,7 @@ mod private
     {
       Ok
       (
-        CmdReport
+        Report
         {
           command : format!( "{program} {}", options.join( " " ) ),
           path : args.path.to_path_buf(),
@@ -70,7 +70,7 @@ mod private
     else
     {
       let options =
-      process::RunOptions::former()
+      process::Run::former()
       .application( program )
       .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .path( args.path )
@@ -114,7 +114,7 @@ mod private
     track_caller,
     tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
   )]
-  pub fn publish( args : PublishOptions ) -> Result< CmdReport >
+  pub fn publish( args : PublishOptions ) -> Result< Report >
   {
     let ( program, arguments) = ( "cargo", args.as_publish_args() );
 
@@ -122,7 +122,7 @@ mod private
     {
       Ok
         (
-          CmdReport
+          Report
           {
             command : format!( "{program} {}", arguments.join( " " ) ),
             path : args.path.to_path_buf(),
@@ -134,7 +134,7 @@ mod private
     else
     {
       let options =
-      process::RunOptions::former()
+      process::Run::former()
       .application( program )
       .args( arguments.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .path( args.path )

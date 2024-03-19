@@ -17,6 +17,8 @@ mod private
     values : TemplateValues,
   }
 
+  // qqq : for Viktor : why DeployTemplate can't be part of template.rs?
+
   impl Template< DeployTemplateFiles > for DeployTemplate
   {
     fn create_all( self, path : &Path ) -> Result< () >
@@ -33,30 +35,47 @@ mod private
     {
       self.values = values
     }
+
+    fn get_values( &self ) -> &TemplateValues
+    {
+      &self.values
+    }
+
+    fn get_values_mut( &mut self ) -> &mut TemplateValues
+    {
+      &mut self.values
+    }
+
+    fn parameter_storage( &self ) -> &Path {
+      "./.deploy_template.toml".as_ref()
+    }
+
+    fn template_name( &self ) -> &'static str {
+      "deploy"
+    }
   }
 
   impl Default for DeployTemplate
   {
     fn default() -> Self
     {
+      let parameters = TemplateParameters::former()
+      .parameter( "gcp_project_id" ).is_mandatory( true ).end()
+      .parameter( "gcp_region" ).end()
+      .parameter( "gcp_artifact_repo_name" ).end()
+      .parameter( "docker_image_name" ).end()
+      .form();
+
       Self
       {
         files : Default::default(),
-        parameters : TemplateParameters::new
-          (
-            &
-            [
-              "gcp_project_id",
-              "gcp_region",
-              "gcp_artifact_repo_name",
-              "docker_image_name"
-            ]
-          ),
+        parameters,
         values : Default::default(),
       }
     }
   }
 
+  // qqq : for Viktor : is that structure required?
   /// Files for the deploy template.
   ///
   /// Default implementation contains all required files.
@@ -69,7 +88,8 @@ mod private
     {
       let formed = TemplateFilesBuilder::former()
       // root
-      .file().data( include_str!( "../../template/deploy/Makefile" ) ).path( "./Makefile" ).is_template( true ).end()
+      .file().data( include_str!( "../../template/deploy/.deploy_template.toml.hbs" ) ).path( "./.deploy_template.toml" ).mode( WriteMode::TomlExtend ).is_template( true ).end()
+      .file().data( include_str!( "../../template/deploy/Makefile.hbs" ) ).path( "./Makefile" ).is_template( true ).end()
       // /key
       .file().data( include_str!( "../../template/deploy/key/pack.sh" ) ).path( "./key/pack.sh" ).end()
       .file().data( include_str!( "../../template/deploy/key/Readme.md" ) ).path( "./key/Readme.md" ).end()
@@ -96,13 +116,21 @@ mod private
       .file().data( include_str!( "../../template/deploy/deploy/hetzner/variables.tf" ) ).path( "./deploy/hetzner/variables.tf" ).end()
       // /deploy/hetzner/templates
       .file().data( include_str!( "../../template/deploy/deploy/hetzner/templates/cloud-init.tpl" ) ).path( "./deploy/hetzner/templates/cloud-init.tpl" ).end()
+      // /deploy/aws
+      .file().data( include_str!( "../../template/deploy/deploy/aws/main.tf" ) ).path( "./deploy/aws/main.tf" ).end()
+      .file().data( include_str!( "../../template/deploy/deploy/aws/outputs.tf" ) ).path( "./deploy/aws/outputs.tf" ).end()
+      .file().data( include_str!( "../../template/deploy/deploy/aws/variables.tf" ) ).path( "./deploy/aws/variables.tf" ).end()
+      // /deploy/aws/templates
+      .file().data( include_str!( "../../template/deploy/deploy/aws/templates/cloud-init.tpl" ) ).path( "./deploy/aws/templates/cloud-init.tpl" ).end()
       .form();
 
       Self( formed.files )
     }
   }
 
+  // qqq : for Viktor : should not be required
   impl TemplateFiles for DeployTemplateFiles {}
+  // qqq : for Viktor : should not be required
   impl IntoIterator for DeployTemplateFiles
   {
     type Item = TemplateFileDescriptor;
@@ -137,13 +165,15 @@ mod private
     mut template : DeployTemplate
   ) -> Result< () >
   {
-    let current_dir = get_dir_name()?;
-    let artifact_repo_name = dir_name_to_formatted( &current_dir, "-" );
-    let docker_image_name = dir_name_to_formatted( &current_dir, "_" );
-    template.values.insert_if_empty( "gcp_artifact_repo_name", wca::Value::String( artifact_repo_name ) );
-    template.values.insert_if_empty( "docker_image_name", wca::Value::String( docker_image_name ) );
-    template.values.insert_if_empty( "gcp_region", wca::Value::String( "europe-central2".into() ) );
-    template.values.interactive_if_empty( "gcp_project_id" );
+    if let None = template.load_existing_params( path )
+    {
+      let current_dir = get_dir_name()?;
+      let artifact_repo_name = dir_name_to_formatted( &current_dir, "-" );
+      let docker_image_name = dir_name_to_formatted( &current_dir, "_" );
+      template.values.insert_if_empty( "gcp_artifact_repo_name", wca::Value::String( artifact_repo_name ) );
+      template.values.insert_if_empty( "docker_image_name", wca::Value::String( docker_image_name ) );
+      template.values.insert_if_empty( "gcp_region", wca::Value::String( "europe-central2".into() ) );
+    }
     template.create_all( path )?;
     Ok( () )
   }

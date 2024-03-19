@@ -33,24 +33,43 @@ mod private
     {
       self.values = values
     }
+
+    fn parameter_storage( &self ) -> &Path
+    {
+      "./.workspace_template.toml".as_ref()
+    }
+
+    fn template_name( &self ) -> &'static str
+    {
+      "workspace"
+    }
+
+    fn get_values( &self ) -> &TemplateValues
+    {
+      &self.values
+    }
+
+    fn get_values_mut( &mut self ) -> &mut TemplateValues
+    {
+      &mut self.values
+    }
+
+
   }
 
   impl Default for WorkspaceTemplate
   {
     fn default() -> Self
     {
+      let parameters = TemplateParameters::former()
+      .parameter( "project_name" ).is_mandatory( true ).end()
+      .parameter( "url" ).is_mandatory( true ).end()
+      .parameter( "branches" ).is_mandatory( true ).end()
+      .form();
       Self
       {
         files : Default::default(),
-        parameters : TemplateParameters::new
-          (
-            &
-              [
-                "project_name",
-                "url",
-                "branches",
-              ]
-          ),
+        parameters,
         values : Default::default(),
       }
     }
@@ -67,19 +86,19 @@ mod private
     fn default() -> Self
     {
       let formed = TemplateFilesBuilder::former()
-        .file().data( include_str!( "../../template/workspace/.gitattributes" ) ).path( "./.gitattributes" ).end()
-        .file().data( include_str!( "../../template/workspace/.gitignore1" ) ).path( "./.gitignore" ).end()
-        .file().data( include_str!( "../../template/workspace/.gitpod.yml" ) ).path( "./.gitpod.yml" ).end()
-        .file().data( include_str!( "../../template/workspace/Cargo.hbs" ) ).path( "./Cargo.toml" ).is_template( true ).end()
-        .file().data( include_str!( "../../template/workspace/Makefile" ) ).path( "./Makefile" ).end()
-        .file().data( include_str!( "../../template/workspace/Readme.md" ) ).path( "./Readme.md" ).end()
-        .file().data( include_str!( "../../template/workspace/.cargo/config.toml" ) ).path( "./.cargo/config.toml" ).end()
-        .file().data( include_str!( "../../template/workspace/module/module1/Cargo.toml.x" ) ).path( "./module/Cargo.toml" ).end()
-        .file().data( include_str!( "../../template/workspace/module/module1/Readme.md" ) ).path( "./module/module1/Readme.md" ).end()
-        .file().data( include_str!( "../../template/workspace/module/module1/examples/module1_example.rs" ) ).path( "./module/module1/examples/module1_example.rs" ).end()
-        .file().data( include_str!( "../../template/workspace/module/module1/src/lib.rs" ) ).path( "./module/module1/src/lib.rs" ).end()
-        .file().data( include_str!( "../../template/workspace/module/module1/tests/hello_test.rs" ) ).path( "./module/module1/tests/hello_test.rs" ).end()
-        .form();
+      .file().data( include_str!( "../../template/workspace/.gitattributes" ) ).path( "./.gitattributes" ).end()
+      .file().data( include_str!( "../../template/workspace/.gitignore1" ) ).path( "./.gitignore" ).end()
+      .file().data( include_str!( "../../template/workspace/.gitpod.yml" ) ).path( "./.gitpod.yml" ).end()
+      .file().data( include_str!( "../../template/workspace/Cargo.hbs" ) ).path( "./Cargo.toml" ).is_template( true ).end()
+      .file().data( include_str!( "../../template/workspace/Makefile" ) ).path( "./Makefile" ).end()
+      .file().data( include_str!( "../../template/workspace/Readme.md" ) ).path( "./Readme.md" ).end()
+      .file().data( include_str!( "../../template/workspace/.cargo/config.toml" ) ).path( "./.cargo/config.toml" ).end()
+      .file().data( include_str!( "../../template/workspace/module/module1/Cargo.toml.x" ) ).path( "./module/Cargo.toml" ).end()
+      .file().data( include_str!( "../../template/workspace/module/module1/Readme.md" ) ).path( "./module/module1/Readme.md" ).end()
+      .file().data( include_str!( "../../template/workspace/module/module1/examples/module1_example.rs" ) ).path( "./module/module1/examples/module1_example.rs" ).end()
+      .file().data( include_str!( "../../template/workspace/module/module1/src/lib.rs" ) ).path( "./module/module1/src/lib.rs" ).end()
+      .file().data( include_str!( "../../template/workspace/module/module1/tests/hello_test.rs" ) ).path( "./module/module1/tests/hello_test.rs" ).end()
+      .form();
 
       Self( formed.files )
     }

@@ -1,10 +1,9 @@
 use super::*;
-const ASSETS_PATH : &str = "module/move/willbe/tests/assets";
 
 use assert_fs::prelude::*;
 use assert_fs::TempDir;
-use TheModule::Workspace;
-use TheModule::package::{ dependencies, DependenciesOptions, DependenciesSort };
+use the_module::Workspace;
+use the_module::package::{ dependencies, DependenciesOptions, DependenciesSort };
 use willbe::CrateDir;
 use willbe::package::Package;
 use willbe::path::AbsolutePath;
@@ -13,12 +12,12 @@ use willbe::path::AbsolutePath;
 
 fn arrange( asset_name : &str ) -> ( TempDir, Workspace )
 {
-  let mut metadata = Workspace::from_current_path().unwrap();
+  let path = CrateDir::try_from( AbsolutePath::try_from( std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) ) ).unwrap() ).unwrap();
+  let mut metadata = Workspace::with_crate_dir( path ).unwrap();
 
   let root_path = metadata.load().unwrap().workspace_root().unwrap();
-  let assets_relative_path = std::path::Path::new( ASSETS_PATH );
-  let assets_path = root_path.join( assets_relative_path );
-
+  let assets_relative_path = std::path::Path::new( ASSET_PATH );
+  let assets_path = root_path.join( "module" ).join( "move" ).join( "willbe" ).join( assets_relative_path );
   let temp = TempDir::new().unwrap();
   temp.copy_from( assets_path.join( asset_name ), &[ "**" ] ).unwrap();
 

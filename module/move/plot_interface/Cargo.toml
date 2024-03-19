@@ -34,7 +34,6 @@ include = [
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-# use_std = []
 no_std = []
 use_alloc = []
 enabled = []
@@ -60,8 +59,8 @@ name = "plot_interface_smoke_test"
 path = "tests/smoke_test.rs"
 
 # [[example]]
-# name = "plot_interface_trivial_sample"
-# path = "examples/plot_interface_trivial_sample/src/main.rs"
+# name = "plot_interface_trivial"
+# path = "examples/plot_interface_trivial/src/main.rs"
 
 [dependencies]
 wplot = { workspace = true }

@@ -1,6 +1,7 @@
 mod toposort
 {
-  use crate::TheModule::graph::toposort;
+  use crate::the_module::*;
+  use graph::toposort;
   use std::collections::HashMap;
   use petgraph::Graph;
 

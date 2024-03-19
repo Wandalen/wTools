@@ -8,7 +8,7 @@ Basic exceptions handling mechanism.
 
 ### Basic use-case
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ```rust ignore
 fn main()

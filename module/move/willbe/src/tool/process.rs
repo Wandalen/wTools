@@ -9,6 +9,7 @@ pub( crate ) mod private
     path::{ Path, PathBuf },
     process::{ Command, Stdio },
   };
+  use std::collections::HashMap;
   use std::ffi::OsString;
   use duct::cmd;
   use error_tools::err;
@@ -20,10 +21,58 @@ pub( crate ) mod private
     error::{ anyhow::Context, Result },
   };
 
+  ///
+  /// Executes an external process using the system shell.
+  ///
+  /// This function abstracts over the differences between shells on Windows and Unix-based
+  /// systems, allowing for a unified interface to execute shell commands.
+  ///
+  /// # Parameters:
+  /// - `exec_path`: The command line string to execute in the shell.
+  /// - `current_path`: The working directory path where the command is executed.
+  ///
+  /// # Returns:
+  /// A `Result` containing a `Report` on success, which includes the command's output,
+  /// or an error if the command fails to execute or complete.
+  ///
+  /// # Examples:
+  /// ```rust
+  /// use willbe::process;
+  ///
+  /// let report = process::run_with_shell( "echo Hello World", "." ).unwrap();
+  /// println!( "{}", report.out );
+  /// ```
+  ///
+
+  pub fn run_with_shell
+  (
+    exec_path : &str,
+    current_path : impl Into< PathBuf >,
+  )
+  -> Result< Report, ( Report, Error ) >
+  {
+    let current_path = current_path.into();
+    let ( program, args ) =
+    if cfg!( target_os = "windows" )
+    {
+      ( "cmd", [ "/C", exec_path ] )
+    }
+    else
+    {
+      ( "sh", [ "-c", exec_path ] )
+    };
+    let options = Run::former()
+    .application( program )
+    .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+    .path( current_path )
+    .form();
+    // xxx : qqq : for Petro : implement run for former та для Run
+    run( options )
+  }
 
   /// Process command output.
   #[ derive( Debug, Clone, Default ) ]
-  pub struct CmdReport
+  pub struct Report
   {
     /// Command that was executed.
     pub command : String,
@@ -35,7 +84,7 @@ pub( crate ) mod private
     pub err : String,
   }
 
-  impl std::fmt::Display for CmdReport
+  impl std::fmt::Display for Report
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
@@ -56,62 +105,14 @@ pub( crate ) mod private
 
   /// Option for `run` function
   #[ derive( Debug, Former ) ]
-  pub struct RunOptions
+  pub struct Run
   {
     application : PathBuf,
     args : Vec< OsString >,
     path : PathBuf,
     #[ default( false ) ]
-    join_steam : bool,
-  }
-
-  ///
-  /// Executes an external process using the system shell.
-  ///
-  /// This function abstracts over the differences between shells on Windows and Unix-based
-  /// systems, allowing for a unified interface to execute shell commands.
-  ///
-  /// # Parameters:
-  /// - `exec_path`: The command line string to execute in the shell.
-  /// - `current_path`: The working directory path where the command is executed.
-  ///
-  /// # Returns:
-  /// A `Result` containing a `CmdReport` on success, which includes the command's output,
-  /// or an error if the command fails to execute or complete.
-  ///
-  /// # Examples:
-  /// ```rust
-  /// use willbe::process;
-  ///
-  /// let report = process::run_with_shell( "echo Hello World", "." ).unwrap();
-  /// println!( "{}", report.out );
-  /// ```
-  ///
-
-  pub fn run_with_shell
-  (
-    exec_path : &str,
-    current_path : impl Into< PathBuf >,
-  )
-  -> Result< CmdReport, ( CmdReport, Error ) >
-  {
-    let current_path = current_path.into();
-    let ( program, args ) =
-    if cfg!( target_os = "windows" )
-    {
-      ( "cmd", [ "/C", exec_path ] )
-    }
-    else
-    {
-      ( "sh", [ "-c", exec_path ] )
-    };
-    let options = RunOptions::former()
-    .application( program )
-    .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-    .path( current_path )
-    .form();
-    // xxx : qqq : for Petro : implement run for former
-    run( options )
+    joining_streams : bool,
+    env_variable : HashMap< String, String >,
   }
 
   ///
@@ -123,26 +124,30 @@ pub( crate ) mod private
   /// - `path`: Directory path to run the application in.
   ///
   /// # Returns:
-  /// A `Result` containing `CmdReport` on success, detailing execution output,
+  /// A `Result` containing `Report` on success, detailing execution output,
   /// or an error message on failure.
   ///
   /// # Errors:
   /// Returns an error if the process fails to spawn, complete, or if output
   /// cannot be decoded as UTF-8.
-  pub fn run( options : RunOptions ) -> Result< CmdReport, (CmdReport, Error ) >
+  pub fn run( options : Run ) -> Result< Report, ( Report, Error ) >
   {
-    let ( application, path ) : ( &Path, &Path ) = ( options.application.as_ref(), options.path.as_ref() );
-    if options.join_steam
+    let application : &Path = options.application.as_ref();
+    let path : &Path = options.path.as_ref();
+    let mut envs : HashMap< String, String > = std::env::vars().collect();
+    envs.extend( options.env_variable );
+    if options.joining_streams
     {
       let output = cmd( application.as_os_str(), &options.args )
       .dir( path )
       .stderr_to_stdout()
       .stdout_capture()
+      .full_env( envs )
       .unchecked()
       .run()
       .map_err( | e | ( Default::default(), e.into() ) )?;
 
-      let report = CmdReport
+      let report = Report
       {
         command : format!( "{} {}", application.display(), options.args.iter().map( | a | a.to_string_lossy() ).join( " " ) ),
         path : path.to_path_buf(),
@@ -163,6 +168,7 @@ pub( crate ) mod private
     {
       let child = Command::new( application )
       .args( &options.args )
+      .envs( envs )
       .stdout( Stdio::piped() )
       .stderr( Stdio::piped() )
       .current_dir( path )
@@ -175,7 +181,7 @@ pub( crate ) mod private
       .context( "failed to wait on child" )
       .map_err( | e | ( Default::default(), e.into() ) )?;
 
-      let report = CmdReport
+      let report = Report
       {
         command : format!( "{} {}", application.display(), options.args.iter().map( | a | a.to_string_lossy() ).join( " " ) ),
         path : path.to_path_buf(),
@@ -195,10 +201,13 @@ pub( crate ) mod private
   }
 }
 
+
 crate::mod_interface!
 {
-  protected use CmdReport;
+  protected use Report;
   protected use run_with_shell;
   protected use run;
-  protected use RunOptions;
+  protected use Run;
 }
+
+// qqq : for Petro : for Bohdan : rid off this file. use process_tools

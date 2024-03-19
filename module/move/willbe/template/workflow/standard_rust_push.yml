@@ -22,7 +22,7 @@ on :
 concurrency :
 
   group : standard_rust_push_${{ inputs.module_name }}_${{ github.ref }}_
-    ${{ contains( inputs.commit_message, '!test' ) || startsWith( inputs.commit_message, 'Merge' ) || contains( inputs.commit_message, inputs.module_name ) }}_
+    ${{ contains( inputs.commit_message, '+test' ) || startsWith( inputs.commit_message, 'Merge' ) || contains( inputs.commit_message, inputs.module_name ) }}_
     ${{ !contains( inputs.commit_message, '!only_js' )}}
   cancel-in-progress : true
 
@@ -35,7 +35,7 @@ env :
 jobs :
 
   checkmate:
-    if: contains( inputs.commit_message, '!test' ) || contains( inputs.commit_message, 'merge' )
+    if: contains( inputs.commit_message, '+test' ) || contains( inputs.commit_message, 'merge' )
     runs-on: ubuntu-latest
     steps:
       - name: Install latest nightly toolchain
@@ -75,7 +75,7 @@ jobs :
         continue-on-error: true
 
 #  release:
-#    if: contains( inputs.commit_message, '!test' ) || contains( inputs.commit_message, 'merge' )
+#    if: contains( inputs.commit_message, '+test' ) || contains( inputs.commit_message, 'merge' )
 #    strategy:
 #      fail-fast: false
 #      matrix:
@@ -99,7 +99,7 @@ jobs :
 #        run: cargo build --manifest-path ${{ inputs.manifest_path }} --release
 
   #  miri:
-  #    if: contains( inputs.commit_message, '!test' ) || contains( inputs.commit_message, 'merge' )
+  #    if: contains( inputs.commit_message, '+test' ) || contains( inputs.commit_message, 'merge' )
   #    runs-on: ubuntu-latest
   #    steps:
   #      - name: Install latest nightly toolchain
@@ -120,7 +120,7 @@ jobs :
   #        run: cargo miri test --manifest-path ${{ inputs.manifest_path }}
 
   will_test :
-    if : contains( inputs.commit_message, '!test' ) || contains( inputs.commit_message, 'merge' )
+    if : contains( inputs.commit_message, '+test' ) || contains( inputs.commit_message, 'merge' )
     concurrency :
       group : standard_rust_push_${{ inputs.module_name }}_${{ github.ref }}_${{ matrix.os }}
       cancel-in-progress : true

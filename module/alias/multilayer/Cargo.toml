@@ -34,7 +34,6 @@ include = [
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-# use_std = []
 no_std = []
 use_alloc = []
 enabled = []
@@ -52,8 +51,8 @@ name = "mod_interface_smoke_test"
 path = "tests/smoke_test.rs"
 
 # [[example]]
-# name = "multilayer_trivial_sample"
-# path = "examples/multilayer_trivial_sample/src/main.rs"
+# name = "multilayer_trivial"
+# path = "examples/multilayer_trivial/src/main.rs"
 
 [dependencies]
 mod_interface = { workspace = true }
