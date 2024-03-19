@@ -71,6 +71,7 @@ mod private
     #[ default( 1u32 ) ]
     power : u32,
     include_features : Vec< String >,
+    #[ default ( [ "full".to_string(), "default".to_string() ] ) ]
     exclude_features : Vec< String >,
     #[ default( true ) ]
     temp : bool,
