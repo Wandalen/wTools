@@ -207,7 +207,6 @@ impl From< Frame > for Vec< ExprNode< 'static > >
   fn from( entry : Frame ) -> Self
   {
     let title = entry.title
-    .clone()
     .map( | title | text( title ) )
     .unwrap_or( null() )
     ;
@@ -238,7 +237,6 @@ impl From< Frame > for Vec< ExprNode< 'static > >
     ;
 
     let categories = entry.categories
-    .clone()
     .map( | categories | text ( categories ) )
     .unwrap_or( null() )
     ;
@@ -248,8 +246,8 @@ impl From< Frame > for Vec< ExprNode< 'static > >
     .unwrap_or( null() )
     ;
 
-    let source = entry.source.clone().map( | s | text( s ) ).unwrap_or( null() );
-    let rights = entry.rights.clone().map( | r | text( r ) ).unwrap_or( null() );
+    let source = entry.source.map( | s | text( s ) ).unwrap_or( null() );
+    let rights = entry.rights.map( | r | text( r ) ).unwrap_or( null() );
     let media = entry.media
     .map( | media | text ( media ) )
     .unwrap_or( null() )

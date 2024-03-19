@@ -20,7 +20,7 @@ use executor::actions::
   feed::FeedsReport,
   frame::{ UpdateReport, SelectedEntries, FramesReport },
 };
-use storage::{ FeedStorage, frame::{ FrameStore, RowValue } };
+use storage::{ FeedStorage, frame::FrameStore };
 use wca::wtools::Itertools;
 
 /// Feed item.
@@ -29,7 +29,7 @@ pub struct Feed
 {
   /// Link to feed source.
   pub link : url::Url,
-  /// Ttitle of feed.
+  /// Title of feed.
   pub title : Option< String >,
   /// Last time the feed was fetched.
   pub updated : Option< DateTime< Utc > >,
@@ -105,8 +105,6 @@ impl FeedStore for FeedStorage< SledStorage >
 
   async fn update_feed( &mut self, feed : Vec< Feed > ) -> Result< () >
   {
-    //let feeds_rows = feed.into_iter().map( | feed | FeedRow::from( feed ).0 ).collect_vec();
-
     for feed in feed
     {
       let _update = table( "feed" )
@@ -132,22 +130,6 @@ impl FeedStore for FeedStorage< SledStorage >
     feeds : Vec< ( feed_rs::model::Feed, Duration, url::Url ) >,
   ) -> Result< UpdateReport >
   {
-    let new_feed_links = feeds
-    .iter()
-    .map( | feed | format!( "'{}'", feed.2.clone() ) )
-    .collect::< Vec< _ > >()
-    .join( "," )
-    ;
-
-    let existing_feeds = table( "feed" )
-    .select()
-    .filter( format!( "link IN ({})", new_feed_links ).as_str() )
-    .project( "link" )
-    .execute( &mut *self.storage.lock().await )
-    .await
-    .context( "Failed to select links of existing feeds while saving new frames" )?
-    ;
-
     let mut new_entries = Vec::new();
     let mut modified_entries = Vec::new();
     let mut reports = Vec::new();
@@ -155,39 +137,10 @@ impl FeedStore for FeedStorage< SledStorage >
     for feed in &feeds
     {
       let mut frames_report = FramesReport::new( feed.0.title.clone().unwrap().content );
-      // check if feed is new
-      if let Some( existing_feeds ) = existing_feeds.select()
-      {
-
-        let existing_feeds = existing_feeds
-        .filter_map( | feed | feed.get( "link" ).map( | link | String::from( RowValue( link ) ) ))
-        .collect_vec()
-        ;
-
-        let link = &feed.2.to_string();
-
-        if !existing_feeds.contains( link )
-        {
-          self.save_feeds( vec![ feed.clone().into() ] ).await?;
-          frames_report.new_frames = feed.0.entries.len();
-          frames_report.is_new_feed = true;
-
-          new_entries.extend
-          (
-            feed.0.entries
-            .clone()
-            .into_iter()
-            .zip( std::iter::repeat( feed.0.id.clone() ).take( feed.0.entries.len() ) )
-            .map( | entry | entry.into() )
-          );
-          reports.push( frames_report );
-          continue;
-        }
-      }
 
       let existing_frames = table( "frame" )
       .select()
-      .filter(col( "feed_link" ).eq( text( feed.0.id.clone() ) ) )
+      .filter( col( "feed_link" ).eq( text( feed.2.to_string() ) ) )
       .project( "id, published" )
       .execute( &mut *self.storage.lock().await )
       .await
@@ -304,8 +257,6 @@ impl From< ( feed_rs::model::Feed, Duration, url::Url ) > for Feed
       authors : ( !authors.is_empty() ).then( || authors.join( ", " ) ),
       update_period : duration,
     }
-    
-    
   }
 }
 
