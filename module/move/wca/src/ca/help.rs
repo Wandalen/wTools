@@ -59,6 +59,7 @@ pub( crate ) mod private
     dictionary.register( cmd );
   }
 
+  // qqq : for Barsik : make possible to change properties order 
   fn generate_help_content( dictionary : &Dictionary, command : Option< &Command > ) -> String
   {
     if let Some( command ) = command

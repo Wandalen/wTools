@@ -25,7 +25,7 @@ mod private
     with_nightly : bool,
     #[ default( 0u32 ) ]
     concurrent : u32,
-    #[ default( 2u32 ) ]
+    #[ default( 1u32 ) ]
     power : u32,
     include : Vec< String >,
     #[ default ( [ "full".to_string(), "default".to_string() ] ) ]
@@ -128,7 +128,7 @@ mod private
       this = if let Some( v ) = value.get_owned( "with_release" ) { this.with_release::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "with_all_features" ) { this.with_all_features::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "with_none_features" ) { this.with_none_features::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "enabled_features" ) { this.enabled_features::< Vec< String > >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "always" ) { this.enabled_features::< Vec< String > >( v ) } else { this };
 
       Ok( this.form() )
     }
