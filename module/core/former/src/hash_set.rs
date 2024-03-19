@@ -4,6 +4,14 @@
 
 use super::*;
 
+#[ cfg( feature = "use_alloc" ) ]
+extern crate alloc;
+#[ cfg( feature = "use_alloc" ) ]
+#[ allow( unused_imports ) ]
+use alloc::collections::HashSet;
+#[ cfg( not( feature = "no_std" ) ) ]
+#[ allow( unused_imports ) ]
+use std::collections::HashSet;
 
 /// A trait for containers behaving like a `HashSet`, allowing insertion operations.
 ///
@@ -20,16 +28,16 @@ where
   E : core::cmp::Eq + core::hash::Hash,
 {
   /// Inserts a key-value pair into the map.
-  fn insert( &mut self, e : E ) -> Option< E >;
+  fn insert( &mut self, element : E ) -> Option< E >;
 }
 
-impl< E > HashSetLike< E > for std::collections::HashSet< E >
+impl< E > HashSetLike< E > for HashSet< E >
 where
   E : core::cmp::Eq + core::hash::Hash,
 {
-  fn insert( &mut self, e : E ) -> Option< E >
+  fn insert( &mut self, element : E ) -> Option< E >
   {
-    std::collections::HashSet::replace( self, e )
+    HashSet::replace( self, element )
   }
 }
 
@@ -200,13 +208,14 @@ where
   /// was already present, it might replace it depending on the container's behavior.
   ///
   /// # Parameters
-  /// - `e`: The element to insert into the set.
+  /// - `element`: The element to insert into the set.
   ///
   /// # Returns
-  /// - `Some(e)` if the element was replaced.
+  /// - `Some(element)` if the element was replaced.
   /// - `None` if the element was newly inserted without replacing any existing element.
-  ///  #[ inline( always ) ]
-  pub fn insert< E2 >( mut self, e : E2 ) -> Self
+  ///
+  #[ inline( always ) ]
+  pub fn insert< E2 >( mut self, element : E2 ) -> Self
   where
     E2 : core::convert::Into< E >,
   {
@@ -216,7 +225,7 @@ where
     }
     if let core::option::Option::Some( ref mut container ) = self.container
     {
-      container.insert( e.into() );
+      container.insert( element.into() );
     }
     self
   }

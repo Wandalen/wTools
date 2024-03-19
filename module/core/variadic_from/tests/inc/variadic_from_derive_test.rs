@@ -4,9 +4,9 @@ use super::*;
 #[ test ]
 fn from_named_fields()
 {
-  use TheModule::prelude::*;
+  use the_module::prelude::*;
 
-  #[ derive( Debug, PartialEq, TheModule::VariadicFrom ) ]
+  #[ derive( Debug, PartialEq, the_module::VariadicFrom ) ]
   struct StructNamedFields
   {
     a : i32,
@@ -23,9 +23,9 @@ fn from_named_fields()
 #[ test ]
 fn from_tuple()
 {
-  use TheModule::prelude::*;
+  use the_module::prelude::*;
 
-  #[ derive( Debug, PartialEq, TheModule::VariadicFrom ) ]
+  #[ derive( Debug, PartialEq, the_module::VariadicFrom ) ]
   struct StructTuple( i32, i32, i32, i32 );
 
   include!( "./only_test/variadic_from_tuple.rs" );
@@ -36,9 +36,9 @@ fn from_tuple()
 #[ test ]
 fn sample()
 {
-  use TheModule::exposed::*;
+  use the_module::exposed::*;
 
-  #[ derive( Debug, PartialEq, TheModule::VariadicFrom ) ]
+  #[ derive( Debug, PartialEq, the_module::VariadicFrom ) ]
   struct MyStruct
   {
     a : i32,

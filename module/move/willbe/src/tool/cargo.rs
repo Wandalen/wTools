@@ -1,10 +1,11 @@
 mod private
 {
+  use std::ffi::OsString;
   use crate::*;
-  
+
   use std::path::PathBuf;
   use former::Former;
-  use process::CmdReport;
+  use process::Report;
   use wtools::error::Result;
 
   /// Represents pack options
@@ -15,7 +16,7 @@ mod private
     temp_path : Option< PathBuf >,
     dry : bool,
   }
-  
+
   impl PackOptionsFormer
   {
     pub fn option_temp_path( mut self, value : impl Into< Option< PathBuf > > ) -> Self
@@ -24,7 +25,7 @@ mod private
       self
     }
   }
-  
+
   impl PackOptions
   {
     fn to_pack_args( &self ) -> Vec< String >
@@ -35,7 +36,7 @@ mod private
       .collect()
     }
   }
-  
+
   ///
   /// Assemble the local package into a distributable tarball.
   ///
@@ -43,7 +44,13 @@ mod private
   /// - `path` - path to the package directory
   /// - `dry` - a flag that indicates whether to execute the command or not
   ///
-  pub fn pack( args : PackOptions ) -> Result< CmdReport >
+  #[ cfg_attr
+  (
+    feature = "tracing",
+    track_caller,
+    tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
+  )]
+  pub fn pack( args : PackOptions ) -> Result< Report >
   {
     let ( program, options ) = ( "cargo", args.to_pack_args() );
 
@@ -51,7 +58,7 @@ mod private
     {
       Ok
       (
-        CmdReport
+        Report
         {
           command : format!( "{program} {}", options.join( " " ) ),
           path : args.path.to_path_buf(),
@@ -62,20 +69,26 @@ mod private
     }
     else
     {
-      process::run(program, options, args.path )
+      let options =
+      process::Run::former()
+      .application( program )
+      .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+      .path( args.path )
+      .form();
+      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
     }
   }
 
 
-  /// Represents the arguments for the publish.
+  /// Represents the options for the publish.
   #[ derive( Debug, Former, Clone, Default ) ]
   pub struct PublishOptions
   {
     path : PathBuf,
     temp_path : Option< PathBuf >,
-    dry : bool, 
+    dry : bool,
   }
-  
+
   impl PublishOptionsFormer
   {
     pub fn option_temp_path( mut self, value : impl Into< Option< PathBuf > > ) -> Self
@@ -95,7 +108,13 @@ mod private
   }
 
  /// Upload a package to the registry
-  pub fn publish( args : PublishOptions ) -> Result< CmdReport >
+  #[ cfg_attr
+  (
+    feature = "tracing",
+    track_caller,
+    tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
+  )]
+  pub fn publish( args : PublishOptions ) -> Result< Report >
   {
     let ( program, arguments) = ( "cargo", args.as_publish_args() );
 
@@ -103,7 +122,7 @@ mod private
     {
       Ok
         (
-          CmdReport
+          Report
           {
             command : format!( "{program} {}", arguments.join( " " ) ),
             path : args.path.to_path_buf(),
@@ -114,7 +133,13 @@ mod private
     }
     else
     {
-      process::run(program, arguments, args.path )
+      let options =
+      process::Run::former()
+      .application( program )
+      .args( arguments.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+      .path( args.path )
+      .form();
+      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
     }
   }
 }

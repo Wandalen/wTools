@@ -1,5 +1,4 @@
-//! example
-
+//! qqq : write proper description
 pub use implements::*;
 
 fn main()

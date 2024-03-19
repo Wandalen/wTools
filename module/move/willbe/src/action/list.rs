@@ -22,6 +22,7 @@ mod private
     for_app::{ Error, Context },
     err
   };
+  // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
   use cargo_metadata::
   {
     Dependency,
@@ -388,6 +389,7 @@ mod private
   ///
   /// - `Result<ListReport, (ListReport, Error)>` - A result containing the list report if successful,
   ///   or a tuple containing the list report and error if not successful.
+  #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
   pub fn list( args : ListOptions ) -> Result< ListReport, ( ListReport, Error ) >
   {
     let mut report = ListReport::default();

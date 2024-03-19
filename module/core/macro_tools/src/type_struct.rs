@@ -24,34 +24,26 @@ pub( crate ) mod private
     pub item_name : syn::Ident,
     /// Collection of struct's fields, including visibility, attributes, and types.
     pub fields : syn::Fields,
-
-    // // xxx : rid off fields below. them are deduced from fields and should be implemented with function
-    // /// Collection of fields for convenient iteration. Planned for deprecation.
-    // pub fields_many : Many< syn::Field >,
-    // /// Types of each field in a vector for easy access. Planned for deprecation.
-    // pub field_types: Vec< syn::Type >,
-    // /// Names of each field if available, otherwise `None`. Planned for deprecation.
-    // pub field_names: Option< Vec< syn::Ident > >,
   }
 
   impl TypeStructParsed
   {
 
     /// Returns a vector of the struct's fields for iteration.
-    pub fn fields_many( &self ) -> Vec< syn::Field >
+    pub fn fields_many( &self ) -> Vec< &syn::Field >
     {
       match &self.fields
       {
-        syn::Fields::Unnamed( fields ) => fields.unnamed.iter().cloned().collect(),
-        syn::Fields::Named( fields ) => fields.named.iter().cloned().collect(),
+        syn::Fields::Unnamed( fields ) => fields.unnamed.iter().collect(),
+        syn::Fields::Named( fields ) => fields.named.iter().collect(),
         syn::Fields::Unit => Vec::new(),
       }
     }
 
     /// Extracts the types of each field into a vector.
-    pub fn field_types( &self ) -> Vec< syn::Type >
+    pub fn field_types< 'a >( &'a self ) -> Vec< &'a syn::Type >
     {
-      self.fields_many().iter().map( |field| field.ty.clone() ).collect()
+      self.fields_many().iter().map( | field | &field.ty ).collect()
     }
 
     /// Retrieves the names of each field, if they exist.

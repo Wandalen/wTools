@@ -8,7 +8,7 @@ Include markdown file or its section.
 
 ### Basic use-case
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ```rust
 use include_md::*;
@@ -26,6 +26,6 @@ cargo add include_md
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd sample/move/include_md_trivial_sample
+cd sample/move/include_md_trivial
 cargo run
 ```

@@ -1,6 +1,6 @@
 [package]
 name = "willbe"
-version = "0.6.0"
+version = "0.8.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -16,14 +16,7 @@ Utility to publish multi-crate and multi-workspace environments and maintain the
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
-default-run = "main"
-include = [
-  "/src",
-  "/template",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
+default-run = "will"
 
 [lints]
 workspace = true
@@ -31,13 +24,15 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-exclude = [ "/tests", "/examples", "-*" ]
+# exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-use_alloc = []
+# use_alloc = [ "no_std" ]
 enabled = []
+tracing = [ "dep:tracing", "dep:tracing-subscriber" ]
+progress_bar = [ "dep:indicatif" ]
 
 [dependencies]
 cargo_metadata = "~0.14"
@@ -62,6 +57,9 @@ handlebars = "4.5.0"
 ureq = "~2.9"
 colored = "2.1.0"
 duct = "0.13.7"
+tracing = { version = "0.1", features = [ "log-always" ], optional = true }
+tracing-subscriber = { version = "0.3", optional = true }
+indicatif = { version = "0.17", optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }

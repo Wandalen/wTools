@@ -8,8 +8,38 @@ mod private
   use std::collections::HashSet;
 
   use std::{ env, fs };
+  // qqq : for Petro : https://github.com/obox-systems/conventions/blob/master/code_style.md#importing-structuring-std-imports
 
   use cargo_metadata::Package;
+  #[ cfg( feature = "progress_bar" ) ]
+  use indicatif::{ MultiProgress, ProgressStyle };
+  // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
+
+  // qqq : for Petro : don't use Package directly. rid it off for the whole willbe
+
+  // qqq : for Petro : should not be such combinations full,no_std
+  // [ release | nightly | full,no_std ]: ❌  failed
+
+  // qqq : for Petro : improve formatting
+  //
+  // [ optimization : debug | channel : stable | feature : derive_component_from,use_alloc ]
+  // [ optimization : debug | channel : stable | feature : default,enabled ]
+  // [ optimization : debug | channel : stable | feature : derive_components_assign ]
+  // [ optimization : debug | channel : stable | feature : derive_component_from,derive_component_assign ]
+  // [ optimization : debug | channel : stable | feature : derive_former,derive_component_assign ]
+  // [ optimization : debug | channel : stable | feature : enabled ]
+  // [ optimization : debug | channel : stable | feature : derive_component_assign,no_std ]
+  // [ optimization : debug | channel : stable | feature : default,derive_component_assign ]
+  // [ optimization : debug | channel : stable | feature : no-features ]
+  //
+  // should be
+  //
+  // [ optimization : release | channel : nightly | feature : full ] -> [ optimization : release | channel : nightly | feature : [ list all features ] ]
+  // [ optimization : debug | channel : stable | feature : [] ]
+  //
+  // don't create artifical categories as no-features
+  //
+  // make table out of that
 
   use former::Former;
   use wtools::
@@ -43,9 +73,18 @@ mod private
     #[ default( 1u32 ) ]
     power : u32,
     include_features : Vec< String >,
+    #[ default ( [ "full".to_string(), "default".to_string() ] ) ]
     exclude_features : Vec< String >,
     #[ default( true ) ]
     temp : bool,
+    enabled_features : Vec< String >,
+    #[ default( true ) ]
+    with_all_features : bool,
+    #[ default( true ) ]
+    with_none_features : bool,
+    optimizations : HashSet< optimization::Optimization >,
+    #[ default( 1000u32 ) ]
+    variants_cap : u32,
   }
 
   /// The function runs tests with a different set of features in the selected crate (the path to the crate is specified in the dir variable).
@@ -56,6 +95,16 @@ mod private
   /// The result of the tests is written to the structure `TestsReport` and returned as a result of the function execution.
   pub fn test( args : TestsCommandOptions, dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
   {
+    #[ cfg( feature = "progress_bar" ) ]
+    let multiprocess = MultiProgress::new();
+    #[ cfg( feature = "progress_bar" ) ]
+    let style = ProgressStyle::with_template
+    (
+      "[{elapsed_precise}] {bar:40.cyan/blue} {pos:>7}/{len:7} {msg}",
+    )
+    .unwrap()
+    .progress_chars( "##-" );
+    
     let mut reports = TestsReport::default();
     // fail fast if some additional installations required
     let channels = channel::available_channels( args.dir.as_ref() ).map_err( | e | ( reports.clone(), e ) )?;
@@ -64,7 +113,6 @@ mod private
     {
       return Err(( reports, format_err!( "Missing toolchain(-s) that was required : [{}]. Try to install it with `rustup install {{toolchain name}}` command(-s)", channels_diff.into_iter().join( ", " ) ) ))
     }
-
     reports.dry = dry;
     let TestsCommandOptions
     {
@@ -74,55 +122,70 @@ mod private
       power,
       include_features,
       exclude_features,
-      temp
+      temp,
+      enabled_features,
+      with_all_features,
+      with_none_features,
+      optimizations,
+      variants_cap,
     } = args;
+    
     let packages = needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?;
 
-    if temp
+    let plan = TestPlan::try_from
+    ( 
+      &packages, 
+      &channels, 
+      power, 
+      include_features, 
+      exclude_features, 
+      &optimizations, 
+      enabled_features,
+      with_all_features, 
+      with_none_features,
+      variants_cap,
+    ).map_err( | e | ( reports.clone(), e ) )?;
+    
+    println!( "{plan}" );
+
+    let temp_path =  if temp
     {
-      
-      let mut unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name_generate().map_err( | e | ( reports.clone(), e ) )? );
+      let mut unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name().map_err( | e | ( reports.clone(), e ) )? );
 
       let mut temp_dir = env::temp_dir().join( unique_name );
 
       while temp_dir.exists()
       {
-        unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name_generate().map_err( | e | ( reports.clone(), e ) )? );
+        unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name().map_err( | e | ( reports.clone(), e ) )? );
         temp_dir = env::temp_dir().join( unique_name );
       }
 
       fs::create_dir( &temp_dir ).map_err( | e | ( reports.clone(), e.into() ) )?;
-
-      let t_args = TestOptions
-      {
-        channels,
-        concurrent,
-        power,
-        include_features,
-        exclude_features,
-        temp_path: Some( temp_dir.clone() ),
-      };
-      
-      let report = tests_run( &t_args, &packages, dry );
-
-      fs::remove_dir_all(&temp_dir).map_err( | e | ( reports.clone(), e.into() ) )?;
-
-      report
+      Some( temp_dir )
     }
     else
     {
-      let t_args = TestOptions
-      {
-        channels,
-        concurrent,
-        power,
-        include_features,
-        exclude_features,
-        temp_path: None,
-      };
+      None
+    };
+    
+    let test_options_former = TestOptions::former()
+    .concurrent( concurrent )
+    .plan( plan )
+    .option_temp( temp_path )
+    .dry( dry );
 
-      tests_run( &t_args, &packages, dry )
+    #[ cfg( feature = "progress_bar" ) ]
+    let test_options_former = test_options_former.feature( TestOptionsProgressBarFeature{ multiprocess, style } );
+    
+    let options = test_options_former.form();
+    let result = tests_run( &options );
+    
+    if temp
+    {
+      fs::remove_dir_all( options.temp_path.unwrap() ).map_err( | e | ( reports.clone(), e.into() ) )?;
     }
+    
+    result 
   }
 
   fn needed_packages( path : AbsolutePath ) -> Result< Vec< Package > >

@@ -98,17 +98,17 @@ pub( crate ) mod private
       .property( "dry" ).hint( "Enables 'dry run'. Does not run tests, only simulates. Default is `true`." ).kind( Type::Bool ).optional( true ).end()
       .property( "temp" ).hint( "If flag is `true` all test will be running in temporary directories. Default `true`." ).kind( Type::Bool ).optional( true ).end()
       .property( "include" )
-        .hint( "A list of features to include in testing. Separate multiple features by comma." )
+        .hint( "A list of features to include in testing. Separate multiple features by comma. Default is empty." )
         .kind( Type::List( Type::String.into(), ',' ) )
         .optional( true )
         .end()
       .property( "exclude" )
-        .hint( "A list of features to exclude from testing. Separate multiple features by comma." )
+        .hint( "A list of features to exclude from testing. Separate multiple features by comma. Default is [full, default]." )
         .kind( Type::List( Type::String.into(), ',' ) )
         .optional( true )
         .end()
       .property( "with_stable" )
-        .hint( "Specifies whether or not to run tests on stable Rust version. Default is `true`" )
+        .hint( "Specifies whether or not to run tests on stable Rust version. Default is `true`." )
         .kind( Type::Bool )
         .optional( true )
         .end()
@@ -127,14 +127,44 @@ pub( crate ) mod private
         .kind( Type::Number )
         .optional( true )
         .end()
+      .property( "always")
+        .hint( "This features will be always present in feature's combinations. Default is empty.")
+        .kind( Type::List( Type::String.into(), ',' ) )
+        .optional( true )
+        .end()
+      .property( "with_all_features" )
+        .hint( "To powerset of features will be add one subset with all features. Default is `true`." )
+        .kind( Type::Bool )
+        .optional( true )
+        .end()
+      .property( "with_none_features" )
+        .hint( "To powerset of features will be add one empty subset. Default is `true`." )
+        .kind( Type::Bool )
+        .optional( true )
+        .end()
+      .property( "with_release" )
+        .hint( "Indicates whether or not tests will be run on the release optimization. Default is `false`." )
+        .kind( Type::Bool )
+        .optional( true )
+        .end()
+      .property( "with_debug" )
+        .hint( "Indicates whether or not tests will be run on the debug optimization. Default is `true`." )
+        .kind( Type::Bool )
+        .optional( true )
+        .end()
+      .property( "variants_cap" )
+        .hint( "Regulates the number of possible combinations. Default is 1000.")
+        .kind( Type::Number )
+        .optional( true )
+        .end()
       .routine( command::test )
       .end()
 
     // qqq : is it right?
-    .command( "workflow.renew" )
-      .hint( "generate a workflow for the workspace" )
+    .command( "cicd.renew" )
+      .hint( "generate a CI/CD for the workspace" )
       .long_hint( "this command generates a development workflow for the entire workspace inferred from the current directory. The workflow outlines the build steps, dependencies, test processes, and more for all modules within the workspace." )
-      .routine( command::workflow_renew )
+      .routine( command::cicd_renew )
       .end()
 
     .command( "workspace.renew" )
@@ -153,27 +183,26 @@ pub( crate ) mod private
       .routine( command::workspace_renew )
       .end()
 
-    // qqq : missing hints
     .command( "deploy.renew" )
       .hint( "Create deploy template" )
-      .long_hint( "" )
+      .long_hint( "Creates static files and directories.\nDeployment to different hosts is done via Makefile." )
       .property( "gcp_project_id" )
-        .hint( "" )
+        .hint( "Google Cloud Platform Project id for image deployment, terraform state bucket, and, if specified, GCE instance deployment." )
         .kind( Type::String )
         .optional( false )
         .end()
       .property( "gcp_region" )
-        .hint( "" )
+        .hint( "Google Cloud Platform region location. Default: `europe-central2` (Warsaw)" )
         .kind( Type::String )
-        .optional( false )
+        .optional( true )
         .end()
       .property( "gcp_artifact_repo_name" )
-        .hint( "" )
+        .hint( "Google Cloud Platform Artifact Repository to store docker image in. Will be generated from current directory name if unspecified." )
         .kind( Type::String )
         .optional( false )
         .end()
       .property( "docker_image_name" )
-        .hint( "" )
+        .hint( "Docker image name to build and deploy. Will be generated from current directory name if unspecified." )
         .kind( Type::String )
         .optional( false )
         .end()
@@ -203,13 +232,14 @@ crate::mod_interface!
   layer list;
   /// Publish packages.
   layer publish;
-  /// Generate tables
-  // qqq : for Petro : what a table??
+  /// Generates health table in main Readme.md file of workspace.
+  // aaa : for Petro : what a table??
+  // aaa : add more details to documentation
   layer readme_health_table_renew;
   /// Run all tests
   layer test;
   /// Generate workflow
-  layer workflow_renew;
+  layer cicd_renew;
   /// Workspace new
   layer workspace_renew;
   /// Deploy new

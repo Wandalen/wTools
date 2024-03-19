@@ -7,6 +7,7 @@ mod private
     path::Path,
     collections::HashSet,
   };
+  use std::ffi::OsString;
   use wtools::error::Result;
 
   /// The `Channel` enum represents different release channels for rust.
@@ -40,7 +41,13 @@ mod private
     P : AsRef< Path >,
   {
     let ( program, options ) = ( "rustup", [ "toolchain", "list" ] );
-    let report = process::run(program, options, path )?;
+    let options =
+    process::Run::former()
+    .application( program )
+    .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+    .path( path.as_ref().to_path_buf() )
+    .form();
+    let report = process::run( options ).map_err( | ( report, err ) | err.context( report ) )?;
 
     let list = report
     .out

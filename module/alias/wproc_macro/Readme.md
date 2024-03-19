@@ -8,7 +8,7 @@ Tools for writing procedural macros.
 
 ### Basic use-case
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ```rust
 use wproc_macro::*;

@@ -1,5 +1,14 @@
 use super::*;
 
+#[ cfg( feature = "use_alloc" ) ]
+extern crate alloc;
+#[ cfg( feature = "use_alloc" ) ]
+#[ allow( unused_imports ) ]
+use alloc::vec::Vec;
+#[ cfg( not( feature = "no_std" ) ) ]
+#[ allow( unused_imports ) ]
+use std::vec::Vec;
+
 /// Trait for containers that behave like a vector, providing an interface for element addition.
 ///
 /// This trait enables the use of custom or standard vector-like containers within the builder pattern,
@@ -8,14 +17,14 @@ use super::*;
 pub trait VectorLike< E >
 {
   /// Appends an element to the back of a container.
-  fn push( &mut self, e : E );
+  fn push( &mut self, element : E );
 }
 
-impl< E > VectorLike< E > for std::vec::Vec< E >
+impl< E > VectorLike< E > for Vec< E >
 {
-  fn push( &mut self, e : E )
+  fn push( &mut self, element : E )
   {
-    std::vec::Vec::push( self, e );
+    Vec::push( self, element );
   }
 }
 
@@ -63,7 +72,7 @@ where
 
   /// Form current former into target structure.
   #[ inline( always ) ]
-  fn form( mut self ) -> Container
+  pub fn form( mut self ) -> Container
   {
     let container = if self.container.is_some()
     {
@@ -77,22 +86,22 @@ where
     container
   }
 
-  /// Initializes a new `VectorSubformer` instance, starting with an empty container.
-  /// This function serves as the entry point for the builder pattern.
-  ///
-  /// # Returns
-  /// A new instance of `VectorSubformer` with an empty internal container.
-  ///
-  #[ inline( always ) ]
-  pub fn new() -> VectorSubformer< E, Container, Container, impl ToSuperFormer< Container, Container > >
-  {
-    VectorSubformer::begin
-    (
-      None,
-      None,
-      crate::ReturnContainer,
-    )
-  }
+  // /// Initializes a new `VectorSubformer` instance, starting with an empty container.
+  // /// This function serves as the entry point for the builder pattern.
+  // ///
+  // /// # Returns
+  // /// A new instance of `VectorSubformer` with an empty internal container.
+  // ///
+  // #[ inline( always ) ]
+  // pub fn new() -> VectorSubformer< E, Container, Container, impl ToSuperFormer< Container, Container > >
+  // {
+  //   VectorSubformer::begin
+  //   (
+  //     None,
+  //     None,
+  //     crate::ReturnContainer,
+  //   )
+  // }
 
   /// Begins the building process, optionally initializing with a context and container.
   #[ inline( always ) ]
@@ -109,10 +118,6 @@ where
       container,
       on_end : Some( on_end ),
       _phantom : core::marker::PhantomData,
-      // context,
-      // container,
-      // on_end,
-      // _phantom : core::marker::PhantomData,
     }
   }
 
@@ -136,6 +141,30 @@ where
 
 }
 
+impl< E, Container > VectorSubformer< E, Container, Container, crate::ReturnContainer >
+where
+  Container : VectorLike< E > + core::default::Default,
+{
+
+  /// Initializes a new `VectorSubformer` instance, starting with an empty container.
+  /// This function serves as the entry point for the builder pattern.
+  ///
+  /// # Returns
+  /// A new instance of `VectorSubformer` with an empty internal container.
+  ///
+  #[ inline( always ) ]
+  pub fn new() -> Self
+  {
+    Self::begin
+    (
+      None,
+      None,
+      crate::ReturnContainer,
+    )
+  }
+
+}
+
 impl< E, Container, Context, ContainerEnd > VectorSubformer< E, Container, Context, ContainerEnd >
 where
   Container : VectorLike< E > + core::default::Default,
@@ -144,7 +173,7 @@ where
 
   /// Appends an element to the end of the container, expanding the internal collection.
   #[ inline( always ) ]
-  pub fn push< E2 >( mut self, e : E2 ) -> Self
+  pub fn push< E2 >( mut self, element : E2 ) -> Self
   where E2 : core::convert::Into< E >,
   {
     if self.container.is_none()
@@ -153,7 +182,7 @@ where
     }
     if let core::option::Option::Some( ref mut container ) = self.container
     {
-      container.push( e.into() );
+      container.push( element.into() );
     }
     self
   }

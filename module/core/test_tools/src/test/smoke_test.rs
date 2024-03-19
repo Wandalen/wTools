@@ -3,17 +3,14 @@
 //! Smoke test checking health of a module.
 //!
 
-// use super::*;
-
-// #![ allow( dead_code ) ]
-
 // qqq : does not work in parallel, fix
-// qqq : make it a command of willbe
+// qqq : make a command for willbe
 
 /// Internal namespace.
 #[ cfg( not( feature = "no_std" ) ) ]
 pub( crate ) mod private
 {
+  use process_tools::environment;
 
   /// Context for smoke testing of a module.
   #[ derive( Debug ) ]
@@ -105,6 +102,8 @@ pub( crate ) mod private
       /* create binary test module */
       let test_name = format!( "{}{}", self.dependency_name, self.test_postfix );
       // println!( "test_name:{test_name}" );
+
+      // dbg!( &test_path );
 
       let output = std::process::Command::new( "cargo" )
       .current_dir( &test_path )
@@ -212,22 +211,6 @@ pub( crate ) mod private
 
   }
 
-  //
-  //   index!
-  //   {
-  //
-  //     new,
-  //     version,
-  //     local_path_clause,
-  //     code,
-  //     form,
-  //     perform,
-  //     clean,
-  //
-  //   }
-  //
-  //
-
   /// Run smoke test for the module.
 
   pub fn smoke_test_run( local : bool )
@@ -241,22 +224,9 @@ pub( crate ) mod private
     };
     println!( "smoke_test_run module_name:{module_name} module_path:{module_path}" );
 
-    // let mut code_path = std::path::PathBuf::from( module_path.clone() );
-    // code_path.push( "rust" );
-    // code_path.push( "test" );
-    // code_path.push( if module_name.starts_with( "w" ) { &module_name[ 1.. ] } else { module_name.as_str() } );
-    // code_path.push( "_asset" );
-    // code_path.push( "smoke.rs" );
-
     let mut t = SmokeModuleTest::new( module_name.as_str() );
     t.test_postfix( test_name );
     t.clean( true ).unwrap();
-    // let data;
-    // if code_path.exists()
-    // {
-    //   data = std::fs::read_to_string( code_path ).unwrap();
-      // t.code( data );
-    // }
 
     t.version( "*" );
     if local
@@ -296,7 +266,8 @@ pub( crate ) mod private
     else
     {
       // qqq : xxx : use is_cicd() and return false if false
-      true
+      // true
+      environment::is_cicd()
     };
     if run
     {
@@ -322,8 +293,9 @@ pub( crate ) mod private
     }
     else
     {
+      environment::is_cicd()
       // qqq : xxx : use is_cicd() and return false if false
-      true
+      // true
     };
     if run
     {
@@ -338,6 +310,9 @@ pub( crate ) mod private
 #[ cfg( not( feature = "no_std" ) ) ]
 crate::mod_interface!
 {
+
+  // exposed use super;
+  exposed use super::super::smoke_test;
 
   exposed use SmokeModuleTest;
   exposed use smoke_test_run;

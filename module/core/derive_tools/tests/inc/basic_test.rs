@@ -10,7 +10,7 @@ tests_impls!
   #[ cfg( all( feature = "derive_from", feature = "derive_inner_from", feature = "derive_display", feature = "derive_from_str" ) ) ]
   fn samples()
   {
-    use TheModule::*;
+    use the_module::*;
 
     // xxx : qqq : make it working
     #[ derive( From, InnerFrom, Display, FromStr, PartialEq, Debug ) ]
@@ -52,7 +52,7 @@ tests_impls!
   #[ cfg( all( feature = "derive_from", feature = "derive_inner_from", feature = "derive_display" ) ) ]
   fn basic()
   {
-    use TheModule::*;
+    use the_module::*;
 
     #[ derive( From, InnerFrom, Display ) ]
     #[ display( "{a}-{b}" ) ]
@@ -84,7 +84,7 @@ tests_impls!
   #[ cfg( all( feature = "strum", feature = "strum_derive" ) ) ]
   fn enum_with_strum()
   {
-    use TheModule::*;
+    use the_module::*;
 
     #[ derive( EnumIter, Debug, PartialEq ) ]
     enum Foo

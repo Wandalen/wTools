@@ -11,7 +11,7 @@
 // #![ cfg_attr( RUSTC_IS_NIGHTLY, feature( type_name_of_val ) ) ]
 
 #[ allow( unused_imports ) ]
-use inspect_type as TheModule;
+use inspect_type as the_module;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 

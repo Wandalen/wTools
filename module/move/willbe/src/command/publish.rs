@@ -31,7 +31,8 @@ mod private
 
         if dry && report.packages.iter().find( |( _, p )| p.publish_required ).is_some()
         {
-          println!( "To perform actual publishing, call the command with `dry : 0` property." )
+          println!( "To apply plan, call the command `will .publish dry:0`" )
+          // qqq : for Petro : for Bohdan : bad. should be exact command with exact parameters
         }
 
         Ok( () )

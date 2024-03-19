@@ -8,7 +8,7 @@ Tools for writing procedural macros.
 
 ### Basic use-case
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ```rust ignore
 use proc_macro_tools::*;

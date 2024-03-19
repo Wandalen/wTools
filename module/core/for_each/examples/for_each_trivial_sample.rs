@@ -1,5 +1,4 @@
-//! example
-
+//! qqq : write proper description
 use for_each::for_each;
 
 fn main()

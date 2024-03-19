@@ -1,9 +1,8 @@
-//! example
-
-#[ cfg( feature = "no_std" ) ]
+//! qqq : write proper description
+#[ cfg( not( feature = "enabled" ) ) ]
 fn main(){}
 
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( feature = "enabled" ) ]
 fn main()
 {
   use macro_tools::{ typ, qt };

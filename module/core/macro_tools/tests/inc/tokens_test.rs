@@ -7,11 +7,11 @@ use super::*;
 fn tokens()
 {
 
-  let got : TheModule::Tokens = syn::parse_quote!( a = b );
+  let got : the_module::Tokens = syn::parse_quote!( a = b );
   // tree_print!( got );
   a_id!( got.to_string(), "a = b".to_string() );
 
-  let got : TheModule::Tokens = syn::parse_quote!( #[ former( default = 31 ) ] );
+  let got : the_module::Tokens = syn::parse_quote!( #[ former( default = 31 ) ] );
   // tree_print!( got );
   a_id!( got.to_string(), "# [former (default = 31)]".to_string() );
 
@@ -23,7 +23,7 @@ fn tokens()
 fn equation()
 {
 
-  let got : TheModule::Equation = syn::parse_quote!( default = 31 );
+  let got : the_module::Equation = syn::parse_quote!( default = 31 );
   tree_print!( got );
   a_id!( code_to_str!( got ), "default = 31".to_string() );
 

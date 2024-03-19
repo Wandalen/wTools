@@ -57,7 +57,7 @@ mod private
   ///
   /// * The key is `PackageName`, referring to the name of each package.
   ///
-  /// * The value is `HashSet<PackageName>`, representing a unique collection of names of its dependencies.
+  /// * The value is `HashSet< PackageName >`, representing a unique collection of names of its dependencies.
   ///
   /// # Filters
   ///

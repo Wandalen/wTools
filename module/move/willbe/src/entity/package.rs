@@ -284,19 +284,19 @@ mod private
   pub struct PublishReport
   {
     /// Retrieves information about the package.
-    pub get_info : Option< process::CmdReport >,
+    pub get_info : Option< process::Report >,
     /// Indicates whether publishing is required for the package.
     pub publish_required : bool,
     /// Bumps the version of the package.
     pub bump : Option< ExtendedBumpReport >,
     /// Report of adding changes to the Git repository.
-    pub add : Option< process::CmdReport >,
+    pub add : Option< process::Report >,
     /// Report of committing changes to the Git repository.
-    pub commit : Option< process::CmdReport >,
+    pub commit : Option< process::Report >,
     /// Report of pushing changes to the Git repository.
-    pub push : Option< process::CmdReport >,
+    pub push : Option< process::Report >,
     /// Report of publishes the package using the `cargo publish` command.
-    pub publish : Option< process::CmdReport >,
+    pub publish : Option< process::Report >,
   }
 
   impl std::fmt::Display for PublishReport
@@ -425,13 +425,13 @@ mod private
     let temp_dir = args.base_temp_dir.as_ref().map
     (
       | p |
-        {
-          let path = p.join( package_dir.as_ref().file_name().unwrap() );
-          std::fs::create_dir_all( &path ).unwrap();
-          path
-        }
+      {
+        let path = p.join( package_dir.as_ref().file_name().unwrap() );
+        std::fs::create_dir_all( &path ).unwrap();
+        path
+      }
     );
-    
+
     let pack_args = cargo::PackOptions::former()
     .path( package_dir.absolute_path().as_ref().to_path_buf() )
     .option_temp_path( temp_dir.clone() )
@@ -504,9 +504,9 @@ mod private
       report.commit = Some( res );
       let res = git::push( package_dir, args.dry ).map_err( | e | ( report.clone(), e ) )?;
       report.push = Some( res );
-      
+
       let res = cargo::publish
-      ( 
+      (
         cargo::PublishOptions::former()
         .path( package_dir.absolute_path().as_ref().to_path_buf() )
         .option_temp_path( temp_dir )

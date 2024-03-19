@@ -90,7 +90,7 @@ pub( crate ) mod private
     /// Constructs a `CommandBuilder` with the given state.
     pub fn with_state( state : T ) -> Self
     {
-      Self { state, handlers : <_>::default(), commands : vec![] }
+      Self { state, handlers : < _ >::default(), commands : vec![] }
     }
   }
 

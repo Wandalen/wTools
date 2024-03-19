@@ -6,6 +6,25 @@
 
 // xxx : write good description and the main use-case
 
+// xxx : does not work. make it working
+// use super::test::{ compiletime, helper, smoke_test };
+
+// // xxx : eliminate need to do such things, putting itself to proper category
+// exposed use super::test::compiletime;
+// exposed use super::test::helper;
+// exposed use super::test::smoke_test;
+
+// crate::mod_interface!
+// {
+//   // xxx : make it working
+//   // exposed use super;
+//   exposed use super::super::compiletime;
+//   protected use
+//   {
+//     *
+//   };
+// }
+
 mod impls;
 #[ allow( unused_imports ) ]
 use impls::exposed::*;

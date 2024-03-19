@@ -226,117 +226,10 @@ pub( crate ) mod private
 
   }
 
-//   #[ macro_export ]
-//   macro_rules! impls2
-//   {
-//
-//     (
-//       @SINGLE_FN1
-//       $( $Token : tt )*
-//     )
-//     =>
-//     {
-//       $crate::impls2!( @SINGLE_FN2 $( $Token )* )
-//     };
-//
-//     (
-//       @SINGLE_FN2
-//       $( #[ $Meta : meta ] )*
-//       $Vis : vis
-//       fn $Name : ident
-//       $( $Rest : tt )*
-//     )
-//     =>
-//     {
-//       compile_error!("yyy");
-//       $crate::impls2!
-//       {
-//         @DefineFn
-//         @Meta{ $( #[ $Meta ] )* }
-//         @Vis{ $Vis }
-//         @Name{ $Name }
-//         @BEFORE_Name
-//         {
-//           $( #[ $Meta ] )*
-//           $Vis fn
-//         }
-//         @AFTER_Name
-//         {
-//           $( $Rest : tt )*
-//         }
-//       }
-//     };
-//
-//     (
-//       @DefineFn
-//       @Meta{ $( #[ $Meta : meta ] )* }
-//       @Vis{ $Vis : vis }
-//       @Name{ $Name : ident }
-//       @BEFORE_Name
-//       {
-//         $( $Before : tt )*
-//       }
-//       @AFTER_Name
-//       {
-//         $( $After : tt )*
-//       }
-//     )
-//     =>
-//     {
-//       // #[ deny( unused_macros ) ]
-//       macro_rules! $Name
-//       {
-//         () =>
-//         {
-//           $Before
-//           $Name
-//           $After
-//         };
-//         // ( @AS $Name : ident ) =>
-//         // {
-//         //   $( #[ $Meta ] )*
-//         //   fn $Name
-//         // };
-//       }
-//     };
-//
-//     (
-//       $( $Item : item )+
-//     )
-//     =>
-//     {
-//       $( $crate::impls2!( @SINGLE_FN1 $Item ) )+
-//     };
-//
-//   }
-
-//   ///
-//   /// Index of items.
-//   ///
-//
-//   #[ macro_export ]
-//   macro_rules! ignore_macro
-//   {
-//
-//     () => {};
-//
-//     (
-//       $Name : ident ,
-//       $( $Rest : tt )*
-//     )
-//     =>
-//     {
-//       $Name!();
-//       stringify!( $crate::index!( $( $Rest )* ) );
-//     };
-//
-//   }
-
   pub use fn_rename;
   pub use fn_name;
   pub use fns;
   pub use fns2;
-  // pub use ignore_macro;
 }
 
 /// Exposed namespace of the module.
@@ -346,7 +239,6 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 }
-
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude

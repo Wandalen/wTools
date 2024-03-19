@@ -5,7 +5,7 @@ use macro_tools::{ attr, diag, generics, container_kind, typ, Result };
 use proc_macro2::TokenStream;
 
 ///
-/// Descripotr of a field.
+/// Descriptor of a field.
 ///
 
 #[ allow( dead_code ) ]
@@ -24,6 +24,7 @@ struct FormerField< 'a >
 ///
 /// Attributes of the field.
 ///
+
 struct Attributes
 {
   default : Option< AttributeDefault >,
@@ -44,7 +45,7 @@ impl Attributes
     for attr in attributes
     {
       let key_ident = attr.path().get_ident()
-      .ok_or_else( || syn_err!( attr, "Expects an attirbute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ) )?;
+      .ok_or_else( || syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ) )?;
       let key_str = format!( "{}", key_ident );
       match key_str.as_ref()
       {
@@ -56,7 +57,7 @@ impl Attributes
             {
               default.replace( syn::parse2::< AttributeDefault >( meta_list.tokens.clone() )? );
             },
-            _ => return_syn_err!( attr, "Expects an attirbute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
+            _ => return_syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
           }
         }
         "setter" =>
@@ -67,7 +68,7 @@ impl Attributes
             {
               setter.replace( syn::parse2::< AttributeSetter >( meta_list.tokens.clone() )? );
             },
-            _ => return_syn_err!( attr, "Expects an attirbute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
+            _ => return_syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
           }
           // let attr_setter = syn::parse2::< AttributeSetter >( attr.tokens.clone() )?;
           // setter.replace( attr_setter );
@@ -80,7 +81,7 @@ impl Attributes
             {
               subformer.replace( syn::parse2::< AttributeFormer >( meta_list.tokens.clone() )? );
             },
-            _ => return_syn_err!( attr, "Expects an attirbute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
+            _ => return_syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
           }
           // let attr_former = syn::parse2::< AttributeFormer >( attr.tokens.clone() )?;
           // subformer.replace( attr_former );
@@ -93,7 +94,7 @@ impl Attributes
             {
               alias.replace( syn::parse2::< AttributeAlias >( meta_list.tokens.clone() )? );
             },
-            _ => return_syn_err!( attr, "Expects an attirbute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
+            _ => return_syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
           }
           // let attr_alias = syn::parse2::< AttributeAlias >( attr.tokens.clone() )?;
           // alias.replace( attr_alias );
@@ -115,7 +116,7 @@ impl Attributes
 ///
 /// Attribute to hold information about method to call after form.
 ///
-/// `#[ perform = ( fn after1< 'a >() -> Option< &'a str > ) ]`
+/// `#[ perform( fn after1< 'a >() -> Option< &'a str > ) ]`
 ///
 
 #[ allow( dead_code ) ]
@@ -168,13 +169,12 @@ impl syn::parse::Parse for AttributeDefault
   }
 }
 
-// qqq : make sure that documentation for each entity is up to date
-
 ///
 /// Attribute to enable/disable setter generation.
 ///
-/// `#[ setter = false ]`
+/// `#[ setter( false ) ]`
 ///
+
 #[ allow( dead_code ) ]
 struct AttributeSetter
 {
@@ -198,8 +198,10 @@ impl syn::parse::Parse for AttributeSetter
 
 ///
 /// Attribute to enable/disable former generation.
+/// Also known as subformers, used for aggregation relationship, when a struct holds another struct, which needs to be build by invoking multiple methods
+/// Typical example is a struct holding a `Vec`
 ///
-/// `#[ former( former::VectorSubformer ) ]`
+/// `#[ subformer( former::VectorSubformer ) ]`
 ///
 
 #[ allow( dead_code ) ]
@@ -274,9 +276,11 @@ fn parameter_internal_first( ty : &syn::Type ) -> Result< &syn::Type >
 ///
 /// Generate fields for initializer of a struct setting each field to `None`.
 ///
+/// Used for initializing a Container, where on initialization all fields are None. User can alter them through builder pattern
+///
 /// ### Basic use-case. of output
 ///
-/// ```compile_fail
+/// ```ignore
 /// int_1 : core::option::Option::None,
 /// string_1 : core::option::Option::None,
 /// int_optional_1 : core::option::Option::None,
@@ -299,9 +303,11 @@ fn field_none_map( field : &FormerField< '_ > ) -> TokenStream
 ///
 /// Generate field of the former for a field of the structure
 ///
+/// Used to generate a Container
+///
 /// ### Basic use-case. of output
 ///
-/// ```compile_fail
+/// ```ignore
 /// pub int_1 : core::option::Option< i32 >,
 /// pub string_1 : core::option::Option< String >,
 /// pub int_optional_1 :  core::option::Option< i32 >,
@@ -335,17 +341,33 @@ fn field_optional_map( field : &FormerField< '_ > ) -> TokenStream
 ///
 /// Generate code converting a field of the former to the field of the structure.
 ///
-/// ### Example of generated code
+/// In simple terms, used on `form()` call to unwrap contained values from the former's container.
+/// Will try to use default values if no values supplied by the former and the type implements `Default` trait.
+///
+/// ### Generated code will look similar to this :
 ///
 /// ```ignore
-/// let int_1 = if self.container.int_1.is_some()
+/// let int_1 : i32 = if self.container.int_1.is_some()
 /// {
+///   // if int_1 is optional
+///   Some( self.container.int_1.take().unwrap() )
+///
+///   // if int_1 isn't optional
 ///   self.container.int_1.take().unwrap()
 /// }
 /// else
 /// {
-///   let val : i32 = core::default::Default::default();
-///   val
+///   // if int_1 is optional and has default
+///   Some( i32::default().into() )
+///
+///   // if int_1 is optional and doesn't have default
+///   None
+///
+///   // if int_1 isn't optional and has default
+///   i32::default().into()
+///
+///   // if int_1 isn't optional and hasn't default
+///   panic!( "Field 'int_1' isn't initialized" )
 /// };
 /// ```
 ///
@@ -361,19 +383,22 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
   let tokens = if field.is_optional
   {
 
-    let _else = if default == None
+    let _else = match default
     {
-      qt!
+      None =>
       {
-        ::core::option::Option::None
+        qt!
+        {
+          ::core::option::Option::None
+        }
       }
-    }
-    else
-    {
-      let default_val = default.unwrap();
-      qt!
+
+      Some( default_val ) =>
       {
-        ::core::option::Option::Some( ( #default_val ).into() )
+        qt!
+        {
+          ::core::option::Option::Some( ( #default_val ).into() )
+        }
       }
     };
 
@@ -393,50 +418,47 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
   else
   {
 
-    let _else = if default == None
+    let _else = match default
     {
-      // qqq : document, explain why and add example of generated code. if possible to improve -- suggest improvements
-      let panic_msg = format!( "Field '{}' isn't initialized", ident );
-      qt!
+      None =>
       {
-        let val : #ty =
+        let panic_msg = format!( "Field '{}' isn't initialized", ident );
+        qt!
         {
-          // Autoref specialization
-          trait NotDefault< T >
           {
-            fn maybe_default( self : &Self ) -> T { panic!( #panic_msg ) }
-          }
-
-          trait WithDefault< T >
-          {
-            fn maybe_default( self : &Self ) -> T;
-          }
-
-          impl< T > NotDefault< T >
-          for & ::core::marker::PhantomData< T >
-          {}
-
-          impl< T > WithDefault< T >
-          for ::core::marker::PhantomData< T >
-          where T : ::core::default::Default,
-          {
-            fn maybe_default( self : &Self ) -> T
+            // By hardly utilizing deref coercion, we achieve conditional trait implementation
+            trait MaybeDefault< T >
             {
-              T::default()
+              fn maybe_default( self : &Self ) -> T { panic!( #panic_msg ) }
             }
-          }
 
-          ( &::core::marker::PhantomData::< #ty > ).maybe_default()
-        };
-        // qqq : test that and document example of generated code
+            // Panic on non-`Default` types
+            impl< T > MaybeDefault< T >
+            for &::core::marker::PhantomData< T >
+            {}
+
+            // Return default value on `Default`` types
+            impl< T > MaybeDefault< T >
+            for ::core::marker::PhantomData< T >
+            where T : ::core::default::Default,
+            {
+              fn maybe_default( self : &Self ) -> T
+              {
+                T::default()
+              }
+            }
+
+            // default if `impl Default`, otherwise - panic
+            ( &::core::marker::PhantomData::< #ty > ).maybe_default()
+          }
+        }
       }
-    }
-    else
-    {
-      let default_val = default.unwrap();
-      qt!
+      Some( default_val ) =>
       {
-        let val : #ty = ( #default_val ).into();
+        qt!
+        {
+          ( #default_val ).into()
+        }
       }
     };
 
@@ -449,7 +471,6 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
       else
       {
         #_else
-        val
       };
     }
 
@@ -471,11 +492,24 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 ///
 /// Generate a former setter for the field.
 ///
+/// If aliases provided, also generate aliases
+///
 /// # Example of output
 /// ```ignore
-/// #[ doc = "Setter for the 'name' field." ]
+/// #[ doc = "Setter for the 'int_1' field." ]
 /// #[ inline ]
 /// pub fn int_1< Src >( mut self, src : Src ) -> Self
+/// where
+///   Src : ::core::convert::Into< i32 >,
+/// {
+///   debug_assert!( self.int_1.is_none() );
+///   self.container.int_1 = ::core::option::Option::Some( src.into() );
+///   self
+/// }
+///
+/// /// #[ doc = "Setter for the 'int_1' field." ]
+/// #[ inline ]
+/// pub fn int_1_alias< Src >( mut self, src : Src ) -> Self
 /// where
 ///   Src : ::core::convert::Into< i32 >,
 /// {
@@ -530,8 +564,23 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< TokenStream >
 }
 
 ///
-/// Generate a setter for the 'field_ident' with the 'setter_name' name.
+/// Generate a single setter for the 'field_ident' with the 'setter_name' name.
 ///
+/// Used as a helper function for field_setter_map(), which generates all alias setters
+///
+/// # Example of output
+/// ```ignore
+/// #[ doc = "Setter for the 'int_1' field." ]
+/// #[ inline ]
+/// pub fn int_1< Src >( mut self, src : Src ) -> Self
+/// where
+///   Src : ::core::convert::Into< i32 >,
+/// {
+///   debug_assert!( self.int_1.is_none() );
+///   self.container.int_1 = ::core::option::Option::Some( src.into() );
+///   self
+/// }
+/// ```
 
 #[ inline ]
 fn field_setter
@@ -662,7 +711,7 @@ pub struct Struct1
   (
 r#" Object to form [{}]. If field's values is not set then default value of the field is set.
 
-For specifing custom default value use attribute `default`. For example:
+For specifying custom default value use attribute `default`. For example:
 ```
 {}
 ```
@@ -674,6 +723,22 @@ For specifing custom default value use attribute `default`. For example:
 }
 
 //
+
+///
+/// Generate parts, used for generating `perform()`` method.
+///
+/// Similar to `form()`, but will also invoke function from `perform` attribute, if specified.
+///
+/// # Example of returned tokens :
+///
+/// ## perform :
+/// return result;
+///
+/// ## perform_output :
+/// <T: Default>
+///
+/// ## perform_generics :
+/// Vec<T>
 
 pub fn performer< 'a >
 (
@@ -718,7 +783,7 @@ pub fn performer< 'a >
               return result.#perform_ident();
             };
           },
-          _ => return_syn_err!( attr, "Expects an attirbute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
+          _ => return_syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
         }
       }
     }
@@ -733,6 +798,12 @@ pub fn performer< 'a >
 
 //
 
+///
+/// Generate the whole Former ecosystem
+///
+/// Output examples can be found in [docs to former crate](https://docs.rs/former/latest/former/)
+///
+
 pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 {
 
@@ -743,6 +814,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     Err( err ) => return Err( err ),
   };
   let has_debug = attr::has_debug( ast.attrs.iter() )?;
+  let example_of_custom_setter = false;
 
 
   /* names */
@@ -850,7 +922,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
     }
 
-    #[ doc = "Container of a correcsponding former." ]
+    #[ doc = "Container of a corresponding former." ]
     pub struct #former_container_name_ident #generics_ty
     #generics_where
     {
@@ -893,7 +965,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       ///
       /// Finish setting options and return formed entity.
       ///
-      /// `perform` has no effect on method `form`, but change behavior and returned type of mehod `perform`.
+      /// `perform` has no effect on method `form`, but change behavior and returned type of method `perform`.
       ///
       #[ inline( always ) ]
       pub fn form( mut self ) -> #name_ident #generics_ty
@@ -931,6 +1003,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
           former::ReturnContainer,
         )
       }
+      // xxx : should be stand-alone. look VectorSubformer
 
       ///
       /// Begin the process of forming. Expects context of forming to return it after forming.
@@ -972,7 +1045,27 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   if has_debug
   {
-    diag::debug_report_print( original_input, &result );
+    diag::debug_report_print( "derive : Former", original_input, &result );
+  }
+
+  if example_of_custom_setter
+  {
+    let _example =
+r#"
+impl< FormerContext, FormerEnd > UserProfileFormer< FormerContext, FormerEnd >
+where
+  FormerEnd : former::ToSuperFormer< UserProfile, FormerContext >,
+{
+  pub fn age< Src >( mut self, src : Src ) -> Self
+  where
+    Src : Into< i32 >,
+  {
+    debug_assert!( self.age.is_none() );
+    self.container.age = ::core::option::Option::Some( src.into() );
+    self
+  }
+}
+"#;
   }
 
   Ok( result )

@@ -1,6 +1,6 @@
 [package]
 name = "former_meta"
-version = "0.7.0"
+version = "0.12.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -23,27 +23,44 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
 
-default = [ "enabled", "derive_former", "derive_component_from", "derive_set_component" ]
-full = [ "enabled", "derive_former", "derive_component_from", "derive_set_component" ]
-enabled = [ "former/enabled" ]
+default = [
+  "enabled",
+  "derive_former",
+  "derive_components",
+  "derive_component_from",
+  "derive_component_assign",
+  "derive_components_assign",
+  "derive_from_components",
+]
+full = [
+  "enabled",
+  "derive_former",
+  "derive_components",
+  "derive_component_from",
+  "derive_component_assign",
+  "derive_components_assign",
+  "derive_from_components",
+]
+enabled = [ "macro_tools/enabled", "iter_tools/enabled" ]
 
-derive_former = [ "former/derive_former" ]
-derive_component_from = [ "former/derive_component_from" ]
-derive_set_component = [ "former/derive_set_component" ]
+derive_former = []
+derive_components = []
+derive_component_assign = []
+derive_components_assign = [ "derive_components", "derive_component_assign", "convert_case" ]
+derive_component_from = [ "derive_components" ]
+derive_from_components = [ "derive_components" ]
 
 [lib]
 proc-macro = true
 
 [dependencies]
-macro_tools = { workspace = true, features = [ "default" ] }
-iter_tools = { workspace = true, features = [ "default" ] }
-
-# xxx : optimize features set
+macro_tools = { workspace = true }
+iter_tools = { workspace = true }
+convert_case = { version = "0.6.0", default-features = false, optional = true, features = [] }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }
-former = { workspace = true }
+former = { workspace = true, features = [ "full" ] }

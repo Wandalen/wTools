@@ -18,7 +18,8 @@ pub mod wtools;
 // use derive_tools_meta::Deref;
 // use derive_tools_meta::VariadicFrom;
 
-/// Dependencies.
+/// Namespace with dependencies.
+
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {

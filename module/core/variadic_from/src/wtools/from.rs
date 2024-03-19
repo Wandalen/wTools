@@ -265,7 +265,7 @@ pub( crate ) mod private
   /// ``` shell test
   /// git clone https://github.com/Wandalen/wTools
   /// cd wTools
-  /// cd examples/type_constructor_trivial_sample
+  /// cd examples/type_constructor_trivial
   /// cargo run
   /// ```
 
