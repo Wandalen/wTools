@@ -46,25 +46,37 @@ pub async fn list_columns
   {
     "feed" =>
     {
-      table_description = String::from( "Table contains information about feed." );
+      table_description = String::from( "Contains feed items." );
       
       for label in columns.get( "feed" ).unwrap()
       {
         match label.as_str()
         {
-          "id" => { columns_desc.insert( label.clone(), String::from( "A unique identifier for this feed" ) ); }
+          "link" => { columns_desc.insert
+            (
+              label.clone(),
+              String::from( "Link to feed source, unique identifier for the feed" ),
+            ); }
           "title" => { columns_desc.insert( label.clone(), String::from( "The title of the feed" ) ); }
           "updated" => 
           {
             columns_desc.insert( label.clone(), String::from
             (
-              "The time at which the feed was last modified. If not provided in the source, or invalid, it is None."
+              "The time at which the feed was last modified. If not provided in the source, or invalid, is Null."
             ) );
           },
           "type" => { columns_desc.insert( label.clone(), String::from( "Type of this feed (e.g. RSS2, Atom etc)" ) ); }
-          "authors" => { columns_desc.insert( label.clone(), String::from( "Collection of authors defined at the feed level" ) ); }
+          "authors" => { columns_desc.insert
+            (
+              label.clone(),
+              String::from( "Collection of authors defined at the feed level" )
+            ); }
           "description" => { columns_desc.insert( label.clone(), String::from( "Description of the feed" ) ); }
-          "published" => { columns_desc.insert( label.clone(), String::from( "The publication date for the content in the channel" ) ); }
+          "published" => { columns_desc.insert
+            (
+              label.clone(),
+              String::from( "The publication date for the content in the channel" ),
+            ); }
           "update_period" => { columns_desc.insert( label.clone(), String::from( "How often this feed must be updated" ) ); }
           _ => { columns_desc.insert( label.clone(), String::from( "Desciption for this column hasn't been added yet!" ) ); }
         }
@@ -72,30 +84,32 @@ pub async fn list_columns
     },
     "frame" =>
     {
+      table_description = String::from( "Contains frame items." );
       for label in columns.get( "frame" ).unwrap()
       {
         match label.as_str()
         {
           "id" => { columns_desc.insert( label.clone(), String::from( "A unique identifier for this frame in the feed. " ) ); },
-          "title" => { columns_desc.insert( label.clone(), String::from("Title of the frame" ) ); },
-          "updated" => { columns_desc.insert( label.clone(), String::from("Time at which this item was fetched from source." ) ); },
-          "authors" => { columns_desc.insert( label.clone(), String::from("List of authors of the frame, optional." ) ); },
-          "content" => { columns_desc.insert( label.clone(), String::from("The content of the frame in html or plain text, optional." ) ); },
-          "links" => { columns_desc.insert( label.clone(), String::from("List of links associated with this item of related Web page and attachments." ) ); },
-          "summary" => { columns_desc.insert( label.clone(), String::from("Short summary, abstract, or excerpt of the frame item, optional." ) ); },
-          "categories" => { columns_desc.insert( label.clone(), String::from("Specifies a list of categories that the item belongs to." ) ); },
-          "published" => { columns_desc.insert( label.clone(), String::from("Time at which this item was first published or updated." ) ); },
-          "source" => { columns_desc.insert( label.clone(), String::from("Specifies the source feed if the frame was copied from one feed into another feed, optional." ) ); },
+          "title" => { columns_desc.insert( label.clone(), String::from( "Title of the frame" ) ); },
+          "updated" => { columns_desc.insert( label.clone(), String::from( "Time at which this item was fetched from source." ) ); },
+          "authors" => { columns_desc.insert( label.clone(), String::from( "List of authors of the frame, optional." ) ); },
+          "content" => { columns_desc.insert( label.clone(), String::from( "The content of the frame in html or plain text, optional." ) ); },
+          "links" => { columns_desc.insert( label.clone(), String::from( "List of links associated with this item of related Web page and attachments." ) ); },
+          "summary" => { columns_desc.insert( label.clone(), String::from( "Short summary, abstract, or excerpt of the frame item, optional." ) ); },
+          "categories" => { columns_desc.insert( label.clone(), String::from( "Specifies a list of categories that the item belongs to." ) ); },
+          "published" => { columns_desc.insert( label.clone(), String::from( "Time at which this item was first published or updated." ) ); },
+          "source" => { columns_desc.insert( label.clone(), String::from( "Specifies the source feed if the frame was copied from one feed into another feed, optional." ) ); },
           "rights" => { columns_desc.insert( label.clone(), String::from( "Conveys information about copyrights over the feed, optional." ) ); },
-          "media" => { columns_desc.insert( label.clone(), String::from("List of media oblects, encountered in the frame, optional." ) ); },
-          "language" => { columns_desc.insert( label.clone(), String::from("The language specified on the item, optional." ) ); },
-          "feed_link" => { columns_desc.insert( label.clone(), String::from("Link of feed that contains this frame." ) ); },
+          "media" => { columns_desc.insert( label.clone(), String::from( "List of media oblects, encountered in the frame, optional." ) ); },
+          "language" => { columns_desc.insert( label.clone(), String::from( "The language specified on the item, optional." ) ); },
+          "feed_link" => { columns_desc.insert( label.clone(), String::from( "Link of feed that contains this frame." ) ); },
           _ => { columns_desc.insert( label.clone(), String::from( "Desciption for this column hasn't been added yet!" ) ); }
         }
       }
     }
     "config" =>
     {
+      table_description = String::from( "Contains paths to feed config files." );
       for label in columns.get( "config" ).unwrap()
       {
         match label.as_str()
@@ -150,11 +164,12 @@ impl std::fmt::Display for ColumnsReport
 {
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
-    write!( f, "Table name: {}", self.table_name )?;
-    writeln!( f, "{}", self.table_description )?;
+    writeln!( f, "Table name: {}", self.table_name )?;
+    writeln!( f, "Description: {}", self.table_description )?;
     
     if !self.columns.is_empty()
     {
+      writeln!( f, "Columns:" )?;
       let mut rows = Vec::new();
       for ( label, desc ) in &self.columns
       {
@@ -199,7 +214,7 @@ impl Report for ColumnsReport {}
 #[ derive( Debug ) ]
 pub struct TablesReport
 {
-  tables : std::collections::HashMap< String, Vec< String > >
+  tables : std::collections::HashMap< String, ( String, Vec< String > ) >
 }
 
 impl TablesReport
@@ -215,9 +230,16 @@ impl TablesReport
         for row in rows_vec
         {
           let table = String::from( row[ 0 ].clone() );
+          let table_description = match table.as_str()
+          {
+            "feed" => String::from( "Contains feed items." ),
+            "frame" => String::from( "Contains frame items." ),
+            "config" => String::from( "Contains paths to feed config files." ),
+            _ => String::new(),
+          };
           result.entry( table )
-          .and_modify( | vec : &mut Vec< String > | vec.push( String::from( row[ 1 ].clone() ) ) )
-          .or_insert( vec![ String::from( row[ 1 ].clone() ) ] )
+          .and_modify( | ( _, vec ) : &mut ( String, Vec< String > ) | vec.push( String::from( row[ 1 ].clone() ) ) )
+          .or_insert( ( table_description, vec![ String::from( row[ 1 ].clone() ) ] ) )
           ;
         }
       },
@@ -233,12 +255,11 @@ impl std::fmt::Display for TablesReport
   {
     writeln!( f, "Storage tables:" )?;
     let mut rows = Vec::new();
-    for ( table_name, columns ) in &self.tables
+    for ( table_name, ( desc, columns ) ) in &self.tables
     {
       let columns_str = if !columns.is_empty()
       {
-        let first = columns[ 0 ].clone();
-        columns.iter().skip( 1 ).fold( first, | acc, val | format!( "{}, {}", acc, val ) )
+        format!( "{};", columns.join( ", " ) )
       }
       else
       {
@@ -251,7 +272,8 @@ impl std::fmt::Display for TablesReport
         [
           EMPTY_CELL.to_owned(),
           table_name.to_owned(),
-          columns_str,
+          textwrap::fill( desc, 80 ),
+          textwrap::fill( &columns_str, 80 ),
         ]
       );
     }
@@ -262,6 +284,7 @@ impl std::fmt::Display for TablesReport
       [
         EMPTY_CELL.to_owned(),
         "name".to_owned(),
+       "description".to_owned(),
         "columns".to_owned(),
       ],
       rows,
@@ -276,44 +299,3 @@ impl std::fmt::Display for TablesReport
 }
 
 impl Report for TablesReport {}
-
-#[ derive( Debug ) ]
-pub struct FieldsReport
-{
-  pub fields_list : Vec< [ &'static str; 3 ] >,
-}
-
-impl std::fmt::Display for FieldsReport
-{
-
-  fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
-  {
-    let mut rows = Vec::new();
-    for field in &self.fields_list
-    {
-      rows.push( vec![ EMPTY_CELL.to_owned(), field[ 0 ].to_owned(), field[ 1 ].to_owned(), field[ 2 ].to_owned() ] );
-    }
-
-    let table = table_display::table_with_headers
-    (
-      vec!
-      [
-        EMPTY_CELL.to_owned(),
-        "name".to_owned(),
-        "type".to_owned(),
-        "explanation".to_owned(),
-      ],
-      rows
-    );
-
-    if let Some( table ) = table
-    {
-      writeln!( f, "Frames fields:" )?;
-      writeln!( f, "{}", table )?;
-    }
-
-    Ok( () )
-  }
-}
-
-impl Report for FieldsReport {}
