@@ -153,42 +153,41 @@ impl std::fmt::Display for ColumnsReport
     write!( f, "Table name: {}", self.table_name )?;
     writeln!( f, "{}", self.table_description )?;
     
-      if !self.columns.is_empty()
+    if !self.columns.is_empty()
+    {
+      let mut rows = Vec::new();
+      for ( label, desc ) in &self.columns
       {
-        let mut rows = Vec::new();
-        for ( label, desc ) in &self.columns
-        {
-          rows.push
-          (
-            vec!
-            [
-              EMPTY_CELL.to_owned(),
-              label.clone(),
-              desc.clone(),
-            ]
-          );
-        }
-        let table = table_display::table_with_headers
+        rows.push
         (
           vec!
           [
             EMPTY_CELL.to_owned(),
-            "label".to_owned(),
-            "description".to_owned(),
-          ],
-          rows,
+            label.clone(),
+            desc.clone(),
+          ]
         );
+      }
+      let table = table_display::table_with_headers
+      (
+        vec!
+        [
+          EMPTY_CELL.to_owned(),
+          "label".to_owned(),
+          "description".to_owned(),
+        ],
+        rows,
+      );
 
-        if let Some( table ) = table
-        {
-          writeln!( f, "{}", table )?;
-        }
-      }
-      else
+      if let Some( table ) = table
       {
-        writeln!( f, "No columns" );
+        writeln!( f, "{}", table )?;
       }
-    
+    }
+    else
+    {
+      writeln!( f, "No columns" )?;
+    }
 
     Ok( () )
   }

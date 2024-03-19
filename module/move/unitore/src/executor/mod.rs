@@ -19,12 +19,12 @@ use actions::
   feeds::list_feeds,
   config::{ add_config, delete_config, list_configs },
   query::execute_query,
-  table::{ list_columns, list_tables, FieldsReport },
+  table::{ list_columns, list_tables },
 };
 
 use std::future::Future;
 
-fn endpoint< 'a, F, Fut, R >( async_endpoint : F, args : &'a Args ) -> Result< R >
+fn action< 'a, F, Fut, R >( async_endpoint : F, args : &'a Args ) -> Result< R >
 where
   F : FnOnce( FeedStorage< SledStorage >, &'a Args ) -> Fut,
   Fut : Future< Output = Result< R > >,
@@ -59,7 +59,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     ))
     .routine( | args |
     {
-      match endpoint( download_frames, &args )
+      match action( download_frames, &args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -75,7 +75,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     ))
     .routine( | args |
     {
-      match endpoint( list_feeds, &args )
+      match action( list_feeds, &args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -91,7 +91,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     ))
     .routine( | args |
     {
-      match endpoint( list_frames, &args )
+      match action( list_frames, &args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -115,7 +115,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .subject().hint( "Path" ).kind( Type::Path ).optional( false ).end()
     .routine( | args : Args |
     {
-      match endpoint( add_config, &args )
+      match action( add_config, &args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -132,7 +132,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .subject().hint( "Path" ).kind( Type::Path ).optional( false ).end()
     .routine( | args : Args |
     {
-      match endpoint( delete_config, &args )
+      match action( delete_config, &args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -148,7 +148,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     ))
     .routine( | args |
     {
-      match endpoint( list_configs, &args )
+      match action( list_configs, &args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -164,7 +164,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     ))
     .routine( | args |
     {
-      match endpoint( list_tables, &args )
+      match action( list_tables, &args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -182,7 +182,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .subject().hint( "Name" ).kind( wca::Type::String ).optional( false ).end()
     .routine( | args : Args |
     {
-      match endpoint( list_columns, &args )
+      match action( list_columns, &args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -205,7 +205,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .subject().hint( "Query" ).kind( Type::List( Type::String.into(), ' ' ) ).optional( false ).end()
     .routine( | args : Args |
     {
-      match endpoint( execute_query, &args )
+      match action( execute_query, &args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -267,7 +267,7 @@ impl< C : FeedFetch, S : FeedStore + ConfigStore + FrameStore + TableStore + Sen
     for i in  0..subscriptions.len()
     {
       let feed = self.client.fetch( subscriptions[ i ].link.clone() ).await?;
-      feeds.push( ( feed, subscriptions[ i ].update_period.clone(), subscriptions[ i ].link.clone() ) );
+      feeds.push( ( feed, subscriptions[ i ].update_period.clone(), subscriptions[ i ].link.to_string() ) );
     }
     self.storage.process_feeds( feeds ).await
   }

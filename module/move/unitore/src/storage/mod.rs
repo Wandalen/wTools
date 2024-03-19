@@ -208,7 +208,7 @@ impl FeedStore for FeedStorage< SledStorage >
       } )
       .collect::< Vec< _ > >()
       .get( 0 )
-      .unwrap_or( &feed.2 )
+      .unwrap_or( &format!( "'{}'", feed.2 ) )
       .clone()
     )
     .join( "," )

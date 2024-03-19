@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use feed_rs::parser as feed_parser;
 use unitore::
 {
-  executor::{ FeedManager, actions },
+  executor::FeedManager,
   feed_config::SubscriptionConfig,
   retriever::FeedFetch,
   storage::{ FeedStorage, MockFeedStore, frame::FrameStore },
@@ -16,7 +16,7 @@ pub struct TestClient;
 #[ async_trait ]
 impl FeedFetch for TestClient
 {
-  async fn fetch( &self, _ : String ) -> Result< feed_rs::model::Feed >
+  async fn fetch( &self, _ : url::Url ) -> Result< feed_rs::model::Feed >
   {
     let feed = feed_parser::parse( include_str!( "./fixtures/plain_feed.xml" ).as_bytes() )?;
 
@@ -53,7 +53,7 @@ async fn test_save_feed_plain() -> Result< () >
   let feed_config = SubscriptionConfig
   {
     update_period : std::time::Duration::from_secs( 1000 ),
-    link : String::from( "test" ),
+    link : url::Url::parse( "https://test" )?,
   };
 
   let mut manager = FeedManager

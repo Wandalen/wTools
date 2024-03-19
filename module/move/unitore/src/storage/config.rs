@@ -1,6 +1,5 @@
 //! Functionality for storing and retrieving config files.
 
-use crate::*;
 use super::*;
 use error_tools::{ err, Result };
 use gluesql::

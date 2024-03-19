@@ -16,7 +16,7 @@ use error_tools::{ Result, for_app::Context };
 pub trait FeedFetch
 {
   /// Get feed from source specified by its link.
-  async fn fetch( &self, source : String ) -> Result< feed_rs::model::Feed >;
+  async fn fetch( &self, source : url::Url ) -> Result< feed_rs::model::Feed >;
 }
 
 /// Feed client for fetching feed.
@@ -26,11 +26,11 @@ pub struct FeedClient;
 #[ async_trait::async_trait ]
 impl FeedFetch for FeedClient
 {
-  async fn fetch( &self, source : String ) -> Result< feed_rs::model::Feed >
+  async fn fetch( &self, source : url::Url ) -> Result< feed_rs::model::Feed >
   {
     let https = HttpsConnector::new();
     let client = Client::builder( TokioExecutor::new() ).build::< _, Empty< Bytes > >( https );
-    let link = source.parse().context( format!( "Failed to parse source link {}", source ) )?;
+    let link = source.to_string().parse().context( format!( "Failed to parse source link {}", source ) )?;
     let mut res = client
     .get( link )
     .await

@@ -4,7 +4,13 @@ use crate::*;
 use super::*;
 use error_tools::{ err, for_app::Context, BasicError, Result };
 use executor::FeedManager;
-use storage::{ FeedStorage, FeedStore, config::{ ConfigStore, Config } };
+use storage::
+{
+  FeedStorage,
+  FeedStore,
+  config::{ ConfigStore, Config },
+  model::FeedRow,
+};
 use gluesql::{ prelude::Payload, sled_storage::SledStorage };
 
 /// Add configuration file with subscriptions to storage.
@@ -28,7 +34,7 @@ pub async fn add_config( storage : FeedStorage< SledStorage >, args : &wca::Args
 
   let feeds = feed_config::read( config.path() )?
   .into_iter()
-  .map( | feed | crate::storage::model::FeedRow::new( feed.link, feed.update_period ) )
+  .map( | feed | FeedRow::new( feed.link.to_string(), feed.update_period ) )
   .collect::< Vec< _ > >()
   ;
 

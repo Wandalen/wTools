@@ -26,7 +26,7 @@ pub struct TestClient ( String );
 #[ async_trait ]
 impl FeedFetch for TestClient
 {
-  async fn fetch( &self, _ : String ) -> Result< feed_rs::model::Feed >
+  async fn fetch( &self, _ : url::Url ) -> Result< feed_rs::model::Feed >
   {
     let feed = feed_parser::parse( std::fs::read_to_string( &self.0 )?.as_bytes() )?;
     Ok( feed )
@@ -46,7 +46,7 @@ async fn test_update() -> Result< () >
   let feed_config = SubscriptionConfig
   {
     update_period : std::time::Duration::from_secs( 1000 ),
-    link : String::from( "test" ),
+    link : url::Url::parse( "https://test" )?,
   };
 
   let mut manager = FeedManager
