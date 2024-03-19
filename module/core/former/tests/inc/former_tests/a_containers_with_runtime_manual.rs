@@ -47,20 +47,20 @@ impl Default for Struct1FormerContainer
 
 pub struct Struct1Former
 <
-  __FormerContext = Struct1,
-  __FormerEnd = the_module::ReturnContainer,
+  FormerContext = Struct1,
+  FormerEnd = the_module::ReturnContainer,
 >
 where
-  __FormerEnd : the_module::ToSuperFormer< Struct1, __FormerContext >,
+  FormerEnd : the_module::ToSuperFormer< Struct1, FormerContext >,
 {
   container : Struct1FormerContainer,
-  context : core::option::Option< __FormerContext >,
-  on_end : core::option::Option< __FormerEnd >,
+  context : core::option::Option< FormerContext >,
+  on_end : core::option::Option< FormerEnd >,
 }
 
-impl< __FormerContext, __FormerEnd > Struct1Former< __FormerContext, __FormerEnd >
+impl< FormerContext, FormerEnd > Struct1Former< FormerContext, FormerEnd >
 where
-  __FormerEnd: the_module::ToSuperFormer<Struct1, __FormerContext>,
+  FormerEnd: the_module::ToSuperFormer<Struct1, FormerContext>,
 {
 
   #[ inline( always ) ]
@@ -113,21 +113,21 @@ where
     return result;
   }
 
-  #[ inline( always ) ]
-  pub fn new() -> Struct1Former<Struct1, the_module::ReturnContainer>
-  {
-    Struct1Former::
-    <
-      Struct1,
-      the_module::ReturnContainer,
-    >::begin(None, the_module::ReturnContainer)
-  }
+  // #[ inline( always ) ]
+  // pub fn new() -> Struct1Former<Struct1, the_module::ReturnContainer>
+  // {
+  //   Struct1Former::
+  //   <
+  //     Struct1,
+  //     the_module::ReturnContainer,
+  //   >::begin(None, the_module::ReturnContainer)
+  // }
 
   #[ inline( always ) ]
   pub fn begin
   (
-    context : core::option::Option< __FormerContext >,
-    on_end : __FormerEnd,
+    context : core::option::Option< FormerContext >,
+    on_end : FormerEnd,
   ) -> Self
   {
     Self
@@ -139,7 +139,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn end( mut self ) -> __FormerContext
+  pub fn end( mut self ) -> FormerContext
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
@@ -200,6 +200,21 @@ where
       super_former
     };
     the_module::HashSetSubformer::begin( Some( self ), container, on_end )
+  }
+
+}
+
+// impl< FormerContext, FormerEnd > Struct1Former< FormerContext, FormerEnd >
+// where
+//   FormerEnd: the_module::ToSuperFormer<Struct1, FormerContext>,
+
+impl Struct1Former< Struct1, the_module::ReturnContainer >
+{
+
+  #[ inline( always ) ]
+  pub fn new() -> Self
+  {
+    Self::begin(None, the_module::ReturnContainer)
   }
 
 }

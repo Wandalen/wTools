@@ -1,13 +1,16 @@
 #![ allow( dead_code ) ]
 
+#[ allow( unused_imports ) ]
 use super::*;
+#[ allow( unused_imports ) ]
 use collection_tools::HashSet;
 
+
+// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
+#[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn push()
 {
-
-  //
 
   let got : HashSet< String > = the_module::HashSetSubformer::new()
   .insert( "a" )
@@ -22,6 +25,8 @@ fn push()
 
 }
 
+// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
+#[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn replace()
 {

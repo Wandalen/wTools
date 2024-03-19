@@ -184,6 +184,7 @@ pub( crate ) mod private
 
   /// Option for `run` function
   #[ derive( Debug, Former ) ]
+  // #[ debug ]
   pub struct Run
   {
     bin_path : PathBuf,

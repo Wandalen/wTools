@@ -840,9 +840,15 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   };
 
   // add embedded generic parameters
-  let mut extra_generics : syn::Generics = parse_quote!{ < __FormerContext = #name_ident #generics_ty, __FormerEnd = former::ReturnContainer > };
-  extra_generics.where_clause = parse_quote!{ where __FormerEnd : former::ToSuperFormer< #name_ident #generics_ty, __FormerContext >, };
-  // xxx : write helper to fix the bug
+  let mut extra_generics : syn::Generics = parse_quote!
+  {
+    < __FormerContext = #name_ident #generics_ty, __FormerEnd = former::ReturnContainer >
+  };
+  extra_generics.where_clause = parse_quote!
+  {
+    where __FormerEnd : former::ToSuperFormer< #name_ident #generics_ty, __FormerContext >,
+  };
+  // xxx : write helper to fix bug with where
   let generics_of_former = generics::merge( &generics, &extra_generics );
   let ( generics_of_former_impl, generics_of_former_ty, generics_of_former_where ) = generics_of_former.split_for_impl();
   let generics_of_former_with_defaults = generics_of_former.params.clone();
@@ -992,20 +998,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
 
       ///
-      /// Construct new instance of former with default parameters.
-      ///
-      #[ inline( always ) ]
-      pub fn new() -> #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnContainer >
-      {
-        #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnContainer > :: begin
-        (
-          None,
-          former::ReturnContainer,
-        )
-      }
-      // xxx : should be stand-alone. look VectorSubformer
-
-      ///
       /// Begin the process of forming. Expects context of forming to return it after forming.
       ///
       #[ inline( always ) ]
@@ -1038,6 +1030,50 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       #(
         #fields_setter
       )*
+
+      // ///
+      // /// Construct new instance of former with default parameters.
+      // ///
+      // #[ inline( always ) ]
+      // pub fn new_() -> #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnContainer >
+      // {
+      //   #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnContainer > :: begin
+      //   (
+      //     None,
+      //     former::ReturnContainer,
+      //   )
+      // }
+      // // xxx : should be stand-alone. look VectorSubformer
+
+    }
+
+    // pub struct #former_container_name_ident #generics_ty
+    // #generics_where
+    // let ( generics_impl, generics_ty, generics_where ) = generics.split_for_impl();
+
+    // impl #generics_of_former_impl #former_name_ident #generics_of_former_ty
+    // #generics_of_former_where
+
+    #[ automatically_derived ]
+    impl #generics_impl #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnContainer >
+    #generics_where
+    {
+
+      ///
+      /// Construct new instance of former with default parameters.
+      ///
+      #[ inline( always ) ]
+      // pub fn new() -> #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnContainer >
+      pub fn new() -> Self
+      {
+        // #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnContainer > :: begin
+        Self :: begin
+        (
+          None,
+          former::ReturnContainer,
+        )
+      }
+      // xxx : should be stand-alone. look VectorSubformer
 
     }
 

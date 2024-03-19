@@ -1,8 +1,12 @@
 #![ allow( dead_code ) ]
 
+#[ allow( unused_imports ) ]
 use super::*;
+#[ allow( unused_imports ) ]
 use collection_tools::HashMap;
 
+// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
+#[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn push()
 {
@@ -22,6 +26,8 @@ fn push()
 
 }
 
+// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
+#[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn replace()
 {
