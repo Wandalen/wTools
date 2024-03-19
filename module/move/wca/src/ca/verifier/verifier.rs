@@ -160,14 +160,14 @@ pub( crate ) mod private
     }
     
     // qqq : for Barsik : 
-    // Problem with separating properties and options: 
-    // if we pass to wca a command that has an incorrectly named property, it defines this property as part of an option. 
+    // Problem with separating properties and subjects: 
+    // if we pass to wca a command that has an incorrectly named property, it defines this property as part of an subject. 
     // You can simulate this problem by running the code from https://github.com/Wandalen/wTools/blob/alpha/module/move/wca/examples/wca_trivial.rs in this form `cargo r .echo propertyf:123` 
-    // where the console shows that the option is `propertyf:123` and the property is empty. 
+    // where the console shows that the subject is `propertyf:123` and the property is empty. 
     // 
     // I would like to get an error in this case. 
     // 
-    // A real example of the problem can be seen in the .test command in willbe where if you don't specify the option and make a mistake in the name of the properties when running it, 
+    // A real example of the problem can be seen in the `.test` command in willbe where if you don't specify the option and make a mistake in the name of the properties when running it, 
     // the option will be an incorrectly written property that will produce an error with unobvious output.
     // 
     
