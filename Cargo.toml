@@ -250,7 +250,7 @@ default-features = false
 ## macro tools
 
 [workspace.dependencies.macro_tools]
-version = "~0.21.0"
+version = "~0.22.0"
 path = "module/core/macro_tools"
 default-features = false
 
