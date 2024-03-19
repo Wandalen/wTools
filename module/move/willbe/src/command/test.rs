@@ -32,9 +32,9 @@ mod private
     #[ default( true ) ]
     temp : bool,
     enabled_features : Vec< String >,
-    #[ default( false ) ]
+    #[ default( true ) ]
     with_all_features : bool,
-    #[ default( false ) ]
+    #[ default( true ) ]
     with_none_features : bool,
     #[ default( true ) ]
     with_debug : bool,
