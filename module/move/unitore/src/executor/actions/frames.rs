@@ -61,7 +61,7 @@ pub async fn download_frames
   {
     return Err( err!( format!
     (
-      "Failed to download frames.\n Config files {} contain no feed subscriptions!",
+      "Failed to download frames.\n Config file(s) {} contain no feed subscriptions!",
       configs.join( ", " )
     ) ) )
   }

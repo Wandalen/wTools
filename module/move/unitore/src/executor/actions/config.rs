@@ -21,9 +21,26 @@ pub async fn add_config( storage : FeedStorage< SledStorage >, args : &wca::Args
   .ok_or_else::< BasicError, _ >( || err!( "Cannot get path argument for command .config.add" ) )?
   .into()
   ;
-  let path = path.canonicalize().context( format!( "Invalid path for config file {:?}", path ) )?;
-  let config = Config::new( path.to_string_lossy().to_string() );
 
+  let mut err_str = format!( "Invalid path for config file {:?}", path );
+
+  let start = path.components().next();
+  if let Some( start ) = start
+  {
+    let abs_path : &std::path::Path = start.as_ref();
+    let abs_path = abs_path.canonicalize();
+    if let Ok( mut abs_path ) = abs_path
+    {
+      for component in path.components().skip( 1 )
+      {
+        abs_path.push( component );
+      }
+      err_str = format!( "Invalid path for config file {:?}", abs_path );
+    }
+  }
+  let path = path.canonicalize().context( err_str )?;
+
+  let config = Config::new( path.to_string_lossy().to_string() );
   let mut manager = FeedManager::new( storage );
 
   let config_report = manager.storage
