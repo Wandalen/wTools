@@ -1,7 +1,7 @@
 //! Endpoint for command execution.
 
-pub mod frames;
-pub mod feeds;
+pub mod frame;
+pub mod feed;
 pub mod config;
 pub mod query;
 pub mod table;

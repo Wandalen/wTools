@@ -6,6 +6,7 @@ use executor::FeedManager;
 use storage::
 {
   FeedStorage,
+  feed::FeedStore,
   config::ConfigStore,
   frame::{ FrameStore, RowValue }
 };
@@ -59,13 +60,21 @@ pub async fn download_frames
 
   if subscriptions.is_empty()
   {
-    return Err( err!( format!(
-      "Failed to download frames.\n Config files {} contain no feed subscriptions!",
+    return Err( err!( format!
+    (
+      "Failed to download frames.\n Config file(s) {} contain no feed subscriptions!",
       configs.join( ", " )
     ) ) )
   }
 
-  manager.update_feed( subscriptions ).await
+  let mut feeds = Vec::new();
+  let client = retriever::FeedClient;
+  for i in  0..subscriptions.len()
+  {
+    let feed = retriever::FeedFetch::fetch(&client, subscriptions[ i ].link.clone()).await?;
+    feeds.push( ( feed, subscriptions[ i ].update_period.clone(), subscriptions[ i ].link.clone() ) );
+  }
+  manager.storage.process_feeds( feeds ).await
 
 }
 

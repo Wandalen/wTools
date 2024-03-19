@@ -8,16 +8,13 @@ use gluesql::
   prelude::Payload,
 };
 
-use executor::actions::table::{ TablesReport, FieldsReport };
+use executor::actions::table::TablesReport;
 use storage::FeedStorage;
 
 /// Functions for tables informantion.
 #[ async_trait::async_trait( ?Send ) ]
 pub trait TableStore
 {
-  /// Get list of column titles of feed table.
-  fn columns_titles( &mut self ) -> FieldsReport;
-
   /// List tables in storage.
   async fn list_tables( &mut self ) -> Result< TablesReport >;
 
@@ -28,14 +25,6 @@ pub trait TableStore
 #[ async_trait::async_trait( ?Send ) ]
 impl TableStore for FeedStorage< SledStorage >
 {
-  fn columns_titles( &mut self ) -> FieldsReport
-  {
-    FieldsReport
-    {
-      fields_list : self.frame_fields.clone()
-    }
-  }
-
   async fn list_tables( &mut self ) -> Result< TablesReport >
   {
     let glue = &mut *self.storage.lock().await;

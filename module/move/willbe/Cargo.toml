@@ -32,6 +32,7 @@ full = [ "enabled" ]
 # use_alloc = [ "no_std" ]
 enabled = []
 tracing = [ "dep:tracing", "dep:tracing-subscriber" ]
+progress_bar = [ "dep:indicatif" ]
 
 [dependencies]
 cargo_metadata = "~0.14"
@@ -58,6 +59,8 @@ colored = "2.1.0"
 duct = "0.13.7"
 tracing = { version = "0.1", features = [ "log-always" ], optional = true }
 tracing-subscriber = { version = "0.3", optional = true }
+indicatif = { version = "0.17", optional = true }
+prettytable-rs = "0.10"
 
 [dev-dependencies]
 test_tools = { workspace = true }
