@@ -25,7 +25,7 @@ mod private
     with_nightly : bool,
     #[ default( 0u32 ) ]
     concurrent : u32,
-    #[ default( 2u32 ) ]
+    #[ default( 1u32 ) ]
     power : u32,
     include : Vec< String >,
     #[ default ( [ "full".to_string(), "default".to_string() ] ) ]

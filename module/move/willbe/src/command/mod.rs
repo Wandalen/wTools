@@ -123,7 +123,7 @@ pub( crate ) mod private
         .optional( true )
         .end()
       .property( "power" )
-        .hint( "Defines the depth of feature combination testing. Default is `2`." )
+        .hint( "Defines the depth of feature combination testing. Default is `1`." )
         .kind( Type::Number )
         .optional( true )
         .end()
