@@ -19,9 +19,9 @@ mod private
   {
     #[ default( true ) ]
     dry : bool,
-    #[ default( false ) ]
-    with_stable : bool,
     #[ default( true ) ]
+    with_stable : bool,
+    #[ default( false ) ]
     with_nightly : bool,
     #[ default( 0u32 ) ]
     concurrent : u32,
