@@ -1,13 +1,12 @@
 //! Frames commands actions.
 
 use crate::*;
-use self::storage::feed::FeedStore;
-
 use super::*;
 use executor::FeedManager;
 use storage::
 {
   FeedStorage,
+  feed::FeedStore,
   config::ConfigStore,
   frame::{ FrameStore, RowValue }
 };

@@ -1,16 +1,13 @@
 //! Execute plan.
 
-use self::storage::frame::FrameStore;
-
 use super::*;
 use feed_config::SubscriptionConfig;
 use gluesql::sled_storage::{ sled::Config, SledStorage };
 use retriever::{ FeedClient, FeedFetch };
-use storage::{ Store, FeedStorage, feed::FeedStore, config::ConfigStore, table::TableStore };
+use storage::{ Store, FeedStorage, feed::FeedStore, config::ConfigStore, table::TableStore, frame::FrameStore };
 use wca::{ Args, Type };
 use executor::actions::Report;
 use error_tools::Result;
-// use wca::prelude::*;
 
 pub mod actions;
 use actions::
@@ -22,12 +19,10 @@ use actions::
   table::{ list_columns, list_tables },
 };
 
-use std::future::Future;
-
 fn action< 'a, F, Fut, R >( async_endpoint : F, args : &'a Args ) -> Result< R >
 where
   F : FnOnce( FeedStorage< SledStorage >, &'a Args ) -> Fut,
-  Fut : Future< Output = Result< R > >,
+  Fut : std::future::Future< Output = Result< R > >,
   R : actions::Report,
 {
   let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )

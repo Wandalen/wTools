@@ -11,7 +11,6 @@ use gluesql::
   },
   sled_storage::SledStorage,
 };
-use FeedStorage;
 
 /// Config file path.
 #[ derive( Debug ) ]
