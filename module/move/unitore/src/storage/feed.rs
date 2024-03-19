@@ -77,7 +77,7 @@ pub trait FeedStore
   async fn get_all_feeds( &mut self ) -> Result< FeedsReport >;
 
   /// Add feeds entries.
-  async fn add_feeds( &mut self, feeds : Vec< Feed > ) -> Result< Payload >;
+  async fn save_feeds( &mut self, feeds : Vec< Feed > ) -> Result< Payload >;
 }
 
 #[ async_trait::async_trait( ?Send ) ]
@@ -168,7 +168,7 @@ impl FeedStore for FeedStorage< SledStorage >
 
         if !existing_feeds.contains( link )
         {
-          self.add_feeds( vec![ feed.clone().into() ] ).await?;
+          self.save_feeds( vec![ feed.clone().into() ] ).await?;
           frames_report.new_frames = feed.0.entries.len();
           frames_report.is_new_feed = true;
 
@@ -257,7 +257,7 @@ impl FeedStore for FeedStorage< SledStorage >
     Ok( UpdateReport( reports ) )
   }
 
-  async fn add_feeds( &mut self, feed : Vec< Feed > ) -> Result< Payload >
+  async fn save_feeds( &mut self, feed : Vec< Feed > ) -> Result< Payload >
   {
     let feeds_rows : Vec< Vec< ExprNode< 'static > > > = feed.into_iter().map( | feed | feed.into() ).collect_vec();
 
@@ -280,64 +280,6 @@ impl FeedStore for FeedStorage< SledStorage >
     ;
 
     Ok( insert )
-  }
-}
-
-/// Feed in format convenient for saving in storage.
-#[ derive( Debug ) ]
-pub struct FeedRow( pub Vec< ExprNode< 'static > > );
-
-impl FeedRow
-{
-  /// Create new feed row for storage.
-  pub fn new( feed_link : String, update_period : Duration ) -> Self
-  {
-    FeedRow( vec!
-    [
-      text( feed_link ),
-      null(),
-      null(),
-      null(),
-      null(),
-      null(),
-      text( update_period.as_secs().to_string() ),
-    ] )
-  }
-}
-
-impl From< ( feed_rs::model::Feed, Duration, String ) > for FeedRow
-{
-  fn from( value : ( feed_rs::model::Feed, Duration, String ) ) -> Self
-  {
-    let duration = value.1;
-    let link = value.2;
-    let value = value.0;
-    
-    let row = vec!
-    [
-      value.links.iter().filter_map( | link |
-        {
-          if let Some( media_type ) = &link.media_type
-          {
-            if media_type == &String::from( "application/rss+xml" )
-            {
-              return Some( text( link.href.clone() ) );
-            }
-          } 
-          None
-        } )
-        .collect::< Vec< _ > >()
-        .get( 0 )
-        .unwrap_or( &text( link ) )
-        .clone(),
-      value.title.clone().map( | title | text( title.content ) ).unwrap_or( null() ),
-      value.updated.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ),
-      text( value.authors.iter().map( | p | p.name.clone() ).fold( String::new(), | acc, val | format!( "{}, {}", acc, val ) ) ),
-      value.description.clone().map( | desc | text( desc.content ) ).unwrap_or( null() ),
-      value.published.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ),
-      text( duration.as_secs().to_string() ),
-    ];
-    FeedRow( row )
   }
 }
 

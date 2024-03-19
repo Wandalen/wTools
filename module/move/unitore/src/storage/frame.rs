@@ -161,7 +161,7 @@ impl FrameStore for FeedStorage< SledStorage >
 
   async fn save_frames( &mut self, frames : Vec< Frame > ) -> Result< Payload >
   {
-    let entries_rows = frames.into_iter().map( | entry | FrameRow::from( entry ).0 ).collect_vec();
+    let entries_rows : Vec< Vec< ExprNode< 'static > > > = frames.into_iter().map( | entry | entry.into() ).collect_vec();
 
     let insert = table( "frame" )
     .insert()
@@ -180,7 +180,7 @@ impl FrameStore for FeedStorage< SledStorage >
 
   async fn update_frames( &mut self, feed : Vec< Frame > ) -> Result< () >
   {
-    let entries_rows = feed.into_iter().map( | entry | FrameRow::from( entry ).0 ).collect_vec();
+    let entries_rows : Vec< Vec< ExprNode< 'static > > > = feed.into_iter().map( | entry | entry.into() ).collect_vec();
 
     for entry in entries_rows
     {
@@ -202,11 +202,7 @@ impl FrameStore for FeedStorage< SledStorage >
   }
 }
 
-/// Frame row format for saving in storage.
-#[ derive( Debug ) ]
-pub struct FrameRow( pub Vec< ExprNode< 'static > > );
-
-impl From< Frame > for FrameRow
+impl From< Frame > for Vec< ExprNode< 'static > >
 {
   fn from( entry : Frame ) -> Self
   {
@@ -261,23 +257,23 @@ impl From< Frame > for FrameRow
 
     let language = entry.language.clone().map( | l | text( l ) ).unwrap_or( null() );
 
-    FrameRow( vec!
-      [
-        text( entry.id ),
-        title,
-        updated,
-        authors,
-        content,
-        links,
-        summary,
-        categories,
-        published,
-        source,
-        rights,
-        media,
-        language,
-        text( entry.feed_link )
-      ] )
+    vec!
+    [
+      text( entry.id ),
+      title,
+      updated,
+      authors,
+      content,
+      links,
+      summary,
+      categories,
+      published,
+      source,
+      rights,
+      media,
+      language,
+      text( entry.feed_link )
+    ]
   }
 }
 

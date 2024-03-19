@@ -54,7 +54,7 @@ pub async fn add_config( storage : FeedStorage< SledStorage >, args : &wca::Args
   .collect::< Vec< _ > >()
   ;
 
-  let new_feeds = manager.storage.add_feeds( feeds ).await?;
+  let new_feeds = manager.storage.save_feeds( feeds ).await?;
 
   Ok( ConfigReport{ payload : config_report, new_feeds : Some( new_feeds ) } )
 }
