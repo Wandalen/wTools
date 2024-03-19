@@ -3,7 +3,7 @@
 use crate::*;
 use gluesql::core::executor::Payload;
 use super::Report;
-use storage::{ FeedStorage, FeedStore };
+use storage::{ FeedStorage, Store };
 use executor::FeedManager;
 use error_tools::{ err, BasicError, Result };
 

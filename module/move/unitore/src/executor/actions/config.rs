@@ -7,9 +7,8 @@ use executor::FeedManager;
 use storage::
 {
   FeedStorage,
-  FeedStore,
+  feed::{ FeedStore, Feed },
   config::{ ConfigStore, Config },
-  model::FeedRow,
 };
 use gluesql::{ prelude::Payload, sled_storage::SledStorage };
 
@@ -51,7 +50,7 @@ pub async fn add_config( storage : FeedStorage< SledStorage >, args : &wca::Args
 
   let feeds = feed_config::read( config.path() )?
   .into_iter()
-  .map( | feed | FeedRow::new( feed.link.to_string(), feed.update_period ) )
+  .map( | feed | Feed::new( feed.link, feed.update_period ) )
   .collect::< Vec< _ > >()
   ;
 

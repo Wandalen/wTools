@@ -1,35 +1,24 @@
 use crate::*;
-use std::{ sync::Arc, time::Duration };
+use std::sync::Arc;
 use error_tools::{ for_app::Context, Result };
 use tokio::sync::Mutex;
-use feed_rs::model::Feed;
 use gluesql::
 {
   core::
   {
-    ast_builder::{ col, table, text, Build, Execute },
-    data::Value,
-    executor::Payload,
+    ast_builder::{ table, Build, Execute },
     store::{ GStore, GStoreMut },
   },
   prelude::Glue,
   sled_storage::{ sled::Config, SledStorage },
 };
 
-use executor::actions::
-{
-  feeds::FeedsReport,
-  query::QueryReport,
-  frames::UpdateReport,
-};
-use storage::frame::{ FrameStore, RowValue };
-use wca::wtools::Itertools;
+use executor::actions::query::QueryReport;
 
-pub mod model;
-use model::FeedRow;
 pub mod config;
 pub mod frame;
-pub mod tables;
+pub mod table;
+pub mod feed;
 
 /// Storage for feed frames.
 #[ derive( Clone ) ]
@@ -111,27 +100,14 @@ impl FeedStorage< SledStorage >
 /// Functionality of feed storage.
 #[ mockall::automock ]
 #[ async_trait::async_trait( ?Send ) ]
-pub trait FeedStore
+pub trait Store
 {
-
-  /// Insert items from list into feed table.
-  async fn save_feed( &mut self, feed : Vec< ( Feed, Duration, String ) > ) -> Result< () >;
-
-  /// Process fetched feed, new items will be saved, modified items will be updated.
-  async fn process_feeds( &mut self, feeds : Vec< ( Feed, Duration, String ) > ) -> Result< UpdateReport >;
-
-  /// Get all feeds from storage.
-  async fn get_all_feeds( &mut self ) -> Result< FeedsReport >;
-
   /// Execute custom query passed as String.
   async fn execute_query( &mut self, query : String ) -> Result< QueryReport >;
-
-  /// Add feeds entries.
-  async fn add_feeds( &mut self, feeds : Vec< FeedRow > ) -> Result< Payload >;
 }
 
 #[ async_trait::async_trait( ?Send ) ]
-impl FeedStore for FeedStorage< SledStorage >
+impl< S : GStore + GStoreMut + Send > Store for FeedStorage< S >
 {
   async fn execute_query( &mut self, query : String ) -> Result< QueryReport >
   {
@@ -141,232 +117,5 @@ impl FeedStore for FeedStorage< SledStorage >
     let report = QueryReport ( payloads );
 
     Ok( report )
-  }
-
-  async fn get_all_feeds( &mut self ) -> Result< FeedsReport >
-  {
-    let res = table( "feed" ).select().project( "title, link, update_period" ).execute( &mut *self.storage.lock().await ).await?;
-    let mut report = FeedsReport::new();
-    match res
-    {
-      Payload::Select { labels: label_vec, rows: rows_vec } =>
-      {
-        report.0 = crate::executor::actions::frames::SelectedEntries
-        {
-          selected_rows : rows_vec,
-          selected_columns : label_vec,
-        }
-      },
-      _ => {},
-    }
-
-    Ok( report )
-  }
-
-  async fn save_feed( &mut self, feed : Vec< ( Feed, Duration, String ) > ) -> Result< () >
-  {
-    let feeds_rows = feed.into_iter().map( | feed | FeedRow::from( feed ).0 ).collect_vec();
-
-    for entry in feeds_rows
-    {
-    let _update = table( "feed" )
-    .update()
-    .set( "title", entry[ 1 ].to_owned() )
-    .set( "updated", entry[ 2 ].to_owned() )
-    .set( "authors", entry[ 3 ].to_owned() )
-    .set( "description", entry[ 4 ].to_owned() )
-    .set( "published", entry[ 5 ].to_owned() )
-    .filter( col( "link" ).eq( entry[ 0 ].to_owned() ) )
-    .execute( &mut *self.storage.lock().await )
-    .await
-    .context( "Failed to insert feed" )?
-    ;
-    }
-
-    Ok( () )
-  }
-
-  async fn process_feeds
-  (
-    &mut self,
-    feeds : Vec< ( Feed, Duration, String ) >,
-  ) -> Result< UpdateReport >
-  {
-    let new_feed_links = feeds
-    .iter()
-    .map( | feed |
-      feed.0.links.iter().filter_map( | link |
-      {
-        if let Some( media_type ) = &link.media_type
-        {
-          if media_type == &String::from( "application/rss+xml" )
-          {
-            return Some( format!( "'{}'", link.href.clone() ) );
-          }
-        }
-        None
-      } )
-      .collect::< Vec< _ > >()
-      .get( 0 )
-      .unwrap_or( &format!( "'{}'", feed.2 ) )
-      .clone()
-    )
-    .join( "," )
-    ;
-
-    let existing_feeds = table( "feed" )
-    .select()
-    .filter( format!( "link IN ({})", new_feed_links ).as_str() )
-    .project( "link" )
-    .execute( &mut *self.storage.lock().await )
-    .await
-    .context( "Failed to select links of existing feeds while saving new frames" )?
-    ;
-
-    let mut new_entries = Vec::new();
-    let mut modified_entries = Vec::new();
-    let mut reports = Vec::new();
-
-    for feed in &feeds
-    {
-      let mut frames_report = crate::executor::actions::frames::FramesReport::new( feed.0.title.clone().unwrap().content );
-      // check if feed is new
-      if let Some( existing_feeds ) = existing_feeds.select()
-      {
-
-        let existing_feeds = existing_feeds
-        .filter_map( | feed | feed.get( "link" ).map( | link | String::from( RowValue( link ) ) ))
-        .collect_vec()
-        ;
-
-        let links = &feed.0.links.iter().filter_map( | link |
-          {
-            if let Some( media_type ) = &link.media_type
-            {
-              if media_type == &String::from( "application/rss+xml" )
-              {
-                return Some( link.href.clone() );
-              }
-            }
-            None
-          } )
-          .collect::< Vec< _ > >();
-
-        let link = links.get( 0 ).unwrap_or( &feed.2 );
-
-        if !existing_feeds.contains( link )
-        {
-          self.add_feeds( vec![ FeedRow::from( feed.clone() ) ] ).await?;
-          frames_report.new_frames = feed.0.entries.len();
-          frames_report.is_new_feed = true;
-
-          new_entries.extend
-          (
-            feed.0.entries
-            .clone()
-            .into_iter()
-            .zip( std::iter::repeat( feed.0.id.clone() ).take( feed.0.entries.len() ) )
-            .map( | entry | entry.into() )
-          );
-          reports.push( frames_report );
-          continue;
-        }
-      }
-
-      let existing_frames = table( "frame" )
-      .select()
-      .filter(col( "feed_link" ).eq( text( feed.0.id.clone() ) ) )
-      .project( "id, published" )
-      .execute( &mut *self.storage.lock().await )
-      .await
-      .context( "Failed to get existing frames while saving new frames" )?
-      ;
-
-      if let Some( rows ) = existing_frames.select()
-      {
-        let rows = rows.collect::< Vec< _ > >();
-        frames_report.existing_frames = rows.len();
-        let existing_entries = rows.iter()
-        .map( | r | ( r.get( "id" ).map( | &val | val.clone() ), r.get( "published" ).map( | &val | val.clone() ) ) )
-        .flat_map( | ( id, published ) |
-          id.map( | id |
-            (
-              id,
-              published.map( | date |
-                {
-                  match date
-                  {
-                    Value::Timestamp( date_time ) => Some( date_time ),
-                    _ => None,
-                  }
-                } )
-              .flatten()
-            )
-          )
-        )
-        .flat_map( | ( id, published ) | match id { Value::Str( id ) => Some( ( id, published ) ), _ => None } )
-        .collect_vec()
-        ;
-
-        let existing_ids = existing_entries.iter().map( | ( id, _ ) | id ).collect_vec();
-        for entry in &feed.0.entries
-        {
-          // if extry with same id is already in db, check if it is updated
-          if let Some( position ) = existing_ids.iter().position( | &id | id == &entry.id )
-          {
-            if let Some( date ) = existing_entries[ position ].1
-            {
-              if date.and_utc() != entry.published.unwrap()
-              {
-                frames_report.updated_frames += 1;
-                modified_entries.push( ( entry.clone(), feed.0.id.clone() ).into() );
-              }
-            }
-          }
-          else
-          {
-            frames_report.new_frames += 1;
-            new_entries.push( ( entry.clone(), feed.0.id.clone() ).into() );
-          }
-        }
-      }
-      reports.push( frames_report );
-    }
-
-    if new_entries.len() > 0
-    {
-      let _saved_report = self.save_frames( new_entries ).await?;
-    }
-    if modified_entries.len() > 0
-    {
-      let _updated_report = self.update_feed( modified_entries ).await?;
-    }
-
-    Ok( UpdateReport( reports ) )
-  }
-
-  async fn add_feeds( &mut self, feed : Vec< FeedRow > ) -> Result< Payload >
-  {
-    let feeds_rows = feed.into_iter().map( | feed | feed.0 ).collect_vec();
-
-    let insert = table( "feed" )
-    .insert()
-    .columns
-    (
-      "link,
-      title,
-      updated,
-      authors,
-      description,
-      published,
-      update_period",
-    )
-    .values( feeds_rows )
-    .execute( &mut *self.storage.lock().await )
-    .await
-    .context( "Failed to insert feeds" )?
-    ;
-
-    Ok( insert )
   }
 }

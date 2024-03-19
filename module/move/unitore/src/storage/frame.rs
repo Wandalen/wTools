@@ -7,21 +7,15 @@ use gluesql::
 {
   core::
   {
-    ast_builder::{ col, table, text, Execute },
+    ast_builder::{ null, col, table, text, Execute, timestamp, ExprNode },
     data::Value,
     executor::Payload,
-    chrono::{ Utc, DateTime },
+    chrono::{ Utc, DateTime, SecondsFormat },
   },
   sled_storage::SledStorage,
 };
 
-use gluesql::core::
-{
-  ast_builder::{ null, timestamp, ExprNode },
-  chrono::SecondsFormat,
-};
-
-use executor::actions::frames::{ FramesReport, ListReport, SelectedEntries };
+use executor::actions::frame::{ FramesReport, ListReport, SelectedEntries };
 use storage::FeedStorage;
 use wca::wtools::Itertools;
 
@@ -111,7 +105,7 @@ pub trait FrameStore
   async fn save_frames( &mut self, feed : Vec< Frame > ) -> Result< Payload >;
 
   /// Update items from list in feed table.
-  async fn update_feed( &mut self, feed : Vec< Frame > ) -> Result< () >;
+  async fn update_frames( &mut self, feed : Vec< Frame > ) -> Result< () >;
 
   /// Get all feed frames from storage.
   async fn list_frames( &mut self ) -> Result< ListReport >;
@@ -184,7 +178,7 @@ impl FrameStore for FeedStorage< SledStorage >
     Ok( insert )
   }
 
-  async fn update_feed( &mut self, feed : Vec< Frame > ) -> Result< () >
+  async fn update_frames( &mut self, feed : Vec< Frame > ) -> Result< () >
   {
     let entries_rows = feed.into_iter().map( | entry | FrameRow::from( entry ).0 ).collect_vec();
 
@@ -206,7 +200,6 @@ impl FrameStore for FeedStorage< SledStorage >
     }
     Ok( () )
   }
-
 }
 
 /// Frame row format for saving in storage.

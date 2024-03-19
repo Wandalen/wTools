@@ -1,11 +1,10 @@
 //! Tables metadata commands actions and reports.
 
 use crate::*;
-use executor::FeedManager;
 use gluesql::prelude::Payload;
 use std::collections::HashMap;
-use executor::Report;
-use storage::{ FeedStorage, tables::TableStore };
+use executor::{ FeedManager, Report };
+use storage::{ FeedStorage, table::TableStore };
 use error_tools::{ err, BasicError, Result };
 
 /// Get labels of column for specified table.

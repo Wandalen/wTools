@@ -2,10 +2,9 @@ use async_trait::async_trait;
 use feed_rs::parser as feed_parser;
 use unitore::
 {
-  executor::FeedManager,
   feed_config::SubscriptionConfig,
   retriever::FeedFetch,
-  storage::{ FeedStorage, MockFeedStore, frame::FrameStore },
+  storage::{ FeedStorage, MockStore, frame::FrameStore, feed::FeedStore },
 };
 use error_tools::Result;
 
@@ -48,24 +47,22 @@ async fn test_save_feed_plain() -> Result< () >
   .temporary( true )
   ;
 
-  let feed_storage = FeedStorage::init_storage( config ).await?;
+  let mut feed_storage = FeedStorage::init_storage( config ).await?;
 
   let feed_config = SubscriptionConfig
   {
     update_period : std::time::Duration::from_secs( 1000 ),
-    link : url::Url::parse( "https://test" )?,
+    link : url::Url::parse( "https://www.nasa.gov/feed/" )?,
   };
 
-  let mut manager = FeedManager
-  {
-    storage : feed_storage.clone(),
-    client : TestClient,
-    config : vec![],
-  };
+  let mut feeds = Vec::new();
+  let client = TestClient;
 
-  manager.update_feed( vec![ feed_config ] ).await?;
+  let feed = FeedFetch::fetch( &client, feed_config.link.clone()).await?;
+  feeds.push( ( feed, feed_config.update_period.clone(), feed_config.link.clone() ) );
+  feed_storage.process_feeds( feeds ).await?;
 
-  let entries = manager.storage.list_frames().await?;
+  let entries = feed_storage.list_frames().await?;
 
   let number_of_frames = entries.0[ 0 ].selected_frames.selected_rows.len();
 

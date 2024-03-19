@@ -1,6 +1,8 @@
 //! Frames commands actions.
 
 use crate::*;
+use self::storage::feed::FeedStore;
+
 use super::*;
 use executor::FeedManager;
 use storage::
@@ -66,7 +68,14 @@ pub async fn download_frames
     ) ) )
   }
 
-  manager.update_feed( subscriptions ).await
+  let mut feeds = Vec::new();
+  let client = retriever::FeedClient;
+  for i in  0..subscriptions.len()
+  {
+    let feed = retriever::FeedFetch::fetch(&client, subscriptions[ i ].link.clone()).await?;
+    feeds.push( ( feed, subscriptions[ i ].update_period.clone(), subscriptions[ i ].link.clone() ) );
+  }
+  manager.storage.process_feeds( feeds ).await
 
 }
 

@@ -11,10 +11,9 @@ use gluesql::
 };
 use unitore::
 {
-  executor::FeedManager,
   feed_config::SubscriptionConfig,
   retriever::FeedFetch,
-  storage::{ FeedStorage, frame::FrameStore },
+  storage::{ feed::FeedStore, frame::FrameStore, FeedStorage },
 };
 use wca::wtools::Itertools;
 use error_tools::Result;
@@ -41,29 +40,30 @@ async fn test_update() -> Result< () >
   .temporary( true )
   ;
 
-  let feed_storage = FeedStorage::init_storage( config ).await?;
+  let mut feed_storage = FeedStorage::init_storage( config ).await?;
 
   let feed_config = SubscriptionConfig
   {
     update_period : std::time::Duration::from_secs( 1000 ),
-    link : url::Url::parse( "https://test" )?,
+    link : url::Url::parse( "https://www.nasa.gov/feed/" )?,
   };
 
-  let mut manager = FeedManager
-  {
-    storage : feed_storage,
-    client : TestClient( "./tests/fixtures/plain_feed.xml".to_owned() ),
-    config : vec![],
-  };
   // initial fetch
-  manager.update_feed( vec![ feed_config.clone() ] ).await?;
+  let client = TestClient( "./tests/fixtures/plain_feed.xml".to_owned() );
 
-  manager.set_client( TestClient( "./tests/fixtures/updated_one_frame.xml".to_owned() ) );
+  let feed = FeedFetch::fetch( &client, feed_config.link.clone()).await?;
+  let feeds = vec![ ( feed, feed_config.update_period.clone(), feed_config.link.clone() ) ];
+  feed_storage.process_feeds( feeds ).await?;
 
   // updated fetch
-  manager.update_feed( vec![ feed_config ] ).await?;
+  let client = TestClient( "./tests/fixtures/updated_one_frame.xml".to_owned() );
+
+  let feed = FeedFetch::fetch( &client, feed_config.link.clone()).await?;
+  let feeds = vec![ ( feed, feed_config.update_period.clone(), feed_config.link.clone() ) ];
+  feed_storage.process_feeds( feeds ).await?;
+
   // check
-  let payload = manager.storage.list_frames().await?;
+  let payload = feed_storage.list_frames().await?;
 
   let entries = payload.0.iter().map( | val | val.selected_frames.selected_rows.clone() ).flatten().collect::< Vec< _ > >();
 
