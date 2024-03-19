@@ -1,3 +1,5 @@
+//! Storage for frames, feeds and config files.
+
 use crate::*;
 use std::sync::Arc;
 use error_tools::{ for_app::Context, Result };
@@ -27,6 +29,14 @@ pub struct FeedStorage< S : GStore + GStoreMut + Send >
   /// GlueSQL storage.
   pub storage : Arc< Mutex< Glue< S > > >,
   frame_fields : Vec< [ &'static str; 3 ] >,
+}
+
+impl< S : GStore + GStoreMut + Send > std::fmt::Debug for FeedStorage< S >
+{
+  fn fmt( &self, f: &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
+  {
+    writeln!(f, "GlueSQL storage" )
+  }
 }
 
 impl FeedStorage< SledStorage >

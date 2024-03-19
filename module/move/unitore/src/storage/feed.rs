@@ -1,3 +1,5 @@
+//! Feed storage entity and storage functions.
+
 use crate::*;
 use std::time::Duration;
 use error_tools::{ for_app::Context, Result };
@@ -21,20 +23,29 @@ use executor::actions::
 use storage::{ FeedStorage, frame::{ FrameStore, RowValue } };
 use wca::wtools::Itertools;
 
+/// Feed item.
 #[ derive( Debug ) ]
 pub struct Feed
 {
+  /// Link to feed source.
   pub link : url::Url,
+  /// Ttitle of feed.
   pub title : Option< String >,
+  /// Last time the feed was fetched.
   pub updated : Option< DateTime< Utc > >,
+  /// Authors of feed.
   pub authors : Option< String >,
+  /// Short description of feed content.
   pub description : Option< String >,
+  /// Date and time when feed was published.
   pub published : Option< DateTime< Utc > >,
+  /// How often the feed frames must be fetched.
   pub update_period : Duration,
 }
 
 impl Feed
 {
+  /// Create new feed item from source url and update period.
   pub fn new( link : url::Url, update_period : Duration ) -> Self
   {
     Self
@@ -123,23 +134,8 @@ impl FeedStore for FeedStorage< SledStorage >
   {
     let new_feed_links = feeds
     .iter()
-    .map( | feed |
-      feed.0.links.iter().filter_map( | link |
-      {
-        if let Some( media_type ) = &link.media_type
-        {
-          if media_type == &String::from( "application/rss+xml" )
-          {
-            return Some( format!( "'{}'", link.href.clone() ) );
-          }
-        }
-        None
-      } )
-      .collect::< Vec< _ > >()
-      .get( 0 )
-      .unwrap_or( &format!( "'{}'", feed.2 ) )
-      .clone()
-    )
+    .map( | feed | format!( "'{}'", feed.2.clone() ) )
+    .collect::< Vec< _ > >()
     .join( "," )
     ;
 

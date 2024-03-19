@@ -232,6 +232,14 @@ pub struct FeedManager< C, S : FeedStore + ConfigStore + FrameStore + Store + Se
   pub client : C,
 }
 
+impl< C, S : FeedStore + ConfigStore + FrameStore + Store + Send > std::fmt::Debug for FeedManager< C, S >
+{
+  fn fmt( &self, f: &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
+  {
+    writeln!(f, "Feed manager with storage and client" )
+  }
+}
+
 impl< S : FeedStore + ConfigStore + FrameStore + TableStore + Store + Send > FeedManager< FeedClient, S >
 {
   /// Create new instance of FeedManager.

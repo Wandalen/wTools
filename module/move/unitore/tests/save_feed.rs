@@ -4,7 +4,7 @@ use unitore::
 {
   feed_config::SubscriptionConfig,
   retriever::FeedFetch,
-  storage::{ FeedStorage, MockStore, frame::FrameStore, feed::FeedStore },
+  storage::{ FeedStorage, frame::FrameStore, feed::FeedStore },
 };
 use error_tools::Result;
 

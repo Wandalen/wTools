@@ -148,6 +148,7 @@ pub struct ColumnsReport
 
 impl ColumnsReport
 {
+  /// Create new table columns report.
   pub fn new( table_name : String, table_description : String, columns : HashMap< String, String > ) -> Self
   {
     Self

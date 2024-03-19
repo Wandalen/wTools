@@ -254,7 +254,7 @@ impl From< Frame > for FrameRow
 
     let source = entry.source.clone().map( | s | text( s ) ).unwrap_or( null() );
     let rights = entry.rights.clone().map( | r | text( r ) ).unwrap_or( null() );
-    let media = entry.categories
+    let media = entry.media
     .map( | media | text ( media ) )
     .unwrap_or( null() )
     ;
