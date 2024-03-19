@@ -1,9 +1,10 @@
 use std::path::PathBuf;
 
 use gluesql::sled_storage::sled::Config;
-use unitore::{
+use unitore::
+{
   executor::FeedManager,
-  storage::{ FeedStorage, FeedStore },
+  storage::{ FeedStorage, feed::FeedStore },
 };
 use error_tools::Result;
 

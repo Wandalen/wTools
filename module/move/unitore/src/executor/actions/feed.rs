@@ -4,9 +4,9 @@ use crate::*;
 use executor::
 {
   FeedManager,
-  actions::{ Report, frames::SelectedEntries },
+  actions::{ Report, frame::SelectedEntries },
 };
-use storage::{ FeedStorage, FeedStore };
+use storage::{ FeedStorage, feed::FeedStore };
 use error_tools::Result;
 
 /// List all feeds.

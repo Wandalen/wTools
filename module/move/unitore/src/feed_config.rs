@@ -12,7 +12,7 @@ pub struct SubscriptionConfig
   #[serde(with = "humantime_serde")]
   pub update_period : std::time::Duration,
   /// Resource link.
-  pub link : String,
+  pub link : url::Url,
 }
 
 /// All subscriptions read from config file.
