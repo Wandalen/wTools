@@ -127,7 +127,7 @@ pub( crate ) mod private
         .kind( Type::Number )
         .optional( true )
         .end()
-      .property( "enabled_features")
+      .property( "always")
         .hint( "This features will be always present in feature's combinations. Default is empty.")
         .kind( Type::List( Type::String.into(), ',' ) )
         .optional( true )
