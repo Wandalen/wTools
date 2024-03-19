@@ -39,10 +39,10 @@ mod private
     /// Contains additional features or characteristics of the test variant.
     features : BTreeSet< String >,
   }
-  
+
   impl Display for TestVariant
   {
-    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result 
+    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
     {
       let features = if self.features.is_empty() { " ".to_string() } else { self.features.iter().join( ", " ) };
       writeln!( f, "{} {} {}", self.optimization, self.channel, features )?;
@@ -489,7 +489,7 @@ mod private
 
   /// `tests_run` is a function that runs tests on a given package with specified arguments.
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
-  pub fn run( options : &PackageTestOptions< '_ >, progress_bar : &ProgressBar ) -> Result< TestReport, ( TestReport, Error ) >
+  pub fn run( options : &PackageTestOptions< '_ >, multi_progress : &MultiProgress, progress_bar : &ProgressBar ) -> Result< TestReport, ( TestReport, Error ) >
   {
     let mut report = TestReport::default();
     report.dry = options.dry;
@@ -532,8 +532,8 @@ mod private
                   std::fs::create_dir_all( &path ).unwrap();
                   args_t = args_t.temp_directory_path( path );
                 }
-                progress_bar.set_message( format!( "start : {}", variant ) );
-                
+                let spinner = multi_progress.add( ProgressBar::new_spinner().with_message( format!( "start : {}", variant ) ) );
+                spinner.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
                 let cmd_rep = _run( dir, args_t.form() );
                 r.lock().unwrap().tests.insert( variant.clone(), cmd_rep.map_err( | e | e.0 ) );
                 progress_bar.inc( 1 );
@@ -573,7 +573,7 @@ mod private
               let pb = progress.add( ProgressBar::new( plan.test_variants.len() as u64 ) );
               pb.set_style( style.clone() );
               let test_package_options = PackageTestOptions{ temp_path : args.temp_path.clone(), plan, dry : args.dry };
-              match run( &test_package_options, &pb )
+              match run( &test_package_options, progress, &pb )
               {
                 Ok( r ) =>
                 {
