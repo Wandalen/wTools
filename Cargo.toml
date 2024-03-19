@@ -5,7 +5,7 @@ members = [
   "module/blank/*",
   "module/core/*",
   "module/move/*",
-  # "module/test/*",
+  "module/test/*",
 ]
 exclude = [
   "-*",
