@@ -11,6 +11,8 @@ mod private
   // qqq : for Petro : https://github.com/obox-systems/conventions/blob/master/code_style.md#importing-structuring-std-imports
 
   use cargo_metadata::Package;
+  #[ cfg( feature = "progress_bar" ) ]
+  use indicatif::{ MultiProgress, ProgressStyle };
   // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
 
   // qqq : for Petro : don't use Package directly. rid it off for the whole willbe
@@ -93,6 +95,16 @@ mod private
   /// The result of the tests is written to the structure `TestsReport` and returned as a result of the function execution.
   pub fn test( args : TestsCommandOptions, dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
   {
+    #[ cfg( feature = "progress_bar" ) ]
+    let multiprocess = MultiProgress::new();
+    #[ cfg( feature = "progress_bar" ) ]
+    let style = ProgressStyle::with_template
+    (
+      "[{elapsed_precise}] {bar:40.cyan/blue} {pos:>7}/{len:7} {msg}",
+    )
+    .unwrap()
+    .progress_chars( "##-" );
+    
     let mut reports = TestsReport::default();
     // fail fast if some additional installations required
     let channels = channel::available_channels( args.dir.as_ref() ).map_err( | e | ( reports.clone(), e ) )?;
@@ -161,7 +173,9 @@ mod private
     .plan( plan )
     .option_temp( temp_path )
     .dry( dry );
-    
+
+    #[ cfg( feature = "progress_bar" ) ]
+    let test_options_former = test_options_former.feature( TestOptionsProgressBarFeature{ multiprocess, style } );
     
     let options = test_options_former.form();
     let result = tests_run( &options );
