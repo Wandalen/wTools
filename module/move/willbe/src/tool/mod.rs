@@ -14,8 +14,8 @@ crate::mod_interface!
   orphan use super::process;
 
   /// Work with paths.
-  layer path;
-  orphan use super::path;
+  layer _path;
+  orphan use super::_path;
 
   /// Tools for working with dependencies graph.
   layer graph;

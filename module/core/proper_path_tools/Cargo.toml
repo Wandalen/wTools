@@ -33,6 +33,7 @@ enabled = [ "mod_interface/enabled" ]
 path_unique_folder_name = []
 
 [dependencies]
+regex = { version = "1.10.3" }
 mod_interface = { workspace = true }
 
 [dev-dependencies]

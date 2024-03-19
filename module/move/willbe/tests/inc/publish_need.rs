@@ -10,7 +10,7 @@ use assert_fs::prelude::*;
 use the_module::
 {
   package::{ publish_need, Package },
-  path::AbsolutePath,
+  _path::AbsolutePath,
   manifest,
   version,
   cargo

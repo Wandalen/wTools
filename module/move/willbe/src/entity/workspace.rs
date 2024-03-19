@@ -6,7 +6,7 @@ mod private
   use cargo_metadata::{ Metadata, MetadataCommand, Package };
   use petgraph::Graph;
   use wtools::error::{ for_app::Context, for_lib::Error, Result };
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
 
   /// Stores information about current workspace.
   #[ derive( Debug, Clone ) ]

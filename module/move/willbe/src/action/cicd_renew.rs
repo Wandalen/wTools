@@ -16,7 +16,7 @@ mod private
   use toml_edit::Document;
 
   use wtools::error::for_app::{ Result, anyhow };
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
 
 
   // qqq : for Petro : should return Report and typed error in Result

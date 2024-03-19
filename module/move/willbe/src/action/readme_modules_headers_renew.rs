@@ -1,7 +1,7 @@
 mod private
 {
   use crate::*;
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
   use action::readme_health_table_renew::{ readme_path, Stability, stability_generate };
   use package::Package;
   use wtools::error::

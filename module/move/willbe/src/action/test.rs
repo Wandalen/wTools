@@ -3,7 +3,7 @@ mod private
 {
   use crate::*;
   use test::*;
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
 
   use std::collections::HashSet;
 
@@ -104,7 +104,7 @@ mod private
     )
     .unwrap()
     .progress_chars( "##-" );
-    
+
     let mut reports = TestsReport::default();
     // fail fast if some additional installations required
     let channels = channel::available_channels( args.dir.as_ref() ).map_err( | e | ( reports.clone(), e ) )?;
@@ -129,34 +129,42 @@ mod private
       optimizations,
       variants_cap,
     } = args;
-    
+
     let packages = needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?;
 
     let plan = TestPlan::try_from
-    ( 
-      &packages, 
-      &channels, 
-      power, 
-      include_features, 
-      exclude_features, 
-      &optimizations, 
+    (
+      &packages,
+      &channels,
+      power,
+      include_features,
+      exclude_features,
+      &optimizations,
       enabled_features,
-      with_all_features, 
+      with_all_features,
       with_none_features,
       variants_cap,
     ).map_err( | e | ( reports.clone(), e ) )?;
-    
+
     println!( "{plan}" );
 
     let temp_path =  if temp
     {
-      let mut unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name().map_err( | e | ( reports.clone(), e ) )? );
+      let mut unique_name = format!
+      (
+        "temp_dir_for_test_command_{}",
+        path_tools::path::unique_folder_name().map_err( | e | ( reports.clone(), e.into() ) )?
+      );
 
       let mut temp_dir = env::temp_dir().join( unique_name );
 
       while temp_dir.exists()
       {
-        unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name().map_err( | e | ( reports.clone(), e ) )? );
+        unique_name = format!
+        (
+          "temp_dir_for_test_command_{}",
+          path_tools::path::unique_folder_name().map_err( | e | ( reports.clone(), e.into() ) )?
+        );
         temp_dir = env::temp_dir().join( unique_name );
       }
 
@@ -167,7 +175,7 @@ mod private
     {
       None
     };
-    
+
     let test_options_former = TestOptions::former()
     .concurrent( concurrent )
     .plan( plan )
@@ -176,16 +184,16 @@ mod private
 
     #[ cfg( feature = "progress_bar" ) ]
     let test_options_former = test_options_former.feature( TestOptionsProgressBarFeature{ multiprocess, style } );
-    
+
     let options = test_options_former.form();
     let result = tests_run( &options );
-    
+
     if temp
     {
       fs::remove_dir_all( options.temp_path.unwrap() ).map_err( | e | ( reports.clone(), e.into() ) )?;
     }
-    
-    result 
+
+    result
   }
 
   fn needed_packages( path : AbsolutePath ) -> Result< Vec< Package > >

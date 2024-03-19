@@ -2,7 +2,7 @@ use super::*;
 use assert_fs::prelude::*;
 use the_module::action;
 use std::io::Read;
-use willbe::path::AbsolutePath;
+use willbe::_path::AbsolutePath;
 
 fn arrange( source : &str ) -> assert_fs::TempDir
 {

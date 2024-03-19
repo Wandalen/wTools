@@ -6,7 +6,7 @@ use the_module::Workspace;
 use the_module::package::{ dependencies, DependenciesOptions, DependenciesSort };
 use willbe::CrateDir;
 use willbe::package::Package;
-use willbe::path::AbsolutePath;
+use willbe::_path::AbsolutePath;
 
 //
 

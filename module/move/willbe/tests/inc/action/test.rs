@@ -6,7 +6,7 @@ use assert_fs::TempDir;
 
 use crate::the_module::*;
 use action::test::{test, TestsCommandOptions};
-use path::AbsolutePath;
+use _path::AbsolutePath;
 use channel::*;
 use optimization::*;
 use willbe::test::TestVariant;
@@ -279,7 +279,7 @@ impl WorkspaceBuilder
     fs::create_dir_all( project_path.join( "modules" ) ).unwrap();
     let mut file = File::create( project_path.join( "Cargo.toml" ) ).unwrap();
     write!( file, "{}", self.toml_content ).unwrap();
-    for member in self.members 
+    for member in self.members
     {
       member.build( project_path.join( "modules" ).join( &member.name ) ).unwrap();
     }

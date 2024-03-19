@@ -16,7 +16,7 @@ pub( crate ) mod private
     for_lib::Error,
     for_app::format_err,
   };
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
 
   #[ derive( Debug, Error ) ]
   pub enum CrateDirError

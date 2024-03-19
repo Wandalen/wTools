@@ -18,7 +18,7 @@ mod private
   use crates_tools::CrateArchive;
 
   use workspace::Workspace;
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
   use version::BumpReport;
 
   use wtools::

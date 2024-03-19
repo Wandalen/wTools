@@ -7,7 +7,7 @@ mod private
   use std::path::PathBuf;
   use wca::{ Args, Props };
   use wtools::error::Result;
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
   use action::test::TestsCommandOptions;
   use former::Former;
   use channel::Channel;
@@ -64,7 +64,7 @@ mod private
       with_debug,
       with_release
     } = properties.try_into()?;
-    
+
     let mut channels = HashSet::new();
     if with_stable { channels.insert( Channel::Stable ); }
     if with_nightly { channels.insert( Channel::Nightly ); }

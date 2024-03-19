@@ -27,24 +27,17 @@ all-features = false
 # exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
-default = [ "enabled" ]
-full = [ "enabled" ]
-# use_alloc = [ "no_std" ]
+default = [ "enabled", "progress_bar" ]
+full = [ "enabled", "progress_bar" ]
 enabled = []
 tracing = [ "dep:tracing", "dep:tracing-subscriber" ]
 progress_bar = [ "dep:indicatif" ]
 
 [dependencies]
-cargo_metadata = "~0.14"
+cargo_metadata = "~0.18.1"
 convert_case = "0.6.0"
-crates_tools = { workspace = true }
-error_tools = { workspace = true, features = [ "default" ] }
 flate2 = "~1.0"
-former = { workspace = true, features = [ "default" ] }
 globwalk = "~0.8"
-iter_tools = { workspace = true, features = [ "default" ] }
-mod_interface = { workspace = true, features = [ "default" ] }
-wca = { workspace = true, features = [ "default" ] }
 toml_edit = "~0.14"
 petgraph = "~0.6"
 ptree = "~0.4"
@@ -61,6 +54,15 @@ tracing = { version = "0.1", features = [ "log-always" ], optional = true }
 tracing-subscriber = { version = "0.3", optional = true }
 indicatif = { version = "0.17", optional = true }
 prettytable-rs = "0.10"
+
+## internal
+crates_tools = { workspace = true }
+error_tools = { workspace = true, features = [ "default" ] }
+former = { workspace = true, features = [ "default" ] }
+iter_tools = { workspace = true, features = [ "default" ] }
+mod_interface = { workspace = true, features = [ "default" ] }
+wca = { workspace = true, features = [ "default" ] }
+proper_path_tools = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }

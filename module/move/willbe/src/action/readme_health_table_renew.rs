@@ -36,7 +36,7 @@ mod private
   };
   use manifest::private::repo_url;
   use workspace::Workspace;
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
 
   static TAG_TEMPLATE: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
   static CLOSE_TAG: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
