@@ -19,7 +19,7 @@ mod private
   {
     #[ default( true ) ]
     dry : bool,
-    #[ default( true ) ]
+    #[ default( false ) ]
     with_stable : bool,
     #[ default( true ) ]
     with_nightly : bool,
@@ -28,17 +28,18 @@ mod private
     #[ default( 2u32 ) ]
     power : u32,
     include : Vec< String >,
+    #[ default ( [ "full".to_string(), "default".to_string() ] ) ]
     exclude : Vec< String >,
     #[ default( true ) ]
     temp : bool,
     enabled_features : Vec< String >,
-    #[ default( false ) ]
+    #[ default( true ) ]
     with_all_features : bool,
-    #[ default( false ) ]
+    #[ default( true ) ]
     with_none_features : bool,
     #[ default( true ) ]
     with_debug : bool,
-    #[ default( true ) ]
+    #[ default( false ) ]
     with_release : bool,
   }
 
