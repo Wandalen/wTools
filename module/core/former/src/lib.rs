@@ -31,7 +31,7 @@ mod hash_map;
 mod hash_set;
 /// Component-based forming.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_component_from" ) ]
+#[ cfg( any( feature = "derive_component_from", feature = "derive_component_assign" ) ) ]
 mod component;
 
 /// Namespace with dependencies.
@@ -114,11 +114,8 @@ pub mod prelude
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   #[ cfg( feature = "enabled" ) ]
-  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  #[ cfg( feature = "derive_component_from" ) ]
+  #[ cfg( any( feature = "derive_component_from", feature = "derive_component_assign" ) ) ]
   pub use super::component::*;
 }
 
-// xxx : debug attribute
-// xxx : expanded example
 // xxx : explain role of container in former

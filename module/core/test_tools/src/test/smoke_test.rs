@@ -7,10 +7,17 @@
 // qqq : make a command for willbe
 
 /// Internal namespace.
-#[ cfg( not( feature = "no_std" ) ) ]
 pub( crate ) mod private
 {
   use process_tools::environment;
+  // xxx : comment out
+  // pub mod environment
+  // {
+  //   pub fn is_cicd() -> bool
+  //   {
+  //     false
+  //   }
+  // }
 
   /// Context for smoke testing of a module.
   #[ derive( Debug ) ]
@@ -307,7 +314,6 @@ pub( crate ) mod private
 
 
 //
-#[ cfg( not( feature = "no_std" ) ) ]
 crate::mod_interface!
 {
 
