@@ -88,7 +88,7 @@ where
 
   /// Form current former into target structure.
   #[ inline( always ) ]
-  fn form( mut self ) -> Container
+  pub fn form( mut self ) -> Container
   {
     let container = if self.container.is_some()
     {
@@ -100,25 +100,6 @@ where
       val
     };
     container
-  }
-
-  /// Initializes a new instance of the builder with default settings.
-  ///
-  /// This method provides a starting point for building a `HashSetLike` container using
-  /// a fluent interface. It sets up an empty container ready to be populated.
-  ///
-  /// # Returns
-  /// A new instance of `HashSetSubformer` with no elements.
-  ///
-  #[ inline( always ) ]
-  pub fn new() -> HashSetSubformer< E, Container, Container, impl ToSuperFormer< Container, Container > >
-  {
-    HashSetSubformer::begin
-    (
-      None,
-      None,
-      crate::ReturnContainer,
-    )
   }
 
   /// Begins the building process with an optional context and container.
@@ -188,6 +169,39 @@ where
 
 }
 
+// impl< E, Container > VectorSubformer< E, Container, Container, crate::ReturnContainer >
+// where
+//   Container : VectorLike< E > + core::default::Default,
+// {
+
+impl< E, Container >
+HashSetSubformer< E, Container, Container, crate::ReturnContainer >
+where
+  E : core::cmp::Eq + core::hash::Hash,
+  Container : HashSetLike< E > + core::default::Default,
+  // ContainerEnd : ToSuperFormer< Container, Context >,
+{
+
+  /// Initializes a new instance of the builder with default settings.
+  ///
+  /// This method provides a starting point for building a `HashSetLike` container using
+  /// a fluent interface. It sets up an empty container ready to be populated.
+  ///
+  /// # Returns
+  /// A new instance of `HashSetSubformer` with no elements.
+  ///
+  #[ inline( always ) ]
+  pub fn new() -> Self
+  {
+    HashSetSubformer::begin
+    (
+      None,
+      None,
+      crate::ReturnContainer,
+    )
+  }
+
+}
 
 impl< E, Container, Context, ContainerEnd >
 HashSetSubformer< E, Container, Context, ContainerEnd >

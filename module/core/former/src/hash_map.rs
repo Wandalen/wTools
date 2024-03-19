@@ -128,18 +128,6 @@ where
     container
   }
 
-  /// Create a new instance without context or on end processing. It just returns continaer on end of forming.
-  #[ inline( always ) ]
-  pub fn new() -> HashMapSubformer< K, E, Container, Container, impl ToSuperFormer< Container, Container > >
-  {
-    HashMapSubformer::begin
-    (
-      None,
-      None,
-      crate::ReturnContainer,
-    )
-  }
-
   /// Make a new HashMapSubformer. It should be called by a context generated for your structure.
   /// The context is returned after completion of forming by function `on_end``.
   #[ inline( always ) ]
@@ -176,6 +164,31 @@ where
   {
     self.container = Some( container );
     self
+  }
+
+}
+
+// impl< E, Container > VectorSubformer< E, Container, Container, crate::ReturnContainer >
+// where
+//   Container : VectorLike< E > + core::default::Default,
+
+impl< K, E, Container >
+HashMapSubformer< K, E, Container, Container, crate::ReturnContainer >
+where
+  K : core::cmp::Eq + core::hash::Hash,
+  Container : HashMapLike< K, E > + core::default::Default,
+{
+
+  /// Create a new instance without context or on end processing. It just returns continaer on end of forming.
+  #[ inline( always ) ]
+  pub fn new() -> Self
+  {
+    HashMapSubformer::begin
+    (
+      None,
+      None,
+      crate::ReturnContainer,
+    )
   }
 
 }

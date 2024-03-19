@@ -49,6 +49,10 @@ mod former_tests
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subformer_vec;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subformer_hashset;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subformer_hashmap;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subformer_shortcut;
 
 }

@@ -9,13 +9,7 @@
 #[ cfg( feature = "derive_former" ) ]
 mod axiomatic;
 /// Former of a vector.
-// #[ cfg( feature = "enabled" ) ]
-
-// #[ cfg( any( not( feature = "no_std" ) ) ) ]
-// warning!( "any( not( feature = "no_std" ) )" );
-// #[ cfg( any( feature = "use_alloc" ) ) ]
-// warning!( "any( feature = "use_alloc" )" );
-
+#[ cfg( feature = "enabled" ) ]
 #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 #[ cfg( feature = "derive_former" ) ]
 mod vector;
