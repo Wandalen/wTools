@@ -158,7 +158,19 @@ pub( crate ) mod private
       if !maybe_valid_variants.is_empty() { return Some( maybe_valid_variants[ 0 ] ) }
       else { None }
     }
-
+    
+    // qqq : for Barsik : 
+    // Problem with separating properties and options: 
+    // if we pass to wca a command that has an incorrectly named property, it defines this property as part of an option. 
+    // You can simulate this problem by running the code from https://github.com/Wandalen/wTools/blob/alpha/module/move/wca/examples/wca_trivial.rs in this form `cargo r .echo propertyf:123` 
+    // where the console shows that the option is `propertyf:123` and the property is empty. 
+    // 
+    // I would like to get an error in this case. 
+    // 
+    // A real example of the problem can be seen in the .test command in willbe where if you don't specify the option and make a mistake in the name of the properties when running it, 
+    // the option will be an incorrectly written property that will produce an error with unobvious output.
+    // 
+    
     fn extract_subjects( command : &Command, raw_command : &ParsedCommand, used_properties : &[ &String ] ) -> Result< Vec< Value > >
     {
       let mut subjects = vec![];
