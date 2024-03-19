@@ -33,7 +33,7 @@ full = [
   "enabled",
 ]
 no_std = []
-use_alloc = []
+use_alloc = [ "no_std" ]
 enabled = [ "meta_tools/enabled", "iter_tools/enabled", "data_type/enabled", "strs_tools/enabled" ]
 
 [dependencies]

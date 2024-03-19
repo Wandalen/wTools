@@ -27,7 +27,7 @@ all-features = false
 default = [ "enabled", "process_environment_is_cicd" ]
 full = [ "enabled", "process_environment_is_cicd" ]
 no_std = []
-use_alloc = []
+use_alloc = [ "no_std" ]
 enabled = [
   "mod_interface/enabled",
   "former/enabled",

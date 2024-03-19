@@ -372,8 +372,8 @@ diagnostics_compiletime_assertions = [ "diagnostics_tools/diagnostics_compiletim
 
 nightly = [] # must be empty
 
-# no_std = []
-use_alloc = []
+no_std = []
+use_alloc = [ "no_std" ]
 enabled = []
 
 # xxx : qqq : should it be filled by all non_std?

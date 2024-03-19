@@ -44,7 +44,7 @@ full = [
   "meta_idents_concat",
 ]
 no_std = []
-use_alloc = []
+use_alloc = [ "no_std" ]
 enabled = []
 
 meta_for_each = [ "for_each/enabled" ]

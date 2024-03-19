@@ -27,7 +27,7 @@ all-features = false
 [features]
 
 no_std = []
-use_alloc = []
+use_alloc = [ "no_std" ]
 
 default = [
   "enabled",
