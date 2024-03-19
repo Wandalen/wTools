@@ -14,7 +14,7 @@ mod private
   use error_tools::for_app::bail;
   use optimization::Optimization;
 
-  #[ derive( Former ) ]
+  #[ derive( Former, Debug ) ]
   struct TestsProperties
   {
     #[ default( true ) ]
@@ -123,8 +123,10 @@ mod private
       this = if let Some( v ) = value.get_owned( "power" ) { this.power::< u32 >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "include" ) { this.include::< Vec< String > >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "exclude" ) { this.exclude::< Vec< String > >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "with_debug" ) { this.dry::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "with_release" ) { this.dry::< bool >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "with_debug" ) { this.with_debug::< bool >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "with_release" ) { this.with_release::< bool >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "with_all_features" ) { this.with_all_features::< bool >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "with_none_features" ) { this.with_none_features::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "enabled_features" ) { this.enabled_features::< Vec< String > >( v ) } else { this };
 
       Ok( this.form() )
