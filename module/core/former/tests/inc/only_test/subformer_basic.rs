@@ -13,6 +13,8 @@
 // ;
 // ca.execute( input ).unwrap();
 
+// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
+#[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn command()
 {
@@ -25,7 +27,7 @@ fn command()
   {
     name : "a".to_string(),
     subject : "b".to_string(),
-    properties : std::collections::HashMap::< &str, Property< &str > >::new(),
+    properties : collection_tools::HashMap::< &str, Property< &str > >::new(),
   };
   a_id!( got, exp );
 
@@ -37,7 +39,7 @@ fn command()
   {
     name : "a".to_string(),
     subject : "b".to_string(),
-    properties : std::collections::HashMap::< &str, Property< &str > >::new(),
+    properties : collection_tools::HashMap::< &str, Property< &str > >::new(),
   };
   a_id!( got, exp );
 
@@ -49,7 +51,7 @@ fn command()
   {
     name : "a".to_string(),
     subject : "b".to_string(),
-    properties : std::collections::HashMap::< &str, Property< &str > >::new(),
+    properties : collection_tools::HashMap::< &str, Property< &str > >::new(),
   };
   a_id!( got, exp );
 
@@ -57,6 +59,8 @@ fn command()
 
 //
 
+// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
+#[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn command_properties()
 {
@@ -78,7 +82,7 @@ fn command_properties()
       "property1" => Property::new( "property1", "simple property", 13isize ),
       "property2" => Property::new( "property2", "simple property 3", 113isize ),
     },
-    // properties : std::collections::HashMap::< &str, Property< &str > >::new(),
+    // properties : collection_tools::HashMap::< &str, Property< &str > >::new(),
   };
   a_id!( got, exp );
 
@@ -101,7 +105,7 @@ fn command_properties()
       "property1" => Property::new( "property1", "simple property", 13isize ),
       "property2" => Property::new( "property2", "simple property 3", 113isize ),
     },
-    // properties : std::collections::HashMap::< &str, Property< &str > >::new(),
+    // properties : collection_tools::HashMap::< &str, Property< &str > >::new(),
   };
   a_id!( got, exp );
 
@@ -109,6 +113,8 @@ fn command_properties()
 
 //
 
+// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
+#[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn aggregator()
 {

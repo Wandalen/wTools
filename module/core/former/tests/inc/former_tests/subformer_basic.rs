@@ -1,4 +1,4 @@
-
+#![ allow( dead_code ) ]
 use super::*;
 
 //
@@ -54,7 +54,7 @@ where
   pub name : String,
   pub subject : String,
   #[ subformer( the_module::HashMapSubformer ) ]
-  pub properties : std::collections::HashMap< K, Property< K > >,
+  pub properties : collection_tools::HashMap< K, Property< K > >,
 }
 
 // manual
@@ -102,7 +102,7 @@ where
 {
   pub parameter1 : String,
   #[ subformer( the_module::HashMapSubformer ) ]
-  pub commands : std::collections::HashMap< String, Command< K > >,
+  pub commands : collection_tools::HashMap< String, Command< K > >,
 }
 
 // manual
@@ -129,7 +129,7 @@ where
       }
       else
       {
-        let mut commands : std::collections::HashMap< String, Command< K > > = Default::default();
+        let mut commands : collection_tools::HashMap< String, Command< K > > = Default::default();
         commands.insert( command.name.clone(), command );
         super_former.container.commands = Some( commands );
       }

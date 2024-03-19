@@ -15,32 +15,27 @@
 //! also shows that the resulting map is equivalent to one created using the standard `HashMap::new`
 //! and `.insert()` methods.
 //!
-//! ```rust
-//! use collection_tools::*;
-//!
-//! fn main()
-//! {
-//!   // Create a HashMap using the `hmap!` macro for more ergonomic initialization.
-//!   let meta_map = hmap! { 3 => 13 };
-//!
-//!   // For comparison, create a HashMap using the standard approach.
-//!   let mut std_map = std::collections::HashMap::new();
-//!   std_map.insert( 3, 13 );
-//!
-//!   // Verify that the maps created by the two methods are equivalent.
-//!   assert_eq!( meta_map, std_map );
-//! }
-//! ```
-//!
 //! The `hmap!` macro significantly simplifies the syntax required to instantiate and populate
 //! a `HashMap`, making your code cleaner and more concise. This is particularly useful in cases
 //! where you need to define a map with a known set of key-value pairs upfront.
 
+#[ cfg( not( all
+(
+  not( feature = "use_alloc" ),
+  all( feature = "enabled", feature = "collection_constructors" ),
+  any( not( feature = "no_std" ), feature = "use_alloc" )
+)))]
+fn main(){}
+
+// zzz : qqq : rid off `#[ cfg( not( feature = "use_alloc" ) ) ]`
+#[ cfg( not( feature = "use_alloc" ) ) ]
+#[ cfg( all( feature = "enabled", feature = "collection_constructors" ) ) ]
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 fn main()
 {
   use collection_tools::*;
-  let meta_map = hmap! { 3 => 13 };
-  let mut std_map = std::collections::HashMap::new();
-  std_map.insert( 3, 13 );
-  assert_eq!( meta_map, std_map );
+  let map = hmap! { 3 => 13 };
+  let mut expected = std::collections::HashMap::new();
+  expected.insert( 3, 13 );
+  assert_eq!( map, expected );
 }

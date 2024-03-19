@@ -27,7 +27,7 @@ all-features = false
 [features]
 
 no_std = [ "collection_tools/no_std" ]
-use_alloc = [ "no_std", "collection_tools/no_std" ]
+use_alloc = [ "no_std", "collection_tools/use_alloc" ]
 
 default = [
   "enabled",

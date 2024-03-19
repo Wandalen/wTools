@@ -1,13 +1,6 @@
 use super::*;
 
-#[ cfg( feature = "use_alloc" ) ]
-extern crate alloc;
-#[ cfg( feature = "use_alloc" ) ]
-#[ allow( unused_imports ) ]
-use alloc::collections::HashMap;
-#[ cfg( not( feature = "no_std" ) ) ]
-#[ allow( unused_imports ) ]
-use std::collections::HashMap;
+use collection_tools::HashMap;
 
 /// A trait for types that behave like hash maps, supporting insertion and custom forming behaviors.
 ///
@@ -74,6 +67,8 @@ where
 ///
 /// # Examples
 /// ```
+/// # #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+/// # {
 /// # use test_tools::exposed::*;
 ///
 /// #[ derive( Debug, PartialEq, former::Former ) ]
@@ -91,6 +86,8 @@ where
 /// .form()
 /// ;
 /// assert_eq!( struct1, StructWithMap { map : hmap!{ "a" => "b", "c" => "d" } } );
+///
+/// # }
 /// ```
 
 #[ derive( Debug, Default ) ]

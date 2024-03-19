@@ -3,15 +3,7 @@
 //! This part of the crate provides a flexible interface (`HashSetLike`) and a builder pattern implementation (`HashSetSubformer`) for `HashSet`-like containers. It's designed to extend the builder pattern, allowing for fluent and dynamic construction of sets within custom data structures.
 
 use super::*;
-
-#[ cfg( feature = "use_alloc" ) ]
-extern crate alloc;
-#[ cfg( feature = "use_alloc" ) ]
-#[ allow( unused_imports ) ]
-use alloc::collections::HashSet;
-#[ cfg( not( feature = "no_std" ) ) ]
-#[ allow( unused_imports ) ]
-use std::collections::HashSet;
+use collection_tools::HashSet;
 
 /// A trait for containers behaving like a `HashSet`, allowing insertion operations.
 ///
@@ -51,6 +43,8 @@ where
 /// Using `HashSetSubformer` to populate a `HashSet` within a struct:
 ///
 /// ```rust
+/// # #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+/// # {
 /// # use test_tools::exposed::*;
 ///
 /// #[ derive( Debug, PartialEq, former::Former ) ]
@@ -68,6 +62,7 @@ where
 /// .form();
 ///
 /// assert_eq!(instance, StructWithSet { set : hset![ "apple", "banana" ] });
+/// # }
 /// ```
 
 #[ derive( Debug, Default ) ]
