@@ -503,7 +503,6 @@ where R : RangeBounds< f64 > + Sync,
         let score = self.evaluate_point( &x, &mut stats );
         res.push( ( x, score ) );
       }
-      
       let mut iterations = 0;
       loop
       {
