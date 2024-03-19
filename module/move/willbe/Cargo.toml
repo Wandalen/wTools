@@ -58,6 +58,7 @@ colored = "2.1.0"
 duct = "0.13.7"
 tracing = { version = "0.1", features = [ "log-always" ], optional = true }
 tracing-subscriber = { version = "0.3", optional = true }
+indicatif = "0.17"
 
 [dev-dependencies]
 test_tools = { workspace = true }

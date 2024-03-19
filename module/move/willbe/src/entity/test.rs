@@ -18,6 +18,7 @@ mod private
   use cargo_metadata::Package;
   // qqq : for Petro : don't use cargo_metadata directly, use facade
   use colored::Colorize;
+  use indicatif::{ MultiProgress, ProgressBar, ProgressStyle };
   use rayon::ThreadPoolBuilder;
   use process::Report;
   use wtools::error::anyhow::{ Error, format_err };
@@ -37,6 +38,16 @@ mod private
     optimization : Optimization,
     /// Contains additional features or characteristics of the test variant.
     features : BTreeSet< String >,
+  }
+  
+  impl Display for TestVariant
+  {
+    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result 
+    {
+      let features = if self.features.is_empty() { " ".to_string() } else { self.features.iter().join( ", " ) };
+      writeln!( f, "{} {} {}", self.optimization, self.channel, features )?;
+      Ok( () )
+    }
   }
   
   /// Global test plan
@@ -478,7 +489,7 @@ mod private
 
   /// `tests_run` is a function that runs tests on a given package with specified arguments.
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
-  pub fn run( options : &PackageTestOptions< '_ > ) -> Result< TestReport, ( TestReport, Error ) >
+  pub fn run( options : &PackageTestOptions< '_ >, progress_bar : &ProgressBar ) -> Result< TestReport, ( TestReport, Error ) >
   {
     let mut report = TestReport::default();
     report.dry = options.dry;
@@ -521,9 +532,11 @@ mod private
                   std::fs::create_dir_all( &path ).unwrap();
                   args_t = args_t.temp_directory_path( path );
                 }
+                progress_bar.set_message( format!( "start : {}", variant ) );
                 
                 let cmd_rep = _run( dir, args_t.form() );
                 r.lock().unwrap().tests.insert( variant.clone(), cmd_rep.map_err( | e | e.0 ) );
+                progress_bar.inc( 1 );
               }
           );
         }
@@ -540,7 +553,7 @@ mod private
   }
 
   /// Run tests for given packages.
-  pub fn tests_run( args : &TestOptions ) -> Result< TestsReport, ( TestsReport, Error ) >
+  pub fn tests_run( args : &TestOptions, progress : &MultiProgress, style : &ProgressStyle ) -> Result< TestsReport, ( TestsReport, Error ) >
   {
     let mut report = TestsReport::default();
     report.dry = args.dry;
@@ -557,8 +570,10 @@ mod private
           (
             move | _ |
             {
+              let pb = progress.add( ProgressBar::new( plan.test_variants.len() as u64 ) );
+              pb.set_style( style.clone() );
               let test_package_options = PackageTestOptions{ temp_path : args.temp_path.clone(), plan, dry : args.dry };
-              match run( &test_package_options )
+              match run( &test_package_options, &pb )
               {
                 Ok( r ) =>
                 {
