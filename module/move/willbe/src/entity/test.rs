@@ -384,7 +384,6 @@ mod private
     fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
     {
       f.debug_struct( "TestOptionsProgressBarFeature" )
-      .field( "multiprocess", &self.multiprocess )
       .finish()
     }
   }
