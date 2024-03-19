@@ -70,6 +70,7 @@ path = "module/alias/std_tools"
 version = "~0.1.4"
 path = "module/alias/std_x"
 
+
 ## data_type
 
 [workspace.dependencies.data_type]
@@ -101,6 +102,11 @@ version = "~0.3.0"
 path = "module/alias/winterval"
 default-features = false
 features = [ "enabled" ]
+
+[workspace.dependencies.collection_tools]
+version = "~0.1.0"
+path = "module/core/collection_tools"
+default-features = false
 
 
 ## derive
@@ -163,6 +169,7 @@ features = [ "enabled" ]
 version = "~0.5.0"
 path = "module/core/mem_tools"
 default-features = false
+
 
 ## diagnostics
 

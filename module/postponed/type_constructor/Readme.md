@@ -115,7 +115,7 @@ Their implementation is based on standard `From`, if `From` is implemented for e
 }
 ```
 
-### Basic use-case :: single-line single
+### Basic Use Case :: single-line single
 
 To define your own single-use macro `types!`. The single-line definition looks like that.
 
@@ -165,7 +165,7 @@ let x = MySingle( 13 );
 println!( "x : {}", x.0 );
 ```
 
-### Basic use-case :: single with derives and attributes
+### Basic Use Case :: single with derives and attributes
 
 It's possible to define attributes as well as derives.
 
@@ -221,7 +221,7 @@ let x = MySingle( 13 );
 dbg!( x );
 ```
 
-### Basic use-case :: single with struct instead of macro
+### Basic Use Case :: single with struct instead of macro
 
 Sometimes it's sufficient to use a common type instead of defining a brand new one.
 You may use parameterized struct `Single< T >` instead of macro `types!` if that is the case.
@@ -234,7 +234,7 @@ let x = Single::< i32 >( 13 );
 dbg!( x );
 ```
 
-### Basic use-case :: single with a parametrized element
+### Basic Use Case :: single with a parametrized element
 
 Element of tuple could be parametrized.
 
@@ -286,7 +286,7 @@ impl< T : Copy > From< MySingle< T > > for std::sync::Arc< T >
 let x = MySingle( std::sync::Arc::new( 13 ) );
 ```
 
-### Basic use-case :: single with parametrized tuple
+### Basic Use Case :: single with parametrized tuple
 
 Instead of parametrizing the element, it's possible to define a parametrized tuple.
 
@@ -335,7 +335,7 @@ let x = MySingle( 13 );
 dbg!( 13 );
 ```
 
-### Basic use-case :: single-line pair
+### Basic Use Case :: single-line pair
 
 Sometimes you need to wrap more than a single element into a tuple. If types of elements are different use `pair`. The same macro `types` is responsible for generating code for both `single`, `pair` and also `many`.
 
@@ -379,7 +379,7 @@ let x = MyPair( 13, 31 );
 println!( "x : ( {}, {} )", x.0, x.1 );
 ```
 
-### Basic use-case :: pair with parameters
+### Basic Use Case :: pair with parameters
 
 Just like `single`, `pair` may have parameters:
 
@@ -440,7 +440,7 @@ dbg!( x );
 // prints : x = MyPair( 13, 13.0 )
 ```
 
-### Basic use-case :: single-line homopair
+### Basic Use Case :: single-line homopair
 
 If you need to wrap pair of elements with the same type use the type constructor `pair`. The same type constructor `pair` for both `pair` and `homopair`, difference in number of types in definition, `homopair` has only one, because both its element has the same type. The same macro `types` is responsible for generating code for both `single`, `pair` and also `many`.
 
@@ -486,7 +486,7 @@ let x = MyPair( 13, 31 );
 println!( "x : ( {}, {} )", x.0, x.1 );
 ```
 
-### Basic use-case :: homopair with parameters
+### Basic Use Case :: homopair with parameters
 
 Unlike `heteropair` `homopair` has much more traits implemented for it. Among such are: `clone_as_tuple`, `clone_as_array` to clone it as either tuple or array, `as_tuple`, `as_array`, `as_slice` to reinterpret it as either tuple or array or slice, traits `From`/`Into` are implemented to convert it from/into tuple, array, slice, scalar.
 
@@ -657,7 +657,7 @@ dbg!( &clone_as_tuple );
 // prints : &clone_as_tuple = ( 13, 31 )
 ```
 
-### Basic use-case :: single-line many
+### Basic Use Case :: single-line many
 
 Use type constructor `many` to wrap `Vec` in a tuple. Similar to `single` it has essential traits implemented for it.
 
@@ -765,7 +765,7 @@ let x = MyMany::from( [ 1, 2, 3 ] );
 println!( "x : {:?}", x.0 );
 ```
 
-### Basic use-case :: make - variadic constructor
+### Basic Use Case :: make - variadic constructor
 
 Implement traits [From_0], [From_1] up to MakeN to provide the interface to construct your structure with a different set of arguments.
 In this example structure, Struct1 could be constructed either without arguments, with a single argument, or with two arguments.

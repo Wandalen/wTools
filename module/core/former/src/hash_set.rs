@@ -4,6 +4,14 @@
 
 use super::*;
 
+#[ cfg( feature = "use_alloc" ) ]
+extern crate alloc;
+#[ cfg( feature = "use_alloc" ) ]
+#[ allow( unused_imports ) ]
+use alloc::collections::HashSet;
+#[ cfg( not( feature = "no_std" ) ) ]
+#[ allow( unused_imports ) ]
+use std::collections::HashSet;
 
 /// A trait for containers behaving like a `HashSet`, allowing insertion operations.
 ///
@@ -23,13 +31,13 @@ where
   fn insert( &mut self, element : E ) -> Option< E >;
 }
 
-impl< E > HashSetLike< E > for std::collections::HashSet< E >
+impl< E > HashSetLike< E > for HashSet< E >
 where
   E : core::cmp::Eq + core::hash::Hash,
 {
   fn insert( &mut self, element : E ) -> Option< E >
   {
-    std::collections::HashSet::replace( self, element )
+    HashSet::replace( self, element )
   }
 }
 

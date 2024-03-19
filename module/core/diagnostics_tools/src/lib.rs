@@ -8,7 +8,8 @@
 /// Compile-time asserting.
 pub mod diag;
 
-/// Dependencies.
+/// Namespace with dependencies.
+
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {

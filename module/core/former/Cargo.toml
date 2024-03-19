@@ -26,8 +26,8 @@ all-features = false
 
 [features]
 
-no_std = []
-use_alloc = [ "no_std" ]
+no_std = [ "collection_tools/no_std" ]
+use_alloc = [ "no_std", "collection_tools/no_std" ]
 
 default = [
   "enabled",
@@ -47,7 +47,7 @@ full = [
   "derive_components_assign",
   "derive_from_components",
 ]
-enabled = [ "former_meta/enabled" ]
+enabled = [ "former_meta/enabled", "collection_tools/enabled" ]
 
 derive_former = [ "former_meta/derive_former" ]
 derive_components = [ "former_meta/derive_components" ]
@@ -59,6 +59,8 @@ derive_from_components = [ "derive_components", "former_meta/derive_from_compone
 
 [dependencies]
 former_meta = { workspace = true }
+collection_tools = { workspace = true, features = [ "collection_std" ] }
+
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }

@@ -6,27 +6,25 @@
 
 /// Axiomatic things.
 #[ cfg( feature = "enabled" ) ]
-// #[ cfg( not( feature = "no_std" ) ) ]
 #[ cfg( feature = "derive_former" ) ]
 mod axiomatic;
 /// Former of a vector.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 #[ cfg( feature = "derive_former" ) ]
 mod vector;
 /// Former of a hash map.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 #[ cfg( feature = "derive_former" ) ]
 mod hash_map;
 /// Former of a hash set.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 #[ cfg( feature = "derive_former" ) ]
 mod hash_set;
 /// Component-based forming.
 #[ cfg( feature = "enabled" ) ]
-// #[ cfg( not( feature = "no_std" ) ) ]
 #[ cfg( feature = "derive_component_from" ) ]
 mod component;
 

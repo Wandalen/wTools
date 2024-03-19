@@ -1,5 +1,14 @@
 use super::*;
 
+#[ cfg( feature = "use_alloc" ) ]
+extern crate alloc;
+#[ cfg( feature = "use_alloc" ) ]
+#[ allow( unused_imports ) ]
+use alloc::vec::Vec;
+#[ cfg( not( feature = "no_std" ) ) ]
+#[ allow( unused_imports ) ]
+use std::vec::Vec;
+
 /// Trait for containers that behave like a vector, providing an interface for element addition.
 ///
 /// This trait enables the use of custom or standard vector-like containers within the builder pattern,
@@ -11,11 +20,11 @@ pub trait VectorLike< E >
   fn push( &mut self, element : E );
 }
 
-impl< E > VectorLike< E > for std::vec::Vec< E >
+impl< E > VectorLike< E > for Vec< E >
 {
   fn push( &mut self, element : E )
   {
-    std::vec::Vec::push( self, element );
+    Vec::push( self, element );
   }
 }
 

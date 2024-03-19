@@ -1,5 +1,14 @@
 use super::*;
 
+#[ cfg( feature = "use_alloc" ) ]
+extern crate alloc;
+#[ cfg( feature = "use_alloc" ) ]
+#[ allow( unused_imports ) ]
+use alloc::collections::HashMap;
+#[ cfg( not( feature = "no_std" ) ) ]
+#[ allow( unused_imports ) ]
+use std::collections::HashMap;
+
 /// A trait for types that behave like hash maps, supporting insertion and custom forming behaviors.
 ///
 /// This trait allows for generic operations on hash map-like data structures, enabling the insertion
@@ -36,7 +45,7 @@ where
 
 }
 
-impl< K, E > HashMapLike< K, E > for std::collections::HashMap< K, E >
+impl< K, E > HashMapLike< K, E > for HashMap< K, E >
 where
   K : core::cmp::Eq + core::hash::Hash,
   Self : Sized + Default,
@@ -45,7 +54,7 @@ where
   #[ inline( always ) ]
   fn insert( &mut self, k : K, e : E ) -> Option< E >
   {
-    std::collections::HashMap::insert( self, k, e )
+    HashMap::insert( self, k, e )
   }
 
 }
