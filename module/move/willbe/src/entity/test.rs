@@ -13,11 +13,13 @@ mod private
   };
   use std::collections::HashMap;
   use std::ffi::OsString;
-  use std::fmt::Display;
+  use std::fmt::{ Debug, Display };
+  use std::marker::PhantomData;
   use std::path::PathBuf;
   use cargo_metadata::Package;
   // qqq : for Petro : don't use cargo_metadata directly, use facade
   use colored::Colorize;
+  #[ cfg( feature = "progress_bar" ) ]
   use indicatif::{ MultiProgress, ProgressBar, ProgressStyle };
   use rayon::ThreadPoolBuilder;
   use process::Report;
@@ -214,12 +216,33 @@ mod private
     }
   }
   
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Former ) ]
   pub struct PackageTestOptions< 'a >
   {
     temp_path : Option< PathBuf >,
     plan : &'a TestPackagePlan,
     dry : bool,
+    progress_bar_feature : Option< PackageTestOptionsProgressBarFeature< 'a > >,
+  }
+  
+  #[ derive( Debug ) ]
+  struct PackageTestOptionsProgressBarFeature< 'a >
+  {
+    phantom : PhantomData< &'a () >,
+    #[ cfg( feature = "progress_bar" ) ]
+    multi_progress : &'a MultiProgress,
+    #[ cfg( feature = "progress_bar" ) ]
+    progress_bar : &'a ProgressBar
+  }
+  
+
+  impl PackageTestOptionsFormer< '_ >
+  {
+    pub fn option_temp(  mut self, value : impl Into< Option< PathBuf > > ) -> Self
+    {
+      self.container.temp_path = value.into();
+      self
+    }
   }
   
   /// Represents the options for the test.
@@ -319,7 +342,7 @@ mod private
   }
 
   /// `TestOptions` is a structure used to store the arguments for tests.
-  #[ derive( Debug, Former ) ]
+  #[ derive( Former ) ]
   pub struct TestOptions
   {
     /// Plan for testing
@@ -333,6 +356,44 @@ mod private
     
     /// A boolean indicating whether to perform a dry run or not.
     pub dry : bool,
+    
+    /// This field contains fields for progress_bar feature
+    pub feature : Option< TestOptionsProgressBarFeature >,
+  }
+  
+  // qqq : remove after Former fix
+  /// Structure for progress bar feature field 
+  pub struct TestOptionsProgressBarFeature
+  {
+    #[ cfg( feature = "progress_bar" ) ]
+    /// Base progress bar
+    pub multiprocess : MultiProgress,
+
+    #[ cfg( feature = "progress_bar" ) ]
+    /// Style for progress bar
+    pub style : ProgressStyle,
+  }
+  
+  impl Debug for TestOptionsProgressBarFeature
+  {
+    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result 
+    {
+      f.debug_struct( "TestOptionsProgressBarFeature" )
+      .field( "multiprocess", &self.multiprocess )
+      .finish()
+    }
+  }
+
+  impl Debug for TestOptions
+  {
+    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result {
+      f.debug_struct( "TestOptions" )
+      .field( "plan", &self.plan)
+      .field( "concurrent", &self.concurrent)
+      .field( "temp_path", &self.temp_path)
+      .field( "plan", &self.plan)
+      .finish()
+    }
   }
 
   impl TestOptionsFormer
@@ -489,7 +550,7 @@ mod private
 
   /// `tests_run` is a function that runs tests on a given package with specified arguments.
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
-  pub fn run( options : &PackageTestOptions< '_ >, multi_progress : &MultiProgress, progress_bar : &ProgressBar ) -> Result< TestReport, ( TestReport, Error ) >
+  pub fn run( options : &PackageTestOptions< '_ > ) -> Result< TestReport, ( TestReport, Error ) >
   {
     let mut report = TestReport::default();
     report.dry = options.dry;
@@ -532,11 +593,17 @@ mod private
                   std::fs::create_dir_all( &path ).unwrap();
                   args_t = args_t.temp_directory_path( path );
                 }
-                let spinner = multi_progress.add( ProgressBar::new_spinner().with_message( format!( "start : {}", variant ) ) );
-                spinner.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
+                #[ cfg( feature = "progress_bar" ) ]
+                let _s = 
+                {
+                  let spinner = options.progress_bar_feature.as_ref().unwrap().multi_progress.add( ProgressBar::new_spinner().with_message( format!( "start : {}", variant ) ) );
+                  spinner.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
+                  spinner
+                };
                 let cmd_rep = _run( dir, args_t.form() );
                 r.lock().unwrap().tests.insert( variant.clone(), cmd_rep.map_err( | e | e.0 ) );
-                progress_bar.inc( 1 );
+                #[ cfg( feature = "progress_bar" ) ]
+                options.progress_bar_feature.as_ref().unwrap().progress_bar.inc( 1 );
               }
           );
         }
@@ -553,7 +620,7 @@ mod private
   }
 
   /// Run tests for given packages.
-  pub fn tests_run( args : &TestOptions, progress : &MultiProgress, style : &ProgressStyle ) -> Result< TestsReport, ( TestsReport, Error ) >
+  pub fn tests_run( args : &TestOptions ) -> Result< TestsReport, ( TestsReport, Error ) >
   {
     let mut report = TestsReport::default();
     report.dry = args.dry;
@@ -570,10 +637,27 @@ mod private
           (
             move | _ |
             {
-              let pb = progress.add( ProgressBar::new( plan.test_variants.len() as u64 ) );
-              pb.set_style( style.clone() );
-              let test_package_options = PackageTestOptions{ temp_path : args.temp_path.clone(), plan, dry : args.dry };
-              match run( &test_package_options, progress, &pb )
+              #[ cfg( feature = "progress_bar" ) ]
+              let pb = 
+              {
+                let pb = args.feature.as_ref().unwrap().multiprocess.add( ProgressBar::new( plan.test_variants.len() as u64 ) );
+                pb.set_style( args.feature.as_ref().unwrap().style.clone() );
+                pb.inc( 0 );
+                pb
+              };
+              let test_package_options = PackageTestOptions::former().option_temp( args.temp_path.clone() ).plan( plan ).dry( args.dry );
+              #[ cfg( feature = "progress_bar" ) ]
+              let test_package_options = test_package_options.progress_bar_feature
+              ( 
+                PackageTestOptionsProgressBarFeature
+                {
+                  phantom : PhantomData,
+                  multi_progress : &args.feature.as_ref().unwrap().multiprocess,
+                  progress_bar : &pb, 
+                }
+              );
+              let options = test_package_options.form();
+              match run( &options )
               {
                 Ok( r ) =>
                 {
@@ -615,4 +699,6 @@ crate::mod_interface!
   protected use TestsReport;
   protected use run;
   protected use tests_run;
+  
+  protected use TestOptionsProgressBarFeature;
 }
