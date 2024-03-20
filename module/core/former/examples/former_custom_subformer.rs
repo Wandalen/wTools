@@ -29,10 +29,10 @@ fn main()
   // Use CommandFormer as custom subformer for AggregatorFormer to add commands by name.
   impl< Context, End > AggregatorFormer< Context, End >
   where
-    End : former::ToSuperFormer< Aggregator, Context >,
+    End : former::FormingEnd< Aggregator, Context >,
   {
     #[ inline( always ) ]
-    pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::ToSuperFormer< Command, Self > >
+    pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::FormingEnd< Command, Self > >
     where
       IntoName : core::convert::Into< String >,
     {

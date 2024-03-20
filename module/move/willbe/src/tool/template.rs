@@ -140,11 +140,11 @@ mod private
 
   impl< Context, End > TemplateParametersFormer< Context, End >
   where
-    End : former::ToSuperFormer< TemplateParameters, Context >,
+    End : former::FormingEnd< TemplateParameters, Context >,
   {
     #[ inline( always ) ]
     pub fn parameter( self, name : &str ) ->
-    TemplateParameterDescriptorFormer< Self, impl former::ToSuperFormer< TemplateParameterDescriptor, Self > >
+    TemplateParameterDescriptorFormer< Self, impl former::FormingEnd< TemplateParameterDescriptor, Self > >
     {
       let on_end = | descriptor : TemplateParameterDescriptor, super_former : core::option::Option< Self > | -> Self
       {
@@ -319,10 +319,10 @@ mod private
 
   impl< Context, End > TemplateFilesBuilderFormer< Context, End >
   where
-    End : former::ToSuperFormer< TemplateFilesBuilder, Context >,
+    End : former::FormingEnd< TemplateFilesBuilder, Context >,
   {
     #[ inline( always ) ]
-    pub fn file( self ) -> TemplateFileDescriptorFormer< Self, impl former::ToSuperFormer< TemplateFileDescriptor, Self > >
+    pub fn file( self ) -> TemplateFileDescriptorFormer< Self, impl former::FormingEnd< TemplateFileDescriptor, Self > >
     {
       let on_end = | descriptor : TemplateFileDescriptor, super_former : core::option::Option< Self > | -> Self
       {

@@ -846,7 +846,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   };
   extra_generics.where_clause = parse_quote!
   {
-    where __FormerEnd : former::ToSuperFormer< #name_ident #generics_ty, __FormerContext >,
+    where __FormerEnd : former::FormingEnd< #name_ident #generics_ty, __FormerContext >,
   };
   // xxx : write helper to fix bug with where
   let generics_of_former = generics::merge( &generics, &extra_generics );
@@ -1098,7 +1098,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 r#"
 impl< FormerContext, FormerEnd > UserProfileFormer< FormerContext, FormerEnd >
 where
-  FormerEnd : former::ToSuperFormer< UserProfile, FormerContext >,
+  FormerEnd : former::FormingEnd< UserProfile, FormerContext >,
 {
   pub fn age< Src >( mut self, src : Src ) -> Self
   where

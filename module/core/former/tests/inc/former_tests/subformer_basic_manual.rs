@@ -96,7 +96,7 @@ where
 pub struct CommandFormer< K, Context = Command< K >, End = the_module::ReturnFormed >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  End : the_module::ToSuperFormer< Command< K >, Context >,
+  End : the_module::FormingEnd< Command< K >, Context >,
 {
   storage : CommandFormerStorage< K >,
   context : core::option::Option< Context >,
@@ -108,7 +108,7 @@ impl< K, Context, End >
 CommandFormer< K, Context, End >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  End : the_module::ToSuperFormer< Command< K >, Context >,
+  End : the_module::FormingEnd< Command< K >, Context >,
 {
 
   #[ inline( always ) ]
@@ -223,7 +223,7 @@ where
     Property< K >,
     collection_tools::HashMap< K, Property< K > >,
     CommandFormer< K, Context, End >,
-    impl the_module::ToSuperFormer< collection_tools::HashMap< K, Property< K > >, Self >,
+    impl the_module::FormingEnd< collection_tools::HashMap< K, Property< K > >, Self >,
   >
   {
     let formed = self.storage.properties.take();
@@ -243,7 +243,7 @@ impl< K, Context, End >
 CommandFormer< K, Context, End >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  End : the_module::ToSuperFormer< Command< K >, Context >,
+  End : the_module::FormingEnd< Command< K >, Context >,
 {
 
   /// Inserts a key-value pair into the map. Make a new container if it was not made so far.
@@ -304,7 +304,7 @@ where
 pub struct AggregatorFormer< K, Context = Aggregator< K >, End = the_module::ReturnFormed >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  End : the_module::ToSuperFormer< Aggregator< K >, Context >,
+  End : the_module::FormingEnd< Aggregator< K >, Context >,
 {
   parameter1 : core::option::Option< String >,
   commands : core::option::Option< collection_tools::HashMap< String, Command< K > > >,
@@ -317,7 +317,7 @@ impl< K, Context, End >
 AggregatorFormer< K, Context, End >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  End : the_module::ToSuperFormer< Aggregator< K >, Context >,
+  End : the_module::FormingEnd< Aggregator< K >, Context >,
 {
 
   #[ inline( always ) ]
@@ -409,7 +409,7 @@ where
     Command< K >,
     collection_tools::HashMap< String, Command< K > >,
     AggregatorFormer< K, Context, End >,
-    impl the_module::ToSuperFormer< collection_tools::HashMap< String, Command< K > >, Self >,
+    impl the_module::FormingEnd< collection_tools::HashMap< String, Command< K > >, Self >,
   >
   {
     let formed = self.commands.take();
@@ -429,12 +429,12 @@ impl< K, Context, End >
 AggregatorFormer< K, Context, End >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  End : the_module::ToSuperFormer< Aggregator< K >, Context >,
+  End : the_module::FormingEnd< Aggregator< K >, Context >,
 {
 
   #[ inline( always ) ]
   pub fn command< IntoName >( self, name : IntoName )
-  -> CommandFormer< K, Self, impl the_module::ToSuperFormer< Command< K >, Self > >
+  -> CommandFormer< K, Self, impl the_module::FormingEnd< Command< K >, Self > >
   where
     K : core::hash::Hash + std::cmp::Eq,
     IntoName : core::convert::Into< String >,

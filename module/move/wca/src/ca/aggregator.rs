@@ -125,14 +125,14 @@ pub( crate ) mod private
 
   impl< Context, End > CommandsAggregatorFormer< Context, End >
   where
-    End : former::ToSuperFormer< CommandsAggregator, Context >,
+    End : former::FormingEnd< CommandsAggregator, Context >,
   {
     /// Creates a command in the command chain.
     ///
     /// # Arguments
     ///
     /// * `name` - The name of the command.
-    pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::ToSuperFormer< Command, Self > >
+    pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::FormingEnd< Command, Self > >
     where
       IntoName : Into< String >,
     {

@@ -139,7 +139,7 @@ mod derive
 ///     FormerEnd = former::ReturnFormed,
 ///   >
 ///   where
-///     FormerEnd : former::ToSuperFormer< UserProfile, FormerContext >,
+///     FormerEnd : former::FormingEnd< UserProfile, FormerContext >,
 ///   {
 ///     storage : UserProfileFormerStorage,
 ///     context : Option< FormerContext >,
@@ -148,7 +148,7 @@ mod derive
 ///
 ///   impl< FormerContext, FormerEnd > UserProfileFormer< FormerContext, FormerEnd >
 ///   where
-///     FormerEnd : former::ToSuperFormer< UserProfile, FormerContext >,
+///     FormerEnd : former::FormingEnd< UserProfile, FormerContext >,
 ///   {
 ///     #[ inline( always ) ]
 ///     pub fn form( mut self ) -> UserProfile

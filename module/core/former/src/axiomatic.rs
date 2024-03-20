@@ -8,7 +8,7 @@
 /// # Parameters
 /// - `Formed`: The type of the container being processed.
 /// - `Context`: The type of the context that might be altered or returned upon completion.
-pub trait ToSuperFormer< Formed, Context >
+pub trait FormingEnd< Formed, Context >
 {
   /// Called at the end of the subforming process to return the modified or original context.
   ///
@@ -22,7 +22,7 @@ pub trait ToSuperFormer< Formed, Context >
   fn call( &self, storage : Formed, context : core::option::Option< Context > ) -> Context;
 }
 
-impl< Formed, Context, F > ToSuperFormer< Formed, Context > for F
+impl< Formed, Context, F > FormingEnd< Formed, Context > for F
 where
   F : Fn( Formed, core::option::Option< Context > ) -> Context,
 {
@@ -33,12 +33,12 @@ where
   }
 }
 
-/// A wrapper around a closure to be used as a `ToSuperFormer`.
+/// A wrapper around a closure to be used as a `FormingEnd`.
 ///
 /// This struct allows for dynamic dispatch of a closure that matches the
-/// `ToSuperFormer` trait's `call` method signature. It is useful for cases where
+/// `FormingEnd` trait's `call` method signature. It is useful for cases where
 /// a closure needs to be stored or passed around as an object implementing
-/// `ToSuperFormer`.
+/// `FormingEnd`.
 ///
 /// # Type Parameters
 ///
@@ -47,26 +47,26 @@ where
 /// * `Context` - The type of the context that may be altered or returned by the closure.
 ///               This allows for flexible manipulation of context based on the container.
 #[ cfg( not( feature = "no_std" ) ) ]
-pub struct ToSuperFormerWrapper< Formed, Context >
+pub struct FormingEndWrapper< Formed, Context >
 {
   closure : Box< dyn Fn( Formed, Option< Context > ) -> Context >,
   _marker : std::marker::PhantomData< Formed >,
 }
 
 #[ cfg( not( feature = "no_std" ) ) ]
-impl< Formed, Context > ToSuperFormerWrapper< Formed, Context >
+impl< Formed, Context > FormingEndWrapper< Formed, Context >
 {
-  /// Constructs a new `ToSuperFormerWrapper` with the provided closure.
+  /// Constructs a new `FormingEndWrapper` with the provided closure.
   ///
   /// # Parameters
   ///
   /// * `closure` - A closure that matches the expected signature for transforming a container
   ///               and context into a new context. This closure is stored and called by the
-  ///               `call` method of the `ToSuperFormer` trait implementation.
+  ///               `call` method of the `FormingEnd` trait implementation.
   ///
   /// # Returns
   ///
-  /// Returns an instance of `ToSuperFormerWrapper` encapsulating the provided closure.
+  /// Returns an instance of `FormingEndWrapper` encapsulating the provided closure.
   pub fn new( closure : impl Fn( Formed, Option< Context > ) -> Context + 'static ) -> Self
   {
     Self
@@ -80,11 +80,11 @@ impl< Formed, Context > ToSuperFormerWrapper< Formed, Context >
 #[ cfg( not( feature = "no_std" ) ) ]
 use std::fmt;
 #[ cfg( not( feature = "no_std" ) ) ]
-impl< Formed, Context > fmt::Debug for ToSuperFormerWrapper< Formed, Context >
+impl< Formed, Context > fmt::Debug for FormingEndWrapper< Formed, Context >
 {
   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
-    f.debug_struct( "ToSuperFormerWrapper" )
+    f.debug_struct( "FormingEndWrapper" )
     .field( "closure", &format_args!{ "- closure -" } )
     .field( "_marker", &self._marker )
     .finish()
@@ -92,8 +92,8 @@ impl< Formed, Context > fmt::Debug for ToSuperFormerWrapper< Formed, Context >
 }
 
 #[ cfg( not( feature = "no_std" ) ) ]
-impl< Formed, Context > ToSuperFormer< Formed, Context >
-for ToSuperFormerWrapper< Formed, Context >
+impl< Formed, Context > FormingEnd< Formed, Context >
+for FormingEndWrapper< Formed, Context >
 {
   fn call( &self, formed : Formed, context : Option< Context > ) -> Context
   {
@@ -101,13 +101,13 @@ for ToSuperFormerWrapper< Formed, Context >
   }
 }
 
-/// A `ToSuperFormer` implementation that returns the original context without any modifications.
+/// A `FormingEnd` implementation that returns the original context without any modifications.
 ///
 /// This struct is used when no end-of-forming processing is needed, and the original context is to be returned as-is.
 #[ derive( Debug, Default ) ]
 pub struct NoEnd;
 
-impl< Formed, Context > ToSuperFormer< Formed, Context >
+impl< Formed, Context > FormingEnd< Formed, Context >
 for NoEnd
 {
   #[ inline( always ) ]
@@ -117,14 +117,14 @@ for NoEnd
   }
 }
 
-/// A `ToSuperFormer` implementation that returns the formed container itself instead of the context.
+/// A `FormingEnd` implementation that returns the formed container itself instead of the context.
 ///
 /// This struct is useful when the forming process should result in the formed container being returned directly,
 /// bypassing any additional context processing. It simplifies scenarios where the formed container is the final result.
 #[ derive( Debug, Default ) ]
 pub struct ReturnFormed;
 
-impl< Formed > ToSuperFormer< Formed, Formed >
+impl< Formed > FormingEnd< Formed, Formed >
 for ReturnFormed
 {
   #[ inline( always ) ]
@@ -153,7 +153,7 @@ for ReturnFormed
 /// # Associated Types
 ///
 /// * `End` - Specifies the trait bound for the closure or handler that gets called at the completion
-///           of the subforming process. This type must implement the `ToSuperFormer<Formed, Context>`
+///           of the subforming process. This type must implement the `FormingEnd<Formed, Context>`
 ///           trait, which defines how the final transformation or construction of `Formed` is handled,
 ///           potentially using the provided `Context`.
 ///
@@ -162,10 +162,10 @@ pub trait FormerBegin< Formed, Context >
 {
 
   /// * `End` - Specifies the trait bound for the closure or handler that gets called at the completion
-  ///           of the subforming process. This type must implement the `ToSuperFormer<Formed, Context>`
+  ///           of the subforming process. This type must implement the `FormingEnd<Formed, Context>`
   ///           trait, which defines how the final transformation or construction of `Formed` is handled,
   ///           potentially using the provided `Context`.
-  type End : ToSuperFormer< Formed, Context >;
+  type End : FormingEnd< Formed, Context >;
 
   /// Initializes the subforming process by setting the context and specifying an `on_end` completion handler.
   ///

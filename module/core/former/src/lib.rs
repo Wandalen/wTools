@@ -10,8 +10,10 @@
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_former" ) ]
 mod axiomatic;
+
 /// Interface for containers.
 #[ cfg( feature = "enabled" ) ]
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 #[ cfg( feature = "derive_former" ) ]
 mod container;
 /// Former of a vector.
@@ -72,21 +74,27 @@ pub mod orphan
 #[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use former_meta::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  #[ cfg( feature = "enabled" ) ]
+  #[ cfg( feature = "derive_former" ) ]
+  pub use super::axiomatic::*;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   #[ cfg( feature = "enabled" ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   #[ cfg( feature = "derive_former" ) ]
-  pub use super::{ axiomatic::*, container::* };
+  pub use super::container::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   #[ cfg( feature = "enabled" ) ]

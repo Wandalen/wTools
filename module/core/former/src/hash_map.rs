@@ -22,7 +22,7 @@ where
   /// Return former.
   #[ inline( always ) ]
   fn former( self )
-  -> HashMapSubformer< K, E, Self, Self, impl ToSuperFormer< Self, Self > >
+  -> HashMapSubformer< K, E, Self, Self, impl FormingEnd< Self, Self > >
   {
     HashMapSubformer::begin( Some( self ), None, ReturnFormed )
   }
@@ -31,7 +31,7 @@ where
   // #[ inline( always ) ]
   // fn former_begin< Context, End >( self, context : Context, end : End )
   // -> HashMapSubformer< K, E, Self, Context, End >
-  // where End : ToSuperFormer< Self, Context >
+  // where End : FormingEnd< Self, Context >
   // {
   //   HashMapSubformer::begin( Some( self ), Some( context ), end )
   // }
@@ -95,7 +95,7 @@ pub struct HashMapSubformer< K, E, Formed, Context, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
   Formed : HashMapLike< K, E > + core::default::Default,
-  End : ToSuperFormer< Formed, Context >,
+  End : FormingEnd< Formed, Context >,
 {
   formed : core::option::Option< Formed >,
   context : core::option::Option< Context >,
@@ -109,7 +109,7 @@ HashMapSubformer< K, E, Formed, Context, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
   Formed : HashMapLike< K, E > + core::default::Default,
-  End : ToSuperFormer< Formed, Context >,
+  End : FormingEnd< Formed, Context >,
 {
 
   /// Form current former into target structure.
@@ -198,7 +198,7 @@ HashMapSubformer< K, E, Formed, Context, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
   Formed : HashMapLike< K, E > + core::default::Default,
-  End : ToSuperFormer< Formed, Context >,
+  End : FormingEnd< Formed, Context >,
 {
 
   /// Inserts a key-value pair into the formed. If the formed doesn't exist, it is created.

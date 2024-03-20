@@ -11,7 +11,7 @@ pub struct StructWithCustomSetters
 
 impl< FormerContext, FormerEnd > StructWithCustomSettersFormer< FormerContext, FormerEnd >
 where
-  FormerEnd: the_module::ToSuperFormer< StructWithCustomSetters, FormerContext >,
+  FormerEnd: the_module::FormingEnd< StructWithCustomSetters, FormerContext >,
 {
 
   /// Custom alternative setter of ordinary field.

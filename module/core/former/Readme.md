@@ -105,7 +105,7 @@ pub struct UserProfileFormer
   FormerEnd = former::ReturnFormed,
 >
 where
-  FormerEnd : former::ToSuperFormer< UserProfile, FormerContext >,
+  FormerEnd : former::FormingEnd< UserProfile, FormerContext >,
 {
   storage : UserProfileFormerStorage,
   context : Option< FormerContext >,
@@ -114,7 +114,7 @@ where
 
 impl< FormerContext, FormerEnd > UserProfileFormer< FormerContext, FormerEnd >
 where
-  FormerEnd : former::ToSuperFormer< UserProfile, FormerContext >,
+  FormerEnd : former::FormingEnd< UserProfile, FormerContext >,
 {
   #[ inline( always ) ]
   pub fn form( mut self ) -> UserProfile
@@ -544,9 +544,9 @@ fn main()
   // Use CommandFormer as custom subformer for AggregatorFormer to add commands by name.
   impl< Context, End > AggregatorFormer< Context, End >
   where
-    End : former::ToSuperFormer< Aggregator, Context >,
+    End : former::FormingEnd< Aggregator, Context >,
   {
-    pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::ToSuperFormer< Command, Self > >
+    pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::FormingEnd< Command, Self > >
     where
       IntoName: core::convert::Into< String >,
     {

@@ -70,7 +70,7 @@ pub struct HashSetSubformer< E, Formed, Context, ContainerEnd >
 where
   E : core::cmp::Eq + core::hash::Hash,
   Formed : HashSetLike< E > + core::default::Default,
-  ContainerEnd : ToSuperFormer< Formed, Context >,
+  ContainerEnd : FormingEnd< Formed, Context >,
 {
   formed : core::option::Option< Formed >,
   context : core::option::Option< Context >,
@@ -83,7 +83,7 @@ HashSetSubformer< E, Formed, Context, ContainerEnd >
 where
   E : core::cmp::Eq + core::hash::Hash,
   Formed : HashSetLike< E > + core::default::Default,
-  ContainerEnd : ToSuperFormer< Formed, Context >,
+  ContainerEnd : FormingEnd< Formed, Context >,
 {
 
   /// Form current former into target structure.
@@ -179,7 +179,7 @@ HashSetSubformer< E, Formed, Formed, crate::ReturnFormed >
 where
   E : core::cmp::Eq + core::hash::Hash,
   Formed : HashSetLike< E > + core::default::Default,
-  // ContainerEnd : ToSuperFormer< Formed, Context >,
+  // ContainerEnd : FormingEnd< Formed, Context >,
 {
 
   /// Initializes a new instance of the builder with default settings.
@@ -208,7 +208,7 @@ HashSetSubformer< E, Formed, Context, ContainerEnd >
 where
   E : core::cmp::Eq + core::hash::Hash,
   Formed : HashSetLike< E > + core::default::Default,
-  ContainerEnd : ToSuperFormer< Formed, Context >,
+  ContainerEnd : FormingEnd< Formed, Context >,
 {
 
   /// Inserts an element into the set, possibly replacing an existing element.

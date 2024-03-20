@@ -50,7 +50,7 @@ impl< E > VectorLike< E > for Vec< E >
 pub struct VectorSubformer< E, Formed, Context, ContainerEnd >
 where
   Formed : VectorLike< E > + core::default::Default,
-  ContainerEnd : ToSuperFormer< Formed, Context >,
+  ContainerEnd : FormingEnd< Formed, Context >,
 {
   formed : core::option::Option< Formed >,
   context : core::option::Option< Context >,
@@ -61,7 +61,7 @@ where
 impl< E, Formed, Context, ContainerEnd > VectorSubformer< E, Formed, Context, ContainerEnd >
 where
   Formed : VectorLike< E > + core::default::Default,
-  ContainerEnd : ToSuperFormer< Formed, Context >,
+  ContainerEnd : FormingEnd< Formed, Context >,
 {
 
   /// Form current former into target structure.
@@ -87,7 +87,7 @@ where
   // /// A new instance of `VectorSubformer` with an empty internal formed.
   // ///
   // #[ inline( always ) ]
-  // pub fn new() -> VectorSubformer< E, Formed, Formed, impl ToSuperFormer< Formed, Formed > >
+  // pub fn new() -> VectorSubformer< E, Formed, Formed, impl FormingEnd< Formed, Formed > >
   // {
   //   VectorSubformer::begin
   //   (
@@ -162,7 +162,7 @@ where
 impl< E, Formed, Context, ContainerEnd > VectorSubformer< E, Formed, Context, ContainerEnd >
 where
   Formed : VectorLike< E > + core::default::Default,
-  ContainerEnd : ToSuperFormer< Formed, Context >,
+  ContainerEnd : FormingEnd< Formed, Context >,
 {
 
   /// Appends an element to the end of the formed, expanding the internal collection.
@@ -188,7 +188,7 @@ where
 impl< E, Formed, Context, End > FormerBegin< Formed, Context >
 for VectorSubformer< E, Formed, Context, End >
 where
-  End : ToSuperFormer< Formed, Context >,
+  End : FormingEnd< Formed, Context >,
   Formed : VectorLike< E > + Default,
 {
   type End = End;

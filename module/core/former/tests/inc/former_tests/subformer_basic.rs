@@ -62,7 +62,7 @@ impl< K, Context, End >
 CommandFormer< K, Context, End >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  End : the_module::ToSuperFormer< Command< K >, Context >,
+  End : the_module::FormingEnd< Command< K >, Context >,
 {
 
   /// Inserts a key-value pair into the map. Make a new container if it was not made so far.
@@ -110,12 +110,12 @@ impl< K, Context, End >
 AggregatorFormer< K, Context, End >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  End : the_module::ToSuperFormer< Aggregator< K >, Context >,
+  End : the_module::FormingEnd< Aggregator< K >, Context >,
 {
 
   #[ inline( always ) ]
   pub fn command< IntoName >( self, name : IntoName )
-  -> CommandFormer< K, Self, impl the_module::ToSuperFormer< Command< K >, Self > >
+  -> CommandFormer< K, Self, impl the_module::FormingEnd< Command< K >, Self > >
   where
     K : core::hash::Hash + std::cmp::Eq,
     IntoName : core::convert::Into< String >,

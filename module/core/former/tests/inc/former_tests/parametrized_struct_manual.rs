@@ -76,7 +76,7 @@ where
 pub struct CommandFormer< K, Context = Command< K >, End = the_module::ReturnFormed >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  End : the_module::ToSuperFormer< Command< K >, Context >,
+  End : the_module::FormingEnd< Command< K >, Context >,
 {
   storage : CommandFormerStorage< K >,
   context : core::option::Option< Context >,
@@ -88,7 +88,7 @@ impl< K, Context, End >
 CommandFormer< K, Context, End >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  End : the_module::ToSuperFormer< Command< K >, Context >,
+  End : the_module::FormingEnd< Command< K >, Context >,
 {
 
   #[ inline( always ) ]
@@ -183,7 +183,7 @@ where
     Property< K >,
     collection_tools::HashMap< K, Property< K > >,
     CommandFormer< K, Context, End >,
-    impl the_module::ToSuperFormer< collection_tools::HashMap< K, Property< K > >, Self >,
+    impl the_module::FormingEnd< collection_tools::HashMap< K, Property< K > >, Self >,
   >
   {
     let formed = self.storage.properties.take();

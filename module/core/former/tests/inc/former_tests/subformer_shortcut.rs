@@ -30,7 +30,7 @@ pub struct TemplateParameters
 impl< Context, End > former::FormerBegin< TemplateParameterDescriptor, Context >
 for TemplateParameterDescriptorFormer< Context, End >
 where
-  End : the_module::ToSuperFormer< TemplateParameterDescriptor, Context >,
+  End : the_module::FormingEnd< TemplateParameterDescriptor, Context >,
 {
   type End = End;
 
@@ -50,14 +50,14 @@ where
 
 impl< Context, End > TemplateParametersFormer< Context, End >
 where
-  End : former::ToSuperFormer< TemplateParameters, Context >,
+  End : former::FormingEnd< TemplateParameters, Context >,
 {
 
   #[ inline( always ) ]
   pub fn descriptor3< Former2 >( self ) ->
   Former2
   where
-    Former2 : former::FormerBegin< TemplateParameterDescriptor, Self, End = former::ToSuperFormerWrapper< TemplateParameterDescriptor, Self > >,
+    Former2 : former::FormerBegin< TemplateParameterDescriptor, Self, End = former::FormingEndWrapper< TemplateParameterDescriptor, Self > >,
     // FieldContainer : ContainerAdd,
   {
     let on_end = | descriptor : TemplateParameterDescriptor, super_former : core::option::Option< Self > | -> Self
@@ -73,14 +73,14 @@ where
       }
       super_former
     };
-    Former2::_begin( None, Some( self ), former::ToSuperFormerWrapper::new( on_end ) )
+    Former2::_begin( None, Some( self ), former::FormingEndWrapper::new( on_end ) )
   }
 
   // xxx2 : move to a trait and make easier to use subformer, trait with generic interface of a container should help
 
   #[ inline( always ) ]
   pub fn descriptor( self, name : &str ) ->
-  TemplateParameterDescriptorFormer< Self, impl former::ToSuperFormer< TemplateParameterDescriptor, Self > >
+  TemplateParameterDescriptorFormer< Self, impl former::FormingEnd< TemplateParameterDescriptor, Self > >
   {
     self.descriptor3::< TemplateParameterDescriptorFormer< _, _ > >().descriptor( name )
   }

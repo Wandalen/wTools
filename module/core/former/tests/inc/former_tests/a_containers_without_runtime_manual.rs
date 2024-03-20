@@ -51,7 +51,7 @@ pub struct Struct1Former
   __FormerEnd = the_module::ReturnFormed,
 >
 where
-  __FormerEnd : the_module::ToSuperFormer< Struct1, __FormerContext >,
+  __FormerEnd : the_module::FormingEnd< Struct1, __FormerContext >,
 {
   storage : Struct1FormerStorage,
   context : core::option::Option< __FormerContext >,
@@ -60,7 +60,7 @@ where
 
 impl< __FormerContext, __FormerEnd > Struct1Former< __FormerContext, __FormerEnd >
 where
-  __FormerEnd: the_module::ToSuperFormer<Struct1, __FormerContext>,
+  __FormerEnd: the_module::FormingEnd<Struct1, __FormerContext>,
 {
 
   #[ inline( always ) ]

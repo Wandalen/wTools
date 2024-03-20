@@ -51,7 +51,7 @@ pub struct Struct1Former
   FormerEnd = the_module::ReturnFormed,
 >
 where
-  FormerEnd : the_module::ToSuperFormer< Struct1, FormerContext >,
+  FormerEnd : the_module::FormingEnd< Struct1, FormerContext >,
 {
   storage : Struct1FormerStorage,
   context : core::option::Option< FormerContext >,
@@ -60,7 +60,7 @@ where
 
 impl< FormerContext, FormerEnd > Struct1Former< FormerContext, FormerEnd >
 where
-  FormerEnd : the_module::ToSuperFormer< Struct1, FormerContext >,
+  FormerEnd : the_module::FormingEnd< Struct1, FormerContext >,
 {
 
   #[ inline( always ) ]
@@ -151,7 +151,7 @@ where
   pub fn __vec_1< Former2 >( self ) ->
   Former2
   where
-    Former2 : former::FormerBegin< Vec< String >, Self, End = former::ToSuperFormerWrapper< Vec< String >, Self > >,
+    Former2 : former::FormerBegin< Vec< String >, Self, End = former::FormingEndWrapper< Vec< String >, Self > >,
   {
     let on_end = | formed : Vec< String >, super_former : core::option::Option< Self > | -> Self
     {
@@ -166,7 +166,7 @@ where
       }
       super_former
     };
-    Former2::_begin( None, Some( self ), former::ToSuperFormerWrapper::new( on_end ) )
+    Former2::_begin( None, Some( self ), former::FormingEndWrapper::new( on_end ) )
   }
 
   // xxx2 : continue
@@ -175,7 +175,7 @@ where
     String,
     Vec< String >,
     Self,
-    impl the_module::ToSuperFormer< Vec< String >, Self >,
+    impl the_module::FormingEnd< Vec< String >, Self >,
   >
   {
     self.__vec_1::< the_module::VectorSubformer::< _, _, _, _ > >()
@@ -186,7 +186,7 @@ where
   //   String,
   //   Vec< String >,
   //   Self,
-  //   impl the_module::ToSuperFormer< Vec< String >, Self >,
+  //   impl the_module::FormingEnd< Vec< String >, Self >,
   // >
   // {
   //   let formed = self.storage.vec_1.take();
@@ -205,7 +205,7 @@ where
     String,
     std::collections::HashMap< String, String >,
     Self,
-    impl the_module::ToSuperFormer< std::collections::HashMap< String, String >, Self >,
+    impl the_module::FormingEnd< std::collections::HashMap< String, String >, Self >,
   >
   {
     let formed = self.storage.hashmap_strings_1.take();
@@ -223,7 +223,7 @@ where
     String,
     std::collections::HashSet< String >,
     Self,
-    impl the_module::ToSuperFormer< std::collections::HashSet< String >, Self >,
+    impl the_module::FormingEnd< std::collections::HashSet< String >, Self >,
   >
   {
     let formed = self.storage.hashset_strings_1.take();
@@ -240,7 +240,7 @@ where
 
 // impl< FormerContext, FormerEnd > Struct1Former< FormerContext, FormerEnd >
 // where
-//   FormerEnd: the_module::ToSuperFormer<Struct1, FormerContext>,
+//   FormerEnd: the_module::FormingEnd<Struct1, FormerContext>,
 
 impl Struct1Former< Struct1, the_module::ReturnFormed >
 {

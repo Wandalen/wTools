@@ -51,7 +51,7 @@ pub( crate ) mod private
 
   impl< C, End > PropertyDescriptionFormer< C, End >
   where
-    End : former::ToSuperFormer< PropertyDescription, C >,
+    End : former::FormingEnd< PropertyDescription, C >,
   {
     pub fn alias< IntoName >( mut self, name : IntoName ) -> Self
     where
@@ -114,7 +114,7 @@ pub( crate ) mod private
 
   impl< Context, End > CommandFormer< Context, End >
   where
-    End : former::ToSuperFormer< Command, Context >,
+    End : former::FormingEnd< Command, Context >,
   {
     /// Setter for separate properties aliases.
     pub fn property_alias< S : Into< String > >( mut self, key : S, alias : S ) -> Self
@@ -171,13 +171,13 @@ pub( crate ) mod private
 
   impl< Context, End > CommandFormer< Context, End >
   where
-    End : former::ToSuperFormer< Command, Context >,
+    End : former::FormingEnd< Command, Context >,
   {
     /// Implements the `subject` method for a value.
     ///
     /// This method allows chaining, where `subject` is the current value and `ValueDescription` is the super-former.
     /// It returns a `ValueDescriptionFormer` which can be used to further build the super-former.
-    pub fn subject( self ) -> ValueDescriptionFormer< Self, impl former::ToSuperFormer< ValueDescription, Self > >
+    pub fn subject( self ) -> ValueDescriptionFormer< Self, impl former::FormingEnd< ValueDescription, Self > >
     {
       let on_end = | subject : ValueDescription, super_former : Option< Self > | -> Self
       {
@@ -201,7 +201,7 @@ pub( crate ) mod private
     /// # Arguments
     ///
     /// * `name` - The name of the property. It should implement the `Into< String >` trait.
-    pub fn property< IntoName >( self, name : IntoName ) -> PropertyDescriptionFormer< Self, impl former::ToSuperFormer< PropertyDescription, Self > >
+    pub fn property< IntoName >( self, name : IntoName ) -> PropertyDescriptionFormer< Self, impl former::FormingEnd< PropertyDescription, Self > >
     where
       IntoName : Into< String >,
     {
