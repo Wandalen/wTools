@@ -440,7 +440,7 @@ mod private
     .map
     (
       | b |
-      format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/Module{}Push.yml?label=&branch={b})]({}/actions/workflows/Module{}Push.yml?query=branch%3A{})", table_parameters.user_and_repo, &module_name.to_case( Case::Pascal ), table_parameters.core_url, &module_name.to_case( Case::Pascal ), b )
+      format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/module_{}_push.yml?label=&branch={b})]({}/actions/workflows/module_{}_push.yml?query=branch%3A{})", table_parameters.user_and_repo, &module_name.to_case( Case::Snake ), table_parameters.core_url, &module_name.to_case( Case::Snake ), b )
     )
     .collect::< Vec< String > >()
     .join( " | " );
