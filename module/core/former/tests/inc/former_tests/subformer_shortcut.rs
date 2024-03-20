@@ -95,6 +95,7 @@ where
   End : former::ToSuperFormer< TemplateParameters, Context >,
 {
 
+  // xxx2 : move to a trait and make easier to use subformer, trait with generic interface of a container should help
   #[ inline( always ) ]
   pub fn __parameter< Former2, Struct >( self ) ->
   Former2

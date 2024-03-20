@@ -11,6 +11,7 @@ use std::
 mod asset;
 
 // xxx : qqq : ?
+// xxx2 : eliminate the function and use test_tools/process_tools instead
 /// Poorly named function
 pub fn path_to_exe( name : &Path, temp_path : &Path ) -> PathBuf
 {
