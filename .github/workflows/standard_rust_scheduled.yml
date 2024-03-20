@@ -19,4 +19,4 @@ jobs :
     with :
       manifest_path : './Cargo.toml'
       module_name : $\{{ github.event.base.ref }}_$\{{ github.event.number }}
-      commit_message : +test_$\{{ github.event.base.ref }}_$\{{ github.event.number }}
+      commit_message : !test_$\{{ github.event.base.ref }}_$\{{ github.event.number }}

@@ -58,7 +58,7 @@ mod private
     for ( name, relative_path ) in names.iter().zip( relative_paths.iter() )
     {
       // generate file names
-      let workflow_file_name = workflow_root.join( format!( "Module{}Push.yml", name.to_case( Case::Pascal ) ) );
+      let workflow_file_name = workflow_root.join( format!( "module_{}_push.yml", name.to_case( Case::Snake ) ) );
       let path = relative_path.join( "Cargo.toml" );
       let mut data = BTreeMap::new();
       data.insert( "name", name.as_str() );
@@ -70,22 +70,22 @@ mod private
       file_write( &workflow_file_name, &content )?;
     }
 
-    file_write( &workflow_root.join( "AppropriateBranch.yml" ), include_str!( "../../template/workflow/appropriate_branch.yml" ) )?;
+    file_write( &workflow_root.join( "appropriate_branch.yml" ), include_str!( "../../template/workflow/appropriate_branch.yml" ) )?;
 
     let data = map_prepare_for_appropriative_branch( "- beta", username_and_repository.0.as_str(), "alpha", "alpha", "beta" );
-    file_write( &workflow_root.join( "AppropriateBranchBeta.yml" ), &handlebars.render( "appropraite_branch_for", &data )? )?;
+    file_write( &workflow_root.join( "appropriate_branch_beta.yml" ), &handlebars.render( "appropraite_branch_for", &data )? )?;
 
     let data = map_prepare_for_appropriative_branch( "- main\n      - master", username_and_repository.0.as_str(), "alpha", "beta", "master" );
-    file_write( &workflow_root.join( "AppropriateBranchMaster.yml" ), &handlebars.render( "appropraite_branch_for", &data )? )?;
+    file_write( &workflow_root.join( "appropriate_branch_master.yml" ), &handlebars.render( "appropraite_branch_for", &data )? )?;
 
     let mut data = BTreeMap::new();
     data.insert( "name", "beta" );
     data.insert( "group_branch", "beta" );
     data.insert( "branch", "alpha" );
 
-    file_write( &workflow_root.join( "AutoMergeToBeta.yml" ), &handlebars.render( "auto_merge_to", &data )? )?;
+    file_write( &workflow_root.join( "auto_merge_to_beta.yml" ), &handlebars.render( "auto_merge_to", &data )? )?;
 
-    file_write( &workflow_root.join( "AutoPr.yml" ), include_str!( "../../template/workflow/auto_pr.yml" ) )?;
+    file_write( &workflow_root.join( "auto_pr.yml" ), include_str!( "../../template/workflow/auto_pr.yml" ) )?;
 
     let mut data = BTreeMap::new();
     data.insert( "name", "alpha" );
@@ -111,7 +111,7 @@ mod private
     data.insert( "src_branch", "${{ github.ref_name }}" );
     data.insert( "dest_branch", "alpha" );
 
-    file_write( &workflow_root.join( "AutoPrToAlpha.yml" ), &handlebars.render( "auto_pr_to", &data )? )?;
+    file_write( &workflow_root.join( "auto_pr_to_alpha.yml" ), &handlebars.render( "auto_pr_to", &data )? )?;
 
     let mut data = BTreeMap::new();
     data.insert( "name", "beta" );
@@ -121,7 +121,7 @@ mod private
     data.insert( "src_branch", "alpha" );
     data.insert( "dest_branch", "beta" );
 
-    file_write( &workflow_root.join( "AutoPrToBeta.yml" ), &handlebars.render( "auto_pr_to", &data )? )?;
+    file_write( &workflow_root.join( "auto_pr_to_beta.yml" ), &handlebars.render( "auto_pr_to", &data )? )?;
 
     let mut data = BTreeMap::new();
     data.insert( "name", "master" );
@@ -131,22 +131,22 @@ mod private
     data.insert( "src_branch", "beta" );
     data.insert( "dest_branch", "master" );
 
-    file_write( &workflow_root.join( "AutoPrToMaster.yml" ), &handlebars.render( "auto_pr_to", &data )? )?;
+    file_write( &workflow_root.join( "auto_pr_to_master.yml" ), &handlebars.render( "auto_pr_to", &data )? )?;
 
-    file_write( &workflow_root.join( "RunsClean.yml" ),  include_str!( "../../template/workflow/rust_clean.yml" ) )?;
+    file_write( &workflow_root.join( "runs_clean.yml" ),  include_str!( "../../template/workflow/rust_clean.yml" ) )?;
 
     let mut data = BTreeMap::new();
     data.insert( "username_and_repository", username_and_repository.0.as_str() );
 
-    file_write( &workflow_root.join( "StandardRustPullRequest.yml" ), &handlebars.render( "standard_rust_pull_request", &data )? )?;
+    file_write( &workflow_root.join( "standard_rust_pull_request.yml" ), &handlebars.render( "standard_rust_pull_request", &data )? )?;
 
-    file_write( &workflow_root.join( "StandardRustPush.yml" ), include_str!( "../../template/workflow/standard_rust_push.yml" ) )?;
+    file_write( &workflow_root.join( "standard_rust_push.yml" ), include_str!( "../../template/workflow/standard_rust_push.yml" ) )?;
 
-    file_write( &workflow_root.join( "StandardRustScheduled.yml" ), include_str!( "../../template/workflow/standard_rust_scheduled.yml" ) )?;
+    file_write( &workflow_root.join( "standard_rust_scheduled.yml" ), include_str!( "../../template/workflow/standard_rust_scheduled.yml" ) )?;
 
-    file_write( &workflow_root.join( "StandardRustStatus.yml" ), include_str!( "../../template/workflow/standard_rust_status.yml" ) )?;
+    file_write( &workflow_root.join( "standard_rust_status.yml" ), include_str!( "../../template/workflow/standard_rust_status.yml" ) )?;
 
-    file_write( &workflow_root.join( "StatusChecksRulesUpdate.yml" ), include_str!( "../../template/workflow/status_checks_rules_update.yml" ) )?;
+    file_write( &workflow_root.join( "status_checks_rules_update.yml" ), include_str!( "../../template/workflow/status_checks_rules_update.yml" ) )?;
     Ok( () )
   }
 

@@ -1,4 +1,4 @@
-name : wautomata
+name : collection_tools
 
 on : push
 
@@ -7,11 +7,11 @@ env :
 
 jobs :
 
-  # wautomata
+  # collection_tools
 
   test :
     uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
     with :
-      manifest_path : 'module/alias/wautomata/Cargo.toml'
-      module_name : 'wautomata'
+      manifest_path : 'module/core/collection_tools/Cargo.toml'
+      module_name : 'collection_tools'
       commit_message : ${{ github.event.head_commit.message }}
