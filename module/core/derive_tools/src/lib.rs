@@ -25,9 +25,9 @@ pub mod dependency
 {
   #[ cfg( feature = "derive_more" ) ]
   pub use ::derive_more;
-  #[ cfg( feature = "strum" ) ]
+  #[ cfg( feature = "strum_derive" ) ]
   pub use ::strum;
-  #[ cfg( feature = "parse_display" ) ]
+  #[ cfg( feature = "parse-display" ) ]
   pub use ::parse_display;
   #[ cfg( feature = "clone_dyn" ) ]
   pub use ::clone_dyn;
@@ -113,9 +113,9 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
-#[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
+  #[ cfg( feature = "enabled" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
@@ -124,6 +124,11 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::derive_more::*;
+
+  #[ cfg( feature = "strum_derive" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use ::strum::*;
 
   // #[ cfg( all( feature = "derive_more", feature = "derive_add" ) ) ]
   // #[ doc( inline ) ]
@@ -188,7 +193,7 @@ pub mod exposed
   //   UpperHex,
   // };
 
-  #[ cfg( feature = "strum" ) ]
+  #[ cfg( feature = "strum_derive" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::strum::*;
@@ -208,6 +213,7 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use ::clone_dyn::exposed::*;
 
+  #[ cfg( feature = "enabled" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::wtools::exposed::*;
@@ -227,13 +233,17 @@ pub mod exposed
   #[ cfg( feature = "derive_from" ) ]
   pub use ::derive_tools_meta::From;
 
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ cfg( feature = "derive_inner_from" ) ]
+  pub use ::derive_tools_meta::InnerFrom;
+
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
-
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

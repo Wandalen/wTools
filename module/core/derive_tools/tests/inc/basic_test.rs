@@ -84,7 +84,7 @@ tests_impls!
   #[ cfg( all( feature = "strum", feature = "strum_derive" ) ) ]
   fn enum_with_strum()
   {
-    use the_module::*;
+    use the_module::{ *, exposed::{ EnumIter, IntoEnumIterator } };
 
     #[ derive( EnumIter, Debug, PartialEq ) ]
     enum Foo

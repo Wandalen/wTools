@@ -1,6 +1,6 @@
 use super::*;
 
-#[ derive( Debug, PartialEq, Eq, the_module::InnerFrom ) ]
+#[ derive( Debug, PartialEq, Eq, the_module::exposed::InnerFrom ) ]
 struct MyStruct
 {
   a: i32,
