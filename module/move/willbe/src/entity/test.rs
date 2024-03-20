@@ -145,11 +145,55 @@ mod private
     fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
     {
       writeln!( f, "Package : {}\nThe tests will be executed using the following configurations :", self.package.file_name().unwrap().to_string_lossy() )?;
+      let mut table = Table::new();
+      let mut all_features = BTreeSet::new();
       for variant in &self.test_variants
       {
-        let feature = if variant.features.is_empty() { "".to_string() } else { variant.features.iter().join( "," ) };
-        writeln!( f, "  [ optimization : {} | channel : {} | feature : [ {feature} ] ]", variant.optimization, variant.channel )?;
+        let features = variant.features.iter().cloned();
+        if features.len() == 0
+        {
+          all_features.extend( [ "[ ]".to_string() ] );
+        }
+        all_features.extend( features );
       }
+      let mut header_row = Row::empty();
+      header_row.add_cell( Cell::new( "Channel" ) );
+      header_row.add_cell( Cell::new( "Opt" ) );
+      for feature in &all_features
+      {
+        header_row.add_cell( Cell::new( feature )  );
+      }
+      table.add_row( header_row );
+
+      for variant in &self.test_variants
+      {
+        let mut row = Row::empty();
+        
+        row.add_cell( Cell::new( &variant.channel.to_string() ) );
+        row.add_cell( Cell::new( &variant.optimization.to_string() ) );
+        let mut a = true;
+        for feature in &all_features
+        {
+          if variant.features.is_empty() && a
+          {
+            a = false;
+            row.add_cell( Cell::new( "+" ) );
+          }
+          else if variant.features.contains( feature )
+          {
+            row.add_cell( Cell::new( "+" ) );
+          }
+          else
+          {
+            row.add_cell( Cell::new( "" ) );
+          }
+        }
+
+        table.add_row( row );
+      }
+      // aaa : for Petro : bad, DRY
+      // aaa : replace with method
+      writeln!( f, "{}", table )?;
       Ok( () )
     }
   }
@@ -458,7 +502,7 @@ mod private
       let mut header_row = Row::empty();
       header_row.add_cell( Cell::new( "Result" ) );
       header_row.add_cell( Cell::new( "Channel" ) );
-      header_row.add_cell( Cell::new( "Optimization" ) );
+      header_row.add_cell( Cell::new( "Opt" ) );
       for feature in &all_features
       {
         header_row.add_cell( Cell::new( feature )  );
