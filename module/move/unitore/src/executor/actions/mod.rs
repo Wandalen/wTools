@@ -14,6 +14,7 @@ pub mod config;
 pub mod query;
 pub mod table;
 
+// qqq : what is it for? purpose?
 /// General report.
 pub trait Report : std::fmt::Display + std::fmt::Debug
 {
