@@ -25,7 +25,7 @@ mod private
   #[ cfg( feature = "progress_bar" ) ]
   use indicatif::{ MultiProgress, ProgressBar, ProgressStyle };
   use rayon::ThreadPoolBuilder;
-  use process::Report;
+  use process_tools::process::*;
   use wtools::error::anyhow::{ Error, format_err };
   use wtools::iter::Itertools;
   use wtools::error::Result;
@@ -311,7 +311,7 @@ mod private
   ///
   /// Returns a `Result` containing a `Report` if the command is executed successfully,
   /// or an error if the command fails to execute.
-  pub fn _run< P >( path : P, options : SingleTestOptions ) -> Result< Report, ( Report, Error ) >
+  pub fn _run< P >( path : P, options : SingleTestOptions ) -> Result< Report, Report >
   where
     P : AsRef< Path >
   {
@@ -327,19 +327,20 @@ mod private
         Report
         {
           command : format!( "{program} {}", args.join( " " ) ),
-          path : path.as_ref().to_path_buf(),
           out : String::new(),
           err : String::new(),
+          current_path: path.as_ref().to_path_buf(),
+          error: Ok( () ),
         }
       )
     }
     else
     {
       let envs = if options.backtrace { [( "RUST_BACKTRACE".to_string(), "full".to_string() )].into_iter().collect() } else { HashMap::new() };
-      process::Run::former()
-      .application( program )
+      Run::former()
+      .bin_path( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-      .path( path.as_ref().to_path_buf() )
+      .current_path( path.as_ref().to_path_buf() )
       .joining_streams( true )
       .env_variable( envs )
       .run()
@@ -653,7 +654,7 @@ mod private
               let args = args_t.form();
               let temp_dir = args.temp_directory_path.clone();
               let cmd_rep = _run( dir, args );
-              r.lock().unwrap().tests.insert( variant.clone(), cmd_rep.map_err( | e | e.0 ) );
+              r.lock().unwrap().tests.insert( variant.clone(), cmd_rep );
               #[ cfg( feature = "progress_bar" ) ]
               options.progress_bar_feature.as_ref().unwrap().progress_bar.inc( 1 );
               if let Some( path ) = temp_dir

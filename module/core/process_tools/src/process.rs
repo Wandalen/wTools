@@ -9,6 +9,7 @@ pub( crate ) mod private
     path::{ Path, PathBuf },
     process::{ Command, Stdio },
   };
+  use std::collections::HashMap;
   use std::ffi::OsString;
   use duct::cmd;
   use error_tools::
@@ -20,54 +21,54 @@ pub( crate ) mod private
   use former::Former;
   use iter_tools::iter::Itertools;
 
-//   ///
-//   /// Executes an external process using the system shell.
-//   ///
-//   /// This function abstracts over the differences between shells on Windows and Unix-based
-//   /// systems, allowing for a unified interface to execute shell commands.
-//   ///
-//   /// # Parameters:
-//   /// - `exec_path`: The command line string to execute in the shell.
-//   /// - `current_path`: The working directory current_path where the command is executed.
-//   ///
-//   /// # Returns:
-//   /// A `Result` containing a `Report` on success, which includes the command's output,
-//   /// or an error if the command fails to execute or complete.
-//   ///
-//   /// # Examples:
-//   /// ```rust
-//   /// use process_tools::process;
-//   ///
-//   /// let report = process::run_with_shell( "echo Hello World", "." ).unwrap();
-//   /// println!( "{}", report.out );
-//   /// ```
-//   ///
-//
-//   pub fn run_with_shell
-//   (
-//     exec_path : &str,
-//     current_path : impl Into< PathBuf >,
-//   )
-//   -> Result< Report, ( Report, Error ) >
-//   {
-//     let current_path = current_path.into();
-//     let ( program, args ) =
-//     if cfg!( target_os = "windows" )
-//     {
-//       ( "cmd", [ "/C", exec_path ] )
-//     }
-//     else
-//     {
-//       ( "sh", [ "-c", exec_path ] )
-//     };
-//     let options = Run::former()
-//     .bin_path( program )
-//     .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-//     .current_path( current_path )
-//     .form();
-//     // xxx : qqq : for Petro : implement run for former та для Run
-//     run( options )
-//   }
+  // ///
+  // /// Executes an external process using the system shell.
+  // ///
+  // /// This function abstracts over the differences between shells on Windows and Unix-based
+  // /// systems, allowing for a unified interface to execute shell commands.
+  // ///
+  // /// # Parameters:
+  // /// - `exec_path`: The command line string to execute in the shell.
+  // /// - `current_path`: The working directory current_path where the command is executed.
+  // ///
+  // /// # Returns:
+  // /// A `Result` containing a `Report` on success, which includes the command's output,
+  // /// or an error if the command fails to execute or complete.
+  // ///
+  // /// # Examples:
+  // /// ```rust
+  // /// use process_tools::process;
+  // ///
+  // /// let report = process::run_with_shell( "echo Hello World", "." ).unwrap();
+  // /// println!( "{}", report.out );
+  // /// ```
+  // ///
+  // 
+  // pub fn run_with_shell
+  // (
+  //   exec_path : &str,
+  //   current_path : impl Into< PathBuf >,
+  // )
+  // -> Result< Report, Report >
+  // {
+  //   let current_path = current_path.into();
+  //   let ( program, args ) =
+  //   if cfg!( target_os = "windows" )
+  //   {
+  //     ( "cmd", [ "/C", exec_path ] )
+  //   }
+  //   else
+  //   {
+  //     ( "sh", [ "-c", exec_path ] )
+  //   };
+  //   let options = Run::former()
+  //   .bin_path( program )
+  //   .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+  //   .current_path( current_path )
+  //   .form();
+  //   // xxx : qqq : for Petro : implement run for former та для Run
+  //   run( options )
+  // }
 
   ///
   /// Executes an external process in a specified directory without using a shell.
@@ -192,6 +193,43 @@ pub( crate ) mod private
     args : Vec< OsString >,
     #[ default( false ) ]
     joining_streams : bool,
+    env_variable : HashMap< String, String >,
+  }
+
+  impl RunFormer
+  {
+    pub fn run( mut self ) -> Result< Report, Report >
+    {
+      run( self.form() )
+    }
+    
+    /// Executes an external process using the system shell.
+    ///
+    /// This function abstracts over the differences between shells on Windows and Unix-based
+    /// systems, allowing for a unified interface to execute shell commands.
+    ///
+    /// # Parameters:
+    /// - `exec_path`: The command line string to execute in the shell.
+    ///
+    /// # Returns:
+    /// A `Result` containing a `Report` on success, which includes the command's output,
+    /// or an error if the command fails to execute or complete.
+    pub fn run_with_shell( mut self, exec_path : &str, ) -> Result< Report, Report >
+    {
+      let ( program, args ) =
+      if cfg!( target_os = "windows" )
+      {
+        ( "cmd", [ "/C", exec_path ] )
+      }
+      else
+      {
+        ( "sh", [ "-c", exec_path ] )
+      };
+      self
+      .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+      .bin_path( program )
+      .run()
+    }
   }
 
   /// Process command output.

@@ -3,8 +3,9 @@ mod private
   use crate::*;
   use std::ffi::OsString;
   use std::path::Path;
-  use process::Report;
+  use process_tools::process::*;
   use wtools::error::Result;
+  use wtools::error::err;
 
   /// Adds changes to the Git staging area.
   ///
@@ -35,19 +36,20 @@ mod private
         Report
         {
           command : format!( "{program} {}", args.join( " " ) ),
-          path : path.as_ref().to_path_buf(),
           out : String::new(),
           err : String::new(),
+          current_path: path.as_ref().to_path_buf(),
+          error: Ok( () ),
         }
       )
     }
     else
     {
-      process::Run::former()
-      .application( program )
+      Run::former()
+      .bin_path( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-      .path( path.as_ref().to_path_buf() )
-      .run().map_err( | ( report, err ) | err.context( report ) )
+      .current_path( path.as_ref().to_path_buf() )
+      .run().map_err( | report | err!( report.to_string() ) )
     }
   }
 
@@ -78,19 +80,20 @@ mod private
         Report
         {
           command : format!( "{program} {}", args.join( " " ) ),
-          path : path.as_ref().to_path_buf(),
           out : String::new(),
           err : String::new(),
+          current_path: path.as_ref().to_path_buf(),
+          error: Ok( () ),
         }
       )
     }
     else
     {
-      process::Run::former()
-      .application( program )
+      Run::former()
+      .bin_path( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-      .path( path.as_ref().to_path_buf() )
-      .run().map_err( | ( report, err ) | err.context( report ) )
+      .current_path( path.as_ref().to_path_buf() )
+      .run().map_err( | report | err!( report.to_string() ) )
     }
   }
 
@@ -119,19 +122,20 @@ mod private
         Report
         {
           command : format!( "{program} {}", args.join( " " ) ),
-          path : path.as_ref().to_path_buf(),
           out : String::new(),
           err : String::new(),
+          current_path: path.as_ref().to_path_buf(),
+          error: Ok( () ),
         }
       )
     }
     else
     {
-      process::Run::former()
-      .application( program )
+      Run::former()
+      .bin_path( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-      .path( path.as_ref().to_path_buf() )
-      .run().map_err( | ( report, err ) | err.context( report ) )
+      .current_path( path.as_ref().to_path_buf() )
+      .run().map_err( | report | err!( report.to_string() ) )
     }
   }
 
@@ -150,11 +154,11 @@ mod private
   {
     let ( program, args ) = ( "git", [ "ls-remote", "--get-url" ] );
 
-    process::Run::former()
-    .application( program )
+    Run::former()
+    .bin_path( program )
     .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-    .path( path.as_ref().to_path_buf() )
-    .run().map_err( | ( report, err ) | err.context( report ) )
+    .current_path( path.as_ref().to_path_buf() )
+    .run().map_err( | report | err!( report.to_string() ) )
   }
 }
 

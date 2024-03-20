@@ -4,8 +4,9 @@ mod private
   use crate::*;
 
   use std::path::PathBuf;
+  use error_tools::err;
   use former::Former;
-  use process::Report;
+  use process_tools::process::*;
   use wtools::error::Result;
 
   /// Represents pack options
@@ -61,19 +62,20 @@ mod private
         Report
         {
           command : format!( "{program} {}", options.join( " " ) ),
-          path : args.path.to_path_buf(),
           out : String::new(),
           err : String::new(),
+          current_path: args.path.to_path_buf(),
+          error: Ok( () ),
         }
       )
     }
     else
     {
-      process::Run::former()
-      .application( program )
+      Run::former()
+      .bin_path( program )
       .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-      .path( args.path )
-      .run().map_err( | ( report, err ) | err.context( report ) )
+      .current_path( args.path )
+      .run().map_err( | report | err!( report.to_string() ) )
     }
   }
 
@@ -123,19 +125,20 @@ mod private
           Report
           {
             command : format!( "{program} {}", arguments.join( " " ) ),
-            path : args.path.to_path_buf(),
             out : String::new(),
             err : String::new(),
+            current_path: args.path.to_path_buf(),
+            error: Ok( () ),
           }
         )
     }
     else
     {
-      process::Run::former()
-      .application( program )
+      Run::former()
+      .bin_path( program )
       .args( arguments.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-      .path( args.path )
-      .run().map_err( | ( report, err ) | err.context( report ) )
+      .current_path( args.path )
+      .run().map_err( | report  | err!( report.to_string() ) )
     }
   }
 }

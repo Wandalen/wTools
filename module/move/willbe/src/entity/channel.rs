@@ -8,7 +8,9 @@ mod private
     collections::HashSet,
   };
   use std::ffi::OsString;
+  use error_tools::for_app::Error;
   use wtools::error::Result;
+  use process_tools::process::*;
 
   /// The `Channel` enum represents different release channels for rust.
   #[ derive( Debug, Default, Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd ) ]
@@ -41,11 +43,11 @@ mod private
     P : AsRef< Path >,
   {
     let ( program, options ) = ( "rustup", [ "toolchain", "list" ] );
-    let report = process::Run::former()
-    .application( program )
+    let report = Run::former()
+    .bin_path( program )
     .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-    .path( path.as_ref().to_path_buf() )
-    .run().map_err( | ( report, err ) | err.context( report ) )?;
+    .current_path( path.as_ref().to_path_buf() )
+    .run().map_err::< Error, _ >( | report | err!( report.to_string() ) )?;
 
     let list = report
     .out

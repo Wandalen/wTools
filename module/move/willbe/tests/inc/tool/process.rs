@@ -1,5 +1,7 @@
 use super::*;
-use the_module::process;
+
+use process_tools::process::*;
+
 use std::env::consts::EXE_EXTENSION;
 use std::ffi::OsString;
 use std::path::{ Path, PathBuf };
@@ -29,9 +31,9 @@ fn err_out_err()
   let args : [ OsString ; 0 ] = [];
 
   let options = process::Run::former()
-  .application( path_to_exe( &assets_path.join( "err_out_test" ).join( "err_out_err.rs" ), temp.path() ) )
+  .bin_path( path_to_exe( &assets_path.join( "err_out_test" ).join( "err_out_err.rs" ), temp.path() ) )
   .args( args.to_vec() )
-  .path( temp.to_path_buf() )
+  .current_path( temp.to_path_buf() )
   .joining_streams( true )
   .form();
 
@@ -51,9 +53,9 @@ fn out_err_out()
   let args : [ OsString ; 0 ] = [];
 
   let options = process::Run::former()
-  .application( path_to_exe( &assets_path.join( "err_out_test" ).join( "out_err_out.rs" ), temp.path() ) )
+  .bin_path( path_to_exe( &assets_path.join( "err_out_test" ).join( "out_err_out.rs" ), temp.path() ) )
   .args( args.to_vec() )
-  .path( temp.to_path_buf() )
+  .current_path( temp.to_path_buf() )
   .joining_streams( true )
   .form();
   let report = process::run( options ).unwrap().out;
