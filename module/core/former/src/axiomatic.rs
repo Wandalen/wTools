@@ -1,9 +1,4 @@
-//! # SuperFormer Trait and Implementations
-//!
-//! This module provides the `ToSuperFormer` trait and its implementations, enabling flexible end-of-subforming
-//! processing in builder patterns. It facilitates returning the original context or container through customizable
-//! handlers, making it versatile for various use cases. The `NoEnd` and `ReturnContainer` structs offer predefined
-//! behaviors for common scenarios.
+//! ....
 
 /// Defines a handler for the end of a subforming process, enabling the return of the original context.
 ///
@@ -140,3 +135,57 @@ for ReturnContainer
 }
 
 //
+
+/// A trait defining the initialization process for a subformer with contextual linkage.
+///
+/// This trait is designed for types that need to initiate a subforming process,
+/// passing themselves as the context and specifying a closure or handler (`on_end`) to be
+/// called upon completion. It facilitates the construction of builder pattern chains
+/// that maintain stateful context through each step of the process.
+///
+/// # Type Parameters
+///
+/// * `Struct` - Represents the type that is being constructed or transformed by the subformer.
+/// * `Context` - Denotes the contextual information or the environment in which `Struct` is being formed.
+///               This could be a reference to a parent builder, configuration settings, or any other
+///               relevant state.
+///
+/// # Associated Types
+///
+/// * `End` - Specifies the trait bound for the closure or handler that gets called at the completion
+///           of the subforming process. This type must implement the `ToSuperFormer<Struct, Context>`
+///           trait, which defines how the final transformation or construction of `Struct` is handled,
+///           potentially using the provided `Context`.
+///
+
+pub trait FormerBegin< Struct, Context >
+{
+
+  /// * `End` - Specifies the trait bound for the closure or handler that gets called at the completion
+  ///           of the subforming process. This type must implement the `ToSuperFormer<Struct, Context>`
+  ///           trait, which defines how the final transformation or construction of `Struct` is handled,
+  ///           potentially using the provided `Context`.
+  type End : ToSuperFormer< Struct, Context >;
+
+  /// Initializes the subforming process by setting the context and specifying an `on_end` completion handler.
+  ///
+  /// This function is the entry point for initiating a subforming sequence, allowing the caller
+  /// to establish initial contextual information and define how the process concludes.
+  ///
+  /// # Parameters
+  ///
+  /// * `context` - An optional parameter providing initial context for the subforming process. This
+  ///               might include configuration data, references to parent structures, or any state
+  ///               relevant to the formation of `Struct`.
+  ///
+  /// * `on_end` - A closure or handler of type `Self::End` that is invoked at the completion of
+  ///              the subforming process. This handler is responsible for applying any final transformations
+  ///              to `Struct` and potentially utilizing `Context` to influence the outcome.
+  ///
+  fn _begin
+  (
+    context : core::option::Option< Context >,
+    on_end : Self::End,
+  ) -> Self;
+
+}

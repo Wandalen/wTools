@@ -147,6 +147,29 @@ where
     on_end.call( container, context )
   }
 
+  // #[ inline( always ) ]
+  // pub fn _vec_1< Former2 >( self ) ->
+  // Former2
+  // where
+  //   Former2 : former::FormerBegin< Vec< String >, Self, End = former::ToSuperFormerWrapper< Vec< String >, Self > >,
+  //   // FieldContainer : ContainerAssign,
+  // {
+  //   let on_end = | formed : Vec< String >, super_former : core::option::Option< Self > | -> Self
+  //   {
+  //     let mut super_former = super_former.unwrap();
+  //     if super_former.container.vec_1.is_none()
+  //     {
+  //       super_former.container.vec_1 = Some( Default::default() );
+  //     }
+  //     if let Some( ref mut field ) = super_former.container.vec_1
+  //     {
+  //       former::ContainerAssign::assign( field, formed );
+  //     }
+  //     super_former
+  //   };
+  //   Former2::_begin( Some( self ), former::ToSuperFormerWrapper::new( on_end ) )
+  // }
+
   pub fn vec_1( mut self ) -> the_module::VectorSubformer
   <
     String,

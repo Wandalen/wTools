@@ -4,10 +4,16 @@
 #![ doc( html_root_url = "https://docs.rs/former/latest/former/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+// xxx : describe "Context-aware forming process"
+
 /// Axiomatic things.
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_former" ) ]
 mod axiomatic;
+/// Interface for containers.
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_former" ) ]
+mod container;
 /// Former of a vector.
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
@@ -23,6 +29,7 @@ mod hash_map;
 #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 #[ cfg( feature = "derive_former" ) ]
 mod hash_set;
+
 /// Component-based forming.
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( any( feature = "derive_component_from", feature = "derive_component_assign" ) ) ]
@@ -79,7 +86,7 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   #[ cfg( feature = "enabled" ) ]
   #[ cfg( feature = "derive_former" ) ]
-  pub use super::axiomatic::*;
+  pub use super::{ axiomatic::*, container::* };
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   #[ cfg( feature = "enabled" ) ]
