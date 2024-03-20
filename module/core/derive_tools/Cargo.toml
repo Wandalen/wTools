@@ -170,7 +170,7 @@ derive_clone_dyn_use_alloc = [ "derive_clone_dyn", "clone_dyn/use_alloc" ]
 
 derive_from = [ "derive_tools_meta/derive_from" ]
 derive_inner_from = [ "derive_tools_meta/derive_inner_from" ]
-
+parse_display = [ "parse-display" ]
 
 [dependencies]
 

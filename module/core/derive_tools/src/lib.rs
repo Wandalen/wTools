@@ -27,7 +27,7 @@ pub mod dependency
   pub use ::derive_more;
   #[ cfg( feature = "strum_derive" ) ]
   pub use ::strum;
-  #[ cfg( feature = "parse-display" ) ]
+  #[ cfg( feature = "parse_display" ) ]
   pub use ::parse_display;
   #[ cfg( feature = "clone_dyn" ) ]
   pub use ::clone_dyn;
@@ -113,9 +113,9 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
-  #[ cfg( feature = "enabled" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
@@ -213,7 +213,6 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use ::clone_dyn::exposed::*;
 
-  #[ cfg( feature = "enabled" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::wtools::exposed::*;
