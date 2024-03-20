@@ -58,6 +58,7 @@ pub struct TemplateParameters
 //
 // }
 
+
 pub trait FormerBegin< Struct, Context >
 {
   type End : the_module::ToSuperFormer< Struct, Context >;
