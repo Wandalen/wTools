@@ -157,7 +157,7 @@ impl< T > ContainerAssign for collection_tools::Vec< T >
 
 }
 
-impl< T > ContainerAssign for std::collections::HashSet< T >
+impl< T > ContainerAssign for collection_tools::HashSet< T >
 where
   T : core::cmp::Eq + core::hash::Hash,
 {
@@ -173,7 +173,7 @@ where
   }
 }
 
-impl< K, V > ContainerAssign for std::collections::HashMap< K, V >
+impl< K, V > ContainerAssign for collection_tools::HashMap< K, V >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
