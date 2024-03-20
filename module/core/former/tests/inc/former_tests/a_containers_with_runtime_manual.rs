@@ -156,14 +156,15 @@ where
     let on_end = | formed : Vec< String >, super_former : core::option::Option< Self > | -> Self
     {
       let mut super_former = super_former.unwrap();
-      if super_former.storage.vec_1.is_none()
-      {
-        super_former.storage.vec_1 = Some( Default::default() );
-      }
       if let Some( ref mut field ) = super_former.storage.vec_1
       {
         former::ContainerAssign::assign( field, formed );
       }
+      else
+      {
+        super_former.storage.vec_1 = Some( formed );
+      }
+
       super_former
     };
     Former2::_begin( None, Some( self ), former::FormingEndWrapper::new( on_end ) )
