@@ -25,7 +25,7 @@ mod private
   #[ cfg( feature = "progress_bar" ) ]
   use indicatif::{ MultiProgress, ProgressBar, ProgressStyle };
   use rayon::ThreadPoolBuilder;
-  use process::Report;
+  use process_tools::process::*;
   use wtools::error::anyhow::{ Error, format_err };
   use wtools::iter::Itertools;
   use wtools::error::Result;
@@ -35,7 +35,7 @@ mod private
 
   /// Newtype for package name
   #[ derive( Debug, Default, Clone ) ]
-  struct PackageName( String );
+  pub struct PackageName( String );
 
   /// Represents a variant for testing purposes.
   #[ derive( Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Former ) ]
@@ -145,11 +145,55 @@ mod private
     fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
     {
       writeln!( f, "Package : {}\nThe tests will be executed using the following configurations :", self.package.file_name().unwrap().to_string_lossy() )?;
+      let mut table = Table::new();
+      let mut all_features = BTreeSet::new();
       for variant in &self.test_variants
       {
-        let feature = if variant.features.is_empty() { "".to_string() } else { variant.features.iter().join( "," ) };
-        writeln!( f, "  [ optimization : {} | channel : {} | feature : [ {feature} ] ]", variant.optimization, variant.channel )?;
+        let features = variant.features.iter().cloned();
+        if features.len() == 0
+        {
+          all_features.extend( [ "[ ]".to_string() ] );
+        }
+        all_features.extend( features );
       }
+      let mut header_row = Row::empty();
+      header_row.add_cell( Cell::new( "Channel" ) );
+      header_row.add_cell( Cell::new( "Opt" ) );
+      for feature in &all_features
+      {
+        header_row.add_cell( Cell::new( feature )  );
+      }
+      table.add_row( header_row );
+
+      for variant in &self.test_variants
+      {
+        let mut row = Row::empty();
+        
+        row.add_cell( Cell::new( &variant.channel.to_string() ) );
+        row.add_cell( Cell::new( &variant.optimization.to_string() ) );
+        let mut a = true;
+        for feature in &all_features
+        {
+          if variant.features.is_empty() && a
+          {
+            a = false;
+            row.add_cell( Cell::new( "+" ) );
+          }
+          else if variant.features.contains( feature )
+          {
+            row.add_cell( Cell::new( "+" ) );
+          }
+          else
+          {
+            row.add_cell( Cell::new( "" ) );
+          }
+        }
+
+        table.add_row( row );
+      }
+      // aaa : for Petro : bad, DRY
+      // aaa : replace with method
+      writeln!( f, "{}", table )?;
       Ok( () )
     }
   }
@@ -311,7 +355,7 @@ mod private
   ///
   /// Returns a `Result` containing a `Report` if the command is executed successfully,
   /// or an error if the command fails to execute.
-  pub fn _run< P >( path : P, options : SingleTestOptions ) -> Result< Report, ( Report, Error ) >
+  pub fn _run< P >( path : P, options : SingleTestOptions ) -> Result< Report, Report >
   where
     P : AsRef< Path >
   {
@@ -327,23 +371,23 @@ mod private
         Report
         {
           command : format!( "{program} {}", args.join( " " ) ),
-          path : path.as_ref().to_path_buf(),
           out : String::new(),
           err : String::new(),
+          current_path: path.as_ref().to_path_buf(),
+          error: Ok( () ),
         }
       )
     }
     else
     {
       let envs = if options.backtrace { [( "RUST_BACKTRACE".to_string(), "full".to_string() )].into_iter().collect() } else { HashMap::new() };
-      let options = process::Run::former()
-      .application( program )
+      Run::former()
+      .bin_path( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-      .path( path.as_ref().to_path_buf() )
+      .current_path( path.as_ref().to_path_buf() )
       .joining_streams( true )
       .env_variable( envs )
-      .form();
-      process::run( options )
+      .run()
     }
   }
 
@@ -458,7 +502,7 @@ mod private
       let mut header_row = Row::empty();
       header_row.add_cell( Cell::new( "Result" ) );
       header_row.add_cell( Cell::new( "Channel" ) );
-      header_row.add_cell( Cell::new( "Optimization" ) );
+      header_row.add_cell( Cell::new( "Opt" ) );
       for feature in &all_features
       {
         header_row.add_cell( Cell::new( feature )  );
@@ -488,7 +532,7 @@ mod private
             failed += 1;
             let mut out = report.out.replace( "\n", "\n      " );
             out.push_str( "\n" );
-            write!( f, " ❌  > {}\n{out}", report.command )?;
+            write!( f, " ❌  > {}\n\n{out}", report.command )?;
             "❌"
           },
         };
@@ -654,7 +698,7 @@ mod private
               let args = args_t.form();
               let temp_dir = args.temp_directory_path.clone();
               let cmd_rep = _run( dir, args );
-              r.lock().unwrap().tests.insert( variant.clone(), cmd_rep.map_err( | e | e.0 ) );
+              r.lock().unwrap().tests.insert( variant.clone(), cmd_rep );
               #[ cfg( feature = "progress_bar" ) ]
               options.progress_bar_feature.as_ref().unwrap().progress_bar.inc( 1 );
               if let Some( path ) = temp_dir

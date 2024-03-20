@@ -13,6 +13,7 @@ Feed reader with the ability to set updates frequency.
 """
 categories = [ "development-tools" ]
 keywords = [ "rss-feed", "atom-feed" ]
+repository = "https://github.com/Wandalen/wTools/tree/alpha/module/move/unitore"
 
 # [lints]
 # workspace = true

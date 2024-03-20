@@ -13,7 +13,7 @@ mod private
   use cargo_metadata::{ Dependency, DependencyKind, Package as PackageMetadata };
   use toml_edit::value;
 
-  use tool::process;
+  use process_tools::process;
   use manifest::{ Manifest, ManifestError };
   use crates_tools::CrateArchive;
 

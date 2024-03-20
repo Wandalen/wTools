@@ -32,5 +32,12 @@ crate::mod_interface!
   /// Operations with tests
   layer test;
   orphan use super::test;
-
+  
+  /// Rust toolchain channel: stable/nightly.
+  layer channel;
+  orphan use super::channel;
+  
+  /// Rust build optimization: debug/release
+  layer optimization;
+  orphan use super::optimization;
 }
