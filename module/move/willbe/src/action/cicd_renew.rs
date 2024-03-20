@@ -13,15 +13,38 @@ mod private
   // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
 
   use convert_case::{ Casing, Case };
+  use handlebars::{ RenderError, TemplateError };
   use toml_edit::Document;
 
-  use wtools::error::for_app::{ Result, anyhow };
   use _path::AbsolutePath;
+  use crate::manifest::private::CrateDirError;
+  use error_tools::for_lib::Error;
+  use error_tools::dependency::*;
 
+  use wtools::error::for_app::{ Result, Error as wError };
+  use entity::WorkspaceError;
+  use error_tools::err;
+
+  #[ derive( Debug, Error ) ]
+  pub enum CiCdGenerateError
+  {
+    #[ error( "Common error: {0}" ) ]
+    Common(#[ from ] wError ),
+    #[ error( "I/O error: {0}" ) ]
+    IO( #[ from ] std::io::Error ),
+    #[ error( "Crate directory error: {0}" ) ]
+    CrateDir( #[ from ] CrateDirError ),
+    #[ error( "Workspace error: {0}" ) ]
+    Workspace( #[ from ] WorkspaceError),
+    #[ error( "Template error: {0}" ) ]
+    Template( #[ from ] TemplateError ),
+    #[ error( "Render error: {0}" ) ]
+    Render( #[ from ] RenderError ),
+  }
 
   // qqq : for Petro : should return Report and typed error in Result
   /// Generate workflows for modules in .github/workflows directory.
-  pub fn cicd_renew( base_path : &Path ) -> Result< () >
+  pub fn cicd_renew( base_path : &Path ) -> Result< (), CiCdGenerateError >
   {
     let workspace_cache = Workspace::with_crate_dir( AbsolutePath::try_from( base_path )?.try_into()? )?;
     let packages = workspace_cache.packages()?;
@@ -218,7 +241,7 @@ mod private
         return url::extract_repo_url( &url )
         .and_then( | url | url::git_info_extract( &url ).ok() )
         .map( UsernameAndRepository )
-        .ok_or_else( || anyhow!( "Fail to parse repository url from workspace Cargo.toml"))
+        .ok_or_else( || err!( "Fail to parse repository url from workspace Cargo.toml"))
       }
       else
       {
@@ -235,7 +258,7 @@ mod private
         .and_then( | url | url::extract_repo_url( &url ) )
         .and_then( | url | url::git_info_extract( &url ).ok() )
         .map( UsernameAndRepository )
-        .ok_or_else( || anyhow!( "Fail to extract repository url") )
+        .ok_or_else( || err!( "Fail to extract repository url") )
       }
     }
 
