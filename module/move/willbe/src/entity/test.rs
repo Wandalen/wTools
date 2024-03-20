@@ -53,7 +53,7 @@ mod private
   {
     fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
     {
-      let features = if self.features.is_empty() { " ".to_string() } else { self.features.iter().join( ", " ) };
+      let features = if self.features.is_empty() { " ".to_string() } else { self.features.iter().join( " " ) };
       writeln!( f, "{} {} {}", self.optimization, self.channel, features )?;
       Ok( () )
     }
@@ -146,6 +146,7 @@ mod private
     {
       writeln!( f, "Package : {}\nThe tests will be executed using the following configurations :", self.package.file_name().unwrap().to_string_lossy() )?;
       let mut table = Table::new();
+      table.set_format( *prettytable::format::consts::FORMAT_NO_BORDER );
       let mut all_features = BTreeSet::new();
       for variant in &self.test_variants
       {
@@ -489,6 +490,7 @@ mod private
         return Ok( () )
       }
       let mut table = Table::new();
+      table.set_format( *prettytable::format::consts::FORMAT_NO_BORDER );
       let mut all_features = BTreeSet::new();
       for variant in self.tests.keys()
       {
@@ -691,7 +693,7 @@ mod private
               #[ cfg( feature = "progress_bar" ) ]
               let _s =
               {
-                let spinner = options.progress_bar_feature.as_ref().unwrap().multi_progress.add( ProgressBar::new_spinner().with_message( format!( "start : {}", variant ) ) );
+                let spinner = options.progress_bar_feature.as_ref().unwrap().multi_progress.add( ProgressBar::new_spinner().with_message( format!( "{}", variant ) ) );
                 spinner.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
                 spinner
               };
