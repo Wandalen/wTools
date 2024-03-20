@@ -43,13 +43,11 @@ mod private
     }
     else
     {
-      let options =
       process::Run::former()
       .application( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .path( path.as_ref().to_path_buf() )
-      .form();
-      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
+      .run().map_err( | ( report, err ) | err.context( report ) )
     }
   }
 
@@ -88,13 +86,11 @@ mod private
     }
     else
     {
-      let options =
       process::Run::former()
       .application( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .path( path.as_ref().to_path_buf() )
-      .form();
-      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
+      .run().map_err( | ( report, err ) | err.context( report ) )
     }
   }
 
@@ -131,14 +127,11 @@ mod private
     }
     else
     {
-      let options =
       process::Run::former()
       .application( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .path( path.as_ref().to_path_buf() )
-      .form();
-
-      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
+      .run().map_err( | ( report, err ) | err.context( report ) )
     }
   }
 
@@ -157,13 +150,11 @@ mod private
   {
     let ( program, args ) = ( "git", [ "ls-remote", "--get-url" ] );
 
-    let options =
     process::Run::former()
     .application( program )
     .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
     .path( path.as_ref().to_path_buf() )
-    .form();
-    process::run( options ).map_err( | ( report, err ) | err.context( report ) )
+    .run().map_err( | ( report, err ) | err.context( report ) )
   }
 }
 

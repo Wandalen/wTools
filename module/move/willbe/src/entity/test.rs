@@ -336,14 +336,13 @@ mod private
     else
     {
       let envs = if options.backtrace { [( "RUST_BACKTRACE".to_string(), "full".to_string() )].into_iter().collect() } else { HashMap::new() };
-      let options = process::Run::former()
+      process::Run::former()
       .application( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .path( path.as_ref().to_path_buf() )
       .joining_streams( true )
       .env_variable( envs )
-      .form();
-      process::run( options )
+      .run()
     }
   }
 

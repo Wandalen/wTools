@@ -41,13 +41,11 @@ mod private
     P : AsRef< Path >,
   {
     let ( program, options ) = ( "rustup", [ "toolchain", "list" ] );
-    let options =
-    process::Run::former()
+    let report = process::Run::former()
     .application( program )
     .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
     .path( path.as_ref().to_path_buf() )
-    .form();
-    let report = process::run( options ).map_err( | ( report, err ) | err.context( report ) )?;
+    .run().map_err( | ( report, err ) | err.context( report ) )?;
 
     let list = report
     .out

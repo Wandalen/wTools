@@ -69,13 +69,11 @@ mod private
     }
     else
     {
-      let options =
       process::Run::former()
       .application( program )
       .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .path( args.path )
-      .form();
-      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
+      .run().map_err( | ( report, err ) | err.context( report ) )
     }
   }
 
@@ -133,13 +131,11 @@ mod private
     }
     else
     {
-      let options =
       process::Run::former()
       .application( program )
       .args( arguments.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .path( args.path )
-      .form();
-      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
+      .run().map_err( | ( report, err ) | err.context( report ) )
     }
   }
 }

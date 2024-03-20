@@ -61,13 +61,12 @@ pub( crate ) mod private
     {
       ( "sh", [ "-c", exec_path ] )
     };
-    let options = Run::former()
+    Run::former()
     .application( program )
     .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
     .path( current_path )
-    .form();
+    .run()
     // xxx : qqq : for Petro : implement run for former та для Run
-    run( options )
   }
 
   /// Process command output.
@@ -113,6 +112,14 @@ pub( crate ) mod private
     #[ default( false ) ]
     joining_streams : bool,
     env_variable : HashMap< String, String >,
+  }
+  
+  impl RunFormer
+  {
+    pub fn run( mut self ) -> Result< Report, ( Report, Error ) >
+    {
+      run( self.form() )
+    }
   }
 
   ///
