@@ -139,15 +139,15 @@ pub( crate ) mod private
       let on_end = | command : Command, super_former : Option< Self > | -> Self
       {
         let mut super_former = super_former.unwrap();
-        let mut dictionary = super_former.container.dictionary.unwrap_or_default();
+        let mut dictionary = super_former.storage.dictionary.unwrap_or_default();
 
         dictionary.register( command );
 
-        super_former.container.dictionary = Some( dictionary );
+        super_former.storage.dictionary = Some( dictionary );
 
         super_former
       };
-      let former = CommandFormer::begin( Some( self ), on_end );
+      let former = CommandFormer::begin( None, Some( self ), on_end );
       former.phrase( name )
     }
   }
@@ -165,7 +165,7 @@ pub( crate ) mod private
     //   let verifier = Verifier::former()
     //   .commands( commands )
     //   .form();
-    //   self.container.verifier = Some( verifier );
+    //   self.storage.verifier = Some( verifier );
     //   self
     // }
 
@@ -180,7 +180,7 @@ pub( crate ) mod private
     //   .routines( routines )
     //   .form();
     //
-    //   self.container.executor_converter = Some( executor );
+    //   self.storage.executor_converter = Some( executor );
     //   self
     // }
 
@@ -202,7 +202,7 @@ pub( crate ) mod private
     where
       HelpFunction : Fn( &Dictionary, Option< &Command > ) -> String + 'static
     {
-      self.container.help_generator = Some( HelpGeneratorFn::new( func ) );
+      self.storage.help_generator = Some( HelpGeneratorFn::new( func ) );
       self
     }
     // qqq : it is good access method, but formed structure should not have help_generator anymore
@@ -226,7 +226,7 @@ pub( crate ) mod private
     where
       Callback : Fn( &str, &Program< VerifiedCommand > ) + 'static,
     {
-      self.container.callback_fn = Some( CommandsAggregatorCallback( Box::new( callback ) ) );
+      self.storage.callback_fn = Some( CommandsAggregatorCallback( Box::new( callback ) ) );
       self
     }
   }

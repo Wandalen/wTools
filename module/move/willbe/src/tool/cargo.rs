@@ -22,7 +22,7 @@ mod private
   {
     pub fn option_temp_path( mut self, value : impl Into< Option< PathBuf > > ) -> Self
     {
-      self.container.temp_path = value.into();
+      self.storage.temp_path = value.into();
       self
     }
   }
@@ -93,7 +93,7 @@ mod private
   {
     pub fn option_temp_path( mut self, value : impl Into< Option< PathBuf > > ) -> Self
     {
-      self.container.temp_path = value.into();
+      self.storage.temp_path = value.into();
       self
     }
   }

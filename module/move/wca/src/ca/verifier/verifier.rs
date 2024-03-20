@@ -47,12 +47,12 @@ pub( crate ) mod private
   //   /// Insert a command to the commands list
   //   pub fn command( mut self, command : Command ) -> Self
   //   {
-  //     let mut commands = self.container.commands.unwrap_or_default();
+  //     let mut commands = self.storage.commands.unwrap_or_default();
   //
   //     let command_variants = commands.entry( command.phrase.to_owned() ).or_insert_with( Vec::new );
   //     command_variants.push( command );
   //
-  //     self.container.commands = Some( commands );
+  //     self.storage.commands = Some( commands );
   //     self
   //   }
   //
@@ -61,7 +61,7 @@ pub( crate ) mod private
   //   where
   //     V : Into< Vec< Command > >
   //   {
-  //     let mut self_commands = self.container.commands.unwrap_or_default();
+  //     let mut self_commands = self.storage.commands.unwrap_or_default();
   //
   //     for command in commands.into()
   //     {
@@ -69,7 +69,7 @@ pub( crate ) mod private
   //       command_variants.push( command );
   //     }
   //
-  //     self.container.commands = Some( self_commands );
+  //     self.storage.commands = Some( self_commands );
   //     self
   //   }
   // }
@@ -158,15 +158,15 @@ pub( crate ) mod private
       if !maybe_valid_variants.is_empty() { return Some( maybe_valid_variants[ 0 ] ) }
       else { None }
     }
-    
-    // qqq : for Barsik : 
+
+    // qqq : for Barsik :
     // Problem with separating properties and subjects:
     // if we pass to wca a command that has an incorrectly named property, it defines this property as part of an subject.
-    // You can simulate this problem by running the code from https://github.com/Wandalen/wTools/blob/alpha/module/move/wca/examples/wca_trivial.rs in this form `cargo r .echo propertyf:123` 
+    // You can simulate this problem by running the code from https://github.com/Wandalen/wTools/blob/alpha/module/move/wca/examples/wca_trivial.rs in this form `cargo r .echo propertyf:123`
     // where the console shows that the subject is `propertyf:123` and the property is empty.
-    // 
-    // I would like to get an error in this case. 
-    // 
+    //
+    // I would like to get an error in this case.
+    //
     // A real example of the problem can be seen in the `.test` command in willbe where if you don't specify the option and make a mistake in the name of the properties when running it,
     // the option will be an incorrectly written property that will produce an error with unobvious output.
     // log:
@@ -361,7 +361,7 @@ pub( crate ) mod private
     //   16: BaseThreadInitThunk
     //   17: RtlUserThreadStart
     // error: process didn't exit successfully: `C:\pro\rust\lib\wTools\target\debug\will.exe .test 'enabled_features:enabled' 'power:1' 'dry:0'` (exit code: 1)
-    
+
     fn extract_subjects( command : &Command, raw_command : &ParsedCommand, used_properties : &[ &String ] ) -> Result< Vec< Value > >
     {
       let mut subjects = vec![];

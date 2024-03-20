@@ -43,7 +43,7 @@ pub( crate ) mod private
   // /// println!( "{}", report.out );
   // /// ```
   // ///
-  // 
+  //
   // pub fn run_with_shell
   // (
   //   exec_path : &str,
@@ -102,7 +102,7 @@ pub( crate ) mod private
 
     let mut env: HashMap<String, String> = std::env::vars().collect();
     env.extend( options.env_variable );
-    
+
     let output = if options.joining_streams
     {
       let output = cmd( bin_path.as_os_str(), &options.args )
@@ -207,7 +207,7 @@ pub( crate ) mod private
     {
       run( self.form() )
     }
-    
+
     /// Executes an external process using the system shell.
     ///
     /// This function abstracts over the differences between shells on Windows and Unix-based

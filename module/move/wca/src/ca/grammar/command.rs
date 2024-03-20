@@ -57,9 +57,9 @@ pub( crate ) mod private
     where
       IntoName : Into< String >,
     {
-      let mut aliases = self.container.properties_aliases.unwrap_or_default();
+      let mut aliases = self.storage.properties_aliases.unwrap_or_default();
       aliases.push( name.into() );
-      self.container.properties_aliases = Some( aliases );
+      self.storage.properties_aliases = Some( aliases );
 
       self
     }
@@ -121,15 +121,15 @@ pub( crate ) mod private
     {
       let key = key.into();
       let alias = alias.into();
-      let properties = self.container.properties.unwrap_or_default();
-      let mut properties_aliases = self.container.properties_aliases.unwrap_or_default();
+      let properties = self.storage.properties.unwrap_or_default();
+      let mut properties_aliases = self.storage.properties_aliases.unwrap_or_default();
       debug_assert!( !properties.contains_key( &alias ), "Name `{key}` is already used for `{:?} as property name`", properties[ &alias ] );
       debug_assert!( !properties_aliases.contains_key( &alias ), "Alias `{alias}` is already used for `{}`", properties_aliases[ &alias ] );
 
       properties_aliases.insert( alias, key );
 
-      self.container.properties = Some( properties );
-      self.container.properties_aliases = Some( properties_aliases );
+      self.storage.properties = Some( properties );
+      self.storage.properties_aliases = Some( properties_aliases );
       self
     }
 
@@ -164,7 +164,7 @@ pub( crate ) mod private
       Routine: From< Handler< I, R > >,
     {
       let h = f.into();
-      self.container.routine = Some( h.into() );
+      self.storage.routine = Some( h.into() );
       self
     }
   }
@@ -182,14 +182,14 @@ pub( crate ) mod private
       let on_end = | subject : ValueDescription, super_former : Option< Self > | -> Self
       {
         let mut super_former = super_former.unwrap();
-        let mut subjects = super_former.container.subjects.unwrap_or_default();
+        let mut subjects = super_former.storage.subjects.unwrap_or_default();
         subjects.push( subject );
 
-        super_former.container.subjects = Some( subjects );
+        super_former.storage.subjects = Some( subjects );
 
         super_former
       };
-      ValueDescriptionFormer::begin( Some( self ), on_end )
+      ValueDescriptionFormer::begin( None, Some( self ), on_end )
     }
 
     /// Sets the name and other properties of the current property.
@@ -208,7 +208,7 @@ pub( crate ) mod private
       let on_end = | property : PropertyDescription, super_former : Option< Self > | -> Self
       {
         let mut super_former = super_former.unwrap();
-        let mut properties = super_former.container.properties.unwrap_or_default();
+        let mut properties = super_former.storage.properties.unwrap_or_default();
         let value = ValueDescription
         {
           hint : property.hint,
@@ -218,17 +218,17 @@ pub( crate ) mod private
         debug_assert!( !properties.contains_key( &property.name ), "Property name `{}` is already used for `{:?}`", property.name, properties[ &property.name ] );
         properties.insert( property.name.clone(), value );
 
-        let mut aliases = super_former.container.properties_aliases.unwrap_or_default();
+        let mut aliases = super_former.storage.properties_aliases.unwrap_or_default();
         debug_assert!( !aliases.contains_key( &property.name ), "Name `{}` is already used for `{}` as alias", property.name, aliases[ &property.name ] );
 
         aliases.extend( property.properties_aliases.into_iter().map( | alias | ( alias, property.name.clone() ) ) );
 
-        super_former.container.properties = Some( properties );
-        super_former.container.properties_aliases = Some( aliases );
+        super_former.storage.properties = Some( properties );
+        super_former.storage.properties_aliases = Some( aliases );
 
         super_former
       };
-      let former = PropertyDescriptionFormer::begin( Some( self ), on_end );
+      let former = PropertyDescriptionFormer::begin( None, Some( self ), on_end );
       former.name( name )
     }
   }

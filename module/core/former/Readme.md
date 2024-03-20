@@ -85,14 +85,14 @@ pub struct UserProfile
 impl UserProfile
 {
   #[ inline( always ) ]
-  pub fn former() -> UserProfileFormer< UserProfile, former::ReturnContainer >
+  pub fn former() -> UserProfileFormer< UserProfile, former::ReturnFormed >
   {
-    UserProfileFormer::< UserProfile, former::ReturnContainer >::new()
+    UserProfileFormer::< UserProfile, former::ReturnFormed >::new()
   }
 }
 
 #[ derive( Debug, Default ) ]
-pub struct UserProfileFormerContainer
+pub struct UserProfileFormerStorage
 {
   age : Option< i32 >,
   username : Option< String >,
@@ -102,12 +102,12 @@ pub struct UserProfileFormerContainer
 pub struct UserProfileFormer
 <
   FormerContext = UserProfile,
-  FormerEnd = former::ReturnContainer,
+  FormerEnd = former::ReturnFormed,
 >
 where
   FormerEnd : former::ToSuperFormer< UserProfile, FormerContext >,
 {
-  container : UserProfileFormerContainer,
+  storage : UserProfileFormerStorage,
   context : Option< FormerContext >,
   on_end : Option< FormerEnd >,
 }
@@ -119,9 +119,9 @@ where
   #[ inline( always ) ]
   pub fn form( mut self ) -> UserProfile
   {
-    let age = if self.container.age.is_some()
+    let age = if self.storage.age.is_some()
     {
-      self.container.age.take().unwrap()
+      self.storage.age.take().unwrap()
     }
     else
     {
@@ -149,9 +149,9 @@ where
       };
       val
     };
-    let username = if self.container.username.is_some()
+    let username = if self.storage.username.is_some()
     {
-      self.container.username.take().unwrap()
+      self.storage.username.take().unwrap()
     }
     else
     {
@@ -179,9 +179,9 @@ where
       };
       val
     };
-    let bio_optional = if self.container.bio_optional.is_some()
+    let bio_optional = if self.storage.bio_optional.is_some()
     {
-      Option::Some( self.container.bio_optional.take().unwrap() )
+      Option::Some( self.storage.bio_optional.take().unwrap() )
     }
     else
     {
@@ -204,9 +204,9 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn new() -> UserProfileFormer< UserProfile, former::ReturnContainer >
+  pub fn new() -> UserProfileFormer< UserProfile, former::ReturnFormed >
   {
-    UserProfileFormer::< UserProfile, former::ReturnContainer >::begin( None, former::ReturnContainer )
+    UserProfileFormer::< UserProfile, former::ReturnFormed >::begin( None, former::ReturnFormed )
   }
 
   #[ inline( always ) ]
@@ -218,7 +218,7 @@ where
   {
     Self
     {
-      container : core::default::Default::default(),
+      storage : core::default::Default::default(),
       context : context,
       on_end : Option::Some( on_end ),
     }
@@ -229,8 +229,8 @@ where
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
-    let container = self.form();
-    on_end.call( container, context )
+    let formed = self.form();
+    on_end.call( formed, context )
   }
 
   #[ inline ]
@@ -238,8 +238,8 @@ where
   where
     Src : Into< i32 >,
   {
-    debug_assert!( self.container.age.is_none() );
-    self.container.age = Option::Some( src.into() );
+    debug_assert!( self.storage.age.is_none() );
+    self.storage.age = Option::Some( src.into() );
     self
   }
 
@@ -248,8 +248,8 @@ where
   where
     Src : Into< String >,
   {
-    debug_assert!( self.container.username.is_none() );
-    self.container.username = Option::Some( src.into() );
+    debug_assert!( self.storage.username.is_none() );
+    self.storage.username = Option::Some( src.into() );
     self
   }
 
@@ -258,8 +258,8 @@ where
   where
     Src : Into< String >,
   {
-    debug_assert!( self.container.bio_optional.is_none() );
-    self.container.bio_optional = Option::Some( src.into() );
+    debug_assert!( self.storage.bio_optional.is_none() );
+    self.storage.bio_optional = Option::Some( src.into() );
     self
   }
 }
@@ -305,8 +305,8 @@ impl StructWithCustomSettersFormer
   // Custom alternative setter for `word`
   pub fn word_exclaimed( mut self, value : impl Into< String > ) -> Self
   {
-    debug_assert!( self.container.word.is_none() );
-    self.container.word = Some( format!( "{}!", value.into() ) );
+    debug_assert!( self.storage.word.is_none() );
+    self.storage.word = Some( format!( "{}!", value.into() ) );
     self
   }
 
@@ -351,8 +351,8 @@ impl StructWithCustomSettersFormer
   // Custom alternative setter for `word`
   pub fn word( mut self, value : impl Into< String > ) -> Self
   {
-    debug_assert!( self.container.word.is_none() );
-    self.container.word = Some( format!( "{}!", value.into() ) );
+    debug_assert!( self.storage.word.is_none() );
+    self.storage.word = Some( format!( "{}!", value.into() ) );
     self
   }
 
@@ -553,7 +553,7 @@ fn main()
       let on_end = | command : Command, super_former : core::option::Option< Self > | -> Self
       {
         let mut super_former = super_former.unwrap();
-        if let Some( ref mut commands ) = super_former.container.command
+        if let Some( ref mut commands ) = super_former.storage.command
         {
           commands.insert( command.name.clone(), command );
         }
@@ -561,11 +561,11 @@ fn main()
         {
           let mut commands: HashMap< String, Command > = Default::default();
           commands.insert( command.name.clone(), command );
-          super_former.container.command = Some( commands );
+          super_former.storage.command = Some( commands );
         }
         super_former
       };
-      let former = CommandFormer::begin( Some( self ), on_end );
+      let former = CommandFormer::begin( None, Some( self ), on_end );
       former.name( name )
     }
   }

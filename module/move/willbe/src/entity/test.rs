@@ -171,7 +171,7 @@ mod private
       for variant in &self.test_variants
       {
         let mut row = Row::empty();
-        
+
         row.add_cell( Cell::new( &variant.channel.to_string() ) );
         row.add_cell( Cell::new( &variant.optimization.to_string() ) );
         let mut a = true;
@@ -270,7 +270,7 @@ mod private
     }
   }
 
-  fn format() -> TableFormat 
+  fn format() -> TableFormat
   {
     let format = FormatBuilder::new()
     .column_separator( ' ' )
@@ -309,7 +309,7 @@ mod private
   {
     pub fn option_temp(  mut self, value : impl Into< Option< PathBuf > > ) -> Self
     {
-      self.container.temp_path = value.into();
+      self.storage.temp_path = value.into();
       self
     }
   }
@@ -467,7 +467,7 @@ mod private
   {
     pub fn option_temp(  mut self, value : impl Into< Option< PathBuf > > ) -> Self
     {
-      self.container.temp_path = value.into();
+      self.storage.temp_path = value.into();
       self
     }
   }

@@ -37,11 +37,13 @@ where
   #[ inline( always ) ]
   fn _begin
   (
+    storage : core::option::Option< TemplateParameterDescriptor >, /* xxx2 : that should be storage */
     context : core::option::Option< Context >,
     on_end : End,
   ) -> Self
   {
-    Self::begin( context, on_end )
+    debug_assert!( storage.is_none() );
+    Self::begin( None, context, on_end )
   }
 
 }
@@ -61,17 +63,17 @@ where
     let on_end = | descriptor : TemplateParameterDescriptor, super_former : core::option::Option< Self > | -> Self
     {
       let mut super_former = super_former.unwrap();
-      if super_former.container.descriptors.is_none()
+      if super_former.storage.descriptors.is_none()
       {
-        super_former.container.descriptors = Some( Default::default() );
+        super_former.storage.descriptors = Some( Default::default() );
       }
-      if let Some( ref mut descriptors ) = super_former.container.descriptors
+      if let Some( ref mut descriptors ) = super_former.storage.descriptors
       {
         former::ContainerAdd::add( descriptors, descriptor );
       }
       super_former
     };
-    Former2::_begin( Some( self ), former::ToSuperFormerWrapper::new( on_end ) )
+    Former2::_begin( None, Some( self ), former::ToSuperFormerWrapper::new( on_end ) )
   }
 
   // xxx2 : move to a trait and make easier to use subformer, trait with generic interface of a container should help

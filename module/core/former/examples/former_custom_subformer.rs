@@ -34,12 +34,12 @@ fn main()
     #[ inline( always ) ]
     pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::ToSuperFormer< Command, Self > >
     where
-      IntoName: core::convert::Into< String >,
+      IntoName : core::convert::Into< String >,
     {
       let on_end = | command : Command, super_former : core::option::Option< Self > | -> Self
       {
         let mut super_former = super_former.unwrap();
-        if let Some( ref mut commands ) = super_former.container.command
+        if let Some( ref mut commands ) = super_former.storage.command
         {
           commands.insert( command.name.clone(), command );
         }
@@ -47,13 +47,14 @@ fn main()
         {
           let mut commands: HashMap< String, Command > = Default::default();
           commands.insert( command.name.clone(), command );
-          super_former.container.command = Some( commands );
+          super_former.storage.command = Some( commands );
         }
         super_former
       };
-      let former = CommandFormer::begin( Some( self ), on_end );
+      let former = CommandFormer::begin( None, Some( self ), on_end );
       former.name( name )
     }
+    // xxx : review
   }
 
   let ca = Aggregator::former()
