@@ -60,7 +60,7 @@ where
 
 impl< FormerContext, FormerEnd > Struct1Former< FormerContext, FormerEnd >
 where
-  FormerEnd: the_module::ToSuperFormer<Struct1, FormerContext>,
+  FormerEnd : the_module::ToSuperFormer< Struct1, FormerContext >,
 {
 
   #[ inline( always ) ]

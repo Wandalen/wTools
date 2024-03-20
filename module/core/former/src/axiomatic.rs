@@ -38,6 +38,70 @@ where
   }
 }
 
+/// A wrapper around a closure to be used as a `ToSuperFormer`.
+///
+/// This struct allows for dynamic dispatch of a closure that matches the
+/// `ToSuperFormer` trait's `call` method signature. It is useful for cases where
+/// a closure needs to be stored or passed around as an object implementing
+/// `ToSuperFormer`.
+///
+/// # Type Parameters
+///
+/// * `T` - The type of the container being processed. This type is passed to the closure
+///         when it's called.
+/// * `Context` - The type of the context that may be altered or returned by the closure.
+///               This allows for flexible manipulation of context based on the container.
+// #[ derive( Debug ) ]
+pub struct ToSuperFormerWrapper< T, Context >
+{
+  closure : Box< dyn Fn( T, Option< Context > ) -> Context >,
+  _marker : std::marker::PhantomData< T >,
+}
+
+impl< T, Context > ToSuperFormerWrapper< T, Context >
+{
+  /// Constructs a new `ToSuperFormerWrapper` with the provided closure.
+  ///
+  /// # Parameters
+  ///
+  /// * `closure` - A closure that matches the expected signature for transforming a container
+  ///               and context into a new context. This closure is stored and called by the
+  ///               `call` method of the `ToSuperFormer` trait implementation.
+  ///
+  /// # Returns
+  ///
+  /// Returns an instance of `ToSuperFormerWrapper` encapsulating the provided closure.
+  pub fn new( closure : impl Fn( T, Option< Context > ) -> Context + 'static ) -> Self
+  {
+    Self
+    {
+      closure : Box::new( closure ),
+      _marker : std::marker::PhantomData
+    }
+  }
+}
+
+use std::fmt;
+impl< T, Context > fmt::Debug for ToSuperFormerWrapper< T, Context >
+{
+  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+  {
+    f.debug_struct( "ToSuperFormerWrapper" )
+    .field( "closure", &format_args!{ "< closure >" } )
+    .field( "_marker", &self._marker )
+    .finish()
+  }
+}
+
+impl< T, Context > ToSuperFormer< T, Context >
+for ToSuperFormerWrapper< T, Context >
+{
+  fn call( &self, container : T, context : Option< Context > ) -> Context
+  {
+    ( self.closure )( container, context )
+  }
+}
+
 /// A `ToSuperFormer` implementation that returns the original context without any modifications.
 ///
 /// This struct is used when no end-of-forming processing is needed, and the original context is to be returned as-is.
