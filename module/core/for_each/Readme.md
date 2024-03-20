@@ -2,7 +2,7 @@
 
 # Module :: for_each
 <!--{ generate.module_header.start() }-->
- [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) |[![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleForEachPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleForEachPush.yml)[![docs.rs](https://img.shields.io/docsrs/for_each?color=e3e8f0&logo=docs.rs)](https://docs.rs/for_each)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ffor_each_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20for_each_trivial/https://github.com/Wandalen/wTools)
+ [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) |[![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_for_each_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_for_each_push.yml)[![docs.rs](https://img.shields.io/docsrs/for_each?color=e3e8f0&logo=docs.rs)](https://docs.rs/for_each)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ffor_each_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20for_each_trivial/https://github.com/Wandalen/wTools)
 <!--{ generate.module_header.end }-->
 
 Apply a macro for each element of a list.
