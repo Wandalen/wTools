@@ -10,7 +10,7 @@ jobs :
   # mod_interface_meta
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
     with :
       manifest_path : 'module/core/mod_interface_meta/Cargo.toml'
       module_name : 'mod_interface_meta'

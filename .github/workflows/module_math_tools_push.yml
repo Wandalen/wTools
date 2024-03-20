@@ -10,7 +10,7 @@ jobs :
   # math_tools
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
     with :
       manifest_path : 'module/blank/math_tools/Cargo.toml'
       module_name : 'math_tools'

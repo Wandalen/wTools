@@ -10,7 +10,7 @@ jobs :
   # variadic_from
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
     with :
       manifest_path : 'module/core/variadic_from/Cargo.toml'
       module_name : 'variadic_from'

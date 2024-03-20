@@ -10,7 +10,7 @@ jobs :
   # is_slice
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
     with :
       manifest_path : 'module/core/is_slice/Cargo.toml'
       module_name : 'is_slice'

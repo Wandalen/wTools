@@ -163,7 +163,7 @@ fn branches_cell()
   let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
-  assert!( actual.contains( "| [![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/ModuleWillbeVariadicTagConfigurationsCPush.yml?label=&branch=test_branch1)](https://github.com/SomeName/SomeCrate/C/actions/workflows/ModuleWillbeVariadicTagConfigurationsCPush.yml?query=branch%3Atest_branch1) | [![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/ModuleWillbeVariadicTagConfigurationsCPush.yml?label=&branch=test_branch2)](https://github.com/SomeName/SomeCrate/C/actions/workflows/ModuleWillbeVariadicTagConfigurationsCPush.yml?query=branch%3Atest_branch2) |" ) );
+  assert!( actual.contains( "| [![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/module_willbe_variadic_tag_configurations_c_push.yml?label=&branch=test_branch1)](https://github.com/SomeName/SomeCrate/C/actions/workflows/module_willbe_variadic_tag_configurations_c_push.yml?query=branch%3Atest_branch1) | [![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/module_willbe_variadic_tag_configurations_c_push.yml?label=&branch=test_branch2)](https://github.com/SomeName/SomeCrate/C/actions/workflows/module_willbe_variadic_tag_configurations_c_push.yml?query=branch%3Atest_branch2) |" ) );
 }
 
 #[ test ]

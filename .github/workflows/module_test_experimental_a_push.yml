@@ -10,7 +10,7 @@ jobs :
   # test_experimental_a
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
     with :
       manifest_path : 'module/test/a/Cargo.toml'
       module_name : 'test_experimental_a'

@@ -10,7 +10,7 @@ jobs :
   # reflect_tools
 
   test :
-    uses : Wandalen/wTools/.github/workflows/StandardRustPush.yml@alpha
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
     with :
       manifest_path : 'module/core/reflect_tools/Cargo.toml'
       module_name : 'reflect_tools'
