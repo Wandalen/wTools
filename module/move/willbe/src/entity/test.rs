@@ -488,7 +488,7 @@ mod private
             failed += 1;
             let mut out = report.out.replace( "\n", "\n      " );
             out.push_str( "\n" );
-            write!( f, " ❌  > {}\n{out}", report.command )?;
+            write!( f, " ❌  > {}\n\n{out}", report.command )?;
             "❌"
           },
         };
