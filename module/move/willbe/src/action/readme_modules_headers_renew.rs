@@ -117,7 +117,6 @@ mod private
       .join( readme_path( path.parent().unwrap().as_ref() ).ok_or_else::< Error, _ >( || err!( "Fail to find README.md" ) )? );
 
       let pakage = Package::try_from( path )?;
-
       let header = ModuleHeader::from_cargo_toml( pakage, &discord_url )?;
 
       let mut file = OpenOptions::new()
