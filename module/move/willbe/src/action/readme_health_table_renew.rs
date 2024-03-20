@@ -37,6 +37,7 @@ mod private
   use manifest::private::repo_url;
   use workspace::Workspace;
   use _path::AbsolutePath;
+  use crate::workspace::WorkspacePackage;
 
   static TAG_TEMPLATE: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
   static CLOSE_TAG: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
@@ -326,18 +327,18 @@ mod private
   }
 
   /// Return topologically sorted modules name, from packages list, in specified directory.
-  fn directory_names( path : PathBuf, packages : &[ Package ] ) -> Result< Vec< String > >
+  fn directory_names( path : PathBuf, packages : &[ WorkspacePackage ] ) -> Result< Vec< String > >
   {
     let path_clone = path.clone();
-    let module_package_filter: Option< Box< dyn Fn( &Package ) -> bool > > = Some
+    let module_package_filter: Option< Box< dyn Fn( &WorkspacePackage ) -> bool > > = Some
     (
       Box::new
       (
         move | p |
-        p.publish.is_none() && p.manifest_path.starts_with( &path )
+        p.inner.publish.is_none() && p.inner.manifest_path.starts_with( &path )
       )
     );
-    let module_dependency_filter: Option< Box< dyn Fn( &Package, &Dependency) -> bool > > = Some
+    let module_dependency_filter: Option< Box< dyn Fn( &WorkspacePackage, &Dependency) -> bool > > = Some
     (
       Box::new
       (

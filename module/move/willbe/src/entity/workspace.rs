@@ -8,12 +8,19 @@ mod private
   use wtools::error::{ for_app::Context, for_lib::Error, Result };
   use _path::AbsolutePath;
 
+  #[ derive( Debug, Clone ) ]
+  pub struct WorkspacePackage
+  {
+    pub inner : Package
+  }
+  
   /// Stores information about current workspace.
   #[ derive( Debug, Clone ) ]
   pub struct Workspace
   {
     metadata : Option< Metadata >,
     manifest_dir : CrateDir,
+    packages : Option< Vec< WorkspacePackage > >,
   }
 
   /// Represents errors related to workspace operations.
@@ -31,22 +38,28 @@ mod private
     pub fn from_current_path() -> Result< Self >
     {
       let current_path = AbsolutePath::try_from( std::env::current_dir().unwrap_or_default() )?;
+      let metadata = MetadataCommand::new().no_deps().exec().context("fail to load CargoMetadata")?;
+      let packages = metadata.packages.iter().map( | p | WorkspacePackage{ inner : p.clone() } ).collect();
       Ok( Self
       {
-        metadata : Some( MetadataCommand::new().no_deps().exec().context("fail to load CargoMetadata")? ),
+        metadata : Some( metadata ),
         manifest_dir : CrateDir::try_from( current_path )?,
+        packages : Some( packages ),
       })
     }
 
     /// Load data from current directory
     pub fn with_crate_dir( crate_dir : CrateDir ) -> Result< Self >
     {
+      let metadata = MetadataCommand::new().no_deps().exec().context("fail to load CargoMetadata")?;
+      let packages = metadata.packages.iter().map( | p | WorkspacePackage{ inner : p.clone() } ).collect();
       Ok
       (
         Self
         {
         metadata : Some( MetadataCommand::new().current_dir( crate_dir.as_ref() ).no_deps().exec().context( "fail to load CargoMetadata" )? ),
         manifest_dir : crate_dir,
+        packages : Some( packages ),
         }
       )
     }
@@ -63,6 +76,7 @@ mod private
       {
         metadata : Some( value ),
         manifest_dir : CrateDir::try_from( path ).unwrap(),
+        packages : None,
       }
     }
   }
@@ -96,14 +110,14 @@ mod private
   impl Workspace
   {
     /// Returns list of all packages
-    pub fn packages( &self ) -> Result< &[ Package ], WorkspaceError >
-    {
+    pub fn packages( &self ) -> Result< &[ WorkspacePackage], WorkspaceError> {
       self
-      .metadata
+      .packages
       .as_ref()
       .ok_or_else( || WorkspaceError::MetadataError )
-      .map( | metadata | metadata.packages.as_slice() )
+      .map( | metadata | metadata.as_slice() )
     }
+
 
     /// Returns the path to workspace root
     pub fn workspace_root( &self ) -> Result< &Path, WorkspaceError >
@@ -142,7 +156,7 @@ mod private
     }
 
     /// Find a package by its manifest file path
-    pub fn package_find_by_manifest< P >( &self, manifest_path : P ) -> Option< &Package >
+    pub fn package_find_by_manifest< P >( &self, manifest_path : P ) -> Option< &WorkspacePackage >
     where
       P : AsRef< Path >,
     {
@@ -154,7 +168,7 @@ mod private
         | packages |
         packages
         .iter()
-        .find( | &p | p.manifest_path.as_std_path() == manifest_path.as_ref() )
+        .find( | &p | p.inner.manifest_path.as_std_path() == manifest_path.as_ref() )
       )
     }
 
@@ -162,11 +176,11 @@ mod private
     pub( crate ) fn graph( &self ) -> Graph< String, String >
     {
       let packages = self.packages().unwrap();
-      let module_package_filter : Option< Box< dyn Fn( &cargo_metadata::Package ) -> bool > > = Some
+      let module_package_filter : Option< Box< dyn Fn( &WorkspacePackage ) -> bool > > = Some
       (
-        Box::new( move | p | p.publish.is_none() )
+        Box::new( move | p | p.inner.publish.is_none() )
       );
-      let module_dependency_filter : Option< Box< dyn Fn( &cargo_metadata::Package, &cargo_metadata::Dependency) -> bool > > = Some
+      let module_dependency_filter : Option< Box< dyn Fn( &WorkspacePackage, &cargo_metadata::Dependency) -> bool > > = Some
       (
         Box::new
         (
@@ -190,4 +204,5 @@ crate::mod_interface!
 {
   exposed use Workspace;
   orphan use WorkspaceError;
+  protected use WorkspacePackage;
 }

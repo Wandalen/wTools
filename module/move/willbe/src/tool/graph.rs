@@ -21,6 +21,7 @@ pub( crate ) mod private
 
   use error_tools::for_lib::Error;
   use package::{ Package, publish_need };
+  use crate::workspace::WorkspacePackage;
 
   #[ derive( Debug, Error ) ]
   pub enum GraphError< T : Debug >

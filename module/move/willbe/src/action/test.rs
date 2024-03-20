@@ -55,6 +55,7 @@ mod private
     },
     iter::Itertools,
   };
+  use crate::workspace::WorkspacePackage;
 
   /// Used to store arguments for running tests.
   ///
@@ -196,7 +197,7 @@ mod private
     result
   }
 
-  fn needed_packages( path : AbsolutePath ) -> Result< Vec< Package > >
+  fn needed_packages( path : AbsolutePath ) -> Result< Vec< WorkspacePackage > >
   {
     let path = if path.as_ref().file_name() == Some( "Cargo.toml".as_ref() )
     {
@@ -212,7 +213,7 @@ mod private
     .packages()?
     .into_iter()
     .cloned()
-    .filter( move | x | x.manifest_path.starts_with( path.as_ref() ) )
+    .filter( move | x | x.inner.manifest_path.starts_with( path.as_ref() ) )
     .collect();
     Ok( result )
   }

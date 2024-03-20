@@ -34,6 +34,7 @@ mod private
   };
   use action::readme_health_table_renew::Stability;
   use former::Former;
+  use crate::workspace::WorkspacePackage;
 
   ///
   #[ derive( Debug ) ]
@@ -42,7 +43,7 @@ mod private
     /// `Cargo.toml` file.
     Manifest( Manifest ),
     /// Cargo metadata package.
-    Metadata( PackageMetadata ),
+    Metadata( WorkspacePackage ),
   }
 
   /// Represents errors related to package handling.
@@ -104,9 +105,9 @@ mod private
     }
   }
 
-  impl From< PackageMetadata > for Package
+  impl From< WorkspacePackage > for Package
   {
-    fn from( value : PackageMetadata ) -> Self
+    fn from( value : WorkspacePackage ) -> Self
     {
       Self::Metadata( value )
     }
@@ -120,7 +121,7 @@ mod private
       match self
       {
         Self::Manifest( manifest ) => manifest.manifest_path.clone(),
-        Self::Metadata( metadata ) => AbsolutePath::try_from( metadata.manifest_path.as_std_path().to_path_buf() ).unwrap(),
+        Self::Metadata( metadata ) => AbsolutePath::try_from( metadata.inner.manifest_path.as_std_path().to_path_buf() ).unwrap(),
       }
     }
 
@@ -132,7 +133,7 @@ mod private
         Self::Manifest( manifest ) => manifest.crate_dir(),
         Self::Metadata( metadata ) =>
         {
-          let path = metadata.manifest_path.parent().unwrap().as_std_path().to_path_buf();
+          let path = metadata.inner.manifest_path.parent().unwrap().as_std_path().to_path_buf();
           let absolute = AbsolutePath::try_from( path ).unwrap();
 
           CrateDir::try_from( absolute ).unwrap()
@@ -154,7 +155,7 @@ mod private
         }
         Self::Metadata( metadata ) =>
         {
-          Ok( metadata.name.clone() )
+          Ok( metadata.inner.name.clone() )
         }
       }
     }
@@ -173,7 +174,7 @@ mod private
         }
         Self::Metadata( metadata ) =>
         {
-          Ok( metadata.version.to_string() )
+          Ok( metadata.inner.version.to_string() )
         }
       }
     }
@@ -192,7 +193,7 @@ mod private
           }
         Self::Metadata( metadata ) =>
           {
-            Ok( metadata.metadata["stability"].as_str().and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental) )
+            Ok( metadata.inner.metadata["stability"].as_str().and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental) )
           }
       }
     }
@@ -211,7 +212,7 @@ mod private
           }
         Self::Metadata( metadata ) =>
           {
-            Ok( metadata.repository.clone() )
+            Ok( metadata.inner.repository.clone() )
           }
       }
     }
@@ -229,7 +230,7 @@ mod private
           }
         Self::Metadata( metadata ) =>
           {
-            Ok( metadata.metadata[ "discord_url" ].as_str().map( | url | url.to_string() ) )
+            Ok( metadata.inner.metadata[ "discord_url" ].as_str().map( | url | url.to_string() ) )
           }
       }
     }
@@ -246,7 +247,7 @@ mod private
         }
         Self::Metadata( metadata ) =>
         {
-          Ok( !( metadata.publish.is_none() || metadata.publish.as_ref().is_some_and( | p | p.is_empty() ) ) )
+          Ok( !( metadata.inner.publish.is_none() || metadata.inner.publish.as_ref().is_some_and( | p | p.is_empty() ) ) )
         }
       }
     }
@@ -259,13 +260,13 @@ mod private
         Package::Manifest( manifest ) => Ok( manifest.clone() ),
         Package::Metadata( metadata ) => manifest::open
         (
-          AbsolutePath::try_from( metadata.manifest_path.as_path() ).map_err( | _ | PackageError::LocalPath )? )
+          AbsolutePath::try_from( metadata.inner.manifest_path.as_path() ).map_err( | _ | PackageError::LocalPath )? )
           .map_err( | _ | PackageError::Metadata ),
       }
     }
 
     /// Returns the `Metadata`
-    pub fn metadata( &self ) -> Result< PackageMetadata, PackageError >
+    pub fn metadata( &self ) -> Result< WorkspacePackage, PackageError >
     {
       match self
       {
@@ -570,14 +571,14 @@ mod private
     pub path : Option< AbsolutePath >,
   }
 
-  impl From< &PackageMetadata > for CrateId
+  impl From< &WorkspacePackage > for CrateId
   {
-    fn from( value : &PackageMetadata ) -> Self
+    fn from( value : &WorkspacePackage ) -> Self
     {
       Self
       {
-        name : value.name.clone(),
-        path : Some( AbsolutePath::try_from( value.manifest_path.parent().unwrap() ).unwrap() ),
+        name : value.inner.name.clone(),
+        path : Some( AbsolutePath::try_from( value.inner.manifest_path.parent().unwrap() ).unwrap() ),
       }
     }
   }
@@ -620,6 +621,7 @@ mod private
     .ok_or( format_err!( "Package not found in the workspace with path : `{}`", manifest_path.as_ref().display() ) )?;
 
     let deps = package
+    .inner
     .dependencies
     .iter()
     .filter( | dep | ( with_remote || dep.path.is_some() ) && ( with_dev || dep.kind != DependencyKind::Development ) )

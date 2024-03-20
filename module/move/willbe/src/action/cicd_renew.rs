@@ -17,6 +17,7 @@ mod private
 
   use wtools::error::for_app::{ Result, anyhow };
   use _path::AbsolutePath;
+  use crate::workspace::WorkspacePackage;
 
 
   // qqq : for Petro : should return Report and typed error in Result
@@ -32,12 +33,12 @@ mod private
     // map packages name's to naming standard
     // aaa : for Petro : avoid calling packages_get twice
     // aaa : remove it
-    let names = packages.iter().map( | p | &p.name ).collect::< Vec< _ > >();
+    let names = packages.iter().map( | p | &p.inner.name ).collect::< Vec< _ > >();
     // map packages path to relative paths fom workspace root, for example D :/work/wTools/module/core/iter_tools => module/core/iter_tools
     let relative_paths =
     packages
     .iter()
-    .map( | p | &p.manifest_path )
+    .map( | p | &p.inner.manifest_path )
     .filter_map( | p | p.strip_prefix( workspace_root ).ok() )
     .map( | p | p.with_file_name( "" ) )
     .collect::< Vec< _ > >();
@@ -201,7 +202,7 @@ mod private
   /// if not found there, it is then searched in the Cargo.toml file of the module.
   /// If it is still not found, the search continues in the GitHub remotes.
   /// Result looks like this: `Wandalen/wTools`
-  fn username_and_repository( cargo_toml_path : &AbsolutePath, packages: &[Package] ) -> Result< UsernameAndRepository >
+  fn username_and_repository( cargo_toml_path : &AbsolutePath, packages : &[ WorkspacePackage ] ) -> Result< UsernameAndRepository >
   {
       let mut contents = String::new();
       File::open( cargo_toml_path )?.read_to_string( &mut contents )?;
@@ -225,7 +226,7 @@ mod private
         let mut url = None;
         for package in packages
         {
-          if let Ok( wu ) = manifest::private::repo_url( package.manifest_path.parent().unwrap().as_std_path() )
+          if let Ok( wu ) = manifest::private::repo_url( package.inner.manifest_path.parent().unwrap().as_std_path() )
           {
             url = Some( wu );
             break;
