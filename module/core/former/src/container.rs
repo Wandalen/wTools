@@ -136,7 +136,8 @@ pub trait ContainerAssign
 
   /// Agging elements to the container.
   fn assign< Elements >( &mut self, elements : Elements ) -> usize
-  where Elements : core::iter::Iterator< Item = Self::Element >;
+  where
+    Elements : IntoIterator< Item = Self::Element >;
 
 }
 
@@ -146,7 +147,8 @@ impl< T > ContainerAssign for collection_tools::Vec< T >
 
   #[ inline( always ) ]
   fn assign< Elements >( &mut self, elements : Elements ) -> usize
-  where Elements : core::iter::Iterator< Item = Self::Element >
+  where
+    Elements : IntoIterator< Item = Self::Element >
   {
     let initial_len = self.len();
     self.extend( elements );
@@ -163,7 +165,7 @@ where
 
   fn assign< Elements >( &mut self, elements : Elements ) -> usize
   where
-    Elements : IntoIterator< Item = Self::Element >,
+    Elements : IntoIterator< Item = Self::Element >
   {
     let initial_len = self.len();
     self.extend( elements );
@@ -179,7 +181,7 @@ where
 
   fn assign< Elements >( &mut self, elements : Elements ) -> usize
   where
-    Elements : IntoIterator< Item = Self::Element >,
+    Elements : IntoIterator< Item = Self::Element >
   {
     let initial_len = self.len();
     self.extend( elements );

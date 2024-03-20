@@ -1,14 +1,5 @@
 use super::*;
 
-// #[ cfg( feature = "use_alloc" ) ]
-// extern crate alloc;
-// #[ cfg( feature = "use_alloc" ) ]
-// #[ allow( unused_imports ) ]
-// use alloc::vec::Vec;
-// #[ cfg( not( feature = "no_std" ) ) ]
-// #[ allow( unused_imports ) ]
-// use std::vec::Vec;
-
 #[ allow( unused ) ]
 use collection_tools::Vec;
 
@@ -188,6 +179,28 @@ where
       container.push( element.into() );
     }
     self
+  }
+
+}
+
+//
+
+impl< E, Container, Context, End > FormerBegin< Container, Context >
+for VectorSubformer< E, Container, Context, End >
+where
+  End : ToSuperFormer< Container, Context >,
+  Container : VectorLike< E > + Default,
+{
+  type End = End;
+
+  #[ inline( always ) ]
+  fn _begin
+  (
+    context : core::option::Option< Context >,
+    on_end : End,
+  ) -> Self
+  {
+    Self::begin( context, None, on_end )
   }
 
 }
