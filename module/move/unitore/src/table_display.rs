@@ -5,6 +5,7 @@ use cli_table::
   format::{ Border, Separator }, Cell, Style, Table, TableDisplay
 };
 
+// qqq : purpose well defined should be always be in documentation
 /// Wrapper struct for cli-table table with iplementation of Display.
 pub struct ReportTable( TableDisplay );
 

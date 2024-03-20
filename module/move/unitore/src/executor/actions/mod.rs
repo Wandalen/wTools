@@ -1,4 +1,11 @@
-//! Endpoint for command execution.
+//! Actions for command execution.
+
+// qqq : reogranize files structure
+// there must be folders
+//
+// action - with all actions
+// entity - with all entities
+// tool - with something not directly related to the problem, but convenient to have as a separate function/structure
 
 pub mod frame;
 pub mod feed;

@@ -41,6 +41,7 @@ pub struct Frame
   feed_link : String,
 }
 
+// qqq : not obvious
 impl From< ( feed_rs::model::Entry, String ) > for Frame
 {
   fn from( ( entry, feed_link ) : ( feed_rs::model::Entry, String ) ) -> Self
@@ -83,14 +84,18 @@ impl From< ( feed_rs::model::Entry, String ) > for Frame
       title : entry.title.map( | title | title.content ).clone(),
       updated : entry.updated.clone(),
       authors : ( !authors.is_empty() ).then( || authors.join( ", " ) ),
+      // qqq : why join?
       content,
       links : ( !links.len() == 0 ).then( || links.join( ", " ) ),
+      // qqq : why join?
       summary : entry.summary.map( | c | c.content ).clone(),
       categories : ( !categories.is_empty() ).then( || categories.join( ", " ) ),
+      // qqq : why join?
       published : entry.published.clone(),
       source : entry.source.clone(),
       rights : entry.rights.map( | r | r.content ).clone(),
       media : ( !media.is_empty() ).then( || media.join( ", " ) ),
+      // qqq : why join?
       language : entry.language.clone(),
       feed_link,
     }
@@ -110,6 +115,7 @@ pub trait FrameStore
   /// Get all feed frames from storage.
   async fn list_frames( &mut self ) -> Result< ListReport >;
 }
+// qqq : what is update? what update? don't use word update without noun and explanation what deos it mean
 
 #[ async_trait::async_trait( ?Send ) ]
 impl FrameStore for FeedStorage< SledStorage >
@@ -202,6 +208,7 @@ impl FrameStore for FeedStorage< SledStorage >
   }
 }
 
+// qqq : what is it for and why?
 impl From< Frame > for Vec< ExprNode< 'static > >
 {
   fn from( entry : Frame ) -> Self
@@ -275,6 +282,7 @@ impl From< Frame > for Vec< ExprNode< 'static > >
   }
 }
 
+// qqq : RowValue or CellValue?
 /// GlueSQL Value wrapper for display.
 #[ derive( Debug ) ]
 pub struct RowValue< 'a >( pub &'a gluesql::prelude::Value );

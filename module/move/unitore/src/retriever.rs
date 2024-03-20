@@ -11,6 +11,7 @@ use hyper::body::Bytes;
 use feed_rs::parser as feed_parser;
 use error_tools::{ Result, for_app::Context };
 
+// qqq : purpose of trait if any?
 /// Fetch feed from provided source link.
 #[ async_trait::async_trait ]
 pub trait FeedFetch
