@@ -651,10 +651,16 @@ mod private
                 spinner.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
                 spinner
               };
-              let cmd_rep = _run( dir, args_t.form() );
+              let args = args_t.form();
+              let temp_dir = args.temp_directory_path.clone();
+              let cmd_rep = _run( dir, args );
               r.lock().unwrap().tests.insert( variant.clone(), cmd_rep.map_err( | e | e.0 ) );
               #[ cfg( feature = "progress_bar" ) ]
               options.progress_bar_feature.as_ref().unwrap().progress_bar.inc( 1 );
+              if let Some( path ) = temp_dir
+              {
+                std::fs::remove_dir_all( path ).unwrap();
+              }
             }
           );
         }
