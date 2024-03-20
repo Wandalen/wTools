@@ -164,7 +164,6 @@ where
       {
         super_former.storage.vec_1 = Some( formed );
       }
-
       super_former
     };
     Former2::_begin( None, Some( self ), former::FormingEndWrapper::new( on_end ) )
