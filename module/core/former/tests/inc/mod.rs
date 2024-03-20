@@ -52,7 +52,9 @@ mod former_tests
   mod subformer_hashset;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subformer_hashmap;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+
+
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subformer_shortcut;
 
 }
