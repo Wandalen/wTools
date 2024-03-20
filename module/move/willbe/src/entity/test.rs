@@ -35,7 +35,7 @@ mod private
 
   /// Newtype for package name
   #[ derive( Debug, Default, Clone ) ]
-  struct PackageName( String );
+  pub struct PackageName( String );
 
   /// Represents a variant for testing purposes.
   #[ derive( Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Former ) ]

@@ -100,10 +100,14 @@ pub( crate ) mod private
       .. Report::default()
     };
 
+    let mut env: HashMap<String, String> = std::env::vars().collect();
+    env.extend( options.env_variable );
+    
     let output = if options.joining_streams
     {
       let output = cmd( bin_path.as_os_str(), &options.args )
       .dir( current_path )
+      .full_env( env )
       .stderr_to_stdout()
       .stdout_capture()
       .unchecked()
@@ -120,6 +124,7 @@ pub( crate ) mod private
     {
       let child = Command::new( bin_path )
       .args( &options.args )
+      .envs( env )
       .stdout( Stdio::piped() )
       .stderr( Stdio::piped() )
       .current_dir( current_path )
@@ -198,7 +203,7 @@ pub( crate ) mod private
 
   impl RunFormer
   {
-    pub fn run( mut self ) -> Result< Report, Report >
+    pub fn run( self ) -> Result< Report, Report >
     {
       run( self.form() )
     }
@@ -214,7 +219,7 @@ pub( crate ) mod private
     /// # Returns:
     /// A `Result` containing a `Report` on success, which includes the command's output,
     /// or an error if the command fails to execute or complete.
-    pub fn run_with_shell( mut self, exec_path : &str, ) -> Result< Report, Report >
+    pub fn run_with_shell( self, exec_path : &str, ) -> Result< Report, Report >
     {
       let ( program, args ) =
       if cfg!( target_os = "windows" )
