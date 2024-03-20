@@ -77,7 +77,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       }
     })
     .end()
-  
+
   .command( "frames.list" )
     .long_hint( concat!
     (
@@ -104,7 +104,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       "   - `link` : URL for feed source;\n\n",
       "    Example:\n",
       "    [[config]]\n",
-      "    update_period = \"1min\"\n", 
+      "    update_period = \"1min\"\n",
       "    link = \"https://feeds.bbci.co.uk/news/world/rss.xml\"\n",
     ))
     .subject().hint( "Path" ).kind( Type::Path ).optional( false ).end()

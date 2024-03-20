@@ -111,3 +111,13 @@ impl ConfigStore for FeedStorage< SledStorage >
     Ok( res )
   }
 }
+
+// qqq : use AbsolutePath newtype from `path_tools`
+// qqq : normalize all paths with `path_tools::path::normalize`
+// https://docs.rs/proper_path_tools/latest/proper_path_tools/path/fn.normalize.html
+
+// unitore .query.execute \'SELECT \* FROM feed\'
+// qqq : something is broken in this table. also lack of association with config files
+
+// unitore .query.execute \'SELECT \* FROM x\'
+// qqq : it is not obvious where one record ends and another begins
