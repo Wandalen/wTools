@@ -155,4 +155,4 @@ jobs :
         id: rootpath
         run: echo "::set-output name=path::$(dirname ${{ inputs.manifest_path }})"
       - name: Run tests with each feature
-        run: will .test ${{ steps.rootpath.outputs.path }} dry:0
+        run: will .test ${{ steps.rootpath.outputs.path }} dry:0 exclude:'' with_all_features:1 with_debug:1 with_nightly:1 with_none_features:1 with_release:1 with_stable:1
