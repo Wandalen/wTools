@@ -24,6 +24,7 @@ mod private
   // qqq : for Petro : don't do micro imports
   #[ cfg( feature = "progress_bar" ) ]
   use indicatif::{ MultiProgress, ProgressBar, ProgressStyle };
+  use prettytable::format::{ FormatBuilder, TableFormat };
   use rayon::ThreadPoolBuilder;
   use process_tools::process::*;
   use wtools::error::anyhow::{ Error, format_err };
@@ -146,14 +147,15 @@ mod private
     {
       writeln!( f, "Package : {}\nThe tests will be executed using the following configurations :", self.package.file_name().unwrap().to_string_lossy() )?;
       let mut table = Table::new();
-      table.set_format( *prettytable::format::consts::FORMAT_NO_BORDER );
+      let format = format();
+      table.set_format( format );
       let mut all_features = BTreeSet::new();
       for variant in &self.test_variants
       {
         let features = variant.features.iter().cloned();
         if features.len() == 0
         {
-          all_features.extend( [ "[ ]".to_string() ] );
+          all_features.extend( [ "[]".to_string() ] );
         }
         all_features.extend( features );
       }
@@ -164,7 +166,7 @@ mod private
       {
         header_row.add_cell( Cell::new( feature )  );
       }
-      table.add_row( header_row );
+      table.set_titles( header_row );
 
       for variant in &self.test_variants
       {
@@ -266,6 +268,21 @@ mod private
         }
       )
     }
+  }
+
+  fn format() -> TableFormat 
+  {
+    let format = FormatBuilder::new()
+    .column_separator( ' ' )
+    .borders( ' ' )
+    .separators
+    (
+      &[ prettytable::format::LinePosition::Title ],
+      prettytable::format::LineSeparator::new( '-', '+', '+', '+' )
+    )
+    .padding( 1, 1 )
+    .build();
+    format
   }
 
   #[ derive( Debug, Former ) ]
@@ -490,6 +507,8 @@ mod private
         return Ok( () )
       }
       let mut table = Table::new();
+      let format = format();
+      table.set_format( format );
       table.set_format( *prettytable::format::consts::FORMAT_NO_BORDER );
       let mut all_features = BTreeSet::new();
       for variant in self.tests.keys()
@@ -497,7 +516,7 @@ mod private
         let features = variant.features.iter().cloned();
         if features.len() == 0
         {
-          all_features.extend( [ "[ ]".to_string() ] );
+          all_features.extend( [ "[]".to_string() ] );
         }
         all_features.extend( features );
       }
@@ -509,7 +528,7 @@ mod private
       {
         header_row.add_cell( Cell::new( feature )  );
       }
-      table.add_row( header_row );
+      table.set_titles( header_row );
 
       let mut failed = 0;
       let mut success = 0;
