@@ -4,7 +4,7 @@ use std::collections::HashSet;
 use crate::hybrid_optimizer::*;
 use crate::problems::sudoku::*;
 
-use derive_tools::{ FromInner, InnerFrom, Display };
+use derive_tools::{ FromInner, InnerFrom, exposed::Display };
 use deterministic_rand::{ Hrng, Rng, seq::SliceRandom };
 use iter_tools::Itertools;
 
