@@ -778,3 +778,4 @@ pub fn from_components( input : proc_macro::TokenStream ) -> proc_macro::TokenSt
     Err( err ) => err.to_compile_error().into(),
   }
 }
+
