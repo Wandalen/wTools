@@ -48,7 +48,7 @@ jobs :
       - name : Get options
         id : options_get
         run : |
-          WORKFLOWS=$(ls .github/workflows | grep Module)
+          WORKFLOWS=$(ls .github/workflows | grep module)
           for WORKFLOW in $WORKFLOWS ; do
           CONTEXT=$(echo $WORKFLOW | sed 's/\(\S\+\).yml/{"context":"check (\1)","app_id":null}/')
             CONTEXTS="$CONTEXTS,$CONTEXT"
