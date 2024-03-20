@@ -51,13 +51,14 @@ where
 ///         when it's called.
 /// * `Context` - The type of the context that may be altered or returned by the closure.
 ///               This allows for flexible manipulation of context based on the container.
-// #[ derive( Debug ) ]
+#[ cfg( not( feature = "no_std" ) ) ]
 pub struct ToSuperFormerWrapper< T, Context >
 {
   closure : Box< dyn Fn( T, Option< Context > ) -> Context >,
   _marker : std::marker::PhantomData< T >,
 }
 
+#[ cfg( not( feature = "no_std" ) ) ]
 impl< T, Context > ToSuperFormerWrapper< T, Context >
 {
   /// Constructs a new `ToSuperFormerWrapper` with the provided closure.
@@ -81,18 +82,21 @@ impl< T, Context > ToSuperFormerWrapper< T, Context >
   }
 }
 
+#[ cfg( not( feature = "no_std" ) ) ]
 use std::fmt;
+#[ cfg( not( feature = "no_std" ) ) ]
 impl< T, Context > fmt::Debug for ToSuperFormerWrapper< T, Context >
 {
   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
     f.debug_struct( "ToSuperFormerWrapper" )
-    .field( "closure", &format_args!{ "< closure >" } )
+    .field( "closure", &format_args!{ "- closure -" } )
     .field( "_marker", &self._marker )
     .finish()
   }
 }
 
+#[ cfg( not( feature = "no_std" ) ) ]
 impl< T, Context > ToSuperFormer< T, Context >
 for ToSuperFormerWrapper< T, Context >
 {
