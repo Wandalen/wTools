@@ -20,11 +20,26 @@ mod private
   // qqq : for Petro : don't use cargo_metadata directly, use facade
   use colored::Colorize;
   // qqq : for Petro : don't do micro imports
-  use prettytable::{ Cell, Row, Table };
+  use prettytable::
+  { 
+    Cell, 
+    Row, 
+    Table,
+  };
   // qqq : for Petro : don't do micro imports
   #[ cfg( feature = "progress_bar" ) ]
-  use indicatif::{ MultiProgress, ProgressBar, ProgressStyle };
-  use prettytable::format::{ FormatBuilder, TableFormat };
+  use indicatif::
+  { 
+    MultiProgress, 
+    ProgressBar, 
+    ProgressStyle 
+  };
+  use prettytable::format::
+  { 
+    Alignment, 
+    FormatBuilder, 
+    TableFormat
+  };
   use rayon::ThreadPoolBuilder;
   use process_tools::process::*;
   use wtools::error::anyhow::{ Error, format_err };
@@ -177,18 +192,21 @@ mod private
         let mut a = true;
         for feature in &all_features
         {
+          let mut c = Cell::new( "+" );
+          c.align( Alignment::CENTER );
           if variant.features.is_empty() && a
           {
             a = false;
-            row.add_cell( Cell::new( "+" ) );
+            row.add_cell( c );
           }
           else if variant.features.contains( feature )
           {
-            row.add_cell( Cell::new( "+" ) );
+            row.add_cell( c );
           }
           else
           {
-            row.add_cell( Cell::new( "" ) );
+            c = Cell::new( "" );
+            row.add_cell( c );
           }
         }
 
@@ -509,7 +527,6 @@ mod private
       let mut table = Table::new();
       let format = format();
       table.set_format( format );
-      table.set_format( *prettytable::format::consts::FORMAT_NO_BORDER );
       let mut all_features = BTreeSet::new();
       for variant in self.tests.keys()
       {
@@ -563,18 +580,21 @@ mod private
         let mut a = true;
         for feature in &all_features
         {
+          let mut c = Cell::new( "+" );
+          c.align( Alignment::CENTER );
           if variant.features.is_empty() && a
           {
             a = false;
-            row.add_cell( Cell::new( "+" ) );
+            row.add_cell( c );
           }
           else if variant.features.contains( feature )
           {
-            row.add_cell( Cell::new( "+" ) );
+            row.add_cell( c );
           }
           else
           {
-            row.add_cell( Cell::new( "" ) );
+            c = Cell::new( "" );
+            row.add_cell( c );
           }
         }
 
@@ -623,7 +643,7 @@ mod private
     pub failure_reports : Vec< TestReport >,
   }
 
-  impl std::fmt::Display for TestsReport
+  impl Display for TestsReport
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
