@@ -140,26 +140,26 @@ mod private
 
   impl< Context, End > TemplateParametersFormer< Context, End >
   where
-    End : former::ToSuperFormer< TemplateParameters, Context >,
+    End : former::FormingEnd< TemplateParameters, Context >,
   {
     #[ inline( always ) ]
     pub fn parameter( self, name : &str ) ->
-    TemplateParameterDescriptorFormer< Self, impl former::ToSuperFormer< TemplateParameterDescriptor, Self > >
+    TemplateParameterDescriptorFormer< Self, impl former::FormingEnd< TemplateParameterDescriptor, Self > >
     {
       let on_end = | descriptor : TemplateParameterDescriptor, super_former : core::option::Option< Self > | -> Self
       {
         let mut super_former = super_former.unwrap();
-        if let Some( ref mut descriptors ) = super_former.container.descriptors
+        if let Some( ref mut descriptors ) = super_former.storage.descriptors
         {
           descriptors.push( descriptor );
         }
         else
         {
-          super_former.container.descriptors = Some( vec![ descriptor ] );
+          super_former.storage.descriptors = Some( vec![ descriptor ] );
         }
         super_former
       };
-      TemplateParameterDescriptorFormer::begin( Some( self ), on_end ).parameter( name )
+      TemplateParameterDescriptorFormer::begin( None, Some( self ), on_end ).parameter( name )
     }
   }
 
@@ -319,25 +319,25 @@ mod private
 
   impl< Context, End > TemplateFilesBuilderFormer< Context, End >
   where
-    End : former::ToSuperFormer< TemplateFilesBuilder, Context >,
+    End : former::FormingEnd< TemplateFilesBuilder, Context >,
   {
     #[ inline( always ) ]
-    pub fn file( self ) -> TemplateFileDescriptorFormer< Self, impl former::ToSuperFormer< TemplateFileDescriptor, Self > >
+    pub fn file( self ) -> TemplateFileDescriptorFormer< Self, impl former::FormingEnd< TemplateFileDescriptor, Self > >
     {
       let on_end = | descriptor : TemplateFileDescriptor, super_former : core::option::Option< Self > | -> Self
       {
         let mut super_former = super_former.unwrap();
-        if let Some( ref mut files ) = super_former.container.files
+        if let Some( ref mut files ) = super_former.storage.files
         {
           files.push( descriptor );
         }
         else
         {
-          super_former.container.files = Some( vec![ descriptor ] );
+          super_former.storage.files = Some( vec![ descriptor ] );
         }
         super_former
       };
-      TemplateFileDescriptorFormer::begin( Some( self ), on_end )
+      TemplateFileDescriptorFormer::begin( None, Some( self ), on_end )
     }
   }
 

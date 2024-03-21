@@ -23,8 +23,6 @@ pub struct Subscriptions
   pub config : Vec< SubscriptionConfig >
 }
 
-// qqq : don't name like that. ask
-// aaa : fixed function naming
 /// Reads provided configuration file with list of subscriptions.
 pub fn read( file_path : String ) -> Result< Vec< SubscriptionConfig > >
 {

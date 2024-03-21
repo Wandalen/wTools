@@ -11,7 +11,7 @@ pub struct StructWithCustomSetters
 
 impl< FormerContext, FormerEnd > StructWithCustomSettersFormer< FormerContext, FormerEnd >
 where
-  FormerEnd: the_module::ToSuperFormer< StructWithCustomSetters, FormerContext >,
+  FormerEnd: the_module::FormingEnd< StructWithCustomSetters, FormerContext >,
 {
 
   /// Custom alternative setter of ordinary field.
@@ -19,8 +19,8 @@ where
   where
     IntoString : Into< String >
   {
-    debug_assert!( self.container.ordinary.is_none() );
-    self.container.ordinary = Some( format!( "{}!", val.into() ) );
+    debug_assert!( self.storage.ordinary.is_none() );
+    self.storage.ordinary = Some( format!( "{}!", val.into() ) );
     self
   }
 
@@ -29,8 +29,8 @@ where
   where
     IntoString : Into< String >
   {
-    debug_assert!( self.container.magic.is_none() );
-    self.container.magic = Some( format!( "Some magic : < {} >", val.into() ) );
+    debug_assert!( self.storage.magic.is_none() );
+    self.storage.magic = Some( format!( "Some magic : < {} >", val.into() ) );
     self
   }
 

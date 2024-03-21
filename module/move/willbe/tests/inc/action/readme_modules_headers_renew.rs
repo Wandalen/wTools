@@ -127,7 +127,7 @@ fn status()
   _ = file.read_to_string( &mut actual ).unwrap();
 
   // Assert
-  assert!( actual.contains( "[![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleTestModulePush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleTestModulePush.yml)" ) );
+  assert!( actual.contains( "[![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_test_module_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_test_module_push.yml)" ) );
 }
 
 #[ test ]

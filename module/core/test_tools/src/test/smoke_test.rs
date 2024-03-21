@@ -6,11 +6,13 @@
 // qqq : does not work in parallel, fix
 // qqq : make a command for willbe
 
+// xxx2 : use process_tools to build and run rust programs, introduce program_
+
 /// Internal namespace.
 pub( crate ) mod private
 {
   use process_tools::environment;
-  // xxx : comment out
+  // zzz : comment out
   // pub mod environment
   // {
   //   pub fn is_cicd() -> bool

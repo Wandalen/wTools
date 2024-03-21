@@ -1,0 +1,95 @@
+
+name : auto_merge_to_beta
+
+on :
+  push :
+    branches : [ alpha ]
+
+concurrency :
+
+  group : auto_merge_to_beta
+  cancel-in-progress : true
+
+jobs :
+
+  get_modules:
+    outputs :
+      workflow_files: ${{ steps.workflow_files.outputs.files }}
+      workflow_names: ${{ steps.workflow_names.outputs.names }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - id: workflow_files
+        run: |
+          WORKFLOWS=$(ls .github/workflows | grep module)
+          for WORKFLOW in $WORKFLOWS ; do
+            NAME=$(echo $WORKFLOW | sed 's/\(\S\+\).yml/\1/')
+            NAMES="$NAMES $NAME"
+          done;
+          NAMES=$(sed 's/\s\+/\n/g' <<< $NAMES)
+          OUTPUT=$(echo "$NAMES" | jq -R -s -c 'split("\n")[1:-1]')
+          echo "files={\"modules\":$OUTPUT}" >> $GITHUB_OUTPUT
+      - id: workflow_names
+        run: |
+          WORKFLOWS=$(ls .github/workflows | grep module)
+          for WORKFLOW in $WORKFLOWS ; do
+            NAME=$(cat .github/workflows/$WORKFLOW | grep -G '^name :' | sed 's/name\s*:\s\+\(\S*\)/\1/')
+            NAMES="$NAMES%0A$NAME"
+          done;
+          echo "names=$NAMES" >> $GITHUB_OUTPUT
+
+  wait_for_modules :
+    needs : get_modules
+    runs-on : ubuntu-latest
+    steps :
+      - name : Waiting ...
+        uses : willgarcia/workflow-wait-action@main
+        with :
+          timeout : 21600
+          interval : 60
+          initial_delay : 60
+          workflows : ${{ needs.get_modules.outputs.workflow_names }}
+
+  runs_check :
+    needs :
+      - get_modules
+      - wait_for_modules
+    strategy :
+      matrix : ${{ fromJSON( needs.get_modules.outputs.workflow_files ) }}
+    runs-on : ubuntu-latest
+    steps :
+      - name : Check workflow run status
+        id : check_ci
+        uses :  ronymeyer/workflow-status@v0.3.7
+        with :
+          token : ${{ secrets.GITHUB_TOKEN }}
+          workflow : ${{ matrix.modules }}.yml
+          event : push
+          branch : alpha
+      - name : Check failure conclusion
+        if : ${{ steps.check_ci.outputs.conclusion == 'failure' }}
+        run : exit 1
+      - name : Check cancelled conclusion
+        if : ${{ steps.check_ci.outputs.conclusion == 'cancelled' }}
+        run : exit 1
+      - name : Check skipped conclusion
+        if : ${{ steps.check_ci.outputs.conclusion == 'skipped' }}
+        run : exit 1
+
+  merge :
+    needs : runs_check
+    runs-on : ubuntu-latest
+    steps :
+      - name : Find PR number for current commit
+        uses : jwalton/gh-find-current-pr@v1
+        id : find
+        with :
+          state: open
+      - name: Automerge passed pull request
+        if : ${{ success() }}
+        uses: juliangruber/merge-pull-request-action@v1
+        with:
+          github-token: ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}
+          repo: ${{ github.repository }}
+          number: ${{ steps.find.outputs.number }}
+          method: merge

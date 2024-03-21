@@ -74,12 +74,7 @@ pub( crate ) mod private
       Self::try_from( self.0.join( path ) ).unwrap()
     }
   }
-
-  /// Check if path is valid.
-  pub fn valid_is( path : &str ) -> bool
-  {
-    std::fs::metadata( path ).is_ok()
-  }
+  
   // qqq : for Petro : for Bohdan : bad. move out
 
   /// Check if path has a glob.
@@ -143,7 +138,6 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   protected use glob_is;
-  protected use valid_is;
   protected use canonicalize;
   protected use unique_folder_name;
 
