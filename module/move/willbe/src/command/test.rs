@@ -41,6 +41,8 @@ mod private
     with_debug : bool,
     #[ default( false ) ]
     with_release : bool,
+    #[ default( true ) ]
+    with_progress : bool,
   }
 
   /// run tests in specified crate
@@ -62,7 +64,8 @@ mod private
       with_all_features,
       with_none_features,
       with_debug,
-      with_release
+      with_release, 
+      with_progress
     } = properties.try_into()?;
 
     let mut channels = HashSet::new();
@@ -91,6 +94,7 @@ mod private
     .with_all_features( with_all_features )
     .with_none_features( with_none_features )
     .optimizations( optimizations )
+    .with_progress( with_progress )
     .form();
 
     match action::test( args, dry )
@@ -129,6 +133,7 @@ mod private
       this = if let Some( v ) = value.get_owned( "with_all_features" ) { this.with_all_features::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "with_none_features" ) { this.with_none_features::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "always" ) { this.enabled_features::< Vec< String > >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "with_progress" ) { this.with_progress::< bool >( v ) } else { this };
 
       Ok( this.form() )
     }
