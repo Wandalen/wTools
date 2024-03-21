@@ -6,9 +6,10 @@ use the_module::features::features_powerset;
 use std::collections::HashMap;
 use cargo_metadata::Package;
 use serde::Deserialize;
+use the_module::workspace::WorkspacePackage;
 
 /// Constructs a mock `Package` with specified features for testing.
-fn mock_package( features : Vec< ( &str, Vec< &str > ) > ) -> Package
+fn mock_package( features : Vec< ( &str, Vec< &str > ) > ) -> WorkspacePackage
 {
   let mut features_map : HashMap< String, Vec< _ > > = HashMap::new();
   for ( feature, deps ) in features
@@ -33,7 +34,7 @@ fn mock_package( features : Vec< ( &str, Vec< &str > ) > ) -> Package
     }
   );
 
-  Package::deserialize( json ).unwrap()
+  Package::deserialize( json ).unwrap().into()
 }
 
 #[ test ]

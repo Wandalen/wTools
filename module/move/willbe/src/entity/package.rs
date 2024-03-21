@@ -10,7 +10,7 @@ mod private
   use std::fmt::Formatter;
   use std::hash::Hash;
   use std::path::PathBuf;
-  use cargo_metadata::{ Dependency, DependencyKind, Package as PackageMetadata };
+  use cargo_metadata::{ Dependency, DependencyKind };
   use toml_edit::value;
 
   use process_tools::process;
@@ -34,6 +34,7 @@ mod private
   };
   use action::readme_health_table_renew::Stability;
   use former::Former;
+  use workspace::WorkspacePackage;
 
   ///
   #[ derive( Debug ) ]
@@ -42,7 +43,7 @@ mod private
     /// `Cargo.toml` file.
     Manifest( Manifest ),
     /// Cargo metadata package.
-    Metadata( PackageMetadata ),
+    Metadata( WorkspacePackage ),
   }
 
   /// Represents errors related to package handling.
@@ -87,6 +88,22 @@ mod private
     }
   }
 
+  impl TryFrom< CrateDir > for Package
+  {
+    type Error = PackageError;
+
+    fn try_from( value : CrateDir ) -> Result< Self, Self::Error >
+    {
+      let manifest =  manifest::open( value.absolute_path().join( "Cargo.toml" ) )?;
+      if !manifest.package_is()?
+      {
+        return Err( PackageError::NotAPackage );
+      }
+
+      Ok( Self::Manifest( manifest ) )
+    }
+  }
+
   impl TryFrom< Manifest > for Package
   {
     // qqq : make better errors
@@ -104,9 +121,9 @@ mod private
     }
   }
 
-  impl From< PackageMetadata > for Package
+  impl From< WorkspacePackage > for Package
   {
-    fn from( value : PackageMetadata ) -> Self
+    fn from( value : WorkspacePackage ) -> Self
     {
       Self::Metadata( value )
     }
@@ -120,7 +137,7 @@ mod private
       match self
       {
         Self::Manifest( manifest ) => manifest.manifest_path.clone(),
-        Self::Metadata( metadata ) => AbsolutePath::try_from( metadata.manifest_path.as_std_path().to_path_buf() ).unwrap(),
+        Self::Metadata( metadata ) => AbsolutePath::try_from( metadata.manifest_path().as_std_path().to_path_buf() ).unwrap(),
       }
     }
 
@@ -132,7 +149,7 @@ mod private
         Self::Manifest( manifest ) => manifest.crate_dir(),
         Self::Metadata( metadata ) =>
         {
-          let path = metadata.manifest_path.parent().unwrap().as_std_path().to_path_buf();
+          let path = metadata.manifest_path().parent().unwrap().as_std_path().to_path_buf();
           let absolute = AbsolutePath::try_from( path ).unwrap();
 
           CrateDir::try_from( absolute ).unwrap()
@@ -154,7 +171,7 @@ mod private
         }
         Self::Metadata( metadata ) =>
         {
-          Ok( metadata.name.clone() )
+          Ok( metadata.name().clone() )
         }
       }
     }
@@ -173,7 +190,7 @@ mod private
         }
         Self::Metadata( metadata ) =>
         {
-          Ok( metadata.version.to_string() )
+          Ok( metadata.version().to_string() )
         }
       }
     }
@@ -192,7 +209,7 @@ mod private
           }
         Self::Metadata( metadata ) =>
           {
-            Ok( metadata.metadata["stability"].as_str().and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental) )
+            Ok( metadata.metadata()["stability"].as_str().and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental) )
           }
       }
     }
@@ -211,7 +228,7 @@ mod private
           }
         Self::Metadata( metadata ) =>
           {
-            Ok( metadata.repository.clone() )
+            Ok( metadata.repository().cloned() )
           }
       }
     }
@@ -229,7 +246,7 @@ mod private
           }
         Self::Metadata( metadata ) =>
           {
-            Ok( metadata.metadata[ "discord_url" ].as_str().map( | url | url.to_string() ) )
+            Ok( metadata.metadata()[ "discord_url" ].as_str().map( | url | url.to_string() ) )
           }
       }
     }
@@ -246,7 +263,7 @@ mod private
         }
         Self::Metadata( metadata ) =>
         {
-          Ok( !( metadata.publish.is_none() || metadata.publish.as_ref().is_some_and( | p | p.is_empty() ) ) )
+          Ok( !( metadata.publish().is_none() || metadata.publish().as_ref().is_some_and( | p | p.is_empty() ) ) )
         }
       }
     }
@@ -259,21 +276,20 @@ mod private
         Package::Manifest( manifest ) => Ok( manifest.clone() ),
         Package::Metadata( metadata ) => manifest::open
         (
-          AbsolutePath::try_from( metadata.manifest_path.as_path() ).map_err( | _ | PackageError::LocalPath )? )
+          AbsolutePath::try_from( metadata.manifest_path() ).map_err( | _ | PackageError::LocalPath )? )
           .map_err( | _ | PackageError::Metadata ),
       }
     }
 
     /// Returns the `Metadata`
-    pub fn metadata( &self ) -> Result< PackageMetadata, PackageError >
+    pub fn metadata( &self ) -> Result< WorkspacePackage, PackageError >
     {
       match self
       {
         Package::Manifest( manifest ) =>
         Workspace::with_crate_dir( manifest.crate_dir() ).map_err( | _ | PackageError::Metadata )?
         .package_find_by_manifest( &manifest.manifest_path )
-        .ok_or_else( || PackageError::Metadata )
-        .cloned(),
+        .ok_or_else( || PackageError::Metadata ),
         Package::Metadata( metadata ) => Ok( metadata.clone() ),
       }
     }
@@ -570,14 +586,14 @@ mod private
     pub path : Option< AbsolutePath >,
   }
 
-  impl From< &PackageMetadata > for CrateId
+  impl From< &WorkspacePackage > for CrateId
   {
-    fn from( value : &PackageMetadata ) -> Self
+    fn from( value : &WorkspacePackage ) -> Self
     {
       Self
       {
-        name : value.name.clone(),
-        path : Some( AbsolutePath::try_from( value.manifest_path.parent().unwrap() ).unwrap() ),
+        name : value.name().clone(),
+        path : Some( AbsolutePath::try_from( value.manifest_path().parent().unwrap() ).unwrap() ),
       }
     }
   }
@@ -620,13 +636,13 @@ mod private
     .ok_or( format_err!( "Package not found in the workspace with path : `{}`", manifest_path.as_ref().display() ) )?;
 
     let deps = package
-    .dependencies
+    .dependencies()
     .iter()
     .filter( | dep | ( with_remote || dep.path.is_some() ) && ( with_dev || dep.kind != DependencyKind::Development ) )
     .map( CrateId::from )
     .collect::< HashSet< _ > >();
 
-    let package = CrateId::from( package );
+    let package = CrateId::from( &package );
     graph.insert( package.clone(), deps.clone() );
 
     if recursive
@@ -744,7 +760,6 @@ mod private
 
     Ok( !is_same )
   }
-
 }
 
 //

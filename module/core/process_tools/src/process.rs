@@ -176,6 +176,22 @@ pub( crate ) mod private
 
     report.out = out;
 
+    let err = String::from_utf8( output.stderr )
+    .context( "Found invalid UTF-8" )
+    .map_err( | e |
+      {
+        report.error = Err( e.into() );
+        Err::< (), () >( () )
+      });
+
+    if err.is_err()
+    {
+      return Err( report );
+    }
+    let err = err.unwrap();
+
+    report.err = err;
+
     if output.status.success()
     {
       Ok( report )

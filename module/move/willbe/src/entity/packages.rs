@@ -1,11 +1,13 @@
 mod private
 {
+  use crate::*;
   use std::
   {
     fmt::Formatter,
     collections::{ HashMap, HashSet },
   };
-  use cargo_metadata::{ Dependency, Package as PackageMetadata };
+  use cargo_metadata::{ Dependency };
+  use workspace::WorkspacePackage;
 
   /// Type aliasing for String
   pub type PackageName = String;
@@ -20,13 +22,13 @@ mod private
     /// applied to each package, and only packages that satisfy the condition
     /// are included in the final result. If not provided, a default filter that
     /// accepts all packages is used.
-    pub package_filter : Option< Box< dyn Fn( &PackageMetadata ) -> bool > >,
+    pub package_filter : Option< Box< dyn Fn( &WorkspacePackage ) -> bool > >,
 
     /// An optional dependency filtering function. If provided, this function
     /// is applied to each dependency of each package, and only dependencies
     /// that satisfy the condition are included in the final result. If not
     /// provided, a default filter that accepts all dependencies is used.
-    pub dependency_filter : Option< Box< dyn Fn( &PackageMetadata, &Dependency ) -> bool  > >,
+    pub dependency_filter : Option< Box< dyn Fn( &WorkspacePackage, &Dependency ) -> bool  > >,
   }
 
   impl std::fmt::Debug for FilterMapOptions
@@ -71,7 +73,7 @@ mod private
 
   // qqq : for Bohdan : for Petro : bad. don't use PackageMetadata directly, use its abstraction only!
 
-  pub fn filter( packages : &[ PackageMetadata ], options : FilterMapOptions ) -> HashMap< PackageName, HashSet< PackageName > >
+  pub fn filter( packages : &[ WorkspacePackage ], options : FilterMapOptions ) -> HashMap< PackageName, HashSet< PackageName > >
   {
     let FilterMapOptions { package_filter, dependency_filter } = options;
     let package_filter = package_filter.unwrap_or_else( || Box::new( | _ | true ) );
@@ -83,8 +85,8 @@ mod private
     (
       | package |
       (
-        package.name.clone(),
-        package.dependencies
+        package.name().clone(),
+        package.dependencies()
         .iter()
         .filter( | &d | dependency_filter( package, d ) )
         .map( | d | d.name.clone() )
