@@ -1,5 +1,19 @@
 //! ....
 
+/// xxx2
+pub trait StoragePerform
+{
+  type Formed;
+  fn preform( self ) -> Self::Formed;
+}
+
+/// xxx2
+pub trait FormerDescriptor
+{
+  type Storage : StoragePerform< Formed = Self::Formed >;
+  type Formed;
+}
+
 /// Defines a handler for the end of a subforming process, enabling the return of the original context.
 ///
 /// This trait is designed to be flexible, allowing for various end-of-forming behaviors in builder patterns.
@@ -8,7 +22,7 @@
 /// # Parameters
 /// - `Storage`: The type of the container being processed.
 /// - `Context`: The type of the context that might be altered or returned upon completion.
-pub trait FormingEnd< Storage, Context, Formed >
+pub trait FormingEnd< Former : FormerDescriptor, Context >
 {
   /// Called at the end of the subforming process to return the modified or original context.
   ///
@@ -19,15 +33,15 @@ pub trait FormingEnd< Storage, Context, Formed >
   /// # Returns
   /// Returns the transformed or original context based on the implementation.
   // #[ allow( dead_code ) ]
-  fn call( &self, storage : Storage, context : core::option::Option< Context > ) -> Formed;
+  fn call( &self, storage : Former::Storage, context : core::option::Option< Context > ) -> Former::Formed;
 }
 
-impl< Storage, Context, Formed, F > FormingEnd< Storage, Context, Formed > for F
+impl< Former : FormerDescriptor, Context, F > FormingEnd< Former, Context > for F
 where
-  F : Fn( Storage, core::option::Option< Context > ) -> Formed,
+  F : Fn( Former::Storage, core::option::Option< Context > ) -> Former::Formed,
 {
   #[ inline( always ) ]
-  fn call( &self, storage : Storage, context : core::option::Option< Context > ) -> Formed
+  fn call( &self, storage : Former::Storage, context : core::option::Option< Context > ) -> Former::Formed
   {
     self( storage, context )
   }
@@ -40,13 +54,13 @@ where
 #[ derive( Debug, Default ) ]
 pub struct ReturnStorage;
 
-impl< Storage, Formed > FormingEnd< Storage, (), Formed >
+impl< Former : FormerDescriptor > FormingEnd< Former, () >
 for ReturnStorage
 // where
   // Storage : StoragePreform<>,
 {
   #[ inline( always ) ]
-  fn call( &self, storage : Storage, _context : core::option::Option< () > ) -> Formed
+  fn call( &self, storage : Former::Storage, _context : core::option::Option< () > ) -> Former::Formed
   {
     storage.preform()
   }
@@ -66,14 +80,14 @@ for ReturnStorage
 /// * `Context` - The type of the context that may be altered or returned by the closure.
 ///               This allows for flexible manipulation of context based on the container.
 #[ cfg( not( feature = "no_std" ) ) ]
-pub struct FormingEndWrapper< Storage, Context, Formed >
+pub struct FormingEndWrapper< Former : FormerDescriptor, Context >
 {
-  closure : Box< dyn Fn( Storage, Option< Context > ) -> Formed >,
-  _marker : std::marker::PhantomData< Storage >,
+  closure : Box< dyn Fn( Former::Storage, Option< Context > ) -> Former::Formed >,
+  _marker : std::marker::PhantomData< Former::Storage >,
 }
 
 #[ cfg( not( feature = "no_std" ) ) ]
-impl< Storage, Context, Formed > FormingEndWrapper< Storage, Context, Formed >
+impl< Former : FormerDescriptor, Context > FormingEndWrapper< Former, Context >
 {
   /// Constructs a new `FormingEndWrapper` with the provided closure.
   ///
@@ -86,7 +100,7 @@ impl< Storage, Context, Formed > FormingEndWrapper< Storage, Context, Formed >
   /// # Returns
   ///
   /// Returns an instance of `FormingEndWrapper` encapsulating the provided closure.
-  pub fn new( closure : impl Fn( Storage, Option< Context > ) -> Formed + 'static ) -> Self
+  pub fn new( closure : impl Fn( Former::Storage, Option< Context > ) -> Former::Formed + 'static ) -> Self
   {
     Self
     {
@@ -99,7 +113,7 @@ impl< Storage, Context, Formed > FormingEndWrapper< Storage, Context, Formed >
 #[ cfg( not( feature = "no_std" ) ) ]
 use std::fmt;
 #[ cfg( not( feature = "no_std" ) ) ]
-impl< Storage, Context, Formed > fmt::Debug for FormingEndWrapper< Storage, Context, Formed >
+impl< Former : FormerDescriptor, Context > fmt::Debug for FormingEndWrapper< Former, Context >
 {
   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
@@ -111,10 +125,10 @@ impl< Storage, Context, Formed > fmt::Debug for FormingEndWrapper< Storage, Cont
 }
 
 #[ cfg( not( feature = "no_std" ) ) ]
-impl< Storage, Context, Formed > FormingEnd< Storage, Context, Formed >
-for FormingEndWrapper< Storage, Context, Formed >
+impl< Former : FormerDescriptor, Context > FormingEnd< Former, Context >
+for FormingEndWrapper< Former, Context >
 {
-  fn call( &self, storage : Storage, context : Option< Context > ) -> Formed
+  fn call( &self, storage : Former::Storage, context : Option< Context > ) -> Former::Formed
   {
     ( self.closure )( storage, context )
   }

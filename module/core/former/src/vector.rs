@@ -22,6 +22,28 @@ impl< E > VectorLike< E > for Vec< E >
   }
 }
 
+impl< E > StoragePerform for VectorLike< E >
+where
+  Self : Sized,
+{
+  type Formed = Self;
+  fn preform( self ) -> Self::Formed
+  {
+    self
+  }
+}
+
+impl< E, Former, Formed, Context, End,  > FormerDescriptor
+for VectorSubformer< Former, Context, End >
+where
+  Formed : StoragePerform< Formed = Formed > + VectorLike< E > + core::default::Default,
+  End : FormingEnd< Self, Context >,
+  Former : FormerDescriptor,
+{
+  type Storage = Formed;
+  type Formed = Formed;
+}
+
 /// A builder for constructing `VectorLike` containers, facilitating a fluent and flexible interface.
 ///
 /// `VectorSubformer` leverages the `VectorLike` trait to enable the construction and manipulation
@@ -48,26 +70,30 @@ impl< E > VectorLike< E > for Vec< E >
 ///
 // xxx2 : change sequence of parameters
 #[ derive( Debug, Default ) ]
-pub struct VectorSubformer< E, Formed, Context, ContainerEnd >
+// pub struct VectorSubformer< E, Formed, Context, End >
+pub struct VectorSubformer< Former, Context, End >
 where
-  Formed : VectorLike< E > + core::default::Default,
-  ContainerEnd : FormingEnd< Formed, Context, Formed >,
+  // Formed : StoragePerform< Formed = Formed > + VectorLike< E > + core::default::Default,
+  Former : FormerDescriptor,
+  End : FormingEnd< Self, Context >,
 {
-  formed : core::option::Option< Formed >,
+  formed : core::option::Option< Former::Formed >,
   context : core::option::Option< Context >,
-  on_end : core::option::Option< ContainerEnd >,
-  _phantom : core::marker::PhantomData< E >,
+  on_end : core::option::Option< End >,
+  // _phantom : core::marker::PhantomData< E >,
 }
 
-impl< E, Formed, Context, ContainerEnd > VectorSubformer< E, Formed, Context, ContainerEnd >
+impl< Former, Context, End > VectorSubformer< Former, Context, End >
 where
-  Formed : VectorLike< E > + core::default::Default,
-  ContainerEnd : FormingEnd< Formed, Context, Formed >,
+  Former : FormerDescriptor,
+  End : FormingEnd< Self, Context >,
+  // Formed : VectorLike< E > + core::default::Default,
+  // End : FormingEnd< Self, Context >,
 {
 
   /// Form current former into target structure.
   #[ inline( always ) ]
-  pub fn form( mut self ) -> Formed
+  pub fn form( mut self ) -> Former::Formed
   {
     let formed = if self.formed.is_some()
     {
@@ -85,9 +111,9 @@ where
   #[ inline( always ) ]
   pub fn begin
   (
-    formed : core::option::Option< Formed >,
+    formed : core::option::Option< Former::Formed >,
     context : core::option::Option< Context >,
-    on_end : ContainerEnd
+    on_end : End
   ) -> Self
   {
     Self
@@ -101,7 +127,7 @@ where
 
   /// Finalizes the building process, returning the formed or a context incorporating it.
   #[ inline( always ) ]
-  pub fn end( mut self ) -> Formed
+  pub fn end( mut self ) -> Former::Formed
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
@@ -111,7 +137,7 @@ where
 
   /// Replaces the current formed with a provided one, allowing for a reset or redirection of the building process.
   #[ inline( always ) ]
-  pub fn replace( mut self, vector : Formed ) -> Self
+  pub fn replace( mut self, vector : Former::Formed ) -> Self
   {
     self.formed = Some( vector );
     self
@@ -143,10 +169,10 @@ where
 
 }
 
-impl< E, Formed, Context, ContainerEnd > VectorSubformer< E, Formed, Context, ContainerEnd >
+impl< E, Formed, Context, End > VectorSubformer< E, Formed, Context, End >
 where
   Formed : VectorLike< E > + core::default::Default,
-  ContainerEnd : FormingEnd< Formed, Context, Formed >,
+  End : FormingEnd< Self, Context >,
 {
 
   /// Appends an element to the end of the formed, expanding the internal collection.
@@ -172,7 +198,7 @@ where
 impl< E, Formed, Context, End > FormerBegin< Formed, Formed, Context >
 for VectorSubformer< E, Formed, Context, End >
 where
-  End : FormingEnd< Formed, Context, Formed >,
+  End : FormingEnd< Self, Context >,
   Formed : VectorLike< E > + Default,
 {
   type End = End;
