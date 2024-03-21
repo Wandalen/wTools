@@ -36,6 +36,7 @@ fn fail_test()
   .channels([ Channel::Stable ])
   .optimizations([ Optimization::Debug ])
   .with_none_features( true )
+  .with_progress( false )
   .form();
 
   let rep = test( args, false ).unwrap_err().0;
@@ -75,6 +76,7 @@ fn fail_build()
   .channels([ Channel::Stable ])
   .optimizations([ Optimization::Debug ])
   .with_none_features( true )
+  .with_progress( false )
   .form();
 
   let rep = test( args, false ).unwrap_err().0;
@@ -137,6 +139,7 @@ fn call_from_workspace_root()
   .channels([ Channel::Stable ])
   .optimizations([ optimization::Optimization::Debug ])
   .with_none_features( true )
+  .with_progress( false )
   .form();
 
 
@@ -171,6 +174,7 @@ fn plan()
   .channels([ Channel::Stable, Channel::Nightly ])
   .optimizations([ Optimization::Debug, Optimization::Release ])
   .with_none_features( true )
+  .with_progress( false )
   .form();
 
   let rep = test( args, true ).unwrap().succses_reports[ 0 ].clone().tests;
