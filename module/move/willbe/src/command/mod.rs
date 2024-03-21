@@ -34,12 +34,11 @@ pub( crate ) mod private
       .routine( command::publish )
       .end()
 
-    // qqq : for Barsik : provide hints
     .command( "publish.diff" )
-      .hint( "---" )
-      .long_hint( "---" )
+      .hint( "Display the differences between a local and remote package versions." )
+      .long_hint( "Following this command, you will immediately get a comparison between the local and remote packages. It looks at each file, identifying those added, removed, or modified. A full report will then be generated where you can quickly and easily see the differences." )
       .subject()
-        .hint( "---" )
+        .hint( "Provide path to the package that you want to check.\n\t  The path should point to a directory that contains a `Cargo.toml` file." )
         .kind( Type::Path )
         .optional( true )
         .end()

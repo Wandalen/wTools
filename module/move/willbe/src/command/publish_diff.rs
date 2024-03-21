@@ -1,35 +1,30 @@
 mod private
 {
-  use std::path::PathBuf;
   use crate::*;
 
-  use { wtools };
-  use crates_tools::CrateArchive;
-
+  use std::path::PathBuf;
   use wca::Args;
+
   use wtools::error::Result;
-  use crate::_path::AbsolutePath;
 
+  /// Command to display the differences between a local and remote package versions.
   ///
+  /// # Arguments
   ///
+  /// * `args` - Command line arguments.
   ///
-
+  /// # Returns
+  ///
+  /// Returns a `Result` indicating success or failure.
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if there is an issue with the command.
   pub fn publish_diff( args : Args ) -> Result< () >
   {
     let path : PathBuf = args.get_owned( 0 ).unwrap_or( std::env::current_dir()? );
 
-    let path = AbsolutePath::try_from( path )?;
-    let dir = CrateDir::try_from( path )?;
-
-    let package = package::Package::try_from( dir.clone() )?;
-    let name = &package.name()?;
-    let version = &package.version()?;
-
-    _ = cargo::pack( cargo::PackOptions::former().path( dir.as_ref() ).dry( false ).form() )?;
-    let l = CrateArchive::read( packed_crate::local_path( name, version, dir )? )?;
-    let r = CrateArchive::download_crates_io( name, version ).unwrap();
-
-    println!( "{}", package::crate_diff( &l, &r ) );
+    println!( "{}", action::publish_diff( path )? );
 
     Ok( () )
   }
@@ -39,5 +34,6 @@ mod private
 
 crate::mod_interface!
 {
+  /// Publishes the difference between the local and published versions of a package.
   orphan use publish_diff;
 }
