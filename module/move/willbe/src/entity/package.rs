@@ -778,7 +778,8 @@ mod private
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
-      for diff in &self.0
+      for diff in self.0.iter()
+      .sorted_by_key( | d | match d { Diff::Modified( df ) | Diff::Same( df ) | Diff::Rem( df ) | Diff::Add( df ) => df } )
       {
         match diff
         {
