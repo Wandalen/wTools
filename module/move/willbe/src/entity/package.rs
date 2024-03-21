@@ -35,7 +35,6 @@ mod private
   };
   use action::readme_health_table_renew::Stability;
   use former::Former;
-  use wtools::iter::EitherOrBoth;
 
   ///
   #[ derive( Debug ) ]
@@ -80,6 +79,22 @@ mod private
     fn try_from( value : AbsolutePath ) -> Result< Self, Self::Error >
     {
       let manifest =  manifest::open( value.clone() )?;
+      if !manifest.package_is()?
+      {
+        return Err( PackageError::NotAPackage );
+      }
+
+      Ok( Self::Manifest( manifest ) )
+    }
+  }
+
+  impl TryFrom< CrateDir > for Package
+  {
+    type Error = PackageError;
+
+    fn try_from( value : CrateDir ) -> Result< Self, Self::Error >
+    {
+      let manifest =  manifest::open( value.absolute_path().join( "Cargo.toml" ) )?;
       if !manifest.package_is()?
       {
         return Err( PackageError::NotAPackage );
@@ -748,40 +763,47 @@ mod private
   }
 
   #[ derive( Debug ) ]
-  enum Diff< T >
+  pub enum Diff< T >
   {
     Same( T ),
+    Modified( T ),
     Add( T ),
     Rem( T ),
   }
 
   #[ derive( Debug, Default ) ]
-  struct DiffReport( HashMap< PathBuf, Vec< Diff< Vec< u8 > > > > );
+  pub struct DiffReport( Vec< Diff< PathBuf > > );
 
   impl std::fmt::Display for DiffReport
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
-      for ( path, diffs ) in &self.0
+      for diff in &self.0
       {
-        writeln!( f, "-- begin [{}]", path.display() )?;
-        for diff in diffs
+        match diff
         {
-          let str = match diff
-          {
-            Diff::Same( t ) => String::from_utf8_lossy( t ).into(),
-            Diff::Add( t ) => format!( "[{}]", String::from_utf8_lossy( t ).green() ),
-            Diff::Rem( t ) => format!( "{{{}}}", String::from_utf8_lossy( t ).red() ),
-          };
-          write!( f, "{str}" )?;
-        }
-        writeln!( f, "-- end [{}]", path.display() )?;
+          Diff::Same( t ) => writeln!( f, "{}", t.display() )?,
+          Diff::Modified( t ) => writeln!( f, "~ {}", t.to_string_lossy().yellow() )?,
+          Diff::Add( t ) => writeln!( f, "+ {}", t.to_string_lossy().green() )?,
+          Diff::Rem( t ) => writeln!( f, "- {}", t.to_string_lossy().red() )?,
+        };
       }
+
       Ok( () )
     }
   }
 
-  fn crate_diff( left : &CrateArchive, right : &CrateArchive ) -> DiffReport
+  /// Compare two crate archives and create a difference report.
+  ///
+  /// # Arguments
+  ///
+  /// * `left` - A reference to the left crate archive.
+  /// * `right` - A reference to the right crate archive.
+  ///
+  /// # Returns
+  ///
+  /// A `DiffReport` struct representing the difference between the two crate archives.
+  pub fn crate_diff( left : &CrateArchive, right : &CrateArchive ) -> DiffReport
   {
     let mut report = DiffReport::default();
 
@@ -794,12 +816,12 @@ mod private
 
     for &path in local_only
     {
-      report.0.entry( path.to_path_buf() ).or_default().push( Diff::Add( left.content_bytes( path ).unwrap().to_vec() ) );
+      report.0.push( Diff::Add( path.to_path_buf() ) );
     }
 
     for &path in remote_only
     {
-      report.0.entry( path.to_path_buf() ).or_default().push( Diff::Rem( right.content_bytes( path ).unwrap().to_vec() ) );
+      report.0.push( Diff::Rem( path.to_path_buf() ) );
     }
 
     for &path in both
@@ -807,55 +829,18 @@ mod private
       // unwraps are safe because the paths to the files was compared previously
       let local = left.content_bytes( path ).unwrap();
       let remote = right.content_bytes( path ).unwrap();
-      let mut diffs = Vec::with_capacity( std::cmp::min( local.len(), remote.len() ) );
 
-      for pair in local.iter().zip_longest(remote)
+      if local == remote
       {
-        match pair
-        {
-          EitherOrBoth::Both( l, r ) =>
-          if l == r
-          {
-            diffs.push( Diff::Same( *l ) );
-          }
-          else
-          {
-            diffs.push( Diff::Rem( *r ) );
-            diffs.push( Diff::Add( *l ) );
-          }
-          EitherOrBoth::Left( l ) => diffs.push( Diff::Add( *l ) ),
-          EitherOrBoth::Right( r ) => diffs.push( Diff::Rem( *r ) ),
-        }
+        report.0.push( Diff::Same( path.to_path_buf() ) );
       }
-      let mut diffs_iter = diffs.iter().peekable();
-      while let Some( first ) = diffs_iter.next()
+      else
       {
-        let mut group = vec![ first ];
-        while diffs_iter.peek().map_or( false, | &next | std::mem::discriminant( next ) == std::mem::discriminant( &group[ 0 ] ) )
-        {
-          group.push( diffs_iter.next().unwrap() );
-        }
-        let group = match first
-        {
-          Diff::Same( _ ) => Diff::Same( group.into_iter().map( | d | { let Diff::Same( v ) = d else { unreachable!() }; *v } ).collect() ),
-          Diff::Add( _ ) => Diff::Add( group.into_iter().map( | d | { let Diff::Add( v ) = d else { unreachable!() }; *v } ).collect() ),
-          Diff::Rem( _ ) => Diff::Rem( group.into_iter().map( | d | { let Diff::Rem( v ) = d else { unreachable!() }; *v } ).collect() ),
-        };
-        report.0.entry( path.to_path_buf() ).or_default().push( group );
+        report.0.push( Diff::Modified( path.to_path_buf() ) );
       }
     }
 
     report
-  }
-
-  #[ test ]
-  fn temporary() {
-    let path = AbsolutePath::try_from(PathBuf::from("../../test/a")).unwrap();
-    let dir = CrateDir::try_from(path).unwrap();
-    let l = CrateArchive::read( packed_crate::local_path( "test_experimental_a", "0.3.0", dir ).unwrap() ).unwrap();
-    let r = CrateArchive::download_crates_io( "test_experimental_a", "0.3.0" ).unwrap();
-    println!("{}", crate_diff( &l, &r ));
-    panic!()
   }
 }
 
@@ -871,6 +856,7 @@ crate::mod_interface!
   protected use PackageError;
 
   protected use publish_need;
+  protected use crate_diff;
 
   protected use CrateId;
   protected use DependenciesSort;
