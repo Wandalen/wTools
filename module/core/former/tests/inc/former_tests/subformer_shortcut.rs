@@ -56,7 +56,13 @@ where
   pub fn descriptor3< Former2 >( self ) ->
   Former2
   where
-    Former2 : former::FormerBegin< TemplateParameterDescriptorFormerStorage, TemplateParameterDescriptor, Self, End = former::FormingEndWrapper< TemplateParameterDescriptor, Self > >,
+    Former2 : former::FormerBegin
+    <
+      TemplateParameterDescriptorFormerStorage,
+      TemplateParameterDescriptor,
+      Self,
+      End = former::FormingEndWrapper< TemplateParameterDescriptor, Self >,
+    >,
     // FieldContainer : ContainerAdd,
   {
     let on_end = | descriptor : TemplateParameterDescriptor, super_former : core::option::Option< Self > | -> Self
