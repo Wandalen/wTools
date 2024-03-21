@@ -101,21 +101,21 @@ for FormingEndWrapper< Formed, Context >
   }
 }
 
-/// A `FormingEnd` implementation that returns the original context without any modifications.
-///
-/// This struct is used when no end-of-forming processing is needed, and the original context is to be returned as-is.
-#[ derive( Debug, Default ) ]
-pub struct NoEnd;
-
-impl< Formed, Context > FormingEnd< Formed, Context >
-for NoEnd
-{
-  #[ inline( always ) ]
-  fn call( &self, _formed : Formed, context : core::option::Option< Context > ) -> Context
-  {
-    context.unwrap()
-  }
-}
+// /// A `FormingEnd` implementation that returns the original context without any modifications.
+// ///
+// /// This struct is used when no end-of-forming processing is needed, and the original context is to be returned as-is.
+// #[ derive( Debug, Default ) ]
+// pub struct NoEnd;
+//
+// impl< Formed, Context > FormingEnd< Formed, Context >
+// for NoEnd
+// {
+//   #[ inline( always ) ]
+//   fn call( &self, _formed : Formed, context : core::option::Option< Context > ) -> Context
+//   {
+//     context.unwrap()
+//   }
+// }
 
 /// A `FormingEnd` implementation that returns the formed container itself instead of the context.
 ///
@@ -158,7 +158,7 @@ for ReturnFormed
 ///           potentially using the provided `Context`.
 ///
 
-pub trait FormerBegin< Formed, Context >
+pub trait FormerBegin< Storage, Formed, Context >
 {
 
   /// * `End` - Specifies the trait bound for the closure or handler that gets called at the completion
@@ -184,7 +184,7 @@ pub trait FormerBegin< Formed, Context >
   ///
   fn _begin
   (
-    formed : core::option::Option< Formed >,
+    storage : core::option::Option< Storage >,
     context : core::option::Option< Context >,
     on_end : Self::End,
   ) -> Self;

@@ -1073,9 +1073,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   {
     let _example =
 r#"
-impl< FormerContext, FormerEnd > UserProfileFormer< FormerContext, FormerEnd >
+impl< Context, End > UserProfileFormer< Context, End >
 where
-  FormerEnd : former::FormingEnd< UserProfile, FormerContext >,
+  End : former::FormingEnd< UserProfile, Context >,
 {
   pub fn age< Src >( mut self, src : Src ) -> Self
   where
