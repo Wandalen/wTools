@@ -71,7 +71,7 @@ mod private
 
   impl TryFrom< AbsolutePath > for Package
   {
-    // qqq : make better errors
+    // aaa : make better errors
     // aaa : return `PackageError` instead of `anohow` message
     type Error = PackageError;
 
@@ -89,7 +89,7 @@ mod private
 
   impl TryFrom< Manifest > for Package
   {
-    // qqq : make better errors
+    // aaa : make better errors
     // aaa : return `PackageError` instead of `anohow` message
     type Error = PackageError;
 
@@ -903,7 +903,7 @@ mod private
     .map( | p | p.join( format!( "package/{0}-{1}.crate", name, version ) ) )
     .unwrap_or( packed_crate::local_path( &name, &version, package.crate_dir() ).map_err( | _ | PackageError::LocalPath )? );
 
-    // qqq : for Bohdan : bad, properly handle errors
+    // aaa : for Bohdan : bad, properly handle errors
     // aaa : return result instead of panic
     let local_package = CrateArchive::read( local_package_path ).map_err( | _ | PackageError::ReadArchive )?;
     let remote_package = match CrateArchive::download_crates_io( name, version )
