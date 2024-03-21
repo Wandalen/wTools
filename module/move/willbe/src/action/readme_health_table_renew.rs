@@ -15,7 +15,9 @@ mod private
     Dependency,
     DependencyKind,
   };
-  // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
+  // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
+  // aaa : ✅
+
 
   use convert_case::{ Case, Casing };
   use toml_edit::Document;
@@ -36,7 +38,7 @@ mod private
   use manifest::private::repo_url;
   use workspace::Workspace;
   use _path::AbsolutePath;
-  use crate::workspace::WorkspacePackage;
+  use workspace::WorkspacePackage;
 
   static TAG_TEMPLATE: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
   static CLOSE_TAG: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();

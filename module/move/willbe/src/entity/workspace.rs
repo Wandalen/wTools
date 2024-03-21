@@ -4,7 +4,7 @@ mod private
   use crate::*;
 
   use std::path::Path;
-  use cargo_metadata::{Dependency, Metadata, MetadataCommand, Package};
+  use cargo_metadata::{ Dependency, Metadata, MetadataCommand, Package };
   use cargo_metadata::camino::Utf8Path;
   use petgraph::Graph;
   use semver::Version;
@@ -79,7 +79,6 @@ mod private
   {
     metadata : Option< Metadata >,
     manifest_dir : CrateDir,
-    packages : Option< Vec< WorkspacePackage > >,
   }
 
   /// Represents errors related to workspace operations.
@@ -98,12 +97,10 @@ mod private
     {
       let current_path = AbsolutePath::try_from( std::env::current_dir().unwrap_or_default() )?;
       let metadata = MetadataCommand::new().no_deps().exec().context("fail to load CargoMetadata")?;
-      let packages = metadata.packages.iter().map( | p | p.clone().into() ).collect();
       Ok( Self
       {
         metadata : Some( metadata ),
         manifest_dir : CrateDir::try_from( current_path )?,
-        packages : Some( packages ),
       })
     }
 
@@ -111,14 +108,12 @@ mod private
     pub fn with_crate_dir( crate_dir : CrateDir ) -> Result< Self >
     {
       let metadata = MetadataCommand::new().no_deps().exec().context("fail to load CargoMetadata")?;
-      let packages = metadata.packages.iter().map( | p | p.clone().into() ).collect();
       Ok
       (
         Self
         {
         metadata : Some( MetadataCommand::new().current_dir( crate_dir.as_ref() ).no_deps().exec().context( "fail to load CargoMetadata" )? ),
         manifest_dir : crate_dir,
-        packages : Some( packages ),
         }
       )
     }
@@ -130,12 +125,10 @@ mod private
     {
       let path = value.workspace_root.as_std_path().parent().unwrap().to_path_buf();
       let path = AbsolutePath::try_from( path ).unwrap();
-      let packages = value.packages.iter().map( | p | p.clone().into() ).collect();
       Self
       {
         metadata : Some( value ),
         manifest_dir : CrateDir::try_from( path ).unwrap(),
-        packages : Some( packages ),
       }
     }
   }
@@ -169,12 +162,14 @@ mod private
   impl Workspace
   {
     /// Returns list of all packages
-    pub fn packages( &self ) -> Result< &[ WorkspacePackage], WorkspaceError> {
+    pub fn packages( &self ) -> Result< Vec< WorkspacePackage >, WorkspaceError > 
+    {
       self
-      .packages
+      .metadata
       .as_ref()
       .ok_or_else( || WorkspaceError::MetadataError )
-      .map( | metadata | metadata.as_slice() )
+      .map( | metadata | metadata.packages.clone() )
+      .map( | p | p.into_iter().map( WorkspacePackage::from ).collect() )
     }
 
 
@@ -215,7 +210,7 @@ mod private
     }
 
     /// Find a package by its manifest file path
-    pub fn package_find_by_manifest< P >( &self, manifest_path : P ) -> Option< &WorkspacePackage >
+    pub fn package_find_by_manifest< P >( &self, manifest_path : P ) -> Option< WorkspacePackage >
     where
       P : AsRef< Path >,
     {
@@ -228,6 +223,7 @@ mod private
         packages
         .iter()
         .find( | &p | p.manifest_path().as_std_path() == manifest_path.as_ref() )
+        .cloned()
       )
     }
 
@@ -248,7 +244,7 @@ mod private
       );
       let module_packages_map = packages::filter
       (
-        packages,
+        packages.as_slice(),
         packages::FilterMapOptions { package_filter : module_package_filter, dependency_filter : module_dependency_filter },
       );
 

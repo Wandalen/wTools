@@ -22,7 +22,8 @@ mod private
     for_app::{ Error, Context },
     err
   };
-  // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
+  // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
+  // aaa : ✅
   use cargo_metadata::
   {
     Dependency,
@@ -33,7 +34,7 @@ mod private
 
   use workspace::Workspace;
   use _path::AbsolutePath;
-  use crate::workspace::WorkspacePackage;
+  use workspace::WorkspacePackage;
 
   /// Args for `list` action.
   #[ derive( Debug, Default, Copy, Clone ) ]
@@ -359,7 +360,7 @@ mod private
     {
       if let Some( package ) = workspace.package_find_by_manifest( path.as_std_path().join( "Cargo.toml" ) )
       {
-        process_package_dependency( workspace, package, args, &mut dep_rep, visited );
+        process_package_dependency( workspace, &package, args, &mut dep_rep, visited );
       }
     }
 
@@ -412,7 +413,7 @@ mod private
         build_dependencies : vec![],
       };
 
-      process_package_dependency( &metadata, package, &args, &mut package_report, visited );
+      process_package_dependency( &metadata, &package, &args, &mut package_report, visited );
 
       *report = match report
       {
@@ -463,7 +464,7 @@ mod private
         let packages = metadata.packages().context( "workspace packages" ).err_with( report.clone() )?;
         let packages_map =  packages::filter
         (
-          packages,
+          packages.as_slice(),
           FilterMapOptions{ dependency_filter : Some( Box::new( dep_filter ) ), ..Default::default() }
         );
 

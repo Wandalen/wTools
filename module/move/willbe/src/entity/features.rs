@@ -2,11 +2,11 @@ mod private
 {
   use crate::*;
   use std::collections::{ BTreeSet, HashSet };
-  // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
+  // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
   // aaa : ✅
   use error_tools::for_app::{ bail, Result };
   use wtools::iter::Itertools;
-  use crate::workspace::WorkspacePackage;
+  use workspace::WorkspacePackage;
 
   /// Generates a powerset of the features available in the given `package`,
   /// filtered according to specified inclusion and exclusion criteria,

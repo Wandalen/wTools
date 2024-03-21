@@ -9,7 +9,7 @@ mod private
     io::{ Write, Read },
     collections::BTreeMap
   };
-  // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
+  // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
   // aaa : ✅
 
   use convert_case::{ Casing, Case };
@@ -20,7 +20,7 @@ mod private
   use crate::manifest::private::CrateDirError;
   use error_tools::for_lib::Error;
   use error_tools::dependency::*;
-  use crate::workspace::WorkspacePackage;
+  use workspace::WorkspacePackage;
 
   use wtools::error::for_app::{ Result, Error as wError };
   use entity::WorkspaceError;
@@ -49,7 +49,7 @@ mod private
   {
     let workspace_cache = Workspace::with_crate_dir( AbsolutePath::try_from( base_path )?.try_into()? )?;
     let packages = workspace_cache.packages()?;
-    let username_and_repository = &username_and_repository( &workspace_cache.workspace_root()?.join( "Cargo.toml" ).try_into()?, packages )?;
+    let username_and_repository = &username_and_repository( &workspace_cache.workspace_root()?.join( "Cargo.toml" ).try_into()?, packages.as_slice() )?;
     let workspace_root = workspace_cache.workspace_root()?;
     // find directory for workflows
     let workflow_root = workspace_root.join( ".github" ).join( "workflows" );
@@ -65,6 +65,7 @@ mod private
     .filter_map( | p | p.strip_prefix( workspace_root ).ok() )
     .map( | p | p.with_file_name( "" ) )
     .collect::< Vec< _ > >();
+    dbg!( &relative_paths );
 
     // preparing templates
     let mut handlebars = handlebars::Handlebars::new();
@@ -212,6 +213,7 @@ mod private
     Ok( () )
   }
 
+  #[derive( Debug ) ]
   struct UsernameAndRepository( String );
 
   // aaa : for Petro : not clear how output should look

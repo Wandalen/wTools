@@ -34,7 +34,7 @@ mod private
   };
   use action::readme_health_table_renew::Stability;
   use former::Former;
-  use crate::workspace::WorkspacePackage;
+  use workspace::WorkspacePackage;
 
   ///
   #[ derive( Debug ) ]
@@ -273,8 +273,7 @@ mod private
         Package::Manifest( manifest ) =>
         Workspace::with_crate_dir( manifest.crate_dir() ).map_err( | _ | PackageError::Metadata )?
         .package_find_by_manifest( &manifest.manifest_path )
-        .ok_or_else( || PackageError::Metadata )
-        .cloned(),
+        .ok_or_else( || PackageError::Metadata ),
         Package::Metadata( metadata ) => Ok( metadata.clone() ),
       }
     }
@@ -627,7 +626,7 @@ mod private
     .map( CrateId::from )
     .collect::< HashSet< _ > >();
 
-    let package = CrateId::from( package );
+    let package = CrateId::from( &package );
     graph.insert( package.clone(), deps.clone() );
 
     if recursive

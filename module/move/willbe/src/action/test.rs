@@ -12,7 +12,8 @@ mod private
 
   #[ cfg( feature = "progress_bar" ) ]
   use indicatif::{ MultiProgress, ProgressStyle };
-  // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
+  // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
+  // aaa : ✅
 
   // qqq : for Petro : don't use Package directly. rid it off for the whole willbe
 
@@ -54,7 +55,7 @@ mod private
     },
     iter::Itertools,
   };
-  use crate::workspace::WorkspacePackage;
+  use workspace::WorkspacePackage;
 
   /// Used to store arguments for running tests.
   ///
@@ -223,7 +224,6 @@ mod private
     let result = metadata
     .packages()?
     .into_iter()
-    .cloned()
     .filter( move | x | x.manifest_path().starts_with( path.as_ref() ) )
     .collect();
     Ok( result )

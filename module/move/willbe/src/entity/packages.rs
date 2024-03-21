@@ -1,12 +1,13 @@
 mod private
 {
+  use crate::*;
   use std::
   {
     fmt::Formatter,
     collections::{ HashMap, HashSet },
   };
   use cargo_metadata::{ Dependency };
-  use crate::workspace::WorkspacePackage;
+  use workspace::WorkspacePackage;
 
   /// Type aliasing for String
   pub type PackageName = String;
