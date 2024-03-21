@@ -11,6 +11,7 @@ mod private
   use std::hash::Hash;
   use std::path::PathBuf;
   use cargo_metadata::{ Dependency, DependencyKind, Package as PackageMetadata };
+  use colored::Colorize;
   use toml_edit::value;
 
   use process_tools::process;
@@ -34,6 +35,7 @@ mod private
   };
   use action::readme_health_table_renew::Stability;
   use former::Former;
+  use wtools::iter::EitherOrBoth;
 
   ///
   #[ derive( Debug ) ]
@@ -745,6 +747,116 @@ mod private
     Ok( !is_same )
   }
 
+  #[ derive( Debug ) ]
+  enum Diff< T >
+  {
+    Same( T ),
+    Add( T ),
+    Rem( T ),
+  }
+
+  #[ derive( Debug, Default ) ]
+  struct DiffReport( HashMap< PathBuf, Vec< Diff< Vec< u8 > > > > );
+
+  impl std::fmt::Display for DiffReport
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
+      for ( path, diffs ) in &self.0
+      {
+        writeln!( f, "-- begin [{}]", path.display() )?;
+        for diff in diffs
+        {
+          let str = match diff
+          {
+            Diff::Same( t ) => String::from_utf8_lossy( t ).into(),
+            Diff::Add( t ) => format!( "[{}]", String::from_utf8_lossy( t ).green() ),
+            Diff::Rem( t ) => format!( "{{{}}}", String::from_utf8_lossy( t ).red() ),
+          };
+          write!( f, "{str}" )?;
+        }
+        writeln!( f, "-- end [{}]", path.display() )?;
+      }
+      Ok( () )
+    }
+  }
+
+  fn crate_diff( left : &CrateArchive, right : &CrateArchive ) -> DiffReport
+  {
+    let mut report = DiffReport::default();
+
+    let local_package_files : HashSet< _ > = left.list().into_iter().collect();
+    let remote_package_files : HashSet< _ > = right.list().into_iter().collect();
+
+    let local_only = local_package_files.difference( &remote_package_files );
+    let remote_only = remote_package_files.difference( &local_package_files );
+    let both = local_package_files.intersection( &remote_package_files );
+
+    for &path in local_only
+    {
+      report.0.entry( path.to_path_buf() ).or_default().push( Diff::Add( left.content_bytes( path ).unwrap().to_vec() ) );
+    }
+
+    for &path in remote_only
+    {
+      report.0.entry( path.to_path_buf() ).or_default().push( Diff::Rem( right.content_bytes( path ).unwrap().to_vec() ) );
+    }
+
+    for &path in both
+    {
+      // unwraps are safe because the paths to the files was compared previously
+      let local = left.content_bytes( path ).unwrap();
+      let remote = right.content_bytes( path ).unwrap();
+      let mut diffs = Vec::with_capacity( std::cmp::min( local.len(), remote.len() ) );
+
+      for pair in local.iter().zip_longest(remote)
+      {
+        match pair
+        {
+          EitherOrBoth::Both( l, r ) =>
+          if l == r
+          {
+            diffs.push( Diff::Same( *l ) );
+          }
+          else
+          {
+            diffs.push( Diff::Rem( *r ) );
+            diffs.push( Diff::Add( *l ) );
+          }
+          EitherOrBoth::Left( l ) => diffs.push( Diff::Add( *l ) ),
+          EitherOrBoth::Right( r ) => diffs.push( Diff::Rem( *r ) ),
+        }
+      }
+      let mut diffs_iter = diffs.iter().peekable();
+      while let Some( first ) = diffs_iter.next()
+      {
+        let mut group = vec![ first ];
+        while diffs_iter.peek().map_or( false, | &next | std::mem::discriminant( next ) == std::mem::discriminant( &group[ 0 ] ) )
+        {
+          group.push( diffs_iter.next().unwrap() );
+        }
+        let group = match first
+        {
+          Diff::Same( _ ) => Diff::Same( group.into_iter().map( | d | { let Diff::Same( v ) = d else { unreachable!() }; *v } ).collect() ),
+          Diff::Add( _ ) => Diff::Add( group.into_iter().map( | d | { let Diff::Add( v ) = d else { unreachable!() }; *v } ).collect() ),
+          Diff::Rem( _ ) => Diff::Rem( group.into_iter().map( | d | { let Diff::Rem( v ) = d else { unreachable!() }; *v } ).collect() ),
+        };
+        report.0.entry( path.to_path_buf() ).or_default().push( group );
+      }
+    }
+
+    report
+  }
+
+  #[ test ]
+  fn temporary() {
+    let path = AbsolutePath::try_from(PathBuf::from("../../test/a")).unwrap();
+    let dir = CrateDir::try_from(path).unwrap();
+    let l = CrateArchive::read( packed_crate::local_path( "test_experimental_a", "0.3.0", dir ).unwrap() ).unwrap();
+    let r = CrateArchive::download_crates_io( "test_experimental_a", "0.3.0" ).unwrap();
+    println!("{}", crate_diff( &l, &r ));
+    panic!()
+  }
 }
 
 //

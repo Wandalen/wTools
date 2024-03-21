@@ -34,6 +34,18 @@ pub( crate ) mod private
       .routine( command::publish )
       .end()
 
+    // qqq : for Barsik : provide hints
+    .command( "publish.diff" )
+      .hint( "---" )
+      .long_hint( "---" )
+      .subject()
+        .hint( "---" )
+        .kind( Type::Path )
+        .optional( true )
+        .end()
+      .routine( command::publish_diff )
+      .end()
+
     .command( "list" )
       .hint( "list packages from a directory" )
       .long_hint( "generates a list of packages based on the provided directory path. The directory must contain a `Cargo.toml` file." )
@@ -237,6 +249,8 @@ crate::mod_interface!
   layer list;
   /// Publish packages.
   layer publish;
+  /// Used to compare local and published versions of a specific package.
+  layer publish_diff;
   /// Generates health table in main Readme.md file of workspace.
   // aaa : for Petro : what a table??
   // aaa : add more details to documentation
