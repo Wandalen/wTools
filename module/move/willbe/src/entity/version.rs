@@ -171,16 +171,31 @@ mod private
 
   // qqq : we have to replace the implementation above with the implementation below, don't we?
 
-  /// Options for version bumping.
-  ///
-  /// This struct is used to specify the options for version bumping operations.
+  /// `BumpOptions` manages the details necessary for the version bump process for crates.
+  /// This includes the directory of the crate whose version is being bumped, the old and new version numbers,
+  /// and the set of dependencies of that crate.
   #[ derive( Debug, Clone ) ]
   pub struct BumpOptions
   {
+    /// `crate_dir` - The directory of the crate which you want to bump the version of. This value is
+    /// represented by `CrateDir` which indicates the directory of the crate.
     pub crate_dir : CrateDir,
+
+    /// `old_version` - The version of the crate before the bump. It's represented by `Version` which
+    /// denotes the old version number of the crate.
     pub old_version : Version,
+
+    /// `new_version` - The version number to assign to the crate after the bump. It's also represented
+    /// by `Version` which denotes the new version number of the crate.
     pub new_version : Version,
+
+    /// `dependencies` - This is a vector containing the directories of all the dependencies of the crate.
+    /// Each item in the `dependencies` vector indicates a `CrateDir` directory of a single dependency.
     pub dependencies : Vec< CrateDir >,
+
+    /// `dry` - A boolean indicating whether to do a "dry run". If set to `true`, a simulated run is performed
+    /// without making actual changes. If set to `false`, the operations are actually executed. This is
+    /// useful for validating the process of bumping up the version or for testing and debugging.
     pub dry : bool,
   }
 

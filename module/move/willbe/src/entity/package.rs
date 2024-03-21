@@ -11,7 +11,6 @@ mod private
   use std::hash::Hash;
   use std::path::PathBuf;
   use cargo_metadata::{ Dependency, DependencyKind };
-  use toml_edit::value;
 
   use process_tools::process;
   use manifest::{ Manifest, ManifestError };
@@ -28,7 +27,7 @@ mod private
       thiserror,
       Result,
       for_lib::Error,
-      for_app::{ format_err, Error as wError, Context },
+      for_app::{ format_err, Context },
     }
   };
   use action::readme_health_table_renew::Stability;
@@ -466,6 +465,9 @@ mod private
     /// manipulation of the filesystem paths.
     pub base_temp_dir : Option< PathBuf >,
 
+    /// `dry` - A boolean value indicating whether to do a dry run. If set to `true`, the application performs
+    /// a simulated run without making any actual changes. If set to `false`, the operations are actually executed.
+    /// This property is optional and defaults to `true`.
     #[ default( true ) ]
     pub dry : bool,
 
