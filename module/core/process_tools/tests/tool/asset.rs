@@ -46,7 +46,7 @@ pub fn path() -> std::io::Result< std::path::PathBuf >
 //
 
 // xxx2 : adjust Former to generate required code easier
-// xxx2 : implement the interface
+// xxx : implement the interface
 
 use former::Former;
 use std::

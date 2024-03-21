@@ -46,11 +46,12 @@ impl< E > VectorLike< E > for Vec< E >
 /// assert_eq!( instance, StructWithVec { vec: vec![ "apple", "banana" ] } );
 ///```
 ///
+// xxx2 : change sequence of parameters
 #[ derive( Debug, Default ) ]
 pub struct VectorSubformer< E, Formed, Context, ContainerEnd >
 where
   Formed : VectorLike< E > + core::default::Default,
-  ContainerEnd : FormingEnd< Formed, Context >,
+  ContainerEnd : FormingEnd< Formed, Context, Formed >,
 {
   formed : core::option::Option< Formed >,
   context : core::option::Option< Context >,
@@ -61,7 +62,7 @@ where
 impl< E, Formed, Context, ContainerEnd > VectorSubformer< E, Formed, Context, ContainerEnd >
 where
   Formed : VectorLike< E > + core::default::Default,
-  ContainerEnd : FormingEnd< Formed, Context >,
+  ContainerEnd : FormingEnd< Formed, Context, Formed >,
 {
 
   /// Form current former into target structure.
@@ -79,23 +80,6 @@ where
     };
     formed
   }
-
-  // /// Initializes a new `VectorSubformer` instance, starting with an empty formed.
-  // /// This function serves as the entry point for the builder pattern.
-  // ///
-  // /// # Returns
-  // /// A new instance of `VectorSubformer` with an empty internal formed.
-  // ///
-  // #[ inline( always ) ]
-  // pub fn new() -> VectorSubformer< E, Formed, Formed, impl FormingEnd< Formed, Formed > >
-  // {
-  //   VectorSubformer::begin
-  //   (
-  //     None,
-  //     None,
-  //     crate::ReturnFormed,
-  //   )
-  // }
 
   /// Begins the building process, optionally initializing with a context and formed.
   #[ inline( always ) ]
@@ -117,7 +101,7 @@ where
 
   /// Finalizes the building process, returning the formed or a context incorporating it.
   #[ inline( always ) ]
-  pub fn end( mut self ) -> Context
+  pub fn end( mut self ) -> Formed
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
@@ -135,7 +119,7 @@ where
 
 }
 
-impl< E, Formed > VectorSubformer< E, Formed, Formed, crate::ReturnFormed >
+impl< E, Formed > VectorSubformer< E, Formed, (), crate::ReturnStorage >
 where
   Formed : VectorLike< E > + core::default::Default,
 {
@@ -153,7 +137,7 @@ where
     (
       None,
       None,
-      crate::ReturnFormed,
+      crate::ReturnStorage,
     )
   }
 
@@ -162,7 +146,7 @@ where
 impl< E, Formed, Context, ContainerEnd > VectorSubformer< E, Formed, Context, ContainerEnd >
 where
   Formed : VectorLike< E > + core::default::Default,
-  ContainerEnd : FormingEnd< Formed, Context >,
+  ContainerEnd : FormingEnd< Formed, Context, Formed >,
 {
 
   /// Appends an element to the end of the formed, expanding the internal collection.
@@ -188,7 +172,7 @@ where
 impl< E, Formed, Context, End > FormerBegin< Formed, Formed, Context >
 for VectorSubformer< E, Formed, Context, End >
 where
-  End : FormingEnd< Formed, Context >,
+  End : FormingEnd< Formed, Context, Formed >,
   Formed : VectorLike< E > + Default,
 {
   type End = End;

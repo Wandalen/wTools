@@ -13,9 +13,9 @@ pub struct Struct1
 
 impl Struct1
 {
-  pub fn former() -> Struct1Former< Struct1, the_module::ReturnFormed >
+  pub fn former() -> Struct1Former< Struct1, the_module::ReturnStorage >
   {
-    Struct1Former::< Struct1, the_module::ReturnFormed >::new()
+    Struct1Former::< Struct1, the_module::ReturnStorage >::new()
   }
 }
 
@@ -48,7 +48,7 @@ impl Default for Struct1FormerStorage
 pub struct Struct1Former
 <
   Context = Struct1,
-  End = the_module::ReturnFormed,
+  End = the_module::ReturnStorage,
 >
 where
   End : the_module::FormingEnd< Struct1, Context >,
@@ -113,16 +113,6 @@ where
     return result;
   }
 
-  // #[ inline( always ) ]
-  // pub fn new() -> Struct1Former<Struct1, the_module::ReturnFormed>
-  // {
-  //   Struct1Former::
-  //   <
-  //     Struct1,
-  //     the_module::ReturnFormed,
-  //   >::begin(None, the_module::ReturnFormed)
-  // }
-
   #[ inline( always ) ]
   pub fn begin
   (
@@ -144,7 +134,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn end( mut self ) -> Context
+  pub fn end( mut self ) -> Formed
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
@@ -160,7 +150,8 @@ where
     <
       Vec< String >,
       Vec< String >,
-      Self, End = former::FormingEndWrapper< Vec< String >, Self >,
+      Self,
+      End = former::FormingEndWrapper< Vec< String >, Self >,
     >,
   {
     let on_end = | formed : Vec< String >, super_former : ::core::option::Option< Self > | -> Self
@@ -252,22 +243,18 @@ where
 // where
 //   End: the_module::FormingEnd<Struct1, Context>,
 
-impl Struct1Former< Struct1, the_module::ReturnFormed >
+impl Struct1Former< Struct1, the_module::ReturnStorage >
 {
 
   #[ inline( always ) ]
   pub fn new() -> Self
   {
-    Self::begin( None, None, the_module::ReturnFormed )
+    Self::begin( None, None, the_module::ReturnStorage )
   }
 
 }
 
 //
-
-// impl< Context, End > Struct1Former< Context, End >
-// where
-//   End : the_module::FormingEnd< Struct1, Context >,
 
 impl< Context, End > former::FormerBegin< Struct1FormerStorage, Struct1, Context >
 for Struct1Former< Context, End >
@@ -279,7 +266,7 @@ where
   #[ inline( always ) ]
   fn _begin
   (
-    storage : core::option::Option< Struct1FormerStorage >, /* xxx2 : that should be storage */
+    storage : core::option::Option< Struct1FormerStorage >,
     context : core::option::Option< Context >,
     on_end : End,
   ) -> Self

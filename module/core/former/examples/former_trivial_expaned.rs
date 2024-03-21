@@ -38,9 +38,9 @@ fn main()
   impl UserProfile
   {
     #[ inline( always ) ]
-    pub fn former() -> UserProfileFormer< UserProfile, former::ReturnFormed >
+    pub fn former() -> UserProfileFormer< UserProfile, former::ReturnStorage >
     {
-      UserProfileFormer::< UserProfile, former::ReturnFormed >::new()
+      UserProfileFormer::< UserProfile, former::ReturnStorage >::new()
     }
   }
 
@@ -55,7 +55,7 @@ fn main()
   pub struct UserProfileFormer
   <
     Context = UserProfile,
-    End = former::ReturnFormed,
+    End = former::ReturnStorage,
   >
   where
     End : former::FormingEnd< UserProfile, Context >,
@@ -157,9 +157,9 @@ fn main()
     }
 
     #[ inline( always ) ]
-    pub fn new() -> UserProfileFormer< UserProfile, former::ReturnFormed >
+    pub fn new() -> UserProfileFormer< UserProfile, former::ReturnStorage >
     {
-      UserProfileFormer::< UserProfile, former::ReturnFormed >::begin( None, former::ReturnFormed )
+      UserProfileFormer::< UserProfile, former::ReturnStorage >::begin( None, former::ReturnStorage )
     }
 
     #[ inline( always ) ]
@@ -178,7 +178,7 @@ fn main()
     }
 
     #[ inline( always ) ]
-    pub fn end( mut self ) -> Context
+    pub fn end( mut self ) -> Formed
     {
       let on_end = self.on_end.take().unwrap();
       let context = self.context.take();

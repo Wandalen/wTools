@@ -404,9 +404,9 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
 
     qt!
     {
-      let #ident = if self.storage.#ident.is_some()
+      let #ident = if self.#ident.is_some()
       {
-        ::core::option::Option::Some( self.storage.#ident.take().unwrap() )
+        ::core::option::Option::Some( self.#ident.take().unwrap() )
       }
       else
       {
@@ -464,9 +464,9 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
 
     qt!
     {
-      let #ident = if self.storage.#ident.is_some()
+      let #ident = if self.#ident.is_some()
       {
-        self.storage.#ident.take().unwrap()
+        self.#ident.take().unwrap()
       }
       else
       {
@@ -816,7 +816,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let has_debug = attr::has_debug( ast.attrs.iter() )?;
   let example_of_custom_setter = false;
 
-
   /* names */
 
   let name_ident = &ast.ident;
@@ -839,14 +838,17 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     qt!{ #_generics_params, }
   };
 
+// __Formed
+
   // add embedded generic parameters
   let mut extra_generics : syn::Generics = parse_quote!
   {
-    < __FormerContext = #name_ident #generics_ty, __FormerEnd = former::ReturnFormed >
+    < __FormerContext = (), __FormerEnd = former::ReturnStorage >
+    // < __FormerContext = #name_ident #generics_ty, __FormerEnd = former::ReturnStorage >
   };
   extra_generics.where_clause = parse_quote!
   {
-    where __FormerEnd : former::FormingEnd< #name_ident #generics_ty, __FormerContext >,
+    where __FormerEnd : former::FormingEnd< #former_storage_name_ident, __FormerContext, #name_ident #generics_ty >,
   };
   // xxx : write helper to fix bug with where
   let generics_of_former = generics::merge( &generics, &extra_generics );
@@ -922,9 +924,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// Make former, variation of builder pattern to form structure defining values of fields step by step.
       ///
       #[ inline( always ) ]
-      pub fn former() -> #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnFormed >
+      pub fn former() -> #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnStorage >
       {
-        #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnFormed > :: new()
+        #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnStorage > :: new()
       }
     }
 
@@ -937,6 +939,29 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
         /// A field
         #fields_optional,
       )*
+    }
+
+    #[ automatically_derived ]
+    impl #generics_impl #former_storage_name_ident #generics_ty
+    #generics_where
+    {
+
+      ///
+      /// Finish setting options and return formed entity.
+      ///
+      /// `perform` has no effect on method `form`, but change behavior and returned type of method `perform`.
+      ///
+      #[ inline( always ) ]
+      pub fn preform( mut self ) -> #name_ident #generics_ty
+      {
+        #( #fields_form )*
+        let result = #name_ident
+        {
+          #( #fields_names, )*
+        };
+        return result;
+      }
+
     }
 
     impl #generics_impl ::core::default::Default for #former_storage_name_ident #generics_ty
@@ -975,14 +1000,15 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// `perform` has no effect on method `form`, but change behavior and returned type of method `perform`.
       ///
       #[ inline( always ) ]
-      pub fn form( mut self ) -> #name_ident #generics_ty
+      pub fn preform( self ) -> #name_ident #generics_ty
       {
-        #( #fields_form )*
-        let result = #name_ident
-        {
-          #( #fields_names, )*
-        };
-        return result;
+        self.storage.preform()
+        // #( #fields_form )*
+        // let result = #name_ident
+        // {
+        //   #( #fields_names, )*
+        // };
+        // return result;
       }
 
       ///
@@ -1025,7 +1051,17 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// End the process of forming returning original context of forming.
       ///
       #[ inline( always ) ]
-      pub fn end( mut self ) -> __FormerContext
+      pub fn form( mut self ) -> #name_ident #generics_ty
+      {
+        self.end()
+      }
+
+      // xxx : improve documentation
+      ///
+      /// End the process of forming returning original context of forming.
+      ///
+      #[ inline( always ) ]
+      pub fn end( mut self ) -> #name_ident #generics_ty
       {
         let on_end = self.on_end.take().unwrap();
         let context = self.context.take();
@@ -1040,7 +1076,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     }
 
     #[ automatically_derived ]
-    impl #generics_impl #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnFormed >
+    // impl #generics_impl #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnStorage >
+    impl #generics_impl #former_name_ident < #generics_params (), former::ReturnStorage >
     #generics_where
     {
 
@@ -1050,12 +1087,12 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       #[ inline( always ) ]
       pub fn new() -> Self
       {
-        // #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnFormed > :: begin
+        // #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnStorage > :: begin
         Self :: begin
         (
           None,
           None,
-          former::ReturnFormed,
+          former::ReturnStorage,
         )
       }
 
@@ -1075,7 +1112,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 r#"
 impl< Context, End > UserProfileFormer< Context, End >
 where
-  End : former::FormingEnd< UserProfile, Context >,
+  End : former::FormingEnd< UserProfileFormerStorage, Context, UserProfile >,
 {
   pub fn age< Src >( mut self, src : Src ) -> Self
   where

@@ -179,10 +179,10 @@ pub( crate ) mod private
     let err = String::from_utf8( output.stderr )
     .context( "Found invalid UTF-8" )
     .map_err( | e |
-      {
-        report.error = Err( e.into() );
-        Err::< (), () >( () )
-      });
+    {
+      report.error = Err( e.into() );
+      Err::< (), () >( () )
+    });
 
     if err.is_err()
     {
@@ -205,7 +205,8 @@ pub( crate ) mod private
   }
 
   /// Option for `run` function
-  #[ derive( Debug, Former ) ]
+  // #[ derive( Debug, Former ) ]
+  #[ derive( Debug ) ]
   // #[ debug ]
   pub struct Run
   {
@@ -216,6 +217,12 @@ pub( crate ) mod private
     joining_streams : bool,
     env_variable : HashMap< String, String >,
   }
+
+// xxx
+
+
+
+// xxx
 
   impl RunFormer
   {

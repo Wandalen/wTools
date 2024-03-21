@@ -22,19 +22,10 @@ where
   /// Return former.
   #[ inline( always ) ]
   fn former( self )
-  -> HashMapSubformer< K, E, Self, Self, impl FormingEnd< Self, Self > >
+  -> HashMapSubformer< K, E, (), Self, impl FormingEnd< Self, (), Self > >
   {
-    HashMapSubformer::begin( Some( self ), None, ReturnFormed )
+    HashMapSubformer::begin( Some( self ), None, ReturnStorage )
   }
-
-  // /// Return former with a custom context.
-  // #[ inline( always ) ]
-  // fn former_begin< Context, End >( self, context : Context, end : End )
-  // -> HashMapSubformer< K, E, Self, Context, End >
-  // where End : FormingEnd< Self, Context >
-  // {
-  //   HashMapSubformer::begin( Some( self ), Some( context ), end )
-  // }
 
 }
 
@@ -91,11 +82,11 @@ where
 /// ```
 
 #[ derive( Debug, Default ) ]
-pub struct HashMapSubformer< K, E, Formed, Context, End >
+pub struct HashMapSubformer< K, E, Context, Formed, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
   Formed : HashMapLike< K, E > + core::default::Default,
-  End : FormingEnd< Formed, Context >,
+  End : FormingEnd< Formed, Context, Formed >,
 {
   formed : core::option::Option< Formed >,
   context : core::option::Option< Context >,
@@ -104,12 +95,12 @@ where
   _k_phantom : core::marker::PhantomData< K >,
 }
 
-impl< K, E, Formed, Context, End >
-HashMapSubformer< K, E, Formed, Context, End >
+impl< K, E, Context, Formed, End >
+HashMapSubformer< K, E, Context, Formed, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
   Formed : HashMapLike< K, E > + core::default::Default,
-  End : FormingEnd< Formed, Context >,
+  End : FormingEnd< Formed, Context, Formed >,
 {
 
   /// Form current former into target structure.
@@ -150,7 +141,7 @@ where
 
   /// Return context of your struct moving formed there. Should be called after configuring the formed.
   #[ inline( always ) ]
-  pub fn end( mut self ) -> Context
+  pub fn end( mut self ) -> Formed
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
@@ -168,12 +159,8 @@ where
 
 }
 
-// impl< E, Formed > VectorSubformer< E, Formed, Formed, crate::ReturnFormed >
-// where
-//   Formed : VectorLike< E > + core::default::Default,
-
 impl< K, E, Formed >
-HashMapSubformer< K, E, Formed, Formed, crate::ReturnFormed >
+HashMapSubformer< K, E, (), Formed, crate::ReturnStorage >
 where
   K : core::cmp::Eq + core::hash::Hash,
   Formed : HashMapLike< K, E > + core::default::Default,
@@ -187,18 +174,18 @@ where
     (
       None,
       None,
-      crate::ReturnFormed,
+      crate::ReturnStorage,
     )
   }
 
 }
 
-impl< K, E, Formed, Context, End >
-HashMapSubformer< K, E, Formed, Context, End >
+impl< K, E, Context, Formed, End >
+HashMapSubformer< K, E, Context, Formed, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
   Formed : HashMapLike< K, E > + core::default::Default,
-  End : FormingEnd< Formed, Context >,
+  End : FormingEnd< Formed, Context, Formed >,
 {
 
   /// Inserts a key-value pair into the formed. If the formed doesn't exist, it is created.

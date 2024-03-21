@@ -65,12 +65,13 @@ where
 /// # }
 /// ```
 
+// xxx2 : change sequence
 #[ derive( Debug, Default ) ]
 pub struct HashSetSubformer< E, Formed, Context, ContainerEnd >
 where
   E : core::cmp::Eq + core::hash::Hash,
   Formed : HashSetLike< E > + core::default::Default,
-  ContainerEnd : FormingEnd< Formed, Context >,
+  ContainerEnd : FormingEnd< Formed, Context, Formed >,
 {
   formed : core::option::Option< Formed >,
   context : core::option::Option< Context >,
@@ -83,12 +84,12 @@ HashSetSubformer< E, Formed, Context, ContainerEnd >
 where
   E : core::cmp::Eq + core::hash::Hash,
   Formed : HashSetLike< E > + core::default::Default,
-  ContainerEnd : FormingEnd< Formed, Context >,
+  ContainerEnd : FormingEnd< Formed, Context, Formed >,
 {
 
   /// Form current former into target structure.
   #[ inline( always ) ]
-  pub fn form( mut self ) -> Formed
+  pub fn preform( mut self ) -> Formed
   {
     let formed = if self.formed.is_some()
     {
@@ -140,11 +141,27 @@ where
   /// constructed formed or a context that incorporates the formed.
   ///
   #[ inline( always ) ]
-  pub fn end( mut self ) -> Context
+  pub fn form( self ) -> Formed
+  {
+    self.end()
+  }
+
+  /// Finalizes the building process and returns the constructed formed or a context.
+  ///
+  /// This method concludes the building process by applying the `on_end` handler to transform
+  /// the formed or incorporate it into a given context. It's typically called at the end
+  /// of the builder chain to retrieve the final product of the building process.
+  ///
+  /// # Returns
+  /// Depending on the `on_end` handler's implementation, this method can return either the
+  /// constructed formed or a context that incorporates the formed.
+  ///
+  #[ inline( always ) ]
+  pub fn end( mut self ) -> Formed
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
-    let formed = self.form();
+    let formed = self.preform();
     on_end.call( formed, context )
   }
 
@@ -169,17 +186,11 @@ where
 
 }
 
-// impl< E, Formed > VectorSubformer< E, Formed, Formed, crate::ReturnFormed >
-// where
-//   Formed : VectorLike< E > + core::default::Default,
-// {
-
 impl< E, Formed >
-HashSetSubformer< E, Formed, Formed, crate::ReturnFormed >
+HashSetSubformer< E, Formed, (), crate::ReturnStorage >
 where
   E : core::cmp::Eq + core::hash::Hash,
   Formed : HashSetLike< E > + core::default::Default,
-  // ContainerEnd : FormingEnd< Formed, Context >,
 {
 
   /// Initializes a new instance of the builder with default settings.
@@ -197,7 +208,7 @@ where
     (
       None,
       None,
-      crate::ReturnFormed,
+      crate::ReturnStorage,
     )
   }
 
@@ -208,7 +219,7 @@ HashSetSubformer< E, Formed, Context, ContainerEnd >
 where
   E : core::cmp::Eq + core::hash::Hash,
   Formed : HashSetLike< E > + core::default::Default,
-  ContainerEnd : FormingEnd< Formed, Context >,
+  ContainerEnd : FormingEnd< Formed, Context, Formed >,
 {
 
   /// Inserts an element into the set, possibly replacing an existing element.
