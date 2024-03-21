@@ -157,6 +157,11 @@ pub( crate ) mod private
         .kind( Type::Number )
         .optional( true )
         .end()
+      .property( "with_progress" )
+        .hint( "If true, will display progressbar during the tests. Default is `true`. ! Work only with `progress_bar` feature !")
+        .kind( Type::Bool )
+        .optional( true )
+        .end()
       .routine( command::test )
       .end()
 

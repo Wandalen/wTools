@@ -19,11 +19,26 @@ mod private
   // qqq : for Petro : don't use cargo_metadata directly, use facade
   use colored::Colorize;
   // qqq : for Petro : don't do micro imports
-  use prettytable::{ Cell, Row, Table };
+  use prettytable::
+  { 
+    Cell, 
+    Row, 
+    Table,
+  };
   // qqq : for Petro : don't do micro imports
   #[ cfg( feature = "progress_bar" ) ]
-  use indicatif::{ MultiProgress, ProgressBar, ProgressStyle };
-  use prettytable::format::{ FormatBuilder, TableFormat };
+  use indicatif::
+  { 
+    MultiProgress, 
+    ProgressBar, 
+    ProgressStyle 
+  };
+  use prettytable::format::
+  { 
+    Alignment, 
+    FormatBuilder, 
+    TableFormat
+  };
   use rayon::ThreadPoolBuilder;
   use process_tools::process::*;
   use wtools::error::anyhow::{ Error, format_err };
@@ -177,18 +192,21 @@ mod private
         let mut a = true;
         for feature in &all_features
         {
+          let mut c = Cell::new( "+" );
+          c.align( Alignment::CENTER );
           if variant.features.is_empty() && a
           {
             a = false;
-            row.add_cell( Cell::new( "+" ) );
+            row.add_cell( c );
           }
           else if variant.features.contains( feature )
           {
-            row.add_cell( Cell::new( "+" ) );
+            row.add_cell( c );
           }
           else
           {
-            row.add_cell( Cell::new( "" ) );
+            c = Cell::new( "" );
+            row.add_cell( c );
           }
         }
 
@@ -299,9 +317,9 @@ mod private
   {
     phantom : PhantomData< &'a () >,
     #[ cfg( feature = "progress_bar" ) ]
-    multi_progress : &'a MultiProgress,
+    multi_progress : &'a Option< &'a MultiProgress >,
     #[ cfg( feature = "progress_bar" ) ]
-    progress_bar : &'a ProgressBar
+    progress_bar : &'a Option< ProgressBar >
   }
 
 
@@ -509,7 +527,6 @@ mod private
       let mut table = Table::new();
       let format = format();
       table.set_format( format );
-      table.set_format( *prettytable::format::consts::FORMAT_NO_BORDER );
       let mut all_features = BTreeSet::new();
       for variant in self.tests.keys()
       {
@@ -563,18 +580,21 @@ mod private
         let mut a = true;
         for feature in &all_features
         {
+          let mut c = Cell::new( "+" );
+          c.align( Alignment::CENTER );
           if variant.features.is_empty() && a
           {
             a = false;
-            row.add_cell( Cell::new( "+" ) );
+            row.add_cell( c );
           }
           else if variant.features.contains( feature )
           {
-            row.add_cell( Cell::new( "+" ) );
+            row.add_cell( c );
           }
           else
           {
-            row.add_cell( Cell::new( "" ) );
+            c = Cell::new( "" );
+            row.add_cell( c );
           }
         }
 
@@ -623,7 +643,7 @@ mod private
     pub failure_reports : Vec< TestReport >,
   }
 
-  impl std::fmt::Display for TestsReport
+  impl Display for TestsReport
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
@@ -692,19 +712,7 @@ mod private
 
               if let Some( p ) = options.temp_path.clone()
               {
-                // let path = p.join
-                // (
-                //   format!
-                //   (
-                //     "{}_{}_{}_{}",
-                //     options.plan.package.file_name().unwrap().to_string_lossy(),
-                //     optimization,
-                //     channel,
-                //     features.iter().join( "," )
-                //   )
-                // );
                 let path = p.join( path_tools::path::unique_folder_name().unwrap() );
-                // let path = p.join( path_tools::path::unique_folder_name().err_with( || report.clone() ).unwrap() );
                 // qqq : for Petro : rid off unwrap
                 std::fs::create_dir_all( &path ).unwrap();
                 args_t = args_t.temp_directory_path( path );
@@ -712,16 +720,25 @@ mod private
               #[ cfg( feature = "progress_bar" ) ]
               let _s =
               {
-                let spinner = options.progress_bar_feature.as_ref().unwrap().multi_progress.add( ProgressBar::new_spinner().with_message( format!( "{}", variant ) ) );
-                spinner.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
-                spinner
+                let s = if let Some( multi_progress ) = options.progress_bar_feature.as_ref().and_then( | f | f.multi_progress.as_ref() )
+                {
+                  let s = multi_progress.add( ProgressBar::new_spinner().with_message( format!( "{}", variant ) ) );
+                  s.enable_steady_tick( std::time::Duration::from_millis( 100 ) ); 
+                  Some( s )
+                }
+                else 
+                { 
+                  None
+                };
+                // spinner.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
+                s
               };
               let args = args_t.form();
               let temp_dir = args.temp_directory_path.clone();
               let cmd_rep = _run( dir, args );
               r.lock().unwrap().tests.insert( variant.clone(), cmd_rep );
               #[ cfg( feature = "progress_bar" ) ]
-              options.progress_bar_feature.as_ref().unwrap().progress_bar.inc( 1 );
+              options.progress_bar_feature.as_ref().unwrap().progress_bar.as_ref().map( | b | b.inc( 1 ) );
               if let Some( path ) = temp_dir
               {
                 std::fs::remove_dir_all( path ).unwrap();
@@ -762,11 +779,21 @@ mod private
               #[ cfg( feature = "progress_bar" ) ]
               let pb =
               {
-                let pb = args.feature.as_ref().unwrap().multiprocess.add( ProgressBar::new( plan.test_variants.len() as u64 ) );
-                pb.set_style( args.feature.as_ref().unwrap().style.clone() );
-                pb.inc( 0 );
+                let pb = if let Some( feature ) = args.feature.as_ref()
+                {
+                  let pb = feature.multiprocess.add(ProgressBar::new(plan.test_variants.len() as u64));
+                  pb.set_style( args.feature.as_ref().unwrap().style.clone() );
+                  pb.inc( 0 );
+                  Some( pb )
+                }
+                else 
+                { 
+                  None
+                };
                 pb
               };
+              #[ cfg( feature = "progress_bar" ) ]
+              let multi_progress = args.feature.as_ref().map( | f | &f.multiprocess );
               let test_package_options = PackageTestOptions::former().option_temp( args.temp_path.clone() ).plan( plan ).dry( args.dry );
               #[ cfg( feature = "progress_bar" ) ]
               let test_package_options = test_package_options.progress_bar_feature
@@ -774,7 +801,7 @@ mod private
                 PackageTestOptionsProgressBarFeature
                 {
                   phantom : PhantomData,
-                  multi_progress : &args.feature.as_ref().unwrap().multiprocess,
+                  multi_progress : &multi_progress,
                   progress_bar : &pb,
                 }
               );
