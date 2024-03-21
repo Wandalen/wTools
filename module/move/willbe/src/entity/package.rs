@@ -19,7 +19,6 @@ mod private
 
   use workspace::Workspace;
   use _path::AbsolutePath;
-  use version::BumpReport;
 
   use wtools::
   {
@@ -297,24 +296,24 @@ mod private
     pub dry : bool,
   }
 
-  fn perform_git_operations(args : GitThingsOptions ) -> Result< ExtendedGitReport >
+  fn perform_git_operations( o : GitThingsOptions ) -> Result< ExtendedGitReport >
   {
     let mut report = ExtendedGitReport::default();
-    if args.items.is_empty() { return Ok( report ); }
-    let items = args
+    if o.items.is_empty() { return Ok( report ); }
+    let items = o
     .items
     .iter()
     .map
     (
-      | item | item.as_ref().strip_prefix( args.git_root.as_ref() ).map( Path::to_string_lossy )
-      .with_context( || format!( "git_root: {}, item: {}", args.git_root.as_ref().display(), item.as_ref().display() ) )
+      | item | item.as_ref().strip_prefix( o.git_root.as_ref() ).map( Path::to_string_lossy )
+      .with_context( || format!("git_root: {}, item: {}", o.git_root.as_ref().display(), item.as_ref().display() ) )
     )
     .collect::< Result< Vec< _ > > >()?;
-    let res = git::add( &args.git_root, &items, args.dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+    let res = git::add( &o.git_root, &items, o.dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
     report.add = Some( res );
-    let res = git::commit( &args.git_root, &args.message, args.dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+    let res = git::commit( &o.git_root, &o.message, o.dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
     report.commit = Some( res );
-    let res = git::push( &args.git_root, args.dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+    let res = git::push( &o.git_root, o.dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
     report.push = Some( res );
 
     Ok( report )
@@ -331,11 +330,12 @@ mod private
     pub dry : bool,
   }
 
+  /// Represents a planner for publishing a single package.
   #[ derive( Debug, Former ) ]
   #[ perform( fn build() -> PackagePublishInstruction ) ]
   pub struct PublishSinglePackagePlanner
   {
-    workspace : Workspace,
+    workspace_dir : CrateDir,
     package : Package,
     base_temp_dir : Option< PathBuf >,
   }
@@ -345,7 +345,7 @@ mod private
     fn build( self ) -> PackagePublishInstruction
     {
       let crate_dir = self.package.crate_dir();
-      let workspace_root : AbsolutePath = self.workspace.workspace_root().unwrap().try_into().unwrap();
+      let workspace_root : AbsolutePath = self.workspace_dir.absolute_path();
       let pack = cargo::PackOptions
       {
         path : crate_dir.as_ref().into(),
@@ -398,7 +398,7 @@ mod private
   /// # Returns
   ///
   /// * `Result<PublishReport>` - The result of the publishing operation, including information about the publish, version bump, and git operations.
-  pub fn perform_package_publish( args : PackagePublishInstruction ) -> Result< PublishReport >
+  pub fn perform_package_publish( instruction : PackagePublishInstruction ) -> Result< PublishReport >
   {
     let mut report = PublishReport::default();
     let PackagePublishInstruction
@@ -408,7 +408,7 @@ mod private
       mut git_things,
       mut publish,
       dry,
-    } = args;
+    } = instruction;
     pack.dry = dry;
     version_bump.dry = dry;
     git_things.dry = dry;
@@ -427,25 +427,49 @@ mod private
     Ok( report )
   }
 
+  /// `PublishPlan` manages the overall publication process for multiple packages.
+  /// It organizes the necessary details required for publishing each individual package.
+  /// This includes the workspace root directory, any temporary directories used during the process,
+  /// and the set of specific instructions for publishing each package.
   #[ derive( Debug, Former ) ]
   pub struct PublishPlan
   {
-    pub workspace : Workspace,
+    /// `workspace_dir` - This is the root directory of your workspace, containing all the Rust crates
+    /// that make up your package. It is used to locate the packages within your workspace that are meant
+    /// to be published. The value here is represented by `CrateDir` which indicates the directory of the crate.
+    pub workspace_dir : CrateDir,
+
+    /// `base_temp_dir` - This is used for any temporary operations during the publication process, like
+    /// building the package or any other processes that might require the storage of transient data. It's
+    /// optional as not all operations will require temporary storage. The type used is `PathBuf` which allows
+    /// manipulation of the filesystem paths.
     pub base_temp_dir : Option< PathBuf >,
+
+    /// `plans` - This is a vector containing the instructions for publishing each package. Each item
+    /// in the `plans` vector indicates a `PackagePublishInstruction` set for a single package. It outlines
+    /// how to build and where to publish the package amongst other instructions. The `#[setter( false )]`
+    /// attribute indicates that there is no setter method for the `plans` variable and it can only be modified
+    /// within the struct.
     #[ setter( false ) ]
     pub plans : Vec< PackagePublishInstruction >,
   }
 
   impl PublishPlanFormer
   {
+    pub fn option_base_temp_dir( mut self, path : Option< PathBuf > ) -> Self
+    {
+      self.storage.base_temp_dir = path;
+      self
+    }
+    
     pub fn package< IntoPackage >( mut self, package : IntoPackage ) -> Self
     where
       IntoPackage : Into< Package >,
     {
       let mut plan = PublishSinglePackagePlanner::former();
-      if let Some( workspace ) = &self.storage.workspace
+      if let Some( workspace ) = &self.storage.workspace_dir
       {
-        plan = plan.workspace( workspace.clone() );
+        plan = plan.workspace_dir( workspace.clone() );
       }
       if let Some( base_temp_dir ) = &self.storage.base_temp_dir
       {
@@ -572,144 +596,144 @@ mod private
     }
   }
 
-  /// Option for publish single
-  #[ derive( Debug, Former ) ]
-  pub struct PublishSingleOptions< 'a >
-  {
-    package : &'a Package,
-    force : bool,
-    base_temp_dir : &'a Option< PathBuf >,
-    dry : bool,
-  }
-
-  impl < 'a >PublishSingleOptionsFormer< 'a >
-  {
-    pub fn option_base_temp_dir(  mut self, value : impl Into< &'a Option< PathBuf > > ) -> Self
-    {
-      self.storage.base_temp_dir = Some( value.into() );
-      self
-    }
-  }
-
-  /// Publishes a single package without publishing its dependencies.
-  ///
-  /// This function is designed to publish a single package. It does not publish any of the package's dependencies.
-  ///
-  /// Args :
-  ///
-  /// - package - a package that will be published
-  /// - dry - a flag that indicates whether to apply the changes or not
-  ///   - true - do not publish, but only show what steps should be taken
-  ///   - false - publishes the package
-  ///
-  /// Returns :
-  /// Returns a result containing a report indicating the result of the operation.
-  pub fn publish_single< 'a >( args : PublishSingleOptions< 'a > ) -> Result< PublishReport, ( PublishReport, wError ) >
-  {
-    let mut report = PublishReport::default();
-    if args.package.local_is().map_err( | err | ( report.clone(), format_err!( err ) ) )?
-    {
-      return Ok( report );
-    }
-
-    let package_dir = &args.package.crate_dir();
-    let temp_dir = args.base_temp_dir.as_ref().map
-    (
-      | p |
-      {
-        let path = p.join( package_dir.as_ref().file_name().unwrap() );
-        std::fs::create_dir_all( &path ).unwrap();
-        path
-      }
-    );
-
-    let pack_args = cargo::PackOptions::former()
-    .path( package_dir.absolute_path().as_ref().to_path_buf() )
-    .option_temp_path( temp_dir.clone() )
-    .dry( args.dry )
-    .form();
-    let output = cargo::pack( pack_args ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
-    if output.err.contains( "not yet committed")
-    {
-      return Err(( report, format_err!( "Some changes wasn't committed. Please, commit or stash that changes and try again." ) ));
-    }
-    report.get_info = Some( output );
-
-    if args.force || publish_need( &args.package, temp_dir.clone() ).map_err( | err | ( report.clone(), format_err!( err ) ) )?
-    {
-      report.publish_required = true;
-
-      let mut files_changed_for_bump = vec![];
-      let mut manifest = args.package.manifest().map_err( | err | ( report.clone(), format_err!( err ) ) )?;
-      // bump a version in the package manifest
-      let bump_report = version::bump( &mut manifest, args.dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
-      files_changed_for_bump.push( args.package.manifest_path() );
-      let new_version = bump_report.new_version.clone().unwrap();
-
-      let package_name = args.package.name().map_err( | err | ( report.clone(), format_err!( err ) ) )?;
-
-      // bump the package version in dependents (so far, only workspace)
-      let workspace_manifest_dir : AbsolutePath = Workspace::with_crate_dir( args.package.crate_dir() ).map_err( | err | ( report.clone(), err ) )?.workspace_root().map_err( | err | ( report.clone(), format_err!( err ) ) )?.try_into().unwrap();
-      let workspace_manifest_path = workspace_manifest_dir.join( "Cargo.toml" );
-
-      // qqq : should be refactored
-      if !args.dry
-      {
-        let mut workspace_manifest = manifest::open( workspace_manifest_path.clone() ).map_err( | e | ( report.clone(), format_err!( e ) ) )?;
-        let workspace_manifest_data = workspace_manifest.manifest_data.as_mut().ok_or_else( || ( report.clone(), format_err!( PackageError::Manifest( ManifestError::EmptyManifestData ) ) ) )?;
-        workspace_manifest_data
-        .get_mut( "workspace" )
-        .and_then( | workspace | workspace.get_mut( "dependencies" ) )
-        .and_then( | dependencies | dependencies.get_mut( &package_name ) )
-        .map
-        (
-          | dependency |
-          {
-            if let Some( previous_version ) = dependency.get( "version" ).and_then( | v | v.as_str() ).map( | v | v.to_string() )
-            {
-              if previous_version.starts_with('~')
-              {
-                dependency[ "version" ] = value( format!( "~{new_version}" ) );
-              }
-              else
-              {
-                dependency[ "version" ] = value( new_version.clone() );
-              }
-            }
-          }
-        )
-        .unwrap();
-        workspace_manifest.store().map_err( | err | ( report.clone(), err.into() ) )?;
-      }
-
-      files_changed_for_bump.push( workspace_manifest_path );
-      let files_changed_for_bump : Vec< _ > = files_changed_for_bump.into_iter().unique().collect();
-      let objects_to_add : Vec< _ > = files_changed_for_bump.iter().map( | f | f.as_ref().strip_prefix( &workspace_manifest_dir ).unwrap().to_string_lossy() ).collect();
-
-      report.bump = Some( version::ExtendedBumpReport { base : bump_report, changed_files : files_changed_for_bump.clone() } );
-
-      let commit_message = format!( "{package_name}-v{new_version}" );
-      let res = git::add( workspace_manifest_dir, objects_to_add, args.dry ).map_err( | e | ( report.clone(), e ) )?;
-      report.add = Some( res );
-      let res = git::commit( package_dir, commit_message, args.dry ).map_err( | e | ( report.clone(), e ) )?;
-      report.commit = Some( res );
-      let res = git::push( package_dir, args.dry ).map_err( | e | ( report.clone(), e ) )?;
-      report.push = Some( res );
-
-      let res = cargo::publish
-      (
-        cargo::PublishOptions::former()
-        .path( package_dir.absolute_path().as_ref().to_path_buf() )
-        .option_temp_path( temp_dir )
-        .dry( args.dry )
-        .form()
-      )
-      .map_err( | e | ( report.clone(), e ) )?;
-      report.publish = Some( res );
-    }
-
-    Ok( report )
-  }
+  // /// Option for publish single
+  // #[ derive( Debug, Former ) ]
+  // pub struct PublishSingleOptions< 'a >
+  // {
+  //   package : &'a Package,
+  //   force : bool,
+  //   base_temp_dir : &'a Option< PathBuf >,
+  //   dry : bool,
+  // }
+  //
+  // impl < 'a >PublishSingleOptionsFormer< 'a >
+  // {
+  //   pub fn option_base_temp_dir(  mut self, value : impl Into< &'a Option< PathBuf > > ) -> Self
+  //   {
+  //     self.storage.base_temp_dir = Some( value.into() );
+  //     self
+  //   }
+  // }
+  //
+  // /// Publishes a single package without publishing its dependencies.
+  // ///
+  // /// This function is designed to publish a single package. It does not publish any of the package's dependencies.
+  // ///
+  // /// Args :
+  // ///
+  // /// - package - a package that will be published
+  // /// - dry - a flag that indicates whether to apply the changes or not
+  // ///   - true - do not publish, but only show what steps should be taken
+  // ///   - false - publishes the package
+  // ///
+  // /// Returns :
+  // /// Returns a result containing a report indicating the result of the operation.
+  // pub fn publish_single( o : PublishSingleOptions< '_ > ) -> Result< PublishReport, ( PublishReport, wError ) >
+  // {
+  //   let mut report = PublishReport::default();
+  //   if o.package.local_is().map_err( | err | ( report.clone(), format_err!( err ) ) )?
+  //   {
+  //     return Ok( report );
+  //   }
+  //
+  //   let package_dir = &o.package.crate_dir();
+  //   let temp_dir = o.base_temp_dir.as_ref().map
+  //   (
+  //     | p |
+  //     {
+  //       let path = p.join( package_dir.as_ref().file_name().unwrap() );
+  //       std::fs::create_dir_all( &path ).unwrap();
+  //       path
+  //     }
+  //   );
+  //
+  //   let pack_args = cargo::PackOptions::former()
+  //   .path( package_dir.absolute_path().as_ref().to_path_buf() )
+  //   .option_temp_path( temp_dir.clone() )
+  //   .dry( o.dry )
+  //   .form();
+  //   let output = cargo::pack( pack_args ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
+  //   if output.err.contains( "not yet committed")
+  //   {
+  //     return Err(( report, format_err!( "Some changes wasn't committed. Please, commit or stash that changes and try again." ) ));
+  //   }
+  //   report.get_info = Some( output );
+  //
+  //   if o.force || publish_need( &o.package, temp_dir.clone() ).map_err( | err | ( report.clone(), format_err!( err ) ) )?
+  //   {
+  //     report.publish_required = true;
+  //
+  //     let mut files_changed_for_bump = vec![];
+  //     let mut manifest = o.package.manifest().map_err( | err | ( report.clone(), format_err!( err ) ) )?;
+  //     // bump a version in the package manifest
+  //     let bump_report = version::bump( &mut manifest, o.dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
+  //     files_changed_for_bump.push( o.package.manifest_path() );
+  //     let new_version = bump_report.new_version.clone().unwrap();
+  //
+  //     let package_name = o.package.name().map_err( |err | ( report.clone(), format_err!( err ) ) )?;
+  //
+  //     // bump the package version in dependents (so far, only workspace)
+  //     let workspace_manifest_dir : AbsolutePath = Workspace::with_crate_dir( o.package.crate_dir() ).map_err( | err | ( report.clone(), err ) )?.workspace_root().map_err( | err | ( report.clone(), format_err!( err ) ) )?.try_into().unwrap();
+  //     let workspace_manifest_path = workspace_manifest_dir.join( "Cargo.toml" );
+  //
+  //     // qqq : should be refactored
+  //     if !o.dry
+  //     {
+  //       let mut workspace_manifest = manifest::open( workspace_manifest_path.clone() ).map_err( | e | ( report.clone(), format_err!( e ) ) )?;
+  //       let workspace_manifest_data = workspace_manifest.manifest_data.as_mut().ok_or_else( || ( report.clone(), format_err!( PackageError::Manifest( ManifestError::EmptyManifestData ) ) ) )?;
+  //       workspace_manifest_data
+  //       .get_mut( "workspace" )
+  //       .and_then( | workspace | workspace.get_mut( "dependencies" ) )
+  //       .and_then( | dependencies | dependencies.get_mut( &package_name ) )
+  //       .map
+  //       (
+  //         | dependency |
+  //         {
+  //           if let Some( previous_version ) = dependency.get( "version" ).and_then( | v | v.as_str() ).map( | v | v.to_string() )
+  //           {
+  //             if previous_version.starts_with('~')
+  //             {
+  //               dependency[ "version" ] = value( format!( "~{new_version}" ) );
+  //             }
+  //             else
+  //             {
+  //               dependency[ "version" ] = value( new_version.clone() );
+  //             }
+  //           }
+  //         }
+  //       )
+  //       .unwrap();
+  //       workspace_manifest.store().map_err( | err | ( report.clone(), err.into() ) )?;
+  //     }
+  //
+  //     files_changed_for_bump.push( workspace_manifest_path );
+  //     let files_changed_for_bump : Vec< _ > = files_changed_for_bump.into_iter().unique().collect();
+  //     let objects_to_add : Vec< _ > = files_changed_for_bump.iter().map( | f | f.as_ref().strip_prefix( &workspace_manifest_dir ).unwrap().to_string_lossy() ).collect();
+  //
+  //     report.bump = Some( version::ExtendedBumpReport { base : bump_report, changed_files : files_changed_for_bump.clone() } );
+  //
+  //     let commit_message = format!( "{package_name}-v{new_version}" );
+  //     let res = git::add( workspace_manifest_dir, objects_to_add, o.dry ).map_err( | e | ( report.clone(), e ) )?;
+  //     report.add = Some( res );
+  //     let res = git::commit( package_dir, commit_message, o.dry ).map_err( | e | ( report.clone(), e ) )?;
+  //     report.commit = Some( res );
+  //     let res = git::push( package_dir, o.dry ).map_err( | e | ( report.clone(), e ) )?;
+  //     report.push = Some( res );
+  //
+  //     let res = cargo::publish
+  //     (
+  //       cargo::PublishOptions::former()
+  //       .path( package_dir.absolute_path().as_ref().to_path_buf() )
+  //       .option_temp_path( temp_dir )
+  //       .dry( o.dry )
+  //       .form()
+  //     )
+  //     .map_err( | e | ( report.clone(), e ) )?;
+  //     report.publish = Some( res );
+  //   }
+  //
+  //   Ok( report )
+  // }
 
   /// Sorting variants for dependencies.
   #[ derive( Debug, Copy, Clone ) ]
@@ -949,8 +973,8 @@ crate::mod_interface!
   protected use perform_packages_publish;
 
   protected use PublishReport;
-  protected use publish_single;
-  protected use PublishSingleOptions;
+  // protected use publish_single;
+  // protected use PublishSingleOptions;
   protected use Package;
   protected use PackageError;
 

@@ -188,8 +188,12 @@ mod private
   #[ derive( Debug, Default, Clone ) ]
   pub struct ExtendedBumpReport
   {
-    /// Report base.
-    pub base : BumpReport,
+    /// Pacakge name.
+    pub name : Option< String >,
+    /// Package old version.
+    pub old_version : Option< String >,
+    /// Package new version.
+    pub new_version : Option< String >,
     /// Files that should(already) changed for bump.
     pub changed_files : Vec< AbsolutePath >
   }
@@ -198,15 +202,20 @@ mod private
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
-      let Self { base, changed_files } = self;
+      let Self { name, old_version, new_version, changed_files } = self;
       if self.changed_files.is_empty()
       {
-        f.write_str( "Files were not changed during bumping the version" )?;
+        write!( f, "Files were not changed during bumping the version" )?;
         return Ok( () )
       }
 
       let files = changed_files.iter().map( | f | f.as_ref().display() ).join( ",\n    " );
-      f.write_fmt( format_args!( "{base}\n  changed files :\n    {files}\n" ) )?;
+      match ( name, old_version, new_version )
+      {
+        ( Some( name ), Some( old_version ), Some( new_version ) )
+        => writeln!( f, "`{name}` bumped from {old_version} to {new_version}\n  changed files :\n    {files}" ),
+        _ => writeln!( f, "Bump failed" )
+      }?;
 
       Ok( () )
     }
@@ -229,15 +238,15 @@ mod private
     let package_path = args.crate_dir.absolute_path().join( "Cargo.toml" );
     let package = Package::try_from( package_path.clone() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
     let name = package.name().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
-    report.base.name = Some( name.clone() );
+    report.name = Some( name.clone() );
     let package_version = package.version().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
     let current_version = version::Version::try_from( package_version.as_str() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
     if current_version > args.new_version
     {
       return Err( format_err!( "{report:?}\nThe current version of the package is higher than need to be set\n\tpackage: {name}\n\tcurrent_version: {current_version}\n\tnew_version: {}", args.new_version ) );
     }
-    report.base.old_version = Some( args.old_version.to_string() );
-    report.base.new_version = Some( args.new_version.to_string() );
+    report.old_version = Some( args.old_version.to_string() );
+    report.new_version = Some( args.new_version.to_string() );
 
     let mut package_manifest = package.manifest().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
     if !args.dry
