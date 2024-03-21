@@ -171,6 +171,7 @@ fn plan()
   .channels([ Channel::Stable, Channel::Nightly ])
   .optimizations([ Optimization::Debug, Optimization::Release ])
   .with_none_features( true )
+  .with_progress( false )
   .form();
 
   let rep = test( args, true ).unwrap().succses_reports[ 0 ].clone().tests;
