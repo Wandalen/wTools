@@ -8,11 +8,15 @@ mod private
     fmt,
     str::FromStr,
   };
+  use std::fmt::Formatter;
   use toml_edit::value;
   use semver::Version as SemVersion;
 
   use wtools::error::for_app::Result;
   use manifest::Manifest;
+  use _path::AbsolutePath;
+  use package::Package;
+  use wtools::{ error::anyhow::format_err, iter::Itertools };
 
   /// Wrapper for a SemVer structure
   #[ derive( Debug, Clone, Eq, PartialEq, Ord, PartialOrd ) ]
@@ -164,6 +168,114 @@ mod private
 
     Ok( report )
   }
+
+  // qqq : we have to replace the implementation above with the implementation below, don't we?
+
+  /// Options for version bumping.
+  ///
+  /// This struct is used to specify the options for version bumping operations.
+  #[ derive( Debug ) ]
+  pub struct BumpOptions
+  {
+    pub crate_dir : CrateDir,
+    pub old_version : Version,
+    pub new_version : Version,
+    pub dependencies : Vec< CrateDir >,
+    pub dry : bool,
+  }
+
+  /// Report about a changing version.
+  #[ derive( Debug, Default, Clone ) ]
+  pub struct ExtendedBumpReport
+  {
+    /// Report base.
+    pub base : BumpReport,
+    /// Files that should(already) changed for bump.
+    pub changed_files : Vec< AbsolutePath >
+  }
+
+  impl std::fmt::Display for ExtendedBumpReport
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
+      let Self { base, changed_files } = self;
+      if self.changed_files.is_empty()
+      {
+        f.write_str( "Files were not changed during bumping the version" )?;
+        return Ok( () )
+      }
+
+      let files = changed_files.iter().map( | f | f.as_ref().display() ).join( ",\n    " );
+      f.write_fmt( format_args!( "{base}\n  changed files :\n    {files}\n" ) )?;
+
+      Ok( () )
+    }
+  }
+
+
+  /// Bumps the version of a package and its dependencies.
+  ///
+  /// # Arguments
+  ///
+  /// * `args` - The options for version bumping.
+  ///
+  /// # Returns
+  ///
+  /// Returns a result containing the extended bump report if successful.
+  ///
+  pub fn version_bump( args : BumpOptions ) -> Result< ExtendedBumpReport >
+  {
+    let mut report = ExtendedBumpReport::default();
+    let package_path = args.crate_dir.absolute_path().join( "Cargo.toml" );
+    let package = Package::try_from( package_path.clone() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+    let name = package.name().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+    report.base.name = Some( name.clone() );
+    let package_version = package.version().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+    let current_version = version::Version::try_from( package_version.as_str() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+    if current_version > args.new_version
+    {
+      return Err( format_err!( "{report:?}\nThe current version of the package is higher than need to be set\n\tpackage: {name}\n\tcurrent_version: {current_version}\n\tnew_version: {}", args.new_version ) );
+    }
+    report.base.old_version = Some( args.old_version.to_string() );
+    report.base.new_version = Some( args.new_version.to_string() );
+
+    let mut package_manifest = package.manifest().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+    if !args.dry
+    {
+      let data = package_manifest.manifest_data.as_mut().unwrap();
+      data[ "package" ][ "version" ] = value( &args.new_version.to_string() );
+      package_manifest.store()?;
+    }
+    report.changed_files = vec![ package_path ];
+    let new_version = &args.new_version.to_string();
+    for dep in &args.dependencies
+    {
+      let manifest_path = dep.absolute_path().join( "Cargo.toml" );
+      let manifest = manifest::open( manifest_path.clone() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+      let data = package_manifest.manifest_data.as_mut().unwrap();
+      let item = if let Some( item ) = data.get_mut( "package" ) { item }
+      else if let Some( item ) = data.get_mut( "workspace" ) { item }
+      else { return Err( format_err!( "{report:?}\nThe manifest nor the package and nor the workspace" ) ); };
+      if let Some( dependency ) = item.get_mut( "dependencies" ).and_then( | ds | ds.get_mut( &name ) )
+      {
+        if let Some( previous_version ) = dependency.get( "version" ).and_then( | v | v.as_str() ).map( | v | v.to_string() )
+        {
+          if previous_version.starts_with('~')
+          {
+            dependency[ "version" ] = value( format!( "~{new_version}" ) );
+          }
+          else
+          {
+            dependency[ "version" ] = value( new_version.clone() );
+          }
+        }
+      }
+      if !args.dry { manifest.store().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?; }
+      report.changed_files.push( manifest_path );
+    }
+
+    Ok( report )
+  }
 }
 
 //
@@ -178,4 +290,11 @@ crate::mod_interface!
 
   /// Bump version.
   protected use bump;
+
+  /// Options for version bumping.
+  protected use BumpOptions;
+  /// Report about a changing version with list of files that was changed.
+  protected use ExtendedBumpReport;
+  /// Bumps the version of a package and its dependencies.
+  protected use version_bump;
 }

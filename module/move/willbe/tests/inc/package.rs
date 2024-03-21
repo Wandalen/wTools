@@ -3,8 +3,9 @@ use the_module::
 {
   Workspace,
   _path::AbsolutePath,
-  package::{Plan, PublishPlan},
+  package::PublishPlan,
 };
+use willbe::package::perform_packages_publish;
 
 #[ test ]
 fn plan_publish_many_packages()
@@ -17,143 +18,155 @@ fn plan_publish_many_packages()
   .packages([ package ])
   .form();
   dbg!( &mega_plan.plans );
-  // [module/move/willbe/tests/inc/package.rs:19:3] &mega_plan.plans = [
-  //     PublishSinglePackagePlan {
-  //         pack: CargoPackagePlan {
-  //             crate_dir: CrateDir(
-  //                 AbsolutePath(
-  //                     ".../wTools/module/move/wca",
-  //                 ),
-  //             ),
-  //             base_temp_dir: Some(
-  //                 "temp",
-  //             ),
-  //         },
-  //         version_bump: VersionBumpPlan {
-  //             crate_dir: CrateDir(
-  //                 AbsolutePath(
-  //                     ".../wTools/module/move/wca",
-  //                 ),
-  //             ),
-  //             old_version: Version(
-  //                 Version {
-  //                     major: 0,
-  //                     minor: 12,
-  //                     patch: 0,
-  //                 },
-  //             ),
-  //             new_version: Version(
-  //                 Version {
-  //                     major: 0,
-  //                     minor: 13,
-  //                     patch: 0,
-  //                 },
-  //             ),
-  //             dependencies: [
-  //                 CrateDir(
-  //                     AbsolutePath(
-  //                         ".../wTools",
-  //                     ),
-  //                 ),
-  //             ],
-  //         },
-  //         git_things: GitThingsPlan {
-  //             git_root: AbsolutePath(
-  //                 ".../wTools",
-  //             ),
-  //             items: [
-  //                 AbsolutePath(
-  //                     ".../wTools/Cargo.toml",
-  //                 ),
-  //                 AbsolutePath(
-  //                     ".../wTools/module/move/wca/Cargo.toml",
-  //                 ),
-  //             ],
-  //             message: "wca-v0.13.0",
-  //         },
-  //         publish: CargoPublishPlan {
-  //             crate_dir: CrateDir(
-  //                 AbsolutePath(
-  //                     ".../wTools/module/move/wca",
-  //                 ),
-  //             ),
-  //             base_temp_dir: Some(
-  //                 "temp",
-  //             ),
-  //         },
-  //     },
-  // ]
-  let mega_plan = mega_plan.perform( true );
+//   [module\move\willbe\tests\inc\package.rs:21:3] &mega_plan.plans = [
+//   PackagePublishInstruction {
+//     pack: PackOptions {
+//       path: ".../wTools/module/move/wca",
+//       temp_path: Some(
+//         "temp",
+//       ),
+//       dry: true,
+//     },
+//     version_bump: BumpOptions {
+//       crate_dir: CrateDir(
+//         AbsolutePath(
+//           ".../wTools/module/move/wca",
+//         ),
+//       ),
+//       old_version: Version(
+//         Version {
+//           major: 0,
+//           minor: 14,
+//           patch: 0,
+//         },
+//       ),
+//       new_version: Version(
+//         Version {
+//           major: 0,
+//           minor: 15,
+//           patch: 0,
+//         },
+//       ),
+//       dependencies: [
+//         CrateDir(
+//           AbsolutePath(
+//             ".../wTools",
+//           ),
+//         ),
+//       ],
+//       dry: true,
+//     },
+//     git_things: GitThingsOptions {
+//       git_root: AbsolutePath(
+//         ".../wTools",
+//       ),
+//       items: [
+//         AbsolutePath(
+//           ".../wTools/Cargo.toml",
+//         ),
+//         AbsolutePath(
+//           ".../wTools/module/move/wca/Cargo.toml",
+//         ),
+//       ],
+//       message: "wca-v0.15.0",
+//       dry: true,
+//     },
+//     publish: PublishOptions {
+//       path: ".../wTools/module/move/wca",
+//       temp_path: Some(
+//         "temp",
+//       ),
+//       dry: true,
+//     },
+//     dry: true,
+//   },
+// ]
+  let mega_plan = perform_packages_publish( mega_plan );
   dbg!( mega_plan );
-  // [module/move/willbe/tests/inc/package.rs:21:3] mega_plan = Ok(
-  //     [
-  //         PublishReport {
-  //             get_info: Some(
-  //                 CmdReport {
-  //                     command: "cargo package --target-dir temp",
-  //                     path: ".../wTools/module/move/wca",
-  //                     out: "",
-  //                     err: "",
-  //                 },
-  //             ),
-  //             publish_required: true,
-  //             bump: Some(
-  //                 ExtendedBumpReport {
-  //                     base: BumpReport {
-  //                         name: Some(
-  //                             "wca",
-  //                         ),
-  //                         old_version: Some(
-  //                             "0.12.0",
-  //                         ),
-  //                         new_version: Some(
-  //                             "0.13.0",
-  //                         ),
-  //                     },
-  //                     changed_files: [
-  //                         AbsolutePath(
-  //                             ".../wTools/module/move/wca/Cargo.toml",
-  //                         ),
-  //                         AbsolutePath(
-  //                             ".../wTools/Cargo.toml",
-  //                         ),
-  //                     ],
-  //                 },
-  //             ),
-  //             add: Some(
-  //                 CmdReport {
-  //                     command: "git add Cargo.toml module/move/wca/Cargo.toml",
-  //                     path: ".../wTools",
-  //                     out: "",
-  //                     err: "",
-  //                 },
-  //             ),
-  //             commit: Some(
-  //                 CmdReport {
-  //                     command: "git commit -m wca-v0.13.0",
-  //                     path: ".../wTools",
-  //                     out: "",
-  //                     err: "",
-  //                 },
-  //             ),
-  //             push: Some(
-  //                 CmdReport {
-  //                     command: "git push",
-  //                     path: ".../wTools",
-  //                     out: "",
-  //                     err: "",
-  //                 },
-  //             ),
-  //             publish: Some(
-  //                 CmdReport {
-  //                     command: "cargo publish --target-dir temp",
-  //                     path: ".../wTools/module/move/wca",
-  //                     out: "",
-  //                     err: "",
-  //                 },
-  //             ),
-  //         },
-  //     ],
-  // )
+//   [module\move\willbe\tests\inc\package.rs:89:3] mega_plan = Ok(
+//   [
+//     PublishReport {
+//       get_info: Some(
+//         Report {
+//           command: "cargo package --target-dir temp",
+//           current_path: ".../wTools/module/move/wca",
+//           out: "",
+//           err: "",
+//           error: Ok(
+//             (),
+//           ),
+//         },
+//       ),
+//       publish_required: true,
+//       bump: Some(
+//         ExtendedBumpReport {
+//           base: BumpReport {
+//             name: Some(
+//               "wca",
+//             ),
+//             old_version: Some(
+//               "0.14.0",
+//             ),
+//             new_version: Some(
+//               "0.15.0",
+//             ),
+//           },
+//           changed_files: [
+//             AbsolutePath(
+//               ".../wTools/module/move/wca/Cargo.toml",
+//             ),
+//             AbsolutePath(
+//               ".../wTools/Cargo.toml",
+//             ),
+//           ],
+//         },
+//       ),
+//       add: Some(
+//         Report {
+//           command: "git add Cargo.toml module/move/wca/Cargo.toml",
+//           current_path: ".../wTools",
+//           out: "",
+//           err: "",
+//           error: Ok(
+//             (),
+//           ),
+//         },
+//       ),
+//       commit: Some(
+//         Report {
+//           command: "git commit -m wca-v0.15.0",
+//           current_path: ".../wTools",
+//           out: "",
+//           err: "",
+//           error: Ok(
+//             (),
+//           ),
+//         },
+//       ),
+//       push: Some(
+//         Report {
+//           command: "git push",
+//           current_path: ".../wTools",
+//           out: "",
+//           err: "",
+//           error: Ok(
+//             (),
+//           ),
+//         },
+//       ),
+//       publish: Some(
+//         Report {
+//           command: "cargo publish --target-dir temp",
+//           current_path: ".../wTools/module/move/wca",
+//           out: "",
+//           err: "",
+//           error: Ok(
+//             (),
+//           ),
+//         },
+//       ),
+//     },
+//   ],
+// )
   panic!()
 }

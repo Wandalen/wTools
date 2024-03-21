@@ -280,100 +280,6 @@ mod private
     }
   }
 
-  pub trait Plan
-  {
-    type Report;
-    fn perform( &self, dry : bool ) -> Result< Self::Report >;
-  }
-
-  #[ derive( Debug ) ]
-  pub struct CargoPackageOptions
-  {
-    pub crate_dir : CrateDir,
-    pub base_temp_dir : Option< PathBuf >,
-  }
-
-  impl Plan for CargoPackageOptions
-  {
-    type Report = process::Report;
-    fn perform( &self, dry : bool ) -> Result< Self::Report >
-    {
-      let args = cargo::PackOptions::former()
-      .path( self.crate_dir.as_ref() )
-      .option_temp_path( self.base_temp_dir.clone() )
-      .dry( dry )
-      .form();
-
-      Ok( cargo::pack( args )? )
-    }
-  }
-
-  #[ derive( Debug ) ]
-  pub struct VersionBumpOptions
-  {
-    pub crate_dir : CrateDir,
-    pub old_version : version::Version,
-    pub new_version : version::Version,
-    pub dependencies : Vec< CrateDir >,
-  }
-
-  impl Plan for VersionBumpOptions
-  {
-    type Report = ExtendedBumpReport;
-    fn perform( &self, dry : bool ) -> Result< Self::Report >
-    {
-      let mut report = Self::Report::default();
-      let package_path = self.crate_dir.absolute_path().join( "Cargo.toml" );
-      let package = Package::try_from( package_path.clone() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
-      let name = package.name().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
-      report.base.name = Some( name.clone() );
-      let package_version = package.version().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
-      let current_version = version::Version::try_from( package_version.as_str() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
-      if current_version > self.new_version
-      {
-        return Err( format_err!( "{report:?}\nThe current version of the package is higher than need to be set\n\tpackage: {name}\n\tcurrent_version: {current_version}\n\tnew_version: {}", self.new_version ) );
-      }
-      report.base.old_version = Some( self.old_version.to_string() );
-      report.base.new_version = Some( self.new_version.to_string() );
-
-      let mut package_manifest = package.manifest().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
-      if !dry
-      {
-        let data = package_manifest.manifest_data.as_mut().unwrap();
-        data[ "package" ][ "version" ] = value( &self.new_version.to_string() );
-        package_manifest.store()?;
-      }
-      report.changed_files = vec![ package_path ];
-      let new_version = &self.new_version.to_string();
-      for dep in &self.dependencies
-      {
-        let manifest_path = dep.absolute_path().join( "Cargo.toml" );
-        let manifest = manifest::open( manifest_path.clone() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
-        let data = package_manifest.manifest_data.as_mut().unwrap();
-        let item = if let Some( item ) = data.get_mut( "package" ) { item }
-        else if let Some( item ) = data.get_mut( "workspace" ) { item }
-        else { return Err( format_err!( "{report:?}\nThe manifest nor the package and nor the workspace" ) ); };
-        if let Some( dependency ) = item.get_mut( "dependencies" ).and_then( | ds | ds.get_mut( &name ) )
-        {
-          if let Some( previous_version ) = dependency.get( "version" ).and_then( | v | v.as_str() ).map( | v | v.to_string() )
-          {
-            if previous_version.starts_with('~')
-            {
-              dependency[ "version" ] = value( format!( "~{new_version}" ) );
-            }
-            else
-            {
-              dependency[ "version" ] = value( new_version.clone() );
-            }
-          }
-        }
-        if !dry { manifest.store().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?; }
-        report.changed_files.push( manifest_path );
-      }
-
-      Ok( report )
-    }
-  }
 
   #[ derive( Debug, Default, Clone ) ]
   pub struct ExtendedGitReport
@@ -389,65 +295,41 @@ mod private
     pub git_root : AbsolutePath,
     pub items : Vec< AbsolutePath >,
     pub message : String,
+    pub dry : bool,
   }
 
-  impl Plan for GitThingsOptions
+  fn perform_git_operations(args : GitThingsOptions ) -> Result< ExtendedGitReport >
   {
-    type Report = ExtendedGitReport;
-    fn perform( &self, dry : bool ) -> Result< Self::Report >
-    {
-      let mut report = Self::Report::default();
-      if self.items.is_empty() { return Ok( report ); }
-      let items = self
-      .items
-      .iter()
-      .map
-      (
-        | item | item.as_ref().strip_prefix( self.git_root.as_ref() ).map( Path::to_string_lossy )
-        .with_context( || format!( "git_root: {}, item: {}", self.git_root.as_ref().display(), item.as_ref().display() ) )
-      )
-      .collect::< Result< Vec< _ > > >()?;
-      let res = git::add( &self.git_root, &items, dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
-      report.add = Some( res );
-      let res = git::commit( &self.git_root, &self.message, dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
-      report.commit = Some( res );
-      let res = git::push( &self.git_root, dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
-      report.push = Some( res );
+    let mut report = ExtendedGitReport::default();
+    if args.items.is_empty() { return Ok( report ); }
+    let items = args
+    .items
+    .iter()
+    .map
+    (
+      | item | item.as_ref().strip_prefix( args.git_root.as_ref() ).map( Path::to_string_lossy )
+      .with_context( || format!( "git_root: {}, item: {}", args.git_root.as_ref().display(), item.as_ref().display() ) )
+    )
+    .collect::< Result< Vec< _ > > >()?;
+    let res = git::add( &args.git_root, &items, args.dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+    report.add = Some( res );
+    let res = git::commit( &args.git_root, &args.message, args.dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+    report.commit = Some( res );
+    let res = git::push( &args.git_root, args.dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+    report.push = Some( res );
 
-      Ok( report )
-    }
-  }
-
-  #[ derive( Debug ) ]
-  pub struct CargoPublishOptions
-  {
-    pub crate_dir : CrateDir,
-    pub base_temp_dir : Option< PathBuf >,
-  }
-
-  impl Plan for CargoPublishOptions
-  {
-    type Report = process::Report;
-    fn perform( &self, dry : bool ) -> Result< Self::Report >
-    {
-      let args = cargo::PublishOptions::former()
-      .path( self.crate_dir.as_ref() )
-      .option_temp_path( self.base_temp_dir.clone() )
-      .dry( dry )
-      .form();
-
-      Ok( cargo::publish( args )? )
-    }
+    Ok( report )
   }
 
   #[ derive( Debug ) ]
   pub struct PackagePublishInstruction
   {
-    pub pack : CargoPackageOptions,
-    pub version_bump : VersionBumpOptions,
+    pub pack : cargo::PackOptions,
+    pub version_bump : version::BumpOptions,
     // qqq : rename
     pub git_things : GitThingsOptions,
-    pub publish : CargoPublishOptions,
+    pub publish : cargo::PublishOptions,
+    pub dry : bool,
   }
 
   #[ derive( Debug, Former ) ]
@@ -465,32 +347,36 @@ mod private
     {
       let crate_dir = self.package.crate_dir();
       let workspace_root : AbsolutePath = self.workspace.workspace_root().unwrap().try_into().unwrap();
-      let pack = CargoPackageOptions
+      let pack = cargo::PackOptions
       {
-        crate_dir : crate_dir.clone(),
-        base_temp_dir : self.base_temp_dir.clone(),
+        path : crate_dir.as_ref().into(),
+        temp_path : self.base_temp_dir.clone(),
+        dry : true,
       };
       let old_version : version::Version = self.package.version().as_ref().unwrap().try_into().unwrap();
       let new_version = old_version.clone().bump();
       // bump the package version in dependents (so far, only workspace)
       let dependencies = vec![ CrateDir::try_from( workspace_root.clone() ).unwrap() ];
-      let version_bump = VersionBumpOptions
+      let version_bump = version::BumpOptions
       {
         crate_dir : crate_dir.clone(),
         old_version : old_version.clone(),
         new_version : new_version.clone(),
         dependencies : dependencies.clone(),
+        dry : true,
       };
       let git_things = GitThingsOptions
       {
         git_root : workspace_root,
         items : dependencies.iter().chain([ &crate_dir ]).map( | d | d.absolute_path().join( "Cargo.toml" ) ).collect(),
         message : format!( "{}-v{}", self.package.name().unwrap(), new_version ),
+        dry : true,
       };
-      let publish = CargoPublishOptions
+      let publish = cargo::PublishOptions
       {
-        crate_dir,
-        base_temp_dir : self.base_temp_dir.clone(),
+        path : crate_dir.as_ref().into(),
+        temp_path : self.base_temp_dir.clone(),
+        dry : true,
       };
 
       PackagePublishInstruction
@@ -499,36 +385,47 @@ mod private
         version_bump,
         git_things,
         publish,
+        dry : true,
       }
     }
   }
 
-  impl Plan for PackagePublishInstruction
+  /// Performs package publishing based on the given arguments.
+  ///
+  /// # Arguments
+  ///
+  /// * `args` - The package publishing instructions.
+  ///
+  /// # Returns
+  ///
+  /// * `Result<PublishReport>` - The result of the publishing operation, including information about the publish, version bump, and git operations.
+  pub fn perform_package_publish( args : PackagePublishInstruction ) -> Result< PublishReport >
   {
-    type Report = PublishReport;
-    fn perform( &self, dry : bool ) -> Result< Self::Report >
+    let mut report = PublishReport::default();
+    let PackagePublishInstruction
     {
-      let mut report = Self::Report::default();
-      let Self
-      {
-        pack,
-        version_bump,
-        git_things,
-        publish,
-      } = self;
+      mut pack,
+      mut version_bump,
+      mut git_things,
+      mut publish,
+      dry,
+    } = args;
+    pack.dry = dry;
+    version_bump.dry = dry;
+    git_things.dry = dry;
+    publish.dry = dry;
 
-      report.get_info = Some( pack.perform( dry ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )? );
-      // qqq : redundant field?
-      report.publish_required = true;
-      report.bump = Some( version_bump.perform( dry ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )? );
-      let git = git_things.perform( dry ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )?;
-      report.add = git.add;
-      report.commit = git.commit;
-      report.push = git.push;
-      report.publish = Some( publish.perform( dry ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )? );
+    report.get_info = Some( cargo::pack( pack ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )? );
+    // qqq : redundant field?
+    report.publish_required = true;
+    report.bump = Some( version::version_bump( version_bump ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )? );
+    let git = perform_git_operations( git_things ).map_err( |e | format_err!( "{report}\n{e:#?}" ) )?;
+    report.add = git.add;
+    report.commit = git.commit;
+    report.push = git.push;
+    report.publish = Some( cargo::publish( publish ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )? );
 
-      Ok( report )
-    }
+    Ok( report )
   }
 
   #[ derive( Debug, Former ) ]
@@ -580,20 +477,26 @@ mod private
     }
   }
 
-  impl Plan for PublishPlan
-  {
-    type Report = Vec< PublishReport >;
-    fn perform( &self, dry : bool ) -> Result< Self::Report >
-    {
-      let mut report = Self::Report::default();
-      for package in &self.plans
-      {
-        let res = package.perform( dry ).map_err( | e | format_err!( "{report:#?}\n{e:#?}" ) )?;
-        report.push( res );
-      }
 
-      Ok( report )
+  /// Perform publishing of multiple packages based on the provided publish plan.
+  ///
+  /// # Arguments
+  ///
+  /// * `plan` - The publish plan with details of packages to be published.
+  ///
+  /// # Returns
+  ///
+  /// Returns a `Result` containing a vector of `PublishReport` if successful, else an error.
+  pub fn perform_packages_publish( plan : PublishPlan ) -> Result< Vec< PublishReport > >
+  {
+    let mut report = vec![];
+    for package in plan.plans
+    {
+      let res = perform_package_publish( package ).map_err( | e | format_err!( "{report:#?}\n{e:#?}" ) )?;
+      report.push( res );
     }
+
+    Ok( report )
   }
 
   /// Holds information about the publishing process.
@@ -605,7 +508,7 @@ mod private
     /// Indicates whether publishing is required for the package.
     pub publish_required : bool,
     /// Bumps the version of the package.
-    pub bump : Option< ExtendedBumpReport >,
+    pub bump : Option< version::ExtendedBumpReport >,
     /// Report of adding changes to the Git repository.
     pub add : Option< process::Report >,
     /// Report of committing changes to the Git repository.
@@ -665,34 +568,6 @@ mod private
       {
         f.write_fmt( format_args!( "{publish}" ) )?;
       }
-
-      Ok( () )
-    }
-  }
-
-  /// Report about a changing version.
-  #[ derive( Debug, Default, Clone ) ]
-  pub struct ExtendedBumpReport
-  {
-    /// Report base.
-    pub base : BumpReport,
-    /// Files that should(already) changed for bump.
-    pub changed_files : Vec< AbsolutePath >
-  }
-
-  impl std::fmt::Display for ExtendedBumpReport
-  {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
-    {
-      let Self { base, changed_files } = self;
-      if self.changed_files.is_empty()
-      {
-        f.write_str( "Files were not changed during bumping the version" )?;
-        return Ok( () )
-      }
-
-      let files = changed_files.iter().map( | f | f.as_ref().display() ).join( ",\n    " );
-      f.write_fmt( format_args!( "{base}\n  changed files :\n    {files}\n" ) )?;
 
       Ok( () )
     }
@@ -812,7 +687,7 @@ mod private
       let files_changed_for_bump : Vec< _ > = files_changed_for_bump.into_iter().unique().collect();
       let objects_to_add : Vec< _ > = files_changed_for_bump.iter().map( | f | f.as_ref().strip_prefix( &workspace_manifest_dir ).unwrap().to_string_lossy() ).collect();
 
-      report.bump = Some( ExtendedBumpReport { base : bump_report, changed_files : files_changed_for_bump.clone() } );
+      report.bump = Some( version::ExtendedBumpReport { base : bump_report, changed_files : files_changed_for_bump.clone() } );
 
       let commit_message = format!( "{package_name}-v{new_version}" );
       let res = git::add( workspace_manifest_dir, objects_to_add, args.dry ).map_err( | e | ( report.clone(), e ) )?;
@@ -1071,7 +946,8 @@ crate::mod_interface!
 
   protected use PublishSinglePackagePlanner;
   protected use PublishPlan;
-  protected use Plan;
+  protected use perform_package_publish;
+  protected use perform_packages_publish;
 
   protected use PublishReport;
   protected use publish_single;
