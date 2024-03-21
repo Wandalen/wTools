@@ -85,7 +85,7 @@ mod private
     optimizations : HashSet< optimization::Optimization >,
     #[ default( 1000u32 ) ]
     variants_cap : u32,
-    #[ default( true ) ]
+    #[ default( false ) ]
     with_progress : bool,
   }
   
