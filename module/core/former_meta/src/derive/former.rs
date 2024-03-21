@@ -1037,28 +1037,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
         #fields_setter
       )*
 
-      // ///
-      // /// Construct new instance of former with default parameters.
-      // ///
-      // #[ inline( always ) ]
-      // pub fn new_() -> #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnFormed >
-      // {
-      //   #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnFormed > :: begin
-      //   (
-      //     None,
-      //     former::ReturnFormed,
-      //   )
-      // }
-      // // xxx : should be stand-alone. look VectorSubformer
-
     }
-
-    // pub struct #former_storage_name_ident #generics_ty
-    // #generics_where
-    // let ( generics_impl, generics_ty, generics_where ) = generics.split_for_impl();
-
-    // impl #generics_of_former_impl #former_name_ident #generics_of_former_ty
-    // #generics_of_former_where
 
     #[ automatically_derived ]
     impl #generics_impl #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnFormed >
@@ -1069,7 +1048,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// Construct new instance of former with default parameters.
       ///
       #[ inline( always ) ]
-      // pub fn new() -> #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnFormed >
       pub fn new() -> Self
       {
         // #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnFormed > :: begin
@@ -1080,7 +1058,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
           former::ReturnFormed,
         )
       }
-      // xxx : should be stand-alone. look VectorSubformer
 
     }
 
