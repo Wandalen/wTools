@@ -10,10 +10,10 @@ mod private
   use std::{ env, fs };
   // qqq : for Petro : https://github.com/obox-systems/conventions/blob/master/code_style.md#importing-structuring-std-imports
 
-  use cargo_metadata::Package;
   #[ cfg( feature = "progress_bar" ) ]
   use indicatif::{ MultiProgress, ProgressStyle };
-  // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
+  // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
+  // aaa : ✅
 
   // qqq : for Petro : don't use Package directly. rid it off for the whole willbe
 
@@ -55,6 +55,7 @@ mod private
     },
     iter::Itertools,
   };
+  use workspace::WorkspacePackage;
 
   /// Used to store arguments for running tests.
   ///
@@ -208,7 +209,7 @@ mod private
     result
   }
 
-  fn needed_packages( path : AbsolutePath ) -> Result< Vec< Package > >
+  fn needed_packages( path : AbsolutePath ) -> Result< Vec< WorkspacePackage > >
   {
     let path = if path.as_ref().file_name() == Some( "Cargo.toml".as_ref() )
     {
@@ -223,8 +224,7 @@ mod private
     let result = metadata
     .packages()?
     .into_iter()
-    .cloned()
-    .filter( move | x | x.manifest_path.starts_with( path.as_ref() ) )
+    .filter( move | x | x.manifest_path().starts_with( path.as_ref() ) )
     .collect();
     Ok( result )
   }
