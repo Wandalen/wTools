@@ -2,10 +2,11 @@ mod private
 {
   use crate::*;
   use std::collections::{ BTreeSet, HashSet };
-  use cargo_metadata::Package;
-  // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
+  // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
+  // aaa : ✅
   use error_tools::for_app::{ bail, Result };
   use wtools::iter::Itertools;
+  use workspace::WorkspacePackage;
 
   /// Generates a powerset of the features available in the given `package`,
   /// filtered according to specified inclusion and exclusion criteria,
@@ -46,7 +47,7 @@ mod private
 
   pub fn features_powerset
   (
-    package : &Package,
+    package : &WorkspacePackage,
     power : usize,
     exclude_features : &[ String ],
     include_features : &[ String ],
@@ -60,13 +61,13 @@ mod private
     let mut features_powerset = HashSet::new();
 
     let filtered_features : BTreeSet< _ > = package
-    .features
+    .features()
     .keys()
     .filter( | f | !exclude_features.contains( f ) && (include_features.contains(f) || include_features.is_empty()) )
     .cloned()
     .collect();
 
-    if esimate_with( filtered_features.len(), power, with_all_features, with_none_features, enabled_features, package.features.len() ) > variants_cap as usize
+    if esimate_with( filtered_features.len(), power, with_all_features, with_none_features, enabled_features, package.features().len() ) > variants_cap as usize
     {
       bail!( "Feature powerset longer then cap." )
     }

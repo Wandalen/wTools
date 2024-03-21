@@ -16,8 +16,8 @@ mod private
   use std::fmt::{ Debug, Display };
   use std::marker::PhantomData;
   use std::path::PathBuf;
-  use cargo_metadata::Package;
-  // qqq : for Petro : don't use cargo_metadata directly, use facade
+  // aaa : for Petro : don't use cargo_metadata directly, use facade
+  // aaa : ✅
   use colored::Colorize;
   // qqq : for Petro : don't do micro imports
   use prettytable::
@@ -48,6 +48,7 @@ mod private
   use former::Former;
   use channel::Channel;
   use optimization::Optimization;
+  use workspace::WorkspacePackage;
 
   /// Newtype for package name
   #[ derive( Debug, Default, Clone ) ]
@@ -110,7 +111,7 @@ mod private
     /// `variants_cap` - Maximum of subset in powerset
     pub fn try_from
     (
-      packages : &[ Package ],
+      packages : &[ WorkspacePackage ],
       channels : &HashSet< Channel >,
       power : u32,
       include_features : Vec< String >,
@@ -234,7 +235,7 @@ mod private
     /// `variants_cap` - Maximum of subset in powerset
     fn try_from
     (
-      package : &Package,
+      package : &WorkspacePackage,
       channels : &HashSet< Channel >,
       power : u32,
       include_features : &[ String ],
@@ -246,7 +247,7 @@ mod private
       variants_cap : u32,
     ) -> Result< Self >
     {
-      let dir = package.manifest_path.parent().unwrap().as_std_path().to_path_buf();
+      let dir = package.manifest_path().parent().unwrap().as_std_path().to_path_buf();
       let mut test_variants = BTreeSet::new();
       let features_powerset = features::features_powerset
       (
