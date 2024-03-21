@@ -153,6 +153,7 @@ mod private
   #[ derive( Debug ) ]
   pub struct TestPackagePlan
   {
+    enabled_features : BTreeSet< String >,
     package : PathBuf,
     test_variants : BTreeSet< TestVariant >,
   }
@@ -162,9 +163,6 @@ mod private
     fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
     {
       writeln!( f, "Package : {}\nThe tests will be executed using the following configurations :", self.package.file_name().unwrap().to_string_lossy() )?;
-      let mut table = Table::new();
-      let format = format();
-      table.set_format( format );
       let mut all_features = BTreeSet::new();
       for variant in &self.test_variants
       {
@@ -175,10 +173,23 @@ mod private
         }
         all_features.extend( features );
       }
+      let mut ff = Vec::from_iter( self.enabled_features.iter().cloned() );
+      for feature in all_features
+      {
+        if !ff.contains( &feature )
+        {
+          ff.push( feature );
+        }
+      }
+      let mut table = Table::new();
+      let format = format();
+      table.set_format( format );
+      
       let mut header_row = Row::empty();
       header_row.add_cell( Cell::new( "Channel" ) );
       header_row.add_cell( Cell::new( "Opt" ) );
-      for feature in &all_features
+      
+      for feature in &ff
       {
         header_row.add_cell( Cell::new( feature )  );
       }
@@ -190,26 +201,9 @@ mod private
 
         row.add_cell( Cell::new( &variant.channel.to_string() ) );
         row.add_cell( Cell::new( &variant.optimization.to_string() ) );
-        let mut a = true;
-        for feature in &all_features
-        {
-          let mut c = Cell::new( "+" );
-          c.align( Alignment::CENTER );
-          if variant.features.is_empty() && a
-          {
-            a = false;
-            row.add_cell( c );
-          }
-          else if variant.features.contains( feature )
-          {
-            row.add_cell( c );
-          }
-          else
-          {
-            c = Cell::new( "" );
-            row.add_cell( c );
-          }
-        }
+        let counter = 0;
+        let flag = true;
+        generate_features_cells(&mut ff, variant, &mut row, counter, flag, &self.enabled_features );
 
         table.add_row( row );
       }
@@ -282,10 +276,35 @@ mod private
       (
         Self
         {
+          enabled_features: enabled_features.iter().cloned().collect(),
           package : dir,
           test_variants,
         }
       )
+    }
+  }
+
+  fn generate_features_cells( ff : &mut Vec< String >, variant : &TestVariant, row : &mut Row, mut counter : usize, mut flag : bool, enabled_features : &BTreeSet< String > ) 
+  {
+    for feature in ff
+    {
+      let mut c = Cell::new("+");
+      c.align( Alignment::CENTER );
+      if variant.features.is_empty() && counter == enabled_features.len() && flag
+      {
+        flag = false;
+        row.add_cell( c );
+      } 
+      else if variant.features.contains( feature )
+      {
+        row.add_cell( c );
+      } 
+      else 
+      {
+        c = Cell::new( "" );
+        row.add_cell( c );
+      }
+      counter += 1;
     }
   }
 
@@ -514,6 +533,8 @@ mod private
     ///   feature names and the values are `Report` structs representing the test results for
     ///   the specific feature and channel.
     pub tests : BTreeMap< TestVariant, Result< Report, Report > > ,
+    /// Enabled features
+    pub enabled_features : BTreeSet< String >,
     // qqq : for Petro : rid off map of map of map, keep flat map
   }
 
@@ -525,9 +546,8 @@ mod private
       {
         return Ok( () )
       }
-      let mut table = Table::new();
-      let format = format();
-      table.set_format( format );
+      let mut failed = 0;
+      let mut success = 0;
       let mut all_features = BTreeSet::new();
       for variant in self.tests.keys()
       {
@@ -538,18 +558,27 @@ mod private
         }
         all_features.extend( features );
       }
+      let mut ff = Vec::from_iter( self.enabled_features.iter().cloned() );
+      for feature in all_features
+      {
+        if !ff.contains( &feature )
+        {
+          ff.push( feature );
+        }
+      }
+      let mut table = Table::new();
+      let format = format();
+      table.set_format( format );
       let mut header_row = Row::empty();
       header_row.add_cell( Cell::new( "Result" ) );
       header_row.add_cell( Cell::new( "Channel" ) );
       header_row.add_cell( Cell::new( "Opt" ) );
-      for feature in &all_features
+      for feature in &ff
       {
         header_row.add_cell( Cell::new( feature )  );
       }
       table.set_titles( header_row );
-
-      let mut failed = 0;
-      let mut success = 0;
+      
       writeln!( f, "{} {}\n", "\n=== Module".bold(), self.package_name.0.bold() )?;
       if self.tests.is_empty()
       {
@@ -578,26 +607,10 @@ mod private
         row.add_cell( Cell::new( result_text ) );
         row.add_cell( Cell::new( &variant.channel.to_string() ) );
         row.add_cell( Cell::new( &variant.optimization.to_string() ) );
-        let mut a = true;
-        for feature in &all_features
-        {
-          let mut c = Cell::new( "+" );
-          c.align( Alignment::CENTER );
-          if variant.features.is_empty() && a
-          {
-            a = false;
-            row.add_cell( c );
-          }
-          else if variant.features.contains( feature )
-          {
-            row.add_cell( c );
-          }
-          else
-          {
-            c = Cell::new( "" );
-            row.add_cell( c );
-          }
-        }
+        let counter = 0;
+        let flag = true;
+        generate_features_cells( &mut ff, variant, &mut row, counter, flag, &self.enabled_features );
+
 
         table.add_row( row );
       }
@@ -688,6 +701,7 @@ mod private
   {
     let mut report = TestReport::default();
     report.dry = options.dry;
+    report.enabled_features = options.plan.enabled_features.clone();
     let report = Arc::new( Mutex::new( report ) );
     let dir = options.plan.package.clone();
 
