@@ -26,7 +26,6 @@ pub struct TemplateParameters
 
 }
 
-
 impl< Context, End > former::FormerBegin< TemplateParameterDescriptor, Context >
 for TemplateParameterDescriptorFormer< Context, End >
 where

@@ -146,6 +146,7 @@ fn stability_cell()
   let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
+  dbg!( &actual );
   assert!( actual.contains( "[![stability-deprecated](https://img.shields.io/badge/stability-deprecated-red.svg)](https://github.com/emersion/stability-badges#deprecated)" ) );
 }
 
