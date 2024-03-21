@@ -3,8 +3,11 @@ mod private
   use crate::*;
 
   use std::path::Path;
-  use cargo_metadata::{ Metadata, MetadataCommand, Package };
+  use cargo_metadata::{Dependency, Metadata, MetadataCommand, Package};
+  use cargo_metadata::camino::Utf8Path;
   use petgraph::Graph;
+  use semver::Version;
+  use serde_json::Value;
   use wtools::error::{ for_app::Context, for_lib::Error, Result };
   use _path::AbsolutePath;
 
@@ -12,6 +15,45 @@ mod private
   pub struct WorkspacePackage
   {
     pub inner : Package
+  }
+  
+  impl WorkspacePackage
+  {
+    pub fn name( &self ) -> &str
+    {
+      self.inner.name.as_str()
+    }
+    
+    pub fn dependencies( &self ) -> &[ Dependency ]
+    {
+      self.inner.dependencies.as_slice()
+    }
+    
+    pub fn manifest_path( &self ) -> &Utf8Path
+    {
+      self.inner.manifest_path.as_path()
+    }
+    
+    pub fn version( &self ) -> Version
+    {
+      self.inner.version.clone()
+    }
+    
+    pub fn publish( &self ) -> Option< &Vec< String > >
+    {
+      self.inner.publish.as_ref()
+    }
+    
+    pub fn metadata( &self ) -> &Value
+    {
+      &self.inner.metadata
+    }
+    
+    pub fn repository( &self ) -> Option< &String >
+    {
+      self.inner.repository.as_ref()
+    }
+    
   }
   
   /// Stores information about current workspace.
