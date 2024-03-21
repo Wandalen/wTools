@@ -14,7 +14,6 @@ mod private
   {
     Dependency,
     DependencyKind,
-    Package
   };
   // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
 
@@ -335,7 +334,7 @@ mod private
       Box::new
       (
         move | p |
-        p.inner.publish.is_none() && p.inner.manifest_path.starts_with( &path )
+        p.publish().is_none() && p.manifest_path().starts_with( &path )
       )
     );
     let module_dependency_filter: Option< Box< dyn Fn( &WorkspacePackage, &Dependency) -> bool > > = Some

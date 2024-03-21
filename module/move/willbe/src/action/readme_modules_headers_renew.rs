@@ -109,7 +109,7 @@ mod private
     regexes_initialize();
     let cargo_metadata = Workspace::with_crate_dir( CrateDir::try_from( path )? )?;
     let discord_url = cargo_metadata.discord_url()?;
-    for path in cargo_metadata.packages()?.into_iter().filter_map( | p | AbsolutePath::try_from( p.inner.manifest_path.clone() ).ok())
+    for path in cargo_metadata.packages()?.into_iter().filter_map( | p | AbsolutePath::try_from( p.manifest_path() ).ok())
     {
       let read_me_path =  path
       .parent()

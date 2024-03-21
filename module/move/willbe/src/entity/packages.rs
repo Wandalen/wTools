@@ -5,7 +5,7 @@ mod private
     fmt::Formatter,
     collections::{ HashMap, HashSet },
   };
-  use cargo_metadata::{ Dependency, Package as PackageMetadata };
+  use cargo_metadata::{ Dependency };
   use crate::workspace::WorkspacePackage;
 
   /// Type aliasing for String
@@ -84,8 +84,8 @@ mod private
     (
       | package |
       (
-        package.inner.name.clone(),
-        package.inner.dependencies
+        package.name().clone(),
+        package.dependencies()
         .iter()
         .filter( | &d | dependency_filter( package, d ) )
         .map( | d | d.name.clone() )

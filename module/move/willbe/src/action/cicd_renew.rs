@@ -9,8 +9,8 @@ mod private
     io::{ Write, Read },
     collections::BTreeMap
   };
-  use cargo_metadata::Package;
   // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
+  // aaa : ✅
 
   use convert_case::{ Casing, Case };
   use handlebars::{ RenderError, TemplateError };
@@ -56,12 +56,12 @@ mod private
     // map packages name's to naming standard
     // aaa : for Petro : avoid calling packages_get twice
     // aaa : remove it
-    let names = packages.iter().map( | p | &p.inner.name ).collect::< Vec< _ > >();
+    let names = packages.iter().map( | p | p.name() ).collect::< Vec< _ > >();
     // map packages path to relative paths fom workspace root, for example D :/work/wTools/module/core/iter_tools => module/core/iter_tools
     let relative_paths =
     packages
     .iter()
-    .map( | p | &p.inner.manifest_path )
+    .map( | p | p.manifest_path() )
     .filter_map( | p | p.strip_prefix( workspace_root ).ok() )
     .map( | p | p.with_file_name( "" ) )
     .collect::< Vec< _ > >();
@@ -249,7 +249,7 @@ mod private
         let mut url = None;
         for package in packages
         {
-          if let Ok( wu ) = manifest::private::repo_url( package.inner.manifest_path.parent().unwrap().as_std_path() )
+          if let Ok( wu ) = manifest::private::repo_url( package.manifest_path().parent().unwrap().as_std_path() )
           {
             url = Some( wu );
             break;

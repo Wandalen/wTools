@@ -11,7 +11,6 @@ mod private
   use _path::AbsolutePath;
   use workspace::Workspace;
   use package::Package;
-  use crate::workspace::WorkspacePackage;
 
   /// Represents a report of publishing packages
   #[ derive( Debug, Default, Clone ) ]
@@ -147,10 +146,10 @@ mod private
     let packages = metadata.load().err_with( || report.clone() )?.packages().err_with( || report.clone() )?;
     let packages_to_publish : Vec< _ > = packages
     .iter()
-    .filter( | &package | paths.contains( &AbsolutePath::try_from( package.inner.manifest_path.as_std_path().parent().unwrap() ).unwrap() ) )
-    .map( | p | p.inner.name.clone() )
+    .filter( | &package | paths.contains( &AbsolutePath::try_from( package.manifest_path().as_std_path().parent().unwrap() ).unwrap() ) )
+    .map( | p | p.name().clone() )
     .collect();
-    let package_map = packages.into_iter().map( | p | ( p.inner.name.clone(), Package::from( p.clone() ) ) ).collect::< HashMap< _, _ > >();
+    let package_map = packages.into_iter().map( | p | ( p.name().clone(), Package::from( p.clone() ) ) ).collect::< HashMap< _, _ > >();
     {
       for node in &packages_to_publish
       {

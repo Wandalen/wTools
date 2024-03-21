@@ -1,5 +1,6 @@
 mod private
 {
+  use std::collections::BTreeMap;
   use crate::*;
 
   use std::path::Path;
@@ -14,14 +15,25 @@ mod private
   #[ derive( Debug, Clone ) ]
   pub struct WorkspacePackage
   {
-    pub inner : Package
+    inner : Package
+  }
+  
+  impl From< Package > for WorkspacePackage
+  {
+    fn from( inner : Package) -> Self 
+    {
+      Self
+      {
+        inner
+      }
+    }
   }
   
   impl WorkspacePackage
   {
-    pub fn name( &self ) -> &str
+    pub fn name( &self ) -> &String
     {
-      self.inner.name.as_str()
+      &self.inner.name
     }
     
     pub fn dependencies( &self ) -> &[ Dependency ]
@@ -54,6 +66,11 @@ mod private
       self.inner.repository.as_ref()
     }
     
+    pub fn features( &self ) -> &BTreeMap< String, Vec< String > >
+    {
+      &self.inner.features
+    }
+    
   }
   
   /// Stores information about current workspace.
@@ -81,7 +98,7 @@ mod private
     {
       let current_path = AbsolutePath::try_from( std::env::current_dir().unwrap_or_default() )?;
       let metadata = MetadataCommand::new().no_deps().exec().context("fail to load CargoMetadata")?;
-      let packages = metadata.packages.iter().map( | p | WorkspacePackage{ inner : p.clone() } ).collect();
+      let packages = metadata.packages.iter().map( | p | p.clone().into() ).collect();
       Ok( Self
       {
         metadata : Some( metadata ),
@@ -94,7 +111,7 @@ mod private
     pub fn with_crate_dir( crate_dir : CrateDir ) -> Result< Self >
     {
       let metadata = MetadataCommand::new().no_deps().exec().context("fail to load CargoMetadata")?;
-      let packages = metadata.packages.iter().map( | p | WorkspacePackage{ inner : p.clone() } ).collect();
+      let packages = metadata.packages.iter().map( | p | p.clone().into() ).collect();
       Ok
       (
         Self
@@ -113,12 +130,12 @@ mod private
     {
       let path = value.workspace_root.as_std_path().parent().unwrap().to_path_buf();
       let path = AbsolutePath::try_from( path ).unwrap();
-
+      let packages = value.packages.iter().map( | p | p.clone().into() ).collect();
       Self
       {
         metadata : Some( value ),
         manifest_dir : CrateDir::try_from( path ).unwrap(),
-        packages : None,
+        packages : Some( packages ),
       }
     }
   }
@@ -210,7 +227,7 @@ mod private
         | packages |
         packages
         .iter()
-        .find( | &p | p.inner.manifest_path.as_std_path() == manifest_path.as_ref() )
+        .find( | &p | p.manifest_path().as_std_path() == manifest_path.as_ref() )
       )
     }
 
@@ -220,7 +237,7 @@ mod private
       let packages = self.packages().unwrap();
       let module_package_filter : Option< Box< dyn Fn( &WorkspacePackage ) -> bool > > = Some
       (
-        Box::new( move | p | p.inner.publish.is_none() )
+        Box::new( move | p | p.publish().is_none() )
       );
       let module_dependency_filter : Option< Box< dyn Fn( &WorkspacePackage, &cargo_metadata::Dependency) -> bool > > = Some
       (

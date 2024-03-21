@@ -10,7 +10,6 @@ mod private
   use std::{ env, fs };
   // qqq : for Petro : https://github.com/obox-systems/conventions/blob/master/code_style.md#importing-structuring-std-imports
 
-  use cargo_metadata::Package;
   #[ cfg( feature = "progress_bar" ) ]
   use indicatif::{ MultiProgress, ProgressStyle };
   // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
@@ -213,7 +212,7 @@ mod private
     .packages()?
     .into_iter()
     .cloned()
-    .filter( move | x | x.inner.manifest_path.starts_with( path.as_ref() ) )
+    .filter( move | x | x.manifest_path().starts_with( path.as_ref() ) )
     .collect();
     Ok( result )
   }

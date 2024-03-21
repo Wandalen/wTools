@@ -16,7 +16,6 @@ mod private
   use std::fmt::{ Debug, Display };
   use std::marker::PhantomData;
   use std::path::PathBuf;
-  use cargo_metadata::Package;
   // qqq : for Petro : don't use cargo_metadata directly, use facade
   use colored::Colorize;
   // qqq : for Petro : don't do micro imports
@@ -229,7 +228,7 @@ mod private
       variants_cap : u32,
     ) -> Result< Self >
     {
-      let dir = package.inner.manifest_path.parent().unwrap().as_std_path().to_path_buf();
+      let dir = package.manifest_path().parent().unwrap().as_std_path().to_path_buf();
       let mut test_variants = BTreeSet::new();
       let features_powerset = features::features_powerset
       (

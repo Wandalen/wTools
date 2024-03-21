@@ -27,7 +27,6 @@ mod private
   {
     Dependency,
     DependencyKind,
-    Package
   };
   use petgraph::prelude::{ Dfs, EdgeRef };
   use former::Former;
@@ -312,7 +311,7 @@ mod private
     visited : &mut HashSet< String >
   )
   {
-    for dependency in &package.inner.dependencies
+    for dependency in package.dependencies()
     {
       if dependency.path.is_some() && !args.dependency_sources.contains( &DependencySource::Local ) { continue; }
       if dependency.path.is_none() && !args.dependency_sources.contains( &DependencySource::Remote ) { continue; }
@@ -405,9 +404,9 @@ mod private
       let package = metadata.package_find_by_manifest( path ).unwrap();
       let mut package_report = ListNodeReport
       {
-        name : package.inner.name.clone(),
-        version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( package.inner.version.to_string() ) } else { None },
-        path : if args.info.contains( &PackageAdditionalInfo::Path ) { Some( package.inner.manifest_path.clone().into_std_path_buf() ) } else { None },
+        name : package.name().to_string(),
+        version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( package.version().to_string() ) } else { None },
+        path : if args.info.contains( &PackageAdditionalInfo::Path ) { Some( package.manifest_path().as_std_path().to_path_buf() ) } else { None },
         normal_dependencies : vec![],
         dev_dependencies : vec![],
         build_dependencies : vec![],
@@ -432,10 +431,10 @@ mod private
       ListFormat::Tree =>
       {
         let packages = metadata.packages().context( "workspace packages" ).err_with( report.clone() )?;
-        let mut visited = packages.iter().map( | p | format!( "{}+{}+{}", p.inner.name, p.inner.version.to_string(), p.inner.manifest_path ) ).collect();
+        let mut visited = packages.iter().map( | p | format!( "{}+{}+{}", p.name(), p.version().to_string(), p.manifest_path() ) ).collect();
         for package in packages
         {
-          tree_package_report( package.inner.manifest_path.as_path().try_into().unwrap(), &mut report, &mut visited )
+          tree_package_report( package.manifest_path().as_std_path().try_into().unwrap(), &mut report, &mut visited )
         }
       }
       ListFormat::Topological =>
@@ -471,7 +470,7 @@ mod private
         let graph = graph::construct( &packages_map );
 
         let sorted = toposort( &graph, None ).map_err( | e | { use std::ops::Index; ( report.clone(), err!( "Failed to process toposort for package : {:?}", graph.index( e.node_id() ) ) ) } )?;
-        let packages_info = packages.iter().map( | p | ( p.inner.name.clone(), p ) ).collect::< HashMap< _, _ > >();
+        let packages_info = packages.iter().map( | p | ( p.name().clone(), p ) ).collect::< HashMap< _, _ > >();
 
         if root_crate.is_empty()
         {
@@ -488,12 +487,12 @@ mod private
                 if args.info.contains( &PackageAdditionalInfo::Version )
                 {
                   name.push_str( " " );
-                  name.push_str( &p.inner.version.to_string() );
+                  name.push_str( &p.version().to_string() );
                 }
                 if args.info.contains( &PackageAdditionalInfo::Path )
                 {
                   name.push_str( " " );
-                  name.push_str( &p.inner.manifest_path.to_string() );
+                  name.push_str( &p.manifest_path().to_string() );
                 }
               }
               name
@@ -532,12 +531,12 @@ mod private
               if args.info.contains( &PackageAdditionalInfo::Version )
               {
                 name.push_str( " " );
-                name.push_str( &p.inner.version.to_string() );
+                name.push_str( &p.version().to_string() );
               }
               if args.info.contains( &PackageAdditionalInfo::Path )
               {
                 name.push_str( " " );
-                name.push_str( &p.inner.manifest_path.to_string() );
+                name.push_str( &p.manifest_path().to_string() );
               }
             }
             names.push( name );
