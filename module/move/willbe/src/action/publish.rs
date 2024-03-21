@@ -20,6 +20,7 @@ mod private
     pub workspace_root_dir : Option< AbsolutePath >,
     /// Represents a collection of packages that are roots of the trees.
     pub wanted_to_publish : Vec< CrateDir >,
+    pub plan : Option< package::PublishPlan >,
     /// Represents a collection of packages and their associated publishing reports.
     pub packages : Vec<( AbsolutePath, package::PublishReport )>
   }
@@ -30,58 +31,16 @@ mod private
     {
       if self.packages.is_empty()
       {
-        f.write_fmt( format_args!( "Nothing to publish" ) )?;
+        write!( f, "Nothing to publish" )?;
         return Ok( () );
       }
-      write!( f, "Tree(-s):\n" )?;
-      let name_bump_report = self
-      .packages
-      .iter()
-      .filter_map( |( _, r )| r.bump.as_ref() )
-      .filter_map( | b | b.name.as_ref().and_then( | name  | b.old_version.as_ref().and_then( | old | b.new_version.as_ref().map( | new | ( name, ( old, new ) ) ) ) ) )
-      .collect::< HashMap< _, _ > >();
-      for wanted in &self.wanted_to_publish
+      if let Some( plan ) = &self.plan
       {
-        let list = action::list
-        (
-          action::list::ListOptions::former()
-          .path_to_manifest( wanted.clone() )
-          .format( action::list::ListFormat::Tree )
-          .dependency_sources([ action::list::DependencySource::Local ])
-          .dependency_categories([ action::list::DependencyCategory::Primary ])
-          .form()
-        )
-        .map_err( |( _, _e )| std::fmt::Error )?;
-        let action::list::ListReport::Tree( list ) = list else { unreachable!() };
+        write!( f, "Tree{} :\n", if self.wanted_to_publish.len() > 1 { "s" } else { "" } )?;
+        plan.display_as_tree( f, &self.wanted_to_publish )?;
 
-        fn callback( name_bump_report : &HashMap< &String, ( &String, &String) >, mut r : action::list::ListNodeReport ) -> action::list::ListNodeReport
-        {
-          if let Some(( old, new )) = name_bump_report.get( &r.name )
-          {
-            r.version = Some( format!( "({old} -> {new})" ) );
-          }
-          r.normal_dependencies = r.normal_dependencies.into_iter().map( | r | callback( name_bump_report, r ) ).collect();
-          r.dev_dependencies = r.dev_dependencies.into_iter().map( | r | callback( name_bump_report, r ) ).collect();
-          r.build_dependencies = r.build_dependencies.into_iter().map( | r | callback( name_bump_report, r ) ).collect();
-
-          r
-        }
-        let list = list.into_iter().map( | r | callback( &name_bump_report, r ) ).collect();
-
-        let list = action::list::ListReport::Tree( list );
-        write!( f, "{}\n", list )?;
-      }
-      writeln!( f, "The following packages are pending for publication :" )?;
-      for ( idx, package ) in self.packages.iter().map( |( _, p )| p ).enumerate()
-      {
-        if let Some( bump ) = &package.bump
-        {
-          match ( &bump.name, &bump.old_version, &bump.new_version )
-          {
-            ( Some( name ), Some( old ), Some( new ) ) => writeln!( f, "[{idx}] {name} ({old} -> {new})" )?,
-            _ => {}
-          }
-        }
+        writeln!( f, "The following packages are pending for publication :" )?;
+        plan.display_as_list( f )?;
       }
 
       writeln!( f, "\nActions :" )?;
@@ -97,7 +56,7 @@ mod private
         {
           path.as_ref()
         };
-        writeln!( f, "Publishing crate by `{}` path\n  {report}", path.display() )?;
+        write!( f, "Publishing crate by `{}` path\n  {report}", path.display() )?;
       }
 
       Ok( () )
@@ -186,32 +145,15 @@ mod private
     let plan = package::PublishPlan::former()
     .workspace_dir( CrateDir::try_from( workspace_root_dir ).unwrap() )
     .option_base_temp_dir( dir.clone() )
+    .dry( dry )
     .packages( queue )
     .form();
+    report.plan = Some( plan.clone() );
     for package_report in package::perform_packages_publish( plan ).err_with( || report.clone() )?
     {
       let path : &std::path::Path = package_report.get_info.as_ref().unwrap().current_path.as_ref();
       report.packages.push(( AbsolutePath::try_from( path ).unwrap(), package_report ));
     }
-    // for package in queue
-    // {
-    //   let args = package::PublishSingleOptions::former()
-    //   .package( package )
-    //   .force( true )
-    //   .option_base_temp_dir( &dir )
-    //   .dry( dry )
-    //   .form();
-    //   let current_report = package::publish_single( args )
-    //   .map_err
-    //   (
-    //     | ( current_report, e ) |
-    //     {
-    //       report.packages.push(( package.crate_dir().absolute_path(), current_report.clone() ));
-    //       ( report.clone(), e.context( "Publish list of packages" ) )
-    //     }
-    //   )?;
-    //   report.packages.push(( package.crate_dir().absolute_path(), current_report ));
-    // }
 
     if temp
     {

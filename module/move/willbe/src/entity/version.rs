@@ -174,7 +174,7 @@ mod private
   /// Options for version bumping.
   ///
   /// This struct is used to specify the options for version bumping operations.
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Clone ) ]
   pub struct BumpOptions
   {
     pub crate_dir : CrateDir,
