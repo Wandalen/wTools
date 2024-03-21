@@ -87,6 +87,22 @@ mod private
     }
   }
 
+  impl TryFrom< CrateDir > for Package
+  {
+    type Error = PackageError;
+
+    fn try_from( value : CrateDir ) -> Result< Self, Self::Error >
+    {
+      let manifest =  manifest::open( value.absolute_path().join( "Cargo.toml" ) )?;
+      if !manifest.package_is()?
+      {
+        return Err( PackageError::NotAPackage );
+      }
+
+      Ok( Self::Manifest( manifest ) )
+    }
+  }
+
   impl TryFrom< Manifest > for Package
   {
     // aaa : make better errors
@@ -907,7 +923,6 @@ mod private
 
     Ok( !is_same )
   }
-
 }
 
 //

@@ -47,20 +47,20 @@ impl Default for Struct1FormerStorage
 
 pub struct Struct1Former
 <
-  FormerContext = Struct1,
-  FormerEnd = the_module::ReturnFormed,
+  Context = Struct1,
+  End = the_module::ReturnFormed,
 >
 where
-  FormerEnd : the_module::FormingEnd< Struct1, FormerContext >,
+  End : the_module::FormingEnd< Struct1, Context >,
 {
   storage : Struct1FormerStorage,
-  context : ::core::option::Option< FormerContext >,
-  on_end : ::core::option::Option< FormerEnd >,
+  context : ::core::option::Option< Context >,
+  on_end : ::core::option::Option< End >,
 }
 
-impl< FormerContext, FormerEnd > Struct1Former< FormerContext, FormerEnd >
+impl< Context, End > Struct1Former< Context, End >
 where
-  FormerEnd : the_module::FormingEnd< Struct1, FormerContext >,
+  End : the_module::FormingEnd< Struct1, Context >,
 {
 
   #[ inline( always ) ]
@@ -127,8 +127,8 @@ where
   pub fn begin
   (
     mut storage : ::core::option::Option< Struct1FormerStorage >,
-    context : ::core::option::Option< FormerContext >,
-    on_end : FormerEnd,
+    context : ::core::option::Option< Context >,
+    on_end : End,
   ) -> Self
   {
     if storage.is_none()
@@ -144,7 +144,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn end( mut self ) -> FormerContext
+  pub fn end( mut self ) -> Context
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
@@ -156,7 +156,12 @@ where
   pub fn __vec_1< Former2 >( self ) ->
   Former2
   where
-    Former2 : former::FormerBegin< Vec< String >, Self, End = former::FormingEndWrapper< Vec< String >, Self > >,
+    Former2 : former::FormerBegin
+    <
+      Vec< String >,
+      Vec< String >,
+      Self, End = former::FormingEndWrapper< Vec< String >, Self >,
+    >,
   {
     let on_end = | formed : Vec< String >, super_former : ::core::option::Option< Self > | -> Self
     {
@@ -243,9 +248,9 @@ where
 
 }
 
-// impl< FormerContext, FormerEnd > Struct1Former< FormerContext, FormerEnd >
+// impl< Context, End > Struct1Former< Context, End >
 // where
-//   FormerEnd: the_module::FormingEnd<Struct1, FormerContext>,
+//   End: the_module::FormingEnd<Struct1, Context>,
 
 impl Struct1Former< Struct1, the_module::ReturnFormed >
 {
@@ -260,30 +265,30 @@ impl Struct1Former< Struct1, the_module::ReturnFormed >
 
 //
 
-// impl< FormerContext, FormerEnd > Struct1Former< FormerContext, FormerEnd >
+// impl< Context, End > Struct1Former< Context, End >
 // where
-//   FormerEnd : the_module::FormingEnd< Struct1, FormerContext >,
+//   End : the_module::FormingEnd< Struct1, Context >,
 
-// impl< FormerContext, FormerEnd > former::FormerBegin< Struct1, FormerContext >
-// for Struct1Former< FormerContext, FormerEnd >
-// where
-//   End : the_module::FormingEnd< Struct1, FormerContext >,
-// {
-//   type End = End;
-//
-//   #[ inline( always ) ]
-//   fn _begin
-//   (
-//     storage : core::option::Option< Struct1FormerStorage >, /* xxx2 : that should be storage */
-//     context : core::option::Option< FormerContext >,
-//     on_end : End,
-//   ) -> Self
-//   {
-//     debug_assert!( storage.is_none() );
-//     Self::begin( None, context, on_end )
-//   }
-//
-// }
+impl< Context, End > former::FormerBegin< Struct1FormerStorage, Struct1, Context >
+for Struct1Former< Context, End >
+where
+  End : the_module::FormingEnd< Struct1, Context >,
+{
+  type End = End;
+
+  #[ inline( always ) ]
+  fn _begin
+  (
+    storage : core::option::Option< Struct1FormerStorage >, /* xxx2 : that should be storage */
+    context : core::option::Option< Context >,
+    on_end : End,
+  ) -> Self
+  {
+    debug_assert!( storage.is_none() );
+    Self::begin( None, context, on_end )
+  }
+
+}
 
 //
 

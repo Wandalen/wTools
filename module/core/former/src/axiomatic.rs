@@ -22,12 +22,12 @@ pub trait FormingEnd< Formed, Context >
   fn call( &self, storage : Formed, context : core::option::Option< Context > ) -> Context;
 }
 
-impl< Formed, Context, F > FormingEnd< Formed, Context > for F
+impl< Storage, Context, F > FormingEnd< Storage, Context > for F
 where
-  F : Fn( Formed, core::option::Option< Context > ) -> Context,
+  F : Fn( Storage, core::option::Option< Context > ) -> Context,
 {
   #[ inline( always ) ]
-  fn call( &self, storage : Formed, context : core::option::Option< Context > ) -> Context
+  fn call( &self, storage : Storage, context : core::option::Option< Context > ) -> Context
   {
     self( storage, context )
   }
@@ -42,19 +42,19 @@ where
 ///
 /// # Type Parameters
 ///
-/// * `Formed` - The type of the container being processed. This type is passed to the closure
+/// * `Storage` - The type of the container being processed. This type is passed to the closure
 ///         when it's called.
 /// * `Context` - The type of the context that may be altered or returned by the closure.
 ///               This allows for flexible manipulation of context based on the container.
 #[ cfg( not( feature = "no_std" ) ) ]
-pub struct FormingEndWrapper< Formed, Context >
+pub struct FormingEndWrapper< Storage, Context >
 {
-  closure : Box< dyn Fn( Formed, Option< Context > ) -> Context >,
-  _marker : std::marker::PhantomData< Formed >,
+  closure : Box< dyn Fn( Storage, Option< Context > ) -> Context >,
+  _marker : std::marker::PhantomData< Storage >,
 }
 
 #[ cfg( not( feature = "no_std" ) ) ]
-impl< Formed, Context > FormingEndWrapper< Formed, Context >
+impl< Storage, Context > FormingEndWrapper< Storage, Context >
 {
   /// Constructs a new `FormingEndWrapper` with the provided closure.
   ///
@@ -67,7 +67,7 @@ impl< Formed, Context > FormingEndWrapper< Formed, Context >
   /// # Returns
   ///
   /// Returns an instance of `FormingEndWrapper` encapsulating the provided closure.
-  pub fn new( closure : impl Fn( Formed, Option< Context > ) -> Context + 'static ) -> Self
+  pub fn new( closure : impl Fn( Storage, Option< Context > ) -> Context + 'static ) -> Self
   {
     Self
     {
@@ -80,7 +80,7 @@ impl< Formed, Context > FormingEndWrapper< Formed, Context >
 #[ cfg( not( feature = "no_std" ) ) ]
 use std::fmt;
 #[ cfg( not( feature = "no_std" ) ) ]
-impl< Formed, Context > fmt::Debug for FormingEndWrapper< Formed, Context >
+impl< Storage, Context > fmt::Debug for FormingEndWrapper< Storage, Context >
 {
   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
@@ -92,30 +92,30 @@ impl< Formed, Context > fmt::Debug for FormingEndWrapper< Formed, Context >
 }
 
 #[ cfg( not( feature = "no_std" ) ) ]
-impl< Formed, Context > FormingEnd< Formed, Context >
-for FormingEndWrapper< Formed, Context >
+impl< Storage, Context > FormingEnd< Storage, Context >
+for FormingEndWrapper< Storage, Context >
 {
-  fn call( &self, formed : Formed, context : Option< Context > ) -> Context
+  fn call( &self, storage : Storage, context : Option< Context > ) -> Context
   {
-    ( self.closure )( formed, context )
+    ( self.closure )( storage, context )
   }
 }
 
-/// A `FormingEnd` implementation that returns the original context without any modifications.
-///
-/// This struct is used when no end-of-forming processing is needed, and the original context is to be returned as-is.
-#[ derive( Debug, Default ) ]
-pub struct NoEnd;
-
-impl< Formed, Context > FormingEnd< Formed, Context >
-for NoEnd
-{
-  #[ inline( always ) ]
-  fn call( &self, _formed : Formed, context : core::option::Option< Context > ) -> Context
-  {
-    context.unwrap()
-  }
-}
+// /// A `FormingEnd` implementation that returns the original context without any modifications.
+// ///
+// /// This struct is used when no end-of-forming processing is needed, and the original context is to be returned as-is.
+// #[ derive( Debug, Default ) ]
+// pub struct NoEnd;
+//
+// impl< Formed, Context > FormingEnd< Formed, Context >
+// for NoEnd
+// {
+//   #[ inline( always ) ]
+//   fn call( &self, _formed : Formed, context : core::option::Option< Context > ) -> Context
+//   {
+//     context.unwrap()
+//   }
+// }
 
 /// A `FormingEnd` implementation that returns the formed container itself instead of the context.
 ///
@@ -124,13 +124,13 @@ for NoEnd
 #[ derive( Debug, Default ) ]
 pub struct ReturnFormed;
 
-impl< Formed > FormingEnd< Formed, Formed >
+impl< Storage > FormingEnd< Storage, Storage >
 for ReturnFormed
 {
   #[ inline( always ) ]
-  fn call( &self, formed : Formed, _context : core::option::Option< Formed > ) -> Formed
+  fn call( &self, storage : Storage, _context : core::option::Option< Storage > ) -> Storage
   {
-    formed
+    storage
   }
 }
 
@@ -158,7 +158,7 @@ for ReturnFormed
 ///           potentially using the provided `Context`.
 ///
 
-pub trait FormerBegin< Formed, Context >
+pub trait FormerBegin< Storage, Formed, Context >
 {
 
   /// * `End` - Specifies the trait bound for the closure or handler that gets called at the completion
@@ -184,7 +184,7 @@ pub trait FormerBegin< Formed, Context >
   ///
   fn _begin
   (
-    formed : core::option::Option< Formed >,
+    storage : core::option::Option< Storage >,
     context : core::option::Option< Context >,
     on_end : Self::End,
   ) -> Self;

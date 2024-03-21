@@ -26,7 +26,7 @@ pub struct TemplateParameters
 
 }
 
-impl< Context, End > former::FormerBegin< TemplateParameterDescriptor, Context >
+impl< Context, End > former::FormerBegin< TemplateParameterDescriptorFormerStorage, TemplateParameterDescriptor, Context >
 for TemplateParameterDescriptorFormer< Context, End >
 where
   End : the_module::FormingEnd< TemplateParameterDescriptor, Context >,
@@ -36,7 +36,7 @@ where
   #[ inline( always ) ]
   fn _begin
   (
-    storage : core::option::Option< TemplateParameterDescriptor >, /* xxx2 : that should be storage */
+    storage : core::option::Option< TemplateParameterDescriptorFormerStorage >, /* xxx2 : that should be storage */
     context : core::option::Option< Context >,
     on_end : End,
   ) -> Self
@@ -56,7 +56,13 @@ where
   pub fn descriptor3< Former2 >( self ) ->
   Former2
   where
-    Former2 : former::FormerBegin< TemplateParameterDescriptor, Self, End = former::FormingEndWrapper< TemplateParameterDescriptor, Self > >,
+    Former2 : former::FormerBegin
+    <
+      TemplateParameterDescriptorFormerStorage,
+      TemplateParameterDescriptor,
+      Self,
+      End = former::FormingEndWrapper< TemplateParameterDescriptor, Self >,
+    >,
     // FieldContainer : ContainerAdd,
   {
     let on_end = | descriptor : TemplateParameterDescriptor, super_former : core::option::Option< Self > | -> Self

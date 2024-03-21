@@ -1,6 +1,10 @@
 crate::mod_interface!
 {
 
+  /// Compare two crate archives and create a difference report.
+  layer diff;
+  orphan use super::diff;
+
   /// Operation with features
   layer features;
   orphan use super::features;

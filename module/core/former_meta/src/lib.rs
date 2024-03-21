@@ -135,20 +135,20 @@ mod derive
 ///
 ///   pub struct UserProfileFormer
 ///   <
-///     FormerContext = UserProfile,
-///     FormerEnd = former::ReturnFormed,
+///     Context = UserProfile,
+///     End = former::ReturnFormed,
 ///   >
 ///   where
-///     FormerEnd : former::FormingEnd< UserProfile, FormerContext >,
+///     End : former::FormingEnd< UserProfile, Context >,
 ///   {
 ///     storage : UserProfileFormerStorage,
-///     context : Option< FormerContext >,
-///     on_end : Option< FormerEnd >,
+///     context : Option< Context >,
+///     on_end : Option< End >,
 ///   }
 ///
-///   impl< FormerContext, FormerEnd > UserProfileFormer< FormerContext, FormerEnd >
+///   impl< Context, End > UserProfileFormer< Context, End >
 ///   where
-///     FormerEnd : former::FormingEnd< UserProfile, FormerContext >,
+///     End : former::FormingEnd< UserProfile, Context >,
 ///   {
 ///     #[ inline( always ) ]
 ///     pub fn form( mut self ) -> UserProfile
@@ -195,7 +195,7 @@ mod derive
 ///      }
 ///
 ///     #[ inline( always ) ]
-///     pub fn begin( context : Option< FormerContext >, on_end : FormerEnd ) -> Self
+///     pub fn begin( context : Option< Context >, on_end : End ) -> Self
 ///     {
 ///       Self
 ///       {
@@ -206,7 +206,7 @@ mod derive
 ///     }
 ///
 ///     #[ inline( always ) ]
-///     pub fn end( mut self ) -> FormerContext
+///     pub fn end( mut self ) -> Context
 ///     {
 ///       let on_end = self.on_end.take().unwrap();
 ///       let context = self.context.take();

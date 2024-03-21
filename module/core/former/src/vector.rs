@@ -185,7 +185,7 @@ where
 
 //
 
-impl< E, Formed, Context, End > FormerBegin< Formed, Context >
+impl< E, Formed, Context, End > FormerBegin< Formed, Formed, Context >
 for VectorSubformer< E, Formed, Context, End >
 where
   End : FormingEnd< Formed, Context >,
