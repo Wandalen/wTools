@@ -204,6 +204,7 @@ fn backtrace_should_be()
   .channels([ Channel::Stable ])
   .optimizations([ Optimization::Debug ])
   .with_none_features( true )
+  .with_progress( false )
   .form();
 
   let rep = test( args, false ).unwrap_err().0;
