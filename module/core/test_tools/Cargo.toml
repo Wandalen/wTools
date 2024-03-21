@@ -1,6 +1,6 @@
 [package]
 name = "test_tools"
-version = "0.6.0"
+version = "0.8.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -31,10 +31,36 @@ all-features = false
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-# use_std = []
-no_std = []
-use_alloc = []
-enabled = []
+no_std = [
+  # "error_tools/no_std",
+  # "meta_tools/no_std",
+  # "mem_tools/no_std",
+  # "typing_tools/no_std",
+  # "data_type/no_std",
+  # "diagnostics_tools/no_std",
+  # "process_tools/no_std",
+  "former/use_alloc",
+]
+use_alloc = [
+  "no_std",
+  # "error_tools/use_alloc",
+  # "meta_tools/use_alloc",
+  # "mem_tools/use_alloc",
+  # "typing_tools/use_alloc",
+  # "data_type/use_alloc",
+  # "diagnostics_tools/use_alloc",
+  # "process_tools/use_alloc",
+  "former/use_alloc",
+]
+enabled = [
+  "error_tools/enabled",
+  "meta_tools/enabled",
+  "mem_tools/enabled",
+  "typing_tools/enabled",
+  "data_type/enabled",
+  "diagnostics_tools/enabled",
+  "process_tools/enabled",
+]
 # nightly = [ "typing_tools/nightly" ]
 
 [dependencies]
@@ -56,6 +82,8 @@ mem_tools = { workspace = true, features = [ "full" ] }
 typing_tools = { workspace = true, features = [ "full" ] }
 data_type = { workspace = true, features = [ "full" ] }
 diagnostics_tools = { workspace = true, features = [ "full" ] }
+process_tools = { workspace = true, features = [ "full" ] }
+former = { workspace = true, features = [ "full" ] }
 
 [build-dependencies]
 rustc_version = "0.4"

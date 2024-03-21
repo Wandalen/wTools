@@ -1,17 +1,35 @@
 # Module :: cargo_will
-
-[![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleCargoWillPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleCargoWillPush.yml) [![docs.rs](https://img.shields.io/docsrs/cargo_will?color=e3e8f0&logo=docs.rs)](https://docs.rs/cargo_will) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
-
+<!--{ generate.module_header.start() }-->
+ [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)[![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_cargo_will_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_cargo_will_push.yml)[![docs.rs](https://img.shields.io/docsrs/cargo_will?color=e3e8f0&logo=docs.rs)](https://docs.rs/cargo_will)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Fcargo_will_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20cargo_will_trivial/https://github.com/Wandalen/wTools)
+<!--{ generate.module_header.end }-->
 Utility to publish multi-crate and multi-workspace environments and maintain their consistency.
 
-<!-- qqq : xxx : write -->
-<!-- ### Basic use-case
+### Purpose
 
-``` rust
-```
+1. **Multi-Workspace Consistency**: In a project setup involving multiple workspaces with shared dependencies, `willbe` maintains consistency. It ensures all workspaces are updated with compatible dependency versions.
 
-### To add to your project
+2. **Publishing Multi-Crate Projects**: If your project structure includes multiple crates that need simultaneous publishing, `willbe` manages the process seamlessly. It ensures the crates are published in the right order while staying in version sync.
+
+3. **Dependency Analysis**: `willbe` can perform a thorough analysis of your project's dependencies, providing a detailed highlight of inconsistencies or areas that need attention.
+
+4. **Test Execution With Varied Configurations**: `willbe` can execute tests with varying configurations, such as different combinations of crate features. This assists in ensuring comprehensive coverage of test scenarios.
+
+5. **Generate Health Table**: Quickly visualize important project metrics like build status for each crate, creating a single, easy-to-read table.
+
+6. **Automating CI/CD Workflow Generation**: Automatically generate a series of CI/CD operations suitable for the task at hand to enhance productivity and improve the development process.
+
+### To install
 
 ``` bash
-cargo add cargo_will
-``` -->
+cargo install cargo_will
+will .
+```
+
+### Try out from the repository
+
+``` shell test
+git clone https://github.com/Wandalen/wTools
+cd wTools/module/alias/cargo_will
+cargo install --path .
+will .
+```

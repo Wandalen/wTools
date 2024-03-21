@@ -31,7 +31,7 @@ default = [ "enabled" ]
 full = [ "enabled" ]
 enabled = [ "interval_adapter/enabled" ]
 no_std = []
-use_alloc = []
+use_alloc = [ "no_std" ]
 
 [dependencies]
 interval_adapter = { workspace = true }

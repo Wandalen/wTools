@@ -1,17 +1,15 @@
 use assert_fs::prelude::*;
 
-use crate::*;
+use super::*;
 use std::fs;
 use std::fs::create_dir;
-use TheModule::action::workspace_renew;
-
-const ASSETS_PATH : &str = "tests/assets"; 
-
+use the_module::action::workspace_renew;
+use the_module::action::WorkspaceTemplate;
 
 fn arrange( sample_dir : &str ) -> assert_fs::TempDir
 {
   let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) );
-  let assets_relative_path = std::path::Path::new( ASSETS_PATH );
+  let assets_relative_path = std::path::Path::new( ASSET_PATH );
   let assets_path = root_path.join( assets_relative_path );
 
   let temp = assert_fs::TempDir::new().unwrap();
@@ -28,7 +26,7 @@ fn default_case()
   create_dir(temp.join("test_project_name" )).unwrap();
 
   // Act
-  _ = workspace_renew( &temp.path().join("test_project_name" ), "https://github.con/Username/TestRepository".to_string(), vec![ "master".into() ] ).unwrap();
+  _ = workspace_renew( &temp.path().join( "test_project_name" ), WorkspaceTemplate::default(), "https://github.con/Username/TestRepository".to_string(), vec![ "master".to_string() ] ).unwrap();
 
   // Assets
   assert!( temp_path.join( "module" ).exists() );
@@ -43,18 +41,11 @@ fn default_case()
   let name = "project_name = \"test_project_name\"";
   let repo_url = "repo_url = \"https://github.con/Username/TestRepository\"";
   let branches = "branches = [\"master\"]";
-
   assert!( actual.contains( &name) );
   assert!( actual.contains( &repo_url) );
   assert!( actual.contains( &branches) );
 
   assert!( temp_path.join( "Makefile" ).exists() );
-  assert!( temp_path.join( "assets" ).exists() );
-  assert!( temp_path.join( "docs" ).exists() );
-  assert!( temp_path.join( ".github" ).exists() );
-  assert!( temp_path.join( ".github/workflows" ).exists() );
-  // assert!( temp_path.join( ".circleci" ).exists() );
-  // assert!( temp_path.join( ".circleci/config.yml" ).exists() );
   assert!( temp_path.join( ".cargo" ).exists() );
   assert!( temp_path.join( ".cargo/config.toml" ).exists() );
 }
@@ -66,7 +57,7 @@ fn non_empty_dir()
   let temp = arrange( "single_module" );
 
   // Act
-  let r = workspace_renew( temp.path(), "".into(), vec![] );
+  let r = workspace_renew( temp.path(), WorkspaceTemplate::default(), "".to_string(), vec![] );
 
   // Assert
   assert!( r.is_err() );

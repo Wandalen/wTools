@@ -1,6 +1,6 @@
 [package]
 name = "cargo_will"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -28,14 +28,18 @@ all-features = false
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-use_alloc = []
+# use_alloc = [ "no_std" ]
 enabled = []
 
 [dependencies]
- willbe = { workspace = true }
+willbe = { workspace = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
-
-# aaa : for Petro : make it working
-# aaa : now it`s working
+assert_fs = "1.0"
+serde_yaml = "0.9"
+serde_json = "1.0.114"
+serde = "1.0"
+assert_cmd = "2.0"
+petgraph = "~0.6"
+cargo_metadata = "~0.14"

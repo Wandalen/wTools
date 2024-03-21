@@ -4,13 +4,13 @@ use std::path::Path;
 use std::process::{Command, Stdio};
 use assert_fs::fixture::PathCopy;
 
-const ASSETS_PATH : &str = concat!( env!("CARGO_MANIFEST_DIR"), "/tests/assets/" );
+const ASSET_PATH : &str = concat!( env!("CARGO_MANIFEST_DIR"), "/tests/assets/" );
 
 
 fn arrange( source: &str ) -> assert_fs::TempDir
 {
   let root_path = Path::new( env!( "CARGO_MANIFEST_DIR" ) );
-  let assets_relative_path = Path::new( ASSETS_PATH );
+  let assets_relative_path = Path::new( ASSET_PATH );
   let assets_path = root_path.join( assets_relative_path );
 
   let temp = assert_fs::TempDir::new().unwrap();

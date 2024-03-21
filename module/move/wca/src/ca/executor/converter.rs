@@ -42,11 +42,11 @@ pub( crate ) mod private
       S : Into< String >,
       Routine : Into< Routine >,
     {
-      let mut routines = self.container.routines.unwrap_or_default();
+      let mut routines = self.storage.routines.unwrap_or_default();
 
       routines.insert( phrase.into(), routine );
 
-      self.container.routines = Some( routines );
+      self.storage.routines = Some( routines );
       self
     }
   }

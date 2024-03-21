@@ -9,7 +9,7 @@ fn command_form()
   let exp = Command::< &str >
   {
     name : "a".to_string(),
-    properties : std::collections::HashMap::< &str, Property< &str > >::new(),
+    properties : collection_tools::HashMap::< &str, Property< &str > >::new(),
   };
   a_id!( got, exp );
 
@@ -20,7 +20,7 @@ fn command_form()
   let exp = Command::< &str >
   {
     name : "a".to_string(),
-    properties : std::collections::HashMap::< &str, Property< &str > >::new(),
+    properties : collection_tools::HashMap::< &str, Property< &str > >::new(),
   };
   a_id!( got, exp );
 
@@ -31,7 +31,7 @@ fn command_form()
   let exp = Command::< &str >
   {
     name : "a".to_string(),
-    properties : std::collections::HashMap::< &str, Property< &str > >::new(),
+    properties : collection_tools::HashMap::< &str, Property< &str > >::new(),
   };
   a_id!( got, exp );
 
@@ -39,6 +39,8 @@ fn command_form()
 
 //
 
+// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
+#[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn command_properties()
 {
@@ -60,7 +62,7 @@ fn command_properties()
       "property1" => Property::new( "property1", 13isize ),
       "property2" => Property::new( "property2", 113isize ),
     },
-    // properties : std::collections::HashMap::< &str, Property< &str > >::new(),
+    // properties : collection_tools::HashMap::< &str, Property< &str > >::new(),
   };
   a_id!( got, exp );
 

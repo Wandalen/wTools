@@ -79,6 +79,9 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
+  // exposed use super;
+  exposed use super::super::helper;
+
   prelude use
   {
     num,

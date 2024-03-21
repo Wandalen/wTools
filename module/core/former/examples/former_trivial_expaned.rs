@@ -16,12 +16,14 @@
 //! This approach abstracts away the need for manually implementing a builder for each struct, making code more readable and maintainable.
 //!
 
-#[ cfg( not( feature = "enabled" ) ) ]
-#[ allow( dead_code ) ]
+// xxx : regenerate
+
+#![ allow( dead_code ) ]
+
+#[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
 fn main(){}
 
-#[ cfg( feature = "enabled" ) ]
-#[ allow( dead_code ) ]
+#[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
 fn main()
 {
 
@@ -36,14 +38,14 @@ fn main()
   impl UserProfile
   {
     #[ inline( always ) ]
-    pub fn former() -> UserProfileFormer< UserProfile, former::ReturnContainer >
+    pub fn former() -> UserProfileFormer< UserProfile, former::ReturnFormed >
     {
-      UserProfileFormer::< UserProfile, former::ReturnContainer >::new()
+      UserProfileFormer::< UserProfile, former::ReturnFormed >::new()
     }
   }
 
   #[ derive( Debug, Default ) ]
-  pub struct UserProfileFormerContainer
+  pub struct UserProfileFormerStorage
   {
     age : Option< i32 >,
     username : Option< String >,
@@ -53,26 +55,26 @@ fn main()
   pub struct UserProfileFormer
   <
     FormerContext = UserProfile,
-    FormerEnd = former::ReturnContainer,
+    FormerEnd = former::ReturnFormed,
   >
   where
-    FormerEnd : former::ToSuperFormer< UserProfile, FormerContext >,
+    FormerEnd : former::FormingEnd< UserProfile, FormerContext >,
   {
-    container : UserProfileFormerContainer,
+    storage : UserProfileFormerStorage,
     context : Option< FormerContext >,
     on_end : Option< FormerEnd >,
   }
 
   impl< FormerContext, FormerEnd > UserProfileFormer< FormerContext, FormerEnd >
   where
-    FormerEnd : former::ToSuperFormer< UserProfile, FormerContext >,
+    FormerEnd : former::FormingEnd< UserProfile, FormerContext >,
   {
     #[ inline( always ) ]
     pub fn form( mut self ) -> UserProfile
     {
-      let age = if self.container.age.is_some()
+      let age = if self.storage.age.is_some()
       {
-        self.container.age.take().unwrap()
+        self.storage.age.take().unwrap()
       }
       else
       {
@@ -100,9 +102,9 @@ fn main()
         };
         val
       };
-      let username = if self.container.username.is_some()
+      let username = if self.storage.username.is_some()
       {
-        self.container.username.take().unwrap()
+        self.storage.username.take().unwrap()
       }
       else
       {
@@ -130,9 +132,9 @@ fn main()
         };
         val
       };
-      let bio_optional = if self.container.bio_optional.is_some()
+      let bio_optional = if self.storage.bio_optional.is_some()
       {
-        Option::Some( self.container.bio_optional.take().unwrap() )
+        Option::Some( self.storage.bio_optional.take().unwrap() )
       }
       else
       {
@@ -155,20 +157,21 @@ fn main()
     }
 
     #[ inline( always ) ]
-    pub fn new() -> UserProfileFormer< UserProfile, former::ReturnContainer >
+    pub fn new() -> UserProfileFormer< UserProfile, former::ReturnFormed >
     {
-      UserProfileFormer::< UserProfile, former::ReturnContainer >::begin( None, former::ReturnContainer )
+      UserProfileFormer::< UserProfile, former::ReturnFormed >::begin( None, former::ReturnFormed )
     }
 
     #[ inline( always ) ]
-    pub fn begin(
+    pub fn begin
+    (
       context : Option< FormerContext >,
       on_end : FormerEnd,
     ) -> Self
     {
       Self
       {
-        container : core::default::Default::default(),
+        storage : core::default::Default::default(),
         context : context,
         on_end : Option::Some( on_end ),
       }
@@ -179,8 +182,8 @@ fn main()
     {
       let on_end = self.on_end.take().unwrap();
       let context = self.context.take();
-      let container = self.form();
-      on_end.call( container, context )
+      let formed = self.form();
+      on_end.call( formed, context )
     }
 
     #[ inline ]
@@ -188,8 +191,8 @@ fn main()
     where
       Src : Into< i32 >,
     {
-      debug_assert!( self.container.age.is_none() );
-      self.container.age = Option::Some( src.into() );
+      debug_assert!( self.storage.age.is_none() );
+      self.storage.age = Option::Some( src.into() );
       self
     }
 
@@ -198,8 +201,8 @@ fn main()
     where
       Src : Into< String >,
     {
-      debug_assert!( self.container.username.is_none() );
-      self.container.username = Option::Some( src.into() );
+      debug_assert!( self.storage.username.is_none() );
+      self.storage.username = Option::Some( src.into() );
       self
     }
 
@@ -208,8 +211,8 @@ fn main()
     where
       Src : Into< String >,
     {
-      debug_assert!( self.container.bio_optional.is_none() );
-      self.container.bio_optional = Option::Some( src.into() );
+      debug_assert!( self.storage.bio_optional.is_none() );
+      self.storage.bio_optional = Option::Some( src.into() );
       self
     }
   }

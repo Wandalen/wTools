@@ -4,7 +4,8 @@ mod private
 
   use std::
   {
-    collections::{ HashMap, HashSet }, path::Path,
+    path::Path,
+    collections::{ HashMap, HashSet },
   };
   use std::fmt::Formatter;
   use std::hash::Hash;
@@ -12,12 +13,12 @@ mod private
   use cargo_metadata::{ Dependency, DependencyKind, Package as PackageMetadata };
   use toml_edit::value;
 
-  use tool::process;
+  use process_tools::process;
   use manifest::{ Manifest, ManifestError };
   use crates_tools::CrateArchive;
 
   use workspace::Workspace;
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
   use version::BumpReport;
 
   use wtools::
@@ -294,7 +295,7 @@ mod private
 
   impl Plan for CargoPackagePlan
   {
-    type Report = process::CmdReport;
+    type Report = process::Report;
     fn perform( &self, dry : bool ) -> Result< Self::Report >
     {
       let args = cargo::PackOptions::former()
@@ -377,9 +378,9 @@ mod private
   #[ derive( Debug, Default, Clone ) ]
   pub struct ExtendedGitReport
   {
-    pub add : Option< process::CmdReport >,
-    pub commit : Option< process::CmdReport >,
-    pub push : Option< process::CmdReport >,
+    pub add : Option< process::Report >,
+    pub commit : Option< process::Report >,
+    pub push : Option< process::Report >,
   }
 
   #[ derive( Debug ) ]
@@ -426,7 +427,7 @@ mod private
 
   impl Plan for CargoPublishPlan
   {
-    type Report = process::CmdReport;
+    type Report = process::Report;
     fn perform( &self, dry : bool ) -> Result< Self::Report >
     {
       let args = cargo::PublishOptions::former()
@@ -546,21 +547,21 @@ mod private
       IntoPackage : Into< Package >,
     {
       let mut plan = PublishSinglePackagePlanner::former();
-      if let Some( workspace ) = &self.container.workspace
+      if let Some( workspace ) = &self.storage.workspace
       {
         plan = plan.workspace( workspace.clone() );
       }
-      if let Some( base_temp_dir ) = &self.container.base_temp_dir
+      if let Some( base_temp_dir ) = &self.storage.base_temp_dir
       {
         plan = plan.base_temp_dir( base_temp_dir.clone() );
       }
       let plan = plan
       .package( package )
       .perform();
-      let mut plans = self.container.plans.unwrap_or_default();
+      let mut plans = self.storage.plans.unwrap_or_default();
       plans.push( plan );
 
-      self.container.plans = Some( plans );
+      self.storage.plans = Some( plans );
 
       self
     }
@@ -600,19 +601,19 @@ mod private
   pub struct PublishReport
   {
     /// Retrieves information about the package.
-    pub get_info : Option< process::CmdReport >,
+    pub get_info : Option< process::Report >,
     /// Indicates whether publishing is required for the package.
     pub publish_required : bool,
     /// Bumps the version of the package.
     pub bump : Option< ExtendedBumpReport >,
     /// Report of adding changes to the Git repository.
-    pub add : Option< process::CmdReport >,
+    pub add : Option< process::Report >,
     /// Report of committing changes to the Git repository.
-    pub commit : Option< process::CmdReport >,
+    pub commit : Option< process::Report >,
     /// Report of pushing changes to the Git repository.
-    pub push : Option< process::CmdReport >,
+    pub push : Option< process::Report >,
     /// Report of publishes the package using the `cargo publish` command.
-    pub publish : Option< process::CmdReport >,
+    pub publish : Option< process::Report >,
   }
 
   impl std::fmt::Display for PublishReport
@@ -711,7 +712,7 @@ mod private
   {
     pub fn option_base_temp_dir(  mut self, value : impl Into< &'a Option< PathBuf > > ) -> Self
     {
-      self.container.base_temp_dir = Some( value.into() );
+      self.storage.base_temp_dir = Some( value.into() );
       self
     }
   }

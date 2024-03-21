@@ -1,5 +1,5 @@
 use super::*;
-pub use TheModule::reflect;
+pub use the_module::reflect;
 
 #[ derive( Debug, Clone, PartialEq ) ]
 pub struct Struct1

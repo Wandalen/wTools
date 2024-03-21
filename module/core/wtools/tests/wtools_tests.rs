@@ -2,7 +2,7 @@
 
 // #![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
 
-use wtools as TheModule;
+use wtools as the_module;
 use test_tools::exposed::*;
 
 ///  A struct for testing purpose.

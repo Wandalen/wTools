@@ -1,6 +1,6 @@
 [package]
 name = "impls_index"
-version = "0.3.0"
+version = "0.6.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -24,40 +24,16 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-# exclude = [ "/tests", "/examples", "-*" ]
-include = [
-  "/rust/impl/meta/impls_index_lib.rs",
-  "/rust/impl/meta/impls_index",
-  "/Cargo.toml",
-  "/Readme.md",
-  "/License",
-]
-
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
 no_std = []
-use_alloc = []
-enabled = []
-
-# [lib]
-# name = "impls_index"
-# path = "src/meta/impls_index/front/impls_index_lib.rs"
-#
-# [[test]]
-# name = "impls_index_test"
-# path = "tests/meta/impls_index_tests.rs"
-#
-# [[test]]
-# name = "impls_index_smoke_test"
-# path = "tests/_integration_test/smoke_test.rs"
-#
-# [[example]]
-# name = "impls_index_trivial_sample"
-# path = "examples/impls_index_trivial_sample/src/main.rs"
+use_alloc = [ "no_std" ]
+enabled = [ "impls_index_meta/enabled" ]
 
 [dependencies]
 impls_index_meta = { workspace = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
+tempdir = { version = "0.3.7" }

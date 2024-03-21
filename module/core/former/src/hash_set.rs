@@ -3,11 +3,11 @@
 //! This part of the crate provides a flexible interface (`HashSetLike`) and a builder pattern implementation (`HashSetSubformer`) for `HashSet`-like containers. It's designed to extend the builder pattern, allowing for fluent and dynamic construction of sets within custom data structures.
 
 use super::*;
-
+use collection_tools::HashSet;
 
 /// A trait for containers behaving like a `HashSet`, allowing insertion operations.
 ///
-/// Implementing this trait enables the associated container to be used with `HashSetSubformer`,
+/// Implementing this trait enables the associated formed to be used with `HashSetSubformer`,
 /// facilitating a builder pattern that is both intuitive and concise.
 ///
 /// # Example Implementation
@@ -20,16 +20,16 @@ where
   E : core::cmp::Eq + core::hash::Hash,
 {
   /// Inserts a key-value pair into the map.
-  fn insert( &mut self, e : E ) -> Option< E >;
+  fn insert( &mut self, element : E ) -> Option< E >;
 }
 
-impl< E > HashSetLike< E > for std::collections::HashSet< E >
+impl< E > HashSetLike< E > for HashSet< E >
 where
   E : core::cmp::Eq + core::hash::Hash,
 {
-  fn insert( &mut self, e : E ) -> Option< E >
+  fn insert( &mut self, element : E ) -> Option< E >
   {
-    std::collections::HashSet::replace( self, e )
+    HashSet::replace( self, element )
   }
 }
 
@@ -43,6 +43,8 @@ where
 /// Using `HashSetSubformer` to populate a `HashSet` within a struct:
 ///
 /// ```rust
+/// # #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
+/// # {
 /// # use test_tools::exposed::*;
 ///
 /// #[ derive( Debug, PartialEq, former::Former ) ]
@@ -60,163 +62,179 @@ where
 /// .form();
 ///
 /// assert_eq!(instance, StructWithSet { set : hset![ "apple", "banana" ] });
+/// # }
 /// ```
 
 #[ derive( Debug, Default ) ]
-pub struct HashSetSubformer< E, Container, Context, ContainerEnd >
+pub struct HashSetSubformer< E, Formed, Context, ContainerEnd >
 where
   E : core::cmp::Eq + core::hash::Hash,
-  Container : HashSetLike< E > + core::default::Default,
-  ContainerEnd : ToSuperFormer< Container, Context >,
+  Formed : HashSetLike< E > + core::default::Default,
+  ContainerEnd : FormingEnd< Formed, Context >,
 {
-  container : core::option::Option< Container >,
+  formed : core::option::Option< Formed >,
   context : core::option::Option< Context >,
   on_end : core::option::Option< ContainerEnd >,
   _e_phantom : core::marker::PhantomData< E >,
 }
 
-impl< E, Container, Context, ContainerEnd >
-HashSetSubformer< E, Container, Context, ContainerEnd >
+impl< E, Formed, Context, ContainerEnd >
+HashSetSubformer< E, Formed, Context, ContainerEnd >
 where
   E : core::cmp::Eq + core::hash::Hash,
-  Container : HashSetLike< E > + core::default::Default,
-  ContainerEnd : ToSuperFormer< Container, Context >,
+  Formed : HashSetLike< E > + core::default::Default,
+  ContainerEnd : FormingEnd< Formed, Context >,
 {
 
   /// Form current former into target structure.
   #[ inline( always ) ]
-  fn form( mut self ) -> Container
+  pub fn form( mut self ) -> Formed
   {
-    let container = if self.container.is_some()
+    let formed = if self.formed.is_some()
     {
-      self.container.take().unwrap()
+      self.formed.take().unwrap()
     }
     else
     {
       let val = Default::default();
       val
     };
-    container
+    formed
   }
 
-  /// Initializes a new instance of the builder with default settings.
-  ///
-  /// This method provides a starting point for building a `HashSetLike` container using
-  /// a fluent interface. It sets up an empty container ready to be populated.
-  ///
-  /// # Returns
-  /// A new instance of `HashSetSubformer` with no elements.
-  ///
-  #[ inline( always ) ]
-  pub fn new() -> HashSetSubformer< E, Container, Container, impl ToSuperFormer< Container, Container > >
-  {
-    HashSetSubformer::begin
-    (
-      None,
-      None,
-      crate::ReturnContainer,
-    )
-  }
-
-  /// Begins the building process with an optional context and container.
+  /// Begins the building process with an optional context and formed.
   ///
   /// This method is typically called internally by the builder but can be used directly
   /// to initialize the builder with specific contexts or containers.
   ///
   /// # Parameters
   /// - `context`: An optional context for the building process.
-  /// - `container`: An optional initial container to populate.
+  /// - `formed`: An optional initial formed to populate.
   /// - `on_end`: A handler to be called at the end of the building process.
   ///
   #[ inline( always ) ]
   pub fn begin
   (
+    formed : core::option::Option< Formed >,
     context : core::option::Option< Context >,
-    container : core::option::Option< Container >,
     on_end : ContainerEnd,
   ) -> Self
   {
     Self
     {
+      formed,
       context : context,
-      container,
       on_end : Some( on_end ),
       _e_phantom : core::marker::PhantomData,
     }
   }
 
-  /// Finalizes the building process and returns the constructed container or a context.
+  /// Finalizes the building process and returns the constructed formed or a context.
   ///
   /// This method concludes the building process by applying the `on_end` handler to transform
-  /// the container or incorporate it into a given context. It's typically called at the end
+  /// the formed or incorporate it into a given context. It's typically called at the end
   /// of the builder chain to retrieve the final product of the building process.
   ///
   /// # Returns
   /// Depending on the `on_end` handler's implementation, this method can return either the
-  /// constructed container or a context that incorporates the container.
+  /// constructed formed or a context that incorporates the formed.
   ///
   #[ inline( always ) ]
   pub fn end( mut self ) -> Context
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
-    let container = self.form();
-    on_end.call( container, context )
+    let formed = self.form();
+    on_end.call( formed, context )
   }
 
-  /// Replaces the current container with a new one.
+  /// Replaces the current formed with a new one.
   ///
   /// This method allows for replacing the entire set being built with a different one.
   /// It can be useful in scenarios where a pre-populated set needs to be modified or
   /// replaced entirely during the building process.
   ///
   /// # Parameters
-  /// - `container`: The new container to use for subsequent builder operations.
+  /// - `formed`: The new formed to use for subsequent builder operations.
   ///
   /// # Returns
-  /// The builder instance with the container replaced, enabling further chained operations.
+  /// The builder instance with the formed replaced, enabling further chained operations.
   ///
   #[ inline( always ) ]
-  pub fn replace( mut self, container : Container ) -> Self
+  pub fn replace( mut self, formed : Formed ) -> Self
   {
-    self.container = Some( container );
+    self.formed = Some( formed );
     self
   }
 
 }
 
+// impl< E, Formed > VectorSubformer< E, Formed, Formed, crate::ReturnFormed >
+// where
+//   Formed : VectorLike< E > + core::default::Default,
+// {
 
-impl< E, Container, Context, ContainerEnd >
-HashSetSubformer< E, Container, Context, ContainerEnd >
+impl< E, Formed >
+HashSetSubformer< E, Formed, Formed, crate::ReturnFormed >
 where
   E : core::cmp::Eq + core::hash::Hash,
-  Container : HashSetLike< E > + core::default::Default,
-  ContainerEnd : ToSuperFormer< Container, Context >,
+  Formed : HashSetLike< E > + core::default::Default,
+  // ContainerEnd : FormingEnd< Formed, Context >,
+{
+
+  /// Initializes a new instance of the builder with default settings.
+  ///
+  /// This method provides a starting point for building a `HashSetLike` formed using
+  /// a fluent interface. It sets up an empty formed ready to be populated.
+  ///
+  /// # Returns
+  /// A new instance of `HashSetSubformer` with no elements.
+  ///
+  #[ inline( always ) ]
+  pub fn new() -> Self
+  {
+    HashSetSubformer::begin
+    (
+      None,
+      None,
+      crate::ReturnFormed,
+    )
+  }
+
+}
+
+impl< E, Formed, Context, ContainerEnd >
+HashSetSubformer< E, Formed, Context, ContainerEnd >
+where
+  E : core::cmp::Eq + core::hash::Hash,
+  Formed : HashSetLike< E > + core::default::Default,
+  ContainerEnd : FormingEnd< Formed, Context >,
 {
 
   /// Inserts an element into the set, possibly replacing an existing element.
   ///
   /// This method ensures that the set contains the given element, and if the element
-  /// was already present, it might replace it depending on the container's behavior.
+  /// was already present, it might replace it depending on the formed's behavior.
   ///
   /// # Parameters
-  /// - `e`: The element to insert into the set.
+  /// - `element`: The element to insert into the set.
   ///
   /// # Returns
-  /// - `Some(e)` if the element was replaced.
+  /// - `Some(element)` if the element was replaced.
   /// - `None` if the element was newly inserted without replacing any existing element.
-  ///  #[ inline( always ) ]
-  pub fn insert< E2 >( mut self, e : E2 ) -> Self
+  ///
+  #[ inline( always ) ]
+  pub fn insert< E2 >( mut self, element : E2 ) -> Self
   where
     E2 : core::convert::Into< E >,
   {
-    if self.container.is_none()
+    if self.formed.is_none()
     {
-      self.container = core::option::Option::Some( Default::default() );
+      self.formed = core::option::Option::Some( Default::default() );
     }
-    if let core::option::Option::Some( ref mut container ) = self.container
+    if let core::option::Option::Some( ref mut formed ) = self.formed
     {
-      container.insert( e.into() );
+      formed.insert( element.into() );
     }
     self
   }

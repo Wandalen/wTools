@@ -22,6 +22,7 @@ mod private
     for_app::{ Error, Context },
     err
   };
+  // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
   use cargo_metadata::
   {
     Dependency,
@@ -32,7 +33,7 @@ mod private
   use former::Former;
 
   use workspace::Workspace;
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
 
   /// Args for `list` action.
   #[ derive( Debug, Default, Copy, Clone ) ]

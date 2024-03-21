@@ -4,8 +4,9 @@ mod private
   use crate::*;
 
   use std::path::PathBuf;
+  use error_tools::err;
   use former::Former;
-  use process::CmdReport;
+  use process_tools::process::*;
   use wtools::error::Result;
 
   /// Represents pack options
@@ -21,7 +22,7 @@ mod private
   {
     pub fn option_temp_path( mut self, value : impl Into< Option< PathBuf > > ) -> Self
     {
-      self.container.temp_path = value.into();
+      self.storage.temp_path = value.into();
       self
     }
   }
@@ -50,7 +51,7 @@ mod private
     track_caller,
     tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
   )]
-  pub fn pack( args : PackOptions ) -> Result< CmdReport >
+  pub fn pack( args : PackOptions ) -> Result< Report >
   {
     let ( program, options ) = ( "cargo", args.to_pack_args() );
 
@@ -58,29 +59,28 @@ mod private
     {
       Ok
       (
-        CmdReport
+        Report
         {
           command : format!( "{program} {}", options.join( " " ) ),
-          path : args.path.to_path_buf(),
           out : String::new(),
           err : String::new(),
+          current_path: args.path.to_path_buf(),
+          error: Ok( () ),
         }
       )
     }
     else
     {
-      let options =
-      process::RunOptions::former()
-      .application( program )
+      Run::former()
+      .bin_path( program )
       .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-      .path( args.path )
-      .form();
-      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
+      .current_path( args.path )
+      .run().map_err( | report | err!( report.to_string() ) )
     }
   }
 
 
-  /// Represents the arguments for the publish.
+  /// Represents the options for the publish.
   #[ derive( Debug, Former, Clone, Default ) ]
   pub struct PublishOptions
   {
@@ -93,7 +93,7 @@ mod private
   {
     pub fn option_temp_path( mut self, value : impl Into< Option< PathBuf > > ) -> Self
     {
-      self.container.temp_path = value.into();
+      self.storage.temp_path = value.into();
       self
     }
   }
@@ -114,7 +114,7 @@ mod private
     track_caller,
     tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
   )]
-  pub fn publish( args : PublishOptions ) -> Result< CmdReport >
+  pub fn publish( args : PublishOptions ) -> Result< Report >
   {
     let ( program, arguments) = ( "cargo", args.as_publish_args() );
 
@@ -122,24 +122,23 @@ mod private
     {
       Ok
         (
-          CmdReport
+          Report
           {
             command : format!( "{program} {}", arguments.join( " " ) ),
-            path : args.path.to_path_buf(),
             out : String::new(),
             err : String::new(),
+            current_path: args.path.to_path_buf(),
+            error: Ok( () ),
           }
         )
     }
     else
     {
-      let options =
-      process::RunOptions::former()
-      .application( program )
+      Run::former()
+      .bin_path( program )
       .args( arguments.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-      .path( args.path )
-      .form();
-      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
+      .current_path( args.path )
+      .run().map_err( | report  | err!( report.to_string() ) )
     }
   }
 }

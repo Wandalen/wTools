@@ -2,31 +2,28 @@
 
 use super::*;
 use feed_config::SubscriptionConfig;
-use gluesql::sled_storage::{sled::Config, SledStorage};
+use gluesql::sled_storage::{ sled::Config, SledStorage };
 use retriever::{ FeedClient, FeedFetch };
-use storage::{ FeedStorage, FeedStore };
+use storage::{ Store, FeedStorage, feed::FeedStore, config::ConfigStore, table::TableStore, frame::FrameStore };
 use wca::{ Args, Type };
-use executor::endpoints::Report;
-// use wca::prelude::*;
+use executor::actions::Report;
+use error_tools::Result;
 
-pub mod endpoints;
-use endpoints::{
-  list_fields::list_fields,
-  frames::{ list_frames, download_frames, ListReport },
-  feeds::list_feeds,
-  config::{ add_config, remove_config, list_configs },
+pub mod actions;
+use actions::
+{
+  frame::{ list_frames, download_frames },
+  feed::list_feeds,
+  config::{ add_config, delete_config, list_configs },
   query::execute_query,
   table::{ list_columns, list_tables },
-  list_fields::FieldsReport,
 };
 
-use std::future::Future;
-
-fn endpoint< 'a, F, Fut, R >( async_endpoint : F, args : &'a Args ) -> Result< R, Box< dyn std::error::Error + Send + Sync > >
+fn action< 'a, F, Fut, R >( async_endpoint : F, args : &'a Args ) -> Result< R >
 where
   F : FnOnce( FeedStorage< SledStorage >, &'a Args ) -> Fut,
-  Fut : Future< Output = Result< R, Box< dyn std::error::Error + Send + Sync > > >,
-  R : endpoints::Report,
+  Fut : std::future::Future< Output = Result< R > >,
+  R : actions::Report,
 {
   let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
   .unwrap_or( String::from( "./_data" ) )
@@ -57,25 +54,10 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     ))
     .routine( | args |
     {
-      match endpoint( download_frames, &args )
+      match action( download_frames, &args )
       {
         Ok( report ) => report.report(),
-        Err( report ) => println!( "{report}" ),
-      }
-    })
-    .end()
-    .command( "fields.list" )
-    .long_hint( concat!
-    (
-      "List all fields in frame table with explanation and type.\n",
-      "    Example: .fields.list",
-    ))
-    .routine( | args |
-    {
-      match endpoint( list_fields, &args )
-      {
-        Ok( report ) => report.report(),
-        Err( report ) => println!( "{report}" ),
+        Err( err ) => println!( "{:?}", err ),
       }
     })
     .end()
@@ -88,14 +70,14 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     ))
     .routine( | args |
     {
-      match endpoint( list_feeds, &args )
+      match action( list_feeds, &args )
       {
         Ok( report ) => report.report(),
-        Err( report ) => println!( "{report}" ),
+        Err( err ) => println!( "{:?}", err ),
       }
     })
     .end()
-  
+
   .command( "frames.list" )
     .long_hint( concat!
     (
@@ -104,10 +86,10 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     ))
     .routine( | args |
     {
-      match endpoint( list_frames, &args )
+      match action( list_frames, &args )
       {
         Ok( report ) => report.report(),
-        Err( report ) => println!( "{report}" ),
+        Err( err ) => println!( "{:?}", err ),
       }
     })
     .end()
@@ -116,19 +98,23 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .long_hint( concat!
     (
       "Add file with feeds configurations. Subject: path to config file.\n",
-      "    Example: .config.add ./config/feeds.toml",
+      "    Example: .config.add ./config/feeds.toml\n",
+      "    The file should contain config entities with fields:\n",
+      "   - `update_period` : update frequency for feed. Example values: `12h`, `1h 20min`, `2days 5h`;\n",
+      "   - `link` : URL for feed source;\n\n",
+      "    Example:\n",
+      "    [[config]]\n",
+      "    update_period = \"1min\"\n",
+      "    link = \"https://feeds.bbci.co.uk/news/world/rss.xml\"\n",
     ))
     .subject().hint( "Path" ).kind( Type::Path ).optional( false ).end()
     .routine( | args : Args |
     {
-      // if let Some( path ) = args.get_owned::< wca::Value >( 0 )
-      // {
-        match endpoint( add_config, &args )
-        {
-          Ok( report ) => report.report(),
-          Err( report ) => println!( "{report}" ),
-        }
-      //}
+      match action( add_config, &args )
+      {
+        Ok( report ) => report.report(),
+        Err( err ) => println!( "{:?}", err ),
+      }
     })
     .end()
 
@@ -138,13 +124,13 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       "Delete file with feeds configuraiton. Subject: path to config file.\n",
       "    Example: .config.delete ./config/feeds.toml",
     ))
-    .subject().hint( "Link" ).kind( Type::Path ).optional( false ).end()
+    .subject().hint( "Path" ).kind( Type::Path ).optional( false ).end()
     .routine( | args : Args |
     {
-      match endpoint( remove_config, &args )
+      match action( delete_config, &args )
       {
         Ok( report ) => report.report(),
-        Err( report ) => println!( "{report}" ),
+        Err( err ) => println!( "{:?}", err ),
       }
     })
     .end()
@@ -157,10 +143,10 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     ))
     .routine( | args |
     {
-      match endpoint( list_configs, &args )
+      match action( list_configs, &args )
       {
         Ok( report ) => report.report(),
-        Err( report ) => println!( "{report}" ),
+        Err( err ) => println!( "{:?}", err ),
       }
     })
     .end()
@@ -173,10 +159,10 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     ))
     .routine( | args |
     {
-      match endpoint( list_tables, &args )
+      match action( list_tables, &args )
       {
         Ok( report ) => report.report(),
-        Err( report ) => println!( "{report}" ),
+        Err( err ) => println!( "{:?}", err ),
       }
     })
     .end()
@@ -191,10 +177,10 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .subject().hint( "Name" ).kind( wca::Type::String ).optional( false ).end()
     .routine( | args : Args |
     {
-      match endpoint( list_columns, &args )
+      match action( list_columns, &args )
       {
         Ok( report ) => report.report(),
-        Err( report ) => println!( "{report}" ),
+        Err( err ) => println!( "{:?}", err ),
       }
     })
     .end()
@@ -214,14 +200,10 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .subject().hint( "Query" ).kind( Type::List( Type::String.into(), ' ' ) ).optional( false ).end()
     .routine( | args : Args |
     {
-      match endpoint( execute_query, &args )
+      match action( execute_query, &args )
       {
         Ok( report ) => report.report(),
-        Err( err ) =>
-        {
-          println!( "Error while executing SQL query:" );
-          println!( "{}", err );
-        }
+        Err( err ) => println!( "{:?}", err ),
       }
     })
     .end()
@@ -235,7 +217,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
 }
 
 /// Manages feed subsriptions and updates.
-pub struct FeedManager< C, S : FeedStore + Send >
+pub struct FeedManager< C, S : FeedStore + ConfigStore + FrameStore + Store + Send >
 {
   /// Subscription configuration with link and update period.
   pub config : Vec< SubscriptionConfig >,
@@ -245,7 +227,15 @@ pub struct FeedManager< C, S : FeedStore + Send >
   pub client : C,
 }
 
-impl< S : FeedStore + Send > FeedManager< FeedClient, S >
+impl< C, S : FeedStore + ConfigStore + FrameStore + Store + Send > std::fmt::Debug for FeedManager< C, S >
+{
+  fn fmt( &self, f: &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
+  {
+    writeln!(f, "Feed manager with storage and client" )
+  }
+}
+
+impl< S : FeedStore + ConfigStore + FrameStore + TableStore + Store + Send > FeedManager< FeedClient, S >
 {
   /// Create new instance of FeedManager.
   pub fn new( storage : S ) -> FeedManager< FeedClient, S >
@@ -259,7 +249,7 @@ impl< S : FeedStore + Send > FeedManager< FeedClient, S >
   }
 }
 
-impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
+impl< C : FeedFetch, S : FeedStore + ConfigStore + FrameStore + TableStore + Store + Send > FeedManager< C, S >
 {
   /// Set configurations for subscriptions.
   pub fn set_config( &mut self, configs : Vec< SubscriptionConfig > )
@@ -273,40 +263,10 @@ impl< C : FeedFetch, S : FeedStore + Send > FeedManager< C, S >
     self.client = client;
   }
 
-  /// Update modified frames and save new items.
-  pub async fn update_feed( &mut self, subscriptions : Vec< SubscriptionConfig > ) -> Result< impl endpoints::Report, Box< dyn std::error::Error + Send + Sync > >
-  {
-    let mut feeds = Vec::new();
-    for i in  0..subscriptions.len()
-    {
-      let feed = self.client.fetch( subscriptions[ i ].link.clone() ).await?;
-      feeds.push( ( feed, subscriptions[ i ].update_period.clone() ) );
-    }
-    self.storage.process_feeds( feeds ).await
-  }
-
-  /// Get all frames currently in storage.
-  pub async fn get_all_frames( &mut self ) -> Result< ListReport, Box< dyn std::error::Error + Send + Sync > >
-  {
-    self.storage.get_all_frames().await
-  }
-
-  /// Get all feeds currently in storage.
-  pub async fn get_all_feeds( &mut self ) -> Result< endpoints::feeds::FeedsReport, Box< dyn std::error::Error + Send + Sync > >
-  {
-    self.storage.get_all_feeds().await
-  }
-
   /// Execute custom query, print result.
-  pub async fn execute_custom_query( &mut self, query : String ) -> Result< impl endpoints::Report, Box< dyn std::error::Error + Send + Sync > >
+  pub async fn execute_custom_query( &mut self, query : String ) -> Result< impl actions::Report >
   {
     self.storage.execute_query( query ).await
-  }
-
-  /// Get columns names of Frames table.
-  pub fn get_columns( &mut self ) -> Result< FieldsReport, Box< dyn std::error::Error + Send + Sync > >
-  {
-    Ok( self.storage.columns_titles() )
   }
 
 }

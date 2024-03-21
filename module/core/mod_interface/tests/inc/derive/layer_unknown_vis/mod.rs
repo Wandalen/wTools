@@ -1,7 +1,7 @@
 
 use super::*;
 
-TheModule::mod_interface!
+the_module::mod_interface!
 {
 
   /// layer_a

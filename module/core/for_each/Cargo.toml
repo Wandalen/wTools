@@ -1,6 +1,6 @@
 [package]
 name = "for_each"
-version = "0.4.0"
+version = "0.7.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -36,7 +36,7 @@ all-features = false
 default = [ "enabled" ]
 full = [ "enabled" ]
 no_std = []
-use_alloc = []
+use_alloc = [ "no_std" ]
 enabled = []
 
 # [lib]
@@ -52,12 +52,12 @@ enabled = []
 # path = "tests/_integration_test/smoke_test.rs"
 #
 # [[example]]
-# name = "for_each_trivial_sample"
-# path = "examples/for_each_trivial_sample/src/main.rs"
+# name = "for_each_trivial"
+# path = "examples/for_each_trivial/src/main.rs"
 #
 # [[example]]
-# name = "for_each_map_style_sample"
-# path = "examples/for_each_map_style_sample/src/main.rs"
+# name = "for_each_map_style"
+# path = "examples/for_each_map_style/src/main.rs"
 
 [dependencies]
 

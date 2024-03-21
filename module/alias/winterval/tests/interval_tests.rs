@@ -1,5 +1,5 @@
 #[ allow( unused_imports ) ]
-use winterval as TheModule;
+use winterval as the_module;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 

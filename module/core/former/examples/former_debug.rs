@@ -3,7 +3,7 @@
 //! The attribute `#[ debug ]` outputs generated code into the console during compilation.
 //!
 
-#[ cfg( not( feature = "derive_former" ) ) ]
+#[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
 fn main() {}
 
 #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
@@ -13,7 +13,8 @@ fn main()
 
 
   #[ derive( Debug, PartialEq, Former ) ]
-  #[ debug ]
+  // #[ debug ]
+  // Uncomment to see what derive expand into
   pub struct UserProfile
   {
     age : i32,

@@ -7,3 +7,5 @@
 // #[ doc( inline ) ]
 // #[ allow( unused_imports ) ]
 // pub use ::willbe::*;
+
+// qqq : for Petro : make it alias for willbe too

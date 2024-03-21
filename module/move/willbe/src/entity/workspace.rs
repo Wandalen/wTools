@@ -6,7 +6,7 @@ mod private
   use cargo_metadata::{ Metadata, MetadataCommand, Package };
   use petgraph::Graph;
   use wtools::error::{ for_app::Context, for_lib::Error, Result };
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
 
   /// Stores information about current workspace.
   #[ derive( Debug, Clone ) ]
@@ -98,7 +98,11 @@ mod private
     /// Returns list of all packages
     pub fn packages( &self ) -> Result< &[ Package ], WorkspaceError >
     {
-      self.metadata.as_ref().ok_or_else( || WorkspaceError::MetadataError ).map( | metadata | metadata.packages.as_slice() )
+      self
+      .metadata
+      .as_ref()
+      .ok_or_else( || WorkspaceError::MetadataError )
+      .map( | metadata | metadata.packages.as_slice() )
     }
 
     /// Returns the path to workspace root

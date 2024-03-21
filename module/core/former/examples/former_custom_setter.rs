@@ -4,10 +4,10 @@
 //! In the example showcases a custom alternative setter, `word_exclaimed`, which appends an exclamation mark to the input string before storing it. This approach allows for additional processing or validation of the input data without compromising the simplicity of the builder pattern.
 //!
 
-#[ cfg( not( feature = "derive_former" ) ) ]
+#[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
 fn main() {}
 
-#[ cfg( feature = "derive_former" ) ]
+#[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
 fn main()
 {
   use former::Former;
@@ -25,8 +25,8 @@ fn main()
     // Custom alternative setter for `word`
     pub fn word_exclaimed( mut self, value : impl Into< String > ) -> Self
     {
-      debug_assert!( self.container.word.is_none() );
-      self.container.word = Some( format!( "{}!", value.into() ) );
+      debug_assert!( self.storage.word.is_none() );
+      self.storage.word = Some( format!( "{}!", value.into() ) );
       self
     }
 
