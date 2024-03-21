@@ -1,9 +1,9 @@
 use super::*;
-use TheModule::
+use the_module::
 {
   Workspace,
-  path::AbsolutePath,
-  package::{ Plan, PublishManyPackagesPlan },
+  _path::AbsolutePath,
+  package::{Plan, PublishPlan},
 };
 
 #[ test ]
@@ -11,7 +11,7 @@ fn plan_publish_many_packages()
 {
   let workspace = Workspace::from_current_path().unwrap();
   let package = workspace.package_find_by_manifest( /* AbsolutePath::try_from( "../wca/Cargo.toml" ).unwrap() */ ).unwrap().to_owned();
-  let mega_plan = PublishManyPackagesPlan::former()
+  let mega_plan = PublishPlan::former()
   .workspace( workspace )
   .base_temp_dir( "temp" )
   .packages([ package ])

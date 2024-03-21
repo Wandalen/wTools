@@ -287,13 +287,13 @@ mod private
   }
 
   #[ derive( Debug ) ]
-  pub struct CargoPackagePlan
+  pub struct CargoPackageOptions
   {
     pub crate_dir : CrateDir,
     pub base_temp_dir : Option< PathBuf >,
   }
 
-  impl Plan for CargoPackagePlan
+  impl Plan for CargoPackageOptions
   {
     type Report = process::Report;
     fn perform( &self, dry : bool ) -> Result< Self::Report >
@@ -309,7 +309,7 @@ mod private
   }
 
   #[ derive( Debug ) ]
-  pub struct VersionBumpPlan
+  pub struct VersionBumpOptions
   {
     pub crate_dir : CrateDir,
     pub old_version : version::Version,
@@ -317,7 +317,7 @@ mod private
     pub dependencies : Vec< CrateDir >,
   }
 
-  impl Plan for VersionBumpPlan
+  impl Plan for VersionBumpOptions
   {
     type Report = ExtendedBumpReport;
     fn perform( &self, dry : bool ) -> Result< Self::Report >
@@ -384,14 +384,14 @@ mod private
   }
 
   #[ derive( Debug ) ]
-  pub struct GitThingsPlan
+  pub struct GitThingsOptions
   {
     pub git_root : AbsolutePath,
     pub items : Vec< AbsolutePath >,
     pub message : String,
   }
 
-  impl Plan for GitThingsPlan
+  impl Plan for GitThingsOptions
   {
     type Report = ExtendedGitReport;
     fn perform( &self, dry : bool ) -> Result< Self::Report >
@@ -419,13 +419,13 @@ mod private
   }
 
   #[ derive( Debug ) ]
-  pub struct CargoPublishPlan
+  pub struct CargoPublishOptions
   {
     pub crate_dir : CrateDir,
     pub base_temp_dir : Option< PathBuf >,
   }
 
-  impl Plan for CargoPublishPlan
+  impl Plan for CargoPublishOptions
   {
     type Report = process::Report;
     fn perform( &self, dry : bool ) -> Result< Self::Report >
@@ -441,17 +441,17 @@ mod private
   }
 
   #[ derive( Debug ) ]
-  pub struct PublishSinglePackagePlan
+  pub struct PackagePublishInstruction
   {
-    pub pack : CargoPackagePlan,
-    pub version_bump : VersionBumpPlan,
+    pub pack : CargoPackageOptions,
+    pub version_bump : VersionBumpOptions,
     // qqq : rename
-    pub git_things : GitThingsPlan,
-    pub publish : CargoPublishPlan,
+    pub git_things : GitThingsOptions,
+    pub publish : CargoPublishOptions,
   }
 
   #[ derive( Debug, Former ) ]
-  #[ perform( fn build() -> PublishSinglePackagePlan ) ]
+  #[ perform( fn build() -> PackagePublishInstruction ) ]
   pub struct PublishSinglePackagePlanner
   {
     workspace : Workspace,
@@ -461,11 +461,11 @@ mod private
 
   impl PublishSinglePackagePlanner
   {
-    fn build( self ) -> PublishSinglePackagePlan
+    fn build( self ) -> PackagePublishInstruction
     {
       let crate_dir = self.package.crate_dir();
       let workspace_root : AbsolutePath = self.workspace.workspace_root().unwrap().try_into().unwrap();
-      let pack = CargoPackagePlan
+      let pack = CargoPackageOptions
       {
         crate_dir : crate_dir.clone(),
         base_temp_dir : self.base_temp_dir.clone(),
@@ -474,26 +474,26 @@ mod private
       let new_version = old_version.clone().bump();
       // bump the package version in dependents (so far, only workspace)
       let dependencies = vec![ CrateDir::try_from( workspace_root.clone() ).unwrap() ];
-      let version_bump = VersionBumpPlan
+      let version_bump = VersionBumpOptions
       {
         crate_dir : crate_dir.clone(),
         old_version : old_version.clone(),
         new_version : new_version.clone(),
         dependencies : dependencies.clone(),
       };
-      let git_things = GitThingsPlan
+      let git_things = GitThingsOptions
       {
         git_root : workspace_root,
         items : dependencies.iter().chain([ &crate_dir ]).map( | d | d.absolute_path().join( "Cargo.toml" ) ).collect(),
         message : format!( "{}-v{}", self.package.name().unwrap(), new_version ),
       };
-      let publish = CargoPublishPlan
+      let publish = CargoPublishOptions
       {
         crate_dir,
         base_temp_dir : self.base_temp_dir.clone(),
       };
 
-      PublishSinglePackagePlan
+      PackagePublishInstruction
       {
         pack,
         version_bump,
@@ -503,7 +503,7 @@ mod private
     }
   }
 
-  impl Plan for PublishSinglePackagePlan
+  impl Plan for PackagePublishInstruction
   {
     type Report = PublishReport;
     fn perform( &self, dry : bool ) -> Result< Self::Report >
@@ -532,15 +532,15 @@ mod private
   }
 
   #[ derive( Debug, Former ) ]
-  pub struct PublishManyPackagesPlan
+  pub struct PublishPlan
   {
     pub workspace : Workspace,
     pub base_temp_dir : Option< PathBuf >,
     #[ setter( false ) ]
-    pub plans : Vec< PublishSinglePackagePlan >,
+    pub plans : Vec< PackagePublishInstruction >,
   }
 
-  impl PublishManyPackagesPlanFormer
+  impl PublishPlanFormer
   {
     pub fn package< IntoPackage >( mut self, package : IntoPackage ) -> Self
     where
@@ -580,7 +580,7 @@ mod private
     }
   }
 
-  impl Plan for PublishManyPackagesPlan
+  impl Plan for PublishPlan
   {
     type Report = Vec< PublishReport >;
     fn perform( &self, dry : bool ) -> Result< Self::Report >
@@ -1070,7 +1070,7 @@ crate::mod_interface!
 {
 
   protected use PublishSinglePackagePlanner;
-  protected use PublishManyPackagesPlan;
+  protected use PublishPlan;
   protected use Plan;
 
   protected use PublishReport;
