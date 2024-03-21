@@ -181,6 +181,43 @@ fn plan()
   assert!( rep.get( &TestVariant::former().optimization( Optimization::Release ).channel( Channel::Nightly ).features( BTreeSet::default() ).form() ).is_some() );
 }
 
+#[ test ]
+fn backtrace_should_be()
+{
+  let temp = TempDir::new().unwrap();
+  let temp = &temp;
+
+  let project = ProjectBuilder::new( "fail_build" )
+  .toml_file( "[features]\nenabled = []" )
+  .test_file( r#"
+  #[test]
+  fn fail() {
+    assert!(false);
+  }
+  "#)
+  .build( temp )
+  .unwrap();
+  let abs = AbsolutePath::try_from( project ).unwrap();
+
+  let args = TestsCommandOptions::former()
+  .dir( abs )
+  .channels([ Channel::Stable ])
+  .optimizations([ Optimization::Debug ])
+  .with_none_features( true )
+  .form();
+
+  let rep = test( args, false ).unwrap_err().0;
+  println!( "========= OUTPUT =========\n{}\n==========================", rep );
+
+  let no_features = rep
+  .failure_reports[ 0 ]
+  .tests.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Stable ).features( BTreeSet::default() ).form() )
+  .unwrap();
+
+  assert!( !no_features.clone().unwrap_err().out.contains( "RUST_BACKTRACE" ) );
+  assert!( no_features.clone().unwrap_err().out.contains( "stack backtrace" ) );
+}
+
 #[ derive( Debug ) ]
 pub struct ProjectBuilder
 {
