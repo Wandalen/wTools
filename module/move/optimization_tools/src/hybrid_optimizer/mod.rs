@@ -8,7 +8,7 @@ use iter_tools::Itertools;
 use std::ops::RangeInclusive;
 use rayon::iter::{ ParallelIterator, IndexedParallelIterator};
 use deterministic_rand::{ Seed, seq::{ SliceRandom, IteratorRandom } };
-use derive_tools::Display;
+use derive_tools::exposed::Display;
 use optimal_params_search::OptimalProblem;
 
 mod gen_alg;
