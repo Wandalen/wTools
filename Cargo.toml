@@ -459,7 +459,7 @@ default-features = true
 ## test experimental
 
 [workspace.dependencies.test_experimental_a]
-version = "~0.4.0"
+version = "~0.5.0"
 path = "module/test/a"
 default-features = true
 
