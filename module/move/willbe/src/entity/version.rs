@@ -232,36 +232,36 @@ mod private
   ///
   /// Returns a result containing the extended bump report if successful.
   ///
-  pub fn version_bump( args : BumpOptions ) -> Result< ExtendedBumpReport >
+  pub fn version_bump( o : BumpOptions ) -> Result< ExtendedBumpReport >
   {
     let mut report = ExtendedBumpReport::default();
-    let package_path = args.crate_dir.absolute_path().join( "Cargo.toml" );
+    let package_path = o.crate_dir.absolute_path().join( "Cargo.toml" );
     let package = Package::try_from( package_path.clone() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
     let name = package.name().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
     report.name = Some( name.clone() );
     let package_version = package.version().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
     let current_version = version::Version::try_from( package_version.as_str() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
-    if current_version > args.new_version
+    if current_version > o.new_version
     {
-      return Err( format_err!( "{report:?}\nThe current version of the package is higher than need to be set\n\tpackage: {name}\n\tcurrent_version: {current_version}\n\tnew_version: {}", args.new_version ) );
+      return Err( format_err!( "{report:?}\nThe current version of the package is higher than need to be set\n\tpackage: {name}\n\tcurrent_version: {current_version}\n\tnew_version: {}", o.new_version ) );
     }
-    report.old_version = Some( args.old_version.to_string() );
-    report.new_version = Some( args.new_version.to_string() );
+    report.old_version = Some( o.old_version.to_string() );
+    report.new_version = Some( o.new_version.to_string() );
 
     let mut package_manifest = package.manifest().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
-    if !args.dry
+    if !o.dry
     {
       let data = package_manifest.manifest_data.as_mut().unwrap();
-      data[ "package" ][ "version" ] = value( &args.new_version.to_string() );
+      data[ "package" ][ "version" ] = value( &o.new_version.to_string() );
       package_manifest.store()?;
     }
     report.changed_files = vec![ package_path ];
-    let new_version = &args.new_version.to_string();
-    for dep in &args.dependencies
+    let new_version = &o.new_version.to_string();
+    for dep in &o.dependencies
     {
       let manifest_path = dep.absolute_path().join( "Cargo.toml" );
-      let manifest = manifest::open( manifest_path.clone() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
-      let data = package_manifest.manifest_data.as_mut().unwrap();
+      let mut manifest = manifest::open( manifest_path.clone() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+      let data = manifest.manifest_data.as_mut().unwrap();
       let item = if let Some( item ) = data.get_mut( "package" ) { item }
       else if let Some( item ) = data.get_mut( "workspace" ) { item }
       else { return Err( format_err!( "{report:?}\nThe manifest nor the package and nor the workspace" ) ); };
@@ -279,7 +279,7 @@ mod private
           }
         }
       }
-      if !args.dry { manifest.store().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?; }
+      if !o.dry { manifest.store().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?; }
       report.changed_files.push( manifest_path );
     }
 
