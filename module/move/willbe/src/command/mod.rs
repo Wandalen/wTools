@@ -34,6 +34,17 @@ pub( crate ) mod private
       .routine( command::publish )
       .end()
 
+    .command( "publish.diff" )
+      .hint( "Display the differences between a local and remote package versions." )
+      .long_hint( "Following this command, you will immediately get a comparison between the local and remote packages. It looks at each file, identifying those added, removed, or modified. A full report will then be generated where you can quickly and easily see the differences." )
+      .subject()
+        .hint( "Provide path to the package that you want to check.\n\t  The path should point to a directory that contains a `Cargo.toml` file." )
+        .kind( Type::Path )
+        .optional( true )
+        .end()
+      .routine( command::publish_diff )
+      .end()
+
     .command( "list" )
       .hint( "list packages from a directory" )
       .long_hint( "generates a list of packages based on the provided directory path. The directory must contain a `Cargo.toml` file." )
@@ -237,6 +248,8 @@ crate::mod_interface!
   layer list;
   /// Publish packages.
   layer publish;
+  /// Used to compare local and published versions of a specific package.
+  layer publish_diff;
   /// Generates health table in main Readme.md file of workspace.
   // aaa : for Petro : what a table??
   // aaa : add more details to documentation
