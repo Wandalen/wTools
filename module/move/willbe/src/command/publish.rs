@@ -13,7 +13,7 @@ mod private
 
   pub fn publish( args : Args, properties : Props ) -> Result< () >
   {
-    let args_line = format!( "{}", args.get_owned( 0 ).unwrap_or( "" ) );
+    let args_line = format!( "{}", args.get_owned( 0 ).unwrap_or( std::path::PathBuf::from( "" ) ).display() );
     let prop_line = format!( "{}", properties.iter().map( | p | format!( "{}:{}", p.0, p.1.to_string() ) ).collect::< Vec< _ > >().join(" ") );
     let patterns : Vec< _ > = args.get_owned( 0 ).unwrap_or_else( || vec![ "./".into() ] );
 

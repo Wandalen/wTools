@@ -52,7 +52,7 @@ mod private
   /// run tests in specified crate
   pub fn test( args : Args, properties : Props ) -> Result< () >
   {
-    let args_line = format!( "{}", args.get_owned( 0 ).unwrap_or( "" ) );
+    let args_line = format!( "{}", args.get_owned( 0 ).unwrap_or( std::path::PathBuf::from( "" ) ).display() );
     let prop_line = format!( "{}", properties.iter().map( | p | format!( "{}:{}", p.0, p.1.to_string() ) ).collect::< Vec< _ > >().join(" ") );
     let path : PathBuf = args.get_owned( 0 ).unwrap_or_else( || "./".into() );
     let path = AbsolutePath::try_from( path )?;
