@@ -153,12 +153,6 @@ jobs :
         run: cargo install --git https://github.com/Wandalen/wTools --branch alpha willbe
       - name: Set MANIFEST_ROOT_PATH
         id: rootpath
-        shell: bash
-        run: |
-          if [[ "${{ inputs.manifest_path }}" == "" || "${{ inputs.manifest_path }}" == "./Cargo.toml" ]]; then
-            echo "path=" >> $GITHUB_ENV
-          else
-            echo "path=$(dirname ${{ inputs.manifest_path }})" >> $GITHUB_ENV
-          fi
+        run: echo "::set-output name=path::$(dirname ${{ inputs.manifest_path }})"
       - name: Run tests with each feature
-        run: will .test ${{ steps.rootpath.outputs.path }} dry:0 exclude:'' with_all_features:1 with_debug:1 with_nightly:1 with_none_features:1 with_release:1 with_stable:1
+        run: will .test ${{ steps.rootpath.outputs.path }}/ dry:0 exclude:'' with_all_features:1 with_debug:1 with_nightly:1 with_none_features:1 with_release:1 with_stable:1
