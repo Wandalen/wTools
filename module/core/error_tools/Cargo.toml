@@ -1,6 +1,6 @@
 [package]
 name = "error_tools"
-version = "0.9.0"
+version = "0.11.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -41,7 +41,7 @@ full = [
   "error_for_app",
 ]
 no_std = []
-use_alloc = []
+use_alloc = [ "no_std" ]
 enabled = []
 
 error_for_lib = [ "thiserror" ]

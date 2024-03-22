@@ -34,6 +34,22 @@ pub( crate ) mod private
       .routine( command::publish )
       .end()
 
+    .command( "publish.diff" )
+      .hint( "Display the differences between a local and remote package versions." )
+      .long_hint( "Following this command, you will immediately get a comparison between the local and remote packages. It looks at each file, identifying those added, removed, or modified. A full report will then be generated where you can quickly and easily see the differences." )
+      .subject()
+        .hint( "Provide path to the package that you want to check.\n\t  The path should point to a directory that contains a `Cargo.toml` file." )
+        .kind( Type::Path )
+        .optional( true )
+        .end()
+      .property( "keep_archive" )
+        .hint( "Save remote package version to the specified path" )
+        .kind( Type::Path )
+        .optional( true )
+        .end()
+      .routine( command::publish_diff )
+      .end()
+
     .command( "list" )
       .hint( "list packages from a directory" )
       .long_hint( "generates a list of packages based on the provided directory path. The directory must contain a `Cargo.toml` file." )
@@ -98,17 +114,17 @@ pub( crate ) mod private
       .property( "dry" ).hint( "Enables 'dry run'. Does not run tests, only simulates. Default is `true`." ).kind( Type::Bool ).optional( true ).end()
       .property( "temp" ).hint( "If flag is `true` all test will be running in temporary directories. Default `true`." ).kind( Type::Bool ).optional( true ).end()
       .property( "include" )
-        .hint( "A list of features to include in testing. Separate multiple features by comma." )
+        .hint( "A list of features to include in testing. Separate multiple features by comma. Default is empty." )
         .kind( Type::List( Type::String.into(), ',' ) )
         .optional( true )
         .end()
       .property( "exclude" )
-        .hint( "A list of features to exclude from testing. Separate multiple features by comma." )
+        .hint( "A list of features to exclude from testing. Separate multiple features by comma. Default is [full, default]." )
         .kind( Type::List( Type::String.into(), ',' ) )
         .optional( true )
         .end()
       .property( "with_stable" )
-        .hint( "Specifies whether or not to run tests on stable Rust version. Default is `true`" )
+        .hint( "Specifies whether or not to run tests on stable Rust version. Default is `true`." )
         .kind( Type::Bool )
         .optional( true )
         .end()
@@ -123,48 +139,53 @@ pub( crate ) mod private
         .optional( true )
         .end()
       .property( "power" )
-        .hint( "Defines the depth of feature combination testing. Default is `2`." )
+        .hint( "Defines the depth of feature combination testing. Default is `1`." )
         .kind( Type::Number )
         .optional( true )
         .end()
-      .property( "enabled_features")
-        .hint( "This features will be always present in feature's combinations.")
+      .property( "always")
+        .hint( "This features will be always present in feature's combinations. Default is empty.")
         .kind( Type::List( Type::String.into(), ',' ) )
         .optional( true )
         .end()
       .property( "with_all_features" )
-        .hint( "Will be only one combination of features ( with all possible features )." )
+        .hint( "To powerset of features will be add one subset with all features. Default is `true`." )
         .kind( Type::Bool )
         .optional( true )
         .end()
       .property( "with_none_features" )
-        .hint( "Will be only one combination of features ( without features )." )
+        .hint( "To powerset of features will be add one empty subset. Default is `true`." )
         .kind( Type::Bool )
         .optional( true )
         .end()
       .property( "with_release" )
-        .hint( "Indicates whether or not tests will be run on the release optimization." )
+        .hint( "Indicates whether or not tests will be run on the release optimization. Default is `false`." )
         .kind( Type::Bool )
         .optional( true )
         .end()
       .property( "with_debug" )
-        .hint( "Indicates whether or not tests will be run on the debug optimization." )
+        .hint( "Indicates whether or not tests will be run on the debug optimization. Default is `true`." )
         .kind( Type::Bool )
         .optional( true )
         .end()
       .property( "variants_cap" )
-        .hint( "Regulates the number of possible combinations")
+        .hint( "Regulates the number of possible combinations. Default is 1000.")
         .kind( Type::Number )
+        .optional( true )
+        .end()
+      .property( "with_progress" )
+        .hint( "If true, will display progressbar during the tests. Default is `true`. ! Work only with `progress_bar` feature !")
+        .kind( Type::Bool )
         .optional( true )
         .end()
       .routine( command::test )
       .end()
 
     // qqq : is it right?
-    .command( "workflow.renew" )
-      .hint( "generate a workflow for the workspace" )
+    .command( "cicd.renew" )
+      .hint( "generate a CI/CD for the workspace" )
       .long_hint( "this command generates a development workflow for the entire workspace inferred from the current directory. The workflow outlines the build steps, dependencies, test processes, and more for all modules within the workspace." )
-      .routine( command::workflow_renew )
+      .routine( command::cicd_renew )
       .end()
 
     .command( "workspace.renew" )
@@ -232,6 +253,8 @@ crate::mod_interface!
   layer list;
   /// Publish packages.
   layer publish;
+  /// Used to compare local and published versions of a specific package.
+  layer publish_diff;
   /// Generates health table in main Readme.md file of workspace.
   // aaa : for Petro : what a table??
   // aaa : add more details to documentation
@@ -239,7 +262,7 @@ crate::mod_interface!
   /// Run all tests
   layer test;
   /// Generate workflow
-  layer workflow_renew;
+  layer cicd_renew;
   /// Workspace new
   layer workspace_renew;
   /// Deploy new

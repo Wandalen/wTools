@@ -1,5 +1,5 @@
 use super::*;
-use super::TheModule::string::parse_request as parse;
+use super::the_module::string::parse_request as parse;
 use std::collections::HashMap;
 
 //
@@ -46,7 +46,7 @@ tests_impls!
   fn basic()
   {
     let src = "";
-    let req = TheModule::string::request_parse()
+    let req = the_module::string::request_parse()
     .src( src )
     .perform();
     let mut exp = parse::Request::default();
@@ -55,7 +55,7 @@ tests_impls!
     a_id!( req, exp );
 
     let src = " ";
-    let req = TheModule::string::request_parse()
+    let req = the_module::string::request_parse()
     .src( src )
     .perform();
     let mut exp = parse::Request::default();
@@ -65,7 +65,7 @@ tests_impls!
     a_id!( req, exp );
 
     let src = "  \t ";
-    let req = TheModule::string::request_parse()
+    let req = the_module::string::request_parse()
     .src( src )
     .perform();
     let mut exp = parse::Request::default();
@@ -80,7 +80,7 @@ tests_impls!
   fn with_subject_and_map()
   {
     let src = "subj";
-    let req = TheModule::string::request_parse()
+    let req = the_module::string::request_parse()
     .src( src )
     .perform();
     let mut exp = parse::Request::default();
@@ -93,7 +93,7 @@ tests_impls!
     a_id!( req, exp );
 
     let src = "subj with space";
-    let req = TheModule::string::request_parse()
+    let req = the_module::string::request_parse()
     .src( src )
     .perform();
     let mut exp = parse::Request::default();
@@ -106,7 +106,7 @@ tests_impls!
     a_id!( req, exp );
 
     let src = "subj v:1";
-    let req = TheModule::string::request_parse()
+    let req = the_module::string::request_parse()
     .src( src )
     .perform();
     let mut options = HashMap::new();
@@ -122,7 +122,7 @@ tests_impls!
     a_id!( req, exp );
 
     let src = "subj v:1 r:some";
-    let req = TheModule::string::request_parse()
+    let req = the_module::string::request_parse()
     .src( src )
     .perform();
     let mut options = HashMap::new();
@@ -141,7 +141,7 @@ tests_impls!
     /* */
 
     let src = "subj1 ; subj2";
-    let req = TheModule::string::request_parse()
+    let req = the_module::string::request_parse()
     .src( src )
     .perform();
     let mut exp = parse::Request::default();
@@ -154,7 +154,7 @@ tests_impls!
     a_id!( req, exp );
 
     let src = "subj1 v:1 ; subj2";
-    let req = TheModule::string::request_parse()
+    let req = the_module::string::request_parse()
     .src( src )
     .perform();
     let mut options = HashMap::new();
@@ -170,7 +170,7 @@ tests_impls!
     a_id!( req, exp );
 
     let src = "subj1 v:1 ; subj2 v:2";
-    let req = TheModule::string::request_parse()
+    let req = the_module::string::request_parse()
     .src( src )
     .perform();
     let mut options1 = HashMap::new();
@@ -188,7 +188,7 @@ tests_impls!
     a_id!( req, exp );
 
     let src = "subj1 v:1 ne:-2 ; subj2 v:2 r:some";
-    let req = TheModule::string::request_parse()
+    let req = the_module::string::request_parse()
     .src( src )
     .perform();
     let mut options1 = HashMap::new();
@@ -213,7 +213,7 @@ tests_impls!
   fn with_several_values()
   {
     let src = "subj v:1 v:2";
-    let req = TheModule::string::request_parse()
+    let req = the_module::string::request_parse()
     .src( src )
     .several_values( false )
     .perform();
@@ -230,7 +230,7 @@ tests_impls!
     a_id!( req, exp );
 
     let src = "subj v:1 v:2";
-    let req = TheModule::string::request_parse()
+    let req = the_module::string::request_parse()
     .src( src )
     .several_values( true )
     .perform();
@@ -252,7 +252,7 @@ tests_impls!
   fn with_parsing_arrays()
   {
     let src = "subj v:[1,2]";
-    let req = TheModule::string::request_parse()
+    let req = the_module::string::request_parse()
     .src( src )
     .parsing_arrays( false )
     .perform();
@@ -269,7 +269,7 @@ tests_impls!
     a_id!( req, exp );
 
     let src = "subj v:[1,2]";
-    let req = TheModule::string::request_parse()
+    let req = the_module::string::request_parse()
     .src( src )
     .parsing_arrays( true )
     .perform();
@@ -288,7 +288,7 @@ tests_impls!
     /* */
 
     let src = "subj v:[1,2] v:3";
-    let req = TheModule::string::request_parse()
+    let req = the_module::string::request_parse()
     .src( src )
     .parsing_arrays( true )
     .several_values( true )
@@ -306,7 +306,7 @@ tests_impls!
     a_id!( req, exp );
 
     let src = "subj v:3 v:[1,2]";
-    let req = TheModule::string::request_parse()
+    let req = the_module::string::request_parse()
     .src( src )
     .parsing_arrays( true )
     .several_values( true )
@@ -324,7 +324,7 @@ tests_impls!
     a_id!( req, exp );
 
     let src = "subj v:[1,2] v:[3,4]";
-    let req = TheModule::string::request_parse()
+    let req = the_module::string::request_parse()
     .src( src )
     .parsing_arrays( true )
     .several_values( true )

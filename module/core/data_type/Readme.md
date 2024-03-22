@@ -1,12 +1,14 @@
 <!-- {{# generate.module_header{} #}} -->
 
 # Module :: data_type
-
-[![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleDataTypePush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleDataTypePush.yml) [![docs.rs](https://img.shields.io/docsrs/data_type?color=e3e8f0&logo=docs.rs)](https://docs.rs/data_type) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Fdata_type_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20data_type_trivial_sample/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+<!--{ generate.module_header.start() }-->
+ [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)[![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_data_type_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_data_type_push.yml)[![docs.rs](https://img.shields.io/docsrs/data_type?color=e3e8f0&logo=docs.rs)](https://docs.rs/data_type)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Fdata_type_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20data_type_trivial/https://github.com/Wandalen/wTools)
+[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+<!--{ generate.module_header.end }-->
 
 Collection of primal data types.
 
-### Basic use-case :: type constructors
+### Basic Use Case :: type constructors
 
 In Rust, you often need to wrap a given type into a new one.
 The role of the orphan rules in particular is basically to prevent you from implementing external traits for external types.
@@ -15,7 +17,7 @@ Type constructor does exactly that and auto-implement traits From, Into, Deref a
 
 Macro [types](https://docs.rs/type_constructor/latest/type_constructor/types/macro.types.html) is responsible for generating code for Single, Pair, Homopair, Many. Each type constructor has its own keyword for that, but Pair and Homopair use the same keyword difference in a number of constituent types. It is possible to define all types at once:
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ```rust
 #[ cfg( feature = "type_constructor" ) ]
@@ -43,7 +45,7 @@ Macro [types](https://docs.rs/type_constructor/latest/type_constructor/types/mac
 }
 ```
 
-### Basic use-case :: make - variadic constructor
+### Basic Use Case :: make - variadic constructor
 
 Implement traits [From_0], [From_1] up to MakeN to provide the interface to construct your structure with a different set of arguments.
 In this example structure, Struct1 could be constructed either without arguments, with a single argument, or with two arguments.
@@ -51,7 +53,7 @@ In this example structure, Struct1 could be constructed either without arguments
 - Constructor with a single argument sets both fields to the value of the argument.
 - Constructor with 2 arguments set individual values of each field.
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ```rust
 #[ cfg( feature = "make" ) ]
@@ -114,6 +116,6 @@ cargo add data_type
 ``` shell test
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd examples/type_constructor_multiple_sample
+cd examples/type_constructor_multiple
 cargo run
 ```

@@ -30,9 +30,9 @@ pub( crate ) mod private
   {
     pub fn command( mut self, command : Command ) -> Self
     {
-      let mut commands = self.container.commands.unwrap_or_default();
+      let mut commands = self.storage.commands.unwrap_or_default();
       commands.extend([( command.phrase.clone(), command )]);
-      self.container.commands = Some( commands );
+      self.storage.commands = Some( commands );
 
       self
     }

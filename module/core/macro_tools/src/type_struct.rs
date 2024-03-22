@@ -30,20 +30,20 @@ pub( crate ) mod private
   {
 
     /// Returns a vector of the struct's fields for iteration.
-    pub fn fields_many( &self ) -> Vec< syn::Field >
+    pub fn fields_many( &self ) -> Vec< &syn::Field >
     {
       match &self.fields
       {
-        syn::Fields::Unnamed( fields ) => fields.unnamed.iter().cloned().collect(),
-        syn::Fields::Named( fields ) => fields.named.iter().cloned().collect(),
+        syn::Fields::Unnamed( fields ) => fields.unnamed.iter().collect(),
+        syn::Fields::Named( fields ) => fields.named.iter().collect(),
         syn::Fields::Unit => Vec::new(),
       }
     }
 
     /// Extracts the types of each field into a vector.
-    pub fn field_types( &self ) -> Vec< syn::Type >
+    pub fn field_types< 'a >( &'a self ) -> Vec< &'a syn::Type >
     {
-      self.fields_many().iter().map( |field| field.ty.clone() ).collect()
+      self.fields_many().iter().map( | field | &field.ty ).collect()
     }
 
     /// Retrieves the names of each field, if they exist.

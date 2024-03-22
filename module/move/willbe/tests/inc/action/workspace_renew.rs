@@ -3,13 +3,13 @@ use assert_fs::prelude::*;
 use super::*;
 use std::fs;
 use std::fs::create_dir;
-use TheModule::action::workspace_renew;
-use TheModule::action::WorkspaceTemplate;
+use the_module::action::workspace_renew;
+use the_module::action::WorkspaceTemplate;
 
 fn arrange( sample_dir : &str ) -> assert_fs::TempDir
 {
   let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) );
-  let assets_relative_path = std::path::Path::new( ASSETS_PATH );
+  let assets_relative_path = std::path::Path::new( ASSET_PATH );
   let assets_path = root_path.join( assets_relative_path );
 
   let temp = assert_fs::TempDir::new().unwrap();

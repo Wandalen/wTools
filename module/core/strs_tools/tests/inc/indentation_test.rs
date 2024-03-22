@@ -7,7 +7,7 @@ use super::*;
 #[ test ]
 fn basic()
 {
-  use TheModule::string::indentation;
+  use the_module::string::indentation;
 
   /* test.case( "basic" ) */
   {

@@ -168,6 +168,9 @@ pub( crate ) mod private
 
   }
 
+  // xxx : qqq : improve a_id and other similar macroses, make sure message is visible int console
+  // a_id!( exp, got, "Failed: path_with_trailing_dot_or_dotdot_segments. Expected: '{}', got: '{}'", exp, got );
+
   ///
   /// Asserts that two expressions are identical to each other (using [`PartialEq`]). Prints nice diff.
   ///

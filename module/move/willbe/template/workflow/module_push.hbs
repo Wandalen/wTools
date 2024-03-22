@@ -10,7 +10,7 @@ jobs :
   # {{name}}
 
   test :
-    uses : {{username_and_repository}}/.github/workflows/StandardRustPush.yml@{{branch}}
+    uses : {{username_and_repository}}/.github/workflows/standard_rust_push.yml@{{branch}}
     with :
       manifest_path : '{{manifest_path}}'
       module_name : '{{name}}'

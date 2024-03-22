@@ -18,7 +18,8 @@
 #[ cfg( feature = "enabled" ) ]
 pub mod wtools;
 
-/// Dependencies.
+/// Namespace with dependencies.
+
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {

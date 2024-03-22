@@ -1,6 +1,6 @@
 [package]
 name = "cargo_will"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -28,7 +28,7 @@ all-features = false
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-use_alloc = []
+# use_alloc = [ "no_std" ]
 enabled = []
 
 [dependencies]

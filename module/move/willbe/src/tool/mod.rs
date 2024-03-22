@@ -8,14 +8,10 @@ crate::mod_interface!
   /// Operate over files.
   layer files;
   orphan use super::files;
-
-  /// Run external processes.
-  layer process;
-  orphan use super::process;
-
+  
   /// Work with paths.
-  layer path;
-  orphan use super::path;
+  layer _path;
+  orphan use super::_path;
 
   /// Tools for working with dependencies graph.
   layer graph;
@@ -32,11 +28,7 @@ crate::mod_interface!
   /// Interaction module with the `cargo` utilities.
   layer cargo;
   orphan use super::cargo;
-
-  /// Rust toolchain channel: stable/nightly.
-  layer channel;
-  orphan use super::channel;
-
+  
   /// The parse function parses an input string into a HashMap where the keys are String and the values are of type Value.
   layer query;
   orphan use super::query;
@@ -44,8 +36,4 @@ crate::mod_interface!
   /// Tools for parsing and extracting information from url.
   layer url;
   orphan use super::url;
-
-  /// Rust build optimization: debug/release
-  layer optimization;
-  orphan use super::optimization;
 }

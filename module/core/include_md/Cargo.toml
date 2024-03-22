@@ -35,9 +35,8 @@ include = [
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-# use_std = []
 no_std = []
-use_alloc = []
+use_alloc = [ "no_std" ]
 enabled = []
 
 [lib]
@@ -53,8 +52,8 @@ path = "src/_blank/standard_lib.rs"
 # path = "tests/_integration_test/smoke_test.rs"
 
 # [[example]]
-# name = "include_md_trivial_sample"
-# path = "sample/move/include_md_trivial_sample/src/main.rs"
+# name = "include_md_trivial"
+# path = "sample/move/include_md_trivial/src/main.rs"
 
 [dependencies]
 

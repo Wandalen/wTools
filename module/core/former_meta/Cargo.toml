@@ -1,6 +1,6 @@
 [package]
 name = "former_meta"
-version = "0.9.0"
+version = "0.13.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -26,15 +26,32 @@ all-features = false
 
 [features]
 
-default = [ "enabled", "derive_former", "derive_component_from", "derive_set_component", "derive_set_components", "derive_from_components" ]
-full = [ "enabled", "derive_former", "derive_component_from", "derive_set_component", "derive_set_components", "derive_from_components" ]
+default = [
+  "enabled",
+  "derive_former",
+  "derive_components",
+  "derive_component_from",
+  "derive_component_assign",
+  "derive_components_assign",
+  "derive_from_components",
+]
+full = [
+  "enabled",
+  "derive_former",
+  "derive_components",
+  "derive_component_from",
+  "derive_component_assign",
+  "derive_components_assign",
+  "derive_from_components",
+]
 enabled = [ "macro_tools/enabled", "iter_tools/enabled" ]
 
 derive_former = []
-derive_component_from = []
-derive_set_component = []
-derive_set_components = []
-derive_from_components = []
+derive_components = []
+derive_component_assign = []
+derive_components_assign = [ "derive_components", "derive_component_assign", "convert_case" ]
+derive_component_from = [ "derive_components" ]
+derive_from_components = [ "derive_components" ]
 
 [lib]
 proc-macro = true
@@ -42,6 +59,7 @@ proc-macro = true
 [dependencies]
 macro_tools = { workspace = true }
 iter_tools = { workspace = true }
+convert_case = { version = "0.6.0", default-features = false, optional = true, features = [] }
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }

@@ -1,0 +1,67 @@
+[package]
+name = "collection_tools"
+version = "0.3.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/collection_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/collection_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/collection_tools"
+description = """
+Collection of general purpose tools to manipulate collections( containers like Vec/HashMap/HashSet ).
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+
+
+[lints]
+workspace = true
+
+
+[package.metadata.docs.rs]
+features = [ "full" ]
+all-features = false
+
+
+
+[features]
+
+no_std = [
+  "test_tools/no_std",
+]
+use_alloc = [
+  "no_std",
+  "hashbrown",
+  "test_tools/use_alloc",
+]
+
+default = [
+  "enabled",
+  "collection_constructors",
+  "collection_std",
+]
+full = [
+  "enabled",
+  "collection_constructors",
+  "collection_std",
+]
+enabled = []
+
+# Collection constructors, like `hmap!{ "key" => "val" }`
+collection_constructors = [ "literally" ]
+# STD collection for no_std.
+collection_std = []
+
+
+[dependencies]
+
+## external
+literally = { version = "~0.1.3", optional = true, default-features = false }
+hashbrown = { version = "~0.14.3", optional = true, default-features = false, features = [ "default" ] }
+
+[dev-dependencies]
+test_tools = { workspace = true }
+# former = { workspace = true }

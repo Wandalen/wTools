@@ -15,7 +15,7 @@ mod private
   use wca::{ Args, Props };
   use wtools::error::{ for_app::Context, Result };
 
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
   use action::{ list as l, list::{ ListFormat, ListOptions } };
   use former::Former;
 

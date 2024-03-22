@@ -1,14 +1,16 @@
 //! Query command endpoint and report.
 
+// qqq : don't use both
 use crate::*;
+use super::*;
 use gluesql::core::executor::Payload;
-use super::Report;
-use storage::{ FeedStorage, FeedStore };
+use storage::{ FeedStorage, Store };
 use executor::FeedManager;
 use error_tools::{ err, BasicError, Result };
 
 /// Execute query specified in query string.
-pub async fn execute_query(
+pub async fn execute_query
+(
   storage : FeedStorage< gluesql::sled_storage::SledStorage >,
   args : &wca::Args,
 ) -> Result< impl Report >
@@ -86,3 +88,6 @@ impl std::fmt::Display for QueryReport
 }
 
 impl Report for QueryReport {}
+
+// qqq : good tests for query action
+// all tables should be touched by these tests

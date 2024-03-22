@@ -1,15 +1,15 @@
 use crate::*;
 use assert_fs::prelude::*;
-use TheModule::action;
+use the_module::action;
 
 use std::io::Read;
-use willbe::path::AbsolutePath;
-  
+use willbe::_path::AbsolutePath;
+
 
 fn arrange( source : &str ) -> assert_fs::TempDir
 {
   let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) );
-  let assets_relative_path = std::path::Path::new( ASSETS_PATH );
+  let assets_relative_path = std::path::Path::new( ASSET_PATH );
   let assets_path = root_path.join( assets_relative_path );
 
   let temp = assert_fs::TempDir::new().unwrap();
@@ -92,7 +92,7 @@ fn gitpod_cell()
   _ = file.read_to_string( &mut actual ).unwrap();
 
   // Assert
-  assert!( actual.contains( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftest_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20test_trivial_sample/https://github.com/Username/test)" ) );
+  assert!( actual.contains( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftest_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20test_trivial/https://github.com/Username/test)" ) );
 }
 
 #[ test ]

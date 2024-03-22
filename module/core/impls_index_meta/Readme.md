@@ -1,8 +1,10 @@
 <!-- {{# generate.module_header{} #}} -->
 
 # Module :: impls_index_meta
-
-[![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleImplsIndexMetaPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleImplsIndexMetaPush.yml) [![docs.rs](https://img.shields.io/docsrs/impls_index_meta?color=e3e8f0&logo=docs.rs)](https://docs.rs/impls_index_meta) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+<!--{ generate.module_header.start() }-->
+ [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)[![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_impls_index_meta_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_impls_index_meta_push.yml)[![docs.rs](https://img.shields.io/docsrs/impls_index_meta?color=e3e8f0&logo=docs.rs)](https://docs.rs/impls_index_meta)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Fimpls_index_meta_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20impls_index_meta_trivial/https://github.com/Wandalen/wTools)
+[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+<!--{ generate.module_header.end }-->
 
 Several of macros to put each function under a named macro to index every function in a class.
 

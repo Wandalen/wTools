@@ -1,8 +1,8 @@
 
 #[ allow( unused_imports ) ]
-use derive_tools as TheModule;
+use derive_tools as the_module;
+#[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 
-// #[ path = "inc.rs" ]
 mod inc;
 
