@@ -5,8 +5,6 @@ use the_module::
   Parser,
 
   CommandsAggregator,
-  Routine,
-  Type,
   HelpVariants,
   Type,
   Error,
