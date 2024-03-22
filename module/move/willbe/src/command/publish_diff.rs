@@ -3,9 +3,16 @@ mod private
   use crate::*;
 
   use std::path::PathBuf;
-  use wca::Args;
+  use wca::{ Args, Props };
 
   use wtools::error::Result;
+  use _path::AbsolutePath;
+
+  #[ derive( former::Former ) ]
+  struct PublishDiffProperties
+  {
+    keep_archive : Option< PathBuf >,
+  }
 
   /// Command to display the differences between a local and remote package versions.
   ///
@@ -20,13 +27,37 @@ mod private
   /// # Errors
   ///
   /// Returns an error if there is an issue with the command.
-  pub fn publish_diff( args : Args ) -> Result< () >
+  pub fn publish_diff( args : Args, props : Props ) -> Result< () >
   {
     let path : PathBuf = args.get_owned( 0 ).unwrap_or( std::env::current_dir()? );
+    let PublishDiffProperties { keep_archive } = props.try_into()?;
 
-    println!( "{}", action::publish_diff( path )? );
+    let mut o = action::PublishDiffOptions::former()
+    .path( path );
+    if let Some( k ) = keep_archive.clone() { o = o.keep_archive( k ); }
+    let o = o.form();
+
+    println!( "{}", action::publish_diff( o )? );
+    if let Some( keep ) = keep_archive
+    {
+      let keep = AbsolutePath::try_from( keep ).unwrap();
+      println!( "Remote version of the package was saved at `{}`", keep.as_ref().display() );
+    }
 
     Ok( () )
+  }
+
+  impl TryFrom< Props > for PublishDiffProperties
+  {
+    type Error = wtools::error::for_app::Error;
+    fn try_from( value : Props ) -> Result< Self, Self::Error >
+    {
+      let mut this = Self::former();
+
+      this = if let Some( v ) = value.get_owned( "keep_archive" ) { this.keep_archive::< PathBuf >( v ) } else { this };
+
+      Ok( this.form() )
+    }
   }
 }
 

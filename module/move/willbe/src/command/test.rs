@@ -9,7 +9,6 @@ mod private
   { 
     Args, 
     Props, 
-    Value,
   };
   use wtools::error::Result;
   use _path::AbsolutePath;
@@ -17,46 +16,8 @@ mod private
   use former::Former;
   use channel::Channel;
   use error_tools::for_app::bail;
-  use iter_tools::Itertools;
   use optimization::Optimization;
-
-  trait ToString
-  {
-    fn to_string( &self ) -> String;
-  }
   
-  
-  impl ToString for Value
-  {
-    fn to_string( &self ) -> String
-    {
-      match self
-      {
-        Value::String( s ) =>
-        {
-          format!( "{s}" )
-        }
-        Value::Number( n ) =>
-        {
-          format!( "{n}" )
-        }
-        Value::Path( p ) =>
-        {
-          format!( "{}", p.display() )
-        }
-        Value::Bool( b ) =>
-        {
-          format!( "{b}" )
-        }
-        Value::List( list ) =>
-        {
-          let list = list.iter().map( | element | element.to_string() ).join( ", "); // qqq : don't hardcode ", " find way to get original separator
-          format!( "{list}" )
-        }
-      }
-    }
-  }
-
   #[ derive( Former, Debug ) ]
   struct TestsProperties
   {
@@ -91,7 +52,7 @@ mod private
   /// run tests in specified crate
   pub fn test( args : Args, properties : Props ) -> Result< () >
   {
-    let args_line = format!( "{}", args.get_owned( 0 ).unwrap_or( "" ) );
+    let args_line = format!( "{}", args.get_owned( 0 ).unwrap_or( std::path::PathBuf::from( "" ) ).display() );
     let prop_line = format!( "{}", properties.iter().map( | p | format!( "{}:{}", p.0, p.1.to_string() ) ).collect::< Vec< _ > >().join(" ") );
     let path : PathBuf = args.get_owned( 0 ).unwrap_or_else( || "./".into() );
     let path = AbsolutePath::try_from( path )?;

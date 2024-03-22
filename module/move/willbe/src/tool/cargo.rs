@@ -10,12 +10,12 @@ mod private
   use wtools::error::Result;
 
   /// Represents pack options
-  #[ derive( Debug, Former ) ]
+  #[ derive( Debug, Former, Clone ) ]
   pub struct PackOptions
   {
-    path : PathBuf,
-    temp_path : Option< PathBuf >,
-    dry : bool,
+    pub( crate ) path : PathBuf,
+    pub( crate ) temp_path : Option< PathBuf >,
+    pub( crate ) dry : bool,
   }
 
   impl PackOptionsFormer
@@ -84,9 +84,9 @@ mod private
   #[ derive( Debug, Former, Clone, Default ) ]
   pub struct PublishOptions
   {
-    path : PathBuf,
-    temp_path : Option< PathBuf >,
-    dry : bool,
+    pub( crate ) path : PathBuf,
+    pub( crate ) temp_path : Option< PathBuf >,
+    pub( crate ) dry : bool,
   }
 
   impl PublishOptionsFormer

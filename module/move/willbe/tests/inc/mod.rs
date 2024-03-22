@@ -1,6 +1,7 @@
 use super::*;
 
 mod action;
+mod package;
 mod command;
 mod entity;
 mod tool;

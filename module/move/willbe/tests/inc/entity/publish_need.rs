@@ -38,7 +38,7 @@ fn package< P : AsRef< Path > >( path : P ) -> Package
 fn no_changes()
 {
   // Arrange
-  // qqq : for Bohdan : make helper function returning package_path. reuse it for all relevant tests
+  // aaa : for Bohdan : make helper function returning package_path. reuse it for all relevant tests
   // aaa : use `package_path` function
   let package_path = package_path( "c" );
 
