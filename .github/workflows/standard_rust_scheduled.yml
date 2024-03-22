@@ -17,6 +17,6 @@ jobs :
     if : ${{ needs.check.outputs.should_run == 'true' }}
     uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
     with :
-      manifest_path : ''
+      manifest_path : './Cargo.toml'
       module_name : $\{{ github.event.base.ref }}_$\{{ github.event.number }}
       commit_message : '+test_$\{{ github.event.base.ref }}_$\{{ github.event.number }}'
