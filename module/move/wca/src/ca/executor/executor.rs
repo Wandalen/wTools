@@ -4,6 +4,8 @@ pub( crate ) mod private
 
   use ca::executor::runtime::_exec_command;
   use wtools::error::Result;
+  use std::sync::Arc;
+  use std::sync::atomic::Ordering;
 
   // aaa : for Bohdan : how is it useful? where is it used?
   // aaa : `ExecutorType` has been removed
@@ -55,10 +57,10 @@ pub( crate ) mod private
     {
       while !runtime.is_finished()
       {
-        let state = runtime.context.get_or_default::< RuntimeState >();
-        state.pos = runtime.pos + 1;
+        let state = runtime.context.get_or_default::< Arc< RuntimeState > >();
+        state.pos.store( runtime.pos + 1, Ordering::Release );
         runtime.r#do( &dictionary )?;
-        runtime.pos = runtime.context.get_ref::< RuntimeState >().unwrap().pos;
+        runtime.pos = runtime.context.get::< Arc< RuntimeState > >().unwrap().pos.load( Ordering::Relaxed );
       }
 
       Ok( () )
