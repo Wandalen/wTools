@@ -108,11 +108,12 @@ pub( crate ) mod private
     #[ default( Executor::former().form() ) ]
     executor : Executor,
 
-    help_generator : HelpGeneratorFn,
+    help_generator : Option< HelpGeneratorFn >,
     #[ default( HashSet::from([ HelpVariants::All ]) ) ]
     help_variants : HashSet< HelpVariants >,
-    // qqq : for Bohdan : should not have fields help_generator and help_variants
+    // aaa : for Bohdan : should not have fields help_generator and help_variants
     // help_generator generateds VerifiedCommand(s) and stop to exist
+    // aaa : Defaults after formation
 
     // #[ default( Verifier::former().form() ) ]
     #[ default( Verifier ) ]
@@ -239,19 +240,22 @@ pub( crate ) mod private
     {
       let mut ca = self;
 
-      if ca.help_variants.contains( &HelpVariants::All )
+      let help_generator = std::mem::take( &mut ca.help_generator ).unwrap_or_default();
+      let help_variants = std::mem::take( &mut ca.help_variants );
+
+      if help_variants.contains( &HelpVariants::All )
       {
-        HelpVariants::All.generate( &ca.help_generator, &mut ca.dictionary );
+        HelpVariants::All.generate( &help_generator, &mut ca.dictionary );
       }
       else
       {
-        for help in ca.help_variants.iter().sorted()
+        for help in help_variants.iter().sorted()
         {
-          help.generate( &ca.help_generator, &mut ca.dictionary );
+          help.generate( &help_generator, &mut ca.dictionary );
         }
       }
 
-      dot_command( &mut ca.dictionary );
+      dot_command( &help_generator, &mut ca.dictionary );
 
       ca
     }
