@@ -24,11 +24,7 @@ mod private
   };
   // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
   // aaa : ✅
-  use cargo_metadata::
-  {
-    Dependency,
-    DependencyKind,
-  };
+
   use petgraph::prelude::{ Dfs, EdgeRef };
   use former::Former;
 
@@ -312,20 +308,20 @@ mod private
     visited : &mut HashSet< String >
   )
   {
-    for dependency in package.dependencies()
+    for dependency in &package.dependencies()
     {
-      if dependency.path.is_some() && !args.dependency_sources.contains( &DependencySource::Local ) { continue; }
-      if dependency.path.is_none() && !args.dependency_sources.contains( &DependencySource::Remote ) { continue; }
-      let dep_id = format!( "{}+{}+{}", dependency.name, dependency.req, dependency.path.as_ref().map( | p | p.join( "Cargo.toml" ) ).unwrap_or_default() );
+      if dependency.path().is_some() && !args.dependency_sources.contains( &DependencySource::Local ) { continue; }
+      if dependency.path().is_none() && !args.dependency_sources.contains( &DependencySource::Remote ) { continue; }
+      let dep_id = format!( "{}+{}+{}", dependency.name(), dependency.req(), dependency.path().as_ref().map( | p | p.join( "Cargo.toml" ) ).unwrap_or_default() );
 
       let mut temp_vis = visited.clone();
       let dependency_rep = process_dependency( workspace, dependency, args, &mut temp_vis );
 
-      match dependency.kind
+      match dependency.kind()
       {
-        DependencyKind::Normal if args.dependency_categories.contains( &DependencyCategory::Primary ) => dep_rep.normal_dependencies.push( dependency_rep ),
-        DependencyKind::Development if args.dependency_categories.contains( &DependencyCategory::Dev ) => dep_rep.dev_dependencies.push( dependency_rep ),
-        DependencyKind::Build if args.dependency_categories.contains( &DependencyCategory::Build ) => dep_rep.build_dependencies.push( dependency_rep ),
+        workspace::DependencyKind::Normal if args.dependency_categories.contains( &DependencyCategory::Primary ) => dep_rep.normal_dependencies.push( dependency_rep ),
+        workspace::DependencyKind::Development if args.dependency_categories.contains( &DependencyCategory::Dev ) => dep_rep.dev_dependencies.push( dependency_rep ),
+        workspace::DependencyKind::Build if args.dependency_categories.contains( &DependencyCategory::Build ) => dep_rep.build_dependencies.push( dependency_rep ),
         _ => { visited.remove( &dep_id ); std::mem::swap( &mut temp_vis, visited ); }
       }
 
@@ -333,19 +329,19 @@ mod private
     }
   }
 
-  fn process_dependency( workspace : &Workspace, dep : &Dependency, args : &ListOptions, visited : &mut HashSet< String > ) -> ListNodeReport
+  fn process_dependency( workspace : &Workspace, dep : &workspace::Dependency, args : &ListOptions, visited : &mut HashSet< String > ) -> ListNodeReport
   {
     let mut dep_rep = ListNodeReport
     {
-      name : dep.name.clone(),
-      version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( dep.req.to_string() ) } else { None },
-      path : if args.info.contains( &PackageAdditionalInfo::Path ) { dep.path.as_ref().map( | p | p.clone().into_std_path_buf() ) } else { None },
+      name : dep.name().clone(),
+      version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( dep.req().to_string() ) } else { None },
+      path : if args.info.contains( &PackageAdditionalInfo::Path ) { dep.path().as_ref().map( | p | p.clone().into_std_path_buf() ) } else { None },
       normal_dependencies : vec![],
       dev_dependencies : vec![],
       build_dependencies : vec![],
     };
 
-    let dep_id = format!( "{}+{}+{}", dep.name, dep.req, dep.path.as_ref().map( | p | p.join( "Cargo.toml" ) ).unwrap_or_default() );
+    let dep_id = format!( "{}+{}+{}", dep.name(), dep.req(), dep.path().as_ref().map( | p | p.join( "Cargo.toml" ) ).unwrap_or_default() );
     // if this is a cycle (we have visited this node before)
     if visited.contains( &dep_id )
     {
@@ -356,7 +352,7 @@ mod private
 
     // if we have not visited this node before, mark it as visited
     visited.insert( dep_id );
-    if let Some( path ) = &dep.path
+    if let Some( path ) = &dep.path()
     {
       if let Some( package ) = workspace.package_find_by_manifest( path.as_std_path().join( "Cargo.toml" ) )
       {
@@ -447,17 +443,17 @@ mod private
         .map( | m | m[ "name" ].to_string().trim().replace( '\"', "" ) )
         .unwrap_or_default();
 
-        let dep_filter = move | _p : &WorkspacePackage, d : &Dependency |
+        let dep_filter = move | _p : &WorkspacePackage, d : &workspace::Dependency |
         {
           (
-            args.dependency_categories.contains( &DependencyCategory::Primary ) && d.kind == DependencyKind::Normal
-            || args.dependency_categories.contains( &DependencyCategory::Dev ) && d.kind == DependencyKind::Development
-            || args.dependency_categories.contains( &DependencyCategory::Build ) && d.kind == DependencyKind::Build
+            args.dependency_categories.contains( &DependencyCategory::Primary ) && d.kind() == workspace::DependencyKind::Normal
+            || args.dependency_categories.contains( &DependencyCategory::Dev ) && d.kind() == workspace::DependencyKind::Development
+            || args.dependency_categories.contains( &DependencyCategory::Build ) && d.kind() == workspace::DependencyKind::Build
           )
           &&
           (
-            args.dependency_sources.contains( &DependencySource::Remote ) && d.path.is_none()
-            || args.dependency_sources.contains( &DependencySource::Local ) && d.path.is_some()
+            args.dependency_sources.contains( &DependencySource::Remote ) && d.path().is_none()
+            || args.dependency_sources.contains( &DependencySource::Local ) && d.path().is_some()
           )
         };
 
