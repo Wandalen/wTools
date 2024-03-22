@@ -9,6 +9,28 @@ pub( crate ) mod private
   #[ derive( Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
   pub struct AbsolutePath( PathBuf );
 
+  impl TryFrom< &str > for AbsolutePath
+  {
+    type Error = std::io::Error;
+
+    fn try_from( value : &str ) -> Result< Self, Self::Error >
+    {
+      let value = PathBuf::from( value );
+      Ok( Self( canonicalize( value )? ) )
+    }
+  }
+
+  impl TryFrom< String > for AbsolutePath
+  {
+    type Error = std::io::Error;
+
+    fn try_from( value : String ) -> Result< Self, Self::Error >
+    {
+      let value = PathBuf::from( value );
+      Ok( Self( canonicalize( value )? ) )
+    }
+  }
+
   impl TryFrom< PathBuf > for AbsolutePath
   {
     type Error = std::io::Error;
@@ -74,7 +96,7 @@ pub( crate ) mod private
       Self::try_from( self.0.join( path ) ).unwrap()
     }
   }
-  
+
   // qqq : for Petro : for Bohdan : bad. move out
 
   /// Check if path has a glob.
