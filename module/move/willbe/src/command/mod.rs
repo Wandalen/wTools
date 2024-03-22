@@ -42,6 +42,11 @@ pub( crate ) mod private
         .kind( Type::Path )
         .optional( true )
         .end()
+      .property( "keep_archive" )
+        .hint( "Save remote package version to the specified path" )
+        .kind( Type::Path )
+        .optional( true )
+        .end()
       .routine( command::publish_diff )
       .end()
 
