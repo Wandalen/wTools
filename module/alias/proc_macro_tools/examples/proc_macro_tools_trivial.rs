@@ -1,5 +1,4 @@
-//! example
-
+//! qqq : write proper description
 #[ cfg( feature = "no_std" ) ]
 fn main(){}
 

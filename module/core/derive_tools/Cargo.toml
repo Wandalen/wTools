@@ -1,6 +1,6 @@
 [package]
 name = "derive_tools"
-version = "0.13.0"
+version = "0.19.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -12,7 +12,7 @@ documentation = "https://docs.rs/derive_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/derive_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/derive_tools"
 description = """
-Collection of derives which extend STD.
+A collection of derive macros designed to enhance STD.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
@@ -23,7 +23,7 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-exclude = [ "/tests", "/examples", "-*" ]
+# exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
 
@@ -115,7 +115,7 @@ full = [
   # "use_std",
 ]
 no_std = []
-use_alloc = []
+use_alloc = [ "no_std" ]
 enabled = []
 
 # nightly = [ "derive_more/nightly" ]

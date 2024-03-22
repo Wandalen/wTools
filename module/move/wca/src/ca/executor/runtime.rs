@@ -89,7 +89,7 @@ pub( crate ) mod private
   {
     match routine
     {
-      Routine::WithoutContext( routine ) => routine( ( Args( command.subjects ), Props( command.properties ) )),
+      Routine::WithoutContext( routine ) => routine(( Args( command.subjects ), Props( command.properties ) )),
       Routine::WithContext( routine ) => routine( ( Args( command.subjects ), Props( command.properties ) ), ctx ),
     }
   }

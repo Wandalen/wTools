@@ -17,31 +17,31 @@ tests_impls!
     impl< T : Sized, const N : usize > Trait1 for [ T; N ] {}
     impl< T : Sized, const N : usize > Trait1 for &[ T; N ] {}
     let src : &[ i32 ] = &[ 1, 2, 3 ];
-    a_id!( TheModule::implements!( src => Trait1 ), true );
+    a_id!( the_module::implements!( src => Trait1 ), true );
     a_id!( impl_trait1( &src ), true );
-    a_id!( TheModule::implements!( &[ 1, 2, 3 ] => Trait1 ), true );
+    a_id!( the_module::implements!( &[ 1, 2, 3 ] => Trait1 ), true );
     a_id!( impl_trait1( &[ 1, 2, 3 ] ), true );
-    a_id!( TheModule::implements!( [ 1, 2, 3 ] => Trait1 ), true );
+    a_id!( the_module::implements!( [ 1, 2, 3 ] => Trait1 ), true );
 
     impl< T : Sized > Trait1 for Vec< T > {}
-    a_id!( TheModule::implements!( vec!( 1, 2, 3 ) => Trait1 ), true );
+    a_id!( the_module::implements!( vec!( 1, 2, 3 ) => Trait1 ), true );
 
     impl Trait1 for f32 {}
-    a_id!( TheModule::implements!( 13_f32 => Trait1 ), true );
+    a_id!( the_module::implements!( 13_f32 => Trait1 ), true );
 
-    a_id!( TheModule::implements!( true => Copy ), true );
-    a_id!( TheModule::implements!( true => Clone ), true );
+    a_id!( the_module::implements!( true => Copy ), true );
+    a_id!( the_module::implements!( true => Clone ), true );
 
     let src = true;
-    a_id!( TheModule::implements!( src => Copy ), true );
-    a_id!( TheModule::implements!( src => Clone ), true );
+    a_id!( the_module::implements!( src => Copy ), true );
+    a_id!( the_module::implements!( src => Clone ), true );
 
     let src = Box::new( true );
-    a_id!( TheModule::implements!( src => Copy ), false );
-    a_id!( TheModule::implements!( src => Clone ), true );
+    a_id!( the_module::implements!( src => Copy ), false );
+    a_id!( the_module::implements!( src => Clone ), true );
 
-    a_id!( TheModule::implements!( Box::new( true ) => std::marker::Copy ), false );
-    a_id!( TheModule::implements!( Box::new( true ) => std::clone::Clone ), true );
+    a_id!( the_module::implements!( Box::new( true ) => std::marker::Copy ), false );
+    a_id!( the_module::implements!( Box::new( true ) => std::clone::Clone ), true );
 
   }
 
@@ -52,8 +52,8 @@ tests_impls!
   {
 
     let src = Box::new( true );
-    a_id!( TheModule::instance_of!( src => Copy ), false );
-    a_id!( TheModule::instance_of!( src => Clone ), true );
+    a_id!( the_module::instance_of!( src => Copy ), false );
+    a_id!( the_module::instance_of!( src => Clone ), true );
 
   }
 
@@ -91,32 +91,32 @@ tests_impls!
 
     /* */
 
-    a_id!( TheModule::implements!( _fn => Copy ), true );
-    a_id!( TheModule::implements!( _fn => Clone ), true );
-    a_id!( TheModule::implements!( _fn => core::ops::Not ), false );
+    a_id!( the_module::implements!( _fn => Copy ), true );
+    a_id!( the_module::implements!( _fn => Clone ), true );
+    a_id!( the_module::implements!( _fn => core::ops::Not ), false );
     let _ = _fn.clone();
 
     /* */
 
-    // a_id!( TheModule::implements!( function1 => fn() -> () ), true );
-    // a_id!( TheModule::implements!( &function1 => Fn() -> () ), true );
-    // a_id!( TheModule::implements!( &function1 => FnMut() -> () ), true );
-    // a_id!( TheModule::implements!( &function1 => FnOnce() -> () ), true );
+    // a_id!( the_module::implements!( function1 => fn() -> () ), true );
+    // a_id!( the_module::implements!( &function1 => Fn() -> () ), true );
+    // a_id!( the_module::implements!( &function1 => FnMut() -> () ), true );
+    // a_id!( the_module::implements!( &function1 => FnOnce() -> () ), true );
 
-    // a_id!( TheModule::implements!( _fn => fn() -> () ), true );
-    a_id!( TheModule::implements!( _fn => Fn() -> () ), true );
-    a_id!( TheModule::implements!( _fn => FnMut() -> () ), true );
-    a_id!( TheModule::implements!( _fn => FnOnce() -> () ), true );
+    // a_id!( the_module::implements!( _fn => fn() -> () ), true );
+    a_id!( the_module::implements!( _fn => Fn() -> () ), true );
+    a_id!( the_module::implements!( _fn => FnMut() -> () ), true );
+    a_id!( the_module::implements!( _fn => FnOnce() -> () ), true );
 
-    // a_id!( TheModule::implements!( _fn_mut => fn() -> () ), false );
-    // a_id!( TheModule::implements!( _fn_mut => Fn() -> () ), false );
-    a_id!( TheModule::implements!( _fn_mut => FnMut() -> () ), true );
-    a_id!( TheModule::implements!( _fn_mut => FnOnce() -> () ), true );
+    // a_id!( the_module::implements!( _fn_mut => fn() -> () ), false );
+    // a_id!( the_module::implements!( _fn_mut => Fn() -> () ), false );
+    a_id!( the_module::implements!( _fn_mut => FnMut() -> () ), true );
+    a_id!( the_module::implements!( _fn_mut => FnOnce() -> () ), true );
 
-    // a_id!( TheModule::implements!( _fn_once => fn() -> () ), false );
-    // a_id!( TheModule::implements!( _fn_once => Fn() -> () ), false );
-    // a_id!( TheModule::implements!( _fn_once => FnMut() -> () ), false );
-    a_id!( TheModule::implements!( _fn_once => FnOnce() -> () ), true );
+    // a_id!( the_module::implements!( _fn_once => fn() -> () ), false );
+    // a_id!( the_module::implements!( _fn_once => Fn() -> () ), false );
+    // a_id!( the_module::implements!( _fn_once => FnMut() -> () ), false );
+    a_id!( the_module::implements!( _fn_once => FnOnce() -> () ), true );
 
     // fn is_f < R >                             ( _x : fn() -> R )      -> bool { true }
     // fn is_fn < R, F : Fn() -> R >             ( _x : &F )             -> bool { true }

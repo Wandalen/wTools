@@ -34,9 +34,8 @@ include = [
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-# use_std = []
 no_std = []
-use_alloc = []
+use_alloc = [ "no_std" ]
 enabled = []
 
 [lib]
@@ -52,8 +51,8 @@ name = "instance_of_smoke_test"
 path = "tests/smoke_test.rs"
 
 [[example]]
-name = "instance_of_trivial_sample"
-path = "examples/instance_of_trivial_sample/src/main.rs"
+name = "instance_of_trivial"
+path = "examples/instance_of_trivial/src/main.rs"
 
 [dependencies]
 implements = { workspace = true }

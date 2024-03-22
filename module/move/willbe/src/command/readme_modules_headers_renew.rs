@@ -1,7 +1,7 @@
 mod private
 {
   use crate::*;
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
   use wtools::error::{ for_app::Context, Result };
 
   /// Generate headers for workspace members

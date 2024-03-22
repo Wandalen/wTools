@@ -22,17 +22,15 @@ mod private
     for_app::{ Error, Context },
     err
   };
-  use cargo_metadata::
-  {
-    Dependency,
-    DependencyKind,
-    Package
-  };
+  // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
+  // aaa : ✅
+
   use petgraph::prelude::{ Dfs, EdgeRef };
   use former::Former;
 
   use workspace::Workspace;
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
+  use workspace::WorkspacePackage;
 
   /// Args for `list` action.
   #[ derive( Debug, Default, Copy, Clone ) ]
@@ -304,26 +302,26 @@ mod private
   fn process_package_dependency
   (
     workspace : &Workspace,
-    package : &Package,
+    package : &WorkspacePackage,
     args : &ListOptions,
     dep_rep : &mut ListNodeReport,
     visited : &mut HashSet< String >
   )
   {
-    for dependency in &package.dependencies
+    for dependency in &package.dependencies()
     {
-      if dependency.path.is_some() && !args.dependency_sources.contains( &DependencySource::Local ) { continue; }
-      if dependency.path.is_none() && !args.dependency_sources.contains( &DependencySource::Remote ) { continue; }
-      let dep_id = format!( "{}+{}+{}", dependency.name, dependency.req, dependency.path.as_ref().map( | p | p.join( "Cargo.toml" ) ).unwrap_or_default() );
+      if dependency.path().is_some() && !args.dependency_sources.contains( &DependencySource::Local ) { continue; }
+      if dependency.path().is_none() && !args.dependency_sources.contains( &DependencySource::Remote ) { continue; }
+      let dep_id = format!( "{}+{}+{}", dependency.name(), dependency.req(), dependency.path().as_ref().map( | p | p.join( "Cargo.toml" ) ).unwrap_or_default() );
 
       let mut temp_vis = visited.clone();
       let dependency_rep = process_dependency( workspace, dependency, args, &mut temp_vis );
 
-      match dependency.kind
+      match dependency.kind()
       {
-        DependencyKind::Normal if args.dependency_categories.contains( &DependencyCategory::Primary ) => dep_rep.normal_dependencies.push( dependency_rep ),
-        DependencyKind::Development if args.dependency_categories.contains( &DependencyCategory::Dev ) => dep_rep.dev_dependencies.push( dependency_rep ),
-        DependencyKind::Build if args.dependency_categories.contains( &DependencyCategory::Build ) => dep_rep.build_dependencies.push( dependency_rep ),
+        workspace::DependencyKind::Normal if args.dependency_categories.contains( &DependencyCategory::Primary ) => dep_rep.normal_dependencies.push( dependency_rep ),
+        workspace::DependencyKind::Development if args.dependency_categories.contains( &DependencyCategory::Dev ) => dep_rep.dev_dependencies.push( dependency_rep ),
+        workspace::DependencyKind::Build if args.dependency_categories.contains( &DependencyCategory::Build ) => dep_rep.build_dependencies.push( dependency_rep ),
         _ => { visited.remove( &dep_id ); std::mem::swap( &mut temp_vis, visited ); }
       }
 
@@ -331,19 +329,19 @@ mod private
     }
   }
 
-  fn process_dependency( workspace : &Workspace, dep : &Dependency, args : &ListOptions, visited : &mut HashSet< String > ) -> ListNodeReport
+  fn process_dependency( workspace : &Workspace, dep : &workspace::Dependency, args : &ListOptions, visited : &mut HashSet< String > ) -> ListNodeReport
   {
     let mut dep_rep = ListNodeReport
     {
-      name : dep.name.clone(),
-      version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( dep.req.to_string() ) } else { None },
-      path : if args.info.contains( &PackageAdditionalInfo::Path ) { dep.path.as_ref().map( | p | p.clone().into_std_path_buf() ) } else { None },
+      name : dep.name().clone(),
+      version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( dep.req().to_string() ) } else { None },
+      path : if args.info.contains( &PackageAdditionalInfo::Path ) { dep.path().as_ref().map( | p | p.clone().into_std_path_buf() ) } else { None },
       normal_dependencies : vec![],
       dev_dependencies : vec![],
       build_dependencies : vec![],
     };
 
-    let dep_id = format!( "{}+{}+{}", dep.name, dep.req, dep.path.as_ref().map( | p | p.join( "Cargo.toml" ) ).unwrap_or_default() );
+    let dep_id = format!( "{}+{}+{}", dep.name(), dep.req(), dep.path().as_ref().map( | p | p.join( "Cargo.toml" ) ).unwrap_or_default() );
     // if this is a cycle (we have visited this node before)
     if visited.contains( &dep_id )
     {
@@ -354,11 +352,11 @@ mod private
 
     // if we have not visited this node before, mark it as visited
     visited.insert( dep_id );
-    if let Some( path ) = &dep.path
+    if let Some( path ) = &dep.path()
     {
       if let Some( package ) = workspace.package_find_by_manifest( path.as_std_path().join( "Cargo.toml" ) )
       {
-        process_package_dependency( workspace, package, args, &mut dep_rep, visited );
+        process_package_dependency( workspace, &package, args, &mut dep_rep, visited );
       }
     }
 
@@ -388,6 +386,7 @@ mod private
   ///
   /// - `Result<ListReport, (ListReport, Error)>` - A result containing the list report if successful,
   ///   or a tuple containing the list report and error if not successful.
+  #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
   pub fn list( args : ListOptions ) -> Result< ListReport, ( ListReport, Error ) >
   {
     let mut report = ListReport::default();
@@ -402,15 +401,15 @@ mod private
       let package = metadata.package_find_by_manifest( path ).unwrap();
       let mut package_report = ListNodeReport
       {
-        name : package.name.clone(),
-        version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( package.version.to_string() ) } else { None },
-        path : if args.info.contains( &PackageAdditionalInfo::Path ) { Some( package.manifest_path.clone().into_std_path_buf() ) } else { None },
+        name : package.name().to_string(),
+        version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( package.version().to_string() ) } else { None },
+        path : if args.info.contains( &PackageAdditionalInfo::Path ) { Some( package.manifest_path().as_std_path().to_path_buf() ) } else { None },
         normal_dependencies : vec![],
         dev_dependencies : vec![],
         build_dependencies : vec![],
       };
 
-      process_package_dependency( &metadata, package, &args, &mut package_report, visited );
+      process_package_dependency( &metadata, &package, &args, &mut package_report, visited );
 
       *report = match report
       {
@@ -429,10 +428,10 @@ mod private
       ListFormat::Tree =>
       {
         let packages = metadata.packages().context( "workspace packages" ).err_with( report.clone() )?;
-        let mut visited = packages.iter().map( | p | format!( "{}+{}+{}", p.name, p.version.to_string(), p.manifest_path ) ).collect();
+        let mut visited = packages.iter().map( | p | format!( "{}+{}+{}", p.name(), p.version().to_string(), p.manifest_path() ) ).collect();
         for package in packages
         {
-          tree_package_report( package.manifest_path.as_path().try_into().unwrap(), &mut report, &mut visited )
+          tree_package_report( package.manifest_path().as_std_path().try_into().unwrap(), &mut report, &mut visited )
         }
       }
       ListFormat::Topological =>
@@ -444,31 +443,31 @@ mod private
         .map( | m | m[ "name" ].to_string().trim().replace( '\"', "" ) )
         .unwrap_or_default();
 
-        let dep_filter = move | _p : &Package, d : &Dependency |
+        let dep_filter = move | _p : &WorkspacePackage, d : &workspace::Dependency |
         {
           (
-            args.dependency_categories.contains( &DependencyCategory::Primary ) && d.kind == DependencyKind::Normal
-            || args.dependency_categories.contains( &DependencyCategory::Dev ) && d.kind == DependencyKind::Development
-            || args.dependency_categories.contains( &DependencyCategory::Build ) && d.kind == DependencyKind::Build
+            args.dependency_categories.contains( &DependencyCategory::Primary ) && d.kind() == workspace::DependencyKind::Normal
+            || args.dependency_categories.contains( &DependencyCategory::Dev ) && d.kind() == workspace::DependencyKind::Development
+            || args.dependency_categories.contains( &DependencyCategory::Build ) && d.kind() == workspace::DependencyKind::Build
           )
           &&
           (
-            args.dependency_sources.contains( &DependencySource::Remote ) && d.path.is_none()
-            || args.dependency_sources.contains( &DependencySource::Local ) && d.path.is_some()
+            args.dependency_sources.contains( &DependencySource::Remote ) && d.path().is_none()
+            || args.dependency_sources.contains( &DependencySource::Local ) && d.path().is_some()
           )
         };
 
         let packages = metadata.packages().context( "workspace packages" ).err_with( report.clone() )?;
         let packages_map =  packages::filter
         (
-          packages,
+          packages.as_slice(),
           FilterMapOptions{ dependency_filter : Some( Box::new( dep_filter ) ), ..Default::default() }
         );
 
         let graph = graph::construct( &packages_map );
 
         let sorted = toposort( &graph, None ).map_err( | e | { use std::ops::Index; ( report.clone(), err!( "Failed to process toposort for package : {:?}", graph.index( e.node_id() ) ) ) } )?;
-        let packages_info = packages.iter().map( | p | ( p.name.clone(), p ) ).collect::< HashMap< _, _ > >();
+        let packages_info = packages.iter().map( | p | ( p.name().clone(), p ) ).collect::< HashMap< _, _ > >();
 
         if root_crate.is_empty()
         {
@@ -485,12 +484,12 @@ mod private
                 if args.info.contains( &PackageAdditionalInfo::Version )
                 {
                   name.push_str( " " );
-                  name.push_str( &p.version.to_string() );
+                  name.push_str( &p.version().to_string() );
                 }
                 if args.info.contains( &PackageAdditionalInfo::Path )
                 {
                   name.push_str( " " );
-                  name.push_str( &p.manifest_path.to_string() );
+                  name.push_str( &p.manifest_path().to_string() );
                 }
               }
               name
@@ -529,12 +528,12 @@ mod private
               if args.info.contains( &PackageAdditionalInfo::Version )
               {
                 name.push_str( " " );
-                name.push_str( &p.version.to_string() );
+                name.push_str( &p.version().to_string() );
               }
               if args.info.contains( &PackageAdditionalInfo::Path )
               {
                 name.push_str( " " );
-                name.push_str( &p.manifest_path.to_string() );
+                name.push_str( &p.manifest_path().to_string() );
               }
             }
             names.push( name );

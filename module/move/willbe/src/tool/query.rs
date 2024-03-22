@@ -194,7 +194,7 @@ mod private
     result
   }
 
-  fn parse_to_map(input : Vec<String> ) -> Result< HashMap< String, Value > >
+  fn parse_to_map(input : Vec< String > ) -> Result< HashMap< String, Value > >
   {
     let mut map = HashMap::new();
     for line in input

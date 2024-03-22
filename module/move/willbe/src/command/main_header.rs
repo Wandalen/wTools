@@ -1,7 +1,8 @@
 mod private
 {
   use crate::*;
-  use { action, path::AbsolutePath };
+  use action;
+  use _path::AbsolutePath;
   use error_tools::{ for_app::Context, Result };
 
   /// Generates header to main Readme.md file.

@@ -1,6 +1,6 @@
 use super::*;
 
-#[ derive( Debug, Clone, Copy, PartialEq, /* TheModule::Default,*/ TheModule::FromInner, TheModule::InnerFrom, TheModule::Deref, TheModule::DerefMut, TheModule::AsRef, TheModule::AsMut ) ]
+#[ derive( Debug, Clone, Copy, PartialEq, /* the_module::Default,*/ the_module::FromInner, the_module::InnerFrom, the_module::Deref, the_module::DerefMut, the_module::AsRef, the_module::AsMut ) ]
 // #[ default( value = false ) ]
 pub struct IsTransparent( bool );
 

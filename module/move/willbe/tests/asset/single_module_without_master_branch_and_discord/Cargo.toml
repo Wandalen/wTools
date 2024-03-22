@@ -1,0 +1,9 @@
+[workspace]
+resolver = "2"
+members = [
+    "test_module",
+]
+
+[workspace.metadata]
+project_name = "test"
+repo_url = "https://github.com/Username/test"

@@ -35,6 +35,9 @@ pub mod protected
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::iter::orphan::*;
 }
 
 /// Orphan namespace of the module.

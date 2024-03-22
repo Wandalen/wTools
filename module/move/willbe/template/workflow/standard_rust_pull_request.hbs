@@ -33,7 +33,7 @@ jobs :
           length=$(jq 'length' response.json)
           index=$(($length - 1))
           latest_commit=$(jq --argjson index $index '.[$index]' response.json)
-          latest_commit_message=$(echo "$latest_commit" | jq -r '.commit.message')
+          latest_commit_message=$(echo "$latest_commit" | jq -r '.commit.message' | tr -d '\n')
           echo "message=$latest_commit_message" >> $GITHUB_OUTPUT
       - name : Set output
         id: run
@@ -43,8 +43,8 @@ jobs :
   tested :
     needs: check
     if : $\{{ needs.check.outputs.should_run == 'true' }}
-    uses : {{username_and_repository}}/.github/workflows/StandardRustPush.yml@alpha
+    uses : {{username_and_repository}}/.github/workflows/standard_rust_push.yml@alpha
     with :
       manifest_path : './Cargo.toml'
       module_name : $\{{ github.event.base.ref }}_$\{{ github.event.number }}
-      commit_message : $\{{ github.event.base.ref }}_$\{{ github.event.number }}
+      commit_message : !test_$\{{ github.event.base.ref }}_$\{{ github.event.number }}

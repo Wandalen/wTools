@@ -1,5 +1,4 @@
-//! example
-
+//! qqq : write proper description
 use variadic_from::exposed::*;
 
 fn main()

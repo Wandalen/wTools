@@ -8,7 +8,7 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
   let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
   let field_types = parsed.field_types();
   let field_names = parsed.field_names();
-  let item_name = parsed.item_name;
+  let item_name = parsed.item_name.clone();
   let result =
   match ( field_types.len(), field_names )
   {
@@ -22,7 +22,13 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
   Ok( result )
 }
 
-fn generate_from_single_field_named( field_type: &syn::Type, field_name: &syn::Ident, item_name: syn::Ident ) -> proc_macro2::TokenStream
+// qqq  : document, add example of generated code
+fn generate_from_single_field_named
+(
+  field_type: &syn::Type,
+  field_name: &syn::Ident,
+  item_name: syn::Ident,
+) -> proc_macro2::TokenStream
 {
   qt!
   {
@@ -41,7 +47,12 @@ fn generate_from_single_field_named( field_type: &syn::Type, field_name: &syn::I
   }
 }
 
-fn generate_from_single_field( field_type: &syn::Type, item_name: syn::Ident ) -> proc_macro2::TokenStream
+// qqq  : document, add example of generated code
+fn generate_from_single_field
+(
+  field_type: &syn::Type,
+  item_name: syn::Ident,
+) -> proc_macro2::TokenStream
 {
   qt!
   {
@@ -60,7 +71,13 @@ fn generate_from_single_field( field_type: &syn::Type, item_name: syn::Ident ) -
   }
 }
 
-fn generate_from_multiple_fields_named( field_types: &Vec< syn::Type >, field_names: &Vec< syn::Ident >, item_name: syn::Ident) -> proc_macro2::TokenStream
+// qqq  : document, add example of generated code
+fn generate_from_multiple_fields_named
+(
+  field_types : &Vec< &syn::Type >,
+  field_names : &Vec< syn::Ident >,
+  item_name : syn::Ident
+) -> proc_macro2::TokenStream
 {
   let params: Vec< proc_macro2::TokenStream > = field_names
     .iter()
@@ -88,7 +105,12 @@ fn generate_from_multiple_fields_named( field_types: &Vec< syn::Type >, field_na
   }
 }
 
-fn generate_from_multiple_fields( field_types: &Vec< syn::Type >, item_name: syn::Ident ) -> proc_macro2::TokenStream
+// qqq  : document, add example of generated code
+fn generate_from_multiple_fields
+(
+  field_types : &Vec< &syn::Type >,
+  item_name: syn::Ident,
+) -> proc_macro2::TokenStream
 {
   let params: Vec< proc_macro2::TokenStream > = ( 0..field_types.len() )
   .map( | index |
@@ -114,6 +136,7 @@ fn generate_from_multiple_fields( field_types: &Vec< syn::Type >, item_name: syn
   }
 }
 
+// qqq  : document, add example of generated code
 fn generate_unit( item_name: syn::Ident ) -> proc_macro2::TokenStream
 {
   qt!

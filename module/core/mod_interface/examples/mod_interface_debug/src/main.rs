@@ -1,5 +1,4 @@
-//! example
-
+//! qqq : write proper description
 use mod_interface::mod_interface;
 
 //

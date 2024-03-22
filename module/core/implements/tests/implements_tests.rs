@@ -5,6 +5,6 @@
 
 use test_tools::exposed::*;
 
-use implements as TheModule;
+use implements as the_module;
 
 mod inc;

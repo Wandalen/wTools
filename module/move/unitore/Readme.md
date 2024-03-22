@@ -1,25 +1,28 @@
 
 # Module :: unitore
-[![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleTemplateBlankPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleTemplateBlankPush.yml) [![docs.rs](https://img.shields.io/docsrs/willbe?color=e3e8f0&logo=docs.rs)](https://docs.rs/unitore) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+<!--{ generate.module_header.start() }-->
+ [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)[![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_unitore_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_unitore_push.yml)[![docs.rs](https://img.shields.io/docsrs/unitore?color=e3e8f0&logo=docs.rs)](https://docs.rs/unitore)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Funitore_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20unitore_trivial/https://github.com/Wandalen/wTools)
+[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+<!--{ generate.module_header.end }-->
 
 Feed reader with the ability to set updates frequency.
 
 ### Basic use-case
 
-To start using unitore, set environment variable `UNITORE_STORAGE` to path to desired storage location.
-Then create configuration toml file with list of feed information - its link and update period.
+To start using unitore, create configuration toml file with list of feed information - its link and update period.
+
+- `update_period` : update frequency for feed. Example values: `12h`, `1h 20min`, `2days 5h`;
+- `link` : URL for feed source; 
 Example:
 
 
 ```toml
 [[config]]
-name = "bbc" 
-period = "2days" 
+update_period = "1min" 
 link = "https://feeds.bbci.co.uk/news/world/rss.xml"
 
 [[config]]
-name = "times"
-period = "2days"
+update_period = "1min"
 link = "https://rss.nytimes.com/services/xml/rss/nyt/World.xml"
 
 ```
@@ -30,6 +33,8 @@ cargo run .config.add ./config/feeds.toml
 ```
 To download feeds from sources specified in config file into storage use command `.frames.download`.
 Every time this command is run, feeds from all sources listed in all config files will be updated.
+By default, unitore will store downloaded frames at `_data` folder, you can change that by setting
+environment variable `UNITORE_STORAGE_PATH` to path to desired storage location.
 ```bash
 cargo run .frames.download
 ```

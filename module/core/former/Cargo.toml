@@ -1,6 +1,6 @@
 [package]
 name = "former"
-version = "0.8.0"
+version = "0.15.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -23,25 +23,44 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-exclude = [ "/tests", "-*" ]
-# exclude = [ "/tests", "/examples", "-*" ]
-# xxx : check and replicate for all modules
 
 [features]
 
-no_std = []
-use_alloc = []
+no_std = [ "collection_tools/no_std" ]
+use_alloc = [ "no_std", "collection_tools/use_alloc" ]
 
-default = [ "enabled", "derive_former", "derive_component_from", "derive_set_component" ]
-full = [ "enabled", "derive_former", "derive_component_from", "derive_set_component" ]
-enabled = [ "former_meta/enabled" ]
+default = [
+  "enabled",
+  "derive_former",
+  "derive_components",
+  "derive_component_from",
+  "derive_component_assign",
+  "derive_components_assign",
+  "derive_from_components",
+]
+full = [
+  "enabled",
+  "derive_former",
+  "derive_components",
+  "derive_component_from",
+  "derive_component_assign",
+  "derive_components_assign",
+  "derive_from_components",
+]
+enabled = [ "former_meta/enabled", "collection_tools/enabled" ]
 
 derive_former = [ "former_meta/derive_former" ]
-derive_component_from = [ "former_meta/derive_component_from" ]
-derive_set_component = [ "former_meta/derive_set_component" ]
+derive_components = [ "former_meta/derive_components" ]
+derive_component_assign = [ "derive_components", "former_meta/derive_component_assign" ]
+derive_components_assign = [ "derive_components", "derive_component_assign", "former_meta/derive_components_assign" ]
+derive_component_from = [ "derive_components", "former_meta/derive_component_from" ]
+derive_from_components = [ "derive_components", "former_meta/derive_from_components" ]
+
 
 [dependencies]
 former_meta = { workspace = true }
+collection_tools = { workspace = true, features = [ "collection_std" ] }
+
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }

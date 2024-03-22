@@ -3,7 +3,7 @@
 // #![ deny( missing_docs ) ]
 
 #[ allow( unused_imports ) ]
-use wca as TheModule;
+use wca as the_module;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 #[ allow( unused_imports ) ]

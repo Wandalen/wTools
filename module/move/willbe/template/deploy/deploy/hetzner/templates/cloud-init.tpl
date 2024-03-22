@@ -7,8 +7,8 @@ write_files:
   content: |
     [Unit]
     Description=Start ${image_name} docker container. Build: ${timestamp}
-    Wants=gcr-online.target
-    After=gcr-online.target
+    Wants=network-online.target
+    After=network-online.target
 
     [Service]
     Environment="HOME=/root"

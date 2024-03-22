@@ -1,20 +1,21 @@
 mod private
 {
+  use crate::*;
+  use _path::AbsolutePath;
+  use action::readme_health_table_renew::{ readme_path, Stability, stability_generate };
+  use package::Package;
+  use wtools::error::
+  {
+    err,
+    for_app::{ Result, Error },
+  };
   use std::borrow::Cow;
   use std::fs::{ OpenOptions };
   use std::io::{ Read, Seek, SeekFrom, Write };
   use convert_case::{ Case, Casing };
   use regex::Regex;
-  // qqq : for Petro : rid off crate::x. ask
-  use crate::path::AbsolutePath;
-  use crate::{ CrateDir, query, url, Workspace };
-  use crate::action::readme_health_table_renew::{ readme_path, Stability, stability_generate };
-  use crate::package::Package;
-  use crate::wtools::error::
-  {
-    err,
-    for_app::{ Result, Error },
-  };
+  // aaa : for Petro : rid off crate::x. ask
+  // aaa : add `use crate::*` first
 
   static TAGS_TEMPLATE : std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 
@@ -69,11 +70,11 @@ mod private
       Ok( format!
       (
         "{}\
-        [![rust-status](https://github.com/{}/actions/workflows/Module{}Push.yml/badge.svg)](https://github.com/{}/actions/workflows/Module{}Push.yml)\
+        [![rust-status](https://github.com/{}/actions/workflows/module_{}_push.yml/badge.svg)](https://github.com/{}/actions/workflows/module_{}_push.yml)\
         [![docs.rs](https://img.shields.io/docsrs/{}?color=e3e8f0&logo=docs.rs)](https://docs.rs/{})\
-        [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/https://github.com/{}){}",
+        [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial/https://github.com/{}){}",
         stability_generate( &self.stability ),
-        repo_url, self.module_name.to_case( Case::Pascal ), repo_url, self.module_name.to_case( Case::Pascal ),
+        repo_url, self.module_name.to_case( Case::Snake ), repo_url, self.module_name.to_case( Case::Snake ),
         self.module_name, self.module_name,
         self.module_name, self.module_name, repo_url,
         discord,
@@ -100,7 +101,7 @@ mod private
   /// Result example :
   /// ``` md
   /// <!--{ generate.module_header.start() }-->
-  /// [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://github.com/Username/test/actions/workflows/ModuleChainOfPackagesAPush.yml/badge.svg)](https://github.com/Username/test/actions/workflows/ModuleChainOfPackagesAPush.yml)[![docs.rs](https://img.shields.io/docsrs/_chain_of_packages_a?color=e3e8f0&logo=docs.rs)](https://docs.rs/_chain_of_packages_a)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F_chain_of_packages_a_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20_chain_of_packages_a_trivial_sample/https://github.com/Username/test)
+  /// [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://github.com/Username/test/actions/workflows/ModuleChainOfPackagesAPush.yml/badge.svg)](https://github.com/Username/test/actions/workflows/ModuleChainOfPackagesAPush.yml)[![docs.rs](https://img.shields.io/docsrs/_chain_of_packages_a?color=e3e8f0&logo=docs.rs)](https://docs.rs/_chain_of_packages_a)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F_chain_of_packages_a_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20_chain_of_packages_a_trivial/https://github.com/Username/test)
   /// <!--{ generate.module_header.end }-->
   /// ```
   pub fn readme_modules_headers_renew( path : AbsolutePath ) -> Result< () >
@@ -108,7 +109,7 @@ mod private
     regexes_initialize();
     let cargo_metadata = Workspace::with_crate_dir( CrateDir::try_from( path )? )?;
     let discord_url = cargo_metadata.discord_url()?;
-    for path in cargo_metadata.packages()?.into_iter().filter_map( | p | AbsolutePath::try_from( p.manifest_path.clone() ).ok())
+    for path in cargo_metadata.packages()?.into_iter().filter_map( | p | AbsolutePath::try_from( p.manifest_path() ).ok())
     {
       let read_me_path =  path
       .parent()
@@ -116,7 +117,6 @@ mod private
       .join( readme_path( path.parent().unwrap().as_ref() ).ok_or_else::< Error, _ >( || err!( "Fail to find README.md" ) )? );
 
       let pakage = Package::try_from( path )?;
-
       let header = ModuleHeader::from_cargo_toml( pakage, &discord_url )?;
 
       let mut file = OpenOptions::new()

@@ -1,6 +1,6 @@
 [package]
 name = "diagnostics_tools"
-version = "0.4.0"
+version = "0.7.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -24,7 +24,7 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-exclude = [ "/tests", "/examples", "-*" ]
+# exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
 default = [
@@ -40,7 +40,7 @@ full = [
   "diagnostics_memory_layout",
 ]
 no_std = []
-use_alloc = []
+use_alloc = [ "no_std" ]
 enabled = []
 
 diagnostics_runtime_assertions = [ "pretty_assertions" ] # run-time assertions

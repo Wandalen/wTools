@@ -2,7 +2,7 @@
 
 use super::*;
 #[ allow ( unused_imports ) ]
-use TheModule::prelude::*;
+use the_module::prelude::*;
 // use test_tools::exposed::*;
 
 //

@@ -6,6 +6,7 @@
 use mod_interface::mod_interface;
 /// Micro wtools
 pub mod wtools;
+use wtools::*;
 
 /// Internal namespace.
 pub( crate ) mod private
@@ -17,9 +18,14 @@ pub( crate ) mod private
   /// It then terminates the program with an exit code of 1 to indicate an error due to the lack of input.
   ///
   /// Do not support interactive mode.
-  pub fn run() -> Result< (), wtools::error::for_app::Error >
+  pub fn run( args : Vec< String > ) -> Result< (), wtools::error::for_app::Error >
   {
-    let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
+    #[ cfg( feature = "tracing" ) ]
+    {
+      tracing_subscriber::fmt().pretty().init();
+    }
+
+    let args = args.into_iter().skip( 1 ).collect::< Vec< String > >();
 
     let ca = command::ca()
     .help_variants( [ wca::HelpVariants::General, wca::HelpVariants::SubjectCommand ] )

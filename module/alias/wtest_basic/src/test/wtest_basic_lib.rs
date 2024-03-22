@@ -14,7 +14,8 @@
 
 // doc_file_test!( "rust/test/test/asset/Test.md" );
 
-/// Dependencies.
+/// Namespace with dependencies.
+
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {

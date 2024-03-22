@@ -34,6 +34,22 @@ pub( crate ) mod private
       .routine( command::publish )
       .end()
 
+    .command( "publish.diff" )
+      .hint( "Display the differences between a local and remote package versions." )
+      .long_hint( "Following this command, you will immediately get a comparison between the local and remote packages. It looks at each file, identifying those added, removed, or modified. A full report will then be generated where you can quickly and easily see the differences." )
+      .subject()
+        .hint( "Provide path to the package that you want to check.\n\t  The path should point to a directory that contains a `Cargo.toml` file." )
+        .kind( Type::Path )
+        .optional( true )
+        .end()
+      .property( "keep_archive" )
+        .hint( "Save remote package version to the specified path" )
+        .kind( Type::Path )
+        .optional( true )
+        .end()
+      .routine( command::publish_diff )
+      .end()
+
     .command( "list" )
       .hint( "list packages from a directory" )
       .long_hint( "generates a list of packages based on the provided directory path. The directory must contain a `Cargo.toml` file." )
@@ -85,7 +101,7 @@ pub( crate ) mod private
       .routine( command::list )
       .end()
 
-    .command( "readme.health.table.generate" )
+    .command( "readme.health.table.renew" )
       .hint( "Generate a table for the root `Readme.md`" )
       .long_hint( "Generates a data summary table for the `Readme.md` file located in the root of the workspace." )
       .routine( command::readme_health_table_renew )
@@ -98,17 +114,17 @@ pub( crate ) mod private
       .property( "dry" ).hint( "Enables 'dry run'. Does not run tests, only simulates. Default is `true`." ).kind( Type::Bool ).optional( true ).end()
       .property( "temp" ).hint( "If flag is `true` all test will be running in temporary directories. Default `true`." ).kind( Type::Bool ).optional( true ).end()
       .property( "include" )
-        .hint( "A list of features to include in testing. Separate multiple features by comma." )
+        .hint( "A list of features to include in testing. Separate multiple features by comma. Default is empty." )
         .kind( Type::List( Type::String.into(), ',' ) )
         .optional( true )
         .end()
       .property( "exclude" )
-        .hint( "A list of features to exclude from testing. Separate multiple features by comma." )
+        .hint( "A list of features to exclude from testing. Separate multiple features by comma. Default is [full, default]." )
         .kind( Type::List( Type::String.into(), ',' ) )
         .optional( true )
         .end()
       .property( "with_stable" )
-        .hint( "Specifies whether or not to run tests on stable Rust version. Default is `true`" )
+        .hint( "Specifies whether or not to run tests on stable Rust version. Default is `true`." )
         .kind( Type::Bool )
         .optional( true )
         .end()
@@ -127,14 +143,49 @@ pub( crate ) mod private
         .kind( Type::Number )
         .optional( true )
         .end()
+      .property( "always")
+        .hint( "This features will be always present in feature's combinations. Default is empty.")
+        .kind( Type::List( Type::String.into(), ',' ) )
+        .optional( true )
+        .end()
+      .property( "with_all_features" )
+        .hint( "To powerset of features will be add one subset with all features. Default is `true`." )
+        .kind( Type::Bool )
+        .optional( true )
+        .end()
+      .property( "with_none_features" )
+        .hint( "To powerset of features will be add one empty subset. Default is `true`." )
+        .kind( Type::Bool )
+        .optional( true )
+        .end()
+      .property( "with_release" )
+        .hint( "Indicates whether or not tests will be run on the release optimization. Default is `false`." )
+        .kind( Type::Bool )
+        .optional( true )
+        .end()
+      .property( "with_debug" )
+        .hint( "Indicates whether or not tests will be run on the debug optimization. Default is `true`." )
+        .kind( Type::Bool )
+        .optional( true )
+        .end()
+      .property( "variants_cap" )
+        .hint( "Regulates the number of possible combinations. Default is 1000.")
+        .kind( Type::Number )
+        .optional( true )
+        .end()
+      .property( "with_progress" )
+        .hint( "If true, will display progressbar during the tests. Default is `true`. ! Work only with `progress_bar` feature !")
+        .kind( Type::Bool )
+        .optional( true )
+        .end()
       .routine( command::test )
       .end()
 
     // qqq : is it right?
-    .command( "workflow.renew" )
-      .hint( "generate a workflow for the workspace" )
+    .command( "cicd.renew" )
+      .hint( "generate a CI/CD for the workspace" )
       .long_hint( "this command generates a development workflow for the entire workspace inferred from the current directory. The workflow outlines the build steps, dependencies, test processes, and more for all modules within the workspace." )
-      .routine( command::workflow_renew )
+      .routine( command::cicd_renew )
       .end()
 
     .command( "workspace.renew" )
@@ -153,40 +204,39 @@ pub( crate ) mod private
       .routine( command::workspace_renew )
       .end()
 
-    // qqq : missing hints
     .command( "deploy.renew" )
       .hint( "Create deploy template" )
-      .long_hint( "" )
+      .long_hint( "Creates static files and directories.\nDeployment to different hosts is done via Makefile." )
       .property( "gcp_project_id" )
-        .hint( "" )
+        .hint( "Google Cloud Platform Project id for image deployment, terraform state bucket, and, if specified, GCE instance deployment." )
         .kind( Type::String )
         .optional( false )
         .end()
       .property( "gcp_region" )
-        .hint( "" )
+        .hint( "Google Cloud Platform region location. Default: `europe-central2` (Warsaw)" )
         .kind( Type::String )
-        .optional( false )
+        .optional( true )
         .end()
       .property( "gcp_artifact_repo_name" )
-        .hint( "" )
+        .hint( "Google Cloud Platform Artifact Repository to store docker image in. Will be generated from current directory name if unspecified." )
         .kind( Type::String )
         .optional( false )
         .end()
       .property( "docker_image_name" )
-        .hint( "" )
+        .hint( "Docker image name to build and deploy. Will be generated from current directory name if unspecified." )
         .kind( Type::String )
         .optional( false )
         .end()
       .routine( command::deploy_renew )
       .end()
 
-    .command( "readme.header.generate" )
+    .command( "readme.header.renew" )
       .hint( "Generate header in workspace`s Readme.md file")
       .long_hint( "For use this command you need to specify:\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nworkspace_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml.")
       .routine( command::readme_header_renew )
       .end()
 
-    .command( "readme.modules.headers.generate" )
+    .command( "readme.modules.headers.renew" )
       .hint( "Generates header for each workspace member." )
       .long_hint( "For use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml." )
       .routine( command::readme_modules_headers_renew )
@@ -203,13 +253,16 @@ crate::mod_interface!
   layer list;
   /// Publish packages.
   layer publish;
-  /// Generate tables
-  // qqq : for Petro : what a table??
+  /// Used to compare local and published versions of a specific package.
+  layer publish_diff;
+  /// Generates health table in main Readme.md file of workspace.
+  // aaa : for Petro : what a table??
+  // aaa : add more details to documentation
   layer readme_health_table_renew;
   /// Run all tests
   layer test;
   /// Generate workflow
-  layer workflow_renew;
+  layer cicd_renew;
   /// Workspace new
   layer workspace_renew;
   /// Deploy new

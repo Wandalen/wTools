@@ -8,7 +8,7 @@ pub( crate ) mod private
   /// Either delimeter or delimeted with the slice on its string.
   ///
 
-  #[allow(dead_code)]
+  #[ allow( dead_code ) ]
   #[ derive( Debug ) ]
   pub struct Split< 'a >
   {

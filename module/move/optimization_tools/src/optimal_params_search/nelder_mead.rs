@@ -1,6 +1,6 @@
 //! Implementation of Nelder–Mead method used to find the minimum of an objective function in a multidimensional space.
 //! It operates by adjusting a simplex(geometric shape) to explore and converge toward the optimal solution.
-//! 
+//!
 
 use std::
 {
@@ -16,7 +16,7 @@ use rayon::iter::{ IntoParallelIterator, ParallelIterator };
 use super::results_serialize::save_result;
 
 /// Represents point in multidimensional space where optimization is performed.
-#[ derive( Debug, Clone ) ] 
+#[ derive( Debug, Clone ) ]
 pub struct Point
 {
   /// Coordinates of the point.
@@ -62,7 +62,7 @@ impl Constraints
   }
 }
 
-#[ derive( Debug, Clone ) ] 
+#[ derive( Debug, Clone ) ]
 pub struct Stats
 {
 
@@ -126,18 +126,18 @@ pub struct Optimizer< R, F >
   /// Max number of steps without improvement, stop execution if exceeded.
   pub max_no_improvement_steps : usize,
   /// Coefficient used for calculating reflection point - point opposite to one with the highest value of objective function.
-  /// It is expected that lower values of objective function lie in the opposite direction from point with highest value. 
+  /// It is expected that lower values of objective function lie in the opposite direction from point with highest value.
   pub alpha : f64,
-  /// Coefficient used for calculating expansion point. 
+  /// Coefficient used for calculating expansion point.
   /// Expansion happents if previously calculated reflection point has the lowest value.
   /// If so, expand simplex in the same direction by calculating expansion point.
   pub gamma : f64,
-  /// Coefficient used for calculating contraction point. 
+  /// Coefficient used for calculating contraction point.
   /// Contraction happens when previously calculated reflection point is the worst point in the simplex.
   /// It means that minimum lies within the simplex, so contracting vertices helps to find better values.
   pub rho : f64,
   /// Coefficient used for shrinking simplex.
-  /// If previously calculated contraction point doesn't improve the objective function shrinking is performed to adjust simplex size. 
+  /// If previously calculated contraction point doesn't improve the objective function shrinking is performed to adjust simplex size.
   /// Shrinking involves reducing the distance between the vertices of the simplex, making it smaller.
   pub sigma : f64,
   /// Values of objective function calculated in previous executions.
@@ -238,7 +238,7 @@ where R : RangeBounds< f64 > + Sync,
     result
   }
 
-  /// Set bounds for parameters. 
+  /// Set bounds for parameters.
   pub fn set_bounds( &mut self, bounds : Vec< Option< R > > )
   {
     self.bounds = bounds
@@ -266,7 +266,7 @@ where R : RangeBounds< f64 > + Sync,
       {
         self.calculate_start_point();
       }
-      else 
+      else
       {
         self.start_point.coords = vec![ 0.0; size.len() ];
       }
@@ -418,7 +418,7 @@ where R : RangeBounds< f64 > + Sync,
             }
             new_coords.push( ( start_bound + end_bound ) / 2.0 )
           }
-          else 
+          else
           {
             new_coords.push( start_bound )
           }
@@ -438,7 +438,7 @@ where R : RangeBounds< f64 > + Sync,
             }
             new_coords.push( end_bound )
           }
-          else 
+          else
           {
             new_coords.push( 0.0 )
           }
@@ -465,7 +465,7 @@ where R : RangeBounds< f64 > + Sync,
       {
         if let Some( bound ) = bound
         {
-          let start = match bound.start_bound() 
+          let start = match bound.start_bound()
           {
             Bound::Included( start ) => *start,
             Bound::Excluded( start ) => *start + f64::EPSILON,
@@ -476,12 +476,12 @@ where R : RangeBounds< f64 > + Sync,
             Bound::Excluded( end ) => *end,
             Bound::Unbounded => unreachable!(),
           };
-          
+
           let x = rng.gen_range( start..end );
           point.push( x );
         }
       }
-    
+
       points.push( Point::new( point ) );
     }
 
@@ -493,7 +493,7 @@ where R : RangeBounds< f64 > + Sync,
       let mut prev_best = self.evaluate_point( &x0, &mut stats );
       let mut steps_with_no_improv = 0;
       let mut res = vec![ ( x0.clone(), prev_best ) ];
-  
+
       for i in 1..=dimensions
       {
         let x = self.initial_simplex.points[ i ].clone();
@@ -504,12 +504,12 @@ where R : RangeBounds< f64 > + Sync,
       loop
       {
         res.sort_by( | ( _, a ), ( _, b ) | a.total_cmp( b ) );
-  
+
         let best = res.first().clone().unwrap();
-  
+
         if self.max_iterations <= iterations
         {
-          return Result::< Solution, Error >::Ok ( Solution 
+          return Result::< Solution, Error >::Ok ( Solution
           {
             point : res[ 0 ].0.clone(),
             objective : res[ 0 ].1,
@@ -517,9 +517,9 @@ where R : RangeBounds< f64 > + Sync,
             stats : Some( stats ),
           } )
         }
-  
+
         iterations += 1;
-  
+
         if best.1 < prev_best - self.improvement_threshold
         {
           steps_with_no_improv = 0;
@@ -527,12 +527,12 @@ where R : RangeBounds< f64 > + Sync,
         }
         else
         {
-          steps_with_no_improv += 1;   
+          steps_with_no_improv += 1;
         }
-  
+
         if steps_with_no_improv >= self.max_no_improvement_steps
         {
-          return Ok ( Solution 
+          return Ok ( Solution
           {
             point : res[ 0 ].0.clone(),
             objective : res[ 0 ].1,
@@ -540,7 +540,7 @@ where R : RangeBounds< f64 > + Sync,
             stats : Some( stats ),
           } )
         }
-  
+
         //centroid
         let mut x0_center = vec![ 0.0; dimensions ];
         for ( point, _ ) in res.iter().take( res.len() - 1 )
@@ -550,7 +550,7 @@ where R : RangeBounds< f64 > + Sync,
             x0_center[ i ] += coordinate / ( res.len() - 1 ) as f64;
           }
         }
-  
+
         //reflection
         let worst_dir = res.last().clone().unwrap();
         let mut x_ref = vec![ 0.0; dimensions ];
@@ -561,7 +561,7 @@ where R : RangeBounds< f64 > + Sync,
         // check if point left the domain, if so, perform projection
         let x_ref = self.check_bounds( Point::new( x_ref ) );
         stats.record_diff( &self.start_point, &x_ref );
-  
+
         let reflection_score = self.evaluate_point( &x_ref, &mut stats );
         let second_worst = res[ res.len() - 2 ].1;
         if res[ 0 ].clone().1 <= reflection_score && reflection_score < second_worst
@@ -572,7 +572,7 @@ where R : RangeBounds< f64 > + Sync,
           // log::info!("reflection");
           continue;
         }
-  
+
         //expansion
         if reflection_score < res[ 0 ].1
         {
@@ -585,7 +585,7 @@ where R : RangeBounds< f64 > + Sync,
           let x_exp = self.check_bounds( Point::new( x_exp ) );
           stats.record_diff( &self.start_point, &x_exp );
           let expansion_score = self.evaluate_point( &x_exp, &mut stats );
-  
+
           if expansion_score < reflection_score
           {
             let prev_point = res.pop().unwrap().0;
@@ -593,9 +593,9 @@ where R : RangeBounds< f64 > + Sync,
             res.push( ( x_exp, expansion_score ) );
             // log::info!("expansion");
             continue;
-            
+
           }
-          else 
+          else
           {
             let prev_point = res.pop().unwrap().0;
             stats.record_positive_change( &prev_point, &x_ref );
@@ -604,7 +604,7 @@ where R : RangeBounds< f64 > + Sync,
             continue;
           }
         }
-  
+
         //contraction
         let mut x_con = vec![ 0.0; dimensions ];
         for i in 0..dimensions
@@ -614,7 +614,7 @@ where R : RangeBounds< f64 > + Sync,
         let x_con = self.check_bounds( Point::new( x_con ) );
         stats.record_diff( &self.start_point, &x_con );
         let contraction_score = self.evaluate_point( &x_con, &mut stats );
-  
+
         if contraction_score < worst_dir.1
         {
           let prev_point = res.pop().unwrap().0;
@@ -623,7 +623,7 @@ where R : RangeBounds< f64 > + Sync,
           // log::info!("contraction");
           continue;
         }
-  
+
         //shrink
         let x1 = res[ 0 ].clone().0;
         let mut new_res = Vec::new();
@@ -642,7 +642,7 @@ where R : RangeBounds< f64 > + Sync,
         // log::info!("shrink");
         res = new_res;
       }
-    } ).collect::< Vec<_> >();
+    } ).collect::< Vec< _ > >();
 
     let results = results.into_iter().flatten().collect_vec();
     let res = results.into_iter().min_by( | res1, res2 | res1.objective.total_cmp( &res2.objective ) ).unwrap();
@@ -667,9 +667,9 @@ where R : RangeBounds< f64 > + Sync,
     {
       self.calculate_regular_simplex();
     }
-    
+
     let x0 = self.start_point.clone();
-    
+
     let dimensions = x0.coords.len();
     let mut prev_best = self.evaluate_point( &x0, &mut stats );
     let mut steps_with_no_improv = 0;
@@ -690,7 +690,7 @@ where R : RangeBounds< f64 > + Sync,
 
       if self.max_iterations <= iterations
       {
-        return Ok ( Solution 
+        return Ok ( Solution
         {
           point : res[ 0 ].0.clone(),
           objective : res[ 0 ].1,
@@ -708,12 +708,12 @@ where R : RangeBounds< f64 > + Sync,
       }
       else
       {
-        steps_with_no_improv += 1;   
+        steps_with_no_improv += 1;
       }
 
       if steps_with_no_improv >= self.max_no_improvement_steps
       {
-        return Ok ( Solution 
+        return Ok ( Solution
         {
           point : res[ 0 ].0.clone(),
           objective : res[ 0 ].1,
@@ -769,7 +769,7 @@ where R : RangeBounds< f64 > + Sync,
           res.push( ( x_exp, expansion_score ) );
           continue;
         }
-        else 
+        else
         {
           res.pop();
           res.push( ( x_ref, reflection_score ) );
@@ -814,7 +814,7 @@ where R : RangeBounds< f64 > + Sync,
 }
 
 /// Result of optimization process.
-#[ derive( Debug, Clone ) ] 
+#[ derive( Debug, Clone ) ]
 pub struct Solution
 {
   /// Point in which objective function had the lowest value at the moment of termination.
@@ -828,7 +828,7 @@ pub struct Solution
 }
 
 /// Reasons for termination of optimization process.
-#[ derive( Debug, Clone ) ] 
+#[ derive( Debug, Clone ) ]
 pub enum TerminationReason
 {
   /// Reached limit of total iterations.
