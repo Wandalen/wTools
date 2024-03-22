@@ -37,6 +37,9 @@ mod hash_set;
 #[ cfg( any( feature = "derive_component_from", feature = "derive_component_assign" ) ) ]
 mod component;
 
+mod axiomatic2;
+mod vector2;
+
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
