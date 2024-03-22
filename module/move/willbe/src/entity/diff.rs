@@ -18,7 +18,7 @@ mod private
 
   /// The `Diff` enum is designed to represent differences between two versions
   /// of some kind of item identified.
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Clone ) ]
   pub enum Diff< T >
   {
     /// This variant represents items that are identical or same in both versions.
@@ -31,7 +31,7 @@ mod private
 
   /// The `DiffItem` enum is designed to represent differences between two versions
   /// of an item. It contains two variants `File` and `Content`.
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Clone ) ]
   pub enum DiffItem
   {
     /// - `File(Diff<()>)`: Represents differences in the file itself. The `Diff` enum
@@ -52,8 +52,46 @@ mod private
   }
 
   /// The `DiffReport` struct represents a diff report containing a list of `Diff` objects.
-  #[ derive( Debug, Default ) ]
+  #[ derive( Debug, Default, Clone ) ]
   pub struct DiffReport( pub( crate ) HashMap< PathBuf, DiffItem > );
+
+  impl DiffReport
+  {
+    /// Excludes specified items from a report.
+    ///
+    /// # Arguments
+    ///
+    /// * `items` - A collection of items to exclude. This can be any type that can be converted into a `HashSet` of `PathBuf` objects.
+    ///
+    /// # Returns
+    ///
+    /// Returns a new instance of the struct with the excluded items removed from the internal report.
+    pub fn exclude< Is, I >( mut self, items : Is ) -> Self
+    where
+      Is : Into< HashSet< I > >,
+      I : AsRef< std::path::Path >,
+    {
+      let current = self.0.keys().cloned().collect::< HashSet< _ > >();
+      let Some( key ) = current.iter().next() else { return self };
+
+      let crate_part = std::path::Path::new( key.components().next().unwrap().as_os_str() );
+      let excluded_paths = items.into().into_iter().map( | i | crate_part.join( i ) ).collect();
+
+      let map = current.difference( &excluded_paths ).filter_map( | key | self.0.remove_entry( key ) ).collect();
+
+      Self( map )
+    }
+
+    /// Checks if there are any changes in the DiffItems.
+    ///
+    /// # Returns
+    /// * `true` if there are changes in any of the DiffItems.
+    /// * `false` if all DiffItems are the same.
+    pub fn has_changes( &self ) -> bool
+    {
+      !self.0.iter().all( |( _, item )| matches!( item, DiffItem::File( Diff::Same( () ) ) ))
+    }
+  }
 
   impl std::fmt::Display for DiffReport
   {
@@ -96,16 +134,21 @@ mod private
     }
   }
 
-  /// Compare two crate archives and create a difference report.
+  /// Creates a differential report between two crate archives.
+  ///
+  /// This function compares two crate archives and generates a report (`DiffReport`),
+  /// indicating the discrepancies between them.
   ///
   /// # Arguments
   ///
-  /// * `left` - A reference to the left crate archive.
-  /// * `right` - A reference to the right crate archive.
+  /// * `left`: A reference to the first crate archive.
+  ///           Changes that are present here but lacking in 'right' are classified as additions.
+  /// * `right`: A reference to the second crate archive.
+  ///            Changes not found in 'left' but present in 'right' are classified as removals.
   ///
   /// # Returns
   ///
-  /// A `DiffReport` struct representing the difference between the two crate archives.
+  /// A `DiffReport` struct, representing the unique and shared attributes of the two crate archives.
   pub fn crate_diff( left : &CrateArchive, right : &CrateArchive ) -> DiffReport
   {
     let mut report = DiffReport::default();
