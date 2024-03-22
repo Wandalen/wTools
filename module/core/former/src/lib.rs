@@ -9,6 +9,7 @@
 /// Axiomatic things.
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_former" ) ]
+#[ path = "axiomatic3.rs" ]
 mod axiomatic;
 
 /// Interface for containers.
@@ -20,6 +21,7 @@ mod container;
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 #[ cfg( feature = "derive_former" ) ]
+#[ path = "vector3.rs" ]
 mod vector;
 /// Former of a hash map.
 #[ cfg( feature = "enabled" ) ]
@@ -38,6 +40,7 @@ mod hash_set;
 mod component;
 
 // mod axiomatic2;
+// mod axiomatic3;
 // mod vector2;
 // mod vector3;
 

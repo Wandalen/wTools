@@ -12,35 +12,28 @@ use collection_tools::HashMap;
 /// - `E`: The type of elements (values) stored in the hash map.
 pub trait HashMapLike< K, E >
 where
-  K : core::cmp::Eq + core::hash::Hash,
+  K : ::core::cmp::Eq + ::core::hash::Hash,
   Self : Sized + Default,
 {
 
   /// Inserts a key-value pair into the map.
   fn insert( &mut self, k : K, e : E ) -> Option< E >;
 
-  /// Return former.
-  #[ inline( always ) ]
-  fn former( self )
-  -> HashMapSubformer< K, E, Self, Self, impl FormingEnd< Self, Self > >
-  {
-    HashMapSubformer::begin( Some( self ), None, ReturnFormed )
-  }
-
-  // /// Return former with a custom context.
+  // /// Return former.
   // #[ inline( always ) ]
-  // fn former_begin< Context, End >( self, context : Context, end : End )
-  // -> HashMapSubformer< K, E, Self, Context, End >
-  // where End : FormingEnd< Self, Context >
+  // fn former< Descriptor : FormerDescriptor >( self )
+  // ->
+  // HashMapSubformer< K, E, Descriptor, (), impl FormingEnd< Self, Self > >
   // {
-  //   HashMapSubformer::begin( Some( self ), Some( context ), end )
+  //   HashMapSubformer::begin( Some( self ), None, ReturnStorage )
   // }
+  // xxx : uncomment and cover by tests
 
 }
 
 impl< K, E > HashMapLike< K, E > for HashMap< K, E >
 where
-  K : core::cmp::Eq + core::hash::Hash,
+  K : ::core::cmp::Eq + ::core::hash::Hash,
   Self : Sized + Default,
 {
 
@@ -50,6 +43,46 @@ where
     HashMap::insert( self, k, e )
   }
 
+}
+
+//
+
+pub struct HashMapDescriptor< K, E >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+  _phantom : ::core::marker::PhantomData< ( K, E ) >,
+}
+
+impl< K, E > HashMapDescriptor< K, E >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+  fn new() -> Self
+  {
+    Self { _phantom : ::core::marker::PhantomData }
+  }
+}
+
+impl< K, E > StoragePerform
+for HashMap< K, E >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+  type Formed = Self;
+  fn preform( self ) -> Self::Formed
+  {
+    self
+  }
+}
+
+impl< K, E > FormerDescriptor
+for HashMapDescriptor< K, E >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+  type Storage = HashMap< K, E >;
+  type Formed = HashMap< K, E >;
 }
 
 /// A builder for constructing hash map-like structures with a fluent interface.
@@ -91,30 +124,35 @@ where
 /// ```
 
 #[ derive( Debug, Default ) ]
-pub struct HashMapSubformer< K, E, Formed, Context, End >
+pub struct HashMapSubformer< K, E, Descriptor, Context, End >
 where
-  K : core::cmp::Eq + core::hash::Hash,
-  Formed : HashMapLike< K, E > + core::default::Default,
-  End : FormingEnd< Formed, Context >,
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+  // Formed : HashMapLike< K, E > + ::core::default::Default,
+  End : FormingEnd< Descriptor, Context >,
+  Descriptor : FormerDescriptor,
+  Descriptor::Storage : ContainerAdd< Element = ( K, E ) >,
 {
-  formed : core::option::Option< Formed >,
-  context : core::option::Option< Context >,
-  on_end : core::option::Option< End >,
-  _e_phantom : core::marker::PhantomData< E >,
-  _k_phantom : core::marker::PhantomData< K >,
+  // xxx : rename
+  formed : ::core::option::Option< Descriptor::Storage >,
+  context : ::core::option::Option< Context >,
+  on_end : ::core::option::Option< End >,
+  _e_phantom : ::core::marker::PhantomData< E >,
+  _k_phantom : ::core::marker::PhantomData< K >,
 }
 
-impl< K, E, Formed, Context, End >
-HashMapSubformer< K, E, Formed, Context, End >
+impl< K, E, Descriptor, Context, End >
+HashMapSubformer< K, E, Descriptor, Context, End >
 where
-  K : core::cmp::Eq + core::hash::Hash,
-  Formed : HashMapLike< K, E > + core::default::Default,
-  End : FormingEnd< Formed, Context >,
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+  // Formed : HashMapLike< K, E > + ::core::default::Default,
+  End : FormingEnd< Descriptor, Context >,
+  Descriptor : FormerDescriptor,
+  Descriptor::Storage : ContainerAdd< Element = ( K, E ) >,
 {
 
   /// Form current former into target structure.
   #[ inline( always ) ]
-  pub fn form( mut self ) -> Formed
+  pub fn preform( mut self ) -> Descriptor::Storage
   {
     let formed = if self.formed.is_some()
     {
@@ -126,41 +164,51 @@ where
       val
     };
     formed
+    // formed.preform()
   }
+  // xxx
 
   /// Make a new HashMapSubformer. It should be called by a context generated for your structure.
   /// The context is returned after completion of forming by function `on_end``.
   #[ inline( always ) ]
   pub fn begin
   (
-    formed : core::option::Option< Formed >,
-    context : core::option::Option< Context >,
+    formed : ::core::option::Option< Descriptor::Storage >,
+    context : ::core::option::Option< Context >,
     on_end : End,
-  ) -> Self
+  )
+  -> Self
   {
     Self
     {
       formed,
       context,
       on_end : Some( on_end ),
-      _e_phantom : core::marker::PhantomData,
-      _k_phantom : core::marker::PhantomData,
+      _e_phantom : ::core::marker::PhantomData,
+      _k_phantom : ::core::marker::PhantomData,
     }
   }
 
   /// Return context of your struct moving formed there. Should be called after configuring the formed.
   #[ inline( always ) ]
-  pub fn end( mut self ) -> Context
+  pub fn form( mut self ) -> Descriptor::Formed
+  {
+    self.end()
+  }
+
+  /// Return context of your struct moving formed there. Should be called after configuring the formed.
+  #[ inline( always ) ]
+  pub fn end( mut self ) -> Descriptor::Formed
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
-    let formed = self.form();
-    on_end.call( formed, context )
+    let storage = self.preform();
+    on_end.call( storage, context )
   }
 
   /// Set the whole formed instead of setting each element individually.
   #[ inline( always ) ]
-  pub fn replace( mut self, formed : Formed ) -> Self
+  pub fn replace( mut self, formed : Descriptor::Storage ) -> Self
   {
     self.formed = Some( formed );
     self
@@ -168,15 +216,13 @@ where
 
 }
 
-// impl< E, Formed > VectorSubformer< E, Formed, Formed, crate::ReturnFormed >
-// where
-//   Formed : VectorLike< E > + core::default::Default,
-
-impl< K, E, Formed >
-HashMapSubformer< K, E, Formed, Formed, crate::ReturnFormed >
+impl< K, E, Descriptor >
+HashMapSubformer< K, E, Descriptor, (), crate::ReturnStorage >
 where
-  K : core::cmp::Eq + core::hash::Hash,
-  Formed : HashMapLike< K, E > + core::default::Default,
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+  Descriptor : FormerDescriptor,
+  Descriptor::Storage : ContainerAdd< Element = ( K, E ) >,
+  // Formed : HashMapLike< K, E > + ::core::default::Default,
 {
 
   /// Create a new instance without context or on end processing. It just returns continaer on end of forming.
@@ -187,18 +233,20 @@ where
     (
       None,
       None,
-      crate::ReturnFormed,
+      crate::ReturnStorage,
     )
   }
 
 }
 
-impl< K, E, Formed, Context, End >
-HashMapSubformer< K, E, Formed, Context, End >
+impl< K, E, Descriptor, Context, End >
+HashMapSubformer< K, E, Descriptor, Context, End >
 where
-  K : core::cmp::Eq + core::hash::Hash,
-  Formed : HashMapLike< K, E > + core::default::Default,
-  End : FormingEnd< Formed, Context >,
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+  // Formed : HashMapLike< K, E > + ::core::default::Default,
+  End : FormingEnd< Descriptor, Context >,
+  Descriptor : FormerDescriptor,
+  Descriptor::Storage : ContainerAdd< Element = ( K, E ) >,
 {
 
   /// Inserts a key-value pair into the formed. If the formed doesn't exist, it is created.
@@ -211,18 +259,20 @@ where
   /// Returns `self` for chaining further insertions or operations.
   ///
   #[ inline( always ) ]
-  pub fn insert< K2, E2 >( mut self, k : K2, e : E2 ) -> Self
+  pub fn insert< K2, E2 >( self, k : K2, e : E2 ) -> Self
   where
-    K2 : core::convert::Into< K >,
-    E2 : core::convert::Into< E >,
+    K2 : ::core::convert::Into< K >,
+    E2 : ::core::convert::Into< E >,
+    // Descriptor::Storage : ContainerAdd< Element = ( K, E ) >,
   {
     if self.formed.is_none()
     {
-      self.formed = core::option::Option::Some( Default::default() );
+      self.formed = ::core::option::Option::Some( Default::default() );
     }
-    if let core::option::Option::Some( ref mut formed ) = self.formed
+    if let ::core::option::Option::Some( ref mut formed ) = self.formed
     {
-      formed.insert( k.into(), e.into() );
+      ContainerAdd::add( formed, ( k.into(), e.into() ) );
+      // formed.insert( k.into(), e.into() );
     }
     self
   }
@@ -239,8 +289,8 @@ where
   #[ inline( always ) ]
   pub fn push< K2, E2 >( self, k : K2, e : E2 ) -> Self
   where
-    K2 : core::convert::Into< K >,
-    E2 : core::convert::Into< E >,
+    K2 : ::core::convert::Into< K >,
+    E2 : ::core::convert::Into< E >,
   {
     self.insert( k, e )
   }

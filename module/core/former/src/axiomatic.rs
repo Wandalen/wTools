@@ -122,10 +122,10 @@ for FormingEndWrapper< Storage, Context >
 /// This struct is useful when the forming process should result in the formed container being returned directly,
 /// bypassing any additional context processing. It simplifies scenarios where the formed container is the final result.
 #[ derive( Debug, Default ) ]
-pub struct ReturnFormed;
+pub struct ReturnStorage;
 
 impl< Storage > FormingEnd< Storage, Storage >
-for ReturnFormed
+for ReturnStorage
 {
   #[ inline( always ) ]
   fn call( &self, storage : Storage, _context : core::option::Option< Storage > ) -> Storage

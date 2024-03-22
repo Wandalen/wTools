@@ -842,7 +842,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   // add embedded generic parameters
   let mut extra_generics : syn::Generics = parse_quote!
   {
-    < __FormerContext = #name_ident #generics_ty, __FormerEnd = former::ReturnFormed >
+    < __FormerContext = #name_ident #generics_ty, __FormerEnd = former::ReturnStorage >
   };
   extra_generics.where_clause = parse_quote!
   {
@@ -922,9 +922,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// Make former, variation of builder pattern to form structure defining values of fields step by step.
       ///
       #[ inline( always ) ]
-      pub fn former() -> #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnFormed >
+      pub fn former() -> #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnStorage >
       {
-        #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnFormed > :: new()
+        #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnStorage > :: new()
       }
     }
 
@@ -1040,7 +1040,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     }
 
     #[ automatically_derived ]
-    impl #generics_impl #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnFormed >
+    impl #generics_impl #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnStorage >
     #generics_where
     {
 
@@ -1050,12 +1050,12 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       #[ inline( always ) ]
       pub fn new() -> Self
       {
-        // #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnFormed > :: begin
+        // #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnStorage > :: begin
         Self :: begin
         (
           None,
           None,
-          former::ReturnFormed,
+          former::ReturnStorage,
         )
       }
 

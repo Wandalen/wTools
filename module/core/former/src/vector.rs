@@ -93,7 +93,7 @@ where
   //   (
   //     None,
   //     None,
-  //     crate::ReturnFormed,
+  //     crate::ReturnStorage,
   //   )
   // }
 
@@ -135,7 +135,7 @@ where
 
 }
 
-impl< E, Formed > VectorSubformer< E, Formed, Formed, crate::ReturnFormed >
+impl< E, Formed > VectorSubformer< E, Formed, Formed, crate::ReturnStorage >
 where
   Formed : VectorLike< E > + core::default::Default,
 {
@@ -153,7 +153,7 @@ where
     (
       None,
       None,
-      crate::ReturnFormed,
+      crate::ReturnStorage,
     )
   }
 

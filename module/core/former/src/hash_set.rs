@@ -15,22 +15,62 @@ use collection_tools::HashSet;
 /// Implementing `HashSetLike` for `std::collections::HashSet`:
 ///
 
-pub trait HashSetLike< E >
+pub trait HashSetLike< K >
 where
-  E : core::cmp::Eq + core::hash::Hash,
+  K : core::cmp::Eq + core::hash::Hash,
 {
   /// Inserts a key-value pair into the map.
-  fn insert( &mut self, element : E ) -> Option< E >;
+  fn insert( &mut self, element : K ) -> Option< K >;
 }
 
-impl< E > HashSetLike< E > for HashSet< E >
+impl< K > HashSetLike< K > for HashSet< K >
 where
-  E : core::cmp::Eq + core::hash::Hash,
+  K : core::cmp::Eq + core::hash::Hash,
 {
-  fn insert( &mut self, element : E ) -> Option< E >
+  fn insert( &mut self, element : K ) -> Option< K >
   {
     HashSet::replace( self, element )
   }
+}
+
+//
+
+pub struct HashSetDescriptor< K >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+  _phantom : ::core::marker::PhantomData< ( K, K ) >,
+}
+
+impl< K > HashSetDescriptor< K >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+  fn new() -> Self
+  {
+    Self { _phantom : ::core::marker::PhantomData }
+  }
+}
+
+impl< K > StoragePerform
+for HashSet< K >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+  type Formed = Self;
+  fn preform( self ) -> Self::Formed
+  {
+    self
+  }
+}
+
+impl< K > FormerDescriptor
+for HashSetDescriptor< K >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+  type Storage = HashSet< K >;
+  type Formed = HashSet< K >;
 }
 
 /// Facilitates building `HashSetLike` containers with a fluent API.
@@ -66,29 +106,30 @@ where
 /// ```
 
 #[ derive( Debug, Default ) ]
-pub struct HashSetSubformer< E, Formed, Context, ContainerEnd >
+pub struct HashSetSubformer< K, Context, End >
 where
-  E : core::cmp::Eq + core::hash::Hash,
-  Formed : HashSetLike< E > + core::default::Default,
-  ContainerEnd : FormingEnd< Formed, Context >,
+  K : core::cmp::Eq + core::hash::Hash,
+  // Formed : HashSetLike< K > + core::default::Default,
+  End : FormingEnd< HashSetDescriptor< K >, Context >,
 {
-  formed : core::option::Option< Formed >,
+  formed : core::option::Option< < HashSetDescriptor< K > as axiomatic::FormerDescriptor >::Formed >,
+  // xxx : rename
   context : core::option::Option< Context >,
-  on_end : core::option::Option< ContainerEnd >,
-  _e_phantom : core::marker::PhantomData< E >,
+  on_end : core::option::Option< End >,
+  _e_phantom : core::marker::PhantomData< K >,
 }
 
-impl< E, Formed, Context, ContainerEnd >
-HashSetSubformer< E, Formed, Context, ContainerEnd >
+impl< K, Context, End >
+HashSetSubformer< K, Context, End >
 where
-  E : core::cmp::Eq + core::hash::Hash,
-  Formed : HashSetLike< E > + core::default::Default,
-  ContainerEnd : FormingEnd< Formed, Context >,
+  K : core::cmp::Eq + core::hash::Hash,
+  // Formed : HashSetLike< K > + core::default::Default,
+  End : FormingEnd< HashSetDescriptor< K >, Context >,
 {
 
   /// Form current former into target structure.
   #[ inline( always ) ]
-  pub fn form( mut self ) -> Formed
+  pub fn form( mut self ) -> < HashSetDescriptor< K > as axiomatic::FormerDescriptor >::Formed
   {
     let formed = if self.formed.is_some()
     {
@@ -101,6 +142,7 @@ where
     };
     formed
   }
+  // xxx
 
   /// Begins the building process with an optional context and formed.
   ///
@@ -115,9 +157,9 @@ where
   #[ inline( always ) ]
   pub fn begin
   (
-    formed : core::option::Option< Formed >,
+    formed : core::option::Option< < HashSetDescriptor< K > as axiomatic::FormerDescriptor >::Formed >,
     context : core::option::Option< Context >,
-    on_end : ContainerEnd,
+    on_end : End,
   ) -> Self
   {
     Self
@@ -140,7 +182,7 @@ where
   /// constructed formed or a context that incorporates the formed.
   ///
   #[ inline( always ) ]
-  pub fn end( mut self ) -> Context
+  pub fn end( mut self ) -> < HashSetDescriptor< K > as axiomatic::FormerDescriptor >::Formed
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
@@ -161,7 +203,7 @@ where
   /// The builder instance with the formed replaced, enabling further chained operations.
   ///
   #[ inline( always ) ]
-  pub fn replace( mut self, formed : Formed ) -> Self
+  pub fn replace( mut self, formed : < HashSetDescriptor< K > as axiomatic::FormerDescriptor >::Formed ) -> Self
   {
     self.formed = Some( formed );
     self
@@ -169,17 +211,17 @@ where
 
 }
 
-// impl< E, Formed > VectorSubformer< E, Formed, Formed, crate::ReturnFormed >
+// impl< K > VectorSubformer< K, Formed, crate::ReturnStorage >
 // where
-//   Formed : VectorLike< E > + core::default::Default,
+//   Formed : VectorLike< K > + core::default::Default,
 // {
 
-impl< E, Formed >
-HashSetSubformer< E, Formed, Formed, crate::ReturnFormed >
+impl< K >
+HashSetSubformer< K, (), crate::ReturnStorage >
 where
-  E : core::cmp::Eq + core::hash::Hash,
-  Formed : HashSetLike< E > + core::default::Default,
-  // ContainerEnd : FormingEnd< Formed, Context >,
+  K : core::cmp::Eq + core::hash::Hash,
+  // Formed : HashSetLike< K > + core::default::Default,
+  // End : FormingEnd< HashSetDescriptor< K >, Context >,
 {
 
   /// Initializes a new instance of the builder with default settings.
@@ -197,18 +239,18 @@ where
     (
       None,
       None,
-      crate::ReturnFormed,
+      crate::ReturnStorage,
     )
   }
 
 }
 
-impl< E, Formed, Context, ContainerEnd >
-HashSetSubformer< E, Formed, Context, ContainerEnd >
+impl< K, Context, End >
+HashSetSubformer< K, Context, End >
 where
-  E : core::cmp::Eq + core::hash::Hash,
-  Formed : HashSetLike< E > + core::default::Default,
-  ContainerEnd : FormingEnd< Formed, Context >,
+  K : core::cmp::Eq + core::hash::Hash,
+  // Formed : HashSetLike< K > + core::default::Default,
+  End : FormingEnd< HashSetDescriptor< K >, Context >,
 {
 
   /// Inserts an element into the set, possibly replacing an existing element.
@@ -226,7 +268,7 @@ where
   #[ inline( always ) ]
   pub fn insert< E2 >( mut self, element : E2 ) -> Self
   where
-    E2 : core::convert::Into< E >,
+    E2 : core::convert::Into< K >,
   {
     if self.formed.is_none()
     {
