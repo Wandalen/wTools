@@ -4,7 +4,6 @@ use super::*;
 use the_module::features::features_powerset;
 
 use std::collections::HashMap;
-use cargo_metadata::Package;
 use serde::Deserialize;
 use the_module::workspace::WorkspacePackage;
 
@@ -34,7 +33,7 @@ fn mock_package( features : Vec< ( &str, Vec< &str > ) > ) -> WorkspacePackage
     }
   );
 
-  Package::deserialize( json ).unwrap().into()
+  WorkspacePackage::deserialize( json ).unwrap()
 }
 
 #[ test ]
