@@ -35,7 +35,7 @@ env :
 jobs :
 
   checkmate:
-    if: contains( inputs.commit_message, '+test' ) || contains( inputs.commit_message, 'merge' )
+    if : contains( inputs.commit_message, '+test' ) || contains( inputs.commit_message, 'merge' )
     runs-on: ubuntu-latest
     steps:
       - name: Install latest nightly toolchain
