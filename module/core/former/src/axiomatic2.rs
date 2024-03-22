@@ -12,6 +12,7 @@
 // {
 //   type Storage : StoragePerform< Formed = Self::Formed >;
 //   type Formed;
+//   // type Former : FormerBegin2< Former : FormerDescriptor, Context >;
 // }
 //
 // /// Defines a handler for the end of a subforming process, enabling the return of the original context.

@@ -23,10 +23,7 @@
 //   }
 // }
 //
-// impl< E, Formed > StoragePerform for Formed
-// where
-//   Formed : VectorLike2< E >,
-//   Self : Sized,
+// impl< E > StoragePerform for Vec< E >
 // {
 //   type Formed = Self;
 //   fn preform( self ) -> Self::Formed
@@ -35,18 +32,28 @@
 //   }
 // }
 //
-// impl< E, Former, Formed, Context, End > FormerDescriptor
-// for VectorSubformer2< Former, Context, End >
-// where
-//   Formed : StoragePerform< Formed = Formed > + VectorLike2< E > + core::default::Default,
-//   End : FormingEnd< Self, Context >,
-//   Former : FormerDescriptor,
+// pub struct VectorSubformerDescriptor< E >
 // {
-//   type Storage = Formed;
-//   type Formed = Formed;
+//   _phantom : core::marker::PhantomData< E >,
 // }
 //
+// impl< E > VectorSubformerDescriptor< E >
+// {
+//   fn new() -> Self
+//   {
+//     Self { _phantom : core::marker::PhantomData }
+//   }
+// }
 //
+// impl< E > FormerDescriptor
+// // where
+//   // End : FormingEnd2< VectorSubformerDescriptor< E >, Context >,
+// for VectorSubformerDescriptor< E >
+// {
+//   type Storage = Vec< E >;
+//   type Formed = Vec< E >;
+//   // type Former = VectorSubformer2< E, Context, End >;
+// }
 //
 // /// A builder for constructing `VectorLike2` containers, facilitating a fluent and flexible interface.
 // ///
@@ -58,7 +65,7 @@
 // /// #[ derive( Debug, PartialEq, former::Former ) ]
 // /// pub struct StructWithVec
 // /// {
-// ///   #[ subformer( former::VectorSubformer2 ) ]
+// ///   #[ subformer( former::Former ) ]
 // ///   vec : Vec< &'static str >,
 // /// }
 // ///
@@ -72,32 +79,24 @@
 // /// assert_eq!( instance, StructWithVec { vec: vec![ "apple", "banana" ] } );
 // ///```
 // ///
-// // xxx2 : change sequence of parameters
 // #[ derive( Debug, Default ) ]
-// // pub struct VectorSubformer2< E, Formed, Context, End >
-// pub struct VectorSubformer2< Former, Context, End >
+// pub struct VectorSubformer2< E, Context, End >
 // where
-//   // Formed : StoragePerform< Formed = Formed > + VectorLike2< E > + core::default::Default,
-//   Former : FormerDescriptor,
-//   End : FormingEnd< Self, Context >,
+//   End : FormingEnd2< VectorSubformerDescriptor< E >, Context >,
 // {
-//   formed : core::option::Option< Former::Formed >,
+//   formed : core::option::Option< < VectorSubformerDescriptor< E > as axiomatic2::FormerDescriptor >::Formed >,
 //   context : core::option::Option< Context >,
 //   on_end : core::option::Option< End >,
-//   // _phantom : core::marker::PhantomData< E >,
 // }
 //
-// impl< Former, Context, End > VectorSubformer2< Former, Context, End >
+// impl< E, Context, End > VectorSubformer2< E, Context, End >
 // where
-//   Former : FormerDescriptor,
-//   End : FormingEnd< Self, Context >,
-//   // Formed : VectorLike2< E > + core::default::Default,
-//   // End : FormingEnd< Self, Context >,
+//   End : FormingEnd2< VectorSubformerDescriptor< E >, Context >,
 // {
 //
 //   /// Form current former into target structure.
 //   #[ inline( always ) ]
-//   pub fn form( mut self ) -> Former::Formed
+//   pub fn form( mut self ) -> < VectorSubformerDescriptor< E > as axiomatic2::FormerDescriptor >::Formed
 //   {
 //     let formed = if self.formed.is_some()
 //     {
@@ -115,7 +114,7 @@
 //   #[ inline( always ) ]
 //   pub fn begin
 //   (
-//     formed : core::option::Option< Former::Formed >,
+//     formed : core::option::Option< < VectorSubformerDescriptor< E > as axiomatic2::FormerDescriptor >::Formed >,
 //     context : core::option::Option< Context >,
 //     on_end : End
 //   ) -> Self
@@ -125,13 +124,12 @@
 //       context,
 //       formed,
 //       on_end : Some( on_end ),
-//       _phantom : core::marker::PhantomData,
 //     }
 //   }
 //
 //   /// Finalizes the building process, returning the formed or a context incorporating it.
 //   #[ inline( always ) ]
-//   pub fn end( mut self ) -> Former::Formed
+//   pub fn end( mut self ) -> < VectorSubformerDescriptor< E > as axiomatic2::FormerDescriptor >::Formed
 //   {
 //     let on_end = self.on_end.take().unwrap();
 //     let context = self.context.take();
@@ -141,7 +139,7 @@
 //
 //   /// Replaces the current formed with a provided one, allowing for a reset or redirection of the building process.
 //   #[ inline( always ) ]
-//   pub fn replace( mut self, vector : Former::Formed ) -> Self
+//   pub fn replace( mut self, vector : < VectorSubformerDescriptor< E > as axiomatic2::FormerDescriptor >::Formed ) -> Self
 //   {
 //     self.formed = Some( vector );
 //     self
@@ -149,11 +147,8 @@
 //
 // }
 //
-// // Former : FormerDescriptor,
-// impl< E, Former > VectorSubformer2< Former, (), ReturnStorage2 >
+// impl< E > VectorSubformer2< E, (), ReturnStorage2 >
 // where
-//   // Formed : VectorLike2< E > + core::default::Default,
-//   Former : FormerDescriptor,
 // {
 //
 //   /// Initializes a new `VectorSubformer2` instance, starting with an empty formed.
@@ -175,11 +170,9 @@
 //
 // }
 //
-// impl< Former, Context, End, E > VectorSubformer2< Former, Context, End >
+// impl< E, Context, End > VectorSubformer2< E, Context, End >
 // where
-//   Former : FormerDescriptor,
-//   // Formed : VectorLike2< E > + core::default::Default,
-//   End : FormingEnd< Self, Context >,
+//   End : FormingEnd2< VectorSubformerDescriptor< E >, Context >,
 // {
 //
 //   /// Appends an element to the end of the formed, expanding the internal collection.
@@ -205,7 +198,7 @@
 // // impl< Former, Context, End > FormerBegin< Formed, Formed, Context >
 // // for VectorSubformer2< Former, Context, End >
 // // where
-// //   End : FormingEnd< Self, Context >,
+// //   End : FormingEnd2< VectorSubformerDescriptor< E >, Context >,
 // //   // Formed : VectorLike2< E > + Default,
 // //   Former : FormerDescriptor,
 // // {
