@@ -1,3 +1,3 @@
-pub const BINARY_NAME : &'static str = "will";
+use super::*;
 
 mod tests_run;

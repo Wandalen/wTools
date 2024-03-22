@@ -12,13 +12,55 @@
 #[ cfg( feature = "enabled" ) ]
 pub mod wtools;
 
-#[ cfg( feature = "derive_reflect" ) ]
-pub mod reflect;
+#[ cfg( all( feature = "derive_more" ) ) ]
+#[ allow( unused_imports ) ]
+mod derive_more
+{
+  #[ cfg( feature = "derive_add" ) ]
+  pub use ::derive_more::{ Add, Sub };
+  #[ cfg( feature = "derive_add_assign" ) ]
+  pub use ::derive_more::{ AddAssign, SubAssign };
+  #[ cfg( feature = "derive_constructor" ) ]
+  pub use ::derive_more::Constructor;
+  #[ cfg( feature = "derive_error" ) ]
+  pub use ::derive_more::Error;
+  #[ cfg( feature = "derive_index_mut" ) ]
+  pub use ::derive_more::IndexMut;
+  #[ cfg( feature = "derive_index" ) ]
+  pub use ::derive_more::Index;
+  #[ cfg( feature = "derive_into" ) ]
+  pub use ::derive_more::Into;
+  #[ cfg( feature = "derive_iterator" ) ]
+  pub use ::derive_more::Iterator;
+  #[ cfg( feature = "derive_into_iterator" ) ]
+  pub use ::derive_more::IntoIterator;
+  #[ cfg( feature = "derive_mul" ) ]
+  pub use ::derive_more::{ Mul, Div };
+  #[ cfg( feature = "derive_mul_assign" ) ]
+  pub use ::derive_more::{ MulAssign, DivAssign };
+  #[ cfg( feature = "derive_not" ) ]
+  pub use ::derive_more::Not;
+  #[ cfg( feature = "derive_sum" ) ]
+  pub use ::derive_more::Sum;
+  #[ cfg( feature = "derive_try_into" ) ]
+  pub use ::derive_more::TryInto;
+  #[ cfg( feature = "derive_is_variant" ) ]
+  pub use ::derive_more::IsVariant;
+  #[ cfg( feature = "derive_unwrap" ) ]
+  pub use ::derive_more::Unwrap;
+
+  // qqq2 : list all
+  // qqq2 : make sure all features of derive_more is reexported
+}
+
+// #[ cfg( feature = "derive_reflect" ) ]
+// pub mod reflect;
 
 // use derive_tools_meta::Deref;
 // use derive_tools_meta::VariadicFrom;
 
-/// Dependencies.
+/// Namespace with dependencies.
+
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
@@ -55,23 +97,10 @@ pub mod protected
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::wtools::orphan::*;
-  #[ cfg( feature = "derive_reflect" ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::reflect::orphan::*;
-}
-
-#[ cfg( all( feature = "derive_more" ) ) ]
-#[ allow( unused_imports ) ]
-mod derive_more
-{
-  #[ cfg( feature = "derive_add" ) ]
-  pub use ::derive_more::Add;
-  #[ cfg( feature = "derive_is_variant" ) ]
-  pub use ::derive_more::IsVariant;
-
-  // qqq2 : list all
-  // qqq2 : make sure all features of derive_more is reexported
+  // #[ cfg( feature = "derive_reflect" ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::reflect::orphan::*;
 }
 
 /// Orphan namespace of the module.
@@ -183,10 +212,10 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::wtools::exposed::*;
 
-  #[ cfg( feature = "derive_reflect" ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::reflect::exposed::*;
+  // #[ cfg( feature = "derive_reflect" ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::reflect::exposed::*;
 
   // #[ cfg( any_derive ) ]
   #[ doc( inline ) ]
@@ -217,10 +246,10 @@ pub mod prelude
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::clone_dyn::clone_dyn;
-  #[ cfg( feature = "derive_reflect" ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::reflect::prelude::*;
+  // #[ cfg( feature = "derive_reflect" ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::reflect::prelude::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

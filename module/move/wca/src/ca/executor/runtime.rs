@@ -35,15 +35,12 @@ pub( crate ) mod private
   /// It performs callbacks to commands at the current execution position and, if necessary, provides context for them.
   ///
   /// ```
-  /// # use wca::{ Runtime, Namespace, Context };
+  /// # use wca::{ Runtime, Context };
   /// let runtime = Runtime
   /// {
   ///   context : Context::default(),
   ///   pos : 0,
-  ///   namespace : Namespace
-  ///   {
-  ///     commands: vec![]
-  ///   }
+  ///   namespace :vec![],
   /// };
   ///
   /// assert!( runtime.is_finished() );
@@ -56,7 +53,7 @@ pub( crate ) mod private
     /// current execution position
     pub pos : usize,
     /// namespace which must be executed
-    pub namespace : Namespace< ExecutableCommand_ >, // qqq : for Bohdan : use VerifiedCommand
+    pub namespace : Vec< VerifiedCommand >, // qqq : for Bohdan : use VerifiedCommand
   }
   // qqq : for Bohdan : why both Runtime and RuntimeState exist? probably one should removed
   // qqq : for Bohdan : why both Runtime and Context exist? What about incapsulating Context into Runtime maybe
@@ -67,18 +64,20 @@ pub( crate ) mod private
     /// returns true if execution position at the end
     pub fn is_finished( &self ) -> bool
     {
-      self.namespace.commands.len() == self.pos
+      self.namespace.len() == self.pos
     }
 
     /// executes current command( command at current execution position )
-    pub fn r#do( &mut self ) -> Result< () >
+    pub fn r#do( &mut self, dictionary : &Dictionary ) -> Result< () >
     {
-      self.namespace.commands
+      self
+      .namespace
       .get( self.pos )
       .ok_or_else( || err!( "No command here. Current execution pos was `{}`", self.pos ) )
       .and_then( | cmd |
       {
-        _exec_command( cmd.clone(), self.context.clone() )
+        let routine = dictionary.command( &cmd.phrase ).unwrap().routine.clone();
+        _exec_command( cmd.clone(), routine, self.context.clone() )
       })
     }
   }
@@ -86,11 +85,11 @@ pub( crate ) mod private
   // qqq : for Bohdan : _exec_command probably should be method of Runtime.
   // qqq : for Bohdan : Accept reference instead of copy.
   /// executes a command
-  pub fn _exec_command( command : ExecutableCommand_, ctx : Context ) -> Result< () >
+  pub fn _exec_command( command : VerifiedCommand, routine : Routine, ctx : Context ) -> Result< () >
   {
-    match command.routine
+    match routine
     {
-      Routine::WithoutContext( routine ) => routine( ( Args( command.subjects ), Props( command.properties ) )),
+      Routine::WithoutContext( routine ) => routine(( Args( command.subjects ), Props( command.properties ) )),
       Routine::WithContext( routine ) => routine( ( Args( command.subjects ), Props( command.properties ) ), ctx ),
     }
   }

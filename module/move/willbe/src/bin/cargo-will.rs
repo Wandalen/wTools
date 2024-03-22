@@ -8,5 +8,6 @@ use::willbe::*;
 
 fn main() -> Result< (), wtools::error::for_app::Error >
 {
-  Ok( willbe::run()? )
+  let args = std::env::args().skip( 1 ).collect();
+  Ok( willbe::run( args )? )
 }

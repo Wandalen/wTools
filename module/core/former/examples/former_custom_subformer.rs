@@ -1,6 +1,10 @@
 //! example of how to use former of another structure as subformer of former of current one
 //! function `command` integrate `CommandFormer` into `AggregatorFormer`.
 
+#[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
+fn main() {}
+
+#[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
 fn main()
 {
   use std::collections::HashMap;
@@ -25,17 +29,17 @@ fn main()
   // Use CommandFormer as custom subformer for AggregatorFormer to add commands by name.
   impl< Context, End > AggregatorFormer< Context, End >
   where
-    End : former::ToSuperFormer< Aggregator, Context >,
+    End : former::FormingEnd< Aggregator, Context >,
   {
     #[ inline( always ) ]
-    pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::ToSuperFormer< Command, Self > >
+    pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::FormingEnd< Command, Self > >
     where
-      IntoName: core::convert::Into< String >,
+      IntoName : core::convert::Into< String >,
     {
       let on_end = | command : Command, super_former : core::option::Option< Self > | -> Self
       {
         let mut super_former = super_former.unwrap();
-        if let Some( ref mut commands ) = super_former.container.command
+        if let Some( ref mut commands ) = super_former.storage.command
         {
           commands.insert( command.name.clone(), command );
         }
@@ -43,13 +47,14 @@ fn main()
         {
           let mut commands: HashMap< String, Command > = Default::default();
           commands.insert( command.name.clone(), command );
-          super_former.container.command = Some( commands );
+          super_former.storage.command = Some( commands );
         }
         super_former
       };
-      let former = CommandFormer::begin( Some( self ), on_end );
+      let former = CommandFormer::begin( None, Some( self ), on_end );
       former.name( name )
     }
+    // xxx : review
   }
 
   let ca = Aggregator::former()

@@ -3,6 +3,10 @@
 //! Demonstrates how to use `HashMapSubformer` with the `HashMapLike` trait to build a `std::collections::HashMap`:
 //!
 
+#[ cfg( not( all( feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+fn main() {}
+
+#[ cfg( all( feature = "derive_former", not( feature = "no_std" ) ) ) ]
 fn main()
 {
 

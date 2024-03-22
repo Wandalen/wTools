@@ -3,82 +3,72 @@ pub( crate ) mod private
   use crate::*;
   use ca::
   {
-    Verifier, ExecutorConverter,
     Command,
     Routine, Type, formatter::private::{ HelpFormat, md_generator },
   };
 
-  use wtools::{ Itertools, err };
+  use wtools::Itertools;
   use std::rc::Rc;
   use error_tools::for_app::anyhow;
 
   // qqq : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
 
   /// Generate `dot` command
-  pub fn dot_command( grammar : &mut Verifier, executor : &mut ExecutorConverter )
+  pub fn dot_command( dictionary : &mut Dictionary )
   {
-    let empty = Command::former()
-    .hint( "prints all available commands" )
-    .phrase( "" )
-    .property( "command_prefix", "", Type::String, false )
-    .form();
-
-    let to_command = Command::former()
-    .hint( "prints all available commands that starts with" )
-    .phrase( "" )
-    .subject( "command name", Type::String, true )
-    .property( "command_prefix", "", Type::String, true )
-    .form();
-
-    let command_variants = grammar.commands.entry( "".to_string() ).or_insert_with( Vec::new );
-    *command_variants = vec![ empty, to_command ];
-
-    let mut available_commands = grammar.commands.keys().cloned().collect::< Vec< _ > >();
+    let mut available_commands = dictionary.commands.keys().cloned().collect::< Vec< _ > >();
     available_commands.sort();
 
-    let routine = Routine::new
-    (
-      move |( args, props )|
+    let routine = move | args : Args, props : Props |
+    {
+      let prefix : String = props.get_owned( "command_prefix" ).unwrap();
+      if let Some( command ) = args.get_owned::< String >( 0 )
       {
-        let prefix : String = props.get_owned( "command_prefix" ).unwrap();
-        if let Some( command ) = args.get_owned::< String >( 0 )
-        {
-          let ac = available_commands
-          .iter()
-          .filter( | cmd | cmd.starts_with( &command ) )
-          .map( | cmd | format!( "{prefix}{cmd}" ) )
-          .collect::< Vec< _ > >();
+        let ac = available_commands
+        .iter()
+        .filter( | cmd | cmd.starts_with( &command ) )
+        .map( | cmd | format!( "{prefix}{cmd}" ) )
+        .collect::< Vec< _ > >();
 
-          if ac.is_empty()
-          {
-            return Err( err!( "Have no commands that starts with `{prefix}{command}`" ) );
-          }
-          else
-          {
-            println!( "{}", ac.join( "\n" ) );
-          }
+        if ac.is_empty()
+        {
+          return Err( "Have no commands that starts with `{prefix}{command}`" );
         }
         else
         {
-          println!( "{}", available_commands.iter().map( | cmd | format!( "{prefix}{cmd}" ) ).join( "\n" ) );
-        };
-
-        Ok( () )
+          println!( "{}", ac.join( "\n" ) );
+        }
       }
-    );
+      else
+      {
+        println!( "{}", available_commands.iter().map( | cmd | format!( "{prefix}{cmd}" ) ).join( "\n" ) );
+      };
 
-    executor.routines.insert( "".to_string(), routine );
+      Ok( () )
+    };
+
+    let cmd = Command::former()
+    .hint( "prints all available commands" )
+    .phrase( "" )
+    .subject().hint( "command name" ).kind( Type::String ).optional( true ).end()
+    // qqq : missing hint
+    .property( "command_prefix" ).hint( "?" ).kind( Type::String ).optional( true ).end()
+    .routine( routine )
+    .form();
+
+    dictionary.register( cmd );
   }
 
-  fn generate_help_content( grammar : &Verifier, command : Option< &Command > ) -> String
+  // qqq : for Barsik : make possible to change properties order 
+  fn generate_help_content( dictionary : &Dictionary, command : Option< &Command > ) -> String
   {
     if let Some( command ) = command
     {
       let name = &command.phrase;
       let hint = if command.long_hint.is_empty() { &command.hint } else { &command.long_hint };
-      let subjects = if command.subjects.is_empty() { "" } else { " <subjects> " };
+      let subjects = if command.subjects.is_empty() { "" } else { " < subjects > " };
       let full_subjects = command.subjects.iter().map( | subj | format!( "- {} [{:?}] {}", subj.hint, subj.kind, if subj.optional { "?" } else { "" } ) ).join( "\n\t" );
-      let properties = if command.properties.is_empty() { " " } else { " <properties> " };
+      let properties = if command.properties.is_empty() { " " } else { " < properties > " };
       let full_properties = command.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| format!( "{name} - {} [{:?}] {}", value.hint, value.kind, if value.optional { "?" } else { "" } ) ).join( "\n\t" );
 
       format!( "{name}{subjects}{properties}- {hint}\n{}{}",
@@ -87,19 +77,16 @@ pub( crate ) mod private
     }
     else
     {
-      grammar.commands
+      dictionary.commands
       .iter()
       .sorted_by_key( |( name, _ )| *name )
       .map( |( name, cmd )|
       {
-        cmd.iter().fold( String::new(), | acc, cmd |
-        {
-          let subjects = cmd.subjects.iter().fold( String::new(), | acc, subj | format!( "{acc} <{:?}>", subj.kind ) );
-          let properties = if cmd.properties.is_empty() { " " } else { " <properties> " };
-          let hint = if cmd.hint.is_empty() { &cmd.long_hint } else { &cmd.hint };
+        let subjects = cmd.subjects.iter().fold( String::new(), | acc, subj | format!( "{acc} <{:?}>", subj.kind ) );
+        let properties = if cmd.properties.is_empty() { " " } else { " < properties > " };
+        let hint = if cmd.hint.is_empty() { &cmd.long_hint } else { &cmd.hint };
 
-          format!( "{acc}\n{name}{subjects}{properties}- {hint}" )
-        })
+        format!( "{name}{subjects}{properties}- {hint}" )
       })
       .fold( String::new(), | acc, cmd |
       {
@@ -125,197 +112,184 @@ pub( crate ) mod private
   impl HelpVariants
   {
     /// Generates help commands
-    pub fn generate( &self, helper : &HelpGeneratorFn, grammar : &mut Verifier, executor : &mut ExecutorConverter )
+    pub fn generate( &self, helper : &HelpGeneratorFn, dictionary : &mut Dictionary )
     {
       match self
       {
         HelpVariants::All =>
         {
-          self.general_help( helper, grammar, executor );
-          self.subject_command_help( helper, grammar, executor );
-          self.dot_command_help( helper, grammar, executor );
+          self.general_help( helper, dictionary );
+          self.subject_command_help( helper, dictionary );
+          // self.dot_command_help( helper, dictionary );
         },
-        HelpVariants::General => self.general_help( helper, grammar, executor ),
-        HelpVariants::SubjectCommand => self.subject_command_help( helper, grammar, executor ),
-        HelpVariants::DotCommand => self.dot_command_help( helper, grammar, executor ),
+        HelpVariants::General => self.general_help( helper, dictionary ),
+        HelpVariants::SubjectCommand => self.subject_command_help( helper, dictionary ),
+        _ => unimplemented!()
+        // HelpVariants::DotCommand => self.dot_command_help( helper, dictionary ),
       }
     }
 
     // .help
-    fn general_help( &self, helper : &HelpGeneratorFn, grammar : &mut Verifier, executor : &mut ExecutorConverter )
+    fn general_help( &self, helper : &HelpGeneratorFn, dictionary : &mut Dictionary )
     {
       let phrase = "help".to_string();
 
-      let help = Command::former()
-      .hint( "prints information about existing commands" )
-      .property( "format", "help generates in format witch you write", Type::String, true )
-      .phrase( &phrase )
-      .form();
-
-      let command_variants = grammar.commands.entry( phrase.to_owned() ).or_insert_with( Vec::new );
-      command_variants.push( help );
-
-      // generate and add routine of help command
-      // replace old help command with new one
-      let subject_help = executor.routines.remove( &phrase );
+      let grammar = dictionary.clone();
       let generator = helper.clone();
-      // TODO: Will be static
-      let grammar = grammar.clone();
 
-      let routine = Routine::new
-      (
-        move |( args, props )|
+      let moved_phrase = phrase.clone();
+      let routine = move | args : Args, props : Props |
+      {
+        let subject_help = grammar.command( &moved_phrase );
+        match &subject_help
         {
-          match &subject_help
+          Some( Command { routine: Routine::WithoutContext( help ), .. } )
+          if !args.is_empty() => help(( args, props ))?,
+          _ =>
           {
-            Some( Routine::WithoutContext( help ) ) if !args.is_empty() => help(( args, props ))?,
-            _ =>
+            let format_prop : String = props.get_owned( "format" ).unwrap_or_default();
+            let format = match format_prop.as_str()
             {
-              let format_prop : String = props.get_owned( "format" ).unwrap_or_default();
-              let format = match format_prop.as_str()
-              {
-                "md" | "markdown" => HelpFormat::Markdown,
-                _ => HelpFormat::Another,
-              };
-              if format == HelpFormat::Markdown
-              {
-                println!( "Help command\n{text}", text = md_generator( &grammar ) );
-              }
-              else
-              {
-                println!( "Help command\n{text}", text = generator.exec( &grammar, None ) );
-              }
+              "md" | "markdown" => HelpFormat::Markdown,
+              _ => HelpFormat::Another,
+            };
+            if format == HelpFormat::Markdown
+            {
+              println!( "Help command\n{text}", text = md_generator( &grammar ) );
+            }
+            else
+            {
+              println!( "Help command\n{text}", text = generator.exec( &grammar, None ) );
             }
           }
-
-          Ok( () )
         }
-      );
 
-      executor.routines.insert( phrase, routine );
+        Ok::< _, error_tools::for_app::Error >( () )
+      };
+      let help = Command::former()
+      .hint( "prints information about existing commands" )
+      .property( "format" )
+        .hint( "help generates in format witch you write" )
+        .kind( Type::String )
+        .optional( true )
+        .end()
+      .phrase( &phrase )
+      .routine( routine )
+      .form();
+
+      dictionary.register( help );
     }
 
     // .help command_name
-    fn subject_command_help( &self, helper : &HelpGeneratorFn, grammar : &mut Verifier, executor : &mut ExecutorConverter )
+    fn subject_command_help( &self, helper : &HelpGeneratorFn, dictionary : &mut Dictionary )
     {
       let phrase = "help".to_string();
 
-      // generate and add grammar of help command
+      let grammar = dictionary.clone();
+      let generator = helper.clone();
+
+      let moved_phrase = phrase.clone();
+      let routine = move | args : Args, props : Props |
+      {
+        let full_help = grammar.command( &moved_phrase );
+        match &full_help
+        {
+          Some( Command { routine: Routine::WithoutContext( help ), .. } )
+          if args.is_empty() => help(( args, props ))?,
+          _ =>
+          {
+            let command = args.get_owned::< String >( 0 ).unwrap();
+            let cmd = grammar.commands.get( &command ).ok_or_else( || anyhow!( "Can not found help for command `{command}`" ) )?;
+
+            let text = generator.exec( &grammar, Some( cmd ) );
+
+            println!( "{text}" );
+          }
+        };
+
+        Ok::< _, error_tools::for_app::Error >( () )
+      };
+
       let help = Command::former()
       .hint( "prints full information about a specified command" )
+      .subject().hint( "command name" ).kind( Type::String ).optional( true ).end()
+      .property( "format" ).hint( "help generates in format witch you write" ).kind( Type::String ).optional( true ).end()
       .phrase( &phrase )
-      .subject( "command name", Type::String, true )
+      .routine( routine )
       .form();
 
-      let command_variants = grammar.commands.entry( phrase.to_owned() ).or_insert_with( Vec::new );
-      command_variants.push( help );
-
-      // generate and add routine of help command
-      // replace old help command with new one
-      let full_help = executor.routines.remove( &phrase );
-      let generator = helper.clone();
-      // TODO: Will be static
-      let grammar = grammar.clone();
-
-      let routine = Routine::new
-      (
-        move |( args, props )|
-        {
-          match &full_help
-          {
-            Some( Routine::WithoutContext( help ) ) if args.is_empty() => help(( args, props ))?,
-            _ =>
-            {
-              let command = args.get_owned::< String >( 0 ).unwrap();
-              let cmds = grammar.commands.get( &command ).ok_or_else( || anyhow!( "Can not found help for command `{command}`" ) )?;
-
-              let text = cmds.iter().map
-              (
-                | cmd |
-                generator.exec( &grammar, Some( cmd ) )
-              )
-              .join( "\n\n" );
-
-              println!( "{text}" );
-            }
-          };
-
-          Ok( () )
-        }
-      );
-
-      executor.routines.insert( phrase, routine );
+      dictionary.register( help );
     }
 
     // .help.command_name
-    fn dot_command_help( &self, helper : &HelpGeneratorFn, grammar : &mut Verifier, executor : &mut ExecutorConverter )
-    {
-      // generate commands names
-      let commands : Vec< _ > = grammar.commands.iter().map( |( name, cmd )| ( format!( "help.{name}" ), cmd.clone() ) ).collect();
-
-      // generate Commands grammar
-      let grammar_helps = commands
-      .iter()
-      .map( |( help_name, _ )| Command::former().hint( "prints full information about a specified command" ).phrase( help_name ).form() )
-      .collect::< Vec< _ > >();
-
-      // add commands to Verifier
-      for cmd in grammar_helps
-      {
-        let command_variants = grammar.commands.entry( cmd.phrase.to_owned() ).or_insert_with( Vec::new );
-        command_variants.push( cmd );
-      }
-
-      // generate Commands routines
-      let executable = commands
-      .into_iter()
-      .fold( vec![], | mut acc, ( help_name, cmds ) |
-      {
-        let generator = helper.clone();
-        // TODO: Will be static
-        let grammar = grammar.clone();
-
-        let routine = Routine::new( move | _ |
-        {
-          let text = cmds.iter()
-          .map
-          (
-            | cmd | generator.exec( &grammar, Some( cmd ) )
-          )
-          .join( "\n\n" );
-
-          println!( "Help for command\n\n{text}" );
-
-          Ok( () )
-        });
-        acc.push(( help_name, routine ));
-
-        acc
-      });
-
-      // add commands to ExecutorConverter
-      for ( phrase, routine ) in executable
-      {
-        executor.routines.insert( phrase, routine );
-      }
-    }
+    // fn dot_command_help( &self, helper : &HelpGeneratorFn, grammar : &mut Dictionary )
+    // {
+    //   // generate commands names
+    //   let commands : Vec< _ > = grammar.commands.iter().map( |( name, cmd )| ( format!( "help.{name}" ), cmd.clone() ) ).collect();
+    //
+    //   // generate Commands grammar
+    //   let grammar_helps = commands
+    //   .iter()
+    //   .map( |( help_name, _ )| Command::former().hint( "prints full information about a specified command" ).phrase( help_name ).form() )
+    //   .collect::< Vec< _ > >();
+    //
+    //   // add commands to Verifier
+    //   for cmd in grammar_helps
+    //   {
+    //     let command_variants = grammar.commands.entry( cmd.phrase.to_owned() ).or_insert_with( Vec::new );
+    //     command_variants.push( cmd );
+    //   }
+    //
+    //   // generate Commands routines
+    //   let executable = commands
+    //   .into_iter()
+    //   .fold( vec![], | mut acc, ( help_name, cmds ) |
+    //   {
+    //     let generator = helper.clone();
+    //     // TODO: Will be static
+    //     let grammar = grammar.clone();
+    //
+    //     let routine = Routine::new( move | _ |
+    //     {
+    //       let text = cmds.iter()
+    //       .map
+    //       (
+    //         | cmd | generator.exec( &grammar, Some( cmd ) )
+    //       )
+    //       .join( "\n\n" );
+    //
+    //       println!( "Help for command\n\n{text}" );
+    //
+    //       Ok( () )
+    //     });
+    //     acc.push(( help_name, routine ));
+    //
+    //     acc
+    //   });
+    //
+    //   // add commands to ExecutorConverter
+    //   for ( phrase, routine ) in executable
+    //   {
+    //     executor.routines.insert( phrase, routine );
+    //   }
+    // }
   }
 
-  type HelpFunctionFn = Rc< dyn Fn( &Verifier, Option< &Command > ) -> String >;
+  type HelpFunctionFn = Rc< dyn Fn( &Dictionary, Option< &Command > ) -> String >;
 
   /// Container for function that generates help string for any command
   ///
   /// ```
   /// # use wca::ca::help::HelpGeneratorFn;
-  /// use wca::{ Verifier, Command };
+  /// use wca::{ Command, Dictionary };
   ///
-  /// fn my_help_generator( grammar : &Verifier, command : Option< &Command > ) -> String
+  /// fn my_help_generator( grammar : &Dictionary, command : Option< &Command > ) -> String
   /// {
   ///   format!( "Help content based on grammar and command" )
   /// }
   ///
   /// let help_fn = HelpGeneratorFn::new( my_help_generator );
-  /// # let grammar = &Verifier::former().form();
+  /// # let grammar = &Dictionary::former().form();
   ///
   /// help_fn.exec( grammar, None );
   /// // or
@@ -338,7 +312,7 @@ pub( crate ) mod private
     /// Wrap a help function
     pub fn new< HelpFunction >( func : HelpFunction ) -> Self
     where
-      HelpFunction : Fn( &Verifier, Option< &Command > ) -> String + 'static
+      HelpFunction : Fn( &Dictionary, Option< &Command > ) -> String + 'static
     {
         Self( Rc::new( func ) )
     }
@@ -347,9 +321,9 @@ pub( crate ) mod private
   impl HelpGeneratorFn
   {
     /// Executes the function to generate help content
-    pub fn exec( &self, grammar : &Verifier, command : Option< &Command > ) -> String
+    pub fn exec( &self, dictionary : &Dictionary, command : Option< &Command > ) -> String
     {
-      self.0( grammar, command )
+      self.0( dictionary, command )
     }
   }
 

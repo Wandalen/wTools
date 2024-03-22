@@ -1,6 +1,6 @@
 [package]
 name = "derive_tools"
-version = "0.13.0"
+version = "0.19.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -12,7 +12,7 @@ documentation = "https://docs.rs/derive_tools"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/derive_tools"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/derive_tools"
 description = """
-Collection of derives which extend STD.
+A collection of derive macros designed to enhance STD.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
@@ -23,7 +23,7 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-exclude = [ "/tests", "/examples", "-*" ]
+# exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
 
@@ -115,7 +115,7 @@ full = [
   # "use_std",
 ]
 no_std = []
-use_alloc = []
+use_alloc = [ "no_std" ]
 enabled = []
 
 # nightly = [ "derive_more/nightly" ]
@@ -125,34 +125,34 @@ derive_variadic_from = [ "type_variadic_from", "derive_tools_meta/derive_variadi
 
 # enable_track_caller = [ "derive_more", "derive_more/track-caller" ]
 
-derive_add_assign = [ "derive_more", "derive_more/add_assign" ]
-derive_add = [ "derive_more", "derive_more/add" ]
+derive_add_assign = [ "derive_more", "derive_more/std", "derive_more/add_assign" ]
+derive_add = [ "derive_more", "derive_more/std", "derive_more/add" ]
 derive_as_mut = [ "derive_tools_meta/derive_as_mut" ]
 derive_as_ref = [ "derive_tools_meta/derive_as_ref" ]
 # derive_as_mut = [ "derive_more", "derive_more/as_mut" ]
 # derive_as_ref = [ "derive_more", "derive_more/as_ref" ]
-derive_constructor = [ "derive_more", "derive_more/constructor" ]
+derive_constructor = [ "derive_more", "derive_more/std", "derive_more/constructor" ]
 derive_deref = [ "derive_tools_meta/derive_deref" ]
 derive_deref_mut = [ "derive_tools_meta/derive_deref_mut" ]
 # derive_deref = [ "derive_more", "derive_more/deref" ]
 # derive_deref_mut = [ "derive_more", "derive_more/deref_mut" ]
-derive_error = [ "derive_more", "derive_more/error" ]
+derive_error = [ "derive_more", "derive_more/std", "derive_more/error" ]
 # derive_from = [ "derive_more", "derive_more/from" ]
 # derive_from = [ "derive_tools_meta/derive_from" ]
 # derive_reflect = [ "derive_tools_meta/derive_reflect" ]
 
-derive_index = [ "derive_more", "derive_more/index" ]
-derive_index_mut = [ "derive_more", "derive_more/index_mut" ]
+derive_index = [ "derive_more", "derive_more/std", "derive_more/index" ]
+derive_index_mut = [ "derive_more", "derive_more/std", "derive_more/index_mut" ]
 # derive_inner_from = [ "derive_more", "derive_more/into" ]
-derive_into_iterator = [ "derive_more", "derive_more/into_iterator" ]
+derive_into_iterator = [ "derive_more", "derive_more/std", "derive_more/into_iterator" ]
 # derive_iterator = [ "derive_more", "derive_more/iterator" ]
-derive_mul_assign = [ "derive_more", "derive_more/mul_assign" ]
-derive_mul = [ "derive_more", "derive_more/mul" ]
-derive_not = [ "derive_more", "derive_more/not" ]
-derive_sum = [ "derive_more", "derive_more/sum" ]
-derive_try_into = [ "derive_more", "derive_more/try_into" ]
+derive_mul_assign = [ "derive_more", "derive_more/std", "derive_more/mul_assign" ]
+derive_mul = [ "derive_more", "derive_more/std", "derive_more/mul" ]
+derive_not = [ "derive_more", "derive_more/std", "derive_more/not" ]
+derive_sum = [ "derive_more", "derive_more/std", "derive_more/sum" ]
+derive_try_into = [ "derive_more", "derive_more/std", "derive_more/try_into" ]
 derive_is_variant = [ "derive_more", "derive_more/is_variant" ]
-derive_unwrap = [ "derive_more", "derive_more/unwrap" ]
+derive_unwrap = [ "derive_more", "derive_more/std", "derive_more/unwrap" ]
 # derive_convert_case = [ "derive_more", "derive_more/convert_case" ]
 
 derive_display = [ "parse-display" ]

@@ -1,6 +1,6 @@
 [package]
 name = "impls_index_meta"
-version = "0.3.0"
+version = "0.6.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -23,13 +23,12 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-
-exclude = [ "/tests", "/examples", "-*" ]
+# exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-enabled = []
+enabled = [ "macro_tools/enabled" ]
 
 [lib]
 proc-macro = true

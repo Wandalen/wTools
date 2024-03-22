@@ -15,7 +15,7 @@ mod private
   use wca::{ Args, Props };
   use wtools::error::{ for_app::Context, Result };
 
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
   use action::{ list as l, list::{ ListFormat, ListOptions } };
   use former::Former;
 
@@ -47,7 +47,7 @@ mod private
   /// List workspace packages.
   ///
 
-  pub fn list( ( args, properties ) : ( Args, Props ) ) -> Result< () >
+  pub fn list( args : Args, properties : Props ) -> Result< () >
   {
     let path_to_workspace : PathBuf = args.get_owned( 0 ).unwrap_or( std::env::current_dir().context( "Workspace list command without subject" )? );
     let path_to_workspace = AbsolutePath::try_from( path_to_workspace )?;

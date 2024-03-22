@@ -2,9 +2,19 @@
 
 ## For hybrid:
 
- - execution time: 0.311s
+ - max number of iterations: 100
+
+ - max no improvement iterations : 10
+
+ - improvement threshold : 0.005s
+
+ - calculated points: 19 from 48
+
+ - points from cache: 29 from 48
 
  - level: Easy
+
+ - execution time: 0.154s
 
  - parameters: 
 
@@ -12,37 +22,48 @@
 ┌─────────────┬────────┬────────┬─────────┬─────────────┬──────────┬─────────┬────────┐
 │             │ start  │ min    │ max     │ sum of diff │ expected │ changes │ final  │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ temperature │ 0.8561 │ 0.00   │ 1.00    │ 0.93        │ 0.02     │ 6       │ 0.9787 │
+│ temperature │ 0.8561 │ 0.00   │ 1.00    │ 0.02        │ 0.00     │ 9       │ 0.9995 │
 │ decrease    │        │        │         │             │          │         │        │
 │ coefficient │        │        │         │             │          │         │        │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ max         │ 106    │ 10.00  │ 200.00  │ 318.95      │ 6.38     │ 6       │ 107    │
+│ max         │ 106    │ 10.00  │ 200.00  │ 311.97      │ 7.43     │ 9       │ 108    │
 │ mutations   │        │        │         │             │          │         │        │
 │ per         │        │        │         │             │          │         │        │
 │ dynasty     │        │        │         │             │          │         │        │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ mutation    │ 0.42   │ 0.00   │ 1.00    │ 2.60        │ 0.05     │ 6       │ 0.31   │
+│ mutation    │ 0.42   │ 0.00   │ 1.00    │ 1.31        │ 0.03     │ 9       │ 0.23   │
 │ rate        │        │        │         │             │          │         │        │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ crossover   │ 0.66   │ 0.00   │ 1.00    │ 3.93        │ 0.08     │ 6       │ 0.58   │
+│ crossover   │ 0.66   │ 0.00   │ 1.00    │ 1.70        │ 0.04     │ 9       │ 0.54   │
 │ rate        │        │        │         │             │          │         │        │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ elitism     │ -0.09  │ -      │ -       │ -           │ -        │ -       │ 0.11   │
+│ elitism     │ -0.09  │ -      │ -       │ -           │ -        │ -       │ 0.23   │
 │ rate        │        │        │         │             │          │         │        │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ max         │ 81     │ 1.00   │ 100.00  │ 474.07      │ 9.48     │ 6       │ 38     │
+│ max         │ 81     │ 1.00   │ 100.00  │ 1404.93     │ 33.45    │ 9       │ 62     │
 │ stale       │        │        │         │             │          │         │        │
 │ iterations  │        │        │         │             │          │         │        │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ population  │ 116    │ 1.00   │ 1000.00 │ 9216.57     │ 184.33   │ 6       │ 77     │
+│ population  │ 116    │ 1.00   │ 1000.00 │ 9233.07     │ 219.83   │ 9       │ 3      │
 │ size        │        │        │         │             │          │         │        │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ dynasties   │ 249    │ 100.00 │ 2000.00 │ 2423.08     │ 48.46    │ 6       │ 984    │
+│ dynasties   │ 249    │ 100.00 │ 2000.00 │ 19863.18    │ 472.93   │ 9       │ 1486   │
 │ limit       │        │        │         │             │          │         │        │
 └─────────────┴────────┴────────┴─────────┴─────────────┴──────────┴─────────┴────────┘
 ```
 
 
+#### List:
+
+
+ - `max number of iterations` : limit of total iterations of optimization process, termination condition
+ - `max no improvement iterations` : max amount of steps performed without detected improvement, termination condition
+ - `improvement threshold` : minimal value detected as improvement in objective function result
+ - `calculated points` : new calculated points that were not found in cache
+ - `points from cache` : points calculated during previous optimizations and read from cache
+ - `level` : sudoku board difficulty level
+ - `execution time` : duration of shortest found hybrid optimization process using final parameters, measured in seconds
+#### Table:
  - `start` : initial value of parameter in starting point
  - `min` : lower bound of parameter
  - `max` : upper bound of parameter
@@ -52,9 +73,19 @@
  - `final` : calculated value of parameter for which execution time was the lowest
 ## For SA:
 
- - execution time: 0.034s
+ - max number of iterations: 100
+
+ - max no improvement iterations : 10
+
+ - improvement threshold : 0.005s
+
+ - calculated points: 0 from 22
+
+ - points from cache: 22 from 22
 
  - level: Easy
+
+ - execution time: 0.019s
 
  - parameters: 
 
@@ -62,11 +93,11 @@
 ┌─────────────┬────────┬────────┬─────────┬─────────────┬──────────┬─────────┬────────┐
 │             │ start  │ min    │ max     │ sum of diff │ expected │ changes │ final  │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ temperature │ 0.0660 │ 0.00   │ 1.00    │ 3.08        │ 0.06     │ 6       │ 0.9657 │
+│ temperature │ 0.8244 │ 0.00   │ 1.00    │ 0.48        │ 0.03     │ 12      │ 0.9554 │
 │ decrease    │        │        │         │             │          │         │        │
 │ coefficient │        │        │         │             │          │         │        │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ max         │ 108    │ 10.00  │ 200.00  │ 126.76      │ 2.49     │ 6       │ 102    │
+│ max         │ 157    │ 10.00  │ 200.00  │ 261.00      │ 18.64    │ 12      │ 116    │
 │ mutations   │        │        │         │             │          │         │        │
 │ per         │        │        │         │             │          │         │        │
 │ dynasty     │        │        │         │             │          │         │        │
@@ -74,25 +105,36 @@
 │ mutation    │ 1.00   │ 1.00   │ 1.00    │ 0.00        │ 0.00     │ 0       │ 1.00   │
 │ rate        │        │        │         │             │          │         │        │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ crossover   │ 0.00   │ 0.00   │ 0.00    │ 0.00        │ 0.00     │ 0       │ 0.00   │
+│ crossover   │ 0.00   │ 0.00   │ 0.00    │ 0.00        │ 0.00     │ 1       │ 0.00   │
 │ rate        │        │        │         │             │          │         │        │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
 │ elitism     │ -0.00  │ -      │ -       │ -           │ -        │ -       │ 0.00   │
 │ rate        │        │        │         │             │          │         │        │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ max         │ 47     │ 1.00   │ 100.00  │ 89.91       │ 1.76     │ 6       │ 30     │
+│ max         │ 67     │ 1.00   │ 100.00  │ 214.24      │ 15.30    │ 12      │ 39     │
 │ stale       │        │        │         │             │          │         │        │
 │ iterations  │        │        │         │             │          │         │        │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
 │ population  │ 1      │ 1.00   │ 1.00    │ 0.00        │ 0.00     │ 0       │ 1      │
 │ size        │        │        │         │             │          │         │        │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ dynasties   │ 4974   │ 100.00 │ 5000.00 │ 21180.01    │ 415.29   │ 6       │ 1216   │
+│ dynasties   │ 3455   │ 100.00 │ 5000.00 │ 13134.94    │ 938.21   │ 12      │ 1646   │
 │ limit       │        │        │         │             │          │         │        │
 └─────────────┴────────┴────────┴─────────┴─────────────┴──────────┴─────────┴────────┘
 ```
 
 
+#### List:
+
+
+ - `max number of iterations` : limit of total iterations of optimization process, termination condition
+ - `max no improvement iterations` : max amount of steps performed without detected improvement, termination condition
+ - `improvement threshold` : minimal value detected as improvement in objective function result
+ - `calculated points` : new calculated points that were not found in cache
+ - `points from cache` : points calculated during previous optimizations and read from cache
+ - `level` : sudoku board difficulty level
+ - `execution time` : duration of shortest found hybrid optimization process using final parameters, measured in seconds
+#### Table:
  - `start` : initial value of parameter in starting point
  - `min` : lower bound of parameter
  - `max` : upper bound of parameter
@@ -102,9 +144,19 @@
  - `final` : calculated value of parameter for which execution time was the lowest
 ## For GA:
 
- - execution time: 0.264s
+ - max number of iterations: 100
+
+ - max no improvement iterations : 10
+
+ - improvement threshold : 0.005s
+
+ - calculated points: 81 from 120
+
+ - points from cache: 39 from 120
 
  - level: Easy
+
+ - execution time: 0.263s
 
  - parameters: 
 
@@ -112,37 +164,48 @@
 ┌─────────────┬────────┬────────┬─────────┬─────────────┬──────────┬─────────┬────────┐
 │             │ start  │ min    │ max     │ sum of diff │ expected │ changes │ final  │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ temperature │ 0.4043 │ 0.00   │ 1.00    │ 0.51        │ 0.03     │ 10      │ 1.0000 │
+│ temperature │ 0.6847 │ 0.00   │ 1.00    │ 0.45        │ 0.00     │ 36      │ 0.9995 │
 │ decrease    │        │        │         │             │          │         │        │
 │ coefficient │        │        │         │             │          │         │        │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ max         │ 37     │ 10.00  │ 200.00  │ 335.93      │ 21.00    │ 10      │ 118    │
+│ max         │ 174    │ 10.00  │ 200.00  │ 514.31      │ 4.40     │ 36      │ 97     │
 │ mutations   │        │        │         │             │          │         │        │
 │ per         │        │        │         │             │          │         │        │
 │ dynasty     │        │        │         │             │          │         │        │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ mutation    │ 0.24   │ 0.10   │ 1.00    │ 0.56        │ 0.03     │ 10      │ 0.17   │
+│ mutation    │ 0.78   │ 0.10   │ 1.00    │ 5.51        │ 0.05     │ 36      │ 0.22   │
 │ rate        │        │        │         │             │          │         │        │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ crossover   │ 0.94   │ 0.10   │ 1.00    │ 2.44        │ 0.15     │ 10      │ 0.74   │
+│ crossover   │ 0.73   │ 0.10   │ 1.00    │ 2.09        │ 0.02     │ 36      │ 0.51   │
 │ rate        │        │        │         │             │          │         │        │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ elitism     │ -0.18  │ -      │ -       │ -           │ -        │ -       │ 0.08   │
+│ elitism     │ -0.52  │ -      │ -       │ -           │ -        │ -       │ 0.26   │
 │ rate        │        │        │         │             │          │         │        │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ max         │ 30     │ 1.00   │ 100.00  │ 25.45       │ 1.59     │ 10      │ 32     │
+│ max         │ 29     │ 1.00   │ 100.00  │ 134.61      │ 1.15     │ 36      │ 31     │
 │ stale       │        │        │         │             │          │         │        │
 │ iterations  │        │        │         │             │          │         │        │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ population  │ 1102   │ 10.00  │ 2000.00 │ 8803.52     │ 550.22   │ 10      │ 77     │
+│ population  │ 846    │ 10.00  │ 2000.00 │ 24289.87    │ 207.61   │ 36      │ 84     │
 │ size        │        │        │         │             │          │         │        │
 ├─────────────┼────────┼────────┼─────────┼─────────────┼──────────┼─────────┼────────┤
-│ dynasties   │ 439    │ 100.00 │ 2000.00 │ 3596.94     │ 224.81   │ 10      │ 1221   │
+│ dynasties   │ 859    │ 100.00 │ 2000.00 │ 8440.12     │ 72.14    │ 36      │ 1075   │
 │ limit       │        │        │         │             │          │         │        │
 └─────────────┴────────┴────────┴─────────┴─────────────┴──────────┴─────────┴────────┘
 ```
 
 
+#### List:
+
+
+ - `max number of iterations` : limit of total iterations of optimization process, termination condition
+ - `max no improvement iterations` : max amount of steps performed without detected improvement, termination condition
+ - `improvement threshold` : minimal value detected as improvement in objective function result
+ - `calculated points` : new calculated points that were not found in cache
+ - `points from cache` : points calculated during previous optimizations and read from cache
+ - `level` : sudoku board difficulty level
+ - `execution time` : duration of shortest found hybrid optimization process using final parameters, measured in seconds
+#### Table:
  - `start` : initial value of parameter in starting point
  - `min` : lower bound of parameter
  - `max` : upper bound of parameter
@@ -158,11 +221,11 @@
 │        │ coefficient │ per       │          │           │         │ iterations │            │           │           │
 │        │             │ dynasty   │          │           │         │            │            │           │           │
 ├────────┼─────────────┼───────────┼──────────┼───────────┼─────────┼────────────┼────────────┼───────────┼───────────┤
-│ hybrid │ 0.9787      │ 107       │ 0.31     │ 0.58      │ 0.11    │ 38         │ 77         │ 984       │ 0.311s    │
+│ hybrid │ 0.9995      │ 108       │ 0.23     │ 0.54      │ 0.23    │ 62         │ 3          │ 1486      │ 0.154s    │
 ├────────┼─────────────┼───────────┼──────────┼───────────┼─────────┼────────────┼────────────┼───────────┼───────────┤
-│ SA     │ 0.9657      │ 102       │ 1.00     │ 0.00      │ 0.00    │ 30         │ 1          │ 1216      │ 0.034s    │
+│ SA     │ 0.9554      │ 116       │ 1.00     │ 0.00      │ 0.00    │ 39         │ 1          │ 1646      │ 0.019s    │
 ├────────┼─────────────┼───────────┼──────────┼───────────┼─────────┼────────────┼────────────┼───────────┼───────────┤
-│ GA     │ 1.0000      │ 118       │ 0.17     │ 0.74      │ 0.08    │ 32         │ 77         │ 1221      │ 0.264s    │
+│ GA     │ 0.9995      │ 97        │ 0.22     │ 0.51      │ 0.26    │ 31         │ 84         │ 1075      │ 0.263s    │
 └────────┴─────────────┴───────────┴──────────┴───────────┴─────────┴────────────┴────────────┴───────────┴───────────┘
 ```
 
@@ -176,3 +239,8 @@
  - `population size` : number of individuals in population
  - `dynasties limit` : max number of dynasties of new solutions produced during optimization process, terminates if exceeded
  - `execution time` : time spent searching for optimal solution, measured in seconds
+## To run:
+ - Sudoku problem:
+`cargo test -- --ignored find_opt_params_sudoku`
+ - Traveling salesman problem:
+`cargo test -- --ignored find_opt_params_tsp`

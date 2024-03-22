@@ -1,13 +1,6 @@
 
-#[ allow( unused_imports ) ]
-use quote::quote;
-#[ allow( unused_imports ) ]
-use syn::parse_quote;
-#[ allow( unused_imports ) ]
+use macro_tools::{ Result, Many };
 use macro_tools::prelude::*;
-#[ allow( unused_imports ) ]
-// use macro_tools::{ Result, Items };
-use macro_tools::{ Result, Many, syn };
 
 ///
 /// Module-specific item.
@@ -21,7 +14,6 @@ pub struct Item2
 }
 
 impl AsMuchAsPossibleNoDelimiter for Item2 {}
-// xxx : qqq : introduce trait
 
 //
 
@@ -75,11 +67,11 @@ impl quote::ToTokens for Items2
     {
       let func = &e.func;
 
-      let declare_aliased = quote!
+      let declare_aliased = qt!
       {
         ( as $Name2 : ident ) =>
         {
-          ::impls_index::fn_rename!
+          impls_index::fn_rename!
           {
             @Name { $Name2 }
             @Fn
@@ -90,14 +82,14 @@ impl quote::ToTokens for Items2
         };
       };
 
-      let mut mandatory = quote!
+      let mut mandatory = qt!
       {
         #[ allow( unused_macros ) ]
       };
 
       if e.optional.is_none()
       {
-        mandatory = quote!
+        mandatory = qt!
         {
           #[ deny( unused_macros ) ]
         }
@@ -105,7 +97,7 @@ impl quote::ToTokens for Items2
 
       let name_str = func.name();
       let name_ident = syn::Ident::new( &name_str[ .. ], proc_macro2::Span::call_site() );
-      let result = quote!
+      let result = qt!
       {
         #mandatory
         macro_rules! #name_ident
@@ -129,7 +121,7 @@ pub fn impls( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
 {
   let items2 = syn::parse::< Items2 >( input )?;
 
-  let result = quote!
+  let result = qt!
   {
     #items2
   };

@@ -1,14 +1,12 @@
 use super::*;
 use assert_fs::prelude::*;
-use TheModule::action;
+use the_module::action;
 use std::io::Read;
-
-const ASSETS_PATH : &str = "tests/assets";
 
 fn arrange( source : &str ) -> assert_fs::TempDir
 {
   let root_path = std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) );
-  let assets_relative_path = std::path::Path::new( ASSETS_PATH );
+  let assets_relative_path = std::path::Path::new( ASSET_PATH );
   let assets_path = root_path.join( assets_relative_path );
 
   let temp = assert_fs::TempDir::new().unwrap();
@@ -148,6 +146,7 @@ fn stability_cell()
   let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
+  dbg!( &actual );
   assert!( actual.contains( "[![stability-deprecated](https://img.shields.io/badge/stability-deprecated-red.svg)](https://github.com/emersion/stability-badges#deprecated)" ) );
 }
 
@@ -165,7 +164,7 @@ fn branches_cell()
   let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
-  assert!( actual.contains( "| [![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/ModuleWillbeVariadicTagConfigurationsCPush.yml?label=&branch=test_branch1)](https://github.com/SomeName/SomeCrate/C/actions/workflows/ModuleWillbeVariadicTagConfigurationsCPush.yml?query=branch%3Atest_branch1) | [![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/ModuleWillbeVariadicTagConfigurationsCPush.yml?label=&branch=test_branch2)](https://github.com/SomeName/SomeCrate/C/actions/workflows/ModuleWillbeVariadicTagConfigurationsCPush.yml?query=branch%3Atest_branch2) |" ) );
+  assert!( actual.contains( "[![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/module_willbe_variadic_tag_configurations_c_push.yml?label=&branch=test_branch1)](https://github.com/SomeName/SomeCrate/C/actions/workflows/module_willbe_variadic_tag_configurations_c_push.yml?query=branch%3Atest_branch1) | [![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/module_willbe_variadic_tag_configurations_c_push.yml?label=&branch=test_branch2)](https://github.com/SomeName/SomeCrate/C/actions/workflows/module_willbe_variadic_tag_configurations_c_push.yml?query=branch%3Atest_branch2)" ) );
 }
 
 #[ test ]
@@ -199,5 +198,5 @@ fn sample_cell()
   let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
-  assert!( actual.contains( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F_willbe_variadic_tag_configurations_c_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20_willbe_variadic_tag_configurations_c_trivial_sample/https://github.com/SomeName/SomeCrate/C)" ) );
+  assert!( actual.contains( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F_willbe_variadic_tag_configurations_c_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20_willbe_variadic_tag_configurations_c_trivial/https://github.com/SomeName/SomeCrate/C)" ) );
 }

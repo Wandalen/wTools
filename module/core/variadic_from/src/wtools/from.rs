@@ -95,7 +95,7 @@ pub( crate ) mod private
   where
     F : From_1< All >,
   {
-    #[inline]
+    #[ inline ]
     fn to( self ) -> F
     {
       F::from_1( self )
@@ -107,7 +107,7 @@ pub( crate ) mod private
   //   F : From_1< F >,
   //   F : From< All >,
   // {
-  //   #[inline]
+  //   #[ inline ]
   //   fn to( self ) -> F
   //   {
   //     F::from_1( From::from( self ) )
@@ -265,7 +265,7 @@ pub( crate ) mod private
   /// ``` shell test
   /// git clone https://github.com/Wandalen/wTools
   /// cd wTools
-  /// cd examples/type_constructor_trivial_sample
+  /// cd examples/type_constructor_trivial
   /// cargo run
   /// ```
 

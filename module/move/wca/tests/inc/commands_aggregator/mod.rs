@@ -1,14 +1,14 @@
 use super::*;
 
-use wca::
+use the_module::
 {
   Parser,
-  Verifier, ExecutorConverter,
 
   CommandsAggregator,
   Routine,
   Type,
   HelpVariants,
+  Type,
   Error,
   ValidationError,
 };

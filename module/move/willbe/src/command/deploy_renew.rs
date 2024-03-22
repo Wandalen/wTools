@@ -2,7 +2,7 @@ mod private
 {
   use crate::*;
 
-  use wca::{ Args, Props };
+  use wca::Props;
   use wtools::error::{ anyhow::Context, Result };
   use tool::template::Template;
   use action::deploy_renew::*;
@@ -11,19 +11,26 @@ mod private
   /// Create new deploy.
   ///
 
-  pub fn deploy_renew( ( _, properties ) : ( Args, Props ) ) -> Result< () >
+  pub fn deploy_renew( properties : Props ) -> Result< () >
   {
+    let current_dir = std::env::current_dir()?;
     let mut template = DeployTemplate::default();
+    _ = template.load_existing_params( &current_dir );
     let parameters = template.parameters();
-    let values = parameters.values_from_props( &properties );
+    let mut values = parameters.values_from_props( &properties );
+    for mandatory in template.get_missing_mandatory()
+    {
+      values.interactive_if_empty( mandatory );
+    }
     template.set_values( values );
-    action::deploy_renew( &std::env::current_dir()?, template ).context( "Fail to create deploy template" )
+    action::deploy_renew( &current_dir, template ).context( "Fail to create deploy template" )
   }
+
 }
 
 crate::mod_interface!
 {
   /// Create deploy from template.
-  exposed use deploy_renew;
+  orphan use deploy_renew;
 }
 

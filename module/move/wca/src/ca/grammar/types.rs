@@ -168,5 +168,5 @@ crate::mod_interface!
 {
   exposed use Type;
   exposed use Value;
-  prelude use TryCast;
+  exposed use TryCast;
 }

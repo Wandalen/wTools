@@ -50,11 +50,11 @@ pub( crate ) mod private
     /// Initialize Context with some value
     pub fn with< T : CloneAny >( mut self, value : T ) -> Self
     {
-      if self.container.inner.is_none()
+      if self.storage.inner.is_none()
       {
-        self.container.inner = Some( Arc::new( RefCell::new( Map::< dyn CloneAny >::new() ) ) );
+        self.storage.inner = Some( Arc::new( RefCell::new( Map::< dyn CloneAny >::new() ) ) );
       }
-      self.container.inner.as_ref().map( | inner | inner.borrow_mut().insert( value ) );
+      self.storage.inner.as_ref().map( | inner | inner.borrow_mut().insert( value ) );
       self
     }
   }

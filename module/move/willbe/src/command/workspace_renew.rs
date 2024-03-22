@@ -1,10 +1,11 @@
 mod private
 {
-  use former::Former;
   use crate::*;
+  use former::Former;
 
-  use wca::{ Args, Props };
+  use wca::Props;
   use wtools::error::{ anyhow::Context, Result };
+  use action::WorkspaceTemplate;
 
   #[ derive( Former ) ]
   struct WorkspaceNewProperties
@@ -17,10 +18,11 @@ mod private
   /// Create new workspace.
   ///
 
-  pub fn workspace_renew( ( _, properties ) : ( Args, Props ) ) -> Result< () >
+  pub fn workspace_renew( properties : Props ) -> Result< () >
   {
     let WorkspaceNewProperties { repository_url, branches } = WorkspaceNewProperties::try_from( properties )?;
-    action::workspace_renew( &std::env::current_dir()?, repository_url, branches ).context( "Fail to workspace" )
+    let template = WorkspaceTemplate::default();
+    action::workspace_renew( &std::env::current_dir()?, template, repository_url, branches ).context( "Fail to create workspace" )
   }
 
   impl TryFrom< Props > for WorkspaceNewProperties

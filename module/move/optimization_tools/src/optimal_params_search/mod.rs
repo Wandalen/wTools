@@ -5,6 +5,7 @@ pub mod nelder_mead;
 pub mod sim_annealing;
 use std::ops::RangeBounds;
 use iter_tools::Itertools;
+use ordered_float::OrderedFloat;
 use crate::hybrid_optimizer::*;
 use results_serialize::read_results;
 
@@ -30,7 +31,7 @@ impl Default for OptimalParamsConfig
     {
       improvement_threshold : 0.005,
       max_no_improvement_steps : 10,
-      max_iterations : 10,
+      max_iterations : 100,
     }
   }
 } 
@@ -128,19 +129,19 @@ where  R : RangeBounds< f64 > + Sync,
     log::info!
     (
       "temp_decrease_coefficient : {:.4?}, max_mutations_per_dynasty: {}, mutation_rate: {:.2}, crossover_rate: {:.2};",
-      case.coords[ 0 ].into_inner(), case.coords[ 1 ].into_inner() as usize, case.coords[ 2 ], case.coords[ 3 ]
+      case.coords[ 0 ], case.coords[ 1 ] as usize, case.coords[ 2 ], case.coords[ 3 ]
     );
 
     log::info!
     (
       "max_stale_iterations : {:?}, population_size: {}, dynasties_limit: {};",
-      case.coords[ 4 ].into_inner() as usize, case.coords[ 5 ].into_inner() as usize, case.coords[ 6 ].into_inner() as usize
+      case.coords[ 4 ] as usize, case.coords[ 5 ] as usize, case.coords[ 6 ] as usize
     );
 
     let temp_schedule = LinearTempSchedule
     {
       constant : 0.0.into(),
-      coefficient : case.coords[ 0 ].into_inner().into(),
+      coefficient : case.coords[ 0 ].into(),
       reset_increase_value : 1.0.into(),
     };
 
@@ -154,16 +155,16 @@ where  R : RangeBounds< f64 > + Sync,
     };
 
     let props = crate::hybrid_optimizer::PopulationModificationProportions::new()
-    .set_crossover_rate( case.coords[ 3 ].into_inner() )
-    .set_mutation_rate( case.coords[ 2 ].into_inner() )
+    .set_crossover_rate( case.coords[ 3 ] )
+    .set_mutation_rate( case.coords[ 2 ] )
     ;
 
     let optimizer = HybridOptimizer::new( Config::default(), h_problem )
-    .set_sa_max_mutations_per_dynasty( case.coords[ 1 ].into_inner() as usize )
+    .set_sa_max_mutations_per_dynasty( case.coords[ 1 ] as usize )
     .set_population_proportions( props )
-    .set_max_stale_iterations( case.coords[ 4 ].into_inner() as usize )
-    .set_population_size( case.coords[ 5 ].into_inner() as usize )
-    .set_dynasties_limit( case.coords[ 6 ].into_inner() as usize )
+    .set_max_stale_iterations( case.coords[ 4 ] as usize )
+    .set_population_size( case.coords[ 5 ] as usize )
+    .set_dynasties_limit( case.coords[ 6 ] as usize )
     ;
     let ( _reason, _solution ) = optimizer.optimize();
   };
@@ -251,4 +252,58 @@ pub enum Error
   /// Error for value located out of its bounds.
   #[ error( "starting value is out of bounds" ) ]
   OutOfBoundsError,
+}
+
+#[ derive( Debug, Clone, PartialEq, Hash, Eq ) ]
+pub struct Point( ( OrderedFloat< f64 >, usize, OrderedFloat< f64 >, OrderedFloat< f64 >, usize, usize, usize ) );
+
+impl From< nelder_mead::Point > for Point
+{
+  fn from( value: nelder_mead::Point ) -> Self
+  {
+    Self
+    ( (
+      OrderedFloat( value.coords[ 0 ] ),
+      value.coords[ 1 ] as usize,
+      OrderedFloat( value.coords[ 2 ] ),
+      OrderedFloat( value.coords[ 3 ] ),
+      value.coords[ 4 ] as usize,
+      value.coords[ 5 ] as usize,
+      value.coords[ 6 ] as usize,
+    ) )
+  }
+}
+
+impl From< ( f64, u32, f64, f64, u32, u32, u32 ) > for Point
+{
+  fn from( value: ( f64, u32, f64, f64, u32, u32, u32 ) ) -> Self
+  {
+    Self
+    ( (
+      OrderedFloat( value.0 ),
+      value.1 as usize,
+      OrderedFloat( value.2 ),
+      OrderedFloat( value.3 ),
+      value.4 as usize,
+      value.5 as usize,
+      value.6 as usize,
+    ) )
+  }
+}
+
+impl From< Point > for ( f64, u32, f64, f64, u32, u32, u32 )
+{
+  fn from( value: Point ) -> Self
+  {
+    let coords = value.0;
+    (
+      coords.0.into_inner(),
+      coords.1.try_into().unwrap(),
+      coords.2.into_inner(),
+      coords.3.into_inner(),
+      coords.4.try_into().unwrap(),
+      coords.5.try_into().unwrap(),
+      coords.6.try_into().unwrap(),
+    )
+  }
 }

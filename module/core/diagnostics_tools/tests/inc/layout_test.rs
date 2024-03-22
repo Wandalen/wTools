@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
-use TheModule::prelude::*;
+use the_module::prelude::*;
 
 // qqq : do negative testing /* aaa : Dmytro : done */
 // zzz : continue here

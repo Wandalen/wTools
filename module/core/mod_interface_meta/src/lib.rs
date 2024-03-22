@@ -1,22 +1,31 @@
-// #![ cfg_attr( feature = "no_std", no_std ) ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/mod_interface_meta/latest/mod_interface_meta/" ) ]
-// #![ deny( rust_2018_idioms ) ]
-// #![ deny( missing_debug_implementations ) ]
-// #![ deny( missing_docs ) ]
 #![ deny( dead_code ) ]
-
-// #![ feature( type_name_of_val ) ]
-// #![ feature( trace_macros ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 // xxx : write good description and the main use-case
 
-//!
-//! Protocol of modularity unifying interface of a module and introducing layers.
-//!
+// xxx : does not work. make it working
+// use super::test::{ compiletime, helper, smoke_test };
 
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+// // xxx : eliminate need to do such things, putting itself to proper category
+// exposed use super::test::compiletime;
+// exposed use super::test::helper;
+// exposed use super::test::smoke_test;
+
+// crate::mod_interface!
+// {
+//   // xxx : make it working
+//   // exposed use super;
+//   exposed use super::super::compiletime;
+//   protected use
+//   {
+//     *
+//   };
+// }
+
+// xxx : make use proper_path_tools::protected::path working
 
 mod impls;
 #[ allow( unused_imports ) ]
@@ -43,49 +52,6 @@ pub fn mod_interface( input : proc_macro::TokenStream ) -> proc_macro::TokenStre
     Err( err ) => err.to_compile_error().into(),
   }
 }
-
-// /// Protected namespace of the module.
-// pub mod protected
-// {
-//   pub use super::orphan::*;
-//   pub use super::
-//   {
-//     impls::orphan::*,
-//     record::orphan::*,
-//     visibility::orphan::*,
-//   };
-// }
-//
-// pub use protected::*;
-//
-// /// Parented namespace of the module.
-// pub mod orphan
-// {
-//   pub use super::exposed::*;
-// }
-//
-// /// Exposed namespace of the module.
-// pub mod exposed
-// {
-//   pub use super::prelude::*;
-//   pub use super::
-//   {
-//     impls::exposed::*,
-//     record::exposed::*,
-//     visibility::exposed::*,
-//   };
-// }
-//
-// /// Prelude to use essentials: `use my_module::prelude::*`.
-// pub mod prelude
-// {
-//   pub use super::
-//   {
-//     impls::prelude::*,
-//     record::prelude::*,
-//     visibility::prelude::*,
-//   };
-// }
 
 /*
 

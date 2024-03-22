@@ -16,6 +16,10 @@
 //! This approach abstracts away the need for manually implementing a builder for each struct, making code more readable and maintainable.
 //!
 
+#[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
+fn main() {}
+
+#[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
 fn main()
 {
   use former::Former;
@@ -25,7 +29,7 @@ fn main()
   {
     age : i32,
     username : String,
-    bio_optional : Option<String>, // Fields could be optional
+    bio_optional : Option< String >, // Fields could be optional
   }
 
   let profile = UserProfile::former()

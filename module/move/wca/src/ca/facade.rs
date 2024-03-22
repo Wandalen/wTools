@@ -90,7 +90,7 @@ pub( crate ) mod private
     /// Constructs a `CommandBuilder` with the given state.
     pub fn with_state( state : T ) -> Self
     {
-      Self { state, handlers : <_>::default(), commands : vec![] }
+      Self { state, handlers : < _ >::default(), commands : vec![] }
     }
   }
 
@@ -279,7 +279,7 @@ pub( crate ) mod private
     /// commands and handlers.
     pub fn build( self ) -> CommandsAggregator
     {
-      CommandsAggregator::former().grammar( self.commands ).executor( self.handlers ).build()
+      CommandsAggregator::former().grammar( self.commands ).executor( self.handlers ).perform()
     }
   }
 

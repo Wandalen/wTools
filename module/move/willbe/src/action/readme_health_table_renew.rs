@@ -14,8 +14,11 @@ mod private
   {
     Dependency,
     DependencyKind,
-    Package
   };
+  // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
+  // aaa : ✅
+
+
   use convert_case::{ Case, Casing };
   use toml_edit::Document;
   use regex::bytes::Regex;
@@ -34,10 +37,11 @@ mod private
   };
   use manifest::private::repo_url;
   use workspace::Workspace;
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
+  use workspace::WorkspacePackage;
 
-  static TAG_TEMPLATE: std::sync::OnceLock<Regex> = std::sync::OnceLock::new();
-  static CLOSE_TAG: std::sync::OnceLock<Regex> = std::sync::OnceLock::new();
+  static TAG_TEMPLATE: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
+  static CLOSE_TAG: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 
 
   /// Initializes two global regular expressions that are used to match tags.
@@ -132,7 +136,7 @@ mod private
     // include docs column flag
     include_docs: bool,
     // include sample column flag
-    include_sample: bool,
+    include: bool,
   }
 
   impl From< HashMap< String, query::Value > > for TableParameters
@@ -142,7 +146,7 @@ mod private
       let include_branches = value.get( "with_branches" ).map( | v | bool::from( v ) ).unwrap_or( true );
       let include_stability = value.get( "with_stability" ).map( | v | bool::from( v ) ).unwrap_or( true );
       let include_docs = value.get( "with_docs" ).map( | v | bool::from( v ) ).unwrap_or( true );
-      let include_sample = value.get( "with_gitpod" ).map( | v | bool::from( v ) ).unwrap_or( true );
+      let include = value.get( "with_gitpod" ).map( | v | bool::from( v ) ).unwrap_or( true );
       let b_p = value.get( "1" );
       let base_path = if let Some( query::Value::String( path ) ) = value.get( "path" ).or( b_p )
       {
@@ -152,7 +156,7 @@ mod private
       {
         "./"
       };
-      Self { base_path: base_path.to_string(), include_branches, include_stability, include_docs, include_sample }
+      Self { base_path: base_path.to_string(), include_branches, include_stability, include_docs, include }
     }
   }
 
@@ -268,7 +272,7 @@ mod private
   /// Writes tables into a file at specified positions.
   fn tables_write_into_file(  tags_closures : Vec< ( usize, usize ) >, tables: Vec< String >, contents: Vec< u8 >, mut file: File ) -> Result< () >
   {
-    let mut buffer: Vec<u8> = vec![];
+    let mut buffer: Vec< u8 > = vec![];
     let mut start: usize = 0;
     for ( ( end_of_start_tag, start_of_end_tag ), con ) in tags_closures.iter().zip( tables.iter() )
     {
@@ -324,18 +328,18 @@ mod private
   }
 
   /// Return topologically sorted modules name, from packages list, in specified directory.
-  fn directory_names( path : PathBuf, packages : &[ Package ] ) -> Result< Vec< String > >
+  fn directory_names( path : PathBuf, packages : &[ WorkspacePackage ] ) -> Result< Vec< String > >
   {
     let path_clone = path.clone();
-    let module_package_filter: Option< Box< dyn Fn( &Package ) -> bool > > = Some
+    let module_package_filter: Option< Box< dyn Fn( &WorkspacePackage ) -> bool > > = Some
     (
       Box::new
       (
         move | p |
-        p.publish.is_none() && p.manifest_path.starts_with( &path )
+        p.publish().is_none() && p.manifest_path().starts_with( &path )
       )
     );
-    let module_dependency_filter: Option< Box< dyn Fn( &Package, &Dependency) -> bool > > = Some
+    let module_dependency_filter: Option< Box< dyn Fn( &WorkspacePackage, &Dependency) -> bool > > = Some
     (
       Box::new
       (
@@ -366,11 +370,11 @@ mod private
     }
     if table_parameters.include_docs
     {
-      rou.push_str( &format!( "[![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{}) | ", &module_name ) );
+      rou.push_str( &format!( " [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{}) |", &module_name ) );
     }
-    if table_parameters.include_sample
+    if table_parameters.include
     {
-      rou.push_str( &format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/{}) | ", &module_name, &module_name, parameters.core_url ) );
+      rou.push_str( &format!( " [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial/{}) |", &module_name, &module_name, parameters.core_url ) );
     }
     format!( "{rou}\n" )
   }
@@ -380,11 +384,11 @@ mod private
   {
     match stability
     {
-      Stability::Experimental => "[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | ".into(),
-      Stability::Stable => "[![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](https://github.com/emersion/stability-badges#stable) | ".into(),
-      Stability::Deprecated => "[![stability-deprecated](https://img.shields.io/badge/stability-deprecated-red.svg)](https://github.com/emersion/stability-badges#deprecated) | ".into(),
-      Stability::Unstable => "[![stability-unstable](https://img.shields.io/badge/stability-unstable-yellow.svg)](https://github.com/emersion/stability-badges#unstable) |".into(),
-      Stability::Frozen => "[![stability-frozen](https://img.shields.io/badge/stability-frozen-blue.svg)](https://github.com/emersion/stability-badges#frozen) |".into(),
+      Stability::Experimental => " [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)".into(),
+      Stability::Stable => " [![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](https://github.com/emersion/stability-badges#stable)".into(),
+      Stability::Deprecated => " [![stability-deprecated](https://img.shields.io/badge/stability-deprecated-red.svg)](https://github.com/emersion/stability-badges#deprecated)".into(),
+      Stability::Unstable => " [![stability-unstable](https://img.shields.io/badge/stability-unstable-yellow.svg)](https://github.com/emersion/stability-badges#unstable)".into(),
+      Stability::Frozen => " [![stability-frozen](https://img.shields.io/badge/stability-frozen-blue.svg)](https://github.com/emersion/stability-badges#frozen)".into(),
     }
   }
 
@@ -418,7 +422,7 @@ mod private
       separator.push_str( ":----:|" );
     }
 
-    if table_parameters.include_sample
+    if table_parameters.include
     {
       header.push_str( " Sample |" );
       separator.push_str( ":------:|" );
@@ -438,11 +442,11 @@ mod private
     .map
     (
       | b |
-      format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/Module{}Push.yml?label=&branch={b})]({}/actions/workflows/Module{}Push.yml?query=branch%3A{})", table_parameters.user_and_repo, &module_name.to_case( Case::Pascal ), table_parameters.core_url, &module_name.to_case( Case::Pascal ), b )
+      format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/module_{}_push.yml?label=&branch={b})]({}/actions/workflows/module_{}_push.yml?query=branch%3A{})", table_parameters.user_and_repo, &module_name.to_case( Case::Snake ), table_parameters.core_url, &module_name.to_case( Case::Snake ), b )
     )
     .collect::< Vec< String > >()
     .join( " | " );
-    format!( "{cells} | " )
+    format!( " {cells} |" )
   }
 
   /// Return workspace root

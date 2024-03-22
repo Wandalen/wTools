@@ -3,7 +3,7 @@
 // #![ deny( missing_docs ) ]
 
 #[ allow( unused_imports ) ]
-use ::meta_tools as TheModule;
+use ::meta_tools as the_module;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 #[ path="../../../../module/step/meta/src/module/aggregating.rs" ]

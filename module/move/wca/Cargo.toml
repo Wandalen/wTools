@@ -1,6 +1,6 @@
 [package]
 name = "wca"
-version = "0.11.0"
+version = "0.14.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -22,51 +22,36 @@ keywords = [ "wtools", "CLI", "CUI", "user-interface" ]
 workspace = true
 
 [package.metadata.docs.rs]
-features = [ "full" ]
+features = [ "full", "error_tools/enabled", "strs_tools/enabled", "mod_interface/enabled", "iter_tools/enabled", "former/enabled" ]
 all-features = false
-exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
-default = [ "enabled", "default_handlers" ]
-full = [ "enabled", "default_handlers" ]
-# use_std = [ "default_handlers" ]
-# use_alloc = []
+default = [ "enabled" ]
+full = [ "enabled", "on_unknown_suggest" ]
 enabled = []
 
-default_handlers = [
-  "on_error_default",
-  "on_syntax_error_default",
-  "on_ambiguity_default",
-  "on_unknown_command_error_default",
-  "on_get_help_default",
-  "on_print_commands_default",
-]
-
-# qqq : for Bohdan : description of all features please
-on_error_default = [ "enabled" ]
-on_syntax_error_default = [ "enabled" ]
-on_ambiguity_default = [ "enabled" ]
-on_unknown_command_error_default = [ "enabled" ] # qqq : for Bohdan : what does this feature do?
+# This configuration suggests an action to be done when the command is unknown. In this case, when an unknown command is encountered, the system might suggest alternatives
 on_unknown_suggest = [ "eddie" ]
-on_get_help_default = [ "enabled" ]
-on_print_commands_default = [ "enabled" ]
 
 [[bench]]
 name = "bench"
 harness = false
 
 [dependencies]
+
+## internal
 error_tools = { workspace = true, features = [ "default" ] }
 strs_tools = { workspace = true, features = [ "default" ] }
 mod_interface = { workspace = true, features = [ "default" ] }
 iter_tools = { workspace = true, features = [ "default" ] }
 former = { workspace = true, features = [ "default" ] }
+
+## external
 anymap = "0.12"
 log = "0.4"
 nom = "7.1"
 closure = "0.3"
-# fuzzy commands search
-eddie = { version = "0.4", optional = true }
+eddie = { version = "0.4", optional = true } # fuzzy commands search
 
 [dev-dependencies]
 test_tools = { workspace = true }

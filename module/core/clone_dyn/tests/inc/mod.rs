@@ -9,6 +9,7 @@ tests_impls!
 
   //
 
+  // qqq : organize tests in the same way tests organized for derive_tools
   fn manual()
   {
 
@@ -34,6 +35,7 @@ tests_impls!
 
     //
 
+    #[ allow( non_local_definitions ) ]
     impl < 'c > Clone
     for Box< dyn Trait1 + 'c >
     {
@@ -41,6 +43,7 @@ tests_impls!
       fn clone( &self ) -> Self { _clone_boxed( &**self ) }
     }
 
+    #[ allow( non_local_definitions ) ]
     impl < 'c > Clone
     for Box< dyn Trait1 + Send + 'c >
     {
@@ -48,6 +51,7 @@ tests_impls!
       fn clone( &self ) -> Self { _clone_boxed( &**self ) }
     }
 
+    #[ allow( non_local_definitions ) ]
     impl < 'c > Clone
     for Box< dyn Trait1 + Sync + 'c >
     {
@@ -55,6 +59,7 @@ tests_impls!
       fn clone( &self ) -> Self { _clone_boxed( &**self ) }
     }
 
+    #[ allow( non_local_definitions ) ]
     impl < 'c > Clone
     for Box< dyn Trait1 + Send + Sync + 'c >
     {
@@ -73,7 +78,7 @@ tests_impls!
 
   fn basic()
   {
-    use TheModule::clone_dyn;
+    use the_module::clone_dyn;
 
     #[ clone_dyn ]
     trait Trait1
@@ -91,7 +96,7 @@ tests_impls!
 
   fn prelude()
   {
-    use TheModule::prelude::*;
+    use the_module::prelude::*;
 
     #[ clone_dyn ]
     trait Trait1
@@ -109,7 +114,7 @@ tests_impls!
 
   fn parametrized()
   {
-    use TheModule::clone_dyn;
+    use the_module::clone_dyn;
 
     #[ clone_dyn ]
     trait Trait2< T1 : Copy, T2 : Copy >
@@ -129,7 +134,7 @@ tests_impls!
 
   fn sample()
   {
-    use TheModule::clone_dyn;
+    use the_module::clone_dyn;
 
     #[ clone_dyn ]
     trait Trait1

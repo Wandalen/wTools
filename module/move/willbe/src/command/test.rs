@@ -5,40 +5,127 @@ mod private
 
   use std::collections::HashSet;
   use std::path::PathBuf;
-  use wca::{ Args, Props };
+  use wca::
+  { 
+    Args, 
+    Props, 
+    Value,
+  };
   use wtools::error::Result;
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
   use action::test::TestsCommandOptions;
   use former::Former;
   use channel::Channel;
+  use error_tools::for_app::bail;
+  use iter_tools::Itertools;
+  use optimization::Optimization;
 
-  #[ derive( Former ) ]
+  trait ToString
+  {
+    fn to_string( &self ) -> String;
+  }
+  
+  
+  impl ToString for Value
+  {
+    fn to_string( &self ) -> String
+    {
+      match self
+      {
+        Value::String( s ) =>
+        {
+          format!( "{s}" )
+        }
+        Value::Number( n ) =>
+        {
+          format!( "{n}" )
+        }
+        Value::Path( p ) =>
+        {
+          format!( "{}", p.display() )
+        }
+        Value::Bool( b ) =>
+        {
+          format!( "{b}" )
+        }
+        Value::List( list ) =>
+        {
+          let list = list.iter().map( | element | element.to_string() ).join( ", "); // qqq : don't hardcode ", " find way to get original separator
+          format!( "{list}" )
+        }
+      }
+    }
+  }
+
+  #[ derive( Former, Debug ) ]
   struct TestsProperties
   {
     #[ default( true ) ]
     dry : bool,
     #[ default( true ) ]
     with_stable : bool,
-    #[ default( true ) ]
+    #[ default( false ) ]
     with_nightly : bool,
     #[ default( 0u32 ) ]
     concurrent : u32,
     #[ default( 1u32 ) ]
     power : u32,
     include : Vec< String >,
+    #[ default ( [ "full".to_string(), "default".to_string() ] ) ]
     exclude : Vec< String >,
+    #[ default( true ) ]
+    temp : bool,
+    enabled_features : Vec< String >,
+    #[ default( true ) ]
+    with_all_features : bool,
+    #[ default( true ) ]
+    with_none_features : bool,
+    #[ default( true ) ]
+    with_debug : bool,
+    #[ default( false ) ]
+    with_release : bool,
+    #[ default( true ) ]
+    with_progress : bool,
   }
 
   /// run tests in specified crate
-  pub fn test( ( args, properties ) : ( Args, Props ) ) -> Result< () >
+  pub fn test( args : Args, properties : Props ) -> Result< () >
   {
+    let args_line = format!( "{}", args.get_owned( 0 ).unwrap_or( "" ) );
+    let prop_line = format!( "{}", properties.iter().map( | p | format!( "{}:{}", p.0, p.1.to_string() ) ).collect::< Vec< _ > >().join(" ") );
     let path : PathBuf = args.get_owned( 0 ).unwrap_or_else( || "./".into() );
     let path = AbsolutePath::try_from( path )?;
-    let TestsProperties { dry, with_stable, with_nightly, concurrent, power, include, exclude } = properties.try_into()?;
+    let TestsProperties
+    {
+      dry,
+      with_stable,
+      with_nightly,
+      concurrent,
+      power,
+      include,
+      exclude,
+      temp,
+      enabled_features,
+      with_all_features,
+      with_none_features,
+      with_debug,
+      with_release, 
+      with_progress
+    } = properties.try_into()?;
 
     let mut channels = HashSet::new();
     if with_stable { channels.insert( Channel::Stable ); }
     if with_nightly { channels.insert( Channel::Nightly ); }
+
+    let mut optimizations = HashSet::new();
+    if with_release { optimizations.insert( Optimization::Release ); }
+    if with_debug { optimizations.insert( Optimization::Debug ); }
+
+    if optimizations.is_empty()
+    {
+      bail!( "Cannot run tests if with_debug and with_release are both false. Set at least one of them to true." );
+    }
+
 
     let args = TestsCommandOptions::former()
     .dir( path )
@@ -47,14 +134,28 @@ mod private
     .power( power )
     .exclude_features( exclude )
     .include_features( include )
+    .temp( temp )
+    .enabled_features( enabled_features )
+    .with_all_features( with_all_features )
+    .with_none_features( with_none_features )
+    .optimizations( optimizations )
+    .with_progress( with_progress )
     .form();
 
     match action::test( args, dry )
     {
+      
       Ok( report ) =>
       {
-        println!( "{report} ");
-
+        if dry
+        {
+          print!( "You can execute the plan with 'will .test {} dry:0 {}'.", args_line.trim(), prop_line.trim() );
+        }
+        else 
+        { 
+          println!( "{report} ");
+        }
+        
         Ok( () )
       }
       Err( ( report, e ) ) =>
@@ -73,12 +174,19 @@ mod private
       let mut this = Self::former();
 
       this = if let Some( v ) = value.get_owned( "dry" ) { this.dry::< bool >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "temp" ) { this.temp::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "with_stable" ) { this.with_stable::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "with_nightly" ) { this.with_nightly::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "concurrent" ) { this.concurrent::< u32 >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "power" ) { this.power::< u32 >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "include" ) { this.include::< Vec< String > >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "exclude" ) { this.exclude::< Vec< String > >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "with_debug" ) { this.with_debug::< bool >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "with_release" ) { this.with_release::< bool >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "with_all_features" ) { this.with_all_features::< bool >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "with_none_features" ) { this.with_none_features::< bool >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "always" ) { this.enabled_features::< Vec< String > >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "with_progress" ) { this.with_progress::< bool >( v ) } else { this };
 
       Ok( this.form() )
     }

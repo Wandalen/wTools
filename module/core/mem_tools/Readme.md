@@ -1,8 +1,10 @@
 <!-- {{# generate.module_header{} #}} -->
 
 # Module :: mem_tools
-
-[![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleMemToolsPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleMemToolsPush.yml) [![docs.rs](https://img.shields.io/docsrs/mem_tools?color=e3e8f0&logo=docs.rs)](https://docs.rs/mem_tools) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Fmem_tools_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20mem_tools_trivial_sample/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+<!--{ generate.module_header.start() }-->
+ [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)[![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_mem_tools_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_mem_tools_push.yml)[![docs.rs](https://img.shields.io/docsrs/mem_tools?color=e3e8f0&logo=docs.rs)](https://docs.rs/mem_tools)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Fmem_tools_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20mem_tools_trivial/https://github.com/Wandalen/wTools)
+[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+<!--{ generate.module_header.end }-->
 
 Collection of tools to manipulate memory.
 
@@ -10,7 +12,7 @@ Performant size / pointer / region / data comparing.
 
 ### Basic use-case
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ```rust
 
@@ -53,5 +55,6 @@ cargo run
 # Sample
 
 [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
-[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=sample%2Frust%2Fmeta_tools_trivial_sample,SAMPLE_FILE=.%2Fsrc%2Fmain.rs/https://github.com/Wandalen/wTools)
+[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=sample%2Frust%2Fmeta_tools_trivial,SAMPLE_FILE=.%2Fsrc%2Fmain.rs/https://github.com/Wandalen/wTools)
 [![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/meta_tools)
+![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/meta_tools)

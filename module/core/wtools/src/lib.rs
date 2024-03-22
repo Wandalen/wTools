@@ -15,7 +15,8 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-/// Dependencies.
+/// Namespace with dependencies.
+
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
@@ -134,7 +135,7 @@ pub mod exposed
   #[ cfg( feature = "typing" ) ]
   pub use super::typing::exposed::*;
   #[ cfg( feature = "diagnostics" ) ]
-  pub use super::diagnostics::exposed::*;
+  pub use super::diag::exposed::*;
   #[ cfg( any( feature = "dt", feature = "data_type" ) ) ]
   pub use super::dt::exposed::*;
   #[ cfg( feature = "time" ) ]
@@ -175,7 +176,7 @@ pub mod prelude
   #[ cfg( feature = "diagnostics" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::diagnostics::prelude::*;
+  pub use super::diag::prelude::*;
   #[ cfg( any( feature = "dt", feature = "data_type" ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

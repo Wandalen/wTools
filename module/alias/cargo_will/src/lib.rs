@@ -4,6 +4,6 @@
 #![ doc( html_root_url = "https://docs.rs/{{template_blank}}/latest/{{template_blank}}/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-// #[ doc( inline ) ]
-// #[ allow( unused_imports ) ]
-// pub use ::willbe::*;
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use ::willbe::*;
