@@ -101,7 +101,7 @@ pub( crate ) mod private
       .routine( command::list )
       .end()
 
-    .command( "readme.health.table.generate" )
+    .command( "readme.health.table.renew" )
       .hint( "Generate a table for the root `Readme.md`" )
       .long_hint( "Generates a data summary table for the `Readme.md` file located in the root of the workspace." )
       .routine( command::readme_health_table_renew )
@@ -230,13 +230,13 @@ pub( crate ) mod private
       .routine( command::deploy_renew )
       .end()
 
-    .command( "readme.header.generate" )
+    .command( "readme.header.renew" )
       .hint( "Generate header in workspace`s Readme.md file")
       .long_hint( "For use this command you need to specify:\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nworkspace_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml.")
       .routine( command::readme_header_renew )
       .end()
 
-    .command( "readme.modules.headers.generate" )
+    .command( "readme.modules.headers.renew" )
       .hint( "Generates header for each workspace member." )
       .long_hint( "For use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml." )
       .routine( command::readme_modules_headers_renew )
