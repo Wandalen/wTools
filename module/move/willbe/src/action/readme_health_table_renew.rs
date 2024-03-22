@@ -10,11 +10,7 @@ mod private
     io::{ Write, Read, Seek, SeekFrom },
     collections::HashMap,
   };
-  use cargo_metadata::
-  {
-    Dependency,
-    DependencyKind,
-  };
+
   // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
   // aaa : ✅
 
@@ -39,6 +35,7 @@ mod private
   use workspace::Workspace;
   use _path::AbsolutePath;
   use workspace::WorkspacePackage;
+  use crate::workspace::{Dependency, DependencyKind};
 
   static TAG_TEMPLATE: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
   static CLOSE_TAG: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
@@ -339,12 +336,12 @@ mod private
         p.publish().is_none() && p.manifest_path().starts_with( &path )
       )
     );
-    let module_dependency_filter: Option< Box< dyn Fn( &WorkspacePackage, &Dependency) -> bool > > = Some
+    let module_dependency_filter: Option< Box< dyn Fn( &WorkspacePackage, &Dependency ) -> bool > > = Some
     (
       Box::new
       (
         move | _, d |
-        d.path.is_some() && d.kind != DependencyKind::Development && d.path.as_ref().unwrap().starts_with( &path_clone )
+        d.path().is_some() && d.kind() != DependencyKind::Development && d.path().as_ref().unwrap().starts_with( &path_clone )
       )
     );
     let module_packages_map = packages::filter

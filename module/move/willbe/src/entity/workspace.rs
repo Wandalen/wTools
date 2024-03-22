@@ -4,18 +4,20 @@ mod private
   use crate::*;
 
   use std::path::Path;
-  use cargo_metadata::{ Dependency, Metadata, MetadataCommand, Package };
-  use cargo_metadata::camino::Utf8Path;
+  use cargo_metadata::{ Dependency as CMDependency, DependencyKind as CMDependencyKind, Metadata, MetadataCommand, Package };
+  use cargo_metadata::camino::{Utf8Path, Utf8PathBuf};
   use petgraph::Graph;
-  use semver::Version;
+  use semver::{Version, VersionReq};
+  use serde::Deserialize;
   use serde_json::Value;
   use wtools::error::{ for_app::Context, for_lib::Error, Result };
   use _path::AbsolutePath;
 
   /// Facade for cargo_metadata::Package
-  #[ derive( Debug, Clone ) ]
+  #[ derive( Debug, Clone, Deserialize ) ]
   pub struct WorkspacePackage
   {
+    #[ serde( flatten ) ]
     inner : Package
   }
   
@@ -39,9 +41,9 @@ mod private
     }
     
     /// List of dependencies of this particular package
-    pub fn dependencies( &self ) -> &[ Dependency ]
+    pub fn dependencies( &self ) -> Vec< Dependency >
     {
-      self.inner.dependencies.as_slice()
+      self.inner.dependencies.iter().cloned().map( Dependency::from ).collect()
     }
     
     /// Path containing the Cargo.toml
@@ -106,6 +108,72 @@ mod private
     
   }
   
+  /// A dependency of the main crate
+  #[ derive( Debug ) ]
+  pub struct Dependency
+  {
+    inner : CMDependency,
+  }
+  
+  impl Dependency
+  {
+    /// The file system path for a local path dependency.
+    /// Only produced on cargo 1.51+
+    pub fn path( &self ) -> Option< Utf8PathBuf >
+    {
+      self.inner.path.clone()
+    }
+    
+    /// Name as given in the Cargo.toml.
+    pub fn name( &self ) -> String
+    {
+      self.inner.name.clone()
+    }
+    
+    /// The kind of dependency this is.
+    pub fn kind( &self ) -> DependencyKind
+    {
+      match self.inner.kind 
+      {
+        CMDependencyKind::Normal => DependencyKind::Normal,
+        CMDependencyKind::Development => DependencyKind::Development,
+        CMDependencyKind::Build => DependencyKind::Build,
+        CMDependencyKind::Unknown => DependencyKind::Unknown,
+      }
+    }
+    
+    /// he required version
+    pub fn req( &self ) -> VersionReq
+    {
+      self.inner.req.clone()
+    }
+  }
+  
+  impl From< CMDependency > for Dependency
+  {
+    fn from( inner : CMDependency ) -> Self 
+    {
+      Self
+      {
+        inner
+      }
+    }
+  }
+
+  /// Dependencies can come in three kinds
+  #[ derive( Eq, PartialEq, Debug ) ]
+  pub enum DependencyKind
+  {
+    /// The 'normal' kind
+    Normal,
+    /// Those used in tests only
+    Development,
+    /// Those used in build scripts only
+    Build,
+    /// The 'unknown' kind
+    Unknown,
+  }
+    
   /// Stores information about current workspace.
   #[ derive( Debug, Clone ) ]
   pub struct Workspace
@@ -267,11 +335,11 @@ mod private
       (
         Box::new( move | p | p.publish().is_none() )
       );
-      let module_dependency_filter : Option< Box< dyn Fn( &WorkspacePackage, &cargo_metadata::Dependency) -> bool > > = Some
+      let module_dependency_filter : Option< Box< dyn Fn( &WorkspacePackage, &Dependency ) -> bool > > = Some
       (
         Box::new
         (
-          move | _, d | d.path.is_some() && d.kind != cargo_metadata::DependencyKind::Development
+          move | _, d | d.path().is_some() && d.kind() != DependencyKind::Development
         )
       );
       let module_packages_map = packages::filter
@@ -292,4 +360,6 @@ crate::mod_interface!
   exposed use Workspace;
   orphan use WorkspaceError;
   protected use WorkspacePackage;
+  protected use Dependency;
+  protected use DependencyKind;
 }

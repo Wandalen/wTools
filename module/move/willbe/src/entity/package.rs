@@ -10,7 +10,6 @@ mod private
   use std::fmt::Formatter;
   use std::hash::Hash;
   use std::path::PathBuf;
-  use cargo_metadata::{ Dependency, DependencyKind };
 
   use process_tools::process;
   use manifest::{ Manifest, ManifestError };
@@ -33,6 +32,7 @@ mod private
   use action::readme_health_table_renew::Stability;
   use former::Former;
   use workspace::WorkspacePackage;
+  use crate::workspace::{Dependency, DependencyKind};
 
   ///
   #[ derive( Debug, Clone ) ]
@@ -769,8 +769,8 @@ mod private
     {
       Self
       {
-        name : value.name.clone(),
-        path : value.path.clone().map( | path | AbsolutePath::try_from( path ).unwrap() ),
+        name : value.name().clone(),
+        path : value.path().clone().map( | path | AbsolutePath::try_from( path ).unwrap() ),
       }
     }
   }
@@ -803,7 +803,7 @@ mod private
     let deps = package
     .dependencies()
     .iter()
-    .filter( | dep | ( with_remote || dep.path.is_some() ) && ( with_dev || dep.kind != DependencyKind::Development ) )
+    .filter( | dep | ( with_remote || dep.path().is_some() ) && ( with_dev || dep.kind() != DependencyKind::Development ) )
     .map( CrateId::from )
     .collect::< HashSet< _ > >();
 
