@@ -3,8 +3,9 @@ mod private
   use crate::*;
   use std::ffi::OsString;
   use std::path::Path;
-  use process::CmdReport;
+  use process_tools::process::*;
   use wtools::error::Result;
+  use wtools::error::err;
 
   /// Adds changes to the Git staging area.
   ///
@@ -18,7 +19,7 @@ mod private
   /// # Returns :
   /// Returns a result containing a report indicating the result of the operation.
   #[ cfg_attr( feature = "tracing", tracing::instrument( skip( path, objects ), fields( path = %path.as_ref().display() ) ) ) ]
-  pub fn add< P, Os, O >( path : P, objects : Os, dry : bool ) -> Result< CmdReport >
+  pub fn add< P, Os, O >( path : P, objects : Os, dry : bool ) -> Result< Report >
   where
     P : AsRef< Path >,
     Os : AsRef< [ O ] >,
@@ -32,24 +33,23 @@ mod private
     {
       Ok
       (
-        CmdReport
+        Report
         {
           command : format!( "{program} {}", args.join( " " ) ),
-          path : path.as_ref().to_path_buf(),
           out : String::new(),
           err : String::new(),
+          current_path: path.as_ref().to_path_buf(),
+          error: Ok( () ),
         }
       )
     }
     else
     {
-      let options = 
-      process::RunOptions::former()
-      .application( program )      
+      Run::former()
+      .bin_path( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-      .path( path.as_ref().to_path_buf() )
-      .form();
-      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
+      .current_path( path.as_ref().to_path_buf() )
+      .run().map_err( | report | err!( report.to_string() ) )
     }
   }
 
@@ -66,7 +66,7 @@ mod private
   /// # Returns :
   /// Returns a result containing a report indicating the result of the operation.
   #[ cfg_attr( feature = "tracing", tracing::instrument( skip( path, message ), fields( path = %path.as_ref().display(), message = %message.as_ref() ) ) ) ]
-  pub fn commit< P, M >( path : P, message : M, dry : bool ) -> Result< CmdReport >
+  pub fn commit< P, M >( path : P, message : M, dry : bool ) -> Result< Report >
   where
     P : AsRef< Path >,
     M : AsRef< str >,
@@ -77,24 +77,23 @@ mod private
     {
       Ok
       (
-        CmdReport
+        Report
         {
           command : format!( "{program} {}", args.join( " " ) ),
-          path : path.as_ref().to_path_buf(),
           out : String::new(),
           err : String::new(),
+          current_path: path.as_ref().to_path_buf(),
+          error: Ok( () ),
         }
       )
     }
     else
     {
-      let options =
-      process::RunOptions::former()
-      .application( program )      
+      Run::former()
+      .bin_path( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-      .path( path.as_ref().to_path_buf() )
-      .form();
-      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
+      .current_path( path.as_ref().to_path_buf() )
+      .run().map_err( | report | err!( report.to_string() ) )
     }
   }
 
@@ -110,7 +109,7 @@ mod private
   /// # Returns :
   /// Returns a result containing a report indicating the result of the operation.
   #[ cfg_attr( feature = "tracing", tracing::instrument( skip( path ), fields( path = %path.as_ref().display() ) ) ) ]
-  pub fn push< P >( path : P, dry : bool ) -> Result< CmdReport >
+  pub fn push< P >( path : P, dry : bool ) -> Result< Report >
   where
     P : AsRef< Path >,
   {
@@ -120,25 +119,23 @@ mod private
     {
       Ok
       (
-        CmdReport
+        Report
         {
           command : format!( "{program} {}", args.join( " " ) ),
-          path : path.as_ref().to_path_buf(),
           out : String::new(),
           err : String::new(),
+          current_path: path.as_ref().to_path_buf(),
+          error: Ok( () ),
         }
       )
     }
     else
     {
-      let options =
-      process::RunOptions::former()
-      .application( program )
+      Run::former()
+      .bin_path( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-      .path( path.as_ref().to_path_buf() )
-      .form();
-      
-      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
+      .current_path( path.as_ref().to_path_buf() )
+      .run().map_err( | report | err!( report.to_string() ) )
     }
   }
 
@@ -150,20 +147,18 @@ mod private
   ///
   /// # Returns
   ///
-  /// A `Result` containing a `CmdReport`, which represents the result of the command execution.
-  pub fn ls_remote_url< P >( path : P ) -> Result< CmdReport >
+  /// A `Result` containing a `Report`, which represents the result of the command execution.
+  pub fn ls_remote_url< P >( path : P ) -> Result< Report >
   where
     P : AsRef< Path >,
   {
     let ( program, args ) = ( "git", [ "ls-remote", "--get-url" ] );
-    
-    let options = 
-    process::RunOptions::former()
-    .application( program )
+
+    Run::former()
+    .bin_path( program )
     .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-    .path( path.as_ref().to_path_buf() )
-    .form();
-    process::run( options ).map_err( | ( report, err ) | err.context( report ) )
+    .current_path( path.as_ref().to_path_buf() )
+    .run().map_err( | report | err!( report.to_string() ) )
   }
 }
 

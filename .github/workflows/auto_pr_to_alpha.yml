@@ -1,0 +1,29 @@
+
+name : auto_pr_to_alpha
+
+on :
+  push :
+    branches :
+      - '*'
+      - '*/*'
+      - '**'
+      - '!master'
+      - '!main'
+      - '!alpha'
+      - '!beta'
+      - '!*test*'
+      - '!*test*/*'
+      - '!*/*test*'
+      - '!*experiment*'
+      - '!*experiment*/*'
+      - '!*/*experiment*'
+
+jobs :
+
+  forward :
+    uses : Wandalen/wTools/.github/workflows/auto_pr.yml@alpha
+    with :
+      src_branch : '${{ github.ref_name }}'
+      dst_branch : 'alpha'
+    secrets :
+      PRIVATE_GITHUB_BOT_TOKEN : '${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}'

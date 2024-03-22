@@ -7,21 +7,15 @@ use gluesql::
 {
   core::
   {
-    ast_builder::{ col, table, text, Execute },
+    ast_builder::{ null, col, table, text, Execute, timestamp, ExprNode },
     data::Value,
     executor::Payload,
-    chrono::{ Utc, DateTime },
+    chrono::{ Utc, DateTime, SecondsFormat },
   },
   sled_storage::SledStorage,
 };
 
-use gluesql::core::
-{
-  ast_builder::{ null, timestamp, ExprNode },
-  chrono::SecondsFormat,
-};
-
-use executor::actions::frames::{ FramesReport, ListReport, SelectedEntries };
+use executor::actions::frame::{ FramesReport, ListReport, SelectedEntries };
 use storage::FeedStorage;
 use wca::wtools::Itertools;
 
@@ -47,6 +41,7 @@ pub struct Frame
   feed_link : String,
 }
 
+// qqq : not obvious
 impl From< ( feed_rs::model::Entry, String ) > for Frame
 {
   fn from( ( entry, feed_link ) : ( feed_rs::model::Entry, String ) ) -> Self
@@ -89,14 +84,18 @@ impl From< ( feed_rs::model::Entry, String ) > for Frame
       title : entry.title.map( | title | title.content ).clone(),
       updated : entry.updated.clone(),
       authors : ( !authors.is_empty() ).then( || authors.join( ", " ) ),
+      // qqq : why join?
       content,
       links : ( !links.len() == 0 ).then( || links.join( ", " ) ),
+      // qqq : why join?
       summary : entry.summary.map( | c | c.content ).clone(),
       categories : ( !categories.is_empty() ).then( || categories.join( ", " ) ),
+      // qqq : why join?
       published : entry.published.clone(),
       source : entry.source.clone(),
       rights : entry.rights.map( | r | r.content ).clone(),
       media : ( !media.is_empty() ).then( || media.join( ", " ) ),
+      // qqq : why join?
       language : entry.language.clone(),
       feed_link,
     }
@@ -111,11 +110,12 @@ pub trait FrameStore
   async fn save_frames( &mut self, feed : Vec< Frame > ) -> Result< Payload >;
 
   /// Update items from list in feed table.
-  async fn update_feed( &mut self, feed : Vec< Frame > ) -> Result< () >;
+  async fn update_frames( &mut self, feed : Vec< Frame > ) -> Result< () >;
 
   /// Get all feed frames from storage.
   async fn list_frames( &mut self ) -> Result< ListReport >;
 }
+// qqq : what is update? what update? don't use word update without noun and explanation what deos it mean
 
 #[ async_trait::async_trait( ?Send ) ]
 impl FrameStore for FeedStorage< SledStorage >
@@ -167,7 +167,7 @@ impl FrameStore for FeedStorage< SledStorage >
 
   async fn save_frames( &mut self, frames : Vec< Frame > ) -> Result< Payload >
   {
-    let entries_rows = frames.into_iter().map( | entry | FrameRow::from( entry ).0 ).collect_vec();
+    let entries_rows : Vec< Vec< ExprNode< 'static > > > = frames.into_iter().map( | entry | entry.into() ).collect_vec();
 
     let insert = table( "frame" )
     .insert()
@@ -184,9 +184,9 @@ impl FrameStore for FeedStorage< SledStorage >
     Ok( insert )
   }
 
-  async fn update_feed( &mut self, feed : Vec< Frame > ) -> Result< () >
+  async fn update_frames( &mut self, feed : Vec< Frame > ) -> Result< () >
   {
-    let entries_rows = feed.into_iter().map( | entry | FrameRow::from( entry ).0 ).collect_vec();
+    let entries_rows : Vec< Vec< ExprNode< 'static > > > = feed.into_iter().map( | entry | entry.into() ).collect_vec();
 
     for entry in entries_rows
     {
@@ -206,134 +206,14 @@ impl FrameStore for FeedStorage< SledStorage >
     }
     Ok( () )
   }
-
 }
 
-/// Frame row format for saving in storage.
-#[ derive( Debug ) ]
-pub struct FrameRow( pub Vec< ExprNode< 'static > > );
-
-// /// Create row for QlueSQL storage from Feed Entry type.
-// impl From< ( feed_rs::model::Entry, String ) > for FrameRow
-// {
-//   fn from( entry : ( feed_rs::model::Entry, String ) ) -> Self
-//   {
-//     let feed_link = text( entry.1.clone() );
-//     let entry = &entry.0;
-
-//     let id = text( entry.id.clone() );
-//     let title = entry.title
-//     .clone()
-//     .map( | title | text( title.content ) )
-//     .unwrap_or( null() )
-//     ;
-
-//     let updated = entry.updated
-//     .map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) )
-//     .unwrap_or( null() )
-//     ;
-
-//     let authors = text
-//     (
-//       entry.authors
-//       .iter()
-//       .map( | p | p.name.clone() )
-//       .fold( String::new(), | acc, val | format!( "{}, {}", acc, val ) )
-//     )
-//     .to_owned();
-
-//     let content = entry.content
-//     .clone()
-//     .map( | c |
-//       text
-//       (
-//         c.body.unwrap_or( c.src.map( | link | link.href ).unwrap_or_default() )
-//       )
-//     )
-//     .unwrap_or( null() )
-//     ;
-
-//     let links = if entry.links.len() != 0
-//     {
-//       text
-//       (
-//         entry.links
-//         .clone()
-//         .iter()
-//         .map( | link | link.href.clone() )
-//         .fold( String::new(), | acc, val | format!( "{} {}", acc, val ) )
-//       )
-//     }
-//     else 
-//     {
-//       null()
-//     };
-//     let summary = entry.summary.clone().map( | c | text( c.content ) ).unwrap_or( null() );
-//     let categories = if entry.categories.len() != 0
-//     {
-//       text
-//       (
-//         entry.categories
-//         .clone()
-//         .iter()
-//         .map( | cat | cat.term.clone() )
-//         .fold( String::new(), | acc, val | format!( "{} {}", acc, val ) )
-//       )
-//     }
-//     else
-//     {
-//       null()
-//     };
-//     let published = entry.published
-//     .map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) )
-//     .unwrap_or( null() )
-//     ;
-
-//     let source = entry.source.clone().map( | s | text( s ) ).unwrap_or( null() );
-//     let rights = entry.rights.clone().map( | r | text( r.content ) ).unwrap_or( null() );
-//     let media = if entry.media.len() != 0
-//     {
-//       text
-//       (
-//         entry.media
-//         .clone()
-//         .iter()
-//         .map( | m | m.title.clone().map( | t | t.content ).unwrap_or_default() )
-//         .fold( String::new(), | acc, val | format!( "{} {}", acc, val ) )
-//       )
-//     }
-//     else 
-//     {
-//       null()
-//     };
-//     let language = entry.language.clone().map( | l | text( l ) ).unwrap_or( null() );
-
-//     FrameRow( vec!
-//       [
-//         id,
-//         title,
-//         updated,
-//         authors,
-//         content,
-//         links,
-//         summary,
-//         categories,
-//         published,
-//         source,
-//         rights,
-//         media,
-//         language,
-//         feed_link
-//       ] )
-//   }
-// }
-
-impl From< Frame > for FrameRow
+// qqq : what is it for and why?
+impl From< Frame > for Vec< ExprNode< 'static > >
 {
   fn from( entry : Frame ) -> Self
   {
     let title = entry.title
-    .clone()
     .map( | title | text( title ) )
     .unwrap_or( null() )
     ;
@@ -364,7 +244,6 @@ impl From< Frame > for FrameRow
     ;
 
     let categories = entry.categories
-    .clone()
     .map( | categories | text ( categories ) )
     .unwrap_or( null() )
     ;
@@ -374,35 +253,36 @@ impl From< Frame > for FrameRow
     .unwrap_or( null() )
     ;
 
-    let source = entry.source.clone().map( | s | text( s ) ).unwrap_or( null() );
-    let rights = entry.rights.clone().map( | r | text( r ) ).unwrap_or( null() );
-    let media = entry.categories
+    let source = entry.source.map( | s | text( s ) ).unwrap_or( null() );
+    let rights = entry.rights.map( | r | text( r ) ).unwrap_or( null() );
+    let media = entry.media
     .map( | media | text ( media ) )
     .unwrap_or( null() )
     ;
 
     let language = entry.language.clone().map( | l | text( l ) ).unwrap_or( null() );
 
-    FrameRow( vec!
-      [
-        text( entry.id ),
-        title,
-        updated,
-        authors,
-        content,
-        links,
-        summary,
-        categories,
-        published,
-        source,
-        rights,
-        media,
-        language,
-        text( entry.feed_link )
-      ] )
+    vec!
+    [
+      text( entry.id ),
+      title,
+      updated,
+      authors,
+      content,
+      links,
+      summary,
+      categories,
+      published,
+      source,
+      rights,
+      media,
+      language,
+      text( entry.feed_link )
+    ]
   }
 }
 
+// qqq : RowValue or CellValue?
 /// GlueSQL Value wrapper for display.
 #[ derive( Debug ) ]
 pub struct RowValue< 'a >( pub &'a gluesql::prelude::Value );
@@ -449,4 +329,3 @@ impl From< RowValue< '_ > > for String
     }
   }
 }
-

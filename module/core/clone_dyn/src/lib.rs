@@ -7,7 +7,8 @@
 #[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
 extern crate alloc;
 
-/// Dependencies.
+/// Namespace with dependencies.
+
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {

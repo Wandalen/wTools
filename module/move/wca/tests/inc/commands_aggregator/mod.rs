@@ -1,6 +1,6 @@
 use super::*;
 
-use TheModule::
+use the_module::
 {
   Parser,
 

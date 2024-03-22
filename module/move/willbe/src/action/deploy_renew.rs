@@ -17,6 +17,8 @@ mod private
     values : TemplateValues,
   }
 
+  // qqq : for Viktor : why DeployTemplate can't be part of template.rs?
+
   impl Template< DeployTemplateFiles > for DeployTemplate
   {
     fn create_all( self, path : &Path ) -> Result< () >
@@ -33,7 +35,7 @@ mod private
     {
       self.values = values
     }
-    
+
     fn get_values( &self ) -> &TemplateValues
     {
       &self.values
@@ -43,11 +45,11 @@ mod private
     {
       &mut self.values
     }
-    
+
     fn parameter_storage( &self ) -> &Path {
       "./.deploy_template.toml".as_ref()
     }
-    
+
     fn template_name( &self ) -> &'static str {
       "deploy"
     }
@@ -63,7 +65,7 @@ mod private
       .parameter( "gcp_artifact_repo_name" ).end()
       .parameter( "docker_image_name" ).end()
       .form();
-      
+
       Self
       {
         files : Default::default(),
@@ -73,6 +75,7 @@ mod private
     }
   }
 
+  // qqq : for Viktor : is that structure required?
   /// Files for the deploy template.
   ///
   /// Default implementation contains all required files.
@@ -125,7 +128,9 @@ mod private
     }
   }
 
+  // qqq : for Viktor : should not be required
   impl TemplateFiles for DeployTemplateFiles {}
+  // qqq : for Viktor : should not be required
   impl IntoIterator for DeployTemplateFiles
   {
     type Item = TemplateFileDescriptor;

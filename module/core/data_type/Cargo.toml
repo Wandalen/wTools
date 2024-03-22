@@ -1,6 +1,6 @@
 [package]
 name = "data_type"
-version = "0.2.0"
+version = "0.6.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -24,14 +24,6 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-# exclude = [ "/tests", "/examples", "-*" ]
-# include = [
-#   "/rust/impl/dt",
-#   "/Cargo.toml",
-#   "/Readme.md",
-#   "/License",
-# ]
-
 # = features
 
 [features]
@@ -42,8 +34,8 @@ default = [
   "dt_either",
   "dt_prelude",
   "dt_interval",
-  "dt_make",
-  "dt_vectorized_from",
+  # "dt_make",
+  # "dt_vectorized_from",
   # "type_constructor/default",
 ]
 full = [
@@ -52,21 +44,20 @@ full = [
   "dt_either",
   "dt_prelude",
   "dt_interval",
-  "dt_make",
-  "dt_vectorized_from",
+  # "dt_make",
+  # "dt_vectorized_from",
   # "type_constructor/full",
 ]
-# # use_std = []
 no_std = []
-use_alloc = []
+use_alloc = [ "no_std" ]
 enabled = []
 
 dt_prelude = []
 dt_either = [ "either" ]
 dt_interval = [ "interval_adapter/enabled" ]
-dt_type_constructor = [ "type_constructor/enabled" ]
-dt_make = [ "type_constructor/make" ]
-dt_vectorized_from = [ "type_constructor/vectorized_from" ]
+# dt_type_constructor = [ "type_constructor/enabled" ]
+# dt_make = [ "type_constructor/make" ]
+# dt_vectorized_from = [ "type_constructor/vectorized_from" ]
 
 # = entries
 
@@ -83,8 +74,8 @@ dt_vectorized_from = [ "type_constructor/vectorized_from" ]
 # path = "tests/_integration_test/smoke_test.rs"
 #
 # [[example]]
-# name = "data_type_trivial_sample"
-# path = "examples/data_type_trivial_sample/src/main.rs"
+# name = "data_type_trivial"
+# path = "examples/data_type_trivial/src/main.rs"
 
 [dependencies]
 
@@ -92,7 +83,7 @@ dt_vectorized_from = [ "type_constructor/vectorized_from" ]
 either = { version = "~1.6", optional = true }
 
 ## internal
-type_constructor = { workspace = true }
+# type_constructor = { workspace = true }
 interval_adapter = { workspace = true }
 
 [dev-dependencies]

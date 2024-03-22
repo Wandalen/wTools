@@ -9,7 +9,7 @@ on :
 jobs :
 
   appropriate_branch :
-    uses : {{username_and_repository}}/.github/workflows/AppropriateBranch.yml@{{uses_branch}}
+    uses : {{username_and_repository}}/.github/workflows/appropriate_branch.yml@{{uses_branch}}
     with :
       src_branch : '{{src_branch}}'
       dst_branch : '$\{{ github.base_ref }}'

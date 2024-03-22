@@ -302,7 +302,7 @@ fn field_none_map( field : &FormerField< '_ > ) -> TokenStream
 
 ///
 /// Generate field of the former for a field of the structure
-/// 
+///
 /// Used to generate a Container
 ///
 /// ### Basic use-case. of output
@@ -341,19 +341,19 @@ fn field_optional_map( field : &FormerField< '_ > ) -> TokenStream
 ///
 /// Generate code converting a field of the former to the field of the structure.
 ///
-/// In simple terms, used on `form()` call to unwrap contained values from the former's container.
+/// In simple terms, used on `form()` call to unwrap contained values from the former's storage.
 /// Will try to use default values if no values supplied by the former and the type implements `Default` trait.
 ///
 /// ### Generated code will look similar to this :
 ///
 /// ```ignore
-/// let int_1 : i32 = if self.container.int_1.is_some()
+/// let int_1 : i32 = if self.storage.int_1.is_some()
 /// {
 ///   // if int_1 is optional
-///   Some( self.container.int_1.take().unwrap() )
+///   Some( self.storage.int_1.take().unwrap() )
 ///
 ///   // if int_1 isn't optional
-///   self.container.int_1.take().unwrap()
+///   self.storage.int_1.take().unwrap()
 /// }
 /// else
 /// {
@@ -404,9 +404,9 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
 
     qt!
     {
-      let #ident = if self.container.#ident.is_some()
+      let #ident = if self.storage.#ident.is_some()
       {
-        ::core::option::Option::Some( self.container.#ident.take().unwrap() )
+        ::core::option::Option::Some( self.storage.#ident.take().unwrap() )
       }
       else
       {
@@ -464,9 +464,9 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
 
     qt!
     {
-      let #ident = if self.container.#ident.is_some()
+      let #ident = if self.storage.#ident.is_some()
       {
-        self.container.#ident.take().unwrap()
+        self.storage.#ident.take().unwrap()
       }
       else
       {
@@ -503,10 +503,10 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 ///   Src : ::core::convert::Into< i32 >,
 /// {
 ///   debug_assert!( self.int_1.is_none() );
-///   self.container.int_1 = ::core::option::Option::Some( src.into() );
+///   self.storage.int_1 = ::core::option::Option::Some( src.into() );
 ///   self
 /// }
-/// 
+///
 /// /// #[ doc = "Setter for the 'int_1' field." ]
 /// #[ inline ]
 /// pub fn int_1_alias< Src >( mut self, src : Src ) -> Self
@@ -514,7 +514,7 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 ///   Src : ::core::convert::Into< i32 >,
 /// {
 ///   debug_assert!( self.int_1.is_none() );
-///   self.container.int_1 = ::core::option::Option::Some( src.into() );
+///   self.storage.int_1 = ::core::option::Option::Some( src.into() );
 ///   self
 /// }
 /// ```
@@ -567,7 +567,7 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< TokenStream >
 /// Generate a single setter for the 'field_ident' with the 'setter_name' name.
 ///
 /// Used as a helper function for field_setter_map(), which generates all alias setters
-/// 
+///
 /// # Example of output
 /// ```ignore
 /// #[ doc = "Setter for the 'int_1' field." ]
@@ -577,7 +577,7 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< TokenStream >
 ///   Src : ::core::convert::Into< i32 >,
 /// {
 ///   debug_assert!( self.int_1.is_none() );
-///   self.container.int_1 = ::core::option::Option::Some( src.into() );
+///   self.storage.int_1 = ::core::option::Option::Some( src.into() );
 ///   self
 /// }
 /// ```
@@ -604,8 +604,8 @@ fn field_setter
     pub fn #setter_name< Src >( mut self, src : Src ) -> Self
     where Src : ::core::convert::Into< #non_optional_type >,
     {
-      debug_assert!( self.container.#field_ident.is_none() );
-      self.container.#field_ident = ::core::option::Option::Some( src.into() );
+      debug_assert!( self.storage.#field_ident.is_none() );
+      self.storage.#field_ident = ::core::option::Option::Some( src.into() );
       self
     }
   }
@@ -626,13 +626,13 @@ fn field_setter
 ///   impl Fn( std::collections::HashMap< String, String >, core::option::Option< Self > ) -> Self
 /// >
 /// {
-///   let container = self.hashmap_strings_1.take();
-///   let on_end = | container : std::collections::HashMap< String, String >, mut former : core::option::Option< Self > | -> Self
+///   let formed = self.hashmap_strings_1.take();
+///   let on_end = | formed : std::collections::HashMap< String, String >, mut former : core::option::Option< Self > | -> Self
 ///   {
-///     former.hashmap_strings_1 = Some( container );
+///     former.hashmap_strings_1 = Some( formed );
 ///     former
 ///   };
-///   former::HashMapSubformer::begin( self, container, on_end )
+///   former::HashMapSubformer::begin( formed, self, on_end )
 /// }
 /// ```
 
@@ -669,14 +669,14 @@ fn subformer_field_setter
       impl Fn( #non_optional_type, core::option::Option< Self > ) -> Self,
     >
     {
-      let container = self.container.#setter_name.take();
-      let on_end = | container : #non_optional_type, former : core::option::Option< Self > | -> Self
+      let formed = self.storage.#setter_name.take();
+      let on_end = | formed : #non_optional_type, former : core::option::Option< Self > | -> Self
       {
         let mut former = former.unwrap();
-        former.container.#setter_name = Some( container );
+        former.storage.#setter_name = Some( formed );
         former
       };
-      #subformer_type::begin( Some( self ), container, on_end )
+      #subformer_type::begin( formed, Some( self ), on_end )
     }
   }
 
@@ -735,10 +735,10 @@ For specifying custom default value use attribute `default`. For example:
 /// return result;
 ///
 /// ## perform_output :
-/// <T: Default>
+/// < T : ::core::default::Default >
 ///
 /// ## perform_generics :
-/// Vec<T>
+/// Vec< T >
 
 pub fn performer< 'a >
 (
@@ -800,7 +800,7 @@ pub fn performer< 'a >
 
 ///
 /// Generate the whole Former ecosystem
-/// 
+///
 /// Output examples can be found in [docs to former crate](https://docs.rs/former/latest/former/)
 ///
 
@@ -814,6 +814,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     Err( err ) => return Err( err ),
   };
   let has_debug = attr::has_debug( ast.attrs.iter() )?;
+  let example_of_custom_setter = false;
 
 
   /* names */
@@ -821,8 +822,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let name_ident = &ast.ident;
   let former_name = format!( "{}Former", name_ident );
   let former_name_ident = syn::Ident::new( &former_name, name_ident.span() );
-  let former_container_name = format!( "{}FormerContainer", name_ident );
-  let former_container_name_ident = syn::Ident::new( &former_container_name, name_ident.span() );
+  let former_storage_name = format!( "{}FormerStorage", name_ident );
+  let former_storage_name_ident = syn::Ident::new( &former_storage_name, name_ident.span() );
 
   /* generic parameters */
 
@@ -839,9 +840,15 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   };
 
   // add embedded generic parameters
-  let mut extra_generics : syn::Generics = parse_quote!{ < __FormerContext = #name_ident #generics_ty, __FormerEnd = former::ReturnContainer > };
-  extra_generics.where_clause = parse_quote!{ where __FormerEnd : former::ToSuperFormer< #name_ident #generics_ty, __FormerContext >, };
-  // xxx : write helper to fix the bug
+  let mut extra_generics : syn::Generics = parse_quote!
+  {
+    < __FormerContext = #name_ident #generics_ty, __FormerEnd = former::ReturnFormed >
+  };
+  extra_generics.where_clause = parse_quote!
+  {
+    where __FormerEnd : former::FormingEnd< #name_ident #generics_ty, __FormerContext >,
+  };
+  // xxx : write helper to fix bug with where
   let generics_of_former = generics::merge( &generics, &extra_generics );
   let ( generics_of_former_impl, generics_of_former_ty, generics_of_former_where ) = generics_of_former.split_for_impl();
   let generics_of_former_with_defaults = generics_of_former.params.clone();
@@ -915,14 +922,15 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// Make former, variation of builder pattern to form structure defining values of fields step by step.
       ///
       #[ inline( always ) ]
-      pub fn former() -> #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnContainer >
+      pub fn former() -> #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnFormed >
       {
-        #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnContainer > :: new()
+        #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnFormed > :: new()
       }
     }
 
+    // xxx : rename to storage
     #[ doc = "Container of a corresponding former." ]
-    pub struct #former_container_name_ident #generics_ty
+    pub struct #former_storage_name_ident #generics_ty
     #generics_where
     {
       #(
@@ -931,7 +939,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       )*
     }
 
-    impl #generics_impl core::default::Default for #former_container_name_ident #generics_ty
+    impl #generics_impl ::core::default::Default for #former_storage_name_ident #generics_ty
     #generics_where
     {
 
@@ -951,7 +959,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     pub struct #former_name_ident < #generics_of_former_with_defaults >
     #generics_of_former_where
     {
-      container : #former_container_name_ident #generics_ty,
+      storage : #former_storage_name_ident #generics_ty,
       context : core::option::Option< __FormerContext >,
       on_end : core::option::Option< __FormerEnd >,
     }
@@ -991,31 +999,23 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
 
       ///
-      /// Construct new instance of former with default parameters.
-      ///
-      #[ inline( always ) ]
-      pub fn new() -> #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnContainer >
-      {
-        #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnContainer > :: begin
-        (
-          None,
-          former::ReturnContainer,
-        )
-      }
-
-      ///
       /// Begin the process of forming. Expects context of forming to return it after forming.
       ///
       #[ inline( always ) ]
       pub fn begin
       (
-        context :  core::option::Option< __FormerContext >,
+        mut storage : core::option::Option< #former_storage_name_ident #generics_ty >,
+        context : core::option::Option< __FormerContext >,
         on_end : __FormerEnd,
       ) -> Self
       {
+        if storage.is_none()
+        {
+          storage = Some( ::core::default::Default::default() );
+        }
         Self
         {
-          container : core::default::Default::default(),
+          storage : storage.unwrap(),
           context : context,
           on_end : ::core::option::Option::Some( on_end ),
         }
@@ -1029,8 +1029,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       {
         let on_end = self.on_end.take().unwrap();
         let context = self.context.take();
-        let container = self.form();
-        on_end.call( container, context )
+        let storage = self.form();
+        on_end.call( storage, context )
       }
 
       #(
@@ -1039,12 +1039,57 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     }
 
+    #[ automatically_derived ]
+    impl #generics_impl #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnFormed >
+    #generics_where
+    {
+
+      ///
+      /// Construct new instance of former with default parameters.
+      ///
+      #[ inline( always ) ]
+      pub fn new() -> Self
+      {
+        // #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnFormed > :: begin
+        Self :: begin
+        (
+          None,
+          None,
+          former::ReturnFormed,
+        )
+      }
+
+    }
+
   };
 
   if has_debug
   {
-    diag::debug_report_print( "derive : Former",original_input, &result );
+    diag::debug_report_print( "derive : Former", original_input, &result );
+  }
+
+  // xxx : implement
+  if example_of_custom_setter
+  {
+    let _example =
+r#"
+impl< Context, End > UserProfileFormer< Context, End >
+where
+  End : former::FormingEnd< UserProfile, Context >,
+{
+  pub fn age< Src >( mut self, src : Src ) -> Self
+  where
+    Src : Into< i32 >,
+  {
+    debug_assert!( self.age.is_none() );
+    self.storage.age = ::core::option::Option::Some( src.into() );
+    self
+  }
+}
+"#;
   }
 
   Ok( result )
 }
+
+// xxx : explain concept of Storage

@@ -1,11 +1,10 @@
 use super::*;
 #[ allow( unused_imports ) ]
-use TheModule::prelude::*;
+use the_module::prelude::*;
 
 // trace_macros!( true );
 tests_impls!
 {
-
 
   fn pass1_test()
   {
@@ -13,7 +12,6 @@ tests_impls!
   }
 
   //
-
 
   fn fail1_test()
   {
@@ -23,7 +21,6 @@ tests_impls!
   //
 
   #[cfg(any())]
-
   fn never_test()
   {
     println!( "never_test" );
@@ -32,7 +29,6 @@ tests_impls!
   //
 
   #[cfg(all())]
-
   fn always_test()
   {
     println!( "always_test" );

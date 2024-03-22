@@ -37,6 +37,6 @@ fn main()
   //   println!( "The command from the root of the sample :" );
   //   println!( "cargo run --features nightly\n" );
   //   println!( "The command from the root of module :" );
-  //   println!( "cargo run --example inspect_type_trivial_sample --features nightly" );
+  //   println!( "cargo run --example inspect_type_trivial --features nightly" );
   // }
 }

@@ -16,7 +16,7 @@ pub( crate ) mod private
     for_lib::Error,
     for_app::format_err,
   };
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
 
   #[ derive( Debug, Error ) ]
   pub enum CrateDirError
@@ -39,7 +39,7 @@ pub( crate ) mod private
 
   impl TryFrom< AbsolutePath > for CrateDir
   {
-    // qqq : make better errors
+    // aaa : make better errors
     // aaa : use `CrateDirError` for it
     type Error = CrateDirError;
 
@@ -100,7 +100,7 @@ pub( crate ) mod private
 
   impl TryFrom< AbsolutePath > for Manifest
   {
-    // qqq : make better errors
+    // aaa : make better errors
     // aaa : return `ManifestError`
     type Error = ManifestError;
 
@@ -159,7 +159,7 @@ pub( crate ) mod private
       Ok( () )
     }
 
-    // qqq : for Bohdan : don't abuse anyhow
+    // aaa : for Bohdan : don't abuse anyhow
     // aaa : return `io` error
     /// Store manifest.
     pub fn store( &self ) -> io::Result< () >
@@ -200,7 +200,7 @@ pub( crate ) mod private
   }
 
   /// Create and load manifest by specified path
-  // qqq : for Bohdan : use newtype, add proper errors handing
+  // aaa : for Bohdan : use newtype, add proper errors handing
   // aaa : return `ManifestError`
   pub fn open( path : AbsolutePath ) -> Result< Manifest, ManifestError >
   {

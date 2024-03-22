@@ -1,6 +1,6 @@
 [package]
 name = "mem_tools"
-version = "0.2.0"
+version = "0.5.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -40,9 +40,8 @@ full = [
   "use_alloc",
   "enabled",
 ]
-# use_std = []
 no_std = []
-use_alloc = []
+use_alloc = [ "no_std" ]
 enabled = []
 
 [dependencies]

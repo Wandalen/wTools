@@ -78,7 +78,7 @@ tests_impls!
 
   fn basic()
   {
-    use TheModule::clone_dyn;
+    use the_module::clone_dyn;
 
     #[ clone_dyn ]
     trait Trait1
@@ -96,7 +96,7 @@ tests_impls!
 
   fn prelude()
   {
-    use TheModule::prelude::*;
+    use the_module::prelude::*;
 
     #[ clone_dyn ]
     trait Trait1
@@ -114,7 +114,7 @@ tests_impls!
 
   fn parametrized()
   {
-    use TheModule::clone_dyn;
+    use the_module::clone_dyn;
 
     #[ clone_dyn ]
     trait Trait2< T1 : Copy, T2 : Copy >
@@ -134,7 +134,7 @@ tests_impls!
 
   fn sample()
   {
-    use TheModule::clone_dyn;
+    use the_module::clone_dyn;
 
     #[ clone_dyn ]
     trait Trait1

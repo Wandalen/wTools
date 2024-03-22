@@ -3,8 +3,6 @@
 //! Try building a program for negative testing.
 //!
 
-// use crate::*;
-
 /// Internal namespace.
 pub( crate ) mod private
 {
@@ -16,6 +14,9 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
+  // xxx : make it working
+  // exposed use super;
+  exposed use super::super::compiletime;
   protected use
   {
     *

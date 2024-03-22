@@ -1,10 +1,4 @@
-use std::path::PathBuf;
 use feed_rs::parser as feed_parser;
-use gluesql::sled_storage::sled::Config;
-use unitore::{
-  executor::FeedManager,
-  storage::{ FeedStorage, FeedStore },
-};
 use error_tools::Result;
 
 #[ tokio::test ]

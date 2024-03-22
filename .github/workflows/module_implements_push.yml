@@ -1,0 +1,17 @@
+name : implements
+
+on : push
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # implements
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/core/implements/Cargo.toml'
+      module_name : 'implements'
+      commit_message : ${{ github.event.head_commit.message }}
