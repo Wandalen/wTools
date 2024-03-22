@@ -9,7 +9,6 @@ mod private
   { 
     Args, 
     Props, 
-    Value,
   };
   use wtools::error::Result;
   use _path::AbsolutePath;
@@ -17,46 +16,8 @@ mod private
   use former::Former;
   use channel::Channel;
   use error_tools::for_app::bail;
-  use iter_tools::Itertools;
   use optimization::Optimization;
-
-  trait ToString
-  {
-    fn to_string( &self ) -> String;
-  }
   
-  
-  impl ToString for Value
-  {
-    fn to_string( &self ) -> String
-    {
-      match self
-      {
-        Value::String( s ) =>
-        {
-          format!( "{s}" )
-        }
-        Value::Number( n ) =>
-        {
-          format!( "{n}" )
-        }
-        Value::Path( p ) =>
-        {
-          format!( "{}", p.display() )
-        }
-        Value::Bool( b ) =>
-        {
-          format!( "{b}" )
-        }
-        Value::List( list ) =>
-        {
-          let list = list.iter().map( | element | element.to_string() ).join( ", "); // qqq : don't hardcode ", " find way to get original separator
-          format!( "{list}" )
-        }
-      }
-    }
-  }
-
   #[ derive( Former, Debug ) ]
   struct TestsProperties
   {
