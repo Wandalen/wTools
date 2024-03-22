@@ -155,7 +155,7 @@ jobs :
         id: rootpath
         shell: bash
         run: |
-          if [[ "${{ inputs.manifest_path }}" == "./Cargo.toml" ]]; then
+          if [[ "${{ inputs.manifest_path }}" == "" || "${{ inputs.manifest_path }}" == "./Cargo.toml" ]]; then
             echo "path=" >> $GITHUB_ENV
           else
             echo "path=$(dirname ${{ inputs.manifest_path }})" >> $GITHUB_ENV
