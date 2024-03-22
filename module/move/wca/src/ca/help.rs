@@ -53,12 +53,30 @@ pub( crate ) mod private
   #[ derive( Debug, Former ) ]
   pub struct HelpGeneratorArgs< 'a >
   {
+    /// Prefix that will be shown before command name
     #[ default( String::new() ) ]
     pub command_prefix : String,
+    /// Show help for the specified command
     pub for_command : Option< &'a Command >,
+    /// Reresents how much information to display for the subjects
+    ///
+    /// - `None` - nothing
+    /// - `Simple` - <subjects>
+    /// - `Detailed` - each subject with information about it. E.g. `<String>`
     pub subject_detailing : LevelOfDetail,
+    /// Reresents how much information to display for the properties
+    ///
+    /// - `None` - nothing
+    /// - `Simple` - <properties>
+    /// - `Detailed` - each property with information about it. E.g. `<property_name:String>`
     pub property_detailing : LevelOfDetail,
+    /// Reresents how much information to display for the properties
+    ///
+    /// - `None` - nothing
+    /// - `Simple` - short hint
+    /// - `Detailed` - long hint
     pub description_detailing : LevelOfDetail,
+    /// If enabled - shows complete description of subjects and properties
     pub with_footer : bool,
   }
 
