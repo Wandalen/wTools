@@ -101,24 +101,24 @@ pub( crate ) mod private
       {
         Value::String( s ) =>
         {
-          writeln!( f , "{s}" )?;
+          write!( f , "{s}" )?;
         }
         Value::Number( n ) =>
         {
-          writeln!( f, "{n}" )?;
+          write!( f, "{n}" )?;
         }
         Value::Path( p ) =>
         {
-          writeln!( f, "{}", p.display() )?;
+          write!( f, "{}", p.display() )?;
         }
         Value::Bool( b ) =>
         {
-          writeln!( f, "{b}" )?;
+          write!( f, "{b}" )?;
         }
         Value::List( list ) =>
         {
           let list = list.iter().map( | element | element.to_string() ).join( "," ); // qqq : don't hardcode ", " find way to get original separator
-          writeln!( f, "{list}" )?;
+          write!( f, "{list}" )?;
         }
       }
       Ok( () )
