@@ -31,7 +31,6 @@ mod private
   use workspace::Workspace;
   use _path::AbsolutePath;
   use workspace::WorkspacePackage;
-  use crate::workspace::{Dependency, DependencyKind};
 
   /// Args for `list` action.
   #[ derive( Debug, Default, Copy, Clone ) ]
@@ -320,9 +319,9 @@ mod private
 
       match dependency.kind()
       {
-        DependencyKind::Normal if args.dependency_categories.contains( &DependencyCategory::Primary ) => dep_rep.normal_dependencies.push( dependency_rep ),
-        DependencyKind::Development if args.dependency_categories.contains( &DependencyCategory::Dev ) => dep_rep.dev_dependencies.push( dependency_rep ),
-        DependencyKind::Build if args.dependency_categories.contains( &DependencyCategory::Build ) => dep_rep.build_dependencies.push( dependency_rep ),
+        workspace::DependencyKind::Normal if args.dependency_categories.contains( &DependencyCategory::Primary ) => dep_rep.normal_dependencies.push( dependency_rep ),
+        workspace::DependencyKind::Development if args.dependency_categories.contains( &DependencyCategory::Dev ) => dep_rep.dev_dependencies.push( dependency_rep ),
+        workspace::DependencyKind::Build if args.dependency_categories.contains( &DependencyCategory::Build ) => dep_rep.build_dependencies.push( dependency_rep ),
         _ => { visited.remove( &dep_id ); std::mem::swap( &mut temp_vis, visited ); }
       }
 
@@ -330,7 +329,7 @@ mod private
     }
   }
 
-  fn process_dependency( workspace : &Workspace, dep : &Dependency, args : &ListOptions, visited : &mut HashSet< String > ) -> ListNodeReport
+  fn process_dependency( workspace : &Workspace, dep : &workspace::Dependency, args : &ListOptions, visited : &mut HashSet< String > ) -> ListNodeReport
   {
     let mut dep_rep = ListNodeReport
     {
@@ -444,12 +443,12 @@ mod private
         .map( | m | m[ "name" ].to_string().trim().replace( '\"', "" ) )
         .unwrap_or_default();
 
-        let dep_filter = move | _p : &WorkspacePackage, d : &Dependency |
+        let dep_filter = move | _p : &WorkspacePackage, d : &workspace::Dependency |
         {
           (
-            args.dependency_categories.contains( &DependencyCategory::Primary ) && d.kind() == DependencyKind::Normal
-            || args.dependency_categories.contains( &DependencyCategory::Dev ) && d.kind() == DependencyKind::Development
-            || args.dependency_categories.contains( &DependencyCategory::Build ) && d.kind() == DependencyKind::Build
+            args.dependency_categories.contains( &DependencyCategory::Primary ) && d.kind() == workspace::DependencyKind::Normal
+            || args.dependency_categories.contains( &DependencyCategory::Dev ) && d.kind() == workspace::DependencyKind::Development
+            || args.dependency_categories.contains( &DependencyCategory::Build ) && d.kind() == workspace::DependencyKind::Build
           )
           &&
           (

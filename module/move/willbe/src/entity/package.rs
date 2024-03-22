@@ -32,7 +32,6 @@ mod private
   use action::readme_health_table_renew::Stability;
   use former::Former;
   use workspace::WorkspacePackage;
-  use crate::workspace::{Dependency, DependencyKind};
 
   ///
   #[ derive( Debug, Clone ) ]
@@ -763,9 +762,9 @@ mod private
     }
   }
 
-  impl From< &Dependency > for CrateId
+  impl From< &workspace::Dependency > for CrateId
   {
-    fn from( value : &Dependency ) -> Self
+    fn from( value : &workspace::Dependency ) -> Self
     {
       Self
       {
@@ -803,7 +802,7 @@ mod private
     let deps = package
     .dependencies()
     .iter()
-    .filter( | dep | ( with_remote || dep.path().is_some() ) && ( with_dev || dep.kind() != DependencyKind::Development ) )
+    .filter( | dep | ( with_remote || dep.path().is_some() ) && ( with_dev || dep.kind() != workspace::DependencyKind::Development ) )
     .map( CrateId::from )
     .collect::< HashSet< _ > >();
 
