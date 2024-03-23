@@ -8,6 +8,19 @@ use collection_tools::Vec;
 fn push()
 {
 
+  let got : Vec< String > = the_module::ContainerSubformer::< String, former::VectorDefinition< String, () > >::new()
+  .push( "a" )
+  .push( "b" )
+  .form();
+  let exp = vec!
+  [
+    "a".to_string(),
+    "b".to_string(),
+  ];
+  a_id!( got, exp );
+
+  //
+
   let got : Vec< String > = the_module::ContainerSubformer::< String, former::VectorDefinition< String > >::new()
   .push( "a" )
   .push( "b" )
@@ -21,7 +34,7 @@ fn push()
 
   //
 
-  let got : Vec< String > = the_module::VectorSubformer::new()
+  let got : Vec< String > = the_module::VectorSubformer::< String, () >::new()
   .push( "a" )
   .push( "b" )
   .form();

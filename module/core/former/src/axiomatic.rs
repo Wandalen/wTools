@@ -19,7 +19,7 @@ pub trait FormerDefinition
   // type Storage : Storage< Definition = Self >;
   type Storage : Storage< Formed = Self::Formed >;
   type Formed;
-  // type Context;
+  type Context;
 }
 
 // pub trait FormerDefinition
