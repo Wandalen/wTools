@@ -45,12 +45,16 @@ for Vec< E >
 //
 
 #[ derive( Debug ) ]
-pub struct VectorDefinition< E, Context = () >
+pub struct VectorDefinition< E, Context, End >
+where
+  End : FormingEnd< Self >
 {
-  _phantom : core::marker::PhantomData< ( E, Context ) >,
+  _phantom : core::marker::PhantomData< ( E, Context, End ) >,
 }
 
-impl< E, Context > VectorDefinition< E, Context >
+impl< E, Context, End > VectorDefinition< E, Context, End >
+where
+  End : FormingEnd< Self >
 {
   pub fn new() -> Self
   {
@@ -58,12 +62,15 @@ impl< E, Context > VectorDefinition< E, Context >
   }
 }
 
-impl< E, Context > FormerDefinition
-for VectorDefinition< E, Context >
+impl< E, Context, End > FormerDefinition
+for VectorDefinition< E, Context, End >
+where
+  End : FormingEnd< Self >
 {
   type Storage = Vec< E >;
   type Formed = Vec< E >;
   type Context = Context;
+  type End = End;
 }
 
 /// A builder for constructing `VectorLike` containers, facilitating a fluent and flexible interface.
@@ -71,7 +78,7 @@ for VectorDefinition< E, Context >
 /// `VectorSubformer` leverages the `VectorLike` trait to enable the construction and manipulation
 /// of vector-like containers in a builder pattern style, promoting readability and ease of use.
 
-pub type VectorSubformer< E, Context = () > = ContainerSubformer::< E, VectorDefinition< E, Context > >;
+pub type VectorSubformer< E, Context, End > = ContainerSubformer::< E, VectorDefinition< E, Context, End > >;
 
 // #[ derive( Debug, Default ) ]
 // pub struct VectorSubformer< E, Definition, Context, End >

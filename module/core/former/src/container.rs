@@ -195,20 +195,20 @@ where
 
 /// A builder for constructing containers, facilitating a fluent and flexible interface.
 #[ derive( Debug, Default ) ]
-pub struct ContainerSubformer< E, Definition, End = ReturnFormed >
+pub struct ContainerSubformer< E, Definition >
 where
-  End : FormingEnd< Definition >,
+  // End : FormingEnd< Definition >,
   Definition : FormerDefinition,
   Definition::Storage : ContainerAdd< Element = E >,
 {
   storage : core::option::Option< Definition::Storage >,
   context : core::option::Option< Definition::Context >,
-  on_end : core::option::Option< End >,
+  on_end : core::option::Option< Definition::End >,
 }
 
-impl< E, Definition, End > ContainerSubformer< E, Definition, End >
+impl< E, Definition > ContainerSubformer< E, Definition >
 where
-  End : FormingEnd< Definition >,
+  // End : FormingEnd< Definition >,
   Definition : FormerDefinition,
   Definition::Storage : ContainerAdd< Element = E >,
 {
@@ -235,7 +235,7 @@ where
   (
     storage : core::option::Option< Definition::Storage >,
     context : core::option::Option< Definition::Context >,
-    on_end : End
+    on_end : Definition::End,
   ) -> Self
   {
     Self
@@ -273,9 +273,9 @@ where
 
 }
 
-impl< E, Definition > ContainerSubformer< E, Definition, ReturnFormed >
+impl< E, T, Definition > ContainerSubformer< E, Definition >
 where
-  Definition : FormerDefinition< Context = () >,
+  Definition : FormerDefinition< Context = (), Storage = T, Formed = T, End = ReturnStorage >,
   Definition::Storage : ContainerAdd< Element = E >,
   Definition::Storage : StoragePerform< Formed = Definition::Formed >,
 {
@@ -293,15 +293,16 @@ where
     (
       None,
       None,
-      ReturnFormed,
+      ReturnStorage,
+      // ReturnFormed,
     )
   }
 
 }
 
-impl< E, Definition, End > ContainerSubformer< E, Definition, End >
+impl< E, Definition > ContainerSubformer< E, Definition >
 where
-  End : FormingEnd< Definition >,
+  // End : FormingEnd< Definition >,
   Definition : FormerDefinition,
   Definition::Storage : ContainerAdd< Element = E >,
 {
@@ -327,21 +328,21 @@ where
 
 //
 
-impl< E, Definition, End > FormerBegin< Definition >
-for ContainerSubformer< E, Definition, End >
+impl< E, Definition > FormerBegin< Definition >
+for ContainerSubformer< E, Definition >
 where
-  End : FormingEnd< Definition >,
+  // End : FormingEnd< Definition >,
   Definition : FormerDefinition,
   Definition::Storage : ContainerAdd< Element = E >,
 {
-  type End = End;
+  type End = Definition::End;
 
   #[ inline( always ) ]
   fn _begin
   (
     storage : core::option::Option< Definition::Storage >,
     context : core::option::Option< Definition::Context >,
-    on_end : End,
+    on_end : Definition::End,
   )
   -> Self
   {

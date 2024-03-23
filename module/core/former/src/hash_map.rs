@@ -45,7 +45,7 @@ where
 
 }
 
-//
+// = storage
 
 impl< K, E > Storage
 for HashMap< K, E >
@@ -68,19 +68,21 @@ where
   }
 }
 
-//
+// = definition
 
 #[ derive( Debug ) ]
-pub struct HashMapDefinition< K, E, Context = () >
+pub struct HashMapDefinition< K, E, Context, End >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
+  End : FormingEnd< Self >,
 {
-  _phantom : ::core::marker::PhantomData< ( K, E, Context ) >,
+  _phantom : ::core::marker::PhantomData< ( K, E, Context, End ) >,
 }
 
-impl< K, E, Context > HashMapDefinition< K, E, Context >
+impl< K, E, Context, End > HashMapDefinition< K, E, Context, End >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
+  End : FormingEnd< Self >,
 {
   pub fn new() -> Self
   {
@@ -88,14 +90,16 @@ where
   }
 }
 
-impl< K, E, Context > FormerDefinition
-for HashMapDefinition< K, E, Context >
+impl< K, E, Context, End > FormerDefinition
+for HashMapDefinition< K, E, Context, End >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
+  End : FormingEnd< Self >,
 {
   type Storage = HashMap< K, E >;
   type Formed = HashMap< K, E >;
   type Context = Context;
+  type End = End;
 }
 
 /// A builder for constructing hash map-like structures with a fluent interface.
@@ -136,7 +140,7 @@ where
 /// # }
 /// ```
 
-pub type HashMapSubformer< K, E, Context = () > = ContainerSubformer::< ( K, E ), HashMapDefinition< K, E, Context > >;
+pub type HashMapSubformer< K, E, Context, End > = ContainerSubformer::< ( K, E ), HashMapDefinition< K, E, Context, End > >;
 
 // #[ derive( Debug, Default ) ]
 // pub struct HashMapSubformer< K, E, Definition, Context, End >

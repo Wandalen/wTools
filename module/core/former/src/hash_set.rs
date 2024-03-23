@@ -33,7 +33,7 @@ where
   }
 }
 
-//
+// = storage
 
 impl< K > Storage
 for HashSet< K >
@@ -56,19 +56,21 @@ where
   }
 }
 
-//
+// = definition
 
 #[ derive( Debug ) ]
-pub struct HashSetDefinition< K, Context = () >
+pub struct HashSetDefinition< K, Context, End >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
+  End : FormingEnd< Self >,
 {
-  _phantom : ::core::marker::PhantomData< ( K, Context ) >,
+  _phantom : ::core::marker::PhantomData< ( K, Context, End ) >,
 }
 
-impl< K, Context > HashSetDefinition< K, Context >
+impl< K, Context, End > HashSetDefinition< K, Context, End >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
+  End : FormingEnd< Self >,
 {
   pub fn new() -> Self
   {
@@ -76,14 +78,16 @@ where
   }
 }
 
-impl< K, Context > FormerDefinition
-for HashSetDefinition< K, Context >
+impl< K, Context, End > FormerDefinition
+for HashSetDefinition< K, Context, End >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
+  End : FormingEnd< Self >,
 {
   type Storage = HashSet< K >;
   type Formed = HashSet< K >;
   type Context = Context;
+  type End = End;
 }
 
 /// Facilitates building `HashSetLike` containers with a fluent API.
@@ -118,7 +122,7 @@ where
 /// # }
 /// ```
 
-pub type HashSetSubformer< K, Context = () > = ContainerSubformer::< K, HashSetDefinition< K, Context > >;
+pub type HashSetSubformer< K, Context, End > = ContainerSubformer::< K, HashSetDefinition< K, Context, End > >;
 
 // #[ derive( Debug, Default ) ]
 // pub struct HashSetSubformer< K, Definition, Context, End >

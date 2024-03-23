@@ -14,12 +14,13 @@ pub trait StoragePerform : Storage
 }
 
 /// xxx
-pub trait FormerDefinition
+pub trait FormerDefinition : Sized
 {
   // type Storage : Storage< Definition = Self >;
   type Storage : Storage< Formed = Self::Formed >;
   type Formed;
   type Context;
+  type End : FormingEnd< Self >;
 }
 
 // pub trait FormerDefinition
@@ -74,7 +75,6 @@ pub struct ReturnFormed;
 impl< Definition > FormingEnd< Definition >
 for ReturnFormed
 where
-  // Definition::Storage : StoragePerform< Definition = Definition >,
   Definition::Storage : StoragePerform< Formed = Definition::Formed >,
   Definition : FormerDefinition< Context = () >,
 {
@@ -82,6 +82,22 @@ where
   fn call( &self, storage : Definition::Storage, _context : core::option::Option< () > ) -> Definition::Formed
   {
     storage.preform()
+  }
+}
+
+/// xxx
+#[ derive( Debug, Default ) ]
+pub struct ReturnStorage;
+
+impl< Definition, T > FormingEnd< Definition >
+for ReturnStorage
+where
+  Definition : FormerDefinition< Context = (), Storage = T, Formed = T >,
+{
+  #[ inline( always ) ]
+  fn call( &self, storage : Definition::Storage, _context : core::option::Option< () > ) -> Definition::Formed
+  {
+    storage
   }
 }
 
