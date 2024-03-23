@@ -34,4 +34,4 @@ where
 
 // ==
 
-include!( "../only_test/parametrized_struct.rs" );
+include!( "./only_test/parametrized_struct.rs" );

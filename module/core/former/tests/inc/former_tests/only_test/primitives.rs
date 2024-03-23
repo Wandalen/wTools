@@ -24,7 +24,7 @@ tests_impls!
     a_id!( former.storage.string_optional_1, None );
     a_id!( former.context, None );
     a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnStorage ) ) );
-    let former2 = Struct1Former::< Struct1, the_module::ReturnStorage >::new();
+    let former2 = Struct1Former::new();
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
 
     let command = Struct1::former().form();

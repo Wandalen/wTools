@@ -846,7 +846,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   };
   extra_generics.where_clause = parse_quote!
   {
-    where __FormerEnd : former::FormingEnd< #name_ident #generics_ty, __FormerContext >,
+    where
+      __FormerEnd : former::FormingEnd< #name_ident #generics_ty, __FormerContext >,
   };
   // xxx : write helper to fix bug with where
   let generics_of_former = generics::merge( &generics, &extra_generics );
@@ -962,6 +963,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       storage : #former_storage_name_ident #generics_ty,
       context : core::option::Option< __FormerContext >,
       on_end : core::option::Option< __FormerEnd >,
+      // xxx : should on_end be optional?
     }
 
     #[ automatically_derived ]
@@ -975,7 +977,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// `perform` has no effect on method `form`, but change behavior and returned type of method `perform`.
       ///
       #[ inline( always ) ]
-      pub fn form( mut self ) -> #name_ident #generics_ty
+      pub fn preform( mut self ) -> #name_ident #generics_ty
       {
         #( #fields_form )*
         let result = #name_ident
@@ -1019,6 +1021,15 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
           context : context,
           on_end : ::core::option::Option::Some( on_end ),
         }
+      }
+
+      ///
+      /// End the process of forming returning original context of forming.
+      ///
+      #[ inline( always ) ]
+      pub fn form( self ) -> __FormerContext
+      {
+        self.end()
       }
 
       ///

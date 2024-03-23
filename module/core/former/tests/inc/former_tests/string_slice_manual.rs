@@ -54,4 +54,4 @@ impl< 'a > Struct1Former< 'a >
 
 //
 
-include!( "../only_test/string_slice.rs" );
+include!( "./only_test/string_slice.rs" );

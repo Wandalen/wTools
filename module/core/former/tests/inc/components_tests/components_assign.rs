@@ -73,4 +73,4 @@ impl From< &Options2 > for String
 
 //
 
-include!( "../only_test/components_components_assign.rs" );
+include!( "./only_test/components_components_assign.rs" );

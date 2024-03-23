@@ -204,6 +204,11 @@ version = "~0.15.0"
 path = "module/core/former"
 default-features = false
 
+[workspace.dependencies.former_stable]
+package = "former"
+version = "=0.15.0"
+default-features = false
+
 [workspace.dependencies.former_meta]
 version = "~0.14.0"
 path = "module/core/former_meta"
@@ -324,6 +329,7 @@ default-features = false
 version = "~0.2.0"
 path = "module/alias/wstring_tools"
 
+
 ## fs tools / path tools
 
 [workspace.dependencies.fs_tools]
@@ -347,6 +353,11 @@ default-features = false
 [workspace.dependencies.process_tools]
 version = "~0.2.0"
 path = "module/core/process_tools"
+default-features = false
+
+[workspace.dependencies.process_tools_published]
+package = "process_tools"
+version = "~0.2.0"
 default-features = false
 
 

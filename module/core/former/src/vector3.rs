@@ -37,6 +37,13 @@ impl< E > VectorDescriptor< E >
   }
 }
 
+impl< E > FormerDescriptor
+for VectorDescriptor< E >
+{
+  type Storage = Vec< E >;
+  type Formed = Vec< E >;
+}
+
 impl< E > StoragePerform
 for Vec< E >
 {
@@ -45,13 +52,6 @@ for Vec< E >
   {
     self
   }
-}
-
-impl< E > FormerDescriptor
-for VectorDescriptor< E >
-{
-  type Storage = Vec< E >;
-  type Formed = Vec< E >;
 }
 
 /// A builder for constructing `VectorLike` containers, facilitating a fluent and flexible interface.
