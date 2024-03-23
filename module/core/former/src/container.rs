@@ -193,23 +193,22 @@ where
 
 // =
 
-
 /// A builder for constructing containers, facilitating a fluent and flexible interface.
 #[ derive( Debug, Default ) ]
-pub struct ContainerSubformer< E, Definition, Context = (), End = ReturnFormed >
+pub struct ContainerSubformer< E, Definition, End = ReturnFormed >
 where
-  End : FormingEnd< Definition, Context >,
+  End : FormingEnd< Definition >,
   Definition : FormerDefinition,
   Definition::Storage : ContainerAdd< Element = E >,
 {
   storage : core::option::Option< Definition::Storage >,
-  context : core::option::Option< Context >,
+  context : core::option::Option< Definition::Context >,
   on_end : core::option::Option< End >,
 }
 
-impl< E, Definition, Context, End > ContainerSubformer< E, Definition, Context, End >
+impl< E, Definition, End > ContainerSubformer< E, Definition, End >
 where
-  End : FormingEnd< Definition, Context >,
+  End : FormingEnd< Definition >,
   Definition : FormerDefinition,
   Definition::Storage : ContainerAdd< Element = E >,
 {
@@ -235,7 +234,7 @@ where
   pub fn begin
   (
     storage : core::option::Option< Definition::Storage >,
-    context : core::option::Option< Context >,
+    context : core::option::Option< Definition::Context >,
     on_end : End
   ) -> Self
   {
@@ -274,9 +273,9 @@ where
 
 }
 
-impl< E, Definition > ContainerSubformer< E, Definition, (), ReturnFormed >
+impl< E, Definition > ContainerSubformer< E, Definition, ReturnFormed >
 where
-  Definition : FormerDefinition,
+  Definition : FormerDefinition< Context = () >,
   Definition::Storage : ContainerAdd< Element = E >,
   Definition::Storage : StoragePerform< Formed = Definition::Formed >,
 {
@@ -300,9 +299,9 @@ where
 
 }
 
-impl< E, Definition, Context, End > ContainerSubformer< E, Definition, Context, End >
+impl< E, Definition, End > ContainerSubformer< E, Definition, End >
 where
-  End : FormingEnd< Definition, Context >,
+  End : FormingEnd< Definition >,
   Definition : FormerDefinition,
   Definition::Storage : ContainerAdd< Element = E >,
 {
@@ -328,10 +327,10 @@ where
 
 //
 
-impl< E, Definition, Context, End > FormerBegin< Definition, Context >
-for ContainerSubformer< E, Definition, Context, End >
+impl< E, Definition, End > FormerBegin< Definition >
+for ContainerSubformer< E, Definition, End >
 where
-  End : FormingEnd< Definition, Context >,
+  End : FormingEnd< Definition >,
   Definition : FormerDefinition,
   Definition::Storage : ContainerAdd< Element = E >,
 {
@@ -341,7 +340,7 @@ where
   fn _begin
   (
     storage : core::option::Option< Definition::Storage >,
-    context : core::option::Option< Context >,
+    context : core::option::Option< Definition::Context >,
     on_end : End,
   )
   -> Self
