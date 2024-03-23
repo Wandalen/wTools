@@ -32,6 +32,7 @@ pub struct Struct1FormerStorage
   pub string_optional_1 : core::option::Option< String >,
 }
 
+// xxx : cover by test
 impl Default for Struct1FormerStorage
 {
 

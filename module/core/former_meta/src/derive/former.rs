@@ -824,11 +824,14 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let former_name_ident = syn::Ident::new( &former_name, name_ident.span() );
   let former_storage_name = format!( "{}FormerStorage", name_ident );
   let former_storage_name_ident = syn::Ident::new( &former_storage_name, name_ident.span() );
+  let former_descriptor_name = format!( "{}FormerDescriptor", name_ident );
+  let former_descriptor_name_ident = syn::Ident::new( &former_descriptor_name, name_ident.span() );
 
   /* generic parameters */
 
   let generics = &ast.generics;
   let ( generics_impl, generics_ty, generics_where ) = generics.split_for_impl();
+  // xxx : eliminate generics_params maybe
   let _generics_params = generics::params_names( generics ).params;
   let generics_params = if _generics_params.len() == 0
   {
@@ -847,7 +850,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   extra_generics.where_clause = parse_quote!
   {
     where
-      __FormerEnd : former::FormingEnd< #name_ident #generics_ty, __FormerContext >,
+      __FormerEnd : former::FormingEnd< #former_descriptor_name_ident #generics_ty, __FormerContext >,
   };
   // xxx : write helper to fix bug with where
   let generics_of_former = generics::merge( &generics, &extra_generics );
@@ -915,6 +918,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let result = qt!
   {
 
+    // = formed
+
     #[ automatically_derived ]
     impl #generics_impl #name_ident #generics_ty
     #generics_where
@@ -923,11 +928,33 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// Make former, variation of builder pattern to form structure defining values of fields step by step.
       ///
       #[ inline( always ) ]
-      pub fn former() -> #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnStorage >
+      pub fn former() -> #former_name_ident < #generics_params (), former::ReturnStorage >
       {
-        #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnStorage > :: new()
+        #former_name_ident :: new()
       }
     }
+
+    // = descriptor
+
+    #[ derive( Debug ) ]
+    pub struct #former_descriptor_name_ident #generics_impl;
+
+    impl #generics_impl #former_descriptor_name_ident #generics_ty
+    {
+      pub fn new() -> Self
+      {
+        Self
+      }
+    }
+
+    impl #generics_impl former::FormerDescriptor
+    for #former_descriptor_name_ident #generics_ty
+    {
+      type Storage = #former_storage_name_ident #generics_ty;
+      type Formed = #name_ident #generics_ty;
+    }
+
+    // = storage
 
     // xxx : rename to storage
     #[ doc = "Container of a corresponding former." ]
@@ -955,6 +982,37 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     }
 
+    impl #generics_impl former::Storage
+    for #former_storage_name_ident #generics_ty
+    #generics_where
+    {
+      // type Descriptor = Struct1FormerDescriptor;
+      type Descriptor = #former_descriptor_name_ident #generics_ty;
+    }
+    // generics_impl, generics_ty, generics_where
+
+    impl former::StoragePerform
+    for #former_storage_name_ident #generics_ty
+    #generics_where
+    {
+
+      fn preform( mut self ) -> #former_storage_name_ident #generics_ty
+      {
+        Self
+        {
+          #( #fields_form )*
+          let result = #name_ident
+          {
+            #( #fields_names, )*
+          };
+          return result;
+        }
+      }
+
+    }
+
+    // = former
+
     #[ doc = #doc_former_struct ]
     #[ automatically_derived ]
     pub struct #former_name_ident < #generics_of_former_with_defaults >
@@ -974,17 +1032,17 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       ///
       /// Finish setting options and return formed entity.
       ///
-      /// `perform` has no effect on method `form`, but change behavior and returned type of method `perform`.
-      ///
       #[ inline( always ) ]
-      pub fn preform( mut self ) -> #name_ident #generics_ty
+      pub fn preform( self ) -> < former_descriptor_name_ident #generics_impl as former::FormerDescriptor >::Formed
+      // #name_ident #generics_ty
       {
-        #( #fields_form )*
-        let result = #name_ident
-        {
-          #( #fields_names, )*
-        };
-        return result;
+        < #former_storage_name_ident #generics_ty as former::StoragePerform >::preform( self.storage )
+        // #( #fields_form )*
+        // let result = #name_ident
+        // {
+        //   #( #fields_names, )*
+        // };
+        // return result;
       }
 
       ///
@@ -1027,7 +1085,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// End the process of forming returning original context of forming.
       ///
       #[ inline( always ) ]
-      pub fn form( self ) -> __FormerContext
+      pub fn form( self ) -> < former_descriptor_name_ident #generics_impl as former::FormerDescriptor >::Formed
       {
         self.end()
       }
@@ -1036,12 +1094,12 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// End the process of forming returning original context of forming.
       ///
       #[ inline( always ) ]
-      pub fn end( mut self ) -> __FormerContext
+      pub fn end( mut self ) -> < former_descriptor_name_ident #generics_impl as former::FormerDescriptor >::Formed
       {
         let on_end = self.on_end.take().unwrap();
         let context = self.context.take();
-        let storage = self.form();
-        on_end.call( storage, context )
+        // let storage = self.form();
+        on_end.call( self.storage, context )
       }
 
       #(
@@ -1051,7 +1109,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     }
 
     #[ automatically_derived ]
-    impl #generics_impl #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnStorage >
+    impl #generics_impl #former_name_ident < #generics_params (), former::ReturnStorage >
     #generics_where
     {
 
