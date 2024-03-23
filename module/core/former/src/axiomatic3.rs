@@ -3,14 +3,15 @@
 /// xxx
 pub trait StoragePerform : ::core::default::Default
 {
-  type Formed;
-  fn preform( self ) -> Self::Formed;
+  // type FormedResult;
+  type Descriptor : FormerDescriptor< Storage = Self >;
+  fn preform( self ) -> < < Self as StoragePerform >::Descriptor as FormerDescriptor >::Formed;
 }
 
 /// xxx
 pub trait FormerDescriptor
 {
-  type Storage : StoragePerform< Formed = Self::Formed >;
+  type Storage : StoragePerform< Descriptor = Self >;
   type Formed;
   // type Former;
 }
@@ -176,7 +177,6 @@ for FormingEndWrapper< Former, Context >
 /// sophisticated and flexible construction patterns conducive to complex data transformations or object creation
 /// sequences within builder patterns.
 
-// xxx : change sequence
 pub trait FormerBegin< Former : FormerDescriptor, Context >
 {
 

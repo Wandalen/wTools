@@ -11,12 +11,6 @@ tests_impls!
   fn internals()
   {
 
-    // // test.case( "vector : construction" );
-    // int_1,
-    // string_1,
-    // int_optional_1,
-    // string_optional_1,
-
     let former = Struct1::former();
     a_id!( former.storage.int_1, None );
     a_id!( former.storage.string_1, None );
@@ -46,6 +40,43 @@ tests_impls!
     a_id!( command.string_optional_1, None );
 
   }
+
+  //
+
+  fn preform()
+  {
+
+    // formation should have method preform
+    let got = Struct1::former().preform();
+    let exp = Struct1::former().form();
+    a_id!( got, exp );
+
+    // storage should have method preform
+    let got = the_module::StoragePerform::preform( Struct1::former().storage );
+    let exp = Struct1::former().form();
+    a_id!( got, exp );
+
+    // storage should have method preform
+    use the_module::StoragePerform;
+    let got = Struct1::former().storage.preform();
+    let exp = Struct1::former().form();
+    a_id!( got, exp );
+
+  }
+
+  //
+
+  fn descriptor()
+  {
+
+    // descriptor exists
+    let got = < Struct1FormerDescriptor as the_module::FormerDescriptor >::Formed::former().form();
+    let exp = Struct1::former().form();
+    a_id!( got, exp );
+
+  }
+
+  //
 
   fn test_int()
   {
@@ -229,6 +260,8 @@ tests_impls!
 tests_index!
 {
   internals,
+  preform,
+  descriptor,
   test_int,
   test_string,
   test_optional_string,

@@ -102,7 +102,7 @@ only_for_terminal_module!
   {
 
     println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
-    let t = test_tools::compiletime::TestCases::new();
+    // let t = test_tools::compiletime::TestCases::new();
 
     // xxx
     // t.compile_fail( "tests/inc/compiletime/former_bad_attr.rs" );
@@ -119,7 +119,7 @@ only_for_terminal_module!
   {
 
     println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
-    let t = test_tools::compiletime::TestCases::new();
+    let _t = test_tools::compiletime::TestCases::new();
 
     //t.compile_fail( "tests/inc/compiletime/components_component_from_debug.rs" );
 

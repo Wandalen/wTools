@@ -47,8 +47,9 @@ for VectorDescriptor< E >
 impl< E > StoragePerform
 for Vec< E >
 {
-  type Formed = Self;
-  fn preform( self ) -> Self::Formed
+  // type Formed = Self;
+  type Descriptor = VectorDescriptor< E >;
+  fn preform( self ) -> < < Self as StoragePerform >::Descriptor as FormerDescriptor >::Formed
   {
     self
   }

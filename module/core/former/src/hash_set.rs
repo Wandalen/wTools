@@ -58,11 +58,16 @@ for HashSet< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  type Formed = Self;
-  fn preform( self ) -> Self::Formed
+  type Descriptor = HashSetDescriptor< K >;
+  fn preform( self ) -> < < Self as StoragePerform >::Descriptor as FormerDescriptor >::Formed
   {
     self
   }
+  // type Formed = Self;
+  // fn preform( self ) -> Self::Formed
+  // {
+  //   self
+  // }
 }
 
 impl< K > FormerDescriptor

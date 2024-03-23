@@ -70,8 +70,13 @@ for HashMap< K, E >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  type Formed = Self;
-  fn preform( self ) -> Self::Formed
+  // type Formed = Self;
+  // fn preform( self ) -> Self::Formed
+  // {
+  //   self
+  // }
+  type Descriptor = HashMapDescriptor< K, E >;
+  fn preform( self ) -> < < Self as StoragePerform >::Descriptor as FormerDescriptor >::Formed
   {
     self
   }
