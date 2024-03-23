@@ -36,14 +36,14 @@ where
 //
 
 #[ derive( Debug ) ]
-pub struct HashSetDescriptor< K >
+pub struct HashSetDefinition< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
   _phantom : ::core::marker::PhantomData< ( K, K ) >,
 }
 
-impl< K > HashSetDescriptor< K >
+impl< K > HashSetDefinition< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
@@ -58,8 +58,8 @@ for HashSet< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  type Descriptor = HashSetDescriptor< K >;
-  // fn preform( self ) -> < < Self as Storage >::Descriptor as FormerDescriptor >::Formed
+  type Definition = HashSetDefinition< K >;
+  // fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinition >::Formed
   // {
   //   self
   // }
@@ -70,14 +70,14 @@ for HashSet< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  fn preform( self ) -> < < Self as Storage >::Descriptor as FormerDescriptor >::Formed
+  fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinition >::Formed
   {
     self
   }
 }
 
-impl< K > FormerDescriptor
-for HashSetDescriptor< K >
+impl< K > FormerDefinition
+for HashSetDefinition< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
@@ -118,33 +118,33 @@ where
 /// ```
 
 #[ derive( Debug, Default ) ]
-pub struct HashSetSubformer< K, Descriptor, Context, End >
+pub struct HashSetSubformer< K, Definition, Context, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
   // Formed : HashSetLike< K > + core::default::Default,
-  End : FormingEnd< Descriptor, Context >,
-  Descriptor : FormerDescriptor,
-  Descriptor::Storage : ContainerAdd< Element = K >,
+  End : FormingEnd< Definition, Context >,
+  Definition : FormerDefinition,
+  Definition::Storage : ContainerAdd< Element = K >,
 {
-  storage : core::option::Option< Descriptor::Storage >,
+  storage : core::option::Option< Definition::Storage >,
   context : core::option::Option< Context >,
   on_end : core::option::Option< End >,
   _e_phantom : core::marker::PhantomData< K >,
 }
 
-impl< K, Descriptor, Context, End >
-HashSetSubformer< K, Descriptor, Context, End >
+impl< K, Definition, Context, End >
+HashSetSubformer< K, Definition, Context, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
   // Formed : HashSetLike< K > + core::default::Default,
-  End : FormingEnd< Descriptor, Context >,
-  Descriptor : FormerDescriptor,
-  Descriptor::Storage : ContainerAdd< Element = K >,
+  End : FormingEnd< Definition, Context >,
+  Definition : FormerDefinition,
+  Definition::Storage : ContainerAdd< Element = K >,
 {
 
   /// Form current former into target structure.
   #[ inline( always ) ]
-  pub fn storage( mut self ) -> Descriptor::Storage
+  pub fn storage( mut self ) -> Definition::Storage
   {
     let storage = if self.storage.is_some()
     {
@@ -172,7 +172,7 @@ where
   #[ inline( always ) ]
   pub fn begin
   (
-    storage : core::option::Option< Descriptor::Storage >,
+    storage : core::option::Option< Definition::Storage >,
     context : core::option::Option< Context >,
     on_end : End,
   ) -> Self
@@ -197,7 +197,7 @@ where
   /// constructed formed or a context that incorporates the formed.
   ///
   #[ inline( always ) ]
-  pub fn form( self ) -> Descriptor::Formed
+  pub fn form( self ) -> Definition::Formed
   {
     self.end()
   }
@@ -213,7 +213,7 @@ where
   /// constructed formed or a context that incorporates the formed.
   ///
   #[ inline( always ) ]
-  pub fn end( mut self ) -> Descriptor::Formed
+  pub fn end( mut self ) -> Definition::Formed
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
@@ -234,7 +234,7 @@ where
   /// The builder instance with the storage replaced, enabling further chained operations.
   ///
   #[ inline( always ) ]
-  pub fn replace( mut self, storage : Descriptor::Storage ) -> Self
+  pub fn replace( mut self, storage : Definition::Storage ) -> Self
   {
     self.storage = Some( storage );
     self
@@ -242,19 +242,13 @@ where
 
 }
 
-// impl< K > VectorSubformer< K, Formed, crate::ReturnStorage >
-// where
-//   Formed : VectorLike< K > + core::default::Default,
-// {
-
-impl< K, Descriptor >
-HashSetSubformer< K, Descriptor, (), crate::ReturnStorage >
+impl< K, Definition >
+HashSetSubformer< K, Definition, (), crate::ReturnFormed >
 where
   K : core::cmp::Eq + core::hash::Hash,
-  Descriptor : FormerDescriptor,
-  Descriptor::Storage : ContainerAdd< Element = K >,
-  // Formed : HashSetLike< K > + core::default::Default,
-  // End : FormingEnd< Descriptor, Context >,
+  Definition : FormerDefinition,
+  Definition::Storage : ContainerAdd< Element = K >,
+  Definition::Storage : StoragePerform< Definition = Definition >,
 {
 
   /// Initializes a new instance of the builder with default settings.
@@ -272,19 +266,19 @@ where
     (
       None,
       None,
-      crate::ReturnStorage,
+      crate::ReturnFormed,
     )
   }
 
 }
 
-impl< K, Descriptor, Context, End >
-HashSetSubformer< K, Descriptor, Context, End >
+impl< K, Definition, Context, End >
+HashSetSubformer< K, Definition, Context, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
-  End : FormingEnd< Descriptor, Context >,
-  Descriptor : FormerDescriptor,
-  Descriptor::Storage : ContainerAdd< Element = K >,
+  End : FormingEnd< Definition, Context >,
+  Definition : FormerDefinition,
+  Definition::Storage : ContainerAdd< Element = K >,
 {
 
   /// Inserts an element into the set, possibly replacing an existing element.

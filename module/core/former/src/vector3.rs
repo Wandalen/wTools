@@ -24,12 +24,12 @@ impl< E > VectorLike< E > for Vec< E >
 }
 
 #[ derive( Debug ) ]
-pub struct VectorDescriptor< E >
+pub struct VectorDefinition< E >
 {
   _phantom : core::marker::PhantomData< E >,
 }
 
-impl< E > VectorDescriptor< E >
+impl< E > VectorDefinition< E >
 {
   pub fn new() -> Self
   {
@@ -37,8 +37,8 @@ impl< E > VectorDescriptor< E >
   }
 }
 
-impl< E > FormerDescriptor
-for VectorDescriptor< E >
+impl< E > FormerDefinition
+for VectorDefinition< E >
 {
   type Storage = Vec< E >;
   type Formed = Vec< E >;
@@ -47,14 +47,14 @@ for VectorDescriptor< E >
 impl< E > Storage
 for Vec< E >
 {
-  type Descriptor = VectorDescriptor< E >;
+  type Definition = VectorDefinition< E >;
 }
 
 impl< E > StoragePerform
 for Vec< E >
 {
-  // type Descriptor = VectorDescriptor< E >;
-  fn preform( self ) -> < < Self as Storage >::Descriptor as FormerDescriptor >::Formed
+  // type Definition = VectorDefinition< E >;
+  fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinition >::Formed
   {
     self
   }
@@ -65,27 +65,27 @@ for Vec< E >
 /// `VectorSubformer` leverages the `VectorLike` trait to enable the construction and manipulation
 /// of vector-like containers in a builder pattern style, promoting readability and ease of use.
 #[ derive( Debug, Default ) ]
-pub struct VectorSubformer< E, Descriptor, Context, End >
+pub struct VectorSubformer< E, Definition, Context, End >
 where
-  End : FormingEnd< Descriptor, Context >,
-  Descriptor : FormerDescriptor,
-  Descriptor::Storage : ContainerAdd< Element = E >,
+  End : FormingEnd< Definition, Context >,
+  Definition : FormerDefinition,
+  Definition::Storage : ContainerAdd< Element = E >,
 {
-  storage : core::option::Option< Descriptor::Storage >,
+  storage : core::option::Option< Definition::Storage >,
   context : core::option::Option< Context >,
   on_end : core::option::Option< End >,
 }
 
-impl< E, Descriptor, Context, End > VectorSubformer< E, Descriptor, Context, End >
+impl< E, Definition, Context, End > VectorSubformer< E, Definition, Context, End >
 where
-  End : FormingEnd< Descriptor, Context >,
-  Descriptor : FormerDescriptor,
-  Descriptor::Storage : ContainerAdd< Element = E >,
+  End : FormingEnd< Definition, Context >,
+  Definition : FormerDefinition,
+  Definition::Storage : ContainerAdd< Element = E >,
 {
 
   /// Form current former into target structure.
   #[ inline( always ) ]
-  pub fn storage( mut self ) -> Descriptor::Storage
+  pub fn storage( mut self ) -> Definition::Storage
   {
     let storage = if self.storage.is_some()
     {
@@ -103,7 +103,7 @@ where
   #[ inline( always ) ]
   pub fn begin
   (
-    storage : core::option::Option< Descriptor::Storage >,
+    storage : core::option::Option< Definition::Storage >,
     context : core::option::Option< Context >,
     on_end : End
   ) -> Self
@@ -118,14 +118,14 @@ where
 
   /// Finalizes the building process, returning the formed or a context incorporating it.
   #[ inline( always ) ]
-  pub fn form( self ) -> Descriptor::Formed
+  pub fn form( self ) -> Definition::Formed
   {
     self.end()
   }
 
   /// Finalizes the building process, returning the formed or a context incorporating it.
   #[ inline( always ) ]
-  pub fn end( mut self ) -> Descriptor::Formed
+  pub fn end( mut self ) -> Definition::Formed
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
@@ -135,7 +135,7 @@ where
 
   /// Replaces the current storage with a provided one, allowing for a reset or redirection of the building process.
   #[ inline( always ) ]
-  pub fn replace( mut self, vector : Descriptor::Storage ) -> Self
+  pub fn replace( mut self, vector : Definition::Storage ) -> Self
   {
     self.storage = Some( vector );
     self
@@ -143,10 +143,11 @@ where
 
 }
 
-impl< E, Descriptor > VectorSubformer< E, Descriptor, (), ReturnStorage >
+impl< E, Definition > VectorSubformer< E, Definition, (), ReturnFormed >
 where
-  Descriptor : FormerDescriptor,
-  Descriptor::Storage : ContainerAdd< Element = E >,
+  Definition : FormerDefinition,
+  Definition::Storage : ContainerAdd< Element = E >,
+  Definition::Storage : StoragePerform< Definition = Definition >,
 {
 
   /// Initializes a new `VectorSubformer` instance, starting with an empty formed.
@@ -162,17 +163,17 @@ where
     (
       None,
       None,
-      ReturnStorage,
+      ReturnFormed,
     )
   }
 
 }
 
-impl< E, Descriptor, Context, End > VectorSubformer< E, Descriptor, Context, End >
+impl< E, Definition, Context, End > VectorSubformer< E, Definition, Context, End >
 where
-  End : FormingEnd< Descriptor, Context >,
-  Descriptor : FormerDescriptor,
-  Descriptor::Storage : ContainerAdd< Element = E >,
+  End : FormingEnd< Definition, Context >,
+  Definition : FormerDefinition,
+  Definition::Storage : ContainerAdd< Element = E >,
 {
 
   /// Appends an element to the end of the storage, expanding the internal collection.
@@ -196,19 +197,19 @@ where
 
 //
 
-impl< E, Descriptor, Context, End > FormerBegin< Descriptor, Context >
-for VectorSubformer< E, Descriptor, Context, End >
+impl< E, Definition, Context, End > FormerBegin< Definition, Context >
+for VectorSubformer< E, Definition, Context, End >
 where
-  End : FormingEnd< Descriptor, Context >,
-  Descriptor : FormerDescriptor,
-  Descriptor::Storage : ContainerAdd< Element = E >,
+  End : FormingEnd< Definition, Context >,
+  Definition : FormerDefinition,
+  Definition::Storage : ContainerAdd< Element = E >,
 {
   type End = End;
 
   #[ inline( always ) ]
   fn _begin
   (
-    storage : core::option::Option< Descriptor::Storage >,
+    storage : core::option::Option< Definition::Storage >,
     context : core::option::Option< Context >,
     on_end : End,
   )

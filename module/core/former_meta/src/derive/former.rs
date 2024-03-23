@@ -5,7 +5,7 @@ use macro_tools::{ attr, diag, generics, container_kind, typ, Result };
 use proc_macro2::TokenStream;
 
 ///
-/// Descriptor of a field.
+/// Definition of a field.
 ///
 
 #[ allow( dead_code ) ]
@@ -755,7 +755,7 @@ pub fn performer< 'a >
     return result;
   };
   // let mut perform_output = qt!{ #name_ident #generics_ty };
-  let mut perform_output = qt!{ < #former_descriptor_name_ident #generics_ty as former::FormerDescriptor >::Formed };
+  let mut perform_output = qt!{ < #former_descriptor_name_ident #generics_ty as former::FormerDefinition >::Formed };
 
   let mut perform_generics = qt!{};
   for attr in attrs
@@ -827,7 +827,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let former_name_ident = syn::Ident::new( &former_name, name_ident.span() );
   let former_storage_name = format!( "{}FormerStorage", name_ident );
   let former_storage_name_ident = syn::Ident::new( &former_storage_name, name_ident.span() );
-  let former_descriptor_name = format!( "{}FormerDescriptor", name_ident );
+  let former_descriptor_name = format!( "{}FormerDefinition", name_ident );
   let former_descriptor_name_ident = syn::Ident::new( &former_descriptor_name, name_ident.span() );
 
   /* generic parameters */
@@ -848,7 +848,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   // add embedded generic parameters
   let mut extra_generics : syn::Generics = parse_quote!
   {
-    < __FormerContext = #name_ident #generics_ty, __FormerEnd = former::ReturnStorage >
+    < __FormerContext = #name_ident #generics_ty, __FormerEnd = former::ReturnFormed >
   };
   extra_generics.where_clause = parse_quote!
   {
@@ -932,7 +932,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// Make former, variation of builder pattern to form structure defining values of fields step by step.
       ///
       #[ inline( always ) ]
-      pub fn former() -> #former_name_ident < #generics_params (), former::ReturnStorage >
+      pub fn former() -> #former_name_ident < #generics_params (), former::ReturnFormed >
       {
         #former_name_ident :: new()
       }
@@ -951,7 +951,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
     }
 
-    impl #generics_impl former::FormerDescriptor
+    impl #generics_impl former::FormerDefinition
     for #former_descriptor_name_ident #generics_ty
     {
       type Storage = #former_storage_name_ident #generics_ty;
@@ -990,8 +990,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     for #former_storage_name_ident #generics_ty
     #generics_where
     {
-      // type Descriptor = Struct1FormerDescriptor;
-      type Descriptor = #former_descriptor_name_ident #generics_ty;
+      // type Definition = Struct1FormerDefinition;
+      type Definition = #former_descriptor_name_ident #generics_ty;
     }
     // generics_impl, generics_ty, generics_where
 
@@ -1001,11 +1001,11 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     {
 
       // fn preform( mut self ) -> #former_storage_name_ident #generics_ty
-      fn preform( mut self ) -> < #former_descriptor_name_ident #generics_ty as former::FormerDescriptor >::Formed
+      fn preform( mut self ) -> < #former_descriptor_name_ident #generics_ty as former::FormerDefinition >::Formed
       {
         #( #fields_form )*
         // Rust does not support that, yet
-        // let result = < #former_descriptor_name_ident #generics_ty as former::FormerDescriptor >::Formed
+        // let result = < #former_descriptor_name_ident #generics_ty as former::FormerDefinition >::Formed
         let result = #name_ident #generics_ty
         {
           #( #fields_names, )*
@@ -1037,7 +1037,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// Finish setting options and return formed entity.
       ///
       #[ inline( always ) ]
-      pub fn preform( self ) -> < #former_descriptor_name_ident #generics_ty as former::FormerDescriptor >::Formed
+      pub fn preform( self ) -> < #former_descriptor_name_ident #generics_ty as former::FormerDefinition >::Formed
       // #name_ident #generics_ty
       {
         < #former_storage_name_ident #generics_ty as former::StoragePerform >::preform( self.storage )
@@ -1089,7 +1089,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// End the process of forming returning original context of forming.
       ///
       #[ inline( always ) ]
-      pub fn form( self ) -> < #former_descriptor_name_ident #generics_ty as former::FormerDescriptor >::Formed
+      pub fn form( self ) -> < #former_descriptor_name_ident #generics_ty as former::FormerDefinition >::Formed
       {
         self.end()
       }
@@ -1098,7 +1098,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// End the process of forming returning original context of forming.
       ///
       #[ inline( always ) ]
-      pub fn end( mut self ) -> < #former_descriptor_name_ident #generics_ty as former::FormerDescriptor >::Formed
+      pub fn end( mut self ) -> < #former_descriptor_name_ident #generics_ty as former::FormerDefinition >::Formed
       {
         let on_end = self.on_end.take().unwrap();
         let context = self.context.take();
@@ -1113,7 +1113,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     }
 
     #[ automatically_derived ]
-    impl #generics_impl #former_name_ident < #generics_params (), former::ReturnStorage >
+    impl #generics_impl #former_name_ident < #generics_params (), former::ReturnFormed >
     #generics_where
     {
 
@@ -1123,12 +1123,12 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       #[ inline( always ) ]
       pub fn new() -> Self
       {
-        // #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnStorage > :: begin
+        // #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnFormed > :: begin
         Self :: begin
         (
           None,
           None,
-          former::ReturnStorage,
+          former::ReturnFormed,
         )
       }
 

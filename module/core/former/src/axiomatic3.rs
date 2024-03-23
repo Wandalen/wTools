@@ -2,19 +2,20 @@
 
 pub trait Storage : ::core::default::Default
 {
-  type Descriptor : FormerDescriptor< Storage = Self >;
+  type Definition : FormerDefinition< Storage = Self >;
 }
 
 /// xxx
 pub trait StoragePerform : Storage
 {
-  fn preform( self ) -> < < Self as Storage >::Descriptor as FormerDescriptor >::Formed;
+  fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinition >::Formed;
 }
 
 /// xxx
-pub trait FormerDescriptor
+pub trait FormerDefinition
 {
-  type Storage : StoragePerform< Descriptor = Self >;
+  // type Storage : StoragePerform< Definition = Self >;
+  type Storage : Storage< Definition = Self >;
   type Formed;
 }
 
@@ -23,8 +24,8 @@ pub trait FormerDescriptor
 //   type Storage : StoragePerform< Formed = Self::Formed >;
 //   type Formed;
 //   type Context;
-//   type FormerDescriptor : FormerDescriptor< Storage = Self::Storage, Formed = Self::Formed >;
-//   type End : FormingEnd< Self::FormerDescriptor, Self::Context >;
+//   type FormerDefinition : FormerDefinition< Storage = Self::Storage, Formed = Self::Formed >;
+//   type End : FormingEnd< Self::FormerDefinition, Self::Context >;
 // }
 
 /// Defines a handler for the end of a subforming process, enabling the return of the original context.
@@ -35,7 +36,7 @@ pub trait FormerDescriptor
 /// # Parameters
 /// - `Storage`: The type of the container being processed.
 /// - `Context`: The type of the context that might be altered or returned upon completion.
-pub trait FormingEnd< Former : FormerDescriptor, Context >
+pub trait FormingEnd< Definition : FormerDefinition, Context >
 {
   /// Called at the end of the subforming process to return the modified or original context.
   ///
@@ -45,15 +46,15 @@ pub trait FormingEnd< Former : FormerDescriptor, Context >
   ///
   /// # Returns
   /// Returns the transformed or original context based on the implementation.
-  fn call( &self, storage : Former::Storage, context : core::option::Option< Context > ) -> Former::Formed;
+  fn call( &self, storage : Definition::Storage, context : core::option::Option< Context > ) -> Definition::Formed;
 }
 
-impl< Former : FormerDescriptor, Context, F > FormingEnd< Former, Context > for F
+impl< Definition : FormerDefinition, Context, F > FormingEnd< Definition, Context > for F
 where
-  F : Fn( Former::Storage, core::option::Option< Context > ) -> Former::Formed,
+  F : Fn( Definition::Storage, core::option::Option< Context > ) -> Definition::Formed,
 {
   #[ inline( always ) ]
-  fn call( &self, storage : Former::Storage, context : core::option::Option< Context > ) -> Former::Formed
+  fn call( &self, storage : Definition::Storage, context : core::option::Option< Context > ) -> Definition::Formed
   {
     self( storage, context )
   }
@@ -64,13 +65,17 @@ where
 /// This struct is useful when the forming process should result in the formed container being returned directly,
 /// bypassing any additional context processing. It simplifies scenarios where the formed container is the final result.
 #[ derive( Debug, Default ) ]
-pub struct ReturnStorage;
+pub struct ReturnFormed;
 
-impl< Former : FormerDescriptor > FormingEnd< Former, () >
-for ReturnStorage
+impl< Definition : FormerDefinition > FormingEnd< Definition, () >
+for ReturnFormed
+where
+  Definition::Storage : StoragePerform< Definition = Definition >,
+  // xxx : rename Former -> Definition
+  // xxx : rename Definition -> Definition
 {
   #[ inline( always ) ]
-  fn call( &self, storage : Former::Storage, _context : core::option::Option< () > ) -> Former::Formed
+  fn call( &self, storage : Definition::Storage, _context : core::option::Option< () > ) -> Definition::Formed
   {
     storage.preform()
   }
@@ -90,14 +95,14 @@ for ReturnStorage
 /// * `Context` - The type of the context that may be altered or returned by the closure.
 ///               This allows for flexible manipulation of context based on the container.
 #[ cfg( not( feature = "no_std" ) ) ]
-pub struct FormingEndWrapper< Former : FormerDescriptor, Context >
+pub struct FormingEndWrapper< Definition : FormerDefinition, Context >
 {
-  closure : Box< dyn Fn( Former::Storage, Option< Context > ) -> Former::Formed >,
-  _marker : std::marker::PhantomData< Former::Storage >,
+  closure : Box< dyn Fn( Definition::Storage, Option< Context > ) -> Definition::Formed >,
+  _marker : std::marker::PhantomData< Definition::Storage >,
 }
 
 #[ cfg( not( feature = "no_std" ) ) ]
-impl< Former : FormerDescriptor, Context > FormingEndWrapper< Former, Context >
+impl< Definition : FormerDefinition, Context > FormingEndWrapper< Definition, Context >
 {
   /// Constructs a new `FormingEndWrapper` with the provided closure.
   ///
@@ -110,7 +115,7 @@ impl< Former : FormerDescriptor, Context > FormingEndWrapper< Former, Context >
   /// # Returns
   ///
   /// Returns an instance of `FormingEndWrapper` encapsulating the provided closure.
-  pub fn new( closure : impl Fn( Former::Storage, Option< Context > ) -> Former::Formed + 'static ) -> Self
+  pub fn new( closure : impl Fn( Definition::Storage, Option< Context > ) -> Definition::Formed + 'static ) -> Self
   {
     Self
     {
@@ -123,7 +128,7 @@ impl< Former : FormerDescriptor, Context > FormingEndWrapper< Former, Context >
 #[ cfg( not( feature = "no_std" ) ) ]
 use std::fmt;
 #[ cfg( not( feature = "no_std" ) ) ]
-impl< Former : FormerDescriptor, Context > fmt::Debug for FormingEndWrapper< Former, Context >
+impl< Definition : FormerDefinition, Context > fmt::Debug for FormingEndWrapper< Definition, Context >
 {
   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
@@ -135,10 +140,10 @@ impl< Former : FormerDescriptor, Context > fmt::Debug for FormingEndWrapper< For
 }
 
 #[ cfg( not( feature = "no_std" ) ) ]
-impl< Former : FormerDescriptor, Context > FormingEnd< Former, Context >
-for FormingEndWrapper< Former, Context >
+impl< Definition : FormerDefinition, Context > FormingEnd< Definition, Context >
+for FormingEndWrapper< Definition, Context >
 {
-  fn call( &self, storage : Former::Storage, context : Option< Context > ) -> Former::Formed
+  fn call( &self, storage : Definition::Storage, context : Option< Context > ) -> Definition::Formed
   {
     ( self.closure )( storage, context )
   }
@@ -179,7 +184,7 @@ for FormingEndWrapper< Former, Context >
 /// sophisticated and flexible construction patterns conducive to complex data transformations or object creation
 /// sequences within builder patterns.
 
-pub trait FormerBegin< Former : FormerDescriptor, Context >
+pub trait FormerBegin< Definition : FormerDefinition, Context >
 {
 
   /// * `End` - A trait bound marking the closure or handler invoked upon completing the subforming process. Implementers
@@ -187,7 +192,7 @@ pub trait FormerBegin< Former : FormerDescriptor, Context >
   ///           into `Formed`, optionally utilizing `Context` to guide this transformation. It is crucial that this
   ///           associated type satisfies the `FormingEnd<Formed, Context>` trait, defining the precise mechanics of
   ///           how the subformer concludes its operation.
-  type End : FormingEnd< Former, Context >;
+  type End : FormingEnd< Definition, Context >;
 
   /// Launches the subforming process with an initial storage and context, setting up an `on_end` completion handler.
   ///
@@ -198,7 +203,7 @@ pub trait FormerBegin< Former : FormerDescriptor, Context >
   /// * `on_end` - A completion handler responsible for transforming the accumulated `Storage` into the final `Formed` structure.
   fn _begin
   (
-    storage : core::option::Option< Former::Storage >,
+    storage : core::option::Option< Definition::Storage >,
     context : core::option::Option< Context >,
     on_end : Self::End,
   ) -> Self;

@@ -119,9 +119,9 @@ mod derive
 ///   impl UserProfile
 ///   {
 ///     #[ inline( always ) ]
-///     pub fn former() -> UserProfileFormer< UserProfile, former::ReturnStorage >
+///     pub fn former() -> UserProfileFormer< UserProfile, former::ReturnFormed >
 ///     {
-///       UserProfileFormer::< UserProfile, former::ReturnStorage >::new()
+///       UserProfileFormer::< UserProfile, former::ReturnFormed >::new()
 ///     }
 ///   }
 ///
@@ -136,7 +136,7 @@ mod derive
 ///   pub struct UserProfileFormer
 ///   <
 ///     Context = UserProfile,
-///     End = former::ReturnStorage,
+///     End = former::ReturnFormed,
 ///   >
 ///   where
 ///     End : former::FormingEnd< UserProfile, Context >,
@@ -189,9 +189,9 @@ mod derive
 ///
 ///      // qqq : xxx : outdated, update
 ///      #[ inline( always ) ]
-///      pub fn new() -> UserProfileFormer< UserProfile, former::ReturnStorage >
+///      pub fn new() -> UserProfileFormer< UserProfile, former::ReturnFormed >
 ///      {
-///        UserProfileFormer::< UserProfile, former::ReturnStorage >::begin( None, former::ReturnStorage )
+///        UserProfileFormer::< UserProfile, former::ReturnFormed >::begin( None, former::ReturnFormed )
 ///      }
 ///
 ///     #[ inline( always ) ]

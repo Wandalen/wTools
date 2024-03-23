@@ -17,7 +17,7 @@ tests_impls!
     a_id!( former.storage.int_optional_1, None );
     a_id!( former.storage.string_optional_1, None );
     a_id!( former.context, None );
-    a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnStorage ) ) );
+    a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnFormed ) ) );
     let former2 = Struct1Former::new();
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
 
@@ -48,7 +48,7 @@ tests_impls!
 
     let mut storage = Struct1FormerStorage::default();
     storage.int_1 = Some( 13 );
-    // Struct1Former::< (), the_module::ReturnStorage >::begin( storage, None, the_module::ReturnStorage )
+    // Struct1Former::< (), the_module::ReturnFormed >::begin( storage, None, the_module::ReturnFormed )
     // xxx
 
   }
@@ -82,13 +82,13 @@ tests_impls!
   {
 
     // descriptor exists and has Formed
-    let got = < Struct1FormerDescriptor as the_module::FormerDescriptor >::Formed::former().form();
+    let got = < Struct1FormerDefinition as the_module::FormerDefinition >::Formed::former().form();
     let exp = Struct1::former().form();
     a_id!( got, exp );
 
     // descriptor exists and has Storage
     use former::StoragePerform;
-    let got = < Struct1FormerDescriptor as the_module::FormerDescriptor >::Storage::preform( Struct1::former().storage );
+    let got = < Struct1FormerDefinition as the_module::FormerDefinition >::Storage::preform( Struct1::former().storage );
     let exp = Struct1::former().form();
     a_id!( got, exp );
 
@@ -116,7 +116,7 @@ tests_impls!
     a_id!( got, exp );
 
     // storage exists
-    let got = < < Struct1FormerStorage as the_module::Storage >::Descriptor as the_module::FormerDescriptor >::Formed::former().form();
+    let got = < < Struct1FormerStorage as the_module::Storage >::Definition as the_module::FormerDefinition >::Formed::former().form();
     let exp = Struct1::former().form();
     a_id!( got, exp );
 

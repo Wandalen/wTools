@@ -4,7 +4,7 @@ use super::*;
 
 /// Parameter description.
 #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
-pub struct TemplateParameterDescriptor
+pub struct TemplateParameterDefinition
 {
   descriptor : String,
   is_mandatory : bool,
@@ -16,7 +16,7 @@ pub struct TemplateParameters
 {
   // #[ debug = the_module::VectorSubformer, descriptor, descriptor( name ) ]
   #[ subformer( the_module::VectorSubformer ) ]
-  descriptors : Vec< TemplateParameterDescriptor >,
+  descriptors : Vec< TemplateParameterDefinition >,
 
   // #[ subformer_setter = the_module::VectorSubformer ]
   // pub fn descriptor( self, name : &str )
@@ -26,17 +26,17 @@ pub struct TemplateParameters
 
 }
 
-impl< Context, End > former::FormerBegin< TemplateParameterDescriptorFormerStorage, TemplateParameterDescriptor, Context >
-for TemplateParameterDescriptorFormer< Context, End >
+impl< Context, End > former::FormerBegin< TemplateParameterDefinitionFormerStorage, TemplateParameterDefinition, Context >
+for TemplateParameterDefinitionFormer< Context, End >
 where
-  End : the_module::FormingEnd< TemplateParameterDescriptor, Context >,
+  End : the_module::FormingEnd< TemplateParameterDefinition, Context >,
 {
   type End = End;
 
   #[ inline( always ) ]
   fn _begin
   (
-    storage : core::option::Option< TemplateParameterDescriptorFormerStorage >, /* xxx2 : that should be storage */
+    storage : core::option::Option< TemplateParameterDefinitionFormerStorage >, /* xxx2 : that should be storage */
     context : core::option::Option< Context >,
     on_end : End,
   ) -> Self
@@ -58,14 +58,14 @@ where
   where
     Former2 : former::FormerBegin
     <
-      TemplateParameterDescriptorFormerStorage,
-      TemplateParameterDescriptor,
+      TemplateParameterDefinitionFormerStorage,
+      TemplateParameterDefinition,
       Self,
-      End = former::FormingEndWrapper< TemplateParameterDescriptor, Self >,
+      End = former::FormingEndWrapper< TemplateParameterDefinition, Self >,
     >,
     // FieldContainer : ContainerAdd,
   {
-    let on_end = | descriptor : TemplateParameterDescriptor, super_former : core::option::Option< Self > | -> Self
+    let on_end = | descriptor : TemplateParameterDefinition, super_former : core::option::Option< Self > | -> Self
     {
       let mut super_former = super_former.unwrap();
       if super_former.storage.descriptors.is_none()
@@ -85,9 +85,9 @@ where
 
   #[ inline( always ) ]
   pub fn descriptor( self, name : &str ) ->
-  TemplateParameterDescriptorFormer< Self, impl former::FormingEnd< TemplateParameterDescriptor, Self > >
+  TemplateParameterDefinitionFormer< Self, impl former::FormingEnd< TemplateParameterDefinition, Self > >
   {
-    self.descriptor3::< TemplateParameterDescriptorFormer< _, _ > >().descriptor( name )
+    self.descriptor3::< TemplateParameterDefinitionFormer< _, _ > >().descriptor( name )
   }
 
 }
@@ -98,15 +98,15 @@ fn basic()
 
   let got = TemplateParameters::former()
   .descriptors()
-    .push( TemplateParameterDescriptor::former().descriptor( "a" ).form() )
-    .push( TemplateParameterDescriptor::former().descriptor( "b" ).form() )
+    .push( TemplateParameterDefinition::former().descriptor( "a" ).form() )
+    .push( TemplateParameterDefinition::former().descriptor( "b" ).form() )
     .end()
   .form();
 
   let descriptors = vec!
   [
-    TemplateParameterDescriptor { descriptor : "a".to_string(), is_mandatory : false },
-    TemplateParameterDescriptor { descriptor : "b".to_string(), is_mandatory : false },
+    TemplateParameterDefinition { descriptor : "a".to_string(), is_mandatory : false },
+    TemplateParameterDefinition { descriptor : "b".to_string(), is_mandatory : false },
   ];
   let exp = TemplateParameters { descriptors };
   a_id!( got, exp );

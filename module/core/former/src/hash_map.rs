@@ -21,11 +21,11 @@ where
 
   // /// Return former.
   // #[ inline( always ) ]
-  // fn former< Descriptor : FormerDescriptor >( self )
+  // fn former< Definition : FormerDefinition >( self )
   // ->
-  // HashMapSubformer< K, E, Descriptor, (), impl FormingEnd< Self, Self > >
+  // HashMapSubformer< K, E, Definition, (), impl FormingEnd< Self, Self > >
   // {
-  //   HashMapSubformer::begin( Some( self ), None, ReturnStorage )
+  //   HashMapSubformer::begin( Some( self ), None, ReturnFormed )
   // }
   // xxx : uncomment and cover by tests
 
@@ -48,14 +48,14 @@ where
 //
 
 #[ derive( Debug ) ]
-pub struct HashMapDescriptor< K, E >
+pub struct HashMapDefinition< K, E >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
   _phantom : ::core::marker::PhantomData< ( K, E ) >,
 }
 
-impl< K, E > HashMapDescriptor< K, E >
+impl< K, E > HashMapDefinition< K, E >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
@@ -65,8 +65,8 @@ where
   }
 }
 
-impl< K, E > FormerDescriptor
-for HashMapDescriptor< K, E >
+impl< K, E > FormerDefinition
+for HashMapDefinition< K, E >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
@@ -79,8 +79,8 @@ for HashMap< K, E >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  type Descriptor = HashMapDescriptor< K, E >;
-  // fn preform( self ) -> < < Self as Storage >::Descriptor as FormerDescriptor >::Formed
+  type Definition = HashMapDefinition< K, E >;
+  // fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinition >::Formed
   // {
   //   self
   // }
@@ -91,7 +91,7 @@ for HashMap< K, E >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  fn preform( self ) -> < < Self as Storage >::Descriptor as FormerDescriptor >::Formed
+  fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinition >::Formed
   {
     self
   }
@@ -136,34 +136,34 @@ where
 /// ```
 
 #[ derive( Debug, Default ) ]
-pub struct HashMapSubformer< K, E, Descriptor, Context, End >
+pub struct HashMapSubformer< K, E, Definition, Context, End >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
   // Formed : HashMapLike< K, E > + ::core::default::Default,
-  End : FormingEnd< Descriptor, Context >,
-  Descriptor : FormerDescriptor,
-  Descriptor::Storage : ContainerAdd< Element = ( K, E ) >,
+  End : FormingEnd< Definition, Context >,
+  Definition : FormerDefinition,
+  Definition::Storage : ContainerAdd< Element = ( K, E ) >,
 {
-  storage : ::core::option::Option< Descriptor::Storage >,
+  storage : ::core::option::Option< Definition::Storage >,
   context : ::core::option::Option< Context >,
   on_end : ::core::option::Option< End >,
   _e_phantom : ::core::marker::PhantomData< E >,
   _k_phantom : ::core::marker::PhantomData< K >,
 }
 
-impl< K, E, Descriptor, Context, End >
-HashMapSubformer< K, E, Descriptor, Context, End >
+impl< K, E, Definition, Context, End >
+HashMapSubformer< K, E, Definition, Context, End >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
   // Formed : HashMapLike< K, E > + ::core::default::Default,
-  End : FormingEnd< Descriptor, Context >,
-  Descriptor : FormerDescriptor,
-  Descriptor::Storage : ContainerAdd< Element = ( K, E ) >,
+  End : FormingEnd< Definition, Context >,
+  Definition : FormerDefinition,
+  Definition::Storage : ContainerAdd< Element = ( K, E ) >,
 {
 
   /// Form current former into target structure.
   #[ inline( always ) ]
-  pub fn storage( mut self ) -> Descriptor::Storage
+  pub fn storage( mut self ) -> Definition::Storage
   {
     // xxx
     let storage = if self.storage.is_some()
@@ -186,7 +186,7 @@ where
   #[ inline( always ) ]
   pub fn begin
   (
-    storage : ::core::option::Option< Descriptor::Storage >,
+    storage : ::core::option::Option< Definition::Storage >,
     context : ::core::option::Option< Context >,
     on_end : End,
   )
@@ -204,7 +204,7 @@ where
 
   /// Return context of your struct moving formed there. Should be called after forming process.
   #[ inline( always ) ]
-  pub fn end( mut self ) -> Descriptor::Formed
+  pub fn end( mut self ) -> Definition::Formed
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
@@ -214,14 +214,14 @@ where
 
   /// Return context of your struct moving formed there. Should be called after forming process.
   #[ inline( always ) ]
-  pub fn form( self ) -> Descriptor::Formed
+  pub fn form( self ) -> Definition::Formed
   {
     self.end()
   }
 
   /// Set the whole storage instead of setting each element individually.
   #[ inline( always ) ]
-  pub fn replace( mut self, storage : Descriptor::Storage ) -> Self
+  pub fn replace( mut self, storage : Definition::Storage ) -> Self
   {
     self.storage = Some( storage );
     self
@@ -229,13 +229,13 @@ where
 
 }
 
-impl< K, E, Descriptor >
-HashMapSubformer< K, E, Descriptor, (), crate::ReturnStorage >
+impl< K, E, Definition >
+HashMapSubformer< K, E, Definition, (), crate::ReturnFormed >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
-  Descriptor : FormerDescriptor,
-  Descriptor::Storage : ContainerAdd< Element = ( K, E ) >,
-  // Formed : HashMapLike< K, E > + ::core::default::Default,
+  Definition : FormerDefinition,
+  Definition::Storage : ContainerAdd< Element = ( K, E ) >,
+  Definition::Storage : StoragePerform< Definition = Definition >,
 {
 
   /// Create a new instance without context or on end processing. It just returns continaer on end of forming.
@@ -246,20 +246,20 @@ where
     (
       None,
       None,
-      crate::ReturnStorage,
+      crate::ReturnFormed,
     )
   }
 
 }
 
-impl< K, E, Descriptor, Context, End >
-HashMapSubformer< K, E, Descriptor, Context, End >
+impl< K, E, Definition, Context, End >
+HashMapSubformer< K, E, Definition, Context, End >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
   // Formed : HashMapLike< K, E > + ::core::default::Default,
-  End : FormingEnd< Descriptor, Context >,
-  Descriptor : FormerDescriptor,
-  Descriptor::Storage : ContainerAdd< Element = ( K, E ) >,
+  End : FormingEnd< Definition, Context >,
+  Definition : FormerDefinition,
+  Definition::Storage : ContainerAdd< Element = ( K, E ) >,
 {
 
   /// Inserts a key-value pair into the formed. If the formed doesn't exist, it is created.
@@ -276,7 +276,7 @@ where
   where
     K2 : ::core::convert::Into< K >,
     E2 : ::core::convert::Into< E >,
-    // Descriptor::Storage : ContainerAdd< Element = ( K, E ) >,
+    // Definition::Storage : ContainerAdd< Element = ( K, E ) >,
   {
     if self.storage.is_none()
     {
