@@ -1000,7 +1000,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     #generics_where
     {
 
-      fn preform( mut self ) -> #former_storage_name_ident #generics_ty
+      // fn preform( mut self ) -> #former_storage_name_ident #generics_ty
+      fn preform( mut self ) -> < former_descriptor_name_ident #generics_ty as former::FormerDescriptor >::Formed
       {
         Self
         {
