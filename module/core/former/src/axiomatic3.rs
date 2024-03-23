@@ -3,7 +3,6 @@
 /// xxx
 pub trait StoragePerform : ::core::default::Default
 {
-  // type FormedResult;
   type Descriptor : FormerDescriptor< Storage = Self >;
   fn preform( self ) -> < < Self as StoragePerform >::Descriptor as FormerDescriptor >::Formed;
 }
@@ -13,7 +12,6 @@ pub trait FormerDescriptor
 {
   type Storage : StoragePerform< Descriptor = Self >;
   type Formed;
-  // type Former;
 }
 
 // pub trait FormerDefinition

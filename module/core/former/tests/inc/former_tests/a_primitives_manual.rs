@@ -70,7 +70,6 @@ for Struct1FormerDescriptor
 impl former::StoragePerform
 for Struct1FormerStorage
 {
-  // type Formed = Struct1;
   type Descriptor = Struct1FormerDescriptor;
 
   fn preform( mut self ) -> < < Self as former::StoragePerform >::Descriptor as former::FormerDescriptor >::Formed
@@ -114,7 +113,7 @@ for Struct1FormerStorage
       None
     };
 
-    // < Self::Descriptor as former::FormerDescriptor >::Formed
+    // xxx : Rust failt to use parameter here
     // < < Self as former::StoragePerform >::Descriptor as former::FormerDescriptor >::Formed
     Struct1
     {
@@ -148,59 +147,9 @@ where
   FormerEnd: the_module::FormingEnd< Struct1FormerDescriptor, FormerContext >,
 {
 
-  // xxx : test that method exists
   fn preform( self ) -> < Struct1FormerDescriptor as former::FormerDescriptor >::Formed
   {
-
-    // xxx : test that method exists
     former::StoragePerform::preform( self.storage )
-
-//     let int_1 = if self.storage.int_1.is_some()
-//     {
-//       self.storage.int_1.take().unwrap()
-//     }
-//     else
-//     {
-//       let val : i32 = Default::default();
-//       val
-//     };
-//
-//     let string_1 = if self.storage.string_1.is_some()
-//     {
-//       self.storage.string_1.take().unwrap()
-//     }
-//     else
-//     {
-//       let val : String = Default::default();
-//       val
-//     };
-//
-//     let int_optional_1 = if self.storage.int_optional_1.is_some()
-//     {
-//       Some( self.storage.int_optional_1.take().unwrap() )
-//     }
-//     else
-//     {
-//       None
-//     };
-//
-//     let string_optional_1 = if self.storage.string_optional_1.is_some()
-//     {
-//       Some( self.storage.string_optional_1.take().unwrap() )
-//     }
-//     else
-//     {
-//       None
-//     };
-//
-//     Struct1
-//     {
-//       int_1,
-//       string_1,
-//       int_optional_1,
-//       string_optional_1,
-//     }
-
   }
 
   #[ inline( always ) ]
@@ -232,18 +181,17 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn form( self ) -> < Struct1FormerDescriptor as former::FormerDescriptor >::Formed
-  {
-    self.end()
-  }
-
-  #[ inline( always ) ]
   pub fn end( mut self ) -> < Struct1FormerDescriptor as former::FormerDescriptor >::Formed
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
-    // let formed = self.preform();
     on_end.call( self.storage, context )
+  }
+
+  #[ inline( always ) ]
+  pub fn form( self ) -> < Struct1FormerDescriptor as former::FormerDescriptor >::Formed
+  {
+    self.end()
   }
 
   pub fn int_1< Src >( mut self, src : Src ) -> Self
@@ -275,16 +223,10 @@ where
 impl Struct1Former< (), the_module::ReturnStorage >
 {
 
-  // xxx : make sure it's covered by tests
   #[ inline( always ) ]
   pub fn new() -> Struct1Former< (), the_module::ReturnStorage >
   {
     Struct1Former::< (), the_module::ReturnStorage >::begin( None, None, the_module::ReturnStorage )
-    // Struct1Former::
-    // <
-    //   Struct1,
-    //   the_module::ReturnStorage,
-    // >::begin( None, the_module::ReturnStorage )
   }
 
 }

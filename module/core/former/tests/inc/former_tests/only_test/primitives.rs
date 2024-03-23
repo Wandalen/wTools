@@ -69,8 +69,38 @@ tests_impls!
   fn descriptor()
   {
 
-    // descriptor exists
+    // descriptor exists and has Formed
     let got = < Struct1FormerDescriptor as the_module::FormerDescriptor >::Formed::former().form();
+    let exp = Struct1::former().form();
+    a_id!( got, exp );
+
+    // descriptor exists and has Storage
+    use former::StoragePerform;
+    let got = < Struct1FormerDescriptor as the_module::FormerDescriptor >::Storage::preform( Struct1::former().storage );
+    let exp = Struct1::former().form();
+    a_id!( got, exp );
+
+  }
+
+  //
+
+  fn storage()
+  {
+
+    // descriptor exists and has Storage
+    // use former::StoragePerform;
+    let got = < Struct1FormerStorage as the_module::StoragePerform >::preform( Struct1::former().storage );
+    let exp = Struct1::former().form();
+    a_id!( got, exp );
+
+    // descriptor exists and has Storage
+    use former::StoragePerform;
+    let got = Struct1::former().storage.preform();
+    let exp = Struct1::former().form();
+    a_id!( got, exp );
+
+    // storage exists
+    let got = < < Struct1FormerStorage as the_module::StoragePerform >::Descriptor as the_module::FormerDescriptor >::Formed::former().form();
     let exp = Struct1::former().form();
     a_id!( got, exp );
 
@@ -262,6 +292,7 @@ tests_index!
   internals,
   preform,
   descriptor,
+  storage,
   test_int,
   test_string,
   test_optional_string,
