@@ -43,6 +43,18 @@ tests_impls!
 
   //
 
+  fn begin()
+  {
+
+    let mut storage = Struct1FormerStorage::default();
+    storage.int_1 = Some( 13 );
+    // Struct1Former::< (), the_module::ReturnStorage >::begin( storage, None, the_module::ReturnStorage )
+    // xxx
+
+  }
+
+  //
+
   fn preform()
   {
 
@@ -88,9 +100,13 @@ tests_impls!
   {
 
     // descriptor exists and has Storage
-    // use former::StoragePerform;
     let got = < Struct1FormerStorage as the_module::StoragePerform >::preform( Struct1::former().storage );
     let exp = Struct1::former().form();
+    a_id!( got, exp );
+
+    // default is implemented for Storage
+    let got = Struct1FormerStorage::default().preform();
+    let exp = Struct1::former().storage.preform();
     a_id!( got, exp );
 
     // descriptor exists and has Storage
@@ -290,6 +306,7 @@ tests_impls!
 tests_index!
 {
   internals,
+  begin,
   preform,
   descriptor,
   storage,

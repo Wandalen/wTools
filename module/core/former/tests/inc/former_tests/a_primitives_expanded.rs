@@ -1,8 +1,8 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-// #[ derive( Debug, PartialEq ) ]
-#[ derive( Debug, PartialEq, the_module::Former ) ] #[ debug ]
+#[ derive( Debug, PartialEq ) ]
+// #[ derive( Debug, PartialEq, the_module::Former ) ] #[ debug ]
 pub struct Struct1
 {
   pub int_1 : i32,
