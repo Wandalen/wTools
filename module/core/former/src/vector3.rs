@@ -211,7 +211,8 @@ where
     storage : core::option::Option< Descriptor::Storage >,
     context : core::option::Option< Context >,
     on_end : End,
-  ) -> Self
+  )
+  -> Self
   {
     Self::begin( storage, context, on_end )
   }
