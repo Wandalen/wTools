@@ -11,7 +11,7 @@ use collection_tools::Vec;
 ///
 pub trait VectorLike< E >
 {
-  /// Appends an element to the back of a formed.
+  /// Appends an element to the back of a storage.
   fn push( &mut self, element : E );
 }
 
@@ -23,6 +23,7 @@ impl< E > VectorLike< E > for Vec< E >
   }
 }
 
+#[ derive( Debug ) ]
 pub struct VectorDescriptor< E >
 {
   _phantom : core::marker::PhantomData< E >,
@@ -30,7 +31,7 @@ pub struct VectorDescriptor< E >
 
 impl< E > VectorDescriptor< E >
 {
-  fn new() -> Self
+  pub fn new() -> Self
   {
     Self { _phantom : core::marker::PhantomData }
   }
@@ -58,75 +59,88 @@ for VectorDescriptor< E >
 /// `VectorSubformer` leverages the `VectorLike` trait to enable the construction and manipulation
 /// of vector-like containers in a builder pattern style, promoting readability and ease of use.
 #[ derive( Debug, Default ) ]
-pub struct VectorSubformer< E, Context, End >
+pub struct VectorSubformer< E, Descriptor, Context, End >
 where
-  End : FormingEnd< VectorDescriptor< E >, Context >,
+  End : FormingEnd< Descriptor, Context >,
+  Descriptor : FormerDescriptor,
+  Descriptor::Storage : ContainerAdd< Element = E >,
 {
-  formed : core::option::Option< < VectorDescriptor< E > as axiomatic::FormerDescriptor >::Formed >,
+  storage : core::option::Option< Descriptor::Storage >,
   context : core::option::Option< Context >,
   on_end : core::option::Option< End >,
 }
 
-impl< E, Context, End > VectorSubformer< E, Context, End >
+impl< E, Descriptor, Context, End > VectorSubformer< E, Descriptor, Context, End >
 where
-  End : FormingEnd< VectorDescriptor< E >, Context >,
+  End : FormingEnd< Descriptor, Context >,
+  Descriptor : FormerDescriptor,
+  Descriptor::Storage : ContainerAdd< Element = E >,
 {
 
   /// Form current former into target structure.
   #[ inline( always ) ]
-  pub fn form( mut self ) -> < VectorDescriptor< E > as axiomatic::FormerDescriptor >::Formed
+  pub fn storage( mut self ) -> Descriptor::Storage
   {
-    let formed = if self.formed.is_some()
+    let storage = if self.storage.is_some()
     {
-      self.formed.take().unwrap()
+      self.storage.take().unwrap()
     }
     else
     {
       let val = Default::default();
       val
     };
-    formed
+    storage
   }
 
-  /// Begins the building process, optionally initializing with a context and formed.
+  /// Begins the building process, optionally initializing with a context and storage.
   #[ inline( always ) ]
   pub fn begin
   (
-    formed : core::option::Option< < VectorDescriptor< E > as axiomatic::FormerDescriptor >::Formed >,
+    storage : core::option::Option< Descriptor::Storage >,
     context : core::option::Option< Context >,
     on_end : End
   ) -> Self
   {
     Self
     {
+      storage,
       context,
-      formed,
       on_end : Some( on_end ),
     }
   }
 
   /// Finalizes the building process, returning the formed or a context incorporating it.
   #[ inline( always ) ]
-  pub fn end( mut self ) -> < VectorDescriptor< E > as axiomatic::FormerDescriptor >::Formed
+  pub fn form( self ) -> Descriptor::Formed
+  {
+    self.end()
+  }
+
+  /// Finalizes the building process, returning the formed or a context incorporating it.
+  #[ inline( always ) ]
+  pub fn end( mut self ) -> Descriptor::Formed
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
-    let formed = self.form();
-    on_end.call( formed, context )
+    let storage = self.storage();
+    on_end.call( storage, context )
   }
 
-  /// Replaces the current formed with a provided one, allowing for a reset or redirection of the building process.
+  /// Replaces the current storage with a provided one, allowing for a reset or redirection of the building process.
   #[ inline( always ) ]
-  pub fn replace( mut self, vector : < VectorDescriptor< E > as axiomatic::FormerDescriptor >::Formed ) -> Self
+  pub fn replace( mut self, vector : Descriptor::Storage ) -> Self
   {
-    self.formed = Some( vector );
+    self.storage = Some( vector );
     self
   }
 
 }
 
-impl< E > VectorSubformer< E, (), ReturnStorage >
+impl< E, Descriptor > VectorSubformer< E, Descriptor, (), ReturnStorage >
 where
+  Descriptor : FormerDescriptor,
+  Descriptor::Storage : ContainerAdd< Element = E >,
 {
 
   /// Initializes a new `VectorSubformer` instance, starting with an empty formed.
@@ -148,23 +162,26 @@ where
 
 }
 
-impl< E, Context, End > VectorSubformer< E, Context, End >
+impl< E, Descriptor, Context, End > VectorSubformer< E, Descriptor, Context, End >
 where
-  End : FormingEnd< VectorDescriptor< E >, Context >,
+  End : FormingEnd< Descriptor, Context >,
+  Descriptor : FormerDescriptor,
+  Descriptor::Storage : ContainerAdd< Element = E >,
 {
 
-  /// Appends an element to the end of the formed, expanding the internal collection.
+  /// Appends an element to the end of the storage, expanding the internal collection.
   #[ inline( always ) ]
   pub fn push< IntoElement >( mut self, element : IntoElement ) -> Self
   where IntoElement : core::convert::Into< E >,
   {
-    if self.formed.is_none()
+    if self.storage.is_none()
     {
-      self.formed = core::option::Option::Some( Default::default() );
+      self.storage = core::option::Option::Some( Default::default() );
     }
-    if let core::option::Option::Some( ref mut formed ) = self.formed
+    if let core::option::Option::Some( ref mut storage ) = self.storage
     {
-      formed.push( element.into() );
+      ContainerAdd::add( storage, element.into() );
+      // storage.push( element.into() );
     }
     self
   }
@@ -173,24 +190,24 @@ where
 
 //
 
-// impl< Former, Context, End > FormerBegin< Formed, Formed, Context >
-// for VectorSubformer< Former, Context, End >
-// where
-//   End : FormingEnd< VectorDescriptor< E >, Context >,
-//   // Formed : VectorLike< E > + Default,
-//   Former : FormerDescriptor,
-// {
-//   type End = End;
-//
-//   #[ inline( always ) ]
-//   fn _begin
-//   (
-//     formed : core::option::Option< Formed >,
-//     context : core::option::Option< Context >,
-//     on_end : End,
-//   ) -> Self
-//   {
-//     Self::begin( formed, context, on_end )
-//   }
-//
-// }
+impl< E, Descriptor, Context, End > FormerBegin< Descriptor, Context >
+for VectorSubformer< E, Descriptor, Context, End >
+where
+  End : FormingEnd< Descriptor, Context >,
+  Descriptor : FormerDescriptor,
+  Descriptor::Storage : ContainerAdd< Element = E >,
+{
+  type End = End;
+
+  #[ inline( always ) ]
+  fn _begin
+  (
+    storage : core::option::Option< Descriptor::Storage >,
+    context : core::option::Option< Context >,
+    on_end : End,
+  ) -> Self
+  {
+    Self::begin( storage, context, on_end )
+  }
+
+}

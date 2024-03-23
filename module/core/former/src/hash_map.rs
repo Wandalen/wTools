@@ -47,6 +47,7 @@ where
 
 //
 
+#[ derive( Debug ) ]
 pub struct HashMapDescriptor< K, E >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
@@ -58,7 +59,7 @@ impl< K, E > HashMapDescriptor< K, E >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  fn new() -> Self
+  pub fn new() -> Self
   {
     Self { _phantom : ::core::marker::PhantomData }
   }
@@ -132,8 +133,7 @@ where
   Descriptor : FormerDescriptor,
   Descriptor::Storage : ContainerAdd< Element = ( K, E ) >,
 {
-  // xxx : rename
-  formed : ::core::option::Option< Descriptor::Storage >,
+  storage : ::core::option::Option< Descriptor::Storage >,
   context : ::core::option::Option< Context >,
   on_end : ::core::option::Option< End >,
   _e_phantom : ::core::marker::PhantomData< E >,
@@ -152,28 +152,30 @@ where
 
   /// Form current former into target structure.
   #[ inline( always ) ]
-  pub fn preform( mut self ) -> Descriptor::Storage
+  pub fn storage( mut self ) -> Descriptor::Storage
   {
-    let formed = if self.formed.is_some()
+    // xxx
+    let storage = if self.storage.is_some()
     {
-      self.formed.take().unwrap()
+      self.storage.take().unwrap()
     }
     else
     {
       let val = Default::default();
       val
     };
-    formed
-    // formed.preform()
+    storage
+    // storage.preform()
   }
   // xxx
+
 
   /// Make a new HashMapSubformer. It should be called by a context generated for your structure.
   /// The context is returned after completion of forming by function `on_end``.
   #[ inline( always ) ]
   pub fn begin
   (
-    formed : ::core::option::Option< Descriptor::Storage >,
+    storage : ::core::option::Option< Descriptor::Storage >,
     context : ::core::option::Option< Context >,
     on_end : End,
   )
@@ -181,7 +183,7 @@ where
   {
     Self
     {
-      formed,
+      storage,
       context,
       on_end : Some( on_end ),
       _e_phantom : ::core::marker::PhantomData,
@@ -189,28 +191,28 @@ where
     }
   }
 
-  /// Return context of your struct moving formed there. Should be called after configuring the formed.
-  #[ inline( always ) ]
-  pub fn form( mut self ) -> Descriptor::Formed
-  {
-    self.end()
-  }
-
-  /// Return context of your struct moving formed there. Should be called after configuring the formed.
+  /// Return context of your struct moving formed there. Should be called after forming process.
   #[ inline( always ) ]
   pub fn end( mut self ) -> Descriptor::Formed
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
-    let storage = self.preform();
+    let storage = self.storage();
     on_end.call( storage, context )
   }
 
-  /// Set the whole formed instead of setting each element individually.
+  /// Return context of your struct moving formed there. Should be called after forming process.
   #[ inline( always ) ]
-  pub fn replace( mut self, formed : Descriptor::Storage ) -> Self
+  pub fn form( self ) -> Descriptor::Formed
   {
-    self.formed = Some( formed );
+    self.end()
+  }
+
+  /// Set the whole storage instead of setting each element individually.
+  #[ inline( always ) ]
+  pub fn replace( mut self, storage : Descriptor::Storage ) -> Self
+  {
+    self.storage = Some( storage );
     self
   }
 
@@ -259,20 +261,20 @@ where
   /// Returns `self` for chaining further insertions or operations.
   ///
   #[ inline( always ) ]
-  pub fn insert< K2, E2 >( self, k : K2, e : E2 ) -> Self
+  pub fn insert< K2, E2 >( mut self, k : K2, e : E2 ) -> Self
   where
     K2 : ::core::convert::Into< K >,
     E2 : ::core::convert::Into< E >,
     // Descriptor::Storage : ContainerAdd< Element = ( K, E ) >,
   {
-    if self.formed.is_none()
+    if self.storage.is_none()
     {
-      self.formed = ::core::option::Option::Some( Default::default() );
+      self.storage = ::core::option::Option::Some( Default::default() );
     }
-    if let ::core::option::Option::Some( ref mut formed ) = self.formed
+    if let ::core::option::Option::Some( ref mut storage ) = self.storage
     {
-      ContainerAdd::add( formed, ( k.into(), e.into() ) );
-      // formed.insert( k.into(), e.into() );
+      ContainerAdd::add( storage, ( k.into(), e.into() ) );
+      // storage.insert( k.into(), e.into() );
     }
     self
   }

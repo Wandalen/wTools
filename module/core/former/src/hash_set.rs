@@ -35,6 +35,7 @@ where
 
 //
 
+#[ derive( Debug ) ]
 pub struct HashSetDescriptor< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
@@ -46,7 +47,7 @@ impl< K > HashSetDescriptor< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  fn new() -> Self
+  pub fn new() -> Self
   {
     Self { _phantom : ::core::marker::PhantomData }
   }
@@ -106,65 +107,68 @@ where
 /// ```
 
 #[ derive( Debug, Default ) ]
-pub struct HashSetSubformer< K, Context, End >
+pub struct HashSetSubformer< K, Descriptor, Context, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
   // Formed : HashSetLike< K > + core::default::Default,
-  End : FormingEnd< HashSetDescriptor< K >, Context >,
+  End : FormingEnd< Descriptor, Context >,
+  Descriptor : FormerDescriptor,
+  Descriptor::Storage : ContainerAdd< Element = K >,
 {
-  formed : core::option::Option< < HashSetDescriptor< K > as axiomatic::FormerDescriptor >::Formed >,
-  // xxx : rename
+  storage : core::option::Option< Descriptor::Storage >,
   context : core::option::Option< Context >,
   on_end : core::option::Option< End >,
   _e_phantom : core::marker::PhantomData< K >,
 }
 
-impl< K, Context, End >
-HashSetSubformer< K, Context, End >
+impl< K, Descriptor, Context, End >
+HashSetSubformer< K, Descriptor, Context, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
   // Formed : HashSetLike< K > + core::default::Default,
-  End : FormingEnd< HashSetDescriptor< K >, Context >,
+  End : FormingEnd< Descriptor, Context >,
+  Descriptor : FormerDescriptor,
+  Descriptor::Storage : ContainerAdd< Element = K >,
 {
 
   /// Form current former into target structure.
   #[ inline( always ) ]
-  pub fn form( mut self ) -> < HashSetDescriptor< K > as axiomatic::FormerDescriptor >::Formed
+  pub fn storage( mut self ) -> Descriptor::Storage
   {
-    let formed = if self.formed.is_some()
+    let storage = if self.storage.is_some()
     {
-      self.formed.take().unwrap()
+      self.storage.take().unwrap()
     }
     else
     {
       let val = Default::default();
       val
     };
-    formed
+    storage
   }
   // xxx
 
-  /// Begins the building process with an optional context and formed.
+  /// Begins the building process with an optional context and storage.
   ///
   /// This method is typically called internally by the builder but can be used directly
   /// to initialize the builder with specific contexts or containers.
   ///
   /// # Parameters
   /// - `context`: An optional context for the building process.
-  /// - `formed`: An optional initial formed to populate.
+  /// - `storage`: An optional initial storage to populate.
   /// - `on_end`: A handler to be called at the end of the building process.
   ///
   #[ inline( always ) ]
   pub fn begin
   (
-    formed : core::option::Option< < HashSetDescriptor< K > as axiomatic::FormerDescriptor >::Formed >,
+    storage : core::option::Option< Descriptor::Storage >,
     context : core::option::Option< Context >,
     on_end : End,
   ) -> Self
   {
     Self
     {
-      formed,
+      storage,
       context : context,
       on_end : Some( on_end ),
       _e_phantom : core::marker::PhantomData,
@@ -182,30 +186,46 @@ where
   /// constructed formed or a context that incorporates the formed.
   ///
   #[ inline( always ) ]
-  pub fn end( mut self ) -> < HashSetDescriptor< K > as axiomatic::FormerDescriptor >::Formed
+  pub fn form( self ) -> Descriptor::Formed
+  {
+    self.end()
+  }
+
+  /// Finalizes the building process and returns the constructed formed or a context.
+  ///
+  /// This method concludes the building process by applying the `on_end` handler to transform
+  /// the formed or incorporate it into a given context. It's typically called at the end
+  /// of the builder chain to retrieve the final product of the building process.
+  ///
+  /// # Returns
+  /// Depending on the `on_end` handler's implementation, this method can return either the
+  /// constructed formed or a context that incorporates the formed.
+  ///
+  #[ inline( always ) ]
+  pub fn end( mut self ) -> Descriptor::Formed
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
-    let formed = self.form();
-    on_end.call( formed, context )
+    let storage = self.storage();
+    on_end.call( storage, context )
   }
 
-  /// Replaces the current formed with a new one.
+  /// Replaces the current storage with a new one.
   ///
   /// This method allows for replacing the entire set being built with a different one.
   /// It can be useful in scenarios where a pre-populated set needs to be modified or
   /// replaced entirely during the building process.
   ///
   /// # Parameters
-  /// - `formed`: The new formed to use for subsequent builder operations.
+  /// - `storage`: The new storage to use for subsequent builder operations.
   ///
   /// # Returns
-  /// The builder instance with the formed replaced, enabling further chained operations.
+  /// The builder instance with the storage replaced, enabling further chained operations.
   ///
   #[ inline( always ) ]
-  pub fn replace( mut self, formed : < HashSetDescriptor< K > as axiomatic::FormerDescriptor >::Formed ) -> Self
+  pub fn replace( mut self, storage : Descriptor::Storage ) -> Self
   {
-    self.formed = Some( formed );
+    self.storage = Some( storage );
     self
   }
 
@@ -216,18 +236,20 @@ where
 //   Formed : VectorLike< K > + core::default::Default,
 // {
 
-impl< K >
-HashSetSubformer< K, (), crate::ReturnStorage >
+impl< K, Descriptor >
+HashSetSubformer< K, Descriptor, (), crate::ReturnStorage >
 where
   K : core::cmp::Eq + core::hash::Hash,
+  Descriptor : FormerDescriptor,
+  Descriptor::Storage : ContainerAdd< Element = K >,
   // Formed : HashSetLike< K > + core::default::Default,
-  // End : FormingEnd< HashSetDescriptor< K >, Context >,
+  // End : FormingEnd< Descriptor, Context >,
 {
 
   /// Initializes a new instance of the builder with default settings.
   ///
-  /// This method provides a starting point for building a `HashSetLike` formed using
-  /// a fluent interface. It sets up an empty formed ready to be populated.
+  /// This method provides a starting point for forming a `HashSetLike` using
+  /// a fluent interface.
   ///
   /// # Returns
   /// A new instance of `HashSetSubformer` with no elements.
@@ -245,18 +267,19 @@ where
 
 }
 
-impl< K, Context, End >
-HashSetSubformer< K, Context, End >
+impl< K, Descriptor, Context, End >
+HashSetSubformer< K, Descriptor, Context, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
-  // Formed : HashSetLike< K > + core::default::Default,
-  End : FormingEnd< HashSetDescriptor< K >, Context >,
+  End : FormingEnd< Descriptor, Context >,
+  Descriptor : FormerDescriptor,
+  Descriptor::Storage : ContainerAdd< Element = K >,
 {
 
   /// Inserts an element into the set, possibly replacing an existing element.
   ///
   /// This method ensures that the set contains the given element, and if the element
-  /// was already present, it might replace it depending on the formed's behavior.
+  /// was already present, it might replace it depending on the storage's behavior.
   ///
   /// # Parameters
   /// - `element`: The element to insert into the set.
@@ -270,13 +293,13 @@ where
   where
     E2 : core::convert::Into< K >,
   {
-    if self.formed.is_none()
+    if self.storage.is_none()
     {
-      self.formed = core::option::Option::Some( Default::default() );
+      self.storage = core::option::Option::Some( Default::default() );
     }
-    if let core::option::Option::Some( ref mut formed ) = self.formed
+    if let core::option::Option::Some( ref mut storage ) = self.storage
     {
-      formed.insert( element.into() );
+      ContainerAdd::add( storage, element.into() );
     }
     self
   }
