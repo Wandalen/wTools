@@ -1,5 +1,7 @@
 //! Interface for containers.
 
+use crate::*;
+
 /// A trait defining the capability to add elements to a container.
 ///
 /// This trait should be implemented by container types that require a generic interface
@@ -187,4 +189,164 @@ where
     self.extend( elements );
     self.len() - initial_len
   }
+}
+
+// =
+
+
+/// A builder for constructing containers, facilitating a fluent and flexible interface.
+#[ derive( Debug, Default ) ]
+pub struct ContainerSubformer< E, Definition, Context = (), End = ReturnFormed >
+where
+  End : FormingEnd< Definition, Context >,
+  Definition : FormerDefinition,
+  Definition::Storage : ContainerAdd< Element = E >,
+{
+  storage : core::option::Option< Definition::Storage >,
+  context : core::option::Option< Context >,
+  on_end : core::option::Option< End >,
+}
+
+impl< E, Definition, Context, End > ContainerSubformer< E, Definition, Context, End >
+where
+  End : FormingEnd< Definition, Context >,
+  Definition : FormerDefinition,
+  Definition::Storage : ContainerAdd< Element = E >,
+{
+
+  /// Form current former into target structure.
+  #[ inline( always ) ]
+  pub fn storage( mut self ) -> Definition::Storage
+  {
+    let storage = if self.storage.is_some()
+    {
+      self.storage.take().unwrap()
+    }
+    else
+    {
+      let val = Default::default();
+      val
+    };
+    storage
+  }
+
+  /// Begins the building process, optionally initializing with a context and storage.
+  #[ inline( always ) ]
+  pub fn begin
+  (
+    storage : core::option::Option< Definition::Storage >,
+    context : core::option::Option< Context >,
+    on_end : End
+  ) -> Self
+  {
+    Self
+    {
+      storage,
+      context,
+      on_end : Some( on_end ),
+    }
+  }
+
+  /// Finalizes the building process, returning the formed or a context incorporating it.
+  #[ inline( always ) ]
+  pub fn end( mut self ) -> Definition::Formed
+  {
+    let on_end = self.on_end.take().unwrap();
+    let context = self.context.take();
+    let storage = self.storage();
+    on_end.call( storage, context )
+  }
+
+  /// Finalizes the building process, returning the formed or a context incorporating it.
+  #[ inline( always ) ]
+  pub fn form( self ) -> Definition::Formed
+  {
+    self.end()
+  }
+
+  /// Replaces the current storage with a provided one, allowing for a reset or redirection of the building process.
+  #[ inline( always ) ]
+  pub fn replace( mut self, vector : Definition::Storage ) -> Self
+  {
+    self.storage = Some( vector );
+    self
+  }
+
+}
+
+impl< E, Definition > ContainerSubformer< E, Definition, (), ReturnFormed >
+where
+  Definition : FormerDefinition,
+  Definition::Storage : ContainerAdd< Element = E >,
+  Definition::Storage : StoragePerform< Definition = Definition >,
+{
+
+  /// Initializes a new `ContainerSubformer` instance, starting with an empty formed.
+  /// This function serves as the entry point for the builder pattern.
+  ///
+  /// # Returns
+  /// A new instance of `ContainerSubformer` with an empty internal formed.
+  ///
+  #[ inline( always ) ]
+  pub fn new() -> Self
+  {
+    Self::begin
+    (
+      None,
+      None,
+      ReturnFormed,
+    )
+  }
+
+}
+
+impl< E, Definition, Context, End > ContainerSubformer< E, Definition, Context, End >
+where
+  End : FormingEnd< Definition, Context >,
+  Definition : FormerDefinition,
+  Definition::Storage : ContainerAdd< Element = E >,
+{
+
+  /// Appends an element to the end of the storage, expanding the internal collection.
+  #[ inline( always ) ]
+  pub fn push< IntoElement >( mut self, element : IntoElement ) -> Self
+  where IntoElement : core::convert::Into< E >,
+  {
+    if self.storage.is_none()
+    {
+      self.storage = core::option::Option::Some( Default::default() );
+    }
+    if let core::option::Option::Some( ref mut storage ) = self.storage
+    {
+      ContainerAdd::add( storage, element.into() );
+      // storage.push( element.into() );
+    }
+    self
+  }
+
+}
+
+//
+
+impl< E, Definition, Context, End > FormerBegin< Definition, Context >
+for ContainerSubformer< E, Definition, Context, End >
+where
+  End : FormingEnd< Definition, Context >,
+  Definition : FormerDefinition,
+  Definition::Storage : ContainerAdd< Element = E >,
+{
+  type End = End;
+
+  #[ inline( always ) ]
+  fn _begin
+  (
+    storage : core::option::Option< Definition::Storage >,
+    context : core::option::Option< Context >,
+    on_end : End,
+  )
+  -> Self
+  {
+    Self::begin( storage, context, on_end )
+  }
+
 }

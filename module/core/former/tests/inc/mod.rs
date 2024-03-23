@@ -7,8 +7,15 @@ mod former_tests
   #[ allow( unused_imports ) ]
   use super::*;
 
-  mod a_primitives_manual;
-  mod a_primitives;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod container_former_vec;
+  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  // mod container_former_hashset;
+  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  // mod container_former_hashmap;
+
+  // mod a_primitives_manual;
+  // mod a_primitives;
   // mod a_primitives_expanded;
 //   mod a_containers_without_runtime_manual;
 //   mod a_containers_without_runtime;
@@ -48,13 +55,6 @@ mod former_tests
 //   mod subformer_basic_manual;
 //   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 //   mod subformer_basic;
-//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-//   mod subformer_vec;
-//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-//   mod subformer_hashset;
-//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-//   mod subformer_hashmap;
-//
 //
 //   #[ cfg( any( not( feature = "no_std" ) ) ) ]
 //   mod subformer_shortcut;

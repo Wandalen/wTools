@@ -117,198 +117,200 @@ where
 /// # }
 /// ```
 
-#[ derive( Debug, Default ) ]
-pub struct HashSetSubformer< K, Definition, Context, End >
-where
-  K : core::cmp::Eq + core::hash::Hash,
-  // Formed : HashSetLike< K > + core::default::Default,
-  End : FormingEnd< Definition, Context >,
-  Definition : FormerDefinition,
-  Definition::Storage : ContainerAdd< Element = K >,
-{
-  storage : core::option::Option< Definition::Storage >,
-  context : core::option::Option< Context >,
-  on_end : core::option::Option< End >,
-  _e_phantom : core::marker::PhantomData< K >,
-}
+pub type VectorSubformer< K > = ContainerSubformer::< K, HashSetDefinition< K > >;
 
-impl< K, Definition, Context, End >
-HashSetSubformer< K, Definition, Context, End >
-where
-  K : core::cmp::Eq + core::hash::Hash,
-  // Formed : HashSetLike< K > + core::default::Default,
-  End : FormingEnd< Definition, Context >,
-  Definition : FormerDefinition,
-  Definition::Storage : ContainerAdd< Element = K >,
-{
-
-  /// Form current former into target structure.
-  #[ inline( always ) ]
-  pub fn storage( mut self ) -> Definition::Storage
-  {
-    let storage = if self.storage.is_some()
-    {
-      self.storage.take().unwrap()
-    }
-    else
-    {
-      let val = Default::default();
-      val
-    };
-    storage
-  }
-  // xxx
-
-  /// Begins the building process with an optional context and storage.
-  ///
-  /// This method is typically called internally by the builder but can be used directly
-  /// to initialize the builder with specific contexts or containers.
-  ///
-  /// # Parameters
-  /// - `context`: An optional context for the building process.
-  /// - `storage`: An optional initial storage to populate.
-  /// - `on_end`: A handler to be called at the end of the building process.
-  ///
-  #[ inline( always ) ]
-  pub fn begin
-  (
-    storage : core::option::Option< Definition::Storage >,
-    context : core::option::Option< Context >,
-    on_end : End,
-  ) -> Self
-  {
-    Self
-    {
-      storage,
-      context : context,
-      on_end : Some( on_end ),
-      _e_phantom : core::marker::PhantomData,
-    }
-  }
-
-  /// Finalizes the building process and returns the constructed formed or a context.
-  ///
-  /// This method concludes the building process by applying the `on_end` handler to transform
-  /// the formed or incorporate it into a given context. It's typically called at the end
-  /// of the builder chain to retrieve the final product of the building process.
-  ///
-  /// # Returns
-  /// Depending on the `on_end` handler's implementation, this method can return either the
-  /// constructed formed or a context that incorporates the formed.
-  ///
-  #[ inline( always ) ]
-  pub fn form( self ) -> Definition::Formed
-  {
-    self.end()
-  }
-
-  /// Finalizes the building process and returns the constructed formed or a context.
-  ///
-  /// This method concludes the building process by applying the `on_end` handler to transform
-  /// the formed or incorporate it into a given context. It's typically called at the end
-  /// of the builder chain to retrieve the final product of the building process.
-  ///
-  /// # Returns
-  /// Depending on the `on_end` handler's implementation, this method can return either the
-  /// constructed formed or a context that incorporates the formed.
-  ///
-  #[ inline( always ) ]
-  pub fn end( mut self ) -> Definition::Formed
-  {
-    let on_end = self.on_end.take().unwrap();
-    let context = self.context.take();
-    let storage = self.storage();
-    on_end.call( storage, context )
-  }
-
-  /// Replaces the current storage with a new one.
-  ///
-  /// This method allows for replacing the entire set being built with a different one.
-  /// It can be useful in scenarios where a pre-populated set needs to be modified or
-  /// replaced entirely during the building process.
-  ///
-  /// # Parameters
-  /// - `storage`: The new storage to use for subsequent builder operations.
-  ///
-  /// # Returns
-  /// The builder instance with the storage replaced, enabling further chained operations.
-  ///
-  #[ inline( always ) ]
-  pub fn replace( mut self, storage : Definition::Storage ) -> Self
-  {
-    self.storage = Some( storage );
-    self
-  }
-
-}
-
-impl< K, Definition >
-HashSetSubformer< K, Definition, (), crate::ReturnFormed >
-where
-  K : core::cmp::Eq + core::hash::Hash,
-  Definition : FormerDefinition,
-  Definition::Storage : ContainerAdd< Element = K >,
-  Definition::Storage : StoragePerform< Definition = Definition >,
-{
-
-  /// Initializes a new instance of the builder with default settings.
-  ///
-  /// This method provides a starting point for forming a `HashSetLike` using
-  /// a fluent interface.
-  ///
-  /// # Returns
-  /// A new instance of `HashSetSubformer` with no elements.
-  ///
-  #[ inline( always ) ]
-  pub fn new() -> Self
-  {
-    HashSetSubformer::begin
-    (
-      None,
-      None,
-      crate::ReturnFormed,
-    )
-  }
-
-}
-
-impl< K, Definition, Context, End >
-HashSetSubformer< K, Definition, Context, End >
-where
-  K : core::cmp::Eq + core::hash::Hash,
-  End : FormingEnd< Definition, Context >,
-  Definition : FormerDefinition,
-  Definition::Storage : ContainerAdd< Element = K >,
-{
-
-  /// Inserts an element into the set, possibly replacing an existing element.
-  ///
-  /// This method ensures that the set contains the given element, and if the element
-  /// was already present, it might replace it depending on the storage's behavior.
-  ///
-  /// # Parameters
-  /// - `element`: The element to insert into the set.
-  ///
-  /// # Returns
-  /// - `Some(element)` if the element was replaced.
-  /// - `None` if the element was newly inserted without replacing any existing element.
-  ///
-  #[ inline( always ) ]
-  pub fn insert< E2 >( mut self, element : E2 ) -> Self
-  where
-    E2 : core::convert::Into< K >,
-  {
-    if self.storage.is_none()
-    {
-      self.storage = core::option::Option::Some( Default::default() );
-    }
-    if let core::option::Option::Some( ref mut storage ) = self.storage
-    {
-      ContainerAdd::add( storage, element.into() );
-    }
-    self
-  }
-
-}
+// #[ derive( Debug, Default ) ]
+// pub struct HashSetSubformer< K, Definition, Context, End >
+// where
+//   K : core::cmp::Eq + core::hash::Hash,
+//   // Formed : HashSetLike< K > + core::default::Default,
+//   End : FormingEnd< Definition, Context >,
+//   Definition : FormerDefinition,
+//   Definition::Storage : ContainerAdd< Element = K >,
+// {
+//   storage : core::option::Option< Definition::Storage >,
+//   context : core::option::Option< Context >,
+//   on_end : core::option::Option< End >,
+//   _e_phantom : core::marker::PhantomData< K >,
+// }
+//
+// impl< K, Definition, Context, End >
+// HashSetSubformer< K, Definition, Context, End >
+// where
+//   K : core::cmp::Eq + core::hash::Hash,
+//   // Formed : HashSetLike< K > + core::default::Default,
+//   End : FormingEnd< Definition, Context >,
+//   Definition : FormerDefinition,
+//   Definition::Storage : ContainerAdd< Element = K >,
+// {
+//
+//   /// Form current former into target structure.
+//   #[ inline( always ) ]
+//   pub fn storage( mut self ) -> Definition::Storage
+//   {
+//     let storage = if self.storage.is_some()
+//     {
+//       self.storage.take().unwrap()
+//     }
+//     else
+//     {
+//       let val = Default::default();
+//       val
+//     };
+//     storage
+//   }
+//   // xxx
+//
+//   /// Begins the building process with an optional context and storage.
+//   ///
+//   /// This method is typically called internally by the builder but can be used directly
+//   /// to initialize the builder with specific contexts or containers.
+//   ///
+//   /// # Parameters
+//   /// - `context`: An optional context for the building process.
+//   /// - `storage`: An optional initial storage to populate.
+//   /// - `on_end`: A handler to be called at the end of the building process.
+//   ///
+//   #[ inline( always ) ]
+//   pub fn begin
+//   (
+//     storage : core::option::Option< Definition::Storage >,
+//     context : core::option::Option< Context >,
+//     on_end : End,
+//   ) -> Self
+//   {
+//     Self
+//     {
+//       storage,
+//       context : context,
+//       on_end : Some( on_end ),
+//       _e_phantom : core::marker::PhantomData,
+//     }
+//   }
+//
+//   /// Finalizes the building process and returns the constructed formed or a context.
+//   ///
+//   /// This method concludes the building process by applying the `on_end` handler to transform
+//   /// the formed or incorporate it into a given context. It's typically called at the end
+//   /// of the builder chain to retrieve the final product of the building process.
+//   ///
+//   /// # Returns
+//   /// Depending on the `on_end` handler's implementation, this method can return either the
+//   /// constructed formed or a context that incorporates the formed.
+//   ///
+//   #[ inline( always ) ]
+//   pub fn form( self ) -> Definition::Formed
+//   {
+//     self.end()
+//   }
+//
+//   /// Finalizes the building process and returns the constructed formed or a context.
+//   ///
+//   /// This method concludes the building process by applying the `on_end` handler to transform
+//   /// the formed or incorporate it into a given context. It's typically called at the end
+//   /// of the builder chain to retrieve the final product of the building process.
+//   ///
+//   /// # Returns
+//   /// Depending on the `on_end` handler's implementation, this method can return either the
+//   /// constructed formed or a context that incorporates the formed.
+//   ///
+//   #[ inline( always ) ]
+//   pub fn end( mut self ) -> Definition::Formed
+//   {
+//     let on_end = self.on_end.take().unwrap();
+//     let context = self.context.take();
+//     let storage = self.storage();
+//     on_end.call( storage, context )
+//   }
+//
+//   /// Replaces the current storage with a new one.
+//   ///
+//   /// This method allows for replacing the entire set being built with a different one.
+//   /// It can be useful in scenarios where a pre-populated set needs to be modified or
+//   /// replaced entirely during the building process.
+//   ///
+//   /// # Parameters
+//   /// - `storage`: The new storage to use for subsequent builder operations.
+//   ///
+//   /// # Returns
+//   /// The builder instance with the storage replaced, enabling further chained operations.
+//   ///
+//   #[ inline( always ) ]
+//   pub fn replace( mut self, storage : Definition::Storage ) -> Self
+//   {
+//     self.storage = Some( storage );
+//     self
+//   }
+//
+// }
+//
+// impl< K, Definition >
+// HashSetSubformer< K, Definition, (), crate::ReturnFormed >
+// where
+//   K : core::cmp::Eq + core::hash::Hash,
+//   Definition : FormerDefinition,
+//   Definition::Storage : ContainerAdd< Element = K >,
+//   Definition::Storage : StoragePerform< Definition = Definition >,
+// {
+//
+//   /// Initializes a new instance of the builder with default settings.
+//   ///
+//   /// This method provides a starting point for forming a `HashSetLike` using
+//   /// a fluent interface.
+//   ///
+//   /// # Returns
+//   /// A new instance of `HashSetSubformer` with no elements.
+//   ///
+//   #[ inline( always ) ]
+//   pub fn new() -> Self
+//   {
+//     HashSetSubformer::begin
+//     (
+//       None,
+//       None,
+//       crate::ReturnFormed,
+//     )
+//   }
+//
+// }
+//
+// impl< K, Definition, Context, End >
+// HashSetSubformer< K, Definition, Context, End >
+// where
+//   K : core::cmp::Eq + core::hash::Hash,
+//   End : FormingEnd< Definition, Context >,
+//   Definition : FormerDefinition,
+//   Definition::Storage : ContainerAdd< Element = K >,
+// {
+//
+//   /// Inserts an element into the set, possibly replacing an existing element.
+//   ///
+//   /// This method ensures that the set contains the given element, and if the element
+//   /// was already present, it might replace it depending on the storage's behavior.
+//   ///
+//   /// # Parameters
+//   /// - `element`: The element to insert into the set.
+//   ///
+//   /// # Returns
+//   /// - `Some(element)` if the element was replaced.
+//   /// - `None` if the element was newly inserted without replacing any existing element.
+//   ///
+//   #[ inline( always ) ]
+//   pub fn insert< E2 >( mut self, element : E2 ) -> Self
+//   where
+//     E2 : core::convert::Into< K >,
+//   {
+//     if self.storage.is_none()
+//     {
+//       self.storage = core::option::Option::Some( Default::default() );
+//     }
+//     if let core::option::Option::Some( ref mut storage ) = self.storage
+//     {
+//       ContainerAdd::add( storage, element.into() );
+//     }
+//     self
+//   }
+//
+// }
 
 //

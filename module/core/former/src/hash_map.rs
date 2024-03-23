@@ -80,10 +80,6 @@ where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
   type Definition = HashMapDefinition< K, E >;
-  // fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinition >::Formed
-  // {
-  //   self
-  // }
 }
 
 impl< K, E > StoragePerform
@@ -135,179 +131,181 @@ where
 /// # }
 /// ```
 
-#[ derive( Debug, Default ) ]
-pub struct HashMapSubformer< K, E, Definition, Context, End >
-where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-  // Formed : HashMapLike< K, E > + ::core::default::Default,
-  End : FormingEnd< Definition, Context >,
-  Definition : FormerDefinition,
-  Definition::Storage : ContainerAdd< Element = ( K, E ) >,
-{
-  storage : ::core::option::Option< Definition::Storage >,
-  context : ::core::option::Option< Context >,
-  on_end : ::core::option::Option< End >,
-  _e_phantom : ::core::marker::PhantomData< E >,
-  _k_phantom : ::core::marker::PhantomData< K >,
-}
+pub type HashMapSubformer< K, E > = ContainerSubformer::< ( K, E ), HashMapDefinition< K, E > >;
 
-impl< K, E, Definition, Context, End >
-HashMapSubformer< K, E, Definition, Context, End >
-where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-  // Formed : HashMapLike< K, E > + ::core::default::Default,
-  End : FormingEnd< Definition, Context >,
-  Definition : FormerDefinition,
-  Definition::Storage : ContainerAdd< Element = ( K, E ) >,
-{
-
-  /// Form current former into target structure.
-  #[ inline( always ) ]
-  pub fn storage( mut self ) -> Definition::Storage
-  {
-    // xxx
-    let storage = if self.storage.is_some()
-    {
-      self.storage.take().unwrap()
-    }
-    else
-    {
-      let val = Default::default();
-      val
-    };
-    storage
-    // storage.preform()
-  }
-  // xxx
-
-
-  /// Make a new HashMapSubformer. It should be called by a context generated for your structure.
-  /// The context is returned after completion of forming by function `on_end``.
-  #[ inline( always ) ]
-  pub fn begin
-  (
-    storage : ::core::option::Option< Definition::Storage >,
-    context : ::core::option::Option< Context >,
-    on_end : End,
-  )
-  -> Self
-  {
-    Self
-    {
-      storage,
-      context,
-      on_end : Some( on_end ),
-      _e_phantom : ::core::marker::PhantomData,
-      _k_phantom : ::core::marker::PhantomData,
-    }
-  }
-
-  /// Return context of your struct moving formed there. Should be called after forming process.
-  #[ inline( always ) ]
-  pub fn end( mut self ) -> Definition::Formed
-  {
-    let on_end = self.on_end.take().unwrap();
-    let context = self.context.take();
-    let storage = self.storage();
-    on_end.call( storage, context )
-  }
-
-  /// Return context of your struct moving formed there. Should be called after forming process.
-  #[ inline( always ) ]
-  pub fn form( self ) -> Definition::Formed
-  {
-    self.end()
-  }
-
-  /// Set the whole storage instead of setting each element individually.
-  #[ inline( always ) ]
-  pub fn replace( mut self, storage : Definition::Storage ) -> Self
-  {
-    self.storage = Some( storage );
-    self
-  }
-
-}
-
-impl< K, E, Definition >
-HashMapSubformer< K, E, Definition, (), crate::ReturnFormed >
-where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-  Definition : FormerDefinition,
-  Definition::Storage : ContainerAdd< Element = ( K, E ) >,
-  Definition::Storage : StoragePerform< Definition = Definition >,
-{
-
-  /// Create a new instance without context or on end processing. It just returns continaer on end of forming.
-  #[ inline( always ) ]
-  pub fn new() -> Self
-  {
-    HashMapSubformer::begin
-    (
-      None,
-      None,
-      crate::ReturnFormed,
-    )
-  }
-
-}
-
-impl< K, E, Definition, Context, End >
-HashMapSubformer< K, E, Definition, Context, End >
-where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-  // Formed : HashMapLike< K, E > + ::core::default::Default,
-  End : FormingEnd< Definition, Context >,
-  Definition : FormerDefinition,
-  Definition::Storage : ContainerAdd< Element = ( K, E ) >,
-{
-
-  /// Inserts a key-value pair into the formed. If the formed doesn't exist, it is created.
-  ///
-  /// # Parameters
-  /// - `k`: The key for the value to be inserted. Will be converted into the formed's key type.
-  /// - `e`: The value to be inserted. Will be converted into the formed's value type.
-  ///
-  /// # Returns
-  /// Returns `self` for chaining further insertions or operations.
-  ///
-  #[ inline( always ) ]
-  pub fn insert< K2, E2 >( mut self, k : K2, e : E2 ) -> Self
-  where
-    K2 : ::core::convert::Into< K >,
-    E2 : ::core::convert::Into< E >,
-    // Definition::Storage : ContainerAdd< Element = ( K, E ) >,
-  {
-    if self.storage.is_none()
-    {
-      self.storage = ::core::option::Option::Some( Default::default() );
-    }
-    if let ::core::option::Option::Some( ref mut storage ) = self.storage
-    {
-      ContainerAdd::add( storage, ( k.into(), e.into() ) );
-      // storage.insert( k.into(), e.into() );
-    }
-    self
-  }
-
-  /// Alias for insert.
-  ///
-  /// # Parameters
-  /// - `k`: The key for the value to be inserted. Will be converted into the formed's key type.
-  /// - `e`: The value to be inserted. Will be converted into the formed's value type.
-  ///
-  /// # Returns
-  /// Returns `self` for chaining further insertions or operations.
-  ///
-  #[ inline( always ) ]
-  pub fn push< K2, E2 >( self, k : K2, e : E2 ) -> Self
-  where
-    K2 : ::core::convert::Into< K >,
-    E2 : ::core::convert::Into< E >,
-  {
-    self.insert( k, e )
-  }
-
-}
+// #[ derive( Debug, Default ) ]
+// pub struct HashMapSubformer< K, E, Definition, Context, End >
+// where
+//   K : ::core::cmp::Eq + ::core::hash::Hash,
+//   // Formed : HashMapLike< K, E > + ::core::default::Default,
+//   End : FormingEnd< Definition, Context >,
+//   Definition : FormerDefinition,
+//   Definition::Storage : ContainerAdd< Element = ( K, E ) >,
+// {
+//   storage : ::core::option::Option< Definition::Storage >,
+//   context : ::core::option::Option< Context >,
+//   on_end : ::core::option::Option< End >,
+//   _e_phantom : ::core::marker::PhantomData< E >,
+//   _k_phantom : ::core::marker::PhantomData< K >,
+// }
+//
+// impl< K, E, Definition, Context, End >
+// HashMapSubformer< K, E, Definition, Context, End >
+// where
+//   K : ::core::cmp::Eq + ::core::hash::Hash,
+//   // Formed : HashMapLike< K, E > + ::core::default::Default,
+//   End : FormingEnd< Definition, Context >,
+//   Definition : FormerDefinition,
+//   Definition::Storage : ContainerAdd< Element = ( K, E ) >,
+// {
+//
+//   /// Form current former into target structure.
+//   #[ inline( always ) ]
+//   pub fn storage( mut self ) -> Definition::Storage
+//   {
+//     // xxx
+//     let storage = if self.storage.is_some()
+//     {
+//       self.storage.take().unwrap()
+//     }
+//     else
+//     {
+//       let val = Default::default();
+//       val
+//     };
+//     storage
+//     // storage.preform()
+//   }
+//   // xxx
+//
+//
+//   /// Make a new HashMapSubformer. It should be called by a context generated for your structure.
+//   /// The context is returned after completion of forming by function `on_end``.
+//   #[ inline( always ) ]
+//   pub fn begin
+//   (
+//     storage : ::core::option::Option< Definition::Storage >,
+//     context : ::core::option::Option< Context >,
+//     on_end : End,
+//   )
+//   -> Self
+//   {
+//     Self
+//     {
+//       storage,
+//       context,
+//       on_end : Some( on_end ),
+//       _e_phantom : ::core::marker::PhantomData,
+//       _k_phantom : ::core::marker::PhantomData,
+//     }
+//   }
+//
+//   /// Return context of your struct moving formed there. Should be called after forming process.
+//   #[ inline( always ) ]
+//   pub fn end( mut self ) -> Definition::Formed
+//   {
+//     let on_end = self.on_end.take().unwrap();
+//     let context = self.context.take();
+//     let storage = self.storage();
+//     on_end.call( storage, context )
+//   }
+//
+//   /// Return context of your struct moving formed there. Should be called after forming process.
+//   #[ inline( always ) ]
+//   pub fn form( self ) -> Definition::Formed
+//   {
+//     self.end()
+//   }
+//
+//   /// Set the whole storage instead of setting each element individually.
+//   #[ inline( always ) ]
+//   pub fn replace( mut self, storage : Definition::Storage ) -> Self
+//   {
+//     self.storage = Some( storage );
+//     self
+//   }
+//
+// }
+//
+// impl< K, E, Definition >
+// HashMapSubformer< K, E, Definition, (), crate::ReturnFormed >
+// where
+//   K : ::core::cmp::Eq + ::core::hash::Hash,
+//   Definition : FormerDefinition,
+//   Definition::Storage : ContainerAdd< Element = ( K, E ) >,
+//   Definition::Storage : StoragePerform< Definition = Definition >,
+// {
+//
+//   /// Create a new instance without context or on end processing. It just returns continaer on end of forming.
+//   #[ inline( always ) ]
+//   pub fn new() -> Self
+//   {
+//     HashMapSubformer::begin
+//     (
+//       None,
+//       None,
+//       crate::ReturnFormed,
+//     )
+//   }
+//
+// }
+//
+// impl< K, E, Definition, Context, End >
+// HashMapSubformer< K, E, Definition, Context, End >
+// where
+//   K : ::core::cmp::Eq + ::core::hash::Hash,
+//   // Formed : HashMapLike< K, E > + ::core::default::Default,
+//   End : FormingEnd< Definition, Context >,
+//   Definition : FormerDefinition,
+//   Definition::Storage : ContainerAdd< Element = ( K, E ) >,
+// {
+//
+//   /// Inserts a key-value pair into the formed. If the formed doesn't exist, it is created.
+//   ///
+//   /// # Parameters
+//   /// - `k`: The key for the value to be inserted. Will be converted into the formed's key type.
+//   /// - `e`: The value to be inserted. Will be converted into the formed's value type.
+//   ///
+//   /// # Returns
+//   /// Returns `self` for chaining further insertions or operations.
+//   ///
+//   #[ inline( always ) ]
+//   pub fn insert< K2, E2 >( mut self, k : K2, e : E2 ) -> Self
+//   where
+//     K2 : ::core::convert::Into< K >,
+//     E2 : ::core::convert::Into< E >,
+//     // Definition::Storage : ContainerAdd< Element = ( K, E ) >,
+//   {
+//     if self.storage.is_none()
+//     {
+//       self.storage = ::core::option::Option::Some( Default::default() );
+//     }
+//     if let ::core::option::Option::Some( ref mut storage ) = self.storage
+//     {
+//       ContainerAdd::add( storage, ( k.into(), e.into() ) );
+//       // storage.insert( k.into(), e.into() );
+//     }
+//     self
+//   }
+//
+//   /// Alias for insert.
+//   ///
+//   /// # Parameters
+//   /// - `k`: The key for the value to be inserted. Will be converted into the formed's key type.
+//   /// - `e`: The value to be inserted. Will be converted into the formed's value type.
+//   ///
+//   /// # Returns
+//   /// Returns `self` for chaining further insertions or operations.
+//   ///
+//   #[ inline( always ) ]
+//   pub fn push< K2, E2 >( self, k : K2, e : E2 ) -> Self
+//   where
+//     K2 : ::core::convert::Into< K >,
+//     E2 : ::core::convert::Into< E >,
+//   {
+//     self.insert( k, e )
+//   }
+//
+// }
 
 //
