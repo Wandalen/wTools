@@ -20,7 +20,14 @@ pub trait FormerDefinition : Sized
   type Storage : Storage< Formed = Self::Formed >;
   type Formed;
   type Context;
-  type End : FormingEnd< Self >;
+  // type End : FormingEnd< Self >;
+}
+
+/// xxx
+pub trait FormerDefinition2 : Sized
+{
+  type Definition : FormerDefinition;
+  type End : FormingEnd< Self::Definition >;
 }
 
 // pub trait FormerDefinition
@@ -92,8 +99,8 @@ pub struct ReturnStorage;
 impl< Definition, T > FormingEnd< Definition >
 for ReturnStorage
 where
-  Definition : FormerDefinition< Context = (), Storage = T, Formed = T, End = Self >,
-  Definition::End : FormingEnd< Definition >,
+  Definition : FormerDefinition< Context = (), Storage = T, Formed = T >,
+  // Definition::End : FormingEnd< Definition >,
   // Definition::End : Self,
   // Definition::Storage : Default,
 {
@@ -180,7 +187,7 @@ for FormingEndWrapper< Definition >
 /// sequences within builder patterns.
 
 // xxx : update description
-pub trait FormerBegin< Definition : FormerDefinition >
+pub trait FormerBegin< Definition : FormerDefinition2 >
 {
 
   /// * `End` - A trait bound marking the closure or handler invoked upon completing the subforming process. Implementers
@@ -188,7 +195,8 @@ pub trait FormerBegin< Definition : FormerDefinition >
   ///           into `Formed`, optionally utilizing `Context` to guide this transformation. It is crucial that this
   ///           associated type satisfies the `FormingEnd< Formed >` trait, defining the precise mechanics of
   ///           how the subformer concludes its operation.
-  type End : FormingEnd< Definition >;
+  // type End : FormingEnd< Definition >;
+  // type End : Definition::End;
 
   /// Launches the subforming process with an initial storage and context, setting up an `on_end` completion handler.
   ///
@@ -199,9 +207,9 @@ pub trait FormerBegin< Definition : FormerDefinition >
   /// * `on_end` - A completion handler responsible for transforming the accumulated `Storage` into the final `Formed` structure.
   fn _begin
   (
-    storage : core::option::Option< Definition::Storage >,
-    context : core::option::Option< Definition::Context >,
-    on_end : Self::End,
+    storage : core::option::Option< < Definition::Definition as FormerDefinition >::Storage >,
+    context : core::option::Option< < Definition::Definition as FormerDefinition >::Context >,
+    on_end : Definition::End,
   ) -> Self;
 
 }
