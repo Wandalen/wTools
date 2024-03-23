@@ -742,7 +742,8 @@ For specifying custom default value use attribute `default`. For example:
 
 pub fn performer< 'a >
 (
-  name_ident : &syn::Ident,
+  _name_ident : &syn::Ident,
+  former_descriptor_name_ident : &syn::Ident,
   generics_ty : &syn::TypeGenerics< '_ >,
   attrs : impl Iterator< Item = &'a syn::Attribute >,
 )
@@ -753,7 +754,9 @@ pub fn performer< 'a >
   {
     return result;
   };
-  let mut perform_output = qt!{ #name_ident #generics_ty };
+  // let mut perform_output = qt!{ #name_ident #generics_ty };
+  let mut perform_output = qt!{ < #former_descriptor_name_ident #generics_ty as former::FormerDescriptor >::Formed };
+
   let mut perform_generics = qt!{};
   for attr in attrs
   {
@@ -864,6 +867,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let ( perform, perform_output, perform_generics ) = performer
   (
     &name_ident,
+    &former_descriptor_name_ident,
     &generics_ty,
     ast.attrs.iter(),
   )?;
@@ -937,7 +941,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     // = descriptor
 
     #[ derive( Debug ) ]
-    pub struct #former_descriptor_name_ident #generics_impl;
+    pub struct #former_descriptor_name_ident #generics_ty;
 
     impl #generics_impl #former_descriptor_name_ident #generics_ty
     {
@@ -1033,7 +1037,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// Finish setting options and return formed entity.
       ///
       #[ inline( always ) ]
-      pub fn preform( self ) -> < former_descriptor_name_ident #generics_impl as former::FormerDescriptor >::Formed
+      pub fn preform( self ) -> < former_descriptor_name_ident #generics_ty as former::FormerDescriptor >::Formed
       // #name_ident #generics_ty
       {
         < #former_storage_name_ident #generics_ty as former::StoragePerform >::preform( self.storage )
@@ -1085,7 +1089,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// End the process of forming returning original context of forming.
       ///
       #[ inline( always ) ]
-      pub fn form( self ) -> < former_descriptor_name_ident #generics_impl as former::FormerDescriptor >::Formed
+      pub fn form( self ) -> < former_descriptor_name_ident #generics_ty as former::FormerDescriptor >::Formed
       {
         self.end()
       }
@@ -1094,7 +1098,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// End the process of forming returning original context of forming.
       ///
       #[ inline( always ) ]
-      pub fn end( mut self ) -> < former_descriptor_name_ident #generics_impl as former::FormerDescriptor >::Formed
+      pub fn end( mut self ) -> < former_descriptor_name_ident #generics_ty as former::FormerDescriptor >::Formed
       {
         let on_end = self.on_end.take().unwrap();
         let context = self.context.take();
