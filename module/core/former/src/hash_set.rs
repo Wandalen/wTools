@@ -53,21 +53,27 @@ where
   }
 }
 
-impl< K > StoragePerform
+impl< K > Storage
 for HashSet< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
   type Descriptor = HashSetDescriptor< K >;
-  fn preform( self ) -> < < Self as StoragePerform >::Descriptor as FormerDescriptor >::Formed
-  {
-    self
-  }
-  // type Formed = Self;
-  // fn preform( self ) -> Self::Formed
+  // fn preform( self ) -> < < Self as Storage >::Descriptor as FormerDescriptor >::Formed
   // {
   //   self
   // }
+}
+
+impl< K > StoragePerform
+for HashSet< K >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+  fn preform( self ) -> < < Self as Storage >::Descriptor as FormerDescriptor >::Formed
+  {
+    self
+  }
 }
 
 impl< K > FormerDescriptor

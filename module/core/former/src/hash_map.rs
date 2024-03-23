@@ -65,23 +65,6 @@ where
   }
 }
 
-impl< K, E > StoragePerform
-for HashMap< K, E >
-where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-{
-  // type Formed = Self;
-  // fn preform( self ) -> Self::Formed
-  // {
-  //   self
-  // }
-  type Descriptor = HashMapDescriptor< K, E >;
-  fn preform( self ) -> < < Self as StoragePerform >::Descriptor as FormerDescriptor >::Formed
-  {
-    self
-  }
-}
-
 impl< K, E > FormerDescriptor
 for HashMapDescriptor< K, E >
 where
@@ -89,6 +72,29 @@ where
 {
   type Storage = HashMap< K, E >;
   type Formed = HashMap< K, E >;
+}
+
+impl< K, E > Storage
+for HashMap< K, E >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+  type Descriptor = HashMapDescriptor< K, E >;
+  // fn preform( self ) -> < < Self as Storage >::Descriptor as FormerDescriptor >::Formed
+  // {
+  //   self
+  // }
+}
+
+impl< K, E > StoragePerform
+for HashMap< K, E >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+  fn preform( self ) -> < < Self as Storage >::Descriptor as FormerDescriptor >::Formed
+  {
+    self
+  }
 }
 
 /// A builder for constructing hash map-like structures with a fluent interface.

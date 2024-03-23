@@ -1,10 +1,14 @@
 //! ....
 
-/// xxx
-pub trait StoragePerform : ::core::default::Default
+pub trait Storage : ::core::default::Default
 {
   type Descriptor : FormerDescriptor< Storage = Self >;
-  fn preform( self ) -> < < Self as StoragePerform >::Descriptor as FormerDescriptor >::Formed;
+}
+
+/// xxx
+pub trait StoragePerform : Storage
+{
+  fn preform( self ) -> < < Self as Storage >::Descriptor as FormerDescriptor >::Formed;
 }
 
 /// xxx

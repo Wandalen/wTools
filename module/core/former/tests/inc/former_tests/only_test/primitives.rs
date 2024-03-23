@@ -100,7 +100,7 @@ tests_impls!
     a_id!( got, exp );
 
     // storage exists
-    let got = < < Struct1FormerStorage as the_module::StoragePerform >::Descriptor as the_module::FormerDescriptor >::Formed::former().form();
+    let got = < < Struct1FormerStorage as the_module::Storage >::Descriptor as the_module::FormerDescriptor >::Formed::former().form();
     let exp = Struct1::former().form();
     a_id!( got, exp );
 

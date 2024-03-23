@@ -44,12 +44,17 @@ for VectorDescriptor< E >
   type Formed = Vec< E >;
 }
 
+impl< E > Storage
+for Vec< E >
+{
+  type Descriptor = VectorDescriptor< E >;
+}
+
 impl< E > StoragePerform
 for Vec< E >
 {
-  // type Formed = Self;
-  type Descriptor = VectorDescriptor< E >;
-  fn preform( self ) -> < < Self as StoragePerform >::Descriptor as FormerDescriptor >::Formed
+  // type Descriptor = VectorDescriptor< E >;
+  fn preform( self ) -> < < Self as Storage >::Descriptor as FormerDescriptor >::Formed
   {
     self
   }

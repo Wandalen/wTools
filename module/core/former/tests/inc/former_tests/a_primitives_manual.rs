@@ -67,12 +67,17 @@ for Struct1FormerDescriptor
   type Formed = Struct1;
 }
 
-impl former::StoragePerform
+impl former::Storage
 for Struct1FormerStorage
 {
   type Descriptor = Struct1FormerDescriptor;
+}
 
-  fn preform( mut self ) -> < < Self as former::StoragePerform >::Descriptor as former::FormerDescriptor >::Formed
+impl former::StoragePerform
+for Struct1FormerStorage
+{
+
+  fn preform( mut self ) -> < < Self as former::Storage >::Descriptor as former::FormerDescriptor >::Formed
   {
 
     let int_1 = if self.int_1.is_some()
@@ -114,7 +119,7 @@ for Struct1FormerStorage
     };
 
     // xxx : Rust failt to use parameter here
-    // < < Self as former::StoragePerform >::Descriptor as former::FormerDescriptor >::Formed
+    // < < Self as former::Storage >::Descriptor as former::FormerDescriptor >::Formed
     Struct1
     {
       int_1,
