@@ -45,7 +45,8 @@ for Vec< E >
 //
 
 #[ derive( Debug ) ]
-pub struct VectorDefinition< E, Context = (), End = ReturnStorage >
+// pub struct VectorDefinition< E, Context = (), End = ReturnStorage >
+pub struct VectorDefinition< E, Context, End >
 where
   End : FormingEnd< Self >
 {

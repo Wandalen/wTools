@@ -93,6 +93,7 @@ impl< Definition, T > FormingEnd< Definition >
 for ReturnStorage
 where
   Definition : FormerDefinition< Context = (), Storage = T, Formed = T, End = Self >,
+  // Definition::Storage : Default,
 {
   #[ inline( always ) ]
   fn call( &self, storage : Definition::Storage, _context : core::option::Option< () > ) -> Definition::Formed
