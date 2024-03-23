@@ -2,21 +2,24 @@
 
 pub trait Storage : ::core::default::Default
 {
-  type Definition : FormerDefinition< Storage = Self >;
+  // type Definition : FormerDefinition< Storage = Self >;
+  type Formed;
 }
 
 /// xxx
 pub trait StoragePerform : Storage
 {
-  fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinition >::Formed;
+  // fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinition >::Formed;
+  fn preform( self ) -> Self::Formed;
 }
 
 /// xxx
 pub trait FormerDefinition
 {
-  type Storage : Storage< Definition = Self >;
+  // type Storage : Storage< Definition = Self >;
+  type Storage : Storage< Formed = Self::Formed >;
   type Formed;
-  // type Contex;
+  // type Context;
 }
 
 // pub trait FormerDefinition
@@ -70,9 +73,8 @@ pub struct ReturnFormed;
 impl< Definition : FormerDefinition > FormingEnd< Definition, () >
 for ReturnFormed
 where
-  Definition::Storage : StoragePerform< Definition = Definition >,
-  // xxx : rename Former -> Definition
-  // xxx : rename Definition -> Definition
+  // Definition::Storage : StoragePerform< Definition = Definition >,
+  Definition::Storage : StoragePerform< Formed = Definition::Formed >,
 {
   #[ inline( always ) ]
   fn call( &self, storage : Definition::Storage, _context : core::option::Option< () > ) -> Definition::Formed

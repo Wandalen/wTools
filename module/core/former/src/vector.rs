@@ -47,13 +47,15 @@ for VectorDefinition< E >
 impl< E > Storage
 for Vec< E >
 {
-  type Definition = VectorDefinition< E >;
+  // type Definition = VectorDefinition< E >;
+  type Formed = Vec< E >;
 }
 
 impl< E > StoragePerform
 for Vec< E >
 {
-  fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinition >::Formed
+  // fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinition >::Formed
+  fn preform( self ) -> Self::Formed
   {
     self
   }

@@ -278,7 +278,7 @@ impl< E, Definition > ContainerSubformer< E, Definition, (), ReturnFormed >
 where
   Definition : FormerDefinition,
   Definition::Storage : ContainerAdd< Element = E >,
-  Definition::Storage : StoragePerform< Definition = Definition >,
+  Definition::Storage : StoragePerform< Formed = Definition::Formed >,
 {
 
   /// Initializes a new `ContainerSubformer` instance, starting with an empty formed.

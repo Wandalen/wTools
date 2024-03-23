@@ -58,11 +58,8 @@ for HashSet< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  type Definition = HashSetDefinition< K >;
-  // fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinition >::Formed
-  // {
-  //   self
-  // }
+  // type Definition = HashSetDefinition< K >;
+  type Formed = HashSet< K >;
 }
 
 impl< K > StoragePerform
@@ -70,7 +67,8 @@ for HashSet< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinition >::Formed
+  // fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinition >::Formed
+  fn preform( self ) -> Self::Formed
   {
     self
   }
@@ -117,7 +115,7 @@ where
 /// # }
 /// ```
 
-pub type VectorSubformer< K > = ContainerSubformer::< K, HashSetDefinition< K > >;
+pub type HashSetSubformer< K > = ContainerSubformer::< K, HashSetDefinition< K > >;
 
 // #[ derive( Debug, Default ) ]
 // pub struct HashSetSubformer< K, Definition, Context, End >
