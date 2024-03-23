@@ -22,6 +22,12 @@ where
 {
 }
 
+// impl former::FormingEnd<former::VectorDefinition<String, (), former::ReturnStorage>> for former::ReturnStorage {
+//     fn call(&self, storage: former::VectorDefinition<String, (), former::ReturnStorage>::Storage, context: Option<former::VectorDefinition<String, (), former::ReturnStorage>::Context>) -> former::VectorDefinition<String, (), former::ReturnStorage>::Formed {
+//         storage
+//     }
+// }
+
 #[ test ]
 fn push()
 {

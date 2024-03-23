@@ -48,7 +48,8 @@ for Vec< E >
 // pub struct VectorDefinition< E, Context = (), End = ReturnStorage >
 pub struct VectorDefinition< E, Context, End >
 where
-  End : FormingEnd< Self >
+  End : FormingEnd< Self >,
+  Self : FormerDefinition,
 {
   _phantom : core::marker::PhantomData< ( E, Context, End ) >,
 }

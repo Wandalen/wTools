@@ -93,6 +93,8 @@ impl< Definition, T > FormingEnd< Definition >
 for ReturnStorage
 where
   Definition : FormerDefinition< Context = (), Storage = T, Formed = T, End = Self >,
+  Definition::End : FormingEnd< Definition >,
+  // Definition::End : Self,
   // Definition::Storage : Default,
 {
   #[ inline( always ) ]
