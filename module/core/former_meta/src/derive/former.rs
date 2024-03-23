@@ -404,9 +404,9 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
 
     qt!
     {
-      let #ident = if self.storage.#ident.is_some()
+      let #ident = if self.#ident.is_some()
       {
-        ::core::option::Option::Some( self.storage.#ident.take().unwrap() )
+        ::core::option::Option::Some( self.#ident.take().unwrap() )
       }
       else
       {
@@ -464,9 +464,9 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
 
     qt!
     {
-      let #ident = if self.storage.#ident.is_some()
+      let #ident = if self.#ident.is_some()
       {
-        self.storage.#ident.take().unwrap()
+        self.#ident.take().unwrap()
       }
       else
       {
@@ -1001,17 +1001,16 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     {
 
       // fn preform( mut self ) -> #former_storage_name_ident #generics_ty
-      fn preform( mut self ) -> < former_descriptor_name_ident #generics_ty as former::FormerDescriptor >::Formed
+      fn preform( mut self ) -> < #former_descriptor_name_ident #generics_ty as former::FormerDescriptor >::Formed
       {
-        Self
+        #( #fields_form )*
+        // Rust does not support that, yet
+        // let result = < #former_descriptor_name_ident #generics_ty as former::FormerDescriptor >::Formed
+        let result = #name_ident #generics_ty
         {
-          #( #fields_form )*
-          let result = #name_ident
-          {
-            #( #fields_names, )*
-          };
-          return result;
-        }
+          #( #fields_names, )*
+        };
+        return result;
       }
 
     }
@@ -1038,7 +1037,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// Finish setting options and return formed entity.
       ///
       #[ inline( always ) ]
-      pub fn preform( self ) -> < former_descriptor_name_ident #generics_ty as former::FormerDescriptor >::Formed
+      pub fn preform( self ) -> < #former_descriptor_name_ident #generics_ty as former::FormerDescriptor >::Formed
       // #name_ident #generics_ty
       {
         < #former_storage_name_ident #generics_ty as former::StoragePerform >::preform( self.storage )
@@ -1090,7 +1089,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// End the process of forming returning original context of forming.
       ///
       #[ inline( always ) ]
-      pub fn form( self ) -> < former_descriptor_name_ident #generics_ty as former::FormerDescriptor >::Formed
+      pub fn form( self ) -> < #former_descriptor_name_ident #generics_ty as former::FormerDescriptor >::Formed
       {
         self.end()
       }
@@ -1099,7 +1098,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// End the process of forming returning original context of forming.
       ///
       #[ inline( always ) ]
-      pub fn end( mut self ) -> < former_descriptor_name_ident #generics_ty as former::FormerDescriptor >::Formed
+      pub fn end( mut self ) -> < #former_descriptor_name_ident #generics_ty as former::FormerDescriptor >::Formed
       {
         let on_end = self.on_end.take().unwrap();
         let context = self.context.take();
