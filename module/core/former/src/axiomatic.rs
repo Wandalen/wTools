@@ -14,9 +14,9 @@ pub trait StoragePerform : Storage
 /// xxx
 pub trait FormerDefinition
 {
-  // type Storage : StoragePerform< Definition = Self >;
   type Storage : Storage< Definition = Self >;
   type Formed;
+  // type Contex;
 }
 
 // pub trait FormerDefinition
