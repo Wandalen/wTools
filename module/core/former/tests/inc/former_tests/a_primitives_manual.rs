@@ -34,7 +34,7 @@ impl Struct1FormerDefinition
   }
 }
 
-impl former::FormerDefinition
+impl former::FormerDefinitionTypes
 for Struct1FormerDefinition
 {
   type Storage = Struct1FormerStorage;
@@ -72,14 +72,14 @@ impl Default for Struct1FormerStorage
 impl former::Storage
 for Struct1FormerStorage
 {
-  type Definition = Struct1FormerDefinition;
+  type Types = Struct1FormerDefinition;
 }
 
 impl former::StoragePerform
 for Struct1FormerStorage
 {
 
-  fn preform( mut self ) -> < < Self as former::Storage >::Definition as former::FormerDefinition >::Formed
+  fn preform( mut self ) -> < < Self as former::Storage >::Definition as former::FormerDefinitionTypes >::Formed
   {
 
     let int_1 = if self.int_1.is_some()
@@ -121,7 +121,7 @@ for Struct1FormerStorage
     };
 
     // Rust failt to use parameter here
-    // < < Self as former::Storage >::Definition as former::FormerDefinition >::Formed
+    // < < Self as former::Storage >::Definition as former::FormerDefinitionTypes >::Formed
     Struct1
     {
       int_1,
@@ -154,13 +154,13 @@ where
   FormerEnd: the_module::FormingEnd< Struct1FormerDefinition, FormerContext >,
 {
 
-  fn preform( self ) -> < Struct1FormerDefinition as former::FormerDefinition >::Formed
+  fn preform( self ) -> < Struct1FormerDefinition as former::FormerDefinitionTypes >::Formed
   {
     former::StoragePerform::preform( self.storage )
   }
 
   #[ inline( always ) ]
-  pub fn perform(self) -> < Struct1FormerDefinition as former::FormerDefinition >::Formed
+  pub fn perform(self) -> < Struct1FormerDefinition as former::FormerDefinitionTypes >::Formed
   {
     let result = self.form();
     return result;
@@ -169,7 +169,7 @@ where
   #[ inline( always ) ]
   pub fn begin
   (
-    mut storage : core::option::Option< < Struct1FormerDefinition as former::FormerDefinition >::Storage >,
+    mut storage : core::option::Option< < Struct1FormerDefinition as former::FormerDefinitionTypes >::Storage >,
     context : core::option::Option< FormerContext >,
     on_end : FormerEnd,
     // xxx : cover by test existance of these 3 parameters in the function
@@ -188,7 +188,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn end( mut self ) -> < Struct1FormerDefinition as former::FormerDefinition >::Formed
+  pub fn end( mut self ) -> < Struct1FormerDefinition as former::FormerDefinitionTypes >::Formed
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
@@ -196,7 +196,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn form( self ) -> < Struct1FormerDefinition as former::FormerDefinition >::Formed
+  pub fn form( self ) -> < Struct1FormerDefinition as former::FormerDefinitionTypes >::Formed
   {
     self.end()
   }

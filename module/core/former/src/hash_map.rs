@@ -21,7 +21,7 @@
 //
 //   // /// Return former.
 //   // #[ inline( always ) ]
-//   // fn former< Definition : FormerDefinition >( self )
+//   // fn former< Definition : FormerDefinitionTypes >( self )
 //   // ->
 //   // HashMapSubformer< K, E, Definition, (), impl FormingEnd< Self, Self > >
 //   // {
@@ -52,7 +52,7 @@
 // where
 //   K : ::core::cmp::Eq + ::core::hash::Hash,
 // {
-//   // type Definition = HashMapDefinition< K, E >;
+//   // type Types = HashMapDefinition< K, E >;
 //   type Formed = HashMap< K, E >;
 // }
 //
@@ -61,7 +61,7 @@
 // where
 //   K : ::core::cmp::Eq + ::core::hash::Hash,
 // {
-//   // fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinition >::Formed
+//   // fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinitionTypes >::Formed
 //   fn preform( self ) -> Self::Formed
 //   {
 //     self
@@ -90,7 +90,7 @@
 //   }
 // }
 //
-// impl< K, E, Context, End > FormerDefinition
+// impl< K, E, Context, End > FormerDefinitionTypes
 // for HashMapDefinition< K, E, Context, End >
 // where
 //   K : ::core::cmp::Eq + ::core::hash::Hash,

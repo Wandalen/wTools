@@ -11,19 +11,19 @@ fn definitions()
 
   pub fn f1< Definition >( _x : Definition )
   where
-    Definition : former::FormerDefinition,
+    Definition : former::FormerDefinitionTypes,
   {
   }
 
   pub fn f2< Definition >( _x : Definition )
   where
-    Definition : former::FormerDefinition2,
+    Definition : former::FormerDefinition,
   {
   }
 
   pub fn f3< Definition, End >( _x : End )
   where
-    Definition : former::FormerDefinition,
+    Definition : former::FormerDefinitionTypes,
     End : former::FormingEnd< Definition >,
   {
   }
@@ -31,7 +31,7 @@ fn definitions()
   f1( former::VectorDefinition::< String, () >::new() );
   f2( former::VectorDefinition::< String, (), Vec< String >, the_module::ReturnStorage >::new() );
   f3::< former::VectorDefinition< String, () >, the_module::ReturnStorage >( the_module::ReturnStorage );
-  f3::< < former::VectorDefinition< String, (), Vec< String >, the_module::ReturnStorage > as the_module::FormerDefinition2 >::Definition, the_module::ReturnStorage >( the_module::ReturnStorage );
+  f3::< < former::VectorDefinition< String, (), Vec< String >, the_module::ReturnStorage > as the_module::FormerDefinition >::Types, the_module::ReturnStorage >( the_module::ReturnStorage );
 
 }
 
@@ -190,16 +190,16 @@ fn custom_definition()
 
   // xxx2 : continue
   struct Return13;
-  impl former::FormerDefinition for Return13
+  impl former::FormerDefinitionTypes for Return13
   {
     type Storage = Vec< String >;
     type Formed = i32;
     type Context = ();
   }
 
-  // impl former::FormerDefinition2 for Return13
+  // impl former::FormerDefinition for Return13
   // {
-  //   type Definition = Return13;
+  //   type Types = Return13;
   //   type End = former::ReturnStorage;
   // }
 

@@ -82,13 +82,13 @@ tests_impls!
   {
 
     // descriptor exists and has Formed
-    let got = < Struct1FormerDefinition as the_module::FormerDefinition >::Formed::former().form();
+    let got = < Struct1FormerDefinition as the_module::FormerDefinitionTypes >::Formed::former().form();
     let exp = Struct1::former().form();
     a_id!( got, exp );
 
     // descriptor exists and has Storage
     use former::StoragePerform;
-    let got = < Struct1FormerDefinition as the_module::FormerDefinition >::Storage::preform( Struct1::former().storage );
+    let got = < Struct1FormerDefinition as the_module::FormerDefinitionTypes >::Storage::preform( Struct1::former().storage );
     let exp = Struct1::former().form();
     a_id!( got, exp );
 
@@ -116,7 +116,7 @@ tests_impls!
     a_id!( got, exp );
 
     // storage exists
-    let got = < < Struct1FormerStorage as the_module::Storage >::Definition as the_module::FormerDefinition >::Formed::former().form();
+    let got = < < Struct1FormerStorage as the_module::Storage >::Definition as the_module::FormerDefinitionTypes >::Formed::former().form();
     let exp = Struct1::former().form();
     a_id!( got, exp );
 

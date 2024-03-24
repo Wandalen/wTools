@@ -45,7 +45,7 @@ for Vec< E >
 #[ derive( Debug ) ]
 pub struct VectorDefinition< E, Context = (), Formed = Vec< E >, End = ReturnStorage >
 // where
-  // Self : FormerDefinition,
+  // Self : FormerDefinitionTypes,
 {
   _phantom : core::marker::PhantomData< ( E, Context, Formed, End ) >,
 }
@@ -58,7 +58,7 @@ impl< E, Context, Formed > VectorDefinition< E, Context, Formed >
   }
 }
 
-impl< E, Context, Formed > FormerDefinition
+impl< E, Context, Formed > FormerDefinitionTypes
 for VectorDefinition< E, Context, Formed >
 {
   type Storage = Vec< E >;
@@ -84,12 +84,12 @@ for VectorDefinition< E, Context, Formed >
 //   }
 // }
 
-impl< E, Context, Formed, End > FormerDefinition2
+impl< E, Context, Formed, End > FormerDefinition
 for VectorDefinition< E, Context, Formed, End >
 where
   End : FormingEnd< VectorDefinition< E, Context, Formed > >,
 {
-  type Definition = VectorDefinition< E, Context, Formed >;
+  type Types = VectorDefinition< E, Context, Formed >;
   type End = End;
 }
 

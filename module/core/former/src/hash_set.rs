@@ -40,7 +40,7 @@
 // where
 //   K : ::core::cmp::Eq + ::core::hash::Hash,
 // {
-//   // type Definition = HashSetDefinition< K >;
+//   // type Types = HashSetDefinition< K >;
 //   type Formed = HashSet< K >;
 // }
 //
@@ -49,7 +49,7 @@
 // where
 //   K : ::core::cmp::Eq + ::core::hash::Hash,
 // {
-//   // fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinition >::Formed
+//   // fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinitionTypes >::Formed
 //   fn preform( self ) -> Self::Formed
 //   {
 //     self
@@ -78,7 +78,7 @@
 //   }
 // }
 //
-// impl< K, Context, End > FormerDefinition
+// impl< K, Context, End > FormerDefinitionTypes
 // for HashSetDefinition< K, Context, End >
 // where
 //   K : ::core::cmp::Eq + ::core::hash::Hash,

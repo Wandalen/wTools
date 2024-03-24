@@ -198,24 +198,24 @@ where
 pub struct ContainerSubformer< E, Definition >
 where
   // End : FormingEnd< Definition >,
-  Definition : FormerDefinition2,
-  < Definition::Definition as FormerDefinition >::Storage : ContainerAdd< Element = E >,
+  Definition : FormerDefinition,
+  < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
 {
-  storage : core::option::Option< < Definition::Definition as FormerDefinition >::Storage >,
-  context : core::option::Option< < Definition::Definition as FormerDefinition >::Context >,
+  storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
+  context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
   on_end : core::option::Option< Definition::End >,
 }
 
 impl< E, Definition > ContainerSubformer< E, Definition >
 where
   // End : FormingEnd< Definition >,
-  Definition : FormerDefinition2,
-  < Definition::Definition as FormerDefinition >::Storage : ContainerAdd< Element = E >,
+  Definition : FormerDefinition,
+  < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
 {
 
   /// Form current former into target structure.
   #[ inline( always ) ]
-  pub fn storage( mut self ) -> < Definition::Definition as FormerDefinition >::Storage
+  pub fn storage( mut self ) -> < Definition::Types as FormerDefinitionTypes >::Storage
   {
     let storage = if self.storage.is_some()
     {
@@ -233,8 +233,8 @@ where
   #[ inline( always ) ]
   pub fn begin
   (
-    storage : core::option::Option< < Definition::Definition as FormerDefinition >::Storage >,
-    context : core::option::Option< < Definition::Definition as FormerDefinition >::Context >,
+    storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
+    context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
     on_end : Definition::End,
   ) -> Self
   {
@@ -248,7 +248,7 @@ where
 
   /// Finalizes the building process, returning the formed or a context incorporating it.
   #[ inline( always ) ]
-  pub fn end( mut self ) -> < Definition::Definition as FormerDefinition >::Formed
+  pub fn end( mut self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
@@ -258,14 +258,14 @@ where
 
   /// Finalizes the building process, returning the formed or a context incorporating it.
   #[ inline( always ) ]
-  pub fn form( self ) -> < Definition::Definition as FormerDefinition >::Formed
+  pub fn form( self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
   {
     self.end()
   }
 
   /// Replaces the current storage with a provided one, allowing for a reset or redirection of the building process.
   #[ inline( always ) ]
-  pub fn replace( mut self, vector : < Definition::Definition as FormerDefinition >::Storage ) -> Self
+  pub fn replace( mut self, vector : < Definition::Types as FormerDefinitionTypes >::Storage ) -> Self
   {
     self.storage = Some( vector );
     self
@@ -273,12 +273,12 @@ where
 
 }
 
-impl< E, T, Definition, Definition1 > ContainerSubformer< E, Definition >
+impl< E, T, Types, Definition > ContainerSubformer< E, Definition >
 where
-  Definition1 : FormerDefinition< Context = (), Storage = T, Formed = T >,
-  Definition : FormerDefinition2< Definition = Definition1, End = ReturnStorage >,
-  < Definition::Definition as FormerDefinition >::Storage : ContainerAdd< Element = E >,
-  < Definition::Definition as FormerDefinition >::Storage : StoragePerform< Formed = < Definition::Definition as FormerDefinition >::Formed >,
+  Types : FormerDefinitionTypes< Context = (), Storage = T, Formed = T >,
+  Definition : FormerDefinition< Types = Types, End = ReturnStorage >,
+  < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
+  < Definition::Types as FormerDefinitionTypes >::Storage : StoragePerform< Formed = < Definition::Types as FormerDefinitionTypes >::Formed >,
 {
 
   /// Initializes a new `ContainerSubformer` instance, starting with an empty formed.
@@ -304,8 +304,8 @@ where
 impl< E, Definition > ContainerSubformer< E, Definition >
 where
   // End : FormingEnd< Definition >,
-  Definition : FormerDefinition2,
-  < Definition::Definition as FormerDefinition >::Storage : ContainerAdd< Element = E >,
+  Definition : FormerDefinition,
+  < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
 {
 
   /// Appends an element to the end of the storage, expanding the internal collection.
@@ -333,16 +333,16 @@ impl< E, Definition > FormerBegin< Definition >
 for ContainerSubformer< E, Definition >
 where
   // End : FormingEnd< Definition >,
-  Definition : FormerDefinition2,
-  < Definition::Definition as FormerDefinition >::Storage : ContainerAdd< Element = E >,
+  Definition : FormerDefinition,
+  < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
 {
   // type End = Definition::End;
 
   #[ inline( always ) ]
   fn _begin
   (
-    storage : core::option::Option< < Definition::Definition as FormerDefinition >::Storage >,
-    context : core::option::Option< < Definition::Definition as FormerDefinition >::Context >,
+    storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
+    context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
     on_end : Definition::End,
   )
   -> Self
