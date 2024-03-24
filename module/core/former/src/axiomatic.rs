@@ -38,6 +38,9 @@ pub trait FormerDefinition : Sized
 /// # Parameters
 /// - `Storage`: The type of the container being processed.
 /// - `Context`: The type of the context that might be altered or returned upon completion.
+
+// xxx2 : contunue. try
+// pub trait FormingEnd< Definition : FormerDefinitionTypes > : Default
 pub trait FormingEnd< Definition : FormerDefinitionTypes >
 {
   /// Called at the end of the subforming process to return the modified or original context.
