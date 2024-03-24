@@ -29,9 +29,9 @@ fn definitions()
   }
 
   f1( former::VectorDefinitionTypes::< String, () >::new() );
-  f2( former::VectorDefinition::< String, (), the_module::ReturnStorage >::new() );
+  f2( former::VectorDefinition::< String, (), Vec< String >, the_module::ReturnStorage >::new() );
   f3::< former::VectorDefinitionTypes< String, () >, the_module::ReturnStorage >( the_module::ReturnStorage );
-  f3::< < former::VectorDefinition< String, (), the_module::ReturnStorage > as the_module::FormerDefinition2 >::Definition, the_module::ReturnStorage >( the_module::ReturnStorage );
+  f3::< < former::VectorDefinition< String, (), Vec< String >, the_module::ReturnStorage > as the_module::FormerDefinition2 >::Definition, the_module::ReturnStorage >( the_module::ReturnStorage );
 
 }
 
@@ -45,7 +45,7 @@ fn push()
 
   let got : Vec< String > = the_module
   ::ContainerSubformer
-  ::< String, former::VectorDefinition< String, (), the_module::ReturnStorage > >
+  ::< String, former::VectorDefinition< String, (), Vec< String >, the_module::ReturnStorage > >
   ::new()
   .push( "a" )
   .push( "b" )
@@ -62,7 +62,7 @@ fn push()
   let got : Vec< String > = the_module::ContainerSubformer::
   <
     String,
-    former::VectorDefinition< String, (), the_module::ReturnStorage >,
+    former::VectorDefinition< String, (), Vec< String >, the_module::ReturnStorage >,
   >::new()
   .push( "a" )
   .push( "b" )
@@ -76,7 +76,7 @@ fn push()
 
   //
 
-  let got : Vec< String > = the_module::VectorSubformer::< String, (), the_module::ReturnStorage >::new()
+  let got : Vec< String > = the_module::VectorSubformer::< String, (), Vec< String >, the_module::ReturnStorage >::new()
   .push( "a" )
   .push( "b" )
   .form();
@@ -144,26 +144,29 @@ fn custom_end()
 {
 
   // xxx2 : continue
-  // struct Return13;
-  // impl former::FormerDefinition for Return13
-  // {
-  //   type Storage = Vec< u32 >;
-  //   type Formed = i32;
-  //   type Context = ();
-  // }
+  struct Return13;
+  impl former::FormerDefinition for Return13
+  {
+    type Storage = Vec< String >;
+    type Formed = i32;
+    type Context = ();
+  }
 
-  // fn return_13( _storage : Vec< i32 >, _context : Option< () > ) -> i32
-  // {
-  //   13
-  // }
-  // let end_wrapper = the_module::FormingEndWrapper::new( return_13 );
+  fn return_13( _storage : Vec< String >, _context : Option< () > ) -> i32
+  {
+    13
+  }
 
-  // let got : i32 = the_module::VectorSubformer::< String, (), return_13 >::new()
+  let end_wrapper : the_module::FormingEndWrapper< Return13 > = the_module::FormingEndWrapper::new( return_13 );
+
+  // let got : i32 = the_module::VectorSubformer::< String, (), _ >::begin( None, (), return_13 )
   // .push( "a" )
   // .push( "b" )
   // .form();
   // let exp = 13;
   // a_id!( got, exp );
+
+  // pub type VectorSubformer< E, Context, End > = ContainerSubformer::< E, VectorDefinition< E, Context, End > >;
 
 }
 

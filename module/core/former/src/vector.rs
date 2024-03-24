@@ -45,14 +45,14 @@ for Vec< E >
 // = definition
 
 #[ derive( Debug ) ]
-pub struct VectorDefinitionTypes< E, Context = () >
+pub struct VectorDefinitionTypes< E, Context = (), Formed = Vec< E > >
 where
   Self : FormerDefinition,
 {
-  _phantom : core::marker::PhantomData< ( E, Context ) >,
+  _phantom : core::marker::PhantomData< ( E, Context, Formed ) >,
 }
 
-impl< E, Context > VectorDefinitionTypes< E, Context >
+impl< E, Context, Formed > VectorDefinitionTypes< E, Context, Formed >
 {
   pub fn new() -> Self
   {
@@ -60,26 +60,25 @@ impl< E, Context > VectorDefinitionTypes< E, Context >
   }
 }
 
-impl< E, Context > FormerDefinition
-for VectorDefinitionTypes< E, Context >
+impl< E, Context, Formed > FormerDefinition
+for VectorDefinitionTypes< E, Context, Formed >
 {
   type Storage = Vec< E >;
-  type Formed = Vec< E >;
+  type Formed = Formed;
   type Context = Context;
 }
 
 #[ derive( Debug ) ]
-pub struct VectorDefinition< E, Context = (), End = ReturnStorage >
-// pub struct VectorDefinition< E, Context, End >
+pub struct VectorDefinition< E, Context = (), Formed = Vec< E >, End = ReturnStorage >
 where
-  End : FormingEnd< VectorDefinitionTypes< E, Context > >,
+  End : FormingEnd< VectorDefinitionTypes< E, Context, Formed > >,
 {
-  _phantom : core::marker::PhantomData< ( E, Context, End ) >,
+  _phantom : core::marker::PhantomData< ( E, Context, Formed, End ) >,
 }
 
-impl< E, Context, End > VectorDefinition< E, Context, End >
+impl< E, Context, Formed, End > VectorDefinition< E, Context, Formed, End >
 where
-  End : FormingEnd< VectorDefinitionTypes< E, Context > >,
+  End : FormingEnd< VectorDefinitionTypes< E, Context, Formed > >,
 {
   pub fn new() -> Self
   {
@@ -87,12 +86,12 @@ where
   }
 }
 
-impl< E, Context, End > FormerDefinition2
-for VectorDefinition< E, Context, End >
+impl< E, Context, Formed, End > FormerDefinition2
+for VectorDefinition< E, Context, Formed, End >
 where
-  End : FormingEnd< VectorDefinitionTypes< E, Context > >,
+  End : FormingEnd< VectorDefinitionTypes< E, Context, Formed > >,
 {
-  type Definition = VectorDefinitionTypes< E, Context >;
+  type Definition = VectorDefinitionTypes< E, Context, Formed >;
   type End = End;
 }
 
@@ -103,20 +102,20 @@ where
 /// `VectorSubformer` leverages the `VectorLike` trait to enable the construction and manipulation
 /// of vector-like containers in a builder pattern style, promoting readability and ease of use.
 
-pub type VectorSubformer< E, Context, End > = ContainerSubformer::< E, VectorDefinition< E, Context, End > >;
+pub type VectorSubformer< E, Context, Formed, End > = ContainerSubformer::< E, VectorDefinition< E, Context, Formed, End > >;
 
 // = extension
 
 pub trait VecExt< E > : sealed::Sealed
 {
-  fn former() -> VectorSubformer< E, (), ReturnStorage >;
+  fn former() -> VectorSubformer< E, (), Vec< E >, ReturnStorage >;
 }
 
 impl< E > VecExt< E > for Vec< E >
 {
-  fn former() -> VectorSubformer< E, (), ReturnStorage >
+  fn former() -> VectorSubformer< E, (), Vec< E >, ReturnStorage >
   {
-    VectorSubformer::< E, (), ReturnStorage >::new()
+    VectorSubformer::< E, (), Vec< E >, ReturnStorage >::new()
   }
 }
 
