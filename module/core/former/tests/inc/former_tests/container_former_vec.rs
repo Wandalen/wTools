@@ -197,23 +197,47 @@ fn custom_definition()
     type Context = ();
   }
 
-  // impl former::FormerDefinition for Return13
-  // {
-  //   type Types = Return13;
-  //   type End = former::ReturnStorage;
-  // }
-
-  fn return_13( _storage : Vec< String >, _context : Option< () > ) -> i32
+  impl former::FormerDefinition for Return13
   {
-    13
+    type Types = Return13;
+    type End = Return13;
   }
 
-  let end_wrapper : the_module::FormingEndWrapper< Return13 > = the_module::FormingEndWrapper::new( return_13 );
+  // -
+
+  impl the_module::FormingEnd< Return13 >
+  for Return13
+  {
+    fn call
+    (
+      &self,
+      storage : < Return13 as the_module::FormerDefinitionTypes >::Storage,
+      context : Option< < Return13 as the_module::FormerDefinitionTypes >::Context >
+    ) -> < Return13 as the_module::FormerDefinitionTypes >::Formed
+    {
+      13
+    }
+  }
 
   //
 
-  // let got = ContainerSubformer::< E, VectorDefinition< E, Context, Formed, End > >
+  let got = the_module::ContainerSubformer::< String, Return13 >::begin( None, None, Return13 )
+  .push( "a" )
+  .push( "b" )
+  .form();
+  let exp = 13;
+  a_id!( got, exp );
 
+  //
+
+//   // -
+//
+//   fn return_13( _storage : Vec< String >, _context : Option< () > ) -> i32
+//   {
+//     13
+//   }
+//
+//   let end_wrapper : the_module::FormingEndWrapper< Return13 > = the_module::FormingEndWrapper::new( return_13 );
 
 }
 

@@ -21,7 +21,6 @@ pub trait FormerDefinitionTypes : Sized
   type Storage : Default;
   type Formed;
   type Context;
-  // type End : FormingEnd< Self >;
 }
 
 /// xxx
@@ -30,15 +29,6 @@ pub trait FormerDefinition : Sized
   type Types : FormerDefinitionTypes;
   type End : FormingEnd< Self::Types >;
 }
-
-// pub trait FormerDefinitionTypes
-// {
-//   type Storage : StoragePerform< Formed = Self::Formed >;
-//   type Formed;
-//   type Context;
-//   type FormerDefinitionTypes : FormerDefinitionTypes< Storage = Self::Storage, Formed = Self::Formed >;
-//   type End : FormingEnd< Self::FormerDefinitionTypes, Self::Context >;
-// }
 
 /// Defines a handler for the end of a subforming process, enabling the return of the original context.
 ///
