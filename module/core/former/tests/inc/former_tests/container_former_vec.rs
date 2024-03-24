@@ -4,92 +4,115 @@ use super::*;
 #[ allow( unused_imports ) ]
 use collection_tools::Vec;
 
-// impl< Definition, T > FormingEnd< Definition >
-// for ReturnStorage
-// where
-//   Definition : FormerDefinition< Context = (), Storage = T, Formed = T, End = Self >,
-
-pub fn f1< Definition >( x : Definition )
-where
-  Definition : former::FormerDefinition,
+#[ test ]
+fn definitions()
 {
-}
 
-pub fn f2< Definition >( x : Definition )
-where
-  Definition : former::FormerDefinition2,
-{
-}
 
-pub fn f3< Definition, End >( x : End )
-where
-  Definition : former::FormerDefinition,
-  End : former::FormingEnd< Definition >,
-{
-}
+  pub fn f1< Definition >( _x : Definition )
+  where
+    Definition : former::FormerDefinition,
+  {
+  }
 
-// impl former::FormingEnd<former::VectorDefinition<String, (), former::ReturnStorage>> for former::ReturnStorage {
-//     fn call(&self, storage: former::VectorDefinition<String, (), former::ReturnStorage>::Storage, context: Option<former::VectorDefinition<String, (), former::ReturnStorage>::Context>) -> former::VectorDefinition<String, (), former::ReturnStorage>::Formed {
-//         storage
-//     }
-// }
+  pub fn f2< Definition >( _x : Definition )
+  where
+    Definition : former::FormerDefinition2,
+  {
+  }
+
+  pub fn f3< Definition, End >( _x : End )
+  where
+    Definition : former::FormerDefinition,
+    End : former::FormingEnd< Definition >,
+  {
+  }
+
+  f1( former::VectorDefinitionTypes::< String, () >::new() );
+  f2( former::VectorDefinition::< String, (), the_module::ReturnStorage >::new() );
+  f3::< former::VectorDefinitionTypes< String, () >, the_module::ReturnStorage >( the_module::ReturnStorage );
+  f3::< < former::VectorDefinition< String, (), the_module::ReturnStorage > as the_module::FormerDefinition2 >::Definition, the_module::ReturnStorage >( the_module::ReturnStorage );
+
+}
 
 #[ test ]
 fn push()
 {
 
-  f1( former::VectorDefinition1::< String, () >::new() );
-  f2( former::VectorDefinition2::< String, (), the_module::ReturnStorage >::new() );
-  f3::< former::VectorDefinition1< String, () >, the_module::ReturnStorage >( the_module::ReturnStorage );
-  // f3::< former::VectorDefinition2< String, (), _ >::Definition, the_module::ReturnStorage >( the_module::ReturnStorage );
+  //
+
+  let got : Vec< String > = the_module
+  ::ContainerSubformer
+  ::< String, former::VectorDefinition< String, (), the_module::ReturnStorage > >
+  ::new()
+  .push( "a" )
+  .push( "b" )
+  .form();
+  let exp = vec!
+  [
+    "a".to_string(),
+    "b".to_string(),
+  ];
+  a_id!( got, exp );
 
   //
 
-  // let got : Vec< String > = the_module
-  // ::ContainerSubformer
-  // ::< String, former::VectorDefinition< String, (), the_module::ReturnStorage > >
-  // ::new()
-  // .push( "a" )
-  // .push( "b" )
-  // .form();
-  // let exp = vec!
-  // [
-  //   "a".to_string(),
-  //   "b".to_string(),
-  // ];
-  // a_id!( got, exp );
-
-  // Definition : FormerDefinition< Context = (), Storage = T, Formed = T, End = Self >,
+  let got : Vec< String > = the_module::ContainerSubformer::
+  <
+    String,
+    former::VectorDefinition< String, (), the_module::ReturnStorage >,
+  >::new()
+  .push( "a" )
+  .push( "b" )
+  .form();
+  let exp = vec!
+  [
+    "a".to_string(),
+    "b".to_string(),
+  ];
+  a_id!( got, exp );
 
   //
 
-  // let got : Vec< String > = the_module::ContainerSubformer::
-  // <
-  //   String,
-  //   former::VectorDefinition< String, (), the_module::ReturnStorage >,
-  // >::new()
-  // .push( "a" )
-  // .push( "b" )
-  // .form();
-  // let exp = vec!
-  // [
-  //   "a".to_string(),
-  //   "b".to_string(),
-  // ];
-  // a_id!( got, exp );
-//
-//   //
-//
-//   let got : Vec< String > = the_module::VectorSubformer::< String, () >::new()
-//   .push( "a" )
-//   .push( "b" )
-//   .form();
-//   let exp = vec!
-//   [
-//     "a".to_string(),
-//     "b".to_string(),
-//   ];
-//   a_id!( got, exp );
+  let got : Vec< String > = the_module::VectorSubformer::< String, (), the_module::ReturnStorage >::new()
+  .push( "a" )
+  .push( "b" )
+  .form();
+  let exp = vec!
+  [
+    "a".to_string(),
+    "b".to_string(),
+  ];
+  a_id!( got, exp );
+
+  //
+
+  let got : Vec< String > = the_module::VectorSubformer::new()
+  .push( "a" )
+  .push( "b" )
+  .form();
+  let exp = vec!
+  [
+    "a".to_string(),
+    "b".to_string(),
+  ];
+  a_id!( got, exp );
+
+  //
+
+  use the_module::VecExt;
+  let got : Vec< String > = Vec::former()
+  .push( "a" )
+  .push( "b" )
+  .form();
+  let exp = vec!
+  [
+    "a".to_string(),
+    "b".to_string(),
+  ];
+  a_id!( got, exp );
+
+  //
 
 }
 
@@ -97,15 +120,15 @@ fn push()
 fn replace()
 {
 
-  // let got : Vec< String > = the_module::VectorSubformer::new()
-  // .push( "x" )
-  // .replace( vec![ "a".to_string(), "b".to_string() ] )
-  // .form();
-  // let exp = vec!
-  // [
-  //   "a".to_string(),
-  //   "b".to_string(),
-  // ];
-  // a_id!( got, exp );
+  let got : Vec< String > = the_module::VectorSubformer::new()
+  .push( "x" )
+  .replace( vec![ "a".to_string(), "b".to_string() ] )
+  .form();
+  let exp = vec!
+  [
+    "a".to_string(),
+    "b".to_string(),
+  ];
+  a_id!( got, exp );
 
 }
