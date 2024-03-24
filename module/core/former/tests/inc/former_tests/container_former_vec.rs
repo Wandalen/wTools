@@ -159,10 +159,10 @@ fn custom_end()
 
   let end_wrapper : the_module::FormingEndWrapper< Return13 > = the_module::FormingEndWrapper::new( return_13 );
 
-  // let got : i32 = the_module::VectorSubformer::< String, (), _ >::begin( None, (), return_13 )
-  // .push( "a" )
-  // .push( "b" )
-  // .form();
+  let got : i32 = the_module::VectorSubformer::< String, (), i32, _ >::begin( None, None, return_13 )
+  .push( "a" )
+  .push( "b" )
+  .form();
   // let exp = 13;
   // a_id!( got, exp );
 
