@@ -41,6 +41,7 @@ fn push()
   f1( former::VectorDefinition1::< String, () >::new() );
   f2( former::VectorDefinition2::< String, (), the_module::ReturnStorage >::new() );
   f3::< former::VectorDefinition1< String, () >, the_module::ReturnStorage >( the_module::ReturnStorage );
+  f3::< former::VectorDefinition2< String, (), _ >::Definition, the_module::ReturnStorage >( the_module::ReturnStorage );
 
   //
 
