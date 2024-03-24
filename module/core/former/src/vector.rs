@@ -28,14 +28,12 @@ impl< E > VectorLike< E > for Vec< E >
 impl< E > Storage
 for Vec< E >
 {
-  // type Definition = VectorDefinition< E >;
   type Formed = Vec< E >;
 }
 
 impl< E > StoragePerform
 for Vec< E >
 {
-  // fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinition >::Formed
   fn preform( self ) -> Self::Formed
   {
     self
@@ -45,14 +43,14 @@ for Vec< E >
 // = definition
 
 #[ derive( Debug ) ]
-pub struct VectorDefinitionTypes< E, Context = (), Formed = Vec< E > >
-where
-  Self : FormerDefinition,
+pub struct VectorDefinition< E, Context = (), Formed = Vec< E >, End = ReturnStorage >
+// where
+  // Self : FormerDefinition,
 {
-  _phantom : core::marker::PhantomData< ( E, Context, Formed ) >,
+  _phantom : core::marker::PhantomData< ( E, Context, Formed, End ) >,
 }
 
-impl< E, Context, Formed > VectorDefinitionTypes< E, Context, Formed >
+impl< E, Context, Formed > VectorDefinition< E, Context, Formed >
 {
   pub fn new() -> Self
   {
@@ -61,37 +59,37 @@ impl< E, Context, Formed > VectorDefinitionTypes< E, Context, Formed >
 }
 
 impl< E, Context, Formed > FormerDefinition
-for VectorDefinitionTypes< E, Context, Formed >
+for VectorDefinition< E, Context, Formed >
 {
   type Storage = Vec< E >;
   type Formed = Formed;
   type Context = Context;
 }
 
-#[ derive( Debug ) ]
-pub struct VectorDefinition< E, Context = (), Formed = Vec< E >, End = ReturnStorage >
-where
-  End : FormingEnd< VectorDefinitionTypes< E, Context, Formed > >,
-{
-  _phantom : core::marker::PhantomData< ( E, Context, Formed, End ) >,
-}
+// #[ derive( Debug ) ]
+// pub struct VectorDefinition< E, Context = (), Formed = Vec< E >, End = ReturnStorage >
+// where
+//   End : FormingEnd< VectorDefinition< E, Context, Formed > >,
+// {
+//   _phantom : core::marker::PhantomData< ( E, Context, Formed, End ) >,
+// }
 
-impl< E, Context, Formed, End > VectorDefinition< E, Context, Formed, End >
-where
-  End : FormingEnd< VectorDefinitionTypes< E, Context, Formed > >,
-{
-  pub fn new() -> Self
-  {
-    Self { _phantom : core::marker::PhantomData }
-  }
-}
+// impl< E, Context, Formed, End > VectorDefinition< E, Context, Formed, End >
+// where
+//   End : FormingEnd< VectorDefinition< E, Context, Formed > >,
+// {
+//   pub fn new() -> Self
+//   {
+//     Self { _phantom : core::marker::PhantomData }
+//   }
+// }
 
 impl< E, Context, Formed, End > FormerDefinition2
 for VectorDefinition< E, Context, Formed, End >
 where
-  End : FormingEnd< VectorDefinitionTypes< E, Context, Formed > >,
+  End : FormingEnd< VectorDefinition< E, Context, Formed > >,
 {
-  type Definition = VectorDefinitionTypes< E, Context, Formed >;
+  type Definition = VectorDefinition< E, Context, Formed >;
   type End = End;
 }
 

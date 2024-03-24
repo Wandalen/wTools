@@ -28,9 +28,9 @@ fn definitions()
   {
   }
 
-  f1( former::VectorDefinitionTypes::< String, () >::new() );
+  f1( former::VectorDefinition::< String, () >::new() );
   f2( former::VectorDefinition::< String, (), Vec< String >, the_module::ReturnStorage >::new() );
-  f3::< former::VectorDefinitionTypes< String, () >, the_module::ReturnStorage >( the_module::ReturnStorage );
+  f3::< former::VectorDefinition< String, () >, the_module::ReturnStorage >( the_module::ReturnStorage );
   f3::< < former::VectorDefinition< String, (), Vec< String >, the_module::ReturnStorage > as the_module::FormerDefinition2 >::Definition, the_module::ReturnStorage >( the_module::ReturnStorage );
 
 }
@@ -143,22 +143,6 @@ fn replace()
 fn begin_and_custom_end()
 {
 
-  // xxx2 : continue
-  // struct Return13;
-  // impl former::FormerDefinition for Return13
-  // {
-  //   type Storage = Vec< String >;
-  //   type Formed = i32;
-  //   type Context = ();
-  // }
-//
-//   fn return_13( _storage : Vec< String >, _context : Option< () > ) -> i32
-//   {
-//     13
-//   }
-//
-//   let end_wrapper : the_module::FormingEndWrapper< Return13 > = the_module::FormingEndWrapper::new( return_13 );
-
   // xxx : make example with that
 
   // basic case
@@ -195,6 +179,41 @@ fn begin_and_custom_end()
   a_id!( got, exp );
 
   //
+
+}
+
+//
+
+#[ test ]
+fn custom_definition()
+{
+
+  // xxx2 : continue
+  struct Return13;
+  impl former::FormerDefinition for Return13
+  {
+    type Storage = Vec< String >;
+    type Formed = i32;
+    type Context = ();
+  }
+
+  // impl former::FormerDefinition2 for Return13
+  // {
+  //   type Definition = Return13;
+  //   type End = former::ReturnStorage;
+  // }
+
+  fn return_13( _storage : Vec< String >, _context : Option< () > ) -> i32
+  {
+    13
+  }
+
+  let end_wrapper : the_module::FormingEndWrapper< Return13 > = the_module::FormingEndWrapper::new( return_13 );
+
+  //
+
+  // let got = ContainerSubformer::< E, VectorDefinition< E, Context, Formed, End > >
+
 
 }
 
