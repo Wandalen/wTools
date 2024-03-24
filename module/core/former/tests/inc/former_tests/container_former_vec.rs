@@ -35,6 +35,8 @@ fn definitions()
 
 }
 
+//
+
 #[ test ]
 fn push()
 {
@@ -116,6 +118,8 @@ fn push()
 
 }
 
+//
+
 #[ test ]
 fn replace()
 {
@@ -132,3 +136,35 @@ fn replace()
   a_id!( got, exp );
 
 }
+
+//
+
+#[ test ]
+fn custom_end()
+{
+
+  // xxx2 : continue
+  // struct Return13;
+  // impl former::FormerDefinition for Return13
+  // {
+  //   type Storage = Vec< u32 >;
+  //   type Formed = i32;
+  //   type Context = ();
+  // }
+
+  // fn return_13( _storage : Vec< i32 >, _context : Option< () > ) -> i32
+  // {
+  //   13
+  // }
+  // let end_wrapper = the_module::FormingEndWrapper::new( return_13 );
+
+  // let got : i32 = the_module::VectorSubformer::< String, (), return_13 >::new()
+  // .push( "a" )
+  // .push( "b" )
+  // .form();
+  // let exp = 13;
+  // a_id!( got, exp );
+
+}
+
+//

@@ -17,7 +17,8 @@ pub trait StoragePerform : Storage
 pub trait FormerDefinition : Sized
 {
   // type Storage : Storage< Definition = Self >;
-  type Storage : Storage< Formed = Self::Formed >;
+  // type Storage : Storage< Formed = Self::Formed >;
+  type Storage : Default;
   type Formed;
   type Context;
   // type End : FormingEnd< Self >;
