@@ -9,13 +9,19 @@ use collection_tools::Vec;
 // where
 //   Definition : FormerDefinition< Context = (), Storage = T, Formed = T, End = Self >,
 
-pub fn f0< Definition >( x : Definition )
+pub fn f1< Definition >( x : Definition )
 where
   Definition : former::FormerDefinition,
 {
 }
 
-pub fn f1< Definition, End >( x : End )
+pub fn f2< Definition >( x : Definition )
+where
+  Definition : former::FormerDefinition2,
+{
+}
+
+pub fn f3< Definition, End >( x : End )
 where
   Definition : former::FormerDefinition,
   End : former::FormingEnd< Definition >,
@@ -32,8 +38,9 @@ where
 fn push()
 {
 
-  // f0( former::VectorDefinition::< String, (), the_module::ReturnStorage >::new() );
-  // f1::< former::VectorDefinition< String, (), the_module::ReturnStorage >, _ >( the_module::ReturnStorage );
+  f1( former::VectorDefinition1::< String, () >::new() );
+  // f2( former::VectorDefinition2::< String, (), the_module::ReturnStorage >::new() );
+  // f3::< former::VectorDefinition< String, (), the_module::ReturnStorage >, _ >( the_module::ReturnStorage );
 
   //
 
