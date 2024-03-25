@@ -19,7 +19,7 @@ mod private
   ///
   /// - `.cargo_vcs_info.json` - contains the git sha1 hash that varies between different commits
   /// - `Cargo.toml` - can be safely modified because it is used to generate the `Cargo.toml` file automatically, and the `Cargo.toml` file is sufficient to check for changes
-  pub const PUBLISH_IGNORE_LIST : [ &str; 2 ] = [ ".cargo_vcs_info.json", "Cargo.toml" ];
+  pub const PUBLISH_IGNORE_LIST : [ &str; 3 ] = [ ".cargo_vcs_info.json", "Cargo.toml", "Cargo.lock" ];
 
 
   /// The `Diff` enum is designed to represent differences between two versions
