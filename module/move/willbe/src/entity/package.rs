@@ -32,6 +32,7 @@ mod private
   use action::readme_health_table_renew::Stability;
   use former::Former;
   use workspace::WorkspacePackage;
+  use diff::crate_diff;
 
   ///
   #[ derive( Debug, Clone ) ]
@@ -879,12 +880,6 @@ mod private
 
   pub fn publish_need( package : &Package, path : Option< PathBuf > ) -> Result< bool, PackageError >
   {
-    // These files are ignored because they can be safely changed without affecting functionality
-    //
-    // - `.cargo_vcs_info.json` - contains the git sha1 hash that varies between different commits
-    // - `Cargo.toml.orig` - can be safely modified because it is used to generate the `Cargo.toml` file automatically, and the `Cargo.toml` file is sufficient to check for changes
-    const IGNORE_LIST : [ &str; 2 ] = [ ".cargo_vcs_info.json", "Cargo.toml.orig" ];
-
     let name = package.name()?;
     let version = package.version()?;
     let local_package_path = path
@@ -902,27 +897,7 @@ mod private
       _ => return Err( PackageError::LoadRemotePackage ),
     };
 
-    let filter_ignore_list = | p : &&Path | !IGNORE_LIST.contains( &p.file_name().unwrap().to_string_lossy().as_ref() );
-    let local_package_files : Vec< _ > = local_package.list().into_iter().filter( filter_ignore_list ).sorted().collect();
-    let remote_package_files : Vec< _ > = remote_package.list().into_iter().filter( filter_ignore_list ).sorted().collect();
-
-    if local_package_files != remote_package_files { return Ok( true ); }
-
-    let mut is_same = true;
-    for path in local_package_files
-    {
-      // unwraps is safe because the paths to the files was compared previously
-      let local = local_package.content_bytes( path ).unwrap();
-      let remote = remote_package.content_bytes( path ).unwrap();
-      // if local != remote
-      // {
-      //   println!( "local :\n===\n{}\n===\nremote :\n===\n{}\n===", String::from_utf8_lossy( local ), String::from_utf8_lossy( remote ) );
-      // }
-
-      is_same &= local == remote;
-    }
-
-    Ok( !is_same )
+    Ok( crate_diff( &local_package, &remote_package ).exclude( diff::PUBLISH_IGNORE_LIST ).has_changes() )
   }
 }
 

@@ -29,6 +29,8 @@ pub( crate ) mod private
   {
     /// Phrase descriptor for command.
     pub phrase : String,
+    /// Flag indicating whether a command is internal or not.
+    pub internal_command : bool,
     /// Command subjects.
     pub subjects : Vec< Value >,
     /// Command options.

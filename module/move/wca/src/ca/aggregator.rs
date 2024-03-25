@@ -8,7 +8,7 @@ pub( crate ) mod private
     ProgramParser,
     Command,
     grammar::command::private::CommandFormer,
-    help::{ HelpGeneratorFn, HelpGeneratorOptions, HelpVariants, dot_command },
+    help::{ HelpGeneratorFn, HelpGeneratorOptions, HelpVariants },
   };
 
   use std::collections::HashSet;
@@ -254,8 +254,6 @@ pub( crate ) mod private
           help.generate( &help_generator, &mut ca.dictionary );
         }
       }
-
-      dot_command( &help_generator, &mut ca.dictionary );
 
       ca
     }

@@ -48,7 +48,7 @@ mod private
       }
     }
 
-    Ok( crate_diff( &l, &r ) )
+    Ok( crate_diff( &l, &r ).exclude( diff::PUBLISH_IGNORE_LIST ) )
   }
 }
 

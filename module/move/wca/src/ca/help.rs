@@ -15,32 +15,6 @@ pub( crate ) mod private
 
   // qqq : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
 
-  /// Generate `dot` command
-  pub fn dot_command( generator : &HelpGeneratorFn, dictionary : &mut Dictionary )
-  {
-    let generator = generator.clone();
-    let grammar = dictionary.clone();
-    let routine = move | props : Props |
-    {
-      let prefix : String = props.get_owned( "command_prefix" ).unwrap();
-
-      let generator_args = HelpGeneratorOptions::former()
-      .command_prefix( prefix )
-      .form();
-
-      println!( "{}", generator.exec( &grammar, generator_args ) );
-    };
-
-    let cmd = Command::former()
-    .hint( "prints all available commands" )
-    .phrase( "" )
-    .property( "command_prefix" ).kind( Type::String ).end()
-    .routine( routine )
-    .form();
-
-    dictionary.register( cmd );
-  }
-
   #[ derive( Debug, Default, Copy, Clone, PartialEq, Eq ) ]
   pub enum LevelOfDetail
   {
@@ -57,8 +31,8 @@ pub( crate ) mod private
     /// Prefix that will be shown before command name
     #[ default( String::new() ) ]
     pub command_prefix : String,
-    /// Show help for the specified command
-    pub for_command : Option< &'a Command >,
+    /// Show help for the specified commands
+    pub for_commands : Vec< &'a Command >,
     /// Reresents how much information to display for the subjects
     ///
     /// - `None` - nothing
@@ -140,16 +114,20 @@ pub( crate ) mod private
         footer,
       }
     };
-    if let Some( command ) = o.for_command
+    if o.for_commands.len() == 1 || !o.for_commands.is_empty() && !o.with_footer
     {
-      let row = for_single_command( command );
-      format!
-      (
-        "{}{}{}",
-        format_table([[ row.name, row.args, row.hint ]]).unwrap(),
-        if row.footer.is_empty() { "" } else { "\n" },
-        row.footer
-      )
+      o.for_commands.into_iter().map( | command |
+      {
+        let row = for_single_command( command );
+        format!
+        (
+          "{}{}{}",
+          format_table([[ row.name, row.args, row.hint ]]).unwrap(),
+          if row.footer.is_empty() { "" } else { "\n" },
+          row.footer
+        )
+      })
+      .join( "\n" )
     }
     else
     {
@@ -159,7 +137,7 @@ pub( crate ) mod private
       .map( |( _, cmd )| cmd )
       .map( for_single_command )
       .map( | row | [ row.name, row.args, row.hint ] );
-      
+
       format_table( rows ).unwrap()
     }
   }
@@ -285,7 +263,7 @@ pub( crate ) mod private
 
             let args = HelpGeneratorOptions::former()
             .command_prefix( "." )
-            .for_command( cmd )
+            .for_commands([ cmd ])
             .description_detailing( LevelOfDetail::Detailed )
             .subject_detailing( LevelOfDetail::Simple )
             .property_detailing( LevelOfDetail::Simple )
@@ -373,7 +351,7 @@ pub( crate ) mod private
   /// # use wca::ca::help::{ HelpGeneratorOptions, HelpGeneratorFn };
   /// use wca::{ Command, Dictionary };
   ///
-  /// fn my_help_generator( grammar : &Dictionary, command : Option< &Command > ) -> String
+  /// fn my_help_generator( dictionary : &Dictionary, args : HelpGeneratorOptions< '_ > ) -> String
   /// {
   ///   format!( "Help content based on grammar and command" )
   /// }

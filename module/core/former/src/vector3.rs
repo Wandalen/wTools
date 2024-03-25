@@ -56,6 +56,7 @@ for VectorSubformerDescriptor< E >
 ///
 /// `VectorSubformer2` leverages the `VectorLike2` trait to enable the construction and manipulation
 /// of vector-like containers in a builder pattern style, promoting readability and ease of use.
+///
 #[ derive( Debug, Default ) ]
 pub struct VectorSubformer2< E, Context, End >
 where
