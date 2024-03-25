@@ -367,7 +367,9 @@ mod private
     let mut rou = format!( "| [{}]({}/{}) |", &module_name, &table_parameters.base_path, &module_name );
     if table_parameters.include_stability
     {
-      rou.push_str( &stability_generate( &stability.as_ref().unwrap() ) );
+      let mut stability = stability_generate( &stability.as_ref().unwrap() );
+      stability.push_str( " |" );
+      rou.push_str( &stability );
     }
     if parameters.branches.is_some() && table_parameters.include_branches
     {
@@ -389,11 +391,11 @@ mod private
   {
     match stability
     {
-      Stability::Experimental => " [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) |".into(),
-      Stability::Stable => " [![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](https://github.com/emersion/stability-badges#stable) |".into(),
-      Stability::Deprecated => " [![stability-deprecated](https://img.shields.io/badge/stability-deprecated-red.svg)](https://github.com/emersion/stability-badges#deprecated) |".into(),
-      Stability::Unstable => " [![stability-unstable](https://img.shields.io/badge/stability-unstable-yellow.svg)](https://github.com/emersion/stability-badges#unstable) |".into(),
-      Stability::Frozen => " [![stability-frozen](https://img.shields.io/badge/stability-frozen-blue.svg)](https://github.com/emersion/stability-badges#frozen) |".into(),
+      Stability::Experimental => " [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)".into(),
+      Stability::Stable => " [![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](https://github.com/emersion/stability-badges#stable)".into(),
+      Stability::Deprecated => " [![stability-deprecated](https://img.shields.io/badge/stability-deprecated-red.svg)](https://github.com/emersion/stability-badges#deprecated)".into(),
+      Stability::Unstable => " [![stability-unstable](https://img.shields.io/badge/stability-unstable-yellow.svg)](https://github.com/emersion/stability-badges#unstable)".into(),
+      Stability::Frozen => " [![stability-frozen](https://img.shields.io/badge/stability-frozen-blue.svg)](https://github.com/emersion/stability-badges#frozen)".into(),
     }
   }
 
