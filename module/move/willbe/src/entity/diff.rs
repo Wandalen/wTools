@@ -19,6 +19,7 @@ mod private
   ///
   /// - `.cargo_vcs_info.json` - contains the git sha1 hash that varies between different commits
   /// - `Cargo.toml` - can be safely modified because it is used to generate the `Cargo.toml` file automatically, and the `Cargo.toml` file is sufficient to check for changes
+  /// - `Cargo.lock` - this file is generated automatically by Cargo. It contains the exact versions of dependencies that your project is using. Changes in this file do not affect the functionality
   pub const PUBLISH_IGNORE_LIST : [ &str; 3 ] = [ ".cargo_vcs_info.json", "Cargo.toml", "Cargo.lock" ];
 
 
