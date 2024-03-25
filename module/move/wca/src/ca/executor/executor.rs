@@ -4,7 +4,7 @@ pub( crate ) mod private
 
   use wtools::error::Result;
   use error_tools::return_err;
-  use ca::help::private::{ HelpGeneratorArgs, LevelOfDetail, generate_help_content };
+  use ca::help::private::{ HelpGeneratorOptions, LevelOfDetail, generate_help_content };
 
   // aaa : for Bohdan : how is it useful? where is it used?
   // aaa : `ExecutorType` has been removed
@@ -90,7 +90,7 @@ pub( crate ) mod private
     {
       "." =>
       {
-        let generator_args = HelpGeneratorArgs::former()
+        let generator_args = HelpGeneratorOptions::former()
         .command_prefix( "." )
         .form();
         
@@ -99,7 +99,7 @@ pub( crate ) mod private
       }
       ".?" =>
       {
-        let generator_args = HelpGeneratorArgs::former()
+        let generator_args = HelpGeneratorOptions::former()
         .description_detailing( LevelOfDetail::Simple )
         .subject_detailing( LevelOfDetail::Simple )
         .property_detailing( LevelOfDetail::Simple )
@@ -116,7 +116,7 @@ pub( crate ) mod private
         {
           return_err!( "Not found command that starts with `.{}`.", name );
         }
-        let generator_args = HelpGeneratorArgs::former()
+        let generator_args = HelpGeneratorOptions::former()
         .command_prefix( "." )
         .for_commands( commands )
         .form();
@@ -130,7 +130,7 @@ pub( crate ) mod private
         let command = dictionary.command( &name.strip_prefix( '.' ).unwrap_or( name ).to_string() );
         if let Some( command ) = command
         {
-          let generator_args = HelpGeneratorArgs::former()
+          let generator_args = HelpGeneratorOptions::former()
           .for_commands([ command ])
           .description_detailing( LevelOfDetail::Detailed )
           .subject_detailing( LevelOfDetail::Simple )

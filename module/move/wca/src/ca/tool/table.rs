@@ -109,8 +109,10 @@ mod private
         formatted_table.push_str( &format!( "{:width$}", cell, width = max_lengths[ i ] ) );
         formatted_table.push( ' ' );
       }
+      formatted_table.pop(); // trailing space
       formatted_table.push( '\n' );
     }
+    formatted_table.pop(); // trailing end of line
     
     Ok( formatted_table )
   }
