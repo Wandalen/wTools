@@ -2,6 +2,7 @@ mod private
 {
   use crate::*;
   use std::collections::{ BTreeSet, HashSet };
+  use error_tools::err;
   // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
   // aaa : ✅
   use error_tools::for_app::{ bail, Result };
@@ -67,7 +68,7 @@ mod private
     .cloned()
     .collect();
 
-    if esimate_with( filtered_features.len(), power, with_all_features, with_none_features, enabled_features, package.features().len() ) > variants_cap as usize
+    if estimate_with( filtered_features.len(), power, with_all_features, with_none_features, enabled_features, package.features().len() ) > variants_cap as usize
     {
       bail!( "Feature powerset longer then cap." )
     }
@@ -100,42 +101,58 @@ mod private
     Ok( features_powerset )
   }
 
-
-  fn esimate_with( filtered_length :  usize, power : usize, with_all : bool, with_none : bool, enabled : &[ String ], unfiltred_length : usize ) -> usize
+  pub fn estimate_with
+  (
+    n : usize,
+    power : usize,
+    with_all_features : bool,
+    with_none_features : bool,
+    enabled_features : &[ String ],
+    total_features : usize
+  ) -> usize 
   {
-    let mut e = esimate( filtered_length, power);
-    if !enabled.is_empty() && with_none
+    let mut estimate = 0;
+    let mut binom = 1;
+    let power = power.min( n );
+
+    for k in 0..=power 
     {
-      e += 1;
+      estimate += binom;
+      binom = binom * ( n - k ) / ( k + 1 );
     }
-    if with_all && power + enabled.len() >= unfiltred_length
+
+    if with_all_features { estimate += 1; }
+    if with_none_features { estimate += 1; }
+
+    if !enabled_features.is_empty() 
     {
-      e += 1;
+      let len = enabled_features.len();
+      let combinations = ( 0..=len.min( total_features ) ).map( | k | 
+      {
+        let mut binom = 1;
+        for i in 0..k 
+        {
+          binom = binom * ( len - i ) / ( i + 1 );
+        }
+        binom
+      }).sum::< usize >();
+      estimate += combinations;
     }
-    e
+
+    estimate
   }
 
-  fn esimate( filtered_length : usize, power : usize ) -> usize
-  {
-    let mut r = 0;
-    for p in 1..power
-    {
-      r += factorial( filtered_length ) / (factorial(p) * factorial( filtered_length - p ) );
-    }
-    r
-  }
-
-  fn factorial( n : usize ) -> usize
-  {
-    return if n == 1
-    {
-      1
-    }
-    else
-    {
-      n * factorial(n - 1)
-    }
-  }
+  // fn factorial( n : usize ) -> Result< usize >
+  // {
+  //   return if n <= 1
+  //   {
+  //     Ok( 1 )
+  //   }
+  //   else
+  //   {
+  //     n.checked_mul( factorial( n - 1 )? ).ok_or_else( || err!( "Too big value" ) )
+  //   }
+  // }
 }
 
 crate::mod_interface!
