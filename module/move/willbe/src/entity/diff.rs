@@ -14,6 +14,12 @@ mod private
   use similar::*;
 
   use wtools::iter::Itertools;
+  
+  /// These files are ignored because they can be safely changed without affecting functionality
+  ///
+  /// - `.cargo_vcs_info.json` - contains the git sha1 hash that varies between different commits
+  /// - `Cargo.toml` - can be safely modified because it is used to generate the `Cargo.toml` file automatically, and the `Cargo.toml` file is sufficient to check for changes
+  pub const PUBLISH_IGNORE_LIST : [ &str; 2 ] = [ ".cargo_vcs_info.json", "Cargo.toml" ];
 
 
   /// The `Diff` enum is designed to represent differences between two versions
@@ -215,4 +221,5 @@ crate::mod_interface!
   protected use DiffItem;
   protected use DiffReport;
   protected use crate_diff;
+  protected use PUBLISH_IGNORE_LIST;
 }
