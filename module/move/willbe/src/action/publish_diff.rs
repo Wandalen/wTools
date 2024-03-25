@@ -22,12 +22,6 @@ mod private
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
   pub fn publish_diff( o : PublishDiffOptions ) -> Result< DiffReport >
   {
-    // These files are ignored because they can be safely changed without affecting functionality
-    //
-    // - `.cargo_vcs_info.json` - contains the git sha1 hash that varies between different commits
-    // - `Cargo.toml.orig` - can be safely modified because it is used to generate the `Cargo.toml` file automatically, and the `Cargo.toml` file is sufficient to check for changes
-    const IGNORE_LIST : [ &str; 2 ] = [ ".cargo_vcs_info.json", "Cargo.toml.orig" ];
-
     let path = AbsolutePath::try_from( o.path )?;
     let dir = CrateDir::try_from( path )?;
 
@@ -54,7 +48,7 @@ mod private
       }
     }
 
-    Ok( crate_diff( &l, &r ).exclude( IGNORE_LIST ) )
+    Ok( crate_diff( &l, &r ).exclude( diff::PUBLISH_IGNORE_LIST ) )
   }
 }
 

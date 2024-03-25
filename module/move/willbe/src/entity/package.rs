@@ -880,12 +880,6 @@ mod private
 
   pub fn publish_need( package : &Package, path : Option< PathBuf > ) -> Result< bool, PackageError >
   {
-    // These files are ignored because they can be safely changed without affecting functionality
-    //
-    // - `.cargo_vcs_info.json` - contains the git sha1 hash that varies between different commits
-    // - `Cargo.toml.orig` - can be safely modified because it is used to generate the `Cargo.toml` file automatically, and the `Cargo.toml` file is sufficient to check for changes
-    const IGNORE_LIST : [ &str; 2 ] = [ ".cargo_vcs_info.json", "Cargo.toml" ];
-
     let name = package.name()?;
     let version = package.version()?;
     let local_package_path = path
@@ -903,7 +897,7 @@ mod private
       _ => return Err( PackageError::LoadRemotePackage ),
     };
 
-    Ok( crate_diff( &local_package, &remote_package ).exclude( IGNORE_LIST ).has_changes() )
+    Ok( crate_diff( &local_package, &remote_package ).exclude( diff::PUBLISH_IGNORE_LIST ).has_changes() )
   }
 }
 
