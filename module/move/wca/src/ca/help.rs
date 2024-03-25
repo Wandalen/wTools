@@ -56,7 +56,7 @@ pub( crate ) mod private
   }
 
   // qqq : for Barsik : make possible to change properties order
-  fn generate_help_content( dictionary : &Dictionary, o : HelpGeneratorOptions< '_ > ) -> String
+  pub( crate ) fn generate_help_content( dictionary : &Dictionary, o : HelpGeneratorOptions< '_ > ) -> String
   {
     struct Row
     {
@@ -93,8 +93,7 @@ pub( crate ) mod private
         LevelOfDetail::Detailed => command.properties.iter().map( |( n, v )| format!( "< {n}:{}{:?} >", if v.optional { "?" } else { "" }, v.kind ) ).collect::< Vec< _ > >().join( " " ),
       };
 
-      // we can not format table with footers for each command
-      let footer = if o.with_footer && o.for_command.is_some()
+      let footer = if o.with_footer
       {
         let full_subjects = command.subjects.iter().map( | subj | format!( "- {} [{}{:?}]", subj.hint, if subj.optional { "?" } else { "" }, subj.kind ) ).join( "\n\t" );
         let full_properties = format_table( command.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| [ name.clone(), format!( "- {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ] ) ).unwrap().replace( '\n', "\n\t" );
@@ -410,6 +409,5 @@ crate::mod_interface!
 {
   protected use HelpGeneratorFn;
   protected use HelpGeneratorOptions;
-  protected use dot_command;
   prelude use HelpVariants;
 }
