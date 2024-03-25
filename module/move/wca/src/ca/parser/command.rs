@@ -10,7 +10,6 @@ pub( crate ) mod private
     },
     wtools
   };
-  use std::collections::HashMap;
   use wtools::{ error:: Result, err };
   use nom::
   {
@@ -75,7 +74,6 @@ pub( crate ) mod private
               Command
               {
                 name : command_prefix.to_string(),
-                properties : HashMap::from_iter([ ( "command_prefix".to_string(), command_prefix.to_string() ) ]),
                 ..Default::default()
               }
             )

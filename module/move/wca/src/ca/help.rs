@@ -14,32 +14,6 @@ pub( crate ) mod private
 
   // qqq : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
 
-  /// Generate `dot` command
-  pub fn dot_command( generator : &HelpGeneratorFn, dictionary : &mut Dictionary )
-  {
-    let generator = generator.clone();
-    let grammar = dictionary.clone();
-    let routine = move | props : Props |
-    {
-      let prefix : String = props.get_owned( "command_prefix" ).unwrap();
-
-      let generator_args = HelpGeneratorArgs::former()
-      .command_prefix( prefix )
-      .form();
-
-      println!( "{}", generator.exec( &grammar, generator_args ) );
-    };
-
-    let cmd = Command::former()
-    .hint( "prints all available commands" )
-    .phrase( "" )
-    .property( "command_prefix" ).kind( Type::String ).end()
-    .routine( routine )
-    .form();
-
-    dictionary.register( cmd );
-  }
-
   #[ derive( Debug, Default, Copy, Clone, PartialEq, Eq ) ]
   pub enum LevelOfDetail
   {
@@ -56,8 +30,8 @@ pub( crate ) mod private
     /// Prefix that will be shown before command name
     #[ default( String::new() ) ]
     pub command_prefix : String,
-    /// Show help for the specified command
-    pub for_command : Option< &'a Command >,
+    /// Show help for the specified commands
+    pub for_commands : Vec< &'a Command >,
     /// Reresents how much information to display for the subjects
     ///
     /// - `None` - nothing
@@ -81,7 +55,7 @@ pub( crate ) mod private
   }
 
   // qqq : for Barsik : make possible to change properties order
-  fn generate_help_content( dictionary : &Dictionary, args : HelpGeneratorArgs< '_ > ) -> String
+  pub fn generate_help_content( dictionary : &Dictionary, args : HelpGeneratorArgs< '_ > ) -> String
   {
     let for_single_command = | command : &Command |
     {
@@ -133,9 +107,10 @@ pub( crate ) mod private
         if footer.is_empty() { "" } else { "\n" },
       )
     };
-    if let Some( command ) = args.for_command
+    if args.for_commands.len() == 1 || !args.for_commands.is_empty() && !args.with_footer
     {
-      for_single_command( command )
+      args.for_commands.into_iter().map( | command | for_single_command( command ) )
+      .join( "\n" )
     }
     else
     {
@@ -270,7 +245,7 @@ pub( crate ) mod private
             let cmd = grammar.commands.get( &command ).ok_or_else( || anyhow!( "Can not found help for command `{command}`" ) )?;
 
             let args = HelpGeneratorArgs::former()
-            .for_command( cmd )
+            .for_commands([ cmd ])
             .description_detailing( LevelOfDetail::Detailed )
             .subject_detailing( LevelOfDetail::Simple )
             .property_detailing( LevelOfDetail::Simple )
@@ -417,6 +392,5 @@ crate::mod_interface!
 {
   protected use HelpGeneratorFn;
   protected use HelpGeneratorArgs;
-  protected use dot_command;
   prelude use HelpVariants;
 }

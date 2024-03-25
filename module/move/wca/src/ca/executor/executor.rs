@@ -3,6 +3,8 @@ pub( crate ) mod private
   use crate::*;
 
   use wtools::error::Result;
+  use error_tools::return_err;
+  use ca::help::private::{ HelpGeneratorArgs, LevelOfDetail, generate_help_content };
 
   // aaa : for Bohdan : how is it useful? where is it used?
   // aaa : `ExecutorType` has been removed
@@ -58,8 +60,15 @@ pub( crate ) mod private
     /// Returns a Result indicating success or failure. If successful, returns `Ok(())`, otherwise returns an error.
     pub fn command( &self, dictionary : &Dictionary, command : VerifiedCommand ) -> Result< () >
     {
-      let routine = dictionary.command( &command.phrase ).unwrap().routine.clone();
-      _exec_command( command, routine, self.context.clone() )
+      if command.internal_command
+      {
+        _exec_internal_command( dictionary, command )
+      }
+      else
+      {
+        let routine = dictionary.command( &command.phrase ).unwrap().routine.clone();
+        _exec_command( command, routine, self.context.clone() )
+      }
     }
     
     // aaa : for Bohdan : probably redundant
@@ -73,6 +82,74 @@ pub( crate ) mod private
       Routine::WithoutContext( routine ) => routine(( Args( command.subjects ), Props( command.properties ) )),
       Routine::WithContext( routine ) => routine( ( Args( command.subjects ), Props( command.properties ) ), ctx ),
     }
+  }
+  
+  fn _exec_internal_command( dictionary : &Dictionary, command : VerifiedCommand ) -> Result< () >
+  {
+    match command.phrase.as_str()
+    {
+      "." =>
+      {
+        let generator_args = HelpGeneratorArgs::former()
+        .command_prefix( "." )
+        .form();
+        
+        let content = generate_help_content( dictionary, generator_args );
+        println!( "{content}" );
+      }
+      ".?" =>
+      {
+        let generator_args = HelpGeneratorArgs::former()
+        .description_detailing( LevelOfDetail::Simple )
+        .subject_detailing( LevelOfDetail::Simple )
+        .property_detailing( LevelOfDetail::Simple )
+        .form();
+        
+        let content = generate_help_content( dictionary, generator_args );
+        println!( "{content}" );
+      }
+      name if name.ends_with( '.' ) =>
+      {
+        let name = name.strip_suffix( '.' ).unwrap();
+        let commands = dictionary.search( name.strip_prefix( '.' ).unwrap_or( name ) );
+        if commands.is_empty()
+        {
+          return_err!( "Not found command that starts with `.{}`.", name );
+        }
+        let generator_args = HelpGeneratorArgs::former()
+        .command_prefix( "." )
+        .for_commands( commands )
+        .form();
+
+        let content = generate_help_content( dictionary, generator_args );
+        println!( "{content}" );
+      }
+      name if name.ends_with( ".?" ) =>
+      {
+        let name = name.strip_suffix( ".?" ).unwrap();
+        let command = dictionary.command( &name.strip_prefix( '.' ).unwrap_or( name ).to_string() );
+        if let Some( command ) = command
+        {
+          let generator_args = HelpGeneratorArgs::former()
+          .for_commands([ command ])
+          .description_detailing( LevelOfDetail::Detailed )
+          .subject_detailing( LevelOfDetail::Simple )
+          .property_detailing( LevelOfDetail::Simple )
+          .with_footer( true )
+          .form();
+          
+          let content = generate_help_content( dictionary, generator_args );
+          println!( "{content}" );
+        }
+        else
+        {
+          return_err!( "Not found command that starts with `.{}`.", name );
+        }
+      }
+      unexpected => return_err!( "Encountered an unrecognized internal command: `.{}`.", unexpected ),
+    }
+    
+    Ok( () )
   }
 }
 
