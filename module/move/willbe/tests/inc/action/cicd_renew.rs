@@ -31,7 +31,7 @@ fn arrange( sample_dir : &str ) -> assert_fs::TempDir
 struct Workflow
 {
   name : String,
-  on : String,
+  on : HashMap<String, HashMap<String, Vec<String>>>,
   env : HashMap< String, String >,
   jobs : HashMap< String, Job >,
 }
@@ -72,7 +72,18 @@ fn default_case()
   let expected = Workflow
   {
     name : "test_module".into(),
-    on : "push".into(),
+    on : 
+    {
+      let mut map = HashMap::new();
+      let mut push_map = HashMap::new();
+      push_map.insert
+      (
+        "branches-ignore".to_string(),
+        vec![ "alpha".to_string(), "beta".to_string(), "master".to_string() ],
+      );
+      map.insert( "push".to_string(), push_map );
+      map
+    },
     env : HashMap::from_iter( [ ( "CARGO_TERM_COLOR".to_string(), "always".to_string() ) ] ),
     jobs : HashMap::from_iter( [ ( "test".to_string(), job ) ] ),
   };
@@ -84,6 +95,7 @@ fn default_case()
   let mut file = File::open( file_path ).unwrap();
   let mut content = String::new();
   _ = file.read_to_string( &mut content ).unwrap();
+  dbg!(&content);
   let actual: Workflow = serde_yaml::from_str( &content ).unwrap();
   assert_eq!( expected, actual );
 
