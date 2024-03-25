@@ -95,7 +95,6 @@ fn default_case()
   let mut file = File::open( file_path ).unwrap();
   let mut content = String::new();
   _ = file.read_to_string( &mut content ).unwrap();
-  dbg!(&content);
   let actual: Workflow = serde_yaml::from_str( &content ).unwrap();
   assert_eq!( expected, actual );
 
