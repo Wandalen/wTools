@@ -347,7 +347,18 @@ mod private
       packages::FilterMapOptions { package_filter: module_package_filter, dependency_filter: module_dependency_filter },
     );
     let module_graph = graph::construct( &module_packages_map );
-    graph::toposort( module_graph ).map_err( | err | err!( "{}", err ) )
+    let names = graph::topological_sort_with_grouping( module_graph )
+    .into_iter()
+    .map
+    ( 
+      | mut group | 
+      {
+        group.sort();
+        group 
+      } 
+    ).flatten().collect::< Vec< _ > >();
+    
+    Ok(names)
   }
 
   /// Generate row that represents a module, with a link to it in the repository and optionals for stability, branches, documentation and links to the gitpod.
