@@ -884,7 +884,7 @@ mod private
     //
     // - `.cargo_vcs_info.json` - contains the git sha1 hash that varies between different commits
     // - `Cargo.toml.orig` - can be safely modified because it is used to generate the `Cargo.toml` file automatically, and the `Cargo.toml` file is sufficient to check for changes
-    const IGNORE_LIST : [ &str; 2 ] = [ ".cargo_vcs_info.json", "Cargo.toml.orig" ];
+    const IGNORE_LIST : [ &str; 2 ] = [ ".cargo_vcs_info.json", "Cargo.toml" ];
 
     let name = package.name()?;
     let version = package.version()?;
