@@ -11,6 +11,7 @@ pub( crate ) mod private
   use std::rc::Rc;
   use error_tools::for_app::anyhow;
   use former::Former;
+  use ca::tool::table::format_table;
 
   // qqq : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
 
@@ -23,7 +24,7 @@ pub( crate ) mod private
     {
       let prefix : String = props.get_owned( "command_prefix" ).unwrap();
 
-      let generator_args = HelpGeneratorArgs::former()
+      let generator_args = HelpGeneratorOptions::former()
       .command_prefix( prefix )
       .form();
 
@@ -51,7 +52,7 @@ pub( crate ) mod private
 
   /// Container for arguments passed to a help generator function.
   #[ derive( Debug, Former ) ]
-  pub struct HelpGeneratorArgs< 'a >
+  pub struct HelpGeneratorOptions< 'a >
   {
     /// Prefix that will be shown before command name
     #[ default( String::new() ) ]
@@ -81,12 +82,19 @@ pub( crate ) mod private
   }
 
   // qqq : for Barsik : make possible to change properties order
-  fn generate_help_content( dictionary : &Dictionary, args : HelpGeneratorArgs< '_ > ) -> String
+  fn generate_help_content( dictionary : &Dictionary, o : HelpGeneratorOptions< '_ > ) -> String
   {
+    struct Row
+    {
+      name : String,
+      args : String,
+      hint : String,
+      footer : String,
+    }
     let for_single_command = | command : &Command |
     {
       let name = &command.phrase;
-      let hint = match args.description_detailing
+      let hint = match o.description_detailing
       {
         LevelOfDetail::None => "",
         _ if command.hint.is_empty() && command.long_hint.is_empty() => "",
@@ -96,14 +104,14 @@ pub( crate ) mod private
         _ if !command.hint.is_empty() => command.hint.as_str(),
         _ => unreachable!(),
       };
-      let subjects = match args.subject_detailing
+      let subjects = match o.subject_detailing
       {
         LevelOfDetail::None => "".into(),
         _ if command.subjects.is_empty() => "".into(),
         LevelOfDetail::Simple => "< subjects >".into(),
         LevelOfDetail::Detailed => command.subjects.iter().map( | v | format!( "< {}{:?} >", if v.optional { "?" } else { "" }, v.kind ) ).collect::< Vec< _ > >().join( " " ),
       };
-      let properties = match args.property_detailing
+      let properties = match o.property_detailing
       {
         LevelOfDetail::None => "".into(),
         _ if command.subjects.is_empty() => "".into(),
@@ -111,10 +119,11 @@ pub( crate ) mod private
         LevelOfDetail::Detailed => command.properties.iter().map( |( n, v )| format!( "< {n}:{}{:?} >", if v.optional { "?" } else { "" }, v.kind ) ).collect::< Vec< _ > >().join( " " ),
       };
 
-      let footer = if args.with_footer
+      // we can not format table with footers for each command
+      let footer = if o.with_footer && o.for_command.is_some()
       {
         let full_subjects = command.subjects.iter().map( | subj | format!( "- {} [{}{:?}]", subj.hint, if subj.optional { "?" } else { "" }, subj.kind ) ).join( "\n\t" );
-        let full_properties = command.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| format!( "{name} - {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ).join( "\n\t" );
+        let full_properties = format_table( command.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| [ name.clone(), format!( "- {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ] ) ).unwrap().replace( '\n', "\n\t" );
         format!
         (
           "{}{}",
@@ -123,31 +132,35 @@ pub( crate ) mod private
         )
       } else { "".into() };
 
+      Row
+      {
+        name : format!( "{}{name}", o.command_prefix ),
+        args : format!( "{subjects}{}{properties}", if !subjects.is_empty() || !properties.is_empty() { " " } else { "" } ),
+        hint : format!( "{}{hint}", if hint.is_empty() { "" } else { "- " } ),
+        footer,
+      }
+    };
+    if let Some( command ) = o.for_command
+    {
+      let row = for_single_command( command );
       format!
       (
-        "{}{name}{}{subjects}{}{properties}{}{hint}{}{footer}",
-        args.command_prefix,
-        if !subjects.is_empty() || !properties.is_empty() { " " } else { "" },
-        if properties.is_empty() { "" } else { " " },
-        if hint.is_empty() { "" } else { " - " },
-        if footer.is_empty() { "" } else { "\n" },
+        "{}{}{}",
+        format_table([[ row.name, row.args, row.hint ]]).unwrap(),
+        if row.footer.is_empty() { "" } else { "\n" },
+        row.footer
       )
-    };
-    if let Some( command ) = args.for_command
-    {
-      for_single_command( command )
     }
     else
     {
-      dictionary.commands
+      let rows = dictionary.commands
       .iter()
       .sorted_by_key( |( name, _ )| *name )
       .map( |( _, cmd )| cmd )
       .map( for_single_command )
-      .fold( String::new(), | acc, cmd |
-      {
-        format!( "{acc}{}{cmd}", if acc.is_empty() { "" } else { "\n" } )
-      })
+      .map( | row | [ row.name, row.args, row.hint ] );
+      
+      format_table( rows ).unwrap()
     }
   }
 
@@ -221,7 +234,8 @@ pub( crate ) mod private
                 text = generator.exec
                 (
                   &grammar,
-                  HelpGeneratorArgs::former()
+                  HelpGeneratorOptions::former()
+                  .command_prefix( "." )
                   .description_detailing( LevelOfDetail::Simple )
                   .subject_detailing( LevelOfDetail::Simple )
                   .property_detailing( LevelOfDetail::Simple )
@@ -269,7 +283,8 @@ pub( crate ) mod private
             let command = args.get_owned::< String >( 0 ).unwrap();
             let cmd = grammar.commands.get( &command ).ok_or_else( || anyhow!( "Can not found help for command `{command}`" ) )?;
 
-            let args = HelpGeneratorArgs::former()
+            let args = HelpGeneratorOptions::former()
+            .command_prefix( "." )
             .for_command( cmd )
             .description_detailing( LevelOfDetail::Detailed )
             .subject_detailing( LevelOfDetail::Simple )
@@ -350,12 +365,12 @@ pub( crate ) mod private
     // }
   }
 
-  type HelpFunctionFn = Rc< dyn Fn( &Dictionary, HelpGeneratorArgs< '_ > ) -> String >;
+  type HelpFunctionFn = Rc< dyn Fn( &Dictionary, HelpGeneratorOptions< '_ > ) -> String >;
 
   /// Container for function that generates help string for any command
   ///
   /// ```
-  /// # use wca::ca::help::{ HelpGeneratorArgs, HelpGeneratorFn };
+  /// # use wca::ca::help::{ HelpGeneratorOptions, HelpGeneratorFn };
   /// use wca::{ Command, Dictionary };
   ///
   /// fn my_help_generator( grammar : &Dictionary, command : Option< &Command > ) -> String
@@ -366,10 +381,10 @@ pub( crate ) mod private
   /// let help_fn = HelpGeneratorFn::new( my_help_generator );
   /// # let grammar = &Dictionary::former().form();
   ///
-  /// help_fn.exec( grammar, HelpGeneratorArgs::former().form() );
+  /// help_fn.exec( grammar, HelpGeneratorOptions::former().form() );
   /// // or
   /// # let cmd = Command::former().form();
-  /// help_fn.exec( grammar, HelpGeneratorArgs::former().for_command( &cmd ).form() );
+  /// help_fn.exec( grammar, HelpGeneratorOptions::former().for_command( &cmd ).form() );
   /// ```
   #[ derive( Clone ) ]
   pub struct HelpGeneratorFn( HelpFunctionFn );
@@ -387,7 +402,7 @@ pub( crate ) mod private
     /// Wrap a help function
     pub fn new< HelpFunction >( func : HelpFunction ) -> Self
     where
-      HelpFunction : Fn( &Dictionary, HelpGeneratorArgs< '_ > ) -> String + 'static
+      HelpFunction : Fn( &Dictionary, HelpGeneratorOptions< '_ > ) -> String + 'static
     {
         Self( Rc::new( func ) )
     }
@@ -396,7 +411,7 @@ pub( crate ) mod private
   impl HelpGeneratorFn
   {
     /// Executes the function to generate help content
-    pub fn exec( &self, dictionary : &Dictionary, args : HelpGeneratorArgs< '_ > ) -> String
+    pub fn exec( &self, dictionary : &Dictionary, args : HelpGeneratorOptions< '_ > ) -> String
     {
       self.0( dictionary, args )
     }
@@ -416,7 +431,7 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   protected use HelpGeneratorFn;
-  protected use HelpGeneratorArgs;
+  protected use HelpGeneratorOptions;
   protected use dot_command;
   prelude use HelpVariants;
 }
