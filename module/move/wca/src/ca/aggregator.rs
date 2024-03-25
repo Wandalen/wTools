@@ -8,7 +8,7 @@ pub( crate ) mod private
     ProgramParser,
     Command,
     grammar::command::private::CommandFormer,
-    help::{ HelpGeneratorFn, HelpGeneratorArgs, HelpVariants },
+    help::{ HelpGeneratorFn, HelpGeneratorOptions, HelpVariants },
   };
 
   use std::collections::HashSet;
@@ -202,7 +202,7 @@ pub( crate ) mod private
     /// ```
     pub fn help< HelpFunction >( mut self, func : HelpFunction ) -> Self
     where
-      HelpFunction : Fn( &Dictionary, HelpGeneratorArgs< '_ > ) -> String + 'static
+      HelpFunction : Fn( &Dictionary, HelpGeneratorOptions< '_ > ) -> String + 'static
     {
       self.storage.help_generator = Some( HelpGeneratorFn::new( func ) );
       self
