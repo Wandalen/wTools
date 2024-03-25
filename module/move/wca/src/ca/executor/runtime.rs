@@ -2,6 +2,8 @@ pub( crate ) mod private
 {
   use crate::*;
   use wtools::{ error::Result, err };
+  use std::sync::Arc;
+  use std::sync::atomic::AtomicUsize;
 
   /// State of a program runtime
   ///
@@ -24,7 +26,7 @@ pub( crate ) mod private
   pub struct RuntimeState
   {
     /// current execution position that can be changed by user
-    pub pos : usize,
+    pub pos : Arc< AtomicUsize >,
   }
   // qqq : for Bohdan : why? how is it useful? is it?
 

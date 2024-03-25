@@ -50,11 +50,10 @@ pub( crate ) mod private
     /// Initialize Context with some value
     pub fn with< T : CloneAny >( mut self, value : T ) -> Self
     {
-      if self.storage.inner.is_none()
-      {
-        self.storage.inner = Some( Arc::new( RefCell::new( Map::< dyn CloneAny >::new() ) ) );
-      }
-      self.storage.inner.as_ref().map( | inner | inner.borrow_mut().insert( value ) );
+      let inner = self.storage.inner.unwrap_or_else( || Context::default().inner );
+      inner.borrow_mut().insert( value );
+
+      self.storage.inner = Some( inner );
       self
     }
   }
@@ -81,46 +80,39 @@ pub( crate ) mod private
        self.inner.borrow_mut().remove::< T >()
      }
 
-    // qqq : Bohdan : why unsafe?
-    /// Return immutable reference on interior object. ! Unsafe !
-    pub fn get_ref< T : CloneAny >( &self ) -> Option< &T >
-    {
-      unsafe{ self.inner.as_ptr().as_ref()?.get() }
-    }
+    // aaa : Bohdan : why unsafe?
+    // aaa : re-worked.
 
-    /// Return mutable reference on interior object. ! Unsafe !
-    pub fn get_mut< T : CloneAny >( &self ) -> Option< &mut T >
+    /// Return immutable reference on interior object.
+    pub fn get< T : CloneAny + Clone >( &self ) -> Option< T >
     {
-      unsafe { self.inner.as_ptr().as_mut()?.get_mut() }
+      self.inner.borrow().get().cloned()
     }
 
     /// Insert the value if it doesn't exists, or take an existing value and return mutable reference to it
-    pub fn get_or_insert< T : CloneAny >( &self, value : T ) -> &mut T
+    pub fn get_or_insert< T : CloneAny + Clone >( &self, value : T ) -> T
     {
-      if let Some( value ) = self.get_mut()
+      if let Some( value ) = self.get()
       {
         value
       }
       else
       {
         self.insert( value );
-        self.get_mut().unwrap()
+        self.get().unwrap()
       }
     }
 
     /// Insert default value if it doesn't exists, or take an existing value and return mutable reference to it
-    pub fn get_or_default< T : CloneAny + Default >( &self ) -> &mut T
+    pub fn get_or_default< T : CloneAny + Default + Clone >( &self ) -> T
     {
       self.get_or_insert( T::default() )
     }
 
-    /// Make a deep clone of the context
-    // qqq : for Bohdan : why is it deep? how is it deep?
-    // qqq : how is it useful? Is it? Examples?
-    pub( crate ) fn deep_clone( &self ) -> Self
-    {
-      Self { inner : Arc::new( RefCell::new( ( *self.inner ).borrow_mut().clone() ) ) }
-    }
+    // aaa : for Bohdan : why is it deep? how is it deep?
+    // aaa : how is it useful? Is it? Examples?
+    //
+    // aaa : removed
   }
 }
 

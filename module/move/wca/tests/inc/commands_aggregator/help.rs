@@ -53,8 +53,7 @@ wca = {{path = "{}"}}"#,
 
   assert_eq!
   (
-    "echo < subjects >  < properties > - prints all subjects and properties\n\nSubjects:\n\t- Subject [String] ?\nProperties:\n\tproperty - simple property [String] ?\n",
+    "Help command\n\necho < subjects > < properties > - prints all subjects and properties\n\nSubjects:\n\t- Subject [?String]\nProperties:\n\tproperty - simple property [?String]\n",
     result
   );
 }
-
