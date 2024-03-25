@@ -2,10 +2,7 @@ pub( crate ) mod private
 {
   use crate::*;
 
-  use ca::executor::runtime::_exec_command;
   use wtools::error::Result;
-  use std::sync::Arc;
-  use std::sync::atomic::Ordering;
 
   // aaa : for Bohdan : how is it useful? where is it used?
   // aaa : `ExecutorType` has been removed
@@ -25,45 +22,56 @@ pub( crate ) mod private
   {
     /// Executes a program
     ///
-    /// Setup runtimes for each namespace into program and run it with specified execution type
+    /// Iterates over the commands in the program and executes each command using the provided dictionary.
+    /// This method returns a `Result` indicating whether the execution was successful or not.
+    ///
+    /// # Arguments
+    ///
+    /// * `dictionary` - A reference to the dictionary used to look up the command routine.
+    /// * `program` - The program to be executed, which is a `Program` object consisting of a list of commands.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` with `Ok(())` if the execution was successful, or an `Err` containing an error message if an error occurred.
+    ///
     pub fn program( &self, dictionary : &Dictionary, program : Program< VerifiedCommand > ) -> Result< () >
     {
-      let context = self.context.clone();
-      let runtime = Runtime
+      for command in program.commands
       {
-        context,
-        pos : 0,
-        namespace : program.commands,
-      };
-
-      Self::sequential_execution_loop( dictionary, runtime )?;
+        self.command( dictionary, command )?;
+      }
 
       Ok( () )
     }
 
-    /// Executes a command
+    /// Executes a given command using a provided dictionary and command.
     ///
-    /// Call command callback with context if it is necessary.
+    /// Calls the command callback with the given context if it is necessary.
+    ///
+    /// # Arguments
+    ///
+    /// * `dictionary` - A reference to the dictionary used to look up the command routine.
+    /// * `command` - The verified command that needs to be executed.
+    ///
+    /// # Returns
+    ///
+    /// Returns a Result indicating success or failure. If successful, returns `Ok(())`, otherwise returns an error.
     pub fn command( &self, dictionary : &Dictionary, command : VerifiedCommand ) -> Result< () >
     {
       let routine = dictionary.command( &command.phrase ).unwrap().routine.clone();
       _exec_command( command, routine, self.context.clone() )
     }
-
-    // qqq : for Bohdan : probably redundant
+    
+    // aaa : for Bohdan : probably redundant
     // aaa : removed `parallel_execution_loop`
-
-    fn sequential_execution_loop( dictionary : &Dictionary, mut runtime : Runtime ) -> Result< () >
+  }
+  
+  fn _exec_command( command : VerifiedCommand, routine : Routine, ctx : Context ) -> Result< () >
+  {
+    match routine
     {
-      while !runtime.is_finished()
-      {
-        let state = runtime.context.get_or_default::< Arc< RuntimeState > >();
-        state.pos.store( runtime.pos + 1, Ordering::Release );
-        runtime.r#do( &dictionary )?;
-        runtime.pos = runtime.context.get::< Arc< RuntimeState > >().unwrap().pos.load( Ordering::Relaxed );
-      }
-
-      Ok( () )
+      Routine::WithoutContext( routine ) => routine(( Args( command.subjects ), Props( command.properties ) )),
+      Routine::WithContext( routine ) => routine( ( Args( command.subjects ), Props( command.properties ) ), ctx ),
     }
   }
 }

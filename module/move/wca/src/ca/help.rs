@@ -358,7 +358,7 @@ pub( crate ) mod private
   /// # use wca::ca::help::{ HelpGeneratorArgs, HelpGeneratorFn };
   /// use wca::{ Command, Dictionary };
   ///
-  /// fn my_help_generator( grammar : &Dictionary, command : Option< &Command > ) -> String
+  /// fn my_help_generator( dictionary : &Dictionary, args : HelpGeneratorArgs< '_ > ) -> String
   /// {
   ///   format!( "Help content based on grammar and command" )
   /// }
