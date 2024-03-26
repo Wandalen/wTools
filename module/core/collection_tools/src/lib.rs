@@ -96,6 +96,7 @@ pub mod prelude
 }
 
 /// Macros used in `use_alloc` context
+/// Basically a tweaked version of `literally` but using `alloc` / `hashbrown` instead of `std`
 #[ cfg( all( feature = "enabled", feature = "use_alloc" ) ) ]
 pub mod alloc_macros
 {
@@ -213,6 +214,7 @@ pub mod alloc_macros
   macro_rules! hset
   {
     ( @single $( $x:tt )* ) => ( () );
+
     (
       @count $( $rest:expr ),*
     )
@@ -222,15 +224,7 @@ pub mod alloc_macros
     );
 
     (
-      $( $key:expr, )+
-    )
-    =>
-    {
-      hset!( $( $key ),+ )
-    };
-
-    (
-      $( $key:expr ),*
+      $( $key:expr ),* $( , )?
     )
     =>
     {{
