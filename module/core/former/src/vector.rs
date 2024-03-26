@@ -113,7 +113,7 @@ impl< E > VecExt< E > for Vec< E >
 {
   fn former() -> VectorSubformer< E, (), Vec< E >, ReturnStorage >
   {
-    VectorSubformer::< E, (), Vec< E >, ReturnStorage >::new()
+    VectorSubformer::< E, (), Vec< E >, ReturnStorage >::new( Default::default() )
   }
 }
 
