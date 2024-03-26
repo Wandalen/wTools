@@ -35,7 +35,9 @@ When implementing a `no_std` environment with the `use_alloc` feature in your Ru
 
 You can do
 
+<!-- // zzz : aaa : rid off `#[ cfg( not( feature = "use_alloc" ) ) ]` -- Rid of by not relying on std -->
 ```rust
+// # #[ cfg( not( feature = "use_alloc" ) ) ]
 # #[ cfg( all( feature = "enabled", feature = "collection_std" ) ) ]
 # #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 # {
