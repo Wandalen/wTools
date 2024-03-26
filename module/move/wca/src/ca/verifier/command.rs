@@ -18,7 +18,8 @@ pub( crate ) mod private
   ///   [
   ///     ( "prop_name".to_string(), Value::Number( 42.0 ) ),
   ///     /* ... */
-  ///   ])
+  ///   ]),
+  ///   internal_command : false,
   /// };
   /// ```
   ///
