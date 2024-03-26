@@ -43,8 +43,8 @@ for Vec< E >
 // = definition
 
 #[ derive( Debug, Default ) ]
-// pub struct VectorDefinition< E, Context = (), Formed = Vec< E >, End = ReturnStorage >
-pub struct VectorDefinition< E, Context, Formed, End >
+pub struct VectorDefinition< E, Context = (), Formed = Vec< E >, End = ReturnStorage >
+// pub struct VectorDefinition< E, Context, Formed, End >
 {
   _phantom : core::marker::PhantomData< ( E, Context, Formed, End ) >,
 }
