@@ -1,6 +1,6 @@
 [package]
 name = "willbe"
-version = "0.8.0"
+version = "0.9.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -43,6 +43,7 @@ petgraph = "~0.6"
 ptree = "~0.4"
 rayon = "1.8.0"
 semver = "~1.0.0"
+similar = "~2.4"
 regex = "1.10.2"
 sha-1 = "~0.10"
 tar = "~0.4"
