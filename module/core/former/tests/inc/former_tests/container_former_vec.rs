@@ -227,8 +227,6 @@ fn custom_definition()
     }
   }
 
-  // type MyContainer<>
-
   //
 
   let got = the_module::ContainerSubformer::< String, Return13 >::begin( None, None, Return13 )
@@ -333,8 +331,31 @@ fn custom_definition_parametrized()
 
   //
 
-  // xxx : make it working?
-  // let got = the_module::ContainerSubformer::< String, Return13 >::new()
+}
+
+//
+
+#[ test ]
+fn custom_definition_custom_end()
+{
+
+  struct Return13;
+  impl former::FormerDefinitionTypes for Return13
+  {
+    type Storage = Vec< String >;
+    type Formed = i32;
+    type Context = ();
+  }
+
+  impl former::FormerDefinition for Return13
+  {
+    type Types = Return13;
+    type End = former::FormingEndWrapper< < Self as former::FormerDefinition >::Types >;
+  }
+
+  //
+
+  // let got = the_module::ContainerSubformer::< String, Return13 >::new( Return13 )
   // .push( "a" )
   // .push( "b" )
   // .form();
@@ -343,14 +364,27 @@ fn custom_definition_parametrized()
 
   //
 
-//   // -
-//
-//   fn return_13( _storage : Vec< String >, _context : Option< () > ) -> i32
-//   {
-//     13
-//   }
-//
-//   let end_wrapper : the_module::FormingEndWrapper< Return13 > = the_module::FormingEndWrapper::new( return_13 );
+  fn return_13( _storage : Vec< String >, _context : Option< () > ) -> i32
+  {
+    13
+  }
+
+  let end_wrapper : the_module::FormingEndWrapper< Return13 > = the_module::FormingEndWrapper::new( return_13 );
+  let got = the_module::ContainerSubformer::< String, Return13 >::new( end_wrapper )
+  .push( "a" )
+  .push( "b" )
+  .form();
+  let exp = 13;
+  a_id!( got, exp );
+
+  let got = the_module::ContainerSubformer::< String, Return13 >::new( return_13.into() )
+  .push( "a" )
+  .push( "b" )
+  .form();
+  let exp = 13;
+  a_id!( got, exp );
+
+  //
 
 }
 

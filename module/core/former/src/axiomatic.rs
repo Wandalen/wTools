@@ -118,6 +118,22 @@ pub struct FormingEndWrapper< Definition : FormerDefinitionTypes >
   _marker : std::marker::PhantomData< Definition::Storage >,
 }
 
+impl< T, Definition > From< T > for FormingEndWrapper< Definition >
+where
+  T : Fn( Definition::Storage, Option< Definition::Context > ) -> Definition::Formed + 'static,
+  Definition : FormerDefinitionTypes,
+{
+  #[ inline( always ) ]
+  fn from( closure : T ) -> Self
+  {
+    Self
+    {
+      closure : Box::new( closure ),
+      _marker : std::marker::PhantomData
+    }
+  }
+}
+
 #[ cfg( not( feature = "no_std" ) ) ]
 impl< Definition : FormerDefinitionTypes > FormingEndWrapper< Definition >
 {
