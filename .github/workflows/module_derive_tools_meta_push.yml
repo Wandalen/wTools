@@ -1,6 +1,12 @@
 name : derive_tools_meta
 
-on : push
+on :
+  push :
+    branches-ignore :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
 
 env :
   CARGO_TERM_COLOR : always

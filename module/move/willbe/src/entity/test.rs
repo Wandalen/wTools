@@ -4,6 +4,7 @@ mod private
   // qqq : for Petro : use https://github.com/console-rs/indicatif
 
   use crate::*;
+  use table::*;
   use std::
   {
     collections::{ BTreeMap, BTreeSet, HashSet },
@@ -20,12 +21,6 @@ mod private
   // aaa : ✅
   use colored::Colorize;
   // qqq : for Petro : don't do micro imports
-  use prettytable::
-  { 
-    Cell, 
-    Row, 
-    Table,
-  };
   // qqq : for Petro : don't do micro imports
   #[ cfg( feature = "progress_bar" ) ]
   use indicatif::
@@ -33,12 +28,6 @@ mod private
     MultiProgress, 
     ProgressBar, 
     ProgressStyle 
-  };
-  use prettytable::format::
-  { 
-    Alignment, 
-    FormatBuilder, 
-    TableFormat
   };
   use rayon::ThreadPoolBuilder;
   use process_tools::process::*;
@@ -181,26 +170,26 @@ mod private
           ff.push( feature );
         }
       }
-      let mut table = Table::new();
-      let format = format();
-      table.set_format( format );
+      let mut table = Table::default();
+      // let format = format();
+      // table.set_format( format );
       
-      let mut header_row = Row::empty();
-      header_row.add_cell( Cell::new( "Channel" ) );
-      header_row.add_cell( Cell::new( "Opt" ) );
+      let mut header_row = Row::new();
+      header_row.add_cell( "Channel" );
+      header_row.add_cell( "Opt" );
       
       for feature in &ff
       {
-        header_row.add_cell( Cell::new( feature )  );
+        header_row.add_cell( feature );
       }
-      table.set_titles( header_row );
+      table.set_header( header_row );
 
       for variant in &self.test_variants
       {
-        let mut row = Row::empty();
+        let mut row = Row::new();
 
-        row.add_cell( Cell::new( &variant.channel.to_string() ) );
-        row.add_cell( Cell::new( &variant.optimization.to_string() ) );
+        row.add_cell( &variant.channel.to_string() );
+        row.add_cell( &variant.optimization.to_string() );
         let counter = 0;
         let flag = true;
         generate_features_cells(&mut ff, variant, &mut row, counter, flag, &self.enabled_features );
@@ -288,8 +277,7 @@ mod private
   {
     for feature in ff
     {
-      let mut c = Cell::new("+");
-      c.align( Alignment::CENTER );
+      let mut c = "+";
       if variant.features.is_empty() && counter == enabled_features.len() && flag
       {
         flag = false;
@@ -301,28 +289,13 @@ mod private
       } 
       else 
       {
-        c = Cell::new( "" );
+        c = "";
         row.add_cell( c );
       }
       counter += 1;
     }
   }
-
-  fn format() -> TableFormat
-  {
-    let format = FormatBuilder::new()
-    .column_separator( ' ' )
-    .borders( ' ' )
-    .separators
-    (
-      &[ prettytable::format::LinePosition::Title ],
-      prettytable::format::LineSeparator::new( '-', '+', '+', '+' )
-    )
-    .padding( 1, 1 )
-    .build();
-    format
-  }
-
+  
   #[ derive( Debug, Former ) ]
   pub struct PackageTestOptions< 'a >
   {
@@ -566,18 +539,16 @@ mod private
           ff.push( feature );
         }
       }
-      let mut table = Table::new();
-      let format = format();
-      table.set_format( format );
-      let mut header_row = Row::empty();
-      header_row.add_cell( Cell::new( "Result" ) );
-      header_row.add_cell( Cell::new( "Channel" ) );
-      header_row.add_cell( Cell::new( "Opt" ) );
+      let mut table = Table::default();
+      let mut header_row = Row::new();
+      header_row.add_cell( "Result" );
+      header_row.add_cell( "Channel" );
+      header_row.add_cell( "Opt" );
       for feature in &ff
       {
-        header_row.add_cell( Cell::new( feature )  );
+        header_row.add_cell( feature );
       }
-      table.set_titles( header_row );
+      table.set_header( header_row );
       
       writeln!( f, "{} {}\n", "\n=== Module".bold(), self.package_name.0.bold() )?;
       if self.tests.is_empty()
@@ -587,7 +558,7 @@ mod private
       }
       for ( variant, result) in &self.tests
       {
-        let mut row = Row::empty();
+        let mut row = Row::new();
         let result_text = match result
         {
           Ok( _ ) =>
@@ -604,9 +575,9 @@ mod private
             "❌"
           },
         };
-        row.add_cell( Cell::new( result_text ) );
-        row.add_cell( Cell::new( &variant.channel.to_string() ) );
-        row.add_cell( Cell::new( &variant.optimization.to_string() ) );
+        row.add_cell( result_text );
+        row.add_cell( &variant.channel.to_string() );
+        row.add_cell( &variant.optimization.to_string() );
         let counter = 0;
         let flag = true;
         generate_features_cells( &mut ff, variant, &mut row, counter, flag, &self.enabled_features );

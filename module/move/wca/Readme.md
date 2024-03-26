@@ -27,10 +27,6 @@ The tool to make CLI ( commands user interface ). It is able to aggregate extern
         .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
         .routine( | args : Args, props | { println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" ) } )
         .end()
-      .command( "inc" )
-        .hint( "This command increments a state number each time it is called consecutively. (E.g. `.inc .inc`)" )
-        .routine( | ctx : Context | { let i : &mut i32 = ctx.get_or_default(); println!( "i = {i}" ); *i += 1; } )
-        .end()
       .command( "error" )
         .hint( "prints all subjects and properties" )
         .subject().hint( "Error message" ).kind( Type::String ).optional( true ).end()
@@ -63,4 +59,3 @@ cd wTools
 cd examples/wca_trivial
 cargo run
 ```
-

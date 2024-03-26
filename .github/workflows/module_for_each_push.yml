@@ -1,6 +1,12 @@
 name : for_each
 
-on : push
+on :
+  push :
+    branches-ignore :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
 
 env :
   CARGO_TERM_COLOR : always
