@@ -18,7 +18,7 @@ branches = [ "master", "alpha" ]
 master_branch = "alpha"
 project_name = "wtools"
 repo_url = "https://github.com/Wandalen/wTools"
-discord_id = "m3YfbXpUUY"
+discord_url = "https://discord.gg/m3YfbXpUUY"
 
 # [metadata.cargo-suppress-warnings]
 # unused-manifest-key = true
@@ -92,7 +92,7 @@ default-features = false
 # path = "module/core/type_constructor_derive_pair_meta"
 
 [workspace.dependencies.interval_adapter]
-version = "~0.17.0"
+version = "~0.18.0"
 path = "module/core/interval_adapter"
 default-features = false
 features = [ "enabled" ]
@@ -104,7 +104,7 @@ default-features = false
 features = [ "enabled" ]
 
 [workspace.dependencies.collection_tools]
-version = "~0.3.0"
+version = "~0.4.0"
 path = "module/core/collection_tools"
 default-features = false
 
@@ -182,7 +182,7 @@ default-features = false
 ## iter
 
 [workspace.dependencies.iter_tools]
-version = "~0.14.0"
+version = "~0.15.0"
 path = "module/core/iter_tools"
 default-features = false
 
@@ -200,12 +200,12 @@ path = "module/core/for_each"
 default-features = false
 
 [workspace.dependencies.former]
-version = "~0.14.0"
+version = "~0.15.0"
 path = "module/core/former"
 default-features = false
 
 [workspace.dependencies.former_meta]
-version = "~0.13.0"
+version = "~0.14.0"
 path = "module/core/former_meta"
 default-features = false
 
@@ -250,7 +250,7 @@ default-features = false
 ## macro tools
 
 [workspace.dependencies.macro_tools]
-version = "~0.22.0"
+version = "~0.23.0"
 path = "module/core/macro_tools"
 default-features = false
 

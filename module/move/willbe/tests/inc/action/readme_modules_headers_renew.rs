@@ -56,6 +56,7 @@ fn default_stability()
 
   // Assert
   assert!( actual.contains( "[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)" ) );
+  assert!( !actual.contains( "|" ) );
 }
 
 #[ test ]

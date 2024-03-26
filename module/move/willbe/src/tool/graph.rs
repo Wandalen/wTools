@@ -10,6 +10,7 @@ pub( crate ) mod private
     hash::Hash,
     collections::{ HashMap, HashSet }
   };
+  use std::collections::VecDeque;
   use std::path::PathBuf;
   use petgraph::
   {
@@ -100,6 +101,71 @@ pub( crate ) mod private
       // aaa : for Bohdan : bad, make proper error handling
       // aaa : now returns `GraphError`
     }
+  }
+
+  /// The function performs a topological sort of a graph with grouping.
+  ///
+  /// # Arguments
+  ///
+  /// * `graph` - A graph represented as an adjacency list. Each node in the graph represents a task, and edges represent dependencies.
+  ///
+  /// # Returns
+  ///
+  /// The function returns a vector of vectors, where each inner vector represents a group of nodes that can be executed in parallel. Tasks within each group are sorted in topological order.
+  pub fn topological_sort_with_grouping< 'a, PackageIdentifier : Clone + std::fmt::Debug >
+  (
+    graph : Graph< &'a PackageIdentifier, &'a PackageIdentifier >
+  ) 
+  -> Vec< Vec< PackageIdentifier > > 
+  {
+    let mut in_degree = HashMap::new();
+    for node in graph.node_indices() 
+    {
+      in_degree.insert( node, graph.neighbors_directed( node, Incoming ).count() );
+    }
+
+    let mut roots = VecDeque::new();
+    for ( node, &degree ) in in_degree.iter() 
+    {
+      if degree == 0 
+      {
+        roots.push_back( *node );
+      }
+    }
+
+    let mut result = Vec::new();
+    while !roots.is_empty() 
+    {
+      let mut next_roots = Vec::new();
+      let mut group = Vec::new();
+      while let Some( node ) = roots.pop_front() 
+      {
+        group.push( node );
+        for edge in graph.neighbors( node ) 
+        {
+          let degree = in_degree.get_mut( &edge ).unwrap();
+          *degree -= 1;
+          if *degree == 0 
+          {
+            next_roots.push( edge );
+          }
+        }
+      }
+      roots = VecDeque::from( next_roots );
+      result.push( group );
+    }
+    result
+    .into_iter()
+    .map
+    ( 
+      | vec | 
+      vec
+      .iter()
+      .map( | dep_idx | ( *graph.node_weight( *dep_idx ).unwrap() ).clone() )
+      .collect() 
+    )
+    .rev()
+    .collect()
   }
 
   /// Creates a subgraph from the given graph, containing only the nodes and edges reachable from the roots.
@@ -238,6 +304,7 @@ crate::mod_interface!
 {
   protected use construct;
   protected use toposort;
+  protected use topological_sort_with_grouping;
   protected use subgraph;
   protected use remove_not_required_to_publish;
 }

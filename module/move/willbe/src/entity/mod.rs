@@ -12,6 +12,10 @@ crate::mod_interface!
   /// Handles operations related to packed Rust crates
   layer packed_crate;
   orphan use super::packed_crate;
+  
+  /// Facade for `preatytable` crate.
+  layer table;
+  orphan use super::table;
 
   /// Provides a set of functionalities for handling and manipulating packages.
   layer packages;

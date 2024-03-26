@@ -59,7 +59,7 @@ fn stability_experimental_by_default()
   let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
-  assert!( actual.contains( "[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)" ) );
+  assert!( actual.contains( "[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) |" ) );
 }
 
 #[ test ]

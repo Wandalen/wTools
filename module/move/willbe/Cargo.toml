@@ -43,6 +43,7 @@ petgraph = "~0.6"
 ptree = "~0.4"
 rayon = "1.8.0"
 semver = "~1.0.0"
+similar = "~2.4"
 regex = "1.10.2"
 sha-1 = "~0.10"
 tar = "~0.4"
@@ -55,6 +56,7 @@ tracing-subscriber = { version = "0.3", optional = true }
 indicatif = { version = "0.17", optional = true }
 prettytable-rs = "0.10"
 serde_json = "1.0" # for CargoMetadata::Package::metadata (need serde_json::Value)
+serde = "1.0" # for CargoMetadata::Package
 
 ## internal
 crates_tools = { workspace = true }

@@ -36,6 +36,7 @@ tests_impls!
 
   fn with_context()
   {
+    use std::sync::{ Arc, Mutex };
     use wtools::error::for_app::Error;
 
     // init parser
@@ -53,9 +54,9 @@ tests_impls!
       (
         | ctx : Context |
         ctx
-        .get_mut()
+        .get()
         .ok_or_else( || "Have no value" )
-        .and_then( | x : &mut i32 | { *x += 1; Ok( () ) } )
+        .and_then( | x : Arc< Mutex< i32 > > | { *x.lock().unwrap() += 1; Ok( () ) } )
       )
       .form()
     )
@@ -70,15 +71,16 @@ tests_impls!
       (
         | ctx : Context, args : Args |
         ctx
-        .get_ref()
+        .get()
         .ok_or_else( || "Have no value".to_string() )
         .and_then
         (
-          | &x : &i32 |
+          | x : Arc< Mutex< i32 > > |
           {
+            let x = x.lock().unwrap();
             let y : i32 = args.get( 0 ).ok_or_else( || "Missing subject".to_string() ).unwrap().to_owned().into();
 
-            if dbg!( x ) != y { Err( format!( "{} not eq {}", x, y ) ) } else { Ok( () ) }
+            if dbg!( *x ) != y { Err( format!( "{} not eq {}", x, y ) ) } else { Ok( () ) }
           }
         )
       )
@@ -89,7 +91,7 @@ tests_impls!
 
     // starts with 0
     let mut ctx = wca::Context::default();
-    ctx.insert( 0 );
+    ctx.insert( Arc::new( Mutex::new( 0 ) ) );
     // init simple executor
     let executor = Executor::former()
     .context( ctx )

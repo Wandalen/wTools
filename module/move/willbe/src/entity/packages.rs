@@ -6,8 +6,8 @@ mod private
     fmt::Formatter,
     collections::{ HashMap, HashSet },
   };
-  use cargo_metadata::{ Dependency };
   use workspace::WorkspacePackage;
+  use crate::workspace::Dependency;
 
   /// Type aliasing for String
   pub type PackageName = String;
@@ -89,7 +89,7 @@ mod private
         package.dependencies()
         .iter()
         .filter( | &d | dependency_filter( package, d ) )
-        .map( | d | d.name.clone() )
+        .map( | d | d.name().clone() )
         .collect::< HashSet< _ > >()
       )
     )
