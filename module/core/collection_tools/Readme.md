@@ -14,9 +14,7 @@ This module encompasses a suite of meta-tools designed to enhance Rust's collect
 
 Consider the following example, which demonstrates the use of the `hmap!` macro to effortlessly create a `HashMap`:
 
-<!-- // zzz : qqq : rid off `#[ cfg( not( feature = "use_alloc" ) ) ]` -->
 ```rust
-# #[ cfg( not( feature = "use_alloc" ) ) ]
 # #[ cfg( all( feature = "enabled", feature = "collection_constructors" ) ) ]
 # #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 # {
@@ -24,7 +22,7 @@ Consider the following example, which demonstrates the use of the `hmap!` macro 
 use collection_tools::*;
 
 let meta_map = hmap! { 3 => 13 };
-let mut std_map = std::collections::HashMap::new();
+let mut std_map = collection_tools::HashMap::new();
 std_map.insert( 3, 13 );
 assert_eq!( meta_map, std_map );
 
@@ -37,9 +35,7 @@ When implementing a `no_std` environment with the `use_alloc` feature in your Ru
 
 You can do
 
-<!-- // zzz : qqq : rid off `#[ cfg( not( feature = "use_alloc" ) ) ]` -->
 ```rust
-# #[ cfg( not( feature = "use_alloc" ) ) ]
 # #[ cfg( all( feature = "enabled", feature = "collection_std" ) ) ]
 # #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 # {

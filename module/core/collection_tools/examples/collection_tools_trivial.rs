@@ -21,21 +21,18 @@
 
 #[ cfg( not( all
 (
-  not( feature = "use_alloc" ),
   all( feature = "enabled", feature = "collection_constructors" ),
   any( not( feature = "no_std" ), feature = "use_alloc" )
 )))]
 fn main(){}
 
-// zzz : qqq : rid off `#[ cfg( not( feature = "use_alloc" ) ) ]`
-#[ cfg( not( feature = "use_alloc" ) ) ]
 #[ cfg( all( feature = "enabled", feature = "collection_constructors" ) ) ]
 #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 fn main()
 {
   use collection_tools::*;
   let map = hmap! { 3 => 13 };
-  let mut expected = std::collections::HashMap::new();
+  let mut expected = collection_tools::HashMap::new();
   expected.insert( 3, 13 );
   assert_eq!( map, expected );
 }
