@@ -1,4 +1,4 @@
-#![ allow( dead_code ) ]
+// #![ allow( dead_code ) ]
 
 use super::*;
 #[ allow( unused_imports ) ]
@@ -7,7 +7,6 @@ use collection_tools::Vec;
 #[ test ]
 fn definitions()
 {
-
 
   pub fn f1< Definition >( _x : Definition )
   where
@@ -346,21 +345,11 @@ fn custom_definition_custom_end()
     type Formed = i32;
     type Context = ();
   }
-
   impl former::FormerDefinition for Return13
   {
     type Types = Return13;
     type End = former::FormingEndWrapper< < Self as former::FormerDefinition >::Types >;
   }
-
-  //
-
-  // let got = the_module::ContainerSubformer::< String, Return13 >::new( Return13 )
-  // .push( "a" )
-  // .push( "b" )
-  // .form();
-  // let exp = 13;
-  // a_id!( got, exp );
 
   //
 
