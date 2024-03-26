@@ -84,24 +84,24 @@
 // //   }
 // // }
 //
-// impl< K, Context, End > FormerDefinitionTypes
-// for HashSetDefinition< K, Context, End >
+// impl< K, Context, Formed > FormerDefinitionTypes
+// for HashSetDefinition< K, Context, Formed >
 // where
 //   K : ::core::cmp::Eq + ::core::hash::Hash,
-//   End : FormingEnd< Self >,
+//   // End : FormingEnd< Self >,
 // {
 //   type Storage = HashSet< K >;
-//   type Formed = HashSet< K >;
+//   type Formed = Formed;
 //   type Context = Context;
 // }
 //
-// impl< K, Context, End > FormerDefinition
-// for HashSetDefinition< K, Context, End >
+// impl< K, Context, Formed, End > FormerDefinition
+// for HashSetDefinition< K, Context, Formed, End >
 // where
 //   K : ::core::cmp::Eq + ::core::hash::Hash,
 //   End : FormingEnd< Self >,
 // {
-//   type Types = HashSetDefinition< K, Context, End >;
+//   type Types = HashSetDefinition< K, Context, Formed >;
 //   type End = End;
 // }
 //
@@ -144,22 +144,22 @@
 //
 // // = extension
 //
-// pub trait HashSetExt< K > : sealed::Sealed
-// where
-//   K : ::core::cmp::Eq + ::core::hash::Hash,
-// {
-//   fn former() -> HashSetSubformer< K, (), HashSet< K >, ReturnStorage >;
-// }
+// // pub trait HashSetExt< K > : sealed::Sealed
+// // where
+// //   K : ::core::cmp::Eq + ::core::hash::Hash,
+// // {
+// //   fn former() -> HashSetSubformer< K, (), HashSet< K >, ReturnStorage >;
+// // }
 //
-// impl< K > HashSetExt< K > for HashSet< K >
-// where
-//   K : ::core::cmp::Eq + ::core::hash::Hash,
-// {
-//   fn former() -> HashSetSubformer< K, (), HashSet< K >, ReturnStorage >
-//   {
-//     HashSetSubformer::< K, (), HashSet< K >, ReturnStorage >::new( ReturnStorage::default() )
-//   }
-// }
+// // impl< K > HashSetExt< K > for HashSet< K >
+// // where
+// //   K : ::core::cmp::Eq + ::core::hash::Hash,
+// // {
+// //   fn former() -> HashSetSubformer< K, (), HashSet< K >, ReturnStorage >
+// //   {
+// //     HashSetSubformer::< K, (), HashSet< K >, ReturnStorage >::new( ReturnStorage::default() )
+// //   }
+// // }
 //
 // mod sealed
 // {
