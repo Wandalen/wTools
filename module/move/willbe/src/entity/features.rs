@@ -101,6 +101,7 @@ mod private
     Ok( features_powerset )
   }
 
+  /// Calculate estimate for `features_powerset.length`
   pub fn estimate_with
   (
     n : usize,
@@ -109,7 +110,8 @@ mod private
     with_none_features : bool,
     enabled_features : &[ String ],
     total_features : usize
-  ) -> usize 
+  ) 
+    -> usize 
   {
     let mut estimate = 0;
     let mut binom = 1;
@@ -141,22 +143,12 @@ mod private
 
     estimate
   }
-
-  // fn factorial( n : usize ) -> Result< usize >
-  // {
-  //   return if n <= 1
-  //   {
-  //     Ok( 1 )
-  //   }
-  //   else
-  //   {
-  //     n.checked_mul( factorial( n - 1 )? ).ok_or_else( || err!( "Too big value" ) )
-  //   }
-  // }
+  
 }
 
 crate::mod_interface!
 {
   /// Features
   protected use features_powerset;
+  protected use estimate_with;
 }
