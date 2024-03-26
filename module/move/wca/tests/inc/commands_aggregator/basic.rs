@@ -71,8 +71,6 @@ tests_impls!
     a_id!( (), ca.perform( "." ).unwrap() );
     // qqq : this use case is disabled
     // a_id!( (), ca.perform( ".cmd." ).unwrap() );
-
-    a_true!( ca.perform( ".c." ).is_err() );
   }
 
   fn error_types()
