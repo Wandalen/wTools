@@ -188,7 +188,8 @@ fn begin_and_custom_end()
 fn custom_definition()
 {
 
-  // xxx2 : continue
+  // xxx : make example of that
+
   struct Return13;
   impl former::FormerDefinitionTypes for Return13
   {
@@ -219,9 +220,74 @@ fn custom_definition()
     }
   }
 
+  // type MyContainer<>
+
   //
 
   let got = the_module::ContainerSubformer::< String, Return13 >::begin( None, None, Return13 )
+  .push( "a" )
+  .push( "b" )
+  .form();
+  let exp = 13;
+  a_id!( got, exp );
+
+  //
+
+}
+
+//
+
+#[ test ]
+fn custom_definition_parametrized()
+{
+
+  // xxx : make example of that
+
+  // xxx2 : continue
+  struct Return13< E >( ::core::marker::PhantomData< E > );
+
+  impl< E > Return13< E >
+  {
+    pub fn new() -> Self
+    {
+      Self ( ::core::marker::PhantomData )
+    }
+  }
+
+  impl< E > former::FormerDefinitionTypes for Return13< E >
+  {
+    type Storage = Vec< E >;
+    type Formed = i32;
+    type Context = ();
+  }
+
+  impl< E > former::FormerDefinition for Return13< E >
+  {
+    type Types = Return13< E >;
+    type End = Return13< E >;
+  }
+
+  // -
+
+  impl< E > the_module::FormingEnd< Return13< E > >
+  for Return13< E >
+  {
+    fn call
+    (
+      &self,
+      storage : < Return13< E > as the_module::FormerDefinitionTypes >::Storage,
+      context : Option< < Return13< E > as the_module::FormerDefinitionTypes >::Context >
+    ) -> < Return13< E > as the_module::FormerDefinitionTypes >::Formed
+    {
+      13
+    }
+  }
+
+  // type MyContainer< Type >
+
+  //
+
+  let got = the_module::ContainerSubformer::< String, Return13< String > >::begin( None, None, Return13::new() )
   .push( "a" )
   .push( "b" )
   .form();
