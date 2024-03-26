@@ -2,8 +2,6 @@ pub( crate ) mod private
 {
   use crate::*;
 
-  use { Handler, Routine, Type };
-
   use std::collections::HashMap;
   use former::Former;
 
@@ -86,7 +84,7 @@ pub( crate ) mod private
 
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
   #[ derive( Former ) ]
-  pub struct Command
+  pub struct Command< C = () >
   {
     /// Command common hint.
     #[ alias( h ) ]
@@ -108,13 +106,13 @@ pub( crate ) mod private
     // qqq : make it usable and remove default(?)
     /// The type `Routine` represents the specific implementation of the routine.
     #[ setter( false ) ]
-    #[ default( Routine::new( | _ | { panic!( "No routine available: A handler function for the command is missing" ) } ) ) ]
-    pub routine : Routine,
+    #[ default( RoutineVerifiedCommand::new( | _ | { Err( "No routine available: A handler function for the command is missing" ) } ) ) ]
+    pub routine : RoutineVerifiedCommand< C >,
   }
 
-  impl< Context, End > CommandFormer< Context, End >
+  impl< C, Context, End > CommandFormer< C, Context, End >
   where
-    End : former::FormingEnd< Command, Context >,
+    End : former::FormingEnd< Command< C >, Context >,
   {
     /// Setter for separate properties aliases.
     pub fn property_alias< S : Into< String > >( mut self, key : S, alias : S ) -> Self
@@ -161,7 +159,7 @@ pub( crate ) mod private
     /// Returns the `CommandFormer` instance with the new command routine set.
     pub fn routine< I, R, F : Into< Handler< I, R > > >( mut self, f : F ) -> Self
     where
-      Routine: From< Handler< I, R > >,
+      RoutineVerifiedCommand< C > : From< Handler< I, R > >,
     {
       let h = f.into();
       self.storage.routine = Some( h.into() );
@@ -169,9 +167,9 @@ pub( crate ) mod private
     }
   }
 
-  impl< Context, End > CommandFormer< Context, End >
+  impl< C, Context, End > CommandFormer< C, Context, End >
   where
-    End : former::FormingEnd< Command, Context >,
+    End : former::FormingEnd< Command< C >, Context >,
   {
     /// Implements the `subject` method for a value.
     ///

@@ -18,7 +18,7 @@ fn exit()
 
 fn main()
 {
-  let ca = CommandsAggregator::former()
+  let ca = CommandsAggregator::< () >::former()
   .command( "echo" )
     .hint( "prints all subjects and properties" )
     .subject().hint( "Subject" ).kind( Type::String ).optional( true ).end()

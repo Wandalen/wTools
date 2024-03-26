@@ -39,7 +39,7 @@ pub( crate ) mod private
   ///   }
   /// );
   /// ```
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Default ) ]
   pub struct Args( pub Vec< Value > );
 
   impl Args
@@ -100,7 +100,7 @@ pub( crate ) mod private
   ///   }
   /// );
   /// ```
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Default ) ]
   pub struct Props( pub HashMap< String, Value > );
 
   impl Props
@@ -135,7 +135,7 @@ pub( crate ) mod private
   // fn(), fn(args), fn(props), fn(args, props), fn(context), fn(context, args), fn(context, props), fn(context, args, props)
   type RoutineWithoutContextFn = dyn Fn( ( Args, Props ) ) -> Result< () >;
   type RoutineWithContextFn = dyn Fn( ( Args, Props ), Context ) -> Result< () >;
-
+  
   ///
   /// Routine handle.
   ///
@@ -171,6 +171,17 @@ pub( crate ) mod private
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
       f.debug_struct( "Handler" ).finish_non_exhaustive()
+    }
+  }
+  
+  impl< Ctx, F, R > From< F > for Handler< VerifiedCommand< Ctx >, R >
+  where
+    R : IntoResult + 'static,
+    F : Fn( VerifiedCommand< Ctx > ) -> R + 'static,
+  {
+    fn from( value : F ) -> Self
+    {
+      Self( Box::new( move | c | value( c ) ) )
     }
   }
 
@@ -275,6 +286,57 @@ pub( crate ) mod private
       Routine::from( Box::new( move | x | value.0( x ).into_result() ) )
     }
   }
+  
+  impl< C, I, O > From< Handler< I, O > > for RoutineVerifiedCommand< C >
+  where
+    I : 'static,
+    O : IntoResult + 'static,
+    RoutineVerifiedCommand< C > : From< Box< dyn Fn( I ) -> Result< () > > >,
+  {
+    fn from( value : Handler< I, O > ) -> Self
+    {
+      RoutineVerifiedCommand::from( Box::new( move | x | value.0( x ).into_result() ) )
+    }
+  }
+  
+  #[ derive( Clone ) ]
+  pub struct RoutineVerifiedCommand< C = () >( pub( crate ) Rc< dyn Fn( VerifiedCommand< C > ) -> Result< () > > );
+  
+  impl std::fmt::Debug for RoutineVerifiedCommand
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
+      f.debug_struct( "Routine" ).finish_non_exhaustive()
+    }
+  }
+  
+  impl RoutineVerifiedCommand
+  {
+    pub fn new< F, R >( callback : F ) -> Self
+    where
+      F : Fn( VerifiedCommand ) -> R,
+      R : IntoResult
+    {
+      Self( Rc::new( move | c | callback( c ).into_result() ) )
+    }
+  }
+
+  impl< C : 'static > From< Box< dyn Fn() -> Result< () > > > for RoutineVerifiedCommand< C >
+  {
+    fn from( value : Box< dyn Fn() -> Result< () > > ) -> Self
+    {
+      Self( Rc::new( move | _ | { value()?; Ok( () ) } ) )
+    }
+  }
+  
+  impl< C : 'static > From< Box< dyn Fn( VerifiedCommand< C > ) -> Result< () > > > for RoutineVerifiedCommand< C >
+  {
+    fn from( value : Box< dyn Fn( VerifiedCommand< C > ) -> Result< () > > ) -> Self
+    {
+      Self( Rc::new( move | x | { value( x )?; Ok( () ) } ) )
+    }
+  }
+
 
   /// Represents different types of routines.
   ///
@@ -439,6 +501,16 @@ pub( crate ) mod private
   }
 
   impl Eq for Routine {}
+  
+  impl< T > PartialEq for RoutineVerifiedCommand< T >
+  {
+    fn eq( &self, other : &Self ) -> bool
+    {
+      Rc::ptr_eq( &self.0, &other.0 )
+    }
+  }
+
+  impl< T > Eq for RoutineVerifiedCommand< T > {}
 
   trait IntoResult
   {
@@ -455,6 +527,7 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   exposed use Routine;
+  exposed use RoutineVerifiedCommand;
   exposed use Handler;
   exposed use Args;
   exposed use Props;

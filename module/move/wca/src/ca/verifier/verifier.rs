@@ -431,10 +431,11 @@ pub( crate ) mod private
       {
         return Ok( VerifiedCommand
         {
+          context : None,
           phrase : raw_command.name,
           internal_command : true,
-          subjects : vec![],
-          properties : HashMap::new(),
+          args : Args::default(),
+          properties : Props::default(),
         });
       }
       let command = dictionary.command( &raw_command.name )
@@ -465,10 +466,11 @@ pub( crate ) mod private
 
       Ok( VerifiedCommand
       {
+        context : None,
         phrase : cmd.phrase.to_owned(),
         internal_command : false,
-        subjects,
-        properties,
+        args : Args( subjects ),
+        properties : Props( properties ),
       })
     }
   }

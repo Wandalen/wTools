@@ -64,7 +64,7 @@ pub( crate ) mod private
   /// {
   ///   phrase : "command".to_string(),
   ///   // Here is numeric value used
-  ///   subjects : vec![ Value::Number( 3.14 ) ],
+  ///   args : vec![ Value::Number( 3.14 ) ],
   ///   properties : HashMap::from_iter(
   ///   [
   ///     // Here is string value used
@@ -72,10 +72,10 @@ pub( crate ) mod private
   ///   ])
   /// };
   ///
-  /// let number : f32 = command.subjects[ 0 ].clone().into();
+  /// let number : f32 = command.args[ 0 ].clone().into();
   /// assert_eq!( 3.14, number );
   ///
-  /// let number : i32 = command.subjects[ 0 ].clone().into();
+  /// let number : i32 = command.args[ 0 ].clone().into();
   /// assert_eq!( 3, number );
   /// ```
   #[ derive( Debug, Clone, PartialEq ) ]
