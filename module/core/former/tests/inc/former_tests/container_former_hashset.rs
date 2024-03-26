@@ -5,7 +5,6 @@ use super::*;
 #[ allow( unused_imports ) ]
 use collection_tools::HashSet;
 
-
 // qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]

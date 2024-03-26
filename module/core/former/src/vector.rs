@@ -42,21 +42,19 @@ for Vec< E >
 
 // = definition
 
-#[ derive( Debug ) ]
+#[ derive( Debug, Default ) ]
 pub struct VectorDefinition< E, Context = (), Formed = Vec< E >, End = ReturnStorage >
-// where
-  // Self : FormerDefinitionTypes,
 {
   _phantom : core::marker::PhantomData< ( E, Context, Formed, End ) >,
 }
 
-impl< E, Context, Formed > VectorDefinition< E, Context, Formed >
-{
-  pub fn new() -> Self
-  {
-    Self { _phantom : core::marker::PhantomData }
-  }
-}
+// impl< E, Context, Formed > VectorDefinition< E, Context, Formed >
+// {
+//   pub fn new() -> Self
+//   {
+//     Self { _phantom : core::marker::PhantomData }
+//   }
+// }
 
 impl< E, Context, Formed > FormerDefinitionTypes
 for VectorDefinition< E, Context, Formed >
@@ -65,24 +63,6 @@ for VectorDefinition< E, Context, Formed >
   type Formed = Formed;
   type Context = Context;
 }
-
-// #[ derive( Debug ) ]
-// pub struct VectorDefinition< E, Context = (), Formed = Vec< E >, End = ReturnStorage >
-// where
-//   End : FormingEnd< VectorDefinition< E, Context, Formed > >,
-// {
-//   _phantom : core::marker::PhantomData< ( E, Context, Formed, End ) >,
-// }
-
-// impl< E, Context, Formed, End > VectorDefinition< E, Context, Formed, End >
-// where
-//   End : FormingEnd< VectorDefinition< E, Context, Formed > >,
-// {
-//   pub fn new() -> Self
-//   {
-//     Self { _phantom : core::marker::PhantomData }
-//   }
-// }
 
 impl< E, Context, Formed, End > FormerDefinition
 for VectorDefinition< E, Context, Formed, End >
@@ -100,7 +80,10 @@ where
 /// `VectorSubformer` leverages the `VectorLike` trait to enable the construction and manipulation
 /// of vector-like containers in a builder pattern style, promoting readability and ease of use.
 
-pub type VectorSubformer< E, Context, Formed, End > = ContainerSubformer::< E, VectorDefinition< E, Context, Formed, End > >;
+// xxx : update documentation
+
+pub type VectorSubformer< E, Context, Formed, End > =
+ContainerSubformer::< E, VectorDefinition< E, Context, Formed, End > >;
 
 // = extension
 
@@ -119,6 +102,7 @@ impl< E > VecExt< E > for Vec< E >
 
 mod sealed
 {
+  use super::Vec;
   pub trait Sealed {}
   impl< E > Sealed for Vec< E > {}
 }

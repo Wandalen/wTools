@@ -58,25 +58,31 @@
 //
 // // = definition
 //
-// #[ derive( Debug ) ]
-// pub struct HashSetDefinition< K, Context, End >
-// where
-//   K : ::core::cmp::Eq + ::core::hash::Hash,
-//   End : FormingEnd< Self >,
+// // #[ derive( Debug, Default ) ]
+// // pub struct HashSetDefinition< K, Context, End >
+// // where
+// //   K : ::core::cmp::Eq + ::core::hash::Hash,
+// //   End : FormingEnd< Self >,
+// // {
+// //   _phantom : ::core::marker::PhantomData< ( K, Context, End ) >,
+// // }
+//
+// #[ derive( Debug, Default ) ]
+// pub struct HashSetDefinition< K, Context = (), Formed = HashSet< K >, End = ReturnStorage >
 // {
-//   _phantom : ::core::marker::PhantomData< ( K, Context, End ) >,
+//   _phantom : core::marker::PhantomData< ( K, Context, Formed, End ) >,
 // }
 //
-// impl< K, Context, End > HashSetDefinition< K, Context, End >
-// where
-//   K : ::core::cmp::Eq + ::core::hash::Hash,
-//   End : FormingEnd< Self >,
-// {
-//   pub fn new() -> Self
-//   {
-//     Self { _phantom : ::core::marker::PhantomData }
-//   }
-// }
+// // impl< K, Context, End > HashSetDefinition< K, Context, End >
+// // where
+// //   K : ::core::cmp::Eq + ::core::hash::Hash,
+// //   End : FormingEnd< Self >,
+// // {
+// //   pub fn new() -> Self
+// //   {
+// //     Self { _phantom : ::core::marker::PhantomData }
+// //   }
+// // }
 //
 // impl< K, Context, End > FormerDefinitionTypes
 // for HashSetDefinition< K, Context, End >
@@ -87,6 +93,15 @@
 //   type Storage = HashSet< K >;
 //   type Formed = HashSet< K >;
 //   type Context = Context;
+// }
+//
+// impl< K, Context, End > FormerDefinition
+// for HashSetDefinition< K, Context, End >
+// where
+//   K : ::core::cmp::Eq + ::core::hash::Hash,
+//   End : FormingEnd< Self >,
+// {
+//   type Types = HashSetDefinition< K, Context, End >;
 //   type End = End;
 // }
 //
@@ -122,4 +137,33 @@
 // /// # }
 // /// ```
 //
-// pub type HashSetSubformer< K, Context, End > = ContainerSubformer::< K, HashSetDefinition< K, Context, End > >;
+// // xxx : update documentation
+// // pub type HashSetSubformer< K, Context, End > = ContainerSubformer::< K, HashSetDefinition< K, Context, End > >;
+// pub type HashSetSubformer< K, Context, Formed, End > =
+// ContainerSubformer::< K, HashSetDefinition< K, Context, Formed, End > >;
+//
+// // = extension
+//
+// pub trait HashSetExt< K > : sealed::Sealed
+// where
+//   K : ::core::cmp::Eq + ::core::hash::Hash,
+// {
+//   fn former() -> HashSetSubformer< K, (), HashSet< K >, ReturnStorage >;
+// }
+//
+// impl< K > HashSetExt< K > for HashSet< K >
+// where
+//   K : ::core::cmp::Eq + ::core::hash::Hash,
+// {
+//   fn former() -> HashSetSubformer< K, (), HashSet< K >, ReturnStorage >
+//   {
+//     HashSetSubformer::< K, (), HashSet< K >, ReturnStorage >::new( ReturnStorage::default() )
+//   }
+// }
+//
+// mod sealed
+// {
+//   use super::HashSet;
+//   pub trait Sealed {}
+//   impl< K > Sealed for HashSet< K > {}
+// }
