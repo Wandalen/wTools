@@ -32,22 +32,22 @@ pub mod protected
 
   #[ cfg( feature = "use_alloc" ) ]
   extern crate alloc;
-  #[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
+  #[ cfg( feature = "use_alloc" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use alloc::vec;
-  #[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
+  #[ cfg( feature = "use_alloc" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use alloc::vec::Vec;
-  #[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
+  #[ cfg( feature = "use_alloc" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use alloc::collections::{ BinaryHeap, BTreeMap, BTreeSet, LinkedList, VecDeque };
-  #[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
+  #[ cfg( feature = "use_alloc" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use hashbrown::*;
+  pub use hashbrown::{ HashMap, HashSet };
   #[ cfg( not( feature = "no_std" ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

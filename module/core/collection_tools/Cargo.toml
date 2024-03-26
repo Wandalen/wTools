@@ -53,7 +53,7 @@ enabled = []
 # Collection constructors, like `hmap!{ "key" => "val" }`
 collection_constructors = [ "literally" ]
 # STD collection for no_std.
-collection_std = []
+collection_std = [ "hashbrown" ]
 
 
 [dependencies]
