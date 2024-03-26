@@ -34,6 +34,7 @@ no_std = [
 ]
 use_alloc = [
   "no_std",
+  "hashbrown",
   "test_tools/use_alloc",
 ]
 
@@ -58,7 +59,7 @@ collection_std = []
 [dependencies]
 
 ## external
-hashbrown = { version = "~0.14.3", default-features = false, features = [ "default" ] }
+hashbrown = { version = "~0.14.3", optional = true, default-features = false, features = [ "default" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }

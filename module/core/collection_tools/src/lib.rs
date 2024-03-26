@@ -9,7 +9,7 @@
 pub mod dependency
 {
 
-  #[ cfg( feature = "collection_std" ) ]
+  #[ cfg( feature = "use_alloc" ) ]
   pub use ::hashbrown;
 
 }
@@ -28,25 +28,18 @@ pub mod protected
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   extern crate alloc;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use alloc::vec;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use alloc::vec::Vec;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use alloc::collections::{ BinaryHeap, BTreeMap, BTreeSet, LinkedList, VecDeque };
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  #[ cfg( feature = "use_alloc" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use hashbrown::{ HashMap, HashSet };
-
+  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use std::collections::{ HashMap, HashSet };
 }
 
 /// Parented namespace of the module.
@@ -74,10 +67,10 @@ pub mod prelude
   #[ cfg( feature = "collection_constructors" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::alloc_macros::*;
+  pub use super::constructors::*;
 }
 
 /// Macros used in `use_alloc` context
 /// Basically a tweaked version of `literally` crate but using `alloc` / `hashbrown` instead of `std`
 #[ cfg( all( feature = "enabled", feature = "collection_constructors" ) ) ]
-pub mod alloc_macros;
+pub mod constructors;
