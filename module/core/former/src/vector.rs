@@ -52,6 +52,7 @@ pub struct VectorDefinition< E, Context, Formed, End >
 impl< E, Context, Formed > FormerDefinitionTypes
 // for VectorDefinition< E, Context, Formed >
 for VectorDefinition< E, Context, Formed, ReturnStorage >
+// for VectorDefinition< E, Context, Formed, End >
 // where
   // End : FormingEnd< Self >,
 {
