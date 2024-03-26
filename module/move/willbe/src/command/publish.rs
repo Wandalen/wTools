@@ -2,6 +2,7 @@
 mod private
 {
   use crate::*;
+  use colored::Colorize;
 
   use wca::{ Args, Props };
   use wtools::error::Result;
@@ -33,7 +34,10 @@ mod private
 
         if dry && report.packages.iter().find( |( _, p )| p.publish_required ).is_some()
         {
-          println!( "To apply plan, call the command `will .publish {} dry:0 {}`", args_line, prop_line )
+          let args = if args_line.is_empty() { String::new() } else { format!(" {}", args_line) };
+          let prop = if prop_line.is_empty() { String::new() } else { format!(" {}", prop_line) };
+          let line = format!("will .publish{}{} dry:0", args, prop);
+          println!("To apply plan, call the command `{}`", line.blue());
           // qqq : for Petro : for Bohdan : bad. should be exact command with exact parameters
         }
 
