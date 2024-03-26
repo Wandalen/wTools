@@ -69,7 +69,8 @@ pub( crate ) mod private
   ///   [
   ///     // Here is string value used
   ///     ( "string_prop".to_string(), Value::String( "value".to_string() ) ),
-  ///   ])
+  ///   ]),
+  ///   internal_command : false,
   /// };
   ///
   /// let number : f32 = command.subjects[ 0 ].clone().into();
