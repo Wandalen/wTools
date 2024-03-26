@@ -18,7 +18,6 @@ Consider the following example, which demonstrates the use of the `hmap!` macro 
 # #[ cfg( all( feature = "enabled", feature = "collection_constructors" ) ) ]
 # #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 # {
-
 use collection_tools::*;
 
 let meta_map = hmap! { 3 => 13 };
@@ -29,6 +28,8 @@ assert_eq!( meta_map, std_map );
 # }
 ```
 
+Note: Do not be afraid of `collection_tools::HashMap`. It is basically a reexport of `std`'s `HashMap`, unless you have enabled `use_alloc` feature.
+
 ### Basic Use Case :: `no_std` `HashSet` / `HashMap`
 
 When implementing a `no_std` environment with the `use_alloc` feature in your Rust project, you'll encounter a challenge: collections like `Vec` are imported differently depending on the availability of the `std` library. Moreover, to use data structures such as `HashSet` or `HashMap` in a `no_std` context, it's necessary to depend on third-party crates, as these are not provided by the `alloc` crate directly. This crate aims to simplify the process of designing Rust libraries or applications that require these collections in a `no_std` environment, offering a more streamlined approach to working with dynamic data structures without the standard library.
@@ -37,36 +38,31 @@ You can do
 
 <!-- // zzz : aaa : rid off `#[ cfg( not( feature = "use_alloc" ) ) ]` -- Rid of by not relying on std -->
 ```rust
-// # #[ cfg( not( feature = "use_alloc" ) ) ]
 # #[ cfg( all( feature = "enabled", feature = "collection_std" ) ) ]
 # #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 # {
+use collection_tools::HashSet;
 
-use collection_tools::Vec;
-
-let mut map : Vec< i32 > = Vec::new();
-map.push( 1 );
-assert_eq!( map.first().unwrap().clone(), 1 );
-
+let mut vec : HashSet< i32 > = HashSet::new();
+vec.insert( 1 );
+assert_eq!( vec.contains( &1 ), true );
 # }
 ```
 
 Instead of
 
 <details>
-<summary>The code above will be expanded to this</summary>
+<summary>Click to see</summary>
 
 ```rust
 #[ cfg( feature = "use_alloc" ) ]
-extern crate alloc;
-#[ cfg( feature = "use_alloc" ) ]
-use alloc::vec::Vec;
+use hashbrown::HashSet; // a `no_std` replacement for `HashSet`
 #[ cfg( not( feature = "no_std" ) ) ]
-use std::vec::Vec;
+use std::collections::HashSet;
 
-let mut collection : Vec< i32 > = Vec::new();
-collection.push( 1 );
-assert_eq!( collection.first().unwrap().clone(), 1 );
+let mut vec : HashSet< i32 > = HashSet::new();
+vec.insert( 1 );
+assert_eq!( vec.contains( &1 ), true );
 ```
 
 </details>
