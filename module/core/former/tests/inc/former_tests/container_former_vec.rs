@@ -27,8 +27,8 @@ fn definitions()
   {
   }
 
-  f1( former::VectorDefinition::< String, () >::new() );
-  f2( former::VectorDefinition::< String, (), Vec< String >, the_module::ReturnStorage >::new() );
+  f1( former::VectorDefinition::< String, () >::default() );
+  f2( former::VectorDefinition::< String, (), Vec< String >, the_module::ReturnStorage >::default() );
   f3::< former::VectorDefinition< String, () >, the_module::ReturnStorage >( the_module::ReturnStorage );
   f3::< < former::VectorDefinition< String, (), Vec< String >, the_module::ReturnStorage > as the_module::FormerDefinition >::Types, the_module::ReturnStorage >( the_module::ReturnStorage );
 
