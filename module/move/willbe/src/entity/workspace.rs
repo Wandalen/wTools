@@ -4,24 +4,29 @@ mod private
   use crate::*;
 
   use std::path::Path;
-  use cargo_metadata::{ Dependency, Metadata, MetadataCommand, Package };
-  use cargo_metadata::camino::Utf8Path;
+  use cargo_metadata::camino::{ Utf8Path, Utf8PathBuf };
   use petgraph::Graph;
-  use semver::Version;
+  use serde::Deserialize;
   use serde_json::Value;
-  use wtools::error::{ for_app::Context, for_lib::Error, Result };
+  use wtools::error::
+  {
+    for_app::Context,
+    for_lib::Error,
+    Result
+  };
   use _path::AbsolutePath;
 
   /// Facade for cargo_metadata::Package
-  #[ derive( Debug, Clone ) ]
+  #[ derive( Debug, Clone, Deserialize ) ]
   pub struct WorkspacePackage
   {
-    inner : Package
+    #[ serde( flatten ) ]
+    inner : cargo_metadata::Package
   }
   
-  impl From< Package > for WorkspacePackage
+  impl From< cargo_metadata::Package > for WorkspacePackage
   {
-    fn from( inner : Package) -> Self 
+    fn from( inner : cargo_metadata::Package) -> Self 
     {
       Self
       {
@@ -39,9 +44,9 @@ mod private
     }
     
     /// List of dependencies of this particular package
-    pub fn dependencies( &self ) -> &[ Dependency ]
+    pub fn dependencies( &self ) -> Vec< Dependency >
     {
-      self.inner.dependencies.as_slice()
+      self.inner.dependencies.iter().cloned().map( Dependency::from ).collect()
     }
     
     /// Path containing the Cargo.toml
@@ -51,7 +56,7 @@ mod private
     }
     
     /// The version field as specified in the Cargo.toml
-    pub fn version( &self ) -> Version
+    pub fn version( &self ) -> semver::Version
     {
       self.inner.version.clone()
     }
@@ -106,11 +111,77 @@ mod private
     
   }
   
+  /// A dependency of the main crate
+  #[ derive( Debug ) ]
+  pub struct Dependency
+  {
+    inner : cargo_metadata::Dependency,
+  }
+  
+  impl Dependency
+  {
+    /// The file system path for a local path dependency.
+    /// Only produced on cargo 1.51+
+    pub fn path( &self ) -> Option< Utf8PathBuf >
+    {
+      self.inner.path.clone()
+    }
+    
+    /// Name as given in the Cargo.toml.
+    pub fn name( &self ) -> String
+    {
+      self.inner.name.clone()
+    }
+    
+    /// The kind of dependency this is.
+    pub fn kind( &self ) -> DependencyKind
+    {
+      match self.inner.kind 
+      {
+        cargo_metadata::DependencyKind::Normal => DependencyKind::Normal,
+        cargo_metadata::DependencyKind::Development => DependencyKind::Development,
+        cargo_metadata::DependencyKind::Build => DependencyKind::Build,
+        cargo_metadata::DependencyKind::Unknown => DependencyKind::Unknown,
+      }
+    }
+    
+    /// he required version
+    pub fn req( &self ) -> semver::VersionReq
+    {
+      self.inner.req.clone()
+    }
+  }
+  
+  impl From< cargo_metadata::Dependency > for Dependency
+  {
+    fn from( inner : cargo_metadata::Dependency ) -> Self 
+    {
+      Self
+      {
+        inner
+      }
+    }
+  }
+
+  /// Dependencies can come in three kinds
+  #[ derive( Eq, PartialEq, Debug ) ]
+  pub enum DependencyKind
+  {
+    /// The 'normal' kind
+    Normal,
+    /// Those used in tests only
+    Development,
+    /// Those used in build scripts only
+    Build,
+    /// The 'unknown' kind
+    Unknown,
+  }
+    
   /// Stores information about current workspace.
   #[ derive( Debug, Clone ) ]
   pub struct Workspace
   {
-    metadata : Option< Metadata >,
+    metadata : Option< cargo_metadata::Metadata >,
     manifest_dir : CrateDir,
   }
 
@@ -129,7 +200,7 @@ mod private
     pub fn from_current_path() -> Result< Self >
     {
       let current_path = AbsolutePath::try_from( std::env::current_dir().unwrap_or_default() )?;
-      let metadata = MetadataCommand::new().no_deps().exec().context("fail to load CargoMetadata")?;
+      let metadata = cargo_metadata::MetadataCommand::new().no_deps().exec().context("fail to load CargoMetadata")?;
       Ok( Self
       {
         metadata : Some( metadata ),
@@ -144,16 +215,16 @@ mod private
       (
         Self
         {
-          metadata : Some( MetadataCommand::new().current_dir( crate_dir.as_ref() ).no_deps().exec().context( "fail to load CargoMetadata" )? ),
+          metadata : Some( cargo_metadata::MetadataCommand::new().current_dir( crate_dir.as_ref() ).no_deps().exec().context( "fail to load CargoMetadata" )? ),
           manifest_dir : crate_dir,
         }
       )
     }
   }
 
-  impl From< Metadata > for Workspace
+  impl From< cargo_metadata::Metadata > for Workspace
   {
-    fn from( value : Metadata ) -> Self
+    fn from( value : cargo_metadata::Metadata ) -> Self
     {
       let path = value.workspace_root.as_std_path().parent().unwrap().to_path_buf();
       let path = AbsolutePath::try_from( path ).unwrap();
@@ -267,11 +338,11 @@ mod private
       (
         Box::new( move | p | p.publish().is_none() )
       );
-      let module_dependency_filter : Option< Box< dyn Fn( &WorkspacePackage, &cargo_metadata::Dependency) -> bool > > = Some
+      let module_dependency_filter : Option< Box< dyn Fn( &WorkspacePackage, &Dependency ) -> bool > > = Some
       (
         Box::new
         (
-          move | _, d | d.path.is_some() && d.kind != cargo_metadata::DependencyKind::Development
+          move | _, d | d.path().is_some() && d.kind() != DependencyKind::Development
         )
       );
       let module_packages_map = packages::filter
@@ -292,4 +363,6 @@ crate::mod_interface!
   exposed use Workspace;
   orphan use WorkspaceError;
   protected use WorkspacePackage;
+  protected use Dependency;
+  protected use DependencyKind;
 }

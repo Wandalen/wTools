@@ -65,7 +65,6 @@ mod private
     .filter_map( | p | p.strip_prefix( workspace_root ).ok() )
     .map( | p | p.with_file_name( "" ) )
     .collect::< Vec< _ > >();
-    dbg!( &relative_paths );
 
     // preparing templates
     let mut handlebars = handlebars::Handlebars::new();

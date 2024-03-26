@@ -1,6 +1,12 @@
 name : include_md
 
-on : push
+on :
+  push :
+    branches-ignore :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
 
 env :
   CARGO_TERM_COLOR : always

@@ -10,7 +10,6 @@ pub( crate ) mod private
     },
     wtools
   };
-  use std::collections::HashMap;
   use wtools::{ error:: Result, err };
   use nom::
   {
@@ -66,33 +65,21 @@ pub( crate ) mod private
                 properties : props.into_iter().map( |( _, prop )| prop ).collect()
               }
             }),
-            // it is the end
+            // spacial cases
+            map( tag( "?" ), | _ | Command { name : format!( "{}?", command_prefix ), ..Default::default() } ),
             map
             (
               eof,
               | _ |
               Command
               {
-                properties : HashMap::from_iter([ ( "command_prefix".to_string(), command_prefix.to_string() ) ]), ..Default::default()
+                name : command_prefix.to_string(),
+                ..Default::default()
               }
             )
           )),
         )),
-        |( _, _, command )|
-        {
-          if command.name.ends_with( command_prefix )
-          {
-            Command {
-              name : "".to_string(),
-              subjects : vec![ command.name ],
-              properties : HashMap::from_iter([ ( "command_prefix".to_string(), command_prefix.to_string() ) ]),
-            }
-          }
-          else
-          {
-            command
-          }
-        }
+        |( _, _, command )| command
       )( input ) )
     }
   }

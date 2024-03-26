@@ -5,6 +5,7 @@ mod private
 
   use std::collections::HashSet;
   use std::path::PathBuf;
+  use colored::Colorize;
   use wca::
   { 
     Args, 
@@ -110,7 +111,10 @@ mod private
       {
         if dry
         {
-          print!( "You can execute the plan with 'will .test {} dry:0 {}'.", args_line.trim(), prop_line.trim() );
+          let args = if args_line.is_empty() { String::new() } else { format!(" {}", args_line) };
+          let prop = if prop_line.is_empty() { String::new() } else { format!(" {}", prop_line) };
+          let line = format!("will .publish{}{} dry:0", args, prop);
+          println!("To apply plan, call the command `{}`", line.blue());
         }
         else 
         { 

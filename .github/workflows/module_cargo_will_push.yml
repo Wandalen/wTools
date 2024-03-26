@@ -1,6 +1,12 @@
 name : cargo_will
 
-on : push
+on :
+  push :
+    branches-ignore :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
 
 env :
   CARGO_TERM_COLOR : always
