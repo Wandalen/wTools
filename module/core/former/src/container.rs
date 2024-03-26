@@ -197,7 +197,6 @@ where
 #[ derive( Default ) ]
 pub struct ContainerSubformer< E, Definition >
 where
-  // End : FormingEnd< Definition >,
   Definition : FormerDefinition,
   < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
 {
@@ -208,7 +207,6 @@ where
 
 impl< E, Definition > ContainerSubformer< E, Definition >
 where
-  // End : FormingEnd< Definition >,
   Definition : FormerDefinition,
   < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
 {
@@ -314,6 +312,7 @@ where
   /// # Returns
   /// A new instance of `ContainerSubformer` with an empty internal formed.
   ///
+  // xxx : update description
   #[ inline( always ) ]
   pub fn new( end : Definition::End ) -> Self
   {
@@ -325,11 +324,24 @@ where
     )
   }
 
+  // xxx : update description
+  #[ inline( always ) ]
+  pub fn new_with< IntoEnd >( end : IntoEnd ) -> Self
+  where
+    IntoEnd : Into< Definition::End >,
+  {
+    Self::begin
+    (
+      None,
+      None,
+      end.into(),
+    )
+  }
+
 }
 
 impl< E, Definition > ContainerSubformer< E, Definition >
 where
-  // End : FormingEnd< Definition >,
   Definition : FormerDefinition,
   < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
 {
@@ -358,7 +370,6 @@ where
 impl< E, Definition > FormerBegin< Definition >
 for ContainerSubformer< E, Definition >
 where
-  // End : FormingEnd< Definition >,
   Definition : FormerDefinition,
   < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
 {

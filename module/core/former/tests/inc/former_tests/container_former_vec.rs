@@ -384,6 +384,13 @@ fn custom_definition_custom_end()
   let exp = 13;
   a_id!( got, exp );
 
+  let got = the_module::ContainerSubformer::< String, Return13 >::new_with( return_13 )
+  .push( "a" )
+  .push( "b" )
+  .form();
+  let exp = 13;
+  a_id!( got, exp );
+
   //
 
 }
