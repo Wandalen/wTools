@@ -441,6 +441,16 @@ pub( crate ) mod private
     /// Make sure that this command is described in the grammar and matches it(command itself and all it options too).
     pub fn to_command( &self, dictionary : &Dictionary, raw_command : ParsedCommand ) -> Result< VerifiedCommand >
     {
+      if raw_command.name.ends_with( '.' ) | raw_command.name.ends_with( ".?" )
+      {
+        return Ok( VerifiedCommand
+        {
+          phrase : raw_command.name,
+          internal_command : true,
+          subjects : vec![],
+          properties : HashMap::new(),
+        });
+      }
       let variants = dictionary.command( &raw_command.name )
       .ok_or_else::< error::for_app::Error, _ >
       (
@@ -485,6 +495,7 @@ pub( crate ) mod private
       Ok( VerifiedCommand
       {
         phrase : cmd.phrase.to_owned(),
+        internal_command : false,
         subjects,
         properties,
       })

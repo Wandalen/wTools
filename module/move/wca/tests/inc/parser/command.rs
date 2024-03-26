@@ -398,9 +398,9 @@ tests_impls!
     (
       ParsedCommand
       {
-        name : "".into(),
+        name : ".".into(),
         subjects : vec![],
-        properties : HashMap::from_iter([( "command_prefix".into(), ".".into() ) ]),
+        properties : HashMap::new(),
       },
       parser.command( "." ).unwrap()
     );
@@ -410,23 +410,11 @@ tests_impls!
     (
       ParsedCommand
       {
-        name : "".into(),
-        subjects : vec![ "command.".into() ],
-        properties : HashMap::from_iter([( "command_prefix".into(), ".".into() ) ]),
+        name : "command.".into(),
+        subjects : vec![],
+        properties : HashMap::new(),
       },
       parser.command( ".command." ).unwrap()
-    );
-
-    // command . with subjects
-    a_id!
-    (
-      ParsedCommand
-      {
-        name : "".into(),
-        subjects : vec![ "command.".into() ],
-        properties : HashMap::from_iter([( "command_prefix".into(), ".".into() ) ]),
-      },
-      parser.command( ".command. <this will be ignored>" ).unwrap()
     );
   }
 }

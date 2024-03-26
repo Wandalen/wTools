@@ -13,19 +13,20 @@ pub( crate ) mod private
   /// let ctx = Context::default();
   ///
   /// ctx.insert( 42 );
-  /// assert_eq!( 42, *ctx.get_ref().unwrap() );
+  /// assert_eq!( 42, ctx.get().unwrap() );
   /// ```
   ///
   /// ```
   /// # use wca::{ Routine, Context, Value, Args, Props };
+  /// # use std::sync::{ Arc, Mutex };
   /// let routine = Routine::new_with_ctx
   /// (
   ///   | ( args, props ), ctx |
   ///   {
   ///     let first_arg : i32 = args.get_owned( 0 ).unwrap_or_default();
-  ///     let ctx_value : &mut i32 = ctx.get_or_default();
+  ///     let ctx_value : Arc< Mutex< i32 > > = ctx.get_or_default();
   ///
-  ///     *ctx_value += first_arg;
+  ///     *ctx_value.lock().unwrap() += first_arg;
   ///
   ///     Ok( () )
   ///   }
@@ -35,7 +36,7 @@ pub( crate ) mod private
   /// {
   ///   callback( ( Args( vec![ Value::Number( 1.0 ) ] ), Props( Default::default() ) ), ctx.clone() ).unwrap();
   /// }
-  /// assert_eq!( 1, *ctx.get_ref().unwrap() );
+  /// assert_eq!( 1, *ctx.get::< Arc< Mutex< i32 > > >().unwrap().lock().unwrap() );
   /// ```
   // CloneAny needs to deep clone of Context
   // qqq : ?
