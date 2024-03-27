@@ -74,7 +74,7 @@
 macro_rules! bmap
 {
   (
-    $( $key:expr => $value:expr ),* $( , )?
+    $( $key : expr => $value : expr ),* $( , )?
   )
   =>
   {{
@@ -162,7 +162,7 @@ macro_rules! bmap
 macro_rules! bset
 {
   (
-    $( $key:expr ),* $( , )?
+    $( $key : expr ),* $( , )?
   )
   =>
   {{
@@ -245,7 +245,7 @@ macro_rules! bset
 macro_rules! heap
 {
   (
-    $( $key:expr ),* $( , )?
+    $( $key : expr ),* $( , )?
   )
   =>
   {{
@@ -332,10 +332,10 @@ macro_rules! heap
 #[macro_export(local_inner_macros)]
 macro_rules! hmap
 {
-  ( @single $( $x:tt )* ) => ( () );
+  ( @single $( $x : tt )* ) => ( () );
 
   (
-    @count $( $rest:expr ),*
+    @count $( $rest : expr ),*
   )
   =>
   (
@@ -343,7 +343,7 @@ macro_rules! hmap
   );
 
   (
-    $( $key:expr => $value:expr ),* $( , )?
+    $( $key : expr => $value : expr ),* $( , )?
   )
   =>
   {{
@@ -431,10 +431,10 @@ macro_rules! hmap
 #[ macro_export( local_inner_macros ) ]
 macro_rules! hset
 {
-  ( @single $( $x:tt )* ) => ( () );
-  
+  ( @single $( $x : tt )* ) => ( () );
+
   (
-    @count $( $rest:expr ),*
+    @count $( $rest : expr ),*
   )
   =>
   (
@@ -442,7 +442,7 @@ macro_rules! hset
   );
 
   (
-    $( $key:expr ),* $( , )?
+    $( $key : expr ),* $( , )?
   )
   =>
   {{
@@ -530,7 +530,7 @@ macro_rules! hset
 macro_rules! list
 {
   (
-    $( $key:expr ),* $( , )?
+    $( $key : expr ),* $( , )?
   )
   =>
   {{
@@ -617,7 +617,7 @@ macro_rules! list
 macro_rules! vecd
 {
   (
-    $( $key:expr ),* $( , )?
+    $( $key : expr ),* $( , )?
   )
   =>
   {
