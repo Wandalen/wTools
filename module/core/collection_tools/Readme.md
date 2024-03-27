@@ -14,20 +14,50 @@ This module encompasses a suite of meta-tools designed to enhance Rust's collect
 
 Consider the following example, which demonstrates the use of the `hmap!` macro to effortlessly create a `HashMap`:
 
-<!-- // zzz : qqq : rid off `#[ cfg( not( feature = "use_alloc" ) ) ]` -->
 ```rust
-# #[ cfg( not( feature = "use_alloc" ) ) ]
 # #[ cfg( all( feature = "enabled", feature = "collection_constructors" ) ) ]
 # #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 # {
-
 use collection_tools::*;
 
 let meta_map = hmap! { 3 => 13 };
-let mut std_map = std::collections::HashMap::new();
+let mut std_map = collection_tools::HashMap::new();
 std_map.insert( 3, 13 );
 assert_eq!( meta_map, std_map );
+# }
+```
 
+Note: Do not be afraid of `collection_tools::HashMap`. It is basically a reexport of `std`'s `HashMap`, unless you have enabled `use_alloc` feature.
+
+Another example, this time, `bset!`, providing you a `BTreeSet`:
+
+```rust
+# #[ cfg( all( feature = "enabled", feature = "collection_constructors" ) ) ]
+# #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+# {
+use collection_tools::*;
+
+let meta_set = bset! { 3, 13 };
+let mut std_set = collection_tools::BTreeSet::new();
+std_set.insert( 13 );
+std_set.insert( 3 );
+assert_eq!( meta_set, std_set );
+# }
+```
+
+Another example with `list!`:
+
+```rust
+# #[ cfg( all( feature = "enabled", feature = "collection_constructors" ) ) ]
+# #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+# {
+use collection_tools::*;
+
+let meta_list : LinkedList< i32 > = list! { 3, 13 };
+let mut meta_list = collection_tools::LinkedList::new();
+meta_list.push_front( 13 );
+meta_list.push_front( 3 );
+assert_eq!( meta_list, meta_list );
 # }
 ```
 
@@ -37,41 +67,46 @@ When implementing a `no_std` environment with the `use_alloc` feature in your Ru
 
 You can do
 
-<!-- // zzz : qqq : rid off `#[ cfg( not( feature = "use_alloc" ) ) ]` -->
+<!-- // zzz : aaa : rid off `#[ cfg( not( feature = "use_alloc" ) ) ]` -- Rid of by not relying on std -->
 ```rust
-# #[ cfg( not( feature = "use_alloc" ) ) ]
 # #[ cfg( all( feature = "enabled", feature = "collection_std" ) ) ]
 # #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 # {
+use collection_tools::HashSet;
 
-use collection_tools::Vec;
-
-let mut map : Vec< i32 > = Vec::new();
-map.push( 1 );
-assert_eq!( map.first().unwrap().clone(), 1 );
-
+let mut vec : HashSet< i32 > = HashSet::new();
+vec.insert( 1 );
+assert_eq!( vec.contains( &1 ), true );
 # }
 ```
 
 Instead of
 
 <details>
-<summary>The code above will be expanded to this</summary>
+<summary>Click to see</summary>
 
 ```rust
 #[ cfg( feature = "use_alloc" ) ]
-extern crate alloc;
-#[ cfg( feature = "use_alloc" ) ]
-use alloc::vec::Vec;
+use hashbrown::HashSet; // a `no_std` replacement for `HashSet`
 #[ cfg( not( feature = "no_std" ) ) ]
-use std::vec::Vec;
+use std::collections::HashSet;
 
-let mut collection : Vec< i32 > = Vec::new();
-collection.push( 1 );
-assert_eq!( collection.first().unwrap().clone(), 1 );
+let mut vec : HashSet< i32 > = HashSet::new();
+vec.insert( 1 );
+assert_eq!( vec.contains( &1 ), true );
 ```
 
 </details>
+
+### Collections being used
+
+To support `no_std` environment as much as possible, we aim at using collections from `alloc` whenever its possible.
+
+If `use_alloc` feature is on, collections available only in `std` are replaced with their `no_std` counterparts. For now, the only replaced collections are `HashMap` and `HashSet` , taken from `hashbrown`.
+
+### MORE Examples
+
+If you are feeling confused about the syntax you should use for a macro, you can visit its documentation. It is saturated with different examples, so hopefully you'll not be stuck.
 
 ### To add to your project
 
