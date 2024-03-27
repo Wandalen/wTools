@@ -1,3 +1,4 @@
+//! doc
 fn main()
 {
   #[ cfg( feature = "type_constructor" ) ]

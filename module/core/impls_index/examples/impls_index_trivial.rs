@@ -1,4 +1,4 @@
-
+//! doc
 fn main()
 {
   use ::impls_index::*;

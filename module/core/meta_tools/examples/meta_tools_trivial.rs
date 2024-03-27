@@ -1,3 +1,4 @@
+//! doc
 use meta_tools::*;
 
 fn main()
