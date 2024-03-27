@@ -13,8 +13,8 @@ mod former_tests
   mod container_former_vec;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod container_former_hashset;
-  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  // mod container_former_hashmap;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod container_former_hashmap;
 
   // mod a_primitives_manual;
   // mod a_primitives;

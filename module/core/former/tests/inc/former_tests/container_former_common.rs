@@ -29,14 +29,10 @@ fn definitions()
   {
   }
 
-  // f1( former::VectorDefinition::< String, () >::default() );
+  f1( former::VectorDefinition::< String, (), Vec< String >, the_module::NoEnd >::default() );
   f2( former::VectorDefinition::< String, (), Vec< String >, the_module::NoEnd >::default() );
   f3::< former::VectorDefinition< String, (), Vec< String >, the_module::NoEnd >, the_module::ReturnStorage >( the_module::ReturnStorage );
   f3::< < former::VectorDefinition< String, (), Vec< String >, the_module::NoEnd > as the_module::FormerDefinition >::Types, the_module::ReturnStorage >( the_module::ReturnStorage );
-
-  // assert_eq!( 0, 1 );
-
-  let vec : Vec< String > = vec![ "a".into(), "b".into(), "c".into() ];
 
 }
 
