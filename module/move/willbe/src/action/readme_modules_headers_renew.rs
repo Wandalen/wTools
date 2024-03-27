@@ -12,8 +12,10 @@ mod private
   use std::borrow::Cow;
   use std::fs::{ OpenOptions };
   use std::io::{ Read, Seek, SeekFrom, Write };
+  use std::path::{Path, PathBuf};
   use convert_case::{ Case, Casing };
   use regex::Regex;
+  use crate::action::readme_health_table_renew::find_example_file;
   // aaa : for Petro : rid off crate::x. ask
   // aaa : add `use crate::*` first
 
@@ -27,6 +29,7 @@ mod private
   /// The `ModuleHeader` structure represents a set of parameters, used for creating url for header.
   struct ModuleHeader
   {
+    module_path : PathBuf,
     stability : Stability,
     module_name : String,
     repository_url : String,
@@ -37,7 +40,7 @@ mod private
   {
 
     /// Create `ModuleHeader` instance from the folder where Cargo.toml is stored.
-    fn from_cargo_toml( package : Package, default_discord_url : &Option< String > ) -> Result< Self >
+    fn from_cargo_toml( package : Package, default_discord_url : &Option< String >, workspace_path : &str ) -> Result< Self >
     {
       let stability = package.stability()?;
 
@@ -46,11 +49,11 @@ mod private
       let repository_url = package.repository()?.ok_or_else::< Error, _ >( || err!( "Fail to find repository_url in module`s Cargo.toml" ) )?;
 
       let discord_url = package.discord_url()?.or_else( || default_discord_url.clone() );
-
       Ok
         (
           Self
           {
+            module_path: package.manifest_path().parent().unwrap().as_ref().strip_prefix( workspace_path ).unwrap().to_path_buf(),
             stability,
             module_name,
             repository_url,
@@ -66,17 +69,28 @@ mod private
         format!( "\n[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)]({discord_url})" )
       )
       .unwrap_or_default();
+      let path = self.module_path.to_string_lossy().replace( "/", "%2F" );
       let repo_url = url::extract_repo_url( &self.repository_url ).and_then( | r | url::git_info_extract( &r ).ok() ).ok_or_else::< Error, _ >( || err!( "Fail to parse repository url" ) )?;
+      let example = if let Some( name ) = find_example_file( self.module_path.as_path(), &self.module_name )
+      {
+        let p = name.replace( "\\","%2F");
+        let name = name.split( "\\" ).last().unwrap().split( "." ).next().unwrap();
+        format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={p},RUN_POSTFIX=--example%20{}/https://github.com/{})", name, repo_url )
+      }
+      else
+      {
+        "".into()
+      };
       Ok( format!
       (
         "{} \
         [![rust-status](https://github.com/{}/actions/workflows/module_{}_push.yml/badge.svg)](https://github.com/{}/actions/workflows/module_{}_push.yml) \
         [![docs.rs](https://img.shields.io/docsrs/{}?color=e3e8f0&logo=docs.rs)](https://docs.rs/{}) \
-        [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial/https://github.com/{}){}",
+        {} {}",
         stability_generate( &self.stability ),
         repo_url, self.module_name.to_case( Case::Snake ), repo_url, self.module_name.to_case( Case::Snake ),
         self.module_name, self.module_name,
-        self.module_name, self.module_name, repo_url,
+        example,
         discord,
       ) )
     }
@@ -117,7 +131,7 @@ mod private
       .join( readme_path( path.parent().unwrap().as_ref() ).ok_or_else::< Error, _ >( || err!( "Fail to find README.md" ) )? );
 
       let pakage = Package::try_from( path )?;
-      let header = ModuleHeader::from_cargo_toml( pakage, &discord_url )?;
+      let header = ModuleHeader::from_cargo_toml( pakage, &discord_url, cargo_metadata.workspace_root()?.to_str().unwrap() )?;
 
       let mut file = OpenOptions::new()
       .read( true )

@@ -396,7 +396,8 @@ mod private
     format!( "{rou}\n" )
   }
   
-  fn find_example_file(base_path : &Path, module_name : &str ) -> Option< String > 
+  /// todo
+  pub fn find_example_file(base_path : &Path, module_name : &str ) -> Option< String > 
   {
     let examples_dir = base_path.join("examples" );
 
@@ -592,6 +593,7 @@ crate::mod_interface!
   protected use Stability;
   /// Generate Stability badge
   protected use stability_generate;
+  protected use find_example_file;
   /// Create Table.
   orphan use readme_health_table_renew;
 }
