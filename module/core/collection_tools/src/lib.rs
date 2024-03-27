@@ -31,9 +31,6 @@ pub mod protected
   extern crate alloc;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use alloc::vec;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use alloc::vec::Vec;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
