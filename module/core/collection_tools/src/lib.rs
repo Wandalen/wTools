@@ -29,8 +29,14 @@ pub mod protected
   pub use super::orphan::*;
 
   extern crate alloc;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use alloc::vec;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use alloc::vec::Vec;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use alloc::collections::{ BinaryHeap, BTreeMap, BTreeSet, LinkedList, VecDeque };
   #[ cfg( feature = "use_alloc" ) ]
   #[ doc( inline ) ]
@@ -70,7 +76,7 @@ pub mod prelude
   pub use super::constructors::*;
 }
 
-/// Macros used in `use_alloc` context
+/// Macros to construct the collections.
 /// Basically a tweaked version of `literally` crate but using `alloc` / `hashbrown` instead of `std`
 #[ cfg( all( feature = "enabled", feature = "collection_constructors" ) ) ]
 pub mod constructors;

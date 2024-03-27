@@ -24,11 +24,42 @@ let meta_map = hmap! { 3 => 13 };
 let mut std_map = collection_tools::HashMap::new();
 std_map.insert( 3, 13 );
 assert_eq!( meta_map, std_map );
-
 # }
 ```
 
 Note: Do not be afraid of `collection_tools::HashMap`. It is basically a reexport of `std`'s `HashMap`, unless you have enabled `use_alloc` feature.
+
+Another example, this time, `bset!`, providing you a `BTreeSet`:
+
+```rust
+# #[ cfg( all( feature = "enabled", feature = "collection_constructors" ) ) ]
+# #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+# {
+use collection_tools::*;
+
+let meta_set = bset! { 3, 13 };
+let mut std_set = collection_tools::BTreeSet::new();
+std_set.insert( 13 );
+std_set.insert( 3 );
+assert_eq!( meta_set, std_set );
+# }
+```
+
+Another example with `list!`:
+
+```rust
+# #[ cfg( all( feature = "enabled", feature = "collection_constructors" ) ) ]
+# #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+# {
+use collection_tools::*;
+
+let meta_list : LinkedList< i32 > = list! { 3, 13 };
+let mut meta_list = collection_tools::LinkedList::new();
+meta_list.push_front( 13 );
+meta_list.push_front( 3 );
+assert_eq!( meta_list, meta_list );
+# }
+```
 
 ### Basic Use Case :: `no_std` `HashSet` / `HashMap`
 
@@ -66,6 +97,16 @@ assert_eq!( vec.contains( &1 ), true );
 ```
 
 </details>
+
+### Collections being used
+
+To support `no_std` environment as much as possible, we aim at using collections from `alloc` whenever its possible.
+
+If `use_alloc` feature is on, collections available only in `std` are replaced with their `no_std` counterparts. For now, the only replaced collections are `HashMap` and `HashSet` , taken from `hashbrown`.
+
+### MORE Examples
+
+If you are feeling confused about the syntax you should use for a macro, you can visit its documentation. It is saturated with different examples, so hopefully you'll not be stuck.
 
 ### To add to your project
 
