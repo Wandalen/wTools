@@ -381,9 +381,66 @@ mod private
     }
     if table_parameters.include
     {
-      rou.push_str( &format!( " [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial/{}) |", &module_name, &module_name, parameters.core_url ) );
+      let path = table_parameters.base_path.replace( "/", "%2F" );
+      let p = Path::new( table_parameters.base_path.as_str() ).join( &module_name );
+      let example = if let Some( name ) = find_example_file( p.as_path(), &module_name )
+      {
+        format!( "(https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={path}%2F{}%2Fexamples%2F{},RUN_POSTFIX=--example%20{}/{})", &module_name, name, name, parameters.core_url )
+      }
+      else 
+      {
+        "".into()
+      };
+      rou.push_str( &format!( " [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)]{} |", example ) );
     }
     format!( "{rou}\n" )
+  }
+  
+  fn find_example_file(base_path : &Path, module_name : &str ) -> Option< String > 
+  {
+    let examples_dir = base_path.join("examples" );
+
+    if examples_dir.exists() && examples_dir.is_dir() 
+    {
+      if let Ok( entries ) = std::fs::read_dir( &examples_dir ) 
+      {
+        for entry in entries 
+        {
+          if let Ok( entry ) = entry 
+          {
+            let file_name = entry.file_name();
+            if let Some( file_name_str ) = file_name.to_str() 
+            {
+              if file_name_str == format!( "{module_name}_trivial.rs" ) 
+              {
+                return Some( entry.path().to_string_lossy().into() )
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // If module_trivial.rs doesn't exist, return any other file in the examples directory
+    if let Ok( entries ) = std::fs::read_dir( &examples_dir ) 
+    {
+      for entry in entries 
+      {
+        if let Ok( entry ) = entry 
+        {
+          let file_name = entry.file_name();
+          if let Some( file_name_str ) = file_name.to_str() 
+          {
+            if file_name_str.ends_with( ".rs" ) 
+            {
+              return Some( entry.path().to_string_lossy().into() )
+            }
+          }
+        }
+      }
+    }
+
+    None
   }
 
   /// Generate stability cell based on stability
