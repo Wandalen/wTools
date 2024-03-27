@@ -333,6 +333,7 @@ macro_rules! heap
 macro_rules! hmap
 {
   ( @single $( $x:tt )* ) => ( () );
+
   (
     @count $( $rest:expr ),*
   )
@@ -340,6 +341,7 @@ macro_rules! hmap
   (
     < [ () ] >::len( &[ $( hmap!( @single $rest ) ),* ] )
   );
+
   (
     $( $key:expr => $value:expr ),* $( , )?
   )
@@ -430,6 +432,7 @@ macro_rules! hmap
 macro_rules! hset
 {
   ( @single $( $x:tt )* ) => ( () );
+  
   (
     @count $( $rest:expr ),*
   )
@@ -437,6 +440,7 @@ macro_rules! hset
   (
     < [ () ] >::len( &[ $( hset!( @single $rest ) ),* ] )
   );
+
   (
     $( $key:expr ),* $( , )?
   )
