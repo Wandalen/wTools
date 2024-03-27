@@ -40,7 +40,7 @@ mod private
   {
 
     /// Create `ModuleHeader` instance from the folder where Cargo.toml is stored.
-    fn from_cargo_toml( package : Package, default_discord_url : &Option< String >, workspace_path : &str ) -> Result< Self >
+    fn from_cargo_toml( package : Package, default_discord_url : &Option< String > ) -> Result< Self >
     {
       let stability = package.stability()?;
 
@@ -53,7 +53,7 @@ mod private
         (
           Self
           {
-            module_path: package.manifest_path().parent().unwrap().as_ref().strip_prefix( workspace_path ).unwrap().to_path_buf(),
+            module_path: package.manifest_path().parent().unwrap().as_ref().to_path_buf(),
             stability,
             module_name,
             repository_url,
@@ -63,17 +63,17 @@ mod private
     }
 
     /// Convert `ModuleHeader`to header.
-    fn to_header( self ) -> Result< String >
+    fn to_header( self, workspace_path : &str ) -> Result< String >
     {
       let discord = self.discord_url.map( | discord_url |
         format!( " [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)]({discord_url})" )
       )
       .unwrap_or_default();
-      let path = self.module_path.to_string_lossy().replace( "/", "%2F" );
+
       let repo_url = url::extract_repo_url( &self.repository_url ).and_then( | r | url::git_info_extract( &r ).ok() ).ok_or_else::< Error, _ >( || err!( "Fail to parse repository url" ) )?;
       let example = if let Some( name ) = find_example_file( self.module_path.as_path(), &self.module_name )
       {
-        let p = name.replace( "\\","%2F");
+        let p = name.strip_prefix( workspace_path ).unwrap().get( 1.. ).unwrap().replace( "\\","%2F" );
         let name = name.split( "\\" ).last().unwrap().split( "." ).next().unwrap();
         format!( " [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={p},RUN_POSTFIX=--example%20{}/https://github.com/{})", name, repo_url )
       }
@@ -130,7 +130,7 @@ mod private
       .join( readme_path( path.parent().unwrap().as_ref() ).ok_or_else::< Error, _ >( || err!( "Fail to find README.md" ) )? );
 
       let pakage = Package::try_from( path )?;
-      let header = ModuleHeader::from_cargo_toml( pakage, &discord_url, cargo_metadata.workspace_root()?.to_str().unwrap() )?;
+      let header = ModuleHeader::from_cargo_toml( pakage, &discord_url )?;
 
       let mut file = OpenOptions::new()
       .read( true )
@@ -150,7 +150,7 @@ mod private
 
       _ = query::parse( raw_params )?;
 
-      let content = header_content_generate( &content, header, raw_params )?;
+      let content = header_content_generate( &content, header, raw_params, cargo_metadata.workspace_root()?.to_str().unwrap() )?;
 
       file.set_len( 0 )?;
       file.seek( SeekFrom::Start( 0 ) )?;
@@ -159,9 +159,9 @@ mod private
     Ok( () )
   }
 
-  fn header_content_generate< 'a >( content : &'a str, header : ModuleHeader, raw_params : &str ) -> Result< Cow< 'a, str > >
+  fn header_content_generate< 'a >( content : &'a str, header : ModuleHeader, raw_params : &str, workspace_root : &str ) -> Result< Cow< 'a, str > >
   {
-    let header = header.to_header()?;
+    let header = header.to_header( workspace_root )?;
     let result = TAGS_TEMPLATE.get().unwrap().replace( &content, &format!( "<!--{{ generate.module_header.start{raw_params} }}-->\n{header}\n<!--{{ generate.module_header.end }}-->" ) );
     Ok( result )
   }

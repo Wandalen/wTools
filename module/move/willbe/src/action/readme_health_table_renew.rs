@@ -115,6 +115,8 @@ mod private
     user_and_repo: String,
     /// List of branches in the repository.
     branches: Option< Vec< String > >,
+    /// workspace root
+    workspace_root : String,
   }
 
   /// Structure that holds the parameters for generating a table.
@@ -198,7 +200,7 @@ mod private
         {
           user_and_repo = url::git_info_extract( core_url )?;
         }
-        Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches } )
+        Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches, workspace_root: path.to_string_lossy().to_string() } )
       }
     }
 
@@ -381,11 +383,15 @@ mod private
     }
     if table_parameters.include
     {
-      let path = table_parameters.base_path.replace( "/", "%2F" );
-      let p = Path::new( table_parameters.base_path.as_str() ).join( &module_name );
+      let path = Path::new( table_parameters.base_path.as_str() ).join( &module_name );
+      let p = Path::new( &parameters.workspace_root ).join( &path );
+      // let path = table_parameters.base_path.
       let example = if let Some( name ) = find_example_file( p.as_path(), &module_name )
       {
-        format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={path}%2F{}%2Fexamples%2F{},RUN_POSTFIX=--example%20{}/{})", &module_name, name, name, parameters.core_url )
+        let path = path.to_string_lossy().replace( "/", "\\" ).replace( "\\", "%2F" );
+        let file_name = name.split( "\\" ).last().unwrap();
+        let name = file_name.strip_suffix( ".rs" ).unwrap();
+        format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={path}%2Fexamples%2F{file_name},RUN_POSTFIX=--example%20{name}/{})", parameters.core_url )
       }
       else 
       {
@@ -401,7 +407,7 @@ mod private
   {
     let examples_dir = base_path.join("examples" );
 
-    if examples_dir.exists() && examples_dir.is_dir() 
+    if examples_dir.exists() && examples_dir.is_dir()
     {
       if let Ok( entries ) = std::fs::read_dir( &examples_dir ) 
       {
