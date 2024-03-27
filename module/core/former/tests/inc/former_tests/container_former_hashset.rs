@@ -11,9 +11,9 @@ use collection_tools::HashSet;
 fn push()
 {
 
-  let got : HashSet< String > = the_module::HashSetSubformer::new()
-  .insert( "a" )
-  .insert( "b" )
+  let got : HashSet< String > = the_module::HashSetSubformer::new( former::ReturnStorage )
+  .add( "a" )
+  .add( "b" )
   .form();
   let exp = hset!
   [
@@ -30,8 +30,8 @@ fn push()
 fn replace()
 {
 
-  let got : HashSet< String > = the_module::HashSetSubformer::new()
-  .insert( "x" )
+  let got : HashSet< String > = the_module::HashSetSubformer::new( former::ReturnStorage )
+  .add( "x" )
   .replace( hset![ "a".to_string(), "b".to_string() ] )
   .form();
   let exp = hset!

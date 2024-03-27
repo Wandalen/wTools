@@ -348,7 +348,7 @@ where
 
   /// Appends an element to the end of the storage, expanding the internal collection.
   #[ inline( always ) ]
-  pub fn push< IntoElement >( mut self, element : IntoElement ) -> Self
+  pub fn add< IntoElement >( mut self, element : IntoElement ) -> Self
   where IntoElement : core::convert::Into< E >,
   {
     if self.storage.is_none()
@@ -358,7 +358,6 @@ where
     if let core::option::Option::Some( ref mut storage ) = self.storage
     {
       ContainerAdd::add( storage, element.into() );
-      // storage.push( element.into() );
     }
     self
   }

@@ -43,7 +43,7 @@ fn definitions()
 //
 
 #[ test ]
-fn push()
+fn add()
 {
 
   //
@@ -52,8 +52,8 @@ fn push()
   ::ContainerSubformer
   ::< String, former::VectorDefinition< String, (), Vec< String >, the_module::ReturnStorage > >
   ::new( former::ReturnStorage )
-  .push( "a" )
-  .push( "b" )
+  .add( "a" )
+  .add( "b" )
   .form();
   let exp = vec!
   [
@@ -69,8 +69,8 @@ fn push()
     String,
     former::VectorDefinition< String, (), Vec< String >, the_module::ReturnStorage >,
   >::new( former::ReturnStorage )
-  .push( "a" )
-  .push( "b" )
+  .add( "a" )
+  .add( "b" )
   .form();
   let exp = vec!
   [
@@ -82,8 +82,8 @@ fn push()
   //
 
   let got : Vec< String > = the_module::VectorSubformer::< String, (), Vec< String >, the_module::ReturnStorage >::new( former::ReturnStorage )
-  .push( "a" )
-  .push( "b" )
+  .add( "a" )
+  .add( "b" )
   .form();
   let exp = vec!
   [
@@ -95,8 +95,8 @@ fn push()
   //
 
   let got : Vec< String > = the_module::VectorSubformer::new( former::ReturnStorage )
-  .push( "a" )
-  .push( "b" )
+  .add( "a" )
+  .add( "b" )
   .form();
   let exp = vec!
   [
@@ -109,8 +109,8 @@ fn push()
 
   use the_module::VecExt;
   let got : Vec< String > = Vec::former()
-  .push( "a" )
-  .push( "b" )
+  .add( "a" )
+  .add( "b" )
   .form();
   let exp = vec!
   [
@@ -130,7 +130,7 @@ fn replace()
 {
 
   let got : Vec< String > = the_module::VectorSubformer::new( former::ReturnStorage )
-  .push( "x" )
+  .add( "x" )
   .replace( vec![ "a".to_string(), "b".to_string() ] )
   .form();
   let exp = vec!
@@ -157,15 +157,15 @@ fn begin_and_custom_end()
     13.1
   }
   let got = the_module::VectorSubformer::begin( None, None, return_13 )
-  .push( "a" )
-  .push( "b" )
+  .add( "a" )
+  .add( "b" )
   .form();
   let exp = 13.1;
   a_id!( got, exp );
 
   let got = the_module::VectorSubformer::new( return_13 )
-  .push( "a" )
-  .push( "b" )
+  .add( "a" )
+  .add( "b" )
   .form();
   let exp = 13.1;
   a_id!( got, exp );
@@ -184,8 +184,8 @@ fn begin_and_custom_end()
     }
   }
   let got = the_module::VectorSubformer::begin( None, Some( 10.0 ), context_plus_13 )
-  .push( "a" )
-  .push( "b" )
+  .add( "a" )
+  .add( "b" )
   .form();
   let exp = 23.1;
   a_id!( got, exp );
@@ -235,15 +235,15 @@ fn custom_definition()
   //
 
   let got = the_module::ContainerSubformer::< String, Return13 >::begin( None, None, Return13 )
-  .push( "a" )
-  .push( "b" )
+  .add( "a" )
+  .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
 
   let got = the_module::ContainerSubformer::< String, Return13 >::new( Return13 )
-  .push( "a" )
-  .push( "b" )
+  .add( "a" )
+  .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
@@ -303,15 +303,15 @@ fn custom_definition_parametrized()
   //
 
   let got = the_module::ContainerSubformer::< String, Return13< String > >::begin( None, None, Return13::new() )
-  .push( "a" )
-  .push( "b" )
+  .add( "a" )
+  .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
 
   let got = the_module::ContainerSubformer::< String, Return13< String > >::new( Return13::new() )
-  .push( "a" )
-  .push( "b" )
+  .add( "a" )
+  .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
@@ -321,15 +321,15 @@ fn custom_definition_parametrized()
   type MyContainer< E > = the_module::ContainerSubformer::< E, Return13< E > >;
 
   let got = MyContainer::< String >::begin( None, None, Return13::new() )
-  .push( "a" )
-  .push( "b" )
+  .add( "a" )
+  .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
 
   let got = MyContainer::< String >::new( Return13::new() )
-  .push( "a" )
-  .push( "b" )
+  .add( "a" )
+  .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
@@ -366,22 +366,22 @@ fn custom_definition_custom_end()
 
   let end_wrapper : the_module::FormingEndWrapper< Return13 > = the_module::FormingEndWrapper::new( return_13 );
   let got = the_module::ContainerSubformer::< String, Return13 >::new( end_wrapper )
-  .push( "a" )
-  .push( "b" )
+  .add( "a" )
+  .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
 
   let got = the_module::ContainerSubformer::< String, Return13 >::new( return_13.into() )
-  .push( "a" )
-  .push( "b" )
+  .add( "a" )
+  .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
 
   let got = the_module::ContainerSubformer::< String, Return13 >::new_with( return_13 )
-  .push( "a" )
-  .push( "b" )
+  .add( "a" )
+  .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
