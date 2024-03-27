@@ -39,7 +39,7 @@ pub trait FormerDefinition : Sized
 /// - `Storage`: The type of the container being processed.
 /// - `Context`: The type of the context that might be altered or returned upon completion.
 
-// xxx2 : contunue. try
+// xxx2 : continue. try
 // pub trait FormingEnd< Definition : FormerDefinitionTypes > : Default
 pub trait FormingEnd< Definition : FormerDefinitionTypes >
 {
@@ -102,6 +102,25 @@ where
   fn call( &self, storage : Definition::Storage, _context : core::option::Option< () > ) -> Definition::Formed
   {
     storage
+  }
+}
+
+// xxx : improve description
+/// Use `NoEnd` to fill parameter FormingEnd in struct where parameter exists, but it is not needed.
+/// It might be needed if the same struct is used as `FormerDefinitionTypes` and as `FormerDefinition`, because the first one does not have information aboud End function.
+/// Similar logic which `std::marker::PhantomData` has behind.
+#[ derive( Debug, Default ) ]
+pub struct NoEnd;
+
+impl< Definition > FormingEnd< Definition >
+for NoEnd
+where
+  Definition : FormerDefinitionTypes< Context = () >,
+{
+  #[ inline( always ) ]
+  fn call( &self, storage : Definition::Storage, _context : core::option::Option< () > ) -> Definition::Formed
+  {
+    unreachable!();
   }
 }
 

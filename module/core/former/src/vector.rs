@@ -51,7 +51,7 @@ pub struct VectorDefinition< E, Context = (), Formed = Vec< E >, End = ReturnSto
 
 impl< E, Context, Formed > FormerDefinitionTypes
 // for VectorDefinition< E, Context, Formed >
-for VectorDefinition< E, Context, Formed, ReturnStorage >
+for VectorDefinition< E, Context, Formed, NoEnd >
 // for VectorDefinition< E, Context, Formed, End >
 // where
   // End : FormingEnd< Self >,
@@ -64,9 +64,9 @@ for VectorDefinition< E, Context, Formed, ReturnStorage >
 impl< E, Context, Formed, End > FormerDefinition
 for VectorDefinition< E, Context, Formed, End >
 where
-  End : FormingEnd< VectorDefinition< E, Context, Formed, ReturnStorage > >,
+  End : FormingEnd< VectorDefinition< E, Context, Formed, NoEnd > >,
 {
-  type Types = VectorDefinition< E, Context, Formed, ReturnStorage >;
+  type Types = VectorDefinition< E, Context, Formed, NoEnd >;
   type End = End;
 }
 
@@ -99,7 +99,6 @@ impl< E > VecExt< E > for Vec< E >
 
 mod sealed
 {
-  use super::Vec;
   pub trait Sealed {}
-  impl< E > Sealed for Vec< E > {}
+  impl< E > Sealed for super::Vec< E > {}
 }
