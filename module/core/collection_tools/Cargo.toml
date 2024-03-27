@@ -51,7 +51,7 @@ full = [
 enabled = []
 
 # Collection constructors, like `hmap!{ "key" => "val" }`
-collection_constructors = [ "literally" ]
+collection_constructors = []
 # STD collection for no_std.
 collection_std = []
 
@@ -59,7 +59,6 @@ collection_std = []
 [dependencies]
 
 ## external
-literally = { version = "~0.1.3", optional = true, default-features = false }
 hashbrown = { version = "~0.14.3", optional = true, default-features = false, features = [ "default" ] }
 
 [dev-dependencies]

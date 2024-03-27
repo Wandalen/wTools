@@ -361,7 +361,7 @@ pub( crate ) mod private
   /// help_fn.exec( grammar, HelpGeneratorOptions::former().form() );
   /// // or
   /// # let cmd = Command::former().form();
-  /// help_fn.exec( grammar, HelpGeneratorOptions::former().for_command( &cmd ).form() );
+  /// help_fn.exec( grammar, HelpGeneratorOptions::former().for_commands( [ &cmd ] ).form() );
   /// ```
   #[ derive( Clone ) ]
   pub struct HelpGeneratorFn( HelpFunctionFn );

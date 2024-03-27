@@ -103,7 +103,22 @@ pub( crate ) mod private
 
     .command( "readme.health.table.renew" )
       .hint( "Generate a table for the root `Readme.md`" )
-      .long_hint( "Generates a data summary table for the `Readme.md` file located in the root of the workspace." )
+      .long_hint( 
+        r#"Generates a data summary table for the `Readme.md` file located in the root of the workspace.
+To ensure the proper execution of the command, the following tags need to be specified in the Readme.md file:
+        
+<!--{ generate.healthtable( './', with_branches:1 ) } -->
+<!--{ generate.healthtable.end } -->
+        
+After executing the command, the tags will not be modified.
+        
+Tags can contains params:
+        
+path: The relative path to the directory from workspace root, which crates will be taken. Default is './'.
+with_branches: If set to 1, it will display the status of workflow execution on branches specified in branches under workspace.metadata in the Cargo.toml of your workspace. For example, branches = ["master", "alpha"]. Default is 1.
+with_stability: If set to 1, a column indicating the stability of the module will be added. Information is taken from package.metadata of each module (package.metadata.stability = "stable"). By default, the module is considered experimental. Default is 1.
+with_docs: If set to 1, adds a column with a link to the module's documentation. Default is 1.
+with_gitpod: If set to 1, a column with a link to Gitpod will be added. Clicking on it will open and run an example named <module_name>_trivial. Default is 1."# )
       .routine( command::readme_health_table_renew )
       .end()
 

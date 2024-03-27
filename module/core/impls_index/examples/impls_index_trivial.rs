@@ -1,4 +1,4 @@
-
+//! This example demonstrates the usage of macros `impls1!` and `index!` for defining and indexing functions.
 fn main()
 {
   use ::impls_index::*;
