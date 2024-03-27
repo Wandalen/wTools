@@ -8,8 +8,40 @@ use collection_tools::HashSet;
 // qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
-fn push()
+fn add()
 {
+
+  // expliccit with ContainerSubformer
+
+  let got : HashSet< String > = the_module
+  ::ContainerSubformer
+  ::< String, former::HashSetDefinition< String, (), HashSet< String >, the_module::ReturnStorage > >
+  ::new( former::ReturnStorage )
+  .add( "a" )
+  .add( "b" )
+  .form();
+  let exp = hset!
+  [
+    "a".to_string(),
+    "b".to_string(),
+  ];
+  a_id!( got, exp );
+
+  // expliccit with HashSetSubformer
+
+  let got : HashSet< String > = the_module::HashSetSubformer::< String, (), HashSet< String >, the_module::ReturnStorage >
+  ::new( former::ReturnStorage )
+  .add( "a" )
+  .add( "b" )
+  .form();
+  let exp = hset!
+  [
+    "a".to_string(),
+    "b".to_string(),
+  ];
+  a_id!( got, exp );
+
+  // compact with HashSetSubformer
 
   let got : HashSet< String > = the_module::HashSetSubformer::new( former::ReturnStorage )
   .add( "a" )
@@ -21,6 +53,35 @@ fn push()
     "b".to_string(),
   ];
   a_id!( got, exp );
+
+  // with begin
+
+  let got : HashSet< String > = the_module::HashSetSubformer
+  ::begin( Some( hset![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
+  .add( "b" )
+  .form();
+  let exp = hset!
+  [
+    "a".to_string(),
+    "b".to_string(),
+  ];
+  a_id!( got, exp );
+
+  // with help of ext
+
+  use the_module::HashSetExt;
+  let got : HashSet< String > = HashSet::former()
+  .add( "a" )
+  .add( "b" )
+  .form();
+  let exp = hset!
+  [
+    "a".to_string(),
+    "b".to_string(),
+  ];
+  a_id!( got, exp );
+
+  //
 
 }
 

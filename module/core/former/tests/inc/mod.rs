@@ -8,6 +8,8 @@ mod former_tests
   use super::*;
 
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod container_former_common;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod container_former_vec;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod container_former_hashset;
