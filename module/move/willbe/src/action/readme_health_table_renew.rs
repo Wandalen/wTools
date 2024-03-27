@@ -115,6 +115,8 @@ mod private
     user_and_repo: String,
     /// List of branches in the repository.
     branches: Option< Vec< String > >,
+    /// workspace root
+    workspace_root : String,
   }
 
   /// Structure that holds the parameters for generating a table.
@@ -198,7 +200,7 @@ mod private
         {
           user_and_repo = url::git_info_extract( core_url )?;
         }
-        Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches } )
+        Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches, workspace_root: path.to_string_lossy().to_string() } )
       }
     }
 
@@ -381,9 +383,71 @@ mod private
     }
     if table_parameters.include
     {
-      rou.push_str( &format!( " [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial/{}) |", &module_name, &module_name, parameters.core_url ) );
+      let path = Path::new( table_parameters.base_path.as_str() ).join( &module_name );
+      let p = Path::new( &parameters.workspace_root ).join( &path );
+      // let path = table_parameters.base_path.
+      let example = if let Some( name ) = find_example_file( p.as_path(), &module_name )
+      {
+        let path = path.to_string_lossy().replace( "/", "\\" ).replace( "\\", "%2F" );
+        let file_name = name.split( "\\" ).last().unwrap();
+        let name = file_name.strip_suffix( ".rs" ).unwrap();
+        format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={path}%2Fexamples%2F{file_name},RUN_POSTFIX=--example%20{name}/{})", parameters.core_url )
+      }
+      else 
+      {
+        "".into()
+      };
+      rou.push_str( &format!( " {} |", example ) );
     }
     format!( "{rou}\n" )
+  }
+  
+  /// todo
+  pub fn find_example_file(base_path : &Path, module_name : &str ) -> Option< String > 
+  {
+    let examples_dir = base_path.join("examples" );
+
+    if examples_dir.exists() && examples_dir.is_dir()
+    {
+      if let Ok( entries ) = std::fs::read_dir( &examples_dir ) 
+      {
+        for entry in entries 
+        {
+          if let Ok( entry ) = entry 
+          {
+            let file_name = entry.file_name();
+            if let Some( file_name_str ) = file_name.to_str() 
+            {
+              if file_name_str == format!( "{module_name}_trivial.rs" ) 
+              {
+                return Some( entry.path().to_string_lossy().into() )
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // If module_trivial.rs doesn't exist, return any other file in the examples directory
+    if let Ok( entries ) = std::fs::read_dir( &examples_dir ) 
+    {
+      for entry in entries 
+      {
+        if let Ok( entry ) = entry 
+        {
+          let file_name = entry.file_name();
+          if let Some( file_name_str ) = file_name.to_str() 
+          {
+            if file_name_str.ends_with( ".rs" ) 
+            {
+              return Some( entry.path().to_string_lossy().into() )
+            }
+          }
+        }
+      }
+    }
+
+    None
   }
 
   /// Generate stability cell based on stability
@@ -535,6 +599,7 @@ crate::mod_interface!
   protected use Stability;
   /// Generate Stability badge
   protected use stability_generate;
+  protected use find_example_file;
   /// Create Table.
   orphan use readme_health_table_renew;
 }
