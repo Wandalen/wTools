@@ -84,6 +84,8 @@ where
   type End = End;
 }
 
+// = subformer
+
 /// Facilitates building `HashSetLike` containers with a fluent API.
 ///
 /// `HashSetSubformer` leverages the `HashSetLike` trait to enable a concise and expressive way

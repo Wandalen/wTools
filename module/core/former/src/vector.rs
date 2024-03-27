@@ -44,9 +44,8 @@ for Vec< E >
 
 #[ derive( Debug, Default ) ]
 pub struct VectorDefinition< E, Context = (), Formed = Vec< E >, End = ReturnStorage >
-where
-  End : FormingEnd< VectorDefinition< E, Context, Formed, NoEnd > >,
-  // axiomatic::NoEnd: axiomatic::FormingEnd<VectorDefinition<E, Context, Formed, axiomatic::NoEnd>>,
+// where
+//   End : FormingEnd< VectorDefinition< E, Context, Formed, NoEnd > >,
 {
   _phantom : core::marker::PhantomData< ( E, Context, Formed, End ) >,
 }

@@ -115,10 +115,10 @@ pub struct NoEnd;
 impl< Definition > FormingEnd< Definition >
 for NoEnd
 where
-  Definition : FormerDefinitionTypes< Context = () >,
+  Definition : FormerDefinitionTypes,
 {
   #[ inline( always ) ]
-  fn call( &self, storage : Definition::Storage, _context : core::option::Option< () > ) -> Definition::Formed
+  fn call( &self, storage : Definition::Storage, _context : core::option::Option< Definition::Context > ) -> Definition::Formed
   {
     unreachable!();
   }
