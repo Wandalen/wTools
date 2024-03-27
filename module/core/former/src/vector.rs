@@ -44,17 +44,15 @@ for Vec< E >
 
 #[ derive( Debug, Default ) ]
 pub struct VectorDefinition< E, Context = (), Formed = Vec< E >, End = ReturnStorage >
-// pub struct VectorDefinition< E, Context, Formed, End >
+where
+  End : FormingEnd< VectorDefinition< E, Context, Formed, NoEnd > >,
+  // axiomatic::NoEnd: axiomatic::FormingEnd<VectorDefinition<E, Context, Formed, axiomatic::NoEnd>>,
 {
   _phantom : core::marker::PhantomData< ( E, Context, Formed, End ) >,
 }
 
 impl< E, Context, Formed > FormerDefinitionTypes
-// for VectorDefinition< E, Context, Formed >
 for VectorDefinition< E, Context, Formed, NoEnd >
-// for VectorDefinition< E, Context, Formed, End >
-// where
-  // End : FormingEnd< Self >,
 {
   type Storage = Vec< E >;
   type Formed = Formed;

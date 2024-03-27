@@ -70,24 +70,13 @@
 //
 // // = definition
 //
-// #[ derive( Debug ) ]
-// pub struct HashMapDefinition< K, E, Context, End >
+// #[ derive( Debug, Default ) ]
+// pub struct HashMapDefinition< K, E, Context = (), Formed = HashMap< K, E >, End = ReturnStorage >
 // where
 //   K : ::core::cmp::Eq + ::core::hash::Hash,
 //   End : FormingEnd< Self >,
 // {
 //   _phantom : ::core::marker::PhantomData< ( K, E, Context, End ) >,
-// }
-//
-// impl< K, E, Context, End > HashMapDefinition< K, E, Context, End >
-// where
-//   K : ::core::cmp::Eq + ::core::hash::Hash,
-//   End : FormingEnd< Self >,
-// {
-//   pub fn new() -> Self
-//   {
-//     Self { _phantom : ::core::marker::PhantomData }
-//   }
 // }
 //
 // impl< K, E, Context, End > FormerDefinitionTypes
@@ -140,4 +129,35 @@
 // /// # }
 // /// ```
 //
-// pub type HashMapSubformer< K, E, Context, End > = ContainerSubformer::< ( K, E ), HashMapDefinition< K, E, Context, End > >;
+// // pub type HashMapSubformer< K, E, Context, End > = ContainerSubformer::< ( K, E ), HashMapDefinition< K, E, Context, End > >;
+//
+// // xxx : update documentation
+// // pub type HashMapSubformer< K, E, Context, End > = ContainerSubformer::< K, HashMapDefinition< K, Context, End > >;
+// pub type HashMapSubformer< K, E, Context, Formed, End > =
+// ContainerSubformer::< K, HashMapDefinition< K, Context, Formed, End > >;
+//
+// // = extension
+//
+// pub trait HashMapExt< K, E > : sealed::Sealed
+// where
+//   K : ::core::cmp::Eq + ::core::hash::Hash,
+// {
+//   fn former() -> HashMapSubformer< K, E, (), HashMap< K, E >, ReturnStorage >;
+// }
+//
+// impl< K, E > HashMapExt< K, E > for HashMap< K, E >
+// where
+//   K : ::core::cmp::Eq + ::core::hash::Hash,
+// {
+//   fn former() -> HashMapSubformer< K, E, (), HashMap< K, E >, ReturnStorage >
+//   {
+//     HashMapSubformer::< K, (), HashMap< K, E >, ReturnStorage >::new( ReturnStorage::default() )
+//   }
+// }
+//
+// mod sealed
+// {
+//   use super::HashMap;
+//   pub trait Sealed {}
+//   impl< K, E > Sealed for HashMap< K, E > {}
+// }
