@@ -2,8 +2,7 @@
 
 # Module :: implements
 <!--{ generate.module_header.start() }-->
- [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_implements_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_implements_push.yml) [![docs.rs](https://img.shields.io/docsrs/implements?color=e3e8f0&logo=docs.rs)](https://docs.rs/implements) [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fcore%2Fimplements%2Fexamples%2Fimplements_trivial_sample.rs,RUN_POSTFIX=--example%20implements_trivial_sample/https://github.com/Wandalen/wTools) 
-[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+ [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_implements_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_implements_push.yml) [![docs.rs](https://img.shields.io/docsrs/implements?color=e3e8f0&logo=docs.rs)](https://docs.rs/implements) [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fcore%2Fimplements%2Fexamples%2Fimplements_trivial_sample.rs,RUN_POSTFIX=--example%20implements_trivial_sample/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 <!--{ generate.module_header.end }-->
 
 Macro to answer the question: does it implement a trait?

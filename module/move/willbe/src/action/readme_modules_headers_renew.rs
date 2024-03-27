@@ -66,7 +66,7 @@ mod private
     fn to_header( self ) -> Result< String >
     {
       let discord = self.discord_url.map( | discord_url |
-        format!( "\n[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)]({discord_url})" )
+        format!( " [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)]({discord_url})" )
       )
       .unwrap_or_default();
       let path = self.module_path.to_string_lossy().replace( "/", "%2F" );
@@ -75,7 +75,7 @@ mod private
       {
         let p = name.replace( "\\","%2F");
         let name = name.split( "\\" ).last().unwrap().split( "." ).next().unwrap();
-        format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={p},RUN_POSTFIX=--example%20{}/https://github.com/{})", name, repo_url )
+        format!( " [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={p},RUN_POSTFIX=--example%20{}/https://github.com/{})", name, repo_url )
       }
       else
       {
@@ -85,8 +85,7 @@ mod private
       (
         "{} \
         [![rust-status](https://github.com/{}/actions/workflows/module_{}_push.yml/badge.svg)](https://github.com/{}/actions/workflows/module_{}_push.yml) \
-        [![docs.rs](https://img.shields.io/docsrs/{}?color=e3e8f0&logo=docs.rs)](https://docs.rs/{}) \
-        {} {}",
+        [![docs.rs](https://img.shields.io/docsrs/{}?color=e3e8f0&logo=docs.rs)](https://docs.rs/{}){}{}",
         stability_generate( &self.stability ),
         repo_url, self.module_name.to_case( Case::Snake ), repo_url, self.module_name.to_case( Case::Snake ),
         self.module_name, self.module_name,
