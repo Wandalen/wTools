@@ -21,13 +21,14 @@ Consider the following example, which demonstrates the use of the `hmap!` macro 
 use collection_tools::*;
 
 let meta_map = hmap! { 3 => 13 };
+
+// reexport from `hashbrown` if `use_alloc` feature is on, otherwise - reexport from `std`
 let mut std_map = collection_tools::HashMap::new();
+
 std_map.insert( 3, 13 );
 assert_eq!( meta_map, std_map );
 # }
 ```
-
-Note: Do not be afraid of `collection_tools::HashMap`. It is basically a reexport of `std`'s `HashMap`, unless you have enabled `use_alloc` feature.
 
 Another example, this time, `bset!`, providing you a `BTreeSet`:
 
@@ -38,7 +39,10 @@ Another example, this time, `bset!`, providing you a `BTreeSet`:
 use collection_tools::*;
 
 let meta_set = bset! { 3, 13 };
+
+// reexport from `alloc`
 let mut std_set = collection_tools::BTreeSet::new();
+
 std_set.insert( 13 );
 std_set.insert( 3 );
 assert_eq!( meta_set, std_set );
@@ -54,7 +58,10 @@ Another example with `list!`:
 use collection_tools::*;
 
 let meta_list : LinkedList< i32 > = list! { 3, 13 };
+
+// reexport from `alloc`
 let mut meta_list = collection_tools::LinkedList::new();
+
 meta_list.push_front( 13 );
 meta_list.push_front( 3 );
 assert_eq!( meta_list, meta_list );

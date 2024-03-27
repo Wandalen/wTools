@@ -10,7 +10,7 @@ fn b_tree_map()
 
   // test.case( "empty" );
   let got : the_module::BTreeMap< i32, i32 > = the_module::bmap!{};
-  let exp : the_module::BTreeMap< i32, i32 > = the_module::BTreeMap::new();
+  let exp = the_module::BTreeMap::new();
   assert_eq!( got, exp );
 
   // test.case( "single entry" );
@@ -30,7 +30,7 @@ fn b_tree_set()
 
   // test.case( "empty" );
   let got : the_module::BTreeSet< i32 > = the_module::bset!{};
-  let exp : the_module::BTreeSet< i32 > = the_module::BTreeSet::new();
+  let exp = the_module::BTreeSet::new();
   assert_eq!( got, exp );
 
   // test.case( "single entry" );
@@ -51,11 +51,11 @@ fn binary_heap()
 
   // test.case( "empty" );
   let got : the_module::BinaryHeap< i32 > = the_module::heap!{};
-  let exp : the_module::BinaryHeap< i32 > = the_module::BinaryHeap::new();
+  let exp = the_module::BinaryHeap::new();
   assert_eq!( got.into_vec(), exp.into_vec() );
 
   // test.case( "single entry" );
-  let got: the_module::BinaryHeap< i32 > = the_module::heap!{ 3, 13 };
+  let got : the_module::BinaryHeap< i32 > = the_module::heap!{ 3, 13 };
   let mut exp = the_module::BinaryHeap::new();
   exp.push(3);
   exp.push(13);
@@ -134,11 +134,11 @@ fn vec()
 
   // test.case( "empty" );
   let got : the_module::Vec< i32 > = the_module::vec!{};
-  let exp: the_module::Vec< i32 > = the_module::Vec::new();
+  let exp = the_module::Vec::new();
   assert_eq!( got, exp );
 
   // test.case( "single entry" );
-  let got = the_module::vec!{ 3, 13 };
+  let got : the_module::Vec< i32 > = the_module::vec!{ 3, 13 };
   let mut exp = the_module::Vec::new();
   exp.push( 3 );
   exp.push( 13 );
@@ -155,7 +155,7 @@ fn vec_deque()
 
   // test.case( "empty" );
   let got : the_module::VecDeque< i32 > = the_module::vecd!{};
-  let exp: the_module::VecDeque< i32 > = the_module::VecDeque::new();
+  let exp = the_module::VecDeque::new();
   assert_eq!( got, exp );
 
   // test.case( "single entry" );

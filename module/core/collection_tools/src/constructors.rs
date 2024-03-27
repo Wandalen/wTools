@@ -542,6 +542,94 @@ macro_rules! list
   }};
 }
 
+/// Creates a `Vec` from a list of elements.
+///
+/// The `vec!` macro simplifies the creation of a `Vec` with initial elements.
+/// Elements passed to the macro are automatically converted into the vector's element type
+/// using `.into()`, making it convenient to use literals or values of different, but convertible types.
+///
+/// Note: The `vec!` macro utilizes the `.into()` method to convert each element into the target type
+/// of the `Vec`. Therefore, the elements must be compatible with the `Into<T>` trait for the
+/// type `T` used in the `Vec`.
+///
+/// # Syntax
+///
+/// The macro can be called with a comma-separated list of elements. A trailing comma is optional.
+///
+/// ```rust
+/// # use collection_tools::{Vec, vec};
+/// // Vec of i32
+/// let vec1 : Vec< i32 > = vec!( 1, 2, 3, 4, 5 );
+///
+/// // Vec of String
+/// let vec2 : Vec< String > = vec!{ "hello", "world", "rust" };
+///
+/// // With trailing comma
+/// let vec3 : Vec< f64 > = vec!( 1.1, 2.2, 3.3, );
+/// ```
+///
+/// # Parameters
+///
+/// - `$( $key : expr ),* $( , )?`: A comma-separated list of elements to insert into the `Vec`.
+/// Each element can be of any type that implements the `Into<T>` trait, where `T` is the
+/// type stored in the `Vec`.
+///
+/// # Returns
+///
+/// Returns a `Vec` containing all the specified elements. The capacity of the vector is
+/// automatically determined based on the number of elements provided.
+///
+/// # Example
+///
+/// Basic usage with integers:
+///
+/// ```rust
+/// # use collection_tools::{Vec, vec};
+/// let vec : Vec< i32 > = vec!( 1, 2, 3 );
+/// assert_eq!( vec[ 0 ], 1 );
+/// assert_eq!( vec[ 1 ], 2 );
+/// assert_eq!( vec[ 2 ], 3 );
+/// ```
+///
+/// # Example
+///
+/// Using with different types that implement `Into<T>`:
+///
+/// ```rust
+/// # use collection_tools::{Vec, vec};
+/// let words : Vec< String > = vec!( "alpha", "beta", "gamma" );
+/// assert_eq!( words[ 0 ], "alpha" );
+/// assert_eq!( words[ 1 ], "beta" );
+/// assert_eq!( words[ 2 ], "gamma" );
+/// ```
+///
+/// # Example
+///
+/// Creating a `Vec` of `String` from string literals and String objects:
+///
+/// ```rust
+/// # use collection_tools::{Vec, vec};
+/// let mixed : Vec< String > = vec!{ "value", "another value".to_string() };
+/// assert_eq!( mixed[ 0 ], "value" );
+/// assert_eq!( mixed[ 1 ], "another value" );
+/// ```
+///
+#[ macro_export( local_inner_macros ) ]
+macro_rules! vec
+{
+  (
+    $( $key : expr ),* $( , )?
+  )
+  =>
+  {{
+    let mut _vec = collection_tools::Vec::new();
+    $(
+      _vec.push( $key.into() );
+    )*
+    _vec
+  }};
+}
+
 /// Creates a `VecDeque` from a list of elements.
 ///
 /// The `vecd` macro allows for the convenient creation of a `VecDeque` with initial elements.
@@ -620,10 +708,11 @@ macro_rules! vecd
     $( $key : expr ),* $( , )?
   )
   =>
-  {
-    collection_tools::VecDeque::from
-    (
-      collection_tools::vec![ $( $key.into() ),* ]
-    )
-  }
+  {{
+    let mut _vecd = collection_tools::VecDeque::new();
+    $(
+      _vecd.push_back( $key.into() );
+    )*
+    _vecd
+  }};
 }

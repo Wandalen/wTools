@@ -134,11 +134,11 @@ fn vec()
 
   // test.case( "empty" );
   let got : the_module::Vec< i32 > = the_module::vec!{};
-  let exp: the_module::Vec< i32 > = the_module::Vec::new();
+  let exp : the_module::Vec< i32 > = the_module::Vec::new();
   assert_eq!( got, exp );
 
   // test.case( "single entry" );
-  let got = the_module::vec!{ 3, 13 };
+  let got : the_module::Vec< i32 > = the_module::vec!{ 3, 13 };
   let mut exp = the_module::Vec::new();
   exp.push( 3 );
   exp.push( 13 );
@@ -155,11 +155,11 @@ fn vec_deque()
 
   // test.case( "empty" );
   let got : the_module::VecDeque< i32 > = the_module::vecd!{};
-  let exp: the_module::VecDeque< i32 > = the_module::VecDeque::new();
+  let exp = the_module::VecDeque::new();
   assert_eq!( got, exp );
 
   // test.case( "single entry" );
-  let got = the_module::vecd!{ 3, 13 };
+  let got : the_module::VecDeque< i32 > = the_module::vecd!{ 3, 13 };
   let mut exp = the_module::VecDeque::new();
   exp.push_front( 13 );
   exp.push_front( 3 );
