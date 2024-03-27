@@ -60,9 +60,9 @@ pub( crate ) mod private
   // xxx : qqq : qqq2 : for Bohdan : one level is obviously redundant
   // Program< Namespace< ExecutableCommand_ > > -> Program< ExecutableCommand_ >
   // aaa : done. The concept of `Namespace` has been removed
-  struct CommandsAggregatorCallback( Box< dyn Fn( &str, &Program< VerifiedCommand > ) > );
+  struct CommandsAggregatorCallback< C >( Box< dyn Fn( &str, &Program< VerifiedCommand< C > > ) > );
 
-  impl fmt::Debug for CommandsAggregatorCallback
+  impl< C > fmt::Debug for CommandsAggregatorCallback< C >
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
@@ -95,9 +95,11 @@ pub( crate ) mod private
   /// ```
   #[ derive( Debug ) ]
   #[ derive( former::Former ) ]
-  #[ perform( fn build() -> CommandsAggregator ) ]
-  pub struct CommandsAggregator
+  #[ perform( fn build() -> CommandsAggregator< C > ) ]
+  pub struct CommandsAggregator< C = () >
   {
+    #[ setter( false ) ]
+    context : Option< C >,
     #[ default( Dictionary::default() ) ]
     dictionary : Dictionary,
 
@@ -122,23 +124,23 @@ pub( crate ) mod private
     // #[ default( ExecutorConverter::former().form() ) ]
     // executor_converter : ExecutorConverter,
 
-    callback_fn : Option< CommandsAggregatorCallback >,
+    callback_fn : Option< CommandsAggregatorCallback< C > >,
   }
-
-  impl< Context, End > CommandsAggregatorFormer< Context, End >
+  
+  impl< C, Context, End > CommandsAggregatorFormer< C, Context, End >
   where
-    End : former::FormingEnd< CommandsAggregator, Context >,
+    End : former::FormingEnd< CommandsAggregator< C >, Context >,
   {
     /// Creates a command in the command chain.
     ///
     /// # Arguments
     ///
     /// * `name` - The name of the command.
-    pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::FormingEnd< Command, Self > >
+    pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< C, Self, impl former::FormingEnd< Command< C >, Self > >
     where
       IntoName : Into< String >,
     {
-      let on_end = | command : Command, super_former : Option< Self > | -> Self
+      let on_end = | command : Command< C >, super_former : Option< Self > | -> Self
       {
         let mut super_former = super_former.unwrap();
         let mut dictionary = super_former.storage.dictionary.unwrap_or_default();
@@ -153,8 +155,25 @@ pub( crate ) mod private
       former.phrase( name )
     }
   }
+  
+  impl< C : Clone > CommandsAggregatorFormer< C >
+  {
+    /// Sets the context of the CommandsAggregator.
+    ///
+    /// Parameters:
+    ///   - `ctx`: The context to be set.
+    ///
+    /// Returns:
+    ///   - The modified object with the updated context.
+    pub fn context( mut self, ctx : C ) -> Self
+    {
+      self.storage.context = Some( ctx );
+      
+      self
+    }
+  }
 
-  impl CommandsAggregatorFormer
+  impl< C > CommandsAggregatorFormer< C >
   {
     // qqq : delete on completion
     // /// Setter for grammar
@@ -226,17 +245,17 @@ pub( crate ) mod private
     /// ```
     pub fn callback< Callback >( mut self, callback : Callback ) -> Self
     where
-      Callback : Fn( &str, &Program< VerifiedCommand > ) + 'static,
+      Callback : Fn( &str, &Program< VerifiedCommand< C > > ) + 'static,
     {
       self.storage.callback_fn = Some( CommandsAggregatorCallback( Box::new( callback ) ) );
       self
     }
   }
 
-  impl CommandsAggregator
+  impl< C > CommandsAggregator< C >
   {
     /// Construct CommandsAggregator
-    fn build( self ) -> CommandsAggregator
+    fn build( self ) -> CommandsAggregator< C >
     {
       let mut ca = self;
 
@@ -246,8 +265,7 @@ pub( crate ) mod private
       if help_variants.contains( &HelpVariants::All )
       {
         HelpVariants::All.generate( &help_generator, &mut ca.dictionary );
-      }
-      else
+      } else
       {
         for help in help_variants.iter().sorted()
         {
@@ -257,7 +275,10 @@ pub( crate ) mod private
 
       ca
     }
-
+  }
+  
+  impl< C : Clone > CommandsAggregator< C >
+  {
     /// Parse, converts and executes a program
     ///
     /// Takes a string with program and executes it
@@ -269,14 +290,30 @@ pub( crate ) mod private
 
       let raw_program = self.parser.program( program ).map_err( | e | Error::Validation( ValidationError::Parser { input : program.to_string(), error : e } ) )?;
       let grammar_program = self.verifier.to_program( &self.dictionary, raw_program ).map_err( | e | Error::Validation( ValidationError::Verifier( e ) ) )?;
-      // let exec_program = self.executor_converter.to_program( grammar_program ).map_err( | e | Error::Validation( ValidationError::ExecutorConverter( e ) ) )?;
+      let grammar_program_with_context = Program
+      {
+        commands :  grammar_program.commands.into_iter()
+        .map
+        (
+          | VerifiedCommand { context : _, phrase, internal_command, args: subjects, properties, } |
+          VerifiedCommand
+          {
+            context : self.context.clone(),
+            phrase,
+            internal_command,
+            args: subjects,
+            properties,
+          }
+        )
+        .collect::< Vec< _ > >(),
+      };
 
       if let Some( callback ) = &self.callback_fn
       {
-        callback.0( program, &grammar_program )
+        callback.0( program, &grammar_program_with_context )
       }
 
-      self.executor.program( &self.dictionary, grammar_program ).map_err( | e | Error::Execution( e ) )
+      self.executor.program( &self.dictionary, grammar_program_with_context ).map_err( | e | Error::Execution( e ) )
     }
   }
 }

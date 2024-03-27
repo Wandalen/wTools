@@ -36,7 +36,7 @@ pub( crate ) mod private
     ///
     /// A `Result` with `Ok(())` if the execution was successful, or an `Err` containing an error message if an error occurred.
     ///
-    pub fn program( &self, dictionary : &Dictionary, program : Program< VerifiedCommand > ) -> Result< () >
+    pub fn program< C >( &self, dictionary : &Dictionary, program : Program< VerifiedCommand< C > > ) -> Result< () >
     {
       for command in program.commands
       {
@@ -58,7 +58,7 @@ pub( crate ) mod private
     /// # Returns
     ///
     /// Returns a Result indicating success or failure. If successful, returns `Ok(())`, otherwise returns an error.
-    pub fn command( &self, dictionary : &Dictionary, command : VerifiedCommand ) -> Result< () >
+    pub fn command< C >( &self, dictionary : &Dictionary, command : VerifiedCommand< C > ) -> Result< () >
     {
       if command.internal_command
       {
@@ -75,16 +75,17 @@ pub( crate ) mod private
     // aaa : removed `parallel_execution_loop`
   }
   
-  fn _exec_command( command : VerifiedCommand, routine : Routine, ctx : Context ) -> Result< () >
+  fn _exec_command< C >( command : VerifiedCommand< C >, routine : RoutineVerifiedCommand< C >, ctx : Context ) -> Result< () >
   {
-    match routine
-    {
-      Routine::WithoutContext( routine ) => routine(( Args( command.subjects ), Props( command.properties ) )),
-      Routine::WithContext( routine ) => routine( ( Args( command.subjects ), Props( command.properties ) ), ctx ),
-    }
+    ( routine.0 )( command )
+    // match routine
+    // {
+    //   Routine::WithoutContext( routine ) => routine((Args( command.args), Props( command.properties ) )),
+    //   Routine::WithContext( routine ) => routine((Args( command.args), Props( command.properties ) ), ctx ),
+    // }
   }
   
-  fn _exec_internal_command( dictionary : &Dictionary, command : VerifiedCommand ) -> Result< () >
+  fn _exec_internal_command< C >( dictionary : &Dictionary, command : VerifiedCommand< C > ) -> Result< () >
   {
     match command.phrase.as_str()
     {

@@ -4,7 +4,9 @@ pub( crate ) mod private
   use ca::
   {
     Command,
-    Routine, Type, formatter::private::{ HelpFormat, md_generator },
+    RoutineVerifiedCommand,
+    Type,
+    formatter::private::{ HelpFormat, md_generator },
   };
 
   use wtools::Itertools;
@@ -184,16 +186,16 @@ pub( crate ) mod private
       let generator = helper.clone();
 
       let moved_phrase = phrase.clone();
-      let routine = move | args : Args, props : Props |
+      let routine = move | c : VerifiedCommand |
       {
         let subject_help = grammar.command( &moved_phrase );
         match &subject_help
         {
-          Some( Command { routine: Routine::WithoutContext( help ), .. } )
-          if !args.is_empty() => help(( args, props ))?,
+          Some( Command { routine: RoutineVerifiedCommand( help ), .. } )
+          if !c.args.is_empty() => help( c )?,
           _ =>
           {
-            let format_prop : String = props.get_owned( "format" ).unwrap_or_default();
+            let format_prop : String = c.properties.get_owned( "format" ).unwrap_or_default();
             let format = match format_prop.as_str()
             {
               "md" | "markdown" => HelpFormat::Markdown,
@@ -248,16 +250,16 @@ pub( crate ) mod private
       let generator = helper.clone();
 
       let moved_phrase = phrase.clone();
-      let routine = move | args : Args, props : Props |
+      let routine = move | c : VerifiedCommand |
       {
         let full_help = grammar.command( &moved_phrase );
         match &full_help
         {
-          Some( Command { routine: Routine::WithoutContext( help ), .. } )
-          if args.is_empty() => help(( args, props ))?,
+          Some( Command { routine: RoutineVerifiedCommand( help ), .. } )
+          if c.args.is_empty() => help( c )?,
           _ =>
           {
-            let command = args.get_owned::< String >( 0 ).unwrap();
+            let command = c.args.get_owned::< String >( 0 ).unwrap();
             let cmd = grammar.commands.get( &command ).ok_or_else( || anyhow!( "Can not found help for command `{command}`" ) )?;
 
             let args = HelpGeneratorOptions::former()
