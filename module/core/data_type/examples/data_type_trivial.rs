@@ -1,4 +1,9 @@
-//! doc
+//! In Rust, you often need to wrap a given type into a new one.
+//! The role of the orphan rules in particular is basically to prevent you from implementing external traits for external types.
+//! To overcome the restriction developer usually wrap the external type into a tuple introducing a new type.
+//! Type constructor does exactly that and auto-implement traits From, Into, Deref and few more for the constructed type.
+//! 
+//! Macro [types](https://docs.rs/type_constructor/latest/type_constructor/types/macro.types.html) is responsible for generating code for Single, Pair, Homopair, Many. Each type constructor has its own keyword for that, but Pair and Homopair use the same keyword difference in a number of constituent types. It is possible to define all types at once.
 fn main()
 {
   #[ cfg( feature = "type_constructor" ) ]
