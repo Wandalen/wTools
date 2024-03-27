@@ -385,13 +385,13 @@ mod private
       let p = Path::new( table_parameters.base_path.as_str() ).join( &module_name );
       let example = if let Some( name ) = find_example_file( p.as_path(), &module_name )
       {
-        format!( "(https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={path}%2F{}%2Fexamples%2F{},RUN_POSTFIX=--example%20{}/{})", &module_name, name, name, parameters.core_url )
+        format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={path}%2F{}%2Fexamples%2F{},RUN_POSTFIX=--example%20{}/{})", &module_name, name, name, parameters.core_url )
       }
       else 
       {
         "".into()
       };
-      rou.push_str( &format!( " [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)]{} |", example ) );
+      rou.push_str( &format!( " {} |", example ) );
     }
     format!( "{rou}\n" )
   }
