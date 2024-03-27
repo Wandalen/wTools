@@ -1,5 +1,5 @@
-//! ....
 
+/// xxx
 pub trait Storage : ::core::default::Default
 {
   // type Types : FormerDefinitionTypes< Storage = Self >;
@@ -21,6 +21,9 @@ pub trait FormerDefinitionTypes : Sized
   type Storage : Default;
   type Formed;
   type Context;
+
+  // fn preform( storage : Self::Storage, context : Self::Context ) -> Self::Formed;
+
 }
 
 /// xxx
@@ -66,23 +69,23 @@ where
   }
 }
 
-// /// A `FormingEnd` implementation that returns the formed container itself instead of the context.
-// ///
-// /// This struct is useful when the forming process should result in the formed container being returned directly,
-// /// bypassing any additional context processing. It simplifies scenarios where the formed container is the final result.
-// #[ derive( Debug, Default ) ]
-// pub struct ReturnFormed;
-//
+/// A `FormingEnd` implementation that returns the formed container itself instead of the context.
+///
+/// This struct is useful when the forming process should result in the formed container being returned directly,
+/// bypassing any additional context processing. It simplifies scenarios where the formed container is the final result.
+#[ derive( Debug, Default ) ]
+pub struct ReturnFormed;
+
 // impl< Definition > FormingEnd< Definition >
 // for ReturnFormed
 // where
-//   Definition::Storage : StoragePerform< Formed = Definition::Formed >,
-//   Definition : FormerDefinitionTypes< Context = () >,
+//   // Definition::Storage : StoragePerform< Formed = Definition::Formed >,
+//   Definition : FormerDefinitionTypes< Definition::Context >,
 // {
 //   #[ inline( always ) ]
-//   fn call( &self, storage : Definition::Storage, _context : core::option::Option< () > ) -> Definition::Formed
+//   fn call( &self, storage : Definition::Storage, context : core::option::Option< Context > ) -> Definition::Formed
 //   {
-//     storage.preform()
+//     storage.preform( context )
 //   }
 // }
 

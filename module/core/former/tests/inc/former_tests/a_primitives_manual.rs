@@ -39,6 +39,7 @@ for Struct1FormerDefinition
 {
   type Storage = Struct1FormerStorage;
   type Formed = Struct1;
+  type End = former::ReturnFormed;
 }
 
 // = storage
@@ -72,7 +73,8 @@ impl Default for Struct1FormerStorage
 impl former::Storage
 for Struct1FormerStorage
 {
-  type Types = Struct1FormerDefinition;
+  // type Types = Struct1FormerDefinition;
+  type Formed = Struct1;
 }
 
 impl former::StoragePerform
