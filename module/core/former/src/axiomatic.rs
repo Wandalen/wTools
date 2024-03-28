@@ -10,6 +10,11 @@ pub trait Storage : ::core::default::Default
 pub trait StoragePerform : Storage
 {
   // fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinitionTypes >::Formed;
+  /// Default implementation of routine transforming storage into formed structure.
+  /// Does not have to be implemented and does not have to be used, especially if there is complex logic behind tranfromation, but can be used if algorithm is traight-forward and does not require any context.
+  ///
+  /// `former::ReturnPreformed` rely on `StoragePerform::preform` returning its result.
+  ///
   fn preform( self ) -> Self::Formed;
 }
 
@@ -74,20 +79,20 @@ where
 /// This struct is useful when the forming process should result in the formed container being returned directly,
 /// bypassing any additional context processing. It simplifies scenarios where the formed container is the final result.
 #[ derive( Debug, Default ) ]
-pub struct ReturnFormed;
+pub struct ReturnPreformed;
 
-// impl< Definition > FormingEnd< Definition >
-// for ReturnFormed
-// where
-//   // Definition::Storage : StoragePerform< Formed = Definition::Formed >,
-//   Definition : FormerDefinitionTypes< Definition::Context >,
-// {
-//   #[ inline( always ) ]
-//   fn call( &self, storage : Definition::Storage, context : core::option::Option< Context > ) -> Definition::Formed
-//   {
-//     storage.preform( context )
-//   }
-// }
+impl< Definition > FormingEnd< Definition >
+for ReturnPreformed
+where
+  Definition::Storage : StoragePerform< Formed = Definition::Formed >,
+  Definition : FormerDefinitionTypes,
+{
+  #[ inline( always ) ]
+  fn call( &self, storage : Definition::Storage, context : core::option::Option< Definition::Context > ) -> Definition::Formed
+  {
+    storage.preform()
+  }
+}
 
 /// xxx : update description
 #[ derive( Debug, Default ) ]

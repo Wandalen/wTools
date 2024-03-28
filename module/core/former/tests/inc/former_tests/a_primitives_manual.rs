@@ -39,6 +39,14 @@ for Struct1FormerDefinition
 {
   type Storage = Struct1FormerStorage;
   type Formed = Struct1;
+  type Context = ();
+  // type End = former::ReturnFormed;
+}
+
+impl former::FormerDefinition
+for Struct1FormerDefinition
+{
+  type Types = Struct1FormerDefinition;
   type End = former::ReturnFormed;
 }
 
@@ -81,7 +89,7 @@ impl former::StoragePerform
 for Struct1FormerStorage
 {
 
-  fn preform( mut self ) -> < < Self as former::Storage >::Definition as former::FormerDefinitionTypes >::Formed
+  fn preform( mut self ) -> < Self as former::Storage >::Formed
   {
 
     let int_1 = if self.int_1.is_some()
@@ -242,4 +250,4 @@ impl Struct1Former< (), the_module::ReturnFormed >
 
 //
 
-include!( "./only_test/primitives.rs" );
+// include!( "./only_test/primitives.rs" );
