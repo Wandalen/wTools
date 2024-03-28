@@ -38,8 +38,8 @@ no_std = [
   # "typing_tools/no_std",
   # "data_type/no_std",
   # "diagnostics_tools/no_std",
-  # "process_tools/no_std",
-  "former/use_alloc",
+  # "process_tools_published/no_std",
+  # "former_stable/use_alloc",
 ]
 use_alloc = [
   "no_std",
@@ -49,8 +49,8 @@ use_alloc = [
   # "typing_tools/use_alloc",
   # "data_type/use_alloc",
   # "diagnostics_tools/use_alloc",
-  # "process_tools/use_alloc",
-  "former/use_alloc",
+  # "process_tools_published/use_alloc",
+  # "former_stable/use_alloc",
 ]
 enabled = [
   "error_tools/enabled",
@@ -59,7 +59,7 @@ enabled = [
   "typing_tools/enabled",
   "data_type/enabled",
   "diagnostics_tools/enabled",
-  "process_tools/enabled",
+  "process_tools_published/enabled",
 ]
 # nightly = [ "typing_tools/nightly" ]
 
@@ -82,8 +82,8 @@ mem_tools = { workspace = true, features = [ "full" ] }
 typing_tools = { workspace = true, features = [ "full" ] }
 data_type = { workspace = true, features = [ "full" ] }
 diagnostics_tools = { workspace = true, features = [ "full" ] }
-process_tools = { workspace = true, features = [ "full" ] }
-former = { workspace = true, features = [ "full" ] }
+process_tools_published = { workspace = true, features = [ "full" ] }
+# former_stable = { workspace = true, features = [ "full" ] }
 
 [build-dependencies]
 rustc_version = "0.4"

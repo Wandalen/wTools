@@ -72,4 +72,4 @@ pub struct Options2
 
 //
 
-include!( "../only_test/components_from_components.rs" );
+include!( "./only_test/components_from_components.rs" );

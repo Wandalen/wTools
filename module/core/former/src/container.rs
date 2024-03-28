@@ -1,5 +1,7 @@
 //! Interface for containers.
 
+use crate::*;
+
 /// A trait defining the capability to add elements to a container.
 ///
 /// This trait should be implemented by container types that require a generic interface
@@ -187,4 +189,201 @@ where
     self.extend( elements );
     self.len() - initial_len
   }
+}
+
+// =
+
+/// A builder for constructing containers, facilitating a fluent and flexible interface.
+#[ derive( Default ) ]
+pub struct ContainerSubformer< E, Definition >
+where
+  Definition : FormerDefinition,
+  < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
+{
+  storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
+  context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
+  on_end : core::option::Option< Definition::End >,
+}
+
+impl< E, Definition > ContainerSubformer< E, Definition >
+where
+  Definition : FormerDefinition,
+  < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
+{
+
+  /// Form current former into target structure.
+  #[ inline( always ) ]
+  pub fn storage( mut self ) -> < Definition::Types as FormerDefinitionTypes >::Storage
+  {
+    let storage = if self.storage.is_some()
+    {
+      self.storage.take().unwrap()
+    }
+    else
+    {
+      let val = Default::default();
+      val
+    };
+    storage
+  }
+
+  /// Begins the building process, optionally initializing with a context and storage.
+  #[ inline( always ) ]
+  pub fn begin
+  (
+    storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
+    context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
+    on_end : Definition::End,
+  ) -> Self
+  {
+    Self
+    {
+      storage,
+      context,
+      on_end : Some( on_end ),
+    }
+  }
+
+  /// Finalizes the building process, returning the formed or a context incorporating it.
+  #[ inline( always ) ]
+  pub fn end( mut self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
+  {
+    let on_end = self.on_end.take().unwrap();
+    let context = self.context.take();
+    let storage = self.storage();
+    on_end.call( storage, context )
+  }
+
+  /// Finalizes the building process, returning the formed or a context incorporating it.
+  #[ inline( always ) ]
+  pub fn form( self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
+  {
+    self.end()
+  }
+
+  /// Replaces the current storage with a provided one, allowing for a reset or redirection of the building process.
+  #[ inline( always ) ]
+  pub fn replace( mut self, vector : < Definition::Types as FormerDefinitionTypes >::Storage ) -> Self
+  {
+    self.storage = Some( vector );
+    self
+  }
+
+}
+
+// impl< E, T, Types, Definition > ContainerSubformer< E, Definition >
+// where
+//   Types : FormerDefinitionTypes< Context = (), Storage = T, Formed = T >,
+//   Definition : FormerDefinition< Types = Types, End = ReturnStorage >,
+//   < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
+//   < Definition::Types as FormerDefinitionTypes >::Storage : StoragePerform< Formed = < Definition::Types as FormerDefinitionTypes >::Formed >,
+// {
+//
+//   // xxx : update description
+//   /// Initializes a new `ContainerSubformer` instance, starting with an empty formed.
+//   /// This function serves as the entry point for the builder pattern.
+//   ///
+//   /// # Returns
+//   /// A new instance of `ContainerSubformer` with an empty internal formed.
+//   ///
+//   #[ inline( always ) ]
+//   pub fn new_returning_storage() -> Self
+//   {
+//     Self::begin
+//     (
+//       None,
+//       None,
+//       ReturnStorage,
+//     )
+//   }
+//
+// }
+
+impl< E, Storage, Formed, Types, Definition > ContainerSubformer< E, Definition >
+where
+  Types : FormerDefinitionTypes< Context = (), Storage = Storage, Formed = Formed >,
+  Definition : FormerDefinition< Types = Types >,
+  < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
+{
+
+  /// Initializes a new `ContainerSubformer` instance, starting with an empty formed.
+  /// This function serves as the entry point for the builder pattern.
+  ///
+  /// # Returns
+  /// A new instance of `ContainerSubformer` with an empty internal formed.
+  ///
+  // xxx : update description
+  #[ inline( always ) ]
+  pub fn new( end : Definition::End ) -> Self
+  {
+    Self::begin
+    (
+      None,
+      None,
+      end,
+    )
+  }
+
+  // xxx : update description
+  #[ inline( always ) ]
+  pub fn new_with< IntoEnd >( end : IntoEnd ) -> Self
+  where
+    IntoEnd : Into< Definition::End >,
+  {
+    Self::begin
+    (
+      None,
+      None,
+      end.into(),
+    )
+  }
+
+}
+
+impl< E, Definition > ContainerSubformer< E, Definition >
+where
+  Definition : FormerDefinition,
+  < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
+{
+
+  /// Appends an element to the end of the storage, expanding the internal collection.
+  #[ inline( always ) ]
+  pub fn add< IntoElement >( mut self, element : IntoElement ) -> Self
+  where IntoElement : core::convert::Into< E >,
+  {
+    if self.storage.is_none()
+    {
+      self.storage = core::option::Option::Some( Default::default() );
+    }
+    if let core::option::Option::Some( ref mut storage ) = self.storage
+    {
+      ContainerAdd::add( storage, element.into() );
+    }
+    self
+  }
+
+}
+
+//
+
+impl< E, Definition > FormerBegin< Definition >
+for ContainerSubformer< E, Definition >
+where
+  Definition : FormerDefinition,
+  < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
+{
+  // type End = Definition::End;
+
+  #[ inline( always ) ]
+  fn _begin
+  (
+    storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
+    context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
+    on_end : Definition::End,
+  )
+  -> Self
+  {
+    Self::begin( storage, context, on_end )
+  }
+
 }

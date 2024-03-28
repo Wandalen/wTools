@@ -32,4 +32,4 @@ pub struct Command< K : core::hash::Hash + std::cmp::Eq >
 
 // ==
 
-include!( "../only_test/parametrized_struct.rs" );
+include!( "./only_test/parametrized_struct.rs" );

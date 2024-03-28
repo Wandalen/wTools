@@ -11,7 +11,8 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use process_tools::environment;
+  use crate::*;
+  use dependency::process_tools::environment;
   // zzz : comment out
   // pub mod environment
   // {

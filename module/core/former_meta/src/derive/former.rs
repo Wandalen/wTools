@@ -5,7 +5,7 @@ use macro_tools::{ attr, diag, generics, container_kind, typ, Result };
 use proc_macro2::TokenStream;
 
 ///
-/// Descriptor of a field.
+/// Definition of a field.
 ///
 
 #[ allow( dead_code ) ]
@@ -404,9 +404,9 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
 
     qt!
     {
-      let #ident = if self.storage.#ident.is_some()
+      let #ident = if self.#ident.is_some()
       {
-        ::core::option::Option::Some( self.storage.#ident.take().unwrap() )
+        ::core::option::Option::Some( self.#ident.take().unwrap() )
       }
       else
       {
@@ -464,9 +464,9 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
 
     qt!
     {
-      let #ident = if self.storage.#ident.is_some()
+      let #ident = if self.#ident.is_some()
       {
-        self.storage.#ident.take().unwrap()
+        self.#ident.take().unwrap()
       }
       else
       {
@@ -742,7 +742,8 @@ For specifying custom default value use attribute `default`. For example:
 
 pub fn performer< 'a >
 (
-  name_ident : &syn::Ident,
+  _name_ident : &syn::Ident,
+  former_descriptor_name_ident : &syn::Ident,
   generics_ty : &syn::TypeGenerics< '_ >,
   attrs : impl Iterator< Item = &'a syn::Attribute >,
 )
@@ -753,7 +754,9 @@ pub fn performer< 'a >
   {
     return result;
   };
-  let mut perform_output = qt!{ #name_ident #generics_ty };
+  // let mut perform_output = qt!{ #name_ident #generics_ty };
+  let mut perform_output = qt!{ < #former_descriptor_name_ident #generics_ty as former::FormerDefinition >::Formed };
+
   let mut perform_generics = qt!{};
   for attr in attrs
   {
@@ -824,11 +827,14 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let former_name_ident = syn::Ident::new( &former_name, name_ident.span() );
   let former_storage_name = format!( "{}FormerStorage", name_ident );
   let former_storage_name_ident = syn::Ident::new( &former_storage_name, name_ident.span() );
+  let former_descriptor_name = format!( "{}FormerDefinition", name_ident );
+  let former_descriptor_name_ident = syn::Ident::new( &former_descriptor_name, name_ident.span() );
 
   /* generic parameters */
 
   let generics = &ast.generics;
   let ( generics_impl, generics_ty, generics_where ) = generics.split_for_impl();
+  // xxx : eliminate generics_params maybe
   let _generics_params = generics::params_names( generics ).params;
   let generics_params = if _generics_params.len() == 0
   {
@@ -846,7 +852,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   };
   extra_generics.where_clause = parse_quote!
   {
-    where __FormerEnd : former::FormingEnd< #name_ident #generics_ty, __FormerContext >,
+    where
+      __FormerEnd : former::FormingEnd< #former_descriptor_name_ident #generics_ty, __FormerContext >,
   };
   // xxx : write helper to fix bug with where
   let generics_of_former = generics::merge( &generics, &extra_generics );
@@ -860,6 +867,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let ( perform, perform_output, perform_generics ) = performer
   (
     &name_ident,
+    &former_descriptor_name_ident,
     &generics_ty,
     ast.attrs.iter(),
   )?;
@@ -914,6 +922,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let result = qt!
   {
 
+    // = formed
+
     #[ automatically_derived ]
     impl #generics_impl #name_ident #generics_ty
     #generics_where
@@ -922,11 +932,33 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// Make former, variation of builder pattern to form structure defining values of fields step by step.
       ///
       #[ inline( always ) ]
-      pub fn former() -> #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnFormed >
+      pub fn former() -> #former_name_ident < #generics_params (), former::ReturnFormed >
       {
-        #former_name_ident :: < #generics_params #name_ident #generics_ty, former::ReturnFormed > :: new()
+        #former_name_ident :: new()
       }
     }
+
+    // = descriptor
+
+    #[ derive( Debug ) ]
+    pub struct #former_descriptor_name_ident #generics_ty;
+
+    impl #generics_impl #former_descriptor_name_ident #generics_ty
+    {
+      pub fn new() -> Self
+      {
+        Self
+      }
+    }
+
+    impl #generics_impl former::FormerDefinition
+    for #former_descriptor_name_ident #generics_ty
+    {
+      type Storage = #former_storage_name_ident #generics_ty;
+      type Formed = #name_ident #generics_ty;
+    }
+
+    // = storage
 
     // xxx : rename to storage
     #[ doc = "Container of a corresponding former." ]
@@ -954,6 +986,37 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     }
 
+    impl #generics_impl former::Storage
+    for #former_storage_name_ident #generics_ty
+    #generics_where
+    {
+      // type Definition = Struct1FormerDefinition;
+      type Definition = #former_descriptor_name_ident #generics_ty;
+    }
+    // generics_impl, generics_ty, generics_where
+
+    impl former::StoragePerform
+    for #former_storage_name_ident #generics_ty
+    #generics_where
+    {
+
+      // fn preform( mut self ) -> #former_storage_name_ident #generics_ty
+      fn preform( mut self ) -> < #former_descriptor_name_ident #generics_ty as former::FormerDefinition >::Formed
+      {
+        #( #fields_form )*
+        // Rust does not support that, yet
+        // let result = < #former_descriptor_name_ident #generics_ty as former::FormerDefinition >::Formed
+        let result = #name_ident #generics_ty
+        {
+          #( #fields_names, )*
+        };
+        return result;
+      }
+
+    }
+
+    // = former
+
     #[ doc = #doc_former_struct ]
     #[ automatically_derived ]
     pub struct #former_name_ident < #generics_of_former_with_defaults >
@@ -962,6 +1025,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       storage : #former_storage_name_ident #generics_ty,
       context : core::option::Option< __FormerContext >,
       on_end : core::option::Option< __FormerEnd >,
+      // xxx : should on_end be optional?
     }
 
     #[ automatically_derived ]
@@ -972,17 +1036,17 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       ///
       /// Finish setting options and return formed entity.
       ///
-      /// `perform` has no effect on method `form`, but change behavior and returned type of method `perform`.
-      ///
       #[ inline( always ) ]
-      pub fn form( mut self ) -> #name_ident #generics_ty
+      pub fn preform( self ) -> < #former_descriptor_name_ident #generics_ty as former::FormerDefinition >::Formed
+      // #name_ident #generics_ty
       {
-        #( #fields_form )*
-        let result = #name_ident
-        {
-          #( #fields_names, )*
-        };
-        return result;
+        < #former_storage_name_ident #generics_ty as former::StoragePerform >::preform( self.storage )
+        // #( #fields_form )*
+        // let result = #name_ident
+        // {
+        //   #( #fields_names, )*
+        // };
+        // return result;
       }
 
       ///
@@ -1025,12 +1089,21 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// End the process of forming returning original context of forming.
       ///
       #[ inline( always ) ]
-      pub fn end( mut self ) -> __FormerContext
+      pub fn form( self ) -> < #former_descriptor_name_ident #generics_ty as former::FormerDefinition >::Formed
+      {
+        self.end()
+      }
+
+      ///
+      /// End the process of forming returning original context of forming.
+      ///
+      #[ inline( always ) ]
+      pub fn end( mut self ) -> < #former_descriptor_name_ident #generics_ty as former::FormerDefinition >::Formed
       {
         let on_end = self.on_end.take().unwrap();
         let context = self.context.take();
-        let storage = self.form();
-        on_end.call( storage, context )
+        // let storage = self.form();
+        on_end.call( self.storage, context )
       }
 
       #(
@@ -1040,7 +1113,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     }
 
     #[ automatically_derived ]
-    impl #generics_impl #former_name_ident < #generics_params #name_ident #generics_ty, former::ReturnFormed >
+    impl #generics_impl #former_name_ident < #generics_params (), former::ReturnFormed >
     #generics_where
     {
 

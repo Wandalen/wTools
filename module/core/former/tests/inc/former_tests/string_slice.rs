@@ -8,4 +8,4 @@ pub struct Struct1< 'a >
 
 //
 
-include!( "../only_test/string_slice.rs" );
+include!( "./only_test/string_slice.rs" );

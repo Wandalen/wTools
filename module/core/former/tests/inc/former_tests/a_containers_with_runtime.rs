@@ -15,4 +15,4 @@ pub struct Struct1
   hashset_strings_1 : std::collections::HashSet< String >,
 }
 
-include!( "../only_test/containers_with_runtime.rs" );
+include!( "./only_test/containers_with_runtime.rs" );

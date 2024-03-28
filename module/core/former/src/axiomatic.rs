@@ -1,4 +1,42 @@
-//! ....
+
+/// xxx
+pub trait Storage : ::core::default::Default
+{
+  // type Types : FormerDefinitionTypes< Storage = Self >;
+  type Formed;
+}
+
+/// xxx
+pub trait StoragePerform : Storage
+{
+  // fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinitionTypes >::Formed;
+  /// Default implementation of routine transforming storage into formed structure.
+  /// Does not have to be implemented and does not have to be used, especially if there is complex logic behind tranfromation, but can be used if algorithm is traight-forward and does not require any context.
+  ///
+  /// `former::ReturnPreformed` rely on `StoragePerform::preform` returning its result.
+  ///
+  fn preform( self ) -> Self::Formed;
+}
+
+/// xxx
+pub trait FormerDefinitionTypes : Sized
+{
+  // type Storage : Storage< Definition = Self >;
+  // type Storage : Storage< Formed = Self::Formed >;
+  type Storage : Default;
+  type Formed;
+  type Context;
+
+  // fn preform( storage : Self::Storage, context : Self::Context ) -> Self::Formed;
+
+}
+
+/// xxx
+pub trait FormerDefinition : Sized
+{
+  type Types : FormerDefinitionTypes;
+  type End : FormingEnd< Self::Types >;
+}
 
 /// Defines a handler for the end of a subforming process, enabling the return of the original context.
 ///
@@ -6,9 +44,12 @@
 /// Implementors can define how to transform or pass through the context during the forming process's completion.
 ///
 /// # Parameters
-/// - `Formed`: The type of the container being processed.
+/// - `Storage`: The type of the container being processed.
 /// - `Context`: The type of the context that might be altered or returned upon completion.
-pub trait FormingEnd< Formed, Context >
+
+// xxx2 : continue. try
+// pub trait FormingEnd< Definition : FormerDefinitionTypes > : Default
+pub trait FormingEnd< Definition : FormerDefinitionTypes >
 {
   /// Called at the end of the subforming process to return the modified or original context.
   ///
@@ -18,18 +59,76 @@ pub trait FormingEnd< Formed, Context >
   ///
   /// # Returns
   /// Returns the transformed or original context based on the implementation.
-  #[ allow( dead_code ) ]
-  fn call( &self, storage : Formed, context : core::option::Option< Context > ) -> Context;
+  fn call( &self, storage : Definition::Storage, context : core::option::Option< Definition::Context > ) -> Definition::Formed;
 }
 
-impl< Storage, Context, F > FormingEnd< Storage, Context > for F
+impl< Definition, F > FormingEnd< Definition > for F
 where
-  F : Fn( Storage, core::option::Option< Context > ) -> Context,
+  F : Fn( Definition::Storage, core::option::Option< Definition::Context > ) -> Definition::Formed,
+  Definition : FormerDefinitionTypes,
 {
   #[ inline( always ) ]
-  fn call( &self, storage : Storage, context : core::option::Option< Context > ) -> Context
+  fn call( &self, storage : Definition::Storage, context : core::option::Option< Definition::Context > ) -> Definition::Formed
   {
     self( storage, context )
+  }
+}
+
+/// A `FormingEnd` implementation that returns the formed container itself instead of the context.
+///
+/// This struct is useful when the forming process should result in the formed container being returned directly,
+/// bypassing any additional context processing. It simplifies scenarios where the formed container is the final result.
+#[ derive( Debug, Default ) ]
+pub struct ReturnPreformed;
+
+impl< Definition > FormingEnd< Definition >
+for ReturnPreformed
+where
+  Definition::Storage : StoragePerform< Formed = Definition::Formed >,
+  Definition : FormerDefinitionTypes,
+{
+  #[ inline( always ) ]
+  fn call( &self, storage : Definition::Storage, context : core::option::Option< Definition::Context > ) -> Definition::Formed
+  {
+    storage.preform()
+  }
+}
+
+/// xxx : update description
+#[ derive( Debug, Default ) ]
+pub struct ReturnStorage;
+
+impl< Definition, T > FormingEnd< Definition >
+for ReturnStorage
+where
+  Definition : FormerDefinitionTypes< Context = (), Storage = T, Formed = T >,
+  // Definition::End : FormingEnd< Definition >,
+  // Definition::End : Self,
+  // Definition::Storage : Default,
+{
+  #[ inline( always ) ]
+  fn call( &self, storage : Definition::Storage, _context : core::option::Option< () > ) -> Definition::Formed
+  {
+    storage
+  }
+}
+
+// xxx : improve description
+/// Use `NoEnd` to fill parameter FormingEnd in struct where parameter exists, but it is not needed.
+/// It might be needed if the same struct is used as `FormerDefinitionTypes` and as `FormerDefinition`, because the first one does not have information aboud End function.
+/// Similar logic which `std::marker::PhantomData` has behind.
+#[ derive( Debug, Default ) ]
+pub struct NoEnd;
+
+impl< Definition > FormingEnd< Definition >
+for NoEnd
+where
+  Definition : FormerDefinitionTypes,
+{
+  #[ inline( always ) ]
+  fn call( &self, storage : Definition::Storage, _context : core::option::Option< Definition::Context > ) -> Definition::Formed
+  {
+    unreachable!();
   }
 }
 
@@ -39,22 +138,31 @@ where
 /// `FormingEnd` trait's `call` method signature. It is useful for cases where
 /// a closure needs to be stored or passed around as an object implementing
 /// `FormingEnd`.
-///
-/// # Type Parameters
-///
-/// * `Storage` - The type of the container being processed. This type is passed to the closure
-///         when it's called.
-/// * `Context` - The type of the context that may be altered or returned by the closure.
-///               This allows for flexible manipulation of context based on the container.
 #[ cfg( not( feature = "no_std" ) ) ]
-pub struct FormingEndWrapper< Storage, Context >
+pub struct FormingEndWrapper< Definition : FormerDefinitionTypes >
 {
-  closure : Box< dyn Fn( Storage, Option< Context > ) -> Context >,
-  _marker : std::marker::PhantomData< Storage >,
+  closure : Box< dyn Fn( Definition::Storage, Option< Definition::Context > ) -> Definition::Formed >,
+  _marker : std::marker::PhantomData< Definition::Storage >,
+}
+
+impl< T, Definition > From< T > for FormingEndWrapper< Definition >
+where
+  T : Fn( Definition::Storage, Option< Definition::Context > ) -> Definition::Formed + 'static,
+  Definition : FormerDefinitionTypes,
+{
+  #[ inline( always ) ]
+  fn from( closure : T ) -> Self
+  {
+    Self
+    {
+      closure : Box::new( closure ),
+      _marker : std::marker::PhantomData
+    }
+  }
 }
 
 #[ cfg( not( feature = "no_std" ) ) ]
-impl< Storage, Context > FormingEndWrapper< Storage, Context >
+impl< Definition : FormerDefinitionTypes > FormingEndWrapper< Definition >
 {
   /// Constructs a new `FormingEndWrapper` with the provided closure.
   ///
@@ -67,7 +175,7 @@ impl< Storage, Context > FormingEndWrapper< Storage, Context >
   /// # Returns
   ///
   /// Returns an instance of `FormingEndWrapper` encapsulating the provided closure.
-  pub fn new( closure : impl Fn( Storage, Option< Context > ) -> Context + 'static ) -> Self
+  pub fn new( closure : impl Fn( Definition::Storage, Option< Definition::Context > ) -> Definition::Formed + 'static ) -> Self
   {
     Self
     {
@@ -80,7 +188,7 @@ impl< Storage, Context > FormingEndWrapper< Storage, Context >
 #[ cfg( not( feature = "no_std" ) ) ]
 use std::fmt;
 #[ cfg( not( feature = "no_std" ) ) ]
-impl< Storage, Context > fmt::Debug for FormingEndWrapper< Storage, Context >
+impl< Definition : FormerDefinitionTypes > fmt::Debug for FormingEndWrapper< Definition >
 {
   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
@@ -92,101 +200,53 @@ impl< Storage, Context > fmt::Debug for FormingEndWrapper< Storage, Context >
 }
 
 #[ cfg( not( feature = "no_std" ) ) ]
-impl< Storage, Context > FormingEnd< Storage, Context >
-for FormingEndWrapper< Storage, Context >
+impl< Definition : FormerDefinitionTypes > FormingEnd< Definition >
+for FormingEndWrapper< Definition >
 {
-  fn call( &self, storage : Storage, context : Option< Context > ) -> Context
+  fn call( &self, storage : Definition::Storage, context : Option< Definition::Context > ) -> Definition::Formed
   {
     ( self.closure )( storage, context )
   }
 }
 
-// /// A `FormingEnd` implementation that returns the original context without any modifications.
-// ///
-// /// This struct is used when no end-of-forming processing is needed, and the original context is to be returned as-is.
-// #[ derive( Debug, Default ) ]
-// pub struct NoEnd;
-//
-// impl< Formed, Context > FormingEnd< Formed, Context >
-// for NoEnd
-// {
-//   #[ inline( always ) ]
-//   fn call( &self, _formed : Formed, context : core::option::Option< Context > ) -> Context
-//   {
-//     context.unwrap()
-//   }
-// }
-
-/// A `FormingEnd` implementation that returns the formed container itself instead of the context.
-///
-/// This struct is useful when the forming process should result in the formed container being returned directly,
-/// bypassing any additional context processing. It simplifies scenarios where the formed container is the final result.
-#[ derive( Debug, Default ) ]
-pub struct ReturnFormed;
-
-impl< Storage > FormingEnd< Storage, Storage >
-for ReturnFormed
-{
-  #[ inline( always ) ]
-  fn call( &self, storage : Storage, _context : core::option::Option< Storage > ) -> Storage
-  {
-    storage
-  }
-}
-
 //
 
-/// A trait defining the initialization process for a subformer with contextual linkage.
+/// A trait for initiating a structured subforming process with contextual and intermediary storage linkage.
 ///
-/// This trait is designed for types that need to initiate a subforming process,
-/// passing themselves as the context and specifying a closure or handler (`on_end`) to be
-/// called upon completion. It facilitates the construction of builder pattern chains
-/// that maintain stateful context through each step of the process.
+/// This trait facilitates the creation of a subformer that carries through a builder pattern chain,
+/// utilizing intermediary storage for accumulating state or data before finally transforming it into
+/// a `Formed` structure. It is designed for scenarios where a multi-step construction or transformation
+/// process benefits from maintaining both transient state (`Storage`) and contextual information (`Context`),
+/// before concluding with the generation of a final product (`Formed`).
 ///
-/// # Type Parameters
-///
-/// * `Formed` - Represents the type that is being constructed or transformed by the subformer.
-/// * `Context` - Denotes the contextual information or the environment in which `Formed` is being formed.
-///               This could be a reference to a parent builder, configuration settings, or any other
-///               relevant state.
-///
-/// # Associated Types
-///
-/// * `End` - Specifies the trait bound for the closure or handler that gets called at the completion
-///           of the subforming process. This type must implement the `FormingEnd<Formed, Context>`
-///           trait, which defines how the final transformation or construction of `Formed` is handled,
-///           potentially using the provided `Context`.
-///
+/// The `FormerBegin` trait, by decoupling `Storage` from `Formed` and introducing a contextual layer, enables
+/// sophisticated and flexible construction patterns conducive to complex data transformations or object creation
+/// sequences within builder patterns.
 
-pub trait FormerBegin< Storage, Formed, Context >
+// xxx : update description
+pub trait FormerBegin< Definition : FormerDefinition >
 {
 
-  /// * `End` - Specifies the trait bound for the closure or handler that gets called at the completion
-  ///           of the subforming process. This type must implement the `FormingEnd<Formed, Context>`
-  ///           trait, which defines how the final transformation or construction of `Formed` is handled,
-  ///           potentially using the provided `Context`.
-  type End : FormingEnd< Formed, Context >;
+  /// * `End` - A trait bound marking the closure or handler invoked upon completing the subforming process. Implementers
+  ///           of this trait (`End`) are tasked with applying the final transformations that transition `Storage`
+  ///           into `Formed`, optionally utilizing `Context` to guide this transformation. It is crucial that this
+  ///           associated type satisfies the `FormingEnd< Formed >` trait, defining the precise mechanics of
+  ///           how the subformer concludes its operation.
+  // type End : FormingEnd< Definition >;
+  // type End : Definition::End;
 
-  /// Initializes the subforming process by setting the context and specifying an `on_end` completion handler.
-  ///
-  /// This function is the entry point for initiating a subforming sequence, allowing the caller
-  /// to establish initial contextual information and define how the process concludes.
+  /// Launches the subforming process with an initial storage and context, setting up an `on_end` completion handler.
   ///
   /// # Parameters
   ///
-  /// * `context` - An optional parameter providing initial context for the subforming process. This
-  ///               might include configuration data, references to parent structures, or any state
-  ///               relevant to the formation of `Formed`.
-  ///
-  /// * `on_end` - A closure or handler of type `Self::End` that is invoked at the completion of
-  ///              the subforming process. This handler is responsible for applying any final transformations
-  ///              to `Formed` and potentially utilizing `Context` to influence the outcome.
-  ///
+  /// * `storage` - An optional initial state for the intermediary storage structure.
+  /// * `context` - An optional initial setting providing contextual information for the subforming process.
+  /// * `on_end` - A completion handler responsible for transforming the accumulated `Storage` into the final `Formed` structure.
   fn _begin
   (
-    storage : core::option::Option< Storage >,
-    context : core::option::Option< Context >,
-    on_end : Self::End,
+    storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
+    context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
+    on_end : Definition::End,
   ) -> Self;
 
 }
