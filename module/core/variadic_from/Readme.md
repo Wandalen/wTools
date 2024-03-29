@@ -12,10 +12,11 @@ Variadic from
 <!-- {{# generate.module{} #}} -->
 
 ```rust
-use variadic_from::exposed::*;
-
+#[ cfg( all(feature = "enabled", feature = "type_variadic_from" ) )]
 fn main()
 {
+  use variadic_from::exposed::*;
+  
   #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
   struct StructNamedFields
   {
@@ -34,8 +35,10 @@ fn main()
   let got : StructNamedFields = ( 13, 14 ).to();
   let exp = StructNamedFields{ a : 13, b : 14 };
   assert_eq!( got, exp );
-
 }
+
+#[ cfg( not( all(feature = "enabled", feature = "type_variadic_from" ) ) ) ]
+fn main(){}
 ```
 
 ### To add to your project
