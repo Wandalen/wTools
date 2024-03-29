@@ -21,7 +21,7 @@ impl Struct1
   }
 }
 
-// = descriptor
+// = definition
 
 #[ derive( Debug ) ]
 pub struct Struct1FormerDefinition;
@@ -202,7 +202,7 @@ impl Struct1Former
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
-    former::FormingEnd::call( &on_end, self.storage, context )
+    former::FormingEnd::< Struct1FormerDefinition >::call( &on_end, self.storage, context )
   }
 
   #[ inline( always ) ]
