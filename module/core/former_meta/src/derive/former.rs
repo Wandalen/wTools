@@ -755,7 +755,7 @@ pub fn performer< 'a >
     return result;
   };
   // let mut perform_output = qt!{ #name_ident #generics_ty };
-  let mut perform_output = qt!{ < #former_definition_name_ident #generics_ty as former::FormerDefinitionTypes >::Formed };
+  let mut perform_output = qt!{ < Definition::Types as former::FormerDefinitionTypes >::Formed };
 
   let mut perform_generics = qt!{};
   for attr in attrs
@@ -968,20 +968,37 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
     }
 
-    impl #generics_impl former::FormerDefinitionTypes
-    for #former_definition_name_ident #generics_ty
+    impl< Context, Formed > former::FormerDefinitionTypes
+    for #former_definition_name_ident< Context, Formed, former::NoEnd >
     {
       type Storage = #former_storage_name_ident #generics_ty;
-      type Formed = #name_ident #generics_ty;
-      type Context = ();
+      type Formed = Formed;
+      type Context = Context;
     }
 
-    impl #generics_impl former::FormerDefinition
-    for #former_definition_name_ident #generics_ty
+    impl< Context, Formed, End > former::FormerDefinition
+    for #former_definition_name_ident< Context, Formed, End >
+    where
+      End : former::FormingEnd< #former_definition_name_ident< Context, Formed, former::NoEnd > >,
     {
-      type Types = #former_definition_name_ident #generics_ty;
-      type End = former::ReturnPreformed;
+      type Types = #former_definition_name_ident< Context, Formed, former::NoEnd >;
+      type End = End;
     }
+
+//     impl #generics_impl former::FormerDefinitionTypes
+//     for #former_definition_name_ident #generics_ty
+//     {
+//       type Storage = #former_storage_name_ident #generics_ty;
+//       type Formed = #name_ident #generics_ty;
+//       type Context = ();
+//     }
+//
+//     impl #generics_impl former::FormerDefinition
+//     for #former_definition_name_ident #generics_ty
+//     {
+//       type Types = #former_definition_name_ident #generics_ty;
+//       type End = former::ReturnPreformed;
+//     }
 
     // = storage
 
@@ -1027,12 +1044,12 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     {
 
       // fn preform( mut self ) -> #former_storage_name_ident #generics_ty
-      // fn preform( mut self ) -> < #former_definition_name_ident #generics_ty as former::FormerDefinitionTypes >::Formed
+      // fn preform( mut self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
       fn preform( mut self ) -> < Self as former::Storage >::Formed
       {
         #( #fields_form )*
         // Rust does not support that, yet
-        // let result = < #former_definition_name_ident #generics_ty as former::FormerDefinitionTypes >::Formed
+        // let result = < Definition::Types as former::FormerDefinitionTypes >::Formed
         let result = #name_ident #generics_ty
         {
           #( #fields_names, )*
@@ -1063,7 +1080,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// Finish setting options and return formed entity.
       ///
       #[ inline( always ) ]
-      pub fn preform( self ) -> < #former_definition_name_ident #generics_ty as former::FormerDefinitionTypes >::Formed
+      pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
       // #name_ident #generics_ty
       {
         < #former_storage_name_ident #generics_ty as former::StoragePerform >::preform( self.storage )
@@ -1118,7 +1135,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// End the process of forming returning original context of forming.
       ///
       #[ inline( always ) ]
-      pub fn form( self ) -> < #former_definition_name_ident #generics_ty as former::FormerDefinitionTypes >::Formed
+      pub fn form( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
       {
         self.end()
       }
@@ -1127,7 +1144,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       /// End the process of forming returning original context of forming.
       ///
       #[ inline( always ) ]
-      pub fn end( mut self ) -> < #former_definition_name_ident #generics_ty as former::FormerDefinitionTypes >::Formed
+      pub fn end( mut self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
       {
         let on_end = self.on_end.take().unwrap();
         let context = self.context.take();

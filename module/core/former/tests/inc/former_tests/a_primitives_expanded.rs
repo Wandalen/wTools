@@ -48,17 +48,34 @@ for Struct1FormerDefinition< Context, Formed, End >
 // #[ derive( Debug, Default ) ]
 // pub struct Struct1FormerDefinition;
 
-impl former::FormerDefinitionTypes for Struct1FormerDefinition
+// impl former::FormerDefinitionTypes for Struct1FormerDefinition
+// {
+//   type Storage = Struct1FormerStorage;
+//   type Formed = Struct1;
+//   type Context = ();
+// }
+//
+// impl former::FormerDefinition for Struct1FormerDefinition
+// {
+//   type Types = Struct1FormerDefinition;
+//   type End = former::ReturnPreformed;
+// }
+
+impl< Context, Formed > former::FormerDefinitionTypes
+for Struct1FormerDefinition< Context, Formed, former::NoEnd >
 {
   type Storage = Struct1FormerStorage;
-  type Formed = Struct1;
-  type Context = ();
+  type Formed = Formed;
+  type Context = Context;
 }
 
-impl former::FormerDefinition for Struct1FormerDefinition
+impl< Context, Formed, End > former::FormerDefinition
+for Struct1FormerDefinition< Context, Formed, End >
+where
+  End : former::FormingEnd< Struct1FormerDefinition< Context, Formed, former::NoEnd > >,
 {
-  type Types = Struct1FormerDefinition;
-  type End = former::ReturnPreformed;
+  type Types = Struct1FormerDefinition< Context, Formed, former::NoEnd >;
+  type End = End;
 }
 
 #[ doc = "Container of a corresponding former." ]
@@ -96,7 +113,7 @@ impl former::Storage for Struct1FormerStorage
 
 impl former::StoragePerform for Struct1FormerStorage
 {
-  // fn preform( mut self ) -> < Struct1FormerDefinition as former::FormerDefinitionTypes >::Formed
+  // fn preform( mut self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   fn preform( mut self ) -> < Self as former::Storage >::Formed
   {
     let int_1 = if self.int_1.is_some()
@@ -212,7 +229,7 @@ where
   #[ doc = r" Finish setting options and return formed entity." ]
   #[ doc = r"" ]
   #[ inline( always ) ]
-  pub fn preform( self ) -> < Struct1FormerDefinition as former::FormerDefinitionTypes >::Formed
+  pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
     < Struct1FormerStorage as former::StoragePerform >::preform( self.storage )
   }
@@ -223,7 +240,7 @@ where
   #[ doc = r" For example `perform()` of structure with : `#[ perform( fn after1() -> &str > )` returns `&str`." ]
   #[ doc = r"" ]
   #[ inline( always ) ]
-  pub fn perform( self ) -> < Struct1FormerDefinition as former::FormerDefinitionTypes >::Formed
+  pub fn perform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
     let result = self.form();
     return result;
@@ -254,7 +271,7 @@ where
   #[ doc = r" End the process of forming returning original context of forming." ]
   #[ doc = r"" ]
   #[ inline( always ) ]
-  pub fn form( self ) -> < Struct1FormerDefinition as former::FormerDefinitionTypes >::Formed
+  pub fn form( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
     self.end()
   }
@@ -262,7 +279,7 @@ where
   #[ doc = r" End the process of forming returning original context of forming." ]
   #[ doc = r"" ]
   #[ inline( always ) ]
-  pub fn end( mut self ) -> < Struct1FormerDefinition as former::FormerDefinitionTypes >::Formed
+  pub fn end( mut self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
