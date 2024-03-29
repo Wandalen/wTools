@@ -26,8 +26,8 @@ all-features = false
 [features]
 default = [ "enabled", "path_unique_folder_name" ]
 full = [ "enabled", "path_unique_folder_name" ]
-no_std = []
-use_alloc = [ "no_std" ]
+#no_std = []
+#use_alloc = [ "no_std" ]
 enabled = [ "mod_interface/enabled" ]
 
 path_unique_folder_name = []
