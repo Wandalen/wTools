@@ -192,7 +192,7 @@ impl Struct1Former
     Self
     {
       storage : storage.unwrap(),
-      context : context,
+      context,
       on_end : ::core::option::Option::Some( on_end ),
     }
   }
@@ -250,4 +250,4 @@ impl Struct1Former
 
 //
 
-// include!( "./only_test/primitives.rs" );
+include!( "./only_test/primitives.rs" );

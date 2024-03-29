@@ -17,7 +17,7 @@ tests_impls!
     a_id!( former.storage.int_optional_1, None );
     a_id!( former.storage.string_optional_1, None );
     a_id!( former.context, None );
-    a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnFormed ) ) );
+    a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnPreformed ) ) );
     let former2 = Struct1Former::new();
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
 
@@ -116,7 +116,7 @@ tests_impls!
     a_id!( got, exp );
 
     // storage exists
-    let got = < < Struct1FormerStorage as the_module::Storage >::Definition as the_module::FormerDefinitionTypes >::Formed::former().form();
+    let got = < Struct1FormerStorage as the_module::Storage >::Formed::former().form();
     let exp = Struct1::former().form();
     a_id!( got, exp );
 
