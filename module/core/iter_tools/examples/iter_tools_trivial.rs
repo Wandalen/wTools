@@ -15,13 +15,12 @@ fn main()
 
   /* non standard functions */
   let vec = vec![ 5, 1, -2 ];
-  let added = vec![ "a", "b", "c" ];
   let mut result = vec![];
-  let zipped = zip( &vec, &added );
-  for( left, right ) in zipped
+  let reversed = rev( &vec );
+  for v in reversed
   {
-    result.push( ( *left, *right ) );
+    result.push( *v );
   }
-  assert_eq!( result, vec![ ( 5, "a" ), ( 1, "b" ), ( -2, "c" ) ] );
+  assert_eq!( result, vec![ -2, 1, 5, ] );
 
 }
