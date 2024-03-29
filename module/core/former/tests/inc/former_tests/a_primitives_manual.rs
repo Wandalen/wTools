@@ -26,12 +26,23 @@ impl Struct1
 #[ derive( Debug, Default ) ]
 pub struct Struct1FormerDefinition;
 
-// impl Struct1FormerDefinition
+#[ derive( Debug, Default ) ]
+pub struct Struct1FormerDefinition2< E, Context = (), Formed = Struct1, End = former::ReturnPreformed >
+// where
+//   End : FormingEnd< Struct1FormerDefinition< E, Context, Formed, NoEnd > >,
+{
+  _phantom : core::marker::PhantomData< ( E, Context, Formed, End ) >,
+}
+
+// #[ derive( Default ) ]
+// pub struct ContainerSubformer< E, Definition >
+// where
+//   Definition : FormerDefinition,
+//   // < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
 // {
-//   pub fn new() -> Self
-//   {
-//     Self
-//   }
+//   storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
+//   context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
+//   on_end : core::option::Option< Definition::End >,
 // }
 
 impl former::FormerDefinitionTypes
@@ -249,4 +260,5 @@ impl Struct1Former
 
 //
 
-include!( "./only_test/primitives.rs" );
+// xxx : uncomment
+// include!( "./only_test/primitives.rs" );
