@@ -26,13 +26,29 @@ impl Struct1
 // #[ derive( Debug, Default ) ]
 // pub struct Struct1FormerDefinition;
 
-#[ derive( Debug, Default ) ]
+#[ derive( Debug ) ]
 pub struct Struct1FormerDefinition< Context = (), Formed = Struct1, End = former::ReturnPreformed >
 // xxx : use?
 // where
 //   End : FormingEnd< Struct1FormerDefinition< Context, Formed, NoEnd > >,
 {
   _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
+}
+
+impl< Context, Formed, End > Default
+for Struct1FormerDefinition< Context, Formed, End >
+// where
+//   Context : Default,
+//   Formed : Default,
+//   End : Default,
+{
+  fn default() -> Self
+  {
+    Struct1FormerDefinition
+    {
+      _phantom : core::marker::PhantomData,
+    }
+  }
 }
 
 impl< Context, Formed > former::FormerDefinitionTypes
@@ -279,4 +295,4 @@ impl Struct1Former
 //
 
 // xxx : uncomment
-// include!( "./only_test/primitives.rs" );
+include!( "./only_test/primitives.rs" );

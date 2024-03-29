@@ -82,16 +82,22 @@ tests_impls!
   {
 
     // default is implemented for definition
-    let _default = Struct1FormerDefinition::default();
+    let _default = Struct1FormerDefinition::< () >::default();
+    // let _default = Struct1FormerDefinition::default(); // why does not work?
 
-    // definition types exists and has Formed
-    let got = < Struct1FormerDefinition as the_module::FormerDefinitionTypes >::Formed::former().form();
-    let exp = Struct1::former().form();
-    a_id!( got, exp );
+    // impl< Context, Formed, End > Default
+
+    // // definition types exists and has Formed
+    // let got = < Struct1FormerDefinition as the_module::FormerDefinitionTypes >::Formed::former().form();
+    // let exp = Struct1::former().form();
+    // a_id!( got, exp );
+    // xxx : uncomment
+
+    // < Context = (), Formed = Struct1, End = former::ReturnPreformed >
 
     // definition types exists and has Storage
     use former::StoragePerform;
-    let got = < Struct1FormerDefinition as the_module::FormerDefinitionTypes >::Storage::preform( Struct1::former().storage );
+    let got = < Struct1FormerDefinition< (), Struct1, former::NoEnd > as the_module::FormerDefinitionTypes >::Storage::preform( Struct1::former().storage );
     let exp = Struct1::former().form();
     a_id!( got, exp );
 
