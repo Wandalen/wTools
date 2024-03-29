@@ -34,7 +34,7 @@ fn main(){}
 fn main()
 {
   use collection_tools::*;
-  let map = hmap! { 3 => 13 };
+  let map = into_hmap! { 3 => 13 };
   let mut expected = collection_tools::HashMap::new();
   expected.insert( 3, 13 );
   assert_eq!( map, expected );

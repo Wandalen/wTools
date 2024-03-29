@@ -20,7 +20,7 @@ Consider the following example, which demonstrates the use of the `hmap!` macro 
 # {
 use collection_tools::*;
 
-let meta_map = hmap! { 3 => 13 };
+let meta_map = into_hmap! { 3 => 13 };
 
 // it is identical to `hashbrown::HashMap` if `use_alloc` feature is on, otherwise `std::collections::HashMap`
 let mut std_map = collection_tools::HashMap::new();
@@ -30,7 +30,7 @@ assert_eq!( meta_map, std_map );
 # }
 ```
 
-Another example, this time, `bset!`, providing you a `BTreeSet`:
+Another example, this time, `into_bset!`, providing you a `BTreeSet`:
 
 ```rust
 # #[ cfg( all( feature = "enabled", feature = "collection_constructors" ) ) ]
@@ -38,7 +38,7 @@ Another example, this time, `bset!`, providing you a `BTreeSet`:
 # {
 use collection_tools::*;
 
-let meta_set = bset! { 3, 13 };
+let meta_set = into_bset! { 3, 13 };
 
 // no black magic, just a regular `alloc::BTreeSet` (same as `std::BTreeSet`)
 let mut std_set = collection_tools::BTreeSet::new();
@@ -57,7 +57,7 @@ Another example with `list!`:
 # {
 use collection_tools::*;
 
-let meta_list : LinkedList< i32 > = list! { 3, 13 };
+let meta_list : LinkedList< i32 > = into_list! { 3, 13 };
 
 // no black magic, just a regular `alloc::LinkedList` (same as `std::LinkedList`)
 let mut meta_list = collection_tools::LinkedList::new();

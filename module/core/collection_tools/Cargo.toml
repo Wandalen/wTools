@@ -41,6 +41,7 @@ use_alloc = [
 default = [
   "enabled",
   "collection_constructors",
+  "collection_into_constructors",
   "collection_std",
 ]
 full = [
@@ -52,6 +53,8 @@ enabled = []
 
 # Collection constructors, like `hmap!{ "key" => "val" }`
 collection_constructors = []
+# Collection constructors, using `into()` under the hood, like `into_hmap!( "key" => "val" )`
+collection_into_constructors = []
 # STD collection for no_std.
 collection_std = []
 

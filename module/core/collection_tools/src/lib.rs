@@ -67,13 +67,13 @@ pub mod exposed
 #[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
-  #[ cfg( feature = "collection_constructors" ) ]
+  #[ cfg( feature = "collection_into_constructors" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::constructors::*;
+  pub use super::into_constructors::*;
 }
 
 /// Macros to construct the collections.
 /// Basically a tweaked version of `literally` crate but using `alloc` / `hashbrown` instead of `std`
-#[ cfg( all( feature = "enabled", feature = "collection_constructors" ) ) ]
-pub mod constructors;
+#[ cfg( all( feature = "enabled", feature = "collection_into_constructors" ) ) ]
+pub mod into_constructors;
