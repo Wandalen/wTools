@@ -30,7 +30,9 @@ impl Struct1
 pub struct Struct1FormerDefinition< Context = (), Formed = Struct1, End = former::ReturnPreformed >
 // xxx : use?
 // where
-//   End : FormingEnd< Struct1FormerDefinition< Context, Formed, NoEnd > >,
+//   End : former::FormingEnd< Struct1FormerDefinition< Context, Formed, NoEnd > >,
+// where
+  // End : former::FormingEnd< Self >,
 {
   _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
 }
@@ -53,6 +55,10 @@ for Struct1FormerDefinition< Context, Formed, End >
 
 impl< Context, Formed > former::FormerDefinitionTypes
 for Struct1FormerDefinition< Context, Formed, former::NoEnd >
+// impl< Context, Formed, End > former::FormerDefinitionTypes
+// for Struct1FormerDefinition< Context, Formed, End >
+// where
+//   End : former::FormingEnd< Self >,
 {
   type Storage = Struct1FormerStorage;
   type Formed = Formed;
@@ -63,9 +69,10 @@ impl< Context, Formed, End > former::FormerDefinition
 for Struct1FormerDefinition< Context, Formed, End >
 where
   End : former::FormingEnd< Struct1FormerDefinition< Context, Formed, former::NoEnd > >,
+  // End : former::FormingEnd< Self >,
 {
-  // type Types = Struct1FormerDefinition;
   type Types = Struct1FormerDefinition< Context, Formed, former::NoEnd >;
+  // type Types = Self;
   type End = End;
 }
 
