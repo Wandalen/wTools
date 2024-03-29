@@ -159,6 +159,7 @@ for Struct1FormerStorage
 //   on_end : core::option::Option< Definition::End >,
 // }
 
+// Storage = Struct1FormerStorage
 pub struct Struct1Former
 <
   Definition = Struct1FormerDefinition,
@@ -168,7 +169,8 @@ pub struct Struct1Former
 where
   Definition : former::FormerDefinition,
   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePerform,
-  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::Storage< Formed = < Definition::Types as former::FormerDefinitionTypes >::Formed >,
+  // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::Storage< Formed = < Definition::Types as former::FormerDefinitionTypes >::Formed >,
+  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
   // FormerEnd : the_module::FormingEnd< Struct1FormerDefinition >,
 {
   storage : < Definition::Types as former::FormerDefinitionTypes >::Storage,
@@ -183,11 +185,13 @@ impl< Definition > Struct1Former< Definition >
 where
   Definition : former::FormerDefinition,
   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePerform,
-  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::Storage< Formed = < Definition::Types as former::FormerDefinitionTypes >::Formed >,
+  // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::Storage< Formed = < Definition::Types as former::FormerDefinitionTypes >::Formed >,
+  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
   // FormerEnd: the_module::FormingEnd< Struct1FormerDefinition, FormerContext >,
 {
 
-  fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
+  // fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
+  fn preform( self ) -> Struct1
   {
     former::StoragePerform::preform( self.storage )
   }
