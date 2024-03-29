@@ -23,30 +23,20 @@ impl Struct1
 
 // = definition
 
-// #[ derive( Debug, Default ) ]
-// pub struct Struct1FormerDefinition;
-
 #[ derive( Debug ) ]
 pub struct Struct1FormerDefinition< Context = (), Formed = Struct1, End = former::ReturnPreformed >
-// xxx : use?
 // where
 //   End : former::FormingEnd< Struct1FormerDefinition< Context, Formed, NoEnd > >,
-// where
-  // End : former::FormingEnd< Self >,
 {
   _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
 }
 
 impl< Context, Formed, End > Default
 for Struct1FormerDefinition< Context, Formed, End >
-// where
-//   Context : Default,
-//   Formed : Default,
-//   End : Default,
 {
   fn default() -> Self
   {
-    Struct1FormerDefinition
+    Self
     {
       _phantom : core::marker::PhantomData,
     }
@@ -55,8 +45,6 @@ for Struct1FormerDefinition< Context, Formed, End >
 
 impl< Context, Formed > former::FormerDefinitionTypes
 for Struct1FormerDefinition< Context, Formed, former::NoEnd >
-// impl< Context, Formed, End > former::FormerDefinitionTypes
-// for Struct1FormerDefinition< Context, Formed, End >
 // where
 //   End : former::FormingEnd< Self >,
 {
@@ -182,35 +170,25 @@ for Struct1FormerStorage
 //   on_end : core::option::Option< Definition::End >,
 // }
 
-// Storage = Struct1FormerStorage
 pub struct Struct1Former
 <
   Definition = Struct1FormerDefinition,
-  // FormerContext = Struct1,
-  // FormerEnd = the_module::ReturnPreformed,
 >
 where
   Definition : former::FormerDefinition,
   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePerform,
-  // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::Storage< Formed = < Definition::Types as former::FormerDefinitionTypes >::Formed >,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
-  // FormerEnd : the_module::FormingEnd< Struct1FormerDefinition >,
 {
   storage : < Definition::Types as former::FormerDefinitionTypes >::Storage,
   context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
   on_end : core::option::Option< Definition::End >,
-  // storage : Struct1FormerStorage,
-  // context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
-  // on_end : core::option::Option< < Definition as former::FormerDefinition >::End >,
 }
 
 impl< Definition > Struct1Former< Definition >
 where
   Definition : former::FormerDefinition,
   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePerform,
-  // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::Storage< Formed = < Definition::Types as former::FormerDefinitionTypes >::Formed >,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
-  // FormerEnd: the_module::FormingEnd< Struct1FormerDefinition, FormerContext >,
 {
 
   // fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
@@ -291,6 +269,7 @@ where
 impl Struct1Former
 {
 
+  // xxx : should pass callback
   #[ inline( always ) ]
   pub fn new() -> Struct1Former
   {

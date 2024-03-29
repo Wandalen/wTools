@@ -829,8 +829,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let former_storage_name_ident = syn::Ident::new( &former_storage_name, name_ident.span() );
   let former_definition_name = format!( "{}FormerDefinition", name_ident );
   let former_definition_name_ident = syn::Ident::new( &former_definition_name, name_ident.span() );
-  // let former_definition_type_name = format!( "{}FormerDefinitionTypes", name_ident );
-  // let former_definition_type_name_ident = syn::Ident::new( &former_definition_name, name_ident.span() );
 
   /* generic parameters */
 
@@ -850,12 +848,16 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   // add embedded generic parameters
   let mut extra_generics : syn::Generics = parse_quote!
   {
-    < __FormerContext = #name_ident #generics_ty, __FormerEnd = former::ReturnPreformed >
+    // < __FormerContext = #name_ident #generics_ty, __FormerEnd = former::ReturnPreformed >
+    < Definition = #former_definition_name_ident #generics_ty >
   };
   extra_generics.where_clause = parse_quote!
   {
     where
-      __FormerEnd : former::FormingEnd< #former_definition_name_ident #generics_ty >,
+      // __FormerEnd : former::FormingEnd< #former_definition_name_ident #generics_ty >,
+      Definition : former::FormerDefinition,
+      < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePerform,
+      Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage_name_ident #generics_ty >,
   };
   // xxx : write helper to fix bug with where
   let generics_of_former = generics::merge( &generics, &extra_generics );
@@ -943,8 +945,28 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     // = definition
 
-    #[ derive( Debug, Default ) ]
-    pub struct #former_definition_name_ident #generics_ty;
+    // #[ derive( Debug, Default ) ]
+    // pub struct #former_definition_name_ident #generics_ty;
+
+    #[ derive( Debug ) ]
+    pub struct #former_definition_name_ident< Context = (), Formed = #name_ident #generics_ty, End = former::ReturnPreformed >
+    // where
+    //   End : former::FormingEnd< #former_definition_name_ident< Context, Formed, NoEnd > >,
+    {
+      _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
+    }
+
+    impl< Context, Formed, End > Default
+    for #former_definition_name_ident< Context, Formed, End >
+    {
+      fn default() -> Self
+      {
+        Self
+        {
+          _phantom : core::marker::PhantomData,
+        }
+      }
+    }
 
     impl #generics_impl former::FormerDefinitionTypes
     for #former_definition_name_ident #generics_ty
@@ -960,21 +982,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       type Types = #former_definition_name_ident #generics_ty;
       type End = former::ReturnPreformed;
     }
-
-// impl former::FormerDefinitionTypes
-// for Struct1FormerDefinition
-// {
-//   type Storage = Struct1FormerStorage;
-//   type Formed = Struct1;
-//   type Context = ();
-// }
-//
-// impl former::FormerDefinition
-// for Struct1FormerDefinition
-// {
-//   type Types = Struct1FormerDefinition;
-//   type End = former::ReturnPreformed;
-// }
 
     // = storage
 
@@ -1020,7 +1027,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     {
 
       // fn preform( mut self ) -> #former_storage_name_ident #generics_ty
-      fn preform( mut self ) -> < #former_definition_name_ident #generics_ty as former::FormerDefinitionTypes >::Formed
+      // fn preform( mut self ) -> < #former_definition_name_ident #generics_ty as former::FormerDefinitionTypes >::Formed
+      fn preform( mut self ) -> < Self as former::Storage >::Formed
       {
         #( #fields_form )*
         // Rust does not support that, yet
@@ -1086,9 +1094,12 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       #[ inline( always ) ]
       pub fn begin
       (
-        mut storage : core::option::Option< #former_storage_name_ident #generics_ty >,
-        context : core::option::Option< __FormerContext >,
-        on_end : __FormerEnd,
+        mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
+        context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
+        on_end : < Definition as former::FormerDefinition >::End,
+        // mut storage : core::option::Option< #former_storage_name_ident #generics_ty >,
+        // context : core::option::Option< __FormerContext >,
+        // on_end : __FormerEnd,
       ) -> Self
       {
         if storage.is_none()
@@ -1122,7 +1133,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
         let context = self.context.take();
         // let storage = self.form();
         // on_end.call( self.storage, context )
-        former::FormingEnd::< #former_definition_name_ident #generics_ty >::call( &on_end, self.storage, context )
+        // former::FormingEnd::< #former_definition_name_ident #generics_ty >::call( &on_end, self.storage, context )
+        former::FormingEnd::< Definition::Types >::call( &on_end, self.storage, context )
       }
 
       #(
@@ -1132,7 +1144,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     }
 
     #[ automatically_derived ]
-    impl #generics_impl #former_name_ident < #generics_params (), former::ReturnPreformed >
+    // impl #generics_impl #former_name_ident < #generics_params (), former::ReturnPreformed >
+    impl #generics_impl #former_name_ident < #generics_params >
     #generics_where
     {
 
