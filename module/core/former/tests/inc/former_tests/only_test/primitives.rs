@@ -87,10 +87,11 @@ tests_impls!
 
     // impl< Context, Formed, End > Default
 
-    // // definition types exists and has Formed
-    // let got = < Struct1FormerDefinition as the_module::FormerDefinitionTypes >::Formed::former().form();
-    // let exp = Struct1::former().form();
-    // a_id!( got, exp );
+    // definition types exists and has Formed
+    let got = < Struct1FormerDefinition< (), Struct1, former::NoEnd > as the_module::FormerDefinitionTypes >::Formed::former().form();
+    // let got = < Struct1FormerDefinition as the_module::FormerDefinitionTypes >::Formed::former().form(); // xxx : make it working
+    let exp = Struct1::former().form();
+    a_id!( got, exp );
     // xxx : uncomment
 
     // < Context = (), Formed = Struct1, End = former::ReturnPreformed >
