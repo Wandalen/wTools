@@ -23,27 +23,16 @@ impl Struct1
 
 // = definition
 
-#[ derive( Debug, Default ) ]
-pub struct Struct1FormerDefinition;
+// #[ derive( Debug, Default ) ]
+// pub struct Struct1FormerDefinition;
 
 #[ derive( Debug, Default ) ]
-pub struct Struct1FormerDefinition2< E, Context = (), Formed = Struct1, End = former::ReturnPreformed >
+pub struct Struct1FormerDefinition< Context = (), Formed = Struct1, End = former::ReturnPreformed >
 // where
-//   End : FormingEnd< Struct1FormerDefinition< E, Context, Formed, NoEnd > >,
+//   End : FormingEnd< Struct1FormerDefinition< Context, Formed, NoEnd > >,
 {
-  _phantom : core::marker::PhantomData< ( E, Context, Formed, End ) >,
+  _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
 }
-
-// #[ derive( Default ) ]
-// pub struct ContainerSubformer< E, Definition >
-// where
-//   Definition : FormerDefinition,
-//   // < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
-// {
-//   storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
-//   context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
-//   on_end : core::option::Option< Definition::End >,
-// }
 
 impl former::FormerDefinitionTypes
 for Struct1FormerDefinition
@@ -156,12 +145,25 @@ for Struct1FormerStorage
 
 // = former
 
+// #[ derive( Default ) ]
+// pub struct ContainerSubformer< E, Definition >
+// where
+//   Definition : FormerDefinition,
+//   // < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
+// {
+//   storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
+//   context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
+//   on_end : core::option::Option< Definition::End >,
+// }
+
 pub struct Struct1Former
 <
+  // Definition,
   // FormerContext = Struct1,
   // FormerEnd = the_module::ReturnPreformed,
 >
-// where
+where
+  // Definition : FormerDefinition,
   // FormerEnd : the_module::FormingEnd< Struct1FormerDefinition >,
 {
   storage : Struct1FormerStorage,
