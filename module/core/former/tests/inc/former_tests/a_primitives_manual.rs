@@ -187,12 +187,6 @@ where
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
 {
 
-  // fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
-  fn preform( self ) -> Struct1
-  {
-    former::StoragePerform::preform( self.storage )
-  }
-
   #[ inline( always ) ]
   pub fn perform(self) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
@@ -258,6 +252,21 @@ where
     debug_assert!( self.storage.string_optional_1.is_none() );
     self.storage.string_optional_1 = Some( src.into() );
     self
+  }
+
+}
+
+impl< Definition > Struct1Former< Definition >
+where
+  Definition : former::FormerDefinition,
+  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePerform,
+  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage, Formed = Struct1 >,
+{
+
+  pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
+  // pub fn preform( self ) -> Struct1
+  {
+    former::StoragePerform::preform( self.storage )
   }
 
 }

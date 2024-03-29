@@ -985,21 +985,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       type End = End;
     }
 
-//     impl #generics_impl former::FormerDefinitionTypes
-//     for #former_definition_name_ident #generics_ty
-//     {
-//       type Storage = #former_storage_name_ident #generics_ty;
-//       type Formed = #name_ident #generics_ty;
-//       type Context = ();
-//     }
-//
-//     impl #generics_impl former::FormerDefinition
-//     for #former_definition_name_ident #generics_ty
-//     {
-//       type Types = #former_definition_name_ident #generics_ty;
-//       type End = former::ReturnPreformed;
-//     }
-
     // = storage
 
     // xxx : rename to storage
@@ -1065,9 +1050,12 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     pub struct #former_name_ident < #generics_of_former_with_defaults >
     #generics_of_former_where
     {
-      storage : #former_storage_name_ident #generics_ty,
-      context : core::option::Option< __FormerContext >,
-      on_end : core::option::Option< __FormerEnd >,
+      storage : < Definition::Types as former::FormerDefinitionTypes >::Storage,
+      context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
+      on_end : core::option::Option< Definition::End >,
+      // storage : #former_storage_name_ident #generics_ty,
+      // context : core::option::Option< __FormerContext >,
+      // on_end : core::option::Option< __FormerEnd >,
       // xxx : should on_end be optional?
     }
 
@@ -1076,21 +1064,22 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     #generics_of_former_where
     {
 
-      ///
-      /// Finish setting options and return formed entity.
-      ///
-      #[ inline( always ) ]
-      pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
-      // #name_ident #generics_ty
-      {
-        < #former_storage_name_ident #generics_ty as former::StoragePerform >::preform( self.storage )
-        // #( #fields_form )*
-        // let result = #name_ident
-        // {
-        //   #( #fields_names, )*
-        // };
-        // return result;
-      }
+      // ///
+      // /// Finish setting options and return formed entity.
+      // ///
+      // #[ inline( always ) ]
+      // pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
+      // // #name_ident #generics_ty
+      // {
+      //   former::StoragePerform::preform( self.storage )
+      //   // < #former_storage_name_ident #generics_ty as former::StoragePerform >::preform( self.storage )
+      //   // #( #fields_form )*
+      //   // let result = #name_ident
+      //   // {
+      //   //   #( #fields_names, )*
+      //   // };
+      //   // return result;
+      // }
 
       ///
       /// Finish setting options and call perform on formed entity.
@@ -1179,6 +1168,21 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
           None,
           former::ReturnPreformed,
         )
+      }
+
+    }
+
+    impl< Definition > #former_name_ident< Definition >
+    where
+      Definition : former::FormerDefinition,
+      < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePerform,
+      Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage_name_ident #generics_ty, Formed = #name_ident #generics_ty >,
+    {
+
+      pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
+      // pub fn preform( self ) -> Struct1
+      {
+        former::StoragePerform::preform( self.storage )
       }
 
     }
