@@ -78,17 +78,25 @@ tests_impls!
 
   //
 
-  fn descriptor()
+  fn definition()
   {
 
-    // descriptor exists and has Formed
+    // default is implemented for definition
+    let _default = Struct1FormerDefinition::default();
+
+    // definition types exists and has Formed
     let got = < Struct1FormerDefinition as the_module::FormerDefinitionTypes >::Formed::former().form();
     let exp = Struct1::former().form();
     a_id!( got, exp );
 
-    // descriptor exists and has Storage
+    // definition types exists and has Storage
     use former::StoragePerform;
     let got = < Struct1FormerDefinition as the_module::FormerDefinitionTypes >::Storage::preform( Struct1::former().storage );
+    let exp = Struct1::former().form();
+    a_id!( got, exp );
+
+    // definition exists and has Storage
+    let got = < < Struct1FormerDefinition as the_module::FormerDefinition >::Types as the_module::FormerDefinitionTypes >::Formed::former().form();
     let exp = Struct1::former().form();
     a_id!( got, exp );
 
@@ -99,7 +107,7 @@ tests_impls!
   fn storage()
   {
 
-    // descriptor exists and has Storage
+    // definition exists and has Storage
     let got = < Struct1FormerStorage as the_module::StoragePerform >::preform( Struct1::former().storage );
     let exp = Struct1::former().form();
     a_id!( got, exp );
@@ -109,7 +117,7 @@ tests_impls!
     let exp = Struct1::former().storage.preform();
     a_id!( got, exp );
 
-    // descriptor exists and has Storage
+    // definition exists and has Storage
     use former::StoragePerform;
     let got = Struct1::former().storage.preform();
     let exp = Struct1::former().form();
@@ -308,7 +316,7 @@ tests_index!
   internals,
   begin,
   preform,
-  descriptor,
+  definition,
   storage,
   test_int,
   test_string,

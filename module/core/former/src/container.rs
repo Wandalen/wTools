@@ -205,6 +205,23 @@ where
   on_end : core::option::Option< Definition::End >,
 }
 
+// xxx : cover by test
+use std::fmt;
+impl< E, Definition > fmt::Debug for ContainerSubformer< E, Definition >
+where
+  Definition : FormerDefinition,
+  < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
+{
+  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+  {
+    f.debug_struct( "ContainerSubformer" )
+    .field( "storage", &self.storage.as_ref().map( |_| "Storage Present" ) )
+    .field( "context", &self.context.as_ref().map( |_| "Context Present" ) )
+    .field( "on_end", &self.on_end.as_ref().map( |_| "End Present" ) )
+    .finish()
+  }
+}
+
 impl< E, Definition > ContainerSubformer< E, Definition >
 where
   Definition : FormerDefinition,

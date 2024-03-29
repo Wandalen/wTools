@@ -23,16 +23,16 @@ impl Struct1
 
 // = definition
 
-#[ derive( Debug ) ]
+#[ derive( Debug, Default ) ]
 pub struct Struct1FormerDefinition;
 
-impl Struct1FormerDefinition
-{
-  pub fn new() -> Self
-  {
-    Self
-  }
-}
+// impl Struct1FormerDefinition
+// {
+//   pub fn new() -> Self
+//   {
+//     Self
+//   }
+// }
 
 impl former::FormerDefinitionTypes
 for Struct1FormerDefinition

@@ -88,7 +88,7 @@ where
   Definition : FormerDefinitionTypes,
 {
   #[ inline( always ) ]
-  fn call( &self, storage : Definition::Storage, context : core::option::Option< Definition::Context > ) -> Definition::Formed
+  fn call( &self, storage : Definition::Storage, _context : core::option::Option< Definition::Context > ) -> Definition::Formed
   {
     storage.preform()
   }
@@ -126,7 +126,7 @@ where
   Definition : FormerDefinitionTypes,
 {
   #[ inline( always ) ]
-  fn call( &self, storage : Definition::Storage, _context : core::option::Option< Definition::Context > ) -> Definition::Formed
+  fn call( &self, _storage : Definition::Storage, _context : core::option::Option< Definition::Context > ) -> Definition::Formed
   {
     unreachable!();
   }

@@ -4,6 +4,9 @@
 #![ doc( html_root_url = "https://docs.rs/former/latest/former/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+// xxx : remove
+#![ allow( missing_docs ) ]
+
 // xxx : describe "Context-aware forming process"
 
 /// Axiomatic things.
