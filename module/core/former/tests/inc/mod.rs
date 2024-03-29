@@ -17,8 +17,8 @@ mod former_tests
   mod container_former_hashmap;
 
   mod a_primitives_manual;
+  mod a_primitives_expanded;
   // mod a_primitives;
-  // mod a_primitives_expanded;
 //   mod a_containers_without_runtime_manual;
 //   mod a_containers_without_runtime;
 //   #[ cfg( not( feature = "no_std" ) ) ]

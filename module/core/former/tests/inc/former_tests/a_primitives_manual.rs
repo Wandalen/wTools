@@ -40,7 +40,6 @@ for Struct1FormerDefinition
   type Storage = Struct1FormerStorage;
   type Formed = Struct1;
   type Context = ();
-  // type End = former::ReturnPreformed;
 }
 
 impl former::FormerDefinition

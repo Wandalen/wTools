@@ -12,4 +12,5 @@ pub struct Struct1
 
 //
 
-include!( "./only_test/primitives.rs" );
+// xxx : uncomment
+// include!( "./only_test/primitives.rs" );
