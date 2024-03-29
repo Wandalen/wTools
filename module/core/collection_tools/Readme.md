@@ -22,7 +22,7 @@ use collection_tools::*;
 
 let meta_map = hmap! { 3 => 13 };
 
-// reexport from `hashbrown` if `use_alloc` feature is on, otherwise - reexport from `std`
+// it is identical to `hashbrown::HashMap` if `use_alloc` feature is on, otherwise `std::collections::HashMap`
 let mut std_map = collection_tools::HashMap::new();
 
 std_map.insert( 3, 13 );
@@ -40,7 +40,7 @@ use collection_tools::*;
 
 let meta_set = bset! { 3, 13 };
 
-// reexport from `alloc`
+// no black magic, just a regular `alloc::BTreeSet` (same as `std::BTreeSet`)
 let mut std_set = collection_tools::BTreeSet::new();
 
 std_set.insert( 13 );
@@ -59,7 +59,7 @@ use collection_tools::*;
 
 let meta_list : LinkedList< i32 > = list! { 3, 13 };
 
-// reexport from `alloc`
+// no black magic, just a regular `alloc::LinkedList` (same as `std::LinkedList`)
 let mut meta_list = collection_tools::LinkedList::new();
 
 meta_list.push_front( 13 );
@@ -107,9 +107,11 @@ assert_eq!( vec.contains( &1 ), true );
 
 ### Collections being used
 
-To support `no_std` environment as much as possible, we aim at using collections from `alloc` whenever its possible.
+So what's the deal with `collection_tools::<collection>`?
 
-If `use_alloc` feature is on, collections available only in `std` are replaced with their `no_std` counterparts. For now, the only replaced collections are `HashMap` and `HashSet` , taken from `hashbrown`.
+Nothing really fancy. We just reuse collections from `alloc` (same as `std`).
+
+But not all collections are available in `alloc` crate. For now, the exceptions are `HashMap` and `HashSet`. This leads to the fact that we can't use them in `no_std` environment. How did we solve this? By using those collections from `hashbrown` crate whenever `no_std` feature is enabled. You can found more details on origin of a collection on its documentation page.
 
 ### MORE Examples
 

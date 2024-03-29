@@ -1,3 +1,25 @@
+/// Not meant to be called directly.
+#[ doc( hidden ) ]
+#[ macro_export( local_inner_macros ) ]
+macro_rules! empty
+{
+  ( @single $( $x : tt )* ) => ( () );
+}
+
+/// Not meant to be called directly.
+#[ doc( hidden ) ]
+#[ macro_export( local_inner_macros ) ]
+macro_rules! count
+{
+  (
+    @count $( $rest : expr ),*
+  )
+  =>
+  (
+    < [ () ] >::len( &[ $( empty!( @single $rest ) ),* ] )
+  );
+}
+
 /// Creates a `BTreeMap` from a list of key-value pairs.
 ///
 /// The `bmap` macro facilitates the convenient creation of a `BTreeMap` with initial elements.
@@ -7,6 +29,10 @@
 /// Note: The `bmap` macro relies on the `.into()` method to convert each key and value into the target types
 /// of the `BTreeMap`. This means that the keys and values must be compatible with the `Into< K >` and `Into< V >` traits
 /// for the key type `K` and value type `V` used in the `BTreeMap`.
+///
+/// # Origin
+///
+/// This collection is reexported from `alloc`.
 ///
 /// # Syntax
 ///
@@ -96,6 +122,10 @@ macro_rules! bmap
 /// of the `BTreeSet`. This means that the elements must be compatible with the `Into<T>` trait for the
 /// type `T` used in the `BTreeSet`.
 ///
+/// # Origin
+///
+/// This collection is reexported from `alloc`.
+///
 /// # Syntax
 ///
 /// The macro can be called with a comma-separated list of elements. A trailing comma is optional.
@@ -166,7 +196,7 @@ macro_rules! bset
   )
   =>
   {{
-    let mut _set = ::collection_tools::BTreeSet::new();
+    let mut _set = collection_tools::BTreeSet::new();
     $(
       _set.insert( $key.into() );
     )*
@@ -183,6 +213,10 @@ macro_rules! bset
 /// Note: The `heap` macro utilizes the `.into()` method to convert each element into the target type
 /// of the `BinaryHeap`. This means that the elements must be compatible with the `Into<T>` trait for the
 /// type `T` used in the `BinaryHeap`.
+///
+/// # Origin
+///
+/// This collection is reexported from `alloc`.
 ///
 /// # Syntax
 ///
@@ -249,7 +283,8 @@ macro_rules! heap
   )
   =>
   {{
-    let mut _heap = collection_tools::BinaryHeap::new();
+    let _cap = count!( @count $( $key ),* );
+    let mut _heap = collection_tools::BinaryHeap::with_capacity( _cap );
     $(
       _heap.push( $key.into() );
     )*
@@ -266,6 +301,12 @@ macro_rules! heap
 /// Note: The `hmap` macro relies on the `.into()` method to convert each key and value into the target types
 /// of the `HashMap`. This means that the keys and values must be compatible with the `Into<K>` and `Into<V>` traits
 /// for the key type `K` and value type `V` used in the `HashMap`.
+///
+/// # Origin
+///
+/// This collection can be reexported from different crates:
+/// - from `std`, if `no_std` flag if off
+/// - from `hashbrown`, if `use_alloc` flag if on
 ///
 /// # Syntax
 ///
@@ -328,26 +369,15 @@ macro_rules! heap
 /// assert_eq!( pairs.get( &2 ), Some( &"banana".to_string() ) );
 /// ```
 ///
-
 #[macro_export(local_inner_macros)]
 macro_rules! hmap
 {
-  ( @single $( $x : tt )* ) => ( () );
-
-  (
-    @count $( $rest : expr ),*
-  )
-  =>
-  (
-    < [ () ] >::len( &[ $( hmap!( @single $rest ) ),* ] )
-  );
-
   (
     $( $key : expr => $value : expr ),* $( , )?
   )
   =>
   {{
-    let _cap = hmap!( @count $( $key ),* );
+    let _cap = count!( @count $( $key ),* );
     let mut _map = collection_tools::HashMap::with_capacity( _cap );
     $(
       let _ = _map.insert( $key.into(), $value.into() );
@@ -365,6 +395,10 @@ macro_rules! hmap
 /// Note: The `hset` macro relies on the `.into()` method to convert each element into the target type
 /// of the `HashSet`. This means that the elements must be compatible with the `Into< T >` trait for the
 /// type `T` used in the `HashSet`.
+///
+/// This collection can be reexported from different crates:
+/// - from `std`, if `no_std` flag if off
+/// - from `hashbrown`, if `use_alloc` flag if on
 ///
 /// # Syntax
 ///
@@ -431,22 +465,12 @@ macro_rules! hmap
 #[ macro_export( local_inner_macros ) ]
 macro_rules! hset
 {
-  ( @single $( $x : tt )* ) => ( () );
-
-  (
-    @count $( $rest : expr ),*
-  )
-  =>
-  (
-    < [ () ] >::len( &[ $( hset!( @single $rest ) ),* ] )
-  );
-
   (
     $( $key : expr ),* $( , )?
   )
   =>
   {{
-    let _cap = hset!( @count $( $key ),* );
+    let _cap = count!( @count $( $key ),* );
     let mut _set = collection_tools::HashSet::with_capacity( _cap );
     $(
       let _ = _set.insert( $key.into() );
@@ -464,6 +488,10 @@ macro_rules! hset
 /// Note: The `list` macro leverages the `.into()` method to convert each element into the target type
 /// of the `LinkedList`. Therefore, the elements must be compatible with the `Into<T>` trait for the
 /// type `T` used in the `LinkedList`.
+///
+/// # Origin
+///
+/// This collection is reexported from `alloc`.
 ///
 /// # Syntax
 ///
@@ -534,6 +562,8 @@ macro_rules! list
   )
   =>
   {{
+    // "The LinkedList allows pushing and popping elements at either end in constant time."
+    // So no `with_capacity`
     let mut _lst = collection_tools::LinkedList::new();
     $(
       _lst.push_back( $key.into() );
@@ -551,6 +581,10 @@ macro_rules! list
 /// Note: The `vec!` macro utilizes the `.into()` method to convert each element into the target type
 /// of the `Vec`. Therefore, the elements must be compatible with the `Into<T>` trait for the
 /// type `T` used in the `Vec`.
+///
+/// # Origin
+///
+/// This collection is reexported from `alloc`.
 ///
 /// # Syntax
 ///
@@ -622,7 +656,8 @@ macro_rules! vec
   )
   =>
   {{
-    let mut _vec = collection_tools::Vec::new();
+    let _cap = count!( @count $( $key ),* );
+    let mut _vec = collection_tools::Vec::with_capacity( _cap );
     $(
       _vec.push( $key.into() );
     )*
@@ -639,6 +674,10 @@ macro_rules! vec
 /// Note: The `vecd` macro relies on the `.into()` method to convert each element into the target type
 /// of the `VecDeque`. This means that the elements must be compatible with the `Into<T>` trait for the
 /// type `T` used in the `VecDeque`.
+///
+/// # Origin
+///
+/// This collection is reexported from `alloc`.
 ///
 /// # Syntax
 ///
@@ -709,7 +748,8 @@ macro_rules! vecd
   )
   =>
   {{
-    let mut _vecd = collection_tools::VecDeque::new();
+    let _cap = count!( @count $( $key ),* );
+    let mut _vecd = collection_tools::VecDeque::with_capacity( _cap );
     $(
       _vecd.push_back( $key.into() );
     )*
