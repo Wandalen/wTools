@@ -331,46 +331,92 @@ where
   //   the_module::VectorSubformer::begin( formed, Some( self ), on_end )
   // }
 
-  pub fn vec_1( self ) ->
-  former::VectorSubformer::< String, (), Vec< String >, former::ReturnStorage >
-  // former::VectorSubformer
+  #[ inline( always ) ]
+  pub fn vec_1_set< Former2 >( self ) -> Former2
+  where
+    Former2 : former::FormerBegin
+    <
+      former::VectorDefinition
+      <
+        String,
+        Self,
+        Self,
+        __Vec1End,
+        // impl former::FormingEnd::< former::VectorDefinition< String, Self, Self, former::NoEnd > >,
+        // former::FormingEndClosure< former::VectorDefinition< String, Self, Self, former::NoEnd > >,
+      >
+    >,
+  {
+
+    // let on_end = | formed : Vec< String >, super_former : ::core::option::Option< Self > | -> Self
+    // {
+    //   let mut super_former = super_former.unwrap();
+    //   if let Some( ref mut field ) = super_former.storage.vec_1
+    //   {
+    //     former::ContainerAssign::assign( field, formed );
+    //   }
+    //   else
+    //   {
+    //     super_former.storage.vec_1 = Some( formed );
+    //   }
+    //   super_former
+    // };
+
+    // Definition : former::FormerDefinition,
+    // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
+    // Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
+
+    Former2::_begin( None, Some( self ), __Vec1End )
+    // Former2::_begin( None, Some( self ), on_end )
+    // Former2::_begin( None, Some( self ), former::FormingEndClosure::new( on_end ) )
+  }
+
+  // pub fn vec_1( self ) ->
+  // former::VectorSubformer::
   // <
   //   String,
-  //   Vec< String >,
   //   Self,
-  //   impl former::FormingEnd< Struct1FormerDefinitionTypes >,
+  //   Self,
+  //   former::FormingEndClosure< former::VectorDefinition< String, Self, Self, former::NoEnd > >,
   // >
-  {
-    self.__vec_1::< former::VectorSubformer::< _, _, _, _ > >()
-  }
+  // {
+  //   self.vec_1_set::< former::VectorSubformer::
+  //   <
+  //     String,
+  //     Self,
+  //     Self,
+  //     former::FormingEndClosure< former::VectorDefinition< String, Self, Self, former::NoEnd > > >,
+  //   >()
+  // }
 
-  #[ doc = "Subformer setter for the 'hashmap_strings_1' field." ]
-  #[ inline ]
-  pub fn hashmap_strings_1( mut self ) -> the_module::HashMapSubformer< String, String, std::collections::HashMap< String, String >, Self, impl Fn( std::collections::HashMap< String, String >, core::option::Option< Self > ) -> Self, >
-  {
-    let formed = self.storage.hashmap_strings_1.take();
-    let on_end = | formed : std::collections::HashMap< String, String >, former : core::option::Option< Self > | -> Self
-    {
-      let mut former = former.unwrap();
-      former.storage.hashmap_strings_1 = Some( formed );
-      former
-    };
-    the_module::HashMapSubformer::begin( formed, Some( self ), on_end )
-  }
+//   #[ doc = "Subformer setter for the 'hashmap_strings_1' field." ]
+//   #[ inline ]
+//   pub fn hashmap_strings_1( mut self ) -> the_module::HashMapSubformer< String, String, std::collections::HashMap< String, String >, Self, impl Fn( std::collections::HashMap< String, String >, core::option::Option< Self > ) -> Self, >
+//   {
+//     let formed = self.storage.hashmap_strings_1.take();
+//     let on_end = | formed : std::collections::HashMap< String, String >, former : core::option::Option< Self > | -> Self
+//     {
+//       let mut former = former.unwrap();
+//       former.storage.hashmap_strings_1 = Some( formed );
+//       former
+//     };
+//     the_module::HashMapSubformer::begin( formed, Some( self ), on_end )
+//   }
+//
+//   #[ doc = "Subformer setter for the 'hashset_strings_1' field." ]
+//   #[ inline ]
+//   pub fn hashset_strings_1( mut self ) -> the_module::HashSetSubformer< String, std::collections::HashSet< String >, Self, impl Fn( std::collections::HashSet< String >, core::option::Option< Self > ) -> Self, >
+//   {
+//     let formed = self.storage.hashset_strings_1.take();
+//     let on_end = | formed : std::collections::HashSet< String >, former : core::option::Option< Self > | -> Self
+//     {
+//       let mut former = former.unwrap();
+//       former.storage.hashset_strings_1 = Some( formed );
+//       former
+//     };
+//     the_module::HashSetSubformer::begin( formed, Some( self ), on_end )
+//   }
 
-  #[ doc = "Subformer setter for the 'hashset_strings_1' field." ]
-  #[ inline ]
-  pub fn hashset_strings_1( mut self ) -> the_module::HashSetSubformer< String, std::collections::HashSet< String >, Self, impl Fn( std::collections::HashSet< String >, core::option::Option< Self > ) -> Self, >
-  {
-    let formed = self.storage.hashset_strings_1.take();
-    let on_end = | formed : std::collections::HashSet< String >, former : core::option::Option< Self > | -> Self
-    {
-      let mut former = former.unwrap();
-      former.storage.hashset_strings_1 = Some( formed );
-      former
-    };
-    the_module::HashSetSubformer::begin( formed, Some( self ), on_end )
-  }
 }
 
 impl< Definition > Struct1Former< Definition >
@@ -382,6 +428,36 @@ where
   pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
     former::StoragePreform::preform( self.storage )
+  }
+}
+
+struct __Vec1End;
+#[ automatically_derived ]
+impl< Definition > former::FormingEnd
+<
+  former::VectorDefinition< String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
+>
+for __Vec1End
+where
+  Definition : former::FormerDefinition,
+  Definition::Types : former::FormerDefinitionTypes
+  <
+    Storage = Struct1FormerStorage
+  >,
+  // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
+{
+  fn call( &self, storage : Vec< String >, super_former : Option< Struct1Former< Definition > > ) -> Struct1Former< Definition >
+  {
+    let mut super_former = super_former.unwrap();
+    if let Some( ref mut field ) = super_former.storage.vec_1
+    {
+      former::ContainerAssign::assign( field, storage );
+    }
+    else
+    {
+      super_former.storage.vec_1 = Some( storage );
+    }
+    super_former
   }
 }
 

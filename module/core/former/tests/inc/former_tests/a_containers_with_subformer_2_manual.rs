@@ -157,8 +157,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn __vec_1< Former2 >( self ) ->
-  Former2
+  pub fn __vec_1< Former2 >( self ) -> Former2
   where
     Former2 : former::FormerBegin
     <
