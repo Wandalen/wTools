@@ -397,7 +397,7 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
       {
         qt!
         {
-          ::core::option::Option::Some( ( #default_val ).into() )
+          ::core::option::Option::Some( ::core::convert::Into::into( #default_val ) )
         }
       }
     };
@@ -457,7 +457,7 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
       {
         qt!
         {
-          ( #default_val ).into()
+          ::core::convert::Into::into( #default_val )
         }
       }
     };
@@ -1164,7 +1164,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
         {
           storage : storage.unwrap(),
           context : context,
-          on_end : ::core::option::Option::Some( on_end.into() ),
+          on_end : ::core::option::Option::Some( ::core::convert::Into::into( on_end ) ),
         }
       }
 
