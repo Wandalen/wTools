@@ -1,24 +1,17 @@
 
-/// xxx
+/// zzz : write description
 pub trait Storage : ::core::default::Default
 {
-  // type Types : FormerDefinitionTypes< Storage = Self >;
   type Formed;
 }
 
-/// xxx
+/// zzz : write description
 pub trait StoragePerform : Storage
 {
-  // fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinitionTypes >::Formed;
-  /// Default implementation of routine transforming storage into formed structure.
-  /// Does not have to be implemented and does not have to be used, especially if there is complex logic behind tranfromation, but can be used if algorithm is traight-forward and does not require any context.
-  ///
-  /// `former::ReturnPreformed` rely on `StoragePerform::preform` returning its result.
-  ///
   fn preform( self ) -> Self::Formed;
 }
 
-/// xxx
+/// zzz : write description
 pub trait FormerDefinitionTypes : Sized
 {
   // type Storage : Storage< Definition = Self >;
@@ -31,7 +24,7 @@ pub trait FormerDefinitionTypes : Sized
 
 }
 
-/// xxx
+/// zzz : write description
 pub trait FormerDefinition : Sized
 {
   type Types : FormerDefinitionTypes;
@@ -94,7 +87,7 @@ where
   }
 }
 
-/// xxx : update description
+/// zzz : update description
 #[ derive( Debug, Default ) ]
 pub struct ReturnStorage;
 
@@ -113,7 +106,7 @@ where
   }
 }
 
-// xxx : improve description
+// zzz : improve description
 /// Use `NoEnd` to fill parameter FormingEnd in struct where parameter exists, but it is not needed.
 /// It might be needed if the same struct is used as `FormerDefinitionTypes` and as `FormerDefinition`, because the first one does not have information aboud End function.
 /// Similar logic which `std::marker::PhantomData` has behind.
@@ -223,7 +216,7 @@ for FormingEndWrapper< Definition >
 /// sophisticated and flexible construction patterns conducive to complex data transformations or object creation
 /// sequences within builder patterns.
 
-// xxx : update description
+// zzz : update description
 pub trait FormerBegin< Definition : FormerDefinition >
 {
 

@@ -36,7 +36,7 @@ where
   #[ inline( always ) ]
   fn _begin
   (
-    storage : core::option::Option< TemplateParameterDefinitionFormerStorage >, /* xxx2 : that should be storage */
+    storage : core::option::Option< TemplateParameterDefinitionFormerStorage >,
     context : core::option::Option< Context >,
     on_end : End,
   ) -> Self

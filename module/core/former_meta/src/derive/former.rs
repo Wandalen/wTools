@@ -836,7 +836,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   let generics = &ast.generics;
   let ( generics_impl, generics_ty, generics_where ) = generics.split_for_impl();
-  // xxx : eliminate generics_params maybe
+  // zzz : eliminate generics_params maybe
   let _generics_params = generics::params_names( generics ).params;
   let generics_params = if _generics_params.len() == 0
   {
@@ -859,7 +859,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePerform,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage_name_ident #generics_ty >,
   };
-  // xxx : write helper to fix bug with where
+  // zzz : write helper to fix bug with where
   let generics_of_former = generics::merge( &generics, &extra_generics );
   let ( generics_of_former_impl, generics_of_former_ty, generics_of_former_where ) = generics_of_former.split_for_impl();
   let generics_of_former_with_defaults = generics_of_former.params.clone();
@@ -1002,7 +1002,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     // = storage
 
-    // xxx : rename to storage
     #[ doc = "Container of a corresponding former." ]
     pub struct #former_storage_name_ident #generics_ty
     #generics_where
@@ -1068,10 +1067,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       storage : < Definition::Types as former::FormerDefinitionTypes >::Storage,
       context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
       on_end : core::option::Option< Definition::End >,
-      // storage : #former_storage_name_ident #generics_ty,
-      // context : core::option::Option< __FormerContext >,
-      // on_end : core::option::Option< __FormerEnd >,
-      // xxx : should on_end be optional?
+      // zzz : should on_end be optional?
     }
 
     #[ automatically_derived ]
@@ -1209,7 +1205,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     diag::debug_report_print( "derive : Former", original_input, &result );
   }
 
-  // xxx : implement
+  // zzz : implement hints
   if example_of_custom_setter
   {
     let _example =
@@ -1233,4 +1229,4 @@ where
   Ok( result )
 }
 
-// xxx : explain concept of Storage
+// zzz : explain concept of Storage
