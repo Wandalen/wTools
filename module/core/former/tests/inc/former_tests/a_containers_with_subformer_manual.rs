@@ -338,11 +338,11 @@ where
         String,
         Self,
         Self,
-        __Vec1End,
+        __vec1_end,
       >
     >,
   {
-    Former2::_begin( None, Some( self ), __Vec1End )
+    Former2::_begin( None, Some( self ), __vec1_end )
   }
 
   pub fn vec_1( self ) ->
@@ -351,7 +351,7 @@ where
     String,
     Self,
     Self,
-    __Vec1End,
+    __vec1_end,
   >
   {
     self.vec_1_set::< former::VectorSubformer::
@@ -359,7 +359,7 @@ where
       String,
       Self,
       Self,
-      __Vec1End,
+      __vec1_end,
     > >()
   }
 
@@ -406,14 +406,14 @@ where
 }
 
 // zzz : description
-/// Return original former after subformer for vec1 is done.
-pub struct __Vec1End;
+/// Return original former after subformer for `vec_1` is done.
+pub struct __vec1_end;
 #[ automatically_derived ]
 impl< Definition > former::FormingEnd
 <
   former::VectorDefinition< String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
 >
-for __Vec1End
+for __vec1_end
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes
@@ -438,14 +438,14 @@ where
 }
 
 // zzz : description
-/// Return original former after subformer for vec1 is done.
-pub struct __HashMapEnd;
+/// Return original former after subformer for `hashmap_string_1` is done.
+pub struct __hashmap_strings_1_end;
 #[ automatically_derived ]
 impl< Definition > former::FormingEnd
 <
   former::HashMapDefinition< String, String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
 >
-for __HashMapEnd
+for __hashmap_strings_1_end
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes
@@ -464,6 +464,38 @@ where
     else
     {
       super_former.storage.hashmap_strings_1 = Some( storage );
+    }
+    super_former
+  }
+}
+
+// zzz : description
+/// Return original former after subformer for `hashset_string_1` is done.
+pub struct __hashset_strings_1_end;
+#[ automatically_derived ]
+impl< Definition > former::FormingEnd
+<
+  former::HashSetDefinition< String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
+>
+for __hashset_strings_1_end
+where
+  Definition : former::FormerDefinition,
+  Definition::Types : former::FormerDefinitionTypes
+  <
+    Storage = Struct1FormerStorage
+  >,
+{
+  #[ inline( always ) ]
+  fn call( &self, storage : std::collections::HashSet< String >, super_former : Option< Struct1Former< Definition > > ) -> Struct1Former< Definition >
+  {
+    let mut super_former = super_former.unwrap();
+    if let Some( ref mut field ) = super_former.storage.hashset_strings_1
+    {
+      former::ContainerAssign::assign( field, storage );
+    }
+    else
+    {
+      super_former.storage.hashset_strings_1 = Some( storage );
     }
     super_former
   }
