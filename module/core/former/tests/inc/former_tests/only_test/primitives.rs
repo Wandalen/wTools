@@ -82,6 +82,7 @@ tests_impls!
 
   fn custom_definition_params()
   {
+    // zzz : make example of that
 
     // default explicit params
     let got = Struct1Former
@@ -92,7 +93,7 @@ tests_impls!
     let exp = Struct1::former().int_1( 13 ).form();
     a_id!( got, exp );
 
-    // default explicit params
+    // default explicit params with wrapper
     fn f1( storage : Struct1FormerStorage, _context : Option< () > ) -> Struct1
     {
       former::StoragePreform::preform( storage )
@@ -101,11 +102,72 @@ tests_impls!
     let got = Struct1Former
     ::< Struct1FormerDefinition< (), Struct1, _ > >
     ::new( end_wrapper )
-    // ::new( ( | storage : Struct1FormerStorage, _context | -> Struct1 { former::StoragePreform::preform( storage ) } ).into() )
     .int_1( 13 )
     .form();
     let exp = Struct1::former().int_1( 13 ).form();
     a_id!( got, exp );
+
+    // default explicit params with wrapper and closure
+    let got = Struct1Former
+    ::< Struct1FormerDefinition< (), Struct1, _ > >
+    ::new( former::FormingEndWrapper::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
+    .int_1( 13 )
+    .form();
+    let exp = Struct1::former().int_1( 13 ).form();
+    a_id!( got, exp );
+
+    // default explicit params with wrapper and closure, auto types
+    let got = Struct1Former
+    ::< Struct1FormerDefinition< _, _, _ > >
+    ::new( former::FormingEndWrapper::new( | storage, _context : Option< () > | { former::StoragePreform::preform( storage ) } ) )
+    .int_1( 13 )
+    .form();
+    let exp = Struct1::former().int_1( 13 ).form();
+    a_id!( got, exp );
+
+    // custom params
+    let got = Struct1Former
+    ::< Struct1FormerDefinition< i32, i32, _ > >
+    ::begin
+    (
+      None,
+      Some( 3 ),
+      former::FormingEndWrapper::new
+      (
+        | storage : Struct1FormerStorage, context | { 2 * ( storage.int_1.unwrap() + context.unwrap() ) }
+      ),
+    )
+    .int_1( 13 )
+    .form();
+    a_id!( got, 32 );
+
+    // custom params with into
+    let got = Struct1Former
+    ::< Struct1FormerDefinition< i32, i32, former::FormingEndWrapper< Struct1FormerDefinitionTypes< i32, i32 > > > >
+    ::begin
+    (
+      None,
+      Some( 3 ),
+      (
+        | storage : Struct1FormerStorage, context : Option< i32 > | { 2 * ( storage.int_1.unwrap() + context.unwrap() ) }
+      ).into(),
+    )
+    .int_1( 13 )
+    .form();
+    a_id!( got, 32 );
+
+    // custom params begin_with
+    let got = Struct1Former
+    ::< Struct1FormerDefinition< i32, i32, former::FormingEndWrapper< Struct1FormerDefinitionTypes< i32, i32 > > > >
+    ::begin_with
+    (
+      None,
+      Some( 3 ),
+      | storage : Struct1FormerStorage, context : Option< i32 > | { 2 * ( storage.int_1.unwrap() + context.unwrap() ) }
+    )
+    .int_1( 13 )
+    .form();
+    a_id!( got, 32 );
 
     // xxx2 : continue
     // // default explicit params

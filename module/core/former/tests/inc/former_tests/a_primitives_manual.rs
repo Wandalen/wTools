@@ -179,8 +179,8 @@ pub struct Struct1Former
 >
 where
   Definition : former::FormerDefinition,
-  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
+  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
 {
   storage : < Definition::Types as former::FormerDefinitionTypes >::Storage,
   context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
@@ -190,8 +190,8 @@ where
 impl< Definition > Struct1Former< Definition >
 where
   Definition : former::FormerDefinition,
-  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
+  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
 {
 
   #[ inline( always ) ]
@@ -200,6 +200,50 @@ where
     let result = self.form();
     return result;
   }
+
+  #[ inline( always ) ]
+  pub fn begin_with< IntoEnd >
+  (
+    mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
+    context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
+    on_end : IntoEnd,
+  ) -> Self
+  where
+    IntoEnd : ::core::convert::Into< < Definition as former::FormerDefinition >::End >
+  {
+    if storage.is_none()
+    {
+      storage = Some( core::default::Default::default() );
+    }
+    Self
+    {
+      storage : storage.unwrap(),
+      context,
+      on_end : ::core::option::Option::Some( on_end.into() ),
+    }
+  }
+
+  // #[ inline( always ) ]
+  // pub fn begin< IntoEnd >
+  // (
+  //   mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
+  //   context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
+  //   on_end : IntoEnd,
+  // ) -> Self
+  // where
+  //   IntoEnd : ::core::convert::Into< < Definition as former::FormerDefinition >::End >
+  // {
+  //   if storage.is_none()
+  //   {
+  //     storage = Some( core::default::Default::default() );
+  //   }
+  //   Self
+  //   {
+  //     storage : storage.unwrap(),
+  //     context,
+  //     on_end : ::core::option::Option::Some( on_end.into() ),
+  //   }
+  // }
 
   #[ inline( always ) ]
   pub fn begin
@@ -296,44 +340,6 @@ where
   }
 
 }
-
-// // impl Struct1Former
-//
-// impl< Definition > Struct1Former< Definition >
-// where
-//   // Types : FormerDefinitionTypes< Context = () >,
-//   Definition : former::FormerDefinition< End = former::ReturnPreformed >,
-//   Definition::Types : former::FormerDefinitionTypes
-//   <
-//     Storage = Struct1FormerStorage,
-//     Formed = Struct1,
-//     Context = (),
-//   >,
-//   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform, // xxx : redundant?
-// {
-//
-//   // zzz : update description
-//   #[ inline( always ) ]
-//   pub fn new( on_end : Definition::End ) -> Self
-//   {
-//     Self::begin( None, None, on_end )
-//   }
-//
-//   // zzz : update description
-//   #[ inline( always ) ]
-//   pub fn new_with< IntoEnd >( end : IntoEnd ) -> Self
-//   where
-//     IntoEnd : Into< Definition::End >,
-//   {
-//     Self::begin
-//     (
-//       None,
-//       None,
-//       end.into(),
-//     )
-//   }
-//
-// }
 
 //
 
