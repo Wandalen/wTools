@@ -19,13 +19,12 @@ mod former_tests
   mod a_primitives_manual;
   // mod a_primitives_expanded;
   mod a_primitives;
-  // mod a_containers_without_subformer_manual;
   mod a_containers_without_subformer;
-//   #[ cfg( not( feature = "no_std" ) ) ]
-//   mod a_containers_with_subformer_manual;
-//   #[ cfg( not( feature = "no_std" ) ) ]
-//   mod a_containers_with_subformer ;
-//
+  // #[ cfg( not( feature = "no_std" ) ) ]
+  // mod a_containers_with_subformer_manual;
+  // #[ cfg( not( feature = "no_std" ) ) ]
+  // mod a_containers_with_subformer ;
+
 //   mod attribute_default_container;
 //   mod attribute_default_primitive;
 //   mod attribute_perform;

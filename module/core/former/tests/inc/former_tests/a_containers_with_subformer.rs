@@ -5,6 +5,7 @@ use super::*;
 // use std::collections::HashSet;
 
 #[ derive( Debug, PartialEq, the_module::Former ) ]
+#[ debug ]
 pub struct Struct1
 {
   #[ subformer( the_module::VectorSubformer ) ]
@@ -15,4 +16,5 @@ pub struct Struct1
   hashset_strings_1 : std::collections::HashSet< String >,
 }
 
-include!( "./only_test/containers_with_subformer.rs" );
+// include!( "./only_test/containers_with_subformer.rs" );
+// xxx : uncomment
