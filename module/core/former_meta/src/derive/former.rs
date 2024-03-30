@@ -1119,6 +1119,33 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
 
       ///
+      /// Construct new instance of former with default parameters.
+      ///
+      // zzz : improve description
+      #[ inline( always ) ]
+      pub fn _new_precise( on_end : Definition::End ) -> Self
+      {
+        Self::begin( None, None, on_end )
+      }
+
+      ///
+      /// Construct new instance of former with default parameters.
+      ///
+      // zzz : improve description
+      #[ inline( always ) ]
+      pub fn new< IntoEnd >( end : IntoEnd ) -> Self
+      where
+        IntoEnd : Into< Definition::End >,
+      {
+        Self::begin
+        (
+          None,
+          None,
+          end,
+        )
+      }
+
+      ///
       /// Begin the process of forming. Expects context of forming to return it after forming.
       ///
       // zzz : improve description
@@ -1147,7 +1174,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       ///
       // zzz : improve description
       #[ inline( always ) ]
-      pub fn begin
+      pub fn begin< IntoEnd >
       (
         mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
         context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
@@ -1167,28 +1194,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
           on_end : ::core::option::Option::Some( ::core::convert::Into::into( on_end ) ),
         }
       }
-
-//   #[ inline( always ) ]
-// pub fn begin< IntoEnd >
-// (
-//   mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
-//   context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
-//   on_end : IntoEnd,
-// ) -> Self
-// where
-//   IntoEnd : ::core::convert::Into< < Definition as former::FormerDefinition >::End >
-// {
-//   if storage.is_none()
-//   {
-//     storage = Some( core::default::Default::default() );
-//   }
-//   Self
-//   {
-//     storage : storage.unwrap(),
-//     context,
-//     on_end : ::core::option::Option::Some( on_end.into() ),
-//   }
-// }
 
       ///
       /// End the process of forming returning original context of forming.
@@ -1229,22 +1234,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
       {
         former::StoragePreform::preform( self.storage )
-      }
-
-    }
-
-    #[ automatically_derived ]
-    impl #generics_impl #former < #generics_params >
-    #generics_where
-    {
-
-      ///
-      /// Construct new instance of former with default parameters.
-      ///
-      #[ inline( always ) ]
-      pub fn new( on_end : < #former_definition as former::FormerDefinition >::End ) -> Self
-      {
-        Self::begin( None, None, on_end )
       }
 
     }

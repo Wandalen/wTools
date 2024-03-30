@@ -205,26 +205,24 @@ where
     return result;
   }
 
+  // zzz : update description
   #[ inline( always ) ]
-  pub fn begin< IntoEnd >
-  (
-    mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
-    context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
-    on_end : IntoEnd,
-  ) -> Self
-  where
-    IntoEnd : ::core::convert::Into< < Definition as former::FormerDefinition >::End >
+  pub fn _new_precise( on_end : Definition::End ) -> Self
   {
-    if storage.is_none()
-    {
-      storage = Some( core::default::Default::default() );
-    }
-    Self
-    {
-      storage : storage.unwrap(),
-      context,
-      on_end : ::core::option::Option::Some( ::core::convert::Into::into( on_end ) ),
-    }
+    Self::_begin_precise( None, None, on_end )
+  }
+
+  #[ inline( always ) ]
+  pub fn new< IntoEnd >( end : IntoEnd ) -> Self
+  where
+    IntoEnd : Into< Definition::End >,
+  {
+    Self::begin
+    (
+      None,
+      None,
+      end,
+    )
   }
 
   #[ inline( always ) ]
@@ -244,6 +242,28 @@ where
       storage : storage.unwrap(),
       context,
       on_end : ::core::option::Option::Some( on_end ),
+    }
+  }
+
+  #[ inline( always ) ]
+  pub fn begin< IntoEnd >
+  (
+    mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
+    context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
+    on_end : IntoEnd,
+  ) -> Self
+  where
+    IntoEnd : ::core::convert::Into< < Definition as former::FormerDefinition >::End >
+  {
+    if storage.is_none()
+    {
+      storage = Some( core::default::Default::default() );
+    }
+    Self
+    {
+      storage : storage.unwrap(),
+      context,
+      on_end : ::core::option::Option::Some( ::core::convert::Into::into( on_end ) ),
     }
   }
 
@@ -284,26 +304,6 @@ where
     debug_assert!( self.storage.string_optional_1.is_none() );
     self.storage.string_optional_1 = Some( ::core::convert::Into::into( src ) );
     self
-  }
-
-  // zzz : update description
-  #[ inline( always ) ]
-  pub fn _new_precise( on_end : Definition::End ) -> Self
-  {
-    Self::_begin_precise( None, None, on_end )
-  }
-
-  #[ inline( always ) ]
-  pub fn new< IntoEnd >( end : IntoEnd ) -> Self
-  where
-    IntoEnd : Into< Definition::End >,
-  {
-    Self::begin
-    (
-      None,
-      None,
-      end,
-    )
   }
 
 }
