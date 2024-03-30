@@ -18,7 +18,7 @@ tests_impls!
     a_id!( former.storage.string_optional_1, None );
     a_id!( former.context, None );
     a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnPreformed ) ) );
-    let former2 = Struct1Former::new();
+    let former2 = Struct1Former::new( former::ReturnPreformed );
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
 
     let command = Struct1::former().form();
@@ -64,6 +64,17 @@ tests_impls!
     ::begin( Some( storage ), Some( () ), the_module::ReturnPreformed )
     .form();
     a_id!( got, exp );
+
+  }
+
+  //
+
+  fn new()
+  {
+
+    let former = Struct1::former();
+    let former2 = Struct1Former::new( former::ReturnPreformed );
+    a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
 
   }
 
@@ -335,6 +346,7 @@ tests_index!
 {
   internals,
   begin,
+  new,
   preform,
   definition,
   storage,

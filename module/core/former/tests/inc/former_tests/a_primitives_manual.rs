@@ -17,7 +17,7 @@ impl Struct1
 {
   pub fn former() -> Struct1Former
   {
-    Struct1Former::new()
+    Struct1Former::new( the_module::ReturnPreformed )
   }
 }
 
@@ -207,7 +207,6 @@ where
     mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
     context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
     on_end : < Definition as former::FormerDefinition >::End,
-    // xxx : cover by test existance of these 3 parameters in the function
   ) -> Self
   {
     if storage.is_none()
@@ -271,7 +270,6 @@ where
 {
 
   pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
-  // pub fn preform( self ) -> Struct1
   {
     former::StoragePerform::preform( self.storage )
   }
@@ -281,16 +279,14 @@ where
 impl Struct1Former
 {
 
-  // xxx : should pass callback
   #[ inline( always ) ]
-  pub fn new() -> Struct1Former
+  pub fn new( on_end : < Struct1FormerDefinition as former::FormerDefinition >::End ) -> Self
   {
-    Struct1Former::begin( None, None, the_module::ReturnPreformed )
+    Self::begin( None, None, on_end )
   }
 
 }
 
 //
 
-// xxx : uncomment
 include!( "./only_test/primitives.rs" );
