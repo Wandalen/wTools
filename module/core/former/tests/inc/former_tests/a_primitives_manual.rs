@@ -260,6 +260,27 @@ where
     self
   }
 
+  // zzz : update description
+  #[ inline( always ) ]
+  pub fn new( on_end : Definition::End ) -> Self
+  {
+    Self::begin( None, None, on_end )
+  }
+
+  // zzz : update description
+  #[ inline( always ) ]
+  pub fn new_with< IntoEnd >( end : IntoEnd ) -> Self
+  where
+    IntoEnd : Into< Definition::End >,
+  {
+    Self::begin
+    (
+      None,
+      None,
+      end.into(),
+    )
+  }
+
 }
 
 impl< Definition > Struct1Former< Definition >
@@ -276,16 +297,43 @@ where
 
 }
 
-impl Struct1Former
-{
-
-  #[ inline( always ) ]
-  pub fn new( on_end : < Struct1FormerDefinition as former::FormerDefinition >::End ) -> Self
-  {
-    Self::begin( None, None, on_end )
-  }
-
-}
+// // impl Struct1Former
+//
+// impl< Definition > Struct1Former< Definition >
+// where
+//   // Types : FormerDefinitionTypes< Context = () >,
+//   Definition : former::FormerDefinition< End = former::ReturnPreformed >,
+//   Definition::Types : former::FormerDefinitionTypes
+//   <
+//     Storage = Struct1FormerStorage,
+//     Formed = Struct1,
+//     Context = (),
+//   >,
+//   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePerform, // xxx : redundant?
+// {
+//
+//   // zzz : update description
+//   #[ inline( always ) ]
+//   pub fn new( on_end : Definition::End ) -> Self
+//   {
+//     Self::begin( None, None, on_end )
+//   }
+//
+//   // zzz : update description
+//   #[ inline( always ) ]
+//   pub fn new_with< IntoEnd >( end : IntoEnd ) -> Self
+//   where
+//     IntoEnd : Into< Definition::End >,
+//   {
+//     Self::begin
+//     (
+//       None,
+//       None,
+//       end.into(),
+//     )
+//   }
+//
+// }
 
 //
 

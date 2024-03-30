@@ -292,34 +292,6 @@ where
 
 }
 
-// impl< E, T, Types, Definition > ContainerSubformer< E, Definition >
-// where
-//   Types : FormerDefinitionTypes< Context = (), Storage = T, Formed = T >,
-//   Definition : FormerDefinition< Types = Types, End = ReturnStorage >,
-//   < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
-//   < Definition::Types as FormerDefinitionTypes >::Storage : StoragePerform< Formed = < Definition::Types as FormerDefinitionTypes >::Formed >,
-// {
-//
-//   // xxx : update description
-//   /// Initializes a new `ContainerSubformer` instance, starting with an empty formed.
-//   /// This function serves as the entry point for the builder pattern.
-//   ///
-//   /// # Returns
-//   /// A new instance of `ContainerSubformer` with an empty internal formed.
-//   ///
-//   #[ inline( always ) ]
-//   pub fn new_returning_storage() -> Self
-//   {
-//     Self::begin
-//     (
-//       None,
-//       None,
-//       ReturnStorage,
-//     )
-//   }
-//
-// }
-
 impl< E, Storage, Formed, Types, Definition > ContainerSubformer< E, Definition >
 where
   Types : FormerDefinitionTypes< Context = (), Storage = Storage, Formed = Formed >,
@@ -333,7 +305,7 @@ where
   /// # Returns
   /// A new instance of `ContainerSubformer` with an empty internal formed.
   ///
-  // xxx : update description
+  // zzz : update description
   #[ inline( always ) ]
   pub fn new( end : Definition::End ) -> Self
   {
@@ -345,7 +317,7 @@ where
     )
   }
 
-  // xxx : update description
+  // zzz : update description
   #[ inline( always ) ]
   pub fn new_with< IntoEnd >( end : IntoEnd ) -> Self
   where

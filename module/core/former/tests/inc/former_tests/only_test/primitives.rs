@@ -18,7 +18,7 @@ tests_impls!
     a_id!( former.storage.string_optional_1, None );
     a_id!( former.context, None );
     a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnPreformed ) ) );
-    let former2 = Struct1Former::new( former::ReturnPreformed );
+    let former2 = Struct1Former::< Struct1FormerDefinition >::new( former::ReturnPreformed );
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
 
     let command = Struct1::former().form();
@@ -73,8 +73,33 @@ tests_impls!
   {
 
     let former = Struct1::former();
-    let former2 = Struct1Former::new( former::ReturnPreformed );
+    let former2 = Struct1Former::< Struct1FormerDefinition >::new( former::ReturnPreformed );
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
+
+  }
+
+  //
+
+  fn custom_definition_params()
+  {
+
+    // default explicit params
+    let got = Struct1Former
+    ::< Struct1FormerDefinition< (), Struct1, _ > >
+    ::new( former::ReturnPreformed )
+    .int_1( 13 )
+    .form();
+    let exp = Struct1::former().int_1( 13 ).form();
+    a_id!( got, exp );
+
+    // xxx2 : continue
+    // // default explicit params
+    // let got = Struct1Former
+    // ::< Struct1FormerDefinition< (), i32, _ > >
+    // ::new( ( | storage : Struct1FormerStorage, _context | storage.int_1.unwrap()*2 ).into() )
+    // .int_1( 13 )
+    // .form();
+    // // a_id!( got, 26 );
 
   }
 
@@ -347,6 +372,7 @@ tests_index!
   internals,
   begin,
   new,
+  custom_definition_params,
   preform,
   definition,
   storage,
