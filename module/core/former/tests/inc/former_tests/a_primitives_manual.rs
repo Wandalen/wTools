@@ -246,7 +246,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn begin_explicit
+  pub fn begin_precise
   (
     mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
     context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
@@ -306,24 +306,30 @@ where
 
   // zzz : update description
   #[ inline( always ) ]
-  pub fn new( on_end : Definition::End ) -> Self
+  pub fn new_precise( on_end : Definition::End ) -> Self
   {
-    Self::begin_explicit( None, None, on_end )
+    Self::begin_precise( None, None, on_end )
   }
 
-  // zzz : update description
   #[ inline( always ) ]
-  pub fn new_with< IntoEnd >( end : IntoEnd ) -> Self
-  where
-    IntoEnd : Into< Definition::End >,
+  pub fn new( on_end : Definition::End ) -> Self
   {
-    Self::begin
-    (
-      None,
-      None,
-      end.into(),
-    )
+    Self::begin_precise( None, None, on_end )
   }
+
+  // zzz : use
+  // #[ inline( always ) ]
+  // pub fn new< IntoEnd >( end : IntoEnd ) -> Self
+  // where
+  //   IntoEnd : Into< Definition::End >,
+  // {
+  //   Self::begin
+  //   (
+  //     None,
+  //     None,
+  //     end.into(),
+  //   )
+  // }
 
 }
 
