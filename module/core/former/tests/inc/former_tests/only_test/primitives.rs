@@ -46,10 +46,24 @@ tests_impls!
   fn begin()
   {
 
+    // begin with none
+    let got = Struct1Former::< Struct1FormerDefinition >::begin( None, None, the_module::ReturnPreformed ).int_1( 13 ).form();
+    let exp = Struct1::former().int_1( 13 ).form();
+    a_id!( got, exp );
+
+    // begin with storage
     let mut storage = Struct1FormerStorage::default();
     storage.int_1 = Some( 13 );
-    // Struct1Former::< (), the_module::ReturnFormed >::begin( storage, None, the_module::ReturnFormed )
-    // xxx
+    let exp = Struct1Former::< Struct1FormerDefinition >::begin( Some( storage ), None, the_module::ReturnPreformed ).form();
+    a_id!( got, exp );
+
+    // begin with context
+    let mut storage = Struct1FormerStorage::default();
+    storage.int_1 = Some( 13 );
+    let exp = Struct1Former::< Struct1FormerDefinition >
+    ::begin( Some( storage ), Some( () ), the_module::ReturnPreformed )
+    .form();
+    a_id!( got, exp );
 
   }
 

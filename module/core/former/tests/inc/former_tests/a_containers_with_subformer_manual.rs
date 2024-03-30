@@ -13,9 +13,9 @@ pub struct Struct1
 
 impl Struct1
 {
-  pub fn former() -> Struct1Former< Struct1, the_module::ReturnFormed >
+  pub fn former() -> Struct1Former< Struct1, the_module::ReturnPreformed >
   {
-    Struct1Former::< Struct1, the_module::ReturnFormed >::new()
+    Struct1Former::< Struct1, the_module::ReturnPreformed >::new()
   }
 }
 
@@ -50,7 +50,7 @@ impl Default for Struct1FormerStorage
 pub struct Struct1Former
 <
   Context = Struct1,
-  End = the_module::ReturnFormed,
+  End = the_module::ReturnPreformed,
 >
 where
   End : the_module::FormingEnd< Struct1, Context >,
@@ -116,13 +116,13 @@ where
   }
 
   // #[ inline( always ) ]
-  // pub fn new() -> Struct1Former<Struct1, the_module::ReturnFormed>
+  // pub fn new() -> Struct1Former<Struct1, the_module::ReturnPreformed>
   // {
   //   Struct1Former::
   //   <
   //     Struct1,
-  //     the_module::ReturnFormed,
-  //   >::begin(None, the_module::ReturnFormed)
+  //     the_module::ReturnPreformed,
+  //   >::begin(None, the_module::ReturnPreformed)
   // }
 
   #[ inline( always ) ]
@@ -254,13 +254,13 @@ where
 // where
 //   End: the_module::FormingEnd<Struct1, Context>,
 
-impl Struct1Former< Struct1, the_module::ReturnFormed >
+impl Struct1Former< Struct1, the_module::ReturnPreformed >
 {
 
   #[ inline( always ) ]
   pub fn new() -> Self
   {
-    Self::begin( None, None, the_module::ReturnFormed )
+    Self::begin( None, None, the_module::ReturnPreformed )
   }
 
 }

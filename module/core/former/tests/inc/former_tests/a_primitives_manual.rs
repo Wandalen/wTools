@@ -173,17 +173,6 @@ for Struct1FormerStorage
 
 // = former
 
-// #[ derive( Default ) ]
-// pub struct ContainerSubformer< E, Definition >
-// where
-//   Definition : FormerDefinition,
-//   // < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
-// {
-//   storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
-//   context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
-//   on_end : core::option::Option< Definition::End >,
-// }
-
 pub struct Struct1Former
 <
   Definition = Struct1FormerDefinition,
