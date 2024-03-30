@@ -47,47 +47,6 @@ tests_impls!
   {
     // zzz : make example of that
 
-    // default explicit params
-    let got = Struct1Former
-    ::< Struct1FormerDefinition< (), Struct1, _ > >
-    ::new( former::ReturnPreformed )
-    .int_1( 13 )
-    .form();
-    let exp = Struct1::former().int_1( 13 ).form();
-    a_id!( got, exp );
-
-    // default explicit params with wrapper
-    fn f1( storage : Struct1FormerStorage, _context : Option< () > ) -> Struct1
-    {
-      former::StoragePreform::preform( storage )
-    }
-    let end_wrapper : former::FormingEndWrapper< Struct1FormerDefinitionTypes< (), Struct1 > > = former::FormingEndWrapper::new( f1 );
-    let got = Struct1Former
-    ::< Struct1FormerDefinition< (), Struct1, _ > >
-    ::new( end_wrapper )
-    .int_1( 13 )
-    .form();
-    let exp = Struct1::former().int_1( 13 ).form();
-    a_id!( got, exp );
-
-    // default explicit params with wrapper and closure
-    let got = Struct1Former
-    ::< Struct1FormerDefinition< (), Struct1, _ > >
-    ::new( former::FormingEndWrapper::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
-    .int_1( 13 )
-    .form();
-    let exp = Struct1::former().int_1( 13 ).form();
-    a_id!( got, exp );
-
-    // default explicit params with wrapper and closure, auto types
-    let got = Struct1Former
-    ::< Struct1FormerDefinition< _, _, _ > >
-    ::new( former::FormingEndWrapper::new( | storage, _context : Option< () > | { former::StoragePreform::preform( storage ) } ) )
-    .int_1( 13 )
-    .form();
-    let exp = Struct1::former().int_1( 13 ).form();
-    a_id!( got, exp );
-
     // custom params
     let got = Struct1Former
     ::< Struct1FormerDefinition< i32, i32, former::FormingEndWrapper< Struct1FormerDefinitionTypes< i32, i32 > > > >
@@ -207,6 +166,7 @@ tests_impls!
   fn new()
   {
 
+    // basic case
     let former = Struct1::former();
     let former2 = Struct1Former::< Struct1FormerDefinition >::new_precise( former::ReturnPreformed );
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
@@ -214,11 +174,101 @@ tests_impls!
     let got = former2.form();
     a_id!( got, exp );
 
+    // default explicit params
+    let got = Struct1Former
+    ::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >
+    ::new( former::ReturnPreformed )
+    .int_1( 13 )
+    .form();
+    let exp = Struct1::former().int_1( 13 ).form();
+    a_id!( got, exp );
+
+    // default explicit params with wrapper
+    fn f1( storage : Struct1FormerStorage, _context : Option< () > ) -> Struct1
+    {
+      former::StoragePreform::preform( storage )
+    }
+    let end_wrapper : former::FormingEndWrapper< Struct1FormerDefinitionTypes< (), Struct1 > > = former::FormingEndWrapper::new( f1 );
+    let got = Struct1Former
+    ::< Struct1FormerDefinition< (), Struct1, former::FormingEndWrapper< Struct1FormerDefinitionTypes< (), Struct1 > > > >
+    ::new( end_wrapper )
+    .int_1( 13 )
+    .form();
+    let exp = Struct1::former().int_1( 13 ).form();
+    a_id!( got, exp );
+
+    // default explicit params with wrapper and closure
+    let got = Struct1Former
+    ::< Struct1FormerDefinition< (), Struct1, former::FormingEndWrapper< Struct1FormerDefinitionTypes< (), Struct1 > > > >
+    ::new( former::FormingEndWrapper::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
+    .int_1( 13 )
+    .form();
+    let exp = Struct1::former().int_1( 13 ).form();
+    a_id!( got, exp );
+
+    // default explicit params with wrapper and closure, auto types
+    let got = Struct1Former
+    ::< Struct1FormerDefinition< _, _, former::FormingEndWrapper< Struct1FormerDefinitionTypes< (), Struct1 > > > >
+    ::new( former::FormingEndWrapper::new( | storage, _context : Option< () > | { former::StoragePreform::preform( storage ) } ) )
+    .int_1( 13 )
+    .form();
+    let exp = Struct1::former().int_1( 13 ).form();
+    a_id!( got, exp );
+
+  }
+
+  //
+
+  fn new_precise()
+  {
+
+    // basic case
     let former = Struct1::former();
-    let former2 = Struct1Former::< Struct1FormerDefinition >::new( former::ReturnPreformed );
+    let former2 = Struct1Former::< Struct1FormerDefinition >::new_precise( former::ReturnPreformed );
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
     let exp = former.form();
     let got = former2.form();
+    a_id!( got, exp );
+
+    // default explicit params
+    let got = Struct1Former
+    ::< Struct1FormerDefinition< (), Struct1, _ > >
+    ::new_precise( former::ReturnPreformed )
+    .int_1( 13 )
+    .form();
+    let exp = Struct1::former().int_1( 13 ).form();
+    a_id!( got, exp );
+
+    // default explicit params with wrapper
+    fn f1( storage : Struct1FormerStorage, _context : Option< () > ) -> Struct1
+    {
+      former::StoragePreform::preform( storage )
+    }
+    let end_wrapper : former::FormingEndWrapper< Struct1FormerDefinitionTypes< (), Struct1 > > = former::FormingEndWrapper::new( f1 );
+    let got = Struct1Former
+    ::< Struct1FormerDefinition< (), Struct1, _ > >
+    ::new_precise( end_wrapper )
+    .int_1( 13 )
+    .form();
+    let exp = Struct1::former().int_1( 13 ).form();
+    a_id!( got, exp );
+
+    // default explicit params with wrapper and closure
+    let got = Struct1Former
+    ::< Struct1FormerDefinition< (), Struct1, _ > >
+    ::new_precise( former::FormingEndWrapper::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
+    .int_1( 13 )
+    .form();
+    let exp = Struct1::former().int_1( 13 ).form();
+    a_id!( got, exp );
+
+    // default explicit params with wrapper and closure, auto types
+    let got = Struct1Former
+    ::< Struct1FormerDefinition< _, _, _ > >
+    ::new_precise( former::FormingEndWrapper::new( | storage, _context : Option< () > | { former::StoragePreform::preform( storage ) } ) )
+    .int_1( 13 )
+    .form();
+    let exp = Struct1::former().int_1( 13 ).form();
     a_id!( got, exp );
 
   }
@@ -493,6 +543,7 @@ tests_index!
   begin,
   begin_precise,
   new,
+  new_precise,
   custom_definition_params,
   preform,
   definition,

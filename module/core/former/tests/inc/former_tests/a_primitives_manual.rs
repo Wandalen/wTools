@@ -311,25 +311,25 @@ where
     Self::begin_precise( None, None, on_end )
   }
 
-  #[ inline( always ) ]
-  pub fn new( on_end : Definition::End ) -> Self
-  {
-    Self::begin_precise( None, None, on_end )
-  }
+  // #[ inline( always ) ]
+  // pub fn new( on_end : Definition::End ) -> Self
+  // {
+  //   Self::begin_precise( None, None, on_end )
+  // }
 
   // zzz : use
-  // #[ inline( always ) ]
-  // pub fn new< IntoEnd >( end : IntoEnd ) -> Self
-  // where
-  //   IntoEnd : Into< Definition::End >,
-  // {
-  //   Self::begin
-  //   (
-  //     None,
-  //     None,
-  //     end.into(),
-  //   )
-  // }
+  #[ inline( always ) ]
+  pub fn new< IntoEnd >( end : IntoEnd ) -> Self
+  where
+    IntoEnd : Into< Definition::End >,
+  {
+    Self::begin
+    (
+      None,
+      None,
+      end.into(),
+    )
+  }
 
 }
 
