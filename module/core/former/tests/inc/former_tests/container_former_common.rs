@@ -250,8 +250,6 @@ fn custom_definition_custom_end()
     type End = former::FormingEndWrapper< < Self as former::FormerDefinition >::Types >;
   }
 
-  //
-
   fn return_13( _storage : Vec< String >, _context : Option< () > ) -> i32
   {
     13

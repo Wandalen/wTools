@@ -43,8 +43,26 @@ for Struct1FormerDefinition< Context, Formed, End >
   }
 }
 
+#[ derive( Debug ) ]
+pub struct Struct1FormerDefinitionTypes< Context = (), Formed = Struct1 >
+{
+  _phantom : core::marker::PhantomData< ( Context, Formed ) >,
+}
+
+impl< Context, Formed > Default
+for Struct1FormerDefinitionTypes< Context, Formed >
+{
+  fn default() -> Self
+  {
+    Self
+    {
+      _phantom : core::marker::PhantomData,
+    }
+  }
+}
+
 impl< Context, Formed > former::FormerDefinitionTypes
-for Struct1FormerDefinition< Context, Formed, former::NoEnd >
+for Struct1FormerDefinitionTypes< Context, Formed >
 {
   type Storage = Struct1FormerStorage;
   type Formed = Formed;
@@ -54,9 +72,9 @@ for Struct1FormerDefinition< Context, Formed, former::NoEnd >
 impl< Context, Formed, End > former::FormerDefinition
 for Struct1FormerDefinition< Context, Formed, End >
 where
-  End : former::FormingEnd< Struct1FormerDefinition< Context, Formed, former::NoEnd > >,
+  End : former::FormingEnd< Struct1FormerDefinitionTypes< Context, Formed > >,
 {
-  type Types = Struct1FormerDefinition< Context, Formed, former::NoEnd >;
+  type Types = Struct1FormerDefinitionTypes< Context, Formed >;
   type End = End;
 }
 

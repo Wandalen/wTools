@@ -743,8 +743,8 @@ For specifying custom default value use attribute `default`. For example:
 pub fn performer< 'a >
 (
   _name_ident : &syn::Ident,
-  former_definition_name_ident : &syn::Ident,
-  generics_ty : &syn::TypeGenerics< '_ >,
+  _former_definition_name_ident : &syn::Ident,
+  _generics_ty : &syn::TypeGenerics< '_ >,
   attrs : impl Iterator< Item = &'a syn::Attribute >,
 )
 -> Result< ( TokenStream, TokenStream, TokenStream ) >
@@ -829,6 +829,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let former_storage_name_ident = syn::Ident::new( &former_storage_name, name_ident.span() );
   let former_definition_name = format!( "{}FormerDefinition", name_ident );
   let former_definition_name_ident = syn::Ident::new( &former_definition_name, name_ident.span() );
+  let former_definition_types_name = format!( "{}FormerDefinitionTypes", name_ident );
+  let former_definition_types_name_ident = syn::Ident::new( &former_definition_types_name, name_ident.span() );
 
   /* generic parameters */
 
@@ -848,13 +850,11 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   // add embedded generic parameters
   let mut extra_generics : syn::Generics = parse_quote!
   {
-    // < __FormerContext = #name_ident #generics_ty, __FormerEnd = former::ReturnPreformed >
     < Definition = #former_definition_name_ident #generics_ty >
   };
   extra_generics.where_clause = parse_quote!
   {
     where
-      // __FormerEnd : former::FormingEnd< #former_definition_name_ident #generics_ty >,
       Definition : former::FormerDefinition,
       < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePerform,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage_name_ident #generics_ty >,
@@ -945,8 +945,23 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     // = definition
 
-    // #[ derive( Debug, Default ) ]
-    // pub struct #former_definition_name_ident #generics_ty;
+    #[ derive( Debug ) ]
+    pub struct #former_definition_types_name_ident< Context = (), Formed = #name_ident #generics_ty >
+    {
+      _phantom : core::marker::PhantomData< ( Context, Formed ) >,
+    }
+
+    impl< Context, Formed > Default
+    for #former_definition_types_name_ident< Context, Formed >
+    {
+      fn default() -> Self
+      {
+        Self
+        {
+          _phantom : core::marker::PhantomData,
+        }
+      }
+    }
 
     #[ derive( Debug ) ]
     pub struct #former_definition_name_ident< Context = (), Formed = #name_ident #generics_ty, End = former::ReturnPreformed >
@@ -969,7 +984,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     }
 
     impl< Context, Formed > former::FormerDefinitionTypes
-    for #former_definition_name_ident< Context, Formed, former::NoEnd >
+    for #former_definition_types_name_ident< Context, Formed >
     {
       type Storage = #former_storage_name_ident #generics_ty;
       type Formed = Formed;
@@ -979,9 +994,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     impl< Context, Formed, End > former::FormerDefinition
     for #former_definition_name_ident< Context, Formed, End >
     where
-      End : former::FormingEnd< #former_definition_name_ident< Context, Formed, former::NoEnd > >,
+      End : former::FormingEnd< #former_definition_types_name_ident< Context, Formed > >,
     {
-      type Types = #former_definition_name_ident< Context, Formed, former::NoEnd >;
+      type Types = #former_definition_types_name_ident< Context, Formed >;
       type End = End;
     }
 
