@@ -342,52 +342,29 @@ where
         Self,
         Self,
         __Vec1End,
-        // impl former::FormingEnd::< former::VectorDefinition< String, Self, Self, former::NoEnd > >,
-        // former::FormingEndClosure< former::VectorDefinition< String, Self, Self, former::NoEnd > >,
       >
     >,
   {
-
-    // let on_end = | formed : Vec< String >, super_former : ::core::option::Option< Self > | -> Self
-    // {
-    //   let mut super_former = super_former.unwrap();
-    //   if let Some( ref mut field ) = super_former.storage.vec_1
-    //   {
-    //     former::ContainerAssign::assign( field, formed );
-    //   }
-    //   else
-    //   {
-    //     super_former.storage.vec_1 = Some( formed );
-    //   }
-    //   super_former
-    // };
-
-    // Definition : former::FormerDefinition,
-    // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
-    // Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
-
     Former2::_begin( None, Some( self ), __Vec1End )
-    // Former2::_begin( None, Some( self ), on_end )
-    // Former2::_begin( None, Some( self ), former::FormingEndClosure::new( on_end ) )
   }
 
-  // pub fn vec_1( self ) ->
-  // former::VectorSubformer::
-  // <
-  //   String,
-  //   Self,
-  //   Self,
-  //   former::FormingEndClosure< former::VectorDefinition< String, Self, Self, former::NoEnd > >,
-  // >
-  // {
-  //   self.vec_1_set::< former::VectorSubformer::
-  //   <
-  //     String,
-  //     Self,
-  //     Self,
-  //     former::FormingEndClosure< former::VectorDefinition< String, Self, Self, former::NoEnd > > >,
-  //   >()
-  // }
+  pub fn vec_1( self ) ->
+  former::VectorSubformer::
+  <
+    String,
+    Self,
+    Self,
+    __Vec1End,
+  >
+  {
+    self.vec_1_set::< former::VectorSubformer::
+    <
+      String,
+      Self,
+      Self,
+      __Vec1End,
+    > >()
+  }
 
 //   #[ doc = "Subformer setter for the 'hashmap_strings_1' field." ]
 //   #[ inline ]
@@ -431,7 +408,7 @@ where
   }
 }
 
-struct __Vec1End;
+pub struct __Vec1End;
 #[ automatically_derived ]
 impl< Definition > former::FormingEnd
 <
@@ -444,8 +421,8 @@ where
   <
     Storage = Struct1FormerStorage
   >,
-  // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
 {
+  #[ inline( always ) ]
   fn call( &self, storage : Vec< String >, super_former : Option< Struct1Former< Definition > > ) -> Struct1Former< Definition >
   {
     let mut super_former = super_former.unwrap();
