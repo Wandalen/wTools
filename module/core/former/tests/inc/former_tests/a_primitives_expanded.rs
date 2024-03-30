@@ -15,4 +15,4 @@ pub struct Struct1
 
 // = end of generated
 
- include!( "./only_test/primitives.rs" );
+include!( "./only_test/primitives.rs" );

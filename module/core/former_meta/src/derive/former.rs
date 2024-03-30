@@ -503,7 +503,7 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 ///   Src : ::core::convert::Into< i32 >,
 /// {
 ///   debug_assert!( self.int_1.is_none() );
-///   self.storage.int_1 = ::core::option::Option::Some( src.into() );
+///   self.storage.int_1 = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
 ///   self
 /// }
 ///
@@ -514,7 +514,7 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 ///   Src : ::core::convert::Into< i32 >,
 /// {
 ///   debug_assert!( self.int_1.is_none() );
-///   self.storage.int_1 = ::core::option::Option::Some( src.into() );
+///   self.storage.int_1 = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
 ///   self
 /// }
 /// ```
@@ -577,7 +577,7 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< TokenStream >
 ///   Src : ::core::convert::Into< i32 >,
 /// {
 ///   debug_assert!( self.int_1.is_none() );
-///   self.storage.int_1 = ::core::option::Option::Some( src.into() );
+///   self.storage.int_1 = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
 ///   self
 /// }
 /// ```
@@ -605,7 +605,7 @@ fn field_setter
     where Src : ::core::convert::Into< #non_optional_type >,
     {
       debug_assert!( self.storage.#field_ident.is_none() );
-      self.storage.#field_ident = ::core::option::Option::Some( src.into() );
+      self.storage.#field_ident = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
       self
     }
   }
@@ -831,6 +831,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let former_definition = syn::Ident::new( &former_definition_name, struct_name.span() );
   let former_definition_types_name = format!( "{}FormerDefinitionTypes", struct_name );
   let former_definition_types = syn::Ident::new( &former_definition_types_name, struct_name.span() );
+  let former_with_closure_name = format!( "{}FormerWithClosure", struct_name );
+  let former_with_closure = syn::Ident::new( &former_with_closure_name, struct_name.span() );
 
   /* generic parameters */
 
@@ -1008,6 +1010,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       type End = End;
     }
 
+    pub type #former_with_closure< Context, Formed > =
+    #former_definition< Context, Formed, former::FormingEndClosure< #former_definition_types< Context, Formed > > >;
+
     // = storage
 
     #[ doc = "Container of a corresponding former." ]
@@ -1116,15 +1121,13 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       ///
       /// Begin the process of forming. Expects context of forming to return it after forming.
       ///
+      // zzz : improve description
       #[ inline( always ) ]
-      pub fn begin
+      pub fn _begin_precise
       (
         mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
         context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
         on_end : < Definition as former::FormerDefinition >::End,
-        // mut storage : core::option::Option< #former_storage #generics_ty >,
-        // context : core::option::Option< __FormerContext >,
-        // on_end : __FormerEnd,
       ) -> Self
       {
         if storage.is_none()
@@ -1138,6 +1141,54 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
           on_end : ::core::option::Option::Some( on_end ),
         }
       }
+
+      ///
+      /// Begin the process of forming. Expects context of forming to return it after forming.
+      ///
+      // zzz : improve description
+      #[ inline( always ) ]
+      pub fn begin
+      (
+        mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
+        context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
+        on_end : IntoEnd,
+      ) -> Self
+      where
+        IntoEnd : ::core::convert::Into< < Definition as former::FormerDefinition >::End >,
+      {
+        if storage.is_none()
+        {
+          storage = Some( ::core::default::Default::default() );
+        }
+        Self
+        {
+          storage : storage.unwrap(),
+          context : context,
+          on_end : ::core::option::Option::Some( on_end.into() ),
+        }
+      }
+
+//   #[ inline( always ) ]
+// pub fn begin< IntoEnd >
+// (
+//   mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
+//   context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
+//   on_end : IntoEnd,
+// ) -> Self
+// where
+//   IntoEnd : ::core::convert::Into< < Definition as former::FormerDefinition >::End >
+// {
+//   if storage.is_none()
+//   {
+//     storage = Some( core::default::Default::default() );
+//   }
+//   Self
+//   {
+//     storage : storage.unwrap(),
+//     context,
+//     on_end : ::core::option::Option::Some( on_end.into() ),
+//   }
+// }
 
       ///
       /// End the process of forming returning original context of forming.
@@ -1219,7 +1270,7 @@ where
     Src : Into< i32 >,
   {
     debug_assert!( self.age.is_none() );
-    self.storage.age = ::core::option::Option::Some( src.into() );
+    self.storage.age = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
     self
   }
 }

@@ -223,7 +223,7 @@ where
     {
       storage : storage.unwrap(),
       context,
-      on_end : ::core::option::Option::Some( on_end.into() ),
+      on_end : ::core::option::Option::Some( ::core::convert::Into::into( on_end ) ),
     }
   }
 
@@ -266,7 +266,7 @@ where
   where Src : core::convert::Into< i32 >,
   {
     debug_assert!( self.storage.int_1.is_none() );
-    self.storage.int_1 = Some( src.into() );
+    self.storage.int_1 = Some( ::core::convert::Into::into( src ) );
     self
   }
 
@@ -274,7 +274,7 @@ where
   where Src : core::convert::Into< String >,
   {
     debug_assert!( self.storage.string_1.is_none() );
-    self.storage.string_1 = Some( src.into() );
+    self.storage.string_1 = Some( ::core::convert::Into::into( src ) );
     self
   }
 
@@ -282,7 +282,7 @@ where
   where Src : core::convert::Into< String >
   {
     debug_assert!( self.storage.string_optional_1.is_none() );
-    self.storage.string_optional_1 = Some( src.into() );
+    self.storage.string_optional_1 = Some( ::core::convert::Into::into( src ) );
     self
   }
 
@@ -302,7 +302,7 @@ where
     (
       None,
       None,
-      end.into(),
+      end,
     )
   }
 
