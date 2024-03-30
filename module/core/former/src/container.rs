@@ -200,7 +200,7 @@ where
   Definition : FormerDefinition,
   < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
 {
-  storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
+  storage : < Definition::Types as FormerDefinitionTypes >::Storage,
   context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
   on_end : core::option::Option< Definition::End >,
 }
@@ -215,7 +215,7 @@ where
   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
     f.debug_struct( "ContainerSubformer" )
-    .field( "storage", &self.storage.as_ref().map( |_| "Storage Present" ) )
+    .field( "storage", &"Storage Present" )
     .field( "context", &self.context.as_ref().map( |_| "Context Present" ) )
     .field( "on_end", &self.on_end.as_ref().map( |_| "End Present" ) )
     .finish()
@@ -228,34 +228,38 @@ where
   < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
 {
 
-  /// Form current former into target structure.
-  #[ inline( always ) ]
-  pub fn storage( mut self ) -> < Definition::Types as FormerDefinitionTypes >::Storage
-  {
-    let storage = if self.storage.is_some()
-    {
-      self.storage.take().unwrap()
-    }
-    else
-    {
-      let val = Default::default();
-      val
-    };
-    storage
-  }
+  // /// Form current former into target structure.
+  // #[ inline( always ) ]
+  // pub fn storage( mut self ) -> < Definition::Types as FormerDefinitionTypes >::Storage
+  // {
+  //   let storage = if self.storage.is_some()
+  //   {
+  //     self.storage.take().unwrap()
+  //   }
+  //   else
+  //   {
+  //     let val = Default::default();
+  //     val
+  //   };
+  //   storage
+  // }
 
   /// Begins the building process, optionally initializing with a context and storage.
   #[ inline( always ) ]
   pub fn begin
   (
-    storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
+    mut storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
     context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
     on_end : Definition::End,
   ) -> Self
   {
+    if storage.is_none()
+    {
+      storage = Some( core::default::Default::default() );
+    }
     Self
     {
-      storage,
+      storage : storage.unwrap(),
       context,
       on_end : Some( on_end ),
     }
@@ -267,8 +271,8 @@ where
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
-    let storage = self.storage();
-    on_end.call( storage, context )
+    // let storage = self.storage();
+    on_end.call( self.storage, context )
   }
 
   /// Finalizes the building process, returning the formed or a context incorporating it.
@@ -282,7 +286,7 @@ where
   #[ inline( always ) ]
   pub fn replace( mut self, vector : < Definition::Types as FormerDefinitionTypes >::Storage ) -> Self
   {
-    self.storage = Some( vector );
+    self.storage = vector;
     self
   }
 
@@ -368,14 +372,14 @@ where
   pub fn add< IntoElement >( mut self, element : IntoElement ) -> Self
   where IntoElement : core::convert::Into< E >,
   {
-    if self.storage.is_none()
-    {
-      self.storage = core::option::Option::Some( Default::default() );
-    }
-    if let core::option::Option::Some( ref mut storage ) = self.storage
-    {
-      ContainerAdd::add( storage, element.into() );
-    }
+    // if self.storage.is_none()
+    // {
+    //   self.storage = core::option::Option::Some( Default::default() );
+    // }
+    // if let core::option::Option::Some( ref mut storage ) = self.storage
+    // {
+      ContainerAdd::add( &mut self.storage, element.into() );
+    // }
     self
   }
 
