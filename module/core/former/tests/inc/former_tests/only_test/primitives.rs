@@ -125,13 +125,13 @@ tests_impls!
 
   //
 
-  fn begin_precise()
+  fn _begin_precise()
   {
 
     // custom params
     let got = Struct1Former
     ::< Struct1FormerDefinition< i32, i32, _ > >
-    ::begin_precise
+    ::_begin_precise
     (
       None,
       Some( 3 ),
@@ -147,7 +147,7 @@ tests_impls!
     // custom params with into
     let got = Struct1Former
     ::< Struct1FormerDefinition< i32, i32, former::FormingEndWrapper< Struct1FormerDefinitionTypes< i32, i32 > > > >
-    ::begin_precise
+    ::_begin_precise
     (
       None,
       Some( 3 ),
@@ -168,7 +168,7 @@ tests_impls!
 
     // basic case
     let former = Struct1::former();
-    let former2 = Struct1Former::< Struct1FormerDefinition >::new_precise( former::ReturnPreformed );
+    let former2 = Struct1Former::< Struct1FormerDefinition >::_new_precise( former::ReturnPreformed );
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
     let exp = former.form();
     let got = former2.form();
@@ -219,12 +219,12 @@ tests_impls!
 
   //
 
-  fn new_precise()
+  fn _new_precise()
   {
 
     // basic case
     let former = Struct1::former();
-    let former2 = Struct1Former::< Struct1FormerDefinition >::new_precise( former::ReturnPreformed );
+    let former2 = Struct1Former::< Struct1FormerDefinition >::_new_precise( former::ReturnPreformed );
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
     let exp = former.form();
     let got = former2.form();
@@ -233,7 +233,7 @@ tests_impls!
     // default explicit params
     let got = Struct1Former
     ::< Struct1FormerDefinition< (), Struct1, _ > >
-    ::new_precise( former::ReturnPreformed )
+    ::_new_precise( former::ReturnPreformed )
     .int_1( 13 )
     .form();
     let exp = Struct1::former().int_1( 13 ).form();
@@ -247,7 +247,7 @@ tests_impls!
     let end_wrapper : former::FormingEndWrapper< Struct1FormerDefinitionTypes< (), Struct1 > > = former::FormingEndWrapper::new( f1 );
     let got = Struct1Former
     ::< Struct1FormerDefinition< (), Struct1, _ > >
-    ::new_precise( end_wrapper )
+    ::_new_precise( end_wrapper )
     .int_1( 13 )
     .form();
     let exp = Struct1::former().int_1( 13 ).form();
@@ -256,7 +256,7 @@ tests_impls!
     // default explicit params with wrapper and closure
     let got = Struct1Former
     ::< Struct1FormerDefinition< (), Struct1, _ > >
-    ::new_precise( former::FormingEndWrapper::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
+    ::_new_precise( former::FormingEndWrapper::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
     .int_1( 13 )
     .form();
     let exp = Struct1::former().int_1( 13 ).form();
@@ -265,7 +265,7 @@ tests_impls!
     // default explicit params with wrapper and closure, auto types
     let got = Struct1Former
     ::< Struct1FormerDefinition< _, _, _ > >
-    ::new_precise( former::FormingEndWrapper::new( | storage, _context : Option< () > | { former::StoragePreform::preform( storage ) } ) )
+    ::_new_precise( former::FormingEndWrapper::new( | storage, _context : Option< () > | { former::StoragePreform::preform( storage ) } ) )
     .int_1( 13 )
     .form();
     let exp = Struct1::former().int_1( 13 ).form();
@@ -541,9 +541,9 @@ tests_index!
 {
   internals,
   begin,
-  begin_precise,
+  _begin_precise,
   new,
-  new_precise,
+  _new_precise,
   custom_definition_params,
   preform,
   definition,
