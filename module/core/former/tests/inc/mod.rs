@@ -61,6 +61,8 @@ mod former_tests
 //   #[ cfg( any( not( feature = "no_std" ) ) ) ]
 //   mod subformer_shortcut;
 
+// xxx : uncomment
+
 }
 
 #[ cfg( feature = "derive_components" ) ]
@@ -108,7 +110,7 @@ only_for_terminal_module!
     println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
     // let t = test_tools::compiletime::TestCases::new();
 
-    // xxx
+    // zzz : uncomment
     // t.compile_fail( "tests/inc/compiletime/former_bad_attr.rs" );
     // t.pass( "tests/inc/compiletime/former_hashmap_without_parameter.rs" );
     // t.pass( "tests/inc/compiletime/former_vector_without_parameter.rs" );
@@ -125,7 +127,8 @@ only_for_terminal_module!
     println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
     let _t = test_tools::compiletime::TestCases::new();
 
-    //t.compile_fail( "tests/inc/compiletime/components_component_from_debug.rs" );
+    // zzz : make it working test
+    //t.run( "tests/inc/compiletime/components_component_from_debug.rs" );
 
   }
 

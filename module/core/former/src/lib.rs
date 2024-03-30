@@ -4,10 +4,11 @@
 #![ doc( html_root_url = "https://docs.rs/former/latest/former/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-// xxx : remove
+// zzz : remove
 #![ allow( missing_docs ) ]
 
-// xxx : describe "Context-aware forming process"
+// zzz : describe "Context-aware forming process"
+// zzz : explain role of container in former
 
 /// Axiomatic things.
 #[ cfg( feature = "enabled" ) ]
@@ -135,4 +136,3 @@ pub mod prelude
   pub use super::component::*;
 }
 
-// xxx : explain role of container in former
