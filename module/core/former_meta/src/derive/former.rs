@@ -1183,25 +1183,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     }
 
     #[ automatically_derived ]
-    // impl #generics_impl #former < #generics_params (), former::ReturnPreformed >
     impl #generics_impl #former < #generics_params >
     #generics_where
     {
-
-      // ///
-      // /// Construct new instance of former with default parameters.
-      // ///
-      // #[ inline( always ) ]
-      // pub fn new(  ) -> Self
-      // {
-      //   // #former :: < #generics_params #struct_name #generics_ty, former::ReturnPreformed > :: begin
-      //   Self :: begin
-      //   (
-      //     None,
-      //     None,
-      //     former::ReturnPreformed,
-      //   )
-      // }
 
       ///
       /// Construct new instance of former with default parameters.

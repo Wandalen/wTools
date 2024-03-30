@@ -74,7 +74,7 @@ where
 /// `VectorSubformer` leverages the `VectorLike` trait to enable the construction and manipulation
 /// of vector-like containers in a builder pattern style, promoting readability and ease of use.
 
-// xxx : update documentation
+// zzz : update documentation
 
 pub type VectorSubformer< E, Context, Formed, End > =
 ContainerSubformer::< E, VectorDefinition< E, Context, Formed, End > >;

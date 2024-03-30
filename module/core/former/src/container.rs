@@ -205,7 +205,7 @@ where
   on_end : core::option::Option< Definition::End >,
 }
 
-// xxx : cover by test
+// zzz : cover by test
 use std::fmt;
 impl< E, Definition > fmt::Debug for ContainerSubformer< E, Definition >
 where
