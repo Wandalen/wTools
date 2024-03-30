@@ -14,9 +14,6 @@ pub struct Struct1
 #[ automatically_derived ]
 impl Struct1
 {
-  #[ doc = r"" ]
-  #[ doc = r" Make former, variation of builder pattern to form structure defining values of fields step by step." ]
-  #[ doc = r"" ]
   #[ inline( always ) ]
   pub fn former() -> Struct1Former< >
   {
@@ -408,6 +405,8 @@ where
   }
 }
 
+// zzz : description
+/// Return original former after subformer for vec1 is done.
 pub struct __Vec1End;
 #[ automatically_derived ]
 impl< Definition > former::FormingEnd
@@ -433,6 +432,38 @@ where
     else
     {
       super_former.storage.vec_1 = Some( storage );
+    }
+    super_former
+  }
+}
+
+// zzz : description
+/// Return original former after subformer for vec1 is done.
+pub struct __HashMapEnd;
+#[ automatically_derived ]
+impl< Definition > former::FormingEnd
+<
+  former::HashMapDefinition< String, String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
+>
+for __HashMapEnd
+where
+  Definition : former::FormerDefinition,
+  Definition::Types : former::FormerDefinitionTypes
+  <
+    Storage = Struct1FormerStorage
+  >,
+{
+  #[ inline( always ) ]
+  fn call( &self, storage : std::collections::HashMap< String, String >, super_former : Option< Struct1Former< Definition > > ) -> Struct1Former< Definition >
+  {
+    let mut super_former = super_former.unwrap();
+    if let Some( ref mut field ) = super_former.storage.hashmap_strings_1
+    {
+      former::ContainerAssign::assign( field, storage );
+    }
+    else
+    {
+      super_former.storage.hashmap_strings_1 = Some( storage );
     }
     super_former
   }
