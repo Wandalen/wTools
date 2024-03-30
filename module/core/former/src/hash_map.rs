@@ -56,7 +56,7 @@ where
   type Formed = HashMap< K, E >;
 }
 
-impl< K, E > StoragePerform
+impl< K, E > StoragePreform
 for HashMap< K, E >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,

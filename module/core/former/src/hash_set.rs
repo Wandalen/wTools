@@ -44,7 +44,7 @@ where
   type Formed = HashSet< K >;
 }
 
-impl< K > StoragePerform
+impl< K > StoragePreform
 for HashSet< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,

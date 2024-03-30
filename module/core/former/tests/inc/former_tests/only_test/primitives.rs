@@ -92,6 +92,21 @@ tests_impls!
     let exp = Struct1::former().int_1( 13 ).form();
     a_id!( got, exp );
 
+    // default explicit params
+    fn f1( storage : Struct1FormerStorage, _context : Option< () > ) -> Struct1
+    {
+      former::StoragePreform::preform( storage )
+    }
+    let end_wrapper : former::FormingEndWrapper< Struct1FormerDefinitionTypes< (), Struct1 > > = former::FormingEndWrapper::new( f1 );
+    let got = Struct1Former
+    ::< Struct1FormerDefinition< (), Struct1, _ > >
+    ::new( end_wrapper )
+    // ::new( ( | storage : Struct1FormerStorage, _context | -> Struct1 { former::StoragePreform::preform( storage ) } ).into() )
+    .int_1( 13 )
+    .form();
+    let exp = Struct1::former().int_1( 13 ).form();
+    a_id!( got, exp );
+
     // xxx2 : continue
     // // default explicit params
     // let got = Struct1Former
@@ -114,12 +129,12 @@ tests_impls!
     a_id!( got, exp );
 
     // storage should have method preform
-    let got = the_module::StoragePerform::preform( Struct1::former().storage );
+    let got = the_module::StoragePreform::preform( Struct1::former().storage );
     let exp = Struct1::former().form();
     a_id!( got, exp );
 
     // storage should have method preform
-    use the_module::StoragePerform;
+    use the_module::StoragePreform;
     let got = Struct1::former().storage.preform();
     let exp = Struct1::former().form();
     a_id!( got, exp );
@@ -146,7 +161,7 @@ tests_impls!
     a_id!( got, exp );
 
     // definition types exists and has Storage
-    use former::StoragePerform;
+    use former::StoragePreform;
     let got = < Struct1FormerDefinitionTypes as the_module::FormerDefinitionTypes >::Storage::preform( Struct1::former().storage );
     let exp = Struct1::former().form();
     a_id!( got, exp );
@@ -164,7 +179,7 @@ tests_impls!
   {
 
     // definition exists and has Storage
-    let got = < Struct1FormerStorage as the_module::StoragePerform >::preform( Struct1::former().storage );
+    let got = < Struct1FormerStorage as the_module::StoragePreform >::preform( Struct1::former().storage );
     let exp = Struct1::former().form();
     a_id!( got, exp );
 
@@ -174,7 +189,7 @@ tests_impls!
     a_id!( got, exp );
 
     // definition exists and has Storage
-    use former::StoragePerform;
+    use former::StoragePreform;
     let got = Struct1::former().storage.preform();
     let exp = Struct1::former().form();
     a_id!( got, exp );

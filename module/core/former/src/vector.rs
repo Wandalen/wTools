@@ -31,7 +31,7 @@ for Vec< E >
   type Formed = Vec< E >;
 }
 
-impl< E > StoragePerform
+impl< E > StoragePreform
 for Vec< E >
 {
   fn preform( self ) -> Self::Formed

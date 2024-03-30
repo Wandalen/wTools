@@ -112,7 +112,7 @@ for Struct1FormerStorage
   type Formed = Struct1;
 }
 
-impl former::StoragePerform
+impl former::StoragePreform
 for Struct1FormerStorage
 {
 
@@ -179,7 +179,7 @@ pub struct Struct1Former
 >
 where
   Definition : former::FormerDefinition,
-  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePerform,
+  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
 {
   storage : < Definition::Types as former::FormerDefinitionTypes >::Storage,
@@ -190,7 +190,7 @@ where
 impl< Definition > Struct1Former< Definition >
 where
   Definition : former::FormerDefinition,
-  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePerform,
+  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
 {
 
@@ -286,13 +286,13 @@ where
 impl< Definition > Struct1Former< Definition >
 where
   Definition : former::FormerDefinition,
-  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePerform,
+  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage, Formed = Struct1 >,
 {
 
   pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
-    former::StoragePerform::preform( self.storage )
+    former::StoragePreform::preform( self.storage )
   }
 
 }
@@ -309,7 +309,7 @@ where
 //     Formed = Struct1,
 //     Context = (),
 //   >,
-//   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePerform, // xxx : redundant?
+//   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform, // xxx : redundant?
 // {
 //
 //   // zzz : update description

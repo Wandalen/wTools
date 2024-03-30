@@ -6,7 +6,7 @@ pub trait Storage : ::core::default::Default
 }
 
 /// zzz : write description
-pub trait StoragePerform : Storage
+pub trait StoragePreform : Storage
 {
   fn preform( self ) -> Self::Formed;
 }
@@ -75,7 +75,7 @@ pub struct ReturnPreformed;
 impl< Definition > FormingEnd< Definition >
 for ReturnPreformed
 where
-  Definition::Storage : StoragePerform< Formed = Definition::Formed >,
+  Definition::Storage : StoragePreform< Formed = Definition::Formed >,
   Definition : FormerDefinitionTypes,
 {
   #[ inline( always ) ]

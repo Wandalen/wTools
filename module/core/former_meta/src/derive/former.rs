@@ -856,7 +856,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   {
     where
       Definition : former::FormerDefinition,
-      < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePerform,
+      < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage #generics_ty >,
   };
   // zzz : write helper to fix bug with where
@@ -1045,7 +1045,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     }
     // generics_impl, generics_ty, generics_where
 
-    impl former::StoragePerform
+    impl former::StoragePreform
     for #former_storage #generics_ty
     #generics_where
     {
@@ -1090,8 +1090,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       // pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
       // // #struct_name #generics_ty
       // {
-      //   former::StoragePerform::preform( self.storage )
-      //   // < #former_storage #generics_ty as former::StoragePerform >::preform( self.storage )
+      //   former::StoragePreform::preform( self.storage )
+      //   // < #former_storage #generics_ty as former::StoragePreform >::preform( self.storage )
       //   // #( #fields_form )*
       //   // let result = #struct_name
       //   // {
@@ -1171,13 +1171,13 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     impl< Definition > #former< Definition >
     where
       Definition : former::FormerDefinition,
-      < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePerform,
+      < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage #generics_ty, Formed = #struct_name #generics_ty >,
     {
 
       pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
       {
-        former::StoragePerform::preform( self.storage )
+        former::StoragePreform::preform( self.storage )
       }
 
     }
