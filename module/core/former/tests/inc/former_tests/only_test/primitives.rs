@@ -86,14 +86,18 @@ tests_impls!
     .form();
     a_id!( got, 32 );
 
-    // xxx2 : continue
-    // // default explicit params
-    // let got = Struct1Former
-    // ::< Struct1FormerDefinition< (), i32, _ > >
-    // ::new( ( | storage : Struct1FormerStorage, _context | storage.int_1.unwrap()*2 ).into() )
-    // .int_1( 13 )
-    // .form();
-    // // a_id!( got, 26 );
+    // custom params begin with Struct1FormerWithClosure
+    let got = Struct1Former
+    ::< Struct1FormerWithClosure< i32, i32 > >
+    ::begin
+    (
+      None,
+      Some( 3 ),
+      | storage : Struct1FormerStorage, context : Option< i32 > | { 2 * ( storage.int_1.unwrap() + context.unwrap() ) }
+    )
+    .int_1( 13 )
+    .form();
+    a_id!( got, 32 );
 
   }
 
