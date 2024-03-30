@@ -407,6 +407,7 @@ where
 
 // zzz : description
 /// Return original former after subformer for `vec_1` is done.
+#[ allow( non_camel_case_types ) ]
 pub struct __vec1_end;
 #[ automatically_derived ]
 impl< Definition > former::FormingEnd
@@ -439,6 +440,7 @@ where
 
 // zzz : description
 /// Return original former after subformer for `hashmap_string_1` is done.
+#[ allow( non_camel_case_types ) ]
 pub struct __hashmap_strings_1_end;
 #[ automatically_derived ]
 impl< Definition > former::FormingEnd
@@ -471,6 +473,7 @@ where
 
 // zzz : description
 /// Return original former after subformer for `hashset_string_1` is done.
+#[ allow( non_camel_case_types ) ]
 pub struct __hashset_strings_1_end;
 #[ automatically_derived ]
 impl< Definition > former::FormingEnd
