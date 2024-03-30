@@ -201,30 +201,8 @@ where
     return result;
   }
 
-  #[ inline( always ) ]
-  pub fn begin_with< IntoEnd >
-  (
-    mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
-    context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
-    on_end : IntoEnd,
-  ) -> Self
-  where
-    IntoEnd : ::core::convert::Into< < Definition as former::FormerDefinition >::End >
-  {
-    if storage.is_none()
-    {
-      storage = Some( core::default::Default::default() );
-    }
-    Self
-    {
-      storage : storage.unwrap(),
-      context,
-      on_end : ::core::option::Option::Some( on_end.into() ),
-    }
-  }
-
   // #[ inline( always ) ]
-  // pub fn begin< IntoEnd >
+  // pub fn begin_with< IntoEnd >
   // (
   //   mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
   //   context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
@@ -246,7 +224,29 @@ where
   // }
 
   #[ inline( always ) ]
-  pub fn begin
+  pub fn begin< IntoEnd >
+  (
+    mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
+    context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
+    on_end : IntoEnd,
+  ) -> Self
+  where
+    IntoEnd : ::core::convert::Into< < Definition as former::FormerDefinition >::End >
+  {
+    if storage.is_none()
+    {
+      storage = Some( core::default::Default::default() );
+    }
+    Self
+    {
+      storage : storage.unwrap(),
+      context,
+      on_end : ::core::option::Option::Some( on_end.into() ),
+    }
+  }
+
+  #[ inline( always ) ]
+  pub fn begin_explicit
   (
     mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
     context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
@@ -308,7 +308,7 @@ where
   #[ inline( always ) ]
   pub fn new( on_end : Definition::End ) -> Self
   {
-    Self::begin( None, None, on_end )
+    Self::begin_explicit( None, None, on_end )
   }
 
   // zzz : update description
