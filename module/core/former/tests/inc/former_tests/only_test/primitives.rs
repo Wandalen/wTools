@@ -49,7 +49,7 @@ tests_impls!
 
     // custom params
     let got = Struct1Former
-    ::< Struct1FormerDefinition< i32, i32, former::FormingEndWrapper< Struct1FormerDefinitionTypes< i32, i32 > > > >
+    ::< Struct1FormerDefinition< i32, i32, former::FormingEndClosure< Struct1FormerDefinitionTypes< i32, i32 > > > >
     ::begin
     (
       None,
@@ -62,7 +62,7 @@ tests_impls!
 
     // custom params with into
     let got = Struct1Former
-    ::< Struct1FormerDefinition< i32, i32, former::FormingEndWrapper< Struct1FormerDefinitionTypes< i32, i32 > > > >
+    ::< Struct1FormerDefinition< i32, i32, former::FormingEndClosure< Struct1FormerDefinitionTypes< i32, i32 > > > >
     ::begin
     (
       None,
@@ -75,7 +75,7 @@ tests_impls!
 
     // custom params begin
     let got = Struct1Former
-    ::< Struct1FormerDefinition< i32, i32, former::FormingEndWrapper< Struct1FormerDefinitionTypes< i32, i32 > > > >
+    ::< Struct1FormerDefinition< i32, i32, former::FormingEndClosure< Struct1FormerDefinitionTypes< i32, i32 > > > >
     ::begin
     (
       None,
@@ -135,7 +135,7 @@ tests_impls!
     (
       None,
       Some( 3 ),
-      former::FormingEndWrapper::new
+      former::FormingEndClosure::new
       (
         | storage : Struct1FormerStorage, context | { 2 * ( storage.int_1.unwrap() + context.unwrap() ) }
       ),
@@ -146,7 +146,7 @@ tests_impls!
 
     // custom params with into
     let got = Struct1Former
-    ::< Struct1FormerDefinition< i32, i32, former::FormingEndWrapper< Struct1FormerDefinitionTypes< i32, i32 > > > >
+    ::< Struct1FormerDefinition< i32, i32, former::FormingEndClosure< Struct1FormerDefinitionTypes< i32, i32 > > > >
     ::_begin_precise
     (
       None,
@@ -188,9 +188,9 @@ tests_impls!
     {
       former::StoragePreform::preform( storage )
     }
-    let end_wrapper : former::FormingEndWrapper< Struct1FormerDefinitionTypes< (), Struct1 > > = former::FormingEndWrapper::new( f1 );
+    let end_wrapper : former::FormingEndClosure< Struct1FormerDefinitionTypes< (), Struct1 > > = former::FormingEndClosure::new( f1 );
     let got = Struct1Former
-    ::< Struct1FormerDefinition< (), Struct1, former::FormingEndWrapper< Struct1FormerDefinitionTypes< (), Struct1 > > > >
+    ::< Struct1FormerDefinition< (), Struct1, former::FormingEndClosure< Struct1FormerDefinitionTypes< (), Struct1 > > > >
     ::new( end_wrapper )
     .int_1( 13 )
     .form();
@@ -199,8 +199,8 @@ tests_impls!
 
     // default explicit params with wrapper and closure
     let got = Struct1Former
-    ::< Struct1FormerDefinition< (), Struct1, former::FormingEndWrapper< Struct1FormerDefinitionTypes< (), Struct1 > > > >
-    ::new( former::FormingEndWrapper::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
+    ::< Struct1FormerDefinition< (), Struct1, former::FormingEndClosure< Struct1FormerDefinitionTypes< (), Struct1 > > > >
+    ::new( former::FormingEndClosure::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
     .int_1( 13 )
     .form();
     let exp = Struct1::former().int_1( 13 ).form();
@@ -208,8 +208,26 @@ tests_impls!
 
     // default explicit params with wrapper and closure, auto types
     let got = Struct1Former
-    ::< Struct1FormerDefinition< _, _, former::FormingEndWrapper< Struct1FormerDefinitionTypes< (), Struct1 > > > >
-    ::new( former::FormingEndWrapper::new( | storage, _context : Option< () > | { former::StoragePreform::preform( storage ) } ) )
+    ::< Struct1FormerDefinition< _, _, former::FormingEndClosure< Struct1FormerDefinitionTypes< (), Struct1 > > > >
+    ::new( former::FormingEndClosure::new( | storage, _context : Option< () > | { former::StoragePreform::preform( storage ) } ) )
+    .int_1( 13 )
+    .form();
+    let exp = Struct1::former().int_1( 13 ).form();
+    a_id!( got, exp );
+
+    // default explicit params with wrapper and closure
+    let got = Struct1Former
+    ::< Struct1FormerWithClosure< (), Struct1 > >
+    ::new( former::FormingEndClosure::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
+    .int_1( 13 )
+    .form();
+    let exp = Struct1::former().int_1( 13 ).form();
+    a_id!( got, exp );
+
+    // default explicit params with wrapper and closure
+    let got = Struct1Former
+    ::< Struct1FormerWithClosure< (), Struct1 > >
+    ::new( | storage, _context | { former::StoragePreform::preform( storage ) } )
     .int_1( 13 )
     .form();
     let exp = Struct1::former().int_1( 13 ).form();
@@ -244,7 +262,7 @@ tests_impls!
     {
       former::StoragePreform::preform( storage )
     }
-    let end_wrapper : former::FormingEndWrapper< Struct1FormerDefinitionTypes< (), Struct1 > > = former::FormingEndWrapper::new( f1 );
+    let end_wrapper : former::FormingEndClosure< Struct1FormerDefinitionTypes< (), Struct1 > > = former::FormingEndClosure::new( f1 );
     let got = Struct1Former
     ::< Struct1FormerDefinition< (), Struct1, _ > >
     ::_new_precise( end_wrapper )
@@ -256,7 +274,7 @@ tests_impls!
     // default explicit params with wrapper and closure
     let got = Struct1Former
     ::< Struct1FormerDefinition< (), Struct1, _ > >
-    ::_new_precise( former::FormingEndWrapper::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
+    ::_new_precise( former::FormingEndClosure::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
     .int_1( 13 )
     .form();
     let exp = Struct1::former().int_1( 13 ).form();
@@ -265,7 +283,7 @@ tests_impls!
     // default explicit params with wrapper and closure, auto types
     let got = Struct1Former
     ::< Struct1FormerDefinition< _, _, _ > >
-    ::_new_precise( former::FormingEndWrapper::new( | storage, _context : Option< () > | { former::StoragePreform::preform( storage ) } ) )
+    ::_new_precise( former::FormingEndClosure::new( | storage, _context : Option< () > | { former::StoragePreform::preform( storage ) } ) )
     .int_1( 13 )
     .form();
     let exp = Struct1::former().int_1( 13 ).form();

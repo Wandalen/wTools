@@ -162,7 +162,7 @@ where
     <
       Vec< String >,
       Vec< String >,
-      Self, End = former::FormingEndWrapper< Vec< String >, Self >,
+      Self, End = former::FormingEndClosure< Vec< String >, Self >,
     >,
   {
     let on_end = | formed : Vec< String >, super_former : ::core::option::Option< Self > | -> Self
@@ -178,7 +178,7 @@ where
       }
       super_former
     };
-    Former2::_begin( None, Some( self ), former::FormingEndWrapper::new( on_end ) )
+    Former2::_begin( None, Some( self ), former::FormingEndClosure::new( on_end ) )
   }
 
   // xxx2 : continue

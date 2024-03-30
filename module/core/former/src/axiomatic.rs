@@ -130,13 +130,13 @@ where
 /// a closure needs to be stored or passed around as an object implementing
 /// `FormingEnd`.
 #[ cfg( not( feature = "no_std" ) ) ]
-pub struct FormingEndWrapper< Definition : FormerDefinitionTypes >
+pub struct FormingEndClosure< Definition : FormerDefinitionTypes >
 {
   closure : Box< dyn Fn( Definition::Storage, Option< Definition::Context > ) -> Definition::Formed >,
   _marker : std::marker::PhantomData< Definition::Storage >,
 }
 
-impl< T, Definition > From< T > for FormingEndWrapper< Definition >
+impl< T, Definition > From< T > for FormingEndClosure< Definition >
 where
   T : Fn( Definition::Storage, Option< Definition::Context > ) -> Definition::Formed + 'static,
   Definition : FormerDefinitionTypes,
@@ -153,9 +153,9 @@ where
 }
 
 #[ cfg( not( feature = "no_std" ) ) ]
-impl< Definition : FormerDefinitionTypes > FormingEndWrapper< Definition >
+impl< Definition : FormerDefinitionTypes > FormingEndClosure< Definition >
 {
-  /// Constructs a new `FormingEndWrapper` with the provided closure.
+  /// Constructs a new `FormingEndClosure` with the provided closure.
   ///
   /// # Parameters
   ///
@@ -165,7 +165,7 @@ impl< Definition : FormerDefinitionTypes > FormingEndWrapper< Definition >
   ///
   /// # Returns
   ///
-  /// Returns an instance of `FormingEndWrapper` encapsulating the provided closure.
+  /// Returns an instance of `FormingEndClosure` encapsulating the provided closure.
   pub fn new( closure : impl Fn( Definition::Storage, Option< Definition::Context > ) -> Definition::Formed + 'static ) -> Self
   {
     Self
@@ -179,11 +179,11 @@ impl< Definition : FormerDefinitionTypes > FormingEndWrapper< Definition >
 #[ cfg( not( feature = "no_std" ) ) ]
 use std::fmt;
 #[ cfg( not( feature = "no_std" ) ) ]
-impl< Definition : FormerDefinitionTypes > fmt::Debug for FormingEndWrapper< Definition >
+impl< Definition : FormerDefinitionTypes > fmt::Debug for FormingEndClosure< Definition >
 {
   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
-    f.debug_struct( "FormingEndWrapper" )
+    f.debug_struct( "FormingEndClosure" )
     .field( "closure", &format_args!{ "- closure -" } )
     .field( "_marker", &self._marker )
     .finish()
@@ -192,7 +192,7 @@ impl< Definition : FormerDefinitionTypes > fmt::Debug for FormingEndWrapper< Def
 
 #[ cfg( not( feature = "no_std" ) ) ]
 impl< Definition : FormerDefinitionTypes > FormingEnd< Definition >
-for FormingEndWrapper< Definition >
+for FormingEndClosure< Definition >
 {
   fn call( &self, storage : Definition::Storage, context : Option< Definition::Context > ) -> Definition::Formed
   {

@@ -61,7 +61,7 @@ where
       TemplateParameterDefinitionFormerStorage,
       TemplateParameterDefinition,
       Self,
-      End = former::FormingEndWrapper< TemplateParameterDefinition, Self >,
+      End = former::FormingEndClosure< TemplateParameterDefinition, Self >,
     >,
     // FieldContainer : ContainerAdd,
   {
@@ -78,7 +78,7 @@ where
       }
       super_former
     };
-    Former2::_begin( None, Some( self ), former::FormingEndWrapper::new( on_end ) )
+    Former2::_begin( None, Some( self ), former::FormingEndClosure::new( on_end ) )
   }
 
   // xxx2 : move to a trait and make easier to use subformer, trait with generic interface of a container should help

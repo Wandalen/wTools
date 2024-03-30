@@ -247,7 +247,7 @@ fn custom_definition_custom_end()
   impl former::FormerDefinition for Return13
   {
     type Types = Return13;
-    type End = former::FormingEndWrapper< < Self as former::FormerDefinition >::Types >;
+    type End = former::FormingEndClosure< < Self as former::FormerDefinition >::Types >;
   }
 
   fn return_13( _storage : Vec< String >, _context : Option< () > ) -> i32
@@ -255,7 +255,7 @@ fn custom_definition_custom_end()
     13
   }
 
-  let end_wrapper : the_module::FormingEndWrapper< Return13 > = the_module::FormingEndWrapper::new( return_13 );
+  let end_wrapper : the_module::FormingEndClosure< Return13 > = the_module::FormingEndClosure::new( return_13 );
   let got = the_module::ContainerSubformer::< String, Return13 >::new( end_wrapper )
   .add( "a" )
   .add( "b" )
