@@ -1,7 +1,6 @@
 //! Endpoint and report for commands for config files.
 
 use crate::*;
-use super::*;
 use error_tools::{ err, for_app::Context, BasicError, Result };
 use executor::FeedManager;
 use storage::
@@ -13,7 +12,7 @@ use storage::
 use gluesql::{ prelude::Payload, sled_storage::SledStorage };
 
 /// Add configuration file with subscriptions to storage.
-pub async fn add_config( storage : FeedStorage< SledStorage >, args : &wca::Args ) -> Result< impl Report >
+pub async fn config_add( storage : FeedStorage< SledStorage >, args : &wca::Args ) -> Result< impl executor::Report >
 {
   let path : std::path::PathBuf = args
   .get_owned::< wca::Value >( 0 )
@@ -43,7 +42,7 @@ pub async fn add_config( storage : FeedStorage< SledStorage >, args : &wca::Args
   let mut manager = FeedManager::new( storage );
 
   let config_report = manager.storage
-  .add_config( &config )
+  .config_add( &config )
   .await
   .context( "Added 0 config files.\n Failed to add config file to storage." )?
   ;
@@ -60,7 +59,7 @@ pub async fn add_config( storage : FeedStorage< SledStorage >, args : &wca::Args
 }
 
 /// Remove configuration file from storage.
-pub async fn delete_config( storage : FeedStorage< SledStorage >, args : &wca::Args ) -> Result< impl Report >
+pub async fn config_delete( storage : FeedStorage< SledStorage >, args : &wca::Args ) -> Result< impl executor::Report >
 {
   let path : std::path::PathBuf = args
   .get_owned::< wca::Value >( 0 )
@@ -74,17 +73,17 @@ pub async fn delete_config( storage : FeedStorage< SledStorage >, args : &wca::A
   let mut manager = FeedManager::new( storage );
   Ok( ConfigReport::new( 
     manager.storage
-    .delete_config( &config )
+    .config_delete( &config )
     .await
     .context( "Failed to remove config from storage." )?
   ) )
 }
 
 /// List all files with subscriptions that are currently in storage.
-pub async fn list_configs( storage : FeedStorage< SledStorage >, _args : &wca::Args ) -> Result< impl Report >
+pub async fn config_list( storage : FeedStorage< SledStorage >, _args : &wca::Args ) -> Result< impl executor::Report >
 {
   let mut manager = FeedManager::new( storage );
-  Ok( ConfigReport::new( manager.storage.list_configs().await? ) )
+  Ok( ConfigReport::new( manager.storage.config_list().await? ) )
 }
 
 /// Information about result of command for subscription config.
@@ -153,4 +152,4 @@ impl std::fmt::Display for ConfigReport
   }
 }
 
-impl Report for ConfigReport {}
+impl executor::Report for ConfigReport {}

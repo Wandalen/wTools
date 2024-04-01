@@ -1,6 +1,6 @@
 //! Execute plan.
 
-use super::*;
+use crate::*;
 use feed_config::SubscriptionConfig;
 use gluesql::sled_storage::{ sled::Config, SledStorage };
 use retriever::{ FeedClient, FeedFetch };
@@ -12,11 +12,11 @@ use error_tools::Result;
 pub mod actions;
 use actions::
 {
-  frame::{ list_frames, download_frames },
-  feed::list_feeds,
-  config::{ add_config, delete_config, list_configs },
-  query::execute_query,
-  table::{ list_columns, list_tables },
+  frame::{ frames_list, frames_download },
+  feed::feeds_list,
+  config::{ config_add, config_delete, config_list },
+  query::query_execute,
+  table::{ table_list, tables_list },
 };
 
 fn action< 'a, F, Fut, R >( async_endpoint : F, args : &'a Args ) -> Result< R >
@@ -54,7 +54,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     ))
     .routine( | args |
     {
-      match action( download_frames, &args )
+      match action( frames_download, &args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -70,7 +70,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     ))
     .routine( | args |
     {
-      match action( list_feeds, &args )
+      match action( feeds_list, &args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -86,7 +86,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     ))
     .routine( | args |
     {
-      match action( list_frames, &args )
+      match action( frames_list, &args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -110,7 +110,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .subject().hint( "Path" ).kind( Type::Path ).optional( false ).end()
     .routine( | args : Args |
     {
-      match action( add_config, &args )
+      match action( config_add, &args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -127,7 +127,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .subject().hint( "Path" ).kind( Type::Path ).optional( false ).end()
     .routine( | args : Args |
     {
-      match action( delete_config, &args )
+      match action( config_delete, &args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -143,7 +143,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     ))
     .routine( | args |
     {
-      match action( list_configs, &args )
+      match action( config_list, &args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -159,7 +159,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     ))
     .routine( | args |
     {
-      match action( list_tables, &args )
+      match action( tables_list, &args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -177,7 +177,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .subject().hint( "Name" ).kind( wca::Type::String ).optional( false ).end()
     .routine( | args : Args |
     {
-      match action( list_columns, &args )
+      match action( table_list, &args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -200,7 +200,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
     .subject().hint( "Query" ).kind( Type::List( Type::String.into(), ' ' ) ).optional( false ).end()
     .routine( | args : Args |
     {
-      match action( execute_query, &args )
+      match action( query_execute, &args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),

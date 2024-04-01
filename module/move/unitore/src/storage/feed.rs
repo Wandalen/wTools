@@ -198,13 +198,13 @@ impl FeedStore for FeedStorage< SledStorage >
       reports.push( frames_report );
     }
 
-    if new_entries.len() > 0
+    if !new_entries.is_empty()
     {
-      let _saved_report = self.save_frames( new_entries ).await?;
+      let _saved_report = self.frames_save( new_entries ).await?;
     }
-    if modified_entries.len() > 0
+    if !modified_entries.is_empty()
     {
-      let _updated_report = self.update_frames( modified_entries ).await?;
+      let _updated_report = self.frames_update( modified_entries ).await?;
     }
 
     Ok( UpdateReport( reports ) )

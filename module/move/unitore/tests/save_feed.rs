@@ -62,7 +62,7 @@ async fn test_save_feed_plain() -> Result< () >
   feeds.push( ( feed, feed_config.update_period.clone(), feed_config.link.clone() ) );
   feed_storage.process_feeds( feeds ).await?;
 
-  let entries = feed_storage.list_frames().await?;
+  let entries = feed_storage.frames_list().await?;
 
   let number_of_frames = entries.0[ 0 ].selected_frames.selected_rows.len();
 

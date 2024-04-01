@@ -71,8 +71,7 @@ impl From< ( feed_rs::model::Entry, String ) > for Frame
 
     let media = entry.media
     .iter()
-    .map( | m | m.content.clone() )
-    .flatten()
+    .flat_map( | m | m.content.clone() )
     .filter_map( | m | m.url.map( | url | url.to_string() ) )
     .collect::< Vec< _ > >()
     ;
@@ -81,13 +80,13 @@ impl From< ( feed_rs::model::Entry, String ) > for Frame
     {
       id : entry.id,
       title : entry.title.map( | title | title.content ).clone(),
-      updated : entry.updated.clone(),
+      updated : entry.updated,
       authors : ( !authors.is_empty() ).then( || authors.join( ", " ) ),
       content,
       links : ( !links.len() == 0 ).then( || links.join( ", " ) ),
       summary : entry.summary.map( | c | c.content ).clone(),
       categories : ( !categories.is_empty() ).then( || categories.join( ", " ) ),
-      published : entry.published.clone(),
+      published : entry.published,
       source : entry.source.clone(),
       rights : entry.rights.map( | r | r.content ).clone(),
       media : ( !media.is_empty() ).then( || media.join( ", " ) ),
@@ -102,35 +101,37 @@ impl From< ( feed_rs::model::Entry, String ) > for Frame
 pub trait FrameStore
 {
   /// Insert items from list into feed table.
-  async fn save_frames( &mut self, feed : Vec< Frame > ) -> Result< Payload >;
+  async fn frames_save( &mut self, feed : Vec< Frame > ) -> Result< Payload >;
 
   /// Update items from list in feed table.
-  async fn update_frames( &mut self, feed : Vec< Frame > ) -> Result< () >;
+  async fn frames_update( &mut self, feed : Vec< Frame > ) -> Result< () >;
 
   /// Get all feed frames from storage.
-  async fn list_frames( &mut self ) -> Result< ListReport >;
+  async fn frames_list( &mut self ) -> Result< ListReport >;
 }
 
 #[ async_trait::async_trait( ?Send ) ]
 impl FrameStore for FeedStorage< SledStorage >
 {
-  async fn list_frames( &mut self ) -> Result< ListReport >
+  async fn frames_list( &mut self ) -> Result< ListReport >
   {
     let res = table( "frame" ).select().execute( &mut *self.storage.lock().await ).await?;
 
     let mut reports = Vec::new();
-    let all_frames = match res
+    let all_frames = 
+    if let Payload::Select { labels: label_vec, rows: rows_vec } = res
     {
-      Payload::Select { labels: label_vec, rows: rows_vec } =>
+      SelectedEntries
       {
-        SelectedEntries
-        {
-          selected_rows : rows_vec,
-          selected_columns : label_vec,
-        }
-      },
-      _ => SelectedEntries::new(),
+        selected_rows : rows_vec,
+        selected_columns : label_vec,
+      }
+    }
+    else
+    {
+      SelectedEntries::new()
     };
+    
 
     let mut feeds_map = HashMap::new();
 
@@ -159,7 +160,7 @@ impl FrameStore for FeedStorage< SledStorage >
     Ok( ListReport( reports ) )
   }
 
-  async fn save_frames( &mut self, frames : Vec< Frame > ) -> Result< Payload >
+  async fn frames_save( &mut self, frames : Vec< Frame > ) -> Result< Payload >
   {
     let entries_rows : Vec< Vec< ExprNode< 'static > > > = frames.into_iter().map( | entry | entry.into() ).collect_vec();
 
@@ -178,7 +179,7 @@ impl FrameStore for FeedStorage< SledStorage >
     Ok( insert )
   }
 
-  async fn update_frames( &mut self, feed : Vec< Frame > ) -> Result< () >
+  async fn frames_update( &mut self, feed : Vec< Frame > ) -> Result< () >
   {
     let entries_rows : Vec< Vec< ExprNode< 'static > > > = feed.into_iter().map( | entry | entry.into() ).collect_vec();
 
@@ -253,7 +254,7 @@ impl From< Frame > for Vec< ExprNode< 'static > >
     .unwrap_or( null() )
     ;
 
-    let language = entry.language.clone().map( | l | text( l ) ).unwrap_or( null() );
+    let language = entry.language.clone().map( text ).unwrap_or( null() );
 
     vec!
     [

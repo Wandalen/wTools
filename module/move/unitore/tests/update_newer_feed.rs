@@ -63,7 +63,7 @@ async fn test_update() -> Result< () >
   feed_storage.process_feeds( feeds ).await?;
 
   // check
-  let payload = feed_storage.list_frames().await?;
+  let payload = feed_storage.frames_list().await?;
 
   let entries = payload.0.iter().map( | val | val.selected_frames.selected_rows.clone() ).flatten().collect::< Vec< _ > >();
 

@@ -10,7 +10,8 @@ use storage::{ FeedStorage, feed::FeedStore };
 use error_tools::Result;
 
 /// List all feeds.
-pub async fn list_feeds(
+pub async fn feeds_list
+(
   storage : FeedStorage< gluesql::sled_storage::SledStorage >,
   _args : &wca::Args,
 ) -> Result< impl Report >

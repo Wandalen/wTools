@@ -1,6 +1,6 @@
 //! Functionality for storing and retrieving config files.
 
-use super::*;
+use crate::*;
 use error_tools::{ err, Result };
 use gluesql::
 {
@@ -36,19 +36,19 @@ impl Config
 pub trait ConfigStore
 {
   /// Add subscription.
-  async fn add_config( &mut self, config : &Config ) -> Result< Payload >;
+  async fn config_add( &mut self, config : &Config ) -> Result< Payload >;
 
   /// Remove subscription.
-  async fn delete_config( &mut self, config : &Config ) -> Result< Payload >;
+  async fn config_delete( &mut self, config : &Config ) -> Result< Payload >;
 
   /// List subscriptions.
-  async fn list_configs( &mut self ) -> Result< Payload >;
+  async fn config_list( &mut self ) -> Result< Payload >;
 }
 
 #[ async_trait::async_trait( ?Send ) ]
-impl ConfigStore for FeedStorage< SledStorage >
+impl ConfigStore for storage::FeedStorage< SledStorage >
 {
-  async fn add_config( &mut self, config : &Config ) -> Result< Payload >
+  async fn config_add( &mut self, config : &Config ) -> Result< Payload >
   {
     let res = table( "config" )
     .insert()
@@ -60,32 +60,10 @@ impl ConfigStore for FeedStorage< SledStorage >
     .execute( &mut *self.storage.lock().await )
     .await;
 
-    // let res = match &res
-    // {
-    //   Err( err ) =>
-    //   {
-    //     if let gluesql::core::error::Error::Validate( val_err ) = err
-    //     {
-    //       let res = match val_err
-    //       {
-    //         gluesql::core::error::ValidateError::DuplicateEntryOnPrimaryKeyField( _ ) =>
-    //         {
-    //           res.context( "Config with same path already exists." )
-    //         },
-    //         _ => res.into()
-    //       };
-
-    //       res
-    //     }
-    //     res.into()
-    //   },
-    //   Ok( _ ) => res.into(),
-    // };
-
     Ok( res? )
   }
 
-  async fn delete_config( &mut self, config : &Config ) -> Result< Payload >
+  async fn config_delete( &mut self, config : &Config ) -> Result< Payload >
   {
     let res = table( "config" )
     .delete()
@@ -101,7 +79,7 @@ impl ConfigStore for FeedStorage< SledStorage >
     Ok( res )
   }
 
-  async fn list_configs( &mut self ) -> Result< Payload >
+  async fn config_list( &mut self ) -> Result< Payload >
   {
     let res = table( "config" ).select().execute( &mut *self.storage.lock().await ).await?;
     Ok( res )

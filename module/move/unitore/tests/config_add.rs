@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use gluesql::sled_storage::sled::Config;
 use unitore::
 {
-  executor::FeedManager,
+  executor::{ FeedManager, actions },
   storage::{ FeedStorage, feed::FeedStore },
 };
 use error_tools::Result;
@@ -20,7 +20,7 @@ async fn add_config_file() -> Result< () >
   ;
 
   let feed_storage = FeedStorage::init_storage( config ).await?;
-  unitore::executor::actions::config::add_config( feed_storage.clone(), &wca::Args( vec![ wca::Value::Path( path ) ] ) ).await?;
+  actions::config::config_add( feed_storage.clone(), &wca::Args( vec![ wca::Value::Path( path ) ] ) ).await?;
 
   let mut manager = FeedManager::new( feed_storage );
   let res = manager.storage.get_all_feeds().await?;

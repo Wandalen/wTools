@@ -8,7 +8,7 @@ use storage::{ FeedStorage, table::TableStore };
 use error_tools::{ err, BasicError, Result };
 
 /// Get labels of column for specified table.
-pub async fn list_columns
+pub async fn table_list
 (
   storage : FeedStorage< gluesql::sled_storage::SledStorage >,
   args : &wca::Args,
@@ -21,24 +21,20 @@ pub async fn list_columns
   ;
 
   let mut manager = FeedManager::new( storage );
-  let result = manager.storage.list_columns( table_name.clone() ).await?;
+  let result = manager.storage.table_list( table_name.clone() ).await?;
 
   let mut table_description = String::new();
-  let mut columns = std::collections::HashMap::new();
-  match &result[ 0 ]
+  let mut columns = HashMap::new();
+  if let Payload::Select { labels: _label_vec, rows: rows_vec } = &result[ 0 ]
   {
-    Payload::Select { labels: _label_vec, rows: rows_vec } =>
+    for row in rows_vec
     {
-      for row in rows_vec
-      {
-        let table = String::from( row[ 0 ].clone() );
-        columns.entry( table )
-        .and_modify( | vec : &mut Vec< String > | vec.push( String::from( row[ 1 ].clone() ) ) )
-        .or_insert( vec![ String::from( row[ 1 ].clone() ) ] )
-        ;
-      }
-    },
-    _ => {},
+      let table = String::from( row[ 0 ].clone() );
+      columns.entry( table )
+      .and_modify( | vec : &mut Vec< String > | vec.push( String::from( row[ 1 ].clone() ) ) )
+      .or_insert( vec![ String::from( row[ 1 ].clone() ) ] )
+      ;
+    }
   }
   let mut columns_desc = HashMap::new();
   match table_name.as_str()
@@ -88,20 +84,115 @@ pub async fn list_columns
       {
         match label.as_str()
         {
-          "id" => { columns_desc.insert( label.clone(), String::from( "A unique identifier for this frame in the feed. " ) ); },
-          "title" => { columns_desc.insert( label.clone(), String::from( "Title of the frame" ) ); },
-          "updated" => { columns_desc.insert( label.clone(), String::from( "Time at which this item was fetched from source." ) ); },
-          "authors" => { columns_desc.insert( label.clone(), String::from( "List of authors of the frame, optional." ) ); },
-          "content" => { columns_desc.insert( label.clone(), String::from( "The content of the frame in html or plain text, optional." ) ); },
-          "links" => { columns_desc.insert( label.clone(), String::from( "List of links associated with this item of related Web page and attachments." ) ); },
-          "summary" => { columns_desc.insert( label.clone(), String::from( "Short summary, abstract, or excerpt of the frame item, optional." ) ); },
-          "categories" => { columns_desc.insert( label.clone(), String::from( "Specifies a list of categories that the item belongs to." ) ); },
-          "published" => { columns_desc.insert( label.clone(), String::from( "Time at which this item was first published or updated." ) ); },
-          "source" => { columns_desc.insert( label.clone(), String::from( "Specifies the source feed if the frame was copied from one feed into another feed, optional." ) ); },
-          "rights" => { columns_desc.insert( label.clone(), String::from( "Conveys information about copyrights over the feed, optional." ) ); },
-          "media" => { columns_desc.insert( label.clone(), String::from( "List of media oblects, encountered in the frame, optional." ) ); },
-          "language" => { columns_desc.insert( label.clone(), String::from( "The language specified on the item, optional." ) ); },
-          "feed_link" => { columns_desc.insert( label.clone(), String::from( "Link of feed that contains this frame." ) ); },
+          "id" =>
+          {
+            columns_desc.insert
+            (
+              label.clone(),
+              String::from( "A unique identifier for this frame in the feed. " ),
+            );
+          },
+          "title" =>
+          {
+            columns_desc.insert
+            (
+              label.clone(),
+              String::from( "Title of the frame" ),
+            );
+          },
+          "updated" => 
+          {
+            columns_desc.insert
+            (
+              label.clone(),
+              String::from( "Time at which this item was fetched from source." ),
+            );
+          },
+          "authors" =>
+          {
+            columns_desc.insert(
+              label.clone(),
+              String::from( "List of authors of the frame, optional." )
+            );
+          },
+          "content" =>
+          {
+            columns_desc.insert(
+              label.clone(),
+              String::from( "The content of the frame in html or plain text, optional." ),
+            );
+          },
+          "links" =>
+          {
+            columns_desc.insert(
+              label.clone(),
+              String::from( "List of links associated with this item of related Web page and attachments." ),
+            );
+          },
+          "summary" =>
+          {
+            columns_desc.insert
+            (
+              label.clone(),
+              String::from( "Short summary, abstract, or excerpt of the frame item, optional." ),
+            );
+          },
+          "categories" =>
+          {
+            columns_desc.insert
+            (
+              label.clone(),
+              String::from( "Specifies a list of categories that the item belongs to." ),
+            );
+          },
+          "published" =>
+          {
+            columns_desc.insert
+            (
+              label.clone(),
+              String::from( "Time at which this item was first published or updated." ),
+            );
+          },
+          "source" =>
+          {
+            columns_desc.insert
+            (
+              label.clone(),
+              String::from( "Specifies the source feed if the frame was copied from one feed into another feed, optional." ),
+            );
+          },
+          "rights" =>
+          {
+            columns_desc.insert
+            (
+              label.clone(),
+              String::from( "Conveys information about copyrights over the feed, optional." ),
+            );
+          },
+          "media" =>
+          {
+            columns_desc.insert
+            (
+              label.clone(),
+              String::from( "List of media oblects, encountered in the frame, optional." ),
+            );
+          },
+          "language" =>
+          {
+            columns_desc.insert
+            (
+              label.clone(),
+              String::from( "The language specified on the item, optional." ),
+            );
+          },
+          "feed_link" =>
+          {
+            columns_desc.insert
+            (
+              label.clone(),
+              String::from( "Link of feed that contains this frame." ),
+            );
+          },
           _ => { columns_desc.insert( label.clone(), String::from( "Desciption for this column hasn't been added yet!" ) ); }
         }
       }
@@ -125,14 +216,14 @@ pub async fn list_columns
 }
 
 /// Get names of tables in storage.
-pub async fn list_tables
+pub async fn tables_list
 (
   storage : FeedStorage< gluesql::sled_storage::SledStorage >,
   _args : &wca::Args,
 ) -> Result< impl Report >
 {
   let mut manager = FeedManager::new( storage );
-  manager.storage.list_tables().await
+  manager.storage.tables_list().await
 }
 
 const EMPTY_CELL : &'static str = "";

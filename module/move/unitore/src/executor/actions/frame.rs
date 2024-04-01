@@ -1,7 +1,6 @@
 //! Frames commands actions.
 
 use crate::*;
-use super::*;
 use executor::FeedManager;
 use storage::
 {
@@ -15,25 +14,25 @@ use feed_config;
 use error_tools::{ err, Result };
 
 /// List all frames.
-pub async fn list_frames
+pub async fn frames_list
 (
   storage : FeedStorage< SledStorage >,
   _args : &wca::Args,
-) -> Result< impl Report >
+) -> Result< impl executor::Report >
 {
     let mut manager = FeedManager::new( storage );
-    manager.storage.list_frames().await
+    manager.storage.frames_list().await
 }
 
 /// Update all frames from config files saved in storage.
-pub async fn download_frames
+pub async fn frames_download
 (
   storage : FeedStorage< SledStorage >,
   _args : &wca::Args,
-) -> Result< impl Report >
+) -> Result< impl executor::Report >
 {
   let mut manager = FeedManager::new( storage );
-  let payload = manager.storage.list_configs().await?;
+  let payload = manager.storage.config_list().await?;
 
   let configs = match &payload
   {
@@ -69,10 +68,10 @@ pub async fn download_frames
 
   let mut feeds = Vec::new();
   let client = retriever::FeedClient;
-  for i in  0..subscriptions.len()
+  for subscription in  subscriptions
   {
-    let feed = retriever::FeedFetch::fetch(&client, subscriptions[ i ].link.clone()).await?;
-    feeds.push( ( feed, subscriptions[ i ].update_period.clone(), subscriptions[ i ].link.clone() ) );
+    let feed = retriever::FeedFetch::fetch(&client, subscription.link.clone()).await?;
+    feeds.push( ( feed, subscription.update_period.clone(), subscription.link ) );
   }
   manager.storage.process_feeds( feeds ).await
 
@@ -170,7 +169,7 @@ impl std::fmt::Display for FramesReport
   }
 }
 
-impl Report for FramesReport {}
+impl executor::Report for FramesReport {}
 
 /// Items get from select query from storage.
 #[ derive( Debug ) ]
@@ -237,7 +236,7 @@ impl std::fmt::Display for UpdateReport
   }
 }
 
-impl Report for UpdateReport {}
+impl executor::Report for UpdateReport {}
 
 /// Report for listing frames.
 #[ derive( Debug ) ]
@@ -269,4 +268,4 @@ impl std::fmt::Display for ListReport
   }
 }
 
-impl Report for ListReport {}
+impl executor::Report for ListReport {}

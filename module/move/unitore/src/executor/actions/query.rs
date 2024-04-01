@@ -1,14 +1,13 @@
 //! Query command endpoint and report.
 
 use crate::*;
-use super::*;
 use gluesql::core::executor::Payload;
 use storage::{ FeedStorage, Store };
-use executor::FeedManager;
+use executor::{ FeedManager, actions::Report };
 use error_tools::{ err, BasicError, Result };
 
 /// Execute query specified in query string.
-pub async fn execute_query
+pub async fn query_execute
 (
   storage : FeedStorage< gluesql::sled_storage::SledStorage >,
   args : &wca::Args,
