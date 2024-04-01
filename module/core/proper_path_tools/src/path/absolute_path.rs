@@ -11,7 +11,7 @@ pub( crate ) mod private
   use serde::{ Serialize, Deserialize };
 
   /// Absolute path.
-  #[ derive( Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize ) ]
+  #[ derive( Debug, Default, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize ) ]
   #[ serde( transparent ) ]
   pub struct AbsolutePath( PathBuf );
 
