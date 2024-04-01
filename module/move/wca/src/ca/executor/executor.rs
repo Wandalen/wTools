@@ -79,9 +79,8 @@ pub( crate ) mod private
   {
     match routine
     {
-      Routine::WithoutContext( routine ) => routine(( command.args, command.properties )),
-      Routine::WithContext( routine ) => routine(( command.args, command.properties ), ctx ),
-      Routine::WithVerifiedCommand( routine ) => routine( command ),
+      Routine::WithoutContext( routine ) => routine( command ),
+      Routine::WithContext( routine ) => routine( ctx, command ),
     }
   }
   

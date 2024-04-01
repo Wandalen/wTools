@@ -1,17 +1,13 @@
 fn main()
 {
-  use wca::
-  {
-    CommandsAggregator, Command, Routine, Type,
-    Args,
-  };
+  use wca::{ Type, VerifiedCommand };
 
   let ca = wca::CommandsAggregator::former()
   .command( "echo" )
     .hint( "prints all subjects and properties" )
     .subject().hint( "Subject" ).kind( Type::String ).optional( true ).end()
     .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
-    .routine( | args : Args, props | { println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" ) } )
+    .routine( | o : VerifiedCommand | { println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.properties ) } )
     .end()
   .perform();
 

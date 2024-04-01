@@ -1,4 +1,5 @@
 use super::*;
+use the_module::VerifiedCommand;
 
 //
 
@@ -46,7 +47,7 @@ tests_impls!
       .long_hint( "long_hint" )
       .phrase( "command" )
       .subject().hint( "hint" ).kind( Type::String ).optional( false ).end()
-      .routine( | args : Args | args.get( 0 ).map( | a | println!( "{a:?}" )).ok_or_else( || "Subject not found" ) )
+      .routine( | o : VerifiedCommand | o.args.get( 0 ).map( | a | println!( "{a:?}" )).ok_or_else( || "Subject not found" ) )
       .form()
     )
     .form();
@@ -82,7 +83,7 @@ tests_impls!
       .long_hint( "long_hint" )
       .phrase( "command" )
       .property( "prop" ).hint( "about prop" ).kind( Type::String ).optional( true ).end()
-      .routine( | props : Props | props.get( "prop" ).map( | a | println!( "{a:?}" )).ok_or_else( || "Prop not found" ) )
+      .routine( | o : VerifiedCommand | o.properties.get( "prop" ).map( | a | println!( "{a:?}" )).ok_or_else( || "Prop not found" ) )
       .form()
     )
     .form();
