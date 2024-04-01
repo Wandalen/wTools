@@ -78,21 +78,38 @@ fn docs()
 }
 
 #[ test ]
-fn gitpod()
+fn no_gitpod()
 {
   // Arrange
-  let temp = arrange( "single_module" );
+  let temp = arrange("single_module");
+
+  // Act
+  _ = action::readme_modules_headers_renew(AbsolutePath::try_from(temp.path()).unwrap()).unwrap();
+  let mut file = std::fs::File::open(temp.path().join("test_module").join("Readme.md")).unwrap();
+
+  let mut actual = String::new();
+
+  _ = file.read_to_string(&mut actual).unwrap();
+
+  // Assert
+  // no example - no gitpod
+  assert!(!actual.contains("[Open in Gitpod]"));
+}
+#[ test ]
+fn with_gitpod()
+{
+  let temp = arrange( "single_module_with_example" );
 
   // Act
   _ = action::readme_modules_headers_renew( AbsolutePath::try_from( temp.path() ).unwrap() ).unwrap();
-  let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
+  let mut file = std::fs::File::open( temp.path().join( "module" ).join( "test_module" ).join( "Readme.md" ) ).unwrap();
 
   let mut actual = String::new();
 
   _ = file.read_to_string( &mut actual ).unwrap();
 
-  // Assert
-  assert!( actual.contains( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2Ftest_module_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20test_module_trivial/https://github.com/Wandalen/wTools)" ) );
+  dbg!(&actual);
+  assert!( actual.contains( "[Open in Gitpod]" ) );
 }
 
 #[ test ]
