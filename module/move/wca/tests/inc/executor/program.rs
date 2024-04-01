@@ -1,4 +1,5 @@
 use super::*;
+use the_module::VerifiedCommand;
 
 //
 
@@ -69,7 +70,7 @@ tests_impls!
       .subject().hint( "number" ).kind( Type::Number ).optional( true ).end()
       .routine
       (
-        | ctx : Context, args : Args |
+        | ctx : Context, o : VerifiedCommand |
         ctx
         .get()
         .ok_or_else( || "Have no value".to_string() )
@@ -78,7 +79,7 @@ tests_impls!
           | x : Arc< Mutex< i32 > > |
           {
             let x = x.lock().unwrap();
-            let y : i32 = args.get( 0 ).ok_or_else( || "Missing subject".to_string() ).unwrap().to_owned().into();
+            let y : i32 = o.args.get( 0 ).ok_or_else( || "Missing subject".to_string() ).unwrap().to_owned().into();
 
             if dbg!( *x ) != y { Err( format!( "{} not eq {}", x, y ) ) } else { Ok( () ) }
           }

@@ -7,7 +7,7 @@
 //!
 
 
-use wca::{ Args, Context, Type };
+use wca::{ Context, Type, VerifiedCommand };
 use std::sync::{ Arc, Mutex };
 
 fn main()
@@ -18,7 +18,7 @@ fn main()
     .hint( "prints all subjects and properties" )
     .subject().kind( Type::String ).optional( true ).end()
     .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
-    .routine( | args : Args, props | { println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" ) } )
+    .routine( | o : VerifiedCommand | { println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props ) } )
     .end()
   .command( "inc" )
     .hint( "This command increments a state number each time it is called consecutively. (E.g. `.inc .inc`)" )
@@ -33,7 +33,7 @@ fn main()
   .command( "error" )
     .hint( "prints all subjects and properties" )
     .subject().kind( Type::String ).optional( true ).end()
-    .routine( | args : Args | { println!( "Returns an error" ); Err( format!( "{}", args.get_owned::< String >( 0 ).unwrap_or_default() ) ) } )
+    .routine( | o : VerifiedCommand | { println!( "Returns an error" ); Err( format!( "{}", o.args.get_owned::< String >( 0 ).unwrap_or_default() ) ) } )
     .end()
   .command( "exit" )
     .hint( "just exit" )

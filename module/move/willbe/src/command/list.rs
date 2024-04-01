@@ -12,7 +12,7 @@ mod private
     collections::HashSet,
   };
 
-  use wca::{ Args, Props };
+  use wca::VerifiedCommand;
   use wtools::error::{ for_app::Context, Result };
 
   use _path::AbsolutePath;
@@ -47,12 +47,12 @@ mod private
   /// List workspace packages.
   ///
 
-  pub fn list( args : Args, properties : Props ) -> Result< () >
+  pub fn list( o : VerifiedCommand ) -> Result< () >
   {
-    let path_to_workspace : PathBuf = args.get_owned( 0 ).unwrap_or( std::env::current_dir().context( "Workspace list command without subject" )? );
+    let path_to_workspace : PathBuf = o.args.get_owned( 0 ).unwrap_or( std::env::current_dir().context( "Workspace list command without subject" )? );
     let path_to_workspace = AbsolutePath::try_from( path_to_workspace )?;
 
-    let ListProperties { format, with_version, with_path, with_local, with_remote, with_primary, with_dev, with_build } = ListProperties::try_from( properties )?;
+    let ListProperties { format, with_version, with_path, with_local, with_remote, with_primary, with_dev, with_build } = o.props.try_into()?;
 
     let crate_dir = CrateDir::try_from( path_to_workspace )?;
 
@@ -94,10 +94,10 @@ mod private
     Ok( () )
   }
 
-  impl TryFrom< Props > for ListProperties
+  impl TryFrom< wca::Props > for ListProperties
   {
     type Error = wtools::error::for_app::Error;
-    fn try_from( value : Props ) -> Result< Self, Self::Error >
+    fn try_from( value : wca::Props ) -> Result< Self, Self::Error >
     {
       let mut this = Self::former();
 

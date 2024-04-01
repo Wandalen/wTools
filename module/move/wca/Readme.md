@@ -14,7 +14,7 @@ The tool to make CLI ( commands user interface ). It is able to aggregate extern
 ```rust
 #[ cfg( not( feature = "no_std" ) ) ]
 {
-    use wca::{ Args, Context, Type };
+    use wca::{ VerifiedCommand, Context, Type };
 
     fn main()
     {
@@ -24,12 +24,12 @@ The tool to make CLI ( commands user interface ). It is able to aggregate extern
         .hint( "prints all subjects and properties" )
         .subject().hint( "Subject" ).kind( Type::String ).optional( true ).end()
         .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
-        .routine( | args : Args, props | { println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" ) } )
+        .routine( | o : VerifiedCommand | { println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props ) } )
         .end()
       .command( "error" )
         .hint( "prints all subjects and properties" )
         .subject().hint( "Error message" ).kind( Type::String ).optional( true ).end()
-        .routine( | args : Args | { println!( "Returns an error" ); Err( format!( "{}", args.get_owned::< String >( 0 ).unwrap_or_default() ) ) } )
+        .routine( | o : VerifiedCommand | { println!( "Returns an error" ); Err( format!( "{}", o.args.get_owned::< String >( 0 ).unwrap_or_default() ) ) } )
         .end()
       .command( "exit" )
         .hint( "just exit" )

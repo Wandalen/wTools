@@ -17,24 +17,29 @@ pub( crate ) mod private
   /// ```
   ///
   /// ```
-  /// # use wca::{ Routine, Context, Value, Args, Props };
+  /// # use wca::{ Routine, Handler, Context, Value, Args, Props, VerifiedCommand };
   /// # use std::sync::{ Arc, Mutex };
-  /// let routine = Routine::new_with_ctx
+  /// let routine = Routine::from( Handler::from
   /// (
-  ///   | ( args, props ), ctx |
+  ///   | ctx : Context, o : VerifiedCommand |
   ///   {
-  ///     let first_arg : i32 = args.get_owned( 0 ).unwrap_or_default();
+  ///     let first_arg : i32 = o.args.get_owned( 0 ).unwrap_or_default();
   ///     let ctx_value : Arc< Mutex< i32 > > = ctx.get_or_default();
   ///
   ///     *ctx_value.lock().unwrap() += first_arg;
-  ///
-  ///     Ok( () )
   ///   }
-  /// );
+  /// ) );
   /// let ctx = Context::default();
   /// if let Routine::WithContext( callback ) = routine
   /// {
-  ///   callback( ( Args( vec![ Value::Number( 1.0 ) ] ), Props( Default::default() ) ), ctx.clone() ).unwrap();
+  ///   let w_command = VerifiedCommand
+  ///   {
+  ///     phrase : "command".into(),
+  ///     internal_command : false,
+  ///     args : Args( vec![ Value::Number( 1.0 ) ] ),
+  ///     props : Props( Default::default() ),
+  ///   };
+  ///   callback( ctx.clone(), w_command ).unwrap();
   /// }
   /// assert_eq!( 1, *ctx.get::< Arc< Mutex< i32 > > >().unwrap().lock().unwrap() );
   /// ```

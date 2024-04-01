@@ -3,7 +3,7 @@ mod private
   use crate::*;
   use former::Former;
 
-  use wca::Props;
+  use wca::VerifiedCommand;
   use wtools::error::{ anyhow::Context, Result };
   use action::WorkspaceTemplate;
 
@@ -18,18 +18,18 @@ mod private
   /// Create new workspace.
   ///
 
-  pub fn workspace_renew( properties : Props ) -> Result< () >
+  pub fn workspace_renew( o : VerifiedCommand ) -> Result< () >
   {
-    let WorkspaceNewProperties { repository_url, branches } = WorkspaceNewProperties::try_from( properties )?;
+    let WorkspaceNewProperties { repository_url, branches } = o.props.try_into()?;
     let template = WorkspaceTemplate::default();
     action::workspace_renew( &std::env::current_dir()?, template, repository_url, branches ).context( "Fail to create workspace" )
   }
 
-  impl TryFrom< Props > for WorkspaceNewProperties
+  impl TryFrom< wca::Props > for WorkspaceNewProperties
   {
     type Error = wtools::error::for_app::Error;
 
-    fn try_from( value : Props ) -> std::result::Result< Self, Self::Error >
+    fn try_from( value : wca::Props ) -> std::result::Result< Self, Self::Error >
     {
       let mut this = Self::former();
 

@@ -28,18 +28,16 @@ pub( crate ) mod private
   ///
   /// ## Use case
   /// ```
-  /// # use wca::{ Routine, Args };
-  /// let routine = Routine::new
+  /// # use wca::{ Routine, Handler, VerifiedCommand };
+  /// let routine = Routine::from( Handler::from
   /// (
-  ///   |( args, _ ) : ( Args, _ )|
+  ///   | o : VerifiedCommand |
   ///   {
-  ///     let first_arg : i32 = args.get_owned( 0 ).unwrap();
-  ///
-  ///     Ok( () )
+  ///     let first_arg : i32 = o.args.get_owned( 0 ).unwrap();
   ///   }
-  /// );
+  /// ) );
   /// ```
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Clone ) ]
   pub struct Args( pub Vec< Value > );
 
   impl Args
@@ -89,18 +87,16 @@ pub( crate ) mod private
   ///
   /// ## Use case
   /// ```
-  /// # use wca::{ Routine, Props };
-  /// let routine = Routine::new
+  /// # use wca::{ Routine, Handler, Props, VerifiedCommand };
+  /// let routine = Routine::from( Handler::from
   /// (
-  ///   |( _, props ) : ( _, Props )|
+  ///   | o : VerifiedCommand |
   ///   {
-  ///     let key_option : i32 = props.get_owned( "key" ).unwrap();
-  ///
-  ///     Ok( () )
+  ///     let key_option : i32 = o.props.get_owned( "key" ).unwrap();
   ///   }
-  /// );
+  /// ) );
   /// ```
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Clone ) ]
   pub struct Props( pub HashMap< String, Value > );
 
   impl Props
@@ -133,36 +129,44 @@ pub( crate ) mod private
   // qqq : make 0-arguments, 1-argument, 2-arguments, 3 arguments versions
   // aaa : done. now it works with the following variants:
   // fn(), fn(args), fn(props), fn(args, props), fn(context), fn(context, args), fn(context, props), fn(context, args, props)
-  type RoutineWithoutContextFn = dyn Fn( ( Args, Props ) ) -> Result< () >;
-  type RoutineWithContextFn = dyn Fn( ( Args, Props ), Context ) -> Result< () >;
+    
+  type RoutineWithoutContextFn = dyn Fn( VerifiedCommand ) -> Result< () >;
+  type RoutineWithContextFn = dyn Fn( Context, VerifiedCommand ) -> Result< () >;
 
   ///
   /// Routine handle.
-  ///
+  /// 
   /// ```
-  /// # use wca::Routine;
-  /// let routine = Routine::new
+  /// # use wca::{ Handler, Routine };
+  /// let routine = Routine::from( Handler::from
   /// (
-  ///   |( args, props )|
+  ///   ||
   ///   {
   ///     // Do what you need to do
-  ///
-  ///     Ok( () )
   ///   }
-  /// );
+  /// ) );
   /// ```
   ///
   /// ```
-  /// # use wca::Routine;
-  /// let routine = Routine::new_with_ctx
+  /// # use wca::{ Handler, Routine, VerifiedCommand };
+  /// let routine = Routine::from( Handler::from
   /// (
-  ///   | ( args, props ), ctx |
+  ///   | o : VerifiedCommand |
   ///   {
   ///     // Do what you need to do
-  ///
-  ///     Ok( () )
   ///   }
-  /// );
+  /// ) );
+  /// ```
+  ///
+  /// ```
+  /// # use wca::{ Handler, Routine };
+  /// let routine = Routine::from( Handler::from
+  /// (
+  ///   | ctx, o |
+  ///   {
+  ///     // Do what you need to do
+  ///   }
+  /// ) );
 
   pub struct Handler< I, O >( Box< dyn Fn( I ) -> O > );
 
@@ -186,36 +190,14 @@ pub( crate ) mod private
     }
   }
 
-  impl< F, R > From< F > for Handler< Args, R >
-  where
-    R : IntoResult + 'static,
-    F : Fn( Args ) -> R + 'static,
+  impl< F, R > From< F > for Handler< VerifiedCommand, R >
+    where
+      R : IntoResult + 'static,
+      F : Fn( VerifiedCommand ) -> R + 'static,
   {
     fn from( value : F ) -> Self
     {
       Self( Box::new( value ) )
-    }
-  }
-
-  impl< F, R > From< F > for Handler< Props, R >
-    where
-      R : IntoResult + 'static,
-      F : Fn( Props ) -> R + 'static,
-  {
-    fn from( value : F ) -> Self
-    {
-      Self( Box::new( value ) )
-    }
-  }
-
-  impl< F, R > From< F > for Handler< ( Args, Props ), R >
-    where
-      R : IntoResult + 'static,
-      F : Fn( Args, Props ) -> R + 'static,
-  {
-    fn from( value : F ) -> Self
-    {
-      Self( Box::new( move |( a, p )| value( a, p ) ) )
     }
   }
 
@@ -231,36 +213,14 @@ pub( crate ) mod private
     }
   }
 
-  impl< F, R > From< F > for Handler< ( Context, Args ), R >
+  impl< F, R > From< F > for Handler< ( Context, VerifiedCommand ), R >
   where
     R : IntoResult + 'static,
-    F : Fn( Context, Args ) -> R + 'static,
+    F : Fn( Context, VerifiedCommand ) -> R + 'static,
   {
     fn from( value : F ) -> Self
     {
       Self( Box::new( move |( ctx, a )| value( ctx, a ) ) )
-    }
-  }
-
-  impl< F, R > From< F > for Handler< ( Context, Props ), R >
-  where
-    R : IntoResult + 'static,
-    F : Fn( Context, Props ) -> R + 'static,
-  {
-    fn from( value : F ) -> Self
-    {
-      Self( Box::new( move |( ctx, a )| value( ctx, a ) ) )
-    }
-  }
-
-  impl< F, R > From< F > for Handler< ( Context, Args, Props ), R >
-  where
-    R : IntoResult + 'static,
-    F : Fn( Context, Args, Props ) -> R + 'static,
-  {
-    fn from( value : F ) -> Self
-    {
-      Self( Box::new( move |( c, a, p )| value( c, a, p ) ) )
     }
   }
 
@@ -311,28 +271,12 @@ pub( crate ) mod private
       Self::WithoutContext( Rc::new( move | _ | { value( () )?; Ok( () ) } ) )
     }
   }
-
-  impl From< Box< dyn Fn( Args ) -> Result< () > > > for Routine
+  
+  impl From< Box< dyn Fn( VerifiedCommand ) -> Result< () > > > for Routine
   {
-    fn from( value : Box< dyn Fn( Args ) -> Result< () > > ) -> Self
+    fn from( value : Box< dyn Fn( VerifiedCommand ) -> Result< () > > ) -> Self
     {
-      Self::WithoutContext( Rc::new( move |( a, _ )| { value( a )?; Ok( () ) } ) )
-    }
-  }
-
-  impl From< Box< dyn Fn( Props ) -> Result< () > > > for Routine
-  {
-    fn from( value : Box< dyn Fn( Props ) -> Result< () > > ) -> Self
-    {
-      Self::WithoutContext( Rc::new( move |( _, p )| { value( p )?; Ok( () ) } ) )
-    }
-  }
-
-  impl From< Box< dyn Fn(( Args, Props )) -> Result< () > > > for Routine
-  {
-    fn from( value : Box< dyn Fn(( Args, Props )) -> Result< () > > ) -> Self
-    {
-      Self::WithoutContext( Rc::new( move |( a, p )| { value(( a, p ))?; Ok( () ) } ) )
+      Self::WithoutContext( Rc::new( move | a | { value( a )?; Ok( () ) } ) )
     }
   }
 
@@ -341,86 +285,20 @@ pub( crate ) mod private
   {
     fn from( value : Box< dyn Fn( Context ) -> Result< () > > ) -> Self
     {
-      Self::WithContext( Rc::new( move | _, ctx | { value( ctx )?; Ok( () ) } ) )
+      Self::WithContext( Rc::new( move | ctx, _ | { value( ctx )?; Ok( () ) } ) )
     }
   }
 
-  impl From< Box< dyn Fn(( Context, Args )) -> Result< () > > > for Routine
+  impl From< Box< dyn Fn(( Context, VerifiedCommand )) -> Result< () > > > for Routine
   {
-    fn from( value : Box< dyn Fn(( Context, Args )) -> Result< () > > ) -> Self
+    fn from( value : Box< dyn Fn(( Context, VerifiedCommand )) -> Result< () > > ) -> Self
     {
-      Self::WithContext( Rc::new( move | ( a, _ ), ctx | { value(( ctx, a ))?; Ok( () ) } ) )
+      Self::WithContext( Rc::new( move | ctx, a | { value(( ctx, a ))?; Ok( () ) } ) )
     }
   }
-
-  impl From< Box< dyn Fn(( Context, Props )) -> Result< () > > > for Routine
-  {
-    fn from( value : Box< dyn Fn(( Context, Props )) -> Result< () > > ) -> Self
-    {
-      Self::WithContext( Rc::new( move | ( _, p ), ctx | { value(( ctx, p ))?; Ok( () ) } ) )
-    }
-  }
-
-  impl From< Box< dyn Fn(( Context, Args, Props )) -> Result< () > > > for Routine
-  {
-    fn from( value : Box< dyn Fn(( Context, Args, Props )) -> Result< () > > ) -> Self
-    {
-      Self::WithContext( Rc::new( move | ( a, p ), ctx | { value(( ctx, a, p ))?; Ok( () ) } ) )
-    }
-  }
-
 
   // qqq : why Rc is necessary? why not just box?
   // aaa : to be able to clone Routines
-
-  impl Routine
-  {
-    ///
-    /// Create new routine.
-    ///
-    /// ```
-    /// # use wca::Routine;
-    /// let routine = Routine::new
-    /// (
-    ///   |( args, props )|
-    ///   {
-    ///     // Do what you need to do
-    ///
-    ///     Ok( () )
-    ///   }
-    /// );
-    /// ```
-
-    pub fn new< F >( callback : F ) -> Self
-    where
-      F : Fn(( Args, Props )) -> Result< () > + 'static,
-    {
-      Routine::WithoutContext( Rc::new( callback ) )
-    }
-
-    ///
-    /// Create new routine with context.
-    ///
-    /// ```
-    /// # use wca::Routine;
-    /// let routine = Routine::new_with_ctx
-    /// (
-    ///   | ( args, props ), ctx |
-    ///   {
-    ///     // Do what you need to do
-    ///
-    ///     Ok( () )
-    ///   }
-    /// );
-    /// ```
-
-    pub fn new_with_ctx< F >( callback : F ) -> Self
-    where
-      F : Fn( ( Args, Props ), Context ) -> Result< () > + 'static,
-    {
-      Routine::WithContext( Rc::new( callback ) )
-    }
-  }
 
   impl PartialEq for Routine
   {
