@@ -83,7 +83,7 @@ tests_impls!
       .long_hint( "long_hint" )
       .phrase( "command" )
       .property( "prop" ).hint( "about prop" ).kind( Type::String ).optional( true ).end()
-      .routine( | o : VerifiedCommand | o.properties.get( "prop" ).map( | a | println!( "{a:?}" )).ok_or_else( || "Prop not found" ) )
+      .routine( | o : VerifiedCommand | o.props.get( "prop" ).map( | a | println!( "{a:?}" )).ok_or_else( || "Prop not found" ) )
       .form()
     )
     .form();

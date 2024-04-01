@@ -6,7 +6,7 @@ use wca::{ CommandsAggregator, Type, VerifiedCommand };
 
 fn f1( o : VerifiedCommand )
 {
-  println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.properties );
+  println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props );
 }
 
 fn exit()

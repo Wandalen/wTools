@@ -7,7 +7,7 @@ fn main()
     .hint( "prints all subjects and properties" )
     .subject().hint( "Subject" ).kind( Type::String ).optional( true ).end()
     .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
-    .routine( | o : VerifiedCommand | { println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.properties ) } )
+    .routine( | o : VerifiedCommand | { println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props ) } )
     .end()
   .perform();
 

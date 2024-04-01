@@ -66,7 +66,7 @@ pub( crate ) mod private
   ///   internal_command : false,
   ///   // Here is numeric value used
   ///   args : Args( vec![ Value::Number( 3.14 ) ] ),
-  ///   properties : Props( HashMap::from_iter(
+  ///   props : Props( HashMap::from_iter(
   ///   [
   ///     // Here is string value used
   ///     ( "string_prop".to_string(), Value::String( "value".to_string() ) ),

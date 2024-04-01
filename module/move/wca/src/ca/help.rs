@@ -193,7 +193,7 @@ pub( crate ) mod private
           if !o.args.0.is_empty() => help( o )?,
           _ =>
           {
-            let format_prop : String = o.properties.get_owned( "format" ).unwrap_or_default();
+            let format_prop : String = o.props.get_owned( "format" ).unwrap_or_default();
             let format = match format_prop.as_str()
             {
               "md" | "markdown" => HelpFormat::Markdown,

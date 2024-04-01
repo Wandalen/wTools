@@ -14,7 +14,7 @@ pub( crate ) mod private
   ///   phrase : "command".to_string(),
   ///   internal_command : false,
   ///   args : Args( vec![ Value::String( "subject_value".to_string() ), /* ... */ ] ),
-  ///   properties : Props( HashMap::from_iter(
+  ///   props : Props( HashMap::from_iter(
   ///   [
   ///     ( "prop_name".to_string(), Value::Number( 42.0 ) ),
   ///     /* ... */
@@ -34,7 +34,7 @@ pub( crate ) mod private
     /// Command subjects.
     pub args : Args,
     /// Command options.
-    pub properties : Props,
+    pub props : Props,
   }
 
 }

@@ -32,7 +32,7 @@ fn main()
     .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
     .routine( | o : VerifiedCommand |
     {
-      println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.properties );
+      println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props );
     })
     .end()
   .perform();
