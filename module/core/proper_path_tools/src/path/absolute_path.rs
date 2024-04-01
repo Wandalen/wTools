@@ -55,6 +55,15 @@ pub( crate ) mod private
     }
   }
 
+  impl From< AbsolutePath > for PathBuf 
+  {
+    fn from( abs_path: AbsolutePath ) -> Self 
+    {
+      abs_path.0
+    }
+  }
+
+
 //   impl TryFrom< Utf8PathBuf > for AbsolutePath
 //   {
 //     type Error = std::io::Error;
@@ -101,20 +110,8 @@ pub( crate ) mod private
       Self::try_from( self.0.join( path ) ).unwrap()
     }
 
-    /// Retrieve reference to inner type
-    pub fn inner( &self ) -> &Path
-    {
-      &self.0
-    }
-
-    /// Retrieve inner type
-    pub fn into_inner( self ) -> PathBuf
-    {
-      self.0
-    }
-
-    /// Converts a `AbsolutePath`` to a `Cow<str>``
-    pub fn to_string_lossy( &self ) -> Cow<'_, str >
+    /// Converts a `AbsolutePath` to a `Cow<str>`
+    pub fn to_string_lossy( &self ) -> Cow< '_, str >
     {
       self.0.to_string_lossy()
     }
