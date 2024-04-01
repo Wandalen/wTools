@@ -39,7 +39,7 @@ pub( crate ) mod private
   ///   }
   /// );
   /// ```
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Clone ) ]
   pub struct Args( pub Vec< Value > );
 
   impl Args
@@ -100,7 +100,7 @@ pub( crate ) mod private
   ///   }
   /// );
   /// ```
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Clone ) ]
   pub struct Props( pub HashMap< String, Value > );
 
   impl Props

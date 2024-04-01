@@ -433,8 +433,8 @@ pub( crate ) mod private
         {
           phrase : raw_command.name,
           internal_command : true,
-          subjects : vec![],
-          properties : HashMap::new(),
+          args : Args( vec![] ),
+          properties : Props( HashMap::new() ),
         });
       }
       let command = dictionary.command( &raw_command.name )
@@ -467,8 +467,8 @@ pub( crate ) mod private
       {
         phrase : cmd.phrase.to_owned(),
         internal_command : false,
-        subjects,
-        properties,
+        args : Args( subjects ),
+        properties : Props( properties ),
       })
     }
   }
