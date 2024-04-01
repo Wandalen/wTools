@@ -4,12 +4,15 @@ pub( crate ) mod private
   use crate::*;
   use std::
   {
+    borrow::Cow,
     fmt,
     path::{ Path, PathBuf },
   };
+  use serde::{ Serialize, Deserialize };
 
   /// Absolute path.
-  #[ derive( Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
+  #[ derive( Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize ) ]
+  #[ serde( transparent ) ]
   pub struct AbsolutePath( PathBuf );
 
   impl fmt::Display for AbsolutePath
@@ -96,6 +99,25 @@ pub( crate ) mod private
     {
       Self::try_from( self.0.join( path ) ).unwrap()
     }
+
+    /// Retrieve reference to inner type
+    pub fn inner( &self ) -> &Path
+    {
+      &self.0
+    }
+
+    /// Retrieve inner type
+    pub fn into_inner( self ) -> PathBuf
+    {
+      self.0
+    }
+
+    /// Converts a `AbsolutePath`` to a `Cow<str>``
+    pub fn to_string_lossy( &self ) -> Cow<'_, str >
+    {
+      self.0.to_string_lossy()
+    }
+
   }
 
 }
