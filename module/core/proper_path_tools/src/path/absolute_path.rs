@@ -12,7 +12,6 @@ pub( crate ) mod private
 
   /// Absolute path.
   #[ derive( Debug, Default, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize ) ]
-  #[ serde( transparent ) ]
   pub struct AbsolutePath( PathBuf );
 
   impl fmt::Display for AbsolutePath
