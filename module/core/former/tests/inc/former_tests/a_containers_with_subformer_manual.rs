@@ -363,6 +363,79 @@ where
     > >()
   }
 
+  #[ inline( always ) ]
+  pub fn hashmap_strings_1_set< Former2 >( self ) -> Former2
+  where
+    Former2 : former::FormerBegin
+    <
+      former::HashMapDefinition
+      <
+        String,
+        String,
+        Self,
+        Self,
+        __hashmap_strings_1_end,
+      >
+    >,
+  {
+    Former2::_begin( None, Some( self ), __hashmap_strings_1_end )
+  }
+
+  pub fn hashmap_strings_1( self ) ->
+  former::HashMapSubformer::
+  <
+    String,
+    String,
+    Self,
+    Self,
+    __hashmap_strings_1_end,
+  >
+  {
+    self.hashmap_strings_1_set::< former::HashMapSubformer::
+    <
+      String,
+      String,
+      Self,
+      Self,
+      __hashmap_strings_1_end,
+    > >()
+  }
+
+  #[ inline( always ) ]
+  pub fn hashset_strings_1_set< Former2 >( self ) -> Former2
+  where
+    Former2 : former::FormerBegin
+    <
+      former::HashSetDefinition
+      <
+        String,
+        Self,
+        Self,
+        __hashset_strings_1_end,
+      >
+    >,
+  {
+    Former2::_begin( None, Some( self ), __hashset_strings_1_end )
+  }
+
+  pub fn hashset_strings_1( self ) ->
+  former::HashSetSubformer::
+  <
+    String,
+    Self,
+    Self,
+    __hashset_strings_1_end,
+  >
+  {
+    self.hashset_strings_1_set::< former::HashSetSubformer::
+    <
+      String,
+      Self,
+      Self,
+      __hashset_strings_1_end,
+    > >()
+  }
+
 //   #[ doc = "Subformer setter for the 'hashmap_strings_1' field." ]
 //   #[ inline ]
 //   pub fn hashmap_strings_1( mut self ) -> the_module::HashMapSubformer< String, String, std::collections::HashMap< String, String >, Self, impl Fn( std::collections::HashMap< String, String >, core::option::Option< Self > ) -> Self, >
