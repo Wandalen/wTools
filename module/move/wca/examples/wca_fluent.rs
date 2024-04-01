@@ -14,6 +14,7 @@ fn main()
 {
 
   let ca = wca::CommandsAggregator::former()
+  .with_context( Mutex::new( 0 ) )
   .command( "echo" )
     .hint( "prints all subjects and properties" )
     .subject().kind( Type::String ).optional( true ).end()
@@ -24,7 +25,7 @@ fn main()
     .hint( "This command increments a state number each time it is called consecutively. (E.g. `.inc .inc`)" )
     .routine( | ctx : Context |
     {
-      let i : Arc< Mutex< i32 > > = ctx.get_or_default();
+      let i : Arc< Mutex< i32 > > = ctx.get().unwrap();
       let mut i = i.lock().unwrap();
       println!( "i = {}", i );
       *i += 1;

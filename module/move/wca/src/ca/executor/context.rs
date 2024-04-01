@@ -1,20 +1,10 @@
 pub( crate ) mod private
 {
-  use std::{ sync::Arc, cell::RefCell };
-  use anymap::{ Map, any::CloneAny };
+  use std::sync::Arc;
 
   /// Container for contexts values
   ///
   /// # Examples:
-  ///
-  /// ```
-  /// use wca::Context;
-  ///
-  /// let ctx = Context::default();
-  ///
-  /// ctx.insert( 42 );
-  /// assert_eq!( 42, ctx.get().unwrap() );
-  /// ```
   ///
   /// ```
   /// # use wca::{ Routine, Handler, Context, Value, Args, Props, VerifiedCommand };
@@ -24,12 +14,12 @@ pub( crate ) mod private
   ///   | ctx : Context, o : VerifiedCommand |
   ///   {
   ///     let first_arg : i32 = o.args.get_owned( 0 ).unwrap_or_default();
-  ///     let ctx_value : Arc< Mutex< i32 > > = ctx.get_or_default();
+  ///     let ctx_value : Arc< Mutex< i32 > > = ctx.get().unwrap();
   ///
   ///     *ctx_value.lock().unwrap() += first_arg;
   ///   }
   /// ) );
-  /// let ctx = Context::default();
+  /// let ctx = Context::new( Mutex::new( 0 ) );
   /// if let Routine::WithContext( callback ) = routine
   /// {
   ///   let w_command = VerifiedCommand
@@ -41,84 +31,59 @@ pub( crate ) mod private
   ///   };
   ///   callback( ctx.clone(), w_command ).unwrap();
   /// }
-  /// assert_eq!( 1, *ctx.get::< Arc< Mutex< i32 > > >().unwrap().lock().unwrap() );
+  /// assert_eq!( 1, *ctx.get::< Mutex< i32 > >().unwrap().lock().unwrap() );
   /// ```
-  // CloneAny needs to deep clone of Context
   // qqq : ?
-  #[ derive( Debug, Clone, former::Former ) ]
+  #[ derive( Debug, Clone ) ]
   pub struct Context
   {
-    inner : Arc< RefCell< Map::< dyn CloneAny > > >
+    inner : Arc< dyn std::any::Any + Send + Sync >,
   }
-
-  impl ContextFormer
-  {
-    /// Initialize Context with some value
-    pub fn with< T : CloneAny >( mut self, value : T ) -> Self
-    {
-      let inner = self.storage.inner.unwrap_or_else( || Context::default().inner );
-      inner.borrow_mut().insert( value );
-
-      self.storage.inner = Some( inner );
-      self
-    }
-  }
-
+  
   impl Default for Context
   {
     fn default() -> Self
     {
-      Self { inner : Arc::new( RefCell::new( Map::< dyn CloneAny >::new() ) ) }
+      Self::new( () )
+    }
+  }
+  
+  impl Context
+  {
+    /// Creates a new `Context` object with the given value.
+    ///
+    /// # Arguments
+    ///
+    /// * `value` - The value to be stored in the `Context`. The value must implement the `Send` and `Sync` traits.
+    /// ```
+    // `'static` means that the object must be owned or live at least as a `Context'
+    pub fn new< T : Send + Sync + 'static >( value : T ) -> Self
+    {
+      Self { inner : Arc::new( value ) }
     }
   }
 
   impl Context
   {
-     /// Insert the T value to the context. If it is already exists - replace it
-     pub fn insert< T : CloneAny >( &self, value : T )
-     {
-       self.inner.borrow_mut().insert( value );
-     }
-
-     /// Removes the T value from the context
-     pub fn remove< T : CloneAny >( &mut self ) -> Option< T >
-     {
-       self.inner.borrow_mut().remove::< T >()
-     }
-
-    // aaa : Bohdan : why unsafe?
-    // aaa : re-worked.
-
-    /// Return immutable reference on interior object.
-    pub fn get< T : CloneAny + Clone >( &self ) -> Option< T >
+    /// This method retrieves a shared reference to an object of type `T` from the context.
+    ///
+    /// # Arguments
+    ///
+    /// * `&self` - The context object.
+    ///
+    /// # Type Parameters
+    ///
+    /// * `T` - The type of the object to retrieve.
+    ///
+    /// # Returns
+    ///
+    /// An `Option` containing a reference-counted smart pointer (`Arc`) to the object of type `T` if it exists in the context.
+    /// `None` is returned if the object does not exist or if it cannot be downcasted to type `T`.
+    // `'static` means that the object must be owned or live at least as a `Context'
+    pub fn get< T : Send + Sync + 'static >( &self ) -> Option< Arc< T > >
     {
-      self.inner.borrow().get().cloned()
+      self.inner.clone().downcast::< T >().ok()
     }
-
-    /// Insert the value if it doesn't exists, or take an existing value and return mutable reference to it
-    pub fn get_or_insert< T : CloneAny + Clone >( &self, value : T ) -> T
-    {
-      if let Some( value ) = self.get()
-      {
-        value
-      }
-      else
-      {
-        self.insert( value );
-        self.get().unwrap()
-      }
-    }
-
-    /// Insert default value if it doesn't exists, or take an existing value and return mutable reference to it
-    pub fn get_or_default< T : CloneAny + Default + Clone >( &self ) -> T
-    {
-      self.get_or_insert( T::default() )
-    }
-
-    // aaa : for Bohdan : why is it deep? how is it deep?
-    // aaa : how is it useful? Is it? Examples?
-    //
-    // aaa : removed
   }
 }
 
