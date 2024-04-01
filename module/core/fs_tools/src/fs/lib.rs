@@ -7,7 +7,8 @@
 /// Collection of primal data types.
 pub mod fs;
 
-/// Dependencies.
+/// Namespace with dependencies.
+
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {

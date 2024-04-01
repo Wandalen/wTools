@@ -1,4 +1,4 @@
-//! Endpoint and report for commands for config files.
+//! Actions and report for commands for config files.
 
 use crate::*;
 use error_tools::{ err, for_app::Context, BasicError, Result };
@@ -71,7 +71,7 @@ pub async fn config_delete( storage : FeedStorage< SledStorage >, args : &wca::A
   let config = Config::new( path.to_string_lossy().to_string() );
 
   let mut manager = FeedManager::new( storage );
-  Ok( ConfigReport::new( 
+  Ok( ConfigReport::new(
     manager.storage
     .config_delete( &config )
     .await
@@ -108,10 +108,10 @@ impl std::fmt::Display for ConfigReport
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
     const EMPTY_CELL : &'static str = "";
-    
+
     match &self.payload
     {
-      Payload::Insert( number ) => 
+      Payload::Insert( number ) =>
       {
         writeln!( f, "Added {} config file(s)", number )?;
         writeln!(

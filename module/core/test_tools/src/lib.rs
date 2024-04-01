@@ -1,10 +1,11 @@
-#![ cfg_attr( feature = "no_std", no_std ) ]
+// #![ cfg_attr( feature = "no_std", no_std ) ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/test_tools/latest/test_tools/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-/// Dependencies.
+/// Namespace with dependencies.
+
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
@@ -38,9 +39,9 @@ pub mod dependency
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::diagnostics_tools;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use ::process_tools;
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use ::process_tools;
 
 }
 
@@ -54,12 +55,13 @@ pub mod dependency
 
   layer test;
 
+  // xxx : comment out
   use super::exposed::meta;
   use super::exposed::mem;
   use super::exposed::typing;
   use super::exposed::dt;
   use super::exposed::diagnostics;
-  use super::exposed::process;
+  // use super::exposed::process;
 
   // prelude use ::rustversion::{ nightly, stable };
 
@@ -73,7 +75,7 @@ pub mod dependency
   prelude use ::typing_tools as typing;
   prelude use ::data_type as dt;
   prelude use ::diagnostics_tools as diagnostics;
-  prelude use ::process_tools as process;
+  // prelude use ::process_tools as process;
 
   prelude use ::meta_tools::
   {

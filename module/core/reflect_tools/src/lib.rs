@@ -8,7 +8,8 @@
 #[ cfg( feature = "reflect_reflect" ) ]
 pub mod reflect;
 
-/// Dependencies.
+/// Namespace with dependencies.
+
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {

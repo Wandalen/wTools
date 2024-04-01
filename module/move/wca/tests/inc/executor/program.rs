@@ -1,4 +1,5 @@
 use super::*;
+use the_module::VerifiedCommand;
 
 //
 
@@ -36,6 +37,7 @@ tests_impls!
 
   fn with_context()
   {
+    use std::sync::{ Arc, Mutex };
     use wtools::error::for_app::Error;
 
     // init parser
@@ -53,9 +55,9 @@ tests_impls!
       (
         | ctx : Context |
         ctx
-        .get_mut()
+        .get()
         .ok_or_else( || "Have no value" )
-        .and_then( | x : &mut i32 | { *x += 1; Ok( () ) } )
+        .and_then( | x : Arc< Mutex< i32 > > | { *x.lock().unwrap() += 1; Ok( () ) } )
       )
       .form()
     )
@@ -68,17 +70,18 @@ tests_impls!
       .subject().hint( "number" ).kind( Type::Number ).optional( true ).end()
       .routine
       (
-        | ctx : Context, args : Args |
+        | ctx : Context, o : VerifiedCommand |
         ctx
-        .get_ref()
+        .get()
         .ok_or_else( || "Have no value".to_string() )
         .and_then
         (
-          | &x : &i32 |
+          | x : Arc< Mutex< i32 > > |
           {
-            let y : i32 = args.get( 0 ).ok_or_else( || "Missing subject".to_string() ).unwrap().to_owned().into();
+            let x = x.lock().unwrap();
+            let y : i32 = o.args.get( 0 ).ok_or_else( || "Missing subject".to_string() ).unwrap().to_owned().into();
 
-            if dbg!( x ) != y { Err( format!( "{} not eq {}", x, y ) ) } else { Ok( () ) }
+            if dbg!( *x ) != y { Err( format!( "{} not eq {}", x, y ) ) } else { Ok( () ) }
           }
         )
       )
@@ -88,8 +91,7 @@ tests_impls!
     let verifier = Verifier;
 
     // starts with 0
-    let mut ctx = wca::Context::default();
-    ctx.insert( 0 );
+    let ctx = wca::Context::new( Mutex::new( 0 ) );
     // init simple executor
     let executor = Executor::former()
     .context( ctx )

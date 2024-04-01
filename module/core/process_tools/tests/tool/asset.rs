@@ -1,4 +1,6 @@
 
+// xxx2 : incorporate the function into a tool
+
 pub const ASSET_PATH : &str = "tests/asset";
 
 macro_rules! ERR_MSG
@@ -42,6 +44,9 @@ pub fn path() -> std::io::Result< std::path::PathBuf >
 }
 
 //
+
+// xxx2 : adjust Former to generate required code easier
+// xxx2 : implement the interface
 
 use former::Former;
 use std::

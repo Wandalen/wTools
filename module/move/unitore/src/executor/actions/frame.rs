@@ -13,6 +13,8 @@ use gluesql::prelude::{ Payload, Value, SledStorage };
 use feed_config;
 use error_tools::{ err, Result };
 
+// qqq : review the whole project and make sure all names are consitant: actions, commands, its tests
+
 /// List all frames.
 pub async fn frames_list
 (
@@ -143,7 +145,7 @@ impl std::fmt::Display for FramesReport
     {
       write!( f, "{}", table )?;
     }
-      
+
     for frame in &self.selected_frames.selected_rows
     {
       let mut rows = Vec::new();
@@ -157,7 +159,7 @@ impl std::fmt::Display for FramesReport
         ];
         rows.push( inner_row );
       }
-      
+
       let table = table_display::plain_table( rows );
       if let Some( table ) = table
       {

@@ -1,6 +1,6 @@
 [package]
 name = "clone_dyn"
-version = "0.14.0"
+version = "0.15.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -30,7 +30,7 @@ all-features = false
 default = [ "enabled" ]
 full = [ "enabled" ]
 no_std = []
-use_alloc = []
+use_alloc = [ "no_std" ]
 enabled = [ "clone_dyn_meta/enabled" ]
 
 [dependencies]

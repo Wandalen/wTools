@@ -1,6 +1,10 @@
 crate::mod_interface!
 {
 
+  /// Compare two crate archives and create a difference report.
+  layer diff;
+  orphan use super::diff;
+
   /// Operation with features
   layer features;
   orphan use super::features;
@@ -8,6 +12,10 @@ crate::mod_interface!
   /// Handles operations related to packed Rust crates
   layer packed_crate;
   orphan use super::packed_crate;
+  
+  /// Facade for `preatytable` crate.
+  layer table;
+  orphan use super::table;
 
   /// Provides a set of functionalities for handling and manipulating packages.
   layer packages;
@@ -32,5 +40,12 @@ crate::mod_interface!
   /// Operations with tests
   layer test;
   orphan use super::test;
-
+  
+  /// Rust toolchain channel: stable/nightly.
+  layer channel;
+  orphan use super::channel;
+  
+  /// Rust build optimization: debug/release
+  layer optimization;
+  orphan use super::optimization;
 }

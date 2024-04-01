@@ -275,7 +275,7 @@ pub( crate ) mod private
     // Thread-local static variable for a counter
     thread_local!
     {
-      static COUNTER : std::cell::Cell<usize> = std::cell::Cell::new( 0 );
+      static COUNTER : std::cell::Cell< usize > = std::cell::Cell::new( 0 );
     }
 
     // Increment and get the current value of the counter safely
@@ -291,9 +291,14 @@ pub( crate ) mod private
     .as_nanos();
 
     let pid = std::process::id();
-    let tid = std::thread::current().id();
+    let tid : String = format!( "{:?}", std::thread::current().id() )
+    .chars()
+    .filter( | c | c.is_digit( 10 ) )
+    .collect();
 
-    Ok( format!( "{}_{}_{:?}_{}", timestamp, pid, tid, count ) )
+    // dbg!( &tid );
+
+    Ok( format!( "{}_{}_{}_{}", timestamp, pid, tid, count ) )
   }
 
 }

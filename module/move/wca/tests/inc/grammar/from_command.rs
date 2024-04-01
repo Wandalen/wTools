@@ -61,8 +61,8 @@ tests_impls!
     let raw_command = parser.command( ".command subject" ).unwrap();
     let grammar_command = verifier.to_command( dictionary, raw_command ).unwrap();
 
-    a_id!( vec![ Value::String( "subject".to_string() ) ], grammar_command.subjects );
-    a_true!( grammar_command.properties.is_empty() );
+    a_id!( vec![ Value::String( "subject".to_string() ) ], grammar_command.args.0 );
+    a_true!( grammar_command.props.is_empty() );
 
     // with more subjects that it is set
     let raw_command = parser.command( ".command subject1 subject2" ).unwrap();
@@ -79,8 +79,8 @@ tests_impls!
     let raw_command = parser.command( ".command prop:value" ).unwrap();
 
     let grammar_command = verifier.to_command( dictionary, raw_command ).unwrap();
-    a_id!( vec![ Value::String( "prop:value".to_string() ) ], grammar_command.subjects );
-    a_true!( grammar_command.properties.is_empty() );
+    a_id!( vec![ Value::String( "prop:value".to_string() ) ], grammar_command.args.0 );
+    a_true!( grammar_command.props.is_empty() );
   }
 
   fn subject_type_check()
@@ -143,8 +143,8 @@ tests_impls!
         Value::String( "second_subject".into() ),
         Value::String( "third_subject".into() ),
       ])
-    ], grammar_command.subjects );
-    a_true!( grammar_command.properties.is_empty() );
+    ], grammar_command.args.0 );
+    a_true!( grammar_command.props.is_empty() );
   }
 
   fn subject_is_optional_basic()
@@ -237,15 +237,15 @@ tests_impls!
     let raw_command = parser.command( ".command prop1:value1" ).unwrap();
     let grammar_command = verifier.to_command( dictionary, raw_command ).unwrap();
 
-    a_true!( grammar_command.subjects.is_empty() );
-    a_id!( HashMap::from_iter([ ( "prop1".to_string(), Value::String( "value1".to_string() ) ) ]), grammar_command.properties );
+    a_true!( grammar_command.args.0.is_empty() );
+    a_id!( HashMap::from_iter([ ( "prop1".to_string(), Value::String( "value1".to_string() ) ) ]), grammar_command.props.0 );
 
     // with property re-write
     let raw_command = parser.command( ".command prop1:value prop1:another_value" ).unwrap();
     let grammar_command = verifier.to_command( dictionary, raw_command ).unwrap();
 
-    a_true!( grammar_command.subjects.is_empty() );
-    a_id!( HashMap::from_iter([ ( "prop1".to_string(), Value::String( "another_value".to_string() ) ) ]), grammar_command.properties );
+    a_true!( grammar_command.args.0.is_empty() );
+    a_id!( HashMap::from_iter([ ( "prop1".to_string(), Value::String( "another_value".to_string() ) ) ]), grammar_command.props.0 );
 
     // with undeclareted property
     let raw_command = parser.command( ".command undeclareted_prop:value" ).unwrap();
@@ -311,11 +311,11 @@ tests_impls!
     let raw_command = parser.command( ".command prop:1,2,3" ).unwrap();
     let grammar_command = verifier.to_command( dictionary, raw_command ).unwrap();
 
-    a_true!( grammar_command.subjects.is_empty() );
+    a_true!( grammar_command.args.0.is_empty() );
     a_id!
     (
       vec![ 1.0, 2.0, 3.0 ],
-      Vec::< f64 >::from( grammar_command.properties[ "prop" ].clone() )
+      Vec::< f64 >::from( grammar_command.props.0[ "prop" ].clone() )
     );
   }
 
@@ -348,22 +348,22 @@ tests_impls!
     let raw_command = parser.command( ".command property:value" ).unwrap();
     let grammar_command = verifier.to_command( dictionary, raw_command ).unwrap();
 
-    a_true!( grammar_command.subjects.is_empty() );
-    a_id!( HashMap::from_iter([ ( "property".to_string(), Value::String( "value".to_string() ) ) ]), grammar_command.properties );
+    a_true!( grammar_command.args.0.is_empty() );
+    a_id!( HashMap::from_iter([ ( "property".to_string(), Value::String( "value".to_string() ) ) ]), grammar_command.props.0 );
 
     // first alias
     let raw_command = parser.command( ".command prop:value" ).unwrap();
     let grammar_command = verifier.to_command( dictionary, raw_command ).unwrap();
 
-    a_true!( grammar_command.subjects.is_empty() );
-    a_id!( HashMap::from_iter([ ( "property".to_string(), Value::String( "value".to_string() ) ) ]), grammar_command.properties );
+    a_true!( grammar_command.args.0.is_empty() );
+    a_id!( HashMap::from_iter([ ( "property".to_string(), Value::String( "value".to_string() ) ) ]), grammar_command.props.0 );
 
     // second alias
     let raw_command = parser.command( ".command p:value" ).unwrap();
     let grammar_command = verifier.to_command( dictionary, raw_command ).unwrap();
 
-    a_true!( grammar_command.subjects.is_empty() );
-    a_id!( HashMap::from_iter([ ( "property".to_string(), Value::String( "value".to_string() ) ) ]), grammar_command.properties );
+    a_true!( grammar_command.args.0.is_empty() );
+    a_id!( HashMap::from_iter([ ( "property".to_string(), Value::String( "value".to_string() ) ) ]), grammar_command.props.0 );
 
     // init converter with layered properties
     let dictionary = &Dictionary::former()
@@ -383,8 +383,8 @@ tests_impls!
     let raw_command = parser.command( ".command p:value" ).unwrap();
     let grammar_command = verifier.to_command( dictionary, raw_command ).unwrap();
 
-    a_true!( grammar_command.subjects.is_empty() );
-    a_id!( HashMap::from_iter([ ( "property".to_string(), Value::String( "value".to_string() ) ) ]), grammar_command.properties );
+    a_true!( grammar_command.args.0.is_empty() );
+    a_id!( HashMap::from_iter([ ( "property".to_string(), Value::String( "value".to_string() ) ) ]), grammar_command.props.0 );
   }
 }
 

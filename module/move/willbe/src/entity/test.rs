@@ -4,6 +4,7 @@ mod private
   // qqq : for Petro : use https://github.com/console-rs/indicatif
 
   use crate::*;
+  use table::*;
   use std::
   {
     collections::{ BTreeMap, BTreeSet, HashSet },
@@ -13,20 +14,35 @@ mod private
   };
   use std::collections::HashMap;
   use std::ffi::OsString;
-  use std::fmt::Display;
+  use std::fmt::{ Debug, Display };
+  use std::marker::PhantomData;
   use std::path::PathBuf;
-  use cargo_metadata::Package;
-  // qqq : for Petro : don't use cargo_metadata directly, use facade
+  // aaa : for Petro : don't use cargo_metadata directly, use facade
+  // aaa : ✅
   use colored::Colorize;
+  // qqq : for Petro : don't do micro imports
+  // qqq : for Petro : don't do micro imports
+  #[ cfg( feature = "progress_bar" ) ]
+  use indicatif::
+  { 
+    MultiProgress, 
+    ProgressBar, 
+    ProgressStyle 
+  };
   use rayon::ThreadPoolBuilder;
-  use process::Report;
+  use process_tools::process::*;
   use wtools::error::anyhow::{ Error, format_err };
   use wtools::iter::Itertools;
   use wtools::error::Result;
   use former::Former;
   use channel::Channel;
   use optimization::Optimization;
-  
+  use workspace::WorkspacePackage;
+
+  /// Newtype for package name
+  #[ derive( Debug, Default, Clone ) ]
+  pub struct PackageName( String );
+
   /// Represents a variant for testing purposes.
   #[ derive( Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Former ) ]
   pub struct TestVariant
@@ -38,27 +54,37 @@ mod private
     /// Contains additional features or characteristics of the test variant.
     features : BTreeSet< String >,
   }
-  
+
+  impl Display for TestVariant
+  {
+    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
+    {
+      let features = if self.features.is_empty() { " ".to_string() } else { self.features.iter().join( " " ) };
+      writeln!( f, "{} {} {}", self.optimization, self.channel, features )?;
+      Ok( () )
+    }
+  }
+
   /// Global test plan
   #[ derive( Debug ) ]
   pub struct TestPlan
   {
     packages_plan : Vec< TestPackagePlan >,
   }
-  
+
   impl Display for TestPlan
   {
-    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result 
+    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
     {
       writeln!( f, "Plan: " )?;
-      for plan in &self.packages_plan 
+      for plan in &self.packages_plan
       {
         writeln!( f, "{plan}" )?;
       }
       Ok( () )
     }
   }
-  
+
   impl TestPlan
   {
     /// Create plan from params:
@@ -73,11 +99,11 @@ mod private
     /// `with_none_features` - If it's true - add to powerset one empty subset.
     /// `variants_cap` - Maximum of subset in powerset
     pub fn try_from
-    ( 
-      packages : &[ Package ], 
-      channels : &HashSet< Channel >, 
-      power : u32, 
-      include_features : Vec< String >, 
+    (
+      packages : &[ WorkspacePackage ],
+      channels : &HashSet< Channel >,
+      power : u32,
+      include_features : Vec< String >,
       exclude_features : Vec< String >,
       optimizations : &HashSet< Optimization >,
       enabled_features : Vec< String >,
@@ -87,20 +113,20 @@ mod private
     ) -> Result< Self >
     {
       let mut packages_plan = vec![];
-      for package in packages 
+      for package in packages
       {
         packages_plan.push
         (
           TestPackagePlan::try_from
           (
-            package, 
-            channels, 
-            power, 
-            include_features.as_slice(), 
-            exclude_features.as_slice(), 
-            optimizations, 
+            package,
+            channels,
+            power,
+            include_features.as_slice(),
+            exclude_features.as_slice(),
+            optimizations,
             enabled_features.as_slice(), with_all_features, with_none_features, variants_cap
-          )? 
+          )?
         );
       }
       Ok
@@ -112,28 +138,71 @@ mod private
       )
     }
   }
-  
+
   #[ derive( Debug ) ]
   pub struct TestPackagePlan
   {
+    enabled_features : BTreeSet< String >,
     package : PathBuf,
     test_variants : BTreeSet< TestVariant >,
   }
-  
+
   impl Display for TestPackagePlan
   {
-    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result 
+    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
     {
       writeln!( f, "Package : {}\nThe tests will be executed using the following configurations :", self.package.file_name().unwrap().to_string_lossy() )?;
-      for variant in &self.test_variants 
+      let mut all_features = BTreeSet::new();
+      for variant in &self.test_variants
       {
-        let feature = if variant.features.is_empty() { "".to_string() } else { variant.features.iter().join( "," ) };
-        writeln!( f, "  [ optimization : {} | channel : {} | feature : [ {feature} ] ]", variant.optimization, variant.channel )?;
+        let features = variant.features.iter().cloned();
+        if features.len() == 0
+        {
+          all_features.extend( [ "[]".to_string() ] );
+        }
+        all_features.extend( features );
       }
+      let mut ff = Vec::from_iter( self.enabled_features.iter().cloned() );
+      for feature in all_features
+      {
+        if !ff.contains( &feature )
+        {
+          ff.push( feature );
+        }
+      }
+      let mut table = Table::default();
+      // let format = format();
+      // table.set_format( format );
+      
+      let mut header_row = Row::new();
+      header_row.add_cell( "Channel" );
+      header_row.add_cell( "Opt" );
+      
+      for feature in &ff
+      {
+        header_row.add_cell( feature );
+      }
+      table.set_header( header_row );
+
+      for variant in &self.test_variants
+      {
+        let mut row = Row::new();
+
+        row.add_cell( &variant.channel.to_string() );
+        row.add_cell( &variant.optimization.to_string() );
+        let counter = 0;
+        let flag = true;
+        generate_features_cells(&mut ff, variant, &mut row, counter, flag, &self.enabled_features );
+
+        table.add_row( row );
+      }
+      // aaa : for Petro : bad, DRY
+      // aaa : replace with method
+      writeln!( f, "{}", table )?;
       Ok( () )
     }
   }
-  
+
   impl TestPackagePlan
   {
     /// Create plan from params:
@@ -148,8 +217,8 @@ mod private
     /// `with_none_features` - If it's true - add to powerset one empty subset.
     /// `variants_cap` - Maximum of subset in powerset
     fn try_from
-    ( 
-      package : &Package,
+    (
+      package : &WorkspacePackage,
       channels : &HashSet< Channel >,
       power : u32,
       include_features : &[ String ],
@@ -161,7 +230,7 @@ mod private
       variants_cap : u32,
     ) -> Result< Self >
     {
-      let dir = package.manifest_path.parent().unwrap().as_std_path().to_path_buf();
+      let dir = package.manifest_path().parent().unwrap().as_std_path().to_path_buf();
       let mut test_variants = BTreeSet::new();
       let features_powerset = features::features_powerset
       (
@@ -181,43 +250,87 @@ mod private
           for feature in &features_powerset
           {
             test_variants.insert
-            ( 
+            (
               TestVariant
-              { 
-                channel: channel.clone(), 
-                optimization: optimization.clone(), 
-                features: feature.clone(), 
+              {
+                channel : channel.clone(),
+                optimization : optimization.clone(),
+                features : feature.clone(),
               }
             );
           }
         }
       }
       Ok
-      ( 
-        Self 
-        { 
-          package: dir, 
-          test_variants, 
-        } 
+      (
+        Self
+        {
+          enabled_features: enabled_features.iter().cloned().collect(),
+          package : dir,
+          test_variants,
+        }
       )
     }
   }
+
+  fn generate_features_cells( ff : &mut Vec< String >, variant : &TestVariant, row : &mut Row, mut counter : usize, mut flag : bool, enabled_features : &BTreeSet< String > ) 
+  {
+    for feature in ff
+    {
+      let mut c = "+";
+      if variant.features.is_empty() && counter == enabled_features.len() && flag
+      {
+        flag = false;
+        row.add_cell( c );
+      } 
+      else if variant.features.contains( feature )
+      {
+        row.add_cell( c );
+      } 
+      else 
+      {
+        c = "";
+        row.add_cell( c );
+      }
+      counter += 1;
+    }
+  }
   
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Former ) ]
   pub struct PackageTestOptions< 'a >
   {
     temp_path : Option< PathBuf >,
     plan : &'a TestPackagePlan,
     dry : bool,
+    progress_bar_feature : Option< PackageTestOptionsProgressBarFeature< 'a > >,
   }
-  
+
+  #[ derive( Debug ) ]
+  struct PackageTestOptionsProgressBarFeature< 'a >
+  {
+    phantom : PhantomData< &'a () >,
+    #[ cfg( feature = "progress_bar" ) ]
+    multi_progress : &'a Option< &'a MultiProgress >,
+    #[ cfg( feature = "progress_bar" ) ]
+    progress_bar : &'a Option< ProgressBar >
+  }
+
+
+  impl PackageTestOptionsFormer< '_ >
+  {
+    pub fn option_temp(  mut self, value : impl Into< Option< PathBuf > > ) -> Self
+    {
+      self.storage.temp_path = value.into();
+      self
+    }
+  }
+
   /// Represents the options for the test.
   #[ derive( Debug, Former, Clone ) ]
   pub struct SingleTestOptions
   {
-    // aaa : for Petro : poor description
-    // aaa : add link to rust doc
-    /// Specifies the release channels for rust. More details : https://rust-lang.github.io/rustup/concepts/channels.html#:~:text=Rust%20is%20released%20to%20three,releases%20are%20made%20every%20night.
+    /// Specifies the release channels for rust.
+    /// More details : https://rust-lang.github.io/rustup/concepts/channels.html#:~:text=Rust%20is%20released%20to%20three,releases%20are%20made%20every%20night.
     channel : Channel,
     /// Specifies the optimization for rust.
     optimization : Optimization,
@@ -244,8 +357,8 @@ mod private
   {
     fn as_rustup_args( &self ) -> Vec< String >
     {
-      debug_assert!( !self.with_default_features );// qqq : remove
-      debug_assert!( !self.with_all_features );// qqq : remove
+      debug_assert!( !self.with_default_features ); // qqq : remove later
+      debug_assert!( !self.with_all_features ); // qqq : remove later
       [ "run".into(), self.channel.to_string(), "cargo".into(), "test".into() ]
       .into_iter()
       .chain( if self.optimization == Optimization::Release { Some( "--release".into() ) } else { None } )
@@ -271,14 +384,14 @@ mod private
   ///
   /// Returns a `Result` containing a `Report` if the command is executed successfully,
   /// or an error if the command fails to execute.
-  pub fn _run< P >( path : P, options : SingleTestOptions ) -> Result< Report, ( Report, Error ) >
+  pub fn _run< P >( path : P, options : SingleTestOptions ) -> Result< Report, Report >
   where
     P : AsRef< Path >
   {
     let ( program, args ) = ( "rustup", options.as_rustup_args() );
     // qqq : for Petro : rustup ???
     // aaa : for Petro : RUST_BACKTRACE=1 ?? //  add to SingleTestOptions, by default true
-    // aaa : add 
+    // aaa : add
 
     if options.dry
     {
@@ -287,28 +400,28 @@ mod private
         Report
         {
           command : format!( "{program} {}", args.join( " " ) ),
-          path : path.as_ref().to_path_buf(),
           out : String::new(),
           err : String::new(),
+          current_path: path.as_ref().to_path_buf(),
+          error: Ok( () ),
         }
       )
     }
     else
     {
       let envs = if options.backtrace { [( "RUST_BACKTRACE".to_string(), "full".to_string() )].into_iter().collect() } else { HashMap::new() };
-      let options = process::Run::former()
-      .application( program )
+      Run::former()
+      .bin_path( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-      .path( path.as_ref().to_path_buf() )
+      .current_path( path.as_ref().to_path_buf() )
       .joining_streams( true )
       .env_variable( envs )
-      .form();
-      process::run( options )
+      .run()
     }
   }
 
   /// `TestOptions` is a structure used to store the arguments for tests.
-  #[ derive( Debug, Former ) ]
+  #[ derive( Former ) ]
   pub struct TestOptions
   {
     /// Plan for testing
@@ -319,16 +432,53 @@ mod private
 
     /// `temp_path` - path to temp directory.
     pub temp_path : Option< PathBuf >,
-    
+
     /// A boolean indicating whether to perform a dry run or not.
     pub dry : bool,
+
+    /// This field contains fields for progress_bar feature
+    pub feature : Option< TestOptionsProgressBarFeature >,
+  }
+
+  // qqq : remove after Former fix
+  /// Structure for progress bar feature field
+  pub struct TestOptionsProgressBarFeature
+  {
+    #[ cfg( feature = "progress_bar" ) ]
+    /// Base progress bar
+    pub multiprocess : MultiProgress,
+
+    #[ cfg( feature = "progress_bar" ) ]
+    /// Style for progress bar
+    pub style : ProgressStyle,
+  }
+
+  impl Debug for TestOptionsProgressBarFeature
+  {
+    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
+    {
+      f.debug_struct( "TestOptionsProgressBarFeature" )
+      .finish()
+    }
+  }
+
+  impl Debug for TestOptions
+  {
+    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result {
+      f.debug_struct( "TestOptions" )
+      .field( "plan", &self.plan)
+      .field( "concurrent", &self.concurrent)
+      .field( "temp_path", &self.temp_path)
+      .field( "plan", &self.plan)
+      .finish()
+    }
   }
 
   impl TestOptionsFormer
   {
     pub fn option_temp(  mut self, value : impl Into< Option< PathBuf > > ) -> Self
     {
-      self.container.temp_path = value.into();
+      self.storage.temp_path = value.into();
       self
     }
   }
@@ -350,12 +500,14 @@ mod private
     /// actually executing them.
     pub dry : bool,
     /// A string containing the name of the package being tested.
-    pub package_name : String, /* qqq : for Petro : bad, reuse newtype */
+    pub package_name : PackageName, /* aaa : for Petro : bad, reuse newtype / aaa : add newtype*/
     /// A `BTreeMap` where the keys are `channel::Channel` enums representing the channels
     ///   for which the tests were run, and the values are nested `BTreeMap` where the keys are
     ///   feature names and the values are `Report` structs representing the test results for
     ///   the specific feature and channel.
     pub tests : BTreeMap< TestVariant, Result< Report, Report > > ,
+    /// Enabled features
+    pub enabled_features : BTreeSet< String >,
     // qqq : for Petro : rid off map of map of map, keep flat map
   }
 
@@ -369,7 +521,36 @@ mod private
       }
       let mut failed = 0;
       let mut success = 0;
-      writeln!( f, "{} {}\n", "\n=== Module".bold(), self.package_name.bold() )?;
+      let mut all_features = BTreeSet::new();
+      for variant in self.tests.keys()
+      {
+        let features = variant.features.iter().cloned();
+        if features.len() == 0
+        {
+          all_features.extend( [ "[]".to_string() ] );
+        }
+        all_features.extend( features );
+      }
+      let mut ff = Vec::from_iter( self.enabled_features.iter().cloned() );
+      for feature in all_features
+      {
+        if !ff.contains( &feature )
+        {
+          ff.push( feature );
+        }
+      }
+      let mut table = Table::default();
+      let mut header_row = Row::new();
+      header_row.add_cell( "Result" );
+      header_row.add_cell( "Channel" );
+      header_row.add_cell( "Opt" );
+      for feature in &ff
+      {
+        header_row.add_cell( feature );
+      }
+      table.set_header( header_row );
+      
+      writeln!( f, "{} {}\n", "\n=== Module".bold(), self.package_name.0.bold() )?;
       if self.tests.is_empty()
       {
         writeln!( f, "unlucky" )?;
@@ -377,28 +558,37 @@ mod private
       }
       for ( variant, result) in &self.tests
       {
-        let feat = variant.features.iter().join( ", " );
-        let feature = if variant.features.is_empty() { "" } else { feat.as_str() };
-        // if tests failed or if build failed
-        match result
+        let mut row = Row::new();
+        let result_text = match result
         {
           Ok( _ ) =>
           {
             success += 1;
-            writeln!( f, "  [ {} | {} | [{}] ]: ✅  successful", variant.optimization, variant.channel, feature )?;
-          }
-          Err( result) =>
+            "✅"
+          },
+          Err( report ) =>
           {
-            let mut out = result.out.replace("\n", "\n      ");
-            out.push_str("\n");
             failed += 1;
-            write!( f, "  [ {} | {} | [{}] ]: ❌  failed\n  \n{out}", variant.optimization, variant.channel, feature )?;
-          }
-        }
+            let mut out = report.out.replace( "\n", "\n      " );
+            out.push_str( "\n" );
+            write!( f, " ❌  > {}\n\n{out}", report.command )?;
+            "❌"
+          },
+        };
+        row.add_cell( result_text );
+        row.add_cell( &variant.channel.to_string() );
+        row.add_cell( &variant.optimization.to_string() );
+        let counter = 0;
+        let flag = true;
+        generate_features_cells( &mut ff, variant, &mut row, counter, flag, &self.enabled_features );
+
+
+        table.add_row( row );
       }
       // aaa : for Petro : bad, DRY
       // aaa : replace with method
-      writeln!( f, "  {}", generate_summary_message(failed, success ) )?;
+      writeln!( f, "{}", table )?;
+      writeln!( f, "  {}", generate_summary_message( failed, success ) )?;
 
       Ok( () )
     }
@@ -438,7 +628,7 @@ mod private
     pub failure_reports : Vec< TestReport >,
   }
 
-  impl std::fmt::Display for TestsReport
+  impl Display for TestsReport
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
@@ -482,6 +672,7 @@ mod private
   {
     let mut report = TestReport::default();
     report.dry = options.dry;
+    report.enabled_features = options.plan.enabled_features.clone();
     let report = Arc::new( Mutex::new( report ) );
     let dir = options.plan.package.clone();
 
@@ -489,7 +680,7 @@ mod private
     (
       | s |
       {
-        for variant in &options.plan.test_variants 
+        for variant in &options.plan.test_variants
         {
           let TestVariant{ channel, optimization, features } = variant;
           let r = report.clone();
@@ -497,34 +688,48 @@ mod private
           s.spawn
           (
             move | _ |
-              {
-                let mut args_t = SingleTestOptions::former()
-                .channel( *channel )
-                .optimization( *optimization )
-                .with_default_features( false )
-                .enable_features( features.clone() )
-                .dry( options.dry );
+            {
+              let mut args_t = SingleTestOptions::former()
+              .channel( *channel )
+              .optimization( *optimization )
+              .with_default_features( false )
+              .enable_features( features.clone() )
+              .dry( options.dry );
 
-                if let Some( p ) = options.temp_path.clone()
-                {
-                  let path = p.join
-                  ( 
-                    format!
-                    (
-                      "{}_{}_{}_{}", 
-                      options.plan.package.file_name().unwrap().to_string_lossy(), 
-                      optimization, 
-                      channel, 
-                      features.iter().join( "," ) 
-                    ) 
-                  );
-                  std::fs::create_dir_all( &path ).unwrap();
-                  args_t = args_t.temp_directory_path( path );
-                }
-                
-                let cmd_rep = _run( dir, args_t.form() );
-                r.lock().unwrap().tests.insert( variant.clone(), cmd_rep.map_err( | e | e.0 ) );
+              if let Some( p ) = options.temp_path.clone()
+              {
+                let path = p.join( path_tools::path::unique_folder_name().unwrap() );
+                // qqq : for Petro : rid off unwrap
+                std::fs::create_dir_all( &path ).unwrap();
+                args_t = args_t.temp_directory_path( path );
               }
+              #[ cfg( feature = "progress_bar" ) ]
+              let _s =
+              {
+                let s = if let Some( multi_progress ) = options.progress_bar_feature.as_ref().and_then( | f | f.multi_progress.as_ref() )
+                {
+                  let s = multi_progress.add( ProgressBar::new_spinner().with_message( format!( "{}", variant ) ) );
+                  s.enable_steady_tick( std::time::Duration::from_millis( 100 ) ); 
+                  Some( s )
+                }
+                else 
+                { 
+                  None
+                };
+                // spinner.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
+                s
+              };
+              let args = args_t.form();
+              let temp_dir = args.temp_directory_path.clone();
+              let cmd_rep = _run( dir, args );
+              r.lock().unwrap().tests.insert( variant.clone(), cmd_rep );
+              #[ cfg( feature = "progress_bar" ) ]
+              options.progress_bar_feature.as_ref().unwrap().progress_bar.as_ref().map( | b | b.inc( 1 ) );
+              if let Some( path ) = temp_dir
+              {
+                std::fs::remove_dir_all( path ).unwrap();
+              }
+            }
           );
         }
       }
@@ -557,8 +762,37 @@ mod private
           (
             move | _ |
             {
-              let test_package_options = PackageTestOptions{ temp_path : args.temp_path.clone(), plan, dry : args.dry };
-              match run( &test_package_options )
+              #[ cfg( feature = "progress_bar" ) ]
+              let pb =
+              {
+                let pb = if let Some( feature ) = args.feature.as_ref()
+                {
+                  let pb = feature.multiprocess.add(ProgressBar::new(plan.test_variants.len() as u64));
+                  pb.set_style( args.feature.as_ref().unwrap().style.clone() );
+                  pb.inc( 0 );
+                  Some( pb )
+                }
+                else 
+                { 
+                  None
+                };
+                pb
+              };
+              #[ cfg( feature = "progress_bar" ) ]
+              let multi_progress = args.feature.as_ref().map( | f | &f.multiprocess );
+              let test_package_options = PackageTestOptions::former().option_temp( args.temp_path.clone() ).plan( plan ).dry( args.dry );
+              #[ cfg( feature = "progress_bar" ) ]
+              let test_package_options = test_package_options.progress_bar_feature
+              (
+                PackageTestOptionsProgressBarFeature
+                {
+                  phantom : PhantomData,
+                  multi_progress : &multi_progress,
+                  progress_bar : &pb,
+                }
+              );
+              let options = test_package_options.form();
+              match run( &options )
               {
                 Ok( r ) =>
                 {
@@ -592,7 +826,7 @@ crate::mod_interface!
   protected use SingleTestOptions;
   protected use TestVariant;
   protected use _run;
-  
+
   protected use TestPlan;
 
   protected use TestOptions;
@@ -600,4 +834,6 @@ crate::mod_interface!
   protected use TestsReport;
   protected use run;
   protected use tests_run;
+
+  protected use TestOptionsProgressBarFeature;
 }

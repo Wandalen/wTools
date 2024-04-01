@@ -1,5 +1,6 @@
 //! Query command endpoint and report.
 
+// qqq : don't use both
 use crate::*;
 use gluesql::core::executor::Payload;
 use storage::{ FeedStorage, Store };
@@ -86,3 +87,6 @@ impl std::fmt::Display for QueryReport
 }
 
 impl Report for QueryReport {}
+
+// qqq : good tests for query action
+// all tables should be touched by these tests

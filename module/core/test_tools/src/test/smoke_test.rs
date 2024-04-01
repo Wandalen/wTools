@@ -6,11 +6,20 @@
 // qqq : does not work in parallel, fix
 // qqq : make a command for willbe
 
+// xxx2 : use process_tools to build and run rust programs, introduce program_
+
 /// Internal namespace.
-#[ cfg( not( feature = "no_std" ) ) ]
 pub( crate ) mod private
 {
   use process_tools::environment;
+  // zzz : comment out
+  // pub mod environment
+  // {
+  //   pub fn is_cicd() -> bool
+  //   {
+  //     false
+  //   }
+  // }
 
   /// Context for smoke testing of a module.
   #[ derive( Debug ) ]
@@ -307,7 +316,6 @@ pub( crate ) mod private
 
 
 //
-#[ cfg( not( feature = "no_std" ) ) ]
 crate::mod_interface!
 {
 

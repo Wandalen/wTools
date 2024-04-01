@@ -29,7 +29,7 @@ all-features = false
 default = [ "enabled", "determinism" ]
 full = [ "enabled", "determinism" ]
 no_std = []
-use_alloc = []
+use_alloc = [ "no_std" ]
 enabled = []
 determinism = [ "rand_chacha", "rand_seeder", "iter_tools" ]
 
@@ -47,4 +47,4 @@ rayon = "1.8.0"
 
 [[example]]
 name = "sample_deterministic_rand_trivial"
-path = "examples/sample_deterministic_rand_trivial.rs"
+path = "examples/deterministic_rand_trivial.rs"

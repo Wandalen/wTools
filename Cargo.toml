@@ -5,7 +5,7 @@ members = [
   "module/blank/*",
   "module/core/*",
   "module/move/*",
-  # "module/test/*",
+  "module/test/*",
 ]
 exclude = [
   "-*",
@@ -18,7 +18,7 @@ branches = [ "master", "alpha" ]
 master_branch = "alpha"
 project_name = "wtools"
 repo_url = "https://github.com/Wandalen/wTools"
-discord_id = "m3YfbXpUUY"
+discord_url = "https://discord.gg/m3YfbXpUUY"
 
 # [metadata.cargo-suppress-warnings]
 # unused-manifest-key = true
@@ -70,6 +70,7 @@ path = "module/alias/std_tools"
 version = "~0.1.4"
 path = "module/alias/std_x"
 
+
 ## data_type
 
 [workspace.dependencies.data_type]
@@ -91,7 +92,7 @@ default-features = false
 # path = "module/core/type_constructor_derive_pair_meta"
 
 [workspace.dependencies.interval_adapter]
-version = "~0.16.0"
+version = "~0.18.0"
 path = "module/core/interval_adapter"
 default-features = false
 features = [ "enabled" ]
@@ -102,17 +103,22 @@ path = "module/alias/winterval"
 default-features = false
 features = [ "enabled" ]
 
+[workspace.dependencies.collection_tools]
+version = "~0.4.0"
+path = "module/core/collection_tools"
+default-features = false
+
 
 ## derive
 
 [workspace.dependencies.derive_tools]
-version = "~0.19.0"
+version = "~0.20.0"
 path = "module/core/derive_tools"
 default-features = false
 features = [ "enabled" ]
 
 [workspace.dependencies.derive_tools_meta]
-version = "~0.16.0"
+version = "~0.17.0"
 path = "module/core/derive_tools_meta"
 default-features = false
 features = [ "enabled" ]
@@ -140,19 +146,19 @@ path = "module/alias/fundamental_data_type"
 default-features = false
 
 [workspace.dependencies.variadic_from]
-version = "~0.12.0"
+version = "~0.13.0"
 path = "module/core/variadic_from"
 default-features = false
 features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn]
-version = "~0.14.0"
+version = "~0.15.0"
 path = "module/core/clone_dyn"
 default-features = false
 features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn_meta]
-version = "~0.14.0"
+version = "~0.15.0"
 path = "module/core/clone_dyn_meta"
 features = [ "enabled" ]
 
@@ -163,6 +169,7 @@ features = [ "enabled" ]
 version = "~0.5.0"
 path = "module/core/mem_tools"
 default-features = false
+
 
 ## diagnostics
 
@@ -175,7 +182,7 @@ default-features = false
 ## iter
 
 [workspace.dependencies.iter_tools]
-version = "~0.13.0"
+version = "~0.15.0"
 path = "module/core/iter_tools"
 default-features = false
 
@@ -193,12 +200,12 @@ path = "module/core/for_each"
 default-features = false
 
 [workspace.dependencies.former]
-version = "~0.13.0"
+version = "~0.16.0"
 path = "module/core/former"
 default-features = false
 
 [workspace.dependencies.former_meta]
-version = "~0.12.0"
+version = "~0.14.0"
 path = "module/core/former_meta"
 default-features = false
 
@@ -212,12 +219,12 @@ version = "~0.6.0"
 path = "module/core/impls_index_meta"
 
 [workspace.dependencies.mod_interface]
-version = "~0.16.0"
+version = "~0.17.0"
 path = "module/core/mod_interface"
 default-features = false
 
 [workspace.dependencies.mod_interface_meta]
-version = "~0.16.0"
+version = "~0.17.0"
 path = "module/core/mod_interface_meta"
 default-features = false
 
@@ -243,7 +250,7 @@ default-features = false
 ## macro tools
 
 [workspace.dependencies.macro_tools]
-version = "~0.21.0"
+version = "~0.23.0"
 path = "module/core/macro_tools"
 default-features = false
 
@@ -297,7 +304,7 @@ default-features = false
 ## error
 
 [workspace.dependencies.error_tools]
-version = "~0.11.0"
+version = "~0.12.0"
 path = "module/core/error_tools"
 default-features = false
 
@@ -309,7 +316,7 @@ path = "module/alias/werror"
 ## string tools
 
 [workspace.dependencies.strs_tools]
-version = "~0.10.0"
+version = "~0.11.0"
 path = "module/core/strs_tools"
 default-features = false
 
@@ -330,7 +337,7 @@ path = "module/alias/file_tools"
 default-features = false
 
 [workspace.dependencies.proper_path_tools]
-version = "~0.3.0"
+version = "~0.4.0"
 path = "module/core/proper_path_tools"
 default-features = false
 
@@ -338,7 +345,7 @@ default-features = false
 ## process tools
 
 [workspace.dependencies.process_tools]
-version = "~0.2.0"
+version = "~0.3.0"
 path = "module/core/process_tools"
 default-features = false
 
@@ -380,7 +387,7 @@ default-features = false
 ## ca
 
 [workspace.dependencies.wca]
-version = "~0.14.0"
+version = "~0.15.0"
 path = "module/move/wca"
 
 
@@ -394,7 +401,7 @@ path = "module/move/wcensor"
 ## willbe
 
 [workspace.dependencies.willbe]
-version = "~0.8.0"
+version = "~0.9.0"
 path = "module/move/willbe"
 
 
@@ -434,7 +441,7 @@ version = "~0.4.0"
 path = "module/move/deterministic_rand"
 
 [workspace.dependencies.crates_tools]
-version = "~0.7.0"
+version = "~0.8.0"
 path = "module/move/crates_tools"
 
 
@@ -452,17 +459,17 @@ default-features = true
 ## test experimental
 
 [workspace.dependencies.test_experimental_a]
-version = "~0.3.0"
+version = "~0.5.0"
 path = "module/test/a"
 default-features = true
 
 [workspace.dependencies.test_experimental_b]
-version = "~0.2.0"
+version = "~0.3.0"
 path = "module/test/b"
 default-features = true
 
 [workspace.dependencies.test_experimental_c]
-version = "~0.2.0"
+version = "~0.3.0"
 path = "module/test/c"
 default-features = true
 

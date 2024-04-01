@@ -34,7 +34,7 @@ include = [
 default = [ "enabled" ]
 full = [ "enabled" ]
 no_std = []
-use_alloc = []
+use_alloc = [ "no_std" ]
 enabled = []
 
 [dependencies]

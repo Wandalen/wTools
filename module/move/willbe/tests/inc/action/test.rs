@@ -6,7 +6,7 @@ use assert_fs::TempDir;
 
 use crate::the_module::*;
 use action::test::{test, TestsCommandOptions};
-use path::AbsolutePath;
+use _path::AbsolutePath;
 use channel::*;
 use optimization::*;
 use willbe::test::TestVariant;
@@ -171,6 +171,7 @@ fn plan()
   .channels([ Channel::Stable, Channel::Nightly ])
   .optimizations([ Optimization::Debug, Optimization::Release ])
   .with_none_features( true )
+  .with_progress( false )
   .form();
 
   let rep = test( args, true ).unwrap().succses_reports[ 0 ].clone().tests;
@@ -179,6 +180,43 @@ fn plan()
   assert!( rep.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Nightly ).features( BTreeSet::default() ).form() ).is_some() );
   assert!( rep.get( &TestVariant::former().optimization( Optimization::Release ).channel( Channel::Stable ).features( BTreeSet::default() ).form() ).is_some() );
   assert!( rep.get( &TestVariant::former().optimization( Optimization::Release ).channel( Channel::Nightly ).features( BTreeSet::default() ).form() ).is_some() );
+}
+
+#[ test ]
+fn backtrace_should_be()
+{
+  let temp = TempDir::new().unwrap();
+  let temp = &temp;
+
+  let project = ProjectBuilder::new( "fail_build" )
+  .toml_file( "[features]\nenabled = []" )
+  .test_file( r#"
+  #[test]
+  fn fail() {
+    assert!(false);
+  }
+  "#)
+  .build( temp )
+  .unwrap();
+  let abs = AbsolutePath::try_from( project ).unwrap();
+
+  let args = TestsCommandOptions::former()
+  .dir( abs )
+  .channels([ Channel::Stable ])
+  .optimizations([ Optimization::Debug ])
+  .with_none_features( true )
+  .form();
+
+  let rep = test( args, false ).unwrap_err().0;
+  println!( "========= OUTPUT =========\n{}\n==========================", rep );
+
+  let no_features = rep
+  .failure_reports[ 0 ]
+  .tests.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Stable ).features( BTreeSet::default() ).form() )
+  .unwrap();
+
+  assert!( !no_features.clone().unwrap_err().out.contains( "RUST_BACKTRACE" ) );
+  assert!( no_features.clone().unwrap_err().out.contains( "stack backtrace" ) );
 }
 
 #[ derive( Debug ) ]
@@ -279,7 +317,7 @@ impl WorkspaceBuilder
     fs::create_dir_all( project_path.join( "modules" ) ).unwrap();
     let mut file = File::create( project_path.join( "Cargo.toml" ) ).unwrap();
     write!( file, "{}", self.toml_content ).unwrap();
-    for member in self.members 
+    for member in self.members
     {
       member.build( project_path.join( "modules" ).join( &member.name ) ).unwrap();
     }

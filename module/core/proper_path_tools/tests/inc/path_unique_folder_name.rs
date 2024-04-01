@@ -10,6 +10,26 @@ fn generates_unique_names_on_consecutive_calls()
 }
 
 #[ test ]
+fn proper_name()
+{
+  use regex::Regex;
+
+  let name1 = the_module::path::unique_folder_name().unwrap();
+  dbg!( &name1 );
+
+  assert!( !name1.contains( "Thread" ), "{} has bad illegal chars", name1 );
+  assert!( !name1.contains( "thread" ), "{} has bad illegal chars", name1 );
+  assert!( !name1.contains( "(" ), "{} has bad illegal chars", name1 );
+  assert!( !name1.contains( ")" ), "{} has bad illegal chars", name1 );
+
+  // let name1 = "_1232_1313_".to_string();
+  let re = Regex::new( r"^[0-9_]*$" ).unwrap();
+  assert!( re.is_match( &name1 ), "{} has bad illegal chars", name1 )
+
+  // ThreadId(1)
+}
+
+#[ test ]
 fn respects_thread_local_counter_increment()
 {
   let initial_name = the_module::path::unique_folder_name().unwrap();

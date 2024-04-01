@@ -18,6 +18,8 @@ crate::mod_interface!
   layer input;
   // /// The missing batteries of WCA.
   // layer facade;
+  /// Genera-purpose tools which might be moved out one day.
+  layer tool;
 
   /// Responsible for aggregating all commands that the user defines, and for parsing and executing them
   layer aggregator;

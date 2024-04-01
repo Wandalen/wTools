@@ -3,7 +3,7 @@ use super::*;
 use assert_fs::prelude::*;
 use the_module::action::{ self, list::* };
 use willbe::CrateDir;
-use willbe::path::AbsolutePath;
+use willbe::_path::AbsolutePath;
 
 
 //

@@ -7,26 +7,34 @@
 //!
 
 
-use wca::{ Args, Context, Type };
+use wca::{ Context, Type, VerifiedCommand };
+use std::sync::{ Arc, Mutex };
 
 fn main()
 {
 
   let ca = wca::CommandsAggregator::former()
+  .with_context( Mutex::new( 0 ) )
   .command( "echo" )
     .hint( "prints all subjects and properties" )
     .subject().kind( Type::String ).optional( true ).end()
     .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
-    .routine( | args : Args, props | { println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" ) } )
+    .routine( | o : VerifiedCommand | { println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props ) } )
     .end()
   .command( "inc" )
     .hint( "This command increments a state number each time it is called consecutively. (E.g. `.inc .inc`)" )
-    .routine( | ctx : Context | { let i : &mut i32 = ctx.get_or_default(); println!( "i = {i}" ); *i += 1; } )
+    .routine( | ctx : Context |
+    {
+      let i : Arc< Mutex< i32 > > = ctx.get().unwrap();
+      let mut i = i.lock().unwrap();
+      println!( "i = {}", i );
+      *i += 1;
+    } )
     .end()
   .command( "error" )
     .hint( "prints all subjects and properties" )
     .subject().kind( Type::String ).optional( true ).end()
-    .routine( | args : Args | { println!( "Returns an error" ); Err( format!( "{}", args.get_owned::< String >( 0 ).unwrap_or_default() ) ) } )
+    .routine( | o : VerifiedCommand | { println!( "Returns an error" ); Err( format!( "{}", o.args.get_owned::< String >( 0 ).unwrap_or_default() ) ) } )
     .end()
   .command( "exit" )
     .hint( "just exit" )

@@ -45,6 +45,10 @@ pub trait ConfigStore
   async fn config_list( &mut self ) -> Result< Payload >;
 }
 
+// qqq : port and adapters should not be in the same file
+// Ideally, they should be in different crates, but you should at least put them in different folders
+// there should be a `sled_adapter`` folder
+
 #[ async_trait::async_trait( ?Send ) ]
 impl ConfigStore for storage::FeedStorage< SledStorage >
 {
@@ -85,3 +89,13 @@ impl ConfigStore for storage::FeedStorage< SledStorage >
     Ok( res )
   }
 }
+
+// qqq : use AbsolutePath newtype from `path_tools`
+// qqq : normalize all paths with `path_tools::path::normalize`
+// https://docs.rs/proper_path_tools/latest/proper_path_tools/path/fn.normalize.html
+
+// unitore .query.execute \'SELECT \* FROM feed\'
+// qqq : something is broken in this table. also lack of association with config files
+
+// unitore .query.execute \'SELECT \* FROM x\'
+// qqq : it is not obvious where one record ends and another begins

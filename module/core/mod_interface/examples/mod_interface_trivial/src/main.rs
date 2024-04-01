@@ -2,9 +2,11 @@
 
 //
 
+use mod_interface::mod_interface;
+
 fn main()
 {
-  assert_eq!( prelude::inner_is(), inner::prelude::inner_is() );
+  assert_eq!( prelude::inner_is(), prelude::inner_is() );
 }
 
 //

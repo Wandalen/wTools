@@ -42,7 +42,7 @@ pub async fn table_list
     "feed" =>
     {
       table_description = String::from( "Contains feed items." );
-      
+
       for label in columns.get( "feed" ).unwrap()
       {
         match label.as_str()
@@ -53,7 +53,7 @@ pub async fn table_list
               String::from( "Link to feed source, unique identifier for the feed" ),
             ); }
           "title" => { columns_desc.insert( label.clone(), String::from( "The title of the feed" ) ); }
-          "updated" => 
+          "updated" =>
           {
             columns_desc.insert( label.clone(), String::from
             (
@@ -257,7 +257,7 @@ impl std::fmt::Display for ColumnsReport
   {
     writeln!( f, "Table name: {}", self.table_name )?;
     writeln!( f, "Description: {}", self.table_description )?;
-    
+
     if !self.columns.is_empty()
     {
       writeln!( f, "Columns:" )?;
@@ -384,7 +384,7 @@ impl std::fmt::Display for TablesReport
     {
       writeln!( f, "{}", table )?;
     }
-    
+
     Ok( () )
   }
 }

@@ -510,7 +510,7 @@ pub( crate ) mod private
     ///
     /// Type constructor to wrap a another type into a tuple.
     ///
-    /// ### Basic use-case :: struct instead of macro.
+    /// ### Basic Use Case :: struct instead of macro.
     ///
     /// Sometimes it's sufficient to use common type instead of defining a brand new one.
     /// You may use paramtetrized struct `fundamental_data_type::Single< T >` instead of macro `fundamental_data_type::types!` if that is the case.

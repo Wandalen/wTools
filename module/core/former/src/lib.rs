@@ -4,31 +4,42 @@
 #![ doc( html_root_url = "https://docs.rs/former/latest/former/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+// xxx : describe "Context-aware forming process"
+
 /// Axiomatic things.
 #[ cfg( feature = "enabled" ) ]
-// #[ cfg( not( feature = "no_std" ) ) ]
 #[ cfg( feature = "derive_former" ) ]
 mod axiomatic;
+
+/// Interface for containers.
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[ cfg( feature = "derive_former" ) ]
+mod container;
 /// Former of a vector.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 #[ cfg( feature = "derive_former" ) ]
 mod vector;
 /// Former of a hash map.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 #[ cfg( feature = "derive_former" ) ]
 mod hash_map;
 /// Former of a hash set.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 #[ cfg( feature = "derive_former" ) ]
 mod hash_set;
+
 /// Component-based forming.
 #[ cfg( feature = "enabled" ) ]
-// #[ cfg( not( feature = "no_std" ) ) ]
-#[ cfg( feature = "derive_component_from" ) ]
+#[ cfg( any( feature = "derive_component_from", feature = "derive_component_assign" ) ) ]
 mod component;
+
+// mod axiomatic2;
+// mod vector2;
+// mod vector3;
 
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
@@ -67,37 +78,43 @@ pub mod orphan
 #[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use former_meta::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   #[ cfg( feature = "enabled" ) ]
   #[ cfg( feature = "derive_former" ) ]
   pub use super::axiomatic::*;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   #[ cfg( feature = "enabled" ) ]
-  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  #[ cfg( feature = "derive_former" ) ]
+  pub use super::container::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ cfg( feature = "enabled" ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   #[ cfg( feature = "derive_former" ) ]
   pub use super::vector::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   #[ cfg( feature = "enabled" ) ]
-  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   #[ cfg( feature = "derive_former" ) ]
   pub use super::hash_map::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   #[ cfg( feature = "enabled" ) ]
-  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   #[ cfg( feature = "derive_former" ) ]
   pub use super::hash_set::*;
 
@@ -110,11 +127,8 @@ pub mod prelude
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   #[ cfg( feature = "enabled" ) ]
-  // #[ cfg( not( feature = "no_std" ) ) ]
-  #[ cfg( feature = "derive_component_from" ) ]
+  #[ cfg( any( feature = "derive_component_from", feature = "derive_component_assign" ) ) ]
   pub use super::component::*;
 }
 
-// xxx : debug attribute
-// xxx : expanded example
 // xxx : explain role of container in former

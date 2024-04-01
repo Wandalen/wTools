@@ -79,6 +79,7 @@ pub trait FeedStore
   /// Add feeds entries.
   async fn save_feeds( &mut self, feeds : Vec< Feed > ) -> Result< Payload >;
 }
+// qqq : poor description and probably naming. improve, please
 
 #[ async_trait::async_trait( ?Send ) ]
 impl FeedStore for FeedStorage< SledStorage >

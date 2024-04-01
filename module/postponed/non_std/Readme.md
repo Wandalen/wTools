@@ -1,12 +1,14 @@
 <!-- {{# generate.module_header{} #}} -->
 
 # Module :: non_std
-
+<!--{ generate.module_header.start() }-->
 [![experimental](https://raster.shields.io/static/v1?label=stability&message=experimental&color=orange&logoColor=eee)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/ModuleNonStdPush.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/ModuleNonStdPush.yml) [![docs.rs](https://img.shields.io/docsrs/non_std?color=e3e8f0&logo=docs.rs)](https://docs.rs/non_std) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+<!--{ generate.module_header.end }-->
+
 
 Collection of general purpose tools for solving problems. Fundamentally extend the language without spoiling, so may be used solely or in conjunction with another module of such kind.
 
-### Basic use-case :: implements
+### Basic Use Case :: implements
 
 <!-- {{# generate.module{} #}} -->
 
@@ -20,7 +22,7 @@ fn main()
 }
 ```
 
-### Basic use-case :: type constructors
+### Basic Use Case :: type constructors
 
 In Rust, you often need to wrap a given type into a new one.
 The role of the orphan rules in particular is basically to prevent you from implementing external traits for external types.
@@ -56,7 +58,7 @@ types!
 }
 ```
 
-### Basic use-case :: make - variadic constructor
+### Basic Use Case :: make - variadic constructor
 
 Implement traits [From_0], [From_1] up to MakeN to provide the interface to construct your structure with a different set of arguments.
 In this example structure, Struct1 could be constructed either without arguments, with a single argument, or with two arguments.

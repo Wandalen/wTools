@@ -44,7 +44,8 @@ macro_rules! _if_from
 #[ cfg( feature = "enabled" ) ]
 pub mod type_constuctor;
 
-/// Dependencies.
+/// Namespace with dependencies.
+
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {

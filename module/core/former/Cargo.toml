@@ -1,6 +1,6 @@
 [package]
 name = "former"
-version = "0.13.0"
+version = "0.16.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -26,8 +26,8 @@ all-features = false
 
 [features]
 
-no_std = []
-use_alloc = []
+no_std = [ "collection_tools/no_std" ]
+use_alloc = [ "no_std", "collection_tools/use_alloc" ]
 
 default = [
   "enabled",
@@ -47,7 +47,7 @@ full = [
   "derive_components_assign",
   "derive_from_components",
 ]
-enabled = [ "former_meta/enabled" ]
+enabled = [ "former_meta/enabled", "collection_tools/enabled" ]
 
 derive_former = [ "former_meta/derive_former" ]
 derive_components = [ "former_meta/derive_components" ]
@@ -59,6 +59,8 @@ derive_from_components = [ "derive_components", "former_meta/derive_from_compone
 
 [dependencies]
 former_meta = { workspace = true }
+collection_tools = { workspace = true, features = [ "collection_std" ] }
+
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }

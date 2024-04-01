@@ -5,7 +5,7 @@ use feed_config::SubscriptionConfig;
 use gluesql::sled_storage::{ sled::Config, SledStorage };
 use retriever::{ FeedClient, FeedFetch };
 use storage::{ Store, FeedStorage, feed::FeedStore, config::ConfigStore, table::TableStore, frame::FrameStore };
-use wca::{ Args, Type };
+use wca::{ Args, Type, VerifiedCommand };
 use executor::actions::Report;
 use error_tools::Result;
 
@@ -52,9 +52,9 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       "Download frames from feed sources provided in config files.\n",
       "    Example: .frames.download",
     ))
-    .routine( | args |
+    .routine( | o : VerifiedCommand |
     {
-      match action( frames_download, &args )
+      match action( frames_download, &o.args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -68,25 +68,25 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       "List all feeds from storage.\n",
       "    Example: .feeds.list",
     ))
-    .routine( | args |
+    .routine( | o : VerifiedCommand |
     {
-      match action( feeds_list, &args )
+      match action( feeds_list, &o.args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
       }
     })
     .end()
-  
+
   .command( "frames.list" )
     .long_hint( concat!
     (
       "List all frames saved in storage.\n",
       "    Example: .frames.list",
     ))
-    .routine( | args |
+    .routine( | o : VerifiedCommand |
     {
-      match action( frames_list, &args )
+      match action( frames_list, &o.args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -104,13 +104,13 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       "   - `link` : URL for feed source;\n\n",
       "    Example:\n",
       "    [[config]]\n",
-      "    update_period = \"1min\"\n", 
+      "    update_period = \"1min\"\n",
       "    link = \"https://feeds.bbci.co.uk/news/world/rss.xml\"\n",
     ))
     .subject().hint( "Path" ).kind( Type::Path ).optional( false ).end()
-    .routine( | args : Args |
+    .routine( | o : VerifiedCommand |
     {
-      match action( config_add, &args )
+      match action( config_add, &o.args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -125,9 +125,9 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       "    Example: .config.delete ./config/feeds.toml",
     ))
     .subject().hint( "Path" ).kind( Type::Path ).optional( false ).end()
-    .routine( | args : Args |
+    .routine( | o : VerifiedCommand |
     {
-      match action( config_delete, &args )
+      match action( config_delete, &o.args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -141,9 +141,9 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       "List all config files saved in storage.\n",
       "    Example: .config.list",
     ))
-    .routine( | args |
+    .routine( | o : VerifiedCommand |
     {
-      match action( config_list, &args )
+      match action( config_list, &o.args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -157,9 +157,9 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       "List all tables saved in storage.\n",
       "    Example: .tables.list",
     ))
-    .routine( | args |
+    .routine( | o : VerifiedCommand |
     {
-      match action( tables_list, &args )
+      match action( tables_list, &o.args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -175,9 +175,9 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       "    Example: .table.list feed",
     ))
     .subject().hint( "Name" ).kind( wca::Type::String ).optional( false ).end()
-    .routine( | args : Args |
+    .routine( | o : VerifiedCommand |
     {
-      match action( table_list, &args )
+      match action( table_list, &o.args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),
@@ -198,9 +198,9 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       "\n\n",
     ))
     .subject().hint( "Query" ).kind( Type::List( Type::String.into(), ' ' ) ).optional( false ).end()
-    .routine( | args : Args |
+    .routine( | o : VerifiedCommand |
     {
-      match action( query_execute, &args )
+      match action( query_execute, &o.args )
       {
         Ok( report ) => report.report(),
         Err( err ) => println!( "{:?}", err ),

@@ -45,7 +45,7 @@ full = [
   # "nightly",
 ]
 no_std = []
-use_alloc = []
+use_alloc = [ "no_std" ]
 enabled = []
 
 typing_inspect_type = [ "inspect_type/enabled" ]

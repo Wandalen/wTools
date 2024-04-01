@@ -1,6 +1,6 @@
 [package]
 name = "willbe"
-version = "0.8.0"
+version = "0.9.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -17,13 +17,6 @@ Utility to publish multi-crate and multi-workspace environments and maintain the
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 default-run = "will"
-# include = [
-#   "/src",
-#   "/template",
-#   "/Cargo.toml",
-#   "/Readme.md",
-#   "/License",
-# ]
 
 [lints]
 workspace = true
@@ -34,28 +27,23 @@ all-features = false
 # exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
-default = [ "enabled" ]
-full = [ "enabled" ]
-use_alloc = []
+default = [ "enabled", "progress_bar" ]
+full = [ "enabled", "progress_bar" ]
 enabled = []
 tracing = [ "dep:tracing", "dep:tracing-subscriber" ]
+progress_bar = [ "dep:indicatif" ]
 
 [dependencies]
-cargo_metadata = "~0.14"
+cargo_metadata = "~0.18.1"
 convert_case = "0.6.0"
-crates_tools = { workspace = true }
-error_tools = { workspace = true, features = [ "default" ] }
 flate2 = "~1.0"
-former = { workspace = true, features = [ "default" ] }
 globwalk = "~0.8"
-iter_tools = { workspace = true, features = [ "default" ] }
-mod_interface = { workspace = true, features = [ "default" ] }
-wca = { workspace = true, features = [ "default" ] }
 toml_edit = "~0.14"
 petgraph = "~0.6"
 ptree = "~0.4"
 rayon = "1.8.0"
 semver = "~1.0.0"
+similar = "~2.4"
 regex = "1.10.2"
 sha-1 = "~0.10"
 tar = "~0.4"
@@ -65,6 +53,20 @@ colored = "2.1.0"
 duct = "0.13.7"
 tracing = { version = "0.1", features = [ "log-always" ], optional = true }
 tracing-subscriber = { version = "0.3", optional = true }
+indicatif = { version = "0.17", optional = true }
+prettytable-rs = "0.10"
+serde_json = "1.0" # for CargoMetadata::Package::metadata (need serde_json::Value)
+serde = "1.0" # for CargoMetadata::Package
+
+## internal
+crates_tools = { workspace = true }
+error_tools = { workspace = true, features = [ "default" ] }
+former = { workspace = true, features = [ "default" ] }
+iter_tools = { workspace = true, features = [ "default" ] }
+mod_interface = { workspace = true, features = [ "default" ] }
+wca = { workspace = true, features = [ "default" ] }
+proper_path_tools = { workspace = true, features = [ "default" ] }
+process_tools = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }

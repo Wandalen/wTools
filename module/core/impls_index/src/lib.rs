@@ -8,7 +8,8 @@
 #[ cfg( feature = "enabled" ) ]
 pub mod impls_index;
 
-/// Dependencies.
+/// Namespace with dependencies.
+
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {

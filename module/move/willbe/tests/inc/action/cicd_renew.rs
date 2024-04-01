@@ -31,7 +31,7 @@ fn arrange( sample_dir : &str ) -> assert_fs::TempDir
 struct Workflow
 {
   name : String,
-  on : String,
+  on : HashMap<String, HashMap<String, Vec<String>>>,
   env : HashMap< String, String >,
   jobs : HashMap< String, Job >,
 }
@@ -57,7 +57,7 @@ fn default_case()
   // Arrange
   let temp = arrange( "single_module" );
   let base_path = temp.path().join( ".github" ).join( "workflows" );
-  let file_path = base_path.join( "ModuleTestModulePush.yml" );
+  let file_path = base_path.join( "module_test_module_push.yml" );
   let with = With
   {
     manifest_path : "test_module/Cargo.toml".into(),
@@ -66,13 +66,24 @@ fn default_case()
   };
   let job = Job
   {
-    uses : "Username/test/.github/workflows/StandardRustPush.yml@alpha".into(),
+    uses : "Username/test/.github/workflows/standard_rust_push.yml@alpha".into(),
     with
   };
   let expected = Workflow
   {
     name : "test_module".into(),
-    on : "push".into(),
+    on : 
+    {
+      let mut map = HashMap::new();
+      let mut push_map = HashMap::new();
+      push_map.insert
+      (
+        "branches-ignore".to_string(),
+        vec![ "alpha".to_string(), "beta".to_string(), "master".to_string() ],
+      );
+      map.insert( "push".to_string(), push_map );
+      map
+    },
     env : HashMap::from_iter( [ ( "CARGO_TERM_COLOR".to_string(), "always".to_string() ) ] ),
     jobs : HashMap::from_iter( [ ( "test".to_string(), job ) ] ),
   };
@@ -87,20 +98,20 @@ fn default_case()
   let actual: Workflow = serde_yaml::from_str( &content ).unwrap();
   assert_eq!( expected, actual );
 
-  assert!( base_path.join( "AppropriateBranch.yml" ).exists() );
-  assert!( base_path.join( "AppropriateBranchBeta.yml" ).exists() );
-  assert!( base_path.join( "AppropriateBranchMaster.yml" ).exists() );
-  assert!( base_path.join( "AutoMergeToBeta.yml" ).exists() );
-  assert!( base_path.join( "AutoPr.yml" ).exists() );
-  assert!( base_path.join( "AutoPrToAlpha.yml" ).exists() );
-  assert!( base_path.join( "AutoPrToBeta.yml" ).exists() );
-  assert!( base_path.join( "AutoPrToMaster.yml" ).exists() );
-  assert!( base_path.join( "RunsClean.yml" ).exists() );
-  assert!( base_path.join( "StandardRustPullRequest.yml" ).exists() );
-  assert!( base_path.join( "StandardRustPush.yml" ).exists() );
-  assert!( base_path.join( "StandardRustScheduled.yml" ).exists() );
-  assert!( base_path.join( "StandardRustStatus.yml" ).exists() );
-  assert!( base_path.join( "StatusChecksRulesUpdate.yml" ).exists() );
+  assert!( base_path.join( "appropriate_branch.yml" ).exists() );
+  assert!( base_path.join( "appropriate_branch_beta.yml" ).exists() );
+  assert!( base_path.join( "appropriate_branch_master.yml" ).exists() );
+  assert!( base_path.join( "auto_merge_to_beta.yml" ).exists() );
+  assert!( base_path.join( "auto_pr.yml" ).exists() );
+  assert!( base_path.join( "auto_pr_to_alpha.yml" ).exists() );
+  assert!( base_path.join( "auto_pr_to_beta.yml" ).exists() );
+  assert!( base_path.join( "auto_pr_to_master.yml" ).exists() );
+  assert!( base_path.join( "runs_clean.yml" ).exists() );
+  assert!( base_path.join( "standard_rust_pull_request.yml" ).exists() );
+  assert!( base_path.join( "standard_rust_push.yml" ).exists() );
+  assert!( base_path.join( "standard_rust_scheduled.yml" ).exists() );
+  assert!( base_path.join( "standard_rust_status.yml" ).exists() );
+  assert!( base_path.join( "status_checks_rules_update.yml" ).exists() );
 }
 
 // aaa : for Petro : fix styles

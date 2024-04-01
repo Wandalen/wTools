@@ -21,7 +21,7 @@ mod private
     readme_path,
     workspace_root
   };
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
   use { CrateDir, query, url, Workspace, wtools };
   use wtools::error::anyhow::
   {

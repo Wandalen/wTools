@@ -13,7 +13,8 @@ pub mod assert;
 #[ cfg( not( feature = "no_std" ) ) ]
 pub mod error;
 
-/// Dependencies.
+/// Namespace with dependencies.
+
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {

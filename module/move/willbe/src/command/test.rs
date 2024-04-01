@@ -5,47 +5,54 @@ mod private
 
   use std::collections::HashSet;
   use std::path::PathBuf;
-  use wca::{ Args, Props };
+  use colored::Colorize;
+  use wca::VerifiedCommand;
   use wtools::error::Result;
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
   use action::test::TestsCommandOptions;
   use former::Former;
   use channel::Channel;
   use error_tools::for_app::bail;
   use optimization::Optimization;
-
-  #[ derive( Former ) ]
+  
+  #[ derive( Former, Debug ) ]
   struct TestsProperties
   {
     #[ default( true ) ]
     dry : bool,
     #[ default( true ) ]
     with_stable : bool,
-    #[ default( true ) ]
+    #[ default( false ) ]
     with_nightly : bool,
     #[ default( 0u32 ) ]
     concurrent : u32,
-    #[ default( 2u32 ) ]
+    #[ default( 1u32 ) ]
     power : u32,
     include : Vec< String >,
+    #[ default ( [ "full".to_string(), "default".to_string() ] ) ]
     exclude : Vec< String >,
     #[ default( true ) ]
     temp : bool,
     enabled_features : Vec< String >,
-    #[ default( false ) ]
+    #[ default( true ) ]
     with_all_features : bool,
-    #[ default( false ) ]
+    #[ default( true ) ]
     with_none_features : bool,
     #[ default( true ) ]
     with_debug : bool,
-    #[ default( true ) ]
+    #[ default( false ) ]
     with_release : bool,
+    #[ default( true ) ]
+    with_progress : bool,
   }
 
   /// run tests in specified crate
-  pub fn test( args : Args, properties : Props ) -> Result< () >
+  pub fn test( o : VerifiedCommand ) -> Result< () >
   {
-    let path : PathBuf = args.get_owned( 0 ).unwrap_or_else( || "./".into() );
+    let args_line = format!( "{}", o.args.get_owned( 0 ).unwrap_or( std::path::PathBuf::from( "" ) ).display() );
+    let prop_line = format!( "{}", o.props.iter().map( | p | format!( "{}:{}", p.0, p.1.to_string() ) ).collect::< Vec< _ > >().join(" ") );
+
+    let path : PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );
     let path = AbsolutePath::try_from( path )?;
     let TestsProperties
     {
@@ -61,9 +68,10 @@ mod private
       with_all_features,
       with_none_features,
       with_debug,
-      with_release
-    } = properties.try_into()?;
-    
+      with_release, 
+      with_progress
+    } = o.props.try_into()?;
+
     let mut channels = HashSet::new();
     if with_stable { channels.insert( Channel::Stable ); }
     if with_nightly { channels.insert( Channel::Nightly ); }
@@ -90,14 +98,26 @@ mod private
     .with_all_features( with_all_features )
     .with_none_features( with_none_features )
     .optimizations( optimizations )
+    .with_progress( with_progress )
     .form();
 
     match action::test( args, dry )
     {
+      
       Ok( report ) =>
       {
-        println!( "{report} ");
-
+        if dry
+        {
+          let args = if args_line.is_empty() { String::new() } else { format!(" {}", args_line) };
+          let prop = if prop_line.is_empty() { String::new() } else { format!(" {}", prop_line) };
+          let line = format!("will .publish{}{} dry:0", args, prop);
+          println!("To apply plan, call the command `{}`", line.blue());
+        }
+        else 
+        { 
+          println!( "{report} ");
+        }
+        
         Ok( () )
       }
       Err( ( report, e ) ) =>
@@ -108,24 +128,27 @@ mod private
     }
   }
 
-  impl TryFrom< Props > for TestsProperties
+  impl TryFrom< wca::Props > for TestsProperties
   {
     type Error = wtools::error::for_app::Error;
-    fn try_from( value : Props ) -> Result< Self, Self::Error >
+    fn try_from( value : wca::Props ) -> Result< Self, Self::Error >
     {
       let mut this = Self::former();
 
       this = if let Some( v ) = value.get_owned( "dry" ) { this.dry::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "temp" ) { this.dry::< bool >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "temp" ) { this.temp::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "with_stable" ) { this.with_stable::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "with_nightly" ) { this.with_nightly::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "concurrent" ) { this.concurrent::< u32 >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "power" ) { this.power::< u32 >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "include" ) { this.include::< Vec< String > >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "exclude" ) { this.exclude::< Vec< String > >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "with_debug" ) { this.dry::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "with_release" ) { this.dry::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "enabled_features" ) { this.enabled_features::< Vec< String > >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "with_debug" ) { this.with_debug::< bool >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "with_release" ) { this.with_release::< bool >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "with_all_features" ) { this.with_all_features::< bool >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "with_none_features" ) { this.with_none_features::< bool >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "always" ) { this.enabled_features::< Vec< String > >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "with_progress" ) { this.with_progress::< bool >( v ) } else { this };
 
       Ok( this.form() )
     }

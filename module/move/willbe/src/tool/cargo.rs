@@ -4,24 +4,25 @@ mod private
   use crate::*;
 
   use std::path::PathBuf;
+  use error_tools::err;
   use former::Former;
-  use process::Report;
+  use process_tools::process::*;
   use wtools::error::Result;
 
   /// Represents pack options
-  #[ derive( Debug, Former ) ]
+  #[ derive( Debug, Former, Clone ) ]
   pub struct PackOptions
   {
-    path : PathBuf,
-    temp_path : Option< PathBuf >,
-    dry : bool,
+    pub( crate ) path : PathBuf,
+    pub( crate ) temp_path : Option< PathBuf >,
+    pub( crate ) dry : bool,
   }
 
   impl PackOptionsFormer
   {
     pub fn option_temp_path( mut self, value : impl Into< Option< PathBuf > > ) -> Self
     {
-      self.container.temp_path = value.into();
+      self.storage.temp_path = value.into();
       self
     }
   }
@@ -61,21 +62,20 @@ mod private
         Report
         {
           command : format!( "{program} {}", options.join( " " ) ),
-          path : args.path.to_path_buf(),
           out : String::new(),
           err : String::new(),
+          current_path: args.path.to_path_buf(),
+          error: Ok( () ),
         }
       )
     }
     else
     {
-      let options =
-      process::Run::former()
-      .application( program )
+      Run::former()
+      .bin_path( program )
       .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-      .path( args.path )
-      .form();
-      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
+      .current_path( args.path )
+      .run().map_err( | report | err!( report.to_string() ) )
     }
   }
 
@@ -84,16 +84,16 @@ mod private
   #[ derive( Debug, Former, Clone, Default ) ]
   pub struct PublishOptions
   {
-    path : PathBuf,
-    temp_path : Option< PathBuf >,
-    dry : bool,
+    pub( crate ) path : PathBuf,
+    pub( crate ) temp_path : Option< PathBuf >,
+    pub( crate ) dry : bool,
   }
 
   impl PublishOptionsFormer
   {
     pub fn option_temp_path( mut self, value : impl Into< Option< PathBuf > > ) -> Self
     {
-      self.container.temp_path = value.into();
+      self.storage.temp_path = value.into();
       self
     }
   }
@@ -125,21 +125,20 @@ mod private
           Report
           {
             command : format!( "{program} {}", arguments.join( " " ) ),
-            path : args.path.to_path_buf(),
             out : String::new(),
             err : String::new(),
+            current_path: args.path.to_path_buf(),
+            error: Ok( () ),
           }
         )
     }
     else
     {
-      let options =
-      process::Run::former()
-      .application( program )
+      Run::former()
+      .bin_path( program )
       .args( arguments.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-      .path( args.path )
-      .form();
-      process::run( options ).map_err( | ( report, err ) | err.context( report ) )
+      .current_path( args.path )
+      .run().map_err( | report  | err!( report.to_string() ) )
     }
   }
 }

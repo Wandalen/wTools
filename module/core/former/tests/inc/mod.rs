@@ -35,18 +35,26 @@ mod former_tests
   mod name_collision_end;
   mod name_collision_on_end;
 
-  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod parametrized_struct_manual;
-  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod parametrized_struct_imm;
-  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod parametrized_struct_where;
 
-  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subformer_basic_manual;
-  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subformer_basic;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subformer_vec;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subformer_hashset;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subformer_hashmap;
+
+
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subformer_shortcut;
 
 }
