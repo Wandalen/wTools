@@ -52,7 +52,7 @@ mod private
       }
     }
 
-    // returns ParsedCommand and position of last parsed item
+    // returns ParsedCommand and relative position of the last parsed item
     fn parse_command( args : &[ String ] ) -> Result< ( ParsedCommand, usize ) >
     {
       if args.is_empty() {
@@ -60,84 +60,100 @@ mod private
       }
 
       let mut i = 0;
-      if Self::valid_command_name( &args[ i ] )
+      
+      if !Self::valid_command_name( &args[ i ] )
       {
-        let name = args[ i ].strip_prefix( '.' ).unwrap();
-        i += 1;
-        // special situation(internal commands)
-        let name = if name.is_empty() { "." } else if name == "?" { ".?" } else { name };
-        let mut subjects = vec![];
-        let mut properties = HashMap::new();
+        return_err!( "Unexpected input: Expected a command, found: `{}`", args[ i ] );
+      }
+      let name = match args[ i ].strip_prefix( '.' ).unwrap()
+      {
+        "" => ".",
+        "?" => ".?",
+        other => other,
+      };
+      i += 1;
+      let ( subjects, properties, relative_pos ) = Self::parse_command_args( &args[ i .. ] )?;
+      
+      i += relative_pos;
 
-        let mut properties_turn = false;
-        while i < args.len()
+      return Ok(
+      (
+        ParsedCommand
         {
-          let item = &args[ i ];
-          
-          if Self::valid_command_name( item ) { break; }
-          
-          if item.contains( ':' )
+          name : name.to_string(),
+          subjects,
+          properties,
+        },
+        i,
+      ))
+    }
+    
+    // returns ( subjects, properties, relative_end_pos )
+    fn parse_command_args( args : &[ String ] ) -> Result< ( Vec< String >, HashMap< String, String >, usize ) >
+    {
+      let mut i = 0;
+      
+      let mut subjects = vec![];
+      let mut properties = HashMap::new();
+
+      let mut properties_turn = false;
+      while i < args.len()
+      {
+        let item = &args[ i ];
+
+        if Self::valid_command_name( item ) { break; }
+
+        if item.contains( ':' )
+        {
+          properties_turn = true;
+          let ( name, value ) = item.split_once( ':' ).unwrap();
+          // prop:value
+          if !value.is_empty()
           {
-            properties_turn = true;
-            let ( name, value ) = item.split_once( ':' ).unwrap();
-            // prop:value
-            if !value.is_empty()
-            {
-              properties.insert( name.to_string(), value.to_string() );
-            }
-            // prop: value
-            else if args.len() > i + 1
-            {
-              properties.insert( name.to_string(), args[ i + 1 ].to_string() );
-              i += 1;
-            }
+            properties.insert( name.to_string(), value.to_string() );
           }
-          // prop : value | prop :value
-          else if args.len() > i + 1 && args[ i + 1 ].starts_with( ':' )
+          // prop: value
+          else if args.len() > i + 1
           {
-            // :value
-            if args[ i + 1 ].len() > 1
-            {
-              properties.insert( args[ i ].clone(), args[ i + 1 ].strip_prefix( ':' ).unwrap().to_string() );
-              i += 1;
-            }
-            // : value
-            else if args.len() > i + 2
-            {
-              properties.insert( args[ i ].clone(), args[ i + 2 ].clone() );
-              i += 2;
-            }
-            else
-            {
-              return_err!( "Unexpected input: Expected property value, found EOL" );
-            }
+            properties.insert( name.to_string(), args[ i + 1 ].to_string() );
+            i += 1;
           }
-          else if !properties_turn
-          {
-            subjects.push( item.to_string() );
-          }
+          // we can identify this as a subject, can't we?
+          // prop:
           else
           {
-            return_err!( "Unexpected input: Expected `subject` or `property`, found: `{}`", item );
+            return_err!( "Unexpected input '{}': Detected a possible property key preceding the ':' character. However, no corresponding value was found.", item );
           }
-          i += 1;
         }
-
-        return Ok(
-        (
-          ParsedCommand
+        // prop : value | prop :value
+        else if args.len() > i + 1 && args[ i + 1 ].starts_with( ':' )
+        {
+          // :value
+          if args[ i + 1 ].len() > 1
           {
-            name : name.to_string(),
-            subjects,
-            properties,
-          },
-          i,
-        ))
+            properties.insert( args[ i ].clone(), args[ i + 1 ].strip_prefix( ':' ).unwrap().to_string() );
+            i += 1;
+          }
+          // : value
+          else if args.len() > i + 2
+          {
+            properties.insert( args[ i ].clone(), args[ i + 2 ].clone() );
+            i += 2;
+          }
+          // :
+          else
+          {
+            return_err!( "Unexpected input '{} :': Detected a possible property key preceding the ':' character. However, no corresponding value was found.", item );
+          }
+        }
+          
+        else if !properties_turn { subjects.push( item.to_string() ); }
+          
+        else { return_err!( "Unexpected input: Expected `command` or `property`, found: `{}`", item ); }
+        i += 1;
       }
-      else
-      {
-        return_err!( "Unexpected input: Expected a command, found: `{}`", args[ i ] )
-      }
+      
+      Ok(( subjects, properties, i ))
     }
   }
 }
