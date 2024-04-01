@@ -8,10 +8,12 @@ pub( crate ) mod private
     fmt,
     path::{ Path, PathBuf },
   };
+  #[ cfg( feature = "derive_serde" ) ]
   use serde::{ Serialize, Deserialize };
 
   /// Absolute path.
-  #[ derive( Debug, Default, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize ) ]
+  #[ cfg_attr( feature = "derive_serde", derive( Serialize, Deserialize ) ) ]
+  #[ derive( Debug, Default, Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
   pub struct AbsolutePath( PathBuf );
 
   impl fmt::Display for AbsolutePath
