@@ -28,16 +28,14 @@ pub( crate ) mod private
   ///
   /// ## Use case
   /// ```
-  /// # use wca::{ Routine, Args };
-  /// let routine = Routine::new
+  /// # use wca::{ Routine, Handler, VerifiedCommand };
+  /// let routine = Routine::from( Handler::from
   /// (
-  ///   |( args, _ ) : ( Args, _ )|
+  ///   | o : VerifiedCommand |
   ///   {
-  ///     let first_arg : i32 = args.get_owned( 0 ).unwrap();
-  ///
-  ///     Ok( () )
+  ///     let first_arg : i32 = o.args.get_owned( 0 ).unwrap();
   ///   }
-  /// );
+  /// ) );
   /// ```
   #[ derive( Debug, Clone ) ]
   pub struct Args( pub Vec< Value > );
@@ -89,16 +87,14 @@ pub( crate ) mod private
   ///
   /// ## Use case
   /// ```
-  /// # use wca::{ Routine, Props };
-  /// let routine = Routine::new
+  /// # use wca::{ Routine, Handler, Props, VerifiedCommand };
+  /// let routine = Routine::from( Handler::from
   /// (
-  ///   |( _, props ) : ( _, Props )|
+  ///   | o : VerifiedCommand |
   ///   {
-  ///     let key_option : i32 = props.get_owned( "key" ).unwrap();
-  ///
-  ///     Ok( () )
+  ///     let key_option : i32 = o.props.get_owned( "key" ).unwrap();
   ///   }
-  /// );
+  /// ) );
   /// ```
   #[ derive( Debug, Clone ) ]
   pub struct Props( pub HashMap< String, Value > );
@@ -139,16 +135,25 @@ pub( crate ) mod private
 
   ///
   /// Routine handle.
-  ///
+  /// 
   /// ```
   /// # use wca::{ Handler, Routine };
   /// let routine = Routine::from( Handler::from
   /// (
-  ///   | o |
+  ///   ||
   ///   {
   ///     // Do what you need to do
+  ///   }
+  /// ) );
+  /// ```
   ///
-  ///     Ok( () )
+  /// ```
+  /// # use wca::{ Handler, Routine, VerifiedCommand };
+  /// let routine = Routine::from( Handler::from
+  /// (
+  ///   | o : VerifiedCommand |
+  ///   {
+  ///     // Do what you need to do
   ///   }
   /// ) );
   /// ```
@@ -160,8 +165,6 @@ pub( crate ) mod private
   ///   | ctx, o |
   ///   {
   ///     // Do what you need to do
-  ///
-  ///     Ok( () )
   ///   }
   /// ) );
 

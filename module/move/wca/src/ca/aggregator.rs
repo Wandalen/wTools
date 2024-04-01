@@ -78,7 +78,7 @@ pub( crate ) mod private
   /// # Example:
   ///
   /// ```
-  /// use wca::{ CommandsAggregator, Args, Props, Type };
+  /// use wca::{ CommandsAggregator, VerifiedCommand, Type };
   ///
   /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
   /// let ca = CommandsAggregator::former()
@@ -86,7 +86,7 @@ pub( crate ) mod private
   ///   .hint( "prints all subjects and properties" )
   ///   .subject().hint( "argument" ).kind( Type::String ).optional( false ).end()
   ///   .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( false ).end()
-  ///   .routine( | args : Args, props : Props | println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" ) )
+  ///   .routine( | o : VerifiedCommand | println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props ) )
   ///   .end()
   /// .perform();
   ///
