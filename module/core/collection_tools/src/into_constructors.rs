@@ -1,19 +1,3 @@
-/// Not meant to be called directly.
-#[ doc( hidden ) ]
-#[ macro_export( local_inner_macros ) ]
-macro_rules! count
-{
-  ( @single $( $x : tt )* ) => ( () );
-
-  (
-    @count $( $rest : expr ),*
-  )
-  =>
-  (
-    < [ () ] >::len( &[ $( count!( @single $rest ) ),* ] )
-  );
-} 
-
 /// Creates a `BTreeMap` from a list of key-value pairs.
 ///
 /// The `into_bmap` macro facilitates the convenient creation of a `BTreeMap` with initial elements.
@@ -100,7 +84,7 @@ macro_rules! into_bmap
   {{
     let mut _map = collection_tools::BTreeMap::new();
     $(
-      let _ = _map.insert( $key.into(), $value.into() );
+      let _ = _map.insert( Into::into( $key ), Into::into( $value ) );
     )*
     _map
   }};
@@ -192,7 +176,7 @@ macro_rules! into_bset
   {{
     let mut _set = collection_tools::BTreeSet::new();
     $(
-      _set.insert( $key.into() );
+      _set.insert( Into::into( $key ) );
     )*
     _set
   }};
@@ -280,7 +264,7 @@ macro_rules! into_heap
     let _cap = count!( @count $( $key ),* );
     let mut _heap = collection_tools::BinaryHeap::with_capacity( _cap );
     $(
-      _heap.push( $key.into() );
+      _heap.push( Into::into( $key ) );
     )*
     _heap
   }};
@@ -374,7 +358,7 @@ macro_rules! into_hmap
     let _cap = count!( @count $( $key ),* );
     let mut _map = collection_tools::HashMap::with_capacity( _cap );
     $(
-      let _ = _map.insert( $key.into(), $value.into() );
+      let _ = _map.insert( Into::into( $key ), Into::into( $value ) );
     )*
     _map
   }};
@@ -390,6 +374,8 @@ macro_rules! into_hmap
 /// of the `HashSet`. This means that the elements must be compatible with the `Into< T >` trait for the
 /// type `T` used in the `HashSet`. Also, this means that sometimes you must specify the type of collection's items.
 ///
+/// # Origin
+/// 
 /// This collection can be reexported from different crates:
 /// - from `std`, if `no_std` flag if off
 /// - from `hashbrown`, if `use_alloc` flag if on
@@ -467,7 +453,7 @@ macro_rules! into_hset
     let _cap = count!( @count $( $key ),* );
     let mut _set = collection_tools::HashSet::with_capacity( _cap );
     $(
-      let _ = _set.insert( $key.into() );
+      let _ = _set.insert( Into::into( $key ) );
     )*
     _set
   }};
@@ -560,7 +546,7 @@ macro_rules! into_list
     // So no `with_capacity`
     let mut _lst = collection_tools::LinkedList::new();
     $(
-      _lst.push_back( $key.into() );
+      _lst.push_back( Into::into( $key ) );
     )*
     _lst
   }};
@@ -653,7 +639,7 @@ macro_rules! into_vec
     let _cap = count!( @count $( $key ),* );
     let mut _vec = collection_tools::Vec::with_capacity( _cap );
     $(
-      _vec.push( $key.into() );
+      _vec.push( Into::into( $key ) );
     )*
     _vec
   }};
@@ -745,7 +731,7 @@ macro_rules! into_vecd
     let _cap = count!( @count $( $key ),* );
     let mut _vecd = collection_tools::VecDeque::with_capacity( _cap );
     $(
-      _vecd.push_back( $key.into() );
+      _vecd.push_back( Into::into( $key ) );
     )*
     _vecd
   }};
