@@ -3,17 +3,17 @@ mod private
 {
   use crate::*;
   use test::*;
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
 
   use std::collections::HashSet;
 
   use std::{ env, fs };
   // qqq : for Petro : https://github.com/obox-systems/conventions/blob/master/code_style.md#importing-structuring-std-imports
 
-  use cargo_metadata::Package;
   #[ cfg( feature = "progress_bar" ) ]
   use indicatif::{ MultiProgress, ProgressStyle };
-  // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
+  // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
+  // aaa : ✅
 
   // qqq : for Petro : don't use Package directly. rid it off for the whole willbe
 
@@ -55,6 +55,7 @@ mod private
     },
     iter::Itertools,
   };
+  use workspace::WorkspacePackage;
 
   /// Used to store arguments for running tests.
   ///
@@ -85,7 +86,10 @@ mod private
     optimizations : HashSet< optimization::Optimization >,
     #[ default( 1000u32 ) ]
     variants_cap : u32,
+    #[ default( false ) ]
+    with_progress : bool,
   }
+  
 
   /// The function runs tests with a different set of features in the selected crate (the path to the crate is specified in the dir variable).
   /// Tests are run with each feature separately, with all features together, and without any features.
@@ -104,7 +108,7 @@ mod private
     )
     .unwrap()
     .progress_chars( "##-" );
-    
+
     let mut reports = TestsReport::default();
     // fail fast if some additional installations required
     let channels = channel::available_channels( args.dir.as_ref() ).map_err( | e | ( reports.clone(), e ) )?;
@@ -127,36 +131,45 @@ mod private
       with_all_features,
       with_none_features,
       optimizations,
-      variants_cap,
+      variants_cap, 
+      with_progress,
     } = args;
-    
+
     let packages = needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?;
 
     let plan = TestPlan::try_from
-    ( 
-      &packages, 
-      &channels, 
-      power, 
-      include_features, 
-      exclude_features, 
-      &optimizations, 
+    (
+      &packages,
+      &channels,
+      power,
+      include_features,
+      exclude_features,
+      &optimizations,
       enabled_features,
-      with_all_features, 
+      with_all_features,
       with_none_features,
       variants_cap,
     ).map_err( | e | ( reports.clone(), e ) )?;
-    
+
     println!( "{plan}" );
 
     let temp_path =  if temp
     {
-      let mut unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name().map_err( | e | ( reports.clone(), e ) )? );
+      let mut unique_name = format!
+      (
+        "temp_dir_for_test_command_{}",
+        path_tools::path::unique_folder_name().map_err( | e | ( reports.clone(), e.into() ) )?
+      );
 
       let mut temp_dir = env::temp_dir().join( unique_name );
 
       while temp_dir.exists()
       {
-        unique_name = format!( "temp_dir_for_test_command_{}", path::unique_folder_name().map_err( | e | ( reports.clone(), e ) )? );
+        unique_name = format!
+        (
+          "temp_dir_for_test_command_{}",
+          path_tools::path::unique_folder_name().map_err( | e | ( reports.clone(), e.into() ) )?
+        );
         temp_dir = env::temp_dir().join( unique_name );
       }
 
@@ -167,7 +180,7 @@ mod private
     {
       None
     };
-    
+
     let test_options_former = TestOptions::former()
     .concurrent( concurrent )
     .plan( plan )
@@ -175,20 +188,28 @@ mod private
     .dry( dry );
 
     #[ cfg( feature = "progress_bar" ) ]
-    let test_options_former = test_options_former.feature( TestOptionsProgressBarFeature{ multiprocess, style } );
-    
+    let test_options_former = if with_progress
+    { 
+      let test_options_former = test_options_former.feature( TestOptionsProgressBarFeature{ multiprocess, style } );
+      test_options_former
+    }
+    else
+    { 
+      test_options_former
+    };
+
     let options = test_options_former.form();
     let result = tests_run( &options );
-    
+
     if temp
     {
       fs::remove_dir_all( options.temp_path.unwrap() ).map_err( | e | ( reports.clone(), e.into() ) )?;
     }
-    
-    result 
+
+    result
   }
 
-  fn needed_packages( path : AbsolutePath ) -> Result< Vec< Package > >
+  fn needed_packages( path : AbsolutePath ) -> Result< Vec< WorkspacePackage > >
   {
     let path = if path.as_ref().file_name() == Some( "Cargo.toml".as_ref() )
     {
@@ -203,8 +224,7 @@ mod private
     let result = metadata
     .packages()?
     .into_iter()
-    .cloned()
-    .filter( move | x | x.manifest_path.starts_with( path.as_ref() ) )
+    .filter( move | x | x.manifest_path().starts_with( path.as_ref() ) )
     .collect();
     Ok( result )
   }

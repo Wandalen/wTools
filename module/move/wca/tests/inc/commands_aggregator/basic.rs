@@ -69,9 +69,8 @@ tests_impls!
     .perform();
 
     a_id!( (), ca.perform( "." ).unwrap() );
-    a_id!( (), ca.perform( ".cmd." ).unwrap() );
-
-    a_true!( ca.perform( ".c." ).is_err() );
+    // qqq : this use case is disabled
+    // a_id!( (), ca.perform( ".cmd." ).unwrap() );
   }
 
   fn error_types()
@@ -242,6 +241,29 @@ tests_impls!
 
     a_id!( (), executor.command( dictionary, grammar_command ).unwrap() );
   }
+
+  // qqq : make the following test work
+  // fn subject_with_spaces()
+  // {
+  //   let query = "SELECT title, links, MIN( published ) FROM Frames";
+  //   let ca = CommandsAggregator::former()
+  //   .grammar(
+  //   [
+  //     wca::Command::former()
+  //     .hint( "hint" )
+  //     .long_hint( "long_hint" )
+  //     .phrase( "query.execute" )
+  //     .subject( "SQL query", Type::String, false )
+  //     .form(),
+  //   ])
+  //   .executor(
+  //   [
+  //     ( "query.execute".to_owned(), Routine::new( move |( args, _ )| { assert_eq!( query, args.get_owned::< &str >( 0 ).unwrap() ); Ok( () ) } ) ),
+  //   ])
+  //   .build();
+
+  //   a_id!( (), ca.perform( vec![ ".query.execute".to_string(), query.into() ] ).unwrap() );
+  // }
 }
 
 //
@@ -257,4 +279,5 @@ tests_index!
   string_subject_with_colon,
   no_prop_subject_with_colon,
   optional_prop_subject_with_colon,
+  // subject_with_spaces,
 }

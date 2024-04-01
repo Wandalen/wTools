@@ -2,6 +2,8 @@
 //! Types, which are extension of std.
 //!
 
+// qqq : xxx : rid off the file
+
 /// Internal namespace.
 pub( crate ) mod private
 {

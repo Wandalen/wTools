@@ -1,7 +1,8 @@
 <!-- {{# generate.module_header{} #}} -->
 
 # Module :: video_experiment
-
+<!--{ generate.module_header.start() }-->
+<!--{ generate.module_header.end }-->
 Video generation example.
 
 ### Basic use-case

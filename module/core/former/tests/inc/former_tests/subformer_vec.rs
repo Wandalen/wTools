@@ -1,15 +1,8 @@
 #![ allow( dead_code ) ]
 
 use super::*;
-
-#[ cfg( feature = "use_alloc" ) ]
-extern crate alloc;
-#[ cfg( feature = "use_alloc" ) ]
 #[ allow( unused_imports ) ]
-use alloc::vec::Vec;
-#[ cfg( not( feature = "no_std" ) ) ]
-#[ allow( unused_imports ) ]
-use std::vec::Vec;
+use collection_tools::Vec;
 
 #[ test ]
 fn push()

@@ -1,13 +1,7 @@
 use super::*;
 
-#[ cfg( feature = "use_alloc" ) ]
-extern crate alloc;
-#[ cfg( feature = "use_alloc" ) ]
-#[ allow( unused_imports ) ]
-use alloc::vec::Vec;
-#[ cfg( not( feature = "no_std" ) ) ]
-#[ allow( unused_imports ) ]
-use std::vec::Vec;
+#[ allow( unused ) ]
+use collection_tools::Vec;
 
 /// Trait for containers that behave like a vector, providing an interface for element addition.
 ///
@@ -16,7 +10,7 @@ use std::vec::Vec;
 ///
 pub trait VectorLike< E >
 {
-  /// Appends an element to the back of a container.
+  /// Appends an element to the back of a formed.
   fn push( &mut self, element : E );
 }
 
@@ -53,104 +47,104 @@ impl< E > VectorLike< E > for Vec< E >
 ///```
 ///
 #[ derive( Debug, Default ) ]
-pub struct VectorSubformer< E, Container, Context, ContainerEnd >
+pub struct VectorSubformer< E, Formed, Context, ContainerEnd >
 where
-  Container : VectorLike< E > + core::default::Default,
-  ContainerEnd : ToSuperFormer< Container, Context >,
+  Formed : VectorLike< E > + core::default::Default,
+  ContainerEnd : FormingEnd< Formed, Context >,
 {
-  container : core::option::Option< Container >,
+  formed : core::option::Option< Formed >,
   context : core::option::Option< Context >,
   on_end : core::option::Option< ContainerEnd >,
   _phantom : core::marker::PhantomData< E >,
 }
 
-impl< E, Container, Context, ContainerEnd > VectorSubformer< E, Container, Context, ContainerEnd >
+impl< E, Formed, Context, ContainerEnd > VectorSubformer< E, Formed, Context, ContainerEnd >
 where
-  Container : VectorLike< E > + core::default::Default,
-  ContainerEnd : ToSuperFormer< Container, Context >,
+  Formed : VectorLike< E > + core::default::Default,
+  ContainerEnd : FormingEnd< Formed, Context >,
 {
 
   /// Form current former into target structure.
   #[ inline( always ) ]
-  pub fn form( mut self ) -> Container
+  pub fn form( mut self ) -> Formed
   {
-    let container = if self.container.is_some()
+    let formed = if self.formed.is_some()
     {
-      self.container.take().unwrap()
+      self.formed.take().unwrap()
     }
     else
     {
       let val = Default::default();
       val
     };
-    container
+    formed
   }
 
-  // /// Initializes a new `VectorSubformer` instance, starting with an empty container.
+  // /// Initializes a new `VectorSubformer` instance, starting with an empty formed.
   // /// This function serves as the entry point for the builder pattern.
   // ///
   // /// # Returns
-  // /// A new instance of `VectorSubformer` with an empty internal container.
+  // /// A new instance of `VectorSubformer` with an empty internal formed.
   // ///
   // #[ inline( always ) ]
-  // pub fn new() -> VectorSubformer< E, Container, Container, impl ToSuperFormer< Container, Container > >
+  // pub fn new() -> VectorSubformer< E, Formed, Formed, impl FormingEnd< Formed, Formed > >
   // {
   //   VectorSubformer::begin
   //   (
   //     None,
   //     None,
-  //     crate::ReturnContainer,
+  //     crate::ReturnFormed,
   //   )
   // }
 
-  /// Begins the building process, optionally initializing with a context and container.
+  /// Begins the building process, optionally initializing with a context and formed.
   #[ inline( always ) ]
   pub fn begin
   (
+    formed : core::option::Option< Formed >,
     context : core::option::Option< Context >,
-    container : core::option::Option< Container >,
     on_end : ContainerEnd
   ) -> Self
   {
     Self
     {
       context,
-      container,
+      formed,
       on_end : Some( on_end ),
       _phantom : core::marker::PhantomData,
     }
   }
 
-  /// Finalizes the building process, returning the container or a context incorporating it.
+  /// Finalizes the building process, returning the formed or a context incorporating it.
   #[ inline( always ) ]
   pub fn end( mut self ) -> Context
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
-    let container = self.form();
-    on_end.call( container, context )
+    let formed = self.form();
+    on_end.call( formed, context )
   }
 
-  /// Replaces the current container with a provided one, allowing for a reset or redirection of the building process.
+  /// Replaces the current formed with a provided one, allowing for a reset or redirection of the building process.
   #[ inline( always ) ]
-  pub fn replace( mut self, vector : Container ) -> Self
+  pub fn replace( mut self, vector : Formed ) -> Self
   {
-    self.container = Some( vector );
+    self.formed = Some( vector );
     self
   }
 
 }
 
-impl< E, Container > VectorSubformer< E, Container, Container, crate::ReturnContainer >
+impl< E, Formed > VectorSubformer< E, Formed, Formed, crate::ReturnFormed >
 where
-  Container : VectorLike< E > + core::default::Default,
+  Formed : VectorLike< E > + core::default::Default,
 {
 
-  /// Initializes a new `VectorSubformer` instance, starting with an empty container.
+  /// Initializes a new `VectorSubformer` instance, starting with an empty formed.
   /// This function serves as the entry point for the builder pattern.
   ///
   /// # Returns
-  /// A new instance of `VectorSubformer` with an empty internal container.
+  /// A new instance of `VectorSubformer` with an empty internal formed.
   ///
   #[ inline( always ) ]
   pub fn new() -> Self
@@ -159,32 +153,55 @@ where
     (
       None,
       None,
-      crate::ReturnContainer,
+      crate::ReturnFormed,
     )
   }
 
 }
 
-impl< E, Container, Context, ContainerEnd > VectorSubformer< E, Container, Context, ContainerEnd >
+impl< E, Formed, Context, ContainerEnd > VectorSubformer< E, Formed, Context, ContainerEnd >
 where
-  Container : VectorLike< E > + core::default::Default,
-  ContainerEnd : ToSuperFormer< Container, Context >,
+  Formed : VectorLike< E > + core::default::Default,
+  ContainerEnd : FormingEnd< Formed, Context >,
 {
 
-  /// Appends an element to the end of the container, expanding the internal collection.
+  /// Appends an element to the end of the formed, expanding the internal collection.
   #[ inline( always ) ]
   pub fn push< E2 >( mut self, element : E2 ) -> Self
   where E2 : core::convert::Into< E >,
   {
-    if self.container.is_none()
+    if self.formed.is_none()
     {
-      self.container = core::option::Option::Some( Default::default() );
+      self.formed = core::option::Option::Some( Default::default() );
     }
-    if let core::option::Option::Some( ref mut container ) = self.container
+    if let core::option::Option::Some( ref mut formed ) = self.formed
     {
-      container.push( element.into() );
+      formed.push( element.into() );
     }
     self
+  }
+
+}
+
+//
+
+impl< E, Formed, Context, End > FormerBegin< Formed, Formed, Context >
+for VectorSubformer< E, Formed, Context, End >
+where
+  End : FormingEnd< Formed, Context >,
+  Formed : VectorLike< E > + Default,
+{
+  type End = End;
+
+  #[ inline( always ) ]
+  fn _begin
+  (
+    formed : core::option::Option< Formed >,
+    context : core::option::Option< Context >,
+    on_end : End,
+  ) -> Self
+  {
+    Self::begin( formed, context, on_end )
   }
 
 }

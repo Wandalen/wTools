@@ -1,6 +1,12 @@
 name : {{name}}
 
-on : push
+on :
+  push :
+    branches-ignore :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
 
 env :
   CARGO_TERM_COLOR : always
@@ -10,7 +16,7 @@ jobs :
   # {{name}}
 
   test :
-    uses : {{username_and_repository}}/.github/workflows/StandardRustPush.yml@{{branch}}
+    uses : {{username_and_repository}}/.github/workflows/standard_rust_push.yml@{{branch}}
     with :
       manifest_path : '{{manifest_path}}'
       module_name : '{{name}}'

@@ -30,9 +30,9 @@ pub( crate ) mod private
   {
     pub fn command( mut self, command : Command ) -> Self
     {
-      let mut commands = self.container.commands.unwrap_or_default();
+      let mut commands = self.storage.commands.unwrap_or_default();
       commands.extend([( command.phrase.clone(), command )]);
-      self.container.commands = Some( commands );
+      self.storage.commands = Some( commands );
 
       self
     }
@@ -66,6 +66,25 @@ pub( crate ) mod private
       Name : std::hash::Hash + Eq,
     {
       self.commands.get( name )
+    }
+    
+    /// Find commands that match a given name part.
+    ///
+    /// This function accepts a `name_part` parameter which is of generic type `NamePart`.
+    /// The `NamePart` type must implement the `AsRef<str>` trait.
+    ///
+    /// # Arguments
+    ///
+    /// * `name_part` - The name part to match against command phrases.
+    ///
+    /// # Returns
+    ///
+    /// A vector of references to `Command` that match the given `name_part`.
+    pub fn search< NamePart >( &self, name_part : NamePart ) -> Vec< &Command >
+    where
+      NamePart : AsRef< str >,
+    {
+      self.commands.values().filter( | command | command.phrase.starts_with( name_part.as_ref() ) ).collect()
     }
   }
 }

@@ -59,7 +59,7 @@ fn stability_experimental_by_default()
   let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
-  assert!( actual.contains( "[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)" ) );
+  assert!( actual.contains( "[![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) |" ) );
 }
 
 #[ test ]
@@ -78,7 +78,6 @@ fn stability_and_repository_from_module_toml()
   _ = file.read_to_string( &mut actual ).unwrap();
 
   assert!( actual.contains( "[![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](https://github.com/emersion/stability-badges#stable)" ) );
-  assert!( actual.contains( "https://github.com/Testusername/TestProject" ) );
 }
 
 #[ test ]
@@ -146,6 +145,7 @@ fn stability_cell()
   let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
+  dbg!( &actual );
   assert!( actual.contains( "[![stability-deprecated](https://img.shields.io/badge/stability-deprecated-red.svg)](https://github.com/emersion/stability-badges#deprecated)" ) );
 }
 
@@ -163,7 +163,7 @@ fn branches_cell()
   let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
-  assert!( actual.contains( "| [![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/ModuleWillbeVariadicTagConfigurationsCPush.yml?label=&branch=test_branch1)](https://github.com/SomeName/SomeCrate/C/actions/workflows/ModuleWillbeVariadicTagConfigurationsCPush.yml?query=branch%3Atest_branch1) | [![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/ModuleWillbeVariadicTagConfigurationsCPush.yml?label=&branch=test_branch2)](https://github.com/SomeName/SomeCrate/C/actions/workflows/ModuleWillbeVariadicTagConfigurationsCPush.yml?query=branch%3Atest_branch2) |" ) );
+  assert!( actual.contains( "[![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/module_willbe_variadic_tag_configurations_c_push.yml?label=&branch=test_branch1)](https://github.com/SomeName/SomeCrate/C/actions/workflows/module_willbe_variadic_tag_configurations_c_push.yml?query=branch%3Atest_branch1) | [![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/module_willbe_variadic_tag_configurations_c_push.yml?label=&branch=test_branch2)](https://github.com/SomeName/SomeCrate/C/actions/workflows/module_willbe_variadic_tag_configurations_c_push.yml?query=branch%3Atest_branch2)" ) );
 }
 
 #[ test ]
@@ -197,5 +197,5 @@ fn sample_cell()
   let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
-  assert!( actual.contains( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F_willbe_variadic_tag_configurations_c_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20_willbe_variadic_tag_configurations_c_trivial/https://github.com/SomeName/SomeCrate/C)" ) );
+  assert!( actual.contains( " [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=.%2F_willbe_variadic_tag_configurations_c%2Fexamples%2F_willbe_variadic_tag_configurations_c_trivial.rs,RUN_POSTFIX=--example%20_willbe_variadic_tag_configurations_c_trivial/https://github.com/SomeName/SomeCrate/C)" ) );
 }

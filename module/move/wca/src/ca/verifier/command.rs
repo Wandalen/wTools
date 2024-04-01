@@ -18,7 +18,8 @@ pub( crate ) mod private
   ///   [
   ///     ( "prop_name".to_string(), Value::Number( 42.0 ) ),
   ///     /* ... */
-  ///   ])
+  ///   ]),
+  ///   internal_command : false,
   /// };
   /// ```
   ///
@@ -29,6 +30,8 @@ pub( crate ) mod private
   {
     /// Phrase descriptor for command.
     pub phrase : String,
+    /// Flag indicating whether a command is internal or not.
+    pub internal_command : bool,
     /// Command subjects.
     pub subjects : Vec< Value >,
     /// Command options.

@@ -1,8 +1,14 @@
 pub( crate ) mod private
 {
   use crate::*;
+  use std::fmt::
+  { 
+    Display, 
+    Formatter 
+  };
   use wtools;
   use wtools::{ error::Result, err };
+  use wtools::Itertools;
 
   /// Available types that can be converted to a `Value`
   ///
@@ -63,7 +69,8 @@ pub( crate ) mod private
   ///   [
   ///     // Here is string value used
   ///     ( "string_prop".to_string(), Value::String( "value".to_string() ) ),
-  ///   ])
+  ///   ]),
+  ///   internal_command : false,
   /// };
   ///
   /// let number : f32 = command.subjects[ 0 ].clone().into();
@@ -85,6 +92,38 @@ pub( crate ) mod private
     Bool( bool ),
     /// List
     List( Vec< Value > ),
+  }
+
+  impl Display for Value
+  {
+    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
+    {
+      match self
+      {
+        Value::String( s ) =>
+        {
+          write!( f , "{s}" )?;
+        }
+        Value::Number( n ) =>
+        {
+          write!( f, "{n}" )?;
+        }
+        Value::Path( p ) =>
+        {
+          write!( f, "{}", p.display() )?;
+        }
+        Value::Bool( b ) =>
+        {
+          write!( f, "{b}" )?;
+        }
+        Value::List( list ) =>
+        {
+          let list = list.iter().map( | element | element.to_string() ).join( "," ); // qqq : don't hardcode ", " find way to get original separator
+          write!( f, "{list}" )?;
+        }
+      }
+      Ok( () )
+    }
   }
 
   macro_rules! value_into_impl

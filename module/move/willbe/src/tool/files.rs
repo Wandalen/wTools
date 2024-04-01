@@ -24,11 +24,17 @@ pub( crate ) mod private
     .collect::< Vec< PathBuf > >()
   }
 
+  /// Check if path is valid.
+  pub fn valid_is( path : &str ) -> bool
+  {
+    std::fs::metadata( path ).is_ok()
+  }
 }
 
 //
 
 crate::mod_interface!
 {
+  protected use valid_is;
   orphan use find;
 }

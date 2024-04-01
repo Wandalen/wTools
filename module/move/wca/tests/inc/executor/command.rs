@@ -111,6 +111,8 @@ tests_impls!
 
   fn with_context()
   {
+    use std::sync::{ Arc, Mutex };
+
     // init parser
     let parser = Parser::former().form();
 
@@ -126,16 +128,16 @@ tests_impls!
       (
         | ctx : Context |
         ctx
-        .get_ref()
+        .get()
         .ok_or_else( || "Have no value" )
-        .and_then( | &x : &i32 | if x != 1 { Err( "x not eq 1" ) } else { Ok( () ) } )
+        .and_then( | x : Arc< Mutex< i32 > > | if *x.lock().unwrap() != 1 { Err( "x not eq 1" ) } else { Ok( () ) } )
       )
       .form()
     )
     .form();
     let verifier = Verifier;
     let mut ctx = wca::Context::default();
-    ctx.insert( 1 );
+    ctx.insert( Arc::new( Mutex::new( 1 ) ) );
     // init executor
     let executor = Executor::former()
     .context( ctx )

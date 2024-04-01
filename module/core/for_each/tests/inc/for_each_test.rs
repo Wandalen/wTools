@@ -590,7 +590,7 @@ tests_impls!
     macro_rules! test_with
     {
       (
-        $( $Arg : tt )*
+        $( $Arg:tt )*
       ) =>
       {{
         GOT += stringify!( $( $Arg )* );

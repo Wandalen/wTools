@@ -1,4 +1,4 @@
-
+#![ allow( dead_code ) ]
 use super::*;
 
 //
@@ -54,7 +54,7 @@ where
   pub name : String,
   pub subject : String,
   #[ subformer( the_module::HashMapSubformer ) ]
-  pub properties : std::collections::HashMap< K, Property< K > >,
+  pub properties : collection_tools::HashMap< K, Property< K > >,
 }
 
 // manual
@@ -62,7 +62,7 @@ impl< K, Context, End >
 CommandFormer< K, Context, End >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  End : the_module::ToSuperFormer< Command< K >, Context >,
+  End : the_module::FormingEnd< Command< K >, Context >,
 {
 
   /// Inserts a key-value pair into the map. Make a new container if it was not made so far.
@@ -74,11 +74,11 @@ where
     Description : core::convert::Into< String >,
     Code : core::convert::Into< isize >,
   {
-    if self.container.properties.is_none()
+    if self.storage.properties.is_none()
     {
-      self.container.properties = core::option::Option::Some( Default::default() );
+      self.storage.properties = core::option::Option::Some( Default::default() );
     }
-    if let core::option::Option::Some( ref mut properties ) = self.container.properties
+    if let core::option::Option::Some( ref mut properties ) = self.storage.properties
     {
       let property = Property
       {
@@ -102,7 +102,7 @@ where
 {
   pub parameter1 : String,
   #[ subformer( the_module::HashMapSubformer ) ]
-  pub commands : std::collections::HashMap< String, Command< K > >,
+  pub commands : collection_tools::HashMap< String, Command< K > >,
 }
 
 // manual
@@ -110,12 +110,12 @@ impl< K, Context, End >
 AggregatorFormer< K, Context, End >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  End : the_module::ToSuperFormer< Aggregator< K >, Context >,
+  End : the_module::FormingEnd< Aggregator< K >, Context >,
 {
 
   #[ inline( always ) ]
   pub fn command< IntoName >( self, name : IntoName )
-  -> CommandFormer< K, Self, impl the_module::ToSuperFormer< Command< K >, Self > >
+  -> CommandFormer< K, Self, impl the_module::FormingEnd< Command< K >, Self > >
   where
     K : core::hash::Hash + std::cmp::Eq,
     IntoName : core::convert::Into< String >,
@@ -123,19 +123,19 @@ where
     let on_end = | command : Command< K >, super_former : core::option::Option< Self > | -> Self
     {
       let mut super_former = super_former.unwrap();
-      if let Some( ref mut commands ) = super_former.container.commands
+      if let Some( ref mut commands ) = super_former.storage.commands
       {
         commands.insert( command.name.clone(), command );
       }
       else
       {
-        let mut commands : std::collections::HashMap< String, Command< K > > = Default::default();
+        let mut commands : collection_tools::HashMap< String, Command< K > > = Default::default();
         commands.insert( command.name.clone(), command );
-        super_former.container.commands = Some( commands );
+        super_former.storage.commands = Some( commands );
       }
       super_former
     };
-    let former = CommandFormer::begin( Some( self ), on_end );
+    let former = CommandFormer::begin( None, Some( self ), on_end );
     former.name( name )
   }
 

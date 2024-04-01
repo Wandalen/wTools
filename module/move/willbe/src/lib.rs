@@ -6,6 +6,7 @@
 use mod_interface::mod_interface;
 /// Micro wtools
 pub mod wtools;
+use wtools::*;
 
 /// Internal namespace.
 pub( crate ) mod private

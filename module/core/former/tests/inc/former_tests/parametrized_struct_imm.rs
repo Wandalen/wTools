@@ -1,3 +1,4 @@
+#![ allow( dead_code ) ]
 #[ allow( unused_imports ) ]
 use super::*;
 
@@ -26,7 +27,7 @@ pub struct Command< K : core::hash::Hash + std::cmp::Eq >
 {
   pub name : String,
   #[ subformer( the_module::HashMapSubformer ) ]
-  pub properties : std::collections::HashMap< K, Property< K > >,
+  pub properties : collection_tools::HashMap< K, Property< K > >,
 }
 
 // ==

@@ -8,6 +8,7 @@
 
 
 use wca::{ Args, Context, Type };
+use std::sync::{ Arc, Mutex };
 
 fn main()
 {
@@ -21,7 +22,13 @@ fn main()
     .end()
   .command( "inc" )
     .hint( "This command increments a state number each time it is called consecutively. (E.g. `.inc .inc`)" )
-    .routine( | ctx : Context | { let i : &mut i32 = ctx.get_or_default(); println!( "i = {i}" ); *i += 1; } )
+    .routine( | ctx : Context |
+    {
+      let i : Arc< Mutex< i32 > > = ctx.get_or_default();
+      let mut i = i.lock().unwrap();
+      println!( "i = {}", i );
+      *i += 1;
+    } )
     .end()
   .command( "error" )
     .hint( "prints all subjects and properties" )

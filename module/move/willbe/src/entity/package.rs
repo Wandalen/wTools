@@ -10,16 +10,13 @@ mod private
   use std::fmt::Formatter;
   use std::hash::Hash;
   use std::path::PathBuf;
-  use cargo_metadata::{ Dependency, DependencyKind, Package as PackageMetadata };
-  use toml_edit::value;
 
-  use tool::process;
+  use process_tools::process;
   use manifest::{ Manifest, ManifestError };
   use crates_tools::CrateArchive;
 
   use workspace::Workspace;
-  use path::AbsolutePath;
-  use version::BumpReport;
+  use _path::AbsolutePath;
 
   use wtools::
   {
@@ -29,20 +26,22 @@ mod private
       thiserror,
       Result,
       for_lib::Error,
-      for_app::{ format_err, Error as wError, Context },
+      for_app::{ format_err, Context },
     }
   };
   use action::readme_health_table_renew::Stability;
   use former::Former;
+  use workspace::WorkspacePackage;
+  use diff::crate_diff;
 
   ///
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Clone ) ]
   pub enum Package
   {
     /// `Cargo.toml` file.
     Manifest( Manifest ),
     /// Cargo metadata package.
-    Metadata( PackageMetadata ),
+    Metadata( WorkspacePackage ),
   }
 
   /// Represents errors related to package handling.
@@ -71,7 +70,7 @@ mod private
 
   impl TryFrom< AbsolutePath > for Package
   {
-    // qqq : make better errors
+    // aaa : make better errors
     // aaa : return `PackageError` instead of `anohow` message
     type Error = PackageError;
 
@@ -87,9 +86,25 @@ mod private
     }
   }
 
+  impl TryFrom< CrateDir > for Package
+  {
+    type Error = PackageError;
+
+    fn try_from( value : CrateDir ) -> Result< Self, Self::Error >
+    {
+      let manifest =  manifest::open( value.absolute_path().join( "Cargo.toml" ) )?;
+      if !manifest.package_is()?
+      {
+        return Err( PackageError::NotAPackage );
+      }
+
+      Ok( Self::Manifest( manifest ) )
+    }
+  }
+
   impl TryFrom< Manifest > for Package
   {
-    // qqq : make better errors
+    // aaa : make better errors
     // aaa : return `PackageError` instead of `anohow` message
     type Error = PackageError;
 
@@ -104,9 +119,9 @@ mod private
     }
   }
 
-  impl From< PackageMetadata > for Package
+  impl From< WorkspacePackage > for Package
   {
-    fn from( value : PackageMetadata ) -> Self
+    fn from( value : WorkspacePackage ) -> Self
     {
       Self::Metadata( value )
     }
@@ -120,7 +135,7 @@ mod private
       match self
       {
         Self::Manifest( manifest ) => manifest.manifest_path.clone(),
-        Self::Metadata( metadata ) => AbsolutePath::try_from( metadata.manifest_path.as_std_path().to_path_buf() ).unwrap(),
+        Self::Metadata( metadata ) => AbsolutePath::try_from( metadata.manifest_path().as_std_path().to_path_buf() ).unwrap(),
       }
     }
 
@@ -132,7 +147,7 @@ mod private
         Self::Manifest( manifest ) => manifest.crate_dir(),
         Self::Metadata( metadata ) =>
         {
-          let path = metadata.manifest_path.parent().unwrap().as_std_path().to_path_buf();
+          let path = metadata.manifest_path().parent().unwrap().as_std_path().to_path_buf();
           let absolute = AbsolutePath::try_from( path ).unwrap();
 
           CrateDir::try_from( absolute ).unwrap()
@@ -154,7 +169,7 @@ mod private
         }
         Self::Metadata( metadata ) =>
         {
-          Ok( metadata.name.clone() )
+          Ok( metadata.name().clone() )
         }
       }
     }
@@ -173,7 +188,7 @@ mod private
         }
         Self::Metadata( metadata ) =>
         {
-          Ok( metadata.version.to_string() )
+          Ok( metadata.version().to_string() )
         }
       }
     }
@@ -184,16 +199,16 @@ mod private
       match self
       {
         Self::Manifest( manifest ) =>
-          {
-            let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+        {
+          let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
 
-            // Unwrap safely because of the `Package` type guarantee
-            Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "stability" ) ).and_then( | s | s.as_str() ).and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental)  )
-          }
+          // Unwrap safely because of the `Package` type guarantee
+          Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "stability" ) ).and_then( | s | s.as_str() ).and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental)  )
+        }
         Self::Metadata( metadata ) =>
-          {
-            Ok( metadata.metadata["stability"].as_str().and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental) )
-          }
+        {
+          Ok( metadata.metadata()[ "stability" ].as_str().and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental) )
+        }
       }
     }
 
@@ -203,16 +218,16 @@ mod private
       match self
       {
         Self::Manifest( manifest ) =>
-          {
-            let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+        {
+          let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
 
-            // Unwrap safely because of the `Package` type guarantee
-            Ok( data[ "package" ].get( "repository" ).and_then( | r | r.as_str() ).map( | r | r.to_string()) )
-          }
+          // Unwrap safely because of the `Package` type guarantee
+          Ok( data[ "package" ].get( "repository" ).and_then( | r | r.as_str() ).map( | r | r.to_string()) )
+        }
         Self::Metadata( metadata ) =>
-          {
-            Ok( metadata.repository.clone() )
-          }
+        {
+          Ok( metadata.repository().cloned() )
+        }
       }
     }
 
@@ -222,15 +237,15 @@ mod private
       match self
       {
         Self::Manifest( manifest ) =>
-          {
-            let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+        {
+          let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
 
-            Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "discord_url" ) ).and_then( | url | url.as_str() ).map( | r | r.to_string() ) )
-          }
+          Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "discord_url" ) ).and_then( | url | url.as_str() ).map( | r | r.to_string() ) )
+        }
         Self::Metadata( metadata ) =>
-          {
-            Ok( metadata.metadata[ "discord_url" ].as_str().map( | url | url.to_string() ) )
-          }
+        {
+          Ok( metadata.metadata()[ "discord_url" ].as_str().map( | url | url.to_string() ) )
+        }
       }
     }
 
@@ -246,7 +261,7 @@ mod private
         }
         Self::Metadata( metadata ) =>
         {
-          Ok( !( metadata.publish.is_none() || metadata.publish.as_ref().is_some_and( | p | p.is_empty() ) ) )
+          Ok( !( metadata.publish().is_none() || metadata.publish().as_ref().is_some_and( | p | p.is_empty() ) ) )
         }
       }
     }
@@ -259,24 +274,357 @@ mod private
         Package::Manifest( manifest ) => Ok( manifest.clone() ),
         Package::Metadata( metadata ) => manifest::open
         (
-          AbsolutePath::try_from( metadata.manifest_path.as_path() ).map_err( | _ | PackageError::LocalPath )? )
-          .map_err( | _ | PackageError::Metadata ),
+          AbsolutePath::try_from( metadata.manifest_path() ).map_err( | _ | PackageError::LocalPath )?
+        )
+        .map_err( | _ | PackageError::Metadata ),
       }
     }
 
     /// Returns the `Metadata`
-    pub fn metadata( &self ) -> Result< PackageMetadata, PackageError >
+    pub fn metadata( &self ) -> Result< WorkspacePackage, PackageError >
     {
       match self
       {
         Package::Manifest( manifest ) =>
         Workspace::with_crate_dir( manifest.crate_dir() ).map_err( | _ | PackageError::Metadata )?
         .package_find_by_manifest( &manifest.manifest_path )
-        .ok_or_else( || PackageError::Metadata )
-        .cloned(),
+        .ok_or_else( || PackageError::Metadata ),
         Package::Metadata( metadata ) => Ok( metadata.clone() ),
       }
     }
+  }
+
+  #[ derive( Debug, Default, Clone ) ]
+  pub struct ExtendedGitReport
+  {
+    pub add : Option< process::Report >,
+    pub commit : Option< process::Report >,
+    pub push : Option< process::Report >,
+  }
+
+  #[ derive( Debug, Clone ) ]
+  pub struct GitThingsOptions
+  {
+    pub git_root : AbsolutePath,
+    pub items : Vec< AbsolutePath >,
+    pub message : String,
+    pub dry : bool,
+  }
+
+  fn perform_git_operations( o : GitThingsOptions ) -> Result< ExtendedGitReport >
+  {
+    let mut report = ExtendedGitReport::default();
+    if o.items.is_empty() { return Ok( report ); }
+    let items = o
+    .items
+    .iter()
+    .map
+    (
+      | item | item.as_ref().strip_prefix( o.git_root.as_ref() ).map( Path::to_string_lossy )
+      .with_context( || format!("git_root: {}, item: {}", o.git_root.as_ref().display(), item.as_ref().display() ) )
+    )
+    .collect::< Result< Vec< _ > > >()?;
+    let res = git::add( &o.git_root, &items, o.dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+    report.add = Some( res );
+    let res = git::commit( &o.git_root, &o.message, o.dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+    report.commit = Some( res );
+    let res = git::push( &o.git_root, o.dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+    report.push = Some( res );
+
+    Ok( report )
+  }
+
+  #[ derive( Debug, Clone ) ]
+  pub struct PackagePublishInstruction
+  {
+    pub package_name : String,
+    pub pack : cargo::PackOptions,
+    pub version_bump : version::BumpOptions,
+    // qqq : rename
+    pub git_things : GitThingsOptions,
+    pub publish : cargo::PublishOptions,
+    pub dry : bool,
+  }
+
+  /// Represents a planner for publishing a single package.
+  #[ derive( Debug, Former ) ]
+  #[ perform( fn build() -> PackagePublishInstruction ) ]
+  pub struct PublishSinglePackagePlanner
+  {
+    workspace_dir : CrateDir,
+    package : Package,
+    base_temp_dir : Option< PathBuf >,
+    #[ default( true ) ]
+    dry : bool,
+  }
+
+  impl PublishSinglePackagePlanner
+  {
+    fn build( self ) -> PackagePublishInstruction
+    {
+      let crate_dir = self.package.crate_dir();
+      let workspace_root : AbsolutePath = self.workspace_dir.absolute_path();
+      let pack = cargo::PackOptions
+      {
+        path : crate_dir.as_ref().into(),
+        temp_path : self.base_temp_dir.clone(),
+        dry : self.dry,
+      };
+      let old_version : version::Version = self.package.version().as_ref().unwrap().try_into().unwrap();
+      let new_version = old_version.clone().bump();
+      // bump the package version in dependents (so far, only workspace)
+      let dependencies = vec![ CrateDir::try_from( workspace_root.clone() ).unwrap() ];
+      let version_bump = version::BumpOptions
+      {
+        crate_dir : crate_dir.clone(),
+        old_version : old_version.clone(),
+        new_version : new_version.clone(),
+        dependencies : dependencies.clone(),
+        dry : self.dry,
+      };
+      let git_things = GitThingsOptions
+      {
+        git_root : workspace_root,
+        items : dependencies.iter().chain([ &crate_dir ]).map( | d | d.absolute_path().join( "Cargo.toml" ) ).collect(),
+        message : format!( "{}-v{}", self.package.name().unwrap(), new_version ),
+        dry : self.dry,
+      };
+      let publish = cargo::PublishOptions
+      {
+        path : crate_dir.as_ref().into(),
+        temp_path : self.base_temp_dir.clone(),
+        dry : self.dry,
+      };
+
+      PackagePublishInstruction
+      {
+        package_name : self.package.name().unwrap(),
+        pack,
+        version_bump,
+        git_things,
+        publish,
+        dry : self.dry,
+      }
+    }
+  }
+
+  /// Performs package publishing based on the given arguments.
+  ///
+  /// # Arguments
+  ///
+  /// * `args` - The package publishing instructions.
+  ///
+  /// # Returns
+  ///
+  /// * `Result<PublishReport>` - The result of the publishing operation, including information about the publish, version bump, and git operations.
+  pub fn perform_package_publish( instruction : PackagePublishInstruction ) -> Result< PublishReport >
+  {
+    let mut report = PublishReport::default();
+    let PackagePublishInstruction
+    {
+      package_name: _,
+      mut pack,
+      mut version_bump,
+      mut git_things,
+      mut publish,
+      dry,
+    } = instruction;
+    pack.dry = dry;
+    version_bump.dry = dry;
+    git_things.dry = dry;
+    publish.dry = dry;
+
+    report.get_info = Some( cargo::pack( pack ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )? );
+    // qqq : redundant field?
+    report.publish_required = true;
+    report.bump = Some( version::version_bump( version_bump ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )? );
+    let git = perform_git_operations( git_things ).map_err( |e | format_err!( "{report}\n{e:#?}" ) )?;
+    report.add = git.add;
+    report.commit = git.commit;
+    report.push = git.push;
+    report.publish = Some( cargo::publish( publish ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )? );
+
+    Ok( report )
+  }
+
+  /// `PublishPlan` manages the overall publication process for multiple packages.
+  /// It organizes the necessary details required for publishing each individual package.
+  /// This includes the workspace root directory, any temporary directories used during the process,
+  /// and the set of specific instructions for publishing each package.
+  #[ derive( Debug, Former, Clone ) ]
+  pub struct PublishPlan
+  {
+    /// `workspace_dir` - This is the root directory of your workspace, containing all the Rust crates
+    /// that make up your package. It is used to locate the packages within your workspace that are meant
+    /// to be published. The value here is represented by `CrateDir` which indicates the directory of the crate.
+    pub workspace_dir : CrateDir,
+
+    /// `base_temp_dir` - This is used for any temporary operations during the publication process, like
+    /// building the package or any other processes that might require the storage of transient data. It's
+    /// optional as not all operations will require temporary storage. The type used is `PathBuf` which allows
+    /// manipulation of the filesystem paths.
+    pub base_temp_dir : Option< PathBuf >,
+
+    /// `dry` - A boolean value indicating whether to do a dry run. If set to `true`, the application performs
+    /// a simulated run without making any actual changes. If set to `false`, the operations are actually executed.
+    /// This property is optional and defaults to `true`.
+    #[ default( true ) ]
+    pub dry : bool,
+
+    /// `plans` - This is a vector containing the instructions for publishing each package. Each item
+    /// in the `plans` vector indicates a `PackagePublishInstruction` set for a single package. It outlines
+    /// how to build and where to publish the package amongst other instructions. The `#[setter( false )]`
+    /// attribute indicates that there is no setter method for the `plans` variable and it can only be modified
+    /// within the struct.
+    #[ setter( false ) ]
+    pub plans : Vec< PackagePublishInstruction >,
+  }
+
+  impl PublishPlan
+  {
+    /// Displays a tree-like structure of crates and their dependencies.
+    ///
+    /// # Arguments
+    ///
+    /// * `f` - A mutable reference to a `Formatter` used for writing the output.
+    /// * `roots` - A slice of `CrateDir` representing the root crates to display.
+    ///
+    /// # Errors
+    ///
+    /// Returns a `std::fmt::Error` if there is an error writing to the formatter.
+    pub fn display_as_tree( &self, f : &mut Formatter< '_ >, roots : &[ CrateDir ] ) -> std::fmt::Result
+    {
+      let name_bump_report = self
+      .plans
+      .iter()
+      .map( | x | ( &x.package_name, ( x.version_bump.old_version.to_string(), x.version_bump.new_version.to_string() ) ) )
+      .collect::< HashMap< _, _ > >();
+      for wanted in roots
+      {
+        let list = action::list
+        (
+          action::list::ListOptions::former()
+          .path_to_manifest( wanted.clone() )
+          .format( action::list::ListFormat::Tree )
+          .dependency_sources([ action::list::DependencySource::Local ])
+          .dependency_categories([ action::list::DependencyCategory::Primary ])
+          .form()
+        )
+        .map_err( |( _, _e )| std::fmt::Error )?;
+        let action::list::ListReport::Tree( list ) = list else { unreachable!() };
+
+        fn callback( name_bump_report : &HashMap< &String, ( String, String ) >, mut r : action::list::ListNodeReport ) -> action::list::ListNodeReport
+        {
+          if let Some(( old, new )) = name_bump_report.get( &r.name )
+          {
+            r.version = Some( format!( "({old} -> {new})" ) );
+          }
+          r.normal_dependencies = r.normal_dependencies.into_iter().map( | r | callback( name_bump_report, r ) ).collect();
+          r.dev_dependencies = r.dev_dependencies.into_iter().map( | r | callback( name_bump_report, r ) ).collect();
+          r.build_dependencies = r.build_dependencies.into_iter().map( | r | callback( name_bump_report, r ) ).collect();
+
+          r
+        }
+        let list = list.into_iter().map( | r | callback( &name_bump_report, r ) ).collect();
+
+        let list = action::list::ListReport::Tree( list );
+        writeln!( f, "{}", list )?;
+      }
+
+      Ok( () )
+    }
+
+    /// Format and display the list of packages and their version bumps in a formatted way.
+    ///
+    /// # Arguments
+    ///
+    /// - `f`: A mutable reference to a `Formatter` where the output will be written to.
+    ///
+    /// # Errors
+    ///
+    /// Returns a `std::fmt::Error` if there is an error writing to the formatter.
+    pub fn display_as_list( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
+      for ( idx, package ) in self.plans.iter().enumerate()
+      {
+        let bump = &package.version_bump;
+        writeln!( f, "[{idx}] {} ({} -> {})", package.package_name, bump.old_version, bump.new_version )?;
+      }
+
+      Ok( () )
+    }
+  }
+
+  impl PublishPlanFormer
+  {
+    pub fn option_base_temp_dir( mut self, path : Option< PathBuf > ) -> Self
+    {
+      self.storage.base_temp_dir = path;
+      self
+    }
+    
+    pub fn package< IntoPackage >( mut self, package : IntoPackage ) -> Self
+    where
+      IntoPackage : Into< Package >,
+    {
+      let mut plan = PublishSinglePackagePlanner::former();
+      if let Some( workspace ) = &self.storage.workspace_dir
+      {
+        plan = plan.workspace_dir( workspace.clone() );
+      }
+      if let Some( base_temp_dir ) = &self.storage.base_temp_dir
+      {
+        plan = plan.base_temp_dir( base_temp_dir.clone() );
+      }
+      if let Some( dry ) = self.storage.dry
+      {
+        plan = plan.dry( dry );
+      }
+      let plan = plan
+      .package( package )
+      .perform();
+      let mut plans = self.storage.plans.unwrap_or_default();
+      plans.push( plan );
+
+      self.storage.plans = Some( plans );
+
+      self
+    }
+
+    pub fn packages< IntoPackageIter, IntoPackage >( mut self, packages : IntoPackageIter ) -> Self
+    where
+      IntoPackageIter : IntoIterator< Item = IntoPackage >,
+      IntoPackage : Into< Package >,
+    {
+      for package in packages
+      {
+        self = self.package( package );
+      }
+
+      self
+    }
+  }
+
+
+  /// Perform publishing of multiple packages based on the provided publish plan.
+  ///
+  /// # Arguments
+  ///
+  /// * `plan` - The publish plan with details of packages to be published.
+  ///
+  /// # Returns
+  ///
+  /// Returns a `Result` containing a vector of `PublishReport` if successful, else an error.
+  pub fn perform_packages_publish( plan : PublishPlan ) -> Result< Vec< PublishReport > >
+  {
+    let mut report = vec![];
+    for package in plan.plans
+    {
+      let res = perform_package_publish( package ).map_err( | e | format_err!( "{report:#?}\n{e:#?}" ) )?;
+      report.push( res );
+    }
+
+    Ok( report )
   }
 
   /// Holds information about the publishing process.
@@ -288,7 +636,7 @@ mod private
     /// Indicates whether publishing is required for the package.
     pub publish_required : bool,
     /// Bumps the version of the package.
-    pub bump : Option< ExtendedBumpReport >,
+    pub bump : Option< version::ExtendedBumpReport >,
     /// Report of adding changes to the Git repository.
     pub add : Option< process::Report >,
     /// Report of committing changes to the Git repository.
@@ -320,7 +668,7 @@ mod private
         return Ok( () )
       }
       let info = get_info.as_ref().unwrap();
-      f.write_fmt( format_args!( "{}", info ) )?;
+      write!( f, "{}", info )?;
 
       if !publish_required
       {
@@ -330,194 +678,27 @@ mod private
 
       if let Some( bump ) = bump
       {
-        f.write_fmt( format_args!( "{}", bump ) )?;
+        writeln!( f, "{}", bump )?;
       }
       if let Some( add ) = add
       {
-        f.write_fmt( format_args!( "{add}" ) )?;
+        write!( f, "{add}" )?;
       }
       if let Some( commit ) = commit
       {
-        f.write_fmt( format_args!( "{commit}" ) )?;
+        write!( f, "{commit}" )?;
       }
       if let Some( push ) = push
       {
-        f.write_fmt( format_args!( "{push}" ) )?;
+        write!( f, "{push}" )?;
       }
       if let Some( publish ) = publish
       {
-        f.write_fmt( format_args!( "{publish}" ) )?;
+        write!( f, "{publish}" )?;
       }
 
       Ok( () )
     }
-  }
-
-  /// Report about a changing version.
-  #[ derive( Debug, Default, Clone ) ]
-  pub struct ExtendedBumpReport
-  {
-    /// Report base.
-    pub base : BumpReport,
-    /// Files that should(already) changed for bump.
-    pub changed_files : Vec< AbsolutePath >
-  }
-
-  impl std::fmt::Display for ExtendedBumpReport
-  {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
-    {
-      let Self { base, changed_files } = self;
-      if self.changed_files.is_empty()
-      {
-        f.write_str( "Files were not changed during bumping the version" )?;
-        return Ok( () )
-      }
-
-      let files = changed_files.iter().map( | f | f.as_ref().display() ).join( ",\n    " );
-      f.write_fmt( format_args!( "{base}\n  changed files :\n    {files}\n" ) )?;
-
-      Ok( () )
-    }
-  }
-
-  /// Option for publish single
-  #[ derive( Debug, Former ) ]
-  pub struct PublishSingleOptions< 'a >
-  {
-    package : &'a Package,
-    force : bool,
-    base_temp_dir : &'a Option< PathBuf >,
-    dry : bool,
-  }
-
-  impl < 'a >PublishSingleOptionsFormer< 'a >
-  {
-    pub fn option_base_temp_dir(  mut self, value : impl Into< &'a Option< PathBuf > > ) -> Self
-    {
-      self.container.base_temp_dir = Some( value.into() );
-      self
-    }
-  }
-
-  /// Publishes a single package without publishing its dependencies.
-  ///
-  /// This function is designed to publish a single package. It does not publish any of the package's dependencies.
-  ///
-  /// Args :
-  ///
-  /// - package - a package that will be published
-  /// - dry - a flag that indicates whether to apply the changes or not
-  ///   - true - do not publish, but only show what steps should be taken
-  ///   - false - publishes the package
-  ///
-  /// Returns :
-  /// Returns a result containing a report indicating the result of the operation.
-  pub fn publish_single< 'a >( args : PublishSingleOptions< 'a > ) -> Result< PublishReport, ( PublishReport, wError ) >
-  {
-    let mut report = PublishReport::default();
-    if args.package.local_is().map_err( | err | ( report.clone(), format_err!( err ) ) )?
-    {
-      return Ok( report );
-    }
-
-    let package_dir = &args.package.crate_dir();
-    let temp_dir = args.base_temp_dir.as_ref().map
-    (
-      | p |
-      {
-        let path = p.join( package_dir.as_ref().file_name().unwrap() );
-        std::fs::create_dir_all( &path ).unwrap();
-        path
-      }
-    );
-
-    let pack_args = cargo::PackOptions::former()
-    .path( package_dir.absolute_path().as_ref().to_path_buf() )
-    .option_temp_path( temp_dir.clone() )
-    .dry( args.dry )
-    .form();
-    let output = cargo::pack( pack_args ).context( "Take information about package" ).map_err( | e | ( report.clone(), e ) )?;
-    if output.err.contains( "not yet committed")
-    {
-      return Err(( report, format_err!( "Some changes wasn't committed. Please, commit or stash that changes and try again." ) ));
-    }
-    report.get_info = Some( output );
-
-    if args.force || publish_need( &args.package, temp_dir.clone() ).map_err( | err | ( report.clone(), format_err!( err ) ) )?
-    {
-      report.publish_required = true;
-
-      let mut files_changed_for_bump = vec![];
-      let mut manifest = args.package.manifest().map_err( | err | ( report.clone(), format_err!( err ) ) )?;
-      // bump a version in the package manifest
-      let bump_report = version::bump( &mut manifest, args.dry ).context( "Try to bump package version" ).map_err( | e | ( report.clone(), e ) )?;
-      files_changed_for_bump.push( args.package.manifest_path() );
-      let new_version = bump_report.new_version.clone().unwrap();
-
-      let package_name = args.package.name().map_err( | err | ( report.clone(), format_err!( err ) ) )?;
-
-      // bump the package version in dependents (so far, only workspace)
-      let workspace_manifest_dir : AbsolutePath = Workspace::with_crate_dir( args.package.crate_dir() ).map_err( | err | ( report.clone(), err ) )?.workspace_root().map_err( | err | ( report.clone(), format_err!( err ) ) )?.try_into().unwrap();
-      let workspace_manifest_path = workspace_manifest_dir.join( "Cargo.toml" );
-
-      // qqq : should be refactored
-      if !args.dry
-      {
-        let mut workspace_manifest = manifest::open( workspace_manifest_path.clone() ).map_err( | e | ( report.clone(), format_err!( e ) ) )?;
-        let workspace_manifest_data = workspace_manifest.manifest_data.as_mut().ok_or_else( || ( report.clone(), format_err!( PackageError::Manifest( ManifestError::EmptyManifestData ) ) ) )?;
-        workspace_manifest_data
-        .get_mut( "workspace" )
-        .and_then( | workspace | workspace.get_mut( "dependencies" ) )
-        .and_then( | dependencies | dependencies.get_mut( &package_name ) )
-        .map
-        (
-          | dependency |
-          {
-            if let Some( previous_version ) = dependency.get( "version" ).and_then( | v | v.as_str() ).map( | v | v.to_string() )
-            {
-              if previous_version.starts_with('~')
-              {
-                dependency[ "version" ] = value( format!( "~{new_version}" ) );
-              }
-              else
-              {
-                dependency[ "version" ] = value( new_version.clone() );
-              }
-            }
-          }
-        )
-        .unwrap();
-        workspace_manifest.store().map_err( | err | ( report.clone(), err.into() ) )?;
-      }
-
-      files_changed_for_bump.push( workspace_manifest_path );
-      let files_changed_for_bump : Vec< _ > = files_changed_for_bump.into_iter().unique().collect();
-      let objects_to_add : Vec< _ > = files_changed_for_bump.iter().map( | f | f.as_ref().strip_prefix( &workspace_manifest_dir ).unwrap().to_string_lossy() ).collect();
-
-      report.bump = Some( ExtendedBumpReport { base : bump_report, changed_files : files_changed_for_bump.clone() } );
-
-      let commit_message = format!( "{package_name}-v{new_version}" );
-      let res = git::add( workspace_manifest_dir, objects_to_add, args.dry ).map_err( | e | ( report.clone(), e ) )?;
-      report.add = Some( res );
-      let res = git::commit( package_dir, commit_message, args.dry ).map_err( | e | ( report.clone(), e ) )?;
-      report.commit = Some( res );
-      let res = git::push( package_dir, args.dry ).map_err( | e | ( report.clone(), e ) )?;
-      report.push = Some( res );
-
-      let res = cargo::publish
-      (
-        cargo::PublishOptions::former()
-        .path( package_dir.absolute_path().as_ref().to_path_buf() )
-        .option_temp_path( temp_dir )
-        .dry( args.dry )
-        .form()
-      )
-      .map_err( | e | ( report.clone(), e ) )?;
-      report.publish = Some( res );
-    }
-
-    Ok( report )
   }
 
   /// Sorting variants for dependencies.
@@ -570,26 +751,26 @@ mod private
     pub path : Option< AbsolutePath >,
   }
 
-  impl From< &PackageMetadata > for CrateId
+  impl From< &WorkspacePackage > for CrateId
   {
-    fn from( value : &PackageMetadata ) -> Self
+    fn from( value : &WorkspacePackage ) -> Self
     {
       Self
       {
-        name : value.name.clone(),
-        path : Some( AbsolutePath::try_from( value.manifest_path.parent().unwrap() ).unwrap() ),
+        name : value.name().clone(),
+        path : Some( AbsolutePath::try_from( value.manifest_path().parent().unwrap() ).unwrap() ),
       }
     }
   }
 
-  impl From< &Dependency > for CrateId
+  impl From< &workspace::Dependency > for CrateId
   {
-    fn from( value : &Dependency ) -> Self
+    fn from( value : &workspace::Dependency ) -> Self
     {
       Self
       {
-        name : value.name.clone(),
-        path : value.path.clone().map( | path | AbsolutePath::try_from( path ).unwrap() ),
+        name : value.name().clone(),
+        path : value.path().clone().map( | path | AbsolutePath::try_from( path ).unwrap() ),
       }
     }
   }
@@ -620,13 +801,13 @@ mod private
     .ok_or( format_err!( "Package not found in the workspace with path : `{}`", manifest_path.as_ref().display() ) )?;
 
     let deps = package
-    .dependencies
+    .dependencies()
     .iter()
-    .filter( | dep | ( with_remote || dep.path.is_some() ) && ( with_dev || dep.kind != DependencyKind::Development ) )
+    .filter( | dep | ( with_remote || dep.path().is_some() ) && ( with_dev || dep.kind() != workspace::DependencyKind::Development ) )
     .map( CrateId::from )
     .collect::< HashSet< _ > >();
 
-    let package = CrateId::from( package );
+    let package = CrateId::from( &package );
     graph.insert( package.clone(), deps.clone() );
 
     if recursive
@@ -699,19 +880,13 @@ mod private
 
   pub fn publish_need( package : &Package, path : Option< PathBuf > ) -> Result< bool, PackageError >
   {
-    // These files are ignored because they can be safely changed without affecting functionality
-    //
-    // - `.cargo_vcs_info.json` - contains the git sha1 hash that varies between different commits
-    // - `Cargo.toml.orig` - can be safely modified because it is used to generate the `Cargo.toml` file automatically, and the `Cargo.toml` file is sufficient to check for changes
-    const IGNORE_LIST : [ &str; 2 ] = [ ".cargo_vcs_info.json", "Cargo.toml.orig" ];
-
     let name = package.name()?;
     let version = package.version()?;
     let local_package_path = path
     .map( | p | p.join( format!( "package/{0}-{1}.crate", name, version ) ) )
     .unwrap_or( packed_crate::local_path( &name, &version, package.crate_dir() ).map_err( | _ | PackageError::LocalPath )? );
 
-    // qqq : for Bohdan : bad, properly handle errors
+    // aaa : for Bohdan : bad, properly handle errors
     // aaa : return result instead of panic
     let local_package = CrateArchive::read( local_package_path ).map_err( | _ | PackageError::ReadArchive )?;
     let remote_package = match CrateArchive::download_crates_io( name, version )
@@ -722,29 +897,8 @@ mod private
       _ => return Err( PackageError::LoadRemotePackage ),
     };
 
-    let filter_ignore_list = | p : &&Path | !IGNORE_LIST.contains( &p.file_name().unwrap().to_string_lossy().as_ref() );
-    let local_package_files : Vec< _ > = local_package.list().into_iter().filter( filter_ignore_list ).sorted().collect();
-    let remote_package_files : Vec< _ > = remote_package.list().into_iter().filter( filter_ignore_list ).sorted().collect();
-
-    if local_package_files != remote_package_files { return Ok( true ); }
-
-    let mut is_same = true;
-    for path in local_package_files
-    {
-      // unwraps is safe because the paths to the files was compared previously
-      let local = local_package.content_bytes( path ).unwrap();
-      let remote = remote_package.content_bytes( path ).unwrap();
-      // if local != remote
-      // {
-      //   println!( "local :\n===\n{}\n===\nremote :\n===\n{}\n===", String::from_utf8_lossy( local ), String::from_utf8_lossy( remote ) );
-      // }
-
-      is_same &= local == remote;
-    }
-
-    Ok( !is_same )
+    Ok( crate_diff( &local_package, &remote_package ).exclude( diff::PUBLISH_IGNORE_LIST ).has_changes() )
   }
-
 }
 
 //
@@ -752,9 +906,12 @@ mod private
 crate::mod_interface!
 {
 
+  protected use PublishSinglePackagePlanner;
+  protected use PublishPlan;
+  protected use perform_package_publish;
+  protected use perform_packages_publish;
+
   protected use PublishReport;
-  protected use publish_single;
-  protected use PublishSingleOptions;
   protected use Package;
   protected use PackageError;
 

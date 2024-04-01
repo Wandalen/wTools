@@ -5,15 +5,20 @@ mod private
 
   use std::collections::HashSet;
   use std::path::PathBuf;
-  use wca::{ Args, Props };
+  use colored::Colorize;
+  use wca::
+  { 
+    Args, 
+    Props, 
+  };
   use wtools::error::Result;
-  use path::AbsolutePath;
+  use _path::AbsolutePath;
   use action::test::TestsCommandOptions;
   use former::Former;
   use channel::Channel;
   use error_tools::for_app::bail;
   use optimization::Optimization;
-
+  
   #[ derive( Former, Debug ) ]
   struct TestsProperties
   {
@@ -41,11 +46,15 @@ mod private
     with_debug : bool,
     #[ default( false ) ]
     with_release : bool,
+    #[ default( true ) ]
+    with_progress : bool,
   }
 
   /// run tests in specified crate
   pub fn test( args : Args, properties : Props ) -> Result< () >
   {
+    let args_line = format!( "{}", args.get_owned( 0 ).unwrap_or( std::path::PathBuf::from( "" ) ).display() );
+    let prop_line = format!( "{}", properties.iter().map( | p | format!( "{}:{}", p.0, p.1.to_string() ) ).collect::< Vec< _ > >().join(" ") );
     let path : PathBuf = args.get_owned( 0 ).unwrap_or_else( || "./".into() );
     let path = AbsolutePath::try_from( path )?;
     let TestsProperties
@@ -62,9 +71,10 @@ mod private
       with_all_features,
       with_none_features,
       with_debug,
-      with_release
+      with_release, 
+      with_progress
     } = properties.try_into()?;
-    
+
     let mut channels = HashSet::new();
     if with_stable { channels.insert( Channel::Stable ); }
     if with_nightly { channels.insert( Channel::Nightly ); }
@@ -91,14 +101,26 @@ mod private
     .with_all_features( with_all_features )
     .with_none_features( with_none_features )
     .optimizations( optimizations )
+    .with_progress( with_progress )
     .form();
 
     match action::test( args, dry )
     {
+      
       Ok( report ) =>
       {
-        println!( "{report} ");
-
+        if dry
+        {
+          let args = if args_line.is_empty() { String::new() } else { format!(" {}", args_line) };
+          let prop = if prop_line.is_empty() { String::new() } else { format!(" {}", prop_line) };
+          let line = format!("will .publish{}{} dry:0", args, prop);
+          println!("To apply plan, call the command `{}`", line.blue());
+        }
+        else 
+        { 
+          println!( "{report} ");
+        }
+        
         Ok( () )
       }
       Err( ( report, e ) ) =>
@@ -117,7 +139,7 @@ mod private
       let mut this = Self::former();
 
       this = if let Some( v ) = value.get_owned( "dry" ) { this.dry::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "temp" ) { this.dry::< bool >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "temp" ) { this.temp::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "with_stable" ) { this.with_stable::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "with_nightly" ) { this.with_nightly::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "concurrent" ) { this.concurrent::< u32 >( v ) } else { this };
@@ -129,6 +151,7 @@ mod private
       this = if let Some( v ) = value.get_owned( "with_all_features" ) { this.with_all_features::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "with_none_features" ) { this.with_none_features::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "always" ) { this.enabled_features::< Vec< String > >( v ) } else { this };
+      this = if let Some( v ) = value.get_owned( "with_progress" ) { this.with_progress::< bool >( v ) } else { this };
 
       Ok( this.form() )
     }
