@@ -474,6 +474,6 @@ path = "module/test/c"
 default-features = true
 
 
-# [patch.crates-io]
-# pathfinder_geometry = { git = "https://github.com/servo/pathfinder.git" }
-# pathfinder_simd = { git = "https://github.com/servo/pathfinder.git" }
+[patch.crates-io]
+pathfinder_geometry = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_simd = { git = "https://github.com/servo/pathfinder.git" }
