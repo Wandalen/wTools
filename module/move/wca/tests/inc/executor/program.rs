@@ -91,8 +91,7 @@ tests_impls!
     let verifier = Verifier;
 
     // starts with 0
-    let mut ctx = wca::Context::default();
-    ctx.insert( Arc::new( Mutex::new( 0 ) ) );
+    let ctx = wca::Context::new( Mutex::new( 0 ) );
     // init simple executor
     let executor = Executor::former()
     .context( ctx )

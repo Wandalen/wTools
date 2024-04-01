@@ -47,10 +47,9 @@ iter_tools = { workspace = true, features = [ "default" ] }
 former = { workspace = true, features = [ "default" ] }
 
 ## external
-anymap = "0.12"
 log = "0.4"
 nom = "7.1"
-closure = "0.3"
+#closure = "0.3"
 eddie = { version = "0.4", optional = true } # fuzzy commands search
 
 [dev-dependencies]
