@@ -2,11 +2,11 @@
 //! A trivial example.
 //!
 
-use wca::{ CommandsAggregator, Args, Props, Type };
+use wca::{ CommandsAggregator, Type, VerifiedCommand };
 
-fn f1( args : Args, props : Props )
+fn f1( o : VerifiedCommand )
 {
-  println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
+  println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.properties );
 }
 
 fn exit()

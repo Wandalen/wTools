@@ -20,7 +20,7 @@
 //! ```
 //!
 
-use wca::{ CommandsAggregator, Args, Props, Type };
+use wca::{ CommandsAggregator, Type, VerifiedCommand };
 
 fn main()
 {
@@ -30,9 +30,9 @@ fn main()
     .hint( "prints all subjects and properties" )
     .subject().kind( Type::String ).optional( true ).end()
     .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
-    .routine( | args : Args, props : Props |
+    .routine( | o : VerifiedCommand |
     {
-      println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
+      println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.properties );
     })
     .end()
   .perform();

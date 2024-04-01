@@ -81,6 +81,7 @@ pub( crate ) mod private
     {
       Routine::WithoutContext( routine ) => routine(( command.args, command.properties )),
       Routine::WithContext( routine ) => routine(( command.args, command.properties ), ctx ),
+      Routine::WithVerifiedCommand( routine ) => routine( command ),
     }
   }
   

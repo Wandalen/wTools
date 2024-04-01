@@ -135,6 +135,8 @@ pub( crate ) mod private
   // fn(), fn(args), fn(props), fn(args, props), fn(context), fn(context, args), fn(context, props), fn(context, args, props)
   type RoutineWithoutContextFn = dyn Fn( ( Args, Props ) ) -> Result< () >;
   type RoutineWithContextFn = dyn Fn( ( Args, Props ), Context ) -> Result< () >;
+    
+  type RoutineWithVerifiedCommandFn = dyn Fn( VerifiedCommand ) -> Result< () >;
 
   ///
   /// Routine handle.
@@ -175,6 +177,17 @@ pub( crate ) mod private
   }
 
   // without context
+  impl< F, R > From< F > for Handler< VerifiedCommand, R >
+  where
+    R : IntoResult + 'static,
+    F : Fn( VerifiedCommand ) -> R + 'static,
+  {
+    fn from( value : F ) -> Self
+    {
+      Self( Box::new( value ) )
+    }
+  }
+    
   impl< F, R > From< F > for Handler< (), R >
   where
     R : IntoResult + 'static,
@@ -289,6 +302,8 @@ pub( crate ) mod private
     WithoutContext( Rc< RoutineWithoutContextFn > ),
     /// Routine with context
     WithContext( Rc< RoutineWithContextFn > ),
+    /// Routine with verified command
+    WithVerifiedCommand( Rc< RoutineWithVerifiedCommandFn > ),
   }
 
   impl std::fmt::Debug for Routine
@@ -299,11 +314,19 @@ pub( crate ) mod private
       {
         Routine::WithoutContext( _ ) => f.debug_struct( "Routine::WithoutContext" ).finish_non_exhaustive(),
         Routine::WithContext( _ ) => f.debug_struct( "Routine::WithContext" ).finish_non_exhaustive(),
+        Routine::WithVerifiedCommand( _ ) => f.debug_struct( "Routine::WithVerifiedCommand" ).finish_non_exhaustive(),
       }
     }
   }
 
   // without context
+  impl From< Box< dyn Fn( VerifiedCommand ) -> Result< () > > > for Routine
+  {
+    fn from( value : Box< dyn Fn( VerifiedCommand ) -> Result< () > > ) -> Self
+    {
+      Self::WithVerifiedCommand( Rc::new( move | a | { value( a )?; Ok( () ) } ) )
+    }
+  }
   impl From< Box< dyn Fn( () ) -> Result< () > > > for Routine
   {
     fn from( value : Box< dyn Fn( () ) -> Result< () > > ) -> Self
