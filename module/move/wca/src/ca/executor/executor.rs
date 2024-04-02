@@ -79,8 +79,8 @@ pub( crate ) mod private
   {
     match routine
     {
-      Routine::WithoutContext( routine ) => routine(( Args( command.subjects ), Props( command.properties ) )),
-      Routine::WithContext( routine ) => routine( ( Args( command.subjects ), Props( command.properties ) ), ctx ),
+      Routine::WithoutContext( routine ) => routine( command ),
+      Routine::WithContext( routine ) => routine( ctx, command ),
     }
   }
   

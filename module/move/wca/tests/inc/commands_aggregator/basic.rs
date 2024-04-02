@@ -176,7 +176,7 @@ tests_impls!
     let raw_command = parser.command( command ).unwrap();
     let grammar_command = grammar.to_command( dictionary, raw_command ).unwrap();
 
-    a_id!( grammar_command.subjects, vec![ the_module::Value::String( "qwe:rty".into() ) ] );
+    a_id!( grammar_command.args.0, vec![ the_module::Value::String( "qwe:rty".into() ) ] );
 
     a_id!( (), executor.command( dictionary, grammar_command ).unwrap() );
   }
@@ -206,7 +206,7 @@ tests_impls!
     let raw_command = parser.command( command ).unwrap();
     let grammar_command = grammar.to_command( dictionary, raw_command ).unwrap();
 
-    a_id!( grammar_command.subjects, vec![ the_module::Value::String( "qwe:rty".into() ) ] );
+    a_id!( grammar_command.args.0, vec![ the_module::Value::String( "qwe:rty".into() ) ] );
 
     a_id!( (), executor.command( dictionary, grammar_command ).unwrap() );
   }
@@ -237,7 +237,7 @@ tests_impls!
     let raw_command = parser.command( command ).unwrap();
     let grammar_command = grammar.to_command( dictionary, raw_command ).unwrap();
 
-    a_id!( grammar_command.subjects, vec![ the_module::Value::String("qwe:rty".into()) ] );
+    a_id!( grammar_command.args.0, vec![ the_module::Value::String("qwe:rty".into()) ] );
 
     a_id!( (), executor.command( dictionary, grammar_command ).unwrap() );
   }

@@ -58,25 +58,25 @@ pub( crate ) mod private
   /// # Example:
   ///
   /// ```
-  /// # use wca::{ VerifiedCommand, Value };
+  /// # use wca::{ VerifiedCommand, Value, Args, Props };
   /// # use std::collections::HashMap;
   /// let command = VerifiedCommand
   /// {
   ///   phrase : "command".to_string(),
+  ///   internal_command : false,
   ///   // Here is numeric value used
-  ///   subjects : vec![ Value::Number( 3.14 ) ],
-  ///   properties : HashMap::from_iter(
+  ///   args : Args( vec![ Value::Number( 3.14 ) ] ),
+  ///   props : Props( HashMap::from_iter(
   ///   [
   ///     // Here is string value used
   ///     ( "string_prop".to_string(), Value::String( "value".to_string() ) ),
-  ///   ]),
-  ///   internal_command : false,
+  ///   ]))
   /// };
   ///
-  /// let number : f32 = command.subjects[ 0 ].clone().into();
+  /// let number : f32 = command.args.get_owned( 0 ).unwrap();
   /// assert_eq!( 3.14, number );
   ///
-  /// let number : i32 = command.subjects[ 0 ].clone().into();
+  /// let number : i32 = command.args.get_owned( 0 ).unwrap();
   /// assert_eq!( 3, number );
   /// ```
   #[ derive( Debug, Clone, PartialEq ) ]
