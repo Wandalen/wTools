@@ -39,7 +39,8 @@ use collection_tools::*;
 
 let meta_set = bset! { 3, 13 };
 
-// this `BTreeSet` is just a reexport from `alloc`, so it can be used in the same places as `alloc/std::BTreeSet`
+// this `BTreeSet` is just a reexport from `alloc`,
+// so it can be used in the same places as `alloc/std::BTreeSet`
 let mut std_set = collection_tools::BTreeSet::new();
 
 std_set.insert( 13 );
@@ -58,7 +59,8 @@ use collection_tools::*;
 
 let meta_list : LinkedList< i32 > = list! { 3, 13 };
 
-// this `LinkedList` is just a reexport from `alloc`, so it can be used in the same places as `alloc/std::LinkedList`
+// this `LinkedList` is just a reexport from `alloc`,
+// so it can be used in the same places as `alloc/std::LinkedList`
 let mut meta_list = collection_tools::LinkedList::new();
 
 meta_list.push_front( 13 );
