@@ -36,8 +36,8 @@ pub struct Struct1
   string_optional_1 : Option< String >,
 
   vec_1 : Vec< String >,
-  hashmap_strings_1 : HashMap< String, String >,
-  hashset_strings_1 : HashSet< String >,
+  hashmap_1 : HashMap< String, String >,
+  hashset_1 : HashSet< String >,
 }
 
 //
@@ -55,8 +55,8 @@ tests_impls!
       int_optional_1 : Some( 31 ),
       string_optional_1 : Some( "abc".to_string() ),
       vec_1 : vec![],
-      hashmap_strings_1 : hmap!{},
-      hashset_strings_1 : hset!{},
+      hashmap_1 : hmap!{},
+      hashset_1 : hset!{},
     };
     a_id!( command, expected );
   }

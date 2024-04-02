@@ -7,8 +7,8 @@ use super::*;
 pub struct Struct1
 {
   vec_1 : Vec< String >,
-  hashmap_strings_1 : std::collections::HashMap< String, String >,
-  hashset_strings_1 : std::collections::HashSet< String >,
+  hashmap_1 : std::collections::HashMap< String, String >,
+  hashset_1 : std::collections::HashSet< String >,
 }
 
 // = formed
@@ -27,8 +27,8 @@ impl Struct1
 pub struct Struct1FormerStorage
 {
   pub vec_1 : ::core::option::Option< Vec< String > >,
-  pub hashmap_strings_1 : ::core::option::Option< std::collections::HashMap< String, String > >,
-  pub hashset_strings_1 : ::core::option::Option< std::collections::HashSet< String > >,
+  pub hashmap_1 : ::core::option::Option< std::collections::HashMap< String, String > >,
+  pub hashset_1 : ::core::option::Option< std::collections::HashSet< String > >,
 }
 
 impl Default for Struct1FormerStorage
@@ -40,8 +40,8 @@ impl Default for Struct1FormerStorage
     Self
     {
       vec_1 : None,
-      hashmap_strings_1 : None,
-      hashset_strings_1 : None,
+      hashmap_1 : None,
+      hashset_1 : None,
     }
   }
 
@@ -81,9 +81,9 @@ where
       val
     };
 
-    let hashmap_strings_1 = if self.storage.hashmap_strings_1.is_some()
+    let hashmap_1 = if self.storage.hashmap_1.is_some()
     {
-      self.storage.hashmap_strings_1.take().unwrap()
+      self.storage.hashmap_1.take().unwrap()
     }
     else
     {
@@ -91,9 +91,9 @@ where
       val
     };
 
-    let hashset_strings_1 = if self.storage.hashset_strings_1.is_some()
+    let hashset_1 = if self.storage.hashset_1.is_some()
     {
-      self.storage.hashset_strings_1.take().unwrap()
+      self.storage.hashset_1.take().unwrap()
     }
     else
     {
@@ -104,8 +104,8 @@ where
     Struct1
     {
       vec_1,
-      hashmap_strings_1,
-      hashset_strings_1,
+      hashmap_1,
+      hashset_1,
     }
 
   }
@@ -212,7 +212,7 @@ where
   //   the_module::VectorSubformer::< String, Vec< String >, Self, _ >::begin( Some( self ), formed, on_end )
   // }
 
-  pub fn hashmap_strings_1( mut self ) -> the_module::HashMapSubformer
+  pub fn hashmap_1( mut self ) -> the_module::HashMapSubformer
   <
     String,
     String,
@@ -221,17 +221,17 @@ where
     impl the_module::FormingEnd< std::collections::HashMap< String, String >, Self >,
   >
   {
-    let formed = self.storage.hashmap_strings_1.take();
+    let formed = self.storage.hashmap_1.take();
     let on_end = | formed : std::collections::HashMap< String, String >, super_former : ::core::option::Option< Self > | -> Self
     {
       let mut super_former = super_former.unwrap();
-      super_former.storage.hashmap_strings_1 = Some( formed );
+      super_former.storage.hashmap_1 = Some( formed );
       super_former
     };
     the_module::HashMapSubformer::begin( formed, Some( self ), on_end )
   }
 
-  pub fn hashset_strings_1( mut self ) -> the_module::HashSetSubformer
+  pub fn hashset_1( mut self ) -> the_module::HashSetSubformer
   <
     String,
     std::collections::HashSet< String >,
@@ -239,11 +239,11 @@ where
     impl the_module::FormingEnd< std::collections::HashSet< String >, Self >,
   >
   {
-    let formed = self.storage.hashset_strings_1.take();
+    let formed = self.storage.hashset_1.take();
     let on_end = | formed : std::collections::HashSet< String >, super_former : ::core::option::Option< Self > | -> Self
     {
       let mut super_former = super_former.unwrap();
-      super_former.storage.hashset_strings_1 = Some( formed );
+      super_former.storage.hashset_1 = Some( formed );
       super_former
     };
     the_module::HashSetSubformer::begin( formed, Some( self ), on_end )

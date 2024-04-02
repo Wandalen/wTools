@@ -16,8 +16,8 @@ tests_impls_optional!
     // fields
     let former = Struct1::former();
     a_id!( former.storage.vec_1, None );
-    a_id!( former.storage.hashmap_strings_1, None );
-    a_id!( former.storage.hashset_strings_1, None );
+    a_id!( former.storage.hashmap_1, None );
+    a_id!( former.storage.hashset_1, None );
     a_id!( former.context, None );
 
     // form
@@ -67,8 +67,8 @@ tests_impls_optional!
     let exp : Struct1 = Struct1
     {
       vec_1 : vec![ "a".to_string(), "b".to_string() ],
-      hashmap_strings_1 : hmap!{},
-      hashset_strings_1 : hset!{},
+      hashmap_1 : hmap!{},
+      hashset_1 : hset!{},
     };
     a_id!( got, exp );
 
@@ -81,8 +81,8 @@ tests_impls_optional!
     let exp : Struct1 = Struct1
     {
       vec_1 : vec![ "a".to_string(), "b".to_string() ],
-      hashmap_strings_1 : hmap!{},
-      hashset_strings_1 : hset!{},
+      hashmap_1 : hmap!{},
+      hashset_1 : hset!{},
     };
     a_id!( got, exp );
 
@@ -104,8 +104,8 @@ tests_impls_optional!
     let expected = Struct1
     {
       vec_1 : vec![ "ghi".to_string(), "klm".to_string() ],
-      hashmap_strings_1 : hmap!{},
-      hashset_strings_1 : hset!{},
+      hashmap_1 : hmap!{},
+      hashset_1 : hset!{},
     };
     a_id!( command, expected );
 
@@ -117,8 +117,8 @@ tests_impls_optional!
     let expected = Struct1
     {
       vec_1 : vec![ "a".to_string(), "bc".to_string(), "def".to_string() ],
-      hashmap_strings_1 : hmap!{},
-      hashset_strings_1 : hset!{},
+      hashmap_1 : hmap!{},
+      hashset_1 : hset!{},
     };
     a_id!( command, expected );
 
@@ -128,8 +128,8 @@ tests_impls_optional!
     let expected = Struct1
     {
       vec_1 : vec![ "a".to_string(), "bc".to_string(), "def".to_string() ],
-      hashmap_strings_1 : hmap!{},
-      hashset_strings_1 : hset!{},
+      hashmap_1 : hmap!{},
+      hashset_1 : hset!{},
     };
     a_id!( command, expected );
 
@@ -143,8 +143,8 @@ tests_impls_optional!
     let expected = Struct1
     {
       vec_1 : vec![ "a".to_string(), "bc".to_string(), "def".to_string(), "gh".to_string() ],
-      hashmap_strings_1 : hmap!{},
-      hashset_strings_1 : hset!{},
+      hashmap_1 : hmap!{},
+      hashset_1 : hset!{},
     };
     a_id!( command, expected );
   }
@@ -157,7 +157,7 @@ tests_impls_optional!
     // test.case( "implicit construction" );
 
     let command = Struct1::former()
-    .hashmap_strings_1().add( ( "k1".to_string(), "v1".to_string() ) ).add( ( "k2".to_string(), "v2".to_string() ) ).end()
+    .hashmap_1().add( ( "k1".to_string(), "v1".to_string() ) ).add( ( "k2".to_string(), "v2".to_string() ) ).end()
     .form()
     ;
     // dbg!( &command );
@@ -165,41 +165,41 @@ tests_impls_optional!
     let expected = Struct1
     {
       vec_1 : vec![],
-      hashmap_strings_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
-      hashset_strings_1 : hset!{},
+      hashmap_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
+      hashset_1 : hset!{},
     };
     a_id!( command, expected );
 
     // test.case( "replace" );
 
     let command = Struct1::former()
-    .hashmap_strings_1().replace( hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } ).end()
+    .hashmap_1().replace( hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } ).end()
     .form()
     ;
     let expected = Struct1
     {
       vec_1 : vec![],
-      hashmap_strings_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
-      hashset_strings_1 : hset!{},
+      hashmap_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
+      hashset_1 : hset!{},
     };
     a_id!( command, expected );
 
     let command = Struct1::former()
-    .hashmap_strings_1().add( ( "x".to_string(), "v1".to_string() ) ).replace( hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } ).end()
+    .hashmap_1().add( ( "x".to_string(), "v1".to_string() ) ).replace( hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } ).end()
     .form()
     ;
     let expected = Struct1
     {
       vec_1 : vec![],
-      hashmap_strings_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
-      hashset_strings_1 : hset!{},
+      hashmap_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
+      hashset_1 : hset!{},
     };
     a_id!( command, expected );
 
     // test.case( "replace and add" );
 
     let command = Struct1::former()
-    .hashmap_strings_1().replace( hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } )
+    .hashmap_1().replace( hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } )
     .add( ( "k3".to_string(), "v3".to_string() ) ).end()
     .form()
     ;
@@ -208,8 +208,8 @@ tests_impls_optional!
     let expected = Struct1
     {
       vec_1 : vec![],
-      hashmap_strings_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string(), "k3".to_string() => "v3".to_string() },
-      hashset_strings_1 : hset!{},
+      hashmap_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string(), "k3".to_string() => "v3".to_string() },
+      hashset_1 : hset!{},
     };
     a_id!( command, expected );
   }
@@ -222,7 +222,7 @@ tests_impls_optional!
     // test.case( "implicit construction" );
 
     let command = Struct1::former()
-    .hashset_strings_1().add( "v1" ).add( "v2" ).end()
+    .hashset_1().add( "v1" ).add( "v2" ).end()
     .form()
     ;
     // dbg!( &command );
@@ -230,41 +230,41 @@ tests_impls_optional!
     let expected = Struct1
     {
       vec_1 : vec![],
-      hashmap_strings_1 : hmap!{},
-      hashset_strings_1 : hset!{ "v1".to_string(), "v2".to_string() },
+      hashmap_1 : hmap!{},
+      hashset_1 : hset!{ "v1".to_string(), "v2".to_string() },
     };
     a_id!( command, expected );
 
     // test.case( "replace" );
 
     let command = Struct1::former()
-    .hashset_strings_1().replace( hset!{ "v1".to_string(), "v2".to_string() } ).end()
+    .hashset_1().replace( hset!{ "v1".to_string(), "v2".to_string() } ).end()
     .form()
     ;
     let expected = Struct1
     {
       vec_1 : vec![],
-      hashmap_strings_1 : hmap!{},
-      hashset_strings_1 : hset!{ "v1".to_string(), "v2".to_string() },
+      hashmap_1 : hmap!{},
+      hashset_1 : hset!{ "v1".to_string(), "v2".to_string() },
     };
     a_id!( command, expected );
 
     let command = Struct1::former()
-    .hashset_strings_1().add( "x" ).replace( hset!{ "v1".to_string(), "v2".to_string() } ).end()
+    .hashset_1().add( "x" ).replace( hset!{ "v1".to_string(), "v2".to_string() } ).end()
     .form()
     ;
     let expected = Struct1
     {
       vec_1 : vec![],
-      hashmap_strings_1 : hmap!{},
-      hashset_strings_1 : hset!{ "v1".to_string(), "v2".to_string() },
+      hashmap_1 : hmap!{},
+      hashset_1 : hset!{ "v1".to_string(), "v2".to_string() },
     };
     a_id!( command, expected );
 
     // test.case( "replace and add" );
 
     let command = Struct1::former()
-    .hashset_strings_1().replace( hset!{ "v1".to_string(), "v2".to_string() } ).add( "v3" ).end()
+    .hashset_1().replace( hset!{ "v1".to_string(), "v2".to_string() } ).add( "v3" ).end()
     .form()
     ;
     // dbg!( &command );
@@ -272,8 +272,8 @@ tests_impls_optional!
     let expected = Struct1
     {
       vec_1 : vec![],
-      hashmap_strings_1 : hmap!{},
-      hashset_strings_1 : hset!{ "v1".to_string(), "v2".to_string(), "v3".to_string() },
+      hashmap_1 : hmap!{},
+      hashset_1 : hset!{ "v1".to_string(), "v2".to_string(), "v3".to_string() },
     };
     a_id!( command, expected );
   }
@@ -285,16 +285,16 @@ tests_impls_optional!
 
     let command = Struct1::former()
     .vec_1().add( "ghi" ).add( "klm" ).end()
-    .hashmap_strings_1().add( ( "k1".to_string(), "v1".to_string() ) ).add( ( "k2".to_string(), "v2".to_string() ) ).end()
-    .hashset_strings_1().add( "k1" ).end()
+    .hashmap_1().add( ( "k1".to_string(), "v1".to_string() ) ).add( ( "k2".to_string(), "v2".to_string() ) ).end()
+    .hashset_1().add( "k1" ).end()
     .form();
     // dbg!( &command );
 
     let expected = Struct1
     {
       vec_1 : vec![ "ghi".to_string(), "klm".to_string() ],
-      hashmap_strings_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
-      hashset_strings_1 : hset!{ "k1".to_string() },
+      hashmap_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
+      hashset_1 : hset!{ "k1".to_string() },
     };
     a_id!( command, expected );
 

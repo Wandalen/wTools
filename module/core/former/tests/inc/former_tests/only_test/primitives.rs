@@ -535,7 +535,7 @@ tests_impls!
     .int_1( 13 )
     .string_1( "Abcd".to_string() )
     // .vec_1().push( "ghi" ).push( "klm" ).end()
-    // .hashmap_strings_1().insert( "k1", "v1" ).insert( "k2", "v2" ).end()
+    // .hashmap_1().insert( "k1", "v1" ).insert( "k2", "v2" ).end()
     .string_optional_1( "dir1" )
     .form();
     // dbg!( &command );

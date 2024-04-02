@@ -5,8 +5,8 @@ use super::*;
 pub struct Struct1
 {
   vec_1 : Vec< String >,
-  hashmap_strings_1 : std::collections::HashMap< String, String >,
-  hashset_strings_1 : std::collections::HashSet< String >,
+  hashmap_1 : std::collections::HashMap< String, String >,
+  hashset_1 : std::collections::HashSet< String >,
 }
 
 // = generated
@@ -83,10 +83,10 @@ pub struct Struct1FormerStorage
   pub vec_1 : ::core::option::Option< Vec< String > >,
 
   #[ doc = r" A field" ]
-  pub hashmap_strings_1 : ::core::option::Option< std::collections::HashMap< String, String > >,
+  pub hashmap_1 : ::core::option::Option< std::collections::HashMap< String, String > >,
 
   #[ doc = r" A field" ]
-  pub hashset_strings_1 : ::core::option::Option< std::collections::HashSet< String > >,
+  pub hashset_1 : ::core::option::Option< std::collections::HashSet< String > >,
 }
 
 impl ::core::default::Default for Struct1FormerStorage
@@ -97,8 +97,8 @@ impl ::core::default::Default for Struct1FormerStorage
     Self
     {
       vec_1 : ::core::option::Option::None,
-      hashmap_strings_1 : ::core::option::Option::None,
-      hashset_strings_1 : ::core::option::Option::None,
+      hashmap_1 : ::core::option::Option::None,
+      hashset_1 : ::core::option::Option::None,
     }
   }
 }
@@ -138,9 +138,9 @@ impl former::StoragePreform for Struct1FormerStorage
         ( &::core::marker::PhantomData::< Vec< String > > ).maybe_default()
       }
     };
-    let hashmap_strings_1 = if self.hashmap_strings_1.is_some()
+    let hashmap_1 = if self.hashmap_1.is_some()
     {
-      self.hashmap_strings_1.take().unwrap()
+      self.hashmap_1.take().unwrap()
     }
     else
     {
@@ -149,7 +149,7 @@ impl former::StoragePreform for Struct1FormerStorage
         {
           fn maybe_default( self : &Self ) -> T
           {
-            panic!( "Field 'hashmap_strings_1' isn't initialized" )
+            panic!( "Field 'hashmap_1' isn't initialized" )
           }
         }
         impl< T > MaybeDefault< T > for &::core::marker::PhantomData< T > {}
@@ -164,9 +164,9 @@ impl former::StoragePreform for Struct1FormerStorage
         ( &::core::marker::PhantomData::< std::collections::HashMap< String, String > > ).maybe_default()
       }
     };
-    let hashset_strings_1 = if self.hashset_strings_1.is_some()
+    let hashset_1 = if self.hashset_1.is_some()
     {
-      self.hashset_strings_1.take().unwrap()
+      self.hashset_1.take().unwrap()
     }
     else
     {
@@ -175,7 +175,7 @@ impl former::StoragePreform for Struct1FormerStorage
         {
           fn maybe_default( self : &Self ) -> T
           {
-            panic!( "Field 'hashset_strings_1' isn't initialized" )
+            panic!( "Field 'hashset_1' isn't initialized" )
           }
         }
         impl< T > MaybeDefault< T > for &::core::marker::PhantomData< T > {}
@@ -193,8 +193,8 @@ impl former::StoragePreform for Struct1FormerStorage
     let result = Struct1
     {
       vec_1,
-      hashmap_strings_1,
-      hashset_strings_1,
+      hashmap_1,
+      hashset_1,
     };
     return result;
   }
@@ -385,7 +385,7 @@ where
 //   }
 
   #[ inline( always ) ]
-  pub fn hashmap_strings_1_set< Former2 >( self ) -> Former2
+  pub fn hashmap_1_set< Former2 >( self ) -> Former2
   where
     Former2 : former::FormerBegin
     <
@@ -395,27 +395,27 @@ where
         String,
         Self,
         Self,
-        __hashmap_strings_1_end,
+        __hashmap_1_end,
       >
     >,
   {
-    Former2::_begin( None, Some( self ), __hashmap_strings_1_end )
+    Former2::_begin( None, Some( self ), __hashmap_1_end )
   }
 
-  pub fn hashmap_strings_1( self ) ->
+  pub fn hashmap_1( self ) ->
   former::ContainerSubformer::
   <
-    ( String, String ), former::HashMapDefinition< String, String, Self, Self, __hashmap_strings_1_end >
+    ( String, String ), former::HashMapDefinition< String, String, Self, Self, __hashmap_1_end >
   >
   {
-    self.hashmap_strings_1_set::< former::ContainerSubformer::
+    self.hashmap_1_set::< former::ContainerSubformer::
     <
-      ( String, String ), former::HashMapDefinition< String, String, Self, Self, __hashmap_strings_1_end >
+      ( String, String ), former::HashMapDefinition< String, String, Self, Self, __hashmap_1_end >
     >>()
   }
 
   #[ inline( always ) ]
-  pub fn hashset_strings_1_set< Former2 >( self ) -> Former2
+  pub fn hashset_1_set< Former2 >( self ) -> Former2
   where
     Former2 : former::FormerBegin
     <
@@ -424,22 +424,22 @@ where
         String,
         Self,
         Self,
-        __hashset_strings_1_end,
+        __hashset_1_end,
       >
     >,
   {
-    Former2::_begin( None, Some( self ), __hashset_strings_1_end )
+    Former2::_begin( None, Some( self ), __hashset_1_end )
   }
 
-  pub fn hashset_strings_1( self ) ->
+  pub fn hashset_1( self ) ->
   former::ContainerSubformer::
   <
-    String, former::HashSetDefinition< String, Self, Self, __hashset_strings_1_end >
+    String, former::HashSetDefinition< String, Self, Self, __hashset_1_end >
   >
   {
-    self.hashset_strings_1_set::< former::ContainerSubformer::
+    self.hashset_1_set::< former::ContainerSubformer::
     <
-      String, former::HashSetDefinition< String, Self, Self, __hashset_strings_1_end >
+      String, former::HashSetDefinition< String, Self, Self, __hashset_1_end >
     >>()
   }
 
@@ -493,13 +493,13 @@ where
 // zzz : description
 /// Return original former after subformer for `hashmap_string_1` is done.
 #[ allow( non_camel_case_types ) ]
-pub struct __hashmap_strings_1_end;
+pub struct __hashmap_1_end;
 #[ automatically_derived ]
 impl< Definition > former::FormingEnd
 <
   former::HashMapDefinition< String, String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
 >
-for __hashmap_strings_1_end
+for __hashmap_1_end
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes
@@ -511,13 +511,13 @@ where
   fn call( &self, storage : std::collections::HashMap< String, String >, super_former : Option< Struct1Former< Definition > > ) -> Struct1Former< Definition >
   {
     let mut super_former = super_former.unwrap();
-    if let Some( ref mut field ) = super_former.storage.hashmap_strings_1
+    if let Some( ref mut field ) = super_former.storage.hashmap_1
     {
       former::ContainerAssign::assign( field, storage );
     }
     else
     {
-      super_former.storage.hashmap_strings_1 = Some( storage );
+      super_former.storage.hashmap_1 = Some( storage );
     }
     super_former
   }
@@ -526,13 +526,13 @@ where
 // zzz : description
 /// Return original former after subformer for `hashset_string_1` is done.
 #[ allow( non_camel_case_types ) ]
-pub struct __hashset_strings_1_end;
+pub struct __hashset_1_end;
 #[ automatically_derived ]
 impl< Definition > former::FormingEnd
 <
   former::HashSetDefinition< String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
 >
-for __hashset_strings_1_end
+for __hashset_1_end
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes
@@ -544,13 +544,13 @@ where
   fn call( &self, storage : std::collections::HashSet< String >, super_former : Option< Struct1Former< Definition > > ) -> Struct1Former< Definition >
   {
     let mut super_former = super_former.unwrap();
-    if let Some( ref mut field ) = super_former.storage.hashset_strings_1
+    if let Some( ref mut field ) = super_former.storage.hashset_1
     {
       former::ContainerAssign::assign( field, storage );
     }
     else
     {
-      super_former.storage.hashset_strings_1 = Some( storage );
+      super_former.storage.hashset_1 = Some( storage );
     }
     super_former
   }

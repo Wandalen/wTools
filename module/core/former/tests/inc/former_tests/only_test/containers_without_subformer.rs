@@ -15,8 +15,8 @@ tests_impls!
 
     let former = Struct1::former();
     a_id!( former.storage.vec_1, None );
-    a_id!( former.storage.hashmap_strings_1, None );
-    a_id!( former.storage.hashset_strings_1, None );
+    a_id!( former.storage.hashmap_1, None );
+    a_id!( former.storage.hashset_1, None );
     a_id!( former.context, None );
     a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnPreformed ) ) );
     let former2 = Struct1Former::< Struct1FormerDefinition >::new( the_module::ReturnPreformed );
@@ -24,18 +24,18 @@ tests_impls!
 
     let command = Struct1::former().form();
     a_id!( command.vec_1, Vec::< String >::new() );
-    a_id!( command.hashmap_strings_1, hmap!{} );
-    a_id!( command.hashset_strings_1, hset![] );
+    a_id!( command.hashmap_1, hmap!{} );
+    a_id!( command.hashset_1, hset![] );
 
     let command = Struct1::former().perform();
     a_id!( command.vec_1, Vec::< String >::new() );
-    a_id!( command.hashmap_strings_1, hmap!{} );
-    a_id!( command.hashset_strings_1, hset![] );
+    a_id!( command.hashmap_1, hmap!{} );
+    a_id!( command.hashset_1, hset![] );
 
     let command = Struct1::former().end();
     a_id!( command.vec_1, Vec::< String >::new() );
-    a_id!( command.hashmap_strings_1, hmap!{} );
-    a_id!( command.hashset_strings_1, hset![] );
+    a_id!( command.hashmap_1, hmap!{} );
+    a_id!( command.hashset_1, hset![] );
 
   }
 
@@ -55,8 +55,8 @@ tests_impls!
     let expected = Struct1
     {
       vec_1 : vec![ "ghi".to_string(), "klm".to_string() ],
-      hashmap_strings_1 : hmap!{},
-      hashset_strings_1 : hset!{},
+      hashmap_1 : hmap!{},
+      hashset_1 : hset!{},
     };
     a_id!( command, expected );
   }
@@ -69,7 +69,7 @@ tests_impls!
     // test.case( "construction" );
 
     let command = Struct1::former()
-    .hashmap_strings_1( hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } )
+    .hashmap_1( hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } )
     .form()
     ;
     // dbg!( &command );
@@ -77,8 +77,8 @@ tests_impls!
     let expected = Struct1
     {
       vec_1 : vec![],
-      hashmap_strings_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
-      hashset_strings_1 : hset!{},
+      hashmap_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
+      hashset_1 : hset!{},
     };
     a_id!( command, expected );
   }
@@ -90,7 +90,7 @@ tests_impls!
 
     // test.case( "construction" );
     let command = Struct1::former()
-    .hashset_strings_1( hset!{ "v1".to_string(), "v2".to_string() } )
+    .hashset_1( hset!{ "v1".to_string(), "v2".to_string() } )
     .form()
     ;
     // dbg!( &command );
@@ -98,8 +98,8 @@ tests_impls!
     let expected = Struct1
     {
       vec_1 : vec![],
-      hashmap_strings_1 : hmap!{},
-      hashset_strings_1 : hset!{ "v1".to_string(), "v2".to_string() },
+      hashmap_1 : hmap!{},
+      hashset_1 : hset!{ "v1".to_string(), "v2".to_string() },
     };
     a_id!( command, expected );
   }
@@ -115,8 +115,8 @@ tests_impls!
     let expected = Struct1
     {
       vec_1 : vec![],
-      hashmap_strings_1 : hmap!{},
-      hashset_strings_1 : hset!{},
+      hashmap_1 : hmap!{},
+      hashset_1 : hset!{},
     };
     a_id!( command, expected );
   }
@@ -127,15 +127,15 @@ tests_impls!
   {
     let command = Struct1::former()
     .vec_1( vec![ "ghi".to_string(), "klm".to_string() ] )
-    .hashmap_strings_1( hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } )
+    .hashmap_1( hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } )
     .form();
     // dbg!( &command );
 
     let expected = Struct1
     {
       vec_1 : vec![ "ghi".to_string(), "klm".to_string() ],
-      hashmap_strings_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
-      hashset_strings_1 : hset!{},
+      hashmap_1 : hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() },
+      hashset_1 : hset!{},
     };
     a_id!( command, expected );
 

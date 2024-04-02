@@ -9,8 +9,8 @@ use std::collections::HashSet;
 pub struct Struct1
 {
   vec_1 : Vec< String >,
-  hashmap_strings_1 : HashMap< String, String >,
-  hashset_strings_1 : HashSet< String >,
+  hashmap_1 : HashMap< String, String >,
+  hashset_1 : HashSet< String >,
 }
 
 //
