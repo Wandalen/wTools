@@ -56,11 +56,11 @@ tests_impls_optional!
     let former2 : Struct1Former = Struct1Former::new( former::ReturnPreformed );
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
 
-    // default explicit params with wrapper and closure
+    // closure without helper
     let got : Struct1 = Struct1Former
-    ::< Struct1FormerWithClosure< (), Struct1 > >
-    ::new( | storage, _context | { former::StoragePreform::preform( storage ) } )
-    .vec_1().replace( vec![ "a".to_string(), "b".to_string() ] )
+    ::< Struct1FormerDefinition< _, _, former::FormingEndClosure< Struct1FormerDefinitionTypes< (), Struct1 > > > >
+    ::new( | storage : Struct1FormerStorage, _context | { former::StoragePreform::preform( storage ) } )
+    .vec_1().replace( vec![ "a".to_string(), "b".to_string() ] ).end()
     .form();
     let exp : Struct1 = Struct1
     {
@@ -68,8 +68,21 @@ tests_impls_optional!
       hashmap_strings_1 : hmap!{},
       hashset_strings_1 : hset!{},
     };
-    // a_id!( got, exp );
-    // xxx : ?
+    a_id!( got, exp );
+
+    // closure with helper
+    let got : Struct1 = Struct1Former
+    ::< Struct1FormerWithClosure< (), Struct1 > >
+    ::new( | storage : Struct1FormerStorage, _context | { former::StoragePreform::preform( storage ) } )
+    .vec_1().replace( vec![ "a".to_string(), "b".to_string() ] ).end()
+    .form();
+    let exp : Struct1 = Struct1
+    {
+      vec_1 : vec![ "a".to_string(), "b".to_string() ],
+      hashmap_strings_1 : hmap!{},
+      hashset_strings_1 : hset!{},
+    };
+    a_id!( got, exp );
 
   }
 
