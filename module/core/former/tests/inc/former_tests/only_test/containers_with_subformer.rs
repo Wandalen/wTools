@@ -13,29 +13,63 @@ tests_impls_optional!
 
     // test.case( "vector : construction" );
 
+    // fields
     let former = Struct1::former();
     a_id!( former.storage.vec_1, None );
     a_id!( former.storage.hashmap_strings_1, None );
     a_id!( former.storage.hashset_strings_1, None );
     a_id!( former.context, None );
-    a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnPreformed ) ) );
-    let former2 = Struct1Former::< Struct1, the_module::ReturnPreformed >::new();
-    a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
 
+    // forming
     let command = Struct1::former().form();
     a_id!( command.vec_1, Vec::< String >::new() );
     a_id!( command.hashmap_strings_1, hmap!{} );
     a_id!( command.hashset_strings_1, hset![] );
 
+    // performing
     let command = Struct1::former().perform();
     a_id!( command.vec_1, Vec::< String >::new() );
     a_id!( command.hashmap_strings_1, hmap!{} );
     a_id!( command.hashset_strings_1, hset![] );
 
+    // ending
     let command = Struct1::former().end();
     a_id!( command.vec_1, Vec::< String >::new() );
     a_id!( command.hashmap_strings_1, hmap!{} );
     a_id!( command.hashset_strings_1, hset![] );
+
+  }
+
+  //
+
+  fn new()
+  {
+
+    // former with explicit definition
+    let former = Struct1::former();
+    a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnPreformed ) ) );
+    let former2 = Struct1Former::< Struct1FormerDefinition >::new( former::ReturnPreformed );
+    a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
+
+    // default parameters
+    let former = Struct1::former();
+    let former2 : Struct1Former = Struct1Former::new( former::ReturnPreformed );
+    a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
+
+    // default explicit params with wrapper and closure
+    let got : Struct1 = Struct1Former
+    ::< Struct1FormerWithClosure< (), Struct1 > >
+    ::new( | storage, _context | { former::StoragePreform::preform( storage ) } )
+    .vec_1().replace( vec![ "a".to_string(), "b".to_string() ] )
+    .form();
+    let exp : Struct1 = Struct1
+    {
+      vec_1 : vec![ "a".to_string(), "b".to_string() ],
+      hashmap_strings_1 : hmap!{},
+      hashset_strings_1 : hset!{},
+    };
+    // a_id!( got, exp );
+    // xxx : ?
 
   }
 
@@ -47,7 +81,7 @@ tests_impls_optional!
     // test.case( "vector : implicit construction" );
 
     let command = Struct1::former()
-    .vec_1().push( "ghi" ).push( "klm" ).end()
+    .vec_1().add( "ghi" ).add( "klm" ).end()
     .form()
     ;
     // dbg!( &command );
@@ -74,7 +108,7 @@ tests_impls_optional!
     a_id!( command, expected );
 
     let command = Struct1::former()
-    .vec_1().push( "x" ).replace( vec![ "a".to_string(), "bc".to_string(), "def".to_string() ] ).end()
+    .vec_1().add( "x" ).replace( vec![ "a".to_string(), "bc".to_string(), "def".to_string() ] ).end()
     .form();
     let expected = Struct1
     {
@@ -84,10 +118,10 @@ tests_impls_optional!
     };
     a_id!( command, expected );
 
-    // test.case( "vector : replace and push" );
+    // test.case( "vector : replace and add" );
 
     let command = Struct1::former()
-    .vec_1().replace( vec![ "a".to_string(), "bc".to_string(), "def".to_string() ] ).push( "gh" ).end()
+    .vec_1().replace( vec![ "a".to_string(), "bc".to_string(), "def".to_string() ] ).add( "gh" ).end()
     .form();
     // dbg!( &command );
 
@@ -108,7 +142,7 @@ tests_impls_optional!
     // test.case( "implicit construction" );
 
     let command = Struct1::former()
-    .hashmap_strings_1().insert( "k1", "v1" ).insert( "k2", "v2" ).end()
+    .hashmap_strings_1().add( ( "k1".to_string(), "v1".to_string() ) ).add( ( "k2".to_string(), "v2".to_string() ) ).end()
     .form()
     ;
     // dbg!( &command );
@@ -136,7 +170,7 @@ tests_impls_optional!
     a_id!( command, expected );
 
     let command = Struct1::former()
-    .hashmap_strings_1().insert( "x", "v1" ).replace( hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } ).end()
+    .hashmap_strings_1().add( ( "x".to_string(), "v1".to_string() ) ).replace( hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } ).end()
     .form()
     ;
     let expected = Struct1
@@ -147,10 +181,11 @@ tests_impls_optional!
     };
     a_id!( command, expected );
 
-    // test.case( "replace and insert" );
+    // test.case( "replace and add" );
 
     let command = Struct1::former()
-    .hashmap_strings_1().replace( hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } ).insert( "k3", "v3" ).end()
+    .hashmap_strings_1().replace( hmap!{ "k1".to_string() => "v1".to_string(), "k2".to_string() => "v2".to_string() } )
+    .add( ( "k3".to_string(), "v3".to_string() ) ).end()
     .form()
     ;
     // dbg!( &command );
@@ -172,7 +207,7 @@ tests_impls_optional!
     // test.case( "implicit construction" );
 
     let command = Struct1::former()
-    .hashset_strings_1().insert( "v1" ).insert( "v2" ).end()
+    .hashset_strings_1().add( "v1" ).add( "v2" ).end()
     .form()
     ;
     // dbg!( &command );
@@ -200,7 +235,7 @@ tests_impls_optional!
     a_id!( command, expected );
 
     let command = Struct1::former()
-    .hashset_strings_1().insert( "x" ).replace( hset!{ "v1".to_string(), "v2".to_string() } ).end()
+    .hashset_strings_1().add( "x" ).replace( hset!{ "v1".to_string(), "v2".to_string() } ).end()
     .form()
     ;
     let expected = Struct1
@@ -211,10 +246,10 @@ tests_impls_optional!
     };
     a_id!( command, expected );
 
-    // test.case( "replace and insert" );
+    // test.case( "replace and add" );
 
     let command = Struct1::former()
-    .hashset_strings_1().replace( hset!{ "v1".to_string(), "v2".to_string() } ).insert( "v3" ).end()
+    .hashset_strings_1().replace( hset!{ "v1".to_string(), "v2".to_string() } ).add( "v3" ).end()
     .form()
     ;
     // dbg!( &command );
@@ -234,9 +269,9 @@ tests_impls_optional!
   {
 
     let command = Struct1::former()
-    .vec_1().push( "ghi" ).push( "klm" ).end()
-    .hashmap_strings_1().insert( "k1", "v1" ).insert( "k2", "v2" ).end()
-    .hashset_strings_1().insert( "k1" ).end()
+    .vec_1().add( "ghi" ).add( "klm" ).end()
+    .hashmap_strings_1().add( ( "k1".to_string(), "v1".to_string() ) ).add( ( "k2".to_string(), "v2".to_string() ) ).end()
+    .hashset_strings_1().add( "k1" ).end()
     .form();
     // dbg!( &command );
 
@@ -257,6 +292,7 @@ tests_impls_optional!
 tests_index!
 {
   internals,
+  new,
   test_vector,
   test_hashmap,
   test_hashset,

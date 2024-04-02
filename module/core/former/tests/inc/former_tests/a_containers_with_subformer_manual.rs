@@ -21,6 +21,8 @@ impl Struct1
   }
 }
 
+// = definition
+
 #[ derive( Debug ) ]
 pub struct Struct1FormerDefinitionTypes< Context = (), Formed = Struct1 >
 {
@@ -71,6 +73,8 @@ where
 }
 
 pub type Struct1FormerWithClosure< Context, Formed > = Struct1FormerDefinition< Context, Formed, former::FormingEndClosure< Struct1FormerDefinitionTypes< Context, Formed > > >;
+
+// = storage
 
 #[ doc = "Container of a corresponding former." ]
 pub struct Struct1FormerStorage
@@ -195,6 +199,8 @@ impl former::StoragePreform for Struct1FormerStorage
     return result;
   }
 }
+
+// = former
 
 #[ doc = " Object to form [Struct1]. If field's values is not set then default value of the field is set.\n\nFor specifying custom default value use attribute `default`. For example:\n```\n\nuse former::Former;\n#[ derive( Former ) ]\npub struct Struct1\n{\n  #[ default( 31 ) ]\n  field1 : i32,\n}\n\n```\n" ]
 pub struct Struct1Former< Definition = Struct1FormerDefinition >
@@ -579,4 +585,4 @@ where
 
 // = end of generated
 
-// include!( "./only_test/containers_with_subformer.rs" );
+include!( "./only_test/containers_with_subformer.rs" );
