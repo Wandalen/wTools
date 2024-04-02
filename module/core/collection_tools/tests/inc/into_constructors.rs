@@ -13,10 +13,11 @@ fn b_tree_map()
   let exp = the_module::BTreeMap::new();
   assert_eq!( got, exp );
 
-  // test.case( "single entry" );
-  let got = the_module::into_bmap!{ 3 => 13 };
+  // test.case( "multiple entry" );
+  let got = the_module::into_bmap!{ 3 => 13, 4 => 1 };
   let mut exp = the_module::BTreeMap::new();
   exp.insert(3, 13);
+  exp.insert(4, 1);
   assert_eq!( got, exp );
 
 }
@@ -33,7 +34,7 @@ fn b_tree_set()
   let exp = the_module::BTreeSet::new();
   assert_eq!( got, exp );
 
-  // test.case( "single entry" );
+  // test.case( "multiple entry" );
   let got = the_module::into_bset!{ 3, 13 };
   let mut exp = the_module::BTreeSet::new();
   exp.insert(3);
@@ -54,7 +55,7 @@ fn binary_heap()
   let exp = the_module::BinaryHeap::new();
   assert_eq!( got.into_vec(), exp.into_vec() );
 
-  // test.case( "single entry" );
+  // test.case( "multiple entry" );
   let got : the_module::BinaryHeap< i32 > = the_module::into_heap!{ 3, 13 };
   let mut exp = the_module::BinaryHeap::new();
   exp.push(3);
@@ -76,10 +77,11 @@ fn hash_map()
   assert_eq!( got, exp );
 
 
-  // test.case( "single entry" );
-  let got = the_module::into_hmap!{ 3 => 13 };
+  // test.case( "multiple entry" );
+  let got = the_module::into_hmap!{ 3 => 13, 4 => 1 };
   let mut exp = the_module::HashMap::new();
   exp.insert( 3, 13 );
+  exp.insert( 4, 1 );
   assert_eq!( got, exp );
 
 }
@@ -96,9 +98,10 @@ fn hash_set()
   let exp = the_module::HashSet::new();
   assert_eq!( got, exp );
 
-  // test.case( "single entry" );
-  let got = the_module::into_hset!{ 13 };
+  // test.case( "multiple entry" );
+  let got = the_module::into_hset!{ 13, 11 };
   let mut exp = the_module::HashSet::new();
+  exp.insert( 11 );
   exp.insert( 13 );
   assert_eq!( got, exp );
 
@@ -116,7 +119,7 @@ fn linked_list()
   let exp = the_module::LinkedList::new();
   assert_eq!( got, exp );
 
-  // test.case( "single entry" );
+  // test.case( "multiple entry" );
   let got = the_module::into_list!{ 13, 15 };
   let mut exp = the_module::LinkedList::new();
   exp.push_front( 15 );
@@ -137,7 +140,7 @@ fn vec()
   let exp = the_module::Vec::new();
   assert_eq!( got, exp );
 
-  // test.case( "single entry" );
+  // test.case( "multiple entry" );
   let got : the_module::Vec< i32 > = the_module::into_vec!{ 3, 13 };
   let mut exp = the_module::Vec::new();
   exp.push( 3 );

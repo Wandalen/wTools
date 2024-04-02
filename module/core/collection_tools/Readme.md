@@ -20,7 +20,7 @@ Consider the following example, which demonstrates the use of the `hmap!` macro 
 # {
 use collection_tools::*;
 
-let meta_map = into_hmap! { 3 => 13 };
+let meta_map = hmap! { 3 => 13 };
 
 // it is identical to `hashbrown::HashMap` if `use_alloc` feature is on, otherwise `std::collections::HashMap`
 let mut std_map = collection_tools::HashMap::new();
@@ -38,9 +38,9 @@ Another example, this time, `into_bset!`, providing you a `BTreeSet`:
 # {
 use collection_tools::*;
 
-let meta_set = into_bset! { 3, 13 };
+let meta_set = bset! { 3, 13 };
 
-// no black magic, just a regular `alloc::BTreeSet` (same as `std::BTreeSet`)
+// this `BTreeSet` is just a reexport from `alloc`, so it can be used in the same places as `alloc/std::BTreeSet`
 let mut std_set = collection_tools::BTreeSet::new();
 
 std_set.insert( 13 );
@@ -57,9 +57,9 @@ Another example with `list!`:
 # {
 use collection_tools::*;
 
-let meta_list : LinkedList< i32 > = into_list! { 3, 13 };
+let meta_list : LinkedList< i32 > = list! { 3, 13 };
 
-// no black magic, just a regular `alloc::LinkedList` (same as `std::LinkedList`)
+// this `LinkedList` is just a reexport from `alloc`, so it can be used in the same places as `alloc/std::LinkedList`
 let mut meta_list = collection_tools::LinkedList::new();
 
 meta_list.push_front( 13 );
@@ -104,6 +104,23 @@ assert_eq!( vec.contains( &1 ), true );
 ```
 
 </details>
+
+### Basic Use Case :: `no_std` `HashSet` / `HashMap`
+
+The crate has two classes of macros: strict macros (the one we covered), which require that all collection members are of the same type; and more "relaxed" macros, that use under the hood `Into` trait to cast to a certain type. They can be accessed by prepending `into_` to name of a macro (`into_vec`, `into_bmap`, etc).
+
+While strict macros require you to have all members of the same type, more relaxed macros often require you to specify the desired type. So there's no a clear winner. Choose the right one for each situation separately.
+
+For example:
+```rust
+# #[ cfg( all( feature = "enabled", feature = "collection_into_constructors" ) ) ]
+# {
+use std::borrow::Cow;
+let vec : Vec< String > = collection_tools::into_vec!( "&str", "String".to_string(), Cow::from( "Cow" ) );
+# }
+```
+
+Each strict macro has its relaxed counterpart.
 
 ### Collections being used
 

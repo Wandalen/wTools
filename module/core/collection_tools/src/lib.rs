@@ -67,7 +67,7 @@ pub mod exposed
 #[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
-  #[ cfg( feature = "collection_into_constructors" ) ]
+  #[ cfg( feature = "collection_constructors" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::constructors::*;
