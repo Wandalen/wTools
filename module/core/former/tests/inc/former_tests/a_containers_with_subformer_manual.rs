@@ -388,24 +388,54 @@ where
   }
 
   pub fn hashmap_strings_1( self ) ->
-  former::HashMapSubformer::
+  former::ContainerSubformer::
   <
-    String,
-    String,
-    Self,
-    Self,
-    __hashmap_strings_1_end,
+    ( String, String ), former::HashMapDefinition< String, String, Self, Self, __hashmap_strings_1_end >
   >
   {
-    self.hashmap_strings_1_set::< former::HashMapSubformer::
+    self.hashmap_strings_1_set::< former::ContainerSubformer::
     <
-      String,
-      String,
-      Self,
-      Self,
-      __hashmap_strings_1_end,
-    > >()
+      ( String, String ), former::HashMapDefinition< String, String, Self, Self, __hashmap_strings_1_end >
+    >>()
   }
+
+//   #[ inline( always ) ]
+//   pub fn hashmap_strings_1_set< Former2 >( self ) -> Former2
+//   where
+//     Former2 : former::FormerBegin
+//     <
+//       former::HashMapDefinition
+//       <
+//         String,
+//         String,
+//         Self,
+//         Self,
+//         __hashmap_strings_1_end,
+//       >
+//     >,
+//   {
+//     Former2::_begin( None, Some( self ), __hashmap_strings_1_end )
+//   }
+//
+//   pub fn hashmap_strings_1( self ) ->
+//   former::HashMapSubformer::
+//   <
+//     String,
+//     String,
+//     Self,
+//     Self,
+//     __hashmap_strings_1_end,
+//   >
+//   {
+//     self.hashmap_strings_1_set::< former::HashMapSubformer::
+//     <
+//       String,
+//       String,
+//       Self,
+//       Self,
+//       __hashmap_strings_1_end,
+//     > >()
+//   }
 
   #[ inline( always ) ]
   pub fn hashset_strings_1_set< Former2 >( self ) -> Former2
