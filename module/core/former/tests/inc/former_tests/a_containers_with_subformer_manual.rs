@@ -320,20 +320,6 @@ where
     former::FormingEnd::< Definition::Types >::call( &on_end, self.storage, context )
   }
 
-  // #[ doc = "Subformer setter for the 'vec_1' field." ]
-  // #[ inline ]
-  // pub fn vec_1( mut self ) -> the_module::VectorSubformer< String, Vec< String >, Self, impl Fn( Vec< String >, core::option::Option< Self > ) -> Self, >
-  // {
-  //   let formed = self.storage.vec_1.take();
-  //   let on_end = | formed : Vec< String >, former : core::option::Option< Self > | -> Self
-  //   {
-  //     let mut former = former.unwrap();
-  //     former.storage.vec_1 = Some( formed );
-  //     former
-  //   };
-  //   the_module::VectorSubformer::begin( formed, Some( self ), on_end )
-  // }
-
   #[ inline( always ) ]
   pub fn vec_1_set< Former2 >( self ) -> Former2
   where
@@ -344,30 +330,59 @@ where
         String,
         Self,
         Self,
-        __vec1_end,
+        __vec_1_end,
       >
     >,
   {
-    Former2::_begin( None, Some( self ), __vec1_end )
+    Former2::_begin( None, Some( self ), __vec_1_end )
   }
 
   pub fn vec_1( self ) ->
-  former::VectorSubformer::
+  former::ContainerSubformer::
   <
-    String,
-    Self,
-    Self,
-    __vec1_end,
+    String, former::VectorDefinition< String, Self, Self, __vec_1_end >
   >
   {
-    self.vec_1_set::< former::VectorSubformer::
+    self.vec_1_set::< former::ContainerSubformer::
     <
-      String,
-      Self,
-      Self,
-      __vec1_end,
-    > >()
+      String, former::VectorDefinition< String, Self, Self, __vec_1_end >
+    >>()
   }
+
+//   #[ inline( always ) ]
+//   pub fn vec_1_set< Former2 >( self ) -> Former2
+//   where
+//     Former2 : former::FormerBegin
+//     <
+//       former::VectorDefinition
+//       <
+//         String,
+//         Self,
+//         Self,
+//         __vec_1_end,
+//       >
+//     >,
+//   {
+//     Former2::_begin( None, Some( self ), __vec_1_end )
+//   }
+//
+//   pub fn vec_1( self ) ->
+//   former::VectorSubformer::
+//   <
+//     String,
+//     Self,
+//     Self,
+//     __vec_1_end,
+//   >
+//   {
+//     self.vec_1_set::< former::VectorSubformer::
+//     <
+//       String,
+//       Self,
+//       Self,
+//       __vec_1_end,
+//     > >()
+//   }
 
   #[ inline( always ) ]
   pub fn hashmap_strings_1_set< Former2 >( self ) -> Former2
@@ -398,44 +413,6 @@ where
       ( String, String ), former::HashMapDefinition< String, String, Self, Self, __hashmap_strings_1_end >
     >>()
   }
-
-//   #[ inline( always ) ]
-//   pub fn hashmap_strings_1_set< Former2 >( self ) -> Former2
-//   where
-//     Former2 : former::FormerBegin
-//     <
-//       former::HashMapDefinition
-//       <
-//         String,
-//         String,
-//         Self,
-//         Self,
-//         __hashmap_strings_1_end,
-//       >
-//     >,
-//   {
-//     Former2::_begin( None, Some( self ), __hashmap_strings_1_end )
-//   }
-//
-//   pub fn hashmap_strings_1( self ) ->
-//   former::HashMapSubformer::
-//   <
-//     String,
-//     String,
-//     Self,
-//     Self,
-//     __hashmap_strings_1_end,
-//   >
-//   {
-//     self.hashmap_strings_1_set::< former::HashMapSubformer::
-//     <
-//       String,
-//       String,
-//       Self,
-//       Self,
-//       __hashmap_strings_1_end,
-//     > >()
-//   }
 
   #[ inline( always ) ]
   pub fn hashset_strings_1_set< Former2 >( self ) -> Former2
@@ -483,13 +460,13 @@ where
 // zzz : description
 /// Return original former after subformer for `vec_1` is done.
 #[ allow( non_camel_case_types ) ]
-pub struct __vec1_end;
+pub struct __vec_1_end;
 #[ automatically_derived ]
 impl< Definition > former::FormingEnd
 <
   former::VectorDefinition< String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
 >
-for __vec1_end
+for __vec_1_end
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes
