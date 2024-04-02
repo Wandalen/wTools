@@ -425,50 +425,16 @@ where
   }
 
   pub fn hashset_strings_1( self ) ->
-  former::HashSetSubformer::
+  former::ContainerSubformer::
   <
-    String,
-    Self,
-    Self,
-    __hashset_strings_1_end,
+    String, former::HashSetDefinition< String, Self, Self, __hashset_strings_1_end >
   >
   {
-    self.hashset_strings_1_set::< former::HashSetSubformer::
+    self.hashset_strings_1_set::< former::ContainerSubformer::
     <
-      String,
-      Self,
-      Self,
-      __hashset_strings_1_end,
-    > >()
+      String, former::HashSetDefinition< String, Self, Self, __hashset_strings_1_end >
+    >>()
   }
-
-//   #[ doc = "Subformer setter for the 'hashmap_strings_1' field." ]
-//   #[ inline ]
-//   pub fn hashmap_strings_1( mut self ) -> the_module::HashMapSubformer< String, String, std::collections::HashMap< String, String >, Self, impl Fn( std::collections::HashMap< String, String >, core::option::Option< Self > ) -> Self, >
-//   {
-//     let formed = self.storage.hashmap_strings_1.take();
-//     let on_end = | formed : std::collections::HashMap< String, String >, former : core::option::Option< Self > | -> Self
-//     {
-//       let mut former = former.unwrap();
-//       former.storage.hashmap_strings_1 = Some( formed );
-//       former
-//     };
-//     the_module::HashMapSubformer::begin( formed, Some( self ), on_end )
-//   }
-//
-//   #[ doc = "Subformer setter for the 'hashset_strings_1' field." ]
-//   #[ inline ]
-//   pub fn hashset_strings_1( mut self ) -> the_module::HashSetSubformer< String, std::collections::HashSet< String >, Self, impl Fn( std::collections::HashSet< String >, core::option::Option< Self > ) -> Self, >
-//   {
-//     let formed = self.storage.hashset_strings_1.take();
-//     let on_end = | formed : std::collections::HashSet< String >, former : core::option::Option< Self > | -> Self
-//     {
-//       let mut former = former.unwrap();
-//       former.storage.hashset_strings_1 = Some( formed );
-//       former
-//     };
-//     the_module::HashSetSubformer::begin( formed, Some( self ), on_end )
-//   }
 
 }
 
