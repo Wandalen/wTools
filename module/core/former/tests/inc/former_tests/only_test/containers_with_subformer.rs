@@ -20,23 +20,25 @@ tests_impls_optional!
     a_id!( former.storage.hashset_strings_1, None );
     a_id!( former.context, None );
 
-    // forming
-    let command = Struct1::former().form();
-    a_id!( command.vec_1, Vec::< String >::new() );
-    a_id!( command.hashmap_strings_1, hmap!{} );
-    a_id!( command.hashset_strings_1, hset![] );
+    // form
+    let got = Struct1::former().form();
+    let exp = Struct1::default();
+    a_id!( got, exp );
 
-    // performing
-    let command = Struct1::former().perform();
-    a_id!( command.vec_1, Vec::< String >::new() );
-    a_id!( command.hashmap_strings_1, hmap!{} );
-    a_id!( command.hashset_strings_1, hset![] );
+    // preform
+    let got = Struct1::former().preform();
+    let exp = Struct1::default();
+    a_id!( got, exp );
 
-    // ending
-    let command = Struct1::former().end();
-    a_id!( command.vec_1, Vec::< String >::new() );
-    a_id!( command.hashmap_strings_1, hmap!{} );
-    a_id!( command.hashset_strings_1, hset![] );
+    // perform
+    let got = Struct1::former().perform();
+    let exp = Struct1::default();
+    a_id!( got, exp );
+
+    // end
+    let got = Struct1::former().end();
+    let exp = Struct1::default();
+    a_id!( got, exp );
 
   }
 

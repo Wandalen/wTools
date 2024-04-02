@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-#[ derive( Debug, PartialEq ) ]
+#[ derive( Default, Debug, PartialEq ) ]
 pub struct Struct1
 {
   vec_1 : Vec< String >,
