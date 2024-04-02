@@ -119,7 +119,8 @@ where
 /// ```
 
 // xxx : update documentation
-// pub type HashSetSubformer< K, Context, End > = ContainerSubformer::< K, HashSetDefinition< K, Context, End > >;
+// write: instead of writing long version with ContainerSubformer it's possible to be more concise with help of the type alias
+//
 pub type HashSetSubformer< K, Context, Formed, End > =
 ContainerSubformer::< K, HashSetDefinition< K, Context, Formed, End > >;
 

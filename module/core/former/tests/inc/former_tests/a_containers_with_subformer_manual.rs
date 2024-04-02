@@ -349,41 +349,6 @@ where
     >>()
   }
 
-//   #[ inline( always ) ]
-//   pub fn vec_1_set< Former2 >( self ) -> Former2
-//   where
-//     Former2 : former::FormerBegin
-//     <
-//       former::VectorDefinition
-//       <
-//         String,
-//         Self,
-//         Self,
-//         __vec_1_end,
-//       >
-//     >,
-//   {
-//     Former2::_begin( None, Some( self ), __vec_1_end )
-//   }
-//
-//   pub fn vec_1( self ) ->
-//   former::VectorSubformer::
-//   <
-//     String,
-//     Self,
-//     Self,
-//     __vec_1_end,
-//   >
-//   {
-//     self.vec_1_set::< former::VectorSubformer::
-//     <
-//       String,
-//       Self,
-//       Self,
-//       __vec_1_end,
-//     > >()
-//   }
-
   #[ inline( always ) ]
   pub fn hashmap_1_set< Former2 >( self ) -> Former2
   where
@@ -411,7 +376,7 @@ where
     self.hashmap_1_set::< former::ContainerSubformer::
     <
       ( String, String ), former::HashMapDefinition< String, String, Self, Self, __hashmap_1_end >
-    >>()
+    > >()
   }
 
   #[ inline( always ) ]
