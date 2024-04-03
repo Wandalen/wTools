@@ -3,9 +3,8 @@ pub( crate ) mod private
   use crate::*;
   use ca::
   {
-    Parser, Verifier,
+    Verifier,
     Executor,
-    ProgramParser,
     Command,
     grammar::command::private::CommandFormer,
     help::{ HelpGeneratorFn, HelpGeneratorOptions, HelpVariants },
@@ -101,7 +100,7 @@ pub( crate ) mod private
     #[ default( Dictionary::default() ) ]
     dictionary : Dictionary,
 
-    #[ default( Parser::former().form() ) ]
+    #[ default( Parser ) ]
     parser : Parser,
 
     #[ setter( false ) ]
@@ -260,13 +259,12 @@ pub( crate ) mod private
     {
       let Input( ref program ) = program.into_input();
 
-      let raw_program = self.parser.program( program ).map_err( | e | Error::Validation( ValidationError::Parser { input : program.to_string(), error : e } ) )?;
+      let raw_program = self.parser.parse( program ).map_err( | e | Error::Validation( ValidationError::Parser { input : format!( "{:?}", program ), error : e } ) )?;
       let grammar_program = self.verifier.to_program( &self.dictionary, raw_program ).map_err( | e | Error::Validation( ValidationError::Verifier( e ) ) )?;
-      // let exec_program = self.executor_converter.to_program( grammar_program ).map_err( | e | Error::Validation( ValidationError::ExecutorConverter( e ) ) )?;
 
       if let Some( callback ) = &self.callback_fn
       {
-        callback.0( program, &grammar_program )
+        callback.0( &program.join( " " ), &grammar_program )
       }
 
       self.executor.program( &self.dictionary, grammar_program ).map_err( | e | Error::Execution( e ) )

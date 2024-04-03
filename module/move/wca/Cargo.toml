@@ -48,7 +48,6 @@ former = { workspace = true, features = [ "default" ] }
 
 ## external
 log = "0.4"
-nom = "7.1"
 #closure = "0.3"
 eddie = { version = "0.4", optional = true } # fuzzy commands search
 
