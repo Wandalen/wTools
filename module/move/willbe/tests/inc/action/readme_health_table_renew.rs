@@ -196,6 +196,11 @@ fn sample_cell()
   let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
   let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
-
+  println!("{actual}");
   assert!( actual.contains( " [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=.%2F_willbe_variadic_tag_configurations_c%2Fexamples%2F_willbe_variadic_tag_configurations_c_trivial.rs,RUN_POSTFIX=--example%20_willbe_variadic_tag_configurations_c_trivial/https://github.com/SomeName/SomeCrate/C)" ) );
+  // Expected (ignore whitespaces, they are only for alignment)
+  //  [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=.%2F_willbe_variadic_tag_configurations_c%2Fexamples%2F                                                                 _willbe_variadic_tag_configurations_c_trivial.rs,RUN_POSTFIX=--example%20                                                                 _willbe_variadic_tag_configurations_c_trivial/https://github.com/SomeName/SomeCrate/C)
+
+  // Actual (maybe because of Linux or some changes in functions being called)
+  //  [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=.%2F_willbe_variadic_tag_configurations_c%2Fexamples%2F/tmp/.tmpi498G6/./_willbe_variadic_tag_configurations_c/examples/_willbe_variadic_tag_configurations_c_trivial.rs,RUN_POSTFIX=--example%20/tmp/.tmpi498G6/./_willbe_variadic_tag_configurations_c/examples/_willbe_variadic_tag_configurations_c_trivial/https://github.com/SomeName/SomeCrate/C)
 }
