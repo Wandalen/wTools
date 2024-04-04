@@ -62,7 +62,7 @@ default = [
   "derive_clone_dyn",
   # "derive_clone_dyn_use_std",
 
-  "strum_derive",
+  "derive_strum",
   "strum_phf",
 
   "derive_from",
@@ -106,7 +106,7 @@ full = [
   "derive_clone_dyn",
   # "derive_clone_dyn_use_std",
 
-  "strum_derive",
+  "derive_strum",
   "strum_phf",
 
   "derive_from",
@@ -159,7 +159,7 @@ derive_display = [ "parse-display" ]
 derive_from_str = [ "parse-display", "parse-display/std", "parse-display/regex" ]
 # derive_from_str = [ "parse-display", "parse-display/std", "parse-display/regex", "parse-display/once_cell" ]
 
-strum_derive = [ "strum/std", "strum/derive", "strum/strum_macros" ]
+derive_strum = [ "strum/std", "strum/derive", "strum/strum_macros" ]
 strum_phf = [ "strum/std", "strum/phf", "strum/strum_macros" ]
 # zzz : review features
 

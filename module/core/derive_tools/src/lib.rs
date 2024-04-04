@@ -193,7 +193,7 @@ pub mod exposed
   //   UpperHex,
   // };
 
-  #[ cfg( feature = "strum_derive" ) ]
+  #[ cfg( feature = "derive_strum" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::strum::*;
