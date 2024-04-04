@@ -1,5 +1,7 @@
 //! qqq : write proper descriptionuse is_slice::*;
 
+use is_slice::is_slice;
+
 fn main()
 {
 

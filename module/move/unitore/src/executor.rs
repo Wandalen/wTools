@@ -197,7 +197,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       r#"    .query.execute \'SELECT title, links, MIN\(published\) FROM frame\'"#,
       "\n\n",
     ))
-    .subject().hint( "Query" ).kind( Type::List( Type::String.into(), ' ' ) ).optional( false ).end()
+    .subject().hint( "Query" ).kind( Type::String ).optional( false ).end()
     .routine( | o : VerifiedCommand |
     {
       match action( query_execute, &o.args )
