@@ -9,6 +9,28 @@ pub( crate ) mod private
   #[ derive( Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
   pub struct AbsolutePath( PathBuf );
 
+  impl TryFrom< &str > for AbsolutePath
+  {
+    type Error = std::io::Error;
+
+    fn try_from( value : &str ) -> Result< Self, Self::Error >
+    {
+      let value = PathBuf::from( value );
+      Ok( Self( canonicalize( value )? ) )
+    }
+  }
+
+  impl TryFrom< String > for AbsolutePath
+  {
+    type Error = std::io::Error;
+
+    fn try_from( value : String ) -> Result< Self, Self::Error >
+    {
+      let value = PathBuf::from( value );
+      Ok( Self( canonicalize( value )? ) )
+    }
+  }
+
   impl TryFrom< PathBuf > for AbsolutePath
   {
     type Error = std::io::Error;
@@ -75,11 +97,6 @@ pub( crate ) mod private
     }
   }
 
-  /// Check if path is valid.
-  pub fn valid_is( path : &str ) -> bool
-  {
-    std::fs::metadata( path ).is_ok()
-  }
   // qqq : for Petro : for Bohdan : bad. move out
 
   /// Check if path has a glob.
@@ -143,7 +160,6 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   protected use glob_is;
-  protected use valid_is;
   protected use canonicalize;
   protected use unique_folder_name;
 

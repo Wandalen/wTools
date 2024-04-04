@@ -22,19 +22,19 @@ where
   /// Return former.
   #[ inline( always ) ]
   fn former( self )
-  -> HashMapSubformer< K, E, Self, Self, impl ToSuperFormer< Self, Self > >
+  -> HashMapSubformer< K, E, Self, Self, impl FormingEnd< Self, Self > >
   {
-    HashMapSubformer::begin( Some( self ), None, ReturnContainer )
+    HashMapSubformer::begin( Some( self ), None, ReturnFormed )
   }
 
-  /// Return former with a custom context.
-  #[ inline( always ) ]
-  fn former_begin< Context, End >( self, context : Context, end : End )
-  -> HashMapSubformer< K, E, Self, Context, End >
-  where End : ToSuperFormer< Self, Context >
-  {
-    HashMapSubformer::begin( Some( context ), Some( self ), end )
-  }
+  // /// Return former with a custom context.
+  // #[ inline( always ) ]
+  // fn former_begin< Context, End >( self, context : Context, end : End )
+  // -> HashMapSubformer< K, E, Self, Context, End >
+  // where End : FormingEnd< Self, Context >
+  // {
+  //   HashMapSubformer::begin( Some( self ), Some( context ), end )
+  // }
 
 }
 
@@ -61,7 +61,7 @@ where
 /// # Type Parameters
 /// - `K`: Key type, must implement `Eq` and `Hash`.
 /// - `E`: Element (value) type.
-/// - `Container`: The hash map-like container being built.
+/// - `Formed`: The hash map-like formed being built.
 /// - `Context`: Type of the optional context used during the building process.
 /// - `End`: End-of-forming action to be executed upon completion.
 ///
@@ -91,41 +91,41 @@ where
 /// ```
 
 #[ derive( Debug, Default ) ]
-pub struct HashMapSubformer< K, E, Container, Context, End >
+pub struct HashMapSubformer< K, E, Formed, Context, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
-  Container : HashMapLike< K, E > + core::default::Default,
-  End : ToSuperFormer< Container, Context >,
+  Formed : HashMapLike< K, E > + core::default::Default,
+  End : FormingEnd< Formed, Context >,
 {
-  container : core::option::Option< Container >,
+  formed : core::option::Option< Formed >,
   context : core::option::Option< Context >,
   on_end : core::option::Option< End >,
   _e_phantom : core::marker::PhantomData< E >,
   _k_phantom : core::marker::PhantomData< K >,
 }
 
-impl< K, E, Container, Context, End >
-HashMapSubformer< K, E, Container, Context, End >
+impl< K, E, Formed, Context, End >
+HashMapSubformer< K, E, Formed, Context, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
-  Container : HashMapLike< K, E > + core::default::Default,
-  End : ToSuperFormer< Container, Context >,
+  Formed : HashMapLike< K, E > + core::default::Default,
+  End : FormingEnd< Formed, Context >,
 {
 
   /// Form current former into target structure.
   #[ inline( always ) ]
-  pub fn form( mut self ) -> Container
+  pub fn form( mut self ) -> Formed
   {
-    let container = if self.container.is_some()
+    let formed = if self.formed.is_some()
     {
-      self.container.take().unwrap()
+      self.formed.take().unwrap()
     }
     else
     {
       let val = Default::default();
       val
     };
-    container
+    formed
   }
 
   /// Make a new HashMapSubformer. It should be called by a context generated for your structure.
@@ -133,50 +133,50 @@ where
   #[ inline( always ) ]
   pub fn begin
   (
+    formed : core::option::Option< Formed >,
     context : core::option::Option< Context >,
-    container : core::option::Option< Container >,
     on_end : End,
   ) -> Self
   {
     Self
     {
+      formed,
       context,
-      container,
       on_end : Some( on_end ),
       _e_phantom : core::marker::PhantomData,
       _k_phantom : core::marker::PhantomData,
     }
   }
 
-  /// Return context of your struct moving container there. Should be called after configuring the container.
+  /// Return context of your struct moving formed there. Should be called after configuring the formed.
   #[ inline( always ) ]
   pub fn end( mut self ) -> Context
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
-    let container = self.form();
-    on_end.call( container, context )
+    let formed = self.form();
+    on_end.call( formed, context )
   }
 
-  /// Set the whole container instead of setting each element individually.
+  /// Set the whole formed instead of setting each element individually.
   #[ inline( always ) ]
-  pub fn replace( mut self, container : Container ) -> Self
+  pub fn replace( mut self, formed : Formed ) -> Self
   {
-    self.container = Some( container );
+    self.formed = Some( formed );
     self
   }
 
 }
 
-// impl< E, Container > VectorSubformer< E, Container, Container, crate::ReturnContainer >
+// impl< E, Formed > VectorSubformer< E, Formed, Formed, crate::ReturnFormed >
 // where
-//   Container : VectorLike< E > + core::default::Default,
+//   Formed : VectorLike< E > + core::default::Default,
 
-impl< K, E, Container >
-HashMapSubformer< K, E, Container, Container, crate::ReturnContainer >
+impl< K, E, Formed >
+HashMapSubformer< K, E, Formed, Formed, crate::ReturnFormed >
 where
   K : core::cmp::Eq + core::hash::Hash,
-  Container : HashMapLike< K, E > + core::default::Default,
+  Formed : HashMapLike< K, E > + core::default::Default,
 {
 
   /// Create a new instance without context or on end processing. It just returns continaer on end of forming.
@@ -187,25 +187,25 @@ where
     (
       None,
       None,
-      crate::ReturnContainer,
+      crate::ReturnFormed,
     )
   }
 
 }
 
-impl< K, E, Container, Context, End >
-HashMapSubformer< K, E, Container, Context, End >
+impl< K, E, Formed, Context, End >
+HashMapSubformer< K, E, Formed, Context, End >
 where
   K : core::cmp::Eq + core::hash::Hash,
-  Container : HashMapLike< K, E > + core::default::Default,
-  End : ToSuperFormer< Container, Context >,
+  Formed : HashMapLike< K, E > + core::default::Default,
+  End : FormingEnd< Formed, Context >,
 {
 
-  /// Inserts a key-value pair into the container. If the container doesn't exist, it is created.
+  /// Inserts a key-value pair into the formed. If the formed doesn't exist, it is created.
   ///
   /// # Parameters
-  /// - `k`: The key for the value to be inserted. Will be converted into the container's key type.
-  /// - `e`: The value to be inserted. Will be converted into the container's value type.
+  /// - `k`: The key for the value to be inserted. Will be converted into the formed's key type.
+  /// - `e`: The value to be inserted. Will be converted into the formed's value type.
   ///
   /// # Returns
   /// Returns `self` for chaining further insertions or operations.
@@ -216,13 +216,13 @@ where
     K2 : core::convert::Into< K >,
     E2 : core::convert::Into< E >,
   {
-    if self.container.is_none()
+    if self.formed.is_none()
     {
-      self.container = core::option::Option::Some( Default::default() );
+      self.formed = core::option::Option::Some( Default::default() );
     }
-    if let core::option::Option::Some( ref mut container ) = self.container
+    if let core::option::Option::Some( ref mut formed ) = self.formed
     {
-      container.insert( k.into(), e.into() );
+      formed.insert( k.into(), e.into() );
     }
     self
   }
@@ -230,8 +230,8 @@ where
   /// Alias for insert.
   ///
   /// # Parameters
-  /// - `k`: The key for the value to be inserted. Will be converted into the container's key type.
-  /// - `e`: The value to be inserted. Will be converted into the container's value type.
+  /// - `k`: The key for the value to be inserted. Will be converted into the formed's key type.
+  /// - `e`: The value to be inserted. Will be converted into the formed's value type.
   ///
   /// # Returns
   /// Returns `self` for chaining further insertions or operations.

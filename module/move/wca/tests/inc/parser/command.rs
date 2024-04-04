@@ -6,7 +6,7 @@ tests_impls!
 {
   fn basic()
   {
-    let parser = Parser::former().form();
+    let parser = Parser;
 
     // only command
     a_id!
@@ -17,7 +17,7 @@ tests_impls!
         subjects : vec![],
         properties : HashMap::new(),
       },
-      parser.command( ".command" ).unwrap()
+      parser.parse( [ ".command" ] ).unwrap().commands[ 0 ]
     );
 
     // command with one subject
@@ -29,7 +29,7 @@ tests_impls!
         subjects : vec![ "subject".into() ],
         properties : HashMap::new(),
       },
-      parser.command( ".command subject" ).unwrap()
+      parser.parse( [ ".command", "subject" ] ).unwrap().commands[ 0 ]
     );
 
     // command with many subjects
@@ -41,7 +41,7 @@ tests_impls!
         subjects : vec![ "subject1".into(), "subject2".into(), "subject3".into() ],
         properties : HashMap::new(),
       },
-      parser.command( ".command subject1 subject2 subject3" ).unwrap()
+      parser.parse( [ ".command", "subject1", "subject2", "subject3" ] ).unwrap().commands[ 0 ]
     );
 
     // command with one property
@@ -53,7 +53,7 @@ tests_impls!
         subjects : vec![],
         properties : HashMap::from_iter([ ( "prop".into(), "value".into() ) ]),
       },
-      parser.command( ".command prop:value" ).unwrap()
+      parser.parse( [ ".command", "prop:value" ] ).unwrap().commands[ 0 ]
     );
 
     // command with many properties
@@ -70,7 +70,7 @@ tests_impls!
           ( "prop3".into(), "value3".into() )
         ]),
       },
-      parser.command( ".command prop1:value1 prop2:value2 prop3:value3" ).unwrap()
+      parser.parse( [ ".command", "prop1:value1", "prop2:value2", "prop3:value3" ] ).unwrap().commands[ 0 ]
     );
 
     // command with one subject and one property
@@ -82,7 +82,7 @@ tests_impls!
         subjects : vec![ "subject".into() ],
         properties : HashMap::from_iter([ ( "prop".into(), "value".into() ) ]),
       },
-      parser.command( ".command subject prop:value" ).unwrap()
+      parser.parse( [ ".command", "subject", "prop:value" ] ).unwrap().commands[ 0 ]
     );
 
     // command with many subjects and many properties
@@ -104,13 +104,26 @@ tests_impls!
           ( "prop3".into(), "value3".into() ),
         ]),
       },
-      parser.command( ".command subject1 subject2 subject3 prop1:value1 prop2:value2 prop3:value3" ).unwrap()
+      parser.parse( [ ".command", "subject1", "subject2", "subject3", "prop1:value1", "prop2:value2", "prop3:value3" ] ).unwrap().commands[ 0 ]
     );
   }
 
-  fn with_spaces()
+  // aaa : the parser must be able to accept a list of arguments(std::env::args())
+  // aaa : yep
+  fn with_spaces_in_value()
   {
-    let parser = Parser::former().form();
+    let parser = Parser;
+
+    a_id!
+    (
+      ParsedCommand
+      {
+        name : "command".into(),
+        subjects : vec![ "value with spaces".into() ],
+        properties : HashMap::new(),
+      },
+      parser.parse( [ ".command", "value with spaces" ] ).unwrap().commands[ 0 ]
+    );
 
     a_id!
     (
@@ -118,9 +131,9 @@ tests_impls!
       {
         name : "command".into(),
         subjects : vec![],
-        properties : HashMap::new(),
+        properties : HashMap::from_iter([ ( "prop".into(), "value with spaces".into() ) ]),
       },
-      parser.command( "     .command   " ).unwrap()
+      parser.parse( [ ".command", "prop:value with spaces" ] ).unwrap().commands[ 0 ]
     );
 
     a_id!
@@ -128,10 +141,21 @@ tests_impls!
       ParsedCommand
       {
         name : "command".into(),
-        subjects : vec![ "subject".into() ],
-        properties : HashMap::new(),
+        subjects : vec![],
+        properties : HashMap::from_iter([ ( "prop".into(), "value with spaces".into() ) ]),
       },
-      parser.command( "   .command  subject  " ).unwrap()
+      parser.parse( [ ".command", "prop:", "value with spaces" ] ).unwrap().commands[ 0 ]
+    );
+    
+    a_id!
+    (
+      ParsedCommand
+      {
+        name : "command".into(),
+        subjects : vec![],
+        properties : HashMap::from_iter([ ( "prop".into(), "value with spaces".into() ) ]),
+      },
+      parser.parse( [ ".command", "prop", ":value with spaces" ] ).unwrap().commands[ 0 ]
     );
 
     a_id!
@@ -139,16 +163,16 @@ tests_impls!
       ParsedCommand
       {
         name : "command".into(),
-        subjects : vec![ "subject".into() ],
-        properties : HashMap::from_iter([ ( "prop".into(), "value".into() ) ]),
+        subjects : vec![],
+        properties : HashMap::from_iter([ ( "prop".into(), "value with spaces".into() ) ]),
       },
-      parser.command( "   .command  subject  prop:value " ).unwrap()
+      parser.parse( [ ".command", "prop", ":", "value with spaces" ] ).unwrap().commands[ 0 ]
     );
   }
 
   fn not_only_alphanumeric_symbols()
   {
-    let parser = Parser::former().form();
+    let parser = Parser;
 
     a_id!
     (
@@ -158,7 +182,7 @@ tests_impls!
         subjects : vec![],
         properties : HashMap::new(),
       },
-      parser.command( ".additional_command" ).unwrap()
+      parser.parse( [ ".additional_command" ] ).unwrap().commands[ 0 ]
     );
 
     a_id!
@@ -169,7 +193,7 @@ tests_impls!
         subjects : vec![ "subj_ect".into() ],
         properties : HashMap::new(),
       },
-      parser.command( ".command.sub_command subj_ect" ).unwrap()
+      parser.parse( [ ".command.sub_command", "subj_ect" ] ).unwrap().commands[ 0 ]
     );
 
     a_id!
@@ -180,32 +204,13 @@ tests_impls!
         subjects : vec![],
         properties : HashMap::from_iter([ ( "long_prop".into(), "some-value".into() ) ]),
       },
-      parser.command( ".command long_prop:some-value" ).unwrap()
-    );
-  }
-
-  fn same_command_and_prop_delimeter()
-  {
-    let parser = Parser::former()
-    .command_prefix( '-' )
-    .prop_delimeter( '-' )
-    .form();
-
-    a_id!
-    (
-      ParsedCommand
-      {
-        name : "command".into(),
-        subjects : vec![ "subject".into() ],
-        properties : HashMap::from_iter([ ( "prop".into(), "value".into() ) ]),
-      },
-      parser.command( "-command subject prop-value" ).unwrap()
+      parser.parse( [ ".command", "long_prop:some-value" ] ).unwrap().commands[ 0 ]
     );
   }
 
   fn path_in_subject()
   {
-    let parser = Parser::former().form();
+    let parser = Parser;
 
     a_id!
     (
@@ -215,7 +220,7 @@ tests_impls!
         subjects : vec![ "/absolute/path/to/something".into() ],
         properties : HashMap::new(),
       },
-      parser.command( ".command /absolute/path/to/something" ).unwrap()
+      parser.parse( [ ".command", "/absolute/path/to/something" ] ).unwrap().commands[ 0 ]
     );
 
     a_id!
@@ -226,13 +231,13 @@ tests_impls!
         subjects : vec![ "./path/to/something".into() ],
         properties : HashMap::new(),
       },
-      parser.command( ".command ./path/to/something" ).unwrap()
+      parser.parse( [ ".command", "./path/to/something" ] ).unwrap().commands[ 0 ]
     );
   }
 
   fn path_in_property()
   {
-    let parser = Parser::former().form();
+    let parser = Parser;
 
     a_id!
     (
@@ -242,7 +247,7 @@ tests_impls!
         subjects : vec![],
         properties : HashMap::from_iter([ ( "path".into(), "/absolute/path/to/something".into() ) ]),
       },
-      parser.command( ".command path:/absolute/path/to/something" ).unwrap()
+      parser.parse( [ ".command", "path:/absolute/path/to/something" ] ).unwrap().commands[ 0 ]
     );
 
     a_id!
@@ -253,7 +258,7 @@ tests_impls!
         subjects : vec![],
         properties : HashMap::from_iter([ ( "path".into(), "./path/to/something".into() ) ]),
       },
-      parser.command( ".command path:./path/to/something" ).unwrap()
+      parser.parse( [ ".command", "path:./path/to/something" ] ).unwrap().commands[ 0 ]
     );
 
     a_id!
@@ -264,28 +269,13 @@ tests_impls!
         subjects : vec![],
         properties : HashMap::from_iter([ ( "path".into(), "../path/to/something".into() ) ]),
       },
-      parser.command( ".command path:../path/to/something" ).unwrap()
-    );
-
-    let parser = Parser::former()
-    .command_prefix( '/' )
-    .form();
-
-    a_id!
-    (
-      ParsedCommand
-      {
-        name : "command".into(),
-        subjects : vec![],
-        properties : HashMap::from_iter([ ( "path".into(), "/absolute/path/to/something".into() ) ]),
-      },
-      parser.command( "/command path:/absolute/path/to/something" ).unwrap()
+      parser.parse( [ ".command", "path:../path/to/something" ] ).unwrap().commands[ 0 ]
     );
   }
 
   fn list_in_property()
   {
-    let parser = Parser::former().form();
+    let parser = Parser;
 
     a_id!
     (
@@ -295,13 +285,13 @@ tests_impls!
         subjects : vec![],
         properties : HashMap::from_iter([ ( "list".into(), "[1,2,3]".into() ) ]),
       },
-      parser.command( ".command list:[1,2,3]" ).unwrap()
+      parser.parse( [ ".command", "list:[1,2,3]" ] ).unwrap().commands[ 0 ]
     );
   }
 
   fn string_value()
   {
-    let parser = Parser::former().form();
+    let parser = Parser;
 
     a_id!
     (
@@ -311,7 +301,7 @@ tests_impls!
         subjects : vec![ "subject with spaces".into() ],
         properties : HashMap::from_iter([ ( "prop".into(), "property with spaces".into() ) ]),
       },
-      parser.command( r#".command "subject with spaces" prop:"property with spaces""# ).unwrap()
+      parser.parse( [ ".command", "subject with spaces", "prop:property with spaces" ] ).unwrap().commands[ 0 ]
     );
 
     // command in subject and property
@@ -320,10 +310,10 @@ tests_impls!
       ParsedCommand
       {
         name : "command".into(),
-        subjects : vec![ ".command".into() ],
+        subjects : vec![ "\\.command".into() ],
         properties : HashMap::from_iter([ ( "prop".into(), ".command".into() ) ]),
       },
-      parser.command( r#".command ".command" prop:".command""# ).unwrap()
+      parser.parse( [ ".command", "\\.command", "prop:.command" ] ).unwrap().commands[ 0 ]
     );
 
     // with escaped quetes
@@ -335,48 +325,56 @@ tests_impls!
         subjects : vec![ "' queted ' \\ value".into() ],
         properties : HashMap::from_iter([ ( "prop".into(), "some \"quetes\" ' \\ in string".into() ) ]),
       },
-      parser.command( r#".command '\' queted \' \\ value' prop:"some \"quetes\" ' \\ in string""# ).unwrap()
+      parser.parse( [ ".command", "\' queted \' \\ value", "prop:some \"quetes\" ' \\ in string" ] ).unwrap().commands[ 0 ]
     );
   }
 
   fn dot_command()
   {
-    let parser = Parser::former().form();
+    let parser = Parser;
 
-    // single dot
     a_id!
     (
       ParsedCommand
       {
-        name : "".into(),
+        name : ".".into(),
         subjects : vec![],
-        properties : HashMap::from_iter([( "command_prefix".into(), ".".into() ) ]),
+        properties : HashMap::new(),
       },
-      parser.command( "." ).unwrap()
+      parser.parse( [ "." ] ).unwrap().commands[ 0 ]
     );
 
-    // command .
     a_id!
     (
       ParsedCommand
       {
-        name : "".into(),
-        subjects : vec![ "command.".into() ],
-        properties : HashMap::from_iter([( "command_prefix".into(), ".".into() ) ]),
+        name : "command.".into(),
+        subjects : vec![],
+        properties : HashMap::new(),
       },
-      parser.command( ".command." ).unwrap()
+      parser.parse( [ ".command." ] ).unwrap().commands[ 0 ]
     );
-
-    // command . with subjects
+    
     a_id!
     (
       ParsedCommand
       {
-        name : "".into(),
-        subjects : vec![ "command.".into() ],
-        properties : HashMap::from_iter([( "command_prefix".into(), ".".into() ) ]),
+        name : ".?".into(),
+        subjects : vec![],
+        properties : HashMap::new(),
       },
-      parser.command( ".command. <this will be ignored>" ).unwrap()
+      parser.parse( [ ".?" ] ).unwrap().commands[ 0 ]
+    );
+    
+    a_id!
+    (
+      ParsedCommand
+      {
+        name : "command.?".into(),
+        subjects : vec![],
+        properties : HashMap::new(),
+      },
+      parser.parse( [ ".command.?" ] ).unwrap().commands[ 0 ]
     );
   }
 }
@@ -386,9 +384,8 @@ tests_impls!
 tests_index!
 {
   basic,
-  with_spaces,
+  with_spaces_in_value,
   not_only_alphanumeric_symbols,
-  same_command_and_prop_delimeter,
   path_in_subject,
   path_in_property,
   list_in_property,

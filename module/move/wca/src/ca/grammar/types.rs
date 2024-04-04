@@ -1,8 +1,14 @@
 pub( crate ) mod private
 {
   use crate::*;
+  use std::fmt::
+  { 
+    Display, 
+    Formatter 
+  };
   use wtools;
   use wtools::{ error::Result, err };
+  use wtools::Itertools;
 
   /// Available types that can be converted to a `Value`
   ///
@@ -52,24 +58,25 @@ pub( crate ) mod private
   /// # Example:
   ///
   /// ```
-  /// # use wca::{ VerifiedCommand, Value };
+  /// # use wca::{ VerifiedCommand, Value, Args, Props };
   /// # use std::collections::HashMap;
   /// let command = VerifiedCommand
   /// {
   ///   phrase : "command".to_string(),
+  ///   internal_command : false,
   ///   // Here is numeric value used
-  ///   subjects : vec![ Value::Number( 3.14 ) ],
-  ///   properties : HashMap::from_iter(
+  ///   args : Args( vec![ Value::Number( 3.14 ) ] ),
+  ///   props : Props( HashMap::from_iter(
   ///   [
   ///     // Here is string value used
   ///     ( "string_prop".to_string(), Value::String( "value".to_string() ) ),
-  ///   ])
+  ///   ]))
   /// };
   ///
-  /// let number : f32 = command.subjects[ 0 ].clone().into();
+  /// let number : f32 = command.args.get_owned( 0 ).unwrap();
   /// assert_eq!( 3.14, number );
   ///
-  /// let number : i32 = command.subjects[ 0 ].clone().into();
+  /// let number : i32 = command.args.get_owned( 0 ).unwrap();
   /// assert_eq!( 3, number );
   /// ```
   #[ derive( Debug, Clone, PartialEq ) ]
@@ -85,6 +92,38 @@ pub( crate ) mod private
     Bool( bool ),
     /// List
     List( Vec< Value > ),
+  }
+
+  impl Display for Value
+  {
+    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
+    {
+      match self
+      {
+        Value::String( s ) =>
+        {
+          write!( f , "{s}" )?;
+        }
+        Value::Number( n ) =>
+        {
+          write!( f, "{n}" )?;
+        }
+        Value::Path( p ) =>
+        {
+          write!( f, "{}", p.display() )?;
+        }
+        Value::Bool( b ) =>
+        {
+          write!( f, "{b}" )?;
+        }
+        Value::List( list ) =>
+        {
+          let list = list.iter().map( | element | element.to_string() ).join( "," ); // qqq : don't hardcode ", " find way to get original separator
+          write!( f, "{list}" )?;
+        }
+      }
+      Ok( () )
+    }
   }
 
   macro_rules! value_into_impl

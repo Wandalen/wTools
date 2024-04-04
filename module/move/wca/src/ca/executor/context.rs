@@ -1,125 +1,88 @@
 pub( crate ) mod private
 {
-  use std::{ sync::Arc, cell::RefCell };
-  use anymap::{ Map, any::CloneAny };
+  use std::sync::Arc;
 
   /// Container for contexts values
   ///
   /// # Examples:
   ///
   /// ```
-  /// use wca::Context;
-  ///
-  /// let ctx = Context::default();
-  ///
-  /// ctx.insert( 42 );
-  /// assert_eq!( 42, *ctx.get_ref().unwrap() );
-  /// ```
-  ///
-  /// ```
-  /// # use wca::{ Routine, Context, Value, Args, Props };
-  /// let routine = Routine::new_with_ctx
+  /// # use wca::{ Routine, Handler, Context, Value, Args, Props, VerifiedCommand };
+  /// # use std::sync::{ Arc, Mutex };
+  /// let routine = Routine::from( Handler::from
   /// (
-  ///   | ( args, props ), ctx |
+  ///   | ctx : Context, o : VerifiedCommand |
   ///   {
-  ///     let first_arg : i32 = args.get_owned( 0 ).unwrap_or_default();
-  ///     let ctx_value : &mut i32 = ctx.get_or_default();
+  ///     let first_arg : i32 = o.args.get_owned( 0 ).unwrap_or_default();
+  ///     let ctx_value : Arc< Mutex< i32 > > = ctx.get().unwrap();
   ///
-  ///     *ctx_value += first_arg;
-  ///
-  ///     Ok( () )
+  ///     *ctx_value.lock().unwrap() += first_arg;
   ///   }
-  /// );
-  /// let ctx = Context::default();
+  /// ) );
+  /// let ctx = Context::new( Mutex::new( 0 ) );
   /// if let Routine::WithContext( callback ) = routine
   /// {
-  ///   callback( ( Args( vec![ Value::Number( 1.0 ) ] ), Props( Default::default() ) ), ctx.clone() ).unwrap();
+  ///   let w_command = VerifiedCommand
+  ///   {
+  ///     phrase : "command".into(),
+  ///     internal_command : false,
+  ///     args : Args( vec![ Value::Number( 1.0 ) ] ),
+  ///     props : Props( Default::default() ),
+  ///   };
+  ///   callback( ctx.clone(), w_command ).unwrap();
   /// }
-  /// assert_eq!( 1, *ctx.get_ref().unwrap() );
+  /// assert_eq!( 1, *ctx.get::< Mutex< i32 > >().unwrap().lock().unwrap() );
   /// ```
-  // CloneAny needs to deep clone of Context
   // qqq : ?
-  #[ derive( Debug, Clone, former::Former ) ]
+  #[ derive( Debug, Clone ) ]
   pub struct Context
   {
-    inner : Arc< RefCell< Map::< dyn CloneAny > > >
+    inner : Arc< dyn std::any::Any + Send + Sync >,
   }
-
-  impl ContextFormer
-  {
-    /// Initialize Context with some value
-    pub fn with< T : CloneAny >( mut self, value : T ) -> Self
-    {
-      if self.container.inner.is_none()
-      {
-        self.container.inner = Some( Arc::new( RefCell::new( Map::< dyn CloneAny >::new() ) ) );
-      }
-      self.container.inner.as_ref().map( | inner | inner.borrow_mut().insert( value ) );
-      self
-    }
-  }
-
+  
   impl Default for Context
   {
     fn default() -> Self
     {
-      Self { inner : Arc::new( RefCell::new( Map::< dyn CloneAny >::new() ) ) }
+      Self::new( () )
+    }
+  }
+  
+  impl Context
+  {
+    /// Creates a new `Context` object with the given value.
+    ///
+    /// # Arguments
+    ///
+    /// * `value` - The value to be stored in the `Context`. The value must implement the `Send` and `Sync` traits.
+    /// ```
+    // `'static` means that the object must be owned or live at least as a `Context'
+    pub fn new< T : Send + Sync + 'static >( value : T ) -> Self
+    {
+      Self { inner : Arc::new( value ) }
     }
   }
 
   impl Context
   {
-     /// Insert the T value to the context. If it is already exists - replace it
-     pub fn insert< T : CloneAny >( &self, value : T )
-     {
-       self.inner.borrow_mut().insert( value );
-     }
-
-     /// Removes the T value from the context
-     pub fn remove< T : CloneAny >( &mut self ) -> Option< T >
-     {
-       self.inner.borrow_mut().remove::< T >()
-     }
-
-    // qqq : Bohdan : why unsafe?
-    /// Return immutable reference on interior object. ! Unsafe !
-    pub fn get_ref< T : CloneAny >( &self ) -> Option< &T >
+    /// This method retrieves a shared reference to an object of type `T` from the context.
+    ///
+    /// # Arguments
+    ///
+    /// * `&self` - The context object.
+    ///
+    /// # Type Parameters
+    ///
+    /// * `T` - The type of the object to retrieve.
+    ///
+    /// # Returns
+    ///
+    /// An `Option` containing a reference-counted smart pointer (`Arc`) to the object of type `T` if it exists in the context.
+    /// `None` is returned if the object does not exist or if it cannot be downcasted to type `T`.
+    // `'static` means that the object must be owned or live at least as a `Context'
+    pub fn get< T : Send + Sync + 'static >( &self ) -> Option< Arc< T > >
     {
-      unsafe{ self.inner.as_ptr().as_ref()?.get() }
-    }
-
-    /// Return mutable reference on interior object. ! Unsafe !
-    pub fn get_mut< T : CloneAny >( &self ) -> Option< &mut T >
-    {
-      unsafe { self.inner.as_ptr().as_mut()?.get_mut() }
-    }
-
-    /// Insert the value if it doesn't exists, or take an existing value and return mutable reference to it
-    pub fn get_or_insert< T : CloneAny >( &self, value : T ) -> &mut T
-    {
-      if let Some( value ) = self.get_mut()
-      {
-        value
-      }
-      else
-      {
-        self.insert( value );
-        self.get_mut().unwrap()
-      }
-    }
-
-    /// Insert default value if it doesn't exists, or take an existing value and return mutable reference to it
-    pub fn get_or_default< T : CloneAny + Default >( &self ) -> &mut T
-    {
-      self.get_or_insert( T::default() )
-    }
-
-    /// Make a deep clone of the context
-    // qqq : for Bohdan : why is it deep? how is it deep?
-    // qqq : how is it useful? Is it? Examples?
-    pub( crate ) fn deep_clone( &self ) -> Self
-    {
-      Self { inner : Arc::new( RefCell::new( ( *self.inner ).borrow_mut().clone() ) ) }
+      self.inner.clone().downcast::< T >().ok()
     }
   }
 }

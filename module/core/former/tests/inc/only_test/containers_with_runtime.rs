@@ -14,12 +14,12 @@ tests_impls_optional!
     // test.case( "vector : construction" );
 
     let former = Struct1::former();
-    a_id!( former.container.vec_1, None );
-    a_id!( former.container.hashmap_strings_1, None );
-    a_id!( former.container.hashset_strings_1, None );
+    a_id!( former.storage.vec_1, None );
+    a_id!( former.storage.hashmap_strings_1, None );
+    a_id!( former.storage.hashset_strings_1, None );
     a_id!( former.context, None );
-    a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnContainer ) ) );
-    let former2 = Struct1Former::< Struct1, the_module::ReturnContainer >::new();
+    a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnFormed ) ) );
+    let former2 = Struct1Former::< Struct1, the_module::ReturnFormed >::new();
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
 
     let command = Struct1::former().form();

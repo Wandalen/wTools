@@ -10,93 +10,139 @@ pub( crate ) mod private
   use wtools::Itertools;
   use std::rc::Rc;
   use error_tools::for_app::anyhow;
+  use former::Former;
+  use ca::tool::table::format_table;
 
   // qqq : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
 
-  /// Generate `dot` command
-  pub fn dot_command( dictionary : &mut Dictionary )
+  #[ derive( Debug, Default, Copy, Clone, PartialEq, Eq ) ]
+  pub enum LevelOfDetail
   {
-    let mut available_commands = dictionary.commands.keys().cloned().collect::< Vec< _ > >();
-    available_commands.sort();
-
-    let routine = move | args : Args, props : Props |
-    {
-      let prefix : String = props.get_owned( "command_prefix" ).unwrap();
-      if let Some( command ) = args.get_owned::< String >( 0 )
-      {
-        let ac = available_commands
-        .iter()
-        .filter( | cmd | cmd.starts_with( &command ) )
-        .map( | cmd | format!( "{prefix}{cmd}" ) )
-        .collect::< Vec< _ > >();
-
-        if ac.is_empty()
-        {
-          return Err( "Have no commands that starts with `{prefix}{command}`" );
-        }
-        else
-        {
-          println!( "{}", ac.join( "\n" ) );
-        }
-      }
-      else
-      {
-        println!( "{}", available_commands.iter().map( | cmd | format!( "{prefix}{cmd}" ) ).join( "\n" ) );
-      };
-
-      Ok( () )
-    };
-
-    let cmd = Command::former()
-    .hint( "prints all available commands" )
-    .phrase( "" )
-    .subject().hint( "command name" ).kind( Type::String ).optional( true ).end()
-    // qqq : missing hint
-    .property( "command_prefix" ).hint( "?" ).kind( Type::String ).optional( true ).end()
-    .routine( routine )
-    .form();
-
-    dictionary.register( cmd );
+    #[ default ]
+    None,
+    Simple,
+    Detailed,
   }
 
-  // qqq : for Barsik : make possible to change properties order 
-  fn generate_help_content( dictionary : &Dictionary, command : Option< &Command > ) -> String
+  /// Container for arguments passed to a help generator function.
+  #[ derive( Debug, Former ) ]
+  pub struct HelpGeneratorOptions< 'a >
   {
-    if let Some( command ) = command
+    /// Prefix that will be shown before command name
+    #[ default( String::new() ) ]
+    pub command_prefix : String,
+    /// Show help for the specified commands
+    pub for_commands : Vec< &'a Command >,
+    /// Reresents how much information to display for the subjects
+    ///
+    /// - `None` - nothing
+    /// - `Simple` - <subjects>
+    /// - `Detailed` - each subject with information about it. E.g. `<String>`
+    pub subject_detailing : LevelOfDetail,
+    /// Reresents how much information to display for the properties
+    ///
+    /// - `None` - nothing
+    /// - `Simple` - <properties>
+    /// - `Detailed` - each property with information about it. E.g. `<property_name:String>`
+    pub property_detailing : LevelOfDetail,
+    /// Reresents how much information to display for the properties
+    ///
+    /// - `None` - nothing
+    /// - `Simple` - short hint
+    /// - `Detailed` - long hint
+    pub description_detailing : LevelOfDetail,
+    /// If enabled - shows complete description of subjects and properties
+    pub with_footer : bool,
+  }
+
+  // qqq : for Barsik : make possible to change properties order
+  pub( crate ) fn generate_help_content( dictionary : &Dictionary, o : HelpGeneratorOptions< '_ > ) -> String
+  {
+    struct Row
+    {
+      name : String,
+      args : String,
+      hint : String,
+      footer : String,
+    }
+    let for_single_command = | command : &Command |
     {
       let name = &command.phrase;
-      let hint = if command.long_hint.is_empty() { &command.hint } else { &command.long_hint };
-      let subjects = if command.subjects.is_empty() { "" } else { " < subjects > " };
-      let full_subjects = command.subjects.iter().map( | subj | format!( "- {} [{:?}] {}", subj.hint, subj.kind, if subj.optional { "?" } else { "" } ) ).join( "\n\t" );
-      let properties = if command.properties.is_empty() { " " } else { " < properties > " };
-      let full_properties = command.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| format!( "{name} - {} [{:?}] {}", value.hint, value.kind, if value.optional { "?" } else { "" } ) ).join( "\n\t" );
+      let hint = match o.description_detailing
+      {
+        LevelOfDetail::None => "",
+        _ if command.hint.is_empty() && command.long_hint.is_empty() => "",
+        LevelOfDetail::Simple if !command.hint.is_empty() => command.hint.as_str(),
+        LevelOfDetail::Detailed if !command.long_hint.is_empty() => command.long_hint.as_str(),
+        _ if !command.long_hint.is_empty() => command.long_hint.as_str(),
+        _ if !command.hint.is_empty() => command.hint.as_str(),
+        _ => unreachable!(),
+      };
+      let subjects = match o.subject_detailing
+      {
+        LevelOfDetail::None => "".into(),
+        _ if command.subjects.is_empty() => "".into(),
+        LevelOfDetail::Simple => "< subjects >".into(),
+        LevelOfDetail::Detailed => command.subjects.iter().map( | v | format!( "< {}{:?} >", if v.optional { "?" } else { "" }, v.kind ) ).collect::< Vec< _ > >().join( " " ),
+      };
+      let properties = match o.property_detailing
+      {
+        LevelOfDetail::None => "".into(),
+        _ if command.subjects.is_empty() => "".into(),
+        LevelOfDetail::Simple => "< properties >".into(),
+        LevelOfDetail::Detailed => command.properties.iter().map( |( n, v )| format!( "< {n}:{}{:?} >", if v.optional { "?" } else { "" }, v.kind ) ).collect::< Vec< _ > >().join( " " ),
+      };
 
-      format!( "{name}{subjects}{properties}- {hint}\n{}{}",
-      if command.subjects.is_empty() { "".to_string() } else { format!( "\nSubjects:\n\t{}", &full_subjects ) },
-      if command.properties.is_empty() { "".to_string() } else { format!( "\nProperties:\n\t{}",&full_properties ) }, )
+      let footer = if o.with_footer
+      {
+        let full_subjects = command.subjects.iter().map( | subj | format!( "- {} [{}{:?}]", subj.hint, if subj.optional { "?" } else { "" }, subj.kind ) ).join( "\n\t" );
+        let full_properties = format_table( command.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| [ name.clone(), format!( "- {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ] ) ).unwrap().replace( '\n', "\n\t" );
+        format!
+        (
+          "{}{}",
+          if command.subjects.is_empty() { "".to_string() } else { format!( "\nSubjects:\n\t{}", &full_subjects ) },
+          if command.properties.is_empty() { "".to_string() } else { format!( "\nProperties:\n\t{}",&full_properties ) }
+        )
+      } else { "".into() };
+
+      Row
+      {
+        name : format!( "{}{name}", o.command_prefix ),
+        args : format!( "{subjects}{}{properties}", if !subjects.is_empty() || !properties.is_empty() { " " } else { "" } ),
+        hint : format!( "{}{hint}", if hint.is_empty() { "" } else { "- " } ),
+        footer,
+      }
+    };
+    if o.for_commands.len() == 1 || !o.for_commands.is_empty() && !o.with_footer
+    {
+      o.for_commands.into_iter().map( | command |
+      {
+        let row = for_single_command( command );
+        format!
+        (
+          "{}{}{}",
+          format_table([[ row.name, row.args, row.hint ]]).unwrap(),
+          if row.footer.is_empty() { "" } else { "\n" },
+          row.footer
+        )
+      })
+      .join( "\n" )
     }
     else
     {
-      dictionary.commands
+      let rows = dictionary.commands
       .iter()
       .sorted_by_key( |( name, _ )| *name )
-      .map( |( name, cmd )|
-      {
-        let subjects = cmd.subjects.iter().fold( String::new(), | acc, subj | format!( "{acc} <{:?}>", subj.kind ) );
-        let properties = if cmd.properties.is_empty() { " " } else { " < properties > " };
-        let hint = if cmd.hint.is_empty() { &cmd.long_hint } else { &cmd.hint };
+      .map( |( _, cmd )| cmd )
+      .map( for_single_command )
+      .map( | row | [ row.name, row.args, row.hint ] );
 
-        format!( "{name}{subjects}{properties}- {hint}" )
-      })
-      .fold( String::new(), | acc, cmd |
-      {
-        format!( "{acc}\n{cmd}" )
-      })
+      format_table( rows ).unwrap()
     }
   }
 
   /// Available help commands variants
-  #[ derive( Debug, Hash, PartialEq, Eq ) ]
+  #[ derive( Debug, Hash, Eq, PartialEq, Ord, PartialOrd ) ]
   pub enum HelpVariants
   {
     /// Make all available variants
@@ -138,16 +184,16 @@ pub( crate ) mod private
       let generator = helper.clone();
 
       let moved_phrase = phrase.clone();
-      let routine = move | args : Args, props : Props |
+      let routine = move | o : VerifiedCommand |
       {
         let subject_help = grammar.command( &moved_phrase );
         match &subject_help
         {
           Some( Command { routine: Routine::WithoutContext( help ), .. } )
-          if !args.is_empty() => help(( args, props ))?,
+          if !o.args.0.is_empty() => help( o )?,
           _ =>
           {
-            let format_prop : String = props.get_owned( "format" ).unwrap_or_default();
+            let format_prop : String = o.props.get_owned( "format" ).unwrap_or_default();
             let format = match format_prop.as_str()
             {
               "md" | "markdown" => HelpFormat::Markdown,
@@ -159,7 +205,20 @@ pub( crate ) mod private
             }
             else
             {
-              println!( "Help command\n{text}", text = generator.exec( &grammar, None ) );
+              println!
+              (
+                "Help command\n\n{text}",
+                text = generator.exec
+                (
+                  &grammar,
+                  HelpGeneratorOptions::former()
+                  .command_prefix( "." )
+                  .description_detailing( LevelOfDetail::Simple )
+                  .subject_detailing( LevelOfDetail::Simple )
+                  .property_detailing( LevelOfDetail::Simple )
+                  .form()
+                )
+              );
             }
           }
         }
@@ -189,21 +248,29 @@ pub( crate ) mod private
       let generator = helper.clone();
 
       let moved_phrase = phrase.clone();
-      let routine = move | args : Args, props : Props |
+      let routine = move | o : VerifiedCommand |
       {
         let full_help = grammar.command( &moved_phrase );
         match &full_help
         {
           Some( Command { routine: Routine::WithoutContext( help ), .. } )
-          if args.is_empty() => help(( args, props ))?,
+          if o.args.0.is_empty() => help( o )?,
           _ =>
           {
-            let command = args.get_owned::< String >( 0 ).unwrap();
+            let command = o.args.get_owned::< String >( 0 ).unwrap();
             let cmd = grammar.commands.get( &command ).ok_or_else( || anyhow!( "Can not found help for command `{command}`" ) )?;
 
-            let text = generator.exec( &grammar, Some( cmd ) );
+            let args = HelpGeneratorOptions::former()
+            .command_prefix( "." )
+            .for_commands([ cmd ])
+            .description_detailing( LevelOfDetail::Detailed )
+            .subject_detailing( LevelOfDetail::Simple )
+            .property_detailing( LevelOfDetail::Simple )
+            .with_footer( true )
+            .form();
+            let text = generator.exec( &grammar, args );
 
-            println!( "{text}" );
+            println!( "Help command\n\n{text}" );
           }
         };
 
@@ -275,15 +342,15 @@ pub( crate ) mod private
     // }
   }
 
-  type HelpFunctionFn = Rc< dyn Fn( &Dictionary, Option< &Command > ) -> String >;
+  type HelpFunctionFn = Rc< dyn Fn( &Dictionary, HelpGeneratorOptions< '_ > ) -> String >;
 
   /// Container for function that generates help string for any command
   ///
   /// ```
-  /// # use wca::ca::help::HelpGeneratorFn;
+  /// # use wca::ca::help::{ HelpGeneratorOptions, HelpGeneratorFn };
   /// use wca::{ Command, Dictionary };
   ///
-  /// fn my_help_generator( grammar : &Dictionary, command : Option< &Command > ) -> String
+  /// fn my_help_generator( dictionary : &Dictionary, args : HelpGeneratorOptions< '_ > ) -> String
   /// {
   ///   format!( "Help content based on grammar and command" )
   /// }
@@ -291,10 +358,10 @@ pub( crate ) mod private
   /// let help_fn = HelpGeneratorFn::new( my_help_generator );
   /// # let grammar = &Dictionary::former().form();
   ///
-  /// help_fn.exec( grammar, None );
+  /// help_fn.exec( grammar, HelpGeneratorOptions::former().form() );
   /// // or
   /// # let cmd = Command::former().form();
-  /// help_fn.exec( grammar, Some( &cmd ) );
+  /// help_fn.exec( grammar, HelpGeneratorOptions::former().for_commands( [ &cmd ] ).form() );
   /// ```
   #[ derive( Clone ) ]
   pub struct HelpGeneratorFn( HelpFunctionFn );
@@ -312,7 +379,7 @@ pub( crate ) mod private
     /// Wrap a help function
     pub fn new< HelpFunction >( func : HelpFunction ) -> Self
     where
-      HelpFunction : Fn( &Dictionary, Option< &Command > ) -> String + 'static
+      HelpFunction : Fn( &Dictionary, HelpGeneratorOptions< '_ > ) -> String + 'static
     {
         Self( Rc::new( func ) )
     }
@@ -321,9 +388,9 @@ pub( crate ) mod private
   impl HelpGeneratorFn
   {
     /// Executes the function to generate help content
-    pub fn exec( &self, dictionary : &Dictionary, command : Option< &Command > ) -> String
+    pub fn exec( &self, dictionary : &Dictionary, args : HelpGeneratorOptions< '_ > ) -> String
     {
-      self.0( dictionary, command )
+      self.0( dictionary, args )
     }
   }
 
@@ -341,6 +408,6 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   protected use HelpGeneratorFn;
-  protected use dot_command;
+  protected use HelpGeneratorOptions;
   prelude use HelpVariants;
 }

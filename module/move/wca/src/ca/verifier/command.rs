@@ -1,24 +1,24 @@
 pub( crate ) mod private
 {
   use crate::*;
-  use std::collections::HashMap;
 
   /// Represents a grammatically correct command with a phrase descriptor, a list of command subjects, and a set of command options.
   ///
   /// # Example:
   ///
   /// ```
-  /// # use wca::{ VerifiedCommand, Value };
+  /// # use wca::{ VerifiedCommand, Value, Args, Props };
   /// # use std::collections::HashMap;
   /// VerifiedCommand
   /// {
   ///   phrase : "command".to_string(),
-  ///   subjects : vec![ Value::String( "subject_value".to_string() ), /* ... */ ],
-  ///   properties : HashMap::from_iter(
+  ///   internal_command : false,
+  ///   args : Args( vec![ Value::String( "subject_value".to_string() ), /* ... */ ] ),
+  ///   props : Props( HashMap::from_iter(
   ///   [
   ///     ( "prop_name".to_string(), Value::Number( 42.0 ) ),
   ///     /* ... */
-  ///   ])
+  ///   ]))
   /// };
   /// ```
   ///
@@ -29,10 +29,12 @@ pub( crate ) mod private
   {
     /// Phrase descriptor for command.
     pub phrase : String,
+    /// Flag indicating whether a command is internal or not.
+    pub internal_command : bool,
     /// Command subjects.
-    pub subjects : Vec< Value >,
+    pub args : Args,
     /// Command options.
-    pub properties : HashMap< String, Value >,
+    pub props : Props,
   }
 
 }

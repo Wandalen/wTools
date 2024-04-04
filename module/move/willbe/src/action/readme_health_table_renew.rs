@@ -10,13 +10,10 @@ mod private
     io::{ Write, Read, Seek, SeekFrom },
     collections::HashMap,
   };
-  use cargo_metadata::
-  {
-    Dependency,
-    DependencyKind,
-    Package
-  };
-  // qqq : for Petro : don't use cargo_metadata and Package directly, use facade
+
+  // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
+  // aaa : ✅
+
 
   use convert_case::{ Case, Casing };
   use toml_edit::Document;
@@ -35,7 +32,6 @@ mod private
     }
   };
   use manifest::private::repo_url;
-  use workspace::Workspace;
   use _path::AbsolutePath;
 
   static TAG_TEMPLATE: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
@@ -119,6 +115,8 @@ mod private
     user_and_repo: String,
     /// List of branches in the repository.
     branches: Option< Vec< String > >,
+    /// workspace root
+    workspace_root : String,
   }
 
   /// Structure that holds the parameters for generating a table.
@@ -202,7 +200,7 @@ mod private
         {
           user_and_repo = url::git_info_extract( core_url )?;
         }
-        Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches } )
+        Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches, workspace_root: path.to_string_lossy().to_string() } )
       }
     }
 
@@ -326,23 +324,23 @@ mod private
   }
 
   /// Return topologically sorted modules name, from packages list, in specified directory.
-  fn directory_names( path : PathBuf, packages : &[ Package ] ) -> Result< Vec< String > >
+  fn directory_names( path : PathBuf, packages : &[ workspace::WorkspacePackage ] ) -> Result< Vec< String > >
   {
     let path_clone = path.clone();
-    let module_package_filter: Option< Box< dyn Fn( &Package ) -> bool > > = Some
+    let module_package_filter: Option< Box< dyn Fn( &workspace::WorkspacePackage ) -> bool > > = Some
     (
       Box::new
       (
         move | p |
-        p.publish.is_none() && p.manifest_path.starts_with( &path )
+        p.publish().is_none() && p.manifest_path().starts_with( &path )
       )
     );
-    let module_dependency_filter: Option< Box< dyn Fn( &Package, &Dependency) -> bool > > = Some
+    let module_dependency_filter: Option< Box< dyn Fn( &workspace::WorkspacePackage, &workspace::Dependency ) -> bool > > = Some
     (
       Box::new
       (
         move | _, d |
-        d.path.is_some() && d.kind != DependencyKind::Development && d.path.as_ref().unwrap().starts_with( &path_clone )
+        d.path().is_some() && d.kind() != workspace::DependencyKind::Development && d.path().as_ref().unwrap().starts_with( &path_clone )
       )
     );
     let module_packages_map = packages::filter
@@ -351,7 +349,18 @@ mod private
       packages::FilterMapOptions { package_filter: module_package_filter, dependency_filter: module_dependency_filter },
     );
     let module_graph = graph::construct( &module_packages_map );
-    graph::toposort( module_graph ).map_err( | err | err!( "{}", err ) )
+    let names = graph::topological_sort_with_grouping( module_graph )
+    .into_iter()
+    .map
+    ( 
+      | mut group | 
+      {
+        group.sort();
+        group 
+      } 
+    ).flatten().collect::< Vec< _ > >();
+    
+    Ok(names)
   }
 
   /// Generate row that represents a module, with a link to it in the repository and optionals for stability, branches, documentation and links to the gitpod.
@@ -360,7 +369,9 @@ mod private
     let mut rou = format!( "| [{}]({}/{}) |", &module_name, &table_parameters.base_path, &module_name );
     if table_parameters.include_stability
     {
-      rou.push_str( &stability_generate( &stability.as_ref().unwrap() ) );
+      let mut stability = stability_generate( &stability.as_ref().unwrap() );
+      stability.push_str( " |" );
+      rou.push_str( &stability );
     }
     if parameters.branches.is_some() && table_parameters.include_branches
     {
@@ -372,9 +383,71 @@ mod private
     }
     if table_parameters.include
     {
-      rou.push_str( &format!( " [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial/{}) |", &module_name, &module_name, parameters.core_url ) );
+      let path = Path::new( table_parameters.base_path.as_str() ).join( &module_name );
+      let p = Path::new( &parameters.workspace_root ).join( &path );
+      // let path = table_parameters.base_path.
+      let example = if let Some( name ) = find_example_file( p.as_path(), &module_name )
+      {
+        let path = path.to_string_lossy().replace( "/", "\\" ).replace( "\\", "%2F" );
+        let file_name = name.split( "\\" ).last().unwrap();
+        let name = file_name.strip_suffix( ".rs" ).unwrap();
+        format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={path}%2Fexamples%2F{file_name},RUN_POSTFIX=--example%20{name}/{})", parameters.core_url )
+      }
+      else 
+      {
+        "".into()
+      };
+      rou.push_str( &format!( " {} |", example ) );
     }
     format!( "{rou}\n" )
+  }
+  
+  /// todo
+  pub fn find_example_file(base_path : &Path, module_name : &str ) -> Option< String > 
+  {
+    let examples_dir = base_path.join("examples" );
+
+    if examples_dir.exists() && examples_dir.is_dir()
+    {
+      if let Ok( entries ) = std::fs::read_dir( &examples_dir ) 
+      {
+        for entry in entries 
+        {
+          if let Ok( entry ) = entry 
+          {
+            let file_name = entry.file_name();
+            if let Some( file_name_str ) = file_name.to_str() 
+            {
+              if file_name_str == format!( "{module_name}_trivial.rs" ) 
+              {
+                return Some( entry.path().to_string_lossy().into() )
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // If module_trivial.rs doesn't exist, return any other file in the examples directory
+    if let Ok( entries ) = std::fs::read_dir( &examples_dir ) 
+    {
+      for entry in entries 
+      {
+        if let Ok( entry ) = entry 
+        {
+          let file_name = entry.file_name();
+          if let Some( file_name_str ) = file_name.to_str() 
+          {
+            if file_name_str.ends_with( ".rs" ) 
+            {
+              return Some( entry.path().to_string_lossy().into() )
+            }
+          }
+        }
+      }
+    }
+
+    None
   }
 
   /// Generate stability cell based on stability
@@ -382,11 +455,11 @@ mod private
   {
     match stability
     {
-      Stability::Experimental => " [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) |".into(),
-      Stability::Stable => " [![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](https://github.com/emersion/stability-badges#stable) |".into(),
-      Stability::Deprecated => " [![stability-deprecated](https://img.shields.io/badge/stability-deprecated-red.svg)](https://github.com/emersion/stability-badges#deprecated) |".into(),
-      Stability::Unstable => " [![stability-unstable](https://img.shields.io/badge/stability-unstable-yellow.svg)](https://github.com/emersion/stability-badges#unstable) |".into(),
-      Stability::Frozen => " [![stability-frozen](https://img.shields.io/badge/stability-frozen-blue.svg)](https://github.com/emersion/stability-badges#frozen) |".into(),
+      Stability::Experimental => " [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)".into(),
+      Stability::Stable => " [![stability-stable](https://img.shields.io/badge/stability-stable-green.svg)](https://github.com/emersion/stability-badges#stable)".into(),
+      Stability::Deprecated => " [![stability-deprecated](https://img.shields.io/badge/stability-deprecated-red.svg)](https://github.com/emersion/stability-badges#deprecated)".into(),
+      Stability::Unstable => " [![stability-unstable](https://img.shields.io/badge/stability-unstable-yellow.svg)](https://github.com/emersion/stability-badges#unstable)".into(),
+      Stability::Frozen => " [![stability-frozen](https://img.shields.io/badge/stability-frozen-blue.svg)](https://github.com/emersion/stability-badges#frozen)".into(),
     }
   }
 
@@ -440,7 +513,7 @@ mod private
     .map
     (
       | b |
-      format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/Module{}Push.yml?label=&branch={b})]({}/actions/workflows/Module{}Push.yml?query=branch%3A{})", table_parameters.user_and_repo, &module_name.to_case( Case::Pascal ), table_parameters.core_url, &module_name.to_case( Case::Pascal ), b )
+      format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/module_{}_push.yml?label=&branch={b})]({}/actions/workflows/module_{}_push.yml?query=branch%3A{})", table_parameters.user_and_repo, &module_name.to_case( Case::Snake ), table_parameters.core_url, &module_name.to_case( Case::Snake ), b )
     )
     .collect::< Vec< String > >()
     .join( " | " );
@@ -526,6 +599,7 @@ crate::mod_interface!
   protected use Stability;
   /// Generate Stability badge
   protected use stability_generate;
+  protected use find_example_file;
   /// Create Table.
   orphan use readme_health_table_renew;
 }

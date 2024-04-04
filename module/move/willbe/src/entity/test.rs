@@ -4,6 +4,7 @@ mod private
   // qqq : for Petro : use https://github.com/console-rs/indicatif
 
   use crate::*;
+  use table::*;
   use std::
   {
     collections::{ BTreeMap, BTreeSet, HashSet },
@@ -16,26 +17,31 @@ mod private
   use std::fmt::{ Debug, Display };
   use std::marker::PhantomData;
   use std::path::PathBuf;
-  use cargo_metadata::Package;
-  // qqq : for Petro : don't use cargo_metadata directly, use facade
+  // aaa : for Petro : don't use cargo_metadata directly, use facade
+  // aaa : ✅
   use colored::Colorize;
   // qqq : for Petro : don't do micro imports
-  use prettytable::{ Cell, Row, Table };
   // qqq : for Petro : don't do micro imports
   #[ cfg( feature = "progress_bar" ) ]
-  use indicatif::{ MultiProgress, ProgressBar, ProgressStyle };
+  use indicatif::
+  { 
+    MultiProgress, 
+    ProgressBar, 
+    ProgressStyle 
+  };
   use rayon::ThreadPoolBuilder;
-  use process::Report;
+  use process_tools::process::*;
   use wtools::error::anyhow::{ Error, format_err };
   use wtools::iter::Itertools;
   use wtools::error::Result;
   use former::Former;
   use channel::Channel;
   use optimization::Optimization;
+  use workspace::WorkspacePackage;
 
   /// Newtype for package name
   #[ derive( Debug, Default, Clone ) ]
-  struct PackageName( String );
+  pub struct PackageName( String );
 
   /// Represents a variant for testing purposes.
   #[ derive( Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Former ) ]
@@ -53,7 +59,7 @@ mod private
   {
     fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
     {
-      let features = if self.features.is_empty() { " ".to_string() } else { self.features.iter().join( ", " ) };
+      let features = if self.features.is_empty() { " ".to_string() } else { self.features.iter().join( " " ) };
       writeln!( f, "{} {} {}", self.optimization, self.channel, features )?;
       Ok( () )
     }
@@ -94,7 +100,7 @@ mod private
     /// `variants_cap` - Maximum of subset in powerset
     pub fn try_from
     (
-      packages : &[ Package ],
+      packages : &[ WorkspacePackage ],
       channels : &HashSet< Channel >,
       power : u32,
       include_features : Vec< String >,
@@ -136,6 +142,7 @@ mod private
   #[ derive( Debug ) ]
   pub struct TestPackagePlan
   {
+    enabled_features : BTreeSet< String >,
     package : PathBuf,
     test_variants : BTreeSet< TestVariant >,
   }
@@ -145,11 +152,53 @@ mod private
     fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
     {
       writeln!( f, "Package : {}\nThe tests will be executed using the following configurations :", self.package.file_name().unwrap().to_string_lossy() )?;
+      let mut all_features = BTreeSet::new();
       for variant in &self.test_variants
       {
-        let feature = if variant.features.is_empty() { "".to_string() } else { variant.features.iter().join( "," ) };
-        writeln!( f, "  [ optimization : {} | channel : {} | feature : [ {feature} ] ]", variant.optimization, variant.channel )?;
+        let features = variant.features.iter().cloned();
+        if features.len() == 0
+        {
+          all_features.extend( [ "[]".to_string() ] );
+        }
+        all_features.extend( features );
       }
+      let mut ff = Vec::from_iter( self.enabled_features.iter().cloned() );
+      for feature in all_features
+      {
+        if !ff.contains( &feature )
+        {
+          ff.push( feature );
+        }
+      }
+      let mut table = Table::default();
+      // let format = format();
+      // table.set_format( format );
+      
+      let mut header_row = Row::new();
+      header_row.add_cell( "Channel" );
+      header_row.add_cell( "Opt" );
+      
+      for feature in &ff
+      {
+        header_row.add_cell( feature );
+      }
+      table.set_header( header_row );
+
+      for variant in &self.test_variants
+      {
+        let mut row = Row::new();
+
+        row.add_cell( &variant.channel.to_string() );
+        row.add_cell( &variant.optimization.to_string() );
+        let counter = 0;
+        let flag = true;
+        generate_features_cells(&mut ff, variant, &mut row, counter, flag, &self.enabled_features );
+
+        table.add_row( row );
+      }
+      // aaa : for Petro : bad, DRY
+      // aaa : replace with method
+      writeln!( f, "{}", table )?;
       Ok( () )
     }
   }
@@ -169,7 +218,7 @@ mod private
     /// `variants_cap` - Maximum of subset in powerset
     fn try_from
     (
-      package : &Package,
+      package : &WorkspacePackage,
       channels : &HashSet< Channel >,
       power : u32,
       include_features : &[ String ],
@@ -181,7 +230,7 @@ mod private
       variants_cap : u32,
     ) -> Result< Self >
     {
-      let dir = package.manifest_path.parent().unwrap().as_std_path().to_path_buf();
+      let dir = package.manifest_path().parent().unwrap().as_std_path().to_path_buf();
       let mut test_variants = BTreeSet::new();
       let features_powerset = features::features_powerset
       (
@@ -216,6 +265,7 @@ mod private
       (
         Self
         {
+          enabled_features: enabled_features.iter().cloned().collect(),
           package : dir,
           test_variants,
         }
@@ -223,6 +273,29 @@ mod private
     }
   }
 
+  fn generate_features_cells( ff : &mut Vec< String >, variant : &TestVariant, row : &mut Row, mut counter : usize, mut flag : bool, enabled_features : &BTreeSet< String > ) 
+  {
+    for feature in ff
+    {
+      let mut c = "+";
+      if variant.features.is_empty() && counter == enabled_features.len() && flag
+      {
+        flag = false;
+        row.add_cell( c );
+      } 
+      else if variant.features.contains( feature )
+      {
+        row.add_cell( c );
+      } 
+      else 
+      {
+        c = "";
+        row.add_cell( c );
+      }
+      counter += 1;
+    }
+  }
+  
   #[ derive( Debug, Former ) ]
   pub struct PackageTestOptions< 'a >
   {
@@ -237,9 +310,9 @@ mod private
   {
     phantom : PhantomData< &'a () >,
     #[ cfg( feature = "progress_bar" ) ]
-    multi_progress : &'a MultiProgress,
+    multi_progress : &'a Option< &'a MultiProgress >,
     #[ cfg( feature = "progress_bar" ) ]
-    progress_bar : &'a ProgressBar
+    progress_bar : &'a Option< ProgressBar >
   }
 
 
@@ -247,7 +320,7 @@ mod private
   {
     pub fn option_temp(  mut self, value : impl Into< Option< PathBuf > > ) -> Self
     {
-      self.container.temp_path = value.into();
+      self.storage.temp_path = value.into();
       self
     }
   }
@@ -311,7 +384,7 @@ mod private
   ///
   /// Returns a `Result` containing a `Report` if the command is executed successfully,
   /// or an error if the command fails to execute.
-  pub fn _run< P >( path : P, options : SingleTestOptions ) -> Result< Report, ( Report, Error ) >
+  pub fn _run< P >( path : P, options : SingleTestOptions ) -> Result< Report, Report >
   where
     P : AsRef< Path >
   {
@@ -327,23 +400,23 @@ mod private
         Report
         {
           command : format!( "{program} {}", args.join( " " ) ),
-          path : path.as_ref().to_path_buf(),
           out : String::new(),
           err : String::new(),
+          current_path: path.as_ref().to_path_buf(),
+          error: Ok( () ),
         }
       )
     }
     else
     {
       let envs = if options.backtrace { [( "RUST_BACKTRACE".to_string(), "full".to_string() )].into_iter().collect() } else { HashMap::new() };
-      let options = process::Run::former()
-      .application( program )
+      Run::former()
+      .bin_path( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-      .path( path.as_ref().to_path_buf() )
+      .current_path( path.as_ref().to_path_buf() )
       .joining_streams( true )
       .env_variable( envs )
-      .form();
-      process::run( options )
+      .run()
     }
   }
 
@@ -405,7 +478,7 @@ mod private
   {
     pub fn option_temp(  mut self, value : impl Into< Option< PathBuf > > ) -> Self
     {
-      self.container.temp_path = value.into();
+      self.storage.temp_path = value.into();
       self
     }
   }
@@ -433,6 +506,8 @@ mod private
     ///   feature names and the values are `Report` structs representing the test results for
     ///   the specific feature and channel.
     pub tests : BTreeMap< TestVariant, Result< Report, Report > > ,
+    /// Enabled features
+    pub enabled_features : BTreeSet< String >,
     // qqq : for Petro : rid off map of map of map, keep flat map
   }
 
@@ -444,29 +519,37 @@ mod private
       {
         return Ok( () )
       }
-      let mut table = Table::new();
+      let mut failed = 0;
+      let mut success = 0;
       let mut all_features = BTreeSet::new();
       for variant in self.tests.keys()
       {
         let features = variant.features.iter().cloned();
         if features.len() == 0
         {
-          all_features.extend( [ "[ ]".to_string() ] );
+          all_features.extend( [ "[]".to_string() ] );
         }
         all_features.extend( features );
       }
-      let mut header_row = Row::empty();
-      header_row.add_cell( Cell::new( "Result" ) );
-      header_row.add_cell( Cell::new( "Channel" ) );
-      header_row.add_cell( Cell::new( "Optimization" ) );
-      for feature in &all_features
+      let mut ff = Vec::from_iter( self.enabled_features.iter().cloned() );
+      for feature in all_features
       {
-        header_row.add_cell( Cell::new( feature )  );
+        if !ff.contains( &feature )
+        {
+          ff.push( feature );
+        }
       }
-      table.add_row( header_row );
-
-      let mut failed = 0;
-      let mut success = 0;
+      let mut table = Table::default();
+      let mut header_row = Row::new();
+      header_row.add_cell( "Result" );
+      header_row.add_cell( "Channel" );
+      header_row.add_cell( "Opt" );
+      for feature in &ff
+      {
+        header_row.add_cell( feature );
+      }
+      table.set_header( header_row );
+      
       writeln!( f, "{} {}\n", "\n=== Module".bold(), self.package_name.0.bold() )?;
       if self.tests.is_empty()
       {
@@ -475,7 +558,7 @@ mod private
       }
       for ( variant, result) in &self.tests
       {
-        let mut row = Row::empty();
+        let mut row = Row::new();
         let result_text = match result
         {
           Ok( _ ) =>
@@ -488,30 +571,17 @@ mod private
             failed += 1;
             let mut out = report.out.replace( "\n", "\n      " );
             out.push_str( "\n" );
-            write!( f, " ❌  > {}\n{out}", report.command )?;
+            write!( f, " ❌  > {}\n\n{out}", report.command )?;
             "❌"
           },
         };
-        row.add_cell( Cell::new( result_text ) );
-        row.add_cell( Cell::new( &variant.channel.to_string() ) );
-        row.add_cell( Cell::new( &variant.optimization.to_string() ) );
-        let mut a = true;
-        for feature in &all_features
-        {
-          if variant.features.is_empty() && a
-          {
-            a = false;
-            row.add_cell( Cell::new( "+" ) );
-          }
-          else if variant.features.contains( feature )
-          {
-            row.add_cell( Cell::new( "+" ) );
-          }
-          else
-          {
-            row.add_cell( Cell::new( "" ) );
-          }
-        }
+        row.add_cell( result_text );
+        row.add_cell( &variant.channel.to_string() );
+        row.add_cell( &variant.optimization.to_string() );
+        let counter = 0;
+        let flag = true;
+        generate_features_cells( &mut ff, variant, &mut row, counter, flag, &self.enabled_features );
+
 
         table.add_row( row );
       }
@@ -558,7 +628,7 @@ mod private
     pub failure_reports : Vec< TestReport >,
   }
 
-  impl std::fmt::Display for TestsReport
+  impl Display for TestsReport
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
@@ -602,6 +672,7 @@ mod private
   {
     let mut report = TestReport::default();
     report.dry = options.dry;
+    report.enabled_features = options.plan.enabled_features.clone();
     let report = Arc::new( Mutex::new( report ) );
     let dir = options.plan.package.clone();
 
@@ -627,19 +698,7 @@ mod private
 
               if let Some( p ) = options.temp_path.clone()
               {
-                // let path = p.join
-                // (
-                //   format!
-                //   (
-                //     "{}_{}_{}_{}",
-                //     options.plan.package.file_name().unwrap().to_string_lossy(),
-                //     optimization,
-                //     channel,
-                //     features.iter().join( "," )
-                //   )
-                // );
                 let path = p.join( path_tools::path::unique_folder_name().unwrap() );
-                // let path = p.join( path_tools::path::unique_folder_name().err_with( || report.clone() ).unwrap() );
                 // qqq : for Petro : rid off unwrap
                 std::fs::create_dir_all( &path ).unwrap();
                 args_t = args_t.temp_directory_path( path );
@@ -647,14 +706,29 @@ mod private
               #[ cfg( feature = "progress_bar" ) ]
               let _s =
               {
-                let spinner = options.progress_bar_feature.as_ref().unwrap().multi_progress.add( ProgressBar::new_spinner().with_message( format!( "start : {}", variant ) ) );
-                spinner.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
-                spinner
+                let s = if let Some( multi_progress ) = options.progress_bar_feature.as_ref().and_then( | f | f.multi_progress.as_ref() )
+                {
+                  let s = multi_progress.add( ProgressBar::new_spinner().with_message( format!( "{}", variant ) ) );
+                  s.enable_steady_tick( std::time::Duration::from_millis( 100 ) ); 
+                  Some( s )
+                }
+                else 
+                { 
+                  None
+                };
+                // spinner.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
+                s
               };
-              let cmd_rep = _run( dir, args_t.form() );
-              r.lock().unwrap().tests.insert( variant.clone(), cmd_rep.map_err( | e | e.0 ) );
+              let args = args_t.form();
+              let temp_dir = args.temp_directory_path.clone();
+              let cmd_rep = _run( dir, args );
+              r.lock().unwrap().tests.insert( variant.clone(), cmd_rep );
               #[ cfg( feature = "progress_bar" ) ]
-              options.progress_bar_feature.as_ref().unwrap().progress_bar.inc( 1 );
+              options.progress_bar_feature.as_ref().unwrap().progress_bar.as_ref().map( | b | b.inc( 1 ) );
+              if let Some( path ) = temp_dir
+              {
+                std::fs::remove_dir_all( path ).unwrap();
+              }
             }
           );
         }
@@ -691,11 +765,21 @@ mod private
               #[ cfg( feature = "progress_bar" ) ]
               let pb =
               {
-                let pb = args.feature.as_ref().unwrap().multiprocess.add( ProgressBar::new( plan.test_variants.len() as u64 ) );
-                pb.set_style( args.feature.as_ref().unwrap().style.clone() );
-                pb.inc( 0 );
+                let pb = if let Some( feature ) = args.feature.as_ref()
+                {
+                  let pb = feature.multiprocess.add(ProgressBar::new(plan.test_variants.len() as u64));
+                  pb.set_style( args.feature.as_ref().unwrap().style.clone() );
+                  pb.inc( 0 );
+                  Some( pb )
+                }
+                else 
+                { 
+                  None
+                };
                 pb
               };
+              #[ cfg( feature = "progress_bar" ) ]
+              let multi_progress = args.feature.as_ref().map( | f | &f.multiprocess );
               let test_package_options = PackageTestOptions::former().option_temp( args.temp_path.clone() ).plan( plan ).dry( args.dry );
               #[ cfg( feature = "progress_bar" ) ]
               let test_package_options = test_package_options.progress_bar_feature
@@ -703,7 +787,7 @@ mod private
                 PackageTestOptionsProgressBarFeature
                 {
                   phantom : PhantomData,
-                  multi_progress : &args.feature.as_ref().unwrap().multiprocess,
+                  multi_progress : &multi_progress,
                   progress_bar : &pb,
                 }
               );

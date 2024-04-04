@@ -6,6 +6,7 @@ pub( crate ) mod private
   // use former::Former;
   use std::collections::HashMap;
   use wtools::{ error, error::Result, err };
+  use ca::help::private::{ HelpGeneratorOptions, LevelOfDetail, generate_help_content };
 
   // TODO: Remove Clone
   /// Converts a `ParsedCommand` to a `VerifiedCommand` by performing validation and type casting on values.
@@ -47,12 +48,12 @@ pub( crate ) mod private
   //   /// Insert a command to the commands list
   //   pub fn command( mut self, command : Command ) -> Self
   //   {
-  //     let mut commands = self.container.commands.unwrap_or_default();
+  //     let mut commands = self.storage.commands.unwrap_or_default();
   //
   //     let command_variants = commands.entry( command.phrase.to_owned() ).or_insert_with( Vec::new );
   //     command_variants.push( command );
   //
-  //     self.container.commands = Some( commands );
+  //     self.storage.commands = Some( commands );
   //     self
   //   }
   //
@@ -61,7 +62,7 @@ pub( crate ) mod private
   //   where
   //     V : Into< Vec< Command > >
   //   {
-  //     let mut self_commands = self.container.commands.unwrap_or_default();
+  //     let mut self_commands = self.storage.commands.unwrap_or_default();
   //
   //     for command in commands.into()
   //     {
@@ -69,7 +70,7 @@ pub( crate ) mod private
   //       command_variants.push( command );
   //     }
   //
-  //     self.container.commands = Some( self_commands );
+  //     self.storage.commands = Some( self_commands );
   //     self
   //   }
   // }
@@ -116,57 +117,42 @@ pub( crate ) mod private
       None
     }
 
-    fn find_variant< 'a >
+    fn get_count_from_properties
     (
-      variants: &'a Command,
-      raw_command : &ParsedCommand,
-    ) -> Option< &'a Command >
+      properties : &HashMap< String, ValueDescription >,
+      properties_aliases : &HashMap< String, String >,
+      raw_properties : &HashMap< String, String >
+    ) -> usize
     {
-      let mut maybe_valid_variants = vec![];
-
-      for variant @ Command
-      {
-        subjects,
-        properties,
-        properties_aliases,
-        ..
-      }
-      in [ variants ]
-      {
-        let raw_subjects_count = raw_command.subjects.len();
-        let expected_subjects_count = subjects.len();
-        if raw_subjects_count > expected_subjects_count { continue; }
-
-        let mut maybe_subjects_count = 0_usize;
-        for ( k, _v ) in &raw_command.properties
-        {
-          if properties.contains_key( k ) { continue; }
-          if let Some( key ) = properties_aliases.get( k )
-          {
-            if properties.contains_key( key ) { continue; }
-          }
-          maybe_subjects_count += 1;
-        }
-
-        if raw_subjects_count + maybe_subjects_count > expected_subjects_count { continue; }
-
-        maybe_valid_variants.push( variant );
-      }
-
-      // if maybe_valid_variants.len() == 1 { return Some( maybe_valid_variants[ 0 ] ) }
-      // qqq: provide better variant selection( E.g. based on types )
-      if !maybe_valid_variants.is_empty() { return Some( maybe_valid_variants[ 0 ] ) }
-      else { None }
+      raw_properties.iter()
+        .filter( |( k, _ )| !( properties.contains_key( *k ) || properties_aliases.get( *k ).map_or( false, | key | properties.contains_key( key ) ) ) )
+        .count()
     }
-    
-    // qqq : for Barsik : 
+
+    fn is_valid_command_variant( subjects_count : usize, raw_count : usize, possible_count : usize ) -> bool
+    {
+      raw_count + possible_count <= subjects_count
+    }
+
+    fn check_command< 'a >( variant : &'a Command, raw_command : &ParsedCommand ) -> Option< &'a Command >
+    {
+      let Command { subjects, properties, properties_aliases, .. } = variant;
+      let raw_subjects_count = raw_command.subjects.len();
+      let expected_subjects_count = subjects.len();
+      if raw_subjects_count > expected_subjects_count { return None; }
+
+      let possible_subjects_count = Self::get_count_from_properties( properties, properties_aliases, &raw_command.properties );
+      if Self::is_valid_command_variant( expected_subjects_count, raw_subjects_count, possible_subjects_count ) { Some( variant ) } else { None }
+    }
+
+    // qqq : for Barsik :
     // Problem with separating properties and subjects:
     // if we pass to wca a command that has an incorrectly named property, it defines this property as part of an subject.
-    // You can simulate this problem by running the code from https://github.com/Wandalen/wTools/blob/alpha/module/move/wca/examples/wca_trivial.rs in this form `cargo r .echo propertyf:123` 
+    // You can simulate this problem by running the code from https://github.com/Wandalen/wTools/blob/alpha/module/move/wca/examples/wca_trivial.rs in this form `cargo r .echo propertyf:123`
     // where the console shows that the subject is `propertyf:123` and the property is empty.
-    // 
-    // I would like to get an error in this case. 
-    // 
+    //
+    // I would like to get an error in this case.
+    //
     // A real example of the problem can be seen in the `.test` command in willbe where if you don't specify the option and make a mistake in the name of the properties when running it,
     // the option will be an incorrectly written property that will produce an error with unobvious output.
     // log:
@@ -361,7 +347,7 @@ pub( crate ) mod private
     //   16: BaseThreadInitThunk
     //   17: RtlUserThreadStart
     // error: process didn't exit successfully: `C:\pro\rust\lib\wTools\target\debug\will.exe .test 'enabled_features:enabled' 'power:1' 'dry:0'` (exit code: 1)
-    
+
     fn extract_subjects( command : &Command, raw_command : &ParsedCommand, used_properties : &[ &String ] ) -> Result< Vec< Value > >
     {
       let mut subjects = vec![];
@@ -441,7 +427,17 @@ pub( crate ) mod private
     /// Make sure that this command is described in the grammar and matches it(command itself and all it options too).
     pub fn to_command( &self, dictionary : &Dictionary, raw_command : ParsedCommand ) -> Result< VerifiedCommand >
     {
-      let variants = dictionary.command( &raw_command.name )
+      if raw_command.name.ends_with( '.' ) | raw_command.name.ends_with( ".?" )
+      {
+        return Ok( VerifiedCommand
+        {
+          phrase : raw_command.name,
+          internal_command : true,
+          args : Args( vec![] ),
+          props : Props( HashMap::new() ),
+        });
+      }
+      let command = dictionary.command( &raw_command.name )
       .ok_or_else::< error::for_app::Error, _ >
       (
         ||
@@ -453,28 +449,13 @@ pub( crate ) mod private
         }
       )?;
 
-      let Some( cmd ) = Self::find_variant( variants, &raw_command ) else
+      let Some( cmd ) = Self::check_command( command, &raw_command ) else
       {
         error::for_app::bail!
         (
-          "`{}` command with specified subjects not found. Available variants `{:#?}`",
+          "`{}` command with specified subjects not found. Command info: `{}`",
           &raw_command.name,
-          [ variants ]
-          .into_iter()
-          .map
-          (
-            | x |
-            format!
-            (
-              ".{}{}",
-              &raw_command.name,
-              {
-                let variants = x.subjects.iter().filter( | x | !x.optional ).map( | x | format!( "{:?}", x.kind ) ).collect::< Vec< _ > >();
-                if variants.is_empty() { String::new() } else { variants.join( "" ) }
-              }
-            )
-          )
-          .collect::< Vec< _ > >()
+          generate_help_content( dictionary, HelpGeneratorOptions::former().for_commands([ dictionary.command( &raw_command.name ).unwrap() ]).command_prefix( "." ).subject_detailing( LevelOfDetail::Detailed ).form() ).strip_suffix( "  " ).unwrap()
         );
       };
 
@@ -485,8 +466,9 @@ pub( crate ) mod private
       Ok( VerifiedCommand
       {
         phrase : cmd.phrase.to_owned(),
-        subjects,
-        properties,
+        internal_command : false,
+        args : Args( subjects ),
+        props : Props( properties ),
       })
     }
   }

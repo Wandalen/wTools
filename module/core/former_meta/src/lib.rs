@@ -119,14 +119,14 @@ mod derive
 ///   impl UserProfile
 ///   {
 ///     #[ inline( always ) ]
-///     pub fn former() -> UserProfileFormer< UserProfile, former::ReturnContainer >
+///     pub fn former() -> UserProfileFormer< UserProfile, former::ReturnFormed >
 ///     {
-///       UserProfileFormer::< UserProfile, former::ReturnContainer >::new()
+///       UserProfileFormer::< UserProfile, former::ReturnFormed >::new()
 ///     }
 ///   }
 ///
 ///   #[ derive( Debug, Default ) ]
-///   pub struct UserProfileFormerContainer
+///   pub struct UserProfileFormerStorage
 ///   {
 ///     age : Option< i32 >,
 ///     username : Option< String >,
@@ -135,43 +135,43 @@ mod derive
 ///
 ///   pub struct UserProfileFormer
 ///   <
-///     FormerContext = UserProfile,
-///     FormerEnd = former::ReturnContainer,
+///     Context = UserProfile,
+///     End = former::ReturnFormed,
 ///   >
 ///   where
-///     FormerEnd : former::ToSuperFormer< UserProfile, FormerContext >,
+///     End : former::FormingEnd< UserProfile, Context >,
 ///   {
-///     container : UserProfileFormerContainer,
-///     context : Option< FormerContext >,
-///     on_end : Option< FormerEnd >,
+///     storage : UserProfileFormerStorage,
+///     context : Option< Context >,
+///     on_end : Option< End >,
 ///   }
 ///
-///   impl< FormerContext, FormerEnd > UserProfileFormer< FormerContext, FormerEnd >
+///   impl< Context, End > UserProfileFormer< Context, End >
 ///   where
-///     FormerEnd : former::ToSuperFormer< UserProfile, FormerContext >,
+///     End : former::FormingEnd< UserProfile, Context >,
 ///   {
 ///     #[ inline( always ) ]
 ///     pub fn form( mut self ) -> UserProfile
 ///     {
-///       let age = if self.container.age.is_some()
+///       let age = if self.storage.age.is_some()
 ///       {
-///         self.container.age.take().unwrap()
+///         self.storage.age.take().unwrap()
 ///       }
 ///       else
 ///       {
 ///         (1).into()
 ///       };
-///       let username = if self.container.username.is_some()
+///       let username = if self.storage.username.is_some()
 ///       {
-///         self.container.username.take().unwrap()
+///         self.storage.username.take().unwrap()
 ///       }
 ///       else
 ///       {
 ///         String::default()
 ///       };
-///       let bio_optional = if self.container.bio_optional.is_some()
+///       let bio_optional = if self.storage.bio_optional.is_some()
 ///       {
-///         Some( self.container.bio_optional.take().unwrap() )
+///         Some( self.storage.bio_optional.take().unwrap() )
 ///       }
 ///       else
 ///       {
@@ -189,29 +189,29 @@ mod derive
 ///
 ///      // qqq : xxx : outdated, update
 ///      #[ inline( always ) ]
-///      pub fn new() -> UserProfileFormer< UserProfile, former::ReturnContainer >
+///      pub fn new() -> UserProfileFormer< UserProfile, former::ReturnFormed >
 ///      {
-///        UserProfileFormer::< UserProfile, former::ReturnContainer >::begin( None, former::ReturnContainer )
+///        UserProfileFormer::< UserProfile, former::ReturnFormed >::begin( None, former::ReturnFormed )
 ///      }
 ///
 ///     #[ inline( always ) ]
-///     pub fn begin( context : Option< FormerContext >, on_end : FormerEnd ) -> Self
+///     pub fn begin( context : Option< Context >, on_end : End ) -> Self
 ///     {
 ///       Self
 ///       {
-///         container : Default::default(),
+///         storage : Default::default(),
 ///         context,
 ///         on_end : Some( on_end ),
 ///       }
 ///     }
 ///
 ///     #[ inline( always ) ]
-///     pub fn end( mut self ) -> FormerContext
+///     pub fn end( mut self ) -> Context
 ///     {
 ///       let on_end = self.on_end.take().unwrap();
 ///       let context = self.context.take();
-///       let container = self.form();
-///       on_end.call( container, context )
+///       let formed = self.form();
+///       on_end.call( formed, context )
 ///     }
 ///
 ///     #[ inline ]
@@ -219,7 +219,7 @@ mod derive
 ///     where
 ///       Src : Into< i32 >,
 ///     {
-///       self.container.age = Some( src.into() );
+///       self.storage.age = Some( src.into() );
 ///       self
 ///     }
 ///
@@ -228,7 +228,7 @@ mod derive
 ///     where
 ///       Src : Into< String >,
 ///     {
-///       self.container.username = Some( src.into() );
+///       self.storage.username = Some( src.into() );
 ///       self
 ///     }
 ///
@@ -237,7 +237,7 @@ mod derive
 ///     where
 ///       Src : Into< String >,
 ///     {
-///       self.container.bio_optional = Some( src.into() );
+///       self.storage.bio_optional = Some( src.into() );
 ///       self
 ///     }
 ///
@@ -246,7 +246,7 @@ mod derive
 ///     where
 ///       Src : Into< String >,
 ///     {
-///       self.container.bio_optional = Some( src.into() );
+///       self.storage.bio_optional = Some( src.into() );
 ///       self
 ///     }
 ///   }
@@ -778,3 +778,4 @@ pub fn from_components( input : proc_macro::TokenStream ) -> proc_macro::TokenSt
     Err( err ) => err.to_compile_error().into(),
   }
 }
+

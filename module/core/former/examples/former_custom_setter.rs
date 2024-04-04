@@ -25,8 +25,8 @@ fn main()
     // Custom alternative setter for `word`
     pub fn word_exclaimed( mut self, value : impl Into< String > ) -> Self
     {
-      debug_assert!( self.container.word.is_none() );
-      self.container.word = Some( format!( "{}!", value.into() ) );
+      debug_assert!( self.storage.word.is_none() );
+      self.storage.word = Some( format!( "{}!", value.into() ) );
       self
     }
 
