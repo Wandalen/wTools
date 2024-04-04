@@ -21,8 +21,7 @@ cd wTools
 cd examples/test_trivial
 cargo run
 ```
-ev
-```
+
 
 ### Try out from the repository
 

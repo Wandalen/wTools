@@ -8,7 +8,7 @@ tests_impls!
   fn basic()
   {
     // init parser
-    let parser = Parser::former().form();
+    let parser = Parser;
 
     // init converter
     let dictionary = &Dictionary::former()
@@ -28,7 +28,7 @@ tests_impls!
     let executor = Executor::former().form();
 
     // existed command | unknown command will fail on converter
-    let raw_program = parser.program( ".command" ).unwrap();
+    let raw_program = parser.parse( [ ".command" ] ).unwrap();
     let grammar_program = verifier.to_program( dictionary, raw_program ).unwrap();
 
     // execute the command
@@ -41,7 +41,7 @@ tests_impls!
     use wtools::error::for_app::Error;
 
     // init parser
-    let parser = Parser::former().form();
+    let parser = Parser;
 
     // init converter
     let dictionary = &Dictionary::former()
@@ -98,13 +98,13 @@ tests_impls!
     .form();
 
     // value in context = 0
-    let raw_program = parser.program( ".eq 1" ).unwrap();
+    let raw_program = parser.parse( [ ".eq", "1" ] ).unwrap();
     let grammar_program = verifier.to_program( dictionary, raw_program ).unwrap();
 
     a_true!( executor.program( dictionary, grammar_program ).is_err() );
 
     // value in context = 1 + 1 + 1 = 3
-    let raw_program = parser.program( ".eq 0 .inc .inc .eq 2" ).unwrap();
+    let raw_program = parser.parse( [ ".eq", "0", ".inc", ".inc", ".eq", "2" ] ).unwrap();
     let grammar_program = verifier.to_program( dictionary, raw_program ).unwrap();
 
     a_true!( executor.program( dictionary, grammar_program ).is_ok() );

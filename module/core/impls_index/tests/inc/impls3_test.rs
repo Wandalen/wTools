@@ -1,6 +1,5 @@
-use super::*;
-use the_module::prelude::impls3;
-use self::impls_index;
+use super::the_module;
+use the_module::*;
 
 //
 
