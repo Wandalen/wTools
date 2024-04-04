@@ -3,16 +3,17 @@
 use crate::*;
 use error_tools::{ err, for_app::Context, BasicError, Result };
 use executor::FeedManager;
-use storage::
+use storage::FeedStorage;
+use entity::
 {
-  FeedStorage,
   feed::{ FeedStore, Feed },
   config::{ ConfigStore, Config },
 };
+use action::Report;
 use gluesql::{ prelude::Payload, sled_storage::SledStorage };
 
 /// Add configuration file with subscriptions to storage.
-pub async fn config_add( storage : FeedStorage< SledStorage >, args : &wca::Args ) -> Result< impl executor::Report >
+pub async fn config_add( storage : FeedStorage< SledStorage >, args : &wca::Args ) -> Result< impl Report >
 {
   let path : std::path::PathBuf = args
   .get_owned::< wca::Value >( 0 )
@@ -49,17 +50,17 @@ pub async fn config_add( storage : FeedStorage< SledStorage >, args : &wca::Args
 
   let feeds = feed_config::read( config.path() )?
   .into_iter()
-  .map( | feed | Feed::new( feed.link, feed.update_period ) )
+  .map( | feed | Feed::new( feed.link, feed.update_period, config.path() ) )
   .collect::< Vec< _ > >()
   ;
 
-  let new_feeds = manager.storage.save_feeds( feeds ).await?;
+  let new_feeds = manager.storage.feeds_save( feeds ).await?;
 
   Ok( ConfigReport{ payload : config_report, new_feeds : Some( new_feeds ) } )
 }
 
 /// Remove configuration file from storage.
-pub async fn config_delete( storage : FeedStorage< SledStorage >, args : &wca::Args ) -> Result< impl executor::Report >
+pub async fn config_delete( storage : FeedStorage< SledStorage >, args : &wca::Args ) -> Result< impl Report >
 {
   let path : std::path::PathBuf = args
   .get_owned::< wca::Value >( 0 )
@@ -80,7 +81,7 @@ pub async fn config_delete( storage : FeedStorage< SledStorage >, args : &wca::A
 }
 
 /// List all files with subscriptions that are currently in storage.
-pub async fn config_list( storage : FeedStorage< SledStorage >, _args : &wca::Args ) -> Result< impl executor::Report >
+pub async fn config_list( storage : FeedStorage< SledStorage >, _args : &wca::Args ) -> Result< impl Report >
 {
   let mut manager = FeedManager::new( storage );
   Ok( ConfigReport::new( manager.storage.config_list().await? ) )
@@ -139,7 +140,7 @@ impl std::fmt::Display for ConfigReport
           rows.push( vec![ EMPTY_CELL.to_owned(), String::from( row[ 0 ].clone() ) ] );
         }
 
-        let table = table_display::plain_table( rows );
+        let table = tool::table_display::plain_table( rows );
         if let Some( table ) = table
         {
           write!( f, "{}", table )?;
@@ -152,4 +153,4 @@ impl std::fmt::Display for ConfigReport
   }
 }
 
-impl executor::Report for ConfigReport {}
+impl Report for ConfigReport {}

@@ -1,15 +1,13 @@
 //! Endpoints and report for feed commands.
 
 use crate::*;
-use executor::
-{
-  FeedManager,
-  actions::{ Report, frame::SelectedEntries },
-};
-use storage::{ FeedStorage, feed::FeedStore };
+use executor::FeedManager;
+use action::{ Report, frame::SelectedEntries };
+use storage::FeedStorage;
+use entity::feed::FeedStore;
 use error_tools::Result;
 
-/// List all feeds.
+/// List all feeds from storage.
 pub async fn feeds_list
 (
   storage : FeedStorage< gluesql::sled_storage::SledStorage >,
@@ -17,7 +15,7 @@ pub async fn feeds_list
 ) -> Result< impl Report >
 {
   let mut manager = FeedManager::new( storage );
-  manager.storage.get_all_feeds().await
+  manager.storage.feeds_list().await
 }
 
 const EMPTY_CELL : &'static str = "";
@@ -52,7 +50,7 @@ impl std::fmt::Display for FeedsReport
       let mut headers = vec![ EMPTY_CELL.to_owned() ];
       headers.extend( self.0.selected_columns.iter().map( | str | str.to_owned() ) );
 
-      let table = table_display::table_with_headers( headers, rows );
+      let table = tool::table_display::table_with_headers( headers, rows );
       if let Some( table ) = table
       {
         write!( f, "{}", table )?;

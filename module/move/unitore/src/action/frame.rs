@@ -2,16 +2,17 @@
 
 use crate::*;
 use executor::FeedManager;
-use storage::
+use storage::FeedStorage;
+use entity::
 {
-  FeedStorage,
   feed::FeedStore,
   config::ConfigStore,
-  frame::{ FrameStore, RowValue }
+  frame::{ FrameStore, CellValue }
 };
 use gluesql::prelude::{ Payload, Value, SledStorage };
 use feed_config;
 use error_tools::{ err, Result };
+use action::Report;
 
 // qqq : review the whole project and make sure all names are consitant: actions, commands, its tests
 
@@ -20,7 +21,7 @@ pub async fn frames_list
 (
   storage : FeedStorage< SledStorage >,
   _args : &wca::Args,
-) -> Result< impl executor::Report >
+) -> Result< impl Report >
 {
     let mut manager = FeedManager::new( storage );
     manager.storage.frames_list().await
@@ -31,7 +32,7 @@ pub async fn frames_download
 (
   storage : FeedStorage< SledStorage >,
   _args : &wca::Args,
-) -> Result< impl executor::Report >
+) -> Result< impl Report >
 {
   let mut manager = FeedManager::new( storage );
   let payload = manager.storage.config_list().await?;
@@ -72,10 +73,10 @@ pub async fn frames_download
   let client = retriever::FeedClient;
   for subscription in  subscriptions
   {
-    let feed = retriever::FeedFetch::fetch(&client, subscription.link.clone()).await?;
+    let feed = client.fetch( subscription.link.clone() ).await?;
     feeds.push( ( feed, subscription.update_period.clone(), subscription.link ) );
   }
-  manager.storage.process_feeds( feeds ).await
+  manager.storage.feeds_process( feeds ).await
 
 }
 
@@ -122,7 +123,7 @@ impl std::fmt::Display for FramesReport
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
     let initial = vec![ vec![ format!( "Feed title: {}", self.feed_link ) ] ];
-    let table = table_display::table_with_headers( initial[ 0 ].clone(), Vec::new() );
+    let table = tool::table_display::table_with_headers( initial[ 0 ].clone(), Vec::new() );
     if let Some( table ) = table
     {
       write!( f, "{}", table )?;
@@ -140,7 +141,7 @@ impl std::fmt::Display for FramesReport
       rows.push( vec![ EMPTY_CELL.to_owned(), format!( "Selected frames:" ) ] );
     }
 
-    let table = table_display::plain_table( rows );
+    let table = tool::table_display::plain_table( rows );
     if let Some( table ) = table
     {
       write!( f, "{}", table )?;
@@ -148,8 +149,14 @@ impl std::fmt::Display for FramesReport
 
     for frame in &self.selected_frames.selected_rows
     {
+      let first_row = vec!
+      [
+        INDENT_CELL.to_owned(),
+        self.selected_frames.selected_columns[ 0 ].clone(),
+        textwrap::fill( &String::from( frame[ 0 ].clone() ), 120 ),
+      ];
       let mut rows = Vec::new();
-      for i in 0..self.selected_frames.selected_columns.len()
+      for i in 1..self.selected_frames.selected_columns.len()
       {
         let inner_row = vec!
         [
@@ -160,7 +167,7 @@ impl std::fmt::Display for FramesReport
         rows.push( inner_row );
       }
 
-      let table = table_display::plain_table( rows );
+      let table = tool::table_display::table_with_headers( first_row, rows );
       if let Some( table ) = table
       {
         writeln!( f, "{}", table )?;
@@ -171,9 +178,9 @@ impl std::fmt::Display for FramesReport
   }
 }
 
-impl executor::Report for FramesReport {}
+impl Report for FramesReport {}
 
-/// Items get from select query from storage.
+/// Items retrieved by select queries from storage.
 #[ derive( Debug ) ]
 pub struct SelectedEntries
 {
@@ -202,7 +209,7 @@ impl std::fmt::Display for SelectedEntries
       {
         for i in 0..self.selected_columns.len()
         {
-          write!( f, "{} : {}, ", self.selected_columns[ i ], RowValue( &row[ i ] ) )?;
+          write!( f, "{} : {}, ", self.selected_columns[ i ], CellValue( &row[ i ] ) )?;
         }
         writeln!( f, "" )?;
       }
@@ -238,7 +245,7 @@ impl std::fmt::Display for UpdateReport
   }
 }
 
-impl executor::Report for UpdateReport {}
+impl Report for UpdateReport {}
 
 /// Report for listing frames.
 #[ derive( Debug ) ]
@@ -270,4 +277,4 @@ impl std::fmt::Display for ListReport
   }
 }
 
-impl executor::Report for ListReport {}
+impl Report for ListReport {}

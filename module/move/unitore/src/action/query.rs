@@ -1,10 +1,12 @@
 //! Query command endpoint and report.
 
 // qqq : don't use both
+// aaa : fixed
 use crate::*;
 use gluesql::core::executor::Payload;
 use storage::{ FeedStorage, Store };
-use executor::{ FeedManager, actions::Report };
+use executor::FeedManager;
+use action::Report;
 use error_tools::{ err, BasicError, Result };
 
 /// Execute query specified in query string.
@@ -67,7 +69,7 @@ impl std::fmt::Display for QueryReport
               ];
               rows.push( new_row );
             }
-            let table = table_display::plain_table( rows );
+            let table = tool::table_display::plain_table( rows );
             if let Some( table ) = table
             {
               writeln!( f, "{}", table )?;

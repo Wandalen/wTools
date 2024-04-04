@@ -3,8 +3,10 @@
 use crate::*;
 use gluesql::prelude::Payload;
 use std::collections::HashMap;
-use executor::{ FeedManager, Report };
-use storage::{ FeedStorage, table::TableStore };
+use action::Report;
+use executor::FeedManager;
+use storage::FeedStorage;
+use entity::table::TableStore;
 use error_tools::{ err, BasicError, Result };
 
 /// Get labels of column for specified table.
@@ -215,7 +217,7 @@ pub async fn table_list
   Ok( ColumnsReport::new( table_name, table_description, columns_desc ) )
 }
 
-/// Get names of tables in storage.
+/// Get information about tables in storage.
 pub async fn tables_list
 (
   storage : FeedStorage< gluesql::sled_storage::SledStorage >,
@@ -274,7 +276,7 @@ impl std::fmt::Display for ColumnsReport
           ]
         );
       }
-      let table = table_display::table_with_headers
+      let table = tool::table_display::table_with_headers
       (
         vec!
         [
@@ -369,7 +371,7 @@ impl std::fmt::Display for TablesReport
       );
     }
 
-    let table = table_display::table_with_headers
+    let table = tool::table_display::table_with_headers
     (
       vec!
       [

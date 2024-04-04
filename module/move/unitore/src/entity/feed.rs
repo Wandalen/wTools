@@ -15,12 +15,13 @@ use gluesql::
   sled_storage::SledStorage,
 };
 
-use executor::actions::
+use action::
 {
   feed::FeedsReport,
   frame::{ UpdateReport, SelectedEntries, FramesReport },
 };
-use storage::{ FeedStorage, frame::FrameStore };
+use storage::FeedStorage;
+use entity::frame::FrameStore;
 use wca::wtools::Itertools;
 
 /// Feed item.
@@ -41,12 +42,14 @@ pub struct Feed
   pub published : Option< DateTime< Utc > >,
   /// How often the feed frames must be fetched.
   pub update_period : Duration,
+  /// Path to config file, from which this feed was saved.
+  pub config_file : String,
 }
 
 impl Feed
 {
   /// Create new feed item from source url and update period.
-  pub fn new( link : url::Url, update_period : Duration ) -> Self
+  pub fn new( link : url::Url, update_period : Duration, config: String ) -> Self
   {
     Self
     {
@@ -57,6 +60,7 @@ impl Feed
       description : None,
       published : None,
       update_period,
+      config_file : config,
     }
   }
 }
@@ -66,27 +70,40 @@ impl Feed
 #[ async_trait::async_trait( ?Send ) ]
 pub trait FeedStore
 {
+  /// Save new feeds to storage.
+  /// New feeds from config files that doesn't exist in storage will be inserted into `feed` table.
+  async fn feeds_save( &mut self, feeds : Vec< Feed > ) -> Result< Payload >;
 
-  /// Insert items from list into feed table.
-  async fn update_feed( &mut self, feed : Vec< Feed > ) -> Result< () >;
+  /// Update existing feeds in storage with new information.
+  /// Feed is updated one time during first fetch. 
+  async fn feeds_update( &mut self, feed : Vec< Feed > ) -> Result< () >;
 
-  /// Process fetched feed, new items will be saved, modified items will be updated.
-  async fn process_feeds( &mut self, feeds : Vec< ( feed_rs::model::Feed, Duration, url::Url ) > ) -> Result< UpdateReport >;
+  /// Process new fetched feeds and frames.
+  /// Frames from recent fetch will be sorted into three categories:
+  /// - new items that will be inserted into `frame` table;
+  /// - modified items that will be updated;
+  /// - unchanged frames saved from previous fetches will be ignored.
+  async fn feeds_process( &mut self, feeds : Vec< ( feed_rs::model::Feed, Duration, url::Url ) > ) -> Result< UpdateReport >;
 
-  /// Get all feeds from storage.
-  async fn get_all_feeds( &mut self ) -> Result< FeedsReport >;
-
-  /// Add feeds entries.
-  async fn save_feeds( &mut self, feeds : Vec< Feed > ) -> Result< Payload >;
+  /// Get existing feeds from storage.
+  /// Retrieves all feeds from `feed` table in storage.
+  async fn feeds_list( &mut self ) -> Result< FeedsReport >;
 }
 // qqq : poor description and probably naming. improve, please
+// aaa : updated description
 
 #[ async_trait::async_trait( ?Send ) ]
 impl FeedStore for FeedStorage< SledStorage >
 {
-  async fn get_all_feeds( &mut self ) -> Result< FeedsReport >
+  async fn feeds_list( &mut self ) -> Result< FeedsReport >
   {
-    let res = table( "feed" ).select().project( "title, link, update_period" ).execute( &mut *self.storage.lock().await ).await?;
+    let res = table( "feed" )
+    .select()
+    .project( "title, link, update_period, config_file" )
+    .execute( &mut *self.storage.lock().await )
+    .await?
+    ;
+  
     let mut report = FeedsReport::new();
     match res
     {
@@ -104,17 +121,23 @@ impl FeedStore for FeedStorage< SledStorage >
     Ok( report )
   }
 
-  async fn update_feed( &mut self, feed : Vec< Feed > ) -> Result< () >
+  async fn feeds_update( &mut self, feed : Vec< Feed > ) -> Result< () >
   {
     for feed in feed
     {
       let _update = table( "feed" )
       .update()
       .set( "title", feed.title.map( text ).unwrap_or( null() ) )
-      .set( "updated", feed.updated.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ) )
+      .set(
+        "updated",
+        feed.updated.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ),
+      )
       .set( "authors", feed.authors.map( text ).unwrap_or( null() ) )
       .set( "description", feed.description.map( text ).unwrap_or( null() ) )
-      .set( "published", feed.published.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ) )
+      .set(
+        "published",
+        feed.published.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ),
+      )
       .filter( col( "link" ).eq( feed.link.to_string() ) )
       .execute( &mut *self.storage.lock().await )
       .await
@@ -125,7 +148,7 @@ impl FeedStore for FeedStorage< SledStorage >
     Ok( () )
   }
 
-  async fn process_feeds
+  async fn feeds_process
   (
     &mut self,
     feeds : Vec< ( feed_rs::model::Feed, Duration, url::Url ) >,
@@ -211,7 +234,7 @@ impl FeedStore for FeedStorage< SledStorage >
     Ok( UpdateReport( reports ) )
   }
 
-  async fn save_feeds( &mut self, feed : Vec< Feed > ) -> Result< Payload >
+  async fn feeds_save( &mut self, feed : Vec< Feed > ) -> Result< Payload >
   {
     let feeds_rows : Vec< Vec< ExprNode< 'static > > > = feed.into_iter().map( | feed | feed.into() ).collect_vec();
 
@@ -225,7 +248,8 @@ impl FeedStore for FeedStorage< SledStorage >
       authors,
       description,
       published,
-      update_period",
+      update_period,
+      config_file",
     )
     .values( feeds_rows )
     .execute( &mut *self.storage.lock().await )
@@ -237,30 +261,8 @@ impl FeedStore for FeedStorage< SledStorage >
   }
 }
 
-impl From< ( feed_rs::model::Feed, Duration, url::Url ) > for Feed
-{
-  fn from( val : ( feed_rs::model::Feed, Duration, url::Url ) ) -> Self
-  {
-    let duration = val.1;
-    let link = val.2;
-    let value = val.0;
-
-    let authors = value.authors.into_iter().map( | p | p.name ).collect::< Vec< _ > >();
-    let description = value.description.map( | desc | desc.content );
-
-    Self
-    {
-      link,
-      title : value.title.map( | title | title.content ),
-      updated : value.updated,
-      published : value.published,
-      description,
-      authors : ( !authors.is_empty() ).then( || authors.join( ", " ) ),
-      update_period : duration,
-    }
-  }
-}
-
+/// Get convenient format of frame item for using with GlueSQL expression builder.
+/// Converts from Feed struct into vec of GlueSQL expression nodes. 
 impl From< Feed > for Vec< ExprNode< 'static > >
 {
   fn from( value : Feed ) -> Self
@@ -274,6 +276,7 @@ impl From< Feed > for Vec< ExprNode< 'static > >
       value.description.map( text ).unwrap_or( null() ),
       value.published.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ),
       text( value.update_period.as_secs().to_string() ),
+      text( value.config_file ),
     ]
   }
 }

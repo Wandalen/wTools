@@ -14,13 +14,7 @@ use gluesql::
   prelude::Glue,
   sled_storage::{ sled::Config, SledStorage },
 };
-
-use executor::actions::query::QueryReport;
-
-pub mod config;
-pub mod frame;
-pub mod table;
-pub mod feed;
+use action::query::QueryReport;
 
 /// Storage for feed frames.
 #[ derive( Clone ) ]
@@ -28,7 +22,7 @@ pub struct FeedStorage< S : GStore + GStoreMut + Send >
 {
   /// GlueSQL storage.
   pub storage : Arc< Mutex< Glue< S > > >,
-  frame_fields : Vec< [ &'static str; 3 ] >,
+  pub frame_fields : Vec< [ &'static str; 3 ] >,
 }
 
 impl< S : GStore + GStoreMut + Send > std::fmt::Debug for FeedStorage< S >
@@ -42,7 +36,7 @@ impl< S : GStore + GStoreMut + Send > std::fmt::Debug for FeedStorage< S >
 impl FeedStorage< SledStorage >
 {
   /// Initialize new storage from configuration, create feed table.
-  pub async fn init_storage( config : Config ) -> Result< Self >
+  pub async fn init_storage( config : &Config ) -> Result< Self >
   {
     let storage = SledStorage::try_from( config.clone() )
     .context( format!( "Failed to initialize storage with config {:?}", config ) )?
@@ -68,6 +62,7 @@ impl FeedStorage< SledStorage >
     .add_column( "description TEXT" )
     .add_column( "published TIMESTAMP" )
     .add_column( "update_period TEXT" )
+    .add_column( "config_file TEXT FOREIGN KEY REFERENCES config(path)" )
     .build()?
     ;
 
@@ -77,7 +72,7 @@ impl FeedStorage< SledStorage >
     [
       [ "id", "TEXT", "A unique identifier for this frame in the feed. " ],
       [ "title", "TEXT", "Title of the frame" ],
-      [ "updated", "TIMESTAMP", "Time at which this item was fetched from source." ],
+      [ "stored_time", "TIMESTAMP", "Time at which this item was fetched from source." ],
       [ "authors", "TEXT", "List of authors of the frame, optional." ],
       [ "content", "TEXT", "The content of the frame in html or plain text, optional." ],
       [ "links", "TEXT", "List of links associated with this item of related Web page and attachments." ],

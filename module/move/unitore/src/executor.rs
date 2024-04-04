@@ -3,15 +3,14 @@
 use crate::*;
 use feed_config::SubscriptionConfig;
 use gluesql::sled_storage::{ sled::Config, SledStorage };
-use retriever::{ FeedClient, FeedFetch };
-use storage::{ Store, FeedStorage, feed::FeedStore, config::ConfigStore, table::TableStore, frame::FrameStore };
+use storage::{ Store, FeedStorage };
+use entity::{ feed::FeedStore, config::ConfigStore, table::TableStore, frame::FrameStore };
 use wca::{ Args, Type, VerifiedCommand };
-use executor::actions::Report;
 use error_tools::Result;
 
-pub mod actions;
-use actions::
+use action::
 {
+  Report,
   frame::{ frames_list, frames_download },
   feed::feeds_list,
   config::{ config_add, config_delete, config_list },
@@ -23,7 +22,7 @@ fn action< 'a, F, Fut, R >( async_endpoint : F, args : &'a Args ) -> Result< R >
 where
   F : FnOnce( FeedStorage< SledStorage >, &'a Args ) -> Fut,
   Fut : std::future::Future< Output = Result< R > >,
-  R : actions::Report,
+  R : action::Report,
 {
   let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
   .unwrap_or( String::from( "./_data" ) )
@@ -36,7 +35,7 @@ where
 
   rt.block_on( async move
   {
-    let feed_storage = FeedStorage::init_storage( config ).await?;
+    let feed_storage = FeedStorage::init_storage( &config ).await?;
     async_endpoint( feed_storage, args ).await
   } )
 }
@@ -44,6 +43,7 @@ where
 /// Run feed updates.
 pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
 {
+  //let ca = wca::CommandsAggregator::new();
   let ca = wca::CommandsAggregator::former()
   .command( "frames.download" )
     .hint( "Download frames from feed sources provided in config files." )
@@ -217,17 +217,15 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
 }
 
 /// Manages feed subsriptions and updates.
-pub struct FeedManager< C, S : FeedStore + ConfigStore + FrameStore + Store + Send >
+pub struct FeedManager< S : FeedStore + ConfigStore + FrameStore + Store + Send >
 {
   /// Subscription configuration with link and update period.
   pub config : Vec< SubscriptionConfig >,
   /// Storage for saving feed.
   pub storage : S,
-  /// Client for fetching feed from links in FeedConfig.
-  pub client : C,
 }
 
-impl< C, S : FeedStore + ConfigStore + FrameStore + Store + Send > std::fmt::Debug for FeedManager< C, S >
+impl< S : FeedStore + ConfigStore + FrameStore + Store + Send > std::fmt::Debug for FeedManager< S >
 {
   fn fmt( &self, f: &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
@@ -235,21 +233,20 @@ impl< C, S : FeedStore + ConfigStore + FrameStore + Store + Send > std::fmt::Deb
   }
 }
 
-impl< S : FeedStore + ConfigStore + FrameStore + TableStore + Store + Send > FeedManager< FeedClient, S >
+impl< S : FeedStore + ConfigStore + FrameStore + TableStore + Store + Send > FeedManager< S >
 {
   /// Create new instance of FeedManager.
-  pub fn new( storage : S ) -> FeedManager< FeedClient, S >
+  pub fn new( storage : S ) -> FeedManager< S >
   {
     Self
     {
       storage,
       config : Vec::new(),
-      client : FeedClient,
     }
   }
 }
 
-impl< C : FeedFetch, S : FeedStore + ConfigStore + FrameStore + TableStore + Store + Send > FeedManager< C, S >
+impl< S : FeedStore + ConfigStore + FrameStore + TableStore + Store + Send > FeedManager< S >
 {
   /// Set configurations for subscriptions.
   pub fn set_config( &mut self, configs : Vec< SubscriptionConfig > )
@@ -257,14 +254,8 @@ impl< C : FeedFetch, S : FeedStore + ConfigStore + FrameStore + TableStore + Sto
     self.config = configs;
   }
 
-  /// Set client for fetching feed.
-  pub fn set_client( &mut self, client : C )
-  {
-    self.client = client;
-  }
-
   /// Execute custom query, print result.
-  pub async fn execute_custom_query( &mut self, query : String ) -> Result< impl actions::Report >
+  pub async fn execute_custom_query( &mut self, query : String ) -> Result< impl Report >
   {
     self.storage.execute_query( query ).await
   }

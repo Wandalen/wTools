@@ -8,7 +8,7 @@ use gluesql::
   prelude::Payload,
 };
 
-use executor::actions::table::TablesReport;
+use action::table::TablesReport;
 use storage::FeedStorage;
 
 /// Functions for tables informantion.
@@ -43,5 +43,4 @@ impl TableStore for FeedStorage< SledStorage >
 
     Ok( payloads )
   }
-
 }

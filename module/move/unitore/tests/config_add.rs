@@ -3,8 +3,10 @@ use std::path::PathBuf;
 use gluesql::sled_storage::sled::Config;
 use unitore::
 {
-  executor::{ FeedManager, actions },
-  storage::{ FeedStorage, feed::FeedStore },
+  executor::FeedManager,
+  storage::FeedStorage,
+  entity::feed::FeedStore,
+  action::config,
 };
 use error_tools::Result;
 
@@ -19,11 +21,11 @@ async fn add_config_file() -> Result< () >
   .temporary( true )
   ;
 
-  let feed_storage = FeedStorage::init_storage( config ).await?;
-  actions::config::config_add( feed_storage.clone(), &wca::Args( vec![ wca::Value::Path( path ) ] ) ).await?;
+  let feed_storage = FeedStorage::init_storage( &config ).await?;
+  config::config_add( feed_storage.clone(), &wca::Args( vec![ wca::Value::Path( path ) ] ) ).await?;
 
   let mut manager = FeedManager::new( feed_storage );
-  let res = manager.storage.get_all_feeds().await?;
+  let res = manager.storage.feeds_list().await?;
 
   let feeds_links = res.0.selected_rows
   .iter()

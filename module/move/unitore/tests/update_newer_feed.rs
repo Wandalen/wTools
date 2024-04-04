@@ -1,4 +1,3 @@
-use async_trait::async_trait;
 use feed_rs::parser as feed_parser;
 use gluesql::
 {
@@ -12,25 +11,11 @@ use gluesql::
 use unitore::
 {
   feed_config::SubscriptionConfig,
-  retriever::FeedFetch,
-  storage::{ feed::FeedStore, frame::FrameStore, FeedStorage },
+  storage::FeedStorage,
+  entity::{ feed::FeedStore, frame::FrameStore },
 };
 use wca::wtools::Itertools;
 use error_tools::Result;
-
-/// Feed client for testing.
-#[derive(Debug)]
-pub struct TestClient ( String );
-
-#[ async_trait ]
-impl FeedFetch for TestClient
-{
-  async fn fetch( &self, _ : url::Url ) -> Result< feed_rs::model::Feed >
-  {
-    let feed = feed_parser::parse( std::fs::read_to_string( &self.0 )?.as_bytes() )?;
-    Ok( feed )
-  }
-}
 
 #[ tokio::test ]
 async fn test_update() -> Result< () >
@@ -40,7 +25,7 @@ async fn test_update() -> Result< () >
   .temporary( true )
   ;
 
-  let mut feed_storage = FeedStorage::init_storage( config ).await?;
+  let mut feed_storage = FeedStorage::init_storage( &config ).await?;
 
   let feed_config = SubscriptionConfig
   {
@@ -49,18 +34,15 @@ async fn test_update() -> Result< () >
   };
 
   // initial fetch
-  let client = TestClient( "./tests/fixtures/plain_feed.xml".to_owned() );
-
-  let feed = FeedFetch::fetch( &client, feed_config.link.clone()).await?;
+  let feed = feed_parser::parse( include_str!("./fixtures/plain_feed.xml").as_bytes() )?;
   let feeds = vec![ ( feed, feed_config.update_period.clone(), feed_config.link.clone() ) ];
-  feed_storage.process_feeds( feeds ).await?;
+  feed_storage.feeds_process( feeds ).await?;
 
   // updated fetch
-  let client = TestClient( "./tests/fixtures/updated_one_frame.xml".to_owned() );
+  let feed = feed_parser::parse( include_str!("./fixtures/updated_one_frame.xml").as_bytes() )?;
 
-  let feed = FeedFetch::fetch( &client, feed_config.link.clone()).await?;
   let feeds = vec![ ( feed, feed_config.update_period.clone(), feed_config.link.clone() ) ];
-  feed_storage.process_feeds( feeds ).await?;
+  feed_storage.feeds_process( feeds ).await?;
 
   // check
   let payload = feed_storage.frames_list().await?;

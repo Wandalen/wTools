@@ -15,7 +15,7 @@ use gluesql::
   sled_storage::SledStorage,
 };
 
-use executor::actions::frame::{ FramesReport, ListReport, SelectedEntries };
+use action::frame::{ FramesReport, ListReport, SelectedEntries };
 use storage::FeedStorage;
 use wca::wtools::Itertools;
 
@@ -27,7 +27,7 @@ pub struct Frame
   pub id : String,
   /// Frame title.
   pub title : Option< String >,
-  updated : Option< DateTime< Utc > >,
+  stored_time : Option< DateTime< Utc > >,
   authors : Option< String >,
   content : Option< String >,
   links : Option< String >,
@@ -42,6 +42,7 @@ pub struct Frame
 }
 
 // qqq : not obvious
+/// Convert from feed_rs feed entry and feed link to Frame struct for convenient use and storage.
 impl From< ( feed_rs::model::Entry, String ) > for Frame
 {
   fn from( ( entry, feed_link ) : ( feed_rs::model::Entry, String ) ) -> Self
@@ -81,7 +82,7 @@ impl From< ( feed_rs::model::Entry, String ) > for Frame
     {
       id : entry.id,
       title : entry.title.map( | title | title.content ).clone(),
-      updated : entry.updated,
+      stored_time : entry.updated,
       authors : ( !authors.is_empty() ).then( || authors.join( ", " ) ),
       // qqq : why join?
       content,
@@ -105,16 +106,19 @@ impl From< ( feed_rs::model::Entry, String ) > for Frame
 #[ async_trait::async_trait( ?Send ) ]
 pub trait FrameStore
 {
-  /// Insert items from list into feed table.
+  /// Save new frames to storage.
+  /// New frames will be inserted into `frame` table. 
   async fn frames_save( &mut self, feed : Vec< Frame > ) -> Result< Payload >;
 
-  /// Update items from list in feed table.
+  /// Update existing frames in storage with new changes.
+  /// If frames in storage were modified in feed source, they will be changed to match new version. 
   async fn frames_update( &mut self, feed : Vec< Frame > ) -> Result< () >;
 
   /// Get all feed frames from storage.
   async fn frames_list( &mut self ) -> Result< ListReport >;
 }
 // qqq : what is update? what update? don't use word update without noun and explanation what deos it mean
+// aaa : fixed comments
 
 #[ async_trait::async_trait( ?Send ) ]
 impl FrameStore for FeedStorage< SledStorage >
@@ -138,7 +142,6 @@ impl FrameStore for FeedStorage< SledStorage >
       SelectedEntries::new()
     };
     
-
     let mut feeds_map = HashMap::new();
 
     for row in all_frames.selected_rows
@@ -210,6 +213,10 @@ impl FrameStore for FeedStorage< SledStorage >
 }
 
 // qqq : what is it for and why?
+// aaa : added explanation
+
+/// Get convenient frame format for using with GlueSQL expression builder.
+/// Converts from Frame struct into vec of GlueSQL expression nodes. 
 impl From< Frame > for Vec< ExprNode< 'static > >
 {
   fn from( entry : Frame ) -> Self
@@ -219,7 +226,7 @@ impl From< Frame > for Vec< ExprNode< 'static > >
     .unwrap_or( null() )
     ;
 
-    let updated = entry.updated
+    let stored_time = entry.stored_time
     .map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) )
     .unwrap_or( null() )
     ;
@@ -267,7 +274,7 @@ impl From< Frame > for Vec< ExprNode< 'static > >
     [
       text( entry.id ),
       title,
-      updated,
+      stored_time,
       authors,
       content,
       links,
@@ -284,11 +291,12 @@ impl From< Frame > for Vec< ExprNode< 'static > >
 }
 
 // qqq : RowValue or CellValue?
+// aaa : fixed name
 /// GlueSQL Value wrapper for display.
 #[ derive( Debug ) ]
-pub struct RowValue< 'a >( pub &'a gluesql::prelude::Value );
+pub struct CellValue< 'a >( pub &'a gluesql::prelude::Value );
 
-impl std::fmt::Display for RowValue< '_ >
+impl std::fmt::Display for CellValue< '_ >
 {
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
@@ -318,9 +326,9 @@ impl std::fmt::Display for RowValue< '_ >
   }
 }
 
-impl From< RowValue< '_ > > for String
+impl From< CellValue< '_ > > for String
 {
-  fn from( value : RowValue< '_ > ) -> Self
+  fn from( value : CellValue< '_ > ) -> Self
   {
     use gluesql::core::data::Value::*;
     match &value.0
