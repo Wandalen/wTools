@@ -25,7 +25,7 @@ pub mod dependency
 {
   #[ cfg( feature = "derive_more" ) ]
   pub use ::derive_more;
-  #[ cfg( feature = "strum_derive" ) ]
+  #[ cfg( feature = "derive_strum" ) ]
   pub use ::strum;
   #[ cfg( feature = "parse_display" ) ]
   pub use ::parse_display;
@@ -125,7 +125,7 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::derive_more::*;
 
-  #[ cfg( feature = "strum_derive" ) ]
+  #[ cfg( feature = "derive_strum" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::strum::*;
