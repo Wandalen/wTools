@@ -330,22 +330,22 @@ where
         String,
         Self,
         Self,
-        __vec_1_end,
+        Struct1FormerVec_1End,
       >
     >,
   {
-    Former2::_begin( None, Some( self ), __vec_1_end )
+    Former2::_begin( None, Some( self ), Struct1FormerVec_1End )
   }
 
   pub fn vec_1( self ) ->
   former::ContainerSubformer::
   <
-    String, former::VectorDefinition< String, Self, Self, __vec_1_end >
+    String, former::VectorDefinition< String, Self, Self, Struct1FormerVec_1End >
   >
   {
     self.vec_1_set::< former::ContainerSubformer::
     <
-      String, former::VectorDefinition< String, Self, Self, __vec_1_end >
+      String, former::VectorDefinition< String, Self, Self, Struct1FormerVec_1End >
     >>()
   }
 
@@ -360,22 +360,22 @@ where
         String,
         Self,
         Self,
-        __hashmap_1_end,
+        Struct1FormerHashmap_1End,
       >
     >,
   {
-    Former2::_begin( None, Some( self ), __hashmap_1_end )
+    Former2::_begin( None, Some( self ), Struct1FormerHashmap_1End )
   }
 
   pub fn hashmap_1( self ) ->
   former::ContainerSubformer::
   <
-    ( String, String ), former::HashMapDefinition< String, String, Self, Self, __hashmap_1_end >
+    ( String, String ), former::HashMapDefinition< String, String, Self, Self, Struct1FormerHashmap_1End >
   >
   {
     self.hashmap_1_set::< former::ContainerSubformer::
     <
-      ( String, String ), former::HashMapDefinition< String, String, Self, Self, __hashmap_1_end >
+      ( String, String ), former::HashMapDefinition< String, String, Self, Self, Struct1FormerHashmap_1End >
     > >()
   }
 
@@ -389,22 +389,22 @@ where
         String,
         Self,
         Self,
-        __hashset_1_end,
+        Struct1FormerHashset_1End,
       >
     >,
   {
-    Former2::_begin( None, Some( self ), __hashset_1_end )
+    Former2::_begin( None, Some( self ), Struct1FormerHashset_1End )
   }
 
   pub fn hashset_1( self ) ->
   former::ContainerSubformer::
   <
-    String, former::HashSetDefinition< String, Self, Self, __hashset_1_end >
+    String, former::HashSetDefinition< String, Self, Self, Struct1FormerHashset_1End >
   >
   {
     self.hashset_1_set::< former::ContainerSubformer::
     <
-      String, former::HashSetDefinition< String, Self, Self, __hashset_1_end >
+      String, former::HashSetDefinition< String, Self, Self, Struct1FormerHashset_1End >
     >>()
   }
 
@@ -425,13 +425,13 @@ where
 // zzz : description
 /// Return original former after subformer for `vec_1` is done.
 #[ allow( non_camel_case_types ) ]
-pub struct __vec_1_end;
+pub struct Struct1FormerVec_1End;
 #[ automatically_derived ]
 impl< Definition > former::FormingEnd
 <
   former::VectorDefinition< String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
 >
-for __vec_1_end
+for Struct1FormerVec_1End
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes
@@ -458,13 +458,13 @@ where
 // zzz : description
 /// Return original former after subformer for `hashmap_string_1` is done.
 #[ allow( non_camel_case_types ) ]
-pub struct __hashmap_1_end;
+pub struct Struct1FormerHashmap_1End;
 #[ automatically_derived ]
 impl< Definition > former::FormingEnd
 <
   former::HashMapDefinition< String, String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
 >
-for __hashmap_1_end
+for Struct1FormerHashmap_1End
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes
@@ -491,13 +491,13 @@ where
 // zzz : description
 /// Return original former after subformer for `hashset_string_1` is done.
 #[ allow( non_camel_case_types ) ]
-pub struct __hashset_1_end;
+pub struct Struct1FormerHashset_1End;
 #[ automatically_derived ]
 impl< Definition > former::FormingEnd
 <
   former::HashSetDefinition< String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
 >
-for __hashset_1_end
+for Struct1FormerHashset_1End
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes

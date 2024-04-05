@@ -90,6 +90,17 @@ tests_impls_optional!
 
   //
 
+  fn end_descriptors()
+  {
+
+    let _got = Struct1FormerVec_1End::new();
+    let _got = Struct1FormerHashmap_1End::new();
+    let _got = Struct1FormerHashset_1End::new();
+
+  }
+
+  //
+
   fn test_vector()
   {
 
