@@ -73,7 +73,9 @@ mod private
       let repo_url = url::extract_repo_url( &self.repository_url ).and_then( | r | url::git_info_extract( &r ).ok() ).ok_or_else::< Error, _ >( || err!( "Fail to parse repository url" ) )?;
       let example = if let Some( name ) = find_example_file( self.module_path.as_path(), &self.module_name )
       {
+        // qqq : for Bohdan : Hardcoded Strings, would be better to use `PathBuf` to avoid separator mismatch on Windows and Unix
         let p = name.strip_prefix( workspace_path ).unwrap().get( 1.. ).unwrap().replace( "\\","%2F" );
+        let name = name.replace("/", "\\");
         let name = name.split( "\\" ).last().unwrap().split( "." ).next().unwrap();
         format!( " [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={p},RUN_POSTFIX=--example%20{}/https://github.com/{})", name, repo_url )
       }

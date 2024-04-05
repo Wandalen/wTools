@@ -388,6 +388,8 @@ mod private
       // let path = table_parameters.base_path.
       let example = if let Some( name ) = find_example_file( p.as_path(), &module_name )
       {
+        // qqq : for Bohdan : Hardcoded Strings, would be better to use `PathBuf` to avoid separator mismatch on Windows and Unix
+        let name = name.replace("/", "\\");
         let path = path.to_string_lossy().replace( "/", "\\" ).replace( "\\", "%2F" );
         let file_name = name.split( "\\" ).last().unwrap();
         let name = file_name.strip_suffix( ".rs" ).unwrap();
