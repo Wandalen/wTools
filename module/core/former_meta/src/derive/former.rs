@@ -617,42 +617,53 @@ fn fields_setter_callback_descriptor_map
 ->
 Result< TokenStream >
 {
-  let ident = &field.ident;
 
   if field.attrs.subformer.is_none()
   {
     return Ok( qt!{ } );
   }
 
+  use convert_case::{ Case, Casing };
+
+  let ident = field.ident;
+  let field_descriptor_name = format!( "former{}End", ident.to_string().to_case( Case::Camel ) );
+  let field_descriptor = syn::Ident::new( &field_descriptor_name, ident.span() );
+
+  let field_ty = field.non_optional_ty;
+  // let xxx = field_ty;
+  // let generics = field_ty.generics
+  // let ( generics_impl, generics_ty, generics_where ) = generics.split_for_impl();
+
 
   let r = qt!
   {
-    xxx
+    // xxx
 
     // zzz : description
     /// Return original former after subformer for `vec_1` is done.
     #[ allow( non_camel_case_types ) ]
-    pub struct Struct1FormerVec_1End;
+    pub struct #field_descriptor;
     #[ automatically_derived ]
     impl< Definition > former::FormingEnd
     <
-      former::VectorDefinition< String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
+      former::VectorDefinition< String, #former< Definition >, #former< Definition >, former::NoEnd >,
     >
-    for Struct1FormerVec_1End
+    for #field_descriptor
     where
       Definition : former::FormerDefinition,
       Definition::Types : former::FormerDefinitionTypes
       <
-        Storage = Struct1FormerStorage
+        Storage = #former_storage
       >,
     {
       #[ inline( always ) ]
       fn call
       (
-        &self, storage : Vec< String >,
-        super_former : Option< Struct1Former< Definition > >,
+        &self,
+        storage : field_ty,
+        super_former : Option< #former< Definition > >,
       )
-      -> Struct1Former< Definition >
+      -> #former< Definition >
       {
         let mut super_former = super_former.unwrap();
         if let Some( ref mut field ) = super_former.storage.vec_1

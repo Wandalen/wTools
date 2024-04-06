@@ -183,6 +183,23 @@ pub( crate ) mod private
     result
   }
 
+  /// Extract generics from a type.
+  pub fn extract_from_type( type_example : &syn::Type ) -> Option< syn::PathArguments >
+  {
+    if let syn::Type::Path( type_path ) = type_example
+    {
+      let segments = &type_path.path.segments;
+      let last_segment = segments.last()?;
+
+      if let syn::PathArguments::AngleBracketed( generics ) = &last_segment.arguments
+      {
+        return Some( generics.clone() );
+      }
+    }
+    None
+  }
+
+
 }
 
 #[ doc( inline ) ]
@@ -197,10 +214,12 @@ pub mod protected
   pub use super::orphan::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::merge;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::params_names;
+  pub use super::private::
+  {
+    merge,
+    params_names,
+    extract_from_type,
+  };
 }
 
 /// Orphan namespace of the module.

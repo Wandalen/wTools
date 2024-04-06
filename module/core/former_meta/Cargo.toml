@@ -46,7 +46,7 @@ full = [
 ]
 enabled = [ "macro_tools/enabled", "iter_tools/enabled" ]
 
-derive_former = []
+derive_former = [ "convert_case" ]
 derive_components = []
 derive_component_assign = []
 derive_components_assign = [ "derive_components", "derive_component_assign", "convert_case" ]
