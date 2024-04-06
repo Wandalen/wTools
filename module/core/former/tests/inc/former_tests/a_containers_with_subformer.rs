@@ -339,6 +339,35 @@ where
   //   former::VectorSubformer::begin( formed, Some( self ), on_end )
   // }
 
+  #[ inline( always ) ]
+  pub fn vec_1_set< Former2 >( self ) -> Former2
+  where
+    Former2 : former::FormerBegin
+    <
+      former::VectorDefinition
+      <
+        String,
+        Self,
+        Self,
+        Struct1FormerVec_1End,
+      >
+    >,
+  {
+    Former2::_begin( None, Some( self ), Struct1FormerVec_1End )
+  }
+
+  pub fn vec_1( self ) ->
+  former::ContainerSubformer::
+  <
+    String, former::VectorDefinition< String, Self, Self, Struct1FormerVec_1End >
+  >
+  {
+    self.vec_1_set::< former::ContainerSubformer::
+    <
+      String, former::VectorDefinition< String, Self, Self, Struct1FormerVec_1End >
+    >>()
+  }
+
 //   #[ doc = "Subformer setter for the 'hashmap_1' field." ]
 //   #[ inline ]
 //   pub fn hashmap_1( mut self ) -> former::HashMapSubformer< String, String, std::collections::HashMap< String, String >, Self, impl Fn( std::collections::HashMap< String, String >, core::option::Option< Self > ) -> Self, >
@@ -378,6 +407,39 @@ where
   pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
     former::StoragePreform::preform( self.storage )
+  }
+}
+
+// zzz : description
+/// Return original former after subformer for `vec_1` is done.
+#[ allow( non_camel_case_types ) ]
+pub struct Struct1FormerVec_1End;
+#[ automatically_derived ]
+impl< Definition > former::FormingEnd
+<
+  former::VectorDefinition< String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
+>
+for Struct1FormerVec_1End
+where
+  Definition : former::FormerDefinition,
+  Definition::Types : former::FormerDefinitionTypes
+  <
+    Storage = Struct1FormerStorage
+  >,
+{
+  #[ inline( always ) ]
+  fn call( &self, storage : Vec< String >, super_former : Option< Struct1Former< Definition > > ) -> Struct1Former< Definition >
+  {
+    let mut super_former = super_former.unwrap();
+    if let Some( ref mut field ) = super_former.storage.vec_1
+    {
+      former::ContainerAssign::assign( field, storage );
+    }
+    else
+    {
+      super_former.storage.vec_1 = Some( storage );
+    }
+    super_former
   }
 }
 

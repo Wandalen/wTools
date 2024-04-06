@@ -29,7 +29,6 @@ struct Attributes
 {
   default : Option< AttributeDefault >,
   setter : Option< AttributeSetter >,
-  // #[ allow( dead_code ) ]
   subformer : Option< AttributeFormer >,
   alias : Option< AttributeAlias >,
 }
@@ -494,7 +493,8 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 ///
 /// If aliases provided, also generate aliases
 ///
-/// # Example of output
+/// # Example of generated code
+///
 /// ```ignore
 /// #[ doc = "Setter for the 'int_1' field." ]
 /// #[ inline ]
@@ -537,7 +537,6 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< TokenStream >
   let setter_tokens = if let Some( subformer_ty ) = &field.attrs.subformer
   {
     subformer_field_setter( ident, ident, non_optional_ty, &subformer_ty.expr )
-    // field_setter( ident, ident, non_optional_ty )
   }
   else
   {
@@ -563,12 +562,123 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< TokenStream >
   r
 }
 
+// zzz : description and exmaple
+
+/// Generate unit struct which is descriptor of callback which should be called after subforming process of a specific field. Descriptors are used insted of closures to inline code and let optimizer play with optimization.
+///
+/// # Example of generated code
+///
+/// ```rust, ignore
+/// #[ allow( non_camel_case_types ) ]
+/// pub struct Struct1FormerVec_1End;
+/// #[ automatically_derived ]
+/// impl< Definition > former::FormingEnd
+/// <
+///   former::VectorDefinition< String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
+/// >
+/// for Struct1FormerVec_1End
+/// where
+///   Definition : former::FormerDefinition,
+///   Definition::Types : former::FormerDefinitionTypes
+///   <
+///     Storage = Struct1FormerStorage
+///   >,
+/// {
+///   #[ inline( always ) ]
+///   fn call
+///   (
+///     &self, storage : Vec< String >,
+///     super_former : Option< Struct1Former< Definition > >,
+///   )
+///   -> Struct1Former< Definition >
+///   {
+///     let mut super_former = super_former.unwrap();
+///     if let Some( ref mut field ) = super_former.storage.vec_1
+///     {
+///       former::ContainerAssign::assign( field, storage );
+///     }
+///     else
+///     {
+///       super_former.storage.vec_1 = Some( storage );
+///     }
+///     super_former
+///   }
+/// }
+/// ```
+
+#[ inline ]
+fn fields_setter_callback_descriptor_map
+(
+  field : &FormerField< '_ >,
+  former : &syn::Ident,
+  former_storage : &syn::Ident,
+  former_definition : &syn::Ident,
+)
+->
+Result< TokenStream >
+{
+  let ident = &field.ident;
+
+  if field.attrs.subformer.is_none()
+  {
+    return Ok( qt!{ } );
+  }
+
+
+  let r = qt!
+  {
+    xxx
+
+    // zzz : description
+    /// Return original former after subformer for `vec_1` is done.
+    #[ allow( non_camel_case_types ) ]
+    pub struct Struct1FormerVec_1End;
+    #[ automatically_derived ]
+    impl< Definition > former::FormingEnd
+    <
+      former::VectorDefinition< String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
+    >
+    for Struct1FormerVec_1End
+    where
+      Definition : former::FormerDefinition,
+      Definition::Types : former::FormerDefinitionTypes
+      <
+        Storage = Struct1FormerStorage
+      >,
+    {
+      #[ inline( always ) ]
+      fn call
+      (
+        &self, storage : Vec< String >,
+        super_former : Option< Struct1Former< Definition > >,
+      )
+      -> Struct1Former< Definition >
+      {
+        let mut super_former = super_former.unwrap();
+        if let Some( ref mut field ) = super_former.storage.vec_1
+        {
+          former::ContainerAssign::assign( field, storage );
+        }
+        else
+        {
+          super_former.storage.vec_1 = Some( storage );
+        }
+        super_former
+      }
+    }
+
+  };
+
+  // tree_print!( r.as_ref().unwrap() );
+  Ok( r )
+}
+
 ///
 /// Generate a single setter for the 'field_ident' with the 'setter_name' name.
 ///
 /// Used as a helper function for field_setter_map(), which generates all alias setters
 ///
-/// # Example of output
+/// # Example of generated code
 /// ```ignore
 /// #[ doc = "Setter for the 'int_1' field." ]
 /// #[ inline ]
@@ -910,8 +1020,17 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   let former_fields : Vec< _ > = process_results( former_fields, | iter | iter.collect() )?;
 
-  let ( fields_none, fields_optional, fields_form, fields_names, fields_setter )
-  : ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
+  let
+  (
+    fields_none,
+    fields_optional,
+    fields_form,
+    fields_names,
+    fields_setter,
+    fields_setter_callback_descriptor,
+  )
+  :
+  ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
   = former_fields.iter().map( | former_field |
   {(
     field_none_map( former_field ),
@@ -919,6 +1038,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     field_form_map( former_field ),
     field_name_map( former_field ),
     field_setter_map( former_field ),
+    fields_setter_callback_descriptor_map( former_field, &former, &former_storage, &former_definition ),
   )}).multiunzip();
 
   let ( _doc_former_mod, doc_former_struct ) = doc_generate( struct_name );
@@ -937,13 +1057,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       ///
       /// Make former, variation of builder pattern to form structure defining values of fields step by step.
       ///
-
-      // #[ inline( always ) ]
-      // // pub fn former() -> #former < #generics_params (), former::ReturnPreformed >
-      // pub fn former() -> #former < #generics_params >
-      // {
-      //   #former :: new()
-      // }
 
       #[ inline( always ) ]
       pub fn former() -> #former < #generics_params >
