@@ -948,7 +948,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       #[ inline( always ) ]
       pub fn former() -> #former < #generics_params >
       {
-        #former :: < #generics_params > :: new( the_module::ReturnPreformed )
+        #former :: < #generics_params > :: new( former::ReturnPreformed )
       }
 
     }
