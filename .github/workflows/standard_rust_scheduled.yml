@@ -13,8 +13,6 @@ env :
 jobs :
 
   tested :
-    needs: check
-    if : ${{ needs.check.outputs.should_run == 'true' }}
     uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
     with :
       manifest_path : './Cargo.toml'
