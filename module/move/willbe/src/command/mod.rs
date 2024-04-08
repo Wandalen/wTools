@@ -265,6 +265,11 @@ with_gitpod: If set to 1, a column with a link to Gitpod will be added. Clicking
         .kind( Type::Path )
         .optional( true )
         .end()
+      .property("with_features_deps")
+        .hint( "Display dependencies of features of the package" )
+        .kind( Type::Bool )
+        .optional( true )
+        .end()
       .routine( command::features )
       .end()
   }

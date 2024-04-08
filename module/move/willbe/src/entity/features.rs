@@ -148,6 +148,8 @@ mod private
   #[ derive( Debug, Default ) ]
   pub struct FeaturesReport
   {
+    pub with_features_deps: bool,
+
     /// A key-value pair structure representing available features.
     ///
     /// Key: name of the package (useful for workspaces, where multiple packages can be found).
@@ -167,8 +169,17 @@ mod private
         features.iter().try_for_each
         ( | ( feature, dependencies ) |
         {
-          let dependencies = dependencies.join(", ");
-          writeln!( f, "\t{feature}: [{dependencies}]")
+          let feature = match self.with_features_deps
+          {
+            false => format!( "\t{feature}" ),
+            true
+            =>
+            {
+              let deps = dependencies.join( ", " );
+              format!( "\t{feature}: [{deps}]" )
+            }
+          };
+          writeln!( f, "{feature}" )
         }
         )
       }
