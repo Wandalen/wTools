@@ -33,6 +33,7 @@ mod private
   use former::Former;
   use workspace::WorkspacePackage;
   use diff::crate_diff;
+  use version::version_revert;
 
   ///
   #[ derive( Debug, Clone ) ]
@@ -311,7 +312,7 @@ mod private
     pub dry : bool,
   }
 
-  fn perform_git_operations( o : GitThingsOptions ) -> Result< ExtendedGitReport >
+  fn perform_git_commit( o : GitThingsOptions ) -> Result< ExtendedGitReport >
   {
     let mut report = ExtendedGitReport::default();
     if o.items.is_empty() { return Ok( report ); }
@@ -328,8 +329,6 @@ mod private
     report.add = Some( res );
     let res = git::commit( &o.git_root, &o.message, o.dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
     report.commit = Some( res );
-    let res = git::push( &o.git_root, o.dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
-    report.push = Some( res );
 
     Ok( report )
   }
@@ -437,12 +436,32 @@ mod private
     report.get_info = Some( cargo::pack( pack ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )? );
     // qqq : redundant field?
     report.publish_required = true;
-    report.bump = Some( version::version_bump( version_bump ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )? );
-    let git = perform_git_operations( git_things ).map_err( |e | format_err!( "{report}\n{e:#?}" ) )?;
+    let bump_report = version::version_bump( version_bump ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )?;
+    report.bump = Some( bump_report.clone() );
+    let git_root = git_things.git_root.clone();
+    let git = match perform_git_commit( git_things ).map_err( |e | format_err!( "{report}\n{e:#?}" ) )
+    {
+      Ok( git ) => git,
+      Err( e ) =>
+      {
+        version_revert( &bump_report ).map_err( | le | format_err!( "{report}\n{e:#?}\n{le:#?}" ) )?;
+        return Err( format_err!( "{report}\n{e:#?}" ) );
+      }
+    };
     report.add = git.add;
     report.commit = git.commit;
-    report.push = git.push;
-    report.publish = Some( cargo::publish( publish ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )? );
+    report.publish = match cargo::publish( publish ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )
+    {
+      Ok( publish ) => Some( publish ),
+      Err( e ) =>
+      {
+        git::reset( git_root.as_ref(), true, 1, false ).map_err( | le | format_err!( "{report}\n{e:#?}\n{le:#?}" ) )?;
+        return Err( format_err!( "{report}\n{e:#?}" ) );
+      }
+    };
+    
+    let res = git::push( &git_root, dry ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )?;
+    report.push = Some( res );
 
     Ok( report )
   }

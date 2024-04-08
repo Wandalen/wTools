@@ -138,6 +138,58 @@ mod private
       .run().map_err( | report | err!( report.to_string() ) )
     }
   }
+  
+  /// This function is a wrapper around the `git reset` command.
+  ///
+  /// # Args :
+  ///
+  /// - `path`: The path to the directory on which the `git reset` command will be executed.
+  /// - `hard`: A boolean indicating whether to perform a hard reset or not.
+  /// - `commits_count`: The number of commits to reset(at least 1).
+  /// - `dry`: A boolean indicating whether to execute the command in dry-run mode or not.
+  ///
+  /// # Returns :
+  /// This function returns a `Result` containing a `Report` if the command is executed successfully. The `Report` contains the command executed, the output
+// git reset command wrapper
+  pub fn reset< P >( path : P, hard : bool, commits_count : usize, dry : bool ) -> Result< Report >
+  where
+    P : AsRef< Path >,
+  {
+    if commits_count < 1 { return Err( err!( "Cannot reset, the count of commits must be greater than 0" ) ) }
+    let ( program, args ) = 
+    (
+      "git",
+      Some( "reset" )
+      .into_iter()
+      .chain( if hard { Some( "--hard" ) } else { None } )
+      .map( String::from )
+      .chain( Some( format!( "HEAD~{}", commits_count ) ) )
+      .collect::< Vec< _ > >()
+    );
+
+    if dry
+    {
+      Ok
+      (
+        Report
+        {
+          command : format!( "{program} {}", args.join( " " ) ),
+          out : String::new(),
+          err : String::new(),
+          current_path : path.as_ref().to_path_buf(),
+          error : Ok( () ),
+        }
+      )
+    }
+    else
+    {
+      Run::former()
+      .bin_path( program )
+      .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+      .current_path( path.as_ref().to_path_buf() )
+      .run().map_err( | report | err!( report.to_string() ) )
+    }
+  }
 
   /// Retrieves the remote URL of a Git repository.
   ///
@@ -169,5 +221,6 @@ crate::mod_interface!
   protected use add;
   protected use commit;
   protected use push;
+  protected use reset;
   protected use ls_remote_url;
 }

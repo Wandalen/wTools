@@ -137,6 +137,21 @@ pub( crate ) mod private
 
   impl Manifest
   {
+    /// Returns a mutable reference to the TOML document.
+    ///
+    /// If the TOML document has not been loaded yet, this function will load it
+    /// by calling the `load` method. If loading fails, this function will panic.
+    ///
+    /// # Returns
+    ///
+    /// A mutable reference to the TOML document.
+    pub fn data( &mut self ) -> &mut toml_edit::Document
+    {
+      if self.manifest_data.is_none() { self.load().unwrap() }
+      
+      self.manifest_data.as_mut().unwrap()
+    }
+    
     /// Returns path to `Cargo.toml`.
     pub fn manifest_path( &self ) -> &AbsolutePath
     {

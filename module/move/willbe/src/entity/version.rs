@@ -300,6 +300,71 @@ mod private
 
     Ok( report )
   }
+  
+  /// Reverts the version of a package in the provided `ExtendedBumpReport`.
+  ///
+  /// # Arguments
+  ///
+  /// * `report` - The `ExtendedBumpReport` containing the bump information.
+  ///
+  /// # Returns
+  ///
+  /// Returns `Ok(())` if the version is reverted successfully. Returns `Err` with an error message if there is any issue with reverting the version.
+  pub fn version_revert( report : &ExtendedBumpReport ) -> Result< () >
+  {
+    let Some( name ) = report.name.as_ref() else { return Ok( () ) };
+    let Some( old_version ) = report.old_version.as_ref() else { return Ok( () ) };
+    let Some( new_version ) = report.new_version.as_ref() else { return Ok( () ) };
+    
+    let dependencies = | item_maybe_with_dependencies : &mut toml_edit::Item |
+    {
+      if let Some( dependency ) = item_maybe_with_dependencies.get_mut( "dependencies" ).and_then( | ds | ds.get_mut( name ) )
+      {
+        if let Some( current_version ) = dependency.get( "version" ).and_then( | v | v.as_str() ).map( | v | v.to_string() )
+        {
+          let version = &mut dependency[ "version" ];
+          if let Some( current_version ) = current_version.strip_prefix( '~' )
+          {
+            if current_version != new_version { return Err( format_err!( "The current version of the package does not match the expected one. Expected: `{new_version}` Current: `{}`", version.as_str().unwrap_or_default() ) ); }
+            *version = value( format!( "~{}", old_version ) );
+          }
+          else
+          {
+            if version.as_str().unwrap() != new_version { return Err( format_err!( "The current version of the package does not match the expected one. Expected: `{new_version}` Current: `{}`", version.as_str().unwrap_or_default() ) ); }
+            *version = value( old_version.clone() );
+          }
+        }
+      }
+      
+      Ok( () )
+    };
+    
+    for path in &report.changed_files
+    {
+      let mut manifest = manifest::open( path.clone() )?;
+      let data = manifest.data();
+      if let Some( workspace ) = data.get_mut( "workspace" )
+      {
+        dependencies( workspace )?;
+      }
+      if let Some( package ) = data.get_mut( "package" )
+      {
+        if package.get_mut( "name" ).unwrap().as_str().unwrap() == name
+        {
+          let version = &mut package[ "version" ];
+          if version.as_str().unwrap() != new_version { return Err( format_err!( "The current version of the package does not match the expected one. Expected: `{new_version}` Current: `{}`", version.as_str().unwrap_or_default() ) ); }
+          *version = value( old_version.clone() );
+        }
+        else
+        {
+          dependencies( package )?;
+        }
+      }
+      manifest.store()?;
+    }
+
+    Ok( () )
+  }
 }
 
 //
@@ -321,4 +386,6 @@ crate::mod_interface!
   protected use ExtendedBumpReport;
   /// Bumps the version of a package and its dependencies.
   protected use version_bump;
+  /// Reverts the version of a package.
+  protected use version_revert;
 }
