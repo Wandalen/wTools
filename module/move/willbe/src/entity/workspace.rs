@@ -108,7 +108,6 @@ mod private
     {
       &self.inner.features
     }
-    
   }
   
   /// A dependency of the main crate

@@ -1,8 +1,8 @@
 mod private
 {
   use crate::*;
-  use std::collections::{ BTreeSet, HashSet };
-  use error_tools::err;
+  use core::fmt;
+  use std::collections::{ BTreeMap, BTreeSet, HashMap, HashSet };
   // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
   // aaa : ✅
   use error_tools::for_app::{ bail, Result };
@@ -143,6 +143,38 @@ mod private
 
     estimate
   }
+
+  /// Represents a report about features available in the package
+  #[ derive( Debug, Default ) ]
+  pub struct FeaturesReport
+  {
+    /// A key-value pair structure representing available features.
+    ///
+    /// Key: name of the package (useful for workspaces, where multiple packages can be found).
+    ///
+    /// Value: Another key-value pair representing a feature and its dependencies
+    pub inner : HashMap< String, BTreeMap< String, Vec< String > > >,
+  }
+
+  impl fmt::Display for FeaturesReport
+  {
+    fn fmt( &self, f : &mut fmt::Formatter< '_ >) -> Result< (), fmt::Error >
+    {
+      self.inner.iter().try_for_each
+      ( | ( package, features ) |
+      {
+        writeln!(f, "Package {}:", package)?;
+        features.iter().try_for_each
+        ( | ( feature, dependencies ) |
+        {
+          let dependencies = dependencies.join(", ");
+          writeln!( f, "\t{feature}: [{dependencies}]")
+        }
+        )
+      }
+      )
+    } 
+  }
   
 }
 
@@ -151,4 +183,5 @@ crate::mod_interface!
   /// Features
   protected use features_powerset;
   protected use estimate_with;
+  protected use FeaturesReport;
 }

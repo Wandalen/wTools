@@ -22,4 +22,6 @@ crate::mod_interface!
   layer cicd_renew;
   /// Workspace new.
   layer workspace_renew;
+  /// List features.
+  layer features;
 }

@@ -1,5 +1,6 @@
 use super::*;
 
+pub mod features;
 pub mod list;
 pub mod readme_health_table_renew;
 pub mod readme_modules_headers_renew;
