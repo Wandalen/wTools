@@ -8,20 +8,53 @@ use gluesql::
   },
   sled_storage::sled::Config,
 };
+use wca::wtools::Itertools;
 use unitore::
 {
   feed_config::SubscriptionConfig,
   storage::FeedStorage,
-  entity::{ feed::FeedStore, frame::FrameStore },
+  entity::{ frame::FrameStore, feed::FeedStore },
 };
-use wca::wtools::Itertools;
 use error_tools::Result;
+
+#[ tokio::test ]
+async fn test_save() -> Result< () >
+{
+  let config = gluesql::sled_storage::sled::Config::default()
+  .path( "./test_save".to_owned() )
+  .temporary( true )
+  ;
+
+  let mut feed_storage = FeedStorage::init_storage( &config ).await?;
+
+  let feed_config = SubscriptionConfig
+  {
+    update_period : std::time::Duration::from_secs( 1000 ),
+    link : url::Url::parse( "https://www.nasa.gov/feed/" )?,
+  };
+
+  let mut feeds = Vec::new();
+
+  let feed = feed_parser::parse( include_str!("./fixtures/plain_feed.xml").as_bytes() )?;
+  feeds.push( ( feed, feed_config.update_period.clone(), feed_config.link.clone() ) );
+  feed_storage.feeds_process( feeds ).await?;
+
+  let entries = feed_storage.frames_list().await?;
+
+  let number_of_frames = entries.0[ 0 ].selected_frames.selected_rows.len();
+
+  println!("{:#?}", entries);
+
+  assert_eq!( number_of_frames, 10 );
+
+  Ok( () )
+}
 
 #[ tokio::test ]
 async fn test_update() -> Result< () >
 {
   let config = Config::default()
-  .path( "./test".to_owned() )
+  .path( "./test_update".to_owned() )
   .temporary( true )
   ;
 

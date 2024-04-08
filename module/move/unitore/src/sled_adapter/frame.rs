@@ -1,3 +1,5 @@
+// Frames operation with Sled storage.
+
 use crate::*;
 use std::collections::HashMap;
 use error_tools::{ Result, for_app::Context };

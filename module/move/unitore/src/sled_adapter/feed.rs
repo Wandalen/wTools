@@ -1,3 +1,5 @@
+// Feed operation with Sled storage.
+
 use crate::*;
 use std::time::Duration;
 use error_tools::{ Result, for_app::Context };
