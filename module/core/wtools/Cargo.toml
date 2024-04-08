@@ -185,7 +185,7 @@ error_full = [
 ]
 # error_use_std = [ "error", "error_tools/use_std" ]
 error_no_std = [ "error", "error_tools/no_std" ]
-error_use_alloc = [ "error", "error_tools/use_alloc" ]
+#error_use_alloc = [ "error", "error_tools/use_alloc" ]
 
 error_for_lib = [ "error", "error_tools/error_for_lib" ]
 error_for_app = [ "error", "error_tools/error_for_app" ]
