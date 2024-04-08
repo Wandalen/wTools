@@ -21,6 +21,8 @@ pub async fn config_add( storage : FeedStorage< SledStorage >, args : &wca::Args
   .into()
   ;
 
+  let path = proper_path_tools::path::normalize( path );
+
   let mut err_str = format!( "Invalid path for config file {:?}", path );
 
   let start = path.components().next();
@@ -37,7 +39,11 @@ pub async fn config_add( storage : FeedStorage< SledStorage >, args : &wca::Args
       err_str = format!( "Invalid path for config file {:?}", abs_path );
     }
   }
-  let path = path.canonicalize().context( err_str )?;
+
+  if !path.exists()
+  {
+    return Err( error_tools::for_app::Error::msg( err_str ) );
+  }  
 
   let config = Config::new( path.to_string_lossy().to_string() );
   let mut manager = FeedManager::new( storage );
