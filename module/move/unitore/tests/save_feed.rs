@@ -49,6 +49,8 @@ async fn test_save_feed_plain() -> Result< () >
 
   let number_of_frames = entries.0[ 0 ].selected_frames.selected_rows.len();
 
+  println!("{:#?}", entries);
+
   assert_eq!( number_of_frames, 10 );
 
   Ok( () )

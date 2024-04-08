@@ -133,7 +133,7 @@ impl std::fmt::Display for FramesReport
     [
       vec![ EMPTY_CELL.to_owned(), format!( "Updated frames: {}", self.updated_frames ) ],
       vec![ EMPTY_CELL.to_owned(), format!( "Inserted frames: {}", self.new_frames ) ],
-      vec![ EMPTY_CELL.to_owned(), format!( "Number of frames in storage: {}", self.existing_frames ) ],
+      vec![ EMPTY_CELL.to_owned(), format!( "Number of frames in storage: {}", self.existing_frames + self.new_frames ) ],
     ];
 
     if !self.selected_frames.selected_columns.is_empty()

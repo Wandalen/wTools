@@ -7,5 +7,6 @@ pub mod tool;
 pub mod command;
 pub mod action;
 pub mod entity;
+pub mod sled_adapter;
 
 // qqq : src/Readmу.md with file structure please

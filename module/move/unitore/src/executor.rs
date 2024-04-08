@@ -43,7 +43,6 @@ where
 /// Run feed updates.
 pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
 {
-  //let ca = wca::CommandsAggregator::new();
   let ca = wca::CommandsAggregator::former()
   .command( "frames.download" )
     .hint( "Download frames from feed sources provided in config files." )
@@ -174,7 +173,7 @@ pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >
       "Subject: table name.\n",
       "    Example: .table.list feed",
     ))
-    .subject().hint( "Name" ).kind( wca::Type::String ).optional( false ).end()
+    .subject().hint( "Name" ).kind( wca::Type::String ).optional( true ).end()
     .routine( | o : VerifiedCommand |
     {
       match action( table_list, &o.args )

@@ -1,23 +1,12 @@
 //! Frame storing and retrieving functionality.
 
 use crate::*;
-use std::collections::HashMap;
-use error_tools::{ for_app::Context, Result };
-use gluesql::
+use error_tools::Result;
+use gluesql::core::
 {
-  core::
-  {
-    ast_builder::{ null, col, table, text, Execute, timestamp, ExprNode },
-    data::Value,
-    executor::Payload,
-    chrono::{ Utc, DateTime, SecondsFormat },
-  },
-  sled_storage::SledStorage,
+  ast_builder::{ null, text, timestamp, ExprNode }, chrono::{ DateTime, SecondsFormat, Utc }, executor::Payload
 };
-
-use action::frame::{ FramesReport, ListReport, SelectedEntries };
-use storage::FeedStorage;
-use wca::wtools::Itertools;
+use action::frame::ListReport;
 
 /// Frame entity.
 #[ derive( Debug ) ]
@@ -27,21 +16,22 @@ pub struct Frame
   pub id : String,
   /// Frame title.
   pub title : Option< String >,
-  stored_time : Option< DateTime< Utc > >,
-  authors : Option< String >,
-  content : Option< String >,
-  links : Option< String >,
-  summary : Option< String >,
-  categories : Option< String >,
-  published : Option< DateTime< Utc > >,
-  source : Option< String >,
-  rights : Option< String >,
-  media : Option< String >,
-  language : Option< String >,
-  feed_link : String,
+  pub stored_time : Option< DateTime< Utc > >,
+  pub authors : Option< Vec< String > >,
+  pub content : Option< String >,
+  pub links : Option< Vec< String > >,
+  pub summary : Option< String >,
+  pub categories : Option< Vec< String > >,
+  pub published : Option< DateTime< Utc > >,
+  pub source : Option< String >,
+  pub rights : Option< String >,
+  pub media : Option< Vec< String > >,
+  pub language : Option< String >,
+  pub feed_link : String,
 }
 
 // qqq : not obvious
+// aaa : added explanation
 /// Convert from feed_rs feed entry and feed link to Frame struct for convenient use and storage.
 impl From< ( feed_rs::model::Entry, String ) > for Frame
 {
@@ -59,9 +49,10 @@ impl From< ( feed_rs::model::Entry, String ) > for Frame
     .clone()
     ;
 
-    let mut links = entry.links
+    let links = entry.links
     .iter()
     .map( | link | link.href.clone() )
+    .collect::< Vec< _ > >()
     .clone()
     ;
 
@@ -83,18 +74,18 @@ impl From< ( feed_rs::model::Entry, String ) > for Frame
       id : entry.id,
       title : entry.title.map( | title | title.content ).clone(),
       stored_time : entry.updated,
-      authors : ( !authors.is_empty() ).then( || authors.join( ", " ) ),
+      authors: ( !authors.is_empty() ).then( || authors ),
       // qqq : why join?
       content,
-      links : ( !links.len() == 0 ).then( || links.join( ", " ) ),
+      links: ( !links.is_empty() ).then( || links ),
       // qqq : why join?
       summary : entry.summary.map( | c | c.content ).clone(),
-      categories : ( !categories.is_empty() ).then( || categories.join( ", " ) ),
+      categories: ( !categories.is_empty() ).then( || categories ),
       // qqq : why join?
       published : entry.published.clone(),
       source : entry.source.clone(),
       rights : entry.rights.map( | r | r.content ).clone(),
-      media : ( !media.is_empty() ).then( || media.join( ", " ) ),
+      media: ( !media.is_empty() ).then( || media ),
       // qqq : why join?
       language : entry.language.clone(),
       feed_link,
@@ -120,97 +111,6 @@ pub trait FrameStore
 // qqq : what is update? what update? don't use word update without noun and explanation what deos it mean
 // aaa : fixed comments
 
-#[ async_trait::async_trait( ?Send ) ]
-impl FrameStore for FeedStorage< SledStorage >
-{
-  async fn frames_list( &mut self ) -> Result< ListReport >
-  {
-    let res = table( "frame" ).select().execute( &mut *self.storage.lock().await ).await?;
-
-    let mut reports = Vec::new();
-    let all_frames = 
-    if let Payload::Select { labels: label_vec, rows: rows_vec } = res
-    {
-      SelectedEntries
-      {
-        selected_rows : rows_vec,
-        selected_columns : label_vec,
-      }
-    }
-    else
-    {
-      SelectedEntries::new()
-    };
-    
-    let mut feeds_map = HashMap::new();
-
-    for row in all_frames.selected_rows
-    {
-      let title_val = row.last().unwrap().clone();
-      let title = String::from( title_val );
-      feeds_map.entry( title )
-      .and_modify( | vec : &mut Vec< Vec< Value > > | vec.push( row.clone() ) )
-      .or_insert( vec![ row ] )
-      ;
-    }
-
-    for ( title, frames ) in feeds_map
-    {
-      let mut report = FramesReport::new( title );
-      report.existing_frames = frames.len();
-      report.selected_frames = SelectedEntries
-      {
-        selected_rows : frames,
-        selected_columns : all_frames.selected_columns.clone(),
-      };
-      reports.push( report );
-    }
-
-    Ok( ListReport( reports ) )
-  }
-
-  async fn frames_save( &mut self, frames : Vec< Frame > ) -> Result< Payload >
-  {
-    let entries_rows : Vec< Vec< ExprNode< 'static > > > = frames.into_iter().map( | entry | entry.into() ).collect_vec();
-
-    let insert = table( "frame" )
-    .insert()
-    .columns
-    (
-      self.frame_fields.iter().map( | field | field[ 0 ] ).join( "," ).as_str()
-    )
-    .values( entries_rows )
-    .execute( &mut *self.storage.lock().await )
-    .await
-    .context( "Failed to insert frames" )?
-    ;
-
-    Ok( insert )
-  }
-
-  async fn frames_update( &mut self, feed : Vec< Frame > ) -> Result< () >
-  {
-    let entries_rows : Vec< Vec< ExprNode< 'static > > > = feed.into_iter().map( | entry | entry.into() ).collect_vec();
-
-    for entry in entries_rows
-    {
-      let _update = table( "frame" )
-      .update()
-      .set( "title", entry[ 1 ].to_owned() )
-      .set( "content", entry[ 4 ].to_owned() )
-      .set( "links", entry[ 5 ].to_owned() )
-      .set( "summary", entry[ 6 ].to_owned() )
-      .set( "published", entry[ 8 ].to_owned() )
-      .set( "media", entry[ 9 ].to_owned() )
-      .filter( col( "id" ).eq( entry[ 0 ].to_owned() ) )
-      .execute( &mut *self.storage.lock().await )
-      .await
-      .context( "Failed to update frames" )?
-      ;
-    }
-    Ok( () )
-  }
-}
 
 // qqq : what is it for and why?
 // aaa : added explanation
@@ -232,7 +132,7 @@ impl From< Frame > for Vec< ExprNode< 'static > >
     ;
 
     let authors = entry.authors
-    .map( | authors | text( authors ) )
+    .map( | authors | text(authors[0].clone()))
     .unwrap_or( null() )
     ;
 
@@ -242,7 +142,7 @@ impl From< Frame > for Vec< ExprNode< 'static > >
     ;
 
     let links = entry.links
-    .map( | links | text ( links ) )
+    .map( | links | text ( links.join(", ") ) )
     .unwrap_or( null() )
     ;
 
@@ -252,7 +152,7 @@ impl From< Frame > for Vec< ExprNode< 'static > >
     ;
 
     let categories = entry.categories
-    .map( | categories | text ( categories ) )
+    .map( | categories | text ( categories.join(", ") ) )
     .unwrap_or( null() )
     ;
 
@@ -264,7 +164,7 @@ impl From< Frame > for Vec< ExprNode< 'static > >
     let source = entry.source.map( | s | text( s ) ).unwrap_or( null() );
     let rights = entry.rights.map( | r | text( r ) ).unwrap_or( null() );
     let media = entry.media
-    .map( | media | text ( media ) )
+    .map( | media | text( media.join(", ") ) )
     .unwrap_or( null() )
     ;
 
