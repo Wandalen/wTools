@@ -21,6 +21,7 @@ pub( crate ) mod private
   use petgraph::prelude::*;
 
   use error_tools::for_lib::Error;
+  use error::Result;
   use package::{ Package, publish_need };
 
   #[ derive( Debug, Error ) ]
@@ -242,7 +243,7 @@ pub( crate ) mod private
     roots : &[ String ], 
     temp_path : Option< PathBuf >,
   ) 
-  -> Graph< String, String >
+  -> Result< Graph< String, String > >
   {
     let mut nodes = HashSet::new();
     let mut cleared_graph = Graph::new();
@@ -269,7 +270,7 @@ pub( crate ) mod private
           .option_temp_path( temp_path.clone() )
           .dry( false )
           .form()
-        ).unwrap();
+        )?;
         if publish_need( package, temp_path.clone() ).unwrap()
         {
           nodes.insert( n );
@@ -294,7 +295,7 @@ pub( crate ) mod private
       }
     }
 
-    cleared_graph
+    Ok( cleared_graph )
   }
 }
 
