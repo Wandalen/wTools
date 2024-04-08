@@ -12,7 +12,7 @@ mod private
   use std::borrow::Cow;
   use std::fs::{ OpenOptions };
   use std::io::{ Read, Seek, SeekFrom, Write };
-  use std::path::{Path, PathBuf};
+  use std::path::PathBuf;
   use convert_case::{ Case, Casing };
   use regex::Regex;
   use crate::action::readme_health_table_renew::find_example_file;

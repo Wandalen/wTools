@@ -14,6 +14,10 @@ mod private
   pub struct PackOptions
   {
     pub( crate ) path : PathBuf,
+    #[ default( false ) ]
+    pub( crate ) allow_dirty : bool,
+    #[ default( false ) ]
+    pub( crate ) no_verify : bool,
     pub( crate ) temp_path : Option< PathBuf >,
     pub( crate ) dry : bool,
   }
@@ -33,6 +37,8 @@ mod private
     {
       [ "package".to_string() ]
       .into_iter()
+      .chain( if self.allow_dirty { Some( "--allow-dirty".to_string() ) } else { None } )
+      .chain( if self.no_verify { Some( "--no-verify".to_string() ) } else { None } )
       .chain( self.temp_path.clone().map( | p | vec![ "--target-dir".to_string(), p.to_string_lossy().into() ] ).into_iter().flatten() )
       .collect()
     }

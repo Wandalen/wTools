@@ -367,6 +367,8 @@ mod private
       let pack = cargo::PackOptions
       {
         path : crate_dir.as_ref().into(),
+        allow_dirty : self.dry,
+        no_verify : self.dry,
         temp_path : self.base_temp_dir.clone(),
         dry : self.dry,
       };
