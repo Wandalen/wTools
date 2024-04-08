@@ -10,6 +10,8 @@ mod impls3_test;
 mod index_test;
 mod tests_index_test;
 
+use crate::only_for_terminal_module;
+
 only_for_terminal_module!
 {
 
