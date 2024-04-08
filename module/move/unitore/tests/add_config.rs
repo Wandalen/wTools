@@ -31,9 +31,8 @@ async fn add_config_file() -> Result< () >
   .collect::< Vec< _ > >()
   ;
 
-  assert!( feeds_links.len() == 2 );
-  assert!( feeds_links.contains( &format!( "https://feeds.bbci.co.uk/news/world/rss.xml" ) ) );
-  assert!( feeds_links.contains( &format!( "https://rss.nytimes.com/services/xml/rss/nyt/World.xml" ) ) );
+  assert!( feeds_links.len() == 1 );
+  assert!( feeds_links.contains( &format!( "https://www.nasa.gov/feed/" ) ) );
 
   Ok( () )
 }

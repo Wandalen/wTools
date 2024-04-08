@@ -19,7 +19,7 @@ use actions::
   table::{ list_columns, list_tables },
 };
 
-fn action< 'a, F, Fut, R >( async_endpoint : F, args : &'a Args ) -> Result< R >
+pub fn action< 'a, F, Fut, R >( async_endpoint : F, args : &'a Args ) -> Result< R >
 where
   F : FnOnce( FeedStorage< SledStorage >, &'a Args ) -> Fut,
   Fut : std::future::Future< Output = Result< R > >,
