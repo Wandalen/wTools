@@ -43,9 +43,13 @@ pub async fn config_add( storage : FeedStorage< SledStorage >, args : &wca::Args
   if !path.exists()
   {
     return Err( error_tools::for_app::Error::msg( err_str ) );
-  }  
+  }
 
-  let config = Config::new( path.to_string_lossy().to_string() );
+  //let abs_path = proper_path_tools::path::canonicalize( path )?;
+  let abs_path = path.canonicalize()?;
+  println!("{}", abs_path.to_string_lossy().to_string() );
+
+  let config = Config::new( abs_path.to_string_lossy().to_string() );
   let mut manager = FeedManager::new( storage );
 
   let config_report = manager.storage
