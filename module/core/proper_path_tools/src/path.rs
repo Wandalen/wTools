@@ -376,11 +376,66 @@ pub( crate ) mod private
     Some( PathBuf::from( full_path.to_string_lossy().replace( "\\", "/" ) ) )
   }
 
+  /// Replaces the existing path extension with the provided extension.
+  ///
+  /// If the input path is empty or contains non-ASCII characters, or if the provided extension is empty or contains non-ASCII characters,
+  /// the function returns None.
+  /// Otherwise, it returns an Option containing the modified path with the new extension.
+  ///
+  /// # Arguments
+  ///
+  /// * `path` - An object that can be converted into a Path reference, representing the file path.
+  /// * `ext` - A string slice representing the new extension to be appended to the path.
+  ///
+  /// # Returns
+  ///
+  /// An Option containing the modified path with the new extension, or None if any of the input parameters are invalid.
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// use std::path::PathBuf;
+  /// use proper_path_tools::path::change_ext;
+  ///
+  /// let path = "/path/to/file.txt";
+  /// let modified_path = change_ext( path, "json" );
+  /// assert_eq!( modified_path, Some( PathBuf::from( "/path/to/file.json" ) ) );
+  /// ```
+  ///
+  /// ```
+  /// use std::path::PathBuf;
+  /// use proper_path_tools::path::change_ext;
+  ///
+  /// let empty_path = "";
+  /// let modified_path = change_ext( empty_path, "txt" );
+  /// assert_eq!( modified_path, None );
+  /// ```
+  ///
+  pub fn change_ext( path : impl AsRef< std::path::Path >, ext : &str ) -> Option< std::path::PathBuf > 
+  {
+    use std::path::PathBuf;
+    if path.as_ref().to_string_lossy().is_empty() || !path.as_ref().to_string_lossy().is_ascii() || !ext.is_ascii() 
+    {
+      return None;
+    }
+  
+    let without_ext = without_ext( path )?;
+    if ext.is_empty() 
+    {
+      Some( without_ext )
+    }
+    else
+    {
+      Some( PathBuf::from( format!( "{}.{}", without_ext.to_string_lossy(), ext ) ) )
+    }
+  
+  }
+
 }
 
 crate::mod_interface!
 {
-
+  protected use change_ext;
   protected use without_ext;
   protected use is_glob;
   protected use normalize;
