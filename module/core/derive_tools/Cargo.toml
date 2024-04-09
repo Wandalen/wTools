@@ -62,7 +62,7 @@ default = [
   "derive_clone_dyn",
   # "derive_clone_dyn_use_std",
 
-  "strum_derive",
+  "derive_strum",
   "strum_phf",
 
   "derive_from",
@@ -102,11 +102,11 @@ full = [
 
   "derive_display",
   "derive_from_str",
-
+  
   "derive_clone_dyn",
   # "derive_clone_dyn_use_std",
 
-  "strum_derive",
+  "derive_strum",
   "strum_phf",
 
   "derive_from",
@@ -159,7 +159,7 @@ derive_display = [ "parse-display" ]
 derive_from_str = [ "parse-display", "parse-display/std", "parse-display/regex" ]
 # derive_from_str = [ "parse-display", "parse-display/std", "parse-display/regex", "parse-display/once_cell" ]
 
-strum_derive = [ "strum/std", "strum/derive", "strum/strum_macros" ]
+derive_strum = [ "strum/std", "strum/derive", "strum/strum_macros" ]
 strum_phf = [ "strum/std", "strum/phf", "strum/strum_macros" ]
 # zzz : review features
 
@@ -170,13 +170,12 @@ derive_clone_dyn_use_alloc = [ "derive_clone_dyn", "clone_dyn/use_alloc" ]
 
 derive_from = [ "derive_tools_meta/derive_from" ]
 derive_inner_from = [ "derive_tools_meta/derive_inner_from" ]
-
+parse_display = [ "parse-display" ]
 
 [dependencies]
 
 ## external
-# derive_more = { version = "~0.99.17", optional = true, default-features = false }
-derive_more = { version = "~1.0.0-beta.6", optional = true, default-features = false }
+derive_more = { version = "~1.0.0-beta.6", optional = true, default-features = false, features = [ "debug" ] }
 strum = { version = "~0.25", optional = true, default-features = false }
 # strum_macros = { version = "~0.25.3", optional = true, default-features = false }
 parse-display = { version = "~0.8.2", optional = true, default-features = false }

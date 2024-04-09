@@ -56,7 +56,7 @@ mod derive_more
 // #[ cfg( feature = "derive_reflect" ) ]
 // pub mod reflect;
 
-// use derive_tools_meta::Deref;
+// use derive_tools_meta::Deref; 
 // use derive_tools_meta::VariadicFrom;
 
 /// Namespace with dependencies.
@@ -66,7 +66,7 @@ pub mod dependency
 {
   #[ cfg( feature = "derive_more" ) ]
   pub use ::derive_more;
-  #[ cfg( feature = "strum" ) ]
+  #[ cfg( feature = "derive_strum" ) ]
   pub use ::strum;
   #[ cfg( feature = "parse_display" ) ]
   pub use ::parse_display;
@@ -124,6 +124,11 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::derive_more::*;
+
+  #[ cfg( feature = "derive_strum" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use ::strum::*;
 
   // #[ cfg( all( feature = "derive_more", feature = "derive_add" ) ) ]
   // #[ doc( inline ) ]
@@ -188,7 +193,7 @@ pub mod exposed
   //   UpperHex,
   // };
 
-  #[ cfg( feature = "strum" ) ]
+  #[ cfg( feature = "derive_strum" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::strum::*;
@@ -227,13 +232,17 @@ pub mod exposed
   #[ cfg( feature = "derive_from" ) ]
   pub use ::derive_tools_meta::From;
 
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ cfg( feature = "derive_inner_from" ) ]
+  pub use ::derive_tools_meta::InnerFrom;
+
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
-
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
