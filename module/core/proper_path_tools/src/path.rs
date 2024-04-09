@@ -295,17 +295,67 @@ pub( crate ) mod private
     .chars()
     .filter( | c | c.is_digit( 10 ) )
     .collect();
-
     // dbg!( &tid );
 
     Ok( format!( "{}_{}_{}_{}", timestamp, pid, tid, count ) )
   }
 
+  /// Extracts the extension from the given path.
+  ///
+  /// This function takes a path and returns a string representing the extension of the file.
+  /// If the input path is empty or if it doesn't contain an extension, it returns an empty string.
+  ///
+  /// # Arguments
+  ///
+  /// * `path` - An object that can be converted into a Path reference, representing the file path.
+  ///
+  /// # Returns
+  ///
+  /// A string containing the extension of the file, or an empty string if the input path is empty or lacks an extension.
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// use proper_path_tools::path::ext;
+  ///
+  /// let path = "/path/to/file.txt";
+  /// let extension = ext(path);
+  /// assert_eq!(extension, "txt");
+  /// ```
+  ///
+  /// ```
+  /// use proper_path_tools::path::ext;
+  ///
+  /// let empty_path = "";
+  /// let extension = ext(empty_path);
+  /// assert_eq!(extension, "");
+  /// ```
+  ///
+  pub fn ext( path : impl AsRef< std::path::Path > ) -> String 
+  {
+    use std::path::Path;
+
+    if path.as_ref().to_string_lossy().is_empty() 
+    {
+      return String::new();
+    }
+    let path_buf = Path::new( path.as_ref() );
+    match path_buf.extension()
+    {
+      Some( ext ) => 
+      {
+        ext.to_string_lossy().to_string()
+      }
+      None => String::new(),
+    }
+  }
+
 }
+
 
 crate::mod_interface!
 {
-
+  protected use ext;
   protected use is_glob;
   protected use normalize;
   protected use canonicalize;
