@@ -80,7 +80,12 @@ async fn test_update() -> Result< () >
   // check
   let payload = feed_storage.frames_list().await?;
 
-  let entries = payload.0.iter().map( | val | val.selected_frames.selected_rows.clone() ).flatten().collect::< Vec< _ > >();
+  let entries = payload.0
+  .iter()
+  .map( | val | val.selected_frames.selected_rows.clone() )
+  .flatten()
+  .collect::< Vec< _ > >()
+  ;
 
   let entries = entries.iter().map( | entry |
     {
@@ -105,8 +110,10 @@ async fn test_update() -> Result< () >
   assert_eq!( entries.len(), 10 );
 
   // check date
-  println!( "{:?}", entries );
-  let updated = entries.iter().find( | ( id, _published ) | id == "https://www.nasa.gov/?post_type=image-article&p=631537" );
+  let updated = entries.iter().find
+  (
+    | ( id, _published ) | id == "https://www.nasa.gov/?post_type=image-article&p=631537"
+  );
   assert!( updated.is_some() );
   let _updated = updated.unwrap();
   Ok( () )

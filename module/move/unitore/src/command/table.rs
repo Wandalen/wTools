@@ -1,4 +1,4 @@
-//! 
+//! Table and columns commands.
 
 use crate::*;
 use gluesql::sled_storage::sled::Config;
@@ -7,13 +7,15 @@ use storage::FeedStorage;
 use action::{ Report, table::{ table_list, tables_list } };
 use error_tools::Result;
 
+/// Struct that provides commands for table information.
+#[ derive( Debug ) ]
 pub struct TableCommand;
 
 impl TableCommand
 {
+  /// Creates command to list info about tables in storage.
   pub fn list() -> Result< Command >
   {
-
     let rt  = tokio::runtime::Runtime::new()?;
   
     Ok
@@ -52,10 +54,13 @@ impl TableCommand
   }
 }
 
+/// Struct that provides commands for table columns information.
+#[ derive( Debug ) ]
 pub struct TablesCommand;
 
 impl TablesCommand
 {
+  /// Creates command to list info about table columns in storage.
   pub fn list() -> Result< Command >
   {
 

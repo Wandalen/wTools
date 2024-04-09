@@ -1,4 +1,4 @@
-// Table and columns info operations from Sled storage.
+//! Table and columns info operations from Sled storage.
 
 use crate::*;
 use error_tools::Result;

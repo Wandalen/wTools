@@ -5,14 +5,13 @@
 use crate::*;
 use gluesql::core::executor::Payload;
 use storage::{ FeedStorage, Store };
-use executor::FeedManager;
 use action::Report;
 use error_tools::{ err, BasicError, Result };
 
 /// Execute query specified in query string.
 pub async fn query_execute
 (
-  storage : FeedStorage< gluesql::sled_storage::SledStorage >,
+  mut storage : FeedStorage< gluesql::sled_storage::SledStorage >,
   args : &wca::Args,
 ) -> Result< impl Report >
 {
@@ -22,8 +21,7 @@ pub async fn query_execute
   .join( " " )
   ;
 
-  let mut manager = FeedManager::new( storage );
-  manager.storage.execute_query( query ).await
+  storage.execute_query( query ).await
 }
 
 const EMPTY_CELL : &'static str = "";
@@ -92,3 +90,4 @@ impl Report for QueryReport {}
 
 // qqq : good tests for query action
 // all tables should be touched by these tests
+// aaa : added in https://github.com/Wandalen/wTools/pull/1284

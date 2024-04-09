@@ -1,4 +1,4 @@
-// Frames operation with Sled storage.
+//! Frames operation with Sled storage.
 
 use crate::*;
 use std::collections::HashMap;

@@ -1,3 +1,5 @@
+//! Commands for unitore executor.
+
 pub mod table;
 pub mod frame;
 pub mod feed;

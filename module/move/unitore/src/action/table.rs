@@ -4,7 +4,6 @@ use crate::*;
 use gluesql::prelude::Payload;
 use std::collections::HashMap;
 use action::Report;
-use executor::FeedManager;
 use storage::FeedStorage;
 use entity::table::TableStore;
 use error_tools::Result;
@@ -12,13 +11,13 @@ use error_tools::Result;
 /// Get labels of column for specified table.
 pub async fn table_list
 (
-  storage : FeedStorage< gluesql::sled_storage::SledStorage >,
+  mut storage : FeedStorage< gluesql::sled_storage::SledStorage >,
   args : &wca::Args,
 ) -> Result< impl Report >
 {
   let table_name = args.get_owned::< String >( 0 );
 
-  let mut manager = FeedManager::new( storage );
+  // let mut manager = FeedManager::new( storage );
   let mut table_names = Vec::new();
   if let Some( name ) = table_name
   {
@@ -26,7 +25,7 @@ pub async fn table_list
   }
   else
   {
-    let tables = manager.storage.tables_list().await?;
+    let tables = storage.tables_list().await?;
 
     let names = tables.tables.keys().map( | k | k.clone() ).collect::< Vec< _ > >();
     table_names.extend( names.into_iter() );
@@ -35,7 +34,7 @@ pub async fn table_list
   let mut reports = Vec::new();
   for table_name in table_names
   {
-    let result = manager.storage.table_list( table_name.clone() ).await?;
+    let result = storage.table_list( table_name.clone() ).await?;
 
     let mut table_description = String::new();
     let mut columns = HashMap::new();
@@ -235,12 +234,11 @@ pub async fn table_list
 /// Get information about tables in storage.
 pub async fn tables_list
 (
-  storage : FeedStorage< gluesql::sled_storage::SledStorage >,
+  mut storage : FeedStorage< gluesql::sled_storage::SledStorage >,
   _args : &wca::Args,
 ) -> Result< impl Report >
 {
-  let mut manager = FeedManager::new( storage );
-  manager.storage.tables_list().await
+  storage.tables_list().await
 }
 
 const EMPTY_CELL : &'static str = "";

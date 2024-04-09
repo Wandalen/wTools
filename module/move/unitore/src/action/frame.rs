@@ -1,7 +1,6 @@
 //! Frames commands actions.
 
 use crate::*;
-use executor::FeedManager;
 use storage::FeedStorage;
 use entity::
 {
@@ -19,24 +18,21 @@ use action::Report;
 /// List all frames.
 pub async fn frames_list
 (
-  storage : FeedStorage< SledStorage >,
+  mut storage : FeedStorage< SledStorage >,
   _args : &wca::Args,
 ) -> Result< impl Report >
 {
-    let mut manager = FeedManager::new( storage );
-    manager.storage.frames_list().await
+  storage.frames_list().await
 }
 
 /// Update all frames from config files saved in storage.
 pub async fn frames_download
 (
-  storage : FeedStorage< SledStorage >,
+  mut storage : FeedStorage< SledStorage >,
   _args : &wca::Args,
 ) -> Result< impl Report >
 {
-  let mut manager = FeedManager::new( storage );
-  let payload = manager.storage.config_list().await?;
-
+  let payload = storage.config_list().await?;
   let configs = match &payload
   {
     Payload::Select { labels: _, rows: rows_vec } =>
@@ -76,7 +72,7 @@ pub async fn frames_download
     let feed = client.fetch( subscription.link.clone() ).await?;
     feeds.push( ( feed, subscription.update_period.clone(), subscription.link ) );
   }
-  manager.storage.feeds_process( feeds ).await
+  storage.feeds_process( feeds ).await
 
 }
 

@@ -1,4 +1,4 @@
-// Config file operation with Sled storage.
+//! Config file operation with Sled storage.
 
 use crate::*;
 use error_tools::{ err, Result };

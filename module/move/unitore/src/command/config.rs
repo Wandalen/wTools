@@ -1,4 +1,4 @@
-//! Feed command.
+//! Config files commands.
 
 use crate::*;
 use gluesql::sled_storage::sled::Config;
@@ -7,13 +7,15 @@ use storage::FeedStorage;
 use action::{ Report, config::{ config_add, config_delete, config_list } };
 use error_tools::Result;
 
+/// Struct that provides commands for config files.
+#[ derive( Debug ) ]
 pub struct ConfigCommand;
 
 impl ConfigCommand
 {
+  /// Create command for adding config.
   pub fn add() -> Result< Command >
   {
-
     let rt  = tokio::runtime::Runtime::new()?;
   
     Ok
@@ -59,6 +61,7 @@ impl ConfigCommand
     )
   }
 
+  /// Create command for deleting config.
   pub fn delete() -> Result< Command >
   {
     let rt  = tokio::runtime::Runtime::new()?;
@@ -98,6 +101,7 @@ impl ConfigCommand
     )
   }
 
+  /// Create command for listing all config files in storage.
   pub fn list() -> Result< Command >
   {
     let rt  = tokio::runtime::Runtime::new()?;

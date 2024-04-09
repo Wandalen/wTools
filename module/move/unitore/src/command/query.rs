@@ -7,11 +7,14 @@ use storage::FeedStorage;
 use action::{ Report, query::query_execute };
 use error_tools::Result;
 
+/// Struct that provides commands for queries.
+#[ derive( Debug ) ]
 pub struct QueryCommand;
 
 impl QueryCommand
 {
-  pub fn list() -> Result< Command >
+  /// Creates command for custom query execution.
+  pub fn execute() -> Result< Command >
   {
     let rt  = tokio::runtime::Runtime::new()?;
   

@@ -2,7 +2,6 @@
 
 use crate::*;
 use error_tools::{ err, for_app::Context, BasicError, Result };
-use executor::FeedManager;
 use storage::FeedStorage;
 use entity::
 {
@@ -13,7 +12,7 @@ use action::Report;
 use gluesql::{ prelude::Payload, sled_storage::SledStorage };
 
 /// Add configuration file with subscriptions to storage.
-pub async fn config_add( storage : FeedStorage< SledStorage >, args : &wca::Args ) -> Result< impl Report >
+pub async fn config_add( mut storage : FeedStorage< SledStorage >, args : &wca::Args ) -> Result< impl Report >
 {
   let path : std::path::PathBuf = args
   .get_owned::< wca::Value >( 0 )
@@ -47,12 +46,9 @@ pub async fn config_add( storage : FeedStorage< SledStorage >, args : &wca::Args
 
   //let abs_path = proper_path_tools::path::canonicalize( path )?;
   let abs_path = path.canonicalize()?;
-  println!("{}", abs_path.to_string_lossy().to_string() );
-
   let config = Config::new( abs_path.to_string_lossy().to_string() );
-  let mut manager = FeedManager::new( storage );
 
-  let config_report = manager.storage
+  let config_report = storage
   .config_add( &config )
   .await
   .context( "Added 0 config files.\n Failed to add config file to storage." )?
@@ -64,13 +60,13 @@ pub async fn config_add( storage : FeedStorage< SledStorage >, args : &wca::Args
   .collect::< Vec< _ > >()
   ;
 
-  let new_feeds = manager.storage.feeds_save( feeds ).await?;
+  let new_feeds = storage.feeds_save( feeds ).await?;
 
   Ok( ConfigReport{ payload : config_report, new_feeds : Some( new_feeds ) } )
 }
 
 /// Remove configuration file from storage.
-pub async fn config_delete( storage : FeedStorage< SledStorage >, args : &wca::Args ) -> Result< impl Report >
+pub async fn config_delete( mut storage : FeedStorage< SledStorage >, args : &wca::Args ) -> Result< impl Report >
 {
   let path : std::path::PathBuf = args
   .get_owned::< wca::Value >( 0 )
@@ -81,9 +77,8 @@ pub async fn config_delete( storage : FeedStorage< SledStorage >, args : &wca::A
   let path = path.canonicalize().context( format!( "Invalid path for config file {:?}", path ) )?;
   let config = Config::new( path.to_string_lossy().to_string() );
 
-  let mut manager = FeedManager::new( storage );
   Ok( ConfigReport::new(
-    manager.storage
+    storage
     .config_delete( &config )
     .await
     .context( "Failed to remove config from storage." )?
@@ -91,10 +86,9 @@ pub async fn config_delete( storage : FeedStorage< SledStorage >, args : &wca::A
 }
 
 /// List all files with subscriptions that are currently in storage.
-pub async fn config_list( storage : FeedStorage< SledStorage >, _args : &wca::Args ) -> Result< impl Report >
+pub async fn config_list( mut storage : FeedStorage< SledStorage >, _args : &wca::Args ) -> Result< impl Report >
 {
-  let mut manager = FeedManager::new( storage );
-  Ok( ConfigReport::new( manager.storage.config_list().await? ) )
+  Ok( ConfigReport::new( storage.config_list().await? ) )
 }
 
 /// Information about result of command for subscription config.

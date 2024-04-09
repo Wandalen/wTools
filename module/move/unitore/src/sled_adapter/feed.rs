@@ -1,4 +1,4 @@
-// Feed operation with Sled storage.
+//! Feed operation with Sled storage.
 
 use crate::*;
 use std::time::Duration;

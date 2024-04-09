@@ -20,6 +20,15 @@ pub struct FeedClient;
 
 impl FeedClient
 {
+  /// Fetch feed frames from provided url source.
+  ///
+  /// # Arguments
+  ///
+  /// * `source` - The link to feed source.
+  ///
+  /// # Returns
+  ///
+  /// Result with fetched feed as feed_rs Feed struct.
   pub async fn fetch( &self, source : url::Url ) -> Result< feed_rs::model::Feed >
   {
     let https = HttpsConnector::new();

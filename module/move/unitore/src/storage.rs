@@ -22,6 +22,7 @@ pub struct FeedStorage< S : GStore + GStoreMut + Send >
 {
   /// GlueSQL storage.
   pub storage : Arc< Mutex< Glue< S > > >,
+  /// Frame table fields with description.
   pub frame_fields : Vec< [ &'static str; 3 ] >,
 }
 

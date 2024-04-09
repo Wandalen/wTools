@@ -7,10 +7,13 @@ use storage::FeedStorage;
 use action::{ Report, frame::{ frames_list, frames_download } };
 use error_tools::Result;
 
+/// Struct that provides commands for frames.
+#[ derive( Debug ) ]
 pub struct FrameCommand;
 
 impl FrameCommand
 {
+  /// Create command that lists all frames in storage.
   pub fn list() -> Result< Command >
   {
     let rt  = tokio::runtime::Runtime::new()?;
@@ -50,9 +53,9 @@ impl FrameCommand
     )
   }
 
+  /// Creates command that downloads frames from feeds specified in config files.
   pub fn download() -> Result< Command >
   {
-
     let rt  = tokio::runtime::Runtime::new()?;
 
     Ok(

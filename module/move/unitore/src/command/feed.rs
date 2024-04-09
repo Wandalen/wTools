@@ -7,10 +7,13 @@ use storage::FeedStorage;
 use action::{ Report, feed::feeds_list };
 use error_tools::Result;
 
+/// Struct that provides commands for feed.
+#[ derive( Debug ) ]
 pub struct FeedCommand;
 
 impl FeedCommand
 {
+  /// Create command that lists all feeds in storage.
   pub fn list() -> Result< Command >
   {
 

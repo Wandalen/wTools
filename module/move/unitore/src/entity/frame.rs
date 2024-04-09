@@ -16,17 +16,29 @@ pub struct Frame
   pub id : String,
   /// Frame title.
   pub title : Option< String >,
+  /// Time at which this item was fetched from source.
   pub stored_time : Option< DateTime< Utc > >,
+  /// List of authors of the frame.
   pub authors : Option< Vec< String > >,
+  /// The content of the frame in html or plain text.
   pub content : Option< String >,
+  /// List of links associated with this item of related Web page and attachments.
   pub links : Option< Vec< String > >,
+  /// Short summary, abstract, or excerpt of the frame item.
   pub summary : Option< String >,
+  /// A list of categories that the item belongs to.
   pub categories : Option< Vec< String > >,
+  /// Time at which this item was first published or updated.
   pub published : Option< DateTime< Utc > >,
+  /// Specifies the source feed if the frame was copied from one feed into another feed.
   pub source : Option< String >,
+  /// Information about copyrights over the feed.
   pub rights : Option< String >,
+  /// List of media oblects, encountered in the frame.
   pub media : Option< Vec< String > >,
+  /// The language of the frame.
   pub language : Option< String >,
+  /// Link to feed that contains this frame.
   pub feed_link : String,
 }
 

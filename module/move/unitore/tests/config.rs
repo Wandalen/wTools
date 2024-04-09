@@ -1,13 +1,11 @@
 use std::path::PathBuf;
-
-use gluesql::{
+use gluesql::
+{
   sled_storage::sled::Config,
-  test_suite::data_type::list,
   prelude::Payload::Select,
 };
 use unitore::
 {
-  executor::FeedManager,
   storage::FeedStorage,
   entity::{ feed::FeedStore, config::ConfigStore },
   action::config,
@@ -24,11 +22,10 @@ async fn config_add() -> Result< () >
   .temporary( true )
   ;
 
-  let feed_storage = FeedStorage::init_storage( &config ).await?;
+  let mut feed_storage = FeedStorage::init_storage( &config ).await?;
   config::config_add( feed_storage.clone(), &wca::Args( vec![ wca::Value::Path( path ) ] ) ).await?;
 
-  let mut manager = FeedManager::new( feed_storage );
-  let res = manager.storage.feeds_list().await?;
+  let res = feed_storage.feeds_list().await?;
 
   let feeds_links = res.0.selected_rows
   .iter()
@@ -60,7 +57,7 @@ async fn config_delete() -> Result< () >
 
   let list = feed_storage.config_list().await?;
 
-  if let Select{ labels, rows } = list
+  if let Select{ labels : _, rows } = list
   {
     assert!( rows.len() == 0 )
   }

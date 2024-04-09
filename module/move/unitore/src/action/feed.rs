@@ -1,7 +1,6 @@
 //! Endpoints and report for feed commands.
 
 use crate::*;
-use executor::FeedManager;
 use action::{ Report, frame::SelectedEntries };
 use storage::FeedStorage;
 use entity::feed::FeedStore;
@@ -10,12 +9,11 @@ use error_tools::Result;
 /// List all feeds from storage.
 pub async fn feeds_list
 (
-  storage : FeedStorage< gluesql::sled_storage::SledStorage >,
+  mut storage : FeedStorage< gluesql::sled_storage::SledStorage >,
   _args : &wca::Args,
 ) -> Result< impl Report >
 {
-  let mut manager = FeedManager::new( storage );
-  manager.storage.feeds_list().await
+  storage.feeds_list().await
 }
 
 const EMPTY_CELL : &'static str = "";
