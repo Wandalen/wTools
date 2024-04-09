@@ -320,16 +320,17 @@ pub( crate ) mod private
   /// use proper_path_tools::path::exts;
   ///
   /// let path = "/path/to/file.tar.gz";
-  /// let extensions = exts(path);
-  /// assert_eq!(extensions, vec!["tar", "gz"]);
+  /// let extensions = exts( path );
+  /// assert_eq!( extensions, vec![ "tar", "gz" ] );
   /// ```
   ///
   /// ```
   /// use proper_path_tools::path::exts;
   ///
   /// let empty_path = "";
-  /// let extensions = exts(empty_path);
-  /// assert_eq!(extensions, vec![]);
+  /// let extensions = exts( empty_path );
+  /// let expected : Vec< String > = vec![];
+  /// assert_eq!( extensions, expected );
   /// ```
   ///
   pub fn exts( path : impl AsRef< std::path::Path > ) -> Vec< String > 
