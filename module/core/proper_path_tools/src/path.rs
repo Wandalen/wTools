@@ -301,11 +301,87 @@ pub( crate ) mod private
     Ok( format!( "{}_{}_{}_{}", timestamp, pid, tid, count ) )
   }
 
+
+  /// Extracts the parent directory and file stem (without extension) from the given path.
+  ///
+  /// This function takes a path and returns an Option containing the modified path without the extension.
+  /// If the input path is empty or if it doesn't contain a file stem, it returns None.
+  ///
+  /// # Arguments
+  ///
+  /// * `path` - An object that can be converted into a Path reference, representing the file path.
+  ///
+  /// # Returns
+  ///
+  /// An Option containing the modified path without the extension, or None if the input path is empty or lacks a file stem.
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// use std::path::PathBuf;
+  /// use proper_path_tools::path::without_ext;
+  /// 
+  /// let path = "/path/to/file.txt";
+  /// let modified_path = without_ext(path);
+  /// assert_eq!(modified_path, Some(PathBuf::from("/path/to/file")));
+  /// ```
+  ///
+  /// ```
+  /// use std::path::PathBuf;
+  /// use proper_path_tools::path::without_ext;
+  /// 
+  /// let empty_path = "";
+  /// let modified_path = without_ext(empty_path);
+  /// assert_eq!(modified_path, None);
+  /// ```
+  ///
+  pub fn without_ext( path : impl AsRef< std::path::Path > ) -> Option< std::path::PathBuf > 
+  {
+    use std::path::Path;
+    use std::path::PathBuf;
+
+    if path.as_ref().to_string_lossy().is_empty()
+    {
+      return None;
+    }
+
+    let path_buf = Path::new( path.as_ref() );
+    
+    let parent = match path_buf.parent() 
+    {
+      Some( parent ) => parent,
+      None => return None,
+    };
+    let file_stem = match path_buf.file_stem() 
+    {
+      Some( name ) => 
+      {
+        let ends = format!( "{}/", name.to_string_lossy() );
+        if path.as_ref().to_string_lossy().ends_with( &ends ) 
+        {
+          ends
+        }
+        else
+        {
+          String::from( name.to_string_lossy() )
+        }
+        
+      }
+      None => return None,
+    };
+
+    let mut full_path = parent.to_path_buf();
+    full_path.push( file_stem );
+    
+    Some( PathBuf::from( full_path.to_string_lossy().replace( "\\", "/" ) ) )
+  }
+
 }
 
 crate::mod_interface!
 {
 
+  protected use without_ext;
   protected use is_glob;
   protected use normalize;
   protected use canonicalize;
