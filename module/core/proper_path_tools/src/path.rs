@@ -301,11 +301,67 @@ pub( crate ) mod private
     Ok( format!( "{}_{}_{}_{}", timestamp, pid, tid, count ) )
   }
 
+  /// Extracts multiple extensions from the given path.
+  ///
+  /// This function takes a path and returns a vector of strings representing the extensions of the file.
+  /// If the input path is empty or if it doesn't contain any extensions, it returns an empty vector.
+  ///
+  /// # Arguments
+  ///
+  /// * `path` - An object that can be converted into a Path reference, representing the file path.
+  ///
+  /// # Returns
+  ///
+  /// A vector of strings containing the extensions of the file, or an empty vector if the input path is empty or lacks extensions.
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// use proper_path_tools::path::exts;
+  ///
+  /// let path = "/path/to/file.tar.gz";
+  /// let extensions = exts(path);
+  /// assert_eq!(extensions, vec!["tar", "gz"]);
+  /// ```
+  ///
+  /// ```
+  /// use proper_path_tools::path::exts;
+  ///
+  /// let empty_path = "";
+  /// let extensions = exts(empty_path);
+  /// assert_eq!(extensions, vec![]);
+  /// ```
+  ///
+  pub fn exts( path : impl AsRef< std::path::Path > ) -> Vec< String > 
+  {
+    use std::path::Path;
+
+    if let Some( file_name ) = Path::new( path.as_ref() ).file_name() 
+    {
+      if let Some( file_name_str ) = file_name.to_str() 
+      {
+        let mut file_name_str = file_name_str.to_string();
+        if file_name_str.starts_with( '.' )
+        {
+          file_name_str.remove( 0 );
+        }
+        if let Some( dot_index ) = file_name_str.find( '.' ) 
+        {
+            
+          let extensions = &file_name_str[ dot_index + 1.. ];
+          
+          return extensions.split( '.' ).map( | s | s.to_string() ).collect()
+        }
+      }
+    }
+    vec![]
+  }
+
 }
 
 crate::mod_interface!
 {
-
+  protected use exts;
   protected use is_glob;
   protected use normalize;
   protected use canonicalize;
