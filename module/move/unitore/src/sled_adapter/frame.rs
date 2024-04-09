@@ -71,64 +71,6 @@ impl FrameStore for FeedStorage< SledStorage >
   {
     let entries_rows : Vec< Vec< ExprNode< 'static > > > = frames.into_iter().map( | entry | entry.into() ).collect_vec();
 
-    // let glue = &mut *self.storage.lock().await;
-
-  //     /// Frame id.
-  // pub id : String,
-  // /// Frame title.
-  // pub title : Option< String >,
-  // stored_time : Option< DateTime< Utc > >,
-  // authors : Option< Vec< String > >,
-  // content : Option< String >,
-  // links : Option< Vec< String > >,
-  // summary : Option< String >,
-  // categories : Option< Vec< String > >,
-  // published : Option< DateTime< Utc > >,
-  // source : Option< String >,
-  // rights : Option< String >,
-  // media : Option< Vec< String > >,
-  // language : Option< String >,
-  // feed_link : String,
-
-  // use gluesql::core::ast_builder::text;
-  //   let mut values_str = String::new();
-  //   let null = "NULL".to_string();
-  //   let values_str = frames.into_iter().map(|frame| format!(
-  //     "('{}', {}, '{}', {}, {}, {}, '{}', {}, '{}')", 
-  //     frame.id, 
-  //     frame.title.map(|t|format!("'{}'", t)).unwrap_or( "Null".to_string() ), 
-  //     frame.stored_time.map(|d|d.to_string()).unwrap_or("Null".to_string()),
-  //     frame.authors.map(|authors| {let authors = authors.into_iter().map(|a|format!("'[\"{}\"]'", a)).collect::<Vec<_>>(); authors.join(", ")}).unwrap_or("'[]'".to_string()),
-  //     null.clone(),
-  //     frame.links.map(|links| {let links = links.into_iter().map(|a|format!("\"{}\"", a)).collect::<Vec<_>>(); format!("'[{}]'", &links.join(", "))}).unwrap_or("'[]'".to_string()),
-  //     frame.summary.unwrap_or(null.clone()),
-  //     frame.categories.map(|categories| {let categories = categories.into_iter().map(|a|format!("{}", a)).collect::<Vec<_>>(); dbg!(format!("'[\"{}\"]'", &categories.join(", ")))}).unwrap_or(null.clone()),
-  //     frame.published.map(|d|d.to_string()).unwrap_or(null.clone()),
-      // frame.source.unwrap_or(null.clone()),
-      // frame.rights.unwrap_or(null.clone()),
-      // // frame.media.map(|media| {let media = media.into_iter().map(|a|format!("\"{}\"", a)).collect::<Vec<_>>(); media.join(", ")}).unwrap_or(null.clone()),
-      // frame.language.unwrap_or(null.clone()),
-      // frame.feed_link,
-    // )
-    // )
-    //   .collect::<Vec<_>>();
-
-    // for frame in frames
-    // {
-    //   let frame_str = format!(
-    //     "({}, {}, {})", 
-    //     frame.id, frame.title.unwrap_or( "NULL".to_string() ), frame.stored_time.map(|d|d.to_string()).unwrap_or("NULL".to_string()));
-    //   values_str.push_str(&format!("({}),", frame_str ));
-    // }
-    // let query_str = format!( "INSERT INTO frame(id, title, stored_time, authors, content, links, summary, categories, published) VALUES {};", values_str.join(", ") );
-    //println!("{}", query_str);
-    // let mut payloads = glue.execute( &query_str ).await?;
-
-    // INSERT INTO ListType VALUES
-    // (1, '[1, 2, 3]'),
-    // (2, '["hello", "world", 30, true, [9,8]]'),
-    // (3, '[{ "foo": 100, "bar": [true, 0, [10.5, false] ] }, 10, 20]');
-
     let insert = table( "frame" )
     .insert()
     .columns
@@ -146,7 +88,6 @@ impl FrameStore for FeedStorage< SledStorage >
 
   async fn frames_update( &mut self, feed : Vec< Frame > ) -> Result< () >
   {
-    //let entries_rows : Vec< Vec< ExprNode< 'static > > > = Vec::new();
     let entries_rows : Vec< Vec< ExprNode< 'static > > > = feed.into_iter().map( | entry | entry.into() ).collect_vec();
 
     for entry in entries_rows
