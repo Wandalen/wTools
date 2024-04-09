@@ -319,16 +319,16 @@ pub( crate ) mod private
   /// use proper_path_tools::path::ext;
   ///
   /// let path = "/path/to/file.txt";
-  /// let extension = ext(path);
-  /// assert_eq!(extension, "txt");
+  /// let extension = ext( path );
+  /// assert_eq!( extension, "txt" );
   /// ```
   ///
   /// ```
   /// use proper_path_tools::path::ext;
   ///
   /// let empty_path = "";
-  /// let extension = ext(empty_path);
-  /// assert_eq!(extension, "");
+  /// let extension = ext( empty_path );
+  /// assert_eq!( extension, "" );
   /// ```
   ///
   pub fn ext( path : impl AsRef< std::path::Path > ) -> String 
