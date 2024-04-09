@@ -1,4 +1,4 @@
-//! Query command endpoint and report.
+//! Query actions and report.
 
 // qqq : don't use both
 // aaa : fixed
@@ -6,22 +6,16 @@ use crate::*;
 use gluesql::core::executor::Payload;
 use sled_adapter::{ FeedStorage, Store };
 use action::Report;
-use error_tools::{ err, BasicError, Result };
+use error_tools::Result;
 
 /// Execute query specified in query string.
 pub async fn query_execute
 (
   mut storage : FeedStorage< gluesql::sled_storage::SledStorage >,
-  args : &wca::Args,
+  query_str : String,
 ) -> Result< impl Report >
 {
-  let query = args
-  .get_owned::< Vec::< String > >( 0 )
-  .ok_or_else::< BasicError, _ >( || err!( "Cannot get Query argument for command .query.execute" ) )?
-  .join( " " )
-  ;
-
-  storage.execute_query( query ).await
+  storage.execute_query( query_str ).await
 }
 
 const EMPTY_CELL : &'static str = "";

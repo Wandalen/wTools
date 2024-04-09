@@ -1,4 +1,4 @@
-//! Frames commands actions.
+//! Frames actions and reports.
 
 use crate::*;
 use sled_adapter::FeedStorage;
@@ -16,11 +16,7 @@ use action::Report;
 // qqq : review the whole project and make sure all names are consitant: actions, commands, its tests
 
 /// List all frames.
-pub async fn frames_list
-(
-  mut storage : FeedStorage< SledStorage >,
-  _args : &wca::Args,
-) -> Result< impl Report >
+pub async fn frames_list( mut storage : FeedStorage< SledStorage > ) -> Result< impl Report >
 {
   storage.frames_list().await
 }
@@ -28,8 +24,7 @@ pub async fn frames_list
 /// Update all frames from config files saved in storage.
 pub async fn frames_download
 (
-  mut storage : FeedStorage< SledStorage >,
-  _args : &wca::Args,
+  mut storage : FeedStorage< SledStorage >
 ) -> Result< impl Report >
 {
   let payload = storage.config_list().await?;

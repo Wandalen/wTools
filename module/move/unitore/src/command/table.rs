@@ -30,6 +30,8 @@ impl TableCommand
       .subject().hint( "Path" ).kind( Type::Path ).optional( false ).end()
       .routine( move | o : VerifiedCommand |
       {
+        let table_name_arg = o.args.get_owned::< String >( 0 );
+
         let res = rt.block_on( async move
         {
           let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
@@ -41,7 +43,7 @@ impl TableCommand
           ;
 
           let feed_storage = FeedStorage::init_storage( &config ).await?;
-          table_list( feed_storage, &o.args ).await
+          table_list( feed_storage, table_name_arg ).await
         } );
         match res
         {
@@ -76,7 +78,7 @@ impl TablesCommand
         "    Example: .config.delete ./config/feeds.toml",
       ))
       .subject().hint( "Path" ).kind( Type::Path ).optional( false ).end()
-      .routine( move | o : VerifiedCommand |
+      .routine( move | _o : VerifiedCommand |
       {
         let res = rt.block_on( async move
         {
@@ -89,7 +91,7 @@ impl TablesCommand
           ;
 
           let feed_storage = FeedStorage::init_storage( &config ).await?;
-          tables_list( feed_storage, &o.args ).await
+          tables_list( feed_storage ).await
         } );
         match res
         {

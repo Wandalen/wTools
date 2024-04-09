@@ -1,4 +1,4 @@
-//! Tables metadata commands actions and reports.
+//! Tables metadata actions and reports.
 
 use crate::*;
 use gluesql::prelude::Payload;
@@ -12,12 +12,9 @@ use error_tools::Result;
 pub async fn table_list
 (
   mut storage : FeedStorage< gluesql::sled_storage::SledStorage >,
-  args : &wca::Args,
+  table_name : Option< String >,
 ) -> Result< impl Report >
 {
-  let table_name = args.get_owned::< String >( 0 );
-
-  // let mut manager = FeedManager::new( storage );
   let mut table_names = Vec::new();
   if let Some( name ) = table_name
   {
@@ -27,7 +24,7 @@ pub async fn table_list
   {
     let tables = storage.tables_list().await?;
 
-    let names = tables.tables.keys().map( | k | k.clone() ).collect::< Vec< _ > >();
+    let names = tables.0.keys().map( | k | k.clone() ).collect::< Vec< _ > >();
     table_names.extend( names.into_iter() );
   }
 
@@ -123,21 +120,24 @@ pub async fn table_list
             },
             "authors" =>
             {
-              columns_desc.insert(
+              columns_desc.insert
+              (
                 label.clone(),
                 String::from( "List of authors of the frame, optional." )
               );
             },
             "content" =>
             {
-              columns_desc.insert(
+              columns_desc.insert
+              (
                 label.clone(),
                 String::from( "The content of the frame in html or plain text, optional." ),
               );
             },
             "links" =>
             {
-              columns_desc.insert(
+              columns_desc.insert
+              (
                 label.clone(),
                 String::from( "List of links associated with this item of related Web page and attachments." ),
               );
@@ -232,11 +232,7 @@ pub async fn table_list
 }
 
 /// Get information about tables in storage.
-pub async fn tables_list
-(
-  mut storage : FeedStorage< gluesql::sled_storage::SledStorage >,
-  _args : &wca::Args,
-) -> Result< impl Report >
+pub async fn tables_list( mut storage : FeedStorage< gluesql::sled_storage::SledStorage > ) -> Result< impl Report >
 {
   storage.tables_list().await
 }
@@ -245,7 +241,7 @@ const EMPTY_CELL : &'static str = "";
 
 /// Information about execution of table columns commands.
 #[ derive( Debug ) ]
-pub struct TablesColumnsReport( Vec< ColumnsReport > );
+pub struct TablesColumnsReport( pub Vec< ColumnsReport > );
 
 impl std::fmt::Display for TablesColumnsReport
 {
@@ -262,7 +258,7 @@ impl std::fmt::Display for TablesColumnsReport
 
 impl Report for TablesColumnsReport {}
 
-/// Information about execution of columns commands.
+/// Information about execution of columns listing action.
 #[ derive( Debug ) ]
 pub struct ColumnsReport
 {
@@ -336,11 +332,9 @@ impl std::fmt::Display for ColumnsReport
 impl Report for ColumnsReport {}
 
 /// Information about execution of tables commands.
+/// Contains tables name, description and list of columns.
 #[ derive( Debug ) ]
-pub struct TablesReport
-{
-  tables : std::collections::HashMap< String, ( String, Vec< String > ) >
-}
+pub struct TablesReport( pub HashMap< String, ( String, Vec< String > ) > );
 
 impl TablesReport
 {
@@ -348,9 +342,8 @@ impl TablesReport
   pub fn new( payload : Vec< Payload > ) -> Self
   {
     let mut result = std::collections::HashMap::new();
-    match &payload[ 0 ]
+    if let Payload::Select { labels: _label_vec, rows: rows_vec } = &payload[ 0 ]
     {
-      Payload::Select { labels: _label_vec, rows: rows_vec } =>
       {
         for row in rows_vec
         {
@@ -367,10 +360,9 @@ impl TablesReport
           .or_insert( ( table_description, vec![ String::from( row[ 1 ].clone() ) ] ) )
           ;
         }
-      },
-      _ => {},
+      }
     }
-    TablesReport{ tables : result }
+    TablesReport( result )
   }
 }
 
@@ -380,7 +372,7 @@ impl std::fmt::Display for TablesReport
   {
     writeln!( f, "Storage tables:" )?;
     let mut rows = Vec::new();
-    for ( table_name, ( desc, columns ) ) in &self.tables
+    for ( table_name, ( desc, columns ) ) in &self.0
     {
       let columns_str = if !columns.is_empty()
       {
@@ -409,7 +401,7 @@ impl std::fmt::Display for TablesReport
       [
         EMPTY_CELL.to_owned(),
         "name".to_owned(),
-       "description".to_owned(),
+        "description".to_owned(),
         "columns".to_owned(),
       ],
       rows,

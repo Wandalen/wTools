@@ -16,7 +16,6 @@ impl FeedCommand
   /// Create command that lists all feeds in storage.
   pub fn list() -> Result< Command >
   {
-
     let rt  = tokio::runtime::Runtime::new()?;
   
     Ok
@@ -28,7 +27,7 @@ impl FeedCommand
         "List all feeds from storage.\n",
         "    Example: .feeds.list",
       ))
-      .routine( move | o : VerifiedCommand |
+      .routine( move | _o : VerifiedCommand |
       {
         let res = rt.block_on( async move
           {
@@ -41,7 +40,7 @@ impl FeedCommand
             ;
   
             let feed_storage = FeedStorage::init_storage( &config ).await?;
-            feeds_list( feed_storage, &o.args ).await
+            feeds_list( feed_storage ).await
           });
           match res
           {

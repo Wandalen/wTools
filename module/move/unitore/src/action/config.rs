@@ -1,7 +1,9 @@
-//! Actions and report for commands for config files.
+//! Actions and report for config files.
+
+use std::path::PathBuf;
 
 use crate::*;
-use error_tools::{ err, for_app::Context, BasicError, Result };
+use error_tools::{ for_app::Context, Result };
 use sled_adapter::FeedStorage;
 use entity::
 {
@@ -12,14 +14,8 @@ use action::Report;
 use gluesql::{ prelude::Payload, sled_storage::SledStorage };
 
 /// Add configuration file with subscriptions to storage.
-pub async fn config_add( mut storage : FeedStorage< SledStorage >, args : &wca::Args ) -> Result< impl Report >
+pub async fn config_add( mut storage : FeedStorage< SledStorage >, path : &PathBuf ) -> Result< impl Report >
 {
-  let path : std::path::PathBuf = args
-  .get_owned::< wca::Value >( 0 )
-  .ok_or_else::< BasicError, _ >( || err!( "Cannot get path argument for command .config.add" ) )?
-  .into()
-  ;
-
   let path = proper_path_tools::path::normalize( path );
 
   let mut err_str = format!( "Invalid path for config file {:?}", path );
@@ -66,14 +62,9 @@ pub async fn config_add( mut storage : FeedStorage< SledStorage >, args : &wca::
 }
 
 /// Remove configuration file from storage.
-pub async fn config_delete( mut storage : FeedStorage< SledStorage >, args : &wca::Args ) -> Result< impl Report >
+pub async fn config_delete( mut storage : FeedStorage< SledStorage >, path : &PathBuf ) -> Result< impl Report >
 {
-  let path : std::path::PathBuf = args
-  .get_owned::< wca::Value >( 0 )
-  .ok_or_else::< BasicError, _ >( || err!( "Cannot get path argument for command .config.delete" ) )?
-  .into()
-  ;
-
+  let path = proper_path_tools::path::normalize( path );
   let path = path.canonicalize().context( format!( "Invalid path for config file {:?}", path ) )?;
   let config = Config::new( path.to_string_lossy().to_string() );
 

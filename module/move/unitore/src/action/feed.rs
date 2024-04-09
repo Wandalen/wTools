@@ -1,4 +1,4 @@
-//! Endpoints and report for feed commands.
+//! Feed actions and reports.
 
 use crate::*;
 use action::{ Report, frame::SelectedEntries };
@@ -7,11 +7,7 @@ use entity::feed::FeedStore;
 use error_tools::Result;
 
 /// List all feeds from storage.
-pub async fn feeds_list
-(
-  mut storage : FeedStorage< gluesql::sled_storage::SledStorage >,
-  _args : &wca::Args,
-) -> Result< impl Report >
+pub async fn feeds_list( mut storage : FeedStorage< gluesql::sled_storage::SledStorage > ) -> Result< impl Report >
 {
   storage.feeds_list().await
 }

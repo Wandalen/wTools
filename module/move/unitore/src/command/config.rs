@@ -1,5 +1,7 @@
 //! Config files commands.
 
+use std::path::PathBuf;
+
 use crate::*;
 use gluesql::sled_storage::sled::Config;
 use wca::{ Command, Type, VerifiedCommand };
@@ -37,25 +39,35 @@ impl ConfigCommand
       .subject().hint( "Path" ).kind( Type::Path ).optional( false ).end()
       .routine( move | o : VerifiedCommand |
       {
-        let res = rt.block_on( async move
-          {
-            let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
-            .unwrap_or( String::from( "./_data" ) )
-            ;
-            
-            let config = Config::default()
-            .path( path_to_storage )
-            ;
-  
-            let feed_storage = FeedStorage::init_storage( &config ).await?;
-            config_add( feed_storage, &o.args ).await
-          });
+        let path_arg = o.args
+        .get_owned::< wca::Value >( 0 );
+
+        if let Some( path ) = path_arg
+        {
+          let path : PathBuf = path.into();
+
+          let res = rt.block_on
+          ( async move
+            {
+              let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
+              .unwrap_or( String::from( "./_data" ) )
+              ;
+              
+              let config = Config::default()
+              .path( path_to_storage )
+              ;
+    
+              let feed_storage = FeedStorage::init_storage( &config ).await?;
+              config_add( feed_storage, &path ).await
+            }
+          );
+
           match res
           {
             Ok( report ) => report.report(),
             Err( err ) => println!( "{:?}", err ),
           }
-        
+        }
       })
       .end()
     )
@@ -76,27 +88,37 @@ impl ConfigCommand
       ))
       .subject().hint( "Path" ).kind( Type::Path ).optional( false ).end()
       .routine( move | o : VerifiedCommand |
-      {
-        let res = rt.block_on( async move
-          {
-            let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
-            .unwrap_or( String::from( "./_data" ) )
-            ;
-            
-            let config = Config::default()
-            .path( path_to_storage )
-            ;
+        {
+          let path_arg = o.args
+          .get_owned::< wca::Value >( 0 );
   
-            let feed_storage = FeedStorage::init_storage( &config ).await?;
-            config_delete( feed_storage, &o.args ).await
-          });
-          match res
+          if let Some( path ) = path_arg
           {
-            Ok( report ) => report.report(),
-            Err( err ) => println!( "{:?}", err ),
+            let path : PathBuf = path.into();
+  
+            let res = rt.block_on
+            ( async move
+              {
+                let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
+                .unwrap_or( String::from( "./_data" ) )
+                ;
+                
+                let config = Config::default()
+                .path( path_to_storage )
+                ;
+      
+                let feed_storage = FeedStorage::init_storage( &config ).await?;
+                config_delete( feed_storage, &path ).await
+              }
+            );
+  
+            match res
+            {
+              Ok( report ) => report.report(),
+              Err( err ) => println!( "{:?}", err ),
+            }
           }
-        
-      })
+        })
       .end()
     )
   }

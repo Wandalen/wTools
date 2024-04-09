@@ -75,7 +75,20 @@ impl FrameStore for FeedStorage< SledStorage >
     .insert()
     .columns
     (
-      self.frame_fields.iter().map( | field | field[ 0 ] ).join( "," ).as_str()
+      "id,
+      title,
+      stored_time,
+      authors,
+      content,
+      links,
+      summary,
+      categories,
+      published,
+      source,
+      rights,
+      media,
+      language,
+      feed_link"
     )
     .values( entries_rows )
     .execute( &mut *self.storage.lock().await )

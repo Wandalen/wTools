@@ -27,7 +27,7 @@ impl FrameCommand
         "List all frames saved in storage.\n",
         "    Example: .frames.list",
       ))
-      .routine( move | o : VerifiedCommand |
+      .routine( move | _o : VerifiedCommand |
       {
         let res = rt.block_on( async move
           {
@@ -40,7 +40,7 @@ impl FrameCommand
             ;
   
             let feed_storage = FeedStorage::init_storage( &config ).await?;
-            frames_list( feed_storage, &o.args ).await
+            frames_list( feed_storage ).await
           });
           match res
           {
@@ -67,7 +67,7 @@ impl FrameCommand
         "Download frames from feed sources provided in config files.\n",
         "    Example: .frames.download",
       ))
-      .routine( move | o : VerifiedCommand |
+      .routine( move | _o : VerifiedCommand |
       {
         let res = rt.block_on( async move
           {
@@ -80,7 +80,7 @@ impl FrameCommand
             ;
 
             let feed_storage = FeedStorage::init_storage( &config ).await?;
-            frames_download( feed_storage, &o.args ).await
+            frames_download( feed_storage ).await
           });
           match res
           {
