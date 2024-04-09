@@ -76,17 +76,21 @@ impl From< ( feed_rs::model::Entry, String ) > for Frame
       stored_time : entry.updated,
       authors: ( !authors.is_empty() ).then( || authors ),
       // qqq : why join?
+      // aaa : fixed, saved as list
       content,
       links: ( !links.is_empty() ).then( || links ),
       // qqq : why join?
+      // aaa : fixed, saved as list
       summary : entry.summary.map( | c | c.content ).clone(),
       categories: ( !categories.is_empty() ).then( || categories ),
       // qqq : why join?
+      // aaa : fixed, saved as list
       published : entry.published.clone(),
       source : entry.source.clone(),
       rights : entry.rights.map( | r | r.content ).clone(),
       media: ( !media.is_empty() ).then( || media ),
       // qqq : why join?
+      // aaa : fixed, saved as list
       language : entry.language.clone(),
       feed_link,
     }
@@ -132,27 +136,46 @@ impl From< Frame > for Vec< ExprNode< 'static > >
     ;
 
     let authors = entry.authors
-    .map( | authors | text(authors[0].clone()))
+    .map( | authors |
+      text
+      (
+        format!( "[{}]", authors.into_iter().map( | a | format!( "\"{}\"", a ) ).collect::< Vec< _ > >().join( ", " ) )
+      )
+    )
     .unwrap_or( null() )
     ;
 
     let content = entry.content
-    .map( | content | text ( content ) )
+    .map( | content | text( content ) )
     .unwrap_or( null() )
     ;
 
     let links = entry.links
-    .map( | links | text ( links.join(", ") ) )
+    .map( | links |
+      text
+      (
+        format!( "[{}]", links.into_iter().map( | link | format!( "\"{}\"", link ) ).collect::< Vec< _ > >().join( ", " ) ) 
+      )
+    )
     .unwrap_or( null() )
     ;
 
     let summary = entry.summary
-    .map( | summary | text ( summary ) )
+    .map( | summary | text( summary ) )
     .unwrap_or( null() )
     ;
 
     let categories = entry.categories
-    .map( | categories | text ( categories.join(", ") ) )
+    .map( | categories |
+      text
+      (
+        format!
+        (
+          "[{}]",
+          categories.into_iter().map( | category | format!( "\"{}\"", category ) ).collect::< Vec< _ > >().join( ", " ),
+        ) 
+      )
+    )
     .unwrap_or( null() )
     ;
 
@@ -164,7 +187,12 @@ impl From< Frame > for Vec< ExprNode< 'static > >
     let source = entry.source.map( | s | text( s ) ).unwrap_or( null() );
     let rights = entry.rights.map( | r | text( r ) ).unwrap_or( null() );
     let media = entry.media
-    .map( | media | text( media.join(", ") ) )
+    .map( | media |
+      text
+      (
+        format!( "[{}]", media.into_iter().map( | media | format!( "\"{}\"", media ) ).collect::< Vec< _ > >().join( ", " ) ) 
+      )
+    )
     .unwrap_or( null() )
     ;
 
