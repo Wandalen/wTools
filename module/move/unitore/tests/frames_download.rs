@@ -12,7 +12,7 @@ use wca::wtools::Itertools;
 use unitore::
 {
   feed_config::SubscriptionConfig,
-  storage::FeedStorage,
+  sled_adapter::FeedStorage,
   entity::{ frame::FrameStore, feed::FeedStore },
 };
 use error_tools::Result;
@@ -42,9 +42,6 @@ async fn test_save() -> Result< () >
   let entries = feed_storage.frames_list().await?;
 
   let number_of_frames = entries.0[ 0 ].selected_frames.selected_rows.len();
-
-  println!("{:#?}", entries);
-
   assert_eq!( number_of_frames, 10 );
 
   Ok( () )

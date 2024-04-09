@@ -2,7 +2,6 @@
 pub mod retriever;
 pub mod feed_config;
 pub mod executor;
-pub mod storage;
 pub mod tool;
 pub mod command;
 pub mod action;

@@ -2,7 +2,7 @@
 
 use crate::*;
 use action::{ Report, frame::SelectedEntries };
-use storage::FeedStorage;
+use sled_adapter::FeedStorage;
 use entity::feed::FeedStore;
 use error_tools::Result;
 

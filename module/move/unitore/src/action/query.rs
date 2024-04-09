@@ -4,7 +4,7 @@
 // aaa : fixed
 use crate::*;
 use gluesql::core::executor::Payload;
-use storage::{ FeedStorage, Store };
+use sled_adapter::{ FeedStorage, Store };
 use action::Report;
 use error_tools::{ err, BasicError, Result };
 

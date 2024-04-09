@@ -15,7 +15,7 @@ use gluesql::
 };
 use entity::frame::{ FrameStore, Frame };
 use action::frame::{ SelectedEntries, FramesReport, ListReport };
-use storage::FeedStorage;
+use sled_adapter::FeedStorage;
 use wca::wtools::Itertools;
 
 #[ async_trait::async_trait( ?Send ) ]

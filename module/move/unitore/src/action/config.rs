@@ -2,7 +2,7 @@
 
 use crate::*;
 use error_tools::{ err, for_app::Context, BasicError, Result };
-use storage::FeedStorage;
+use sled_adapter::FeedStorage;
 use entity::
 {
   feed::{ FeedStore, Feed },

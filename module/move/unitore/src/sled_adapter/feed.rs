@@ -24,7 +24,7 @@ use action::
   feed::FeedsReport,
   frame::{ UpdateReport, SelectedEntries, FramesReport },
 };
-use storage::FeedStorage;
+use sled_adapter::FeedStorage;
 use wca::wtools::Itertools;
 
 #[ async_trait::async_trait( ?Send ) ]

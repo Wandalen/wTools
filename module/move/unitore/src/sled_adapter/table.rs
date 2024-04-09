@@ -9,7 +9,7 @@ use gluesql::
 };
 use entity::table::TableStore;
 use action::table::TablesReport;
-use storage::FeedStorage;
+use sled_adapter::FeedStorage;
 
 #[ async_trait::async_trait( ?Send ) ]
 impl TableStore for FeedStorage< SledStorage >

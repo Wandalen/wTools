@@ -1,7 +1,7 @@
 //! Frames commands actions.
 
 use crate::*;
-use storage::FeedStorage;
+use sled_adapter::FeedStorage;
 use entity::
 {
   feed::FeedStore,

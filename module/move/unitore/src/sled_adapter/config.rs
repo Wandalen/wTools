@@ -12,9 +12,10 @@ use gluesql::
   sled_storage::SledStorage,
 };
 use entity::config::{ Config, ConfigStore };
+use sled_adapter::FeedStorage;
 
 #[ async_trait::async_trait( ?Send ) ]
-impl ConfigStore for storage::FeedStorage< SledStorage >
+impl ConfigStore for FeedStorage< SledStorage >
 {
   async fn config_add( &mut self, config : &Config ) -> Result< Payload >
   {

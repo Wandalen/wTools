@@ -3,7 +3,7 @@
 use crate::*;
 use gluesql::sled_storage::sled::Config;
 use wca::{ Command, Type, VerifiedCommand };
-use storage::FeedStorage;
+use sled_adapter::FeedStorage;
 use action::{ Report, query::query_execute };
 use error_tools::Result;
 

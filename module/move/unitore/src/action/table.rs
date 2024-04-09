@@ -4,7 +4,7 @@ use crate::*;
 use gluesql::prelude::Payload;
 use std::collections::HashMap;
 use action::Report;
-use storage::FeedStorage;
+use sled_adapter::FeedStorage;
 use entity::table::TableStore;
 use error_tools::Result;
 

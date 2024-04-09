@@ -6,7 +6,7 @@ use gluesql::
 };
 use unitore::
 {
-  storage::FeedStorage,
+  sled_adapter::FeedStorage,
   entity::{ feed::FeedStore, config::ConfigStore },
   action::config,
 };
