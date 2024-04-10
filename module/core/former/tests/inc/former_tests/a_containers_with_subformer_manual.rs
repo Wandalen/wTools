@@ -473,13 +473,7 @@ where
   >,
 {
   #[ inline( always ) ]
-  fn call
-  (
-    &self,
-    storage : std::collections::HashMap< String, String >,
-    super_former : Option< Struct1Former< Definition > >,
-  )
-  -> Struct1Former< Definition >
+  fn call( &self, storage : std::collections::HashMap< String, String >, super_former : Option< Struct1Former< Definition > > ) -> Struct1Former< Definition >
   {
     let mut super_former = super_former.unwrap();
     if let Some( ref mut field ) = super_former.storage.hashmap_1

@@ -825,7 +825,8 @@ Result< TokenStream >
     return Ok( qt!{ } );
   }
 
-  let subformer = field.attrs.subformer.as_ref().unwrap();
+  let subformer_definition = &field.attrs.subformer.as_ref().unwrap().expr;
+  // let subformer = field.attrs.subformer.as_ref().unwrap();
   // former::VectorDefinition
   // xxx
 
@@ -852,8 +853,7 @@ Result< TokenStream >
     #[ automatically_derived ]
     impl< Definition > former::FormingEnd
     <
-      former::VectorDefinition< #( #params, )* #former< Definition >, #former< Definition >, former::NoEnd >,
-      // xxx : what is there is no generic parameters?
+      #subformer_definition < #( #params, )* #former< Definition >, #former< Definition >, former::NoEnd >,
     >
     for #field_forming_end
     where
