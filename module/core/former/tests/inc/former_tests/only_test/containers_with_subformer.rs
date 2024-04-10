@@ -323,4 +323,5 @@ tests_index!
   // test_hashmap,
   // test_hashset,
   // test_complex,
+  // xxx
 }
