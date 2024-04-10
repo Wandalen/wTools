@@ -685,7 +685,7 @@ fn subformer_field_setter
       <
         #subformer_definition
         <
-          #( #params, )*,
+          #( #params, )*
           Self,
           Self,
           #field_set,
@@ -698,12 +698,12 @@ fn subformer_field_setter
     pub fn #field_ident( self ) ->
     former::ContainerSubformer::
     <
-      #( #params, )*, #subformer_definition< #( #params, )*, Self, Self, #field_set >
+      #( #params, )* #subformer_definition< #( #params, )* Self, Self, #field_set >
     >
     {
       self.#field_set::< former::ContainerSubformer::
       <
-        #( #params, )*, #subformer_definition< #( #params, )*, Self, Self, #field_set >
+        #( #params, )* #subformer_definition< #( #params, )* Self, Self, #field_set >
       >>()
     }
 
@@ -832,7 +832,7 @@ Result< TokenStream >
   let field_forming_end_name = format!( "former{}End", ident.to_string().to_case( Case::Camel ) );
   let field_forming_end = syn::Ident::new( &field_forming_end_name, ident.span() );
 
-  // let field_ty = field.non_optional_ty;
+  let field_ty = field.non_optional_ty;
   let params = typ::type_parameters( &field.non_optional_ty, .. );
   // let params = typ::all_type_parameters( field.non_optional_ty );
   // let xxx = field_ty;
@@ -865,7 +865,7 @@ Result< TokenStream >
       fn call
       (
         &self,
-        storage : field_ty,
+        storage : #field_ty,
         super_former : Option< #former< Definition > >,
       )
       -> #former< Definition >
