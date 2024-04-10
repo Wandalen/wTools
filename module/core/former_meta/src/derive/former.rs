@@ -824,7 +824,6 @@ Result< TokenStream >
   }
 
   let subformer = field.attrs.subformer.as_ref().unwrap();
-  // former::VectorSubformer
   // former::VectorDefinition
   // xxx
 
