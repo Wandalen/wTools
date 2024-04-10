@@ -301,11 +301,86 @@ pub( crate ) mod private
     Ok( format!( "{}_{}_{}_{}", timestamp, pid, tid, count ) )
   }
 
+  /// Finds the common directory path among a collection of paths.
+  ///
+  /// Given an iterator of path strings, this function determines the common directory
+  /// path shared by all paths. If no common directory path exists, it returns `None`.
+  ///
+  /// # Arguments
+  ///
+  /// * `paths` - An iterator of path strings (`&str`).
+  ///
+  /// # Returns
+  ///
+  /// * `Option<String>` - The common directory path shared by all paths, if it exists.
+  ///                      If no common directory path exists, returns `None`.
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// use proper_path_tools::path::::path_common;
+  ///
+  /// let paths = vec![ "/a/b/c", "/a/b/d", "/a/b/e" ];
+  /// let common_path = path_common( paths.into_iter() );
+  /// assert_eq!( common_path, Some( "/a/b/".to_string() ) );
+  /// ```
+  ///
+  pub fn path_common< 'a, I >( paths : I ) -> Option< String > 
+  where
+    I : Iterator< Item = &'a str >,
+  {
+    use std::collections::HashMap;
+
+    let paths : Vec< String > = paths.map( | path | path.to_string() ).collect();
+
+    if paths.is_empty() 
+    {
+      return None;
+    }
+
+    // Create a map to store directory frequencies
+    let mut dir_freqs : HashMap< String, usize > = HashMap::new();
+
+    // Iterate over paths to count directory frequencies
+    for path in paths.iter() 
+    {
+      // Split path into directories
+      let dirs : Vec< &str > = path.split( '/' ).collect();
+
+      // Iterate over directories
+      for i in 0..dirs.len() 
+      {
+        // Construct directory path
+        let dir_path = dirs[ 0..i + 1 ].join( "/" );
+        if dir_path.is_empty()
+        {
+          continue;
+        }
+        // Increment frequency count
+        *dir_freqs.entry( dir_path ).or_insert( 0 ) += 1;
+      }
+    }
+
+    // Find the directory with the highest frequency
+    let common_dir = dir_freqs
+    .into_iter()
+    .filter( | ( _, freq ) | *freq == paths.len() )
+    .map( | ( dir, _ ) | dir )
+    .max_by_key( | dir | dir.len() )
+    .unwrap_or_default();
+
+    let mut result = common_dir.to_string();
+    //result.push( '/' );
+    Some( result )
+
+
+  }
+
 }
 
 crate::mod_interface!
 {
-
+  protected use path_common;
   protected use is_glob;
   protected use normalize;
   protected use canonicalize;
