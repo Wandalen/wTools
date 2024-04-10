@@ -11,16 +11,18 @@ pub struct Struct1
 {
   #[ subformer( former::VectorDefinition ) ]
   vec_1 : Vec< String >,
-  // #[ subformer( former::HashMapSubformer ) ]
+  // #[ subformer( former::HashMapDefinition ) ]
   hashmap_1 : std::collections::HashMap< String, String >,
-  // // #[ subformer( former::HashSetSubformer ) ]
+  #[ subformer( former::HashSetDefinition ) ]
   hashset_1 : std::collections::HashSet< String >,
 }
 
 // = generated
 
 
+
+
 // = generated
 
-include!( "./only_test/containers_with_subformer.rs" );
+// include!( "./only_test/containers_with_subformer.rs" );
 // xxx : uncomment
