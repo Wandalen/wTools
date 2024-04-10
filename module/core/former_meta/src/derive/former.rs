@@ -833,8 +833,9 @@ Result< TokenStream >
   let field_forming_end_name = format!( "former{}End", ident.to_string().to_case( Case::Camel ) );
   let field_forming_end = syn::Ident::new( &field_forming_end_name, ident.span() );
 
-  let field_ty = field.non_optional_ty;
-  let field_set = typ::all_type_parameters( field_ty );
+  // let field_ty = field.non_optional_ty;
+  let params = typ::type_parameters( &field.non_optional_ty, .. );
+  // let params = typ::all_type_parameters( field.non_optional_ty );
   // let xxx = field_ty;
   // let generics = field_ty.generics
   // let ( generics_impl, generics_ty, generics_where ) = generics.split_for_impl();
@@ -850,7 +851,7 @@ Result< TokenStream >
     #[ automatically_derived ]
     impl< Definition > former::FormingEnd
     <
-      former::VectorDefinition< #field_set, #former< Definition >, #former< Definition >, former::NoEnd >,
+      former::VectorDefinition< #( #params, )* #former< Definition >, #former< Definition >, former::NoEnd >,
       // xxx : what is there is no generic parameters?
     >
     for #field_forming_end
