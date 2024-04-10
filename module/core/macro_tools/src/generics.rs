@@ -183,26 +183,6 @@ pub( crate ) mod private
     result
   }
 
-  /// Extract generics from a type.
-  // pub fn extract_from_type( type_example : &syn::Type ) -> Option< syn::PathArguments >
-  pub fn extract_from_type( type_example : &syn::Type )
-  ->
-  Option< syn::punctuated::Punctuated< syn::GenericArgument, syn::token::Comma > >
-  {
-    if let syn::Type::Path( type_path ) = type_example
-    {
-      let segments = &type_path.path.segments;
-      let last_segment = segments.last()?;
-
-      if let syn::PathArguments::AngleBracketed( generics ) = &last_segment.arguments
-      {
-        return Some( generics.args.clone() );
-      }
-    }
-    None
-  }
-
-
 }
 
 #[ doc( inline ) ]
@@ -221,7 +201,6 @@ pub mod protected
   {
     merge,
     params_names,
-    extract_from_type,
   };
 }
 

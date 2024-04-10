@@ -90,6 +90,25 @@ pub( crate ) mod private
     vec![ ty ]
   }
 
+  // xxx : cover by tests
+  /// Extract generics from a type.
+  pub fn all_type_parameters( type_example : &syn::Type )
+  ->
+  Option< syn::punctuated::Punctuated< syn::GenericArgument, syn::token::Comma > >
+  {
+    if let syn::Type::Path( type_path ) = type_example
+    {
+      let segments = &type_path.path.segments;
+      let last_segment = segments.last()?;
+
+      if let syn::PathArguments::AngleBracketed( generics ) = &last_segment.arguments
+      {
+        return Some( generics.args.clone() );
+      }
+    }
+    None
+  }
+
 }
 
 #[ doc( inline ) ]
@@ -108,7 +127,7 @@ pub mod protected
   {
     type_rightmost,
     type_parameters,
-    // xxx : rename
+    all_type_parameters,
   };
 }
 

@@ -202,6 +202,7 @@ impl syn::parse::Parse for AttributeSetter
 ///
 /// `#[ subformer( former::VectorSubformer ) ]`
 ///
+// qqq : update documentation
 
 #[ allow( dead_code ) ]
 struct AttributeFormer
@@ -536,7 +537,8 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< TokenStream >
   // Either subformer or ordinary setter.
   let setter_tokens = if let Some( subformer_ty ) = &field.attrs.subformer
   {
-    subformer_field_setter( ident, ident, non_optional_ty, &subformer_ty.expr )
+    // subformer_field_setter( ident, ident, non_optional_ty, &subformer_ty.expr )
+    subformer_field_setter( field, &subformer_ty.expr )
   }
   else
   {
@@ -562,127 +564,6 @@ fn field_setter_map( field : &FormerField< '_ > ) -> Result< TokenStream >
   r
 }
 
-// zzz : description and exmaple
-
-/// Generate unit struct which is descriptor of callback which should be called after subforming process of a specific field. Descriptors are used insted of closures to inline code and let optimizer play with optimization.
-///
-/// # Example of generated code
-///
-/// ```rust, ignore
-/// #[ allow( non_camel_case_types ) ]
-/// pub struct Struct1FormerVec_1End;
-/// #[ automatically_derived ]
-/// impl< Definition > former::FormingEnd
-/// <
-///   former::VectorDefinition< String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
-/// >
-/// for Struct1FormerVec_1End
-/// where
-///   Definition : former::FormerDefinition,
-///   Definition::Types : former::FormerDefinitionTypes
-///   <
-///     Storage = Struct1FormerStorage
-///   >,
-/// {
-///   #[ inline( always ) ]
-///   fn call
-///   (
-///     &self, storage : Vec< String >,
-///     super_former : Option< Struct1Former< Definition > >,
-///   )
-///   -> Struct1Former< Definition >
-///   {
-///     let mut super_former = super_former.unwrap();
-///     if let Some( ref mut field ) = super_former.storage.vec_1
-///     {
-///       former::ContainerAssign::assign( field, storage );
-///     }
-///     else
-///     {
-///       super_former.storage.vec_1 = Some( storage );
-///     }
-///     super_former
-///   }
-/// }
-/// ```
-
-#[ inline ]
-fn fields_setter_callback_descriptor_map
-(
-  field : &FormerField< '_ >,
-  former : &syn::Ident,
-  former_storage : &syn::Ident,
-  former_definition : &syn::Ident,
-)
-->
-Result< TokenStream >
-{
-
-  if field.attrs.subformer.is_none()
-  {
-    return Ok( qt!{ } );
-  }
-
-  use convert_case::{ Case, Casing };
-
-  let ident = field.ident;
-  let field_descriptor_name = format!( "former{}End", ident.to_string().to_case( Case::Camel ) );
-  let field_descriptor = syn::Ident::new( &field_descriptor_name, ident.span() );
-
-  let field_ty = field.non_optional_ty;
-  // let xxx = field_ty;
-  // let generics = field_ty.generics
-  // let ( generics_impl, generics_ty, generics_where ) = generics.split_for_impl();
-
-
-  let r = qt!
-  {
-    // xxx
-
-    // zzz : description
-    /// Return original former after subformer for `vec_1` is done.
-    #[ allow( non_camel_case_types ) ]
-    pub struct #field_descriptor;
-    #[ automatically_derived ]
-    impl< Definition > former::FormingEnd
-    <
-      former::VectorDefinition< String, #former< Definition >, #former< Definition >, former::NoEnd >,
-    >
-    for #field_descriptor
-    where
-      Definition : former::FormerDefinition,
-      Definition::Types : former::FormerDefinitionTypes
-      <
-        Storage = #former_storage
-      >,
-    {
-      #[ inline( always ) ]
-      fn call
-      (
-        &self,
-        storage : field_ty,
-        super_former : Option< #former< Definition > >,
-      )
-      -> #former< Definition >
-      {
-        let mut super_former = super_former.unwrap();
-        if let Some( ref mut field ) = super_former.storage.vec_1
-        {
-          former::ContainerAssign::assign( field, storage );
-        }
-        else
-        {
-          super_former.storage.vec_1 = Some( storage );
-        }
-        super_former
-      }
-    }
-
-  };
-
-  // tree_print!( r.as_ref().unwrap() );
-  Ok( r )
-}
 
 ///
 /// Generate a single setter for the 'field_ident' with the 'setter_name' name.
@@ -756,51 +637,256 @@ fn field_setter
 ///   former::HashMapSubformer::begin( formed, self, on_end )
 /// }
 /// ```
+/// zzz : update example
 
 #[ inline ]
 fn subformer_field_setter
 (
-  field_ident : &syn::Ident,
-  setter_name : &syn::Ident,
-  non_optional_type : &syn::Type,
+  field : &FormerField< '_ >,
+  // field_ident : &syn::Ident,
+  // setter_name : &syn::Ident,
+  // non_optional_type : &syn::Type,
   subformer_type : &syn::Type,
 )
 -> TokenStream
 {
+  let field_ident = &field.ident;
   let doc = format!
   (
     "Subformer setter for the '{}' field.",
     field_ident
   );
 
+  let non_optional_ty = &field.non_optional_ty;
+
   // tree_print!( non_optional_type );
   // code_print!( non_optional_type );
-  let params = typ::type_parameters( &non_optional_type, .. );
+  let params = typ::type_parameters( &non_optional_ty, .. );
   // params.iter().for_each( | e | println!( "{}", qt!( #e ) ) );
+  // let genertic_params = typ::all_type_parameters( non_optional_type );
+  // xxx : try `all_type_parameters`` instead
+
+  let subformer_definition = &field.attrs.subformer.as_ref().unwrap().expr;
+  // for example : former::VectorDefinition
+
+  use convert_case::{ Case, Casing };
+  // let ident = field_ident;
+  let field_forming_end_name = format!( "former{}End", field_ident.to_string().to_case( Case::Camel ) );
+  let field_forming_end = syn::Ident::new( &field_forming_end_name, field_ident.span() );
+  let field_set_name = format!( "{}_set", field_ident );
+  let field_set = syn::Ident::new( &field_forming_end_name, field_ident.span() );
 
   qt!
   {
-    #[ doc = #doc ]
-    #[ inline ]
-    pub fn #setter_name( mut self ) -> #subformer_type
+    #[ inline( always ) ]
+    pub fn #field_set< Former2 >( self ) -> Former2
+    where
+      Former2 : former::FormerBegin
+      <
+        #subformer_definition
+        <
+          #( #params, )*,
+          Self,
+          Self,
+          #field_set,
+        >
+      >,
+    {
+      Former2::_begin( None, Some( self ), #field_set )
+    }
+
+    pub fn #field_ident( self ) ->
+    former::ContainerSubformer::
     <
-      #( #params, )*
-      #non_optional_type,
-      Self,
-      impl Fn( #non_optional_type, core::option::Option< Self > ) -> Self,
+      #( #params, )*, #subformer_definition< #( #params, )*, Self, Self, #field_set >
     >
     {
-      let formed = self.storage.#setter_name.take();
-      let on_end = | formed : #non_optional_type, former : core::option::Option< Self > | -> Self
-      {
-        let mut former = former.unwrap();
-        former.storage.#setter_name = Some( formed );
-        former
-      };
-      #subformer_type::begin( formed, Some( self ), on_end )
+      self.#field_set::< former::ContainerSubformer::
+      <
+        #( #params, )*, #subformer_definition< #( #params, )*, Self, Self, #field_set >
+      >>()
     }
+
   }
 
+  // qt!
+  // {
+  //   #[ doc = #doc ]
+  //   #[ inline ]
+  //   pub fn #setter_name( mut self ) -> #subformer_type
+  //   <
+  //     #( #params, )*
+  //     #non_optional_type,
+  //     Self,
+  //     impl Fn( #non_optional_type, core::option::Option< Self > ) -> Self,
+  //   >
+  //   {
+  //     let formed = self.storage.#setter_name.take();
+  //     let on_end = | formed : #non_optional_type, former : core::option::Option< Self > | -> Self
+  //     {
+  //       let mut former = former.unwrap();
+  //       former.storage.#setter_name = Some( formed );
+  //       former
+  //     };
+  //     #subformer_type::begin( formed, Some( self ), on_end )
+  //   }
+  // }
+
+//   #[ inline( always ) ]
+//   pub fn vec_1_set< Former2 >( self ) -> Former2
+//   where
+//     Former2 : former::FormerBegin
+//     <
+//       former::VectorDefinition
+//       <
+//         String,
+//         Self,
+//         Self,
+//         Struct1FormerVec_1End,
+//       >
+//     >,
+//   {
+//     Former2::_begin( None, Some( self ), Struct1FormerVec_1End )
+//   }
+//
+//   pub fn vec_1( self ) ->
+//   former::ContainerSubformer::
+//   <
+//     String, former::VectorDefinition< String, Self, Self, Struct1FormerVec_1End >
+//   >
+//   {
+//     self.vec_1_set::< former::ContainerSubformer::
+//     <
+//       String, former::VectorDefinition< String, Self, Self, Struct1FormerVec_1End >
+//     >>()
+//   }
+
+}
+
+// zzz : description and exmaple
+/// Generate unit struct which is descriptor of callback which should be called after subforming process of a specific field. Descriptors are used insted of closures to inline code and let optimizer play with optimization.
+///
+/// # Example of generated code
+///
+/// ```rust, ignore
+/// #[ allow( non_camel_case_types ) ]
+/// pub struct Struct1FormerVec_1End;
+/// #[ automatically_derived ]
+/// impl< Definition > former::FormingEnd
+/// <
+///   former::VectorDefinition< String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
+/// >
+/// for Struct1FormerVec_1End
+/// where
+///   Definition : former::FormerDefinition,
+///   Definition::Types : former::FormerDefinitionTypes
+///   <
+///     Storage = Struct1FormerStorage
+///   >,
+/// {
+///   #[ inline( always ) ]
+///   fn call
+///   (
+///     &self, storage : Vec< String >,
+///     super_former : Option< Struct1Former< Definition > >,
+///   )
+///   -> Struct1Former< Definition >
+///   {
+///     let mut super_former = super_former.unwrap();
+///     if let Some( ref mut field ) = super_former.storage.vec_1
+///     {
+///       former::ContainerAssign::assign( field, storage );
+///     }
+///     else
+///     {
+///       super_former.storage.vec_1 = Some( storage );
+///     }
+///     super_former
+///   }
+/// }
+/// ```
+
+#[ inline ]
+fn fields_setter_callback_descriptor_map
+(
+  field : &FormerField< '_ >,
+  former : &syn::Ident,
+  former_storage : &syn::Ident,
+  former_definition : &syn::Ident,
+)
+->
+Result< TokenStream >
+{
+
+  if field.attrs.subformer.is_none()
+  {
+    return Ok( qt!{ } );
+  }
+
+  let subformer = field.attrs.subformer.as_ref().unwrap();
+  // former::VectorSubformer
+  // former::VectorDefinition
+  // xxx
+
+  use convert_case::{ Case, Casing };
+  let ident = field.ident;
+  let field_forming_end_name = format!( "former{}End", ident.to_string().to_case( Case::Camel ) );
+  let field_forming_end = syn::Ident::new( &field_forming_end_name, ident.span() );
+
+  let field_ty = field.non_optional_ty;
+  let field_set = typ::all_type_parameters( field_ty );
+  // let xxx = field_ty;
+  // let generics = field_ty.generics
+  // let ( generics_impl, generics_ty, generics_where ) = generics.split_for_impl();
+
+  let r = qt!
+  {
+    // xxx
+
+    // zzz : description
+    /// Return original former after subformer for `vec_1` is done.
+    #[ allow( non_camel_case_types ) ]
+    pub struct #field_forming_end;
+    #[ automatically_derived ]
+    impl< Definition > former::FormingEnd
+    <
+      former::VectorDefinition< #field_set, #former< Definition >, #former< Definition >, former::NoEnd >,
+      // xxx : what is there is no generic parameters?
+    >
+    for #field_forming_end
+    where
+      Definition : former::FormerDefinition,
+      Definition::Types : former::FormerDefinitionTypes
+      <
+        Storage = #former_storage
+      >,
+    {
+      #[ inline( always ) ]
+      fn call
+      (
+        &self,
+        storage : field_ty,
+        super_former : Option< #former< Definition > >,
+      )
+      -> #former< Definition >
+      {
+        let mut super_former = super_former.unwrap();
+        if let Some( ref mut field ) = super_former.storage.#ident
+        {
+          former::ContainerAssign::assign( field, storage );
+        }
+        else
+        {
+          super_former.storage.#ident = Some( storage );
+        }
+        super_former
+      }
+    }
+
+  };
+
+  // tree_print!( r.as_ref().unwrap() );
+  Ok( r )
 }
 
 ///
@@ -1055,6 +1141,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let ( _doc_former_mod, doc_former_struct ) = doc_generate( struct_name );
   let fields_setter : Vec< _ > = process_results( fields_setter, | iter | iter.collect() )?;
   let fields_form : Vec< _ > = process_results( fields_form, | iter | iter.collect() )?;
+  let fields_setter_callback_descriptor : Vec< _ > = process_results( fields_setter_callback_descriptor, | iter | iter.collect() )?;
 
   let result = qt!
   {
@@ -1361,6 +1448,10 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
 
     }
+
+    #(
+      #fields_setter_callback_descriptor
+    )*
 
   };
 
