@@ -1,31 +1,20 @@
-//! Tables sroring functions.
+//! Table and columns info operations from Sled storage.
 
 use crate::*;
 use error_tools::Result;
 use gluesql::
 {
+  core::executor::Payload,
   sled_storage::SledStorage,
-  prelude::Payload,
 };
-
-use executor::actions::table::TablesReport;
-use storage::FeedStorage;
-
-/// Functions for tables informantion.
-#[ async_trait::async_trait( ?Send ) ]
-pub trait TableStore
-{
-  /// List tables in storage.
-  async fn list_tables( &mut self ) -> Result< TablesReport >;
-
-  /// List columns of table.
-  async fn list_columns( &mut self, table_name : String ) -> Result< Vec< Payload > >;
-}
+use entity::table::TableStore;
+use action::table::TablesReport;
+use sled_adapter::FeedStorage;
 
 #[ async_trait::async_trait( ?Send ) ]
 impl TableStore for FeedStorage< SledStorage >
 {
-  async fn list_tables( &mut self ) -> Result< TablesReport >
+  async fn tables_list( &mut self ) -> Result< TablesReport >
   {
     let glue = &mut *self.storage.lock().await;
     let payloads = glue.execute( "SELECT * FROM GLUE_TABLE_COLUMNS" ).await?;
@@ -35,7 +24,7 @@ impl TableStore for FeedStorage< SledStorage >
     Ok( report )
   }
 
-  async fn list_columns( &mut self, table_name : String ) -> Result< Vec< Payload > >
+  async fn table_list( &mut self, table_name : String ) -> Result< Vec< Payload > >
   {
     let glue = &mut *self.storage.lock().await;
     let query_str = format!( "SELECT * FROM GLUE_TABLE_COLUMNS WHERE TABLE_NAME='{}'", table_name );
@@ -43,5 +32,4 @@ impl TableStore for FeedStorage< SledStorage >
 
     Ok( payloads )
   }
-
 }

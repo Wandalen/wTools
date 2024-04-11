@@ -1,25 +1,22 @@
-//! Actions and report for commands for config files.
+//! Actions and report for config files.
+
+use std::path::PathBuf;
 
 use crate::*;
-use super::*;
-use error_tools::{ err, for_app::Context, BasicError, Result };
-use executor::FeedManager;
-use storage::
+use error_tools::{ for_app::Context, Result };
+use sled_adapter::FeedStorage;
+use entity::
 {
-  FeedStorage,
   feed::{ FeedStore, Feed },
   config::{ ConfigStore, Config },
 };
+use action::Report;
 use gluesql::{ prelude::Payload, sled_storage::SledStorage };
 
 /// Add configuration file with subscriptions to storage.
-pub async fn add_config( storage : FeedStorage< SledStorage >, args : &wca::Args ) -> Result< impl Report >
+pub async fn config_add( mut storage : FeedStorage< SledStorage >, path : &PathBuf ) -> Result< impl Report >
 {
-  let path : std::path::PathBuf = args
-  .get_owned::< wca::Value >( 0 )
-  .ok_or_else::< BasicError, _ >( || err!( "Cannot get path argument for command .config.add" ) )?
-  .into()
-  ;
+  let path = proper_path_tools::path::normalize( path );
 
   let mut err_str = format!( "Invalid path for config file {:?}", path );
 
@@ -37,54 +34,52 @@ pub async fn add_config( storage : FeedStorage< SledStorage >, args : &wca::Args
       err_str = format!( "Invalid path for config file {:?}", abs_path );
     }
   }
-  let path = path.canonicalize().context( err_str )?;
 
-  let config = Config::new( path.to_string_lossy().to_string() );
-  let mut manager = FeedManager::new( storage );
+  if !path.exists()
+  {
+    return Err( error_tools::for_app::Error::msg( err_str ) );
+  }
 
-  let config_report = manager.storage
-  .add_config( &config )
+  //let abs_path = proper_path_tools::path::canonicalize( path )?;
+  let abs_path = path.canonicalize()?;
+  let config = Config::new( abs_path.to_string_lossy().to_string() );
+
+  let config_report = storage
+  .config_add( &config )
   .await
   .context( "Added 0 config files.\n Failed to add config file to storage." )?
   ;
 
   let feeds = feed_config::read( config.path() )?
   .into_iter()
-  .map( | feed | Feed::new( feed.link, feed.update_period ) )
+  .map( | feed | Feed::new( feed.link, feed.update_period, config.path() ) )
   .collect::< Vec< _ > >()
   ;
 
-  let new_feeds = manager.storage.save_feeds( feeds ).await?;
+  let new_feeds = storage.feeds_save( feeds ).await?;
 
   Ok( ConfigReport{ payload : config_report, new_feeds : Some( new_feeds ) } )
 }
 
 /// Remove configuration file from storage.
-pub async fn delete_config( storage : FeedStorage< SledStorage >, args : &wca::Args ) -> Result< impl Report >
+pub async fn config_delete( mut storage : FeedStorage< SledStorage >, path : &PathBuf ) -> Result< impl Report >
 {
-  let path : std::path::PathBuf = args
-  .get_owned::< wca::Value >( 0 )
-  .ok_or_else::< BasicError, _ >( || err!( "Cannot get path argument for command .config.delete" ) )?
-  .into()
-  ;
-
+  let path = proper_path_tools::path::normalize( path );
   let path = path.canonicalize().context( format!( "Invalid path for config file {:?}", path ) )?;
   let config = Config::new( path.to_string_lossy().to_string() );
 
-  let mut manager = FeedManager::new( storage );
   Ok( ConfigReport::new(
-    manager.storage
-    .delete_config( &config )
+    storage
+    .config_delete( &config )
     .await
     .context( "Failed to remove config from storage." )?
   ) )
 }
 
 /// List all files with subscriptions that are currently in storage.
-pub async fn list_configs( storage : FeedStorage< SledStorage >, _args : &wca::Args ) -> Result< impl Report >
+pub async fn config_list( mut storage : FeedStorage< SledStorage >, _args : &wca::Args ) -> Result< impl Report >
 {
-  let mut manager = FeedManager::new( storage );
-  Ok( ConfigReport::new( manager.storage.list_configs().await? ) )
+  Ok( ConfigReport::new( storage.config_list().await? ) )
 }
 
 /// Information about result of command for subscription config.
@@ -140,7 +135,7 @@ impl std::fmt::Display for ConfigReport
           rows.push( vec![ EMPTY_CELL.to_owned(), String::from( row[ 0 ].clone() ) ] );
         }
 
-        let table = table_display::plain_table( rows );
+        let table = tool::table_display::plain_table( rows );
         if let Some( table ) = table
         {
           write!( f, "{}", table )?;

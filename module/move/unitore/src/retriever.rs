@@ -12,22 +12,24 @@ use feed_rs::parser as feed_parser;
 use error_tools::{ Result, for_app::Context };
 
 // qqq : purpose of trait if any?
-/// Fetch feed from provided source link.
-#[ async_trait::async_trait ]
-pub trait FeedFetch
-{
-  /// Get feed from source specified by its link.
-  async fn fetch( &self, source : url::Url ) -> Result< feed_rs::model::Feed >;
-}
+// aaa : removed unnecessary trait
 
 /// Feed client for fetching feed.
 #[ derive( Debug ) ]
 pub struct FeedClient;
 
-#[ async_trait::async_trait ]
-impl FeedFetch for FeedClient
+impl FeedClient
 {
-  async fn fetch( &self, source : url::Url ) -> Result< feed_rs::model::Feed >
+  /// Fetch feed frames from provided url source.
+  ///
+  /// # Arguments
+  ///
+  /// * `source` - The link to feed source.
+  ///
+  /// # Returns
+  ///
+  /// Result with fetched feed as feed_rs Feed struct.
+  pub async fn fetch( &self, source : url::Url ) -> Result< feed_rs::model::Feed >
   {
     let https = HttpsConnector::new();
     let client = Client::builder( TokioExecutor::new() ).build::< _, Empty< Bytes > >( https );
