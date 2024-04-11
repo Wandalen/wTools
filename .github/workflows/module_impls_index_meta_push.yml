@@ -2,7 +2,7 @@ name : impls_index_meta
 
 on :
   push :
-    branches-ignore :
+    branches :
       - 'alpha'
       - 'beta'
       - 'master'

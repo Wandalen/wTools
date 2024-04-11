@@ -2,7 +2,7 @@ name : include_md
 
 on :
   push :
-    branches-ignore :
+    branches :
       - 'alpha'
       - 'beta'
       - 'master'

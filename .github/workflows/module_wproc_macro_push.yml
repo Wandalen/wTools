@@ -2,7 +2,7 @@ name : wproc_macro
 
 on :
   push :
-    branches-ignore :
+    branches :
       - 'alpha'
       - 'beta'
       - 'master'

@@ -2,7 +2,7 @@ name : mod_interface_meta
 
 on :
   push :
-    branches-ignore :
+    branches :
       - 'alpha'
       - 'beta'
       - 'master'

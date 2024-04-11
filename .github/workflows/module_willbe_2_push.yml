@@ -2,7 +2,7 @@ name : willbe2
 
 on :
   push :
-    branches-ignore :
+    branches :
       - 'alpha'
       - 'beta'
       - 'master'

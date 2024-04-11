@@ -2,7 +2,7 @@ name : test_tools
 
 on :
   push :
-    branches-ignore :
+    branches :
       - 'alpha'
       - 'beta'
       - 'master'

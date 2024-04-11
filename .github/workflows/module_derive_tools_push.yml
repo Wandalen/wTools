@@ -2,7 +2,7 @@ name : derive_tools
 
 on :
   push :
-    branches-ignore :
+    branches :
       - 'alpha'
       - 'beta'
       - 'master'
