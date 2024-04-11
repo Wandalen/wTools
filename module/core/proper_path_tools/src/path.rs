@@ -318,7 +318,7 @@ pub( crate ) mod private
   /// # Examples
   ///
   /// ```
-  /// use proper_path_tools::path::::path_common;
+  /// use proper_path_tools::path::path_common;
   ///
   /// let paths = vec![ "/a/b/c", "/a/b/d", "/a/b/e" ];
   /// let common_path = path_common( paths.into_iter() );
@@ -330,37 +330,44 @@ pub( crate ) mod private
     I : Iterator< Item = &'a str >,
   {
     use std::collections::HashMap;
-
-    let paths : Vec< String > = paths.map( | path | path.to_string() ).collect();
-
-    if paths.is_empty() 
+    let orig_paths : Vec< String > = paths.map( | path | path.to_string() ).collect();
+  
+    if orig_paths.is_empty() 
     {
       return None;
     }
-
+  
     // Create a map to store directory frequencies
     let mut dir_freqs : HashMap< String, usize > = HashMap::new();
-
+  
+    let mut paths = orig_paths.clone();
     // Iterate over paths to count directory frequencies
-    for path in paths.iter() 
+    for path in paths.iter_mut() 
     {
+      path_remove_dots( path );
+      path_remove_double_dots( path );
       // Split path into directories
       let dirs : Vec< &str > = path.split( '/' ).collect();
-
+  
       // Iterate over directories
-      for i in 0..dirs.len() 
+      for i in 0..dirs.len()
       {
+        
         // Construct directory path
-        let dir_path = dirs[ 0..i + 1 ].join( "/" );
-        if dir_path.is_empty()
-        {
-          continue;
-        }
+        let mut dir_path = dirs[ 0..i + 1 ].join( "/" );
+  
+        
         // Increment frequency count
-        *dir_freqs.entry( dir_path ).or_insert( 0 ) += 1;
+        *dir_freqs.entry( dir_path.clone() ).or_insert( 0 ) += 1;
+  
+        if i != dirs.len() - 1 && !dirs[ i + 1 ].is_empty()
+        {
+          dir_path.push( '/' );
+          *dir_freqs.entry( dir_path ).or_insert( 0 ) += 1;
+        }
       }
     }
-
+  
     // Find the directory with the highest frequency
     let common_dir = dir_freqs
     .into_iter()
@@ -368,18 +375,181 @@ pub( crate ) mod private
     .map( | ( dir, _ ) | dir )
     .max_by_key( | dir | dir.len() )
     .unwrap_or_default();
-
+  
     let mut result = common_dir.to_string();
-    //result.push( '/' );
+  
+    if result.is_empty() 
+    {
+      if orig_paths.iter().any( | path | path.starts_with( '/' ) )
+      { 
+        result.push( '/' );
+      }
+      else if orig_paths.iter().any( | path | path.starts_with( ".." ) )
+      {
+        result.push_str( ".." );
+      }
+      else
+      {
+        result.push( '.' );
+      }
+  
+    }
+    
     Some( result )
+  
+  
+  }
+
+  /// Removes dot segments (".") from the given path string.
+  ///
+  /// Dot segments in a path represent the current directory and can be safely removed
+  /// without changing the meaning of the path.
+  ///
+  /// # Arguments
+  ///
+  /// * `path` - A mutable reference to a string representing the path to be cleaned.
+  ///
+  fn path_remove_dots( path : &mut String ) 
+  {
+    let mut cleaned_parts = vec![];
+
+    for part in path.split( '/' ) 
+    {
+      if part == "."
+      {
+        continue;
+      }
+
+      cleaned_parts.push( part );
+
+    }
+
+    *path = cleaned_parts.join( "/" );
+
+  }
+
+  /// Removes dot-dot segments ("..") from the given path string.
+  ///
+  /// Dot-dot segments in a path represent the parent directory and can be safely resolved
+  /// to simplify the path.
+  ///
+  /// # Arguments
+  ///
+  /// * `path` - A mutable reference to a string representing the path to be cleaned.
+  ///
+  fn path_remove_double_dots( path : &mut String ) 
+  {
+    
+    let mut cleaned_parts: Vec< &str > = Vec::new();
+    let mut delete_empty_part = false;
+
+    for part in path.split( '/' ) 
+    {
+      if part == ".." 
+      {
+        if let Some( pop ) = cleaned_parts.pop()
+        {
+          if pop.is_empty()
+          {
+            delete_empty_part = true;
+          }
+
+          if pop == ".."
+          {
+            cleaned_parts.push("..");
+            cleaned_parts.push("..");
+          }
+        }
+        else
+        {
+          cleaned_parts.push( ".." );
+        }
+      } 
+      else 
+      {
+        cleaned_parts.push( part );
+      }
+    }
+    if delete_empty_part
+    {
+      *path = format!( "/{}", cleaned_parts.join( "/" ) );
+    }
+    else
+    {
+      *path = cleaned_parts.join( "/" );
+    }
+    
+  }
 
 
+  /// Rebase the file path relative to a new base path, optionally removing a common prefix.
+  ///
+  /// # Arguments
+  ///
+  /// * `file_path` - The original file path to rebase.
+  /// * `new_path` - The new base path to which the file path will be rebased.
+  /// * `old_path` - An optional common prefix to remove from the file path before rebasing.
+  ///
+  /// # Returns
+  ///
+  /// Returns the rebased file path if successful, or None if any error occurs.
+  ///
+  /// # Examples
+  ///
+  /// Rebase a file path to a new base path without removing any common prefix:
+  ///
+  /// ```
+  /// use std::path::PathBuf;
+  ///
+  /// let file_path = "/home/user/documents/file.txt";
+  /// let new_path = "/mnt/storage";
+  /// let rebased_path = proper_path_tools::path::rebase( file_path, new_path, None ).unwrap();
+  /// assert_eq!( rebased_path, PathBuf::from( "/mnt/storage/home/user/documents/file.txt" ) );
+  /// ```
+  ///
+  /// Rebase a file path to a new base path after removing a common prefix:
+  ///
+  /// ```
+  /// use std::path::PathBuf;
+  ///
+  /// let file_path = "/home/user/documents/file.txt";
+  /// let new_path = "/mnt/storage";
+  /// let old_path = "/home/user";
+  /// let rebased_path = proper_path_tools::path::rebase( file_path, new_path, Some( old_path ) ).unwrap();
+  /// assert_eq!( rebased_path, PathBuf::from( "/mnt/storage/documents/file.txt" ) );
+  /// ```
+  ///
+  pub fn rebase< T : AsRef< std::path::Path > >( file_path : T, new_path : T, old_path : Option< T > ) -> Option< std::path::PathBuf > 
+  {
+    use std::path::Path;
+    use std::path::PathBuf;
+
+    let new_path = Path::new( new_path.as_ref() );
+    let mut main_file_path = Path::new( file_path.as_ref() );
+
+    if old_path.is_some()
+    {
+      let common = path_common( vec![ file_path.as_ref().to_str().unwrap(), old_path.unwrap().as_ref().to_str().unwrap() ].into_iter() )?;
+      
+      main_file_path = match main_file_path.strip_prefix( common )
+      {
+        Ok( rel ) => rel,
+        Err( _ ) => return None,
+      };
+    }
+
+    let mut rebased_path = PathBuf::new();
+    rebased_path.push( new_path );
+    rebased_path.push( main_file_path.strip_prefix( "/" ).unwrap_or( main_file_path ) );
+
+    Some( normalize( rebased_path ) )
   }
 
 }
 
 crate::mod_interface!
 {
+  protected use rebase;
   protected use path_common;
   protected use is_glob;
   protected use normalize;

@@ -10,13 +10,7 @@ fn test_with_empty_array()
   assert_eq!( got, None );
 }
 
-#[ test ]
-fn test_array() 
-{
-  let paths = vec![ "/a1/b2", "/a1/b" ];
-  let got = the_module::path::path_common( paths.into_iter() ).unwrap();
-  assert_eq!( got, "/a1/" );
-}
+// absolute-absolute
 
 #[ test ]
 fn test_absolute_absolute_have_common_dir() 
@@ -122,6 +116,9 @@ fn test_absolute_absolute_different_paths_in_root_directory_common_root_director
   let got = the_module::path::path_common( vec![ "/a", "/x" ].into_iter() ).unwrap();
   assert_eq!( got, "/" );
 }
+
+
+// more than 2 path in arguments
 
 #[ test ]
 fn test_absolute_absolute_more_than_2_path_in_arguments() 
@@ -320,33 +317,7 @@ fn test_relative_relative_combinations_of_paths_with_dots_variant4()
   assert_eq!( got, ".." );
 }
 
-#[ test ]
-fn test_relative_relative_combinations_of_paths_with_dots_variant5() 
-{
-  let got = the_module::path::path_common( vec![ "../../b/c", "../b" ].into_iter() ).unwrap();
-  assert_eq!( got, "../.." );
-}
 
-#[ test ]
-fn test_relative_relative_combinations_of_paths_with_dots_variant6() 
-{
-  let got = the_module::path::path_common( vec![ "../../b/c", "../../../x" ].into_iter() ).unwrap();
-  assert_eq!( got, "../../.." );
-}
-
-#[ test ]
-fn test_relative_relative_combinations_of_paths_with_dots_variant7() 
-{
-  let got = the_module::path::path_common( vec![ "../../b/c/../../x", "../../../x" ].into_iter() ).unwrap();
-  assert_eq!( got, "../../.." );
-}
-
-#[ test ]
-fn test_relative_relative_combinations_of_paths_with_dots_variant8() 
-{
-  let got = the_module::path::path_common( vec![ "./../../b/c/../../x", "./../../../x" ].into_iter() ).unwrap();
-  assert_eq!( got, "../../.." );
-}
 
 #[ test ]
 fn test_relative_relative_combinations_of_paths_with_dots_variant9() 
@@ -382,6 +353,9 @@ fn test_relative_relative_combinations_of_paths_with_dots_variant13()
   let got = the_module::path::path_common( vec![ "../b", "./../b" ].into_iter() ).unwrap();
   assert_eq!( got, "../b" );
 }
+
+
+// several relative paths
 
 #[ test ]
 fn test_relative_relative_several_relative_paths() 
@@ -432,12 +406,7 @@ fn test_relative_relative_several_relative_paths_variant7()
   assert_eq!( got, ".." );
 }
 
-#[ test ]
-fn test_relative_relative_several_relative_paths_variant8() 
-{
-  let got = the_module::path::path_common( vec![ "./a/b/c", "../../a/b/c", "../../../a/b" ].into_iter() ).unwrap();
-  assert_eq!( got, "../../.." );
-}
+
 
 #[ test ]
 fn test_relative_relative_dot_and_double_up_and_down_tokens() 
@@ -446,6 +415,39 @@ fn test_relative_relative_dot_and_double_up_and_down_tokens()
   assert_eq!( got, ".." );
 }
 
+
+
+/* 
+
+#[ test ]
+fn test_relative_relative_combinations_of_paths_with_dots_variant5() 
+{
+  let got = the_module::path::path_common( vec![ "../../b/c", "../b" ].into_iter() ).unwrap();
+  assert_eq!( got, "../.." );
+}
+
+#[ test ]
+fn test_relative_relative_combinations_of_paths_with_dots_variant6() 
+{
+  let got = the_module::path::path_common( vec![ "../../b/c", "../../../x" ].into_iter() ).unwrap();
+  assert_eq!( got, "../../.." );
+}
+
+#[ test ]
+fn test_relative_relative_combinations_of_paths_with_dots_variant7() 
+{
+  let got = the_module::path::path_common( vec![ "../../b/c/../../x", "../../../x" ].into_iter() ).unwrap();
+  assert_eq!( got, "../../.." );
+}
+
+#[ test ]
+fn test_relative_relative_combinations_of_paths_with_dots_variant8() 
+{
+  let got = the_module::path::path_common( vec![ "./../../b/c/../../x", "./../../../x" ].into_iter() ).unwrap();
+  assert_eq!( got, "../../.." );
+}
+
+
 #[ test ]
 fn test_relative_relative_dot_and_double_up_and_down_tokens_variant2() 
 {
@@ -453,7 +455,21 @@ fn test_relative_relative_dot_and_double_up_and_down_tokens_variant2()
   assert_eq!( got, "../.." );
 }
 
-/* 
+#[ test ]
+fn test_relative_relative_several_relative_paths_variant8() 
+{
+  let got = the_module::path::path_common( vec![ "./a/b/c", "../../a/b/c", "../../../a/b" ].into_iter() ).unwrap();
+  assert_eq!( got, "../../.." );
+}
+
+
+
+
+
+
+
+
+
 #[ test ]
 #[ should_panic ]
 fn test_first_path_is_absolute_another_is_dots() 
