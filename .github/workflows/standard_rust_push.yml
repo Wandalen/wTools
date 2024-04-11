@@ -39,7 +39,7 @@ jobs :
     runs-on: ubuntu-latest
     steps:
       - name: Install latest nightly toolchain
-        uses: Wandalen/wretry.action@master
+        uses: Wandalen/wretry.action/main@master
         with:
           action: actions-rs/toolchain@v1
           with: |
@@ -131,7 +131,7 @@ jobs :
     runs-on : ${{ matrix.os }}
     steps :
       - name : Install latest stable toolchain
-        uses : Wandalen/wretry.action@master
+        uses : Wandalen/wretry.action/main@master
         with :
           action : actions-rs/toolchain@v1
           with : |
@@ -140,7 +140,7 @@ jobs :
           attempt_limit : 3
           attempt_delay: 10000
       - name: Install latest nightly toolchain
-        uses: Wandalen/wretry.action@master
+        uses: Wandalen/wretry.action/main@master
         with:
           action: actions-rs/toolchain@v1
           with: |

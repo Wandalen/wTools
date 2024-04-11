@@ -2,7 +2,7 @@ name : w4d
 
 on :
   push :
-    branches-ignore :
+    branches :
       - 'alpha'
       - 'beta'
       - 'master'

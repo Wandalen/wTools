@@ -2,7 +2,7 @@ name : cargo_will
 
 on :
   push :
-    branches-ignore :
+    branches :
       - 'alpha'
       - 'beta'
       - 'master'
