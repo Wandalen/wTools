@@ -658,8 +658,6 @@ fn subformer_field_setter
   // code_print!( non_optional_type );
   let params = typ::type_parameters( &non_optional_ty, .. );
   // params.iter().for_each( | e | println!( "{}", qt!( #e ) ) );
-  // let genertic_params = typ::all_type_parameters( non_optional_type );
-  // xxx : try `all_type_parameters`` instead
 
   let subformer_definition = &field.attrs.subformer.as_ref().unwrap().expr;
   // for example : former::VectorDefinition
@@ -866,9 +864,7 @@ Result< TokenStream >
   }
 
   let subformer_definition = &field.attrs.subformer.as_ref().unwrap().expr;
-  // let subformer = field.attrs.subformer.as_ref().unwrap();
-  // former::VectorDefinition
-  // xxx
+  // Expected: "former::VectorDefinition"
 
   use convert_case::{ Case, Casing };
   let ident = field.ident;
@@ -877,14 +873,9 @@ Result< TokenStream >
 
   let field_ty = field.non_optional_ty;
   let params = typ::type_parameters( &field.non_optional_ty, .. );
-  // let params = typ::all_type_parameters( field.non_optional_ty );
-  // let xxx = field_ty;
-  // let generics = field_ty.generics
-  // let ( generics_impl, generics_ty, generics_where ) = generics.split_for_impl();
 
   let r = qt!
   {
-    // xxx
 
     // zzz : description
     /// Return original former after subformer for `vec_1` is done.

@@ -23,4 +23,3 @@ pub struct Struct1
 // = generated
 
 include!( "./only_test/containers_with_subformer.rs" );
-// xxx : uncomment
