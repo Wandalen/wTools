@@ -28,7 +28,8 @@ where
   K : core::hash::Hash + std::cmp::Eq,
 {
   pub name : String,
-  #[ subformer( the_module::HashMapSubformer ) ]
+  // #[ subformer( the_module::HashMapSubformer ) ]
+  #[ subformer( former::HashMapDefinition ) ]
   pub properties : collection_tools::HashMap< K, Property< K > >,
 }
 

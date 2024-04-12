@@ -53,7 +53,8 @@ where
 {
   pub name : String,
   pub subject : String,
-  #[ subformer( the_module::HashMapSubformer ) ]
+  // #[ subformer( the_module::HashMapSubformer ) ]
+  #[ subformer( former::HashMapDefinition ) ]
   pub properties : collection_tools::HashMap< K, Property< K > >,
 }
 

@@ -177,14 +177,10 @@ for Struct1FormerStorage
 
 // = former
 
-pub struct Struct1Former
-<
-  Definition = Struct1FormerDefinition,
->
+pub struct Struct1Former< Definition = Struct1FormerDefinition >
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
-  // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
 {
   storage : < Definition::Types as former::FormerDefinitionTypes >::Storage,
   context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
@@ -195,7 +191,6 @@ impl< Definition > Struct1Former< Definition >
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
-  // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
 {
 
   #[ inline( always ) ]

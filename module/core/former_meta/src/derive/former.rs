@@ -1493,7 +1493,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     diag::debug_report_print( "derive : Former", original_input, &result );
   }
 
-  // zzz : implement hints
+  // zzz : implement hints, rewrite
   if example_of_custom_setter
   {
     let _example =

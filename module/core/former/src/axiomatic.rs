@@ -218,14 +218,6 @@ for FormingEndClosure< Definition >
 pub trait FormerBegin< Definition : FormerDefinition >
 {
 
-  /// * `End` - A trait bound marking the closure or handler invoked upon completing the subforming process. Implementers
-  ///           of this trait (`End`) are tasked with applying the final transformations that transition `Storage`
-  ///           into `Formed`, optionally utilizing `Context` to guide this transformation. It is crucial that this
-  ///           associated type satisfies the `FormingEnd< Formed >` trait, defining the precise mechanics of
-  ///           how the subformer concludes its operation.
-  // type End : FormingEnd< Definition >;
-  // type End : Definition::End;
-
   /// Launches the subforming process with an initial storage and context, setting up an `on_end` completion handler.
   ///
   /// # Parameters

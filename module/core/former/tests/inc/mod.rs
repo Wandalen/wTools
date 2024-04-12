@@ -28,7 +28,7 @@ mod former_tests
   mod attribute_default_container;
   mod attribute_default_primitive;
   // mod attribute_perform;
-  // mod attribute_setter;
+  mod attribute_setter;
   mod attribute_alias;
 
 //   mod string_slice_manual;
@@ -56,9 +56,9 @@ mod former_tests
 //   mod subformer_basic_manual;
 //   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 //   mod subformer_basic;
-//
-//   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-//   mod subformer_shortcut;
+
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_shortcut;
 
 // xxx : uncomment
 
