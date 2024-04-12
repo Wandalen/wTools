@@ -25,12 +25,12 @@ mod former_tests
   #[ cfg( not( feature = "no_std" ) ) ]
   mod a_containers_with_subformer ;
 
-//   mod attribute_default_container;
-//   mod attribute_default_primitive;
-//   mod attribute_perform;
-//   mod attribute_setter;
-//   mod attribute_alias;
-//
+  mod attribute_default_container;
+  mod attribute_default_primitive;
+  // mod attribute_perform;
+  // mod attribute_setter;
+  mod attribute_alias;
+
 //   mod string_slice_manual;
 //   mod string_slice;
 //   mod unsigned_primitive_types;

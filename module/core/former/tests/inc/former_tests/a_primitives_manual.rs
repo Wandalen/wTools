@@ -184,7 +184,7 @@ pub struct Struct1Former
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
-  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
+  // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
 {
   storage : < Definition::Types as former::FormerDefinitionTypes >::Storage,
   context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
@@ -195,7 +195,7 @@ impl< Definition > Struct1Former< Definition >
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
-  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
+  // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
 {
 
   #[ inline( always ) ]

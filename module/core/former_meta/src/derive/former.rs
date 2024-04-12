@@ -1099,7 +1099,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     where
       Definition : former::FormerDefinition,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage #generics_ty >,
-      < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
+      // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
   };
   // zzz : write helper to fix bug with where
   let generics_of_former = generics::merge( &generics, &extra_generics );
