@@ -81,19 +81,19 @@ where
   //   type Context;
   // }
 
-  #[ inline( always ) ]
-  pub fn descriptor3< Former2, Definition2, End >( self ) ->
-  Former2
-  where
-    // Definition2 : former::FormerDefinition< End = former::FormingEndClosure< Definition2::Types > >,
-    Definition2 : former::FormerDefinition,
-    Definition2::End : former::FormingEnd< Definition2::Types >,
-
-    // Definition2 : former::FormerDefinition< Types = Former2::Types, End = End >,
-    // Former2 : former::FormerBegin< Definition2 >,
-    // End : former::FormingEnd< Former2::Types >,
-
 // xxx : uncomment
+//   #[ inline( always ) ]
+//   pub fn descriptor3< Former2, Definition2, End >( self ) ->
+//   Former2
+//   where
+//     // Definition2 : former::FormerDefinition< End = former::FormingEndClosure< Definition2::Types > >,
+//     Definition2 : former::FormerDefinition,
+//     Definition2::End : former::FormingEnd< Definition2::Types >,
+//
+//     // Definition2 : former::FormerDefinition< Types = Former2::Types, End = End >,
+//     // Former2 : former::FormerBegin< Definition2 >,
+//     // End : former::FormingEnd< Former2::Types >,
+//
 //     Definition2::Types : former::FormerDefinitionTypes
 //     <
 //       Storage = TemplateParameterDescriptorFormerStorage,
