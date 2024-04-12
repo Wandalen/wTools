@@ -330,22 +330,22 @@ where
         String,
         Self,
         Self,
-        Struct1FormerVec_1End,
+        Struct1FormerVec1End,
       >
     >,
   {
-    Former2::_begin( None, Some( self ), Struct1FormerVec_1End )
+    Former2::_begin( None, Some( self ), Struct1FormerVec1End )
   }
 
   pub fn vec_1( self ) ->
   former::ContainerSubformer::
   <
-    String, former::VectorDefinition< String, Self, Self, Struct1FormerVec_1End >
+    String, former::VectorDefinition< String, Self, Self, Struct1FormerVec1End >
   >
   {
     self.vec_1_set::< former::ContainerSubformer::
     <
-      String, former::VectorDefinition< String, Self, Self, Struct1FormerVec_1End >
+      String, former::VectorDefinition< String, Self, Self, Struct1FormerVec1End >
     >>()
   }
 
@@ -360,22 +360,22 @@ where
         String,
         Self,
         Self,
-        Struct1FormerHashmap_1End,
+        Struct1FormerHashmap1End,
       >
     >,
   {
-    Former2::_begin( None, Some( self ), Struct1FormerHashmap_1End )
+    Former2::_begin( None, Some( self ), Struct1FormerHashmap1End )
   }
 
   pub fn hashmap_1( self ) ->
   former::ContainerSubformer::
   <
-    ( String, String ), former::HashMapDefinition< String, String, Self, Self, Struct1FormerHashmap_1End >
+    ( String, String ), former::HashMapDefinition< String, String, Self, Self, Struct1FormerHashmap1End >
   >
   {
     self.hashmap_1_set::< former::ContainerSubformer::
     <
-      ( String, String ), former::HashMapDefinition< String, String, Self, Self, Struct1FormerHashmap_1End >
+      ( String, String ), former::HashMapDefinition< String, String, Self, Self, Struct1FormerHashmap1End >
     > >()
   }
 
@@ -389,22 +389,22 @@ where
         String,
         Self,
         Self,
-        Struct1FormerHashset_1End,
+        Struct1FormerHashset1End,
       >
     >,
   {
-    Former2::_begin( None, Some( self ), Struct1FormerHashset_1End )
+    Former2::_begin( None, Some( self ), Struct1FormerHashset1End )
   }
 
   pub fn hashset_1( self ) ->
   former::ContainerSubformer::
   <
-    String, former::HashSetDefinition< String, Self, Self, Struct1FormerHashset_1End >
+    String, former::HashSetDefinition< String, Self, Self, Struct1FormerHashset1End >
   >
   {
     self.hashset_1_set::< former::ContainerSubformer::
     <
-      String, former::HashSetDefinition< String, Self, Self, Struct1FormerHashset_1End >
+      String, former::HashSetDefinition< String, Self, Self, Struct1FormerHashset1End >
     >>()
   }
 
@@ -425,13 +425,13 @@ where
 // zzz : description
 /// Return original former after subformer for `vec_1` is done.
 #[ allow( non_camel_case_types ) ]
-pub struct Struct1FormerVec_1End;
+pub struct Struct1FormerVec1End;
 #[ automatically_derived ]
 impl< Definition > former::FormingEnd
 <
   former::VectorDefinition< String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
 >
-for Struct1FormerVec_1End
+for Struct1FormerVec1End
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes
@@ -458,13 +458,13 @@ where
 // zzz : description
 /// Return original former after subformer for `hashmap_string_1` is done.
 #[ allow( non_camel_case_types ) ]
-pub struct Struct1FormerHashmap_1End;
+pub struct Struct1FormerHashmap1End;
 #[ automatically_derived ]
 impl< Definition > former::FormingEnd
 <
   former::HashMapDefinition< String, String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
 >
-for Struct1FormerHashmap_1End
+for Struct1FormerHashmap1End
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes
@@ -491,13 +491,13 @@ where
 // zzz : description
 /// Return original former after subformer for `hashset_string_1` is done.
 #[ allow( non_camel_case_types ) ]
-pub struct Struct1FormerHashset_1End;
+pub struct Struct1FormerHashset1End;
 #[ automatically_derived ]
 impl< Definition > former::FormingEnd
 <
   former::HashSetDefinition< String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
 >
-for Struct1FormerHashset_1End
+for Struct1FormerHashset1End
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes

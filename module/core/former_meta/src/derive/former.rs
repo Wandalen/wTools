@@ -535,10 +535,10 @@ fn field_setter_map( field : &FormerField< '_ >, struct_name : &syn::Ident ) -> 
 
   let non_optional_ty = &field.non_optional_ty;
   // Either subformer or ordinary setter.
-  let setter_tokens = if let Some( subformer_ty ) = &field.attrs.subformer
+  let setter_tokens = if let Some( _subformer_ty ) = &field.attrs.subformer
   {
     // subformer_field_setter( ident, ident, non_optional_ty, &subformer_ty.expr )
-    subformer_field_setter( field, struct_name, &subformer_ty.expr )
+    subformer_field_setter( field, struct_name )
   }
   else
   {
@@ -647,17 +647,11 @@ fn subformer_field_setter
   // field_ident : &syn::Ident,
   // setter_name : &syn::Ident,
   // non_optional_type : &syn::Type,
-  subformer_type : &syn::Type,
+  // subformer_type : &syn::Type,
 )
 -> TokenStream
 {
   let field_ident = &field.ident;
-  let doc = format!
-  (
-    "Subformer setter for the '{}' field.",
-    field_ident
-  );
-
   let non_optional_ty = &field.non_optional_ty;
 
   // tree_print!( non_optional_type );
@@ -672,13 +666,23 @@ fn subformer_field_setter
 
   use convert_case::{ Case, Casing };
   // let ident = field_ident;
-  let field_forming_end_name = format!( "{}Former{}End", struct_name, field_ident.to_string().to_case( Case::Camel ) );
+  let field_forming_end_name = format!( "{}Former{}End", struct_name, field_ident.to_string().to_case( Case::Pascal ) );
   let field_forming_end = syn::Ident::new( &field_forming_end_name, field_ident.span() );
   let field_set_name = format!( "{}_set", field_ident );
   let field_set = syn::Ident::new( &field_set_name, field_ident.span() );
 
+  let doc = format!
+  (
+    "Subformer setter for the '{}' field. Method {} unlike method {} accept custom subformer.",
+    field_ident,
+    field_set_name,
+    field_ident,
+  );
+
+  let setter1 =
   qt!
   {
+    #[ doc = #doc ]
     #[ inline( always ) ]
     pub fn #field_set< Former2 >( self ) -> Former2
     where
@@ -695,19 +699,55 @@ fn subformer_field_setter
     {
       Former2::_begin( None, Some( self ), #field_forming_end )
     }
+  };
 
-    pub fn #field_ident( self ) ->
-    former::ContainerSubformer::
-    <
-      #( #params, )* #subformer_definition< #( #params, )* Self, Self, #field_forming_end >
-    >
+  let setter2 = if params.len() > 1
+  {
+    qt!
     {
-      self.#field_set::< former::ContainerSubformer::
+
+      #[ doc = #doc ]
+      #[ inline( always ) ]
+      pub fn #field_ident( self ) ->
+      former::ContainerSubformer::
+      <
+        ( #( #params, )* ), #subformer_definition< #( #params, )* Self, Self, #field_forming_end >
+      >
+      {
+        self.#field_set::< former::ContainerSubformer::
+        <
+          ( #( #params, )* ), #subformer_definition< #( #params, )* Self, Self, #field_forming_end >
+        >>()
+      }
+
+    }
+  }
+  else
+  {
+    qt!
+    {
+
+      #[ doc = #doc ]
+      #[ inline( always ) ]
+      pub fn #field_ident( self ) ->
+      former::ContainerSubformer::
       <
         #( #params, )* #subformer_definition< #( #params, )* Self, Self, #field_forming_end >
-      >>()
-    }
+      >
+      {
+        self.#field_set::< former::ContainerSubformer::
+        <
+          #( #params, )* #subformer_definition< #( #params, )* Self, Self, #field_forming_end >
+        >>()
+      }
 
+    }
+  };
+
+  qt!
+  {
+    #setter1
+    #setter2
   }
 
   // qt!
@@ -814,7 +854,7 @@ fn fields_setter_callback_descriptor_map
   struct_name : &syn::Ident,
   former : &syn::Ident,
   former_storage : &syn::Ident,
-  former_definition : &syn::Ident,
+  // former_definition : &syn::Ident,
 )
 ->
 Result< TokenStream >
@@ -832,7 +872,7 @@ Result< TokenStream >
 
   use convert_case::{ Case, Casing };
   let ident = field.ident;
-  let field_forming_end_name = format!( "{}Former{}End", struct_name, field.ident.to_string().to_case( Case::Camel ) );
+  let field_forming_end_name = format!( "{}Former{}End", struct_name, field.ident.to_string().to_case( Case::Pascal ) );
   let field_forming_end = syn::Ident::new( &field_forming_end_name, ident.span() );
 
   let field_ty = field.non_optional_ty;
@@ -1137,7 +1177,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     field_form_map( former_field ),
     field_name_map( former_field ),
     field_setter_map( former_field, &struct_name ),
-    fields_setter_callback_descriptor_map( former_field, &struct_name, &former, &former_storage, &former_definition ),
+    fields_setter_callback_descriptor_map( former_field, &struct_name, &former, &former_storage /*, &former_definition */ ),
   )}).multiunzip();
 
   let ( _doc_former_mod, doc_former_struct ) = doc_generate( struct_name );
