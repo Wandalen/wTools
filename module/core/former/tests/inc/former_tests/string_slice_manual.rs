@@ -117,7 +117,7 @@ impl former::StoragePreform for Struct1FormerStorage< 'a >
         (& ::core::marker::PhantomData::< &'a str >).maybe_default()
       }
     };
-    let result = Struct1::< 'a > { string_slice_1, };
+    let result = Struct1< 'a > { string_slice_1, };
     return result;
   }
 }
