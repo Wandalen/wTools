@@ -83,12 +83,12 @@ where
 
 // xxx : uncomment
   #[ inline( always ) ]
-  pub fn descriptor3< Former2, Definition2, Types2, End >( self ) ->
+  pub fn descriptor3< Former2, Definition2, Types2 >( self ) ->
   Former2
   where
     Types2 : former::FormerDefinitionTypes
     <
-      Storage = TemplateParameterDescriptor,
+      Storage = TemplateParameterDescriptorFormerStorage,
       Formed = Self,
       Context = Self,
     >,
@@ -120,7 +120,7 @@ where
     // FieldContainer : ContainerAdd,
   {
 
-    let on_end = | descriptor : TemplateParameterDescriptor, super_former : core::option::Option< Self > | -> Self
+    let on_end = | descriptor : TemplateParameterDescriptorFormerStorage, super_former : core::option::Option< Self > | -> Self
     {
       let mut super_former = super_former.unwrap();
       if super_former.storage.descriptors.is_none()
@@ -129,7 +129,7 @@ where
       }
       if let Some( ref mut descriptors ) = super_former.storage.descriptors
       {
-        former::ContainerAdd::add( descriptors, descriptor );
+        former::ContainerAdd::add( descriptors, former::StoragePreform::preform( descriptor ) );
       }
       super_former
     };
@@ -142,9 +142,17 @@ where
   // #[ inline( always ) ]
   // pub fn descriptor( self, name : &str ) ->
   // // TemplateParameterDescriptorFormer< Self, impl former::FormingEnd< TemplateParameterDescriptor, Self > >
-  // TemplateParameterDescriptorFormer< Definition >
+  // TemplateParameterDescriptorFormer< TemplateParameterDescriptorFormerDefinition >
   // {
-  //   self.descriptor3::< TemplateParameterDescriptorFormer< _ > >().descriptor( name )
+  //   self.descriptor3
+  //   ::
+  //   <
+  //     TemplateParameterDescriptorFormer< TemplateParameterDescriptorFormerDefinition >,
+  //     TemplateParameterDescriptorFormerDefinition,
+  //     // < TemplateParameterDescriptorFormerDefinition as former::FormerDefinition >::Types,
+  //     _,
+  //     // _,
+  //   >().descriptor( name )
   // }
 
 }
