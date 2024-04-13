@@ -8,43 +8,34 @@ tests_impls!
 
   //
 
-  fn internals()
+  fn api()
   {
 
-    let former = Struct1::former();
-    a_id!( former.storage.int_1, None );
-    a_id!( former.storage.string_1, None );
-    a_id!( former.storage.int_optional_1, None );
-    a_id!( former.storage.string_optional_1, None );
-    a_id!( former.context, None );
-    a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnPreformed ) ) );
-    let former2 = Struct1Former::< Struct1FormerDefinition >::new( former::ReturnPreformed );
-    a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
-
+    // form
     let command = Struct1::former().form();
     a_id!( command.int_1, 0 );
     a_id!( command.string_1, "".to_string() );
     a_id!( command.int_optional_1, None );
     a_id!( command.string_optional_1, None );
 
-    let command = Struct1::former().perform();
-    a_id!( command.int_1, 0 );
-    a_id!( command.string_1, "".to_string() );
-    a_id!( command.int_optional_1, None );
-    a_id!( command.string_optional_1, None );
-
+    // end
     let command = Struct1::former().end();
     a_id!( command.int_1, 0 );
     a_id!( command.string_1, "".to_string() );
     a_id!( command.int_optional_1, None );
     a_id!( command.string_optional_1, None );
 
-  }
+    // perform
+    let command = Struct1::former().perform();
+    a_id!( command.int_1, 0 );
+    a_id!( command.string_1, "".to_string() );
+    a_id!( command.int_optional_1, None );
+    a_id!( command.string_optional_1, None );
 
-  //
-
-  fn new()
-  {
+    // formation should have method preform
+    let got = Struct1::former().preform();
+    let exp = Struct1::former().form();
+    a_id!( got, exp );
 
     // default explicit params with wrapper and closure
     let got = Struct1Former
@@ -53,29 +44,6 @@ tests_impls!
     .int_1( 13 )
     .form();
     let exp = Struct1::former().int_1( 13 ).form();
-    a_id!( got, exp );
-
-  }
-
-  //
-
-  fn preform()
-  {
-
-    // formation should have method preform
-    let got = Struct1::former().preform();
-    let exp = Struct1::former().form();
-    a_id!( got, exp );
-
-    // storage should have method preform
-    let got = the_module::StoragePreform::preform( Struct1::former().storage );
-    let exp = Struct1::former().form();
-    a_id!( got, exp );
-
-    // storage should have method preform
-    use the_module::StoragePreform;
-    let got = Struct1::former().storage.preform();
-    let exp = Struct1::former().form();
     a_id!( got, exp );
 
   }
@@ -263,9 +231,7 @@ tests_impls!
 
 tests_index!
 {
-  internals,
-  new,
-  preform,
+  api,
 
   test_int,
   test_string,

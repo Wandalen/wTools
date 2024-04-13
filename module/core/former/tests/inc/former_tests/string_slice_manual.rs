@@ -13,10 +13,16 @@ pub struct Struct1< 'a >
 impl< 'a > Struct1< 'a >
 {
 
+  // #[ inline( always ) ]
+  // pub fn former() -> Struct1Former< 'a, (), Struct1< 'a >, former::ReturnPreformed >
+  // {
+  //   Struct1Former::< 'a, _, _, _ >::new( former::ReturnPreformed )
+  // }
+
   #[ inline( always ) ]
-  pub fn former() -> Struct1Former< 'a, (), Struct1< 'a >, former::ReturnPreformed >
+  pub fn former() -> Struct1Former< 'a >
   {
-    Struct1Former::< 'a, _, _, _ >::new( former::ReturnPreformed )
+    Struct1Former::new( former::ReturnPreformed )
   }
 
 }
@@ -48,8 +54,8 @@ impl< 'a, Context, Formed > former::FormerDefinitionTypes for Struct1FormerDefin
 // = definition
 
 #[ derive( Debug ) ]
-pub struct Struct1FormerDefinition< 'a, Context, Formed, End >
 // pub struct Struct1FormerDefinition< 'a, Context = (), Formed = Struct1< 'a >, End = former::ReturnPreformed >
+pub struct Struct1FormerDefinition< 'a, Context, Formed, End >
 {
   _phantom : core::marker::PhantomData< ( &'a(), Context, Formed, End ) >,
 }
@@ -93,19 +99,10 @@ impl< 'a > former::Storage for Struct1FormerStorage< 'a >
   type Formed = Struct1< 'a >;
 }
 
-// impl<'a> former::StoragePreform for Struct1FormerStorage<'a> {
-//     fn preform(mut self) -> Self::Formed {
-//         let string_slice_1 = self.string_slice_1.take().unwrap_or_else(|| {
-//             panic!("Field 'string_slice_1' isn't initialized");
-//         });
-//         Struct1 { string_slice_1 }
-//     }
-// }
-
 impl< 'a > former::StoragePreform for Struct1FormerStorage< 'a >
 {
-  // fn preform( mut self ) -> < Self as former::Storage >::Formed
-  fn preform( mut self ) -> Struct1< 'a >
+  fn preform( mut self ) -> < Self as former::Storage >::Formed
+  // fn preform( mut self ) -> Struct1< 'a >
   {
     let string_slice_1 = if self.string_slice_1.is_some()
     {
@@ -137,23 +134,29 @@ impl< 'a > former::StoragePreform for Struct1FormerStorage< 'a >
   }
 }
 
-pub struct Struct1Former< 'a, Context, Formed, End, Definition = Struct1FormerDefinition< 'a, Context, Formed, End > >
+// = former
+
+pub struct Struct1Former< 'a, Definition = Struct1FormerDefinition< 'a, (), Struct1< 'a >, former::ReturnPreformed > >
 where
-  End : former::FormingEnd::< Definition::Types >,
-  Definition : former::FormerDefinition< End = End >,
-  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Formed, Context = Context >,
+  // End : former::FormingEnd::< Definition::Types >,
+  // Definition : former::FormerDefinition< End = End >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Formed, Context = Context >,
+  Definition : former::FormerDefinition,
+  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a > >,
 {
   storage : < Definition::Types as former::FormerDefinitionTypes >::Storage,
-  context : core::option::Option< Context >,
-  on_end : core::option::Option< End >,
+  context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
+  on_end : core::option::Option< Definition::End >,
 }
 
 #[ automatically_derived ]
-impl< 'a, Context, Formed, End, Definition > Struct1Former< 'a, Context, Formed, End, Definition >
+impl< 'a, Definition > Struct1Former< 'a, Definition >
 where
-  End : former::FormingEnd::< Definition::Types >,
-  Definition : former::FormerDefinition< End = End >,
-  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Formed, Context = Context >,
+  // End : former::FormingEnd::< Definition::Types >,
+  // Definition : former::FormerDefinition< End = End >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Formed, Context = Context >,
+  Definition : former::FormerDefinition,
+  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a > >,
 {
 
   #[ inline( always ) ]
@@ -241,12 +244,10 @@ where
   }
 }
 
-// pub struct Struct1Former< 'a, Context, Formed, End, Definition = Struct1FormerDefinition< 'a, Context, Formed, End > >
-impl< 'a, Context, End, Definition > Struct1Former< 'a, Context, Struct1< 'a >, End, Definition >
+impl< 'a, Definition > Struct1Former< 'a, Definition >
 where
-  End : former::FormingEnd::< Definition::Types >,
-  Definition : former::FormerDefinition< End = End >,
-  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Struct1< 'a >, Context = Context >,
+  Definition : former::FormerDefinition,
+  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Struct1< 'a > >,
   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::Storage< Formed = Struct1< 'a > >,
 {

@@ -32,6 +32,7 @@ mod former_tests
   mod attribute_setter;
   mod attribute_alias;
 
+  // xxx
   mod string_slice_manual;
   // mod string_slice;
   mod unsigned_primitive_types;

@@ -261,17 +261,13 @@ where
 
 // = preform with Storage::preform
 
-// impl< Context, End, Definition > Struct1Former< Context, Struct1, End, Definition >
 impl< Definition > Struct1Former< Definition >
 where
-  // End : former::FormingEnd::< Definition::Types >,
-  // Definition : former::FormerDefinition< End = End >,
-  // Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage, Formed = Struct1, Context = Context >,
-  // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
-  // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::Storage< Formed = Struct1 >,
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage, Formed = Struct1 >,
   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
+  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::Storage< Formed = Struct1 >,
+
 {
   pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
