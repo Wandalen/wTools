@@ -1,6 +1,7 @@
 use super::*;
 
 #[ derive( Debug, PartialEq, the_module::Former ) ]
+// #[ derive( Debug, PartialEq, the_module::Former ) ] #[ debug ]
 pub struct Struct1< 'a >
 {
   pub string_slice_1 : &'a str,
@@ -8,4 +9,5 @@ pub struct Struct1< 'a >
 
 //
 
-include!( "./only_test/string_slice.rs" );
+// include!( "./only_test/string_slice.rs" );
+// xxx : uncomment
