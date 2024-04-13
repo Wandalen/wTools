@@ -64,6 +64,9 @@ where
 
 }
 
+// pub struct Struct1FormerDefinition< Context = (), Formed = Struct1, End = former::ReturnPreformed >
+// pub struct Struct1FormerDefinitionTypes< Context = (), Formed = Struct1 >
+
 // impl< Context, End > TemplateParametersFormer< Context, End >
 // where
 //   End : former::FormingEnd< TemplateParameters, Context >,
@@ -110,8 +113,29 @@ where
 
   // xxx2 : move to a trait and make easier to use subformer, trait with generic interface of a container should help
 
+  // pub struct Struct1FormerDefinition< Context = (), Formed = Struct1, End = former::ReturnPreformed >
   // xxx : uncomment
-  // #[ inline( always ) ]
+  #[ inline( always ) ]
+  pub fn descriptor( self, name: &str ) ->
+  TemplateParameterDescriptorFormer
+  <
+    TemplateParameterDescriptorFormerDefinition
+    <
+      Self,
+      Self,
+      former::FormingEndClosure< TemplateParameterDescriptorFormerDefinitionTypes< Self, Self > >
+    >
+  >
+  {
+    self.descriptor3::
+    <
+      TemplateParameterDescriptorFormer< _ >,
+      _,
+      _, // Define or adjust this type to meet the constraints
+    >()
+    .descriptor( name )
+  }
+
   // pub fn descriptor( self, name : &str ) ->
   // // TemplateParameterDescriptorFormer< Self, impl former::FormingEnd< TemplateParameterDescriptor, Self > >
   // TemplateParameterDescriptorFormer< TemplateParameterDescriptorFormerDefinition >
