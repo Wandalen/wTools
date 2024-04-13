@@ -23,10 +23,9 @@ impl Struct1
 
 // = definition
 
+// xxx : should context and formed be here?
 #[ derive( Debug ) ]
 pub struct Struct1FormerDefinition< Context = (), Formed = Struct1, End = former::ReturnPreformed >
-// where
-//   End : former::FormingEnd< Struct1FormerDefinition< Context, Formed, NoEnd > >,
 {
   _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
 }
@@ -268,7 +267,6 @@ where
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
     former::FormingEnd::< Definition::Types >::call( &on_end, self.storage, context )
-    // former::FormingEnd::< Struct1FormerDefinition >::call( &on_end, self.storage, context )
   }
 
   #[ inline( always ) ]
