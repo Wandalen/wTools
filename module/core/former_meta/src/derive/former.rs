@@ -1197,7 +1197,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     }
 
-    // = definition
+    // = definition types
 
     #[ derive( Debug ) ]
     pub struct #former_definition_types< Context = (), Formed = #struct_name #generics_ty >
@@ -1217,10 +1217,18 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
     }
 
+    impl< Context, Formed > former::FormerDefinitionTypes
+    for #former_definition_types< Context, Formed >
+    {
+      type Storage = #former_storage #generics_ty;
+      type Formed = Formed;
+      type Context = Context;
+    }
+
+    // = definition
+
     #[ derive( Debug ) ]
     pub struct #former_definition< Context = (), Formed = #struct_name #generics_ty, End = former::ReturnPreformed >
-    // where
-    //   End : former::FormingEnd< #former_definition< Context, Formed, NoEnd > >,
     {
       _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
     }
@@ -1235,14 +1243,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
           _phantom : core::marker::PhantomData,
         }
       }
-    }
-
-    impl< Context, Formed > former::FormerDefinitionTypes
-    for #former_definition_types< Context, Formed >
-    {
-      type Storage = #former_storage #generics_ty;
-      type Formed = Formed;
-      type Context = Context;
     }
 
     impl< Context, Formed, End > former::FormerDefinition
@@ -1288,8 +1288,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     for #former_storage #generics_ty
     #generics_where
     {
-      // type Definition = Struct1FormerDefinition;
-      // type Definition = #former_definition #generics_ty;
       type Formed = #struct_name #generics_ty;
     }
     // generics_impl, generics_ty, generics_where
@@ -1299,8 +1297,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     #generics_where
     {
 
-      // fn preform( mut self ) -> #former_storage #generics_ty
-      // fn preform( mut self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
       fn preform( mut self ) -> < Self as former::Storage >::Formed
       {
         #( #fields_form )*
@@ -1467,6 +1463,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       )*
 
     }
+
+    // = preform with Storage::preform
 
     impl< Definition > #former< Definition >
     where

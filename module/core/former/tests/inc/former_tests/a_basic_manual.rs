@@ -7,7 +7,9 @@ pub struct Struct1
   pub int_1 : i32,
 }
 
-// = begin of generated
+// === begin of generated
+
+// = formed
 
 #[ automatically_derived ]
 impl Struct1
@@ -19,6 +21,8 @@ impl Struct1
     Struct1Former::< >::new( former::ReturnPreformed )
   }
 }
+
+// = definition types
 
 #[ derive( Debug ) ]
 pub struct Struct1FormerDefinitionTypes< Context = (), Formed = Struct1 >
@@ -34,6 +38,15 @@ impl< Context, Formed > Default for Struct1FormerDefinitionTypes< Context, Forme
   }
 }
 
+impl< Context, Formed > former::FormerDefinitionTypes for Struct1FormerDefinitionTypes< Context, Formed >
+{
+  type Storage = Struct1FormerStorage;
+  type Formed = Formed;
+  type Context = Context;
+}
+
+// = definition
+
 #[ derive( Debug ) ]
 pub struct Struct1FormerDefinition< Context = (), Formed = Struct1, End = former::ReturnPreformed >
 {
@@ -48,13 +61,6 @@ impl< Context, Formed, End > Default for Struct1FormerDefinition< Context, Forme
   }
 }
 
-impl< Context, Formed > former::FormerDefinitionTypes for Struct1FormerDefinitionTypes< Context, Formed >
-{
-  type Storage = Struct1FormerStorage;
-  type Formed = Formed;
-  type Context = Context;
-}
-
 impl< Context, Formed, End > former::FormerDefinition for Struct1FormerDefinition< Context, Formed, End >
 where End : former::FormingEnd< Struct1FormerDefinitionTypes< Context, Formed > >
 {
@@ -64,6 +70,9 @@ where End : former::FormingEnd< Struct1FormerDefinitionTypes< Context, Formed > 
 
 pub type Struct1FormerWithClosure< Context, Formed > =
   Struct1FormerDefinition< Context, Formed, former::FormingEndClosure< Struct1FormerDefinitionTypes< Context, Formed > > >;
+
+// = storage
+
 pub struct Struct1FormerStorage
 {
   pub int_1 : ::core::option::Option< i32 >,
@@ -117,6 +126,8 @@ impl former::StoragePreform for Struct1FormerStorage
     return result;
   }
 }
+
+// = former
 
 pub struct Struct1Former< Definition = Struct1FormerDefinition >
 where Definition : former::FormerDefinition, Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
@@ -207,6 +218,7 @@ where Definition : former::FormerDefinition, Definition::Types : former::FormerD
     let context = self.context.take();
     former::FormingEnd::< Definition::Types >::call( & on_end, self.storage, context )
   }
+
   #[ inline ]
   pub fn int_1< Src >( mut self, src : Src ) -> Self
   where Src : ::core::convert::Into< i32 >,
@@ -215,7 +227,10 @@ where Definition : former::FormerDefinition, Definition::Types : former::FormerD
     self.storage.int_1 = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
     self
   }
+
 }
+
+// = preform with Storage::preform
 
 impl< Definition > Struct1Former< Definition >
 where
@@ -229,6 +244,6 @@ where
   }
 }
 
-// = end of generated
+// === end of generated
 
 include!( "./only_test/basic.rs" );
