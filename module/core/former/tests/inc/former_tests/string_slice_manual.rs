@@ -75,7 +75,6 @@ pub type Struct1FormerWithClosure< 'a, Context, Formed > =
 
 pub struct Struct1FormerStorage< 'a >
 {
-
   pub string_slice_1 : ::core::option::Option< &'a str >,
 }
 
@@ -92,6 +91,7 @@ impl< 'a > former::Storage for Struct1FormerStorage< 'a >
 {
   type Formed = Struct1< 'a >;
 }
+
 // impl<'a> former::StoragePreform for Struct1FormerStorage<'a> {
 //     fn preform(mut self) -> Self::Formed {
 //         let string_slice_1 = self.string_slice_1.take().unwrap_or_else(|| {
@@ -103,7 +103,8 @@ impl< 'a > former::Storage for Struct1FormerStorage< 'a >
 
 impl< 'a > former::StoragePreform for Struct1FormerStorage< 'a >
 {
-  fn preform( mut self ) -> < Self as former::Storage >::Formed
+  // fn preform( mut self ) -> < Self as former::Storage >::Formed
+  fn preform( mut self ) -> Struct1< 'a >
   {
     let string_slice_1 = if self.string_slice_1.is_some()
     {
@@ -239,17 +240,25 @@ where
   }
 }
 
-// impl< 'a, Definition > Struct1Former< 'a, Definition >
-// where
-//   Definition : former::FormerDefinition,
-//   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Struct1< 'a > >,
-//   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
-// {
-//   pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
-//   {
-//     former::StoragePreform::preform( self.storage )
-//   }
-// }
+// pub struct Struct1Former< 'a, Context, Formed, End, Definition = Struct1FormerDefinition< 'a, Context, Formed, End > >
+impl< 'a, Context, End, Definition > Struct1Former< 'a, Context, Struct1< 'a >, End, Definition >
+where
+
+  End : former::FormingEnd::< Definition::Types >,
+  Definition : former::FormerDefinition< End = End >,
+  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Struct1< 'a >, Context = Context >,
+
+  // Definition : former::FormerDefinition,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Struct1< 'a > >,
+  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
+  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::Storage< Formed = Struct1< 'a > >,
+{
+  pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
+  {
+    // panic!();
+    former::StoragePreform::preform( self.storage )
+  }
+}
 
 // impl< 'a > former::Storage for Struct1FormerStorage< 'a >
 // {
