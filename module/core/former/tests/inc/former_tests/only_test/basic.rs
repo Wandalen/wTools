@@ -15,8 +15,11 @@ tests_impls!
     a_id!( former.storage.int_1, None );
     a_id!( former.context, None );
     a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnPreformed ) ) );
-    let former2 = Struct1Former::< Struct1FormerDefinition >::new( former::ReturnPreformed );
+    let former2 = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::new( former::ReturnPreformed );
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
+    // let former2 = Struct1Former::< Struct1FormerDefinition >::new( former::ReturnPreformed );
+    // a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
+    // xxx : uncomment
 
     let command = Struct1::former().form();
     a_id!( command.int_1, 0 );
@@ -39,9 +42,6 @@ tests_impls!
     let got = Struct1Former
     ::
     <
-      _,
-      _,
-      _,
       Struct1FormerDefinition< i32, i32, former::FormingEndClosure< Struct1FormerDefinitionTypes< i32, i32 > > >
     >
     ::begin
@@ -58,9 +58,6 @@ tests_impls!
     let got = Struct1Former
     ::
     <
-      _,
-      _,
-      _,
       Struct1FormerDefinition< i32, i32, former::FormingEndClosure< Struct1FormerDefinitionTypes< i32, i32 > > >
     >
     ::begin
@@ -77,9 +74,7 @@ tests_impls!
     let got = Struct1Former
     ::
     <
-      _,
-      _,
-      _,
+
       Struct1FormerDefinition< i32, i32, former::FormingEndClosure< Struct1FormerDefinitionTypes< i32, i32 > > >
     >
     ::begin
@@ -96,9 +91,7 @@ tests_impls!
     let got = Struct1Former
     ::
     <
-      _,
-      _,
-      _,
+
       Struct1FormerDefinition< i32, i32, former::FormingEndClosure< Struct1FormerDefinitionTypes< i32, i32 > > >
     >
     ::begin
@@ -115,9 +108,7 @@ tests_impls!
     let got = Struct1Former
     ::
     <
-      _,
-      _,
-      _,
+
       Struct1FormerDefinition< i32, i32, former::FormingEndClosure< _ > >
     >
     ::begin
@@ -138,14 +129,14 @@ tests_impls!
   {
 
     // begin with none
-    let got = Struct1Former::< Struct1FormerDefinition >::begin( None, None, the_module::ReturnPreformed ).int_1( 13 ).form();
+    let got = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::begin( None, None, the_module::ReturnPreformed ).int_1( 13 ).form();
     let exp = Struct1::former().int_1( 13 ).form();
     a_id!( got, exp );
 
     // begin with storage
     let mut storage = Struct1FormerStorage::default();
     storage.int_1 = Some( 13 );
-    let exp = Struct1Former::< Struct1FormerDefinition >::begin( Some( storage ), None, the_module::ReturnPreformed ).form();
+    let exp = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::begin( Some( storage ), None, the_module::ReturnPreformed ).form();
     a_id!( got, exp );
 
     // begin with context
@@ -154,10 +145,7 @@ tests_impls!
     let exp = Struct1Former
     ::
     <
-      _,
-      _,
-      _,
-      Struct1FormerDefinition
+      Struct1FormerDefinition< (), Struct1, former::ReturnPreformed >
     >
     ::begin( Some( storage ), Some( () ), the_module::ReturnPreformed )
     .form();
@@ -175,9 +163,7 @@ tests_impls!
     // ::< Struct1FormerDefinition< i32, i32, _ > >
     ::
     <
-      _,
-      _,
-      _,
+
       Struct1FormerDefinition< i32, i32, _ >
     >
     ::_begin_precise
@@ -198,9 +184,7 @@ tests_impls!
     // ::< Struct1FormerDefinition< i32, i32, former::FormingEndClosure< Struct1FormerDefinitionTypes< i32, i32 > > > >
     ::
     <
-      _,
-      _,
-      _,
+
       Struct1FormerDefinition< i32, i32, former::FormingEndClosure< Struct1FormerDefinitionTypes< i32, i32 > > >
     >
     ::_begin_precise
@@ -224,7 +208,7 @@ tests_impls!
 
     // basic case
     let former = Struct1::former();
-    let former2 = Struct1Former::< Struct1FormerDefinition >::_new_precise( former::ReturnPreformed );
+    let former2 = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::_new_precise( former::ReturnPreformed );
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
     let exp = former.form();
     let got = former2.form();
@@ -249,9 +233,7 @@ tests_impls!
     // ::< Struct1FormerDefinition< (), Struct1, former::FormingEndClosure< Struct1FormerDefinitionTypes< (), Struct1 > > > >
     ::
     <
-      _,
-      _,
-      _,
+
       Struct1FormerDefinition< (), Struct1, former::FormingEndClosure< Struct1FormerDefinitionTypes< (), Struct1 > > >
     >
     ::new( end_wrapper )
@@ -265,9 +247,7 @@ tests_impls!
     // ::< Struct1FormerDefinition< (), Struct1, former::FormingEndClosure< Struct1FormerDefinitionTypes< (), Struct1 > > > >
     ::
     <
-      _,
-      _,
-      _,
+
       Struct1FormerDefinition< (), Struct1, former::FormingEndClosure< Struct1FormerDefinitionTypes< (), Struct1 > > >
     >
     ::new( former::FormingEndClosure::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
@@ -281,9 +261,7 @@ tests_impls!
     // ::< Struct1FormerDefinition< _, _, former::FormingEndClosure< Struct1FormerDefinitionTypes< (), Struct1 > > > >
     ::
     <
-      _,
-      _,
-      _,
+
       Struct1FormerDefinition< (), Struct1, former::FormingEndClosure< Struct1FormerDefinitionTypes< (), Struct1 > > >
     >
     ::new( former::FormingEndClosure::new( | storage, _context : Option< () > | { former::StoragePreform::preform( storage ) } ) )
@@ -297,9 +275,7 @@ tests_impls!
     // ::< Struct1FormerWithClosure< (), Struct1 > >
     ::
     <
-      _,
-      _,
-      _,
+
       Struct1FormerWithClosure< (), Struct1 >
     >
     ::new( former::FormingEndClosure::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
@@ -313,9 +289,7 @@ tests_impls!
     // ::< Struct1FormerWithClosure< (), Struct1 > >
     ::
     <
-      _,
-      _,
-      _,
+
       Struct1FormerWithClosure< (), Struct1 >
     >
     ::new( | storage, _context | { former::StoragePreform::preform( storage ) } )
@@ -333,7 +307,7 @@ tests_impls!
 
     // basic case
     let former = Struct1::former();
-    let former2 = Struct1Former::< Struct1FormerDefinition >::_new_precise( former::ReturnPreformed );
+    let former2 = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::_new_precise( former::ReturnPreformed );
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
     let exp = former.form();
     let got = former2.form();
@@ -344,9 +318,7 @@ tests_impls!
     // ::< Struct1FormerDefinition< (), Struct1, _ > >
     ::
     <
-      _,
-      _,
-      _,
+
       Struct1FormerDefinition< (), Struct1, _ >,
     >
     ::_new_precise( former::ReturnPreformed )
@@ -365,9 +337,7 @@ tests_impls!
     // ::< Struct1FormerDefinition< (), Struct1, _ > >
     ::
     <
-      _,
-      _,
-      _,
+
       Struct1FormerDefinition< (), Struct1, _ >,
     >
     ::_new_precise( end_wrapper )
@@ -381,9 +351,7 @@ tests_impls!
     // ::< Struct1FormerDefinition< (), Struct1, _ > >
     ::
     <
-      _,
-      _,
-      _,
+
       Struct1FormerDefinition< (), Struct1, _ >,
     >
     ::_new_precise( former::FormingEndClosure::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
@@ -397,9 +365,7 @@ tests_impls!
     // ::< Struct1FormerDefinition< _, _, _ > >
     ::
     <
-      _,
-      _,
-      _,
+
       Struct1FormerDefinition< _, _, _ >,
     >
     ::_new_precise( former::FormingEndClosure::new( | storage, _context : Option< () > | { former::StoragePreform::preform( storage ) } ) )
@@ -439,7 +405,7 @@ tests_impls!
   {
 
     // default is implemented for definition
-    let _default = Struct1FormerDefinition::< () >::default();
+    let _default = Struct1FormerDefinition::< (), Struct1, former::ReturnPreformed >::default();
     // let _default = Struct1FormerDefinition::default(); // why does not work?
 
     // definition types exists and has Formed
@@ -448,18 +414,20 @@ tests_impls!
     a_id!( got, exp );
 
     // definition types exists and has Formed
-    let got = < Struct1FormerDefinitionTypes as the_module::FormerDefinitionTypes >::Formed::former().form();
+    let got = < Struct1FormerDefinitionTypes< (), Struct1 > as the_module::FormerDefinitionTypes >::Formed::former().form();
     let exp = Struct1::former().form();
     a_id!( got, exp );
 
     // definition types exists and has Storage
     use former::StoragePreform;
-    let got = < Struct1FormerDefinitionTypes as the_module::FormerDefinitionTypes >::Storage::preform( Struct1::former().storage );
+    let got = < Struct1FormerDefinitionTypes< (), Struct1 > as the_module::FormerDefinitionTypes >::Storage
+    ::preform( Struct1::former().storage );
     let exp = Struct1::former().form();
     a_id!( got, exp );
 
     // definition exists and has Storage
-    let got = < < Struct1FormerDefinition as the_module::FormerDefinition >::Types as the_module::FormerDefinitionTypes >::Formed::former().form();
+    let got = < < Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > as the_module::FormerDefinition >::Types as the_module::FormerDefinitionTypes >::Formed
+    ::former().form();
     let exp = Struct1::former().form();
     a_id!( got, exp );
 
