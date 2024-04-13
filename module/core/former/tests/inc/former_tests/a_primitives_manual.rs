@@ -23,7 +23,6 @@ impl Struct1
 
 // = definition
 
-// xxx : should context and formed be here?
 #[ derive( Debug ) ]
 pub struct Struct1FormerDefinition< Context = (), Formed = Struct1, End = former::ReturnPreformed >
 {
