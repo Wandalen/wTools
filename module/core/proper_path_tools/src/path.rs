@@ -545,10 +545,146 @@ pub( crate ) mod private
     Some( normalize( rebased_path ) )
   }
 
+
+  /// Computes the relative path from one path to another.
+  ///
+  /// This function takes two paths and returns a relative path from the `from` path to the `to` path.
+  /// If the paths have different roots, the function returns the `to` path.
+  ///
+  /// # Arguments
+  ///
+  /// * `from` - The starting path.
+  /// * `to` - The target path.
+  ///
+  /// # Returns
+  ///
+  /// A `std::path::PathBuf` representing the relative path from `from` to `to`.
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// use std::path::PathBuf;
+  ///
+  /// let from = "/a/b";
+  /// let to = "/a/c/d";
+  /// let relative_path = proper_path_tools::path::path_relative( from, to );
+  /// assert_eq!( relative_path, PathBuf::from( "../c/d" ) );
+  /// ```
+  pub fn path_relative< T : AsRef< std::path::Path > >( from : T, to : T ) -> std::path::PathBuf 
+  {
+    use std::path::PathBuf;
+
+    let mut from = from.as_ref().to_string_lossy().to_string();
+    let mut to = to.as_ref().to_string_lossy().to_string();
+
+    from = from.replace( ':', "" );
+    to = to.replace( ':', "" );
+
+
+    if from == "./"
+    {
+      from.push_str( &to );
+      return PathBuf::from( from )
+    }
+
+    if from == "."
+    {
+      return PathBuf::from( to )
+    }
+
+    path_remove_double_dots( &mut from );
+    path_remove_double_dots( &mut to );
+    path_remove_dots( &mut from );
+    path_remove_dots( &mut to );
+    
+    let mut from_parts: Vec< &str > = from.split( '/' ).collect();
+    let mut to_parts: Vec< &str > = to.split( '/' ).collect();
+
+
+    if from_parts.len() == 1 && from_parts[ 0 ].is_empty()
+    {
+      from_parts.pop();
+    }
+
+    if to_parts.len() == 1 && to_parts[ 0 ].is_empty()
+    {
+      to_parts.pop();
+    }
+
+    let mut common_prefix = 0;
+    for ( idx, ( f, t ) ) in from_parts.iter().zip( to_parts.iter() ).enumerate() 
+    {
+      if f != t 
+      {
+        break;
+      }
+      common_prefix = idx + 1;
+    }
+
+    let mut result = Vec::new();
+
+    // Add ".." for each directory not in common
+    for i in common_prefix..from_parts.len() 
+    {
+      if from_parts[ common_prefix ].is_empty() || 
+      ( 
+        i == from_parts.len() - 1 
+        && from_parts[ i ].is_empty()
+        && !to_parts.last().unwrap_or( &"" ).is_empty() 
+      )
+      {
+        continue;
+      }
+
+      result.push( ".." );
+    }
+
+    // Add the remaining directories from 'to'
+    for part in to_parts.iter().skip( common_prefix ) 
+    {
+      result.push( *part );
+    }
+
+    // Join the parts into a string
+    let mut relative_path = result.join( "/" );
+
+
+
+    // If the relative path is empty or the 'to' path is the same as the 'from' path,
+    // set the relative path to "."
+    if relative_path.is_empty() || from == to 
+    {
+      relative_path = ".".to_string();
+    }
+
+    
+    if to.ends_with( '/' ) && !relative_path.ends_with( '/' ) && to != "/"
+    {
+      relative_path.push( '/' );
+    }
+
+
+    if from.ends_with( '/' ) && to.starts_with( '/' ) && relative_path.starts_with( ".." ) && relative_path != ".."
+    {
+      relative_path.replace_range( ..2 , "." );
+    }
+
+    if from.ends_with( '/' ) && to.starts_with( '/' ) && relative_path == ".."
+    {
+      relative_path = "./..".to_string();
+    }
+
+    PathBuf::from( relative_path )
+  }
+
+
+
+
 }
 
 crate::mod_interface!
 {
+  protected use path_relative;
   protected use rebase;
   protected use path_common;
   protected use is_glob;
