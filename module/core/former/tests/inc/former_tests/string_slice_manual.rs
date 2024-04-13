@@ -12,23 +12,24 @@ pub struct Struct1< 'a >
 #[ automatically_derived ]
 impl< 'a > Struct1< 'a >
 {
-  #[ doc = r"" ]
-  #[ doc = r" Make former, variation of builder pattern to form structure defining values of fields step by step." ]
-  #[ doc = r"" ]
+
   #[ inline( always ) ]
-  pub fn former() -> Struct1Former< 'a, >
+  pub fn former() -> Struct1Former< 'a, (), Struct1< 'a >, former::ReturnPreformed >
   {
-    Struct1Former::< 'a, >::new( former::ReturnPreformed )
+    Struct1Former::< 'a, _, _, _ >::new( former::ReturnPreformed )
   }
 }
 
+// = definition types
+
 #[ derive( Debug ) ]
-pub struct Struct1FormerDefinitionTypes< Context = (), Formed = Struct1< 'a > >
+// pub struct Struct1FormerDefinitionTypes< 'a, Context = (), Formed = Struct1< 'a > >
+pub struct Struct1FormerDefinitionTypes< 'a, Context, Formed >
 {
-  _phantom : core::marker::PhantomData< ( Context, Formed ) >,
+  _phantom : core::marker::PhantomData< ( &'a(), Context, Formed ) >,
 }
 
-impl< Context, Formed > Default for Struct1FormerDefinitionTypes< Context, Formed >
+impl< 'a, Context, Formed > Default for Struct1FormerDefinitionTypes< 'a, Context, Formed >
 {
   fn default() -> Self
   {
@@ -36,20 +37,23 @@ impl< Context, Formed > Default for Struct1FormerDefinitionTypes< Context, Forme
   }
 }
 
-impl< Context, Formed > former::FormerDefinitionTypes for Struct1FormerDefinitionTypes< Context, Formed >
+impl< 'a, Context, Formed > former::FormerDefinitionTypes for Struct1FormerDefinitionTypes< 'a, Context, Formed >
 {
   type Storage = Struct1FormerStorage< 'a >;
   type Formed = Formed;
   type Context = Context;
 }
 
+// = definition
+
 #[ derive( Debug ) ]
-pub struct Struct1FormerDefinition< Context = (), Formed = Struct1< 'a >, End = former::ReturnPreformed >
+pub struct Struct1FormerDefinition< 'a, Context, Formed, End >
+// pub struct Struct1FormerDefinition< 'a, Context = (), Formed = Struct1< 'a >, End = former::ReturnPreformed >
 {
-  _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
+  _phantom : core::marker::PhantomData< ( &'a(), Context, Formed, End ) >,
 }
 
-impl< Context, Formed, End > Default for Struct1FormerDefinition< Context, Formed, End >
+impl< 'a, Context, Formed, End > Default for Struct1FormerDefinition< 'a, Context, Formed, End >
 {
   fn default() -> Self
   {
@@ -57,20 +61,21 @@ impl< Context, Formed, End > Default for Struct1FormerDefinition< Context, Forme
   }
 }
 
-impl< Context, Formed, End > former::FormerDefinition for Struct1FormerDefinition< Context, Formed, End >
-where End : former::FormingEnd< Struct1FormerDefinitionTypes< Context, Formed > >
+impl< 'a, Context, Formed, End > former::FormerDefinition for Struct1FormerDefinition< 'a, Context, Formed, End >
+where End : former::FormingEnd< Struct1FormerDefinitionTypes< 'a, Context, Formed > >
 {
-  type Types = Struct1FormerDefinitionTypes< Context, Formed >;
+  type Types = Struct1FormerDefinitionTypes< 'a, Context, Formed >;
   type End = End;
 }
 
-pub type Struct1FormerWithClosure< Context, Formed > =
-  Struct1FormerDefinition< Context, Formed, former::FormingEndClosure< Struct1FormerDefinitionTypes< Context, Formed > > >;
+pub type Struct1FormerWithClosure< 'a, Context, Formed > =
+  Struct1FormerDefinition< 'a, Context, Formed, former::FormingEndClosure< Struct1FormerDefinitionTypes< 'a, Context, Formed > > >;
 
-#[ doc = "Container of a corresponding former." ]
+// = storage
+
 pub struct Struct1FormerStorage< 'a >
 {
-  #[ doc = r" A field" ]
+
   pub string_slice_1 : ::core::option::Option< &'a str >,
 }
 
@@ -87,8 +92,16 @@ impl< 'a > former::Storage for Struct1FormerStorage< 'a >
 {
   type Formed = Struct1< 'a >;
 }
+// impl<'a> former::StoragePreform for Struct1FormerStorage<'a> {
+//     fn preform(mut self) -> Self::Formed {
+//         let string_slice_1 = self.string_slice_1.take().unwrap_or_else(|| {
+//             panic!("Field 'string_slice_1' isn't initialized");
+//         });
+//         Struct1 { string_slice_1 }
+//     }
+// }
 
-impl former::StoragePreform for Struct1FormerStorage< 'a >
+impl< 'a > former::StoragePreform for Struct1FormerStorage< 'a >
 {
   fn preform( mut self ) -> < Self as former::Storage >::Formed
   {
@@ -117,30 +130,30 @@ impl former::StoragePreform for Struct1FormerStorage< 'a >
         (& ::core::marker::PhantomData::< &'a str >).maybe_default()
       }
     };
-    let result = Struct1< 'a > { string_slice_1, };
+    let result = Struct1 { string_slice_1, };
     return result;
   }
 }
 
-#[ doc = " Object to form [Struct1]. If field's values is not set then default value of the field is set.\n\nFor specifying custom default value use attribute `default`. For example:\n```\n\nuse former::Former;\n#[ derive( Former ) ]\npub struct Struct1\n{\n  #[default( 31 ) ]\n  field1 : i32,\n}\n\n```\n" ]
-pub struct Struct1Former< 'a, Definition = Struct1FormerDefinition< 'a > >
-where Definition : former::FormerDefinition, Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a > >,
+pub struct Struct1Former< 'a, Context, Formed, End, Definition = Struct1FormerDefinition< 'a, Context, Formed, End > >
+where
+  Definition : former::FormerDefinition< End = End >,
+  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Formed, Context = Context >,
+  End : former::FormingEnd::< Definition::Types >,
 {
   storage : < Definition::Types as former::FormerDefinitionTypes >::Storage,
-  context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
-  on_end : core::option::Option< Definition::End >,
+  context : core::option::Option< Context >,
+  on_end : core::option::Option< End >,
 }
 
 #[ automatically_derived ]
-impl< 'a, Definition > Struct1Former< 'a, Definition >
-where Definition : former::FormerDefinition, Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a > >,
+impl< 'a, Context, Formed, End, Definition > Struct1Former< 'a, Context, Formed, End, Definition >
+where
+  Definition : former::FormerDefinition< End = End >,
+  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Formed, Context = Context >,
+  End : former::FormingEnd::< Definition::Types >,
 {
-  #[ doc = r"" ]
-  #[ doc = r" Finish setting options and call perform on formed entity." ]
-  #[ doc = r"" ]
-  #[ doc = r" If `perform` defined then associated method is called and its result returned instead of entity." ]
-  #[ doc = r" For example `perform()` of structure with : `#[ perform( fn after1() -> &str > )` returns `&str`." ]
-  #[ doc = r"" ]
+
   #[ inline( always ) ]
   pub fn perform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
@@ -148,18 +161,12 @@ where Definition : former::FormerDefinition, Definition::Types : former::FormerD
     return result;
   }
 
-  #[ doc = r"" ]
-  #[ doc = r" Construct new instance of former with default parameters." ]
-  #[ doc = r"" ]
   #[ inline( always ) ]
   pub fn _new_precise( on_end : Definition::End ) -> Self
   {
     Self::begin( None, None, on_end )
   }
 
-  #[ doc = r"" ]
-  #[ doc = r" Construct new instance of former with default parameters." ]
-  #[ doc = r"" ]
   #[ inline( always ) ]
   pub fn new< IntoEnd >( end : IntoEnd ) -> Self
   where IntoEnd : Into< Definition::End >,
@@ -167,11 +174,9 @@ where Definition : former::FormerDefinition, Definition::Types : former::FormerD
     Self::begin( None, None, end, )
   }
 
-  #[ doc = r"" ]
-  #[ doc = r" Begin the process of forming. Expects context of forming to return it after forming." ]
-  #[ doc = r"" ]
   #[ inline( always ) ]
-  pub fn _begin_precise(
+  pub fn _begin_precise
+  (
     mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
     context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
     on_end : < Definition as former::FormerDefinition >::End,
@@ -189,9 +194,6 @@ where Definition : former::FormerDefinition, Definition::Types : former::FormerD
     }
   }
 
-  #[ doc = r"" ]
-  #[ doc = r" Begin the process of forming. Expects context of forming to return it after forming." ]
-  #[ doc = r"" ]
   #[ inline( always ) ]
   pub fn begin< IntoEnd >
   (
@@ -213,18 +215,12 @@ where Definition : former::FormerDefinition, Definition::Types : former::FormerD
     }
   }
 
-  #[ doc = r"" ]
-  #[ doc = r" End the process of forming returning original context of forming." ]
-  #[ doc = r"" ]
   #[ inline( always ) ]
   pub fn form( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
     self.end()
   }
 
-  #[ doc = r"" ]
-  #[ doc = r" End the process of forming returning original context of forming." ]
-  #[ doc = r"" ]
   #[ inline( always ) ]
   pub fn end( mut self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
@@ -233,7 +229,6 @@ where Definition : former::FormerDefinition, Definition::Types : former::FormerD
     former::FormingEnd::< Definition::Types >::call( & on_end, self.storage, context )
   }
 
-  #[ doc = "Setter for the 'string_slice_1' field." ]
   #[ inline ]
   pub fn string_slice_1< Src >( mut self, src : Src ) -> Self
   where Src : ::core::convert::Into< &'a str >,
@@ -244,14 +239,22 @@ where Definition : former::FormerDefinition, Definition::Types : former::FormerD
   }
 }
 
-impl< Definition > Struct1Former< Definition >
-where Definition : former::FormerDefinition, Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Struct1< 'a > >, < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
-{
-  pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
-  {
-    former::StoragePreform::preform( self.storage )
-  }
-}
+// impl< 'a, Definition > Struct1Former< 'a, Definition >
+// where
+//   Definition : former::FormerDefinition,
+//   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Struct1< 'a > >,
+//   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
+// {
+//   pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
+//   {
+//     former::StoragePreform::preform( self.storage )
+//   }
+// }
+
+// impl< 'a > former::Storage for Struct1FormerStorage< 'a >
+// {
+//   type Formed = Struct1< 'a >;
+// }
 
 // === end of generated
 
