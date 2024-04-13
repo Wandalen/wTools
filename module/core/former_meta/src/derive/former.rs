@@ -1092,7 +1092,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   // add embedded generic parameters
   let mut extra_generics : syn::Generics = parse_quote!
   {
-    < Definition = #former_definition #generics_ty >
+    < Definition = #former_definition < #generics_ty (), #struct_name, former::ReturnPreformed > >
+    // Definition = Struct1FormerDefinition< (), Struct1, former::ReturnPreformed >,
+    // xxx
   };
   extra_generics.where_clause = parse_quote!
   {
@@ -1168,7 +1170,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     field_form_map( former_field ),
     field_name_map( former_field ),
     field_setter_map( former_field, &struct_name ),
-    fields_setter_callback_descriptor_map( former_field, &struct_name, &former, &former_storage /*, &former_definition */ ),
+    fields_setter_callback_descriptor_map( former_field, &struct_name, &former, &former_storage ),
   )}).multiunzip();
 
   let ( _doc_former_mod, doc_former_struct ) = doc_generate( struct_name );
@@ -1200,7 +1202,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     // = definition types
 
     #[ derive( Debug ) ]
-    pub struct #former_definition_types< Context = (), Formed = #struct_name #generics_ty >
+    // xxx : revert later
+    // pub struct #former_definition_types< Context = (), Formed = #struct_name #generics_ty >
+    pub struct #former_definition_types< Context, Formed >
     {
       _phantom : core::marker::PhantomData< ( Context, Formed ) >,
     }
@@ -1228,7 +1232,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     // = definition
 
     #[ derive( Debug ) ]
-    pub struct #former_definition< Context = (), Formed = #struct_name #generics_ty, End = former::ReturnPreformed >
+    // xxx : revert later
+    // pub struct #former_definition< Context = (), Formed = #struct_name #generics_ty, End = former::ReturnPreformed >
+    pub struct #former_definition< Context, Formed, End >
     {
       _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
     }
@@ -1327,23 +1333,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     impl #generics_of_former_impl #former #generics_of_former_ty
     #generics_of_former_where
     {
-
-      // ///
-      // /// Finish setting options and return formed entity.
-      // ///
-      // #[ inline( always ) ]
-      // pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
-      // // #struct_name #generics_ty
-      // {
-      //   former::StoragePreform::preform( self.storage )
-      //   // < #former_storage #generics_ty as former::StoragePreform >::preform( self.storage )
-      //   // #( #fields_form )*
-      //   // let result = #struct_name
-      //   // {
-      //   //   #( #fields_names, )*
-      //   // };
-      //   // return result;
-      // }
 
       ///
       /// Finish setting options and call perform on formed entity.
@@ -1452,9 +1441,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       {
         let on_end = self.on_end.take().unwrap();
         let context = self.context.take();
-        // let storage = self.form();
-        // on_end.call( self.storage, context )
-        // former::FormingEnd::< #former_definition #generics_ty >::call( &on_end, self.storage, context )
         former::FormingEnd::< Definition::Types >::call( &on_end, self.storage, context )
       }
 
@@ -1471,6 +1457,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       Definition : former::FormerDefinition,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage #generics_ty, Formed = #struct_name #generics_ty >,
       < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
+      < Definition::Types as former::FormerDefinitionTypes >::Storage : former::Storage< Formed = #struct_name #generics_ty >,
     {
 
       pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
