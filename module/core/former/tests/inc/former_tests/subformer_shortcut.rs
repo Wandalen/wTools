@@ -6,7 +6,7 @@ use super::*;
 #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 pub struct TemplateParameterDescriptor
 {
-  descriptor : String,
+  name : String,
   is_mandatory : bool,
 }
 
@@ -14,45 +14,20 @@ pub struct TemplateParameterDescriptor
 #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 pub struct TemplateParameters
 {
-  // #[ debug = the_module::VectorSubformer, descriptor, descriptor( name ) ]
-  // #[ subformer( the_module::VectorSubformer ) ]
   #[ subformer( former::VectorDefinition ) ]
   descriptors : Vec< TemplateParameterDescriptor >,
-
-  // #[ subformer_setter = the_module::VectorSubformer ]
-  // pub fn descriptor( self, name : &str )
-  // {
-  //   descriptor( name )
-  // }
-
 }
 
-// impl< Definition > TemplateParametersFormer< Definition >
-// where
-//   Definition : former::FormerDefinition,
-//   Definition::Types : former::FormerDefinitionTypes< Storage = TemplateParameterDescriptorFormerStorage >,
-// {
-
-// impl< Context, End > former::FormerBegin< TemplateParameterDescriptorFormerStorage, TemplateParameterDescriptor, Context >
-// for TemplateParameterDescriptorFormer< Context, End >
-// where
-//   End : the_module::FormingEnd< TemplateParameterDescriptor, Context >,
 impl< Definition > former::FormerBegin< Definition >
 for TemplateParameterDescriptorFormer< Definition >
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = TemplateParameterDescriptorFormerStorage >,
-  // End : the_module::FormingEnd< TemplateParameterDescriptor, Context >,
 {
-
-  // type End = End;
 
   #[ inline( always ) ]
   fn _begin
   (
-    // storage : core::option::Option< TemplateParameterDescriptorFormerStorage >,
-    // context : core::option::Option< Context >,
-    // on_end : End,
     storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
     context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
     on_end : Definition::End,
@@ -64,9 +39,6 @@ where
 
 }
 
-// impl< Context, End > TemplateParametersFormer< Context, End >
-// where
-//   End : former::FormingEnd< TemplateParameters, Context >,
 impl< Definition > TemplateParametersFormer< Definition >
 where
   Definition : former::FormerDefinition,
@@ -110,11 +82,8 @@ where
 
   // xxx2 : move to a trait and make easier to use subformer, trait with generic interface of a container should help
 
-// pub struct Struct1FormerDefinition< Context = (), Formed = Struct1, End = former::ReturnPreformed >
-// pub struct Struct1FormerDefinitionTypes< Context = (), Formed = Struct1 >
-
   #[ inline( always ) ]
-  pub fn descriptor( self, name: &str ) ->
+  pub fn descriptor( self, name : &str ) ->
   TemplateParameterDescriptorFormer
   <
     TemplateParameterDescriptorFormerDefinition
@@ -131,29 +100,29 @@ where
       _,
       _,
     >()
-    .descriptor( name )
+    .name( name )
   }
 
 }
 
 // xxx : uncomment
-// #[ test ]
-// fn basic()
-// {
-//
-//   let got = TemplateParameters::former()
-//   .descriptors()
-//     .push( TemplateParameterDescriptor::former().descriptor( "a" ).form() )
-//     .push( TemplateParameterDescriptor::former().descriptor( "b" ).form() )
-//     .end()
-//   .form();
-//
-//   let descriptors = vec!
-//   [
-//     TemplateParameterDescriptor { descriptor : "a".to_string(), is_mandatory : false },
-//     TemplateParameterDescriptor { descriptor : "b".to_string(), is_mandatory : false },
-//   ];
-//   let exp = TemplateParameters { descriptors };
-//   a_id!( got, exp );
-//
-// }
+#[ test ]
+fn basic()
+{
+
+  let got = TemplateParameters::former()
+  .descriptors()
+    .add( TemplateParameterDescriptor::former().name( "a" ).form() )
+    .add( TemplateParameterDescriptor::former().name( "b" ).form() )
+    .end()
+  .form();
+
+  let descriptors = vec!
+  [
+    TemplateParameterDescriptor { name : "a".to_string(), is_mandatory : false },
+    TemplateParameterDescriptor { name : "b".to_string(), is_mandatory : false },
+  ];
+  let exp = TemplateParameters { descriptors };
+  a_id!( got, exp );
+
+}
