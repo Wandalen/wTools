@@ -17,7 +17,7 @@ mod former_tests
   mod container_former_hashmap;
 
   mod a_basic_manual;
-  // mod a_basic; // xxx
+  mod a_basic;
   mod a_primitives_manual;
   mod a_primitives;
   mod a_containers_without_subformer;
