@@ -69,19 +69,10 @@ where
 //   End : former::FormingEnd< TemplateParameters, Context >,
 impl< Definition > TemplateParametersFormer< Definition >
 where
-  // End : former::FormingEnd< TemplateParameters, Context >,
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = TemplateParametersFormerStorage >,
 {
 
-  // pub trait FormerDefinitionTypes : Sized
-  // {
-  //   type Storage : Default;
-  //   type Formed;
-  //   type Context;
-  // }
-
-// xxx : uncomment
   #[ inline( always ) ]
   pub fn descriptor3< Former2, Definition2, Types2 >( self ) ->
   Former2
@@ -92,32 +83,13 @@ where
       Formed = Self,
       Context = Self,
     >,
-    // Definition2 : former::FormerDefinition< End = former::FormingEndClosure< Definition2::Types > >,
     Definition2 : former::FormerDefinition< End = former::FormingEndClosure< Types2 >, Types = Types2 >,
-    // Definition2 : former::FormerDefinition< End = End >,
     Definition2 : former::FormerDefinition,
     Definition2::End : former::FormingEnd< Definition2::Types >,
-
-    // Definition2 : former::FormerDefinition< Types = Former2::Types, End = End >,
-    // Former2 : former::FormerBegin< Definition2 >,
-    // End : former::FormingEnd< Former2::Types >,
-
-    // Definition2::Types : former::FormerDefinitionTypes
-    // <
-    //   Storage = TemplateParameterDescriptorFormerStorage,
-    //   Formed = TemplateParameterDescriptor,
-    //   Context = Self,
-    // >,
-
     Former2 : former::FormerBegin
     <
       Definition2,
-      // TemplateParameterDescriptorFormerStorage,
-      // TemplateParameterDescriptor,
-      // Self,
-      // End = former::FormingEndClosure< TemplateParameterDescriptor, Self >,
     >,
-    // FieldContainer : ContainerAdd,
   {
 
     let on_end = | descriptor : TemplateParameterDescriptorFormerStorage, super_former : core::option::Option< Self > | -> Self
@@ -138,7 +110,7 @@ where
 
   // xxx2 : move to a trait and make easier to use subformer, trait with generic interface of a container should help
 
-// xxx : uncomment
+  // xxx : uncomment
   // #[ inline( always ) ]
   // pub fn descriptor( self, name : &str ) ->
   // // TemplateParameterDescriptorFormer< Self, impl former::FormingEnd< TemplateParameterDescriptor, Self > >
