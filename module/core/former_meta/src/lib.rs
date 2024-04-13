@@ -188,7 +188,7 @@ mod derive
 ///       return result.greet_user();
 ///     }
 ///
-///      // qqq : xxx : outdated, update
+///      // qqq : zzz : outdated, update
 ///      #[ inline( always ) ]
 ///      pub fn new() -> UserProfileFormer< UserProfile, former::ReturnFormed >
 ///      {

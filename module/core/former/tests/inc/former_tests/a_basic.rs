@@ -3,7 +3,7 @@ use super::*;
 
 #[ derive( Debug, PartialEq, former::Former ) ]
 // #[ derive( Debug, PartialEq, former::Former ) ] #[ debug ]
-// #[ derive( Debug, PartialEq ) ] #[ debug ]
+// #[ derive( Debug, PartialEq ) ]
 pub struct Struct1
 {
   pub int_1 : i32,

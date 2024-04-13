@@ -16,7 +16,7 @@ mod former_tests
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod container_former_hashmap;
 
-  // mod a_basic_manual;
+  mod a_basic_manual;
   mod a_basic;
   mod a_primitives_manual;
   mod a_primitives;
