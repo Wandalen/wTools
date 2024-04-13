@@ -18,6 +18,7 @@ impl< 'a > Struct1< 'a >
   {
     Struct1Former::< 'a, _, _, _ >::new( former::ReturnPreformed )
   }
+
 }
 
 // = definition types
@@ -138,9 +139,9 @@ impl< 'a > former::StoragePreform for Struct1FormerStorage< 'a >
 
 pub struct Struct1Former< 'a, Context, Formed, End, Definition = Struct1FormerDefinition< 'a, Context, Formed, End > >
 where
+  End : former::FormingEnd::< Definition::Types >,
   Definition : former::FormerDefinition< End = End >,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Formed, Context = Context >,
-  End : former::FormingEnd::< Definition::Types >,
 {
   storage : < Definition::Types as former::FormerDefinitionTypes >::Storage,
   context : core::option::Option< Context >,
@@ -150,9 +151,9 @@ where
 #[ automatically_derived ]
 impl< 'a, Context, Formed, End, Definition > Struct1Former< 'a, Context, Formed, End, Definition >
 where
+  End : former::FormingEnd::< Definition::Types >,
   Definition : former::FormerDefinition< End = End >,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Formed, Context = Context >,
-  End : former::FormingEnd::< Definition::Types >,
 {
 
   #[ inline( always ) ]
@@ -243,13 +244,9 @@ where
 // pub struct Struct1Former< 'a, Context, Formed, End, Definition = Struct1FormerDefinition< 'a, Context, Formed, End > >
 impl< 'a, Context, End, Definition > Struct1Former< 'a, Context, Struct1< 'a >, End, Definition >
 where
-
   End : former::FormingEnd::< Definition::Types >,
   Definition : former::FormerDefinition< End = End >,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Struct1< 'a >, Context = Context >,
-
-  // Definition : former::FormerDefinition,
-  // Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Struct1< 'a > >,
   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::Storage< Formed = Struct1< 'a > >,
 {
