@@ -32,8 +32,8 @@ impl Struct1
 // = definition types
 
 #[ derive( Debug ) ]
-// pub struct Struct1FormerDefinitionTypes< Context = (), Formed = Struct1 >
-pub struct Struct1FormerDefinitionTypes< Context, Formed >
+pub struct Struct1FormerDefinitionTypes< Context = (), Formed = Struct1 >
+// pub struct Struct1FormerDefinitionTypes< Context, Formed >
 {
   _phantom : core::marker::PhantomData< ( Context, Formed ) >,
 }
@@ -56,8 +56,8 @@ impl< Context, Formed > former::FormerDefinitionTypes for Struct1FormerDefinitio
 // = definition
 
 #[ derive( Debug ) ]
-// pub struct Struct1FormerDefinition< Context = (), Formed = Struct1, End = former::ReturnPreformed >
-pub struct Struct1FormerDefinition< Context, Formed, End >
+pub struct Struct1FormerDefinition< Context = (), Formed = Struct1, End = former::ReturnPreformed >
+// pub struct Struct1FormerDefinition< Context, Formed, End >
 {
   _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
 }
@@ -138,7 +138,13 @@ impl former::StoragePreform for Struct1FormerStorage
 
 // = former
 
-pub struct Struct1Former< Context, Formed, End, Definition = Struct1FormerDefinition< Context, Formed, End > >
+pub struct Struct1Former
+<
+  Context = (),
+  Formed = Struct1,
+  End = former::ReturnPreformed,
+  Definition = Struct1FormerDefinition< Context, Formed, End >,
+>
 where
   End : former::FormingEnd::< Definition::Types >,
   Definition : former::FormerDefinition< End = End >,
@@ -270,5 +276,5 @@ where
 
 // === end of generated
 
-// include!( "./only_test/basic.rs" );
+include!( "./only_test/basic.rs" );
 // xxx : uncomment
