@@ -12,6 +12,7 @@ pub struct Struct1
 #[ automatically_derived ]
 impl Struct1
 {
+
   #[ inline( always ) ]
   pub fn former() -> Struct1Former< >
   {
@@ -70,6 +71,7 @@ pub struct Struct1FormerStorage
 
 impl ::core::default::Default for Struct1FormerStorage
 {
+
   #[ inline( always ) ]
   fn default() -> Self
   {
@@ -115,6 +117,7 @@ impl former::StoragePreform for Struct1FormerStorage
     return result;
   }
 }
+
 pub struct Struct1Former< Definition = Struct1FormerDefinition >
 where Definition : former::FormerDefinition, Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
 {
@@ -127,30 +130,35 @@ where Definition : former::FormerDefinition, Definition::Types : former::FormerD
 impl< Definition > Struct1Former< Definition >
 where Definition : former::FormerDefinition, Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
 {
+
   #[ inline( always ) ]
   pub fn perform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
     let result = self.form();
     return result;
   }
+
   #[ inline( always ) ]
   pub fn _new_precise( on_end : Definition::End ) -> Self
   {
     Self::begin( None, None, on_end )
   }
+
   #[ inline( always ) ]
   pub fn new< IntoEnd >( end : IntoEnd ) -> Self
   where IntoEnd : Into< Definition::End >,
   {
     Self::begin( None, None, end, )
   }
+
   #[ inline( always ) ]
   pub fn _begin_precise
   (
     mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
     context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
     on_end : < Definition as former::FormerDefinition >::End,
-  ) -> Self
+  )
+  -> Self
   {
     if storage.is_none()
     {
@@ -163,6 +171,7 @@ where Definition : former::FormerDefinition, Definition::Types : former::FormerD
       on_end : ::core::option::Option::Some( on_end ),
     }
   }
+
   #[ inline( always ) ]
   pub fn begin< IntoEnd >
   (
@@ -170,7 +179,8 @@ where Definition : former::FormerDefinition, Definition::Types : former::FormerD
     context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
     on_end : IntoEnd,
   ) -> Self
-  where IntoEnd : ::core::convert::Into< < Definition as former::FormerDefinition >::End >,
+  where
+    IntoEnd : ::core::convert::Into< < Definition as former::FormerDefinition >::End >,
   {
     if storage.is_none()
     {
@@ -183,11 +193,13 @@ where Definition : former::FormerDefinition, Definition::Types : former::FormerD
       on_end : ::core::option::Option::Some( ::core::convert::Into::into( on_end ) ),
     }
   }
+
   #[ inline( always ) ]
   pub fn form( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
     self.end()
   }
+
   #[ inline( always ) ]
   pub fn end( mut self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
@@ -206,7 +218,10 @@ where Definition : former::FormerDefinition, Definition::Types : former::FormerD
 }
 
 impl< Definition > Struct1Former< Definition >
-where Definition : former::FormerDefinition, Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage, Formed = Struct1 >, < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
+where
+  Definition : former::FormerDefinition,
+  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage, Formed = Struct1 >,
+  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
 {
   pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
