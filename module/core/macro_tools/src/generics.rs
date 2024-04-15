@@ -24,6 +24,73 @@
 pub( crate ) mod private
 {
 
+  /// A `GenericsWithWhere` struct to handle the parsing of Rust generics with an explicit `where` clause.
+  ///
+  /// This wrapper addresses the limitation in the `syn` crate where parsing `Generics` directly from a `ParseStream`
+  /// does not automatically handle associated `where` clauses. By integrating `where` clause parsing into the
+  /// `GenericsWithWhere`, this struct provides a seamless way to capture both the generics and their constraints
+  /// in scenarios where the `where` clause is crucial for type constraints and bounds in Rust macros and code generation.
+  ///
+  /// Usage:
+  /// ```
+  /// let parsed_generics : macro_tools::GenericsWithWhere = syn::parse_str( "< T : Clone, U : Default = Default1 > where T : Default").unwrap();
+  /// assert!( parsed_generics.generics.params.len() == 2 );
+  /// assert!( parsed_generics.generics.where_clause.is_some() );
+  /// ```
+  ///
+
+  #[ derive( Debug ) ]
+  pub struct GenericsWithWhere
+  {
+    /// Syn's generics parameters.
+    pub generics : syn::Generics,
+  }
+
+  impl GenericsWithWhere
+  {
+    /// Unwraps the `GenericsWithWhere` to retrieve the inner `syn::Generics`.
+    pub fn unwrap( self ) -> syn::Generics
+    {
+      self.generics
+    }
+
+    /// Parses a string to a `GenericsWithWhere`, specifically designed to handle generics syntax with where clauses effectively.
+    pub fn parse_from_str( s : &str ) -> syn::Result< GenericsWithWhere >
+    {
+      syn::parse_str::< GenericsWithWhere >( s )
+    }
+  }
+
+  impl syn::parse::Parse for GenericsWithWhere
+  {
+    fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+    {
+      let generics : syn::Generics = input.parse()?;
+      let where_clause : Option< syn::WhereClause > = input.parse()?;
+
+      let mut generics_clone = generics.clone();
+      generics_clone.where_clause = where_clause;
+
+      Ok( GenericsWithWhere
+      {
+        generics : generics_clone,
+      })
+    }
+  }
+
+  impl quote::ToTokens for GenericsWithWhere
+  {
+    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
+    {
+      self.generics.to_tokens( tokens );
+    }
+  }
+
+//   pub fn make< IntoTokens : Into< proc_macro2::TokenStream > >( input : IntoTokens )
+//   {
+//
+//   }
+
   /// Merges two `syn::Generics` instances into a new one.
   ///
   /// This function takes two references to `syn::Generics` and combines their
@@ -109,6 +176,25 @@ pub( crate ) mod private
 
     result
   }
+
+//   // add embedded generic parameters
+//   let mut extra_generics : syn::Generics = parse_quote!
+//   {
+//     < Definition = #former_definition < #generics_ty (), #struct_name, former::ReturnPreformed > >
+//     // Definition = Struct1FormerDefinition< (), Struct1, former::ReturnPreformed >,
+//     // xxx
+//   };
+//
+//   extra_generics.where_clause = parse_quote!
+//   {
+//     where
+//       Definition : former::FormerDefinition,
+//       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage #generics_ty >,
+//       // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
+//   };
+//
+//   // zzz : write helper to fix bug with where
+//   let generics_of_former = generics::merge( &generics, &extra_generics );
 
   /// Extracts parameter names from the given `Generics`,
   /// dropping bounds, defaults, and the where clause.
@@ -210,6 +296,12 @@ pub mod orphan
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::exposed::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::private::
+  {
+    GenericsWithWhere,
+  };
 }
 
 /// Exposed namespace of the module.

@@ -4,7 +4,7 @@ use super::*;
 //
 
 #[ test ]
-fn basic()
+fn assumptions()
 {
 
   let mut generics_a : syn::Generics = parse_quote!{ < T : Clone, U : Default > };
@@ -22,6 +22,42 @@ fn basic()
     where
       T : Default,
       V : Sized
+  };
+
+  // a_id!( tree_print!( got ), tree_print!( exp ) );
+  // code_print!( got );
+  // code_print!( exp );
+  // code_print!( got.where_clause );
+  // code_print!( exp.where_clause );
+
+  assert_eq!( got.params, exp.params );
+  assert_eq!( got.where_clause, exp.where_clause );
+  assert_eq!( got, exp );
+
+}
+
+//
+
+#[ test ]
+fn where_assumptions()
+{
+
+  let got : the_module::GenericsWithWhere = parse_quote!
+  {
+    < 'a, T : Clone, U : Default >
+    where
+      Definition : former::FormerDefinition,
+  };
+  let got = got.unwrap();
+
+  let mut exp : syn::Generics = parse_quote!
+  {
+    < 'a, T : Clone, U : Default, V : std::fmt::Debug >
+  };
+  exp.where_clause = parse_quote!
+  {
+    where
+      Definition : former::FormerDefinition,
   };
 
   // a_id!( tree_print!( got ), tree_print!( exp ) );

@@ -261,4 +261,3 @@ where
 // === end of generated
 
 include!( "./only_test/string_slice.rs" );
-// xxx : uncomment

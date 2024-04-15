@@ -1059,7 +1059,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let has_debug = attr::has_debug( ast.attrs.iter() )?;
   let example_of_custom_setter = false;
 
-
   /* names */
 
   let struct_name = &ast.ident;
@@ -1089,6 +1088,18 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     qt!{ #_generics_params, }
   };
 
+  // xxx
+  // if has_debug
+  // {
+  //   let q = qt!
+  //   {
+  //     < Definition = #former_definition < #generics_ty > >;
+  //   };
+  //   println!( "= a =" );
+  //   // diag::debug_report_print( "derive : Former", original_input, &result );
+  //   macro_tools::code_print!( q );
+  // }
+
   // add embedded generic parameters
   let mut extra_generics : syn::Generics = parse_quote!
   {
@@ -1096,6 +1107,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     // Definition = Struct1FormerDefinition< (), Struct1, former::ReturnPreformed >,
     // xxx
   };
+
   extra_generics.where_clause = parse_quote!
   {
     where
@@ -1103,8 +1115,10 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage #generics_ty >,
       // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
   };
+
   // zzz : write helper to fix bug with where
   let generics_of_former = generics::merge( &generics, &extra_generics );
+
   let ( generics_of_former_impl, generics_of_former_ty, generics_of_former_where ) = generics_of_former.split_for_impl();
   let generics_of_former_with_defaults = generics_of_former.params.clone();
   // macro_tools::code_print!( generics_of_former_with_defaults );
