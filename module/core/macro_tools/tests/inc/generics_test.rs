@@ -44,7 +44,7 @@ fn where_assumptions()
 
   let got : the_module::GenericsWithWhere = parse_quote!
   {
-    < 'a, T : Clone, U : Default >
+    < 'a, T : Clone, U : Default, V : std::fmt::Debug >
     where
       Definition : former::FormerDefinition,
   };
