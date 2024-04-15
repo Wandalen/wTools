@@ -86,6 +86,22 @@ pub( crate ) mod private
     }
   }
 
+  impl From<GenericsWithWhere> for syn::Generics
+  {
+    fn from( g : GenericsWithWhere ) -> Self
+    {
+      g.generics
+    }
+  }
+
+  impl From<syn::Generics> for GenericsWithWhere
+  {
+    fn from( generics : syn::Generics ) -> Self
+    {
+      GenericsWithWhere { generics }
+    }
+  }
+
 //   pub fn make< IntoTokens : Into< proc_macro2::TokenStream > >( input : IntoTokens )
 //   {
 //
@@ -133,7 +149,13 @@ pub( crate ) mod private
   /// assert_eq!( got, exp );
 
   pub fn merge( a : &syn::Generics, b : &syn::Generics ) -> syn::Generics
+  // pub fn merge< A, B >( a : A, b : B ) -> syn::Generics
+  // where
+  //   A : AsRef< syn::Generics >,
+  //   B : AsRef< syn::Generics >,
   {
+    // let a : &syn::Generics = a.as_ref();
+    // let b : &syn::Generics = b.as_ref();
 
     let mut result = syn::Generics
     {
@@ -144,6 +166,7 @@ pub( crate ) mod private
     };
 
     // Merge params
+    // result.params.extend( a.params.iter().chain( b.params.iter() ) );
     for param in &a.params
     {
       result.params.push( param.clone() );

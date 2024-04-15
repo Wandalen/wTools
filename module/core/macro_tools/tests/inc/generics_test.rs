@@ -39,7 +39,7 @@ fn assumptions()
 //
 
 #[ test ]
-fn where_assumptions()
+fn generics_with_where()
 {
 
   let got : the_module::GenericsWithWhere = parse_quote!
