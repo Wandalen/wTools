@@ -1089,10 +1089,11 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   };
 
 
-  if has_debug
-  {
-    println!( "= a =" );
-  }
+  // xxx
+  // if has_debug
+  // {
+  //   println!( "= a =" );
+  // }
 
   // parameters for definition
   // let mut definition_extra_generics : macro_tools::GenericsWithWhere = parse_quote!
@@ -1104,11 +1105,11 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   // let generics_of_definition = generics::merge( &generics, &definition_extra_generics.into() );
   let generics_of_definition = definition_extra_generics;
 
-  // xxx
-  if has_debug
-  {
-    println!( "= b =" );
-  }
+  // // xxx
+  // if has_debug
+  // {
+  //   println!( "= b =" );
+  // }
 
   // parameters for former
   let mut former_extra_generics : macro_tools::GenericsWithWhere = parse_quote!
