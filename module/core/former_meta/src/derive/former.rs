@@ -1108,7 +1108,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       Definition : former::FormerDefinition,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage #generics_ty >,
   };
-  let generics_of_former = generics::merge( &generics, &definition_extra_generics );
+  let generics_of_former = generics::merge( &generics, &definition_extra_generics.into() );
 
   // parameters for former
   let mut former_extra_generics : macro_tools::GenericsWithWhere = parse_quote!
@@ -1130,7 +1130,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   // };
 
   // zzz : write helper to fix bug with where
-  let generics_of_former = generics::merge( &generics, &former_extra_generics );
+  let generics_of_former = generics::merge( &generics, &former_extra_generics.into() );
 
   let ( generics_of_former_impl, generics_of_former_ty, generics_of_former_where ) = generics_of_former.split_for_impl();
   let generics_of_former_with_defaults = generics_of_former.params.clone();
