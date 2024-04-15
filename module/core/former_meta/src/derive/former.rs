@@ -1088,48 +1088,36 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     qt!{ #_generics_params, }
   };
 
-  // xxx
-  // if has_debug
-  // {
-  //   let q = qt!
-  //   {
-  //     < Definition = #former_definition < #generics_ty > >;
-  //   };
-  //   println!( "= a =" );
-  //   // diag::debug_report_print( "derive : Former", original_input, &result );
-  //   macro_tools::code_print!( q );
-  // }
+
+  if has_debug
+  {
+    println!( "= a =" );
+  }
 
   // parameters for definition
-  let mut definition_extra_generics : macro_tools::GenericsWithWhere = parse_quote!
+  // let mut definition_extra_generics : macro_tools::GenericsWithWhere = parse_quote!
+  let mut definition_extra_generics : macro_tools::syn::AngleBracketedGenericArguments = parse_quote!
   {
-    < Definition = #former_definition < #generics_ty (), #struct_name, former::ReturnPreformed > >
-    where
-      Definition : former::FormerDefinition,
-      Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage #generics_ty >,
+    < (), #struct_name, former::ReturnPreformed >
   };
-  let generics_of_former = generics::merge( &generics, &definition_extra_generics.into() );
+  // xxx : uncomment
+  // let generics_of_definition = generics::merge( &generics, &definition_extra_generics.into() );
+  let generics_of_definition = definition_extra_generics;
+
+  // xxx
+  if has_debug
+  {
+    println!( "= b =" );
+  }
 
   // parameters for former
   let mut former_extra_generics : macro_tools::GenericsWithWhere = parse_quote!
   {
-    < Definition = #former_definition < #generics_ty (), #struct_name, former::ReturnPreformed > >
+    < Definition = #former_definition #generics_of_definition >
     where
       Definition : former::FormerDefinition,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage #generics_ty >,
-    // Definition = Struct1FormerDefinition< (), Struct1, former::ReturnPreformed >,
-    // xxx
   };
-
-  // former_extra_generics.where_clause = parse_quote!
-  // {
-  //   where
-  //     Definition : former::FormerDefinition,
-  //     Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage #generics_ty >,
-  //     // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
-  // };
-
-  // zzz : write helper to fix bug with where
   let generics_of_former = generics::merge( &generics, &former_extra_generics.into() );
 
   let ( generics_of_former_impl, generics_of_former_ty, generics_of_former_where ) = generics_of_former.split_for_impl();

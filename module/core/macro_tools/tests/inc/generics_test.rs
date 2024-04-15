@@ -39,6 +39,34 @@ fn assumptions()
 //
 
 #[ test ]
+fn assumptions2()
+{
+
+  let code : syn::ItemStruct = syn::parse_quote!
+  {
+    pub struct Struct1Former
+    <
+      Definition = Struct1FormerDefinition< (), Struct1, former::ReturnPreformed >,
+    >
+    {}
+  };
+  tree_print!( code );
+
+  // let mut _got : syn::Generics = parse_quote!
+  // {
+  //   < Struct1, former::ReturnPreformed >
+  // };
+
+  // let mut _got : syn::Generics = parse_quote!
+  // {
+  //   < (), Struct1, former::ReturnPreformed >
+  // };
+
+}
+
+//
+
+#[ test ]
 fn generics_with_where()
 {
 
