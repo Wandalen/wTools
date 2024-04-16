@@ -62,55 +62,34 @@ fn into_generic_args_empty_generics()
 }
 
 //
-
 #[ test ]
 fn into_generic_args_single_type_parameter()
 {
-  use macro_tools::IntoGenericArgs;
   use syn::
   {
     Generics,
-    GenericParam,
-    TypeParam,
     AngleBracketedGenericArguments,
-    GenericArgument,
-    Type,
-    TypePath,
-    Ident,
-    token,
-    punctuated::Punctuated,
+    parse_quote
+  };
+  use macro_tools::IntoGenericArgs;
+
+  // Generate the generics with a single type parameter using parse_quote
+  let generics : Generics = parse_quote!
+  {
+    < T >
   };
 
-  let mut args = Punctuated::new();
-  args.push(GenericArgument::Type(Type::Path(TypePath {
-    qself: None,
-    path: Ident::new("T", proc_macro2::Span::call_site()).into(),
-  })));
-
-  let generics = Generics
+  // Create the expected AngleBracketedGenericArguments using parse_quote
+  let exp : AngleBracketedGenericArguments = parse_quote!
   {
-    params: Some(GenericParam::Type(TypeParam {
-      attrs: Vec::new(),
-      ident: Ident::new("T", proc_macro2::Span::call_site()),
-      colon_token: None,
-      bounds: Punctuated::new(),
-      eq_token: None,
-      default: None,
-    })).into_iter().collect(),
-    ..Default::default()
-  };
-
-  let exp = AngleBracketedGenericArguments
-  {
-    colon2_token: None,
-    lt_token: token::Lt::default(),
-    args,
-    gt_token: token::Gt::default(),
+    < T >
   };
 
   let got = generics.into_generic_args();
-  assert_eq!(exp, got, "Failed into_generic_args_single_type_parameter: expected {:?}, got {:?}", exp, got);
+  assert_eq!( exp, got, "Failed into_generic_args_single_type_parameter: expected {:?}, got {:?}", exp, got );
 }
+
+///
 
 #[ test ]
 fn into_generic_args_single_lifetime_parameter()
