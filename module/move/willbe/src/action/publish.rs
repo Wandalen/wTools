@@ -32,16 +32,8 @@ mod private
         write!( f, "Nothing to publish" )?;
         return Ok( () );
       }
-      if let Some( plan ) = &self.plan
-      {
-        write!( f, "Tree{} :\n", if plan.roots.len() > 1 { "s" } else { "" } )?;
-        plan.display_as_tree( f )?;
 
-        writeln!( f, "The following packages are pending for publication :" )?;
-        plan.display_as_list( f )?;
-      }
-
-      writeln!( f, "\nActions :" )?;
+      writeln!( f, "Actions :" )?;
       for ( path, report ) in &self.packages
       {
         let report = report.to_string().replace("\n", "\n  ");
@@ -55,6 +47,51 @@ mod private
           path.as_ref()
         };
         write!( f, "Publishing crate by `{}` path\n  {report}", path.display() )?;
+      }
+      if let Some( plan ) = &self.plan
+      {
+        if !plan.dry
+        {
+          let expected_to_publish = plan
+          .plans
+          .iter()
+          .map( | p | ( p.version_bump.crate_dir.absolute_path(), p.package_name.clone(), p.version_bump.clone() ) )
+          .collect::< Vec< _ > >();
+          let mut actually_published = self.packages.iter()
+          .filter_map
+          (
+            |( path, repo )|
+            if repo.publish.as_ref().is_some_and( | r | r.error.is_ok() )
+            {
+              Some( path.clone() )
+            }
+            else
+            {
+              None
+            }
+          )
+          .collect::< Vec< _ > >();
+
+          writeln!( f, "Status :" )?;
+          for ( path, name, version )  in expected_to_publish
+          {
+            if let Some( pos ) = actually_published.iter().position( | p | p == &path )
+            {
+              write!( f, "✅ {name} {}", version.new_version )?;
+              // want to check that only expected packages actually published
+              _ = actually_published.remove( pos );
+            }
+            else
+            {
+              write!( f, "❌ {name} {}", version.old_version )?;
+            }
+          }
+          if !actually_published.is_empty()
+          {
+            writeln!( f, "Logical error. Published unexpected packages" )?;
+            return Err( std::fmt::Error );
+          }
+        }
       }
 
       Ok( () )

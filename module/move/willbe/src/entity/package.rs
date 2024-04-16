@@ -494,7 +494,9 @@ mod private
     /// # Errors
     ///
     /// Returns a `std::fmt::Error` if there is an error writing to the formatter.
-    pub fn display_as_tree( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    pub fn write_as_tree< W >( &self, f : &mut W ) -> std::fmt::Result
+    where
+      W : std::fmt::Write
     {
       let name_bump_report = self
       .plans
@@ -545,7 +547,9 @@ mod private
     /// # Errors
     ///
     /// Returns a `std::fmt::Error` if there is an error writing to the formatter.
-    pub fn display_as_list( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    pub fn write_as_list< W >( &self, f : &mut W ) -> std::fmt::Result
+    where
+      W : std::fmt::Write
     {
       for ( idx, package ) in self.plans.iter().enumerate()
       {

@@ -5,8 +5,9 @@ mod private
   use colored::Colorize;
 
   use wca::VerifiedCommand;
-  use wtools::error::Result;
+  use wtools::error::{ Result, for_app::Context };
   use former::Former;
+  use std::fmt::Write;
 
   #[ derive( Former ) ]
   struct PublishProperties
@@ -29,8 +30,20 @@ mod private
     let patterns : Vec< _ > = o.args.get_owned( 0 ).unwrap_or_else( || vec![ "./".into() ] );
 
     let PublishProperties { dry, temp } = o.props.try_into()?;
+    let plan = action::publish_plan( patterns, dry, temp ).context( "Failed to plan the publication process" )?;
 
-    match action::publish( patterns, dry, temp )
+    let mut formatted_plan = String::new();
+    writeln!( &mut formatted_plan, "Tree :" )?;
+    plan.write_as_tree( &mut formatted_plan )?;
+    
+    if !plan.plans.is_empty()
+    {
+      writeln!( &mut formatted_plan, "The following packages are pending for publication :" )?;
+      plan.write_as_list( &mut formatted_plan )?;
+    }
+    println!( "{formatted_plan}" );
+
+    match action::publish( plan )
     {
       Ok( report ) =>
       {
