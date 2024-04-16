@@ -133,7 +133,7 @@ pub( crate ) mod private
   /// generics_a.where_clause = parse_quote!{ where T : Default };
   /// let mut generics_b : syn::Generics = parse_quote!{ < V : std::fmt::Debug > };
   /// generics_b.where_clause = parse_quote!{ where V : Sized };
-  /// let got = generics::merge( &generics_a, &generics_b );
+  /// let got = generic_params::merge( &generics_a, &generics_b );
   ///
   /// let mut exp : syn::Generics = parse_quote!
   /// {
@@ -211,7 +211,7 @@ pub( crate ) mod private
 //   };
 //
 //   // zzz : write helper to fix bug with where
-//   let generics_of_former = generics::merge( &generics, &extra_generics );
+//   let generics_of_former = generic_params::merge( &generics, &extra_generics );
 
   /// Extracts parameter names from the given `Generics`,
   /// dropping bounds, defaults, and the where clause.
@@ -236,13 +236,13 @@ pub( crate ) mod private
   /// let mut generics : syn::Generics = parse_quote!{ < T : Clone + Default, U, 'a, const N : usize > };
   /// generics.where_clause = parse_quote!{ where T: std::fmt::Debug };
   /// // let generics : Generics = parse_quote!{ < T : Clone + Default, U, 'a, const N : usize > where T: std::fmt::Debug };
-  /// let simplified_generics = macro_tools::generic_params::params_names( &generics );
+  /// let simplified_generics = macro_tools::generic_params::names( &generics );
   ///
   /// assert_eq!( simplified_generics.params.len(), 4 ); // Contains T, U, 'a, and N
   /// assert!( simplified_generics.where_clause.is_none() ); // Where clause is removed
   /// ```
 
-  pub fn params_names( generics : &syn::Generics ) -> syn::Generics
+  pub fn names( generics : &syn::Generics ) -> syn::Generics
   {
     // use syn::{ Generics, GenericParam, LifetimeDef, TypeParam, ConstParam };
     use syn::{ Generics, GenericParam, LifetimeParam, TypeParam, ConstParam };
@@ -303,7 +303,7 @@ pub mod protected
   pub use super::private::
   {
     merge,
-    params_names,
+    names,
   };
 }
 

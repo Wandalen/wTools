@@ -16,7 +16,7 @@ pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStrea
   let name_ident = &item_parsed.ident;
   // let generics = &item_parsed.generics;
   let generics_analyzed = item_parsed.generics_analyze();
-  let generics_params = &generics_analyzed.generics.params;
+  let generic_params = &generics_analyzed.generics.params;
   let generics_where = &generics_analyzed.generics.where_clause;
   let generics_names = &generics_analyzed.names;
 
@@ -25,7 +25,7 @@ pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStrea
     #item_parsed
 
     #[ allow( non_local_definitions ) ]
-    impl < 'c, #generics_params > Clone
+    impl < 'c, #generic_params > Clone
     for Box< dyn #name_ident< #( #generics_names ),* > + 'c >
     // where
       #generics_where
@@ -35,7 +35,7 @@ pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStrea
     }
 
     #[ allow( non_local_definitions ) ]
-    impl < 'c, #generics_params > Clone
+    impl < 'c, #generic_params > Clone
     for Box< dyn #name_ident< #( #generics_names ),* > + Send + 'c >
     // where
       #generics_where
@@ -45,7 +45,7 @@ pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStrea
     }
 
     #[ allow( non_local_definitions ) ]
-    impl < 'c, #generics_params > Clone
+    impl < 'c, #generic_params > Clone
     for Box< dyn #name_ident< #( #generics_names ),* > + Sync + 'c >
     // where
       #generics_where
@@ -55,7 +55,7 @@ pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStrea
     }
 
     #[ allow( non_local_definitions ) ]
-    impl < 'c, #generics_params > Clone
+    impl < 'c, #generic_params > Clone
     for Box< dyn #name_ident< #( #generics_names ),* > + Send + Sync + 'c >
     // where
       #generics_where

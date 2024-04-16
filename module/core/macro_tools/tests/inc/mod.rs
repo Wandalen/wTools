@@ -14,11 +14,11 @@ mod if_enabled
   use the_module::exposed::*;
 
   mod attr;
-  // mod basic;
-  // mod generic_args;
-  // mod generic_params;
-  // mod quantifier;
-  // mod syntax;
-  // mod tokens;
+  mod basic;
+  mod generic_args;
+  mod generic_params;
+  mod quantifier;
+  mod syntax;
+  mod tokens;
 
 }

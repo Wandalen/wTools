@@ -1,7 +1,7 @@
 
 use super::*;
 use iter_tools::{ Itertools, process_results };
-use macro_tools::{ attr, diag, generics, container_kind, typ, Result };
+use macro_tools::{ attr, diag, generic_params, generic_args, container_kind, typ, Result };
 use proc_macro2::TokenStream;
 
 ///
@@ -1077,9 +1077,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   let generics = &ast.generics;
   let ( generics_impl, generics_ty, generics_where ) = generics.split_for_impl();
-  // zzz : eliminate generics_params maybe
-  let _generics_params = generics::params_names( generics ).params;
-  let generics_params = if _generics_params.len() == 0
+  // zzz : eliminate generic_params maybe
+  let _generics_params = generic_params::names( generics ).params;
+  let generic_params = if _generics_params.len() == 0
   {
     qt!{}
   }
@@ -1097,12 +1097,12 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   // parameters for definition
   // let mut definition_extra_generics : macro_tools::GenericsWithWhere = parse_quote!
-  let mut definition_extra_generics : macro_tools::syn::AngleBracketedGenericArguments = parse_quote!
+  let definition_extra_generics : macro_tools::syn::AngleBracketedGenericArguments = parse_quote!
   {
     < (), #struct_name, former::ReturnPreformed >
   };
   // xxx : uncomment
-  // let generics_of_definition = generics::merge( &generics, &definition_extra_generics.into() );
+  // let generics_of_definition = generic_params::merge( &generics, &definition_extra_generics.into() );
   let generics_of_definition = definition_extra_generics;
 
   // // xxx
@@ -1112,14 +1112,14 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   // }
 
   // parameters for former
-  let mut former_extra_generics : macro_tools::GenericsWithWhere = parse_quote!
+  let former_extra_generics : macro_tools::GenericsWithWhere = parse_quote!
   {
     < Definition = #former_definition #generics_of_definition >
     where
       Definition : former::FormerDefinition,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage #generics_ty >,
   };
-  let generics_of_former = generics::merge( &generics, &former_extra_generics.into() );
+  let generics_of_former = generic_params::merge( &generics, &former_extra_generics.into() );
 
   let ( generics_of_former_impl, generics_of_former_ty, generics_of_former_where ) = generics_of_former.split_for_impl();
   let generics_of_former_with_defaults = generics_of_former.params.clone();
@@ -1208,9 +1208,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       ///
 
       #[ inline( always ) ]
-      pub fn former() -> #former < #generics_params >
+      pub fn former() -> #former < #generic_params >
       {
-        #former :: < #generics_params > :: new( former::ReturnPreformed )
+        #former :: < #generic_params > :: new( former::ReturnPreformed )
       }
 
     }
