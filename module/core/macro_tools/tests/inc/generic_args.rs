@@ -118,40 +118,33 @@ fn into_generic_args_single_lifetime_parameter()
   use syn::
   {
     Generics,
-    GenericParam,
-    LifetimeParam,
-    Lifetime,
     AngleBracketedGenericArguments,
     GenericArgument,
-    token,
-    punctuated::Punctuated,
+    parse_quote,
+    punctuated::Punctuated
   };
-  use macro_tools::IntoGenericArgs; // Correct trait name if necessary
+  use macro_tools::IntoGenericArgs;
 
-  let mut args = Punctuated::new();
-  args.push( GenericArgument::Lifetime( Lifetime::new( "'a", proc_macro2::Span::call_site() )));
-
-  let generics = Generics
+  // Generate the generics using parse_quote to include a lifetime parameter
+  let generics : Generics = parse_quote!
   {
-    params: Some( GenericParam::Lifetime( LifetimeParam
-    {
-      attrs: Vec::new(),
-      lifetime: Lifetime::new( "'a", proc_macro2::Span::call_site() ),
-      colon_token: None,
-      bounds: Punctuated::new(),
-    })).into_iter().collect(),
-    ..Default::default()
+    < 'a >
   };
 
-  let exp = AngleBracketedGenericArguments
+  // Create the expected AngleBracketedGenericArguments using parse_quote
+  let exp : AngleBracketedGenericArguments = parse_quote!
   {
-    colon2_token: None,
-    lt_token: token::Lt::default(),
-    args,
-    gt_token: token::Gt::default(),
+    < 'a >
   };
 
-  let got = generics.into_generic_args();  // Ensure the method name is correct
+  // Use the implementation to generate the actual output
+  let got = generics.into_generic_args();
+
+  // Debug prints for better traceability in case of failure
+  println!( "Expected: {:?}", exp );
+  println!( "Got: {:?}", got );
+
+  // Assert to check if the expected matches the got
   assert_eq!( exp, got, "Failed into_generic_args_single_lifetime_parameter: expected {:?}, got {:?}", exp, got );
 }
 
