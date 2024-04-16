@@ -18,8 +18,6 @@ mod private
   {
     /// Represents the absolute path to the root directory of the workspace.
     pub workspace_root_dir : Option< AbsolutePath >,
-    /// Represents a collection of packages that are roots of the trees.
-    pub wanted_to_publish : Vec< CrateDir >,
     pub plan : Option< package::PublishPlan >,
     /// Represents a collection of packages and their associated publishing reports.
     pub packages : Vec<( AbsolutePath, package::PublishReport )>
@@ -36,8 +34,8 @@ mod private
       }
       if let Some( plan ) = &self.plan
       {
-        write!( f, "Tree{} :\n", if self.wanted_to_publish.len() > 1 { "s" } else { "" } )?;
-        plan.display_as_tree( f, &self.wanted_to_publish )?;
+        write!( f, "Tree{} :\n", if plan.roots.len() > 1 { "s" } else { "" } )?;
+        plan.display_as_tree( f )?;
 
         writeln!( f, "The following packages are pending for publication :" )?;
         plan.display_as_list( f )?;
@@ -63,61 +61,55 @@ mod private
     }
   }
 
+  /// Publishes packages based on the specified patterns.
   ///
-  /// Publish packages.
+  /// # Arguments
+  /// * `patterns` - A vector of patterns specifying the folders to search for packages.
+  /// * `dry` - A boolean value indicating whether to perform a dry run.
+  /// * `temp` - A boolean value indicating whether to use a temporary directory.
   ///
-
+  /// # Returns
+  /// A Result containing a `PublishPlan` if successful, or an `Error` otherwise.
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
-  pub fn publish( patterns : Vec< String >, dry : bool, temp : bool ) -> Result< PublishReport, ( PublishReport, Error ) >
+  pub fn publish_plan( patterns : Vec< String >, dry : bool, temp : bool  ) -> Result< package::PublishPlan, Error >
   {
-    let mut report = PublishReport::default();
-
     let mut paths = HashSet::new();
     // find all packages by specified folders
     for pattern in &patterns
     {
-      let current_path = AbsolutePath::try_from( std::path::PathBuf::from( pattern ) ).err_with( || report.clone() )?;
+      let current_path = AbsolutePath::try_from( std::path::PathBuf::from( pattern ) )?;
       // let current_paths = files::find( current_path, &[ "Cargo.toml" ] );
       paths.extend( Some( current_path ) );
     }
 
     let mut metadata = if paths.is_empty()
     {
-      Workspace::from_current_path().err_with( || report.clone() )?
+      Workspace::from_current_path()?
     }
     else
     {
       // FIX : patterns can point to different workspaces. Current solution take first random path from list
       let current_path = paths.iter().next().unwrap().clone();
-      let dir = CrateDir::try_from( current_path ).err_with( || report.clone() )?;
+      let dir = CrateDir::try_from( current_path )?;
 
-      Workspace::with_crate_dir( dir ).err_with( || report.clone() )?
+      Workspace::with_crate_dir( dir )?
     };
     let workspace_root_dir : AbsolutePath = metadata
-    .workspace_root()
-    .err_with( || report.clone() )?
-    .try_into()
-    .err_with( || report.clone() )?;
-    report.workspace_root_dir = Some( workspace_root_dir.clone() );
-    let packages = metadata.load().err_with( || report.clone() )?.packages().err_with( || report.clone() )?;
+    .workspace_root()?
+    .try_into()?;
+    let packages = metadata.load()?.packages()?;
     let packages_to_publish : Vec< _ > = packages
     .iter()
     .filter( | &package | paths.contains( &AbsolutePath::try_from( package.manifest_path().as_std_path().parent().unwrap() ).unwrap() ) )
     .map( | p | p.name().clone() )
     .collect();
     let package_map = packages.into_iter().map( | p | ( p.name().clone(), Package::from( p.clone() ) ) ).collect::< HashMap< _, _ > >();
-    {
-      for node in &packages_to_publish
-      {
-        report.wanted_to_publish.push( package_map.get( node ).unwrap().crate_dir() );
-      }
-    }
 
     let graph = metadata.graph();
     let subgraph_wanted = graph::subgraph( &graph, &packages_to_publish );
     let tmp = subgraph_wanted.map( | _, n | graph[ *n ].clone(), | _, e | graph[ *e ].clone() );
 
-    let mut unique_name = format!( "temp_dir_for_publish_command_{}", path_tools::path::unique_folder_name().err_with( || report.clone() )? );
+    let mut unique_name = format!( "temp_dir_for_publish_command_{}", path_tools::path::unique_folder_name()? );
 
     let dir = if temp
     {
@@ -125,11 +117,11 @@ mod private
 
       while temp_dir.exists()
       {
-        unique_name = format!( "temp_dir_for_publish_command_{}", path_tools::path::unique_folder_name().err_with( || report.clone() )? );
+        unique_name = format!( "temp_dir_for_publish_command_{}", path_tools::path::unique_folder_name()? );
         temp_dir = env::temp_dir().join( unique_name );
       }
 
-      fs::create_dir( &temp_dir ).err_with( || report.clone() )?;
+      fs::create_dir( &temp_dir )?;
       Some( temp_dir )
     }
     else
@@ -142,12 +134,29 @@ mod private
 
     let queue = graph::toposort( subgraph ).unwrap().into_iter().map( | n | package_map.get( &n ).unwrap() ).cloned().collect::< Vec< _ > >();
 
+    let roots = packages_to_publish.iter().map( | p | package_map.get( p ).unwrap().crate_dir() ).collect::< Vec< _ > >();
+    
     let plan = package::PublishPlan::former()
     .workspace_dir( CrateDir::try_from( workspace_root_dir ).unwrap() )
     .option_base_temp_dir( dir.clone() )
     .dry( dry )
+    .roots( roots )
     .packages( queue )
     .form();
+    
+    Ok( plan )
+  }
+
+  ///
+  /// Publish packages.
+  ///
+
+  #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
+  pub fn publish( plan : package::PublishPlan ) -> Result< PublishReport, ( PublishReport, Error ) >
+  {
+    let mut report = PublishReport::default();
+    let temp = plan.base_temp_dir.clone();
+
     report.plan = Some( plan.clone() );
     for package_report in package::perform_packages_publish( plan ).err_with( || report.clone() )?
     {
@@ -155,9 +164,9 @@ mod private
       report.packages.push(( AbsolutePath::try_from( path ).unwrap(), package_report ));
     }
 
-    if temp
+    if let Some( dir ) = temp
     {
-      fs::remove_dir_all( dir.unwrap() ).err_with( || report.clone() )?;
+      fs::remove_dir_all( dir ).err_with( || report.clone() )?;
     }
 
     Ok( report )
@@ -188,6 +197,8 @@ mod private
 
 crate::mod_interface!
 {
-  /// Publish package.
+  /// Create a plan for publishing packages
+  orphan use publish_plan;
+  /// Execute the publication plan
   orphan use publish;
 }
