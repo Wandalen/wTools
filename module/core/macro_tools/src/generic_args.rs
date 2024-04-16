@@ -12,7 +12,7 @@ pub( crate ) mod private
   /// such as `syn::Generics`, into a uniform `syn::AngleBracketedGenericArguments`. This is particularly
   /// useful when working with Rust syntax trees in procedural macros, allowing for the manipulation
   /// and merging of generic parameters from different syntactic elements.
-  pub trait IntoGenericsArgs
+  pub trait IntoGenericArgs
   {
     /// Converts a reference of the implementing type into `syn::AngleBracketedGenericArguments`.
     ///
@@ -24,12 +24,12 @@ pub( crate ) mod private
     /// # Returns
     /// A new instance of `syn::AngleBracketedGenericArguments` representing the generic parameters
     /// of the original type.
-    fn into_generics_args( &self ) -> syn::AngleBracketedGenericArguments;
+    fn into_generic_args( &self ) -> syn::AngleBracketedGenericArguments;
   }
 
-  impl IntoGenericsArgs for syn::Generics
+  impl IntoGenericArgs for syn::Generics
   {
-    fn into_generics_args( &self ) -> syn::AngleBracketedGenericArguments
+    fn into_generic_args( &self ) -> syn::AngleBracketedGenericArguments
     {
       let args = self.params.iter().map( | param |
       {
@@ -89,7 +89,7 @@ pub mod orphan
   #[ allow( unused_imports ) ]
   pub use super::private::
   {
-    IntoGenericsArgs,
+    IntoGenericArgs,
   };
 }
 
