@@ -140,32 +140,52 @@ fn decompose_empty_generics()
   assert!( where_gen.is_empty(), "Where generics should be empty" );
 }
 
-// #[ test ]
-// fn decompose_generics_without_where_clause()
-// {
-//   let generics : syn::Generics = syn::parse_quote! { <T, U> };
-//   let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
-//
-//   assert_eq!( impl_gen.len(), 2, "Impl generics should have two parameters" );
-//   assert_eq!( ty_gen.len(), 2, "Type generics should have two parameters" );
-//   assert!( where_gen.is_empty(), "Where generics should be empty" );
-// }
-//
-// #[ test ]
-// fn decompose_generics_with_where_clause()
-// {
-//   let generics : syn::Generics = syn::parse_quote! { <T, U> where T: Clone, U: Default };
-//   let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
-//
-//   assert_eq!( impl_gen.len(), 2, "Impl generics should have two parameters" );
-//   assert_eq!( ty_gen.len(), 2, "Type generics should have two parameters" );
-//   assert_eq!( where_gen.len(), 2, "Where generics should have two predicates" );
-//
-//   let where_clauses : Vec<_> = where_gen.iter().collect();
-//   assert_eq!( where_clauses[0].bounded_ty.to_token_stream().to_string(), "T" );
-//   assert_eq!( where_clauses[1].bounded_ty.to_token_stream().to_string(), "U" );
-// }
-//
+#[ test ]
+fn decompose_generics_without_where_clause()
+{
+  let generics : syn::Generics = syn::parse_quote! { < T, U > };
+  let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+
+  assert_eq!( impl_gen.len(), 2, "Impl generics should have two parameters" );
+  assert_eq!( ty_gen.len(), 2, "Type generics should have two parameters" );
+  assert!( where_gen.is_empty(), "Where generics should be empty" );
+}
+
+#[ test ]
+fn decompose_generics_with_where_clause()
+{
+  use macro_tools::quote::ToTokens;
+
+  let generics : the_module::GenericsWithWhere = syn::parse_quote! { <T, U> where T: Clone, U: Default };
+  let generics = generics.unwrap();
+  let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+
+  assert_eq!( impl_gen.len(), 2, "Impl generics should have two parameters" );
+  assert_eq!( ty_gen.len(), 2, "Type generics should have two parameters" );
+  assert_eq!( where_gen.len(), 2, "Where generics should have two predicates" );
+
+  let where_clauses : Vec<_> = where_gen.iter().collect();
+
+  // Properly match against the `syn::WherePredicate::Type` variant to extract `bounded_ty`
+  if let syn::WherePredicate::Type( pt ) = &where_clauses[0]
+  {
+    assert_eq!( pt.bounded_ty.to_token_stream().to_string(), "T", "The first where clause should be for T" );
+  }
+  else
+  {
+    panic!( "First where clause is not a Type predicate as expected." );
+  }
+
+  if let syn::WherePredicate::Type( pt ) = &where_clauses[1]
+  {
+    assert_eq!( pt.bounded_ty.to_token_stream().to_string(), "U", "The second where clause should be for U" );
+  }
+  else
+  {
+    panic!( "Second where clause is not a Type predicate as expected." );
+  }
+}
+
 // #[ test ]
 // fn decompose_generics_with_only_where_clause()
 // {
