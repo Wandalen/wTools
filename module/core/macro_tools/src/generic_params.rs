@@ -290,7 +290,8 @@ pub( crate ) mod private
   /// Split a type’s generics into the pieces required for impl’ing a trait for that type.
   ///
   /// ```rust
-  /// let ( generics_impl, generics_ty, generics_where ) = macro_tools::generic_params::decompose();
+  /// let code : syn::Generics = syn::parse_quote!{ < T1, T2 > };
+  /// let ( generics_impl, generics_ty, generics_where ) = macro_tools::generic_params::decompose( &code );
   ///
   /// macro_tools::qt!
   /// {
