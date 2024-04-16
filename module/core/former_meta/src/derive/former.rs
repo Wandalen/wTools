@@ -1102,8 +1102,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     < (), #struct_name, former::ReturnPreformed >
   };
   // xxx : uncomment
-  // let generics_of_definition = generic_params::merge( &generics, &definition_extra_generics.into() );
-  let generics_of_definition = definition_extra_generics;
+  let generics_of_definition = generic_args::merge( &generics.into_into_generic_args(), &definition_extra_generics.into() );
+  // let generics_of_definition = definition_extra_generics;
 
   // // xxx
   // if has_debug

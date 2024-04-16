@@ -60,51 +60,78 @@ pub( crate ) mod private
     }
   }
 
-  /// Merges two `syn::AngleBracketedGenericArguments` instances into a new one.
+  /// Merges two `syn::AngleBracketedGenericArguments` instances into a new one,
+  /// prioritizing lifetime parameters before other types of generic arguments.
   ///
-  /// This function takes two references to `syn::AngleBracketedGenericArguments` and combines
-  /// their arguments into a single `syn::AngleBracketedGenericArguments` instance.
+  /// This function takes two references to `syn::AngleBracketedGenericArguments` and
+  /// categorizes their arguments into lifetimes and other types. It then combines
+  /// them such that all lifetimes from both instances precede any other arguments in the
+  /// resulting `syn::AngleBracketedGenericArguments` instance. This is particularly useful
+  /// for ensuring that the merged generics conform to typical Rust syntax requirements where
+  /// lifetimes are declared before other generic parameters.
   ///
   /// # Arguments
   ///
-  /// * `a` - A reference to the first `syn::AngleBracketedGenericArguments` instance.
-  /// * `b` - A reference to the second `syn::AngleBracketedGenericArguments` instance.
+  /// * `a` - A reference to the first `syn::AngleBracketedGenericArguments` instance, containing one or more generic arguments.
+  /// * `b` - A reference to the second `syn::AngleBracketedGenericArguments` instance, containing one or more generic arguments.
   ///
   /// # Returns
   ///
-  /// Returns a new `syn::AngleBracketedGenericArguments` instance containing the combined
-  /// arguments from both `a` and `b`.
+  /// Returns a new `syn::AngleBracketedGenericArguments` instance containing the merged
+  /// arguments from both `a` and `b`, with lifetimes appearing first.
   ///
   /// # Examples
   ///
   /// ```
-  /// use macro_tools::
-  /// {
+  /// use macro_tools::{
   ///   generic_args,
-  ///   syn::{ parse_quote, AngleBracketedGenericArguments },
+  ///   syn::{parse_quote, AngleBracketedGenericArguments},
   /// };
   ///
-  /// let a : AngleBracketedGenericArguments = parse_quote!{ <T: Clone, U: Default> };
-  /// let b : AngleBracketedGenericArguments = parse_quote!{ <V: std::fmt::Debug> };
-  /// let merged = generic_args::merge( &a, &b );
+  /// let a: AngleBracketedGenericArguments = parse_quote! { <'a, T: Clone, U: Default> };
+  /// let b: AngleBracketedGenericArguments = parse_quote! { <'b, V: std::fmt::Debug> };
+  /// let merged = generic_args::merge(&a, &b);
   ///
-  /// let expected : AngleBracketedGenericArguments = parse_quote!{ < T: Clone, U: Default, V: std::fmt::Debug > };
-  /// assert_eq!( merged, expected );
+  /// let expected: AngleBracketedGenericArguments = parse_quote! { <'a, 'b, T: Clone, U: Default, V: std::fmt::Debug> };
+  /// assert_eq!(merged, expected);
   /// ```
+  ///
+  /// This example demonstrates how lifetimes `'a` and `'b` are placed before other generic parameters
+  /// like `T`, `U`, and `V` in the merged result, adhering to the expected syntax order in Rust generics.
   pub fn merge
   (
     a : &syn::AngleBracketedGenericArguments,
     b : &syn::AngleBracketedGenericArguments
   ) -> syn::AngleBracketedGenericArguments
   {
-    let mut args = syn::punctuated::Punctuated::new();
+    let mut lifetimes : syn::punctuated::Punctuated< syn::GenericArgument, syn::token::Comma > = syn::punctuated::Punctuated::new();
+    let mut others : syn::punctuated::Punctuated< syn::GenericArgument, syn::token::Comma > = syn::punctuated::Punctuated::new();
 
-    args.extend( a.args.iter().cloned() );
-    args.extend( b.args.iter().cloned() );
+    // Function to categorize and collect arguments into lifetimes and others
+    let mut categorize_and_collect = |args : &syn::punctuated::Punctuated<syn::GenericArgument, syn::token::Comma>|
+    {
+      for arg in args.iter()
+      {
+        match arg
+        {
+          syn::GenericArgument::Lifetime( _ ) => lifetimes.push( arg.clone() ),
+          _ => others.push( arg.clone() ),
+        }
+      }
+    };
+
+    // Categorize and collect from both input arguments
+    categorize_and_collect( &a.args );
+    categorize_and_collect( &b.args );
+
+    // Combine lifetimes and other arguments into final merged arguments
+    let mut args = syn::punctuated::Punctuated::new();
+    args.extend( lifetimes );
+    args.extend( others );
 
     syn::AngleBracketedGenericArguments
     {
-      colon2_token: None,
+      colon2_token: None, // Adjust if needed based on context
       lt_token: syn::token::Lt::default(),
       args,
       gt_token: syn::token::Gt::default(),
