@@ -60,6 +60,57 @@ pub( crate ) mod private
     }
   }
 
+  /// Merges two `syn::AngleBracketedGenericArguments` instances into a new one.
+  ///
+  /// This function takes two references to `syn::AngleBracketedGenericArguments` and combines
+  /// their arguments into a single `syn::AngleBracketedGenericArguments` instance.
+  ///
+  /// # Arguments
+  ///
+  /// * `a` - A reference to the first `syn::AngleBracketedGenericArguments` instance.
+  /// * `b` - A reference to the second `syn::AngleBracketedGenericArguments` instance.
+  ///
+  /// # Returns
+  ///
+  /// Returns a new `syn::AngleBracketedGenericArguments` instance containing the combined
+  /// arguments from both `a` and `b`.
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// use macro_tools::
+  /// {
+  ///   generic_args,
+  ///   syn::{ parse_quote, AngleBracketedGenericArguments },
+  /// };
+  ///
+  /// let a : AngleBracketedGenericArguments = parse_quote!{ <T: Clone, U: Default> };
+  /// let b : AngleBracketedGenericArguments = parse_quote!{ <V: std::fmt::Debug> };
+  /// let merged = generic_args::merge( &a, &b );
+  ///
+  /// let expected : AngleBracketedGenericArguments = parse_quote!{ < T: Clone, U: Default, V: std::fmt::Debug > };
+  /// assert_eq!( merged, expected );
+  /// ```
+  pub fn merge
+  (
+    a : &syn::AngleBracketedGenericArguments,
+    b : &syn::AngleBracketedGenericArguments
+  ) -> syn::AngleBracketedGenericArguments
+  {
+    let mut args = syn::punctuated::Punctuated::new();
+
+    args.extend( a.args.iter().cloned() );
+    args.extend( b.args.iter().cloned() );
+
+    syn::AngleBracketedGenericArguments
+    {
+      colon2_token: None,
+      lt_token: syn::token::Lt::default(),
+      args,
+      gt_token: syn::token::Gt::default(),
+    }
+  }
+
 }
 
 #[ doc( inline ) ]
@@ -76,6 +127,7 @@ pub mod protected
   #[ allow( unused_imports ) ]
   pub use super::private::
   {
+    merge,
   };
 }
 

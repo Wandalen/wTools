@@ -102,11 +102,6 @@ pub( crate ) mod private
     }
   }
 
-//   pub fn make< IntoTokens : Into< proc_macro2::TokenStream > >( input : IntoTokens )
-//   {
-//
-//   }
-
   /// Merges two `syn::Generics` instances into a new one.
   ///
   /// This function takes two references to `syn::Generics` and combines their
