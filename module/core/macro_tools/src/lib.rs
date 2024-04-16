@@ -12,6 +12,8 @@ pub mod diag;
 #[ cfg( feature = "enabled" ) ]
 pub mod generic_analyze;
 #[ cfg( feature = "enabled" ) ]
+pub mod generic_args;
+#[ cfg( feature = "enabled" ) ]
 pub mod generic_params;
 #[ cfg( feature = "enabled" ) ]
 pub mod name;
@@ -56,6 +58,7 @@ pub mod protected
     container_kind::orphan::*,
     diag::orphan::*,
     generic_analyze::orphan::*,
+    generic_args::orphan::*,
     generic_params::orphan::*,
     name::orphan::*,
     quantifier::orphan::*,
@@ -95,6 +98,7 @@ pub mod exposed
     container_kind::exposed::*,
     diag::exposed::*,
     generic_analyze::exposed::*,
+    generic_args::exposed::*,
     generic_params::exposed::*,
     name::exposed::*,
     quantifier::exposed::*,
@@ -163,6 +167,7 @@ pub mod prelude
     container_kind::prelude::*,
     diag::prelude::*,
     generic_analyze::prelude::*,
+    generic_args::prelude::*,
     generic_params::prelude::*,
     name::prelude::*,
     quantifier::prelude::*,

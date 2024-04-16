@@ -236,7 +236,7 @@ pub( crate ) mod private
   /// let mut generics : syn::Generics = parse_quote!{ < T : Clone + Default, U, 'a, const N : usize > };
   /// generics.where_clause = parse_quote!{ where T: std::fmt::Debug };
   /// // let generics : Generics = parse_quote!{ < T : Clone + Default, U, 'a, const N : usize > where T: std::fmt::Debug };
-  /// let simplified_generics = macro_tools::generics::params_names( &generics );
+  /// let simplified_generics = macro_tools::generic_params::params_names( &generics );
   ///
   /// assert_eq!( simplified_generics.params.len(), 4 ); // Contains T, U, 'a, and N
   /// assert!( simplified_generics.where_clause.is_none() ); // Where clause is removed
@@ -307,6 +307,7 @@ pub mod protected
   };
 }
 
+// xxx : external attr instead of internal?
 /// Orphan namespace of the module.
 pub mod orphan
 {
@@ -324,7 +325,7 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  pub use super::protected as generics;
+  pub use super::protected as generics_params;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::
