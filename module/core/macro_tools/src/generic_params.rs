@@ -281,6 +281,80 @@ pub( crate ) mod private
     result
   }
 
+  /// Splits generics into three parts suitable for use in impls, converting to `syn::punctuated::Punctuated` types.
+  ///
+  /// This function utilizes `syn::Generics::split_for_impl` from the `syn` crate and adapts
+  /// the results to return simple `syn::punctuated::Punctuated` structures for generic parameters and
+  /// where predicates.
+  ///
+  /// Split a type’s generics into the pieces required for impl’ing a trait for that type.
+  ///
+  /// ```rust
+  /// let ( generics_impl, generics_ty, generics_where ) = macro_tools::generic_params::decompose();
+  ///
+  /// macro_tools::qt!
+  /// {
+  ///   impl < #generics_impl > MyTrait for Struct1 < #generics_ty >
+  ///   where
+  ///     #generics_where
+  ///   {
+  ///     // ...
+  ///   }
+  /// };
+  /// ```
+  ///
+  /// # Arguments
+  ///
+  /// * `generics` - A reference to the `syn::Generics` to be decomposed.
+  ///
+  /// # Returns
+  ///
+  /// Returns a tuple containing:
+  /// - `syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>` for use with `impl`
+  /// - `syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>` for use with type definition
+  /// - `syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>` for the where clause
+  ///
+  pub fn decompose( generics : &syn::Generics ) ->
+  (
+    syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+    syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+    syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  )
+  {
+    // use quote::ToTokens;
+    // let ( generics_impl, generics_ty, generics_where ) = generics.split_for_impl();
+
+    // let generics_impl = generics_impl.into_iter().collect::< syn::punctuated::Punctuated< _, syn::token::Comma > >();
+    // let generics_ty = generics_ty.into_iter().collect::< syn::punctuated::Punctuated< _, syn::token::Comma > >();
+    // let generics_impl = generics_impl.into_token_stream().into();
+    // let generics_ty = generics_ty.into_token_stream().into();
+
+    // let generics_where = if let Some( generics_where ) = generics_where
+    // {
+    //   generics_where.predicates
+    // }
+    // else
+    // {
+    //   syn::punctuated::Punctuated::new()
+    // };
+
+    // Clone the parameters for use in both `impl` and type definition contexts
+    let generics_impl = generics.params.clone();
+    let generics_ty = generics.params.clone();
+
+    // Clone where predicates if present
+    let generics_where = if let Some( where_clause ) = &generics.where_clause
+    {
+      where_clause.predicates.clone()
+    }
+    else
+    {
+      syn::punctuated::Punctuated::new()
+    };
+
+    ( generics_impl, generics_ty, generics_where )
+  }
+
 }
 
 #[ doc( inline ) ]
@@ -299,6 +373,7 @@ pub mod protected
   {
     merge,
     names,
+    decompose,
   };
 }
 

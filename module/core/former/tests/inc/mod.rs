@@ -1,6 +1,12 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
+// struct Struct1< 'a, const N : i32, T >
+// where
+// {
+//   _phantom : core::marker::PhantomData< ( &'a (), T, ) >,
+// }
+
 #[ cfg( feature = "derive_former" ) ]
 mod former_tests
 {

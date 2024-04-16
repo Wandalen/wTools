@@ -182,6 +182,7 @@ Storage : former :: Storage < Formed = Struct1 < 'a > >,
     FormerDefinitionTypes > :: Formed
     { former :: StoragePreform :: preform(self.storage) }
 }
+
 // === end of generated
 
 // include!( "./only_test/string_slice.rs" );
