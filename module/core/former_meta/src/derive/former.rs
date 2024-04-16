@@ -1305,7 +1305,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     }
     // generics_impl, generics_ty, generics_where
 
-    impl former::StoragePreform
+    impl #generics_impl former::StoragePreform
     for #former_storage #generics_ty
     #generics_where
     {
