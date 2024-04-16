@@ -1049,6 +1049,7 @@ pub fn performer< 'a >
 
 pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 {
+  use macro_tools::IntoGenericArgs;
 
   let original_input = input.clone();
   let ast = match syn::parse::< syn::DeriveInput >( input )
@@ -1089,27 +1090,17 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   };
 
 
-  // xxx
   // if has_debug
   // {
   //   println!( "= a =" );
   // }
 
   // parameters for definition
-  // let mut definition_extra_generics : macro_tools::GenericsWithWhere = parse_quote!
   let definition_extra_generics : macro_tools::syn::AngleBracketedGenericArguments = parse_quote!
   {
     < (), #struct_name, former::ReturnPreformed >
   };
-  // xxx : uncomment
-  let generics_of_definition = generic_args::merge( &generics.into_into_generic_args(), &definition_extra_generics.into() );
-  // let generics_of_definition = definition_extra_generics;
-
-  // // xxx
-  // if has_debug
-  // {
-  //   println!( "= b =" );
-  // }
+  let generics_of_definition = generic_args::merge( &generics.into_generic_args(), &definition_extra_generics.into() );
 
   // parameters for former
   let former_extra_generics : macro_tools::GenericsWithWhere = parse_quote!
