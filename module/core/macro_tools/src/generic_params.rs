@@ -325,7 +325,7 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  pub use super::protected as generics_params;
+  pub use super::protected as generic_params;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::

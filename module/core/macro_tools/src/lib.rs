@@ -3,28 +3,24 @@
 #![ doc( html_root_url = "https://docs.rs/proc_macro_tools/latest/proc_macro_tools/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+/// Modular files.
 #[ cfg( feature = "enabled" ) ]
-pub mod attr;
-#[ cfg( feature = "enabled" ) ]
-pub mod container_kind;
-#[ cfg( feature = "enabled" ) ]
-pub mod diag;
-#[ cfg( feature = "enabled" ) ]
-pub mod generic_analyze;
-#[ cfg( feature = "enabled" ) ]
-pub mod generic_args;
-#[ cfg( feature = "enabled" ) ]
-pub mod generic_params;
-#[ cfg( feature = "enabled" ) ]
-pub mod name;
-#[ cfg( feature = "enabled" ) ]
-pub mod quantifier;
-#[ cfg( feature = "enabled" ) ]
-pub mod tokens;
-#[ cfg( feature = "enabled" ) ]
-pub mod typ;
-#[ cfg( feature = "enabled" ) ]
-pub mod type_struct;
+#[ path = "." ]
+mod file
+{
+  use super::*;
+  pub mod attr;
+  pub mod container_kind;
+  pub mod diag;
+  pub mod generic_analyze;
+  pub mod generic_args;
+  pub mod generic_params;
+  pub mod name;
+  pub mod quantifier;
+  pub mod tokens;
+  pub mod typ;
+  pub mod type_struct;
+}
 
 ///
 /// Dependencies of the module.
@@ -37,7 +33,6 @@ pub mod dependency
   pub use ::quote;
   pub use ::proc_macro2;
   pub use ::interval_adapter;
-  // pub use ::type_constructor;
 }
 
 #[ doc( inline ) ]
@@ -54,6 +49,10 @@ pub mod protected
   pub use super::
   {
     orphan::*,
+  };
+
+  pub use super::file::
+  {
     attr::orphan::*,
     container_kind::orphan::*,
     diag::orphan::*,
@@ -94,6 +93,9 @@ pub mod exposed
   pub use super::
   {
     prelude::*,
+  };
+  pub use super::file::
+  {
     attr::exposed::*,
     container_kind::exposed::*,
     diag::exposed::*,
@@ -106,13 +108,6 @@ pub mod exposed
     typ::exposed::*,
     type_struct::exposed::*,
   };
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::quantifier::
-  // {
-  //   Pair,
-  //   Many,
-  // };
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -161,7 +156,7 @@ pub mod prelude
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::
+  pub use super::file::
   {
     attr::prelude::*,
     container_kind::prelude::*,
