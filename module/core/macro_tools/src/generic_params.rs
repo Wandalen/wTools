@@ -149,13 +149,7 @@ pub( crate ) mod private
   /// assert_eq!( got, exp );
 
   pub fn merge( a : &syn::Generics, b : &syn::Generics ) -> syn::Generics
-  // pub fn merge< A, B >( a : A, b : B ) -> syn::Generics
-  // where
-  //   A : AsRef< syn::Generics >,
-  //   B : AsRef< syn::Generics >,
   {
-    // let a : &syn::Generics = a.as_ref();
-    // let b : &syn::Generics = b.as_ref();
 
     let mut result = syn::Generics
     {

@@ -6,17 +6,19 @@ use test_tools::exposed::*;
 
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
-use the_module::exposed::*;
+#[ path = "." ]
+mod if_enabled
+{
 
-#[ cfg( feature = "enabled" ) ]
-mod attr_test;
-#[ cfg( feature = "enabled" ) ]
-mod basic_test;
-#[ cfg( feature = "enabled" ) ]
-mod generics_test;
-#[ cfg( feature = "enabled" ) ]
-mod quantifier_test;
-#[ cfg( feature = "enabled" ) ]
-mod syntax_test;
-#[ cfg( feature = "enabled" ) ]
-mod tokens_test;
+  use super::*;
+  use the_module::exposed::*;
+
+  mod attr;
+  mod basic;
+  mod generic_args;
+  mod generic_params;
+  mod quantifier;
+  mod syntax;
+  mod tokens;
+
+}
