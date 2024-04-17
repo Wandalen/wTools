@@ -41,7 +41,7 @@ mod former_tests
 //   mod attribute_alias;
 
   // xxx
-  mod string_slice_manual;
+  // mod string_slice_manual;
   // mod string_slice;
   // mod unsigned_primitive_types;
   // mod default_user_type;

@@ -24,7 +24,6 @@ impl< 'a > Struct1< 'a >
   {
     Struct1Former::new( former::ReturnPreformed )
   }
-
 }
 
 // = definition types
