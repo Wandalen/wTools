@@ -1122,6 +1122,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   };
   let generics_of_definition_type = generic_params::merge( &generics, &extra.into() );
   let ( generics_of_definition_type_impl, generics_of_definition_type_ty, generics_of_definition_type_where ) = generics_of_definition_type.split_for_impl();
+  // xxx : rid off all split_for_impl, replacing them by generic_params::decompose
 
   /* parameters for definition */
   let extra : macro_tools::GenericsWithWhere = parse_quote!
