@@ -246,7 +246,7 @@ fn decompose_generics_with_nested_generic_types()
 #[ test ]
 fn decompose_generics_with_lifetime_parameters_only()
 {
-  let generics : syn::Generics = syn::parse_quote! { <'a, 'b> };
+  let generics : syn::Generics = syn::parse_quote! { < 'a, 'b > };
   let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
 
   assert_eq!( impl_gen.len(), 2, "Impl generics should contain only lifetimes" );
@@ -254,39 +254,58 @@ fn decompose_generics_with_lifetime_parameters_only()
   assert!( where_gen.is_empty(), "Where generics should be empty" );
 }
 
-// #[ test ]
-// fn decompose_generics_with_constants_only()
-// {
-//   let generics : syn::Generics = syn::parse_quote! { <const N: usize, const M: usize> };
-//   let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
-//
-//   assert_eq!( impl_gen.len(), 2, "Impl generics should contain constants" );
-//   assert_eq!( ty_gen.len(), 2, "Type generics should contain constants" );
-//   assert!( where_gen.is_empty(), "Where generics should be empty" );
-// }
-//
-// #[ test ]
-// fn decompose_generics_with_default_values()
-// {
-//   let generics : syn::Generics = syn::parse_quote! { <T=usize, U=i32> };
-//   let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
-//
-//   assert_eq!( impl_gen.len(), 2, "Impl generics should retain default types" );
-//   assert_eq!( ty_gen.len(), 2, "Type generics should retain default types" );
-//   assert!( where_gen.is_empty(), "Where generics should be empty" );
-// }
-//
-// #[ test ]
-// fn decompose_mixed_generics_types()
-// {
-//   let generics : syn::Generics = syn::parse_quote! { <'a, T, const N: usize, U='static> where T: Clone, U: Default };
-//   let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
-//
-//   assert_eq!( impl_gen.len(), 4, "Impl generics should correctly interleave types" );
-//   assert_eq!( ty_gen.len(), 4, "Type generics should correctly interleave types" );
-//   assert_eq!( where_gen.len(), 2, "Where generics should include conditions for T and U" );
-//
-//   let where_clauses : Vec<_> = where_gen.iter().collect();
-//   assert_eq!( where_clauses[0].bounded_ty.to_token_stream().to_string(), "T" );
-//   assert_eq!( where_clauses[1].bounded_ty.to_token_stream().to_string(), "U" );
-// }
+#[ test ]
+fn decompose_generics_with_constants_only()
+{
+  let generics : syn::Generics = syn::parse_quote! { <const N: usize, const M: usize> };
+  let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+
+  assert_eq!( impl_gen.len(), 2, "Impl generics should contain constants" );
+  assert_eq!( ty_gen.len(), 2, "Type generics should contain constants" );
+  assert!( where_gen.is_empty(), "Where generics should be empty" );
+}
+
+#[ test ]
+fn decompose_generics_with_default_values()
+{
+  let generics : syn::Generics = syn::parse_quote! { < T = usize, U = i32 > };
+  let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+
+  assert_eq!( impl_gen.len(), 2, "Impl generics should retain default types" );
+  assert_eq!( ty_gen.len(), 2, "Type generics should retain default types" );
+  assert!( where_gen.is_empty(), "Where generics should be empty" );
+}
+
+#[ test ]
+fn decompose_mixed_generics_types()
+{
+  use macro_tools::quote::ToTokens;
+  let generics : the_module::GenericsWithWhere = syn::parse_quote! { < 'a, T, const N : usize, U > where T : Clone, U : Default };
+  let generics = generics.unwrap();
+  let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+
+  assert_eq!( impl_gen.len(), 4, "Impl generics should correctly interleave types" );
+  assert_eq!( ty_gen.len(), 4, "Type generics should correctly interleave types" );
+  assert_eq!( where_gen.len(), 2, "Where generics should include conditions for T and U" );
+
+  // Correctly handling the pattern matching for WherePredicate::Type
+  let where_clauses : Vec<_> = where_gen.iter().collect();
+  if let syn::WherePredicate::Type( pt ) = &where_clauses[0]
+  {
+    assert_eq!( pt.bounded_ty.to_token_stream().to_string(), "T", "The first where clause should be for T" );
+  }
+  else
+  {
+    panic!( "First where clause is not a Type predicate as expected." );
+  }
+
+  if let syn::WherePredicate::Type( pt ) = &where_clauses[1]
+  {
+    assert_eq!( pt.bounded_ty.to_token_stream().to_string(), "U", "The second where clause should be for U" );
+  }
+  else
+  {
+    panic!( "Second where clause is not a Type predicate as expected." );
+  }
+
+}
