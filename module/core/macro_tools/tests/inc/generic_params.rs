@@ -186,54 +186,74 @@ fn decompose_generics_with_where_clause()
   }
 }
 
-// #[ test ]
-// fn decompose_generics_with_only_where_clause()
-// {
-//   let generics : syn::Generics = syn::parse_quote! { where T: Clone, U: Default };
-//   let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
-//
-//   assert!( impl_gen.is_empty(), "Impl generics should be empty" );
-//   assert!( ty_gen.is_empty(), "Type generics should be empty" );
-//   assert_eq!( where_gen.len(), 2, "Where generics should have two predicates" );
-// }
-//
-// #[ test ]
-// fn decompose_generics_with_complex_constraints()
-// {
-//   let generics : syn::Generics = syn::parse_quote! { <T: Clone + Send, U: Default> where T: Send, U: Default };
-//   let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
-//
-//   assert_eq!( impl_gen.len(), 2, "Impl generics should reflect complex constraints" );
-//   assert_eq!( ty_gen.len(), 2, "Type generics should reflect complex constraints" );
-//   assert_eq!( where_gen.len(), 2, "Where generics should reflect complex constraints" );
-//
-//   let where_clauses : Vec<_> = where_gen.iter().collect();
-//   assert_eq!( where_clauses[0].bounded_ty.to_token_stream().to_string(), "T" );
-//   assert_eq!( where_clauses[1].bounded_ty.to_token_stream().to_string(), "U" );
-// }
-//
-// #[ test ]
-// fn decompose_generics_with_nested_generic_types()
-// {
-//   let generics : syn::Generics = syn::parse_quote! { <T: Iterator<Item=U>, U> };
-//   let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
-//
-//   assert_eq!( impl_gen.len(), 2, "Impl generics should handle nested generics" );
-//   assert_eq!( ty_gen.len(), 2, "Type generics should handle nested generics" );
-//   assert!( where_gen.is_empty(), "Where generics should be empty for non-conditional types" );
-// }
-//
-// #[ test ]
-// fn decompose_generics_with_lifetime_parameters_only()
-// {
-//   let generics : syn::Generics = syn::parse_quote! { <'a, 'b> };
-//   let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
-//
-//   assert_eq!( impl_gen.len(), 2, "Impl generics should contain only lifetimes" );
-//   assert_eq!( ty_gen.len(), 2, "Type generics should contain only lifetimes" );
-//   assert!( where_gen.is_empty(), "Where generics should be empty" );
-// }
-//
+#[ test ]
+fn decompose_generics_with_only_where_clause()
+{
+  let generics : the_module::GenericsWithWhere = syn::parse_quote! { where T : Clone, U : Default };
+  let generics = generics.unwrap();
+  let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+
+  assert!( impl_gen.is_empty(), "Impl generics should be empty" );
+  assert!( ty_gen.is_empty(), "Type generics should be empty" );
+  assert_eq!( where_gen.len(), 2, "Where generics should have two predicates" );
+}
+
+#[ test ]
+fn decompose_generics_with_complex_constraints()
+{
+  use macro_tools::quote::ToTokens;
+  let generics : the_module::GenericsWithWhere = syn::parse_quote! { < T : Clone + Send, U : Default > where T: Send, U: Default };
+  let generics = generics.unwrap();
+  let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+
+  assert_eq!( impl_gen.len(), 2, "Impl generics should reflect complex constraints" );
+  assert_eq!( ty_gen.len(), 2, "Type generics should reflect complex constraints" );
+  assert_eq!( where_gen.len(), 2, "Where generics should reflect complex constraints" );
+
+  let where_clauses : Vec<_> = where_gen.iter().collect();
+
+  // Properly matching against the WherePredicate::Type variant
+  if let syn::WherePredicate::Type( pt ) = &where_clauses[0]
+  {
+    assert_eq!( pt.bounded_ty.to_token_stream().to_string(), "T", "The first where clause should be for T" );
+  }
+  else
+  {
+    panic!( "First where clause is not a Type predicate as expected." );
+  }
+
+  if let syn::WherePredicate::Type( pt ) = &where_clauses[1]
+  {
+    assert_eq!( pt.bounded_ty.to_token_stream().to_string(), "U", "The second where clause should be for U" );
+  }
+  else
+  {
+    panic!( "Second where clause is not a Type predicate as expected." );
+  }
+}
+
+#[ test ]
+fn decompose_generics_with_nested_generic_types()
+{
+  let generics : syn::Generics = syn::parse_quote! { < T : Iterator< Item = U >, U > };
+  let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+
+  assert_eq!( impl_gen.len(), 2, "Impl generics should handle nested generics" );
+  assert_eq!( ty_gen.len(), 2, "Type generics should handle nested generics" );
+  assert!( where_gen.is_empty(), "Where generics should be empty for non-conditional types" );
+}
+
+#[ test ]
+fn decompose_generics_with_lifetime_parameters_only()
+{
+  let generics : syn::Generics = syn::parse_quote! { <'a, 'b> };
+  let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+
+  assert_eq!( impl_gen.len(), 2, "Impl generics should contain only lifetimes" );
+  assert_eq!( ty_gen.len(), 2, "Type generics should contain only lifetimes" );
+  assert!( where_gen.is_empty(), "Where generics should be empty" );
+}
+
 // #[ test ]
 // fn decompose_generics_with_constants_only()
 // {
