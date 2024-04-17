@@ -149,6 +149,13 @@ fn decompose_generics_without_where_clause()
   assert_eq!( impl_gen.len(), 2, "Impl generics should have two parameters" );
   assert_eq!( ty_gen.len(), 2, "Type generics should have two parameters" );
   assert!( where_gen.is_empty(), "Where generics should be empty" );
+
+  let exp : syn::Generics = syn::parse_quote! { < T, U, > };
+  a_id!( impl_gen, exp.params );
+  let exp : syn::Generics = syn::parse_quote! { < T, U, > };
+  a_id!( ty_gen, exp.params );
+  // xxx : extend other tests
+
 }
 
 #[ test ]

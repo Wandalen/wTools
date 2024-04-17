@@ -23,6 +23,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+  use super::super::*;
 
   /// A `GenericsWithWhere` struct to handle the parsing of Rust generics with an explicit `where` clause.
   ///
@@ -315,38 +316,28 @@ pub( crate ) mod private
   /// - `syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>` for use with type definition
   /// - `syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>` for the where clause
   ///
-  pub fn decompose( generics : &syn::Generics ) ->
+  pub fn decompose
   (
-    syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-    syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-    syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+    generics : &syn::Generics
+  )
+  ->
+  (
+    syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
+    syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
+    syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>,
   )
   {
-    // use quote::ToTokens;
-    // let ( generics_impl, generics_ty, generics_where ) = generics.split_for_impl();
+    let mut generics_impl = generics.params.clone();
+    punctuated::ensure_trailing_comma( &mut generics_impl );
 
-    // let generics_impl = generics_impl.into_iter().collect::< syn::punctuated::Punctuated< _, syn::token::Comma > >();
-    // let generics_ty = generics_ty.into_iter().collect::< syn::punctuated::Punctuated< _, syn::token::Comma > >();
-    // let generics_impl = generics_impl.into_token_stream().into();
-    // let generics_ty = generics_ty.into_token_stream().into();
+    let mut generics_ty = generics.params.clone();
+    punctuated::ensure_trailing_comma( &mut generics_ty );
 
-    // let generics_where = if let Some( generics_where ) = generics_where
-    // {
-    //   generics_where.predicates
-    // }
-    // else
-    // {
-    //   syn::punctuated::Punctuated::new()
-    // };
-
-    // Clone the parameters for use in both `impl` and type definition contexts
-    let generics_impl = generics.params.clone();
-    let generics_ty = generics.params.clone();
-
-    // Clone where predicates if present
     let generics_where = if let Some( where_clause ) = &generics.where_clause
     {
-      where_clause.predicates.clone()
+      let mut predicates = where_clause.predicates.clone();
+      punctuated::ensure_trailing_comma( &mut predicates );
+      predicates
     }
     else
     {
