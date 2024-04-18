@@ -394,37 +394,6 @@ pub( crate ) mod private
     ( generics_impl, generics_ty, generics_where )
   }
 
-//   pub fn decompose
-//   (
-//     generics : &syn::Generics
-//   )
-//   ->
-//   (
-//     syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
-//     syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
-//     syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>,
-//   )
-//   {
-//     let mut generics_impl = generics.params.clone();
-//     punctuated::ensure_trailing_comma( &mut generics_impl );
-//
-//     let mut generics_ty = generics.params.clone();
-//     punctuated::ensure_trailing_comma( &mut generics_ty );
-//
-//     let generics_where = if let Some( where_clause ) = &generics.where_clause
-//     {
-//       let mut predicates = where_clause.predicates.clone();
-//       punctuated::ensure_trailing_comma( &mut predicates );
-//       predicates
-//     }
-//     else
-//     {
-//       syn::punctuated::Punctuated::new()
-//     };
-//
-//     ( generics_impl, generics_ty, generics_where )
-//   }
-
 }
 
 #[ doc( inline ) ]
