@@ -40,7 +40,8 @@ impl< Context, Formed > Default for Struct1FormerDefinitionTypes< Context, Forme
   }
 }
 
-impl< Context, Formed > former::FormerDefinitionTypes for Struct1FormerDefinitionTypes< Context, Formed >
+impl< Context, Formed > former::FormerDefinitionTypes
+for Struct1FormerDefinitionTypes< Context, Formed >
 {
   type Storage = Struct1FormerStorage;
   type Formed = Formed;

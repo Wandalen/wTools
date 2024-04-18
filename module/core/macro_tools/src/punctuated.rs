@@ -5,7 +5,8 @@ pub( crate ) mod private
 {
 
   /// Ensures that a `syn::punctuated::Punctuated` collection ends with a comma if it contains elements.
-  pub fn ensure_trailing_comma<T : Clone>( punctuated : &mut syn::punctuated::Punctuated<T, syn::token::Comma> )
+  pub fn ensure_trailing_comma< T : Clone >
+  ( punctuated : &mut syn::punctuated::Punctuated< T, syn::token::Comma > )
   {
     if !punctuated.empty_or_trailing()
     {

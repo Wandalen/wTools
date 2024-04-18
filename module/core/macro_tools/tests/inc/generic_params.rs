@@ -287,9 +287,15 @@ fn decompose_generics_with_default_values()
 fn decompose_mixed_generics_types()
 {
   use macro_tools::quote::ToTokens;
-  let generics : the_module::GenericsWithWhere = syn::parse_quote! { < 'a, T, const N : usize, U > where T : Clone, U : Default };
+  let generics : the_module::GenericsWithWhere = syn::parse_quote! { < 'a, T, const N : usize, U : Trait1 > where T : Clone, U : Default };
   let generics = generics.unwrap();
   let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+
+  let impl_exp : syn::Generics = syn::parse_quote! { < 'a, T, const N : usize, U : Trait1, > };
+  let ty_exp : syn::Generics = syn::parse_quote! { < 'a, T, N, U, > };
+
+  a_id!( impl_gen, impl_exp.params );
+  a_id!( ty_gen, ty_exp.params );
 
   assert_eq!( impl_gen.len(), 4, "Impl generics should correctly interleave types" );
   assert_eq!( ty_gen.len(), 4, "Type generics should correctly interleave types" );

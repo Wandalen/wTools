@@ -282,16 +282,18 @@ pub( crate ) mod private
     result
   }
 
-  /// Splits generics into three parts suitable for use in impls, converting to `syn::punctuated::Punctuated` types.
+  /// Decomposes `syn::Generics` into three parts suitable for use in implementing traits or types,
+  /// simplifying type and const parameters for type definitions.
   ///
-  /// This function utilizes `syn::Generics::split_for_impl` from the `syn` crate and adapts
-  /// the results to return simple `syn::punctuated::Punctuated` structures for generic parameters and
-  /// where predicates.
+  /// This function clones generic parameters for use with `impl` declarations directly. For type
+  /// definitions, it simplifies type and const parameters to include only identifiers, removing
+  /// any associated bounds or default values. Where clauses are cloned as-is, with a check to ensure
+  /// they end with a comma if not empty.
   ///
-  /// Split a type’s generics into the pieces required for impl’ing a trait for that type.
+  /// # Examples
   ///
   /// ```rust
-  /// let code : syn::Generics = syn::parse_quote!{ < T1, T2 > };
+  /// let code : syn::Generics = syn::parse_quote!{ < 'a, T, const N : usize, U : Trait1 > };
   /// let ( generics_impl, generics_ty, generics_where ) = macro_tools::generic_params::decompose( &code );
   ///
   /// macro_tools::qt!
@@ -300,10 +302,17 @@ pub( crate ) mod private
   ///   where
   ///     #generics_where
   ///   {
-  ///     // ...
+  ///     // implementation details...
   ///   }
   /// };
   /// ```
+  ///
+  /// # Usage
+  ///
+  /// - `generics_impl` : Retains full structure of the original generic parameters for use in `impl` blocks.
+  /// - `generics_ty` : Simplifies generic parameters for type declarations by stripping bounds and modifiers,
+  ///   leaving only the identifiers. Lifetimes are included as is.
+  /// - `generics_where` : Directly clones where clauses if present and ensures they are properly punctuated.
   ///
   /// # Arguments
   ///
@@ -312,26 +321,64 @@ pub( crate ) mod private
   /// # Returns
   ///
   /// Returns a tuple containing:
-  /// - `syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>` for use with `impl`
-  /// - `syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>` for use with type definition
-  /// - `syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>` for the where clause
-  ///
+  /// - `syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>` : For use with `impl` blocks.
+  /// - `syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>` : For use with type definitions, simplified.
+  /// - `syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>` : For where clauses, properly punctuated.
+
   pub fn decompose
   (
     generics : &syn::Generics
   )
   ->
   (
-    syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
-    syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
-    syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>,
+    syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+    syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+    syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
   )
   {
     let mut generics_impl = generics.params.clone();
     punctuated::ensure_trailing_comma( &mut generics_impl );
 
-    let mut generics_ty = generics.params.clone();
-    punctuated::ensure_trailing_comma( &mut generics_ty );
+    let mut generics_ty = syn::punctuated::Punctuated::new();
+    for param in &generics.params
+    {
+      match param
+      {
+        syn::GenericParam::Type( type_param ) =>
+        {
+          let simplified = syn::GenericParam::Type( syn::TypeParam
+          {
+            attrs : vec![],
+            ident : type_param.ident.clone(),
+            colon_token : None,
+            bounds : syn::punctuated::Punctuated::new(),
+            eq_token : None,
+            default : None,
+          });
+          generics_ty.push_value( simplified );
+          generics_ty.push_punct( syn::token::Comma::default() );
+        },
+        syn::GenericParam::Const( const_param ) =>
+        {
+          let simplified = syn::GenericParam::Type( syn::TypeParam
+          {
+            attrs : vec![],
+            ident : const_param.ident.clone(),
+            colon_token : None,
+            bounds : syn::punctuated::Punctuated::new(),
+            eq_token : None,
+            default : None,
+          });
+          generics_ty.push_value( simplified );
+          generics_ty.push_punct( syn::token::Comma::default() );
+        },
+        syn::GenericParam::Lifetime( lifetime_param ) =>
+        {
+          generics_ty.push_value( syn::GenericParam::Lifetime( lifetime_param.clone() ) );
+          generics_ty.push_punct( syn::token::Comma::default() );
+        }
+      }
+    }
 
     let generics_where = if let Some( where_clause ) = &generics.where_clause
     {
@@ -346,6 +393,37 @@ pub( crate ) mod private
 
     ( generics_impl, generics_ty, generics_where )
   }
+
+//   pub fn decompose
+//   (
+//     generics : &syn::Generics
+//   )
+//   ->
+//   (
+//     syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
+//     syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>,
+//     syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>,
+//   )
+//   {
+//     let mut generics_impl = generics.params.clone();
+//     punctuated::ensure_trailing_comma( &mut generics_impl );
+//
+//     let mut generics_ty = generics.params.clone();
+//     punctuated::ensure_trailing_comma( &mut generics_ty );
+//
+//     let generics_where = if let Some( where_clause ) = &generics.where_clause
+//     {
+//       let mut predicates = where_clause.predicates.clone();
+//       punctuated::ensure_trailing_comma( &mut predicates );
+//       predicates
+//     }
+//     else
+//     {
+//       syn::punctuated::Punctuated::new()
+//     };
+//
+//     ( generics_impl, generics_ty, generics_where )
+//   }
 
 }
 
