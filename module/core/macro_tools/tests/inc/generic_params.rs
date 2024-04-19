@@ -131,7 +131,7 @@ fn names()
 fn decompose_empty_generics()
 {
   let generics : syn::Generics = syn::parse_quote! {};
-  let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+  let ( _impl_with_def, impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
 
   assert!( impl_gen.is_empty(), "Impl generics should be empty" );
   assert!( ty_gen.is_empty(), "Type generics should be empty" );
@@ -142,7 +142,7 @@ fn decompose_empty_generics()
 fn decompose_generics_without_where_clause()
 {
   let generics : syn::Generics = syn::parse_quote! { < T, U > };
-  let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+  let ( _impl_with_def, impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
 
   assert_eq!( impl_gen.len(), 2, "Impl generics should have two parameters" );
   assert_eq!( ty_gen.len(), 2, "Type generics should have two parameters" );
@@ -163,7 +163,7 @@ fn decompose_generics_with_where_clause()
 
   let generics : the_module::GenericsWithWhere = syn::parse_quote! { < T, U > where T : Clone, U : Default };
   let generics = generics.unwrap();
-  let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+  let ( _impl_with_def, impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
 
   let impl_exp : syn::Generics = syn::parse_quote! { < T, U, > };
   let ty_exp : syn::Generics = syn::parse_quote! { < T, U, > };
@@ -201,7 +201,7 @@ fn decompose_generics_with_only_where_clause()
 {
   let generics : the_module::GenericsWithWhere = syn::parse_quote! { where T : Clone, U : Default };
   let generics = generics.unwrap();
-  let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+  let ( _impl_with_def, impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
 
   assert!( impl_gen.is_empty(), "Impl generics should be empty" );
   assert!( ty_gen.is_empty(), "Type generics should be empty" );
@@ -214,7 +214,7 @@ fn decompose_generics_with_complex_constraints()
   use macro_tools::quote::ToTokens;
   let generics : the_module::GenericsWithWhere = syn::parse_quote! { < T : Clone + Send, U : Default > where T: Send, U: Default };
   let generics = generics.unwrap();
-  let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+  let ( _impl_with_def, impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
 
   let impl_exp : syn::Generics = syn::parse_quote! { < T : Clone + Send, U : Default, > };
   let ty_exp : syn::Generics = syn::parse_quote! { < T, U, > };
@@ -251,7 +251,7 @@ fn decompose_generics_with_complex_constraints()
 fn decompose_generics_with_nested_generic_types()
 {
   let generics : syn::Generics = syn::parse_quote! { < T : Iterator< Item = U >, U > };
-  let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+  let ( _impl_with_def, impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
 
   let impl_exp : syn::Generics = syn::parse_quote! { < T : Iterator< Item = U >, U, > };
   let ty_exp : syn::Generics = syn::parse_quote! { < T, U, > };
@@ -267,7 +267,7 @@ fn decompose_generics_with_nested_generic_types()
 fn decompose_generics_with_lifetime_parameters_only()
 {
   let generics : syn::Generics = syn::parse_quote! { < 'a, 'b > };
-  let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+  let ( _impl_with_def, impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
 
   let impl_exp : syn::Generics = syn::parse_quote! { < 'a, 'b, > };
   let ty_exp : syn::Generics = syn::parse_quote! { < 'a, 'b, > };
@@ -283,7 +283,7 @@ fn decompose_generics_with_lifetime_parameters_only()
 fn decompose_generics_with_constants_only()
 {
   let generics : syn::Generics = syn::parse_quote! { < const N : usize, const M : usize > };
-  let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+  let ( _impl_with_def, impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
 
   let impl_exp : syn::Generics = syn::parse_quote! { < const N : usize, const M : usize, > };
   let ty_exp : syn::Generics = syn::parse_quote! { < N, M, > };
@@ -299,10 +299,12 @@ fn decompose_generics_with_constants_only()
 fn decompose_generics_with_default_values()
 {
   let generics : syn::Generics = syn::parse_quote! { < T = usize, U = i32 > };
-  let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+  let ( impl_with_def, impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
 
+  let impl_with_exp : syn::Generics = syn::parse_quote! { < T = usize, U = i32, > };
   let impl_exp : syn::Generics = syn::parse_quote! { < T, U, > };
   let ty_exp : syn::Generics = syn::parse_quote! { < T, U, > };
+  a_id!( impl_with_def, impl_with_exp.params );
   a_id!( impl_gen, impl_exp.params );
   a_id!( ty_gen, ty_exp.params );
 
@@ -317,7 +319,7 @@ fn decompose_mixed_generics_types()
   use macro_tools::quote::ToTokens;
   let generics : the_module::GenericsWithWhere = syn::parse_quote! { < 'a, T, const N : usize, U : Trait1 > where T : Clone, U : Default };
   let generics = generics.unwrap();
-  let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+  let ( _impl_with_def, impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
 
   let impl_exp : syn::Generics = syn::parse_quote! { < 'a, T, const N : usize, U : Trait1, > };
   let ty_exp : syn::Generics = syn::parse_quote! { < 'a, T, N, U, > };

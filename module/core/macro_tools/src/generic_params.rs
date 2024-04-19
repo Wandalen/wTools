@@ -193,7 +193,7 @@ pub( crate ) mod private
 //   // add embedded generic parameters
 //   let mut extra_generics : syn::Generics = parse_quote!
 //   {
-//     < Definition = #former_definition < #generics_ty (), #struct_name, former::ReturnPreformed > >
+//     < Definition = #former_definition < #generics_for_ty (), #struct_name, former::ReturnPreformed > >
 //     // Definition = Struct1FormerDefinition< (), Struct1, former::ReturnPreformed >,
 //     // xxx
 //   };
@@ -202,7 +202,7 @@ pub( crate ) mod private
 //   {
 //     where
 //       Definition : former::FormerDefinition,
-//       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage #generics_ty >,
+//       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage #generics_for_ty >,
 //       // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
 //   };
 //
@@ -282,23 +282,27 @@ pub( crate ) mod private
     result
   }
 
-  /// Decomposes `syn::Generics` into three parts suitable for use in implementing traits or types,
-  /// simplifying type and const parameters for type definitions.
+  /// Decomposes `syn::Generics` into components suitable for different usage contexts in Rust implementations,
+  /// specifically focusing on different requirements for `impl` blocks and type definitions.
   ///
-  /// This function clones generic parameters for use with `impl` declarations directly. For type
-  /// definitions, it simplifies type and const parameters to include only identifiers, removing
-  /// any associated bounds or default values. Where clauses are cloned as-is, with a check to ensure
-  /// they end with a comma if not empty.
+  /// This function prepares three versions of the generics:
+  /// - One preserving the full structure for `impl` declarations.
+  /// - One simplified for type definitions, removing bounds and defaults from type and const parameters, retaining only identifiers.
+  /// - One for the where clauses, if present, ensuring they are correctly punctuated.
+  ///
+  /// This helps in situations where you need different representations of generics for implementing traits,
+  /// defining types, or specifying trait bounds and conditions.
   ///
   /// # Examples
   ///
   /// ```rust
-  /// let code : syn::Generics = syn::parse_quote!{ < 'a, T, const N : usize, U : Trait1 > };
-  /// let ( generics_impl, generics_ty, generics_where ) = macro_tools::generic_params::decompose( &code );
+  /// let code : syn::Generics = syn::parse_quote!{ <'a, T, const N : usize, U : Trait1> };
+  /// let ( generics_with_defaults, generics_for_impl, generics_for_ty, generics_where ) = macro_tools::generic_params::decompose( &code );
   ///
+  /// // Use in a macro for generating code
   /// macro_tools::qt!
   /// {
-  ///   impl < #generics_impl > MyTrait for Struct1 < #generics_ty >
+  ///   impl < #generics_for_impl > MyTrait for Struct1 < #generics_for_ty >
   ///   where
   ///     #generics_where
   ///   {
@@ -307,13 +311,6 @@ pub( crate ) mod private
   /// };
   /// ```
   ///
-  /// # Usage
-  ///
-  /// - `generics_impl` : Retains full structure of the original generic parameters for use in `impl` blocks.
-  /// - `generics_ty` : Simplifies generic parameters for type declarations by stripping bounds and modifiers,
-  ///   leaving only the identifiers. Lifetimes are included as is.
-  /// - `generics_where` : Directly clones where clauses if present and ensures they are properly punctuated.
-  ///
   /// # Arguments
   ///
   /// * `generics` - A reference to the `syn::Generics` to be decomposed.
@@ -321,9 +318,10 @@ pub( crate ) mod private
   /// # Returns
   ///
   /// Returns a tuple containing:
-  /// - `syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>` : For use with `impl` blocks.
-  /// - `syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>` : For use with type definitions, simplified.
-  /// - `syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>` : For where clauses, properly punctuated.
+  /// - `syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>`: Original generics with defaults, used where full specification is needed.
+  /// - `syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>`: Generics for `impl` blocks, retaining bounds but no defaults.
+  /// - `syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>`: Simplified generics for type definitions, only identifiers.
+  /// - `syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>`: Where clauses, properly punctuated for use in where conditions.
 
   pub fn decompose
   (
@@ -333,11 +331,16 @@ pub( crate ) mod private
   (
     syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+    syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
   )
   {
-    let mut generics_impl = syn::punctuated::Punctuated::new();
-    let mut generics_ty = syn::punctuated::Punctuated::new();
+
+    let mut generics_with_defaults = generics.params.clone();
+    punctuated::ensure_trailing_comma( &mut generics_with_defaults );
+
+    let mut generics_for_impl = syn::punctuated::Punctuated::new();
+    let mut generics_for_ty = syn::punctuated::Punctuated::new();
 
     // Process each generic parameter
     for param in &generics.params
@@ -346,7 +349,7 @@ pub( crate ) mod private
       {
         syn::GenericParam::Type( type_param ) =>
         {
-          // Retain bounds for generics_impl, remove defaults
+          // Retain bounds for generics_for_impl, remove defaults
           let impl_param = syn::GenericParam::Type( syn::TypeParam
           {
             attrs : vec![],
@@ -356,10 +359,10 @@ pub( crate ) mod private
             eq_token : None, // Remove default token
             default : None, // Remove default value
           } );
-          generics_impl.push_value( impl_param );
-          generics_impl.push_punct( syn::token::Comma::default() );
+          generics_for_impl.push_value( impl_param );
+          generics_for_impl.push_punct( syn::token::Comma::default() );
 
-          // Simplify for generics_ty by removing all except identifiers
+          // Simplify for generics_for_ty by removing all except identifiers
           let ty_param = syn::GenericParam::Type( syn::TypeParam
           {
             attrs : vec![],
@@ -369,8 +372,8 @@ pub( crate ) mod private
             eq_token : None,
             default : None,
           } );
-          generics_ty.push_value( ty_param );
-          generics_ty.push_punct( syn::token::Comma::default() );
+          generics_for_ty.push_value( ty_param );
+          generics_for_ty.push_punct( syn::token::Comma::default() );
         },
         syn::GenericParam::Const( const_param ) =>
         {
@@ -385,8 +388,8 @@ pub( crate ) mod private
             eq_token : None,
             default : None,
           } );
-          generics_impl.push_value( impl_param );
-          generics_impl.push_punct( syn::token::Comma::default() );
+          generics_for_impl.push_value( impl_param );
+          generics_for_impl.push_punct( syn::token::Comma::default() );
 
           let ty_param = syn::GenericParam::Type( syn::TypeParam
           {
@@ -397,16 +400,16 @@ pub( crate ) mod private
             eq_token : None,
             default : None,
           });
-          generics_ty.push_value( ty_param );
-          generics_ty.push_punct( syn::token::Comma::default() );
+          generics_for_ty.push_value( ty_param );
+          generics_for_ty.push_punct( syn::token::Comma::default() );
         },
         syn::GenericParam::Lifetime( lifetime_param ) =>
         {
-          // Lifetimes are added as-is to both generics_impl and generics_ty
-          generics_impl.push_value( syn::GenericParam::Lifetime( lifetime_param.clone() ) );
-          generics_impl.push_punct( syn::token::Comma::default() );
-          generics_ty.push_value( syn::GenericParam::Lifetime( lifetime_param.clone() ) );
-          generics_ty.push_punct( syn::token::Comma::default() );
+          // Lifetimes are added as-is to both generics_for_impl and generics_for_ty
+          generics_for_impl.push_value( syn::GenericParam::Lifetime( lifetime_param.clone() ) );
+          generics_for_impl.push_punct( syn::token::Comma::default() );
+          generics_for_ty.push_value( syn::GenericParam::Lifetime( lifetime_param.clone() ) );
+          generics_for_ty.push_punct( syn::token::Comma::default() );
         }
       }
     }
@@ -423,7 +426,7 @@ pub( crate ) mod private
       syn::punctuated::Punctuated::new()
     };
 
-    ( generics_impl, generics_ty, generics_where )
+    ( generics_with_defaults, generics_for_impl, generics_for_ty, generics_where )
   }
 
 //   pub fn decompose
@@ -437,10 +440,10 @@ pub( crate ) mod private
 //     syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
 //   )
 //   {
-//     let mut generics_impl = generics.params.clone();
-//     punctuated::ensure_trailing_comma( &mut generics_impl );
+//     let mut generics_for_impl = generics.params.clone();
+//     punctuated::ensure_trailing_comma( &mut generics_for_impl );
 //
-//     let mut generics_ty = syn::punctuated::Punctuated::new();
+//     let mut generics_for_ty = syn::punctuated::Punctuated::new();
 //     for param in &generics.params
 //     {
 //       match param
@@ -456,8 +459,8 @@ pub( crate ) mod private
 //             eq_token : None,
 //             default : None,
 //           });
-//           generics_ty.push_value( simplified );
-//           generics_ty.push_punct( syn::token::Comma::default() );
+//           generics_for_ty.push_value( simplified );
+//           generics_for_ty.push_punct( syn::token::Comma::default() );
 //         },
 //         syn::GenericParam::Const( const_param ) =>
 //         {
@@ -470,13 +473,13 @@ pub( crate ) mod private
 //             eq_token : None,
 //             default : None,
 //           });
-//           generics_ty.push_value( simplified );
-//           generics_ty.push_punct( syn::token::Comma::default() );
+//           generics_for_ty.push_value( simplified );
+//           generics_for_ty.push_punct( syn::token::Comma::default() );
 //         },
 //         syn::GenericParam::Lifetime( lifetime_param ) =>
 //         {
-//           generics_ty.push_value( syn::GenericParam::Lifetime( lifetime_param.clone() ) );
-//           generics_ty.push_punct( syn::token::Comma::default() );
+//           generics_for_ty.push_value( syn::GenericParam::Lifetime( lifetime_param.clone() ) );
+//           generics_for_ty.push_punct( syn::token::Comma::default() );
 //         }
 //       }
 //     }
@@ -492,7 +495,7 @@ pub( crate ) mod private
 //       syn::punctuated::Punctuated::new()
 //     };
 //
-//     ( generics_impl, generics_ty, generics_where )
+//     ( generics_for_impl, generics_for_ty, generics_where )
 //   }
 
 }

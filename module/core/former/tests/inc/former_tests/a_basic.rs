@@ -11,6 +11,7 @@ pub struct Struct1
 
 // = begin of generated
 
+
 // = end of generated
 
 include!( "./only_test/basic.rs" );
