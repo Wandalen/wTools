@@ -327,7 +327,7 @@ pub( crate ) mod private
 
   pub fn decompose
   (
-    generics : &syn::Generics
+    generics : &syn::Generics,
   )
   ->
   (
@@ -336,17 +336,31 @@ pub( crate ) mod private
     syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
   )
   {
-    let mut generics_impl = generics.params.clone();
-    punctuated::ensure_trailing_comma( &mut generics_impl );
-
+    let mut generics_impl = syn::punctuated::Punctuated::new();
     let mut generics_ty = syn::punctuated::Punctuated::new();
+
+    // Process each generic parameter
     for param in &generics.params
     {
       match param
       {
         syn::GenericParam::Type( type_param ) =>
         {
-          let simplified = syn::GenericParam::Type( syn::TypeParam
+          // Retain bounds for generics_impl, remove defaults
+          let impl_param = syn::GenericParam::Type( syn::TypeParam
+          {
+            attrs : vec![],
+            ident : type_param.ident.clone(),
+            colon_token : type_param.colon_token,
+            bounds : type_param.bounds.clone(),
+            eq_token : None, // Remove default token
+            default : None, // Remove default value
+          } );
+          generics_impl.push_value( impl_param );
+          generics_impl.push_punct( syn::token::Comma::default() );
+
+          // Simplify for generics_ty by removing all except identifiers
+          let ty_param = syn::GenericParam::Type( syn::TypeParam
           {
             attrs : vec![],
             ident : type_param.ident.clone(),
@@ -354,13 +368,27 @@ pub( crate ) mod private
             bounds : syn::punctuated::Punctuated::new(),
             eq_token : None,
             default : None,
-          });
-          generics_ty.push_value( simplified );
+          } );
+          generics_ty.push_value( ty_param );
           generics_ty.push_punct( syn::token::Comma::default() );
         },
         syn::GenericParam::Const( const_param ) =>
         {
-          let simplified = syn::GenericParam::Type( syn::TypeParam
+          // Simplify const parameters by removing all details except the identifier
+          let impl_param = syn::GenericParam::Const( syn::ConstParam
+          {
+            attrs : vec![],
+            const_token : const_param.const_token,
+            ident : const_param.ident.clone(),
+            colon_token : const_param.colon_token,
+            ty : const_param.ty.clone(),
+            eq_token : None,
+            default : None,
+          } );
+          generics_impl.push_value( impl_param );
+          generics_impl.push_punct( syn::token::Comma::default() );
+
+          let ty_param = syn::GenericParam::Type( syn::TypeParam
           {
             attrs : vec![],
             ident : const_param.ident.clone(),
@@ -369,17 +397,21 @@ pub( crate ) mod private
             eq_token : None,
             default : None,
           });
-          generics_ty.push_value( simplified );
+          generics_ty.push_value( ty_param );
           generics_ty.push_punct( syn::token::Comma::default() );
         },
         syn::GenericParam::Lifetime( lifetime_param ) =>
         {
+          // Lifetimes are added as-is to both generics_impl and generics_ty
+          generics_impl.push_value( syn::GenericParam::Lifetime( lifetime_param.clone() ) );
+          generics_impl.push_punct( syn::token::Comma::default() );
           generics_ty.push_value( syn::GenericParam::Lifetime( lifetime_param.clone() ) );
           generics_ty.push_punct( syn::token::Comma::default() );
         }
       }
     }
 
+    // Clone where predicates if present, ensuring they end with a comma
     let generics_where = if let Some( where_clause ) = &generics.where_clause
     {
       let mut predicates = where_clause.predicates.clone();
@@ -393,6 +425,75 @@ pub( crate ) mod private
 
     ( generics_impl, generics_ty, generics_where )
   }
+
+//   pub fn decompose
+//   (
+//     generics : &syn::Generics
+//   )
+//   ->
+//   (
+//     syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+//     syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+//     syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+//   )
+//   {
+//     let mut generics_impl = generics.params.clone();
+//     punctuated::ensure_trailing_comma( &mut generics_impl );
+//
+//     let mut generics_ty = syn::punctuated::Punctuated::new();
+//     for param in &generics.params
+//     {
+//       match param
+//       {
+//         syn::GenericParam::Type( type_param ) =>
+//         {
+//           let simplified = syn::GenericParam::Type( syn::TypeParam
+//           {
+//             attrs : vec![],
+//             ident : type_param.ident.clone(),
+//             colon_token : None,
+//             bounds : syn::punctuated::Punctuated::new(),
+//             eq_token : None,
+//             default : None,
+//           });
+//           generics_ty.push_value( simplified );
+//           generics_ty.push_punct( syn::token::Comma::default() );
+//         },
+//         syn::GenericParam::Const( const_param ) =>
+//         {
+//           let simplified = syn::GenericParam::Type( syn::TypeParam
+//           {
+//             attrs : vec![],
+//             ident : const_param.ident.clone(),
+//             colon_token : None,
+//             bounds : syn::punctuated::Punctuated::new(),
+//             eq_token : None,
+//             default : None,
+//           });
+//           generics_ty.push_value( simplified );
+//           generics_ty.push_punct( syn::token::Comma::default() );
+//         },
+//         syn::GenericParam::Lifetime( lifetime_param ) =>
+//         {
+//           generics_ty.push_value( syn::GenericParam::Lifetime( lifetime_param.clone() ) );
+//           generics_ty.push_punct( syn::token::Comma::default() );
+//         }
+//       }
+//     }
+//
+//     let generics_where = if let Some( where_clause ) = &generics.where_clause
+//     {
+//       let mut predicates = where_clause.predicates.clone();
+//       punctuated::ensure_trailing_comma( &mut predicates );
+//       predicates
+//     }
+//     else
+//     {
+//       syn::punctuated::Punctuated::new()
+//     };
+//
+//     ( generics_impl, generics_ty, generics_where )
+//   }
 
 }
 

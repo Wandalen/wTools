@@ -301,7 +301,7 @@ fn decompose_generics_with_default_values()
   let generics : syn::Generics = syn::parse_quote! { < T = usize, U = i32 > };
   let ( impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
 
-  let impl_exp : syn::Generics = syn::parse_quote! { < T = usize, U = i32, > };
+  let impl_exp : syn::Generics = syn::parse_quote! { < T, U, > };
   let ty_exp : syn::Generics = syn::parse_quote! { < T, U, > };
   a_id!( impl_gen, impl_exp.params );
   a_id!( ty_gen, ty_exp.params );

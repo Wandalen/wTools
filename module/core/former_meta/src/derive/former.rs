@@ -1110,7 +1110,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   };
   let generics_of_former = generic_params::merge( &generics, &extra.into() );
 
-  let ( generics_of_former_impl, generics_of_former_ty, generics_of_former_where ) = generics_of_former.split_for_impl();
+  let ( generics_of_former_impl, generics_of_former_ty, generics_of_former_where ) = generic_params::decompose( &generics_of_former );
+
+  // let ( generics_of_former_impl, generics_of_former_ty, generics_of_former_where ) = generics_of_former.split_for_impl();
   let generics_of_former_with_defaults = generics_of_former.params.clone(); // xxx : remove?
   // macro_tools::code_print!( generics_of_former_with_defaults );
   // macro_tools::code_print!( extra );
@@ -1357,7 +1359,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     #[ doc = #doc_former_struct ]
     pub struct #former < #generics_of_former_with_defaults >
-    #generics_of_former_where
+    where
+      #generics_of_former_where
     {
       storage : < Definition::Types as former::FormerDefinitionTypes >::Storage,
       context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
@@ -1366,8 +1369,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     }
 
     #[ automatically_derived ]
-    impl #generics_of_former_impl #former #generics_of_former_ty
-    #generics_of_former_where
+    impl < #generics_of_former_impl > #former < #generics_of_former_ty >
+    where
+      #generics_of_former_where
     {
 
       ///
