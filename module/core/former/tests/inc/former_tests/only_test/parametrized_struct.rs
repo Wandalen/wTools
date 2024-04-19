@@ -49,9 +49,9 @@ fn command_properties()
   let got = Command::< &str >::former()
   .name( "a" )
   .properties()
-    .insert( "property1", Property::< &str >::new( "property1", 13isize ) )
-    .insert( "property2", Property::new( "property2", 13isize ) )
-    .insert( "property2", Property::new( "property2", 113isize ) )
+    .add( ( "property1", Property::< &str >::new( "property1", 13isize ) ) )
+    .add( ( "property2", Property::new( "property2", 13isize ) ) )
+    .add( ( "property2", Property::new( "property2", 113isize ) ) )
     .end()
   .form();
   let exp = Command::< &str >

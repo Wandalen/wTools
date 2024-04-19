@@ -352,3 +352,21 @@ fn decompose_mixed_generics_types()
   }
 
 }
+
+// xxx
+// #[ test ]
+// fn decompose_bug_a()
+// {
+//   use macro_tools::quote::ToTokens;
+//   let generics : the_module::GenericsWithWhere = syn::parse_quote! { < K : core::hash::Hash + std::cmp::Eq > };
+//   let generics = generics.unwrap();
+//   let ( impl_with_def, impl_gen, ty_gen, where_gen ) = the_module::generic_params::decompose( &generics );
+//
+//   let impl_with_def_exp : syn::Generics = syn::parse_quote! { < K : core::hash::Hash + std::cmp::Eq, > };
+//   let impl_gen_exp : syn::Generics = syn::parse_quote! { < K, > };
+//   let ty_gen_exp : syn::Generics = syn::parse_quote! { < K, > };
+//   a_id!( impl_with_def, impl_with_def_exp.params );
+//   a_id!( impl_gen, impl_gen_exp.params );
+//   a_id!( ty_gen_exp, ty_gen.params );
+//
+// }
