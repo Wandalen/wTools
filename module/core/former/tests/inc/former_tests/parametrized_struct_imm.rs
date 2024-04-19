@@ -37,4 +37,3 @@ pub struct Command< K : core::hash::Hash + std::cmp::Eq >
 // == end of generated
 
 include!( "./only_test/parametrized_struct.rs" );
-// xxx : uncomment

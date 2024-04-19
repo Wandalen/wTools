@@ -854,6 +854,7 @@ fn fields_setter_callback_descriptor_map
   former_storage : &syn::Ident,
   former_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  former_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
   struct_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
 )
 ->
@@ -883,6 +884,7 @@ Result< TokenStream >
     /// Return original former after subformer for `vec_1` is done.
     #[ allow( non_camel_case_types ) ]
     pub struct #field_forming_end;
+
     #[ automatically_derived ]
     impl< #former_generics_impl > former::FormingEnd
     <
@@ -895,6 +897,7 @@ Result< TokenStream >
       <
         Storage = #former_storage < #struct_generics_ty >
       >,
+      #former_generics_where
     {
       #[ inline( always ) ]
       fn call
@@ -1193,6 +1196,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       &former_storage,
       &former_generics_impl,
       &former_generics_ty,
+      &former_generics_where,
       &struct_generics_ty,
     ),
   )}).multiunzip();
@@ -1254,6 +1258,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     impl < #former_definition_type_generics_impl > former::FormerDefinitionTypes
     for #former_definition_types < #former_definition_type_generics_ty >
+    where
+      #former_definition_type_generics_where
     {
       type Storage = #former_storage < #struct_generics_ty >;
       type Formed = __Formed;
@@ -1504,6 +1510,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty >, Formed = #struct_name < #struct_generics_ty > >,
       < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
       < Definition::Types as former::FormerDefinitionTypes >::Storage : former::Storage< Formed = #struct_name < #struct_generics_ty > >,
+      #former_generics_where
     {
 
       pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
