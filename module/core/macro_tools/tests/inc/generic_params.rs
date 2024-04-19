@@ -174,7 +174,7 @@ fn decompose_generics_with_where_clause()
   assert_eq!( ty_gen.len(), 2, "Type generics should have two parameters" );
   assert_eq!( where_gen.len(), 2, "Where generics should have two predicates" );
 
-  let where_clauses : Vec<_> = where_gen.iter().collect();
+  let where_clauses : Vec< _ > = where_gen.iter().collect();
 
   // Properly match against the `syn::WherePredicate::Type` variant to extract `bounded_ty`
   if let syn::WherePredicate::Type( pt ) = &where_clauses[0]
@@ -206,6 +206,7 @@ fn decompose_generics_with_only_where_clause()
   assert!( impl_gen.is_empty(), "Impl generics should be empty" );
   assert!( ty_gen.is_empty(), "Type generics should be empty" );
   assert_eq!( where_gen.len(), 2, "Where generics should have two predicates" );
+
 }
 
 #[ test ]

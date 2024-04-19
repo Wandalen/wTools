@@ -5,9 +5,45 @@ pub( crate ) mod private
 {
   use super::super::*;
 
+  /// Adds a `PhantomData` field to a struct to manage generic parameter usage.
+  ///
+  /// This function clones a given `syn::ItemStruct`, calculates the appropriate `PhantomData` usage
+  /// based on the struct's generic parameters, and adds a corresponding `PhantomData` field. This field
+  /// helps in handling ownership and lifetime indications for generic parameters, ensuring that they
+  /// are correctly accounted for in type checking, even if they are not directly used in the struct's
+  /// fields.
+  ///
+  /// # Parameters
+  /// - `input`: A reference to the `syn::ItemStruct` which describes the structure to which the
+  ///   `PhantomData` field will be added.
+  ///
+  /// # Returns
+  /// Returns a new `syn::ItemStruct` with the `PhantomData` field added to its list of fields.
+  ///
+  /// # Examples
+  /// ```rust
+  /// use syn::{ parse_quote, ItemStruct };
+  /// use macro_tools::item::phantom_add;
+  ///
+  /// let input_struct: ItemStruct = parse_quote!
+  /// {
+  ///   pub struct MyStruct< T, U >
+  ///   {
+  ///     data : T,
+  ///   }
+  /// };
+  ///
+  /// let modified_struct = phantom_add(&input_struct);
+  /// println!( "{:#?}", modified_struct );
+  ///
+  /// // Output will include a _phantom field of type `PhantomData<(T, U)>`
+  /// ```
+  ///
+
   pub fn phantom_add( input : &syn::ItemStruct ) -> syn::ItemStruct
   {
     use proc_macro2::Span;
+    use syn::{ GenericParam, Type };
 
     // Clone the input struct to work on a modifiable copy
     let mut input = input.clone();
@@ -19,25 +55,31 @@ pub( crate ) mod private
       {
         match param
         {
-          syn::GenericParam::Type( type_param ) =>
+          GenericParam::Type( type_param ) =>
           {
-            syn::Type::Path( syn::TypePath
+            Type::Path( syn::TypePath
             {
               qself : None,
               path : type_param.ident.clone().into(),
             })
           },
-          syn::GenericParam::Lifetime( lifetime_param ) =>
+          GenericParam::Lifetime( lifetime_param ) =>
           {
-            syn::Type::Path( syn::TypePath
+            Type::Reference( syn::TypeReference
             {
-              qself : None,
-              path : lifetime_param.lifetime.ident.clone().into(),
+              and_token : Default::default(),
+              lifetime : Some( lifetime_param.lifetime.clone() ),
+              mutability : None,
+              elem : Box::new( Type::Tuple( syn::TypeTuple
+              {
+                paren_token : syn::token::Paren( Span::call_site() ),
+                elems : syn::punctuated::Punctuated::new(),
+              }))
             })
           },
-          syn::GenericParam::Const( const_param ) =>
+          GenericParam::Const( const_param ) =>
           {
-            syn::Type::Path( syn::TypePath
+            Type::Path( syn::TypePath
             {
               qself : None,
               path : const_param.ident.clone().into(),
@@ -46,7 +88,7 @@ pub( crate ) mod private
         }
       }).collect::<syn::punctuated::Punctuated<_, syn::token::Comma>>();
 
-      syn::Type::Tuple( syn::TypeTuple
+      Type::Tuple( syn::TypeTuple
       {
         paren_token : syn::token::Paren( Span::call_site() ),
         elems : generics_list,
@@ -55,7 +97,7 @@ pub( crate ) mod private
     else
     {
       // Use unit type if there are no generics
-      syn::Type::Tuple( syn::TypeTuple
+      Type::Tuple( syn::TypeTuple
       {
         paren_token : syn::token::Paren( Span::call_site() ),
         elems : syn::punctuated::Punctuated::new(),
@@ -81,7 +123,7 @@ pub( crate ) mod private
             let mut segments = syn::punctuated::Punctuated::new();
             segments.push_value( syn::PathSegment
             {
-              ident : syn::Ident::new( "std", Span::call_site() ),
+              ident : syn::Ident::new( "core", Span::call_site() ),
               arguments : syn::PathArguments::None,
             });
             segments.push_punct( Default::default() );
@@ -108,10 +150,11 @@ pub( crate ) mod private
       }),
     };
 
-    // Add the new field to the existing fields of the struct
+    // Add the new field to the existing fields of the struct, including a comma
     if let syn::Fields::Named( ref mut fields ) = input.fields
     {
       fields.named.push( phantom_field );
+      fields.named.push_punct( Default::default() ); // Add the comma after the phantom field
     }
 
     input
