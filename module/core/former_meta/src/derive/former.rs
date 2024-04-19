@@ -1108,9 +1108,11 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   {
     < Context, Formed >
   };
-  let former_definition_generics_type = generic_params::merge( &generics, &extra.into() );
-  let ( former_definition_generics_type_with_defaults, former_definition_generics_type_impl, former_definition_generics_type_ty, former_definition_generics_type_where )
-  = generic_params::decompose( &former_definition_generics_type );
+  let former_definition_type_generics = generic_params::merge( &generics, &extra.into() );
+  let ( former_definition_type_generics_with_defaults, former_definition_type_generics_impl, former_definition_type_generics_ty, former_definition_type_generics_where )
+  = generic_params::decompose( &former_definition_type_generics );
+
+  let former_definition_type_phantom = macro_tools::phantom::tuple( &former_definition_type_generics_impl );
 
   /* parameters for definition */
   let extra : macro_tools::GenericsWithWhere = parse_quote!
@@ -1120,6 +1122,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let generics_of_definition = generic_params::merge( &generics, &extra.into() );
   let ( former_definition_generics_with_defaults, former_definition_generics_impl, former_definition_generics_ty, former_definition_generics_where )
   = generic_params::decompose( &generics_of_definition );
+
+  let former_definition_phantom = macro_tools::phantom::tuple( &former_definition_generics_impl );
 
   /* structure attribute */
 
@@ -1224,18 +1228,19 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     #[ derive( Debug ) ]
     // xxx : revert later
-    pub struct #former_definition_types < #former_definition_generics_type_impl >
-    // pub struct #former_definition_types < #former_definition_generics_type_with_defaults >
+    pub struct #former_definition_types < #former_definition_type_generics_impl >
+    // pub struct #former_definition_types < #former_definition_type_generics_with_defaults >
     where
-      #former_definition_generics_type_where
+      #former_definition_type_generics_where
     {
-      _phantom : core::marker::PhantomData< ( Context, Formed ) >,
+      // _phantom : core::marker::PhantomData< ( Context, Formed ) >,
+      _phantom : #former_definition_type_phantom,
     }
 
-    impl < #former_definition_generics_type_impl > Default
-    for #former_definition_types < #former_definition_generics_type_ty >
+    impl < #former_definition_type_generics_impl > Default
+    for #former_definition_types < #former_definition_type_generics_ty >
     where
-      #former_definition_generics_type_where
+      #former_definition_type_generics_where
     {
       fn default() -> Self
       {
@@ -1246,8 +1251,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
     }
 
-    impl < #former_definition_generics_type_impl > former::FormerDefinitionTypes
-    for #former_definition_types < #former_definition_generics_type_ty >
+    impl < #former_definition_type_generics_impl > former::FormerDefinitionTypes
+    for #former_definition_types < #former_definition_type_generics_ty >
     {
       type Storage = #former_storage < #struct_generics_ty >;
       type Formed = Formed;
@@ -1263,7 +1268,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     where
       #former_definition_generics_where
     {
-      _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
+      // _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
+      _phantom : #former_definition_phantom,
     }
 
     impl < #former_definition_generics_impl > Default
@@ -1283,17 +1289,17 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     impl < #former_definition_generics_impl > former::FormerDefinition
     for #former_definition < #former_definition_generics_ty > // xxx
     where
-      End : former::FormingEnd< #former_definition_types < #former_definition_generics_type_ty > >,
+      End : former::FormingEnd< #former_definition_types < #former_definition_type_generics_ty > >,
       #former_definition_generics_where
     {
-      type Types = #former_definition_types < #former_definition_generics_type_ty >;
+      type Types = #former_definition_types < #former_definition_type_generics_ty >;
       type End = End;
     }
 
-    pub type #former_with_closure < #former_definition_generics_type_ty > =
+    pub type #former_with_closure < #former_definition_type_generics_ty > =
     #former_definition
     <
-      #former_definition_generics_type_ty former::FormingEndClosure< #former_definition_types < #former_definition_generics_type_ty > >
+      #former_definition_type_generics_ty former::FormingEndClosure< #former_definition_types < #former_definition_type_generics_ty > >
     >;
 
     // = storage
