@@ -13,36 +13,35 @@ mod former_tests
   #[ allow( unused_imports ) ]
   use super::*;
 
-  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  // mod container_former_common;
-  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  // mod container_former_vec;
-  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  // mod container_former_hashset;
-  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  // mod container_former_hashmap;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod container_former_common;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod container_former_vec;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod container_former_hashset;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod container_former_hashmap;
 
   mod a_basic_manual;
   mod a_basic;
-//   mod a_primitives_manual;
-//   mod a_primitives;
-//   // mod a_containers_without_subformer;
-//   // xxx
-//   #[ cfg( not( feature = "no_std" ) ) ]
-//   mod a_containers_with_subformer_manual;
-//   // #[ cfg( not( feature = "no_std" ) ) ]
-//   // mod a_containers_with_subformer ;
-//   // xxx
-//
-//   mod attribute_default_container;
-//   mod attribute_default_primitive;
-//   // mod attribute_perform; // xxx
-//   mod attribute_setter;
-//   mod attribute_alias;
-
+  mod a_primitives_manual;
+  mod a_primitives;
+  // mod a_containers_without_subformer;
   // xxx
+  #[ cfg( not( feature = "no_std" ) ) ]
+  mod a_containers_with_subformer_manual;
+  // #[ cfg( not( feature = "no_std" ) ) ]
+  // mod a_containers_with_subformer ;
+  // xxx
+
+  mod attribute_default_container;
+  mod attribute_default_primitive;
+  // mod attribute_perform; // xxx
+  mod attribute_setter;
+  mod attribute_alias;
+
   mod string_slice_manual;
-  // mod string_slice;
+  mod string_slice;
   // mod unsigned_primitive_types;
   // mod default_user_type;
   // mod user_type_no_default;

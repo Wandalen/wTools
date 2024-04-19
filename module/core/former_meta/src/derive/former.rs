@@ -1227,9 +1227,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     // = definition types
 
     #[ derive( Debug ) ]
-    // xxx : revert later
-    pub struct #former_definition_types < #former_definition_type_generics_impl >
-    // pub struct #former_definition_types < #former_definition_type_generics_with_defaults >
+    // pub struct #former_definition_types < #former_definition_type_generics_impl >
+    pub struct #former_definition_types < #former_definition_type_generics_with_defaults >
     where
       #former_definition_type_generics_where
     {
@@ -1262,9 +1261,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     // = definition
 
     #[ derive( Debug ) ]
-    // xxx : revert later
-    // pub struct #former_definition < #former_definition_generics_with_defaults >
-    pub struct #former_definition < #former_definition_generics_impl >
+    // pub struct #former_definition < #former_definition_generics_impl >
+    pub struct #former_definition < #former_definition_generics_with_defaults >
     where
       #former_definition_generics_where
     {
@@ -1287,7 +1285,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     }
 
     impl < #former_definition_generics_impl > former::FormerDefinition
-    for #former_definition < #former_definition_generics_ty > // xxx
+    for #former_definition < #former_definition_generics_ty >
     where
       End : former::FormingEnd< #former_definition_types < #former_definition_type_generics_ty > >,
       #former_definition_generics_where
