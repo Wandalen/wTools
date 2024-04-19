@@ -1080,20 +1080,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let ( generics_with_defaults, generics_impl, generics_ty, generics_where )
   = generic_params::decompose( generics );
 
-  // xxx : rid off
-  // let ( generics_impl_, generics_ty_, generics_where_ ) = generics.split_for_impl();
-  // let generics_ty_turbofish = generics_ty_.as_turbofish();
-  // zzz : eliminate generic_params maybe
-  // let _generics_params = generic_params::names( generics ).params;
-  // let generic_params = if _generics_params.len() == 0
-  // {
-  //   qt!{}
-  // }
-  // else
-  // {
-  //   qt!{ #_generics_params, }
-  // };
-
+  /* parameters for definition */
   /* parameters for definition */
   let extra : macro_tools::syn::AngleBracketedGenericArguments = parse_quote!
   {
@@ -1114,11 +1101,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let ( generics_of_former_with_defaults, generics_of_former_impl, generics_of_former_ty, generics_of_former_where )
   = generic_params::decompose( &generics_of_former );
 
-  // let ( generics_of_former_impl, generics_of_former_ty, generics_of_former_where ) = generics_of_former.split_for_impl();
-  // let generics_of_former_with_defaults = generics_of_former.params.clone(); // xxx : remove?
-  // macro_tools::code_print!( generics_of_former_with_defaults );
-  // macro_tools::code_print!( extra );
-
   /* parameters for definition types */
   let extra : macro_tools::GenericsWithWhere = parse_quote!
   {
@@ -1128,16 +1110,12 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let ( generics_of_definition_type_with_defaults, generics_of_definition_type_impl, generics_of_definition_type_ty, generics_of_definition_type_where )
   = generic_params::decompose( &generics_of_definition_type );
 
-  // let ( generics_of_definition_type_impl, generics_of_definition_type_ty, generics_of_definition_type_where ) = generics_of_definition_type.split_for_impl();
-  // xxx : rid off all split_for_impl, replacing them by generic_params::decompose
-
   /* parameters for definition */
   let extra : macro_tools::GenericsWithWhere = parse_quote!
   {
     < Context, Formed, End >
   };
   let generics_of_definition = generic_params::merge( &generics, &extra.into() );
-  // let ( generics_of_definition_impl, _generics_of_definition_ty, generics_of_definition_where ) = generics_of_definition.split_for_impl();
   let ( generics_of_definition_with_defaults, generics_of_definition_impl, generics_of_definition_ty, generics_of_definition_where )
   = generic_params::decompose( &generics_of_definition );
 
@@ -1235,9 +1213,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     #[ derive( Debug ) ]
     // xxx : revert later
-    // pub struct #former_definition_types< Context = (), Formed = #struct_name #generics_ty_ >
-    // pub struct #former_definition_types #generics_of_definition_type_impl
-    pub struct #former_definition_types < #generics_of_definition_type_with_defaults >
+    pub struct #former_definition_types < #generics_of_definition_type_impl >
+    // pub struct #former_definition_types < #generics_of_definition_type_with_defaults >
     where
       #generics_of_definition_type_where
     {
@@ -1270,9 +1247,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     #[ derive( Debug ) ]
     // xxx : revert later
-    // pub struct #former_definition< Context = (), Formed = #struct_name #generics_ty_, End = former::ReturnPreformed >
-    // pub struct #former_definition < #generics_of_definition_impl >
-    pub struct #former_definition < #generics_of_definition_with_defaults >
+    // pub struct #former_definition < #generics_of_definition_with_defaults >
+    pub struct #former_definition < #generics_of_definition_impl >
     where
       #generics_of_definition_where
     {
