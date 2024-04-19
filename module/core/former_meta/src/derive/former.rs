@@ -852,8 +852,8 @@ fn fields_setter_callback_descriptor_map
   struct_name : &syn::Ident,
   former : &syn::Ident,
   former_storage : &syn::Ident,
-  generics_of_former_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_of_former_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  former_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   // former_definition : &syn::Ident,
 )
 ->
@@ -884,9 +884,9 @@ Result< TokenStream >
     #[ allow( non_camel_case_types ) ]
     pub struct #field_forming_end;
     #[ automatically_derived ]
-    impl< #generics_of_former_impl > former::FormingEnd
+    impl< #former_generics_impl > former::FormingEnd
     <
-      #subformer_definition < #( #params, )* #former< #generics_of_former_ty >, #former< #generics_of_former_ty >, former::NoEnd >,
+      #subformer_definition < #( #params, )* #former< #former_generics_ty >, #former< #former_generics_ty >, former::NoEnd >,
     >
     for #field_forming_end
     where
@@ -901,9 +901,9 @@ Result< TokenStream >
       (
         &self,
         storage : #field_ty,
-        super_former : Option< #former< #generics_of_former_ty > >,
+        super_former : Option< #former< #former_generics_ty > >,
       )
-      -> #former< #generics_of_former_ty >
+      -> #former< #former_generics_ty >
       {
         let mut super_former = super_former.unwrap();
         if let Some( ref mut field ) = super_former.storage.#ident
@@ -1079,38 +1079,38 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   /* generic parameters */
 
   let generics = &ast.generics;
-  let ( generics_with_defaults, generics_impl, generics_ty, generics_where )
+  let ( struct_generics_with_defaults, struct_generics_impl, struct_generics_ty, struct_generics_where )
   = generic_params::decompose( generics );
 
   /* parameters for definition */
   /* parameters for definition */
   let extra : macro_tools::syn::AngleBracketedGenericArguments = parse_quote!
   {
-    < (), #struct_name < #generics_ty >, former::ReturnPreformed >
+    < (), #struct_name < #struct_generics_ty >, former::ReturnPreformed >
   };
-  let args_of_definition = generic_args::merge( &generics.into_generic_args(), &extra.into() ).args;
+  let former_definition_args = generic_args::merge( &generics.into_generic_args(), &extra.into() ).args;
 
   /* parameters for former */
   let extra : macro_tools::GenericsWithWhere = parse_quote!
   {
-    < Definition = #former_definition < #args_of_definition > >
+    < Definition = #former_definition < #former_definition_args > >
     where
       Definition : former::FormerDefinition,
-      Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #generics_ty > >,
+      Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty > >,
   };
-  let generics_of_former = generic_params::merge( &generics, &extra.into() );
+  let extra = generic_params::merge( &generics, &extra.into() );
 
-  let ( generics_of_former_with_defaults, generics_of_former_impl, generics_of_former_ty, generics_of_former_where )
-  = generic_params::decompose( &generics_of_former );
+  let ( former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where )
+  = generic_params::decompose( &extra );
 
   /* parameters for definition types */
   let extra : macro_tools::GenericsWithWhere = parse_quote!
   {
     < Context, Formed >
   };
-  let generics_of_definition_type = generic_params::merge( &generics, &extra.into() );
-  let ( generics_of_definition_type_with_defaults, generics_of_definition_type_impl, generics_of_definition_type_ty, generics_of_definition_type_where )
-  = generic_params::decompose( &generics_of_definition_type );
+  let former_definition_generics_type = generic_params::merge( &generics, &extra.into() );
+  let ( former_definition_generics_type_with_defaults, former_definition_generics_type_impl, former_definition_generics_type_ty, former_definition_generics_type_where )
+  = generic_params::decompose( &former_definition_generics_type );
 
   /* parameters for definition */
   let extra : macro_tools::GenericsWithWhere = parse_quote!
@@ -1118,7 +1118,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     < Context, Formed, End >
   };
   let generics_of_definition = generic_params::merge( &generics, &extra.into() );
-  let ( generics_of_definition_with_defaults, generics_of_definition_impl, generics_of_definition_ty, generics_of_definition_where )
+  let ( former_definition_generics_with_defaults, former_definition_generics_impl, former_definition_generics_ty, former_definition_generics_where )
   = generic_params::decompose( &generics_of_definition );
 
   /* structure attribute */
@@ -1127,7 +1127,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   (
     &struct_name,
     // &former_definition,
-    // &generics_ty,
+    // &struct_generics_ty,
     ast.attrs.iter(),
   )?;
 
@@ -1187,8 +1187,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       &struct_name,
       &former,
       &former_storage,
-      &generics_of_former_impl,
-      &generics_of_former_ty,
+      &former_generics_impl,
+      &former_generics_ty,
     ),
   )}).multiunzip();
 
@@ -1203,18 +1203,18 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     // = formed
 
     #[ automatically_derived ]
-    impl < #generics_impl > #struct_name < #generics_ty >
+    impl < #struct_generics_impl > #struct_name < #struct_generics_ty >
     where
-      #generics_where
+      #struct_generics_where
     {
       ///
       /// Make former, variation of builder pattern to form structure defining values of fields step by step.
       ///
 
       #[ inline( always ) ]
-      pub fn former() -> #former < #former_definition< #args_of_definition > >
+      pub fn former() -> #former < #struct_generics_impl #former_definition< #former_definition_args > >
       {
-        #former :: < #former_definition< #args_of_definition > > :: new( former::ReturnPreformed )
+        #former :: < #struct_generics_impl #former_definition< #former_definition_args > > :: new( former::ReturnPreformed )
 
       }
 
@@ -1224,18 +1224,18 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     #[ derive( Debug ) ]
     // xxx : revert later
-    pub struct #former_definition_types < #generics_of_definition_type_impl >
-    // pub struct #former_definition_types < #generics_of_definition_type_with_defaults >
+    pub struct #former_definition_types < #former_definition_generics_type_impl >
+    // pub struct #former_definition_types < #former_definition_generics_type_with_defaults >
     where
-      #generics_of_definition_type_where
+      #former_definition_generics_type_where
     {
       _phantom : core::marker::PhantomData< ( Context, Formed ) >,
     }
 
-    impl < #generics_of_definition_type_impl > Default
-    for #former_definition_types < #generics_of_definition_type_ty >
+    impl < #former_definition_generics_type_impl > Default
+    for #former_definition_types < #former_definition_generics_type_ty >
     where
-      #generics_of_definition_type_where
+      #former_definition_generics_type_where
     {
       fn default() -> Self
       {
@@ -1246,10 +1246,10 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
     }
 
-    impl < #generics_of_definition_type_impl > former::FormerDefinitionTypes
-    for #former_definition_types < #generics_of_definition_type_ty >
+    impl < #former_definition_generics_type_impl > former::FormerDefinitionTypes
+    for #former_definition_types < #former_definition_generics_type_ty >
     {
-      type Storage = #former_storage < #generics_ty >;
+      type Storage = #former_storage < #struct_generics_ty >;
       type Formed = Formed;
       type Context = Context;
     }
@@ -1258,18 +1258,18 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     #[ derive( Debug ) ]
     // xxx : revert later
-    // pub struct #former_definition < #generics_of_definition_with_defaults >
-    pub struct #former_definition < #generics_of_definition_impl >
+    // pub struct #former_definition < #former_definition_generics_with_defaults >
+    pub struct #former_definition < #former_definition_generics_impl >
     where
-      #generics_of_definition_where
+      #former_definition_generics_where
     {
       _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
     }
 
-    impl < #generics_of_definition_impl > Default
-    for #former_definition < #generics_of_definition_ty >
+    impl < #former_definition_generics_impl > Default
+    for #former_definition < #former_definition_generics_ty >
     where
-      #generics_of_definition_where
+      #former_definition_generics_where
     {
       fn default() -> Self
       {
@@ -1280,27 +1280,29 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
     }
 
-    impl < #generics_of_definition_impl > former::FormerDefinition
-    for #former_definition < #generics_of_definition_ty > // xxx
+    impl < #former_definition_generics_impl > former::FormerDefinition
+    for #former_definition < #former_definition_generics_ty > // xxx
     where
-      End : former::FormingEnd< #former_definition_types < #generics_of_definition_type_ty > >,
-      #generics_of_definition_where
+      End : former::FormingEnd< #former_definition_types < #former_definition_generics_type_ty > >,
+      #former_definition_generics_where
     {
-      type Types = #former_definition_types < #generics_of_definition_type_ty >;
+      type Types = #former_definition_types < #former_definition_generics_type_ty >;
       type End = End;
     }
 
-    pub type #former_with_closure < #generics_of_definition_type_ty > =
-    #former_definition< #generics_of_definition_type_ty former::FormingEndClosure< #former_definition_types < #generics_of_definition_type_ty > > >;
-    // xxx2 : use unwrapped generics better
+    pub type #former_with_closure < #former_definition_generics_type_ty > =
+    #former_definition
+    <
+      #former_definition_generics_type_ty former::FormingEndClosure< #former_definition_types < #former_definition_generics_type_ty > >
+    >;
 
     // = storage
 
     #[ doc = "Container of a corresponding former." ]
-    // pub struct #former_storage < #generics_ty >
-    pub struct #former_storage < #generics_with_defaults >
+    // pub struct #former_storage < #struct_generics_ty >
+    pub struct #former_storage < #struct_generics_with_defaults >
     where
-      #generics_where
+      #struct_generics_where
     {
       #(
         /// A field
@@ -1308,9 +1310,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       )*
     }
 
-    impl < #generics_impl > ::core::default::Default for #former_storage < #generics_ty >
+    impl < #struct_generics_impl > ::core::default::Default for #former_storage < #struct_generics_ty >
     where
-      #generics_where
+      #struct_generics_where
     {
 
       #[ inline( always ) ]
@@ -1324,18 +1326,18 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     }
 
-    impl < #generics_impl > former::Storage
-    for #former_storage < #generics_ty >
+    impl < #struct_generics_impl > former::Storage
+    for #former_storage < #struct_generics_ty >
     where
-      #generics_where
+      #struct_generics_where
     {
-      type Formed = #struct_name < #generics_ty >;
+      type Formed = #struct_name < #struct_generics_ty >;
     }
 
-    impl < #generics_impl > former::StoragePreform
-    for #former_storage < #generics_ty >
+    impl < #struct_generics_impl > former::StoragePreform
+    for #former_storage < #struct_generics_ty >
     where
-      #generics_where
+      #struct_generics_where
     {
 
       fn preform( mut self ) -> < Self as former::Storage >::Formed
@@ -1343,7 +1345,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
         #( #fields_form )*
         // Rust does not support that, yet
         // let result = < Definition::Types as former::FormerDefinitionTypes >::Formed
-        let result = #struct_name :: < #generics_ty >
+        let result = #struct_name :: < #struct_generics_ty >
         {
           #( #fields_names, )*
         };
@@ -1355,9 +1357,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     // = former
 
     #[ doc = #doc_former_struct ]
-    pub struct #former < #generics_of_former_with_defaults >
+    pub struct #former < #former_generics_with_defaults >
     where
-      #generics_of_former_where
+      #former_generics_where
     {
       storage : < Definition::Types as former::FormerDefinitionTypes >::Storage,
       context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
@@ -1366,9 +1368,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     }
 
     #[ automatically_derived ]
-    impl < #generics_of_former_impl > #former < #generics_of_former_ty >
+    impl < #former_generics_impl > #former < #former_generics_ty >
     where
-      #generics_of_former_where
+      #former_generics_where
     {
 
       ///
@@ -1489,12 +1491,12 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     // = preform with Storage::preform
 
-    impl< #generics_of_former_impl > #former< #generics_of_former_ty >
+    impl< #former_generics_impl > #former< #former_generics_ty >
     where
       Definition : former::FormerDefinition,
-      Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #generics_ty >, Formed = #struct_name < #generics_ty > >,
+      Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty >, Formed = #struct_name < #struct_generics_ty > >,
       < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
-      < Definition::Types as former::FormerDefinitionTypes >::Storage : former::Storage< Formed = #struct_name < #generics_ty > >,
+      < Definition::Types as former::FormerDefinitionTypes >::Storage : former::Storage< Formed = #struct_name < #struct_generics_ty > >,
     {
 
       pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed

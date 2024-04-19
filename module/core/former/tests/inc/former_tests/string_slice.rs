@@ -10,24 +10,33 @@ pub struct Struct1< 'a >
 
 // === begin of generated
 
-
   #[automatically_derived] impl < 'a, > Struct1 < 'a, > where
   {
       #[doc = r""]
       #[doc =
       r" Make former, variation of builder pattern to form structure defining values of fields step by step."]
       #[doc = r""] #[inline(always)] pub fn former() -> Struct1Former < 'a,
-      Definition, >
-      { Struct1Former :: < 'a, Definition, > :: new(former :: ReturnPreformed) }
-  } #[derive(Debug)] pub struct Struct1FormerDefinitionTypes < 'a, Context,
+      Struct1FormerDefinition < 'a, (), Struct1 < 'a, >, former ::
+      ReturnPreformed > >
+      {
+          Struct1Former :: < 'a, Struct1FormerDefinition < 'a, (), Struct1 < 'a,
+          >, former :: ReturnPreformed > > :: new(former :: ReturnPreformed)
+      }
+  }
+
+  #[derive(Debug)] pub struct Struct1FormerDefinitionTypes < 'a, Context,
   Formed, > where
-  { _phantom : core :: marker :: PhantomData < (Context, Formed) >, } impl < 'a,
+  { _phantom : core :: marker :: PhantomData < (Context, Formed) >, }
+
+  impl < 'a,
   Context, Formed, > Default for Struct1FormerDefinitionTypes < 'a, Context,
   Formed, > where
   {
       fn default() -> Self
       { Self { _phantom : core :: marker :: PhantomData, } }
-  } impl < 'a, Context, Formed, > former :: FormerDefinitionTypes for
+  }
+
+  impl < 'a, Context, Formed, > former :: FormerDefinitionTypes for
   Struct1FormerDefinitionTypes < 'a, Context, Formed, >
   {
       type Storage = Struct1FormerStorage < 'a, > ; type Formed = Formed ; type
