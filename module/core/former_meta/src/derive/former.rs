@@ -852,6 +852,8 @@ fn fields_setter_callback_descriptor_map
   struct_name : &syn::Ident,
   former : &syn::Ident,
   former_storage : &syn::Ident,
+  generics_of_former_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_of_former_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   // former_definition : &syn::Ident,
 )
 ->
@@ -882,9 +884,9 @@ Result< TokenStream >
     #[ allow( non_camel_case_types ) ]
     pub struct #field_forming_end;
     #[ automatically_derived ]
-    impl< Definition > former::FormingEnd
+    impl< #generics_of_former_impl > former::FormingEnd
     <
-      #subformer_definition < #( #params, )* #former< Definition >, #former< Definition >, former::NoEnd >,
+      #subformer_definition < #( #params, )* #former< #generics_of_former_ty >, #former< #generics_of_former_ty >, former::NoEnd >,
     >
     for #field_forming_end
     where
@@ -899,9 +901,9 @@ Result< TokenStream >
       (
         &self,
         storage : #field_ty,
-        super_former : Option< #former< Definition > >,
+        super_former : Option< #former< #generics_of_former_ty > >,
       )
-      -> #former< Definition >
+      -> #former< #generics_of_former_ty >
       {
         let mut super_former = super_former.unwrap();
         if let Some( ref mut field ) = super_former.storage.#ident
@@ -1084,14 +1086,14 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   /* parameters for definition */
   let extra : macro_tools::syn::AngleBracketedGenericArguments = parse_quote!
   {
-    < (), #struct_name, former::ReturnPreformed >
+    < (), #struct_name < #generics_ty >, former::ReturnPreformed >
   };
-  let generics_of_definition = generic_args::merge( &generics.into_generic_args(), &extra.into() );
+  let args_of_definition = generic_args::merge( &generics.into_generic_args(), &extra.into() ).args;
 
   /* parameters for former */
   let extra : macro_tools::GenericsWithWhere = parse_quote!
   {
-    < Definition = #former_definition #generics_of_definition >
+    < Definition = #former_definition < #args_of_definition > >
     where
       Definition : former::FormerDefinition,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #generics_ty > >,
@@ -1179,7 +1181,15 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     field_form_map( former_field ),
     field_name_map( former_field ),
     field_setter_map( former_field, &struct_name ),
-    fields_setter_callback_descriptor_map( former_field, &struct_name, &former, &former_storage ),
+    fields_setter_callback_descriptor_map
+    (
+      former_field,
+      &struct_name,
+      &former,
+      &former_storage,
+      &generics_of_former_impl,
+      &generics_of_former_ty,
+    ),
   )}).multiunzip();
 
   let ( _doc_former_mod, doc_former_struct ) = doc_generate( struct_name );
@@ -1202,9 +1212,10 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       ///
 
       #[ inline( always ) ]
-      pub fn former() -> #former < #generics_ty >
+      pub fn former() -> #former < #former_definition< #args_of_definition > >
       {
-        #former :: < #generics_ty > :: new( former::ReturnPreformed )
+        #former :: < #former_definition< #args_of_definition > > :: new( former::ReturnPreformed )
+
       }
 
     }
@@ -1270,7 +1281,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     }
 
     impl < #generics_of_definition_impl > former::FormerDefinition
-    for #former_definition < #generics_of_definition_ty >
+    for #former_definition < #generics_of_definition_ty > // xxx
     where
       End : former::FormingEnd< #former_definition_types < #generics_of_definition_type_ty > >,
       #generics_of_definition_where
@@ -1280,7 +1291,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     }
 
     pub type #former_with_closure < #generics_of_definition_type_ty > =
-    #former_definition< Context, Formed, former::FormingEndClosure< #former_definition_types < #generics_of_definition_type_ty > > >;
+    #former_definition< #generics_of_definition_type_ty former::FormingEndClosure< #former_definition_types < #generics_of_definition_type_ty > > >;
     // xxx2 : use unwrapped generics better
 
     // = storage
@@ -1478,7 +1489,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     // = preform with Storage::preform
 
-    impl< Definition > #former< Definition >
+    impl< #generics_of_former_impl > #former< #generics_of_former_ty >
     where
       Definition : former::FormerDefinition,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #generics_ty >, Formed = #struct_name < #generics_ty > >,
