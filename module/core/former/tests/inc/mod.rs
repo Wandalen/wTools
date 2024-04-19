@@ -55,8 +55,8 @@ mod former_tests
 
   // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   // mod subformer_basic_manual;
-  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  // mod subformer_basic;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subformer_basic;
   // xxx : uncomment
 
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
