@@ -19,6 +19,7 @@
 //!   K : core::hash::Hash + std::cmp::Eq,
 //! {}
 //!```
+//! xxx : update documentation of file
 
 /// Internal namespace.
 pub( crate ) mod private

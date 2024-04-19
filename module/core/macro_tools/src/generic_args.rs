@@ -1,6 +1,7 @@
 //!
 //! Manipulations on generic arguments.
 //!
+//! xxx : update documentation of file
 
 /// Internal namespace.
 pub( crate ) mod private

@@ -15,6 +15,7 @@ mod file
   pub mod generic_analyze;
   pub mod generic_args;
   pub mod generic_params;
+  pub mod item;
   pub mod name;
   pub mod punctuated;
   pub mod quantifier;
@@ -51,7 +52,8 @@ pub mod protected
   {
     orphan::*,
   };
-
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::file::
   {
     attr::orphan::*,
@@ -60,6 +62,7 @@ pub mod protected
     generic_analyze::orphan::*,
     generic_args::orphan::*,
     generic_params::orphan::*,
+    item::orphan::*,
     name::orphan::*,
     punctuated::orphan::*,
     quantifier::orphan::*,
@@ -96,6 +99,8 @@ pub mod exposed
   {
     prelude::*,
   };
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::file::
   {
     attr::exposed::*,
@@ -104,6 +109,7 @@ pub mod exposed
     generic_analyze::exposed::*,
     generic_args::exposed::*,
     generic_params::exposed::*,
+    item::exposed::*,
     name::exposed::*,
     punctuated::orphan::*,
     quantifier::exposed::*,
@@ -167,6 +173,7 @@ pub mod prelude
     generic_analyze::prelude::*,
     generic_args::prelude::*,
     generic_params::prelude::*,
+    item::exposed::*,
     name::prelude::*,
     punctuated::orphan::*,
     quantifier::prelude::*,

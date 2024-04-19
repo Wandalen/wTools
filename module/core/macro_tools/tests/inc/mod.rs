@@ -17,6 +17,7 @@ mod if_enabled
   mod basic;
   mod generic_args;
   mod generic_params;
+  mod item;
   mod quantifier;
   mod syntax;
   mod tokens;
