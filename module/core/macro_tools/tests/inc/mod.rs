@@ -18,6 +18,7 @@ mod if_enabled
   mod generic_args;
   mod generic_params;
   mod item;
+  mod phantom;
   mod quantifier;
   mod syntax;
   mod tokens;

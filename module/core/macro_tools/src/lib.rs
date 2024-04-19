@@ -17,6 +17,7 @@ mod file
   pub mod generic_params;
   pub mod item;
   pub mod name;
+  pub mod phantom;
   pub mod punctuated;
   pub mod quantifier;
   pub mod tokens;
@@ -64,6 +65,7 @@ pub mod protected
     generic_params::orphan::*,
     item::orphan::*,
     name::orphan::*,
+    phantom::orphan::*,
     punctuated::orphan::*,
     quantifier::orphan::*,
     tokens::orphan::*,
@@ -111,7 +113,8 @@ pub mod exposed
     generic_params::exposed::*,
     item::exposed::*,
     name::exposed::*,
-    punctuated::orphan::*,
+    phantom::exposed::*,
+    punctuated::exposed::*,
     quantifier::exposed::*,
     tokens::exposed::*,
     typ::exposed::*,
@@ -173,9 +176,10 @@ pub mod prelude
     generic_analyze::prelude::*,
     generic_args::prelude::*,
     generic_params::prelude::*,
-    item::exposed::*,
+    item::prelude::*,
     name::prelude::*,
-    punctuated::orphan::*,
+    phantom::prelude::*,
+    punctuated::prelude::*,
     quantifier::prelude::*,
     tokens::prelude::*,
     typ::prelude::*,
