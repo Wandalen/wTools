@@ -150,10 +150,12 @@ tests_impls!
 
 tests_index!
 {
+
   internals,
   test_vector,
   test_hashmap,
   test_hashset,
   test_underscored_form,
   test_complex,
+
 }

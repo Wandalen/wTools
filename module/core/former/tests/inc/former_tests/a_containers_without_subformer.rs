@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 
 #[ derive( Debug, PartialEq, the_module::Former ) ]
-// #[ debug ]
+// #[ derive( Debug, PartialEq, the_module::Former ) ] #[ debug ]
 // #[ derive( Debug, PartialEq ) ]
 pub struct Struct1
 {

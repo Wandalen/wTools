@@ -1106,7 +1106,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   /* parameters for definition types */
   let extra : macro_tools::GenericsWithWhere = parse_quote!
   {
-    < Context, Formed >
+    < Context = (), Formed = #struct_name < #struct_generics_ty > >
   };
   let former_definition_type_generics = generic_params::merge( &generics, &extra.into() );
   let ( former_definition_type_generics_with_defaults, former_definition_type_generics_impl, former_definition_type_generics_ty, former_definition_type_generics_where )
@@ -1117,7 +1117,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   /* parameters for definition */
   let extra : macro_tools::GenericsWithWhere = parse_quote!
   {
-    < Context, Formed, End >
+    < Context = (), Formed = #struct_name < #struct_generics_ty >, End = former::ReturnPreformed >
   };
   let generics_of_definition = generic_params::merge( &generics, &extra.into() );
   let ( former_definition_generics_with_defaults, former_definition_generics_impl, former_definition_generics_ty, former_definition_generics_where )
@@ -1211,6 +1211,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     where
       #struct_generics_where
     {
+
       ///
       /// Make former, variation of builder pattern to form structure defining values of fields step by step.
       ///
