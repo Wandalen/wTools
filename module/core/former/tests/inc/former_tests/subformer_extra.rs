@@ -177,12 +177,9 @@ where
 
 }
 
-#[ allow( non_camel_case_types ) ]
 pub struct AggregatorFormerCommandEnd;
 
-#[ automatically_derived ]
 impl< K, Definition >
-// CommandSubformerEnd< K, AggregatorFormer< K, Definition > >
 former::FormingEnd
 <
   CommandFormerDefinitionTypes
@@ -223,7 +220,6 @@ where
     {
       let mut container : collection_tools::HashMap< String, Command< K > > = Default::default();
       // former::ContainerAdd::add( &mut container, ( sub_formed.name.clone(), sub_formed ) );
-      // former::ContainerAdd::add( &mut container, Into::< Element >::into( sub_formed ) );
       former::ContainerAdd::add( &mut container, Into::into( sub_formed ) );
       super_former.storage.commands = Some( container );
     }
