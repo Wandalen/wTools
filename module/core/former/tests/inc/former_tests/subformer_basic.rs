@@ -286,65 +286,114 @@ where
 
 //
 
-#[ allow( non_camel_case_types ) ]
-pub struct ContainerAddElement;
+/// xxx : extend description
+/// get container for a field out of a storage
+pub trait StorageContainer< Target >
+{
+  // fn container_get( &self ) -> &Target;
+  fn container_mut( &mut self ) -> &mut Target;
+}
 
-#[ automatically_derived ]
-impl< K, SuperDefinition > former::FormingEnd
-<
-  CommandFormerDefinitionTypes
-  <
-    K,
-    AggregatorFormer< K, SuperDefinition >,
-    AggregatorFormer< K, SuperDefinition >,
-  >,
->
-for ContainerAddElement
+impl< K > StorageContainer< collection_tools::HashMap< String, Command< K > > >
+for AggregatorFormerStorage< K >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  SuperDefinition : former::FormerDefinition,
-  SuperDefinition::Types : former::FormerDefinitionTypes
-  <
-    Storage = AggregatorFormerStorage< K >,
-  >,
 {
-  #[ inline( always ) ]
-  fn call
-  (
-    &self,
-    storage : CommandFormerStorage< K >,
-    super_former : Option< AggregatorFormer< K, SuperDefinition > >,
-  )
-  ->
-  AggregatorFormer< K, SuperDefinition >
+  // fn container_get( &self ) -> &collection_tools::HashMap< String, Command< K > >
+  // {
+  //   &self.commands
+  // }
+  fn container_mut( &mut self ) -> &mut collection_tools::HashMap< String, Command< K > >
   {
-
-    let storage =  former::StoragePreform::preform( storage );
-    let mut super_former = super_former.unwrap();
-    if let Some( ref mut commands ) = super_former.storage.commands
+    if let Some( ref mut commands ) = self.commands
     {
-      former::ContainerAdd::add
-      (
-        commands,
-        IntoElement::< ( String, Command< K > ) >::into_element( storage ),
-        // ( storage.name.clone(), storage ),
-      );
+      commands
     }
     else
     {
       let mut commands : collection_tools::HashMap< String, Command< K > > = Default::default();
-      former::ContainerAdd::add
-      (
-        &mut commands,
-        IntoElement::< ( String, Command< K > ) >::into_element( storage ),
-        // ( storage.name.clone(), storage ),
-      );
-      super_former.storage.commands = Some( commands );
+      self.commands = Some( commands );
+      self.commands.as_mut().unwrap()
     }
-    super_former
-
   }
 }
+
+//
+
+#[ allow( non_camel_case_types ) ]
+pub struct ContainerAddElement;
+
+// #[ automatically_derived ]
+// impl< /*K,*/ SuperDefinition, SuperFormer, SubDefinitionTypes > former::FormingEnd
+// <
+//   SubDefinitionTypes,
+//   // CommandFormerDefinitionTypes
+//   // <
+//   //   K,
+//   //   AggregatorFormer< K, SuperDefinition >,
+//   //   AggregatorFormer< K, SuperDefinition >,
+//   // >,
+//
+// >
+// for ContainerAddElement
+// where
+//   // K : core::hash::Hash + std::cmp::Eq,
+//   SuperDefinition : former::FormerDefinition,
+//   SuperDefinition::Types : former::FormerDefinitionTypes
+//   <
+//     // Storage = AggregatorFormerStorage< K >,
+//     // Storage = SubDefinitionTypes::Storage,
+//   >,
+//   SubDefinitionTypes : former::FormerDefinitionTypes
+//   <
+//     // Storage = Storate,
+//     Formed = SuperFormer,
+//     Context = SuperFormer,
+//   >,
+//   SubDefinitionTypes::Storage : former::Storage< Formed = SuperFormer >,
+//   SubDefinitionTypes::Storage : former::StoragePreform,
+// {
+//   #[ inline( always ) ]
+//   fn call
+//   (
+//     &self,
+//     // storage : CommandFormerStorage< K >,
+//     storage : SubDefinitionTypes::Storage,
+//     super_former : Option< SuperFormer >,
+//     // super_former : Option< AggregatorFormer< K, SuperDefinition > >,
+//   )
+//   ->
+//   SuperFormer
+//   // AggregatorFormer< K, SuperDefinition >
+//   {
+//
+//     let storage =  former::StoragePreform::preform( storage );
+//     let mut super_former = super_former.unwrap();
+//     if let Some( ref mut container ) = super_former.storage.commands
+//     {
+//       former::ContainerAdd::add
+//       (
+//         container,
+//         IntoElement::< ( String, Command< K > ) >::into_element( storage ),
+//         // ( storage.name.clone(), storage ),
+//       );
+//     }
+//     else
+//     {
+//       // let mut container : collection_tools::HashMap< String, Command< K > > = Default::default();
+//       let mut container = Default::default();
+//       former::ContainerAdd::add
+//       (
+//         &mut container,
+//         IntoElement::< ( String, Command< K > ) >::into_element( storage ),
+//         // ( storage.name.clone(), storage ),
+//       );
+//       super_former.storage.commands = Some( container );
+//     }
+//     super_former
+//
+//   }
+// }
 
 // ==
 
