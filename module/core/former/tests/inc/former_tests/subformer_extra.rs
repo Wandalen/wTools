@@ -178,9 +178,7 @@ where
 }
 
 pub struct AggregatorFormerCommandEnd;
-
-impl< K, Definition >
-former::FormingEnd
+impl< K, Definition > former::FormingEnd
 <
   CommandFormerDefinitionTypes
   <
@@ -209,18 +207,18 @@ where
   AggregatorFormer< K, Definition >
   {
 
-    let sub_formed = former::StoragePreform::preform( sub_storage );
+    let preformed = former::StoragePreform::preform( sub_storage );
     let mut super_former = super_former.unwrap();
     if let Some( ref mut container ) = super_former.storage.commands
     {
-      // former::ContainerAdd::add( container, ( sub_formed.name.clone(), sub_formed ) );
-      former::ContainerAdd::add( container, Into::into( sub_formed ) );
+      // former::ContainerAdd::add( container, ( preformed.name.clone(), preformed ) );
+      former::ContainerAdd::add( container, Into::into( preformed ) );
     }
     else
     {
       let mut container : collection_tools::HashMap< String, Command< K > > = Default::default();
-      // former::ContainerAdd::add( &mut container, ( sub_formed.name.clone(), sub_formed ) );
-      former::ContainerAdd::add( &mut container, Into::into( sub_formed ) );
+      // former::ContainerAdd::add( &mut container, ( preformed.name.clone(), preformed ) );
+      former::ContainerAdd::add( &mut container, Into::into( preformed ) );
       super_former.storage.commands = Some( container );
     }
 
