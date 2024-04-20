@@ -1111,6 +1111,28 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let ( former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where )
   = generic_params::decompose( &extra );
 
+  /* parameters for former perform */
+
+  let extra : macro_tools::GenericsWithWhere = parse_quote!
+  {
+    < Definition = #former_definition < #former_definition_args > >
+    where
+      Definition : former::FormerDefinition,
+      Definition::Types : former::FormerDefinitionTypes
+      <
+        Storage = #former_storage < #struct_generics_ty >,
+        Formed = #struct_name < #struct_generics_ty >
+      >,
+  };
+  let extra = generic_params::merge( &generics, &extra.into() );
+
+  let ( _former_perform_generics_with_defaults, former_perform_generics_impl, former_perform_generics_ty, former_perform_generics_where )
+  = generic_params::decompose( &extra );
+
+// where
+//   Definition : former::FormerDefinition,
+//   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage<>, Formed = Struct1 >,
+
   /* parameters for definition types */
 
   let extra : macro_tools::GenericsWithWhere = parse_quote!
@@ -1389,9 +1411,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     }
 
     #[ automatically_derived ]
-    impl < #former_generics_impl > #former < #former_generics_ty >
+    impl < #former_perform_generics_impl > #former < #former_perform_generics_ty >
     where
-      #former_generics_where
+      #former_perform_generics_where
     {
 
       ///
@@ -1406,6 +1428,14 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
         let result = self.form();
         #perform
       }
+
+    }
+
+    #[ automatically_derived ]
+    impl < #former_generics_impl > #former < #former_generics_ty >
+    where
+      #former_generics_where
+    {
 
       ///
       /// Construct new instance of former with default parameters.
@@ -1530,7 +1560,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     // = subformer
 
-    // xxx
+    // xxx : improve description
 
     /// Use as subformer of a field during process of forming of super structure.
     pub type #subformer < #struct_generics_ty __Superformer, __End > = #former

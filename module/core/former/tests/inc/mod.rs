@@ -28,7 +28,7 @@ mod former_tests
 
   mod attribute_default_container;
   mod attribute_default_primitive;
-  // mod attribute_perform; // xxx
+  mod attribute_perform;
   mod attribute_setter;
   mod attribute_alias;
 
@@ -107,12 +107,12 @@ only_for_terminal_module!
   {
 
     println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
-    // let t = test_tools::compiletime::TestCases::new();
+    let t = test_tools::compiletime::TestCases::new();
 
     // zzz : uncomment
-    // t.compile_fail( "tests/inc/compiletime/former_bad_attr.rs" );
-    // t.pass( "tests/inc/compiletime/former_hashmap_without_parameter.rs" );
-    // t.pass( "tests/inc/compiletime/former_vector_without_parameter.rs" );
+    t.compile_fail( "tests/inc/compiletime/former_bad_attr.rs" );
+    t.pass( "tests/inc/compiletime/former_hashmap_without_parameter.rs" );
+    t.pass( "tests/inc/compiletime/former_vector_without_parameter.rs" );
 
   }
 
