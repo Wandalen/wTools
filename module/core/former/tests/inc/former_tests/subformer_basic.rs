@@ -434,8 +434,20 @@ where
 pub struct ContainerAddElement< SuperDefinition, SuperContainer, Element, SubFormed >
 ( core::marker::PhantomData< fn( SuperDefinition, SuperContainer, Element, SubFormed ) > );
 
-impl< SuperDefinition, SuperContainer, Element, SubFormed >
-ContainerAddElement< SuperDefinition, SuperContainer, Element, SubFormed >
+impl
+<
+  SuperDefinition,
+  SuperContainer,
+  Element,
+  SubFormed,
+>
+ContainerAddElement
+<
+  SuperDefinition,
+  SuperContainer,
+  Element,
+  SubFormed,
+>
 {
   pub fn new() -> Self
   {
@@ -443,7 +455,15 @@ ContainerAddElement< SuperDefinition, SuperContainer, Element, SubFormed >
   }
 }
 
-impl< SuperDefinition, SuperFormer, SuperContainer, Element, SubFormed, SubDefinition >
+impl
+<
+  SuperDefinition,
+  SuperFormer,
+  SuperContainer,
+  Element,
+  SubFormed,
+  SubDefinition,
+>
 former::FormingEnd
 <
   SubDefinition,
