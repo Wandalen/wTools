@@ -248,22 +248,15 @@ where
 
 //
 
-/// xxx : extend description
-/// Convert an entity to an element which could be added to a container.
-pub trait IntoElement< Element >
-{
-  /// Convert an entity to an element which could be added to a container.
-  fn into_element( self ) -> Element;
-}
-
-impl< K > IntoElement< ( String, Command< K > ) >
-for Command< K >
+impl< K > From< Command< K > >
+for ( String, Command< K > )
 where
   K : core::hash::Hash + std::cmp::Eq,
 {
-  fn into_element( self ) -> ( String, Command< K > )
+  #[ inline( always ) ]
+  fn from( src : Command< K > ) -> Self
   {
-    ( self.name.clone(), self )
+    ( src.name.clone(), src )
   }
 }
 
@@ -370,7 +363,8 @@ where
   >,
   SubDefinition::Storage : former::StoragePreform< Preformed = SubFormed >,
 
-  SubFormed : IntoElement< Element >,
+  // SubFormed : IntoElement< Element >,
+  SubFormed : Into< Element >,
 {
 
   #[ inline( always ) ]
@@ -394,7 +388,7 @@ where
     former::ContainerAdd::add
     (
       container,
-      IntoElement::< Element >::into_element( storage ),
+      Into::< Element >::into( storage ),
     );
 
     super_former
