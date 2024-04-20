@@ -248,6 +248,40 @@ where
 
 }
 
+#[ allow( non_camel_case_types ) ]
+pub struct AggregatorFormerCommandEnd;
+#[ automatically_derived ]
+impl< K, Definition > former::FormingEnd
+<
+  former::HashMapDefinition< String, Command< K >, AggregatorFormer< K, Definition >, AggregatorFormer< K, Definition >, former::NoEnd >,
+>
+for AggregatorFormerCommandEnd
+where
+  K : core::hash::Hash + std::cmp::Eq,
+  Definition : former::FormerDefinition,
+  Definition::Types : former::FormerDefinitionTypes
+  <
+    Storage = AggregatorFormerStorage< K >
+  >,
+{
+  #[ inline( always ) ]
+  fn call( &self, storage : std::collections::HashMap< String, Command< K > >, super_former : Option< AggregatorFormer< K, Definition > > )
+  ->
+  AggregatorFormer< K, Definition >
+  {
+    let mut super_former = super_former.unwrap();
+    if let Some( ref mut field ) = super_former.storage.commands
+    {
+      former::ContainerAssign::assign( field, storage );
+    }
+    else
+    {
+      super_former.storage.commands = Some( storage );
+    }
+    super_former
+  }
+}
+
 // ==
 
 // include!( "./only_test/subformer_basic.rs" );
