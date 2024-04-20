@@ -290,20 +290,20 @@ where
 pub struct ContainerAddElement;
 
 #[ automatically_derived ]
-impl< K, Definition > former::FormingEnd
+impl< K, SuperDefinition > former::FormingEnd
 <
   CommandFormerDefinitionTypes
   <
     K,
-    AggregatorFormer< K, Definition >,
-    AggregatorFormer< K, Definition >,
+    AggregatorFormer< K, SuperDefinition >,
+    AggregatorFormer< K, SuperDefinition >,
   >,
 >
 for ContainerAddElement
 where
   K : core::hash::Hash + std::cmp::Eq,
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes
+  SuperDefinition : former::FormerDefinition,
+  SuperDefinition::Types : former::FormerDefinitionTypes
   <
     Storage = AggregatorFormerStorage< K >,
   >,
@@ -313,10 +313,10 @@ where
   (
     &self,
     storage : CommandFormerStorage< K >,
-    super_former : Option< AggregatorFormer< K, Definition > >,
+    super_former : Option< AggregatorFormer< K, SuperDefinition > >,
   )
   ->
-  AggregatorFormer< K, Definition >
+  AggregatorFormer< K, SuperDefinition >
   {
 
     let storage =  former::StoragePreform::preform( storage );
