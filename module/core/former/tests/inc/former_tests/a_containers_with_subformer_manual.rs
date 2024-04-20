@@ -21,7 +21,7 @@ impl Struct1
   }
 }
 
-// = definition
+// = definition types
 
 #[ derive( Debug ) ]
 pub struct Struct1FormerDefinitionTypes< Context = (), Formed = Struct1 >
@@ -40,6 +40,16 @@ impl< Context, Formed > Default for Struct1FormerDefinitionTypes< Context, Forme
   }
 }
 
+impl< Context, Formed > former::FormerDefinitionTypes
+for Struct1FormerDefinitionTypes< Context, Formed >
+{
+  type Storage = Struct1FormerStorage;
+  type Formed = Formed;
+  type Context = Context;
+}
+
+// = definition
+
 #[ derive( Debug ) ]
 pub struct Struct1FormerDefinition< Context = (), Formed = Struct1, End = former::ReturnPreformed >
 {
@@ -57,13 +67,6 @@ impl< Context, Formed, End > Default for Struct1FormerDefinition< Context, Forme
   }
 }
 
-impl< Context, Formed > former::FormerDefinitionTypes for Struct1FormerDefinitionTypes< Context, Formed >
-{
-  type Storage = Struct1FormerStorage;
-  type Formed = Formed;
-  type Context = Context;
-}
-
 impl< Context, Formed, End > former::FormerDefinition for Struct1FormerDefinition< Context, Formed, End >
 where
   End : former::FormingEnd< Struct1FormerDefinitionTypes< Context, Formed > >,
@@ -76,16 +79,10 @@ pub type Struct1FormerWithClosure< Context, Formed > = Struct1FormerDefinition< 
 
 // = storage
 
-#[ doc = "Container of a corresponding former." ]
 pub struct Struct1FormerStorage
 {
-  #[ doc = r" A field" ]
   pub vec_1 : ::core::option::Option< Vec< String > >,
-
-  #[ doc = r" A field" ]
   pub hashmap_1 : ::core::option::Option< std::collections::HashMap< String, String > >,
-
-  #[ doc = r" A field" ]
   pub hashset_1 : ::core::option::Option< std::collections::HashSet< String > >,
 }
 
@@ -202,7 +199,6 @@ impl former::StoragePreform for Struct1FormerStorage
 
 // = former
 
-#[ doc = " Object to form [Struct1]. If field's values is not set then default value of the field is set.\n\nFor specifying custom default value use attribute `default`. For example:\n```\n\nuse former::Former;\n#[ derive( Former ) ]\npub struct Struct1\n{\n  #[ default( 31 ) ]\n  field1 : i32,\n}\n\n```\n" ]
 pub struct Struct1Former< Definition = Struct1FormerDefinition >
 where
   Definition : former::FormerDefinition,
@@ -221,12 +217,8 @@ where
   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
 {
-  #[ doc = r"" ]
-  #[ doc = r" Finish setting options and call perform on formed entity." ]
-  #[ doc = r"" ]
-  #[ doc = r" If `perform` defined then associated method is called and its result returned instead of entity." ]
-  #[ doc = r" For example `perform()` of structure with : `#[ perform( fn after1() -> &str ) ]` returns `&str`." ]
-  #[ doc = r"" ]
+
+
   #[ inline( always ) ]
   pub fn perform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
@@ -234,18 +226,18 @@ where
     return result;
   }
 
-  #[ doc = r"" ]
-  #[ doc = r" Construct new instance of former with default parameters." ]
-  #[ doc = r"" ]
+
+
+
   #[ inline( always ) ]
   pub fn _new_precise( on_end : Definition::End ) -> Self
   {
     Self::begin( None, None, on_end )
   }
 
-  #[ doc = r"" ]
-  #[ doc = r" Construct new instance of former with default parameters." ]
-  #[ doc = r"" ]
+
+
+
   #[ inline( always ) ]
   pub fn new< IntoEnd >( end : IntoEnd ) -> Self
   where
@@ -254,9 +246,9 @@ where
     Self::begin( None, None, end, )
   }
 
-  #[ doc = r"" ]
-  #[ doc = r" Begin the process of forming. Expects context of forming to return it after forming." ]
-  #[ doc = r"" ]
+
+
+
   #[ inline( always ) ]
   pub fn _begin_precise(
     mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
@@ -276,9 +268,9 @@ where
     }
   }
 
-  #[ doc = r"" ]
-  #[ doc = r" Begin the process of forming. Expects context of forming to return it after forming." ]
-  #[ doc = r"" ]
+
+
+
   #[ inline( always ) ]
   pub fn begin< IntoEnd >(
     mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
@@ -300,18 +292,18 @@ where
     }
   }
 
-  #[ doc = r"" ]
-  #[ doc = r" End the process of forming returning original context of forming." ]
-  #[ doc = r"" ]
+
+
+
   #[ inline( always ) ]
   pub fn form( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
     self.end()
   }
 
-  #[ doc = r"" ]
-  #[ doc = r" End the process of forming returning original context of forming." ]
-  #[ doc = r"" ]
+
+
+
   #[ inline( always ) ]
   pub fn end( mut self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {

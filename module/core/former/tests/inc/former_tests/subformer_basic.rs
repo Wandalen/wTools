@@ -97,24 +97,39 @@ where
 
 // == aggregator
 
-// #[ derive( Debug, PartialEq, the_module::Former ) ]
-// pub struct Aggregator< K >
+#[ derive( Debug, PartialEq, the_module::Former ) ]
+pub struct Aggregator< K >
+where
+  K : core::hash::Hash + std::cmp::Eq,
+{
+  pub parameter1 : String,
+  // #[ subformer( the_module::HashMapSubformer ) ]
+  #[ subformer( former::HashMapDefinition ) ]
+  pub commands : collection_tools::HashMap< String, Command< K > >,
+}
+
+// manual
+// impl< K, Context, End >
+// AggregatorFormer< K, Context, End >
 // where
 //   K : core::hash::Hash + std::cmp::Eq,
-// {
-//   pub parameter1 : String,
-//   // #[ subformer( the_module::HashMapSubformer ) ]
-//   #[ subformer( former::HashMapDefinition ) ]
-//   pub commands : collection_tools::HashMap< String, Command< K > >,
-// }
-//
-// // manual
-// // impl< K, Context, End >
-// // AggregatorFormer< K, Context, End >
-// // where
-// //   K : core::hash::Hash + std::cmp::Eq,
-// //   End : the_module::FormingEnd< Aggregator< K >, Context >,
-//
+//   End : the_module::FormingEnd< Aggregator< K >, Context >,
+
+impl< K, Definition > AggregatorFormer
+<
+  K,
+  Definition,
+>
+where
+  K : core::hash::Hash + std::cmp::Eq,
+  Definition : former::FormerDefinition,
+  Definition::Types : former::FormerDefinitionTypes< Storage = AggregatorFormerStorage< K > >,
+
+  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
+  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::Storage< Formed = Aggregator< K > >,
+
+{
+
 // impl< K, Definition > AggregatorFormer< K, Definition >
 // where
 //   K : core::hash::Hash + std::cmp::Eq,
@@ -122,34 +137,101 @@ where
 //   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
 //   Definition::Types : former::FormerDefinitionTypes< Storage = AggregatorFormerStorage< K > >,
 // {
-//
-//   #[ inline( always ) ]
-//   pub fn command< IntoName >( self, name : IntoName )
-//   -> CommandFormer< K, Self, impl the_module::FormingEnd< Command< K >, Self > >
-//   where
-//     K : core::hash::Hash + std::cmp::Eq,
-//     IntoName : core::convert::Into< String >,
-//   {
-//     let on_end = | command : Command< K >, super_former : core::option::Option< Self > | -> Self
-//     {
-//       let mut super_former = super_former.unwrap();
-//       if let Some( ref mut commands ) = super_former.storage.commands
-//       {
-//         commands.insert( command.name.clone(), command );
-//       }
-//       else
-//       {
-//         let mut commands : collection_tools::HashMap< String, Command< K > > = Default::default();
-//         commands.insert( command.name.clone(), command );
-//         super_former.storage.commands = Some( commands );
-//       }
-//       super_former
-//     };
-//     let former = CommandFormer::begin( None, Some( self ), on_end );
-//     former.name( name )
-//   }
-//
-// }
+
+  // #[ inline( always ) ]
+  // pub fn command< IntoName >( self, name : IntoName )
+  // -> CommandFormer< K, Self, impl the_module::FormingEnd< Command< K >, Self > >
+  // where
+  //   K : core::hash::Hash + std::cmp::Eq,
+  //   IntoName : core::convert::Into< String >,
+  // {
+  //   let on_end = | command : Command< K >, super_former : core::option::Option< Self > | -> Self
+  //   {
+  //     let mut super_former = super_former.unwrap();
+  //     if let Some( ref mut commands ) = super_former.storage.commands
+  //     {
+  //       commands.insert( command.name.clone(), command );
+  //     }
+  //     else
+  //     {
+  //       let mut commands : collection_tools::HashMap< String, Command< K > > = Default::default();
+  //       commands.insert( command.name.clone(), command );
+  //       super_former.storage.commands = Some( commands );
+  //     }
+  //     super_former
+  //   };
+  //   let former = CommandFormer::begin( None, Some( self ), on_end );
+  //   former.name( name )
+  // }
+
+  #[ inline( always ) ]
+  pub fn command< IntoName >( self, name : IntoName )
+  // -> CommandFormer
+  // <
+  //   K,
+  //   CommandFormerDefinition
+  //   <
+  //     K,
+  //     Self,
+  //     Self,
+  //     impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
+  //   >,
+  // >
+  where
+    // K : core::hash::Hash + std::cmp::Eq,
+    IntoName : core::convert::Into< String >,
+  {
+
+    let on_end = | command : CommandFormerStorage< K >, super_former : core::option::Option< Self > | -> Self
+    {
+      let command =  former::StoragePreform::preform( command );
+      let mut super_former = super_former.unwrap();
+      if let Some( ref mut commands ) = super_former.storage.commands
+      {
+        former::ContainerAdd::add( commands, ( command.name.clone(), command ) );
+      }
+      else
+      {
+        let mut commands : collection_tools::HashMap< String, Command< K > > = Default::default();
+        former::ContainerAdd::add( &mut commands, ( command.name.clone(), command ) );
+        super_former.storage.commands = Some( commands );
+      }
+      super_former
+    };
+
+    let former
+    // : CommandFormer<K, subformer_basic::CommandFormerDefinition<K, AggregatorFormer<K, Definition>, AggregatorFormer<K, Definition>, _>>
+    : CommandFormer
+    <
+      K,
+      CommandFormerDefinition
+      <
+        K,
+        AggregatorFormer< K, Definition >,
+        AggregatorFormer< K, Definition >,
+        former::FormingEndClosure< _ >,
+        // former::FormingEnd< CommandFormerDefinitionTypes< K, AggregatorFormer< K, Definition >, AggregatorFormer< K, Definition > > >,
+      >
+    >
+    = CommandFormer::begin( None, Some( self ), on_end );
+
+    // former.name( name )
+
+  }
+
+  // pub fn hashset_1( self ) ->
+  // former::ContainerSubformer::
+  // <
+  //   String, former::HashSetDefinition< String, Self, Self, Struct1FormerHashset1End >
+  // >
+  // {
+  //   self.hashset_1_set::< former::ContainerSubformer::
+  //   <
+  //     String, former::HashSetDefinition< String, Self, Self, Struct1FormerHashset1End >
+  //   >>()
+  // }
+
+}
 
 // ==
 
