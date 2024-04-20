@@ -250,8 +250,8 @@ where
       CommandFormerDefinitionTypes
       <
         K,
-        AggregatorFormer< K, Definition >,
-        AggregatorFormer< K, Definition >
+        Self,
+        Self,
       >
     >
   {
@@ -266,43 +266,23 @@ where
         K,
         Self,
         Self,
-        _,
+        ContainerAddElement::
+        <
+          collection_tools::HashMap< String, Command< K > >,
+          ( String, Command< K > ),
+          Command< K >,
+        >,
       >
     >
-    = CommandFormer::_begin_precise
+    = CommandFormer::begin
     (
       None,
       Some( self ),
-      ContainerAddElement::
-      <
-        // Definition::Types,
-        collection_tools::HashMap< String, Command< K > >,
-        ( String, Command< K > ),
-        Command< K >,
-      >
+      ContainerAddElement
       ::new(),
     );
 
-//     let callback = ContainerAddElement
-//     ::
-//     <
-//       Definition::Types,
-//       collection_tools::HashMap< String, Command< K > >,
-//       ( String, Command< K > ),
-//       Command< K >,
-//     >
-//     ::new();
-//
-//     let command : CommandFormerStorage< K > = Default::default();
-//     // let super_former : core::option::Option< Self > = ;
-//
-//     // use former::FormingEnd;
-//     let got = former::FormingEnd
-//     ::< CommandFormerDefinitionTypes< K, Self, Self > >
-//     ::call( &callback, command, Some( self ) );
-
     former.name( name )
-
   }
 
 }
