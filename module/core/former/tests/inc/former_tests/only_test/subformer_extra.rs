@@ -123,6 +123,15 @@ fn aggregator()
   let got = Aggregator::< &str >::former()
   .parameter1( "p1" )
   .commands().add( ( "name1".to_string(), CommandFormer::< &str >::new_coercing( former::ReturnPreformed ).name( "name1" ).subject( "s" ).end() ) ).end()
+  .command_with_closure( "command1".to_string() )
+    .subject( "b" )
+    .property( "property1", "simple property", 13isize )
+    .property( "property2", "simple property 3", 113isize )
+    .end()
+  .command_with_closure( "command2".to_string() )
+    .subject( "c" )
+    .property( "property3", "x", 113isize )
+    .end()
   .form()
   ;
 
@@ -132,10 +141,29 @@ fn aggregator()
     subject : "s".to_string(),
     properties : hmap!{},
   };
+  let command1 = Command::< &str >
+  {
+    name : "command1".to_string(),
+    subject : "b".to_string(),
+    properties : hmap!
+    {
+      "property1" => Property::new( "property1", "simple property", 13isize ),
+      "property2" => Property::new( "property2", "simple property 3", 113isize ),
+    },
+  };
+  let command2 = Command::< &str >
+  {
+    name : "command2".to_string(),
+    subject : "c".to_string(),
+    properties : hmap!
+    {
+      "property3" => Property::new( "property3", "x", 113isize ),
+    },
+  };
   let exp = Aggregator
   {
     parameter1 : "p1".to_string(),
-    commands : hmap!{ "name1" => name1 },
+    commands : hmap!{ "name1" => name1, "command1" => command1, "command2" => command2 },
   };
   dbg!( &got );
   dbg!( &exp );
@@ -151,17 +179,29 @@ fn aggregator_alternative_form()
 
   let exp = Aggregator::< &str >::former()
   .parameter1( "p1" )
+  .command_with_closure( "command1".to_string() )
+    .subject( "b" )
+    .property( "property2", "simple property 3", 113isize )
+    .end()
   .form()
   ;
 
   let got = Aggregator::< &str >::former()
   .parameter1( "p1" )
+  .command_with_closure( "command1".to_string() )
+    .subject( "b" )
+    .property( "property2", "simple property 3", 113isize )
+    .end()
   .perform()
   ;
   a_id!( got, exp );
 
   let got = Aggregator::< &str >::former()
   .parameter1( "p1" )
+  .command_with_closure( "command1".to_string() )
+    .subject( "b" )
+    .property( "property2", "simple property 3", 113isize )
+    .end()
   .end()
   ;
   a_id!( got, exp );
