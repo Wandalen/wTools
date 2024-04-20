@@ -101,25 +101,13 @@ where
   K : core::hash::Hash + std::cmp::Eq,
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = AggregatorFormerStorage< K > >,
-  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform< Preformed = Aggregator< K > >,
 {
 
   #[ inline( always ) ]
   pub fn command_with_closure< IntoName >( self, name : IntoName )
   ->
-  CommandFormer
-  <
-    K,
-    CommandFormerDefinition
-    <
-      K,
-      Self,
-      Self,
-      impl CommandSubformerEnd< K, Self >,
-      // impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
-    >,
-  >
+  CommandSubformer< K, Self, impl CommandSubformerEnd< K, Self > >
   where
     IntoName : core::convert::Into< String >,
   {
@@ -163,21 +151,9 @@ where
   #[ inline( always ) ]
   pub fn command_with_helper< IntoName >( self, name : IntoName )
   ->
-  CommandFormer
-  <
-    K,
-    CommandFormerDefinition
-    <
-      K,
-      Self,
-      Self,
-      impl CommandSubformerEnd< K, Self >,
-      // impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
-    >,
-  >
+  CommandSubformer< K, Self, impl CommandSubformerEnd< K, Self > >
   where
     IntoName : core::convert::Into< String >,
-
     ContainerAddElement
     <
       collection_tools::HashMap< String, Command< K > >,
