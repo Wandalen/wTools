@@ -139,7 +139,7 @@ where
   Definition::Types : former::FormerDefinitionTypes< Storage = AggregatorFormerStorage< K > >,
 
   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
-  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::Storage< Formed = Aggregator< K > >,
+  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform< Preformed = Aggregator< K > >,
 
 {
 
@@ -246,7 +246,7 @@ where
   AggregatorFormer< K, Definition >
   {
 
-    let command =  former::StoragePreform::preform( command );
+    let command = former::StoragePreform::preform( command );
     let mut super_former = super_former.unwrap();
     if let Some( ref mut commands ) = super_former.storage.commands
     {
@@ -337,10 +337,10 @@ where
 
 //
 
-pub struct ContainerAddElement< SuperDefinition, SuperContainer, Element >
-( core::marker::PhantomData< fn( SuperDefinition, SuperContainer, Element ) > );
+pub struct ContainerAddElement< SuperDefinition, SuperContainer, Element, SubFormed >
+( core::marker::PhantomData< fn( SuperDefinition, SuperContainer, Element, SubFormed ) > );
 
-impl< SuperDefinition, SuperFormer, SuperContainer, Element, SubDefinitionTypes >
+impl< SuperDefinition, SuperFormer, SuperContainer, Element, SubFormed, SubDefinitionTypes >
 former::FormingEnd
 <
   SubDefinitionTypes,
@@ -351,26 +351,34 @@ former::FormingEnd
   //   AggregatorFormer< K, SuperDefinition >,
   // >,
 >
-for ContainerAddElement< SuperDefinition, SuperContainer, Element >
+for ContainerAddElement< SuperDefinition, SuperContainer, Element, SubFormed >
 where
+
   // K : core::hash::Hash + std::cmp::Eq,
   SuperDefinition : former::FormerDefinition,
+  < SuperDefinition::Types as former::FormerDefinitionTypes >::Storage : StorageExtractContainer< SuperContainer >,
   SuperDefinition::Types : former::FormerDefinitionTypes
   <
     // Storage = AggregatorFormerStorage< K >,
     // Storage = SubDefinitionTypes::Storage,
   >,
-  SuperFormer : FormerExtractStorage,
+
+  SuperFormer : FormerExtractStorage< Storage = < SuperDefinition::Types as former::FormerDefinitionTypes >::Storage >,
   < SuperFormer as FormerExtractStorage >::Storage : StorageExtractContainer< SuperContainer >,
+  SuperContainer : former::ContainerAdd< Element = Element >,
+
   SubDefinitionTypes : former::FormerDefinitionTypes
   <
     // Storage = Storate,
     Formed = SuperFormer,
     Context = SuperFormer,
   >,
-  SubDefinitionTypes::Storage : former::Storage< Formed = SuperFormer >,
+  // SubDefinitionTypes::Storage : former::StoragePreform< Preformed = SuperFormer >,
+  SubDefinitionTypes::Storage : former::StoragePreform< Preformed = SubFormed >,
   SubDefinitionTypes::Storage : former::StoragePreform,
-  SubDefinitionTypes::Formed : IntoElement< Element >
+
+  SubFormed : IntoElement< Element >,
+  // SubDefinitionTypes::Formed : IntoElement< Element >,
 {
   #[ inline( always ) ]
   fn call
@@ -386,18 +394,20 @@ where
   // AggregatorFormer< K, SuperDefinition >
   {
 
-    let storage =  former::StoragePreform::preform( storage );
+    let storage : SubFormed = former::StoragePreform::preform( storage );
     let mut super_former = super_former.unwrap();
 
     let container = StorageExtractContainer
     ::< SuperContainer >
     ::container_mut( FormerExtractStorage::storage_mut( &mut super_former ) );
 
-    // former::ContainerAdd::add
-    // (
-    //   container,
-    //   IntoElement::< SubDefinitionTypes::Formed >::into_element( storage ),
-    // );
+    // let x = IntoElement::< Element >::into_element( storage );
+
+    former::ContainerAdd::add
+    (
+      container,
+      IntoElement::< Element >::into_element( storage ),
+    );
 
     // if let Some( ref mut container ) = super_former.storage.commands
     // {

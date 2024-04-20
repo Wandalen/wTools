@@ -34,7 +34,9 @@ for Vec< E >
 impl< E > StoragePreform
 for Vec< E >
 {
-  fn preform( self ) -> Self::Formed
+  type Preformed = Vec< E >;
+  // fn preform( self ) -> Self::Formed
+  fn preform( self ) -> Self::Preformed
   {
     self
   }

@@ -127,7 +127,10 @@ impl< K, > former :: Storage for CommandFormerStorage< K, > where K : core :: ha
 
 impl< K, > former :: StoragePreform for CommandFormerStorage< K, > where K : core :: hash :: Hash + std :: cmp :: Eq,
 {
-  fn preform( mut self ) -> < Self as former :: Storage > :: Formed
+  type Preformed = Command< K, >;
+
+  fn preform( mut self ) -> Self::Preformed
+  // fn preform( mut self ) -> < Self as former :: Storage > :: Formed
   {
     let name = if self.name.is_some()
     {
@@ -295,7 +298,7 @@ where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = CommandFormerStorage< K, >, Formed = Command< K, > >,
   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
-  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::Storage< Formed = Command< K, > >
+  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform< Preformed = Command< K, > >
 {
   pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {

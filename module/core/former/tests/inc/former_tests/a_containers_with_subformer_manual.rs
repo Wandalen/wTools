@@ -107,7 +107,9 @@ impl former::Storage for Struct1FormerStorage
 
 impl former::StoragePreform for Struct1FormerStorage
 {
-  fn preform( mut self ) -> < Self as former::Storage >::Formed
+  type Preformed = Struct1;
+  // fn preform( mut self ) -> < Self as former::Storage >::Formed
+  fn preform( mut self ) -> Self::Preformed
   {
     let vec_1 = if self.vec_1.is_some()
     {

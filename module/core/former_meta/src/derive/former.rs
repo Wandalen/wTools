@@ -1352,8 +1352,10 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     where
       #struct_generics_where
     {
+      type Preformed = #struct_name < #struct_generics_ty >;
 
-      fn preform( mut self ) -> < Self as former::Storage >::Formed
+      // fn preform( mut self ) -> < Self as former::Storage >::Formed
+      fn preform( mut self ) -> Self::Preformed
       {
         #( #fields_form )*
         // Rust does not support that, yet
@@ -1509,7 +1511,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       Definition : former::FormerDefinition,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty >, Formed = #struct_name < #struct_generics_ty > >,
       < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
-      < Definition::Types as former::FormerDefinitionTypes >::Storage : former::Storage< Formed = #struct_name < #struct_generics_ty > >,
+      < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform< Preformed = #struct_name < #struct_generics_ty > >,
       #former_generics_where
     {
 

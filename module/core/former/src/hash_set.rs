@@ -49,8 +49,10 @@ for HashSet< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
+  type Preformed = HashSet< K >;
   // fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinitionTypes >::Formed
-  fn preform( self ) -> Self::Formed
+  // fn preform( self ) -> Self::Formed
+  fn preform( self ) -> Self::Preformed
   {
     self
   }

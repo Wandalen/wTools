@@ -99,7 +99,8 @@ impl former::Storage for Struct1FormerStorage
 
 impl former::StoragePreform for Struct1FormerStorage
 {
-  fn preform( mut self ) -> < Self as former::Storage >::Formed
+  type Preformed = < Self as former::Storage >::Formed;
+  fn preform( mut self ) -> Self::Preformed
   {
     let int_1 = if self.int_1.is_some()
     {
@@ -248,7 +249,7 @@ where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage, Formed = Struct1 >,
   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
-  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::Storage< Formed = Struct1 >,
+  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform< Preformed = Struct1 >,
 {
   pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
