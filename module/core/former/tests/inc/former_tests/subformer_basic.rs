@@ -360,6 +360,8 @@ where
     // Storage = AggregatorFormerStorage< K >,
     // Storage = SubDefinitionTypes::Storage,
   >,
+  SuperFormer : FormerExtractStorage,
+  < SuperFormer as FormerExtractStorage >::Storage : StorageExtractContainer< SuperContainer >,
   SubDefinitionTypes : former::FormerDefinitionTypes
   <
     // Storage = Storate,
@@ -387,13 +389,15 @@ where
     let storage =  former::StoragePreform::preform( storage );
     let mut super_former = super_former.unwrap();
 
-//     let container = StorageExtractContainer::< SuperContainer >::container_mut( FormerExtractStorage::storage_mut( super_former ) );
-//
-//     former::ContainerAdd::add
-//     (
-//       container,
-//       IntoElement::< SubDefinitionTypes::Formed >::into_element( storage ),
-//     );
+    let container = StorageExtractContainer
+    ::< SuperContainer >
+    ::container_mut( FormerExtractStorage::storage_mut( &mut super_former ) );
+
+    // former::ContainerAdd::add
+    // (
+    //   container,
+    //   IntoElement::< SubDefinitionTypes::Formed >::into_element( storage ),
+    // );
 
     // if let Some( ref mut container ) = super_former.storage.commands
     // {
