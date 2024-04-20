@@ -104,6 +104,7 @@ where
   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform< Preformed = Aggregator< K > >,
 {
 
+  //
   #[ inline( always ) ]
   pub fn command_with_closure< IntoName >( self, name : IntoName )
   ->
@@ -136,6 +137,7 @@ where
     former.name( name )
   }
 
+  //
   #[ inline( always ) ]
   pub fn command_with_type< IntoName >( self, name : IntoName )
   ->
@@ -148,6 +150,7 @@ where
     former.name( name )
   }
 
+  //
   #[ inline( always ) ]
   pub fn command_with_helper< IntoName >( self, name : IntoName )
   ->
@@ -163,7 +166,6 @@ where
     :
     CommandSubformerEnd< K, Self >,
   {
-
     let former
     = CommandFormer::_begin_precise
     (
@@ -171,7 +173,6 @@ where
       Some( self ),
       ContainerAddElement::default(),
     );
-
     former.name( name )
   }
 
