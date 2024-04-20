@@ -232,7 +232,6 @@ where
 
     ContainerAddElement
     <
-      // < Definition as former::FormerDefinition >::Types,
       collection_tools::HashMap
       <
         String,
@@ -266,12 +265,14 @@ where
         K,
         Self,
         Self,
-        ContainerAddElement::
-        <
-          collection_tools::HashMap< String, Command< K > >,
-          ( String, Command< K > ),
-          Command< K >,
-        >,
+        ContainerAddElement
+        ::< _, _, _ >
+        // ::
+        // <
+        //   // collection_tools::HashMap< String, Command< K > >,
+        //   // ( String, Command< K > ),
+        //   // Command< K >,
+        // >,
       >
     >
     = CommandFormer::begin
