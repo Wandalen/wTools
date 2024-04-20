@@ -175,12 +175,35 @@ where
       Self,
       Self,
       impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, AggregatorFormer< K, Definition >, AggregatorFormer< K, Definition > > >,
-      // impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
     >,
   >
   where
-    // K : core::hash::Hash + std::cmp::Eq,
     IntoName : core::convert::Into< String >,
+//   {
+//
+//     let on_end = | command : CommandFormerStorage< K >, super_former : core::option::Option< Self > | -> Self
+//     {
+//       let command =  former::StoragePreform::preform( command );
+//       let mut super_former = super_former.unwrap();
+//       if let Some( ref mut commands ) = super_former.storage.commands
+//       {
+//         former::ContainerAdd::add( commands, ( command.name.clone(), command ) );
+//       }
+//       else
+//       {
+//         let mut commands : collection_tools::HashMap< String, Command< K > > = Default::default();
+//         former::ContainerAdd::add( &mut commands, ( command.name.clone(), command ) );
+//         super_former.storage.commands = Some( commands );
+//       }
+//       super_former
+//     };
+//
+//     self.commands_set::< former::ContainerSubformer::
+//     <
+//       ( K, Command< K > ), former::HashMapDefinition< K, Command< K >, Self, Self, AggregatorFormerCommandsEnd >
+//     > >()
+//   }
+
   {
 
     let on_end = | command : CommandFormerStorage< K >, super_former : core::option::Option< Self > | -> Self
@@ -201,7 +224,6 @@ where
     };
 
     let former
-    // : CommandFormer<K, subformer_basic::CommandFormerDefinition<K, AggregatorFormer<K, Definition>, AggregatorFormer<K, Definition>, _>>
     : CommandFormer
     <
       K,
