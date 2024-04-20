@@ -438,19 +438,17 @@ where
 
 //
 
-pub struct ContainerAddElement< /*SuperDefinition,*/ SuperContainer, Element, SubFormed >
-( core::marker::PhantomData< fn( /*SuperDefinition,*/ SuperContainer, Element, SubFormed ) > );
+pub struct ContainerAddElement< SuperContainer, Element, SubFormed >
+( core::marker::PhantomData< fn( SuperContainer, Element, SubFormed ) > );
 
 impl
 <
-  // SuperDefinition,
   SuperContainer,
   Element,
   SubFormed,
 >
 ContainerAddElement
 <
-  // SuperDefinition,
   SuperContainer,
   Element,
   SubFormed,
@@ -464,7 +462,6 @@ ContainerAddElement
 
 impl
 <
-  // SuperDefinition,
   SuperFormer,
   SuperContainer,
   Element,
@@ -483,17 +480,11 @@ former::FormingEnd
 >
 for ContainerAddElement
 <
-  // SuperDefinition,
   SuperContainer,
   Element,
   SubFormed,
 >
 where
-
-  // SuperDefinition : former::FormerDefinitionTypes,
-  // SuperDefinition::Storage : FormerStorageExtractContainer< SuperContainer >,
-
-  // SuperFormer : FormerExtractStorage< Storage = SuperDefinition::Storage >,
   SuperFormer : FormerExtractStorage<>,
   < SuperFormer as FormerExtractStorage >::Storage : FormerStorageExtractContainer< SuperContainer >,
   SuperContainer : former::ContainerAdd< Element = Element >,
