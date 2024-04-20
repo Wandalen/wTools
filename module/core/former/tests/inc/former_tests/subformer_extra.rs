@@ -363,7 +363,6 @@ where
   >,
   SubDefinition::Storage : former::StoragePreform< Preformed = SubFormed >,
 
-  // SubFormed : IntoElement< Element >,
   SubFormed : Into< Element >,
 {
 
