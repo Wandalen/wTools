@@ -201,7 +201,8 @@ where
     mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
     context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
     on_end : IntoEnd,
-  ) -> Self
+  )
+  -> Self
   where
     IntoEnd : ::core::convert::Into< < Definition as former::FormerDefinition >::End >,
   {

@@ -294,16 +294,11 @@ where
     }
   }
 
-
-
-
   #[ inline( always ) ]
   pub fn form( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
     self.end()
   }
-
-
 
 
   #[ inline( always ) ]
