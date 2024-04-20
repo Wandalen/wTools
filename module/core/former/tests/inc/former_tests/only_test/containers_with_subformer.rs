@@ -50,18 +50,18 @@ tests_impls_optional!
     // former with explicit definition
     let former = Struct1::former();
     a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnPreformed ) ) );
-    let former2 = Struct1Former::< Struct1FormerDefinition >::new( former::ReturnPreformed );
+    let former2 = Struct1Former::< Struct1FormerDefinition >::new_coercing( former::ReturnPreformed );
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
 
     // default parameters
     let former = Struct1::former();
-    let former2 : Struct1Former = Struct1Former::new( former::ReturnPreformed );
+    let former2 : Struct1Former = Struct1Former::new_coercing( former::ReturnPreformed );
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
 
     // closure without helper
     let got : Struct1 = Struct1Former
     ::< Struct1FormerDefinition< _, _, former::FormingEndClosure< Struct1FormerDefinitionTypes< (), Struct1 > > > >
-    ::new( | storage : Struct1FormerStorage, _context | { former::StoragePreform::preform( storage ) } )
+    ::new_coercing( | storage : Struct1FormerStorage, _context | { former::StoragePreform::preform( storage ) } )
     .vec_1().replace( vec![ "a".to_string(), "b".to_string() ] ).end()
     .form();
     let exp : Struct1 = Struct1
@@ -75,7 +75,7 @@ tests_impls_optional!
     // closure with helper
     let got : Struct1 = Struct1Former
     ::< Struct1FormerWithClosure< (), Struct1 > >
-    ::new( | storage : Struct1FormerStorage, _context | { former::StoragePreform::preform( storage ) } )
+    ::new_coercing( | storage : Struct1FormerStorage, _context | { former::StoragePreform::preform( storage ) } )
     .vec_1().replace( vec![ "a".to_string(), "b".to_string() ] ).end()
     .form();
     let exp : Struct1 = Struct1

@@ -17,7 +17,7 @@ impl Struct1
 {
   pub fn former() -> Struct1Former
   {
-    Struct1Former::new( the_module::ReturnPreformed )
+    Struct1Former::new_coercing( the_module::ReturnPreformed )
   }
 }
 
@@ -208,7 +208,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn new< IntoEnd >( end : IntoEnd ) -> Self
+  pub fn new_coercing< IntoEnd >( end : IntoEnd ) -> Self
   where
     IntoEnd : Into< Definition::End >,
   {

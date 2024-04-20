@@ -34,7 +34,7 @@ pub struct Property< Name >
 impl< Name > Property< Name >
 {
   #[ inline ]
-  pub fn new< Description, Code >( name : Name, description : Description, code : Code ) -> Self
+  pub fn new_coercing< Description, Code >( name : Name, description : Description, code : Code ) -> Self
   where
     Name : core::convert::Into< Name >,
     Description : core::convert::Into< String >,
@@ -306,7 +306,7 @@ where
       None,
       Some( self ),
       ContainerAddElement
-      ::new(),
+      ::new_coercing(),
     );
 
     former.name( name )
@@ -456,7 +456,7 @@ ContainerAddElement
   SubFormed,
 >
 {
-  pub fn new() -> Self
+  pub fn new_coercing() -> Self
   {
     Self( core::marker::PhantomData )
   }

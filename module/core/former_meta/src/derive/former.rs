@@ -1224,8 +1224,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       #[ inline( always ) ]
       pub fn former() -> #former < #struct_generics_ty #former_definition< #former_definition_args > >
       {
-        #former :: < #struct_generics_ty #former_definition< #former_definition_args > > :: new( former::ReturnPreformed )
-
+        #former :: < #struct_generics_ty #former_definition< #former_definition_args > > :: new_coercing( former::ReturnPreformed )
       }
 
     }
@@ -1416,7 +1415,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       ///
       // zzz : improve description
       #[ inline( always ) ]
-      pub fn new< IntoEnd >( end : IntoEnd ) -> Self
+      pub fn new_coercing< IntoEnd >( end : IntoEnd ) -> Self
       where
         IntoEnd : Into< Definition::End >,
       {

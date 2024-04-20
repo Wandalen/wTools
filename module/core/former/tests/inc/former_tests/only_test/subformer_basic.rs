@@ -122,7 +122,7 @@ fn aggregator()
   // with helper
   let got = Aggregator::< &str >::former()
   .parameter1( "p1" )
-  .commands().insert( "name1", CommandFormer::< &str >::new().name( "name1" ).subject( "s" ).end() ).end()
+  .commands().insert( "name1", CommandFormer::< &str >::new_coercing().name( "name1" ).subject( "s" ).end() ).end()
   .command( "command1".to_string() )
     .subject( "b" )
     .property( "property1", "simple property", 13isize )

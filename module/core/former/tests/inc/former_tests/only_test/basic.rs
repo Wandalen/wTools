@@ -15,9 +15,9 @@ tests_impls!
     a_id!( former.storage.int_1, None );
     a_id!( former.context, None );
     a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnPreformed ) ) );
-    let former2 = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::new( former::ReturnPreformed );
+    let former2 = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::new_coercing( former::ReturnPreformed );
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
-    // let former2 = Struct1Former::< Struct1FormerDefinition >::new( former::ReturnPreformed );
+    // let former2 = Struct1Former::< Struct1FormerDefinition >::new_coercing( former::ReturnPreformed );
     // a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
     // xxx : uncomment
 
@@ -217,7 +217,7 @@ tests_impls!
     // default explicit params
     let got = Struct1Former
     ::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >
-    ::new( former::ReturnPreformed )
+    ::new_coercing( former::ReturnPreformed )
     .int_1( 13 )
     .form();
     let exp = Struct1::former().int_1( 13 ).form();
@@ -233,10 +233,9 @@ tests_impls!
     // ::< Struct1FormerDefinition< (), Struct1, former::FormingEndClosure< Struct1FormerDefinitionTypes< (), Struct1 > > > >
     ::
     <
-
       Struct1FormerDefinition< (), Struct1, former::FormingEndClosure< Struct1FormerDefinitionTypes< (), Struct1 > > >
     >
-    ::new( end_wrapper )
+    ::new_coercing( end_wrapper )
     .int_1( 13 )
     .form();
     let exp = Struct1::former().int_1( 13 ).form();
@@ -250,7 +249,7 @@ tests_impls!
 
       Struct1FormerDefinition< (), Struct1, former::FormingEndClosure< Struct1FormerDefinitionTypes< (), Struct1 > > >
     >
-    ::new( former::FormingEndClosure::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
+    ::new_coercing( former::FormingEndClosure::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
     .int_1( 13 )
     .form();
     let exp = Struct1::former().int_1( 13 ).form();
@@ -264,7 +263,20 @@ tests_impls!
 
       Struct1FormerDefinition< (), Struct1, former::FormingEndClosure< Struct1FormerDefinitionTypes< (), Struct1 > > >
     >
-    ::new( former::FormingEndClosure::new( | storage, _context : Option< () > | { former::StoragePreform::preform( storage ) } ) )
+    ::new_coercing( former::FormingEndClosure::new( | storage, _context : Option< () > | { former::StoragePreform::preform( storage ) } ) )
+    .int_1( 13 )
+    .form();
+    let exp = Struct1::former().int_1( 13 ).form();
+    a_id!( got, exp );
+
+    // default explicit params with wrapper and closure
+    let got = Struct1Former
+    // ::< Struct1FormerWithClosure< (), Struct1 > >
+    ::
+    <
+      Struct1FormerWithClosure< (), Struct1 >
+    >
+    ::new_coercing( former::FormingEndClosure::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
     .int_1( 13 )
     .form();
     let exp = Struct1::former().int_1( 13 ).form();
@@ -278,21 +290,7 @@ tests_impls!
 
       Struct1FormerWithClosure< (), Struct1 >
     >
-    ::new( former::FormingEndClosure::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
-    .int_1( 13 )
-    .form();
-    let exp = Struct1::former().int_1( 13 ).form();
-    a_id!( got, exp );
-
-    // default explicit params with wrapper and closure
-    let got = Struct1Former
-    // ::< Struct1FormerWithClosure< (), Struct1 > >
-    ::
-    <
-
-      Struct1FormerWithClosure< (), Struct1 >
-    >
-    ::new( | storage, _context | { former::StoragePreform::preform( storage ) } )
+    ::new_coercing( | storage, _context | { former::StoragePreform::preform( storage ) } )
     .int_1( 13 )
     .form();
     let exp = Struct1::former().int_1( 13 ).form();

@@ -121,7 +121,7 @@ mod derive
 ///     #[ inline( always ) ]
 ///     pub fn former() -> UserProfileFormer< UserProfile, former::ReturnFormed >
 ///     {
-///       UserProfileFormer::< UserProfile, former::ReturnFormed >::new()
+///       UserProfileFormer::< UserProfile, former::ReturnFormed >::new_coercing()
 ///     }
 ///   }
 ///
@@ -190,7 +190,7 @@ mod derive
 ///
 ///      // qqq : zzz : outdated, update
 ///      #[ inline( always ) ]
-///      pub fn new() -> UserProfileFormer< UserProfile, former::ReturnFormed >
+///      pub fn new_coercing() -> UserProfileFormer< UserProfile, former::ReturnFormed >
 ///      {
 ///        UserProfileFormer::< UserProfile, former::ReturnFormed >::begin_coercing( None, former::ReturnFormed )
 ///      }
