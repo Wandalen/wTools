@@ -108,6 +108,19 @@ where
   pub commands : collection_tools::HashMap< String, Command< K > >,
 }
 
+pub type CommandSubformer< K, Superformer > = CommandFormer
+<
+  K,
+  CommandFormerDefinition
+  <
+    K,
+    Superformer,
+    Superformer,
+    former::FormingEndClosure< CommandFormerDefinitionTypes< K, Superformer, Superformer > >,
+    // impl former::FormingEnd< CommandFormerDefinitionTypes< K, Superformer, Superformer > >,
+  >,
+>;
+
 // manual
 // impl< K, Context, End >
 // AggregatorFormer< K, Context, End >
@@ -166,44 +179,21 @@ where
 
   #[ inline( always ) ]
   pub fn command< IntoName >( self, name : IntoName )
-  -> CommandFormer
-  <
-    K,
-    CommandFormerDefinition
-    <
-      K,
-      Self,
-      Self,
-      impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, AggregatorFormer< K, Definition >, AggregatorFormer< K, Definition > > >,
-    >,
-  >
+  ->
+  CommandSubformer< K, Self >
+  // CommandFormer
+  // <
+  //   K,
+  //   CommandFormerDefinition
+  //   <
+  //     K,
+  //     Self,
+  //     Self,
+  //     impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
+  //   >,
+  // >
   where
     IntoName : core::convert::Into< String >,
-//   {
-//
-//     let on_end = | command : CommandFormerStorage< K >, super_former : core::option::Option< Self > | -> Self
-//     {
-//       let command =  former::StoragePreform::preform( command );
-//       let mut super_former = super_former.unwrap();
-//       if let Some( ref mut commands ) = super_former.storage.commands
-//       {
-//         former::ContainerAdd::add( commands, ( command.name.clone(), command ) );
-//       }
-//       else
-//       {
-//         let mut commands : collection_tools::HashMap< String, Command< K > > = Default::default();
-//         former::ContainerAdd::add( &mut commands, ( command.name.clone(), command ) );
-//         super_former.storage.commands = Some( commands );
-//       }
-//       super_former
-//     };
-//
-//     self.commands_set::< former::ContainerSubformer::
-//     <
-//       ( K, Command< K > ), former::HashMapDefinition< K, Command< K >, Self, Self, AggregatorFormerCommandsEnd >
-//     > >()
-//   }
-
   {
 
     let on_end = | command : CommandFormerStorage< K >, super_former : core::option::Option< Self > | -> Self
@@ -224,19 +214,20 @@ where
     };
 
     let former
-    : CommandFormer
-    <
-      K,
-      CommandFormerDefinition
-      <
-        K,
-        AggregatorFormer< K, Definition >,
-        AggregatorFormer< K, Definition >,
-        former::FormingEndClosure< _ >,
-        // former::FormingEndClosure< CommandFormerDefinitionTypes< K, AggregatorFormer< K, Definition >, AggregatorFormer< K, Definition > > >,
-        // former::FormingEnd< CommandFormerDefinitionTypes< K, AggregatorFormer< K, Definition >, AggregatorFormer< K, Definition > > >,
-      >
-    >
+    : CommandSubformer< K, Self >
+    // : CommandFormer
+    // <
+    //   K,
+    //   CommandFormerDefinition
+    //   <
+    //     K,
+    //     Self,
+    //     Self,
+    //     former::FormingEndClosure< _ >,
+    //     // former::FormingEndClosure< CommandFormerDefinitionTypes< K, Self, Self > >,
+    //     // former::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
+    //   >
+    // >
     = CommandFormer::begin( None, Some( self ), on_end );
 
     former.name( name )
