@@ -457,15 +457,8 @@ former::FormingEnd
 for ContainerAddElement< SuperDefinition, SuperContainer, Element, SubFormed >
 where
 
-  // K : core::hash::Hash + std::cmp::Eq,
   SuperDefinition : former::FormerDefinitionTypes,
   SuperDefinition::Storage : StorageExtractContainer< SuperContainer >,
-
-  // SuperDefinition::Types : former::FormerDefinitionTypes
-  // <
-  //   // Storage = AggregatorFormerStorage< K >,
-  //   // Storage = SubDefinition::Storage,
-  // >,
 
   SuperFormer : FormerExtractStorage< Storage = SuperDefinition::Storage >,
   < SuperFormer as FormerExtractStorage >::Storage : StorageExtractContainer< SuperContainer >,
@@ -473,30 +466,23 @@ where
 
   SubDefinition : former::FormerDefinitionTypes
   <
-    // Storage = Storate,
     Formed = SuperFormer,
     Context = SuperFormer,
   >,
-  // SubDefinition::Storage : former::StoragePreform< Preformed = SuperFormer >,
   SubDefinition::Storage : former::StoragePreform< Preformed = SubFormed >,
-  // SubDefinition::Storage : former::StoragePreform,
 
   SubFormed : IntoElement< Element >,
-  // SubDefinition::Formed : IntoElement< Element >,
 {
 
   #[ inline( always ) ]
   fn call
   (
     &self,
-    // storage : CommandFormerStorage< K >,
     storage : SubDefinition::Storage,
     super_former : Option< SuperFormer >,
-    // super_former : Option< AggregatorFormer< K, SuperDefinition > >,
   )
   ->
   SuperFormer
-  // AggregatorFormer< K, SuperDefinition >
   {
 
     let storage : SubFormed = former::StoragePreform::preform( storage );
@@ -506,35 +492,11 @@ where
     ::< SuperContainer >
     ::container_mut( FormerExtractStorage::storage_mut( &mut super_former ) );
 
-    // let x = IntoElement::< Element >::into_element( storage );
-
     former::ContainerAdd::add
     (
       container,
       IntoElement::< Element >::into_element( storage ),
     );
-
-    // if let Some( ref mut container ) = super_former.storage.commands
-    // {
-    //   former::ContainerAdd::add
-    //   (
-    //     container,
-    //     IntoElement::< ( String, Command< K > ) >::into_element( storage ),
-    //     // ( storage.name.clone(), storage ),
-    //   );
-    // }
-    // else
-    // {
-    //   // let mut container : collection_tools::HashMap< String, Command< K > > = Default::default();
-    //   let mut container = Default::default();
-    //   former::ContainerAdd::add
-    //   (
-    //     &mut container,
-    //     IntoElement::< ( String, Command< K > ) >::into_element( storage ),
-    //     // ( storage.name.clone(), storage ),
-    //   );
-    //   super_former.storage.commands = Some( container );
-    // }
 
     super_former
   }
