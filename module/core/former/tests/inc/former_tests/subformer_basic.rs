@@ -232,7 +232,7 @@ where
 
     ContainerAddElement
     <
-      < Definition as former::FormerDefinition >::Types,
+      // < Definition as former::FormerDefinition >::Types,
       collection_tools::HashMap
       <
         String,
@@ -275,7 +275,7 @@ where
       Some( self ),
       ContainerAddElement::
       <
-        Definition::Types,
+        // Definition::Types,
         collection_tools::HashMap< String, Command< K > >,
         ( String, Command< K > ),
         Command< K >,
@@ -382,12 +382,12 @@ where
 
 /// xxx : extend description
 /// get container for a field out of a storage
-pub trait StorageExtractContainer< Target >
+pub trait FormerStorageExtractContainer< Target >
 {
   fn container_mut( &mut self ) -> &mut Target;
 }
 
-impl< K > StorageExtractContainer< collection_tools::HashMap< String, Command< K > > >
+impl< K > FormerStorageExtractContainer< collection_tools::HashMap< String, Command< K > > >
 for AggregatorFormerStorage< K >
 where
   K : core::hash::Hash + std::cmp::Eq,
@@ -431,19 +431,19 @@ where
 
 //
 
-pub struct ContainerAddElement< SuperDefinition, SuperContainer, Element, SubFormed >
-( core::marker::PhantomData< fn( SuperDefinition, SuperContainer, Element, SubFormed ) > );
+pub struct ContainerAddElement< /*SuperDefinition,*/ SuperContainer, Element, SubFormed >
+( core::marker::PhantomData< fn( /*SuperDefinition,*/ SuperContainer, Element, SubFormed ) > );
 
 impl
 <
-  SuperDefinition,
+  // SuperDefinition,
   SuperContainer,
   Element,
   SubFormed,
 >
 ContainerAddElement
 <
-  SuperDefinition,
+  // SuperDefinition,
   SuperContainer,
   Element,
   SubFormed,
@@ -457,7 +457,7 @@ ContainerAddElement
 
 impl
 <
-  SuperDefinition,
+  // SuperDefinition,
   SuperFormer,
   SuperContainer,
   Element,
@@ -474,14 +474,21 @@ former::FormingEnd
   //   AggregatorFormer< K, SuperDefinition >,
   // >,
 >
-for ContainerAddElement< SuperDefinition, SuperContainer, Element, SubFormed >
+for ContainerAddElement
+<
+  // SuperDefinition,
+  SuperContainer,
+  Element,
+  SubFormed,
+>
 where
 
-  SuperDefinition : former::FormerDefinitionTypes,
-  SuperDefinition::Storage : StorageExtractContainer< SuperContainer >,
+  // SuperDefinition : former::FormerDefinitionTypes,
+  // SuperDefinition::Storage : FormerStorageExtractContainer< SuperContainer >,
 
-  SuperFormer : FormerExtractStorage< Storage = SuperDefinition::Storage >,
-  < SuperFormer as FormerExtractStorage >::Storage : StorageExtractContainer< SuperContainer >,
+  // SuperFormer : FormerExtractStorage< Storage = SuperDefinition::Storage >,
+  SuperFormer : FormerExtractStorage<>,
+  < SuperFormer as FormerExtractStorage >::Storage : FormerStorageExtractContainer< SuperContainer >,
   SuperContainer : former::ContainerAdd< Element = Element >,
 
   SubDefinition : former::FormerDefinitionTypes
@@ -508,7 +515,7 @@ where
     let storage : SubFormed = former::StoragePreform::preform( storage );
     let mut super_former = super_former.unwrap();
 
-    let container = StorageExtractContainer
+    let container = FormerStorageExtractContainer
     ::< SuperContainer >
     ::container_mut( FormerExtractStorage::storage_mut( &mut super_former ) );
 
