@@ -112,19 +112,19 @@ where
     IntoName : core::convert::Into< String >,
   {
 
-    let on_end = | command : CommandFormerStorage< K >, super_former : core::option::Option< Self > | -> Self
+    let on_end = | storage : CommandFormerStorage< K >, super_former : core::option::Option< Self > | -> Self
     {
-      let command =  former::StoragePreform::preform( command );
+      let formed =  former::StoragePreform::preform( storage );
       let mut super_former = super_former.unwrap();
-      if let Some( ref mut commands ) = super_former.storage.commands
+      if let Some( ref mut container ) = super_former.storage.commands
       {
-        former::ContainerAdd::add( commands, ( command.name.clone(), command ) );
+        former::ContainerAdd::add( container, ( formed.name.clone(), formed ) );
       }
       else
       {
-        let mut commands : collection_tools::HashMap< String, Command< K > > = Default::default();
-        former::ContainerAdd::add( &mut commands, ( command.name.clone(), command ) );
-        super_former.storage.commands = Some( commands );
+        let mut container : collection_tools::HashMap< String, Command< K > > = Default::default();
+        former::ContainerAdd::add( &mut container, ( formed.name.clone(), formed ) );
+        super_former.storage.commands = Some( container );
       }
       super_former
     };
