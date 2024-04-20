@@ -166,17 +166,18 @@ where
 
   #[ inline( always ) ]
   pub fn command< IntoName >( self, name : IntoName )
-  // -> CommandFormer
-  // <
-  //   K,
-  //   CommandFormerDefinition
-  //   <
-  //     K,
-  //     Self,
-  //     Self,
-  //     impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
-  //   >,
-  // >
+  -> CommandFormer
+  <
+    K,
+    CommandFormerDefinition
+    <
+      K,
+      Self,
+      Self,
+      impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, AggregatorFormer< K, Definition >, AggregatorFormer< K, Definition > > >,
+      // impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
+    >,
+  >
   where
     // K : core::hash::Hash + std::cmp::Eq,
     IntoName : core::convert::Into< String >,
@@ -210,12 +211,13 @@ where
         AggregatorFormer< K, Definition >,
         AggregatorFormer< K, Definition >,
         former::FormingEndClosure< _ >,
+        // former::FormingEndClosure< CommandFormerDefinitionTypes< K, AggregatorFormer< K, Definition >, AggregatorFormer< K, Definition > > >,
         // former::FormingEnd< CommandFormerDefinitionTypes< K, AggregatorFormer< K, Definition >, AggregatorFormer< K, Definition > > >,
       >
     >
     = CommandFormer::begin( None, Some( self ), on_end );
 
-    // former.name( name )
+    former.name( name )
 
   }
 
