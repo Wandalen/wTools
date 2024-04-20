@@ -395,10 +395,10 @@ where
 pub struct ContainerAddElement< SuperDefinition, SuperContainer, Element, SubFormed >
 ( core::marker::PhantomData< fn( SuperDefinition, SuperContainer, Element, SubFormed ) > );
 
-impl< SuperDefinition, SuperFormer, SuperContainer, Element, SubFormed, SubDefinitionTypes >
+impl< SuperDefinition, SuperFormer, SuperContainer, Element, SubFormed, SubDefinition >
 former::FormingEnd
 <
-  SubDefinitionTypes,
+  SubDefinition,
   // CommandFormerDefinitionTypes
   // <
   //   K,
@@ -410,37 +410,38 @@ for ContainerAddElement< SuperDefinition, SuperContainer, Element, SubFormed >
 where
 
   // K : core::hash::Hash + std::cmp::Eq,
-  SuperDefinition : former::FormerDefinition,
-  < SuperDefinition::Types as former::FormerDefinitionTypes >::Storage : StorageExtractContainer< SuperContainer >,
-  SuperDefinition::Types : former::FormerDefinitionTypes
-  <
-    // Storage = AggregatorFormerStorage< K >,
-    // Storage = SubDefinitionTypes::Storage,
-  >,
+  SuperDefinition : former::FormerDefinitionTypes,
+  SuperDefinition::Storage : StorageExtractContainer< SuperContainer >,
 
-  SuperFormer : FormerExtractStorage< Storage = < SuperDefinition::Types as former::FormerDefinitionTypes >::Storage >,
+  // SuperDefinition::Types : former::FormerDefinitionTypes
+  // <
+  //   // Storage = AggregatorFormerStorage< K >,
+  //   // Storage = SubDefinition::Storage,
+  // >,
+
+  SuperFormer : FormerExtractStorage< Storage = SuperDefinition::Storage >,
   < SuperFormer as FormerExtractStorage >::Storage : StorageExtractContainer< SuperContainer >,
   SuperContainer : former::ContainerAdd< Element = Element >,
 
-  SubDefinitionTypes : former::FormerDefinitionTypes
+  SubDefinition : former::FormerDefinitionTypes
   <
     // Storage = Storate,
     Formed = SuperFormer,
     Context = SuperFormer,
   >,
-  // SubDefinitionTypes::Storage : former::StoragePreform< Preformed = SuperFormer >,
-  SubDefinitionTypes::Storage : former::StoragePreform< Preformed = SubFormed >,
-  SubDefinitionTypes::Storage : former::StoragePreform,
+  // SubDefinition::Storage : former::StoragePreform< Preformed = SuperFormer >,
+  SubDefinition::Storage : former::StoragePreform< Preformed = SubFormed >,
+  SubDefinition::Storage : former::StoragePreform,
 
   SubFormed : IntoElement< Element >,
-  // SubDefinitionTypes::Formed : IntoElement< Element >,
+  // SubDefinition::Formed : IntoElement< Element >,
 {
   #[ inline( always ) ]
   fn call
   (
     &self,
     // storage : CommandFormerStorage< K >,
-    storage : SubDefinitionTypes::Storage,
+    storage : SubDefinition::Storage,
     super_former : Option< SuperFormer >,
     // super_former : Option< AggregatorFormer< K, SuperDefinition > >,
   )
