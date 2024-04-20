@@ -288,21 +288,16 @@ where
 
 /// xxx : extend description
 /// get container for a field out of a storage
-pub trait StorageContainer< Target >
+pub trait StorageExtractContainer< Target >
 {
-  // fn container_get( &self ) -> &Target;
   fn container_mut( &mut self ) -> &mut Target;
 }
 
-impl< K > StorageContainer< collection_tools::HashMap< String, Command< K > > >
+impl< K > StorageExtractContainer< collection_tools::HashMap< String, Command< K > > >
 for AggregatorFormerStorage< K >
 where
   K : core::hash::Hash + std::cmp::Eq,
 {
-  // fn container_get( &self ) -> &collection_tools::HashMap< String, Command< K > >
-  // {
-  //   &self.commands
-  // }
   fn container_mut( &mut self ) -> &mut collection_tools::HashMap< String, Command< K > >
   {
     if let Some( ref mut commands ) = self.commands
@@ -311,7 +306,7 @@ where
     }
     else
     {
-      let mut commands : collection_tools::HashMap< String, Command< K > > = Default::default();
+      let commands : collection_tools::HashMap< String, Command< K > > = Default::default();
       self.commands = Some( commands );
       self.commands.as_mut().unwrap()
     }
@@ -320,11 +315,33 @@ where
 
 //
 
-#[ allow( non_camel_case_types ) ]
-pub struct ContainerAddElement;
+/// xxx : extend description
+/// extract storage from a former
+pub trait FormerExtractStorage
+{
+  type Storage;
+  fn storage_mut( &mut self ) -> &mut Self::Storage;
+}
 
-// #[ automatically_derived ]
-// impl< /*K,*/ SuperDefinition, SuperFormer, SubDefinitionTypes > former::FormingEnd
+impl< K > FormerExtractStorage
+for AggregatorFormer< K >
+where
+  K : core::hash::Hash + std::cmp::Eq,
+{
+  type Storage = AggregatorFormerStorage< K >;
+  fn storage_mut( &mut self ) -> &mut Self::Storage
+  {
+    &mut self.storage
+  }
+}
+
+//
+
+pub struct ContainerAddElement< SuperDefinition, SuperContainer, Element >
+( core::marker::PhantomData< fn( SuperDefinition, SuperContainer, Element ) > );
+
+// impl< SuperDefinition, SuperFormer, SuperContainer, Element, SubDefinitionTypes >
+// former::FormingEnd
 // <
 //   SubDefinitionTypes,
 //   // CommandFormerDefinitionTypes
@@ -333,9 +350,8 @@ pub struct ContainerAddElement;
 //   //   AggregatorFormer< K, SuperDefinition >,
 //   //   AggregatorFormer< K, SuperDefinition >,
 //   // >,
-//
 // >
-// for ContainerAddElement
+// for ContainerAddElement< SuperDefinition, >
 // where
 //   // K : core::hash::Hash + std::cmp::Eq,
 //   SuperDefinition : former::FormerDefinition,
@@ -352,6 +368,7 @@ pub struct ContainerAddElement;
 //   >,
 //   SubDefinitionTypes::Storage : former::Storage< Formed = SuperFormer >,
 //   SubDefinitionTypes::Storage : former::StoragePreform,
+//   SubDefinitionTypes::Formed : IntoElement< Element >
 // {
 //   #[ inline( always ) ]
 //   fn call
@@ -369,29 +386,37 @@ pub struct ContainerAddElement;
 //
 //     let storage =  former::StoragePreform::preform( storage );
 //     let mut super_former = super_former.unwrap();
-//     if let Some( ref mut container ) = super_former.storage.commands
-//     {
-//       former::ContainerAdd::add
-//       (
-//         container,
-//         IntoElement::< ( String, Command< K > ) >::into_element( storage ),
-//         // ( storage.name.clone(), storage ),
-//       );
-//     }
-//     else
-//     {
-//       // let mut container : collection_tools::HashMap< String, Command< K > > = Default::default();
-//       let mut container = Default::default();
-//       former::ContainerAdd::add
-//       (
-//         &mut container,
-//         IntoElement::< ( String, Command< K > ) >::into_element( storage ),
-//         // ( storage.name.clone(), storage ),
-//       );
-//       super_former.storage.commands = Some( container );
-//     }
-//     super_former
+//     let container = StorageExtractContainer::< SuperContainer >::container_mut( FormerExtractStorage::storage_mut( super_former ) );
 //
+//     former::ContainerAdd::add
+//     (
+//       container,
+//       IntoElement::< SubDefinitionTypes::Formed >::into_element( storage ),
+//     );
+//
+//     // if let Some( ref mut container ) = super_former.storage.commands
+//     // {
+//     //   former::ContainerAdd::add
+//     //   (
+//     //     container,
+//     //     IntoElement::< ( String, Command< K > ) >::into_element( storage ),
+//     //     // ( storage.name.clone(), storage ),
+//     //   );
+//     // }
+//     // else
+//     // {
+//     //   // let mut container : collection_tools::HashMap< String, Command< K > > = Default::default();
+//     //   let mut container = Default::default();
+//     //   former::ContainerAdd::add
+//     //   (
+//     //     &mut container,
+//     //     IntoElement::< ( String, Command< K > ) >::into_element( storage ),
+//     //     // ( storage.name.clone(), storage ),
+//     //   );
+//     //   super_former.storage.commands = Some( container );
+//     // }
+//
+//     super_former
 //   }
 // }
 
