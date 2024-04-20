@@ -211,60 +211,99 @@ where
 
   }
 
-//   #[ inline( always ) ]
-//   pub fn command_with_helper< IntoName >( self, name : IntoName )
-//   ->
-//   // CommandSubformer< K, Self >
-//   CommandFormer
-//   <
-//     K,
-//     CommandFormerDefinition
+  #[ inline( always ) ]
+  pub fn command_with_helper< IntoName >( self, name : IntoName )
+  ->
+  // ()
+  // CommandSubformer< K, Self >
+  CommandFormer
+  <
+    K,
+    CommandFormerDefinition
+    <
+      K,
+      Self,
+      Self,
+      impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
+    >,
+  >
+  where
+    IntoName : core::convert::Into< String >,
+
+    ContainerAddElement
+    <
+      < Definition as former::FormerDefinition >::Types,
+      collection_tools::HashMap
+      <
+        String,
+        Command< K >
+      >,
+      (
+        String,
+        Command< K >,
+      ),
+      Command< K >
+    >
+    :
+    former::FormingEnd
+    <
+      CommandFormerDefinitionTypes
+      <
+        K,
+        AggregatorFormer< K, Definition >,
+        AggregatorFormer< K, Definition >
+      >
+    >
+  {
+
+    let former
+    // : CommandSubformer< K, Self >
+    : CommandFormer
+    <
+      K,
+      CommandFormerDefinition
+      <
+        K,
+        Self,
+        Self,
+        _,
+      >
+    >
+    = CommandFormer::_begin_precise
+    (
+      None,
+      Some( self ),
+      ContainerAddElement::
+      <
+        Definition::Types,
+        collection_tools::HashMap< String, Command< K > >,
+        ( String, Command< K > ),
+        Command< K >,
+      >
+      ::new(),
+    );
+
+//     let callback = ContainerAddElement
+//     ::
 //     <
-//       K,
-//       Self,
-//       Self,
-//       impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
-//     >,
-//   >
-//   where
-//     IntoName : core::convert::Into< String >,
-//   {
+//       Definition::Types,
+//       collection_tools::HashMap< String, Command< K > >,
+//       ( String, Command< K > ),
+//       Command< K >,
+//     >
+//     ::new();
 //
-//     let former
-//     // : CommandSubformer< K, Self >
-//     // : CommandFormer
-//     // <
-//     //   K,
-//     //   CommandFormerDefinition
-//     //   <
-//     //     K,
-//     //     Self,
-//     //     Self,
-//     //     AggregatorFormerCommandEnd2,
-//     //   >
-//     // >
-//     = CommandFormer::_begin_precise
-//     (
-//       None,
-//       Some( self ),
-//       ContainerAddElement::
-//       <
-//         CommandFormerDefinition
-//         <
-//           K,
-//           Self,
-//           Self,
-//           impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
-//         >,
-//         SuperContainer,
-//         Element,
-//         SubFormed
-//       >,
-//     );
+//     let command : CommandFormerStorage< K > = Default::default();
+//     // let super_former : core::option::Option< Self > = ;
 //
-//     former.name( name )
-//
-//   }
+//     // use former::FormingEnd;
+//     let got = former::FormingEnd
+//     ::< CommandFormerDefinitionTypes< K, Self, Self > >
+//     ::call( &callback, command, Some( self ) );
+
+    former.name( name )
+
+  }
 
 }
 
@@ -395,6 +434,15 @@ where
 pub struct ContainerAddElement< SuperDefinition, SuperContainer, Element, SubFormed >
 ( core::marker::PhantomData< fn( SuperDefinition, SuperContainer, Element, SubFormed ) > );
 
+impl< SuperDefinition, SuperContainer, Element, SubFormed >
+ContainerAddElement< SuperDefinition, SuperContainer, Element, SubFormed >
+{
+  pub fn new() -> Self
+  {
+    Self( core::marker::PhantomData )
+  }
+}
+
 impl< SuperDefinition, SuperFormer, SuperContainer, Element, SubFormed, SubDefinition >
 former::FormingEnd
 <
@@ -431,11 +479,12 @@ where
   >,
   // SubDefinition::Storage : former::StoragePreform< Preformed = SuperFormer >,
   SubDefinition::Storage : former::StoragePreform< Preformed = SubFormed >,
-  SubDefinition::Storage : former::StoragePreform,
+  // SubDefinition::Storage : former::StoragePreform,
 
   SubFormed : IntoElement< Element >,
   // SubDefinition::Formed : IntoElement< Element >,
 {
+
   #[ inline( always ) ]
   fn call
   (
@@ -489,6 +538,7 @@ where
 
     super_former
   }
+
 }
 
 // ==
