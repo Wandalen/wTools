@@ -145,8 +145,7 @@ where
   where
     IntoName : core::convert::Into< String >,
   {
-    let former
-    = CommandFormer::_begin_precise( None, Some( self ), AggregatorFormerCommandEnd );
+    let former = CommandFormer::_begin_precise( None, Some( self ), AggregatorFormerCommandEnd );
     former.name( name )
   }
 
@@ -217,16 +216,19 @@ where
     let mut super_former = super_former.unwrap();
     if let Some( ref mut container ) = super_former.storage.commands
     {
-      former::ContainerAdd::add( container, ( sub_formed.name.clone(), sub_formed ) );
+      // former::ContainerAdd::add( container, ( sub_formed.name.clone(), sub_formed ) );
+      former::ContainerAdd::add( container, Into::into( sub_formed ) );
     }
     else
     {
       let mut container : collection_tools::HashMap< String, Command< K > > = Default::default();
-      former::ContainerAdd::add( &mut container, ( sub_formed.name.clone(), sub_formed ) );
+      // former::ContainerAdd::add( &mut container, ( sub_formed.name.clone(), sub_formed ) );
+      // former::ContainerAdd::add( &mut container, Into::< Element >::into( sub_formed ) );
+      former::ContainerAdd::add( &mut container, Into::into( sub_formed ) );
       super_former.storage.commands = Some( container );
     }
-    super_former
 
+    super_former
   }
 }
 
