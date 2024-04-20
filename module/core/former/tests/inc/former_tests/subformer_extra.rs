@@ -24,6 +24,8 @@ where
   pub commands : collection_tools::HashMap< String, Command< K > >,
 }
 
+// =
+
 pub type CommandSubformerWithClosure< K, Superformer > = CommandFormer
 <
   K,
@@ -36,6 +38,36 @@ pub type CommandSubformerWithClosure< K, Superformer > = CommandFormer
     // impl former::FormingEnd< CommandFormerDefinitionTypes< K, Superformer, Superformer > >,
   >,
 >;
+
+// =
+
+pub type CommandSubformer< K, Superformer, End > = CommandFormer
+<
+  K,
+  CommandFormerDefinition
+  <
+    K,
+    Superformer,
+    Superformer,
+    End,
+    // impl former::FormingEnd< CommandFormerDefinitionTypes< K, Superformer, Superformer > >,
+  >,
+>;
+
+// CommandFormer
+// <
+//   K,
+//   CommandFormerDefinition
+//   <
+//     K,
+//     Self,
+//     Self,
+//     impl CommandSubformerEnd< K, Self >,
+//     // impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
+//   >,
+// >
+
+// =
 
 pub trait CommandSubformerEnd< K, SuperFormer >
 where
@@ -58,7 +90,7 @@ where
 {
 }
 
-//
+// =
 
 impl< K, Definition > AggregatorFormer
 <
@@ -119,40 +151,13 @@ where
   #[ inline( always ) ]
   pub fn command_with_type< IntoName >( self, name : IntoName )
   ->
-  // CommandSubformerWithClosure< K, Self >
-  CommandFormer
-  <
-    K,
-    CommandFormerDefinition
-    <
-      K,
-      Self,
-      Self,
-      impl CommandSubformerEnd< K, Self >,
-      // impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
-    >,
-  >
+  CommandSubformer< K, Self, impl CommandSubformerEnd< K, Self > >
   where
     IntoName : core::convert::Into< String >,
   {
-
     let former
-    // : CommandSubformerWithClosure< K, Self >
-    // : CommandFormer
-    // <
-    //   K,
-    //   CommandFormerDefinition
-    //   <
-    //     K,
-    //     Self,
-    //     Self,
-    //     AggregatorFormerCommandEnd,
-    //   >
-    // >
     = CommandFormer::_begin_precise( None, Some( self ), AggregatorFormerCommandEnd );
-
     former.name( name )
-
   }
 
   #[ inline( always ) ]
@@ -200,7 +205,9 @@ where
 pub struct AggregatorFormerCommandEnd;
 
 #[ automatically_derived ]
-impl< K, Definition > former::FormingEnd
+impl< K, Definition >
+// CommandSubformerEnd< K, AggregatorFormer< K, Definition > >
+former::FormingEnd
 <
   CommandFormerDefinitionTypes
   <
@@ -222,29 +229,49 @@ where
   fn call
   (
     &self,
-    command : CommandFormerStorage< K >,
+    sub_storage : CommandFormerStorage< K >,
     super_former : Option< AggregatorFormer< K, Definition > >,
   )
   ->
   AggregatorFormer< K, Definition >
   {
 
-    let command = former::StoragePreform::preform( command );
+    let sub_formed = former::StoragePreform::preform( sub_storage );
     let mut super_former = super_former.unwrap();
     if let Some( ref mut commands ) = super_former.storage.commands
     {
-      former::ContainerAdd::add( commands, ( command.name.clone(), command ) );
+      former::ContainerAdd::add( commands, ( sub_formed.name.clone(), sub_formed ) );
     }
     else
     {
       let mut commands : collection_tools::HashMap< String, Command< K > > = Default::default();
-      former::ContainerAdd::add( &mut commands, ( command.name.clone(), command ) );
+      former::ContainerAdd::add( &mut commands, ( sub_formed.name.clone(), sub_formed ) );
       super_former.storage.commands = Some( commands );
     }
     super_former
 
   }
 }
+
+//
+
+// /// Convert an entity to an element which could be added to a container.
+// pub trait IntoElement< Element >
+// {
+//   /// Convert an entity to an element which could be added to a container.
+//   fn into_element( self ) -> Element;
+// }
+//
+// impl< K > IntoElement< ( String, Command< K > ) >
+// for Command< K >
+// where
+//   K : core::hash::Hash + std::cmp::Eq,
+// {
+//   fn into_element( self ) -> ( String, Command< K > )
+//   {
+//     ( self.name.clone(), self )
+//   }
+// }
 
 //
 
@@ -398,4 +425,3 @@ where
 // ==
 
 include!( "./only_test/subformer_extra.rs" );
-// xxx : uncomment
