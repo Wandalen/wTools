@@ -34,7 +34,7 @@ pub struct Property< Name >
 impl< Name > Property< Name >
 {
   #[ inline ]
-  pub fn new_coercing< Description, Code >( name : Name, description : Description, code : Code ) -> Self
+  pub fn new< Description, Code >( name : Name, description : Description, code : Code ) -> Self
   where
     Name : core::convert::Into< Name >,
     Description : core::convert::Into< String >,
@@ -295,7 +295,7 @@ where
     (
       None,
       Some( self ),
-      ContainerAddElement::new_coercing(),
+      ContainerAddElement::default(),
     );
 
     former.name( name )
@@ -427,23 +427,15 @@ where
 
 //
 
+#[ derive( Debug ) ]
 pub struct ContainerAddElement< SuperContainer, Element, SubFormed >
 ( core::marker::PhantomData< fn( SuperContainer, Element, SubFormed ) > );
 
-impl
-<
-  SuperContainer,
-  Element,
-  SubFormed,
->
-ContainerAddElement
-<
-  SuperContainer,
-  Element,
-  SubFormed,
->
+impl< SuperContainer, Element, SubFormed > ::core::default::Default
+for ContainerAddElement< SuperContainer, Element, SubFormed >
 {
-  pub fn new_coercing() -> Self
+  #[ inline( always ) ]
+  fn default() -> Self
   {
     Self( core::marker::PhantomData )
   }
