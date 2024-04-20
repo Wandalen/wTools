@@ -207,11 +207,11 @@ where
   #[ inline( always ) ]
   pub fn new() -> UserProfileFormer< UserProfile, former::ReturnFormed >
   {
-    UserProfileFormer::< UserProfile, former::ReturnFormed >::begin( None, former::ReturnFormed )
+    UserProfileFormer::< UserProfile, former::ReturnFormed >::begin_coercing( None, former::ReturnFormed )
   }
 
   #[ inline( always ) ]
-  pub fn begin
+  pub fn begin_coercing
   (
     context : Option< Context >,
     on_end : End,
@@ -566,7 +566,7 @@ fn main()
         }
         super_former
       };
-      let former = CommandFormer::begin( None, Some( self ), on_end );
+      let former = CommandFormer::begin_coercing( None, Some( self ), on_end );
       former.name( name )
     }
   }

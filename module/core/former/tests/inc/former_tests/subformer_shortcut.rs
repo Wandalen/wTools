@@ -34,7 +34,7 @@ where
   ) -> Self
   {
     debug_assert!( storage.is_none() );
-    Self::begin( None, context, on_end )
+    Self::begin_coercing( None, context, on_end )
   }
 
 }

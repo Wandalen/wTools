@@ -14,7 +14,7 @@ pub struct Struct1
   hashset_1 : HashSet< String >,
 }
 
-// = begin of generated
+// = begin_coercing of generated
 
 // = end of generated
 

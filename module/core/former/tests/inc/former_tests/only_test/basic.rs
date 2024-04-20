@@ -44,7 +44,7 @@ tests_impls!
     <
       Struct1FormerDefinition< i32, i32, former::FormingEndClosure< Struct1FormerDefinitionTypes< i32, i32 > > >
     >
-    ::begin
+    ::begin_coercing
     (
       None,
       Some( 3 ),
@@ -60,7 +60,7 @@ tests_impls!
     <
       Struct1FormerDefinition< i32, i32, former::FormingEndClosure< Struct1FormerDefinitionTypes< i32, i32 > > >
     >
-    ::begin
+    ::begin_coercing
     (
       None,
       Some( 3 ),
@@ -70,14 +70,14 @@ tests_impls!
     .form();
     a_id!( got, 32 );
 
-    // custom params begin
+    // custom params begin_coercing
     let got = Struct1Former
     ::
     <
 
       Struct1FormerDefinition< i32, i32, former::FormingEndClosure< Struct1FormerDefinitionTypes< i32, i32 > > >
     >
-    ::begin
+    ::begin_coercing
     (
       None,
       Some( 3 ),
@@ -87,14 +87,14 @@ tests_impls!
     .form();
     a_id!( got, 32 );
 
-    // custom params begin with Struct1FormerWithClosure
+    // custom params begin_coercing with Struct1FormerWithClosure
     let got = Struct1Former
     ::
     <
 
       Struct1FormerDefinition< i32, i32, former::FormingEndClosure< Struct1FormerDefinitionTypes< i32, i32 > > >
     >
-    ::begin
+    ::begin_coercing
     (
       None,
       Some( 3 ),
@@ -111,7 +111,7 @@ tests_impls!
 
       Struct1FormerDefinition< i32, i32, former::FormingEndClosure< _ > >
     >
-    ::begin
+    ::begin_coercing
     (
       None,
       Some( 3 ),
@@ -125,21 +125,21 @@ tests_impls!
 
   //
 
-  fn begin()
+  fn begin_coercing()
   {
 
-    // begin with none
-    let got = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::begin( None, None, the_module::ReturnPreformed ).int_1( 13 ).form();
+    // begin_coercing with none
+    let got = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::begin_coercing( None, None, the_module::ReturnPreformed ).int_1( 13 ).form();
     let exp = Struct1::former().int_1( 13 ).form();
     a_id!( got, exp );
 
-    // begin with storage
+    // begin_coercing with storage
     let mut storage = Struct1FormerStorage::default();
     storage.int_1 = Some( 13 );
-    let exp = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::begin( Some( storage ), None, the_module::ReturnPreformed ).form();
+    let exp = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::begin_coercing( Some( storage ), None, the_module::ReturnPreformed ).form();
     a_id!( got, exp );
 
-    // begin with context
+    // begin_coercing with context
     let mut storage = Struct1FormerStorage::default();
     storage.int_1 = Some( 13 );
     let exp = Struct1Former
@@ -147,7 +147,7 @@ tests_impls!
     <
       Struct1FormerDefinition< (), Struct1, former::ReturnPreformed >
     >
-    ::begin( Some( storage ), Some( () ), the_module::ReturnPreformed )
+    ::begin_coercing( Some( storage ), Some( () ), the_module::ReturnPreformed )
     .form();
     a_id!( got, exp );
 
@@ -518,7 +518,7 @@ tests_index!
 {
   internals,
   custom_definition_params,
-  begin,
+  begin_coercing,
   _begin_precise,
   new,
   _new_precise,

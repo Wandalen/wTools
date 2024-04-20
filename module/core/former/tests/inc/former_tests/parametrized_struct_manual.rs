@@ -34,7 +34,7 @@ where
   pub properties : collection_tools::HashMap< K, Property< K > >,
 }
 
-// == begin of generated
+// == begin_coercing of generated
 
 #[ automatically_derived ]
 impl< K, > Command< K, > where K : core :: hash :: Hash + std :: cmp :: Eq,
@@ -212,14 +212,14 @@ where
   #[ inline( always ) ]
   pub fn _new_precise( on_end : Definition::End ) -> Self
   {
-    Self::begin( None, None, on_end )
+    Self::begin_coercing( None, None, on_end )
   }
 
   #[ inline( always ) ]
   pub fn new< IntoEnd >( end : IntoEnd ) -> Self
   where IntoEnd : Into< Definition::End >
   {
-    Self::begin( None, None, end )
+    Self::begin_coercing( None, None, end )
   }
 
   #[ inline( always ) ]
@@ -238,7 +238,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn begin< IntoEnd >( mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >, context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >, on_end : IntoEnd, ) -> Self
+  pub fn begin_coercing< IntoEnd >( mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >, context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >, on_end : IntoEnd, ) -> Self
   where IntoEnd : ::core::convert::Into< < Definition as former::FormerDefinition >::End >
   {
     if storage.is_none()

@@ -54,10 +54,10 @@ fn add()
   ];
   a_id!( got, exp );
 
-  // with begin
+  // with begin_coercing
 
   let got : HashSet< String > = the_module::HashSetSubformer
-  ::begin( Some( hset![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
+  ::begin_coercing( Some( hset![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
   .add( "b" )
   .form();
   let exp = hset!

@@ -32,7 +32,7 @@ pub struct Command< K : core::hash::Hash + std::cmp::Eq >
   pub properties : collection_tools::HashMap< K, Property< K > >,
 }
 
-// == begin of generated
+// == begin_coercing of generated
 
 // == end of generated
 

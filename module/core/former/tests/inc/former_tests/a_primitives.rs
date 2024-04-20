@@ -12,7 +12,7 @@ pub struct Struct1
   string_optional_1 : Option< String >,
 }
 
-// = begin of generated
+// = begin_coercing of generated
 
 // = end of generated
 

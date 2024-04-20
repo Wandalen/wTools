@@ -25,7 +25,7 @@ where
   // ->
   // HashMapSubformer< K, E, Definition, (), impl FormingEnd< Self, Self > >
   // {
-  //   HashMapSubformer::begin( Some( self ), None, ReturnFormed )
+  //   HashMapSubformer::begin_coercing( Some( self ), None, ReturnFormed )
   // }
   // xxx : uncomment and cover by tests
 

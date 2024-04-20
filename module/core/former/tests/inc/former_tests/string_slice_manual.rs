@@ -7,7 +7,7 @@ pub struct Struct1< 'a >
   pub string_slice_1 : &'a str,
 }
 
-// === begin of generated
+// === begin_coercing of generated
 
 #[ automatically_derived ]
 impl< 'a > Struct1< 'a >
@@ -171,14 +171,14 @@ where
   #[ inline( always ) ]
   pub fn _new_precise( on_end : Definition::End ) -> Self
   {
-    Self::begin( None, None, on_end )
+    Self::begin_coercing( None, None, on_end )
   }
 
   #[ inline( always ) ]
   pub fn new< IntoEnd >( end : IntoEnd ) -> Self
   where IntoEnd : Into< Definition::End >,
   {
-    Self::begin( None, None, end, )
+    Self::begin_coercing( None, None, end, )
   }
 
   #[ inline( always ) ]
@@ -202,7 +202,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn begin< IntoEnd >
+  pub fn begin_coercing< IntoEnd >
   (
     mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
     context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,

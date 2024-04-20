@@ -179,7 +179,22 @@ where
       super_former
     };
 
-    let former : CommandSubformer< K, Self > = CommandFormer::begin( None, Some( self ), on_end );
+    let former
+    // : CommandSubformer< K, Self >
+    : CommandFormer< _, _ >
+    // : CommandFormer
+    // <
+    //   K,
+    //   CommandFormerDefinition
+    //   <
+    //     K,
+    //     Self,
+    //     Self,
+    //     _,
+    //   >
+    // >
+    = CommandFormer::_begin_precise( None, Some( self ), on_end );
+    // = CommandFormer::begin_coercing( None, Some( self ), on_end );
     former.name( name )
 
   }
@@ -286,7 +301,7 @@ where
         // >,
       >
     >
-    = CommandFormer::begin
+    = CommandFormer::begin_coercing
     (
       None,
       Some( self ),

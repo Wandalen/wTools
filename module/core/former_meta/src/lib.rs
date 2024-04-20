@@ -192,11 +192,11 @@ mod derive
 ///      #[ inline( always ) ]
 ///      pub fn new() -> UserProfileFormer< UserProfile, former::ReturnFormed >
 ///      {
-///        UserProfileFormer::< UserProfile, former::ReturnFormed >::begin( None, former::ReturnFormed )
+///        UserProfileFormer::< UserProfile, former::ReturnFormed >::begin_coercing( None, former::ReturnFormed )
 ///      }
 ///
 ///     #[ inline( always ) ]
-///     pub fn begin( context : Option< Context >, on_end : End ) -> Self
+///     pub fn begin_coercing( context : Option< Context >, on_end : End ) -> Self
 ///     {
 ///       Self
 ///       {

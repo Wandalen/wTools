@@ -162,7 +162,7 @@ where
   #[ inline( always ) ]
   pub fn new() -> CommandFormer< K >
   {
-    CommandFormer::< K >::begin
+    CommandFormer::< K >::begin_coercing
     (
       None,
       None,
@@ -171,7 +171,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn begin
+  pub fn begin_coercing
   (
     storage : core::option::Option< CommandFormerStorage< K > >,
     context : core::option::Option< Context >,
@@ -233,7 +233,7 @@ where
       super_former.storage.properties = Some( formed );
       super_former
     };
-    the_module::HashMapSubformer::begin( formed, Some( self ), on_end )
+    the_module::HashMapSubformer::begin_coercing( formed, Some( self ), on_end )
   }
 
 }
@@ -360,7 +360,7 @@ where
   #[ inline( always ) ]
   pub fn new() -> AggregatorFormer< K >
   {
-    AggregatorFormer::< K >::begin
+    AggregatorFormer::< K >::begin_coercing
     (
       None,
       the_module::ReturnPreformed,
@@ -368,7 +368,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn begin
+  pub fn begin_coercing
   (
     context :  core::option::Option< Context >,
     on_end : End,
@@ -419,7 +419,7 @@ where
       super_former.commands = Some( formed );
       super_former
     };
-    the_module::HashMapSubformer::begin(  formed, Some( self ), on_end )
+    the_module::HashMapSubformer::begin_coercing(  formed, Some( self ), on_end )
   }
 
 }
@@ -454,7 +454,7 @@ where
       }
       super_former
     };
-    let former = CommandFormer::begin( None, Some( self ), on_end );
+    let former = CommandFormer::begin_coercing( None, Some( self ), on_end );
     former.name( name )
   }
 

@@ -50,7 +50,7 @@ fn begin_and_custom_end()
   {
     13.1
   }
-  let got = the_module::VectorSubformer::begin( None, None, return_13 )
+  let got = the_module::VectorSubformer::begin_coercing( None, None, return_13 )
   .add( "a" )
   .add( "b" )
   .form();
@@ -77,7 +77,7 @@ fn begin_and_custom_end()
       13.1
     }
   }
-  let got = the_module::VectorSubformer::begin( None, Some( 10.0 ), context_plus_13 )
+  let got = the_module::VectorSubformer::begin_coercing( None, Some( 10.0 ), context_plus_13 )
   .add( "a" )
   .add( "b" )
   .form();
@@ -128,7 +128,7 @@ fn custom_definition()
 
   //
 
-  let got = the_module::ContainerSubformer::< String, Return13 >::begin( None, None, Return13 )
+  let got = the_module::ContainerSubformer::< String, Return13 >::begin_coercing( None, None, Return13 )
   .add( "a" )
   .add( "b" )
   .form();
@@ -195,7 +195,7 @@ fn custom_definition_parametrized()
 
   //
 
-  let got = the_module::ContainerSubformer::< String, Return13< String > >::begin( None, None, Return13::new() )
+  let got = the_module::ContainerSubformer::< String, Return13< String > >::begin_coercing( None, None, Return13::new() )
   .add( "a" )
   .add( "b" )
   .form();
@@ -213,7 +213,7 @@ fn custom_definition_parametrized()
 
   type MyContainer< E > = the_module::ContainerSubformer::< E, Return13< E > >;
 
-  let got = MyContainer::< String >::begin( None, None, Return13::new() )
+  let got = MyContainer::< String >::begin_coercing( None, None, Return13::new() )
   .add( "a" )
   .add( "b" )
   .form();

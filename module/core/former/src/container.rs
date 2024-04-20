@@ -246,7 +246,7 @@ where
 
   /// Begins the building process, optionally initializing with a context and storage.
   #[ inline( always ) ]
-  pub fn begin
+  pub fn begin_coercing
   (
     mut storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
     context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
@@ -309,7 +309,7 @@ where
   #[ inline( always ) ]
   pub fn new( end : Definition::End ) -> Self
   {
-    Self::begin
+    Self::begin_coercing
     (
       None,
       None,
@@ -323,7 +323,7 @@ where
   where
     IntoEnd : Into< Definition::End >,
   {
-    Self::begin
+    Self::begin_coercing
     (
       None,
       None,
@@ -376,7 +376,7 @@ where
   )
   -> Self
   {
-    Self::begin( storage, context, on_end )
+    Self::begin_coercing( storage, context, on_end )
   }
 
 }

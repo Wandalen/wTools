@@ -16,6 +16,6 @@ pub struct End
   inner : std::sync::Arc< core::cell::RefCell< dyn CloneAny > >
 }
 
-// = begin of generated
+// = begin_coercing of generated
 
 // = end of generated

@@ -53,10 +53,10 @@ fn add()
   ];
   a_id!( got, exp );
 
-  // with begin
+  // with begin_coercing
 
   let got : Vec< String > = the_module::VectorSubformer
-  ::begin( Some( vec![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
+  ::begin_coercing( Some( vec![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
   .add( "b" )
   .form();
   let exp = vec!

@@ -634,7 +634,7 @@ fn field_setter
 ///     former.hashmap_strings_1 = Some( formed );
 ///     former
 ///   };
-///   former::HashMapSubformer::begin( formed, self, on_end )
+///   former::HashMapSubformer::begin_coercing( formed, self, on_end )
 /// }
 /// ```
 /// zzz : update example
@@ -767,7 +767,7 @@ fn subformer_field_setter
   //       former.storage.#setter_name = Some( formed );
   //       former
   //     };
-  //     #subformer_type::begin( formed, Some( self ), on_end )
+  //     #subformer_type::begin_coercing( formed, Some( self ), on_end )
   //   }
   // }
 
@@ -1408,7 +1408,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       #[ inline( always ) ]
       pub fn _new_precise( on_end : Definition::End ) -> Self
       {
-        Self::begin( None, None, on_end )
+        Self::begin_coercing( None, None, on_end )
       }
 
       ///
@@ -1420,7 +1420,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       where
         IntoEnd : Into< Definition::End >,
       {
-        Self::begin
+        Self::begin_coercing
         (
           None,
           None,
@@ -1457,7 +1457,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       ///
       // zzz : improve description
       #[ inline( always ) ]
-      pub fn begin< IntoEnd >
+      pub fn begin_coercing< IntoEnd >
       (
         mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
         context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,

@@ -234,7 +234,7 @@ where
   #[ inline( always ) ]
   pub fn _new_precise( on_end : Definition::End ) -> Self
   {
-    Self::begin( None, None, on_end )
+    Self::begin_coercing( None, None, on_end )
   }
 
 
@@ -245,7 +245,7 @@ where
   where
     IntoEnd : Into< Definition::End >,
   {
-    Self::begin( None, None, end, )
+    Self::begin_coercing( None, None, end, )
   }
 
 
@@ -274,7 +274,7 @@ where
 
 
   #[ inline( always ) ]
-  pub fn begin< IntoEnd >(
+  pub fn begin_coercing< IntoEnd >(
     mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
     context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
     on_end : IntoEnd,

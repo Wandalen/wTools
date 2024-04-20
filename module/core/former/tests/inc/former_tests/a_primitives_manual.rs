@@ -212,7 +212,7 @@ where
   where
     IntoEnd : Into< Definition::End >,
   {
-    Self::begin
+    Self::begin_coercing
     (
       None,
       None,
@@ -241,7 +241,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn begin< IntoEnd >
+  pub fn begin_coercing< IntoEnd >
   (
     mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
     context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,

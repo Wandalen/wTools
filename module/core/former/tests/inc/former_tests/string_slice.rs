@@ -8,7 +8,7 @@ pub struct Struct1< 'a >
   pub string_slice_1 : &'a str,
 }
 
-// === begin of generated
+// === begin_coercing of generated
 
 // === end of generated
 
