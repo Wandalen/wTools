@@ -144,6 +144,36 @@ where
 {
 
   #[ inline( always ) ]
+  pub fn command_with_closure< IntoName >( self, name : IntoName )
+  ->
+  CommandSubformer< K, Self >
+  where
+    IntoName : core::convert::Into< String >,
+  {
+
+    let on_end = | command : CommandFormerStorage< K >, super_former : core::option::Option< Self > | -> Self
+    {
+      let command =  former::StoragePreform::preform( command );
+      let mut super_former = super_former.unwrap();
+      if let Some( ref mut commands ) = super_former.storage.commands
+      {
+        former::ContainerAdd::add( commands, ( command.name.clone(), command ) );
+      }
+      else
+      {
+        let mut commands : collection_tools::HashMap< String, Command< K > > = Default::default();
+        former::ContainerAdd::add( &mut commands, ( command.name.clone(), command ) );
+        super_former.storage.commands = Some( commands );
+      }
+      super_former
+    };
+
+    let former = CommandFormer::begin( None, Some( self ), on_end );
+    former.name( name )
+
+  }
+
+  #[ inline( always ) ]
   pub fn command_with_types< IntoName >( self, name : IntoName )
   ->
   // CommandSubformer< K, Self >
@@ -181,35 +211,60 @@ where
 
   }
 
-  #[ inline( always ) ]
-  pub fn command_with_closure< IntoName >( self, name : IntoName )
-  ->
-  CommandSubformer< K, Self >
-  where
-    IntoName : core::convert::Into< String >,
-  {
-
-    let on_end = | command : CommandFormerStorage< K >, super_former : core::option::Option< Self > | -> Self
-    {
-      let command =  former::StoragePreform::preform( command );
-      let mut super_former = super_former.unwrap();
-      if let Some( ref mut commands ) = super_former.storage.commands
-      {
-        former::ContainerAdd::add( commands, ( command.name.clone(), command ) );
-      }
-      else
-      {
-        let mut commands : collection_tools::HashMap< String, Command< K > > = Default::default();
-        former::ContainerAdd::add( &mut commands, ( command.name.clone(), command ) );
-        super_former.storage.commands = Some( commands );
-      }
-      super_former
-    };
-
-    let former = CommandFormer::begin( None, Some( self ), on_end );
-    former.name( name )
-
-  }
+//   #[ inline( always ) ]
+//   pub fn command_with_helper< IntoName >( self, name : IntoName )
+//   ->
+//   // CommandSubformer< K, Self >
+//   CommandFormer
+//   <
+//     K,
+//     CommandFormerDefinition
+//     <
+//       K,
+//       Self,
+//       Self,
+//       impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
+//     >,
+//   >
+//   where
+//     IntoName : core::convert::Into< String >,
+//   {
+//
+//     let former
+//     // : CommandSubformer< K, Self >
+//     // : CommandFormer
+//     // <
+//     //   K,
+//     //   CommandFormerDefinition
+//     //   <
+//     //     K,
+//     //     Self,
+//     //     Self,
+//     //     AggregatorFormerCommandEnd2,
+//     //   >
+//     // >
+//     = CommandFormer::_begin_precise
+//     (
+//       None,
+//       Some( self ),
+//       ContainerAddElement::
+//       <
+//         CommandFormerDefinition
+//         <
+//           K,
+//           Self,
+//           Self,
+//           impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
+//         >,
+//         SuperContainer,
+//         Element,
+//         SubFormed
+//       >,
+//     );
+//
+//     former.name( name )
+//
+//   }
 
 }
 
