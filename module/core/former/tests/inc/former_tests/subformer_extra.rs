@@ -12,9 +12,9 @@ where
   pub subject : K,
 }
 
-// = command subformer with closure
-
-// pub type CommandSubformerWithClosure< K, Superformer > = CommandFormer
+// // = command subformer - generated
+//
+// pub type CommandSubformer< K, Superformer, End > = CommandFormer
 // <
 //   K,
 //   CommandFormerDefinition
@@ -22,48 +22,33 @@ where
 //     K,
 //     Superformer,
 //     Superformer,
-//     former::FormingEndClosure< CommandFormerDefinitionTypes< K, Superformer, Superformer > >,
+//     End,
 //     // impl former::FormingEnd< CommandFormerDefinitionTypes< K, Superformer, Superformer > >,
 //   >,
 // >;
-
-// = command subformer
-
-pub type CommandSubformer< K, Superformer, End > = CommandFormer
-<
-  K,
-  CommandFormerDefinition
-  <
-    K,
-    Superformer,
-    Superformer,
-    End,
-    // impl former::FormingEnd< CommandFormerDefinitionTypes< K, Superformer, Superformer > >,
-  >,
->;
-
-// = command subformer end
-
-pub trait CommandSubformerEnd< K, SuperFormer >
-where
-  K : core::hash::Hash + std::cmp::Eq,
-  Self : the_module::FormingEnd
-  <
-    CommandFormerDefinitionTypes< K, SuperFormer, SuperFormer >,
-  >
-{
-}
-
-impl< K, SuperFormer, T > CommandSubformerEnd< K, SuperFormer >
-for T
-where
-  K : core::hash::Hash + std::cmp::Eq,
-  Self : the_module::FormingEnd
-  <
-    CommandFormerDefinitionTypes< K, SuperFormer, SuperFormer >,
-  >
-{
-}
+//
+// // = command subformer end - generated
+//
+// pub trait CommandSubformerEnd< K, SuperFormer >
+// where
+//   K : core::hash::Hash + std::cmp::Eq,
+//   Self : the_module::FormingEnd
+//   <
+//     CommandFormerDefinitionTypes< K, SuperFormer, SuperFormer >,
+//   >
+// {
+// }
+//
+// impl< K, SuperFormer, T > CommandSubformerEnd< K, SuperFormer >
+// for T
+// where
+//   K : core::hash::Hash + std::cmp::Eq,
+//   Self : the_module::FormingEnd
+//   <
+//     CommandFormerDefinitionTypes< K, SuperFormer, SuperFormer >,
+//   >
+// {
+// }
 
 // == aggregator
 

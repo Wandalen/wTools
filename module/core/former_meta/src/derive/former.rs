@@ -1077,16 +1077,20 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let former_definition_types_name = format!( "{}FormerDefinitionTypes", struct_name );
   let former_definition_types = syn::Ident::new( &former_definition_types_name, struct_name.span() );
   let former_with_closure_name = format!( "{}FormerWithClosure", struct_name );
-  let former_with_closure = syn::Ident::new( &former_with_closure_name, struct_name.span() );
+  let former_with_closure = syn::Ident::new( &former_with_closure_name, struct_name.span() ); // xxx : maybe remove
+  let subformer_name = format!( "{}Subformer", struct_name );
+  let subformer = syn::Ident::new( &subformer_name, struct_name.span() );
+  let subformer_end_name = format!( "{}SubformerEnd", struct_name );
+  let subformer_end = syn::Ident::new( &subformer_end_name, struct_name.span() );
 
-  /* generic parameters */
+  /* parameters for structure */
 
   let generics = &ast.generics;
   let ( struct_generics_with_defaults, struct_generics_impl, struct_generics_ty, struct_generics_where )
   = generic_params::decompose( generics );
 
   /* parameters for definition */
-  /* parameters for definition */
+
   let extra : macro_tools::syn::AngleBracketedGenericArguments = parse_quote!
   {
     < (), #struct_name < #struct_generics_ty >, former::ReturnPreformed >
@@ -1094,6 +1098,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let former_definition_args = generic_args::merge( &generics.into_generic_args(), &extra.into() ).args;
 
   /* parameters for former */
+
   let extra : macro_tools::GenericsWithWhere = parse_quote!
   {
     < Definition = #former_definition < #former_definition_args > >
@@ -1107,6 +1112,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   = generic_params::decompose( &extra );
 
   /* parameters for definition types */
+
   let extra : macro_tools::GenericsWithWhere = parse_quote!
   {
     < __Context = (), __Formed = #struct_name < #struct_generics_ty > >
@@ -1118,6 +1124,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let former_definition_type_phantom = macro_tools::phantom::tuple( &former_definition_type_generics_impl );
 
   /* parameters for definition */
+
   let extra : macro_tools::GenericsWithWhere = parse_quote!
   {
     < __Context = (), __Formed = #struct_name < #struct_generics_ty >, __End = former::ReturnPreformed >
@@ -1520,6 +1527,50 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
 
     }
+
+    // = subformer
+
+    // xxx
+
+    /// Use as subformer of a field during process of forming of super structure.
+    pub type #subformer < #struct_generics_ty __Superformer, __End > = #former
+    <
+      #struct_generics_ty
+      #former_definition
+      <
+        #struct_generics_ty
+        __Superformer,
+        __Superformer,
+        __End,
+        // impl former::FormingEnd< CommandFormerDefinitionTypes< K, __Superformer, __Superformer > >,
+      >,
+    >;
+
+    // = subformer end
+
+    /// Use as subformer end of a field during process of forming of super structure.
+    pub trait #subformer_end < #struct_generics_impl SuperFormer >
+    where
+      #struct_generics_where
+      Self : former::FormingEnd
+      <
+        #former_definition_types < #struct_generics_ty SuperFormer, SuperFormer >,
+      >,
+    {
+    }
+
+    impl< #struct_generics_impl SuperFormer, T > #subformer_end < #struct_generics_ty SuperFormer >
+    for T
+    where
+      #struct_generics_where
+      Self : former::FormingEnd
+      <
+        #former_definition_types < #struct_generics_ty SuperFormer, SuperFormer >,
+      >,
+    {
+    }
+
+    // = setters
 
     #(
       #fields_setter_callback_descriptor

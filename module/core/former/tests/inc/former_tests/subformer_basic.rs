@@ -106,38 +106,39 @@ where
   pub commands : collection_tools::HashMap< String, Command< K > >,
 }
 
-pub type CommandSubformerWithClosure< K, Superformer > = CommandFormer
-<
-  K,
-  CommandFormerDefinition
-  <
-    K,
-    Superformer,
-    Superformer,
-    former::FormingEndClosure< CommandFormerDefinitionTypes< K, Superformer, Superformer > >,
-  >,
->;
-
-pub trait CommandSubformerEnd< K, SuperFormer >
-where
-  K : core::hash::Hash + std::cmp::Eq,
-  Self : the_module::FormingEnd
-  <
-    CommandFormerDefinitionTypes< K, SuperFormer, SuperFormer >,
-  >
-{
-}
-
-impl< K, SuperFormer, T > CommandSubformerEnd< K, SuperFormer >
-for T
-where
-  K : core::hash::Hash + std::cmp::Eq,
-  Self : the_module::FormingEnd
-  <
-    CommandFormerDefinitionTypes< K, SuperFormer, SuperFormer >,
-  >
-{
-}
+// xxx : remove
+// pub type CommandSubformerWithClosure< K, Superformer > = CommandFormer
+// <
+//   K,
+//   CommandFormerDefinition
+//   <
+//     K,
+//     Superformer,
+//     Superformer,
+//     former::FormingEndClosure< CommandFormerDefinitionTypes< K, Superformer, Superformer > >,
+//   >,
+// >;
+//
+// pub trait CommandSubformerEnd< K, SuperFormer >
+// where
+//   K : core::hash::Hash + std::cmp::Eq,
+//   Self : the_module::FormingEnd
+//   <
+//     CommandFormerDefinitionTypes< K, SuperFormer, SuperFormer >,
+//   >
+// {
+// }
+//
+// impl< K, SuperFormer, T > CommandSubformerEnd< K, SuperFormer >
+// for T
+// where
+//   K : core::hash::Hash + std::cmp::Eq,
+//   Self : the_module::FormingEnd
+//   <
+//     CommandFormerDefinitionTypes< K, SuperFormer, SuperFormer >,
+//   >
+// {
+// }
 
 // ==
 
