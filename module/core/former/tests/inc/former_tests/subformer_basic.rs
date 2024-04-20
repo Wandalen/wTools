@@ -146,7 +146,18 @@ where
   #[ inline( always ) ]
   pub fn command_with_closure< IntoName >( self, name : IntoName )
   ->
-  CommandSubformer< K, Self >
+  // CommandSubformer< K, Self >
+  CommandFormer
+  <
+    K,
+    CommandFormerDefinition
+    <
+      K,
+      Self,
+      Self,
+      impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
+    >,
+  >
   where
     IntoName : core::convert::Into< String >,
   {
@@ -168,7 +179,7 @@ where
       super_former
     };
 
-    let former = CommandFormer::begin( None, Some( self ), on_end );
+    let former : CommandSubformer< K, Self > = CommandFormer::begin( None, Some( self ), on_end );
     former.name( name )
 
   }
