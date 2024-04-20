@@ -12,34 +12,22 @@ where
   pub subject : K,
 }
 
-// == aggregator
+// = command subformer with closure
 
-#[ derive( Debug, PartialEq, the_module::Former ) ]
-pub struct Aggregator< K >
-where
-  K : core::hash::Hash + std::cmp::Eq,
-{
-  pub parameter1 : String,
-  #[ subformer( former::HashMapDefinition ) ]
-  pub commands : collection_tools::HashMap< String, Command< K > >,
-}
+// pub type CommandSubformerWithClosure< K, Superformer > = CommandFormer
+// <
+//   K,
+//   CommandFormerDefinition
+//   <
+//     K,
+//     Superformer,
+//     Superformer,
+//     former::FormingEndClosure< CommandFormerDefinitionTypes< K, Superformer, Superformer > >,
+//     // impl former::FormingEnd< CommandFormerDefinitionTypes< K, Superformer, Superformer > >,
+//   >,
+// >;
 
-// =
-
-pub type CommandSubformerWithClosure< K, Superformer > = CommandFormer
-<
-  K,
-  CommandFormerDefinition
-  <
-    K,
-    Superformer,
-    Superformer,
-    former::FormingEndClosure< CommandFormerDefinitionTypes< K, Superformer, Superformer > >,
-    // impl former::FormingEnd< CommandFormerDefinitionTypes< K, Superformer, Superformer > >,
-  >,
->;
-
-// =
+// = command subformer
 
 pub type CommandSubformer< K, Superformer, End > = CommandFormer
 <
@@ -54,20 +42,7 @@ pub type CommandSubformer< K, Superformer, End > = CommandFormer
   >,
 >;
 
-// CommandFormer
-// <
-//   K,
-//   CommandFormerDefinition
-//   <
-//     K,
-//     Self,
-//     Self,
-//     impl CommandSubformerEnd< K, Self >,
-//     // impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
-//   >,
-// >
-
-// =
+// = command subformer end
 
 pub trait CommandSubformerEnd< K, SuperFormer >
 where
@@ -88,6 +63,18 @@ where
     CommandFormerDefinitionTypes< K, SuperFormer, SuperFormer >,
   >
 {
+}
+
+// == aggregator
+
+#[ derive( Debug, PartialEq, the_module::Former ) ]
+pub struct Aggregator< K >
+where
+  K : core::hash::Hash + std::cmp::Eq,
+{
+  pub parameter1 : String,
+  #[ subformer( former::HashMapDefinition ) ]
+  pub commands : collection_tools::HashMap< String, Command< K > >,
 }
 
 // =
