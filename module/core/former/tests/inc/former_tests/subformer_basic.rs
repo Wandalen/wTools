@@ -329,7 +329,6 @@ where
         IntoElement::< ( String, Command< K > ) >::into_element( storage ),
         // ( storage.name.clone(), storage ),
       );
-      // former::ContainerAdd::add( commands, ( storage.name.clone(), storage ) );
     }
     else
     {
