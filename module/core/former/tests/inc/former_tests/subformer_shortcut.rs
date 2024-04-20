@@ -90,7 +90,8 @@ where
     <
       Self,
       Self,
-      former::FormingEndClosure< TemplateParameterDescriptorFormerDefinitionTypes< Self, Self > >
+      impl TemplateParameterDescriptorSubformerEnd< Self >,
+      // former::FormingEndClosure< TemplateParameterDescriptorFormerDefinitionTypes< Self, Self > >,
     >
   >
   {
@@ -102,6 +103,28 @@ where
     >()
     .name( name )
   }
+
+  // pub fn descriptor2( self, name : &str ) ->
+  // TemplateParameterDescriptorFormer
+  // <
+  //   TemplateParameterDescriptorFormerDefinition
+  //   <
+  //     Self,
+  //     Self,
+  //     impl TemplateParameterDescriptorSubformerEnd< K, Self >
+  //     // former::FormingEndClosure< TemplateParameterDescriptorFormerDefinitionTypes< Self, Self > >,
+  //   >
+  // >
+  // // former::ContainerSubformer::
+  // // <
+  // //   String, former::VectorDefinition< String, Self, Self, Struct1FormerVec1End >
+  // // >
+  // {
+  //   self.descriptors_set::< former::ContainerSubformer::
+  //   <
+  //     String, former::VectorDefinition< String, Self, Self, TemplateParametersFormerDescriptorsEnd >
+  //   >>()
+  // }
 
 }
 
