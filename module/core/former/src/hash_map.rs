@@ -171,7 +171,7 @@ where
 
 // pub type HashMapSubformer< K, E, Context, End > = ContainerSubformer::< ( K, E ), HashMapDefinition< K, E, Context, End > >;
 
-// xxx : update documentation
+// zzz : update documentation
 // pub type HashMapSubformer< K, E, Context, End > = ContainerSubformer::< K, HashMapDefinition< K, E, Context, End > >;
 pub type HashMapSubformer< K, E, Context, Formed, End > =
 ContainerSubformer::< ( K, E ), HashMapDefinition< K, E, Context, Formed, End > >;

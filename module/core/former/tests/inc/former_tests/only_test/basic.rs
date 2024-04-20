@@ -34,7 +34,6 @@ tests_impls!
 
   //
 
-// xxx : uncomment
   fn custom_definition_params()
   {
 

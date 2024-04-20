@@ -102,7 +102,6 @@ where
 
 //
 
-/// xxx : extend description
 /// get container for a field out of a storage
 pub trait FormerStorageExtractContainer< Target >
 {
@@ -131,7 +130,6 @@ where
 
 //
 
-/// xxx : extend description
 /// extract storage from a former
 pub trait FormerExtractStorage
 {

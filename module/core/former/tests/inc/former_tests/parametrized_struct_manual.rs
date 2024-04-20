@@ -183,7 +183,6 @@ impl< K, > former :: StoragePreform for CommandFormerStorage< K, > where K : cor
   }
 }
 
-  // xxx
 pub struct CommandFormer< K, Definition = CommandFormerDefinition< K, (), Command< K, >, former::ReturnPreformed >, >
 where
   K : core::hash::Hash + std::cmp::Eq,
@@ -290,7 +289,7 @@ where
   }
 }
 
-// xxx
+//
 
 impl< K, Definition, > CommandFormer< K, Definition, >
 where

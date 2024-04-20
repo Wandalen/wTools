@@ -42,7 +42,7 @@ fn definitions()
 fn begin_and_custom_end()
 {
 
-  // xxx : make example with that
+  // zzz : make example with that
 
   // basic case
 
@@ -94,7 +94,7 @@ fn begin_and_custom_end()
 fn custom_definition()
 {
 
-  // xxx : make example of that
+  // zzz : make example of that
 
   struct Return13;
   impl former::FormerDefinitionTypes for Return13
@@ -152,7 +152,7 @@ fn custom_definition()
 fn custom_definition_parametrized()
 {
 
-  // xxx : make example of that
+  // zzz : make example of that
 
   struct Return13< E >( ::core::marker::PhantomData< E > );
 

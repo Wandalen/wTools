@@ -1,4 +1,5 @@
 // xxx : need to fix
+
 // #[ derive( Former ) ]
 // struct Foo
 // {
