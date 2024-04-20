@@ -105,7 +105,6 @@ where
 
 }
 
-// xxx : uncomment
 #[ test ]
 fn basic()
 {

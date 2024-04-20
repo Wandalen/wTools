@@ -191,25 +191,6 @@ pub( crate ) mod private
     result
   }
 
-//   // add embedded generic parameters
-//   let mut extra_generics : syn::Generics = parse_quote!
-//   {
-//     < Definition = #former_definition < #generics_for_ty (), #struct_name, former::ReturnPreformed > >
-//     // Definition = Struct1FormerDefinition< (), Struct1, former::ReturnPreformed >,
-//     // xxx
-//   };
-//
-//   extra_generics.where_clause = parse_quote!
-//   {
-//     where
-//       Definition : former::FormerDefinition,
-//       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage #generics_for_ty >,
-//       // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
-//   };
-//
-//   // zzz : write helper to fix bug with where
-//   let generics_of_former = generic_params::merge( &generics, &extra_generics );
-
   /// Extracts parameter names from the given `Generics`,
   /// dropping bounds, defaults, and the where clause.
   ///
