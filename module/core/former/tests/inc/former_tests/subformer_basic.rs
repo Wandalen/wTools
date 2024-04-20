@@ -265,6 +265,27 @@ where
 
 //
 
+/// xxx : extend description
+/// Convert an entity to an element which could be added to a container.
+pub trait IntoElement< Target >
+{
+  /// Convert an entity to an element which could be added to a container.
+  fn into_element( self ) -> Target;
+}
+
+impl< K > IntoElement< ( String, Command< K > ) >
+for Command< K >
+where
+  K : core::hash::Hash + std::cmp::Eq,
+{
+  fn into_element( self ) -> ( String, Command< K > )
+  {
+    ( self.name.clone(), self )
+  }
+}
+
+//
+
 #[ allow( non_camel_case_types ) ]
 pub struct ContainerAddElement;
 
@@ -291,23 +312,34 @@ where
   fn call
   (
     &self,
-    command : CommandFormerStorage< K >,
+    storage : CommandFormerStorage< K >,
     super_former : Option< AggregatorFormer< K, Definition > >,
   )
   ->
   AggregatorFormer< K, Definition >
   {
 
-    let command =  former::StoragePreform::preform( command );
+    let storage =  former::StoragePreform::preform( storage );
     let mut super_former = super_former.unwrap();
     if let Some( ref mut commands ) = super_former.storage.commands
     {
-      former::ContainerAdd::add( commands, ( command.name.clone(), command ) );
+      former::ContainerAdd::add
+      (
+        commands,
+        IntoElement::< ( String, Command< K > ) >::into_element( storage ),
+        // ( storage.name.clone(), storage ),
+      );
+      // former::ContainerAdd::add( commands, ( storage.name.clone(), storage ) );
     }
     else
     {
       let mut commands : collection_tools::HashMap< String, Command< K > > = Default::default();
-      former::ContainerAdd::add( &mut commands, ( command.name.clone(), command ) );
+      former::ContainerAdd::add
+      (
+        &mut commands,
+        IntoElement::< ( String, Command< K > ) >::into_element( storage ),
+        // ( storage.name.clone(), storage ),
+      );
       super_former.storage.commands = Some( commands );
     }
     super_former
