@@ -263,6 +263,58 @@ where
   }
 }
 
+//
+
+#[ allow( non_camel_case_types ) ]
+pub struct ContainerAddElement;
+
+#[ automatically_derived ]
+impl< K, Definition > former::FormingEnd
+<
+  CommandFormerDefinitionTypes
+  <
+    K,
+    AggregatorFormer< K, Definition >,
+    AggregatorFormer< K, Definition >,
+  >,
+>
+for ContainerAddElement
+where
+  K : core::hash::Hash + std::cmp::Eq,
+  Definition : former::FormerDefinition,
+  Definition::Types : former::FormerDefinitionTypes
+  <
+    Storage = AggregatorFormerStorage< K >,
+  >,
+{
+  #[ inline( always ) ]
+  fn call
+  (
+    &self,
+    command : CommandFormerStorage< K >,
+    super_former : Option< AggregatorFormer< K, Definition > >,
+  )
+  ->
+  AggregatorFormer< K, Definition >
+  {
+
+    let command =  former::StoragePreform::preform( command );
+    let mut super_former = super_former.unwrap();
+    if let Some( ref mut commands ) = super_former.storage.commands
+    {
+      former::ContainerAdd::add( commands, ( command.name.clone(), command ) );
+    }
+    else
+    {
+      let mut commands : collection_tools::HashMap< String, Command< K > > = Default::default();
+      former::ContainerAdd::add( &mut commands, ( command.name.clone(), command ) );
+      super_former.storage.commands = Some( commands );
+    }
+    super_former
+
+  }
+}
+
 // ==
 
 // include!( "./only_test/subformer_basic.rs" );
