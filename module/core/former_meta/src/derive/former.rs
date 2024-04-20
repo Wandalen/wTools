@@ -521,7 +521,7 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 /// ```
 
 #[ inline ]
-fn field_setter_map( field : &FormerField< '_ >, struct_name : &syn::Ident ) -> Result< TokenStream >
+fn field_setter_map( field : &FormerField< '_ >, stru : &syn::Ident ) -> Result< TokenStream >
 {
   let ident = &field.ident;
 
@@ -538,7 +538,7 @@ fn field_setter_map( field : &FormerField< '_ >, struct_name : &syn::Ident ) -> 
   let setter_tokens = if let Some( _subformer_ty ) = &field.attrs.subformer
   {
     // subformer_field_setter( ident, ident, non_optional_ty, &subformer_ty.expr )
-    subformer_field_setter( field, struct_name )
+    subformer_field_setter( field, stru )
   }
   else
   {
@@ -643,7 +643,7 @@ fn field_setter
 fn subformer_field_setter
 (
   field : &FormerField< '_ >,
-  struct_name : &syn::Ident,
+  stru : &syn::Ident,
   // field_ident : &syn::Ident,
   // setter_name : &syn::Ident,
   // non_optional_type : &syn::Type,
@@ -664,7 +664,7 @@ fn subformer_field_setter
 
   use convert_case::{ Case, Casing };
   // let ident = field_ident;
-  let field_forming_end_name = format!( "{}Former{}End", struct_name, field_ident.to_string().to_case( Case::Pascal ) );
+  let field_forming_end_name = format!( "{}Former{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
   let field_forming_end = syn::Ident::new( &field_forming_end_name, field_ident.span() );
   let field_set_name = format!( "{}_set", field_ident );
   let field_set = syn::Ident::new( &field_set_name, field_ident.span() );
@@ -849,7 +849,7 @@ fn subformer_field_setter
 fn fields_setter_callback_descriptor_map
 (
   field : &FormerField< '_ >,
-  struct_name : &syn::Ident,
+  stru : &syn::Ident,
   former : &syn::Ident,
   former_storage : &syn::Ident,
   former_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
@@ -871,7 +871,7 @@ Result< TokenStream >
 
   use convert_case::{ Case, Casing };
   let ident = field.ident;
-  let field_forming_end_name = format!( "{}Former{}End", struct_name, field.ident.to_string().to_case( Case::Pascal ) );
+  let field_forming_end_name = format!( "{}Former{}End", stru, field.ident.to_string().to_case( Case::Pascal ) );
   let field_forming_end = syn::Ident::new( &field_forming_end_name, ident.span() );
 
   let field_ty = field.non_optional_ty;
@@ -931,14 +931,14 @@ Result< TokenStream >
 /// Generate documentation for the former.
 ///
 
-fn doc_generate( struct_name : &syn::Ident ) -> ( String, String )
+fn doc_generate( stru : &syn::Ident ) -> ( String, String )
 {
 
   let doc_former_mod = format!
   (
 r#" Implementation of former for [{}].
 "#,
-    struct_name
+    stru
   );
 
   let doc_example1 =
@@ -961,7 +961,7 @@ For specifying custom default value use attribute `default`. For example:
 {}
 ```
 "#,
-    struct_name, doc_example1
+    stru, doc_example1
   );
 
   ( doc_former_mod, doc_former_struct )
@@ -999,7 +999,7 @@ pub fn performer< 'a >
   {
     return result;
   };
-  // let mut perform_output = qt!{ #struct_name #generics_ty_ };
+  // let mut perform_output = qt!{ #stru #generics_ty_ };
   let mut perform_output = qt!{ < Definition::Types as former::FormerDefinitionTypes >::Formed };
 
   let mut perform_generics = qt!{};
@@ -1067,21 +1067,21 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   /* names */
 
-  let struct_name = &ast.ident;
-  let former_name = format!( "{}Former", struct_name );
-  let former = syn::Ident::new( &former_name, struct_name.span() );
-  let former_storage_name = format!( "{}FormerStorage", struct_name );
-  let former_storage = syn::Ident::new( &former_storage_name, struct_name.span() );
-  let former_definition_name = format!( "{}FormerDefinition", struct_name );
-  let former_definition = syn::Ident::new( &former_definition_name, struct_name.span() );
-  let former_definition_types_name = format!( "{}FormerDefinitionTypes", struct_name );
-  let former_definition_types = syn::Ident::new( &former_definition_types_name, struct_name.span() );
-  let former_with_closure_name = format!( "{}FormerWithClosure", struct_name );
-  let former_with_closure = syn::Ident::new( &former_with_closure_name, struct_name.span() ); // xxx : maybe remove
-  let subformer_name = format!( "{}Subformer", struct_name );
-  let subformer = syn::Ident::new( &subformer_name, struct_name.span() );
-  let subformer_end_name = format!( "{}SubformerEnd", struct_name );
-  let subformer_end = syn::Ident::new( &subformer_end_name, struct_name.span() );
+  let stru = &ast.ident;
+  let former_name = format!( "{}Former", stru );
+  let former = syn::Ident::new( &former_name, stru.span() );
+  let former_storage_name = format!( "{}FormerStorage", stru );
+  let former_storage = syn::Ident::new( &former_storage_name, stru.span() );
+  let former_definition_name = format!( "{}FormerDefinition", stru );
+  let former_definition = syn::Ident::new( &former_definition_name, stru.span() );
+  let former_definition_types_name = format!( "{}FormerDefinitionTypes", stru );
+  let former_definition_types = syn::Ident::new( &former_definition_types_name, stru.span() );
+  let former_with_closure_name = format!( "{}FormerWithClosure", stru );
+  let former_with_closure = syn::Ident::new( &former_with_closure_name, stru.span() ); // xxx : maybe remove
+  let subformer_name = format!( "{}Subformer", stru );
+  let subformer = syn::Ident::new( &subformer_name, stru.span() );
+  let subformer_end_name = format!( "{}SubformerEnd", stru );
+  let subformer_end = syn::Ident::new( &subformer_end_name, stru.span() );
 
   /* parameters for structure */
 
@@ -1093,7 +1093,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   let extra : macro_tools::syn::AngleBracketedGenericArguments = parse_quote!
   {
-    < (), #struct_name < #struct_generics_ty >, former::ReturnPreformed >
+    < (), #stru < #struct_generics_ty >, former::ReturnPreformed >
   };
   let former_definition_args = generic_args::merge( &generics.into_generic_args(), &extra.into() ).args;
 
@@ -1121,7 +1121,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       Definition::Types : former::FormerDefinitionTypes
       <
         Storage = #former_storage < #struct_generics_ty >,
-        Formed = #struct_name < #struct_generics_ty >
+        Formed = #stru < #struct_generics_ty >
       >,
   };
   let extra = generic_params::merge( &generics, &extra.into() );
@@ -1129,15 +1129,11 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let ( _former_perform_generics_with_defaults, former_perform_generics_impl, former_perform_generics_ty, former_perform_generics_where )
   = generic_params::decompose( &extra );
 
-// where
-//   Definition : former::FormerDefinition,
-//   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage<>, Formed = Struct1 >,
-
   /* parameters for definition types */
 
   let extra : macro_tools::GenericsWithWhere = parse_quote!
   {
-    < __Context = (), __Formed = #struct_name < #struct_generics_ty > >
+    < __Context = (), __Formed = #stru < #struct_generics_ty > >
   };
   let former_definition_type_generics = generic_params::merge( &generics, &extra.into() );
   let ( former_definition_type_generics_with_defaults, former_definition_type_generics_impl, former_definition_type_generics_ty, former_definition_type_generics_where )
@@ -1149,7 +1145,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   let extra : macro_tools::GenericsWithWhere = parse_quote!
   {
-    < __Context = (), __Formed = #struct_name < #struct_generics_ty >, __End = former::ReturnPreformed >
+    < __Context = (), __Formed = #stru < #struct_generics_ty >, __End = former::ReturnPreformed >
   };
   let generics_of_definition = generic_params::merge( &generics, &extra.into() );
   let ( former_definition_generics_with_defaults, former_definition_generics_impl, former_definition_generics_ty, former_definition_generics_where )
@@ -1161,7 +1157,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   let ( perform, perform_output, perform_generics ) = performer
   (
-    &struct_name,
+    &stru,
     // &former_definition,
     // &struct_generics_ty,
     ast.attrs.iter(),
@@ -1216,11 +1212,11 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     field_optional_map( former_field ),
     field_form_map( former_field ),
     field_name_map( former_field ),
-    field_setter_map( former_field, &struct_name ),
+    field_setter_map( former_field, &stru ),
     fields_setter_callback_descriptor_map
     (
       former_field,
-      &struct_name,
+      &stru,
       &former,
       &former_storage,
       &former_generics_impl,
@@ -1230,7 +1226,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     ),
   )}).multiunzip();
 
-  let ( _doc_former_mod, doc_former_struct ) = doc_generate( struct_name );
+  let ( _doc_former_mod, doc_former_struct ) = doc_generate( stru );
   let fields_setter : Vec< _ > = process_results( fields_setter, | iter | iter.collect() )?;
   let fields_form : Vec< _ > = process_results( fields_form, | iter | iter.collect() )?;
   let fields_setter_callback_descriptor : Vec< _ > = process_results( fields_setter_callback_descriptor, | iter | iter.collect() )?;
@@ -1241,7 +1237,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     // = formed
 
     #[ automatically_derived ]
-    impl < #struct_generics_impl > #struct_name < #struct_generics_ty >
+    impl < #struct_generics_impl > #stru < #struct_generics_ty >
     where
       #struct_generics_where
     {
@@ -1372,7 +1368,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     where
       #struct_generics_where
     {
-      type Formed = #struct_name < #struct_generics_ty >;
+      type Formed = #stru < #struct_generics_ty >;
     }
 
     impl < #struct_generics_impl > former::StoragePreform
@@ -1380,7 +1376,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     where
       #struct_generics_where
     {
-      type Preformed = #struct_name < #struct_generics_ty >;
+      type Preformed = #stru < #struct_generics_ty >;
 
       // fn preform( mut self ) -> < Self as former::Storage >::Formed
       fn preform( mut self ) -> Self::Preformed
@@ -1388,7 +1384,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
         #( #fields_form )*
         // Rust does not support that, yet
         // let result = < Definition::Types as former::FormerDefinitionTypes >::Formed
-        let result = #struct_name :: < #struct_generics_ty >
+        let result = #stru :: < #struct_generics_ty >
         {
           #( #fields_names, )*
         };
@@ -1545,9 +1541,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     impl< #former_generics_impl > #former< #former_generics_ty >
     where
       Definition : former::FormerDefinition,
-      Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty >, Formed = #struct_name < #struct_generics_ty > >,
+      Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty >, Formed = #stru < #struct_generics_ty > >,
       < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
-      < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform< Preformed = #struct_name < #struct_generics_ty > >,
+      < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform< Preformed = #stru < #struct_generics_ty > >,
       #former_generics_where
     {
 
