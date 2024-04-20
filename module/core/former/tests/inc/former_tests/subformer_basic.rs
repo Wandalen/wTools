@@ -108,7 +108,7 @@ where
   pub commands : collection_tools::HashMap< String, Command< K > >,
 }
 
-pub type CommandSubformer< K, Superformer > = CommandFormer
+pub type CommandSubformerWithClosure< K, Superformer > = CommandFormer
 <
   K,
   CommandFormerDefinition
@@ -120,6 +120,27 @@ pub type CommandSubformer< K, Superformer > = CommandFormer
     // impl former::FormingEnd< CommandFormerDefinitionTypes< K, Superformer, Superformer > >,
   >,
 >;
+
+pub trait CommandSubformerEnd< K, SuperFormer >
+where
+  K : core::hash::Hash + std::cmp::Eq,
+  Self : the_module::FormingEnd
+  <
+    CommandFormerDefinitionTypes< K, SuperFormer, SuperFormer >,
+  >
+{
+}
+
+impl< K, SuperFormer, T > CommandSubformerEnd< K, SuperFormer >
+for T
+where
+  K : core::hash::Hash + std::cmp::Eq,
+  Self : the_module::FormingEnd
+  <
+    CommandFormerDefinitionTypes< K, SuperFormer, SuperFormer >,
+  >
+{
+}
 
 // manual
 // impl< K, Context, End >
@@ -146,7 +167,6 @@ where
   #[ inline( always ) ]
   pub fn command_with_closure< IntoName >( self, name : IntoName )
   ->
-  // CommandSubformer< K, Self >
   CommandFormer
   <
     K,
@@ -155,7 +175,8 @@ where
       K,
       Self,
       Self,
-      impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
+      impl CommandSubformerEnd< K, Self >,
+      // impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
     >,
   >
   where
@@ -180,29 +201,16 @@ where
     };
 
     let former
-    // : CommandSubformer< K, Self >
     : CommandFormer< _, _ >
-    // : CommandFormer
-    // <
-    //   K,
-    //   CommandFormerDefinition
-    //   <
-    //     K,
-    //     Self,
-    //     Self,
-    //     _,
-    //   >
-    // >
     = CommandFormer::_begin_precise( None, Some( self ), on_end );
-    // = CommandFormer::begin_coercing( None, Some( self ), on_end );
-    former.name( name )
 
+    former.name( name )
   }
 
   #[ inline( always ) ]
   pub fn command_with_types< IntoName >( self, name : IntoName )
   ->
-  // CommandSubformer< K, Self >
+  // CommandSubformerWithClosure< K, Self >
   CommandFormer
   <
     K,
@@ -211,7 +219,8 @@ where
       K,
       Self,
       Self,
-      impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
+      impl CommandSubformerEnd< K, Self >,
+      // impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
     >,
   >
   where
@@ -219,7 +228,7 @@ where
   {
 
     let former
-    // : CommandSubformer< K, Self >
+    // : CommandSubformerWithClosure< K, Self >
     // : CommandFormer
     // <
     //   K,
@@ -240,8 +249,6 @@ where
   #[ inline( always ) ]
   pub fn command_with_helper< IntoName >( self, name : IntoName )
   ->
-  // ()
-  // CommandSubformer< K, Self >
   CommandFormer
   <
     K,
@@ -250,7 +257,8 @@ where
       K,
       Self,
       Self,
-      impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
+      impl CommandSubformerEnd< K, Self >,
+      // impl the_module::FormingEnd< CommandFormerDefinitionTypes< K, Self, Self > >,
     >,
   >
   where
@@ -270,43 +278,24 @@ where
       Command< K >
     >
     :
-    former::FormingEnd
-    <
-      CommandFormerDefinitionTypes
-      <
-        K,
-        Self,
-        Self,
-      >
-    >
+    CommandSubformerEnd< K, Self >,
+    // former::FormingEnd
+    // <
+    //   CommandFormerDefinitionTypes
+    //   <
+    //     K,
+    //     Self,
+    //     Self,
+    //   >
+    // >
   {
 
     let former
-    // : CommandSubformer< K, Self >
-    : CommandFormer
-    <
-      K,
-      CommandFormerDefinition
-      <
-        K,
-        Self,
-        Self,
-        ContainerAddElement
-        ::< _, _, _ >
-        // ::
-        // <
-        //   // collection_tools::HashMap< String, Command< K > >,
-        //   // ( String, Command< K > ),
-        //   // Command< K >,
-        // >,
-      >
-    >
-    = CommandFormer::begin_coercing
+    = CommandFormer::_begin_precise
     (
       None,
       Some( self ),
-      ContainerAddElement
-      ::new_coercing(),
+      ContainerAddElement::new_coercing(),
     );
 
     former.name( name )
