@@ -19,7 +19,4 @@ pub struct Struct1
 
 // = generated
 
-
-// = generated
-
 include!( "./only_test/containers_with_subformer.rs" );

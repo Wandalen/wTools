@@ -55,8 +55,8 @@ where
       Formed = Self,
       Context = Self,
     >,
-    Definition2 : former::FormerDefinition< End = former::FormingEndClosure< Types2 >, Types = Types2 >,
-    Definition2 : former::FormerDefinition,
+    Definition2 : former::FormerDefinition< Types = Types2, End = former::FormingEndClosure< Types2 > >,
+    // Definition2 : former::FormerDefinition< Types = Types2 >,
     Definition2::End : former::FormingEnd< Definition2::Types >,
     Former2 : former::FormerBegin
     <
@@ -78,52 +78,31 @@ where
       super_former
     };
     Former2::_begin( None, Some( self ), former::FormingEndClosure::new( on_end ) )
+    // Former2::_begin( None, Some( self ), on_end )
   }
 
   // xxx2 : move to a trait and make easier to use subformer, trait with generic interface of a container should help
 
-  #[ inline( always ) ]
-  pub fn descriptor( self, name : &str ) ->
-  TemplateParameterDescriptorFormer
-  <
-    TemplateParameterDescriptorFormerDefinition
-    <
-      Self,
-      Self,
-      impl TemplateParameterDescriptorSubformerEnd< Self >,
-      // former::FormingEndClosure< TemplateParameterDescriptorFormerDefinitionTypes< Self, Self > >,
-    >
-  >
-  {
-    self.descriptor3::
-    <
-      TemplateParameterDescriptorFormer< _ >,
-      _,
-      _,
-    >()
-    .name( name )
-  }
-
-  // pub fn descriptor2( self, name : &str ) ->
+  // #[ inline( always ) ]
+  // pub fn descriptor( self, name : &str ) ->
   // TemplateParameterDescriptorFormer
   // <
   //   TemplateParameterDescriptorFormerDefinition
   //   <
   //     Self,
   //     Self,
-  //     impl TemplateParameterDescriptorSubformerEnd< K, Self >
+  //     impl TemplateParameterDescriptorSubformerEnd< Self >,
   //     // former::FormingEndClosure< TemplateParameterDescriptorFormerDefinitionTypes< Self, Self > >,
   //   >
   // >
-  // // former::ContainerSubformer::
-  // // <
-  // //   String, former::VectorDefinition< String, Self, Self, Struct1FormerVec1End >
-  // // >
   // {
-  //   self.descriptors_set::< former::ContainerSubformer::
+  //   self.descriptor3::
   //   <
-  //     String, former::VectorDefinition< String, Self, Self, TemplateParametersFormerDescriptorsEnd >
-  //   >>()
+  //     TemplateParameterDescriptorFormer< _ >,
+  //     _,
+  //     _,
+  //   >()
+  //   .name( name )
   // }
 
 }

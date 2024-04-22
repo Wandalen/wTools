@@ -77,6 +77,7 @@ where
 {
 
   //
+
   #[ inline( always ) ]
   pub fn command_with_closure< IntoName >( self, name : IntoName )
   ->
@@ -110,6 +111,7 @@ where
   }
 
   //
+
   #[ inline( always ) ]
   pub fn command_with_type< IntoName >( self, name : IntoName )
   ->
@@ -152,22 +154,18 @@ where
   ->
   AggregatorFormer< K, Definition >
   {
-
     let preformed = former::StoragePreform::preform( sub_storage );
     let mut super_former = super_former.unwrap();
     if let Some( ref mut container ) = super_former.storage.commands
     {
-      // former::ContainerAdd::add( container, ( preformed.name.clone(), preformed ) );
       former::ContainerAdd::add( container, Into::into( preformed ) );
     }
     else
     {
       let mut container : collection_tools::HashMap< String, Command< K > > = Default::default();
-      // former::ContainerAdd::add( &mut container, ( preformed.name.clone(), preformed ) );
       former::ContainerAdd::add( &mut container, Into::into( preformed ) );
       super_former.storage.commands = Some( container );
     }
-
     super_former
   }
 }
