@@ -63,7 +63,6 @@ where
       Definition2,
     >,
   {
-
     let on_end = | descriptor : TemplateParameterDescriptorFormerStorage, super_former : core::option::Option< Self > | -> Self
     {
       let mut super_former = super_former.unwrap();
@@ -83,27 +82,27 @@ where
 
   // xxx2 : move to a trait and make easier to use subformer, trait with generic interface of a container should help
 
-  // #[ inline( always ) ]
-  // pub fn descriptor( self, name : &str ) ->
-  // TemplateParameterDescriptorFormer
-  // <
-  //   TemplateParameterDescriptorFormerDefinition
-  //   <
-  //     Self,
-  //     Self,
-  //     impl TemplateParameterDescriptorSubformerEnd< Self >,
-  //     // former::FormingEndClosure< TemplateParameterDescriptorFormerDefinitionTypes< Self, Self > >,
-  //   >
-  // >
-  // {
-  //   self.descriptor3::
-  //   <
-  //     TemplateParameterDescriptorFormer< _ >,
-  //     _,
-  //     _,
-  //   >()
-  //   .name( name )
-  // }
+  #[ inline( always ) ]
+  pub fn descriptor( self, name : &str ) ->
+  TemplateParameterDescriptorFormer
+  <
+    TemplateParameterDescriptorFormerDefinition
+    <
+      Self,
+      Self,
+      impl TemplateParameterDescriptorSubformerEnd< Self >,
+      // former::FormingEndClosure< TemplateParameterDescriptorFormerDefinitionTypes< Self, Self > >,
+    >
+  >
+  {
+    self.descriptor3::
+    <
+      TemplateParameterDescriptorFormer< _ >,
+      _,
+      _,
+    >()
+    .name( name )
+  }
 
 }
 
