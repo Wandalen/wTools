@@ -388,8 +388,9 @@ mod private
       // let path = table_parameters.base_path.
       let example = if let Some( name ) = find_example_file( p.as_path(), &module_name )
       {
-        let path = path.to_string_lossy().replace( "/", "\\" ).replace( "\\", "%2F" );
-        let file_name = name.split( "\\" ).last().unwrap();
+        let path = path.to_string_lossy().replace( '\\', "/" ).replace( "/", "%2F" );
+        let tmp = name.replace( '\\', "/" );
+        let file_name = tmp.split( '/' ).last().unwrap();
         let name = file_name.strip_suffix( ".rs" ).unwrap();
         format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={path}%2Fexamples%2F{file_name},RUN_POSTFIX=--example%20{name}/{})", parameters.core_url )
       }
