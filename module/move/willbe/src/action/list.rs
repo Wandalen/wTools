@@ -176,7 +176,7 @@ mod private
   /// It holds essential information about the project dependencies. It is also capable
   /// of holding any nested dependencies in a recursive manner, allowing the modeling
   /// of complex dependency structures.
-  #[ derive( Debug, Clone ) ]
+  #[ derive( Debug, Clone, Eq, PartialEq ) ]
   pub struct ListNodeReport
   {
     /// This could be the name of the library or crate.
@@ -186,6 +186,8 @@ mod private
     /// The path to the node's source files in the local filesystem. This is
     /// optional as not all nodes may have a local presence (e.g., nodes representing remote crates).
     pub path : Option< PathBuf >,
+    /// This field is a flag indicating whether the Node is a duplicate or not.
+    pub duplicate : bool,
     /// A list that stores normal dependencies.
     /// Each element in the list is also of the same 'ListNodeReport' type to allow
     /// storage of nested dependencies.
@@ -218,6 +220,7 @@ mod private
       write!( f, "{}", self.name )?;
       if let Some( version ) = &self.version { write!( f, " {version}" )? }
       if let Some( path ) = &self.path { write!( f, " {}", path.display() )? }
+      if self.duplicate { write!( f, "(*)" )? }
       write!( f, "\n" )?;
 
       let mut new_spacer = format!( "{spacer}{}  ", if self.normal_dependencies.len() < 2 { " " } else { UTF8_SYMBOLS.down } );
@@ -336,6 +339,7 @@ mod private
       name : dep.name().clone(),
       version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( dep.req().to_string() ) } else { None },
       path : if args.info.contains( &PackageAdditionalInfo::Path ) { dep.path().as_ref().map( | p | p.clone().into_std_path_buf() ) } else { None },
+      duplicate : false,
       normal_dependencies : vec![],
       dev_dependencies : vec![],
       build_dependencies : vec![],
@@ -345,7 +349,7 @@ mod private
     // if this is a cycle (we have visited this node before)
     if visited.contains( &dep_id )
     {
-      dep_rep.name = format!( "{} (*)", dep_rep.name );
+      dep_rep.duplicate = true;
 
       return dep_rep;
     }
@@ -404,6 +408,7 @@ mod private
         name : package.name().to_string(),
         version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( package.version().to_string() ) } else { None },
         path : if args.info.contains( &PackageAdditionalInfo::Path ) { Some( package.manifest_path().as_std_path().to_path_buf() ) } else { None },
+        duplicate : false,
         normal_dependencies : vec![],
         dev_dependencies : vec![],
         build_dependencies : vec![],
@@ -413,9 +418,9 @@ mod private
 
       *report = match report
       {
-        ListReport::Tree(ref mut v ) => ListReport::Tree( { v.extend([ package_report ]); v.clone() } ),
+        ListReport::Tree( ref mut v ) => ListReport::Tree( { v.extend([ package_report ]); v.clone() } ),
         ListReport::Empty => ListReport::Tree( vec![ package_report ] ),
-        ListReport::List(_ ) => unreachable!(),
+        ListReport::List( _ ) => unreachable!(),
       };
     };
     match args.format
@@ -423,7 +428,10 @@ mod private
       ListFormat::Tree if is_package =>
       {
         let mut visited = HashSet::new();
-        tree_package_report( manifest.manifest_path, &mut report, &mut visited )
+        tree_package_report( manifest.manifest_path, &mut report, &mut visited );
+        let ListReport::Tree( tree ) = report else { unreachable!() };
+        let tree = rearrange_duplicates( merge_dev_dependencies( tree ) );
+        report = ListReport::Tree( tree );
       }
       ListFormat::Tree =>
       {
@@ -433,6 +441,9 @@ mod private
         {
           tree_package_report( package.manifest_path().as_std_path().try_into().unwrap(), &mut report, &mut visited )
         }
+        let ListReport::Tree( tree ) = report else { unreachable!() };
+        let tree = rearrange_duplicates( merge_dev_dependencies( tree ) );
+        report = ListReport::Tree( tree );
       }
       ListFormat::Topological =>
       {
@@ -461,7 +472,7 @@ mod private
         let packages_map =  packages::filter
         (
           packages.as_slice(),
-          FilterMapOptions{ dependency_filter : Some( Box::new( dep_filter ) ), ..Default::default() }
+          FilterMapOptions { dependency_filter : Some( Box::new( dep_filter ) ), ..Default::default() }
         );
 
         let graph = graph::construct( &packages_map );
@@ -504,7 +515,7 @@ mod private
           let node = graph.node_indices().find( | n | graph.node_weight( *n ).unwrap() == &&root_crate ).unwrap();
           let mut dfs = Dfs::new( &graph, node );
           let mut subgraph = Graph::new();
-          let mut node_map = std::collections::HashMap::new();
+          let mut node_map = HashMap::new();
           while let Some( n )= dfs.next( &graph )
           {
             node_map.insert( n, subgraph.add_node( graph[ n ] ) );
@@ -546,6 +557,79 @@ mod private
     }
 
     Ok( report )
+  }
+  
+  fn merge_dev_dependencies( mut report: Vec< ListNodeReport > ) -> Vec< ListNodeReport >
+  {
+    let mut dev_dependencies = vec![];
+    for node_report in &mut report
+    {
+      dev_dependencies = merge_dev_dependencies_impl( node_report, dev_dependencies );
+    }
+    if let Some( last_report ) = report.last_mut()
+    {
+      last_report.dev_dependencies = dev_dependencies;
+    }
+    
+    report
+  }
+  
+  fn merge_dev_dependencies_impl( report : &mut ListNodeReport, mut dev_deps_acc : Vec< ListNodeReport > ) -> Vec< ListNodeReport >
+  {
+    for dep in report.normal_dependencies.iter_mut()
+    .chain( report.dev_dependencies.iter_mut() )
+    .chain( report.build_dependencies.iter_mut() )
+    {
+      dev_deps_acc = merge_dev_dependencies_impl( dep, dev_deps_acc );
+    }
+    
+    for dep in std::mem::take( &mut report.dev_dependencies )
+    {
+      if !dev_deps_acc.contains( &dep )
+      {
+        dev_deps_acc.push( dep );
+      }
+    }
+    
+    dev_deps_acc
+  }
+  
+  fn rearrange_duplicates( mut report : Vec< ListNodeReport > ) -> Vec< ListNodeReport >
+  {
+    let mut required_normal : HashMap< usize, Vec< ListNodeReport > > = HashMap::new();
+    for i in 0 .. report.len()
+    {
+      let ( required, exist ) : ( Vec< _ >, Vec< _ > ) = std::mem::take( &mut report[ i ].normal_dependencies ).into_iter().partition( | d | d.duplicate );
+      report[ i ].normal_dependencies = exist;
+      required_normal.insert( i, required );
+    }
+    
+    rearrange_duplicates_resolver( &mut report, &mut required_normal );
+    for ( i, deps ) in required_normal
+    {
+      report[ i ].normal_dependencies.extend( deps );
+    }
+    
+    report
+  }
+  
+  fn rearrange_duplicates_resolver( report : &mut [ ListNodeReport ], required : &mut HashMap< usize, Vec< ListNodeReport > > )
+  {
+    for node in report
+    {
+      rearrange_duplicates_resolver( &mut node.normal_dependencies, required );
+      rearrange_duplicates_resolver( &mut node.dev_dependencies, required );
+      rearrange_duplicates_resolver( &mut node.build_dependencies, required );
+      
+      if !node.duplicate
+      {
+        if let Some( r ) = required.iter_mut().flat_map( |( _, v )| v )
+        .find( | r | r.name == node.name && r.version == node.version && r.path == node.path )
+        {
+          std::mem::swap( r, node );
+        }
+      }
+    }
   }
 }
 
