@@ -47,7 +47,7 @@ where
 
 
   #[ inline( always ) ]
-  pub fn _descriptor_former< Former2, Definition2, Types2 >( self ) ->
+  pub fn _descriptor_former_with_closure< Former2, Definition2, Types2 >( self ) ->
   Former2
   where
     Types2 : former::FormerDefinitionTypes
@@ -81,7 +81,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn _descriptor_former2< Former2, Definition2, Types2 >( self ) ->
+  pub fn _descriptor_former< Former2, Definition2, Types2 >( self ) ->
   Former2
   where
     Types2 : former::FormerDefinitionTypes
@@ -142,13 +142,13 @@ where
 // }
 
 /// Handles the completion of the subformer for `TemplateParameterDescriptor`.
-pub struct TemplateParametersTemplateParameterDescriptorElementEnd< X, Definition, Types2 >
+pub struct TemplateParametersTemplateParameterDescriptorElementEnd< Definition, Types2 >
 {
-  _phantom : core::marker::PhantomData< fn( X, Definition, Types2 ) >,
+  _phantom : core::marker::PhantomData< fn( Definition, Types2 ) >,
 }
 
-impl< X, Definition, Types2 > Default
-for TemplateParametersTemplateParameterDescriptorElementEnd< X, Definition, Types2 >
+impl< Definition, Types2 > Default
+for TemplateParametersTemplateParameterDescriptorElementEnd< Definition, Types2 >
 {
   #[ inline( always ) ]
   fn default() -> Self
@@ -160,8 +160,8 @@ for TemplateParametersTemplateParameterDescriptorElementEnd< X, Definition, Type
   }
 }
 
-impl< X, Definition, Types2 > former::FormingEnd< Types2, >
-for TemplateParametersTemplateParameterDescriptorElementEnd< X, Definition, Types2 >
+impl< Definition, Types2 > former::FormingEnd< Types2, >
+for TemplateParametersTemplateParameterDescriptorElementEnd< Definition, Types2 >
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes
