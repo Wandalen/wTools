@@ -80,21 +80,21 @@ where
     // Former2::_begin( None, Some( self ), on_end )
   }
 
-  // #[ inline( always ) ]
-  // pub fn _descriptor_former2< Former2, Definition2, Types2 >( self ) ->
-  // Former2
-  // where
-  //   Types2 : former::FormerDefinitionTypes
-  //   <
-  //     Storage = TemplateParameterDescriptorFormerStorage,
-  //     Formed = Self,
-  //     Context = Self,
-  //   >,
-  //   Definition2 : former::FormerDefinition< Types = Types2, End = TemplateParametersTemplateParameterDescriptorElementEnd< Definition, Types2 > >,
-  //   Former2 : former::FormerBegin< Definition2 >,
-  // {
-  //   Former2::_begin( None, Some( self ), TemplateParametersTemplateParameterDescriptorElementEnd::default() )
-  // }
+  #[ inline( always ) ]
+  pub fn _descriptor_former2< Former2, Definition2, Types2 >( self ) ->
+  Former2
+  where
+    Types2 : former::FormerDefinitionTypes
+    <
+      Storage = TemplateParameterDescriptorFormerStorage,
+      Formed = Self,
+      Context = Self,
+    >,
+    Definition2 : former::FormerDefinition< Types = Types2, End = TemplateParametersTemplateParameterDescriptorElementEnd< Definition, Types2 > >,
+    Former2 : former::FormerBegin< Definition2 >,
+  {
+    Former2::_begin( None, Some( self ), TemplateParametersTemplateParameterDescriptorElementEnd::default() )
+  }
 
   // xxx2 : move to a trait and make easier to use subformer, trait with generic interface of a container should help
 
