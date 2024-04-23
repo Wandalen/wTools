@@ -96,21 +96,22 @@ where
     Former2::_begin( None, Some( self ), ParametersDescriptorAddElementOnEnd::default() )
   }
 
-  #[ inline( always ) ]
-  pub fn _descriptor_former_set3< Former2, Definition2, Types2 >( self ) ->
-  Former2
-  where
-    Types2 : former::FormerDefinitionTypes
-    <
-      Storage = DescriptorFormerStorage,
-      Formed = Self,
-      Context = Self,
-    >,
-    Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Types2, Definition > >,
-    Former2 : SubFormerTrait< Self, Definition, Definition2, Types2 >,
-  {
-    Former2::_begin( None, Some( self ), ParametersDescriptorAddElementOnEnd::default() )
-  }
+  // #[ inline( always ) ]
+  // pub fn _descriptor_former_set3< Former2 >( self ) ->
+  // Former2
+  // where
+  //   Former2 : SubFormerTrait2< Definition = Definition, Former = Self >,
+  //   // Types2 : former::FormerDefinitionTypes
+  //   // <
+  //   //   Storage = DescriptorFormerStorage,
+  //   //   Formed = Self,
+  //   //   Context = Self,
+  //   // >,
+  //   // Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Types2, Definition > >,
+  //   // Former2 : SubFormerTrait< Self, Definition, Definition2, Types2 >,
+  // {
+  //   Former2::_begin( None, Some( self ), ParametersDescriptorAddElementOnEnd::default() )
+  // }
 
   // xxx2 : move to a trait and make easier to use subformer, trait with generic interface of a container should help
 
@@ -131,32 +132,55 @@ where
 
 }
 
-pub trait SubFormerTrait< Former, Definition, Definition2, Types2 >
-where
-  Types2 : former::FormerDefinitionTypes
-  <
-    Storage = DescriptorFormerStorage,
-    Formed = Former,
-    Context = Former,
-  >,
-  Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Types2, Definition > >,
-  Self : former::FormerBegin< Definition2 >,
-{
-}
-
-impl< T, Former, Definition, Definition2, Types2 > SubFormerTrait< Former, Definition, Definition2, Types2 >
-for T
-where
-  Types2 : former::FormerDefinitionTypes
-  <
-    Storage = DescriptorFormerStorage,
-    Formed = Former,
-    Context = Former,
-  >,
-  Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Types2, Definition > >,
-  Self : former::FormerBegin< Definition2 >,
-{
-}
+// pub trait SubFormerTrait2
+// where
+//   < Self::Definition2 as former::FormerDefinition >::Types : former::FormerDefinitionTypes
+//   <
+//     Storage = DescriptorFormerStorage,
+//     Formed = Self::Former,
+//     Context = Self::Former,
+//   >,
+//   Self : former::FormerBegin< Self::Definition2 >,
+// {
+//   type Former;
+//   type Definition;
+//   type Definition2 : former::FormerDefinition
+//   <
+//     End = ParametersDescriptorAddElementOnEnd
+//     <
+//       < Self::Definition2 as former::FormerDefinition >::Types,
+//       Self::Definition,
+//     >,
+//   >;
+//   // type Types2;
+// }
+//
+// pub trait SubFormerTrait< Former, Definition, Definition2, Types2 >
+// where
+//   Types2 : former::FormerDefinitionTypes
+//   <
+//     Storage = DescriptorFormerStorage,
+//     Formed = Former,
+//     Context = Former,
+//   >,
+//   Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Types2, Definition > >,
+//   Self : former::FormerBegin< Definition2 >,
+// {
+// }
+//
+// impl< T, Former, Definition, Definition2, Types2 > SubFormerTrait< Former, Definition, Definition2, Types2 >
+// for T
+// where
+//   Types2 : former::FormerDefinitionTypes
+//   <
+//     Storage = DescriptorFormerStorage,
+//     Formed = Former,
+//     Context = Former,
+//   >,
+//   Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Types2, Definition > >,
+//   Self : former::FormerBegin< Definition2 >,
+// {
+// }
 
 /// Handles the completion of the subformer for `Descriptor`.
 pub struct ParametersDescriptorAddElementOnEnd< Definition, Types2 >
