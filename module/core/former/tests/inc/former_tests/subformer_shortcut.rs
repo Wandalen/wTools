@@ -90,7 +90,7 @@ where
       Formed = Self,
       Context = Self,
     >,
-    Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Types2, Definition > >,
+    Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Definition > >,
     Former2 : former::FormerBegin< Definition2 >,
   {
     Former2::_begin( None, Some( self ), ParametersDescriptorAddElementOnEnd::default() )
@@ -107,7 +107,7 @@ where
   //   //   Formed = Self,
   //   //   Context = Self,
   //   // >,
-  //   // Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Types2, Definition > >,
+  //   // Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Definition > >,
   //   // Former2 : SubFormerTrait< Self, Definition, Definition2, Types2 >,
   // {
   //   Former2::_begin( None, Some( self ), ParametersDescriptorAddElementOnEnd::default() )
@@ -157,7 +157,7 @@ where
 //     Formed = Former,
 //     Context = Former,
 //   >,
-//   Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Types2, Definition > >,
+//   Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Definition > >,
 //   Self : former::FormerBegin< Definition2 >,
 // {
 // }
@@ -171,19 +171,19 @@ where
 //     Formed = Former,
 //     Context = Former,
 //   >,
-//   Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Types2, Definition > >,
+//   Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Definition > >,
 //   Self : former::FormerBegin< Definition2 >,
 // {
 // }
 
-/// Handles the completion of the subformer for `Descriptor`.
-pub struct ParametersDescriptorAddElementOnEnd< Definition, Types2 >
+/// Handles the completion of and element of subformer's container.
+pub struct ParametersDescriptorAddElementOnEnd< Definition >
 {
-  _phantom : core::marker::PhantomData< fn( Definition, Types2 ) >,
+  _phantom : core::marker::PhantomData< fn( Definition ) >,
 }
 
-impl< Definition, Types2 > Default
-for ParametersDescriptorAddElementOnEnd< Definition, Types2 >
+impl< Definition > Default
+for ParametersDescriptorAddElementOnEnd< Definition >
 {
   #[ inline( always ) ]
   fn default() -> Self
@@ -196,13 +196,12 @@ for ParametersDescriptorAddElementOnEnd< Definition, Types2 >
 }
 
 impl< Types2, Definition > former::FormingEnd< Types2, >
-for ParametersDescriptorAddElementOnEnd< Types2, Definition >
+for ParametersDescriptorAddElementOnEnd< Definition >
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes
   <
     Storage = ParametersFormerStorage,
-    // Storage = X,
   >,
   Types2 : former::FormerDefinitionTypes
   <
@@ -210,7 +209,6 @@ where
     Formed = ParametersFormer< Definition >,
     Context = ParametersFormer< Definition >,
   >,
-  // Types2::Storage : former::StoragePreform,
 {
   #[ inline( always ) ]
   fn call

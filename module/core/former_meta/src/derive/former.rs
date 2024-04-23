@@ -921,6 +921,78 @@ Result< TokenStream >
       }
     }
 
+    // #[ inline( always ) ]
+    // pub fn _descriptor_former_set2< Former2, Definition2, Types2 >( self ) ->
+    // Former2
+    // where
+    //   Types2 : former::FormerDefinitionTypes
+    //   <
+    //     Storage = DescriptorFormerStorage,
+    //     Formed = Self,
+    //     Context = Self,
+    //   >,
+    //   Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Types2, Definition > >,
+    //   Former2 : former::FormerBegin< Definition2 >,
+    // {
+    //   Former2::_begin( None, Some( self ), ParametersDescriptorAddElementOnEnd::default() )
+    // }
+
+//     /// Handles the completion of and element of subformer's container.
+//     pub struct ParametersDescriptorAddElementOnEnd< Definition >
+//     {
+//       _phantom : core::marker::PhantomData< fn( Definition ) >,
+//     }
+//
+//     impl< Definition > Default
+//     for ParametersDescriptorAddElementOnEnd< Definition >
+//     {
+//       #[ inline( always ) ]
+//       fn default() -> Self
+//       {
+//         Self
+//         {
+//           _phantom : core::marker::PhantomData,
+//         }
+//       }
+//     }
+//
+//     impl< Types2, Definition > former::FormingEnd< Types2, >
+//     for ParametersDescriptorAddElementOnEnd< Definition >
+//     where
+//       Definition : former::FormerDefinition,
+//       Definition::Types : former::FormerDefinitionTypes
+//       <
+//         Storage = ParametersFormerStorage,
+//       >,
+//       Types2 : former::FormerDefinitionTypes
+//       <
+//         Storage = DescriptorFormerStorage,
+//         Formed = ParametersFormer< Definition >,
+//         Context = ParametersFormer< Definition >,
+//       >,
+//     {
+//       #[ inline( always ) ]
+//       fn call
+//       (
+//         &self,
+//         substorage : Types2::Storage,
+//         super_former : core::option::Option< Types2::Context >,
+//       )
+//       -> Types2::Formed
+//       {
+//         let mut super_former = super_former.unwrap();
+//         if super_former.storage.descriptors.is_none()
+//         {
+//           super_former.storage.descriptors = Some( Default::default() );
+//         }
+//         if let Some( ref mut descriptors ) = super_former.storage.descriptors
+//         {
+//           former::ContainerAdd::add( descriptors, former::StoragePreform::preform( substorage ) );
+//         }
+//         super_former
+//       }
+//     }
+
   };
 
   // tree_print!( r.as_ref().unwrap() );
