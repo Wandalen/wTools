@@ -120,13 +120,7 @@ where
   DescriptorSubformer< Self, impl DescriptorSubformerEnd< Self > >
   {
     self._descriptor_former_set2
-    ::
-    <
-      DescriptorFormer< _ >,
-      _,
-      _,
-    >
-    ()
+    ::< DescriptorFormer< _ >, _, _, >()
     .name( name )
   }
 
