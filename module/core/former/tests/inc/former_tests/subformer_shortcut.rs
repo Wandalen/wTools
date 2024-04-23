@@ -114,41 +114,41 @@ where
   }
 }
 
-trait SubFormerTrait< Definition, Definition2, Types2 >
-where
-  Types2 : former::FormerDefinitionTypes
-  <
-    Storage = TemplateParameterDescriptorFormerStorage,
-    Formed = Self,
-    Context = Self,
-  >,
-  Definition2 : former::FormerDefinition< Types = Types2, End = TemplateParameterDescriptorEnd< Definition, Types2 > >,
-  Self : former::FormerBegin< Definition2 >,
-{
-}
-
-impl< T, Definition, Definition2, Types2 > SubFormerTrait< Definition, Definition2, Types2 >
-for T
-where
-  Types2 : former::FormerDefinitionTypes
-  <
-    Storage = TemplateParameterDescriptorFormerStorage,
-    Formed = Self,
-    Context = Self,
-  >,
-  Definition2 : former::FormerDefinition< Types = Types2, End = TemplateParameterDescriptorEnd< Definition, Types2 > >,
-  Self : former::FormerBegin< Definition2 >,
-{
-}
+// trait SubFormerTrait< Definition, Definition2, Types2 >
+// where
+//   Types2 : former::FormerDefinitionTypes
+//   <
+//     Storage = TemplateParameterDescriptorFormerStorage,
+//     Formed = Self,
+//     Context = Self,
+//   >,
+//   Definition2 : former::FormerDefinition< Types = Types2, End = TemplateParameterDescriptorEnd< Definition, Types2 > >,
+//   Self : former::FormerBegin< Definition2 >,
+// {
+// }
+//
+// impl< T, Definition, Definition2, Types2 > SubFormerTrait< Definition, Definition2, Types2 >
+// for T
+// where
+//   Types2 : former::FormerDefinitionTypes
+//   <
+//     Storage = TemplateParameterDescriptorFormerStorage,
+//     Formed = Self,
+//     Context = Self,
+//   >,
+//   Definition2 : former::FormerDefinition< Types = Types2, End = TemplateParameterDescriptorEnd< Definition, Types2 > >,
+//   Self : former::FormerBegin< Definition2 >,
+// {
+// }
 
 /// Handles the completion of the subformer for `TemplateParameterDescriptor`.
-pub struct TemplateParameterDescriptorEnd< Definition, Types2 >
+pub struct TemplateParameterDescriptorEnd< X, Definition, Types2 >
 {
-  _phantom : core::marker::PhantomData< fn( Definition, Types2 ) >,
+  _phantom : core::marker::PhantomData< fn( X, Definition, Types2 ) >,
 }
 
-impl< Definition, Types2 > Default
-for TemplateParameterDescriptorEnd< Definition, Types2 >
+impl< X, Definition, Types2 > Default
+for TemplateParameterDescriptorEnd< X, Definition, Types2 >
 {
   #[ inline( always ) ]
   fn default() -> Self
@@ -160,14 +160,14 @@ for TemplateParameterDescriptorEnd< Definition, Types2 >
   }
 }
 
-impl< Definition, Types2 > former::FormingEnd< Types2, >
-for TemplateParameterDescriptorEnd< Definition, Types2 >
+impl< X, Definition, Types2 > former::FormingEnd< Types2, >
+for TemplateParameterDescriptorEnd< X, Definition, Types2 >
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes
   <
     Storage = TemplateParametersFormerStorage,
-    // Storage = Storage,
+    // Storage = X,
   >,
   Types2 : former::FormerDefinitionTypes
   <
@@ -180,21 +180,21 @@ where
   fn call
   (
     &self,
-    substorage : TemplateParameterDescriptorFormerStorage,
-    super_former : core::option::Option< TemplateParametersFormer< Definition > >,
+    substorage : Types2::Storage,
+    super_former : core::option::Option< Types2::Context >,
   )
-  -> TemplateParametersFormer< Definition >
+  -> Types2::Formed
   {
-      let mut super_former = super_former.unwrap();
-      if super_former.storage.descriptors.is_none()
-      {
-        super_former.storage.descriptors = Some( Default::default() );
-      }
-      if let Some( ref mut descriptors ) = super_former.storage.descriptors
-      {
-        former::ContainerAdd::add( descriptors, former::StoragePreform::preform( substorage ) );
-      }
-      super_former
+    let mut super_former = super_former.unwrap();
+    if super_former.storage.descriptors.is_none()
+    {
+      super_former.storage.descriptors = Some( Default::default() );
+    }
+    if let Some( ref mut descriptors ) = super_former.storage.descriptors
+    {
+      former::ContainerAdd::add( descriptors, former::StoragePreform::preform( substorage ) );
+    }
+    super_former
   }
 }
 
