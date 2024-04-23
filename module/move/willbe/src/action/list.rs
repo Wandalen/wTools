@@ -430,7 +430,7 @@ mod private
         let mut visited = HashSet::new();
         tree_package_report( manifest.manifest_path, &mut report, &mut visited );
         let ListReport::Tree( tree ) = report else { unreachable!() };
-        let tree = rearrange_duplicates( merge_dev_dependencies( tree ) );
+        let tree = rearrange_duplicates( merge_dev_dependencies( merge_build_dependencies( tree ) ) );
         report = ListReport::Tree( tree );
       }
       ListFormat::Tree =>
@@ -442,7 +442,7 @@ mod private
           tree_package_report( package.manifest_path().as_std_path().try_into().unwrap(), &mut report, &mut visited )
         }
         let ListReport::Tree( tree ) = report else { unreachable!() };
-        let tree = merge_dev_dependencies( tree );
+        let tree = merge_dev_dependencies( merge_build_dependencies( tree ) );
         report = ListReport::Tree( tree );
       }
       ListFormat::Topological =>
@@ -559,6 +559,41 @@ mod private
     Ok( report )
   }
 
+  fn merge_build_dependencies( mut report: Vec< ListNodeReport > ) -> Vec< ListNodeReport >
+  {
+    let mut build_dependencies = vec![];
+    for node_report in &mut report
+    {
+      build_dependencies = merge_build_dependencies_impl( node_report, build_dependencies );
+    }
+    if let Some( last_report ) = report.last_mut()
+    {
+      last_report.build_dependencies = build_dependencies;
+    }
+
+    report
+  }
+  
+  fn merge_build_dependencies_impl( report : &mut ListNodeReport, mut build_deps_acc : Vec< ListNodeReport > ) -> Vec< ListNodeReport >
+  {
+    for dep in report.normal_dependencies.iter_mut()
+      .chain( report.dev_dependencies.iter_mut() )
+      .chain( report.build_dependencies.iter_mut() )
+    {
+      build_deps_acc = merge_build_dependencies_impl(dep, build_deps_acc );
+    }
+
+    for dep in std::mem::take( &mut report.build_dependencies )
+    {
+      if !build_deps_acc.contains( &dep )
+      {
+        build_deps_acc.push( dep );
+      }
+    }
+
+    build_deps_acc
+  }
+  
   fn merge_dev_dependencies( mut report: Vec< ListNodeReport > ) -> Vec< ListNodeReport >
   {
     let mut dev_dependencies = vec![];
