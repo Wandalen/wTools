@@ -100,7 +100,6 @@ where
   pub fn _descriptor_former_set3< Former2, Definition2, Types2 >( self ) ->
   Former2
   where
-    Former2 : SubFormerTrait< Self, Definition, Definition2, Types2 >,
     Types2 : former::FormerDefinitionTypes
     <
       Storage = DescriptorFormerStorage,
@@ -108,7 +107,7 @@ where
       Context = Self,
     >,
     Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Types2, Definition > >,
-    Former2 : former::FormerBegin< Definition2 >,
+    Former2 : SubFormerTrait< Self, Definition, Definition2, Types2 >,
   {
     Former2::_begin( None, Some( self ), ParametersDescriptorAddElementOnEnd::default() )
   }
