@@ -400,7 +400,6 @@ where
 pub type Struct1Subformer< __Superformer, __End >
 = Struct1Former< Struct1FormerDefinition< __Superformer, __Superformer, __End, >, >;
 
-// // xxx : remove maybe
 // pub type Struct1FormerWithClosure< __Context, __Formed, > = Struct1FormerDefinition< __Context, __Formed, former::FormingEndClosure< Struct1FormerDefinitionTypes< __Context, __Formed, > > >;
 
 // = subformer end

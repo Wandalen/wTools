@@ -1077,7 +1077,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let former_definition_types_name = format!( "{}FormerDefinitionTypes", stru );
   let former_definition_types = syn::Ident::new( &former_definition_types_name, stru.span() );
   // let former_with_closure_name = format!( "{}FormerWithClosure", stru );
-  // let former_with_closure = syn::Ident::new( &former_with_closure_name, stru.span() ); // xxx : maybe remove
+  // let former_with_closure = syn::Ident::new( &former_with_closure_name, stru.span() );
   let subformer_name = format!( "{}Subformer", stru );
   let subformer = syn::Ident::new( &subformer_name, stru.span() );
   let subformer_end_name = format!( "{}SubformerEnd", stru );
