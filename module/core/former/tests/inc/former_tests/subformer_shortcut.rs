@@ -125,67 +125,67 @@ for TemplateParameterDescriptorEnd< Definition, Former2, Definition2, Types2 >
   }
 }
 
-// impl< Definition, Former2, Definition2, Types2 > former::FormingEnd
-// <
-//   Types2,
-// >
-// for TemplateParameterDescriptorEnd< Definition, Former2, Definition2, Types2 >
-// where
-//
-//   Definition : former::FormerDefinition,
-//   Definition::Types : former::FormerDefinitionTypes
-//   <
-//     Storage = TemplateParametersFormerStorage
-//   >,
-//
-//   // Self : former::FormerDefinition,
-//   // Self::Types : former::FormerDefinitionTypes< Storage = TemplateParametersFormerStorage, >
-//   Types2 : former::FormerDefinitionTypes
-//   <
-//     Storage = TemplateParameterDescriptorFormerStorage,
-//     Formed = Self,
-//     Context = Self,
-//   >,
-//   Definition2 : former::FormerDefinition< Types = Types2, End = former::FormingEndClosure< Types2 > >,
-//   // Definition2 : former::FormerDefinition< Types = Types2 >,
-//   Definition2::End : former::FormingEnd< Definition2::Types >,
-//   Former2 : former::FormerBegin
-//   <
-//     Definition2,
-//   >,
-//
-// {
-//   #[ inline( always ) ]
-//   fn call
-//   (
-//     &self,
-//     substorage : TemplateParameterDescriptorFormerStorage,
-//     super_former : core::option::Option< Self >,
-//     // descriptor : TemplateParameterDescriptorFormerStorage,
-//     // super_former : Option< TemplateParametersFormer< Self > >,
-//   )
-//   -> TemplateParametersFormer< Definition >
-//   {
-//       let mut super_former = super_former.unwrap();
-//       if super_former.storage.descriptors.is_none()
-//       {
-//         super_former.storage.descriptors = Some( Default::default() );
-//       }
-//       if let Some( ref mut descriptors ) = super_former.storage.descriptors
-//       {
-//         former::ContainerAdd::add( descriptors, former::StoragePreform::preform( substorage ) );
-//       }
-//       super_former
-//     // let mut super_former = super_former.unwrap();
-//     // if super_former.storage.descriptors.is_none()
-//     // {
-//     //   super_former.storage.descriptors = Some( Vec::new() );
-//     // }
-//     // let preformed_descriptor = former::StoragePreform::preform( substorage );
-//     // super_former.storage.descriptors.as_mut().unwrap().push( preformed_descriptor );
-//     // super_former
-//   }
-// }
+impl< Definition, Former2, Definition2, Types2 > former::FormingEnd
+<
+  Types2,
+>
+for TemplateParameterDescriptorEnd< Definition, Former2, Definition2, Types2 >
+where
+
+  Definition : former::FormerDefinition,
+  Definition::Types : former::FormerDefinitionTypes
+  <
+    Storage = TemplateParametersFormerStorage
+  >,
+
+  // Self : former::FormerDefinition,
+  // Self::Types : former::FormerDefinitionTypes< Storage = TemplateParametersFormerStorage, >
+  Types2 : former::FormerDefinitionTypes
+  <
+    Storage = TemplateParameterDescriptorFormerStorage,
+    Formed = TemplateParametersFormer< Definition >,
+    Context = TemplateParametersFormer< Definition >,
+  >,
+  Definition2 : former::FormerDefinition< Types = Types2, End = former::FormingEndClosure< Types2 > >,
+  // Definition2 : former::FormerDefinition< Types = Types2 >,
+  Definition2::End : former::FormingEnd< Definition2::Types >,
+  Former2 : former::FormerBegin
+  <
+    Definition2,
+  >,
+
+{
+  #[ inline( always ) ]
+  fn call
+  (
+    &self,
+    substorage : TemplateParameterDescriptorFormerStorage,
+    super_former : core::option::Option< TemplateParametersFormer< Definition > >,
+    // descriptor : TemplateParameterDescriptorFormerStorage,
+    // super_former : Option< TemplateParametersFormer< Self > >,
+  )
+  -> TemplateParametersFormer< Definition >
+  {
+      let mut super_former = super_former.unwrap();
+      if super_former.storage.descriptors.is_none()
+      {
+        super_former.storage.descriptors = Some( Default::default() );
+      }
+      if let Some( ref mut descriptors ) = super_former.storage.descriptors
+      {
+        former::ContainerAdd::add( descriptors, former::StoragePreform::preform( substorage ) );
+      }
+      super_former
+    // let mut super_former = super_former.unwrap();
+    // if super_former.storage.descriptors.is_none()
+    // {
+    //   super_former.storage.descriptors = Some( Vec::new() );
+    // }
+    // let preformed_descriptor = former::StoragePreform::preform( substorage );
+    // super_former.storage.descriptors.as_mut().unwrap().push( preformed_descriptor );
+    // super_former
+  }
+}
 
 #[ test ]
 fn basic()
