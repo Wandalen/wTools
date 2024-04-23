@@ -442,7 +442,7 @@ mod private
           tree_package_report( package.manifest_path().as_std_path().try_into().unwrap(), &mut report, &mut visited )
         }
         let ListReport::Tree( tree ) = report else { unreachable!() };
-        let tree = rearrange_duplicates( merge_dev_dependencies( tree ) );
+        let tree = merge_dev_dependencies( tree );
         report = ListReport::Tree( tree );
       }
       ListFormat::Topological =>
@@ -558,7 +558,7 @@ mod private
 
     Ok( report )
   }
-  
+
   fn merge_dev_dependencies( mut report: Vec< ListNodeReport > ) -> Vec< ListNodeReport >
   {
     let mut dev_dependencies = vec![];
@@ -570,10 +570,10 @@ mod private
     {
       last_report.dev_dependencies = dev_dependencies;
     }
-    
+
     report
   }
-  
+
   fn merge_dev_dependencies_impl( report : &mut ListNodeReport, mut dev_deps_acc : Vec< ListNodeReport > ) -> Vec< ListNodeReport >
   {
     for dep in report.normal_dependencies.iter_mut()
@@ -582,7 +582,7 @@ mod private
     {
       dev_deps_acc = merge_dev_dependencies_impl( dep, dev_deps_acc );
     }
-    
+
     for dep in std::mem::take( &mut report.dev_dependencies )
     {
       if !dev_deps_acc.contains( &dep )
@@ -590,7 +590,7 @@ mod private
         dev_deps_acc.push( dep );
       }
     }
-    
+
     dev_deps_acc
   }
   
@@ -620,7 +620,7 @@ mod private
       rearrange_duplicates_resolver( &mut node.normal_dependencies, required );
       rearrange_duplicates_resolver( &mut node.dev_dependencies, required );
       rearrange_duplicates_resolver( &mut node.build_dependencies, required );
-      
+
       if !node.duplicate
       {
         if let Some( r ) = required.iter_mut().flat_map( |( _, v )| v )
