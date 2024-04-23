@@ -91,11 +91,7 @@ where
       Context = Self,
     >,
     Definition2 : former::FormerDefinition< Types = Types2, End = TemplateParameterDescriptorEnd< Definition, Types2 > >,
-    Definition2::End : former::FormingEnd< Definition2::Types >,
-    Former2 : former::FormerBegin
-    <
-      Definition2,
-    >,
+    Former2 : former::FormerBegin< Definition2 >,
   {
     Former2::_begin( None, Some( self ), TemplateParameterDescriptorEnd::< Definition, Types2 >::default() )
   }
