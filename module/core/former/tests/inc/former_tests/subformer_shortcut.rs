@@ -90,10 +90,10 @@ where
   //     Formed = Self,
   //     Context = Self,
   //   >,
-  //   Definition2 : former::FormerDefinition< Types = Types2, End = TemplateParameterDescriptorEnd< Definition, Types2 > >,
+  //   Definition2 : former::FormerDefinition< Types = Types2, End = TemplateParametersTemplateParameterDescriptorElementEnd< Definition, Types2 > >,
   //   Former2 : former::FormerBegin< Definition2 >,
   // {
-  //   Former2::_begin( None, Some( self ), TemplateParameterDescriptorEnd::default() )
+  //   Former2::_begin( None, Some( self ), TemplateParametersTemplateParameterDescriptorElementEnd::default() )
   // }
 
   // xxx2 : move to a trait and make easier to use subformer, trait with generic interface of a container should help
@@ -122,7 +122,7 @@ where
 //     Formed = Self,
 //     Context = Self,
 //   >,
-//   Definition2 : former::FormerDefinition< Types = Types2, End = TemplateParameterDescriptorEnd< Definition, Types2 > >,
+//   Definition2 : former::FormerDefinition< Types = Types2, End = TemplateParametersTemplateParameterDescriptorElementEnd< Definition, Types2 > >,
 //   Self : former::FormerBegin< Definition2 >,
 // {
 // }
@@ -136,19 +136,19 @@ where
 //     Formed = Self,
 //     Context = Self,
 //   >,
-//   Definition2 : former::FormerDefinition< Types = Types2, End = TemplateParameterDescriptorEnd< Definition, Types2 > >,
+//   Definition2 : former::FormerDefinition< Types = Types2, End = TemplateParametersTemplateParameterDescriptorElementEnd< Definition, Types2 > >,
 //   Self : former::FormerBegin< Definition2 >,
 // {
 // }
 
 /// Handles the completion of the subformer for `TemplateParameterDescriptor`.
-pub struct TemplateParameterDescriptorEnd< X, Definition, Types2 >
+pub struct TemplateParametersTemplateParameterDescriptorElementEnd< X, Definition, Types2 >
 {
   _phantom : core::marker::PhantomData< fn( X, Definition, Types2 ) >,
 }
 
 impl< X, Definition, Types2 > Default
-for TemplateParameterDescriptorEnd< X, Definition, Types2 >
+for TemplateParametersTemplateParameterDescriptorElementEnd< X, Definition, Types2 >
 {
   #[ inline( always ) ]
   fn default() -> Self
@@ -161,7 +161,7 @@ for TemplateParameterDescriptorEnd< X, Definition, Types2 >
 }
 
 impl< X, Definition, Types2 > former::FormingEnd< Types2, >
-for TemplateParameterDescriptorEnd< X, Definition, Types2 >
+for TemplateParametersTemplateParameterDescriptorElementEnd< X, Definition, Types2 >
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes
@@ -175,6 +175,7 @@ where
     Formed = TemplateParametersFormer< Definition >,
     Context = TemplateParametersFormer< Definition >,
   >,
+  // Types2::Storage : former::StoragePreform,
 {
   #[ inline( always ) ]
   fn call
