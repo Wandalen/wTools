@@ -9,27 +9,30 @@ pub struct Struct1
   hashset_1 : std::collections::HashSet< String >,
 }
 
-// = generated
+// == begin of generated
 
 #[ automatically_derived ]
-impl Struct1
+impl< > Struct1< >
+where
 {
   #[ inline( always ) ]
-  pub fn former() -> Struct1Former< >
+  pub fn former() -> Struct1Former< Struct1FormerDefinition< (), Struct1< >, former::ReturnPreformed > >
   {
-    Struct1Former::<>::new_coercing( the_module::ReturnPreformed )
+    Struct1Former::< Struct1FormerDefinition< (), Struct1< >, former::ReturnPreformed > >::new_coercing( former::ReturnPreformed )
   }
 }
 
-// = definition types
+// = types
 
 #[ derive( Debug ) ]
-pub struct Struct1FormerDefinitionTypes< Context = (), Formed = Struct1 >
+pub struct Struct1FormerDefinitionTypes< __Context = (), __Formed = Struct1< >, >
+where
 {
-  _phantom : core::marker::PhantomData< ( Context, Formed ) >,
+  _phantom : core::marker::PhantomData< ( __Context, __Formed ) >,
 }
 
-impl< Context, Formed > Default for Struct1FormerDefinitionTypes< Context, Formed >
+impl< __Context, __Formed, > ::core::default::Default for Struct1FormerDefinitionTypes< __Context, __Formed, >
+where
 {
   fn default() -> Self
   {
@@ -40,23 +43,25 @@ impl< Context, Formed > Default for Struct1FormerDefinitionTypes< Context, Forme
   }
 }
 
-impl< Context, Formed > former::FormerDefinitionTypes
-for Struct1FormerDefinitionTypes< Context, Formed >
+impl< __Context, __Formed, > former::FormerDefinitionTypes for Struct1FormerDefinitionTypes< __Context, __Formed, >
+where
 {
-  type Storage = Struct1FormerStorage;
-  type Formed = Formed;
-  type Context = Context;
+  type Storage = Struct1FormerStorage< >;
+  type Formed = __Formed;
+  type Context = __Context;
 }
 
 // = definition
 
 #[ derive( Debug ) ]
-pub struct Struct1FormerDefinition< Context = (), Formed = Struct1, End = former::ReturnPreformed >
+pub struct Struct1FormerDefinition< __Context = (), __Formed = Struct1< >, __End = former::ReturnPreformed, >
+where
 {
-  _phantom : core::marker::PhantomData< ( Context, Formed, End ) >,
+  _phantom : core::marker::PhantomData< ( __Context, __Formed, __End ) >,
 }
 
-impl< Context, Formed, End > Default for Struct1FormerDefinition< Context, Formed, End >
+impl< __Context, __Formed, __End, > ::core::default::Default for Struct1FormerDefinition< __Context, __Formed, __End, >
+where
 {
   fn default() -> Self
   {
@@ -67,26 +72,29 @@ impl< Context, Formed, End > Default for Struct1FormerDefinition< Context, Forme
   }
 }
 
-impl< Context, Formed, End > former::FormerDefinition for Struct1FormerDefinition< Context, Formed, End >
+impl< __Context, __Formed, __End, > former::FormerDefinition for Struct1FormerDefinition< __Context, __Formed, __End, >
 where
-  End : former::FormingEnd< Struct1FormerDefinitionTypes< Context, Formed > >,
+  __End : former::FormingEnd< Struct1FormerDefinitionTypes< __Context, __Formed, > >,
 {
-  type Types = Struct1FormerDefinitionTypes< Context, Formed >;
-  type End = End;
+  type Types = Struct1FormerDefinitionTypes< __Context, __Formed, >;
+  type End = __End;
 }
-
-pub type Struct1FormerWithClosure< Context, Formed > = Struct1FormerDefinition< Context, Formed, former::FormingEndClosure< Struct1FormerDefinitionTypes< Context, Formed > > >;
 
 // = storage
 
-pub struct Struct1FormerStorage
+pub struct Struct1FormerStorage< >
+where
 {
+
   pub vec_1 : ::core::option::Option< Vec< String > >,
+
   pub hashmap_1 : ::core::option::Option< std::collections::HashMap< String, String > >,
+
   pub hashset_1 : ::core::option::Option< std::collections::HashSet< String > >,
 }
 
-impl ::core::default::Default for Struct1FormerStorage
+impl< > ::core::default::Default for Struct1FormerStorage< >
+where
 {
   #[ inline( always ) ]
   fn default() -> Self
@@ -100,15 +108,17 @@ impl ::core::default::Default for Struct1FormerStorage
   }
 }
 
-impl former::Storage for Struct1FormerStorage
+impl< > former::Storage for Struct1FormerStorage< >
+where
 {
-  type Formed = Struct1;
+  type Formed = Struct1< >;
 }
 
-impl former::StoragePreform for Struct1FormerStorage
+impl< > former::StoragePreform for Struct1FormerStorage< >
+where
 {
-  type Preformed = Struct1;
-  // fn preform( mut self ) -> < Self as former::Storage >::Formed
+  type Preformed = Struct1< >;
+
   fn preform( mut self ) -> Self::Preformed
   {
     let vec_1 = if self.vec_1.is_some()
@@ -120,23 +130,29 @@ impl former::StoragePreform for Struct1FormerStorage
       {
         trait MaybeDefault< T >
         {
-          fn maybe_default( self : &Self ) -> T
+          fn maybe_default( self : & Self ) -> T
           {
             panic!( "Field 'vec_1' isn't initialized" )
           }
         }
-        impl< T > MaybeDefault< T > for &::core::marker::PhantomData< T > {}
+
+        impl< T > MaybeDefault< T > for &::core::marker::PhantomData< T >
+        {
+        }
+
         impl< T > MaybeDefault< T > for ::core::marker::PhantomData< T >
         where T : ::core::default::Default,
         {
-          fn maybe_default( self : &Self ) -> T
+          fn maybe_default( self : & Self ) -> T
           {
             T::default()
           }
         }
-        ( &::core::marker::PhantomData::< Vec< String > > ).maybe_default()
+
+        (&::core::marker::PhantomData::< Vec< String > >).maybe_default()
       }
     };
+
     let hashmap_1 = if self.hashmap_1.is_some()
     {
       self.hashmap_1.take().unwrap()
@@ -146,23 +162,29 @@ impl former::StoragePreform for Struct1FormerStorage
       {
         trait MaybeDefault< T >
         {
-          fn maybe_default( self : &Self ) -> T
+          fn maybe_default( self : & Self ) -> T
           {
             panic!( "Field 'hashmap_1' isn't initialized" )
           }
         }
-        impl< T > MaybeDefault< T > for &::core::marker::PhantomData< T > {}
+
+        impl< T > MaybeDefault< T > for &::core::marker::PhantomData< T >
+        {
+        }
+
         impl< T > MaybeDefault< T > for ::core::marker::PhantomData< T >
         where T : ::core::default::Default,
         {
-          fn maybe_default( self : &Self ) -> T
+          fn maybe_default( self : & Self ) -> T
           {
             T::default()
           }
         }
-        ( &::core::marker::PhantomData::< std::collections::HashMap< String, String > > ).maybe_default()
+
+        (&::core::marker::PhantomData::< std::collections::HashMap< String, String > >).maybe_default()
       }
     };
+
     let hashset_1 = if self.hashset_1.is_some()
     {
       self.hashset_1.take().unwrap()
@@ -172,40 +194,46 @@ impl former::StoragePreform for Struct1FormerStorage
       {
         trait MaybeDefault< T >
         {
-          fn maybe_default( self : &Self ) -> T
+          fn maybe_default( self : & Self ) -> T
           {
             panic!( "Field 'hashset_1' isn't initialized" )
           }
         }
-        impl< T > MaybeDefault< T > for &::core::marker::PhantomData< T > {}
+
+        impl< T > MaybeDefault< T > for &::core::marker::PhantomData< T >
+        {
+        }
+
         impl< T > MaybeDefault< T > for ::core::marker::PhantomData< T >
         where T : ::core::default::Default,
         {
-          fn maybe_default( self : &Self ) -> T
+          fn maybe_default( self : & Self ) -> T
           {
             T::default()
           }
         }
-        ( &::core::marker::PhantomData::< std::collections::HashSet< String > > ).maybe_default()
+
+        (&::core::marker::PhantomData::< std::collections::HashSet< String > >).maybe_default()
       }
     };
+
     let result = Struct1
     {
       vec_1,
       hashmap_1,
       hashset_1,
     };
+
     return result;
   }
 }
 
 // = former
 
-pub struct Struct1Former< Definition = Struct1FormerDefinition >
+pub struct Struct1Former< Definition = Struct1FormerDefinition< (), Struct1< >, former::ReturnPreformed >, >
 where
   Definition : former::FormerDefinition,
-  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
-  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
+  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< > >,
 {
   storage : < Definition::Types as former::FormerDefinitionTypes >::Storage,
   context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
@@ -213,46 +241,29 @@ where
 }
 
 #[ automatically_derived ]
-impl< Definition > Struct1Former< Definition >
+impl< Definition, > Struct1Former< Definition, >
 where
   Definition : former::FormerDefinition,
-  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
-  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
+  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< > >,
 {
 
-
   #[ inline( always ) ]
-  pub fn perform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
-  {
-    let result = self.form();
-    return result;
-  }
-
-
-
-
-  #[ inline( always ) ]
-  pub fn _new_precise( on_end : Definition::End ) -> Self
+  pub fn new_precise( on_end : Definition::End ) -> Self
   {
     Self::begin_coercing( None, None, on_end )
   }
-
-
-
 
   #[ inline( always ) ]
   pub fn new_coercing< IntoEnd >( end : IntoEnd ) -> Self
   where
     IntoEnd : Into< Definition::End >,
   {
-    Self::begin_coercing( None, None, end, )
+    Self::begin_coercing( None, None, end )
   }
 
-
-
-
   #[ inline( always ) ]
-  pub fn _begin_precise(
+  pub fn begin_precise
+  (
     mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
     context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
     on_end : < Definition as former::FormerDefinition >::End,
@@ -269,9 +280,6 @@ where
       on_end : ::core::option::Option::Some( on_end ),
     }
   }
-
-
-
 
   #[ inline( always ) ]
   pub fn begin_coercing< IntoEnd >(
@@ -300,7 +308,6 @@ where
     self.end()
   }
 
-
   #[ inline( always ) ]
   pub fn end( mut self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
@@ -312,98 +319,57 @@ where
   #[ inline( always ) ]
   pub fn vec_1_set< Former2 >( self ) -> Former2
   where
-    Former2 : former::FormerBegin
-    <
-      former::VectorDefinition
-      <
-        String,
-        Self,
-        Self,
-        Struct1FormerVec1End,
-      >
-    >,
+    Former2 : former::FormerBegin< former::VectorDefinition< String, Self, Self, Struct1FormerVec1End, > >,
   {
     Former2::_begin( None, Some( self ), Struct1FormerVec1End )
   }
 
-  pub fn vec_1( self ) ->
-  former::ContainerSubformer::
-  <
-    String, former::VectorDefinition< String, Self, Self, Struct1FormerVec1End >
-  >
+  #[ inline( always ) ]
+  pub fn vec_1( self ) -> former::ContainerSubformer::< String, former::VectorDefinition< String, Self, Self, Struct1FormerVec1End > >
   {
-    self.vec_1_set::< former::ContainerSubformer::
-    <
-      String, former::VectorDefinition< String, Self, Self, Struct1FormerVec1End >
-    >>()
+    self.vec_1_set::< former::ContainerSubformer::< String, former::VectorDefinition< String, Self, Self, Struct1FormerVec1End > >>()
   }
 
   #[ inline( always ) ]
   pub fn hashmap_1_set< Former2 >( self ) -> Former2
   where
-    Former2 : former::FormerBegin
-    <
-      former::HashMapDefinition
-      <
-        String,
-        String,
-        Self,
-        Self,
-        Struct1FormerHashmap1End,
-      >
-    >,
+    Former2 : former::FormerBegin< former::HashMapDefinition< String, String, Self, Self, Struct1FormerHashmap1End, > >,
   {
     Former2::_begin( None, Some( self ), Struct1FormerHashmap1End )
   }
 
-  pub fn hashmap_1( self ) ->
-  former::ContainerSubformer::
-  <
-    ( String, String ), former::HashMapDefinition< String, String, Self, Self, Struct1FormerHashmap1End >
-  >
+
+  #[ inline( always ) ]
+  pub fn hashmap_1( self ) -> former::ContainerSubformer::< (String, String), former::HashMapDefinition< String, String, Self, Self, Struct1FormerHashmap1End > >
   {
-    self.hashmap_1_set::< former::ContainerSubformer::
-    <
-      ( String, String ), former::HashMapDefinition< String, String, Self, Self, Struct1FormerHashmap1End >
-    > >()
+    self.hashmap_1_set::< former::ContainerSubformer::< (String, String), former::HashMapDefinition< String, String, Self, Self, Struct1FormerHashmap1End > >>()
   }
+
 
   #[ inline( always ) ]
   pub fn hashset_1_set< Former2 >( self ) -> Former2
   where
-    Former2 : former::FormerBegin
-    <
-      former::HashSetDefinition
-      <
-        String,
-        Self,
-        Self,
-        Struct1FormerHashset1End,
-      >
-    >,
+    Former2 : former::FormerBegin< former::HashSetDefinition< String, Self, Self, Struct1FormerHashset1End, > >,
   {
     Former2::_begin( None, Some( self ), Struct1FormerHashset1End )
   }
 
-  pub fn hashset_1( self ) ->
-  former::ContainerSubformer::
-  <
-    String, former::HashSetDefinition< String, Self, Self, Struct1FormerHashset1End >
-  >
-  {
-    self.hashset_1_set::< former::ContainerSubformer::
-    <
-      String, former::HashSetDefinition< String, Self, Self, Struct1FormerHashset1End >
-    >>()
-  }
 
+  #[ inline( always ) ]
+  pub fn hashset_1( self ) -> former::ContainerSubformer::< String, former::HashSetDefinition< String, Self, Self, Struct1FormerHashset1End > >
+  {
+    self.hashset_1_set::< former::ContainerSubformer::< String, former::HashSetDefinition< String, Self, Self, Struct1FormerHashset1End > >>()
+  }
 }
 
-impl< Definition > Struct1Former< Definition >
+// = former :: preform
+
+impl< Definition, > Struct1Former< Definition, >
 where
   Definition : former::FormerDefinition,
+  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< >, Formed = Struct1< > >,
   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
-  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage, Formed = Struct1 >,
+  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform< Preformed = Struct1< > >,
 {
   pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
@@ -411,25 +377,58 @@ where
   }
 }
 
-// zzz : description
-/// Return original former after subformer for `vec_1` is done.
-#[ allow( non_camel_case_types ) ]
-pub struct Struct1FormerVec1End;
+// = former :: perform
+
 #[ automatically_derived ]
-impl< Definition > former::FormingEnd
-<
-  former::VectorDefinition< String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
->
-for Struct1FormerVec1End
+impl< Definition, > Struct1Former< Definition, >
 where
   Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes
-  <
-    Storage = Struct1FormerStorage
-  >,
+  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< >, Formed = Struct1< > >,
+{
+
+  #[ inline( always ) ]
+  pub fn perform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
+  {
+    let result = self.form();
+    return result;
+  }
+}
+
+// = subformer
+
+#[ allow( dead_code ) ]
+pub type Struct1Subformer< __Superformer, __End >
+= Struct1Former< Struct1FormerDefinition< __Superformer, __Superformer, __End, >, >;
+
+// // xxx : remove maybe
+// pub type Struct1FormerWithClosure< __Context, __Formed, > = Struct1FormerDefinition< __Context, __Formed, former::FormingEndClosure< Struct1FormerDefinitionTypes< __Context, __Formed, > > >;
+
+// = subformer end
+
+#[ allow( dead_code ) ]
+pub trait Struct1SubformerEnd< SuperFormer >
+where
+  Self : former::FormingEnd< Struct1FormerDefinitionTypes< SuperFormer, SuperFormer >, >,
+{}
+
+impl< SuperFormer, T > Struct1SubformerEnd< SuperFormer > for T
+where
+  Self : former::FormingEnd< Struct1FormerDefinitionTypes< SuperFormer, SuperFormer >, >,
+{}
+
+// = end handlers
+
+#[ allow( non_camel_case_types ) ]
+pub struct Struct1FormerVec1End;
+
+#[ automatically_derived ]
+impl< Definition, > former::FormingEnd< former::VectorDefinition< String, Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd >, > for Struct1FormerVec1End
+where
+  Definition : former::FormerDefinition,
+  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< > >,
 {
   #[ inline( always ) ]
-  fn call( &self, storage : Vec< String >, super_former : Option< Struct1Former< Definition > > ) -> Struct1Former< Definition >
+  fn call( &self, storage : Vec< String >, super_former : Option< Struct1Former< Definition, > >, ) -> Struct1Former< Definition, >
   {
     let mut super_former = super_former.unwrap();
     if let Some( ref mut field ) = super_former.storage.vec_1
@@ -444,32 +443,17 @@ where
   }
 }
 
-// zzz : description
-/// Return original former after subformer for `hashmap_string_1` is done.
 #[ allow( non_camel_case_types ) ]
 pub struct Struct1FormerHashmap1End;
+
 #[ automatically_derived ]
-impl< Definition > former::FormingEnd
-<
-  former::HashMapDefinition< String, String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
->
-for Struct1FormerHashmap1End
+impl< Definition, > former::FormingEnd< former::HashMapDefinition< String, String, Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd >, > for Struct1FormerHashmap1End
 where
   Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes
-  <
-    Storage = Struct1FormerStorage
-  >,
+  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< > >,
 {
   #[ inline( always ) ]
-  fn call
-  (
-    &self,
-    storage : std::collections::HashMap< String, String >,
-    super_former : Option< Struct1Former< Definition > >,
-  )
-  ->
-  Struct1Former< Definition >
+  fn call( &self, storage : std::collections::HashMap< String, String >, super_former : Option< Struct1Former< Definition, > >, ) -> Struct1Former< Definition, >
   {
     let mut super_former = super_former.unwrap();
     if let Some( ref mut field ) = super_former.storage.hashmap_1
@@ -484,25 +468,17 @@ where
   }
 }
 
-// zzz : description
-/// Return original former after subformer for `hashset_string_1` is done.
 #[ allow( non_camel_case_types ) ]
 pub struct Struct1FormerHashset1End;
+
 #[ automatically_derived ]
-impl< Definition > former::FormingEnd
-<
-  former::HashSetDefinition< String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
->
-for Struct1FormerHashset1End
+impl< Definition, > former::FormingEnd< former::HashSetDefinition< String, Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd >, > for Struct1FormerHashset1End
 where
   Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes
-  <
-    Storage = Struct1FormerStorage
-  >,
+  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< > >,
 {
   #[ inline( always ) ]
-  fn call( &self, storage : std::collections::HashSet< String >, super_former : Option< Struct1Former< Definition > > ) -> Struct1Former< Definition >
+  fn call( &self, storage : std::collections::HashSet< String >, super_former : Option< Struct1Former< Definition, > >, ) -> Struct1Former< Definition, >
   {
     let mut super_former = super_former.unwrap();
     if let Some( ref mut field ) = super_former.storage.hashset_1
@@ -517,6 +493,6 @@ where
   }
 }
 
-// = end of generated
+// == end of generated
 
 include!( "./only_test/containers_with_subformer.rs" );

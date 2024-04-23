@@ -33,8 +33,17 @@ tests_impls!
 
     // default explicit params with wrapper and closure
     let got = Struct1Former
-    ::< Struct1FormerWithClosure< (), Struct1 > >
-    ::new_coercing( | storage, _context | { former::StoragePreform::preform( storage ) } )
+    ::< Struct1FormerDefinition< (), Struct1, _ > >
+    ::new_precise( | storage, _context | { former::StoragePreform::preform( storage ) } )
+    .string_slice_1( "abc" )
+    .form();
+    let exp = Struct1::former().string_slice_1( "abc" ).form();
+    a_id!( got, exp );
+
+    // closure with helper
+    let got : Struct1 = Struct1Former
+    ::< Struct1FormerDefinition< (), Struct1, _ > >
+    ::begin_precise( None, None, | storage, _context | { former::StoragePreform::preform( storage ) } )
     .string_slice_1( "abc" )
     .form();
     let exp = Struct1::former().string_slice_1( "abc" ).form();

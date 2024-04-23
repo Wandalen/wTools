@@ -1076,8 +1076,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let former_definition = syn::Ident::new( &former_definition_name, stru.span() );
   let former_definition_types_name = format!( "{}FormerDefinitionTypes", stru );
   let former_definition_types = syn::Ident::new( &former_definition_types_name, stru.span() );
-  let former_with_closure_name = format!( "{}FormerWithClosure", stru );
-  let former_with_closure = syn::Ident::new( &former_with_closure_name, stru.span() ); // xxx : maybe remove
+  // let former_with_closure_name = format!( "{}FormerWithClosure", stru );
+  // let former_with_closure = syn::Ident::new( &former_with_closure_name, stru.span() ); // xxx : maybe remove
   let subformer_name = format!( "{}Subformer", stru );
   let subformer = syn::Ident::new( &subformer_name, stru.span() );
   let subformer_end_name = format!( "{}SubformerEnd", stru );
@@ -1326,12 +1326,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       type End = __End;
     }
 
-    pub type #former_with_closure < #former_definition_type_generics_ty > =
-    #former_definition
-    <
-      #former_definition_type_generics_ty former::FormingEndClosure< #former_definition_types < #former_definition_type_generics_ty > >
-    >;
-
     // = storage
 
     #[ doc = "Container of a corresponding former." ]
@@ -1407,27 +1401,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     }
 
     #[ automatically_derived ]
-    impl < #former_perform_generics_impl > #former < #former_perform_generics_ty >
-    where
-      #former_perform_generics_where
-    {
-
-      ///
-      /// Finish setting options and call perform on formed entity.
-      ///
-      /// If `perform` defined then associated method is called and its result returned instead of entity.
-      /// For example `perform()` of structure with : `#[ perform( fn after1() -> &str > )` returns `&str`.
-      ///
-      #[ inline( always ) ]
-      pub fn perform #perform_generics ( self ) -> #perform_output
-      {
-        let result = self.form();
-        #perform
-      }
-
-    }
-
-    #[ automatically_derived ]
     impl < #former_generics_impl > #former < #former_generics_ty >
     where
       #former_generics_where
@@ -1438,7 +1411,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       ///
       // zzz : improve description
       #[ inline( always ) ]
-      pub fn _new_precise( on_end : Definition::End ) -> Self
+      pub fn new_precise( on_end : Definition::End ) -> Self
       {
         Self::begin_coercing( None, None, on_end )
       }
@@ -1465,7 +1438,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       ///
       // zzz : improve description
       #[ inline( always ) ]
-      pub fn _begin_precise
+      pub fn begin_precise
       (
         mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
         context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
@@ -1536,7 +1509,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     }
 
-    // = preform with Storage::preform
+    // = former :: preform
 
     impl< #former_generics_impl > #former< #former_generics_ty >
     where
@@ -1554,10 +1527,32 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     }
 
+    // = former :: perform
+
+    #[ automatically_derived ]
+    impl < #former_perform_generics_impl > #former < #former_perform_generics_ty >
+    where
+      #former_perform_generics_where
+    {
+
+      ///
+      /// Finish setting options and call perform on formed entity.
+      ///
+      /// If `perform` defined then associated method is called and its result returned instead of entity.
+      /// For example `perform()` of structure with : `#[ perform( fn after1() -> &str > )` returns `&str`.
+      ///
+      #[ inline( always ) ]
+      pub fn perform #perform_generics ( self ) -> #perform_output
+      {
+        let result = self.form();
+        #perform
+      }
+
+    }
+
     // = subformer
 
-    // xxx : improve description
-
+    // zzz : improve description
     /// Use as subformer of a field during process of forming of super structure.
     pub type #subformer < #struct_generics_ty __Superformer, __End > = #former
     <
@@ -1571,6 +1566,12 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
         // impl former::FormingEnd< CommandFormerDefinitionTypes< K, __Superformer, __Superformer > >,
       >,
     >;
+
+    // pub type #former_with_closure < #former_definition_type_generics_ty > =
+    // #former_definition
+    // <
+    //   #former_definition_type_generics_ty former::FormingEndClosure< #former_definition_types < #former_definition_type_generics_ty > >
+    // >;
 
     // = subformer end
 

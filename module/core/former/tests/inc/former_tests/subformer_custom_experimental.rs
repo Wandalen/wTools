@@ -55,7 +55,7 @@ where
     CommandSubformerEnd< K, Self >,
   {
     let former
-    = CommandFormer::_begin_precise
+    = CommandFormer::begin_precise
     (
       None,
       Some( self ),

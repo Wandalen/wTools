@@ -96,8 +96,7 @@ impl< K, __Context, __Formed, __End, > former :: FormerDefinition for CommandFor
   type End = __End;
 }
 
-pub type CommandFormerWithClosure< K, __Context, __Formed, > = CommandFormerDefinition< K, __Context, __Formed, former :: FormingEndClosure< CommandFormerDefinitionTypes< K, __Context, __Formed, > > >;
-
+// pub type CommandFormerWithClosure< K, __Context, __Formed, > = CommandFormerDefinition< K, __Context, __Formed, former :: FormingEndClosure< CommandFormerDefinitionTypes< K, __Context, __Formed, > > >;
 
 pub struct CommandFormerStorage< K, > where K : core :: hash :: Hash + std :: cmp :: Eq,
 {
@@ -209,7 +208,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn _new_precise( on_end : Definition::End ) -> Self
+  pub fn new_precise( on_end : Definition::End ) -> Self
   {
     Self::begin_coercing( None, None, on_end )
   }
@@ -222,7 +221,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn _begin_precise( mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >, context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >, on_end : < Definition as former::FormerDefinition >::End, ) -> Self
+  pub fn begin_precise( mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >, context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >, on_end : < Definition as former::FormerDefinition >::End, ) -> Self
   {
     if storage.is_none()
     {

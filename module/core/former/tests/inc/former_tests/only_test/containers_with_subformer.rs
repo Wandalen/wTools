@@ -3,7 +3,7 @@ use super::*;
 
 //
 
-tests_impls_optional!
+tests_impls!
 {
 
   //
@@ -74,8 +74,36 @@ tests_impls_optional!
 
     // closure with helper
     let got : Struct1 = Struct1Former
-    ::< Struct1FormerWithClosure< (), Struct1 > >
-    ::new_coercing( | storage : Struct1FormerStorage, _context | { former::StoragePreform::preform( storage ) } )
+    ::< Struct1FormerDefinition< (), Struct1, _ > >
+    ::new_precise( | storage, _context | { former::StoragePreform::preform( storage ) } )
+    .vec_1().replace( vec![ "a".to_string(), "b".to_string() ] ).end()
+    .form();
+    let exp : Struct1 = Struct1
+    {
+      vec_1 : vec![ "a".to_string(), "b".to_string() ],
+      hashmap_1 : hmap!{},
+      hashset_1 : hset!{},
+    };
+    a_id!( got, exp );
+
+    // // closure with helper
+    // let got : Struct1 = Struct1Former
+    // ::< Struct1FormerWithClosure< (), Struct1 > >
+    // ::new_coercing( | storage : Struct1FormerStorage, _context | { former::StoragePreform::preform( storage ) } )
+    // .vec_1().replace( vec![ "a".to_string(), "b".to_string() ] ).end()
+    // .form();
+    // let exp : Struct1 = Struct1
+    // {
+    //   vec_1 : vec![ "a".to_string(), "b".to_string() ],
+    //   hashmap_1 : hmap!{},
+    //   hashset_1 : hset!{},
+    // };
+    // a_id!( got, exp );
+
+    // closure with helper
+    let got : Struct1 = Struct1Former
+    ::< Struct1FormerDefinition< (), Struct1, _ > >
+    ::begin_precise( None, None, | storage, _context | { former::StoragePreform::preform( storage ) } )
     .vec_1().replace( vec![ "a".to_string(), "b".to_string() ] ).end()
     .form();
     let exp : Struct1 = Struct1
@@ -93,10 +121,19 @@ tests_impls_optional!
   fn field_forming_end()
   {
 
-    // use super::*;
+    // Container subformers are defined
     let _got = Struct1FormerVec1End;
     let _got = Struct1FormerHashmap1End;
     let _got = Struct1FormerHashset1End;
+
+    // SubformerEnd is defined
+    fn _f1< End : Struct1SubformerEnd< Struct1Former > >
+    (
+      _end : End,
+      _subformer : Struct1Subformer< Struct1Former, impl Struct1SubformerEnd< Struct1Former > >
+    )
+    {
+    }
 
   }
 

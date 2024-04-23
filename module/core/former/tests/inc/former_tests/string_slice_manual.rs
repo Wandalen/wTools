@@ -68,8 +68,8 @@ where End : former::FormingEnd< Struct1FormerDefinitionTypes< 'a, Context, Forme
   type End = End;
 }
 
-pub type Struct1FormerWithClosure< 'a, Context, Formed > =
-  Struct1FormerDefinition< 'a, Context, Formed, former::FormingEndClosure< Struct1FormerDefinitionTypes< 'a, Context, Formed > > >;
+// pub type Struct1FormerWithClosure< 'a, Context, Formed > =
+//   Struct1FormerDefinition< 'a, Context, Formed, former::FormingEndClosure< Struct1FormerDefinitionTypes< 'a, Context, Formed > > >;
 
 // = storage
 
@@ -163,7 +163,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn _new_precise( on_end : Definition::End ) -> Self
+  pub fn new_precise( on_end : Definition::End ) -> Self
   {
     Self::begin_coercing( None, None, on_end )
   }
@@ -176,7 +176,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn _begin_precise
+  pub fn begin_precise
   (
     mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
     context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,

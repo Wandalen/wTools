@@ -39,8 +39,8 @@ tests_impls!
 
     // default explicit params with wrapper and closure
     let got = Struct1Former
-    ::< Struct1FormerWithClosure< (), Struct1 > >
-    ::new_coercing( | storage, _context | { former::StoragePreform::preform( storage ) } )
+    ::< Struct1FormerDefinition< (), Struct1, _ > >
+    ::new_precise( | storage, _context | { former::StoragePreform::preform( storage ) } )
     .int_1( 13 )
     .form();
     let exp = Struct1::former().int_1( 13 ).form();

@@ -5,7 +5,7 @@ use super::*;
 // use std::collections::HashSet;
 
 #[ derive( Default, Debug, PartialEq, former::Former ) ]
-// #[ debug ]
+// #[ derive( Default, Debug, PartialEq, former::Former ) ] #[ debug ]
 // #[ derive( Default, Debug, PartialEq ) ]
 pub struct Struct1
 {
@@ -17,6 +17,8 @@ pub struct Struct1
   hashset_1 : std::collections::HashSet< String >,
 }
 
-// = generated
+// == generated begin
+
+// == generated end
 
 include!( "./only_test/containers_with_subformer.rs" );

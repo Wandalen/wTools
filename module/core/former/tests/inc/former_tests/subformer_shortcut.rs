@@ -60,7 +60,7 @@ where
     >
   >
   {
-    self._descriptor_former::
+    self._descriptor_former2::
     <
       TemplateParameterDescriptorFormer< _ >,
       _,
