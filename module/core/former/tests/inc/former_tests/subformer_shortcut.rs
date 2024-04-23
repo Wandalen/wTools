@@ -15,6 +15,7 @@ pub struct Descriptor
 pub struct Parameters
 {
   #[ subformer( former::VectorDefinition ) ]
+  // #[ element_subformer( Descriptor ) ]
   descriptors : Vec< Descriptor >,
 }
 
@@ -126,6 +127,24 @@ where
 
 }
 
+pub trait FormerDefinitionFull
+{
+  type Storage;
+  // type Formed;
+  // type Context;
+  // type Types;
+  // type Definition;
+}
+
+impl FormerDefinitionFull for Descriptor
+{
+  type Storage = DescriptorFormerStorage;
+  // type Formed;
+  // type Context;
+  // type Types;
+  // type Definition;
+}
+
 // pub trait SubFormerTrait2
 // where
 //   < Self::Definition2 as former::FormerDefinition >::Types : former::FormerDefinitionTypes
@@ -205,7 +224,10 @@ where
   >,
   Types2 : former::FormerDefinitionTypes
   <
-    Storage = DescriptorFormerStorage,
+    // Storage = DescriptorFormerStorage,
+    // Storage = < DescriptorFormerDefinitionTypes as former::FormerDefinitionTypes >::Storage,
+    Storage = < Descriptor as FormerDefinitionFull >::Storage,
+    // Storage = < former::VectorDefinition< Descriptor > as former::FormerDefinitionTypes >::Storage,
     Formed = ParametersFormer< Definition >,
     Context = ParametersFormer< Definition >,
   >,
