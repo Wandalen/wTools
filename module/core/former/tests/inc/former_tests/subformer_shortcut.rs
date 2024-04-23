@@ -125,10 +125,7 @@ for TemplateParameterDescriptorEnd< Definition, Former2, Definition2, Types2 >
   }
 }
 
-impl< Definition, Former2, Definition2, Types2 > former::FormingEnd
-<
-  Types2,
->
+impl< Definition, Former2, Definition2, Types2 > former::FormingEnd< Types2, >
 for TemplateParameterDescriptorEnd< Definition, Former2, Definition2, Types2 >
 where
 
@@ -138,21 +135,21 @@ where
     Storage = TemplateParametersFormerStorage
   >,
 
-  // Self : former::FormerDefinition,
-  // Self::Types : former::FormerDefinitionTypes< Storage = TemplateParametersFormerStorage, >
+  // // Self : former::FormerDefinition,
+  // // Self::Types : former::FormerDefinitionTypes< Storage = TemplateParametersFormerStorage, >
   Types2 : former::FormerDefinitionTypes
   <
     Storage = TemplateParameterDescriptorFormerStorage,
     Formed = TemplateParametersFormer< Definition >,
     Context = TemplateParametersFormer< Definition >,
   >,
-  Definition2 : former::FormerDefinition< Types = Types2, End = former::FormingEndClosure< Types2 > >,
-  // Definition2 : former::FormerDefinition< Types = Types2 >,
-  Definition2::End : former::FormingEnd< Definition2::Types >,
-  Former2 : former::FormerBegin
-  <
-    Definition2,
-  >,
+  // Definition2 : former::FormerDefinition< Types = Types2, End = former::FormingEndClosure< Types2 > >,
+  // // Definition2 : former::FormerDefinition< Types = Types2 >,
+  // Definition2::End : former::FormingEnd< Definition2::Types >,
+  // Former2 : former::FormerBegin
+  // <
+  //   Definition2,
+  // >,
 
 {
   #[ inline( always ) ]
