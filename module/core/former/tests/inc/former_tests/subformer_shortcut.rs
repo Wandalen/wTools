@@ -60,7 +60,7 @@ where
     >
   >
   {
-    self.descriptor3::
+    self._descriptor_former::
     <
       TemplateParameterDescriptorFormer< _ >,
       _,
@@ -70,7 +70,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn descriptor3< Former2, Definition2, Types2 >( self ) ->
+  pub fn _descriptor_former< Former2, Definition2, Types2 >( self ) ->
   Former2
   where
     Types2 : former::FormerDefinitionTypes
@@ -80,7 +80,6 @@ where
       Context = Self,
     >,
     Definition2 : former::FormerDefinition< Types = Types2, End = former::FormingEndClosure< Types2 > >,
-    // Definition2 : former::FormerDefinition< Types = Types2 >,
     Definition2::End : former::FormingEnd< Definition2::Types >,
     Former2 : former::FormerBegin
     <
@@ -104,16 +103,36 @@ where
     // Former2::_begin( None, Some( self ), on_end )
   }
 
+  #[ inline( always ) ]
+  pub fn _descriptor_former2< Former2, Definition2, Types2 >( self ) ->
+  Former2
+  where
+    Types2 : former::FormerDefinitionTypes
+    <
+      Storage = TemplateParameterDescriptorFormerStorage,
+      Formed = Self,
+      Context = Self,
+    >,
+    Definition2 : former::FormerDefinition< Types = Types2, End = TemplateParameterDescriptorEnd< Definition, Types2 > >,
+    Definition2::End : former::FormingEnd< Definition2::Types >,
+    Former2 : former::FormerBegin
+    <
+      Definition2,
+    >,
+  {
+    Former2::_begin( None, Some( self ), TemplateParameterDescriptorEnd::< Definition, Types2 >::default() )
+  }
+
 }
 
 /// Handles the completion of the subformer for `TemplateParameterDescriptor`.
-pub struct TemplateParameterDescriptorEnd< Definition, Former2, Definition2, Types2 >
+pub struct TemplateParameterDescriptorEnd< Definition, Types2 >
 {
-  _phantom : core::marker::PhantomData< fn( Definition, Former2, Definition2, Types2 ) >,
+  _phantom : core::marker::PhantomData< fn( Definition, Types2 ) >,
 }
 
-impl< Definition, Former2, Definition2, Types2 > Default
-for TemplateParameterDescriptorEnd< Definition, Former2, Definition2, Types2 >
+impl< Definition, Types2 > Default
+for TemplateParameterDescriptorEnd< Definition, Types2 >
 {
   #[ inline( always ) ]
   fn default() -> Self
@@ -125,8 +144,8 @@ for TemplateParameterDescriptorEnd< Definition, Former2, Definition2, Types2 >
   }
 }
 
-impl< Definition, Former2, Definition2, Types2 > former::FormingEnd< Types2, >
-for TemplateParameterDescriptorEnd< Definition, Former2, Definition2, Types2 >
+impl< Definition, Types2 > former::FormingEnd< Types2, >
+for TemplateParameterDescriptorEnd< Definition, Types2 >
 where
 
   Definition : former::FormerDefinition,
@@ -193,6 +212,28 @@ fn basic()
     .add( TemplateParameterDescriptor::former().name( "a" ).form() )
     .add( TemplateParameterDescriptor::former().name( "b" ).form() )
     .end()
+  .form();
+
+  let descriptors = vec!
+  [
+    TemplateParameterDescriptor { name : "a".to_string(), is_mandatory : false },
+    TemplateParameterDescriptor { name : "b".to_string(), is_mandatory : false },
+  ];
+  let exp = TemplateParameters { descriptors };
+  a_id!( got, exp );
+
+}
+
+#[ test ]
+fn descriptor()
+{
+
+  let got = TemplateParameters::former()
+  .descriptor( "a" ).end()
+  .descriptor( "b" ).end()
+    // .add( TemplateParameterDescriptor::former().name( "a" ).form() )
+    // .add( TemplateParameterDescriptor::former().name( "b" ).form() )
+    // .end()
   .form();
 
   let descriptors = vec!
