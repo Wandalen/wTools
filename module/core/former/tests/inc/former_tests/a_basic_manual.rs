@@ -69,6 +69,9 @@ impl< Context, Formed, End > former::FormerDefinition for Struct1FormerDefinitio
 where End : former::FormingEnd< Struct1FormerDefinitionTypes< Context, Formed > >
 {
   type Types = Struct1FormerDefinitionTypes< Context, Formed >;
+  // type Storage = Struct1FormerStorage;
+  // type Formed = Formed;
+  // type Context = Context;
   type End = End;
 }
 

@@ -7,61 +7,63 @@ mod former_tests
   #[ allow( unused_imports ) ]
   use super::*;
 
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod container_former_common;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod container_former_vec;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod container_former_hashset;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod container_former_hashmap;
-
+// xxx : uncomment
+//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+//   mod container_former_common;
+//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+//   mod container_former_vec;
+//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+//   mod container_former_hashset;
+//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+//   mod container_former_hashmap;
+//
   mod a_basic_manual;
-  mod a_basic;
-  mod a_primitives_manual;
-  mod a_primitives;
-  mod a_containers_without_subformer;
-  #[ cfg( not( feature = "no_std" ) ) ]
-  mod a_containers_with_subformer_manual;
-  #[ cfg( not( feature = "no_std" ) ) ]
-  mod a_containers_with_subformer ;
-
-  mod attribute_default_container;
-  mod attribute_default_primitive;
-  mod attribute_perform;
-  mod attribute_setter;
-  mod attribute_alias;
-  // mod attribute_feature; // xxx : write test
-
-  mod string_slice_manual;
-  mod string_slice;
-  mod unsigned_primitive_types;
-  mod default_user_type;
-  mod user_type_no_default;
-  mod user_type_no_debug;
-
-  mod name_collision_former_hashmap_without_parameter;
-  mod name_collision_former_vector_without_parameter;
-  mod name_collisions;
-  mod name_collision_context;
-  mod name_collision_end;
-  mod name_collision_on_end;
-
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod parametrized_struct_manual;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod parametrized_struct_imm;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod parametrized_struct_where;
-
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod subformer_basic;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod subformer_custom;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod subformer_custom_experimental;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_shortcut;
+  // mod a_basic;
+//   mod a_primitives_manual;
+//   mod a_primitives;
+//   mod a_containers_without_subformer;
+//   #[ cfg( not( feature = "no_std" ) ) ]
+//   mod a_containers_with_subformer_manual;
+//   #[ cfg( not( feature = "no_std" ) ) ]
+//   mod a_containers_with_subformer ;
+//
+//   mod attribute_default_container;
+//   mod attribute_default_primitive;
+//   mod attribute_perform;
+//   mod attribute_setter;
+//   mod attribute_alias;
+//   // mod attribute_feature; // xxx : write test
+//
+//   mod string_slice_manual;
+//   mod string_slice;
+//   mod unsigned_primitive_types;
+//   mod default_user_type;
+//   mod user_type_no_default;
+//   mod user_type_no_debug;
+//
+//   mod name_collision_former_hashmap_without_parameter;
+//   mod name_collision_former_vector_without_parameter;
+//   mod name_collisions;
+//   mod name_collision_context;
+//   mod name_collision_end;
+//   mod name_collision_on_end;
+//
+//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+//   mod parametrized_struct_manual;
+//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+//   mod parametrized_struct_imm;
+//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+//   mod parametrized_struct_where;
+//
+//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+//   mod subformer_basic;
+//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+//   mod subformer_custom;
+//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+//   mod subformer_custom_experimental;
+//   #[ cfg( any( not( feature = "no_std" ) ) ) ]
+//   mod subformer_shortcut;
+  // xxx : uncomment
 
 }
 

@@ -20,14 +20,9 @@ pub trait StoragePreform
 /// zzz : write description
 pub trait FormerDefinitionTypes : Sized
 {
-  // type Storage : Storage< Definition = Self >;
-  // type Storage : Storage< Formed = Self::Formed >;
   type Storage : Default;
   type Formed;
   type Context;
-
-  // fn preform( storage : Self::Storage, context : Self::Context ) -> Self::Formed;
-
 }
 
 /// zzz : write description
