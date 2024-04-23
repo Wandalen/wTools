@@ -127,18 +127,20 @@ where
 
 }
 
-pub trait FormerDefinitionFull
+pub trait EntityToFormer
 {
   type Storage;
+  type Former;
   // type Formed;
   // type Context;
   // type Types;
   // type Definition;
 }
 
-impl FormerDefinitionFull for Descriptor
+impl EntityToFormer for Descriptor
 {
   type Storage = DescriptorFormerStorage;
+  type Former = DescriptorFormer;
   // type Formed;
   // type Context;
   // type Types;
@@ -226,8 +228,7 @@ where
   <
     // Storage = DescriptorFormerStorage,
     // Storage = < DescriptorFormerDefinitionTypes as former::FormerDefinitionTypes >::Storage,
-    Storage = < Descriptor as FormerDefinitionFull >::Storage,
-    // Storage = < former::VectorDefinition< Descriptor > as former::FormerDefinitionTypes >::Storage,
+    Storage = < Descriptor as EntityToFormer >::Storage,
     Formed = ParametersFormer< Definition >,
     Context = ParametersFormer< Definition >,
   >,
