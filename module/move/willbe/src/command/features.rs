@@ -9,7 +9,7 @@ mod private
   use wtools::error::Result;
 
   ///
-  /// List features.
+  /// List features of a package.
   ///
 
   pub fn features( o : VerifiedCommand ) -> Result< () >
@@ -18,8 +18,8 @@ mod private
     let path = AbsolutePath::try_from( path )?;
     let with_features_deps = o.props.get_owned( "with_features_deps" ).unwrap_or( false );
     let options = FeaturesOptions::former()
-    .manifest_dir(path)
-    .with_features_deps(with_features_deps)
+    .manifest_dir( path )
+    .with_features_deps( with_features_deps )
     .form();
     let report = action::features( options );
     match report
