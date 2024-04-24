@@ -82,8 +82,15 @@ where
   K : ::core::cmp::Eq + ::core::hash::Hash,
   End : FormingEnd< HashSetDefinition< K, Context, Formed, NoEnd > >,
 {
+  type Storage = HashSet< K >;
+  type Formed = Formed;
+  type Context = Context;
+
   type Types = HashSetDefinition< K, Context, Formed, NoEnd >;
   type End = End;
+
+  // type Types = HashSetDefinition< K, Context, Formed, NoEnd >;
+  // type End = End;
 }
 
 // = subformer

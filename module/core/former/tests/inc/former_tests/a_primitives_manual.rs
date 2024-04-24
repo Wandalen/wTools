@@ -74,6 +74,9 @@ where
 {
   type Types = Struct1FormerDefinitionTypes< Context, Formed >;
   type End = End;
+  type Storage = Struct1FormerStorage;
+  type Formed = Formed;
+  type Context = Context;
 }
 
 // // zzz : documentation

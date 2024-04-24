@@ -108,6 +108,9 @@ fn custom_definition()
   {
     type Types = Return13;
     type End = Return13;
+    type Storage = Vec< String >;
+    type Formed = i32;
+    type Context = ();
   }
 
   // -
@@ -175,6 +178,9 @@ fn custom_definition_parametrized()
   {
     type Types = Return13< E >;
     type End = Return13< E >;
+    type Storage = Vec< E >;
+    type Formed = i32;
+    type Context = ();
   }
 
   // -
@@ -248,6 +254,9 @@ fn custom_definition_custom_end()
   {
     type Types = Return13;
     type End = former::FormingEndClosure< < Self as former::FormerDefinition >::Types >;
+    type Storage = Vec< String >;
+    type Formed = i32;
+    type Context = ();
   }
 
   fn return_13( _storage : Vec< String >, _context : Option< () > ) -> i32

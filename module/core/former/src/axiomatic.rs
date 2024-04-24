@@ -28,8 +28,11 @@ pub trait FormerDefinitionTypes : Sized
 /// zzz : write description
 pub trait FormerDefinition : Sized
 {
-  type Types : FormerDefinitionTypes;
+  type Types : FormerDefinitionTypes< Storage = Self::Storage, Formed = Self::Formed, Context = Self::Context >;
   type End : FormingEnd< Self::Types >;
+  type Storage : Default;
+  type Formed;
+  type Context;
 }
 
 /// Defines a handler for the end of a subforming process, enabling the return of the original context.
@@ -228,8 +231,8 @@ pub trait FormerBegin< Definition : FormerDefinition >
   /// * `on_end` - A completion handler responsible for transforming the accumulated `Storage` into the final `Formed` structure.
   fn _begin
   (
-    storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
-    context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
+    storage : core::option::Option< Definition::Storage >,
+    context : core::option::Option< Definition::Context >,
     on_end : Definition::End,
   ) -> Self;
 

@@ -66,12 +66,13 @@ impl< Context, Formed, End > Default for Struct1FormerDefinition< Context, Forme
 }
 
 impl< Context, Formed, End > former::FormerDefinition for Struct1FormerDefinition< Context, Formed, End >
-where End : former::FormingEnd< Struct1FormerDefinitionTypes< Context, Formed > >
+where
+  End : former::FormingEnd< Struct1FormerDefinitionTypes< Context, Formed > >
 {
+  type Storage = Struct1FormerStorage;
+  type Formed = Formed;
+  type Context = Context;
   type Types = Struct1FormerDefinitionTypes< Context, Formed >;
-  // type Storage = Struct1FormerStorage;
-  // type Formed = Formed;
-  // type Context = Context;
   type End = End;
 }
 

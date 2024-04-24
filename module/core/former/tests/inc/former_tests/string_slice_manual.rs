@@ -61,11 +61,16 @@ impl< 'a, Context, Formed, End > Default for Struct1FormerDefinition< 'a, Contex
   }
 }
 
-impl< 'a, Context, Formed, End > former::FormerDefinition for Struct1FormerDefinition< 'a, Context, Formed, End >
-where End : former::FormingEnd< Struct1FormerDefinitionTypes< 'a, Context, Formed > >
+impl< 'a, Context, Formed, End > former::FormerDefinition
+for Struct1FormerDefinition< 'a, Context, Formed, End >
+where
+  End : former::FormingEnd< Struct1FormerDefinitionTypes< 'a, Context, Formed > >
 {
   type Types = Struct1FormerDefinitionTypes< 'a, Context, Formed >;
   type End = End;
+  type Storage = Struct1FormerStorage< 'a >;
+  type Formed = Formed;
+  type Context = Context;
 }
 
 // pub type Struct1FormerWithClosure< 'a, Context, Formed > =

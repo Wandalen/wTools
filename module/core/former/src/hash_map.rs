@@ -93,8 +93,16 @@ where
   K : ::core::cmp::Eq + ::core::hash::Hash,
   End : FormingEnd< HashMapDefinition< K, E, Context, Formed, NoEnd > >,
 {
+  // type Types = HashMapDefinition< K, E, Context, Formed, NoEnd >;
+  // type End = End;
+
+  type Storage = HashMap< K, E >;
+  type Formed = Formed;
+  type Context = Context;
+
   type Types = HashMapDefinition< K, E, Context, Formed, NoEnd >;
   type End = End;
+
 }
 
 // #[ derive( Debug, Default ) ]

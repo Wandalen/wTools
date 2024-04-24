@@ -45,7 +45,10 @@ impl< K, > Command< K, > where K : core :: hash :: Hash + std :: cmp :: Eq,
   #[ inline( always ) ]
   pub fn former() -> CommandFormer< K, CommandFormerDefinition< K, (), Command< K, >, former :: ReturnPreformed > >
   {
-    CommandFormer :: < K, CommandFormerDefinition< K, (), Command< K, >, former :: ReturnPreformed > > :: new( former :: ReturnPreformed )
+    CommandFormer
+    ::
+    < K, CommandFormerDefinition< K, (), Command< K, >, former :: ReturnPreformed > >
+    :: new( former :: ReturnPreformed )
   }
 }
 
@@ -55,7 +58,10 @@ pub struct CommandFormerDefinitionTypes< K, __Context = (), __Formed = Command< 
   _phantom : core :: marker :: PhantomData< ( K, __Context, __Formed ) >,
 }
 
-impl< K, __Context, __Formed, > :: core :: default :: Default for CommandFormerDefinitionTypes< K, __Context, __Formed, > where K : core :: hash :: Hash + std :: cmp :: Eq,
+impl< K, __Context, __Formed, > :: core :: default :: Default
+for CommandFormerDefinitionTypes< K, __Context, __Formed, >
+where
+  K : core :: hash :: Hash + std :: cmp :: Eq,
 {
   fn default() -> Self
   {
@@ -66,7 +72,10 @@ impl< K, __Context, __Formed, > :: core :: default :: Default for CommandFormerD
   }
 }
 
-impl< K, __Context, __Formed, > former :: FormerDefinitionTypes for CommandFormerDefinitionTypes< K, __Context, __Formed, > where K : core :: hash :: Hash + std :: cmp :: Eq,
+impl< K, __Context, __Formed, > former :: FormerDefinitionTypes
+for CommandFormerDefinitionTypes< K, __Context, __Formed, >
+where
+  K : core :: hash :: Hash + std :: cmp :: Eq,
 {
   type Storage = CommandFormerStorage< K, >;
   type Formed = __Formed;
@@ -74,12 +83,18 @@ impl< K, __Context, __Formed, > former :: FormerDefinitionTypes for CommandForme
 }
 
 #[ derive( Debug ) ]
-pub struct CommandFormerDefinition< K, __Context = (), __Formed = Command< K, >, __End = former :: ReturnPreformed, > where K : core :: hash :: Hash + std :: cmp :: Eq,
+pub struct CommandFormerDefinition
+< K, __Context = (), __Formed = Command< K, >, __End = former :: ReturnPreformed, >
+where
+  K : core :: hash :: Hash + std :: cmp :: Eq,
 {
   _phantom : core :: marker :: PhantomData< ( K, __Context, __Formed, __End ) >,
 }
 
-impl< K, __Context, __Formed, __End, > :: core :: default :: Default for CommandFormerDefinition< K, __Context, __Formed, __End, > where K : core :: hash :: Hash + std :: cmp :: Eq,
+impl< K, __Context, __Formed, __End, > :: core :: default :: Default
+for CommandFormerDefinition< K, __Context, __Formed, __End, >
+where
+  K : core :: hash :: Hash + std :: cmp :: Eq,
 {
   fn default() -> Self
   {
@@ -90,10 +105,17 @@ impl< K, __Context, __Formed, __End, > :: core :: default :: Default for Command
   }
 }
 
-impl< K, __Context, __Formed, __End, > former :: FormerDefinition for CommandFormerDefinition< K, __Context, __Formed, __End, > where __End : former :: FormingEnd< CommandFormerDefinitionTypes< K, __Context, __Formed, > >, K : core :: hash :: Hash + std :: cmp :: Eq,
+impl< K, __Context, __Formed, __End, > former :: FormerDefinition
+for CommandFormerDefinition< K, __Context, __Formed, __End, >
+where
+  __End : former :: FormingEnd< CommandFormerDefinitionTypes< K, __Context, __Formed, > >,
+  K : core :: hash :: Hash + std :: cmp :: Eq,
 {
   type Types = CommandFormerDefinitionTypes< K, __Context, __Formed, >;
   type End = __End;
+  type Storage = CommandFormerStorage< K, >;
+  type Formed = __Formed;
+  type Context = __Context;
 }
 
 // pub type CommandFormerWithClosure< K, __Context, __Formed, > = CommandFormerDefinition< K, __Context, __Formed, former :: FormingEndClosure< CommandFormerDefinitionTypes< K, __Context, __Formed, > > >;

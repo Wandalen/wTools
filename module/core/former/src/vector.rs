@@ -65,6 +65,10 @@ for VectorDefinition< E, Context, Formed, End >
 where
   End : FormingEnd< VectorDefinition< E, Context, Formed, NoEnd > >,
 {
+  type Storage = Vec< E >;
+  type Formed = Formed;
+  type Context = Context;
+
   type Types = VectorDefinition< E, Context, Formed, NoEnd >;
   type End = End;
 }

@@ -43,7 +43,8 @@ where
   }
 }
 
-impl< __Context, __Formed, > former::FormerDefinitionTypes for Struct1FormerDefinitionTypes< __Context, __Formed, >
+impl< __Context, __Formed, > former::FormerDefinitionTypes
+for Struct1FormerDefinitionTypes< __Context, __Formed, >
 where
 {
   type Storage = Struct1FormerStorage< >;
@@ -72,12 +73,16 @@ where
   }
 }
 
-impl< __Context, __Formed, __End, > former::FormerDefinition for Struct1FormerDefinition< __Context, __Formed, __End, >
+impl< __Context, __Formed, __End, > former::FormerDefinition
+for Struct1FormerDefinition< __Context, __Formed, __End, >
 where
   __End : former::FormingEnd< Struct1FormerDefinitionTypes< __Context, __Formed, > >,
 {
   type Types = Struct1FormerDefinitionTypes< __Context, __Formed, >;
   type End = __End;
+  type Storage = Struct1FormerStorage< >;
+  type Formed = __Formed;
+  type Context = __Context;
 }
 
 // = storage

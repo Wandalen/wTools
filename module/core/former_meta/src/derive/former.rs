@@ -937,6 +937,7 @@ Result< TokenStream >
     //   Former2::_begin( None, Some( self ), ParametersDescriptorAddElementOnEnd::default() )
     // }
 
+// xxx : uncomment
 //     /// Handles the completion of and element of subformer's container.
 //     pub struct ParametersDescriptorAddElementOnEnd< Definition >
 //     {
@@ -1396,6 +1397,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     {
       type Types = #former_definition_types < #former_definition_type_generics_ty >;
       type End = __End;
+      type Storage = #former_storage < #struct_generics_ty >;
+      type Formed = __Formed;
+      type Context = __Context;
     }
 
     // = storage

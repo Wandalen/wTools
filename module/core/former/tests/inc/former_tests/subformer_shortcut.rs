@@ -22,8 +22,8 @@ pub struct Parameters
 impl< Definition > former::FormerBegin< Definition >
 for DescriptorFormer< Definition >
 where
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = DescriptorFormerStorage >,
+  Definition : former::FormerDefinition< Storage = DescriptorFormerStorage >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = DescriptorFormerStorage >,
 {
 
   #[ inline( always ) ]
@@ -57,7 +57,14 @@ where
       Formed = Self,
       Context = Self,
     >,
-    Definition2 : former::FormerDefinition< Types = Types2, End = former::FormingEndClosure< Types2 > >,
+    Definition2 : former::FormerDefinition
+    <
+      Types = Types2,
+      End = former::FormingEndClosure< Types2 >,
+      Storage = DescriptorFormerStorage,
+      Formed = Self,
+      Context = Self,
+    >,
     Definition2::End : former::FormingEnd< Definition2::Types >,
     Former2 : former::FormerBegin
     <
@@ -91,7 +98,14 @@ where
       Formed = Self,
       Context = Self,
     >,
-    Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Definition > >,
+    Definition2 : former::FormerDefinition
+    <
+      Types = Types2,
+      End = ParametersDescriptorAddElementOnEnd< Definition >,
+      Storage = DescriptorFormerStorage,
+      Formed = Self,
+      Context = Self,
+    >,
     Former2 : former::FormerBegin< Definition2 >,
   {
     Former2::_begin( None, Some( self ), ParametersDescriptorAddElementOnEnd::default() )
