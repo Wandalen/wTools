@@ -33,6 +33,7 @@ mod private
   use former::Former;
   use workspace::WorkspacePackage;
   use diff::crate_diff;
+  use error_tools::for_app::Error;
 
   ///
   #[ derive( Debug, Clone ) ]
@@ -301,6 +302,18 @@ mod private
     pub commit : Option< process::Report >,
     pub push : Option< process::Report >,
   }
+  
+  impl std::fmt::Display for ExtendedGitReport
+  {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+      let Self { add, commit, push } = &self;
+      if let Some( add ) = add { writeln!( f, "{add}" )? }
+      if let Some( commit ) = commit { writeln!( f, "{commit}" )? }
+      if let Some( push ) = push { writeln!( f, "{push}" )? }
+      
+      Ok( () )
+    }
+  }
 
   #[ derive( Debug, Clone ) ]
   pub struct GitThingsOptions
@@ -324,11 +337,11 @@ mod private
       .with_context( || format!("git_root: {}, item: {}", o.git_root.as_ref().display(), item.as_ref().display() ) )
     )
     .collect::< Result< Vec< _ > > >()?;
-    let res = git::add( &o.git_root, &items, o.dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+    let res = git::add( &o.git_root, &items, o.dry ).map_err( | e | format_err!( "{report}\n{e}" ) )?;
     report.add = Some( res );
-    let res = git::commit( &o.git_root, &o.message, o.dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+    let res = git::commit( &o.git_root, &o.message, o.dry ).map_err( | e | format_err!( "{report}\n{e}" ) )?;
     report.commit = Some( res );
-    let res = git::push( &o.git_root, o.dry ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+    let res = git::push( &o.git_root, o.dry ).map_err( | e | format_err!( "{report}\n{e}" ) )?;
     report.push = Some( res );
 
     Ok( report )
@@ -417,7 +430,7 @@ mod private
   /// # Returns
   ///
   /// * `Result<PublishReport>` - The result of the publishing operation, including information about the publish, version bump, and git operations.
-  pub fn perform_package_publish( instruction : PackagePublishInstruction ) -> Result< PublishReport >
+  pub fn perform_package_publish( instruction : PackagePublishInstruction ) -> Result< PublishReport, ( PublishReport, Error ) >
   {
     let mut report = PublishReport::default();
     let PackagePublishInstruction
@@ -434,15 +447,15 @@ mod private
     git_things.dry = dry;
     publish.dry = dry;
 
-    report.get_info = Some( cargo::pack( pack ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )? );
+    report.get_info = Some( cargo::pack( pack ).map_err( | e | ( report.clone(), e ) )? );
     // qqq : redundant field?
     report.publish_required = true;
-    report.bump = Some( version::version_bump( version_bump ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )? );
-    let git = perform_git_operations( git_things ).map_err( |e | format_err!( "{report}\n{e:#?}" ) )?;
+    report.bump = Some( version::version_bump( version_bump ).map_err( | e | ( report.clone(), e ) )? );
+    let git = perform_git_operations( git_things ).map_err( | e | ( report.clone(), e ) )?;
     report.add = git.add;
     report.commit = git.commit;
     report.push = git.push;
-    report.publish = Some( cargo::publish( publish ).map_err( | e | format_err!( "{report}\n{e:#?}" ) )? );
+    report.publish = Some( cargo::publish( publish ).map_err( | e | ( report.clone(), e ) )? );
 
     Ok( report )
   }
@@ -620,7 +633,7 @@ mod private
     let mut report = vec![];
     for package in plan.plans
     {
-      let res = perform_package_publish( package ).map_err( | e | format_err!( "{report:#?}\n{e:#?}" ) )?;
+      let res = perform_package_publish( package ).map_err( |( current_rep, e )| format_err!( "{}\n{current_rep}\n{e}", report.iter().map( | r | format!( "{r}" ) ).join( "\n" ) ) )?;
       report.push( res );
     }
 
