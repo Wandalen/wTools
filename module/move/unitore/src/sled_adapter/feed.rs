@@ -35,7 +35,7 @@ impl FeedStore for FeedStorage< SledStorage >
     let res = table( "feed" )
     .select()
     .project( "title, link, update_period, config_file" )
-    .execute( &mut *self.storage.lock().await )
+    .execute( &mut *self.0.lock().await )
     .await?
     ;
   
@@ -74,7 +74,7 @@ impl FeedStore for FeedStorage< SledStorage >
         feed.published.map( | d | timestamp( d.to_rfc3339_opts( SecondsFormat::Millis, true ) ) ).unwrap_or( null() ),
       )
       .filter( col( "link" ).eq( feed.link.to_string() ) )
-      .execute( &mut *self.storage.lock().await )
+      .execute( &mut *self.0.lock().await )
       .await
       .context( "Failed to insert feed" )?
       ;
@@ -101,7 +101,7 @@ impl FeedStore for FeedStorage< SledStorage >
       .select()
       .filter( col( "feed_link" ).eq( text( feed.2.to_string() ) ) )
       .project( "id, published" )
-      .execute( &mut *self.storage.lock().await )
+      .execute( &mut *self.0.lock().await )
       .await
       .context( "Failed to get existing frames while saving new frames" )?
       ;
@@ -187,7 +187,7 @@ impl FeedStore for FeedStorage< SledStorage >
       config_file",
     )
     .values( feeds_rows )
-    .execute( &mut *self.storage.lock().await )
+    .execute( &mut *self.0.lock().await )
     .await
     .context( "Failed to insert feeds" )?
     ;

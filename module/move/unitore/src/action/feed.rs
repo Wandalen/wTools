@@ -29,7 +29,7 @@ impl FeedsReport
 
 impl std::fmt::Display for FeedsReport
 {
-  fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
+  fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
   {
     writeln!( f, "Selected feeds:" )?;
     if !self.0.selected_rows.is_empty()

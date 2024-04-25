@@ -40,7 +40,6 @@ pub async fn config_add( mut storage : FeedStorage< SledStorage >, path : &PathB
     return Err( error_tools::for_app::Error::msg( err_str ) );
   }
 
-  //let abs_path = proper_path_tools::path::canonicalize( path )?;
   let abs_path = path.canonicalize()?;
   let config = Config::new( abs_path.to_string_lossy().to_string() );
 
@@ -101,7 +100,7 @@ impl ConfigReport
 
 impl std::fmt::Display for ConfigReport
 {
-  fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
+  fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
   {
     const EMPTY_CELL : &'static str = "";
 
@@ -112,7 +111,7 @@ impl std::fmt::Display for ConfigReport
         writeln!( f, "Added {} config file(s)", number )?;
         writeln!(
           f,
-          "Added {} feeds",
+          "Added {} feed(s)",
           self.new_feeds
           .as_ref()
           .and_then( | payload |
