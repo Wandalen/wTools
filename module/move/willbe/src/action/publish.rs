@@ -137,7 +137,7 @@ mod private
       None
     };
 
-    let subgraph = graph::remove_not_required_to_publish( &package_map, &tmp, &packages_to_publish, dir.clone() );
+    let subgraph = graph::remove_not_required_to_publish( &package_map, &tmp, &packages_to_publish, dir.clone() ).err_with( || report.clone() )?;
     let subgraph = subgraph.map( | _, n | n, | _, e | e );
 
     let queue = graph::toposort( subgraph ).unwrap().into_iter().map( | n | package_map.get( &n ).unwrap() ).cloned().collect::< Vec< _ > >();

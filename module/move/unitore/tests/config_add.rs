@@ -1,29 +1,27 @@
 use std::path::PathBuf;
-
 use gluesql::sled_storage::sled::Config;
 use unitore::
 {
-  executor::FeedManager,
-  storage::{ FeedStorage, feed::FeedStore },
+  sled_adapter::FeedStorage,
+  entity::feed::FeedStore,
+  action::config,
 };
 use error_tools::Result;
 
 #[ tokio::test ]
-async fn add_config_file() -> Result< () >
+async fn config_add() -> Result< () >
 {
   let path = PathBuf::from( "./tests/fixtures/test_config.toml" );
-  let path = path.canonicalize().expect( "Invalid path" );
 
   let config = Config::default()
-  .path( "./test".to_owned() )
+  .path( "./test_add".to_owned() )
   .temporary( true )
   ;
 
-  let feed_storage = FeedStorage::init_storage( config ).await?;
-  unitore::executor::actions::config::add_config( feed_storage.clone(), &wca::Args( vec![ wca::Value::Path( path ) ] ) ).await?;
+  let mut feed_storage = FeedStorage::init_storage( &config ).await?;
+  config::config_add( feed_storage.clone(), &path ).await?;
 
-  let mut manager = FeedManager::new( feed_storage );
-  let res = manager.storage.get_all_feeds().await?;
+  let res = feed_storage.feeds_list().await?;
 
   let feeds_links = res.0.selected_rows
   .iter()

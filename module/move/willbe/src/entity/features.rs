@@ -2,7 +2,6 @@ mod private
 {
   use crate::*;
   use std::collections::{ BTreeSet, HashSet };
-  use error_tools::err;
   // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
   // aaa : ✅
   use error_tools::for_app::{ bail, Result };

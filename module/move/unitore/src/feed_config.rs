@@ -23,7 +23,15 @@ pub struct Subscriptions
   pub config : Vec< SubscriptionConfig >
 }
 
-/// Reads provided configuration file with list of subscriptions.
+/// Get list of feed subscriptions from provided configuration file.
+///
+/// # Arguments
+///
+/// * `file_path` - Path to the configuration file.
+///
+/// # Returns
+///
+/// Result with list of feed subscriptions serialized as SubscriptionConfig.
 pub fn read( file_path : String ) -> Result< Vec< SubscriptionConfig > >
 {
   let read_file = OpenOptions::new()

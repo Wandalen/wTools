@@ -300,7 +300,7 @@ derive_is_variant = [ "derive", "derive_tools/derive_is_variant" ]
 derive_unwrap = [ "derive", "derive_tools/derive_unwrap" ]
 # derive_convert_case = [ "derive", "derive_tools/derive_convert_case" ]
 
-derive_strum = [ "derive", "derive_tools/strum_derive" ]
+derive_strum = [ "derive", "derive_tools/derive_strum" ]
 derive_strum_phf = [ "derive", "derive_tools/strum_phf" ]
 
 derive_display = [ "derive", "derive_tools/derive_display", "parse-display" ]

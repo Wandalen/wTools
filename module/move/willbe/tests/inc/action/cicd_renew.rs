@@ -78,7 +78,7 @@ fn default_case()
       let mut push_map = HashMap::new();
       push_map.insert
       (
-        "branches-ignore".to_string(),
+        "branches".to_string(),
         vec![ "alpha".to_string(), "beta".to_string(), "master".to_string() ],
       );
       map.insert( "push".to_string(), push_map );

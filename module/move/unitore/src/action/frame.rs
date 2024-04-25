@@ -1,42 +1,33 @@
-//! Frames commands actions.
+//! Frames actions and reports.
 
 use crate::*;
-use super::*;
-use executor::FeedManager;
-use storage::
+use sled_adapter::FeedStorage;
+use entity::
 {
-  FeedStorage,
   feed::FeedStore,
   config::ConfigStore,
-  frame::{ FrameStore, RowValue }
+  frame::{ FrameStore, CellValue }
 };
 use gluesql::prelude::{ Payload, Value, SledStorage };
 use feed_config;
 use error_tools::{ err, Result };
+use action::Report;
 
 // qqq : review the whole project and make sure all names are consitant: actions, commands, its tests
 
 /// List all frames.
-pub async fn list_frames
-(
-  storage : FeedStorage< SledStorage >,
-  _args : &wca::Args,
-) -> Result< impl Report >
+pub async fn frames_list( mut storage : FeedStorage< SledStorage > ) -> Result< impl Report >
 {
-    let mut manager = FeedManager::new( storage );
-    manager.storage.list_frames().await
+  storage.frames_list().await
 }
 
 /// Update all frames from config files saved in storage.
-pub async fn download_frames
+pub async fn frames_download
 (
-  storage : FeedStorage< SledStorage >,
-  _args : &wca::Args,
+  mut storage : FeedStorage< SledStorage >
 ) -> Result< impl Report >
 {
-  let mut manager = FeedManager::new( storage );
-  let payload = manager.storage.list_configs().await?;
-
+  let payload = storage.config_list().await?;
   let configs = match &payload
   {
     Payload::Select { labels: _, rows: rows_vec } =>
@@ -71,12 +62,12 @@ pub async fn download_frames
 
   let mut feeds = Vec::new();
   let client = retriever::FeedClient;
-  for i in  0..subscriptions.len()
+  for subscription in  subscriptions
   {
-    let feed = retriever::FeedFetch::fetch(&client, subscriptions[ i ].link.clone()).await?;
-    feeds.push( ( feed, subscriptions[ i ].update_period.clone(), subscriptions[ i ].link.clone() ) );
+    let feed = client.fetch( subscription.link.clone() ).await?;
+    feeds.push( ( feed, subscription.update_period.clone(), subscription.link ) );
   }
-  manager.storage.process_feeds( feeds ).await
+  storage.feeds_process( feeds ).await
 
 }
 
@@ -123,7 +114,7 @@ impl std::fmt::Display for FramesReport
   fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
   {
     let initial = vec![ vec![ format!( "Feed title: {}", self.feed_link ) ] ];
-    let table = table_display::table_with_headers( initial[ 0 ].clone(), Vec::new() );
+    let table = tool::table_display::table_with_headers( initial[ 0 ].clone(), Vec::new() );
     if let Some( table ) = table
     {
       write!( f, "{}", table )?;
@@ -133,7 +124,7 @@ impl std::fmt::Display for FramesReport
     [
       vec![ EMPTY_CELL.to_owned(), format!( "Updated frames: {}", self.updated_frames ) ],
       vec![ EMPTY_CELL.to_owned(), format!( "Inserted frames: {}", self.new_frames ) ],
-      vec![ EMPTY_CELL.to_owned(), format!( "Number of frames in storage: {}", self.existing_frames ) ],
+      vec![ EMPTY_CELL.to_owned(), format!( "Number of frames in storage: {}", self.existing_frames + self.new_frames ) ],
     ];
 
     if !self.selected_frames.selected_columns.is_empty()
@@ -141,7 +132,7 @@ impl std::fmt::Display for FramesReport
       rows.push( vec![ EMPTY_CELL.to_owned(), format!( "Selected frames:" ) ] );
     }
 
-    let table = table_display::plain_table( rows );
+    let table = tool::table_display::plain_table( rows );
     if let Some( table ) = table
     {
       write!( f, "{}", table )?;
@@ -149,8 +140,14 @@ impl std::fmt::Display for FramesReport
 
     for frame in &self.selected_frames.selected_rows
     {
+      let first_row = vec!
+      [
+        INDENT_CELL.to_owned(),
+        self.selected_frames.selected_columns[ 0 ].clone(),
+        textwrap::fill( &String::from( frame[ 0 ].clone() ), 120 ),
+      ];
       let mut rows = Vec::new();
-      for i in 0..self.selected_frames.selected_columns.len()
+      for i in 1..self.selected_frames.selected_columns.len()
       {
         let inner_row = vec!
         [
@@ -161,7 +158,7 @@ impl std::fmt::Display for FramesReport
         rows.push( inner_row );
       }
 
-      let table = table_display::plain_table( rows );
+      let table = tool::table_display::table_with_headers( first_row, rows );
       if let Some( table ) = table
       {
         writeln!( f, "{}", table )?;
@@ -174,7 +171,7 @@ impl std::fmt::Display for FramesReport
 
 impl Report for FramesReport {}
 
-/// Items get from select query from storage.
+/// Items retrieved by select queries from storage.
 #[ derive( Debug ) ]
 pub struct SelectedEntries
 {
@@ -203,7 +200,7 @@ impl std::fmt::Display for SelectedEntries
       {
         for i in 0..self.selected_columns.len()
         {
-          write!( f, "{} : {}, ", self.selected_columns[ i ], RowValue( &row[ i ] ) )?;
+          write!( f, "{} : {}, ", self.selected_columns[ i ], CellValue( &row[ i ] ) )?;
         }
         writeln!( f, "" )?;
       }
