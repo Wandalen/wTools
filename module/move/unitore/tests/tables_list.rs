@@ -9,8 +9,10 @@ use error_tools::Result;
 #[ tokio::test ]
 async fn tables_list() -> Result< () >
 {
+  let temp_path = proper_path_tools::path::unique_folder_name().unwrap();
+
   let config = Config::default()
-  .path( "./test_list".to_owned() )
+  .path( format!( "./{}", temp_path ) )
   .temporary( true )
   ;
 

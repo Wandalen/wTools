@@ -1,4 +1,3 @@
-use std::path::PathBuf;
 use gluesql::
 {
   sled_storage::sled::Config,
@@ -15,10 +14,11 @@ use error_tools::Result;
 #[ tokio::test ]
 async fn config_delete() -> Result< () >
 {
-  let path = PathBuf::from( "./tests/fixtures/test_config.toml" );
+  let path = std::path::PathBuf::from( "./tests/fixtures/test_config.toml" );
+  let temp_path = proper_path_tools::path::unique_folder_name().unwrap();
 
   let config = Config::default()
-  .path( "./test_del".to_owned() )
+  .path( format!( "./{}", temp_path ) )
   .temporary( true )
   ;
 

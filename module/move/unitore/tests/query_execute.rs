@@ -1,10 +1,9 @@
-use async_trait::async_trait;
 use feed_rs::parser as feed_parser;
 use unitore::
 {
   feed_config::SubscriptionConfig,
   sled_adapter::{ FeedStorage, Store, MockStore },
-  entity::{ config::{ Config, ConfigStore }, feed::FeedStore },
+  entity::{ config::ConfigStore, feed::FeedStore },
   action::{ query::{ self, QueryReport }, config },
   command::query::QueryCommand,
 };
@@ -85,10 +84,10 @@ fn query_execute() -> Result< () >
 async fn query_feeds() -> Result< () >
 {
   let path = PathBuf::from( "./tests/fixtures/test_config.toml" );
-  let path = path.canonicalize().expect( "Invalid path" );
+  let temp_path = proper_path_tools::path::unique_folder_name().unwrap();
 
   let config = sled::Config::default()
-  .path( "./test_feeds".to_owned() )
+  .path( format!( "./{}", temp_path ) )
   .temporary( true )
   ;
 
@@ -115,8 +114,10 @@ async fn query_feeds() -> Result< () >
 #[ tokio::test ]
 async fn query_frames() -> Result< () >
 {
-  let config = gluesql::sled_storage::sled::Config::default()
-  .path( "./test_frames".to_owned() )
+  let temp_path = proper_path_tools::path::unique_folder_name().unwrap();
+
+  let config = sled::Config::default()
+  .path( format!( "./{}", temp_path ) )
   .temporary( true )
   ;
 
@@ -159,10 +160,10 @@ async fn query_frames() -> Result< () >
 async fn query_configs() -> Result< () >
 {
   let path = PathBuf::from( "./tests/fixtures/test_config.toml" );
-  let path = path.canonicalize().expect( "Invalid path" );
+  let temp_path = proper_path_tools::path::unique_folder_name().unwrap();
 
   let config = sled::Config::default()
-  .path( "./test_config".to_owned() )
+  .path( format!( "./{}", temp_path ) )
   .temporary( true )
   ;
 
