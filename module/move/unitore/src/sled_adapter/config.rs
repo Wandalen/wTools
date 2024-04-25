@@ -26,7 +26,7 @@ impl ConfigStore for FeedStorage< SledStorage >
       "path",
     )
     .values( vec![ vec![ text( config.path() ) ] ] )
-    .execute( &mut *self.storage.lock().await )
+    .execute( &mut *self.0.lock().await )
     .await;
 
     Ok( res? )
@@ -37,7 +37,7 @@ impl ConfigStore for FeedStorage< SledStorage >
     let res = table( "config" )
     .delete()
     .filter( col( "path" ).eq( format!( "'{}'", config.path() ) ) )
-    .execute( &mut *self.storage.lock().await )
+    .execute( &mut *self.0.lock().await )
     .await?;
 
     if res == Payload::Delete( 0 )
@@ -50,7 +50,7 @@ impl ConfigStore for FeedStorage< SledStorage >
 
   async fn config_list( &mut self ) -> Result< Payload >
   {
-    let res = table( "config" ).select().execute( &mut *self.storage.lock().await ).await?;
+    let res = table( "config" ).select().execute( &mut *self.0.lock().await ).await?;
     Ok( res )
   }
 }

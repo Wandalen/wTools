@@ -230,7 +230,9 @@ fn write_results
       " - `max number of iterations` : limit of total iterations of optimization process, termination condition\n",
       " - `max no improvement iterations` : max amount of steps performed without detected improvement, termination condition\n",
       " - `improvement threshold` : minimal value detected as improvement in objective function result\n",
-      " - `calculated points` : new calculated points that were not found in cache\n",
+      " - `termination reason` : the reason why optimization process was stopped\n",
+      " - `iterations number` : actual number of iterations performed during optimization\n",
+      " - `resumed after stale` : how many times optimization progress was resumed after some iterations without improvement\n",
       " - `points from cache` : points calculated during previous optimizations and read from cache\n",
     );
 
@@ -337,138 +339,76 @@ fn find_opt_params_sudoku() -> Result< (), Box< dyn std::error::Error > >
   let config = OptimalParamsConfig::default();
   let initial = SudokuInitial::new( Board::from( easy ) );
 
-  let hybrid_problem = Problem::new
-  (
-    initial.clone(),
-    BestRowsColumnsCrossover,
-    RandomPairInBlockMutation,
-  );
-  let starting_params = hybrid_optimizer::starting_params_for_hybrid()?;
-  let res = optimal_params_search::find_hybrid_optimal_params
-  (
-    config.clone(),
-    starting_params.clone(),
-    hybrid_problem,
-    Some( path.clone() ),
-  );
-  assert!( res.is_ok() );
-
   let mut hybrid_res = Statistics::new();
-  if let Ok( solution ) = res
-  {
-    let cached = solution.stats.clone().unwrap().cached_points;
-    hybrid_res = Statistics
-    {
-      table_params : named_results_list
-      (
-        solution.point.coords
-        .into_iter()
-        .map( | val | val )
-        .collect_vec(),
-        solution.stats.unwrap(),
-        starting_params.bounds,
-      ),
-      list_params : vec!
-      [ 
-        ( String::from( "max number of iterations" ), format!( "{}", config.max_iterations ) ),
-        ( String::from( "max no improvement iterations " ), format!( "{}", config.max_no_improvement_steps ) ),
-        ( String::from( "improvement threshold " ), format!( "{}s", config.improvement_threshold ) ),
-        ( String::from( "calculated points" ), format!( "{} from {}", cached.1, cached.1 + cached.0 ) ),
-        ( String::from( "points from cache" ), format!( "{} from {}", cached.0, cached.1 + cached.0 ) ),
-        ( String::from( "level" ), format!( "{:?}", Board::from( easy ).calculate_level() ) ),
-        ( String::from( "execution time" ), format!( "{:.3}s", solution.objective ) ),
-      ]
-    }
-  }
-
-  // SA
-  let hybrid_problem = Problem::new
-  (
-    initial.clone(),
-    BestRowsColumnsCrossover,
-    RandomPairInBlockMutation,
-  );
-  let starting_params = hybrid_optimizer::starting_params_for_sa()?;
-  let res = optimal_params_search::find_hybrid_optimal_params
-  (
-    config.clone(),
-    starting_params.clone(),
-    hybrid_problem,
-    Some( path.clone() ),
-  );
-  assert!( res.is_ok() );
-
   let mut sa_res = Statistics::new();
-  if let Ok( solution ) = res
-  {
-    let cached = solution.stats.clone().unwrap().cached_points;
-    sa_res = Statistics
-    {
-      table_params : named_results_list
-      (
-        solution.point.coords
-        .into_iter()
-        .map( | val | val )
-        .collect_vec(),
-        solution.stats.unwrap(),
-        starting_params.bounds,
-      ),
-      list_params : vec!
-      [
-        ( String::from( "max number of iterations" ), format!( "{}", config.max_iterations ) ),
-        ( String::from( "max no improvement iterations " ), format!( "{}", config.max_no_improvement_steps ) ),
-        ( String::from( "improvement threshold " ), format!( "{}s", config.improvement_threshold ) ),
-        ( String::from( "calculated points" ), format!( "{} from {}", cached.1, cached.1 + cached.0 ) ),
-        ( String::from( "points from cache" ), format!( "{} from {}", cached.0, cached.1 + cached.0 ) ),
-        ( String::from( "level" ), format!( "{:?}", Board::from( easy ).calculate_level() ) ),
-        ( String::from( "execution time" ), format!( "{:.3}s", solution.objective ) ),
-      ]
-    }
-  }
-
-  // GA
-  let hybrid_problem = Problem::new(
-    initial.clone(),
-    BestRowsColumnsCrossover,
-    RandomPairInBlockMutation,
-  );
-  let starting_params = hybrid_optimizer::starting_params_for_ga()?;
-  let res = optimal_params_search::find_hybrid_optimal_params
-  (
-    config.clone(),
-    starting_params.clone(),
-    hybrid_problem,
-    Some( path ),
-  );
-  assert!( res.is_ok() );
-
   let mut ga_res = Statistics::new();
-  if let Ok( solution ) = res
+  for mode in [ "hybrid", "sa", "ga" ]
   {
-    let cached = solution.stats.clone().unwrap().cached_points;
-    ga_res = Statistics
+    let mut starting_params = hybrid_optimizer::starting_params_for_hybrid()?;
+    match mode
     {
-      table_params : named_results_list
-      (
-        solution.point.coords
-        .into_iter()
-        .map( | val | val )
-        .collect_vec(),
-        solution.stats.unwrap(),
-        starting_params.bounds,
-      ),
-      list_params : vec!
-      [
-        ( String::from( "max number of iterations" ), format!( "{}", config.max_iterations ) ),
-        ( String::from( "max no improvement iterations " ), format!( "{}", config.max_no_improvement_steps ) ),
-        ( String::from( "improvement threshold " ), format!( "{}s", config.improvement_threshold ) ),
-        ( String::from( "calculated points" ), format!( "{} from {}", cached.1, cached.1 + cached.0 ) ),
-        ( String::from( "points from cache" ), format!( "{} from {}", cached.0, cached.1 + cached.0 ) ),
-        ( String::from( "level" ), format!( "{:?}", Board::from( easy ).calculate_level() ) ),
-        ( String::from( "execution time" ), format!( "{:.3}s", solution.objective ) ),
-      ]
+      "hybrid" => {},
+      "sa" => starting_params = hybrid_optimizer::starting_params_for_sa()?,
+      "ga" => starting_params = hybrid_optimizer::starting_params_for_ga()?,
+      _ => unreachable!(),
+    }
+
+    let hybrid_problem = Problem::new
+    (
+      initial.clone(),
+      BestRowsColumnsCrossover,
+      RandomPairInBlockMutation,
+    );
+
+    let res = optimal_params_search::find_hybrid_optimal_params
+    (
+      config.clone(),
+      starting_params.clone(),
+      hybrid_problem,
+      Some( path.clone() ),
+    );
+    assert!( res.is_ok() );
+  
+    if let Ok( solution ) = res
+    {
+      assert!( solution.stats.is_some() );
+      let stats = solution.stats.clone().unwrap();
+      let cached = stats.cached_points;
+      let final_res = Statistics
+      {
+        table_params : named_results_list
+        (
+          solution.point.coords
+          .into_iter()
+          .map( | val | val )
+          .collect_vec(),
+          solution.stats.unwrap(),
+          starting_params.bounds,
+        ),
+        list_params : vec!
+        [ 
+          ( String::from( "max number of iterations" ), format!( "{}", config.max_iterations ) ),
+          ( String::from( "max no improvement iterations " ), format!( "{}", config.max_no_improvement_steps ) ),
+          ( String::from( "improvement threshold " ), format!( "{}s", config.improvement_threshold ) ),
+          ( String::from( "termination reason" ), format!( "{}", solution.reason ) ),
+          ( String::from( "iterations number" ), format!( "{}", stats.number_of_iterations ) ),
+          ( String::from( "resumed after stale" ), format!( "{}", stats.resumed_after_stale ) ),
+          ( String::from( "points from cache" ), format!( "{}/{}", cached.0, cached.1 + cached.0 ) ),
+          ( String::from( "level" ), format!( "{:?}", Board::from( easy ).calculate_level() ) ),
+          ( String::from( "execution time" ), format!( "{:.3}s", solution.objective ) ),
+        ]
+      };
+
+      match mode
+      {
+        "hybrid" => hybrid_res = final_res,
+        "sa" => sa_res = final_res,
+        "ga" => ga_res = final_res,
+        _ => unreachable!(),
+      }
     }
   }
+
   write_results( String::from( "sudoku_results" ), String::from( "Sudoku Problem" ), hybrid_res, sa_res, ga_res )?;
   Ok( () )
 }

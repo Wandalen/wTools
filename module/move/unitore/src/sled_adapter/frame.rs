@@ -23,7 +23,7 @@ impl FrameStore for FeedStorage< SledStorage >
 {
   async fn frames_list( &mut self ) -> Result< ListReport >
   {
-    let res = table( "frame" ).select().execute( &mut *self.storage.lock().await ).await?;
+    let res = table( "frame" ).select().execute( &mut *self.0.lock().await ).await?;
 
     let mut reports = Vec::new();
     let all_frames = 
@@ -91,7 +91,7 @@ impl FrameStore for FeedStorage< SledStorage >
       feed_link"
     )
     .values( entries_rows )
-    .execute( &mut *self.storage.lock().await )
+    .execute( &mut *self.0.lock().await )
     .await
     .context( "Failed to insert frames" )?
     ;
@@ -114,7 +114,7 @@ impl FrameStore for FeedStorage< SledStorage >
       .set( "published", entry[ 8 ].to_owned() )
       .set( "media", entry[ 9 ].to_owned() )
       .filter( col( "id" ).eq( entry[ 0 ].to_owned() ) )
-      .execute( &mut *self.storage.lock().await )
+      .execute( &mut *self.0.lock().await )
       .await
       .context( "Failed to update frames" )?
       ;

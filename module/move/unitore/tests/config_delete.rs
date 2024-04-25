@@ -14,6 +14,7 @@ use error_tools::Result;
 #[ tokio::test ]
 async fn config_delete() -> Result< () >
 {
+
   let path = std::path::PathBuf::from( "./tests/fixtures/test_config.toml" );
   let temp_path = proper_path_tools::path::unique_folder_name().unwrap();
 
