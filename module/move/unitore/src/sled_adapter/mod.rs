@@ -99,13 +99,13 @@ impl FeedStorage< SledStorage >
 pub trait Store
 {
   /// Execute custom query passed as String.
-  async fn execute_query( &mut self, query : String ) -> Result< QueryReport >;
+  async fn query_execute( &mut self, query : String ) -> Result< QueryReport >;
 }
 
 #[ async_trait::async_trait( ?Send ) ]
 impl< S : GStore + GStoreMut + Send > Store for FeedStorage< S >
 {
-  async fn execute_query( &mut self, query : String ) -> Result< QueryReport >
+  async fn query_execute( &mut self, query : String ) -> Result< QueryReport >
   {
     let glue = &mut *self.0.lock().await;
     let payloads = glue.execute( &query ).await.context( "Failed to execute query" )?;
