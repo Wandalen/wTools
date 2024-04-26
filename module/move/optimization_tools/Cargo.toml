@@ -48,7 +48,6 @@ rand = "0.8.5"
 statrs = "0.16.0"
 faer = { version = "0.16.0", features = [ "ndarray" ] }
 ndarray = "0.15.6"
-# plotters = { git = "https://github.com/plotters-rs/plotters.git" }
 plotters = { version = "0.3.5", default-features=false, features = [
   "bitmap_encoder",
   "ttf",
