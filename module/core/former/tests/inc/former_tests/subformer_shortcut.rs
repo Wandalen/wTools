@@ -49,7 +49,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn descriptor( self, name : &str ) -> ChildSubformer< Self, impl ChildSubformerEnd< Self > >
+  pub fn child( self, name : &str ) -> ChildSubformer< Self, impl ChildSubformerEnd< Self > >
   {
     self._children_former::< ChildFormer< _ >, _, >()
     .name( name )
