@@ -1329,6 +1329,17 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     }
 
+    // = entity to former
+
+    impl< #struct_generics_impl > former::EntityToFormer for #stru < #struct_generics_ty >
+    where
+      Self : Sized,
+      #struct_generics_where
+    {
+      type Storage = #former_storage < #struct_generics_ty >;
+      type Former = #former < #struct_generics_ty >;
+    }
+
     // = definition types
 
     #[ derive( Debug ) ]

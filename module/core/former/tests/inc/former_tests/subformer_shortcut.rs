@@ -10,13 +10,14 @@ pub struct Descriptor
   is_mandatory : bool,
 }
 
-impl former::EntityToFormer for Descriptor
-where
-  Self : Sized,
-{
-  type Storage = DescriptorFormerStorage;
-  type Former = DescriptorFormer;
-}
+// xxx : write test of to check that former::EntityToFormer is implemented for a struct
+// impl former::EntityToFormer for Descriptor
+// where
+//   Self : Sized,
+// {
+//   type Storage = DescriptorFormerStorage;
+//   type Former = DescriptorFormer;
+// }
 
 /// Parameters required for the template.
 #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
@@ -28,13 +29,13 @@ pub struct Parameters
   descriptors : Vec< Descriptor >,
 }
 
-impl former::EntityToFormer for Parameters
-where
-  Self : Sized,
-{
-  type Storage = ParametersFormerStorage;
-  type Former = ParametersFormer;
-}
+// impl former::EntityToFormer for Parameters
+// where
+//   Self : Sized,
+// {
+//   type Storage = ParametersFormerStorage;
+//   type Former = ParametersFormer;
+// }
 
 impl< Definition > former::FormerBegin< Definition >
 for DescriptorFormer< Definition >
