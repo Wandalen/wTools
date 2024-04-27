@@ -753,25 +753,38 @@ fn container_setter
   let non_optional_ty = &field.non_optional_ty;
   let params = typ::type_parameters( &non_optional_ty, .. );
 
-  // example : `former::VectorDefinition`
-  let mut subformer_definition = &field.attrs.container.as_ref().unwrap().expr;
-
-  // xxx
-  // if subformer_definition.is_none()
-  // {
-  //   let extra : syn::Type = parse_quote!
-  //   // let code = qt!
-  //   {
-  //
-  //   }
-  //   subformer_definition = Some( code );
-  // }
-
   use convert_case::{ Case, Casing };
   let former_assign_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
   let former_assign_end = syn::Ident::new( &former_assign_end_name, field_ident.span() );
   let field_assign_name = format!( "_{}_assign", field_ident );
   let field_assign = syn::Ident::new( &field_assign_name, field_ident.span() );
+
+  // example : `former::VectorDefinition`
+  let subformer_definition = &field.attrs.container.as_ref().unwrap().expr;
+
+  // xxx
+  let subformer_definition = if subformer_definition.is_some()
+  {
+    qt!
+    {
+      #subformer_definition
+      <
+        #( #params, )*
+        Self,
+        Self,
+        #former_assign_end,
+      >
+    }
+    // former::VectorDefinition< String, Self, Self, Struct1FormerAssignVec1End, >
+  }
+  else
+  {
+    qt!
+    {
+      < #non_optional_ty as former::EntityToDefinition< Self, Self, #former_assign_end > >::Definition
+    }
+    // < Vec< String > as former::EntityToDefinition< Self, Self, Struct1FormerAssignVec1End > >::Definition
+  };
 
   let doc = format!
   (
@@ -791,12 +804,6 @@ fn container_setter
       Former2 : former::FormerBegin
       <
         #subformer_definition
-        <
-          #( #params, )*
-          Self,
-          Self,
-          #former_assign_end,
-        >
       >,
     {
       Former2::former_begin( None, Some( self ), #former_assign_end )
@@ -813,12 +820,12 @@ fn container_setter
       pub fn #field_ident( self ) ->
       former::ContainerSubformer::
       <
-        ( #( #params, )* ), #subformer_definition< #( #params, )* Self, Self, #former_assign_end >
+        ( #( #params, )* ), #subformer_definition
       >
       {
         self.#field_assign::< former::ContainerSubformer::
         <
-          ( #( #params, )* ), #subformer_definition< #( #params, )* Self, Self, #former_assign_end >
+          ( #( #params, )* ), #subformer_definition
         >>()
       }
 
@@ -834,12 +841,12 @@ fn container_setter
       pub fn #field_ident( self ) ->
       former::ContainerSubformer::
       <
-        #( #params, )* #subformer_definition< #( #params, )* Self, Self, #former_assign_end >
+        #( #params, )* #subformer_definition
       >
       {
         self.#field_assign::< former::ContainerSubformer::
         <
-          #( #params, )* #subformer_definition< #( #params, )* Self, Self, #former_assign_end >
+          #( #params, )* #subformer_definition
         >>()
       }
 

@@ -321,8 +321,8 @@ where
   #[ inline( always ) ]
   pub fn vec_1_set< Former2 >( self ) -> Former2
   where
-    Former2 : former::FormerBegin< former::VectorDefinition< String, Self, Self, Struct1FormerAssignVec1End, > >,
-    // Former2 : former::FormerBegin< < Vec< String > as former::EntityToDefinition< Self, Self, Struct1FormerAssignVec1End > >::Definition >,
+    // Former2 : former::FormerBegin< former::VectorDefinition< String, Self, Self, Struct1FormerAssignVec1End, > >,
+    Former2 : former::FormerBegin< < Vec< String > as former::EntityToDefinition< Self, Self, Struct1FormerAssignVec1End > >::Definition >,
   {
     Former2::former_begin( None, Some( self ), Struct1FormerAssignVec1End )
   }
