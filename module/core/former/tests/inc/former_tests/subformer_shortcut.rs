@@ -108,7 +108,7 @@ where
   where
     Definition2 : former::FormerDefinition
     <
-      End = ParametersAddDescriptorEnd< Definition >,
+      End = ParametersFormerAddDescriptorsEnd< Definition >,
       Storage = < Descriptor as former::EntityToFormer >::Storage,
       Formed = Self,
       Context = Self,
@@ -121,7 +121,7 @@ where
     >,
     Former2 : former::FormerBegin< Definition2 >,
   {
-    Former2::former_begin( None, Some( self ), ParametersAddDescriptorEnd::default() )
+    Former2::former_begin( None, Some( self ), ParametersFormerAddDescriptorsEnd::default() )
   }
 
   // #[ inline( always ) ]
@@ -135,10 +135,10 @@ where
   //   //   Formed = Self,
   //   //   Context = Self,
   //   // >,
-  //   // Definition2 : former::FormerDefinition< Types = Types2, End = ParametersAddDescriptorEnd< Definition > >,
+  //   // Definition2 : former::FormerDefinition< Types = Types2, End = ParametersFormerAddDescriptorsEnd< Definition > >,
   //   // Former2 : SubFormerTrait< Self, Definition, Definition2, Types2 >,
   // {
-  //   Former2::_begin( None, Some( self ), ParametersAddDescriptorEnd::default() )
+  //   Former2::_begin( None, Some( self ), ParametersFormerAddDescriptorsEnd::default() )
   // }
 
   // xxx2 : move to a trait and make easier to use subformer, trait with generic interface of a container should help
@@ -168,7 +168,7 @@ where
 //   type Definition;
 //   type Definition2 : former::FormerDefinition
 //   <
-//     End = ParametersAddDescriptorEnd
+//     End = ParametersFormerAddDescriptorsEnd
 //     <
 //       < Self::Definition2 as former::FormerDefinition >::Types,
 //       Self::Definition,
@@ -185,7 +185,7 @@ where
 //     Formed = Former,
 //     Context = Former,
 //   >,
-//   Definition2 : former::FormerDefinition< Types = Types2, End = ParametersAddDescriptorEnd< Definition > >,
+//   Definition2 : former::FormerDefinition< Types = Types2, End = ParametersFormerAddDescriptorsEnd< Definition > >,
 //   Self : former::FormerBegin< Definition2 >,
 // {
 // }
@@ -199,20 +199,20 @@ where
 //     Formed = Former,
 //     Context = Former,
 //   >,
-//   Definition2 : former::FormerDefinition< Types = Types2, End = ParametersAddDescriptorEnd< Definition > >,
+//   Definition2 : former::FormerDefinition< Types = Types2, End = ParametersFormerAddDescriptorsEnd< Definition > >,
 //   Self : former::FormerBegin< Definition2 >,
 // {
 // }
 
 // zzz : improve description
 /// Handles the completion of and element of subformer's container.
-pub struct ParametersAddDescriptorEnd< Definition >
+pub struct ParametersFormerAddDescriptorsEnd< Definition >
 {
   _phantom : core::marker::PhantomData< fn( Definition ) >,
 }
 
 impl< Definition > Default
-for ParametersAddDescriptorEnd< Definition >
+for ParametersFormerAddDescriptorsEnd< Definition >
 {
   #[ inline( always ) ]
   fn default() -> Self
@@ -225,7 +225,7 @@ for ParametersAddDescriptorEnd< Definition >
 }
 
 impl< Types2, Definition > former::FormingEnd< Types2, >
-for ParametersAddDescriptorEnd< Definition >
+for ParametersFormerAddDescriptorsEnd< Definition >
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes
