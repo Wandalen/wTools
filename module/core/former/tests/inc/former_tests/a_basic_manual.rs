@@ -7,7 +7,7 @@ pub struct Struct1
   pub int_1 : i32,
 }
 
-// === begin_coercing of generated
+// == begin of generated
 
 // = formed
 
@@ -284,6 +284,27 @@ where
   }
 }
 
-// === end of generated
+impl< Definition > former::FormerBegin< Definition >
+for Struct1Former< Definition >
+where
+  Definition : former::FormerDefinition< Storage = Struct1FormerStorage >,
+{
+
+  #[ inline( always ) ]
+  fn former_begin
+  (
+    storage : core::option::Option< Definition::Storage >,
+    context : core::option::Option< Definition::Context >,
+    on_end : Definition::End,
+  )
+  -> Self
+  {
+    debug_assert!( storage.is_none() );
+    Self::begin_precise( None, context, on_end )
+  }
+
+}
+
+// == end of generated
 
 include!( "./only_test/basic.rs" );

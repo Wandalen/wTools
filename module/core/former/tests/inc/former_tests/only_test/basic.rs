@@ -51,6 +51,21 @@ tests_impls!
 
   //
 
+  fn former_begin()
+  {
+
+    let former = < Struct1Former as former::FormerBegin< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > > >
+    ::former_begin( None, None, former::ReturnPreformed );
+    let got = former
+    .int_1( 13 )
+    .form();
+    let exp = Struct1 { int_1 : 13 };
+    a_id!( got, exp );
+
+  }
+
+  //
+
   fn custom_definition_params()
   {
 
@@ -532,6 +547,7 @@ tests_index!
 {
   internals,
   entity_to_former,
+  former_begin,
   custom_definition_params,
   begin_coercing,
   begin_precise,

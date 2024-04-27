@@ -1760,6 +1760,35 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     }
 
+    // = former begin
+
+    impl< #struct_generics_impl Definition > former::FormerBegin< Definition >
+    // for ChildFormer< Definition >
+    for #former
+    <
+      #struct_generics_ty
+      Definition,
+    >
+    where
+      Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
+      #struct_generics_where
+    {
+
+      #[ inline( always ) ]
+      fn former_begin
+      (
+        storage : core::option::Option< Definition::Storage >,
+        context : core::option::Option< Definition::Context >,
+        on_end : Definition::End,
+      )
+      -> Self
+      {
+        debug_assert!( storage.is_none() );
+        Self::begin_precise( None, context, on_end )
+      }
+
+    }
+
     // = subformer
 
     // zzz : improve description

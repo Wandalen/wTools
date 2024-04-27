@@ -29,8 +29,8 @@ where
   #[ inline( always ) ]
   fn former_begin
   (
-    storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
-    context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
+    storage : core::option::Option< Definition::Storage >,
+    context : core::option::Option< Definition::Context >,
     on_end : Definition::End,
   )
   -> Self
