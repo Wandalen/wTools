@@ -85,7 +85,6 @@ impl Attributes
             _ => return_syn_err!( attr, "Expects an attribute of format #[ container( val ) ], but got:\n  {}", qt!{ #attr } ),
           }
         }
-        // xxx
         "subform" =>
         {
           match attr.meta
@@ -93,7 +92,6 @@ impl Attributes
             syn::Meta::Path( ref _path ) =>
             {
               // code_print!( _path );
-              // panic!( "xxx!" );
               subform.replace( syn::parse2::< AttributeSubform >( Default::default() )? );
             },
             _ => return_syn_err!( attr, "Expects an attribute of format #[ subform ], but got:\n  {}", qt!{ #attr } ),
@@ -563,9 +561,9 @@ fn field_setter_map( field : &FormerField< '_ >, stru : &syn::Ident ) -> Result<
 
   let non_optional_ty = &field.non_optional_ty;
   // Either subformer or ordinary setter.
-  let setter_tokens = if let Some( _container_ty ) = &field.attrs.container
+  let r = if let Some( _container_ty ) = &field.attrs.container
   {
-    subformer_field_setter( field, stru )
+    container_setter( field, stru )
   }
   else
   {
@@ -577,13 +575,13 @@ fn field_setter_map( field : &FormerField< '_ >, stru : &syn::Ident ) -> Result<
     let alias_tokens = field_setter( ident, &alias_attr.alias, non_optional_ty );
     qt!
     {
-      #setter_tokens
+      #r
       #alias_tokens
     }
   }
   else
   {
-    setter_tokens
+    r
   };
 
   let r = if field.attrs.subform.is_some()
@@ -604,7 +602,7 @@ fn field_setter_map( field : &FormerField< '_ >, stru : &syn::Ident ) -> Result<
   Ok( r )
 }
 
-/// xxx : write documentation
+/// zzz : write documentation
 
 #[ inline ]
 fn field_subformer_map
@@ -629,14 +627,16 @@ fn field_subformer_map
   let parent_add_element_end = syn::Ident::new( &parent_add_element_end_name, field_ident.span() );
 
   // example : `_children_former`
-  let child_former_name = format!( "_{}_former", field_ident );
-  let child_former = syn::Ident::new( &child_former_name, field_ident.span() );
+  let element_subformer_name = format!( "_{}_element_subformer", field_ident );
+  let element_subformer = syn::Ident::new( &element_subformer_name, field_ident.span() );
 
   let r = qt!
   {
 
+    // zzz : improve documentation
+    /// Custom setter which produce container element subformer.
     #[ inline( always ) ]
-    pub fn #child_former< Former2, Definition2 >( self ) -> Former2
+    pub fn #element_subformer< Former2, Definition2 >( self ) -> Former2
     where
       Definition2 : former::FormerDefinition
       <
@@ -737,7 +737,7 @@ fn field_setter
 /// zzz : update example
 
 #[ inline ]
-fn subformer_field_setter
+fn container_setter
 (
   field : &FormerField< '_ >,
   stru : &syn::Ident,
@@ -845,31 +845,8 @@ fn subformer_field_setter
     #setter2
   }
 
-  // qt!
-  // {
-  //   #[ doc = #doc ]
-  //   #[ inline ]
-  //   pub fn #setter_name( mut self ) -> #subformer_type
-  //   <
-  //     #( #params, )*
-  //     #non_optional_type,
-  //     Self,
-  //     impl Fn( #non_optional_type, core::option::Option< Self > ) -> Self,
-  //   >
-  //   {
-  //     let formed = self.storage.#setter_name.take();
-  //     let on_end = | formed : #non_optional_type, former : core::option::Option< Self > | -> Self
-  //     {
-  //       let mut former = former.unwrap();
-  //       former.storage.#setter_name = Some( formed );
-  //       former
-  //     };
-  //     #subformer_type::begin_coercing( formed, Some( self ), on_end )
-  //   }
-  // }
-
 //   #[ inline( always ) ]
-//   pub fn vec_1_set< Former2 >( self ) -> Former2
+//   pub fn vec_1_assign< Former2 >( self ) -> Former2
 //   where
 //     Former2 : former::FormerBegin
 //     <
@@ -891,7 +868,7 @@ fn subformer_field_setter
 //     String, former::VectorDefinition< String, Self, Self, Struct1FormerVec_1End >
 //   >
 //   {
-//     self.vec_1_set::< former::ContainerSubformer::
+//     self.vec_1_assign::< former::ContainerSubformer::
 //     <
 //       String, former::VectorDefinition< String, Self, Self, Struct1FormerVec_1End >
 //     >>()
@@ -1031,7 +1008,7 @@ Result< TokenStream >
   Ok( r )
 }
 
-/// xxx : write documentation
+/// zzz : write documentation
 
 #[ inline ]
 fn field_former_add_map
@@ -1067,8 +1044,6 @@ Result< TokenStream >
 
   let r = qt!
   {
-
-// xxx : uncomment
 
     // zzz : improve description
     /// Handles the completion of an element of subformer's container.
