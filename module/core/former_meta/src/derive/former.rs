@@ -741,29 +741,20 @@ fn container_setter
 (
   field : &FormerField< '_ >,
   stru : &syn::Ident,
-  // field_ident : &syn::Ident,
-  // setter_name : &syn::Ident,
-  // non_optional_type : &syn::Type,
-  // subformer_type : &syn::Type,
 )
 -> TokenStream
 {
   let field_ident = &field.ident;
   let non_optional_ty = &field.non_optional_ty;
-
-  // tree_print!( non_optional_type );
-  // code_print!( non_optional_type );
   let params = typ::type_parameters( &non_optional_ty, .. );
-  // params.iter().for_each( | e | println!( "{}", qt!( #e ) ) );
 
+  // example : `former::VectorDefinition`
   let subformer_definition = &field.attrs.container.as_ref().unwrap().expr;
-  // for example : former::VectorDefinition
 
   use convert_case::{ Case, Casing };
-  // let ident = field_ident;
   let former_assign_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
   let former_assign_end = syn::Ident::new( &former_assign_end_name, field_ident.span() );
-  let field_assign_name = format!( "{}_assign", field_ident );
+  let field_assign_name = format!( "_{}_assign", field_ident );
   let field_assign = syn::Ident::new( &field_assign_name, field_ident.span() );
 
   let doc = format!
