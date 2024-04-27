@@ -664,8 +664,8 @@ fn subformer_field_setter
 
   use convert_case::{ Case, Casing };
   // let ident = field_ident;
-  let field_forming_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
-  let field_forming_end = syn::Ident::new( &field_forming_end_name, field_ident.span() );
+  let former_assign_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
+  let former_assign_end = syn::Ident::new( &former_assign_end_name, field_ident.span() );
   let field_assign_name = format!( "{}_assign", field_ident );
   let field_assign = syn::Ident::new( &field_assign_name, field_ident.span() );
 
@@ -691,11 +691,11 @@ fn subformer_field_setter
           #( #params, )*
           Self,
           Self,
-          #field_forming_end,
+          #former_assign_end,
         >
       >,
     {
-      Former2::former_begin( None, Some( self ), #field_forming_end )
+      Former2::former_begin( None, Some( self ), #former_assign_end )
     }
   };
 
@@ -709,12 +709,12 @@ fn subformer_field_setter
       pub fn #field_ident( self ) ->
       former::ContainerSubformer::
       <
-        ( #( #params, )* ), #subformer_definition< #( #params, )* Self, Self, #field_forming_end >
+        ( #( #params, )* ), #subformer_definition< #( #params, )* Self, Self, #former_assign_end >
       >
       {
         self.#field_assign::< former::ContainerSubformer::
         <
-          ( #( #params, )* ), #subformer_definition< #( #params, )* Self, Self, #field_forming_end >
+          ( #( #params, )* ), #subformer_definition< #( #params, )* Self, Self, #former_assign_end >
         >>()
       }
 
@@ -730,12 +730,12 @@ fn subformer_field_setter
       pub fn #field_ident( self ) ->
       former::ContainerSubformer::
       <
-        #( #params, )* #subformer_definition< #( #params, )* Self, Self, #field_forming_end >
+        #( #params, )* #subformer_definition< #( #params, )* Self, Self, #former_assign_end >
       >
       {
         self.#field_assign::< former::ContainerSubformer::
         <
-          #( #params, )* #subformer_definition< #( #params, )* Self, Self, #field_forming_end >
+          #( #params, )* #subformer_definition< #( #params, )* Self, Self, #former_assign_end >
         >>()
       }
 
@@ -872,10 +872,10 @@ Result< TokenStream >
   use convert_case::{ Case, Casing };
   let field_ident = field.ident;
   // example : `ParametersFormerAssignDescriptorsEnd``
-  let field_forming_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
-  let field_forming_end = syn::Ident::new( &field_forming_end_name, field_ident.span() );
+  let former_assign_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
+  let former_assign_end = syn::Ident::new( &former_assign_end_name, field_ident.span() );
   // example : `ParametersFormerAddDescriptorsEnd``
-  let parent_add_element_end_name = format!( "{}FormerAdd{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
+  let parent_add_element_end_name = format!( "{}FormerAdd{}End2", stru, field_ident.to_string().to_case( Case::Pascal ) );
   let parent_add_element_end = syn::Ident::new( &parent_add_element_end_name, field_ident.span() );
 
   let field_ty = field.non_optional_ty;
@@ -887,14 +887,14 @@ Result< TokenStream >
     // zzz : description
     /// Return original former after subformer for `vec_1` is done.
     #[ allow( non_camel_case_types ) ]
-    pub struct #field_forming_end;
+    pub struct #former_assign_end;
 
     #[ automatically_derived ]
     impl< #former_generics_impl > former::FormingEnd
     <
       #subformer_definition < #( #params, )* #former< #former_generics_ty >, #former< #former_generics_ty >, former::NoEnd >,
     >
-    for #field_forming_end
+    for #former_assign_end
     where
       Definition : former::FormerDefinition,
       Definition::Types : former::FormerDefinitionTypes
@@ -943,64 +943,67 @@ Result< TokenStream >
 
 // xxx : uncomment
 
-//     // zzz : improve description
-//     /// Handles the completion of an element of subformer's container.
-//     pub struct #parent_add_element_end< Definition >
-//     {
-//       _phantom : core::marker::PhantomData< fn( Definition ) >,
-//     }
-//
-//     impl< Definition > Default
-//     for #parent_add_element_end< Definition >
-//     {
-//       #[ inline( always ) ]
-//       fn default() -> Self
-//       {
-//         Self
-//         {
-//           _phantom : core::marker::PhantomData,
-//         }
-//       }
-//     }
-//
-//     impl< Types2, Definition > former::FormingEnd< Types2, >
-//     for #parent_add_element_end< Definition >
-//     where
-//       Definition : former::FormerDefinition,
-//       Definition::Types : former::FormerDefinitionTypes
-//       <
-//         Storage = < #stru as former::EntityToStorage >::Storage,
-//         // xxx : add test with life time + param + containers
-//       >,
-//       Types2 : former::FormerDefinitionTypes
-//       <
-//         // Storage = < Descriptor as former::EntityToStorage >::Storage,
-//         Storage = < < Vec< #stru as former::ContainerAdd >::Element as former::EntityToStorage >::Storage,
-//         Formed = ParametersFormer< Definition >,
-//         Context = ParametersFormer< Definition >,
-//       >,
-//     {
-//       #[ inline( always ) ]
-//       fn call
-//       (
-//         &self,
-//         substorage : Types2::Storage,
-//         super_former : core::option::Option< Types2::Context >,
-//       )
-//       -> Types2::Formed
-//       {
-//         let mut super_former = super_former.unwrap();
-//         if super_former.storage.#field_ident.is_none()
-//         {
-//           super_former.storage.#field_ident = Some( Default::default() );
-//         }
-//         if let Some( ref mut field ) = super_former.storage.#field_ident
-//         {
-//           former::ContainerAdd::add( field, former::StoragePreform::preform( substorage ) );
-//         }
-//         super_former
-//       }
-//     }
+    // zzz : improve description
+    /// Handles the completion of an element of subformer's container.
+    pub struct #parent_add_element_end< Definition >
+    {
+      _phantom : core::marker::PhantomData< fn( Definition ) >,
+    }
+
+    impl< Definition > Default
+    for #parent_add_element_end< Definition >
+    {
+      #[ inline( always ) ]
+      fn default() -> Self
+      {
+        Self
+        {
+          _phantom : core::marker::PhantomData,
+        }
+      }
+    }
+
+    // impl< Types2, Definition > former::FormingEnd< Types2, >
+    // for #parent_add_element_end< Definition >
+    // where
+    //   Definition : former::FormerDefinition,
+    //   Definition::Types : former::FormerDefinitionTypes
+    //   <
+    //     Storage = < #stru as former::EntityToStorage >::Storage,
+    //     // xxx : add test with life time + param + containers
+    //   >,
+    //   Types2 : former::FormerDefinitionTypes
+    //   <
+    //     // Storage = < Descriptor as former::EntityToStorage >::Storage,
+    //     // Formed = ParametersFormer< Definition >,
+    //     // Context = ParametersFormer< Definition >,
+    //     // Storage = < < Vec< #field > as former::ContainerAdd >::Element as former::EntityToStorage >::Storage,
+    //     Storage = < < Vec< #field > as former::ContainerAdd >::Element as former::EntityToStorage >::Storage,
+    //     Formed = #former< #former_generics_ty >,
+    //     Context = #former< #former_generics_ty >,
+    //   >,
+    // {
+    //   #[ inline( always ) ]
+    //   fn call
+    //   (
+    //     &self,
+    //     substorage : Types2::Storage,
+    //     super_former : core::option::Option< Types2::Context >,
+    //   )
+    //   -> Types2::Formed
+    //   {
+    //     let mut super_former = super_former.unwrap();
+    //     if super_former.storage.#field_ident.is_none()
+    //     {
+    //       super_former.storage.#field_ident = Some( Default::default() );
+    //     }
+    //     if let Some( ref mut field ) = super_former.storage.#field_ident
+    //     {
+    //       former::ContainerAdd::add( field, former::StoragePreform::preform( substorage ) );
+    //     }
+    //     super_former
+    //   }
+    // }
 
   };
 
