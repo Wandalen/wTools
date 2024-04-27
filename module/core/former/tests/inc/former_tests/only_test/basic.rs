@@ -34,6 +34,23 @@ tests_impls!
 
   //
 
+  fn entity_to_former()
+  {
+
+    let got = < Struct1 as former::EntityToFormer >::Former::new_precise( former::ReturnPreformed )
+    .int_1( 13 )
+    .form();
+    let exp = Struct1 { int_1 : 13 };
+    a_id!( got, exp );
+
+    let got = < Struct1 as former::EntityToFormer >::Storage::default();
+    let exp = < Struct1 as former::EntityToFormer >::Former::new_precise( former::ReturnPreformed );
+    a_id!( got.int_1, exp.storage.int_1 );
+
+  }
+
+  //
+
   fn custom_definition_params()
   {
 
@@ -514,6 +531,7 @@ tests_impls!
 tests_index!
 {
   internals,
+  entity_to_former,
   custom_definition_params,
   begin_coercing,
   begin_precise,

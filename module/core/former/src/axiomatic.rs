@@ -17,9 +17,13 @@ pub trait StoragePreform
   fn preform( self ) -> Self::Preformed;
 }
 
+// zzz : improve documentation
+/// Map type of entity to storage and former.
 pub trait EntityToFormer
 {
+  /// Storage to store fields of entity during formign process.
   type Storage;
+  /// Former with default definition
   type Former;
   // type Formed;
   // type Context;

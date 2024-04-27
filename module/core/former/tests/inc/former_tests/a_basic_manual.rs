@@ -23,6 +23,16 @@ impl Struct1
 
 }
 
+// = entity to former
+
+impl former::EntityToFormer for Struct1
+where
+  Self : Sized,
+{
+  type Storage = Struct1FormerStorage;
+  type Former = Struct1Former;
+}
+
 // = definition types
 
 #[ derive( Debug ) ]
