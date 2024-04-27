@@ -20,11 +20,14 @@ mod former_tests
   mod a_basic;
   mod a_primitives_manual;
   mod a_primitives;
+
   mod a_containers_without_subformer;
   #[ cfg( not( feature = "no_std" ) ) ]
   mod a_containers_with_subformer_manual;
   #[ cfg( not( feature = "no_std" ) ) ]
-  mod a_containers_with_subformer ;
+  mod a_containers_with_subformer;
+  #[ cfg( not( feature = "no_std" ) ) ]
+  mod a_containers_with_subformer_implicit;
 
   mod attribute_default_container;
   mod attribute_default_primitive;

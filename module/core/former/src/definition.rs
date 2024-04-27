@@ -1,6 +1,13 @@
 
 // zzz : improve documentation
 /// Map type of entity to former.
+pub trait EntityToDefinition< Context, Formed, End >
+{
+  type Definition : FormerDefinition;
+}
+
+// zzz : improve documentation
+/// Map type of entity to former.
 pub trait EntityToFormer< Definition >
 where
   // Definition : FormerDefinition< Storage = Self::Storage >,

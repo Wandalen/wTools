@@ -102,12 +102,23 @@ where
   type End = End;
 }
 
+// xxx : implement for hashset / hashmap
+// xxx : cover by tests
 impl< E, Definition > EntityToFormer< Definition > for Vec< E >
 where
   Definition : FormerDefinition< Storage = Vec< E >, Formed = () >,
   < Definition as definition::FormerDefinition>::End : Fn( Vec< E >, Option< Definition::Context > ),
 {
   type Former = VectorSubformer< E, Definition::Context, Definition::Formed, Definition::End >;
+}
+
+impl< E, Context, Formed, End > EntityToDefinition< Context, Formed, End >
+for Vec< E >
+where
+  // End : std::ops::Fn< ( collection_tools::Vec< E >, std::option::Option< Context > ), Output = Formed >,
+  End : Fn(collection_tools::Vec< E >, std::option::Option< Context >) -> Formed,
+{
+  type Definition = VectorDefinition< E, Context, Formed, End >;
 }
 
 // = subformer

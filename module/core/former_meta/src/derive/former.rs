@@ -82,7 +82,11 @@ impl Attributes
             {
               container.replace( syn::parse2::< AttributeContainer >( meta_list.tokens.clone() )? );
             },
-            _ => return_syn_err!( attr, "Expects an attribute of format #[ container( val ) ], but got:\n  {}", qt!{ #attr } ),
+            syn::Meta::Path( ref _path ) =>
+            {
+              container.replace( syn::parse2::< AttributeContainer >( Default::default() )? );
+            },
+            _ => return_syn_err!( attr, "Expects an attribute of format #[ container( former::VectorDefinition ) ] or #[ container ] if you want to use default container defition, but got:\n  {}", qt!{ #attr } ),
           }
         }
         "subform" =>
@@ -219,7 +223,7 @@ impl syn::parse::Parse for AttributeSetter
 #[ allow( dead_code ) ]
 struct AttributeContainer
 {
-  expr : syn::Type,
+  expr : Option< syn::Type >,
 }
 
 impl syn::parse::Parse for AttributeContainer
@@ -228,7 +232,7 @@ impl syn::parse::Parse for AttributeContainer
   {
     Ok( Self
     {
-      expr : input.parse()?,
+      expr : Some( input.parse()? ),
     })
   }
 }
