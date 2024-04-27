@@ -754,7 +754,18 @@ fn container_setter
   let params = typ::type_parameters( &non_optional_ty, .. );
 
   // example : `former::VectorDefinition`
-  let subformer_definition = &field.attrs.container.as_ref().unwrap().expr;
+  let mut subformer_definition = &field.attrs.container.as_ref().unwrap().expr;
+
+  // xxx
+  // if subformer_definition.is_none()
+  // {
+  //   let extra : syn::Type = parse_quote!
+  //   // let code = qt!
+  //   {
+  //
+  //   }
+  //   subformer_definition = Some( code );
+  // }
 
   use convert_case::{ Case, Casing };
   let former_assign_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
