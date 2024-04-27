@@ -235,6 +235,7 @@ where
   Types2 : former::FormerDefinitionTypes
   <
     Storage = < Descriptor as former::EntityToFormer >::Storage,
+    // Storage = < Vec< Descriptor > as former::ContainerAdd >::Element,
     Formed = ParametersFormer< Definition >,
     Context = ParametersFormer< Definition >,
   >,
