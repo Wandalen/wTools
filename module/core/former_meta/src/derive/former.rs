@@ -230,9 +230,10 @@ impl syn::parse::Parse for AttributeContainer
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
   {
+    let expr : Option< syn::Type > = input.parse().ok();
     Ok( Self
     {
-      expr : Some( input.parse()? ),
+      expr,
     })
   }
 }
