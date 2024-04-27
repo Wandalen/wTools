@@ -866,17 +866,17 @@ Result< TokenStream >
     return Ok( qt!{ } );
   }
 
+  // example : `former::VectorDefinition``
   let subformer_definition = &field.attrs.subformer.as_ref().unwrap().expr;
-  // Expected: "former::VectorDefinition"
 
   use convert_case::{ Case, Casing };
   let field_ident = field.ident;
+  // example : `ParametersFormerAssignDescriptorsEnd``
   let field_forming_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
   let field_forming_end = syn::Ident::new( &field_forming_end_name, field_ident.span() );
-
+  // example : `ParametersFormerAddDescriptorsEnd``
   let parent_add_element_end_name = format!( "{}FormerAdd{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
   let parent_add_element_end = syn::Ident::new( &parent_add_element_end_name, field_ident.span() );
-  // #parent_add_element_end
 
   let field_ty = field.non_optional_ty;
   let params = typ::type_parameters( &field.non_optional_ty, .. );
