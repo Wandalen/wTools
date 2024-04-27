@@ -60,9 +60,11 @@ mod former_tests
   mod subformer_custom;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subformer_custom_experimental;
+
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_shortcut_manual;
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subformer_shortcut;
-// xxx
 
 }
 

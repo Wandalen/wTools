@@ -3,21 +3,21 @@
 fn basic()
 {
 
-  // let x : < Vec< Descriptor > as former::ContainerAdd >::Element;
+  // let x : < Vec< Child > as former::ContainerAdd >::Element;
 
-  let got = Parameters::former()
-  .descriptors()
-    .add( Descriptor::former().name( "a" ).form() )
-    .add( Descriptor::former().name( "b" ).form() )
+  let got = Parent::former()
+  .children()
+    .add( Child::former().name( "a" ).form() )
+    .add( Child::former().name( "b" ).form() )
     .end()
   .form();
 
-  let descriptors = vec!
+  let children = vec!
   [
-    Descriptor { name : "a".to_string(), is_mandatory : false },
-    Descriptor { name : "b".to_string(), is_mandatory : false },
+    Child { name : "a".to_string(), is_mandatory : false },
+    Child { name : "b".to_string(), is_mandatory : false },
   ];
-  let exp = Parameters { descriptors };
+  let exp = Parent { children };
   a_id!( got, exp );
 
 }
@@ -26,20 +26,20 @@ fn basic()
 fn descriptor()
 {
 
-  let got = Parameters::former()
+  let got = Parent::former()
   .descriptor( "a" ).end()
   .descriptor( "b" ).end()
-    // .add( Descriptor::former().name( "a" ).form() )
-    // .add( Descriptor::former().name( "b" ).form() )
+    // .add( Child::former().name( "a" ).form() )
+    // .add( Child::former().name( "b" ).form() )
     // .end()
   .form();
 
-  let descriptors = vec!
+  let children = vec!
   [
-    Descriptor { name : "a".to_string(), is_mandatory : false },
-    Descriptor { name : "b".to_string(), is_mandatory : false },
+    Child { name : "a".to_string(), is_mandatory : false },
+    Child { name : "b".to_string(), is_mandatory : false },
   ];
-  let exp = Parameters { descriptors };
+  let exp = Parent { children };
   a_id!( got, exp );
 
 }

@@ -2,7 +2,8 @@
 
 use super::*;
 
-/// Child
+// xxx : rename
+/// Parameter description.
 #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 pub struct Child
 {
@@ -10,13 +11,12 @@ pub struct Child
   is_mandatory : bool,
 }
 
-/// Parent
+/// Parent required for the template.
 #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 pub struct Parent
 {
-  // xxx : is definition as argument fine?
   #[ container( former::VectorDefinition ) ]
-  #[ subform ]
+  // #[ subform ]
   children : Vec< Child >,
 }
 
@@ -93,7 +93,7 @@ where
   where
     Definition2 : former::FormerDefinition
     <
-      End = ParentFormerAddChildrenEnd< Definition >,
+      End = ParentFormerAddChildsEnd< Definition >,
       Storage = < Child as former::EntityToStorage >::Storage,
       Formed = Self,
       Context = Self,
@@ -106,7 +106,7 @@ where
     >,
     Former2 : former::FormerBegin< Definition2 >,
   {
-    Former2::former_begin( None, Some( self ), ParentFormerAddChildrenEnd::default() )
+    Former2::former_begin( None, Some( self ), ParentFormerAddChildsEnd::default() )
   }
 
   #[ inline( always ) ]
@@ -118,6 +118,66 @@ where
     .name( name )
   }
 
+}
+
+/// Handles the completion of and element of subformer's container.
+pub struct ParentFormerAddChildsEnd< Definition >
+{
+  _phantom : core::marker::PhantomData< fn( Definition ) >,
+}
+
+impl< Definition > Default
+for ParentFormerAddChildsEnd< Definition >
+{
+  #[ inline( always ) ]
+  fn default() -> Self
+  {
+    Self
+    {
+      _phantom : core::marker::PhantomData,
+    }
+  }
+}
+
+impl< Types2, Definition > former::FormingEnd< Types2, >
+for ParentFormerAddChildsEnd< Definition >
+where
+  Definition : former::FormerDefinition,
+  Definition::Types : former::FormerDefinitionTypes
+  <
+    Storage = < Parent as former::EntityToStorage >::Storage,
+  >,
+  Types2 : former::FormerDefinitionTypes
+  <
+    // Storage = < Child as former::EntityToStorage >::Storage,
+    Storage = < < Vec< Child > as former::ContainerAdd >::Element as former::EntityToStorage >::Storage,
+    Formed = ParentFormer< Definition >,
+    Context = ParentFormer< Definition >,
+    // Formed = < Parent as former::EntityToFormer >::Former,
+    // Context = < Parent as former::EntityToFormer >::Former,
+  >,
+  // Types2::Storage : former::StoragePreform< Preformed =  >,
+{
+  #[ inline( always ) ]
+  fn call
+  (
+    &self,
+    substorage : Types2::Storage,
+    super_former : core::option::Option< Types2::Context >,
+  )
+  -> Types2::Formed
+  {
+    let mut super_former = super_former.unwrap();
+    if super_former.storage.children.is_none()
+    {
+      super_former.storage.children = Some( Default::default() );
+    }
+    if let Some( ref mut fields ) = super_former.storage.children
+    {
+      former::ContainerAdd::add( fields, former::StoragePreform::preform( substorage ) );
+    }
+    super_former
+  }
 }
 
 //

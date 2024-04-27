@@ -830,7 +830,7 @@ fn subformer_field_setter
 }
 
 // zzz : description and exmaple
-/// Generate unit struct which is descriptor of callback which should be called after subforming process of a specific field. Descriptors are used insted of closures to inline code and let optimizer play with optimization.
+/// Generate unit struct which is descriptor of callback which should be called after subforming process of a specific field. Childs are used insted of closures to inline code and let optimizer play with optimization.
 ///
 /// # Example of generated code
 ///
@@ -903,11 +903,11 @@ Result< TokenStream >
   let field_ty = field.non_optional_ty;
   let params = typ::type_parameters( &field.non_optional_ty, .. );
 
-  // example : `ParametersFormerAssignDescriptorsEnd``
+  // example : `ParentFormerAssignChildsEnd``
   let former_assign_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
   let former_assign_end = syn::Ident::new( &former_assign_end_name, field_ident.span() );
 
-  // // example : `ParametersFormerAddDescriptorsEnd``
+  // // example : `ParentFormerAddChildsEnd``
   // let parent_add_element_end_name = format!( "{}FormerAdd{}End2", stru, field_ident.to_string().to_case( Case::Pascal ) );
   // let parent_add_element_end = syn::Ident::new( &parent_add_element_end_name, field_ident.span() );
 
@@ -994,7 +994,7 @@ Result< TokenStream >
   let field_ty = field.non_optional_ty;
   // let params = typ::type_parameters( &field.non_optional_ty, .. );
 
-  // example : `ParametersFormerAddDescriptorsEnd``
+  // example : `ParentFormerAddChildsEnd``
   let parent_add_element_end_name = format!( "{}FormerAdd{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
   let parent_add_element_end = syn::Ident::new( &parent_add_element_end_name, field_ident.span() );
 
@@ -1007,7 +1007,7 @@ Result< TokenStream >
     // where
     //   Types2 : former::FormerDefinitionTypes
     //   <
-    //     Storage = DescriptorFormerStorage,
+    //     Storage = ChildFormerStorage,
     //     Formed = Self,
     //     Context = Self,
     //   >,
@@ -1050,9 +1050,9 @@ Result< TokenStream >
       >,
       Types2 : former::FormerDefinitionTypes
       <
-        // Storage = < Descriptor as former::EntityToStorage >::Storage,
-        // Formed = ParametersFormer< Definition >,
-        // Context = ParametersFormer< Definition >,
+        // Storage = < Child as former::EntityToStorage >::Storage,
+        // Formed = ParentFormer< Definition >,
+        // Context = ParentFormer< Definition >,
         // Storage = < < Vec< #field_ident > as former::ContainerAdd >::Element as former::EntityToStorage >::Storage,
         Storage = < < #field_ty as former::ContainerAdd >::Element as former::EntityToStorage >::Storage,
         Formed = #former< #former_generics_ty >,
