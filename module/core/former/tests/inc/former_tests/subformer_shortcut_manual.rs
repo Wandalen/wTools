@@ -20,26 +20,26 @@ pub struct Parent
   children : Vec< Child >,
 }
 
-impl< Definition > former::FormerBegin< Definition >
-for ChildFormer< Definition >
-where
-  Definition : former::FormerDefinition< Storage = ChildFormerStorage >,
-{
-
-  #[ inline( always ) ]
-  fn former_begin
-  (
-    storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
-    context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
-    on_end : Definition::End,
-  )
-  -> Self
-  {
-    debug_assert!( storage.is_none() );
-    Self::begin_precise( None, context, on_end )
-  }
-
-}
+// impl< Definition > former::FormerBegin< Definition >
+// for ChildFormer< Definition >
+// where
+//   Definition : former::FormerDefinition< Storage = ChildFormerStorage >,
+// {
+//
+//   #[ inline( always ) ]
+//   fn former_begin
+//   (
+//     storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
+//     context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
+//     on_end : Definition::End,
+//   )
+//   -> Self
+//   {
+//     debug_assert!( storage.is_none() );
+//     Self::begin_precise( None, context, on_end )
+//   }
+//
+// }
 
 impl< Definition > ParentFormer< Definition >
 where

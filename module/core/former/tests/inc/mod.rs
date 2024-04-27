@@ -16,7 +16,6 @@ mod former_tests
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod container_former_hashmap;
 
-  // xxx
   mod a_basic_manual;
   mod a_basic;
   mod a_primitives_manual;
@@ -62,10 +61,10 @@ mod former_tests
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subformer_custom_experimental;
 
-  // #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  // mod subformer_shortcut_manual;
-  // #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  // mod subformer_shortcut;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_shortcut_manual;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_shortcut;
   // xxx
 
 }
