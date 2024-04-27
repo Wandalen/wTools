@@ -969,13 +969,13 @@ Result< TokenStream >
 //       Definition : former::FormerDefinition,
 //       Definition::Types : former::FormerDefinitionTypes
 //       <
-//         Storage = < #stru as former::EntityToFormer >::Storage,
+//         Storage = < #stru as former::EntityToFormer_ >::Storage,
 //         // xxx : add test with life time + param + containers
 //       >,
 //       Types2 : former::FormerDefinitionTypes
 //       <
-//         // Storage = < Descriptor as former::EntityToFormer >::Storage,
-//         Storage = < < Vec< #stru as former::ContainerAdd >::Element as former::EntityToFormer >::Storage,
+//         // Storage = < Descriptor as former::EntityToFormer_ >::Storage,
+//         Storage = < < Vec< #stru as former::ContainerAdd >::Element as former::EntityToFormer_ >::Storage,
 //         Formed = ParametersFormer< Definition >,
 //         Context = ParametersFormer< Definition >,
 //       >,
@@ -1337,7 +1337,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     // = entity to former
 
-    impl< #struct_generics_impl > former::EntityToFormer for #stru < #struct_generics_ty >
+    impl< #struct_generics_impl > former::EntityToFormer_ for #stru < #struct_generics_ty >
     where
       Self : Sized,
       #struct_generics_where

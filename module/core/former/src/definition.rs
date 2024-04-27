@@ -1,7 +1,7 @@
 
 // zzz : improve documentation
 /// Map type of entity to storage and former.
-pub trait EntityToFormer
+pub trait EntityToFormer_
 {
   /// Storage to store fields of entity during formign process.
   type Storage;
@@ -14,21 +14,21 @@ pub trait EntityToFormer
 }
 
 // zzz : improve documentation
-/// Map type of entity to storage and former.
-pub trait EntityToFormer2< Definition >
+/// Map type of entity to former.
+pub trait EntityToFormer< Definition >
+where
+  // Definition : FormerDefinition< Storage = Self::Storage >,
+  Definition : FormerDefinition,
 {
-  /// Storage to store fields of entity during formign process.
-  type Storage;
-  /// Former with default definition
   type Former;
-  // type Definition = Definition;
-  // type Formed;
-  // type Context;
-  // type Types;
-  // type Definition;
-
   fn f1( _ : &Definition ) {}
+}
 
+// zzz : improve documentation
+/// Map type of entity to storage.
+pub trait EntityToStorage
+{
+  type Storage;
 }
 
 /// zzz : write description

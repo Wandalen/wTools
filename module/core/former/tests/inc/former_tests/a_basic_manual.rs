@@ -25,7 +25,7 @@ impl Struct1
 
 // = entity to former
 
-impl former::EntityToFormer for Struct1
+impl former::EntityToFormer_ for Struct1
 where
   Self : Sized,
 {
