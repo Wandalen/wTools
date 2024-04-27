@@ -199,7 +199,7 @@ where
       {
         trait MaybeDefault< T >
         {
-          fn maybe_default( self : & Self ) -> T
+          fn maybe_default( self : &Self ) -> T
           {
             panic!( "Field 'hashset_1' isn't initialized" )
           }
@@ -212,7 +212,7 @@ where
         impl< T > MaybeDefault< T > for ::core::marker::PhantomData< T >
         where T : ::core::default::Default,
         {
-          fn maybe_default( self : & Self ) -> T
+          fn maybe_default( self : &Self ) -> T
           {
             T::default()
           }
@@ -390,7 +390,6 @@ where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< >, Formed = Struct1< > >,
 {
-
   #[ inline( always ) ]
   pub fn perform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
@@ -426,7 +425,8 @@ where
 pub struct Struct1FormerAssignVec1End;
 
 #[ automatically_derived ]
-impl< Definition, > former::FormingEnd< former::VectorDefinition< String, Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd >, > for Struct1FormerAssignVec1End
+impl< Definition, > former::FormingEnd< former::VectorDefinition< String, Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd >, >
+for Struct1FormerAssignVec1End
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< > >,
@@ -483,7 +483,8 @@ pub struct Struct1FormerAssignHashset1End;
 #[ automatically_derived ]
 impl< Definition, > former::FormingEnd
 <
-  former::HashSetDefinition< String, Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd >, >
+  former::HashSetDefinition< String, Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd >,
+>
 for Struct1FormerAssignHashset1End
 where
   Definition : former::FormerDefinition,

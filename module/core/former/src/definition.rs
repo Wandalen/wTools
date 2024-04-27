@@ -31,6 +31,12 @@ pub trait EntityToStorage
   type Storage;
 }
 
+// impl< T > EntityToStorage
+// for T
+// {
+//   type Storage = T;
+// }
+
 /// zzz : write description
 pub trait FormerDefinitionTypes : Sized
 {

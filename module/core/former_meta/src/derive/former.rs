@@ -855,7 +855,9 @@ fn fields_setter_callback_descriptor_map
   former_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   former_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  struct_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   struct_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  struct_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
 )
 ->
 Result< TokenStream >
@@ -943,67 +945,68 @@ Result< TokenStream >
 
 // xxx : uncomment
 
-    // zzz : improve description
-    /// Handles the completion of an element of subformer's container.
-    pub struct #parent_add_element_end< Definition >
-    {
-      _phantom : core::marker::PhantomData< fn( Definition ) >,
-    }
-
-    impl< Definition > Default
-    for #parent_add_element_end< Definition >
-    {
-      #[ inline( always ) ]
-      fn default() -> Self
-      {
-        Self
-        {
-          _phantom : core::marker::PhantomData,
-        }
-      }
-    }
-
-    // impl< Types2, Definition > former::FormingEnd< Types2, >
-    // for #parent_add_element_end< Definition >
-    // where
-    //   Definition : former::FormerDefinition,
-    //   Definition::Types : former::FormerDefinitionTypes
-    //   <
-    //     Storage = < #stru as former::EntityToStorage >::Storage,
-    //     // xxx : add test with life time + param + containers
-    //   >,
-    //   Types2 : former::FormerDefinitionTypes
-    //   <
-    //     // Storage = < Descriptor as former::EntityToStorage >::Storage,
-    //     // Formed = ParametersFormer< Definition >,
-    //     // Context = ParametersFormer< Definition >,
-    //     // Storage = < < Vec< #field > as former::ContainerAdd >::Element as former::EntityToStorage >::Storage,
-    //     Storage = < < Vec< #field > as former::ContainerAdd >::Element as former::EntityToStorage >::Storage,
-    //     Formed = #former< #former_generics_ty >,
-    //     Context = #former< #former_generics_ty >,
-    //   >,
-    // {
-    //   #[ inline( always ) ]
-    //   fn call
-    //   (
-    //     &self,
-    //     substorage : Types2::Storage,
-    //     super_former : core::option::Option< Types2::Context >,
-    //   )
-    //   -> Types2::Formed
-    //   {
-    //     let mut super_former = super_former.unwrap();
-    //     if super_former.storage.#field_ident.is_none()
-    //     {
-    //       super_former.storage.#field_ident = Some( Default::default() );
-    //     }
-    //     if let Some( ref mut field ) = super_former.storage.#field_ident
-    //     {
-    //       former::ContainerAdd::add( field, former::StoragePreform::preform( substorage ) );
-    //     }
-    //     super_former
-    //   }
-    // }
+//     // zzz : improve description
+//     /// Handles the completion of an element of subformer's container.
+//     pub struct #parent_add_element_end< Definition >
+//     {
+//       _phantom : core::marker::PhantomData< fn( Definition ) >,
+//     }
+//
+//     impl< Definition > Default
+//     for #parent_add_element_end< Definition >
+//     {
+//       #[ inline( always ) ]
+//       fn default() -> Self
+//       {
+//         Self
+//         {
+//           _phantom : core::marker::PhantomData,
+//         }
+//       }
+//     }
+//
+//     impl< #struct_generics_impl Types2, Definition > former::FormingEnd< Types2, >
+//     for #parent_add_element_end< Definition >
+//     where
+//       Definition : former::FormerDefinition,
+//       Definition::Types : former::FormerDefinitionTypes
+//       <
+//         Storage = < #stru < #struct_generics_ty > as former::EntityToStorage >::Storage,
+//         // xxx : add test with life time + param + containers
+//       >,
+//       Types2 : former::FormerDefinitionTypes
+//       <
+//         // Storage = < Descriptor as former::EntityToStorage >::Storage,
+//         // Formed = ParametersFormer< Definition >,
+//         // Context = ParametersFormer< Definition >,
+//         // Storage = < < Vec< #field_ident > as former::ContainerAdd >::Element as former::EntityToStorage >::Storage,
+//         Storage = < < #field_ty as former::ContainerAdd >::Element as former::EntityToStorage >::Storage,
+//         Formed = #former< #former_generics_ty >,
+//         Context = #former< #former_generics_ty >,
+//       >,
+//       #struct_generics_where
+//     {
+//       #[ inline( always ) ]
+//       fn call
+//       (
+//         &self,
+//         substorage : Types2::Storage,
+//         super_former : core::option::Option< Types2::Context >,
+//       )
+//       -> Types2::Formed
+//       {
+//         let mut super_former = super_former.unwrap();
+//         if super_former.storage.#field_ident.is_none()
+//         {
+//           super_former.storage.#field_ident = Some( Default::default() );
+//         }
+//         if let Some( ref mut field ) = super_former.storage.#field_ident
+//         {
+//           former::ContainerAdd::add( field, former::StoragePreform::preform( substorage ) );
+//         }
+//         super_former
+//       }
+//     }
 
   };
 
@@ -1306,7 +1309,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       &former_generics_impl,
       &former_generics_ty,
       &former_generics_where,
+      &struct_generics_impl,
       &struct_generics_ty,
+      &struct_generics_where,
     ),
   )}).multiunzip();
 
