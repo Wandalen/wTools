@@ -36,23 +36,17 @@ pub struct Parameters
 //   type Former = ParametersFormer;
 // }
 
-impl< Definition > former::EntityToFormer< Definition > for Parameters
-where
-  Self : Sized,
-  // Definition : former::FormerDefinition< Storage = Self::Storage >,
-  Definition : former::FormerDefinition< Storage = ParametersFormerStorage >,
-  // Definition : former::FormerDefinition,
-{
-  // type Storage = ParametersFormerStorage;
-  type Former = ParametersFormer< Definition >;
-}
-
-impl former::EntityToStorage for Parameters
+// impl< Definition > former::EntityToFormer< Definition > for Parameters
 // where
-//   Self : Sized,
-{
-  type Storage = ParametersFormerStorage;
-}
+//   Definition : former::FormerDefinition< Storage = ParametersFormerStorage >,
+// {
+//   type Former = ParametersFormer< Definition >;
+// }
+//
+// impl former::EntityToStorage for Parameters
+// {
+//   type Storage = ParametersFormerStorage;
+// }
 
 impl< Definition > former::FormerBegin< Definition >
 for DescriptorFormer< Definition >
@@ -77,7 +71,7 @@ where
 impl< Definition > ParametersFormer< Definition >
 where
   Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = < Parameters as former::EntityToFormer_ >::Storage >,
+  Definition::Types : former::FormerDefinitionTypes< Storage = < Parameters as former::EntityToStorage >::Storage >,
 {
 
   #[ inline( always ) ]
@@ -127,13 +121,13 @@ where
     Definition2 : former::FormerDefinition
     <
       End = ParametersFormerAddDescriptorsEnd< Definition >,
-      Storage = < Descriptor as former::EntityToFormer_ >::Storage,
+      Storage = < Descriptor as former::EntityToStorage >::Storage,
       Formed = Self,
       Context = Self,
     >,
     Definition2::Types : former::FormerDefinitionTypes
     <
-      Storage = < Descriptor as former::EntityToFormer_ >::Storage,
+      Storage = < Descriptor as former::EntityToStorage >::Storage,
       Formed = Self,
       Context = Self,
     >,
@@ -248,16 +242,16 @@ where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes
   <
-    Storage = < Parameters as former::EntityToFormer_ >::Storage,
+    Storage = < Parameters as former::EntityToStorage >::Storage,
   >,
   Types2 : former::FormerDefinitionTypes
   <
-    // Storage = < Descriptor as former::EntityToFormer_ >::Storage,
+    // Storage = < Descriptor as former::EntityToStorage >::Storage,
     Formed = ParametersFormer< Definition >,
     Context = ParametersFormer< Definition >,
-    Storage = < < Vec< Descriptor > as former::ContainerAdd >::Element as former::EntityToFormer_ >::Storage,
-    // Formed = < Parameters as former::EntityToFormer_ >::Former,
-    // Context = < Parameters as former::EntityToFormer_ >::Former,
+    Storage = < < Vec< Descriptor > as former::ContainerAdd >::Element as former::EntityToStorage >::Storage,
+    // Formed = < Parameters as former::EntityToFormer >::Former,
+    // Context = < Parameters as former::EntityToFormer >::Former,
   >,
   // Types2::Storage : former::StoragePreform< Preformed =  >,
 {

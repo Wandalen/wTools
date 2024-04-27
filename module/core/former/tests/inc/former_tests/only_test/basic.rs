@@ -37,14 +37,14 @@ tests_impls!
   fn entity_to_former()
   {
 
-    let got = < Struct1 as former::EntityToFormer_ >::Former::new_precise( former::ReturnPreformed )
+    let got = < Struct1 as former::EntityToFormer< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > > >::Former::new_precise( former::ReturnPreformed )
     .int_1( 13 )
     .form();
     let exp = Struct1 { int_1 : 13 };
     a_id!( got, exp );
 
-    let got = < Struct1 as former::EntityToFormer_ >::Storage::default();
-    let exp = < Struct1 as former::EntityToFormer_ >::Former::new_precise( former::ReturnPreformed );
+    let got = < Struct1 as former::EntityToStorage >::Storage::default();
+    let exp = < Struct1 as former::EntityToFormer< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > > >::Former::new_precise( former::ReturnPreformed );
     a_id!( got.int_1, exp.storage.int_1 );
 
   }

@@ -25,12 +25,24 @@ impl Struct1
 
 // = entity to former
 
-impl former::EntityToFormer_ for Struct1
+// impl former::EntityToFormer_ for Struct1
+// where
+//   Self : Sized,
+// {
+//   type Storage = Struct1FormerStorage;
+//   type Former = Struct1Former;
+// }
+
+impl< Definition > former::EntityToFormer< Definition > for Struct1
 where
-  Self : Sized,
+  Definition : former::FormerDefinition< Storage = Struct1FormerStorage >,
+{
+  type Former = Struct1Former< Definition >;
+}
+
+impl former::EntityToStorage for Struct1
 {
   type Storage = Struct1FormerStorage;
-  type Former = Struct1Former;
 }
 
 // = definition types
