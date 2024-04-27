@@ -16,6 +16,22 @@ where
 
 }
 
+impl< K, V > ContainerAssign for collection_tools::HashMap< K, V >
+where
+  K : core::cmp::Eq + core::hash::Hash,
+{
+  type Element = ( K, V );
+
+  fn assign< Elements >( &mut self, elements : Elements ) -> usize
+  where
+    Elements : IntoIterator< Item = Self::Element >
+  {
+    let initial_len = self.len();
+    self.extend( elements );
+    self.len() - initial_len
+  }
+}
+
 /// A trait for types that behave like hash maps, supporting insertion and custom forming behaviors.
 ///
 /// This trait allows for generic operations on hash map-like data structures, enabling the insertion

@@ -17,6 +17,22 @@ impl< T > ContainerAdd for collection_tools::Vec< T >
 
 }
 
+impl< T > ContainerAssign for collection_tools::Vec< T >
+{
+  type Element = T;
+
+  #[ inline( always ) ]
+  fn assign< Elements >( &mut self, elements : Elements ) -> usize
+  where
+    Elements : IntoIterator< Item = Self::Element >
+  {
+    let initial_len = self.len();
+    self.extend( elements );
+    self.len() - initial_len
+  }
+
+}
+
 /// Trait for containers that behave like a vector, providing an interface for element addition.
 ///
 /// This trait enables the use of custom or standard vector-like containers within the builder pattern,

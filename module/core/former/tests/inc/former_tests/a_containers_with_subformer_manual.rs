@@ -90,11 +90,8 @@ where
 pub struct Struct1FormerStorage< >
 where
 {
-
   pub vec_1 : ::core::option::Option< Vec< String > >,
-
   pub hashmap_1 : ::core::option::Option< std::collections::HashMap< String, String > >,
-
   pub hashset_1 : ::core::option::Option< std::collections::HashSet< String > >,
 }
 
@@ -330,7 +327,8 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn vec_1( self ) -> former::ContainerSubformer::< String, former::VectorDefinition< String, Self, Self, Struct1FormerAssignVec1End > >
+  pub fn vec_1( self ) ->
+  former::ContainerSubformer::< String, former::VectorDefinition< String, Self, Self, Struct1FormerAssignVec1End > >
   {
     self.vec_1_set::< former::ContainerSubformer::< String, former::VectorDefinition< String, Self, Self, Struct1FormerAssignVec1End > >>()
   }
@@ -425,14 +423,16 @@ where
 pub struct Struct1FormerAssignVec1End;
 
 #[ automatically_derived ]
-impl< Definition, > former::FormingEnd< former::VectorDefinition< String, Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd >, >
+impl< Definition, > former::FormingEnd
+< former::VectorDefinition< String, Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd >, >
 for Struct1FormerAssignVec1End
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< > >,
 {
   #[ inline( always ) ]
-  fn call( &self, storage : Vec< String >, super_former : Option< Struct1Former< Definition, > >, ) -> Struct1Former< Definition, >
+  fn call( &self, storage : Vec< String >, super_former : Option< Struct1Former< Definition, > >, ) ->
+  Struct1Former< Definition, >
   {
     let mut super_former = super_former.unwrap();
     if let Some( ref mut field ) = super_former.storage.vec_1

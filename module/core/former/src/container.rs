@@ -102,54 +102,6 @@ pub trait ContainerAssign
 
 }
 
-impl< T > ContainerAssign for collection_tools::Vec< T >
-{
-  type Element = T;
-
-  #[ inline( always ) ]
-  fn assign< Elements >( &mut self, elements : Elements ) -> usize
-  where
-    Elements : IntoIterator< Item = Self::Element >
-  {
-    let initial_len = self.len();
-    self.extend( elements );
-    self.len() - initial_len
-  }
-
-}
-
-impl< T > ContainerAssign for collection_tools::HashSet< T >
-where
-  T : core::cmp::Eq + core::hash::Hash,
-{
-  type Element = T;
-
-  fn assign< Elements >( &mut self, elements : Elements ) -> usize
-  where
-    Elements : IntoIterator< Item = Self::Element >
-  {
-    let initial_len = self.len();
-    self.extend( elements );
-    self.len() - initial_len
-  }
-}
-
-impl< K, V > ContainerAssign for collection_tools::HashMap< K, V >
-where
-  K : core::cmp::Eq + core::hash::Hash,
-{
-  type Element = ( K, V );
-
-  fn assign< Elements >( &mut self, elements : Elements ) -> usize
-  where
-    Elements : IntoIterator< Item = Self::Element >
-  {
-    let initial_len = self.len();
-    self.extend( elements );
-    self.len() - initial_len
-  }
-}
-
 // =
 
 /// A builder for constructing containers, facilitating a fluent and flexible interface.

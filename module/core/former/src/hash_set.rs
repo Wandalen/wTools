@@ -19,6 +19,22 @@ where
 
 }
 
+impl< T > ContainerAssign for collection_tools::HashSet< T >
+where
+  T : core::cmp::Eq + core::hash::Hash,
+{
+  type Element = T;
+
+  fn assign< Elements >( &mut self, elements : Elements ) -> usize
+  where
+    Elements : IntoIterator< Item = Self::Element >
+  {
+    let initial_len = self.len();
+    self.extend( elements );
+    self.len() - initial_len
+  }
+}
+
 /// A trait for containers behaving like a `HashSet`, allowing insertion operations.
 ///
 /// Implementing this trait enables the associated formed to be used with `HashSetSubformer`,
