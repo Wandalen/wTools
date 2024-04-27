@@ -956,21 +956,34 @@ Result< TokenStream >
     return Ok( qt!{ } );
   }
 
-  // example : `former::VectorDefinition``
-  let subformer_definition = &field.attrs.container.as_ref().unwrap().expr;
-
   use convert_case::{ Case, Casing };
   let field_ident = field.ident;
   let field_ty = field.non_optional_ty;
-  let params = typ::type_parameters( &field.non_optional_ty, .. );
+  let params = typ::type_parameters( field_ty, .. );
 
   // example : `ParentFormerAssignChildsEnd``
   let former_assign_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
   let former_assign_end = syn::Ident::new( &former_assign_end_name, field_ident.span() );
 
-  // // example : `ParentFormerAddChildsEnd``
-  // let parent_add_element_end_name = format!( "{}FormerAdd{}End2", stru, field_ident.to_string().to_case( Case::Pascal ) );
-  // let parent_add_element_end = syn::Ident::new( &parent_add_element_end_name, field_ident.span() );
+  // example : `former::VectorDefinition``
+  let subformer_definition = &field.attrs.container.as_ref().unwrap().expr;
+
+  let subformer_definition = if subformer_definition.is_some()
+  {
+    qt!
+    {
+      #subformer_definition < #( #params, )* #former< #former_generics_ty >, #former< #former_generics_ty >, former::NoEnd >
+    }
+    // former::VectorDefinition< String, Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd >
+  }
+  else
+  {
+    qt!
+    {
+      < #field_ty as former::EntityToDefinition< #former< #former_generics_ty >, #former< #former_generics_ty >, former::NoEnd > >::Definition
+    }
+    // < Vec< String > as former::EntityToDefinition< Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd > >::Definition
+  };
 
   let r = qt!
   {
@@ -983,7 +996,8 @@ Result< TokenStream >
     #[ automatically_derived ]
     impl< #former_generics_impl > former::FormingEnd
     <
-      #subformer_definition < #( #params, )* #former< #former_generics_ty >, #former< #former_generics_ty >, former::NoEnd >,
+      // #subformer_definition < #( #params, )* #former< #former_generics_ty >, #former< #former_generics_ty >, former::NoEnd >,
+      #subformer_definition,
     >
     for #former_assign_end
     where
