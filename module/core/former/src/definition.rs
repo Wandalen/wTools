@@ -13,6 +13,24 @@ pub trait EntityToFormer
   // type Definition;
 }
 
+// zzz : improve documentation
+/// Map type of entity to storage and former.
+pub trait EntityToFormer2< Definition >
+{
+  /// Storage to store fields of entity during formign process.
+  type Storage;
+  /// Former with default definition
+  type Former;
+  // type Definition = Definition;
+  // type Formed;
+  // type Context;
+  // type Types;
+  // type Definition;
+
+  fn f1( _ : &Definition ) {}
+
+}
+
 /// zzz : write description
 pub trait FormerDefinitionTypes : Sized
 {

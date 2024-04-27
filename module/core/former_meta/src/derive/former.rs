@@ -974,7 +974,8 @@ Result< TokenStream >
 //       >,
 //       Types2 : former::FormerDefinitionTypes
 //       <
-//         Storage = < Descriptor as former::EntityToFormer >::Storage,
+//         // Storage = < Descriptor as former::EntityToFormer >::Storage,
+//         Storage = < < Vec< #stru as former::ContainerAdd >::Element as former::EntityToFormer >::Storage,
 //         Formed = ParametersFormer< Definition >,
 //         Context = ParametersFormer< Definition >,
 //       >,

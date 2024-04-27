@@ -36,6 +36,14 @@ pub struct Parameters
 //   type Former = ParametersFormer;
 // }
 
+// impl< Definition > former::EntityToFormer for Parameters<  >
+// where
+//   Self : Sized,
+// {
+//   type Storage = ParametersFormerStorage;
+//   type Former = ParametersFormer;
+// }
+
 impl< Definition > former::FormerBegin< Definition >
 for DescriptorFormer< Definition >
 where
@@ -235,9 +243,11 @@ where
   Types2 : former::FormerDefinitionTypes
   <
     // Storage = < Descriptor as former::EntityToFormer >::Storage,
-    Storage = < < Vec< Descriptor > as former::ContainerAdd >::Element as former::EntityToFormer >::Storage,
     Formed = ParametersFormer< Definition >,
     Context = ParametersFormer< Definition >,
+    Storage = < < Vec< Descriptor > as former::ContainerAdd >::Element as former::EntityToFormer >::Storage,
+    // Formed = < Parameters as former::EntityToFormer >::Former,
+    // Context = < Parameters as former::EntityToFormer >::Former,
   >,
   // Types2::Storage : former::StoragePreform< Preformed =  >,
 {
