@@ -10,7 +10,6 @@ pub struct Descriptor
   is_mandatory : bool,
 }
 
-// xxx : write test of to check that former::EntityToFormer is implemented for a struct
 // impl former::EntityToFormer for Descriptor
 // where
 //   Self : Sized,
@@ -53,7 +52,7 @@ where
   ) -> Self
   {
     debug_assert!( storage.is_none() );
-    Self::begin_coercing( None, context, on_end )
+    Self::begin_precise( None, context, on_end )
   }
 
 }
