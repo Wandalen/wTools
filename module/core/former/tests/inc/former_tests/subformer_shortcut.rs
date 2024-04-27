@@ -10,13 +10,30 @@ pub struct Descriptor
   is_mandatory : bool,
 }
 
+impl former::EntityToFormer for Descriptor
+where
+  Self : Sized,
+{
+  type Storage = DescriptorFormerStorage;
+  type Former = DescriptorFormer;
+}
+
 /// Parameters required for the template.
 #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 pub struct Parameters
 {
+  // xxx : is definition as argument fine?
   #[ subformer( former::VectorDefinition ) ]
   // #[ element_subformer( Descriptor ) ]
   descriptors : Vec< Descriptor >,
+}
+
+impl former::EntityToFormer for Parameters
+where
+  Self : Sized,
+{
+  type Storage = ParametersFormerStorage;
+  type Former = ParametersFormer;
 }
 
 impl< Definition > former::FormerBegin< Definition >
@@ -43,9 +60,8 @@ where
 impl< Definition > ParametersFormer< Definition >
 where
   Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = ParametersFormerStorage >,
+  Definition::Types : former::FormerDefinitionTypes< Storage = < Parameters as former::EntityToFormer >::Storage >,
 {
-
 
   #[ inline( always ) ]
   pub fn _descriptor_former_with_closure< Former2, Definition2, Types2 >( self ) ->
@@ -89,26 +105,25 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn _descriptor_former_set2< Former2, Definition2, Types2 >( self ) ->
+  pub fn _descriptor_former_set2< Former2, Definition2 >( self ) ->
   Former2
   where
-    Types2 : former::FormerDefinitionTypes
+    Definition2 : former::FormerDefinition
     <
-      Storage = DescriptorFormerStorage,
+      End = ParametersAddDescriptorOnEnd< Definition >,
+      Storage = < Descriptor as former::EntityToFormer >::Storage,
       Formed = Self,
       Context = Self,
     >,
-    Definition2 : former::FormerDefinition
+    Definition2::Types : former::FormerDefinitionTypes
     <
-      Types = Types2,
-      End = ParametersDescriptorAddElementOnEnd< Definition >,
-      Storage = DescriptorFormerStorage,
+      Storage = < Descriptor as former::EntityToFormer >::Storage,
       Formed = Self,
       Context = Self,
     >,
     Former2 : former::FormerBegin< Definition2 >,
   {
-    Former2::_begin( None, Some( self ), ParametersDescriptorAddElementOnEnd::default() )
+    Former2::_begin( None, Some( self ), ParametersAddDescriptorOnEnd::default() )
   }
 
   // #[ inline( always ) ]
@@ -122,10 +137,10 @@ where
   //   //   Formed = Self,
   //   //   Context = Self,
   //   // >,
-  //   // Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Definition > >,
+  //   // Definition2 : former::FormerDefinition< Types = Types2, End = ParametersAddDescriptorOnEnd< Definition > >,
   //   // Former2 : SubFormerTrait< Self, Definition, Definition2, Types2 >,
   // {
-  //   Former2::_begin( None, Some( self ), ParametersDescriptorAddElementOnEnd::default() )
+  //   Former2::_begin( None, Some( self ), ParametersAddDescriptorOnEnd::default() )
   // }
 
   // xxx2 : move to a trait and make easier to use subformer, trait with generic interface of a container should help
@@ -135,30 +150,10 @@ where
   DescriptorSubformer< Self, impl DescriptorSubformerEnd< Self > >
   {
     self._descriptor_former_set2
-    ::< DescriptorFormer< _ >, _, _, >()
+    ::< DescriptorFormer< _ >, _, >()
     .name( name )
   }
 
-}
-
-pub trait EntityToFormer
-{
-  type Storage;
-  type Former;
-  // type Formed;
-  // type Context;
-  // type Types;
-  // type Definition;
-}
-
-impl EntityToFormer for Descriptor
-{
-  type Storage = DescriptorFormerStorage;
-  type Former = DescriptorFormer;
-  // type Formed;
-  // type Context;
-  // type Types;
-  // type Definition;
 }
 
 // pub trait SubFormerTrait2
@@ -175,7 +170,7 @@ impl EntityToFormer for Descriptor
 //   type Definition;
 //   type Definition2 : former::FormerDefinition
 //   <
-//     End = ParametersDescriptorAddElementOnEnd
+//     End = ParametersAddDescriptorOnEnd
 //     <
 //       < Self::Definition2 as former::FormerDefinition >::Types,
 //       Self::Definition,
@@ -192,7 +187,7 @@ impl EntityToFormer for Descriptor
 //     Formed = Former,
 //     Context = Former,
 //   >,
-//   Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Definition > >,
+//   Definition2 : former::FormerDefinition< Types = Types2, End = ParametersAddDescriptorOnEnd< Definition > >,
 //   Self : former::FormerBegin< Definition2 >,
 // {
 // }
@@ -206,19 +201,20 @@ impl EntityToFormer for Descriptor
 //     Formed = Former,
 //     Context = Former,
 //   >,
-//   Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Definition > >,
+//   Definition2 : former::FormerDefinition< Types = Types2, End = ParametersAddDescriptorOnEnd< Definition > >,
 //   Self : former::FormerBegin< Definition2 >,
 // {
 // }
 
+// zzz : improve description
 /// Handles the completion of and element of subformer's container.
-pub struct ParametersDescriptorAddElementOnEnd< Definition >
+pub struct ParametersAddDescriptorOnEnd< Definition >
 {
   _phantom : core::marker::PhantomData< fn( Definition ) >,
 }
 
 impl< Definition > Default
-for ParametersDescriptorAddElementOnEnd< Definition >
+for ParametersAddDescriptorOnEnd< Definition >
 {
   #[ inline( always ) ]
   fn default() -> Self
@@ -231,18 +227,16 @@ for ParametersDescriptorAddElementOnEnd< Definition >
 }
 
 impl< Types2, Definition > former::FormingEnd< Types2, >
-for ParametersDescriptorAddElementOnEnd< Definition >
+for ParametersAddDescriptorOnEnd< Definition >
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes
   <
-    Storage = ParametersFormerStorage,
+    Storage = < Parameters as former::EntityToFormer >::Storage,
   >,
   Types2 : former::FormerDefinitionTypes
   <
-    // Storage = DescriptorFormerStorage,
-    // Storage = < DescriptorFormerDefinitionTypes as former::FormerDefinitionTypes >::Storage,
-    Storage = < Descriptor as EntityToFormer >::Storage,
+    Storage = < Descriptor as former::EntityToFormer >::Storage,
     Formed = ParametersFormer< Definition >,
     Context = ParametersFormer< Definition >,
   >,

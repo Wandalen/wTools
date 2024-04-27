@@ -931,21 +931,23 @@ Result< TokenStream >
     //     Formed = Self,
     //     Context = Self,
     //   >,
-    //   Definition2 : former::FormerDefinition< Types = Types2, End = ParametersDescriptorAddElementOnEnd< Types2, Definition > >,
+    //   Definition2 : former::FormerDefinition< Types = Types2, End = ParametersAddDescriptorOnEnd< Types2, Definition > >,
     //   Former2 : former::FormerBegin< Definition2 >,
     // {
-    //   Former2::_begin( None, Some( self ), ParametersDescriptorAddElementOnEnd::default() )
+    //   Former2::_begin( None, Some( self ), ParametersAddDescriptorOnEnd::default() )
     // }
 
 // xxx : uncomment
+
+//     // zzz : improve description
 //     /// Handles the completion of and element of subformer's container.
-//     pub struct ParametersDescriptorAddElementOnEnd< Definition >
+//     pub struct ParametersAddDescriptorOnEnd< Definition >
 //     {
 //       _phantom : core::marker::PhantomData< fn( Definition ) >,
 //     }
 //
 //     impl< Definition > Default
-//     for ParametersDescriptorAddElementOnEnd< Definition >
+//     for ParametersAddDescriptorOnEnd< Definition >
 //     {
 //       #[ inline( always ) ]
 //       fn default() -> Self
@@ -958,16 +960,16 @@ Result< TokenStream >
 //     }
 //
 //     impl< Types2, Definition > former::FormingEnd< Types2, >
-//     for ParametersDescriptorAddElementOnEnd< Definition >
+//     for ParametersAddDescriptorOnEnd< Definition >
 //     where
 //       Definition : former::FormerDefinition,
 //       Definition::Types : former::FormerDefinitionTypes
 //       <
-//         Storage = ParametersFormerStorage,
+//         Storage = < Parameters as former::EntityToFormer >::Storage,
 //       >,
 //       Types2 : former::FormerDefinitionTypes
 //       <
-//         Storage = DescriptorFormerStorage,
+//         Storage = < Descriptor as former::EntityToFormer >::Storage,
 //         Formed = ParametersFormer< Definition >,
 //         Context = ParametersFormer< Definition >,
 //       >,

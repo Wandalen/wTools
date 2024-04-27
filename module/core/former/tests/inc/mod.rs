@@ -7,7 +7,6 @@ mod former_tests
   #[ allow( unused_imports ) ]
   use super::*;
 
-// xxx : uncomment
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod container_former_common;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
@@ -32,7 +31,7 @@ mod former_tests
   mod attribute_perform;
   mod attribute_setter;
   mod attribute_alias;
-  // mod attribute_feature; // xxx : write test
+  // mod attribute_feature; // zzz : write test
 
   mod string_slice_manual;
   mod string_slice;
@@ -63,7 +62,6 @@ mod former_tests
   mod subformer_custom_experimental;
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subformer_shortcut;
-  // xxx : uncomment
 
 }
 

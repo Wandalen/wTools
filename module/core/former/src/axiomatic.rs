@@ -17,6 +17,16 @@ pub trait StoragePreform
   fn preform( self ) -> Self::Preformed;
 }
 
+pub trait EntityToFormer
+{
+  type Storage;
+  type Former;
+  // type Formed;
+  // type Context;
+  // type Types;
+  // type Definition;
+}
+
 /// zzz : write description
 pub trait FormerDefinitionTypes : Sized
 {
