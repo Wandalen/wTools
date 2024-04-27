@@ -15,7 +15,7 @@ pub struct Child
 #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 pub struct Parent
 {
-  #[ container( former::VectorDefinition ) ]
+  // #[ container( former::VectorDefinition ) ]
   // #[ subform ]
   children : Vec< Child >,
 }
