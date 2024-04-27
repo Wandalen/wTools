@@ -368,7 +368,7 @@ where
   // type End = Definition::End;
 
   #[ inline( always ) ]
-  fn _begin
+  fn former_begin
   (
     storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
     context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,

@@ -14,6 +14,18 @@
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_former" ) ]
 mod axiomatic;
+/// Forming process.
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_former" ) ]
+mod definition;
+/// Forming process.
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_former" ) ]
+mod forming;
+/// Storage.
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_former" ) ]
+mod storage;
 
 /// Interface for containers.
 #[ cfg( feature = "enabled" ) ]
@@ -96,7 +108,13 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   #[ cfg( feature = "enabled" ) ]
   #[ cfg( feature = "derive_former" ) ]
-  pub use super::axiomatic::*;
+  pub use super::
+  {
+    axiomatic::*,
+    definition::*,
+    forming::*,
+    storage::*,
+  };
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

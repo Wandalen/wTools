@@ -695,7 +695,7 @@ fn subformer_field_setter
         >
       >,
     {
-      Former2::_begin( None, Some( self ), #field_forming_end )
+      Former2::former_begin( None, Some( self ), #field_forming_end )
     }
   };
 

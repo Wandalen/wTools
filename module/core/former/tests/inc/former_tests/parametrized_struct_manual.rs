@@ -300,7 +300,7 @@ where
   pub fn properties_set< Former2 >( self ) -> Former2
   where Former2 : former::FormerBegin< former::HashMapDefinition< K, Property< K >, Self, Self, CommandFormerPropertiesEnd, > >
   {
-    Former2::_begin( None, Some( self ), CommandFormerPropertiesEnd )
+    Former2::former_begin( None, Some( self ), CommandFormerPropertiesEnd )
   }
 
   #[ inline( always ) ]

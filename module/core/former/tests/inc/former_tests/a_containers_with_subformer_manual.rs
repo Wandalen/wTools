@@ -326,7 +326,7 @@ where
   where
     Former2 : former::FormerBegin< former::VectorDefinition< String, Self, Self, Struct1FormerVec1End, > >,
   {
-    Former2::_begin( None, Some( self ), Struct1FormerVec1End )
+    Former2::former_begin( None, Some( self ), Struct1FormerVec1End )
   }
 
   #[ inline( always ) ]
@@ -340,7 +340,7 @@ where
   where
     Former2 : former::FormerBegin< former::HashMapDefinition< String, String, Self, Self, Struct1FormerHashmap1End, > >,
   {
-    Former2::_begin( None, Some( self ), Struct1FormerHashmap1End )
+    Former2::former_begin( None, Some( self ), Struct1FormerHashmap1End )
   }
 
 
@@ -356,7 +356,7 @@ where
   where
     Former2 : former::FormerBegin< former::HashSetDefinition< String, Self, Self, Struct1FormerHashset1End, > >,
   {
-    Former2::_begin( None, Some( self ), Struct1FormerHashset1End )
+    Former2::former_begin( None, Some( self ), Struct1FormerHashset1End )
   }
 
 

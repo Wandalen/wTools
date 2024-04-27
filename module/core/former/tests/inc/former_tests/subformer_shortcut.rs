@@ -40,11 +40,10 @@ impl< Definition > former::FormerBegin< Definition >
 for DescriptorFormer< Definition >
 where
   Definition : former::FormerDefinition< Storage = DescriptorFormerStorage >,
-  // Definition::Types : former::FormerDefinitionTypes< Storage = DescriptorFormerStorage >,
 {
 
   #[ inline( always ) ]
-  fn _begin
+  fn former_begin
   (
     storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
     context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
@@ -100,8 +99,7 @@ where
       }
       super_former
     };
-    Former2::_begin( None, Some( self ), former::FormingEndClosure::new( on_end ) )
-    // Former2::_begin( None, Some( self ), on_end )
+    Former2::former_begin( None, Some( self ), former::FormingEndClosure::new( on_end ) )
   }
 
   #[ inline( always ) ]
@@ -123,7 +121,7 @@ where
     >,
     Former2 : former::FormerBegin< Definition2 >,
   {
-    Former2::_begin( None, Some( self ), ParametersAddDescriptorOnEnd::default() )
+    Former2::former_begin( None, Some( self ), ParametersAddDescriptorOnEnd::default() )
   }
 
   // #[ inline( always ) ]
