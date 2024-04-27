@@ -575,22 +575,92 @@ fn field_setter_map( field : &FormerField< '_ >, stru : &syn::Ident ) -> Result<
   let r = if let Some( alias_attr ) = &field.attrs.alias
   {
     let alias_tokens = field_setter( ident, &alias_attr.alias, non_optional_ty );
-    let token = qt!
+    qt!
     {
       #setter_tokens
       #alias_tokens
-    };
-    Ok( token )
+    }
   }
   else
   {
-    Ok( setter_tokens )
+    setter_tokens
+  };
+
+  let r = if field.attrs.subform.is_some()
+  {
+    let subformer = field_subformer_map( field, stru )?;
+    qt!
+    {
+      #r
+      #subformer
+    }
+  }
+  else
+  {
+    r
   };
 
   // tree_print!( r.as_ref().unwrap() );
-  r
+  Ok( r )
 }
 
+/// xxx : write documentation
+
+#[ inline ]
+fn field_subformer_map
+(
+  field : &FormerField< '_ >,
+  stru : &syn::Ident
+) -> Result< TokenStream >
+{
+
+  if field.attrs.subform.is_none()
+  {
+    return Ok( qt!{ } );
+  }
+
+  use convert_case::{ Case, Casing };
+  let field_ident = field.ident;
+  // let field_ty = field.non_optional_ty;
+  // let params = typ::type_parameters( &field.non_optional_ty, .. );
+
+  // example : `ParentFormerAddChildsEnd``
+  let parent_add_element_end_name = format!( "{}FormerAdd{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
+  let parent_add_element_end = syn::Ident::new( &parent_add_element_end_name, field_ident.span() );
+
+  // example : `_children_former`
+  let child_former_name = format!( "_{}_former", field_ident );
+  let child_former = syn::Ident::new( &child_former_name, field_ident.span() );
+
+  let r = qt!
+  {
+
+    #[ inline( always ) ]
+    pub fn #child_former< Former2, Definition2 >( self ) -> Former2
+    where
+      Definition2 : former::FormerDefinition
+      <
+        End = #parent_add_element_end< Definition >,
+        Storage = < Child as former::EntityToStorage >::Storage,
+        Formed = Self,
+        Context = Self,
+      >,
+      Definition2::Types : former::FormerDefinitionTypes
+      <
+        Storage = < Child as former::EntityToStorage >::Storage,
+        Formed = Self,
+        Context = Self,
+      >,
+      Former2 : former::FormerBegin< Definition2 >,
+    {
+      Former2::former_begin( None, Some( self ), #parent_add_element_end::default() )
+    }
+
+  };
+
+  // tree_print!( r.as_ref().unwrap() );
+  Ok( r )
+}
 
 ///
 /// Generate a single setter for the 'field_ident' with the 'setter_name' name.
@@ -986,9 +1056,6 @@ Result< TokenStream >
     return Ok( qt!{ } );
   }
 
-  // example : `former::VectorDefinition``
-  // let subformer_definition = &field.attrs.subform.as_ref().unwrap().expr;
-
   use convert_case::{ Case, Casing };
   let field_ident = field.ident;
   let field_ty = field.non_optional_ty;
@@ -1000,22 +1067,6 @@ Result< TokenStream >
 
   let r = qt!
   {
-
-    // #[ inline( always ) ]
-    // pub fn _descriptor_former_set2< Former2, Definition2, Types2 >( self ) ->
-    // Former2
-    // where
-    //   Types2 : former::FormerDefinitionTypes
-    //   <
-    //     Storage = ChildFormerStorage,
-    //     Formed = Self,
-    //     Context = Self,
-    //   >,
-    //   Definition2 : former::FormerDefinition< Types = Types2, End = #parent_add_element_end< Types2, Definition > >,
-    //   Former2 : former::FormerBegin< Definition2 >,
-    // {
-    //   Former2::_begin( None, Some( self ), #parent_add_element_end::default() )
-    // }
 
 // xxx : uncomment
 

@@ -27,26 +27,26 @@ where
   Definition::Types : former::FormerDefinitionTypes< Storage = < Parent as former::EntityToStorage >::Storage >,
 {
 
-  #[ inline( always ) ]
-  pub fn _children_former< Former2, Definition2 >( self ) -> Former2
-  where
-    Definition2 : former::FormerDefinition
-    <
-      End = ParentFormerAddChildrenEnd< Definition >,
-      Storage = < Child as former::EntityToStorage >::Storage,
-      Formed = Self,
-      Context = Self,
-    >,
-    Definition2::Types : former::FormerDefinitionTypes
-    <
-      Storage = < Child as former::EntityToStorage >::Storage,
-      Formed = Self,
-      Context = Self,
-    >,
-    Former2 : former::FormerBegin< Definition2 >,
-  {
-    Former2::former_begin( None, Some( self ), ParentFormerAddChildrenEnd::default() )
-  }
+  // #[ inline( always ) ]
+  // pub fn _children_former< Former2, Definition2 >( self ) -> Former2
+  // where
+  //   Definition2 : former::FormerDefinition
+  //   <
+  //     End = ParentFormerAddChildrenEnd< Definition >,
+  //     Storage = < Child as former::EntityToStorage >::Storage,
+  //     Formed = Self,
+  //     Context = Self,
+  //   >,
+  //   Definition2::Types : former::FormerDefinitionTypes
+  //   <
+  //     Storage = < Child as former::EntityToStorage >::Storage,
+  //     Formed = Self,
+  //     Context = Self,
+  //   >,
+  //   Former2 : former::FormerBegin< Definition2 >,
+  // {
+  //   Former2::former_begin( None, Some( self ), ParentFormerAddChildrenEnd::default() )
+  // }
 
   #[ inline( always ) ]
   pub fn child( self, name : &str ) -> ChildSubformer< Self, impl ChildSubformerEnd< Self > >
