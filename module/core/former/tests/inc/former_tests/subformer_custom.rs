@@ -58,7 +58,7 @@ where
   K : core::hash::Hash + std::cmp::Eq,
 {
   pub parameter1 : String,
-  #[ subformer( former::HashMapDefinition ) ]
+  #[ container( former::HashMapDefinition ) ]
   pub commands : collection_tools::HashMap< String, Command< K > >,
 }
 

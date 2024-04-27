@@ -27,10 +27,10 @@ mod derive
 
 }
 
+// zzz : outdated
 ///
 /// Derive macro to generate former for a structure. Former is variation of Builder Pattern.
 ///
-
 /// Derives a 'Former' for a struct, implementing a variation of the Builder Pattern.
 ///
 /// This macro simplifies the creation of builder patterns for structs by automatically
@@ -272,7 +272,7 @@ mod derive
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_former" ) ]
-#[ proc_macro_derive( Former, attributes( debug, perform, default, setter, subformer, alias, doc, embed ) ) ]
+#[ proc_macro_derive( Former, attributes( debug, perform, default, setter, container, subform, alias, doc, embed ) ) ]
 pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::former::former( input );

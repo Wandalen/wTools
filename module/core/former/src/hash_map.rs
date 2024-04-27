@@ -175,7 +175,7 @@ where
 /// #[ derive( Debug, PartialEq, former::Former ) ]
 /// pub struct StructWithMap
 /// {
-///   #[ subformer( former::HashMapSubformer ) ]
+///   #[ container( former::HashMapSubformer ) ]
 ///   map : std::collections::HashMap< &'static str, &'static str >,
 /// }
 ///

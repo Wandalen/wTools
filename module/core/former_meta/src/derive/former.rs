@@ -29,7 +29,8 @@ struct Attributes
 {
   default : Option< AttributeDefault >,
   setter : Option< AttributeSetter >,
-  subformer : Option< AttributeFormer >,
+  container : Option< AttributeContainer >,
+  subform : Option< AttributeSubform >,
   alias : Option< AttributeAlias >,
 }
 
@@ -39,7 +40,8 @@ impl Attributes
   {
     let mut default = None;
     let mut setter = None;
-    let mut subformer = None;
+    let mut container = None;
+    let mut subform = None;
     let mut alias = None;
     for attr in attributes
     {
@@ -56,7 +58,7 @@ impl Attributes
             {
               default.replace( syn::parse2::< AttributeDefault >( meta_list.tokens.clone() )? );
             },
-            _ => return_syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
+            _ => return_syn_err!( attr, "Expects an attribute of format #[ default( val ) ], but got:\n  {}", qt!{ #attr } ),
           }
         }
         "setter" =>
@@ -67,23 +69,35 @@ impl Attributes
             {
               setter.replace( syn::parse2::< AttributeSetter >( meta_list.tokens.clone() )? );
             },
-            _ => return_syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
+            _ => return_syn_err!( attr, "Expects an attribute of format #[ setter( val ) ], but got:\n  {}", qt!{ #attr } ),
           }
           // let attr_setter = syn::parse2::< AttributeSetter >( attr.tokens.clone() )?;
           // setter.replace( attr_setter );
         }
-        "subformer" =>
+        "container" =>
         {
           match attr.meta
           {
             syn::Meta::List( ref meta_list ) =>
             {
-              subformer.replace( syn::parse2::< AttributeFormer >( meta_list.tokens.clone() )? );
+              container.replace( syn::parse2::< AttributeContainer >( meta_list.tokens.clone() )? );
             },
-            _ => return_syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
+            _ => return_syn_err!( attr, "Expects an attribute of format #[ container( val ) ], but got:\n  {}", qt!{ #attr } ),
           }
-          // let attr_former = syn::parse2::< AttributeFormer >( attr.tokens.clone() )?;
-          // subformer.replace( attr_former );
+        }
+        // xxx
+        "subform" =>
+        {
+          match attr.meta
+          {
+            syn::Meta::Path( ref _path ) =>
+            {
+              // code_print!( _path );
+              // panic!( "xxx!" );
+              subform.replace( syn::parse2::< AttributeSubform >( Default::default() )? );
+            },
+            _ => return_syn_err!( attr, "Expects an attribute of format #[ subform ], but got:\n  {}", qt!{ #attr } ),
+          }
         }
         "alias" =>
         {
@@ -93,7 +107,7 @@ impl Attributes
             {
               alias.replace( syn::parse2::< AttributeAlias >( meta_list.tokens.clone() )? );
             },
-            _ => return_syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
+            _ => return_syn_err!( attr, "Expects an attribute of format #[ alias( val ) ], but got:\n  {}", qt!{ #attr } ),
           }
           // let attr_alias = syn::parse2::< AttributeAlias >( attr.tokens.clone() )?;
           // alias.replace( attr_alias );
@@ -108,7 +122,7 @@ impl Attributes
       }
     }
 
-    Ok( Attributes { default, setter, subformer, alias } )
+    Ok( Attributes { default, setter, container, subform, alias } )
   }
 }
 
@@ -200,27 +214,41 @@ impl syn::parse::Parse for AttributeSetter
 /// Also known as subformers, used for aggregation relationship, when a struct holds another struct, which needs to be build by invoking multiple methods
 /// Typical example is a struct holding a `Vec`
 ///
-/// `#[ subformer( former::VectorSubformer ) ]`
+/// `#[ container( former::VectorSubformer ) ]`
 ///
 // qqq : update documentation
 
 #[ allow( dead_code ) ]
-struct AttributeFormer
+struct AttributeContainer
 {
-  // paren_token : syn::token::Paren,
   expr : syn::Type,
 }
 
-impl syn::parse::Parse for AttributeFormer
+impl syn::parse::Parse for AttributeContainer
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
   {
-    // let input2;
     Ok( Self
     {
-      // paren_token : syn::parenthesized!( input2 in input ),
-      // expr : input2.parse()?,
       expr : input.parse()?,
+    })
+  }
+}
+
+/// zzz : write description with example
+#[ allow( dead_code ) ]
+struct AttributeSubform
+{
+  // expr : syn::Type,
+}
+
+impl syn::parse::Parse for AttributeSubform
+{
+  fn parse( _input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+  {
+    Ok( Self
+    {
+      // expr : input.parse()?,
     })
   }
 }
@@ -535,9 +563,8 @@ fn field_setter_map( field : &FormerField< '_ >, stru : &syn::Ident ) -> Result<
 
   let non_optional_ty = &field.non_optional_ty;
   // Either subformer or ordinary setter.
-  let setter_tokens = if let Some( _subformer_ty ) = &field.attrs.subformer
+  let setter_tokens = if let Some( _container_ty ) = &field.attrs.container
   {
-    // subformer_field_setter( ident, ident, non_optional_ty, &subformer_ty.expr )
     subformer_field_setter( field, stru )
   }
   else
@@ -659,7 +686,7 @@ fn subformer_field_setter
   let params = typ::type_parameters( &non_optional_ty, .. );
   // params.iter().for_each( | e | println!( "{}", qt!( #e ) ) );
 
-  let subformer_definition = &field.attrs.subformer.as_ref().unwrap().expr;
+  let subformer_definition = &field.attrs.container.as_ref().unwrap().expr;
   // for example : former::VectorDefinition
 
   use convert_case::{ Case, Casing };
@@ -671,7 +698,7 @@ fn subformer_field_setter
 
   let doc = format!
   (
-    "Subformer setter for the '{}' field. Method {} unlike method {} accept custom subformer.",
+    "Subformer setter for the '{}' field. Method {} unlike method {} accept custom container subformer.",
     field_ident,
     field_assign_name,
     field_ident,
@@ -846,7 +873,7 @@ fn subformer_field_setter
 /// ```
 
 #[ inline ]
-fn fields_setter_callback_descriptor_map
+fn field_former_assign_map
 (
   field : &FormerField< '_ >,
   stru : &syn::Ident,
@@ -855,39 +882,40 @@ fn fields_setter_callback_descriptor_map
   former_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   former_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  struct_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  _struct_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   struct_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  struct_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  _struct_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
 )
 ->
 Result< TokenStream >
 {
 
-  if field.attrs.subformer.is_none()
+  if field.attrs.container.is_none()
   {
     return Ok( qt!{ } );
   }
 
   // example : `former::VectorDefinition``
-  let subformer_definition = &field.attrs.subformer.as_ref().unwrap().expr;
+  let subformer_definition = &field.attrs.container.as_ref().unwrap().expr;
 
   use convert_case::{ Case, Casing };
   let field_ident = field.ident;
+  let field_ty = field.non_optional_ty;
+  let params = typ::type_parameters( &field.non_optional_ty, .. );
+
   // example : `ParametersFormerAssignDescriptorsEnd``
   let former_assign_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
   let former_assign_end = syn::Ident::new( &former_assign_end_name, field_ident.span() );
-  // example : `ParametersFormerAddDescriptorsEnd``
-  let parent_add_element_end_name = format!( "{}FormerAdd{}End2", stru, field_ident.to_string().to_case( Case::Pascal ) );
-  let parent_add_element_end = syn::Ident::new( &parent_add_element_end_name, field_ident.span() );
 
-  let field_ty = field.non_optional_ty;
-  let params = typ::type_parameters( &field.non_optional_ty, .. );
+  // // example : `ParametersFormerAddDescriptorsEnd``
+  // let parent_add_element_end_name = format!( "{}FormerAdd{}End2", stru, field_ident.to_string().to_case( Case::Pascal ) );
+  // let parent_add_element_end = syn::Ident::new( &parent_add_element_end_name, field_ident.span() );
 
   let r = qt!
   {
 
     // zzz : description
-    /// Return original former after subformer for `vec_1` is done.
+    /// Return original former after container for `vec_1` is done.
     #[ allow( non_camel_case_types ) ]
     pub struct #former_assign_end;
 
@@ -927,6 +955,52 @@ Result< TokenStream >
       }
     }
 
+  };
+
+  // tree_print!( r.as_ref().unwrap() );
+  Ok( r )
+}
+
+/// xxx : write documentation
+
+#[ inline ]
+fn field_former_add_map
+(
+  field : &FormerField< '_ >,
+  stru : &syn::Ident,
+  former : &syn::Ident,
+  _former_storage : &syn::Ident,
+  _former_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  _former_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  struct_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  struct_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  struct_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+)
+->
+Result< TokenStream >
+{
+
+  if field.attrs.subform.is_none()
+  {
+    return Ok( qt!{ } );
+  }
+
+  // example : `former::VectorDefinition``
+  // let subformer_definition = &field.attrs.subform.as_ref().unwrap().expr;
+
+  use convert_case::{ Case, Casing };
+  let field_ident = field.ident;
+  let field_ty = field.non_optional_ty;
+  // let params = typ::type_parameters( &field.non_optional_ty, .. );
+
+  // example : `ParametersFormerAddDescriptorsEnd``
+  let parent_add_element_end_name = format!( "{}FormerAdd{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
+  let parent_add_element_end = syn::Ident::new( &parent_add_element_end_name, field_ident.span() );
+
+  let r = qt!
+  {
+
     // #[ inline( always ) ]
     // pub fn _descriptor_former_set2< Former2, Definition2, Types2 >( self ) ->
     // Former2
@@ -945,68 +1019,68 @@ Result< TokenStream >
 
 // xxx : uncomment
 
-//     // zzz : improve description
-//     /// Handles the completion of an element of subformer's container.
-//     pub struct #parent_add_element_end< Definition >
-//     {
-//       _phantom : core::marker::PhantomData< fn( Definition ) >,
-//     }
-//
-//     impl< Definition > Default
-//     for #parent_add_element_end< Definition >
-//     {
-//       #[ inline( always ) ]
-//       fn default() -> Self
-//       {
-//         Self
-//         {
-//           _phantom : core::marker::PhantomData,
-//         }
-//       }
-//     }
-//
-//     impl< #struct_generics_impl Types2, Definition > former::FormingEnd< Types2, >
-//     for #parent_add_element_end< Definition >
-//     where
-//       Definition : former::FormerDefinition,
-//       Definition::Types : former::FormerDefinitionTypes
-//       <
-//         Storage = < #stru < #struct_generics_ty > as former::EntityToStorage >::Storage,
-//         // xxx : add test with life time + param + containers
-//       >,
-//       Types2 : former::FormerDefinitionTypes
-//       <
-//         // Storage = < Descriptor as former::EntityToStorage >::Storage,
-//         // Formed = ParametersFormer< Definition >,
-//         // Context = ParametersFormer< Definition >,
-//         // Storage = < < Vec< #field_ident > as former::ContainerAdd >::Element as former::EntityToStorage >::Storage,
-//         Storage = < < #field_ty as former::ContainerAdd >::Element as former::EntityToStorage >::Storage,
-//         Formed = #former< #former_generics_ty >,
-//         Context = #former< #former_generics_ty >,
-//       >,
-//       #struct_generics_where
-//     {
-//       #[ inline( always ) ]
-//       fn call
-//       (
-//         &self,
-//         substorage : Types2::Storage,
-//         super_former : core::option::Option< Types2::Context >,
-//       )
-//       -> Types2::Formed
-//       {
-//         let mut super_former = super_former.unwrap();
-//         if super_former.storage.#field_ident.is_none()
-//         {
-//           super_former.storage.#field_ident = Some( Default::default() );
-//         }
-//         if let Some( ref mut field ) = super_former.storage.#field_ident
-//         {
-//           former::ContainerAdd::add( field, former::StoragePreform::preform( substorage ) );
-//         }
-//         super_former
-//       }
-//     }
+    // zzz : improve description
+    /// Handles the completion of an element of subformer's container.
+    pub struct #parent_add_element_end< Definition >
+    {
+      _phantom : core::marker::PhantomData< fn( Definition ) >,
+    }
+
+    impl< Definition > Default
+    for #parent_add_element_end< Definition >
+    {
+      #[ inline( always ) ]
+      fn default() -> Self
+      {
+        Self
+        {
+          _phantom : core::marker::PhantomData,
+        }
+      }
+    }
+
+    impl< #struct_generics_impl Types2, Definition > former::FormingEnd< Types2, >
+    for #parent_add_element_end< Definition >
+    where
+      Definition : former::FormerDefinition,
+      Definition::Types : former::FormerDefinitionTypes
+      <
+        Storage = < #stru < #struct_generics_ty > as former::EntityToStorage >::Storage,
+        // xxx : add test with life time + param + containers
+      >,
+      Types2 : former::FormerDefinitionTypes
+      <
+        // Storage = < Descriptor as former::EntityToStorage >::Storage,
+        // Formed = ParametersFormer< Definition >,
+        // Context = ParametersFormer< Definition >,
+        // Storage = < < Vec< #field_ident > as former::ContainerAdd >::Element as former::EntityToStorage >::Storage,
+        Storage = < < #field_ty as former::ContainerAdd >::Element as former::EntityToStorage >::Storage,
+        Formed = #former< #former_generics_ty >,
+        Context = #former< #former_generics_ty >,
+      >,
+      #struct_generics_where
+    {
+      #[ inline( always ) ]
+      fn call
+      (
+        &self,
+        substorage : Types2::Storage,
+        super_former : core::option::Option< Types2::Context >,
+      )
+      -> Types2::Formed
+      {
+        let mut super_former = super_former.unwrap();
+        if super_former.storage.#field_ident.is_none()
+        {
+          super_former.storage.#field_ident = Some( Default::default() );
+        }
+        if let Some( ref mut field ) = super_former.storage.#field_ident
+        {
+          former::ContainerAdd::add( field, former::StoragePreform::preform( substorage ) );
+        }
+        super_former
+      }
+    }
 
   };
 
@@ -1289,10 +1363,11 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     fields_form,
     fields_names,
     fields_setter,
-    fields_setter_callback_descriptor,
+    fields_former_assign,
+    fields_former_add,
   )
   :
-  ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
+  ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
   = former_fields.iter().map( | former_field |
   {(
     field_none_map( former_field ),
@@ -1300,7 +1375,20 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     field_form_map( former_field ),
     field_name_map( former_field ),
     field_setter_map( former_field, &stru ),
-    fields_setter_callback_descriptor_map
+    field_former_assign_map
+    (
+      former_field,
+      &stru,
+      &former,
+      &former_storage,
+      &former_generics_impl,
+      &former_generics_ty,
+      &former_generics_where,
+      &struct_generics_impl,
+      &struct_generics_ty,
+      &struct_generics_where,
+    ),
+    field_former_add_map
     (
       former_field,
       &stru,
@@ -1318,7 +1406,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let ( _doc_former_mod, doc_former_struct ) = doc_generate( stru );
   let fields_setter : Vec< _ > = process_results( fields_setter, | iter | iter.collect() )?;
   let fields_form : Vec< _ > = process_results( fields_form, | iter | iter.collect() )?;
-  let fields_setter_callback_descriptor : Vec< _ > = process_results( fields_setter_callback_descriptor, | iter | iter.collect() )?;
+  let fields_former_assign : Vec< _ > = process_results( fields_former_assign, | iter | iter.collect() )?;
+  let fields_former_add : Vec< _ > = process_results( fields_former_add, | iter | iter.collect() )?;
 
   let result = qt!
   {
@@ -1718,10 +1807,16 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     {
     }
 
-    // = setters
+    // = container assign callbacks
 
     #(
-      #fields_setter_callback_descriptor
+      #fields_former_assign
+    )*
+
+    // = container add callbacks
+
+    #(
+      #fields_former_add
     )*
 
   };
