@@ -102,6 +102,14 @@ where
   type End = End;
 }
 
+impl< E, Definition > EntityToFormer< Definition > for Vec< E >
+where
+  Definition : FormerDefinition< Storage = Vec< E >, Formed = () >,
+  < Definition as definition::FormerDefinition>::End : Fn( Vec< E >, Option< Definition::Context > ),
+{
+  type Former = VectorSubformer< E, Definition::Context, Definition::Formed, Definition::End >;
+}
+
 // = subformer
 
 /// A builder for constructing `VectorLike` containers, facilitating a fluent and flexible interface.
