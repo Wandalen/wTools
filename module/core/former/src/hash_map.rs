@@ -2,6 +2,20 @@ use super::*;
 
 use collection_tools::HashMap;
 
+impl< K, V > ContainerAdd for collection_tools::HashMap< K, V >
+where
+  K : core::cmp::Eq + core::hash::Hash,
+{
+  type Element = ( K, V );
+
+  #[ inline( always ) ]
+  fn add( &mut self, ( k, v ) : Self::Element ) -> bool
+  {
+    self.insert( k, v ).map_or_else( || true, | _ | false )
+  }
+
+}
+
 /// A trait for types that behave like hash maps, supporting insertion and custom forming behaviors.
 ///
 /// This trait allows for generic operations on hash map-like data structures, enabling the insertion

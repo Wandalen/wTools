@@ -5,6 +5,20 @@
 use super::*;
 use collection_tools::HashSet;
 
+impl< E > ContainerAdd for collection_tools::HashSet< E >
+where
+  E : core::cmp::Eq + core::hash::Hash,
+{
+  type Element = E;
+
+  #[ inline( always ) ]
+  fn add( &mut self, e : Self::Element ) -> bool
+  {
+    self.insert( e )
+  }
+
+}
+
 /// A trait for containers behaving like a `HashSet`, allowing insertion operations.
 ///
 /// Implementing this trait enables the associated formed to be used with `HashSetSubformer`,

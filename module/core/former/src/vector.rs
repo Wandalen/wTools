@@ -4,6 +4,19 @@ use super::*;
 #[ allow( unused ) ]
 use collection_tools::Vec;
 
+impl< T > ContainerAdd for collection_tools::Vec< T >
+{
+  type Element = T;
+
+  #[ inline( always ) ]
+  fn add( &mut self, e : Self::Element ) -> bool
+  {
+    self.push( e );
+    true
+  }
+
+}
+
 /// Trait for containers that behave like a vector, providing an interface for element addition.
 ///
 /// This trait enables the use of custom or standard vector-like containers within the builder pattern,

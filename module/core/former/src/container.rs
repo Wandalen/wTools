@@ -87,47 +87,6 @@ pub trait ContainerAdd
 
 }
 
-impl< T > ContainerAdd for collection_tools::Vec< T >
-{
-  type Element = T;
-
-  #[ inline( always ) ]
-  fn add( &mut self, e : Self::Element ) -> bool
-  {
-    self.push( e );
-    true
-  }
-
-}
-
-impl< E > ContainerAdd for collection_tools::HashSet< E >
-where
-  E : core::cmp::Eq + core::hash::Hash,
-{
-  type Element = E;
-
-  #[ inline( always ) ]
-  fn add( &mut self, e : Self::Element ) -> bool
-  {
-    self.insert( e )
-  }
-
-}
-
-impl< K, V > ContainerAdd for collection_tools::HashMap< K, V >
-where
-  K : core::cmp::Eq + core::hash::Hash,
-{
-  type Element = ( K, V );
-
-  #[ inline( always ) ]
-  fn add( &mut self, ( k, v ) : Self::Element ) -> bool
-  {
-    self.insert( k, v ).map_or_else( || true, | _ | false )
-  }
-
-}
-
 // qqq : implement for other containers
 
 /// A trait defining the capability to replface all elements.
@@ -344,14 +303,7 @@ where
   pub fn add< IntoElement >( mut self, element : IntoElement ) -> Self
   where IntoElement : core::convert::Into< E >,
   {
-    // if self.storage.is_none()
-    // {
-    //   self.storage = core::option::Option::Some( Default::default() );
-    // }
-    // if let core::option::Option::Some( ref mut storage ) = self.storage
-    // {
-      ContainerAdd::add( &mut self.storage, element.into() );
-    // }
+    ContainerAdd::add( &mut self.storage, element.into() );
     self
   }
 
