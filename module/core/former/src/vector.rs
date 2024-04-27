@@ -115,8 +115,9 @@ where
 impl< E, Context, Formed, End > EntityToDefinition< Context, Formed, End >
 for Vec< E >
 where
-  // End : std::ops::Fn< ( collection_tools::Vec< E >, std::option::Option< Context > ), Output = Formed >,
-  End : Fn(collection_tools::Vec< E >, std::option::Option< Context >) -> Formed,
+  // End : std::ops::Fn< ( Vec< E >, std::option::Option< Context > ), Output = Formed >,
+  // End : Fn( Vec< E >, std::option::Option< Context > ) -> Formed,
+  End : crate::FormingEnd< VectorDefinition< E, Context, Formed, NoEnd > >,
 {
   type Definition = VectorDefinition< E, Context, Formed, End >;
 }
