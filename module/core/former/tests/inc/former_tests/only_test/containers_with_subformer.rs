@@ -122,9 +122,9 @@ tests_impls!
   {
 
     // Container subformers are defined
-    let _got = Struct1FormerVec1End;
-    let _got = Struct1FormerHashmap1End;
-    let _got = Struct1FormerHashset1End;
+    let _got = Struct1FormerAssignVec1End;
+    let _got = Struct1FormerAssignHashmap1End;
+    let _got = Struct1FormerAssignHashset1End;
 
     // SubformerEnd is defined
     fn _f1< End : Struct1SubformerEnd< Struct1Former > >

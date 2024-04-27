@@ -234,11 +234,12 @@ where
   >,
   Types2 : former::FormerDefinitionTypes
   <
-    Storage = < Descriptor as former::EntityToFormer >::Storage,
-    // Storage = < Vec< Descriptor > as former::ContainerAdd >::Element,
+    // Storage = < Descriptor as former::EntityToFormer >::Storage,
+    Storage = < < Vec< Descriptor > as former::ContainerAdd >::Element as former::EntityToFormer >::Storage,
     Formed = ParametersFormer< Definition >,
     Context = ParametersFormer< Definition >,
   >,
+  // Types2::Storage : former::StoragePreform< Preformed =  >,
 {
   #[ inline( always ) ]
   fn call
@@ -254,9 +255,9 @@ where
     {
       super_former.storage.descriptors = Some( Default::default() );
     }
-    if let Some( ref mut descriptors ) = super_former.storage.descriptors
+    if let Some( ref mut fields ) = super_former.storage.descriptors
     {
-      former::ContainerAdd::add( descriptors, former::StoragePreform::preform( substorage ) );
+      former::ContainerAdd::add( fields, former::StoragePreform::preform( substorage ) );
     }
     super_former
   }
@@ -265,6 +266,8 @@ where
 #[ test ]
 fn basic()
 {
+
+  // let x : < Vec< Descriptor > as former::ContainerAdd >::Element;
 
   let got = Parameters::former()
   .descriptors()

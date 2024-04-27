@@ -324,46 +324,46 @@ where
   #[ inline( always ) ]
   pub fn vec_1_set< Former2 >( self ) -> Former2
   where
-    Former2 : former::FormerBegin< former::VectorDefinition< String, Self, Self, Struct1FormerVec1End, > >,
+    Former2 : former::FormerBegin< former::VectorDefinition< String, Self, Self, Struct1FormerAssignVec1End, > >,
   {
-    Former2::former_begin( None, Some( self ), Struct1FormerVec1End )
+    Former2::former_begin( None, Some( self ), Struct1FormerAssignVec1End )
   }
 
   #[ inline( always ) ]
-  pub fn vec_1( self ) -> former::ContainerSubformer::< String, former::VectorDefinition< String, Self, Self, Struct1FormerVec1End > >
+  pub fn vec_1( self ) -> former::ContainerSubformer::< String, former::VectorDefinition< String, Self, Self, Struct1FormerAssignVec1End > >
   {
-    self.vec_1_set::< former::ContainerSubformer::< String, former::VectorDefinition< String, Self, Self, Struct1FormerVec1End > >>()
+    self.vec_1_set::< former::ContainerSubformer::< String, former::VectorDefinition< String, Self, Self, Struct1FormerAssignVec1End > >>()
   }
 
   #[ inline( always ) ]
   pub fn hashmap_1_set< Former2 >( self ) -> Former2
   where
-    Former2 : former::FormerBegin< former::HashMapDefinition< String, String, Self, Self, Struct1FormerHashmap1End, > >,
+    Former2 : former::FormerBegin< former::HashMapDefinition< String, String, Self, Self, Struct1FormerAssignHashmap1End, > >,
   {
-    Former2::former_begin( None, Some( self ), Struct1FormerHashmap1End )
+    Former2::former_begin( None, Some( self ), Struct1FormerAssignHashmap1End )
   }
 
 
   #[ inline( always ) ]
-  pub fn hashmap_1( self ) -> former::ContainerSubformer::< (String, String), former::HashMapDefinition< String, String, Self, Self, Struct1FormerHashmap1End > >
+  pub fn hashmap_1( self ) -> former::ContainerSubformer::< (String, String), former::HashMapDefinition< String, String, Self, Self, Struct1FormerAssignHashmap1End > >
   {
-    self.hashmap_1_set::< former::ContainerSubformer::< (String, String), former::HashMapDefinition< String, String, Self, Self, Struct1FormerHashmap1End > >>()
+    self.hashmap_1_set::< former::ContainerSubformer::< (String, String), former::HashMapDefinition< String, String, Self, Self, Struct1FormerAssignHashmap1End > >>()
   }
 
 
   #[ inline( always ) ]
   pub fn hashset_1_set< Former2 >( self ) -> Former2
   where
-    Former2 : former::FormerBegin< former::HashSetDefinition< String, Self, Self, Struct1FormerHashset1End, > >,
+    Former2 : former::FormerBegin< former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End, > >,
   {
-    Former2::former_begin( None, Some( self ), Struct1FormerHashset1End )
+    Former2::former_begin( None, Some( self ), Struct1FormerAssignHashset1End )
   }
 
 
   #[ inline( always ) ]
-  pub fn hashset_1( self ) -> former::ContainerSubformer::< String, former::HashSetDefinition< String, Self, Self, Struct1FormerHashset1End > >
+  pub fn hashset_1( self ) -> former::ContainerSubformer::< String, former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End > >
   {
-    self.hashset_1_set::< former::ContainerSubformer::< String, former::HashSetDefinition< String, Self, Self, Struct1FormerHashset1End > >>()
+    self.hashset_1_set::< former::ContainerSubformer::< String, former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End > >>()
   }
 }
 
@@ -423,10 +423,10 @@ where
 // = end handlers
 
 #[ allow( non_camel_case_types ) ]
-pub struct Struct1FormerVec1End;
+pub struct Struct1FormerAssignVec1End;
 
 #[ automatically_derived ]
-impl< Definition, > former::FormingEnd< former::VectorDefinition< String, Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd >, > for Struct1FormerVec1End
+impl< Definition, > former::FormingEnd< former::VectorDefinition< String, Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd >, > for Struct1FormerAssignVec1End
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< > >,
@@ -448,10 +448,15 @@ where
 }
 
 #[ allow( non_camel_case_types ) ]
-pub struct Struct1FormerHashmap1End;
+pub struct Struct1FormerAssignHashmap1End;
 
 #[ automatically_derived ]
-impl< Definition, > former::FormingEnd< former::HashMapDefinition< String, String, Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd >, > for Struct1FormerHashmap1End
+impl< Definition, >
+former::FormingEnd
+<
+  former::HashMapDefinition< String, String, Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd >,
+>
+for Struct1FormerAssignHashmap1End
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< > >,
@@ -473,10 +478,13 @@ where
 }
 
 #[ allow( non_camel_case_types ) ]
-pub struct Struct1FormerHashset1End;
+pub struct Struct1FormerAssignHashset1End;
 
 #[ automatically_derived ]
-impl< Definition, > former::FormingEnd< former::HashSetDefinition< String, Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd >, > for Struct1FormerHashset1End
+impl< Definition, > former::FormingEnd
+<
+  former::HashSetDefinition< String, Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd >, >
+for Struct1FormerAssignHashset1End
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< > >,

@@ -568,7 +568,7 @@ fn field_setter_map( field : &FormerField< '_ >, stru : &syn::Ident ) -> Result<
 ///
 /// Generate a single setter for the 'field_ident' with the 'setter_name' name.
 ///
-/// Used as a helper function for field_setter_map(), which generates all alias setters
+/// Used as a helper function for field_setter_map(), which generates alias setters
 ///
 /// # Example of generated code
 /// ```ignore
@@ -664,16 +664,16 @@ fn subformer_field_setter
 
   use convert_case::{ Case, Casing };
   // let ident = field_ident;
-  let field_forming_end_name = format!( "{}Former{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
+  let field_forming_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
   let field_forming_end = syn::Ident::new( &field_forming_end_name, field_ident.span() );
-  let field_set_name = format!( "{}_set", field_ident );
-  let field_set = syn::Ident::new( &field_set_name, field_ident.span() );
+  let field_assign_name = format!( "{}_assign", field_ident );
+  let field_assign = syn::Ident::new( &field_assign_name, field_ident.span() );
 
   let doc = format!
   (
     "Subformer setter for the '{}' field. Method {} unlike method {} accept custom subformer.",
     field_ident,
-    field_set_name,
+    field_assign_name,
     field_ident,
   );
 
@@ -682,7 +682,7 @@ fn subformer_field_setter
   {
     #[ doc = #doc ]
     #[ inline( always ) ]
-    pub fn #field_set< Former2 >( self ) -> Former2
+    pub fn #field_assign< Former2 >( self ) -> Former2
     where
       Former2 : former::FormerBegin
       <
@@ -712,7 +712,7 @@ fn subformer_field_setter
         ( #( #params, )* ), #subformer_definition< #( #params, )* Self, Self, #field_forming_end >
       >
       {
-        self.#field_set::< former::ContainerSubformer::
+        self.#field_assign::< former::ContainerSubformer::
         <
           ( #( #params, )* ), #subformer_definition< #( #params, )* Self, Self, #field_forming_end >
         >>()
@@ -733,7 +733,7 @@ fn subformer_field_setter
         #( #params, )* #subformer_definition< #( #params, )* Self, Self, #field_forming_end >
       >
       {
-        self.#field_set::< former::ContainerSubformer::
+        self.#field_assign::< former::ContainerSubformer::
         <
           #( #params, )* #subformer_definition< #( #params, )* Self, Self, #field_forming_end >
         >>()
@@ -871,10 +871,10 @@ Result< TokenStream >
 
   use convert_case::{ Case, Casing };
   let field_ident = field.ident;
-  let field_forming_end_name = format!( "{}Former{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
+  let field_forming_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
   let field_forming_end = syn::Ident::new( &field_forming_end_name, field_ident.span() );
 
-  let parent_add_element_end_name = format!( "{}Add{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
+  let parent_add_element_end_name = format!( "{}FormerAdd{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
   let parent_add_element_end = syn::Ident::new( &parent_add_element_end_name, field_ident.span() );
   // #parent_add_element_end
 
