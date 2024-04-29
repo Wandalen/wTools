@@ -213,21 +213,23 @@ impl< Definition > Default for ParentFormerAssignChildrenEnd< Definition >
 
 #[ automatically_derived ]
 impl< Definition, > former::FormingEnd
-< former::VectorDefinition< Child, ParentFormer< Definition, >, ParentFormer< Definition, >, former::NoEnd >, >
-// <
-//   < Vec< Child > as former::EntityToDefinition< Parent, Parent, former::NoEnd > >::Definition
-// >
+// < former::VectorDefinition< Child, ParentFormer< Definition, >, ParentFormer< Definition, >, former::NoEnd >, >
+<
+  < Vec< Child > as former::EntityToDefinition< ParentFormer< Definition, >, ParentFormer< Definition, >, former::NoEnd > >::Definition
+>
 for ParentFormerAssignChildrenEnd< Definition >
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = ParentFormerStorage< > >,
 {
   #[ inline( always ) ]
-  fn call(
+  fn call
+  (
     &self,
     storage : Vec< Child >,
     super_former : Option< ParentFormer< Definition, > >,
-  ) -> ParentFormer< Definition, >
+  )
+  -> ParentFormer< Definition, >
   {
     let mut super_former = super_former.unwrap();
     if let Some( ref mut field ) = super_former.storage.children
