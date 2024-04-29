@@ -1779,7 +1779,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     where
       Definition : former::FormerDefinition,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty >, Formed = #stru < #struct_generics_ty > >,
-      < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
       < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform< Preformed = #stru < #struct_generics_ty > >,
       #former_generics_where
     {
