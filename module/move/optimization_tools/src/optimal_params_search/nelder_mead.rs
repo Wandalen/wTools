@@ -4,7 +4,10 @@
 
 use std::
 {
-  collections::HashMap, fs::{ File, OpenOptions }, ops::{ Bound, RangeBounds }, sync::{ Arc, Mutex }
+  collections::HashMap,
+  fs::{ File, OpenOptions },
+  ops::{ Bound, RangeBounds },
+  sync::{ Arc, Mutex },
 };
 use deterministic_rand::{ Hrng, Seed, Rng };
 use iter_tools::Itertools;
