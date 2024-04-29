@@ -174,16 +174,16 @@ where
   #[ inline( always ) ]
   pub fn _children_assign< Former2 >( self ) -> Former2
   where
-    Former2 : former::FormerBegin< former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd, > >,
+    Former2 : former::FormerBegin< former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, > >,
   {
-    Former2::former_begin( None, Some( self ), ParentFormerAssignChildrenEnd )
+    Former2::former_begin( None, Some( self ), ParentFormerAssignChildrenEnd::< Definition >::default() )
   }
   #[ doc =
   "Subformer setter for the 'children' field. Method _children_assign unlike method children accept custom container subformer." ]
   #[ inline( always ) ]
-  pub fn children( self ) -> former::ContainerSubformer::< Child, former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd, > >
+  pub fn children( self ) -> former::ContainerSubformer::< Child, former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, > >
   {
-    self._children_assign::< former::ContainerSubformer::< Child, former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd, > > >()
+    self._children_assign::< former::ContainerSubformer::< Child, former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, > > >()
   }
 
 }
@@ -192,12 +192,32 @@ where
 
 #[ doc = r" Return original former after container for `vec_1` is done." ]
 #[ allow( non_camel_case_types ) ]
-pub struct ParentFormerAssignChildrenEnd;
+pub struct ParentFormerAssignChildrenEnd< Definition >
+{
+  _phantom : core::marker::PhantomData< ( Definition, ) >,
+}
+
+impl< Definition > Default for ParentFormerAssignChildrenEnd< Definition >
+{
+
+  #[ inline( always ) ]
+  fn default() -> Self
+  {
+    Self
+    {
+      _phantom : core::marker::PhantomData,
+    }
+  }
+
+}
 
 #[ automatically_derived ]
 impl< Definition, > former::FormingEnd
 < former::VectorDefinition< Child, ParentFormer< Definition, >, ParentFormer< Definition, >, former::NoEnd >, >
-for ParentFormerAssignChildrenEnd
+// <
+//   < Vec< Child > as former::EntityToDefinition< Parent, Parent, former::NoEnd > >::Definition
+// >
+for ParentFormerAssignChildrenEnd< Definition >
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = ParentFormerStorage< > >,
