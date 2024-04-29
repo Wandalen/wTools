@@ -939,12 +939,12 @@ fn field_former_assign_map
   field : &FormerField< '_ >,
   stru : &syn::Ident,
   former : &syn::Ident,
-  former_storage : &syn::Ident,
+  _former_storage : &syn::Ident,
   former_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   former_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
   _struct_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  struct_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  _struct_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   _struct_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
 )
 ->
@@ -1001,11 +1001,11 @@ Result< TokenStream >
     >
     for #former_assign_end
     where
-      Definition : former::FormerDefinition,
-      Definition::Types : former::FormerDefinitionTypes
-      <
-        Storage = #former_storage < #struct_generics_ty >
-      >,
+      // Definition : former::FormerDefinition,
+      // Definition::Types : former::FormerDefinitionTypes
+      // <
+      //   Storage = #former_storage < #struct_generics_ty >
+      // >,
       #former_generics_where
     {
       #[ inline( always ) ]
@@ -1104,10 +1104,6 @@ Result< TokenStream >
       >,
       Types2 : former::FormerDefinitionTypes
       <
-        // Storage = < Child as former::EntityToStorage >::Storage,
-        // Formed = ParentFormer< Definition >,
-        // Context = ParentFormer< Definition >,
-        // Storage = < < Vec< #field_ident > as former::ContainerAdd >::Element as former::EntityToStorage >::Storage,
         Storage = < < #field_ty as former::ContainerAdd >::Element as former::EntityToStorage >::Storage,
         Formed = #former< #former_generics_ty >,
         Context = #former< #former_generics_ty >,
@@ -1777,9 +1773,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     impl< #former_generics_impl > #former< #former_generics_ty >
     where
-      Definition : former::FormerDefinition,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty >, Formed = #stru < #struct_generics_ty > >,
-      < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform< Preformed = #stru < #struct_generics_ty > >,
+      // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform< Preformed = #stru < #struct_generics_ty > >,
       #former_generics_where
     {
 

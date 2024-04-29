@@ -429,8 +429,7 @@ where
 // where
 //   Definition : former::FormerDefinition,
 //   Definition::Types : former::FormerDefinitionTypes< Storage = ParentFormerStorage< >, Formed = Parent< > >,
-//   // xxx
-//   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
+//   x < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
 //   < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform< Preformed = Parent< > >,
 //   Definition : former::FormerDefinition,
 //   Definition::Types : former::FormerDefinitionTypes< Storage = ParentFormerStorage< > >,
@@ -496,17 +495,17 @@ where
 //   Self : former::FormingEnd< ParentFormerDefinitionTypes< SuperFormer, SuperFormer >, >,
 // {}
 
-// = assign
+//
 
 #[ doc = r" Return original former after container for `vec_1` is done." ]
 #[ allow( non_camel_case_types ) ]
 pub struct ParentFormerAssignChildrenEnd;
 
 #[ automatically_derived ]
-impl< Definition, > former::FormingEnd< former::VectorDefinition< Child, ParentFormer< Definition, >, ParentFormer< Definition, >, former::NoEnd >, > for ParentFormerAssignChildrenEnd
+impl< Definition, > former::FormingEnd
+< former::VectorDefinition< Child, ParentFormer< Definition, >, ParentFormer< Definition, >, former::NoEnd >, >
+for ParentFormerAssignChildrenEnd
 where
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = ParentFormerStorage< > >,
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = ParentFormerStorage< > >,
 {
