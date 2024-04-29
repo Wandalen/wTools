@@ -13,6 +13,7 @@ pub struct Child
 
 /// Parent required for the template.
 #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
+// #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent
 {
   // #[ container( former::VectorDefinition ) ]
@@ -180,6 +181,4 @@ where
   }
 }
 
-//
-
-include!( "./only_test/subformer_shortcut.rs" );
+include!( "./only_test/subformer_subform.rs" );

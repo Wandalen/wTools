@@ -65,9 +65,14 @@ mod former_tests
   mod subformer_custom_experimental;
 
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_shortcut_manual;
+  mod subformer_subform;
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_shortcut;
+  mod subformer_subform_manual;
+
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_subform_implicit_container;
+  // #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  // mod subformer_subform_implicit_container_manutal;
   // xxx
 
 }
