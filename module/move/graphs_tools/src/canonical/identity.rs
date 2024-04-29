@@ -114,12 +114,17 @@ pub( crate ) mod private
   // =
   //
 
-  type_constructor::types!
-  {
+  // type_constructor::types!
+  // {
+  //   /// Identify an instance by integer.
+  //   #[ derive( PartialEq, Eq, Copy, Clone, Hash ) ]
+  //   pub single IdentityWithInt : isize;
+  // }
+
+
     /// Identify an instance by integer.
-    #[ derive( PartialEq, Eq, Copy, Clone, Hash ) ]
-    pub single IdentityWithInt : isize;
-  }
+    #[ derive( PartialEq, Eq, Copy, Clone, Hash, derive_tools::From, derive_tools::Deref ) ]
+    pub struct IdentityWithInt( isize );
 
   ///
   /// Interface to to generate a new IDs for IdentityWithInt
