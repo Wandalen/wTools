@@ -627,7 +627,7 @@ fn field_subformer_map
   // let field_ty = field.non_optional_ty;
   // let params = typ::type_parameters( &field.non_optional_ty, .. );
 
-  // example : `ParentFormerAddChildsEnd``
+  // example : `ParentFormerAddChildrenEnd``
   let parent_add_element_end_name = format!( "{}FormerAdd{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
   let parent_add_element_end = syn::Ident::new( &parent_add_element_end_name, field_ident.span() );
 
@@ -1066,7 +1066,7 @@ Result< TokenStream >
   let field_ty = field.non_optional_ty;
   // let params = typ::type_parameters( &field.non_optional_ty, .. );
 
-  // example : `ParentFormerAddChildsEnd``
+  // example : `ParentFormerAddChildrenEnd``
   let parent_add_element_end_name = format!( "{}FormerAdd{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
   let parent_add_element_end = syn::Ident::new( &parent_add_element_end_name, field_ident.span() );
 

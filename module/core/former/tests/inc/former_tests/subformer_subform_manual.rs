@@ -94,7 +94,7 @@ where
   where
     Definition2 : former::FormerDefinition
     <
-      End = ParentFormerAddChildsEnd< Definition >,
+      End = ParentFormerAddChildrenEnd< Definition >,
       Storage = < Child as former::EntityToStorage >::Storage,
       Formed = Self,
       Context = Self,
@@ -107,7 +107,7 @@ where
     >,
     Former2 : former::FormerBegin< Definition2 >,
   {
-    Former2::former_begin( None, Some( self ), ParentFormerAddChildsEnd::default() )
+    Former2::former_begin( None, Some( self ), ParentFormerAddChildrenEnd::default() )
   }
 
   #[ inline( always ) ]
@@ -122,13 +122,13 @@ where
 }
 
 /// Handles the completion of and element of subformer's container.
-pub struct ParentFormerAddChildsEnd< Definition >
+pub struct ParentFormerAddChildrenEnd< Definition >
 {
   _phantom : core::marker::PhantomData< fn( Definition ) >,
 }
 
 impl< Definition > Default
-for ParentFormerAddChildsEnd< Definition >
+for ParentFormerAddChildrenEnd< Definition >
 {
   #[ inline( always ) ]
   fn default() -> Self
@@ -141,7 +141,7 @@ for ParentFormerAddChildsEnd< Definition >
 }
 
 impl< Types2, Definition > former::FormingEnd< Types2, >
-for ParentFormerAddChildsEnd< Definition >
+for ParentFormerAddChildrenEnd< Definition >
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes

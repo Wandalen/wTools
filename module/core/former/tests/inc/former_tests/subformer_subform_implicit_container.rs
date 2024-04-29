@@ -76,7 +76,7 @@ where
   where
     Definition2 : former::FormerDefinition
     <
-      End = ParentFormerAddChildsEnd< Definition >,
+      End = ParentFormerAddChildrenEnd< Definition >,
       Storage = < Child as former::EntityToStorage >::Storage,
       Formed = Self,
       Context = Self,
@@ -89,7 +89,7 @@ where
     >,
     Former2 : former::FormerBegin< Definition2 >,
   {
-    Former2::former_begin( None, Some( self ), ParentFormerAddChildsEnd::default() )
+    Former2::former_begin( None, Some( self ), ParentFormerAddChildrenEnd::default() )
   }
 
   #[ inline( always ) ]
@@ -104,13 +104,13 @@ where
 }
 
 /// Handles the completion of and element of subformer's container.
-pub struct ParentFormerAddChildsEnd< Definition >
+pub struct ParentFormerAddChildrenEnd< Definition >
 {
   _phantom : core::marker::PhantomData< fn( Definition ) >,
 }
 
 impl< Definition > Default
-for ParentFormerAddChildsEnd< Definition >
+for ParentFormerAddChildrenEnd< Definition >
 {
   #[ inline( always ) ]
   fn default() -> Self
@@ -123,7 +123,7 @@ for ParentFormerAddChildsEnd< Definition >
 }
 
 impl< Types2, Definition > former::FormingEnd< Types2, >
-for ParentFormerAddChildsEnd< Definition >
+for ParentFormerAddChildrenEnd< Definition >
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes
@@ -489,6 +489,8 @@ where
   Self : former::FormingEnd< ParentFormerDefinitionTypes< SuperFormer, SuperFormer >, >,
 {}
 
+// = assign
+
 #[ doc = r" Return original former after container for `vec_1` is done." ]
 #[ allow( non_camel_case_types ) ]
 pub struct ParentFormerAssignChildrenEnd;
@@ -516,50 +518,6 @@ where
     else
     {
       super_former.storage.children = Some( storage );
-    }
-    super_former
-  }
-}
-
-#[ doc = r" Handles the completion of an element of subformer's container." ]
-pub struct ParentFormerAddChildrenEnd< Definition >
-{
-  _phantom : core::marker::PhantomData< fn( Definition ) >,
-}
-
-impl< Definition > Default for ParentFormerAddChildrenEnd< Definition >
-{
-  #[ inline( always ) ]
-  fn default() -> Self
-  {
-    Self
-    {
-      _phantom : core::marker::PhantomData,
-    }
-  }
-}
-
-impl< Types2, Definition > former::FormingEnd< Types2, > for ParentFormerAddChildrenEnd< Definition >
-where
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = < Parent< > as former::EntityToStorage >::Storage, >,
-  Types2 : former::FormerDefinitionTypes< Storage = < < Vec< Child > as former::ContainerAdd >::Element as former::EntityToStorage >::Storage, Formed = ParentFormer< Definition, >, Context = ParentFormer< Definition, >, >,
-{
-  #[ inline( always ) ]
-  fn call(
-    &self,
-    substorage : Types2::Storage,
-    super_former : core::option::Option< Types2::Context >,
-  ) -> Types2::Formed
-  {
-    let mut super_former = super_former.unwrap();
-    if super_former.storage.children.is_none()
-    {
-      super_former.storage.children = Some( Default::default() );
-    }
-    if let Some( ref mut field ) = super_former.storage.children
-    {
-      former::ContainerAdd::add( field, former::StoragePreform::preform( substorage ) );
     }
     super_former
   }
