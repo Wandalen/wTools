@@ -1617,16 +1617,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     // = entity to former
 
-    // impl< #struct_generics_impl > former::EntityToFormer_
-    // for #stru < #struct_generics_ty >
-    // where
-    //   Self : Sized,
-    //   #struct_generics_where
-    // {
-    //   type Storage = #former_storage < #struct_generics_ty >;
-    //   type Former = #former < #struct_generics_ty >;
-    // }
-
     impl< #struct_generics_impl Definition > former::EntityToFormer< Definition >
     for #stru < #struct_generics_ty >
     where
@@ -1652,15 +1642,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     {
       type Definition = #former_definition < #struct_generics_ty __Context, __Formed, __End >;
     }
-
-    // // xxx : implement for other containers
-    // impl< E, Context, Formed, End > former::EntityToDefinition< Context, Formed, End >
-    // for Vec< E >
-    // where
-    //   End : crate::FormingEnd< VectorDefinition< E, Context, Formed, NoEnd > >,
-    // {
-    //   type Definition = VectorDefinition< E, Context, Formed, End >;
-    // }
 
     // = definition types
 

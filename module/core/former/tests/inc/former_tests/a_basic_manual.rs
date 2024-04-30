@@ -45,6 +45,14 @@ impl former::EntityToStorage for Struct1
   type Storage = Struct1FormerStorage;
 }
 
+impl< Context, Formed, End > former::EntityToDefinition< Context, Formed, End >
+for Struct1
+where
+  End : former::FormingEnd< Struct1FormerDefinitionTypes< Context, Formed > >,
+{
+  type Definition = Struct1FormerDefinition< Context, Formed, End >;
+}
+
 // = definition types
 
 #[ derive( Debug ) ]

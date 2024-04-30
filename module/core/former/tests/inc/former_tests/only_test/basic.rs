@@ -44,7 +44,23 @@ tests_impls!
     a_id!( got, exp );
 
     let got = < Struct1 as former::EntityToStorage >::Storage::default();
-    let exp = < Struct1 as former::EntityToFormer< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > > >::Former::new_precise( former::ReturnPreformed );
+    let exp =
+    <
+      Struct1 as former::EntityToFormer
+      <
+        Struct1FormerDefinition< (), Struct1, former::ReturnPreformed >
+      >
+    >::Former::new_precise( former::ReturnPreformed );
+    a_id!( got.int_1, exp.storage.int_1 );
+
+    let got = < Struct1 as former::EntityToStorage >::Storage::default();
+    let exp =
+    <
+      Struct1 as former::EntityToFormer
+      <
+        < Struct1 as former::EntityToDefinition< (), Struct1, former::ReturnPreformed > >::Definition
+      >
+    >::Former::new_precise( former::ReturnPreformed );
     a_id!( got.int_1, exp.storage.int_1 );
 
   }

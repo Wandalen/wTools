@@ -118,7 +118,6 @@ for Vec< E >
   type Storage = Vec< E >;
 }
 
-// xxx : implement for other containers
 impl< E, Context, Formed, End > crate::EntityToDefinition< Context, Formed, End >
 for Vec< E >
 where
