@@ -135,37 +135,33 @@ where
 
 }
 
-// #[ derive( Debug, Default ) ]
-// pub struct HashMapDefinition< K, E, Context = (), Formed = HashMap< K, E >, End = ReturnStorage >
-// where
-//   K : ::core::cmp::Eq + ::core::hash::Hash,
-// {
-//   _phantom : ::core::marker::PhantomData< ( K, E, Context, End ) >,
-// }
-//
-// impl< K, E, Context, End > FormerDefinitionTypes
-// for HashMapDefinition< K, E, Context, End >
-// where
-//   K : ::core::cmp::Eq + ::core::hash::Hash,
-//   End : FormingEnd< Self >,
-// {
-//   type Storage = HashMap< K, E >;
-//   type Formed = HashMap< K, E >;
-//   type Context = Context;
-//   type End = End;
-// }
-//
-// impl< K, E, Context, End > FormerDefinitionTypes
-// for HashMapDefinition< K, E, Context, End >
-// where
-//   K : ::core::cmp::Eq + ::core::hash::Hash,
-//   End : FormingEnd< Self >,
-// {
-//   type Storage = HashMap< K, E >;
-//   type Formed = HashMap< K, E >;
-//   type Context = Context;
-//   type End = End;
-// }
+// = Entity To
+
+impl< K, E, Definition > EntityToFormer< Definition > for HashMap< K, E >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+  Definition : FormerDefinition< Storage = HashMap< K, E >, Formed = () >,
+  < Definition as definition::FormerDefinition>::End : Fn( HashMap< K, E >, Option< Definition::Context > ),
+{
+  type Former = HashMapSubformer< K, E, Definition::Context, Definition::Formed, Definition::End >;
+}
+
+impl< K, E > crate::EntityToStorage
+for HashMap< K, E >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+  type Storage = HashMap< K, E >;
+}
+
+impl< K, E, Context, Formed, End > crate::EntityToDefinition< Context, Formed, End >
+for HashMap< K, E >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+  End : crate::FormingEnd< HashMapDefinition< K, E, Context, Formed, NoEnd > >,
+{
+  type Definition = HashMapDefinition< K, E, Context, Formed, End >;
+}
 
 // = subformer
 

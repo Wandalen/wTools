@@ -34,7 +34,7 @@ tests_impls!
 
   //
 
-  fn entity_to_former()
+  fn entity_to()
   {
 
     let got = < Struct1 as former::EntityToFormer< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > > >::Former::new_precise( former::ReturnPreformed )
@@ -562,7 +562,7 @@ tests_impls!
 tests_index!
 {
   internals,
-  entity_to_former,
+  entity_to,
   former_begin,
   custom_definition_params,
   begin_coercing,

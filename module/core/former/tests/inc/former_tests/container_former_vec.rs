@@ -104,3 +104,35 @@ fn replace()
 }
 
 //
+
+#[ test ]
+fn entity_to()
+{
+
+  // let got = < Vec< i32 > as former::EntityToFormer< former::VectorDefinition< (), Vec< i32 >, former::ReturnPreformed > > >::Former::new_precise( former::ReturnPreformed )
+  // .add( 13 )
+  // .form();
+  // let exp = vec![ 13 ];
+  // a_id!( got, exp );
+
+//   let got = < Vec< i32 > as former::EntityToStorage >::Storage::default();
+//   let exp =
+//   <
+//     Vec< i32 > as former::EntityToFormer
+//     <
+//       Vec< i32 >FormerDefinition< (), Vec< i32 >, former::ReturnPreformed >
+//     >
+//   >::Former::new_precise( former::ReturnPreformed );
+//   a_id!( got.int_1, exp.storage.int_1 );
+//
+//   let got = < Vec< i32 > as former::EntityToStorage >::Storage::default();
+//   let exp =
+//   <
+//     Vec< i32 > as former::EntityToFormer
+//     <
+//       < Vec< i32 > as former::EntityToDefinition< (), Vec< i32 >, former::ReturnPreformed > >::Definition
+//     >
+//   >::Former::new_precise( former::ReturnPreformed );
+//   a_id!( got.int_1, exp.storage.int_1 );
+
+}
