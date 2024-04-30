@@ -42,7 +42,7 @@ where
   #[ inline( always ) ]
   pub fn command_with_helper< IntoName >( self, name : IntoName )
   ->
-  CommandSubformer< K, Self, impl CommandSubformerEnd< K, Self > >
+  CommandAsSubformer< K, Self, impl CommandAsSubformerEnd< K, Self > >
   where
     IntoName : core::convert::Into< String >,
     ContainerAddElement
@@ -52,7 +52,7 @@ where
       Command< K >
     >
     :
-    CommandSubformerEnd< K, Self >,
+    CommandAsSubformerEnd< K, Self >,
   {
     let former
     = CommandFormer::begin_precise

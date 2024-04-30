@@ -6,9 +6,6 @@ fn child()
   let got = Parent::former()
   .child( "a" ).end()
   .child( "b" ).end()
-    // .add( Child::former().name( "a" ).form() )
-    // .add( Child::former().name( "b" ).form() )
-    // .end()
   .form();
 
   let children = vec!

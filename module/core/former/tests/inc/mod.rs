@@ -26,8 +26,6 @@ mod former_tests
   mod a_containers_with_subformer_manual;
   #[ cfg( not( feature = "no_std" ) ) ]
   mod a_containers_with_subformer;
-  #[ cfg( not( feature = "no_std" ) ) ]
-  mod a_containers_with_subformer_implicit;
 
   mod attribute_default_container;
   mod attribute_default_primitive;
@@ -70,10 +68,9 @@ mod former_tests
   mod subformer_subform_manual;
 
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_subform_implicit_container;
-  // #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  // mod subformer_subform_implicit_container_manutal;
-  // xxx
+  mod subformer_implicit_container;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_implicit_container_manual;
 
 }
 

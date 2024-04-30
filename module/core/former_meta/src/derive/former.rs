@@ -93,12 +93,15 @@ impl Attributes
         {
           match attr.meta
           {
+            syn::Meta::List( ref meta_list ) =>
+            {
+              subform.replace( syn::parse2::< AttributeSubform >( meta_list.tokens.clone() )? );
+            },
             syn::Meta::Path( ref _path ) =>
             {
-              // code_print!( _path );
               subform.replace( syn::parse2::< AttributeSubform >( Default::default() )? );
             },
-            _ => return_syn_err!( attr, "Expects an attribute of format #[ subform ], but got:\n  {}", qt!{ #attr } ),
+            _ => return_syn_err!( attr, "Expects an attribute of format #[ subform ] or #[ subform( name : child ) ], but got:\n  {}", qt!{ #attr } ),
           }
         }
         "alias" =>
@@ -238,21 +241,79 @@ impl syn::parse::Parse for AttributeContainer
   }
 }
 
-/// zzz : write description with example
-#[ allow( dead_code ) ]
+// /// zzz : write description with example
+// #[ allow( dead_code ) ]
+// struct AttributeSubform
+// {
+//   // name : Option< syn::Ident >,
+//   // public : bolean,
+// }
+//
+// impl syn::parse::Parse for AttributeSubform
+// {
+//   fn parse( _input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+//   {
+//     Ok( Self
+//     {
+//       // expr : input.parse()?,
+//     })
+//   }
+// }
+
 struct AttributeSubform
 {
-  // expr : syn::Type,
+  name : Option< syn::Ident >,
+  public : bool,
 }
 
 impl syn::parse::Parse for AttributeSubform
 {
-  fn parse( _input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
-    Ok( Self
+    let mut name : Option< syn::Ident > = None;
+    let mut public : bool = true;
+
+    while !input.is_empty()
     {
-      // expr : input.parse()?,
-    })
+      let lookahead = input.lookahead1();
+      if lookahead.peek( syn::Ident )
+      {
+        let ident : syn::Ident = input.parse()?;
+        if ident == "name"
+        {
+          input.parse::< syn::Token![:] >()?; // Expecting a colon
+          name = Some( input.parse()? ); // Parse the identifier
+        }
+        else if ident == "public"
+        {
+          input.parse::< syn::Token![:] >()?; // Expecting a colon
+          // Parse the boolean by checking next Ident if it's "true" or "false"
+          let value : syn::Ident = input.parse()?;
+          match value.to_string().as_str()
+          {
+            "true" => public = true,
+            "false" => public = false,
+            _ => return Err( syn::Error::new( value.span(), "expected `true` or `false`" ) ),
+          }
+        }
+        else
+        {
+          return Err( lookahead.error() );
+        }
+      }
+      else
+      {
+        return Err( lookahead.error() );
+      }
+
+      // Optional comma handling
+      if input.peek( syn::Token![,] )
+      {
+        input.parse::< syn::Token![,] >()?;
+      }
+    }
+
+    Ok( Self { name, public } )
   }
 }
 
@@ -772,7 +833,7 @@ fn container_setter
         #( #params, )*
         Self,
         Self,
-        #former_assign_end,
+        #former_assign_end< Definition >,
       >
     }
     // former::VectorDefinition< String, Self, Self, Struct1FormerAssignVec1End, >
@@ -781,7 +842,7 @@ fn container_setter
   {
     qt!
     {
-      < #non_optional_ty as former::EntityToDefinition< Self, Self, #former_assign_end > >::Definition
+      < #non_optional_ty as former::EntityToDefinition< Self, Self, #former_assign_end< Definition > > >::Definition
     }
     // < Vec< String > as former::EntityToDefinition< Self, Self, Struct1FormerAssignVec1End > >::Definition
   };
@@ -806,7 +867,7 @@ fn container_setter
         #subformer_definition
       >,
     {
-      Former2::former_begin( None, Some( self ), #former_assign_end )
+      Former2::former_begin( None, Some( self ), #former_assign_end::< Definition >::default() )
     }
   };
 
@@ -995,16 +1056,34 @@ Callback replace content of container assigning new content from subformer's sto
   let r = qt!
   {
 
-    // zzz : description
+    // zzz : improve description
     #[ doc = #former_assign_end_doc ]
-    pub struct #former_assign_end;
+    pub struct #former_assign_end< Definition >
+    {
+      _phantom : core::marker::PhantomData< ( Definition, ) >,
+    }
+
+    impl< Definition > Default
+    for #former_assign_end< Definition >
+    {
+
+      #[ inline( always ) ]
+      fn default() -> Self
+      {
+        Self
+        {
+          _phantom : core::marker::PhantomData,
+        }
+      }
+
+    }
 
     #[ automatically_derived ]
     impl< #former_generics_impl > former::FormingEnd
     <
       #subformer_definition,
     >
-    for #former_assign_end
+    for #former_assign_end< Definition >
     where
       #former_generics_where
     {
@@ -1287,13 +1366,13 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let former_definition = syn::Ident::new( &former_definition_name, stru.span() );
   let former_definition_types_name = format!( "{}FormerDefinitionTypes", stru );
   let former_definition_types = syn::Ident::new( &former_definition_types_name, stru.span() );
-  let subformer_name = format!( "{}Subformer", stru );
-  let subformer = syn::Ident::new( &subformer_name, stru.span() );
-  let subformer_end_name = format!( "{}SubformerEnd", stru );
-  let subformer_end = syn::Ident::new( &subformer_end_name, stru.span() );
+  let as_subformer_name = format!( "{}AsSubformer", stru );
+  let as_subformer = syn::Ident::new( &as_subformer_name, stru.span() );
+  let as_subformer_end_name = format!( "{}AsSubformerEnd", stru );
+  let as_subformer_end = syn::Ident::new( &as_subformer_end_name, stru.span() );
 
   // zzz : improve
-  let subformer_end_doc = format!( "Alias for trait former::FormingEnd with context and formed the same type and definition of structure [`$(stru)`]. Use as subformer end of a field during process of forming of super structure." );
+  let as_subformer_end_doc = format!( "Alias for trait former::FormingEnd with context and formed the same type and definition of structure [`$(stru)`]. Use as subformer end of a field during process of forming of super structure." );
 
   /* parameters for structure */
 
@@ -1842,7 +1921,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     // zzz : improve description
     /// Use as subformer of a field during process of forming of super structure.
-    pub type #subformer < #struct_generics_ty __Superformer, __End > = #former
+    pub type #as_subformer < #struct_generics_ty __Superformer, __End > = #former
     <
       #struct_generics_ty
       #former_definition
@@ -1855,11 +1934,11 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       >,
     >;
 
-    // = subformer end
+    // = as subformer end
 
     // zzz : imporove documentation
-    #[ doc = #subformer_end_doc ]
-    pub trait #subformer_end < #struct_generics_impl SuperFormer >
+    #[ doc = #as_subformer_end_doc ]
+    pub trait #as_subformer_end < #struct_generics_impl SuperFormer >
     where
       #struct_generics_where
       Self : former::FormingEnd
@@ -1869,7 +1948,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     {
     }
 
-    impl< #struct_generics_impl SuperFormer, T > #subformer_end < #struct_generics_ty SuperFormer >
+    impl< #struct_generics_impl SuperFormer, T > #as_subformer_end < #struct_generics_ty SuperFormer >
     for T
     where
       #struct_generics_where

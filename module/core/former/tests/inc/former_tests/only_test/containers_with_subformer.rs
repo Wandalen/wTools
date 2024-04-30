@@ -122,15 +122,15 @@ tests_impls!
   {
 
     // Container subformers are defined
-    let _got = Struct1FormerAssignVec1End;
-    let _got = Struct1FormerAssignHashmap1End;
-    let _got = Struct1FormerAssignHashset1End;
+    let _got = Struct1FormerAssignVec1End::< Struct1FormerDefinition >::default();
+    let _got = Struct1FormerAssignHashmap1End::< Struct1FormerDefinition >::default();
+    let _got = Struct1FormerAssignHashset1End::< Struct1FormerDefinition >::default();
 
-    // SubformerEnd is defined
-    fn _f1< End : Struct1SubformerEnd< Struct1Former > >
+    // AsSubformerEnd is defined
+    fn _f1< End : Struct1AsSubformerEnd< Struct1Former > >
     (
       _end : End,
-      _subformer : Struct1Subformer< Struct1Former, impl Struct1SubformerEnd< Struct1Former > >
+      _subformer : Struct1AsSubformer< Struct1Former, impl Struct1AsSubformerEnd< Struct1Former > >
     )
     {
     }

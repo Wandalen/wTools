@@ -112,7 +112,7 @@ where
 
   #[ inline( always ) ]
   pub fn child( self, name : &str ) ->
-  ChildSubformer< Self, impl ChildSubformerEnd< Self > >
+  ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   {
     self._children_element_subformer
     ::< ChildFormer< _ >, _, >()

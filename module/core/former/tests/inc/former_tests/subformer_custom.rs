@@ -14,7 +14,7 @@ where
 
 // // = command subformer - generated
 //
-// pub type CommandSubformer< K, Superformer, End > = CommandFormer
+// pub type CommandAsSubformer< K, Superformer, End > = CommandFormer
 // <
 //   K,
 //   CommandFormerDefinition
@@ -29,7 +29,7 @@ where
 //
 // // = command subformer end - generated
 //
-// pub trait CommandSubformerEnd< K, SuperFormer >
+// pub trait CommandAsSubformerEnd< K, SuperFormer >
 // where
 //   K : core::hash::Hash + std::cmp::Eq,
 //   Self : the_module::FormingEnd
@@ -39,7 +39,7 @@ where
 // {
 // }
 //
-// impl< K, SuperFormer, T > CommandSubformerEnd< K, SuperFormer >
+// impl< K, SuperFormer, T > CommandAsSubformerEnd< K, SuperFormer >
 // for T
 // where
 //   K : core::hash::Hash + std::cmp::Eq,
@@ -81,7 +81,7 @@ where
   #[ inline( always ) ]
   pub fn command_with_closure< IntoName >( self, name : IntoName )
   ->
-  CommandSubformer< K, Self, impl CommandSubformerEnd< K, Self > >
+  CommandAsSubformer< K, Self, impl CommandAsSubformerEnd< K, Self > >
   where
     IntoName : core::convert::Into< String >,
   {
@@ -115,7 +115,7 @@ where
   #[ inline( always ) ]
   pub fn command_with_type< IntoName >( self, name : IntoName )
   ->
-  CommandSubformer< K, Self, impl CommandSubformerEnd< K, Self > >
+  CommandAsSubformer< K, Self, impl CommandAsSubformerEnd< K, Self > >
   where
     IntoName : core::convert::Into< String >,
   {
