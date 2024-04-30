@@ -16,7 +16,7 @@ fn add()
   let got : HashMap< String, String > = the_module
   ::ContainerSubformer
   ::< ( String, String ), former::HashMapDefinition< String, String, (), HashMap< String, String >, the_module::ReturnStorage > >
-  ::new( former::ReturnStorage )
+  ::new_precise( former::ReturnStorage )
   .add( ( "a".into(), "x".into() ) )
   .add( ( "b".into(), "y".into() ) )
   .form();
@@ -30,7 +30,7 @@ fn add()
   // expliccit with HashMapSubformer
 
   let got : HashMap< String, String > = the_module::HashMapSubformer::< String, String, (), HashMap< String, String >, the_module::ReturnStorage >
-  ::new( former::ReturnStorage )
+  ::new_precise( former::ReturnStorage )
   .add( ( "a".into(), "x".into() ) )
   .add( ( "b".into(), "y".into() ) )
   .form();
@@ -43,7 +43,7 @@ fn add()
 
   // compact with HashMapSubformer
 
-  let got : HashMap< String, String > = the_module::HashMapSubformer::new( former::ReturnStorage )
+  let got : HashMap< String, String > = the_module::HashMapSubformer::new_precise( former::ReturnStorage )
   .add( ( "a".into(), "x".into() ) )
   .add( ( "b".into(), "y".into() ) )
   .form();
@@ -54,10 +54,10 @@ fn add()
   ];
   a_id!( got, exp );
 
-  // with begin_coercing
+  // with begin_precise
 
   let got : HashMap< String, String > = the_module::HashMapSubformer
-  ::begin_coercing( Some( hmap![ "a".to_string() => "x".to_string() ] ), Some( () ), former::ReturnStorage )
+  ::begin_precise( Some( hmap![ "a".to_string() => "x".to_string() ] ), Some( () ), former::ReturnStorage )
   .add( ( "b".into(), "y".into() ) )
   .form();
   let exp = hmap!
@@ -91,7 +91,7 @@ fn add()
 fn replace()
 {
 
-  let got : HashMap< String, String > = the_module::HashMapSubformer::new( former::ReturnStorage )
+  let got : HashMap< String, String > = the_module::HashMapSubformer::new_precise( former::ReturnStorage )
   .add( ( "x".to_string(), "y".to_string() ) )
   .replace( hmap![ "a".to_string() => "x".to_string(), "b".to_string() => "y".to_string(), ] )
   .form();
@@ -103,3 +103,17 @@ fn replace()
   a_id!( got, exp );
 
 }
+
+// xxx
+// #[ test ]
+// fn entity_to()
+// {
+//
+//   let got = < Vec< i32 > as former::EntityToFormer< former::VectorDefinition< i32, (), Vec< i32 >, former::ReturnPreformed > > >
+//   ::Former::new_precise( former::ReturnPreformed )
+//   .add( 13 )
+//   .form();
+//   let exp = vec![ 13 ];
+//   a_id!( got, exp );
+//
+// }

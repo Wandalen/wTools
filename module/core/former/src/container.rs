@@ -139,30 +139,15 @@ where
   < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
 {
 
-  // /// Form current former into target structure.
-  // #[ inline( always ) ]
-  // pub fn storage( mut self ) -> < Definition::Types as FormerDefinitionTypes >::Storage
-  // {
-  //   let storage = if self.storage.is_some()
-  //   {
-  //     self.storage.take().unwrap()
-  //   }
-  //   else
-  //   {
-  //     let val = Default::default();
-  //     val
-  //   };
-  //   storage
-  // }
-
   /// Begins the building process, optionally initializing with a context and storage.
   #[ inline( always ) ]
-  pub fn begin_coercing
+  pub fn begin_precise
   (
     mut storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
     context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
     on_end : Definition::End,
-  ) -> Self
+  )
+  -> Self
   {
     if storage.is_none()
     {
@@ -173,6 +158,30 @@ where
       storage : storage.unwrap(),
       context,
       on_end : Some( on_end ),
+    }
+  }
+
+  /// zzz : update description
+  #[ inline( always ) ]
+  pub fn begin_coercing< IntoEnd >
+  (
+    mut storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
+    context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
+    on_end : IntoEnd,
+  )
+  -> Self
+  where
+    IntoEnd : Into< Definition::End >,
+  {
+    if storage.is_none()
+    {
+      storage = Some( core::default::Default::default() );
+    }
+    Self
+    {
+      storage : storage.unwrap(),
+      context,
+      on_end : Some( on_end.into() ),
     }
   }
 
@@ -218,9 +227,9 @@ where
   ///
   // zzz : update description
   #[ inline( always ) ]
-  pub fn new( end : Definition::End ) -> Self
+  pub fn new_precise( end : Definition::End ) -> Self
   {
-    Self::begin_coercing
+    Self::begin_precise
     (
       None,
       None,
@@ -230,11 +239,11 @@ where
 
   // zzz : update description
   #[ inline( always ) ]
-  pub fn new_with< IntoEnd >( end : IntoEnd ) -> Self
+  pub fn new_coercing< IntoEnd >( end : IntoEnd ) -> Self
   where
     IntoEnd : Into< Definition::End >,
   {
-    Self::begin_coercing
+    Self::begin_precise
     (
       None,
       None,
@@ -280,7 +289,7 @@ where
   )
   -> Self
   {
-    Self::begin_coercing( storage, context, on_end )
+    Self::begin_precise( storage, context, on_end )
   }
 
 }

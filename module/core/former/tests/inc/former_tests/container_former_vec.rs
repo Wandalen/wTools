@@ -15,7 +15,7 @@ fn add()
   let got : Vec< String > = the_module
   ::ContainerSubformer
   ::< String, former::VectorDefinition< String, (), Vec< String >, the_module::ReturnStorage > >
-  ::new( former::ReturnStorage )
+  ::new_precise( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
   .form();
@@ -29,7 +29,7 @@ fn add()
   // expliccit with VectorSubformer
 
   let got : Vec< String > = the_module::VectorSubformer::< String, (), Vec< String >, the_module::ReturnStorage >
-  ::new( former::ReturnStorage )
+  ::new_precise( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
   .form();
@@ -42,7 +42,7 @@ fn add()
 
   // compact with VectorSubformer
 
-  let got : Vec< String > = the_module::VectorSubformer::new( former::ReturnStorage )
+  let got : Vec< String > = the_module::VectorSubformer::new_precise( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
   .form();
@@ -56,7 +56,7 @@ fn add()
   // with begin_coercing
 
   let got : Vec< String > = the_module::VectorSubformer
-  ::begin_coercing( Some( vec![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
+  ::begin_precise( Some( vec![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
   .add( "b" )
   .form();
   let exp = vec!
@@ -90,7 +90,7 @@ fn add()
 fn replace()
 {
 
-  let got : Vec< String > = the_module::VectorSubformer::new( former::ReturnStorage )
+  let got : Vec< String > = the_module::VectorSubformer::new_precise( former::ReturnStorage )
   .add( "x" )
   .replace( vec![ "a".to_string(), "b".to_string() ] )
   .form();
