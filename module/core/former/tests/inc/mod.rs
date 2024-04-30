@@ -32,7 +32,7 @@ mod former_tests
   mod attribute_perform;
   mod attribute_setter;
   mod attribute_alias;
-  // mod attribute_feature; // zzz : write test
+  // mod attribute_feature; // xxx : write test
 
   mod string_slice_manual;
   mod string_slice;
@@ -40,6 +40,7 @@ mod former_tests
   mod default_user_type;
   mod user_type_no_default;
   mod user_type_no_debug;
+  mod visibility; // xxx : write test
 
   mod name_collision_former_hashmap_without_parameter;
   mod name_collision_former_vector_without_parameter;
