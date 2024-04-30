@@ -49,7 +49,7 @@ where
 {
 
   #[ inline( always ) ]
-  pub fn _children_element_subformer_with_closure< Former2, Definition2, Types2 >( self ) ->
+  pub fn _children_add_subformer_with_closure< Former2, Definition2, Types2 >( self ) ->
   Former2
   where
     Types2 : former::FormerDefinitionTypes
@@ -89,7 +89,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn _children_element_subformer< Former2, Definition2 >( self ) ->
+  pub fn _children_add_subformer< Former2, Definition2 >( self ) ->
   Former2
   where
     Definition2 : former::FormerDefinition
@@ -114,7 +114,7 @@ where
   pub fn child( self, name : &str ) ->
   ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   {
-    self._children_element_subformer
+    self._children_add_subformer
     ::< ChildFormer< _ >, _, >()
     .name( name )
   }

@@ -30,7 +30,7 @@ where
   #[ inline( always ) ]
   pub fn child( self, name : &str ) -> ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   {
-    self._children_element_subformer::< ChildFormer< _ >, _, >()
+    self._children_add_subformer::< ChildFormer< _ >, _, >()
     .name( name )
   }
 

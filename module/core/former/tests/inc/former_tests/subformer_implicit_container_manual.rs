@@ -22,7 +22,7 @@ pub struct Parent
   children : Vec< Child >,
 }
 
-// = begin of generated for Parent in context of attribute subform
+// == begin of generated for Parent in context of attribute subform
 
 impl< Definition > ParentFormer< Definition >
 where
@@ -31,7 +31,7 @@ where
 {
 
   #[ inline( always ) ]
-  pub fn _children_element_subformer_with_closure< Former2, Definition2, Types2 >( self ) ->
+  pub fn _children_add_subformer_with_closure< Former2, Definition2, Types2 >( self ) ->
   Former2
   where
     Types2 : former::FormerDefinitionTypes
@@ -71,7 +71,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn _children_element_subformer< Former2, Definition2 >( self ) ->
+  pub fn _children_add_subformer< Former2, Definition2 >( self ) ->
   Former2
   where
     Definition2 : former::FormerDefinition
@@ -92,12 +92,30 @@ where
     Former2::former_begin( None, Some( self ), ParentFormerAddChildrenEnd::default() )
   }
 
+  // #[ inline( always ) ]
+  // pub fn child( self, name : &str ) ->
+  // ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
+  // {
+  //   self._children_add_subformer
+  //   ::< ChildFormer< _ >, _, >()
+  //   .name( name )
+  // }
+
+  // #[ inline( always ) ]
+  // pub fn child( self, name : &str ) ->
+  // ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
+  // {
+  //   self._children_add_subformer
+  //   ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
+  //   .name( name )
+  // }
+
   #[ inline( always ) ]
   pub fn child( self, name : &str ) ->
   ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   {
-    self._children_element_subformer
-    ::< ChildFormer< _ >, _, >()
+    self._children_add_subformer
+    ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
     .name( name )
   }
 
@@ -159,9 +177,9 @@ where
   }
 }
 
-// = end of generated for Parent in context of attribute subform
+// == end of generated for Parent in context of attribute subform
 
-// = begin of generated for Parent in context of attribute container( former::VectorDefinition ) ]
+// == begin of generated for Parent in context of attribute container( former::VectorDefinition ) ]
 
 #[ automatically_derived ]
 impl< Definition, > ParentFormer< Definition, >
@@ -242,7 +260,7 @@ where
   }
 }
 
-// = end of generated for Parent in context of attribute container( former::VectorDefinition ) ]
+// == end of generated for Parent in context of attribute container( former::VectorDefinition ) ]
 
 include!( "./only_test/subformer_subform.rs" );
 include!( "./only_test/subformer_container.rs" );

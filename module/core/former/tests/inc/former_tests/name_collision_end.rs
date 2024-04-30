@@ -18,4 +18,4 @@ pub struct End
 
 // = begin_coercing of generated
 
-// = end of generated
+// == end of generated

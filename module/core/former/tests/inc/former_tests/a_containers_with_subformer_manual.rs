@@ -27,7 +27,8 @@ where
   }
 }
 
-impl< Definition > former::EntityToFormer< Definition > for Struct1< >
+impl< Definition > former::EntityToFormer< Definition >
+for Struct1< >
 where
   Definition : former::FormerDefinition< Storage = Struct1FormerStorage<> >,
 {
@@ -444,14 +445,12 @@ where
   }
 }
 
-#[doc =
-r" Use as subformer of a field during process of forming of super structure."]
+#[ allow( dead_code ) ]
 pub type Struct1AsSubformer<Superformer, End> = Struct1Former<
   Struct1FormerDefinition<Superformer, Superformer, End,>,
 >;
 
-#[doc =
-"Alias for trait former::FormingEnd with context and formed the same type and definition of structure [`$(stru)`]. Use as subformer end of a field during process of forming of super structure."]
+#[ allow( dead_code ) ]
 pub trait Struct1AsSubformerEnd<SuperFormer> where Self : former::FormingEnd< Struct1FormerDefinitionTypes<SuperFormer, SuperFormer>, >
 {}
 

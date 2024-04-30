@@ -241,28 +241,28 @@ impl syn::parse::Parse for AttributeContainer
   }
 }
 
-// /// zzz : write description with example
-// #[ allow( dead_code ) ]
-// struct AttributeSubform
-// {
-//   // name : Option< syn::Ident >,
-//   // public : bolean,
-// }
-//
-// impl syn::parse::Parse for AttributeSubform
-// {
-//   fn parse( _input : syn::parse::ParseStream< '_ > ) -> Result< Self >
-//   {
-//     Ok( Self
-//     {
-//       // expr : input.parse()?,
-//     })
-//   }
-// }
+/// Represents a subform attribute with optional name flag.
+/// Used to specify extra options for using one former as subformer of another one.
+/// For example name of setter could be customized.
+///
+/// ## Example Input
+///
+/// A typical input to parse might look like the following:
+/// ```
+/// name = field_name, public = true
+/// ```
+/// or simply:
+/// ```
+/// mame = field_name
+/// ```
 
 struct AttributeSubform
 {
+  /// - `name` : An optional identifier that names the subform. It is parsed from inputs
+  ///   like `name = my_field`.
   name : Option< syn::Ident >,
+  /// - `pubc` : An option for debug purpose.
+  #[ allow( dead_code ) ]
   public : bool,
 }
 
@@ -281,12 +281,12 @@ impl syn::parse::Parse for AttributeSubform
         let ident : syn::Ident = input.parse()?;
         if ident == "name"
         {
-          input.parse::< syn::Token![:] >()?; // Expecting a colon
-          name = Some( input.parse()? ); // Parse the identifier
+          input.parse::< syn::Token![ = ] >()?;
+          name = Some( input.parse()? );
         }
         else if ident == "public"
         {
-          input.parse::< syn::Token![:] >()?; // Expecting a colon
+          input.parse::< syn::Token![ = ] >()?;
           // Parse the boolean by checking next Ident if it's "true" or "false"
           let value : syn::Ident = input.parse()?;
           match value.to_string().as_str()
@@ -613,7 +613,14 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
 /// ```
 
 #[ inline ]
-fn field_setter_map( field : &FormerField< '_ >, stru : &syn::Ident ) -> Result< TokenStream >
+fn field_setter_map
+(
+  field : &FormerField< '_ >,
+  stru : &syn::Ident,
+  as_subformer : &syn::Ident,
+  as_subformer_end : &syn::Ident,
+)
+-> Result< TokenStream >
 {
   let ident = &field.ident;
 
@@ -652,7 +659,7 @@ fn field_setter_map( field : &FormerField< '_ >, stru : &syn::Ident ) -> Result<
 
   let r = if field.attrs.subform.is_some()
   {
-    let subformer = field_subformer_map( field, stru )?;
+    let subformer = field_subformer_map( field, stru, as_subformer, as_subformer_end )?;
     qt!
     {
       #r
@@ -674,8 +681,11 @@ fn field_setter_map( field : &FormerField< '_ >, stru : &syn::Ident ) -> Result<
 fn field_subformer_map
 (
   field : &FormerField< '_ >,
-  stru : &syn::Ident
-) -> Result< TokenStream >
+  stru : &syn::Ident,
+  as_subformer : &syn::Ident,
+  as_subformer_end : &syn::Ident,
+)
+-> Result< TokenStream >
 {
 
   if field.attrs.subform.is_none()
@@ -685,15 +695,27 @@ fn field_subformer_map
 
   use convert_case::{ Case, Casing };
   let field_ident = field.ident;
-  // let field_ty = field.non_optional_ty;
+  let field_ty = field.non_optional_ty;
   // let params = typ::type_parameters( &field.non_optional_ty, .. );
+
+  // example : `child`
+  let mut explicit_name = false;
+  let setter_name = if let Some( ref _name ) = field.attrs.subform.as_ref().unwrap().name
+  {
+    explicit_name = true;
+    _name
+  }
+  else
+  {
+    field_ident
+  };
 
   // example : `ParentFormerAddChildrenEnd``
   let parent_add_element_end_name = format!( "{}FormerAdd{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
   let parent_add_element_end = syn::Ident::new( &parent_add_element_end_name, field_ident.span() );
 
   // example : `_children_former`
-  let element_subformer_name = format!( "_{}_element_subformer", field_ident );
+  let element_subformer_name = format!( "_{}_add_subformer", field_ident );
   let element_subformer = syn::Ident::new( &element_subformer_name, field_ident.span() );
 
   let r = qt!
@@ -724,56 +746,39 @@ fn field_subformer_map
 
   };
 
+  // xxx : it should be printed by hint also
+  let r = if explicit_name
+  {
+    qt!
+    {
+      #r
+
+      #[ inline( always ) ]
+      pub fn #setter_name( self ) ->
+      #as_subformer< Self, impl #as_subformer_end< Self > >
+      {
+        self.#element_subformer
+        ::< < #field_ty as former::EntityToFormer< _ > >::Former, _, >()
+        // ::< #former< _ >, _, >()
+      }
+    }
+
+    // #[ inline( always ) ]
+    // pub fn child( self ) ->
+    // ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
+    // {
+    //   self._children_add_subformer
+    //   ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
+    // }
+
+  }
+  else
+  {
+    r
+  };
+
   // tree_print!( r.as_ref().unwrap() );
   Ok( r )
-}
-
-///
-/// Generate a single setter for the 'field_ident' with the 'setter_name' name.
-///
-/// Used as a helper function for field_setter_map(), which generates alias setters
-///
-/// # Example of generated code
-/// ```ignore
-/// #[ doc = "Setter for the 'int_1' field." ]
-/// #[ inline ]
-/// pub fn int_1< Src >( mut self, src : Src ) -> Self
-/// where
-///   Src : ::core::convert::Into< i32 >,
-/// {
-///   debug_assert!( self.int_1.is_none() );
-///   self.storage.int_1 = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
-///   self
-/// }
-/// ```
-
-#[ inline ]
-fn field_setter
-(
-  field_ident : &syn::Ident,
-  setter_name : &syn::Ident,
-  non_optional_type : &syn::Type,
-)
--> TokenStream
-{
-  let doc = format!
-  (
-    "Setter for the '{}' field.",
-    field_ident,
-  );
-
-  qt!
-  {
-    #[ doc = #doc ]
-    #[ inline ]
-    pub fn #setter_name< Src >( mut self, src : Src ) -> Self
-    where Src : ::core::convert::Into< #non_optional_type >,
-    {
-      debug_assert!( self.storage.#field_ident.is_none() );
-      self.storage.#field_ident = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
-      self
-    }
-  }
 }
 
 ///
@@ -949,6 +954,54 @@ fn container_setter
 //     >>()
 //   }
 
+}
+
+///
+/// Generate a single setter for the 'field_ident' with the 'setter_name' name.
+///
+/// Used as a helper function for field_setter_map(), which generates alias setters
+///
+/// # Example of generated code
+/// ```ignore
+/// #[ doc = "Setter for the 'int_1' field." ]
+/// #[ inline ]
+/// pub fn int_1< Src >( mut self, src : Src ) -> Self
+/// where
+///   Src : ::core::convert::Into< i32 >,
+/// {
+///   debug_assert!( self.int_1.is_none() );
+///   self.storage.int_1 = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
+///   self
+/// }
+/// ```
+
+#[ inline ]
+fn field_setter
+(
+  field_ident : &syn::Ident,
+  setter_name : &syn::Ident,
+  non_optional_type : &syn::Type,
+)
+-> TokenStream
+{
+  let doc = format!
+  (
+    "Setter for the '{}' field.",
+    field_ident,
+  );
+
+  qt!
+  {
+    #[ doc = #doc ]
+    #[ inline ]
+    pub fn #setter_name< Src >( mut self, src : Src ) -> Self
+    where Src : ::core::convert::Into< #non_optional_type >,
+    {
+      debug_assert!( self.storage.#field_ident.is_none() );
+      self.storage.#field_ident = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
+      self
+    }
+  }
 }
 
 // zzz : description and exmaple
@@ -1504,7 +1557,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     field_optional_map( former_field ),
     field_form_map( former_field ),
     field_name_map( former_field ),
-    field_setter_map( former_field, &stru ),
+    field_setter_map( former_field, &stru, &as_subformer, &as_subformer_end ),
     field_former_assign_map
     (
       former_field,

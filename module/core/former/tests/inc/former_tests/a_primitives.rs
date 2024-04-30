@@ -14,6 +14,6 @@ pub struct Struct1
 
 // = begin_coercing of generated
 
-// = end of generated
+// == end of generated
 
 include!( "./only_test/primitives.rs" );
