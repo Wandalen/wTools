@@ -32,7 +32,7 @@ mod former_tests
   mod attribute_perform;
   mod attribute_setter;
   mod attribute_alias;
-  mod attribute_feature; // xxx : write test
+  mod attribute_feature;
 
   mod string_slice_manual;
   mod string_slice;

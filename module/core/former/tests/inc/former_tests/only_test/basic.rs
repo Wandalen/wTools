@@ -17,9 +17,8 @@ tests_impls!
     a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnPreformed ) ) );
     let former2 = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::new_coercing( former::ReturnPreformed );
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
-    // let former2 = Struct1Former::< Struct1FormerDefinition >::new_coercing( former::ReturnPreformed );
-    // a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
-    // xxx : uncomment
+    let former2 = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::new_precise( former::ReturnPreformed );
+    a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
 
     let command = Struct1::former().form();
     a_id!( command.int_1, 0 );
@@ -307,7 +306,6 @@ tests_impls!
     // ::< Struct1FormerDefinition< _, _, former::FormingEndClosure< Struct1FormerDefinitionTypes< (), Struct1 > > > >
     ::
     <
-
       Struct1FormerDefinition< (), Struct1, former::FormingEndClosure< Struct1FormerDefinitionTypes< (), Struct1 > > >
     >
     ::new_coercing( former::FormingEndClosure::new( | storage, _context : Option< () > | { former::StoragePreform::preform( storage ) } ) )
@@ -317,31 +315,31 @@ tests_impls!
     a_id!( got, exp );
 
 // xxx : switch on or remove
-//     // default explicit params with wrapper and closure
-//     let got = Struct1Former
-//     // ::< Struct1FormerWithClosure< (), Struct1 > >
-//     ::
-//     <
-//       Struct1FormerDefinition< (), Struct1, _ >
-//     >
-//     ::new_coercing( former::FormingEndClosure::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
-//     .int_1( 13 )
-//     .form();
-//     let exp = Struct1::former().int_1( 13 ).form();
-//     a_id!( got, exp );
-//
-//     // default explicit params with wrapper and closure
-//     let got = Struct1Former
-//     // ::< Struct1FormerWithClosure< (), Struct1 > >
-//     ::
-//     <
-//       Struct1FormerDefinition< (), Struct1, _ >
-//     >
-//     ::new_coercing( | storage, _context | { former::StoragePreform::preform( storage ) } )
-//     .int_1( 13 )
-//     .form();
-//     let exp = Struct1::former().int_1( 13 ).form();
-//     a_id!( got, exp );
+    // default explicit params with wrapper and closure
+    let got = Struct1Former
+    // ::< Struct1FormerWithClosure< (), Struct1 > >
+    ::
+    <
+      Struct1FormerDefinition< (), Struct1, _ >
+    >
+    ::new_precise( former::FormingEndClosure::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
+    .int_1( 13 )
+    .form();
+    let exp = Struct1::former().int_1( 13 ).form();
+    a_id!( got, exp );
+
+    // default explicit params with wrapper and closure
+    let got = Struct1Former
+    // ::< Struct1FormerWithClosure< (), Struct1 > >
+    ::
+    <
+      Struct1FormerDefinition< (), Struct1, _ >
+    >
+    ::new_precise( | storage, _context | { former::StoragePreform::preform( storage ) } )
+    .int_1( 13 )
+    .form();
+    let exp = Struct1::former().int_1( 13 ).form();
+    a_id!( got, exp );
 
   }
 

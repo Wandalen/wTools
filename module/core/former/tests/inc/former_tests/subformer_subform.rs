@@ -14,9 +14,6 @@ pub struct Child
 #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 pub struct Parent
 {
-  // xxx : is definition as argument fine?
-  // xxx : add another test to make sure attributes container and subform are compatible
-  // #[ container( former::VectorDefinition ) ]
   #[ subform ]
   children : Vec< Child >,
 }

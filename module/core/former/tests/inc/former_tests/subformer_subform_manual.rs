@@ -2,7 +2,6 @@
 
 use super::*;
 
-// xxx : rename
 /// Parameter description.
 #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 pub struct Child

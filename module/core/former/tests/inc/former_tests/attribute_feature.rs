@@ -1,8 +1,6 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-// xxx : need to fix
-
 #[ derive( Debug, PartialEq ) ]
 pub struct BaseCase
 {
