@@ -4,8 +4,6 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-// xxx : need to fix
-
 #[ derive( Debug, PartialEq, former::Former ) ]
 // #[ debug ]
 // #[ derive( Debug, PartialEq ) ]
@@ -13,7 +11,6 @@ pub struct Foo
 {
   bar : i32,
 }
-
 
 // == begin of generated
 
