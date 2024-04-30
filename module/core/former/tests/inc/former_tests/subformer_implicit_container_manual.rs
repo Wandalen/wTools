@@ -10,6 +10,14 @@ pub struct Child
   is_mandatory : bool,
 }
 
+// impl< Context, Formed, End > former::EntityToDefinition< Context, Formed, End >
+// for Child
+// where
+//   End : former::FormingEnd< ChildFormerDefinitionTypes< Context, Formed > >,
+// {
+//   type Definition = ChildFormerDefinition< Context, Formed, End >;
+// }
+
 /// Parent required for the template.
 #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 // #[ derive( Debug, Default, PartialEq, the_module::Former ) ] #[ debug ]
@@ -111,9 +119,13 @@ where
 
   #[ inline( always ) ]
   pub fn _child( self ) ->
-  < Child as former::EntityToFormer< ChildFormerDefinition< Self, Self, ParentFormerAddChildrenEnd< Definition > > > >::Former
-  // ChildFormer< ChildFormerDefinition< Self, Self, impl ChildAsSubformerEnd< Self > > >
-  // ChildFormer< ChildFormerDefinition< Self, Self, impl ChildAsSubformerEnd< Self > > >
+  < Child as former::EntityToFormer
+    <
+      // ChildFormerDefinition< Self, Self, ParentFormerAddChildrenEnd< Definition > >,
+      < Child as former::EntityToDefinition< Self, Self, ParentFormerAddChildrenEnd< Definition > > >::Definition,
+      // < Vec< Child > as former::EntityToDefinition< ParentFormer< Definition, >, ParentFormer< Definition, >, former::NoEnd > >::Definition
+    >
+  >::Former
   {
     self._children_add_subformer
     ::< < < Vec< Child > as former::ContainerAdd >::Element as former::EntityToFormer< _ > >::Former, _, >()

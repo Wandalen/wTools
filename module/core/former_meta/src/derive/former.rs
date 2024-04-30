@@ -1644,6 +1644,24 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       type Storage = #former_storage < #struct_generics_ty >;
     }
 
+    impl< #struct_generics_impl __Context, __Formed, __End > former::EntityToDefinition< __Context, __Formed, __End >
+    for #stru < #struct_generics_ty >
+    where
+      __End : former::FormingEnd< #former_definition_types < #struct_generics_ty __Context, __Formed > >,
+      #struct_generics_where
+    {
+      type Definition = #former_definition < #struct_generics_ty __Context, __Formed, __End >;
+    }
+
+    // // xxx : implement for other containers
+    // impl< E, Context, Formed, End > former::EntityToDefinition< Context, Formed, End >
+    // for Vec< E >
+    // where
+    //   End : crate::FormingEnd< VectorDefinition< E, Context, Formed, NoEnd > >,
+    // {
+    //   type Definition = VectorDefinition< E, Context, Formed, End >;
+    // }
+
     // = definition types
 
     #[ derive( Debug ) ]

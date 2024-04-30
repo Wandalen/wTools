@@ -112,11 +112,16 @@ where
   type Former = VectorSubformer< E, Definition::Context, Definition::Formed, Definition::End >;
 }
 
-impl< E, Context, Formed, End > EntityToDefinition< Context, Formed, End >
+impl< E > crate::EntityToStorage
+for Vec< E >
+{
+  type Storage = Vec< E >;
+}
+
+// xxx : implement for other containers
+impl< E, Context, Formed, End > crate::EntityToDefinition< Context, Formed, End >
 for Vec< E >
 where
-  // End : std::ops::Fn< ( Vec< E >, std::option::Option< Context > ), Output = Formed >,
-  // End : Fn( Vec< E >, std::option::Option< Context > ) -> Formed,
   End : crate::FormingEnd< VectorDefinition< E, Context, Formed, NoEnd > >,
 {
   type Definition = VectorDefinition< E, Context, Formed, End >;
