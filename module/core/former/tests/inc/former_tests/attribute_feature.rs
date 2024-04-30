@@ -17,7 +17,7 @@ pub struct BaseCase
 // #[ derive( Debug, PartialEq ) ]
 pub struct Foo
 {
-  // #[ cfg( feature = "enabled" ) ]
+  #[ cfg( feature = "enabled" ) ]
   #[ allow( dead_code ) ]
   enabled : i32,
   #[ cfg( feature = "disabled" ) ]
@@ -36,10 +36,10 @@ fn basecase()
   a_id!( got, exp );
 }
 
-// #[ test ]
-// fn basic()
-// {
-//   let got = Foo::former().enabled( 13 ).form();
-//   let exp = Foo { enabled : 13 };
-//   a_id!( got, exp );
-// }
+#[ test ]
+fn basic()
+{
+  let got = Foo::former().enabled( 13 ).form();
+  let exp = Foo { enabled : 13 };
+  a_id!( got, exp );
+}
