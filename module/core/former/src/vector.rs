@@ -102,6 +102,8 @@ where
   type End = End;
 }
 
+// = Entity To
+
 // xxx : implement for hashset / hashmap
 // xxx : cover by tests
 impl< E, Definition > EntityToFormer< Definition > for Vec< E >

@@ -5,11 +5,11 @@
 use super::*;
 use collection_tools::HashSet;
 
-impl< E > ContainerAdd for collection_tools::HashSet< E >
+impl<K > ContainerAdd for collection_tools::HashSet< K >
 where
-  E : core::cmp::Eq + core::hash::Hash,
+  K : core::cmp::Eq + core::hash::Hash,
 {
-  type Element = E;
+  type Element = K;
 
   #[ inline( always ) ]
   fn add( &mut self, e : Self::Element ) -> bool
@@ -118,9 +118,34 @@ where
 
   type Types = HashSetDefinition< K, Context, Formed, NoEnd >;
   type End = End;
+}
 
-  // type Types = HashSetDefinition< K, Context, Formed, NoEnd >;
-  // type End = End;
+// = Entity To
+
+impl< K, Definition > EntityToFormer< Definition > for HashSet< K >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+  Definition : FormerDefinition< Storage = HashSet< K >, Formed = () >,
+  < Definition as definition::FormerDefinition>::End : Fn( HashSet< K >, Option< Definition::Context > ),
+{
+  type Former = HashSetSubformer< K, Definition::Context, Definition::Formed, Definition::End >;
+}
+
+impl< K > crate::EntityToStorage
+for HashSet< K >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+  type Storage = HashSet< K >;
+}
+
+impl< K, Context, Formed, End > crate::EntityToDefinition< Context, Formed, End >
+for HashSet< K >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+  End : crate::FormingEnd< HashSetDefinition< K, Context, Formed, NoEnd > >,
+{
+  type Definition = HashSetDefinition< K, Context, Formed, End >;
 }
 
 // = subformer
