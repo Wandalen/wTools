@@ -243,7 +243,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn begin_precise( mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >, context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >, on_end : < Definition as former::FormerDefinition >::End, ) -> Self
+  pub fn begin( mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >, context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >, on_end : < Definition as former::FormerDefinition >::End, ) -> Self
   {
     if storage.is_none()
     {

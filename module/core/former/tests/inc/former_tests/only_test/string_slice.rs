@@ -43,7 +43,7 @@ tests_impls!
     // closure with helper
     let got : Struct1 = Struct1Former
     ::< Struct1FormerDefinition< (), Struct1, _ > >
-    ::begin_precise( None, None, | storage, _context | { former::StoragePreform::preform( storage ) } )
+    ::begin( None, None, | storage, _context | { former::StoragePreform::preform( storage ) } )
     .string_slice_1( "abc" )
     .form();
     let exp = Struct1::former().string_slice_1( "abc" ).form();

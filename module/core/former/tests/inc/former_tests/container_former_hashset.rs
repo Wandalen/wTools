@@ -57,7 +57,7 @@ fn add()
   // with begin_coercing
 
   let got : HashSet< String > = the_module::HashSetSubformer
-  ::begin_precise( Some( hset![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
+  ::begin( Some( hset![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
   .add( "b" )
   .form();
   let exp = hset!

@@ -50,7 +50,7 @@ fn begin_and_custom_end()
   {
     13.1
   }
-  let got = the_module::VectorSubformer::begin_precise( None, None, return_13 )
+  let got = the_module::VectorSubformer::begin( None, None, return_13 )
   .add( "a" )
   .add( "b" )
   .form();
@@ -77,7 +77,7 @@ fn begin_and_custom_end()
       13.1
     }
   }
-  let got = the_module::VectorSubformer::begin_precise( None, Some( 10.0 ), context_plus_13 )
+  let got = the_module::VectorSubformer::begin( None, Some( 10.0 ), context_plus_13 )
   .add( "a" )
   .add( "b" )
   .form();

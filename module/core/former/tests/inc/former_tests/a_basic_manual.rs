@@ -209,7 +209,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn begin_precise
+  pub fn begin
   (
     mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
     context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
@@ -308,7 +308,7 @@ where
   -> Self
   {
     debug_assert!( storage.is_none() );
-    Self::begin_precise( None, context, on_end )
+    Self::begin( None, context, on_end )
   }
 
 }

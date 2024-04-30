@@ -207,7 +207,7 @@ where
   #[ inline( always ) ]
   pub fn new( on_end : Definition::End ) -> Self
   {
-    Self::begin_precise( None, None, on_end )
+    Self::begin( None, None, on_end )
   }
 
   #[ inline( always ) ]
@@ -224,7 +224,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn begin_precise
+  pub fn begin
   (
     mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
     context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,

@@ -201,7 +201,7 @@ tests_impls!
 
   //
 
-  fn begin_precise()
+  fn begin()
   {
 
     // custom params
@@ -212,7 +212,7 @@ tests_impls!
 
       Struct1FormerDefinition< i32, i32, _ >
     >
-    ::begin_precise
+    ::begin
     (
       None,
       Some( 3 ),
@@ -233,7 +233,7 @@ tests_impls!
 
       Struct1FormerDefinition< i32, i32, former::FormingEndClosure< Struct1FormerDefinitionTypes< i32, i32 > > >
     >
-    ::begin_precise
+    ::begin
     (
       None,
       Some( 3 ),
@@ -551,7 +551,7 @@ tests_index!
   former_begin,
   custom_definition_params,
   begin_coercing,
-  begin_precise,
+  begin,
   new_coercing,
   new,
   preform,

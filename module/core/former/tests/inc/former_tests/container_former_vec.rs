@@ -56,7 +56,7 @@ fn add()
   // with begin_coercing
 
   let got : Vec< String > = the_module::VectorSubformer
-  ::begin_precise( Some( vec![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
+  ::begin( Some( vec![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
   .add( "b" )
   .form();
   let exp = vec!

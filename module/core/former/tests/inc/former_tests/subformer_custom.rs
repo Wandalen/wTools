@@ -105,7 +105,7 @@ where
 
     let former
     : CommandFormer< _, _ >
-    = CommandFormer::begin_precise( None, Some( self ), on_end );
+    = CommandFormer::begin( None, Some( self ), on_end );
 
     former.name( name )
   }
@@ -119,7 +119,7 @@ where
   where
     IntoName : core::convert::Into< String >,
   {
-    let former = CommandFormer::begin_precise( None, Some( self ), AggregatorFormerCommandEnd );
+    let former = CommandFormer::begin( None, Some( self ), AggregatorFormerCommandEnd );
     former.name( name )
   }
 

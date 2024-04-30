@@ -54,10 +54,10 @@ fn add()
   ];
   a_id!( got, exp );
 
-  // with begin_precise
+  // with begin
 
   let got : HashMap< String, String > = the_module::HashMapSubformer
-  ::begin_precise( Some( hmap![ "a".to_string() => "x".to_string() ] ), Some( () ), former::ReturnStorage )
+  ::begin( Some( hmap![ "a".to_string() => "x".to_string() ] ), Some( () ), former::ReturnStorage )
   .add( ( "b".into(), "y".into() ) )
   .form();
   let exp = hmap!

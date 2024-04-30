@@ -141,7 +141,7 @@ where
 
   /// Begins the building process, optionally initializing with a context and storage.
   #[ inline( always ) ]
-  pub fn begin_precise
+  pub fn begin
   (
     mut storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
     context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
@@ -229,7 +229,7 @@ where
   #[ inline( always ) ]
   pub fn new( end : Definition::End ) -> Self
   {
-    Self::begin_precise
+    Self::begin
     (
       None,
       None,
@@ -243,7 +243,7 @@ where
   where
     IntoEnd : Into< Definition::End >,
   {
-    Self::begin_precise
+    Self::begin
     (
       None,
       None,
@@ -289,7 +289,7 @@ where
   )
   -> Self
   {
-    Self::begin_precise( storage, context, on_end )
+    Self::begin( storage, context, on_end )
   }
 
 }
