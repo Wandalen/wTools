@@ -620,8 +620,8 @@ fn field_setter_map
 (
   field : &FormerField< '_ >,
   stru : &syn::Ident,
-  as_subformer : &syn::Ident,
-  as_subformer_end : &syn::Ident,
+  // as_subformer : &syn::Ident,
+  // as_subformer_end : &syn::Ident,
 )
 -> Result< TokenStream >
 {
@@ -662,7 +662,7 @@ fn field_setter_map
 
   let r = if field.attrs.subform.is_some()
   {
-    let subformer = field_subformer_map( field, stru, as_subformer, as_subformer_end )?;
+    let subformer = field_subformer_map( field, stru )?;
     qt!
     {
       #r
@@ -685,8 +685,6 @@ fn field_subformer_map
 (
   field : &FormerField< '_ >,
   stru : &syn::Ident,
-  _as_subformer : &syn::Ident,
-  _as_subformer_end : &syn::Ident,
 )
 -> Result< TokenStream >
 {
@@ -1565,7 +1563,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     field_optional_map( former_field ),
     field_form_map( former_field ),
     field_name_map( former_field ),
-    field_setter_map( former_field, &stru, &as_subformer, &as_subformer_end ),
+    field_setter_map( former_field, &stru ),
     field_former_assign_map
     (
       former_field,
@@ -2008,8 +2006,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     {
     }
 
-    impl< #struct_generics_impl SuperFormer, T > #as_subformer_end < #struct_generics_ty SuperFormer >
-    for T
+    impl< #struct_generics_impl SuperFormer, __T > #as_subformer_end < #struct_generics_ty SuperFormer >
+    for __T
     where
       #struct_generics_where
       Self : former::FormingEnd

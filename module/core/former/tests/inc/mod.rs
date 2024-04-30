@@ -55,6 +55,7 @@ mod former_tests
   mod parametrized_struct_imm;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod parametrized_struct_where;
+  mod parametrized_field;
 
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subformer_basic;
