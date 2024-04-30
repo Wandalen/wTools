@@ -16,7 +16,7 @@ fn add()
   let got : HashMap< String, String > = the_module
   ::ContainerSubformer
   ::< ( String, String ), former::HashMapDefinition< String, String, (), HashMap< String, String >, the_module::ReturnStorage > >
-  ::new_precise( former::ReturnStorage )
+  ::new( former::ReturnStorage )
   .add( ( "a".into(), "x".into() ) )
   .add( ( "b".into(), "y".into() ) )
   .form();
@@ -30,7 +30,7 @@ fn add()
   // expliccit with HashMapSubformer
 
   let got : HashMap< String, String > = the_module::HashMapSubformer::< String, String, (), HashMap< String, String >, the_module::ReturnStorage >
-  ::new_precise( former::ReturnStorage )
+  ::new( former::ReturnStorage )
   .add( ( "a".into(), "x".into() ) )
   .add( ( "b".into(), "y".into() ) )
   .form();
@@ -43,7 +43,7 @@ fn add()
 
   // compact with HashMapSubformer
 
-  let got : HashMap< String, String > = the_module::HashMapSubformer::new_precise( former::ReturnStorage )
+  let got : HashMap< String, String > = the_module::HashMapSubformer::new( former::ReturnStorage )
   .add( ( "a".into(), "x".into() ) )
   .add( ( "b".into(), "y".into() ) )
   .form();
@@ -91,7 +91,7 @@ fn add()
 fn replace()
 {
 
-  let got : HashMap< String, String > = the_module::HashMapSubformer::new_precise( former::ReturnStorage )
+  let got : HashMap< String, String > = the_module::HashMapSubformer::new( former::ReturnStorage )
   .add( ( "x".to_string(), "y".to_string() ) )
   .replace( hmap![ "a".to_string() => "x".to_string(), "b".to_string() => "y".to_string(), ] )
   .form();

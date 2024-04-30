@@ -34,7 +34,7 @@ tests_impls!
     // default explicit params with wrapper and closure
     let got = Struct1Former
     ::< Struct1FormerDefinition< (), Struct1, _ > >
-    ::new_precise( | storage, _context | { former::StoragePreform::preform( storage ) } )
+    ::new( | storage, _context | { former::StoragePreform::preform( storage ) } )
     .string_slice_1( "abc" )
     .form();
     let exp = Struct1::former().string_slice_1( "abc" ).form();

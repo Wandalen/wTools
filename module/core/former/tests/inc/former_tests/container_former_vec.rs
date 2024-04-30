@@ -15,7 +15,7 @@ fn add()
   let got : Vec< String > = the_module
   ::ContainerSubformer
   ::< String, former::VectorDefinition< String, (), Vec< String >, the_module::ReturnStorage > >
-  ::new_precise( former::ReturnStorage )
+  ::new( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
   .form();
@@ -29,7 +29,7 @@ fn add()
   // expliccit with VectorSubformer
 
   let got : Vec< String > = the_module::VectorSubformer::< String, (), Vec< String >, the_module::ReturnStorage >
-  ::new_precise( former::ReturnStorage )
+  ::new( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
   .form();
@@ -42,7 +42,7 @@ fn add()
 
   // compact with VectorSubformer
 
-  let got : Vec< String > = the_module::VectorSubformer::new_precise( former::ReturnStorage )
+  let got : Vec< String > = the_module::VectorSubformer::new( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
   .form();
@@ -90,7 +90,7 @@ fn add()
 fn replace()
 {
 
-  let got : Vec< String > = the_module::VectorSubformer::new_precise( former::ReturnStorage )
+  let got : Vec< String > = the_module::VectorSubformer::new( former::ReturnStorage )
   .add( "x" )
   .replace( vec![ "a".to_string(), "b".to_string() ] )
   .form();
@@ -112,7 +112,7 @@ fn entity_to()
 
   // qqq : uncomment and make it working
   // let got = < Vec< i32 > as former::EntityToFormer< former::VectorDefinition< i32, (), Vec< i32 >, former::ReturnPreformed > > >
-  // ::Former::new_precise( former::ReturnPreformed )
+  // ::Former::new( former::ReturnPreformed )
   // .add( 13 )
   // .form();
   // let exp = vec![ 13 ];
@@ -126,7 +126,7 @@ fn entity_to()
 //     <
 //       Vec< i32 >FormerDefinition< (), Vec< i32 >, former::ReturnPreformed >
 //     >
-//   >::Former::new_precise( former::ReturnPreformed );
+//   >::Former::new( former::ReturnPreformed );
 //   a_id!( got.int_1, exp.storage.int_1 );
 //
 //   let got = < Vec< i32 > as former::EntityToStorage >::Storage::default();
@@ -136,7 +136,7 @@ fn entity_to()
 //     <
 //       < Vec< i32 > as former::EntityToDefinition< (), Vec< i32 >, former::ReturnPreformed > >::Definition
 //     >
-//   >::Former::new_precise( former::ReturnPreformed );
+//   >::Former::new( former::ReturnPreformed );
 //   a_id!( got.int_1, exp.storage.int_1 );
 
 }

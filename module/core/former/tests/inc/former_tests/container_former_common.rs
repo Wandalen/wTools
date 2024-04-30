@@ -57,7 +57,7 @@ fn begin_and_custom_end()
   let exp = 13.1;
   a_id!( got, exp );
 
-  let got = the_module::VectorSubformer::new_precise( return_13 )
+  let got = the_module::VectorSubformer::new( return_13 )
   .add( "a" )
   .add( "b" )
   .form();
@@ -138,7 +138,7 @@ fn custom_definition()
   let exp = 13;
   a_id!( got, exp );
 
-  let got = the_module::ContainerSubformer::< String, Return13 >::new_precise( Return13 )
+  let got = the_module::ContainerSubformer::< String, Return13 >::new( Return13 )
   .add( "a" )
   .add( "b" )
   .form();
@@ -265,14 +265,14 @@ fn custom_definition_custom_end()
   }
 
   let end_wrapper : the_module::FormingEndClosure< Return13 > = the_module::FormingEndClosure::new( return_13 );
-  let got = the_module::ContainerSubformer::< String, Return13 >::new_precise( end_wrapper )
+  let got = the_module::ContainerSubformer::< String, Return13 >::new( end_wrapper )
   .add( "a" )
   .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
 
-  let got = the_module::ContainerSubformer::< String, Return13 >::new_precise( return_13.into() )
+  let got = the_module::ContainerSubformer::< String, Return13 >::new( return_13.into() )
   .add( "a" )
   .add( "b" )
   .form();

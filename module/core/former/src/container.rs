@@ -227,7 +227,7 @@ where
   ///
   // zzz : update description
   #[ inline( always ) ]
-  pub fn new_precise( end : Definition::End ) -> Self
+  pub fn new( end : Definition::End ) -> Self
   {
     Self::begin_precise
     (

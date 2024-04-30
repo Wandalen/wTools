@@ -230,13 +230,13 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn new_precise( on_end : Definition::End ) -> Self
+  pub fn new( on_end : Definition::End ) -> Self
   {
     Self::begin_coercing( None, None, on_end )
   }
 
   #[ inline( always ) ]
-  pub fn new< IntoEnd >( end : IntoEnd ) -> Self
+  pub fn new_coercing< IntoEnd >( end : IntoEnd ) -> Self
   where IntoEnd : Into< Definition::End >
   {
     Self::begin_coercing( None, None, end )

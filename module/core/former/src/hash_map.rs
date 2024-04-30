@@ -225,7 +225,7 @@ where
 {
   fn former() -> HashMapSubformer< K, E, (), HashMap< K, E >, ReturnStorage >
   {
-    HashMapSubformer::< K, E, (), HashMap< K, E >, ReturnStorage >::new_precise( ReturnStorage::default() )
+    HashMapSubformer::< K, E, (), HashMap< K, E >, ReturnStorage >::new( ReturnStorage::default() )
   }
 }
 

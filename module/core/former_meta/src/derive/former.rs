@@ -1813,7 +1813,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       ///
       // zzz : improve description
       #[ inline( always ) ]
-      pub fn new_precise( on_end : Definition::End ) -> Self
+      pub fn new( on_end : Definition::End ) -> Self
       {
         Self::begin_coercing( None, None, on_end )
       }

@@ -16,7 +16,7 @@ fn add()
   let got : HashSet< String > = the_module
   ::ContainerSubformer
   ::< String, former::HashSetDefinition< String, (), HashSet< String >, the_module::ReturnStorage > >
-  ::new_precise( former::ReturnStorage )
+  ::new( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
   .form();
@@ -30,7 +30,7 @@ fn add()
   // expliccit with HashSetSubformer
 
   let got : HashSet< String > = the_module::HashSetSubformer::< String, (), HashSet< String >, the_module::ReturnStorage >
-  ::new_precise( former::ReturnStorage )
+  ::new( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
   .form();
@@ -43,7 +43,7 @@ fn add()
 
   // compact with HashSetSubformer
 
-  let got : HashSet< String > = the_module::HashSetSubformer::new_precise( former::ReturnStorage )
+  let got : HashSet< String > = the_module::HashSetSubformer::new( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
   .form();
@@ -91,7 +91,7 @@ fn add()
 fn replace()
 {
 
-  let got : HashSet< String > = the_module::HashSetSubformer::new_precise( former::ReturnStorage )
+  let got : HashSet< String > = the_module::HashSetSubformer::new( former::ReturnStorage )
   .add( "x" )
   .replace( hset![ "a".to_string(), "b".to_string() ] )
   .form();

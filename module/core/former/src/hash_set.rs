@@ -203,7 +203,7 @@ where
 {
   fn former() -> HashSetSubformer< K, (), HashSet< K >, ReturnStorage >
   {
-    HashSetSubformer::< K, (), HashSet< K >, ReturnStorage >::new_precise( ReturnStorage::default() )
+    HashSetSubformer::< K, (), HashSet< K >, ReturnStorage >::new( ReturnStorage::default() )
   }
 }
 

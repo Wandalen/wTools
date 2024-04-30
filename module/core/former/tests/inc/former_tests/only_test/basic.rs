@@ -17,7 +17,7 @@ tests_impls!
     a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnPreformed ) ) );
     let former2 = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::new_coercing( former::ReturnPreformed );
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
-    let former2 = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::new_precise( former::ReturnPreformed );
+    let former2 = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::new( former::ReturnPreformed );
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
 
     let command = Struct1::former().form();
@@ -36,7 +36,7 @@ tests_impls!
   fn entity_to()
   {
 
-    let got = < Struct1 as former::EntityToFormer< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > > >::Former::new_precise( former::ReturnPreformed )
+    let got = < Struct1 as former::EntityToFormer< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > > >::Former::new( former::ReturnPreformed )
     .int_1( 13 )
     .form();
     let exp = Struct1 { int_1 : 13 };
@@ -49,7 +49,7 @@ tests_impls!
       <
         Struct1FormerDefinition< (), Struct1, former::ReturnPreformed >
       >
-    >::Former::new_precise( former::ReturnPreformed );
+    >::Former::new( former::ReturnPreformed );
     a_id!( got.int_1, exp.storage.int_1 );
 
     let got = < Struct1 as former::EntityToStorage >::Storage::default();
@@ -59,7 +59,7 @@ tests_impls!
       <
         < Struct1 as former::EntityToDefinition< (), Struct1, former::ReturnPreformed > >::Definition
       >
-    >::Former::new_precise( former::ReturnPreformed );
+    >::Former::new( former::ReturnPreformed );
     a_id!( got.int_1, exp.storage.int_1 );
 
   }
@@ -249,12 +249,12 @@ tests_impls!
 
   //
 
-  fn new()
+  fn new_coercing()
   {
 
     // basic case
     let former = Struct1::former();
-    let former2 = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::new_precise( former::ReturnPreformed );
+    let former2 = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::new( former::ReturnPreformed );
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
     let exp = former.form();
     let got = former2.form();
@@ -314,43 +314,16 @@ tests_impls!
     let exp = Struct1::former().int_1( 13 ).form();
     a_id!( got, exp );
 
-// xxx : switch on or remove
-    // default explicit params with wrapper and closure
-    let got = Struct1Former
-    // ::< Struct1FormerWithClosure< (), Struct1 > >
-    ::
-    <
-      Struct1FormerDefinition< (), Struct1, _ >
-    >
-    ::new_precise( former::FormingEndClosure::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
-    .int_1( 13 )
-    .form();
-    let exp = Struct1::former().int_1( 13 ).form();
-    a_id!( got, exp );
-
-    // default explicit params with wrapper and closure
-    let got = Struct1Former
-    // ::< Struct1FormerWithClosure< (), Struct1 > >
-    ::
-    <
-      Struct1FormerDefinition< (), Struct1, _ >
-    >
-    ::new_precise( | storage, _context | { former::StoragePreform::preform( storage ) } )
-    .int_1( 13 )
-    .form();
-    let exp = Struct1::former().int_1( 13 ).form();
-    a_id!( got, exp );
-
   }
 
   //
 
-  fn new_precise()
+  fn new()
   {
 
     // basic case
     let former = Struct1::former();
-    let former2 = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::new_precise( former::ReturnPreformed );
+    let former2 = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::new( former::ReturnPreformed );
     a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
     let exp = former.form();
     let got = former2.form();
@@ -364,7 +337,7 @@ tests_impls!
 
       Struct1FormerDefinition< (), Struct1, _ >,
     >
-    ::new_precise( former::ReturnPreformed )
+    ::new( former::ReturnPreformed )
     .int_1( 13 )
     .form();
     let exp = Struct1::former().int_1( 13 ).form();
@@ -380,24 +353,39 @@ tests_impls!
     // ::< Struct1FormerDefinition< (), Struct1, _ > >
     ::
     <
-
       Struct1FormerDefinition< (), Struct1, _ >,
     >
-    ::new_precise( end_wrapper )
+    ::new( end_wrapper )
     .int_1( 13 )
     .form();
     let exp = Struct1::former().int_1( 13 ).form();
     a_id!( got, exp );
+
+    //
+
+    // default explicit params with wrapper and closure
+    let got = Struct1Former
+    // ::< Struct1FormerWithClosure< (), Struct1 > >
+    ::
+    <
+      Struct1FormerDefinition< (), Struct1, _ >
+    >
+    ::new( | storage, _context | { former::StoragePreform::preform( storage ) } )
+    .int_1( 13 )
+    .form();
+    let exp = Struct1::former().int_1( 13 ).form();
+    a_id!( got, exp );
+
+    //
 
     // default explicit params with wrapper and closure
     let got = Struct1Former
     // ::< Struct1FormerDefinition< (), Struct1, _ > >
     ::
     <
-
       Struct1FormerDefinition< (), Struct1, _ >,
     >
-    ::new_precise( former::FormingEndClosure::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
+    ::new( former::FormingEndClosure::new( | storage, _context | { former::StoragePreform::preform( storage ) } ) )
     .int_1( 13 )
     .form();
     let exp = Struct1::former().int_1( 13 ).form();
@@ -408,10 +396,9 @@ tests_impls!
     // ::< Struct1FormerDefinition< _, _, _ > >
     ::
     <
-
       Struct1FormerDefinition< _, _, _ >,
     >
-    ::new_precise( former::FormingEndClosure::new( | storage, _context : Option< () > | { former::StoragePreform::preform( storage ) } ) )
+    ::new( former::FormingEndClosure::new( | storage, _context : Option< () > | { former::StoragePreform::preform( storage ) } ) )
     .int_1( 13 )
     .form();
     let exp = Struct1::former().int_1( 13 ).form();
@@ -565,8 +552,8 @@ tests_index!
   custom_definition_params,
   begin_coercing,
   begin_precise,
+  new_coercing,
   new,
-  new_precise,
   preform,
   definition,
   storage,

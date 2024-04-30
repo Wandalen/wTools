@@ -196,7 +196,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn new_precise( on_end : Definition::End ) -> Self
+  pub fn new( on_end : Definition::End ) -> Self
   {
     Self::begin_coercing( None, None, on_end )
   }
