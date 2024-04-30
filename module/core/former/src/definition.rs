@@ -14,7 +14,7 @@ where
   Definition : FormerDefinition,
 {
   type Former;
-  fn f1( _ : &Definition ) {}
+  fn __f( _ : &Definition ) {}
 }
 
 // zzz : improve documentation

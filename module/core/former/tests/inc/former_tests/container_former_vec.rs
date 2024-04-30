@@ -109,12 +109,15 @@ fn replace()
 fn entity_to()
 {
 
-  // let got = < Vec< i32 > as former::EntityToFormer< former::VectorDefinition< (), Vec< i32 >, former::ReturnPreformed > > >::Former::new_precise( former::ReturnPreformed )
+  // qqq : uncomment and make it working
+  // let got = < Vec< i32 > as former::EntityToFormer< former::VectorDefinition< i32, (), Vec< i32 >, former::ReturnPreformed > > >
+  // ::Former::new_precise( former::ReturnPreformed )
   // .add( 13 )
   // .form();
   // let exp = vec![ 13 ];
   // a_id!( got, exp );
 
+// qqq : uncomment and make it working
 //   let got = < Vec< i32 > as former::EntityToStorage >::Storage::default();
 //   let exp =
 //   <

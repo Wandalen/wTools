@@ -75,8 +75,8 @@ for Vec< E >
 
 #[ derive( Debug, Default ) ]
 pub struct VectorDefinition< E, Context = (), Formed = Vec< E >, End = ReturnStorage >
-// where
-//   End : FormingEnd< VectorDefinition< E, Context, Formed, NoEnd > >,
+where
+  End : FormingEnd< VectorDefinition< E, Context, Formed, NoEnd > >,
 {
   _phantom : core::marker::PhantomData< ( E, Context, Formed, End ) >,
 }
@@ -104,12 +104,15 @@ where
 
 // = Entity To
 
-// xxx : implement for hashset / hashmap
-// xxx : cover by tests
+// zzz : qqq : implement for hashset / hashmap
+// zzz : qqq : cover by tests
+// zzz : qqq : rid off bound `Fn( Vec< E >, Option< Definition::Context > ) -> Definition::Formed``
 impl< E, Definition > EntityToFormer< Definition > for Vec< E >
 where
-  Definition : FormerDefinition< Storage = Vec< E >, Formed = () >,
-  < Definition as definition::FormerDefinition>::End : Fn( Vec< E >, Option< Definition::Context > ),
+  Definition : FormerDefinition< Storage = Vec< E > >,
+  Definition::Types : FormerDefinitionTypes< Storage = Vec< E >, Formed = Definition::Formed, Context = Definition::Context >,
+  Definition::End : crate::FormingEnd< Definition::Types >,
+  Definition::End : Fn( Vec< E >, Option< Definition::Context > ) -> Definition::Formed,
 {
   type Former = VectorSubformer< E, Definition::Context, Definition::Formed, Definition::End >;
 }
