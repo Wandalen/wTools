@@ -446,8 +446,9 @@ where
 }
 
 #[ allow( dead_code ) ]
-pub type Struct1AsSubformer<Superformer, End> = Struct1Former<
-  Struct1FormerDefinition<Superformer, Superformer, End,>,
+pub type Struct1AsSubformer< Superformer, End > = Struct1Former
+<
+  Struct1FormerDefinition< Superformer, Superformer, End, >,
 >;
 
 #[ allow( dead_code ) ]

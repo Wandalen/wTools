@@ -92,32 +92,32 @@ where
     Former2::former_begin( None, Some( self ), ParentFormerAddChildrenEnd::default() )
   }
 
-  // #[ inline( always ) ]
-  // pub fn child( self, name : &str ) ->
-  // ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
-  // {
-  //   self._children_add_subformer
-  //   ::< ChildFormer< _ >, _, >()
-  //   .name( name )
-  // }
-
-  // #[ inline( always ) ]
-  // pub fn child( self, name : &str ) ->
-  // ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
-  // {
-  //   self._children_add_subformer
-  //   ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
-  //   .name( name )
-  // }
-
   #[ inline( always ) ]
   pub fn child( self, name : &str ) ->
   ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   {
     self._children_add_subformer
-    ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
+    ::< ChildFormer< _ >, _, >()
     .name( name )
   }
+
+  #[ inline( always ) ]
+  pub fn _child( self ) ->
+  ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
+  {
+    self._children_add_subformer
+    ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
+  }
+
+  // #[ inline( always ) ]
+  // pub fn _child( self ) ->
+  // < Child as former::EntityToFormer< ChildFormerDefinition< Self, Self, impl ChildAsSubformerEnd< Self > > > >::Former
+  // // ChildFormer< ChildFormerDefinition< Self, Self, impl ChildAsSubformerEnd< Self > > >
+  // // ChildFormer< ChildFormerDefinition< Self, Self, impl ChildAsSubformerEnd< Self > > >
+  // {
+  //   self._children_add_subformer
+  //   ::< < < Vec< Child > as former::ContainerAdd >::Element as former::EntityToFormer< _ > >::Former, _, >()
+  // }
 
 }
 
