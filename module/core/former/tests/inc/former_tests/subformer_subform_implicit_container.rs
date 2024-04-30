@@ -190,8 +190,7 @@ where
 
 //
 
-#[ doc = r" Return original former after container for `vec_1` is done." ]
-#[ allow( non_camel_case_types ) ]
+#[ doc = r"Callback to return original former after forming of container for `vec_1` is done. Callback replace content of container assigning new content from subformer's storage." ]
 pub struct ParentFormerAssignChildrenEnd< Definition >
 {
   _phantom : core::marker::PhantomData< ( Definition, ) >,

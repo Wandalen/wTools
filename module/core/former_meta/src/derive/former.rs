@@ -896,7 +896,6 @@ fn container_setter
 /// # Example of generated code
 ///
 /// ```rust, ignore
-/// #[ allow( non_camel_case_types ) ]
 /// pub struct Struct1FormerVec_1End;
 /// #[ automatically_derived ]
 /// impl< Definition > former::FormingEnd
@@ -968,6 +967,14 @@ Result< TokenStream >
   // example : `former::VectorDefinition``
   let subformer_definition = &field.attrs.container.as_ref().unwrap().expr;
 
+  // zzz : improve description
+  let former_assign_end_doc = format!
+  (
+r#"Callback to return original former after forming of container for `${stru}` is done.#
+
+Callback replace content of container assigning new content from subformer's storage."#
+  );
+
   let subformer_definition = if subformer_definition.is_some()
   {
     qt!
@@ -989,23 +996,16 @@ Result< TokenStream >
   {
 
     // zzz : description
-    /// Return original former after container for `vec_1` is done.
-    #[ allow( non_camel_case_types ) ]
+    #[ doc = #former_assign_end_doc ]
     pub struct #former_assign_end;
 
     #[ automatically_derived ]
     impl< #former_generics_impl > former::FormingEnd
     <
-      // #subformer_definition < #( #params, )* #former< #former_generics_ty >, #former< #former_generics_ty >, former::NoEnd >,
       #subformer_definition,
     >
     for #former_assign_end
     where
-      // Definition : former::FormerDefinition,
-      // Definition::Types : former::FormerDefinitionTypes
-      // <
-      //   Storage = #former_storage < #struct_generics_ty >
-      // >,
       #former_generics_where
     {
       #[ inline( always ) ]
@@ -1287,12 +1287,13 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let former_definition = syn::Ident::new( &former_definition_name, stru.span() );
   let former_definition_types_name = format!( "{}FormerDefinitionTypes", stru );
   let former_definition_types = syn::Ident::new( &former_definition_types_name, stru.span() );
-  // let former_with_closure_name = format!( "{}FormerWithClosure", stru );
-  // let former_with_closure = syn::Ident::new( &former_with_closure_name, stru.span() );
   let subformer_name = format!( "{}Subformer", stru );
   let subformer = syn::Ident::new( &subformer_name, stru.span() );
   let subformer_end_name = format!( "{}SubformerEnd", stru );
   let subformer_end = syn::Ident::new( &subformer_end_name, stru.span() );
+
+  // zzz : improve
+  let subformer_end_doc = format!( "Alias for trait former::FormingEnd with context and formed the same type and definition of structure [`$(stru)`]. Use as subformer end of a field during process of forming of super structure." );
 
   /* parameters for structure */
 
@@ -1854,15 +1855,10 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       >,
     >;
 
-    // pub type #former_with_closure < #former_definition_type_generics_ty > =
-    // #former_definition
-    // <
-    //   #former_definition_type_generics_ty former::FormingEndClosure< #former_definition_types < #former_definition_type_generics_ty > >
-    // >;
-
     // = subformer end
 
-    /// Use as subformer end of a field during process of forming of super structure.
+    // zzz : imporove documentation
+    #[ doc = #subformer_end_doc ]
     pub trait #subformer_end < #struct_generics_impl SuperFormer >
     where
       #struct_generics_where
