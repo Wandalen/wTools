@@ -2,7 +2,6 @@
 
 use super::*;
 
-// xxx : rename
 /// Parameter description.
 #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 pub struct Child
@@ -13,6 +12,7 @@ pub struct Child
 
 /// Parent required for the template.
 #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
+// #[ derive( Debug, Default, PartialEq, the_module::Former ) ] #[ debug ]
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent
 {
@@ -22,7 +22,7 @@ pub struct Parent
   children : Vec< Child >,
 }
 
-// = custom
+// == begin of generated for Parent in context of attribute subform
 
 impl< Definition > ParentFormer< Definition >
 where
@@ -71,6 +71,28 @@ where
   }
 
   #[ inline( always ) ]
+  pub fn _children_add_subformer< Former2, Definition2 >( self ) ->
+  Former2
+  where
+    Definition2 : former::FormerDefinition
+    <
+      End = ParentFormerAddChildrenEnd< Definition >,
+      Storage = < Child as former::EntityToStorage >::Storage,
+      Formed = Self,
+      Context = Self,
+    >,
+    Definition2::Types : former::FormerDefinitionTypes
+    <
+      Storage = < Child as former::EntityToStorage >::Storage,
+      Formed = Self,
+      Context = Self,
+    >,
+    Former2 : former::FormerBegin< Definition2 >,
+  {
+    Former2::former_begin( None, Some( self ), ParentFormerAddChildrenEnd::default() )
+  }
+
+  #[ inline( always ) ]
   pub fn child( self, name : &str ) ->
   ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   {
@@ -100,38 +122,6 @@ where
   {
     self._children_add_subformer
     ::< < < Vec< Child > as former::ContainerAdd >::Element as former::EntityToFormer< _ > >::Former, _, >()
-  }
-
-}
-
-// == begin of generated for Parent in context of attribute subform
-
-impl< Definition > ParentFormer< Definition >
-where
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = < Parent as former::EntityToStorage >::Storage >,
-{
-
-  #[ inline( always ) ]
-  pub fn _children_add_subformer< Former2, Definition2 >( self ) ->
-  Former2
-  where
-    Definition2 : former::FormerDefinition
-    <
-      End = ParentFormerAddChildrenEnd< Definition >,
-      Storage = < Child as former::EntityToStorage >::Storage,
-      Formed = Self,
-      Context = Self,
-    >,
-    Definition2::Types : former::FormerDefinitionTypes
-    <
-      Storage = < Child as former::EntityToStorage >::Storage,
-      Formed = Self,
-      Context = Self,
-    >,
-    Former2 : former::FormerBegin< Definition2 >,
-  {
-    Former2::former_begin( None, Some( self ), ParentFormerAddChildrenEnd::default() )
   }
 
 }
@@ -194,4 +184,88 @@ where
 
 // == end of generated for Parent in context of attribute subform
 
+// == begin of generated for Parent in context of attribute container( former::VectorDefinition ) ]
+
+#[ automatically_derived ]
+impl< Definition, > ParentFormer< Definition, >
+where
+  Definition : former::FormerDefinition,
+  Definition::Types : former::FormerDefinitionTypes< Storage = ParentFormerStorage< > >,
+{
+
+  #[ inline( always ) ]
+  pub fn _children_assign< Former2 >( self ) -> Former2
+  where
+    Former2 : former::FormerBegin< former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, > >,
+  {
+    Former2::former_begin( None, Some( self ), ParentFormerAssignChildrenEnd::< Definition >::default() )
+  }
+  #[ doc =
+  "Subformer setter for the 'children' field. Method _children_assign unlike method children accept custom container subformer." ]
+  #[ inline( always ) ]
+  pub fn children( self ) -> former::ContainerSubformer::< Child, former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, > >
+  {
+    self._children_assign::< former::ContainerSubformer::< Child, former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, > > >()
+  }
+
+}
+
+//
+
+#[ doc = r"Callback to return original former after forming of container for `vec_1` is done. Callback replace content of container assigning new content from subformer's storage." ]
+pub struct ParentFormerAssignChildrenEnd< Definition >
+{
+  _phantom : core::marker::PhantomData< ( Definition, ) >,
+}
+
+impl< Definition > Default for ParentFormerAssignChildrenEnd< Definition >
+{
+
+  #[ inline( always ) ]
+  fn default() -> Self
+  {
+    Self
+    {
+      _phantom : core::marker::PhantomData,
+    }
+  }
+
+}
+
+#[ automatically_derived ]
+impl< Definition, > former::FormingEnd
+// < former::VectorDefinition< Child, ParentFormer< Definition, >, ParentFormer< Definition, >, former::NoEnd >, >
+<
+  < Vec< Child > as former::EntityToDefinition< ParentFormer< Definition, >, ParentFormer< Definition, >, former::NoEnd > >::Definition
+>
+for ParentFormerAssignChildrenEnd< Definition >
+where
+  Definition : former::FormerDefinition,
+  Definition::Types : former::FormerDefinitionTypes< Storage = ParentFormerStorage< > >,
+{
+  #[ inline( always ) ]
+  fn call
+  (
+    &self,
+    storage : Vec< Child >,
+    super_former : Option< ParentFormer< Definition, > >,
+  )
+  -> ParentFormer< Definition, >
+  {
+    let mut super_former = super_former.unwrap();
+    if let Some( ref mut field ) = super_former.storage.children
+    {
+      former::ContainerAssign::assign( field, storage );
+    }
+    else
+    {
+      super_former.storage.children = Some( storage );
+    }
+    super_former
+  }
+}
+
+// == end of generated for Parent in context of attribute container( former::VectorDefinition ) ]
+
 include!( "./only_test/subformer_subform.rs" );
+include!( "./only_test/subformer_container.rs" );
