@@ -837,8 +837,6 @@ fn container_setter
 
   // example : `former::VectorDefinition`
   let subformer_definition = &field.attrs.container.as_ref().unwrap().expr;
-
-  // xxx
   let subformer_definition = if subformer_definition.is_some()
   {
     qt!
@@ -1242,7 +1240,7 @@ Result< TokenStream >
       Definition::Types : former::FormerDefinitionTypes
       <
         Storage = < #stru < #struct_generics_ty > as former::EntityToStorage >::Storage,
-        // xxx : add test with life time + param + containers
+        // xxx : add test with life time + param + subform
       >,
       Types2 : former::FormerDefinitionTypes
       <
