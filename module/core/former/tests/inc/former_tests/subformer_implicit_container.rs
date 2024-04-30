@@ -38,6 +38,14 @@ where
     .name( name )
   }
 
+  #[ inline( always ) ]
+  pub fn _child( self ) ->
+  ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
+  {
+    self._children_add_subformer
+    ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
+  }
+
 }
 
 // == begin of generated
