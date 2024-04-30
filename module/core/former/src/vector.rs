@@ -106,7 +106,7 @@ where
 
 // zzz : qqq : implement for hashset / hashmap
 // zzz : qqq : cover by tests
-// zzz : qqq : rid off bound `Fn( Vec< E >, Option< Definition::Context > ) -> Definition::Formed``
+// zzz : qqq : rid off bound `Fn( Vec< E >, Option< Definition::Context > ) -> Definition::Formed` for all containers
 impl< E, Definition > EntityToFormer< Definition > for Vec< E >
 where
   Definition : FormerDefinition< Storage = Vec< E > >,

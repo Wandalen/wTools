@@ -682,8 +682,8 @@ fn field_subformer_map
 (
   field : &FormerField< '_ >,
   stru : &syn::Ident,
-  as_subformer : &syn::Ident,
-  as_subformer_end : &syn::Ident,
+  _as_subformer : &syn::Ident,
+  _as_subformer_end : &syn::Ident,
 )
 -> Result< TokenStream >
 {
@@ -755,10 +755,17 @@ fn field_subformer_map
 
       #[ inline( always ) ]
       pub fn #setter_name( self ) ->
-      #as_subformer< Self, impl #as_subformer_end< Self > >
+      < < #field_ty as former::ContainerAdd >::Element as former::EntityToFormer
+        <
+          <
+            < #field_ty as former::ContainerAdd >::Element as former::EntityToDefinition< Self, Self, #parent_add_element_end < Definition > >
+          >::Definition,
+        >
+      >::Former
+      // #as_subformer< Self, impl #as_subformer_end< Self > >
       {
         self.#element_subformer
-        ::< < #field_ty as former::EntityToFormer< _ > >::Former, _, >()
+        ::< < < #field_ty as former::ContainerAdd >::Element as former::EntityToFormer< _ > >::Former, _, >()
         // ::< #former< _ >, _, >()
       }
     }

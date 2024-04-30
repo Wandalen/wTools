@@ -72,6 +72,11 @@ mod former_tests
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subformer_implicit_container_manual;
 
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_and_container;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_and_container_manual;
+
 }
 
 #[ cfg( feature = "derive_components" ) ]

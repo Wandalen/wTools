@@ -18,6 +18,7 @@ pub struct Parent
 {
   // #[ subform ]
   #[ subform( name = _child ) ]
+  #[ container( former::VectorDefinition ) ]
   // #[ setter( false ) ]
   children : Vec< Child >,
 }
@@ -51,4 +52,6 @@ where
 
 // == end of generated
 
+// xxx
 include!( "./only_test/subformer_subform.rs" );
+include!( "./only_test/subformer_container.rs" );
