@@ -57,7 +57,7 @@ pub( crate ) mod private
 //   }
 
   ///
-  /// Interface to identify an instance of somthing with ability to increase it to generate a new one.
+  /// Interface to identify an instance of something with ability to increase it to generate a new one.
   ///
 
   pub trait IdentityGeneratorInterface< Id >

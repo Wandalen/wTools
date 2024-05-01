@@ -2,7 +2,7 @@ name : refiner
 
 on :
   push :
-    branches-ignore :
+    branches :
       - 'alpha'
       - 'beta'
       - 'master'
