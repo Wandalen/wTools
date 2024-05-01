@@ -25,8 +25,8 @@ pub struct Parent
 
 impl< Definition > ParentFormer< Definition >
 where
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = < Parent as former::EntityToStorage >::Storage >,
+  Definition : former::FormerDefinition< Storage = < Parent as former::EntityToStorage >::Storage >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = < Parent as former::EntityToStorage >::Storage >,
 {
 
   #[ inline( always ) ]
@@ -157,8 +157,7 @@ for ParentFormerAddChildrenEnd< Definition >
 impl< Types2, Definition > former::FormingEnd< Types2, >
 for ParentFormerAddChildrenEnd< Definition >
 where
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes
+  Definition : former::FormerDefinition
   <
     Storage = < Parent as former::EntityToStorage >::Storage,
   >,
