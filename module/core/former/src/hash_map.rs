@@ -21,8 +21,8 @@ impl< K, V > ContainerAdd for collection_tools::HashMap< K, V >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
-  type Element = ( K, V );
-  type Val = V;
+  // type Element = ( K, V );
+  // type Val = V;
 
   #[ inline( always ) ]
   fn add( &mut self, ( k, v ) : Self::Element ) -> bool

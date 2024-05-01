@@ -730,13 +730,13 @@ fn field_subformer_map
       Definition2 : former::FormerDefinition
       <
         End = #parent_add_element_end< Definition >,
-        Storage = < < #field_ty as former::ContainerAdd >::Val as former::EntityToStorage >::Storage,
+        Storage = < < #field_ty as former::Container >::Val as former::EntityToStorage >::Storage,
         Formed = Self,
         Context = Self,
       >,
       Definition2::Types : former::FormerDefinitionTypes
       <
-        Storage = < < #field_ty as former::ContainerAdd >::Val as former::EntityToStorage >::Storage,
+        Storage = < < #field_ty as former::Container >::Val as former::EntityToStorage >::Storage,
         Formed = Self,
         Context = Self,
       >,
@@ -756,17 +756,17 @@ fn field_subformer_map
 
       #[ inline( always ) ]
       pub fn #setter_name( self ) ->
-      < < #field_ty as former::ContainerAdd >::Val as former::EntityToFormer
+      < < #field_ty as former::Container >::Val as former::EntityToFormer
         <
           <
-            < #field_ty as former::ContainerAdd >::Val as former::EntityToDefinition< Self, Self, #parent_add_element_end < Definition > >
+            < #field_ty as former::Container >::Val as former::EntityToDefinition< Self, Self, #parent_add_element_end < Definition > >
           >::Definition,
         >
       >::Former
       // #as_subformer< Self, impl #as_subformer_end< Self > >
       {
         self.#element_subformer
-        ::< < < #field_ty as former::ContainerAdd >::Val as former::EntityToFormer< _ > >::Former, _, >()
+        ::< < < #field_ty as former::Container >::Val as former::EntityToFormer< _ > >::Former, _, >()
         // ::< #former< _ >, _, >()
       }
     }
@@ -1240,7 +1240,7 @@ Result< TokenStream >
       >,
       Types2 : former::FormerDefinitionTypes
       <
-        Storage = < < #field_ty as former::ContainerAdd >::Val as former::EntityToStorage >::Storage,
+        Storage = < < #field_ty as former::Container >::Val as former::EntityToStorage >::Storage,
         Formed = #former< #former_generics_ty >,
         Context = #former< #former_generics_ty >,
       >,

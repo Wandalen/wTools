@@ -41,12 +41,13 @@ pub trait ValToElement : Container
 ///   defined by the implementer of the trait, allowing for flexibility in the kinds of
 ///   elements different containers can accept.
 ///
-pub trait ContainerAdd
+
+pub trait ContainerAdd : Container
 {
-  /// The type of elements to be added to the container. For Vector `Val` and `Element` is the same type, but for `HashMap` `Element` is pair of key-value and `Val` is value itself.
-  type Element;
-  /// The type of value to be added to the container. For Vector `Val` and `Element` is the same type, but for `HashMap` `Element` is pair of key-value and `Val` is value itself.
-  type Val;
+  // /// The type of elements to be added to the container. For Vector `Val` and `Element` is the same type, but for `HashMap` `Element` is pair of key-value and `Val` is value itself.
+  // type Element;
+  // /// The type of value to be added to the container. For Vector `Val` and `Element` is the same type, but for `HashMap` `Element` is pair of key-value and `Val` is value itself.
+  // type Val;
 
   /// Adds an element to the container.
   ///

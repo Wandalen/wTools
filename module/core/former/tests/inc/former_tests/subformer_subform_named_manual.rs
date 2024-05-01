@@ -56,17 +56,17 @@ where
 
   #[ inline( always ) ]
   pub fn _child( self ) ->
-  < < Vec< Child > as former::ContainerAdd >::Element as former::EntityToFormer
+  < < Vec< Child > as former::Container >::Element as former::EntityToFormer
     <
       // ChildFormerDefinition< Self, Self, ParentFormerAddChildrenEnd< Definition > >,
       <
-        < Vec< Child > as former::ContainerAdd >::Element as former::EntityToDefinition< Self, Self, ParentFormerAddChildrenEnd< Definition > >
+        < Vec< Child > as former::Container >::Element as former::EntityToDefinition< Self, Self, ParentFormerAddChildrenEnd< Definition > >
       >::Definition,
     >
   >::Former
   {
     self._children_add_subformer
-    ::< < < Vec< Child > as former::ContainerAdd >::Element as former::EntityToFormer< _ > >::Former, _, >()
+    ::< < < Vec< Child > as former::Container >::Element as former::EntityToFormer< _ > >::Former, _, >()
   }
 
 }

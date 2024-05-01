@@ -19,8 +19,8 @@ impl< E > Container for collection_tools::Vec< E >
 
 impl< E > ContainerAdd for collection_tools::Vec< E >
 {
-  type Element = E;
-  type Val = E;
+  // type Element = E;
+  // type Val = E;
 
   #[ inline( always ) ]
   fn add( &mut self, e : Self::Element ) -> bool
