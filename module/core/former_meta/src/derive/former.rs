@@ -1796,9 +1796,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     where
       #former_generics_where
     {
-      // storage : Definition::Storage, // xxx
       storage : Definition::Storage,
-      context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
+      context : core::option::Option< Definition::Context >,
       on_end : core::option::Option< Definition::End >,
       // zzz : should on_end be optional?
     }
@@ -1844,7 +1843,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       pub fn begin
       (
         mut storage : core::option::Option< Definition::Storage >,
-        context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >, // xxx
+        context : core::option::Option< Definition::Context >, // xxx
         on_end : < Definition as former::FormerDefinition >::End,
       )
       -> Self
@@ -1869,7 +1868,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       pub fn begin_coercing< IntoEnd >
       (
         mut storage : core::option::Option< Definition::Storage >,
-        context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
+        context : core::option::Option< Definition::Context >,
         on_end : IntoEnd,
       ) -> Self
       where

@@ -211,7 +211,7 @@ where
   Definition::Types : former::FormerDefinitionTypes< Storage = CommandFormerStorage< K, > >
 {
   storage : Definition::Storage,
-  context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
+  context : core::option::Option< Definition::Context >,
   on_end : core::option::Option< Definition::End >,
 }
 
@@ -243,7 +243,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn begin( mut storage : core::option::Option< Definition::Storage >, context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >, on_end : < Definition as former::FormerDefinition >::End, ) -> Self
+  pub fn begin( mut storage : core::option::Option< Definition::Storage >, context : core::option::Option< Definition::Context >, on_end : < Definition as former::FormerDefinition >::End, ) -> Self
   {
     if storage.is_none()
     {
@@ -258,7 +258,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn begin_coercing< IntoEnd >( mut storage : core::option::Option< Definition::Storage >, context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >, on_end : IntoEnd, ) -> Self
+  pub fn begin_coercing< IntoEnd >( mut storage : core::option::Option< Definition::Storage >, context : core::option::Option< Definition::Context >, on_end : IntoEnd, ) -> Self
   where IntoEnd : ::core::convert::Into< < Definition as former::FormerDefinition >::End >
   {
     if storage.is_none()

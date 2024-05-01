@@ -177,7 +177,7 @@ where
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
 {
   storage : Definition::Storage,
-  context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
+  context : core::option::Option< Definition::Context >,
   on_end : core::option::Option< Definition::End >,
 }
 
@@ -212,7 +212,7 @@ where
   pub fn begin
   (
     mut storage : core::option::Option< Definition::Storage >,
-    context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
+    context : core::option::Option< Definition::Context >,
     on_end : < Definition as former::FormerDefinition >::End,
   )
   -> Self
@@ -233,7 +233,7 @@ where
   pub fn begin_coercing< IntoEnd >
   (
     mut storage : core::option::Option< Definition::Storage >,
-    context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
+    context : core::option::Option< Definition::Context >,
     on_end : IntoEnd,
   )
   -> Self
