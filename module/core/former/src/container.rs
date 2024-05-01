@@ -31,7 +31,7 @@ pub trait Container
 /// xxx : improve description
 /// Implement function to convert value of  an element of a container.
 /// As well as function to convert element to value. Reversal conversion could be not possible, so value to element conversion is in a separate trait.
-pub trait ValToElement
+pub trait ValToElement< Container >
 {
   type Element;
 

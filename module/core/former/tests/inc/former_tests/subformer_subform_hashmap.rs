@@ -342,7 +342,8 @@ where
       former::ContainerAdd::add
       (
         field,
-        < Command as former::ValToElement >::val_to_element( former::StoragePreform::preform( substorage ) ),
+        < Command as former::ValToElement< HashMap< String, Command > > >
+        ::val_to_element( former::StoragePreform::preform( substorage ) ),
       );
     }
     super_former
@@ -357,7 +358,7 @@ where
 //   }
 // }
 
-impl former::ValToElement for Command
+impl former::ValToElement< HashMap< String, Command > > for Command
 {
   type Element = ( String, Command );
   #[ inline ]
