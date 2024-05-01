@@ -77,10 +77,10 @@ mod former_tests
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subformer_subform_named_manual;
 
-//   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-//   mod subformer_subform_and_container;
-//   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-//   mod subformer_subform_and_container_parametrized;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_subform_and_container;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_subform_and_container_parametrized;
 
 }
 
