@@ -2,6 +2,19 @@
 
 use crate::*;
 
+/// xxx : write description
+pub trait Container
+{
+  /// The type of elements to be added to the container. For Vector `Val` and `Element` is the same type, but for `HashMap` `Element` is pair of key-value and `Val` is value itself.
+  type Element;
+  /// The type of value to be added to the container. For Vector `Val` and `Element` is the same type, but for `HashMap` `Element` is pair of key-value and `Val` is value itself.
+  type Val;
+
+  // pub fn element_to_val( Element ) -> Val;
+  // pub fn val_to_element( Val ) -> Element;
+
+}
+
 /// A trait defining the capability to add elements to a container.
 ///
 /// This trait should be implemented by container types that require a generic interface
@@ -138,7 +151,7 @@ where
 impl< E, Definition > ContainerSubformer< E, Definition >
 where
   Definition : FormerDefinition,
-  < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
+  < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >, // xxx
 {
 
   /// Begins the building process, optionally initializing with a context and storage.

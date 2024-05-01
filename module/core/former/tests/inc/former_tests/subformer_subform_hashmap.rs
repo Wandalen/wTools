@@ -72,7 +72,6 @@ pub struct Aggregator
 
 // == begin of generated
 
-
   #[automatically_derived] impl < > Aggregator < > where
   {
       #[doc = r""]
@@ -244,11 +243,11 @@ pub struct Aggregator
       #[inline(always)] pub fn _command_add_subformer < Former2, Definition2 >
       (self) -> Former2 where Definition2 : former :: FormerDefinition < End =
       AggregatorFormerAddCommandEnd < Definition > , Storage = < < HashMap <
-      String, Command > as former :: ContainerAdd > :: Element as former ::
+      String, Command > as former :: ContainerAdd > :: Val as former ::
       EntityToStorage > :: Storage, Formed = Self, Context = Self, > ,
       Definition2 :: Types : former :: FormerDefinitionTypes < Storage = < <
-      HashMap < String, Command > as former :: ContainerAdd > :: Element as
-      former :: EntityToStorage > :: Storage, Formed = Self, Context = Self, > ,
+      HashMap < String, Command > as former :: ContainerAdd > :: Val as former
+      :: EntityToStorage > :: Storage, Formed = Self, Context = Self, > ,
       Former2 : former :: FormerBegin < Definition2 > ,
       {
           Former2 ::
@@ -315,17 +314,16 @@ pub struct Aggregator
       { Self { _phantom : core :: marker :: PhantomData, } }
   }
 
-  impl < Types2, Definition > former :: FormingEnd < Types2, > for
+  impl < Types2, Definition > former :: FormingEnd < Types2, >
+  for
   AggregatorFormerAddCommandEnd < Definition >
   where
-    Definition : former :: FormerDefinition < Storage = < Aggregator < > as former :: EntityToStorage >
-  :: Storage, > ,
-  Types2 : former :: FormerDefinitionTypes
-  <
-    Storage = < < HashMap < String, Command > as former :: ContainerAdd > :: Element as former :: EntityToStorage > :: Storage,
-    Formed = AggregatorFormer < Definition, > ,
-    Context = AggregatorFormer < Definition, > ,
-  > ,
+    Definition : former ::
+  FormerDefinition < Storage = < Aggregator < > as former :: EntityToStorage >
+  :: Storage, > , Types2 : former :: FormerDefinitionTypes < Storage = < <
+  HashMap < String, Command > as former :: ContainerAdd > :: Val as former ::
+  EntityToStorage > :: Storage, Formed = AggregatorFormer < Definition, > ,
+  Context = AggregatorFormer < Definition, > , > ,
   {
       #[inline(always)] fn
       call(& self, substorage : Types2 :: Storage, super_former : core :: option
@@ -336,8 +334,7 @@ pub struct Aggregator
           { super_former.storage.command = Some(Default :: default()); } if let
           Some(ref mut field) = super_former.storage.command
           {
-              former :: ContainerAdd ::
-              add(field, former :: StoragePreform :: preform(substorage));
+              former :: ContainerAdd :: add(field, former :: StoragePreform :: preform(substorage));
           } super_former
       }
   }
