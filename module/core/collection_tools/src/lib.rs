@@ -31,9 +31,6 @@ pub mod protected
   extern crate alloc;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use alloc::vec;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use alloc::vec::Vec;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -74,9 +71,35 @@ pub mod prelude
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::constructors::*;
+  #[ cfg( feature = "collection_into_constructors" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::into_constructors::*;
 }
+
+/// Not meant to be called directly.
+#[ doc( hidden ) ]
+#[ macro_export( local_inner_macros ) ]
+macro_rules! count
+{
+  ( @single $( $x : tt )* ) => ( () );
+
+  (
+    @count $( $rest : expr ),*
+  )
+  =>
+  (
+    < [ () ] >::len( &[ $( count!( @single $rest ) ),* ] )
+  );
+} 
+
 
 /// Macros to construct the collections.
 /// Basically a tweaked version of `literally` crate but using `alloc` / `hashbrown` instead of `std`
 #[ cfg( all( feature = "enabled", feature = "collection_constructors" ) ) ]
 pub mod constructors;
+
+/// Macros to construct the collections, using `.into()` under the hood.
+/// Often requires explicitly specifying type to cast to.
+#[ cfg( all( feature = "enabled", feature = "collection_into_constructors" ) ) ]
+pub mod into_constructors;
