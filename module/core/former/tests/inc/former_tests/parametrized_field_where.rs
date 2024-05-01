@@ -7,7 +7,9 @@ use super::*;
 #[ derive( Debug, PartialEq, the_module::Former ) ]
 // #[ debug ]
 // #[ derive( Debug, PartialEq ) ]
-pub struct Child< 'child, T : ?Sized + 'child >
+pub struct Child< 'child, T >
+where
+  T : ?Sized + 'child,
 {
   name : String,
   arg : &'child T,
