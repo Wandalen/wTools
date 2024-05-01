@@ -20,8 +20,10 @@ use error_tools::Result;
 #[ tokio::test ]
 async fn test_save() -> Result< () >
 {
-  let config = gluesql::sled_storage::sled::Config::default()
-  .path( "./test_save".to_owned() )
+  let temp_path = proper_path_tools::path::unique_folder_name().unwrap();
+
+  let config = Config::default()
+  .path( format!( "./{}", temp_path ) )
   .temporary( true )
   ;
 
@@ -50,8 +52,10 @@ async fn test_save() -> Result< () >
 #[ tokio::test ]
 async fn test_update() -> Result< () >
 {
+  let temp_path = proper_path_tools::path::unique_folder_name().unwrap();
+
   let config = Config::default()
-  .path( "./test_update".to_owned() )
+  .path( format!( "./{}", temp_path ) )
   .temporary( true )
   ;
 
