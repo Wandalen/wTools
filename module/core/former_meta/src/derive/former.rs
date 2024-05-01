@@ -1727,6 +1727,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     // = storage
 
     #[ doc = "Container of a corresponding former." ]
+    #[ allow( explicit_outlives_requirements ) ]
     // pub struct #former_storage < #struct_generics_ty >
     pub struct #former_storage < #struct_generics_with_defaults >
     where
