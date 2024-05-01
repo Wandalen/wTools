@@ -318,28 +318,63 @@ Definition > Default for AggregatorFormerAddCommandEnd < Definition >
     { Self { _phantom : core :: marker :: PhantomData, } }
 }
 
-impl < Types2, Definition > former :: FormingEnd < Types2, > for
-AggregatorFormerAddCommandEnd < Definition > where Definition : former ::
-FormerDefinition < Storage = < Aggregator < > as former :: EntityToStorage >
-:: Storage, > , Types2 : former :: FormerDefinitionTypes < Storage = < <
-HashMap < String, Command > as former :: Container > :: Val as former ::
-EntityToStorage > :: Storage, Formed = AggregatorFormer < Definition, > ,
-Context = AggregatorFormer < Definition, > , > ,
+impl< Types2, Definition > former::FormingEnd< Types2, >
+for AggregatorFormerAddCommandEnd< Definition >
+where
+  Definition : former::FormerDefinition< Storage = < Aggregator< > as former::EntityToStorage >::Storage, >,
+  Types2 :former::FormerDefinitionTypes
+  <
+    Storage = < < HashMap< String, Command > as former::Container >::Val as former::EntityToStorage >::Storage,
+    Formed = AggregatorFormer< Definition, >,
+    Context = AggregatorFormer< Definition, >,
+  >,
 {
-    #[inline(always)] fn
-    call(& self, substorage : Types2 :: Storage, super_former : core :: option
-    :: Option < Types2 :: Context > ,) -> Types2 :: Formed
+  #[ inline( always ) ]
+  fn call( &self, substorage : Types2::Storage, super_former : core::option::Option< Types2::Context > ) -> Types2::Formed
+  {
+    let mut super_former = super_former.unwrap();
+    if super_former.storage.command.is_none()
     {
-        let mut super_former = super_former.unwrap(); if
-        super_former.storage.command.is_none()
-        { super_former.storage.command = Some(Default :: default()); } if let
-        Some(ref mut field) = super_former.storage.command
-        {
-            former :: ContainerAdd ::
-            add(field, former :: StoragePreform :: preform(substorage));
-        } super_former
+      super_former.storage.command = Some( Default::default() );
     }
+    if let Some( ref mut field ) = super_former.storage.command
+    {
+      former::ContainerAdd::add
+      (
+        field,
+        < Command as former::ValToElement >::val_to_element( former::StoragePreform::preform( substorage ) ),
+      );
+    }
+    super_former
+  }
 }
+
+// impl former::ContainerValToElement for collection_tools::HashMap< String, Command >
+// {
+//   fn val_to_element( val : Self::Val ) -> Self::Element
+//   {
+//     ( val.name.clone(), val )
+//   }
+// }
+
+impl former::ValToElement for Command
+{
+  type Element = ( String, Command );
+  #[ inline ]
+  fn val_to_element( self ) -> Self::Element
+  {
+    ( self.name.clone(), self )
+  }
+}
+
+// pub trait ValToElement
+// {
+//   type Element;
+//
+//   /// Convert val to element. For Vector `Val` and `Element` is the same type, but for `HashMap` `Element` is pair of key-value and `Val` is value itself.
+//   fn val_to_element( self ) -> Self::Element;
+//
+// }
 
 // == end of generated
 
