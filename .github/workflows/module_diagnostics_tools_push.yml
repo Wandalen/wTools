@@ -2,7 +2,7 @@ name : diagnostics_tools
 
 on :
   push :
-    branches-ignore :
+    branches :
       - 'alpha'
       - 'beta'
       - 'master'
