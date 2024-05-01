@@ -1452,7 +1452,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   {
     < Definition = #former_definition < #former_definition_args > >
     where
-      Definition : former::FormerDefinition,
+      Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty > >,
   };
   let extra = generic_params::merge( &generics, &extra.into() );
@@ -1466,11 +1466,15 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   {
     < Definition = #former_definition < #former_definition_args > >
     where
-      Definition : former::FormerDefinition,
+      Definition : former::FormerDefinition
+      <
+        Storage = #former_storage < #struct_generics_ty >,
+        Formed = #stru < #struct_generics_ty >,
+      >,
       Definition::Types : former::FormerDefinitionTypes
       <
         Storage = #former_storage < #struct_generics_ty >,
-        Formed = #stru < #struct_generics_ty >
+        Formed = #stru < #struct_generics_ty >,
       >,
   };
   let extra = generic_params::merge( &generics, &extra.into() );
@@ -1792,7 +1796,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     where
       #former_generics_where
     {
-      storage : < Definition::Types as former::FormerDefinitionTypes >::Storage,
+      // storage : < Definition::Types as former::FormerDefinitionTypes >::Storage, // xxx
+      storage : Definition::Storage,
       context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
       on_end : core::option::Option< Definition::End >,
       // zzz : should on_end be optional?
@@ -1838,10 +1843,11 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       #[ inline( always ) ]
       pub fn begin
       (
-        mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
-        context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
+        mut storage : core::option::Option< Definition::Storage >,
+        context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >, // xxx
         on_end : < Definition as former::FormerDefinition >::End,
-      ) -> Self
+      )
+      -> Self
       {
         if storage.is_none()
         {
@@ -1862,7 +1868,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       #[ inline( always ) ]
       pub fn begin_coercing< IntoEnd >
       (
-        mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
+        mut storage : core::option::Option< Definition::Storage >,
         context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
         on_end : IntoEnd,
       ) -> Self
@@ -1911,8 +1917,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     impl< #former_generics_impl > #former< #former_generics_ty >
     where
+      Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty >, Formed = #stru < #struct_generics_ty > >,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty >, Formed = #stru < #struct_generics_ty > >,
-      // < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform< Preformed = #stru < #struct_generics_ty > >,
       #former_generics_where
     {
 
