@@ -18,7 +18,7 @@ fn phantom_add_basic()
     pub struct Struct1< 'a, Context, Formed >
     {
       f1 : int32,
-      _phantom : core::marker::PhantomData< ( &'a(), Context, Formed ) >,
+      _phantom : core::marker::PhantomData< ( &'a(), *const Context, *const Formed ) >,
     }
   };
 
@@ -64,7 +64,7 @@ fn phantom_add_type_generics()
   {
     struct TestStruct< T, U >
     {
-      _phantom : core::marker::PhantomData< ( T, U ) >,
+      _phantom : core::marker::PhantomData< ( *const T, *const U ) >,
     }
   };
 
@@ -130,7 +130,7 @@ fn phantom_add_mixed_generics()
   {
     struct TestStruct< T, 'a, const N : usize >
     {
-      _phantom : core::marker::PhantomData< ( T, &'a (), N ) >,
+      _phantom : core::marker::PhantomData< ( *const T, &'a (), N ) >,
     }
   };
 
@@ -191,7 +191,7 @@ fn phantom_add_unnamed_fields_with_generics()
     struct TestStruct< T, U >
     (
       T, U,
-      core::marker::PhantomData< ( T, U ) >,
+      core::marker::PhantomData< ( *const T, *const U ) >,
     );
   };
 
@@ -274,7 +274,7 @@ fn phantom_tuple_only_type_parameters()
   let input : Punctuated< GenericParam, Comma > = parse_quote! { T, U };
   let result = tuple( &input );
 
-  let exp : syn::Type = parse_quote! { core::marker::PhantomData<(T, U)> };
+  let exp : syn::Type = parse_quote! { core::marker::PhantomData< ( *const T, *const U ) > };
   let got = result;
 
   assert_eq!( format!( "{:?}", exp ), format!( "{:?}", got ), "Expected PhantomData with type parameters, got: {:?}", got );
@@ -291,7 +291,7 @@ fn phantom_tuple_mixed_generics()
   let input : Punctuated< GenericParam, Comma > = parse_quote! { T, 'a, const N: usize };
   let result = tuple( &input );
 
-  let exp : syn::Type = parse_quote! { core::marker::PhantomData<(T, &'a (), N)> };
+  let exp : syn::Type = parse_quote! { core::marker::PhantomData< ( *const T, &'a (), N ) > };
   let got = result;
 
   assert_eq!( format!( "{:?}", exp ), format!( "{:?}", got ), "Expected PhantomData with mixed generics, got: {:?}", got );

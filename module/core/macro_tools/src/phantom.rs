@@ -113,10 +113,10 @@ pub( crate ) mod private
   /// use syn::{parse_quote, punctuated::Punctuated, GenericParam, token::Comma};
   /// use macro_tools::phantom::tuple;
   ///
-  /// let generics: Punctuated< GenericParam, Comma > = parse_quote! { T, 'a, const N : usize };
+  /// let generics: Punctuated< GenericParam, Comma > = parse_quote! { 'a, T, const N : usize };
   /// let phantom_type = tuple( &generics );
   /// println!( "{}", quote::quote! { #phantom_type } );
-  /// // Output: core::marker::PhantomData< ( T, &'a (), N ) >
+  /// // Output: core::marker::PhantomData< ( &'a (), *const T, N ) >
   /// ```
   ///
   pub fn tuple( input : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma > ) -> syn::Type
@@ -131,11 +131,12 @@ pub( crate ) mod private
       {
         match param
         {
-          GenericParam::Type( type_param ) => Type::Path( syn::TypePath
+          GenericParam::Type( type_param ) =>
           {
-            qself : None,
-            path : type_param.ident.clone().into(),
-          }),
+            let path = &type_param.ident;
+            let path2 : syn::Type = parse_quote!{ *const #path };
+            path2
+          },
           GenericParam::Lifetime( lifetime_param ) => Type::Reference( syn::TypeReference
           {
             and_token : Default::default(),
@@ -153,7 +154,7 @@ pub( crate ) mod private
             path : const_param.ident.clone().into(),
           }),
         }
-      }).collect::<syn::punctuated::Punctuated< _, syn::token::Comma>>();
+      }).collect::< syn::punctuated::Punctuated< _, syn::token::Comma > >();
 
       Type::Tuple( syn::TypeTuple
       {
