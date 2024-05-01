@@ -115,11 +115,10 @@ pub trait ContainerAdd : Container
 
 // qqq : implement for other containers
 
+// xxx : extend documentation
 /// A trait defining the capability to replface all elements.
 pub trait ContainerAssign : Container
 {
-  // /// The type of elements to be added to the container.
-  // type Element;
 
   /// Agging elements to the container.
   fn assign< Elements >( &mut self, elements : Elements ) -> usize
