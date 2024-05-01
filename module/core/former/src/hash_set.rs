@@ -10,6 +10,7 @@ where
   K : core::cmp::Eq + core::hash::Hash,
 {
   type Element = K;
+  type Val = K;
 
   #[ inline( always ) ]
   fn add( &mut self, e : Self::Element ) -> bool

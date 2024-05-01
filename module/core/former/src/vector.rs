@@ -4,9 +4,10 @@ use super::*;
 #[ allow( unused ) ]
 use collection_tools::Vec;
 
-impl< T > ContainerAdd for collection_tools::Vec< T >
+impl< E > ContainerAdd for collection_tools::Vec< E >
 {
-  type Element = T;
+  type Element = E;
+  type Val = E;
 
   #[ inline( always ) ]
   fn add( &mut self, e : Self::Element ) -> bool
@@ -17,9 +18,9 @@ impl< T > ContainerAdd for collection_tools::Vec< T >
 
 }
 
-impl< T > ContainerAssign for collection_tools::Vec< T >
+impl< E > ContainerAssign for collection_tools::Vec< E >
 {
-  type Element = T;
+  type Element = E;
 
   #[ inline( always ) ]
   fn assign< Elements >( &mut self, elements : Elements ) -> usize
