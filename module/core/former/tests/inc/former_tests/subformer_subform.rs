@@ -11,7 +11,10 @@ pub struct Child
 }
 
 /// Parent
+
 #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
+// #[ debug ]
+// #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent
 {
   #[ subform ]
@@ -20,8 +23,8 @@ pub struct Parent
 
 impl< Definition > ParentFormer< Definition >
 where
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = < Parent as former::EntityToStorage >::Storage >,
+  Definition : former::FormerDefinition< Storage = < Parent as former::EntityToStorage >::Storage >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = < Parent as former::EntityToStorage >::Storage >,
 {
 
   #[ inline( always ) ]
@@ -41,6 +44,8 @@ where
 
 }
 
-//
+// == begin of generated
+
+// == end of generated
 
 include!( "./only_test/subformer_subform.rs" );

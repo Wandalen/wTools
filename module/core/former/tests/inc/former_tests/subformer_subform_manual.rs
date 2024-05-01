@@ -107,8 +107,8 @@ where
 
 impl< Definition > ParentFormer< Definition >
 where
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = < Parent as former::EntityToStorage >::Storage >,
+  Definition : former::FormerDefinition< Storage = < Parent as former::EntityToStorage >::Storage >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = < Parent as former::EntityToStorage >::Storage >,
 {
 
   #[ inline( always ) ]

@@ -26,8 +26,8 @@ pub struct Parent
 #[ automatically_derived ]
 impl< Definition, > ParentFormer< Definition, >
 where
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = ParentFormerStorage< > >,
+  Definition : former::FormerDefinition< Storage = ParentFormerStorage< > >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = ParentFormerStorage< > >,
 {
 
   #[ inline( always ) ]
@@ -77,8 +77,8 @@ impl< Definition, > former::FormingEnd
 >
 for ParentFormerAssignChildrenEnd< Definition >
 where
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = ParentFormerStorage< > >,
+  Definition : former::FormerDefinition< Storage = ParentFormerStorage< > >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = ParentFormerStorage< > >,
 {
   #[ inline( always ) ]
   fn call

@@ -1234,8 +1234,7 @@ Result< TokenStream >
     impl< #struct_generics_impl Types2, Definition > former::FormingEnd< Types2, >
     for #parent_add_element_end< Definition >
     where
-      Definition : former::FormerDefinition,
-      Definition::Types : former::FormerDefinitionTypes
+      Definition : former::FormerDefinition
       <
         Storage = < #stru < #struct_generics_ty > as former::EntityToStorage >::Storage,
       >,
