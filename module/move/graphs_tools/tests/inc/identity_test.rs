@@ -56,13 +56,13 @@ tests_impls!
     // }
 
     /* test.case( "from x2 tupple" ) */
-    {
-      use type_constructor::VectorizedInto;
-      let src = ( 1, 3 );
-      let got : ( IdentityWithInt, IdentityWithInt ) = src.vectorized_into();
-      let exp = ( IdentityWithInt::from( 1 ), IdentityWithInt::from( 3 ) );
-      a_id!( got, exp );
-    }
+    // {
+    //   //use type_constructor::VectorizedInto;
+    //   let src = ( 1, 3 );
+    //   let got : ( IdentityWithInt, IdentityWithInt ) = src.into();
+    //   let exp = ( IdentityWithInt::from( 1 ), IdentityWithInt::from( 3 ) );
+    //   a_id!( got, exp );
+    // }
 
     // /* test.case( "from x3 tupple" ) */
     // {

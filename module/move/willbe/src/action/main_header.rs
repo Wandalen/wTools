@@ -78,7 +78,7 @@ mod private
       (
         format!
         (
-          r#"[![{}](https://img.shields.io/github/actions/workflow/status/{}/StandardRustScheduled.yml?branch=master&label={}&logo=github)](https://github.com/{}/actions/workflows/StandardRustStatus.yml){}
+          r#"[![{}](https://img.shields.io/github/actions/workflow/status/{}/StandardRustScheduled.yml?branch=master&label={}&logo=github)](https://github.com/{}/actions){}
 [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial/https://github.com/{})
 [![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/{})"#,
           self.master_branch, url::git_info_extract( &self.repository_url )?, self.master_branch, url::git_info_extract( &self.repository_url )?,

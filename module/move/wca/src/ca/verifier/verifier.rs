@@ -99,11 +99,12 @@ pub( crate ) mod private
     #[ cfg( feature = "on_unknown_suggest" ) ]
     fn suggest_command< 'a >( dictionary : &'a Dictionary, user_input: &str ) -> Option< &'a str >
     {
-      let jaro = eddie::JaroWinkler::new();
+      use textdistance::{ Algorithm, JaroWinkler };
+      let jaro = JaroWinkler::default();
       let sim = dictionary
       .commands
       .iter()
-      .map( |( name, c )| ( jaro.similarity( name, user_input ), c ) )
+      .map( |( name, c )| ( jaro.for_str( name, user_input ).nsim(), c ) )
       .max_by( |( s1, _ ), ( s2, _ )| s1.total_cmp( s2 ) );
       if let Some(( sim, variant )) = sim
       {

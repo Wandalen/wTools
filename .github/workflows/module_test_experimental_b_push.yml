@@ -2,7 +2,7 @@ name : test_experimental_b
 
 on :
   push :
-    branches-ignore :
+    branches :
       - 'alpha'
       - 'beta'
       - 'master'
