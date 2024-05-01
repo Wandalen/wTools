@@ -22,40 +22,56 @@ fn main()
   #[ derive( Debug, PartialEq, Former ) ]
   pub struct Aggregator
   {
+    #[ subform ]
     #[ setter( false ) ]
     command : HashMap< String, Command >,
   }
 
   // Use CommandFormer as custom subformer for AggregatorFormer to add commands by name.
-  impl< Definition > AggregatorFormer< Definition >
+  impl< Definition > ParentFormer< Definition >
   where
-    End : former::FormingEnd< Aggregator, Context >,
+    Definition : former::FormerDefinition< Storage = < Parent as former::EntityToStorage >::Storage >,
   {
+
     #[ inline( always ) ]
-    pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::FormingEnd< Command, Self > >
-    where
-      IntoName : core::convert::Into< String >,
+    pub fn command( self, name : &str ) -> CommandAsSubformer< Self, impl CommandAsSubformerEnd< Self > >
     {
-      let on_end = | command : Command, super_former : core::option::Option< Self > | -> Self
-      {
-        let mut super_former = super_former.unwrap();
-        if let Some( ref mut commands ) = super_former.storage.command
-        {
-          commands.insert( command.name.clone(), command );
-        }
-        else
-        {
-          let mut commands: HashMap< String, Command > = Default::default();
-          commands.insert( command.name.clone(), command );
-          super_former.storage.command = Some( commands );
-        }
-        super_former
-      };
-      let former = CommandFormer::begin( None, Some( self ), on_end );
-      former.name( name )
+      self._command_add_subformer::< CommandFormer< _ >, _, >()
+      .name( name )
     }
-    // xxx : review
+
   }
+
+  // // Use CommandFormer as custom subformer for AggregatorFormer to add commands by name.
+  // impl< Definition > AggregatorFormer< Definition >
+  // where
+  //   End : former::FormingEnd< Aggregator, Context >,
+  // {
+  //   #[ inline( always ) ]
+  //   pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::FormingEnd< Command, Self > >
+  //   where
+  //     IntoName : core::convert::Into< String >,
+  //   {
+  //     let on_end = | command : Command, super_former : core::option::Option< Self > | -> Self
+  //     {
+  //       let mut super_former = super_former.unwrap();
+  //       if let Some( ref mut commands ) = super_former.storage.command
+  //       {
+  //         commands.insert( command.name.clone(), command );
+  //       }
+  //       else
+  //       {
+  //         let mut commands: HashMap< String, Command > = Default::default();
+  //         commands.insert( command.name.clone(), command );
+  //         super_former.storage.command = Some( commands );
+  //       }
+  //       super_former
+  //     };
+  //     let former = CommandFormer::begin( None, Some( self ), on_end );
+  //     former.name( name )
+  //   }
+  //   // xxx : review
+  // }
 
   let ca = Aggregator::former()
   .command( "echo" )
