@@ -1,11 +1,8 @@
 crate::mod_interface!
 {
-  /// Parser configuration
-  layer parser;
-  /// Implementation for parsing command
+  /// Parsed command
   layer command;
-  /// Implementation for parsing program
-  layer program;
-  /// Entities representation to interact with
-  layer entities;
+  
+  /// Parser.
+  layer parser;
 }

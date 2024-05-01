@@ -47,4 +47,4 @@ rayon = "1.8.0"
 
 [[example]]
 name = "sample_deterministic_rand_trivial"
-path = "examples/sample_deterministic_rand_trivial.rs"
+path = "examples/deterministic_rand_trivial.rs"

@@ -3,9 +3,8 @@ pub( crate ) mod private
   use crate::*;
   use ca::
   {
-    Parser, Verifier,
+    Verifier,
     Executor,
-    ProgramParser,
     Command,
     grammar::command::private::CommandFormer,
     help::{ HelpGeneratorFn, HelpGeneratorOptions, HelpVariants },
@@ -78,7 +77,7 @@ pub( crate ) mod private
   /// # Example:
   ///
   /// ```
-  /// use wca::{ CommandsAggregator, Args, Props, Type };
+  /// use wca::{ CommandsAggregator, VerifiedCommand, Type };
   ///
   /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
   /// let ca = CommandsAggregator::former()
@@ -86,7 +85,7 @@ pub( crate ) mod private
   ///   .hint( "prints all subjects and properties" )
   ///   .subject().hint( "argument" ).kind( Type::String ).optional( false ).end()
   ///   .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( false ).end()
-  ///   .routine( | args : Args, props : Props | println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" ) )
+  ///   .routine( | o : VerifiedCommand | println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props ) )
   ///   .end()
   /// .perform();
   ///
@@ -101,7 +100,7 @@ pub( crate ) mod private
     #[ default( Dictionary::default() ) ]
     dictionary : Dictionary,
 
-    #[ default( Parser::former().form() ) ]
+    #[ default( Parser ) ]
     parser : Parser,
 
     #[ setter( false ) ]
@@ -156,35 +155,28 @@ pub( crate ) mod private
 
   impl CommandsAggregatorFormer
   {
-    // qqq : delete on completion
-    // /// Setter for grammar
-    // ///
-    // /// Gets list of available commands
-    // pub fn grammar< V >( mut self, commands : V ) -> Self
-    // where
-    //   V : Into< Vec< Command > >
-    // {
-    //   let verifier = Verifier::former()
-    //   .commands( commands )
-    //   .form();
-    //   self.storage.verifier = Some( verifier );
-    //   self
-    // }
+    /// Adds a context to the executor.
+    ///
+    /// # Arguments
+    ///
+    /// * `value` - The value to be used as the context.
+    ///
+    /// # Returns
+    ///
+    /// The modified instance of `Self`.
+    // `'static` means that the value must be owned or live at least as a `Context'
+    pub fn with_context< T >( mut self, value : T ) -> Self
+    where
+      T : Sync + Send + 'static,
+    {
+      let mut executor = self.storage.executor.unwrap_or_else( || Executor::former().form() );
 
-    // /// Setter for executor
-    // ///
-    // /// Gets dictionary of routines( command name -> callback )
-    // pub fn executor< H >( mut self, routines : H ) -> Self
-    // where
-    //   H : Into< HashMap< String, Routine > >
-    // {
-    //   let executor = ExecutorConverter::former()
-    //   .routines( routines )
-    //   .form();
-    //
-    //   self.storage.executor_converter = Some( executor );
-    //   self
-    // }
+      executor.context = Context::new( value );
+
+      self.storage.executor = Some( executor );
+
+      self
+    }
 
     /// Setter for help content generator
     ///
@@ -267,13 +259,12 @@ pub( crate ) mod private
     {
       let Input( ref program ) = program.into_input();
 
-      let raw_program = self.parser.program( program ).map_err( | e | Error::Validation( ValidationError::Parser { input : program.to_string(), error : e } ) )?;
+      let raw_program = self.parser.parse( program ).map_err( | e | Error::Validation( ValidationError::Parser { input : format!( "{:?}", program ), error : e } ) )?;
       let grammar_program = self.verifier.to_program( &self.dictionary, raw_program ).map_err( | e | Error::Validation( ValidationError::Verifier( e ) ) )?;
-      // let exec_program = self.executor_converter.to_program( grammar_program ).map_err( | e | Error::Validation( ValidationError::ExecutorConverter( e ) ) )?;
 
       if let Some( callback ) = &self.callback_fn
       {
-        callback.0( program, &grammar_program )
+        callback.0( &program.join( " " ), &grammar_program )
       }
 
       self.executor.program( &self.dictionary, grammar_program ).map_err( | e | Error::Execution( e ) )

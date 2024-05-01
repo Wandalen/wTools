@@ -6,7 +6,7 @@ tests_impls!
 {
   fn basic()
   {
-    let parser = Parser::former().form();
+    let parser = Parser;
 
     // only one command
     a_id!
@@ -20,7 +20,7 @@ tests_impls!
           properties : HashMap::new(),
         },
       ]},
-      parser.program( ".command" ).unwrap()
+      parser.parse( [ ".command" ] ).unwrap()
     );
 
     a_id!
@@ -46,7 +46,7 @@ tests_impls!
           properties : HashMap::new(),
         }
       ]},
-      parser.program( ".command1 .command2 .command3" ).unwrap()
+      parser.parse( [ ".command1", ".command2", ".command3" ] ).unwrap()
     );
   }
 }

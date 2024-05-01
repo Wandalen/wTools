@@ -14,8 +14,7 @@ pub( crate ) mod private
   use duct::cmd;
   use error_tools::
   {
-    err,
-    for_app::{ Error, Context },
+    for_app::{ Error, Context, anyhow },
     Result,
   };
   use former::Former;
@@ -198,7 +197,7 @@ pub( crate ) mod private
     }
     else
     {
-      report.error = Err( err!( "Process was finished with error code : {}", output.status ) );
+      report.error = Err( anyhow!( "Process was finished with error code : {}", output.status ) );
       Err( report )
     }
 

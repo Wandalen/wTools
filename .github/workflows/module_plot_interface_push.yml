@@ -2,7 +2,7 @@ name : plot_interface
 
 on :
   push :
-    branches-ignore :
+    branches :
       - 'alpha'
       - 'beta'
       - 'master'

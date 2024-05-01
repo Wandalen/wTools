@@ -6,11 +6,7 @@ mod private
   use std::collections::HashSet;
   use std::path::PathBuf;
   use colored::Colorize;
-  use wca::
-  { 
-    Args, 
-    Props, 
-  };
+  use wca::VerifiedCommand;
   use wtools::error::Result;
   use _path::AbsolutePath;
   use action::test::TestsCommandOptions;
@@ -51,11 +47,12 @@ mod private
   }
 
   /// run tests in specified crate
-  pub fn test( args : Args, properties : Props ) -> Result< () >
+  pub fn test( o : VerifiedCommand ) -> Result< () >
   {
-    let args_line = format!( "{}", args.get_owned( 0 ).unwrap_or( std::path::PathBuf::from( "" ) ).display() );
-    let prop_line = format!( "{}", properties.iter().map( | p | format!( "{}:{}", p.0, p.1.to_string() ) ).collect::< Vec< _ > >().join(" ") );
-    let path : PathBuf = args.get_owned( 0 ).unwrap_or_else( || "./".into() );
+    let args_line = format!( "{}", o.args.get_owned( 0 ).unwrap_or( std::path::PathBuf::from( "" ) ).display() );
+    let prop_line = format!( "{}", o.props.iter().map( | p | format!( "{}:{}", p.0, p.1.to_string() ) ).collect::< Vec< _ > >().join(" ") );
+
+    let path : PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );
     let path = AbsolutePath::try_from( path )?;
     let TestsProperties
     {
@@ -73,7 +70,7 @@ mod private
       with_debug,
       with_release, 
       with_progress
-    } = properties.try_into()?;
+    } = o.props.try_into()?;
 
     let mut channels = HashSet::new();
     if with_stable { channels.insert( Channel::Stable ); }
@@ -131,10 +128,10 @@ mod private
     }
   }
 
-  impl TryFrom< Props > for TestsProperties
+  impl TryFrom< wca::Props > for TestsProperties
   {
     type Error = wtools::error::for_app::Error;
-    fn try_from( value : Props ) -> Result< Self, Self::Error >
+    fn try_from( value : wca::Props ) -> Result< Self, Self::Error >
     {
       let mut this = Self::former();
 

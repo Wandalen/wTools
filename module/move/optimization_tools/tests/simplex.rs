@@ -112,6 +112,8 @@ fn problem_5_vars()
   assert_eq!( solution[ 0 ].point, vec![ 300.0, 400.0, 300.0, 0.0, 0.0 ] )
 }
 
+// for issue https://github.com/plotters-rs/plotters/issues/573
+#[ cfg( not( all( debug_assertions, target_os = "linux" ) ) ) ]
 #[ test ]
 fn problem_draw() 
 {

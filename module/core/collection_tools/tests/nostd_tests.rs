@@ -9,4 +9,4 @@ use ::collection_tools as the_module;
 mod aggregating;
 
 mod nostd;
-// xxx : enable
+// aaa : enable
