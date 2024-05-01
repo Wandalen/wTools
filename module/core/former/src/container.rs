@@ -2,7 +2,9 @@
 
 use crate::*;
 
-/// xxx : write description
+/// xxx : improve description
+/// Descriptor of a container, specifically it define type of element and type of value.
+/// As well as function to convert element to value. Reversal conversion could be not possible, so value to element conversion is in a separate trait.
 pub trait Container
 {
   /// The type of elements to be added to the container. For Vector `Val` and `Element` is the same type, but for `HashMap` `Element` is pair of key-value and `Val` is value itself.
@@ -10,8 +12,14 @@ pub trait Container
   /// The type of value to be added to the container. For Vector `Val` and `Element` is the same type, but for `HashMap` `Element` is pair of key-value and `Val` is value itself.
   type Val;
 
-  // pub fn element_to_val( Element ) -> Val;
-  // pub fn val_to_element( Val ) -> Element;
+  fn element_to_val( e : Self::Element ) -> Self::Val;
+
+}
+
+pub trait ValToElement : Container
+{
+
+  fn val_to_element( val : Self::Val ) -> Self::Element;
 
 }
 

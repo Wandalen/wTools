@@ -4,6 +4,19 @@ use super::*;
 #[ allow( unused ) ]
 use collection_tools::Vec;
 
+impl< E > Container for collection_tools::Vec< E >
+{
+  type Element = E;
+  type Val = E;
+
+  #[ inline( always ) ]
+  fn element_to_val( e : Self::Element ) -> Self::Val
+  {
+    e
+  }
+
+}
+
 impl< E > ContainerAdd for collection_tools::Vec< E >
 {
   type Element = E;

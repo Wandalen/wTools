@@ -2,6 +2,21 @@ use super::*;
 
 use collection_tools::HashMap;
 
+impl< K, V > Container for collection_tools::HashMap< K, V >
+where
+  K : core::cmp::Eq + core::hash::Hash,
+{
+  type Element = ( K, V );
+  type Val = V;
+
+  #[ inline( always ) ]
+  fn element_to_val( e : Self::Element ) -> Self::Val
+  {
+    e.1
+  }
+
+}
+
 impl< K, V > ContainerAdd for collection_tools::HashMap< K, V >
 where
   K : core::cmp::Eq + core::hash::Hash,

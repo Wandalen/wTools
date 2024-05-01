@@ -5,7 +5,22 @@
 use super::*;
 use collection_tools::HashSet;
 
-impl<K > ContainerAdd for collection_tools::HashSet< K >
+impl< K > Container for collection_tools::HashSet< K >
+where
+  K : core::cmp::Eq + core::hash::Hash,
+{
+  type Element = K;
+  type Val = K;
+
+  #[ inline( always ) ]
+  fn element_to_val( e : Self::Element ) -> Self::Val
+  {
+    e
+  }
+
+}
+
+impl< K > ContainerAdd for collection_tools::HashSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
