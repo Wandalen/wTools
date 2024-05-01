@@ -72,9 +72,8 @@ impl< K, Definition > AggregatorFormer
 where
   K : core::hash::Hash + std::cmp::Eq,
   Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = AggregatorFormerStorage< K > >,
   Definition::Storage : former::StoragePreform< Preformed = Aggregator< K > >,
-  // Definition::Storage : former::StoragePreform< Preformed = Aggregator< K > >,
+  Definition::Types : former::FormerDefinitionTypes< Storage = AggregatorFormerStorage< K > >, // xxx
 {
 
   //

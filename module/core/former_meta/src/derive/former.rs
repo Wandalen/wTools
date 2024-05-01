@@ -1843,7 +1843,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       pub fn begin
       (
         mut storage : core::option::Option< Definition::Storage >,
-        context : core::option::Option< Definition::Context >, // xxx
+        context : core::option::Option< Definition::Context >,
         on_end : < Definition as former::FormerDefinition >::End,
       )
       -> Self

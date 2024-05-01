@@ -182,8 +182,8 @@ for Struct1FormerStorage
 
 pub struct Struct1Former< Definition = Struct1FormerDefinition >
 where
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
+  Definition : former::FormerDefinition< Storage = Struct1FormerStorage >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
 {
   storage : Definition::Storage,
   context : core::option::Option< Definition::Context >,
@@ -192,8 +192,8 @@ where
 
 impl< Definition > Struct1Former< Definition >
 where
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
+  Definition : former::FormerDefinition< Storage = Struct1FormerStorage >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
 {
 
   #[ inline( always ) ]
@@ -307,7 +307,7 @@ where
 
 impl< Definition > Struct1Former< Definition >
 where
-  Definition : former::FormerDefinition,
+  Definition : former::FormerDefinition< Storage = Struct1FormerStorage, Formed = Struct1 >,
   Definition::Storage : former::StoragePreform,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage, Formed = Struct1 >,
 {

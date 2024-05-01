@@ -118,7 +118,6 @@ pub struct Struct1FormerStorage
 
 impl ::core::default::Default for Struct1FormerStorage
 {
-
   #[ inline( always ) ]
   fn default() -> Self
   {
@@ -173,8 +172,8 @@ pub struct Struct1Former
   Definition = Struct1FormerDefinition< (), Struct1, former::ReturnPreformed >,
 >
 where
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
+  Definition : former::FormerDefinition< Storage = Struct1FormerStorage >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
 {
   storage : Definition::Storage,
   context : core::option::Option< Definition::Context >,
@@ -184,8 +183,8 @@ where
 #[ automatically_derived ]
 impl< Definition > Struct1Former< Definition >
 where
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
+  Definition : former::FormerDefinition< Storage = Struct1FormerStorage >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
 {
 
   #[ inline( always ) ]
@@ -281,9 +280,8 @@ where
 
 impl< Definition > Struct1Former< Definition >
 where
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage, Formed = Struct1 >,
-  Definition::Storage : former::StoragePreform,
+  Definition : former::FormerDefinition< Storage = Struct1FormerStorage, Formed = Struct1 >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage, Formed = Struct1 >,
   Definition::Storage : former::StoragePreform< Preformed = Struct1 >,
 {
   pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed

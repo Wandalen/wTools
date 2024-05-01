@@ -7,33 +7,33 @@ mod former_tests
   #[ allow( unused_imports ) ]
   use super::*;
 
-//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-//   mod container_former_common;
-//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-//   mod container_former_vec;
-//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-//   mod container_former_hashset;
-//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-//   mod container_former_hashmap;
-//
-//   mod a_basic_manual;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod container_former_common;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod container_former_vec;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod container_former_hashset;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod container_former_hashmap;
+
+  mod a_basic_manual;
   mod a_basic;
-//   mod a_primitives_manual;
-//   mod a_primitives;
-//
-//   mod a_containers_without_subformer;
-//   #[ cfg( not( feature = "no_std" ) ) ]
-//   mod a_containers_with_subformer_manual;
-//   #[ cfg( not( feature = "no_std" ) ) ]
-//   mod a_containers_with_subformer;
-//
-//   mod attribute_default_container;
-//   mod attribute_default_primitive;
-//   mod attribute_perform;
-//   mod attribute_setter;
-//   mod attribute_alias;
-//   mod attribute_feature;
-//
+  mod a_primitives_manual;
+  mod a_primitives;
+
+  mod a_containers_without_subformer;
+  #[ cfg( not( feature = "no_std" ) ) ]
+  mod a_containers_with_subformer_manual;
+  #[ cfg( not( feature = "no_std" ) ) ]
+  mod a_containers_with_subformer;
+
+  mod attribute_default_container;
+  mod attribute_default_primitive;
+  mod attribute_perform;
+  mod attribute_setter;
+  mod attribute_alias;
+  mod attribute_feature;
+
 //   mod string_slice_manual;
 //   mod string_slice;
 //   mod unsigned_primitive_types;
