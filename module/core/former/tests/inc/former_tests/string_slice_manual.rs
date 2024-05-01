@@ -145,7 +145,7 @@ where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a > >,
 {
-  storage : < Definition::Types as former::FormerDefinitionTypes >::Storage,
+  storage : Definition::Storage,
   context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
   on_end : core::option::Option< Definition::End >,
 }
@@ -183,7 +183,7 @@ where
   #[ inline( always ) ]
   pub fn begin
   (
-    mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
+    mut storage : core::option::Option< Definition::Storage >,
     context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
     on_end : < Definition as former::FormerDefinition >::End,
   ) -> Self
@@ -203,7 +203,7 @@ where
   #[ inline( always ) ]
   pub fn begin_coercing< IntoEnd >
   (
-    mut storage : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Storage >,
+    mut storage : core::option::Option< Definition::Storage >,
     context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
     on_end : IntoEnd,
   ) -> Self
@@ -249,8 +249,8 @@ impl< 'a, Definition > Struct1Former< 'a, Definition >
 where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Struct1< 'a > >,
-  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
-  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform< Preformed = Struct1< 'a > >,
+  Definition::Storage : former::StoragePreform,
+  Definition::Storage : former::StoragePreform< Preformed = Struct1< 'a > >,
 {
   pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {

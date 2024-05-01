@@ -62,7 +62,7 @@ impl< K, Definition > CommandFormer< K, Definition >
 where
   K : core::hash::Hash + std::cmp::Eq,
   Definition : former::FormerDefinition,
-  < Definition::Types as former::FormerDefinitionTypes >::Storage : former::StoragePreform,
+  Definition::Storage : former::StoragePreform,
   Definition::Types : former::FormerDefinitionTypes< Storage = CommandFormerStorage< K > >,
 {
 

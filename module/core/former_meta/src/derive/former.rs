@@ -1796,7 +1796,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     where
       #former_generics_where
     {
-      // storage : < Definition::Types as former::FormerDefinitionTypes >::Storage, // xxx
+      // storage : Definition::Storage, // xxx
       storage : Definition::Storage,
       context : core::option::Option< < Definition::Types as former::FormerDefinitionTypes >::Context >,
       on_end : core::option::Option< Definition::End >,
