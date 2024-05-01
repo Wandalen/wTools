@@ -47,12 +47,9 @@ pub trait ValToElement : Container
 ///   elements different containers can accept.
 ///
 
+// zzz : update description
 pub trait ContainerAdd : Container
 {
-  // /// The type of elements to be added to the container. For Vector `Val` and `Element` is the same type, but for `HashMap` `Element` is pair of key-value and `Val` is value itself.
-  // type Element;
-  // /// The type of value to be added to the container. For Vector `Val` and `Element` is the same type, but for `HashMap` `Element` is pair of key-value and `Val` is value itself.
-  // type Val;
 
   /// Adds an element to the container.
   ///
@@ -119,10 +116,10 @@ pub trait ContainerAdd : Container
 // qqq : implement for other containers
 
 /// A trait defining the capability to replface all elements.
-pub trait ContainerAssign
+pub trait ContainerAssign : Container
 {
-  /// The type of elements to be added to the container.
-  type Element;
+  // /// The type of elements to be added to the container.
+  // type Element;
 
   /// Agging elements to the container.
   fn assign< Elements >( &mut self, elements : Elements ) -> usize

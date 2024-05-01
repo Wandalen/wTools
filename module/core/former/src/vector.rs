@@ -33,7 +33,7 @@ impl< E > ContainerAdd for collection_tools::Vec< E >
 
 impl< E > ContainerAssign for collection_tools::Vec< E >
 {
-  type Element = E;
+  // type Element = E;
 
   #[ inline( always ) ]
   fn assign< Elements >( &mut self, elements : Elements ) -> usize

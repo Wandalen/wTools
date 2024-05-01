@@ -39,7 +39,7 @@ impl< T > ContainerAssign for collection_tools::HashSet< T >
 where
   T : core::cmp::Eq + core::hash::Hash,
 {
-  type Element = T;
+  // type Element = T;
 
   fn assign< Elements >( &mut self, elements : Elements ) -> usize
   where

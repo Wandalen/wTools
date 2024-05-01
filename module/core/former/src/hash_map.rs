@@ -36,7 +36,7 @@ impl< K, V > ContainerAssign for collection_tools::HashMap< K, V >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
-  type Element = ( K, V );
+  // type Element = ( K, V );
 
   fn assign< Elements >( &mut self, elements : Elements ) -> usize
   where
