@@ -1,6 +1,6 @@
 //! Implementation of Simulated Annealing for Hybrid Optimizer.
 
-use derive_tools::{ FromInner, InnerFrom, Display };
+use derive_tools::{ FromInner, InnerFrom, exposed::Display };
 /// Represents temperature of SA process.
 #[ derive( Default, Debug, Display, Clone, Copy, PartialEq, PartialOrd, FromInner, InnerFrom ) ]
 pub struct Temperature( f64 );
