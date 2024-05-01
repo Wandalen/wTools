@@ -2,7 +2,7 @@ name : deterministic_rand
 
 on :
   push :
-    branches-ignore :
+    branches :
       - 'alpha'
       - 'beta'
       - 'master'

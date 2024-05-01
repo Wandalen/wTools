@@ -1,28 +1,21 @@
-//! Query command endpoint and report.
+//! Query actions and report.
 
 // qqq : don't use both
+// aaa : fixed
 use crate::*;
-use super::*;
 use gluesql::core::executor::Payload;
-use storage::{ FeedStorage, Store };
-use executor::FeedManager;
-use error_tools::{ err, BasicError, Result };
+use sled_adapter::{ FeedStorage, Store };
+use action::Report;
+use error_tools::Result;
 
 /// Execute query specified in query string.
-pub async fn execute_query
+pub async fn query_execute
 (
-  storage : FeedStorage< gluesql::sled_storage::SledStorage >,
-  args : &wca::Args,
+  mut storage : FeedStorage< gluesql::sled_storage::SledStorage >,
+  query_str : String,
 ) -> Result< impl Report >
 {
-  let query = args
-  .get_owned::< Vec::< String > >( 0 )
-  .ok_or_else::< BasicError, _ >( || err!( "Cannot get Query argument for command .query.execute" ) )?
-  .join( " " )
-  ;
-
-  let mut manager = FeedManager::new( storage );
-  manager.storage.execute_query( query ).await
+  storage.execute_query( query_str ).await
 }
 
 const EMPTY_CELL : &'static str = "";
@@ -68,7 +61,7 @@ impl std::fmt::Display for QueryReport
               ];
               rows.push( new_row );
             }
-            let table = table_display::plain_table( rows );
+            let table = tool::table_display::plain_table( rows );
             if let Some( table ) = table
             {
               writeln!( f, "{}", table )?;
@@ -91,3 +84,4 @@ impl Report for QueryReport {}
 
 // qqq : good tests for query action
 // all tables should be touched by these tests
+// aaa : added in https://github.com/Wandalen/wTools/pull/1284
