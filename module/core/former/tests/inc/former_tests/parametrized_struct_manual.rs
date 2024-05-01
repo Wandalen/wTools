@@ -207,8 +207,8 @@ impl< K, > former :: StoragePreform for CommandFormerStorage< K, > where K : cor
 pub struct CommandFormer< K, Definition = CommandFormerDefinition< K, (), Command< K, >, former::ReturnPreformed >, >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = CommandFormerStorage< K, > >
+  Definition : former::FormerDefinition< Storage = CommandFormerStorage< K, > >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = CommandFormerStorage< K, > >
 {
   storage : Definition::Storage,
   context : core::option::Option< Definition::Context >,
@@ -219,9 +219,10 @@ where
 impl< K, Definition, > CommandFormer< K, Definition, >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = CommandFormerStorage< K, > >
+  Definition : former::FormerDefinition< Storage = CommandFormerStorage< K, > >
+  // Definition::Types : former::FormerDefinitionTypes< Storage = CommandFormerStorage< K, > >,
 {
+
   #[ inline( always ) ]
   pub fn perform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
@@ -258,8 +259,13 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn begin_coercing< IntoEnd >( mut storage : core::option::Option< Definition::Storage >, context : core::option::Option< Definition::Context >, on_end : IntoEnd, ) -> Self
-  where IntoEnd : ::core::convert::Into< < Definition as former::FormerDefinition >::End >
+  pub fn begin_coercing< IntoEnd >
+  (
+    mut storage : core::option::Option< Definition::Storage >, context : core::option::Option< Definition::Context >, on_end : IntoEnd,
+  )
+  -> Self
+  where
+    IntoEnd : ::core::convert::Into< < Definition as former::FormerDefinition >::End >
   {
     if storage.is_none()
     {
@@ -315,9 +321,8 @@ where
 impl< K, Definition, > CommandFormer< K, Definition, >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = CommandFormerStorage< K, >, Formed = Command< K, > >,
-  Definition::Storage : former::StoragePreform,
+  Definition : former::FormerDefinition< Storage = CommandFormerStorage< K, >, Formed = Command< K, > >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = CommandFormerStorage< K, >, Formed = Command< K, > >,
   Definition::Storage : former::StoragePreform< Preformed = Command< K, > >
 {
   pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
@@ -334,8 +339,8 @@ pub struct CommandFormerPropertiesEnd;
 impl< K, Definition, > former::FormingEnd< former::HashMapDefinition< K, Property< K >, CommandFormer< K, Definition, >, CommandFormer< K, Definition, >, former::NoEnd >, > for CommandFormerPropertiesEnd
 where
   K : core::hash::Hash + std::cmp::Eq,
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = CommandFormerStorage< K, > >
+  Definition : former::FormerDefinition< Storage = CommandFormerStorage< K, > >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = CommandFormerStorage< K, > >,
 {
   #[ inline( always ) ]
   fn call( &self, storage : collection_tools::HashMap< K, Property< K > >, super_former : Option< CommandFormer< K, Definition, > >, ) -> CommandFormer< K, Definition, >

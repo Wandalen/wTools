@@ -49,15 +49,15 @@ mod former_tests
   mod name_collision_end;
   mod name_collision_on_end;
 
-//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-//   mod parametrized_struct_manual;
-//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-//   mod parametrized_struct_imm;
-//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-//   mod parametrized_struct_where;
-//   mod parametrized_field;
-//   mod parametrized_field_where;
-//
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod parametrized_struct_manual;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod parametrized_struct_imm;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod parametrized_struct_where;
+  mod parametrized_field;
+  mod parametrized_field_where;
+
 //   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 //   mod subformer_basic;
 //   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
