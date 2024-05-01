@@ -34,21 +34,21 @@ mod former_tests
   mod attribute_alias;
   mod attribute_feature;
 
-//   mod string_slice_manual;
-//   mod string_slice;
-//   mod unsigned_primitive_types;
-//   mod default_user_type;
-//   mod user_type_no_default;
-//   mod user_type_no_debug;
-//   mod visibility;
-//
-//   mod name_collision_former_hashmap_without_parameter;
-//   mod name_collision_former_vector_without_parameter;
-//   mod name_collisions;
-//   mod name_collision_context;
-//   mod name_collision_end;
-//   mod name_collision_on_end;
-//
+  mod string_slice_manual;
+  mod string_slice;
+  mod unsigned_primitive_types;
+  mod default_user_type;
+  mod user_type_no_default;
+  mod user_type_no_debug;
+  mod visibility;
+
+  mod name_collision_former_hashmap_without_parameter;
+  mod name_collision_former_vector_without_parameter;
+  mod name_collisions;
+  mod name_collision_context;
+  mod name_collision_end;
+  mod name_collision_on_end;
+
 //   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 //   mod parametrized_struct_manual;
 //   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]

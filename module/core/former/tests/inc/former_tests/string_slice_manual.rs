@@ -153,11 +153,8 @@ where
 #[ automatically_derived ]
 impl< 'a, Definition > Struct1Former< 'a, Definition >
 where
-  // End : former::FormingEnd::< Definition::Types >,
-  // Definition : former::FormerDefinition< End = End >,
-  // Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Formed, Context = Context >,
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a > >,
+  Definition : former::FormerDefinition< Storage = Struct1FormerStorage< 'a > >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a > >,
 {
 
   #[ inline( always ) ]
@@ -247,9 +244,8 @@ where
 
 impl< 'a, Definition > Struct1Former< 'a, Definition >
 where
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Struct1< 'a > >,
-  Definition::Storage : former::StoragePreform,
+  Definition : former::FormerDefinition< Storage = Struct1FormerStorage< 'a >, Formed = Struct1< 'a > >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage< 'a >, Formed = Struct1< 'a > >,
   Definition::Storage : former::StoragePreform< Preformed = Struct1< 'a > >,
 {
   pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed

@@ -16,8 +16,8 @@ pub struct StructWithCustomSetters
 
 impl< Definition > StructWithCustomSettersFormer< Definition >
 where
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = StructWithCustomSettersFormerStorage >,
+  Definition : former::FormerDefinition< Storage = StructWithCustomSettersFormerStorage >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = StructWithCustomSettersFormerStorage >,
 {
 
   /// Custom alternative setter of ordinary field.
