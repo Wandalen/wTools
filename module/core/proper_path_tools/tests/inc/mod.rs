@@ -5,7 +5,8 @@ mod path_normalize;
 mod path_is_glob;
 mod absolute_path;
 mod without_ext;
-mod path_change_ext;mod path_common;
+mod path_change_ext;
+mod path_common;
 mod rebase_path;
 mod path_relative;
 
