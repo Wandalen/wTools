@@ -1238,7 +1238,6 @@ Result< TokenStream >
       Definition::Types : former::FormerDefinitionTypes
       <
         Storage = < #stru < #struct_generics_ty > as former::EntityToStorage >::Storage,
-        // xxx : add test with life time + param + subform
       >,
       Types2 : former::FormerDefinitionTypes
       <
