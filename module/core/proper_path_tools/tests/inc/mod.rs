@@ -4,7 +4,7 @@ use super::*;
 mod path_normalize;
 mod path_is_glob;
 mod absolute_path;
-mod path_common;
+mod path_exts;mod path_common;
 mod rebase_path;
 mod path_relative;
 
