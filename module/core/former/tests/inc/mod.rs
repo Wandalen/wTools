@@ -76,6 +76,8 @@ mod former_tests
   mod subformer_subform_named;
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subformer_subform_named_manual;
+  // #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  // mod subformer_subform_hashmap;
 
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subformer_subform_and_container;

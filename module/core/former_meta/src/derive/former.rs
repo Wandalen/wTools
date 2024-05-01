@@ -730,13 +730,13 @@ fn field_subformer_map
       Definition2 : former::FormerDefinition
       <
         End = #parent_add_element_end< Definition >,
-        Storage = < Child as former::EntityToStorage >::Storage,
+        Storage = < < #field_ty as former::ContainerAdd >::Element as former::EntityToStorage >::Storage,
         Formed = Self,
         Context = Self,
       >,
       Definition2::Types : former::FormerDefinitionTypes
       <
-        Storage = < Child as former::EntityToStorage >::Storage,
+        Storage = < < #field_ty as former::ContainerAdd >::Element as former::EntityToStorage >::Storage,
         Formed = Self,
         Context = Self,
       >,

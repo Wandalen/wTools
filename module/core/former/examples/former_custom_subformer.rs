@@ -23,14 +23,14 @@ fn main()
   pub struct Aggregator
   {
     #[ subform ]
-    #[ setter( false ) ]
+    // #[ setter( false ) ]
     command : HashMap< String, Command >,
   }
 
   // Use CommandFormer as custom subformer for AggregatorFormer to add commands by name.
-  impl< Definition > ParentFormer< Definition >
+  impl< Definition > AggregatorFormer< Definition >
   where
-    Definition : former::FormerDefinition< Storage = < Parent as former::EntityToStorage >::Storage >,
+    Definition : former::FormerDefinition< Storage = < Aggregator as former::EntityToStorage >::Storage >,
   {
 
     #[ inline( always ) ]
