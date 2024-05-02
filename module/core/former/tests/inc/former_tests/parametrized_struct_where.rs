@@ -25,7 +25,7 @@ impl< Name > Property< Name >
 #[ derive( Debug, PartialEq, the_module::Former ) ]
 // #[ derive( Debug, PartialEq, the_module::Former ) ] #[ debug ]
 // #[ derive( Debug, PartialEq ) ]
-pub struct Command< K >
+pub struct Child< K >
 where
   K : core::hash::Hash + std::cmp::Eq,
 {

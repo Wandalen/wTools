@@ -5,28 +5,27 @@ use super::*;
 #[ allow( unused_imports ) ]
 use collection_tools::HashMap;
 
-// Command struct with Former derived for builder pattern support
+// Child struct with Former derived for builder pattern support
 #[ derive( Debug, PartialEq, former::Former ) ]
-pub struct Command
+pub struct Child
 {
   name : String,
   description : String,
 }
 
-// Aggregator struct to hold commands
+// Parent struct to hold commands
 #[ derive( Debug, PartialEq, former::Former ) ]
 // #[ debug ]
 // #[ derive( Debug, PartialEq ) ]
-pub struct Aggregator
+pub struct Parent
 {
   #[ subform ]
-  #[ scalar_setter( false ) ]
-  command : HashMap< String, Command >,
+  command : HashMap< String, Child >,
 }
 
-impl former::ValToElement< HashMap< String, Command > > for Command
+impl former::ValToElement< HashMap< String, Child > > for Child
 {
-  type Element = ( String, Command );
+  type Element = ( String, Child );
   #[ inline( always ) ]
   fn val_to_element( self ) -> Self::Element
   {
@@ -42,7 +41,7 @@ impl former::ValToElement< HashMap< String, Command > > for Command
 fn basic()
 {
 
-  let got = Aggregator::former()
+  let got = Parent::former()
   .command()
     .name( "echo" )
     .description( "prints all subjects and properties" ) // sets additional properties using custom subformer

@@ -25,7 +25,7 @@ impl< Name > Property< Name >
 // #[ derive( Debug, PartialEq, the_module::Former ) ]
 // #[ derive( Debug, PartialEq, the_module::Former ) ] #[ debug ]
 #[ derive( Debug, PartialEq ) ]
-pub struct Command< K >
+pub struct Child< K >
 where
   K : core::hash::Hash + std::cmp::Eq,
 {
@@ -37,29 +37,29 @@ where
 // == begin_coercing of generated
 
 #[ automatically_derived ]
-impl< K, > Command< K, > where K : core :: hash :: Hash + std :: cmp :: Eq,
+impl< K, > Child< K, > where K : core :: hash :: Hash + std :: cmp :: Eq,
 {
 
 
 
   #[ inline( always ) ]
-  pub fn former() -> CommandFormer< K, CommandFormerDefinition< K, (), Command< K, >, former :: ReturnPreformed > >
+  pub fn former() -> ChildFormer< K, ChildFormerDefinition< K, (), Child< K, >, former :: ReturnPreformed > >
   {
-    CommandFormer
+    ChildFormer
     ::
-    < K, CommandFormerDefinition< K, (), Command< K, >, former :: ReturnPreformed > >
+    < K, ChildFormerDefinition< K, (), Child< K, >, former :: ReturnPreformed > >
     :: new( former :: ReturnPreformed )
   }
 }
 
 #[ derive( Debug ) ]
-pub struct CommandFormerDefinitionTypes< K, __Context = (), __Formed = Command< K, >, > where K : core :: hash :: Hash + std :: cmp :: Eq,
+pub struct ChildFormerDefinitionTypes< K, __Context = (), __Formed = Child< K, >, > where K : core :: hash :: Hash + std :: cmp :: Eq,
 {
   _phantom : core :: marker :: PhantomData< ( K, __Context, __Formed ) >,
 }
 
 impl< K, __Context, __Formed, > :: core :: default :: Default
-for CommandFormerDefinitionTypes< K, __Context, __Formed, >
+for ChildFormerDefinitionTypes< K, __Context, __Formed, >
 where
   K : core :: hash :: Hash + std :: cmp :: Eq,
 {
@@ -73,18 +73,18 @@ where
 }
 
 impl< K, __Context, __Formed, > former :: FormerDefinitionTypes
-for CommandFormerDefinitionTypes< K, __Context, __Formed, >
+for ChildFormerDefinitionTypes< K, __Context, __Formed, >
 where
   K : core :: hash :: Hash + std :: cmp :: Eq,
 {
-  type Storage = CommandFormerStorage< K, >;
+  type Storage = ChildFormerStorage< K, >;
   type Formed = __Formed;
   type Context = __Context;
 }
 
 #[ derive( Debug ) ]
-pub struct CommandFormerDefinition
-< K, __Context = (), __Formed = Command< K, >, __End = former :: ReturnPreformed, >
+pub struct ChildFormerDefinition
+< K, __Context = (), __Formed = Child< K, >, __End = former :: ReturnPreformed, >
 where
   K : core :: hash :: Hash + std :: cmp :: Eq,
 {
@@ -92,7 +92,7 @@ where
 }
 
 impl< K, __Context, __Formed, __End, > :: core :: default :: Default
-for CommandFormerDefinition< K, __Context, __Formed, __End, >
+for ChildFormerDefinition< K, __Context, __Formed, __End, >
 where
   K : core :: hash :: Hash + std :: cmp :: Eq,
 {
@@ -106,21 +106,21 @@ where
 }
 
 impl< K, __Context, __Formed, __End, > former :: FormerDefinition
-for CommandFormerDefinition< K, __Context, __Formed, __End, >
+for ChildFormerDefinition< K, __Context, __Formed, __End, >
 where
-  __End : former :: FormingEnd< CommandFormerDefinitionTypes< K, __Context, __Formed, > >,
+  __End : former :: FormingEnd< ChildFormerDefinitionTypes< K, __Context, __Formed, > >,
   K : core :: hash :: Hash + std :: cmp :: Eq,
 {
-  type Types = CommandFormerDefinitionTypes< K, __Context, __Formed, >;
+  type Types = ChildFormerDefinitionTypes< K, __Context, __Formed, >;
   type End = __End;
-  type Storage = CommandFormerStorage< K, >;
+  type Storage = ChildFormerStorage< K, >;
   type Formed = __Formed;
   type Context = __Context;
 }
 
-// pub type CommandFormerWithClosure< K, __Context, __Formed, > = CommandFormerDefinition< K, __Context, __Formed, former :: FormingEndClosure< CommandFormerDefinitionTypes< K, __Context, __Formed, > > >;
+// pub type ChildFormerWithClosure< K, __Context, __Formed, > = ChildFormerDefinition< K, __Context, __Formed, former :: FormingEndClosure< ChildFormerDefinitionTypes< K, __Context, __Formed, > > >;
 
-pub struct CommandFormerStorage< K, > where K : core :: hash :: Hash + std :: cmp :: Eq,
+pub struct ChildFormerStorage< K, > where K : core :: hash :: Hash + std :: cmp :: Eq,
 {
 
   pub name : :: core :: option :: Option< String >,
@@ -128,7 +128,7 @@ pub struct CommandFormerStorage< K, > where K : core :: hash :: Hash + std :: cm
   pub properties : :: core :: option :: Option< collection_tools :: HashMap< K, Property< K > > >,
 }
 
-impl< K, > :: core :: default :: Default for CommandFormerStorage< K, > where K : core :: hash :: Hash + std :: cmp :: Eq,
+impl< K, > :: core :: default :: Default for ChildFormerStorage< K, > where K : core :: hash :: Hash + std :: cmp :: Eq,
 {
   #[ inline( always ) ]
   fn default() -> Self
@@ -141,14 +141,14 @@ impl< K, > :: core :: default :: Default for CommandFormerStorage< K, > where K 
   }
 }
 
-impl< K, > former :: Storage for CommandFormerStorage< K, > where K : core :: hash :: Hash + std :: cmp :: Eq,
+impl< K, > former :: Storage for ChildFormerStorage< K, > where K : core :: hash :: Hash + std :: cmp :: Eq,
 {
-  type Formed = Command< K, >;
+  type Formed = Child< K, >;
 }
 
-impl< K, > former :: StoragePreform for CommandFormerStorage< K, > where K : core :: hash :: Hash + std :: cmp :: Eq,
+impl< K, > former :: StoragePreform for ChildFormerStorage< K, > where K : core :: hash :: Hash + std :: cmp :: Eq,
 {
-  type Preformed = Command< K, >;
+  type Preformed = Child< K, >;
 
   fn preform( mut self ) -> Self::Preformed
   // fn preform( mut self ) -> < Self as former :: Storage > :: Formed
@@ -199,16 +199,16 @@ impl< K, > former :: StoragePreform for CommandFormerStorage< K, > where K : cor
       }
     };
 
-    let result = Command :: < K, > { name, properties, };
+    let result = Child :: < K, > { name, properties, };
     return result;
   }
 }
 
-pub struct CommandFormer< K, Definition = CommandFormerDefinition< K, (), Command< K, >, former::ReturnPreformed >, >
+pub struct ChildFormer< K, Definition = ChildFormerDefinition< K, (), Child< K, >, former::ReturnPreformed >, >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  Definition : former::FormerDefinition< Storage = CommandFormerStorage< K, > >,
-  // Definition::Types : former::FormerDefinitionTypes< Storage = CommandFormerStorage< K, > >
+  Definition : former::FormerDefinition< Storage = ChildFormerStorage< K, > >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = ChildFormerStorage< K, > >
 {
   storage : Definition::Storage,
   context : core::option::Option< Definition::Context >,
@@ -216,11 +216,11 @@ where
 }
 
 #[ automatically_derived ]
-impl< K, Definition, > CommandFormer< K, Definition, >
+impl< K, Definition, > ChildFormer< K, Definition, >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  Definition : former::FormerDefinition< Storage = CommandFormerStorage< K, > >
-  // Definition::Types : former::FormerDefinitionTypes< Storage = CommandFormerStorage< K, > >,
+  Definition : former::FormerDefinition< Storage = ChildFormerStorage< K, > >
+  // Definition::Types : former::FormerDefinitionTypes< Storage = ChildFormerStorage< K, > >,
 {
 
   #[ inline( always ) ]
@@ -304,26 +304,26 @@ where
 
   #[ inline( always ) ]
   pub fn properties_set< Former2 >( self ) -> Former2
-  where Former2 : former::FormerBegin< former::HashMapDefinition< K, Property< K >, Self, Self, CommandFormerPropertiesEnd, > >
+  where Former2 : former::FormerBegin< former::HashMapDefinition< K, Property< K >, Self, Self, ChildFormerPropertiesEnd, > >
   {
-    Former2::former_begin( None, Some( self ), CommandFormerPropertiesEnd )
+    Former2::former_begin( None, Some( self ), ChildFormerPropertiesEnd )
   }
 
   #[ inline( always ) ]
-  pub fn properties( self ) -> former::ContainerSubformer::< ( K, Property< K >, ), former::HashMapDefinition< K, Property< K >, Self, Self, CommandFormerPropertiesEnd > >
+  pub fn properties( self ) -> former::ContainerSubformer::< ( K, Property< K >, ), former::HashMapDefinition< K, Property< K >, Self, Self, ChildFormerPropertiesEnd > >
   {
-    self.properties_set::< former::ContainerSubformer::< ( K, Property< K >, ), former::HashMapDefinition< K, Property< K >, Self, Self, CommandFormerPropertiesEnd > >>()
+    self.properties_set::< former::ContainerSubformer::< ( K, Property< K >, ), former::HashMapDefinition< K, Property< K >, Self, Self, ChildFormerPropertiesEnd > >>()
   }
 }
 
 //
 
-impl< K, Definition, > CommandFormer< K, Definition, >
+impl< K, Definition, > ChildFormer< K, Definition, >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  Definition : former::FormerDefinition< Storage = CommandFormerStorage< K, >, Formed = Command< K, > >,
-  // Definition::Types : former::FormerDefinitionTypes< Storage = CommandFormerStorage< K, >, Formed = Command< K, > >,
-  Definition::Storage : former::StoragePreform< Preformed = Command< K, > >
+  Definition : former::FormerDefinition< Storage = ChildFormerStorage< K, >, Formed = Child< K, > >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = ChildFormerStorage< K, >, Formed = Child< K, > >,
+  Definition::Storage : former::StoragePreform< Preformed = Child< K, > >
 {
   pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
@@ -333,17 +333,17 @@ where
 
 
 #[ allow( non_camel_case_types ) ]
-pub struct CommandFormerPropertiesEnd;
+pub struct ChildFormerPropertiesEnd;
 
 #[ automatically_derived ]
-impl< K, Definition, > former::FormingEnd< former::HashMapDefinition< K, Property< K >, CommandFormer< K, Definition, >, CommandFormer< K, Definition, >, former::NoEnd >, > for CommandFormerPropertiesEnd
+impl< K, Definition, > former::FormingEnd< former::HashMapDefinition< K, Property< K >, ChildFormer< K, Definition, >, ChildFormer< K, Definition, >, former::NoEnd >, > for ChildFormerPropertiesEnd
 where
   K : core::hash::Hash + std::cmp::Eq,
-  Definition : former::FormerDefinition< Storage = CommandFormerStorage< K, > >,
-  // Definition::Types : former::FormerDefinitionTypes< Storage = CommandFormerStorage< K, > >,
+  Definition : former::FormerDefinition< Storage = ChildFormerStorage< K, > >,
+  // Definition::Types : former::FormerDefinitionTypes< Storage = ChildFormerStorage< K, > >,
 {
   #[ inline( always ) ]
-  fn call( &self, storage : collection_tools::HashMap< K, Property< K > >, super_former : Option< CommandFormer< K, Definition, > >, ) -> CommandFormer< K, Definition, >
+  fn call( &self, storage : collection_tools::HashMap< K, Property< K > >, super_former : Option< ChildFormer< K, Definition, > >, ) -> ChildFormer< K, Definition, >
   {
     let mut super_former = super_former.unwrap();
     if let Some( ref mut field ) = super_former.storage.properties

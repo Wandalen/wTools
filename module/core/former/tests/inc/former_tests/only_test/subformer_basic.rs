@@ -1,4 +1,4 @@
-// let ca = wca::CommandsAggregator::former()
+// let ca = wca::ChildsParent::former()
 // .command_with_closure( "echo" )
 //   .name( "prints all subjects and properties" )
 //   .subject( "Subject", wca::Type::String, true )
@@ -19,11 +19,11 @@
 fn command_with_closure()
 {
 
-  let got = Command::< &str >::former()
+  let got = Child::< &str >::former()
   .name( "a" )
   .subject( "b" )
   .form();
-  let exp = Command::< &str >
+  let exp = Child::< &str >
   {
     name : "a".to_string(),
     subject : "b".to_string(),
@@ -31,11 +31,11 @@ fn command_with_closure()
   };
   a_id!( got, exp );
 
-  let got = Command::< &str >::former()
+  let got = Child::< &str >::former()
   .name( "a" )
   .subject( "b" )
   .perform();
-  let exp = Command::< &str >
+  let exp = Child::< &str >
   {
     name : "a".to_string(),
     subject : "b".to_string(),
@@ -43,11 +43,11 @@ fn command_with_closure()
   };
   a_id!( got, exp );
 
-  let got = Command::< &str >::former()
+  let got = Child::< &str >::former()
   .name( "a" )
   .subject( "b" )
   .end();
-  let exp = Command::< &str >
+  let exp = Child::< &str >
   {
     name : "a".to_string(),
     subject : "b".to_string(),
@@ -66,14 +66,14 @@ fn command_properties()
 {
 
   // with helper
-  let got = Command::< &str >::former()
+  let got = Child::< &str >::former()
   .name( "a" )
   .subject( "b" )
   .property( "property1", "simple property", 13isize )
   .property( "property2", "simple property 2", 13isize )
   .property( "property2", "simple property 3", 113isize )
   .form();
-  let exp = Command::< &str >
+  let exp = Child::< &str >
   {
     name : "a".to_string(),
     subject : "b".to_string(),
@@ -87,7 +87,7 @@ fn command_properties()
   a_id!( got, exp );
 
   // with HashMapSubformer
-  let got = Command::< &str >::former()
+  let got = Child::< &str >::former()
   .name( "a" )
   .subject( "b" )
   .properties()
@@ -96,7 +96,7 @@ fn command_properties()
     .add( ( "property2", Property::new( "property2", "simple property 3", 113isize ) ) )
     .end()
   .form();
-  let exp = Command::< &str >
+  let exp = Child::< &str >
   {
     name : "a".to_string(),
     subject : "b".to_string(),
@@ -120,19 +120,19 @@ fn aggregator()
 {
 
   // with helper
-  let got = Aggregator::< &str >::former()
+  let got = Parent::< &str >::former()
   .parameter1( "p1" )
-  .commands().add( ( "name1".to_string(), CommandFormer::< &str >::new_coercing( former::ReturnPreformed ).name( "name1" ).subject( "s" ).end() ) ).end()
+  .commands().add( ( "name1".to_string(), ChildFormer::< &str >::new_coercing( former::ReturnPreformed ).name( "name1" ).subject( "s" ).end() ) ).end()
   .form()
   ;
 
-  let name1 = Command::< &str >
+  let name1 = Child::< &str >
   {
     name : "name1".to_string(),
     subject : "s".to_string(),
     properties : hmap!{},
   };
-  let exp = Aggregator
+  let exp = Parent
   {
     parameter1 : "p1".to_string(),
     commands : hmap!{ "name1" => name1 },
@@ -149,18 +149,18 @@ fn aggregator()
 fn aggregator_alternative_form()
 {
 
-  let exp = Aggregator::< &str >::former()
+  let exp = Parent::< &str >::former()
   .parameter1( "p1" )
   .form()
   ;
 
-  let got = Aggregator::< &str >::former()
+  let got = Parent::< &str >::former()
   .parameter1( "p1" )
   .perform()
   ;
   a_id!( got, exp );
 
-  let got = Aggregator::< &str >::former()
+  let got = Parent::< &str >::former()
   .parameter1( "p1" )
   .end()
   ;

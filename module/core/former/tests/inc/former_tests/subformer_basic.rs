@@ -4,7 +4,7 @@ use super::*;
 //
 // this should work
 //
-// let ca = Aggregator::former()
+// let ca = Parent::former()
 // .parameter1( "val" )
 // .command( "echo" )
 //   .name( "prints all subjects and properties" )
@@ -47,7 +47,7 @@ impl< Name > Property< Name >
 // == command
 
 #[ derive( Debug, PartialEq, the_module::Former ) ]
-pub struct Command< K >
+pub struct Child< K >
 where
   K : core::hash::Hash + std::cmp::Eq,
 {
@@ -58,10 +58,10 @@ where
 }
 
 // manual
-impl< K, Definition > CommandFormer< K, Definition >
+impl< K, Definition > ChildFormer< K, Definition >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  Definition : former::FormerDefinition< Storage = CommandFormerStorage< K > >,
+  Definition : former::FormerDefinition< Storage = ChildFormerStorage< K > >,
   Definition::Storage : former::StoragePreform,
 {
 
@@ -96,13 +96,13 @@ where
 // == aggregator
 
 #[ derive( Debug, PartialEq, the_module::Former ) ]
-pub struct Aggregator< K >
+pub struct Parent< K >
 where
   K : core::hash::Hash + std::cmp::Eq,
 {
   pub parameter1 : String,
   #[ container( former::HashMapDefinition ) ]
-  pub commands : collection_tools::HashMap< String, Command< K > >,
+  pub commands : collection_tools::HashMap< String, Child< K > >,
 }
 
 // ==

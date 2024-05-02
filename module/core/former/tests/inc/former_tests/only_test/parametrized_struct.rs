@@ -3,10 +3,10 @@ fn command_form()
 {
 
   // form
-  let got = Command::< &str >::former()
+  let got = Child::< &str >::former()
   .name( "a" )
   .form();
-  let exp = Command::< &str >
+  let exp = Child::< &str >
   {
     name : "a".to_string(),
     properties : collection_tools::HashMap::< &str, Property< &str > >::new(),
@@ -14,10 +14,10 @@ fn command_form()
   a_id!( got, exp );
 
   // perform
-  let got = Command::< &str >::former()
+  let got = Child::< &str >::former()
   .name( "a" )
   .perform();
-  let exp = Command::< &str >
+  let exp = Child::< &str >
   {
     name : "a".to_string(),
     properties : collection_tools::HashMap::< &str, Property< &str > >::new(),
@@ -25,10 +25,10 @@ fn command_form()
   a_id!( got, exp );
 
   // end
-  let got = Command::< &str >::former()
+  let got = Child::< &str >::former()
   .name( "a" )
   .end();
-  let exp = Command::< &str >
+  let exp = Child::< &str >
   {
     name : "a".to_string(),
     properties : collection_tools::HashMap::< &str, Property< &str > >::new(),
@@ -46,7 +46,7 @@ fn command_properties()
 {
 
   // with HashMapSubformer
-  let got = Command::< &str >::former()
+  let got = Child::< &str >::former()
   .name( "a" )
   .properties()
     .add( ( "property1", Property::< &str >::new( "property1", 13isize ) ) )
@@ -54,7 +54,7 @@ fn command_properties()
     .add( ( "property2", Property::new( "property2", 113isize ) ) )
     .end()
   .form();
-  let exp = Command::< &str >
+  let exp = Child::< &str >
   {
     name : "a".to_string(),
     properties : hmap!
