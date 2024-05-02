@@ -39,7 +39,6 @@ impl< 'a > FormerField< 'a >
     return &self.ident;
   }
 
-  // xxx : maybe without Option?
   /// Get name of setter for container if such setter should be generated.
   pub fn container_setter_name( &self ) -> Option< &syn::Ident >
   {
@@ -99,6 +98,10 @@ impl< 'a > FormerField< 'a >
         }
         explicit = true;
       }
+      if let Some( ref _name ) = attr.name
+      {
+        explicit = true;
+      }
     }
 
     if self.attrs.container.is_some() && !explicit
@@ -126,7 +129,6 @@ struct Attributes
   scalar : Option< AttributeScalarSetter >,
   container : Option< AttributeContainerSetter >,
   subform : Option< AttributeSubformSetter >,
-  // alias : Option< AttributeAlias >, // xxx : remove
 }
 
 impl Attributes
@@ -137,7 +139,6 @@ impl Attributes
     let mut scalar = None;
     let mut container = None;
     let mut subform = None;
-    // let mut alias = None;
     for attr in attributes
     {
       let key_ident = attr.path().get_ident()
@@ -207,19 +208,6 @@ impl Attributes
             _ => return_syn_err!( attr, "Expects an attribute of format `#[ subform ]` or `#[ subform( name : child )` ], \nGot: {}", qt!{ #attr } ),
           }
         }
-        // "alias" =>
-        // {
-        //   match attr.meta
-        //   {
-        //     syn::Meta::List( ref meta_list ) =>
-        //     {
-        //       alias.replace( syn::parse2::< AttributeAlias >( meta_list.tokens.clone() )? );
-        //     },
-        //     _ => return_syn_err!( attr, "Expects an attribute of format `#[ alias( val ) ]`. \nGot: {}", qt!{ #attr } ),
-        //   }
-        //   // let attr_alias = syn::parse2::< AttributeAlias >( attr.tokens.clone() )?;
-        //   // alias.replace( attr_alias );
-        // }
         _ =>
         {
           return Err( syn_err!( attr, "Unknown attribute {}", qt!{ #attr } ) );
@@ -541,33 +529,6 @@ impl syn::parse::Parse for AttributeSubformSetter
   }
 }
 
-// ///
-// /// Attribute to create alias.
-// ///
-// /// `#[ alias( name ) ]`
-// ///
-//
-//
-// struct AttributeAlias
-// {
-//   // paren_token : syn::token::Paren,
-//   alias : syn::Ident,
-// }
-//
-// impl syn::parse::Parse for AttributeAlias
-// {
-//   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
-//   {
-//     // let input2;
-//     Ok( Self
-//     {
-//       // paren_token : syn::parenthesized!( input2 in input ),
-//       // alias : input2.parse()?,
-//       alias : input.parse()?,
-//     })
-//   }
-// }
-
 ///
 /// Is type under Option.
 ///
@@ -805,6 +766,7 @@ fn field_name_map( field : &FormerField< '_ > ) -> syn::Ident
   field.ident.clone()
 }
 
+// zzz : outdated, please update documentation
 ///
 /// Generate a former setter for the field.
 ///
@@ -844,11 +806,7 @@ fn field_setter_map
 )
 -> Result< TokenStream >
 {
-  // let ident = &field.ident;
-  // let typ = &field.non_optional_ty;
   let r = qt!{};
-
-  // xxx : write test for interoperability of 3 attributes: scalar, subform, container
 
   // scalar setter
   let r = if field.scalar_setter_required()
@@ -864,29 +822,6 @@ fn field_setter_map
   {
     r
   };
-
-  // xxx : clean
-  // // alias trival setter
-  // let r = if let Some( attr ) = &field.attrs.scalar
-  // {
-  //   if let Some( ref alias ) = attr.name
-  //   {
-  //     let r2 = field_scalar_setter( ident, alias, typ );
-  //     qt!
-  //     {
-  //       #r
-  //       #r2
-  //     }
-  //   }
-  //   else
-  //   {
-  //     r
-  //   }
-  // }
-  // else
-  // {
-  //   r
-  // };
 
   // container setter
   let r = if let Some( _ ) = &field.attrs.container
@@ -1228,9 +1163,6 @@ fn field_container_setter
 fn field_scalar_setter
 (
   field : &FormerField< '_ >,
-  // field_ident : &syn::Ident,
-  // setter_name : &syn::Ident,
-  // non_optional_type : &syn::Type,
 )
 -> TokenStream
 {

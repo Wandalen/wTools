@@ -16,8 +16,9 @@ pub struct Child
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent
 {
+  #[ scalar( name = children3 ) ]
   #[ subform( name = _child ) ]
-  #[ container( definition = former::VectorDefinition, name = children2 ) ]
+  #[ container( name = children2 ) ]
   children : Vec< Child >,
 }
 
@@ -50,5 +51,6 @@ where
 
 // == end of generated
 
+include!( "./only_test/subformer_scalar_children3.rs" );
 include!( "./only_test/subformer_subform_child.rs" );
 include!( "./only_test/subformer_container_children2.rs" );
