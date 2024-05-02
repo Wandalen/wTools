@@ -25,7 +25,7 @@ pub struct Child
 pub struct Parent
 {
   #[ subform ]
-  // #[ scalar_setter( false ) ]
+  // #[ scalar( setter = false ) ]
   children : Vec< Child >,
 }
 

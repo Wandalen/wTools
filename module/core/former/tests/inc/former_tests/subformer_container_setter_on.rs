@@ -20,7 +20,7 @@ pub struct Parent
   // Such parameters switch off generation of front-end container setter and switch on scalar setter.
   // Without explicit scalar_setter( true ) scalar setter is not generated.
   #[ subform( setter = false ) ]
-  #[ scalar_setter( true ) ]
+  #[ scalar( setter = true ) ]
   children : Vec< Child >,
 }
 

@@ -22,7 +22,7 @@ pub struct Child< 'child, T >
 //   // #[ subform ]
 //   #[ subform( name = _child ) ]
 //   #[ container( definition = former::VectorDefinition ) ]
-//   // #[ scalar_setter( false ) ]
+//   // #[ scalar( setter = false ) ]
 //   children : Vec< Child >,
 // }
 //

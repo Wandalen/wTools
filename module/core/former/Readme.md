@@ -341,7 +341,7 @@ use former::Former;
 #[ derive( Debug, Former ) ]
 pub struct StructWithCustomSetters
 {
-  #[ scalar_setter( false ) ]
+  #[ scalar( setter = false ) ]
   word : String,
 }
 
@@ -537,7 +537,7 @@ fn main()
   #[ derive( Debug, PartialEq, Former ) ]
   pub struct Aggregator
   {
-    #[ scalar_setter( false ) ]
+    #[ scalar( setter = false ) ]
     command : HashMap< String, Command >,
   }
 

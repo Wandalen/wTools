@@ -31,7 +31,7 @@ impl< 'a > FormerField< 'a >
 
     if let Some( ref attr ) = self.attrs.container
     {
-      if attr.setter.is_none() || attr.setter.unwrap()
+      if attr.setter()
       {
         if let Some( ref name ) = attr.name
         {
@@ -53,7 +53,7 @@ impl< 'a > FormerField< 'a >
 
     if let Some( ref attr ) = self.attrs.subform
     {
-      if attr.setter.is_none() || attr.setter.unwrap() == true
+      if attr.setter()
       {
         if let Some( ref name ) = attr.name
         {

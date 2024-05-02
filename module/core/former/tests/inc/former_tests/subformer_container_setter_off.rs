@@ -18,7 +18,7 @@ pub struct Child
 pub struct Parent
 {
   #[ container( setter = false ) ]
-  // #[ scalar_setter( false ) ]
+  // #[ scalar( setter = false ) ]
   children : Vec< Child >,
 }
 

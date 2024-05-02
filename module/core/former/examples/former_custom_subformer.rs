@@ -23,7 +23,7 @@ fn main()
   pub struct Aggregator
   {
     #[ subform ]
-    // #[ scalar_setter( false ) ]
+    // #[ scalar( setter = false ) ]
     command : HashMap< String, Command >,
   }
 
