@@ -36,7 +36,7 @@ fn main()
     #[ inline( always ) ]
     pub fn command( self, name : &str ) -> CommandAsSubformer< Self, impl CommandAsSubformerEnd< Self > >
     {
-      self._command_add_subformer::< CommandFormer< _ >, _, >()
+      self._command_add::< CommandFormer< _ >, _, >()
       .name( name )
     }
 

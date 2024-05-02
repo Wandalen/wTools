@@ -30,7 +30,7 @@ where
 {
 
   #[ inline( always ) ]
-  pub fn _children_add_subformer_with_closure< Former2, Definition2, Types2 >( self ) ->
+  pub fn _children_add_with_closure< Former2, Definition2, Types2 >( self ) ->
   Former2
   where
     Types2 : former::FormerDefinitionTypes
@@ -73,7 +73,7 @@ where
   pub fn child( self, name : &str ) ->
   ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   {
-    self._children_add_subformer
+    self._children_add
     ::< ChildFormer< _ >, _, >()
     .name( name )
   }
@@ -82,7 +82,7 @@ where
   // pub fn _child( self ) ->
   // ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   // {
-  //   self._children_add_subformer
+  //   self._children_add
   //   ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
   // }
 
@@ -97,7 +97,7 @@ where
     >
   >::Former
   {
-    self._children_add_subformer
+    self._children_add
     ::< < < Vec< Child > as former::Container >::Element as former::EntityToFormer< _ > >::Former, _, >()
   }
 
@@ -112,7 +112,7 @@ where
 {
 
   #[ inline( always ) ]
-  pub fn _children_add_subformer< Former2, Definition2 >( self ) ->
+  pub fn _children_add< Former2, Definition2 >( self ) ->
   Former2
   where
     Definition2 : former::FormerDefinition

@@ -32,7 +32,7 @@ where
   pub fn child( self, name : &str ) ->
   ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   {
-    self._children_add_subformer
+    self._children_add
     ::< ChildFormer< _ >, _, >()
     .name( name )
   }
@@ -41,7 +41,7 @@ where
   // pub fn _child( self ) ->
   // ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   // {
-  //   self._children_add_subformer
+  //   self._children_add
   //   ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
   // }
 

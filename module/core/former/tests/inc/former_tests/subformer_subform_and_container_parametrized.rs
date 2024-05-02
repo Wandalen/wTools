@@ -36,7 +36,7 @@ pub struct Child< 'child, T >
 //   pub fn child( self, name : &str ) ->
 //   ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
 //   {
-//     self._children_add_subformer
+//     self._children_add
 //     ::< ChildFormer< _ >, _, >()
 //     .name( name )
 //   }

@@ -41,7 +41,7 @@ where
   pub fn child( self, name : &str ) ->
   ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   {
-    self._children_add_subformer
+    self._children_add
     ::< ChildFormer< _ >, _, >()
     .name( name )
   }
@@ -50,7 +50,7 @@ where
   // pub fn _child( self ) ->
   // ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   // {
-  //   self._children_add_subformer
+  //   self._children_add
   //   ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
   // }
 
@@ -65,7 +65,7 @@ where
     >
   >::Former
   {
-    self._children_add_subformer
+    self._children_add
     ::< < < Vec< Child > as former::Container >::Element as former::EntityToFormer< _ > >::Former, _, >()
   }
 

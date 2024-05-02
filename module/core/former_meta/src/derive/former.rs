@@ -736,7 +736,7 @@ fn field_subform_add_setter_map
   let former_add_end = syn::Ident::new( &former_add_end_name, field_ident.span() );
 
   // example : `_children_former`
-  let element_subformer_name = format!( "_{}_add_subformer", field_ident ); // xxx : rename
+  let element_subformer_name = format!( "_{}_add", field_ident ); // xxx : rename
   let element_subformer = syn::Ident::new( &element_subformer_name, field_ident.span() );
 
   let r = qt!
@@ -795,7 +795,7 @@ fn field_subform_add_setter_map
     // pub fn child( self ) ->
     // ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
     // {
-    //   self._children_add_subformer
+    //   self._children_add
     //   ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
     // }
 

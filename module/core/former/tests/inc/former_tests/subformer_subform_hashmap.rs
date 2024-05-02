@@ -33,7 +33,7 @@ where
   #[ inline( always ) ]
   pub fn command( self, name : &str ) -> CommandAsSubformer< Self, impl CommandAsSubformerEnd< Self > >
   {
-    self._command_add_subformer::< CommandFormer< _ >, _, >()
+    self._command_add::< CommandFormer< _ >, _, >()
     .name( name )
   }
 
@@ -224,7 +224,7 @@ impl former::ValToElement< HashMap< String, Command > > for Command
 //       }
 //
 //       #[doc = r" Custom setter which produce container element subformer."]
-//       #[inline(always)] pub fn _command_add_subformer < Former2, Definition2 >
+//       #[inline(always)] pub fn _command_add < Former2, Definition2 >
 //       (self) -> Former2 where Definition2 : former :: FormerDefinition < End =
 //       AggregatorFormerAddCommandEnd < Definition > , Storage = < < HashMap <
 //       String, Command > as former :: Container > :: Val as former ::
