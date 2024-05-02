@@ -47,5 +47,5 @@ pub struct Child< 'child, T >
 
 // == end of generated
 
-// include!( "./only_test/subformer_subform.rs" );
+// include!( "./only_test/subformer_subform_child.rs" );
 // include!( "./only_test/subformer_container.rs" );

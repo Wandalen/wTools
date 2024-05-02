@@ -96,3 +96,6 @@ fn main()
   // >     },
   // > }
 }
+
+// xxx2 : finish example former_custom_subformer
+

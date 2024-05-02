@@ -292,15 +292,19 @@ impl syn::parse::Parse for AttributeScalarSetter
   }
 }
 
+/// Represents an attribute for configuring setter generation in container-like structures.
 ///
-/// Attribute to enable/disable/customize container setter generation.
+/// This struct is part of a meta-programming approach to enable detailed configuration of nested structs or collections such as `Vec< E >, HashMap< K, E >` and so on.
+/// It allows the customization of setter methods and the specification of the container's behavior through meta attributes.
 ///
-/// Also known as subformers, used for aggregation relationship, when a struct holds another struct, which needs to be build by invoking multiple methods
-/// Typical example is a struct holding a `Vec`
+/// ## Example Input
 ///
-/// `#[ container( former::VectorSubformer ) ]`
+/// The following is an example of a token stream that this struct can parse:
+/// ```ignore
+/// container( name = "custom_setter", setter = true, definition = former::VectorDefinition )
+/// ```
+/// This example configures a struct to use a custom setter named `custom_setter` and enables setter generation using `former::VectorDefinition` as definition of the container former.
 ///
-// qqq : update documentation
 
 struct AttributeContainer
 {
@@ -309,7 +313,7 @@ struct AttributeContainer
   /// Controls the generation of a setter method. If false, a setter method is not generated.
   setter : Option< bool >,
   /// Definition of the container former to use, e.g., `former::VectorSubformer`.
-  expr : Option< syn::Type >,
+  definition : Option< syn::Type >,
 }
 
 impl syn::parse::Parse for AttributeContainer
@@ -318,7 +322,7 @@ impl syn::parse::Parse for AttributeContainer
   {
     let mut name : Option< syn::Ident > = None;
     let mut setter : Option< bool > = None; // Default is to generate a setter
-    let mut expr : Option< syn::Type > = None;
+    let mut definition : Option< syn::Type > = None;
 
     while !input.is_empty()
     {
@@ -340,16 +344,19 @@ impl syn::parse::Parse for AttributeContainer
         else if ident == "definition"
         {
           input.parse::< syn::Token![ = ] >()?;
-          expr = Some( input.parse()? );
+          definition = Some( input.parse()? );
         }
         else
         {
-          return Err( lookahead.error() );
+          return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: name = myName, setter = true, definition = MyContainerType", ident ) ) );
+          // return Err( lookahead.error() );
         }
       }
       else
       {
-        return Err( lookahead.error() );
+        // return Err( lookahead.error() );
+        // return Err( lookahead.error_with( "Expected 'name', 'setter', or 'definition' identifier " ) );
+        return Err( syn::Error::new( input.span(), "Expected 'name', 'setter', or 'definition' identifier" ) );
       }
 
       // Optional comma handling
@@ -359,35 +366,9 @@ impl syn::parse::Parse for AttributeContainer
       }
     }
 
-    Ok( Self { name, setter, expr } )
+    Ok( Self { name, setter, definition } )
   }
 }
-
-//
-// struct AttributeContainer
-// {
-//   // /// An optional identifier that names the setter. It is parsed from inputs
-//   // ///   like `name = my_field`.
-//   // name : Option< syn::Ident >,
-//   // /// Disable generation of setter.
-//   // /// It still generate `_field_add` method, so it could be used to make a setter with custom arguments.
-//   // setter : bool,
-//   /// Definition of container former to use.
-//   /// Look [`former::ContainerSubformer`] and [`former::VectorDefinition`].
-//   expr : Option< syn::Type >, // xxx : rename
-// }
-//
-// impl syn::parse::Parse for AttributeContainer
-// {
-//   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
-//   {
-//     let expr : Option< syn::Type > = input.parse().ok();
-//     Ok( Self
-//     {
-//       expr,
-//     })
-//   }
-// }
 
 /// Represents a subform attribute with optional name flag.
 /// Used to specify extra options for using one former as subformer of another one.
@@ -983,7 +964,7 @@ fn field_container_setter
   let field_assign = syn::Ident::new( &field_assign_name, field_ident.span() );
 
   // example : `former::VectorDefinition`
-  let subformer_definition = &field.attrs.container.as_ref().unwrap().expr;
+  let subformer_definition = &field.attrs.container.as_ref().unwrap().definition;
   let subformer_definition = if subformer_definition.is_some()
   {
     qt!
@@ -1238,7 +1219,7 @@ Result< TokenStream >
   let former_assign_end = syn::Ident::new( &former_assign_end_name, field_ident.span() );
 
   // example : `former::VectorDefinition``
-  let subformer_definition = &field.attrs.container.as_ref().unwrap().expr;
+  let subformer_definition = &field.attrs.container.as_ref().unwrap().definition;
 
   // zzz : improve description
   let former_assign_end_doc = format!

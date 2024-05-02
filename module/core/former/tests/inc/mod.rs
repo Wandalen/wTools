@@ -83,12 +83,12 @@ mod former_tests
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subformer_subform_setter_on;
 
-//   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-//   mod subformer_subform_hashmap;
-//   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-//   mod subformer_subform_hashmap_explicit;
-  // #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  // mod subformer_subform_and_container;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_subform_hashmap;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_subform_hashmap_explicit;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_subform_and_container;
   // #[ cfg( any( not( feature = "no_std" ) ) ) ]
   // mod subformer_subform_and_container_parametrized;
 

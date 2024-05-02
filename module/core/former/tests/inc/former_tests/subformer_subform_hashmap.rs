@@ -55,3 +55,5 @@ fn basic()
   a_id!( got.command.len(), 2 );
 
 }
+
+// xxx2 : finish example former_custom_subformer

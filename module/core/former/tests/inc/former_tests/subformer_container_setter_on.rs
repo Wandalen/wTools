@@ -41,46 +41,5 @@ where
 
 }
 
-#[ test ]
-fn scalar()
-{
-
-  let children = vec!
-  [
-    Child { name : "a".to_string(), is_mandatory : false },
-    Child { name : "b".to_string(), is_mandatory : false },
-  ];
-  let got = Parent::former()
-  .children( children )
-  .form();
-
-  let children = vec!
-  [
-    Child { name : "a".to_string(), is_mandatory : false },
-    Child { name : "b".to_string(), is_mandatory : false },
-  ];
-  let exp = Parent { children };
-  a_id!( got, exp );
-
-}
-
-#[ test ]
-fn container()
-{
-
-  let got = Parent::former()
-  .children2()
-    .add( Child::former().name( "a" ).form() )
-    .add( Child::former().name( "b" ).form() )
-    .end()
-  .form();
-
-  let children = vec!
-  [
-    Child { name : "a".to_string(), is_mandatory : false },
-    Child { name : "b".to_string(), is_mandatory : false },
-  ];
-  let exp = Parent { children };
-  a_id!( got, exp );
-
-}
+include!( "./only_test/subformer_scalar_children.rs" );
+include!( "./only_test/subformer_container_children2.rs" );

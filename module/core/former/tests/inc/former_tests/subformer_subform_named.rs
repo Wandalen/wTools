@@ -51,4 +51,4 @@ where
 
 // == end of generated
 
-include!( "./only_test/subformer_subform.rs" );
+include!( "./only_test/subformer_subform_child.rs" );
