@@ -8,7 +8,7 @@ use proc_macro2::TokenStream;
 /// Definition of a field.
 ///
 
-
+#[ allow( dead_code ) ]
 struct FormerField< 'a >
 {
   pub attrs : Attributes,

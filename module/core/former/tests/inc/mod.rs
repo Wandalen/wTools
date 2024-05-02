@@ -65,8 +65,8 @@ mod former_tests
 //   mod subformer_container;
 //   #[ cfg( any( not( feature = "no_std" ) ) ) ]
 //   mod subformer_container_manual;
-//   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-//   mod subformer_container_implicit;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_container_implicit;
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subformer_container_setter_off;
 
@@ -80,6 +80,8 @@ mod former_tests
 //   mod subformer_subform_named_manual;
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subformer_subform_setter_off;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_subform_setter_on;
 
 //   #[ cfg( any( not( feature = "no_std" ) ) ) ]
 //   mod subformer_subform_hashmap;
