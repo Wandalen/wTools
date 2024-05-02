@@ -301,9 +301,8 @@ impl syn::parse::Parse for AttributeScalarSetter
 ///
 /// The following is an example of a token stream that this struct can parse:
 /// ```ignore
-/// container( name = "custom_setter", setter = true, definition = former::VectorDefinition )
+/// name = "custom_setter", setter = true, definition = former::VectorDefinition
 /// ```
-/// This example configures a struct to use a custom setter named `custom_setter` and enables setter generation using `former::VectorDefinition` as definition of the container former.
 ///
 
 struct AttributeContainer
@@ -413,8 +412,6 @@ impl syn::parse::Parse for AttributeSubform
         else if ident == "setter"
         {
           input.parse::< syn::Token![ = ] >()?;
-          // Parse the boolean by checking next Ident if it's "true" or "false"
-          // let value : syn::Ident = input.parse()?;
           let value : syn::LitBool = input.parse()?;
           setter = value.value();
         }
@@ -427,16 +424,6 @@ impl syn::parse::Parse for AttributeSubform
       {
         return Err( syn::Error::new( input.span(), "Expected 'name', 'setter', or 'definition' identifier. For example: `subform( name = myName, setter = true )`" ) );
       }
-
-      //   else
-      //   {
-      //     return Err( lookahead.error() );
-      //   }
-      // }
-      // else
-      // {
-      //   return Err( lookahead.error() );
-      // }
 
       // Optional comma handling
       if input.peek( syn::Token![,] )
@@ -842,8 +829,6 @@ fn field_subform_add_setter_map
   let field_ty = field.non_optional_ty;
   let attr = field.attrs.subform.as_ref().unwrap();
   // let params = typ::type_parameters( &field.non_optional_ty, .. );
-
-  // xxx
 
   // example : `child`
   let setter_name = field.subform_setter_name();
