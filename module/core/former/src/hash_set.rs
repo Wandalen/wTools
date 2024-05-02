@@ -56,7 +56,7 @@ where
   K : core::cmp::Eq + core::hash::Hash,
 {
   type Element = K;
-  #[ inline ]
+  #[ inline( always ) ]
   fn val_to_element( self ) -> Self::Element
   {
     self

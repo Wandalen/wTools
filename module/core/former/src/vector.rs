@@ -50,7 +50,7 @@ impl< E > ContainerAssign for collection_tools::Vec< E >
 impl< E > ValToElement< collection_tools::Vec< E > > for E
 {
   type Element = E;
-  #[ inline ]
+  #[ inline( always ) ]
   fn val_to_element( self ) -> Self::Element
   {
     self

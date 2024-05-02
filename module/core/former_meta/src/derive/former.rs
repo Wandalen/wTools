@@ -712,8 +712,8 @@ fn field_subformer_map
   };
 
   // example : `ParentFormerAddChildrenEnd``
-  let parent_add_element_end_name = format!( "{}FormerAdd{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
-  let parent_add_element_end = syn::Ident::new( &parent_add_element_end_name, field_ident.span() );
+  let former_add_end_name = format!( "{}FormerAdd{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
+  let former_add_end = syn::Ident::new( &former_add_end_name, field_ident.span() );
 
   // example : `_children_former`
   let element_subformer_name = format!( "_{}_add_subformer", field_ident );
@@ -729,7 +729,7 @@ fn field_subformer_map
     where
       Definition2 : former::FormerDefinition
       <
-        End = #parent_add_element_end< Definition >,
+        End = #former_add_end< Definition >,
         Storage = < < #field_ty as former::Container >::Val as former::EntityToStorage >::Storage,
         Formed = Self,
         Context = Self,
@@ -742,7 +742,7 @@ fn field_subformer_map
       >,
       Former2 : former::FormerBegin< Definition2 >,
     {
-      Former2::former_begin( None, Some( self ), #parent_add_element_end::default() )
+      Former2::former_begin( None, Some( self ), #former_add_end::default() )
     }
 
   };
@@ -759,7 +759,7 @@ fn field_subformer_map
       < < #field_ty as former::Container >::Val as former::EntityToFormer
         <
           <
-            < #field_ty as former::Container >::Val as former::EntityToDefinition< Self, Self, #parent_add_element_end < Definition > >
+            < #field_ty as former::Container >::Val as former::EntityToDefinition< Self, Self, #former_add_end < Definition > >
           >::Definition,
         >
       >::Former
@@ -1205,21 +1205,21 @@ Result< TokenStream >
   // let params = typ::type_parameters( &field.non_optional_ty, .. );
 
   // example : `ParentFormerAddChildrenEnd``
-  let parent_add_element_end_name = format!( "{}FormerAdd{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
-  let parent_add_element_end = syn::Ident::new( &parent_add_element_end_name, field_ident.span() );
+  let former_add_end_name = format!( "{}FormerAdd{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
+  let former_add_end = syn::Ident::new( &former_add_end_name, field_ident.span() );
 
   let r = qt!
   {
 
     // zzz : improve description
     /// Handles the completion of an element of subformer's container.
-    pub struct #parent_add_element_end< Definition >
+    pub struct #former_add_end< Definition >
     {
       _phantom : core::marker::PhantomData< fn( Definition ) >,
     }
 
     impl< Definition > Default
-    for #parent_add_element_end< Definition >
+    for #former_add_end< Definition >
     {
       #[ inline( always ) ]
       fn default() -> Self
@@ -1232,7 +1232,7 @@ Result< TokenStream >
     }
 
     impl< #struct_generics_impl Types2, Definition > former::FormingEnd< Types2, >
-    for #parent_add_element_end< Definition >
+    for #former_add_end< Definition >
     where
       Definition : former::FormerDefinition
       <
@@ -1262,7 +1262,13 @@ Result< TokenStream >
         }
         if let Some( ref mut field ) = super_former.storage.#field_ident
         {
-          former::ContainerAdd::add( field, former::StoragePreform::preform( substorage ) );
+          former::ContainerAdd::add
+          (
+            field,
+            < < #field_ty as former::Container >::Val as former::ValToElement< #field_ty > >
+            ::val_to_element( former::StoragePreform::preform( substorage ) ),
+          );
+          // former::ContainerAdd::add( field, former::StoragePreform::preform( substorage ) );
         }
         super_former
       }
