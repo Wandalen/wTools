@@ -8,7 +8,7 @@ use proc_macro2::TokenStream;
 /// Definition of a field.
 ///
 
-#[ allow( dead_code ) ]
+
 struct FormerField< 'a >
 {
   pub attrs : Attributes,
@@ -25,7 +25,29 @@ struct FormerField< 'a >
 impl< 'a > FormerField< 'a >
 {
 
-  /// Get name of setter for subform.
+  /// Get name of setter for container if such setter should be generated.
+  pub fn container_setter_name( &self ) -> Option< &syn::Ident >
+  {
+
+    if let Some( ref attr ) = self.attrs.container
+    {
+      if attr.setter.is_none() || attr.setter.unwrap()
+      {
+        if let Some( ref name ) = attr.name
+        {
+          return Some( &name )
+        }
+        else
+        {
+          return Some( &self.ident )
+        }
+      }
+    }
+
+    return None;
+  }
+
+  /// Get name of setter for subform if such setter should be generated.
   pub fn subform_setter_name( &self ) -> Option< &syn::Ident >
   {
 
@@ -61,8 +83,7 @@ impl< 'a > FormerField< 'a >
       explicit = true;
     }
 
-    // xxx : container setter also could have custom name
-    if let Some( ref _attr ) = self.attrs.container
+    if self.attrs.container.is_some() && !explicit
     {
       return false;
     }
@@ -71,22 +92,6 @@ impl< 'a > FormerField< 'a >
     {
       return false;
     }
-
-    // let subform_name = self.subform_setter_name();
-    // if let Some( name ) = subform_name
-    // {
-    //   if self.ident == name
-    //   {
-    //     return false;
-    //   }
-    //   else
-    //   {
-    //     if !explicit
-    //     {
-    //       return false;
-    //     }
-    //   }
-    // }
 
     return true;
   }
@@ -162,7 +167,7 @@ impl Attributes
             {
               container.replace( syn::parse2::< AttributeContainer >( Default::default() )? );
             },
-            _ => return_syn_err!( attr, "Expects an attribute of format #[ container( former::VectorDefinition ) ] or #[ container ] if you want to use default container defition, but got:\n  {}", qt!{ #attr } ),
+            _ => return_syn_err!( attr, "Expects an attribute of format #[ container ] or #[ container( definition = former::VectorDefinition ) ] if you want to use default container defition, but got:\n  {}", qt!{ #attr } ),
           }
         }
         "subform" =>
@@ -210,7 +215,7 @@ impl Attributes
 /// `#[ perform( fn after1< 'a >() -> Option< &'a str > ) ]`
 ///
 
-#[ allow( dead_code ) ]
+
 struct AttributeFormAfter
 {
   // paren_token : syn::token::Paren,
@@ -237,7 +242,7 @@ impl syn::parse::Parse for AttributeFormAfter
 /// `#[ default( 13 ) ]`
 ///
 
-#[ allow( dead_code ) ]
+
 struct AttributeDefault
 {
   // eq_token : syn::Token!{ = },
@@ -266,7 +271,7 @@ impl syn::parse::Parse for AttributeDefault
 /// `#[ scalar_setter( false ) ]`
 ///
 
-#[ allow( dead_code ) ]
+
 struct AttributeScalarSetter
 {
   // paren_token : syn::token::Paren,
@@ -288,7 +293,8 @@ impl syn::parse::Parse for AttributeScalarSetter
 }
 
 ///
-/// Attribute to enable/disable former generation.
+/// Attribute to enable/disable/customize container setter generation.
+///
 /// Also known as subformers, used for aggregation relationship, when a struct holds another struct, which needs to be build by invoking multiple methods
 /// Typical example is a struct holding a `Vec`
 ///
@@ -296,23 +302,92 @@ impl syn::parse::Parse for AttributeScalarSetter
 ///
 // qqq : update documentation
 
-#[ allow( dead_code ) ]
 struct AttributeContainer
 {
+  /// Optional identifier for naming the setter.
+  name : Option< syn::Ident >,
+  /// Controls the generation of a setter method. If false, a setter method is not generated.
+  setter : Option< bool >,
+  /// Definition of the container former to use, e.g., `former::VectorSubformer`.
   expr : Option< syn::Type >,
 }
 
 impl syn::parse::Parse for AttributeContainer
 {
-  fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
-    let expr : Option< syn::Type > = input.parse().ok();
-    Ok( Self
+    let mut name : Option< syn::Ident > = None;
+    let mut setter : Option< bool > = None; // Default is to generate a setter
+    let mut expr : Option< syn::Type > = None;
+
+    while !input.is_empty()
     {
-      expr,
-    })
+      let lookahead = input.lookahead1();
+      if lookahead.peek( syn::Ident )
+      {
+        let ident : syn::Ident = input.parse()?;
+        if ident == "name"
+        {
+          input.parse::< syn::Token![ = ] >()?;
+          name = Some( input.parse()? );
+        }
+        else if ident == "setter"
+        {
+          input.parse::< syn::Token![ = ] >()?;
+          let value : syn::LitBool = input.parse()?;
+          setter = Some( value.value );
+        }
+        else if ident == "definition"
+        {
+          input.parse::< syn::Token![ = ] >()?;
+          expr = Some( input.parse()? );
+        }
+        else
+        {
+          return Err( lookahead.error() );
+        }
+      }
+      else
+      {
+        return Err( lookahead.error() );
+      }
+
+      // Optional comma handling
+      if input.peek( syn::Token![ , ] )
+      {
+        input.parse::< syn::Token![ , ] >()?;
+      }
+    }
+
+    Ok( Self { name, setter, expr } )
   }
 }
+
+//
+// struct AttributeContainer
+// {
+//   // /// An optional identifier that names the setter. It is parsed from inputs
+//   // ///   like `name = my_field`.
+//   // name : Option< syn::Ident >,
+//   // /// Disable generation of setter.
+//   // /// It still generate `_field_add` method, so it could be used to make a setter with custom arguments.
+//   // setter : bool,
+//   /// Definition of container former to use.
+//   /// Look [`former::ContainerSubformer`] and [`former::VectorDefinition`].
+//   expr : Option< syn::Type >, // xxx : rename
+// }
+//
+// impl syn::parse::Parse for AttributeContainer
+// {
+//   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+//   {
+//     let expr : Option< syn::Type > = input.parse().ok();
+//     Ok( Self
+//     {
+//       expr,
+//     })
+//   }
+// }
 
 /// Represents a subform attribute with optional name flag.
 /// Used to specify extra options for using one former as subformer of another one.
@@ -331,10 +406,10 @@ impl syn::parse::Parse for AttributeContainer
 
 struct AttributeSubform
 {
-  /// - `name` : An optional identifier that names the subform. It is parsed from inputs
-  ///   like `name = my_field`.
+  /// An optional identifier that names the setter. It is parsed from inputs
+  /// like `name = my_field`.
   name : Option< syn::Ident >,
-  /// - `setter` : Disable generation of setter.
+  /// Disable generation of setter.
   /// It still generate `_field_add` method, so it could be used to make a setter with custom arguments.
   setter : bool,
 }
@@ -392,7 +467,7 @@ impl syn::parse::Parse for AttributeSubform
 /// `#[ alias( name ) ]`
 ///
 
-#[ allow( dead_code ) ]
+
 struct AttributeAlias
 {
   // paren_token : syn::token::Paren,
@@ -956,47 +1031,55 @@ fn field_container_setter
     }
   };
 
-  let setter2 = if params.len() > 1
+  let setter_name = field.container_setter_name();
+  let setter2 = if let Some( setter_name ) = setter_name
   {
-    qt!
+    if params.len() > 1
     {
-
-      #[ doc = #doc ]
-      #[ inline( always ) ]
-      pub fn #field_ident( self ) ->
-      former::ContainerSubformer::
-      <
-        ( #( #params, )* ), #subformer_definition
-      >
+      qt!
       {
-        self.#field_assign::< former::ContainerSubformer::
+
+        #[ doc = #doc ]
+        #[ inline( always ) ]
+        pub fn #setter_name( self ) ->
+        former::ContainerSubformer::
         <
           ( #( #params, )* ), #subformer_definition
-        >>()
-      }
+        >
+        {
+          self.#field_assign::< former::ContainerSubformer::
+          <
+            ( #( #params, )* ), #subformer_definition
+          > >()
+        }
 
+      }
+    }
+    else
+    {
+      qt!
+      {
+
+        #[ doc = #doc ]
+        #[ inline( always ) ]
+        pub fn #setter_name( self ) ->
+        former::ContainerSubformer::
+        <
+          #( #params, )* #subformer_definition
+        >
+        {
+          self.#field_assign::< former::ContainerSubformer::
+          <
+            #( #params, )* #subformer_definition
+          > >()
+        }
+
+      }
     }
   }
   else
   {
-    qt!
-    {
-
-      #[ doc = #doc ]
-      #[ inline( always ) ]
-      pub fn #field_ident( self ) ->
-      former::ContainerSubformer::
-      <
-        #( #params, )* #subformer_definition
-      >
-      {
-        self.#field_assign::< former::ContainerSubformer::
-        <
-          #( #params, )* #subformer_definition
-        >>()
-      }
-
-    }
+    qt!{}
   };
 
   qt!

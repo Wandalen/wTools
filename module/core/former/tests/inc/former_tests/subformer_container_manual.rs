@@ -27,7 +27,6 @@ pub struct Parent
 impl< Definition, > ParentFormer< Definition, >
 where
   Definition : former::FormerDefinition< Storage = ParentFormerStorage< > >,
-  // Definition::Types : former::FormerDefinitionTypes< Storage = ParentFormerStorage< > >,
 {
 
   #[ inline( always ) ]
@@ -37,10 +36,13 @@ where
   {
     Former2::former_begin( None, Some( self ), ParentFormerAssignChildrenEnd::< Definition >::default() )
   }
-  #[ doc =
-  "Subformer setter for the 'children' field. Method _children_assign unlike method children accept custom container subformer." ]
+
   #[ inline( always ) ]
-  pub fn children( self ) -> former::ContainerSubformer::< Child, former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, > >
+  pub fn children( self ) -> former::ContainerSubformer::
+  <
+    Child,
+    former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, >
+  >
   {
     self._children_assign::< former::ContainerSubformer::< Child, former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, > > >()
   }
@@ -71,14 +73,14 @@ impl< Definition > Default for ParentFormerAssignChildrenEnd< Definition >
 
 #[ automatically_derived ]
 impl< Definition, > former::FormingEnd
-// < former::VectorDefinition< Child, ParentFormer< Definition, >, ParentFormer< Definition, >, former::NoEnd >, >
 <
-  < Vec< Child > as former::EntityToDefinition< ParentFormer< Definition, >, ParentFormer< Definition, >, former::NoEnd > >::Definition
+  <
+    Vec< Child > as former::EntityToDefinition< ParentFormer< Definition, >, ParentFormer< Definition, >, former::NoEnd >
+  >::Definition
 >
 for ParentFormerAssignChildrenEnd< Definition >
 where
   Definition : former::FormerDefinition< Storage = ParentFormerStorage< > >,
-  // Definition::Types : former::FormerDefinitionTypes< Storage = ParentFormerStorage< > >,
 {
   #[ inline( always ) ]
   fn call

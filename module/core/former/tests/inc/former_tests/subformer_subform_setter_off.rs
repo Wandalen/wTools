@@ -1,4 +1,5 @@
 #![ allow( dead_code ) ]
+// xxx : rename
 
 use super::*;
 
@@ -37,5 +38,33 @@ where
     It can only be generated if req
     "#
   }
+
+  #[ inline( always ) ]
+  pub fn children2( self, name : &str ) ->
+  ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
+  {
+    self._children_add
+    ::< ChildFormer< _ >, _, >()
+    .name( name )
+  }
+
+}
+
+#[ test ]
+fn children()
+{
+
+  let got = Parent::former()
+  .children2( "a" ).end()
+  .children2( "b" ).end()
+  .form();
+
+  let children = vec!
+  [
+    Child { name : "a".to_string(), is_mandatory : false },
+    Child { name : "b".to_string(), is_mandatory : false },
+  ];
+  let exp = Parent { children };
+  a_id!( got, exp );
 
 }
