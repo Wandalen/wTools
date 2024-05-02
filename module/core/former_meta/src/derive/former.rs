@@ -620,30 +620,51 @@ fn field_setter_map
 (
   field : &FormerField< '_ >,
   stru : &syn::Ident,
-  // as_subformer : &syn::Ident,
-  // as_subformer_end : &syn::Ident,
 )
 -> Result< TokenStream >
 {
   let ident = &field.ident;
 
-  if let Some( setter_attr ) = &field.attrs.setter
-  {
-    if !setter_attr.condition.value()
-    {
-      return Ok( qt!{ } );
-    }
-  }
+  // if let Some( setter_attr ) = &field.attrs.setter
+  // {
+  //   if !setter_attr.condition.value()
+  //   {
+  //     return Ok( qt!{ } );
+  //   }
+  // }
+  // xxx : write test for interoperability of 3 attributes
 
   let non_optional_ty = &field.non_optional_ty;
   // Either subformer or ordinary setter.
   let r = if let Some( _container_ty ) = &field.attrs.container
   {
-    container_setter( field, stru )
+    field_container_setter( field, stru )
   }
   else
   {
-    field_setter( ident, ident, non_optional_ty )
+    let setter_enabled = if let Some( setter_attr ) = &field.attrs.setter
+    {
+      if !setter_attr.condition.value()
+      {
+        false
+      }
+      else
+      {
+        true
+      }
+    }
+    else
+    {
+      true
+    };
+    if setter_enabled
+    {
+      field_setter( ident, ident, non_optional_ty )
+    }
+    else
+    {
+      qt!{ }
+    }
   };
 
   let r = if let Some( alias_attr ) = &field.attrs.alias
@@ -662,7 +683,7 @@ fn field_setter_map
 
   let r = if field.attrs.subform.is_some()
   {
-    let subformer = field_subformer_map( field, stru )?;
+    let subformer = field_subform_add_setter_map( field, stru )?;
     qt!
     {
       #r
@@ -679,9 +700,8 @@ fn field_setter_map
 }
 
 /// zzz : write documentation
-
 #[ inline ]
-fn field_subformer_map
+fn field_subform_add_setter_map
 (
   field : &FormerField< '_ >,
   stru : &syn::Ident,
@@ -716,7 +736,7 @@ fn field_subformer_map
   let former_add_end = syn::Ident::new( &former_add_end_name, field_ident.span() );
 
   // example : `_children_former`
-  let element_subformer_name = format!( "_{}_add_subformer", field_ident );
+  let element_subformer_name = format!( "_{}_add_subformer", field_ident ); // xxx : rename
   let element_subformer = syn::Ident::new( &element_subformer_name, field_ident.span() );
 
   let r = qt!
@@ -816,7 +836,7 @@ fn field_subformer_map
 /// zzz : update example
 
 #[ inline ]
-fn container_setter
+fn field_container_setter
 (
   field : &FormerField< '_ >,
   stru : &syn::Ident,
@@ -1053,18 +1073,14 @@ fn field_setter
 /// ```
 
 #[ inline ]
-fn field_former_assign_map
+fn field_former_assign_end_map
 (
   field : &FormerField< '_ >,
   stru : &syn::Ident,
   former : &syn::Ident,
-  _former_storage : &syn::Ident,
   former_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   former_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  _struct_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  _struct_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  _struct_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
 )
 ->
 Result< TokenStream >
@@ -1177,7 +1193,7 @@ Callback replace content of container assigning new content from subformer's sto
 /// zzz : write documentation
 
 #[ inline ]
-fn field_former_add_map
+fn field_former_add_end_map
 (
   field : &FormerField< '_ >,
   stru : &syn::Ident,
@@ -1572,20 +1588,16 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     field_form_map( former_field ),
     field_name_map( former_field ),
     field_setter_map( former_field, &stru ),
-    field_former_assign_map
+    field_former_assign_end_map
     (
       former_field,
       &stru,
       &former,
-      &former_storage,
       &former_generics_impl,
       &former_generics_ty,
       &former_generics_where,
-      &struct_generics_impl,
-      &struct_generics_ty,
-      &struct_generics_where,
     ),
-    field_former_add_map
+    field_former_add_end_map
     (
       former_field,
       &stru,
