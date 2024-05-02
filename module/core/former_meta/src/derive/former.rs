@@ -21,6 +21,58 @@ struct FormerField< 'a >
   pub of_type : container_kind::ContainerKind,
 }
 
+// xxx
+impl< 'a > FormerField< 'a >
+{
+
+  /// Get name of setter for subform.
+  pub fn subform_setter_name( &self ) -> Option< &syn::Ident >
+  {
+
+    if let Some( ref attr ) = self.attrs.subform
+    {
+      if attr.setter
+      {
+        if let Some( ref name ) = attr.name
+        {
+          return Some( &name )
+        }
+        else
+        {
+          return Some( &self.ident )
+        }
+      }
+    }
+
+    return None;
+  }
+
+  /// Is trivial setter required.
+  pub fn trivial_setter_enabled( &self ) -> bool
+  {
+
+    if let Some( ref attr ) = self.attrs.setter
+    {
+      if attr.condition.value() == false
+      {
+        return false
+      }
+    }
+
+    let subform_name = self.subform_setter_name();
+    if let Some( name ) = subform_name
+    {
+      if self.ident == name
+      {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+}
+
 ///
 /// Attributes of the field.
 ///
@@ -264,9 +316,9 @@ struct AttributeSubform
   /// - `name` : An optional identifier that names the subform. It is parsed from inputs
   ///   like `name = my_field`.
   name : Option< syn::Ident >,
-  /// - `pubc` : An option for debug purpose.
-  #[ allow( dead_code ) ]
-  public : bool,
+  /// - `setter` : Disable generation of setter.
+  /// It still generate `_field_add` method, so it could be used to make a setter with custom arguments.
+  setter : bool,
 }
 
 impl syn::parse::Parse for AttributeSubform
@@ -274,7 +326,7 @@ impl syn::parse::Parse for AttributeSubform
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
     let mut name : Option< syn::Ident > = None;
-    let mut public : bool = true;
+    let mut setter : bool = true;
 
     while !input.is_empty()
     {
@@ -287,17 +339,13 @@ impl syn::parse::Parse for AttributeSubform
           input.parse::< syn::Token![ = ] >()?;
           name = Some( input.parse()? );
         }
-        else if ident == "public"
+        else if ident == "setter"
         {
           input.parse::< syn::Token![ = ] >()?;
           // Parse the boolean by checking next Ident if it's "true" or "false"
-          let value : syn::Ident = input.parse()?;
-          match value.to_string().as_str()
-          {
-            "true" => public = true,
-            "false" => public = false,
-            _ => return Err( syn::Error::new( value.span(), "expected `true` or `false`" ) ),
-          }
+          // let value : syn::Ident = input.parse()?;
+          let value : syn::LitBool = input.parse()?;
+          setter = value.value();
         }
         else
         {
@@ -316,7 +364,7 @@ impl syn::parse::Parse for AttributeSubform
       }
     }
 
-    Ok( Self { name, public } )
+    Ok( Self { name, setter } )
   }
 }
 
@@ -642,24 +690,24 @@ fn field_setter_map
   }
   else
   {
-    let setter_enabled = if let Some( setter_attr ) = &field.attrs.setter
+    // let setter_enabled = if let Some( setter_attr ) = &field.attrs.setter
+    // {
+    //   if !setter_attr.condition.value()
+    //   {
+    //     false
+    //   }
+    //   else
+    //   {
+    //     true
+    //   }
+    // }
+    // else
+    // {
+    //   true
+    // };
+    if field.trivial_setter_enabled()
     {
-      if !setter_attr.condition.value()
-      {
-        false
-      }
-      else
-      {
-        true
-      }
-    }
-    else
-    {
-      true
-    };
-    if setter_enabled
-    {
-      field_setter( ident, ident, non_optional_ty )
+      field_trivial_setter( ident, ident, non_optional_ty )
     }
     else
     {
@@ -669,7 +717,7 @@ fn field_setter_map
 
   let r = if let Some( alias_attr ) = &field.attrs.alias
   {
-    let alias_tokens = field_setter( ident, &alias_attr.alias, non_optional_ty );
+    let alias_tokens = field_trivial_setter( ident, &alias_attr.alias, non_optional_ty );
     qt!
     {
       #r
@@ -717,19 +765,24 @@ fn field_subform_add_setter_map
   use convert_case::{ Case, Casing };
   let field_ident = field.ident;
   let field_ty = field.non_optional_ty;
+  let attr = field.attrs.subform.as_ref().unwrap();
   // let params = typ::type_parameters( &field.non_optional_ty, .. );
 
+  // xxx
+
   // example : `child`
-  let mut explicit_name = false;
-  let setter_name = if let Some( ref _name ) = field.attrs.subform.as_ref().unwrap().name
-  {
-    explicit_name = true;
-    _name
-  }
-  else
-  {
-    field_ident
-  };
+  // let mut explicit_name = false;
+  let setter_name = field.subform_setter_name();
+
+  // let setter_name = if let Some( ref name ) = attr.name
+  // {
+  //   explicit_name = true;
+  //   name
+  // }
+  // else
+  // {
+  //   field_ident
+  // };
 
   // example : `ParentFormerAddChildrenEnd``
   let former_add_end_name = format!( "{}FormerAdd{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
@@ -768,7 +821,8 @@ fn field_subform_add_setter_map
   };
 
   // xxx : it should be printed by hint also
-  let r = if explicit_name
+  // let r = if explicit_name || attr.setter
+  let r = if attr.setter
   {
     qt!
     {
@@ -1002,7 +1056,7 @@ fn field_container_setter
 /// ```
 
 #[ inline ]
-fn field_setter
+fn field_trivial_setter
 (
   field_ident : &syn::Ident,
   setter_name : &syn::Ident,
