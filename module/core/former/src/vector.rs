@@ -47,6 +47,16 @@ impl< E > ContainerAssign for collection_tools::Vec< E >
 
 }
 
+impl< E > ValToElement< collection_tools::Vec< E > > for E
+{
+  type Element = E;
+  #[ inline ]
+  fn val_to_element( self ) -> Self::Element
+  {
+    self
+  }
+}
+
 /// Trait for containers that behave like a vector, providing an interface for element addition.
 ///
 /// This trait enables the use of custom or standard vector-like containers within the builder pattern,

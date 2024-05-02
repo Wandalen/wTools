@@ -35,11 +35,11 @@ where
 
 }
 
-impl< T > ContainerAssign for collection_tools::HashSet< T >
+impl< K > ContainerAssign for collection_tools::HashSet< K >
 where
-  T : core::cmp::Eq + core::hash::Hash,
+  K : core::cmp::Eq + core::hash::Hash,
 {
-  // type Element = T;
+  // type Element = K;
 
   fn assign< Elements >( &mut self, elements : Elements ) -> usize
   where
@@ -48,6 +48,18 @@ where
     let initial_len = self.len();
     self.extend( elements );
     self.len() - initial_len
+  }
+}
+
+impl< K > ValToElement< HashSet< K > > for K
+where
+  K : core::cmp::Eq + core::hash::Hash,
+{
+  type Element = K;
+  #[ inline ]
+  fn val_to_element( self ) -> Self::Element
+  {
+    self
   }
 }
 
