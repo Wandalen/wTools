@@ -69,6 +69,8 @@ mod former_tests
   mod subformer_container_implicit;
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subformer_container_setter_off;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_container_named;
 
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subformer_subform;
