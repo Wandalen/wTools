@@ -195,7 +195,7 @@ where
 /// #[ derive( Debug, PartialEq, former::Former ) ]
 /// pub struct StructWithSet
 /// {
-///   #[ container( former::HashSetSubformer ) ]
+///   #[ container( definition = former::HashSetSubformer ) ]
 ///   set : std::collections::HashSet< &'static str >,
 /// }
 ///

@@ -30,7 +30,7 @@ where
   K : core::hash::Hash + std::cmp::Eq,
 {
   pub name : String,
-  #[ container( former::HashMapDefinition ) ]
+  #[ container( definition = former::HashMapDefinition ) ]
   pub properties : collection_tools::HashMap< K, Property< K > >,
 }
 

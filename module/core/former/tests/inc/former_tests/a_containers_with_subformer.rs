@@ -9,11 +9,11 @@ use super::*;
 // #[ derive( Default, Debug, PartialEq ) ]
 pub struct Struct1
 {
-  #[ container( former::VectorDefinition ) ]
+  #[ container( definition = former::VectorDefinition ) ]
   vec_1 : Vec< String >,
-  #[ container( former::HashMapDefinition ) ]
+  #[ container( definition = former::HashMapDefinition ) ]
   hashmap_1 : std::collections::HashMap< String, String >,
-  #[ container( former::HashSetDefinition ) ]
+  #[ container( definition = former::HashSetDefinition ) ]
   hashset_1 : std::collections::HashSet< String >,
 }
 

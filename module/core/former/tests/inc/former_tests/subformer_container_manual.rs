@@ -16,7 +16,7 @@ pub struct Child
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent
 {
-  // #[ container( former::VectorDefinition ) ]
+  // #[ container( definition = former::VectorDefinition ) ]
   #[ scalar_setter( false ) ]
   children : Vec< Child >,
 }

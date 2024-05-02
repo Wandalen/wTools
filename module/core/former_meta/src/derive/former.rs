@@ -348,15 +348,12 @@ impl syn::parse::Parse for AttributeContainer
         }
         else
         {
-          return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: name = myName, setter = true, definition = MyContainerType", ident ) ) );
-          // return Err( lookahead.error() );
+          return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `container( name = myName, setter = true, definition = MyDefinition )`", ident ) ) );
         }
       }
       else
       {
-        // return Err( lookahead.error() );
-        // return Err( lookahead.error_with( "Expected 'name', 'setter', or 'definition' identifier " ) );
-        return Err( syn::Error::new( input.span(), "Expected 'name', 'setter', or 'definition' identifier" ) );
+        return Err( syn::Error::new( input.span(), "Expected 'name', 'setter', or 'definition' identifier. For example: `container( name = myName, setter = true, definition = MyDefinition )`" ) );
       }
 
       // Optional comma handling
@@ -423,13 +420,23 @@ impl syn::parse::Parse for AttributeSubform
         }
         else
         {
-          return Err( lookahead.error() );
+          return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `subform( name = myName, setter = true )`", ident ) ) );
         }
       }
       else
       {
-        return Err( lookahead.error() );
+        return Err( syn::Error::new( input.span(), "Expected 'name', 'setter', or 'definition' identifier. For example: `subform( name = myName, setter = true )`" ) );
       }
+
+      //   else
+      //   {
+      //     return Err( lookahead.error() );
+      //   }
+      // }
+      // else
+      // {
+      //   return Err( lookahead.error() );
+      // }
 
       // Optional comma handling
       if input.peek( syn::Token![,] )

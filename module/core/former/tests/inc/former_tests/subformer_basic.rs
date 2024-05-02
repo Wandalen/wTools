@@ -53,7 +53,7 @@ where
 {
   pub name : String,
   pub subject : String,
-  #[ container( former::HashMapDefinition ) ]
+  #[ container( definition = former::HashMapDefinition ) ]
   pub properties : collection_tools::HashMap< K, Property< K > >,
 }
 
@@ -101,7 +101,7 @@ where
   K : core::hash::Hash + std::cmp::Eq,
 {
   pub parameter1 : String,
-  #[ container( former::HashMapDefinition ) ]
+  #[ container( definition = former::HashMapDefinition ) ]
   pub commands : collection_tools::HashMap< String, Child< K > >,
 }
 

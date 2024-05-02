@@ -433,7 +433,7 @@ The following example illustrates how to use a `VectorSubformer` to construct a 
 #[ derive( Debug, PartialEq, former::Former ) ]
 pub struct StructWithVec
 {
-  #[ container( former::VectorSubformer ) ]
+  #[ container( definition = former::VectorSubformer ) ]
   vec : Vec< &'static str >,
 }
 
@@ -462,7 +462,7 @@ use test_tools::exposed::*;
 #[ derive( Debug, PartialEq, former::Former ) ]
 pub struct StructWithMap
 {
-  #[ container( former::HashMapSubformer ) ]
+  #[ container( definition = former::HashMapSubformer ) ]
   map : std::collections::HashMap< &'static str, &'static str >,
 }
 
@@ -491,7 +491,7 @@ use test_tools::exposed::*;
 #[ derive( Debug, PartialEq, former::Former ) ]
 pub struct StructWithSet
 {
-  #[ container( former::HashSetSubformer ) ]
+  #[ container( definition = former::HashSetSubformer ) ]
   set : std::collections::HashSet< &'static str >,
 }
 
