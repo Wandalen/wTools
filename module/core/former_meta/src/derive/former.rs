@@ -59,6 +59,11 @@ impl< 'a > FormerField< 'a >
       }
     }
 
+    if let Some( ref _attr ) = self.attrs.container
+    {
+      return false;
+    }
+
     let subform_name = self.subform_setter_name();
     if let Some( name ) = subform_name
     {
@@ -684,12 +689,17 @@ fn field_setter_map
 
   let non_optional_ty = &field.non_optional_ty;
   // Either subformer or ordinary setter.
-  let r = if let Some( _container_ty ) = &field.attrs.container
+  let r = if let Some( _ ) = &field.attrs.container
   {
     field_container_setter( field, stru )
   }
   else
   {
+    qt!{}
+  };
+
+  // else
+  // {
     // let setter_enabled = if let Some( setter_attr ) = &field.attrs.setter
     // {
     //   if !setter_attr.condition.value()
@@ -705,23 +715,30 @@ fn field_setter_map
     // {
     //   true
     // };
-    if field.trivial_setter_enabled()
-    {
-      field_trivial_setter( ident, ident, non_optional_ty )
-    }
-    else
-    {
-      qt!{ }
-    }
-  };
 
-  let r = if let Some( alias_attr ) = &field.attrs.alias
+  let r = if field.trivial_setter_enabled()
   {
-    let alias_tokens = field_trivial_setter( ident, &alias_attr.alias, non_optional_ty );
+    let r2 = field_trivial_setter( ident, ident, non_optional_ty );
     qt!
     {
       #r
-      #alias_tokens
+      #r2
+    }
+  }
+  else
+  {
+    r
+  };
+
+  // };
+
+  let r = if let Some( alias_attr ) = &field.attrs.alias
+  {
+    let r2 = field_trivial_setter( ident, &alias_attr.alias, non_optional_ty );
+    qt!
+    {
+      #r
+      #r2
     }
   }
   else
@@ -731,11 +748,11 @@ fn field_setter_map
 
   let r = if field.attrs.subform.is_some()
   {
-    let subformer = field_subform_add_setter_map( field, stru )?;
+    let r2 = field_subform_add_setter_map( field, stru )?;
     qt!
     {
       #r
-      #subformer
+      #r2
     }
   }
   else

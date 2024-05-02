@@ -69,4 +69,3 @@ fn basic()
   a_id!( got.command.len(), 2 );
 
 }
-// xxx
