@@ -21,10 +21,23 @@ struct FormerField< 'a >
   pub of_type : container_kind::ContainerKind,
 }
 
-// xxx
 impl< 'a > FormerField< 'a >
 {
 
+  /// Get name of scalar setter.
+  pub fn scalar_setter_name( &self ) -> &syn::Ident
+  {
+    if let Some( ref attr ) = self.attrs.scalar
+    {
+      if let Some( ref name ) = attr.name
+      {
+        return name
+      }
+    }
+    return &self.ident;
+  }
+
+  // xxx : maybe without Option?
   /// Get name of setter for container if such setter should be generated.
   pub fn container_setter_name( &self ) -> Option< &syn::Ident >
   {
@@ -69,8 +82,8 @@ impl< 'a > FormerField< 'a >
     return None;
   }
 
-  /// Is scalar setter required.
-  pub fn scalar_setter_enabled( &self ) -> bool
+  /// Is scalar setter required. Does not if container of subformer setter requested.
+  pub fn scalar_setter_required( &self ) -> bool
   {
 
     let mut explicit = false;
@@ -111,7 +124,7 @@ struct Attributes
   scalar : Option< AttributeScalarSetter >,
   container : Option< AttributeContainerSetter >,
   subform : Option< AttributeSubformSetter >,
-  alias : Option< AttributeAlias >, // xxx : remove
+  // alias : Option< AttributeAlias >, // xxx : remove
 }
 
 impl Attributes
@@ -122,7 +135,7 @@ impl Attributes
     let mut scalar = None;
     let mut container = None;
     let mut subform = None;
-    let mut alias = None;
+    // let mut alias = None;
     for attr in attributes
     {
       let key_ident = attr.path().get_ident()
@@ -192,19 +205,19 @@ impl Attributes
             _ => return_syn_err!( attr, "Expects an attribute of format `#[ subform ]` or `#[ subform( name : child )` ], \nGot: {}", qt!{ #attr } ),
           }
         }
-        "alias" =>
-        {
-          match attr.meta
-          {
-            syn::Meta::List( ref meta_list ) =>
-            {
-              alias.replace( syn::parse2::< AttributeAlias >( meta_list.tokens.clone() )? );
-            },
-            _ => return_syn_err!( attr, "Expects an attribute of format `#[ alias( val ) ]`. \nGot: {}", qt!{ #attr } ),
-          }
-          // let attr_alias = syn::parse2::< AttributeAlias >( attr.tokens.clone() )?;
-          // alias.replace( attr_alias );
-        }
+        // "alias" =>
+        // {
+        //   match attr.meta
+        //   {
+        //     syn::Meta::List( ref meta_list ) =>
+        //     {
+        //       alias.replace( syn::parse2::< AttributeAlias >( meta_list.tokens.clone() )? );
+        //     },
+        //     _ => return_syn_err!( attr, "Expects an attribute of format `#[ alias( val ) ]`. \nGot: {}", qt!{ #attr } ),
+        //   }
+        //   // let attr_alias = syn::parse2::< AttributeAlias >( attr.tokens.clone() )?;
+        //   // alias.replace( attr_alias );
+        // }
         _ =>
         {
           return Err( syn_err!( attr, "Unknown attribute {}", qt!{ #attr } ) );
@@ -212,7 +225,7 @@ impl Attributes
       }
     }
 
-    Ok( Attributes { default, scalar, container, subform, alias } )
+    Ok( Attributes { default, scalar, container, subform } )
   }
 }
 
@@ -526,32 +539,32 @@ impl syn::parse::Parse for AttributeSubformSetter
   }
 }
 
-///
-/// Attribute to create alias.
-///
-/// `#[ alias( name ) ]`
-///
-
-
-struct AttributeAlias
-{
-  // paren_token : syn::token::Paren,
-  alias : syn::Ident,
-}
-
-impl syn::parse::Parse for AttributeAlias
-{
-  fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
-  {
-    // let input2;
-    Ok( Self
-    {
-      // paren_token : syn::parenthesized!( input2 in input ),
-      // alias : input2.parse()?,
-      alias : input.parse()?,
-    })
-  }
-}
+// ///
+// /// Attribute to create alias.
+// ///
+// /// `#[ alias( name ) ]`
+// ///
+//
+//
+// struct AttributeAlias
+// {
+//   // paren_token : syn::token::Paren,
+//   alias : syn::Ident,
+// }
+//
+// impl syn::parse::Parse for AttributeAlias
+// {
+//   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+//   {
+//     // let input2;
+//     Ok( Self
+//     {
+//       // paren_token : syn::parenthesized!( input2 in input ),
+//       // alias : input2.parse()?,
+//       alias : input.parse()?,
+//     })
+//   }
+// }
 
 ///
 /// Is type under Option.
@@ -829,16 +842,16 @@ fn field_setter_map
 )
 -> Result< TokenStream >
 {
-  let ident = &field.ident;
-  let non_optional_ty = &field.non_optional_ty;
+  // let ident = &field.ident;
+  // let typ = &field.non_optional_ty;
   let r = qt!{};
 
   // xxx : write test for interoperability of 3 attributes: scalar, subform, container
 
   // scalar setter
-  let r = if field.scalar_setter_enabled()
+  let r = if field.scalar_setter_required()
   {
-    let r2 = field_scalar_setter( ident, ident, non_optional_ty );
+    let r2 = field_scalar_setter( field );
     qt!
     {
       #r
@@ -850,20 +863,28 @@ fn field_setter_map
     r
   };
 
-  // alias trival setter
-  let r = if let Some( alias_attr ) = &field.attrs.alias
-  {
-    let r2 = field_scalar_setter( ident, &alias_attr.alias, non_optional_ty );
-    qt!
-    {
-      #r
-      #r2
-    }
-  }
-  else
-  {
-    r
-  };
+  // xxx : clean
+  // // alias trival setter
+  // let r = if let Some( attr ) = &field.attrs.scalar
+  // {
+  //   if let Some( ref alias ) = attr.name
+  //   {
+  //     let r2 = field_scalar_setter( ident, alias, typ );
+  //     qt!
+  //     {
+  //       #r
+  //       #r2
+  //     }
+  //   }
+  //   else
+  //   {
+  //     r
+  //   }
+  // }
+  // else
+  // {
+  //   r
+  // };
 
   // container setter
   let r = if let Some( _ ) = &field.attrs.container
@@ -1204,12 +1225,17 @@ fn field_container_setter
 #[ inline ]
 fn field_scalar_setter
 (
-  field_ident : &syn::Ident,
-  setter_name : &syn::Ident,
-  non_optional_type : &syn::Type,
+  field : &FormerField< '_ >,
+  // field_ident : &syn::Ident,
+  // setter_name : &syn::Ident,
+  // non_optional_type : &syn::Type,
 )
 -> TokenStream
 {
+  let field_ident = &field.ident;
+  let typ = &field.non_optional_ty;
+  let setter_name = field.scalar_setter_name();
+
   let doc = format!
   (
     "Setter for the '{}' field.",
@@ -1221,7 +1247,7 @@ fn field_scalar_setter
     #[ doc = #doc ]
     #[ inline ]
     pub fn #setter_name< Src >( mut self, src : Src ) -> Self
-    where Src : ::core::convert::Into< #non_optional_type >,
+    where Src : ::core::convert::Into< #typ >,
     {
       debug_assert!( self.storage.#field_ident.is_none() );
       self.storage.#field_ident = ::core::option::Option::Some( ::core::convert::Into::into( src ) );

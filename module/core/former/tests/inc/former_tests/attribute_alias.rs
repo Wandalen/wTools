@@ -12,16 +12,17 @@ tests_impls!
     #[ derive( Debug, PartialEq, the_module::Former ) ]
     pub struct AliasTestStruct
     {
-      #[ alias( first_field ) ]
+      #[ scalar( name = first_field ) ]
       string_field : String,
-      #[ alias( second_field ) ]
+      #[ scalar( name = second_field ) ]
       i32_field : i32,
       i8_field : i8,
     }
 
     let test_struct = AliasTestStruct::former()
     .first_field( "first_field" )
-    .i32_field( 2 )
+    .second_field( 2 )
+    // .i32_field( 2 )
     .i8_field( 1 )
     .form();
 
