@@ -51,27 +51,42 @@ impl< 'a > FormerField< 'a >
   pub fn scalar_setter_enabled( &self ) -> bool
   {
 
+    let mut explicit = false;
     if let Some( ref attr ) = self.attrs.scalar_setter
     {
       if attr.condition.value() == false
       {
         return false
       }
+      explicit = true;
     }
 
+    // xxx : container setter also could have custom name
     if let Some( ref _attr ) = self.attrs.container
     {
       return false;
     }
 
-    let subform_name = self.subform_setter_name();
-    if let Some( name ) = subform_name
+    if self.attrs.subform.is_some() && !explicit
     {
-      if self.ident == name
-      {
-        return false;
-      }
+      return false;
     }
+
+    // let subform_name = self.subform_setter_name();
+    // if let Some( name ) = subform_name
+    // {
+    //   if self.ident == name
+    //   {
+    //     return false;
+    //   }
+    //   else
+    //   {
+    //     if !explicit
+    //     {
+    //       return false;
+    //     }
+    //   }
+    // }
 
     return true;
   }
@@ -85,7 +100,7 @@ impl< 'a > FormerField< 'a >
 struct Attributes
 {
   default : Option< AttributeDefault >,
-  scalar_setter : Option< AttributeTrivialSetter >,
+  scalar_setter : Option< AttributeScalarSetter >,
   container : Option< AttributeContainer >,
   subform : Option< AttributeSubform >,
   alias : Option< AttributeAlias >,
@@ -130,7 +145,7 @@ impl Attributes
           {
             syn::Meta::List( ref meta_list ) =>
             {
-              scalar_setter.replace( syn::parse2::< AttributeTrivialSetter >( meta_list.tokens.clone() )? );
+              scalar_setter.replace( syn::parse2::< AttributeScalarSetter >( meta_list.tokens.clone() )? );
             },
             _ => return_syn_err!( attr, "Expects an attribute of format #[ scalar_setter( val ) ], but got:\n  {}", qt!{ #attr } ),
           }
@@ -252,13 +267,13 @@ impl syn::parse::Parse for AttributeDefault
 ///
 
 #[ allow( dead_code ) ]
-struct AttributeTrivialSetter
+struct AttributeScalarSetter
 {
   // paren_token : syn::token::Paren,
   condition : syn::LitBool,
 }
 
-impl syn::parse::Parse for AttributeTrivialSetter
+impl syn::parse::Parse for AttributeScalarSetter
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
   {
