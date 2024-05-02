@@ -47,11 +47,11 @@ impl< 'a > FormerField< 'a >
     return None;
   }
 
-  /// Is trivial setter required.
-  pub fn trivial_setter_enabled( &self ) -> bool
+  /// Is scalar setter required.
+  pub fn scalar_setter_enabled( &self ) -> bool
   {
 
-    if let Some( ref attr ) = self.attrs.setter
+    if let Some( ref attr ) = self.attrs.scalar_setter
     {
       if attr.condition.value() == false
       {
@@ -85,7 +85,7 @@ impl< 'a > FormerField< 'a >
 struct Attributes
 {
   default : Option< AttributeDefault >,
-  setter : Option< AttributeSetter >,
+  scalar_setter : Option< AttributeTrivialSetter >,
   container : Option< AttributeContainer >,
   subform : Option< AttributeSubform >,
   alias : Option< AttributeAlias >,
@@ -96,7 +96,7 @@ impl Attributes
   fn parse( attributes : & Vec< syn::Attribute > ) -> Result< Self >
   {
     let mut default = None;
-    let mut setter = None;
+    let mut scalar_setter = None;
     let mut container = None;
     let mut subform = None;
     let mut alias = None;
@@ -124,18 +124,16 @@ impl Attributes
             _ => return_syn_err!( attr, "Expects an attribute of format #[ default( val ) ], but got:\n  {}", qt!{ #attr } ),
           }
         }
-        "setter" =>
+        "scalar_setter" =>
         {
           match attr.meta
           {
             syn::Meta::List( ref meta_list ) =>
             {
-              setter.replace( syn::parse2::< AttributeSetter >( meta_list.tokens.clone() )? );
+              scalar_setter.replace( syn::parse2::< AttributeTrivialSetter >( meta_list.tokens.clone() )? );
             },
-            _ => return_syn_err!( attr, "Expects an attribute of format #[ setter( val ) ], but got:\n  {}", qt!{ #attr } ),
+            _ => return_syn_err!( attr, "Expects an attribute of format #[ scalar_setter( val ) ], but got:\n  {}", qt!{ #attr } ),
           }
-          // let attr_setter = syn::parse2::< AttributeSetter >( attr.tokens.clone() )?;
-          // setter.replace( attr_setter );
         }
         "container" =>
         {
@@ -187,7 +185,7 @@ impl Attributes
       }
     }
 
-    Ok( Attributes { default, setter, container, subform, alias } )
+    Ok( Attributes { default, scalar_setter, container, subform, alias } )
   }
 }
 
@@ -248,19 +246,19 @@ impl syn::parse::Parse for AttributeDefault
 }
 
 ///
-/// Attribute to enable/disable setter generation.
+/// Attribute to enable/disable scalar setter generation.
 ///
-/// `#[ setter( false ) ]`
+/// `#[ scalar_setter( false ) ]`
 ///
 
 #[ allow( dead_code ) ]
-struct AttributeSetter
+struct AttributeTrivialSetter
 {
   // paren_token : syn::token::Paren,
   condition : syn::LitBool,
 }
 
-impl syn::parse::Parse for AttributeSetter
+impl syn::parse::Parse for AttributeTrivialSetter
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
   {
@@ -677,48 +675,15 @@ fn field_setter_map
 -> Result< TokenStream >
 {
   let ident = &field.ident;
-
-  // if let Some( setter_attr ) = &field.attrs.setter
-  // {
-  //   if !setter_attr.condition.value()
-  //   {
-  //     return Ok( qt!{ } );
-  //   }
-  // }
-  // xxx : write test for interoperability of 3 attributes
-
   let non_optional_ty = &field.non_optional_ty;
-  // Either subformer or ordinary setter.
-  let r = if let Some( _ ) = &field.attrs.container
-  {
-    field_container_setter( field, stru )
-  }
-  else
-  {
-    qt!{}
-  };
+  let r = qt!{};
 
-  // else
-  // {
-    // let setter_enabled = if let Some( setter_attr ) = &field.attrs.setter
-    // {
-    //   if !setter_attr.condition.value()
-    //   {
-    //     false
-    //   }
-    //   else
-    //   {
-    //     true
-    //   }
-    // }
-    // else
-    // {
-    //   true
-    // };
+  // xxx : write test for interoperability of 3 attributes: scalar_setter, subform, container
 
-  let r = if field.trivial_setter_enabled()
+  // scalar setter
+  let r = if field.scalar_setter_enabled()
   {
-    let r2 = field_trivial_setter( ident, ident, non_optional_ty );
+    let r2 = field_scalar_setter( ident, ident, non_optional_ty );
     qt!
     {
       #r
@@ -730,11 +695,10 @@ fn field_setter_map
     r
   };
 
-  // };
-
+  // alias trival setter
   let r = if let Some( alias_attr ) = &field.attrs.alias
   {
-    let r2 = field_trivial_setter( ident, &alias_attr.alias, non_optional_ty );
+    let r2 = field_scalar_setter( ident, &alias_attr.alias, non_optional_ty );
     qt!
     {
       #r
@@ -746,6 +710,22 @@ fn field_setter_map
     r
   };
 
+  // container setter
+  let r = if let Some( _ ) = &field.attrs.container
+  {
+    let r2 = field_container_setter( field, stru );
+    qt!
+    {
+      #r
+      #r2
+    }
+  }
+  else
+  {
+    r
+  };
+
+  // subform setter
   let r = if field.attrs.subform.is_some()
   {
     let r2 = field_subform_add_setter_map( field, stru )?;
@@ -788,34 +768,23 @@ fn field_subform_add_setter_map
   // xxx
 
   // example : `child`
-  // let mut explicit_name = false;
   let setter_name = field.subform_setter_name();
-
-  // let setter_name = if let Some( ref name ) = attr.name
-  // {
-  //   explicit_name = true;
-  //   name
-  // }
-  // else
-  // {
-  //   field_ident
-  // };
 
   // example : `ParentFormerAddChildrenEnd``
   let former_add_end_name = format!( "{}FormerAdd{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
   let former_add_end = syn::Ident::new( &former_add_end_name, field_ident.span() );
 
   // example : `_children_former`
-  let element_subformer_name = format!( "_{}_add", field_ident ); // xxx : rename
-  let element_subformer = syn::Ident::new( &element_subformer_name, field_ident.span() );
+  let field_add_name = format!( "_{}_add", field_ident );
+  let field_add = syn::Ident::new( &field_add_name, field_ident.span() );
 
   let r = qt!
   {
 
     // zzz : improve documentation
-    /// Custom setter which produce container element subformer.
+    /// Setter returning former of element of container of the field as subformer.
     #[ inline( always ) ]
-    pub fn #element_subformer< Former2, Definition2 >( self ) -> Former2
+    pub fn #field_add< Former2, Definition2 >( self ) -> Former2
     where
       Definition2 : former::FormerDefinition
       <
@@ -838,7 +807,6 @@ fn field_subform_add_setter_map
   };
 
   // xxx : it should be printed by hint also
-  // let r = if explicit_name || attr.setter
   let r = if attr.setter
   {
     qt!
@@ -856,7 +824,7 @@ fn field_subform_add_setter_map
       >::Former
       // #as_subformer< Self, impl #as_subformer_end< Self > >
       {
-        self.#element_subformer
+        self.#field_add
         ::< < < #field_ty as former::Container >::Val as former::EntityToFormer< _ > >::Former, _, >()
         // ::< #former< _ >, _, >()
       }
@@ -881,7 +849,7 @@ fn field_subform_add_setter_map
 }
 
 ///
-/// Generate a sub-former setter for the 'field_ident' with the 'setter_name' name.
+/// Generate a container setter for the 'field_ident' with the 'setter_name' name.
 ///
 /// # Example of generated code
 ///
@@ -951,7 +919,7 @@ fn field_container_setter
 
   let doc = format!
   (
-    "Subformer setter for the '{}' field. Method {} unlike method {} accept custom container subformer.",
+    "Container setter for the '{}' field. Method {} unlike method {} accept custom container subformer.",
     field_ident,
     field_assign_name,
     field_ident,
@@ -1054,7 +1022,7 @@ fn field_container_setter
 }
 
 ///
-/// Generate a single setter for the 'field_ident' with the 'setter_name' name.
+/// Generate a single scalar setter for the 'field_ident' with the 'setter_name' name.
 ///
 /// Used as a helper function for field_setter_map(), which generates alias setters
 ///
@@ -1073,7 +1041,7 @@ fn field_container_setter
 /// ```
 
 #[ inline ]
-fn field_trivial_setter
+fn field_scalar_setter
 (
   field_ident : &syn::Ident,
   setter_name : &syn::Ident,

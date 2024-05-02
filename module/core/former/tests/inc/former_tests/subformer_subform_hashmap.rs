@@ -20,7 +20,7 @@ pub struct Command
 pub struct Aggregator
 {
   #[ subform ]
-  #[ setter( false ) ]
+  #[ scalar_setter( false ) ]
   command : HashMap< String, Command >,
 }
 

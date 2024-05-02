@@ -5,7 +5,7 @@ use super::*;
 pub struct StructWithCustomSetters
 {
   ordinary : String,
-  #[ setter( false ) ]
+  #[ scalar_setter( false ) ]
   magic : String,
 }
 

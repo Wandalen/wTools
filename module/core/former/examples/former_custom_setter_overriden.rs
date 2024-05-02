@@ -15,7 +15,7 @@ fn main()
   #[ derive( Debug, Former ) ]
   pub struct StructWithCustomSetters
   {
-    #[ setter( false ) ]
+    #[ scalar_setter( false ) ]
     word : String,
   }
 

@@ -19,7 +19,7 @@ pub struct Parent
   // #[ subform ]
   #[ subform( name = _child ) ]
   #[ container( former::VectorDefinition ) ]
-  // #[ setter( false ) ]
+  // #[ scalar_setter( false ) ]
   children : Vec< Child >,
 }
 

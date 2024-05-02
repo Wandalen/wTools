@@ -18,7 +18,7 @@ pub struct Parent
 {
   // #[ container( former::VectorDefinition ) ]
   #[ container ]
-  // #[ setter( false ) ]
+  // #[ scalar_setter( false ) ]
   children : Vec< Child >,
 }
 
