@@ -7,7 +7,7 @@ use super::*;
 pub struct Child
 {
   name : String,
-  is_mandatory : bool,
+  data : bool,
 }
 
 /// Parent

@@ -7,7 +7,7 @@ use super::*;
 pub struct Child
 {
   name : String,
-  is_mandatory : bool,
+  data : bool,
 }
 
 // impl< Context, Formed, End > former::EntityToDefinition< Context, Formed, End >
