@@ -9,7 +9,7 @@ pub struct Struct1
   pub int_1 : i32,
 }
 
-// = begin_coercing of generated
+// == begin of generated
 
 // == end of generated
 
