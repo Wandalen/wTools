@@ -2,19 +2,21 @@
 use super::*;
 // xxx2 : implement
 
-#[ derive( Debug, PartialEq, the_module::Former ) ]
+// #[ derive( Debug, PartialEq, the_module::Former ) ]
 // #[ debug ]
-// #[ derive( Debug, PartialEq ) ]
-  #[ storage_fields( a : i32, b : Option< String > ) ]
+#[ derive( Debug, PartialEq ) ]
+// #[ storage_fields( a : i32, b : Option< String > ) ]
 pub struct Struct1
 {
   // #[ former( only_storage = true ) ]
-  pub a : i32,
+  // pub a : i32,
   // #[ former( only_storage = true ) ]
-  b : Option< String >,
+  // b : Option< String >,
 }
 
-//
+// == begin of generated
+
+// == end of generated
 
 tests_impls!
 {
@@ -29,10 +31,6 @@ tests_impls!
     // a_id!( got, exp );
   }
 }
-
-// == begin of generated
-
-// == end of generated
 
 tests_index!
 {

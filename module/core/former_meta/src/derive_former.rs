@@ -470,6 +470,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
         /// A field
         #fields_optional,
       )*
+      #storage_fields
     }
 
     impl < #struct_generics_impl > ::core::default::Default

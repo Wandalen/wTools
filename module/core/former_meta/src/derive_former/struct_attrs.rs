@@ -109,7 +109,7 @@ impl syn::parse::Parse for AttributePerform
 
 pub struct AttributeStorageFields
 {
-  pub fields : syn::Fields,
+  pub fields : syn::punctuated::Punctuated< syn::Field, syn::token::Comma >,
 }
 
 impl syn::parse::Parse for AttributeStorageFields
@@ -118,15 +118,16 @@ impl syn::parse::Parse for AttributeStorageFields
   {
 
     let fields : syn::punctuated::Punctuated< syn::Field, syn::Token![,] > =
-      input.parse_terminated( syn::Field::parse_named, Token![,] )?;
+    input.parse_terminated( syn::Field::parse_named, Token![,] )?;
 
     Ok( Self
     {
-      fields : syn::Fields::Named( syn::FieldsNamed
-      {
-        brace_token : Default::default(),
-        named : fields,
-      }),
+      fields,
+      // fields : syn::Fields::Named( syn::FieldsNamed
+      // {
+      //   brace_token : Default::default(),
+      //   named : fields,
+      // }),
     })
   }
 }
