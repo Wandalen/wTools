@@ -108,6 +108,28 @@ pub( crate ) mod private
 //     None
 //   }
 
+  ///
+  /// Is type under Option.
+  ///
+
+  // xxx : move
+  pub fn is_optional( ty : &syn::Type ) -> bool
+  {
+    typ::type_rightmost( ty ) == Some( "Option".to_string() )
+  }
+
+  ///
+  /// Extract the first parameter of the type if such exist.
+  ///
+
+  pub fn parameter_first( ty : &syn::Type ) -> Result< &syn::Type >
+  {
+    typ::type_parameters( ty, 0 ..= 0 )
+    .first()
+    .copied()
+    .ok_or_else( || syn_err!( ty, "Expects at least one parameter here:\n  {}", qt!{ #ty } ) )
+  }
+
 }
 
 #[ doc( inline ) ]
@@ -127,6 +149,8 @@ pub mod protected
     type_rightmost,
     type_parameters,
     // all_type_parameters,
+    is_optional,
+    parameter_first,
   };
 }
 

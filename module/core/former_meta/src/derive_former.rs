@@ -30,7 +30,7 @@ fn is_optional( ty : &syn::Type ) -> bool
 /// Extract the first parameter of the type if such exist.
 ///
 
-fn parameter_internal_first( ty : &syn::Type ) -> Result< &syn::Type >
+fn parameter_first( ty : &syn::Type ) -> Result< &syn::Type >
 {
   typ::type_parameters( ty, 0 ..= 0 )
   .first()
@@ -250,14 +250,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   let former_definition_phantom = macro_tools::phantom::tuple( &former_definition_generics_impl );
 
-  /* structure attribute */
-
-  let ( perform, perform_output, perform_generics ) = performer
-  (
-    &struct_attrs
-    // ast.attrs.iter(),
-  )?;
-
   /* */
 
   let fields = match ast.data
@@ -284,7 +276,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     let ty = &field.ty;
     let is_optional = is_optional( ty );
     let of_type = container_kind::of_optional( ty ).0;
-    let non_optional_ty : &syn::Type = if is_optional { parameter_internal_first( ty )? } else { ty };
+    let non_optional_ty : &syn::Type = if is_optional { parameter_first( ty )? } else { ty };
     let field = FormerField { attrs, vis, ident, colon_token, ty, non_optional_ty, is_optional, of_type };
     Ok( field )
   }).collect();
@@ -329,11 +321,16 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     ),
   )}).multiunzip();
 
-  let ( _doc_former_mod, doc_former_struct ) = doc_generate( stru );
   let fields_setter : Vec< _ > = process_results( fields_setter, | iter | iter.collect() )?;
   let fields_form : Vec< _ > = process_results( fields_form, | iter | iter.collect() )?;
   let fields_former_assign : Vec< _ > = process_results( fields_former_assign, | iter | iter.collect() )?;
   let fields_former_add : Vec< _ > = process_results( fields_former_add, | iter | iter.collect() )?;
+
+  let ( _doc_former_mod, doc_former_struct ) = doc_generate( stru );
+  let ( perform, perform_output, perform_generics ) = performer
+  (
+    &struct_attrs
+  )?;
 
   let result = qt!
   {
@@ -389,7 +386,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     // = definition types
 
     #[ derive( Debug ) ]
-    // pub struct #former_definition_types < #former_definition_type_generics_impl >
     pub struct #former_definition_types < #former_definition_type_generics_with_defaults >
     where
       #former_definition_type_generics_where
@@ -425,7 +421,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     // = definition
 
     #[ derive( Debug ) ]
-    // pub struct #former_definition < #former_definition_generics_impl >
     pub struct #former_definition < #former_definition_generics_with_defaults >
     where
       #former_definition_generics_where
