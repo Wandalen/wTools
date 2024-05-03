@@ -4,7 +4,7 @@ use std::collections::HashSet;
 use crate::hybrid_optimizer::*;
 use crate::problems::sudoku::*;
 
-use derive_tools::{ FromInner, InnerFrom, Display };
+use derive_tools::{ FromInner, InnerFrom, exposed::Display };
 use deterministic_rand::{ Hrng, Rng, seq::SliceRandom };
 use iter_tools::Itertools;
 
@@ -12,28 +12,11 @@ use iter_tools::Itertools;
 trait BoardExt
 {
   /// Validate that each bloack has at least one non-fixed cell.
-  fn validate_each_block_has_non_fixed_cell( &self ) -> bool;
   fn validate_block_has_non_fixed_cells( &self, block : BlockIndex ) -> bool;
 }
 
 impl BoardExt for Board
 {
-  fn validate_each_block_has_non_fixed_cell( &self ) -> bool
-  {
-    for block in self.blocks()
-    {
-      let fixed = self.block_cells( block )
-      .map( | cell | self.cell( cell ) )
-      .fold( 0, | acc, e | if e == 0.into() { acc + 1 } else { acc } )
-      ;
-      if fixed <= 1 || fixed >= 10
-      {
-        return false;
-      }
-    }
-    true
-  }
-
   fn validate_block_has_non_fixed_cells( &self, block : BlockIndex ) -> bool
   {
     let fixed = self.block_cells( block )

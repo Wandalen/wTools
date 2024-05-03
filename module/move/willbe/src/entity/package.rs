@@ -380,6 +380,8 @@ mod private
       let pack = cargo::PackOptions
       {
         path : crate_dir.as_ref().into(),
+        allow_dirty : self.dry,
+        no_verify : self.dry,
         temp_path : self.base_temp_dir.clone(),
         dry : self.dry,
       };
@@ -484,6 +486,9 @@ mod private
     #[ default( true ) ]
     pub dry : bool,
 
+    /// Required for tree view only
+    pub roots : Vec< CrateDir >,
+
     /// `plans` - This is a vector containing the instructions for publishing each package. Each item
     /// in the `plans` vector indicates a `PackagePublishInstruction` set for a single package. It outlines
     /// how to build and where to publish the package amongst other instructions. The `#[setter( false )]`
@@ -500,19 +505,20 @@ mod private
     /// # Arguments
     ///
     /// * `f` - A mutable reference to a `Formatter` used for writing the output.
-    /// * `roots` - A slice of `CrateDir` representing the root crates to display.
     ///
     /// # Errors
     ///
     /// Returns a `std::fmt::Error` if there is an error writing to the formatter.
-    pub fn display_as_tree( &self, f : &mut Formatter< '_ >, roots : &[ CrateDir ] ) -> std::fmt::Result
+    pub fn write_as_tree< W >( &self, f : &mut W ) -> std::fmt::Result
+    where
+      W : std::fmt::Write
     {
       let name_bump_report = self
       .plans
       .iter()
       .map( | x | ( &x.package_name, ( x.version_bump.old_version.to_string(), x.version_bump.new_version.to_string() ) ) )
       .collect::< HashMap< _, _ > >();
-      for wanted in roots
+      for wanted in &self.roots
       {
         let list = action::list
         (
@@ -556,7 +562,9 @@ mod private
     /// # Errors
     ///
     /// Returns a `std::fmt::Error` if there is an error writing to the formatter.
-    pub fn display_as_list( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    pub fn write_as_list< W >( &self, f : &mut W ) -> std::fmt::Result
+    where
+      W : std::fmt::Write
     {
       for ( idx, package ) in self.plans.iter().enumerate()
       {

@@ -12,9 +12,10 @@ use error_tools::Result;
 async fn config_add() -> Result< () >
 {
   let path = PathBuf::from( "./tests/fixtures/test_config.toml" );
+  let temp_path = proper_path_tools::path::unique_folder_name().unwrap();
 
   let config = Config::default()
-  .path( "./test_add".to_owned() )
+  .path( format!( "./{}", temp_path ) )
   .temporary( true )
   ;
 
@@ -29,9 +30,8 @@ async fn config_add() -> Result< () >
   .collect::< Vec< _ > >()
   ;
 
-  assert!( feeds_links.len() == 2 );
-  assert!( feeds_links.contains( &format!( "https://feeds.bbci.co.uk/news/world/rss.xml" ) ) );
-  assert!( feeds_links.contains( &format!( "https://rss.nytimes.com/services/xml/rss/nyt/World.xml" ) ) );
+  assert!( feeds_links.len() == 1 );
+  assert!( feeds_links.contains( &format!( "https://www.nasa.gov/feed/" ) ) );
 
   Ok( () )
 }

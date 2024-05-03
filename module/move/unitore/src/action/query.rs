@@ -4,18 +4,18 @@
 // aaa : fixed
 use crate::*;
 use gluesql::core::executor::Payload;
-use sled_adapter::{ FeedStorage, Store };
+use sled_adapter::Store;
 use action::Report;
 use error_tools::Result;
 
 /// Execute query specified in query string.
 pub async fn query_execute
 (
-  mut storage : FeedStorage< gluesql::sled_storage::SledStorage >,
+  mut storage : impl Store,
   query_str : String,
 ) -> Result< impl Report >
 {
-  storage.execute_query( query_str ).await
+  storage.query_execute( query_str ).await
 }
 
 const EMPTY_CELL : &'static str = "";
