@@ -16,9 +16,9 @@ pub struct Child
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent
 {
-  #[ scalar( name = children3 ) ]
   #[ subform( name = _child ) ]
   #[ container( name = children2 ) ]
+  #[ scalar( name = children3 ) ]
   children : Vec< Child >,
 }
 

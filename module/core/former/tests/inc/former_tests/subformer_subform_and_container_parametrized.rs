@@ -22,29 +22,27 @@ where
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent< 'child >
 {
-  // #[ subform ]
-  // #[ subform( name = _child ) ]
-  // #[ container() ]
-  // #[ scalar( setter = false ) ]
+  #[ subform( name = _child ) ]
+  #[ container( name = children2 ) ]
+  #[ scalar( name = children3 ) ]
   children : Vec< Child< 'child, str > >,
 }
 
-// impl< Definition > ParentFormer< Definition >
-// where
-//   Definition : former::FormerDefinition,
-//   Definition::Types : former::FormerDefinitionTypes< Storage = < Parent as former::EntityToStorage >::Storage >,
-// {
-//
-//   #[ inline( always ) ]
-//   pub fn child( self, name : &str ) ->
-//   ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
-//   {
-//     self._children_add
-//     ::< ChildFormer< _ >, _, >()
-//     .name( name )
-//   }
-//
-// }
+impl< 'child, Definition > ParentFormer< 'child, Definition >
+where
+  Definition : former::FormerDefinition< Storage = < Parent< 'child > as former::EntityToStorage >::Storage >,
+{
+
+  #[ inline( always ) ]
+  pub fn child( self, name : &str ) ->
+  ChildAsSubformer< 'child, str, Self, impl ChildAsSubformerEnd< 'child, str, Self > >
+  {
+    self._children_add
+    ::< ChildFormer< '_, _, _ >, _, >()
+    .name( name )
+  }
+
+}
 
 // == begin of generated
 
