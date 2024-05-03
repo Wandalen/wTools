@@ -30,6 +30,7 @@ mod former_tests
   mod attribute_default_container;
   mod attribute_default_primitive;
   mod attribute_default_conflict;
+  mod attribute_storage_primitive;
   mod attribute_perform;
   mod attribute_setter;
   mod attribute_alias;
