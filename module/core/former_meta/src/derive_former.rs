@@ -20,6 +20,7 @@ use struct_attrs::*;
 /// Is type under Option.
 ///
 
+// xxx : move
 fn is_optional( ty : &syn::Type ) -> bool
 {
   typ::type_rightmost( ty ) == Some( "Option".to_string() )
@@ -845,10 +846,7 @@ fn field_former_add_end_map
   field : &FormerField< '_ >,
   stru : &syn::Ident,
   former : &syn::Ident,
-  _former_storage : &syn::Ident,
-  _former_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  _former_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
   struct_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   struct_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   struct_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
@@ -1199,6 +1197,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     _ => return Err( syn_err!( ast, "Unknown format of data, expected syn::Data::Struct( ref data_struct )\n  {}", qt!{ #ast } ) ),
   };
 
+  // xxx : move
   let former_fields : Vec< Result< FormerField< '_ > > > = fields.iter().map( | field |
   {
     let attrs = FieldAttributes::from_attrs( field.attrs.iter() )?;
@@ -1249,10 +1248,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       former_field,
       &stru,
       &former,
-      &former_storage,
-      &former_generics_impl,
       &former_generics_ty,
-      &former_generics_where,
       &struct_generics_impl,
       &struct_generics_ty,
       &struct_generics_where,

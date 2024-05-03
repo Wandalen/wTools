@@ -1,8 +1,6 @@
 
 use super::*;
-use iter_tools::{ Itertools, process_results };
-use macro_tools::{ attr, diag, generic_params, generic_args, container_kind, typ, Result };
-use proc_macro2::TokenStream;
+use macro_tools::{ attr, Result };
 
 ///
 /// Definition of a field.

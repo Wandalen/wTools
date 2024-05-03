@@ -145,9 +145,10 @@ only_for_terminal_module!
     let t = test_tools::compiletime::TestCases::new();
 
     // zzz : uncomment
-    t.compile_fail( "tests/inc/compiletime/former_bad_attr.rs" );
-    t.pass( "tests/inc/compiletime/former_hashmap_without_parameter.rs" );
-    t.pass( "tests/inc/compiletime/former_vector_without_parameter.rs" );
+    t.compile_fail( "tests/inc/former_tests/compiletime/field_attr_bad.rs" );
+    t.compile_fail( "tests/inc/former_tests/compiletime/struct_attr_bad.rs" );
+    t.pass( "tests/inc/former_tests/compiletime/hashmap_without_parameter.rs" );
+    t.pass( "tests/inc/former_tests/compiletime/vector_without_parameter.rs" );
 
   }
 
@@ -162,7 +163,7 @@ only_for_terminal_module!
     let _t = test_tools::compiletime::TestCases::new();
 
     // zzz : make it working test
-    //t.run( "tests/inc/compiletime/components_component_from_debug.rs" );
+    //t.run( "tests/inc/components_tests/compiletime/components_component_from_debug.rs" );
 
   }
 
