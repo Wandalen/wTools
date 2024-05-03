@@ -12,7 +12,7 @@ use macro_tools::{ attr, Result };
 
 pub struct StructAttributes
 {
-  perform : Option< AttributePerform >,
+  pub perform : Option< AttributePerform >,
 }
 
 impl StructAttributes

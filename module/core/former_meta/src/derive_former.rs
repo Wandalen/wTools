@@ -98,7 +98,8 @@ For specifying custom default value use attribute `default`. For example:
 
 pub fn performer< 'a >
 (
-  attrs : impl Iterator< Item = &'a syn::Attribute >,
+  attrs : &StructAttributes,
+  // attrs : impl Iterator< Item = &'a syn::Attribute >,
 )
 -> Result< ( TokenStream, TokenStream, TokenStream ) >
 {
@@ -109,43 +110,63 @@ pub fn performer< 'a >
   };
   // let mut perform_output = qt!{ #stru #generics_ty_ };
   let mut perform_output = qt!{ < Definition::Types as former::FormerDefinitionTypes >::Formed };
-
   let mut perform_generics = qt!{};
-  for attr in attrs
+
+  if let Some( ref attr ) = attrs.perform
   {
-    if let Some( ident ) = attr.path().get_ident()
+
+    // let attr_perform = syn::parse2::< AttributePerform >( meta_list.tokens.clone() )?;
+    let signature = &attr.signature;
+    let generics = &signature.generics;
+    perform_generics = qt!{ #generics };
+    let perform_ident = &signature.ident;
+    let output = &signature.output;
+    if let syn::ReturnType::Type( _, boxed_type ) = output
     {
-      let ident_string = format!( "{}", ident );
-      if ident_string == "perform"
-      {
-        match attr.meta
-        {
-          syn::Meta::List( ref meta_list ) =>
-          {
-            let attr_perform = syn::parse2::< AttributePerform >( meta_list.tokens.clone() )?;
-            let signature = &attr_perform.signature;
-            let generics = &signature.generics;
-            perform_generics = qt!{ #generics };
-            let perform_ident = &signature.ident;
-            let output = &signature.output;
-            if let syn::ReturnType::Type( _, boxed_type ) = output
-            {
-              perform_output = qt!{ #boxed_type };
-            }
-            perform = qt!
-            {
-              return result.#perform_ident();
-            };
-          },
-          _ => return_syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
-        }
-      }
+      perform_output = qt!{ #boxed_type };
     }
-    else
+    perform = qt!
     {
-      return_syn_err!( "Unknown structure attribute:\n{}", qt!{ attr } );
-    }
+      return result.#perform_ident();
+    };
+
   }
+
+  // for attr in attrs
+  // {
+  //   if let Some( ident ) = attr.path().get_ident()
+  //   {
+  //     let ident_string = format!( "{}", ident );
+  //     if ident_string == "perform"
+  //     {
+  //       match attr.meta
+  //       {
+  //         syn::Meta::List( ref meta_list ) =>
+  //         {
+  //           let attr_perform = syn::parse2::< AttributePerform >( meta_list.tokens.clone() )?;
+  //           let signature = &attr_perform.signature;
+  //           let generics = &signature.generics;
+  //           perform_generics = qt!{ #generics };
+  //           let perform_ident = &signature.ident;
+  //           let output = &signature.output;
+  //           if let syn::ReturnType::Type( _, boxed_type ) = output
+  //           {
+  //             perform_output = qt!{ #boxed_type };
+  //           }
+  //           perform = qt!
+  //           {
+  //             return result.#perform_ident();
+  //           };
+  //         },
+  //         _ => return_syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
+  //       }
+  //     }
+  //   }
+  //   else
+  //   {
+  //     return_syn_err!( "Unknown structure attribute:\n{}", qt!{ attr } );
+  //   }
+  // }
 
   Ok( ( perform, perform_output, perform_generics ) )
 }
@@ -270,7 +291,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   let ( perform, perform_output, perform_generics ) = performer
   (
-    ast.attrs.iter(),
+    &struct_attrs
+    // ast.attrs.iter(),
   )?;
 
   /* */
@@ -523,7 +545,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     {
       type Preformed = #stru < #struct_generics_ty >;
 
-      // fn preform( mut self ) -> < Self as former::Storage >::Formed
       fn preform( mut self ) -> Self::Preformed
       {
         #( #fields_form )*

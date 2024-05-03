@@ -22,7 +22,7 @@ pub struct FormerField< 'a >
 impl< 'a > FormerField< 'a >
 {
 
-/*
+/** methods
 
 scalar_setter_name
 container_setter_name
