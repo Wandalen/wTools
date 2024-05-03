@@ -272,7 +272,17 @@ mod derive
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_former" ) ]
-#[ proc_macro_derive( Former, attributes( debug, perform, former, scalar, container, subform ) ) ]
+#[
+  proc_macro_derive
+  (
+    Former,
+    attributes
+    (
+      debug, perform, storage_fields, // struct attributes
+      former, scalar, container, subform, // field attributes
+    )
+  )
+]
 pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::former::former( input );

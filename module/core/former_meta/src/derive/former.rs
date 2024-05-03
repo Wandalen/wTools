@@ -16,7 +16,7 @@ use proc_macro2::TokenStream;
 #[ allow( dead_code ) ]
 struct FormerField< 'a >
 {
-  pub attrs : Attributes,
+  pub attrs : FieldAttributes,
   pub vis : &'a syn::Visibility,
   pub ident : &'a syn::Ident,
   pub colon_token : &'a Option< syn::token::Colon >,
@@ -123,10 +123,85 @@ impl< 'a > FormerField< 'a >
 }
 
 ///
-/// Attributes of the field.
+/// Attributes of a struct.
 ///
 
-struct Attributes
+struct StructAttributes
+{
+  perform : Option< AttributePerform >,
+}
+
+impl StructAttributes
+{
+  // fn from_attrs( attributes : & Vec< syn::Attribute > ) -> Result< Self >
+  fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
+  {
+    let mut perform = None;
+    for attr in attrs
+    {
+      let key_ident = attr.path().get_ident()
+      .ok_or_else( || syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ) )?;
+      let key_str = format!( "{}", key_ident );
+
+      if attr::is_standard( &key_str )
+      {
+        continue;
+      }
+
+      match key_str.as_ref()
+      {
+        "storage_fields" =>
+        {
+        }
+        "perform" =>
+        {
+        }
+        "debug" =>
+        {
+        }
+        _ =>
+        {
+          return Err( syn_err!( attr, "Known structure attirbutes are : `storage_fields`, `perform`, `debug`.\nUnknown structure attribute : {}", qt!{ #attr } ) );
+        }
+      }
+    }
+
+    Ok( StructAttributes { perform } )
+  }
+}
+
+///
+/// Attribute to hold information about method to call after form.
+///
+/// `#[ perform( fn after1< 'a >() -> Option< &'a str > ) ]`
+///
+
+// xxx : move out
+struct AttributePerform
+{
+  // paren_token : syn::token::Paren,
+  signature : syn::Signature,
+}
+
+impl syn::parse::Parse for AttributePerform
+{
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+  {
+    // let input2;
+    Ok( Self
+    {
+      // paren_token : syn::parenthesized!( input2 in input ),
+      // signature : input2.parse()?,
+      signature : input.parse()?,
+    })
+  }
+}
+
+///
+/// Attributes of a field.
+///
+
+struct FieldAttributes
 {
   config : Option< AttributeConfig >,
   scalar : Option< AttributeScalarSetter >,
@@ -134,15 +209,16 @@ struct Attributes
   subform : Option< AttributeSubformSetter >,
 }
 
-impl Attributes
+impl FieldAttributes
 {
-  fn parse( attributes : & Vec< syn::Attribute > ) -> Result< Self >
+  // fn from_attrs( attributes : & Vec< syn::Attribute > ) -> Result< Self >
+  fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
   {
     let mut config = None;
     let mut scalar = None;
     let mut container = None;
     let mut subform = None;
-    for attr in attributes
+    for attr in attrs
     {
       let key_ident = attr.path().get_ident()
       .ok_or_else( || syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ) )?;
@@ -221,39 +297,12 @@ impl Attributes
         }
         _ =>
         {
-          return Err( syn_err!( attr, "Unknown attribute {}", qt!{ #attr } ) );
+          return Err( syn_err!( attr, "Unknown field attribute {}", qt!{ #attr } ) );
         }
       }
     }
 
-    Ok( Attributes { config, scalar, container, subform } )
-  }
-}
-
-///
-/// Attribute to hold information about method to call after form.
-///
-/// `#[ perform( fn after1< 'a >() -> Option< &'a str > ) ]`
-///
-
-
-struct AttributeFormAfter
-{
-  // paren_token : syn::token::Paren,
-  signature : syn::Signature,
-}
-
-impl syn::parse::Parse for AttributeFormAfter
-{
-  fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
-  {
-    // let input2;
-    Ok( Self
-    {
-      // paren_token : syn::parenthesized!( input2 in input ),
-      // signature : input2.parse()?,
-      signature : input.parse()?,
-    })
+    Ok( FieldAttributes { config, scalar, container, subform } )
   }
 }
 
@@ -263,39 +312,15 @@ impl syn::parse::Parse for AttributeFormAfter
 /// `#[ default( 13 ) ]`
 ///
 
-
-// struct AttributeConfig
-// {
-//   // eq_token : syn::Token!{ = },
-//   // paren_token : syn::token::Paren,
-//   expr : syn::Expr,
-// }
-//
-// impl syn::parse::Parse for AttributeConfig
-// {
-//   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
-//   {
-//     // let input2;
-//     Ok( Self
-//     {
-//       // paren_token : syn::parenthesized!( input2 in input ),
-//       // eq_token : input.parse()?,
-//       // expr : input2.parse()?,
-//       expr : input.parse()?,
-//     })
-//   }
-// }
-
 struct AttributeConfig
 {
 
-  // /// Optional identifier for naming the setter.
-  // name : Option< syn::Ident >,
-  // /// Controls the generation of a setter method. If false, a setter method is not generated.
-  // setter : Option< bool >,
-
   /// Default value to use for the field.
   default : Option< syn::Expr >,
+  /// Such field should be present only in storage and should not be present in structure itself.
+  /// That might be useful for parametrization of forming process.
+  only_storage : Option< bool >,
+
 }
 
 impl AttributeConfig
@@ -307,6 +332,7 @@ impl syn::parse::Parse for AttributeConfig
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
     let mut default : Option< syn::Expr > = None;
+    let mut only_storage : Option< bool > = None;
 
     while !input.is_empty()
     {
@@ -319,11 +345,18 @@ impl syn::parse::Parse for AttributeConfig
           input.parse::< syn::Token![ = ] >()?;
           default = Some( input.parse()? );
         }
+        else if ident == "only_storage"
+        {
+          input.parse::< syn::Token![ = ] >()?;
+          let value : syn::LitBool = input.parse()?;
+          only_storage = Some( value.value() );
+        }
         else
         {
           return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'default'. For example: `former( default = 13 )`", ident ) ) );
         }
       }
+
       else
       {
         return Err( syn::Error::new( input.span(), "Expected 'default'. For example: `former( default = 13 )`" ) );
@@ -336,7 +369,7 @@ impl syn::parse::Parse for AttributeConfig
       }
     }
 
-    Ok( Self { default } )
+    Ok( Self { default, only_storage } )
   }
 }
 
@@ -720,8 +753,8 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
 {
   let ident = field.ident;
   let ty = field.ty;
-  let default = field.attrs.config.as_ref()
-  .map( | attr | &attr.default );
+  let default : Option< &syn::Expr > = field.attrs.config.as_ref()
+  .and_then( | attr | attr.default.as_ref() );
 
   let tokens = if field.is_optional
   {
@@ -1609,7 +1642,7 @@ pub fn performer< 'a >
         {
           syn::Meta::List( ref meta_list ) =>
           {
-            let attr_perform = syn::parse2::< AttributeFormAfter >( meta_list.tokens.clone() )?;
+            let attr_perform = syn::parse2::< AttributePerform >( meta_list.tokens.clone() )?;
             let signature = &attr_perform.signature;
             let generics = &signature.generics;
             perform_generics = qt!{ #generics };
@@ -1656,6 +1689,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     Err( err ) => return Err( err ),
   };
   let has_debug = attr::has_debug( ast.attrs.iter() )?;
+  let struct_attrs = StructAttributes::from_attrs( ast.attrs.iter() )?;
+
   let example_of_custom_setter = false;
 
   /* names */
@@ -1778,7 +1813,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   let former_fields : Vec< Result< FormerField< '_ > > > = fields.iter().map( | field |
   {
-    let attrs = Attributes::parse( &field.attrs )?;
+    let attrs = FieldAttributes::from_attrs( field.attrs.iter() )?;
     let vis = &field.vis;
     let ident = field.ident.as_ref()
     .ok_or_else( || syn_err!( field, "Expected that each field has key, but some does not:\n  {}", qt!{ #field } ) )?;
@@ -2305,4 +2340,3 @@ where
 
   Ok( result )
 }
-

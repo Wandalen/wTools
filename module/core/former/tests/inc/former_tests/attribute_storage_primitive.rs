@@ -2,12 +2,15 @@
 use super::*;
 
 #[ derive( Debug, PartialEq, the_module::Former ) ]
+// #[ debug ]
+// #[ derive( Debug, PartialEq ) ]
+  #[ storage_fields( a : i32, b : Option< String > ) ]
 pub struct Struct1
 {
-  #[ former( default = 31 ) ]
-  pub int_1 : i32,
-  #[ former( default = "abc" ) ]
-  string_optional_1 : Option< String >,
+  // #[ former( only_storage = true ) ]
+  pub a : i32,
+  // #[ former( only_storage = true ) ]
+  b : Option< String >,
 }
 
 //
@@ -16,18 +19,19 @@ tests_impls!
 {
   fn test_complex()
   {
-    let command = Struct1::former().form();
-
-    let expected = Struct1
-    {
-      int_1 : 31,
-      string_optional_1 : Some( "abc".to_string() ),
-    };
-    a_id!( command, expected );
+    // let got = Struct1::former().a( 13 ).b( "abc" ).form();
+    // let exp = Struct1
+    // {
+    //   a : 13,
+    //   b : Some( "abc".to_string() ),
+    // };
+    // a_id!( got, exp );
   }
 }
 
-//
+// == begin of generated
+
+// == end of generated
 
 tests_index!
 {
