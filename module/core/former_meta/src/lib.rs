@@ -4,7 +4,8 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 #[ cfg( feature = "enabled" ) ]
-mod derive
+#[ cfg( feature = "derive_component_from" ) ]
+mod component
 {
 
   //!
@@ -14,8 +15,6 @@ mod derive
   #[ allow( unused_imports ) ]
   use macro_tools::prelude::*;
 
-  #[ cfg( feature = "derive_former" ) ]
-  pub mod former;
   #[ cfg( feature = "derive_component_from" ) ]
   pub mod component_from;
   #[ cfg( feature = "derive_from_components" ) ]
@@ -26,6 +25,9 @@ mod derive
   pub mod components_assign;
 
 }
+
+#[ cfg( feature = "derive_former" ) ]
+pub mod former;
 
 // zzz : outdated
 ///
