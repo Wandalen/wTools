@@ -40,10 +40,6 @@ impl FieldAttributes
         {
           match attr.meta
           {
-            // syn::Meta::List( ref meta_list ) =>
-            // {
-            //   config.replace( syn::parse2::< AttributeConfig >( meta_list.tokens.clone() )? );
-            // },
             syn::Meta::List( ref meta_list ) =>
             {
               config.replace( syn::parse2::< AttributeConfig >( meta_list.tokens.clone() )? );
@@ -122,9 +118,9 @@ pub struct AttributeConfig
 
   /// Default value to use for the field.
   pub default : Option< syn::Expr >,
-  /// Such field should be present only in storage and should not be present in structure itself.
-  /// That might be useful for parametrization of forming process.
-  pub only_storage : Option< bool >,
+  // /// Such field should be present only in storage and should not be present in structure itself.
+  // /// That might be useful for parametrization of forming process.
+  // pub only_storage : Option< bool >,
 
 }
 
@@ -137,7 +133,7 @@ impl syn::parse::Parse for AttributeConfig
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
     let mut default : Option< syn::Expr > = None;
-    let mut only_storage : Option< bool > = None;
+    // let mut only_storage : Option< bool > = None;
 
     while !input.is_empty()
     {
@@ -150,12 +146,12 @@ impl syn::parse::Parse for AttributeConfig
           input.parse::< syn::Token![ = ] >()?;
           default = Some( input.parse()? );
         }
-        else if ident == "only_storage"
-        {
-          input.parse::< syn::Token![ = ] >()?;
-          let value : syn::LitBool = input.parse()?;
-          only_storage = Some( value.value() );
-        }
+        // else if ident == "only_storage"
+        // {
+        //   input.parse::< syn::Token![ = ] >()?;
+        //   let value : syn::LitBool = input.parse()?;
+        //   only_storage = Some( value.value() );
+        // }
         else
         {
           return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'default'. For example: `former( default = 13 )`", ident ) ) );
@@ -174,7 +170,7 @@ impl syn::parse::Parse for AttributeConfig
       }
     }
 
-    Ok( Self { default, only_storage } )
+    Ok( Self { default } )
   }
 }
 

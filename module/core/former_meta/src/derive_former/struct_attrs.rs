@@ -21,6 +21,7 @@ impl StructAttributes
   pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
   {
     let mut perform = None;
+
     for attr in attrs
     {
       let key_ident = attr.path().get_ident()
@@ -39,6 +40,15 @@ impl StructAttributes
         }
         "perform" =>
         {
+          match attr.meta
+          {
+            syn::Meta::List( ref meta_list ) =>
+            {
+              perform.replace( syn::parse2::< AttributePerform >( meta_list.tokens.clone() )? );
+            },
+            _ => return_syn_err!( attr, "Expects an attribute of format #[ perform( fn parse( mut self ) -> Request ) ]
+.\nGot: {}", qt!{ #attr } ),
+          }
         }
         "debug" =>
         {

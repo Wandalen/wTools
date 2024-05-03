@@ -22,6 +22,26 @@ pub struct FormerField< 'a >
 impl< 'a > FormerField< 'a >
 {
 
+/*
+
+scalar_setter_name
+container_setter_name
+subform_setter_name
+scalar_setter_required
+
+none_map
+optional_map
+form_map
+name_map
+setter_map
+subform_add_setter_map
+container_setter
+scalar_setter
+former_assign_end_map
+former_add_end_map
+
+*/
+
   /// Get name of scalar setter.
   pub fn scalar_setter_name( &self ) -> &syn::Ident
   {
@@ -128,7 +148,7 @@ impl< 'a > FormerField< 'a >
   ///
 
   #[ inline( always ) ]
-  pub fn field_none_map( &self ) -> TokenStream
+  pub fn none_map( &self ) -> TokenStream
   {
     let ident = Some( self.ident.clone() );
     let tokens = qt! { ::core::option::Option::None };
@@ -156,7 +176,7 @@ impl< 'a > FormerField< 'a >
   ///
 
   #[ inline( always ) ]
-  pub fn field_optional_map( &self ) -> TokenStream
+  pub fn optional_map( &self ) -> TokenStream
   {
     let ident = Some( self.ident.clone() );
     let ty = self.ty.clone();
@@ -213,7 +233,7 @@ impl< 'a > FormerField< 'a >
   ///
 
   #[ inline( always ) ]
-  pub fn field_form_map( &self ) -> Result< TokenStream >
+  pub fn form_map( &self ) -> Result< TokenStream >
   {
     let ident = self.ident;
     let ty = self.ty;
@@ -324,7 +344,7 @@ impl< 'a > FormerField< 'a >
   ///
 
   #[ inline( always ) ]
-  pub fn field_name_map( &self ) -> syn::Ident
+  pub fn name_map( &self ) -> syn::Ident
   {
     self.ident.clone()
   }
@@ -362,7 +382,7 @@ impl< 'a > FormerField< 'a >
   /// ```
 
   #[ inline ]
-  pub fn field_setter_map
+  pub fn setter_map
   (
     &self,
     stru : &syn::Ident,
@@ -374,7 +394,7 @@ impl< 'a > FormerField< 'a >
     // scalar setter
     let r = if self.scalar_setter_required()
     {
-      let r2 = self.field_scalar_setter();
+      let r2 = self.scalar_setter();
       qt!
       {
         #r
@@ -389,7 +409,7 @@ impl< 'a > FormerField< 'a >
     // container setter
     let r = if let Some( _ ) = &self.attrs.container
     {
-      let r2 = self.field_container_setter( stru );
+      let r2 = self.container_setter( stru );
       qt!
       {
         #r
@@ -404,7 +424,7 @@ impl< 'a > FormerField< 'a >
     // subform setter
     let r = if self.attrs.subform.is_some()
     {
-      let r2 = self.field_subform_add_setter_map( stru )?;
+      let r2 = self.subform_add_setter_map( stru )?;
       qt!
       {
         #r
@@ -422,7 +442,7 @@ impl< 'a > FormerField< 'a >
 
   /// zzz : write documentation
   #[ inline ]
-  pub fn field_subform_add_setter_map
+  pub fn subform_add_setter_map
   (
     &self,
     stru : &syn::Ident,
@@ -549,7 +569,7 @@ impl< 'a > FormerField< 'a >
   /// zzz : update example
 
   #[ inline ]
-  pub fn field_container_setter
+  pub fn container_setter
   (
     &self,
     stru : &syn::Ident,
@@ -706,7 +726,7 @@ impl< 'a > FormerField< 'a >
   ///
   /// Generate a single scalar setter for the 'field_ident' with the 'setter_name' name.
   ///
-  /// Used as a helper function for field_setter_map(), which generates alias setters
+  /// Used as a helper function for setter_map(), which generates alias setters
   ///
   /// # Example of generated code
   /// ```ignore
@@ -723,7 +743,7 @@ impl< 'a > FormerField< 'a >
   /// ```
 
   #[ inline ]
-  pub fn field_scalar_setter
+  pub fn scalar_setter
   (
     &self,
   )
@@ -796,7 +816,7 @@ impl< 'a > FormerField< 'a >
   /// ```
 
   #[ inline ]
-  pub fn field_former_assign_end_map
+  pub fn former_assign_end_map
   (
     &self,
     stru : &syn::Ident,
@@ -916,7 +936,7 @@ impl< 'a > FormerField< 'a >
   /// zzz : write documentation
 
   #[ inline ]
-  pub fn field_former_add_end_map
+  pub fn former_add_end_map
   (
     &self,
     stru : &syn::Ident,

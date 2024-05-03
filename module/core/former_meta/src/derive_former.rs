@@ -98,9 +98,6 @@ For specifying custom default value use attribute `default`. For example:
 
 pub fn performer< 'a >
 (
-  _struct_name : &syn::Ident,
-  // _former_definition : &syn::Ident,
-  // _generics_ty : &syn::TypeGenerics< '_ >,
   attrs : impl Iterator< Item = &'a syn::Attribute >,
 )
 -> Result< ( TokenStream, TokenStream, TokenStream ) >
@@ -273,9 +270,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   let ( perform, perform_output, perform_generics ) = performer
   (
-    &stru,
-    // &former_definition,
-    // &struct_generics_ty,
     ast.attrs.iter(),
   )?;
 
@@ -326,12 +320,12 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
   = former_fields.iter().map( | field |
   {(
-    field.field_none_map(),
-    field.field_optional_map(),
-    field.field_form_map(),
-    field.field_name_map(),
-    field.field_setter_map( &stru ),
-    field.field_former_assign_end_map
+    field.none_map(),
+    field.optional_map(),
+    field.form_map(),
+    field.name_map(),
+    field.setter_map( &stru ),
+    field.former_assign_end_map
     (
       &stru,
       &former,
@@ -339,7 +333,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       &former_generics_ty,
       &former_generics_where,
     ),
-    field.field_former_add_end_map
+    field.former_add_end_map
     (
       &stru,
       &former,
