@@ -51,6 +51,6 @@ where
 
 // == end of generated
 
-include!( "./only_test/subformer_scalar_children3.rs" );
 include!( "./only_test/subformer_subform_child.rs" );
 include!( "./only_test/subformer_container_children2.rs" );
+include!( "./only_test/subformer_scalar_children3.rs" );

@@ -48,5 +48,48 @@ where
 
 // == end of generated
 
+
+#[ test ]
+fn subform_child()
+{
+
+  let got = Parent::former()
+  .child( "a" ).is_mandatory( "aa" ).end()
+  .child( "b" ).is_mandatory( "bb" ).end()
+  .form();
+
+  let children = vec!
+  [
+    Child { name : "a".to_string(), is_mandatory : "aa" },
+    Child { name : "b".to_string(), is_mandatory : "bb" },
+  ];
+  let exp = Parent { children };
+  a_id!( got, exp );
+
+}
+
+#[ test ]
+fn subform_child_generated()
+{
+
+  let got = Parent::former()
+  ._child().name( "a" ).is_mandatory( "aa" ).end()
+  ._child().name( "b" ).is_mandatory( "bb" ).end()
+  .form();
+
+  let children = vec!
+  [
+    Child { name : "a".to_string(), is_mandatory : "aa" },
+    Child { name : "b".to_string(), is_mandatory : "bb" },
+  ];
+  let exp = Parent { children };
+  a_id!( got, exp );
+
+}
+
+// include!( "./only_test/subformer_subform_child.rs" );
+// include!( "./only_test/subformer_container_children2.rs" );
+// include!( "./only_test/subformer_scalar_children3.rs" );
+
 // include!( "./only_test/subformer_subform_child.rs" );
 // include!( "./only_test/subformer_container.rs" );
