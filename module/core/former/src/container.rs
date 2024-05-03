@@ -2,7 +2,7 @@
 
 use crate::*;
 
-/// xxx : improve description
+/// zzz : improve description
 /// Descriptor of a container, specifically it define type of element and type of value.
 /// As well as function to convert element to value. Reversal conversion could be not possible, so value to element conversion is in a separate trait.
 pub trait Container
@@ -17,7 +17,7 @@ pub trait Container
 
 }
 
-// /// xxx : improve description
+// /// zzz : improve description
 // /// Extensation of container interface to convert value ot element.
 // /// As well as function to convert element to value. Reversal conversion could be not possible, so value to element conversion is in a separate trait.
 // pub trait ContainerValToElement : Container
@@ -31,11 +31,35 @@ pub trait Container
 /// xxx : improve description
 /// Implement function to convert value of  an element of a container.
 /// As well as function to convert element to value. Reversal conversion could be not possible, so value to element conversion is in a separate trait.
+pub trait ElementToVal< Container >
+{
+  type Val;
+
+  /// Convert element to value. For Vector `Val` and `Element` is the same type, but for `HashMap` `Element` is pair of key-value and `Val` is value itself.
+  fn element_to_val( self ) -> Self::Val;
+
+}
+
+impl< C, E > ElementToVal< C >
+for E
+where
+  C : Container< Element = E >,
+{
+  type Val = C::Val;
+  fn element_to_val( self ) -> Self::Val
+  {
+    C::element_to_val( self )
+  }
+}
+
+/// xxx : improve description
+/// Implement function to convert value to an element of a container.
+/// Value to an element conversion could be not possible, so value to element conversion is in a separate trait.
 pub trait ValToElement< Container >
 {
   type Element;
 
-  /// Convert val to element. For Vector `Val` and `Element` is the same type, but for `HashMap` `Element` is pair of key-value and `Val` is value itself.
+  /// Convert value to element. For Vector `Val` and `Element` is the same type, but for `HashMap` `Element` is pair of key-value and `Val` is value itself.
   fn val_to_element( self ) -> Self::Element;
 
 }
@@ -146,10 +170,10 @@ pub trait ContainerAssign : Container
 pub struct ContainerSubformer< E, Definition >
 where
   Definition : FormerDefinition,
-  < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
+  Definition::Storage : ContainerAdd< Element = E >,
 {
-  storage : < Definition::Types as FormerDefinitionTypes >::Storage,
-  context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
+  storage : Definition::Storage,
+  context : core::option::Option< Definition::Context >,
   on_end : core::option::Option< Definition::End >,
 }
 
@@ -158,7 +182,7 @@ use std::fmt;
 impl< E, Definition > fmt::Debug for ContainerSubformer< E, Definition >
 where
   Definition : FormerDefinition,
-  < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
+  Definition::Storage : ContainerAdd< Element = E >,
 {
   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
@@ -173,15 +197,15 @@ where
 impl< E, Definition > ContainerSubformer< E, Definition >
 where
   Definition : FormerDefinition,
-  < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >, // xxx
+  Definition::Storage : ContainerAdd< Element = E >,
 {
 
   /// Begins the building process, optionally initializing with a context and storage.
   #[ inline( always ) ]
   pub fn begin
   (
-    mut storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
-    context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
+    mut storage : core::option::Option< Definition::Storage >,
+    context : core::option::Option< Definition::Context >,
     on_end : Definition::End,
   )
   -> Self
@@ -202,8 +226,8 @@ where
   #[ inline( always ) ]
   pub fn begin_coercing< IntoEnd >
   (
-    mut storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
-    context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
+    mut storage : core::option::Option< Definition::Storage >,
+    context : core::option::Option< Definition::Context >,
     on_end : IntoEnd,
   )
   -> Self
@@ -224,7 +248,7 @@ where
 
   /// Finalizes the building process, returning the formed or a context incorporating it.
   #[ inline( always ) ]
-  pub fn end( mut self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
+  pub fn end( mut self ) -> Definition::Formed
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
@@ -234,14 +258,14 @@ where
 
   /// Finalizes the building process, returning the formed or a context incorporating it.
   #[ inline( always ) ]
-  pub fn form( self ) -> < Definition::Types as FormerDefinitionTypes >::Formed
+  pub fn form( self ) -> Definition::Formed
   {
     self.end()
   }
 
   /// Replaces the current storage with a provided one, allowing for a reset or redirection of the building process.
   #[ inline( always ) ]
-  pub fn replace( mut self, vector : < Definition::Types as FormerDefinitionTypes >::Storage ) -> Self
+  pub fn replace( mut self, vector : Definition::Storage ) -> Self
   {
     self.storage = vector;
     self
@@ -253,7 +277,7 @@ impl< E, Storage, Formed, Types, Definition > ContainerSubformer< E, Definition 
 where
   Types : FormerDefinitionTypes< Context = (), Storage = Storage, Formed = Formed >,
   Definition : FormerDefinition< Types = Types >,
-  < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
+  Definition::Storage : ContainerAdd< Element = E >,
 {
 
   /// Initializes a new `ContainerSubformer` instance, starting with an empty formed.
@@ -293,7 +317,7 @@ where
 impl< E, Definition > ContainerSubformer< E, Definition >
 where
   Definition : FormerDefinition,
-  < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
+  Definition::Storage : ContainerAdd< Element = E >,
 {
 
   /// Appends an element to the end of the storage, expanding the internal collection.
@@ -313,15 +337,15 @@ impl< E, Definition > FormerBegin< Definition >
 for ContainerSubformer< E, Definition >
 where
   Definition : FormerDefinition,
-  < Definition::Types as FormerDefinitionTypes >::Storage : ContainerAdd< Element = E >,
+  Definition::Storage : ContainerAdd< Element = E >,
 {
   // type End = Definition::End;
 
   #[ inline( always ) ]
   fn former_begin
   (
-    storage : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Storage >,
-    context : core::option::Option< < Definition::Types as FormerDefinitionTypes >::Context >,
+    storage : core::option::Option< Definition::Storage >,
+    context : core::option::Option< Definition::Context >,
     on_end : Definition::End,
   )
   -> Self

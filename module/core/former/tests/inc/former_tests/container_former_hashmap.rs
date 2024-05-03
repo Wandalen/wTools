@@ -103,3 +103,38 @@ fn replace()
   a_id!( got, exp );
 
 }
+
+#[ test ]
+fn element_to_val()
+{
+  let got = former::ElementToVal::< HashMap< u32, i32 > >::element_to_val( ( 1u32, 13i32 ) );
+  let exp = 13i32;
+  a_id!( got, exp )
+}
+
+#[ test ]
+fn val_to_element()
+{
+
+  #[ derive( Clone, Copy, Debug, PartialEq ) ]
+  struct Val
+  {
+    key : u32,
+    data : i32,
+  }
+
+  impl former::ValToElement< HashMap< u32, Val > > for Val
+  {
+    type Element = ( u32, Val );
+    #[ inline( always ) ]
+    fn val_to_element( self ) -> Self::Element
+    {
+      ( self.key, self )
+    }
+  }
+
+  let got = former::ValToElement::< HashMap< u32, Val > >::val_to_element( Val { key : 1u32, data : 13i32 } );
+  let exp = ( 1u32, Val { key : 1u32, data : 13i32 } );
+  a_id!( got, exp )
+
+}

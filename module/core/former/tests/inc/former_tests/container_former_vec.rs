@@ -140,3 +140,19 @@ fn entity_to()
 //   a_id!( got.int_1, exp.storage.int_1 );
 
 }
+
+#[ test ]
+fn element_to_val()
+{
+  let got = former::ElementToVal::< Vec< i32 > >::element_to_val( 13i32 );
+  let exp = 13i32;
+  a_id!( got, exp )
+}
+
+#[ test ]
+fn val_to_element()
+{
+  let got = former::ValToElement::< Vec< i32 > >::val_to_element( 13i32 );
+  let exp = 13i32;
+  a_id!( got, exp )
+}

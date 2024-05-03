@@ -103,3 +103,19 @@ fn replace()
   a_id!( got, exp );
 
 }
+
+#[ test ]
+fn element_to_val()
+{
+  let got = former::ElementToVal::< HashSet< i32 > >::element_to_val( 13i32 );
+  let exp = 13i32;
+  a_id!( got, exp )
+}
+
+#[ test ]
+fn val_to_element()
+{
+  let got = former::ValToElement::< HashSet< i32 > >::val_to_element( 13i32 );
+  let exp = 13i32;
+  a_id!( got, exp )
+}
