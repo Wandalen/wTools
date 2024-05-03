@@ -17,28 +17,6 @@ mod struct_attrs;
 use struct_attrs::*;
 
 ///
-/// Is type under Option.
-///
-
-// xxx : move
-fn is_optional( ty : &syn::Type ) -> bool
-{
-  typ::type_rightmost( ty ) == Some( "Option".to_string() )
-}
-
-///
-/// Extract the first parameter of the type if such exist.
-///
-
-fn parameter_first( ty : &syn::Type ) -> Result< &syn::Type >
-{
-  typ::type_parameters( ty, 0 ..= 0 )
-  .first()
-  .copied()
-  .ok_or_else( || syn_err!( ty, "Expects at least one parameter here:\n  {}", qt!{ #ty } ) )
-}
-
-///
 /// Generate documentation for the former.
 ///
 
@@ -274,9 +252,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     .ok_or_else( || syn_err!( field, "Expected that each field has key, but some does not:\n  {}", qt!{ #field } ) )?;
     let colon_token = &field.colon_token;
     let ty = &field.ty;
-    let is_optional = is_optional( ty );
+    let is_optional = typ::is_optional( ty );
     let of_type = container_kind::of_optional( ty ).0;
-    let non_optional_ty : &syn::Type = if is_optional { parameter_first( ty )? } else { ty };
+    let non_optional_ty : &syn::Type = if is_optional { typ::parameter_first( ty )? } else { ty };
     let field = FormerField { attrs, vis, ident, colon_token, ty, non_optional_ty, is_optional, of_type };
     Ok( field )
   }).collect();
