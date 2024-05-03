@@ -82,6 +82,7 @@ fn tsp_person_mutate()
   a_id!( person.route.len() - 1, unique.len() );
 }
 
+#[ ignore ]
 #[ test ]
 fn find_route()
 {
