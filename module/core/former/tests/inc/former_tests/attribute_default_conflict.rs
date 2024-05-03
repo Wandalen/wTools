@@ -4,7 +4,7 @@ use super::*;
 #[ derive( Debug, PartialEq, Default, the_module::Former ) ]
 pub struct Struct1
 {
-  #[ default( 31 ) ]
+  #[ former( default = 31 ) ]
   pub int_1 : i32,
 }
 

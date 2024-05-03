@@ -21,11 +21,11 @@ fn main()
   #[ derive(  Debug, PartialEq, Former ) ]
   pub struct ExampleStruct
   {
-    #[ default( 5 ) ]
+    #[ former( default = 5 ) ]
     number : i32,
-    #[ default( "Hello, Former!".to_string() ) ]
+    #[ former( default = "Hello, Former!".to_string() ) ]
     greeting : String,
-    #[ default( vec![ 10, 20, 30 ] ) ]
+    #[ former( default = vec![ 10, 20, 30 ] ) ]
     numbers : Vec< i32 >,
   }
 
