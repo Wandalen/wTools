@@ -8,7 +8,7 @@ use std::collections::HashSet;
 pub struct Struct1
 {
 
-  #[ default( vec![ 1, 2, 3 ] ) ]
+  #[ former( default = vec![ 1, 2, 3 ] ) ]
   vec_ints : Vec< i32 >,
   #[ default( hmap!{ 1 => 11 } ) ]
   hashmap_ints : HashMap< i32, i32 >,

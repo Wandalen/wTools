@@ -5,7 +5,8 @@ use macro_tools::{ attr, diag, generic_params, generic_args, container_kind, typ
 use proc_macro2::TokenStream;
 
 // zzz : explain concept of Storage
-// zzz : feature to have storage fields
+// xxx : feature to have storage fields
+// xxx : introduce namespaces
 // zzz : qqq : implement interfaces for other containers
 
 ///
@@ -127,7 +128,7 @@ impl< 'a > FormerField< 'a >
 
 struct Attributes
 {
-  default : Option< AttributeDefault >,
+  config : Option< AttributeConfig >,
   scalar : Option< AttributeScalarSetter >,
   container : Option< AttributeContainerSetter >,
   subform : Option< AttributeSubformSetter >,
@@ -137,7 +138,7 @@ impl Attributes
 {
   fn parse( attributes : & Vec< syn::Attribute > ) -> Result< Self >
   {
-    let mut default = None;
+    let mut config = None;
     let mut scalar = None;
     let mut container = None;
     let mut subform = None;
@@ -154,15 +155,23 @@ impl Attributes
 
       match key_str.as_ref()
       {
-        "default" =>
+        "former" =>
         {
           match attr.meta
           {
+            // syn::Meta::List( ref meta_list ) =>
+            // {
+            //   config.replace( syn::parse2::< AttributeConfig >( meta_list.tokens.clone() )? );
+            // },
             syn::Meta::List( ref meta_list ) =>
             {
-              default.replace( syn::parse2::< AttributeDefault >( meta_list.tokens.clone() )? );
+              config.replace( syn::parse2::< AttributeConfig >( meta_list.tokens.clone() )? );
             },
-            _ => return_syn_err!( attr, "Expects an attribute of format #[ default( val ) ], but got:\n  {}", qt!{ #attr } ),
+            syn::Meta::Path( ref _path ) =>
+            {
+              config.replace( syn::parse2::< AttributeConfig >( Default::default() )? );
+            },
+            _ => return_syn_err!( attr, "Expects an attribute of format #[ former( default = 13 ) ].\nGot: {}", qt!{ #attr } ),
           }
         }
         "scalar" =>
@@ -217,7 +226,7 @@ impl Attributes
       }
     }
 
-    Ok( Attributes { default, scalar, container, subform } )
+    Ok( Attributes { config, scalar, container, subform } )
   }
 }
 
@@ -249,31 +258,85 @@ impl syn::parse::Parse for AttributeFormAfter
 }
 
 ///
-/// Attribute to hold information about default value.
+/// Attribute to hold configuration information about the field such as default value.
 ///
 /// `#[ default( 13 ) ]`
 ///
 
 
-struct AttributeDefault
+// struct AttributeConfig
+// {
+//   // eq_token : syn::Token!{ = },
+//   // paren_token : syn::token::Paren,
+//   expr : syn::Expr,
+// }
+//
+// impl syn::parse::Parse for AttributeConfig
+// {
+//   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+//   {
+//     // let input2;
+//     Ok( Self
+//     {
+//       // paren_token : syn::parenthesized!( input2 in input ),
+//       // eq_token : input.parse()?,
+//       // expr : input2.parse()?,
+//       expr : input.parse()?,
+//     })
+//   }
+// }
+
+struct AttributeConfig
 {
-  // eq_token : syn::Token!{ = },
-  // paren_token : syn::token::Paren,
-  expr : syn::Expr,
+
+  // /// Optional identifier for naming the setter.
+  // name : Option< syn::Ident >,
+  // /// Controls the generation of a setter method. If false, a setter method is not generated.
+  // setter : Option< bool >,
+
+  /// Default value to use for the field.
+  default : Option< syn::Expr >,
 }
 
-impl syn::parse::Parse for AttributeDefault
+impl AttributeConfig
 {
-  fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+}
+
+impl syn::parse::Parse for AttributeConfig
+{
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
-    // let input2;
-    Ok( Self
+    let mut default : Option< syn::Expr > = None;
+
+    while !input.is_empty()
     {
-      // paren_token : syn::parenthesized!( input2 in input ),
-      // eq_token : input.parse()?,
-      // expr : input2.parse()?,
-      expr : input.parse()?,
-    })
+      let lookahead = input.lookahead1();
+      if lookahead.peek( syn::Ident )
+      {
+        let ident : syn::Ident = input.parse()?;
+        if ident == "default"
+        {
+          input.parse::< syn::Token![ = ] >()?;
+          default = Some( input.parse()? );
+        }
+        else
+        {
+          return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'default'. For example: `former( default = 13 )`", ident ) ) );
+        }
+      }
+      else
+      {
+        return Err( syn::Error::new( input.span(), "Expected 'default'. For example: `former( default = 13 )`" ) );
+      }
+
+      // Optional comma handling
+      if input.peek( syn::Token![ , ] )
+      {
+        input.parse::< syn::Token![ , ] >()?;
+      }
+    }
+
+    Ok( Self { default } )
   }
 }
 
@@ -657,8 +720,8 @@ fn field_form_map( field : &FormerField< '_ > ) -> Result< TokenStream >
 {
   let ident = field.ident;
   let ty = field.ty;
-  let default = field.attrs.default.as_ref()
-  .map( | attr_default | &attr_default.expr );
+  let default = field.attrs.config.as_ref()
+  .map( | attr | &attr.default );
 
   let tokens = if field.is_optional
   {
@@ -1546,8 +1609,6 @@ pub fn performer< 'a >
         {
           syn::Meta::List( ref meta_list ) =>
           {
-            // default.replace( syn::parse2::< AttributeDefault >( meta_list.tokens.clone() )? );
-            // let attr_perform = syn::parse2::< AttributeFormAfter >( attr.tokens.clone() )?;
             let attr_perform = syn::parse2::< AttributeFormAfter >( meta_list.tokens.clone() )?;
             let signature = &attr_perform.signature;
             let generics = &signature.generics;

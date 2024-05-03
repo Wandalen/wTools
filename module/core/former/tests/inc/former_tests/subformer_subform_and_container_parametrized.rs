@@ -46,7 +46,6 @@ where
 
 // == end of generated
 
-
 #[ test ]
 fn subform_child()
 {

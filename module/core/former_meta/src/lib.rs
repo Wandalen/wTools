@@ -55,7 +55,7 @@ mod derive
 ///   #[ perform( fn greet_user() ) ]
 ///   pub struct UserProfile
 ///   {
-///     #[default(1)]
+///     #[ former( default = 1 ) ]
 ///     age : i32,
 ///
 ///     username : String,
@@ -272,8 +272,7 @@ mod derive
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_former" ) ]
-// xxx : rename default
-#[ proc_macro_derive( Former, attributes( debug, perform, default, scalar, container, subform ) ) ]
+#[ proc_macro_derive( Former, attributes( debug, perform, former, scalar, container, subform ) ) ]
 pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::former::former( input );
@@ -667,6 +666,7 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 /// take_smaller_opts( &options2 );
 /// ```
 ///
+
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( all( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
 #[ proc_macro_derive( ComponentsAssign, attributes( debug ) ) ]
