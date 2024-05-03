@@ -95,7 +95,6 @@ mod former_tests
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subformer_subform_and_container_parametrized;
 
-  // xxx
 }
 
 #[ cfg( feature = "derive_components" ) ]
@@ -130,40 +129,39 @@ mod components_tests
 
 }
 
-// only_for_terminal_module!
-// {
-//
-//   // stable have different information about error
-//   // that's why these tests are active only for nightly
-//   #[ test_tools::nightly ]
-//   #[ test ]
-//   fn former_trybuild()
-//   {
-//
-//     println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
-//     let t = test_tools::compiletime::TestCases::new();
-//
-//     // zzz : uncomment
-//     t.compile_fail( "tests/inc/compiletime/former_bad_attr.rs" );
-//     t.pass( "tests/inc/compiletime/former_hashmap_without_parameter.rs" );
-//     t.pass( "tests/inc/compiletime/former_vector_without_parameter.rs" );
-//
-//   }
-//
-//   // stable have different information about error
-//   // that's why these tests are active only for nightly
-//   #[ test_tools::nightly ]
-//   #[ test ]
-//   fn components_trybuild()
-//   {
-//
-//     println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
-//     let _t = test_tools::compiletime::TestCases::new();
-//
-//     // zzz : make it working test
-//     //t.run( "tests/inc/compiletime/components_component_from_debug.rs" );
-//
-//   }
-//
-// }
-// xxx
+only_for_terminal_module!
+{
+
+  // stable have different information about error
+  // that's why these tests are active only for nightly
+  #[ test_tools::nightly ]
+  #[ test ]
+  fn former_trybuild()
+  {
+
+    println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+    let t = test_tools::compiletime::TestCases::new();
+
+    // zzz : uncomment
+    t.compile_fail( "tests/inc/compiletime/former_bad_attr.rs" );
+    t.pass( "tests/inc/compiletime/former_hashmap_without_parameter.rs" );
+    t.pass( "tests/inc/compiletime/former_vector_without_parameter.rs" );
+
+  }
+
+  // stable have different information about error
+  // that's why these tests are active only for nightly
+  #[ test_tools::nightly ]
+  #[ test ]
+  fn components_trybuild()
+  {
+
+    println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+    let _t = test_tools::compiletime::TestCases::new();
+
+    // zzz : make it working test
+    //t.run( "tests/inc/compiletime/components_component_from_debug.rs" );
+
+  }
+
+}

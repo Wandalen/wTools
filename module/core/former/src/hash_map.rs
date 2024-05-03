@@ -65,16 +65,6 @@ where
   /// Inserts a key-value pair into the map.
   fn insert( &mut self, k : K, e : E ) -> Option< E >;
 
-  // /// Return former.
-  // #[ inline( always ) ]
-  // fn former< Definition : FormerDefinitionTypes >( self )
-  // ->
-  // HashMapSubformer< K, E, Definition, (), impl FormingEnd< Self, Self > >
-  // {
-  //   HashMapSubformer::begin_coercing( Some( self ), None, ReturnFormed )
-  // }
-  // xxx : uncomment and cover by tests
-
 }
 
 impl< K, E > HashMapLike< K, E > for HashMap< K, E >

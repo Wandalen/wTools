@@ -16,7 +16,7 @@
 //! This approach abstracts away the need for manually implementing a builder for each struct, making code more readable and maintainable.
 //!
 
-// xxx : regenerate
+// zzz : regenerate
 
 // #![ allow( dead_code ) ]
 //

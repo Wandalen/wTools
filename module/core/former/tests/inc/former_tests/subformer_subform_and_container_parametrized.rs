@@ -5,27 +5,30 @@ use super::*;
 // xxx : make it working
 
 /// Parameter description.
-// #[ derive( Debug, PartialEq, the_module::Former ) ]
-#[ derive( Debug, PartialEq ) ]
+#[ allow( explicit_outlives_requirements ) ]
+#[ derive( Debug, PartialEq, the_module::Former ) ]
+// #[ derive( Debug, PartialEq ) ]
 pub struct Child< 'child, T >
+where
+  T : 'child + ?Sized,
 {
   name : String,
   is_mandatory : &'child T,
 }
 
-// /// Parent required for the template.
-// #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
-// // #[ derive( Debug, Default, PartialEq, the_module::Former ) ] #[ debug ]
-// // #[ derive( Debug, Default, PartialEq ) ]
-// pub struct Parent
-// {
-//   // #[ subform ]
-//   #[ subform( name = _child ) ]
-//   #[ container( definition = former::VectorDefinition ) ]
-//   // #[ scalar( setter = false ) ]
-//   children : Vec< Child >,
-// }
-//
+/// Parent required for the template.
+#[ derive( Debug, Default, PartialEq, the_module::Former ) ]
+// #[ derive( Debug, Default, PartialEq, the_module::Former ) ] #[ debug ]
+// #[ derive( Debug, Default, PartialEq ) ]
+pub struct Parent< 'child >
+{
+  // #[ subform ]
+  // #[ subform( name = _child ) ]
+  // #[ container() ]
+  // #[ scalar( setter = false ) ]
+  children : Vec< Child< 'child, str > >,
+}
+
 // impl< Definition > ParentFormer< Definition >
 // where
 //   Definition : former::FormerDefinition,

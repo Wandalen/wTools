@@ -1,5 +1,4 @@
 #![ allow( dead_code ) ]
-// xxx : rename
 
 use super::*;
 
@@ -19,8 +18,6 @@ pub struct Child
 pub struct Parent
 {
   #[ subform( setter = false ) ]
-  // #[ scalar( setter = false ) ]
-  // xxx : should be #[ scalar_setter = false ]
   children : Vec< Child >,
 }
 
