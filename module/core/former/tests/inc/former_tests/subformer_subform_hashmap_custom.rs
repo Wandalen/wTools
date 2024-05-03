@@ -20,7 +20,6 @@ pub struct Child
 pub struct Parent
 {
   #[ subform( setter = false ) ]
-  #[ scalar( setter = false ) ] // xxx : should not be required in this case
   command : HashMap< String, Child >,
 }
 
