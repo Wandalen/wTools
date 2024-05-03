@@ -243,7 +243,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     _ => return Err( syn_err!( ast, "Unknown format of data, expected syn::Data::Struct( ref data_struct )\n  {}", qt!{ #ast } ) ),
   };
 
-  // xxx : move
   let former_fields : Vec< Result< FormerField< '_ > > > = fields.iter().map( | field |
   {
     let attrs = FieldAttributes::from_attrs( field.attrs.iter() )?;

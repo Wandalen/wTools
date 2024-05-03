@@ -112,7 +112,7 @@ pub( crate ) mod private
   /// Is type under Option.
   ///
 
-  // xxx : move
+  // qqq : cover by test
   pub fn is_optional( ty : &syn::Type ) -> bool
   {
     typ::type_rightmost( ty ) == Some( "Option".to_string() )
@@ -122,6 +122,7 @@ pub( crate ) mod private
   /// Extract the first parameter of the type if such exist.
   ///
 
+  // qqq : cover by test
   pub fn parameter_first( ty : &syn::Type ) -> Result< &syn::Type >
   {
     typ::type_parameters( ty, 0 ..= 0 )
