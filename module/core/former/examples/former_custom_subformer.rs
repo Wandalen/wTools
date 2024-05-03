@@ -1,12 +1,23 @@
-//! example of how to use former of another structure as subformer of former of current one
-//! function `child` integrate `ChildFormer` into `ParentFormer`.
-// zzz : improve description
+// example former_custom_subformer.rs
 
+//! This example demonstrates the use of the `Former` trait to implement nested builder patterns
+//! in Rust using a parent-child relationship. The `Parent` struct uses `ChildFormer` as a custom
+//! subformer to dynamically construct its `child` field, which is a `HashMap`. Each entry in the
+//! `HashMap` represents a child with unique attributes managed through the `ChildFormer`.
+//!
+//! The `child` function in `ParentFormer` is particularly noteworthy as it leverages the
+//! `ChildFormer` to add and configure children by their names directly within the builder pattern
+//! of the `Parent`. This approach showcases the flexibility of the `former` crate in handling
+//! complex nested data structures and providing a clear, fluent interface for object construction.
+
+// xxx2 : description is not good enough. it should be made stress that example show how to write custom subform setter. also dedicate a paragraph to explain difference between subform setter which returns former of element of container exposing interface to form an element and container setter which returns container former exposing interface to containet itself, not its element
+// xxx2 : finish example former_custom_subformer
 // xxx : zzz : implement example former_custom_container
 
 #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
 fn main() {}
 
+// Ensure the example only compiles when the appropriate features are enabled.
 #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
 fn main()
 {
@@ -15,6 +26,7 @@ fn main()
 
   // Child struct with Former derived for builder pattern support
   #[ derive( Debug, PartialEq, Former ) ]
+  #[ debug ]
   pub struct Child
   {
     name : String,
@@ -23,6 +35,7 @@ fn main()
 
   // Parent struct to hold children
   #[ derive( Debug, PartialEq, Former ) ]
+  #[ debug ]
   pub struct Parent
   {
     #[ subform( setter = false ) ]
@@ -77,6 +90,4 @@ fn main()
   // >     },
   // > }
 }
-
-// xxx2 : finish example former_custom_subformer
 
