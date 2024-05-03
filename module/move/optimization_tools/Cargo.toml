@@ -33,8 +33,8 @@ full = [
 enabled = []
 rapidity_6 = [] # to enable slow tests
 static_plot = []
-dynamic_plot = [ "static_plot", "plotters-backend", "piston_window" ]
-lp_parse = [ "exmex" ]
+dynamic_plot = [ "static_plot", "dep:plotters-backend", "dep:piston_window" ]
+lp_parse = [ "dep:exmex" ]
 
 [dependencies]
 derive_tools = { workspace = true, features = [ "derive_more", "full", "strum" ] }

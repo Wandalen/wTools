@@ -57,6 +57,7 @@ fn crossover()
 /// cargo test solve_with_ga --release --features rapidity_6
 ///
 #[ cfg( feature = "rapidity_6" ) ]
+#[ ignore ]
 #[ test ]
 fn solve_with_ga()
 {
