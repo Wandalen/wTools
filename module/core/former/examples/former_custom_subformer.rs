@@ -1,5 +1,8 @@
 //! example of how to use former of another structure as subformer of former of current one
-//! function `command` integrate `CommandFormer` into `AggregatorFormer`.
+//! function `child` integrate `ChildFormer` into `ParentFormer`.
+// zzz : improve description
+
+// xxx : zzz : implement example former_custom_container
 
 #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
 fn main() {}
@@ -10,86 +13,64 @@ fn main()
   use std::collections::HashMap;
   use former::Former;
 
-  // Command struct with Former derived for builder pattern support
+  // Child struct with Former derived for builder pattern support
   #[ derive( Debug, PartialEq, Former ) ]
-  pub struct Command
+  pub struct Child
   {
     name : String,
     description : String,
   }
 
-  // Aggregator struct to hold commands
+  // Parent struct to hold children
   #[ derive( Debug, PartialEq, Former ) ]
-  pub struct Aggregator
+  pub struct Parent
   {
-    #[ subform ]
-    // #[ scalar( setter = false ) ]
-    command : HashMap< String, Command >,
+    #[ subform( setter = false ) ]
+    child : HashMap< String, Child >,
   }
 
-  // Use CommandFormer as custom subformer for AggregatorFormer to add commands by name.
-  impl< Definition > AggregatorFormer< Definition >
+  // Use ChildFormer as custom subformer for ParentFormer to add children by name.
+  impl< Definition > ParentFormer< Definition >
   where
-    Definition : former::FormerDefinition< Storage = < Aggregator as former::EntityToStorage >::Storage >,
+    Definition : former::FormerDefinition< Storage = < Parent as former::EntityToStorage >::Storage >,
   {
 
     #[ inline( always ) ]
-    pub fn command( self, name : &str ) -> CommandAsSubformer< Self, impl CommandAsSubformerEnd< Self > >
+    pub fn child( self, name : &str ) -> ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
     {
-      self._command_add::< CommandFormer< _ >, _, >()
+      self._child_add::< ChildFormer< _ >, _, >()
       .name( name )
     }
 
   }
 
-  // // Use CommandFormer as custom subformer for AggregatorFormer to add commands by name.
-  // impl< Definition > AggregatorFormer< Definition >
-  // where
-  //   End : former::FormingEnd< Aggregator, Context >,
-  // {
-  //   #[ inline( always ) ]
-  //   pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::FormingEnd< Command, Self > >
-  //   where
-  //     IntoName : core::convert::Into< String >,
-  //   {
-  //     let on_end = | command : Command, super_former : core::option::Option< Self > | -> Self
-  //     {
-  //       let mut super_former = super_former.unwrap();
-  //       if let Some( ref mut commands ) = super_former.storage.command
-  //       {
-  //         commands.insert( command.name.clone(), command );
-  //       }
-  //       else
-  //       {
-  //         let mut commands: HashMap< String, Command > = Default::default();
-  //         commands.insert( command.name.clone(), command );
-  //         super_former.storage.command = Some( commands );
-  //       }
-  //       super_former
-  //     };
-  //     let former = CommandFormer::begin( None, Some( self ), on_end );
-  //     former.name( name )
-  //   }
-  //   // xxx : review
-  // }
+  impl former::ValToElement< HashMap< String, Child > > for Child
+  {
+    type Element = ( String, Child );
+    #[ inline( always ) ]
+    fn val_to_element( self ) -> Self::Element
+    {
+      ( self.name.clone(), self )
+    }
+  }
 
-  let ca = Aggregator::former()
-  .command( "echo" )
+  let ca = Parent::former()
+  .child( "echo" )
     .description( "prints all subjects and properties" ) // sets additional properties using custom subformer
     .end()
-  .command( "exit" )
+  .child( "exit" )
     .description( "just exit" ) // Sets additional properties using using custom subformer
     .end()
   .form();
 
   dbg!( &ca );
-  // > &ca = Aggregator {
-  // >     command: {
-  // >          "echo": Command {
+  // > &ca = Parent {
+  // >     child: {
+  // >          "echo": Child {
   // >              name: "echo",
   // >              description: "prints all subjects and properties",
   // >          },
-  // >          "exit": Command {
+  // >          "exit": Child {
   // >              name: "exit",
   // >              description: "just exit",
   // >          },

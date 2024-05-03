@@ -306,6 +306,7 @@ struct AttributeScalarSetter
   setter : Option< bool >,
 }
 
+#[ allow( dead_code ) ]
 impl AttributeScalarSetter
 {
 
