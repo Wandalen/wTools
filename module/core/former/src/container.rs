@@ -17,18 +17,7 @@ pub trait Container
 
 }
 
-// /// zzz : improve description
-// /// Extensation of container interface to convert value ot element.
-// /// As well as function to convert element to value. Reversal conversion could be not possible, so value to element conversion is in a separate trait.
-// pub trait ContainerValToElement : Container
-// {
-//
-//   /// Convert val to element. For Vector `Val` and `Element` is the same type, but for `HashMap` `Element` is pair of key-value and `Val` is value itself.
-//   fn val_to_element( val : Self::Val ) -> Self::Element;
-//
-// }
-
-/// xxx : improve description
+/// zzz : improve description
 /// Implement function to convert value of  an element of a container.
 /// As well as function to convert element to value. Reversal conversion could be not possible, so value to element conversion is in a separate trait.
 pub trait ElementToVal< Container >
@@ -52,7 +41,7 @@ where
   }
 }
 
-/// xxx : improve description
+/// zzz : improve description
 /// Implement function to convert value to an element of a container.
 /// Value to an element conversion could be not possible, so value to element conversion is in a separate trait.
 pub trait ValToElement< Container >
@@ -149,9 +138,7 @@ pub trait ContainerAdd : Container
 
 }
 
-// qqq : implement for other containers
-
-// xxx : extend documentation
+// zzz : extend documentation
 /// A trait defining the capability to replface all elements.
 pub trait ContainerAssign : Container
 {

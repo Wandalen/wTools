@@ -6,6 +6,7 @@ use proc_macro2::TokenStream;
 
 // zzz : explain concept of Storage
 // zzz : feature to have storage fields
+// zzz : qqq : implement interfaces for other containers
 
 ///
 /// Definition of a field.

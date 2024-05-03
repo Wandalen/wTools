@@ -62,13 +62,21 @@ where
       }
       if let Some( ref mut children ) = super_former.storage.children
       {
-        former::ContainerAdd::add( children, former::StoragePreform::preform( substorage ) );
+        former::ContainerAdd::add
+        (
+          children,
+          < < Vec< Child > as former::Container >::Val as former::ValToElement< Vec< Child > > >
+          ::val_to_element( former::StoragePreform::preform( substorage ) )
+        );
       }
       super_former
     };
     Former2::former_begin( None, Some( self ), former::FormingEndClosure::new( on_end ) )
   }
 
+  // < < #field_ty as former::Container >::Val as former::ValToElement< #field_ty > >
+
+  // less generic, but more concise way to define custom subform setter
   #[ inline( always ) ]
   pub fn child( self, name : &str ) ->
   ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
@@ -86,6 +94,7 @@ where
   //   ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
   // }
 
+  // it is generated
   #[ inline( always ) ]
   pub fn _child( self ) ->
   < < Vec< Child > as former::Container >::Element as former::EntityToFormer
