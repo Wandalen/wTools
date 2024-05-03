@@ -98,14 +98,15 @@ where
         super_former.storage.command = Some( Default::default() );
       }
 
+      // add instance to the container
+      super_former.storage.command.as_mut().unwrap()
+      .entry( preformed.name.clone() )
+      .or_insert( preformed.clone() );
+
       // custom logic to add two instances to the container
       super_former.storage.command.as_mut().unwrap()
       .entry( format!( "{}_2", preformed.name ) )
       .or_insert( preformed.clone() );
-
-      super_former.storage.command.as_mut().unwrap()
-      .entry( preformed.name.clone() )
-      .or_insert( preformed );
 
       super_former
     };
