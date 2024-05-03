@@ -26,8 +26,10 @@ mod component
 
 }
 
+#[ allow( unused_imports ) ]
+use macro_tools::prelude::*;
 #[ cfg( feature = "derive_former" ) ]
-pub mod former;
+mod derive_former;
 
 // zzz : outdated
 ///
@@ -287,7 +289,7 @@ pub mod former;
 ]
 pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = derive::former::former( input );
+  let result = derive_former::former( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -340,7 +342,7 @@ pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 #[ proc_macro_derive( ComponentFrom, attributes( debug ) ) ]
 pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = derive::component_from::component_from( input );
+  let result = component::component_from::component_from( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -431,7 +433,7 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 #[ proc_macro_derive( ComponentAssign, attributes( debug ) ) ]
 pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = derive::component_assign::component_assign( input );
+  let result = component::component_assign::component_assign( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -684,7 +686,7 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 #[ proc_macro_derive( ComponentsAssign, attributes( debug ) ) ]
 pub fn components_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = derive::components_assign::components_assign( input );
+  let result = component::components_assign::components_assign( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -785,7 +787,7 @@ pub fn components_assign( input : proc_macro::TokenStream ) -> proc_macro::Token
 #[ proc_macro_derive( FromComponents, attributes( debug ) ) ]
 pub fn from_components( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = derive::from_components::from_components( input );
+  let result = component::from_components::from_components( input );
   match result
   {
     Ok( stream ) => stream.into(),
