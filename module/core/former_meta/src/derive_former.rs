@@ -108,8 +108,7 @@ pub fn performer< 'a >
   {
     return result;
   };
-  // let mut perform_output = qt!{ #stru #generics_ty_ };
-  let mut perform_output = qt!{ < Definition::Types as former::FormerDefinitionTypes >::Formed };
+  let mut perform_output = qt!{ Definition::Formed };
   let mut perform_generics = qt!{};
 
   if let Some( ref attr ) = attrs.perform
@@ -131,42 +130,6 @@ pub fn performer< 'a >
     };
 
   }
-
-  // for attr in attrs
-  // {
-  //   if let Some( ident ) = attr.path().get_ident()
-  //   {
-  //     let ident_string = format!( "{}", ident );
-  //     if ident_string == "perform"
-  //     {
-  //       match attr.meta
-  //       {
-  //         syn::Meta::List( ref meta_list ) =>
-  //         {
-  //           let attr_perform = syn::parse2::< AttributePerform >( meta_list.tokens.clone() )?;
-  //           let signature = &attr_perform.signature;
-  //           let generics = &signature.generics;
-  //           perform_generics = qt!{ #generics };
-  //           let perform_ident = &signature.ident;
-  //           let output = &signature.output;
-  //           if let syn::ReturnType::Type( _, boxed_type ) = output
-  //           {
-  //             perform_output = qt!{ #boxed_type };
-  //           }
-  //           perform = qt!
-  //           {
-  //             return result.#perform_ident();
-  //           };
-  //         },
-  //         _ => return_syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ),
-  //       }
-  //     }
-  //   }
-  //   else
-  //   {
-  //     return_syn_err!( "Unknown structure attribute:\n{}", qt!{ attr } );
-  //   }
-  // }
 
   Ok( ( perform, perform_output, perform_generics ) )
 }
