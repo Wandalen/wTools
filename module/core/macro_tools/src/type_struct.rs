@@ -6,6 +6,7 @@
 pub( crate ) mod private
 {
   use super::super::*;
+  use quote::ToTokens;
   // use interval_adapter::BoundExt;
 
   // xxx : raname to Parsed
@@ -22,12 +23,45 @@ pub( crate ) mod private
     pub item : syn::ItemStruct,
     /// Identifier of the struct, useful for referencing in generated code.
     pub item_name : syn::Ident,
+    /// Generics of the struct, including the where clause
+    pub generics : syn::Generics,
     /// Collection of struct's fields, including visibility, attributes, and types.
     pub fields : syn::Fields,
   }
 
   impl TypeStructParsed
   {
+
+    /// Returns a list of generic arguments based on generic parameters of the struct
+    ///
+    /// # Example:
+    /// `<'a, T: Default>` -> `<'a, T>`
+    pub fn generic_arguments( &self ) -> syn::AngleBracketedGenericArguments
+    {
+      let mut generics = &self.generics;
+    
+      let mut simplified_generics = Vec::with_capacity( generics.params.len() );
+      for generic in &generics.params
+      {
+        let ident = match generic
+        {
+          syn::GenericParam::Lifetime( p ) => syn::GenericArgument::Lifetime( p.lifetime.to_owned() ),
+          syn::GenericParam::Type( p ) => syn::GenericArgument::Type( syn::Type::Verbatim( p.ident.to_token_stream() ) ),
+          syn::GenericParam::Const( p ) => syn::GenericArgument::Const( syn::Expr::Verbatim( p.ident.to_token_stream() ) ),
+        };
+        simplified_generics.push(ident);
+      }
+
+      let punctuated = syn::punctuated::Punctuated::<_, Token![,]>::from_iter(simplified_generics.into_iter());
+
+      syn::AngleBracketedGenericArguments
+      {
+        colon2_token: None,
+        lt_token: Default::default(),
+        args: punctuated,
+        gt_token: Default::default(),
+      }
+    }
 
     /// Returns a vector of the struct's fields for iteration.
     pub fn fields_many( &self ) -> Vec< &syn::Field >
@@ -121,6 +155,7 @@ pub( crate ) mod private
 
       let item_name = item.ident.clone();
       let fields = item.fields.clone();
+      let generics = item.generics.clone();
 
 //       let fields_many : Vec< syn::Field > = match item.fields
 //       {
@@ -134,7 +169,7 @@ pub( crate ) mod private
 //       let field_names = field_names( &fields_many )?;
 //       Ok( Self { item, item_name, fields, fields_many, field_types, field_names } )
 
-      Ok( Self { item, item_name, fields } )
+      Ok( Self { item, item_name, generics, fields } )
     }
   }
 
