@@ -74,10 +74,9 @@ For specifying custom default value use attribute `default`. For example:
 /// ## perform_generics :
 /// Vec< T >
 
-pub fn performer< 'a >
+pub fn performer
 (
   attrs : &StructAttributes,
-  // attrs : impl Iterator< Item = &'a syn::Attribute >,
 )
 -> Result< ( TokenStream, TokenStream, TokenStream ) >
 {
@@ -112,7 +111,27 @@ pub fn performer< 'a >
   Ok( ( perform, perform_output, perform_generics ) )
 }
 
-//
+/// xxx : write documentation. provide example of generated code
+
+pub fn storage_fields
+(
+  attrs : &StructAttributes,
+)
+-> Result< TokenStream >
+{
+
+  let mut result = qt!
+  {
+  };
+
+  if let Some( ref attr ) = attrs.storage_fields
+  {
+    let storage_fields = &attr.fields;
+    result = qt! { #storage_fields }
+  }
+
+  Ok( result )
+}
 
 ///
 /// Generate the whole Former ecosystem
@@ -305,6 +324,11 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   let ( _doc_former_mod, doc_former_struct ) = doc_generate( stru );
   let ( perform, perform_output, perform_generics ) = performer
+  (
+    &struct_attrs
+  )?;
+
+  let storage_fields = storage_fields
   (
     &struct_attrs
   )?;

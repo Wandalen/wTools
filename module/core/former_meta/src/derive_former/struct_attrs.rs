@@ -13,6 +13,7 @@ use macro_tools::{ attr, Result };
 pub struct StructAttributes
 {
   pub perform : Option< AttributePerform >,
+  pub storage_fields : Option< AttributeStorageFields >,
 }
 
 impl StructAttributes
@@ -21,6 +22,7 @@ impl StructAttributes
   pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
   {
     let mut perform = None;
+    let mut storage_fields = None;
 
     for attr in attrs
     {
@@ -37,6 +39,15 @@ impl StructAttributes
       {
         "storage_fields" =>
         {
+          match attr.meta
+          {
+            syn::Meta::List( ref meta_list ) =>
+            {
+              storage_fields.replace( syn::parse2::< AttributeStorageFields >( meta_list.tokens.clone() )? );
+            },
+            _ => return_syn_err!( attr, "Expects an attribute of format #[ storage_fields( a : i32, b : Option< String > ) ]
+.\nGot: {}", qt!{ #attr } ),
+          }
         }
         "perform" =>
         {
@@ -60,7 +71,7 @@ impl StructAttributes
       }
     }
 
-    Ok( StructAttributes { perform } )
+    Ok( StructAttributes { perform, storage_fields } )
   }
 }
 
@@ -70,10 +81,8 @@ impl StructAttributes
 /// `#[ perform( fn after1< 'a >() -> Option< &'a str > ) ]`
 ///
 
-// xxx : move out
 pub struct AttributePerform
 {
-  // paren_token : syn::token::Paren,
   pub signature : syn::Signature,
 }
 
@@ -87,6 +96,37 @@ impl syn::parse::Parse for AttributePerform
       // paren_token : syn::parenthesized!( input2 in input ),
       // signature : input2.parse()?,
       signature : input.parse()?,
+    })
+  }
+}
+
+///
+/// Attribute to hold storage-specific fields.
+/// Useful if formed structure should not have such fields.
+///
+/// `#[ storage_fields( a : i32, b : Option< String > ) ]`
+///
+
+pub struct AttributeStorageFields
+{
+  pub fields : syn::Fields,
+}
+
+impl syn::parse::Parse for AttributeStorageFields
+{
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+  {
+
+    let fields : syn::punctuated::Punctuated< syn::Field, syn::Token![,] > =
+      input.parse_terminated( syn::Field::parse_named, Token![,] )?;
+
+    Ok( Self
+    {
+      fields : syn::Fields::Named( syn::FieldsNamed
+      {
+        brace_token : Default::default(),
+        named : fields,
+      }),
     })
   }
 }
