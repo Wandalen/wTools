@@ -70,12 +70,11 @@ impl StructAttributes
             syn::Meta::List( ref meta_list ) =>
             {
               mutator = syn::parse2::< AttributeMutator >( meta_list.tokens.clone() )?
-              // container.replace( syn::parse2::< AttributeMutator >( meta_list.tokens.clone() )? );
             },
             syn::Meta::Path( ref _path ) =>
             {
             },
-            _ => return_syn_err!( attr, "Expects an attribute of format `#[ container ]` or `#[ container( definition = former::VectorDefinition ) ]` if you want to use default container defition. \nGot: {}", qt!{ #attr } ),
+            _ => return_syn_err!( attr, "Expects an attribute of format `#[ mutator( custom = true, hint = true ) ]`. \nGot: {}", qt!{ #attr } ),
           }
         }
         "debug" =>
@@ -252,38 +251,51 @@ pub struct AttributeMutator
   pub hint : bool,
 }
 
-impl syn::parse::Parse for AttributeMutator {
-    fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
-        let mut custom = None;
-        let mut hint = None;
+impl syn::parse::Parse for AttributeMutator
+{
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+  {
+    let mut custom = false;
+    let mut hint = false;
 
-        while !input.is_empty() {
-            let lookahead = input.lookahead1();
-            if lookahead.peek(syn::Ident) {
-                let ident: syn::Ident = input.parse()?;
-                input.parse::<syn::Token![=]>()?;
-                if ident == "custom" {
-                    let value: syn::LitBool = input.parse()?;
-                    custom = Some(value.value);
-                } else if ident == "hint" {
-                    let value: syn::LitBool = input.parse()?;
-                    hint = Some(value.value);
-                } else {
-                    return Err(syn::Error::new_spanned(&ident, format!("Unexpected identifier '{}'. Expected 'custom' or 'hint'.", ident)));
-                }
-            } else {
-                return Err(lookahead.error());
-            }
-
-            // Optional comma handling
-            if input.peek(syn::Token![,]) {
-                input.parse::<syn::Token![,]>()?;
-            }
+    while !input.is_empty()
+    {
+      let lookahead = input.lookahead1();
+      if lookahead.peek( syn::Ident )
+      {
+        let ident : syn::Ident = input.parse()?;
+        input.parse::< syn::Token![=] >()?;
+        if ident == "custom"
+        {
+          let value : syn::LitBool = input.parse()?;
+          custom = value.value;
         }
+        else if ident == "hint"
+        {
+          let value : syn::LitBool = input.parse()?;
+          hint = value.value;
+        }
+        else
+        {
+          return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'custom' or 'hint'.", ident ) ) );
+        }
+      }
+      else
+      {
+        return Err( lookahead.error() );
+      }
 
-        Ok(Self {
-            custom: custom.unwrap_or(false),
-            hint: hint.unwrap_or(false),
-        })
+      // Optional comma handling
+      if input.peek( syn::Token![,] )
+      {
+        input.parse::< syn::Token![,] >()?;
+      }
     }
+
+    Ok( Self
+    {
+      custom,
+      hint,
+    })
+  }
 }
