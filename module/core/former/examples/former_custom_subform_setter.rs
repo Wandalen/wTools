@@ -26,7 +26,7 @@ fn main()
 
   // Child struct with Former derived for builder pattern support
   #[ derive( Debug, PartialEq, Former ) ]
-  #[ debug ]
+  // #[ debug ]
   pub struct Child
   {
     name : String,
@@ -35,10 +35,10 @@ fn main()
 
   // Parent struct to hold children
   #[ derive( Debug, PartialEq, Former ) ]
-  #[ debug ]
+  // #[ debug ]
   pub struct Parent
   {
-    #[ subform( setter = false ) ]
+    #[ subform( setter = false, hint = false ) ]
     child : HashMap< String, Child >,
   }
 
@@ -90,4 +90,3 @@ fn main()
   // >     },
   // > }
 }
-

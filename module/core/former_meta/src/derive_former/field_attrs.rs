@@ -183,6 +183,9 @@ pub struct AttributeScalarSetter
   pub name : Option< syn::Ident >,
   /// Controls the generation of a setter method. If false, a setter method is not generated.
   pub setter : Option< bool >,
+  /// Specifies whether to provide a sketch of the subform setter as a hint.
+  /// Defaults to `false`, which means no hint is provided unless explicitly requested.
+  pub hint : bool,
 }
 
 #[ allow( dead_code ) ]
@@ -203,6 +206,7 @@ impl syn::parse::Parse for AttributeScalarSetter
   {
     let mut name : Option< syn::Ident > = None;
     let mut setter : Option< bool > = None;
+    let mut hint = false;
 
     while !input.is_empty()
     {
@@ -221,6 +225,12 @@ impl syn::parse::Parse for AttributeScalarSetter
           let value : syn::LitBool = input.parse()?;
           setter = Some( value.value() );
         }
+        else if ident == "hint"
+        {
+          input.parse::< syn::Token![ = ] >()?;
+          let value : syn::LitBool = input.parse()?;
+          hint = value.value;
+        }
         else
         {
           return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `scalar( name = myName, setter = true )`", ident ) ) );
@@ -238,7 +248,7 @@ impl syn::parse::Parse for AttributeScalarSetter
       }
     }
 
-    Ok( Self { name, setter } )
+    Ok( Self { name, setter, hint } )
   }
 }
 
@@ -263,6 +273,9 @@ pub struct AttributeContainerSetter
   pub setter : Option< bool >,
   /// Definition of the container former to use, e.g., `former::VectorSubformer`.
   pub definition : Option< syn::Type >,
+  /// Specifies whether to provide a sketch of the subform setter as a hint.
+  /// Defaults to `false`, which means no hint is provided unless explicitly requested.
+  pub hint : bool,
 }
 
 impl AttributeContainerSetter
@@ -282,6 +295,7 @@ impl syn::parse::Parse for AttributeContainerSetter
   {
     let mut name : Option< syn::Ident > = None;
     let mut setter : Option< bool > = None; // Default is to generate a setter
+    let mut hint = false;
     let mut definition : Option< syn::Type > = None;
 
     while !input.is_empty()
@@ -300,6 +314,12 @@ impl syn::parse::Parse for AttributeContainerSetter
           input.parse::< syn::Token![ = ] >()?;
           let value : syn::LitBool = input.parse()?;
           setter = Some( value.value );
+        }
+        else if ident == "hint"
+        {
+          input.parse::< syn::Token![ = ] >()?;
+          let value : syn::LitBool = input.parse()?;
+          hint = value.value;
         }
         else if ident == "definition"
         {
@@ -323,7 +343,7 @@ impl syn::parse::Parse for AttributeContainerSetter
       }
     }
 
-    Ok( Self { name, setter, definition } )
+    Ok( Self { name, setter, hint, definition } )
   }
 }
 
@@ -353,6 +373,9 @@ pub struct AttributeSubformSetter
   /// Disable generation of setter.
   /// It still generate `_field_add` method, so it could be used to make a setter with custom arguments.
   pub setter : Option< bool >,
+  /// Specifies whether to provide a sketch of the subform setter as a hint.
+  /// Defaults to `false`, which means no hint is provided unless explicitly requested.
+  pub hint : bool,
 }
 
 impl AttributeSubformSetter
@@ -372,6 +395,7 @@ impl syn::parse::Parse for AttributeSubformSetter
   {
     let mut name : Option< syn::Ident > = None;
     let mut setter : Option< bool > = None;
+    let mut hint = false;
 
     while !input.is_empty()
     {
@@ -390,6 +414,12 @@ impl syn::parse::Parse for AttributeSubformSetter
           let value : syn::LitBool = input.parse()?;
           setter = Some( value.value() );
         }
+        else if ident == "hint"
+        {
+          input.parse::< syn::Token![ = ] >()?;
+          let value : syn::LitBool = input.parse()?;
+          hint = value.value;
+        }
         else
         {
           return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `subform( name = myName, setter = true )`", ident ) ) );
@@ -407,6 +437,6 @@ impl syn::parse::Parse for AttributeSubformSetter
       }
     }
 
-    Ok( Self { name, setter } )
+    Ok( Self { name, setter, hint } )
   }
 }

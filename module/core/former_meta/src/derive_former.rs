@@ -5,7 +5,6 @@ use macro_tools::{ attr, diag, generic_params, generic_args, typ, derive, Result
 use proc_macro2::TokenStream;
 
 // zzz : explain concept of Storage
-// xxx : feature to have storage fields
 // xxx : introduce namespaces
 // zzz : qqq : implement interfaces for other containers
 
@@ -74,8 +73,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   };
   let has_debug = attr::has_debug( ast.attrs.iter() )?;
   let struct_attrs = StructAttributes::from_attrs( ast.attrs.iter() )?;
-
-  let example_of_custom_setter = false;
 
   /* names */
 
@@ -439,7 +436,6 @@ where
       #struct_generics_where
     {
 
-      // xxx
       #[ inline( always ) ]
       fn default() -> Self
       {
