@@ -217,7 +217,14 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     field.storage_field_optional(),
     field.storage_field_name(),
     field.storage_field_preform(),
-    field.former_field_setter( &stru ),
+    field.former_field_setter
+    (
+      &stru,
+      &former,
+      &former_storage,
+      // &as_subformer,
+      // &as_subformer_end,
+    ),
     field.former_field_assign_end
     (
       &stru,
@@ -263,7 +270,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   {
     let hint = format!
     (
-      r#"
+r#"
  = Example of custom mutator
 
 impl< {} > former::FormerMutator

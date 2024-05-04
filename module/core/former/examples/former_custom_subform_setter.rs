@@ -38,11 +38,15 @@ fn main()
   // #[ debug ]
   pub struct Parent
   {
-    #[ subform( setter = false, hint = false ) ]
+    #[ subform( setter = false, hint = true ) ]
     child : HashMap< String, Child >,
   }
 
-  // Use ChildFormer as custom subformer for ParentFormer to add children by name.
+  /// Initializes and configures a subformer for adding named child entities. This method leverages an internal function
+  /// to create and return a configured subformer instance. It allows for the dynamic addition of children with specific names,
+  /// integrating them into the formation process of the parent entity. After creation, the name of the child is immediately set,
+  /// facilitating the customization and integration of child entities within the overall structure of the parent.
+  ///
   impl< Definition > ParentFormer< Definition >
   where
     Definition : former::FormerDefinition< Storage = < Parent as former::EntityToStorage >::Storage >,

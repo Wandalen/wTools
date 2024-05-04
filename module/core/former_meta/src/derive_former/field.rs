@@ -343,6 +343,10 @@ scalar_setter_required
   (
     &self,
     stru : &syn::Ident,
+    former : &syn::Ident,
+    former_storage : &syn::Ident,
+    // as_subformer : &syn::Ident,
+    // as_subformer_end : &syn::Ident,
   )
   -> Result< TokenStream >
   {
@@ -381,7 +385,14 @@ scalar_setter_required
     // subform setter
     let r = if self.attrs.subform.is_some()
     {
-      let r2 = self.subform_add_setter_map( stru )?;
+      let r2 = self.subform_add_setter_map
+      (
+        stru,
+        former,
+        former_storage,
+        // as_subformer,
+        // as_subformer_end,
+      )?;
       qt!
       {
         #r
@@ -403,6 +414,10 @@ scalar_setter_required
   (
     &self,
     stru : &syn::Ident,
+    former : &syn::Ident,
+    former_storage : &syn::Ident,
+    // as_subformer : &syn::Ident,
+    // as_subformer_end : &syn::Ident,
   )
   -> Result< TokenStream >
   {
@@ -456,6 +471,42 @@ scalar_setter_required
       }
 
     };
+
+    if true
+    {
+      let hint = format!
+      (
+r#"
+
+/// Initializes and configures a subformer for adding named child entities. This method leverages an internal function
+/// to create and return a configured subformer instance. It allows for the dynamic addition of children with specific names,
+/// integrating them into the formation process of the parent entity. After creation, the name of the child is immediately set,
+/// facilitating the customization and integration of child entities within the overall structure of the parent.
+///
+
+impl< Definition > {}< Definition >
+where
+  Definition : former::FormerDefinition< Storage = {} >,
+{{
+
+  #[ inline( always ) ]
+  pub fn {}( self ) -> ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
+  {{
+    self.{}::< ChildFormer< _ >, _, >()
+  }}
+
+}}
+        "#,
+        former,
+        former_storage,
+        field_ident,
+        // as_subformer,
+        // as_subformer_end,
+        field_add_name,
+      );
+      println!( "{hint}" );
+    }
+
 
     // xxx : it should be printed by hint also
     let r = if attr.setter()
