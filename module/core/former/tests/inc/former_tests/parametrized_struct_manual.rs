@@ -53,7 +53,8 @@ impl< K, > Child< K, > where K : core :: hash :: Hash + std :: cmp :: Eq,
 }
 
 #[ derive( Debug ) ]
-pub struct ChildFormerDefinitionTypes< K, __Context = (), __Formed = Child< K, >, > where K : core :: hash :: Hash + std :: cmp :: Eq,
+pub struct ChildFormerDefinitionTypes< K, __Context = (), __Formed = Child< K, >, >
+where K : core :: hash :: Hash + std :: cmp :: Eq,
 {
   _phantom : core :: marker :: PhantomData< ( K, __Context, __Formed ) >,
 }
@@ -80,6 +81,13 @@ where
   type Storage = ChildFormerStorage< K, >;
   type Formed = __Formed;
   type Context = __Context;
+}
+
+impl< K, Context, Formed > former::FormerMutator
+for ChildFormerDefinitionTypes< K, Context, Formed >
+where
+  K : core :: hash :: Hash + std :: cmp :: Eq,
+{
 }
 
 #[ derive( Debug ) ]

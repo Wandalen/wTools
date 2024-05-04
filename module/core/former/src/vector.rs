@@ -97,6 +97,7 @@ for Vec< E >
 
 // = definition
 
+// xxx : split definition and definition types
 #[ derive( Debug, Default ) ]
 pub struct VectorDefinition< E, Context = (), Formed = Vec< E >, End = ReturnStorage >
 where

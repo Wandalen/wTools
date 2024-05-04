@@ -37,11 +37,19 @@ impl< 'a, Context, Formed > Default for Struct1FormerDefinitionTypes< 'a, Contex
   }
 }
 
-impl< 'a, Context, Formed > former::FormerDefinitionTypes for Struct1FormerDefinitionTypes< 'a, Context, Formed >
+impl< 'a, Context, Formed > former::FormerDefinitionTypes
+for Struct1FormerDefinitionTypes< 'a, Context, Formed >
 {
   type Storage = Struct1FormerStorage< 'a >;
   type Formed = Formed;
   type Context = Context;
+}
+
+// = former mutator
+
+impl< 'a, Context, Formed > former::FormerMutator
+for Struct1FormerDefinitionTypes< 'a, Context, Formed >
+{
 }
 
 // = definition
