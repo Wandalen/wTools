@@ -295,10 +295,144 @@ pub( crate ) mod private
     .chars()
     .filter( | c | c.is_digit( 10 ) )
     .collect();
-
     // dbg!( &tid );
 
     Ok( format!( "{}_{}_{}_{}", timestamp, pid, tid, count ) )
+  }
+
+  /// Extracts multiple extensions from the given path.
+  ///
+  /// This function takes a path and returns a vector of strings representing the extensions of the file.
+  /// If the input path is empty or if it doesn't contain any extensions, it returns an empty vector.
+  ///
+  /// # Arguments
+  ///
+  /// * `path` - An object that can be converted into a Path reference, representing the file path.
+  ///
+  /// # Returns
+  ///
+  /// A vector of strings containing the extensions of the file, or an empty vector if the input path is empty or lacks extensions.
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// use proper_path_tools::path::exts;
+  ///
+  /// let path = "/path/to/file.tar.gz";
+  /// let extensions = exts( path );
+  /// assert_eq!( extensions, vec![ "tar", "gz" ] );
+  /// ```
+  ///
+  /// ```
+  /// use proper_path_tools::path::exts;
+  ///
+  /// let empty_path = "";
+  /// let extensions = exts( empty_path );
+  /// let expected : Vec< String > = vec![];
+  /// assert_eq!( extensions, expected );
+  /// ```
+  ///
+  pub fn exts( path : impl AsRef< std::path::Path > ) -> Vec< String > 
+  {
+    use std::path::Path;
+
+    if let Some( file_name ) = Path::new( path.as_ref() ).file_name() 
+    {
+      if let Some( file_name_str ) = file_name.to_str() 
+      {
+        let mut file_name_str = file_name_str.to_string();
+        if file_name_str.starts_with( '.' )
+        {
+          file_name_str.remove( 0 );
+        }
+        if let Some( dot_index ) = file_name_str.find( '.' ) 
+        {
+            
+          let extensions = &file_name_str[ dot_index + 1.. ];
+          
+          return extensions.split( '.' ).map( | s | s.to_string() ).collect()
+        }
+      }
+    }
+    vec![]
+  }
+
+
+  
+
+
+  /// Extracts the parent directory and file stem (without extension) from the given path.
+  ///
+  /// This function takes a path and returns an Option containing the modified path without the extension.
+  /// If the input path is empty or if it doesn't contain a file stem, it returns None.
+  ///
+  /// # Arguments
+  ///
+  /// * `path` - An object that can be converted into a Path reference, representing the file path.
+  ///
+  /// # Returns
+  ///
+  /// An Option containing the modified path without the extension, or None if the input path is empty or lacks a file stem.
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// use std::path::PathBuf;
+  /// use proper_path_tools::path::without_ext;
+  /// 
+  /// let path = "/path/to/file.txt";
+  /// let modified_path = without_ext(path);
+  /// assert_eq!(modified_path, Some(PathBuf::from("/path/to/file")));
+  /// ```
+  ///
+  /// ```
+  /// use std::path::PathBuf;
+  /// use proper_path_tools::path::without_ext;
+  /// 
+  /// let empty_path = "";
+  /// let modified_path = without_ext(empty_path);
+  /// assert_eq!(modified_path, None);
+  /// ```
+  ///
+  pub fn without_ext( path : impl AsRef< std::path::Path > ) -> Option< std::path::PathBuf > 
+  {
+    use std::path::Path;
+    use std::path::PathBuf;
+
+    if path.as_ref().to_string_lossy().is_empty()
+    {
+      return None;
+    }
+
+    let path_buf = Path::new( path.as_ref() );
+    
+    let parent = match path_buf.parent() 
+    {
+      Some( parent ) => parent,
+      None => return None,
+    };
+    let file_stem = match path_buf.file_stem() 
+    {
+      Some( name ) => 
+      {
+        let ends = format!( "{}/", name.to_string_lossy() );
+        if path.as_ref().to_string_lossy().ends_with( &ends ) 
+        {
+          ends
+        }
+        else
+        {
+          String::from( name.to_string_lossy() )
+        }
+        
+      }
+      None => return None,
+    };
+
+    let mut full_path = parent.to_path_buf();
+    full_path.push( file_stem );
+    
+    Some( PathBuf::from( full_path.to_string_lossy().replace( "\\", "/" ) ) )
   }
 
   /// Finds the common directory path among a collection of paths.
@@ -680,13 +814,67 @@ pub( crate ) mod private
 
 
 
+  /// Extracts the extension from the given path.
+  ///
+  /// This function takes a path and returns a string representing the extension of the file.
+  /// If the input path is empty or if it doesn't contain an extension, it returns an empty string.
+  ///
+  /// # Arguments
+  ///
+  /// * `path` - An object that can be converted into a Path reference, representing the file path.
+  ///
+  /// # Returns
+  ///
+  /// A string containing the extension of the file, or an empty string if the input path is empty or lacks an extension.
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// use proper_path_tools::path::ext;
+  ///
+  /// let path = "/path/to/file.txt";
+  /// let extension = ext( path );
+  /// assert_eq!( extension, "txt" );
+  /// ```
+  ///
+  /// ```
+  /// use proper_path_tools::path::ext;
+  ///
+  /// let empty_path = "";
+  /// let extension = ext( empty_path );
+  /// assert_eq!( extension, "" );
+  /// ```
+  ///
+  pub fn ext( path : impl AsRef< std::path::Path > ) -> String 
+  {
+    use std::path::Path;
+
+    if path.as_ref().to_string_lossy().is_empty() 
+    {
+      return String::new();
+    }
+    let path_buf = Path::new( path.as_ref() );
+    match path_buf.extension()
+    {
+      Some( ext ) => 
+      {
+        ext.to_string_lossy().to_string()
+      }
+      None => String::new(),
+    }
+  }
+
 }
+
 
 crate::mod_interface!
 {
+  protected use ext;  
+  protected use exts;  
   protected use path_relative;
   protected use rebase;
   protected use path_common;
+  protected use without_ext;
   protected use is_glob;
   protected use normalize;
   protected use canonicalize;
