@@ -191,11 +191,12 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   // xxx
 
-  let storage_fields : Vec< Result< FormerField< '_ > > > = fields
-  .into_iter()
+  let storage_fields : Vec< Result< FormerField< '_ > > > = struct_attrs
+  .storage_fields()
+  .iter()
   .map( | field |
   {
-    FormerField::from_syn( field )
+    FormerField::from_syn( &field )
   })
   .collect();
   let storage_fields : Vec< _ > = process_results( storage_fields, | iter | iter.collect() )?;

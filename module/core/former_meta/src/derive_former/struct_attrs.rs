@@ -195,17 +195,38 @@ impl StructAttributes
   /// it clones and iterates over its fields. If `storage_fields` is `None`, it returns an empty iterator.
   ///
 
-  pub fn storage_fields( &self ) -> impl Iterator< Item = syn::Field >
+  // pub fn storage_fields( &self ) -> impl Iterator< Item = syn::Field >
+  pub fn storage_fields( &self ) -> &syn::punctuated::Punctuated< syn::Field, syn::token::Comma >
   {
-    self.storage_fields
-    .as_ref()
-    .map_or_else(
-      || syn::punctuated::Punctuated::< syn::Field, syn::token::Comma >::new().into_iter(),
-      | attr | attr.fields.clone().into_iter() // Clone and create an iterator when storage_fields is Some
+
+    self.storage_fields.as_ref().map_or_else(
+        || &*Box::leak(Box::new(syn::punctuated::Punctuated::new())),
+        |attr| &attr.fields
     )
+    // xxx : investigate
+
+    // self.storage_fields
+    // .as_ref()
+    // .map_or_else(
+    //   || syn::punctuated::Punctuated::< syn::Field, syn::token::Comma >::new().into_iter(),
+    //   | attr | attr.fields.clone().into_iter()
+    //   // Clone and create an iterator when storage_fields is Some
+    // )
   }
 
-  /// xxx : write documentation. provide example of generated code
+  /// Generates a `TokenStream` for the fields specified in `storage_fields`.
+  ///
+  /// This function constructs a token stream for code generation, incorporating fields from the
+  /// `storage_fields` attribute into the generated Rust code. If `storage_fields` is set, it includes
+  /// its fields in the output; otherwise, it returns an empty token stream.
+  ///
+  /// # Example of generated code
+  ///
+  /// ```rust, ignore
+  /// field1 : i32,
+  /// field2 : String,
+  /// ```
+  ///
 
   pub fn storage_fields_code( &self )
   -> Result< TokenStream >
