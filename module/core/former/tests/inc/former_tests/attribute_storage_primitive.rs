@@ -8,10 +8,7 @@ use super::*;
 // #[ derive( Debug, PartialEq ) ]
 pub struct Struct1
 {
-  // #[ former( only_storage = true ) ]
-  // pub a : i32,
-  // #[ former( only_storage = true ) ]
-  // b : Option< String >,
+  c : String,
 }
 
 // == begin of generated
@@ -22,11 +19,10 @@ tests_impls!
 {
   fn test_complex()
   {
-    let got = Struct1::former().a( 13 ).b( "abc" ).form();
+    let got = Struct1::former().a( 13 ).b( "abc" ).c( "def" ).form();
     let exp = Struct1
     {
-      // a : 13,
-      // b : Some( "abc".to_string() ),
+      c : "def".to_string(),
     };
     a_id!( got, exp );
   }
