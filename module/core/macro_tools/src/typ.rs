@@ -124,17 +124,26 @@ pub( crate ) mod private
   /// ```
   ///
 
-  // qqq : cover by test
   pub fn is_optional( ty : &syn::Type ) -> bool
   {
     typ::type_rightmost( ty ) == Some( "Option".to_string() )
   }
 
+  /// Extracts the first generic parameter from a given `syn::Type` if any exists.
   ///
-  /// Extract the first parameter of the type if such exist.
+  /// This function is designed to analyze a type and retrieve its first generic parameter.
+  /// It is particularly useful when working with complex types in macro expansions and needs
+  /// to extract specific type information for further processing.
   ///
+///
+  /// # Example
+  /// ```rust
+  /// let type_string = "Result< Option< i32 >, Error >";
+  /// let parsed_type : syn::Type = syn::parse_str( type_string ).expect( "Type should parse correctly" );
+  /// let first_param = macro_tools::typ::parameter_first( &parsed_type ).expect( "Should have at least one parameter" );
+  /// // Option< i32 >
+  /// ```
 
-  // qqq : cover by test
   pub fn parameter_first( ty : &syn::Type ) -> Result< &syn::Type >
   {
     typ::type_parameters( ty, 0 ..= 0 )
