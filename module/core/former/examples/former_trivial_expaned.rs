@@ -45,6 +45,8 @@ fn main()
     }
   }
 
+  // = entity to
+
   impl< Definition > former::EntityToFormer< Definition > for UserProfile< >
   where
     Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< > >,
@@ -64,6 +66,8 @@ fn main()
   {
     type Definition = UserProfileFormerDefinition< Context, Formed, End >;
   }
+
+  // = definition
 
   #[derive(Debug)]
   pub struct UserProfileFormerDefinitionTypes< Context = (), Formed = UserProfile< >, >
@@ -125,6 +129,8 @@ fn main()
   impl< Context, Formed, > former::FormerMutator for UserProfileFormerDefinitionTypes< Context, Formed, >
   where
   {}
+
+  // = storage
 
   pub struct UserProfileFormerStorage< >
   where
@@ -336,7 +342,6 @@ fn main()
   impl< Definition, > UserProfileFormer< Definition, >
   where
     Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< >, Formed = UserProfile< > >,
-    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< > >,
   {
     pub fn preform(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed
     {
@@ -348,7 +353,6 @@ fn main()
   where
     Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< >, Formed = UserProfile< >, >,
   {
-
     #[ inline( always ) ]
     pub fn perform(self) -> Definition::Formed
     {
@@ -369,6 +373,8 @@ fn main()
     }
   }
 
+  // = as subformer
+
   pub type UserProfileAsSubformer< Superformer, End > =
   UserProfileFormer< UserProfileFormerDefinition< Superformer, Superformer, End, >, >;
 
@@ -380,6 +386,8 @@ fn main()
   where
     Self : former::FormingEnd< UserProfileFormerDefinitionTypes< SuperFormer, SuperFormer >, >,
   {}
+
+  // = end
 
   let profile = UserProfile::former()
   .age( 30 )

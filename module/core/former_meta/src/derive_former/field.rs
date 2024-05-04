@@ -837,10 +837,6 @@ where
         format!( "{}", qt!{ #typ } ),
         field_ident,
         field_ident,
-        // field_ident,
-        // format!( "{}", qt!{ #( #params, )* } ),
-        // format!( "{}", qt!{ #( #params, )* } ),
-        // former_assign_end,
       );
       println!( "{hint}" );
     }

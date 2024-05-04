@@ -29,26 +29,14 @@ fn main()
 {
   use former::Former;
 
+  // Use attribute debug to print expanded code.
   #[ derive( Debug, PartialEq, Former ) ]
-  #[ perform( fn greet_user() ) ]
+  // #[ debug ]
   pub struct UserProfile
   {
-    #[default(1)]
     age : i32,
-
     username : String,
-
-    #[alias(bio)]
     bio_optional : Option< String >, // Fields could be optional
-  }
-
-  impl UserProfile
-  {
-    fn greet_user(self) -> Self
-    {
-      println!("Hello, {}", self.username);
-      self
-    }
   }
 
   let profile = UserProfile::former()
@@ -56,7 +44,6 @@ fn main()
   .username( "JohnDoe".to_string() )
   .bio_optional( "Software Developer".to_string() ) // Optionally provide a bio
   .form();
-  // .perform(); // same as `form()` but will execute method passed to `perform` attribute
 
   dbg!( &profile );
   // Expected output:
@@ -73,216 +60,389 @@ fn main()
 <summary>The code above will be expanded to this</summary>
 
 ```rust
-
-#[ derive( Debug, PartialEq ) ]
-pub struct UserProfile
+#[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+fn main()
 {
-  age : i32,
-  username : String,
-  bio_optional : Option< String >, // Fields could be optional
-}
 
-impl UserProfile
-{
-  #[ inline( always ) ]
-  pub fn former() -> UserProfileFormer< UserProfile, former::ReturnFormed >
+  // Use attribute debug to print expanded code.
+  #[ derive( Debug, PartialEq ) ]
+  pub struct UserProfile
   {
-    UserProfileFormer::< UserProfile, former::ReturnFormed >::new()
+    age : i32,
+    username : String,
+    bio_optional : Option< String >, // Fields could be optional
   }
-}
 
-#[ derive( Debug, Default ) ]
-pub struct UserProfileFormerStorage
-{
-  age : Option< i32 >,
-  username : Option< String >,
-  bio_optional : Option< String >,
-}
-
-pub struct UserProfileFormer
-<
-  Context = UserProfile,
-  End = former::ReturnFormed,
->
-where
-  End : former::FormingEnd< UserProfile, Context >,
-{
-  storage : UserProfileFormerStorage,
-  context : Option< Context >,
-  on_end : Option< End >,
-}
-
-impl< Context, End > UserProfileFormer< Context, End >
-where
-  End : former::FormingEnd< UserProfile, Context >,
-{
-  #[ inline( always ) ]
-  pub fn form( mut self ) -> UserProfile
+  impl< > UserProfile< >
+  where
   {
-    let age = if self.storage.age.is_some()
+    #[ inline( always ) ]
+    pub fn former() -> UserProfileFormer<
+      UserProfileFormerDefinition< (), UserProfile< >, former::ReturnPreformed >
+    >
     {
-      self.storage.age.take().unwrap()
+      UserProfileFormer::< UserProfileFormerDefinition< (), UserProfile< >, former::ReturnPreformed > >::
+      new_coercing(former::ReturnPreformed)
     }
-    else
+  }
+
+  impl< Definition > former::EntityToFormer< Definition > for UserProfile< >
+  where
+    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< > >,
+  {
+    type Former = UserProfileFormer< Definition >;
+  }
+
+  impl< > former::EntityToStorage for UserProfile< >
+  where
+  {
+    type Storage = UserProfileFormerStorage< >;
+  }
+
+  impl< Context, Formed, End > former::EntityToDefinition< Context, Formed, End > for UserProfile< >
+  where
+    End : former::FormingEnd< UserProfileFormerDefinitionTypes< Context, Formed > >,
+  {
+    type Definition = UserProfileFormerDefinition< Context, Formed, End >;
+  }
+
+  #[derive(Debug)]
+  pub struct UserProfileFormerDefinitionTypes< Context = (), Formed = UserProfile< >, >
+  where
+  {
+    _phantom : core::marker::PhantomData< (*const Context, *const Formed) >,
+  }
+
+  impl< Context, Formed, > ::core::default::Default for UserProfileFormerDefinitionTypes< Context, Formed, >
+  where
+  {
+    fn default() -> Self
     {
-      let val : i32 =
+      Self
       {
-        trait NotDefault< T >
-        {
-          fn maybe_default( self : &Self ) -> T { panic!( "Field 'age' isn't initialized" ) }
-        }
-        trait WithDefault< T >
-        {
-          fn maybe_default( self : &Self ) -> T;
-        }
-        impl< T > NotDefault< T > for &::core::marker::PhantomData< T > {}
-        impl< T > WithDefault< T > for ::core::marker::PhantomData< T >
-        where
-          T : ::core::default::Default,
-        {
-          fn maybe_default( self : &Self ) -> T
-          {
-            T::default()
-          }
-        }
-        ( &::core::marker::PhantomData::< i32 > ).maybe_default()
-      };
-      val
-    };
-    let username = if self.storage.username.is_some()
-    {
-      self.storage.username.take().unwrap()
+        _phantom : core::marker::PhantomData,
+      }
     }
-    else
+  }
+
+  impl< Context, Formed, > former::FormerDefinitionTypes for UserProfileFormerDefinitionTypes< Context, Formed, >
+  where
+  {
+    type Storage = UserProfileFormerStorage< >;
+    type Formed = Formed;
+    type Context = Context;
+  }
+
+  #[derive(Debug)]
+  pub struct UserProfileFormerDefinition< Context = (), Formed = UserProfile< >, End = former::ReturnPreformed, >
+  where
+  {
+    _phantom : core::marker::PhantomData< (*const Context, *const Formed, *const End) >,
+  }
+
+  impl< Context, Formed, End, > ::core::default::Default for UserProfileFormerDefinition< Context, Formed, End, >
+  where
+  {
+    fn default() -> Self
     {
-      let val : String =
+      Self
       {
-        trait NotDefault< T >
+        _phantom : core::marker::PhantomData,
+      }
+    }
+  }
+
+  impl< Context, Formed, End, > former::FormerDefinition for UserProfileFormerDefinition< Context, Formed, End, >
+  where
+    End : former::FormingEnd< UserProfileFormerDefinitionTypes< Context, Formed, > >,
+  {
+    type Types = UserProfileFormerDefinitionTypes< Context, Formed, >;
+    type End = End;
+    type Storage = UserProfileFormerStorage< >;
+    type Formed = Formed;
+    type Context = Context;
+  }
+
+  impl< Context, Formed, > former::FormerMutator for UserProfileFormerDefinitionTypes< Context, Formed, >
+  where
+  {}
+
+  pub struct UserProfileFormerStorage< >
+  where
+  {
+    pub age : ::core::option::Option< i32 >,
+    pub username : ::core::option::Option< String >,
+    pub bio_optional : Option< String >,
+  }
+
+  impl< > ::core::default::Default for UserProfileFormerStorage< >
+  where
+  {
+    #[ inline( always ) ]
+    fn default() -> Self
+    {
+      Self
+      {
+        age : ::core::option::Option::None,
+        username : ::core::option::Option::None,
+        bio_optional : ::core::option::Option::None,
+      }
+    }
+  }
+
+  impl< > former::Storage for UserProfileFormerStorage< >
+  where
+  {
+    type Formed = UserProfile< >;
+  }
+
+  impl< > former::StoragePreform for UserProfileFormerStorage< >
+  where
+  {
+    type Preformed = UserProfile< >;
+    fn preform(mut self) -> Self::Preformed
+    {
+      let age = if self.age.is_some()
+      {
+        self.age.take().unwrap()
+      }
+      else
+      {
         {
-          fn maybe_default( self : &Self ) -> T { panic!( "Field 'username' isn't initialized" ) }
-        }
-        trait WithDefault< T >
-        {
-          fn maybe_default( self : &Self ) -> T;
-        }
-        impl< T > NotDefault< T > for &::core::marker::PhantomData< T > {}
-        impl< T > WithDefault< T > for ::core::marker::PhantomData< T >
-        where
-          T : ::core::default::Default,
-        {
-          fn maybe_default( self : &Self ) -> T
+          trait MaybeDefault< T >
           {
-            T::default()
+            fn maybe_default(self : &Self) -> T
+            {
+              panic!("Field 'age' isn't initialized")
+            }
           }
+          impl< T > MaybeDefault< T > for &::core::marker::PhantomData< T >
+          {}
+          impl< T > MaybeDefault< T > for ::core::marker::PhantomData< T >
+          where T : ::core::default::Default,
+          {
+            fn maybe_default(self : &Self) -> T
+            {
+              T::default()
+            }
+          }
+          (&::core::marker::PhantomData::< i32 >).maybe_default()
         }
-        ( &::core::marker::PhantomData::< String > ).maybe_default()
       };
-      val
-    };
-    let bio_optional = if self.storage.bio_optional.is_some()
-    {
-      Option::Some( self.storage.bio_optional.take().unwrap() )
-    }
-    else
-    {
-      Option::None
-    };
-    let result = UserProfile
-    {
-      age,
-      username,
-      bio_optional,
-    };
-    return result;
-  }
-
-  #[ inline( always ) ]
-  pub fn perform( self ) -> UserProfile
-  {
-    let result = self.form();
-    return result;
-  }
-
-  #[ inline( always ) ]
-  pub fn new() -> UserProfileFormer< UserProfile, former::ReturnFormed >
-  {
-    UserProfileFormer::< UserProfile, former::ReturnFormed >::begin_coercing( None, former::ReturnFormed )
-  }
-
-  #[ inline( always ) ]
-  pub fn begin_coercing
-  (
-    context : Option< Context >,
-    on_end : End,
-  ) -> Self
-  {
-    Self
-    {
-      storage : core::default::Default::default(),
-      context : context,
-      on_end : Option::Some( on_end ),
+      let username = if self.username.is_some()
+      {
+        self.username.take().unwrap()
+      }
+      else
+      {
+        {
+          trait MaybeDefault< T >
+          {
+            fn maybe_default(self : &Self) -> T
+            {
+              panic!("Field 'username' isn't initialized")
+            }
+          }
+          impl< T > MaybeDefault< T > for &::core::marker::PhantomData< T >
+          {}
+          impl< T > MaybeDefault< T > for ::core::marker::PhantomData< T >
+          where T : ::core::default::Default,
+          {
+            fn maybe_default(self : &Self) -> T
+            {
+              T::default()
+            }
+          }
+          (&::core::marker::PhantomData::< String >).maybe_default()
+        }
+      };
+      let bio_optional = if self.bio_optional.is_some()
+      {
+        ::core::option::Option::Some(self.bio_optional.take().unwrap())
+      }
+      else
+      {
+        ::core::option::Option::None
+      };
+      let result = UserProfile::<>
+      {
+        age,
+        username,
+        bio_optional,
+      };
+      return result;
     }
   }
 
-  #[ inline( always ) ]
-  pub fn end( mut self ) -> Context
+  pub struct UserProfileFormer< Definition = UserProfileFormerDefinition< (), UserProfile< >, former::ReturnPreformed >, >
+  where
+    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< > >,
   {
-    let on_end = self.on_end.take().unwrap();
-    let context = self.context.take();
-    let formed = self.form();
-    on_end.call( formed, context )
+    pub storage : Definition::Storage,
+    pub context : core::option::Option< Definition::Context >,
+    pub on_end : core::option::Option< Definition::End >,
   }
 
-  #[ inline ]
-  pub fn age< Src >( mut self, src : Src ) -> Self
+  impl< Definition, > UserProfileFormer< Definition, >
   where
-    Src : Into< i32 >,
+    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< > >, Definition::Types : former::FormerDefinitionTypes< Storage = UserProfileFormerStorage< > >,
   {
-    debug_assert!( self.storage.age.is_none() );
-    self.storage.age = Option::Some( src.into() );
-    self
+    #[ inline( always ) ]
+    pub fn new(on_end : Definition::End) -> Self
+    {
+      Self::begin_coercing(None, None, on_end)
+    }
+
+    #[ inline( always ) ]
+    pub fn new_coercing< IntoEnd >(end : IntoEnd) -> Self
+    where IntoEnd : Into< Definition::End >,
+    {
+      Self::begin_coercing(None, None, end,)
+    }
+
+    #[ inline( always ) ]
+    pub fn begin(mut storage : core::option::Option< Definition::Storage >, context : core::option::Option< Definition::Context >, on_end : <Definition as former::FormerDefinition>::End,) -> Self
+    {
+      if storage.is_none()
+      {
+        storage = Some(::core::default::Default::default());
+      }
+      Self
+      {
+        storage : storage.unwrap(),
+        context : context,
+        on_end : ::core::option::Option::Some(on_end),
+      }
+    }
+
+    #[ inline( always ) ]
+    pub fn begin_coercing< IntoEnd >(mut storage : core::option::Option< Definition::Storage >, context : core::option::Option< Definition::Context >, on_end : IntoEnd,) -> Self
+    where IntoEnd : ::core::convert::Into< <Definition as former::FormerDefinition>::End >,
+    {
+      if storage.is_none()
+      {
+        storage = Some(::core::default::Default::default());
+      }
+      Self
+      {
+        storage : storage.unwrap(),
+        context : context,
+        on_end : ::core::option::Option::Some(::core::convert::Into::into(on_end)),
+      }
+    }
+
+    #[ inline( always ) ]
+    pub fn form(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed
+    {
+      self.end()
+    }
+
+    #[ inline( always ) ]
+    pub fn end(mut self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed
+    {
+      let on_end = self.on_end.take().unwrap();
+      let mut context = self.context.take();
+      <Definition::Types as former::FormerMutator>::form_mutation(&mut self.storage, &mut context);
+      former::FormingEnd::<Definition::Types>::call(&on_end, self.storage, context)
+    }
+
+    #[ inline( always ) ]
+    pub fn age< Src >(mut self, src : Src) -> Self
+    where Src : ::core::convert::Into< i32 >,
+    {
+      debug_assert!(self.storage.age.is_none());
+      self.storage.age = ::core::option::Option::Some(::core::convert::Into::into(src));
+      self
+    }
+
+    #[ inline( always ) ]
+    pub fn username< Src >(mut self, src : Src) -> Self
+    where Src : ::core::convert::Into< String >,
+    {
+      debug_assert!(self.storage.username.is_none());
+      self.storage.username = ::core::option::Option::Some(::core::convert::Into::into(src));
+      self
+    }
+
+    #[ inline( always ) ]
+    pub fn bio_optional< Src >(mut self, src : Src) -> Self
+    where Src : ::core::convert::Into< String >,
+    {
+      debug_assert!(self.storage.bio_optional.is_none());
+      self.storage.bio_optional = ::core::option::Option::Some(::core::convert::Into::into(src));
+      self
+    }
   }
 
-  #[ inline ]
-  pub fn username< Src >( mut self, src : Src ) -> Self
+  impl< Definition, > UserProfileFormer< Definition, >
   where
-    Src : Into< String >,
+    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< >, Formed = UserProfile< > >,
+    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< > >,
   {
-    debug_assert!( self.storage.username.is_none() );
-    self.storage.username = Option::Some( src.into() );
-    self
+    pub fn preform(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed
+    {
+      former::StoragePreform::preform(self.storage)
+    }
   }
 
-  #[ inline ]
-  pub fn bio_optional< Src >( mut self, src : Src ) -> Self
+  impl< Definition, > UserProfileFormer< Definition, >
   where
-    Src : Into< String >,
+    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< >, Formed = UserProfile< >, >,
   {
-    debug_assert!( self.storage.bio_optional.is_none() );
-    self.storage.bio_optional = Option::Some( src.into() );
-    self
+
+    #[ inline( always ) ]
+    pub fn perform(self) -> Definition::Formed
+    {
+      let result = self.form();
+      return result;
+    }
   }
+
+  impl< Definition > former::FormerBegin< Definition > for UserProfileFormer< Definition, >
+  where
+    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< > >,
+  {
+    #[ inline( always ) ]
+    fn former_begin(storage : core::option::Option< Definition::Storage >, context : core::option::Option< Definition::Context >, on_end : Definition::End,) -> Self
+    {
+      debug_assert!(storage.is_none());
+      Self::begin(None, context, on_end)
+    }
+  }
+
+  pub type UserProfileAsSubformer< Superformer, End > =
+  UserProfileFormer< UserProfileFormerDefinition< Superformer, Superformer, End, >, >;
+
+  pub trait UserProfileAsSubformerEnd< SuperFormer >
+  where
+    Self : former::FormingEnd< UserProfileFormerDefinitionTypes< SuperFormer, SuperFormer >, >, {}
+
+  impl< SuperFormer, T > UserProfileAsSubformerEnd< SuperFormer > for T
+  where
+    Self : former::FormingEnd< UserProfileFormerDefinitionTypes< SuperFormer, SuperFormer >, >,
+  {}
+
+  let profile = UserProfile::former()
+  .age( 30 )
+  .username( "JohnDoe".to_string() )
+  .bio_optional( "Software Developer".to_string() ) // Optionally provide a bio
+  .form();
+  dbg!( &profile );
+
+  // Expected output:
+  //
+  // &profile = UserProfile {
+  //   age: 30,
+  //   username: "JohnDoe",
+  //   bio_optional: Some("Software Developer"),
+  // }
+
 }
-
-let profile = UserProfile::former()
-.age( 30 )
-.username( "JohnDoe".to_string() )
-.bio_optional( "Software Developer".to_string() )
-.form();
-
-dbg!( &profile );
-// Expected output:
-// &profile = UserProfile {
-//   age: 30,
-//   username: "JohnDoe",
-//   bio_optional: Some("Software Developer"),
-// }
-
 ```
 
 </details>
 
-### Custom and Alternative Setters
+## Custom and Alternative Setters
 
 With help of `Former`, it is possible to define multiple versions of a setter for a single field, providing the flexibility to include custom logic within the setter methods. This feature is particularly useful when you need to preprocess data or enforce specific constraints before assigning values to fields. Custom setters should have unique names to differentiate them from the default setters generated by `Former`, allowing for specialized behavior while maintaining clarity in your code.
 
@@ -327,7 +487,7 @@ assert_eq!( example.word, "Hello!".to_string() );
 
 In the example above showcases a custom alternative setter, `word_exclaimed`, which appends an exclamation mark to the input string before storing it. This approach allows for additional processing or validation of the input data without compromising the simplicity of the builder pattern.
 
-### Custom Setter Overriding
+## Custom Setter Overriding
 
 But it's also possible to completely override setter and write its own from scratch. For that use attribe `[ setter( false ) ]` to disable setter.
 
@@ -417,11 +577,40 @@ The above code snippet showcases the `Former` crate's ability to initialize stru
 
 This approach significantly simplifies struct construction, particularly for complex types or where defaults beyond the `Default` trait's capability are required. By utilizing the `default` attribute, developers can ensure their structs are initialized safely and predictably, enhancing code clarity and maintainability.
 
+## Concept of Storage and Former
+
+Storage is temporary storage structure holds the intermediate state of an object during its construction.
+
+Purpose of Storage:
+
+- **Intermediate State Holding**: Storage serves as a temporary repository for all the partially set properties and data of the object being formed. This functionality is essential in situations where the object's completion depends on multiple, potentially complex stages of configuration.
+- **Decoupling Configuration from Instantiation**: Storage separates the accumulation of configuration states from the actual creation of the final object. This separation fosters cleaner, more maintainable code, allowing developers to apply configurations in any order and manage interim states more efficiently, without compromising the integrity of the final object.
+
+Storage is not just a passive container; it is an active part of a larger ecosystem that includes the former itself, a context, and a callback (often referred to as `FormingEnd`):
+
+- **Former as an Active Manager**: The former is responsible for managing the storage, utilizing it to keep track of the object's evolving configuration. It orchestrates the formation process by handling intermediate states and preparing the object for its final form.
+- **Contextual Flexibility**: The context associated with the former adds an additional layer of flexibility, allowing the former to adjust its behavior based on the broader circumstances of the object's formation. This is particularly useful when the forming process involves conditions or states external to the object itself.
+- **FormingEnd Callback**: The `FormingEnd` callback is a dynamic component that defines the final steps of the forming process. It can modify the storage based on final adjustments, validate the object's readiness, or integrate the object into a larger structure, such as embedding it as a subformer within another structure.
+
+These elements work in concert to ensure that the forming process is not only about building an object step-by-step but also about integrating it seamlessly into larger, more complex structures or systems. The `Former` framework, with its sophisticated management of storage, context, and callbacks, enables a highly flexible and reusable approach to object formation, making it ideal for scenarios where objects are part of nested or interdependent systems.
+
+## Comcept of Definitions
+
+Definitions are utilized to encapsulate and manage generic parameters efficiently and avoid passing each parameter individually.
+
+Two key definition Traits:
+
+1. **`FormerDefinitionTypes`**:
+   - This trait outlines the essential components involved in the formation process, including the types of storage, the form being created, and the context used. It focuses on the types involved rather than the termination of the formation process.
+2. **`FormerDefinition`**:
+   - Building upon `FormerDefinitionTypes`, this trait incorporates the `FormingEnd` callback, linking the formation types with a definitive ending. It specifies how the formation process should conclude, which may involve validations, transformations, or integrations into larger structures.
+   - The inclusion of the `End` type parameter specifies the end conditions of the formation process, effectively connecting the temporary state held in storage to its ultimate form.
+
 ## Concept of subformer
 
 Subformers are specialized builders used within the `Former` framework to construct nested or collection-based data structures like vectors, hash maps, and hash sets. They simplify the process of adding elements to these structures by providing a fluent interface that can be seamlessly integrated into the overall builder pattern of a parent struct. This approach allows for clean and intuitive initialization of complex data structures, enhancing code readability and maintainability.
 
-### Types of Setters
+## Types of Setters
 
 It's crucial to understand the differences among subform setters, container setters, and scalar setters:
 
@@ -434,7 +623,7 @@ It's crucial to understand the differences among subform setters, container sett
 Each type of setter is designed to address different needs in the formation process, ensuring that users can build complex, nested structures or simply set individual field values as required.
 
 
-### Subformer example: Building a Vector
+## Subformer example: Building a Vector
 
 The following example illustrates how to use a `VectorSubformer` to construct a `Vec` field within a struct. The subformer enables adding elements to the vector with a fluent interface, streamlining the process of populating collection fields within structs.
 
@@ -461,7 +650,7 @@ assert_eq!( instance, StructWithVec { vec: vec![ "apple", "banana" ] } );
 # }
 ```
 
-### Subformer example: Building a Hashmap
+## Subformer example: Building a Hashmap
 
 This example demonstrates the use of a `HashMapSubformer` to build a hash map within a struct. The subformer provides a concise way to insert key-value pairs into the map, making it easier to manage and construct hash map fields.
 
@@ -490,7 +679,7 @@ assert_eq!( struct1, StructWithMap { map : hmap!{ "a" => "b", "c" => "d" } } );
 # }
 ```
 
-### Subformer example: Building a Hashset
+## Subformer example: Building a Hashset
 
 In the following example, a `HashSetSubformer` is utilized to construct a hash set within a struct. This illustrates the convenience of adding elements to a set using the builder pattern facilitated by subformers.
 
@@ -519,7 +708,7 @@ assert_eq!(instance, StructWithSet { set : hset![ "apple", "banana" ] });
 # }
 ```
 
-### Custom Subformer
+## Custom Subformer
 
 It is possible to use former of one structure to construct field of another one and integrate it into former of the last one.
 
@@ -617,13 +806,39 @@ In this example, the `Parent` struct functions as a container for multiple `Chil
 
 This pattern of using a structure's former as a subformer within another facilitates the creation of deeply nested or complex data structures through a coherent and fluent interface, showcasing the powerful capabilities of the `Former` framework for Rust applications.
 
-### To add to your project
+## Concept of Mutator
+
+Provides a mechanism for mutating the context and storage just before the forming process is completed.
+
+The `FormerMutator` trait allows for the implementation of custom mutation logic on the internal state
+of an entity (context and storage) just before the final forming operation is completed. This mutation
+occurs immediately before the `FormingEnd` callback is invoked.
+
+Use cases of Mutator
+
+- Applying last-minute changes to the data being formed.
+- Setting or modifying properties that depend on the final state of the storage or context.
+- Storage-specific fields which are not present in formed structure.
+
+## Mutator vs `FormingEnd`
+
+Unlike `FormingEnd`, which is responsible for integrating and finalizing the formation process of a field within
+a parent former, `form_mutation` directly pertains to the entity itself. This method is designed to be independent
+of whether the forming process is occurring within the context of a superformer or if the structure is a standalone
+or nested field. This makes `form_mutation` suitable for entity-specific transformations that should not interfere
+with the hierarchical forming logic managed by `FormingEnd`.
+
+## Example: Mutator
+
+<!-- xxx : write -->
+
+## To add to your project
 
 ```sh
 cargo add former
 ```
 
-### Try out from the repository
+## Try out from the repository
 
 ```sh
 git clone https://github.com/Wandalen/wTools
