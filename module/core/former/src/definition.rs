@@ -35,7 +35,9 @@ pub trait FormerDefinitionTypes : Sized
 /// zzz : write description
 pub trait FormerDefinition : Sized
 {
-  type Types : crate::FormerDefinitionTypes< Storage = Self::Storage, Formed = Self::Formed, Context = Self::Context >;
+  type Types :
+    crate::FormerDefinitionTypes< Storage = Self::Storage, Formed = Self::Formed, Context = Self::Context >
+    + crate::FormerMutator;
   type End : crate::FormingEnd< Self::Types >;
   type Storage : Default;
   type Formed;

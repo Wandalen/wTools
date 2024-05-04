@@ -9,15 +9,9 @@ pub struct StructWithCustomSetters
   magic : String,
 }
 
-// impl< Context, End > StructWithCustomSettersFormer< Context, End >
-// where
-//   End: the_module::FormingEnd< StructWithCustomSetters, Context >,
-// {
-
 impl< Definition > StructWithCustomSettersFormer< Definition >
 where
   Definition : former::FormerDefinition< Storage = StructWithCustomSettersFormerStorage >,
-  // Definition::Types : former::FormerDefinitionTypes< Storage = StructWithCustomSettersFormerStorage >,
 {
 
   /// Custom alternative setter of ordinary field.

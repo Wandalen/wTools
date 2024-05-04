@@ -104,6 +104,11 @@ fn custom_definition()
     type Context = ();
   }
 
+  impl former::FormerMutator
+  for Return13
+  {
+  }
+
   impl former::FormerDefinition for Return13
   {
     type Types = Return13;
@@ -172,6 +177,11 @@ fn custom_definition_parametrized()
     type Storage = Vec< E >;
     type Formed = i32;
     type Context = ();
+  }
+
+  impl< E > former::FormerMutator
+  for Return13< E >
+  {
   }
 
   impl< E > former::FormerDefinition for Return13< E >
@@ -249,6 +259,10 @@ fn custom_definition_custom_end()
     type Storage = Vec< String >;
     type Formed = i32;
     type Context = ();
+  }
+  impl former::FormerMutator
+  for Return13
+  {
   }
   impl former::FormerDefinition for Return13
   {

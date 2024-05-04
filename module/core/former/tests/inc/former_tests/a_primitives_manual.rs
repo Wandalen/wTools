@@ -67,6 +67,11 @@ for Struct1FormerDefinitionTypes< Context, Formed >
   type Context = Context;
 }
 
+impl< Context, Formed > former::FormerMutator
+for Struct1FormerDefinitionTypes< Context, Formed >
+{
+}
+
 impl< Context, Formed, End > former::FormerDefinition
 for Struct1FormerDefinition< Context, Formed, End >
 where

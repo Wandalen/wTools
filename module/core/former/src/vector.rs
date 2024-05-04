@@ -113,6 +113,11 @@ for VectorDefinition< E, Context, Formed, NoEnd >
   type Context = Context;
 }
 
+impl< E, Context, Formed > FormerMutator
+for VectorDefinition< E, Context, Formed, NoEnd >
+{
+}
+
 impl< E, Context, Formed, End > FormerDefinition
 for VectorDefinition< E, Context, Formed, End >
 where

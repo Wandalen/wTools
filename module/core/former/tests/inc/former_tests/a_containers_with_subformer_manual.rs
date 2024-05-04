@@ -48,7 +48,8 @@ where
   _phantom : core::marker::PhantomData<(Context, Formed)>,
 }
 
-impl< Context, Formed, > core::default::Default for Struct1FormerDefinitionTypes< Context, Formed, >
+impl< Context, Formed, > core::default::Default
+for Struct1FormerDefinitionTypes< Context, Formed, >
 where
 {
   fn default() -> Self
@@ -60,12 +61,18 @@ where
   }
 }
 
-impl< Context, Formed, > former::FormerDefinitionTypes for Struct1FormerDefinitionTypes< Context, Formed, >
+impl< Context, Formed, > former::FormerDefinitionTypes
+for Struct1FormerDefinitionTypes< Context, Formed, >
 where
 {
   type Storage = Struct1FormerStorage<>;
   type Formed = Formed;
   type Context = Context;
+}
+
+impl< Context, Formed > former::FormerMutator
+for Struct1FormerDefinitionTypes< Context, Formed >
+{
 }
 
 #[derive(Debug)]

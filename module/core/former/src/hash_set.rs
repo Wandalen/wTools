@@ -134,6 +134,13 @@ where
   type Context = Context;
 }
 
+impl< K, Context, Formed > FormerMutator
+for HashSetDefinition< K, Context, Formed, NoEnd >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+}
+
 impl< K, Context, Formed, End > FormerDefinition
 for HashSetDefinition< K, Context, Formed, End >
 where

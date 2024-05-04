@@ -123,6 +123,13 @@ where
   type Context = Context;
 }
 
+impl< K, E, Context, Formed > FormerMutator
+for HashMapDefinition< K, E, Context, Formed, NoEnd >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+}
+
 impl< K, E, Context, Formed, End > FormerDefinition
 for HashMapDefinition< K, E, Context, Formed, End >
 where
