@@ -11,12 +11,13 @@ pub struct Struct1
   c : String,
 }
 
-pub struct Struct1CustomEnd< Definition >
+pub struct Struct1CustomEnd
 {
-  _phantom : core::marker::PhantomData< ( Definition, ) >,
+  _phantom : core::marker::PhantomData< ( (), ) >,
 }
 
-impl< Definition > Default for Struct1CustomEnd< Definition >
+// impl< Definition > Default for Struct1CustomEnd< Definition >
+impl Default for Struct1CustomEnd
 {
 
   #[ inline( always ) ]
@@ -35,7 +36,7 @@ impl< Context, > former::FormingEnd
 <
   Struct1FormerDefinitionTypes< Context, Struct1 >
 >
-for Struct1CustomEnd< Struct1FormerDefinitionTypes< Context, Struct1 > >
+for Struct1CustomEnd
 {
   #[ inline( always ) ]
   fn call
@@ -62,7 +63,7 @@ for Struct1CustomEnd< Struct1FormerDefinitionTypes< Context, Struct1 > >
     {
       Default::default()
     };
-    Struct1 { c : format!( "{:?} - {:?}", a, b ) }
+    Struct1 { c : format!( "{:?} - :?", a, b ) }
   }
 }
 
@@ -72,12 +73,18 @@ for Struct1CustomEnd< Struct1FormerDefinitionTypes< Context, Struct1 > >
 
 tests_impls!
 {
+
   fn test_complex()
   {
-    let got = Struct1::former().a( 13 ).b( "abc" ).c( "def" ).form();
+    // let got = Struct1::former().a( 13 ).b( "abc" ).c( "def" ).form();
+    let end = Struct1CustomEnd::default();
+    let got = Struct1Former
+    ::< Struct1FormerDefinition< (), Struct1, _ > >
+    ::new( end )
+    .a( 13 ).b( "abc" ).c( "def" ).form();
     let exp = Struct1
     {
-      c : "def".to_string(),
+      c : "13 - abc".to_string(),
     };
     a_id!( got, exp );
   }

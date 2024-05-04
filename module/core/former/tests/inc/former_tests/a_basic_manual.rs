@@ -18,7 +18,9 @@ impl Struct1
   #[ inline( always ) ]
   pub fn former() -> Struct1Former< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >
   {
-    Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::new_coercing( former::ReturnPreformed )
+    Struct1Former
+    ::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >
+    ::new( former::ReturnPreformed )
   }
 
 }
