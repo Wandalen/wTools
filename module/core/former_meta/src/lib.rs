@@ -282,7 +282,7 @@ mod derive_former;
     Former,
     attributes
     (
-      debug, perform, storage_fields, // struct attributes
+      debug, perform, storage_fields, mutator, // struct attributes
       former, scalar, container, subform, // field attributes
     )
   )

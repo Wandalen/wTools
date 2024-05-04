@@ -273,12 +273,16 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     r#"
  = Example of custom mutator
 
-impl< {former_definition_types_generics_impl:?} > former::FormerMutator
-for {former_definition_types} < {former_definition_types_generics_ty:?} >
+impl< {} > former::FormerMutator
+for {} < {} >
 where
-  {former_definition_types_generics_where:?}
+  {}
 {}
     "#,
+    format!( "{}", qt!{ #former_definition_types_generics_impl } ),
+    former_definition_types,
+    format!( "{}", qt!{ #former_definition_types_generics_ty } ),
+    format!( "{}", qt!{ #former_definition_types_generics_where } ),
     "{\n}"
     );
     println!( "{hint}" );
