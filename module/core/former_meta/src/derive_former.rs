@@ -42,9 +42,12 @@ pub struct Struct1
 
   let doc_former_struct = format!
   (
-r#" Object to form [{}]. If field's values is not set then default value of the field is set.
+r#"
+Structure to form [{}]. Represents a forming entity designed to construct objects through a builder pattern.
 
-For specifying custom default value use attribute `default`. For example:
+This structure holds temporary storage and context during the formation process and
+utilizes a defined end strategy to finalize the object creation. It facilitates the flexible
+construction of complex objects by allowing step-by-step configuration.
 ```
 {}
 ```
@@ -79,6 +82,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let stru = &ast.ident;
   let former_name = format!( "{}Former", stru );
   let former = syn::Ident::new( &former_name, stru.span() );
+  // let former_namespace_name = format!( "{}FormerSpace", stru );
+  // let former_namespace = syn::Ident::new( &former_namespace_name, stru.span() );
   let former_storage_name = format!( "{}FormerStorage", stru );
   let former_storage = syn::Ident::new( &former_storage_name, stru.span() );
   let former_definition_name = format!( "{}FormerDefinition", stru );
@@ -344,6 +349,12 @@ where
       type Definition = #former_definition < #struct_generics_ty __Context, __Formed, __End >;
     }
 
+    // #[ allow( non_snake_case ) ]
+    // pub mod #former_namespace
+    // {
+    // pub use super::#stru;
+    // use super::*;
+
     // = definition types
 
     #[ derive( Debug ) ]
@@ -491,10 +502,15 @@ where
     where
       #former_generics_where
     {
-      storage : Definition::Storage,
-      context : core::option::Option< Definition::Context >,
-      on_end : core::option::Option< Definition::End >,
-      // zzz : should on_end be optional?
+      /// Temporary storage for all fields during the formation process. It contains
+      ///   partial data that progressively builds up to the final object.
+      pub storage : Definition::Storage,
+      /// An optional context providing additional data or state necessary for custom
+      ///   formation logic or to facilitate this former's role as a subformer within another former.
+      pub context : core::option::Option< Definition::Context >,
+      /// An optional closure or handler that is invoked to transform the accumulated
+      ///   temporary storage into the final object structure once formation is complete.
+      pub on_end : core::option::Option< Definition::End >,
     }
 
     #[ automatically_derived ]
@@ -729,6 +745,9 @@ where
     #(
       #former_field_add_end
     )*
+
+    // } /* end of namespace */
+    // pub use #former_namespace :: *;
 
   };
 

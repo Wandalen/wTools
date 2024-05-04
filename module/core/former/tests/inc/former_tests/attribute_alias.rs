@@ -10,6 +10,8 @@ tests_impls!
   fn test_alias()
   {
     #[ derive( Debug, PartialEq, the_module::Former ) ]
+    // #[ derive( Debug, PartialEq, the_module::Former ) ] #[ debug ]
+    // #[ derive( Debug, PartialEq ) ]
     pub struct AliasTestStruct
     {
       #[ scalar( name = first_field ) ]
@@ -18,6 +20,10 @@ tests_impls!
       i32_field : i32,
       i8_field : i8,
     }
+
+    // == begin of generated
+
+    // == end of generated
 
     let test_struct = AliasTestStruct::former()
     .first_field( "first_field" )

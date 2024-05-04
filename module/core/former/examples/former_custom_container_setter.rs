@@ -7,6 +7,7 @@
 //!
 //! The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a container—each child entity in this case.
 //!
+//! xxx : extend by information about Scalar Setter
 //! #### Subform Setter vs. Container Setter
 //!
 //! It's important to distinguish between a subform setter and a container setter:
