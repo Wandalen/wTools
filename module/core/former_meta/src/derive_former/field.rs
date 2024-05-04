@@ -350,22 +350,26 @@ scalar_setter_required
   )
   -> Result< TokenStream >
   {
-    let r = qt!{};
+    let r = self.scalar_setter
+    (
+      former,
+      former_storage,
+    );
 
-    // scalar setter
-    let r = if self.scalar_setter_required()
-    {
-      let r2 = self.scalar_setter();
-      qt!
-      {
-        #r
-        #r2
-      }
-    }
-    else
-    {
-      r
-    };
+    // // scalar setter
+    // let r = if self.scalar_setter_required()
+    // {
+    //   let r2 = self.scalar_setter();
+    //   qt!
+    //   {
+    //     #r
+    //     #r2
+    //   }
+    // }
+    // else
+    // {
+    //   r
+    // };
 
     // container setter
     let r = if let Some( _ ) = &self.attrs.container
@@ -795,12 +799,56 @@ where
   pub fn scalar_setter
   (
     &self,
+    former : &syn::Ident,
+    former_storage : &syn::Ident,
   )
   -> TokenStream
   {
-    let field_ident = &self.ident;
-    let typ = &self.non_optional_ty;
+    let field_ident = self.ident;
+    let typ = self.non_optional_ty;
     let setter_name = self.scalar_setter_name();
+    let attr = self.attrs.scalar.as_ref();
+
+    if attr.is_some() && attr.unwrap().hint
+    {
+      let hint = format!
+      (
+        r#"
+
+impl< Definition > {}< Definition >
+where
+  Definition : former::FormerDefinition< Storage = {} >,
+{{
+  #[ inline ]
+  pub fn {}< Src >( mut self, src : Src ) -> Self
+  where
+    Src : ::core::convert::Into< {} >,
+  {{
+    debug_assert!( self.storage.{}.is_none() );
+    self.storage.{} = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
+    self
+  }}
+}}
+
+        "#,
+        former,
+        former_storage,
+        field_ident,
+        format!( "{}", qt!{ #typ } ),
+        field_ident,
+        field_ident,
+        // field_ident,
+        // format!( "{}", qt!{ #( #params, )* } ),
+        // format!( "{}", qt!{ #( #params, )* } ),
+        // former_assign_end,
+      );
+      println!( "{hint}" );
+    }
+
+    if !self.scalar_setter_required()
+    {
+      return qt! {};
+    }
 
     let doc = format!
     (
@@ -813,7 +861,8 @@ where
       #[ doc = #doc ]
       #[ inline ]
       pub fn #setter_name< Src >( mut self, src : Src ) -> Self
-      where Src : ::core::convert::Into< #typ >,
+      where
+        Src : ::core::convert::Into< #typ >,
       {
         debug_assert!( self.storage.#field_ident.is_none() );
         self.storage.#field_ident = ::core::option::Option::Some( ::core::convert::Into::into( src ) );

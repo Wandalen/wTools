@@ -1,7 +1,7 @@
 // Example former_custom_scalar_setter.rs
 
 //!
-//! This example demonstrates the use of container setters to manage complex nested data structures with the `Former` trait, focusing on a parent-child relationship structured around a container `HashMap`. Unlike typical builder patterns that add individual elements using subform setters, this example uses a container setter to manage the entire collection of children.
+//! This example demonstrates the implementation of a scalar setter using the `Former` trait in Rust. Unlike the more complex subform and container setters shown in previous examples, this example focuses on a straightforward approach to directly set a scalar value within a parent entity. The `Parent` struct manages a `HashMap` of `Child` entities, and the scalar setter is used to set the entire `HashMap` directly.
 //!
 //! #### Custom Subform Setter
 //!
@@ -19,8 +19,6 @@
 //!
 //! Each type of setter is designed to address different needs in the formation process, ensuring that users can build complex, nested structures or simply set individual field values as required.
 //!
-
-// xxx : update documentation
 
 // zzz : duplicate into readme
 
@@ -48,7 +46,8 @@ fn main()
   // #[ debug ]
   pub struct Parent
   {
-    #[ scalar( setter = false, hint = true ) ]
+    // Use `hint = true` to gennerate sketch of setter.
+    #[ scalar( setter = false, hint = false ) ]
     children : HashMap< String, Child >,
   }
 
@@ -58,7 +57,8 @@ fn main()
   {
     #[ inline ]
     pub fn children< Src >( mut self, src : Src ) -> Self
-    where Src : ::core::convert::Into< HashMap< String, Child > >,
+    where
+      Src : ::core::convert::Into< HashMap< String, Child > >,
     {
       debug_assert!( self.storage.children.is_none() );
       self.storage.children = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
