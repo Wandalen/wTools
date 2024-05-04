@@ -118,7 +118,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     where
       Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty > >,
-      // < Definition as former::FormerDefinition >::Types : former::FormerMutator,
   };
   let extra = generic_params::merge( &generics, &extra.into() );
 
@@ -141,7 +140,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
         Storage = #former_storage < #struct_generics_ty >,
         Formed = #stru < #struct_generics_ty >,
       >,
-      // < Definition as former::FormerDefinition >::Types : former::FormerMutator,
   };
   let extra = generic_params::merge( &generics, &extra.into() );
 
@@ -190,8 +188,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   })
   .collect();
   let formed_fields : Vec< _ > = process_results( formed_fields, | iter | iter.collect() )?;
-
-  // xxx
 
   let storage_fields : Vec< Result< FormerField< '_ > > > = struct_attrs
   .storage_fields()
@@ -322,7 +318,6 @@ where
     for #stru < #struct_generics_ty >
     where
       Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
-      // < Definition as former::FormerDefinition >::Types : former::FormerMutator,
       #struct_generics_where
     {
       type Former = #former < #struct_generics_ty Definition > ;
@@ -660,7 +655,6 @@ where
     >
     where
       Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
-      // < Definition as former::FormerDefinition >::Types : former::FormerMutator,
       #struct_generics_where
     {
 
@@ -738,27 +732,6 @@ where
   if has_debug
   {
     diag::debug_report_print( "derive : Former", original_input, &result );
-  }
-
-  // zzz : implement hints, rewrite
-  if example_of_custom_setter
-  {
-    let _example =
-r#"
-impl< Context, End > UserProfileFormer< Context, End >
-where
-  End : former::FormingEnd< UserProfile, Context >,
-{
-  pub fn age< Src >( mut self, src : Src ) -> Self
-  where
-    Src : Into< i32 >,
-  {
-    debug_assert!( self.age.is_none() );
-    self.storage.age = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
-    self
-  }
-}
-"#;
   }
 
   Ok( result )
