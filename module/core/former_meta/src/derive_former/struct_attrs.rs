@@ -226,28 +226,25 @@ impl syn::parse::Parse for AttributeStorageFields
   }
 }
 
-/// xxx : update documentation
+/// Represents attributes for customizing the mutation process in a forming operation.
 ///
-/// Customize mutator making possible to write custom mutator and get hint with sketch of mutator.
+/// `AttributeMutator` allows specifying whether a custom mutator should be used or a sketch should be provided
+/// as a hint for developing a custom mutator. This is crucial for advanced scenarios where the entity's state
+/// might require conditional modifications which are not handled by the standard `FormingEnd`.
 ///
-/// The `FormerMutator` trait allows for the implementation of custom mutation logic on the internal state
-/// of an entity (context and storage) just before the final forming operation is completed. This mutation
-/// occurs immediately before the `FormingEnd` callback is invoked.
-///
-/// ## Differences from `FormingEnd`
-///
-/// Unlike `FormingEnd`, which is responsible for integrating and finalizing the formation process of a field within
-/// a parent former, `form_mutation` directly pertains to the entity itself. This method is designed to be independent
-/// of whether the forming process is occurring within the context of a superformer or if the structure is a standalone
-/// or nested field. This makes `form_mutation` suitable for entity-specific transformations that should not interfere
-/// with the hierarchical forming logic managed by `FormingEnd`.
-///
+/// ## Example of code
+/// ```ignore
+/// custom = true, hint = true
+/// ```
+
 #[ derive( Debug, Default ) ]
 pub struct AttributeMutator
 {
-  /// Disable generation of mutator. Optional and `false` by default.
+  /// Indicates whether a custom mutator should be generated.
+  /// Defaults to `false`, meaning no custom mutator is generated unless explicitly requested.
   pub custom : bool,
-  /// Get hint with sketch of mutator. Optional and `false` by default.
+  /// Specifies whether to provide a sketch of the mutator as a hint.
+  /// Defaults to `false`, which means no hint is provided unless explicitly requested.
   pub hint : bool,
 }
 

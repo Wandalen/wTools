@@ -270,20 +270,25 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   {
     let hint = format!
     (
-    r#"
+      r#"
  = Example of custom mutator
 
 impl< {} > former::FormerMutator
 for {} < {} >
 where
   {}
-{}
-    "#,
-    format!( "{}", qt!{ #former_definition_types_generics_impl } ),
-    former_definition_types,
-    format!( "{}", qt!{ #former_definition_types_generics_ty } ),
-    format!( "{}", qt!{ #former_definition_types_generics_where } ),
-    "{\n}"
+{{
+  /// Mutates the context and storage of the entity just before the formation process completes.
+  #[ inline ]
+  fn form_mutation( storage : &mut Self::Storage, context : &mut Option< Self::Context > )
+  {{
+  }}
+}}
+      "#,
+      format!( "{}", qt!{ #former_definition_types_generics_impl } ),
+      former_definition_types,
+      format!( "{}", qt!{ #former_definition_types_generics_ty } ),
+      format!( "{}", qt!{ #former_definition_types_generics_where } ),
     );
     println!( "{hint}" );
   };

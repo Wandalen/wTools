@@ -18,6 +18,11 @@ pub struct Struct1
 impl< Context, Formed > former::FormerMutator
 for Struct1FormerDefinitionTypes< Context, Formed >
 {
+  /// Mutates the context and storage of the entity just before the formation process completes.
+  #[ inline ]
+  fn form_mutation( _storage : &mut Self::Storage, _context : &mut ::core::option::Option< Self::Context > )
+  {
+  }
 }
 
 // pub struct Struct1CustomEnd
