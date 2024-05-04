@@ -167,25 +167,16 @@ impl former::StoragePreform for Struct1FormerStorage
   }
 }
 
-// = former before end
+// = former mutator
 
-pub trait FormerBeforeEnd
-where
-  Self : former::FormerDefinitionTypes,
-{
-  fn before_end( _storage : &mut Self::Storage, _context : &mut ::core::option::Option< Self::Context > )
-  {
-  }
-}
-
-impl< Definition > FormerBeforeEnd
-for Definition
-where
-  Definition : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
+impl< Context, Formed > former::FormerMutator
+for Struct1FormerDefinitionTypes< Context, Formed >
+// where
+  // Struct1FormerDefinitionTypes : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
 {
 }
 
-// FormerBeforeEnd::< Self >::before_end( &mut self.storage, &mut context );
+// FormerMutator::< Self >::form_mutation( &mut self.storage, &mut context );
 
 // = former
 
@@ -205,6 +196,7 @@ where
 impl< Definition > Struct1Former< Definition >
 where
   Definition : former::FormerDefinition< Storage = Struct1FormerStorage >,
+  < Definition as former::FormerDefinition >::Types : former::FormerMutator,
 {
 
   #[ inline( always ) ]
@@ -282,7 +274,7 @@ where
   {
     let on_end = self.on_end.take().unwrap();
     let mut context = self.context.take();
-    < Definition::Types as FormerBeforeEnd >::before_end( &mut self.storage, &mut context );
+    < Definition::Types as former::FormerMutator >::form_mutation( &mut self.storage, &mut context );
     former::FormingEnd::< Definition::Types >::call( & on_end, self.storage, context )
   }
 
@@ -314,6 +306,7 @@ impl< Definition > former::FormerBegin< Definition >
 for Struct1Former< Definition >
 where
   Definition : former::FormerDefinition< Storage = Struct1FormerStorage >,
+  < Definition as former::FormerDefinition >::Types : former::FormerMutator,
 {
 
   #[ inline( always ) ]

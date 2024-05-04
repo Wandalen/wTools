@@ -1,4 +1,43 @@
 
+
+/// Provides a mechanism for mutating the context and storage just before the forming process is completed.
+///
+/// The `FormerMutator` trait allows for the implementation of custom mutation logic on the internal state
+/// of an entity (context and storage) just before the final forming operation is completed. This mutation
+/// occurs immediately before the `FormingEnd` callback is invoked.
+///
+/// ## Differences from `FormingEnd`
+///
+/// Unlike `FormingEnd`, which is responsible for integrating and finalizing the formation process of a field within
+/// a parent former, `form_mutation` directly pertains to the entity itself. This method is designed to be independent
+/// of whether the forming process is occurring within the context of a superformer or if the structure is a standalone
+/// or nested field. This makes `form_mutation` suitable for entity-specific transformations that should not interfere
+/// with the hierarchical forming logic managed by `FormingEnd`.
+///
+/// ## Use Cases
+///
+/// - Applying last-minute changes to the data being formed.
+/// - Setting or modifying properties that depend on the final state of the storage or context.
+/// - Storage-specific fields which are not present in formed structure.
+
+// xxx : add example
+pub trait FormerMutator
+where
+  Self : crate::FormerDefinitionTypes,
+{
+  /// Mutates the context and storage of the entity just before the formation process completes.
+  ///
+  /// This function is invoked immediately prior to the `FormingEnd` callback during the forming process.
+  /// It provides a hook for implementing custom logic that modifies the internal state (storage and context)
+  /// of the entity. `form_mutation` is particularly useful for adjustments or updates that need to reflect
+  /// in the entity just before it is finalized and returned.
+  ///
+  #[ inline ]
+  fn form_mutation( _storage : &mut Self::Storage, _context : &mut ::core::option::Option< Self::Context > )
+  {
+  }
+}
+
 /// Defines a handler for the end of a subforming process, enabling the return of the original context.
 ///
 /// This trait is designed to be flexible, allowing for various end-of-forming behaviors in builder patterns.
