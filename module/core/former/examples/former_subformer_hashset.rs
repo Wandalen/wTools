@@ -1,6 +1,5 @@
-//! # Example Usage
 //!
-//! Demonstrates how to use `HashMapSubformer` with the `HashMapLike` trait to build a `std::collections::HashMap`:
+//! This example demonstrates the use of the `Former` trait to build a `std::collections::HashSet` through subforming.
 //!
 
 #[ cfg( not( all( feature = "derive_former", not( feature = "no_std" ) ) ) ) ]

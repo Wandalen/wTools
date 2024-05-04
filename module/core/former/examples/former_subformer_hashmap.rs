@@ -1,6 +1,5 @@
-//! # Example Usage
 //!
-//! Demonstrates how to use `HashMapSubformer` with the `HashMapLike` trait to build a `std::collections::HashMap`:
+//! This example demonstrates how to effectively employ the `Former` trait to configure a `HashMap` using a container setter.
 //!
 
 #[ cfg( not( all( feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
