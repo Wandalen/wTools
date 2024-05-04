@@ -14,14 +14,14 @@ fn main()
   #[ derive( Debug, PartialEq, former::Former ) ]
   pub struct StructWithMap
   {
-    #[ container( definition = former::HashMapSubformer ) ]
+    #[ container ]
     map : std::collections::HashMap< &'static str, &'static str >,
   }
 
   let struct1 = StructWithMap::former()
   .map()
-    .insert( "a", "b" )
-    .insert( "c", "d" )
+    .add( ( "a", "b" ) )
+    .add( ( "c", "d" ) )
     .end()
   .form()
   ;

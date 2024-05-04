@@ -1,7 +1,7 @@
 //! The `Former` crate enhances struct initialization in Rust by allowing the specification of custom default values for fields through the `default` attribute.
 //!
 //! This feature not only provides a way to set initial values for struct fields without relying on the `Default` trait but also adds flexibility in handling cases where a field's type does not implement `Default`, or a non-standard default value is desired.
-//! The above code snippet showcases the `Former` crate's ability to initialize struct fields with custom default values:
+//! The example showcases the `Former` crate's ability to initialize struct fields with custom default values:
 //! - The `number` field is initialized to `5`.
 //! - The `greeting` field defaults to a greeting message, "Hello, Former!".
 //! - The `numbers` field starts with a vector containing the integers `10`, `20`, and `30`.

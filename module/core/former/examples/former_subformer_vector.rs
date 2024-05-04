@@ -1,6 +1,6 @@
 //! # Example Usage
 //!
-//! Demonstrates how to use `HashMapSubformer` with the `HashMapLike` trait to build a `std::collections::HashMap`:
+//! This example demonstrates how to employ the `Former` trait to configure a `Vec` using a container setter in a structured manner.
 //!
 
 #[ cfg( not( all( feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
@@ -13,14 +13,14 @@ fn main()
   #[ derive( Debug, PartialEq, former::Former ) ]
   pub struct StructWithVec
   {
-    #[ container( definition = former::VectorSubformer ) ]
+    #[ container ]
     vec : Vec< &'static str >,
   }
 
   let instance = StructWithVec::former()
   .vec()
-    .push( "apple" )
-    .push( "banana" )
+    .add( "apple" )
+    .add( "banana" )
     .end()
   .form();
 

@@ -14,14 +14,14 @@ fn main()
   #[ derive( Debug, PartialEq, former::Former ) ]
   pub struct StructWithSet
   {
-    #[ container( definition = former::HashSetSubformer ) ]
+    #[ container ]
     set : std::collections::HashSet< &'static str >,
   }
 
   let instance = StructWithSet::former()
   .set()
-    .insert("apple")
-    .insert("banana")
+    .add( "apple" )
+    .add( "banana" )
     .end()
   .form();
 
