@@ -15,6 +15,7 @@ mod if_enabled
 
   mod attr;
   mod basic;
+  mod derive;
   mod generic_args;
   mod generic_params;
   mod item;
@@ -22,5 +23,6 @@ mod if_enabled
   mod quantifier;
   mod syntax;
   mod tokens;
+  mod typ;
 
 }

@@ -1,7 +1,7 @@
 
 use super::*;
 use iter_tools::{ Itertools, process_results };
-use macro_tools::{ attr, diag, generic_params, generic_args, container_kind, typ, derive, Result };
+use macro_tools::{ attr, diag, generic_params, generic_args, typ, derive, Result };
 use proc_macro2::TokenStream;
 
 // zzz : explain concept of Storage
@@ -178,56 +178,33 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   /* fields */
 
-  let fields = derive::data_named_fields( &ast );
+  let fields = derive::named_fields( &ast )?;
 
-  let fields = match ast.data
+  let formed_fields : Vec< Result< FormerField< '_ > > > = fields.into_iter().map( | field |
   {
-    syn::Data::Struct( ref data_struct ) => match data_struct.fields
-    {
-      syn::Fields::Named( ref fields_named ) =>
-      {
-        &fields_named.named
-      },
-      _ => return Err( syn_err!( ast, "Unknown format of data, expected syn::Fields::Named( ref fields_named )\n  {}", qt!{ #ast } ) ),
-    },
-    _ => return Err( syn_err!( ast, "Unknown format of data, expected syn::Data::Struct( ref data_struct )\n  {}", qt!{ #ast } ) ),
-  };
-
-  let former_fields : Vec< Result< FormerField< '_ > > > = fields.iter().map( | field |
-  {
-    let attrs = FieldAttributes::from_attrs( field.attrs.iter() )?;
-    let vis = &field.vis;
-    let ident = field.ident.as_ref()
-    .ok_or_else( || syn_err!( field, "Expected that each field has key, but some does not:\n  {}", qt!{ #field } ) )?;
-    let colon_token = &field.colon_token;
-    let ty = &field.ty;
-    let is_optional = typ::is_optional( ty );
-    let of_type = container_kind::of_optional( ty ).0;
-    let non_optional_ty : &syn::Type = if is_optional { typ::parameter_first( ty )? } else { ty };
-    let field = FormerField { attrs, vis, ident, colon_token, ty, non_optional_ty, is_optional, of_type };
-    Ok( field )
+    FormerField::from_syn( field )
   }).collect();
 
-  let former_fields : Vec< _ > = process_results( former_fields, | iter | iter.collect() )?;
+  let formed_fields : Vec< _ > = process_results( formed_fields, | iter | iter.collect() )?;
 
   let
   (
     fields_none,
     fields_optional,
-    fields_form,
     fields_names,
+    fields_form,
     fields_setter,
     fields_former_assign,
     fields_former_add,
   )
   :
   ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
-  = former_fields.iter().map( | field |
+  = formed_fields.iter().map( | field |
   {(
     field.none_map(),
     field.optional_map(),
-    field.form_map(),
     field.name_map(),
+    field.form_map(),
     field.setter_map( &stru ),
     field.former_assign_end_map
     (

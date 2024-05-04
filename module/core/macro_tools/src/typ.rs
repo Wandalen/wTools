@@ -108,8 +108,20 @@ pub( crate ) mod private
 //     None
 //   }
 
+
+  /// Checks if a given [`syn::Type`] is an `Option` type.
   ///
-  /// Is type under Option.
+  /// This function examines a type to determine if it represents an `Option`.
+  /// It is useful for scenarios where type-specific behavior needs to be conditional
+  /// on whether the type is optional or not.
+  ///
+  /// # Example
+  ///
+  /// ```rust
+  /// let type_string = "Option< i32 >";
+  /// let parsed_type : syn::Type = syn::parse_str( type_string ).expect( "Type should parse correctly" );
+  /// assert!( macro_tools::typ::is_optional( &parsed_type ) );
+  /// ```
   ///
 
   // qqq : cover by test

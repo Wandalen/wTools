@@ -24,10 +24,7 @@ impl< 'a > FormerField< 'a >
 
 /** methods
 
-scalar_setter_name
-container_setter_name
-subform_setter_name
-scalar_setter_required
+from_syn
 
 none_map
 optional_map
@@ -40,97 +37,27 @@ scalar_setter
 former_assign_end_map
 former_add_end_map
 
+scalar_setter_name
+container_setter_name
+subform_setter_name
+scalar_setter_required
+
 */
 
-  /// Get name of scalar setter.
-  pub fn scalar_setter_name( &self ) -> &syn::Ident
+  /// Construct former field from [`syn::Field`]
+  pub fn from_syn( field : &'a syn::Field ) -> Result< Self >
   {
-    if let Some( ref attr ) = self.attrs.scalar
-    {
-      if let Some( ref name ) = attr.name
-      {
-        return name
-      }
-    }
-    return &self.ident;
-  }
-
-  /// Get name of setter for container if such setter should be generated.
-  pub fn container_setter_name( &self ) -> Option< &syn::Ident >
-  {
-
-    if let Some( ref attr ) = self.attrs.container
-    {
-      if attr.setter()
-      {
-        if let Some( ref name ) = attr.name
-        {
-          return Some( &name )
-        }
-        else
-        {
-          return Some( &self.ident )
-        }
-      }
-    }
-
-    return None;
-  }
-
-  /// Get name of setter for subform if such setter should be generated.
-  pub fn subform_setter_name( &self ) -> Option< &syn::Ident >
-  {
-
-    if let Some( ref attr ) = self.attrs.subform
-    {
-      if attr.setter()
-      {
-        if let Some( ref name ) = attr.name
-        {
-          return Some( &name )
-        }
-        else
-        {
-          return Some( &self.ident )
-        }
-      }
-    }
-
-    return None;
-  }
-
-  /// Is scalar setter required. Does not if container of subformer setter requested.
-  pub fn scalar_setter_required( &self ) -> bool
-  {
-
-    let mut explicit = false;
-    if let Some( ref attr ) = self.attrs.scalar
-    {
-      if let Some( setter ) = attr.setter
-      {
-        if setter == false
-        {
-          return false
-        }
-        explicit = true;
-      }
-      if let Some( ref _name ) = attr.name
-      {
-        explicit = true;
-      }
-    }
-
-    if self.attrs.container.is_some() && !explicit
-    {
-      return false;
-    }
-
-    if self.attrs.subform.is_some() && !explicit
-    {
-      return false;
-    }
-
-    return true;
+    let attrs = FieldAttributes::from_attrs( field.attrs.iter() )?;
+    let vis = &field.vis;
+    let ident = field.ident.as_ref()
+    .ok_or_else( || syn_err!( field, "Expected that each field has key, but some does not:\n  {}", qt!{ #field } ) )?;
+    let colon_token = &field.colon_token;
+    let ty = &field.ty;
+    let is_optional = typ::is_optional( ty );
+    let of_type = container_kind::of_optional( ty ).0;
+    let non_optional_ty : &syn::Type = if is_optional { typ::parameter_first( ty )? } else { ty };
+    let field2 = Self { attrs, vis, ident, colon_token, ty, non_optional_ty, is_optional, of_type };
+    Ok( field2 )
   }
 
   ///
@@ -1033,6 +960,98 @@ former_add_end_map
 
     // tree_print!( r.as_ref().unwrap() );
     Ok( r )
+  }
+
+
+  /// Get name of scalar setter.
+  pub fn scalar_setter_name( &self ) -> &syn::Ident
+  {
+    if let Some( ref attr ) = self.attrs.scalar
+    {
+      if let Some( ref name ) = attr.name
+      {
+        return name
+      }
+    }
+    return &self.ident;
+  }
+
+  /// Get name of setter for container if such setter should be generated.
+  pub fn container_setter_name( &self ) -> Option< &syn::Ident >
+  {
+
+    if let Some( ref attr ) = self.attrs.container
+    {
+      if attr.setter()
+      {
+        if let Some( ref name ) = attr.name
+        {
+          return Some( &name )
+        }
+        else
+        {
+          return Some( &self.ident )
+        }
+      }
+    }
+
+    return None;
+  }
+
+  /// Get name of setter for subform if such setter should be generated.
+  pub fn subform_setter_name( &self ) -> Option< &syn::Ident >
+  {
+
+    if let Some( ref attr ) = self.attrs.subform
+    {
+      if attr.setter()
+      {
+        if let Some( ref name ) = attr.name
+        {
+          return Some( &name )
+        }
+        else
+        {
+          return Some( &self.ident )
+        }
+      }
+    }
+
+    return None;
+  }
+
+  /// Is scalar setter required. Does not if container of subformer setter requested.
+  pub fn scalar_setter_required( &self ) -> bool
+  {
+
+    let mut explicit = false;
+    if let Some( ref attr ) = self.attrs.scalar
+    {
+      if let Some( setter ) = attr.setter
+      {
+        if setter == false
+        {
+          return false
+        }
+        explicit = true;
+      }
+      if let Some( ref _name ) = attr.name
+      {
+        explicit = true;
+      }
+    }
+
+    if self.attrs.container.is_some() && !explicit
+    {
+      return false;
+    }
+
+    if self.attrs.subform.is_some() && !explicit
+    {
+      return false;
+    }
+
+    return true;
   }
 
 }

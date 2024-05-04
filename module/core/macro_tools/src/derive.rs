@@ -8,69 +8,12 @@ pub( crate ) mod private
   use super::super::*;
   use syn::punctuated::Punctuated;
 
-//   struct Wrap< T >( pub T );
-//   // impl quote::ToTokens for Wrap< syn::Data >
-//   // {
-//   //   fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
-//   //   {
-//   //     match self.0
-//   //     {
-//   //       syn::Data::Struct( ref data_struct ) =>
-//   //       {
-//   //         qt! { #data_struct }.to_tokens( tokens );
-//   //       },
-//   //       syn::Data::Enum( ref data_enum ) =>
-//   //       {
-//   //         qt! { #data_enum }.to_tokens( tokens );
-//   //       },
-//   //       syn::Data::Union( ref data_union ) =>
-//   //       {
-//   //         qt! { #data_union }.to_tokens( tokens );
-//   //       },
-//   //     }
-//   //   }
-//   // }
-// impl quote::ToTokens for Wrap<syn::Data> {
-//     fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
-//         match &self.0 {
-//             syn::Data::Struct(data_struct) => {
-//                 // Manually construct the representation for structs
-//                 let fields_tokens = data_struct.fields.iter().map(|field| {
-//                     quote::quote!(#field)
-//                 });
-//                 let ident = &data_struct.ident;
-//                 tokens.extend(quote::quote! {
-//                     struct #ident {
-//                         #(#fields_tokens),*
-//                     }
-//                 });
-//             },
-//             syn::Data::Enum(data_enum) => {
-//                 // Manually construct the representation for enums
-//                 let variants_tokens = data_enum.variants.iter().map(|variant| {
-//                     quote::quote!(#variant)
-//                 });
-//                 tokens.extend(quote::quote! {
-//                     enum #data_enum.ident {
-//                         #(#variants_tokens),*
-//                     }
-//                 });
-//             },
-//             syn::Data::Union(data_union) => {
-//                 // Manually construct the representation for unions
-//                 let fields_tokens = data_union.fields.named.iter().map(|field| {
-//                     quote::quote!(#field)
-//                 });
-//                 tokens.extend(quote::quote! {
-//                     union #data_union.ident {
-//                         #(#fields_tokens),*
-//                     }
-//                 });
-//             },
-//         }
-//     }
-// }
-
+  ///
+  /// Extracts the named fields from a struct defined in a `syn::DeriveInput`.
+  ///
+  /// This function specifically handles `syn::DeriveInput` that represent structs
+  /// with named fields. It will return an error if the provided AST does not conform to these expectations.
+  ///
   /// # Example
   ///
   /// ```rust, ignore
@@ -79,10 +22,10 @@ pub( crate ) mod private
   ///   Ok( syntax_tree ) => syntax_tree,
   ///   Err( err ) => return Err( err ),
   /// };
-  /// let fields = derive.data_named_fields( &ast );
+  /// let fields = derive.named_fields( &ast );
   /// ```
 
-  pub fn data_named_fields< 'a >( ast : &'a syn::DeriveInput ) -> crate::Result< &'a Punctuated< syn::Field, syn::token::Comma > >
+  pub fn named_fields< 'a >( ast : &'a syn::DeriveInput ) -> crate::Result< &'a Punctuated< syn::Field, syn::token::Comma > >
   {
 
     let fields = match ast.data
@@ -118,7 +61,7 @@ pub mod protected
   #[ allow( unused_imports ) ]
   pub use super::private::
   {
-    data_named_fields,
+    named_fields,
   };
 
 }
