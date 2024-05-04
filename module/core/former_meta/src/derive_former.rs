@@ -184,7 +184,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   .into_iter()
   .map( | field |
   {
-    FormerField::from_syn( field )
+    FormerField::from_syn( field, true, true )
   })
   .collect();
   let formed_fields : Vec< _ > = process_results( formed_fields, | iter | iter.collect() )?;
@@ -196,7 +196,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   .iter()
   .map( | field |
   {
-    FormerField::from_syn( &field )
+    FormerField::from_syn( &field, true, false )
   })
   .collect();
   let storage_fields : Vec< _ > = process_results( storage_fields, | iter | iter.collect() )?;
@@ -205,7 +205,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   (
     storage_fields_none,
     storage_fields_optional,
-    storage_fields_names,
+    storage_field_name,
     storage_fields_preform,
     former_fields_setter,
     former_fields_former_assign,
@@ -215,13 +215,13 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
   = formed_fields
   .iter()
-  // .chain( storage_fields.iter() )
+  .chain( storage_fields.iter() )
   .map( | field |
   {(
     field.none_map(),
     field.optional_map(),
-    field.name_map(),
-    field.form_map(),
+    field.storage_field_name(),
+    field.preform_map(),
     field.setter_map( &stru ),
     field.former_assign_end_map
     (
@@ -384,7 +384,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
         /// A field
         #storage_fields_optional,
       )*
-      #storage_fields_code
+      // #storage_fields_code
     }
 
     impl < #struct_generics_impl > ::core::default::Default
@@ -427,7 +427,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
         // let result = < Definition::Types as former::FormerDefinitionTypes >::Formed
         let result = #stru :: < #struct_generics_ty >
         {
-          #( #storage_fields_names, )*
+          #( #storage_field_name, )*
         };
         return result;
       }

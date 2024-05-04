@@ -17,6 +17,8 @@ pub struct FormerField< 'a >
   pub non_optional_ty : &'a syn::Type,
   pub is_optional : bool,
   pub of_type : container_kind::ContainerKind,
+  pub for_storage : bool,
+  pub for_formed : bool,
 }
 
 impl< 'a > FormerField< 'a >
@@ -28,8 +30,8 @@ from_syn
 
 none_map
 optional_map
-form_map
-name_map
+preform_map
+storage_field_name
 setter_map
 subform_add_setter_map
 container_setter
@@ -45,7 +47,7 @@ scalar_setter_required
 */
 
   /// Construct former field from [`syn::Field`]
-  pub fn from_syn( field : &'a syn::Field ) -> Result< Self >
+  pub fn from_syn( field : &'a syn::Field, for_storage : bool, for_formed : bool ) -> Result< Self >
   {
     let attrs = FieldAttributes::from_attrs( field.attrs.iter() )?;
     let vis = &field.vis;
@@ -56,7 +58,21 @@ scalar_setter_required
     let is_optional = typ::is_optional( ty );
     let of_type = container_kind::of_optional( ty ).0;
     let non_optional_ty : &syn::Type = if is_optional { typ::parameter_first( ty )? } else { ty };
-    let field2 = Self { attrs, vis, ident, colon_token, ty, non_optional_ty, is_optional, of_type };
+    // let for_storage = true;
+    // let for_formed = true;
+    let field2 = Self
+    {
+      attrs,
+      vis,
+      ident,
+      colon_token,
+      ty,
+      non_optional_ty,
+      is_optional,
+      of_type,
+      for_storage,
+      for_formed,
+    };
     Ok( field2 )
   }
 
@@ -160,8 +176,14 @@ scalar_setter_required
   ///
 
   #[ inline( always ) ]
-  pub fn form_map( &self ) -> Result< TokenStream >
+  pub fn preform_map( &self ) -> Result< TokenStream >
   {
+
+    if !self.for_formed
+    {
+      return Ok( qt!{} )
+    }
+
     let ident = self.ident;
     let ty = self.ty;
     let default : Option< &syn::Expr > = self.attrs.config.as_ref()
@@ -271,9 +293,17 @@ scalar_setter_required
   ///
 
   #[ inline( always ) ]
-  pub fn name_map( &self ) -> syn::Ident
+  pub fn storage_field_name( &self ) -> TokenStream
   {
-    self.ident.clone()
+
+    if !self.for_formed
+    {
+      return qt!{}
+    }
+
+    let ident = self.ident;
+    qt!{ #ident }
+
   }
 
   // zzz : outdated, please update documentation

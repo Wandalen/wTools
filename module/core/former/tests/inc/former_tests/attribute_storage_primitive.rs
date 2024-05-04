@@ -2,10 +2,10 @@
 use super::*;
 // xxx2 : implement
 
-// #[ derive( Debug, PartialEq, the_module::Former ) ]
+#[ derive( Debug, PartialEq, the_module::Former ) ]
 // #[ storage_fields( a : i32, b : Option< String > ) ]
 // #[ debug ]
-#[ derive( Debug, PartialEq ) ]
+// #[ derive( Debug, PartialEq ) ]
 pub struct Struct1
 {
   // #[ former( only_storage = true ) ]
