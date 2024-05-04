@@ -174,32 +174,48 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   let ( _doc_former_mod, doc_former_struct ) = doc_generate( stru );
   let ( perform, perform_output, perform_generics ) = struct_attrs.performer()?;
-  let storage_fields = struct_attrs.storage_fields()?;
+  let storage_fields_code = struct_attrs.storage_fields_code()?;
 
   /* fields */
 
   let fields = derive::named_fields( &ast )?;
 
-  let formed_fields : Vec< Result< FormerField< '_ > > > = fields.into_iter().map( | field |
+  let formed_fields : Vec< Result< FormerField< '_ > > > = fields
+  .into_iter()
+  .map( | field |
   {
     FormerField::from_syn( field )
-  }).collect();
-
+  })
+  .collect();
   let formed_fields : Vec< _ > = process_results( formed_fields, | iter | iter.collect() )?;
+
+  // xxx
+
+  let storage_fields : Vec< Result< FormerField< '_ > > > = fields
+  .into_iter()
+  .map( | field |
+  {
+    FormerField::from_syn( field )
+  })
+  .collect();
+  let storage_fields : Vec< _ > = process_results( storage_fields, | iter | iter.collect() )?;
 
   let
   (
-    fields_none,
-    fields_optional,
-    fields_names,
-    fields_form,
-    fields_setter,
-    fields_former_assign,
-    fields_former_add,
+    storage_fields_none,
+    storage_fields_optional,
+    storage_fields_names,
+    storage_fields_preform,
+    former_fields_setter,
+    former_fields_former_assign,
+    former_fields_former_add,
   )
   :
   ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
-  = formed_fields.iter().map( | field |
+  = formed_fields
+  .iter()
+  // .chain( storage_fields.iter() )
+  .map( | field |
   {(
     field.none_map(),
     field.optional_map(),
@@ -225,10 +241,10 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     ),
   )}).multiunzip();
 
-  let fields_setter : Vec< _ > = process_results( fields_setter, | iter | iter.collect() )?;
-  let fields_form : Vec< _ > = process_results( fields_form, | iter | iter.collect() )?;
-  let fields_former_assign : Vec< _ > = process_results( fields_former_assign, | iter | iter.collect() )?;
-  let fields_former_add : Vec< _ > = process_results( fields_former_add, | iter | iter.collect() )?;
+  let former_fields_setter : Vec< _ > = process_results( former_fields_setter, | iter | iter.collect() )?;
+  let storage_fields_preform : Vec< _ > = process_results( storage_fields_preform, | iter | iter.collect() )?;
+  let former_fields_former_assign : Vec< _ > = process_results( former_fields_former_assign, | iter | iter.collect() )?;
+  let former_fields_former_add : Vec< _ > = process_results( former_fields_former_add, | iter | iter.collect() )?;
 
   let result = qt!
   {
@@ -365,9 +381,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     {
       #(
         /// A field
-        #fields_optional,
+        #storage_fields_optional,
       )*
-      #storage_fields
+      #storage_fields_code
     }
 
     impl < #struct_generics_impl > ::core::default::Default
@@ -382,7 +398,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       {
         Self
         {
-          #( #fields_none, )*
+          #( #storage_fields_none, )*
         }
       }
 
@@ -405,12 +421,12 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
       fn preform( mut self ) -> Self::Preformed
       {
-        #( #fields_form )*
+        #( #storage_fields_preform )*
         // Rust does not support that, yet
         // let result = < Definition::Types as former::FormerDefinitionTypes >::Formed
         let result = #stru :: < #struct_generics_ty >
         {
-          #( #fields_names, )*
+          #( #storage_fields_names, )*
         };
         return result;
       }
@@ -535,7 +551,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
 
       #(
-        #fields_setter
+        #former_fields_setter
       )*
 
     }
@@ -653,13 +669,13 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     // = container assign callbacks
 
     #(
-      #fields_former_assign
+      #former_fields_former_assign
     )*
 
     // = container add callbacks
 
     #(
-      #fields_former_add
+      #former_fields_former_add
     )*
 
   };

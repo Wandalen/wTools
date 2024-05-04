@@ -189,9 +189,25 @@ impl StructAttributes
     Ok( ( perform, perform_output, perform_generics ) )
   }
 
+  /// Returns an iterator over the fields defined in the `storage_fields` attribute.
+  ///
+  /// This function provides an iterator that yields `syn::Field` objects. If `storage_fields` is set,
+  /// it clones and iterates over its fields. If `storage_fields` is `None`, it returns an empty iterator.
+  ///
+
+  pub fn storage_fields( &self ) -> impl Iterator< Item = syn::Field >
+  {
+    self.storage_fields
+    .as_ref()
+    .map_or_else(
+      || syn::punctuated::Punctuated::< syn::Field, syn::token::Comma >::new().into_iter(),
+      | attr | attr.fields.clone().into_iter() // Clone and create an iterator when storage_fields is Some
+    )
+  }
+
   /// xxx : write documentation. provide example of generated code
 
-  pub fn storage_fields( &self )
+  pub fn storage_fields_code( &self )
   -> Result< TokenStream >
   {
 
