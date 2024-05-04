@@ -1,4 +1,4 @@
-// Example former_custom_container_setter.rs
+// Example former_custom_scalar_setter.rs
 
 //!
 //! This example demonstrates the use of container setters to manage complex nested data structures with the `Former` trait, focusing on a parent-child relationship structured around a container `HashMap`. Unlike typical builder patterns that add individual elements using subform setters, this example uses a container setter to manage the entire collection of children.
@@ -19,6 +19,8 @@
 //!
 //! Each type of setter is designed to address different needs in the formation process, ensuring that users can build complex, nested structures or simply set individual field values as required.
 //!
+
+// xxx : update documentation
 
 // zzz : duplicate into readme
 
@@ -46,36 +48,31 @@ fn main()
   // #[ debug ]
   pub struct Parent
   {
-    // Use `hint = true` to gennerate sketch of setter.
-    #[ container( setter = false, hint = false ) ]
+    #[ scalar( setter = false, hint = true ) ]
     children : HashMap< String, Child >,
   }
 
-  /// The containr setter provides a container setter that returns a ContainerSubformer tailored for managing a collection of child entities. It employs a generic container definition to facilitate operations on the entire collection, such as adding or updating elements.
-  impl< Definition, > ParentFormer< Definition, >
+  impl< Definition > ParentFormer< Definition >
   where
     Definition : former::FormerDefinition< Storage = ParentFormerStorage >,
   {
-
-    #[ inline( always ) ]
-    pub fn children( self ) -> former::ContainerSubformer::
-    <
-      ( String, Child ),
-      former::HashMapDefinition< String, Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, >
-    >
+    #[ inline ]
+    pub fn children< Src >( mut self, src : Src ) -> Self
+    where Src : ::core::convert::Into< HashMap< String, Child > >,
     {
-      self._children_container_former()
+      debug_assert!( self.storage.children.is_none() );
+      self.storage.children = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
+      self
     }
-
   }
 
   let echo = Child { name : "echo".to_string(), description : "prints all subjects and properties".to_string() };
   let exit = Child { name : "exit".to_string(), description : "just exit".to_string() };
+  let mut children = HashMap::new();
+  children.insert( echo.name.clone(), echo );
+  children.insert( exit.name.clone(), exit );
   let ca = Parent::former()
-  .children()
-    .add( ( echo.name.clone(), echo ) )
-    .add( ( exit.name.clone(), exit ) )
-    .end()
+  .children( children )
   .form();
 
   dbg!( &ca );
