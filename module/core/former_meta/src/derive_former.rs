@@ -599,9 +599,8 @@ where
       pub fn end( mut self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
       {
         let on_end = self.on_end.take().unwrap();
-        let context = self.context.take();
-        // < Definition::Types as former::FormerMutator >::form_mutation( &mut self.storage, &mut context );
-        // xxx
+        let mut context = self.context.take();
+        < Definition::Types as former::FormerMutator >::form_mutation( &mut self.storage, &mut context );
         former::FormingEnd::< Definition::Types >::call( &on_end, self.storage, context )
       }
 

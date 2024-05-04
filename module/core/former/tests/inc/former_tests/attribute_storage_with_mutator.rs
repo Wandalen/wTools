@@ -20,8 +20,11 @@ for Struct1FormerDefinitionTypes< Context, Formed >
 {
   /// Mutates the context and storage of the entity just before the formation process completes.
   #[ inline ]
-  fn form_mutation( _storage : &mut Self::Storage, _context : &mut ::core::option::Option< Self::Context > )
+  fn form_mutation( storage : &mut Self::Storage, _context : &mut ::core::option::Option< Self::Context > )
   {
+    storage.a.get_or_insert_with( Default::default );
+    storage.b.get_or_insert_with( Default::default );
+    storage.c = Some( format!( "{:?} - {}", storage.a.unwrap(), storage.b.as_ref().unwrap() ) );
   }
 }
 
@@ -90,17 +93,12 @@ tests_impls!
 
   fn test_complex()
   {
-    // // let got = Struct1::former().a( 13 ).b( "abc" ).c( "def" ).form();
-    // let end = Struct1CustomEnd::default();
-    // let got = Struct1Former
-    // ::< Struct1FormerDefinition< (), Struct1, _ > >
-    // ::new( end )
-    // .a( 13 ).b( "abc" ).c( "def" ).form();
-    // let exp = Struct1
-    // {
-    //   c : "13 - abc".to_string(),
-    // };
-    // a_id!( got, exp );
+    let got = Struct1::former().a( 13 ).b( "abc" ).c( "def" ).form();
+    let exp = Struct1
+    {
+      c : "13 - abc".to_string(),
+    };
+    a_id!( got, exp );
   }
 
 }
