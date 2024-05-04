@@ -26,7 +26,7 @@ fn main()
 
   // Use attribute debug to print expanded code.
   #[ derive( Debug, PartialEq, Former ) ]
-  #[ debug ]
+  // #[ debug ]
   pub struct UserProfile
   {
     age : i32,
