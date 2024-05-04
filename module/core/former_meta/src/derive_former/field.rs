@@ -472,7 +472,7 @@ scalar_setter_required
 
     };
 
-    if true
+    if attr.hint
     {
       let hint = format!
       (

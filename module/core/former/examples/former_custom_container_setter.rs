@@ -1,4 +1,4 @@
-// Example former_custom_subformer.rs
+// Example former_custom_container_setter.rs
 
 //!
 //! This example illustrates the implementation of nested builder patterns in Rust using the `Former` trait, emphasizing a parent-child relationship. Here, the `Parent` struct utilizes `ChildFormer` as a custom subformer to dynamically manage its `child` field—a `HashMap`. Each child in the `HashMap` is uniquely identified and configured via the `ChildFormer`.
@@ -13,6 +13,8 @@
 //! - **Subform Setter**: This returns a former of an element within a container, providing an interface to individually form each element. In this example, `child` acts as a subform setter, allowing for the addition and configuration of individual `Child` entities within the `Parent`'s `HashMap`.
 //! - **Container Setter**: Conversely, a container setter returns a former of the container itself, offering an interface to manage the container as a whole rather than its individual elements. It would be used if one needed to apply configurations or validations to the entire `HashMap` of children, rather than to individual children.
 //!
+
+// xxx : improve description of this example. container setter unlike subform setter expose interface of container, not element itself
 
 // zzz : duplicate into readme
 
@@ -40,45 +42,24 @@ fn main()
   // #[ debug ]
   pub struct Parent
   {
-    #[ subform( setter = false, hint = false ) ]
+    #[ container( setter = true, hint = true ) ]
     child : HashMap< String, Child >,
   }
 
-  /// Initializes and configures a subformer for adding named child entities. This method leverages an internal function
-  /// to create and return a configured subformer instance. It allows for the dynamic addition of children with specific names,
-  /// integrating them into the formation process of the parent entity. After creation, the name of the child is immediately set,
-  /// facilitating the customization and integration of child entities within the overall structure of the parent.
-  ///
-  impl< Definition > ParentFormer< Definition >
-  where
-    Definition : former::FormerDefinition< Storage = < Parent as former::EntityToStorage >::Storage >,
-  {
-
-    #[ inline( always ) ]
-    pub fn child( self, name : &str ) -> ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
-    {
-      self._child_add::< ChildFormer< _ >, _, >()
-      .name( name )
-    }
-
-  }
-
-  impl former::ValToElement< HashMap< String, Child > > for Child
-  {
-    type Element = ( String, Child );
-    #[ inline( always ) ]
-    fn val_to_element( self ) -> Self::Element
-    {
-      ( self.name.clone(), self )
-    }
-  }
+  // impl former::ValToElement< HashMap< String, Child > > for Child
+  // {
+  //   type Element = ( String, Child );
+  //   #[ inline( always ) ]
+  //   fn val_to_element( self ) -> Self::Element
+  //   {
+  //     ( self.name.clone(), self )
+  //   }
+  // }
 
   let ca = Parent::former()
-  .child( "echo" )
-    .description( "prints all subjects and properties" ) // sets additional properties using custom subformer
-    .end()
-  .child( "exit" )
-    .description( "just exit" ) // Sets additional properties using using custom subformer
+  .child()
+    .add( Child { name : "echo".to_string(), description : "prints all subjects and properties".to_string() } )
+    .add( Child { name : "exit".to_string(), description : "just exit".to_string() } )
     .end()
   .form();
 
