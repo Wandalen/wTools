@@ -249,6 +249,41 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let former_field_assign_end : Vec< _ > = process_results( former_field_assign_end, | iter | iter.collect() )?;
   let former_field_add_end : Vec< _ > = process_results( former_field_add_end, | iter | iter.collect() )?;
 
+  let former_mutator_code = if struct_attrs.mutator.custom
+  {
+    qt!{}
+  }
+  else
+  {
+    qt!
+    {
+      impl< #former_definition_types_generics_impl > former::FormerMutator
+      for #former_definition_types < #former_definition_types_generics_ty >
+      where
+        #former_definition_types_generics_where
+      {
+      }
+    }
+  };
+
+  if struct_attrs.mutator.hint
+  {
+    let hint = format!
+    (
+    r#"
+ = Example of custom mutator
+
+impl< {former_definition_types_generics_impl:?} > former::FormerMutator
+for {former_definition_types} < {former_definition_types_generics_ty:?} >
+where
+  {former_definition_types_generics_where:?}
+{}
+    "#,
+    "{\n}"
+    );
+    println!( "{hint}" );
+  };
+
   let result = qt!
   {
 
@@ -376,12 +411,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     // = former mutator
 
-    impl< #former_definition_types_generics_impl > former::FormerMutator
-    for #former_definition_types < #former_definition_types_generics_ty >
-    where
-      #former_definition_types_generics_where
-    {
-    }
+    #former_mutator_code
 
     // = storage
 

@@ -118,9 +118,6 @@ pub struct AttributeConfig
 
   /// Default value to use for the field.
   pub default : Option< syn::Expr >,
-  // /// Such field should be present only in storage and should not be present in structure itself.
-  // /// That might be useful for parametrization of forming process.
-  // pub only_storage : Option< bool >,
 
 }
 
@@ -146,12 +143,6 @@ impl syn::parse::Parse for AttributeConfig
           input.parse::< syn::Token![ = ] >()?;
           default = Some( input.parse()? );
         }
-        // else if ident == "only_storage"
-        // {
-        //   input.parse::< syn::Token![ = ] >()?;
-        //   let value : syn::LitBool = input.parse()?;
-        //   only_storage = Some( value.value() );
-        // }
         else
         {
           return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'default'. For example: `former( default = 13 )`", ident ) ) );

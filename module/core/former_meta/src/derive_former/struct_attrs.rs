@@ -14,15 +14,17 @@ pub struct StructAttributes
 {
   pub perform : Option< AttributePerform >,
   pub storage_fields : Option< AttributeStorageFields >,
+  pub mutator : AttributeMutator,
 }
 
 impl StructAttributes
 {
-  // fn from_attrs( attributes : & Vec< syn::Attribute > ) -> Result< Self >
+
   pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
   {
     let mut perform = None;
     let mut storage_fields = None;
+    let mut mutator = Default::default();
 
     for attr in attrs
     {
@@ -61,6 +63,21 @@ impl StructAttributes
 .\nGot: {}", qt!{ #attr } ),
           }
         }
+        "mutator" =>
+        {
+          match attr.meta
+          {
+            syn::Meta::List( ref meta_list ) =>
+            {
+              mutator = syn::parse2::< AttributeMutator >( meta_list.tokens.clone() )?
+              // container.replace( syn::parse2::< AttributeMutator >( meta_list.tokens.clone() )? );
+            },
+            syn::Meta::Path( ref _path ) =>
+            {
+            },
+            _ => return_syn_err!( attr, "Expects an attribute of format `#[ container ]` or `#[ container( definition = former::VectorDefinition ) ]` if you want to use default container defition. \nGot: {}", qt!{ #attr } ),
+          }
+        }
         "debug" =>
         {
         }
@@ -71,8 +88,86 @@ impl StructAttributes
       }
     }
 
-    Ok( StructAttributes { perform, storage_fields } )
+    Ok( StructAttributes { perform, storage_fields, mutator } )
   }
+
+
+  ///
+  /// Generate parts, used for generating `perform()`` method.
+  ///
+  /// Similar to `form()`, but will also invoke function from `perform` attribute, if specified.
+  ///
+  /// # Example of returned tokens :
+  ///
+  /// ## perform :
+  /// return result;
+  ///
+  /// ## perform_output :
+  /// < T : ::core::default::Default >
+  ///
+  /// ## perform_generics :
+  /// Vec< T >
+  ///
+
+  pub fn performer( &self )
+  -> Result< ( TokenStream, TokenStream, TokenStream ) >
+  {
+
+    let mut perform = qt!
+    {
+      return result;
+    };
+    let mut perform_output = qt!{ Definition::Formed };
+    let mut perform_generics = qt!{};
+
+    if let Some( ref attr ) = self.perform
+    {
+
+      // let attr_perform = syn::parse2::< AttributePerform >( meta_list.tokens.clone() )?;
+      let signature = &attr.signature;
+      let generics = &signature.generics;
+      perform_generics = qt!{ #generics };
+      let perform_ident = &signature.ident;
+      let output = &signature.output;
+      if let syn::ReturnType::Type( _, boxed_type ) = output
+      {
+        perform_output = qt!{ #boxed_type };
+      }
+      perform = qt!
+      {
+        return result.#perform_ident();
+      };
+
+    }
+
+    Ok( ( perform, perform_output, perform_generics ) )
+  }
+
+  /// Returns an iterator over the fields defined in the `storage_fields` attribute.
+  ///
+  /// This function provides an iterator that yields `syn::Field` objects. If `storage_fields` is set,
+  /// it clones and iterates over its fields. If `storage_fields` is `None`, it returns an empty iterator.
+  ///
+
+  // pub fn storage_fields( &self ) -> impl Iterator< Item = syn::Field >
+  pub fn storage_fields( &self ) -> &syn::punctuated::Punctuated< syn::Field, syn::token::Comma >
+  {
+
+    self.storage_fields.as_ref().map_or_else(
+      || &*Box::leak( Box::new( syn::punctuated::Punctuated::new() ) ),
+      | attr | &attr.fields
+    )
+    // xxx : investigate
+
+    // self.storage_fields
+    // .as_ref()
+    // .map_or_else(
+    //   || syn::punctuated::Punctuated::< syn::Field, syn::token::Comma >::new().into_iter(),
+    //   | attr | attr.fields.clone().into_iter()
+    //   // Clone and create an iterator when storage_fields is Some
+    // )
+  }
+
 }
 
 ///
@@ -132,117 +227,63 @@ impl syn::parse::Parse for AttributeStorageFields
   }
 }
 
-
-//
-
+/// xxx : update documentation
 ///
-/// Generate parts, used for generating `perform()`` method.
+/// Customize mutator making possible to write custom mutator and get hint with sketch of mutator.
 ///
-/// Similar to `form()`, but will also invoke function from `perform` attribute, if specified.
+/// The `FormerMutator` trait allows for the implementation of custom mutation logic on the internal state
+/// of an entity (context and storage) just before the final forming operation is completed. This mutation
+/// occurs immediately before the `FormingEnd` callback is invoked.
 ///
-/// # Example of returned tokens :
+/// ## Differences from `FormingEnd`
 ///
-/// ## perform :
-/// return result;
+/// Unlike `FormingEnd`, which is responsible for integrating and finalizing the formation process of a field within
+/// a parent former, `form_mutation` directly pertains to the entity itself. This method is designed to be independent
+/// of whether the forming process is occurring within the context of a superformer or if the structure is a standalone
+/// or nested field. This makes `form_mutation` suitable for entity-specific transformations that should not interfere
+/// with the hierarchical forming logic managed by `FormingEnd`.
 ///
-/// ## perform_output :
-/// < T : ::core::default::Default >
-///
-/// ## perform_generics :
-/// Vec< T >
-///
-
-impl StructAttributes
+#[ derive( Debug, Default ) ]
+pub struct AttributeMutator
 {
+  /// Disable generation of mutator. Optional and `false` by default.
+  pub custom : bool,
+  /// Get hint with sketch of mutator. Optional and `false` by default.
+  pub hint : bool,
+}
 
-  pub fn performer( &self )
-  -> Result< ( TokenStream, TokenStream, TokenStream ) >
-  {
+impl syn::parse::Parse for AttributeMutator {
+    fn parse(input: syn::parse::ParseStream<'_>) -> syn::Result<Self> {
+        let mut custom = None;
+        let mut hint = None;
 
-    let mut perform = qt!
-    {
-      return result;
-    };
-    let mut perform_output = qt!{ Definition::Formed };
-    let mut perform_generics = qt!{};
+        while !input.is_empty() {
+            let lookahead = input.lookahead1();
+            if lookahead.peek(syn::Ident) {
+                let ident: syn::Ident = input.parse()?;
+                input.parse::<syn::Token![=]>()?;
+                if ident == "custom" {
+                    let value: syn::LitBool = input.parse()?;
+                    custom = Some(value.value);
+                } else if ident == "hint" {
+                    let value: syn::LitBool = input.parse()?;
+                    hint = Some(value.value);
+                } else {
+                    return Err(syn::Error::new_spanned(&ident, format!("Unexpected identifier '{}'. Expected 'custom' or 'hint'.", ident)));
+                }
+            } else {
+                return Err(lookahead.error());
+            }
 
-    if let Some( ref attr ) = self.perform
-    {
+            // Optional comma handling
+            if input.peek(syn::Token![,]) {
+                input.parse::<syn::Token![,]>()?;
+            }
+        }
 
-      // let attr_perform = syn::parse2::< AttributePerform >( meta_list.tokens.clone() )?;
-      let signature = &attr.signature;
-      let generics = &signature.generics;
-      perform_generics = qt!{ #generics };
-      let perform_ident = &signature.ident;
-      let output = &signature.output;
-      if let syn::ReturnType::Type( _, boxed_type ) = output
-      {
-        perform_output = qt!{ #boxed_type };
-      }
-      perform = qt!
-      {
-        return result.#perform_ident();
-      };
-
+        Ok(Self {
+            custom: custom.unwrap_or(false),
+            hint: hint.unwrap_or(false),
+        })
     }
-
-    Ok( ( perform, perform_output, perform_generics ) )
-  }
-
-  /// Returns an iterator over the fields defined in the `storage_fields` attribute.
-  ///
-  /// This function provides an iterator that yields `syn::Field` objects. If `storage_fields` is set,
-  /// it clones and iterates over its fields. If `storage_fields` is `None`, it returns an empty iterator.
-  ///
-
-  // pub fn storage_fields( &self ) -> impl Iterator< Item = syn::Field >
-  pub fn storage_fields( &self ) -> &syn::punctuated::Punctuated< syn::Field, syn::token::Comma >
-  {
-
-    self.storage_fields.as_ref().map_or_else(
-        || &*Box::leak(Box::new(syn::punctuated::Punctuated::new())),
-        |attr| &attr.fields
-    )
-    // xxx : investigate
-
-    // self.storage_fields
-    // .as_ref()
-    // .map_or_else(
-    //   || syn::punctuated::Punctuated::< syn::Field, syn::token::Comma >::new().into_iter(),
-    //   | attr | attr.fields.clone().into_iter()
-    //   // Clone and create an iterator when storage_fields is Some
-    // )
-  }
-
-//   /// Generates a `TokenStream` for the fields specified in `storage_fields`.
-//   ///
-//   /// This function constructs a token stream for code generation, incorporating fields from the
-//   /// `storage_fields` attribute into the generated Rust code. If `storage_fields` is set, it includes
-//   /// its fields in the output; otherwise, it returns an empty token stream.
-//   ///
-//   /// # Example of generated code
-//   ///
-//   /// ```rust, ignore
-//   /// field1 : i32,
-//   /// field2 : String,
-//   /// ```
-//   ///
-//
-//   pub fn storage_fields_code( &self )
-//   -> Result< TokenStream >
-//   {
-//
-//     let mut result = qt!
-//     {
-//     };
-//
-//     if let Some( ref attr ) = self.storage_fields
-//     {
-//       let storage_fields = &attr.fields;
-//       result = qt! { #storage_fields }
-//     }
-//
-//     Ok( result )
-//   }
-
 }
