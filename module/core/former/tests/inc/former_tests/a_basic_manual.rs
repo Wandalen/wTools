@@ -167,6 +167,26 @@ impl former::StoragePreform for Struct1FormerStorage
   }
 }
 
+// = former before end
+
+pub trait FormerBeforeEnd
+where
+  Self : former::FormerDefinitionTypes,
+{
+  fn before_end( _storage : &mut Self::Storage, _context : &mut ::core::option::Option< Self::Context > )
+  {
+  }
+}
+
+impl< Definition > FormerBeforeEnd
+for Definition
+where
+  Definition : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
+{
+}
+
+// FormerBeforeEnd::< Self >::before_end( &mut self.storage, &mut context );
+
 // = former
 
 pub struct Struct1Former
@@ -175,18 +195,16 @@ pub struct Struct1Former
 >
 where
   Definition : former::FormerDefinition< Storage = Struct1FormerStorage >,
-  // Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
 {
   storage : Definition::Storage,
-  context : core::option::Option< Definition::Context >,
-  on_end : core::option::Option< Definition::End >,
+  context : ::core::option::Option< Definition::Context >,
+  on_end : ::core::option::Option< Definition::End >,
 }
 
 #[ automatically_derived ]
 impl< Definition > Struct1Former< Definition >
 where
   Definition : former::FormerDefinition< Storage = Struct1FormerStorage >,
-  // Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
 {
 
   #[ inline( always ) ]
@@ -263,7 +281,8 @@ where
   pub fn end( mut self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
     let on_end = self.on_end.take().unwrap();
-    let context = self.context.take();
+    let mut context = self.context.take();
+    < Definition::Types as FormerBeforeEnd >::before_end( &mut self.storage, &mut context );
     former::FormingEnd::< Definition::Types >::call( & on_end, self.storage, context )
   }
 
