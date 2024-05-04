@@ -1,7 +1,7 @@
 // Example former_custom_container_setter.rs
 
 //!
-//! This example illustrates the implementation of nested builder patterns in Rust using the `Former` trait, emphasizing a parent-child relationship. Here, the `Parent` struct utilizes `ChildFormer` as a custom subformer to dynamically manage its `child` field—a `HashMap`. Each child in the `HashMap` is uniquely identified and configured via the `ChildFormer`.
+//! This example demonstrates the use of container setters to manage complex nested data structures with the `Former` trait, focusing on a parent-child relationship structured around a container `HashMap`. Unlike typical builder patterns that add individual elements using subform setters, this example uses a container setter to manage the entire collection of children.
 //!
 //! #### Custom Subform Setter
 //!
@@ -42,24 +42,33 @@ fn main()
   // #[ debug ]
   pub struct Parent
   {
-    #[ container( setter = true, hint = true ) ]
-    child : HashMap< String, Child >,
+    #[ container( setter = false, hint = true ) ]
+    children : HashMap< String, Child >,
   }
 
-  // impl former::ValToElement< HashMap< String, Child > > for Child
-  // {
-  //   type Element = ( String, Child );
-  //   #[ inline( always ) ]
-  //   fn val_to_element( self ) -> Self::Element
-  //   {
-  //     ( self.name.clone(), self )
-  //   }
-  // }
+  impl< Definition, > ParentFormer< Definition, >
+  where
+    Definition : former::FormerDefinition< Storage = ParentFormerStorage >,
+  {
 
+    #[ inline( always ) ]
+    pub fn children( self ) -> former::ContainerSubformer::
+    <
+      ( String, Child ),
+      former::HashMapDefinition< String, Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, >
+    >
+    {
+      self._children_assign()
+    }
+
+  }
+
+  let echo = Child { name : "echo".to_string(), description : "prints all subjects and properties".to_string() };
+  let exit = Child { name : "exit".to_string(), description : "just exit".to_string() };
   let ca = Parent::former()
-  .child()
-    .add( Child { name : "echo".to_string(), description : "prints all subjects and properties".to_string() } )
-    .add( Child { name : "exit".to_string(), description : "just exit".to_string() } )
+  .children()
+    .add( ( echo.name.clone(), echo ) )
+    .add( ( exit.name.clone(), exit ) )
     .end()
   .form();
 

@@ -113,6 +113,7 @@ fn main()
 
   }
 
+  // Requored to define how `value` is converted into pair `( key, value )`
   impl former::ValToElement< HashMap< String, Child > > for Child
   {
     type Element = ( String, Child );
