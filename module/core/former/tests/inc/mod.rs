@@ -53,51 +53,49 @@ mod former_tests
 
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod parametrized_struct_manual;
-  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  // mod parametrized_struct_imm;
-  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  // mod parametrized_struct_where;
-  // mod parametrized_field;
-  // mod parametrized_field_where;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod parametrized_struct_imm;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod parametrized_struct_where;
+  mod parametrized_field;
+  mod parametrized_field_where;
 
-  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  // mod subformer_basic;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subformer_basic;
 
-  // #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  // mod subformer_container;
-  // #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  // mod subformer_container_manual;
-  // #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  // mod subformer_container_implicit;
-  // #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  // mod subformer_container_setter_off;
-  // #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  // mod subformer_container_named;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_container;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_container_manual;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_container_implicit;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_container_setter_off;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_container_named;
 
-//   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-//   mod subformer_subform;
-//   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-//   mod subformer_subform_manual;
-//   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-//   mod subformer_subform_named;
-//   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-//   mod subformer_subform_named_manual;
-//   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-//   mod subformer_subform_setter_off;
-//   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-//   mod subformer_subform_setter_on;
-//
-//   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-//   mod subformer_subform_hashmap;
-//   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-//   mod subformer_subform_hashmap_custom;
-//
-//   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-//   mod subformer_subform_and_container;
-//   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-//   mod subformer_subform_and_container_parametrized;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_subform;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_subform_manual;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_subform_named;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_subform_named_manual;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_subform_setter_off;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_subform_setter_on;
 
-// xxx
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_subform_hashmap;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_subform_hashmap_custom;
+
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_subform_and_container;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_subform_and_container_parametrized;
 
 }
 

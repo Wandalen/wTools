@@ -378,6 +378,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     impl< #former_definition_types_generics_impl > former::FormerMutator
     for #former_definition_types < #former_definition_types_generics_ty >
+    where
+      #former_definition_types_generics_where
     {
     }
 
