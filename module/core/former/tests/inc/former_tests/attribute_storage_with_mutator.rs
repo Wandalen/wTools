@@ -1,8 +1,6 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-// xxx2 : finish
-
 #[ derive( Debug, PartialEq, the_module::Former ) ]
 #[ storage_fields( a : i32, b : Option< String > ) ]
 #[ mutator( custom = true, hint = true ) ]
@@ -27,62 +25,6 @@ for Struct1FormerDefinitionTypes< Context, Formed >
     storage.c = Some( format!( "{:?} - {}", storage.a.unwrap(), storage.b.as_ref().unwrap() ) );
   }
 }
-
-// pub struct Struct1CustomEnd
-// {
-//   _phantom : core::marker::PhantomData< ( (), ) >,
-// }
-//
-// // impl< Definition > Default for Struct1CustomEnd< Definition >
-// impl Default for Struct1CustomEnd
-// {
-//
-//   #[ inline( always ) ]
-//   fn default() -> Self
-//   {
-//     Self
-//     {
-//       _phantom : core::marker::PhantomData,
-//     }
-//   }
-//
-// }
-//
-// #[ automatically_derived ]
-// impl< Context, > former::FormingEnd
-// <
-//   Struct1FormerDefinitionTypes< Context, Struct1 >
-// >
-// for Struct1CustomEnd
-// {
-//   #[ inline( always ) ]
-//   fn call
-//   (
-//     &self,
-//     storage : Struct1FormerStorage,
-//     super_former : Option< Context >,
-//   )
-//   -> Struct1
-//   {
-//     let a = if let Some( a ) = storage.a
-//     {
-//       a
-//     }
-//     else
-//     {
-//       Default::default()
-//     };
-//     let b = if let Some( b ) = storage.b
-//     {
-//       b
-//     }
-//     else
-//     {
-//       Default::default()
-//     };
-//     Struct1 { c : format!( "{:?} - {}", a, b ) }
-//   }
-// }
 
 // == begin of generated
 
