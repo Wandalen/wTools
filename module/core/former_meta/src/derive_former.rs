@@ -118,7 +118,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     where
       Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty > >,
-      < Definition as former::FormerDefinition >::Types : former::FormerMutator,
+      // < Definition as former::FormerDefinition >::Types : former::FormerMutator,
   };
   let extra = generic_params::merge( &generics, &extra.into() );
 
@@ -141,7 +141,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
         Storage = #former_storage < #struct_generics_ty >,
         Formed = #stru < #struct_generics_ty >,
       >,
-      < Definition as former::FormerDefinition >::Types : former::FormerMutator,
+      // < Definition as former::FormerDefinition >::Types : former::FormerMutator,
   };
   let extra = generic_params::merge( &generics, &extra.into() );
 
@@ -278,7 +278,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     for #stru < #struct_generics_ty >
     where
       Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
-      < Definition as former::FormerDefinition >::Types : former::FormerMutator,
+      // < Definition as former::FormerDefinition >::Types : former::FormerMutator,
       #struct_generics_where
     {
       type Former = #former < #struct_generics_ty Definition > ;
@@ -620,7 +620,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     >
     where
       Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
-      < Definition as former::FormerDefinition >::Types : former::FormerMutator,
+      // < Definition as former::FormerDefinition >::Types : former::FormerMutator,
       #struct_generics_where
     {
 
