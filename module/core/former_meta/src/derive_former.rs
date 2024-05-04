@@ -203,13 +203,13 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   let
   (
-    storage_fields_none,
-    storage_fields_optional,
+    storage_field_none,
+    storage_field_optional,
     storage_field_name,
-    storage_fields_preform,
-    former_fields_setter,
-    former_fields_former_assign,
-    former_fields_former_add,
+    storage_field_preform,
+    former_field_setter,
+    former_field_assign_end,
+    former_field_add_end,
   )
   :
   ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
@@ -218,12 +218,12 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   .chain( storage_fields.iter() )
   .map( | field |
   {(
-    field.none_map(),
-    field.optional_map(),
+    field.storage_fields_none(),
+    field.storage_field_optional(),
     field.storage_field_name(),
-    field.preform_map(),
-    field.setter_map( &stru ),
-    field.former_assign_end_map
+    field.storage_field_preform(),
+    field.former_field_setter( &stru ),
+    field.former_field_assign_end
     (
       &stru,
       &former,
@@ -231,7 +231,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       &former_generics_ty,
       &former_generics_where,
     ),
-    field.former_add_end_map
+    field.former_field_add_end
     (
       &stru,
       &former,
@@ -242,10 +242,10 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     ),
   )}).multiunzip();
 
-  let former_fields_setter : Vec< _ > = process_results( former_fields_setter, | iter | iter.collect() )?;
-  let storage_fields_preform : Vec< _ > = process_results( storage_fields_preform, | iter | iter.collect() )?;
-  let former_fields_former_assign : Vec< _ > = process_results( former_fields_former_assign, | iter | iter.collect() )?;
-  let former_fields_former_add : Vec< _ > = process_results( former_fields_former_add, | iter | iter.collect() )?;
+  let former_field_setter : Vec< _ > = process_results( former_field_setter, | iter | iter.collect() )?;
+  let storage_field_preform : Vec< _ > = process_results( storage_field_preform, | iter | iter.collect() )?;
+  let former_field_assign_end : Vec< _ > = process_results( former_field_assign_end, | iter | iter.collect() )?;
+  let former_field_add_end : Vec< _ > = process_results( former_field_add_end, | iter | iter.collect() )?;
 
   let result = qt!
   {
@@ -382,7 +382,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     {
       #(
         /// A field
-        #storage_fields_optional,
+        #storage_field_optional,
       )*
       // #storage_fields_code
     }
@@ -399,7 +399,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       {
         Self
         {
-          #( #storage_fields_none, )*
+          #( #storage_field_none, )*
         }
       }
 
@@ -422,12 +422,13 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
       fn preform( mut self ) -> Self::Preformed
       {
-        #( #storage_fields_preform )*
+        #( #storage_field_preform )*
         // Rust does not support that, yet
         // let result = < Definition::Types as former::FormerDefinitionTypes >::Formed
         let result = #stru :: < #struct_generics_ty >
         {
-          #( #storage_field_name, )*
+          #( #storage_field_name )*
+          // #( #storage_field_name, )*
         };
         return result;
       }
@@ -552,7 +553,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
 
       #(
-        #former_fields_setter
+        #former_field_setter
       )*
 
     }
@@ -670,13 +671,13 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     // = container assign callbacks
 
     #(
-      #former_fields_former_assign
+      #former_field_assign_end
     )*
 
     // = container add callbacks
 
     #(
-      #former_fields_former_add
+      #former_field_add_end
     )*
 
   };

@@ -28,16 +28,16 @@ impl< 'a > FormerField< 'a >
 
 from_syn
 
-none_map
-optional_map
-preform_map
+storage_fields_none
+storage_field_optional
+storage_field_preform
 storage_field_name
-setter_map
+former_field_setter
 subform_add_setter_map
 container_setter
 scalar_setter
-former_assign_end_map
-former_add_end_map
+former_field_assign_end
+former_field_add_end
 
 scalar_setter_name
 container_setter_name
@@ -91,7 +91,7 @@ scalar_setter_required
   ///
 
   #[ inline( always ) ]
-  pub fn none_map( &self ) -> TokenStream
+  pub fn storage_fields_none( &self ) -> TokenStream
   {
     let ident = Some( self.ident.clone() );
     let tokens = qt! { ::core::option::Option::None };
@@ -119,7 +119,7 @@ scalar_setter_required
   ///
 
   #[ inline( always ) ]
-  pub fn optional_map( &self ) -> TokenStream
+  pub fn storage_field_optional( &self ) -> TokenStream
   {
     let ident = Some( self.ident.clone() );
     let ty = self.ty.clone();
@@ -176,7 +176,7 @@ scalar_setter_required
   ///
 
   #[ inline( always ) ]
-  pub fn preform_map( &self ) -> Result< TokenStream >
+  pub fn storage_field_preform( &self ) -> Result< TokenStream >
   {
 
     if !self.for_formed
@@ -302,7 +302,7 @@ scalar_setter_required
     }
 
     let ident = self.ident;
-    qt!{ #ident }
+    qt!{ #ident, }
 
   }
 
@@ -339,7 +339,7 @@ scalar_setter_required
   /// ```
 
   #[ inline ]
-  pub fn setter_map
+  pub fn former_field_setter
   (
     &self,
     stru : &syn::Ident,
@@ -683,7 +683,7 @@ scalar_setter_required
   ///
   /// Generate a single scalar setter for the 'field_ident' with the 'setter_name' name.
   ///
-  /// Used as a helper function for setter_map(), which generates alias setters
+  /// Used as a helper function for former_field_setter(), which generates alias setters
   ///
   /// # Example of generated code
   /// ```ignore
@@ -773,7 +773,7 @@ scalar_setter_required
   /// ```
 
   #[ inline ]
-  pub fn former_assign_end_map
+  pub fn former_field_assign_end
   (
     &self,
     stru : &syn::Ident,
@@ -893,7 +893,7 @@ scalar_setter_required
   /// zzz : write documentation
 
   #[ inline ]
-  pub fn former_add_end_map
+  pub fn former_field_add_end
   (
     &self,
     stru : &syn::Ident,
