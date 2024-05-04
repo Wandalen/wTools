@@ -171,12 +171,8 @@ impl former::StoragePreform for Struct1FormerStorage
 
 impl< Context, Formed > former::FormerMutator
 for Struct1FormerDefinitionTypes< Context, Formed >
-// where
-  // Struct1FormerDefinitionTypes : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
 {
 }
-
-// FormerMutator::< Self >::form_mutation( &mut self.storage, &mut context );
 
 // = former
 

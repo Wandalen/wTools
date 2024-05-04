@@ -38,6 +38,13 @@ where
   }
 }
 
+// impl< Definition > crate::FormerMutator
+// for Definition
+// where
+//   Definition : crate::FormerDefinitionTypes,
+// {
+// }
+
 /// Defines a handler for the end of a subforming process, enabling the return of the original context.
 ///
 /// This trait is designed to be flexible, allowing for various end-of-forming behaviors in builder patterns.
