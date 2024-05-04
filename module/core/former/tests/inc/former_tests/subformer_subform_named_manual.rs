@@ -10,14 +10,6 @@ pub struct Child
   data : bool,
 }
 
-// impl< Context, Formed, End > former::EntityToDefinition< Context, Formed, End >
-// for Child
-// where
-//   End : former::FormingEnd< ChildFormerDefinitionTypes< Context, Formed > >,
-// {
-//   type Definition = ChildFormerDefinition< Context, Formed, End >;
-// }
-
 /// Parent required for the template.
 #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 // #[ derive( Debug, Default, PartialEq, the_module::Former ) ] #[ debug ]
@@ -34,7 +26,6 @@ pub struct Parent
 impl< Definition > ParentFormer< Definition >
 where
   Definition : former::FormerDefinition< Storage = < Parent as former::EntityToStorage >::Storage >,
-  // Definition::Types : former::FormerDefinitionTypes< Storage = < Parent as former::EntityToStorage >::Storage >,
 {
 
   #[ inline( always ) ]

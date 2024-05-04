@@ -281,7 +281,6 @@ where
 impl< Definition > Struct1Former< Definition >
 where
   Definition : former::FormerDefinition< Storage = Struct1FormerStorage, Formed = Struct1 >,
-  // Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage, Formed = Struct1 >,
   Definition::Storage : former::StoragePreform< Preformed = Struct1 >,
 {
   pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
