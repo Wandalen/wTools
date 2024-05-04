@@ -33,7 +33,7 @@ storage_field_optional
 storage_field_preform
 storage_field_name
 former_field_setter
-subform_add_setter_map
+subform_setter
 container_setter
 scalar_setter
 former_field_assign_end
@@ -370,7 +370,12 @@ scalar_setter_required
     // container setter
     let r = if let Some( _ ) = &self.attrs.container
     {
-      let r2 = self.container_setter( stru );
+      let r2 = self.container_setter
+      (
+        stru,
+        former,
+        former_storage,
+      );
       qt!
       {
         #r
@@ -385,13 +390,11 @@ scalar_setter_required
     // subform setter
     let r = if self.attrs.subform.is_some()
     {
-      let r2 = self.subform_add_setter_map
+      let r2 = self.subform_setter
       (
         stru,
         former,
         former_storage,
-        // as_subformer,
-        // as_subformer_end,
       )?;
       qt!
       {
@@ -410,7 +413,7 @@ scalar_setter_required
 
   /// zzz : write documentation
   #[ inline ]
-  pub fn subform_add_setter_map
+  pub fn subform_setter
   (
     &self,
     stru : &syn::Ident,
@@ -476,7 +479,7 @@ scalar_setter_required
     {
       let hint = format!
       (
-r#"
+        r#"
 
 /// Initializes and configures a subformer for adding named child entities. This method leverages an internal function
 /// to create and return a configured subformer instance. It allows for the dynamic addition of children with specific names,
@@ -494,6 +497,7 @@ where
   {{
     self.{}::< ChildFormer< _ >, _, >()
   }}
+  // Replace Child with name of type of element value.
 
 }}
         "#,
@@ -507,8 +511,6 @@ where
       println!( "{hint}" );
     }
 
-
-    // xxx : it should be printed by hint also
     let r = if attr.setter()
     {
       qt!
@@ -581,9 +583,12 @@ where
   (
     &self,
     stru : &syn::Ident,
+    former : &syn::Ident,
+    former_storage : &syn::Ident,
   )
   -> TokenStream
   {
+    let attr = self.attrs.container.as_ref().unwrap();
     let field_ident = &self.ident;
     let non_optional_ty = &self.non_optional_ty;
     let params = typ::type_parameters( &non_optional_ty, .. );
@@ -591,11 +596,11 @@ where
     use convert_case::{ Case, Casing };
     let former_assign_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
     let former_assign_end = syn::Ident::new( &former_assign_end_name, field_ident.span() );
-    let field_assign_name = format!( "_{}_assign", field_ident );
+    let field_assign_name = format!( "_{}_container_former", field_ident );
     let field_assign = syn::Ident::new( &field_assign_name, field_ident.span() );
 
     // example : `former::VectorDefinition`
-    let subformer_definition = &self.attrs.container.as_ref().unwrap().definition;
+    let subformer_definition = &attr.definition;
     let subformer_definition = if subformer_definition.is_some()
     {
       qt!
@@ -693,6 +698,42 @@ where
     {
       qt!{}
     };
+
+    if attr.hint
+    {
+      let hint = format!
+      (
+        r#"
+
+/// The containr setter provides a container setter that returns a ContainerSubformer tailored for managing a collection of child entities. It employs a generic container definition to facilitate operations on the entire collection, such as adding or updating elements.
+impl< Definition, > {}< Definition, >
+where
+  Definition : former::FormerDefinition< Storage = {} >,
+{{
+
+  #[ inline( always ) ]
+  pub fn {}( self ) -> former::ContainerSubformer::
+  <
+    ( {} ),
+    former::HashMapDefinition< {} Self, Self, {}< Definition >, >
+    // Replace `HashMapDefinition` with definition for your container
+  >
+  {{
+    self._children_container_former()
+  }}
+
+}}
+
+        "#,
+        former,
+        former_storage,
+        field_ident,
+        format!( "{}", qt!{ #( #params, )* } ),
+        format!( "{}", qt!{ #( #params, )* } ),
+        former_assign_end,
+      );
+      println!( "{hint}" );
+    }
 
     qt!
     {

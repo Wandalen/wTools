@@ -43,7 +43,7 @@ where
     former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, >
   >
   {
-    self._children_assign::< _ >()
+    self._children_container_former::< _ >()
   }
 
 }

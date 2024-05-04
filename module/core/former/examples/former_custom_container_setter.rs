@@ -14,8 +14,6 @@
 //! - **Container Setter**: Conversely, a container setter returns a former of the container itself, offering an interface to manage the container as a whole rather than its individual elements. It would be used if one needed to apply configurations or validations to the entire `HashMap` of children, rather than to individual children.
 //!
 
-// xxx : improve description of this example. container setter unlike subform setter expose interface of container, not element itself
-
 // zzz : duplicate into readme
 
 #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
@@ -46,6 +44,7 @@ fn main()
     children : HashMap< String, Child >,
   }
 
+  /// The containr setter provides a container setter that returns a ContainerSubformer tailored for managing a collection of child entities. It employs a generic container definition to facilitate operations on the entire collection, such as adding or updating elements.
   impl< Definition, > ParentFormer< Definition, >
   where
     Definition : former::FormerDefinition< Storage = ParentFormerStorage >,
@@ -58,7 +57,7 @@ fn main()
       former::HashMapDefinition< String, Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, >
     >
     {
-      self._children_assign()
+      self._children_container_former()
     }
 
   }

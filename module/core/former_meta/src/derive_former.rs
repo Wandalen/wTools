@@ -270,7 +270,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   {
     let hint = format!
     (
-r#"
+      r#"
  = Example of custom mutator
 
 impl< {} > former::FormerMutator
