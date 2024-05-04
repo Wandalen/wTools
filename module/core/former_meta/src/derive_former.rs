@@ -174,7 +174,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   let ( _doc_former_mod, doc_former_struct ) = doc_generate( stru );
   let ( perform, perform_output, perform_generics ) = struct_attrs.performer()?;
-  let storage_fields_code = struct_attrs.storage_fields_code()?;
+  // let storage_fields_code = struct_attrs.storage_fields_code()?;
 
   /* fields */
 

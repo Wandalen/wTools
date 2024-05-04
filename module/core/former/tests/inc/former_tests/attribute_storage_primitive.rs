@@ -63,7 +63,7 @@ for Struct1CustomEnd
     {
       Default::default()
     };
-    Struct1 { c : format!( "{:?} - :?", a, b ) }
+    Struct1 { c : format!( "{:?} - {}", a, b ) }
   }
 }
 

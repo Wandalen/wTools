@@ -214,35 +214,35 @@ impl StructAttributes
     // )
   }
 
-  /// Generates a `TokenStream` for the fields specified in `storage_fields`.
-  ///
-  /// This function constructs a token stream for code generation, incorporating fields from the
-  /// `storage_fields` attribute into the generated Rust code. If `storage_fields` is set, it includes
-  /// its fields in the output; otherwise, it returns an empty token stream.
-  ///
-  /// # Example of generated code
-  ///
-  /// ```rust, ignore
-  /// field1 : i32,
-  /// field2 : String,
-  /// ```
-  ///
-
-  pub fn storage_fields_code( &self )
-  -> Result< TokenStream >
-  {
-
-    let mut result = qt!
-    {
-    };
-
-    if let Some( ref attr ) = self.storage_fields
-    {
-      let storage_fields = &attr.fields;
-      result = qt! { #storage_fields }
-    }
-
-    Ok( result )
-  }
+//   /// Generates a `TokenStream` for the fields specified in `storage_fields`.
+//   ///
+//   /// This function constructs a token stream for code generation, incorporating fields from the
+//   /// `storage_fields` attribute into the generated Rust code. If `storage_fields` is set, it includes
+//   /// its fields in the output; otherwise, it returns an empty token stream.
+//   ///
+//   /// # Example of generated code
+//   ///
+//   /// ```rust, ignore
+//   /// field1 : i32,
+//   /// field2 : String,
+//   /// ```
+//   ///
+//
+//   pub fn storage_fields_code( &self )
+//   -> Result< TokenStream >
+//   {
+//
+//     let mut result = qt!
+//     {
+//     };
+//
+//     if let Some( ref attr ) = self.storage_fields
+//     {
+//       let storage_fields = &attr.fields;
+//       result = qt! { #storage_fields }
+//     }
+//
+//     Ok( result )
+//   }
 
 }
