@@ -7,12 +7,17 @@
 //!
 //! The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a container—each child entity in this case.
 //!
-//! xxx : extend by information about Scalar Setter
-//! #### Subform Setter vs. Container Setter
+//! #### Types of Setters
 //!
-//! It's important to distinguish between a subform setter and a container setter:
-//! - **Subform Setter**: This returns a former of an element within a container, providing an interface to individually form each element. In this example, `child` acts as a subform setter, allowing for the addition and configuration of individual `Child` entities within the `Parent`'s `HashMap`.
-//! - **Container Setter**: Conversely, a container setter returns a former of the container itself, offering an interface to manage the container as a whole rather than its individual elements. It would be used if one needed to apply configurations or validations to the entire `HashMap` of children, rather than to individual children.
+//! It's crucial to understand the differences among subform setters, container setters, and scalar setters:
+//!
+//! - **Scalar Setter**: Directly sets scalar values or simple fields within the forming entity. Unlike subform or container setters that manage complex objects or collections, scalar setters handle basic data types or individual fields. These are typically straightforward setter methods that do not involve nested formers or additional structuring.
+//!
+//! - **Container Setter**: Returns a former of the container itself, offering an interface to manage the container as a whole rather than its individual elements. This type of setter is useful for applying configurations or validations to the entire collection, such as a `HashMap` of children.
+//!
+//! - **Subform Setter**: Returns a former of an element within a container, providing an interface to individually form each element. For example, the `child` method acts as a subform setter, allowing for the addition and configuration of individual `Child` entities within the `Parent`'s `HashMap`.
+//!
+//! Each type of setter is designed to address different needs in the formation process, ensuring that users can build complex, nested structures or simply set individual field values as required.
 //!
 
 // zzz : duplicate into readme
