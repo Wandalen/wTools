@@ -5,8 +5,7 @@ use macro_tools::{ attr, diag, generic_params, generic_args, typ, derive, Result
 use proc_macro2::TokenStream;
 
 // zzz : explain concept of Storage
-// xxx : introduce namespaces
-// zzz : qqq : implement interfaces for other containers
+// qqq : implement interfaces for other containers
 
 mod field;
 use field::*;

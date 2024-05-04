@@ -152,11 +152,12 @@ impl StructAttributes
   pub fn storage_fields( &self ) -> &syn::punctuated::Punctuated< syn::Field, syn::token::Comma >
   {
 
-    self.storage_fields.as_ref().map_or_else(
+    self.storage_fields.as_ref().map_or_else
+    (
       || &*Box::leak( Box::new( syn::punctuated::Punctuated::new() ) ),
       | attr | &attr.fields
     )
-    // xxx : investigate
+    // qqq : find better solutioin
 
     // self.storage_fields
     // .as_ref()
