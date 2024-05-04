@@ -131,3 +131,81 @@ impl syn::parse::Parse for AttributeStorageFields
     })
   }
 }
+
+
+//
+
+///
+/// Generate parts, used for generating `perform()`` method.
+///
+/// Similar to `form()`, but will also invoke function from `perform` attribute, if specified.
+///
+/// # Example of returned tokens :
+///
+/// ## perform :
+/// return result;
+///
+/// ## perform_output :
+/// < T : ::core::default::Default >
+///
+/// ## perform_generics :
+/// Vec< T >
+///
+
+impl StructAttributes
+{
+
+  pub fn performer( &self )
+  -> Result< ( TokenStream, TokenStream, TokenStream ) >
+  {
+
+    let mut perform = qt!
+    {
+      return result;
+    };
+    let mut perform_output = qt!{ Definition::Formed };
+    let mut perform_generics = qt!{};
+
+    if let Some( ref attr ) = self.perform
+    {
+
+      // let attr_perform = syn::parse2::< AttributePerform >( meta_list.tokens.clone() )?;
+      let signature = &attr.signature;
+      let generics = &signature.generics;
+      perform_generics = qt!{ #generics };
+      let perform_ident = &signature.ident;
+      let output = &signature.output;
+      if let syn::ReturnType::Type( _, boxed_type ) = output
+      {
+        perform_output = qt!{ #boxed_type };
+      }
+      perform = qt!
+      {
+        return result.#perform_ident();
+      };
+
+    }
+
+    Ok( ( perform, perform_output, perform_generics ) )
+  }
+
+  /// xxx : write documentation. provide example of generated code
+
+  pub fn storage_fields( &self )
+  -> Result< TokenStream >
+  {
+
+    let mut result = qt!
+    {
+    };
+
+    if let Some( ref attr ) = self.storage_fields
+    {
+      let storage_fields = &attr.fields;
+      result = qt! { #storage_fields }
+    }
+
+    Ok( result )
+  }
+
+}

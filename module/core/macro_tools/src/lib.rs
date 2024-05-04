@@ -11,6 +11,7 @@ mod file
   use super::*;
   pub mod attr;
   pub mod container_kind;
+  pub mod derive;
   pub mod diag;
   pub mod generic_analyze;
   pub mod generic_args;
@@ -59,6 +60,7 @@ pub mod protected
   {
     attr::orphan::*,
     container_kind::orphan::*,
+    derive::orphan::*,
     diag::orphan::*,
     generic_analyze::orphan::*,
     generic_args::orphan::*,
@@ -107,6 +109,7 @@ pub mod exposed
   {
     attr::exposed::*,
     container_kind::exposed::*,
+    derive::orphan::*,
     diag::exposed::*,
     generic_analyze::exposed::*,
     generic_args::exposed::*,
@@ -172,6 +175,7 @@ pub mod prelude
   {
     attr::prelude::*,
     container_kind::prelude::*,
+    derive::orphan::*,
     diag::prelude::*,
     generic_analyze::prelude::*,
     generic_args::prelude::*,

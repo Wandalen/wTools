@@ -1,7 +1,7 @@
 
 use super::*;
 use iter_tools::{ Itertools, process_results };
-use macro_tools::{ attr, diag, generic_params, generic_args, container_kind, typ, Result };
+use macro_tools::{ attr, diag, generic_params, generic_args, container_kind, typ, derive, Result };
 use proc_macro2::TokenStream;
 
 // zzz : explain concept of Storage
@@ -54,83 +54,6 @@ For specifying custom default value use attribute `default`. For example:
   );
 
   ( doc_former_mod, doc_former_struct )
-}
-
-//
-
-///
-/// Generate parts, used for generating `perform()`` method.
-///
-/// Similar to `form()`, but will also invoke function from `perform` attribute, if specified.
-///
-/// # Example of returned tokens :
-///
-/// ## perform :
-/// return result;
-///
-/// ## perform_output :
-/// < T : ::core::default::Default >
-///
-/// ## perform_generics :
-/// Vec< T >
-
-pub fn performer
-(
-  attrs : &StructAttributes,
-)
--> Result< ( TokenStream, TokenStream, TokenStream ) >
-{
-
-  let mut perform = qt!
-  {
-    return result;
-  };
-  let mut perform_output = qt!{ Definition::Formed };
-  let mut perform_generics = qt!{};
-
-  if let Some( ref attr ) = attrs.perform
-  {
-
-    // let attr_perform = syn::parse2::< AttributePerform >( meta_list.tokens.clone() )?;
-    let signature = &attr.signature;
-    let generics = &signature.generics;
-    perform_generics = qt!{ #generics };
-    let perform_ident = &signature.ident;
-    let output = &signature.output;
-    if let syn::ReturnType::Type( _, boxed_type ) = output
-    {
-      perform_output = qt!{ #boxed_type };
-    }
-    perform = qt!
-    {
-      return result.#perform_ident();
-    };
-
-  }
-
-  Ok( ( perform, perform_output, perform_generics ) )
-}
-
-/// xxx : write documentation. provide example of generated code
-
-pub fn storage_fields
-(
-  attrs : &StructAttributes,
-)
--> Result< TokenStream >
-{
-
-  let mut result = qt!
-  {
-  };
-
-  if let Some( ref attr ) = attrs.storage_fields
-  {
-    let storage_fields = &attr.fields;
-    result = qt! { #storage_fields }
-  }
-
-  Ok( result )
 }
 
 ///
@@ -247,7 +170,15 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   let former_definition_phantom = macro_tools::phantom::tuple( &former_definition_generics_impl );
 
-  /* */
+  /* struct attributes */
+
+  let ( _doc_former_mod, doc_former_struct ) = doc_generate( stru );
+  let ( perform, perform_output, perform_generics ) = struct_attrs.performer()?;
+  let storage_fields = struct_attrs.storage_fields()?;
+
+  /* fields */
+
+  let fields = derive::data_named_fields( &ast );
 
   let fields = match ast.data
   {
@@ -321,17 +252,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let fields_form : Vec< _ > = process_results( fields_form, | iter | iter.collect() )?;
   let fields_former_assign : Vec< _ > = process_results( fields_former_assign, | iter | iter.collect() )?;
   let fields_former_add : Vec< _ > = process_results( fields_former_add, | iter | iter.collect() )?;
-
-  let ( _doc_former_mod, doc_former_struct ) = doc_generate( stru );
-  let ( perform, perform_output, perform_generics ) = performer
-  (
-    &struct_attrs
-  )?;
-
-  let storage_fields = storage_fields
-  (
-    &struct_attrs
-  )?;
 
   let result = qt!
   {
@@ -479,6 +399,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       #struct_generics_where
     {
 
+      // xxx
       #[ inline( always ) ]
       fn default() -> Self
       {
