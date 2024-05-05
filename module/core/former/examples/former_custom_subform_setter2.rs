@@ -20,8 +20,6 @@
 //! Each type of setter is designed to address different needs in the formation process, ensuring that users can build complex, nested structures or simply set individual field values as required.
 //!
 
-// zzz : duplicate into readme
-
 // Ensure the example only compiles when the appropriate features are enabled.
 #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
 fn main() {}

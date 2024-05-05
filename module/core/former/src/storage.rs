@@ -6,11 +6,6 @@ pub trait Storage : ::core::default::Default
 }
 
 /// zzz : write description
-// pub trait StoragePreform : Storage
-// {
-//   fn preform( self ) -> Self::Formed;
-// }
-
 pub trait StoragePreform
 {
   type Preformed;
