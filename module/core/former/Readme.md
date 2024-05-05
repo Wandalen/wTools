@@ -602,7 +602,7 @@ Storage is not just a passive container; it is an active part of a larger ecosys
 
 These elements work in concert to ensure that the forming process is not only about building an object step-by-step but also about integrating it seamlessly into larger, more complex structures or systems. The `Former` framework, with its sophisticated management of storage, context, and callbacks, enables a highly flexible and reusable approach to object formation, making it ideal for scenarios where objects are part of nested or interdependent systems.
 
-## Comcept of Definitions
+## Concept of Definitions
 
 Definitions are utilized to encapsulate and manage generic parameters efficiently and avoid passing each parameter individually.
 
