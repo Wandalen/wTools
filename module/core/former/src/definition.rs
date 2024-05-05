@@ -1,4 +1,19 @@
-// definition.rs
+//! Module `definition`
+//!
+//! Provides traits for defining the relationships between entities and their formation mechanisms.
+//! These traits are central to the implementation of a flexible and extensible formation system,
+//! enabling entities to be constructed using various configurations and complex logic.
+//!
+//! Key aspects of the module include:
+//! - **Entity to Definition Mapping**: Linking entities to their specific formation definitions,
+//!   which detail how they are to be constructed.
+//! - **Entity to Former Mapping**: Associating entities with formers that handle their construction
+//!   process.
+//! - **Entity to Storage Mapping**: Defining the storage structures that maintain the state of an
+//!   entity during its formation.
+//! - **Definition Traits**: Specifying the properties and ending conditions of the formation
+//!   process to ensure entities are formed according to specified rules and logic.
+//!
 
 /// Maps a type of entity to its corresponding former definition.
 /// This trait provides a linkage between the entity and its definition,

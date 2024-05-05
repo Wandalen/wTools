@@ -614,6 +614,23 @@ Two key definition Traits:
    - Building upon `FormerDefinitionTypes`, this trait incorporates the `FormingEnd` callback, linking the formation types with a definitive ending. It specifies how the formation process should conclude, which may involve validations, transformations, or integrations into larger structures.
    - The inclusion of the `End` type parameter specifies the end conditions of the formation process, effectively connecting the temporary state held in storage to its ultimate form.
 
+## Overview of Formation Traits
+
+The formation process in our framework utilizes several core traits, each serving a specific purpose in the lifecycle of entity creation. These traits ensure that entities are constructed methodically, adhering to a structured pattern that enhances maintainability and scalability. Below is a summary of these key traits:
+
+- `EntityToDefinition`: Links entities to their respective formation definitions which dictate their construction process.
+- `EntityToFormer`: Connects entities with formers that are responsible for their step-by-step construction.
+- `EntityToStorage`: Specifies the storage structures that temporarily hold the state of an entity during its formation.
+- `FormerDefinition`, `FormerDefinitionTypes`: Define the essential properties and ending conditions of the formation process, ensuring entities are formed according to predetermined rules and logic.
+- `Storage`: Establishes the fundamental interface for storage types used in the formation process, ensuring each can initialize to a default state.
+- `StoragePreform`: Describes the transformation of storage from a mutable, intermediate state into the final, immutable state of the entity, crucial for accurately concluding the formation process.
+- `FormerMutator`: Allows for custom mutation logic on the storage and context immediately before the formation process completes, ensuring last-minute adjustments are possible.
+- `FormingEnd`: Specifies the closure action at the end of the formation process, which can transform or validate the final state of the entity.
+- `FormingEndClosure`: Provides a flexible mechanism for dynamically handling the end of the formation process using closures, useful for complex scenarios.
+- `FormerBegin`: Initiates a subforming process, managing how entities begin their formation in terms of storage and context setup.
+
+These traits collectively facilitate a robust and flexible builder pattern that supports complex object creation and configuration scenarios.
+
 ## Concept of subformer
 
 Subformers are specialized builders used within the `Former` framework to construct nested or collection-based data structures like vectors, hash maps, and hash sets. They simplify the process of adding elements to these structures by providing a fluent interface that can be seamlessly integrated into the overall builder pattern of a parent struct. This approach allows for clean and intuitive initialization of complex data structures, enhancing code readability and maintainability.

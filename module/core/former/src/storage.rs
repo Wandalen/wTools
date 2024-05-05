@@ -1,4 +1,16 @@
-// storage.rs
+//! Module `storage`
+//!
+//! Provides traits that define the storage mechanics used during the formation of entities in a builder pattern.
+//! This module is critical for managing the state of entities as they are constructed, ensuring that all
+//! interim data is handled appropriately before finalizing the entity's construction.
+//!
+//! Key components of the module include:
+//! - **Storage Interface**: Defines the essential interface for any storage type used in the formation
+//!   process. It ensures that each storage type can be initialized to a default state.
+//! - **Storage Preformation**: Outlines the method for transitioning storage from a mutable, intermediate
+//!   state to a finalized, immutable state of the entity. This is pivotal for concluding the formation process
+//!   with integrity and accuracy.
+//!
 
 /// Defines the storage interface for entities being constructed using a forming pattern.
 ///

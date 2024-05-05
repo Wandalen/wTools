@@ -98,6 +98,8 @@ for Vec< E >
 // = definition
 
 // xxx : split definition and definition types
+// xxx : imlement custom ContainerDefinition
+
 #[ derive( Debug, Default ) ]
 pub struct VectorDefinition< E, Context = (), Formed = Vec< E >, End = ReturnStorage >
 where

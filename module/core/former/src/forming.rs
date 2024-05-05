@@ -1,4 +1,9 @@
-
+//! Module `forming`
+//!
+//! This module defines a collection of traits that are crucial for implementing a structured and extensible builder pattern.
+//! The traits provided manage the various stages of the forming process, handling the initiation, mutation, and completion
+//! of constructing complex data structures. These traits facilitate the creation of flexible and maintainable formation
+//! logic that can accommodate complex construction scenarios, including nested and conditional formations.
 
 /// Provides a mechanism for mutating the context and storage just before the forming process is completed.
 ///
@@ -19,8 +24,9 @@
 /// - Applying last-minute changes to the data being formed.
 /// - Setting or modifying properties that depend on the final state of the storage or context.
 /// - Storage-specific fields which are not present in formed structure.
+///
+/// Look example `former_custom_mutator.rs`
 
-// xxx : add example
 pub trait FormerMutator
 where
   Self : crate::FormerDefinitionTypes,
@@ -79,10 +85,11 @@ where
   }
 }
 
-/// A `FormingEnd` implementation that returns the formed container itself instead of the context.
+/// A `FormingEnd` implementation that directly returns the formed container as the final product of the forming process.
 ///
-/// This struct is useful when the forming process should result in the formed container being returned directly,
-/// bypassing any additional context processing. It simplifies scenarios where the formed container is the final result.
+/// This struct is particularly useful when the end result of the forming process is simply the formed container itself,
+/// without needing to integrate or process additional contextual information. It's ideal for scenarios where the final
+/// entity is directly derived from the storage state without further transformations or context-dependent adjustments.
 #[ derive( Debug, Default ) ]
 pub struct ReturnPreformed;
 
@@ -92,6 +99,7 @@ where
   Definition::Storage : crate::StoragePreform< Preformed = Definition::Formed >,
   Definition : crate::FormerDefinitionTypes,
 {
+  /// Transforms the storage into its final formed state and returns it, bypassing context processing.
   #[ inline( always ) ]
   fn call( &self, storage : Definition::Storage, _context : core::option::Option< Definition::Context > ) -> Definition::Formed
   {
@@ -99,7 +107,12 @@ where
   }
 }
 
-/// zzz : update description
+/// A `FormingEnd` implementation that returns the storage itself as the formed entity, disregarding any contextual data.
+///
+/// This struct is suited for straightforward forming processes where the storage already represents the final state of the
+/// entity, and no additional processing or transformation of the storage is required. It simplifies use cases where the
+/// storage does not undergo a transformation into a different type at the end of the forming process.
+
 #[ derive( Debug, Default ) ]
 pub struct ReturnStorage;
 
@@ -108,6 +121,7 @@ for ReturnStorage
 where
   Definition : crate::FormerDefinitionTypes< Context = (), Storage = T, Formed = T >,
 {
+  /// Returns the storage as the final product of the forming process, ignoring any additional context.
   #[ inline( always ) ]
   fn call( &self, storage : Definition::Storage, _context : core::option::Option< () > ) -> Definition::Formed
   {
@@ -115,10 +129,11 @@ where
   }
 }
 
-// zzz : improve description
-/// Use `NoEnd` to fill parameter FormingEnd in struct where parameter exists, but it is not needed.
-/// It might be needed if the same struct is used as `FormerDefinitionTypes` and as `FormerDefinition`, because the first one does not have information aboud End function.
-/// Similar logic which `std::marker::PhantomData` has behind.
+/// A placeholder `FormingEnd` used when no end operation is required or applicable.
+///
+/// This implementation is useful in generic or templated scenarios where a `FormingEnd` is required by the interface,
+/// but no meaningful end operation is applicable. It serves a role similar to `std::marker::PhantomData` by filling
+/// generic parameter slots without contributing operational logic.
 #[ derive( Debug, Default ) ]
 pub struct NoEnd;
 
@@ -127,6 +142,7 @@ for NoEnd
 where
   Definition : crate::FormerDefinitionTypes,
 {
+  /// Intentionally causes a panic if called, as its use indicates a configuration error.
   #[ inline( always ) ]
   fn call( &self, _storage : Definition::Storage, _context : core::option::Option< Definition::Context > ) -> Definition::Formed
   {
@@ -211,31 +227,46 @@ for FormingEndClosure< Definition >
   }
 }
 
-//
-
 /// A trait for initiating a structured subforming process with contextual and intermediary storage linkage.
 ///
-/// This trait facilitates the creation of a subformer that carries through a builder pattern chain,
-/// utilizing intermediary storage for accumulating state or data before finally transforming it into
-/// a `Formed` structure. It is designed for scenarios where a multi-step construction or transformation
-/// process benefits from maintaining both transient state (`Storage`) and contextual information (`Context`),
-/// before concluding with the generation of a final product (`Formed`).
+/// This trait is crucial for the `derive(Former)` macro implementation, where it facilitates the creation
+/// of a subformer that integrates seamlessly within a builder pattern chain. It handles intermediary storage
+/// to accumulate state or data before finally transforming it into the final `Formed` structure.
 ///
-/// The `FormerBegin` trait, by decoupling `Storage` from `Formed` and introducing a contextual layer, enables
-/// sophisticated and flexible construction patterns conducive to complex data transformations or object creation
-/// sequences within builder patterns.
+/// `FormerBegin` is particularly important in scenarios where complex, hierarchical structures are formed,
+/// allowing a former to be reused within another former. This reusability and the ability to maintain both transient
+/// state (`Storage`) and contextual information (`Context`) are essential for multi-step construction or transformation
+/// processes that culminate in the generation of a final product (`Formed`).
+///
+/// During code generation via the `derive(Former)` macro, `FormerBegin` provides the necessary scaffolding to
+/// initiate the subforming process. This setup is critical for ensuring that all elements involved in the formation
+/// are aligned from the onset, particularly when one former is nested within another, facilitating the creation
+/// of complex hierarchical data structures.
+///
 
-// zzz : update description
 pub trait FormerBegin< Definition : crate::FormerDefinition >
 {
 
   /// Launches the subforming process with an initial storage and context, setting up an `on_end` completion handler.
   ///
+  /// This method initializes the formation process by providing the foundational elements necessary for
+  /// building the entity. It allows for the configuration of initial states and contextual parameters, which
+  /// are critical for accurately reflecting the intended final state of the entity.
+  ///
   /// # Parameters
   ///
-  /// * `storage` - An optional initial state for the intermediary storage structure.
+  /// * `storage` - An optional initial state for the intermediary storage structure. This parameter allows
+  ///   for the pre-configuration of storage, which can be crucial for entities requiring specific initial states.
   /// * `context` - An optional initial setting providing contextual information for the subforming process.
+  ///   This context can influence how the formation process progresses, especially in complex forming scenarios.
   /// * `on_end` - A completion handler responsible for transforming the accumulated `Storage` into the final `Formed` structure.
+  ///   This parameter is vital for ensuring that the transition from `Storage` to `Formed` is handled correctly,
+  ///   incorporating any last-minute adjustments or validations necessary for the entity's integrity.
+  ///
+  /// # Returns
+  ///
+  /// Returns an instance of Former.
+  ///
   fn former_begin
   (
     storage : core::option::Option< Definition::Storage >,
