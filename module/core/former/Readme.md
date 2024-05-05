@@ -618,7 +618,7 @@ Two key definition Traits:
 
 Subformers are specialized builders used within the `Former` framework to construct nested or collection-based data structures like vectors, hash maps, and hash sets. They simplify the process of adding elements to these structures by providing a fluent interface that can be seamlessly integrated into the overall builder pattern of a parent struct. This approach allows for clean and intuitive initialization of complex data structures, enhancing code readability and maintainability.
 
-## Types of Setters
+## Types of Setters / Subformers
 
 It's crucial to understand the differences among subform setters, container setters, and scalar setters:
 
@@ -630,32 +630,32 @@ It's crucial to understand the differences among subform setters, container sett
 
 Each type of setter is designed to address different needs in the formation process, ensuring that users can build complex, nested structures or simply set individual field values as required.
 
-
 ## Subformer example: Building a Vector
 
 The following example illustrates how to use a `VectorSubformer` to construct a `Vec` field within a struct. The subformer enables adding elements to the vector with a fluent interface, streamlining the process of populating collection fields within structs.
 
 ```rust
-# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
-# #[ cfg( not( feature = "no_std" ) ) ]
-# {
-
-#[ derive( Debug, PartialEq, former::Former ) ]
-pub struct StructWithVec
+#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+fn main()
 {
-  #[ container( definition = former::VectorSubformer ) ]
-  vec : Vec< &'static str >,
+
+  #[ derive( Debug, PartialEq, former::Former ) ]
+  pub struct StructWithVec
+  {
+    #[ container ]
+    vec : Vec< &'static str >,
+  }
+
+  let instance = StructWithVec::former()
+  .vec()
+    .add( "apple" )
+    .add( "banana" )
+    .end()
+  .form();
+
+  assert_eq!( instance, StructWithVec { vec: vec![ "apple", "banana" ] } );
+
 }
-
-let instance = StructWithVec::former()
-.vec()
-  .push( "apple" )
-  .push( "banana" )
-  .end()
-.form();
-
-assert_eq!( instance, StructWithVec { vec: vec![ "apple", "banana" ] } );
-# }
 ```
 
 ## Subformer example: Building a Hashmap
@@ -663,28 +663,27 @@ assert_eq!( instance, StructWithVec { vec: vec![ "apple", "banana" ] } );
 This example demonstrates the use of a `HashMapSubformer` to build a hash map within a struct. The subformer provides a concise way to insert key-value pairs into the map, making it easier to manage and construct hash map fields.
 
 ```rust
-# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
-# #[ cfg( not( feature = "no_std" ) ) ]
-# {
-
-use test_tools::exposed::*;
-
-#[ derive( Debug, PartialEq, former::Former ) ]
-pub struct StructWithMap
+#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+fn main()
 {
-  #[ container( definition = former::HashMapSubformer ) ]
-  map : std::collections::HashMap< &'static str, &'static str >,
-}
+  use test_tools::exposed::*;
 
-let struct1 = StructWithMap::former()
-.map()
-  .insert( "a", "b" )
-  .insert( "c", "d" )
-  .end()
-.form()
-;
-assert_eq!( struct1, StructWithMap { map : hmap!{ "a" => "b", "c" => "d" } } );
-# }
+  #[ derive( Debug, PartialEq, former::Former ) ]
+  pub struct StructWithMap
+  {
+    #[ container ]
+    map : collection_tools::HashMap< &'static str, &'static str >,
+  }
+
+  let struct1 = StructWithMap::former()
+  .map()
+    .add( ( "a", "b" ) )
+    .add( ( "c", "d" ) )
+    .end()
+  .form()
+  ;
+  assert_eq!( struct1, StructWithMap { map : hmap!{ "a" => "b", "c" => "d" } } );
+}
 ```
 
 ## Subformer example: Building a Hashset
@@ -692,51 +691,46 @@ assert_eq!( struct1, StructWithMap { map : hmap!{ "a" => "b", "c" => "d" } } );
 In the following example, a `HashSetSubformer` is utilized to construct a hash set within a struct. This illustrates the convenience of adding elements to a set using the builder pattern facilitated by subformers.
 
 ```rust
-# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
-# #[ cfg( not( feature = "no_std" ) ) ]
-# {
-
-use test_tools::exposed::*;
-
-#[ derive( Debug, PartialEq, former::Former ) ]
-pub struct StructWithSet
-{
-  #[ container( definition = former::HashSetSubformer ) ]
-  set : std::collections::HashSet< &'static str >,
-}
-
-let instance = StructWithSet::former()
-.set()
-  .insert("apple")
-  .insert("banana")
-  .end()
-.form();
-
-assert_eq!(instance, StructWithSet { set : hset![ "apple", "banana" ] });
-# }
-```
-
-## Custom Subformer
-
-It is possible to use former of one structure to construct field of another one and integrate it into former of the last one.
-
-The example below illustrates how to incorporate the builder pattern of one structure as a subformer in another, enabling nested struct initialization within a single fluent interface.
-
-
-Example of how to use former of another structure as subformer of former of current one
-function `child` integrate `ChildFormer` into `ParentFormer`.
-
-```rust
-# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
-# {
-
+#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
 fn main()
 {
-  use std::collections::HashMap;
+  use test_tools::exposed::*;
+
+  #[ derive( Debug, PartialEq, former::Former ) ]
+  pub struct StructWithSet
+  {
+    #[ container ]
+    set : collection_tools::HashSet< &'static str >,
+  }
+
+  let instance = StructWithSet::former()
+  .set()
+    .add( "apple" )
+    .add( "banana" )
+    .end()
+  .form();
+
+  assert_eq!(instance, StructWithSet { set : hset![ "apple", "banana" ] });
+
+}
+```
+
+## Custom Scalar Setter
+
+This example demonstrates the implementation of a scalar setter using the `Former` trait in Rust. Unlike the more complex subform and container setters shown in previous examples, this example focuses on a straightforward approach to directly set a scalar value within a parent entity. The `Parent` struct manages a `HashMap` of `Child` entities, and the scalar setter is used to set the entire `HashMap` directly.
+
+The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a container—each child entity in this case.
+
+```rust
+#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+fn main()
+{
+  use collection_tools::HashMap;
   use former::Former;
 
   // Child struct with Former derived for builder pattern support
   #[ derive( Debug, PartialEq, Former ) ]
+  // #[ debug ]
   pub struct Child
   {
     name : String,
@@ -745,38 +739,195 @@ fn main()
 
   // Parent struct to hold children
   #[ derive( Debug, PartialEq, Former ) ]
+  // #[ debug ]
   pub struct Parent
   {
-    #[ scalar( setter = false ) ]
+    // Use `hint = true` to gennerate sketch of setter.
+    #[ scalar( setter = false, hint = false ) ]
+    children : HashMap< String, Child >,
+  }
+
+  impl< Definition > ParentFormer< Definition >
+  where
+    Definition : former::FormerDefinition< Storage = ParentFormerStorage >,
+  {
+    #[ inline ]
+    pub fn children< Src >( mut self, src : Src ) -> Self
+    where
+      Src : ::core::convert::Into< HashMap< String, Child > >,
+    {
+      debug_assert!( self.storage.children.is_none() );
+      self.storage.children = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
+      self
+    }
+  }
+
+  let echo = Child { name : "echo".to_string(), description : "prints all subjects and properties".to_string() };
+  let exit = Child { name : "exit".to_string(), description : "just exit".to_string() };
+  let mut children = HashMap::new();
+  children.insert( echo.name.clone(), echo );
+  children.insert( exit.name.clone(), exit );
+  let ca = Parent::former()
+  .children( children )
+  .form();
+
+  dbg!( &ca );
+  // > &ca = Parent {
+  // >     child: {
+  // >          "echo": Child {
+  // >              name: "echo",
+  // >              description: "prints all subjects and properties",
+  // >          },
+  // >          "exit": Child {
+  // >              name: "exit",
+  // >              description: "just exit",
+  // >          },
+  // >     },
+  // > }
+}
+```
+
+In this example, the `Parent` struct functions as a container for multiple `Child` structs, each identified by a unique child name. The `ParentFormer` implements a custom method `child`, which serves as a subformer for adding `Child` instances into the `Parent`.
+
+- **Child Definition**: Each `Child` consists of a `name` and a `description`, and we derive `Former` to enable easy setting of these properties using a builder pattern.
+- **Parent Definition**: It holds a collection of `Child` objects in a `HashMap`. The `#[setter(false)]` attribute is used to disable the default setter, and a custom method `child` is defined to facilitate the addition of children with specific attributes.
+- **Custom Subformer Integration**: The `child` method in the `ParentFormer` initializes a `ChildFormer` with a closure that integrates the `Child` into the `Parent`'s `child` map upon completion.
+
+This pattern of using a structure's former as a subformer within another facilitates the creation of deeply nested or complex data structures through a coherent and fluent interface, showcasing the powerful capabilities of the `Former` framework for Rust applications.
+
+## Custom Container Setter
+
+This example demonstrates the use of container setters to manage complex nested data structures with the `Former` trait, focusing on a parent-child relationship structured around a container `HashMap`. Unlike typical builder patterns that add individual elements using subform setters, this example uses a container setter to manage the entire collection of children.
+
+The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a container—each child entity in this case.
+
+```rust
+// Ensure the example only compiles when the appropriate features are enabled.
+#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+fn main()
+{
+  use collection_tools::HashMap;
+  use former::Former;
+
+  // Child struct with Former derived for builder pattern support
+  #[ derive( Debug, PartialEq, Former ) ]
+  // #[ debug ]
+  pub struct Child
+  {
+    name : String,
+    description : String,
+  }
+
+  // Parent struct to hold children
+  #[ derive( Debug, PartialEq, Former ) ]
+  // #[ debug ]
+  pub struct Parent
+  {
+    // Use `hint = true` to gennerate sketch of setter.
+    #[ scalar( setter = false, hint = false ) ]
+    children : HashMap< String, Child >,
+  }
+
+  impl< Definition > ParentFormer< Definition >
+  where
+    Definition : former::FormerDefinition< Storage = ParentFormerStorage >,
+  {
+    #[ inline ]
+    pub fn children< Src >( mut self, src : Src ) -> Self
+    where
+      Src : ::core::convert::Into< HashMap< String, Child > >,
+    {
+      debug_assert!( self.storage.children.is_none() );
+      self.storage.children = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
+      self
+    }
+  }
+
+  let echo = Child { name : "echo".to_string(), description : "prints all subjects and properties".to_string() };
+  let exit = Child { name : "exit".to_string(), description : "just exit".to_string() };
+  let mut children = HashMap::new();
+  children.insert( echo.name.clone(), echo );
+  children.insert( exit.name.clone(), exit );
+  let ca = Parent::former()
+  .children( children )
+  .form();
+
+  dbg!( &ca );
+  // > &ca = Parent {
+  // >     child: {
+  // >          "echo": Child {
+  // >              name: "echo",
+  // >              description: "prints all subjects and properties",
+  // >          },
+  // >          "exit": Child {
+  // >              name: "exit",
+  // >              description: "just exit",
+  // >          },
+  // >     },
+  // > }
+}
+```
+
+## Custom Subform Setter
+
+This example illustrates the implementation of nested builder patterns in Rust using the `Former` trait, emphasizing a parent-child relationship. Here, the `Parent` struct utilizes `ChildFormer` as a custom subformer to dynamically manage its `child` field—a `HashMap`. Each child in the `HashMap` is uniquely identified and configured via the `ChildFormer`.
+
+The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a container—each child entity in this case.
+
+```rust
+
+// Ensure the example only compiles when the appropriate features are enabled.
+#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+fn main()
+{
+  use collection_tools::HashMap;
+  use former::Former;
+
+  // Child struct with Former derived for builder pattern support
+  #[ derive( Debug, PartialEq, Former ) ]
+  // #[ debug ]
+  pub struct Child
+  {
+    name : String,
+    description : String,
+  }
+
+  // Parent struct to hold children
+  #[ derive( Debug, PartialEq, Former ) ]
+  // #[ debug ]
+  pub struct Parent
+  {
+    // Use `hint = true` to gennerate sketch of setter.
+    #[ subform( setter = false, hint = false ) ]
     child : HashMap< String, Child >,
   }
 
-  // Use ChildFormer as custom subformer for ParentFormer to add children by name.
-  impl< Context, End > ParentFormer< Context, End >
+  /// Initializes and configures a subformer for adding named child entities. This method leverages an internal function
+  /// to create and return a configured subformer instance. It allows for the dynamic addition of children with specific names,
+  /// integrating them into the formation process of the parent entity.
+  ///
+  impl< Definition > ParentFormer< Definition >
   where
-    End : former::FormingEnd< Parent, Context >,
+    Definition : former::FormerDefinition< Storage = < Parent as former::EntityToStorage >::Storage >,
   {
-    pub fn child< IntoName >( self, name : IntoName ) -> ChildFormer< Self, impl former::FormingEnd< Child, Self > >
-    where
-      IntoName: core::convert::Into< String >,
+
+    #[ inline( always ) ]
+    pub fn child( self, name : &str ) -> ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
     {
-      let on_end = | child : Child, super_former : core::option::Option< Self > | -> Self
-      {
-        let mut super_former = super_former.unwrap();
-        if let Some( ref mut children ) = super_former.storage.child
-        {
-          children.insert( child.name.clone(), child );
-        }
-        else
-        {
-          let mut children: HashMap< String, Child > = Default::default();
-          children.insert( child.name.clone(), child );
-          super_former.storage.child = Some( children );
-        }
-        super_former
-      };
-      let former = ChildFormer::begin_coercing( None, Some( self ), on_end );
-      former.name( name )
+      self._child_add::< ChildFormer< _ >, _, >()
+      .name( name )
+    }
+
+  }
+
+  // Required to define how `value` is converted into pair `( key, value )`
+  impl former::ValToElement< HashMap< String, Child > > for Child
+  {
+    type Element = ( String, Child );
+    #[ inline( always ) ]
+    fn val_to_element( self ) -> Self::Element
+    {
+      ( self.name.clone(), self )
     }
   }
 
@@ -803,16 +954,7 @@ fn main()
   // >     },
   // > }
 }
-# }
 ```
-
-In this example, the `Parent` struct functions as a container for multiple `Child` structs, each identified by a unique child name. The `ParentFormer` implements a custom method `child`, which serves as a subformer for adding `Child` instances into the `Parent`.
-
-- **Child Definition**: Each `Child` consists of a `name` and a `description`, and we derive `Former` to enable easy setting of these properties using a builder pattern.
-- **Parent Definition**: It holds a collection of `Child` objects in a `HashMap`. The `#[setter(false)]` attribute is used to disable the default setter, and a custom method `child` is defined to facilitate the addition of children with specific attributes.
-- **Custom Subformer Integration**: The `child` method in the `ParentFormer` initializes a `ChildFormer` with a closure that integrates the `Child` into the `Parent`'s `child` map upon completion.
-
-This pattern of using a structure's former as a subformer within another facilitates the creation of deeply nested or complex data structures through a coherent and fluent interface, showcasing the powerful capabilities of the `Former` framework for Rust applications.
 
 ## Concept of Mutator
 
@@ -828,6 +970,21 @@ Use cases of Mutator
 - Setting or modifying properties that depend on the final state of the storage or context.
 - Storage-specific fields which are not present in formed structure.
 
+## Storage-Specific Fields
+
+Storage-specific fields are intermediate fields that exist only in the storage structure during
+the forming process. These fields are not present in the final formed structure but are instrumental
+in complex forming operations, such as conditional mutations, temporary state tracking, or accumulations.
+
+These fields are used to manage intermediate data or state that aids in the construction
+of the final object but does not necessarily have a direct representation in the object's schema. For
+instance, counters, flags, or temporary computation results that determine the final state of the object.
+
+The `FormerMutator` trait facilitates the implementation of custom mutation logic. It acts on the internal
+state (context and storage) just before the final forming operation is completed, right before the `FormingEnd`
+callback is invoked. This trait is crucial for making last-minute adjustments or computations based on the
+accumulated state in the storage.
+
 ## Mutator vs `FormingEnd`
 
 Unlike `FormingEnd`, which is responsible for integrating and finalizing the formation process of a field within
@@ -838,7 +995,56 @@ with the hierarchical forming logic managed by `FormingEnd`.
 
 ## Example: Mutator
 
-<!-- xxx : write -->
+This example illustrates how to use the `FormerMutator` trait for implementing custom mutations
+and demonstrates the concept of storage-specific fields in the forming process.
+
+In this example, the fields `a` and `b` are defined only within the storage and used
+within the custom mutator to enrich or modify the field `c` of the formed entity. This approach
+allows for a richer and more flexible formation logic that can adapt based on the intermediate state
+held within the storage.
+
+```rust
+#[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+fn main()
+{
+  use former::Former;
+
+  #[ derive( Debug, PartialEq, Former ) ]
+  #[ storage_fields( a : i32, b : Option< String > ) ]
+  #[ mutator( custom = true ) ]
+  pub struct Struct1
+  {
+    c : String,
+  }
+
+  // = former mutator
+
+  impl< Context, Formed > former::FormerMutator
+  for Struct1FormerDefinitionTypes< Context, Formed >
+  {
+    Mutates the context and storage of the entity just before the formation process completes.
+    #[ inline ]
+    fn form_mutation( storage : &mut Self::Storage, _context : &mut ::core::option::Option< Self::Context > )
+    {
+      storage.a.get_or_insert_with( Default::default );
+      storage.b.get_or_insert_with( Default::default );
+      storage.c = Some( format!( "{:?} - {}", storage.a.unwrap(), storage.b.as_ref().unwrap() ) );
+    }
+  }
+
+  let got = Struct1::former().a( 13 ).b( "abc" ).c( "def" ).form();
+  let exp = Struct1
+  {
+    c : "13 - abc".to_string(),
+  };
+  assert_eq!( got, exp );
+  dbg!( got );
+  // > got = Struct1 {
+  // >  c: "13 - abc",
+  // > }
+
+}
+```
 
 ## To add to your project
 

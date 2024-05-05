@@ -487,9 +487,7 @@ scalar_setter_required
 
 /// Initializes and configures a subformer for adding named child entities. This method leverages an internal function
 /// to create and return a configured subformer instance. It allows for the dynamic addition of children with specific names,
-/// integrating them into the formation process of the parent entity. After creation, the name of the child is immediately set,
-/// facilitating the customization and integration of child entities within the overall structure of the parent.
-///
+/// integrating them into the formation process of the parent entity.
 
 impl< Definition > {}< Definition >
 where

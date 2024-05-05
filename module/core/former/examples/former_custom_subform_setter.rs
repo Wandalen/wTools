@@ -3,8 +3,6 @@
 //!
 //! This example illustrates the implementation of nested builder patterns in Rust using the `Former` trait, emphasizing a parent-child relationship. Here, the `Parent` struct utilizes `ChildFormer` as a custom subformer to dynamically manage its `child` field—a `HashMap`. Each child in the `HashMap` is uniquely identified and configured via the `ChildFormer`.
 //!
-//! #### Custom Subform Setter
-//!
 //! The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a container—each child entity in this case.
 //!
 //! #### Types of Setters
@@ -20,16 +18,14 @@
 //! Each type of setter is designed to address different needs in the formation process, ensuring that users can build complex, nested structures or simply set individual field values as required.
 //!
 
-// zzz : duplicate into readme
-
-#[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
+#[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
 fn main() {}
 
 // Ensure the example only compiles when the appropriate features are enabled.
-#[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
 fn main()
 {
-  use std::collections::HashMap;
+  use collection_tools::HashMap;
   use former::Former;
 
   // Child struct with Former derived for builder pattern support
@@ -53,8 +49,7 @@ fn main()
 
   /// Initializes and configures a subformer for adding named child entities. This method leverages an internal function
   /// to create and return a configured subformer instance. It allows for the dynamic addition of children with specific names,
-  /// integrating them into the formation process of the parent entity. After creation, the name of the child is immediately set,
-  /// facilitating the customization and integration of child entities within the overall structure of the parent.
+  /// integrating them into the formation process of the parent entity.
   ///
   impl< Definition > ParentFormer< Definition >
   where
@@ -70,7 +65,7 @@ fn main()
 
   }
 
-  // Requored to define how `value` is converted into pair `( key, value )`
+  // Required to define how `value` is converted into pair `( key, value )`
   impl former::ValToElement< HashMap< String, Child > > for Child
   {
     type Element = ( String, Child );

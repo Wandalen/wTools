@@ -22,14 +22,13 @@
 
 // zzz : duplicate into readme
 
-#[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
-fn main() {}
-
 // Ensure the example only compiles when the appropriate features are enabled.
-#[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+#[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+fn main() {}
+#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
 fn main()
 {
-  use std::collections::HashMap;
+  use collection_tools::HashMap;
   use former::Former;
 
   // Child struct with Former derived for builder pattern support
@@ -120,7 +119,7 @@ fn main()
 
   }
 
-  // Requored to define how `value` is converted into pair `( key, value )`
+  // Required to define how `value` is converted into pair `( key, value )`
   impl former::ValToElement< HashMap< String, Child > > for Child
   {
     type Element = ( String, Child );

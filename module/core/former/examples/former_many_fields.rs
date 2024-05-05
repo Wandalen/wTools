@@ -31,11 +31,11 @@ fn main()
     int_1 : i32,
     string_1 : String,
     vec_1 : Vec< u32 >,
-    hashmap_1 : std::collections::HashMap< String, String >,
+    hashmap_1 : collection_tools::HashMap< String, String >,
     int_optional_1 : core::option::Option< i32 >,
     string_optional_1 : Option< String >,
   }
-  let hashmap = std::collections::HashMap::from
+  let hashmap = collection_tools::HashMap::from
   ([
     ( "k1".to_string(), "v1".to_string() ),
     ( "k2".to_string(), "v2".to_string() ),

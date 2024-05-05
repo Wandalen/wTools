@@ -1,11 +1,10 @@
 //!
-//! This example demonstrates the use of the `Former` trait to build a `std::collections::HashSet` through subforming.
+//! This example demonstrates the use of the `Former` trait to build a `collection_tools::HashSet` through subforming.
 //!
 
-#[ cfg( not( all( feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+#[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
 fn main() {}
-
-#[ cfg( all( feature = "derive_former", not( feature = "no_std" ) ) ) ]
+#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
 fn main()
 {
   use test_tools::exposed::*;
@@ -14,7 +13,7 @@ fn main()
   pub struct StructWithSet
   {
     #[ container ]
-    set : std::collections::HashSet< &'static str >,
+    set : collection_tools::HashSet< &'static str >,
   }
 
   let instance = StructWithSet::former()

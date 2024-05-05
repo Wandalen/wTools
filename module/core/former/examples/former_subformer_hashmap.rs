@@ -2,10 +2,9 @@
 //! This example demonstrates how to effectively employ the `Former` trait to configure a `HashMap` using a container setter.
 //!
 
-#[ cfg( not( all( feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+#[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
 fn main() {}
-
-#[ cfg( all( feature = "derive_former", not( feature = "no_std" ) ) ) ]
+#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
 fn main()
 {
   use test_tools::exposed::*;
@@ -14,7 +13,7 @@ fn main()
   pub struct StructWithMap
   {
     #[ container ]
-    map : std::collections::HashMap< &'static str, &'static str >,
+    map : collection_tools::HashMap< &'static str, &'static str >,
   }
 
   let struct1 = StructWithMap::former()

@@ -3,8 +3,6 @@
 //!
 //! This example demonstrates the implementation of a scalar setter using the `Former` trait in Rust. Unlike the more complex subform and container setters shown in previous examples, this example focuses on a straightforward approach to directly set a scalar value within a parent entity. The `Parent` struct manages a `HashMap` of `Child` entities, and the scalar setter is used to set the entire `HashMap` directly.
 //!
-//! #### Custom Subform Setter
-//!
 //! The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a container—each child entity in this case.
 //!
 //! #### Types of Setters
@@ -20,16 +18,14 @@
 //! Each type of setter is designed to address different needs in the formation process, ensuring that users can build complex, nested structures or simply set individual field values as required.
 //!
 
-// zzz : duplicate into readme
-
-#[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
+#[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
 fn main() {}
 
 // Ensure the example only compiles when the appropriate features are enabled.
-#[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
 fn main()
 {
-  use std::collections::HashMap;
+  use collection_tools::HashMap;
   use former::Former;
 
   // Child struct with Former derived for builder pattern support

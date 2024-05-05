@@ -6,7 +6,7 @@
 /// of an entity (context and storage) just before the final forming operation is completed. This mutation
 /// occurs immediately before the `FormingEnd` callback is invoked.
 ///
-/// ## Differences from `FormingEnd`
+/// #### Differences from `FormingEnd`
 ///
 /// Unlike `FormingEnd`, which is responsible for integrating and finalizing the formation process of a field within
 /// a parent former, `form_mutation` directly pertains to the entity itself. This method is designed to be independent
@@ -14,7 +14,7 @@
 /// or nested field. This makes `form_mutation` suitable for entity-specific transformations that should not interfere
 /// with the hierarchical forming logic managed by `FormingEnd`.
 ///
-/// ## Use Cases
+/// #### Use Cases
 ///
 /// - Applying last-minute changes to the data being formed.
 /// - Setting or modifying properties that depend on the final state of the storage or context.
