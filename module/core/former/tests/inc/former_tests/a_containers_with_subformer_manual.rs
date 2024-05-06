@@ -247,7 +247,7 @@ where
   }
 }
 
-#[doc = " Object to form [Struct1]. If field's values is not set then default value of the field is set.\n\nFor specifying custom default value use attribute `default`. For example:\n```\n\nuse former::Former;\n#[ derive( Former ) ]\npub struct Struct1\n{\n  #[default( 31 ) ]\n  field1 : i32,\n}\n\n```\n"]
+#[doc = " Object to form [Struct1]. If field's values is not set then default value of the field is set.\n\nFor specifying custom default value use attribute `default`. For example:\n```\n\nuse former::Former;\n#[ derive( Former ) ]\npub struct Struct1\n{\n  #[ former( default = 31 ) ]\n  field1 : i32,\n}\n\n```\n"]
 pub struct Struct1Former< Definition = Struct1FormerDefinition<(), Struct1<>, former::ReturnPreformed>, >
 where
   Definition : former::FormerDefinition,
