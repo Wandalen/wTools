@@ -211,7 +211,7 @@ pub( crate ) mod private
     bin_path : PathBuf,
     current_path : PathBuf,
     args : Vec< OsString >,
-    #[ default( false ) ]
+    #[ former( default = false ) ]
     joining_streams : bool,
     env_variable : HashMap< String, String >,
   }
