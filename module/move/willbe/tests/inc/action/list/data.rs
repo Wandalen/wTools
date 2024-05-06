@@ -275,7 +275,9 @@ mod workspace_with_cyclic_dependency
 
     // (*) - means duplication
     let ultra_sub_tree = &mega_sub_tree.normal_dependencies[ 0 ];
-    assert_eq!( "_workspace_with_cyclic_dep_b (*)", ultra_sub_tree.name.as_str() );
+    assert_eq!( "_workspace_with_cyclic_dep_b", ultra_sub_tree.name.as_str() );
+    assert_eq!( "*", sub_tree.version.as_ref().unwrap().as_str() );
+    assert!( ultra_sub_tree.duplicate );
     assert_eq!( "*", ultra_sub_tree.version.as_ref().unwrap().as_str() );
 
     assert!( ultra_sub_tree.normal_dependencies.is_empty() );
