@@ -454,7 +454,7 @@ mod private
     let bump_report = version::version_bump( version_bump ).map_err( | e | ( report.clone(), e ) )?;
     report.bump = Some( bump_report.clone() );
     let git_root = git_things.git_root.clone();
-    let git = match perform_git_commit( git_things ).map_err( | e | ( report.clone(), e ) )
+    let git = match perform_git_commit( git_things )
     {
       Ok( git ) => git,
       Err( e ) =>
@@ -466,7 +466,7 @@ mod private
     };
     report.add = git.add;
     report.commit = git.commit;
-    report.publish = match cargo::publish( publish ).map_err( | e | ( report.clone(), e ) )
+    report.publish = match cargo::publish( publish )
     {
       Ok( publish ) => Some( publish ),
       Err( e ) =>
