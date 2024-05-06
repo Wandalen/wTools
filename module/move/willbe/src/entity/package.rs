@@ -459,8 +459,12 @@ mod private
       Ok( git ) => git,
       Err( e ) =>
       {
-        // use both errors
-        version_revert( &bump_report ).map_err( | le | ( report.clone(), le ) )?;
+        version_revert( &bump_report )
+        .map_err( | le |
+        (
+          report.clone(),
+          format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) )
+        ))?;
         return Err(( report, e ));
       }
     };
@@ -471,8 +475,12 @@ mod private
       Ok( publish ) => Some( publish ),
       Err( e ) =>
       {
-        // use both errors
-        git::reset( git_root.as_ref(), true, 1, false ).map_err( | le | ( report.clone(), le ) )?;
+        git::reset( git_root.as_ref(), true, 1, false )
+        .map_err( | le |
+        (
+          report.clone(),
+          format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) )
+        ))?;
         return Err(( report, e ));
       }
     };
