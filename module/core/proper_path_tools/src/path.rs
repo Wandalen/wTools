@@ -802,7 +802,6 @@ crate::mod_interface! {
   protected use ext;
   protected use exts;
   protected use change_ext;
-  protected use without_ext;
   protected use path_relative;
   protected use rebase;
   protected use path_common;
