@@ -9,11 +9,11 @@ impl< K > Container for collection_tools::HashSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
-  type Element = K;
+  type Entry = K;
   type Val = K;
 
   #[ inline( always ) ]
-  fn element_to_val( e : Self::Element ) -> Self::Val
+  fn entry_to_val( e : Self::Entry ) -> Self::Val
   {
     e
   }
@@ -24,11 +24,11 @@ impl< K > ContainerAdd for collection_tools::HashSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
-  // type Element = K;
+  // type Entry = K;
   // type Val = K;
 
   #[ inline( always ) ]
-  fn add( &mut self, e : Self::Element ) -> bool
+  fn add( &mut self, e : Self::Entry ) -> bool
   {
     self.insert( e )
   }
@@ -39,11 +39,11 @@ impl< K > ContainerAssign for collection_tools::HashSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
-  // type Element = K;
+  // type Entry = K;
 
   fn assign< Elements >( &mut self, elements : Elements ) -> usize
   where
-    Elements : IntoIterator< Item = Self::Element >
+    Elements : IntoIterator< Item = Self::Entry >
   {
     let initial_len = self.len();
     self.extend( elements );
@@ -51,13 +51,13 @@ where
   }
 }
 
-impl< K > ValToElement< HashSet< K > > for K
+impl< K > ValToEntry< HashSet< K > > for K
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
-  type Element = K;
+  type Entry = K;
   #[ inline( always ) ]
-  fn val_to_element( self ) -> Self::Element
+  fn val_to_entry( self ) -> Self::Entry
   {
     self
   }

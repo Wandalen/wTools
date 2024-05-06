@@ -23,11 +23,11 @@ pub struct Parent
   command : HashMap< String, Child >,
 }
 
-impl former::ValToElement< HashMap< String, Child > > for Child
+impl former::ValToEntry< HashMap< String, Child > > for Child
 {
-  type Element = ( String, Child );
+  type Entry = ( String, Child );
   #[ inline( always ) ]
-  fn val_to_element( self ) -> Self::Element
+  fn val_to_entry( self ) -> Self::Entry
   {
     ( self.name.clone(), self )
   }

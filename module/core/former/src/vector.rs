@@ -6,11 +6,11 @@ use collection_tools::Vec;
 
 impl< E > Container for collection_tools::Vec< E >
 {
-  type Element = E;
+  type Entry = E;
   type Val = E;
 
   #[ inline( always ) ]
-  fn element_to_val( e : Self::Element ) -> Self::Val
+  fn entry_to_val( e : Self::Entry ) -> Self::Val
   {
     e
   }
@@ -19,11 +19,11 @@ impl< E > Container for collection_tools::Vec< E >
 
 impl< E > ContainerAdd for collection_tools::Vec< E >
 {
-  // type Element = E;
+  // type Entry = E;
   // type Val = E;
 
   #[ inline( always ) ]
-  fn add( &mut self, e : Self::Element ) -> bool
+  fn add( &mut self, e : Self::Entry ) -> bool
   {
     self.push( e );
     true
@@ -33,12 +33,12 @@ impl< E > ContainerAdd for collection_tools::Vec< E >
 
 impl< E > ContainerAssign for collection_tools::Vec< E >
 {
-  // type Element = E;
+  // type Entry = E;
 
   #[ inline( always ) ]
   fn assign< Elements >( &mut self, elements : Elements ) -> usize
   where
-    Elements : IntoIterator< Item = Self::Element >
+    Elements : IntoIterator< Item = Self::Entry >
   {
     let initial_len = self.len();
     self.extend( elements );
@@ -47,11 +47,11 @@ impl< E > ContainerAssign for collection_tools::Vec< E >
 
 }
 
-impl< E > ValToElement< collection_tools::Vec< E > > for E
+impl< E > ValToEntry< collection_tools::Vec< E > > for E
 {
-  type Element = E;
+  type Entry = E;
   #[ inline( always ) ]
-  fn val_to_element( self ) -> Self::Element
+  fn val_to_entry( self ) -> Self::Entry
   {
     self
   }

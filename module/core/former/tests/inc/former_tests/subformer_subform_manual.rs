@@ -65,8 +65,8 @@ where
         former::ContainerAdd::add
         (
           children,
-          < < Vec< Child > as former::Container >::Val as former::ValToElement< Vec< Child > > >
-          ::val_to_element( former::StoragePreform::preform( substorage ) )
+          < < Vec< Child > as former::Container >::Val as former::ValToEntry< Vec< Child > > >
+          ::val_to_entry( former::StoragePreform::preform( substorage ) )
         );
       }
       super_former
@@ -74,7 +74,7 @@ where
     Former2::former_begin( None, Some( self ), former::FormingEndClosure::new( on_end ) )
   }
 
-  // < < #field_ty as former::Container >::Val as former::ValToElement< #field_ty > >
+  // < < #field_ty as former::Container >::Val as former::ValToEntry< #field_ty > >
 
   // less generic, but more concise way to define custom subform setter
   #[ inline( always ) ]
@@ -97,17 +97,17 @@ where
   // it is generated
   #[ inline( always ) ]
   pub fn _child( self ) ->
-  < < Vec< Child > as former::Container >::Element as former::EntityToFormer
+  < < Vec< Child > as former::Container >::Entry as former::EntityToFormer
     <
       // ChildFormerDefinition< Self, Self, ParentFormerAddChildrenEnd< Definition > >,
       <
-        < Vec< Child > as former::Container >::Element as former::EntityToDefinition< Self, Self, ParentFormerAddChildrenEnd< Definition > >
+        < Vec< Child > as former::Container >::Entry as former::EntityToDefinition< Self, Self, ParentFormerAddChildrenEnd< Definition > >
       >::Definition,
     >
   >::Former
   {
     self._children_add
-    ::< < < Vec< Child > as former::Container >::Element as former::EntityToFormer< _ > >::Former, _, >()
+    ::< < < Vec< Child > as former::Container >::Entry as former::EntityToFormer< _ > >::Former, _, >()
   }
 
 }
@@ -172,7 +172,7 @@ where
   >,
   Types2 : former::FormerDefinitionTypes
   <
-    Storage = < < Vec< Child > as former::Container >::Element as former::EntityToStorage >::Storage,
+    Storage = < < Vec< Child > as former::Container >::Entry as former::EntityToStorage >::Storage,
     Formed = ParentFormer< Definition >,
     Context = ParentFormer< Definition >,
   >,

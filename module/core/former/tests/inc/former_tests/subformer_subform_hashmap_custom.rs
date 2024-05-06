@@ -66,8 +66,8 @@ where
         former::ContainerAdd::add
         (
           children,
-          < < HashMap< String, Child > as former::Container >::Val as former::ValToElement< HashMap< String, Child > > >
-          ::val_to_element( former::StoragePreform::preform( substorage ) )
+          < < HashMap< String, Child > as former::Container >::Val as former::ValToEntry< HashMap< String, Child > > >
+          ::val_to_entry( former::StoragePreform::preform( substorage ) )
         );
       }
       super_former
@@ -115,11 +115,11 @@ where
 
 }
 
-impl former::ValToElement< HashMap< String, Child > > for Child
+impl former::ValToEntry< HashMap< String, Child > > for Child
 {
-  type Element = ( String, Child );
+  type Entry = ( String, Child );
   #[ inline( always ) ]
-  fn val_to_element( self ) -> Self::Element
+  fn val_to_entry( self ) -> Self::Entry
   {
     ( self.name.clone(), self )
   }

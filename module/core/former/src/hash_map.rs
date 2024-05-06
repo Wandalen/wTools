@@ -6,11 +6,11 @@ impl< K, V > Container for collection_tools::HashMap< K, V >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
-  type Element = ( K, V );
+  type Entry = ( K, V );
   type Val = V;
 
   #[ inline( always ) ]
-  fn element_to_val( e : Self::Element ) -> Self::Val
+  fn entry_to_val( e : Self::Entry ) -> Self::Val
   {
     e.1
   }
@@ -21,11 +21,11 @@ impl< K, V > ContainerAdd for collection_tools::HashMap< K, V >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
-  // type Element = ( K, V );
+  // type Entry = ( K, V );
   // type Val = V;
 
   #[ inline( always ) ]
-  fn add( &mut self, ( k, v ) : Self::Element ) -> bool
+  fn add( &mut self, ( k, v ) : Self::Entry ) -> bool
   {
     self.insert( k, v ).map_or_else( || true, | _ | false )
   }
@@ -36,11 +36,11 @@ impl< K, V > ContainerAssign for collection_tools::HashMap< K, V >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
-  // type Element = ( K, V );
+  // type Entry = ( K, V );
 
   fn assign< Elements >( &mut self, elements : Elements ) -> usize
   where
-    Elements : IntoIterator< Item = Self::Element >
+    Elements : IntoIterator< Item = Self::Entry >
   {
     let initial_len = self.len();
     self.extend( elements );
@@ -186,7 +186,7 @@ where
 ///
 /// # Type Parameters
 /// - `K`: Key type, must implement `Eq` and `Hash`.
-/// - `E`: Element (value) type.
+/// - `E`: Entry (value) type.
 /// - `Formed`: The hash map-like formed being built.
 /// - `Context`: Type of the optional context used during the building process.
 /// - `End`: End-of-forming action to be executed upon completion.

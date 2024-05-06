@@ -4,155 +4,178 @@
 
 use crate::*;
 
-/// Represents a container by defining the types of elements and values it handles.
+/// Represents a container by defining the types of entries and values it handles.
 ///
 /// This trait abstracts the nature of containers in data structures, facilitating the handling of contained
-/// elements and values, especially in scenarios where the structure of the container allows for complex relationships,
-/// such as `HashMap`s. It not only identifies what constitutes an element and a value in the context of the container
-/// but also provides utility for converting between these two, which is critical in operations involving element manipulation
+/// entries and values, especially in scenarios where the structure of the container allows for complex relationships,
+/// such as `HashMap`s. It not only identifies what constitutes an entry and a value in the context of the container
+/// but also provides utility for converting between these two, which is critical in operations involving entry manipulation
 /// and value retrieval.
 
 pub trait Container
 {
-  /// The type of elements that can be added to the container. This type can differ from `Val` in containers like `HashMap`,
-  /// where an element might represent a key-value pair, and `Val` could represent just the value or the key.
-  type Element;
+  /// The type of entries that can be added to the container. This type can differ from `Val` in containers like `HashMap`,
+  /// where an entry might represent a key-value pair, and `Val` could represent just the value or the key.
+  type Entry;
 
-  /// The type of values stored in the container. This might be distinct from `Element` in complex containers.
-  /// For example, in a `HashMap`, while `Element` might be a (key, value) tuple, `Val` might only be the value part.
+  /// The type of values stored in the container. This might be distinct from `Entry` in complex containers.
+  /// For example, in a `HashMap`, while `Entry` might be a (key, value) tuple, `Val` might only be the value part.
   type Val;
 
-  /// Converts an element to its corresponding value within the container. This function is essential for abstracting
+  /// Converts an entry to its corresponding value within the container. This function is essential for abstracting
   /// the container's internal representation from the values it manipulates.
-  fn element_to_val( e : Self::Element ) -> Self::Val;
+  fn entry_to_val( e : Self::Entry ) -> Self::Val;
 }
 
-/// Facilitates the conversion of container elements to their corresponding value representations.
+/// Facilitates the conversion of container entries to their corresponding value representations.
 ///
-/// This trait is utilized to transform an element of a container into a value, abstracting the operation of containers
-/// like vectors or hash maps. It ensures that even in complex container structures, elements can be seamlessly managed
+/// This trait is utilized to transform an entry of a container into a value, abstracting the operation of containers
+/// like vectors or hash maps. It ensures that even in complex container structures, entries can be seamlessly managed
 /// and manipulated as values.
-pub trait ElementToVal<Container>
+pub trait EntryToVal<Container>
 {
   type Val;
 
-  /// Converts an element into a value representation specific to the type of container. This conversion is crucial
-  /// for handling operations on elements, especially when they need to be treated or accessed as individual values,
+  /// Converts an entry into a value representation specific to the type of container. This conversion is crucial
+  /// for handling operations on entries, especially when they need to be treated or accessed as individual values,
   /// such as retrieving the value part from a key-value pair in a hash map.
-  fn element_to_val( self ) -> Self::Val;
+  fn entry_to_val( self ) -> Self::Val;
 }
 
-impl< C, E > ElementToVal< C > for E
+impl< C, E > EntryToVal< C > for E
 where
-  C : Container< Element = E >,
+  C : Container< Entry = E >,
 {
   type Val = C::Val;
 
-  fn element_to_val( self ) -> Self::Val
+  fn entry_to_val( self ) -> Self::Val
   {
-    C::element_to_val( self )
+    C::entry_to_val( self )
   }
 }
 
-/// Provides a mechanism for converting values back to container-specific elements.
+/// Provides a mechanism for converting values back to container-specific entries.
 ///
-/// This trait is crucial for operations that require the insertion or modification of elements based on values,
-/// especially in complex data structures where the element's structure is more intricate than the value it represents,
-/// such as inserting a new entry in a `HashMap` where the element consists of a key-value pair.
-pub trait ValToElement< Container >
+/// This trait is crucial for operations that require the insertion or modification of entries based on values,
+/// especially in complex data structures where the entry's structure is more intricate than the value it represents,
+/// such as inserting a new entry in a `HashMap` where the entry consists of a key-value pair.
+pub trait ValToEntry< Container >
 {
-  type Element;
+  type Entry;
 
-  /// Converts a value back into an element of the container. This function is essential for operations like insertion
-  /// or modification, where a value needs to be transformed into a container-compatible element, such as converting
+  /// Converts a value back into an entry of the container. This function is essential for operations like insertion
+  /// or modification, where a value needs to be transformed into a container-compatible entry, such as converting
   /// a value into a (key, value) tuple for insertion into a `HashMap`.
-  fn val_to_element( self ) -> Self::Element;
+  fn val_to_entry( self ) -> Self::Entry;
 }
-
-/// A trait defining the capability to add elements to a container.
+/// Provides functionality to add individual entries to a container.
 ///
-/// This trait should be implemented by container types that require a generic interface
-/// for adding new elements. It abstracts over the specific details of how elements are
-/// added to the container, providing a consistent API regardless of the underlying
-/// container's structure.
-///
-
-// zzz : update description
+/// This trait extends the basic `Container` trait by introducing a method to add entries to a container.
+/// It is designed to handle the container's specific requirements and rules for adding entries, such as
+/// managing duplicates, maintaining order, or handling capacity constraints.
 pub trait ContainerAdd : Container
 {
-
-  /// Adds an element to the container.
+  /// Adds an entry to the container and returns a boolean indicating the success of the operation.
   ///
-  /// Implementations of this function should add the provided element to the container,
-  /// respecting the container's specific semantics for element addition (e.g., handling
-  /// duplicates or maintaining order). The function returns a boolean indicating whether
-  /// the addition was successful.
+  /// Implementations should ensure that the entry is added according to the rules of the container,
+  /// which might involve checking for duplicates, ordering, or capacity limits.
   ///
   /// # Parameters
   ///
-  /// * `e`: The element to be added to the container. The type of the element is specified
-  ///   by the associated `Element` type.
+  /// * `e`: The entry to be added to the container, where the type `Entry` is defined by the `Container` trait.
   ///
   /// # Returns
   ///
-  /// Returns `true` if the element was successfully added to the container, or `false` if
-  /// the addition failed. Failure conditions are defined by the implementer but may include
-  /// situations like the container being at capacity or the element already existing in a
-  /// set.
+  /// Returns `true` if the entry was successfully added, or `false` if not added due to reasons such as
+  /// the entry already existing in the container or the container reaching its capacity.
   ///
   /// # Examples
   ///
   /// Basic usage:
   ///
-  /// ```
+  /// ```rust
   /// use former::ContainerAdd;
   ///
   /// struct MyContainer
   /// {
-  ///   elements : Vec< i32 >,
+  ///   entries : Vec< i32 >,
   /// }
   ///
   /// impl ContainerAdd for MyContainer
   /// {
-  ///   type Element = i32;
-  ///
-  ///   fn add( &mut self, e : Self::Element ) -> bool
+  ///   fn add( &mut self, e : Self::Entry ) -> bool
   ///   {
-  ///     if self.elements.contains( &e )
+  ///     if self.entries.contains( &e )
   ///     {
   ///       false
   ///     }
   ///     else
   ///     {
-  ///       self.elements.push( e );
+  ///       self.entries.push( e );
   ///       true
   ///     }
   ///   }
   /// }
   ///
-  /// let mut container = MyContainer { elements : vec![] };
-  /// assert!( container.add( 10 ) ); // Returns true, element added
-  /// assert!( !container.add( 10 ) ); // Returns false, element already exists
+  /// let mut container = MyContainer { entries : vec![] };
+  /// assert!( container.add( 10 ) ); // Returns true, entry added
+  /// assert!( !container.add( 10 ) ); // Returns false, entry already exists
   /// ```
-  ///
-  /// This example demonstrates a simple container that does not allow duplicate elements.
-  /// The `add` method checks for the existence of the element before adding it, returning
-  /// `false` if the element is already present.
-  ///
-  fn add( &mut self, e : Self::Element ) -> bool;
-
+  fn add( &mut self, e : Self::Entry ) -> bool;
 }
 
-// zzz : extend documentation
-/// A trait defining the capability to replface all elements.
+/// Defines the capability to replace all entries in a container with a new set of entries.
+///
+/// This trait extends the `Container` trait by providing a method to replace the existing entries in
+/// the container with a new set. This can be useful for resetting the container's contents or bulk-updating
+/// them based on external criteria or operations.
 pub trait ContainerAssign : Container
 {
-
-  /// Agging elements to the container.
-  fn assign< Elements >( &mut self, elements : Elements ) -> usize
+  /// Replaces all entries in the container with the provided entries and returns the count of new entries added.
+  ///
+  /// This method clears the existing entries and populates the container with new ones provided by an iterator.
+  /// It is ideal for scenarios where the container needs to be refreshed or updated with a new batch of entries.
+  ///
+  /// # Parameters
+  ///
+  /// * `entries` : An iterator over the entries to be added to the container. The entries must conform to
+  ///   the `Entry` type defined by the `Container` trait.
+  ///
+  /// # Returns
+  ///
+  /// Returns the number of entries successfully added to the container. This count may differ from the total
+  /// number of entries in the iterator if the container imposes restrictions such as capacity limits or duplicate
+  /// handling.
+  ///
+  /// # Examples
+  ///
+  /// ```rust
+  /// use former::ContainerAssign;
+  ///
+  /// struct MyContainer
+  /// {
+  ///   entries : Vec< i32 >,
+  /// }
+  ///
+  /// impl ContainerAssign for MyContainer
+  /// {
+  ///   fn assign< Entries >( &mut self, entries : Entries ) -> usize
+  ///   where
+  ///     Entries : IntoIterator< Item = Self::Entry >,
+  ///   {
+  ///     self.entries.clear();
+  ///     self.entries.extend( entries );
+  ///     self.entries.len()
+  ///   }
+  /// }
+  ///
+  /// let mut container = MyContainer { entries : vec![ 1, 2, 3 ] };
+  /// let new_elements = vec![ 4, 5, 6 ];
+  /// assert_eq!( container.assign( new_elements ), 3 ); // Container now contains [ 4, 5, 6 ]
+  /// ```
+  fn assign< Entries >( &mut self, entries : Entries ) -> usize
   where
-    Elements : IntoIterator< Item = Self::Element >;
-
+    Entries : IntoIterator< Item = Self::Entry >;
 }
 
 // =
@@ -162,7 +185,7 @@ pub trait ContainerAssign : Container
 pub struct ContainerSubformer< E, Definition >
 where
   Definition : FormerDefinition,
-  Definition::Storage : ContainerAdd< Element = E >,
+  Definition::Storage : ContainerAdd< Entry = E >,
 {
   storage : Definition::Storage,
   context : core::option::Option< Definition::Context >,
@@ -174,7 +197,7 @@ use std::fmt;
 impl< E, Definition > fmt::Debug for ContainerSubformer< E, Definition >
 where
   Definition : FormerDefinition,
-  Definition::Storage : ContainerAdd< Element = E >,
+  Definition::Storage : ContainerAdd< Entry = E >,
 {
   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
@@ -190,7 +213,7 @@ where
 impl< E, Definition > ContainerSubformer< E, Definition >
 where
   Definition : FormerDefinition,
-  Definition::Storage : ContainerAdd< Element = E >,
+  Definition::Storage : ContainerAdd< Entry = E >,
 {
 
   /// Begins the building process, optionally initializing with a context and storage.
@@ -270,7 +293,7 @@ impl< E, Storage, Formed, Types, Definition > ContainerSubformer< E, Definition 
 where
   Types : FormerDefinitionTypes< Context = (), Storage = Storage, Formed = Formed >,
   Definition : FormerDefinition< Types = Types >,
-  Definition::Storage : ContainerAdd< Element = E >,
+  Definition::Storage : ContainerAdd< Entry = E >,
 {
 
   /// Initializes a new `ContainerSubformer` instance, starting with an empty formed.
@@ -310,15 +333,15 @@ where
 impl< E, Definition > ContainerSubformer< E, Definition >
 where
   Definition : FormerDefinition,
-  Definition::Storage : ContainerAdd< Element = E >,
+  Definition::Storage : ContainerAdd< Entry = E >,
 {
 
-  /// Appends an element to the end of the storage, expanding the internal collection.
+  /// Appends an entry to the end of the storage, expanding the internal collection.
   #[ inline( always ) ]
-  pub fn add< IntoElement >( mut self, element : IntoElement ) -> Self
+  pub fn add< IntoElement >( mut self, entry : IntoElement ) -> Self
   where IntoElement : core::convert::Into< E >,
   {
-    ContainerAdd::add( &mut self.storage, element.into() );
+    ContainerAdd::add( &mut self.storage, entry.into() );
     self
   }
 
@@ -330,7 +353,7 @@ impl< E, Definition > FormerBegin< Definition >
 for ContainerSubformer< E, Definition >
 where
   Definition : FormerDefinition,
-  Definition::Storage : ContainerAdd< Element = E >,
+  Definition::Storage : ContainerAdd< Entry = E >,
 {
   // type End = Definition::End;
 

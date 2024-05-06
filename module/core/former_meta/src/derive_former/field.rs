@@ -1113,8 +1113,8 @@ where
             former::ContainerAdd::add
             (
               field,
-              < < #field_ty as former::Container >::Val as former::ValToElement< #field_ty > >
-              ::val_to_element( former::StoragePreform::preform( substorage ) ),
+              < < #field_ty as former::Container >::Val as former::ValToEntry< #field_ty > >
+              ::val_to_entry( former::StoragePreform::preform( substorage ) ),
             );
           }
           super_former

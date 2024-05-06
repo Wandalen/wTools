@@ -938,11 +938,11 @@ fn main()
   }
 
   // Required to define how `value` is converted into pair `( key, value )`
-  impl former::ValToElement< HashMap< String, Child > > for Child
+  impl former::ValToEntry< HashMap< String, Child > > for Child
   {
-    type Element = ( String, Child );
+    type Entry = ( String, Child );
     #[ inline( always ) ]
-    fn val_to_element( self ) -> Self::Element
+    fn val_to_entry( self ) -> Self::Entry
     {
       ( self.name.clone(), self )
     }

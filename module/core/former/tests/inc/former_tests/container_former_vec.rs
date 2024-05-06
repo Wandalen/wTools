@@ -142,17 +142,17 @@ fn entity_to()
 }
 
 #[ test ]
-fn element_to_val()
+fn entry_to_val()
 {
-  let got = former::ElementToVal::< Vec< i32 > >::element_to_val( 13i32 );
+  let got = former::EntryToVal::< Vec< i32 > >::entry_to_val( 13i32 );
   let exp = 13i32;
   a_id!( got, exp )
 }
 
 #[ test ]
-fn val_to_element()
+fn val_to_entry()
 {
-  let got = former::ValToElement::< Vec< i32 > >::val_to_element( 13i32 );
+  let got = former::ValToEntry::< Vec< i32 > >::val_to_entry( 13i32 );
   let exp = 13i32;
   a_id!( got, exp )
 }

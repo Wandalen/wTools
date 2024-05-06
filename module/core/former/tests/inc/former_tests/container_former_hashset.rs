@@ -105,17 +105,17 @@ fn replace()
 }
 
 #[ test ]
-fn element_to_val()
+fn entry_to_val()
 {
-  let got = former::ElementToVal::< HashSet< i32 > >::element_to_val( 13i32 );
+  let got = former::EntryToVal::< HashSet< i32 > >::entry_to_val( 13i32 );
   let exp = 13i32;
   a_id!( got, exp )
 }
 
 #[ test ]
-fn val_to_element()
+fn val_to_entry()
 {
-  let got = former::ValToElement::< HashSet< i32 > >::val_to_element( 13i32 );
+  let got = former::ValToEntry::< HashSet< i32 > >::val_to_entry( 13i32 );
   let exp = 13i32;
   a_id!( got, exp )
 }

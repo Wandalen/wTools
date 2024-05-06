@@ -105,15 +105,15 @@ fn replace()
 }
 
 #[ test ]
-fn element_to_val()
+fn entry_to_val()
 {
-  let got = former::ElementToVal::< HashMap< u32, i32 > >::element_to_val( ( 1u32, 13i32 ) );
+  let got = former::EntryToVal::< HashMap< u32, i32 > >::entry_to_val( ( 1u32, 13i32 ) );
   let exp = 13i32;
   a_id!( got, exp )
 }
 
 #[ test ]
-fn val_to_element()
+fn val_to_entry()
 {
 
   #[ derive( Clone, Copy, Debug, PartialEq ) ]
@@ -123,17 +123,17 @@ fn val_to_element()
     data : i32,
   }
 
-  impl former::ValToElement< HashMap< u32, Val > > for Val
+  impl former::ValToEntry< HashMap< u32, Val > > for Val
   {
-    type Element = ( u32, Val );
+    type Entry = ( u32, Val );
     #[ inline( always ) ]
-    fn val_to_element( self ) -> Self::Element
+    fn val_to_entry( self ) -> Self::Entry
     {
       ( self.key, self )
     }
   }
 
-  let got = former::ValToElement::< HashMap< u32, Val > >::val_to_element( Val { key : 1u32, data : 13i32 } );
+  let got = former::ValToEntry::< HashMap< u32, Val > >::val_to_entry( Val { key : 1u32, data : 13i32 } );
   let exp = ( 1u32, Val { key : 1u32, data : 13i32 } );
   a_id!( got, exp )
 
