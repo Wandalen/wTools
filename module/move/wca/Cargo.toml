@@ -31,7 +31,7 @@ full = [ "enabled", "on_unknown_suggest" ]
 enabled = []
 
 # This configuration suggests an action to be done when the command is unknown. In this case, when an unknown command is encountered, the system might suggest alternatives
-on_unknown_suggest = [ "eddie" ]
+on_unknown_suggest = [ "dep:textdistance" ]
 
 [[bench]]
 name = "bench"
@@ -49,7 +49,7 @@ former = { workspace = true, features = [ "default" ] }
 ## external
 log = "0.4"
 #closure = "0.3"
-eddie = { version = "0.4", optional = true } # fuzzy commands search
+textdistance = { version = "1.0", optional = true } # fuzzy commands search
 
 [dev-dependencies]
 test_tools = { workspace = true }

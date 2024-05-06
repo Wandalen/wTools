@@ -2,13 +2,13 @@
 //! 
 
 use crate::*;
-#[ cfg( feature="static_plot" ) ]
+#[ cfg( feature="plotting" ) ]
 use crate::plot::{ PlotDescription, PlotOptions, plot };
 use iter_tools::Itertools;
 use std::ops::RangeInclusive;
 use rayon::iter::{ ParallelIterator, IndexedParallelIterator};
 use deterministic_rand::{ Seed, seq::{ SliceRandom, IteratorRandom } };
-use derive_tools::Display;
+use derive_tools::exposed::Display;
 use optimal_params_search::OptimalProblem;
 
 mod gen_alg;

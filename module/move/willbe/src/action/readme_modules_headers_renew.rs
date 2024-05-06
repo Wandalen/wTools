@@ -12,7 +12,7 @@ mod private
   use std::borrow::Cow;
   use std::fs::{ OpenOptions };
   use std::io::{ Read, Seek, SeekFrom, Write };
-  use std::path::{Path, PathBuf};
+  use std::path::PathBuf;
   use convert_case::{ Case, Casing };
   use regex::Regex;
   use crate::action::readme_health_table_renew::find_example_file;
@@ -75,7 +75,7 @@ mod private
       {
         let p = name.strip_prefix( workspace_path ).unwrap().get( 1.. ).unwrap().replace( "\\","%2F" );
         let name = name.split( "\\" ).last().unwrap().split( "." ).next().unwrap();
-        format!( " [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={p},RUN_POSTFIX=--example%20{}/https://github.com/{})", name, repo_url )
+        format!( " [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={p},RUN_POSTFIX=--example%20{}/https://github.com/{})", name, repo_url )
       }
       else
       {

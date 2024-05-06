@@ -7,7 +7,7 @@ pub( crate ) mod private
   {
     io::{ self, Read },
     fs,
-    path::Path,
+    path::{ Path, PathBuf },
   };
   use wtools::error::
   {
@@ -51,6 +51,21 @@ pub( crate ) mod private
       }
 
       Ok( Self( crate_dir_path ) )
+    }
+  }
+  
+  impl TryFrom< PathBuf > for CrateDir
+  {
+    type Error = CrateDirError;
+
+    fn try_from( crate_dir_path : PathBuf ) -> Result< Self, Self::Error >
+    {
+      if !crate_dir_path.join( "Cargo.toml" ).exists()
+      {
+        return Err( CrateDirError::Validation( "The path is not a crate directory path".into() ) );
+      }
+
+      Ok( Self( AbsolutePath::try_from( crate_dir_path ).unwrap() ) )
     }
   }
 
