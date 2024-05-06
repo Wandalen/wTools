@@ -269,6 +269,7 @@ pub( crate ) mod private
           .path( package.crate_dir().absolute_path().as_ref().to_path_buf() )
           .option_temp_path( temp_path.clone() )
           .dry( false )
+          .allow_dirty( true )
           .form()
         )?;
         if publish_need( package, temp_path.clone() ).unwrap()
