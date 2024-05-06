@@ -89,14 +89,13 @@ pub( crate ) mod private
   pub struct Command
   {
     /// Command common hint.
-    // #[ alias( h ) ] // qqq: is it works?
     pub hint : String,
     /// Command full hint.
-    // #[ alias( lh ) ]
     pub long_hint : String,
     /// Phrase descriptor for command.
     pub phrase : String,
     /// Command subjects hints and types.
+    #[ subform( setter = true ) ]
     pub subjects : Vec< ValueDescription >,
     /// Hints and types for command options.
     pub properties : HashMap< String, ValueDescription >,
@@ -179,17 +178,7 @@ pub( crate ) mod private
     /// It returns a `ValueDescriptionFormer` which can be used to further build the super-former.
     pub fn subject( self ) -> ValueDescriptionAsSubformer< Self, impl ValueDescriptionAsSubformerEnd< Self > >
     {
-      let on_end = | subject : ValueDescriptionFormerStorage, super_former : Option< Self > | -> Self
-      {
-        let mut super_former = super_former.unwrap();
-        let mut subjects = super_former.storage.subjects.unwrap_or_default();
-        subjects.push( subject.preform() );
-
-        super_former.storage.subjects = Some( subjects );
-
-        super_former
-      };
-      ValueDescriptionFormer::begin( None, Some( self ), on_end )
+      self._subjects_add()
     }
 
     /// Sets the name and other properties of the current property.

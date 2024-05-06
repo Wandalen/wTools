@@ -4,7 +4,7 @@ mod private
   use std::fs;
   use error_tools::for_app::Context;
   use error_tools::Result;
-  use former::{ Former, StoragePreform };
+  use former::Former;
   use wca::Props;
   use std::path::Path;
   use std::path::PathBuf;
@@ -107,6 +107,7 @@ mod private
   #[ derive( Debug, Default, Former ) ]
   pub struct TemplateParameters
   {
+    #[ subform( setter = false ) ]
     descriptors : Vec< TemplateParameterDescriptor >
   }
 
@@ -146,21 +147,8 @@ mod private
     pub fn parameter( self, name : &str ) ->
     TemplateParameterDescriptorAsSubformer< Self, impl TemplateParameterDescriptorAsSubformerEnd< Self > >
     {
-      let on_end = | descriptor : TemplateParameterDescriptorFormerStorage, super_former : core::option::Option< Self > | -> Self
-      {
-        let mut super_former = super_former.unwrap();
-        let descriptor = descriptor.preform();
-        if let Some( ref mut descriptors ) = super_former.storage.descriptors
-        {
-          descriptors.push( descriptor );
-        }
-        else
-        {
-          super_former.storage.descriptors = Some( vec![ descriptor ] );
-        }
-        super_former
-      };
-      TemplateParameterDescriptorFormer::begin( None, Some( self ), on_end ).parameter( name )
+      self._descriptors_add::< TemplateParameterDescriptorFormer< _ >, _ >()
+      .parameter( name )
     }
   }
 
@@ -314,6 +302,7 @@ mod private
   pub struct TemplateFilesBuilder
   {
     /// Stores all file descriptors for current template.
+    #[ subform( setter = true ) ]
     #[ scalar( setter = false, hint = false ) ]
     pub files : Vec< TemplateFileDescriptor >,
   }
@@ -325,21 +314,7 @@ mod private
     #[ inline( always ) ]
     pub fn file( self ) -> TemplateFileDescriptorAsSubformer< Self, impl TemplateFileDescriptorAsSubformerEnd< Self > >
     {
-      let on_end = | descriptor : TemplateFileDescriptorFormerStorage, super_former : core::option::Option< Self > | -> Self
-      {
-        let mut super_former = super_former.unwrap();
-        let descriptor = descriptor.preform();
-        if let Some( ref mut files ) = super_former.storage.files
-        {
-          files.push( descriptor );
-        }
-        else
-        {
-          super_former.storage.files = Some( vec![ descriptor ] );
-        }
-        super_former
-      };
-      TemplateFileDescriptorFormer::begin( None, Some( self ), on_end )
+      self._files_add()
     }
   }
 

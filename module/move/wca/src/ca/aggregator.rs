@@ -100,7 +100,8 @@ pub( crate ) mod private
   /// ```
   #[ derive( Debug ) ]
   #[ derive( former::Former ) ]
-  #[ perform( fn build() -> CommandsAggregator ) ]
+  #[ storage_fields( help_generator : HelpGeneratorFn, help_variants : HashSet< HelpVariants > ) ]
+  #[ mutator( custom = true ) ]
   pub struct CommandsAggregator
   {
     #[ former( default = Dictionary::default() ) ]
@@ -113,21 +114,34 @@ pub( crate ) mod private
     #[ former( default = Executor::former().form() ) ]
     executor : Executor,
 
-    help_generator : Option< HelpGeneratorFn >,
-    #[ former( default = HashSet::from([ HelpVariants::All ]) ) ]
-    help_variants : HashSet< HelpVariants >,
-    // aaa : for Bohdan : should not have fields help_generator and help_variants
-    // help_generator generateds VerifiedCommand(s) and stop to exist
-    // aaa : Defaults after formation
-
-    // #[ default( Verifier::former().form() ) ]
     #[ former( default = Verifier ) ]
     verifier : Verifier,
 
-    // #[ default( ExecutorConverter::former().form() ) ]
-    // executor_converter : ExecutorConverter,
-
     callback_fn : Option< CommandsAggregatorCallback >,
+  }
+  
+  impl< Context, Formed > former::FormerMutator for CommandsAggregatorFormerDefinitionTypes< Context, Formed >
+  {
+    fn form_mutation( storage : &mut Self::Storage, _context : &mut Option< Self::Context > )
+    {
+      let ca = storage;
+      let dictionary = ca.dictionary.get_or_insert_with( Dictionary::default );
+
+      let help_generator = std::mem::take( &mut ca.help_generator ).unwrap_or_default();
+      let help_variants = std::mem::take( &mut ca.help_variants ).unwrap_or_else( || HashSet::from([ HelpVariants::All ]) );
+
+      if help_variants.contains( &HelpVariants::All )
+      {
+        HelpVariants::All.generate( &help_generator, dictionary );
+      }
+      else
+      {
+        for help in help_variants.iter().sorted()
+        {
+          help.generate( &help_generator, dictionary );
+        }
+      }
+    }
   }
 
   impl< Definition > CommandsAggregatorFormer< Definition >
@@ -205,7 +219,8 @@ pub( crate ) mod private
       self.storage.help_generator = Some( HelpGeneratorFn::new( func ) );
       self
     }
-    // qqq : it is good access method, but formed structure should not have help_generator anymore
+    // aaa : it is good access method, but formed structure should not have help_generator anymore
+    // aaa : mutator used
 
     /// Set callback function that will be executed after validation state
     ///
@@ -233,29 +248,6 @@ pub( crate ) mod private
 
   impl CommandsAggregator
   {
-    /// Construct CommandsAggregator
-    fn build( self ) -> CommandsAggregator
-    {
-      let mut ca = self;
-
-      let help_generator = std::mem::take( &mut ca.help_generator ).unwrap_or_default();
-      let help_variants = std::mem::take( &mut ca.help_variants );
-
-      if help_variants.contains( &HelpVariants::All )
-      {
-        HelpVariants::All.generate( &help_generator, &mut ca.dictionary );
-      }
-      else
-      {
-        for help in help_variants.iter().sorted()
-        {
-          help.generate( &help_generator, &mut ca.dictionary );
-        }
-      }
-
-      ca
-    }
-
     /// Parse, converts and executes a program
     ///
     /// Takes a string with program and executes it
