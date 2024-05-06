@@ -20,7 +20,7 @@ pub( crate ) mod private
   #[ derive( Debug, Default, Former, Clone ) ]
   pub struct Dictionary
   {
-    #[ setter( false ) ]
+    #[ scalar( setter = false, hint = false ) ]
     pub( crate ) commands : HashMap< String, Command >,
   }
 

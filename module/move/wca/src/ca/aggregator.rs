@@ -5,13 +5,19 @@ pub( crate ) mod private
   {
     Verifier,
     Executor,
-    Command,
-    grammar::command::private::CommandFormer,
+    grammar::command::private::
+    {
+      CommandFormer,
+      CommandAsSubformer,
+      CommandAsSubformerEnd,
+      CommandFormerStorage
+    },
     help::{ HelpGeneratorFn, HelpGeneratorOptions, HelpVariants },
   };
 
   use std::collections::HashSet;
   use std::fmt;
+  use former::StoragePreform;
   use wtools::thiserror;
   use wtools::error::
   {
@@ -97,25 +103,25 @@ pub( crate ) mod private
   #[ perform( fn build() -> CommandsAggregator ) ]
   pub struct CommandsAggregator
   {
-    #[ default( Dictionary::default() ) ]
+    #[ former( default = Dictionary::default() ) ]
     dictionary : Dictionary,
 
-    #[ default( Parser ) ]
+    #[ former( default = Parser ) ]
     parser : Parser,
 
-    #[ setter( false ) ]
-    #[ default( Executor::former().form() ) ]
+    #[ scalar( setter = false, hint = false ) ]
+    #[ former( default = Executor::former().form() ) ]
     executor : Executor,
 
     help_generator : Option< HelpGeneratorFn >,
-    #[ default( HashSet::from([ HelpVariants::All ]) ) ]
+    #[ former( default = HashSet::from([ HelpVariants::All ]) ) ]
     help_variants : HashSet< HelpVariants >,
     // aaa : for Bohdan : should not have fields help_generator and help_variants
     // help_generator generateds VerifiedCommand(s) and stop to exist
     // aaa : Defaults after formation
 
     // #[ default( Verifier::former().form() ) ]
-    #[ default( Verifier ) ]
+    #[ former( default = Verifier ) ]
     verifier : Verifier,
 
     // #[ default( ExecutorConverter::former().form() ) ]
@@ -124,25 +130,25 @@ pub( crate ) mod private
     callback_fn : Option< CommandsAggregatorCallback >,
   }
 
-  impl< Context, End > CommandsAggregatorFormer< Context, End >
+  impl< Definition > CommandsAggregatorFormer< Definition >
   where
-    End : former::FormingEnd< CommandsAggregator, Context >,
+    Definition : former::FormerDefinition< Storage = < CommandsAggregator as former::EntityToStorage >::Storage >,
   {
     /// Creates a command in the command chain.
     ///
     /// # Arguments
     ///
     /// * `name` - The name of the command.
-    pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::FormingEnd< Command, Self > >
+    pub fn command< IntoName >( self, name : IntoName ) -> CommandAsSubformer< Self, impl CommandAsSubformerEnd< Self > >
     where
       IntoName : Into< String >,
     {
-      let on_end = | command : Command, super_former : Option< Self > | -> Self
+      let on_end = | command : CommandFormerStorage, super_former : Option< Self > | -> Self
       {
         let mut super_former = super_former.unwrap();
         let mut dictionary = super_former.storage.dictionary.unwrap_or_default();
 
-        dictionary.register( command );
+        dictionary.register( command.preform() );
 
         super_former.storage.dictionary = Some( dictionary );
 
