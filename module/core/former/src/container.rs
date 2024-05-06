@@ -1,56 +1,72 @@
+// File container.rs
+
 //! Interface for containers.
 
 use crate::*;
 
-/// zzz : improve description
-/// Descriptor of a container, specifically it define type of element and type of value.
-/// As well as function to convert element to value. Reversal conversion could be not possible, so value to element conversion is in a separate trait.
+/// Represents a container by defining the types of elements and values it handles.
+///
+/// This trait abstracts the nature of containers in data structures, facilitating the handling of contained
+/// elements and values, especially in scenarios where the structure of the container allows for complex relationships,
+/// such as `HashMap`s. It not only identifies what constitutes an element and a value in the context of the container
+/// but also provides utility for converting between these two, which is critical in operations involving element manipulation
+/// and value retrieval.
+
 pub trait Container
 {
-  /// The type of elements to be added to the container. For Vector `Val` and `Element` is the same type, but for `HashMap` `Element` is pair of key-value and `Val` is value itself.
+  /// The type of elements that can be added to the container. This type can differ from `Val` in containers like `HashMap`,
+  /// where an element might represent a key-value pair, and `Val` could represent just the value or the key.
   type Element;
-  /// The type of value to be added to the container. For Vector `Val` and `Element` is the same type, but for `HashMap` `Element` is pair of key-value and `Val` is value itself.
+
+  /// The type of values stored in the container. This might be distinct from `Element` in complex containers.
+  /// For example, in a `HashMap`, while `Element` might be a (key, value) tuple, `Val` might only be the value part.
   type Val;
 
-  /// Convert element to val. For Vector `Val` and `Element` is the same type, but for `HashMap` `Element` is pair of key-value and `Val` is value itself.
+  /// Converts an element to its corresponding value within the container. This function is essential for abstracting
+  /// the container's internal representation from the values it manipulates.
   fn element_to_val( e : Self::Element ) -> Self::Val;
-
 }
 
-/// zzz : improve description
-/// Implement function to convert value of  an element of a container.
-/// As well as function to convert element to value. Reversal conversion could be not possible, so value to element conversion is in a separate trait.
-pub trait ElementToVal< Container >
+/// Facilitates the conversion of container elements to their corresponding value representations.
+///
+/// This trait is utilized to transform an element of a container into a value, abstracting the operation of containers
+/// like vectors or hash maps. It ensures that even in complex container structures, elements can be seamlessly managed
+/// and manipulated as values.
+pub trait ElementToVal<Container>
 {
   type Val;
 
-  /// Convert element to value. For Vector `Val` and `Element` is the same type, but for `HashMap` `Element` is pair of key-value and `Val` is value itself.
+  /// Converts an element into a value representation specific to the type of container. This conversion is crucial
+  /// for handling operations on elements, especially when they need to be treated or accessed as individual values,
+  /// such as retrieving the value part from a key-value pair in a hash map.
   fn element_to_val( self ) -> Self::Val;
-
 }
 
-impl< C, E > ElementToVal< C >
-for E
+impl< C, E > ElementToVal< C > for E
 where
   C : Container< Element = E >,
 {
   type Val = C::Val;
+
   fn element_to_val( self ) -> Self::Val
   {
     C::element_to_val( self )
   }
 }
 
-/// zzz : improve description
-/// Implement function to convert value to an element of a container.
-/// Value to an element conversion could be not possible, so value to element conversion is in a separate trait.
+/// Provides a mechanism for converting values back to container-specific elements.
+///
+/// This trait is crucial for operations that require the insertion or modification of elements based on values,
+/// especially in complex data structures where the element's structure is more intricate than the value it represents,
+/// such as inserting a new entry in a `HashMap` where the element consists of a key-value pair.
 pub trait ValToElement< Container >
 {
   type Element;
 
-  /// Convert value to element. For Vector `Val` and `Element` is the same type, but for `HashMap` `Element` is pair of key-value and `Val` is value itself.
+  /// Converts a value back into an element of the container. This function is essential for operations like insertion
+  /// or modification, where a value needs to be transformed into a container-compatible element, such as converting
+  /// a value into a (key, value) tuple for insertion into a `HashMap`.
   fn val_to_element( self ) -> Self::Element;
-
 }
 
 /// A trait defining the capability to add elements to a container.
@@ -59,17 +75,6 @@ pub trait ValToElement< Container >
 /// for adding new elements. It abstracts over the specific details of how elements are
 /// added to the container, providing a consistent API regardless of the underlying
 /// container's structure.
-///
-/// # Type Parameters
-///
-/// - There are no explicit type parameters for the trait itself, but implementers will
-///   specify their own types as needed.
-///
-/// # Associated Types
-///
-/// * `Element`: The type of elements that can be added to the container. This type is
-///   defined by the implementer of the trait, allowing for flexibility in the kinds of
-///   elements different containers can accept.
 ///
 
 // zzz : update description
@@ -173,7 +178,8 @@ where
 {
   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
-    f.debug_struct( "ContainerSubformer" )
+    f
+    .debug_struct( "ContainerSubformer" )
     .field( "storage", &"Storage Present" )
     .field( "context", &self.context.as_ref().map( |_| "Context Present" ) )
     .field( "on_end", &self.on_end.as_ref().map( |_| "End Present" ) )
