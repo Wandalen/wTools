@@ -111,7 +111,7 @@ impl FramesReport
 
 impl std::fmt::Display for FramesReport
 {
-  fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
+  fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
   {
     let initial = vec![ vec![ format!( "Feed title: {}", self.feed_link ) ] ];
     let table = tool::table_display::table_with_headers( initial[ 0 ].clone(), Vec::new() );
@@ -192,7 +192,7 @@ impl SelectedEntries
 
 impl std::fmt::Display for SelectedEntries
 {
-  fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
+  fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
   {
     if !self.selected_columns.is_empty()
     {
@@ -216,7 +216,7 @@ pub struct UpdateReport( pub Vec< FramesReport > );
 
 impl std::fmt::Display for UpdateReport
 {
-  fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
+  fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
   {
     for report in &self.0
     {
@@ -244,7 +244,7 @@ pub struct ListReport( pub Vec< FramesReport > );
 
 impl std::fmt::Display for ListReport
 {
-  fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
+  fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
   {
     for report in &self.0
     {

@@ -20,15 +20,16 @@ Consider the following example, which demonstrates the use of the `hmap!` macro 
 use collection_tools::*;
 
 let meta_map = hmap! { 3 => 13 };
+
+// it is identical to `hashbrown::HashMap` if `use_alloc` feature is on, otherwise `std::collections::HashMap`
 let mut std_map = collection_tools::HashMap::new();
+
 std_map.insert( 3, 13 );
 assert_eq!( meta_map, std_map );
 # }
 ```
 
-Note: Do not be afraid of `collection_tools::HashMap`. It is basically a reexport of `std`'s `HashMap`, unless you have enabled `use_alloc` feature.
-
-Another example, this time, `bset!`, providing you a `BTreeSet`:
+Another example, this time, `into_bset!`, providing you a `BTreeSet`:
 
 ```rust
 # #[ cfg( all( feature = "enabled", feature = "collection_constructors" ) ) ]
@@ -37,7 +38,11 @@ Another example, this time, `bset!`, providing you a `BTreeSet`:
 use collection_tools::*;
 
 let meta_set = bset! { 3, 13 };
+
+// this `BTreeSet` is just a reexport from `alloc`,
+// so it can be used in the same places as `alloc/std::BTreeSet`
 let mut std_set = collection_tools::BTreeSet::new();
+
 std_set.insert( 13 );
 std_set.insert( 3 );
 assert_eq!( meta_set, std_set );
@@ -53,7 +58,11 @@ Another example with `list!`:
 use collection_tools::*;
 
 let meta_list : LinkedList< i32 > = list! { 3, 13 };
+
+// this `LinkedList` is just a reexport from `alloc`,
+// so it can be used in the same places as `alloc/std::LinkedList`
 let mut meta_list = collection_tools::LinkedList::new();
+
 meta_list.push_front( 13 );
 meta_list.push_front( 3 );
 assert_eq!( meta_list, meta_list );
@@ -97,11 +106,30 @@ assert_eq!( vec.contains( &1 ), true );
 
 </details>
 
+### Basic Use Case :: `no_std` `HashSet` / `HashMap`
+
+The crate has two classes of macros: strict macros (the one we covered), which require that all collection members are of the same type; and more "relaxed" macros, that use under the hood `Into` trait to cast to a certain type. They can be accessed by prepending `into_` to name of a macro (`into_vec`, `into_bmap`, etc).
+
+While strict macros require you to have all members of the same type, more relaxed macros often require you to specify the desired type. So there's no a clear winner. Choose the right one for each situation separately.
+
+For example:
+```rust
+# #[ cfg( all( feature = "enabled", feature = "collection_into_constructors" ) ) ]
+# {
+use std::borrow::Cow;
+let vec : Vec< String > = collection_tools::into_vec!( "&str", "String".to_string(), Cow::from( "Cow" ) );
+# }
+```
+
+Each strict macro has its relaxed counterpart.
+
 ### Collections being used
 
-To support `no_std` environment as much as possible, we aim at using collections from `alloc` whenever its possible.
+So what's the deal with `collection_tools::<collection>`?
 
-If `use_alloc` feature is on, collections available only in `std` are replaced with their `no_std` counterparts. For now, the only replaced collections are `HashMap` and `HashSet` , taken from `hashbrown`.
+Nothing really fancy. We just reuse collections from `alloc` (same as `std`).
+
+But not all collections are available in `alloc` crate. For now, the exceptions are `HashMap` and `HashSet`. This leads to the fact that we can't use them in `no_std` environment. How did we solve this? By using those collections from `hashbrown` crate whenever `no_std` feature is enabled. You can found more details on origin of a collection on its documentation page.
 
 ### MORE Examples
 
