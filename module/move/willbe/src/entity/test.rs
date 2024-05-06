@@ -623,7 +623,7 @@ mod private
     /// actually executing them.
     pub dry : bool,
     /// Vector of succses reports.
-    pub succses_reports : Vec< TestReport >,
+    pub success_reports : Vec< TestReport >,
     /// Vector of failure reports.
     pub failure_reports : Vec< TestReport >,
   }
@@ -638,15 +638,15 @@ mod private
         // qqq : for Petro : bad. should be exact command with exact parameters / при виклику зовнішніх команд повинен бути вивід у консоль про цей виклик і його аргументи за виключенням коли ційлий блок виводу прихований (у моєму випадку при фейлі)
         return Ok( () )
       }
-      if self.succses_reports.is_empty() && self.failure_reports.is_empty()
+      if self.success_reports.is_empty() && self.failure_reports.is_empty()
       {
         writeln!( f, "The tests have not been run."  )?;
         return Ok( () );
       }
-      if !self.succses_reports.is_empty()
+      if !self.success_reports.is_empty()
       {
         writeln!( f, "Successful :" )?;
-        for report in &self.succses_reports
+        for report in &self.success_reports
         {
           writeln!( f, "{}", report )?;
         }
@@ -660,7 +660,7 @@ mod private
         }
       }
       writeln!( f, "Global report" )?;
-      writeln!( f, "  {}", generate_summary_message( self.failure_reports.len() as i32, self.succses_reports.len() as i32 ) )?;
+      writeln!( f, "  {}", generate_summary_message( self.failure_reports.len() as i32, self.success_reports.len() as i32 ) )?;
 
       Ok( () )
     }
@@ -796,7 +796,7 @@ mod private
               {
                 Ok( r ) =>
                 {
-                  report.lock().unwrap().succses_reports.push( r );
+                  report.lock().unwrap().success_reports.push( r );
                 }
                 Err(( r, _ )) =>
                 {
