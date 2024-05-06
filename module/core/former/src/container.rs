@@ -180,7 +180,7 @@ pub trait ContainerAssign : Container
 
 // =
 
-/// A builder for constructing containers, facilitating a fluent and flexible interface.
+/// A builder structure for constructing containers with a fluent and flexible interface.
 #[ derive( Default ) ]
 pub struct ContainerSubformer< E, Definition >
 where
@@ -192,7 +192,6 @@ where
   on_end : core::option::Option< Definition::End >,
 }
 
-// zzz : cover by test
 use std::fmt;
 impl< E, Definition > fmt::Debug for ContainerSubformer< E, Definition >
 where
@@ -215,8 +214,8 @@ where
   Definition : FormerDefinition,
   Definition::Storage : ContainerAdd< Entry = E >,
 {
-
-  /// Begins the building process, optionally initializing with a context and storage.
+  /// Begins the construction process of a container with optional initial storage and context,
+  /// setting up an `on_end` completion handler to finalize the container's construction.
   #[ inline( always ) ]
   pub fn begin
   (
@@ -238,7 +237,8 @@ where
     }
   }
 
-  /// zzz : update description
+  /// Provides a variation of the `begin` method allowing for coercion of the end handler,
+  /// facilitating ease of integration with different end conditions.
   #[ inline( always ) ]
   pub fn begin_coercing< IntoEnd >
   (
@@ -268,41 +268,34 @@ where
   {
     let on_end = self.on_end.take().unwrap();
     let context = self.context.take();
-    // let storage = self.storage();
     on_end.call( self.storage, context )
   }
 
-  /// Finalizes the building process, returning the formed or a context incorporating it.
+  /// Alias for the `end` method to align with typical builder pattern terminologies.
   #[ inline( always ) ]
   pub fn form( self ) -> Definition::Formed
   {
     self.end()
   }
 
-  /// Replaces the current storage with a provided one, allowing for a reset or redirection of the building process.
+  /// Replaces the current storage with a provided storage, allowing for resetting or
+  /// redirection of the building process.
   #[ inline( always ) ]
-  pub fn replace( mut self, vector : Definition::Storage ) -> Self
+  pub fn replace( mut self, storage : Definition::Storage ) -> Self
   {
-    self.storage = vector;
+    self.storage = storage;
     self
   }
-
 }
 
-impl< E, Storage, Formed, Types, Definition > ContainerSubformer< E, Definition >
+impl< E, Storage, Formed, Definition > ContainerSubformer< E, Definition >
 where
-  Types : FormerDefinitionTypes< Context = (), Storage = Storage, Formed = Formed >,
-  Definition : FormerDefinition< Types = Types >,
+  Definition : FormerDefinition< Context = (), Storage = Storage, Formed = Formed >,
   Definition::Storage : ContainerAdd< Entry = E >,
 {
-
-  /// Initializes a new `ContainerSubformer` instance, starting with an empty formed.
-  /// This function serves as the entry point for the builder pattern.
-  ///
-  /// # Returns
-  /// A new instance of `ContainerSubformer` with an empty internal formed.
-  ///
-  // zzz : update description
+  /// Constructs a new `ContainerSubformer` instance, starting with an empty storage.
+  /// This method serves as the entry point for the builder pattern, facilitating the
+  /// creation of a new container.
   #[ inline( always ) ]
   pub fn new( end : Definition::End ) -> Self
   {
@@ -314,7 +307,8 @@ where
     )
   }
 
-  // zzz : update description
+  /// Variant of the `new` method allowing for end condition coercion, providing flexibility
+  /// in specifying different types of end conditions dynamically.
   #[ inline( always ) ]
   pub fn new_coercing< IntoEnd >( end : IntoEnd ) -> Self
   where
@@ -327,7 +321,6 @@ where
       end.into(),
     )
   }
-
 }
 
 impl< E, Definition > ContainerSubformer< E, Definition >
@@ -355,7 +348,6 @@ where
   Definition : FormerDefinition,
   Definition::Storage : ContainerAdd< Entry = E >,
 {
-  // type End = Definition::End;
 
   #[ inline( always ) ]
   fn former_begin
