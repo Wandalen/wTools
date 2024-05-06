@@ -78,6 +78,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   /* names */
 
+  let vis = &ast.vis;
   let stru = &ast.ident;
   let former_name = format!( "{}Former", stru );
   let former = syn::Ident::new( &former_name, stru.span() );
@@ -357,7 +358,7 @@ where
     // = definition types
 
     #[ derive( Debug ) ]
-    pub struct #former_definition_types < #former_definition_types_generics_with_defaults >
+    #vis struct #former_definition_types < #former_definition_types_generics_with_defaults >
     where
       #former_definition_types_generics_where
     {
@@ -392,7 +393,7 @@ where
     // = definition
 
     #[ derive( Debug ) ]
-    pub struct #former_definition < #former_definition_generics_with_defaults >
+    #vis struct #former_definition < #former_definition_generics_with_defaults >
     where
       #former_definition_generics_where
     {
@@ -436,7 +437,7 @@ where
     #[ doc = "Container of a corresponding former." ]
     #[ allow( explicit_outlives_requirements ) ]
     // pub struct #former_storage < #struct_generics_ty >
-    pub struct #former_storage < #struct_generics_with_defaults >
+    #vis struct #former_storage < #struct_generics_with_defaults >
     where
       #struct_generics_where
     {
@@ -497,7 +498,7 @@ where
     // = former
 
     #[ doc = #doc_former_struct ]
-    pub struct #former < #former_generics_with_defaults >
+    #vis struct #former < #former_generics_with_defaults >
     where
       #former_generics_where
     {
@@ -695,7 +696,7 @@ where
 
     // zzz : improve description
     /// Use as subformer of a field during process of forming of super structure.
-    pub type #as_subformer < #struct_generics_ty __Superformer, __End > = #former
+    #vis type #as_subformer < #struct_generics_ty __Superformer, __End > = #former
     <
       #struct_generics_ty
       #former_definition
