@@ -7,7 +7,6 @@ fn main() {}
 #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
 fn main()
 {
-  use test_tools::exposed::*;
 
   #[ derive( Debug, PartialEq, former::Former ) ]
   pub struct StructWithMap

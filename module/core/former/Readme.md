@@ -683,7 +683,6 @@ This example demonstrates the use of a `HashMapSubformer` to build a hash map wi
 #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
 fn main()
 {
-  use test_tools::exposed::*;
 
   #[ derive( Debug, PartialEq, former::Former ) ]
   pub struct StructWithMap
@@ -711,7 +710,6 @@ In the following example, a `HashSetSubformer` is utilized to construct a hash s
 #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
 fn main()
 {
-  use test_tools::exposed::*;
 
   #[ derive( Debug, PartialEq, former::Former ) ]
   pub struct StructWithSet
@@ -970,6 +968,34 @@ fn main()
   // >          },
   // >     },
   // > }
+}
+```
+
+## General Container Interface
+
+There are suite of traits designed to abstract and enhance the functionality of container data structures within the forming process. These traits are integral to managing the complexity of container operations, such as adding, modifying, and converting between different representations within containers like vectors, hash maps, etc. They are especially useful when used in conjunction with the `container` attribute in the `former` macro, which automates the implementation of these traits to create robust and flexible builder patterns for complex data structures.
+
+- [`Container`] - Defines basic functionalities for containers, managing entries and values, establishing the fundamental operations required for any custom container implementation in forming processes.
+- [`EntryToVal`] - Facilitates the conversion of container entries to their value representations, crucial for operations that treat container elements more abstractly as values.
+- [`ValToEntry`] - Provides the reverse functionality of `EntryToVal`, converting values back into entries, which is essential for operations that require adding or modifying entries in the container based on value data.
+- [`ContainerAdd`] - Adds functionality for inserting entries into a container, considering container-specific rules such as duplication handling and order preservation, enhancing the usability of containers in forming scenarios.
+- [`ContainerAssign`] - Extends the container functionality to replace all existing entries with new ones, enabling bulk updates or complete resets of container contents, which is particularly useful in dynamic data environments.
+
+## Custom Container Former
+
+Container interface is defined in the crate and implemented for containers like vectors, hash maps, etc, but if you want to use non-standard container you can implement container interface for the container. This example demonstrate how to do that.
+
+```rust
+
+// Ensure the example only compiles when the appropriate features are enabled.
+#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+fn main()
+{
+  use collection_tools::HashMap;
+  use former::Former;
+
+  xxx : write
+
 }
 ```
 

@@ -569,9 +569,10 @@ impl<Definition> Default for Struct1FormerAssignHashset1End<Definition>
 }
 
 #[automatically_derived]
-impl<Definition,> former::FormingEnd< former::HashSetDefinition<String, Struct1Former<Definition,>, Struct1Former<Definition,>, former::NoEnd>, > for Struct1FormerAssignHashset1End<Definition>
+impl<Definition,> former::FormingEnd< former::HashSetDefinition<String, Struct1Former<Definition,>, Struct1Former<Definition,>, former::NoEnd>, >
+for Struct1FormerAssignHashset1End<Definition>
 where
-  Definition : former::FormerDefinition,
+  Definition : former::FormerDefinition< Storage = Struct1FormerStorage<> >,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage<> >,
 {
   #[inline(always)]

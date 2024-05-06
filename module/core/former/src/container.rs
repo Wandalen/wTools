@@ -1,6 +1,9 @@
-// File container.rs
-
-//! Interface for containers.
+//!
+//! This module defines traits and structures that facilitate the management and manipulation
+//! of container data structures within a builder pattern context. It provides a comprehensive
+//! interface for adding, managing, and converting elements within various types of containers,
+//! such as vectors, hash maps, and custom container implementations.
+//!
 
 use crate::*;
 
