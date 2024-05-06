@@ -145,7 +145,7 @@ fn call_from_workspace_root()
 
 
   assert_eq!( rep.failure_reports.len(), 1 );
-  assert_eq!( rep.succses_reports.len(), 2 );
+  assert_eq!( rep.success_reports.len(), 2 );
 }
 
 #[ test ]
@@ -174,7 +174,7 @@ fn plan()
   .with_progress( false )
   .form();
 
-  let rep = test( args, true ).unwrap().succses_reports[ 0 ].clone().tests;
+  let rep = test( args, true ).unwrap().success_reports[ 0 ].clone().tests;
 
   assert!( rep.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Stable ).features( BTreeSet::default() ).form() ).is_some() );
   assert!( rep.get( &TestVariant::former().optimization( Optimization::Debug ).channel( Channel::Nightly ).features( BTreeSet::default() ).form() ).is_some() );
