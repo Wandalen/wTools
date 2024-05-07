@@ -701,8 +701,9 @@ where
           #[ inline( always ) ]
           pub fn #setter_name( self ) -> former::ContainerSubformer::
           <
-            ( #( #params, )* ),
-             #subformer_definition,
+            // ( #( #params, )* ),
+            < #typ as former::Container >::Entry,
+            #subformer_definition,
           >
           where
             #subformer_definition : former::FormerDefinition
@@ -715,8 +716,10 @@ where
           {
             self.#field_assign::< former::ContainerSubformer::
             <
-              ( #( #params, )* ),
-               #subformer_definition,
+              _,
+              _,
+              // ( #( #params, )* ),
+              //  #subformer_definition,
             > > ()
           }
 
@@ -767,7 +770,8 @@ where
           #[ inline( always ) ]
           pub fn #setter_name( self ) -> former::ContainerSubformer::
           <
-            #( #params, )* // xxx : use former::Container
+            < #typ as former::Container >::Entry,
+            // #( #params, )* // xxx : use former::Container
              #subformer_definition,
           >
           where
@@ -781,8 +785,10 @@ where
           {
             self.#field_assign::< former::ContainerSubformer::
             <
-              #( #params, )* // xxx : use former::Container
-               #subformer_definition,
+              _,
+              _,
+              // #( #params, )* // xxx : use former::Container
+              // #subformer_definition,
             > > ()
           }
 
