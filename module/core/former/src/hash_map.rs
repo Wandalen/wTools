@@ -109,6 +109,9 @@ where
 
 #[ derive( Debug, Default ) ]
 pub struct HashMapDefinition< K, E, Context = (), Formed = HashMap< K, E >, End = ReturnStorage >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+  End : FormingEnd< HashMapDefinitionTypes< K, E, Context, Formed > >,
 {
   _phantom : core::marker::PhantomData< ( K, E, Context, Formed, End ) >,
 }

@@ -441,6 +441,10 @@ where
       Context = Struct1Former< Definition >,
       End = Struct1FormerAssignHashmap1End< Definition >,
     >,
+    Struct1FormerAssignHashmap1End< Definition > : former::FormingEnd
+    <
+      < collection_tools::HashMap< String, String > as former::EntityToDefinitionTypes< Self, Self > >::Types
+    >,
   {
     Former2::former_begin( None, Some( self ), Struct1FormerAssignHashmap1End::< Definition >::default() )
   }
@@ -457,6 +461,10 @@ where
       Storage : former::ContainerAdd< Entry = < collection_tools::HashMap< String, String > as former::Container >::Entry >,
       Context = Struct1Former< Definition >,
       End = Struct1FormerAssignHashmap1End< Definition >,
+    >,
+    Struct1FormerAssignHashmap1End< Definition > : former::FormingEnd
+    <
+      < collection_tools::HashMap< String, String > as former::EntityToDefinitionTypes< Self, Self > >::Types
     >,
   {
     self._hashmap_1_assign::< former::ContainerSubformer::
@@ -481,6 +489,11 @@ where
       Context = Struct1Former< Definition >,
       End = Struct1FormerAssignHashset1End< Definition >,
     >,
+    Struct1FormerAssignHashset1End< Definition > : former::FormingEnd
+    <
+      < collection_tools::HashSet< String > as former::EntityToDefinitionTypes< Self, Self > >::Types
+    >,
+
     // Struct1FormerAssignHashset1End< Definition > : former::FormingEnd
     // <
     //   former::HashSetDefinitionTypes< String, Struct1Former< Definition >, Struct1Former< Definition > >
@@ -502,6 +515,11 @@ where
       Context = Struct1Former< Definition >,
       End = Struct1FormerAssignHashset1End< Definition >,
     >,
+    Struct1FormerAssignHashset1End< Definition > : former::FormingEnd
+    <
+      < collection_tools::HashSet< String > as former::EntityToDefinitionTypes< Self, Self > >::Types
+    >,
+
     // Struct1FormerAssignHashset1End< Definition > : former::FormingEnd
     // <
     //   former::HashSetDefinitionTypes< String, Struct1Former< Definition >, Struct1Former< Definition > >,

@@ -117,6 +117,9 @@ where
 
 #[ derive( Debug, Default ) ]
 pub struct HashSetDefinition< K, Context = (), Formed = HashSet< K >, End = ReturnStorage >
+where
+  End : FormingEnd< HashSetDefinitionTypes< K, Context, Formed > >,
+  K : ::core::cmp::Eq + ::core::hash::Hash,
 {
   _phantom : core::marker::PhantomData< ( K, Context, Formed, End ) >,
 }
