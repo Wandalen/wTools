@@ -113,24 +113,6 @@ where
   }
 }
 
-// = definition types
-
-#[ derive( Debug, Default ) ]
-pub struct HashSetDefinitionTypes< K, Context = (), Formed = HashSet< K > >
-{
-  _phantom : core::marker::PhantomData< ( K, Context, Formed ) >,
-}
-
-impl< K, Context, Formed > FormerDefinitionTypes
-for HashSetDefinitionTypes< K, Context, Formed >
-where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-{
-  type Storage = HashSet< K >;
-  type Formed = Formed;
-  type Context = Context;
-}
-
 // = definition
 
 #[ derive( Debug, Default ) ]
@@ -153,6 +135,24 @@ where
   type End = End;
 }
 
+// = definition types
+
+#[ derive( Debug, Default ) ]
+pub struct HashSetDefinitionTypes< K, Context = (), Formed = HashSet< K > >
+{
+  _phantom : core::marker::PhantomData< ( K, Context, Formed ) >,
+}
+
+impl< K, Context, Formed > FormerDefinitionTypes
+for HashSetDefinitionTypes< K, Context, Formed >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+  type Storage = HashSet< K >;
+  type Formed = Formed;
+  type Context = Context;
+}
+
 // = mutator
 
 impl< K, Context, Formed > FormerMutator
@@ -170,7 +170,7 @@ where
   Definition : FormerDefinition< Storage = HashSet< K >, Formed = () >,
   Definition::Types : FormerDefinitionTypes< Storage = HashSet< K >, Formed = () >,
   Definition::End : crate::FormingEnd< Definition::Types >,
-  < Definition as definition::FormerDefinition>::End : Fn( HashSet< K >, Option< Definition::Context > ),
+  < Definition as definition::FormerDefinition >::End : Fn( HashSet< K >, Option< Definition::Context > ),
 {
   type Former = HashSetSubformer< K, Definition::Context, Definition::Formed, Definition::End >;
 }

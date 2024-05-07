@@ -154,7 +154,7 @@ where
   Definition : FormerDefinition< Storage = Vec< E > >,
   Definition::Types : FormerDefinitionTypes< Storage = Vec< E >, Formed = Definition::Formed, Context = Definition::Context >,
   Definition::End : crate::FormingEnd< Definition::Types >,
-  Definition::End : Fn( Vec< E >, Option< Definition::Context > ) -> Definition::Formed, // xxx
+  < Definition as definition::FormerDefinition >::End : Fn( Vec< E >, Option< Definition::Context > ) -> Definition::Formed, // xxx
 {
   type Former = VectorSubformer< E, Definition::Context, Definition::Formed, Definition::End >;
 }
