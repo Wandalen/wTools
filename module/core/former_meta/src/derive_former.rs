@@ -4,7 +4,6 @@ use iter_tools::{ Itertools, process_results };
 use macro_tools::{ attr, diag, generic_params, generic_args, typ, derive, Result };
 use proc_macro2::TokenStream;
 
-// zzz : explain concept of Storage
 // qqq : implement interfaces for other containers
 
 mod field;
@@ -14,7 +13,7 @@ use field_attrs::*;
 mod struct_attrs;
 use struct_attrs::*;
 
-/// xxx : write documentation and example of generated code
+/// zzz : write documentation and example of generated code
 
 pub fn mutator
 (
@@ -141,8 +140,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let stru = &ast.ident;
   let former_name = format!( "{}Former", stru );
   let former = syn::Ident::new( &former_name, stru.span() );
-  // let former_namespace_name = format!( "{}FormerSpace", stru );
-  // let former_namespace = syn::Ident::new( &former_namespace_name, stru.span() );
   let former_storage_name = format!( "{}FormerStorage", stru );
   let former_storage = syn::Ident::new( &former_storage_name, stru.span() );
   let former_definition_name = format!( "{}FormerDefinition", stru );
@@ -365,12 +362,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     {
       type Types = #former_definition_types < #struct_generics_ty __Context, __Formed >;
     }
-
-    // #[ allow( non_snake_case ) ]
-    // pub mod #former_namespace
-    // {
-    // pub use super::#stru;
-    // use super::*;
 
     // = definition types
 
@@ -750,24 +741,11 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     {
     }
 
-    // = container assign callbacks
-
-    // #(
-    //   #former_assign_end
-    // )*
+    // = etc
 
     #(
       #namespace_code
     )*
-
-    // = container add callbacks
-
-    // #(
-    //   #former_add_end
-    // )*
-
-    // } /* end of namespace */
-    // pub use #former_namespace :: *;
 
   };
 
