@@ -24,5 +24,6 @@ fn main()
   .form();
 
   assert_eq!( instance, StructWithVec { vec: vec![ "apple", "banana" ] } );
+  dbg!( instance );
 
 }

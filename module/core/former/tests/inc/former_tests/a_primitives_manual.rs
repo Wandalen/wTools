@@ -316,12 +316,10 @@ where
   Definition::Storage : former::StoragePreform,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage, Formed = Struct1 >,
 {
-
   pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
   {
     former::StoragePreform::preform( self.storage )
   }
-
 }
 
 //

@@ -14,6 +14,66 @@ use field_attrs::*;
 mod struct_attrs;
 use struct_attrs::*;
 
+/// xxx : write documentation and example of generated code
+
+pub fn mutator
+(
+  mutator : &AttributeMutator,
+  // stru : &syn::Ident,
+  former_definition_types : &syn::Ident,
+  former_definition_types_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  former_definition_types_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  former_definition_types_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+)
+-> Result< TokenStream >
+{
+  let former_mutator_code = if mutator.custom
+  {
+    qt!{}
+  }
+  else
+  {
+    qt!
+    {
+      impl< #former_definition_types_generics_impl > former::FormerMutator
+      for #former_definition_types < #former_definition_types_generics_ty >
+      where
+        #former_definition_types_generics_where
+      {
+      }
+    }
+  };
+
+  if mutator.hint
+  {
+    let hint = format!
+    (
+      r#"
+= Example of custom mutator
+
+impl< {} > former::FormerMutator
+for {} < {} >
+where
+  {}
+{{
+  /// Mutates the context and storage of the entity just before the formation process completes.
+  #[ inline ]
+  fn form_mutation( storage : &mut Self::Storage, context : &mut Option< Self::Context > )
+  {{
+  }}
+}}
+      "#,
+      format!( "{}", qt!{ #former_definition_types_generics_impl } ),
+      former_definition_types,
+      format!( "{}", qt!{ #former_definition_types_generics_ty } ),
+      format!( "{}", qt!{ #former_definition_types_generics_where } ),
+    );
+    println!( "{hint}" );
+  };
+
+  Ok( former_mutator_code )
+}
+
 ///
 /// Generate documentation for the former.
 ///
@@ -206,11 +266,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     storage_field_name,
     storage_field_preform,
     former_field_setter,
-    // former_assign_end,
-    former_add_end,
   )
   :
-  ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
+  ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
   = formed_fields
   .iter()
   .chain( storage_fields.iter() )
@@ -223,84 +281,30 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     field.former_field_setter
     (
       &stru,
+      &struct_generics_impl,
+      &struct_generics_ty,
+      &struct_generics_where,
       &former,
       &former_generics_impl,
       &former_generics_ty,
       &former_generics_where,
       &former_storage,
     ),
-    // // xxx : move maybe
-    // field.former_assign_end
-    // (
-    //   &stru,
-    //   &former,
-    //   &former_generics_impl,
-    //   &former_generics_ty,
-    //   &former_generics_where,
-    // ),
-    field.former_add_end
-    (
-      &stru,
-      &former,
-      &former_generics_ty,
-      &struct_generics_impl,
-      &struct_generics_ty,
-      &struct_generics_where,
-    ),
   )}).multiunzip();
 
-  // let former_field_setter : Vec< _ > = process_results( former_field_setter, | iter | iter.collect() )?;
-  let ( former_field_setter, namespace_code ) : ( Vec< _ >, Vec< _ > )
-  = former_field_setter.into_iter().process_results( | iter | iter.collect::< Vec< _ > >() )?.into_iter().unzip();
+  let results : Result< Vec< _ > > = former_field_setter.into_iter().collect();
+  let ( former_field_setter, namespace_code ) : ( Vec< _ >, Vec< _ > ) = results?.into_iter().unzip();
 
   let storage_field_preform : Vec< _ > = process_results( storage_field_preform, | iter | iter.collect() )?;
-  // let former_assign_end : Vec< _ > = process_results( former_assign_end, | iter | iter.collect() )?;
-  let former_add_end : Vec< _ > = process_results( former_add_end, | iter | iter.collect() )?;
 
-  // xxx : move to a function
-  let former_mutator_code = if struct_attrs.mutator.custom
-  {
-    qt!{}
-  }
-  else
-  {
-    qt!
-    {
-      impl< #former_definition_types_generics_impl > former::FormerMutator
-      for #former_definition_types < #former_definition_types_generics_ty >
-      where
-        #former_definition_types_generics_where
-      {
-      }
-    }
-  };
-
-  if struct_attrs.mutator.hint
-  {
-    let hint = format!
-    (
-      r#"
- = Example of custom mutator
-
-impl< {} > former::FormerMutator
-for {} < {} >
-where
-  {}
-{{
-  /// Mutates the context and storage of the entity just before the formation process completes.
-  #[ inline ]
-  fn form_mutation( storage : &mut Self::Storage, context : &mut Option< Self::Context > )
-  {{
-  }}
-}}
-      "#,
-      format!( "{}", qt!{ #former_definition_types_generics_impl } ),
-      former_definition_types,
-      format!( "{}", qt!{ #former_definition_types_generics_ty } ),
-      format!( "{}", qt!{ #former_definition_types_generics_where } ),
-    );
-    println!( "{hint}" );
-  };
+  let former_mutator_code = mutator
+  (
+    &struct_attrs.mutator,
+    &former_definition_types,
+    &former_definition_types_generics_impl,
+    &former_definition_types_generics_ty,
+    &former_definition_types_generics_where,
+  )?;
 
   let result = qt!
   {
@@ -758,9 +762,9 @@ where
 
     // = container add callbacks
 
-    #(
-      #former_add_end
-    )*
+    // #(
+    //   #former_add_end
+    // )*
 
     // } /* end of namespace */
     // pub use #former_namespace :: *;

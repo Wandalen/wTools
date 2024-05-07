@@ -42,7 +42,7 @@ fn main()
   pub struct Parent
   {
     // Use `hint = true` to gennerate sketch of setter.
-    #[ container( setter = false, hint = false ) ]
+    #[ container( setter = false, hint = true ) ]
     children : HashMap< String, Child >,
   }
 

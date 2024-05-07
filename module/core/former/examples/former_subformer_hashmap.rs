@@ -23,4 +23,6 @@ fn main()
   .form()
   ;
   assert_eq!( struct1, StructWithMap { map : hmap!{ "a" => "b", "c" => "d" } } );
+  dbg!( instance );
+
 }

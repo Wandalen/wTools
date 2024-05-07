@@ -23,5 +23,6 @@ fn main()
   .form();
 
   assert_eq!(instance, StructWithSet { set : hset![ "apple", "banana" ] });
+  dbg!( instance );
 
 }

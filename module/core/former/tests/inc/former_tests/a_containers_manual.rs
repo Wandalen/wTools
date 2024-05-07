@@ -620,8 +620,6 @@ where
   }
 }
 
-#[doc =
-"Callback to return original former after forming of container for `$Struct1` is done.#\n\nCallback replace content of container assigning new content from subformer's storage."]
 pub struct Struct1FormerAssignHashset1End<Definition>
 {
   _phantom : core::marker::PhantomData<(Definition,)>,

@@ -671,6 +671,7 @@ fn main()
   .form();
 
   assert_eq!( instance, StructWithVec { vec: vec![ "apple", "banana" ] } );
+  dbg!( instance );
 
 }
 ```
@@ -726,6 +727,7 @@ fn main()
   .form();
 
   assert_eq!(instance, StructWithSet { set : hset![ "apple", "banana" ] });
+  dbg!( instance );
 
 }
 ```
