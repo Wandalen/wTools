@@ -175,7 +175,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   let ( _doc_former_mod, doc_former_struct ) = doc_generate( stru );
   let ( perform, perform_output, perform_generics ) = struct_attrs.performer()?;
-  // let storage_fields_code = struct_attrs.storage_fields_code()?;
 
   /* fields */
 
@@ -207,8 +206,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     storage_field_name,
     storage_field_preform,
     former_field_setter,
-    former_field_assign_end,
-    former_field_add_end,
+    former_assign_end,
+    former_add_end,
   )
   :
   ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
@@ -226,10 +225,10 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       &stru,
       &former,
       &former_storage,
-      // &as_subformer,
-      // &as_subformer_end,
+      &former_generics_ty,
     ),
-    field.former_field_assign_end
+    // xxx : move maybe
+    field.former_assign_end
     (
       &stru,
       &former,
@@ -237,7 +236,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       &former_generics_ty,
       &former_generics_where,
     ),
-    field.former_field_add_end
+    field.former_add_end
     (
       &stru,
       &former,
@@ -250,9 +249,10 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   let former_field_setter : Vec< _ > = process_results( former_field_setter, | iter | iter.collect() )?;
   let storage_field_preform : Vec< _ > = process_results( storage_field_preform, | iter | iter.collect() )?;
-  let former_field_assign_end : Vec< _ > = process_results( former_field_assign_end, | iter | iter.collect() )?;
-  let former_field_add_end : Vec< _ > = process_results( former_field_add_end, | iter | iter.collect() )?;
+  let former_assign_end : Vec< _ > = process_results( former_assign_end, | iter | iter.collect() )?;
+  let former_add_end : Vec< _ > = process_results( former_add_end, | iter | iter.collect() )?;
 
+  // xxx : move to a function
   let former_mutator_code = if struct_attrs.mutator.custom
   {
     qt!{}
@@ -346,6 +346,15 @@ where
       #struct_generics_where
     {
       type Definition = #former_definition < #struct_generics_ty __Context, __Formed, __End >;
+      type Types = #former_definition_types < #struct_generics_ty __Context, __Formed >;
+    }
+
+    impl< #struct_generics_impl __Context, __Formed > former::EntityToDefinitionTypes< __Context, __Formed >
+    for #stru < #struct_generics_ty >
+    where
+      #struct_generics_where
+    {
+      type Types = #former_definition_types < #struct_generics_ty __Context, __Formed >;
     }
 
     // #[ allow( non_snake_case ) ]
@@ -444,7 +453,6 @@ where
         /// A field
         #storage_field_optional,
       )*
-      // #storage_fields_code
     }
 
     impl < #struct_generics_impl > ::core::default::Default
@@ -736,13 +744,13 @@ where
     // = container assign callbacks
 
     #(
-      #former_field_assign_end
+      #former_assign_end
     )*
 
     // = container add callbacks
 
     #(
-      #former_field_add_end
+      #former_add_end
     )*
 
     // } /* end of namespace */

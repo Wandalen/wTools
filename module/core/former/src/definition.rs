@@ -19,16 +19,24 @@
 /// This trait provides a linkage between the entity and its definition,
 /// allowing the formation logic to understand what definition to apply
 /// during the formation process.
-pub trait EntityToDefinition<Context, Formed, End>
+pub trait EntityToDefinition< Context, Formed, End >
 {
   /// The specific `FormerDefinition` associated with this entity.
   type Definition : FormerDefinition;
+  type Types : FormerDefinitionTypes;
+}
+
+/// xxx : update description
+pub trait EntityToDefinitionTypes< Context, Formed >
+{
+  /// The specific `FormerDefinitionTypes` associated with this entity.
+  type Types : FormerDefinitionTypes;
 }
 
 /// Maps a type of entity to its corresponding former.
 /// This trait binds an entity type to a specific former, facilitating the use
 /// of custom formers in complex formation scenarios.
-pub trait EntityToFormer<Definition>
+pub trait EntityToFormer< Definition >
 where
   Definition : FormerDefinition,
 {

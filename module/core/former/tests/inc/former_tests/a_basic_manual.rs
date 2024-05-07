@@ -45,6 +45,13 @@ where
   End : former::FormingEnd< Struct1FormerDefinitionTypes< Context, Formed > >,
 {
   type Definition = Struct1FormerDefinition< Context, Formed, End >;
+  type Types = Struct1FormerDefinitionTypes< Context, Formed >;
+}
+
+impl< Context, Formed > former::EntityToDefinitionTypes< Context, Formed >
+for Struct1
+{
+  type Types = Struct1FormerDefinitionTypes< Context, Formed >;
 }
 
 // = definition types

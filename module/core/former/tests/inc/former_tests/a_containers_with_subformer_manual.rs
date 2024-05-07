@@ -5,8 +5,8 @@ use super::*;
 pub struct Struct1
 {
   vec_1 : Vec< String >,
-  hashmap_1 : std::collections::HashMap< String, String >,
-  hashset_1 : std::collections::HashSet< String >,
+  hashmap_1 : collection_tools::HashMap< String, String >,
+  hashset_1 : collection_tools::HashSet< String >,
 }
 
 // == begin of generated
@@ -15,10 +15,10 @@ pub struct Struct1
 impl< > Struct1< >
 where
 {
-  #[doc = r""]
-  #[doc = r" Make former, variation of builder pattern to form structure defining values of fields step by step."]
-  #[doc = r""]
-  #[inline(always)]
+
+
+
+  #[ inline( always ) ]
   pub fn former() -> Struct1Former<
     Struct1FormerDefinition<(), Struct1<>, former::ReturnPreformed>
   >
@@ -105,22 +105,22 @@ where
   type Context = Context;
 }
 
-#[doc = "Container of a corresponding former."]
+
 pub struct Struct1FormerStorage<>
 where
 {
-  #[doc = r" A field"]
+
   pub vec_1 : core::option::Option<Vec<String>>,
-  #[doc = r" A field"]
-  pub hashmap_1 : core::option::Option<std::collections::HashMap<String, String>>,
-  #[doc = r" A field"]
-  pub hashset_1 : core::option::Option<std::collections::HashSet<String>>,
+
+  pub hashmap_1 : core::option::Option<collection_tools::HashMap<String, String>>,
+
+  pub hashset_1 : core::option::Option<collection_tools::HashSet<String>>,
 }
 
 impl< > core::default::Default for Struct1FormerStorage<>
 where
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn default() -> Self
   {
     Self
@@ -203,7 +203,7 @@ where
           }
         }
 
-        (&core::marker::PhantomData::<std::collections::HashMap<String, String>>).maybe_default()
+        (&core::marker::PhantomData::<collection_tools::HashMap<String, String>>).maybe_default()
       }
     };
 
@@ -234,7 +234,7 @@ where
           }
         }
 
-        (&core::marker::PhantomData::<std::collections::HashSet<String>>).maybe_default()
+        (&core::marker::PhantomData::<collection_tools::HashSet<String>>).maybe_default()
       }
     };
 
@@ -247,7 +247,7 @@ where
   }
 }
 
-#[doc = " Object to form [Struct1]. If field's values is not set then default value of the field is set.\n\nFor specifying custom default value use attribute `default`. For example:\n```\n\nuse former::Former;\n#[ derive( Former ) ]\npub struct Struct1\n{\n  #[default( 31 ) ]\n  field1 : i32,\n}\n\n```\n"]
+
 pub struct Struct1Former< Definition = Struct1FormerDefinition<(), Struct1<>, former::ReturnPreformed>, >
 where
   Definition : former::FormerDefinition,
@@ -264,19 +264,19 @@ where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage<> >,
 {
-  #[doc = r""]
-  #[doc = r" Construct new instance of former with default parameters."]
-  #[doc = r""]
-  #[inline(always)]
+
+
+
+  #[ inline( always ) ]
   pub fn new(on_end: Definition::End) -> Self
   {
     Self::begin_coercing(None, None, on_end)
   }
 
-  #[doc = r""]
-  #[doc = r" Construct new instance of former with default parameters."]
-  #[doc = r""]
-  #[inline(always)]
+
+
+
+  #[ inline( always ) ]
   pub fn new_coercing<IntoEnd>(end: IntoEnd) -> Self
   where
     IntoEnd : Into<Definition::End>,
@@ -284,10 +284,10 @@ where
     Self::begin_coercing(None, None, end,)
   }
 
-  #[doc = r""]
-  #[doc = r" Begin the process of forming. Expects context of forming to return it after forming."]
-  #[doc = r""]
-  #[inline(always)]
+
+
+
+  #[ inline( always ) ]
   pub fn begin(mut storage: core::option::Option<<Definition::Types as former::FormerDefinitionTypes>::Storage>, context: core::option::Option<<Definition::Types as former::FormerDefinitionTypes>::Context>, on_end: <Definition as former::FormerDefinition>::End,) -> Self
   {
     if storage.is_none()
@@ -302,10 +302,10 @@ where
     }
   }
 
-  #[doc = r""]
-  #[doc = r" Begin the process of forming. Expects context of forming to return it after forming."]
-  #[doc = r""]
-  #[inline(always)]
+
+
+
+  #[ inline( always ) ]
   pub fn begin_coercing<IntoEnd>(mut storage: core::option::Option<<Definition::Types as former::FormerDefinitionTypes>::Storage>, context: core::option::Option<<Definition::Types as former::FormerDefinitionTypes>::Context>, on_end: IntoEnd,) -> Self
   where
     IntoEnd : core::convert::Into<<Definition as former::FormerDefinition>::End>,
@@ -322,19 +322,19 @@ where
     }
   }
 
-  #[doc = r""]
-  #[doc = r" End the process of forming returning original context of forming."]
-  #[doc = r""]
-  #[inline(always)]
+
+
+
+  #[ inline( always ) ]
   pub fn form(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed
   {
     self.end()
   }
 
-  #[doc = r""]
-  #[doc = r" End the process of forming returning original context of forming."]
-  #[doc = r""]
-  #[inline(always)]
+
+
+
+  #[ inline( always ) ]
   pub fn end(mut self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed
   {
     let on_end = self.on_end.take().unwrap();
@@ -342,68 +342,96 @@ where
     former::FormingEnd::<Definition::Types>::call(&on_end, self.storage, context)
   }
 
-  #[doc = "Subformer setter for the 'vec_1' field. Method _vec_1_assign unlike method vec_1 accept custom container subformer."]
-  #[inline(always)]
-  pub fn _vec_1_assign<Former2>(self) -> Former2
+//   #[ inline( always ) ]
+//   pub fn _vec_1_assign<Former2>(self) -> Former2
+//   where
+//     Former2 : former::FormerBegin<former::VectorDefinition<String, Self, Self, Struct1FormerAssignVec1End<Definition>,>>,
+//   {
+//     Former2::former_begin(None, Some(self), Struct1FormerAssignVec1End::<Definition>::default())
+//   }
+//
+//
+//   #[ inline( always ) ]
+//   pub fn vec_1(self) -> former::ContainerSubformer::<
+//     String,
+//     former::VectorDefinition<String, Self, Self, Struct1FormerAssignVec1End<Definition>,>
+//   >
+//   {
+//     self._vec_1_assign::<former::ContainerSubformer::<String, former::VectorDefinition<String, Self, Self, Struct1FormerAssignVec1End<Definition>,>>> ()
+//   }
+//
+//
+//   #[ inline( always ) ]
+//   pub fn _hashmap_1_assign<Former2>(self) -> Former2
+//   where
+//     Former2 : former::FormerBegin<former::HashMapDefinition<String, String, Self, Self, Struct1FormerAssignHashmap1End<Definition>,>>,
+//   {
+//     Former2::former_begin(None, Some(self), Struct1FormerAssignHashmap1End::<Definition>::default())
+//   }
+//
+//
+//   #[ inline( always ) ]
+//   pub fn hashmap_1(self) -> former::ContainerSubformer::
+//   <
+//     (String, String,),
+//     former::HashMapDefinition<String, String, Self, Self, Struct1FormerAssignHashmap1End<Definition>,>
+//   >
+//   {
+//     self._hashmap_1_assign::<former::ContainerSubformer::<
+//       (String, String,),
+//       former::HashMapDefinition<String, String, Self, Self, Struct1FormerAssignHashmap1End<Definition>,>
+//     >> ()
+//   }
+// xxx
+
+  #[ inline( always ) ]
+  pub fn _hashset_1_assign< Former2 >( self ) -> Former2
   where
-    Former2 : former::FormerBegin<former::VectorDefinition<String, Self, Self, Struct1FormerAssignVec1End<Definition>,>>,
+    Former2 : former::FormerBegin
+    <
+      former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
+    >,
+    former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > > : former::FormerDefinition
+    <
+      Storage : former::ContainerAdd< Entry = < collection_tools::HashSet< String > as former::Container >::Entry >,
+      Context = Struct1Former< Definition >,
+      End = Struct1FormerAssignHashset1End< Definition >,
+    >,
+    // Struct1FormerAssignHashset1End< Definition > : former::FormingEnd
+    // <
+    //   former::HashSetDefinitionTypes< String, Struct1Former< Definition >, Struct1Former< Definition > >
+    // >,
   {
-    Former2::former_begin(None, Some(self), Struct1FormerAssignVec1End::<Definition>::default())
+    Former2::former_begin( None, Some( self ), Struct1FormerAssignHashset1End::< Definition >::default() )
   }
 
-  #[doc = "Subformer setter for the 'vec_1' field. Method _vec_1_assign unlike method vec_1 accept custom container subformer."]
-  #[inline(always)]
-  pub fn vec_1(self) -> former::ContainerSubformer::<
+  #[ inline( always ) ]
+  pub fn hashset_1( self ) -> former::ContainerSubformer::
+  <
     String,
-    former::VectorDefinition<String, Self, Self, Struct1FormerAssignVec1End<Definition>,>
+    former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
   >
-  {
-    self._vec_1_assign::<former::ContainerSubformer::<String, former::VectorDefinition<String, Self, Self, Struct1FormerAssignVec1End<Definition>,>>> ()
-  }
-
-  #[doc = "Subformer setter for the 'hashmap_1' field. Method _hashmap_1_assign unlike method hashmap_1 accept custom container subformer."]
-  #[inline(always)]
-  pub fn _hashmap_1_assign<Former2>(self) -> Former2
   where
-    Former2 : former::FormerBegin<former::HashMapDefinition<String, String, Self, Self, Struct1FormerAssignHashmap1End<Definition>,>>,
+    former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > > : former::FormerDefinition
+    <
+      Storage : former::ContainerAdd< Entry = < collection_tools::HashSet< String > as former::Container >::Entry >,
+      Context = Struct1Former< Definition >,
+      End = Struct1FormerAssignHashset1End< Definition >,
+    >,
+    // Struct1FormerAssignHashset1End< Definition > : former::FormingEnd
+    // <
+    //   former::HashSetDefinitionTypes< String, Struct1Former< Definition >, Struct1Former< Definition > >,
+    // >,
   {
-    Former2::former_begin(None, Some(self), Struct1FormerAssignHashmap1End::<Definition>::default())
-  }
-
-  #[doc = "Subformer setter for the 'hashmap_1' field. Method _hashmap_1_assign unlike method hashmap_1 accept custom container subformer."]
-  #[inline(always)]
-  pub fn hashmap_1(self) -> former::ContainerSubformer::<
-    (String, String,),
-    former::HashMapDefinition<String, String, Self, Self, Struct1FormerAssignHashmap1End<Definition>,>
-  >
-  {
-    self._hashmap_1_assign::<former::ContainerSubformer::<
-      (String, String,),
-      former::HashMapDefinition<String, String, Self, Self, Struct1FormerAssignHashmap1End<Definition>,>
-    >> ()
-  }
-
-  #[doc = "Subformer setter for the 'hashset_1' field. Method _hashset_1_assign unlike method hashset_1 accept custom container subformer."]
-  #[inline(always)]
-  pub fn _hashset_1_assign<Former2>(self) -> Former2
-  where
-    Former2 : former::FormerBegin<former::HashSetDefinition<String, Self, Self, Struct1FormerAssignHashset1End<Definition>,>>,
-  {
-    Former2::former_begin(None, Some(self), Struct1FormerAssignHashset1End::<Definition>::default())
-  }
-
-  #[doc = "Subformer setter for the 'hashset_1' field. Method _hashset_1_assign unlike method hashset_1 accept custom container subformer."]
-  #[inline(always)]
-  pub fn hashset_1(self) -> former::ContainerSubformer::<
-    String,
-    former::HashSetDefinition<String, Self, Self, Struct1FormerAssignHashset1End<Definition>,>
-  >
-  {
-    self._hashset_1_assign::<former::ContainerSubformer::<
+    self._hashset_1_assign::< former::ContainerSubformer::
+    <
       String,
-      former::HashSetDefinition<String, Self, Self, Struct1FormerAssignHashset1End<Definition>,>
-    >> ()
+      former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
+    > > ()
   }
+
+  // xxx
+
 }
 
 impl< Definition, > Struct1Former< Definition, >
@@ -424,15 +452,15 @@ where
   Definition : former::FormerDefinition,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage<>, Formed = Struct1<> >,
 {
-  #[doc = r""]
-  #[doc = r" Finish setting options and call perform on formed entity."]
-  #[doc = r""]
+
+
+
   #[doc =
   r" If `perform` defined then associated method is called and its result returned instead of entity."]
   #[doc =
   r" For example `perform()` of structure with : `#[ perform( fn after1() -> &str > )` returns `&str`."]
-  #[doc = r""]
-  #[inline(always)]
+
+  #[ inline( always ) ]
   pub fn perform(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed
   {
     let result = self.form();
@@ -444,7 +472,7 @@ impl< Definition > former::FormerBegin< Definition > for Struct1Former< Definiti
 where
   Definition : former::FormerDefinition< Storage = Struct1FormerStorage<> >,
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn former_begin(storage: core::option::Option<Definition::Storage>, context: core::option::Option<Definition::Context>, on_end: Definition::End,) -> Self
   {
     debug_assert!(storage.is_none());
@@ -467,16 +495,16 @@ where
   Self : former::FormingEnd< Struct1FormerDefinitionTypes<SuperFormer, SuperFormer>, >,
 {}
 
-#[doc =
-"Callback to return original former after forming of container for `$Struct1` is done.#\n\nCallback replace content of container assigning new content from subformer's storage."]
-pub struct Struct1FormerAssignVec1End<Definition>
+// = former assign end
+
+pub struct Struct1FormerAssignVec1End< Definition >
 {
-  _phantom : core::marker::PhantomData<(Definition,)>,
+  _phantom : core::marker::PhantomData< ( Definition, ) >,
 }
 
-impl<Definition> Default for Struct1FormerAssignVec1End<Definition>
+impl<Definition> Default for Struct1FormerAssignVec1End< Definition >
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn default() -> Self
   {
     Self
@@ -486,27 +514,51 @@ impl<Definition> Default for Struct1FormerAssignVec1End<Definition>
   }
 }
 
-#[automatically_derived]
-impl<Definition,> former::FormingEnd< former::VectorDefinition<String, Struct1Former<Definition,>, Struct1Former<Definition,>, former::NoEnd>, > for Struct1FormerAssignVec1End<Definition>
+impl< Definition, > former::FormingEnd
+< former::VectorDefinitionTypes< String, Struct1Former< Definition >, Struct1Former< Definition > > >
+for Struct1FormerAssignVec1End< Definition >
 where
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage<> >,
+  Definition : former::FormerDefinition< Storage = Struct1FormerStorage >,
+  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
 {
-  #[inline(always)]
-  fn call(&self, storage: Vec<String>, super_former: Option<Struct1Former<Definition,>>,) -> Struct1Former<Definition,>
+  #[ inline( always ) ]
+  fn call( &self, storage : collection_tools::Vec< String >, super_former : Option< Struct1Former< Definition > > )
+  -> Struct1Former< Definition, >
   {
     let mut super_former = super_former.unwrap();
-    if let Some(ref mut field) = super_former.storage.vec_1
+    if let Some( ref mut field ) = super_former.storage.vec_1
     {
-      former::ContainerAssign::assign(field, storage);
+      former::ContainerAssign::assign( field, storage );
     }
     else
     {
-      super_former.storage.vec_1 = Some(storage);
+      super_former.storage.vec_1 = Some( storage );
     }
     super_former
   }
 }
+
+// #[automatically_derived]
+// impl<Definition,> former::FormingEnd< former::VectorDefinition<String, Struct1Former<Definition,>, Struct1Former<Definition,>, former::NoEnd>, > for Struct1FormerAssignVec1End<Definition>
+// where
+//   Definition : former::FormerDefinition,
+//   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage<> >,
+// {
+//   #[ inline( always ) ]
+//   fn call(&self, storage: Vec<String>, super_former: Option<Struct1Former<Definition,>>,) -> Struct1Former<Definition,>
+//   {
+//     let mut super_former = super_former.unwrap();
+//     if let Some(ref mut field) = super_former.storage.vec_1
+//     {
+//       former::ContainerAssign::assign(field, storage);
+//     }
+//     else
+//     {
+//       super_former.storage.vec_1 = Some(storage);
+//     }
+//     super_former
+//   }
+// }
 
 #[doc =
 "Callback to return original former after forming of container for `$Struct1` is done.#\n\nCallback replace content of container assigning new content from subformer's storage."]
@@ -517,7 +569,7 @@ pub struct Struct1FormerAssignHashmap1End<Definition>
 
 impl<Definition> Default for Struct1FormerAssignHashmap1End<Definition>
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn default() -> Self
   {
     Self
@@ -527,27 +579,51 @@ impl<Definition> Default for Struct1FormerAssignHashmap1End<Definition>
   }
 }
 
-#[automatically_derived]
-impl<Definition,> former::FormingEnd< former::HashMapDefinition<String, String, Struct1Former<Definition,>, Struct1Former<Definition,>, former::NoEnd>, > for Struct1FormerAssignHashmap1End<Definition>
+impl< Definition, > former::FormingEnd
+< former::HashMapDefinitionTypes< String, String, Struct1Former< Definition >, Struct1Former< Definition > > >
+for Struct1FormerAssignHashmap1End< Definition >
 where
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage<> >,
+  Definition : former::FormerDefinition< Storage = Struct1FormerStorage >,
+  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
 {
-  #[inline(always)]
-  fn call(&self, storage: std::collections::HashMap<String, String>, super_former: Option<Struct1Former<Definition,>>,) -> Struct1Former<Definition,>
+  #[ inline( always ) ]
+  fn call( &self, storage : collection_tools::HashMap< String, String >, super_former : Option< Struct1Former< Definition > > )
+  -> Struct1Former< Definition, >
   {
     let mut super_former = super_former.unwrap();
-    if let Some(ref mut field) = super_former.storage.hashmap_1
+    if let Some( ref mut field ) = super_former.storage.hashmap_1
     {
-      former::ContainerAssign::assign(field, storage);
+      former::ContainerAssign::assign( field, storage );
     }
     else
     {
-      super_former.storage.hashmap_1 = Some(storage);
+      super_former.storage.hashmap_1 = Some( storage );
     }
     super_former
   }
 }
+
+// #[automatically_derived]
+// impl<Definition,> former::FormingEnd< former::HashMapDefinition<String, String, Struct1Former<Definition,>, Struct1Former<Definition,>, former::NoEnd>, > for Struct1FormerAssignHashmap1End<Definition>
+// where
+//   Definition : former::FormerDefinition,
+//   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage<> >,
+// {
+//   #[ inline( always ) ]
+//   fn call(&self, storage: collection_tools::HashMap<String, String>, super_former: Option<Struct1Former<Definition,>>,) -> Struct1Former<Definition,>
+//   {
+//     let mut super_former = super_former.unwrap();
+//     if let Some(ref mut field) = super_former.storage.hashmap_1
+//     {
+//       former::ContainerAssign::assign(field, storage);
+//     }
+//     else
+//     {
+//       super_former.storage.hashmap_1 = Some(storage);
+//     }
+//     super_former
+//   }
+// }
 
 #[doc =
 "Callback to return original former after forming of container for `$Struct1` is done.#\n\nCallback replace content of container assigning new content from subformer's storage."]
@@ -558,7 +634,7 @@ pub struct Struct1FormerAssignHashset1End<Definition>
 
 impl<Definition> Default for Struct1FormerAssignHashset1End<Definition>
 {
-  #[inline(always)]
+  #[ inline( always ) ]
   fn default() -> Self
   {
     Self
@@ -568,23 +644,25 @@ impl<Definition> Default for Struct1FormerAssignHashset1End<Definition>
   }
 }
 
-#[automatically_derived]
-impl<Definition,> former::FormingEnd< former::HashSetDefinition<String, Struct1Former<Definition,>, Struct1Former<Definition,>, former::NoEnd>, > for Struct1FormerAssignHashset1End<Definition>
+impl< Definition, > former::FormingEnd
+< former::HashSetDefinitionTypes< String, Struct1Former< Definition >, Struct1Former< Definition > > >
+for Struct1FormerAssignHashset1End< Definition >
 where
-  Definition : former::FormerDefinition,
-  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage<> >,
+  Definition : former::FormerDefinition< Storage = Struct1FormerStorage >,
+  Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
 {
-  #[inline(always)]
-  fn call(&self, storage: std::collections::HashSet<String>, super_former: Option<Struct1Former<Definition,>>,) -> Struct1Former<Definition,>
+  #[ inline( always ) ]
+  fn call( &self, storage : collection_tools::HashSet< String >, super_former : Option< Struct1Former< Definition >, > )
+  -> Struct1Former< Definition, >
   {
     let mut super_former = super_former.unwrap();
-    if let Some(ref mut field) = super_former.storage.hashset_1
+    if let Some( ref mut field ) = super_former.storage.hashset_1
     {
-      former::ContainerAssign::assign(field, storage);
+      former::ContainerAssign::assign( field, storage );
     }
     else
     {
-      super_former.storage.hashset_1 = Some(storage);
+      super_former.storage.hashset_1 = Some( storage );
     }
     super_former
   }
@@ -592,4 +670,5 @@ where
 
 // == end of generated
 
-include!( "./only_test/containers_with_subformer.rs" );
+// include!( "./only_test/containers_with_subformer.rs" );
+// xxx

@@ -103,35 +103,45 @@ for Vec< E >
 #[ derive( Debug, Default ) ]
 pub struct VectorDefinition< E, Context = (), Formed = Vec< E >, End = ReturnStorage >
 where
-  End : FormingEnd< VectorDefinition< E, Context, Formed, NoEnd > >,
+  End : FormingEnd< VectorDefinitionTypes< E, Context, Formed > >,
 {
   _phantom : core::marker::PhantomData< ( E, Context, Formed, End ) >,
-}
-
-impl< E, Context, Formed > FormerDefinitionTypes
-for VectorDefinition< E, Context, Formed, NoEnd >
-{
-  type Storage = Vec< E >;
-  type Formed = Formed;
-  type Context = Context;
-}
-
-impl< E, Context, Formed > FormerMutator
-for VectorDefinition< E, Context, Formed, NoEnd >
-{
 }
 
 impl< E, Context, Formed, End > FormerDefinition
 for VectorDefinition< E, Context, Formed, End >
 where
-  End : FormingEnd< VectorDefinition< E, Context, Formed, NoEnd > >,
+  End : FormingEnd< VectorDefinitionTypes< E, Context, Formed > >,
 {
   type Storage = Vec< E >;
   type Formed = Formed;
   type Context = Context;
 
-  type Types = VectorDefinition< E, Context, Formed, NoEnd >;
+  type Types = VectorDefinitionTypes< E, Context, Formed >;
   type End = End;
+}
+
+// = definition type
+
+#[ derive( Debug, Default ) ]
+pub struct VectorDefinitionTypes< E, Context = (), Formed = Vec< E > >
+{
+  _phantom : core::marker::PhantomData< ( E, Context, Formed ) >,
+}
+
+impl< E, Context, Formed > FormerDefinitionTypes
+for VectorDefinitionTypes< E, Context, Formed >
+{
+  type Storage = Vec< E >;
+  type Formed = Formed;
+  type Context = Context;
+}
+
+// = mutator
+
+impl< E, Context, Formed > FormerMutator
+for VectorDefinitionTypes< E, Context, Formed >
+{
 }
 
 // = Entity To
@@ -144,7 +154,7 @@ where
   Definition : FormerDefinition< Storage = Vec< E > >,
   Definition::Types : FormerDefinitionTypes< Storage = Vec< E >, Formed = Definition::Formed, Context = Definition::Context >,
   Definition::End : crate::FormingEnd< Definition::Types >,
-  Definition::End : Fn( Vec< E >, Option< Definition::Context > ) -> Definition::Formed,
+  Definition::End : Fn( Vec< E >, Option< Definition::Context > ) -> Definition::Formed, // xxx
 {
   type Former = VectorSubformer< E, Definition::Context, Definition::Formed, Definition::End >;
 }
@@ -158,9 +168,16 @@ for Vec< E >
 impl< E, Context, Formed, End > crate::EntityToDefinition< Context, Formed, End >
 for Vec< E >
 where
-  End : crate::FormingEnd< VectorDefinition< E, Context, Formed, NoEnd > >,
+  End : crate::FormingEnd< VectorDefinitionTypes< E, Context, Formed > >,
 {
   type Definition = VectorDefinition< E, Context, Formed, End >;
+  type Types = VectorDefinitionTypes< E, Context, Formed >;
+}
+
+impl< E, Context, Formed > crate::EntityToDefinitionTypes< Context, Formed >
+for Vec< E >
+{
+  type Types = VectorDefinitionTypes< E, Context, Formed >;
 }
 
 // = subformer

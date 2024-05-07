@@ -244,7 +244,9 @@ for FormingEndClosure< Definition >
 /// of complex hierarchical data structures.
 ///
 
-pub trait FormerBegin< Definition : crate::FormerDefinition >
+pub trait FormerBegin< Definition :  >
+where
+  Definition : crate::FormerDefinition,
 {
 
   /// Launches the subforming process with an initial storage and context, setting up an `on_end` completion handler.

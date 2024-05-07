@@ -71,6 +71,7 @@ pub trait ValToEntry< Container >
   /// a value into a (key, value) tuple for insertion into a `HashMap`.
   fn val_to_entry( self ) -> Self::Entry;
 }
+
 /// Provides functionality to add individual entries to a container.
 ///
 /// This trait extends the basic `Container` trait by introducing a method to add entries to a container.

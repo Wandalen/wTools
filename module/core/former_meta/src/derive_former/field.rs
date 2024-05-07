@@ -36,8 +36,8 @@ former_field_setter
 subform_setter
 container_setter
 scalar_setter
-former_field_assign_end
-former_field_add_end
+former_assign_end
+former_add_end
 
 scalar_setter_name
 container_setter_name
@@ -345,8 +345,7 @@ scalar_setter_required
     stru : &syn::Ident,
     former : &syn::Ident,
     former_storage : &syn::Ident,
-    // as_subformer : &syn::Ident,
-    // as_subformer_end : &syn::Ident,
+    former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   )
   -> Result< TokenStream >
   {
@@ -356,21 +355,6 @@ scalar_setter_required
       former_storage,
     );
 
-    // // scalar setter
-    // let r = if self.scalar_setter_required()
-    // {
-    //   let r2 = self.scalar_setter();
-    //   qt!
-    //   {
-    //     #r
-    //     #r2
-    //   }
-    // }
-    // else
-    // {
-    //   r
-    // };
-
     // container setter
     let r = if let Some( _ ) = &self.attrs.container
     {
@@ -379,6 +363,7 @@ scalar_setter_required
         stru,
         former,
         former_storage,
+        former_generics_ty,
       );
       qt!
       {
@@ -423,8 +408,6 @@ scalar_setter_required
     stru : &syn::Ident,
     former : &syn::Ident,
     former_storage : &syn::Ident,
-    // as_subformer : &syn::Ident,
-    // as_subformer_end : &syn::Ident,
   )
   -> Result< TokenStream >
   {
@@ -587,13 +570,14 @@ where
     stru : &syn::Ident,
     former : &syn::Ident,
     former_storage : &syn::Ident,
+    former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   )
   -> TokenStream
   {
     let attr = self.attrs.container.as_ref().unwrap();
     let field_ident = &self.ident;
-    let non_optional_ty = &self.non_optional_ty;
-    let params = typ::type_parameters( &non_optional_ty, .. );
+    let typ = &self.non_optional_ty;
+    let params = typ::type_parameters( &typ, .. );
 
     use convert_case::{ Case, Casing };
     let former_assign_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
@@ -621,7 +605,9 @@ where
     {
       qt!
       {
-        < #non_optional_ty as former::EntityToDefinition< Self, Self, #former_assign_end< Definition > > >::Definition
+        <
+          #typ as former::EntityToDefinition< Self, Self, #former_assign_end< Definition > >
+        >::Definition
       }
       // < Vec< String > as former::EntityToDefinition< Self, Self, Struct1FormerAssignVec1End > >::Definition
     };
@@ -637,17 +623,54 @@ where
     let setter1 =
     qt!
     {
+
+      // #[ doc = #doc ]
+      // #[ inline( always ) ]
+      // pub fn #field_assign< Former2 >( self ) -> Former2
+      // where
+      //   Former2 : former::FormerBegin
+      //   <
+      //     #subformer_definition
+      //   >,
+      // {
+      //   Former2::former_begin( None, Some( self ), #former_assign_end::< Definition >::default() )
+      // }
+
       #[ doc = #doc ]
       #[ inline( always ) ]
       pub fn #field_assign< Former2 >( self ) -> Former2
       where
         Former2 : former::FormerBegin
         <
-          #subformer_definition
+          #subformer_definition,
+        >,
+        #subformer_definition : former::FormerDefinition
+        <
+          Storage : former::ContainerAdd< Entry = < #typ as former::Container >::Entry >,
+          Context = #former< #former_generics_ty >,
+          End = #former_assign_end< Definition >,
         >,
       {
         Former2::former_begin( None, Some( self ), #former_assign_end::< Definition >::default() )
       }
+
+      // #[ inline( always ) ]
+      // pub fn _hashset_1_assign< Former2 >( self ) -> Former2
+      // where
+      //   Former2 : former::FormerBegin
+      //   <
+      //     former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
+      //   >,
+      //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > > : former::FormerDefinition
+      //   <
+      //     Storage : former::ContainerAdd< Entry = < collection_tools::HashSet< String > as former::Container >::Entry >,
+      //     Context = Struct1Former< Definition >,
+      //     End = Struct1FormerAssignHashset1End< Definition >,
+      //   >,
+      // {
+      //   Former2::former_begin( None, Some( self ), Struct1FormerAssignHashset1End::< Definition >::default() )
+      // }
+
     };
 
     let setter_name = self.container_setter_name();
@@ -658,19 +681,62 @@ where
         qt!
         {
 
+          // #[ doc = #doc ]
+          // #[ inline( always ) ]
+          // pub fn #setter_name( self ) ->
+          // former::ContainerSubformer::
+          // <
+          //   ( #( #params, )* ), #subformer_definition
+          // >
+          // {
+          //   self.#field_assign::< former::ContainerSubformer::
+          //   <
+          //     ( #( #params, )* ), #subformer_definition
+          //   > >()
+          // }
+
           #[ doc = #doc ]
           #[ inline( always ) ]
-          pub fn #setter_name( self ) ->
-          former::ContainerSubformer::
+          pub fn #setter_name( self ) -> former::ContainerSubformer::
           <
-            ( #( #params, )* ), #subformer_definition
+            ( #( #params, )* ),
+             #subformer_definition,
           >
+          where
+            #subformer_definition : former::FormerDefinition
+            <
+              Storage : former::ContainerAdd< Entry = < #typ as former::Container >::Entry >,
+              Context = Struct1Former< Definition >,
+              End = #former_assign_end < Definition >,
+            >,
           {
             self.#field_assign::< former::ContainerSubformer::
             <
-              ( #( #params, )* ), #subformer_definition
-            > >()
+              ( #( #params, )* ),
+               #subformer_definition,
+            > > ()
           }
+
+          // #[ inline( always ) ]
+          // pub fn hashset_1( self ) -> former::ContainerSubformer::
+          // <
+          //   String,
+          //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
+          // >
+          // where
+          //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > > : former::FormerDefinition
+          //   <
+          //     Storage : former::ContainerAdd< Entry = < collection_tools::HashSet< String > as former::Container >::Entry >,
+          //     Context = Struct1Former< Definition >,
+          //     End = Struct1FormerAssignHashset1End< Definition >,
+          //   >,
+          // {
+          //   self._hashset_1_assign::< former::ContainerSubformer::
+          //   <
+          //     String,
+          //     former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
+          //   > > ()
+          // }
 
         }
       }
@@ -679,19 +745,63 @@ where
         qt!
         {
 
+          // xxx : clean
+          // #[ doc = #doc ]
+          // #[ inline( always ) ]
+          // pub fn #setter_name( self ) ->
+          // former::ContainerSubformer::
+          // <
+          //   #( #params, )* #subformer_definition
+          // >
+          // {
+          //   self.#field_assign::< former::ContainerSubformer::
+          //   <
+          //     #( #params, )* #subformer_definition
+          //   > >()
+          // }
+
           #[ doc = #doc ]
           #[ inline( always ) ]
-          pub fn #setter_name( self ) ->
-          former::ContainerSubformer::
+          pub fn #setter_name( self ) -> former::ContainerSubformer::
           <
-            #( #params, )* #subformer_definition
+            #( #params, )*, // xxx : use former::Container
+             #subformer_definition,
           >
+          where
+            #subformer_definition : former::FormerDefinition
+            <
+              Storage : former::ContainerAdd< Entry = < #typ as former::Container >::Entry >,
+              Context = Struct1Former< Definition >,
+              End = #former_assign_end < Definition >,
+            >,
           {
             self.#field_assign::< former::ContainerSubformer::
             <
-              #( #params, )* #subformer_definition
-            > >()
+              #( #params, )*, // xxx : use former::Container
+               #subformer_definition,
+            > > ()
           }
+
+          // #[ inline( always ) ]
+          // pub fn hashset_1( self ) -> former::ContainerSubformer::
+          // <
+          //   String,
+          //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
+          // >
+          // where
+          //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > > : former::FormerDefinition
+          //   <
+          //     Storage : former::ContainerAdd< Entry = < collection_tools::HashSet< String > as former::Container >::Entry >,
+          //     Context = Struct1Former< Definition >,
+          //     End = Struct1FormerAssignHashset1End< Definition >,
+          //   >,
+          // {
+          //   self._hashset_1_assign::< former::ContainerSubformer::
+          //   <
+          //     String,
+          //     former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
+          //   > > ()
+          // }
 
         }
       }
@@ -701,6 +811,7 @@ where
       qt!{}
     };
 
+    // xxx : update
     if attr.hint
     {
       let hint = format!
@@ -727,6 +838,7 @@ where
 }}
 
         "#,
+        // xxx : update
         former,
         former_storage,
         field_ident,
@@ -742,35 +854,6 @@ where
       #setter1
       #setter2
     }
-
-  //   #[ inline( always ) ]
-  //   pub fn vec_1_assign< Former2 >( self ) -> Former2
-  //   where
-  //     Former2 : former::FormerBegin
-  //     <
-  //       former::VectorDefinition
-  //       <
-  //         String,
-  //         Self,
-  //         Self,
-  //         Struct1FormerVec_1End,
-  //       >
-  //     >,
-  //   {
-  //     Former2::_begin( None, Some( self ), Struct1FormerVec_1End )
-  //   }
-  //
-  //   pub fn vec_1( self ) ->
-  //   former::ContainerSubformer::
-  //   <
-  //     String, former::VectorDefinition< String, Self, Self, Struct1FormerVec_1End >
-  //   >
-  //   {
-  //     self.vec_1_assign::< former::ContainerSubformer::
-  //     <
-  //       String, former::VectorDefinition< String, Self, Self, Struct1FormerVec_1End >
-  //     >>()
-  //   }
 
   }
 
@@ -908,7 +991,7 @@ where
   /// ```
 
   #[ inline ]
-  pub fn former_field_assign_end
+  pub fn former_assign_end
   (
     &self,
     stru : &syn::Ident,
@@ -950,15 +1033,27 @@ where
     {
       qt!
       {
-        #subformer_definition < #( #params, )* #former< #former_generics_ty >, #former< #former_generics_ty >, former::NoEnd >
+        #subformer_definition
+        <
+          #( #params, )*
+          #former< #former_generics_ty >,
+          #former< #former_generics_ty >,
+          // former::NoEnd,
+        >
       }
-      // former::VectorDefinition< String, Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd >
+      // former::VectorDefinition< String, Struct1Former< Definition, >, Struct1Former< Definition, > >
     }
     else
     {
       qt!
       {
-        < #field_ty as former::EntityToDefinition< #former< #former_generics_ty >, #former< #former_generics_ty >, former::NoEnd > >::Definition
+        <
+          #field_ty as former::EntityToDefinition
+          <
+            #former< #former_generics_ty >,
+            #former< #former_generics_ty >,
+          >
+        >::Types
       }
       // < Vec< String > as former::EntityToDefinition< Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd > >::Definition
     };
@@ -1028,7 +1123,7 @@ where
   /// zzz : write documentation
 
   #[ inline ]
-  pub fn former_field_add_end
+  pub fn former_add_end
   (
     &self,
     stru : &syn::Ident,

@@ -98,7 +98,6 @@ for HashSet< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  // type Types = HashSetDefinition< K >;
   type Formed = HashSet< K >;
 }
 
@@ -108,12 +107,28 @@ where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
   type Preformed = HashSet< K >;
-  // fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinitionTypes >::Formed
-  // fn preform( self ) -> Self::Formed
   fn preform( self ) -> Self::Preformed
   {
     self
   }
+}
+
+// = definition types
+
+#[ derive( Debug, Default ) ]
+pub struct HashSetDefinitionTypes< K, Context = (), Formed = HashSet< K > >
+{
+  _phantom : core::marker::PhantomData< ( K, Context, Formed ) >,
+}
+
+impl< K, Context, Formed > FormerDefinitionTypes
+for HashSetDefinitionTypes< K, Context, Formed >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+  type Storage = HashSet< K >;
+  type Formed = Formed;
+  type Context = Context;
 }
 
 // = definition
@@ -124,43 +139,37 @@ pub struct HashSetDefinition< K, Context = (), Formed = HashSet< K >, End = Retu
   _phantom : core::marker::PhantomData< ( K, Context, Formed, End ) >,
 }
 
-impl< K, Context, Formed > FormerDefinitionTypes
-for HashSetDefinition< K, Context, Formed, NoEnd >
-where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-{
-  type Storage = HashSet< K >;
-  type Formed = Formed;
-  type Context = Context;
-}
-
-impl< K, Context, Formed > FormerMutator
-for HashSetDefinition< K, Context, Formed, NoEnd >
-where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-{
-}
-
 impl< K, Context, Formed, End > FormerDefinition
 for HashSetDefinition< K, Context, Formed, End >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
-  End : FormingEnd< HashSetDefinition< K, Context, Formed, NoEnd > >,
+  End : FormingEnd< HashSetDefinitionTypes< K, Context, Formed > >,
 {
   type Storage = HashSet< K >;
   type Formed = Formed;
   type Context = Context;
 
-  type Types = HashSetDefinition< K, Context, Formed, NoEnd >;
+  type Types = HashSetDefinitionTypes< K, Context, Formed >;
   type End = End;
 }
 
-// = Entity To
+// = mutator
+
+impl< K, Context, Formed > FormerMutator
+for HashSetDefinitionTypes< K, Context, Formed >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+}
+
+// = entity to
 
 impl< K, Definition > EntityToFormer< Definition > for HashSet< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
   Definition : FormerDefinition< Storage = HashSet< K >, Formed = () >,
+  Definition::Types : FormerDefinitionTypes< Storage = HashSet< K >, Formed = () >,
+  Definition::End : crate::FormingEnd< Definition::Types >,
   < Definition as definition::FormerDefinition>::End : Fn( HashSet< K >, Option< Definition::Context > ),
 {
   type Former = HashSetSubformer< K, Definition::Context, Definition::Formed, Definition::End >;
@@ -178,9 +187,18 @@ impl< K, Context, Formed, End > crate::EntityToDefinition< Context, Formed, End 
 for HashSet< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
-  End : crate::FormingEnd< HashSetDefinition< K, Context, Formed, NoEnd > >,
+  End : crate::FormingEnd< HashSetDefinitionTypes< K, Context, Formed > >,
 {
   type Definition = HashSetDefinition< K, Context, Formed, End >;
+  type Types = HashSetDefinitionTypes< K, Context, Formed >;
+}
+
+impl< K, Context, Formed > crate::EntityToDefinitionTypes< Context, Formed >
+for HashSet< K >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+  type Types = HashSetDefinitionTypes< K, Context, Formed >;
 }
 
 // = subformer
