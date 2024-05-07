@@ -118,8 +118,8 @@ where
 #[ derive( Debug, Default ) ]
 pub struct HashSetDefinition< K, Context = (), Formed = HashSet< K >, End = ReturnStorage >
 where
-  End : FormingEnd< HashSetDefinitionTypes< K, Context, Formed > >,
   K : ::core::cmp::Eq + ::core::hash::Hash,
+  End : FormingEnd< HashSetDefinitionTypes< K, Context, Formed > >,
 {
   _phantom : core::marker::PhantomData< ( K, Context, Formed, End ) >,
 }
@@ -173,7 +173,7 @@ where
   Definition : FormerDefinition< Storage = HashSet< K >, Formed = () >,
   Definition::Types : FormerDefinitionTypes< Storage = HashSet< K >, Formed = () >,
   Definition::End : crate::FormingEnd< Definition::Types >,
-  < Definition as definition::FormerDefinition >::End : Fn( HashSet< K >, Option< Definition::Context > ),
+  // < Definition as definition::FormerDefinition >::End : Fn( HashSet< K >, Option< Definition::Context > ),
 {
   type Former = HashSetSubformer< K, Definition::Context, Definition::Formed, Definition::End >;
 }
