@@ -23,7 +23,7 @@ where
     Struct1FormerDefinition<(), Struct1<>, former::ReturnPreformed>
   >
   {
-    Struct1Former::<Struct1FormerDefinition<(), Struct1<>, former::ReturnPreformed>>::new_coercing(former::ReturnPreformed)
+    Struct1Former::< Struct1FormerDefinition< (), Struct1<>, former::ReturnPreformed > >::new_coercing(former::ReturnPreformed)
   }
 }
 
@@ -596,10 +596,38 @@ impl<Definition> Default for Struct1FormerAssignVec1End< Definition >
   }
 }
 
-impl< Definition, > former::FormingEnd
-< former::VectorDefinitionTypes< String, Struct1Former< Definition >, Struct1Former< Definition > > >
+// Struct1Former< Definition = Struct1FormerDefinition<(), Struct1<>, former::ReturnPreformed>, >
+
+impl< Definition > former::FormingEnd
+<
+  former::VectorDefinitionTypes< String, Struct1Former< Definition >, Struct1Former< Definition > >
+  // <
+  //   former::VectorDefinition
+  //   <
+  //     String,
+  //     Struct1Former< Definition >,
+  //     Struct1Former< Definition >,
+  //     // End,
+  //     Self,
+  //     // Struct1FormerAssignVec1End< Definition >,
+  //   >
+  //   as former::FormerDefinition
+  // > :: Types,
+>
 for Struct1FormerAssignVec1End< Definition >
 where
+  // Self : Sized,
+  // <
+  //   former::VectorDefinition
+  //   <
+  //     String,
+  //     Struct1Former< Definition, >,
+  //     Struct1Former< Definition, >,
+  //     Struct1FormerAssignVec1End< Definition >,
+  //   >
+  //   as former::FormerDefinition
+  // > :: Types : former::FormerDefinitionTypes,
+  // > :: Types : former::FormerDefinitionTypes< Context = Struct1Former< Definition, >, Formed = Struct1Former< Definition, > >,
   Definition : former::FormerDefinition< Storage = Struct1FormerStorage >,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
 {

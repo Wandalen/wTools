@@ -764,7 +764,7 @@ where
           #[ inline( always ) ]
           pub fn #setter_name( self ) -> former::ContainerSubformer::
           <
-            #( #params, )*, // xxx : use former::Container
+            #( #params, )* // xxx : use former::Container
              #subformer_definition,
           >
           where
@@ -777,7 +777,7 @@ where
           {
             self.#field_assign::< former::ContainerSubformer::
             <
-              #( #params, )*, // xxx : use former::Container
+              #( #params, )* // xxx : use former::Container
                #subformer_definition,
             > > ()
           }
@@ -838,7 +838,6 @@ where
 }}
 
         "#,
-        // xxx : update
         former,
         former_storage,
         field_ident,

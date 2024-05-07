@@ -101,7 +101,8 @@ for Vec< E >
 // xxx : imlement custom ContainerDefinition
 
 #[ derive( Debug, Default ) ]
-pub struct VectorDefinition< E, Context = (), Formed = Vec< E >, End = ReturnStorage >
+// pub struct VectorDefinition< E, Context = (), Formed = Vec< E >, End = ReturnStorage >
+pub struct VectorDefinition< E, Context, Formed, End >
 where
   End : FormingEnd< VectorDefinitionTypes< E, Context, Formed > >,
 {
@@ -114,8 +115,8 @@ where
   End : FormingEnd< VectorDefinitionTypes< E, Context, Formed > >,
 {
   type Storage = Vec< E >;
-  type Formed = Formed;
   type Context = Context;
+  type Formed = Formed;
 
   type Types = VectorDefinitionTypes< E, Context, Formed >;
   type End = End;
@@ -133,8 +134,8 @@ impl< E, Context, Formed > FormerDefinitionTypes
 for VectorDefinitionTypes< E, Context, Formed >
 {
   type Storage = Vec< E >;
-  type Formed = Formed;
   type Context = Context;
+  type Formed = Formed;
 }
 
 // = mutator
@@ -150,7 +151,8 @@ for VectorDefinitionTypes< E, Context, Formed >
 // zzz : qqq : cover by tests
 // zzz : qqq : rid off bound `Fn( Vec< E >, Option< Definition::Context > ) -> Definition::Formed` for all containers
 
-impl< E, Definition > EntityToFormer< Definition > for Vec< E >
+impl< E, Definition > EntityToFormer< Definition >
+for Vec< E >
 // where
 //   Definition : FormerDefinition< Storage = Vec< E > >,
 //   Definition::Types : FormerDefinitionTypes< Storage = Vec< E >, Formed = Definition::Formed, Context = Definition::Context >,
