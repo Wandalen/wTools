@@ -26,10 +26,11 @@ pub trait EntityToDefinition< Context, Formed, End >
   type Types : FormerDefinitionTypes;
 }
 
-/// xxx : update description
+/// Provides a mapping between a type of entity and its associated formation type definitions.
 pub trait EntityToDefinitionTypes< Context, Formed >
 {
-  /// The specific `FormerDefinitionTypes` associated with this entity.
+  /// Specifies the `FormerDefinitionTypes` that define the storage, formed entity, and context types used during formation.
+  /// This association is essential for ensuring that the formation process is carried out with the correct type-specific logic.
   type Types : FormerDefinitionTypes;
 }
 

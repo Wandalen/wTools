@@ -304,9 +304,27 @@ scalar_setter_required
 
   }
 
-  // zzz : outdated, please update documentation
+  /// Generates former setters for the specified field within a struct or enum.
   ///
-  /// Generate a former setter for the field.
+  /// This function is responsible for dynamically creating code that allows for the building
+  /// or modifying of fields within a `Former`-enabled struct or enum. It supports different
+  /// types of setters based on the field attributes, such as scalar setters, container setters,
+  /// and subform setters.
+  ///
+  /// # Returns
+  ///
+  /// Returns a pair of `TokenStream` instances:
+  /// - The first `TokenStream` contains the generated setter functions for the field.
+  /// - The second `TokenStream` includes additional namespace or supporting code that might
+  ///   be required for the setters to function correctly, such as definitions for end conditions
+  ///   or callbacks used in the formation process.
+  ///
+  /// The generation of setters is dependent on the attributes of the field:
+  /// - **Scalar Setters**: Created for basic data types and simple fields.
+  /// - **Container Setters**: Generated when the field is annotated to behave as a container,
+  ///   supporting operations like adding or replacing elements.
+  /// - **Subform Setters**: Generated for fields annotated as subforms, allowing for nested
+  ///   forming processes where a field itself can be formed using a dedicated former.
   ///
 
   #[ inline ]
@@ -421,11 +439,30 @@ scalar_setter_required
     let field_add_name = format!( "_{}_add", field_ident );
     let field_add = syn::Ident::new( &field_add_name, field_ident.span() );
 
+    let doc = format!
+    (
+      r#"
+
+Initiates the addition of {field_ident} to the `{stru}` entity using a dedicated subformer.
+
+This method configures and returns a subformer specialized for the `{field_typ}` entities' formation process,
+which is part of the `{stru}` entity's construction. The subformer is set up with a specific end condition
+handled by `{former_add_end}`, ensuring that the {field_ident} are properly integrated into the
+parent's structure once formed.
+
+# Returns
+
+Returns an instance of `Former2`, a subformer ready to begin the formation process for `{field_typ}` entities,
+allowing for dynamic and flexible construction of the `{stru}` entity's {field_ident}.
+
+      "#,
+      format!( "{}", qt!{ #field_typ } ),
+    );
+
     let setters_code = qt!
     {
 
-      // zzz : improve documentation
-      /// Setter returning former of element of container of the field as subformer.
+      #[ doc = doc ]
       #[ inline( always ) ]
       pub fn #field_add< Former2, Definition2 >( self ) -> Former2
       where
@@ -448,40 +485,6 @@ scalar_setter_required
       }
 
     };
-
-    if attr.hint
-    {
-      let hint = format!
-      (
-        r#"
-
-/// Initializes and configures a subformer for adding named child entities. This method leverages an internal function
-/// to create and return a configured subformer instance. It allows for the dynamic addition of children with specific names,
-/// integrating them into the formation process of the parent entity.
-
-impl< Definition > {}< Definition >
-where
-  Definition : former::FormerDefinition< Storage = {} >,
-{{
-
-  #[ inline( always ) ]
-  pub fn {}( self ) -> ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
-  {{
-    self.{}::< ChildFormer< _ >, _, >()
-  }}
-  // Replace Child with name of type of element value.
-
-}}
-        "#,
-        former,
-        former_storage,
-        field_ident,
-        // as_subformer,
-        // as_subformer_end,
-        field_add_name,
-      );
-      println!( "{hint}" );
-    }
 
     let setters_code = if attr.setter()
     {
@@ -520,11 +523,77 @@ where
       setters_code
     };
 
+    if attr.hint
+    {
+      let hint = format!
+      (
+        r#"
+
+/// Initializes and configures a subformer for adding named child entities. This method leverages an internal function
+/// to create and return a configured subformer instance. It allows for the dynamic addition of children with specific names,
+/// integrating them into the formation process of the parent entity.
+
+impl< Definition > {}< Definition >
+where
+  Definition : former::FormerDefinition< Storage = {} >,
+{{
+
+  #[ inline( always ) ]
+  pub fn {}( self ) -> ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
+  {{
+    self.{}::< ChildFormer< _ >, _, >()
+  }}
+  // Replace Child with name of type of element value.
+
+}}
+        "#,
+        former,
+        former_storage,
+        field_ident,
+        field_add_name,
+      );
+      println!( "{hint}" );
+    }
+
+    let doc = format!
+    (
+      r#"
+
+Implements the `FormingEnd` trait for `{former_add_end}` to handle the final
+stage of the forming process for a `{stru}` container that contains `{0}` elements.
+
+This implementation is tailored to manage the transition of {field_ident} elements from a substorage
+temporary state into their final state within the `{stru}`'s storage. The function ensures
+that the `{stru}`'s {field_ident} storage is initialized if not already set, and then adds the
+preformed elements to this storage.
+
+# Type Parameters
+
+- `Types2`: Represents the specific types associated with the `Former` trait being applied,
+  which include storage, formed type, and context.
+- `Definition`: Defines the `FormerDefinition` that outlines the storage structure and
+  the end conditions for the formation process.
+
+# Parameters
+
+- `substorage`: The storage from which {field_ident} elements are preformed and retrieved.
+- `super_former`: An optional context which, upon invocation, contains the `{former}`
+  instance being formed.
+
+# Returns
+
+Returns the updated `{former}` instance with newly added {field_ident}, completing the
+formation process of the `{stru}`.
+
+      "#,
+      format!( "{}", qt!{ #field_typ } ),
+    );
+
+
     let namespace_code = qt!
     {
 
-      // zzz : improve description
-      /// Handles the completion of an element of subformer's container.
+      #[ doc = #doc ]
       pub struct #former_add_end< Definition >
       {
         _phantom : core::marker::PhantomData< fn( Definition ) >,
@@ -852,7 +921,6 @@ with the new content generated during the subforming process.
     let r = qt!
     {
 
-      // zzz : improve description
       #[ doc = #former_assign_end_doc ]
       pub struct #former_assign_end< Definition >
       {
