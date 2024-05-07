@@ -1028,11 +1028,17 @@ where
   Callback replace content of container assigning new content from subformer's storage."#
     );
 
-    let subformer_definition = if subformer_definition.is_some()
+    let subformer_definition_types = if let Some( ref _subformer_definition ) = subformer_definition
     {
+      // let subformer_definition_types_name = format!( "{}Types", qt!{ #subformer_definition } );
+      // dbg!( &subformer_definition_types_name );
+      // let subformer_definition_types = syn::Ident::new( &subformer_definition_types_name, field_ident.span() );
+      let subformer_definition_types_string = format!( "{}Types", qt!{ #subformer_definition } );
+      // let subformer_definition_types : syn::Type = subformer_definition_types_string.parse()?
+      let subformer_definition_types : syn::Type = syn::parse_str( &subformer_definition_types_string )?;
       qt!
       {
-        #subformer_definition
+        #subformer_definition_types
         <
           #( #params, )*
           #former< #former_generics_ty >,
@@ -1044,6 +1050,7 @@ where
     }
     else
     {
+
       qt!
       {
         <
@@ -1085,7 +1092,9 @@ where
       #[ automatically_derived ]
       impl< #former_generics_impl > former::FormingEnd
       <
-        #subformer_definition,
+        // VectorDefinitionTypes
+        // #subformer_definition,
+        #subformer_definition_types,
       >
       for #former_assign_end< Definition >
       where
