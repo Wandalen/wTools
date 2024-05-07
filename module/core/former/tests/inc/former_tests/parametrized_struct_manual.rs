@@ -339,12 +339,12 @@ where
   }
 }
 
-
 #[ allow( non_camel_case_types ) ]
 pub struct ChildFormerPropertiesEnd;
 
 #[ automatically_derived ]
-impl< K, Definition, > former::FormingEnd< former::HashMapDefinition< K, Property< K >, ChildFormer< K, Definition, >, ChildFormer< K, Definition, >, former::NoEnd >, > for ChildFormerPropertiesEnd
+impl< K, Definition, > former::FormingEnd< former::HashMapDefinitionTypes< K, Property< K >, ChildFormer< K, Definition, >, ChildFormer< K, Definition, > >, >
+for ChildFormerPropertiesEnd
 where
   K : core::hash::Hash + std::cmp::Eq,
   Definition : former::FormerDefinition< Storage = ChildFormerStorage< K, > >,
