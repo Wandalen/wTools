@@ -13,12 +13,37 @@ use field_attrs::*;
 mod struct_attrs;
 use struct_attrs::*;
 
-/// zzz : write documentation and example of generated code
+/// Generates the code for implementing the `FormerMutator` trait for a specified former definition type.
+///
+/// This function generate code that implements the `FormerMutator` trait based on the given
+/// former definition types and their associated generics. The `FormerMutator` trait provides the
+/// functionality to mutate the storage and context of an entity just before its formation process
+/// completes. This is particularly useful for performing final adjustments or validations on the data
+/// before the entity is fully constructed.
+///
+/// # Example
+///
+/// Below is an example of how the generated code might look:
+///
+/// ```rust
+/// impl< Context, Formed > former::FormerMutator
+/// for Struct1FormerDefinitionTypes< Context, Formed >
+/// {
+///   /// Mutates the context and storage of the entity just before the formation process completes.
+///   #[ inline ]
+///   fn form_mutation( storage : &mut Self::Storage, _context : &mut ::core::option::Option< Self::Context > )
+///   {
+///     storage.a.get_or_insert_with( Default::default );
+///     storage.b.get_or_insert_with( Default::default );
+///     storage.c = Some( format!( "{:?} - {}", storage.a.unwrap(), storage.b.as_ref().unwrap() ) );
+///   }
+/// }
+/// ```
+///
 
 pub fn mutator
 (
   mutator : &AttributeMutator,
-  // stru : &syn::Ident,
   former_definition_types : &syn::Ident,
   former_definition_types_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   former_definition_types_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,

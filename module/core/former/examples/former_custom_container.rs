@@ -2,7 +2,7 @@
 ///
 /// Container interface is defined in the crate and implemented for containers like vectors, hash maps, etc, but if you want to use non-standard container you can implement container interface for the container. This example demonstrate how to do that.
 
-// xxx2 : get complited
+// xxx2 : get completed
 
 #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
 fn main() {}
