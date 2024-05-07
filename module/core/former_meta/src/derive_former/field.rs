@@ -678,8 +678,9 @@ where
     let setter_name = self.container_setter_name();
     let setter2 = if let Some( setter_name ) = setter_name
     {
-      if params.len() > 1
-      {
+      // xxx : remove if
+      // if params.len() > 1
+      // {
         qt!
         {
 
@@ -745,83 +746,83 @@ where
           // }
 
         }
-      }
-      else
-      {
-        qt!
-        {
-
-          // xxx : clean
-          // #[ doc = #doc ]
-          // #[ inline( always ) ]
-          // pub fn #setter_name( self ) ->
-          // former::ContainerSubformer::
-          // <
-          //   #( #params, )* #subformer_definition
-          // >
-          // {
-          //   self.#field_assign::< former::ContainerSubformer::
-          //   <
-          //     #( #params, )* #subformer_definition
-          //   > >()
-          // }
-
-          #[ doc = #doc ]
-          #[ inline( always ) ]
-          pub fn #setter_name( self ) -> former::ContainerSubformer::
-          <
-            < #typ as former::Container >::Entry,
-            // #( #params, )* // xxx : use former::Container
-             #subformer_definition,
-          >
-          where
-            #subformer_definition : former::FormerDefinition
-            <
-              // Storage : former::ContainerAdd< Entry = < #typ as former::Container >::Entry >,
-              Storage = #typ,
-              Context = #former< #former_generics_ty >,
-              End = #former_assign_end < Definition >,
-            >,
-          {
-            self.#field_assign::< former::ContainerSubformer::
-            <
-              _,
-              _,
-              // #( #params, )* // xxx : use former::Container
-              // #subformer_definition,
-            > > ()
-          }
-
-          // #[ inline( always ) ]
-          // pub fn hashset_1( self ) -> former::ContainerSubformer::
-          // <
-          //   String,
-          //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
-          // >
-          // where
-          //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > > : former::FormerDefinition
-          //   <
-          //     Storage : former::ContainerAdd< Entry = < collection_tools::HashSet< String > as former::Container >::Entry >,
-          //     Context = Struct1Former< Definition >,
-          //     End = Struct1FormerAssignHashset1End< Definition >,
-          //   >,
-          // {
-          //   self._hashset_1_assign::< former::ContainerSubformer::
-          //   <
-          //     String,
-          //     former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
-          //   > > ()
-          // }
-
-        }
-      }
+//       }
+//       else
+//       {
+//         qt!
+//         {
+//
+//           // xxx : clean
+//           // #[ doc = #doc ]
+//           // #[ inline( always ) ]
+//           // pub fn #setter_name( self ) ->
+//           // former::ContainerSubformer::
+//           // <
+//           //   #( #params, )* #subformer_definition
+//           // >
+//           // {
+//           //   self.#field_assign::< former::ContainerSubformer::
+//           //   <
+//           //     #( #params, )* #subformer_definition
+//           //   > >()
+//           // }
+//
+//           #[ doc = #doc ]
+//           #[ inline( always ) ]
+//           pub fn #setter_name( self ) -> former::ContainerSubformer::
+//           <
+//             < #typ as former::Container >::Entry,
+//             // #( #params, )* // xxx : use former::Container
+//              #subformer_definition,
+//           >
+//           where
+//             #subformer_definition : former::FormerDefinition
+//             <
+//               // Storage : former::ContainerAdd< Entry = < #typ as former::Container >::Entry >,
+//               Storage = #typ,
+//               Context = #former< #former_generics_ty >,
+//               End = #former_assign_end < Definition >,
+//             >,
+//           {
+//             self.#field_assign::< former::ContainerSubformer::
+//             <
+//               _,
+//               _,
+//               // #( #params, )* // xxx : use former::Container
+//               // #subformer_definition,
+//             > > ()
+//           }
+//
+//           // #[ inline( always ) ]
+//           // pub fn hashset_1( self ) -> former::ContainerSubformer::
+//           // <
+//           //   String,
+//           //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
+//           // >
+//           // where
+//           //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > > : former::FormerDefinition
+//           //   <
+//           //     Storage : former::ContainerAdd< Entry = < collection_tools::HashSet< String > as former::Container >::Entry >,
+//           //     Context = Struct1Former< Definition >,
+//           //     End = Struct1FormerAssignHashset1End< Definition >,
+//           //   >,
+//           // {
+//           //   self._hashset_1_assign::< former::ContainerSubformer::
+//           //   <
+//           //     String,
+//           //     former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
+//           //   > > ()
+//           // }
+//
+//         }
+//       }
     }
     else
     {
       qt!{}
     };
 
-    // xxx : update
+    // xxx2 : update
     if attr.hint
     {
       let hint = format!
@@ -842,7 +843,7 @@ where
     // Replace `HashMapDefinition` with definition for your container
   >
   {{
-    self._children_container_former()
+    self.{}()
   }}
 
 }}
@@ -854,6 +855,7 @@ where
         format!( "{}", qt!{ #( #params, )* } ),
         format!( "{}", qt!{ #( #params, )* } ),
         former_assign_end,
+        field_assign,
       );
       println!( "{hint}" );
     }
