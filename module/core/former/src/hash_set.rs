@@ -167,26 +167,19 @@ where
 
 // = entity to
 
-// < Definition as definition::FormerDefinition >::End : forming::FormingEnd
-// <
-//   HashSetDefinitionTypes
-//   <
-//     K,
-//     < Definition as definition::FormerDefinition >::Context,
-//     < Definition as definition::FormerDefinition >::Formed,
-//   >,
-// >
-
 impl< K, Definition > EntityToFormer< Definition > for HashSet< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
-  Definition : FormerDefinition< Storage = HashSet< K >, Types = HashSetDefinitionTypes
+  Definition : FormerDefinition
+  <
+    Storage = HashSet< K >,
+    Types = HashSetDefinitionTypes
     <
       K,
       < Definition as definition::FormerDefinition >::Context,
       < Definition as definition::FormerDefinition >::Formed,
     >,
- >,
+  >,
   Definition::End : forming::FormingEnd< Definition::Types >,
 {
   type Former = HashSetSubformer< K, Definition::Context, Definition::Formed, Definition::End >;

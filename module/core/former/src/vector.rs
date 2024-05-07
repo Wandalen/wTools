@@ -149,12 +149,25 @@ for VectorDefinitionTypes< E, Context, Formed >
 // zzz : qqq : implement for hashset / hashmap
 // zzz : qqq : cover by tests
 // zzz : qqq : rid off bound `Fn( Vec< E >, Option< Definition::Context > ) -> Definition::Formed` for all containers
+
 impl< E, Definition > EntityToFormer< Definition > for Vec< E >
+// where
+//   Definition : FormerDefinition< Storage = Vec< E > >,
+//   Definition::Types : FormerDefinitionTypes< Storage = Vec< E >, Formed = Definition::Formed, Context = Definition::Context >,
+//   Definition::End : crate::FormingEnd< Definition::Types >,
+//   < Definition as definition::FormerDefinition >::End : Fn( Vec< E >, Option< Definition::Context > ) -> Definition::Formed, // xxx
 where
-  Definition : FormerDefinition< Storage = Vec< E > >,
-  Definition::Types : FormerDefinitionTypes< Storage = Vec< E >, Formed = Definition::Formed, Context = Definition::Context >,
-  Definition::End : crate::FormingEnd< Definition::Types >,
-  < Definition as definition::FormerDefinition >::End : Fn( Vec< E >, Option< Definition::Context > ) -> Definition::Formed, // xxx
+  Definition : FormerDefinition
+  <
+    Storage = Vec< E >,
+    Types = VectorDefinitionTypes
+    <
+      E,
+      < Definition as definition::FormerDefinition >::Context,
+      < Definition as definition::FormerDefinition >::Formed,
+    >,
+  >,
+  Definition::End : forming::FormingEnd< Definition::Types >,
 {
   type Former = VectorSubformer< E, Definition::Context, Definition::Formed, Definition::End >;
 }

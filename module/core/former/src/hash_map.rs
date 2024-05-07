@@ -162,10 +162,24 @@ where
 // = Entity To
 
 impl< K, E, Definition > EntityToFormer< Definition > for HashMap< K, E >
+// where
+//   K : ::core::cmp::Eq + ::core::hash::Hash,
+//   Definition : FormerDefinition< Storage = HashMap< K, E >, Formed = () >,
+//   < Definition as definition::FormerDefinition>::End : Fn( HashMap< K, E >, Option< Definition::Context > ),
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
-  Definition : FormerDefinition< Storage = HashMap< K, E >, Formed = () >,
-  < Definition as definition::FormerDefinition>::End : Fn( HashMap< K, E >, Option< Definition::Context > ),
+  Definition : FormerDefinition
+  <
+    Storage = HashMap< K, E >,
+    Types = HashMapDefinitionTypes
+    <
+      K,
+      E,
+      < Definition as definition::FormerDefinition >::Context,
+      < Definition as definition::FormerDefinition >::Formed,
+    >,
+  >,
+  Definition::End : forming::FormingEnd< Definition::Types >,
 {
   type Former = HashMapSubformer< K, E, Definition::Context, Definition::Formed, Definition::End >;
 }
