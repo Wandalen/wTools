@@ -339,26 +339,6 @@ where
     former::FormingEnd::<Definition::Types>::call(&on_end, self.storage, context)
   }
 
-//   #[ inline( always ) ]
-//   pub fn _vec_1_assign<Former2>(self) -> Former2
-//   where
-//     Former2 : former::FormerBegin<former::VectorDefinition<String, Self, Self, Struct1FormerAssignVec1End<Definition>,>>,
-//   {
-//     Former2::former_begin(None, Some(self), Struct1FormerAssignVec1End::<Definition>::default())
-//   }
-//
-//
-//   #[ inline( always ) ]
-//   pub fn vec_1(self) -> former::ContainerSubformer::<
-//     String,
-//     former::VectorDefinition<String, Self, Self, Struct1FormerAssignVec1End<Definition>,>
-//   >
-//   {
-//     self._vec_1_assign::<former::ContainerSubformer::<String, former::VectorDefinition<String, Self, Self, Struct1FormerAssignVec1End<Definition>,>>> ()
-//   }
-
-  // xxx : clean
-
   #[ inline( always ) ]
   pub fn _vec_1_assign< Former2 >( self ) -> Former2
   where
@@ -405,29 +385,6 @@ where
     > > ()
   }
 
-// xxx : clean
-//   #[ inline( always ) ]
-//   pub fn _hashmap_1_assign<Former2>(self) -> Former2
-//   where
-//     Former2 : former::FormerBegin<former::HashMapDefinition<String, String, Self, Self, Struct1FormerAssignHashmap1End<Definition>,>>,
-//   {
-//     Former2::former_begin(None, Some(self), Struct1FormerAssignHashmap1End::<Definition>::default())
-//   }
-//
-//
-//   #[ inline( always ) ]
-//   pub fn hashmap_1(self) -> former::ContainerSubformer::
-//   <
-//     (String, String,),
-//     former::HashMapDefinition<String, String, Self, Self, Struct1FormerAssignHashmap1End<Definition>,>
-//   >
-//   {
-//     self._hashmap_1_assign::<former::ContainerSubformer::<
-//       (String, String,),
-//       former::HashMapDefinition<String, String, Self, Self, Struct1FormerAssignHashmap1End<Definition>,>
-//     >> ()
-//   }
-
   #[ inline( always ) ]
   pub fn _hashmap_1_assign< Former2 >( self ) -> Former2
   where
@@ -473,8 +430,6 @@ where
       former::HashMapDefinition< String, String, Self, Self, Struct1FormerAssignHashmap1End< Definition > >,
     > > ()
   }
-
-// xxx
 
   #[ inline( always ) ]
   pub fn _hashset_1_assign< Former2 >( self ) -> Former2
@@ -624,29 +579,6 @@ where
   }
 }
 
-// xxx : clean
-// #[automatically_derived]
-// impl<Definition,> former::FormingEnd< former::VectorDefinition<String, Struct1Former<Definition,>, Struct1Former<Definition,>, former::NoEnd>, > for Struct1FormerAssignVec1End<Definition>
-// where
-//   Definition : former::FormerDefinition,
-//   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage<> >,
-// {
-//   #[ inline( always ) ]
-//   fn call(&self, storage: Vec<String>, super_former: Option<Struct1Former<Definition,>>,) -> Struct1Former<Definition,>
-//   {
-//     let mut super_former = super_former.unwrap();
-//     if let Some(ref mut field) = super_former.storage.vec_1
-//     {
-//       former::ContainerAssign::assign(field, storage);
-//     }
-//     else
-//     {
-//       super_former.storage.vec_1 = Some(storage);
-//     }
-//     super_former
-//   }
-// }
-
 pub struct Struct1FormerAssignHashmap1End<Definition>
 {
   _phantom : core::marker::PhantomData<(Definition,)>,
@@ -687,29 +619,6 @@ where
     super_former
   }
 }
-
-// xxx : clean
-// #[automatically_derived]
-// impl<Definition,> former::FormingEnd< former::HashMapDefinition<String, String, Struct1Former<Definition,>, Struct1Former<Definition,>, former::NoEnd>, > for Struct1FormerAssignHashmap1End<Definition>
-// where
-//   Definition : former::FormerDefinition,
-//   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage<> >,
-// {
-//   #[ inline( always ) ]
-//   fn call(&self, storage: collection_tools::HashMap<String, String>, super_former: Option<Struct1Former<Definition,>>,) -> Struct1Former<Definition,>
-//   {
-//     let mut super_former = super_former.unwrap();
-//     if let Some(ref mut field) = super_former.storage.hashmap_1
-//     {
-//       former::ContainerAssign::assign(field, storage);
-//     }
-//     else
-//     {
-//       super_former.storage.hashmap_1 = Some(storage);
-//     }
-//     super_former
-//   }
-// }
 
 #[doc =
 "Callback to return original former after forming of container for `$Struct1` is done.#\n\nCallback replace content of container assigning new content from subformer's storage."]
@@ -757,4 +666,3 @@ where
 // == end of generated
 
 include!( "./only_test/containers_with_subformer.rs" );
-// xxx

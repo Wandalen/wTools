@@ -35,8 +35,8 @@ storage_field_name
 former_field_setter
 subform_setter
 container_setter
+// former_assign_end
 scalar_setter
-former_assign_end
 former_add_end
 
 scalar_setter_name
@@ -344,60 +344,58 @@ scalar_setter_required
     &self,
     stru : &syn::Ident,
     former : &syn::Ident,
-    former_storage : &syn::Ident,
+    former_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+    former_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+    former_storage : &syn::Ident,
   )
-  -> Result< TokenStream >
+  -> Result< ( TokenStream, TokenStream ) >
   {
-    let r = self.scalar_setter
+    let namespace_code = qt! {};
+    let setters_code = self.scalar_setter
     (
       former,
       former_storage,
     );
 
     // container setter
-    let r = if let Some( _ ) = &self.attrs.container
+    let ( setters_code, namespace_code ) = if let Some( _ ) = &self.attrs.container
     {
-      let r2 = self.container_setter
+      let ( setters_code2, namespace_code2 ) = self.container_setter
       (
         stru,
         former,
-        former_storage,
+        former_generics_impl,
         former_generics_ty,
-      );
-      qt!
-      {
-        #r
-        #r2
-      }
+        former_generics_where,
+        former_storage,
+      )?;
+      ( qt! { #setters_code #setters_code2 }, qt! { #namespace_code #namespace_code2 } )
     }
     else
     {
-      r
+      ( setters_code, namespace_code )
     };
 
     // subform setter
-    let r = if self.attrs.subform.is_some()
+    let ( setters_code, namespace_code ) = if self.attrs.subform.is_some()
     {
-      let r2 = self.subform_setter
+      let setters_code2 = self.subform_setter
       (
         stru,
         former,
         former_storage,
       )?;
-      qt!
-      {
-        #r
-        #r2
-      }
+      ( qt! { #setters_code #setters_code2 }, namespace_code )
     }
     else
     {
-      r
+      ( setters_code, namespace_code )
     };
 
     // tree_print!( r.as_ref().unwrap() );
-    Ok( r )
+    // Ok( r )
+    Ok( ( setters_code, namespace_code ) )
   }
 
   /// zzz : write documentation
@@ -563,21 +561,33 @@ where
   /// ```
   /// zzz : update example
 
+//   pub fn former_assign_end
+//   (
+//     &self,
+//     stru : &syn::Ident,
+//     former : &syn::Ident,
+//     former_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+//     former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+//     former_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+//   )
+
   #[ inline ]
   pub fn container_setter
   (
     &self,
     stru : &syn::Ident,
     former : &syn::Ident,
-    former_storage : &syn::Ident,
+    former_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+    former_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+    former_storage : &syn::Ident,
   )
-  -> TokenStream
+  -> Result< ( TokenStream, TokenStream ) >
   {
     let attr = self.attrs.container.as_ref().unwrap();
     let field_ident = &self.ident;
-    let typ = &self.non_optional_ty;
-    let params = typ::type_parameters( &typ, .. );
+    let field_typ = &self.non_optional_ty;
+    let params = typ::type_parameters( &field_typ, .. );
 
     use convert_case::{ Case, Casing };
     let former_assign_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
@@ -606,7 +616,7 @@ where
       qt!
       {
         <
-          #typ as former::EntityToDefinition< Self, Self, #former_assign_end< Definition > >
+          #field_typ as former::EntityToDefinition< Self, Self, #former_assign_end< Definition > >
         >::Definition
       }
       // < Vec< String > as former::EntityToDefinition< Self, Self, Struct1FormerAssignVec1End > >::Definition
@@ -624,18 +634,6 @@ where
     qt!
     {
 
-      // #[ doc = #doc ]
-      // #[ inline( always ) ]
-      // pub fn #field_assign< Former2 >( self ) -> Former2
-      // where
-      //   Former2 : former::FormerBegin
-      //   <
-      //     #subformer_definition
-      //   >,
-      // {
-      //   Former2::former_begin( None, Some( self ), #former_assign_end::< Definition >::default() )
-      // }
-
       #[ doc = #doc ]
       #[ inline( always ) ]
       pub fn #field_assign< Former2 >( self ) -> Former2
@@ -646,9 +644,8 @@ where
         >,
         #subformer_definition : former::FormerDefinition
         <
-          // Storage : former::ContainerAdd< Entry = < #typ as former::Container >::Entry >,
-          // Storage : former::Container< Entry = < #typ as former::Container >::Entry >,
-          Storage = #typ,
+          // Storage : former::ContainerAdd< Entry = < #field_typ as former::Container >::Entry >,
+          Storage = #field_typ,
           Context = #former< #former_generics_ty >,
           End = #former_assign_end< Definition >,
         >,
@@ -678,144 +675,57 @@ where
     let setter_name = self.container_setter_name();
     let setter2 = if let Some( setter_name ) = setter_name
     {
-      // xxx : remove if
-      // if params.len() > 1
-      // {
-        qt!
-        {
+      qt!
+      {
 
-          // #[ doc = #doc ]
-          // #[ inline( always ) ]
-          // pub fn #setter_name( self ) ->
-          // former::ContainerSubformer::
-          // <
-          //   ( #( #params, )* ), #subformer_definition
-          // >
-          // {
-          //   self.#field_assign::< former::ContainerSubformer::
-          //   <
-          //     ( #( #params, )* ), #subformer_definition
-          //   > >()
-          // }
-
-          #[ doc = #doc ]
-          #[ inline( always ) ]
-          pub fn #setter_name( self ) -> former::ContainerSubformer::
+        #[ doc = #doc ]
+        #[ inline( always ) ]
+        pub fn #setter_name( self ) -> former::ContainerSubformer::
+        <
+          // ( #( #params, )* ),
+          < #field_typ as former::Container >::Entry,
+          #subformer_definition,
+        >
+        where
+          #subformer_definition : former::FormerDefinition
           <
+            // Storage : former::ContainerAdd< Entry = < #field_typ as former::Container >::Entry >,
+            Storage = #field_typ,
+            Context = #former< #former_generics_ty >,
+            End = #former_assign_end < Definition >,
+          >,
+        {
+          self.#field_assign::< former::ContainerSubformer::
+          <
+            _,
+            _,
             // ( #( #params, )* ),
-            < #typ as former::Container >::Entry,
-            #subformer_definition,
-          >
-          where
-            #subformer_definition : former::FormerDefinition
-            <
-              // Storage : former::ContainerAdd< Entry = < #typ as former::Container >::Entry >,
-              Storage = #typ,
-              Context = #former< #former_generics_ty >,
-              End = #former_assign_end < Definition >,
-            >,
-          {
-            self.#field_assign::< former::ContainerSubformer::
-            <
-              _,
-              _,
-              // ( #( #params, )* ),
-              //  #subformer_definition,
-            > > ()
-          }
-
-          // #[ inline( always ) ]
-          // pub fn hashset_1( self ) -> former::ContainerSubformer::
-          // <
-          //   String,
-          //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
-          // >
-          // where
-          //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > > : former::FormerDefinition
-          //   <
-          //     Storage : former::ContainerAdd< Entry = < collection_tools::HashSet< String > as former::Container >::Entry >,
-          //     Context = Struct1Former< Definition >,
-          //     End = Struct1FormerAssignHashset1End< Definition >,
-          //   >,
-          // {
-          //   self._hashset_1_assign::< former::ContainerSubformer::
-          //   <
-          //     String,
-          //     former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
-          //   > > ()
-          // }
-
+            //  #subformer_definition,
+          > > ()
         }
-//       }
-//       else
-//       {
-//         qt!
-//         {
-//
-//           // xxx : clean
-//           // #[ doc = #doc ]
-//           // #[ inline( always ) ]
-//           // pub fn #setter_name( self ) ->
-//           // former::ContainerSubformer::
-//           // <
-//           //   #( #params, )* #subformer_definition
-//           // >
-//           // {
-//           //   self.#field_assign::< former::ContainerSubformer::
-//           //   <
-//           //     #( #params, )* #subformer_definition
-//           //   > >()
-//           // }
-//
-//           #[ doc = #doc ]
-//           #[ inline( always ) ]
-//           pub fn #setter_name( self ) -> former::ContainerSubformer::
-//           <
-//             < #typ as former::Container >::Entry,
-//             // #( #params, )* // xxx : use former::Container
-//              #subformer_definition,
-//           >
-//           where
-//             #subformer_definition : former::FormerDefinition
-//             <
-//               // Storage : former::ContainerAdd< Entry = < #typ as former::Container >::Entry >,
-//               Storage = #typ,
-//               Context = #former< #former_generics_ty >,
-//               End = #former_assign_end < Definition >,
-//             >,
-//           {
-//             self.#field_assign::< former::ContainerSubformer::
-//             <
-//               _,
-//               _,
-//               // #( #params, )* // xxx : use former::Container
-//               // #subformer_definition,
-//             > > ()
-//           }
-//
-//           // #[ inline( always ) ]
-//           // pub fn hashset_1( self ) -> former::ContainerSubformer::
-//           // <
-//           //   String,
-//           //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
-//           // >
-//           // where
-//           //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > > : former::FormerDefinition
-//           //   <
-//           //     Storage : former::ContainerAdd< Entry = < collection_tools::HashSet< String > as former::Container >::Entry >,
-//           //     Context = Struct1Former< Definition >,
-//           //     End = Struct1FormerAssignHashset1End< Definition >,
-//           //   >,
-//           // {
-//           //   self._hashset_1_assign::< former::ContainerSubformer::
-//           //   <
-//           //     String,
-//           //     former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
-//           //   > > ()
-//           // }
-//
-//         }
-//       }
+
+        // #[ inline( always ) ]
+        // pub fn hashset_1( self ) -> former::ContainerSubformer::
+        // <
+        //   String,
+        //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
+        // >
+        // where
+        //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > > : former::FormerDefinition
+        //   <
+        //     Storage : former::ContainerAdd< Entry = < collection_tools::HashSet< String > as former::Container >::Entry >,
+        //     Context = Struct1Former< Definition >,
+        //     End = Struct1FormerAssignHashset1End< Definition >,
+        //   >,
+        // {
+        //   self._hashset_1_assign::< former::ContainerSubformer::
+        //   <
+        //     String,
+        //     former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
+        //   > > ()
+        // }
+
+      }
     }
     else
     {
@@ -860,13 +770,317 @@ where
       println!( "{hint}" );
     }
 
-    qt!
+    let setters_code = qt!
     {
       #setter1
       #setter2
-    }
+    };
 
+    // xxx
+
+    // if self.attrs.container.is_none()
+    // {
+    //   return Ok( qt!{ } );
+    // }
+
+    // use convert_case::{ Case, Casing };
+    // let field_ident = self.ident;
+    // let field_typ = self.non_optional_ty;
+    // let params = typ::type_parameters( field_typ, .. );
+
+    // // example : `ParentFormerAssignChildsEnd``
+    // let former_assign_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
+    // let former_assign_end = syn::Ident::new( &former_assign_end_name, field_ident.span() );
+
+    // example : `former::VectorDefinition``
+    let subformer_definition = &self.attrs.container.as_ref().unwrap().definition;
+
+    // zzz : improve description
+    let former_assign_end_doc = format!
+    (
+  r#"Callback to return original former after forming of container for `${stru}` is done.#
+
+  Callback replace content of container assigning new content from subformer's storage."#
+    );
+
+    let subformer_definition_types = if let Some( ref _subformer_definition ) = subformer_definition
+    {
+      // let subformer_definition_types_name = format!( "{}Types", qt!{ #subformer_definition } );
+      // dbg!( &subformer_definition_types_name );
+      // let subformer_definition_types = syn::Ident::new( &subformer_definition_types_name, field_ident.span() );
+      let subformer_definition_types_string = format!( "{}Types", qt!{ #subformer_definition } );
+      // let subformer_definition_types : syn::Type = subformer_definition_types_string.parse()?
+      let subformer_definition_types : syn::Type = syn::parse_str( &subformer_definition_types_string )?;
+      qt!
+      {
+        #subformer_definition_types
+        <
+          #( #params, )*
+          #former< #former_generics_ty >,
+          #former< #former_generics_ty >,
+        >
+      }
+    }
+    else
+    {
+
+      qt!
+      {
+        <
+          #field_typ as former::EntityToDefinitionTypes
+          <
+            #former< #former_generics_ty >,
+            #former< #former_generics_ty >,
+          >
+        >::Types
+      }
+    };
+
+    let r = qt!
+    {
+
+      // zzz : improve description
+      #[ doc = #former_assign_end_doc ]
+      pub struct #former_assign_end< Definition >
+      {
+        _phantom : core::marker::PhantomData< ( Definition, ) >,
+      }
+
+      impl< Definition > Default
+      for #former_assign_end< Definition >
+      {
+
+        #[ inline( always ) ]
+        fn default() -> Self
+        {
+          Self
+          {
+            _phantom : core::marker::PhantomData,
+          }
+        }
+
+      }
+
+      #[ automatically_derived ]
+      impl< #former_generics_impl > former::FormingEnd
+      <
+        // VectorDefinitionTypes
+        #subformer_definition_types,
+      >
+      for #former_assign_end< Definition >
+      where
+        #former_generics_where
+      {
+        #[ inline( always ) ]
+        fn call
+        (
+          &self,
+          storage : #field_typ,
+          super_former : Option< #former< #former_generics_ty > >,
+        )
+        -> #former< #former_generics_ty >
+        {
+          let mut super_former = super_former.unwrap();
+          if let Some( ref mut field ) = super_former.storage.#field_ident
+          {
+            former::ContainerAssign::assign( field, storage );
+          }
+          else
+          {
+            super_former.storage.#field_ident = Some( storage );
+          }
+          super_former
+        }
+      }
+
+    };
+
+    // tree_print!( r.as_ref().unwrap() );
+    let namespace_code = r;
+
+    Ok( ( setters_code, namespace_code ) )
   }
+
+//   // zzz : description and exmaple
+//   /// Generate unit struct which is descriptor of callback which should be called after subforming process of a specific field. Childs are used insted of closures to inline code and let optimizer play with optimization.
+//   ///
+//   /// # Example of generated code
+//   ///
+//   /// ```rust, ignore
+//   /// pub struct Struct1FormerVec_1End;
+//   /// #[ automatically_derived ]
+//   /// impl< Definition > former::FormingEnd
+//   /// <
+//   ///   former::VectorDefinition< String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
+//   /// >
+//   /// for Struct1FormerVec_1End
+//   /// where
+//   ///   Definition : former::FormerDefinition,
+//   ///   Definition::Types : former::FormerDefinitionTypes
+//   ///   <
+//   ///     Storage = Struct1FormerStorage
+//   ///   >,
+//   /// {
+//   ///   #[ inline( always ) ]
+//   ///   pub fn call
+//   ///   (
+//   ///     &self, storage : Vec< String >,
+//   ///     super_former : Option< Struct1Former< Definition > >,
+//   ///   )
+//   ///   -> Struct1Former< Definition >
+//   ///   {
+//   ///     let mut super_former = super_former.unwrap();
+//   ///     if let Some( ref mut field ) = super_former.storage.vec_1
+//   ///     {
+//   ///       former::ContainerAssign::assign( field, storage );
+//   ///     }
+//   ///     else
+//   ///     {
+//   ///       super_former.storage.vec_1 = Some( storage );
+//   ///     }
+//   ///     super_former
+//   ///   }
+//   /// }
+//   /// ```
+//
+//   #[ inline ]
+//   pub fn former_assign_end
+//   (
+//     &self,
+//     stru : &syn::Ident,
+//     former : &syn::Ident,
+//     former_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+//     former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+//     former_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+//   )
+//   ->
+//   Result< TokenStream >
+//   {
+//
+//     if self.attrs.container.is_none()
+//     {
+//       return Ok( qt!{ } );
+//     }
+//
+//     use convert_case::{ Case, Casing };
+//     let field_ident = self.ident;
+//     let field_ty = self.non_optional_ty;
+//     let params = typ::type_parameters( field_ty, .. );
+//
+//     // example : `ParentFormerAssignChildsEnd``
+//     let former_assign_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
+//     let former_assign_end = syn::Ident::new( &former_assign_end_name, field_ident.span() );
+//
+//     // example : `former::VectorDefinition``
+//     let subformer_definition = &self.attrs.container.as_ref().unwrap().definition;
+//
+//     // zzz : improve description
+//     let former_assign_end_doc = format!
+//     (
+//   r#"Callback to return original former after forming of container for `${stru}` is done.#
+//
+//   Callback replace content of container assigning new content from subformer's storage."#
+//     );
+//
+//     let subformer_definition_types = if let Some( ref _subformer_definition ) = subformer_definition
+//     {
+//       // let subformer_definition_types_name = format!( "{}Types", qt!{ #subformer_definition } );
+//       // dbg!( &subformer_definition_types_name );
+//       // let subformer_definition_types = syn::Ident::new( &subformer_definition_types_name, field_ident.span() );
+//       let subformer_definition_types_string = format!( "{}Types", qt!{ #subformer_definition } );
+//       // let subformer_definition_types : syn::Type = subformer_definition_types_string.parse()?
+//       let subformer_definition_types : syn::Type = syn::parse_str( &subformer_definition_types_string )?;
+//       qt!
+//       {
+//         #subformer_definition_types
+//         <
+//           #( #params, )*
+//           #former< #former_generics_ty >,
+//           #former< #former_generics_ty >,
+//           // former::NoEnd,
+//         >
+//       }
+//       // former::VectorDefinition< String, Struct1Former< Definition, >, Struct1Former< Definition, > >
+//     }
+//     else
+//     {
+//
+//       qt!
+//       {
+//         <
+//           #field_ty as former::EntityToDefinitionTypes
+//           <
+//             #former< #former_generics_ty >,
+//             #former< #former_generics_ty >,
+//           >
+//         >::Types
+//       }
+//       // < Vec< String > as former::EntityToDefinition< Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd > >::Definition
+//     };
+//
+//     let r = qt!
+//     {
+//
+//       // zzz : improve description
+//       #[ doc = #former_assign_end_doc ]
+//       pub struct #former_assign_end< Definition >
+//       {
+//         _phantom : core::marker::PhantomData< ( Definition, ) >,
+//       }
+//
+//       impl< Definition > Default
+//       for #former_assign_end< Definition >
+//       {
+//
+//         #[ inline( always ) ]
+//         fn default() -> Self
+//         {
+//           Self
+//           {
+//             _phantom : core::marker::PhantomData,
+//           }
+//         }
+//
+//       }
+//
+//       #[ automatically_derived ]
+//       impl< #former_generics_impl > former::FormingEnd
+//       <
+//         // VectorDefinitionTypes
+//         // #subformer_definition,
+//         #subformer_definition_types,
+//       >
+//       for #former_assign_end< Definition >
+//       where
+//         #former_generics_where
+//       {
+//         #[ inline( always ) ]
+//         fn call
+//         (
+//           &self,
+//           storage : #field_ty,
+//           super_former : Option< #former< #former_generics_ty > >,
+//         )
+//         -> #former< #former_generics_ty >
+//         {
+//           let mut super_former = super_former.unwrap();
+//           if let Some( ref mut field ) = super_former.storage.#field_ident
+//           {
+//             former::ContainerAssign::assign( field, storage );
+//           }
+//           else
+//           {
+//             super_former.storage.#field_ident = Some( storage );
+//           }
+//           super_former
+//         }
+//       }
+//
+//     };
+//
+//     // tree_print!( r.as_ref().unwrap() );
+//     Ok( r )
+//   }
 
   ///
   /// Generate a single scalar setter for the 'field_ident' with the 'setter_name' name.
@@ -959,189 +1173,9 @@ where
     }
   }
 
-  // zzz : description and exmaple
-  /// Generate unit struct which is descriptor of callback which should be called after subforming process of a specific field. Childs are used insted of closures to inline code and let optimizer play with optimization.
-  ///
-  /// # Example of generated code
-  ///
-  /// ```rust, ignore
-  /// pub struct Struct1FormerVec_1End;
-  /// #[ automatically_derived ]
-  /// impl< Definition > former::FormingEnd
-  /// <
-  ///   former::VectorDefinition< String, Struct1Former< Definition >, Struct1Former< Definition >, former::NoEnd >,
-  /// >
-  /// for Struct1FormerVec_1End
-  /// where
-  ///   Definition : former::FormerDefinition,
-  ///   Definition::Types : former::FormerDefinitionTypes
-  ///   <
-  ///     Storage = Struct1FormerStorage
-  ///   >,
-  /// {
-  ///   #[ inline( always ) ]
-  ///   pub fn call
-  ///   (
-  ///     &self, storage : Vec< String >,
-  ///     super_former : Option< Struct1Former< Definition > >,
-  ///   )
-  ///   -> Struct1Former< Definition >
-  ///   {
-  ///     let mut super_former = super_former.unwrap();
-  ///     if let Some( ref mut field ) = super_former.storage.vec_1
-  ///     {
-  ///       former::ContainerAssign::assign( field, storage );
-  ///     }
-  ///     else
-  ///     {
-  ///       super_former.storage.vec_1 = Some( storage );
-  ///     }
-  ///     super_former
-  ///   }
-  /// }
-  /// ```
-
-  #[ inline ]
-  pub fn former_assign_end
-  (
-    &self,
-    stru : &syn::Ident,
-    former : &syn::Ident,
-    former_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-    former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-    former_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  )
-  ->
-  Result< TokenStream >
-  {
-
-    if self.attrs.container.is_none()
-    {
-      return Ok( qt!{ } );
-    }
-
-    use convert_case::{ Case, Casing };
-    let field_ident = self.ident;
-    let field_ty = self.non_optional_ty;
-    let params = typ::type_parameters( field_ty, .. );
-
-    // example : `ParentFormerAssignChildsEnd``
-    let former_assign_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
-    let former_assign_end = syn::Ident::new( &former_assign_end_name, field_ident.span() );
-
-    // example : `former::VectorDefinition``
-    let subformer_definition = &self.attrs.container.as_ref().unwrap().definition;
-
-    // zzz : improve description
-    let former_assign_end_doc = format!
-    (
-  r#"Callback to return original former after forming of container for `${stru}` is done.#
-
-  Callback replace content of container assigning new content from subformer's storage."#
-    );
-
-    let subformer_definition_types = if let Some( ref _subformer_definition ) = subformer_definition
-    {
-      // let subformer_definition_types_name = format!( "{}Types", qt!{ #subformer_definition } );
-      // dbg!( &subformer_definition_types_name );
-      // let subformer_definition_types = syn::Ident::new( &subformer_definition_types_name, field_ident.span() );
-      let subformer_definition_types_string = format!( "{}Types", qt!{ #subformer_definition } );
-      // let subformer_definition_types : syn::Type = subformer_definition_types_string.parse()?
-      let subformer_definition_types : syn::Type = syn::parse_str( &subformer_definition_types_string )?;
-      qt!
-      {
-        #subformer_definition_types
-        <
-          #( #params, )*
-          #former< #former_generics_ty >,
-          #former< #former_generics_ty >,
-          // former::NoEnd,
-        >
-      }
-      // former::VectorDefinition< String, Struct1Former< Definition, >, Struct1Former< Definition, > >
-    }
-    else
-    {
-
-      qt!
-      {
-        <
-          #field_ty as former::EntityToDefinitionTypes
-          <
-            #former< #former_generics_ty >,
-            #former< #former_generics_ty >,
-          >
-        >::Types
-      }
-      // < Vec< String > as former::EntityToDefinition< Struct1Former< Definition, >, Struct1Former< Definition, >, former::NoEnd > >::Definition
-    };
-
-    let r = qt!
-    {
-
-      // zzz : improve description
-      #[ doc = #former_assign_end_doc ]
-      pub struct #former_assign_end< Definition >
-      {
-        _phantom : core::marker::PhantomData< ( Definition, ) >,
-      }
-
-      impl< Definition > Default
-      for #former_assign_end< Definition >
-      {
-
-        #[ inline( always ) ]
-        fn default() -> Self
-        {
-          Self
-          {
-            _phantom : core::marker::PhantomData,
-          }
-        }
-
-      }
-
-      #[ automatically_derived ]
-      impl< #former_generics_impl > former::FormingEnd
-      <
-        // VectorDefinitionTypes
-        // #subformer_definition,
-        #subformer_definition_types,
-      >
-      for #former_assign_end< Definition >
-      where
-        #former_generics_where
-      {
-        #[ inline( always ) ]
-        fn call
-        (
-          &self,
-          storage : #field_ty,
-          super_former : Option< #former< #former_generics_ty > >,
-        )
-        -> #former< #former_generics_ty >
-        {
-          let mut super_former = super_former.unwrap();
-          if let Some( ref mut field ) = super_former.storage.#field_ident
-          {
-            former::ContainerAssign::assign( field, storage );
-          }
-          else
-          {
-            super_former.storage.#field_ident = Some( storage );
-          }
-          super_former
-        }
-      }
-
-    };
-
-    // tree_print!( r.as_ref().unwrap() );
-    Ok( r )
-  }
-
   /// zzz : write documentation
 
+  // xxx : move
   #[ inline ]
   pub fn former_add_end
   (

@@ -206,11 +206,11 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     storage_field_name,
     storage_field_preform,
     former_field_setter,
-    former_assign_end,
+    // former_assign_end,
     former_add_end,
   )
   :
-  ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
+  ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
   = formed_fields
   .iter()
   .chain( storage_fields.iter() )
@@ -224,18 +224,20 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     (
       &stru,
       &former,
-      &former_storage,
-      &former_generics_ty,
-    ),
-    // xxx : move maybe
-    field.former_assign_end
-    (
-      &stru,
-      &former,
       &former_generics_impl,
       &former_generics_ty,
       &former_generics_where,
+      &former_storage,
     ),
+    // // xxx : move maybe
+    // field.former_assign_end
+    // (
+    //   &stru,
+    //   &former,
+    //   &former_generics_impl,
+    //   &former_generics_ty,
+    //   &former_generics_where,
+    // ),
     field.former_add_end
     (
       &stru,
@@ -247,9 +249,12 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     ),
   )}).multiunzip();
 
-  let former_field_setter : Vec< _ > = process_results( former_field_setter, | iter | iter.collect() )?;
+  // let former_field_setter : Vec< _ > = process_results( former_field_setter, | iter | iter.collect() )?;
+  let ( former_field_setter, namespace_code ) : ( Vec< _ >, Vec< _ > )
+  = former_field_setter.into_iter().process_results( | iter | iter.collect::< Vec< _ > >() )?.into_iter().unzip();
+
   let storage_field_preform : Vec< _ > = process_results( storage_field_preform, | iter | iter.collect() )?;
-  let former_assign_end : Vec< _ > = process_results( former_assign_end, | iter | iter.collect() )?;
+  // let former_assign_end : Vec< _ > = process_results( former_assign_end, | iter | iter.collect() )?;
   let former_add_end : Vec< _ > = process_results( former_add_end, | iter | iter.collect() )?;
 
   // xxx : move to a function
@@ -743,8 +748,12 @@ where
 
     // = container assign callbacks
 
+    // #(
+    //   #former_assign_end
+    // )*
+
     #(
-      #former_assign_end
+      #namespace_code
     )*
 
     // = container add callbacks
