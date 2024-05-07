@@ -646,7 +646,9 @@ where
         >,
         #subformer_definition : former::FormerDefinition
         <
-          Storage : former::ContainerAdd< Entry = < #typ as former::Container >::Entry >,
+          // Storage : former::ContainerAdd< Entry = < #typ as former::Container >::Entry >,
+          // Storage : former::Container< Entry = < #typ as former::Container >::Entry >,
+          Storage = #typ,
           Context = #former< #former_generics_ty >,
           End = #former_assign_end< Definition >,
         >,
@@ -705,9 +707,9 @@ where
           where
             #subformer_definition : former::FormerDefinition
             <
-              Storage : former::ContainerAdd< Entry = < #typ as former::Container >::Entry >,
+              // Storage : former::ContainerAdd< Entry = < #typ as former::Container >::Entry >,
+              Storage = #typ,
               Context = #former< #former_generics_ty >,
-              // Context = Struct1Former< Definition >,
               End = #former_assign_end < Definition >,
             >,
           {
@@ -771,9 +773,9 @@ where
           where
             #subformer_definition : former::FormerDefinition
             <
-              Storage : former::ContainerAdd< Entry = < #typ as former::Container >::Entry >,
+              // Storage : former::ContainerAdd< Entry = < #typ as former::Container >::Entry >,
+              Storage = #typ,
               Context = #former< #former_generics_ty >,
-              // Context = Struct1Former< Definition >,
               End = #former_assign_end < Definition >,
             >,
           {
