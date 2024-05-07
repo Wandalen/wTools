@@ -706,7 +706,8 @@ where
             #subformer_definition : former::FormerDefinition
             <
               Storage : former::ContainerAdd< Entry = < #typ as former::Container >::Entry >,
-              Context = Struct1Former< Definition >,
+              Context = #former< #former_generics_ty >,
+              // Context = Struct1Former< Definition >,
               End = #former_assign_end < Definition >,
             >,
           {
@@ -771,7 +772,8 @@ where
             #subformer_definition : former::FormerDefinition
             <
               Storage : former::ContainerAdd< Entry = < #typ as former::Container >::Entry >,
-              Context = Struct1Former< Definition >,
+              Context = #former< #former_generics_ty >,
+              // Context = Struct1Former< Definition >,
               End = #former_assign_end < Definition >,
             >,
           {

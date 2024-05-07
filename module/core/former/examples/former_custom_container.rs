@@ -14,10 +14,10 @@ fn main()
   // = define custom container
 
   // Custom container that logs additions
-  #[derive(Default)]
-  pub struct LoggingSet<T>
+  #[ derive( Default ) ]
+  pub struct LoggingSet< T >
   {
-    set: HashSet<T>,
+    set : HashSet< T >,
   }
 
 //   // Implementing the container traits for LoggingSet
@@ -33,7 +33,8 @@ fn main()
 //   }
 
   // This trait allows adding entries to the LoggingSet
-  impl<T: Eq + std::hash::Hash + fmt::Debug> former::ContainerAdd for LoggingSet<T>
+  impl< T : Eq + std::hash::Hash + fmt::Debug > former::ContainerAdd
+  for LoggingSet< T >
   {
     fn add(&mut self, e: Self::Entry) -> bool
     {
