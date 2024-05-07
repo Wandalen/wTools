@@ -493,11 +493,6 @@ where
     <
       < collection_tools::HashSet< String > as former::EntityToDefinitionTypes< Self, Self > >::Types
     >,
-
-    // Struct1FormerAssignHashset1End< Definition > : former::FormingEnd
-    // <
-    //   former::HashSetDefinitionTypes< String, Struct1Former< Definition >, Struct1Former< Definition > >
-    // >,
   {
     Former2::former_begin( None, Some( self ), Struct1FormerAssignHashset1End::< Definition >::default() )
   }
@@ -519,11 +514,6 @@ where
     <
       < collection_tools::HashSet< String > as former::EntityToDefinitionTypes< Self, Self > >::Types
     >,
-
-    // Struct1FormerAssignHashset1End< Definition > : former::FormingEnd
-    // <
-    //   former::HashSetDefinitionTypes< String, Struct1Former< Definition >, Struct1Former< Definition > >,
-    // >,
   {
     self._hashset_1_assign::< former::ContainerSubformer::
     <
@@ -531,8 +521,6 @@ where
       former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
     > > ()
   }
-
-  // xxx
 
 }
 
@@ -548,7 +536,6 @@ where
   }
 }
 
-#[automatically_derived]
 impl< Definition, > Struct1Former< Definition, >
 where
   Definition : former::FormerDefinition,
@@ -656,8 +643,6 @@ where
 //   }
 // }
 
-#[doc =
-"Callback to return original former after forming of container for `$Struct1` is done.#\n\nCallback replace content of container assigning new content from subformer's storage."]
 pub struct Struct1FormerAssignHashmap1End<Definition>
 {
   _phantom : core::marker::PhantomData<(Definition,)>,
