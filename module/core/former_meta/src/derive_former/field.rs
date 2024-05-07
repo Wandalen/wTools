@@ -445,14 +445,14 @@ scalar_setter_required
 
 Initiates the addition of {field_ident} to the `{stru}` entity using a dedicated subformer.
 
-This method configures and returns a subformer specialized for the `{field_typ}` entities' formation process,
+This method configures and returns a subformer specialized for the `{0}` entities' formation process,
 which is part of the `{stru}` entity's construction. The subformer is set up with a specific end condition
 handled by `{former_add_end}`, ensuring that the {field_ident} are properly integrated into the
 parent's structure once formed.
 
 # Returns
 
-Returns an instance of `Former2`, a subformer ready to begin the formation process for `{field_typ}` entities,
+Returns an instance of `Former2`, a subformer ready to begin the formation process for `{0}` entities,
 allowing for dynamic and flexible construction of the `{stru}` entity's {field_ident}.
 
       "#,
@@ -462,7 +462,7 @@ allowing for dynamic and flexible construction of the `{stru}` entity's {field_i
     let setters_code = qt!
     {
 
-      #[ doc = doc ]
+      #[ doc = #doc ]
       #[ inline( always ) ]
       pub fn #field_add< Former2, Definition2 >( self ) -> Former2
       where
@@ -988,6 +988,7 @@ with the new content generated during the subforming process.
   /// Used as a helper function for former_field_setter(), which generates alias setters
   ///
   /// # Example of generated code
+  ///
   /// ```ignore
   /// #[ doc = "Setter for the 'int_1' field." ]
   /// #[ inline ]
