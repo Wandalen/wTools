@@ -1056,7 +1056,7 @@ where
       qt!
       {
         <
-          #field_ty as former::EntityToDefinition
+          #field_ty as former::EntityToDefinitionTypes
           <
             #former< #former_generics_ty >,
             #former< #former_generics_ty >,

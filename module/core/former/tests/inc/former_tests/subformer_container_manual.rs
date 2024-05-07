@@ -75,8 +75,8 @@ impl< Definition > Default for ParentFormerAssignChildrenEnd< Definition >
 impl< Definition, > former::FormingEnd
 <
   <
-    Vec< Child > as former::EntityToDefinition< ParentFormer< Definition, >, ParentFormer< Definition, >, former::NoEnd >
-  >::Definition
+    Vec< Child > as former::EntityToDefinitionTypes< ParentFormer< Definition, >, ParentFormer< Definition, > >
+  >::Types
 >
 for ParentFormerAssignChildrenEnd< Definition >
 where

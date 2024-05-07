@@ -994,7 +994,7 @@ fn main()
   use collection_tools::HashMap;
   use former::Former;
 
-  xxx : write
+  xxx2 : write
 
 }
 ```
