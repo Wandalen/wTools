@@ -1,6 +1,10 @@
 /// Internal namespace.
+
 pub( crate ) mod private
 {
+  #[cfg(feature="no_std")]
+  extern crate std;
+
   // use std::
   // {
   //   path::{ Component, Path, PathBuf },
@@ -138,11 +142,11 @@ pub( crate ) mod private
 
   pub fn normalize< P : AsRef< std::path::Path > >( path : P ) -> std::path::PathBuf
   {
-
-    use std::
-    {
-      path::{ Component, PathBuf },
-    };
+    use std::path::{ Component, PathBuf };
+    #[ cfg( feature = "no_std" ) ]
+    extern crate alloc;
+    #[ cfg( feature = "no_std" ) ]
+    use alloc::vec::Vec;
 
     let mut components = Vec::new();
     let mut starts_with_dot = false;
@@ -207,6 +211,7 @@ pub( crate ) mod private
   /// This function does not touch fs.
   pub fn canonicalize( path : impl AsRef< std::path::Path > ) -> std::io::Result< std::path::PathBuf >
   {
+    #[ cfg( target_os = "windows" ) ]
     use std::path::PathBuf;
 
     // println!( "a" );
@@ -265,15 +270,16 @@ pub( crate ) mod private
   /// ```
 
   #[ cfg( feature = "path_unique_folder_name" ) ]
-  pub fn unique_folder_name() -> Result< String, std::time::SystemTimeError >
+  pub fn unique_folder_name() -> std::result::Result< std::string::String, std::time::SystemTimeError >
   {
-    use std::
-    {
-      time::{ SystemTime, UNIX_EPOCH },
-    };
+    use std::time::{ SystemTime, UNIX_EPOCH };
+    #[ cfg( feature = "no_std" ) ]
+    extern crate alloc;
+    #[ cfg( feature = "no_std" ) ]
+    use alloc::string::String;
 
     // Thread-local static variable for a counter
-    thread_local!
+    std::thread_local!
     {
       static COUNTER : std::cell::Cell< usize > = std::cell::Cell::new( 0 );
     }
@@ -291,13 +297,13 @@ pub( crate ) mod private
     .as_nanos();
 
     let pid = std::process::id();
-    let tid : String = format!( "{:?}", std::thread::current().id() )
+    let tid : String = std::format!( "{:?}", std::thread::current().id() )
     .chars()
     .filter( | c | c.is_digit( 10 ) )
     .collect();
     // dbg!( &tid );
 
-    Ok( format!( "{}_{}_{}_{}", timestamp, pid, tid, count ) )
+    Ok( std::format!( "{}_{}_{}_{}", timestamp, pid, tid, count ) )
   }
 
   /// Extracts multiple extensions from the given path.
@@ -332,11 +338,14 @@ pub( crate ) mod private
   /// assert_eq!( extensions, expected );
   /// ```
   ///
-  pub fn exts( path : impl AsRef< std::path::Path > ) -> Vec< String > 
+  pub fn exts( path : impl AsRef< std::path::Path > ) -> std::vec::Vec< std::string::String > 
   {
-    use std::path::Path;
+    #[ cfg( feature = "no_std" ) ]
+    extern crate alloc;
+    #[ cfg( feature = "no_std" ) ]
+    use alloc::string::ToString;
 
-    if let Some( file_name ) = Path::new( path.as_ref() ).file_name() 
+    if let Some( file_name ) = std::path::Path::new( path.as_ref() ).file_name() 
     {
       if let Some( file_name_str ) = file_name.to_str() 
       {
@@ -394,10 +403,13 @@ pub( crate ) mod private
   /// assert_eq!(modified_path, None);
   /// ```
   ///
-  pub fn without_ext( path : impl AsRef< std::path::Path > ) -> Option< std::path::PathBuf > 
+  pub fn without_ext( path : impl AsRef< std::path::Path > ) -> core::option::Option< std::path::PathBuf > 
   {
-    use std::path::Path;
-    use std::path::PathBuf;
+    use std::path::{ Path, PathBuf };
+    #[ cfg( feature = "no_std" ) ]
+    extern crate alloc;
+    #[ cfg( feature = "no_std" ) ]
+    use alloc::string::String;
 
     if path.as_ref().to_string_lossy().is_empty()
     {
@@ -459,11 +471,16 @@ pub( crate ) mod private
   /// assert_eq!( common_path, Some( "/a/b/".to_string() ) );
   /// ```
   ///
-  pub fn path_common< 'a, I >( paths : I ) -> Option< String > 
+  pub fn path_common< 'a, I >( paths : I ) -> Option< std::string::String > 
   where
     I : Iterator< Item = &'a str >,
   {
     use std::collections::HashMap;
+    #[ cfg( feature = "no_std" ) ]
+    extern crate alloc;
+    #[ cfg( feature = "no_std" ) ]
+    use alloc::{ string::{ String, ToString }, vec::Vec };
+
     let orig_paths : Vec< String > = paths.map( | path | path.to_string() ).collect();
   
     if orig_paths.is_empty() 
@@ -543,7 +560,7 @@ pub( crate ) mod private
   ///
   /// * `path` - A mutable reference to a string representing the path to be cleaned.
   ///
-  fn path_remove_dots( path : &mut String ) 
+  fn path_remove_dots( path : &mut std::string::String ) 
   {
     let mut cleaned_parts = vec![];
 
@@ -571,9 +588,13 @@ pub( crate ) mod private
   ///
   /// * `path` - A mutable reference to a string representing the path to be cleaned.
   ///
-  fn path_remove_double_dots( path : &mut String ) 
+  fn path_remove_double_dots( path : &mut std::string::String ) 
   {
-    
+    #[ cfg( feature = "no_std" ) ]
+    extern crate alloc;
+    #[ cfg( feature = "no_std" ) ]
+    use alloc::vec::Vec;
+
     let mut cleaned_parts: Vec< &str > = Vec::new();
     let mut delete_empty_part = false;
 
@@ -707,6 +728,10 @@ pub( crate ) mod private
   pub fn path_relative< T : AsRef< std::path::Path > >( from : T, to : T ) -> std::path::PathBuf 
   {
     use std::path::PathBuf;
+    #[ cfg( feature = "no_std" ) ]
+    extern crate alloc;
+    #[ cfg( feature = "no_std" ) ]
+    use alloc::{ vec::Vec, string::ToString };
 
     let mut from = from.as_ref().to_string_lossy().to_string();
     let mut to = to.as_ref().to_string_lossy().to_string();
@@ -845,9 +870,13 @@ pub( crate ) mod private
   /// assert_eq!( extension, "" );
   /// ```
   ///
-  pub fn ext( path : impl AsRef< std::path::Path > ) -> String 
+  pub fn ext( path : impl AsRef< std::path::Path > ) -> std::string::String 
   {
     use std::path::Path;
+    #[ cfg( feature = "no_std" ) ]
+    extern crate alloc;
+    #[ cfg( feature = "no_std" ) ]
+    use alloc::string::{ String, ToString };
 
     if path.as_ref().to_string_lossy().is_empty() 
     {
