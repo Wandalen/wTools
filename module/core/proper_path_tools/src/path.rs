@@ -345,7 +345,7 @@ pub( crate ) mod private
     #[ cfg( feature = "no_std" ) ]
     use alloc::string::ToString;
 
-    if let Some( file_name ) = Path::new( path.as_ref() ).file_name() 
+    if let Some( file_name ) = std::path::Path::new( path.as_ref() ).file_name() 
     {
       if let Some( file_name_str ) = file_name.to_str() 
       {
