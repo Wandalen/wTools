@@ -1,6 +1,6 @@
-//! # HashSetLike Trait and HashSetSubformer Struct
+//! # HashSetLike Trait and HashSetAsSubformer Struct
 //!
-//! This part of the crate provides a flexible interface (`HashSetLike`) and a builder pattern implementation (`HashSetSubformer`) for `HashSet`-like containers. It's designed to extend the builder pattern, allowing for fluent and dynamic construction of sets within custom data structures.
+//! This part of the crate provides a flexible interface (`HashSetLike`) and a builder pattern implementation (`HashSetAsSubformer`) for `HashSet`-like containers. It's designed to extend the builder pattern, allowing for fluent and dynamic construction of sets within custom data structures.
 
 use super::*;
 use collection_tools::HashSet;
@@ -65,7 +65,7 @@ where
 
 /// A trait for containers behaving like a `HashSet`, allowing insertion operations.
 ///
-/// Implementing this trait enables the associated formed to be used with `HashSetSubformer`,
+/// Implementing this trait enables the associated formed to be used with `HashSetAsSubformer`,
 /// facilitating a builder pattern that is both intuitive and concise.
 ///
 /// # Example Implementation
@@ -177,12 +177,12 @@ where
     <
       K,
       < Definition as definition::FormerDefinition >::Context,
-      < Definition as definition::FormerDefinition >::Formed,
+      < Definition as definition::FormerDefinition >::Formed, // xxx : ?
     >,
   >,
   Definition::End : forming::FormingEnd< Definition::Types >,
 {
-  type Former = HashSetSubformer< K, Definition::Context, Definition::Formed, Definition::End >;
+  type Former = HashSetAsSubformer< K, Definition::Context, Definition::Formed, Definition::End >;
 }
 
 impl< K > crate::EntityToStorage
@@ -215,12 +215,12 @@ where
 
 /// Facilitates building `HashSetLike` containers with a fluent API.
 ///
-/// `HashSetSubformer` leverages the `HashSetLike` trait to enable a concise and expressive way
+/// `HashSetAsSubformer` leverages the `HashSetLike` trait to enable a concise and expressive way
 /// of populating `HashSet`-like containers. It exemplifies the crate's builder pattern variation for sets.
 ///
 /// # Example Usage
 ///
-/// Using `HashSetSubformer` to populate a `HashSet` within a struct:
+/// Using `HashSetAsSubformer` to populate a `HashSet` within a struct:
 ///
 /// ```rust
 /// # #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
@@ -230,7 +230,7 @@ where
 /// #[ derive( Debug, PartialEq, former::Former ) ]
 /// pub struct StructWithSet
 /// {
-///   #[ container( definition = former::HashSetSubformer ) ]
+///   #[ container( definition = former::HashSetAsSubformer ) ]
 ///   set : std::collections::HashSet< &'static str >,
 /// }
 ///
@@ -246,9 +246,8 @@ where
 /// ```
 
 // zzz : update documentation
-// write: instead of writing long version with ContainerSubformer it's possible to be more concise with help of the type alias
-//
-pub type HashSetSubformer< K, Context, Formed, End > =
+// add: instead of writing long version with ContainerSubformer it's possible to be more concise with help of the type alias
+pub type HashSetAsSubformer< K, Context, Formed, End > =
 ContainerSubformer::< K, HashSetDefinition< K, Context, Formed, End > >;
 
 // = extension
@@ -257,16 +256,16 @@ pub trait HashSetExt< K > : sealed::Sealed
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  fn former() -> HashSetSubformer< K, (), HashSet< K >, ReturnStorage >;
+  fn former() -> HashSetAsSubformer< K, (), HashSet< K >, ReturnStorage >;
 }
 
 impl< K > HashSetExt< K > for HashSet< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  fn former() -> HashSetSubformer< K, (), HashSet< K >, ReturnStorage >
+  fn former() -> HashSetAsSubformer< K, (), HashSet< K >, ReturnStorage >
   {
-    HashSetSubformer::< K, (), HashSet< K >, ReturnStorage >::new( ReturnStorage::default() )
+    HashSetAsSubformer::< K, (), HashSet< K >, ReturnStorage >::new( ReturnStorage::default() )
   }
 }
 

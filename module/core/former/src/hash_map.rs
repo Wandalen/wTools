@@ -181,7 +181,7 @@ where
   >,
   Definition::End : forming::FormingEnd< Definition::Types >,
 {
-  type Former = HashMapSubformer< K, E, Definition::Context, Definition::Formed, Definition::End >;
+  type Former = HashMapAsSubformer< K, E, Definition::Context, Definition::Formed, Definition::End >;
 }
 
 impl< K, E > crate::EntityToStorage
@@ -214,7 +214,7 @@ where
 
 /// A builder for constructing hash map-like structures with a fluent interface.
 ///
-/// `HashMapSubformer` leverages the `HashMapLike` trait to enable a flexible and customizable
+/// `HashMapAsSubformer` leverages the `HashMapLike` trait to enable a flexible and customizable
 /// way to build hash map-like structures. It supports the chaining of insert operations and
 /// allows for the definition of custom end actions to finalize the building process.
 ///
@@ -234,7 +234,7 @@ where
 /// #[ derive( Debug, PartialEq, former::Former ) ]
 /// pub struct StructWithMap
 /// {
-///   #[ container( definition = former::HashMapSubformer ) ]
+///   #[ container( definition = former::HashMapAsSubformer ) ]
 ///   map : std::collections::HashMap< &'static str, &'static str >,
 /// }
 ///
@@ -250,11 +250,11 @@ where
 /// # }
 /// ```
 
-// pub type HashMapSubformer< K, E, Context, End > = ContainerSubformer::< ( K, E ), HashMapDefinition< K, E, Context, End > >;
+// pub type HashMapAsSubformer< K, E, Context, End > = ContainerSubformer::< ( K, E ), HashMapDefinition< K, E, Context, End > >;
 
 // zzz : update documentation
-// pub type HashMapSubformer< K, E, Context, End > = ContainerSubformer::< K, HashMapDefinition< K, E, Context, End > >;
-pub type HashMapSubformer< K, E, Context, Formed, End > =
+// pub type HashMapAsSubformer< K, E, Context, End > = ContainerSubformer::< K, HashMapDefinition< K, E, Context, End > >;
+pub type HashMapAsSubformer< K, E, Context, Formed, End > =
 ContainerSubformer::< ( K, E ), HashMapDefinition< K, E, Context, Formed, End > >;
 
 // = extension
@@ -263,16 +263,16 @@ pub trait HashMapExt< K, E > : sealed::Sealed
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  fn former() -> HashMapSubformer< K, E, (), HashMap< K, E >, ReturnStorage >;
+  fn former() -> HashMapAsSubformer< K, E, (), HashMap< K, E >, ReturnStorage >;
 }
 
 impl< K, E > HashMapExt< K, E > for HashMap< K, E >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  fn former() -> HashMapSubformer< K, E, (), HashMap< K, E >, ReturnStorage >
+  fn former() -> HashMapAsSubformer< K, E, (), HashMap< K, E >, ReturnStorage >
   {
-    HashMapSubformer::< K, E, (), HashMap< K, E >, ReturnStorage >::new( ReturnStorage::default() )
+    HashMapAsSubformer::< K, E, (), HashMap< K, E >, ReturnStorage >::new( ReturnStorage::default() )
   }
 }
 

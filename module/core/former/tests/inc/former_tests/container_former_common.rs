@@ -50,14 +50,14 @@ fn begin_and_custom_end()
   {
     13.1
   }
-  let got = the_module::VectorSubformer::begin( None, None, return_13 )
+  let got = the_module::VectorAsSubformer::begin( None, None, return_13 )
   .add( "a" )
   .add( "b" )
   .form();
   let exp = 13.1;
   a_id!( got, exp );
 
-  let got = the_module::VectorSubformer::new( return_13 )
+  let got = the_module::VectorAsSubformer::new( return_13 )
   .add( "a" )
   .add( "b" )
   .form();
@@ -77,7 +77,7 @@ fn begin_and_custom_end()
       13.1
     }
   }
-  let got = the_module::VectorSubformer::begin( None, Some( 10.0 ), context_plus_13 )
+  let got = the_module::VectorAsSubformer::begin( None, Some( 10.0 ), context_plus_13 )
   .add( "a" )
   .add( "b" )
   .form();

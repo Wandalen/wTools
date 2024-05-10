@@ -171,7 +171,7 @@ where
   >,
   Definition::End : forming::FormingEnd< Definition::Types >,
 {
-  type Former = VectorSubformer< E, Definition::Context, Definition::Formed, Definition::End >;
+  type Former = VectorAsSubformer< E, Definition::Context, Definition::Formed, Definition::End >;
 }
 
 impl< E > crate::EntityToStorage
@@ -199,26 +199,26 @@ for Vec< E >
 
 /// A builder for constructing `VectorLike` containers, facilitating a fluent and flexible interface.
 ///
-/// `VectorSubformer` leverages the `VectorLike` trait to enable the construction and manipulation
+/// `VectorAsSubformer` leverages the `VectorLike` trait to enable the construction and manipulation
 /// of vector-like containers in a builder pattern style, promoting readability and ease of use.
 
 // zzz : update documentation
 
-pub type VectorSubformer< E, Context, Formed, End > =
+pub type VectorAsSubformer< E, Context, Formed, End > =
 ContainerSubformer::< E, VectorDefinition< E, Context, Formed, End > >;
 
 // = extension
 
 pub trait VecExt< E > : sealed::Sealed
 {
-  fn former() -> VectorSubformer< E, (), Vec< E >, ReturnStorage >;
+  fn former() -> VectorAsSubformer< E, (), Vec< E >, ReturnStorage >;
 }
 
 impl< E > VecExt< E > for Vec< E >
 {
-  fn former() -> VectorSubformer< E, (), Vec< E >, ReturnStorage >
+  fn former() -> VectorAsSubformer< E, (), Vec< E >, ReturnStorage >
   {
-    VectorSubformer::< E, (), Vec< E >, ReturnStorage >::new( ReturnStorage::default() )
+    VectorAsSubformer::< E, (), Vec< E >, ReturnStorage >::new( ReturnStorage::default() )
   }
 }
 

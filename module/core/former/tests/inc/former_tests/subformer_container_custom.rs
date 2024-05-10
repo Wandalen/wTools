@@ -129,13 +129,13 @@ where
 // = definition types
 
 #[ derive( Debug, Default ) ]
-pub struct HashSetDefinitionTypes< K, Context = (), Formed = LoggingSet< K > >
+pub struct LoggingSetDefinitionTypes< K, Context = (), Formed = LoggingSet< K > >
 {
   _phantom : core::marker::PhantomData< ( K, Context, Formed ) >,
 }
 
 impl< K, Context, Formed > former::FormerDefinitionTypes
-for HashSetDefinitionTypes< K, Context, Formed >
+for LoggingSetDefinitionTypes< K, Context, Formed >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
@@ -147,29 +147,29 @@ where
 // = definition
 
 #[ derive( Debug, Default ) ]
-pub struct HashSetDefinition< K, Context = (), Formed = LoggingSet< K >, End = former::ReturnStorage >
+pub struct LoggingSetDefinition< K, Context = (), Formed = LoggingSet< K >, End = former::ReturnStorage >
 {
   _phantom : core::marker::PhantomData< ( K, Context, Formed, End ) >,
 }
 
 impl< K, Context, Formed, End > former::FormerDefinition
-for HashSetDefinition< K, Context, Formed, End >
+for LoggingSetDefinition< K, Context, Formed, End >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
-  End : former::FormingEnd< HashSetDefinitionTypes< K, Context, Formed > >,
+  End : former::FormingEnd< LoggingSetDefinitionTypes< K, Context, Formed > >,
 {
   type Storage = LoggingSet< K >;
   type Formed = Formed;
   type Context = Context;
 
-  type Types = HashSetDefinitionTypes< K, Context, Formed >;
+  type Types = LoggingSetDefinitionTypes< K, Context, Formed >;
   type End = End;
 }
 
 // = mutator
 
 impl< K, Context, Formed > former::FormerMutator
-for HashSetDefinitionTypes< K, Context, Formed >
+for LoggingSetDefinitionTypes< K, Context, Formed >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
@@ -177,24 +177,26 @@ where
 
 // = Entity To
 
-// impl< K, Definition > former::EntityToFormer< Definition > for HashSet< K >
-// where
-//   K : ::core::cmp::Eq + ::core::hash::Hash,
-//   Definition : former::FormerDefinition
-//   <
-//     Storage = HashSet< K >,
-//     Types = HashSetDefinitionTypes
-//     <
-//       K,
-//       < Definition as former::FormerDefinition >::Context,
-//       < Definition as former::FormerDefinition >::Formed,
-//     >,
-//   >,
-//   Definition::End : former::FormingEnd< Definition::Types >,
-// {
-//   type Former = HashSetSubformer< K, Definition::Context, Definition::Formed, Definition::End >;
-// }
-//
+impl< K, Definition > former::EntityToFormer< Definition > for LoggingSet< K >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+  Definition : former::FormerDefinition
+  <
+    Storage = LoggingSet< K >,
+    Types = LoggingSetDefinitionTypes
+    <
+      K,
+      < Definition as former::FormerDefinition >::Context,
+      < Definition as former::FormerDefinition >::Formed,
+    >,
+  >,
+  Definition::End : former::FormingEnd< Definition::Types >,
+{
+  type Former = LoggingSetAsSubformer< K, Definition::Context, Definition::Formed, Definition::End >;
+  // xxx : uncomment
+  // type Former = LoggingSetAsSubformer< K, Definition::Context, Definition::Formed, Definition::End >;
+}
+
 // impl< K > former::EntityToStorage
 // for LoggingSet< K >
 // where
@@ -211,6 +213,19 @@ where
 // {
 //   type Definition = HashSetDefinition< K, Context, Formed, End >;
 // }
+
+// impl< K, Context, Formed > crate::EntityToDefinitionTypes< Context, Formed >
+// for HashSet< K >
+// where
+//   K : ::core::cmp::Eq + ::core::hash::Hash,
+// {
+//   type Types = HashSetDefinitionTypes< K, Context, Formed >;
+// }
+
+// = subformer
+
+pub type LoggingSetAsSubformer< K, Context, Formed, End > =
+former::ContainerSubformer::< K, LoggingSetDefinition< K, Context, Formed, End > >;
 
 // == use custom container
 
@@ -246,3 +261,4 @@ pub struct Parent
 // }
 
 // xxx2 : get completed
+
