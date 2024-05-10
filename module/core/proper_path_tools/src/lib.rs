@@ -7,6 +7,10 @@
 #[ cfg( feature = "enabled" ) ]
 use mod_interface::mod_interface;
 
+#[ cfg( feature="no_std" ) ]
+#[ macro_use ]
+extern crate alloc;
+
 #[ cfg( feature = "enabled" ) ]
 mod_interface!
 {

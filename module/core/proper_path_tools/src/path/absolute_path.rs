@@ -1,6 +1,8 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+  #[cfg(feature="no_std")]
+  extern crate std;
   use crate::*;
   use std::
   {
