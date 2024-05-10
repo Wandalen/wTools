@@ -2,7 +2,7 @@
 //! 
 
 use crate::*;
-#[ cfg( feature="plotting" ) ]
+#[ cfg( feature="static_plot" ) ]
 use crate::plot::{ PlotDescription, PlotOptions, plot };
 use iter_tools::Itertools;
 use std::ops::RangeInclusive;
