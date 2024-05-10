@@ -193,8 +193,6 @@ where
   Definition::End : former::FormingEnd< Definition::Types >,
 {
   type Former = LoggingSetAsSubformer< K, Definition::Context, Definition::Formed, Definition::End >;
-  // xxx : uncomment
-  // type Former = LoggingSetAsSubformer< K, Definition::Context, Definition::Formed, Definition::End >;
 }
 
 // impl< K > former::EntityToStorage
