@@ -8,7 +8,7 @@ pub mod problems;
 pub mod hybrid_optimizer;
 pub mod simplex;
 pub mod optimal_params_search;
-#[ cfg( feature="plotting" ) ]
+#[ cfg( feature="static_plot" ) ]
 pub mod plot;
-#[ cfg( feature="plotting" ) ]
+#[ cfg( feature="dynamic_plot" ) ]
 pub mod plot_dynamic;

@@ -32,8 +32,8 @@ full = [
 ]
 enabled = []
 # rapidity_6 = [] # to enable slow tests
-# static_plot = []
-plotting = [ "dep:plotters-backend", "dep:piston_window" ]
+static_plot = []
+dynamic_plot = [ "static_plot", "dep:plotters-backend", "dep:piston_window" ]
 lp_parse = [ "dep:exmex" ]
 
 [dependencies]
