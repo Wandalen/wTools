@@ -89,7 +89,8 @@ where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
   // type Types = HashMapDefinition< K, E >;
-  type Formed = HashMap< K, E >;
+  // type Formed = HashMap< K, E >;
+  type Preformed = HashMap< K, E >;
 }
 
 impl< K, E > StoragePreform
@@ -97,7 +98,7 @@ for HashMap< K, E >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  type Preformed = HashMap< K, E >;
+  // type Preformed = HashMap< K, E >;
   // fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinitionTypes >::Formed
   fn preform( self ) -> Self::Preformed
   {

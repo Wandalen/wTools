@@ -340,6 +340,7 @@ scalar_setter_required
     former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     former_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
     former_storage : &syn::Ident,
+    original_input : &proc_macro::TokenStream,
   )
   -> Result< ( TokenStream, TokenStream ) >
   {
@@ -361,6 +362,7 @@ scalar_setter_required
         former_generics_impl,
         former_generics_ty,
         former_generics_where,
+        original_input,
       )?;
       ( qt! { #setters_code #setters_code2 }, qt! { #namespace_code #namespace_code2 } )
     }
@@ -675,6 +677,7 @@ formation process of the `{stru}`.
     former_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     former_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+    original_input : &proc_macro::TokenStream,
   )
   -> Result< ( TokenStream, TokenStream ) >
   {
@@ -861,7 +864,18 @@ where
         former_assign_end,
         field_assign,
       );
-      println!( "{hint}" );
+      let about = format!
+      (
+r#"derive : Former
+structure : {stru}
+field : {field_ident}"#,
+        // format!( "{}", qt!{ #setter_name } ),
+      );
+      // xxx
+      // diag::report_print( about, original_input, hint );
+      // print!( "{}", diag::report_format( about, original_input, hint ) );
+        diag::report_print( about, original_input, hint );
+      // println!( "{hint}" );
     }
 
     let setters_code = qt!

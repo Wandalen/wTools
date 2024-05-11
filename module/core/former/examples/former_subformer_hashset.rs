@@ -7,12 +7,13 @@ fn main() {}
 #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
 fn main()
 {
+  use collection_tools::{ HashSet, hset };
 
   #[ derive( Debug, PartialEq, former::Former ) ]
   pub struct StructWithSet
   {
     #[ container ]
-    set : collection_tools::HashSet< &'static str >,
+    set : HashSet< &'static str >,
   }
 
   let instance = StructWithSet::former()

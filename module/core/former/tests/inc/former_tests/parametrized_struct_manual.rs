@@ -151,12 +151,12 @@ impl< K, > :: core :: default :: Default for ChildFormerStorage< K, > where K : 
 
 impl< K, > former :: Storage for ChildFormerStorage< K, > where K : core :: hash :: Hash + std :: cmp :: Eq,
 {
-  type Formed = Child< K, >;
+  type Preformed = Child< K, >;
 }
 
 impl< K, > former :: StoragePreform for ChildFormerStorage< K, > where K : core :: hash :: Hash + std :: cmp :: Eq,
 {
-  type Preformed = Child< K, >;
+  // type Preformed = Child< K, >;
 
   fn preform( mut self ) -> Self::Preformed
   // fn preform( mut self ) -> < Self as former :: Storage > :: Formed

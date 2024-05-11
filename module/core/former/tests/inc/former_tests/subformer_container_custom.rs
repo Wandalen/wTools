@@ -130,7 +130,7 @@ for LoggingSet< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  type Formed = LoggingSet< K >;
+  type Preformed = LoggingSet< K >;
   // xxx : rid off Formed maybe?
 }
 
@@ -139,7 +139,7 @@ for LoggingSet< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  type Preformed = LoggingSet< K >;
+  // type Preformed = LoggingSet< K >;
   fn preform( self ) -> Self::Preformed
   {
     self

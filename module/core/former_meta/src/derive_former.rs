@@ -311,6 +311,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       &former_generics_ty,
       &former_generics_where,
       &former_storage,
+      &original_input,
     ),
   )}).multiunzip();
 
@@ -502,7 +503,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     where
       #struct_generics_where
     {
-      type Formed = #stru < #struct_generics_ty >;
+      type Preformed = #stru < #struct_generics_ty >;
     }
 
     impl < #struct_generics_impl > former::StoragePreform
@@ -510,7 +511,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     where
       #struct_generics_where
     {
-      type Preformed = #stru < #struct_generics_ty >;
+      // type Preformed = #stru < #struct_generics_ty >;
 
       fn preform( mut self ) -> Self::Preformed
       {
@@ -776,7 +777,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   if has_debug
   {
-    diag::debug_report_print( "derive : Former", original_input, &result );
+    let about = format!( "derive : Former\nstructure : {stru}" );
+    diag::report_print( about, &original_input, &result );
+    // diag::report_print( "derive : Former", original_input, &result );
   }
 
   Ok( result )

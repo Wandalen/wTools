@@ -119,13 +119,13 @@ impl Default for Struct1FormerStorage
 impl former::Storage
 for Struct1FormerStorage
 {
-  type Formed = Struct1;
+  type Preformed = Struct1;
 }
 
 impl former::StoragePreform
 for Struct1FormerStorage
 {
-  type Preformed = Struct1;
+  // type Preformed = Struct1;
 
   // fn preform( mut self ) -> < Self as former::Storage >::Formed
   fn preform( mut self ) -> Self::Preformed

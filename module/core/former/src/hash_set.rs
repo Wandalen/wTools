@@ -98,7 +98,8 @@ for HashSet< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  type Formed = HashSet< K >;
+  // type Formed = HashSet< K >;
+  type Preformed = HashSet< K >;
 }
 
 impl< K > StoragePreform
@@ -106,7 +107,7 @@ for HashSet< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  type Preformed = HashSet< K >;
+  // type Preformed = HashSet< K >;
   fn preform( self ) -> Self::Preformed
   {
     self

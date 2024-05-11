@@ -38,7 +38,7 @@ fn main()
 
   // Parent struct to hold children
   #[ derive( Debug, PartialEq, Former ) ]
-  // #[ debug ]
+  #[ debug ]
   pub struct Parent
   {
     // Use `hint = true` to gennerate sketch of setter.

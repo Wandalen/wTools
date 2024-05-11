@@ -7,22 +7,23 @@ fn main() {}
 #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
 fn main()
 {
+  use collection_tools::{ HashMap, hmap };
 
   #[ derive( Debug, PartialEq, former::Former ) ]
   pub struct StructWithMap
   {
     #[ container ]
-    map : collection_tools::HashMap< &'static str, &'static str >,
+    map : HashMap< &'static str, &'static str >,
   }
 
-  let struct1 = StructWithMap::former()
+  let instance = StructWithMap::former()
   .map()
     .add( ( "a", "b" ) )
     .add( ( "c", "d" ) )
     .end()
   .form()
   ;
-  assert_eq!( struct1, StructWithMap { map : hmap!{ "a" => "b", "c" => "d" } } );
+  assert_eq!( instance, StructWithMap { map : hmap!{ "a" => "b", "c" => "d" } } );
   dbg!( instance );
 
 }

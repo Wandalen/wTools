@@ -32,32 +32,32 @@ fn main()
     bio_optional : Option< String >, // Fields could be optional
   }
 
-  impl< > UserProfile< >
+  impl UserProfile
   where
   {
     #[ inline( always ) ]
     pub fn former() -> UserProfileFormer<
-      UserProfileFormerDefinition< (), UserProfile< >, former::ReturnPreformed >
+      UserProfileFormerDefinition< (), UserProfile, former::ReturnPreformed >
     >
     {
-      UserProfileFormer::< UserProfileFormerDefinition< (), UserProfile< >, former::ReturnPreformed > >::
+      UserProfileFormer::< UserProfileFormerDefinition< (), UserProfile, former::ReturnPreformed > >::
       new_coercing(former::ReturnPreformed)
     }
   }
 
   // = entity to
 
-  impl< Definition > former::EntityToFormer< Definition > for UserProfile< >
+  impl< Definition > former::EntityToFormer< Definition > for UserProfile
   where
-    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< > >,
+    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage >,
   {
     type Former = UserProfileFormer< Definition >;
   }
 
-  impl< > former::EntityToStorage for UserProfile< >
+  impl former::EntityToStorage for UserProfile
   where
   {
-    type Storage = UserProfileFormerStorage< >;
+    type Storage = UserProfileFormerStorage;
   }
 
   impl< Context, Formed, End > former::EntityToDefinition< Context, Formed, End > for UserProfile< >
@@ -65,12 +65,13 @@ fn main()
     End : former::FormingEnd< UserProfileFormerDefinitionTypes< Context, Formed > >,
   {
     type Definition = UserProfileFormerDefinition< Context, Formed, End >;
+    type Types = UserProfileFormerDefinitionTypes< Context, Formed >;
   }
 
   // = definition
 
   #[derive(Debug)]
-  pub struct UserProfileFormerDefinitionTypes< Context = (), Formed = UserProfile< >, >
+  pub struct UserProfileFormerDefinitionTypes< Context = (), Formed = UserProfile, >
   where
   {
     _phantom : core::marker::PhantomData< (*const Context, *const Formed) >,
@@ -91,13 +92,13 @@ fn main()
   impl< Context, Formed, > former::FormerDefinitionTypes for UserProfileFormerDefinitionTypes< Context, Formed, >
   where
   {
-    type Storage = UserProfileFormerStorage< >;
+    type Storage = UserProfileFormerStorage;
     type Formed = Formed;
     type Context = Context;
   }
 
   #[derive(Debug)]
-  pub struct UserProfileFormerDefinition< Context = (), Formed = UserProfile< >, End = former::ReturnPreformed, >
+  pub struct UserProfileFormerDefinition< Context = (), Formed = UserProfile, End = former::ReturnPreformed, >
   where
   {
     _phantom : core::marker::PhantomData< (*const Context, *const Formed, *const End) >,
@@ -121,7 +122,7 @@ fn main()
   {
     type Types = UserProfileFormerDefinitionTypes< Context, Formed, >;
     type End = End;
-    type Storage = UserProfileFormerStorage< >;
+    type Storage = UserProfileFormerStorage;
     type Formed = Formed;
     type Context = Context;
   }
@@ -132,7 +133,7 @@ fn main()
 
   // = storage
 
-  pub struct UserProfileFormerStorage< >
+  pub struct UserProfileFormerStorage
   where
   {
     pub age : ::core::option::Option< i32 >,
@@ -140,7 +141,7 @@ fn main()
     pub bio_optional : Option< String >,
   }
 
-  impl< > ::core::default::Default for UserProfileFormerStorage< >
+  impl ::core::default::Default for UserProfileFormerStorage
   where
   {
     #[ inline( always ) ]
@@ -155,16 +156,16 @@ fn main()
     }
   }
 
-  impl< > former::Storage for UserProfileFormerStorage< >
+  impl former::Storage for UserProfileFormerStorage
   where
   {
-    type Formed = UserProfile< >;
+    type Preformed = UserProfile;
   }
 
-  impl< > former::StoragePreform for UserProfileFormerStorage< >
+  impl former::StoragePreform for UserProfileFormerStorage
   where
   {
-    type Preformed = UserProfile< >;
+    // type Preformed = UserProfile;
     fn preform(mut self) -> Self::Preformed
     {
       let age = if self.age.is_some()
@@ -239,9 +240,9 @@ fn main()
     }
   }
 
-  pub struct UserProfileFormer< Definition = UserProfileFormerDefinition< (), UserProfile< >, former::ReturnPreformed >, >
+  pub struct UserProfileFormer< Definition = UserProfileFormerDefinition< (), UserProfile, former::ReturnPreformed >, >
   where
-    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< > >,
+    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage >,
   {
     pub storage : Definition::Storage,
     pub context : core::option::Option< Definition::Context >,
@@ -250,7 +251,7 @@ fn main()
 
   impl< Definition, > UserProfileFormer< Definition, >
   where
-    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< > >, Definition::Types : former::FormerDefinitionTypes< Storage = UserProfileFormerStorage< > >,
+    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage >, Definition::Types : former::FormerDefinitionTypes< Storage = UserProfileFormerStorage >,
   {
     #[ inline( always ) ]
     pub fn new(on_end : Definition::End) -> Self
@@ -341,7 +342,7 @@ fn main()
 
   impl< Definition, > UserProfileFormer< Definition, >
   where
-    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< >, Formed = UserProfile< > >,
+    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage, Formed = UserProfile >,
   {
     pub fn preform(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed
     {
@@ -351,7 +352,7 @@ fn main()
 
   impl< Definition, > UserProfileFormer< Definition, >
   where
-    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< >, Formed = UserProfile< >, >,
+    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage, Formed = UserProfile, >,
   {
     #[ inline( always ) ]
     pub fn perform(self) -> Definition::Formed
@@ -363,7 +364,7 @@ fn main()
 
   impl< Definition > former::FormerBegin< Definition > for UserProfileFormer< Definition, >
   where
-    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< > >,
+    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage >,
   {
     #[ inline( always ) ]
     fn former_begin(storage : core::option::Option< Definition::Storage >, context : core::option::Option< Definition::Context >, on_end : Definition::End,) -> Self

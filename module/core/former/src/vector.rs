@@ -82,13 +82,14 @@ impl< E > VectorLike< E > for Vec< E >
 impl< E > Storage
 for Vec< E >
 {
-  type Formed = Vec< E >;
+  // type Formed = Vec< E >;
+  type Preformed = Vec< E >;
 }
 
 impl< E > StoragePreform
 for Vec< E >
 {
-  type Preformed = Vec< E >;
+  // type Preformed = Vec< E >;
   // fn preform( self ) -> Self::Formed
   fn preform( self ) -> Self::Preformed
   {

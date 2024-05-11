@@ -135,13 +135,13 @@ where
 impl< > former::Storage for Struct1FormerStorage<>
 where
 {
-  type Formed = Struct1<>;
+  type Preformed = Struct1<>;
 }
 
 impl< > former::StoragePreform for Struct1FormerStorage<>
 where
 {
-  type Preformed = Struct1<>;
+  // type Preformed = Struct1<>;
 
   fn preform(mut self) -> Self::Preformed
   {

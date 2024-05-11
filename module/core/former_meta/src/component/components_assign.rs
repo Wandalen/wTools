@@ -16,7 +16,7 @@ pub fn components_assign( input : proc_macro::TokenStream ) -> Result< proc_macr
   let has_debug = attr::has_debug( parsed.item.attrs.iter() )?;
 
   // name
-  let item_name = parsed.item_name;
+  let item_name = &parsed.item_name;
   let trait_name = format!( "{}ComponentsAssign", item_name );
   let trait_ident = syn::Ident::new( &trait_name, item_name.span() );
   let method_name = format!( "{}_assign", item_name.to_string().to_case( Case::Snake ) );
@@ -68,8 +68,15 @@ pub fn components_assign( input : proc_macro::TokenStream ) -> Result< proc_macr
 
   if has_debug
   {
-    diag::debug_report_print( "derive : ComponentsAssign", original_input, &result );
+    let about = format!( "derive : ComponentsAssign\nstructure : {0}", item_name );
+    diag::report_print( about, &original_input, &result );
   }
+
+  // if has_debug
+  // {
+  //   diag::report_print( "derive : ComponentsAssign", original_input, &result );
+  // }
+
   Ok( result )
 }
 

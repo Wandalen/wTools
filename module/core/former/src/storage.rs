@@ -19,8 +19,10 @@
 /// to a default state at the start of the forming process.
 pub trait Storage : ::core::default::Default
 {
-  /// The type of the fully formed entity that results from the forming process.
-  type Formed;
+  /// The type of the entity as it should appear once preformed. It could, but does not have to be the same type as `Formed`.
+  type Preformed;
+  // /// The type of the fully formed entity that results from the forming process.
+  // type Formed;
 }
 
 /// Provides a mechanism to finalize the forming process by converting storage into its final formed state.
@@ -32,10 +34,10 @@ pub trait Storage : ::core::default::Default
 /// state of the entity. However, it can differ if a custom `FormingEnd` or a different `Formed` type
 /// is defined to handle specific forming logic or requirements.
 /// But even if `Formed` is custom `Preformed` is always that structure.
-pub trait StoragePreform
+pub trait StoragePreform : Storage
 {
-  /// The type of the entity as it should appear once fully formed.
-  type Preformed;
+  // /// The type of the entity as it should appear once fully formed.
+  // type Preformed;
 
   /// Transforms the storage into the final formed state of the entity.
   ///
