@@ -44,7 +44,7 @@ pub( crate ) mod private
     /// subject optional parameter
     #[ former( default = false ) ]
     optional : bool,
-    #[ scalar( setter = false, hint = false ) ]
+    #[ scalar( setter = false ) ]
     #[ former( default = Vec::new() ) ]
     properties_aliases : Vec< String >,
   }
@@ -86,6 +86,7 @@ pub( crate ) mod private
 
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
   #[ derive( Former ) ]
+  // #[ debug ]
   pub struct Command
   {
     /// Command common hint.
@@ -106,7 +107,7 @@ pub( crate ) mod private
     // aaa : here it is
     // qqq : make it usable and remove default(?)
     /// The type `Routine` represents the specific implementation of the routine.
-    #[ scalar( setter = false, hint = false ) ]
+    #[ scalar( setter = false ) ]
     #[ former( default = Routine::from( Handler::from( || { panic!( "No routine available: A handler function for the command is missing" ) } ) ) ) ]
     pub routine : Routine,
   }

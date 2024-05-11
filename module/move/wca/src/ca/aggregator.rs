@@ -102,6 +102,7 @@ pub( crate ) mod private
   #[ derive( former::Former ) ]
   #[ storage_fields( help_generator : HelpGeneratorFn, help_variants : HashSet< HelpVariants > ) ]
   #[ mutator( custom = true ) ]
+  // #[ debug ]
   pub struct CommandsAggregator
   {
     #[ former( default = Dictionary::default() ) ]
@@ -119,7 +120,7 @@ pub( crate ) mod private
 
     callback_fn : Option< CommandsAggregatorCallback >,
   }
-  
+
   impl< Context, Formed > former::FormerMutator for CommandsAggregatorFormerDefinitionTypes< Context, Formed >
   {
     fn form_mutation( storage : &mut Self::Storage, _context : &mut Option< Self::Context > )

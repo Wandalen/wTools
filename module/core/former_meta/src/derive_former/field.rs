@@ -488,10 +488,26 @@ allowing for dynamic and flexible construction of the `{stru}` entity's {field_i
 
     let setters_code = if attr.setter()
     {
+
+      let doc = format!
+      (
+        r#"
+Provides a user-friendly interface to add an instancce of {field_ident} to the {stru}.
+
+# Returns
+
+Returns an instance of `Former2`, a subformer ready to begin the formation process for `{0}` entities,
+allowing for dynamic and flexible construction of the `{stru}` entity's {field_ident}.
+
+        "#,
+        format!( "{}", qt!{ #field_typ } ),
+      );
+
       qt!
       {
         #setters_code
 
+        #[ doc = #doc ]
         #[ inline( always ) ]
         pub fn #setter_name( self ) ->
         < < #field_typ as former::Container >::Val as former::EntityToFormer
@@ -908,7 +924,6 @@ with the new content generated during the subforming process.
     }
     else
     {
-
       qt!
       {
         <

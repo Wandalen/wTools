@@ -655,6 +655,7 @@ specific needs of the broader forming context. It mandates the implementation of
       #former_generics_where
     {
 
+      /// Executes the transformation from the former's storage state to the preformed object as specified by the definition.
       pub fn preform( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
       {
         former::StoragePreform::preform( self.storage )
