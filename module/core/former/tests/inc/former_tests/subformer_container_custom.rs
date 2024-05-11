@@ -110,17 +110,6 @@ where
   }
 }
 
-// xxx : test with HashSetLike
-//
-// impl< K > HashSetLike< K > for LoggingSet< K >
-// where
-//   K : core::cmp::Eq + core::hash::Hash,
-// {
-//   fn insert( &mut self, element : K ) -> Option< K >
-//   {
-//     HashSet::replace( self, element )
-//   }
-// }
 
 // = storage
 

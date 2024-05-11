@@ -110,170 +110,167 @@ where
   }
 }
 
+// xxx2 : get completed
 // xxx : test with HashSetLike
-//
-// impl< K > HashSetLike< K > for LoggingSet< K >
-// where
-//   K : core::cmp::Eq + core::hash::Hash,
-// {
-//   fn insert( &mut self, element : K ) -> Option< K >
-//   {
-//     HashSet::replace( self, element )
-//   }
-// }
 
-// = storage
-
-impl< K > former::Storage
-for LoggingSet< K >
+impl< K > former::HashSetLike< K > for LoggingSet< K >
 where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
+  K : core::cmp::Eq + core::hash::Hash,
 {
-  type Preformed = LoggingSet< K >;
-}
-
-impl< K > former::StoragePreform
-for LoggingSet< K >
-where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-{
-  fn preform( self ) -> Self::Preformed
+  fn insert( &mut self, element : K ) -> Option< K >
   {
-    self
+    HashSet::replace( self, element )
   }
 }
 
-// = definition types
+// = storage
 
-#[ derive( Debug, Default ) ]
-pub struct LoggingSetDefinitionTypes< K, Context = (), Formed = LoggingSet< K > >
-{
-  _phantom : core::marker::PhantomData< ( K, Context, Formed ) >,
-}
-
-impl< K, Context, Formed > former::FormerDefinitionTypes
-for LoggingSetDefinitionTypes< K, Context, Formed >
-where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-{
-  type Storage = LoggingSet< K >;
-  type Formed = Formed;
-  type Context = Context;
-}
-
-// = definition
-
-#[ derive( Debug, Default ) ]
-pub struct LoggingSetDefinition< K, Context = (), Formed = LoggingSet< K >, End = former::ReturnStorage >
-{
-  _phantom : core::marker::PhantomData< ( K, Context, Formed, End ) >,
-}
-
-impl< K, Context, Formed, End > former::FormerDefinition
-for LoggingSetDefinition< K, Context, Formed, End >
-where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-  End : former::FormingEnd< LoggingSetDefinitionTypes< K, Context, Formed > >,
-{
-  type Storage = LoggingSet< K >;
-  type Formed = Formed;
-  type Context = Context;
-
-  type Types = LoggingSetDefinitionTypes< K, Context, Formed >;
-  type End = End;
-}
-
-// = mutator
-
-impl< K, Context, Formed > former::FormerMutator
-for LoggingSetDefinitionTypes< K, Context, Formed >
-where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-{
-}
-
-// = Entity To
-
-impl< K, Definition > former::EntityToFormer< Definition > for LoggingSet< K >
-where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-  Definition : former::FormerDefinition
-  <
-    Storage = LoggingSet< K >,
-    Types = LoggingSetDefinitionTypes
-    <
-      K,
-      < Definition as former::FormerDefinition >::Context,
-      < Definition as former::FormerDefinition >::Formed,
-    >,
-  >,
-  Definition::End : former::FormingEnd< Definition::Types >,
-{
-  type Former = LoggingSetAsSubformer< K, Definition::Context, Definition::Formed, Definition::End >;
-}
-
-impl< K > former::EntityToStorage
-for LoggingSet< K >
-where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-{
-  type Storage = LoggingSet< K >;
-}
-
-impl< K, Context, Formed, End > former::EntityToDefinition< Context, Formed, End >
-for LoggingSet< K >
-where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-  End : former::FormingEnd< LoggingSetDefinitionTypes< K, Context, Formed > >,
-{
-  type Definition = LoggingSetDefinition< K, Context, Formed, End >;
-  type Types = LoggingSetDefinitionTypes< K, Context, Formed >;
-}
-
-impl< K, Context, Formed > former::EntityToDefinitionTypes< Context, Formed >
-for LoggingSet< K >
-where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-{
-  type Types = LoggingSetDefinitionTypes< K, Context, Formed >;
-}
-
-// = subformer
-
-pub type LoggingSetAsSubformer< K, Context, Formed, End > =
-former::ContainerSubformer::< K, LoggingSetDefinition< K, Context, Formed, End > >;
-
-// == use custom container
-
-/// Parent required for the template.
-#[ derive( Debug, Default, PartialEq, the_module::Former ) ]
-pub struct Parent
-{
-  #[ container ]
-  children : LoggingSet< i32 >,
-}
-
-// == begin of generated
-
-// == end of generated
-
-#[ test ]
-fn basic()
-{
-
-  // Using the builder pattern provided by Former to manipulate Parent
-  let parent = Parent::former()
-  .children()
-    .add(10)
-    .add(20)
-    .add(10)
-    .end()
-  .form();
-
-  println!("Got: {:?}", parent);
-
-}
-
-// xxx2 : get completed
-// xxx2 : get completed example
-
+// impl< K > former::Storage
+// for LoggingSet< K >
+// where
+//   K : ::core::cmp::Eq + ::core::hash::Hash,
+// {
+//   type Preformed = LoggingSet< K >;
+// }
+//
+// impl< K > former::StoragePreform
+// for LoggingSet< K >
+// where
+//   K : ::core::cmp::Eq + ::core::hash::Hash,
+// {
+//   fn preform( self ) -> Self::Preformed
+//   {
+//     self
+//   }
+// }
+//
+// // = definition types
+//
+// #[ derive( Debug, Default ) ]
+// pub struct LoggingSetDefinitionTypes< K, Context = (), Formed = LoggingSet< K > >
+// {
+//   _phantom : core::marker::PhantomData< ( K, Context, Formed ) >,
+// }
+//
+// impl< K, Context, Formed > former::FormerDefinitionTypes
+// for LoggingSetDefinitionTypes< K, Context, Formed >
+// where
+//   K : ::core::cmp::Eq + ::core::hash::Hash,
+// {
+//   type Storage = LoggingSet< K >;
+//   type Formed = Formed;
+//   type Context = Context;
+// }
+//
+// // = definition
+//
+// #[ derive( Debug, Default ) ]
+// pub struct LoggingSetDefinition< K, Context = (), Formed = LoggingSet< K >, End = former::ReturnStorage >
+// {
+//   _phantom : core::marker::PhantomData< ( K, Context, Formed, End ) >,
+// }
+//
+// impl< K, Context, Formed, End > former::FormerDefinition
+// for LoggingSetDefinition< K, Context, Formed, End >
+// where
+//   K : ::core::cmp::Eq + ::core::hash::Hash,
+//   End : former::FormingEnd< LoggingSetDefinitionTypes< K, Context, Formed > >,
+// {
+//   type Storage = LoggingSet< K >;
+//   type Formed = Formed;
+//   type Context = Context;
+//
+//   type Types = LoggingSetDefinitionTypes< K, Context, Formed >;
+//   type End = End;
+// }
+//
+// // = mutator
+//
+// impl< K, Context, Formed > former::FormerMutator
+// for LoggingSetDefinitionTypes< K, Context, Formed >
+// where
+//   K : ::core::cmp::Eq + ::core::hash::Hash,
+// {
+// }
+//
+// // = Entity To
+//
+// impl< K, Definition > former::EntityToFormer< Definition > for LoggingSet< K >
+// where
+//   K : ::core::cmp::Eq + ::core::hash::Hash,
+//   Definition : former::FormerDefinition
+//   <
+//     Storage = LoggingSet< K >,
+//     Types = LoggingSetDefinitionTypes
+//     <
+//       K,
+//       < Definition as former::FormerDefinition >::Context,
+//       < Definition as former::FormerDefinition >::Formed,
+//     >,
+//   >,
+//   Definition::End : former::FormingEnd< Definition::Types >,
+// {
+//   type Former = LoggingSetAsSubformer< K, Definition::Context, Definition::Formed, Definition::End >;
+// }
+//
+// impl< K > former::EntityToStorage
+// for LoggingSet< K >
+// where
+//   K : ::core::cmp::Eq + ::core::hash::Hash,
+// {
+//   type Storage = LoggingSet< K >;
+// }
+//
+// impl< K, Context, Formed, End > former::EntityToDefinition< Context, Formed, End >
+// for LoggingSet< K >
+// where
+//   K : ::core::cmp::Eq + ::core::hash::Hash,
+//   End : former::FormingEnd< LoggingSetDefinitionTypes< K, Context, Formed > >,
+// {
+//   type Definition = LoggingSetDefinition< K, Context, Formed, End >;
+//   type Types = LoggingSetDefinitionTypes< K, Context, Formed >;
+// }
+//
+// impl< K, Context, Formed > former::EntityToDefinitionTypes< Context, Formed >
+// for LoggingSet< K >
+// where
+//   K : ::core::cmp::Eq + ::core::hash::Hash,
+// {
+//   type Types = LoggingSetDefinitionTypes< K, Context, Formed >;
+// }
+//
+// // = subformer
+//
+// pub type LoggingSetAsSubformer< K, Context, Formed, End > =
+// former::ContainerSubformer::< K, LoggingSetDefinition< K, Context, Formed, End > >;
+//
+// // == use custom container
+//
+// /// Parent required for the template.
+// #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
+// pub struct Parent
+// {
+//   #[ container ]
+//   children : LoggingSet< i32 >,
+// }
+//
+// // == begin of generated
+//
+// // == end of generated
+//
+// #[ test ]
+// fn basic()
+// {
+//
+//   // Using the builder pattern provided by Former to manipulate Parent
+//   let parent = Parent::former()
+//   .children()
+//     .add(10)
+//     .add(20)
+//     .add(10)
+//     .end()
+//   .form();
+//
+//   println!("Got: {:?}", parent);
+//
+// }
