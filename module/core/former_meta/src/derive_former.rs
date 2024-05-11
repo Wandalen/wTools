@@ -779,7 +779,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   {
     let about = format!( "derive : Former\nstructure : {stru}" );
     diag::report_print( about, &original_input, &result );
-    // diag::report_print( "derive : Former", original_input, &result );
   }
 
   Ok( result )
