@@ -51,17 +51,30 @@ where
   }
 }
 
-impl< K > ValToEntry< HashSet< K > > for K
+impl< K > ContainerValToEntry< K > for HashSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
   type Entry = K;
   #[ inline( always ) ]
-  fn val_to_entry( self ) -> Self::Entry
+  fn val_to_entry( val : K ) -> Self::Entry
   {
-    self
+    val
   }
 }
+
+// xxx : clean
+// impl< K > ValToEntry< HashSet< K > > for K
+// where
+//   K : core::cmp::Eq + core::hash::Hash,
+// {
+//   type Entry = K;
+//   #[ inline( always ) ]
+//   fn val_to_entry( self ) -> Self::Entry
+//   {
+//     self
+//   }
+// }
 
 /// A trait for containers behaving like a `HashSet`, allowing insertion operations.
 ///

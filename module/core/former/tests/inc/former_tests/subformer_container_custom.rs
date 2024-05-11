@@ -102,6 +102,7 @@ where
 }
 
 // xxx : uncomment
+//
 // impl< K > former::ValToEntry< LoggingSet< K > > for K
 // where
 //   K : core::cmp::Eq + core::hash::Hash,

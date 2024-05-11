@@ -62,6 +62,24 @@ where
 /// This trait is crucial for operations that require the insertion or modification of entries based on values,
 /// especially in complex data structures where the entry's structure is more intricate than the value it represents,
 /// such as inserting a new entry in a `HashMap` where the entry consists of a key-value pair.
+// xxx : update description
+pub trait ContainerValToEntry< Val >
+{
+  type Entry;
+
+  /// Converts a value back into an entry of the container. This function is essential for operations like insertion
+  /// or modification, where a value needs to be transformed into a container-compatible entry, such as converting
+  /// a value into a (key, value) tuple for insertion into a `HashMap`.
+  // xxx : update description
+  fn val_to_entry( val : Val ) -> Self::Entry;
+}
+
+/// Provides a mechanism for converting values back to container-specific entries.
+///
+/// This trait is crucial for operations that require the insertion or modification of entries based on values,
+/// especially in complex data structures where the entry's structure is more intricate than the value it represents,
+/// such as inserting a new entry in a `HashMap` where the entry consists of a key-value pair.
+// xxx : update description
 pub trait ValToEntry< Container >
 {
   type Entry;
@@ -69,7 +87,20 @@ pub trait ValToEntry< Container >
   /// Converts a value back into an entry of the container. This function is essential for operations like insertion
   /// or modification, where a value needs to be transformed into a container-compatible entry, such as converting
   /// a value into a (key, value) tuple for insertion into a `HashMap`.
+  // xxx : update description
   fn val_to_entry( self ) -> Self::Entry;
+}
+
+impl< C, Val > ValToEntry< C > for Val
+where
+  C : ContainerValToEntry< Val >,
+{
+  type Entry = C::Entry;
+
+  fn val_to_entry( self ) -> C::Entry
+  {
+    C::val_to_entry( self )
+  }
 }
 
 /// Provides functionality to add individual entries to a container.

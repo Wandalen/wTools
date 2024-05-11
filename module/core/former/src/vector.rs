@@ -47,15 +47,27 @@ impl< E > ContainerAssign for collection_tools::Vec< E >
 
 }
 
-impl< E > ValToEntry< collection_tools::Vec< E > > for E
+impl< E > ContainerValToEntry< E > for collection_tools::Vec< E >
+where
 {
   type Entry = E;
   #[ inline( always ) ]
-  fn val_to_entry( self ) -> Self::Entry
+  fn val_to_entry( val : E ) -> Self::Entry
   {
-    self
+    val
   }
 }
+
+// xxx : clean
+// impl< E > ValToEntry< collection_tools::Vec< E > > for E
+// {
+//   type Entry = E;
+//   #[ inline( always ) ]
+//   fn val_to_entry( self ) -> Self::Entry
+//   {
+//     self
+//   }
+// }
 
 /// Trait for containers that behave like a vector, providing an interface for element addition.
 ///
