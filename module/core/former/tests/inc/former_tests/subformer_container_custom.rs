@@ -111,20 +111,6 @@ where
   }
 }
 
-// xxx : uncomment
-//
-// impl< K > former::ValToEntry< LoggingSet< K > > for K
-// where
-//   K : core::cmp::Eq + core::hash::Hash,
-// {
-//   type Entry = K;
-//   #[ inline( always ) ]
-//   fn val_to_entry( self ) -> Self::Entry
-//   {
-//     self
-//   }
-// }
-
 // xxx : test with HashSetLike
 //
 // impl< K > HashSetLike< K > for LoggingSet< K >
