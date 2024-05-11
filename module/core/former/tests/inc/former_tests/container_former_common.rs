@@ -42,8 +42,6 @@ fn definitions()
 fn begin_and_custom_end()
 {
 
-  // xxx : make example with that
-
   // basic case
 
   fn return_13( _storage : Vec< String >, _context : Option< () > ) -> f32
@@ -94,8 +92,6 @@ fn begin_and_custom_end()
 fn custom_definition()
 {
 
-  // xxx : make example of that
-
   struct Return13;
   impl former::FormerDefinitionTypes for Return13
   {
@@ -120,15 +116,15 @@ fn custom_definition()
 
   // -
 
-  impl the_module::FormingEnd< Return13 >
+  impl former::FormingEnd< Return13 >
   for Return13
   {
     fn call
     (
       &self,
-      _storage : < Return13 as the_module::FormerDefinitionTypes >::Storage,
-      _context : Option< < Return13 as the_module::FormerDefinitionTypes >::Context >
-    ) -> < Return13 as the_module::FormerDefinitionTypes >::Formed
+      _storage : < Return13 as former::FormerDefinitionTypes >::Storage,
+      _context : Option< < Return13 as former::FormerDefinitionTypes >::Context >
+    ) -> < Return13 as former::FormerDefinitionTypes >::Formed
     {
       13
     }
@@ -136,14 +132,14 @@ fn custom_definition()
 
   //
 
-  let got = the_module::ContainerFormer::< String, Return13 >::begin_coercing( None, None, Return13 )
+  let got = former::ContainerFormer::< String, Return13 >::begin( None, None, Return13 )
   .add( "a" )
   .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
 
-  let got = the_module::ContainerFormer::< String, Return13 >::new( Return13 )
+  let got = former::ContainerFormer::< String, Return13 >::new( Return13 )
   .add( "a" )
   .add( "b" )
   .form();
@@ -159,8 +155,6 @@ fn custom_definition()
 #[ test ]
 fn custom_definition_parametrized()
 {
-
-  // xxx : make example of that
 
   struct Return13< E >( ::core::marker::PhantomData< E > );
 

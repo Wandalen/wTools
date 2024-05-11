@@ -176,7 +176,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let as_subformer_end_name = format!( "{}AsSubformerEnd", stru );
   let as_subformer_end = syn::Ident::new( &as_subformer_end_name, stru.span() );
 
-  // zzz : improve
+  // xxx : improve
   let as_subformer_end_doc = format!( "Alias for trait former::FormingEnd with context and formed the same type and definition of structure [`$(stru)`]. Use as subformer end of a field during process of forming of super structure." );
 
   /* parameters for structure */
@@ -555,7 +555,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       ///
       /// Construct new instance of former with default parameters.
       ///
-      // zzz : improve description
+      // xxx : improve description
       #[ inline( always ) ]
       pub fn new( on_end : Definition::End ) -> Self
       {
@@ -565,7 +565,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       ///
       /// Construct new instance of former with default parameters.
       ///
-      // zzz : improve description
+      // xxx : improve description
       #[ inline( always ) ]
       pub fn new_coercing< IntoEnd >( end : IntoEnd ) -> Self
       where
@@ -582,7 +582,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       ///
       /// Begin the process of forming. Expects context of forming to return it after forming.
       ///
-      // zzz : improve description
+      // xxx : improve description
       #[ inline( always ) ]
       pub fn begin
       (
@@ -607,7 +607,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       ///
       /// Begin the process of forming. Expects context of forming to return it after forming.
       ///
-      // zzz : improve description
+      // xxx : improve description
       #[ inline( always ) ]
       pub fn begin_coercing< IntoEnd >
       (
@@ -727,7 +727,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     // = subformer
 
-    // zzz : improve description
+    // xxx : improve description
     /// Use as subformer of a field during process of forming of super structure.
     pub type #as_subformer < #struct_generics_ty __Superformer, __End > = #former
     <
@@ -744,7 +744,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     // = as subformer end
 
-    // zzz : imporove documentation
+    // xxx : imporove documentation
     #[ doc = #as_subformer_end_doc ]
     pub trait #as_subformer_end < #struct_generics_impl SuperFormer >
     where

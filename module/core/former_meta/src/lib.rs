@@ -31,7 +31,7 @@ use macro_tools::prelude::*;
 #[ cfg( feature = "derive_former" ) ]
 mod derive_former;
 
-// zzz : outdated
+// xxx : outdated
 ///
 /// Derive macro to generate former for a structure. Former is variation of Builder Pattern.
 ///
@@ -144,7 +144,7 @@ mod derive_former;
 ///   >
 ///   where
 ///     End : former::FormingEnd< UserProfile, Context >,
-/// // zzz : update
+/// // xxx : update
 ///   {
 ///     storage : UserProfileFormerStorage,
 ///     context : Option< Context >,
@@ -192,7 +192,7 @@ mod derive_former;
 ///       return result.greet_user();
 ///     }
 ///
-///      // qqq : zzz : outdated, update
+///      // qqq : xxx : outdated, update
 ///      #[ inline( always ) ]
 ///      pub fn new_coercing() -> UserProfileFormer< UserProfile, former::ReturnFormed >
 ///      {

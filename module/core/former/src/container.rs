@@ -11,29 +11,6 @@ pub( crate ) mod private
 
   use crate::*;
 
-  /// Represents a container by defining the types of entries and values it handles.
-  ///
-  /// This trait abstracts the nature of containers in data structures, facilitating the handling of contained
-  /// entries and values, especially in scenarios where the structure of the container allows for complex relationships,
-  /// such as `HashMap`s. It not only identifies what constitutes an entry and a value in the context of the container
-  /// but also provides utility for converting between these two, which is critical in operations involving entry manipulation
-  /// and value retrieval.
-
-  pub trait Container
-  {
-    /// The type of entries that can be added to the container. This type can differ from `Val` in containers like `HashMap`,
-    /// where an entry might represent a key-value pair, and `Val` could represent just the value or the key.
-    type Entry;
-
-    /// The type of values stored in the container. This might be distinct from `Entry` in complex containers.
-    /// For example, in a `HashMap`, while `Entry` might be a ( key, value ) tuple, `Val` might only be the value part.
-    type Val;
-
-    /// Converts an entry to its corresponding value within the container. This function is essential for abstracting
-    /// the container's internal representation from the values it manipulates.
-    fn entry_to_val( e : Self::Entry ) -> Self::Val;
-  }
-
   /// Facilitates the conversion of container entries to their corresponding value representations.
   ///
   /// This trait is utilized to transform an entry of a container into a value, abstracting the operation of containers
@@ -155,6 +132,29 @@ pub( crate ) mod private
     {
       C::val_to_entry( self )
     }
+  }
+
+  /// Represents a container by defining the types of entries and values it handles.
+  ///
+  /// This trait abstracts the nature of containers in data structures, facilitating the handling of contained
+  /// entries and values, especially in scenarios where the structure of the container allows for complex relationships,
+  /// such as `HashMap`s. It not only identifies what constitutes an entry and a value in the context of the container
+  /// but also provides utility for converting between these two, which is critical in operations involving entry manipulation
+  /// and value retrieval.
+
+  pub trait Container
+  {
+    /// The type of entries that can be added to the container. This type can differ from `Val` in containers like `HashMap`,
+    /// where an entry might represent a key-value pair, and `Val` could represent just the value or the key.
+    type Entry;
+
+    /// The type of values stored in the container. This might be distinct from `Entry` in complex containers.
+    /// For example, in a `HashMap`, while `Entry` might be a ( key, value ) tuple, `Val` might only be the value part.
+    type Val;
+
+    /// Converts an entry to its corresponding value within the container. This function is essential for abstracting
+    /// the container's internal representation from the values it manipulates.
+    fn entry_to_val( e : Self::Entry ) -> Self::Val;
   }
 
   /// Provides functionality to add individual entries to a container.
@@ -535,13 +535,16 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::private::
   {
-    Container,
+
     EntryToVal,
     ContainerValToEntry,
     ValToEntry,
+
+    Container,
     ContainerAdd,
     ContainerAssign,
     ContainerFormer,
+
   };
 
   #[ doc( inline ) ]
