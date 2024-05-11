@@ -166,7 +166,7 @@ features = [ "enabled" ]
 ## mem
 
 [workspace.dependencies.mem_tools]
-version = "~0.5.0"
+version = "~0.6.0"
 path = "module/core/mem_tools"
 default-features = false
 
