@@ -150,6 +150,12 @@ where
   }
 }
 
+#[ allow( unused_extern_crates ) ]
+#[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
+extern crate alloc;
+#[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
+use alloc::boxed::Box;
+
 /// A wrapper around a closure to be used as a `FormingEnd`.
 ///
 /// This struct allows for dynamic dispatch of a closure that matches the

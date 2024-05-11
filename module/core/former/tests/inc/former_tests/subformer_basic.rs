@@ -1,3 +1,4 @@
+#![ deny( missing_docs ) ]
 #![ allow( dead_code ) ]
 use super::*;
 
