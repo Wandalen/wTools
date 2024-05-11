@@ -1,6 +1,4 @@
-//! # HashSetLike Trait and HashSetAsSubformer Struct
-//!
-//! This part of the crate provides a flexible interface (`HashSetLike`) and a builder pattern implementation (`HashSetAsSubformer`) for `HashSet`-like containers. It's designed to extend the builder pattern, allowing for fluent and dynamic construction of sets within custom data structures.
+//! This module provides a builder pattern implementation (`HashSetAsSubformer`) for `HashSet`-like containers. It is designed to extend the builder pattern, allowing for fluent and dynamic construction of sets within custom data structures.
 
 use super::*;
 use collection_tools::HashSet;

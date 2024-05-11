@@ -56,8 +56,6 @@ scalar_setter_required
     let is_optional = typ::is_optional( ty );
     let of_type = container_kind::of_optional( ty ).0;
     let non_optional_ty : &syn::Type = if is_optional { typ::parameter_first( ty )? } else { ty };
-    // let for_storage = true;
-    // let for_formed = true;
     let field2 = Self
     {
       attrs,

@@ -1,3 +1,10 @@
+//! This module provides a comprehensive approach to applying the builder pattern to `HashMap` containers.
+//!
+//! By leveraging traits such as `Container`, `ContainerAdd`, `ContainerAssign`, and `ContainerValToEntry`,
+//! this module abstracts the operations on hashmap-like data structures, making them more flexible and easier to integrate as
+//! as subformer, enabling fluid and intuitive manipulation of hashmaps via builder patterns.
+//!
+
 use super::*;
 
 use collection_tools::HashMap;
@@ -21,8 +28,6 @@ impl< K, V > ContainerAdd for collection_tools::HashMap< K, V >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
-  // type Entry = ( K, V );
-  // type Val = V;
 
   #[ inline( always ) ]
   fn add( &mut self, ( k, v ) : Self::Entry ) -> bool
@@ -36,7 +41,6 @@ impl< K, V > ContainerAssign for collection_tools::HashMap< K, V >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
-  // type Entry = ( K, V );
 
   fn assign< Elements >( &mut self, elements : Elements ) -> usize
   where
@@ -48,39 +52,6 @@ where
   }
 }
 
-/// A trait for types that behave like hash maps, supporting insertion and custom forming behaviors.
-///
-/// This trait allows for generic operations on hash map-like data structures, enabling the insertion
-/// of key-value pairs and the creation of formers for more complex construction patterns.
-///
-/// # Type Parameters
-/// - `K`: The type of keys stored in the hash map. Must implement `Eq` and `Hash`.
-/// - `E`: The type of elements (values) stored in the hash map.
-pub trait HashMapLike< K, E >
-where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-  Self : Sized + Default,
-{
-
-  /// Inserts a key-value pair into the map.
-  fn insert( &mut self, k : K, e : E ) -> Option< E >;
-
-}
-
-impl< K, E > HashMapLike< K, E > for HashMap< K, E >
-where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-  Self : Sized + Default,
-{
-
-  #[ inline( always ) ]
-  fn insert( &mut self, k : K, e : E ) -> Option< E >
-  {
-    HashMap::insert( self, k, e )
-  }
-
-}
-
 // = storage
 
 impl< K, E > Storage
@@ -88,8 +59,6 @@ for HashMap< K, E >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  // type Types = HashMapDefinition< K, E >;
-  // type Formed = HashMap< K, E >;
   type Preformed = HashMap< K, E >;
 }
 
@@ -98,8 +67,6 @@ for HashMap< K, E >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  // type Preformed = HashMap< K, E >;
-  // fn preform( self ) -> < < Self as Storage >::Definition as FormerDefinitionTypes >::Formed
   fn preform( self ) -> Self::Preformed
   {
     self
@@ -163,10 +130,6 @@ where
 // = Entity To
 
 impl< K, E, Definition > EntityToFormer< Definition > for HashMap< K, E >
-// where
-//   K : ::core::cmp::Eq + ::core::hash::Hash,
-//   Definition : FormerDefinition< Storage = HashMap< K, E >, Formed = () >,
-//   < Definition as definition::FormerDefinition>::End : Fn( HashMap< K, E >, Option< Definition::Context > ),
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
   Definition : FormerDefinition
@@ -213,48 +176,17 @@ where
 
 // = subformer
 
-/// A builder for constructing hash map-like structures with a fluent interface.
+/// Provides a streamlined builder interface for constructing hash map-like containers.
 ///
-/// `HashMapAsSubformer` leverages the `HashMapLike` trait to enable a flexible and customizable
-/// way to build hash map-like structures. It supports the chaining of insert operations and
-/// allows for the definition of custom end actions to finalize the building process.
+/// `HashMapAsSubformer` is a type alias that configures the `ContainerSubformer` specifically for hash maps,
+/// facilitating a more intuitive and flexible way to build and manipulate hash maps within custom data structures.
+/// This type alias simplifies the usage of hash maps in builder patterns by encapsulating complex generic parameters
+/// and leveraging the `HashMapDefinition` to handle the construction logic. It supports fluent chaining of key-value
+/// insertions and can be customized with various end actions to finalize the hash map upon completion.
 ///
-/// # Type Parameters
-/// - `K`: Key type, must implement `Eq` and `Hash`.
-/// - `E`: Entry (value) type.
-/// - `Formed`: The hash map-like formed being built.
-/// - `Context`: Type of the optional context used during the building process.
-/// - `End`: End-of-forming action to be executed upon completion.
-///
-/// # Examples
-/// ```
-/// # #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
-/// # {
-/// # use test_tools::exposed::*;
-///
-/// #[ derive( Debug, PartialEq, former::Former ) ]
-/// pub struct StructWithMap
-/// {
-///   #[ container( definition = former::HashMapAsSubformer ) ]
-///   map : std::collections::HashMap< &'static str, &'static str >,
-/// }
-///
-/// let struct1 = StructWithMap::former()
-/// .map()
-///   .insert( "a", "b" )
-///   .insert( "c", "d" )
-///   .end()
-/// .form()
-/// ;
-/// assert_eq!( struct1, StructWithMap { map : hmap!{ "a" => "b", "c" => "d" } } );
-///
-/// # }
-/// ```
+/// The alias helps reduce boilerplate code and enhances readability, making the construction of hash maps in
+/// a builder pattern both efficient and expressive.
 
-// pub type HashMapAsSubformer< K, E, Context, End > = ContainerSubformer::< ( K, E ), HashMapDefinition< K, E, Context, End > >;
-
-// zzz : update documentation
-// pub type HashMapAsSubformer< K, E, Context, End > = ContainerSubformer::< K, HashMapDefinition< K, E, Context, End > >;
 pub type HashMapAsSubformer< K, E, Context, Formed, End > =
 ContainerSubformer::< ( K, E ), HashMapDefinition< K, E, Context, Formed, End > >;
 

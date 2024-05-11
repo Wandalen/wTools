@@ -1,3 +1,10 @@
+//! This module provides a comprehensive approach to applying the builder pattern to `Vec` containers.
+//!
+//! By leveraging traits such as `Container`, `ContainerAdd`, `ContainerAssign`, and `ContainerValToEntry`,
+//! this module abstracts the operations on vector-like data structures, making them more flexible and easier to integrate as
+//! as subformer, enabling fluid and intuitive manipulation of vectors via builder patterns.
+//!
+
 use super::*;
 // use axiomatic::*;
 
@@ -19,8 +26,6 @@ impl< E > Container for collection_tools::Vec< E >
 
 impl< E > ContainerAdd for collection_tools::Vec< E >
 {
-  // type Entry = E;
-  // type Val = E;
 
   #[ inline( always ) ]
   fn add( &mut self, e : Self::Entry ) -> bool
@@ -33,8 +38,6 @@ impl< E > ContainerAdd for collection_tools::Vec< E >
 
 impl< E > ContainerAssign for collection_tools::Vec< E >
 {
-  // type Entry = E;
-
   #[ inline( always ) ]
   fn assign< Elements >( &mut self, elements : Elements ) -> usize
   where
@@ -55,25 +58,6 @@ where
   fn val_to_entry( val : E ) -> Self::Entry
   {
     val
-  }
-}
-
-/// Trait for containers that behave like a vector, providing an interface for element addition.
-///
-/// This trait enables the use of custom or standard vector-like containers within the builder pattern,
-/// allowing for a unified and flexible approach to constructing collections.
-///
-pub trait VectorLike< E >
-{
-  /// Appends an element to the back of a storage.
-  fn push( &mut self, element : E );
-}
-
-impl< E > VectorLike< E > for Vec< E >
-{
-  fn push( &mut self, element : E )
-  {
-    Vec::push( self, element );
   }
 }
 
@@ -99,11 +83,7 @@ for Vec< E >
 
 // = definition
 
-// xxx : split definition and definition types
-// xxx : imlement custom ContainerDefinition
-
 #[ derive( Debug, Default ) ]
-// pub struct VectorDefinition< E, Context = (), Formed = Vec< E >, End = ReturnStorage >
 pub struct VectorDefinition< E, Context, Formed, End >
 where
   End : FormingEnd< VectorDefinitionTypes< E, Context, Formed > >,
@@ -149,17 +129,8 @@ for VectorDefinitionTypes< E, Context, Formed >
 
 // = Entity To
 
-// zzz : qqq : implement for hashset / hashmap
-// zzz : qqq : cover by tests
-// zzz : qqq : rid off bound `Fn( Vec< E >, Option< Definition::Context > ) -> Definition::Formed` for all containers
-
 impl< E, Definition > EntityToFormer< Definition >
 for Vec< E >
-// where
-//   Definition : FormerDefinition< Storage = Vec< E > >,
-//   Definition::Types : FormerDefinitionTypes< Storage = Vec< E >, Formed = Definition::Formed, Context = Definition::Context >,
-//   Definition::End : crate::FormingEnd< Definition::Types >,
-//   < Definition as definition::FormerDefinition >::End : Fn( Vec< E >, Option< Definition::Context > ) -> Definition::Formed, // xxx
 where
   Definition : FormerDefinition
   <
@@ -199,12 +170,17 @@ for Vec< E >
 
 // = subformer
 
-/// A builder for constructing `VectorLike` containers, facilitating a fluent and flexible interface.
+/// Provides a streamlined builder interface for constructing vector-like containers.
 ///
-/// `VectorAsSubformer` leverages the `VectorLike` trait to enable the construction and manipulation
-/// of vector-like containers in a builder pattern style, promoting readability and ease of use.
-
-// zzz : update documentation
+/// `VectorAsSubformer` is a type alias that configures the `ContainerSubformer` for use specifically with vectors.
+/// It integrates the `VectorDefinition` to facilitate the fluent and dynamic construction of vectors, leveraging
+/// predefined settings to reduce boilerplate code. This approach enhances readability and simplifies the use of
+/// vectors in custom data structures where builder patterns are desired.
+///
+/// The alias encapsulates complex generic parameters, making the construction process more accessible and maintainable.
+/// It is particularly useful in scenarios where vectors are repeatedly used or configured in similar ways across different
+/// parts of an application.
+///
 
 pub type VectorAsSubformer< E, Context, Formed, End > =
 ContainerSubformer::< E, VectorDefinition< E, Context, Formed, End > >;
