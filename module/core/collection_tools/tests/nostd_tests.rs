@@ -8,5 +8,5 @@ use ::collection_tools as the_module;
 #[ path="../../../../module/step/meta/src/module/aggregating.rs" ]
 mod aggregating;
 
-mod nostd;
+mod only_tests;
 // aaa : enable
