@@ -121,6 +121,10 @@ pub trait ValToEntry< Container >
   ///
   /// # Example
   /// ```
+  /// use former::ValToEntry;
+  ///
+  /// struct PairMap;
+  ///
   /// impl ValToEntry< PairMap > for (i32, i32)
   /// {
   ///   type Entry = ( String, i32 );
@@ -268,8 +272,9 @@ where
   /// impl IntoIterator for MyContainer
   /// {
   ///   type Item = i32;
-  ///   type IntoIter = collection_tools::vec::IntoIter< i32 >;
-  // xxx : make sure collection_tools has it
+  ///   type IntoIter = std::vec::IntoIter< i32 >;
+  ///   // type IntoIter = collection_tools::vec::IntoIter< i32 >;
+  ///   // qqq : zzz : make sure collection_tools has itearators
   ///
   ///   fn into_iter( self ) -> Self::IntoIter
   ///   {

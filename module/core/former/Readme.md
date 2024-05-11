@@ -113,6 +113,7 @@ fn main()
     End : former::FormingEnd< UserProfileFormerDefinitionTypes< Context, Formed > >,
   {
     type Definition = UserProfileFormerDefinition< Context, Formed, End >;
+    type Types = UserProfileFormerDefinitionTypes< Context, Formed >;
   }
 
   // = definition
@@ -206,7 +207,7 @@ fn main()
   impl former::Storage for UserProfileFormerStorage
   where
   {
-    type Performed = UserProfile;
+    type Preformed = UserProfile;
   }
 
   impl former::StoragePreform for UserProfileFormerStorage
@@ -1105,7 +1106,7 @@ fn main()
   impl< Context, Formed > former::FormerMutator
   for Struct1FormerDefinitionTypes< Context, Formed >
   {
-    Mutates the context and storage of the entity just before the formation process completes.
+    /// Mutates the context and storage of the entity just before the formation process completes.
     #[ inline ]
     fn form_mutation( storage : &mut Self::Storage, _context : &mut ::core::option::Option< Self::Context > )
     {

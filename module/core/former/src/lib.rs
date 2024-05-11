@@ -4,12 +4,6 @@
 #![ doc( html_root_url = "https://docs.rs/former/latest/former/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-// zzz : remove
-#![ allow( missing_docs ) ]
-
-// zzz : describe "Context-aware forming process"
-// zzz : explain role of container in former
-
 /// Axiomatic things.
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_former" ) ]

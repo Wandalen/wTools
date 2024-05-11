@@ -100,78 +100,73 @@ mod former_tests
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subformer_subform_and_container_parametrized;
 
-  // xxx
+}
+
+#[ cfg( feature = "derive_components" ) ]
+mod components_tests
+{
+  use super::*;
+
+  #[ cfg( feature = "derive_component_from" ) ]
+  mod component_from_manual;
+  #[ cfg( feature = "derive_component_from" ) ]
+  mod component_from;
+
+  #[ cfg( feature = "derive_component_assign" ) ]
+  mod component_assign_manual;
+  #[ cfg( feature = "derive_component_assign" ) ]
+  mod component_assign;
+
+  #[ cfg( all( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
+  mod components_assign_manual;
+  #[ cfg( all( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
+  mod components_assign;
+
+  #[ cfg( all( feature = "derive_from_components" ) ) ]
+  mod from_components_manual;
+  #[ cfg( all( feature = "derive_from_components" ) ) ]
+  mod from_components;
+
+  #[ cfg( all( feature = "derive_component_from", feature = "derive_component_assign", feature = "derive_components_assign", feature = "derive_from_components" ) ) ]
+  mod composite_manual;
+  #[ cfg( all( feature = "derive_component_from", feature = "derive_component_assign", feature = "derive_components_assign", feature = "derive_from_components" ) ) ]
+  mod composite;
 
 }
 
-// xxx
-// #[ cfg( feature = "derive_components" ) ]
-// mod components_tests
-// {
-//   use super::*;
-//
-//   #[ cfg( feature = "derive_component_from" ) ]
-//   mod component_from_manual;
-//   #[ cfg( feature = "derive_component_from" ) ]
-//   mod component_from;
-//
-//   #[ cfg( feature = "derive_component_assign" ) ]
-//   mod component_assign_manual;
-//   #[ cfg( feature = "derive_component_assign" ) ]
-//   mod component_assign;
-//
-//   #[ cfg( all( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
-//   mod components_assign_manual;
-//   #[ cfg( all( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
-//   mod components_assign;
-//
-//   #[ cfg( all( feature = "derive_from_components" ) ) ]
-//   mod from_components_manual;
-//   #[ cfg( all( feature = "derive_from_components" ) ) ]
-//   mod from_components;
-//
-//   #[ cfg( all( feature = "derive_component_from", feature = "derive_component_assign", feature = "derive_components_assign", feature = "derive_from_components" ) ) ]
-//   mod composite_manual;
-//   #[ cfg( all( feature = "derive_component_from", feature = "derive_component_assign", feature = "derive_components_assign", feature = "derive_from_components" ) ) ]
-//   mod composite;
-//
-// }
+only_for_terminal_module!
+{
 
-// xxx
-// only_for_terminal_module!
-// {
-//
-//   // stable have different information about error
-//   // that's why these tests are active only for nightly
-//   #[ test_tools::nightly ]
-//   #[ test ]
-//   fn former_trybuild()
-//   {
-//
-//     println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
-//     let t = test_tools::compiletime::TestCases::new();
-//
-//     // zzz : uncomment
-//     t.compile_fail( "tests/inc/former_tests/compiletime/field_attr_bad.rs" );
-//     t.compile_fail( "tests/inc/former_tests/compiletime/struct_attr_bad.rs" );
-//     t.pass( "tests/inc/former_tests/compiletime/hashmap_without_parameter.rs" );
-//     t.pass( "tests/inc/former_tests/compiletime/vector_without_parameter.rs" );
-//
-//   }
-//
-//   // stable have different information about error
-//   // that's why these tests are active only for nightly
-//   #[ test_tools::nightly ]
-//   #[ test ]
-//   fn components_trybuild()
-//   {
-//
-//     println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
-//     let _t = test_tools::compiletime::TestCases::new();
-//
-//     // zzz : make it working test
-//     //t.run( "tests/inc/components_tests/compiletime/components_component_from_debug.rs" );
-//
-//   }
-//
-// }
+  // stable have different information about error
+  // that's why these tests are active only for nightly
+  #[ test_tools::nightly ]
+  #[ test ]
+  fn former_trybuild()
+  {
+
+    println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+    let t = test_tools::compiletime::TestCases::new();
+
+    t.compile_fail( "tests/inc/former_tests/compiletime/field_attr_bad.rs" );
+    t.compile_fail( "tests/inc/former_tests/compiletime/struct_attr_bad.rs" );
+    t.pass( "tests/inc/former_tests/compiletime/hashmap_without_parameter.rs" );
+    t.pass( "tests/inc/former_tests/compiletime/vector_without_parameter.rs" );
+
+  }
+
+  // stable have different information about error
+  // that's why these tests are active only for nightly
+  #[ test_tools::nightly ]
+  #[ test ]
+  fn components_trybuild()
+  {
+
+    println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+    let _t = test_tools::compiletime::TestCases::new();
+
+    // zzz : make it working test
+    //t.run( "tests/inc/components_tests/compiletime/components_component_from_debug.rs" );
+
+  }
+
+}

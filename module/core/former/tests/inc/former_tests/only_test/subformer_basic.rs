@@ -13,7 +13,7 @@
 // ;
 // ca.execute( input ).unwrap();
 
-// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
+// qqq : xxx : remove #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn command_with_closure()
@@ -59,7 +59,7 @@ fn command_with_closure()
 
 //
 
-// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
+// qqq : xxx : remove #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn command_properties()
@@ -113,7 +113,7 @@ fn command_properties()
 
 //
 
-// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
+// qqq : xxx : remove #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn aggregator()

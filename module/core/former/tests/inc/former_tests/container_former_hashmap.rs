@@ -5,7 +5,7 @@ use super::*;
 #[ allow( unused_imports ) ]
 use collection_tools::HashMap;
 
-// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
+// qqq : xxx : remove #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn add()
@@ -85,7 +85,7 @@ fn add()
 
 }
 
-// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
+// qqq : xxx : remove #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn replace()
