@@ -1,23 +1,7 @@
-//! This module provides a builder pattern implementation (`HashSetAsSubformer`) for `HashSet`-like containers. It is designed to extend the builder pattern, allowing for fluent and dynamic construction of sets within custom data structures.
+//! This module provides a builder pattern implementation (`HashSetFormer`) for `HashSet`-like containers. It is designed to extend the builder pattern, allowing for fluent and dynamic construction of sets within custom data structures.
 
-use super::*;
+use crate::*;
 use collection_tools::HashSet;
-
-// impl< K, T > Container for T
-// where
-//   K : core::cmp::Eq + core::hash::Hash,
-//   T : HashSetLike< K >,
-// {
-//   type Entry = K;
-//   type Val = K;
-//
-//   #[ inline( always ) ]
-//   fn entry_to_val( e : Self::Entry ) -> Self::Val
-//   {
-//     e
-//   }
-//
-// }
 
 impl< K > Container for collection_tools::HashSet< K >
 where
@@ -79,7 +63,7 @@ where
 
 // /// A trait for containers behaving like a `HashSet`, allowing insertion operations.
 // ///
-// /// Implementing this trait enables the associated formed to be used with `HashSetAsSubformer`,
+// /// Implementing this trait enables the associated formed to be used with `HashSetFormer`,
 // /// facilitating a builder pattern that is both intuitive and concise.
 // ///
 // /// # Example Implementation
@@ -130,6 +114,20 @@ where
 
 // = definition
 
+/// Represents the formation definition for a hash set-like container within the former framework.
+///
+/// This structure defines the essential elements required to form a hash set-like container, detailing
+/// the type of elements, the contextual environment during formation, the final formed type, and the
+/// behavior at the end of the formation process. It is designed to support the construction and configuration
+/// of hash set containers with dynamic characteristics and behaviors.
+///
+/// # Type Parameters
+/// - `K`: The type of elements in the hash set.
+/// - `Context`: The optional context provided during the formation process.
+/// - `Formed`: The type of the entity produced, typically a `HashSet<K>`.
+/// - `End`: A trait defining the end behavior of the formation process, managing how the hash set is finalized.
+///
+
 #[ derive( Debug, Default ) ]
 pub struct HashSetDefinition< K, Context = (), Formed = HashSet< K >, End = ReturnStorage >
 where
@@ -154,6 +152,13 @@ where
 }
 
 // = definition types
+
+/// Holds the generic parameters for the `HashSetDefinition`.
+///
+/// This struct encapsulates the type relationships and characteristics essential for the formation process
+/// of a `HashSet`, including the storage type, the context, and the type ultimately formed. It ensures that
+/// these elements are congruent and coherent throughout the lifecycle of the hash set formation.
+///
 
 #[ derive( Debug, Default ) ]
 pub struct HashSetDefinitionTypes< K, Context = (), Formed = HashSet< K > >
@@ -197,7 +202,7 @@ where
   >,
   Definition::End : forming::FormingEnd< Definition::Types >,
 {
-  type Former = HashSetAsSubformer< K, Definition::Context, Definition::Formed, Definition::End >;
+  type Former = HashSetFormer< K, Definition::Context, Definition::Formed, Definition::End >;
 }
 
 impl< K > crate::EntityToStorage
@@ -228,32 +233,40 @@ where
 
 // = subformer
 
-/// Provides a concise alias for `ContainerSubformer` configured specifically for `HashSet`-like containers.
+/// Provides a concise alias for `ContainerFormer` configured specifically for `HashSet`-like containers.
 ///
-/// `HashSetAsSubformer` simplifies the creation of `HashSet` containers within builder patterns by leveraging
-/// the `ContainerSubformer` with predefined settings. This approach minimizes boilerplate code and enhances
+/// `HashSetFormer` simplifies the creation of `HashSet` containers within builder patterns by leveraging
+/// the `ContainerFormer` with predefined settings. This approach minimizes boilerplate code and enhances
 /// readability, making it ideal for fluent and expressive construction of set containers within custom data structures.
 ///
 
-pub type HashSetAsSubformer< K, Context, Formed, End > =
-ContainerSubformer::< K, HashSetDefinition< K, Context, Formed, End > >;
+pub type HashSetFormer< K, Context, Formed, End > =
+ContainerFormer::< K, HashSetDefinition< K, Context, Formed, End > >;
 
 // = extension
+
+/// Provides an extension method for `HashSet` to facilitate the use of the builder pattern.
+///
+/// This trait extends `HashSet`, enabling direct use of the `HashSetFormer` interface for fluent and expressive
+/// set construction. It simplifies the process of building `HashSet` instances by providing a straightforward
+/// way to start the builder pattern with default context and termination behavior.
+///
 
 pub trait HashSetExt< K > : sealed::Sealed
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  fn former() -> HashSetAsSubformer< K, (), HashSet< K >, ReturnStorage >;
+  /// Initializes a builder pattern for `HashSet` using a default `HashSetFormer`.
+  fn former() -> HashSetFormer< K, (), HashSet< K >, ReturnStorage >;
 }
 
 impl< K > HashSetExt< K > for HashSet< K >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  fn former() -> HashSetAsSubformer< K, (), HashSet< K >, ReturnStorage >
+  fn former() -> HashSetFormer< K, (), HashSet< K >, ReturnStorage >
   {
-    HashSetAsSubformer::< K, (), HashSet< K >, ReturnStorage >::new( ReturnStorage::default() )
+    HashSetFormer::< K, (), HashSet< K >, ReturnStorage >::new( ReturnStorage::default() )
   }
 }
 

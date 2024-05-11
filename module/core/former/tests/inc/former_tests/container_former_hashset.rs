@@ -11,10 +11,10 @@ use collection_tools::HashSet;
 fn add()
 {
 
-  // expliccit with ContainerSubformer
+  // expliccit with ContainerFormer
 
   let got : HashSet< String > = the_module
-  ::ContainerSubformer
+  ::ContainerFormer
   ::< String, former::HashSetDefinition< String, (), HashSet< String >, the_module::ReturnStorage > >
   ::new( former::ReturnStorage )
   .add( "a" )
@@ -27,9 +27,9 @@ fn add()
   ];
   a_id!( got, exp );
 
-  // expliccit with HashSetAsSubformer
+  // expliccit with HashSetFormer
 
-  let got : HashSet< String > = the_module::HashSetAsSubformer::< String, (), HashSet< String >, the_module::ReturnStorage >
+  let got : HashSet< String > = the_module::HashSetFormer::< String, (), HashSet< String >, the_module::ReturnStorage >
   ::new( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
@@ -41,9 +41,9 @@ fn add()
   ];
   a_id!( got, exp );
 
-  // compact with HashSetAsSubformer
+  // compact with HashSetFormer
 
-  let got : HashSet< String > = the_module::HashSetAsSubformer::new( former::ReturnStorage )
+  let got : HashSet< String > = the_module::HashSetFormer::new( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
   .form();
@@ -56,7 +56,7 @@ fn add()
 
   // with begin_coercing
 
-  let got : HashSet< String > = the_module::HashSetAsSubformer
+  let got : HashSet< String > = the_module::HashSetFormer
   ::begin( Some( hset![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
   .add( "b" )
   .form();
@@ -91,7 +91,7 @@ fn add()
 fn replace()
 {
 
-  let got : HashSet< String > = the_module::HashSetAsSubformer::new( former::ReturnStorage )
+  let got : HashSet< String > = the_module::HashSetFormer::new( former::ReturnStorage )
   .add( "x" )
   .replace( hset![ "a".to_string(), "b".to_string() ] )
   .form();

@@ -229,7 +229,7 @@ where
 // = subformer
 
 pub type LoggingSetAsSubformer< K, Context, Formed, End > =
-former::ContainerSubformer::< K, LoggingSetDefinition< K, Context, Formed, End > >;
+former::ContainerFormer::< K, LoggingSetDefinition< K, Context, Formed, End > >;
 
 // == use custom container
 

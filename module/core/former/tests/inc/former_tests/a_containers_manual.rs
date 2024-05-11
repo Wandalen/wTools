@@ -361,7 +361,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn vec_1( self ) -> former::ContainerSubformer::
+  pub fn vec_1( self ) -> former::ContainerFormer::
   <
     String,
     former::VectorDefinition< String, Self, Self, Struct1FormerAssignVec1End< Definition > >,
@@ -378,7 +378,7 @@ where
       < collection_tools::Vec< String > as former::EntityToDefinitionTypes< Self, Self > >::Types
     >,
   {
-    self._vec_1_assign::< former::ContainerSubformer::
+    self._vec_1_assign::< former::ContainerFormer::
     <
       String,
       former::VectorDefinition< String, Self, Self, Struct1FormerAssignVec1End< Definition > >,
@@ -407,7 +407,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn hashmap_1( self ) -> former::ContainerSubformer::
+  pub fn hashmap_1( self ) -> former::ContainerFormer::
   <
     ( String, String ),
     former::HashMapDefinition< String, String, Self, Self, Struct1FormerAssignHashmap1End< Definition > >,
@@ -424,7 +424,7 @@ where
       < collection_tools::HashMap< String, String > as former::EntityToDefinitionTypes< Self, Self > >::Types
     >,
   {
-    self._hashmap_1_assign::< former::ContainerSubformer::
+    self._hashmap_1_assign::< former::ContainerFormer::
     <
       ( String, String ),
       former::HashMapDefinition< String, String, Self, Self, Struct1FormerAssignHashmap1End< Definition > >,
@@ -453,7 +453,7 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn hashset_1( self ) -> former::ContainerSubformer::
+  pub fn hashset_1( self ) -> former::ContainerFormer::
   <
     String,
     former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
@@ -470,7 +470,7 @@ where
       < collection_tools::HashSet< String > as former::EntityToDefinitionTypes< Self, Self > >::Types
     >,
   {
-    self._hashset_1_assign::< former::ContainerSubformer::
+    self._hashset_1_assign::< former::ContainerFormer::
     <
       String,
       former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,

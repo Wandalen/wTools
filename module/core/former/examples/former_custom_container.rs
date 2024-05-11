@@ -249,9 +249,9 @@ fn main()
 
   // = subformer
 
-  // Subformer type alias simplifies the usage of `ContainerSubformer` with `LoggingSet`.
+  // Subformer type alias simplifies the usage of `ContainerFormer` with `LoggingSet`.
   pub type LoggingSetAsSubformer< K, Context, Formed, End > =
-  former::ContainerSubformer::< K, LoggingSetDefinition< K, Context, Formed, End > >;
+  former::ContainerFormer::< K, LoggingSetDefinition< K, Context, Formed, End > >;
 
   // == use custom container
 

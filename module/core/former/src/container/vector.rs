@@ -5,9 +5,7 @@
 //! as subformer, enabling fluid and intuitive manipulation of vectors via builder patterns.
 //!
 
-use super::*;
-// use axiomatic::*;
-
+use crate::*;
 #[ allow( unused ) ]
 use collection_tools::Vec;
 
@@ -66,15 +64,12 @@ where
 impl< E > Storage
 for Vec< E >
 {
-  // type Formed = Vec< E >;
   type Preformed = Vec< E >;
 }
 
 impl< E > StoragePreform
 for Vec< E >
 {
-  // type Preformed = Vec< E >;
-  // fn preform( self ) -> Self::Formed
   fn preform( self ) -> Self::Preformed
   {
     self
@@ -82,6 +77,18 @@ for Vec< E >
 }
 
 // = definition
+
+/// Represents the formation definition for a vector-like container within the former framework.
+///
+/// This structure defines the necessary parameters and relationships needed to form a vector-like container,
+/// including its storage, context, the result of the formation process, and the behavior at the end of the formation.
+///
+/// # Type Parameters
+/// - `E`: The element type of the vector.
+/// - `Context`: The context needed for the formation, can be provided externally.
+/// - `Formed`: The type formed at the end of the formation process, typically a `Vec<E>`.
+/// - `End`: A trait determining the behavior at the end of the formation process.
+///
 
 #[ derive( Debug, Default ) ]
 pub struct VectorDefinition< E, Context, Formed, End >
@@ -105,6 +112,18 @@ where
 }
 
 // = definition type
+
+/// Holds the generic parameters for the `VectorDefinition`.
+///
+/// This struct acts as a companion to `VectorDefinition`, providing a concrete definition of types used
+/// in the formation process. It is crucial for linking the type parameters with the operational mechanics
+/// of the formation and ensuring type safety and correctness throughout the formation lifecycle.
+///
+/// # Type Parameters
+///
+/// - `E`: The element type of the vector.
+/// - `Context`: The context in which the vector is formed.
+/// - `Formed`: The type produced as a result of the formation process.
 
 #[ derive( Debug, Default ) ]
 pub struct VectorDefinitionTypes< E, Context = (), Formed = Vec< E > >
@@ -144,7 +163,7 @@ where
   >,
   Definition::End : forming::FormingEnd< Definition::Types >,
 {
-  type Former = VectorAsSubformer< E, Definition::Context, Definition::Formed, Definition::End >;
+  type Former = VectorFormer< E, Definition::Context, Definition::Formed, Definition::End >;
 }
 
 impl< E > crate::EntityToStorage
@@ -172,7 +191,7 @@ for Vec< E >
 
 /// Provides a streamlined builder interface for constructing vector-like containers.
 ///
-/// `VectorAsSubformer` is a type alias that configures the `ContainerSubformer` for use specifically with vectors.
+/// `VectorFormer` is a type alias that configures the `ContainerFormer` for use specifically with vectors.
 /// It integrates the `VectorDefinition` to facilitate the fluent and dynamic construction of vectors, leveraging
 /// predefined settings to reduce boilerplate code. This approach enhances readability and simplifies the use of
 /// vectors in custom data structures where builder patterns are desired.
@@ -182,21 +201,29 @@ for Vec< E >
 /// parts of an application.
 ///
 
-pub type VectorAsSubformer< E, Context, Formed, End > =
-ContainerSubformer::< E, VectorDefinition< E, Context, Formed, End > >;
+pub type VectorFormer< E, Context, Formed, End > =
+ContainerFormer::< E, VectorDefinition< E, Context, Formed, End > >;
 
 // = extension
 
+/// Provides an extension method for vectors to facilitate the use of the builder pattern.
+///
+/// This trait extends the `Vec` type, enabling it to use the `VectorFormer` interface directly.
+/// This allows for fluent, expressive construction and manipulation of vectors, integrating seamlessly
+/// with the builder pattern provided by the `former` framework. It's a convenience trait that simplifies
+/// creating configured vector builders with default settings.
+///
 pub trait VecExt< E > : sealed::Sealed
 {
-  fn former() -> VectorAsSubformer< E, (), Vec< E >, ReturnStorage >;
+  /// Initializes a builder pattern for `Vec` using a default `VectorFormer`.
+  fn former() -> VectorFormer< E, (), Vec< E >, ReturnStorage >;
 }
 
 impl< E > VecExt< E > for Vec< E >
 {
-  fn former() -> VectorAsSubformer< E, (), Vec< E >, ReturnStorage >
+  fn former() -> VectorFormer< E, (), Vec< E >, ReturnStorage >
   {
-    VectorAsSubformer::< E, (), Vec< E >, ReturnStorage >::new( ReturnStorage::default() )
+    VectorFormer::< E, (), Vec< E >, ReturnStorage >::new( ReturnStorage::default() )
   }
 }
 

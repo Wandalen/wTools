@@ -318,9 +318,9 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn properties( self ) -> former::ContainerSubformer::< ( K, Property< K >, ), former::HashMapDefinition< K, Property< K >, Self, Self, ChildFormerPropertiesEnd > >
+  pub fn properties( self ) -> former::ContainerFormer::< ( K, Property< K >, ), former::HashMapDefinition< K, Property< K >, Self, Self, ChildFormerPropertiesEnd > >
   {
-    self.properties_set::< former::ContainerSubformer::< ( K, Property< K >, ), former::HashMapDefinition< K, Property< K >, Self, Self, ChildFormerPropertiesEnd > >>()
+    self.properties_set::< former::ContainerFormer::< ( K, Property< K >, ), former::HashMapDefinition< K, Property< K >, Self, Self, ChildFormerPropertiesEnd > >>()
   }
 }
 

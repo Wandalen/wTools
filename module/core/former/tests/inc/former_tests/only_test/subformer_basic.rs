@@ -86,7 +86,7 @@ fn command_properties()
   };
   a_id!( got, exp );
 
-  // with HashMapAsSubformer
+  // with HashMapFormer
   let got = Child::< &str >::former()
   .name( "a" )
   .subject( "b" )

@@ -38,13 +38,13 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn children( self ) -> former::ContainerSubformer::
+  pub fn children( self ) -> former::ContainerFormer::
   <
     Child,
     former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, >
   >
   {
-    self._children_container_former::< former::ContainerSubformer::< Child, former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, > > >()
+    self._children_container_former::< former::ContainerFormer::< Child, former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, > > >()
   }
 
 }

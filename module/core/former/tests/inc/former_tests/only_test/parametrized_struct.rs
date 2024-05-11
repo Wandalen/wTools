@@ -45,7 +45,7 @@ fn command_form()
 fn command_properties()
 {
 
-  // with HashMapAsSubformer
+  // with HashMapFormer
   let got = Child::< &str >::former()
   .name( "a" )
   .properties()

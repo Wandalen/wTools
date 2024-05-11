@@ -5,8 +5,7 @@
 //! as subformer, enabling fluid and intuitive manipulation of hashmaps via builder patterns.
 //!
 
-use super::*;
-
+use crate::*;
 use collection_tools::HashMap;
 
 impl< K, V > Container for collection_tools::HashMap< K, V >
@@ -75,6 +74,21 @@ where
 
 // = definition
 
+/// Represents the formation definition for a hash map-like container within the former framework.
+///
+/// This structure defines the essential elements required to form a hash map-like container, detailing
+/// the key and value types, the contextual environment during formation, the final formed type, and the
+/// behavior at the end of the formation process. It facilitates customization and extension of hash map
+/// formation within any system that implements complex data management operations.
+///
+/// # Type Parameters
+/// - `K`: The key type of the hash map.
+/// - `E`: The value type of the hash map.
+/// - `Context`: The optional context provided during the formation process.
+/// - `Formed`: The type of the entity produced, typically a `HashMap<K, E>`.
+/// - `End`: A trait defining the end behavior of the formation process, managing how the hash map is finalized.
+///
+
 #[ derive( Debug, Default ) ]
 pub struct HashMapDefinition< K, E, Context = (), Formed = HashMap< K, E >, End = ReturnStorage >
 where
@@ -101,6 +115,18 @@ where
 }
 
 // = definition types
+
+/// Holds the generic parameters for the `HashMapDefinition`.
+///
+/// This companion struct to `HashMapDefinition` defines the storage type and the context, along with the
+/// type that is ultimately formed through the process. It is crucial for maintaining the integrity and
+/// consistency of type relations throughout the former lifecycle.
+///
+/// # Type Parameters
+/// - `K`: The key type of the hash map.
+/// - `E`: The value type of the hash map.
+/// - `Context`: The operational context in which the hash map is formed.
+/// - `Formed`: The type produced, typically mirroring the structure of a `HashMap<K, E>`.
 
 #[ derive( Debug, Default ) ]
 pub struct HashMapDefinitionTypes< K, E, Context = (), Formed = HashMap< K, E > >
@@ -145,7 +171,7 @@ where
   >,
   Definition::End : forming::FormingEnd< Definition::Types >,
 {
-  type Former = HashMapAsSubformer< K, E, Definition::Context, Definition::Formed, Definition::End >;
+  type Former = HashMapFormer< K, E, Definition::Context, Definition::Formed, Definition::End >;
 }
 
 impl< K, E > crate::EntityToStorage
@@ -178,7 +204,7 @@ where
 
 /// Provides a streamlined builder interface for constructing hash map-like containers.
 ///
-/// `HashMapAsSubformer` is a type alias that configures the `ContainerSubformer` specifically for hash maps,
+/// `HashMapFormer` is a type alias that configures the `ContainerFormer` specifically for hash maps,
 /// facilitating a more intuitive and flexible way to build and manipulate hash maps within custom data structures.
 /// This type alias simplifies the usage of hash maps in builder patterns by encapsulating complex generic parameters
 /// and leveraging the `HashMapDefinition` to handle the construction logic. It supports fluent chaining of key-value
@@ -187,25 +213,34 @@ where
 /// The alias helps reduce boilerplate code and enhances readability, making the construction of hash maps in
 /// a builder pattern both efficient and expressive.
 
-pub type HashMapAsSubformer< K, E, Context, Formed, End > =
-ContainerSubformer::< ( K, E ), HashMapDefinition< K, E, Context, Formed, End > >;
+pub type HashMapFormer< K, E, Context, Formed, End > =
+ContainerFormer::< ( K, E ), HashMapDefinition< K, E, Context, Formed, End > >;
 
 // = extension
+
+/// Provides an extension method for hash maps to facilitate the use of the builder pattern.
+///
+/// This trait extends the `HashMap` type, enabling it to use the `HashMapFormer` interface directly.
+/// It allows for fluent, expressive construction and manipulation of hash maps, integrating seamlessly
+/// with the builder pattern provided by the `former` framework. It's a convenience trait that simplifies
+/// creating configured hash map builders with default settings.
+///
 
 pub trait HashMapExt< K, E > : sealed::Sealed
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  fn former() -> HashMapAsSubformer< K, E, (), HashMap< K, E >, ReturnStorage >;
+  /// Initializes a builder pattern for `HashMap` using a default `HashMapFormer`.
+  fn former() -> HashMapFormer< K, E, (), HashMap< K, E >, ReturnStorage >;
 }
 
 impl< K, E > HashMapExt< K, E > for HashMap< K, E >
 where
   K : ::core::cmp::Eq + ::core::hash::Hash,
 {
-  fn former() -> HashMapAsSubformer< K, E, (), HashMap< K, E >, ReturnStorage >
+  fn former() -> HashMapFormer< K, E, (), HashMap< K, E >, ReturnStorage >
   {
-    HashMapAsSubformer::< K, E, (), HashMap< K, E >, ReturnStorage >::new( ReturnStorage::default() )
+    HashMapFormer::< K, E, (), HashMap< K, E >, ReturnStorage >::new( ReturnStorage::default() )
   }
 }
 

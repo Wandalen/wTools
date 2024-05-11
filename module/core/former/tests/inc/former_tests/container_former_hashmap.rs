@@ -11,10 +11,10 @@ use collection_tools::HashMap;
 fn add()
 {
 
-  // expliccit with ContainerSubformer
+  // expliccit with ContainerFormer
 
   let got : HashMap< String, String > = the_module
-  ::ContainerSubformer
+  ::ContainerFormer
   ::< ( String, String ), former::HashMapDefinition< String, String, (), HashMap< String, String >, the_module::ReturnStorage > >
   ::new( former::ReturnStorage )
   .add( ( "a".into(), "x".into() ) )
@@ -27,9 +27,9 @@ fn add()
   ];
   a_id!( got, exp );
 
-  // expliccit with HashMapAsSubformer
+  // expliccit with HashMapFormer
 
-  let got : HashMap< String, String > = the_module::HashMapAsSubformer::< String, String, (), HashMap< String, String >, the_module::ReturnStorage >
+  let got : HashMap< String, String > = the_module::HashMapFormer::< String, String, (), HashMap< String, String >, the_module::ReturnStorage >
   ::new( former::ReturnStorage )
   .add( ( "a".into(), "x".into() ) )
   .add( ( "b".into(), "y".into() ) )
@@ -41,9 +41,9 @@ fn add()
   ];
   a_id!( got, exp );
 
-  // compact with HashMapAsSubformer
+  // compact with HashMapFormer
 
-  let got : HashMap< String, String > = the_module::HashMapAsSubformer::new( former::ReturnStorage )
+  let got : HashMap< String, String > = the_module::HashMapFormer::new( former::ReturnStorage )
   .add( ( "a".into(), "x".into() ) )
   .add( ( "b".into(), "y".into() ) )
   .form();
@@ -56,7 +56,7 @@ fn add()
 
   // with begin
 
-  let got : HashMap< String, String > = the_module::HashMapAsSubformer
+  let got : HashMap< String, String > = the_module::HashMapFormer
   ::begin( Some( hmap![ "a".to_string() => "x".to_string() ] ), Some( () ), former::ReturnStorage )
   .add( ( "b".into(), "y".into() ) )
   .form();
@@ -91,7 +91,7 @@ fn add()
 fn replace()
 {
 
-  let got : HashMap< String, String > = the_module::HashMapAsSubformer::new( former::ReturnStorage )
+  let got : HashMap< String, String > = the_module::HashMapFormer::new( former::ReturnStorage )
   .add( ( "x".to_string(), "y".to_string() ) )
   .replace( hmap![ "a".to_string() => "x".to_string(), "b".to_string() => "y".to_string(), ] )
   .form();

@@ -21,8 +21,9 @@
 /// during the formation process.
 pub trait EntityToDefinition< Context, Formed, End >
 {
-  /// The specific `FormerDefinition` associated with this entity.
+  /// The specific [`FormerDefinition`] associated with this entity.
   type Definition : FormerDefinition;
+  /// The specific [`FormerDefinitionTypes`] associated with this entity.
   type Types : FormerDefinitionTypes;
 }
 

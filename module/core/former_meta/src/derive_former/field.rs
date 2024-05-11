@@ -775,7 +775,7 @@ formation process of the `{stru}`.
 
         #[ doc = #doc ]
         #[ inline( always ) ]
-        pub fn #setter_name( self ) -> former::ContainerSubformer::
+        pub fn #setter_name( self ) -> former::ContainerFormer::
         <
           // ( #( #params, )* ),
           < #field_typ as former::Container >::Entry,
@@ -790,7 +790,7 @@ formation process of the `{stru}`.
             End = #former_assign_end < Definition >,
           >,
         {
-          self.#field_assign::< former::ContainerSubformer::
+          self.#field_assign::< former::ContainerFormer::
           <
             _,
             _,
@@ -800,7 +800,7 @@ formation process of the `{stru}`.
         }
 
         // #[ inline( always ) ]
-        // pub fn hashset_1( self ) -> former::ContainerSubformer::
+        // pub fn hashset_1( self ) -> former::ContainerFormer::
         // <
         //   String,
         //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
@@ -813,7 +813,7 @@ formation process of the `{stru}`.
         //     End = Struct1FormerAssignHashset1End< Definition >,
         //   >,
         // {
-        //   self._hashset_1_assign::< former::ContainerSubformer::
+        //   self._hashset_1_assign::< former::ContainerFormer::
         //   <
         //     String,
         //     former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
@@ -833,7 +833,7 @@ formation process of the `{stru}`.
       (
         r#"
 
-/// The containr setter provides a container setter that returns a ContainerSubformer tailored for managing a collection of child entities. It employs a generic container definition to facilitate operations on the entire collection, such as adding or updating elements.
+/// The containr setter provides a container setter that returns a ContainerFormer tailored for managing a collection of child entities. It employs a generic container definition to facilitate operations on the entire collection, such as adding or updating elements.
 
 impl< Definition, > {}< Definition, >
 where
@@ -841,7 +841,7 @@ where
 {{
 
   #[ inline( always ) ]
-  pub fn {}( self ) -> former::ContainerSubformer::
+  pub fn {}( self ) -> former::ContainerFormer::
   <
     ( {} ),
     former::HashMapDefinition< {} Self, Self, {}< Definition >, >
