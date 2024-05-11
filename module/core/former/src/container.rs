@@ -83,13 +83,15 @@ pub trait ContainerValToEntry< Val >
   ///
   /// # Example
   /// ```
+  /// use former::ContainerValToEntry;
+  ///
   /// struct PairMap;
   ///
-  /// impl ContainerValToEntry<(i32, i32)> for PairMap
+  /// impl ContainerValToEntry< ( i32, i32 ) > for PairMap
   /// {
-  ///   type Entry = (String, i32);
+  ///   type Entry = ( String, i32 );
   ///
-  ///   fn val_to_entry( val : (i32, i32) ) -> Self::Entry
+  ///   fn val_to_entry( val : ( i32, i32 ) ) -> Self::Entry
   ///   {
   ///     (val.0.to_string(), val.1)
   ///   }
@@ -119,9 +121,9 @@ pub trait ValToEntry< Container >
   ///
   /// # Example
   /// ```
-  /// impl ValToEntry<PairMap> for (i32, i32)
+  /// impl ValToEntry< PairMap > for (i32, i32)
   /// {
-  ///   type Entry = (String, i32);
+  ///   type Entry = ( String, i32 );
   ///
   ///   fn val_to_entry( self ) -> Self::Entry
   ///   {
@@ -171,11 +173,25 @@ pub trait ContainerAdd : Container
   /// Basic usage:
   ///
   /// ```rust
-  /// use former::ContainerAdd;
+  ///
+  /// use former::{ Container, ContainerAdd };
   ///
   /// struct MyContainer
   /// {
   ///   entries : Vec< i32 >,
+  /// }
+  ///
+  /// impl Container for MyContainer
+  /// {
+  ///   type Entry = i32;
+  ///   type Val = i32;
+  ///
+  ///   #[ inline( always ) ]
+  ///   fn entry_to_val( e : Self::Entry ) -> Self::Val
+  ///   {
+  ///     e
+  ///   }
+  ///
   /// }
   ///
   /// impl ContainerAdd for MyContainer
@@ -229,11 +245,36 @@ where
   /// # Examples
   ///
   /// ```rust
-  /// use former::ContainerAssign;
+  /// use former::{ Container, ContainerAssign };
   ///
   /// struct MyContainer
   /// {
   ///   entries : Vec< i32 >,
+  /// }
+  ///
+  /// impl Container for MyContainer
+  /// {
+  ///   type Entry = i32;
+  ///   type Val = i32;
+  ///
+  ///   #[ inline( always ) ]
+  ///   fn entry_to_val( e : Self::Entry ) -> Self::Val
+  ///   {
+  ///     e
+  ///   }
+  ///
+  /// }
+  ///
+  /// impl IntoIterator for MyContainer
+  /// {
+  ///   type Item = i32;
+  ///   type IntoIter = collection_tools::vec::IntoIter< i32 >;
+  // xxx : make sure collection_tools has it
+  ///
+  ///   fn into_iter( self ) -> Self::IntoIter
+  ///   {
+  ///     self.entries.into_iter() // Create an iterator from the internal HashSet.
+  ///   }
   /// }
   ///
   /// impl ContainerAssign for MyContainer
