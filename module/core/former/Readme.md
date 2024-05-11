@@ -650,6 +650,8 @@ Each type of setter is designed to address different needs in the formation proc
 
 The following example illustrates how to use a `VectorAsSubformer` to construct a `Vec` field within a struct. The subformer enables adding elements to the vector with a fluent interface, streamlining the process of populating collection fields within structs.
 
+<!-- xxx : update description -->
+
 ```rust
 #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
 fn main()
@@ -678,6 +680,8 @@ fn main()
 ## Subformer example: Building a Hashmap
 
 This example demonstrates the use of a `HashMapAsSubformer` to build a hash map within a struct. The subformer provides a concise way to insert key-value pairs into the map, making it easier to manage and construct hash map fields.
+
+<!-- xxx : update description -->
 
 ```rust
 #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
@@ -708,6 +712,8 @@ fn main()
 ## Subformer example: Building a Hashset
 
 In the following example, a `HashSetAsSubformer` is utilized to construct a hash set within a struct. This illustrates the convenience of adding elements to a set using the builder pattern facilitated by subformers.
+
+<!-- xxx : update description -->
 
 ```rust
 #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]

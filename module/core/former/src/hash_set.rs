@@ -230,40 +230,13 @@ where
 
 // = subformer
 
-/// Facilitates building `HashSetLike` containers with a fluent API.
+/// Provides a concise alias for `ContainerSubformer` configured specifically for `HashSet`-like containers.
 ///
-/// `HashSetAsSubformer` leverages the `HashSetLike` trait to enable a concise and expressive way
-/// of populating `HashSet`-like containers. It exemplifies the crate's builder pattern variation for sets.
+/// `HashSetAsSubformer` simplifies the creation of `HashSet` containers within builder patterns by leveraging
+/// the `ContainerSubformer` with predefined settings. This approach minimizes boilerplate code and enhances
+/// readability, making it ideal for fluent and expressive construction of set containers within custom data structures.
 ///
-/// # Example Usage
-///
-/// Using `HashSetAsSubformer` to populate a `HashSet` within a struct:
-///
-/// ```rust
-/// # #[ cfg( all( feature = "enabled", not( feature = "no_std" ) ) ) ]
-/// # {
-/// # use test_tools::exposed::*;
-///
-/// #[ derive( Debug, PartialEq, former::Former ) ]
-/// pub struct StructWithSet
-/// {
-///   #[ container( definition = former::HashSetAsSubformer ) ]
-///   set : std::collections::HashSet< &'static str >,
-/// }
-///
-/// let instance = StructWithSet::former()
-/// .set()
-///   .insert( "apple" )
-///   .insert( "banana" )
-///   .end()
-/// .form();
-///
-/// assert_eq!(instance, StructWithSet { set : hset![ "apple", "banana" ] });
-/// # }
-/// ```
 
-// zzz : update documentation
-// add: instead of writing long version with ContainerSubformer it's possible to be more concise with help of the type alias
 pub type HashSetAsSubformer< K, Context, Formed, End > =
 ContainerSubformer::< K, HashSetDefinition< K, Context, Formed, End > >;
 
