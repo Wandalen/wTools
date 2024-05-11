@@ -119,7 +119,7 @@ where
 {
   fn insert( &mut self, element : K ) -> Option< K >
   {
-    HashSet::replace( self, element )
+    HashSet::replace( &mut self.set, element )
   }
 }
 
