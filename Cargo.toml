@@ -74,7 +74,7 @@ path = "module/alias/std_x"
 ## data_type
 
 [workspace.dependencies.data_type]
-version = "~0.6.0"
+version = "~0.7.0"
 path = "module/core/data_type"
 default-features = false
 
