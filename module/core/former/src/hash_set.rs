@@ -192,7 +192,7 @@ where
     <
       K,
       < Definition as definition::FormerDefinition >::Context,
-      < Definition as definition::FormerDefinition >::Formed, // xxx : ?
+      < Definition as definition::FormerDefinition >::Formed,
     >,
   >,
   Definition::End : forming::FormingEnd< Definition::Types >,

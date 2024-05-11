@@ -1,4 +1,3 @@
-//! # Example Usage
 //!
 //! This example demonstrates how to employ the `Former` trait to configure a `Vec` using a container setter in a structured manner.
 //!

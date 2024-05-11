@@ -34,7 +34,6 @@
 
 #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
 fn main() {}
-
 #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
 fn main()
 {
