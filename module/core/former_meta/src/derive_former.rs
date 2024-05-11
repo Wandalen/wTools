@@ -147,6 +147,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   /* names */
 
+  let vis = &ast.vis;
   let stru = &ast.ident;
   let former_name = format!( "{}Former", stru );
   let former = syn::Ident::new( &former_name, stru.span() );
@@ -385,7 +386,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
     /// Defines the generic parameters for formation behavior including context, form, and end conditions.
     #[ derive( Debug ) ]
-    pub struct #former_definition_types < #former_definition_types_generics_with_defaults >
+    #vis struct #former_definition_types < #former_definition_types_generics_with_defaults >
     where
       #former_definition_types_generics_where
     {
@@ -421,7 +422,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
     /// Holds the definition types used during the formation process.
     #[ derive( Debug ) ]
-    pub struct #former_definition < #former_definition_generics_with_defaults >
+    #vis struct #former_definition < #former_definition_generics_with_defaults >
     where
       #former_definition_generics_where
     {
@@ -464,7 +465,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
     #[ doc = "Stores potential values for fields during the formation process." ]
     #[ allow( explicit_outlives_requirements ) ]
-    pub struct #former_storage < #struct_generics_with_defaults >
+    #vis struct #former_storage < #struct_generics_with_defaults >
     where
       #struct_generics_where
     {
@@ -524,7 +525,7 @@ specific needs of the broader forming context. It mandates the implementation of
     // = former
 
     #[ doc = #doc_former_struct ]
-    pub struct #former < #former_generics_with_defaults >
+    #vis struct #former < #former_generics_with_defaults >
     where
       #former_generics_where
     {
@@ -721,7 +722,7 @@ specific needs of the broader forming context. It mandates the implementation of
     ///
     /// This type alias configures former of the structure with a specific definition to streamline its usage in broader contexts,
     /// especially where structure needs to be integrated into larger structures with a clear termination condition.
-    pub type #as_subformer < #struct_generics_ty __Superformer, __End > = #former
+    #vis type #as_subformer < #struct_generics_ty __Superformer, __End > = #former
     <
       #struct_generics_ty
       #former_definition

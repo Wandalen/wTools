@@ -100,6 +100,8 @@ mod former_tests
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subformer_subform_and_container;
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_subform_and_container_private;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subformer_subform_and_container_parametrized;
 
 }
