@@ -76,8 +76,6 @@ impl< K > former::ContainerAdd for LoggingSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
-  // type Entry = K;
-  // type Val = K;
 
   #[ inline( always ) ]
   fn add( &mut self, e : Self::Entry ) -> bool
@@ -98,6 +96,18 @@ where
     let initial_len = self.set.len();
     self.set.extend( elements );
     self.set.len() - initial_len
+  }
+}
+
+impl< K > former::ContainerValToEntry< K > for LoggingSet< K >
+where
+  K : core::cmp::Eq + core::hash::Hash,
+{
+  type Entry = K;
+  #[ inline( always ) ]
+  fn val_to_entry( val : K ) -> Self::Entry
+  {
+    val
   }
 }
 
