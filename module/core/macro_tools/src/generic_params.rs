@@ -128,13 +128,13 @@ pub( crate ) mod private
   ///
   /// let mut generics_a : syn::Generics = parse_quote!{ < T : Clone, U : Default > };
   /// generics_a.where_clause = parse_quote!{ where T : Default };
-  /// let mut generics_b : syn::Generics = parse_quote!{ < V : std::fmt::Debug > };
+  /// let mut generics_b : syn::Generics = parse_quote!{ < V : core::fmt::Debug > };
   /// generics_b.where_clause = parse_quote!{ where V : Sized };
   /// let got = generic_params::merge( &generics_a, &generics_b );
   ///
   /// let mut exp : syn::Generics = parse_quote!
   /// {
-  ///   < T : Clone, U : Default, V : std::fmt::Debug >
+  ///   < T : Clone, U : Default, V : core::fmt::Debug >
   /// };
   /// exp.where_clause = parse_quote!
   /// {
@@ -212,8 +212,8 @@ pub( crate ) mod private
   /// # use macro_tools::syn::parse_quote;
   ///
   /// let mut generics : syn::Generics = parse_quote!{ < T : Clone + Default, U, 'a, const N : usize > };
-  /// generics.where_clause = parse_quote!{ where T: std::fmt::Debug };
-  /// // let generics : Generics = parse_quote!{ < T : Clone + Default, U, 'a, const N : usize > where T: std::fmt::Debug };
+  /// generics.where_clause = parse_quote!{ where T: core::fmt::Debug };
+  /// // let generics : Generics = parse_quote!{ < T : Clone + Default, U, 'a, const N : usize > where T: core::fmt::Debug };
   /// let simplified_generics = macro_tools::generic_params::names( &generics );
   ///
   /// assert_eq!( simplified_generics.params.len(), 4 ); // Contains T, U, 'a, and N

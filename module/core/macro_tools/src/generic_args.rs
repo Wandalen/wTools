@@ -90,10 +90,10 @@ pub( crate ) mod private
   /// };
   ///
   /// let a: AngleBracketedGenericArguments = parse_quote! { <'a, T: Clone, U: Default> };
-  /// let b: AngleBracketedGenericArguments = parse_quote! { <'b, V: std::fmt::Debug> };
+  /// let b: AngleBracketedGenericArguments = parse_quote! { <'b, V: core::fmt::Debug> };
   /// let merged = generic_args::merge(&a, &b);
   ///
-  /// let expected: AngleBracketedGenericArguments = parse_quote! { <'a, 'b, T: Clone, U: Default, V: std::fmt::Debug> };
+  /// let expected: AngleBracketedGenericArguments = parse_quote! { <'a, 'b, T: Clone, U: Default, V: core::fmt::Debug> };
   /// assert_eq!(merged, expected);
   /// ```
   ///

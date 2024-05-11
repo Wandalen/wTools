@@ -323,7 +323,7 @@ pub( crate ) mod private
     on_end : core::option::Option< Definition::End >,
   }
 
-  use std::fmt;
+  use core::fmt;
   impl< E, Definition > fmt::Debug for ContainerFormer< E, Definition >
   where
     Definition : FormerDefinition,

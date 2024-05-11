@@ -25,7 +25,7 @@ use struct_attrs::*;
 ///
 /// Below is an example of how the generated code might look:
 ///
-/// ```rust
+/// ```rust, ignore
 /// impl< Context, Formed > former::FormerMutator
 /// for Struct1FormerDefinitionTypes< Context, Formed >
 /// {

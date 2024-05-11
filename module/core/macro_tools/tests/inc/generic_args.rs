@@ -314,8 +314,8 @@ fn merge_complex_generic_constraints()
   use macro_tools::generic_args;
 
   let a : AngleBracketedGenericArguments = parse_quote! { < T : Clone + Send, U: Default > };
-  let b : AngleBracketedGenericArguments = parse_quote! { < V : std::fmt::Debug + Sync > };
-  let exp : AngleBracketedGenericArguments = parse_quote! { < T: Clone + Send, U: Default, V: std::fmt::Debug + Sync > };
+  let b : AngleBracketedGenericArguments = parse_quote! { < V : core::fmt::Debug + Sync > };
+  let exp : AngleBracketedGenericArguments = parse_quote! { < T: Clone + Send, U: Default, V: core::fmt::Debug + Sync > };
 
   let got = generic_args::merge( &a, &b );
   a_id!( got, exp, "Complex constraints should be merged correctly" );

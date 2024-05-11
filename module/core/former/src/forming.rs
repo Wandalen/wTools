@@ -132,7 +132,7 @@ where
 /// A placeholder `FormingEnd` used when no end operation is required or applicable.
 ///
 /// This implementation is useful in generic or templated scenarios where a `FormingEnd` is required by the interface,
-/// but no meaningful end operation is applicable. It serves a role similar to `std::marker::PhantomData` by filling
+/// but no meaningful end operation is applicable. It serves a role similar to `core::marker::PhantomData` by filling
 /// generic parameter slots without contributing operational logic.
 #[ derive( Debug, Default ) ]
 pub struct NoEnd;
@@ -156,13 +156,14 @@ where
 /// `FormingEnd` trait's `call` method signature. It is useful for cases where
 /// a closure needs to be stored or passed around as an object implementing
 /// `FormingEnd`.
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 pub struct FormingEndClosure< Definition : crate::FormerDefinitionTypes >
 {
   closure : Box< dyn Fn( Definition::Storage, Option< Definition::Context > ) -> Definition::Formed >,
-  _marker : std::marker::PhantomData< Definition::Storage >,
+  _marker : core::marker::PhantomData< Definition::Storage >,
 }
 
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 impl< T, Definition > From< T > for FormingEndClosure< Definition >
 where
   T : Fn( Definition::Storage, Option< Definition::Context > ) -> Definition::Formed + 'static,
@@ -174,12 +175,12 @@ where
     Self
     {
       closure : Box::new( closure ),
-      _marker : std::marker::PhantomData
+      _marker : core::marker::PhantomData
     }
   }
 }
 
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 impl< Definition : crate::FormerDefinitionTypes > FormingEndClosure< Definition >
 {
   /// Constructs a new `FormingEndClosure` with the provided closure.
@@ -198,14 +199,14 @@ impl< Definition : crate::FormerDefinitionTypes > FormingEndClosure< Definition 
     Self
     {
       closure : Box::new( closure ),
-      _marker : std::marker::PhantomData
+      _marker : core::marker::PhantomData
     }
   }
 }
 
-#[ cfg( not( feature = "no_std" ) ) ]
-use std::fmt;
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+use core::fmt;
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 impl< Definition : crate::FormerDefinitionTypes > fmt::Debug for FormingEndClosure< Definition >
 {
   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
@@ -217,7 +218,7 @@ impl< Definition : crate::FormerDefinitionTypes > fmt::Debug for FormingEndClosu
   }
 }
 
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 impl< Definition : crate::FormerDefinitionTypes > FormingEnd< Definition >
 for FormingEndClosure< Definition >
 {

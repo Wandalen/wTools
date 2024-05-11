@@ -60,8 +60,8 @@ fn main()
   //   bio_optional: Some("Software Developer"),
   // }
 
- }
- ```
+}
+```
 
 <details>
 <summary>The code above will be expanded to this</summary>

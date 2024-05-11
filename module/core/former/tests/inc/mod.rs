@@ -139,6 +139,8 @@ only_for_terminal_module!
 
   // stable have different information about error
   // that's why these tests are active only for nightly
+
+  #[ cfg( feature = "derive_former" ) ]
   #[ test_tools::nightly ]
   #[ test ]
   fn former_trybuild()
