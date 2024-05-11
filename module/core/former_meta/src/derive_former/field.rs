@@ -869,13 +869,8 @@ where
 r#"derive : Former
 structure : {stru}
 field : {field_ident}"#,
-        // format!( "{}", qt!{ #setter_name } ),
       );
-      // xxx
-      // diag::report_print( about, original_input, hint );
-      // print!( "{}", diag::report_format( about, original_input, hint ) );
-        diag::report_print( about, original_input, hint );
-      // println!( "{hint}" );
+      diag::report_print( about, original_input, hint );
     }
 
     let setters_code = qt!

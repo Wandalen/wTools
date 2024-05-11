@@ -29,6 +29,7 @@ fn main()
 
   // Child struct with Former derived for builder pattern support
   #[ derive( Debug, PartialEq, Former ) ]
+  // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
   pub struct Child
   {
@@ -38,11 +39,12 @@ fn main()
 
   // Parent struct to hold children
   #[ derive( Debug, PartialEq, Former ) ]
-  #[ debug ]
+  // Use `#[ debug ]` to expand and debug generate code.
+  // #[ debug ]
   pub struct Parent
   {
     // Use `hint = true` to gennerate sketch of setter.
-    #[ container( setter = false, hint = true ) ]
+    #[ container( setter = false, hint = false ) ]
     children : HashMap< String, Child >,
   }
 
