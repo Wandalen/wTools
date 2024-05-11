@@ -599,7 +599,7 @@ Storage is not just a passive container; it is an active part of a larger ecosys
 - **Contextual Flexibility**: The context associated with the former adds an additional layer of flexibility, allowing the former to adjust its behavior based on the broader circumstances of the object's formation. This is particularly useful when the forming process involves conditions or states external to the object itself.
 - **FormingEnd Callback**: The `FormingEnd` callback is a dynamic component that defines the final steps of the forming process. It can modify the storage based on final adjustments, validate the object's readiness, or integrate the object into a larger structure, such as embedding it as a subformer within another structure.
 
-These elements work in concert to ensure that the forming process is not only about building an object step-by-step but also about integrating it seamlessly into larger, more complex structures or systems. The `Former` framework, with its sophisticated management of storage, context, and callbacks, enables a highly flexible and reusable approach to object formation, making it ideal for scenarios where objects are part of nested or interdependent systems.
+These elements work in concert to ensure that the forming process is not only about building an object step-by-step but also about integrating it seamlessly into larger, more complex structures or systems.
 
 ## Concept of Definitions
 
@@ -615,7 +615,7 @@ Two key definition Traits:
 
 ## Overview of Formation Traits
 
-The formation process in our framework utilizes several core traits, each serving a specific purpose in the lifecycle of entity creation. These traits ensure that entities are constructed methodically, adhering to a structured pattern that enhances maintainability and scalability. Below is a summary of these key traits:
+The formation process utilizes several core traits, each serving a specific purpose in the lifecycle of entity creation. These traits ensure that entities are constructed methodically, adhering to a structured pattern that enhances maintainability and scalability. Below is a summary of these key traits:
 
 - `EntityToDefinition`: Links entities to their respective formation definitions which dictate their construction process.
 - `EntityToFormer`: Connects entities with formers that are responsible for their step-by-step construction.
@@ -632,7 +632,7 @@ These traits collectively facilitate a robust and flexible builder pattern that 
 
 ## Concept of subformer
 
-Subformers are specialized builders used within the `Former` framework to construct nested or collection-based data structures like vectors, hash maps, and hash sets. They simplify the process of adding elements to these structures by providing a fluent interface that can be seamlessly integrated into the overall builder pattern of a parent struct. This approach allows for clean and intuitive initialization of complex data structures, enhancing code readability and maintainability.
+Subformers are specialized builders used within the former to construct nested or collection-based data structures like vectors, hash maps, and hash sets. They simplify the process of adding elements to these structures by providing a fluent interface that can be seamlessly integrated into the overall builder pattern of a parent struct. This approach allows for clean and intuitive initialization of complex data structures, enhancing code readability and maintainability.
 
 ## Types of Setters / Subformers
 
@@ -648,9 +648,7 @@ Each type of setter is designed to address different needs in the formation proc
 
 ## Subformer example: Building a Vector
 
-The following example illustrates how to use a `VectorAsSubformer` to construct a `Vec` field within a struct. The subformer enables adding elements to the vector with a fluent interface, streamlining the process of populating collection fields within structs.
-
-<!-- xxx : update description -->
+This example demonstrates how to employ the `Former` trait to configure a `Vec` using a container setter in a structured manner.
 
 ```rust
 #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
@@ -679,9 +677,7 @@ fn main()
 
 ## Subformer example: Building a Hashmap
 
-This example demonstrates the use of a `HashMapAsSubformer` to build a hash map within a struct. The subformer provides a concise way to insert key-value pairs into the map, making it easier to manage and construct hash map fields.
-
-<!-- xxx : update description -->
+This example demonstrates how to effectively employ the `Former` trait to configure a `HashMap` using a container setter.
 
 ```rust
 #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
@@ -711,9 +707,7 @@ fn main()
 
 ## Subformer example: Building a Hashset
 
-In the following example, a `HashSetAsSubformer` is utilized to construct a hash set within a struct. This illustrates the convenience of adding elements to a set using the builder pattern facilitated by subformers.
-
-<!-- xxx : update description -->
+This example demonstrates the use of the `Former` trait to build a `collection_tools::HashSet` through subforming.
 
 ```rust
 #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
@@ -818,8 +812,6 @@ In this example, the `Parent` struct functions as a container for multiple `Chil
 - **Child Definition**: Each `Child` consists of a `name` and a `description`, and we derive `Former` to enable easy setting of these properties using a builder pattern.
 - **Parent Definition**: It holds a collection of `Child` objects in a `HashMap`. The `#[setter(false)]` attribute is used to disable the default setter, and a custom method `child` is defined to facilitate the addition of children with specific attributes.
 - **Custom Subformer Integration**: The `child` method in the `ParentFormer` initializes a `ChildFormer` with a closure that integrates the `Child` into the `Parent`'s `child` map upon completion.
-
-This pattern of using a structure's former as a subformer within another facilitates the creation of deeply nested or complex data structures through a coherent and fluent interface, showcasing the powerful capabilities of the `Former` framework for Rust applications.
 
 ## Custom Container Setter
 
@@ -996,19 +988,7 @@ There are suite of traits designed to abstract and enhance the functionality of 
 
 Container interface is defined in the crate and implemented for containers like vectors, hash maps, etc, but if you want to use non-standard container you can implement container interface for the container. This example demonstrate how to do that.
 
-```rust
-
-// Ensure the example only compiles when the appropriate features are enabled.
-#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
-fn main()
-{
-  use collection_tools::HashMap;
-  use former::Former;
-
-  xxx2 : write
-
-}
-```
+[See code](./examples/former_custom_container.rs).
 
 ## Concept of Mutator
 

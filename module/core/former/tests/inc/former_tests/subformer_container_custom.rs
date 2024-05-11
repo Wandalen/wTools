@@ -110,7 +110,6 @@ where
   }
 }
 
-
 // = storage
 
 impl< K > former::Storage
@@ -262,7 +261,3 @@ fn basic()
   println!("Got: {:?}", parent);
 
 }
-
-// xxx2 : get completed
-// xxx2 : get completed example
-
