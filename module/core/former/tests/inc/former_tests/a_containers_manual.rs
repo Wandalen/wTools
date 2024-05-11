@@ -347,7 +347,8 @@ where
     >,
     former::VectorDefinition< String, Self, Self, Struct1FormerAssignVec1End< Definition > > : former::FormerDefinition
     <
-      Storage : former::ContainerAdd< Entry = < collection_tools::Vec< String > as former::Container >::Entry >,
+      // Storage : former::ContainerAdd< Entry = < collection_tools::Vec< String > as former::Container >::Entry >,
+      Storage = Vec< String >,
       Context = Struct1Former< Definition >,
       End = Struct1FormerAssignVec1End< Definition >,
     >,
@@ -368,7 +369,8 @@ where
   where
     former::VectorDefinition< String, Self, Self, Struct1FormerAssignVec1End< Definition > > : former::FormerDefinition
     <
-      Storage : former::ContainerAdd< Entry = < collection_tools::Vec< String > as former::Container >::Entry >,
+      // Storage : former::ContainerAdd< Entry = < collection_tools::Vec< String > as former::Container >::Entry >,
+      Storage = Vec< String >,
       Context = Struct1Former< Definition >,
       End = Struct1FormerAssignVec1End< Definition >,
     >,
@@ -393,7 +395,8 @@ where
     >,
     former::HashMapDefinition< String, String, Self, Self, Struct1FormerAssignHashmap1End< Definition > > : former::FormerDefinition
     <
-      Storage : former::ContainerAdd< Entry = < collection_tools::HashMap< String, String > as former::Container >::Entry >,
+      // Storage : former::ContainerAdd< Entry = < collection_tools::HashMap< String, String > as former::Container >::Entry >,
+      Storage = collection_tools::HashMap< String, String >,
       Context = Struct1Former< Definition >,
       End = Struct1FormerAssignHashmap1End< Definition >,
     >,
@@ -414,7 +417,8 @@ where
   where
     former::HashMapDefinition< String, String, Self, Self, Struct1FormerAssignHashmap1End< Definition > > : former::FormerDefinition
     <
-      Storage : former::ContainerAdd< Entry = < collection_tools::HashMap< String, String > as former::Container >::Entry >,
+      // Storage : former::ContainerAdd< Entry = < collection_tools::HashMap< String, String > as former::Container >::Entry >,
+      Storage = collection_tools::HashMap< String, String >,
       Context = Struct1Former< Definition >,
       End = Struct1FormerAssignHashmap1End< Definition >,
     >,
@@ -439,7 +443,8 @@ where
     >,
     former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > > : former::FormerDefinition
     <
-      Storage : former::ContainerAdd< Entry = < collection_tools::HashSet< String > as former::Container >::Entry >,
+      // Storage : former::ContainerAdd< Entry = < collection_tools::HashSet< String > as former::Container >::Entry >,
+      Storage = collection_tools::HashSet< String >,
       Context = Struct1Former< Definition >,
       End = Struct1FormerAssignHashset1End< Definition >,
     >,
@@ -460,7 +465,8 @@ where
   where
     former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > > : former::FormerDefinition
     <
-      Storage : former::ContainerAdd< Entry = < collection_tools::HashSet< String > as former::Container >::Entry >,
+      // Storage : former::ContainerAdd< Entry = < collection_tools::HashSet< String > as former::Container >::Entry >,
+      Storage = collection_tools::HashSet< String >,
       Context = Struct1Former< Definition >,
       End = Struct1FormerAssignHashset1End< Definition >,
     >,

@@ -5,7 +5,7 @@ pub( crate ) mod private
   use { Handler, Routine, Type };
 
   use std::collections::HashMap;
-  use former::{ Former, StoragePreform };
+  use former::Former;
 
   /// A description of a Value in a command. Used to specify the expected type and provide a hint for the Value.
   ///
