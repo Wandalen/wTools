@@ -90,7 +90,6 @@ where
 //   }
 // }
 
-
 // xxx : test with HashSetLike
 //
 // impl< K > HashSetLike< K > for LoggingSet< K >
@@ -213,13 +212,13 @@ where
   type Types = LoggingSetDefinitionTypes< K, Context, Formed >;
 }
 
-// impl< K, Context, Formed > crate::EntityToDefinitionTypes< Context, Formed >
-// for HashSet< K >
-// where
-//   K : ::core::cmp::Eq + ::core::hash::Hash,
-// {
-//   type Types = HashSetDefinitionTypes< K, Context, Formed >;
-// }
+impl< K, Context, Formed > former::EntityToDefinitionTypes< Context, Formed >
+for LoggingSet< K >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+  type Types = LoggingSetDefinitionTypes< K, Context, Formed >;
+}
 
 // = subformer
 
