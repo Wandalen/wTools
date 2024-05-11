@@ -65,7 +65,7 @@ where
 /// often involve a key-value pair, and simple values need to be restructured to fit this model
 /// for operations like insertion or update.
 
-pub trait ContainerValToEntry<Val>
+pub trait ContainerValToEntry< Val >
 {
   /// The specific type of entry that corresponds to the value within the container.
   /// For example, in a `HashMap`, this might be a tuple of a key and a value.
@@ -87,12 +87,12 @@ pub trait ContainerValToEntry<Val>
   ///
   /// impl ContainerValToEntry<(i32, i32)> for PairMap
   /// {
-  ///     type Entry = (String, i32);
+  ///   type Entry = (String, i32);
   ///
-  ///     fn val_to_entry( val : (i32, i32) ) -> Self::Entry
-  ///     {
-  ///         (val.0.to_string(), val.1)
-  ///     }
+  ///   fn val_to_entry( val : (i32, i32) ) -> Self::Entry
+  ///   {
+  ///     (val.0.to_string(), val.1)
+  ///   }
   /// }
   /// ```
   fn val_to_entry( val : Val ) -> Self::Entry;
@@ -105,7 +105,7 @@ pub trait ContainerValToEntry<Val>
 /// in maintaining the integrity of container operations, especially when dealing with
 /// sophisticated structures that separate the concept of values and entries, such as `HashMap`s
 /// and other associative containers.
-pub trait ValToEntry<Container>
+pub trait ValToEntry< Container >
 {
   /// Represents the type of entry that corresponds to the value within the container.
   type Entry;
@@ -121,20 +121,20 @@ pub trait ValToEntry<Container>
   /// ```
   /// impl ValToEntry<PairMap> for (i32, i32)
   /// {
-  ///     type Entry = (String, i32);
+  ///   type Entry = (String, i32);
   ///
-  ///     fn val_to_entry( self ) -> Self::Entry
-  ///     {
-  ///         (self.0.to_string(), self.1)
-  ///     }
+  ///   fn val_to_entry( self ) -> Self::Entry
+  ///   {
+  ///     (self.0.to_string(), self.1)
+  ///   }
   /// }
   /// ```
   fn val_to_entry( self ) -> Self::Entry;
 }
 
-impl<C, Val> ValToEntry<C> for Val
+impl< C, Val > ValToEntry< C > for Val
 where
-  C : ContainerValToEntry<Val>,
+  C : ContainerValToEntry< Val >,
 {
   type Entry = C::Entry;
 
