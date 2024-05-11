@@ -31,6 +31,32 @@ where
 
 }
 
+impl< K > IntoIterator for LoggingSet< K >
+where
+  K : std::cmp::Eq + std::hash::Hash,
+{
+  type Item = K;
+  type IntoIter = std::collections::hash_set::IntoIter< K >;
+
+  fn into_iter( self ) -> Self::IntoIter
+  {
+    self.set.into_iter()
+  }
+}
+
+impl<'a, K> IntoIterator for &'a LoggingSet< K >
+where
+  K : std::cmp::Eq + std::hash::Hash,
+{
+  type Item = &'a K;
+  type IntoIter = std::collections::hash_set::Iter< 'a, K >;
+
+  fn into_iter( self ) -> Self::IntoIter
+  {
+    self.set.iter()
+  }
+}
+
 impl< K > former::Container for LoggingSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
@@ -65,8 +91,6 @@ impl< K > former::ContainerAssign for LoggingSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
-  // type Entry = K;
-
   fn assign< Elements >( &mut self, elements : Elements ) -> usize
   where
     Elements : IntoIterator< Item = Self::Entry >
@@ -233,7 +257,7 @@ former::ContainerSubformer::< K, LoggingSetDefinition< K, Context, Formed, End >
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent
 {
-  // #[ container ]
+  #[ container ]
   children : LoggingSet< i32 >,
 }
 

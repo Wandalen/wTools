@@ -134,6 +134,8 @@ pub trait ContainerAdd : Container
 /// the container with a new set. This can be useful for resetting the container's contents or bulk-updating
 /// them based on external criteria or operations.
 pub trait ContainerAssign : Container
+where
+  Self : IntoIterator< Item = Self::Entry >,
 {
   /// Replaces all entries in the container with the provided entries and returns the count of new entries added.
   ///
