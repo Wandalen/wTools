@@ -63,19 +63,6 @@ where
   }
 }
 
-// xxx : clean
-// impl< K > ValToEntry< HashSet< K > > for K
-// where
-//   K : core::cmp::Eq + core::hash::Hash,
-// {
-//   type Entry = K;
-//   #[ inline( always ) ]
-//   fn val_to_entry( self ) -> Self::Entry
-//   {
-//     self
-//   }
-// }
-
 /// A trait for containers behaving like a `HashSet`, allowing insertion operations.
 ///
 /// Implementing this trait enables the associated formed to be used with `HashSetAsSubformer`,

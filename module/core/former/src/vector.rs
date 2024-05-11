@@ -58,17 +58,6 @@ where
   }
 }
 
-// xxx : clean
-// impl< E > ValToEntry< collection_tools::Vec< E > > for E
-// {
-//   type Entry = E;
-//   #[ inline( always ) ]
-//   fn val_to_entry( self ) -> Self::Entry
-//   {
-//     self
-//   }
-// }
-
 /// Trait for containers that behave like a vector, providing an interface for element addition.
 ///
 /// This trait enables the use of custom or standard vector-like containers within the builder pattern,

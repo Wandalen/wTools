@@ -57,46 +57,88 @@ where
   }
 }
 
-/// Provides a mechanism for converting values back to container-specific entries.
+/// Provides a mechanism for transforming a value back into a container-specific entry format.
 ///
-/// This trait is crucial for operations that require the insertion or modification of entries based on values,
-/// especially in complex data structures where the entry's structure is more intricate than the value it represents,
-/// such as inserting a new entry in a `HashMap` where the entry consists of a key-value pair.
-// xxx : update description
-pub trait ContainerValToEntry< Val >
+/// This trait is particularly valuable in scenarios where the operations on a container require
+/// not just the manipulation of values but also the re-integration of these values as entries.
+/// It is especially crucial in complex data structures, such as `HashMap`s, where entries
+/// often involve a key-value pair, and simple values need to be restructured to fit this model
+/// for operations like insertion or update.
+
+pub trait ContainerValToEntry<Val>
 {
+  /// The specific type of entry that corresponds to the value within the container.
+  /// For example, in a `HashMap`, this might be a tuple of a key and a value.
   type Entry;
 
-  /// Converts a value back into an entry of the container. This function is essential for operations like insertion
-  /// or modification, where a value needs to be transformed into a container-compatible entry, such as converting
-  /// a value into a (key, value) tuple for insertion into a `HashMap`.
-  // xxx : update description
+  /// Converts a value into a container-specific entry, facilitating operations that modify
+  /// the container. This method is key for ensuring that values can be correctly integrated
+  /// back into the container, particularly when the entry type is more complex than the value.
+  ///
+  /// # Parameters
+  /// * `val` - The value to be converted into an entry.
+  ///
+  /// # Returns
+  /// Returns the entry constructed from the provided value, ready for insertion or other modifications.
+  ///
+  /// # Example
+  /// ```
+  /// struct PairMap;
+  ///
+  /// impl ContainerValToEntry<(i32, i32)> for PairMap
+  /// {
+  ///     type Entry = (String, i32);
+  ///
+  ///     fn val_to_entry( val : (i32, i32) ) -> Self::Entry
+  ///     {
+  ///         (val.0.to_string(), val.1)
+  ///     }
+  /// }
+  /// ```
   fn val_to_entry( val : Val ) -> Self::Entry;
 }
 
-/// Provides a mechanism for converting values back to container-specific entries.
+/// Facilitates the conversion of values back into entries for specific container types.
 ///
-/// This trait is crucial for operations that require the insertion or modification of entries based on values,
-/// especially in complex data structures where the entry's structure is more intricate than the value it represents,
-/// such as inserting a new entry in a `HashMap` where the entry consists of a key-value pair.
-// xxx : update description
-pub trait ValToEntry< Container >
+/// This trait wraps the functionality of `ContainerValToEntry`, providing a more ergonomic
+/// interface for converting values directly within the type they pertain to. It is useful
+/// in maintaining the integrity of container operations, especially when dealing with
+/// sophisticated structures that separate the concept of values and entries, such as `HashMap`s
+/// and other associative containers.
+pub trait ValToEntry<Container>
 {
+  /// Represents the type of entry that corresponds to the value within the container.
   type Entry;
 
-  /// Converts a value back into an entry of the container. This function is essential for operations like insertion
-  /// or modification, where a value needs to be transformed into a container-compatible entry, such as converting
-  /// a value into a (key, value) tuple for insertion into a `HashMap`.
-  // xxx : update description
+  /// Transforms the instance (value) into an entry compatible with the specified container.
+  /// This conversion is essential for operations like insertion or modification within the container,
+  /// where the value needs to be formatted as an entry.
+  ///
+  /// # Returns
+  /// Returns the entry constructed from the instance of the value, ready for integration into the container.
+  ///
+  /// # Example
+  /// ```
+  /// impl ValToEntry<PairMap> for (i32, i32)
+  /// {
+  ///     type Entry = (String, i32);
+  ///
+  ///     fn val_to_entry( self ) -> Self::Entry
+  ///     {
+  ///         (self.0.to_string(), self.1)
+  ///     }
+  /// }
+  /// ```
   fn val_to_entry( self ) -> Self::Entry;
 }
 
-impl< C, Val > ValToEntry< C > for Val
+impl<C, Val> ValToEntry<C> for Val
 where
-  C : ContainerValToEntry< Val >,
+  C : ContainerValToEntry<Val>,
 {
   type Entry = C::Entry;
 
+  /// Invokes the `val_to_entry` function of the `ContainerValToEntry` trait to convert the value to an entry.
   fn val_to_entry( self ) -> C::Entry
   {
     C::val_to_entry( self )
