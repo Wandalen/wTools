@@ -2,7 +2,7 @@
 
 use super::*;
 use collection_tools::HashSet;
-use std::fmt;
+// use std::fmt;
 
 // == define custom containers
 
@@ -195,22 +195,23 @@ where
   type Former = LoggingSetAsSubformer< K, Definition::Context, Definition::Formed, Definition::End >;
 }
 
-// impl< K > former::EntityToStorage
-// for LoggingSet< K >
-// where
-//   K : ::core::cmp::Eq + ::core::hash::Hash,
-// {
-//   type Storage = LoggingSet< K >;
-// }
-//
-// impl< K, Context, Formed, End > former::EntityToDefinition< Context, Formed, End >
-// for LoggingSet< K >
-// where
-//   K : ::core::cmp::Eq + ::core::hash::Hash,
-//   End : former::FormingEnd< HashSetDefinition< K, Context, Formed, NoEnd > >,
-// {
-//   type Definition = HashSetDefinition< K, Context, Formed, End >;
-// }
+impl< K > former::EntityToStorage
+for LoggingSet< K >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+{
+  type Storage = LoggingSet< K >;
+}
+
+impl< K, Context, Formed, End > former::EntityToDefinition< Context, Formed, End >
+for LoggingSet< K >
+where
+  K : ::core::cmp::Eq + ::core::hash::Hash,
+  End : former::FormingEnd< LoggingSetDefinitionTypes< K, Context, Formed > >,
+{
+  type Definition = LoggingSetDefinition< K, Context, Formed, End >;
+  type Types = LoggingSetDefinitionTypes< K, Context, Formed >;
+}
 
 // impl< K, Context, Formed > crate::EntityToDefinitionTypes< Context, Formed >
 // for HashSet< K >
