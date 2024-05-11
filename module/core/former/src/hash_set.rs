@@ -5,6 +5,22 @@
 use super::*;
 use collection_tools::HashSet;
 
+// impl< K, T > Container for T
+// where
+//   K : core::cmp::Eq + core::hash::Hash,
+//   T : HashSetLike< K >,
+// {
+//   type Entry = K;
+//   type Val = K;
+//
+//   #[ inline( always ) ]
+//   fn entry_to_val( e : Self::Entry ) -> Self::Val
+//   {
+//     e
+//   }
+//
+// }
+
 impl< K > Container for collection_tools::HashSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
@@ -63,33 +79,33 @@ where
   }
 }
 
-/// A trait for containers behaving like a `HashSet`, allowing insertion operations.
-///
-/// Implementing this trait enables the associated formed to be used with `HashSetAsSubformer`,
-/// facilitating a builder pattern that is both intuitive and concise.
-///
-/// # Example Implementation
-///
-/// Implementing `HashSetLike` for `std::collections::HashSet`:
-///
-
-pub trait HashSetLike< K >
-where
-  K : core::cmp::Eq + core::hash::Hash,
-{
-  /// Inserts a key-value pair into the map.
-  fn insert( &mut self, element : K ) -> Option< K >;
-}
-
-impl< K > HashSetLike< K > for HashSet< K >
-where
-  K : core::cmp::Eq + core::hash::Hash,
-{
-  fn insert( &mut self, element : K ) -> Option< K >
-  {
-    HashSet::replace( self, element )
-  }
-}
+// /// A trait for containers behaving like a `HashSet`, allowing insertion operations.
+// ///
+// /// Implementing this trait enables the associated formed to be used with `HashSetAsSubformer`,
+// /// facilitating a builder pattern that is both intuitive and concise.
+// ///
+// /// # Example Implementation
+// ///
+// /// Implementing `HashSetLike` for `std::collections::HashSet`:
+// ///
+//
+// pub trait HashSetLike< K >
+// where
+//   K : core::cmp::Eq + core::hash::Hash,
+// {
+//   /// Inserts a key-value pair into the map.
+//   fn insert( &mut self, element : K ) -> Option< K >;
+// }
+//
+// // impl< K > HashSetLike< K > for HashSet< K >
+// // where
+// //   K : core::cmp::Eq + core::hash::Hash,
+// // {
+// //   fn insert( &mut self, element : K ) -> Option< K >
+// //   {
+// //     HashSet::replace( self, element )
+// //   }
+// // }
 
 // = storage
 
