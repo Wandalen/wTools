@@ -17,7 +17,7 @@ impl Struct1
 {
   pub fn former() -> Struct1Former
   {
-    Struct1Former::new_coercing( the_module::ReturnPreformed )
+    Struct1Former::new_coercing( former::ReturnPreformed )
   }
 }
 

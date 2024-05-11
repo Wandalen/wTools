@@ -112,30 +112,15 @@ r#" Implementation of former for [{}].
     stru
   );
 
-  let doc_example1 =
-r#"
-use former::Former;
-#[ derive( Former ) ]
-pub struct Struct1
-{
-  #[default( 31 ) ]
-  field1 : i32,
-}
-"#;
-
   let doc_former_struct = format!
   (
 r#"
 Structure to form [{}]. Represents a forming entity designed to construct objects through a builder pattern.
 
 This structure holds temporary storage and context during the formation process and
-utilizes a defined end strategy to finalize the object creation. It facilitates the flexible
-construction of complex objects by allowing step-by-step configuration.
-```
-{}
-```
+utilizes a defined end strategy to finalize the object creation.
 "#,
-    stru, doc_example1
+    stru
   );
 
   ( doc_former_mod, doc_former_struct )
@@ -176,8 +161,15 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let as_subformer_end_name = format!( "{}AsSubformerEnd", stru );
   let as_subformer_end = syn::Ident::new( &as_subformer_end_name, stru.span() );
 
-  // xxx : improve
-  let as_subformer_end_doc = format!( "Alias for trait former::FormingEnd with context and formed the same type and definition of structure [`$(stru)`]. Use as subformer end of a field during process of forming of super structure." );
+  let as_subformer_end_doc = format!
+  (
+    r#"
+Represents an end condition for former of [`${stru}`], tying the lifecycle of forming processes to a broader context.
+
+This trait is intended for use with subformer alias, ensuring that end conditions are met according to the
+specific needs of the broader forming context. It mandates the implementation of `former::FormingEnd`.
+    "#
+  );
 
   /* parameters for structure */
 
@@ -341,7 +333,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     {
 
       ///
-      /// Make former, variation of builder pattern to form structure defining values of fields step by step.
+      /// Provides a mechanism to initiate the formation process with a default completion behavior.
       ///
 
       #[ inline( always ) ]
@@ -391,6 +383,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     // = definition types
 
+    /// Defines the generic parameters for formation behavior including context, form, and end conditions.
     #[ derive( Debug ) ]
     pub struct #former_definition_types < #former_definition_types_generics_with_defaults >
     where
@@ -426,6 +419,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     // = definition
 
+    /// Holds the definition types used during the formation process.
     #[ derive( Debug ) ]
     pub struct #former_definition < #former_definition_generics_with_defaults >
     where
@@ -468,9 +462,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     // = storage
 
-    #[ doc = "Container of a corresponding former." ]
+    #[ doc = "Stores potential values for fields during the formation process." ]
     #[ allow( explicit_outlives_requirements ) ]
-    // pub struct #former_storage < #struct_generics_ty >
     pub struct #former_storage < #struct_generics_with_defaults >
     where
       #struct_generics_where
@@ -553,9 +546,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     {
 
       ///
-      /// Construct new instance of former with default parameters.
+      /// Initializes a former with an end condition and default storage.
       ///
-      // xxx : improve description
       #[ inline( always ) ]
       pub fn new( on_end : Definition::End ) -> Self
       {
@@ -563,9 +555,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
 
       ///
-      /// Construct new instance of former with default parameters.
+      /// Initializes a former with a coercible end condition.
       ///
-      // xxx : improve description
       #[ inline( always ) ]
       pub fn new_coercing< IntoEnd >( end : IntoEnd ) -> Self
       where
@@ -580,9 +571,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
 
       ///
-      /// Begin the process of forming. Expects context of forming to return it after forming.
+      /// Begins the formation process with specified context and termination logic.
       ///
-      // xxx : improve description
       #[ inline( always ) ]
       pub fn begin
       (
@@ -605,9 +595,8 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
 
       ///
-      /// Begin the process of forming. Expects context of forming to return it after forming.
+      /// Starts the formation process with coercible end condition and optional initial values.
       ///
-      // xxx : improve description
       #[ inline( always ) ]
       pub fn begin_coercing< IntoEnd >
       (
@@ -631,7 +620,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
 
       ///
-      /// End the process of forming returning original context of forming.
+      /// Wrapper for `end` to align with common builder pattern terminologies.
       ///
       #[ inline( always ) ]
       pub fn form( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
@@ -640,7 +629,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
       }
 
       ///
-      /// End the process of forming returning original context of forming.
+      /// Completes the formation and returns the formed object.
       ///
       #[ inline( always ) ]
       pub fn end( mut self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
@@ -727,8 +716,10 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     // = subformer
 
-    // xxx : improve description
-    /// Use as subformer of a field during process of forming of super structure.
+    /// Provides a specialized former for structure using predefined settings for superformer and end conditions.
+    ///
+    /// This type alias configures former of the structure with a specific definition to streamline its usage in broader contexts,
+    /// especially where structure needs to be integrated into larger structures with a clear termination condition.
     pub type #as_subformer < #struct_generics_ty __Superformer, __End > = #former
     <
       #struct_generics_ty
@@ -744,7 +735,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
     // = as subformer end
 
-    // xxx : imporove documentation
     #[ doc = #as_subformer_end_doc ]
     pub trait #as_subformer_end < #struct_generics_impl SuperFormer >
     where

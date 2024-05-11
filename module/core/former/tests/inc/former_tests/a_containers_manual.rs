@@ -524,7 +524,8 @@ pub type Struct1AsSubformer< Superformer, End > = Struct1Former
 >;
 
 #[ allow( dead_code ) ]
-pub trait Struct1AsSubformerEnd<SuperFormer> where Self : former::FormingEnd< Struct1FormerDefinitionTypes<SuperFormer, SuperFormer>, >
+pub trait Struct1AsSubformerEnd<SuperFormer>
+where Self : former::FormingEnd< Struct1FormerDefinitionTypes<SuperFormer, SuperFormer>, >
 {}
 
 impl<SuperFormer, T> Struct1AsSubformerEnd<SuperFormer> for T

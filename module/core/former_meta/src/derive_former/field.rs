@@ -894,11 +894,7 @@ with the new content generated during the subforming process.
 
     let subformer_definition_types = if let Some( ref _subformer_definition ) = subformer_definition
     {
-      // let subformer_definition_types_name = format!( "{}Types", qt!{ #subformer_definition } );
-      // dbg!( &subformer_definition_types_name );
-      // let subformer_definition_types = syn::Ident::new( &subformer_definition_types_name, field_ident.span() );
       let subformer_definition_types_string = format!( "{}Types", qt!{ #subformer_definition } );
-      // let subformer_definition_types : syn::Type = subformer_definition_types_string.parse()?
       let subformer_definition_types : syn::Type = syn::parse_str( &subformer_definition_types_string )?;
       qt!
       {
@@ -1062,7 +1058,7 @@ where
 
     let doc = format!
     (
-      "Setter for the '{}' field.",
+      "Scalar setter for the '{}' field.",
       field_ident,
     );
 
