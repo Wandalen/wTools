@@ -10,10 +10,10 @@ use collection_tools::Vec;
 fn add()
 {
 
-  // expliccit with ContainerSubformer
+  // expliccit with ContainerFormer
 
   let got : Vec< String > = the_module
-  ::ContainerSubformer
+  ::ContainerFormer
   ::< String, former::VectorDefinition< String, (), Vec< String >, the_module::ReturnStorage > >
   ::new( former::ReturnStorage )
   .add( "a" )
@@ -26,9 +26,9 @@ fn add()
   ];
   a_id!( got, exp );
 
-  // expliccit with VectorSubformer
+  // expliccit with VectorFormer
 
-  let got : Vec< String > = the_module::VectorSubformer::< String, (), Vec< String >, the_module::ReturnStorage >
+  let got : Vec< String > = the_module::VectorFormer::< String, (), Vec< String >, the_module::ReturnStorage >
   ::new( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
@@ -40,9 +40,9 @@ fn add()
   ];
   a_id!( got, exp );
 
-  // compact with VectorSubformer
+  // compact with VectorFormer
 
-  let got : Vec< String > = the_module::VectorSubformer::new( former::ReturnStorage )
+  let got : Vec< String > = the_module::VectorFormer::new( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
   .form();
@@ -55,7 +55,7 @@ fn add()
 
   // with begin_coercing
 
-  let got : Vec< String > = the_module::VectorSubformer
+  let got : Vec< String > = the_module::VectorFormer
   ::begin( Some( vec![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
   .add( "b" )
   .form();
@@ -90,7 +90,7 @@ fn add()
 fn replace()
 {
 
-  let got : Vec< String > = the_module::VectorSubformer::new( former::ReturnStorage )
+  let got : Vec< String > = the_module::VectorFormer::new( former::ReturnStorage )
   .add( "x" )
   .replace( vec![ "a".to_string(), "b".to_string() ] )
   .form();

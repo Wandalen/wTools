@@ -1,9 +1,10 @@
 // Example former_custom_scalar_setter.rs
 
+//! ## Example : Custom Scalar Setter
 //!
-//! This example demonstrates the implementation of a scalar setter using the `Former` trait in Rust. Unlike the more complex subform and container setters shown in previous examples, this example focuses on a straightforward approach to directly set a scalar value within a parent entity. The `Parent` struct manages a `HashMap` of `Child` entities, and the scalar setter is used to set the entire `HashMap` directly.
+//! Use of a scalar setter within a `Former` trait implementation to directly assign a `HashMap` of `Child` entities to a `Parent` structure using a custom setter function.
 //!
-//! The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a container—each child entity in this case.
+//! Unlike the more complex subform and container setters shown in previous examples, this example focuses on a straightforward approach to directly set a scalar value within a parent entity. The `Parent` struct manages a `HashMap` of `Child` entities, and the scalar setter is used to set the entire `HashMap` directly. The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a container—each child entity in this case.
 //!
 //! #### Types of Setters
 //!
@@ -30,6 +31,7 @@ fn main()
 
   // Child struct with Former derived for builder pattern support
   #[ derive( Debug, PartialEq, Former ) ]
+  // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
   pub struct Child
   {
@@ -39,6 +41,7 @@ fn main()
 
   // Parent struct to hold children
   #[ derive( Debug, PartialEq, Former ) ]
+  // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
   pub struct Parent
   {

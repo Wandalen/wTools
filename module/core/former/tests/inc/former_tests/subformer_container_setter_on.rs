@@ -30,7 +30,7 @@ where
 {
 
   #[ inline( always ) ]
-  pub fn children2( self ) -> former::ContainerSubformer::
+  pub fn children2( self ) -> former::ContainerFormer::
   <
     Child,
     former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, >

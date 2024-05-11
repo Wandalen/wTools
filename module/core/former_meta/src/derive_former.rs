@@ -4,7 +4,6 @@ use iter_tools::{ Itertools, process_results };
 use macro_tools::{ attr, diag, generic_params, generic_args, typ, derive, Result };
 use proc_macro2::TokenStream;
 
-// zzz : explain concept of Storage
 // qqq : implement interfaces for other containers
 
 mod field;
@@ -13,6 +12,91 @@ mod field_attrs;
 use field_attrs::*;
 mod struct_attrs;
 use struct_attrs::*;
+
+/// Generates the code for implementing the `FormerMutator` trait for a specified former definition type.
+///
+/// This function generate code that implements the `FormerMutator` trait based on the given
+/// former definition types and their associated generics. The `FormerMutator` trait provides the
+/// functionality to mutate the storage and context of an entity just before its formation process
+/// completes. This is particularly useful for performing final adjustments or validations on the data
+/// before the entity is fully constructed.
+///
+/// # Example
+///
+/// Below is an example of how the generated code might look:
+///
+/// ```rust, ignore
+/// impl< Context, Formed > former::FormerMutator
+/// for Struct1FormerDefinitionTypes< Context, Formed >
+/// {
+///   /// Mutates the context and storage of the entity just before the formation process completes.
+///   #[ inline ]
+///   fn form_mutation( storage : &mut Self::Storage, _context : &mut ::core::option::Option< Self::Context > )
+///   {
+///     storage.a.get_or_insert_with( Default::default );
+///     storage.b.get_or_insert_with( Default::default );
+///     storage.c = Some( format!( "{:?} - {}", storage.a.unwrap(), storage.b.as_ref().unwrap() ) );
+///   }
+/// }
+/// ```
+///
+
+pub fn mutator
+(
+  mutator : &AttributeMutator,
+  former_definition_types : &syn::Ident,
+  former_definition_types_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  former_definition_types_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  former_definition_types_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+)
+-> Result< TokenStream >
+{
+  let former_mutator_code = if mutator.custom
+  {
+    qt!{}
+  }
+  else
+  {
+    qt!
+    {
+      impl< #former_definition_types_generics_impl > former::FormerMutator
+      for #former_definition_types < #former_definition_types_generics_ty >
+      where
+        #former_definition_types_generics_where
+      {
+      }
+    }
+  };
+
+  if mutator.hint
+  {
+    let hint = format!
+    (
+      r#"
+= Example of custom mutator
+
+impl< {} > former::FormerMutator
+for {} < {} >
+where
+  {}
+{{
+  /// Mutates the context and storage of the entity just before the formation process completes.
+  #[ inline ]
+  fn form_mutation( storage : &mut Self::Storage, context : &mut Option< Self::Context > )
+  {{
+  }}
+}}
+      "#,
+      format!( "{}", qt!{ #former_definition_types_generics_impl } ),
+      former_definition_types,
+      format!( "{}", qt!{ #former_definition_types_generics_ty } ),
+      format!( "{}", qt!{ #former_definition_types_generics_where } ),
+    );
+    println!( "{hint}" );
+  };
+
+  Ok( former_mutator_code )
+}
 
 ///
 /// Generate documentation for the former.
@@ -28,30 +112,15 @@ r#" Implementation of former for [{}].
     stru
   );
 
-  let doc_example1 =
-r#"
-use former::Former;
-#[ derive( Former ) ]
-pub struct Struct1
-{
-  #[ former( default = 31 ) ]
-  field1 : i32,
-}
-"#;
-
   let doc_former_struct = format!
   (
 r#"
 Structure to form [{}]. Represents a forming entity designed to construct objects through a builder pattern.
 
 This structure holds temporary storage and context during the formation process and
-utilizes a defined end strategy to finalize the object creation. It facilitates the flexible
-construction of complex objects by allowing step-by-step configuration.
-```
-{}
-```
+utilizes a defined end strategy to finalize the object creation.
 "#,
-    stru, doc_example1
+    stru
   );
 
   ( doc_former_mod, doc_former_struct )
@@ -81,8 +150,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let stru = &ast.ident;
   let former_name = format!( "{}Former", stru );
   let former = syn::Ident::new( &former_name, stru.span() );
-  // let former_namespace_name = format!( "{}FormerSpace", stru );
-  // let former_namespace = syn::Ident::new( &former_namespace_name, stru.span() );
   let former_storage_name = format!( "{}FormerStorage", stru );
   let former_storage = syn::Ident::new( &former_storage_name, stru.span() );
   let former_definition_name = format!( "{}FormerDefinition", stru );
@@ -94,8 +161,15 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   let as_subformer_end_name = format!( "{}AsSubformerEnd", stru );
   let as_subformer_end = syn::Ident::new( &as_subformer_end_name, stru.span() );
 
-  // zzz : improve
-  let as_subformer_end_doc = format!( "Alias for trait former::FormingEnd with context and formed the same type and definition of structure [`$(stru)`]. Use as subformer end of a field during process of forming of super structure." );
+  let as_subformer_end_doc = format!
+  (
+    r#"
+Represents an end condition for former of [`${stru}`], tying the lifecycle of forming processes to a broader context.
+
+This trait is intended for use with subformer alias, ensuring that end conditions are met according to the
+specific needs of the broader forming context. It mandates the implementation of `former::FormingEnd`.
+    "#
+  );
 
   /* parameters for structure */
 
@@ -175,7 +249,6 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 
   let ( _doc_former_mod, doc_former_struct ) = doc_generate( stru );
   let ( perform, perform_output, perform_generics ) = struct_attrs.performer()?;
-  // let storage_fields_code = struct_attrs.storage_fields_code()?;
 
   /* fields */
 
@@ -207,11 +280,9 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     storage_field_name,
     storage_field_preform,
     former_field_setter,
-    former_field_assign_end,
-    former_field_add_end,
   )
   :
-  ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
+  ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
   = formed_fields
   .iter()
   .chain( storage_fields.iter() )
@@ -224,78 +295,31 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     field.former_field_setter
     (
       &stru,
-      &former,
-      &former_storage,
-      // &as_subformer,
-      // &as_subformer_end,
-    ),
-    field.former_field_assign_end
-    (
-      &stru,
+      &struct_generics_impl,
+      &struct_generics_ty,
+      &struct_generics_where,
       &former,
       &former_generics_impl,
       &former_generics_ty,
       &former_generics_where,
-    ),
-    field.former_field_add_end
-    (
-      &stru,
-      &former,
-      &former_generics_ty,
-      &struct_generics_impl,
-      &struct_generics_ty,
-      &struct_generics_where,
+      &former_storage,
+      &original_input,
     ),
   )}).multiunzip();
 
-  let former_field_setter : Vec< _ > = process_results( former_field_setter, | iter | iter.collect() )?;
+  let results : Result< Vec< _ > > = former_field_setter.into_iter().collect();
+  let ( former_field_setter, namespace_code ) : ( Vec< _ >, Vec< _ > ) = results?.into_iter().unzip();
+
   let storage_field_preform : Vec< _ > = process_results( storage_field_preform, | iter | iter.collect() )?;
-  let former_field_assign_end : Vec< _ > = process_results( former_field_assign_end, | iter | iter.collect() )?;
-  let former_field_add_end : Vec< _ > = process_results( former_field_add_end, | iter | iter.collect() )?;
 
-  let former_mutator_code = if struct_attrs.mutator.custom
-  {
-    qt!{}
-  }
-  else
-  {
-    qt!
-    {
-      impl< #former_definition_types_generics_impl > former::FormerMutator
-      for #former_definition_types < #former_definition_types_generics_ty >
-      where
-        #former_definition_types_generics_where
-      {
-      }
-    }
-  };
-
-  if struct_attrs.mutator.hint
-  {
-    let hint = format!
-    (
-      r#"
- = Example of custom mutator
-
-impl< {} > former::FormerMutator
-for {} < {} >
-where
-  {}
-{{
-  /// Mutates the context and storage of the entity just before the formation process completes.
-  #[ inline ]
-  fn form_mutation( storage : &mut Self::Storage, context : &mut Option< Self::Context > )
-  {{
-  }}
-}}
-      "#,
-      format!( "{}", qt!{ #former_definition_types_generics_impl } ),
-      former_definition_types,
-      format!( "{}", qt!{ #former_definition_types_generics_ty } ),
-      format!( "{}", qt!{ #former_definition_types_generics_where } ),
-    );
-    println!( "{hint}" );
-  };
+  let former_mutator_code = mutator
+  (
+    &struct_attrs.mutator,
+    &former_definition_types,
+    &former_definition_types_generics_impl,
+    &former_definition_types_generics_ty,
+    &former_definition_types_generics_where,
+  )?;
 
   let result = qt!
   {
@@ -309,7 +333,7 @@ where
     {
 
       ///
-      /// Make former, variation of builder pattern to form structure defining values of fields step by step.
+      /// Provides a mechanism to initiate the formation process with a default completion behavior.
       ///
 
       #[ inline( always ) ]
@@ -346,16 +370,20 @@ where
       #struct_generics_where
     {
       type Definition = #former_definition < #struct_generics_ty __Context, __Formed, __End >;
+      type Types = #former_definition_types < #struct_generics_ty __Context, __Formed >;
     }
 
-    // #[ allow( non_snake_case ) ]
-    // pub mod #former_namespace
-    // {
-    // pub use super::#stru;
-    // use super::*;
+    impl< #struct_generics_impl __Context, __Formed > former::EntityToDefinitionTypes< __Context, __Formed >
+    for #stru < #struct_generics_ty >
+    where
+      #struct_generics_where
+    {
+      type Types = #former_definition_types < #struct_generics_ty __Context, __Formed >;
+    }
 
     // = definition types
 
+    /// Defines the generic parameters for formation behavior including context, form, and end conditions.
     #[ derive( Debug ) ]
     pub struct #former_definition_types < #former_definition_types_generics_with_defaults >
     where
@@ -391,6 +419,7 @@ where
 
     // = definition
 
+    /// Holds the definition types used during the formation process.
     #[ derive( Debug ) ]
     pub struct #former_definition < #former_definition_generics_with_defaults >
     where
@@ -433,9 +462,8 @@ where
 
     // = storage
 
-    #[ doc = "Container of a corresponding former." ]
+    #[ doc = "Stores potential values for fields during the formation process." ]
     #[ allow( explicit_outlives_requirements ) ]
-    // pub struct #former_storage < #struct_generics_ty >
     pub struct #former_storage < #struct_generics_with_defaults >
     where
       #struct_generics_where
@@ -444,7 +472,6 @@ where
         /// A field
         #storage_field_optional,
       )*
-      // #storage_fields_code
     }
 
     impl < #struct_generics_impl > ::core::default::Default
@@ -469,7 +496,7 @@ where
     where
       #struct_generics_where
     {
-      type Formed = #stru < #struct_generics_ty >;
+      type Preformed = #stru < #struct_generics_ty >;
     }
 
     impl < #struct_generics_impl > former::StoragePreform
@@ -477,7 +504,7 @@ where
     where
       #struct_generics_where
     {
-      type Preformed = #stru < #struct_generics_ty >;
+      // type Preformed = #stru < #struct_generics_ty >;
 
       fn preform( mut self ) -> Self::Preformed
       {
@@ -519,9 +546,8 @@ where
     {
 
       ///
-      /// Construct new instance of former with default parameters.
+      /// Initializes a former with an end condition and default storage.
       ///
-      // zzz : improve description
       #[ inline( always ) ]
       pub fn new( on_end : Definition::End ) -> Self
       {
@@ -529,9 +555,8 @@ where
       }
 
       ///
-      /// Construct new instance of former with default parameters.
+      /// Initializes a former with a coercible end condition.
       ///
-      // zzz : improve description
       #[ inline( always ) ]
       pub fn new_coercing< IntoEnd >( end : IntoEnd ) -> Self
       where
@@ -546,9 +571,8 @@ where
       }
 
       ///
-      /// Begin the process of forming. Expects context of forming to return it after forming.
+      /// Begins the formation process with specified context and termination logic.
       ///
-      // zzz : improve description
       #[ inline( always ) ]
       pub fn begin
       (
@@ -571,9 +595,8 @@ where
       }
 
       ///
-      /// Begin the process of forming. Expects context of forming to return it after forming.
+      /// Starts the formation process with coercible end condition and optional initial values.
       ///
-      // zzz : improve description
       #[ inline( always ) ]
       pub fn begin_coercing< IntoEnd >
       (
@@ -597,7 +620,7 @@ where
       }
 
       ///
-      /// End the process of forming returning original context of forming.
+      /// Wrapper for `end` to align with common builder pattern terminologies.
       ///
       #[ inline( always ) ]
       pub fn form( self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
@@ -606,7 +629,7 @@ where
       }
 
       ///
-      /// End the process of forming returning original context of forming.
+      /// Completes the formation and returns the formed object.
       ///
       #[ inline( always ) ]
       pub fn end( mut self ) -> < Definition::Types as former::FormerDefinitionTypes >::Formed
@@ -693,8 +716,10 @@ where
 
     // = subformer
 
-    // zzz : improve description
-    /// Use as subformer of a field during process of forming of super structure.
+    /// Provides a specialized former for structure using predefined settings for superformer and end conditions.
+    ///
+    /// This type alias configures former of the structure with a specific definition to streamline its usage in broader contexts,
+    /// especially where structure needs to be integrated into larger structures with a clear termination condition.
     pub type #as_subformer < #struct_generics_ty __Superformer, __End > = #former
     <
       #struct_generics_ty
@@ -710,7 +735,6 @@ where
 
     // = as subformer end
 
-    // zzz : imporove documentation
     #[ doc = #as_subformer_end_doc ]
     pub trait #as_subformer_end < #struct_generics_impl SuperFormer >
     where
@@ -733,26 +757,18 @@ where
     {
     }
 
-    // = container assign callbacks
+    // = etc
 
     #(
-      #former_field_assign_end
+      #namespace_code
     )*
-
-    // = container add callbacks
-
-    #(
-      #former_field_add_end
-    )*
-
-    // } /* end of namespace */
-    // pub use #former_namespace :: *;
 
   };
 
   if has_debug
   {
-    diag::debug_report_print( "derive : Former", original_input, &result );
+    let about = format!( "derive : Former\nstructure : {stru}" );
+    diag::report_print( about, &original_input, &result );
   }
 
   Ok( result )

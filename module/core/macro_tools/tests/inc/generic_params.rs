@@ -9,7 +9,7 @@ fn generics_with_where()
 
   let got : the_module::GenericsWithWhere = parse_quote!
   {
-    < 'a, T : Clone, U : Default, V : std::fmt::Debug >
+    < 'a, T : Clone, U : Default, V : core::fmt::Debug >
     where
       Definition : former::FormerDefinition,
   };
@@ -17,7 +17,7 @@ fn generics_with_where()
 
   let mut exp : syn::Generics = parse_quote!
   {
-    < 'a, T : Clone, U : Default, V : std::fmt::Debug >
+    < 'a, T : Clone, U : Default, V : core::fmt::Debug >
   };
   exp.where_clause = parse_quote!
   {
@@ -46,13 +46,13 @@ fn merge_assumptions()
 
   let mut generics_a : syn::Generics = parse_quote!{ < T : Clone, U : Default > };
   generics_a.where_clause = parse_quote!{ where T : Default };
-  let mut generics_b : syn::Generics = parse_quote!{ < V : std::fmt::Debug > };
+  let mut generics_b : syn::Generics = parse_quote!{ < V : core::fmt::Debug > };
   generics_b.where_clause = parse_quote!{ where V : Sized };
   let got = generic_params::merge( &generics_a, &generics_b );
 
   let mut exp : syn::Generics = parse_quote!
   {
-    < T : Clone, U : Default, V : std::fmt::Debug >
+    < T : Clone, U : Default, V : core::fmt::Debug >
   };
   exp.where_clause = parse_quote!
   {
@@ -82,13 +82,13 @@ fn merge_defaults()
 
   let mut generics_a : syn::Generics = parse_quote!{ < T : Clone, U : Default = Default1 > };
   generics_a.where_clause = parse_quote!{ where T : Default };
-  let mut generics_b : syn::Generics = parse_quote!{ < V : std::fmt::Debug = Debug1 > };
+  let mut generics_b : syn::Generics = parse_quote!{ < V : core::fmt::Debug = Debug1 > };
   generics_b.where_clause = parse_quote!{ where V : Sized };
   let got = generic_params::merge( &generics_a, &generics_b );
 
   let mut exp : syn::Generics = parse_quote!
   {
-    < T : Clone, U : Default = Default1, V : std::fmt::Debug = Debug1 >
+    < T : Clone, U : Default = Default1, V : core::fmt::Debug = Debug1 >
   };
   exp.where_clause = parse_quote!
   {
@@ -117,7 +117,7 @@ fn names()
 
   use macro_tools::syn::parse_quote;
 
-  let generics : the_module::GenericsWithWhere = parse_quote!{ < T : Clone + Default, U, 'a, const N : usize > where T: std::fmt::Debug };
+  let generics : the_module::GenericsWithWhere = parse_quote!{ < T : Clone + Default, U, 'a, const N : usize > where T: core::fmt::Debug };
   let simplified_generics = macro_tools::generic_params::names( &generics.unwrap() );
 
   assert_eq!( simplified_generics.params.len(), 4 ); // Contains T, U, 'a, and N

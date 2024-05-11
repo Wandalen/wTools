@@ -15,7 +15,7 @@
 //!
 //! The builder pattern methods significantly streamline the process of struct initialization, especially for structs with complex or optional fields. By leveraging `Former`, developers can write more readable and maintainable initialization code, avoiding the verbosity and complexity often associated with manual struct instantiation.
 //!
-//! The `dbg!` macro is utilized to print the constructed `Structure1` instance, confirming that all fields are correctly assigned, including the handling of optional fields and collections. This example underscores the power and convenience of using `Former` for struct initialization in Rust projects.
+//! The `dbg!` macro is utilized to print the constructed `Structure1` instance, confirming that all fields are correctly assigned, including the handling of optional fields and collections.
 
 #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
 fn main() {}

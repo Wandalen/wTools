@@ -29,9 +29,9 @@ fn definitions()
   {
   }
 
-  f1( former::VectorDefinition::< String, (), Vec< String >, the_module::NoEnd >::default() );
+  f1( former::VectorDefinitionTypes::< String, (), Vec< String > >::default() );
   f2( former::VectorDefinition::< String, (), Vec< String >, the_module::NoEnd >::default() );
-  f3::< former::VectorDefinition< String, (), Vec< String >, the_module::NoEnd >, the_module::ReturnStorage >( the_module::ReturnStorage );
+  f3::< former::VectorDefinitionTypes< String, (), Vec< String > >, the_module::ReturnStorage >( the_module::ReturnStorage );
   f3::< < former::VectorDefinition< String, (), Vec< String >, the_module::NoEnd > as the_module::FormerDefinition >::Types, the_module::ReturnStorage >( the_module::ReturnStorage );
 
 }
@@ -42,22 +42,20 @@ fn definitions()
 fn begin_and_custom_end()
 {
 
-  // zzz : make example with that
-
   // basic case
 
   fn return_13( _storage : Vec< String >, _context : Option< () > ) -> f32
   {
     13.1
   }
-  let got = the_module::VectorSubformer::begin( None, None, return_13 )
+  let got = the_module::VectorFormer::begin( None, None, return_13 )
   .add( "a" )
   .add( "b" )
   .form();
   let exp = 13.1;
   a_id!( got, exp );
 
-  let got = the_module::VectorSubformer::new( return_13 )
+  let got = the_module::VectorFormer::new( return_13 )
   .add( "a" )
   .add( "b" )
   .form();
@@ -77,7 +75,7 @@ fn begin_and_custom_end()
       13.1
     }
   }
-  let got = the_module::VectorSubformer::begin( None, Some( 10.0 ), context_plus_13 )
+  let got = the_module::VectorFormer::begin( None, Some( 10.0 ), context_plus_13 )
   .add( "a" )
   .add( "b" )
   .form();
@@ -93,8 +91,6 @@ fn begin_and_custom_end()
 #[ test ]
 fn custom_definition()
 {
-
-  // zzz : make example of that
 
   struct Return13;
   impl former::FormerDefinitionTypes for Return13
@@ -120,15 +116,15 @@ fn custom_definition()
 
   // -
 
-  impl the_module::FormingEnd< Return13 >
+  impl former::FormingEnd< Return13 >
   for Return13
   {
     fn call
     (
       &self,
-      _storage : < Return13 as the_module::FormerDefinitionTypes >::Storage,
-      _context : Option< < Return13 as the_module::FormerDefinitionTypes >::Context >
-    ) -> < Return13 as the_module::FormerDefinitionTypes >::Formed
+      _storage : < Return13 as former::FormerDefinitionTypes >::Storage,
+      _context : Option< < Return13 as former::FormerDefinitionTypes >::Context >
+    ) -> < Return13 as former::FormerDefinitionTypes >::Formed
     {
       13
     }
@@ -136,14 +132,14 @@ fn custom_definition()
 
   //
 
-  let got = the_module::ContainerSubformer::< String, Return13 >::begin_coercing( None, None, Return13 )
+  let got = former::ContainerFormer::< String, Return13 >::begin( None, None, Return13 )
   .add( "a" )
   .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
 
-  let got = the_module::ContainerSubformer::< String, Return13 >::new( Return13 )
+  let got = former::ContainerFormer::< String, Return13 >::new( Return13 )
   .add( "a" )
   .add( "b" )
   .form();
@@ -159,8 +155,6 @@ fn custom_definition()
 #[ test ]
 fn custom_definition_parametrized()
 {
-
-  // zzz : make example of that
 
   struct Return13< E >( ::core::marker::PhantomData< E > );
 
@@ -211,14 +205,14 @@ fn custom_definition_parametrized()
 
   //
 
-  let got = the_module::ContainerSubformer::< String, Return13< String > >::begin_coercing( None, None, Return13::new() )
+  let got = the_module::ContainerFormer::< String, Return13< String > >::begin_coercing( None, None, Return13::new() )
   .add( "a" )
   .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
 
-  let got = the_module::ContainerSubformer::< String, Return13< String > >::new_coercing( Return13::new() )
+  let got = the_module::ContainerFormer::< String, Return13< String > >::new_coercing( Return13::new() )
   .add( "a" )
   .add( "b" )
   .form();
@@ -227,7 +221,7 @@ fn custom_definition_parametrized()
 
   //
 
-  type MyContainer< E > = the_module::ContainerSubformer::< E, Return13< E > >;
+  type MyContainer< E > = the_module::ContainerFormer::< E, Return13< E > >;
 
   let got = MyContainer::< String >::begin_coercing( None, None, Return13::new() )
   .add( "a" )
@@ -279,21 +273,21 @@ fn custom_definition_custom_end()
   }
 
   let end_wrapper : the_module::FormingEndClosure< Return13 > = the_module::FormingEndClosure::new( return_13 );
-  let got = the_module::ContainerSubformer::< String, Return13 >::new( end_wrapper )
+  let got = the_module::ContainerFormer::< String, Return13 >::new( end_wrapper )
   .add( "a" )
   .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
 
-  let got = the_module::ContainerSubformer::< String, Return13 >::new( return_13.into() )
+  let got = the_module::ContainerFormer::< String, Return13 >::new( return_13.into() )
   .add( "a" )
   .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
 
-  let got = the_module::ContainerSubformer::< String, Return13 >::new_coercing( return_13 )
+  let got = the_module::ContainerFormer::< String, Return13 >::new_coercing( return_13 )
   .add( "a" )
   .add( "b" )
   .form();

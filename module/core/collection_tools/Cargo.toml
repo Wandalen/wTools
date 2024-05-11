@@ -57,7 +57,7 @@ collection_constructors = []
 collection_into_constructors = []
 # STD collection for no_std.
 collection_std = []
-
+# qqq : is this feature used? seems not. if yes, what is it responsible for? discuss
 
 [dependencies]
 

@@ -271,7 +271,7 @@ pub struct AttributeContainerSetter
   pub name : Option< syn::Ident >,
   /// Controls the generation of a setter method. If false, a setter method is not generated.
   pub setter : Option< bool >,
-  /// Definition of the container former to use, e.g., `former::VectorSubformer`.
+  /// Definition of the container former to use, e.g., `former::VectorFormer`.
   pub definition : Option< syn::Type >,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.

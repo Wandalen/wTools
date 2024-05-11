@@ -1,8 +1,6 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-// xxx : write example
-
 #[ derive( Debug, PartialEq, the_module::Former ) ]
 #[ storage_fields( a : i32, b : Option< String > ) ]
 #[ mutator( custom = true ) ]

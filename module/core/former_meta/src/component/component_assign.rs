@@ -23,8 +23,14 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> Result< proc_macro
 
   if has_debug
   {
-    diag::debug_report_print( "derive : ComponentAssign", original_input, &result );
+    let about = format!( "derive : ComponentAssign\nstructure : {0}", &parsed.item_name );
+    diag::report_print( about, &original_input, &result );
   }
+
+  // if has_debug
+  // {
+  //   diag::report_print( "derive : ComponentAssign", original_input, &result );
+  // }
 
   Ok( result )
 }

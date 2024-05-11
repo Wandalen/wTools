@@ -102,12 +102,12 @@ impl< 'a > ::core::default::Default for Struct1FormerStorage< 'a >
 
 impl< 'a > former::Storage for Struct1FormerStorage< 'a >
 {
-  type Formed = Struct1< 'a >;
+  type Preformed = Struct1< 'a >;
 }
 
 impl< 'a > former::StoragePreform for Struct1FormerStorage< 'a >
 {
-  type Preformed = Struct1< 'a >;
+  // type Preformed = Struct1< 'a >;
 
   fn preform( mut self ) -> Self::Preformed
   // fn preform( mut self ) -> < Self as former::Storage >::Formed

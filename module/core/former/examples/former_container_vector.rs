@@ -1,5 +1,5 @@
 //!
-//! This example demonstrates the use of the `Former` trait to build a `collection_tools::HashSet` through subforming.
+//! This example demonstrates how to employ the `Former` trait to configure a `Vec` using a container setter in a structured manner.
 //!
 
 #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
@@ -7,22 +7,22 @@ fn main() {}
 #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
 fn main()
 {
-  use test_tools::exposed::*;
 
   #[ derive( Debug, PartialEq, former::Former ) ]
-  pub struct StructWithSet
+  pub struct StructWithVec
   {
     #[ container ]
-    set : collection_tools::HashSet< &'static str >,
+    vec : Vec< &'static str >,
   }
 
-  let instance = StructWithSet::former()
-  .set()
+  let instance = StructWithVec::former()
+  .vec()
     .add( "apple" )
     .add( "banana" )
     .end()
   .form();
 
-  assert_eq!(instance, StructWithSet { set : hset![ "apple", "banana" ] });
+  assert_eq!( instance, StructWithVec { vec: vec![ "apple", "banana" ] } );
+  dbg!( instance );
 
 }

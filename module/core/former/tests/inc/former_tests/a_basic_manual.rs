@@ -45,6 +45,13 @@ where
   End : former::FormingEnd< Struct1FormerDefinitionTypes< Context, Formed > >,
 {
   type Definition = Struct1FormerDefinition< Context, Formed, End >;
+  type Types = Struct1FormerDefinitionTypes< Context, Formed >;
+}
+
+impl< Context, Formed > former::EntityToDefinitionTypes< Context, Formed >
+for Struct1
+{
+  type Types = Struct1FormerDefinitionTypes< Context, Formed >;
 }
 
 // = definition types
@@ -121,12 +128,12 @@ impl ::core::default::Default for Struct1FormerStorage
 
 impl former::Storage for Struct1FormerStorage
 {
-  type Formed = Struct1;
+  type Preformed = Struct1;
 }
 
 impl former::StoragePreform for Struct1FormerStorage
 {
-  type Preformed = < Self as former::Storage >::Formed;
+  // type Preformed = < Self as former::Storage >::Formed;
   fn preform( mut self ) -> Self::Preformed
   {
     let int_1 = if self.int_1.is_some()

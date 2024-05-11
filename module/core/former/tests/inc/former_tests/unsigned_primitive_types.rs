@@ -47,91 +47,90 @@ tests_impls!
 
   //
 
-// zzz : make it working
   fn with_u16()
   {
-//     #[ derive( Debug, PartialEq, the_module::Former ) ]
-//     pub struct Counter
-//     {
-//       count : u16,
-//     }
-//
-//     let counter = Counter::former()
-//     .count( 0 )
-//     .form();
-//
-//     let expected = Counter
-//     {
-//       count : 0,
-//     };
-//
-//     a_id!( counter, expected );
+    #[ derive( Debug, PartialEq, the_module::Former ) ]
+    pub struct Counter
+    {
+      count : u16,
+    }
+
+    let counter = Counter::former()
+    .count( 0u16 )
+    .form();
+
+    let expected = Counter
+    {
+      count : 0,
+    };
+
+    a_id!( counter, expected );
   }
 
   //
 
   fn with_u32()
   {
-    // #[ derive( Debug, PartialEq, Former ) ]
-    // pub struct Counter
-    // {
-    //   count : u32,
-    // }
-    //
-    // let counter = Counter::former()
-    // .count( 0 )
-    // .form();
-    //
-    // let expected = Counter
-    // {
-    //   count : 0,
-    // };
-    //
-    // a_id!( counter, expected );
+    #[ derive( Debug, PartialEq, the_module::Former ) ]
+    pub struct Counter
+    {
+      count : u32,
+    }
+
+    let counter = Counter::former()
+    .count( 0u32 )
+    .form();
+
+    let expected = Counter
+    {
+      count : 0,
+    };
+
+    a_id!( counter, expected );
   }
 
   //
 
   fn with_u64()
   {
-    // #[ derive( Debug, PartialEq, Former ) ]
-    // pub struct Counter
-    // {
-    //   count : u64,
-    // }
-    //
-    // let counter = Counter::former()
-    // .count( 0 )
-    // .form();
-    //
-    // let expected = Counter
-    // {
-    //   count : 0,
-    // };
-    //
-    // a_id!( counter, expected );
+    #[ derive( Debug, PartialEq, the_module::Former ) ]
+    pub struct Counter
+    {
+      count : u64,
+    }
+
+    let counter = Counter::former()
+    .count( 0u64 )
+    .form();
+
+    let expected = Counter
+    {
+      count : 0,
+    };
+
+    a_id!( counter, expected );
   }
 
   //
 
   fn with_usize()
   {
-    // #[ derive( Debug, PartialEq, Former ) ]
-    // pub struct Counter
-    // {
-    //   count : usize,
-    // }
-    //
-    // let counter = Counter::former()
-    // .count( 0 )
-    // .form();
-    //
-    // let expected = Counter
-    // {
-    //   count : 0,
-    // };
-    //
-    // a_id!( counter, expected );
+    #[ derive( Debug, PartialEq, the_module::Former ) ]
+    pub struct Counter
+    {
+      count : usize,
+    }
+
+    let counter = Counter::former()
+    .count( 0usize )
+    .form();
+
+    let expected = Counter
+    {
+      count : 0,
+    };
+
+    a_id!( counter, expected );
   }
 }
 

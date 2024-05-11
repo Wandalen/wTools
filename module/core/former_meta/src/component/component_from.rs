@@ -22,8 +22,14 @@ pub fn component_from( input : proc_macro::TokenStream ) -> Result< proc_macro2:
 
   if has_debug
   {
-    diag::debug_report_print( "derive : ComponentFrom", original_input, &result );
+    let about = format!( "derive : ComponentFrom\nstructure : {0}", &parsed.item_name );
+    diag::report_print( about, &original_input, &result );
   }
+
+  // if has_debug
+  // {
+  //   diag::report_print( "derive : ComponentFrom", original_input, &result );
+  // }
 
   Ok( result )
 }

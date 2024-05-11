@@ -29,6 +29,7 @@ fn main()
 
   // Child struct with Former derived for builder pattern support
   #[ derive( Debug, PartialEq, Former ) ]
+  // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
   pub struct Child
   {
@@ -38,6 +39,7 @@ fn main()
 
   // Parent struct to hold children
   #[ derive( Debug, PartialEq, Former ) ]
+  // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
   pub struct Parent
   {
@@ -46,14 +48,14 @@ fn main()
     children : HashMap< String, Child >,
   }
 
-  /// The containr setter provides a container setter that returns a ContainerSubformer tailored for managing a collection of child entities. It employs a generic container definition to facilitate operations on the entire collection, such as adding or updating elements.
+  /// The containr setter provides a container setter that returns a ContainerFormer tailored for managing a collection of child entities. It employs a generic container definition to facilitate operations on the entire collection, such as adding or updating elements.
   impl< Definition, > ParentFormer< Definition, >
   where
     Definition : former::FormerDefinition< Storage = ParentFormerStorage >,
   {
 
     #[ inline( always ) ]
-    pub fn children( self ) -> former::ContainerSubformer::
+    pub fn children( self ) -> former::ContainerFormer::
     <
       ( String, Child ),
       former::HashMapDefinition< String, Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, >

@@ -151,12 +151,12 @@ impl< K, > :: core :: default :: Default for ChildFormerStorage< K, > where K : 
 
 impl< K, > former :: Storage for ChildFormerStorage< K, > where K : core :: hash :: Hash + std :: cmp :: Eq,
 {
-  type Formed = Child< K, >;
+  type Preformed = Child< K, >;
 }
 
 impl< K, > former :: StoragePreform for ChildFormerStorage< K, > where K : core :: hash :: Hash + std :: cmp :: Eq,
 {
-  type Preformed = Child< K, >;
+  // type Preformed = Child< K, >;
 
   fn preform( mut self ) -> Self::Preformed
   // fn preform( mut self ) -> < Self as former :: Storage > :: Formed
@@ -318,9 +318,9 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn properties( self ) -> former::ContainerSubformer::< ( K, Property< K >, ), former::HashMapDefinition< K, Property< K >, Self, Self, ChildFormerPropertiesEnd > >
+  pub fn properties( self ) -> former::ContainerFormer::< ( K, Property< K >, ), former::HashMapDefinition< K, Property< K >, Self, Self, ChildFormerPropertiesEnd > >
   {
-    self.properties_set::< former::ContainerSubformer::< ( K, Property< K >, ), former::HashMapDefinition< K, Property< K >, Self, Self, ChildFormerPropertiesEnd > >>()
+    self.properties_set::< former::ContainerFormer::< ( K, Property< K >, ), former::HashMapDefinition< K, Property< K >, Self, Self, ChildFormerPropertiesEnd > >>()
   }
 }
 
@@ -339,12 +339,12 @@ where
   }
 }
 
-
 #[ allow( non_camel_case_types ) ]
 pub struct ChildFormerPropertiesEnd;
 
 #[ automatically_derived ]
-impl< K, Definition, > former::FormingEnd< former::HashMapDefinition< K, Property< K >, ChildFormer< K, Definition, >, ChildFormer< K, Definition, >, former::NoEnd >, > for ChildFormerPropertiesEnd
+impl< K, Definition, > former::FormingEnd< former::HashMapDefinitionTypes< K, Property< K >, ChildFormer< K, Definition, >, ChildFormer< K, Definition, > >, >
+for ChildFormerPropertiesEnd
 where
   K : core::hash::Hash + std::cmp::Eq,
   Definition : former::FormerDefinition< Storage = ChildFormerStorage< K, > >,

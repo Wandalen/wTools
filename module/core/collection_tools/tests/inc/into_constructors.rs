@@ -1,3 +1,5 @@
+// xxx : uncomment
+
 #[ allow( unused_imports ) ]
 use super::*;
 
@@ -52,7 +54,7 @@ fn binary_heap()
 
   // test.case( "empty" );
   let got : the_module::BinaryHeap< i32 > = the_module::into_heap!{};
-  let exp = the_module::BinaryHeap::new();
+  let exp = the_module::BinaryHeap::< i32 >::new();
   assert_eq!( got.into_vec(), exp.into_vec() );
 
   // test.case( "multiple entry" );
@@ -137,7 +139,7 @@ fn vec()
 
   // test.case( "empty" );
   let got : the_module::Vec< i32 > = the_module::into_vec!{};
-  let exp = the_module::Vec::new();
+  let exp = the_module::Vec::< i32 >::new();
   assert_eq!( got, exp );
 
   // test.case( "multiple entry" );

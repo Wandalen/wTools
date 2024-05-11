@@ -38,13 +38,13 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn children( self ) -> former::ContainerSubformer::
+  pub fn children( self ) -> former::ContainerFormer::
   <
     Child,
     former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, >
   >
   {
-    self._children_container_former::< former::ContainerSubformer::< Child, former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, > > >()
+    self._children_container_former::< former::ContainerFormer::< Child, former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, > > >()
   }
 
 }
@@ -75,8 +75,8 @@ impl< Definition > Default for ParentFormerAssignChildrenEnd< Definition >
 impl< Definition, > former::FormingEnd
 <
   <
-    Vec< Child > as former::EntityToDefinition< ParentFormer< Definition, >, ParentFormer< Definition, >, former::NoEnd >
-  >::Definition
+    Vec< Child > as former::EntityToDefinitionTypes< ParentFormer< Definition, >, ParentFormer< Definition, > >
+  >::Types
 >
 for ParentFormerAssignChildrenEnd< Definition >
 where

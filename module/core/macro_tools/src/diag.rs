@@ -86,39 +86,43 @@ pub( crate ) mod private
     result
   }
 
-  /// Formats a debugging report for a pair of token streams, showing the original and generated code.
+  /// Formats a debugging report for code transformation processes, detailing both the original and generated code for easy comparison and review.
   ///
-  /// This function takes two inputs: the original code as an `IntoTokens` (which can be converted into a `proc_macro2::TokenStream`),
-  /// and the generated code as a `proc_macro2::TokenStream`. It formats both inputs with indentation for better readability,
-  /// labeling them as "original" and "generated" respectively.
+  /// This function creates a structured report comprising the initial input code, the resulting generated code, and an explanatory context. It is designed to facilitate debugging and documentation of code transformations, such as those performed in procedural macros or similar code generation tasks. The report categorizes the information into labeled sections to enhance readability and traceability.
   ///
-  /// Ensure the correct conversion of `proc_macro::TokenStream` to `proc_macro2::TokenStream` where necessary,
-  /// especially when interfacing with procedural macros' `input` parameter
+  /// This function helps visualize the changes from the original to the generated code, assisting developers in verifying and understanding the transformations applied during code generation processes.
   ///
   /// # Parameters
-  /// - `input`: The original input code that can be converted into a `proc_macro2::TokenStream`.
-  /// - `output`: The generated code as a `proc_macro2::TokenStream`.
   ///
-  /// # Returns
-  /// A `String` containing the formatted debug report.
+  /// - `about` : A description or context explaining the purpose or nature of the transformation. This information is displayed at the beginning of the report to provide an overview of the code transformation context.
+  /// - `input` : The original code before transformation. This is typically the code that is subject to processing by macros or other code generation tools.
+  /// - `output` : The code generated as a result of the transformation. This reflects the changes or enhancements made to the original code.
   ///
   /// # Type Parameters
-  /// - `IntoTokens`: A type that can be converted into a `proc_macro2::TokenStream`.
+  ///
+  /// - `IntoAbout` : A type that can be converted into a string representation, providing a descriptive context for the report.
+  /// - `IntoInput` : A type representing the original code, which can be converted into a string format for display.
+  /// - `IntoOutput` : A type representing the generated code, which can be converted into a string format for display.
+  ///
+  /// # Returns
+  ///
+  /// A string containing the formatted debug report, organized into sections with appropriate labels and indentation to distinguish between the original and generated code segments.
   ///
   /// # Examples
+  ///
   /// ```
   /// use macro_tools::exposed::*;
   ///
-  /// let original_input : proc_macro2::TokenStream = qt!
+  /// let original_input : proc_macro2::TokenStream = quote!
   /// {
-  ///   #[ derive( Debug, PartialEq ) ]
+  ///   #[derive(Debug, PartialEq)]
   ///   pub struct MyStruct
   ///   {
   ///     pub field : i32,
   ///   }
   /// };
   ///
-  /// let generated_code : proc_macro2::TokenStream = qt!
+  /// let generated_code : proc_macro2::TokenStream = quote!
   /// {
   ///   impl MyStruct
   ///   {
@@ -130,52 +134,55 @@ pub( crate ) mod private
   /// };
   ///
   /// // Format the debug report for printing or logging
-  /// let formatted_report = debug_report_format( "derive :: MyDerive", original_input, &generated_code );
+  /// let formatted_report = report_format( "Code Transformation for MyStruct", original_input, generated_code );
   /// println!( "{}", formatted_report );
   /// ```
   ///
-  /// This will output a formatted report showing the original input code and the generated code side by side,
-  /// each line indented for clarity.
-  ///
-  pub fn debug_report_format< IntoAbout, IntoTokens >
+
+  pub fn report_format< IntoAbout, IntoInput, IntoOutput >
   (
-    about : IntoAbout, input : IntoTokens, output : &proc_macro2::TokenStream
+    about : IntoAbout, input : IntoInput, output : IntoOutput
   ) -> String
   where
-    IntoAbout : Into< String >,
-    // xxx : qqq : use AsRef<>
-    IntoTokens : Into< proc_macro2::TokenStream >,
+    IntoAbout : ToString,
+    IntoInput : ToString,
+    IntoOutput : ToString,
   {
     format!( "\n" ) +
-    &format!( " = context\n\n{}\n\n", indentation( "  ", about.into(), "" ) ) +
-    &format!( " = original\n\n{}\n\n", indentation( "  ", input.into().to_string(), "" ) ) +
-    &format!( " = generated\n\n{}\n", indentation( "  ", qt!{ #output }.to_string(), "" ) )
+    &format!( " = context\n\n{}\n\n", indentation( "  ", about.to_string(), "" ) ) +
+    &format!( " = original\n\n{}\n\n", indentation( "  ", input.to_string(), "" ) ) +
+    &format!( " = generated\n\n{}\n", indentation( "  ", output.to_string(), "" ) )
   }
 
   /// Prints a debugging report for a pair of token streams to the standard output.
   ///
-  /// This convenience function wraps `debug_report_format`, directly printing the formatted report to stdout.
-  /// It serves as a utility for debugging procedural macros, providing a clear comparison between original
-  /// and generated code.
+  /// This function acts as a utility for debugging transformations in procedural macros or other code generation scenarios.
+  /// It provides an immediate visual comparison of the original code versus the generated code by utilizing the `report_format`
+  /// function to format the output and then printing it directly to the standard output. This can be particularly helpful for
+  /// real-time debugging and quick assessments without requiring additional output management.
   ///
   /// # Parameters and Type Parameters
-  /// - Same as `debug_report_format`.
+  /// - `about` : A description of the code transformation context or operation. This is used to headline the generated report.
+  /// - `input` : The original code or token stream before transformation. This is what the code looked like prior to any procedural manipulations.
+  /// - `output` : The transformed or generated code or token stream as a result of the macro or code transformation process.
+  ///
+  /// The types for these parameters are expected to be convertible to strings, matching the `report_format` function's requirements.
   ///
   /// # Examples
   ///
-  /// ```
+  /// ```rust
   /// use macro_tools::exposed::*;
   ///
-  /// let original_input : proc_macro2::TokenStream = qt!
+  /// let original_input : proc_macro2::TokenStream = quote!
   /// {
-  ///   #[ derive( Debug, PartialEq ) ]
+  ///   #[derive(Debug, PartialEq)]
   ///   pub struct MyStruct
   ///   {
   ///     pub field : i32,
   ///   }
   /// };
   ///
-  /// let generated_code : proc_macro2::TokenStream = qt!
+  /// let generated_code : proc_macro2::TokenStream = quote!
   /// {
   ///   impl MyStruct
   ///   {
@@ -187,21 +194,23 @@ pub( crate ) mod private
   /// };
   ///
   /// // Directly print the debug report
-  /// debug_report_print( "derive :: MyDerive", original_input, &generated_code );
+  /// report_print( "Code Transformation for MyStruct", original_input, generated_code );
   /// ```
   ///
-  /// This will output a formatted report showing the original input code and the generated code side by side,
-  /// each line indented for clarity.
+  /// The above example demonstrates how the `report_print` function can be used to visualize the changes from original input code to the generated code,
+  /// helping developers to verify and understand the modifications made during code generation processes. The output is formatted to show clear distinctions
+  /// between the 'original' and 'generated' sections, providing an easy-to-follow comparison.
 
-  pub fn debug_report_print< IntoAbout, IntoTokens >
+  pub fn report_print< IntoAbout, IntoInput, IntoOutput >
   (
-    about : IntoAbout, input : IntoTokens, output : &proc_macro2::TokenStream
+    about : IntoAbout, input : IntoInput, output : IntoOutput
   )
   where
-    IntoAbout : Into< String >,
-    IntoTokens : Into< proc_macro2::TokenStream >,
+    IntoAbout : ToString,
+    IntoInput : ToString,
+    IntoOutput : ToString,
   {
-    println!( "{}", debug_report_format( about, input, output ) );
+    println!( "{}", report_format( about, input, output ) );
   }
 
   ///
@@ -408,8 +417,8 @@ pub mod exposed
   {
     Result,
     indentation,
-    debug_report_format,
-    debug_report_print,
+    report_format,
+    report_print,
   };
 
 }

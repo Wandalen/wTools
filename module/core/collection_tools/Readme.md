@@ -94,6 +94,10 @@ Instead of
 <summary>Click to see</summary>
 
 ```rust
+# #[ cfg( all( feature = "enabled", feature = "collection_std" ) ) ]
+# #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+# {
+
 #[ cfg( feature = "use_alloc" ) ]
 use hashbrown::HashSet; // a `no_std` replacement for `HashSet`
 #[ cfg( not( feature = "no_std" ) ) ]
@@ -102,6 +106,8 @@ use std::collections::HashSet;
 let mut vec : HashSet< i32 > = HashSet::new();
 vec.insert( 1 );
 assert_eq!( vec.contains( &1 ), true );
+
+# }
 ```
 
 </details>

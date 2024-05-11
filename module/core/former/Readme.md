@@ -19,14 +19,25 @@ It offers specialized subformers for common Rust collections like `Vec`, `HashMa
 
 This approach abstracts away the need for manually implementing a builder for each struct, making code more readable and maintainable.
 
-## Basic use-case
+## Example : Trivial
 
-The provided code snippet illustrates a basic use-case of the Former crate in Rust, which is used to apply the builder pattern for structured and flexible object creation. Below is a detailed explanation of each part of the markdown chapter, aimed at clarifying how the Former trait simplifies struct instantiation.
+<!-- qqq : for Petro : implement command `will .generators.list` show rules of applying generators -->
+<!-- qqq : for Petro : implement command `will .generators.applied.list` show actual files to which applied which generator -->
+
+<!-- qqq : for Petro : make this generator working -->
+<!--{ example.use{ code : "former_trivial", hidden_code : "former_trivial_expanded", link : true, try_out : true } }-->
+<!--{ example.use.end }-->
+
+The provided code snippet illustrates a basic use-case of the Former, which is used to apply the builder pattern for structured and flexible object creation. Below is a detailed explanation of each part of the markdown chapter, aimed at clarifying how the Former trait simplifies struct instantiation.
 
 ```rust
-#[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
-fn main()
-{
+# #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
+# fn main() {}
+
+# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+# fn main()
+# {
+
   use former::Former;
 
   // Use attribute debug to print expanded code.
@@ -53,16 +64,19 @@ fn main()
   //   bio_optional: Some("Software Developer"),
   // }
 
- }
- ```
+# }
+```
 
 <details>
 <summary>The code above will be expanded to this</summary>
 
 ```rust
-#[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
-fn main()
-{
+# #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
+# fn main() {}
+
+# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+# fn main()
+# {
 
   // Use attribute debug to print expanded code.
   #[ derive( Debug, PartialEq ) ]
@@ -73,45 +87,46 @@ fn main()
     bio_optional : Option< String >, // Fields could be optional
   }
 
-  impl< > UserProfile< >
+  impl UserProfile
   where
   {
     #[ inline( always ) ]
     pub fn former() -> UserProfileFormer<
-      UserProfileFormerDefinition< (), UserProfile< >, former::ReturnPreformed >
+      UserProfileFormerDefinition< (), UserProfile, former::ReturnPreformed >
     >
     {
-      UserProfileFormer::< UserProfileFormerDefinition< (), UserProfile< >, former::ReturnPreformed > >::
+      UserProfileFormer::< UserProfileFormerDefinition< (), UserProfile, former::ReturnPreformed > >::
       new_coercing(former::ReturnPreformed)
     }
   }
 
   // = entity to
 
-  impl< Definition > former::EntityToFormer< Definition > for UserProfile< >
+  impl< Definition > former::EntityToFormer< Definition > for UserProfile
   where
-    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< > >,
+    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage >,
   {
     type Former = UserProfileFormer< Definition >;
   }
 
-  impl< > former::EntityToStorage for UserProfile< >
+  impl former::EntityToStorage for UserProfile
   where
   {
-    type Storage = UserProfileFormerStorage< >;
+    type Storage = UserProfileFormerStorage;
   }
 
-  impl< Context, Formed, End > former::EntityToDefinition< Context, Formed, End > for UserProfile< >
+  impl< Context, Formed, End > former::EntityToDefinition< Context, Formed, End > for UserProfile
   where
     End : former::FormingEnd< UserProfileFormerDefinitionTypes< Context, Formed > >,
   {
     type Definition = UserProfileFormerDefinition< Context, Formed, End >;
+    type Types = UserProfileFormerDefinitionTypes< Context, Formed >;
   }
 
   // = definition
 
   #[derive(Debug)]
-  pub struct UserProfileFormerDefinitionTypes< Context = (), Formed = UserProfile< >, >
+  pub struct UserProfileFormerDefinitionTypes< Context = (), Formed = UserProfile, >
   where
   {
     _phantom : core::marker::PhantomData< (*const Context, *const Formed) >,
@@ -132,13 +147,13 @@ fn main()
   impl< Context, Formed, > former::FormerDefinitionTypes for UserProfileFormerDefinitionTypes< Context, Formed, >
   where
   {
-    type Storage = UserProfileFormerStorage< >;
+    type Storage = UserProfileFormerStorage;
     type Formed = Formed;
     type Context = Context;
   }
 
   #[derive(Debug)]
-  pub struct UserProfileFormerDefinition< Context = (), Formed = UserProfile< >, End = former::ReturnPreformed, >
+  pub struct UserProfileFormerDefinition< Context = (), Formed = UserProfile, End = former::ReturnPreformed, >
   where
   {
     _phantom : core::marker::PhantomData< (*const Context, *const Formed, *const End) >,
@@ -162,7 +177,7 @@ fn main()
   {
     type Types = UserProfileFormerDefinitionTypes< Context, Formed, >;
     type End = End;
-    type Storage = UserProfileFormerStorage< >;
+    type Storage = UserProfileFormerStorage;
     type Formed = Formed;
     type Context = Context;
   }
@@ -173,7 +188,7 @@ fn main()
 
   // = storage
 
-  pub struct UserProfileFormerStorage< >
+  pub struct UserProfileFormerStorage
   where
   {
     pub age : ::core::option::Option< i32 >,
@@ -181,7 +196,7 @@ fn main()
     pub bio_optional : Option< String >,
   }
 
-  impl< > ::core::default::Default for UserProfileFormerStorage< >
+  impl ::core::default::Default for UserProfileFormerStorage
   where
   {
     #[ inline( always ) ]
@@ -196,16 +211,15 @@ fn main()
     }
   }
 
-  impl< > former::Storage for UserProfileFormerStorage< >
+  impl former::Storage for UserProfileFormerStorage
   where
   {
-    type Formed = UserProfile< >;
+    type Preformed = UserProfile;
   }
 
-  impl< > former::StoragePreform for UserProfileFormerStorage< >
+  impl former::StoragePreform for UserProfileFormerStorage
   where
   {
-    type Preformed = UserProfile< >;
     fn preform(mut self) -> Self::Preformed
     {
       let age = if self.age.is_some()
@@ -280,9 +294,9 @@ fn main()
     }
   }
 
-  pub struct UserProfileFormer< Definition = UserProfileFormerDefinition< (), UserProfile< >, former::ReturnPreformed >, >
+  pub struct UserProfileFormer< Definition = UserProfileFormerDefinition< (), UserProfile, former::ReturnPreformed >, >
   where
-    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< > >,
+    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage >,
   {
     pub storage : Definition::Storage,
     pub context : core::option::Option< Definition::Context >,
@@ -291,7 +305,7 @@ fn main()
 
   impl< Definition, > UserProfileFormer< Definition, >
   where
-    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< > >, Definition::Types : former::FormerDefinitionTypes< Storage = UserProfileFormerStorage< > >,
+    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage >, Definition::Types : former::FormerDefinitionTypes< Storage = UserProfileFormerStorage >,
   {
     #[ inline( always ) ]
     pub fn new(on_end : Definition::End) -> Self
@@ -382,7 +396,7 @@ fn main()
 
   impl< Definition, > UserProfileFormer< Definition, >
   where
-    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< >, Formed = UserProfile< > >,
+    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage, Formed = UserProfile >,
   {
     pub fn preform(self) -> <Definition::Types as former::FormerDefinitionTypes>::Formed
     {
@@ -392,7 +406,7 @@ fn main()
 
   impl< Definition, > UserProfileFormer< Definition, >
   where
-    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< >, Formed = UserProfile< >, >,
+    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage, Formed = UserProfile, >,
   {
     #[ inline( always ) ]
     pub fn perform(self) -> Definition::Formed
@@ -404,7 +418,7 @@ fn main()
 
   impl< Definition > former::FormerBegin< Definition > for UserProfileFormer< Definition, >
   where
-    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage< > >,
+    Definition : former::FormerDefinition< Storage = UserProfileFormerStorage >,
   {
     #[ inline( always ) ]
     fn former_begin(storage : core::option::Option< Definition::Storage >, context : core::option::Option< Definition::Context >, on_end : Definition::End,) -> Self
@@ -445,17 +459,25 @@ fn main()
   //   bio_optional: Some("Software Developer"),
   // }
 
-}
+# }
 ```
 
 </details>
 
-## Custom and Alternative Setters
+Try out `cargo run --example former_trivial`.
+</br>
+[See code](./examples/former_trivial.rs).
+
+## Example : Custom and Alternative Setters
 
 With help of `Former`, it is possible to define multiple versions of a setter for a single field, providing the flexibility to include custom logic within the setter methods. This feature is particularly useful when you need to preprocess data or enforce specific constraints before assigning values to fields. Custom setters should have unique names to differentiate them from the default setters generated by `Former`, allowing for specialized behavior while maintaining clarity in your code.
 
 ```rust
+# #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
+# fn main() {}
+
 # #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+# fn main()
 # {
 
 use former::Former;
@@ -495,12 +517,20 @@ assert_eq!( example.word, "Hello!".to_string() );
 
 In the example above showcases a custom alternative setter, `word_exclaimed`, which appends an exclamation mark to the input string before storing it. This approach allows for additional processing or validation of the input data without compromising the simplicity of the builder pattern.
 
-## Custom Setter Overriding
+Try out `cargo run --example former_custom_setter`.
+</br>
+[See code](./examples/former_custom_setter.rs).
+
+## Example : Custom Setter Overriding
 
 But it's also possible to completely override setter and write its own from scratch. For that use attribe `[ setter( false ) ]` to disable setter.
 
 ```rust
+# #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
+# fn main() {}
+
 # #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+# fn main()
 # {
 
 use former::Former;
@@ -530,17 +560,26 @@ let example = StructWithCustomSetters::former()
 .word( "Hello" )
 .form();
 assert_eq!( example.word, "Hello!".to_string() );
+
 # }
 ```
 
 In the example above, the default setter for `word` is disabled, and a custom setter is defined to automatically append an exclamation mark to the string. This method allows for complete control over the data assignment process, enabling the inclusion of any necessary logic or validation steps.
 
-## Custom Default
+Try out `cargo run --example former_custom_setter_overriden`.
+</br>
+[See code](./examples/former_custom_setter_overriden.rs).
 
-The `Former` crate enhances struct initialization in Rust by allowing the specification of custom default values for fields through the `default` attribute. This feature not only provides a way to set initial values for struct fields without relying on the `Default` trait but also adds flexibility in handling cases where a field's type does not implement `Default`, or a non-standard default value is desired.
+## Example : Custom Defaults
+
+The `Former` crate enhances struct initialization by allowing the specification of custom default values for fields through the `default` attribute. This feature not only provides a way to set initial values for struct fields without relying on the `Default` trait but also adds flexibility in handling cases where a field's type does not implement `Default`, or a non-standard default value is desired.
 
 ```rust
+# #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
+# fn main() {}
+
 # #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+# fn main()
 # {
 
 use former::Former;
@@ -575,6 +614,7 @@ dbg!( &instance );
 // >        30,
 // >    ],
 // > }
+
 # }
 ```
 
@@ -584,6 +624,10 @@ The above code snippet showcases the `Former` crate's ability to initialize stru
 - The `numbers` field starts with a vector containing the integers `10`, `20`, and `30`.
 
 This approach significantly simplifies struct construction, particularly for complex types or where defaults beyond the `Default` trait's capability are required. By utilizing the `default` attribute, developers can ensure their structs are initialized safely and predictably, enhancing code clarity and maintainability.
+
+Try out `cargo run --example former_custom_defaults`.
+</br>
+[See code](./examples/former_custom_defaults.rs).
 
 ## Concept of Storage and Former
 
@@ -600,7 +644,7 @@ Storage is not just a passive container; it is an active part of a larger ecosys
 - **Contextual Flexibility**: The context associated with the former adds an additional layer of flexibility, allowing the former to adjust its behavior based on the broader circumstances of the object's formation. This is particularly useful when the forming process involves conditions or states external to the object itself.
 - **FormingEnd Callback**: The `FormingEnd` callback is a dynamic component that defines the final steps of the forming process. It can modify the storage based on final adjustments, validate the object's readiness, or integrate the object into a larger structure, such as embedding it as a subformer within another structure.
 
-These elements work in concert to ensure that the forming process is not only about building an object step-by-step but also about integrating it seamlessly into larger, more complex structures or systems. The `Former` framework, with its sophisticated management of storage, context, and callbacks, enables a highly flexible and reusable approach to object formation, making it ideal for scenarios where objects are part of nested or interdependent systems.
+These elements work in concert to ensure that the forming process is not only about building an object step-by-step but also about integrating it seamlessly into larger, more complex structures or systems.
 
 ## Concept of Definitions
 
@@ -616,7 +660,7 @@ Two key definition Traits:
 
 ## Overview of Formation Traits
 
-The formation process in our framework utilizes several core traits, each serving a specific purpose in the lifecycle of entity creation. These traits ensure that entities are constructed methodically, adhering to a structured pattern that enhances maintainability and scalability. Below is a summary of these key traits:
+The formation process utilizes several core traits, each serving a specific purpose in the lifecycle of entity creation. These traits ensure that entities are constructed methodically, adhering to a structured pattern that enhances maintainability and scalability. Below is a summary of these key traits:
 
 - `EntityToDefinition`: Links entities to their respective formation definitions which dictate their construction process.
 - `EntityToFormer`: Connects entities with formers that are responsible for their step-by-step construction.
@@ -631,9 +675,84 @@ The formation process in our framework utilizes several core traits, each servin
 
 These traits collectively facilitate a robust and flexible builder pattern that supports complex object creation and configuration scenarios.
 
+## Example : Custom Definition
+
+Define a custom former definition and custom forming logic, and apply them to a container.
+
+The example showcases how to accumulate elements into a container and then transform them into a single result using a custom `FormingEnd` implementation. This pattern is useful for scenarios where the formation process involves aggregation or transformation of input elements into a different type or form.
+
+```rust
+# #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
+# fn main() {}
+
+# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+# fn main()
+# {
+
+  // Define a struct `Sum` that will act as a custom former definition.
+  struct Sum;
+
+  // Implement `FormerDefinitionTypes` for `Sum`.
+  // This trait defines the types used during the forming process.
+  impl former::FormerDefinitionTypes for Sum
+  {
+    type Storage = Vec<i32>; // Container for the integers.
+    type Formed = i32;       // The final type after forming, which is a single integer.
+    type Context = ();       // No additional context is used in this example.
+  }
+
+  // Implement `FormerMutator` for `Sum`.
+  // This trait could include custom mutation logic applied during the forming process, but it's empty in this example.
+  impl former::FormerMutator for Sum
+  {
+  }
+
+  // Implement `FormerDefinition` for `Sum`.
+  // This trait links the custom types to the former.
+  impl former::FormerDefinition for Sum
+  {
+    type Types = Sum;        // Associate the `FormerDefinitionTypes` with `Sum`.
+    type End = Sum;          // Use `Sum` itself as the end handler.
+    type Storage = Vec<i32>; // Specify the storage type.
+    type Formed = i32;       // Specify the final formed type.
+    type Context = ();       // Specify the context type, not used here.
+  }
+
+  // Implement `FormingEnd` for `Sum`.
+  // This trait handles the final step of the forming process.
+  impl former::FormingEnd<Sum> for Sum
+  {
+    fn call
+    (
+      &self,
+      storage: < Sum as former::FormerDefinitionTypes >::Storage,
+      _context: Option< < Sum as former::FormerDefinitionTypes >::Context>
+    )
+    -> < Sum as former::FormerDefinitionTypes >::Formed
+    {
+      // Sum all integers in the storage vector.
+      storage.iter().sum()
+    }
+  }
+
+  // Use the custom `Former` to sum a list of integers.
+  let got = former::ContainerFormer::<i32, Sum>::new(Sum)
+  .add( 1 )  // Add an integer to the storage.
+  .add( 2 )  // Add another integer.
+  .add( 10 ) // Add another integer.
+  .form(); // Perform the form operation, which triggers the summing logic.
+  let exp = 13; // Expected result after summing 1, 2, and 10.
+  assert_eq!(got, exp); // Assert the result is as expected.
+
+  dbg!(got); // Debug print the result to verify the output.
+  // > got = 13
+
+# }
+```
+
 ## Concept of subformer
 
-Subformers are specialized builders used within the `Former` framework to construct nested or collection-based data structures like vectors, hash maps, and hash sets. They simplify the process of adding elements to these structures by providing a fluent interface that can be seamlessly integrated into the overall builder pattern of a parent struct. This approach allows for clean and intuitive initialization of complex data structures, enhancing code readability and maintainability.
+Subformers are specialized builders used within the former to construct nested or collection-based data structures like vectors, hash maps, and hash sets. They simplify the process of adding elements to these structures by providing a fluent interface that can be seamlessly integrated into the overall builder pattern of a parent struct. This approach allows for clean and intuitive initialization of complex data structures, enhancing code readability and maintainability.
 
 ## Types of Setters / Subformers
 
@@ -647,14 +766,17 @@ It's crucial to understand the differences among subform setters, container sett
 
 Each type of setter is designed to address different needs in the formation process, ensuring that users can build complex, nested structures or simply set individual field values as required.
 
-## Subformer example: Building a Vector
+## Example : Container Setter for a Vector
 
-The following example illustrates how to use a `VectorSubformer` to construct a `Vec` field within a struct. The subformer enables adding elements to the vector with a fluent interface, streamlining the process of populating collection fields within structs.
+This example demonstrates how to employ the `Former` trait to configure a `Vec` using a container setter in a structured manner.
 
 ```rust
-#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
-fn main()
-{
+# #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+# fn main() {}
+
+# #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+# fn main()
+# {
 
   #[ derive( Debug, PartialEq, former::Former ) ]
   pub struct StructWithVec
@@ -671,53 +793,70 @@ fn main()
   .form();
 
   assert_eq!( instance, StructWithVec { vec: vec![ "apple", "banana" ] } );
+  dbg!( instance );
 
-}
+# }
 ```
 
-## Subformer example: Building a Hashmap
+Try out `cargo run --example former_container_vector`.
+</br>
+[See code](./examples/former_container_vector.rs).
 
-This example demonstrates the use of a `HashMapSubformer` to build a hash map within a struct. The subformer provides a concise way to insert key-value pairs into the map, making it easier to manage and construct hash map fields.
+## Example : Container Setter for a Hashmap
+
+This example demonstrates how to effectively employ the `Former` trait to configure a `HashMap` using a container setter.
 
 ```rust
-#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
-fn main()
-{
-  use test_tools::exposed::*;
+# #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+# fn main() {}
+
+# #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+# fn main()
+# {
+  use collection_tools::{ HashMap, hmap };
 
   #[ derive( Debug, PartialEq, former::Former ) ]
   pub struct StructWithMap
   {
     #[ container ]
-    map : collection_tools::HashMap< &'static str, &'static str >,
+    map : HashMap< &'static str, &'static str >,
   }
 
-  let struct1 = StructWithMap::former()
+  let instance = StructWithMap::former()
   .map()
     .add( ( "a", "b" ) )
     .add( ( "c", "d" ) )
     .end()
   .form()
   ;
-  assert_eq!( struct1, StructWithMap { map : hmap!{ "a" => "b", "c" => "d" } } );
-}
+  assert_eq!( instance, StructWithMap { map : hmap!{ "a" => "b", "c" => "d" } } );
+  dbg!( instance );
+
+# }
 ```
 
-## Subformer example: Building a Hashset
+Try out `cargo run --example former_container_hashmap`.
+</br>
+[See code](./examples/former_container_hashmap.rs).
 
-In the following example, a `HashSetSubformer` is utilized to construct a hash set within a struct. This illustrates the convenience of adding elements to a set using the builder pattern facilitated by subformers.
+## Example : Container Setter for a Hashset
+
+This example demonstrates the use of the `Former` trait to build a `collection_tools::HashSet` through subforming.
 
 ```rust
-#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
-fn main()
+# #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+# fn main() {}
+
+# #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+# fn main()
 {
-  use test_tools::exposed::*;
+  use collection_tools::{ HashSet, hset };
 
   #[ derive( Debug, PartialEq, former::Former ) ]
   pub struct StructWithSet
   {
     #[ container ]
-    set : collection_tools::HashSet< &'static str >,
+    set : HashSet< &'static str >,
   }
 
   let instance = StructWithSet::former()
@@ -728,20 +867,28 @@ fn main()
   .form();
 
   assert_eq!(instance, StructWithSet { set : hset![ "apple", "banana" ] });
+  dbg!( instance );
 
-}
+# }
 ```
 
-## Custom Scalar Setter
+Try out `cargo run --example former_container_hashset`.
+</br>
+[See code](./examples/former_container_hashset.rs).
 
-This example demonstrates the implementation of a scalar setter using the `Former` trait in Rust. Unlike the more complex subform and container setters shown in previous examples, this example focuses on a straightforward approach to directly set a scalar value within a parent entity. The `Parent` struct manages a `HashMap` of `Child` entities, and the scalar setter is used to set the entire `HashMap` directly.
+## Example : Custom Scalar Setter
+
+This example demonstrates the implementation of a scalar setter using the `Former` trait. Unlike the more complex subform and container setters shown in previous examples, this example focuses on a straightforward approach to directly set a scalar value within a parent entity. The `Parent` struct manages a `HashMap` of `Child` entities, and the scalar setter is used to set the entire `HashMap` directly.
 
 The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a container—each child entity in this case.
 
 ```rust
-#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
-fn main()
-{
+# #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+# fn main() {}
+
+# #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+# fn main()
+# {
   use collection_tools::HashMap;
   use former::Former;
 
@@ -801,7 +948,8 @@ fn main()
   // >          },
   // >     },
   // > }
-}
+
+# }
 ```
 
 In this example, the `Parent` struct functions as a container for multiple `Child` structs, each identified by a unique child name. The `ParentFormer` implements a custom method `child`, which serves as a subformer for adding `Child` instances into the `Parent`.
@@ -810,19 +958,24 @@ In this example, the `Parent` struct functions as a container for multiple `Chil
 - **Parent Definition**: It holds a collection of `Child` objects in a `HashMap`. The `#[setter(false)]` attribute is used to disable the default setter, and a custom method `child` is defined to facilitate the addition of children with specific attributes.
 - **Custom Subformer Integration**: The `child` method in the `ParentFormer` initializes a `ChildFormer` with a closure that integrates the `Child` into the `Parent`'s `child` map upon completion.
 
-This pattern of using a structure's former as a subformer within another facilitates the creation of deeply nested or complex data structures through a coherent and fluent interface, showcasing the powerful capabilities of the `Former` framework for Rust applications.
+Try out `cargo run --example former_custom_scalar_setter`.
+</br>
+[See code](./examples/former_custom_scalar_setter.rs).
 
-## Custom Container Setter
+## Example : Custom Container Setter
 
 This example demonstrates the use of container setters to manage complex nested data structures with the `Former` trait, focusing on a parent-child relationship structured around a container `HashMap`. Unlike typical builder patterns that add individual elements using subform setters, this example uses a container setter to manage the entire collection of children.
 
 The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a container—each child entity in this case.
 
 ```rust
+# #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+# fn main() {}
+
 // Ensure the example only compiles when the appropriate features are enabled.
-#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
-fn main()
-{
+# #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+# fn main()
+# {
   use collection_tools::HashMap;
   use former::Former;
 
@@ -882,21 +1035,28 @@ fn main()
   // >          },
   // >     },
   // > }
-}
+
+# }
 ```
 
-## Custom Subform Setter
+Try out `cargo run --example former_custom_container_setter`.
+</br>
+[See code](./examples/former_custom_container_setter.rs).
 
-This example illustrates the implementation of nested builder patterns in Rust using the `Former` trait, emphasizing a parent-child relationship. Here, the `Parent` struct utilizes `ChildFormer` as a custom subformer to dynamically manage its `child` field—a `HashMap`. Each child in the `HashMap` is uniquely identified and configured via the `ChildFormer`.
+## Example : Custom Subform Setter
+
+This example illustrates the implementation of nested builder patterns using the `Former` trait, emphasizing a parent-child relationship. Here, the `Parent` struct utilizes `ChildFormer` as a custom subformer to dynamically manage its `child` field—a `HashMap`. Each child in the `HashMap` is uniquely identified and configured via the `ChildFormer`.
 
 The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a container—each child entity in this case.
 
 ```rust
+# #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+# fn main() {}
 
-// Ensure the example only compiles when the appropriate features are enabled.
-#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
-fn main()
-{
+# // Ensure the example only compiles when the appropriate features are enabled.
+# #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+# fn main()
+# {
   use collection_tools::HashMap;
   use former::Former;
 
@@ -970,8 +1130,30 @@ fn main()
   // >          },
   // >     },
   // > }
-}
+# }
 ```
+
+Try out `cargo run --example former_custom_subform_setter`.
+</br>
+[See code](./examples/former_custom_subform_setter.rs).
+
+## General Container Interface
+
+There are suite of traits designed to abstract and enhance the functionality of container data structures within the forming process. These traits are integral to managing the complexity of container operations, such as adding, modifying, and converting between different representations within containers like vectors, hash maps, etc. They are especially useful when used in conjunction with the `container` attribute in the `former` macro, which automates the implementation of these traits to create robust and flexible builder patterns for complex data structures.
+
+- [`Container`] - Defines basic functionalities for containers, managing entries and values, establishing the fundamental operations required for any custom container implementation in forming processes.
+- [`EntryToVal`] - Facilitates the conversion of container entries to their value representations, crucial for operations that treat container elements more abstractly as values.
+- [`ValToEntry`] - Provides the reverse functionality of `EntryToVal`, converting values back into entries, which is essential for operations that require adding or modifying entries in the container based on value data.
+- [`ContainerAdd`] - Adds functionality for inserting entries into a container, considering container-specific rules such as duplication handling and order preservation, enhancing the usability of containers in forming scenarios.
+- [`ContainerAssign`] - Extends the container functionality to replace all existing entries with new ones, enabling bulk updates or complete resets of container contents, which is particularly useful in dynamic data environments.
+
+## Custom Container Former
+
+Container interface is defined in the crate and implemented for containers like vectors, hash maps, etc, but if you want to use non-standard container you can implement container interface for the container. This example demonstrate how to do that.
+
+Try out `cargo run --example former_custom_container`.
+</br>
+[See code](./examples/former_custom_container.rs).
 
 ## Concept of Mutator
 
@@ -1010,7 +1192,7 @@ of whether the forming process is occurring within the context of a superformer 
 or nested field. This makes `form_mutation` suitable for entity-specific transformations that should not interfere
 with the hierarchical forming logic managed by `FormingEnd`.
 
-## Example: Mutator
+## Example : Mutator and Storage Fields
 
 This example illustrates how to use the `FormerMutator` trait for implementing custom mutations
 and demonstrates the concept of storage-specific fields in the forming process.
@@ -1021,9 +1203,13 @@ allows for a richer and more flexible formation logic that can adapt based on th
 held within the storage.
 
 ```rust
-#[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
-fn main()
-{
+# #[ cfg( not( all( feature = "enabled", feature = "derive_former" ) ) ) ]
+# fn main() {}
+
+# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+# fn main()
+# {
+
   use former::Former;
 
   #[ derive( Debug, PartialEq, Former ) ]
@@ -1039,7 +1225,7 @@ fn main()
   impl< Context, Formed > former::FormerMutator
   for Struct1FormerDefinitionTypes< Context, Formed >
   {
-    Mutates the context and storage of the entity just before the formation process completes.
+    /// Mutates the context and storage of the entity just before the formation process completes.
     #[ inline ]
     fn form_mutation( storage : &mut Self::Storage, _context : &mut ::core::option::Option< Self::Context > )
     {
@@ -1060,8 +1246,25 @@ fn main()
   // >  c: "13 - abc",
   // > }
 
-}
+# }
 ```
+
+Try out `cargo run --example former_custom_mutator`.
+</br>
+[See code](./examples/former_custom_mutator.rs).
+
+## Index of Examples
+
+<!-- qqq : for Petro : make this generator working -->
+<!--{ examples.index{ description : "short" } }-->
+<!--{ examples.index.end }-->
+
+<!-- qqq : for Petro : first write -->
+
+- [Custom Defaults](./examples/former_custom_defaults.rs) - Former allows the specification of custom default values for fields through the `former( default )` attribute.
+- [Custom Definition](./examples/former_custom_definition.rs) - Define a custom former definition and custom forming logic, and apply them to a container.
+
+<!-- qqq : for Petro : implement command `will .mdbook.from.readme` -->
 
 ## To add to your project
 
