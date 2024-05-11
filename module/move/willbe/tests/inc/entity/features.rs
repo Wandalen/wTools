@@ -6,6 +6,7 @@ use the_module::features::features_powerset;
 use std::collections::HashMap;
 use serde::Deserialize;
 use the_module::workspace::WorkspacePackage;
+use willbe::features::estimate_with;
 
 /// Constructs a mock `Package` with specified features for testing.
 fn mock_package( features : Vec< ( &str, Vec< &str > ) > ) -> WorkspacePackage
@@ -254,4 +255,14 @@ fn case_6()
   assert!( result.contains( &vec![ "f2".to_string() ].into_iter().collect()) );
 
   assert_eq!( result.len(), 2 );
+}
+
+#[ test ]
+fn estimate()
+{
+  assert_eq!( estimate_with( 5, 2, false, false, &[], 0 ), 16 );
+  assert_eq!( estimate_with( 5, 2, true, false, &[], 0 ), 17 );
+  assert_eq!( estimate_with( 5, 2, false, true, &[], 0 ), 17 );
+  assert_eq!( estimate_with( 5, 2, false, false, &[ "feature1".to_string(), "feature2".to_string() ], 2 ), 20 );
+  assert_eq!( estimate_with( 5, 2, true, true, &[ "feature1".to_string(), "feature2".to_string() ], 2 ), 22 );
 }

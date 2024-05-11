@@ -5,13 +5,13 @@ use super::*;
 pub struct StructWithCustomSetters
 {
   ordinary : String,
-  #[ setter( false ) ]
+  #[ scalar( setter = false ) ]
   magic : String,
 }
 
-impl< Context, End > StructWithCustomSettersFormer< Context, End >
+impl< Definition > StructWithCustomSettersFormer< Definition >
 where
-  End: the_module::FormingEnd< StructWithCustomSetters, Context >,
+  Definition : former::FormerDefinition< Storage = StructWithCustomSettersFormerStorage >,
 {
 
   /// Custom alternative setter of ordinary field.

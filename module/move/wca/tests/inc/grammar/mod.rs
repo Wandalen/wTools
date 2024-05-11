@@ -2,7 +2,6 @@ use super::*;
 use the_module::
 {
   Parser,
-  ProgramParser, CommandParser,
 
   Type, Value,
   Dictionary,

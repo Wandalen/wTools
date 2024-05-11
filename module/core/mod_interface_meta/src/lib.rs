@@ -27,6 +27,17 @@
 
 // xxx : make use proper_path_tools::protected::path working
 
+// xxx : put modular files into a namespace `file` maybe
+// #[ cfg( feature = "enabled" ) ]
+// #[ path = "." ]
+// mod file
+// {
+//   use super::*;
+//   pub mod tokens;
+//   pub mod typ;
+//   pub mod type_struct;
+// }
+
 mod impls;
 #[ allow( unused_imports ) ]
 use impls::exposed::*;

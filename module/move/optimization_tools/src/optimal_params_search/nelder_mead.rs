@@ -65,7 +65,9 @@ impl Constraints
 #[ derive( Debug, Clone ) ]
 pub struct Stats
 {
-
+  pub number_of_iterations : usize,
+  pub number_of_starting_points : usize,
+  pub resumed_after_stale : usize,
   pub starting_point : Point,
   pub differences : Vec< Vec< f64 > >,
   pub positive_change : Vec< usize >,
@@ -79,6 +81,9 @@ impl Stats
     let dimensions = starting_point.coords.len();
     Self
     {
+      number_of_iterations : 0,
+      number_of_starting_points : 1,
+      resumed_after_stale : 0,
       starting_point,
       differences : vec![ Vec::new(); dimensions ],
       positive_change : vec![ 0; dimensions ],
@@ -488,6 +493,7 @@ where R : RangeBounds< f64 > + Sync,
     let results = points.into_par_iter().map( | point |
     {
       let mut stats = Stats::new( point.clone() );
+      stats.number_of_starting_points = points_number;
       let x0 = point.clone();
       let dimensions = x0.coords.len();
       let mut prev_best = self.evaluate_point( &x0, &mut stats );
@@ -509,7 +515,8 @@ where R : RangeBounds< f64 > + Sync,
 
         if self.max_iterations <= iterations
         {
-          return Result::< Solution, Error >::Ok ( Solution
+          stats.number_of_iterations = iterations;
+          return Result::< Solution, Error >::Ok ( Solution 
           {
             point : res[ 0 ].0.clone(),
             objective : res[ 0 ].1,
@@ -517,11 +524,13 @@ where R : RangeBounds< f64 > + Sync,
             stats : Some( stats ),
           } )
         }
-
-        iterations += 1;
-
+  
         if best.1 < prev_best - self.improvement_threshold
         {
+          if steps_with_no_improv > 0
+          {
+            stats.resumed_after_stale += 1;
+          }
           steps_with_no_improv = 0;
           prev_best = best.1;
         }
@@ -532,7 +541,8 @@ where R : RangeBounds< f64 > + Sync,
 
         if steps_with_no_improv >= self.max_no_improvement_steps
         {
-          return Ok ( Solution
+          stats.number_of_iterations = iterations;
+          return Ok ( Solution 
           {
             point : res[ 0 ].0.clone(),
             objective : res[ 0 ].1,
@@ -541,6 +551,8 @@ where R : RangeBounds< f64 > + Sync,
           } )
         }
 
+        iterations += 1;
+  
         //centroid
         let mut x0_center = vec![ 0.0; dimensions ];
         for ( point, _ ) in res.iter().take( res.len() - 1 )
@@ -569,7 +581,6 @@ where R : RangeBounds< f64 > + Sync,
           let prev_point = res.pop().unwrap().0;
           stats.record_positive_change( &prev_point, &x_ref );
           res.push( ( x_ref, reflection_score ) );
-          // log::info!("reflection");
           continue;
         }
 
@@ -591,7 +602,6 @@ where R : RangeBounds< f64 > + Sync,
             let prev_point = res.pop().unwrap().0;
             stats.record_positive_change( &prev_point, &x_exp );
             res.push( ( x_exp, expansion_score ) );
-            // log::info!("expansion");
             continue;
 
           }
@@ -600,7 +610,6 @@ where R : RangeBounds< f64 > + Sync,
             let prev_point = res.pop().unwrap().0;
             stats.record_positive_change( &prev_point, &x_ref );
             res.push( ( x_ref, reflection_score ) );
-            // log::info!("expansion");
             continue;
           }
         }
@@ -620,7 +629,6 @@ where R : RangeBounds< f64 > + Sync,
           let prev_point = res.pop().unwrap().0;
           stats.record_positive_change( &prev_point, &x_con );
           res.push( ( x_con, contraction_score ) );
-          // log::info!("contraction");
           continue;
         }
 
@@ -639,7 +647,6 @@ where R : RangeBounds< f64 > + Sync,
           let score = self.evaluate_point( &x_shrink, &mut stats );
           new_res.push( ( x_shrink, score ) );
         }
-        // log::info!("shrink");
         res = new_res;
       }
     } ).collect::< Vec< _ > >();
@@ -828,7 +835,7 @@ pub struct Solution
 }
 
 /// Reasons for termination of optimization process.
-#[ derive( Debug, Clone ) ]
+#[ derive( Debug, Clone, derive_tools::Display ) ] 
 pub enum TerminationReason
 {
   /// Reached limit of total iterations.

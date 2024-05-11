@@ -10,6 +10,7 @@ fn node_with_depth_two_leaves_stop_spacer()
     name : "node".into(),
     version : None,
     path : None,
+    duplicate : false,
     normal_dependencies : vec!
     [
       ListNodeReport
@@ -17,11 +18,13 @@ fn node_with_depth_two_leaves_stop_spacer()
         name : "sub_node1".into(),
         version : None,
         path : None,
+        duplicate : false,
         normal_dependencies : vec![ ListNodeReport
         {
           name : "sub_sub_node1".into(),
           version : None,
           path : None,
+          duplicate : false,
           normal_dependencies : vec![],
           dev_dependencies : vec![],
           build_dependencies : vec![],
@@ -34,11 +37,13 @@ fn node_with_depth_two_leaves_stop_spacer()
         name : "sub_node2".into(),
         version : None,
         path : None,
+        duplicate : false,
         normal_dependencies : vec![ ListNodeReport
         {
           name : "sub_sub_node2".into(),
           version : None,
           path : None,
+          duplicate : false,
           normal_dependencies : vec![],
           dev_dependencies : vec![],
           build_dependencies : vec![],
@@ -73,6 +78,7 @@ fn node_with_depth_two_leaves()
     name : "node".into(),
     version : None,
     path : None,
+    duplicate : false,
     normal_dependencies : vec!
     [
       ListNodeReport
@@ -80,11 +86,13 @@ fn node_with_depth_two_leaves()
         name : "sub_node1".into(),
         version : None,
         path : None,
+        duplicate : false,
         normal_dependencies : vec![ ListNodeReport
         {
           name : "sub_sub_node".into(),
           version : None,
           path : None,
+          duplicate : false,
           normal_dependencies : vec![],
           dev_dependencies : vec![],
           build_dependencies : vec![],
@@ -97,6 +105,7 @@ fn node_with_depth_two_leaves()
         name : "sub_node2".into(),
         version : None,
         path : None,
+        duplicate : false,
         normal_dependencies : vec![],
         dev_dependencies : vec![],
         build_dependencies : vec![],
@@ -127,16 +136,19 @@ fn node_with_depth_one_leaf()
     name : "node".into(),
     version : None,
     path : None,
+    duplicate : false,
     normal_dependencies : vec![ ListNodeReport
     {
       name : "sub_node".into(),
       version : None,
       path : None,
+      duplicate : false,
       normal_dependencies : vec![ ListNodeReport
       {
         name : "sub_sub_node".into(),
         version : None,
         path : None,
+        duplicate : false,
         normal_dependencies : vec![],
         dev_dependencies : vec![],
         build_dependencies : vec![],
@@ -168,6 +180,7 @@ fn node_with_build_dependencies_tree_with_two_leaves()
     name : "node".into(),
     version : None,
     path : None,
+    duplicate : false,
     normal_dependencies : vec![],
     dev_dependencies : vec![],
     build_dependencies : vec!
@@ -177,6 +190,7 @@ fn node_with_build_dependencies_tree_with_two_leaves()
         name : "build_sub_node1".into(),
         version : None,
         path : None,
+        duplicate : false,
         normal_dependencies : vec![],
         dev_dependencies : vec![],
         build_dependencies : vec![],
@@ -186,6 +200,7 @@ fn node_with_build_dependencies_tree_with_two_leaves()
         name : "build_sub_node2".into(),
         version : None,
         path : None,
+        duplicate : false,
         normal_dependencies : vec![],
         dev_dependencies : vec![],
         build_dependencies : vec![],
@@ -214,6 +229,7 @@ fn node_with_build_dependencies_tree_with_one_leaf()
     name : "node".into(),
     version : None,
     path : None,
+    duplicate : false,
     normal_dependencies : vec![],
     dev_dependencies : vec![],
     build_dependencies : vec![
@@ -222,6 +238,7 @@ fn node_with_build_dependencies_tree_with_one_leaf()
         name : "build_sub_node".into(),
         version : None,
         path : None,
+        duplicate : false,
         normal_dependencies : vec![],
         dev_dependencies : vec![],
         build_dependencies : vec![],
@@ -249,6 +266,7 @@ fn node_with_dev_dependencies_tree_with_two_leaves()
     name : "node".into(),
     version : None,
     path : None,
+    duplicate : false,
     normal_dependencies : vec![],
     dev_dependencies : vec!
     [
@@ -257,6 +275,7 @@ fn node_with_dev_dependencies_tree_with_two_leaves()
         name : "dev_sub_node1".into(),
         version : None,
         path : None,
+        duplicate : false,
         normal_dependencies : vec![],
         dev_dependencies : vec![],
         build_dependencies : vec![],
@@ -266,6 +285,7 @@ fn node_with_dev_dependencies_tree_with_two_leaves()
         name : "dev_sub_node2".into(),
         version : None,
         path : None,
+        duplicate : false,
         normal_dependencies : vec![],
         dev_dependencies : vec![],
         build_dependencies : vec![],
@@ -295,6 +315,7 @@ fn node_with_dev_dependencies_tree_with_one_leaf()
     name : "node".into(),
     version : None,
     path : None,
+    duplicate : false,
     normal_dependencies : vec![],
     dev_dependencies : vec![
       ListNodeReport
@@ -302,6 +323,7 @@ fn node_with_dev_dependencies_tree_with_one_leaf()
         name : "dev_sub_node".into(),
         version : None,
         path : None,
+        duplicate : false,
         normal_dependencies : vec![],
         dev_dependencies : vec![],
         build_dependencies : vec![],
@@ -330,6 +352,7 @@ fn node_with_dependencies_tree_with_two_leaves()
     name : "node".into(),
     version : None,
     path : None,
+    duplicate : false,
     normal_dependencies : vec!
     [
       ListNodeReport
@@ -337,6 +360,7 @@ fn node_with_dependencies_tree_with_two_leaves()
         name : "sub_node1".into(),
         version : None,
         path : None,
+        duplicate : false,
         normal_dependencies : vec![],
         dev_dependencies : vec![],
         build_dependencies : vec![],
@@ -346,6 +370,7 @@ fn node_with_dependencies_tree_with_two_leaves()
         name : "sub_node2".into(),
         version : None,
         path : None,
+        duplicate : false,
         normal_dependencies : vec![],
         dev_dependencies : vec![],
         build_dependencies : vec![],
@@ -375,11 +400,13 @@ fn node_with_dependency_tree_with_one_leaf()
     name : "node".into(),
     version : None,
     path : None,
+    duplicate : false,
     normal_dependencies : vec![ ListNodeReport
     {
       name : "sub_node".into(),
       version : None,
       path : None,
+      duplicate : false,
       normal_dependencies : vec![],
       dev_dependencies : vec![],
       build_dependencies : vec![],
@@ -407,6 +434,7 @@ fn one_node_one_line()
     name : "node".into(),
     version : None,
     path : None,
+    duplicate : false,
     normal_dependencies : vec![],
     dev_dependencies : vec![],
     build_dependencies : vec![],

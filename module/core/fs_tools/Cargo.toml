@@ -20,6 +20,9 @@ keywords = [ "fundamental", "general-purpose", "testing" ]
 [lints]
 workspace = true
 
+[lib]
+path = "src/fs/lib.rs"
+
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false

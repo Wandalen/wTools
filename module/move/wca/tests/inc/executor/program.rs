@@ -1,4 +1,5 @@
 use super::*;
+use the_module::VerifiedCommand;
 
 //
 
@@ -7,7 +8,7 @@ tests_impls!
   fn basic()
   {
     // init parser
-    let parser = Parser::former().form();
+    let parser = Parser;
 
     // init converter
     let dictionary = &Dictionary::former()
@@ -27,7 +28,7 @@ tests_impls!
     let executor = Executor::former().form();
 
     // existed command | unknown command will fail on converter
-    let raw_program = parser.program( ".command" ).unwrap();
+    let raw_program = parser.parse( [ ".command" ] ).unwrap();
     let grammar_program = verifier.to_program( dictionary, raw_program ).unwrap();
 
     // execute the command
@@ -40,7 +41,7 @@ tests_impls!
     use wtools::error::for_app::Error;
 
     // init parser
-    let parser = Parser::former().form();
+    let parser = Parser;
 
     // init converter
     let dictionary = &Dictionary::former()
@@ -69,7 +70,7 @@ tests_impls!
       .subject().hint( "number" ).kind( Type::Number ).optional( true ).end()
       .routine
       (
-        | ctx : Context, args : Args |
+        | ctx : Context, o : VerifiedCommand |
         ctx
         .get()
         .ok_or_else( || "Have no value".to_string() )
@@ -78,7 +79,7 @@ tests_impls!
           | x : Arc< Mutex< i32 > > |
           {
             let x = x.lock().unwrap();
-            let y : i32 = args.get( 0 ).ok_or_else( || "Missing subject".to_string() ).unwrap().to_owned().into();
+            let y : i32 = o.args.get( 0 ).ok_or_else( || "Missing subject".to_string() ).unwrap().to_owned().into();
 
             if dbg!( *x ) != y { Err( format!( "{} not eq {}", x, y ) ) } else { Ok( () ) }
           }
@@ -90,21 +91,20 @@ tests_impls!
     let verifier = Verifier;
 
     // starts with 0
-    let mut ctx = wca::Context::default();
-    ctx.insert( Arc::new( Mutex::new( 0 ) ) );
+    let ctx = wca::Context::new( Mutex::new( 0 ) );
     // init simple executor
     let executor = Executor::former()
     .context( ctx )
     .form();
 
     // value in context = 0
-    let raw_program = parser.program( ".eq 1" ).unwrap();
+    let raw_program = parser.parse( [ ".eq", "1" ] ).unwrap();
     let grammar_program = verifier.to_program( dictionary, raw_program ).unwrap();
 
     a_true!( executor.program( dictionary, grammar_program ).is_err() );
 
     // value in context = 1 + 1 + 1 = 3
-    let raw_program = parser.program( ".eq 0 .inc .inc .eq 2" ).unwrap();
+    let raw_program = parser.parse( [ ".eq", "0", ".inc", ".inc", ".eq", "2" ] ).unwrap();
     let grammar_program = verifier.to_program( dictionary, raw_program ).unwrap();
 
     a_true!( executor.program( dictionary, grammar_program ).is_ok() );

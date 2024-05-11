@@ -90,6 +90,68 @@ pub( crate ) mod private
     vec![ ty ]
   }
 
+//   /// Extract generics from a type.
+//   pub fn all_type_parameters( type_example : &syn::Type )
+//   ->
+//   Option< syn::punctuated::Punctuated< syn::GenericArgument, syn::token::Comma > >
+//   {
+//     if let syn::Type::Path( type_path ) = type_example
+//     {
+//       let segments = &type_path.path.segments;
+//       let last_segment = segments.last()?;
+//
+//       if let syn::PathArguments::AngleBracketed( generics ) = &last_segment.arguments
+//       {
+//         return Some( generics.args.clone() );
+//       }
+//     }
+//     None
+//   }
+
+
+  /// Checks if a given [`syn::Type`] is an `Option` type.
+  ///
+  /// This function examines a type to determine if it represents an `Option`.
+  /// It is useful for scenarios where type-specific behavior needs to be conditional
+  /// on whether the type is optional or not.
+  ///
+  /// # Example
+  ///
+  /// ```rust
+  /// let type_string = "Option< i32 >";
+  /// let parsed_type : syn::Type = syn::parse_str( type_string ).expect( "Type should parse correctly" );
+  /// assert!( macro_tools::typ::is_optional( &parsed_type ) );
+  /// ```
+  ///
+
+  pub fn is_optional( ty : &syn::Type ) -> bool
+  {
+    typ::type_rightmost( ty ) == Some( "Option".to_string() )
+  }
+
+  /// Extracts the first generic parameter from a given `syn::Type` if any exists.
+  ///
+  /// This function is designed to analyze a type and retrieve its first generic parameter.
+  /// It is particularly useful when working with complex types in macro expansions and needs
+  /// to extract specific type information for further processing.
+  ///
+///
+  /// # Example
+  /// ```rust
+  /// let type_string = "Result< Option< i32 >, Error >";
+  /// let parsed_type : syn::Type = syn::parse_str( type_string ).expect( "Type should parse correctly" );
+  /// let first_param = macro_tools::typ::parameter_first( &parsed_type ).expect( "Should have at least one parameter" );
+  /// // Option< i32 >
+  /// ```
+
+  pub fn parameter_first( ty : &syn::Type ) -> Result< &syn::Type >
+  {
+    typ::type_parameters( ty, 0 ..= 0 )
+    .first()
+    .copied()
+    .ok_or_else( || syn_err!( ty, "Expects at least one parameter here:\n  {}", qt!{ #ty } ) )
+  }
+
 }
 
 #[ doc( inline ) ]
@@ -108,7 +170,9 @@ pub mod protected
   {
     type_rightmost,
     type_parameters,
-    // xxx : rename
+    // all_type_parameters,
+    is_optional,
+    parameter_first,
   };
 }
 

@@ -4,7 +4,8 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 #[ cfg( feature = "enabled" ) ]
-mod derive
+// #[ cfg( feature = "derive_component_from" ) ]
+mod component
 {
 
   //!
@@ -14,8 +15,6 @@ mod derive
   #[ allow( unused_imports ) ]
   use macro_tools::prelude::*;
 
-  #[ cfg( feature = "derive_former" ) ]
-  pub mod former;
   #[ cfg( feature = "derive_component_from" ) ]
   pub mod component_from;
   #[ cfg( feature = "derive_from_components" ) ]
@@ -27,50 +26,51 @@ mod derive
 
 }
 
-///
-/// Derive macro to generate former for a structure. Former is variation of Builder Pattern.
-///
+#[ allow( unused_imports ) ]
+use macro_tools::prelude::*;
+#[ cfg( feature = "derive_former" ) ]
+mod derive_former;
 
-/// Derives a 'Former' for a struct, implementing a variation of the Builder Pattern.
+/// Derive macro for generating a `Former` struct, applying a Builder Pattern to the annotated struct.
 ///
-/// This macro simplifies the creation of builder patterns for structs by automatically
-/// generating a 'former' (builder) struct and implementation. It supports customization
-/// through attributes to control default values, setter generation, subformer inclusion,
-/// and field aliases.
+/// This macro simplifies the construction of complex objects by automatically generating a builder (former) for
+/// the specified struct. It supports extensive customization through attributes that control defaults, setter generation,
+/// and field customization, allowing for flexible and fluent object construction.
 ///
-/// # Attributes :
-/// - `perform` : Specifies a method to call on the built object immediately after its construction.
-/// - `default` : Sets a default value for a field.
-/// - `setter` : Enables or disables the generation of a setter method for a field.
-/// - `subformer` : Defines a sub-former for complex field types, allowing nested builders.
-/// - `alias` : Creates an alias for a field setter.
-/// - `doc` : Adds documentation to the generated setter methods. (deprecated)
+/// # Struct Attributes
 ///
-/// # Input Example :
+/// - `debug`: Enables debug mode which can be used to print or log the internal state of the builder for debugging purposes.
+/// - `perform`: Specifies a custom method to be invoked automatically at the end of the build process.
+/// - `storage_fields`: Specifies fields that should be treated as part of the storage for the former.
+/// - `mutator`: Defines a custom mutator class or function to manipulate the data just before the object is finalized.
+///
+/// # Field Attributes
+///
+/// - `former`: General attribute to specify various options like defaults or inclusion in the former.
+/// - `scalar`: Indicates that the field is a scalar value, enabling direct assignment without the need for a sub-former.
+/// - `container`: Marks the field as a container that can use specific former methods to manage its contents.
+/// - `subform`: Specifies that the field should utilize a nested former, facilitating the construction of complex nested structures.
+///
+/// # Usage Example
+///
+/// Below is a typical usage example where the macro is applied to a struct:
 ///
 /// ```rust
+///
+/// # #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+/// # fn main()
+/// # {
 ///   use former::Former;
 ///
+///   // Use attribute debug to print expanded code.
 ///   #[ derive( Debug, PartialEq, Former ) ]
-///   #[ perform( fn greet_user() ) ]
+///   // Uncomment to see what derive expand into
+///   // #[ debug ]
 ///   pub struct UserProfile
 ///   {
-///     #[default(1)]
 ///     age : i32,
-///
 ///     username : String,
-///
-///     #[alias(bio)]
 ///     bio_optional : Option< String >, // Fields could be optional
-///   }
-///
-///   impl UserProfile
-///   {
-///     fn greet_user(self) -> Self
-///     {
-///       println!("Hello, {}", self.username);
-///       self
-///     }
 ///   }
 ///
 ///   let profile = UserProfile::former()
@@ -78,7 +78,6 @@ mod derive
 ///   .username( "JohnDoe".to_string() )
 ///   .bio_optional( "Software Developer".to_string() ) // Optionally provide a bio
 ///   .form();
-///   // .perform(); // same as `form()` but will execute method passed to perform attribute
 ///
 ///   dbg!( &profile );
 ///   // Expected output:
@@ -87,194 +86,29 @@ mod derive
 ///   //   username: "JohnDoe",
 ///   //   bio_optional: Some("Software Developer"),
 ///   // }
-/// ```
 ///
-/// # Generated Code Example :
-///
-/// Assuming the struct above, the macro generates something like this :
-///
-/// ```rust
-/// # #[ cfg( feature = "enabled" ) ]
-/// # #[ allow( dead_code ) ]
-/// # fn main()
-/// # {
-///
-///   #[ derive( Debug, PartialEq ) ]
-///   pub struct UserProfile
-///   {
-///     age : i32,
-///     username : String,
-///     bio_optional : Option< String >, // Fields could be optional
-///   }
-///
-///   impl UserProfile
-///   {
-///     fn greet_user(self) -> Self
-///     {
-///       println!("Hello, {}", self.username);
-///       self
-///     }
-///   }
-///
-///   impl UserProfile
-///   {
-///     #[ inline( always ) ]
-///     pub fn former() -> UserProfileFormer< UserProfile, former::ReturnFormed >
-///     {
-///       UserProfileFormer::< UserProfile, former::ReturnFormed >::new()
-///     }
-///   }
-///
-///   #[ derive( Debug, Default ) ]
-///   pub struct UserProfileFormerStorage
-///   {
-///     age : Option< i32 >,
-///     username : Option< String >,
-///     bio_optional : Option< String >,
-///   }
-///
-///   pub struct UserProfileFormer
-///   <
-///     Context = UserProfile,
-///     End = former::ReturnFormed,
-///   >
-///   where
-///     End : former::FormingEnd< UserProfile, Context >,
-///   {
-///     storage : UserProfileFormerStorage,
-///     context : Option< Context >,
-///     on_end : Option< End >,
-///   }
-///
-///   impl< Context, End > UserProfileFormer< Context, End >
-///   where
-///     End : former::FormingEnd< UserProfile, Context >,
-///   {
-///     #[ inline( always ) ]
-///     pub fn form( mut self ) -> UserProfile
-///     {
-///       let age = if self.storage.age.is_some()
-///       {
-///         self.storage.age.take().unwrap()
-///       }
-///       else
-///       {
-///         (1).into()
-///       };
-///       let username = if self.storage.username.is_some()
-///       {
-///         self.storage.username.take().unwrap()
-///       }
-///       else
-///       {
-///         String::default()
-///       };
-///       let bio_optional = if self.storage.bio_optional.is_some()
-///       {
-///         Some( self.storage.bio_optional.take().unwrap() )
-///       }
-///       else
-///       {
-///         None
-///       };
-///       UserProfile { age, username, bio_optional }
-///     }
-///
-///     #[ inline( always ) ]
-///     pub fn perform( self ) -> UserProfile
-///     {
-///       let result = self.form();
-///       return result.greet_user();
-///     }
-///
-///      // qqq : xxx : outdated, update
-///      #[ inline( always ) ]
-///      pub fn new() -> UserProfileFormer< UserProfile, former::ReturnFormed >
-///      {
-///        UserProfileFormer::< UserProfile, former::ReturnFormed >::begin( None, former::ReturnFormed )
-///      }
-///
-///     #[ inline( always ) ]
-///     pub fn begin( context : Option< Context >, on_end : End ) -> Self
-///     {
-///       Self
-///       {
-///         storage : Default::default(),
-///         context,
-///         on_end : Some( on_end ),
-///       }
-///     }
-///
-///     #[ inline( always ) ]
-///     pub fn end( mut self ) -> Context
-///     {
-///       let on_end = self.on_end.take().unwrap();
-///       let context = self.context.take();
-///       let formed = self.form();
-///       on_end.call( formed, context )
-///     }
-///
-///     #[ inline ]
-///     pub fn age< Src >( mut self, src : Src ) -> Self
-///     where
-///       Src : Into< i32 >,
-///     {
-///       self.storage.age = Some( src.into() );
-///       self
-///     }
-///
-///     #[ inline ]
-///     pub fn username< Src >( mut self, src : Src ) -> Self
-///     where
-///       Src : Into< String >,
-///     {
-///       self.storage.username = Some( src.into() );
-///       self
-///     }
-///
-///     #[ inline ]
-///     pub fn bio_optional< Src >( mut self, src : Src ) -> Self
-///     where
-///       Src : Into< String >,
-///     {
-///       self.storage.bio_optional = Some( src.into() );
-///       self
-///     }
-///
-///     #[inline]
-///     pub fn bio< Src >( mut self, src : Src ) -> Self
-///     where
-///       Src : Into< String >,
-///     {
-///       self.storage.bio_optional = Some( src.into() );
-///       self
-///     }
-///   }
-///
-///   let profile = UserProfile::former()
-///   .age( 30 )
-///   .username( "JohnDoe".to_string() )
-///   .bio_optional( "Software Developer".to_string() )
-///   .form();
-///
-///   dbg!( &profile );
-///   // Expected output:
-///   // &profile = UserProfile {
-///   //   age: 30,
-///   //   username: "JohnDoe",
-///   //   bio_optional: Some("Software Developer"),
-///   // }
 /// # }
+///
 /// ```
 ///
-/// This generated code allows building an instance of `MyStruct` fluently, with optional customization for each field.
+/// This pattern enables fluent and customizable construction of `UserProfile` instances, allowing for easy setting and modification of its fields.
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_former" ) ]
-#[ proc_macro_derive( Former, attributes( debug, perform, default, setter, subformer, alias, doc, embed ) ) ]
+#[
+  proc_macro_derive
+  (
+    Former,
+    attributes
+    (
+      debug, perform, storage_fields, mutator, // struct attributes
+      former, scalar, container, subform, // field attributes
+    )
+  )
+]
 pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = derive::former::former( input );
+  let result = derive_former::former( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -327,7 +161,7 @@ pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 #[ proc_macro_derive( ComponentFrom, attributes( debug ) ) ]
 pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = derive::component_from::component_from( input );
+  let result = component::component_from::component_from( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -418,7 +252,7 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 #[ proc_macro_derive( ComponentAssign, attributes( debug ) ) ]
 pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = derive::component_assign::component_assign( input );
+  let result = component::component_assign::component_assign( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -665,12 +499,13 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 /// take_smaller_opts( &options2 );
 /// ```
 ///
+
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( all( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
 #[ proc_macro_derive( ComponentsAssign, attributes( debug ) ) ]
 pub fn components_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = derive::components_assign::components_assign( input );
+  let result = component::components_assign::components_assign( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -771,7 +606,7 @@ pub fn components_assign( input : proc_macro::TokenStream ) -> proc_macro::Token
 #[ proc_macro_derive( FromComponents, attributes( debug ) ) ]
 pub fn from_components( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = derive::from_components::from_components( input );
+  let result = component::from_components::from_components( input );
   match result
   {
     Ok( stream ) => stream.into(),

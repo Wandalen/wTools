@@ -1,8 +1,13 @@
 //! qqq : write proper description
-use variadic_from::exposed::*;
 
+#[ cfg( not( all(feature = "enabled", feature = "type_variadic_from" ) ) ) ]
+fn main(){}
+
+#[ cfg( all(feature = "enabled", feature = "type_variadic_from" ) )]
 fn main()
 {
+  use variadic_from::*;
+
   #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
   struct StructNamedFields
   {

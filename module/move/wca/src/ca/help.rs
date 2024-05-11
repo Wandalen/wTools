@@ -29,7 +29,7 @@ pub( crate ) mod private
   pub struct HelpGeneratorOptions< 'a >
   {
     /// Prefix that will be shown before command name
-    #[ default( String::new() ) ]
+    #[ former( default = String::new() ) ]
     pub command_prefix : String,
     /// Show help for the specified commands
     pub for_commands : Vec< &'a Command >,
@@ -184,16 +184,16 @@ pub( crate ) mod private
       let generator = helper.clone();
 
       let moved_phrase = phrase.clone();
-      let routine = move | args : Args, props : Props |
+      let routine = move | o : VerifiedCommand |
       {
         let subject_help = grammar.command( &moved_phrase );
         match &subject_help
         {
           Some( Command { routine: Routine::WithoutContext( help ), .. } )
-          if !args.is_empty() => help(( args, props ))?,
+          if !o.args.0.is_empty() => help( o )?,
           _ =>
           {
-            let format_prop : String = props.get_owned( "format" ).unwrap_or_default();
+            let format_prop : String = o.props.get_owned( "format" ).unwrap_or_default();
             let format = match format_prop.as_str()
             {
               "md" | "markdown" => HelpFormat::Markdown,
@@ -248,16 +248,16 @@ pub( crate ) mod private
       let generator = helper.clone();
 
       let moved_phrase = phrase.clone();
-      let routine = move | args : Args, props : Props |
+      let routine = move | o : VerifiedCommand |
       {
         let full_help = grammar.command( &moved_phrase );
         match &full_help
         {
           Some( Command { routine: Routine::WithoutContext( help ), .. } )
-          if args.is_empty() => help(( args, props ))?,
+          if o.args.0.is_empty() => help( o )?,
           _ =>
           {
-            let command = args.get_owned::< String >( 0 ).unwrap();
+            let command = o.args.get_owned::< String >( 0 ).unwrap();
             let cmd = grammar.commands.get( &command ).ok_or_else( || anyhow!( "Can not found help for command `{command}`" ) )?;
 
             let args = HelpGeneratorOptions::former()
@@ -361,7 +361,7 @@ pub( crate ) mod private
   /// help_fn.exec( grammar, HelpGeneratorOptions::former().form() );
   /// // or
   /// # let cmd = Command::former().form();
-  /// help_fn.exec( grammar, HelpGeneratorOptions::former().for_command( &cmd ).form() );
+  /// help_fn.exec( grammar, HelpGeneratorOptions::former().for_commands( [ &cmd ] ).form() );
   /// ```
   #[ derive( Clone ) ]
   pub struct HelpGeneratorFn( HelpFunctionFn );

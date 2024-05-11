@@ -12,7 +12,7 @@ use test_tools::exposed::*;
 // }
 
 #[ cfg( feature = "iter_tools" ) ]
-#[ path = "../../../core/iter_tools/tests/iter_tools_tests.rs" ]
+#[ path = "../../../core/iter_tools/tests/tests.rs" ]
 mod iter_tools;
 
 #[ cfg( feature = "meta_tools" ) ]
@@ -41,7 +41,7 @@ mod strs_tools;
 mod error_tools;
 
 #[ cfg( feature = "derive_tools" ) ]
-#[ path = "../../../core/derive_tools/tests/derive_tests.rs" ]
+#[ path = "../../../core/derive_tools/tests/tests.rs" ]
 mod derive_tools;
 
 #[ cfg( feature = "data_type" ) ]

@@ -74,7 +74,7 @@ path = "module/alias/std_x"
 ## data_type
 
 [workspace.dependencies.data_type]
-version = "~0.6.0"
+version = "~0.7.0"
 path = "module/core/data_type"
 default-features = false
 
@@ -92,7 +92,7 @@ default-features = false
 # path = "module/core/type_constructor_derive_pair_meta"
 
 [workspace.dependencies.interval_adapter]
-version = "~0.18.0"
+version = "~0.19.0"
 path = "module/core/interval_adapter"
 default-features = false
 features = [ "enabled" ]
@@ -112,13 +112,13 @@ default-features = false
 ## derive
 
 [workspace.dependencies.derive_tools]
-version = "~0.20.0"
+version = "~0.21.0"
 path = "module/core/derive_tools"
 default-features = false
 features = [ "enabled" ]
 
 [workspace.dependencies.derive_tools_meta]
-version = "~0.17.0"
+version = "~0.18.0"
 path = "module/core/derive_tools_meta"
 default-features = false
 features = [ "enabled" ]
@@ -146,19 +146,19 @@ path = "module/alias/fundamental_data_type"
 default-features = false
 
 [workspace.dependencies.variadic_from]
-version = "~0.13.0"
+version = "~0.14.0"
 path = "module/core/variadic_from"
 default-features = false
 features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn]
-version = "~0.15.0"
+version = "~0.16.0"
 path = "module/core/clone_dyn"
 default-features = false
 features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn_meta]
-version = "~0.15.0"
+version = "~0.16.0"
 path = "module/core/clone_dyn_meta"
 features = [ "enabled" ]
 
@@ -166,7 +166,7 @@ features = [ "enabled" ]
 ## mem
 
 [workspace.dependencies.mem_tools]
-version = "~0.5.0"
+version = "~0.6.0"
 path = "module/core/mem_tools"
 default-features = false
 
@@ -174,7 +174,7 @@ default-features = false
 ## diagnostics
 
 [workspace.dependencies.diagnostics_tools]
-version = "~0.7.0"
+version = "~0.8.0"
 path = "module/core/diagnostics_tools"
 default-features = false
 
@@ -182,7 +182,7 @@ default-features = false
 ## iter
 
 [workspace.dependencies.iter_tools]
-version = "~0.15.0"
+version = "~0.16.0"
 path = "module/core/iter_tools"
 default-features = false
 
@@ -190,41 +190,46 @@ default-features = false
 ## meta
 
 [workspace.dependencies.meta_tools]
-version = "~0.9.0"
+version = "~0.10.0"
 path = "module/core/meta_tools"
 default-features = false
 
 [workspace.dependencies.for_each]
-version = "~0.7.0"
+version = "~0.8.0"
 path = "module/core/for_each"
 default-features = false
 
 [workspace.dependencies.former]
-version = "~0.16.0"
+version = "~1.0.0"
 path = "module/core/former"
 default-features = false
 
+[workspace.dependencies.former_stable]
+package = "former"
+version = "=0.15.0"
+default-features = false
+
 [workspace.dependencies.former_meta]
-version = "~0.14.0"
+version = "~1.0.0"
 path = "module/core/former_meta"
 default-features = false
 
 [workspace.dependencies.impls_index]
-version = "~0.6.0"
+version = "~0.7.0"
 path = "module/core/impls_index"
 default-features = false
 
 [workspace.dependencies.impls_index_meta]
-version = "~0.6.0"
+version = "~0.7.0"
 path = "module/core/impls_index_meta"
 
 [workspace.dependencies.mod_interface]
-version = "~0.17.0"
+version = "~0.18.0"
 path = "module/core/mod_interface"
 default-features = false
 
 [workspace.dependencies.mod_interface_meta]
-version = "~0.17.0"
+version = "~0.18.0"
 path = "module/core/mod_interface_meta"
 default-features = false
 
@@ -250,7 +255,7 @@ default-features = false
 ## macro tools
 
 [workspace.dependencies.macro_tools]
-version = "~0.23.0"
+version = "~0.24.0"
 path = "module/core/macro_tools"
 default-features = false
 
@@ -276,12 +281,12 @@ default-features = false
 ## typing
 
 [workspace.dependencies.typing_tools]
-version = "~0.7.0"
+version = "~0.8.0"
 path = "module/core/typing_tools"
 default-features = false
 
 [workspace.dependencies.implements]
-version = "~0.7.0"
+version = "~0.8.0"
 path = "module/core/implements"
 default-features = false
 
@@ -291,12 +296,12 @@ path = "module/alias/instance_of"
 default-features = false
 
 [workspace.dependencies.inspect_type]
-version = "~0.9.0"
+version = "~0.10.0"
 path = "module/core/inspect_type"
 default-features = false
 
 [workspace.dependencies.is_slice]
-version = "~0.8.0"
+version = "~0.9.0"
 path = "module/core/is_slice"
 default-features = false
 
@@ -304,7 +309,7 @@ default-features = false
 ## error
 
 [workspace.dependencies.error_tools]
-version = "~0.12.0"
+version = "~0.13.0"
 path = "module/core/error_tools"
 default-features = false
 
@@ -323,6 +328,7 @@ default-features = false
 [workspace.dependencies.wstring_tools]
 version = "~0.2.0"
 path = "module/alias/wstring_tools"
+
 
 ## fs tools / path tools
 
@@ -349,6 +355,11 @@ version = "~0.3.0"
 path = "module/core/process_tools"
 default-features = false
 
+[workspace.dependencies.process_tools_published]
+package = "process_tools"
+version = "~0.2.0"
+default-features = false
+
 
 ## test
 
@@ -357,7 +368,7 @@ version = "~0.4.0"
 path = "module/alias/wtest"
 
 [workspace.dependencies.test_tools]
-version = "~0.8.0"
+version = "~0.9.0"
 path = "module/core/test_tools"
 
 [workspace.dependencies.wtest_basic]
@@ -437,7 +448,7 @@ version = "~0.2.0"
 path = "module/move/sqlx_query"
 
 [workspace.dependencies.deterministic_rand]
-version = "~0.4.0"
+version = "~0.5.0"
 path = "module/move/deterministic_rand"
 
 [workspace.dependencies.crates_tools]
@@ -472,8 +483,3 @@ default-features = true
 version = "~0.3.0"
 path = "module/test/c"
 default-features = true
-
-
-# [patch.crates-io]
-# pathfinder_geometry = { git = "https://github.com/servo/pathfinder.git" }
-# pathfinder_simd = { git = "https://github.com/servo/pathfinder.git" }

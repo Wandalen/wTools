@@ -1,10 +1,11 @@
+#![ deny( missing_docs ) ]
 #![ allow( dead_code ) ]
 use super::*;
 
 //
 // this should work
 //
-// let ca = Aggregator::former()
+// let ca = Parent::former()
 // .parameter1( "val" )
 // .command( "echo" )
 //   .name( "prints all subjects and properties" )
@@ -47,22 +48,22 @@ impl< Name > Property< Name >
 // == command
 
 #[ derive( Debug, PartialEq, the_module::Former ) ]
-pub struct Command< K >
+pub struct Child< K >
 where
   K : core::hash::Hash + std::cmp::Eq,
 {
   pub name : String,
   pub subject : String,
-  #[ subformer( the_module::HashMapSubformer ) ]
+  #[ container( definition = former::HashMapDefinition ) ]
   pub properties : collection_tools::HashMap< K, Property< K > >,
 }
 
 // manual
-impl< K, Context, End >
-CommandFormer< K, Context, End >
+impl< K, Definition > ChildFormer< K, Definition >
 where
   K : core::hash::Hash + std::cmp::Eq,
-  End : the_module::FormingEnd< Command< K >, Context >,
+  Definition : former::FormerDefinition< Storage = ChildFormerStorage< K > >,
+  Definition::Storage : former::StoragePreform,
 {
 
   /// Inserts a key-value pair into the map. Make a new container if it was not made so far.
@@ -96,51 +97,15 @@ where
 // == aggregator
 
 #[ derive( Debug, PartialEq, the_module::Former ) ]
-pub struct Aggregator< K >
+pub struct Parent< K >
 where
   K : core::hash::Hash + std::cmp::Eq,
 {
   pub parameter1 : String,
-  #[ subformer( the_module::HashMapSubformer ) ]
-  pub commands : collection_tools::HashMap< String, Command< K > >,
-}
-
-// manual
-impl< K, Context, End >
-AggregatorFormer< K, Context, End >
-where
-  K : core::hash::Hash + std::cmp::Eq,
-  End : the_module::FormingEnd< Aggregator< K >, Context >,
-{
-
-  #[ inline( always ) ]
-  pub fn command< IntoName >( self, name : IntoName )
-  -> CommandFormer< K, Self, impl the_module::FormingEnd< Command< K >, Self > >
-  where
-    K : core::hash::Hash + std::cmp::Eq,
-    IntoName : core::convert::Into< String >,
-  {
-    let on_end = | command : Command< K >, super_former : core::option::Option< Self > | -> Self
-    {
-      let mut super_former = super_former.unwrap();
-      if let Some( ref mut commands ) = super_former.storage.commands
-      {
-        commands.insert( command.name.clone(), command );
-      }
-      else
-      {
-        let mut commands : collection_tools::HashMap< String, Command< K > > = Default::default();
-        commands.insert( command.name.clone(), command );
-        super_former.storage.commands = Some( commands );
-      }
-      super_former
-    };
-    let former = CommandFormer::begin( None, Some( self ), on_end );
-    former.name( name )
-  }
-
+  #[ container( definition = former::HashMapDefinition ) ]
+  pub commands : collection_tools::HashMap< String, Child< K > >,
 }
 
 // ==
 
-include!( "../only_test/subformer_basic.rs" );
+include!( "./only_test/subformer_basic.rs" );

@@ -14,8 +14,7 @@ pub( crate ) mod private
   use duct::cmd;
   use error_tools::
   {
-    err,
-    for_app::{ Error, Context },
+    for_app::{ Error, Context, anyhow },
     Result,
   };
   use former::Former;
@@ -198,7 +197,7 @@ pub( crate ) mod private
     }
     else
     {
-      report.error = Err( err!( "Process was finished with error code : {}", output.status ) );
+      report.error = Err( anyhow!( "Process was finished with error code : {}", output.status ) );
       Err( report )
     }
 
@@ -212,7 +211,7 @@ pub( crate ) mod private
     bin_path : PathBuf,
     current_path : PathBuf,
     args : Vec< OsString >,
-    #[ default( false ) ]
+    #[ former( default = false ) ]
     joining_streams : bool,
     env_variable : HashMap< String, String >,
   }
@@ -299,9 +298,9 @@ pub( crate ) mod private
       }
     }
   }
-  impl std::fmt::Display for Report
+  impl core::fmt::Display for Report
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> core::fmt::Result
     {
       // Trim prevents writing unnecessary whitespace or empty lines
       f.write_fmt( format_args!( "> {}\n", self.command ) )?;
