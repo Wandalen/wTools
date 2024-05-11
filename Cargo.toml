@@ -174,7 +174,7 @@ default-features = false
 ## diagnostics
 
 [workspace.dependencies.diagnostics_tools]
-version = "~0.7.0"
+version = "~0.8.0"
 path = "module/core/diagnostics_tools"
 default-features = false
 
