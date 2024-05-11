@@ -137,7 +137,7 @@ fn vec()
 
   // test.case( "empty" );
   let got : the_module::Vec< i32 > = the_module::vec!{};
-  let exp = the_module::Vec::new();
+  let exp = the_module::Vec::< i32 >::new();
   assert_eq!( got, exp );
 
   // test.case( "multiple entry" );
