@@ -366,7 +366,7 @@ mod private
     workspace_dir : CrateDir,
     package : Package,
     base_temp_dir : Option< PathBuf >,
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     dry : bool,
   }
 
@@ -512,7 +512,7 @@ mod private
     /// `dry` - A boolean value indicating whether to do a dry run. If set to `true`, the application performs
     /// a simulated run without making any actual changes. If set to `false`, the operations are actually executed.
     /// This property is optional and defaults to `true`.
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     pub dry : bool,
 
     /// Required for tree view only
@@ -523,7 +523,7 @@ mod private
     /// how to build and where to publish the package amongst other instructions. The `#[setter( false )]`
     /// attribute indicates that there is no setter method for the `plans` variable and it can only be modified
     /// within the struct.
-    #[ setter( false ) ]
+    #[ scalar( setter = false, hint = false ) ]
     pub plans : Vec< PackagePublishInstruction >,
   }
 

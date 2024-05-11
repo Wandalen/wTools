@@ -19,27 +19,28 @@ mod private
   use action::{ list as l, list::{ ListFormat, ListOptions } };
   use former::Former;
 
+  // qqq: `Former` forces the struct to be public
   #[ derive( Former ) ]
-  struct ListProperties
+  pub struct ListProperties
   {
-    #[ default( ListFormat::Tree ) ]
+    #[ former( default = ListFormat::Tree ) ]
     format : ListFormat,
 
-    #[ default( false ) ]
+    #[ former( default = false ) ]
     with_version : bool,
-    #[ default( false ) ]
+    #[ former( default = false ) ]
     with_path : bool,
 
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     with_local : bool,
-    #[ default( false ) ]
+    #[ former( default = false ) ]
     with_remote : bool,
 
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     with_primary : bool,
-    #[ default( false ) ]
+    #[ former( default = false ) ]
     with_dev : bool,
-    #[ default( false ) ]
+    #[ former( default = false ) ]
     with_build : bool,
   }
 

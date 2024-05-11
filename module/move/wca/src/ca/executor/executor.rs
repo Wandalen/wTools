@@ -16,7 +16,7 @@ pub( crate ) mod private
   pub struct Executor
   {
     /// The default context for the executor
-    #[ default( Context::default() ) ]
+    #[ former( default = Context::default() ) ]
     pub context : Context,
   }
 

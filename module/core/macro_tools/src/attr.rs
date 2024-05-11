@@ -97,6 +97,108 @@ pub( crate ) mod private
     return Ok( false )
   }
 
+  /// Checks if the given attribute name is a standard Rust attribute.
+  ///
+  /// Standard Rust attributes are those which are recognized and processed
+  /// directly by the Rust compiler. They influence various aspects of compilation,
+  /// including but not limited to conditional compilation, optimization hints,
+  /// code visibility, and procedural macro behavior.
+  ///
+  /// This function is useful when developing tools that need to interact with or
+  /// understand the significance of specific attributes in Rust source code, such
+  /// as linters, code analyzers, or procedural macros.
+  ///
+  /// This function does not cover all possible attributes but includes many of the
+  /// common ones that are relevant to most Rust projects. Developers are encouraged
+  /// to update this function as needed to suit more specialized needs, especially
+  /// when dealing with nightly-only compiler attributes or deprecated ones.
+  ///
+  /// # Parameters
+  /// - `attr_name`: A string slice that holds the name of the attribute to check.
+  ///
+  /// # Returns
+  /// Returns `true` if `attr_name` is a recognized standard Rust attribute. Otherwise,
+  /// returns `false`.
+  ///
+  /// # Examples
+  ///
+  /// Standard attributes:
+  ///
+  /// ```
+  /// assert_eq!( macro_tools::attr::is_standard( "cfg" ), true );
+  /// assert_eq!( macro_tools::attr::is_standard( "inline" ), true );
+  /// assert_eq!( macro_tools::attr::is_standard( "derive" ), true );
+  /// ```
+  ///
+  /// Non-standard or custom attributes:
+  ///
+  /// ```
+  /// assert_eq!( macro_tools::attr::is_standard( "custom_attr" ), false );
+  /// assert_eq!( macro_tools::attr::is_standard( "my_attribute" ), false );
+  /// ```
+  ///
+
+  pub fn is_standard<'a>( attr_name : &'a str ) -> bool
+  {
+    match attr_name
+    {
+      // Conditional compilation
+      "cfg" | "cfg_attr" => true,
+
+      // Compiler instructions and optimizations
+      "inline" | "repr" | "derive" | "allow" | "warn" | "deny" | "forbid" => true,
+
+      // Testing attributes
+      "test" | "bench" => true,
+
+      // Documentation attributes
+      "doc" => true,
+
+      // Visibility and accessibility
+      "pub" => true, // This would typically need context to be accurate
+
+      // Safety and ABI
+      "unsafe" | "no_mangle" | "extern" => true,
+
+      // Module and Crate configuration
+      "path" | "macro_use" | "crate_type" | "crate_name" => true,
+
+      // Linking
+      "link" | "link_name" | "link_section" => true,
+
+      // Usage warnings
+      "must_use" => true,
+
+      // Other attributes
+      "cold" | "export_name" | "global_allocator" => true,
+
+      // Module handling
+      "used" | "unused" => true,
+
+      // Procedural macros and hygiene
+      "proc_macro" | "proc_macro_derive" | "proc_macro_attribute" => true,
+
+      // Stability attributes
+      "stable" | "unstable" | "rustc_const_unstable" | "rustc_const_stable" |
+      "rustc_diagnostic_item" | "rustc_deprecated" | "rustc_legacy_const_generics" => true,
+
+      // Special compiler attributes
+      "feature" | "non_exhaustive" => true,
+
+      // Future compatibility
+      "rustc_paren_sugar" | "rustc_insignificant_dtor" => true,
+
+      // Type system extensions
+      "opaque" => true,
+
+      // Miscellaneous
+      "track_caller" => true,
+
+      // Default case
+      _ => false,
+    }
+  }
+
   ///
   /// Attribute which is inner.
   ///
@@ -316,6 +418,7 @@ pub mod exposed
   {
     equation,
     has_debug,
+    is_standard,
     AttributesInner,
     AttributesOuter,
     AttributedIdent,
@@ -326,4 +429,3 @@ pub mod exposed
 pub mod prelude
 {
 }
-

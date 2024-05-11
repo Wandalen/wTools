@@ -160,21 +160,21 @@ pub( crate ) mod private
   #[ perform( fn parse( mut self ) -> Request< 'a > ) ]
   pub struct ParseOptions< 'a >
   {
-    #[ default( "" ) ]
+    #[ former( default = "" ) ]
     src : &'a str,
-    #[ default( ":" ) ]
+    #[ former( default = ":" ) ]
     key_val_delimeter : &'a str,
-    #[ default( ";" ) ]
+    #[ former( default = ";" ) ]
     commands_delimeter : &'a str,
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     quoting : bool,
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     unquoting : bool,
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     parsing_arrays : bool,
-    #[ default( false ) ]
+    #[ former( default = false ) ]
     several_values : bool,
-    #[ default( false ) ]
+    #[ former( default = false ) ]
     subject_win_paths_maybe : bool,
   }
 
