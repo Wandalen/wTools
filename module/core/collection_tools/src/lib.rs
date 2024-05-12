@@ -105,12 +105,41 @@ pub mod exposed
 #[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
+
   #[ cfg( feature = "collection_constructors" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::constructors::*;
+
   #[ cfg( feature = "collection_into_constructors" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::into_constructors::*;
+
+// qqq : for Antont : uncomment, make it working and cover by tests
+//   #[ cfg( feature = "prelude" ) ]
+//   #[ doc( inline ) ]
+//   #[ allow( unused_imports ) ]
+//   pub use std::collections::
+//   {
+//     HashMap as Map,
+//     HashSet as Set,
+//     HashMap,
+//     HashSet,
+//     VecDeque,
+//     BTreeMap,
+//     BTreeSet,
+//     BinaryHeap,
+//     LinkedList,
+//   };
+//
+//   #[ cfg( feature = "prelude" ) ]
+//   #[ doc( inline ) ]
+//   #[ allow( unused_imports ) ]
+//   pub use std::vec::
+//   {
+//     Vec,
+//     Vec as DynArray,
+//   };
+
 }

@@ -6,8 +6,8 @@
 
 #[ allow( unused_imports ) ]
 use data_type as the_module;
+
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 
-// #[ path = "./inc.rs" ]
 mod inc;
