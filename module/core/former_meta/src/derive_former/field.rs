@@ -687,32 +687,32 @@ where
 
 /// The collection setter provides a collection setter that returns a CollectionFormer tailored for managing a collection of child entities. It employs a generic collection definition to facilitate operations on the entire collection, such as adding or updating elements.
 
-impl< Definition, > {}< Definition, >
+impl< Definition, > {former}< Definition, >
 where
-  Definition : former::FormerDefinition< Storage = {} >,
+  Definition : former::FormerDefinition< Storage = {former_storage} >,
 {{
 
   #[ inline( always ) ]
-  pub fn {}( self ) -> former::CollectionFormer::
+  pub fn {field_ident}( self ) -> former::CollectionFormer::
   <
-    ( {} ),
-    former::HashMapDefinition< {} Self, Self, {}< Definition >, >
+    ( {0} ),
+    former::HashMapDefinition< {0} Self, Self, {subform_collection_end}< Definition >, >
     // Replace `HashMapDefinition` with definition for your collection
   >
   {{
-    self.{}()
+    self.{subform_collection}()
   }}
 
 }}
 
         "#,
-        former,
-        former_storage,
-        field_ident,
+        // former,
+        // former_storage,
+        // field_ident,
         format!( "{}", qt!{ #( #params, )* } ),
-        format!( "{}", qt!{ #( #params, )* } ),
-        subform_collection_end,
-        subform_collection,
+        // format!( "{}", qt!{ #( #params, )* } ),
+        // subform_collection_end,
+        // subform_collection,
       );
       let about = format!
       (
@@ -981,7 +981,6 @@ allowing for dynamic and flexible construction of the `{stru}` entity's {field_i
 
     if attr.hint
     {
-      // xxx : maybe improve
       let hint = format!
       (
         r#"
@@ -1000,6 +999,7 @@ where
   {{
     self.{subform_entry_name}::< {0}Former< _ >, _, >()
   }}
+  // Replace {0} with name of type of entry value.
 
 }}
         "#,
