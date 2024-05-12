@@ -863,6 +863,8 @@ with the new content generated during the subforming process.
     use convert_case::{ Case, Casing };
     let field_ident = self.ident;
     let field_typ = self.non_optional_ty;
+    let entry_typ : &syn::Type = typ::parameter_first( field_typ )?;
+
     let attr = self.attrs.subform_entry.as_ref().unwrap();
     // let params = typ::type_parameters( &self.non_optional_ty, .. );
 
@@ -988,24 +990,24 @@ allowing for dynamic and flexible construction of the `{stru}` entity's {field_i
 /// to create and return a configured subformer instance. It allows for the dynamic addition of children with specific names,
 /// integrating them into the formation process of the parent entity.
 
-impl< Definition > {}< Definition >
+impl< Definition > {former}< Definition >
 where
-  Definition : former::FormerDefinition< Storage = {} >,
+  Definition : former::FormerDefinition< Storage = {former_storage} >,
 {{
 
   #[ inline( always ) ]
-  pub fn {}( self ) -> ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
+  pub fn {field_ident}( self ) -> {0}AsSubformer< Self, impl {0}AsSubformerEnd< Self > >
   {{
-    self.{}::< ChildFormer< _ >, _, >()
+    self.{subform_entry_name}::< {0}Former< _ >, _, >()
   }}
-  // Replace Child with name of type of element value.
 
 }}
         "#,
-        former,
-        former_storage,
-        field_ident,
-        subform_entry_name,
+        format!( "{}", qt!{ #entry_typ } ),
+        // former,
+        // former_storage,
+        // field_ident,
+        // subform_entry_name,
       );
       println!( "{hint}" );
       // xxx : use diag::report_print
