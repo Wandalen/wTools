@@ -179,7 +179,7 @@ pub( crate ) mod private
     /// It returns a `ValueDescriptionFormer` which can be used to further build the super-former.
     pub fn subject( self ) -> ValueDescriptionAsSubformer< Self, impl ValueDescriptionAsSubformerEnd< Self > >
     {
-      self._subjects_add()
+      self._subjects_subform_entry()
     }
 
     /// Sets the name and other properties of the current property.

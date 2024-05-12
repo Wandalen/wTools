@@ -147,7 +147,7 @@ mod private
     pub fn parameter( self, name : &str ) ->
     TemplateParameterDescriptorAsSubformer< Self, impl TemplateParameterDescriptorAsSubformerEnd< Self > >
     {
-      self._descriptors_add::< TemplateParameterDescriptorFormer< _ >, _ >()
+      self._descriptors_subform_entry::< TemplateParameterDescriptorFormer< _ >, _ >()
       .parameter( name )
     }
   }
@@ -314,7 +314,7 @@ mod private
     #[ inline( always ) ]
     pub fn file( self ) -> TemplateFileDescriptorAsSubformer< Self, impl TemplateFileDescriptorAsSubformerEnd< Self > >
     {
-      self._files_add()
+      self._files_subform_entry()
     }
   }
 
