@@ -43,6 +43,8 @@ use struct_attrs::*;
 
 pub fn mutator
 (
+  stru : &syn::Ident,
+  original_input : &proc_macro::TokenStream,
   mutator : &AttributeMutator,
   former_definition_types : &syn::Ident,
   former_definition_types_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
@@ -76,7 +78,7 @@ pub fn mutator
 = Example of custom mutator
 
 impl< {} > former::FormerMutator
-for {} < {} >
+for {former_definition_types} < {} >
 where
   {}
 {{
@@ -88,11 +90,16 @@ where
 }}
       "#,
       format!( "{}", qt!{ #former_definition_types_generics_impl } ),
-      former_definition_types,
       format!( "{}", qt!{ #former_definition_types_generics_ty } ),
       format!( "{}", qt!{ #former_definition_types_generics_where } ),
     );
-    println!( "{hint}" );
+    // println!( "{hint}" );
+    let about = format!
+    (
+r#"derive : Former
+structure : {stru}"#,
+    );
+    diag::report_print( about, original_input, hint );
   };
 
   Ok( former_mutator_code )
@@ -296,6 +303,7 @@ specific needs of the broader forming context. It mandates the implementation of
     field.former_field_setter
     (
       &stru,
+      &original_input,
       &struct_generics_impl,
       &struct_generics_ty,
       &struct_generics_where,
@@ -304,7 +312,6 @@ specific needs of the broader forming context. It mandates the implementation of
       &former_generics_ty,
       &former_generics_where,
       &former_storage,
-      &original_input,
     ),
   )}).multiunzip();
 
@@ -315,6 +322,8 @@ specific needs of the broader forming context. It mandates the implementation of
 
   let former_mutator_code = mutator
   (
+    &stru,
+    &original_input,
     &struct_attrs.mutator,
     &former_definition_types,
     &former_definition_types_generics_impl,

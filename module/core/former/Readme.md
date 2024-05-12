@@ -533,33 +533,41 @@ But it's also possible to completely override setter and write its own from scra
 # fn main()
 # {
 
-use former::Former;
+  use former::Former;
 
-/// Structure with a custom setter.
-#[ derive( Debug, Former ) ]
-pub struct StructWithCustomSetters
-{
-  #[ scalar( setter = false ) ]
-  word : String,
-}
-
-impl StructWithCustomSettersFormer
-{
-
-  // Custom alternative setter for `word`
-  pub fn word( mut self, value : impl Into< String > ) -> Self
+  /// Structure with a custom setter.
+  #[ derive( Debug, Former ) ]
+  pub struct StructWithCustomSetters
   {
-    debug_assert!( self.storage.word.is_none() );
-    self.storage.word = Some( format!( "{}!", value.into() ) );
-    self
+    // Use `hint = true` to gennerate sketch of setter.
+    #[ scalar( setter = false, hint = false ) ]
+    word : String,
   }
 
-}
+  impl< Definition > StructWithCustomSettersFormer< Definition >
+  where
+    Definition : former::FormerDefinition< Storage = StructWithCustomSettersFormerStorage >,
+  {
+    // Custom alternative setter for `word`
+    #[ inline ]
+    pub fn word< Src >( mut self, src : Src ) -> Self
+    where
+      Src : ::core::convert::Into< String >,
+    {
+      debug_assert!( self.storage.word.is_none() );
+      self.storage.word = Some( format!( "{}!", src.into() ) );
+      self
+    }
+  }
 
-let example = StructWithCustomSetters::former()
-.word( "Hello" )
-.form();
-assert_eq!( example.word, "Hello!".to_string() );
+  let example = StructWithCustomSetters::former()
+  .word( "Hello" )
+  .form();
+  assert_eq!( example.word, "Hello!".to_string() );
+  dbg!( example );
+  //> StructWithCustomSetters {
+  //>     word: "Hello!",
+  //> }
 
 # }
 ```

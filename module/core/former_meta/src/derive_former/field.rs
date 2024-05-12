@@ -331,6 +331,7 @@ scalar_setter_required
   (
     &self,
     stru : &syn::Ident,
+    original_input : &proc_macro::TokenStream,
     struct_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     struct_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     struct_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
@@ -339,7 +340,6 @@ scalar_setter_required
     former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     former_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
     former_storage : &syn::Ident,
-    original_input : &proc_macro::TokenStream,
   )
   -> Result< ( TokenStream, TokenStream ) >
   {
@@ -348,8 +348,10 @@ scalar_setter_required
     let namespace_code = qt! {};
     let setters_code = self.scalar_setter
     (
+      stru,
       former,
       former_storage,
+      original_input,
     );
 
     // subform scalar setter
@@ -364,6 +366,7 @@ scalar_setter_required
         struct_generics_impl,
         struct_generics_ty,
         struct_generics_where,
+        original_input,
       )?;
       ( qt! { #setters_code #setters_code2 }, qt! { #namespace_code #namespace_code2 } )
     }
@@ -404,6 +407,7 @@ scalar_setter_required
         struct_generics_impl,
         struct_generics_ty,
         struct_generics_where,
+        original_input,
       )?;
       ( qt! { #setters_code #setters_code2 }, qt! { #namespace_code #namespace_code2 } )
     }
@@ -440,8 +444,10 @@ scalar_setter_required
   pub fn scalar_setter
   (
     &self,
+    stru : &syn::Ident,
     former : &syn::Ident,
     former_storage : &syn::Ident,
+    original_input : &proc_macro::TokenStream,
   )
   -> TokenStream
   {
@@ -455,7 +461,6 @@ scalar_setter_required
       let hint = format!
       (
         r#"
-
 impl< Definition > {former}< Definition >
 where
   Definition : former::FormerDefinition< Storage = {former_storage} >,
@@ -470,12 +475,16 @@ where
     self
   }}
 }}
-
         "#,
         format!( "{}", qt!{ #typ } ),
       );
-      println!( "{hint}" );
-      // xxx : use diag::report_print
+      let about = format!
+      (
+r#"derive : Former
+structure : {stru}
+field : {field_ident}"#,
+      );
+      diag::report_print( about, original_input, hint );
     }
 
     if !self.scalar_setter_required()
@@ -678,7 +687,6 @@ where
       let hint = format!
       (
         r#"
-
 /// The collection setter provides a collection setter that returns a CollectionFormer tailored for managing a collection of child entities. It employs a generic collection definition to facilitate operations on the entire collection, such as adding or updating elements.
 
 impl< Definition, > {former}< Definition, >
@@ -698,7 +706,6 @@ where
   }}
 
 }}
-
         "#,
         format!( "{}", qt!{ #( #params, )* } ),
       );
@@ -844,6 +851,7 @@ with the new content generated during the subforming process.
     struct_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     struct_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     struct_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+    original_input : &proc_macro::TokenStream,
   )
   -> Result< ( TokenStream, TokenStream ) >
   {
@@ -972,7 +980,6 @@ allowing for dynamic and flexible construction of the `{stru}` entity's {field_i
       let hint = format!
       (
         r#"
-
 /// Initializes and configures a subformer for adding named child entities. This method leverages an internal function
 /// to create and return a configured subformer instance. It allows for the dynamic addition of children with specific names,
 /// integrating them into the formation process of the parent entity.
@@ -992,13 +999,14 @@ where
 }}
         "#,
         format!( "{}", qt!{ #entry_typ } ),
-        // former,
-        // former_storage,
-        // field_ident,
-        // subform_entry_name,
       );
-      println!( "{hint}" );
-      // xxx : use diag::report_print
+      let about = format!
+      (
+r#"derive : Former
+structure : {stru}
+field : {field_ident}"#,
+      );
+      diag::report_print( about, original_input, hint );
     }
 
     let doc = format!
@@ -1106,12 +1114,9 @@ formation process of the `{stru}`.
     Ok( ( setters_code, namespace_code ) )
   }
 
-
-  /// Generates setter functions to subform scalar.
+  /// Generates setter functions to subform scalar and all corresponding helpers.
   ///
   /// See `tests/inc/former_tests/subform_scalar_manual.rs` for example of generated code.
-  ///
-  // xxx : improve documentation
 
   #[ inline ]
   pub fn subform_scalar_setter
@@ -1124,6 +1129,7 @@ formation process of the `{stru}`.
     struct_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     struct_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     struct_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+    original_input : &proc_macro::TokenStream,
   )
   -> Result< ( TokenStream, TokenStream ) >
   {
@@ -1284,7 +1290,6 @@ former and end action types, ensuring a seamless developer experience when formi
       let hint = format!
       (
         r#"
-
 /// Extends `{former}` to include a method that initializes and configures a subformer for the '{field_ident}' field.
 /// This function demonstrates the dynamic addition of a named {field_ident}, leveraging a subformer to specify detailed properties.
 
@@ -1298,17 +1303,16 @@ where
     self._{field_ident}_subform_scalar::< {0}Former< _ >, _, >().name( name )
   }}
 }}
-
         "#,
         format!( "{}", qt!{ #field_typ } ),
-        // former,
-        // former_storage,
-        // field_ident,
-        // subform_scalar_name,
       );
-      println!( "{hint}" );
-      // xxx : outdated
-      // xxx : use diag::report_print
+      let about = format!
+      (
+r#"derive : Former
+structure : {stru}
+field : {field_ident}"#,
+      );
+      diag::report_print( about, original_input, hint );
     }
 
     let doc = format!
