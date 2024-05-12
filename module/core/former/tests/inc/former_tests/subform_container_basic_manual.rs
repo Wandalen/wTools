@@ -16,8 +16,6 @@ impl< > Struct1< >
 where
 {
 
-
-
   #[ inline( always ) ]
   pub fn former() -> Struct1Former<
     Struct1FormerDefinition<(), Struct1<>, former::ReturnPreformed>

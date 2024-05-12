@@ -17,6 +17,7 @@ pub struct Child
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent
 {
+  #[ scalar( setter = false ) ]
   // #[ scalar_subform ]
   child : Child,
 }
@@ -26,6 +27,13 @@ where
   Definition : former::FormerDefinition< Storage = < Parent as former::EntityToStorage >::Storage >,
 {
 
+  #[ inline( always ) ]
+  pub fn child( self ) ->
+  ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
+  {
+    self._child_scalar_subformer
+    ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
+  }
 
 }
 
@@ -40,7 +48,7 @@ where
   where
     Definition2 : former::FormerDefinition
     <
-      End = ParentFormerScalarSubformChildEnd< Definition >,
+      End = ParentFormerSubformScalarChildEnd< Definition >,
       Storage = < Child as former::EntityToStorage >::Storage,
       Formed = Self,
       Context = Self,
@@ -53,7 +61,7 @@ where
     >,
     Former2 : former::FormerBegin< Definition2 >,
   {
-    Former2::former_begin( None, Some( self ), ParentFormerScalarSubformChildEnd::default() )
+    Former2::former_begin( None, Some( self ), ParentFormerSubformScalarChildEnd::default() )
   }
 
 }
@@ -61,13 +69,13 @@ where
 // = end
 
 /// Handles the completion of and element of subformer's container.
-pub struct ParentFormerScalarSubformChildEnd< Definition >
+pub struct ParentFormerSubformScalarChildEnd< Definition >
 {
   _phantom : core::marker::PhantomData< fn( Definition ) >,
 }
 
 impl< Definition > Default
-for ParentFormerScalarSubformChildEnd< Definition >
+for ParentFormerSubformScalarChildEnd< Definition >
 {
   #[ inline( always ) ]
   fn default() -> Self
@@ -80,7 +88,7 @@ for ParentFormerScalarSubformChildEnd< Definition >
 }
 
 impl< Types2, Definition > former::FormingEnd< Types2, >
-for ParentFormerScalarSubformChildEnd< Definition >
+for ParentFormerSubformScalarChildEnd< Definition >
 where
   Definition : former::FormerDefinition
   <
@@ -113,5 +121,5 @@ where
 
 // == end of generated
 
-// include!( "./only_test/subformer_scalar.rs" );
+include!( "./only_test/subformer_scalar_subform.rs" );
 // xxx : uncomment
