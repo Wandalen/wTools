@@ -139,3 +139,5 @@ where
 
 include!( "./only_test/subformer_scalar_subform.rs" );
 // xxx : uncomment
+// xxx : write few more tests to cover name, setter
+// xxx : extend all test

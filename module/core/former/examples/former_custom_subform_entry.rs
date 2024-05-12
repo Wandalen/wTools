@@ -1,7 +1,8 @@
-// Example former_custom_collection_setter.rs
+// Example former_custom_subform_entry.rs
 
+//! ## Example : Custom Subform Entry Setter
 //!
-//! This example demonstrates the use of collection setters to manage complex nested data structures with the `Former` trait, focusing on a parent-child relationship structured around a collection `HashMap`. Unlike typical builder patterns that add individual elements using subform setters, this example uses a collection setter to manage the entire collection of children.
+//! This example illustrates the implementation of nested builder patterns using the `Former` trait, emphasizing a parent-child relationship. Here, the `Parent` struct utilizes `ChildFormer` as a custom subformer to dynamically manage its `child` field—a `HashMap`. Each child in the `HashMap` is uniquely identified and configured via the `ChildFormer`.
 //!
 //! The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a collection—each child entity in this case.
 //!
@@ -20,9 +21,10 @@
 //! These setters ensure that developers can precisely and efficiently set properties, manage collections, and configure complex structures within their applications.
 //!
 
-// Ensure the example only compiles when the appropriate features are enabled.
 #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
 fn main() {}
+
+// Ensure the example only compiles when the appropriate features are enabled.
 #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
 fn main()
 {
@@ -46,34 +48,45 @@ fn main()
   pub struct Parent
   {
     // Use `hint = true` to gennerate sketch of setter.
-    #[ subform_collection( setter = false, hint = false ) ]
-    children : HashMap< String, Child >,
+    #[ subform_entry( setter = false, hint = false ) ]
+    child : HashMap< String, Child >,
   }
 
-  /// The containr setter provides a collection setter that returns a CollectionFormer tailored for managing a collection of child entities. It employs a generic collection definition to facilitate operations on the entire collection, such as adding or updating elements.
-  impl< Definition, > ParentFormer< Definition, >
+  /// Initializes and configures a subformer for adding named child entities. This method leverages an internal function
+  /// to create and return a configured subformer instance. It allows for the dynamic addition of children with specific names,
+  /// integrating them into the formation process of the parent entity.
+  ///
+  impl< Definition > ParentFormer< Definition >
   where
-    Definition : former::FormerDefinition< Storage = ParentFormerStorage >,
+    Definition : former::FormerDefinition< Storage = < Parent as former::EntityToStorage >::Storage >,
   {
 
     #[ inline( always ) ]
-    pub fn children( self ) -> former::CollectionFormer::
-    <
-      ( String, Child ),
-      former::HashMapDefinition< String, Child, Self, Self, ParentSubformCollectionChildrenEnd< Definition >, >
-    >
+    pub fn child( self, name : &str ) -> ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
     {
-      self._children_subform_collection()
+      self._child_subform_entry::< ChildFormer< _ >, _, >()
+      .name( name )
     }
 
   }
 
-  let echo = Child { name : "echo".to_string(), description : "prints all subjects and properties".to_string() };
-  let exit = Child { name : "exit".to_string(), description : "just exit".to_string() };
+  // Required to define how `value` is converted into pair `( key, value )`
+  impl former::ValToEntry< HashMap< String, Child > > for Child
+  {
+    type Entry = ( String, Child );
+    #[ inline( always ) ]
+    fn val_to_entry( self ) -> Self::Entry
+    {
+      ( self.name.clone(), self )
+    }
+  }
+
   let ca = Parent::former()
-  .children()
-    .add( ( echo.name.clone(), echo ) )
-    .add( ( exit.name.clone(), exit ) )
+  .child( "echo" )
+    .description( "prints all subjects and properties" ) // sets additional properties using custom subformer
+    .end()
+  .child( "exit" )
+    .description( "just exit" ) // Sets additional properties using using custom subformer
     .end()
   .form();
 

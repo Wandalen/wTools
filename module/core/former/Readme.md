@@ -646,110 +646,6 @@ Storage is not just a passive collection; it is an active part of a larger ecosy
 
 These elements work in concert to ensure that the forming process is not only about building an object step-by-step but also about integrating it seamlessly into larger, more complex structures or systems.
 
-## Concept of Definitions
-
-Definitions are utilized to encapsulate and manage generic parameters efficiently and avoid passing each parameter individually.
-
-Two key definition Traits:
-
-1. **`FormerDefinitionTypes`**:
-   - This trait outlines the essential components involved in the formation process, including the types of storage, the form being created, and the context used. It focuses on the types involved rather than the termination of the formation process.
-2. **`FormerDefinition`**:
-   - Building upon `FormerDefinitionTypes`, this trait incorporates the `FormingEnd` callback, linking the formation types with a definitive ending. It specifies how the formation process should conclude, which may involve validations, transformations, or integrations into larger structures.
-   - The inclusion of the `End` type parameter specifies the end conditions of the formation process, effectively connecting the temporary state held in storage to its ultimate form.
-
-## Overview of Formation Traits
-
-The formation process utilizes several core traits, each serving a specific purpose in the lifecycle of entity creation. These traits ensure that entities are constructed methodically, adhering to a structured pattern that enhances maintainability and scalability. Below is a summary of these key traits:
-
-- `EntityToDefinition`: Links entities to their respective formation definitions which dictate their construction process.
-- `EntityToFormer`: Connects entities with formers that are responsible for their step-by-step construction.
-- `EntityToStorage`: Specifies the storage structures that temporarily hold the state of an entity during its formation.
-- `FormerDefinition`, `FormerDefinitionTypes`: Define the essential properties and ending conditions of the formation process, ensuring entities are formed according to predetermined rules and logic.
-- `Storage`: Establishes the fundamental interface for storage types used in the formation process, ensuring each can initialize to a default state.
-- `StoragePreform`: Describes the transformation of storage from a mutable, intermediate state into the final, immutable state of the entity, crucial for accurately concluding the formation process.
-- `FormerMutator`: Allows for custom mutation logic on the storage and context immediately before the formation process completes, ensuring last-minute adjustments are possible.
-- `FormingEnd`: Specifies the closure action at the end of the formation process, which can transform or validate the final state of the entity.
-- `FormingEndClosure`: Provides a flexible mechanism for dynamically handling the end of the formation process using closures, useful for complex scenarios.
-- `FormerBegin`: Initiates a subforming process, managing how entities begin their formation in terms of storage and context setup.
-
-These traits collectively facilitate a robust and flexible builder pattern that supports complex object creation and configuration scenarios.
-
-## Example : Custom Definition
-
-Define a custom former definition and custom forming logic, and apply them to a collection.
-
-The example showcases how to accumulate elements into a collection and then transform them into a single result using a custom `FormingEnd` implementation. This pattern is useful for scenarios where the formation process involves aggregation or transformation of input elements into a different type or form.
-
-```rust
-# #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
-# fn main() {}
-
-# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
-# fn main()
-# {
-
-  // Define a struct `Sum` that will act as a custom former definition.
-  struct Sum;
-
-  // Implement `FormerDefinitionTypes` for `Sum`.
-  // This trait defines the types used during the forming process.
-  impl former::FormerDefinitionTypes for Sum
-  {
-    type Storage = Vec<i32>; // Collection for the integers.
-    type Formed = i32;       // The final type after forming, which is a single integer.
-    type Context = ();       // No additional context is used in this example.
-  }
-
-  // Implement `FormerMutator` for `Sum`.
-  // This trait could include custom mutation logic applied during the forming process, but it's empty in this example.
-  impl former::FormerMutator for Sum
-  {
-  }
-
-  // Implement `FormerDefinition` for `Sum`.
-  // This trait links the custom types to the former.
-  impl former::FormerDefinition for Sum
-  {
-    type Types = Sum;        // Associate the `FormerDefinitionTypes` with `Sum`.
-    type End = Sum;          // Use `Sum` itself as the end handler.
-    type Storage = Vec<i32>; // Specify the storage type.
-    type Formed = i32;       // Specify the final formed type.
-    type Context = ();       // Specify the context type, not used here.
-  }
-
-  // Implement `FormingEnd` for `Sum`.
-  // This trait handles the final step of the forming process.
-  impl former::FormingEnd<Sum> for Sum
-  {
-    fn call
-    (
-      &self,
-      storage: < Sum as former::FormerDefinitionTypes >::Storage,
-      _context: Option< < Sum as former::FormerDefinitionTypes >::Context>
-    )
-    -> < Sum as former::FormerDefinitionTypes >::Formed
-    {
-      // Sum all integers in the storage vector.
-      storage.iter().sum()
-    }
-  }
-
-  // Use the custom `Former` to sum a list of integers.
-  let got = former::CollectionFormer::<i32, Sum>::new(Sum)
-  .add( 1 )  // Add an integer to the storage.
-  .add( 2 )  // Add another integer.
-  .add( 10 ) // Add another integer.
-  .form(); // Perform the form operation, which triggers the summing logic.
-  let exp = 13; // Expected result after summing 1, 2, and 10.
-  assert_eq!(got, exp); // Assert the result is as expected.
-
-  dbg!(got); // Debug print the result to verify the output.
-  // > got = 13
-
-# }
-```
-
 ## Concept of subformer
 
 Subformers are specialized builders used within the former to construct nested or collection-based data structures like vectors, hash maps, and hash sets. They simplify the process of adding elements to these structures by providing a fluent interface that can be seamlessly integrated into the overall builder pattern of a parent struct. This approach allows for clean and intuitive initialization of complex data structures, enhancing code readability and maintainability.
@@ -964,7 +860,82 @@ Try out `cargo run --example former_custom_scalar_setter`.
 </br>
 [See code](./examples/former_custom_scalar_setter.rs).
 
-## Example : Custom Collection Setter
+## Example : Custom Subform Scalar Setter
+
+Implementation of a custom subform scalar setter using the `Former` trait in Rust.
+
+This example focuses on the usage of a subform scalar setter to manage complex scalar types within a parent structure.
+Unlike more general subform setters that handle collections, this setter specifically configures scalar fields that have
+their own formers, allowing for detailed configuration within a nested builder pattern.
+
+```rust
+
+# #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+# fn main()
+# {}
+#
+# // Ensures the example only compiles when the appropriate features are enabled.
+# #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+# fn main()
+# {
+
+  use former::Former;
+
+  // Child struct with Former derived for builder pattern support
+  #[ derive( Debug, PartialEq, Former ) ]
+  // Optional: Use `#[debug]` to expand and debug generated code.
+  // #[debug]
+  pub struct Child
+  {
+    name : String,
+    description : String,
+  }
+
+  // Parent struct designed to hold a single Child instance using subform scalar
+  #[ derive( Debug, PartialEq, Former ) ]
+  // Optional: Use `#[debug]` to expand and debug generated code.
+  // #[debug]
+  pub struct Parent
+  {
+    // The `subform_scalar` attribute is used to specify that the 'child' field has its own former
+    // and can be individually configured via a subform setter. This is not a collection but a single scalar entity.
+    #[ subform_scalar( setter = false, hint = false ) ]
+    child : Child,
+  }
+
+  /// Extends `ParentFormer` to include a method that initializes and configures a subformer for the 'child' field.
+  /// This function demonstrates the dynamic addition of a named child, leveraging a subformer to specify detailed properties.
+  impl< Definition > ParentFormer< Definition >
+  where
+    Definition : former::FormerDefinition< Storage = < Parent as former::EntityToStorage >::Storage >,
+  {
+    #[ inline( always ) ]
+    pub fn child( self, name : &str ) -> ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
+    {
+      self._child_subform_scalar::< ChildFormer< _ >, _, >().name( name )
+    }
+  }
+
+  // Creating an instance of `Parent` using the builder pattern to configure `Child`
+  let ca = Parent::former()
+    .child( "echo" ) // starts the configuration of the `child` subformer
+    .description( "prints all subjects and properties" ) // sets additional properties for the `Child`
+    .end() // finalize the child configuration
+    .form(); // finalize the Parent configuration
+
+  dbg!( &ca ); // Outputs the structured data for review
+  // Expected output:
+  //> Parent {
+  //>   child: Child {
+  //>       name: "echo",
+  //>       description: "prints all subjects and properties",
+  //>   },
+  //> }
+
+# }
+```
+
+## Example : Custom Subform Collection Setter
 
 This example demonstrates the use of collection setters to manage complex nested data structures with the `Former` trait, focusing on a parent-child relationship structured around a collection `HashMap`. Unlike typical builder patterns that add individual elements using subform setters, this example uses a collection setter to manage the entire collection of children.
 
@@ -1041,11 +1012,11 @@ The `child` function within `ParentFormer` is a custom subform setter that plays
 # }
 ```
 
-Try out `cargo run --example former_custom_collection_setter`.
+Try out `cargo run --example former_custom_subform_collection`.
 </br>
-[See code](./examples/former_custom_collection_setter.rs).
+[See code](./examples/former_custom_subform_collection.rs).
 
-## Example : Custom Subform Setter
+## Example : Custom Subform Entry Setter
 
 This example illustrates the implementation of nested builder patterns using the `Former` trait, emphasizing a parent-child relationship. Here, the `Parent` struct utilizes `ChildFormer` as a custom subformer to dynamically manage its `child` field—a `HashMap`. Each child in the `HashMap` is uniquely identified and configured via the `ChildFormer`.
 
@@ -1135,9 +1106,9 @@ The `child` function within `ParentFormer` is a custom subform setter that plays
 # }
 ```
 
-Try out `cargo run --example former_custom_subform_setter`.
+Try out `cargo run --example former_custom_subform_entry`.
 </br>
-[See code](./examples/former_custom_subform_setter.rs).
+[See code](./examples/former_custom_subform_entry.rs).
 
 ## General Collection Interface
 
@@ -1254,6 +1225,110 @@ held within the storage.
 Try out `cargo run --example former_custom_mutator`.
 </br>
 [See code](./examples/former_custom_mutator.rs).
+
+## Concept of Definitions
+
+Definitions are utilized to encapsulate and manage generic parameters efficiently and avoid passing each parameter individually.
+
+Two key definition Traits:
+
+1. **`FormerDefinitionTypes`**:
+   - This trait outlines the essential components involved in the formation process, including the types of storage, the form being created, and the context used. It focuses on the types involved rather than the termination of the formation process.
+2. **`FormerDefinition`**:
+   - Building upon `FormerDefinitionTypes`, this trait incorporates the `FormingEnd` callback, linking the formation types with a definitive ending. It specifies how the formation process should conclude, which may involve validations, transformations, or integrations into larger structures.
+   - The inclusion of the `End` type parameter specifies the end conditions of the formation process, effectively connecting the temporary state held in storage to its ultimate form.
+
+## Overview of Formation Traits
+
+The formation process utilizes several core traits, each serving a specific purpose in the lifecycle of entity creation. These traits ensure that entities are constructed methodically, adhering to a structured pattern that enhances maintainability and scalability. Below is a summary of these key traits:
+
+- `EntityToDefinition`: Links entities to their respective formation definitions which dictate their construction process.
+- `EntityToFormer`: Connects entities with formers that are responsible for their step-by-step construction.
+- `EntityToStorage`: Specifies the storage structures that temporarily hold the state of an entity during its formation.
+- `FormerDefinition`, `FormerDefinitionTypes`: Define the essential properties and ending conditions of the formation process, ensuring entities are formed according to predetermined rules and logic.
+- `Storage`: Establishes the fundamental interface for storage types used in the formation process, ensuring each can initialize to a default state.
+- `StoragePreform`: Describes the transformation of storage from a mutable, intermediate state into the final, immutable state of the entity, crucial for accurately concluding the formation process.
+- `FormerMutator`: Allows for custom mutation logic on the storage and context immediately before the formation process completes, ensuring last-minute adjustments are possible.
+- `FormingEnd`: Specifies the closure action at the end of the formation process, which can transform or validate the final state of the entity.
+- `FormingEndClosure`: Provides a flexible mechanism for dynamically handling the end of the formation process using closures, useful for complex scenarios.
+- `FormerBegin`: Initiates a subforming process, managing how entities begin their formation in terms of storage and context setup.
+
+These traits collectively facilitate a robust and flexible builder pattern that supports complex object creation and configuration scenarios.
+
+## Example : Custom Definition
+
+Define a custom former definition and custom forming logic, and apply them to a collection.
+
+The example showcases how to accumulate elements into a collection and then transform them into a single result using a custom `FormingEnd` implementation. This pattern is useful for scenarios where the formation process involves aggregation or transformation of input elements into a different type or form.
+
+```rust
+# #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
+# fn main() {}
+
+# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+# fn main()
+# {
+
+  // Define a struct `Sum` that will act as a custom former definition.
+  struct Sum;
+
+  // Implement `FormerDefinitionTypes` for `Sum`.
+  // This trait defines the types used during the forming process.
+  impl former::FormerDefinitionTypes for Sum
+  {
+    type Storage = Vec<i32>; // Collection for the integers.
+    type Formed = i32;       // The final type after forming, which is a single integer.
+    type Context = ();       // No additional context is used in this example.
+  }
+
+  // Implement `FormerMutator` for `Sum`.
+  // This trait could include custom mutation logic applied during the forming process, but it's empty in this example.
+  impl former::FormerMutator for Sum
+  {
+  }
+
+  // Implement `FormerDefinition` for `Sum`.
+  // This trait links the custom types to the former.
+  impl former::FormerDefinition for Sum
+  {
+    type Types = Sum;        // Associate the `FormerDefinitionTypes` with `Sum`.
+    type End = Sum;          // Use `Sum` itself as the end handler.
+    type Storage = Vec<i32>; // Specify the storage type.
+    type Formed = i32;       // Specify the final formed type.
+    type Context = ();       // Specify the context type, not used here.
+  }
+
+  // Implement `FormingEnd` for `Sum`.
+  // This trait handles the final step of the forming process.
+  impl former::FormingEnd<Sum> for Sum
+  {
+    fn call
+    (
+      &self,
+      storage: < Sum as former::FormerDefinitionTypes >::Storage,
+      _context: Option< < Sum as former::FormerDefinitionTypes >::Context>
+    )
+    -> < Sum as former::FormerDefinitionTypes >::Formed
+    {
+      // Sum all integers in the storage vector.
+      storage.iter().sum()
+    }
+  }
+
+  // Use the custom `Former` to sum a list of integers.
+  let got = former::CollectionFormer::<i32, Sum>::new(Sum)
+  .add( 1 )  // Add an integer to the storage.
+  .add( 2 )  // Add another integer.
+  .add( 10 ) // Add another integer.
+  .form(); // Perform the form operation, which triggers the summing logic.
+  let exp = 13; // Expected result after summing 1, 2, and 10.
+  assert_eq!(got, exp); // Assert the result is as expected.
+
+  dbg!(got); // Debug print the result to verify the output.
+  // > got = 13
+
+# }
+```
 
 ## Index of Examples
 

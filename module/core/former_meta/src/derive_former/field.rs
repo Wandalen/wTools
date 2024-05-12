@@ -680,6 +680,7 @@ where
 
     if attr.hint
     {
+      // xxx : maybe improve
       let hint = format!
       (
         r#"
@@ -978,6 +979,7 @@ allowing for dynamic and flexible construction of the `{stru}` entity's {field_i
 
     if attr.hint
     {
+      // xxx : maybe improve
       let hint = format!
       (
         r#"
@@ -1127,7 +1129,7 @@ formation process of the `{stru}`.
     &self,
     stru : &syn::Ident,
     former : &syn::Ident,
-    former_storage : &syn::Ident,
+    _former_storage : &syn::Ident,
     former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     struct_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     struct_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
@@ -1293,28 +1295,26 @@ former and end action types, ensuring a seamless developer experience when formi
       (
         r#"
 
-/// Initializes and configures a subformer for adding named child entities. This method leverages an internal function
-/// to create and return a configured subformer instance. It allows for the dynamic addition of children with specific names,
-/// integrating them into the formation process of the parent entity.
+/// Extends `{former}` to include a method that initializes and configures a subformer for the '{field_ident}' field.
+/// This function demonstrates the dynamic addition of a named {field_ident}, leveraging a subformer to specify detailed properties.
 
-impl< Definition > {}< Definition >
+impl< Definition > {former}< Definition >
 where
-  Definition : former::FormerDefinition< Storage = {} >,
+  Definition : former::FormerDefinition< Storage = < {stru} as former::EntityToStorage >::Storage >,
 {{
-
   #[ inline( always ) ]
-  pub fn {}( self ) -> ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
+  pub fn {field_ident}( self, name : &str ) -> {0}AsSubformer< Self, impl {0}AsSubformerEnd< Self > >
   {{
-    self.{}::< ChildFormer< _ >, _, >()
+    self._{field_ident}_subform_scalar::< {0}Former< _ >, _, >().name( name )
   }}
-  // Replace Child with name of type of element value.
-
 }}
+
         "#,
-        former,
-        former_storage,
-        field_ident,
-        subform_scalar_name,
+        format!( "{}", qt!{ #field_typ } ),
+        // former,
+        // former_storage,
+        // field_ident,
+        // subform_scalar_name,
       );
       println!( "{hint}" );
       // xxx : outdated
