@@ -349,36 +349,36 @@ pub( crate ) mod private
     }
   }
 
-  impl< T > std::fmt::Debug for EntityDescriptor< T >
+  impl< T > core::fmt::Debug for EntityDescriptor< T >
   where
     T : Instance + 'static,
     EntityDescriptor< T > : Entity,
   {
-    fn fmt( &self, f: &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f: &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
     {
       f
       .write_str( &format!( "{}#{:?}", self.type_name(), self.type_id() ) )
     }
   }
 
-  impl< T > std::fmt::Debug for CollectionDescriptor< T >
+  impl< T > core::fmt::Debug for CollectionDescriptor< T >
   where
     T : Instance + 'static,
     CollectionDescriptor< T > : Entity,
   {
-    fn fmt( &self, f: &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f: &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
     {
       f
       .write_str( &format!( "{}#{:?}", self.type_name(), self.type_id() ) )
     }
   }
 
-  impl< T > std::fmt::Debug for KeyedCollectionDescriptor< T >
+  impl< T > core::fmt::Debug for KeyedCollectionDescriptor< T >
   where
     T : Instance + 'static,
     KeyedCollectionDescriptor< T > : Entity,
   {
-    fn fmt( &self, f: &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f: &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
     {
       f
       .write_str( &format!( "{}#{:?}", self.type_name(), self.type_id() ) )
@@ -415,9 +415,9 @@ pub( crate ) mod private
     }
   }
 
-  impl std::fmt::Debug for KeyVal
+  impl core::fmt::Debug for KeyVal
   {
-    fn fmt( &self, f: &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f: &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
     {
       f
       .debug_struct( "KeyVal" )

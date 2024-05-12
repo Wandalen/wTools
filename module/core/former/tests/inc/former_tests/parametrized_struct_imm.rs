@@ -23,13 +23,17 @@ impl< Name > Property< Name >
 }
 
 #[ derive( Debug, PartialEq, the_module::Former ) ]
-pub struct Command< K : core::hash::Hash + std::cmp::Eq >
+// #[ derive( Debug, PartialEq, the_module::Former ) ] #[ debug ]
+// #[ derive( Debug, PartialEq ) ]
+pub struct Child< K : core::hash::Hash + std::cmp::Eq >
 {
   pub name : String,
-  #[ subformer( the_module::HashMapSubformer ) ]
+  #[ container( definition = former::HashMapDefinition ) ]
   pub properties : collection_tools::HashMap< K, Property< K > >,
 }
 
-// ==
+// == begin_coercing of generated
 
-include!( "../only_test/parametrized_struct.rs" );
+// == end of generated
+
+include!( "./only_test/parametrized_struct.rs" );

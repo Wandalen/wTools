@@ -1,6 +1,6 @@
 [package]
 name = "deterministic_rand"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -47,4 +47,4 @@ rayon = "1.8.0"
 
 [[example]]
 name = "sample_deterministic_rand_trivial"
-path = "examples/sample_deterministic_rand_trivial.rs"
+path = "examples/deterministic_rand_trivial.rs"

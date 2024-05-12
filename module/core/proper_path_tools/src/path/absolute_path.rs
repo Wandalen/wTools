@@ -1,15 +1,21 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+  #[cfg(feature="no_std")]
+  extern crate std;
   use crate::*;
   use std::
   {
+    borrow::Cow,
     fmt,
     path::{ Path, PathBuf },
   };
+  #[ cfg( feature = "derive_serde" ) ]
+  use serde::{ Serialize, Deserialize };
 
   /// Absolute path.
-  #[ derive( Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
+  #[ cfg_attr( feature = "derive_serde", derive( Serialize, Deserialize ) ) ]
+  #[ derive( Debug, Default, Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
   pub struct AbsolutePath( PathBuf );
 
   impl fmt::Display for AbsolutePath
@@ -50,6 +56,15 @@ pub( crate ) mod private
       Ok( Self( path::canonicalize( value )? ) )
     }
   }
+
+  impl From< AbsolutePath > for PathBuf 
+  {
+    fn from( abs_path: AbsolutePath ) -> Self 
+    {
+      abs_path.0
+    }
+  }
+
 
 //   impl TryFrom< Utf8PathBuf > for AbsolutePath
 //   {
@@ -96,6 +111,13 @@ pub( crate ) mod private
     {
       Self::try_from( self.0.join( path ) ).unwrap()
     }
+
+    /// Converts a `AbsolutePath` to a `Cow<str>`
+    pub fn to_string_lossy( &self ) -> Cow< '_, str >
+    {
+      self.0.to_string_lossy()
+    }
+
   }
 
 }

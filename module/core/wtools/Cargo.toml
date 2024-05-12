@@ -185,7 +185,7 @@ error_full = [
 ]
 # error_use_std = [ "error", "error_tools/use_std" ]
 error_no_std = [ "error", "error_tools/no_std" ]
-error_use_alloc = [ "error", "error_tools/use_alloc" ]
+#error_use_alloc = [ "error", "error_tools/use_alloc" ]
 
 error_for_lib = [ "error", "error_tools/error_for_lib" ]
 error_for_app = [ "error", "error_tools/error_for_app" ]
@@ -300,7 +300,7 @@ derive_is_variant = [ "derive", "derive_tools/derive_is_variant" ]
 derive_unwrap = [ "derive", "derive_tools/derive_unwrap" ]
 # derive_convert_case = [ "derive", "derive_tools/derive_convert_case" ]
 
-derive_strum = [ "derive", "derive_tools/strum_derive" ]
+derive_strum = [ "derive", "derive_tools/derive_strum" ]
 derive_strum_phf = [ "derive", "derive_tools/strum_phf" ]
 
 derive_display = [ "derive", "derive_tools/derive_display", "parse-display" ]

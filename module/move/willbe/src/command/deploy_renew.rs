@@ -2,7 +2,7 @@ mod private
 {
   use crate::*;
 
-  use wca::Props;
+  use wca::VerifiedCommand;
   use wtools::error::{ anyhow::Context, Result };
   use tool::template::Template;
   use action::deploy_renew::*;
@@ -11,13 +11,13 @@ mod private
   /// Create new deploy.
   ///
 
-  pub fn deploy_renew( properties : Props ) -> Result< () >
+  pub fn deploy_renew( o : VerifiedCommand ) -> Result< () >
   {
     let current_dir = std::env::current_dir()?;
     let mut template = DeployTemplate::default();
     _ = template.load_existing_params( &current_dir );
     let parameters = template.parameters();
-    let mut values = parameters.values_from_props( &properties );
+    let mut values = parameters.values_from_props( &o.props );
     for mandatory in template.get_missing_mandatory()
     {
       values.interactive_if_empty( mandatory );

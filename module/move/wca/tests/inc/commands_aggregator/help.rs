@@ -29,6 +29,8 @@ pub fn start_sync< AP, Args, Arg, P >
   let args = args.into_iter().map( | a | a.as_ref().into() ).collect::< Vec< std::ffi::OsString > >();
   let child = Command::new( application ).args( &args ).stdout( Stdio::piped() ).stderr( Stdio::piped() ).current_dir( path ).spawn().unwrap();
   let output = child.wait_with_output().unwrap();
+  dbg!( &output );
+  
   String::from_utf8( output.stdout ).unwrap()
 }
 

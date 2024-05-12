@@ -24,7 +24,10 @@ fn main()
 {
   use former::Former;
 
+  // Use attribute debug to print expanded code.
   #[ derive( Debug, PartialEq, Former ) ]
+  // Uncomment to see what derive expand into
+  // #[ debug ]
   pub struct UserProfile
   {
     age : i32,

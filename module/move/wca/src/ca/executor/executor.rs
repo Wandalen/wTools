@@ -16,7 +16,7 @@ pub( crate ) mod private
   pub struct Executor
   {
     /// The default context for the executor
-    #[ default( Context::default() ) ]
+    #[ former( default = Context::default() ) ]
     pub context : Context,
   }
 
@@ -79,8 +79,8 @@ pub( crate ) mod private
   {
     match routine
     {
-      Routine::WithoutContext( routine ) => routine(( Args( command.subjects ), Props( command.properties ) )),
-      Routine::WithContext( routine ) => routine( ( Args( command.subjects ), Props( command.properties ) ), ctx ),
+      Routine::WithoutContext( routine ) => routine( command ),
+      Routine::WithContext( routine ) => routine( ctx, command ),
     }
   }
   
