@@ -1,5 +1,5 @@
 //!
-//! This example demonstrates how to effectively employ the `Former` trait to configure a `HashMap` using a container setter.
+//! This example demonstrates how to effectively employ the `Former` trait to configure a `HashMap` using a collection setter.
 //!
 
 #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
@@ -12,7 +12,7 @@ fn main()
   #[ derive( Debug, PartialEq, former::Former ) ]
   pub struct StructWithMap
   {
-    #[ container ]
+    #[ subform_collection ]
     map : HashMap< &'static str, &'static str >,
   }
 

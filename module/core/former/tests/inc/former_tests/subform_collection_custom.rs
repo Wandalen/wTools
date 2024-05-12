@@ -4,9 +4,9 @@
 use super::*;
 use collection_tools::HashSet;
 
-// == define custom containers
+// == define custom collections
 
-// Custom container that logs additions
+// Custom collection that logs additions
 #[ derive( Debug, PartialEq ) ]
 pub struct LoggingSet< K >
 where
@@ -57,7 +57,7 @@ where
   }
 }
 
-impl< K > former::Container for LoggingSet< K >
+impl< K > former::Collection for LoggingSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
@@ -72,7 +72,7 @@ where
 
 }
 
-impl< K > former::ContainerAdd for LoggingSet< K >
+impl< K > former::CollectionAdd for LoggingSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
@@ -85,7 +85,7 @@ where
 
 }
 
-impl< K > former::ContainerAssign for LoggingSet< K >
+impl< K > former::CollectionAssign for LoggingSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
@@ -99,7 +99,7 @@ where
   }
 }
 
-impl< K > former::ContainerValToEntry< K > for LoggingSet< K >
+impl< K > former::CollectionValToEntry< K > for LoggingSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
@@ -230,15 +230,15 @@ where
 // = subformer
 
 pub type LoggingSetAsSubformer< K, Context, Formed, End > =
-former::ContainerFormer::< K, LoggingSetDefinition< K, Context, Formed, End > >;
+former::CollectionFormer::< K, LoggingSetDefinition< K, Context, Formed, End > >;
 
-// == use custom container
+// == use custom collection
 
 /// Parent required for the template.
 #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
 pub struct Parent
 {
-  #[ container ]
+  #[ subform_collection ]
   children : LoggingSet< i32 >,
 }
 

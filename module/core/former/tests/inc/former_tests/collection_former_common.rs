@@ -132,14 +132,14 @@ fn custom_definition()
 
   //
 
-  let got = former::ContainerFormer::< String, Return13 >::begin( None, None, Return13 )
+  let got = former::CollectionFormer::< String, Return13 >::begin( None, None, Return13 )
   .add( "a" )
   .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
 
-  let got = former::ContainerFormer::< String, Return13 >::new( Return13 )
+  let got = former::CollectionFormer::< String, Return13 >::new( Return13 )
   .add( "a" )
   .add( "b" )
   .form();
@@ -205,14 +205,14 @@ fn custom_definition_parametrized()
 
   //
 
-  let got = the_module::ContainerFormer::< String, Return13< String > >::begin_coercing( None, None, Return13::new() )
+  let got = the_module::CollectionFormer::< String, Return13< String > >::begin_coercing( None, None, Return13::new() )
   .add( "a" )
   .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
 
-  let got = the_module::ContainerFormer::< String, Return13< String > >::new_coercing( Return13::new() )
+  let got = the_module::CollectionFormer::< String, Return13< String > >::new_coercing( Return13::new() )
   .add( "a" )
   .add( "b" )
   .form();
@@ -221,16 +221,16 @@ fn custom_definition_parametrized()
 
   //
 
-  type MyContainer< E > = the_module::ContainerFormer::< E, Return13< E > >;
+  type MyCollection< E > = the_module::CollectionFormer::< E, Return13< E > >;
 
-  let got = MyContainer::< String >::begin_coercing( None, None, Return13::new() )
+  let got = MyCollection::< String >::begin_coercing( None, None, Return13::new() )
   .add( "a" )
   .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
 
-  let got = MyContainer::< String >::new_coercing( Return13::new() )
+  let got = MyCollection::< String >::new_coercing( Return13::new() )
   .add( "a" )
   .add( "b" )
   .form();
@@ -273,21 +273,21 @@ fn custom_definition_custom_end()
   }
 
   let end_wrapper : the_module::FormingEndClosure< Return13 > = the_module::FormingEndClosure::new( return_13 );
-  let got = the_module::ContainerFormer::< String, Return13 >::new( end_wrapper )
+  let got = the_module::CollectionFormer::< String, Return13 >::new( end_wrapper )
   .add( "a" )
   .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
 
-  let got = the_module::ContainerFormer::< String, Return13 >::new( return_13.into() )
+  let got = the_module::CollectionFormer::< String, Return13 >::new( return_13.into() )
   .add( "a" )
   .add( "b" )
   .form();
   let exp = 13;
   a_id!( got, exp );
 
-  let got = the_module::ContainerFormer::< String, Return13 >::new_coercing( return_13 )
+  let got = the_module::CollectionFormer::< String, Return13 >::new_coercing( return_13 )
   .add( "a" )
   .add( "b" )
   .form();

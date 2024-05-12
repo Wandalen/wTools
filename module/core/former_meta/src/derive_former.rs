@@ -4,7 +4,7 @@ use iter_tools::{ Itertools, process_results };
 use macro_tools::{ attr, diag, generic_params, generic_args, typ, derive, Result };
 use proc_macro2::TokenStream;
 
-// qqq : implement interfaces for other containers
+// qqq : implement interfaces for other collections
 
 mod field;
 use field::*;

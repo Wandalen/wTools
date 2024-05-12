@@ -1,19 +1,19 @@
-// Example former_custom_container_setter.rs
+// Example former_custom_collection_setter.rs
 
 //!
-//! This example demonstrates the use of container setters to manage complex nested data structures with the `Former` trait, focusing on a parent-child relationship structured around a container `HashMap`. Unlike typical builder patterns that add individual elements using subform setters, this example uses a container setter to manage the entire collection of children.
+//! This example demonstrates the use of collection setters to manage complex nested data structures with the `Former` trait, focusing on a parent-child relationship structured around a collection `HashMap`. Unlike typical builder patterns that add individual elements using subform setters, this example uses a collection setter to manage the entire collection of children.
 //!
-//! The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a container—each child entity in this case.
+//! The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a collection—each child entity in this case.
 //!
 //! #### Types of Setters
 //!
-//! It's crucial to understand the differences among subform setters, container setters, and scalar setters:
+//! It's crucial to understand the differences among subform setters, collection setters, and scalar setters:
 //!
-//! - **Scalar Setter**: Directly sets scalar values or simple fields within the forming entity. Unlike subform or container setters that manage complex objects or collections, scalar setters handle basic data types or individual fields. These are typically straightforward setter methods that do not involve nested formers or additional structuring.
+//! - **Scalar Setter**: Directly sets scalar values or simple fields within the forming entity. Unlike subform or collection setters that manage complex objects or collections, scalar setters handle basic data types or individual fields. These are typically straightforward setter methods that do not involve nested formers or additional structuring.
 //!
-//! - **Container Setter**: Returns a former of the container itself, offering an interface to manage the container as a whole rather than its individual elements. This type of setter is useful for applying configurations or validations to the entire collection, such as a `HashMap` of children.
+//! - **Collection Setter**: Returns a former of the collection itself, offering an interface to manage the collection as a whole rather than its individual elements. This type of setter is useful for applying configurations or validations to the entire collection, such as a `HashMap` of children.
 //!
-//! - **Subform Setter**: Returns a former of an element within a container, providing an interface to individually form each element. For example, the `child` method acts as a subform setter, allowing for the addition and configuration of individual `Child` entities within the `Parent`'s `HashMap`.
+//! - **Subform Setter**: Returns a former of an element within a collection, providing an interface to individually form each element. For example, the `child` method acts as a subform setter, allowing for the addition and configuration of individual `Child` entities within the `Parent`'s `HashMap`.
 //!
 //! Each type of setter is designed to address different needs in the formation process, ensuring that users can build complex, nested structures or simply set individual field values as required.
 //!
@@ -44,24 +44,24 @@ fn main()
   pub struct Parent
   {
     // Use `hint = true` to gennerate sketch of setter.
-    #[ container( setter = false, hint = false ) ]
+    #[ subform_collection( setter = false, hint = false ) ]
     children : HashMap< String, Child >,
   }
 
-  /// The containr setter provides a container setter that returns a ContainerFormer tailored for managing a collection of child entities. It employs a generic container definition to facilitate operations on the entire collection, such as adding or updating elements.
+  /// The containr setter provides a collection setter that returns a CollectionFormer tailored for managing a collection of child entities. It employs a generic collection definition to facilitate operations on the entire collection, such as adding or updating elements.
   impl< Definition, > ParentFormer< Definition, >
   where
     Definition : former::FormerDefinition< Storage = ParentFormerStorage >,
   {
 
     #[ inline( always ) ]
-    pub fn children( self ) -> former::ContainerFormer::
+    pub fn children( self ) -> former::CollectionFormer::
     <
       ( String, Child ),
-      former::HashMapDefinition< String, Child, Self, Self, ParentSubformContainerChildrenEnd< Definition >, >
+      former::HashMapDefinition< String, Child, Self, Self, ParentSubformCollectionChildrenEnd< Definition >, >
     >
     {
-      self._children_subform_container()
+      self._children_subform_collection()
     }
 
   }

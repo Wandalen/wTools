@@ -5,17 +5,17 @@
 //!
 //! #### Custom Subform Setter
 //!
-//! The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a container—each child entity in this case.
+//! The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a collection—each child entity in this case.
 //!
 //! #### Types of Setters
 //!
-//! It's crucial to understand the differences among subform setters, container setters, and scalar setters:
+//! It's crucial to understand the differences among subform setters, collection setters, and scalar setters:
 //!
-//! - **Scalar Setter**: Directly sets scalar values or simple fields within the forming entity. Unlike subform or container setters that manage complex objects or collections, scalar setters handle basic data types or individual fields. These are typically straightforward setter methods that do not involve nested formers or additional structuring.
+//! - **Scalar Setter**: Directly sets scalar values or simple fields within the forming entity. Unlike subform or collection setters that manage complex objects or collections, scalar setters handle basic data types or individual fields. These are typically straightforward setter methods that do not involve nested formers or additional structuring.
 //!
-//! - **Container Setter**: Returns a former of the container itself, offering an interface to manage the container as a whole rather than its individual elements. This type of setter is useful for applying configurations or validations to the entire collection, such as a `HashMap` of children.
+//! - **Collection Setter**: Returns a former of the collection itself, offering an interface to manage the collection as a whole rather than its individual elements. This type of setter is useful for applying configurations or validations to the entire collection, such as a `HashMap` of children.
 //!
-//! - **Subform Setter**: Returns a former of an element within a container, providing an interface to individually form each element. For example, the `child` method acts as a subform setter, allowing for the addition and configuration of individual `Child` entities within the `Parent`'s `HashMap`.
+//! - **Subform Setter**: Returns a former of an element within a collection, providing an interface to individually form each element. For example, the `child` method acts as a subform setter, allowing for the addition and configuration of individual `Child` entities within the `Parent`'s `HashMap`.
 //!
 //! Each type of setter is designed to address different needs in the formation process, ensuring that users can build complex, nested structures or simply set individual field values as required.
 //!
@@ -46,7 +46,7 @@ fn main()
   pub struct Parent
   {
     // Use `hint = true` to gennerate sketch of setter.
-    #[ subform( setter = false, hint = false ) ]
+    #[ subform_entry( setter = false, hint = false ) ]
     child : HashMap< String, Child >,
   }
 
@@ -73,7 +73,7 @@ fn main()
           super_former.storage.child = Some( Default::default() );
         }
 
-        // add instance to the container
+        // add instance to the collection
         super_former.storage.child.as_mut().unwrap()
         .entry( preformed.name.clone() )
         .or_insert( preformed.clone() );
@@ -101,12 +101,12 @@ fn main()
           super_former.storage.child = Some( Default::default() );
         }
 
-        // add instance to the container
+        // add instance to the collection
         super_former.storage.child.as_mut().unwrap()
         .entry( preformed.name.clone() )
         .or_insert( preformed.clone() );
 
-        // custom logic to add two instances to the container
+        // custom logic to add two instances to the collection
         super_former.storage.child.as_mut().unwrap()
         .entry( format!( "{}_2", preformed.name ) )
         .or_insert( preformed.clone() );

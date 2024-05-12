@@ -1,8 +1,8 @@
-//! Example former_custom_container.rs
+//! Example former_custom_collection.rs
 //!
-//! This example demonstrates how to define and use a custom container with former.
-//! The custom container implemented here is a `LoggingSet`, which extends the basic `HashSet` behavior
-//! by logging each addition. This example illustrates how to integrate such custom containers with the
+//! This example demonstrates how to define and use a custom collection with former.
+//! The custom collection implemented here is a `LoggingSet`, which extends the basic `HashSet` behavior
+//! by logging each addition. This example illustrates how to integrate such custom collections with the
 //! Former trait system for use in structured data types.
 
 #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
@@ -12,7 +12,7 @@ fn main()
 {
   use collection_tools::HashSet;
 
-  // Custom container that logs additions.
+  // Custom collection that logs additions.
   #[ derive( Debug, PartialEq ) ]
   pub struct LoggingSet< K >
   where
@@ -21,7 +21,7 @@ fn main()
     set : HashSet< K >, // Internal HashSet to store the elements.
   }
 
-  // Implement default for the custom container.
+  // Implement default for the custom collection.
   impl< K > Default for LoggingSet< K >
   where
     K : core::cmp::Eq + core::hash::Hash,
@@ -36,7 +36,7 @@ fn main()
     }
   }
 
-  // Allow the custom container to be converted into an iterator, to iterate over the elements.
+  // Allow the custom collection to be converted into an iterator, to iterate over the elements.
   impl< K > IntoIterator for LoggingSet< K >
   where
     K : std::cmp::Eq + std::hash::Hash,
@@ -64,8 +64,8 @@ fn main()
     }
   }
 
-  // Implement the Container trait to integrate with the former system.
-  impl< K > former::Container for LoggingSet< K >
+  // Implement the Collection trait to integrate with the former system.
+  impl< K > former::Collection for LoggingSet< K >
   where
     K : core::cmp::Eq + core::hash::Hash,
   {
@@ -79,8 +79,8 @@ fn main()
     }
   }
 
-  // Implement ContainerAdd to handle adding elements to the custom container.
-  impl< K > former::ContainerAdd for LoggingSet< K >
+  // Implement CollectionAdd to handle adding elements to the custom collection.
+  impl< K > former::CollectionAdd for LoggingSet< K >
   where
     K : core::cmp::Eq + core::hash::Hash,
   {
@@ -91,8 +91,8 @@ fn main()
     }
   }
 
-  // Implement ContainerAssign to handle bulk assignment of elements.
-  impl< K > former::ContainerAssign for LoggingSet< K >
+  // Implement CollectionAssign to handle bulk assignment of elements.
+  impl< K > former::CollectionAssign for LoggingSet< K >
   where
     K : core::cmp::Eq + core::hash::Hash,
   {
@@ -106,8 +106,8 @@ fn main()
     }
   }
 
-  // Implement ContainerValToEntry to convert values back to entries.
-  impl< K > former::ContainerValToEntry< K > for LoggingSet< K >
+  // Implement CollectionValToEntry to convert values back to entries.
+  impl< K > former::CollectionValToEntry< K > for LoggingSet< K >
   where
     K : core::cmp::Eq + core::hash::Hash,
   {
@@ -121,7 +121,7 @@ fn main()
 
   // = storage
 
-  // Define storage behavior for the custom container.
+  // Define storage behavior for the custom collection.
   impl< K > former::Storage
   for LoggingSet< K >
   where
@@ -138,13 +138,13 @@ fn main()
   {
     fn preform( self ) -> Self::Preformed
     {
-      self // Return the container as is.
+      self // Return the collection as is.
     }
   }
 
   // = definition types
 
-  // Definitions related to the type settings for the LoggingSet, which detail how the container should behave with former.
+  // Definitions related to the type settings for the LoggingSet, which detail how the collection should behave with former.
 
   /// Holds generic parameter types for forming operations related to `LoggingSet`.
   #[ derive( Debug, Default ) ]
@@ -249,17 +249,17 @@ fn main()
 
   // = subformer
 
-  // Subformer type alias simplifies the usage of `ContainerFormer` with `LoggingSet`.
+  // Subformer type alias simplifies the usage of `CollectionFormer` with `LoggingSet`.
   pub type LoggingSetAsSubformer< K, Context, Formed, End > =
-  former::ContainerFormer::< K, LoggingSetDefinition< K, Context, Formed, End > >;
+  former::CollectionFormer::< K, LoggingSetDefinition< K, Context, Formed, End > >;
 
-  // == use custom container
+  // == use custom collection
 
   /// Parent required for the template.
   #[ derive( Debug, Default, PartialEq, former::Former ) ]
   pub struct Parent
   {
-    #[ container ]
+    #[ subform_collection ]
     children : LoggingSet< i32 >,
   }
 

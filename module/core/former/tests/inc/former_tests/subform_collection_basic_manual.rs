@@ -341,46 +341,46 @@ where
   where
     Former2 : former::FormerBegin
     <
-      former::VectorDefinition< String, Self, Self, Struct1SubformContainerVec1End< Definition > >,
+      former::VectorDefinition< String, Self, Self, Struct1SubformCollectionVec1End< Definition > >,
     >,
-    former::VectorDefinition< String, Self, Self, Struct1SubformContainerVec1End< Definition > > : former::FormerDefinition
+    former::VectorDefinition< String, Self, Self, Struct1SubformCollectionVec1End< Definition > > : former::FormerDefinition
     <
-      // Storage : former::ContainerAdd< Entry = < collection_tools::Vec< String > as former::Container >::Entry >,
+      // Storage : former::CollectionAdd< Entry = < collection_tools::Vec< String > as former::Collection >::Entry >,
       Storage = Vec< String >,
       Context = Struct1Former< Definition >,
-      End = Struct1SubformContainerVec1End< Definition >,
+      End = Struct1SubformCollectionVec1End< Definition >,
     >,
-    Struct1SubformContainerVec1End< Definition > : former::FormingEnd
+    Struct1SubformCollectionVec1End< Definition > : former::FormingEnd
     <
       < collection_tools::Vec< String > as former::EntityToDefinitionTypes< Self, Self > >::Types
     >,
   {
-    Former2::former_begin( None, Some( self ), Struct1SubformContainerVec1End::< Definition >::default() )
+    Former2::former_begin( None, Some( self ), Struct1SubformCollectionVec1End::< Definition >::default() )
   }
 
   #[ inline( always ) ]
-  pub fn vec_1( self ) -> former::ContainerFormer::
+  pub fn vec_1( self ) -> former::CollectionFormer::
   <
     String,
-    former::VectorDefinition< String, Self, Self, Struct1SubformContainerVec1End< Definition > >,
+    former::VectorDefinition< String, Self, Self, Struct1SubformCollectionVec1End< Definition > >,
   >
   where
-    former::VectorDefinition< String, Self, Self, Struct1SubformContainerVec1End< Definition > > : former::FormerDefinition
+    former::VectorDefinition< String, Self, Self, Struct1SubformCollectionVec1End< Definition > > : former::FormerDefinition
     <
-      // Storage : former::ContainerAdd< Entry = < collection_tools::Vec< String > as former::Container >::Entry >,
+      // Storage : former::CollectionAdd< Entry = < collection_tools::Vec< String > as former::Collection >::Entry >,
       Storage = Vec< String >,
       Context = Struct1Former< Definition >,
-      End = Struct1SubformContainerVec1End< Definition >,
+      End = Struct1SubformCollectionVec1End< Definition >,
     >,
-    Struct1SubformContainerVec1End< Definition > : former::FormingEnd
+    Struct1SubformCollectionVec1End< Definition > : former::FormingEnd
     <
       < collection_tools::Vec< String > as former::EntityToDefinitionTypes< Self, Self > >::Types
     >,
   {
-    self._vec_1_assign::< former::ContainerFormer::
+    self._vec_1_assign::< former::CollectionFormer::
     <
       String,
-      former::VectorDefinition< String, Self, Self, Struct1SubformContainerVec1End< Definition > >,
+      former::VectorDefinition< String, Self, Self, Struct1SubformCollectionVec1End< Definition > >,
     > > ()
   }
 
@@ -389,46 +389,46 @@ where
   where
     Former2 : former::FormerBegin
     <
-      former::HashMapDefinition< String, String, Self, Self, Struct1SubformContainerHashmap1End< Definition > >,
+      former::HashMapDefinition< String, String, Self, Self, Struct1SubformCollectionHashmap1End< Definition > >,
     >,
-    former::HashMapDefinition< String, String, Self, Self, Struct1SubformContainerHashmap1End< Definition > > : former::FormerDefinition
+    former::HashMapDefinition< String, String, Self, Self, Struct1SubformCollectionHashmap1End< Definition > > : former::FormerDefinition
     <
-      // Storage : former::ContainerAdd< Entry = < collection_tools::HashMap< String, String > as former::Container >::Entry >,
+      // Storage : former::CollectionAdd< Entry = < collection_tools::HashMap< String, String > as former::Collection >::Entry >,
       Storage = collection_tools::HashMap< String, String >,
       Context = Struct1Former< Definition >,
-      End = Struct1SubformContainerHashmap1End< Definition >,
+      End = Struct1SubformCollectionHashmap1End< Definition >,
     >,
-    Struct1SubformContainerHashmap1End< Definition > : former::FormingEnd
+    Struct1SubformCollectionHashmap1End< Definition > : former::FormingEnd
     <
       < collection_tools::HashMap< String, String > as former::EntityToDefinitionTypes< Self, Self > >::Types
     >,
   {
-    Former2::former_begin( None, Some( self ), Struct1SubformContainerHashmap1End::< Definition >::default() )
+    Former2::former_begin( None, Some( self ), Struct1SubformCollectionHashmap1End::< Definition >::default() )
   }
 
   #[ inline( always ) ]
-  pub fn hashmap_1( self ) -> former::ContainerFormer::
+  pub fn hashmap_1( self ) -> former::CollectionFormer::
   <
     ( String, String ),
-    former::HashMapDefinition< String, String, Self, Self, Struct1SubformContainerHashmap1End< Definition > >,
+    former::HashMapDefinition< String, String, Self, Self, Struct1SubformCollectionHashmap1End< Definition > >,
   >
   where
-    former::HashMapDefinition< String, String, Self, Self, Struct1SubformContainerHashmap1End< Definition > > : former::FormerDefinition
+    former::HashMapDefinition< String, String, Self, Self, Struct1SubformCollectionHashmap1End< Definition > > : former::FormerDefinition
     <
-      // Storage : former::ContainerAdd< Entry = < collection_tools::HashMap< String, String > as former::Container >::Entry >,
+      // Storage : former::CollectionAdd< Entry = < collection_tools::HashMap< String, String > as former::Collection >::Entry >,
       Storage = collection_tools::HashMap< String, String >,
       Context = Struct1Former< Definition >,
-      End = Struct1SubformContainerHashmap1End< Definition >,
+      End = Struct1SubformCollectionHashmap1End< Definition >,
     >,
-    Struct1SubformContainerHashmap1End< Definition > : former::FormingEnd
+    Struct1SubformCollectionHashmap1End< Definition > : former::FormingEnd
     <
       < collection_tools::HashMap< String, String > as former::EntityToDefinitionTypes< Self, Self > >::Types
     >,
   {
-    self._hashmap_1_assign::< former::ContainerFormer::
+    self._hashmap_1_assign::< former::CollectionFormer::
     <
       ( String, String ),
-      former::HashMapDefinition< String, String, Self, Self, Struct1SubformContainerHashmap1End< Definition > >,
+      former::HashMapDefinition< String, String, Self, Self, Struct1SubformCollectionHashmap1End< Definition > >,
     > > ()
   }
 
@@ -437,46 +437,46 @@ where
   where
     Former2 : former::FormerBegin
     <
-      former::HashSetDefinition< String, Self, Self, Struct1SubformContainerHashset1End< Definition > >,
+      former::HashSetDefinition< String, Self, Self, Struct1SubformCollectionHashset1End< Definition > >,
     >,
-    former::HashSetDefinition< String, Self, Self, Struct1SubformContainerHashset1End< Definition > > : former::FormerDefinition
+    former::HashSetDefinition< String, Self, Self, Struct1SubformCollectionHashset1End< Definition > > : former::FormerDefinition
     <
-      // Storage : former::ContainerAdd< Entry = < collection_tools::HashSet< String > as former::Container >::Entry >,
+      // Storage : former::CollectionAdd< Entry = < collection_tools::HashSet< String > as former::Collection >::Entry >,
       Storage = collection_tools::HashSet< String >,
       Context = Struct1Former< Definition >,
-      End = Struct1SubformContainerHashset1End< Definition >,
+      End = Struct1SubformCollectionHashset1End< Definition >,
     >,
-    Struct1SubformContainerHashset1End< Definition > : former::FormingEnd
+    Struct1SubformCollectionHashset1End< Definition > : former::FormingEnd
     <
       < collection_tools::HashSet< String > as former::EntityToDefinitionTypes< Self, Self > >::Types
     >,
   {
-    Former2::former_begin( None, Some( self ), Struct1SubformContainerHashset1End::< Definition >::default() )
+    Former2::former_begin( None, Some( self ), Struct1SubformCollectionHashset1End::< Definition >::default() )
   }
 
   #[ inline( always ) ]
-  pub fn hashset_1( self ) -> former::ContainerFormer::
+  pub fn hashset_1( self ) -> former::CollectionFormer::
   <
     String,
-    former::HashSetDefinition< String, Self, Self, Struct1SubformContainerHashset1End< Definition > >,
+    former::HashSetDefinition< String, Self, Self, Struct1SubformCollectionHashset1End< Definition > >,
   >
   where
-    former::HashSetDefinition< String, Self, Self, Struct1SubformContainerHashset1End< Definition > > : former::FormerDefinition
+    former::HashSetDefinition< String, Self, Self, Struct1SubformCollectionHashset1End< Definition > > : former::FormerDefinition
     <
-      // Storage : former::ContainerAdd< Entry = < collection_tools::HashSet< String > as former::Container >::Entry >,
+      // Storage : former::CollectionAdd< Entry = < collection_tools::HashSet< String > as former::Collection >::Entry >,
       Storage = collection_tools::HashSet< String >,
       Context = Struct1Former< Definition >,
-      End = Struct1SubformContainerHashset1End< Definition >,
+      End = Struct1SubformCollectionHashset1End< Definition >,
     >,
-    Struct1SubformContainerHashset1End< Definition > : former::FormingEnd
+    Struct1SubformCollectionHashset1End< Definition > : former::FormingEnd
     <
       < collection_tools::HashSet< String > as former::EntityToDefinitionTypes< Self, Self > >::Types
     >,
   {
-    self._hashset_1_assign::< former::ContainerFormer::
+    self._hashset_1_assign::< former::CollectionFormer::
     <
       String,
-      former::HashSetDefinition< String, Self, Self, Struct1SubformContainerHashset1End< Definition > >,
+      former::HashSetDefinition< String, Self, Self, Struct1SubformCollectionHashset1End< Definition > >,
     > > ()
   }
 
@@ -538,12 +538,12 @@ where
 
 // = former assign end
 
-pub struct Struct1SubformContainerVec1End< Definition >
+pub struct Struct1SubformCollectionVec1End< Definition >
 {
   _phantom : core::marker::PhantomData< ( Definition, ) >,
 }
 
-impl<Definition> Default for Struct1SubformContainerVec1End< Definition >
+impl<Definition> Default for Struct1SubformCollectionVec1End< Definition >
 {
   #[ inline( always ) ]
   fn default() -> Self
@@ -561,7 +561,7 @@ impl< Definition > former::FormingEnd
 <
   former::VectorDefinitionTypes< String, Struct1Former< Definition >, Struct1Former< Definition > >
 >
-for Struct1SubformContainerVec1End< Definition >
+for Struct1SubformCollectionVec1End< Definition >
 where
   Definition : former::FormerDefinition< Storage = Struct1FormerStorage >,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
@@ -573,7 +573,7 @@ where
     let mut super_former = super_former.unwrap();
     if let Some( ref mut field ) = super_former.storage.vec_1
     {
-      former::ContainerAssign::assign( field, storage );
+      former::CollectionAssign::assign( field, storage );
     }
     else
     {
@@ -583,12 +583,12 @@ where
   }
 }
 
-pub struct Struct1SubformContainerHashmap1End<Definition>
+pub struct Struct1SubformCollectionHashmap1End<Definition>
 {
   _phantom : core::marker::PhantomData<(Definition,)>,
 }
 
-impl<Definition> Default for Struct1SubformContainerHashmap1End<Definition>
+impl<Definition> Default for Struct1SubformCollectionHashmap1End<Definition>
 {
   #[ inline( always ) ]
   fn default() -> Self
@@ -602,7 +602,7 @@ impl<Definition> Default for Struct1SubformContainerHashmap1End<Definition>
 
 impl< Definition, > former::FormingEnd
 < former::HashMapDefinitionTypes< String, String, Struct1Former< Definition >, Struct1Former< Definition > > >
-for Struct1SubformContainerHashmap1End< Definition >
+for Struct1SubformCollectionHashmap1End< Definition >
 where
   Definition : former::FormerDefinition< Storage = Struct1FormerStorage >,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
@@ -614,7 +614,7 @@ where
     let mut super_former = super_former.unwrap();
     if let Some( ref mut field ) = super_former.storage.hashmap_1
     {
-      former::ContainerAssign::assign( field, storage );
+      former::CollectionAssign::assign( field, storage );
     }
     else
     {
@@ -624,12 +624,12 @@ where
   }
 }
 
-pub struct Struct1SubformContainerHashset1End<Definition>
+pub struct Struct1SubformCollectionHashset1End<Definition>
 {
   _phantom : core::marker::PhantomData<(Definition,)>,
 }
 
-impl<Definition> Default for Struct1SubformContainerHashset1End<Definition>
+impl<Definition> Default for Struct1SubformCollectionHashset1End<Definition>
 {
   #[ inline( always ) ]
   fn default() -> Self
@@ -643,7 +643,7 @@ impl<Definition> Default for Struct1SubformContainerHashset1End<Definition>
 
 impl< Definition, > former::FormingEnd
 < former::HashSetDefinitionTypes< String, Struct1Former< Definition >, Struct1Former< Definition > > >
-for Struct1SubformContainerHashset1End< Definition >
+for Struct1SubformCollectionHashset1End< Definition >
 where
   Definition : former::FormerDefinition< Storage = Struct1FormerStorage >,
   Definition::Types : former::FormerDefinitionTypes< Storage = Struct1FormerStorage >,
@@ -655,7 +655,7 @@ where
     let mut super_former = super_former.unwrap();
     if let Some( ref mut field ) = super_former.storage.hashset_1
     {
-      former::ContainerAssign::assign( field, storage );
+      former::CollectionAssign::assign( field, storage );
     }
     else
     {
@@ -667,4 +667,4 @@ where
 
 // == end of generated
 
-include!( "./only_test/containers_with_subformer.rs" );
+include!( "./only_test/collections_with_subformer.rs" );

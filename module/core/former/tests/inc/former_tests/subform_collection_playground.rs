@@ -55,7 +55,7 @@ where
 {
   pub name : String,
   pub subject : String,
-  #[ container( definition = former::HashMapDefinition ) ]
+  #[ subform_collection( definition = former::HashMapDefinition ) ]
   pub properties : collection_tools::HashMap< K, Property< K > >,
 }
 
@@ -67,7 +67,7 @@ where
   Definition::Storage : former::StoragePreform,
 {
 
-  /// Inserts a key-value pair into the map. Make a new container if it was not made so far.
+  /// Inserts a key-value pair into the map. Make a new collection if it was not made so far.
   #[ inline( always ) ]
   pub fn property< Name, Description, Code >
   ( mut self, name : Name, description : Description, code : Code ) -> Self
@@ -103,7 +103,7 @@ where
   K : core::hash::Hash + std::cmp::Eq,
 {
   pub parameter1 : String,
-  #[ container( definition = former::HashMapDefinition ) ]
+  #[ subform_collection( definition = former::HashMapDefinition ) ]
   pub commands : collection_tools::HashMap< String, Child< K > >,
 }
 

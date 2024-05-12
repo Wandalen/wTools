@@ -48,7 +48,7 @@ mod derive_former;
 ///
 /// - `former`: General attribute to specify various options like defaults or inclusion in the former.
 /// - `scalar`: Indicates that the field is a scalar value, enabling direct assignment without the need for a sub-former.
-/// - `container`: Marks the field as a container that can use specific former methods to manage its contents.
+/// - `collection`: Marks the field as a collection that can use specific former methods to manage its contents.
 /// - `subform`: Specifies that the field should utilize a nested former, facilitating the construction of complex nested structures.
 ///
 /// # Usage Example
@@ -102,7 +102,7 @@ mod derive_former;
     attributes
     (
       debug, perform, storage_fields, mutator, // struct attributes
-      former, scalar, container, subform, // field attributes
+      former, scalar, subform_scalar, subform_collection, subform_entry, // field attributes
     )
   )
 ]

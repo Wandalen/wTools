@@ -20,8 +20,8 @@ where
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent< 'child >
 {
-  #[ subform( name = _child ) ]
-  #[ container( name = children2 ) ]
+  #[ subform_entry( name = _child ) ]
+  #[ subform_collection( name = children2 ) ]
   #[ scalar( name = children3 ) ]
   children : Vec< Child< 'child, str > >,
 }
@@ -85,7 +85,7 @@ fn subform_child_generated()
 }
 
 #[ test ]
-fn container()
+fn collection()
 {
 
   let got = Parent::former()
@@ -130,5 +130,5 @@ fn scalar()
 }
 
 // include!( "./only_test/subformer_subform_child.rs" );
-// include!( "./only_test/subformer_container_children2.rs" );
+// include!( "./only_test/subformer_collection_children2.rs" );
 // include!( "./only_test/subformer_scalar_children3.rs" );

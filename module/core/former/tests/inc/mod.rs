@@ -16,15 +16,15 @@ mod former_tests
   mod a_primitives_manual;
   mod a_primitives;
 
-  mod subform_container_basic_scalar;
+  mod subform_collection_basic_scalar;
   #[ cfg( not( feature = "no_std" ) ) ]
-  mod subform_container_basic_manual;
+  mod subform_collection_basic_manual;
   #[ cfg( not( feature = "no_std" ) ) ]
-  mod subform_container_basic;
+  mod subform_collection_basic;
 
   // = attribute
 
-  mod attribute_default_container;
+  mod attribute_default_collection;
   mod attribute_default_primitive;
   mod attribute_default_conflict;
   mod attribute_storage_with_end;
@@ -65,33 +65,33 @@ mod former_tests
   mod user_type_no_debug;
   mod visibility;
 
-  // = container former
+  // = collection former
 
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod container_former_common;
+  mod collection_former_common;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod container_former_vec;
+  mod collection_former_vec;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod container_former_hashset;
+  mod collection_former_hashset;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod container_former_hashmap;
+  mod collection_former_hashmap;
 
-  // = subform container
+  // = subform collection
 
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod subform_container_playground;
+  mod subform_collection_playground;
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subform_container;
+  mod subform_collection;
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subform_container_manual;
+  mod subform_collection_manual;
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subform_container_implicit;
+  mod subform_collection_implicit;
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subform_container_setter_off;
+  mod subform_collection_setter_off;
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subform_container_named;
+  mod subform_collection_named;
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subform_container_custom;
+  mod subform_collection_custom;
 
   // = subform scalar
 
@@ -121,14 +121,14 @@ mod former_tests
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subform_entry_hashmap_custom;
 
-  // = subform entry and container
+  // = subform all : scalar, subform_scalar, subform_entry, subform_collection
 
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subform_entry_and_container;
+  mod subform_all;
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subform_entry_and_container_private;
+  mod subform_all_private;
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subform_entry_and_container_parametrized;
+  mod subform_all_parametrized;
 
 }
 

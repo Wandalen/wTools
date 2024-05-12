@@ -10,7 +10,7 @@ pub struct FieldAttributes
 {
   pub config : Option< AttributeConfig >,
   pub scalar : Option< AttributeScalarSetter >,
-  pub container : Option< AttributeContainerSetter >,
+  pub collection : Option< AttributeCollectionSetter >,
   pub subform : Option< AttributeSubformSetter >,
 }
 
@@ -21,7 +21,7 @@ impl FieldAttributes
   {
     let mut config = None;
     let mut scalar = None;
-    let mut container = None;
+    let mut collection = None;
     let mut subform = None;
     for attr in attrs
     {
@@ -66,22 +66,22 @@ impl FieldAttributes
             _ => return_syn_err!( attr, "Expects an attribute of format `#[ scalar( setter = false ) ]` or `#[ scalar( setter = false, name = my_name ) ]`. \nGot: {}", qt!{ #attr } ),
           }
         }
-        "container" =>
+        "subform_collection" =>
         {
           match attr.meta
           {
             syn::Meta::List( ref meta_list ) =>
             {
-              container.replace( syn::parse2::< AttributeContainerSetter >( meta_list.tokens.clone() )? );
+              collection.replace( syn::parse2::< AttributeCollectionSetter >( meta_list.tokens.clone() )? );
             },
             syn::Meta::Path( ref _path ) =>
             {
-              container.replace( syn::parse2::< AttributeContainerSetter >( Default::default() )? );
+              collection.replace( syn::parse2::< AttributeCollectionSetter >( Default::default() )? );
             },
-            _ => return_syn_err!( attr, "Expects an attribute of format `#[ container ]` or `#[ container( definition = former::VectorDefinition ) ]` if you want to use default container defition. \nGot: {}", qt!{ #attr } ),
+            _ => return_syn_err!( attr, "Expects an attribute of format `#[ subform_collection ]` or `#[ subform_collection( definition = former::VectorDefinition ) ]` if you want to use default collection defition. \nGot: {}", qt!{ #attr } ),
           }
         }
-        "subform" =>
+        "subform_entry" =>
         {
           match attr.meta
           {
@@ -93,7 +93,7 @@ impl FieldAttributes
             {
               subform.replace( syn::parse2::< AttributeSubformSetter >( Default::default() )? );
             },
-            _ => return_syn_err!( attr, "Expects an attribute of format `#[ subform ]` or `#[ subform( name : child )` ], \nGot: {}", qt!{ #attr } ),
+            _ => return_syn_err!( attr, "Expects an attribute of format `#[ subform_entry ]` or `#[ subform_entry( name : child )` ], \nGot: {}", qt!{ #attr } ),
           }
         }
         _ =>
@@ -103,7 +103,7 @@ impl FieldAttributes
       }
     }
 
-    Ok( FieldAttributes { config, scalar, container, subform } )
+    Ok( FieldAttributes { config, scalar, collection, subform } )
   }
 }
 
@@ -252,10 +252,10 @@ impl syn::parse::Parse for AttributeScalarSetter
   }
 }
 
-/// Represents an attribute for configuring container setter generation.
+/// Represents an attribute for configuring collection setter generation.
 ///
 /// This struct is part of a meta-programming approach to enable detailed configuration of nested structs or collections such as `Vec< E >, HashMap< K, E >` and so on.
-/// It allows the customization of setter methods and the specification of the container's behavior through meta attributes.
+/// It allows the customization of setter methods and the specification of the collection's behavior through meta attributes.
 ///
 /// ## Example Input
 ///
@@ -265,20 +265,20 @@ impl syn::parse::Parse for AttributeScalarSetter
 /// ```
 ///
 
-pub struct AttributeContainerSetter
+pub struct AttributeCollectionSetter
 {
   /// Optional identifier for naming the setter.
   pub name : Option< syn::Ident >,
   /// Controls the generation of a setter method. If false, a setter method is not generated.
   pub setter : Option< bool >,
-  /// Definition of the container former to use, e.g., `former::VectorFormer`.
+  /// Definition of the collection former to use, e.g., `former::VectorFormer`.
   pub definition : Option< syn::Type >,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
   pub hint : bool,
 }
 
-impl AttributeContainerSetter
+impl AttributeCollectionSetter
 {
 
   /// Should setter be generated or not?
@@ -289,7 +289,7 @@ impl AttributeContainerSetter
 
 }
 
-impl syn::parse::Parse for AttributeContainerSetter
+impl syn::parse::Parse for AttributeCollectionSetter
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
@@ -328,12 +328,12 @@ impl syn::parse::Parse for AttributeContainerSetter
         }
         else
         {
-          return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `container( name = myName, setter = true, definition = MyDefinition )`", ident ) ) );
+          return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `collection( name = myName, setter = true, definition = MyDefinition )`", ident ) ) );
         }
       }
       else
       {
-        return Err( syn::Error::new( input.span(), "Expected 'name', 'setter', or 'definition' identifier. For example: `container( name = myName, setter = true, definition = MyDefinition )`" ) );
+        return Err( syn::Error::new( input.span(), "Expected 'name', 'setter', or 'definition' identifier. For example: `collection( name = myName, setter = true, definition = MyDefinition )`" ) );
       }
 
       // Optional comma handling

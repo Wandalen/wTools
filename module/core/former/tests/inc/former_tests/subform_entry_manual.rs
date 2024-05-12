@@ -15,8 +15,8 @@ pub struct Child
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent
 {
-  // #[ container( definition = former::VectorDefinition ) ]
-  // #[ subform ]
+  // #[ subform_collection( definition = former::VectorDefinition ) ]
+  // #[ subform_entry ]
   #[ scalar( setter = false ) ]
   children : Vec< Child >,
 }
@@ -62,10 +62,10 @@ where
       }
       if let Some( ref mut children ) = super_former.storage.children
       {
-        former::ContainerAdd::add
+        former::CollectionAdd::add
         (
           children,
-          < < Vec< Child > as former::Container >::Val as former::ValToEntry< Vec< Child > > >
+          < < Vec< Child > as former::Collection >::Val as former::ValToEntry< Vec< Child > > >
           ::val_to_entry( former::StoragePreform::preform( substorage ) )
         );
       }
@@ -95,17 +95,17 @@ where
   // it is generated
   #[ inline( always ) ]
   pub fn _child( self ) ->
-  < < Vec< Child > as former::Container >::Entry as former::EntityToFormer
+  < < Vec< Child > as former::Collection >::Entry as former::EntityToFormer
     <
       // ChildFormerDefinition< Self, Self, ParentSubformEntryChildrenEnd< Definition > >,
       <
-        < Vec< Child > as former::Container >::Entry as former::EntityToDefinition< Self, Self, ParentSubformEntryChildrenEnd< Definition > >
+        < Vec< Child > as former::Collection >::Entry as former::EntityToDefinition< Self, Self, ParentSubformEntryChildrenEnd< Definition > >
       >::Definition,
     >
   >::Former
   {
     self._children_subform_entry
-    ::< < < Vec< Child > as former::Container >::Entry as former::EntityToFormer< _ > >::Former, _, >()
+    ::< < < Vec< Child > as former::Collection >::Entry as former::EntityToFormer< _ > >::Former, _, >()
   }
 
 }
@@ -143,7 +143,7 @@ where
 
 }
 
-/// Handles the completion of and element of subformer's container.
+/// Handles the completion of and element of subformer's collection.
 pub struct ParentSubformEntryChildrenEnd< Definition >
 {
   _phantom : core::marker::PhantomData< fn( Definition ) >,
@@ -171,7 +171,7 @@ where
   >,
   Types2 : former::FormerDefinitionTypes
   <
-    Storage = < < Vec< Child > as former::Container >::Entry as former::EntityToStorage >::Storage,
+    Storage = < < Vec< Child > as former::Collection >::Entry as former::EntityToStorage >::Storage,
     Formed = ParentFormer< Definition >,
     Context = ParentFormer< Definition >,
   >,
@@ -192,7 +192,7 @@ where
     }
     if let Some( ref mut fields ) = super_former.storage.children
     {
-      former::ContainerAdd::add( fields, former::StoragePreform::preform( substorage ) );
+      former::CollectionAdd::add( fields, former::StoragePreform::preform( substorage ) );
     }
     super_former
   }

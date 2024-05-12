@@ -1,6 +1,6 @@
-//! This module provides a comprehensive approach to applying the builder pattern to `HashMap` containers.
+//! This module provides a comprehensive approach to applying the builder pattern to `HashMap` collections.
 //!
-//! By leveraging traits such as `Container`, `ContainerAdd`, `ContainerAssign`, and `ContainerValToEntry`,
+//! By leveraging traits such as `Collection`, `CollectionAdd`, `CollectionAssign`, and `CollectionValToEntry`,
 //! this module abstracts the operations on hashmap-like data structures, making them more flexible and easier to integrate as
 //! as subformer, enabling fluid and intuitive manipulation of hashmaps via builder patterns.
 //!
@@ -8,7 +8,7 @@
 use crate::*;
 use collection_tools::HashMap;
 
-impl< K, V > Container for collection_tools::HashMap< K, V >
+impl< K, V > Collection for collection_tools::HashMap< K, V >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
@@ -23,7 +23,7 @@ where
 
 }
 
-impl< K, V > ContainerAdd for collection_tools::HashMap< K, V >
+impl< K, V > CollectionAdd for collection_tools::HashMap< K, V >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
@@ -36,7 +36,7 @@ where
 
 }
 
-impl< K, V > ContainerAssign for collection_tools::HashMap< K, V >
+impl< K, V > CollectionAssign for collection_tools::HashMap< K, V >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
@@ -74,9 +74,9 @@ where
 
 // = definition
 
-/// Represents the formation definition for a hash map-like container within the former framework.
+/// Represents the formation definition for a hash map-like collection within the former framework.
 ///
-/// This structure defines the essential elements required to form a hash map-like container, detailing
+/// This structure defines the essential elements required to form a hash map-like collection, detailing
 /// the key and value types, the contextual environment during formation, the final formed type, and the
 /// behavior at the end of the formation process. It facilitates customization and extension of hash map
 /// formation within any system that implements complex data management operations.
@@ -202,9 +202,9 @@ where
 
 // = subformer
 
-/// Provides a streamlined builder interface for constructing hash map-like containers.
+/// Provides a streamlined builder interface for constructing hash map-like collections.
 ///
-/// `HashMapFormer` is a type alias that configures the `ContainerFormer` specifically for hash maps,
+/// `HashMapFormer` is a type alias that configures the `CollectionFormer` specifically for hash maps,
 /// facilitating a more intuitive and flexible way to build and manipulate hash maps within custom data structures.
 /// This type alias simplifies the usage of hash maps in builder patterns by encapsulating complex generic parameters
 /// and leveraging the `HashMapDefinition` to handle the construction logic. It supports fluent chaining of key-value
@@ -214,7 +214,7 @@ where
 /// a builder pattern both efficient and expressive.
 
 pub type HashMapFormer< K, E, Context, Formed, End > =
-ContainerFormer::< ( K, E ), HashMapDefinition< K, E, Context, Formed, End > >;
+CollectionFormer::< ( K, E ), HashMapDefinition< K, E, Context, Formed, End > >;
 
 // = extension
 

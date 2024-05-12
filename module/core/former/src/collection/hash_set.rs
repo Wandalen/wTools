@@ -1,9 +1,9 @@
-//! This module provides a builder pattern implementation (`HashSetFormer`) for `HashSet`-like containers. It is designed to extend the builder pattern, allowing for fluent and dynamic construction of sets within custom data structures.
+//! This module provides a builder pattern implementation (`HashSetFormer`) for `HashSet`-like collections. It is designed to extend the builder pattern, allowing for fluent and dynamic construction of sets within custom data structures.
 
 use crate::*;
 use collection_tools::HashSet;
 
-impl< K > Container for collection_tools::HashSet< K >
+impl< K > Collection for collection_tools::HashSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
@@ -18,7 +18,7 @@ where
 
 }
 
-impl< K > ContainerAdd for collection_tools::HashSet< K >
+impl< K > CollectionAdd for collection_tools::HashSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
@@ -33,7 +33,7 @@ where
 
 }
 
-impl< K > ContainerAssign for collection_tools::HashSet< K >
+impl< K > CollectionAssign for collection_tools::HashSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
@@ -49,7 +49,7 @@ where
   }
 }
 
-impl< K > ContainerValToEntry< K > for HashSet< K >
+impl< K > CollectionValToEntry< K > for HashSet< K >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
@@ -61,7 +61,7 @@ where
   }
 }
 
-// /// A trait for containers behaving like a `HashSet`, allowing insertion operations.
+// /// A trait for collections behaving like a `HashSet`, allowing insertion operations.
 // ///
 // /// Implementing this trait enables the associated formed to be used with `HashSetFormer`,
 // /// facilitating a builder pattern that is both intuitive and concise.
@@ -114,12 +114,12 @@ where
 
 // = definition
 
-/// Represents the formation definition for a hash set-like container within the former framework.
+/// Represents the formation definition for a hash set-like collection within the former framework.
 ///
-/// This structure defines the essential elements required to form a hash set-like container, detailing
+/// This structure defines the essential elements required to form a hash set-like collection, detailing
 /// the type of elements, the contextual environment during formation, the final formed type, and the
 /// behavior at the end of the formation process. It is designed to support the construction and configuration
-/// of hash set containers with dynamic characteristics and behaviors.
+/// of hash set collections with dynamic characteristics and behaviors.
 ///
 /// # Type Parameters
 /// - `K`: The type of elements in the hash set.
@@ -233,15 +233,15 @@ where
 
 // = subformer
 
-/// Provides a concise alias for `ContainerFormer` configured specifically for `HashSet`-like containers.
+/// Provides a concise alias for `CollectionFormer` configured specifically for `HashSet`-like collections.
 ///
-/// `HashSetFormer` simplifies the creation of `HashSet` containers within builder patterns by leveraging
-/// the `ContainerFormer` with predefined settings. This approach minimizes boilerplate code and enhances
-/// readability, making it ideal for fluent and expressive construction of set containers within custom data structures.
+/// `HashSetFormer` simplifies the creation of `HashSet` collections within builder patterns by leveraging
+/// the `CollectionFormer` with predefined settings. This approach minimizes boilerplate code and enhances
+/// readability, making it ideal for fluent and expressive construction of set collections within custom data structures.
 ///
 
 pub type HashSetFormer< K, Context, Formed, End > =
-ContainerFormer::< K, HashSetDefinition< K, Context, Formed, End > >;
+CollectionFormer::< K, HashSetDefinition< K, Context, Formed, End > >;
 
 // = extension
 

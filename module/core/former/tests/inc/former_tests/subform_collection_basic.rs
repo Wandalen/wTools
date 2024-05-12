@@ -11,11 +11,11 @@ use super::*;
 // #[ derive( Default, Debug, PartialEq ) ]
 pub struct Struct1
 {
-  #[ container( definition = former::VectorDefinition ) ]
+  #[ subform_collection( definition = former::VectorDefinition ) ]
   vec_1 : Vec< String >,
-  #[ container( definition = former::HashMapDefinition ) ]
+  #[ subform_collection( definition = former::HashMapDefinition ) ]
   hashmap_1 : std::collections::HashMap< String, String >,
-  #[ container( definition = former::HashSetDefinition ) ]
+  #[ subform_collection( definition = former::HashSetDefinition ) ]
   hashset_1 : std::collections::HashSet< String >,
 }
 
@@ -23,4 +23,4 @@ pub struct Struct1
 
 // == generated end
 
-include!( "./only_test/containers_with_subformer.rs" );
+include!( "./only_test/collections_with_subformer.rs" );

@@ -638,7 +638,7 @@ Purpose of Storage:
 - **Intermediate State Holding**: Storage serves as a temporary repository for all the partially set properties and data of the object being formed. This functionality is essential in situations where the object's completion depends on multiple, potentially complex stages of configuration.
 - **Decoupling Configuration from Instantiation**: Storage separates the accumulation of configuration states from the actual creation of the final object. This separation fosters cleaner, more maintainable code, allowing developers to apply configurations in any order and manage interim states more efficiently, without compromising the integrity of the final object.
 
-Storage is not just a passive container; it is an active part of a larger ecosystem that includes the former itself, a context, and a callback (often referred to as `FormingEnd`):
+Storage is not just a passive collection; it is an active part of a larger ecosystem that includes the former itself, a context, and a callback (often referred to as `FormingEnd`):
 
 - **Former as an Active Manager**: The former is responsible for managing the storage, utilizing it to keep track of the object's evolving configuration. It orchestrates the formation process by handling intermediate states and preparing the object for its final form.
 - **Contextual Flexibility**: The context associated with the former adds an additional layer of flexibility, allowing the former to adjust its behavior based on the broader circumstances of the object's formation. This is particularly useful when the forming process involves conditions or states external to the object itself.
@@ -677,9 +677,9 @@ These traits collectively facilitate a robust and flexible builder pattern that 
 
 ## Example : Custom Definition
 
-Define a custom former definition and custom forming logic, and apply them to a container.
+Define a custom former definition and custom forming logic, and apply them to a collection.
 
-The example showcases how to accumulate elements into a container and then transform them into a single result using a custom `FormingEnd` implementation. This pattern is useful for scenarios where the formation process involves aggregation or transformation of input elements into a different type or form.
+The example showcases how to accumulate elements into a collection and then transform them into a single result using a custom `FormingEnd` implementation. This pattern is useful for scenarios where the formation process involves aggregation or transformation of input elements into a different type or form.
 
 ```rust
 # #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
@@ -696,7 +696,7 @@ The example showcases how to accumulate elements into a container and then trans
   // This trait defines the types used during the forming process.
   impl former::FormerDefinitionTypes for Sum
   {
-    type Storage = Vec<i32>; // Container for the integers.
+    type Storage = Vec<i32>; // Collection for the integers.
     type Formed = i32;       // The final type after forming, which is a single integer.
     type Context = ();       // No additional context is used in this example.
   }
@@ -736,7 +736,7 @@ The example showcases how to accumulate elements into a container and then trans
   }
 
   // Use the custom `Former` to sum a list of integers.
-  let got = former::ContainerFormer::<i32, Sum>::new(Sum)
+  let got = former::CollectionFormer::<i32, Sum>::new(Sum)
   .add( 1 )  // Add an integer to the storage.
   .add( 2 )  // Add another integer.
   .add( 10 ) // Add another integer.
@@ -756,19 +756,19 @@ Subformers are specialized builders used within the former to construct nested o
 
 ## Types of Setters / Subformers
 
-It's crucial to understand the differences among subform setters, container setters, and scalar setters:
+It's crucial to understand the differences among subform setters, collection setters, and scalar setters:
 
-- **Scalar Setter**: Directly sets scalar values or simple fields within the forming entity. Unlike subform or container setters that manage complex objects or collections, scalar setters handle basic data types or individual fields. These are typically straightforward setter methods that do not involve nested formers or additional structuring.
+- **Scalar Setter**: Directly sets scalar values or simple fields within the forming entity. Unlike subform or collection setters that manage complex objects or collections, scalar setters handle basic data types or individual fields. These are typically straightforward setter methods that do not involve nested formers or additional structuring.
 
-- **Container Setter**: Returns a former of the container itself, offering an interface to manage the container as a whole rather than its individual elements. This type of setter is useful for applying configurations or validations to the entire collection, such as a `HashMap` of children.
+- **Collection Setter**: Returns a former of the collection itself, offering an interface to manage the collection as a whole rather than its individual elements. This type of setter is useful for applying configurations or validations to the entire collection, such as a `HashMap` of children.
 
-- **Subform Setter**: Returns a former of an element within a container, providing an interface to individually form each element. For example, the `child` method acts as a subform setter, allowing for the addition and configuration of individual `Child` entities within the `Parent`'s `HashMap`.
+- **Subform Setter**: Returns a former of an element within a collection, providing an interface to individually form each element. For example, the `child` method acts as a subform setter, allowing for the addition and configuration of individual `Child` entities within the `Parent`'s `HashMap`.
 
 Each type of setter is designed to address different needs in the formation process, ensuring that users can build complex, nested structures or simply set individual field values as required.
 
-## Example : Container Setter for a Vector
+## Example : Collection Setter for a Vector
 
-This example demonstrates how to employ the `Former` trait to configure a `Vec` using a container setter in a structured manner.
+This example demonstrates how to employ the `Former` trait to configure a `Vec` using a collection setter in a structured manner.
 
 ```rust
 # #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
@@ -781,7 +781,7 @@ This example demonstrates how to employ the `Former` trait to configure a `Vec` 
   #[ derive( Debug, PartialEq, former::Former ) ]
   pub struct StructWithVec
   {
-    #[ container ]
+    #[ subform_collection ]
     vec : Vec< &'static str >,
   }
 
@@ -798,13 +798,13 @@ This example demonstrates how to employ the `Former` trait to configure a `Vec` 
 # }
 ```
 
-Try out `cargo run --example former_container_vector`.
+Try out `cargo run --example former_collection_vector`.
 </br>
-[See code](./examples/former_container_vector.rs).
+[See code](./examples/former_collection_vector.rs).
 
-## Example : Container Setter for a Hashmap
+## Example : Collection Setter for a Hashmap
 
-This example demonstrates how to effectively employ the `Former` trait to configure a `HashMap` using a container setter.
+This example demonstrates how to effectively employ the `Former` trait to configure a `HashMap` using a collection setter.
 
 ```rust
 # #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
@@ -818,7 +818,7 @@ This example demonstrates how to effectively employ the `Former` trait to config
   #[ derive( Debug, PartialEq, former::Former ) ]
   pub struct StructWithMap
   {
-    #[ container ]
+    #[ subform_collection ]
     map : HashMap< &'static str, &'static str >,
   }
 
@@ -835,11 +835,11 @@ This example demonstrates how to effectively employ the `Former` trait to config
 # }
 ```
 
-Try out `cargo run --example former_container_hashmap`.
+Try out `cargo run --example former_collection_hashmap`.
 </br>
-[See code](./examples/former_container_hashmap.rs).
+[See code](./examples/former_collection_hashmap.rs).
 
-## Example : Container Setter for a Hashset
+## Example : Collection Setter for a Hashset
 
 This example demonstrates the use of the `Former` trait to build a `collection_tools::HashSet` through subforming.
 
@@ -855,7 +855,7 @@ This example demonstrates the use of the `Former` trait to build a `collection_t
   #[ derive( Debug, PartialEq, former::Former ) ]
   pub struct StructWithSet
   {
-    #[ container ]
+    #[ subform_collection ]
     set : HashSet< &'static str >,
   }
 
@@ -872,15 +872,15 @@ This example demonstrates the use of the `Former` trait to build a `collection_t
 # }
 ```
 
-Try out `cargo run --example former_container_hashset`.
+Try out `cargo run --example former_collection_hashset`.
 </br>
-[See code](./examples/former_container_hashset.rs).
+[See code](./examples/former_collection_hashset.rs).
 
 ## Example : Custom Scalar Setter
 
-This example demonstrates the implementation of a scalar setter using the `Former` trait. Unlike the more complex subform and container setters shown in previous examples, this example focuses on a straightforward approach to directly set a scalar value within a parent entity. The `Parent` struct manages a `HashMap` of `Child` entities, and the scalar setter is used to set the entire `HashMap` directly.
+This example demonstrates the implementation of a scalar setter using the `Former` trait. Unlike the more complex subform and collection setters shown in previous examples, this example focuses on a straightforward approach to directly set a scalar value within a parent entity. The `Parent` struct manages a `HashMap` of `Child` entities, and the scalar setter is used to set the entire `HashMap` directly.
 
-The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a container—each child entity in this case.
+The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a collection—each child entity in this case.
 
 ```rust
 # #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
@@ -952,7 +952,7 @@ The `child` function within `ParentFormer` is a custom subform setter that plays
 # }
 ```
 
-In this example, the `Parent` struct functions as a container for multiple `Child` structs, each identified by a unique child name. The `ParentFormer` implements a custom method `child`, which serves as a subformer for adding `Child` instances into the `Parent`.
+In this example, the `Parent` struct functions as a collection for multiple `Child` structs, each identified by a unique child name. The `ParentFormer` implements a custom method `child`, which serves as a subformer for adding `Child` instances into the `Parent`.
 
 - **Child Definition**: Each `Child` consists of a `name` and a `description`, and we derive `Former` to enable easy setting of these properties using a builder pattern.
 - **Parent Definition**: It holds a collection of `Child` objects in a `HashMap`. The `#[setter(false)]` attribute is used to disable the default setter, and a custom method `child` is defined to facilitate the addition of children with specific attributes.
@@ -962,11 +962,11 @@ Try out `cargo run --example former_custom_scalar_setter`.
 </br>
 [See code](./examples/former_custom_scalar_setter.rs).
 
-## Example : Custom Container Setter
+## Example : Custom Collection Setter
 
-This example demonstrates the use of container setters to manage complex nested data structures with the `Former` trait, focusing on a parent-child relationship structured around a container `HashMap`. Unlike typical builder patterns that add individual elements using subform setters, this example uses a container setter to manage the entire collection of children.
+This example demonstrates the use of collection setters to manage complex nested data structures with the `Former` trait, focusing on a parent-child relationship structured around a collection `HashMap`. Unlike typical builder patterns that add individual elements using subform setters, this example uses a collection setter to manage the entire collection of children.
 
-The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a container—each child entity in this case.
+The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a collection—each child entity in this case.
 
 ```rust
 # #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
@@ -1039,15 +1039,15 @@ The `child` function within `ParentFormer` is a custom subform setter that plays
 # }
 ```
 
-Try out `cargo run --example former_custom_container_setter`.
+Try out `cargo run --example former_custom_collection_setter`.
 </br>
-[See code](./examples/former_custom_container_setter.rs).
+[See code](./examples/former_custom_collection_setter.rs).
 
 ## Example : Custom Subform Setter
 
 This example illustrates the implementation of nested builder patterns using the `Former` trait, emphasizing a parent-child relationship. Here, the `Parent` struct utilizes `ChildFormer` as a custom subformer to dynamically manage its `child` field—a `HashMap`. Each child in the `HashMap` is uniquely identified and configured via the `ChildFormer`.
 
-The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a container—each child entity in this case.
+The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a collection—each child entity in this case.
 
 ```rust
 # #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
@@ -1075,7 +1075,7 @@ The `child` function within `ParentFormer` is a custom subform setter that plays
   pub struct Parent
   {
     // Use `hint = true` to gennerate sketch of setter.
-    #[ subform( setter = false, hint = false ) ]
+    #[ subform_entry( setter = false, hint = false ) ]
     child : HashMap< String, Child >,
   }
 
@@ -1137,23 +1137,23 @@ Try out `cargo run --example former_custom_subform_setter`.
 </br>
 [See code](./examples/former_custom_subform_setter.rs).
 
-## General Container Interface
+## General Collection Interface
 
-There are suite of traits designed to abstract and enhance the functionality of container data structures within the forming process. These traits are integral to managing the complexity of container operations, such as adding, modifying, and converting between different representations within containers like vectors, hash maps, etc. They are especially useful when used in conjunction with the `container` attribute in the `former` macro, which automates the implementation of these traits to create robust and flexible builder patterns for complex data structures.
+There are suite of traits designed to abstract and enhance the functionality of collection data structures within the forming process. These traits are integral to managing the complexity of collection operations, such as adding, modifying, and converting between different representations within collections like vectors, hash maps, etc. They are especially useful when used in conjunction with the `collection` attribute in the `former` macro, which automates the implementation of these traits to create robust and flexible builder patterns for complex data structures.
 
-- [`Container`] - Defines basic functionalities for containers, managing entries and values, establishing the fundamental operations required for any custom container implementation in forming processes.
-- [`EntryToVal`] - Facilitates the conversion of container entries to their value representations, crucial for operations that treat container elements more abstractly as values.
-- [`ValToEntry`] - Provides the reverse functionality of `EntryToVal`, converting values back into entries, which is essential for operations that require adding or modifying entries in the container based on value data.
-- [`ContainerAdd`] - Adds functionality for inserting entries into a container, considering container-specific rules such as duplication handling and order preservation, enhancing the usability of containers in forming scenarios.
-- [`ContainerAssign`] - Extends the container functionality to replace all existing entries with new ones, enabling bulk updates or complete resets of container contents, which is particularly useful in dynamic data environments.
+- [`Collection`] - Defines basic functionalities for collections, managing entries and values, establishing the fundamental operations required for any custom collection implementation in forming processes.
+- [`EntryToVal`] - Facilitates the conversion of collection entries to their value representations, crucial for operations that treat collection elements more abstractly as values.
+- [`ValToEntry`] - Provides the reverse functionality of `EntryToVal`, converting values back into entries, which is essential for operations that require adding or modifying entries in the collection based on value data.
+- [`CollectionAdd`] - Adds functionality for inserting entries into a collection, considering collection-specific rules such as duplication handling and order preservation, enhancing the usability of collections in forming scenarios.
+- [`CollectionAssign`] - Extends the collection functionality to replace all existing entries with new ones, enabling bulk updates or complete resets of collection contents, which is particularly useful in dynamic data environments.
 
-## Custom Container Former
+## Custom Collection Former
 
-Container interface is defined in the crate and implemented for containers like vectors, hash maps, etc, but if you want to use non-standard container you can implement container interface for the container. This example demonstrate how to do that.
+Collection interface is defined in the crate and implemented for collections like vectors, hash maps, etc, but if you want to use non-standard collection you can implement collection interface for the collection. This example demonstrate how to do that.
 
-Try out `cargo run --example former_custom_container`.
+Try out `cargo run --example former_custom_collection`.
 </br>
-[See code](./examples/former_custom_container.rs).
+[See code](./examples/former_custom_collection.rs).
 
 ## Concept of Mutator
 
@@ -1262,7 +1262,7 @@ Try out `cargo run --example former_custom_mutator`.
 <!-- qqq : for Petro : first write -->
 
 - [Custom Defaults](./examples/former_custom_defaults.rs) - Former allows the specification of custom default values for fields through the `former( default )` attribute.
-- [Custom Definition](./examples/former_custom_definition.rs) - Define a custom former definition and custom forming logic, and apply them to a container.
+- [Custom Definition](./examples/former_custom_definition.rs) - Define a custom former definition and custom forming logic, and apply them to a collection.
 
 <!-- qqq : for Petro : implement command `will .mdbook.from.readme` -->
 

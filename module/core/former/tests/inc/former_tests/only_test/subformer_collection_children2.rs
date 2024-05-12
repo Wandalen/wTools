@@ -1,6 +1,6 @@
 
 #[ test ]
-fn container()
+fn collection()
 {
 
   let got = Parent::former()

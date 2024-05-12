@@ -20,4 +20,4 @@ pub struct Struct1
 
 // == end of generated
 
-include!( "./only_test/containers_without_subformer.rs" );
+include!( "./only_test/collections_without_subformer.rs" );

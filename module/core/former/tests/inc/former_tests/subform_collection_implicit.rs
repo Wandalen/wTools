@@ -17,8 +17,8 @@ pub struct Child
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent
 {
-  // #[ container( definition = former::VectorDefinition ) ]
-  #[ container ]
+  // #[ subform_collection( definition = former::VectorDefinition ) ]
+  #[ subform_collection ]
   children : Vec< Child >,
 }
 
@@ -26,4 +26,4 @@ pub struct Parent
 
 // == end of generated
 
-include!( "./only_test/subformer_container.rs" );
+include!( "./only_test/subformer_collection.rs" );

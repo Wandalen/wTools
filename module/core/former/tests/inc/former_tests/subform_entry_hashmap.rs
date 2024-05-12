@@ -19,7 +19,7 @@ pub struct Child
 // #[ derive( Debug, PartialEq ) ]
 pub struct Parent
 {
-  #[ subform ]
+  #[ subform_entry ]
   command : HashMap< String, Child >,
 }
 

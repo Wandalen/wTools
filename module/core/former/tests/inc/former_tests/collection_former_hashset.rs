@@ -11,10 +11,10 @@ use collection_tools::HashSet;
 fn add()
 {
 
-  // expliccit with ContainerFormer
+  // expliccit with CollectionFormer
 
   let got : HashSet< String > = the_module
-  ::ContainerFormer
+  ::CollectionFormer
   ::< String, former::HashSetDefinition< String, (), HashSet< String >, the_module::ReturnStorage > >
   ::new( former::ReturnStorage )
   .add( "a" )

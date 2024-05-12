@@ -16,12 +16,12 @@ pub struct Child
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent
 {
-  // #[ container( definition = former::VectorDefinition ) ]
+  // #[ subform_collection( definition = former::VectorDefinition ) ]
   #[ scalar( setter = false ) ]
   children : Vec< Child >,
 }
 
-// == begin of generated for Parent in context of attribute container( former::VectorDefinition ) ]
+// == begin of generated for Parent in context of attribute collection( former::VectorDefinition ) ]
 
 #[ automatically_derived ]
 impl< Definition, > ParentFormer< Definition, >
@@ -30,34 +30,34 @@ where
 {
 
   #[ inline( always ) ]
-  pub fn _children_subform_container< Former2 >( self ) -> Former2
+  pub fn _children_subform_collection< Former2 >( self ) -> Former2
   where
-    Former2 : former::FormerBegin< former::VectorDefinition< Child, Self, Self, ParentSubformContainerChildrenEnd< Definition >, > >,
+    Former2 : former::FormerBegin< former::VectorDefinition< Child, Self, Self, ParentSubformCollectionChildrenEnd< Definition >, > >,
   {
-    Former2::former_begin( None, Some( self ), ParentSubformContainerChildrenEnd::< Definition >::default() )
+    Former2::former_begin( None, Some( self ), ParentSubformCollectionChildrenEnd::< Definition >::default() )
   }
 
   #[ inline( always ) ]
-  pub fn children( self ) -> former::ContainerFormer::
+  pub fn children( self ) -> former::CollectionFormer::
   <
     Child,
-    former::VectorDefinition< Child, Self, Self, ParentSubformContainerChildrenEnd< Definition >, >
+    former::VectorDefinition< Child, Self, Self, ParentSubformCollectionChildrenEnd< Definition >, >
   >
   {
-    self._children_subform_container::< former::ContainerFormer::< Child, former::VectorDefinition< Child, Self, Self, ParentSubformContainerChildrenEnd< Definition >, > > >()
+    self._children_subform_collection::< former::CollectionFormer::< Child, former::VectorDefinition< Child, Self, Self, ParentSubformCollectionChildrenEnd< Definition >, > > >()
   }
 
 }
 
 //
 
-#[ doc = r"Callback to return original former after forming of container for `vec_1` is done. Callback replace content of container assigning new content from subformer's storage." ]
-pub struct ParentSubformContainerChildrenEnd< Definition >
+#[ doc = r"Callback to return original former after forming of collection for `vec_1` is done. Callback replace content of collection assigning new content from subformer's storage." ]
+pub struct ParentSubformCollectionChildrenEnd< Definition >
 {
   _phantom : core::marker::PhantomData< ( Definition, ) >,
 }
 
-impl< Definition > Default for ParentSubformContainerChildrenEnd< Definition >
+impl< Definition > Default for ParentSubformCollectionChildrenEnd< Definition >
 {
 
   #[ inline( always ) ]
@@ -78,7 +78,7 @@ impl< Definition, > former::FormingEnd
     Vec< Child > as former::EntityToDefinitionTypes< ParentFormer< Definition, >, ParentFormer< Definition, > >
   >::Types
 >
-for ParentSubformContainerChildrenEnd< Definition >
+for ParentSubformCollectionChildrenEnd< Definition >
 where
   Definition : former::FormerDefinition< Storage = ParentFormerStorage< > >,
 {
@@ -94,7 +94,7 @@ where
     let mut super_former = super_former.unwrap();
     if let Some( ref mut field ) = super_former.storage.children
     {
-      former::ContainerAssign::assign( field, storage );
+      former::CollectionAssign::assign( field, storage );
     }
     else
     {
@@ -104,6 +104,6 @@ where
   }
 }
 
-// == end of generated for Parent in context of attribute container( former::VectorDefinition ) ]
+// == end of generated for Parent in context of attribute collection( former::VectorDefinition ) ]
 
-include!( "./only_test/subformer_container.rs" );
+include!( "./only_test/subformer_collection.rs" );

@@ -121,10 +121,10 @@ tests_impls!
   fn field_forming_end()
   {
 
-    // Container subformers are defined
-    let _got = Struct1SubformContainerVec1End::< Struct1FormerDefinition >::default();
-    let _got = Struct1SubformContainerHashmap1End::< Struct1FormerDefinition >::default();
-    let _got = Struct1SubformContainerHashset1End::< Struct1FormerDefinition >::default();
+    // Collection subformers are defined
+    let _got = Struct1SubformCollectionVec1End::< Struct1FormerDefinition >::default();
+    let _got = Struct1SubformCollectionHashmap1End::< Struct1FormerDefinition >::default();
+    let _got = Struct1SubformCollectionHashset1End::< Struct1FormerDefinition >::default();
 
     // AsSubformerEnd is defined
     fn _f1< End : Struct1AsSubformerEnd< Struct1Former > >

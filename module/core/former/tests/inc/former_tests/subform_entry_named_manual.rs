@@ -17,7 +17,7 @@ pub struct Child
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent
 {
-  #[ subform ]
+  #[ subform_entry ]
   // #[ scalar( setter = false ) ]
   children : Vec< Child >,
 }
@@ -48,17 +48,17 @@ where
 
   #[ inline( always ) ]
   pub fn _child( self ) ->
-  < < Vec< Child > as former::Container >::Entry as former::EntityToFormer
+  < < Vec< Child > as former::Collection >::Entry as former::EntityToFormer
     <
       // ChildFormerDefinition< Self, Self, ParentSubformEntryChildrenEnd< Definition > >,
       <
-        < Vec< Child > as former::Container >::Entry as former::EntityToDefinition< Self, Self, ParentSubformEntryChildrenEnd< Definition > >
+        < Vec< Child > as former::Collection >::Entry as former::EntityToDefinition< Self, Self, ParentSubformEntryChildrenEnd< Definition > >
       >::Definition,
     >
   >::Former
   {
     self._children_subform_entry
-    ::< < < Vec< Child > as former::Container >::Entry as former::EntityToFormer< _ > >::Former, _, >()
+    ::< < < Vec< Child > as former::Collection >::Entry as former::EntityToFormer< _ > >::Former, _, >()
   }
 
 }

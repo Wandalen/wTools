@@ -12,7 +12,7 @@ fn main()
   #[ derive( Debug, PartialEq, former::Former ) ]
   pub struct StructWithSet
   {
-    #[ container ]
+    #[ subform_collection ]
     set : HashSet< &'static str >,
   }
 

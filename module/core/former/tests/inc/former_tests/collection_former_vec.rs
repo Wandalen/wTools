@@ -10,10 +10,10 @@ use collection_tools::Vec;
 fn add()
 {
 
-  // expliccit with ContainerFormer
+  // expliccit with CollectionFormer
 
   let got : Vec< String > = the_module
-  ::ContainerFormer
+  ::CollectionFormer
   ::< String, former::VectorDefinition< String, (), Vec< String >, the_module::ReturnStorage > >
   ::new( former::ReturnStorage )
   .add( "a" )
@@ -105,7 +105,7 @@ fn replace()
 
 //
 
-// qqq : make similar test for all containers
+// qqq : make similar test for all collections
 #[ test ]
 fn entity_to()
 {

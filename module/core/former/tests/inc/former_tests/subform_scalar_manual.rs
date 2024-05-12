@@ -68,7 +68,7 @@ where
 
 // = end
 
-/// Handles the completion of and element of subformer's container.
+/// Handles the completion of and element of subformer's collection.
 pub struct ParentFormerSubformScalarChildEnd< Definition >
 {
   _phantom : core::marker::PhantomData< fn( Definition ) >,

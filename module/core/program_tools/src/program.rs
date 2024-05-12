@@ -36,9 +36,9 @@ pub( crate ) mod private
   {
     write_path : Option< PathBuf >,
     read_path : Option< PathBuf >,
-    #[ subform( name = entry ) ]
+    #[ subform_entry( name = entry ) ]
     entries : Vec< Entry >,
-    #[ subform( name = source ) ]
+    #[ subform_entry( name = source ) ]
     sources : Vec< SourceFile >,
     cargo_file : Option< CargoFile >,
   }

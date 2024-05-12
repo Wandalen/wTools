@@ -19,7 +19,7 @@ pub struct Child
 // #[ derive( Debug, PartialEq ) ]
 pub struct Parent
 {
-  #[ subform( setter = false ) ]
+  #[ subform_entry( setter = false ) ]
   command : HashMap< String, Child >,
 }
 
@@ -63,10 +63,10 @@ where
       }
       if let Some( ref mut children ) = super_former.storage.command
       {
-        former::ContainerAdd::add
+        former::CollectionAdd::add
         (
           children,
-          < < HashMap< String, Child > as former::Container >::Val as former::ValToEntry< HashMap< String, Child > > >
+          < < HashMap< String, Child > as former::Collection >::Val as former::ValToEntry< HashMap< String, Child > > >
           ::val_to_entry( former::StoragePreform::preform( substorage ) )
         );
       }
@@ -97,12 +97,12 @@ where
         super_former.storage.command = Some( Default::default() );
       }
 
-      // add instance to the container
+      // add instance to the collection
       super_former.storage.command.as_mut().unwrap()
       .entry( preformed.name.clone() )
       .or_insert( preformed.clone() );
 
-      // custom logic to add two instances to the container
+      // custom logic to add two instances to the collection
       super_former.storage.command.as_mut().unwrap()
       .entry( format!( "{}_2", preformed.name ) )
       .or_insert( preformed.clone() );

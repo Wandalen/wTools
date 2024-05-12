@@ -107,7 +107,7 @@ mod private
   #[ derive( Debug, Default, Former ) ]
   pub struct TemplateParameters
   {
-    #[ subform( setter = false ) ]
+    #[ subform_entry( setter = false ) ]
     descriptors : Vec< TemplateParameterDescriptor >
   }
 
@@ -302,7 +302,7 @@ mod private
   pub struct TemplateFilesBuilder
   {
     /// Stores all file descriptors for current template.
-    #[ subform( setter = true ) ]
+    #[ subform_entry( setter = true ) ]
     #[ scalar( setter = false, hint = false ) ]
     pub files : Vec< TemplateFileDescriptor >,
   }

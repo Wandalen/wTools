@@ -1,6 +1,6 @@
-//! This module provides a comprehensive approach to applying the builder pattern to `Vec` containers.
+//! This module provides a comprehensive approach to applying the builder pattern to `Vec` collections.
 //!
-//! By leveraging traits such as `Container`, `ContainerAdd`, `ContainerAssign`, and `ContainerValToEntry`,
+//! By leveraging traits such as `Collection`, `CollectionAdd`, `CollectionAssign`, and `CollectionValToEntry`,
 //! this module abstracts the operations on vector-like data structures, making them more flexible and easier to integrate as
 //! as subformer, enabling fluid and intuitive manipulation of vectors via builder patterns.
 //!
@@ -9,7 +9,7 @@ use crate::*;
 #[ allow( unused ) ]
 use collection_tools::Vec;
 
-impl< E > Container for collection_tools::Vec< E >
+impl< E > Collection for collection_tools::Vec< E >
 {
   type Entry = E;
   type Val = E;
@@ -22,7 +22,7 @@ impl< E > Container for collection_tools::Vec< E >
 
 }
 
-impl< E > ContainerAdd for collection_tools::Vec< E >
+impl< E > CollectionAdd for collection_tools::Vec< E >
 {
 
   #[ inline( always ) ]
@@ -34,7 +34,7 @@ impl< E > ContainerAdd for collection_tools::Vec< E >
 
 }
 
-impl< E > ContainerAssign for collection_tools::Vec< E >
+impl< E > CollectionAssign for collection_tools::Vec< E >
 {
   #[ inline( always ) ]
   fn assign< Elements >( &mut self, elements : Elements ) -> usize
@@ -48,7 +48,7 @@ impl< E > ContainerAssign for collection_tools::Vec< E >
 
 }
 
-impl< E > ContainerValToEntry< E > for collection_tools::Vec< E >
+impl< E > CollectionValToEntry< E > for collection_tools::Vec< E >
 where
 {
   type Entry = E;
@@ -78,9 +78,9 @@ for Vec< E >
 
 // = definition
 
-/// Represents the formation definition for a vector-like container within the former framework.
+/// Represents the formation definition for a vector-like collection within the former framework.
 ///
-/// This structure defines the necessary parameters and relationships needed to form a vector-like container,
+/// This structure defines the necessary parameters and relationships needed to form a vector-like collection,
 /// including its storage, context, the result of the formation process, and the behavior at the end of the formation.
 ///
 /// # Type Parameters
@@ -189,9 +189,9 @@ for Vec< E >
 
 // = subformer
 
-/// Provides a streamlined builder interface for constructing vector-like containers.
+/// Provides a streamlined builder interface for constructing vector-like collections.
 ///
-/// `VectorFormer` is a type alias that configures the `ContainerFormer` for use specifically with vectors.
+/// `VectorFormer` is a type alias that configures the `CollectionFormer` for use specifically with vectors.
 /// It integrates the `VectorDefinition` to facilitate the fluent and dynamic construction of vectors, leveraging
 /// predefined settings to reduce boilerplate code. This approach enhances readability and simplifies the use of
 /// vectors in custom data structures where builder patterns are desired.
@@ -202,7 +202,7 @@ for Vec< E >
 ///
 
 pub type VectorFormer< E, Context, Formed, End > =
-ContainerFormer::< E, VectorDefinition< E, Context, Formed, End > >;
+CollectionFormer::< E, VectorDefinition< E, Context, Formed, End > >;
 
 // = extension
 

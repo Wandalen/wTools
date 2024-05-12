@@ -11,10 +11,10 @@ use collection_tools::HashMap;
 fn add()
 {
 
-  // expliccit with ContainerFormer
+  // expliccit with CollectionFormer
 
   let got : HashMap< String, String > = the_module
-  ::ContainerFormer
+  ::CollectionFormer
   ::< ( String, String ), former::HashMapDefinition< String, String, (), HashMap< String, String >, the_module::ReturnStorage > >
   ::new( former::ReturnStorage )
   .add( ( "a".into(), "x".into() ) )

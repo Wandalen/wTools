@@ -96,7 +96,7 @@ pub( crate ) mod private
     /// Phrase descriptor for command.
     pub phrase : String,
     /// Command subjects hints and types.
-    #[ subform( setter = true ) ]
+    #[ subform_entry( setter = true ) ]
     pub subjects : Vec< ValueDescription >,
     /// Hints and types for command options.
     pub properties : HashMap< String, ValueDescription >,

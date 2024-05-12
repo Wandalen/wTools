@@ -17,9 +17,9 @@ pub struct Child
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent
 {
-  // Such parameters switch off generation of front-end container setter and switch on scalar setter.
+  // Such parameters switch off generation of front-end collection setter and switch on scalar setter.
   // Without explicit scalar_setter( true ) scalar setter is not generated.
-  #[ subform( setter = false ) ]
+  #[ subform_entry( setter = false ) ]
   #[ scalar( setter = true ) ]
   children : Vec< Child >,
 }
@@ -30,16 +30,16 @@ where
 {
 
   #[ inline( always ) ]
-  pub fn children2( self ) -> former::ContainerFormer::
+  pub fn children2( self ) -> former::CollectionFormer::
   <
     Child,
-    former::VectorDefinition< Child, Self, Self, ParentSubformContainerChildrenEnd< Definition >, >
+    former::VectorDefinition< Child, Self, Self, ParentSubformCollectionChildrenEnd< Definition >, >
   >
   {
-    self._children_subform_container::< _ >()
+    self._children_subform_collection::< _ >()
   }
 
 }
 
 include!( "./only_test/subformer_scalar_children.rs" );
-include!( "./only_test/subformer_container_children2.rs" );
+include!( "./only_test/subformer_collection_children2.rs" );
