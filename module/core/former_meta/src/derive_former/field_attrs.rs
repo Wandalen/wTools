@@ -371,7 +371,7 @@ pub struct AttributeSubformSetter
   /// like `name = my_field`.
   pub name : Option< syn::Ident >,
   /// Disable generation of setter.
-  /// It still generate `_field_add` method, so it could be used to make a setter with custom arguments.
+  /// It still generate `_field_subform_entry` method, so it could be used to make a setter with custom arguments.
   pub setter : Option< bool >,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.

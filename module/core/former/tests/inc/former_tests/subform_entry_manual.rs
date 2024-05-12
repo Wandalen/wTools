@@ -30,7 +30,7 @@ where
 {
 
   #[ inline( always ) ]
-  pub fn _children_add_with_closure< Former2, Definition2, Types2 >( self ) ->
+  pub fn _children_subform_entry_with_closure< Former2, Definition2, Types2 >( self ) ->
   Former2
   where
     Types2 : former::FormerDefinitionTypes
@@ -79,7 +79,7 @@ where
   pub fn child( self, name : &str ) ->
   ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   {
-    self._children_add
+    self._children_subform_entry
     ::< ChildFormer< _ >, _, >()
     .name( name )
   }
@@ -88,7 +88,7 @@ where
   // pub fn _child( self ) ->
   // ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   // {
-  //   self._children_add
+  //   self._children_subform_entry
   //   ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
   // }
 
@@ -97,14 +97,14 @@ where
   pub fn _child( self ) ->
   < < Vec< Child > as former::Container >::Entry as former::EntityToFormer
     <
-      // ChildFormerDefinition< Self, Self, ParentFormerAddChildrenEnd< Definition > >,
+      // ChildFormerDefinition< Self, Self, ParentSubformEntryChildrenEnd< Definition > >,
       <
-        < Vec< Child > as former::Container >::Entry as former::EntityToDefinition< Self, Self, ParentFormerAddChildrenEnd< Definition > >
+        < Vec< Child > as former::Container >::Entry as former::EntityToDefinition< Self, Self, ParentSubformEntryChildrenEnd< Definition > >
       >::Definition,
     >
   >::Former
   {
-    self._children_add
+    self._children_subform_entry
     ::< < < Vec< Child > as former::Container >::Entry as former::EntityToFormer< _ > >::Former, _, >()
   }
 
@@ -120,12 +120,12 @@ where
 
   // xxx : rename
   #[ inline( always ) ]
-  pub fn _children_add< Former2, Definition2 >( self ) ->
+  pub fn _children_subform_entry< Former2, Definition2 >( self ) ->
   Former2
   where
     Definition2 : former::FormerDefinition
     <
-      End = ParentFormerAddChildrenEnd< Definition >,
+      End = ParentSubformEntryChildrenEnd< Definition >,
       Storage = < Child as former::EntityToStorage >::Storage,
       Formed = Self,
       Context = Self,
@@ -138,19 +138,19 @@ where
     >,
     Former2 : former::FormerBegin< Definition2 >,
   {
-    Former2::former_begin( None, Some( self ), ParentFormerAddChildrenEnd::default() )
+    Former2::former_begin( None, Some( self ), ParentSubformEntryChildrenEnd::default() )
   }
 
 }
 
 /// Handles the completion of and element of subformer's container.
-pub struct ParentFormerAddChildrenEnd< Definition >
+pub struct ParentSubformEntryChildrenEnd< Definition >
 {
   _phantom : core::marker::PhantomData< fn( Definition ) >,
 }
 
 impl< Definition > Default
-for ParentFormerAddChildrenEnd< Definition >
+for ParentSubformEntryChildrenEnd< Definition >
 {
   #[ inline( always ) ]
   fn default() -> Self
@@ -163,7 +163,7 @@ for ParentFormerAddChildrenEnd< Definition >
 }
 
 impl< Types2, Definition > former::FormingEnd< Types2, >
-for ParentFormerAddChildrenEnd< Definition >
+for ParentSubformEntryChildrenEnd< Definition >
 where
   Definition : former::FormerDefinition
   <

@@ -33,7 +33,7 @@ where
   pub fn child( self, name : &str ) ->
   ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   {
-    self._children_add
+    self._children_subform_entry
     ::< ChildFormer< _ >, _, >()
     .name( name )
   }
@@ -42,7 +42,7 @@ where
   // pub fn _child( self ) ->
   // ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   // {
-  //   self._children_add
+  //   self._children_subform_entry
   //   ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
   // }
 
@@ -50,14 +50,14 @@ where
   pub fn _child( self ) ->
   < < Vec< Child > as former::Container >::Entry as former::EntityToFormer
     <
-      // ChildFormerDefinition< Self, Self, ParentFormerAddChildrenEnd< Definition > >,
+      // ChildFormerDefinition< Self, Self, ParentSubformEntryChildrenEnd< Definition > >,
       <
-        < Vec< Child > as former::Container >::Entry as former::EntityToDefinition< Self, Self, ParentFormerAddChildrenEnd< Definition > >
+        < Vec< Child > as former::Container >::Entry as former::EntityToDefinition< Self, Self, ParentSubformEntryChildrenEnd< Definition > >
       >::Definition,
     >
   >::Former
   {
-    self._children_add
+    self._children_subform_entry
     ::< < < Vec< Child > as former::Container >::Entry as former::EntityToFormer< _ > >::Former, _, >()
   }
 

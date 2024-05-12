@@ -31,7 +31,7 @@ where
   pub fn child( self, name : &str ) ->
   ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   {
-    self._children_add
+    self._children_subform_entry
     ::< ChildFormer< _ >, _, >()
     .name( name )
   }

@@ -31,7 +31,7 @@ where
 
   // more generic version
   #[ inline( always ) ]
-  pub fn _children_add_with_closure< Former2, Definition2, Types2 >( self ) ->
+  pub fn _children_subform_entry_with_closure< Former2, Definition2, Types2 >( self ) ->
   Former2
   where
     Types2 : former::FormerDefinitionTypes
@@ -75,15 +75,15 @@ where
     Former2::former_begin( None, Some( self ), former::FormingEndClosure::new( on_end ) )
   }
 
-  // reuse _command_add
+  // reuse _command_subform_entry
   #[ inline( always ) ]
   pub fn command( self, name : &str ) -> ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   {
-    self._command_add::< ChildFormer< _ >, _, >()
+    self._command_subform_entry::< ChildFormer< _ >, _, >()
     .name( name )
   }
 
-  // that's how you should do custom subformer setters if you can't reuse _command_add
+  // that's how you should do custom subformer setters if you can't reuse _command_subform_entry
   #[ inline( always ) ]
   pub fn command2( self, name : &str ) -> ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   {

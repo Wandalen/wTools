@@ -61,7 +61,7 @@ fn main()
     #[ inline( always ) ]
     pub fn child( self, name : &str ) -> ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
     {
-      self._child_add::< ChildFormer< _ >, _, >()
+      self._child_subform_entry::< ChildFormer< _ >, _, >()
       .name( name )
     }
 
