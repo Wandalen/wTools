@@ -1157,21 +1157,30 @@ formation process of the `{stru}`.
     (
       r#"
 
-Initiates the addition of {field_ident} to the `{stru}` entity using a dedicated subformer.
+Initiates the scalar subformer for a `{0}` entity within a `{stru}`.
 
-This method configures and returns a subformer specialized for the `{0}` entities' formation process,
-which is part of the `{stru}` entity's construction. The subformer is set up with a specific end condition
-handled by `{subform_scalar_end}`, ensuring that the {field_ident} are properly integrated into the
-parent's structure once formed.
+This function creates a subformer specifically for handling scalar values associated with a `{0}` entity,
+leveraging a dedicated end structure to integrate the formed value seamlessly back into the `{stru}`.
 
-# Returns
+## Type Parameters
 
-Returns an instance of `Former2`, a subformer ready to begin the formation process for `{0}` entities,
-allowing for dynamic and flexible construction of the `{stru}` entity's {field_ident}.
+- `Former2`: Represents the specific former to be returned.
+- `Definition2`: Defines the former's setup including its end action and storage specifics.
+
+## Returns
+
+- `Former2`: An instance of the former configured to handle the scalar formation of a `{0}`.
+
+This method prepares the forming context, ensuring that the subforming process for a scalar field in `{stru}`
+is properly initialized with all necessary configurations, including the default end action for integration.
+
+## Usage
+
+This function is typically called internally by a more user-friendly method that abstracts away the complex
+generics, providing a cleaner interface for initiating subform operations on scalar fields.
 
       "#,
       format!( "{}", qt!{ #field_typ } ),
-      // xxx : outdated
     );
 
     let setters_code = qt!
@@ -1230,38 +1239,22 @@ allowing for dynamic and flexible construction of the `{stru}` entity's {field_i
       let doc = format!
       (
         r#"
-Provides a user-friendly interface to add an instancce of {field_ident} to the {stru}.
+Provides a user-friendly interface to begin subforming a scalar `{0}` field within a `{stru}`.
 
-# Returns
+This method abstracts the underlying complex generics involved in setting up the former, simplifying the
+user interaction needed to initiate the subform process for a scalar field associated with a `{0}`.
 
-Returns an instance of `Former2`, a subformer ready to begin the formation process for `{0}` entities,
-allowing for dynamic and flexible construction of the `{stru}` entity's {field_ident}.
+This method utilizes the more generic `{subform_scalar}` method to set up and return the subformer,
+providing a straightforward and type-safe interface for client code. It encapsulates details about the specific
+former and end action types, ensuring a seamless developer experience when forming parts of a `{stru}`.
 
         "#,
         format!( "{}", qt!{ #field_typ } ),
       );
-      // xxx : outdated
 
       qt!
       {
         #setters_code
-
-        // #[ doc = #doc ]
-        // #[ inline( always ) ]
-        // pub fn #setter_name( self ) ->
-        // < < #field_typ as former::Collection >::Val as former::EntityToFormer
-        //   <
-        //     <
-        //       < #field_typ as former::Collection >::Val as former::EntityToDefinition< Self, Self, #subform_scalar_end < Definition > >
-        //     >::Definition,
-        //   >
-        // >::Former
-        // {
-        //   self.#subform_scalar
-        //   ::< < < #field_typ as former::Collection >::Val as former::EntityToFormer< _ > >::Former, _, >()
-        //   // ::< #former< _ >, _, >()
-        // }
-        // xxx : clean
 
         #[ doc = #doc ]
         #[ inline( always ) ]
@@ -1287,14 +1280,6 @@ allowing for dynamic and flexible construction of the `{stru}` entity's {field_i
         // }
 
       }
-
-      // #[ inline( always ) ]
-      // pub fn child( self ) ->
-      // ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
-      // {
-      //   self._children_subform_scalar
-      //   ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
-      // }
 
     }
     else
