@@ -21,16 +21,8 @@ pub struct Parent
   child : Child,
 }
 
-impl< Definition > ParentFormer< Definition >
-where
-  Definition : former::FormerDefinition< Storage = < Parent as former::EntityToStorage >::Storage >,
-{
-
-}
-
 // == begin of generated
 
 // == end of generated
 
-include!( "./only_test/subformer_scalar_subform.rs" );
-// xxx : uncomment
+include!( "./only_test/subform_scalar.rs" );

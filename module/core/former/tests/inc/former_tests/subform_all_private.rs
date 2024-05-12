@@ -16,9 +16,9 @@ struct Child
 // #[ derive( Debug, Default, PartialEq ) ]
 struct Parent
 {
-  #[ subform_entry( name = _child ) ]
-  #[ subform_collection( name = children2 ) ]
   #[ scalar( name = children3 ) ]
+  #[ subform_collection( name = children2 ) ]
+  #[ subform_entry( name = _child ) ]
   children : Vec< Child >,
 }
 
@@ -51,6 +51,6 @@ where
 
 // == end of generated
 
-include!( "./only_test/subformer_subform_child.rs" );
-include!( "./only_test/subformer_collection_children2.rs" );
+include!( "./only_test/subform_entry_child.rs" );
+include!( "./only_test/subform_collection_children2.rs" );
 include!( "./only_test/scalar_children3.rs" );

@@ -95,11 +95,12 @@ mod former_tests
 
   // = subform scalar
 
-  // xxx
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subform_scalar_manual;
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subform_scalar;
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subform_scalar_manual;
+  mod subform_scalar_name;
 
   // = subform entry
 

@@ -1,6 +1,6 @@
 
 #[ test ]
-fn child()
+fn subforme_scalar()
 {
 
   let got = Parent::former()

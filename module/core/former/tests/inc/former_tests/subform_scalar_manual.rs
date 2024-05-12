@@ -28,7 +28,7 @@ where
 {
 
   #[ inline( always ) ]
-  pub fn _child_scalar_subformer< Former2, Definition2 >( self ) ->
+  pub fn _child_subform_scalar< Former2, Definition2 >( self ) ->
   Former2
   where
     Definition2 : former::FormerDefinition
@@ -60,7 +60,7 @@ where
   pub fn child( self ) ->
   ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
   {
-    self._child_scalar_subformer
+    self._child_subform_scalar
     ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
   }
 
@@ -137,7 +137,4 @@ where
 
 // == end of generated
 
-include!( "./only_test/subformer_scalar_subform.rs" );
-// xxx : uncomment
-// xxx : write few more tests to cover name, setter
-// xxx : extend all test
+include!( "./only_test/subform_scalar.rs" );

@@ -118,7 +118,6 @@ where
   // Definition::Types : former::FormerDefinitionTypes< Storage = < Parent as former::EntityToStorage >::Storage >,
 {
 
-  // xxx : rename
   #[ inline( always ) ]
   pub fn _children_subform_entry< Former2, Definition2 >( self ) ->
   Former2
@@ -200,4 +199,4 @@ where
 
 // == end of generated for Parent in context of attribute subform
 
-include!( "./only_test/subformer_subform_child.rs" );
+include!( "./only_test/subform_entry_child.rs" );

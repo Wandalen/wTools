@@ -106,4 +106,4 @@ where
 
 // == end of generated for Parent in context of attribute collection( former::VectorDefinition ) ]
 
-include!( "./only_test/subformer_collection.rs" );
+include!( "./only_test/subform_collection.rs" );

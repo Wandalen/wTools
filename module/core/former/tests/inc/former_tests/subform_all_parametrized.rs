@@ -20,9 +20,9 @@ where
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent< 'child >
 {
-  #[ subform_entry( name = _child ) ]
-  #[ subform_collection( name = children2 ) ]
   #[ scalar( name = children3 ) ]
+  #[ subform_collection( name = children2 ) ]
+  #[ subform_entry( name = _child ) ]
   children : Vec< Child< 'child, str > >,
 }
 
@@ -129,6 +129,6 @@ fn scalar()
 
 }
 
-// include!( "./only_test/subformer_subform_child.rs" );
-// include!( "./only_test/subformer_collection_children2.rs" );
-// include!( "./only_test/subformer_scalar_children3.rs" );
+// include!( "./only_test/subform_entry_child.rs" );
+// include!( "./only_test/subform_collection_children2.rs" );
+// include!( "./only_test/subform_scalar_children3.rs" );
