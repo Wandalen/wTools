@@ -456,28 +456,23 @@ scalar_setter_required
       (
         r#"
 
-impl< Definition > {}< Definition >
+impl< Definition > {former}< Definition >
 where
-  Definition : former::FormerDefinition< Storage = {} >,
+  Definition : former::FormerDefinition< Storage = {former_storage} >,
 {{
   #[ inline ]
-  pub fn {}< Src >( mut self, src : Src ) -> Self
+  pub fn {field_ident}< Src >( mut self, src : Src ) -> Self
   where
-    Src : ::core::convert::Into< {} >,
+    Src : ::core::convert::Into< {0} >,
   {{
-    debug_assert!( self.storage.{}.is_none() );
-    self.storage.{} = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
+    debug_assert!( self.storage.{field_ident}.is_none() );
+    self.storage.{field_ident} = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
     self
   }}
 }}
 
         "#,
-        former,
-        former_storage,
-        field_ident,
         format!( "{}", qt!{ #typ } ),
-        field_ident,
-        field_ident,
       );
       println!( "{hint}" );
       // xxx : use diag::report_print
@@ -680,7 +675,6 @@ where
 
     if attr.hint
     {
-      // xxx : maybe improve
       let hint = format!
       (
         r#"
@@ -706,13 +700,7 @@ where
 }}
 
         "#,
-        // former,
-        // former_storage,
-        // field_ident,
         format!( "{}", qt!{ #( #params, )* } ),
-        // format!( "{}", qt!{ #( #params, )* } ),
-        // subform_collection_end,
-        // subform_collection,
       );
       let about = format!
       (

@@ -1,4 +1,4 @@
-// Example former_custom_collection_setter.rs
+// Example former_custom_subform_collection.rs
 
 //!
 //! ## Example : Custom Subform Collection Setter

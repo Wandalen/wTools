@@ -15,13 +15,13 @@ fn main()
   #[ derive( Debug, Former ) ]
   pub struct StructWithCustomSetters
   {
-    #[ scalar( setter = false ) ]
+    // Use `hint = true` to gennerate sketch of setter.
+    #[ scalar( setter = false, hint = false ) ]
     word : String,
   }
 
   impl StructWithCustomSettersFormer
   {
-
     // Custom alternative setter for `word`
     pub fn word( mut self, value : impl Into< String > ) -> Self
     {
@@ -29,11 +29,15 @@ fn main()
       self.storage.word = Some( format!( "{}!", value.into() ) );
       self
     }
-
   }
 
   let example = StructWithCustomSetters::former()
   .word( "Hello" )
   .form();
   assert_eq!( example.word, "Hello!".to_string() );
+  dbg!( example );
+  //> StructWithCustomSetters {
+  //>     word: "Hello!",
+  //> }
+
 }
