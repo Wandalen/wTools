@@ -10,8 +10,9 @@ pub struct FieldAttributes
 {
   pub config : Option< AttributeConfig >,
   pub scalar : Option< AttributeScalarSetter >,
-  pub collection : Option< AttributeCollectionSetter >,
-  pub subform : Option< AttributeSubformSetter >,
+  pub subform_scalar : Option< AttributeSubformScalarSetter >,
+  pub subform_collection : Option< AttributeSubformCollectionSetter >,
+  pub subform_entry : Option< AttributeSubformEntrySetter >,
 }
 
 impl FieldAttributes
@@ -21,8 +22,9 @@ impl FieldAttributes
   {
     let mut config = None;
     let mut scalar = None;
-    let mut collection = None;
-    let mut subform = None;
+    let mut subform_scalar = None;
+    let mut subform_collection = None;
+    let mut subform_entry = None;
     for attr in attrs
     {
       let key_ident = attr.path().get_ident()
@@ -53,6 +55,7 @@ impl FieldAttributes
         }
         "scalar" =>
         {
+          // qqq : move this part of parsing into attribute. do that for all attributes
           match attr.meta
           {
             syn::Meta::List( ref meta_list ) =>
@@ -63,7 +66,22 @@ impl FieldAttributes
             {
               scalar.replace( syn::parse2::< AttributeScalarSetter >( Default::default() )? );
             },
-            _ => return_syn_err!( attr, "Expects an attribute of format `#[ scalar( setter = false ) ]` or `#[ scalar( setter = false, name = my_name ) ]`. \nGot: {}", qt!{ #attr } ),
+            _ => return_syn_err!( attr, "Expects an attribute of format `#[ scalar( setter = false ) ]` or `#[ scalar( setter = true, name = my_name ) ]`. \nGot: {}", qt!{ #attr } ),
+          }
+        }
+        "subform_scalar" =>
+        {
+          match attr.meta
+          {
+            syn::Meta::List( ref meta_list ) =>
+            {
+              subform_scalar.replace( syn::parse2::< AttributeSubformScalarSetter >( meta_list.tokens.clone() )? );
+            },
+            syn::Meta::Path( ref _path ) =>
+            {
+              subform_scalar.replace( syn::parse2::< AttributeSubformScalarSetter >( Default::default() )? );
+            },
+            _ => return_syn_err!( attr, "Expects an attribute of format `#[ subform_scalar( setter = false ) ]` or `#[ subform_scalar( setter = true, name = my_name ) ]`. \nGot: {}", qt!{ #attr } ),
           }
         }
         "subform_collection" =>
@@ -72,11 +90,11 @@ impl FieldAttributes
           {
             syn::Meta::List( ref meta_list ) =>
             {
-              collection.replace( syn::parse2::< AttributeCollectionSetter >( meta_list.tokens.clone() )? );
+              subform_collection.replace( syn::parse2::< AttributeSubformCollectionSetter >( meta_list.tokens.clone() )? );
             },
             syn::Meta::Path( ref _path ) =>
             {
-              collection.replace( syn::parse2::< AttributeCollectionSetter >( Default::default() )? );
+              subform_collection.replace( syn::parse2::< AttributeSubformCollectionSetter >( Default::default() )? );
             },
             _ => return_syn_err!( attr, "Expects an attribute of format `#[ subform_collection ]` or `#[ subform_collection( definition = former::VectorDefinition ) ]` if you want to use default collection defition. \nGot: {}", qt!{ #attr } ),
           }
@@ -87,11 +105,11 @@ impl FieldAttributes
           {
             syn::Meta::List( ref meta_list ) =>
             {
-              subform.replace( syn::parse2::< AttributeSubformSetter >( meta_list.tokens.clone() )? );
+              subform_entry.replace( syn::parse2::< AttributeSubformEntrySetter >( meta_list.tokens.clone() )? );
             },
             syn::Meta::Path( ref _path ) =>
             {
-              subform.replace( syn::parse2::< AttributeSubformSetter >( Default::default() )? );
+              subform_entry.replace( syn::parse2::< AttributeSubformEntrySetter >( Default::default() )? );
             },
             _ => return_syn_err!( attr, "Expects an attribute of format `#[ subform_entry ]` or `#[ subform_entry( name : child )` ], \nGot: {}", qt!{ #attr } ),
           }
@@ -103,7 +121,7 @@ impl FieldAttributes
       }
     }
 
-    Ok( FieldAttributes { config, scalar, collection, subform } )
+    Ok( FieldAttributes { config, scalar, subform_scalar, subform_collection, subform_entry } )
   }
 }
 
@@ -252,6 +270,93 @@ impl syn::parse::Parse for AttributeScalarSetter
   }
 }
 
+///
+/// Attribute to enable/disable scalar setter generation.
+///
+/// ## Example Input
+///
+/// A typical input to parse might look like the following:
+///
+/// ```ignore
+/// name = field_name, setter = true
+/// ```
+///
+
+pub struct AttributeSubformScalarSetter
+{
+  /// Optional identifier for naming the setter.
+  pub name : Option< syn::Ident >,
+  /// Controls the generation of a setter method. If false, a setter method is not generated.
+  pub setter : Option< bool >,
+  /// Specifies whether to provide a sketch of the subform setter as a hint.
+  /// Defaults to `false`, which means no hint is provided unless explicitly requested.
+  pub hint : bool,
+}
+
+#[ allow( dead_code ) ]
+impl AttributeSubformScalarSetter
+{
+
+  /// Should setter be generated or not?
+  pub fn setter( &self ) -> bool
+  {
+    self.setter.is_none() || self.setter.unwrap()
+  }
+
+}
+
+impl syn::parse::Parse for AttributeSubformScalarSetter
+{
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+  {
+    let mut name : Option< syn::Ident > = None;
+    let mut setter : Option< bool > = None;
+    let mut hint = false;
+
+    while !input.is_empty()
+    {
+      let lookahead = input.lookahead1();
+      if lookahead.peek( syn::Ident )
+      {
+        let ident : syn::Ident = input.parse()?;
+        if ident == "name"
+        {
+          input.parse::< syn::Token![ = ] >()?;
+          name = Some( input.parse()? );
+        }
+        else if ident == "setter"
+        {
+          input.parse::< syn::Token![ = ] >()?;
+          let value : syn::LitBool = input.parse()?;
+          setter = Some( value.value() );
+        }
+        else if ident == "hint"
+        {
+          input.parse::< syn::Token![ = ] >()?;
+          let value : syn::LitBool = input.parse()?;
+          hint = value.value;
+        }
+        else
+        {
+          return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `subform_scalar( name = myName, setter = true )`", ident ) ) );
+        }
+      }
+      else
+      {
+        return Err( syn::Error::new( input.span(), "Expected 'name', 'setter', or 'definition' identifier. For example: `subform_scalar( name = myName, setter = true )`" ) );
+      }
+
+      // Optional comma handling
+      if input.peek( syn::Token![,] )
+      {
+        input.parse::< syn::Token![,] >()?;
+      }
+    }
+
+    Ok( Self { name, setter, hint } )
+  }
+}
+
 /// Represents an attribute for configuring collection setter generation.
 ///
 /// This struct is part of a meta-programming approach to enable detailed configuration of nested structs or collections such as `Vec< E >, HashMap< K, E >` and so on.
@@ -265,7 +370,7 @@ impl syn::parse::Parse for AttributeScalarSetter
 /// ```
 ///
 
-pub struct AttributeCollectionSetter
+pub struct AttributeSubformCollectionSetter
 {
   /// Optional identifier for naming the setter.
   pub name : Option< syn::Ident >,
@@ -278,7 +383,7 @@ pub struct AttributeCollectionSetter
   pub hint : bool,
 }
 
-impl AttributeCollectionSetter
+impl AttributeSubformCollectionSetter
 {
 
   /// Should setter be generated or not?
@@ -289,7 +394,7 @@ impl AttributeCollectionSetter
 
 }
 
-impl syn::parse::Parse for AttributeCollectionSetter
+impl syn::parse::Parse for AttributeSubformCollectionSetter
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
@@ -365,7 +470,7 @@ impl syn::parse::Parse for AttributeCollectionSetter
 /// mame = field_name
 /// ```
 
-pub struct AttributeSubformSetter
+pub struct AttributeSubformEntrySetter
 {
   /// An optional identifier that names the setter. It is parsed from inputs
   /// like `name = my_field`.
@@ -378,7 +483,7 @@ pub struct AttributeSubformSetter
   pub hint : bool,
 }
 
-impl AttributeSubformSetter
+impl AttributeSubformEntrySetter
 {
 
   /// Should setter be generated or not?
@@ -389,7 +494,7 @@ impl AttributeSubformSetter
 
 }
 
-impl syn::parse::Parse for AttributeSubformSetter
+impl syn::parse::Parse for AttributeSubformEntrySetter
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {

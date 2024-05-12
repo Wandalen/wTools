@@ -350,7 +350,7 @@ scalar_setter_required
     );
 
     // collection setter
-    let ( setters_code, namespace_code ) = if let Some( _ ) = &self.attrs.collection
+    let ( setters_code, namespace_code ) = if let Some( _ ) = &self.attrs.subform_collection
     {
       let ( setters_code2, namespace_code2 ) = self.subform_collection_setter
       (
@@ -370,7 +370,7 @@ scalar_setter_required
     };
 
     // subform setter
-    let ( setters_code, namespace_code ) = if self.attrs.subform.is_some()
+    let ( setters_code, namespace_code ) = if self.attrs.subform_entry.is_some()
     {
       let ( setters_code2, namespace_code2 ) = self.subform_entry_setter
       (
@@ -504,7 +504,7 @@ where
   )
   -> Result< ( TokenStream, TokenStream ) >
   {
-    let attr = self.attrs.collection.as_ref().unwrap();
+    let attr = self.attrs.subform_collection.as_ref().unwrap();
     let field_ident = &self.ident;
     let field_typ = &self.non_optional_ty;
     let params = typ::type_parameters( &field_typ, .. );
@@ -703,7 +703,7 @@ field : {field_ident}"#,
     };
 
     // example : `former::VectorDefinition``
-    let subformer_definition = &self.attrs.collection.as_ref().unwrap().definition;
+    let subformer_definition = &self.attrs.subform_collection.as_ref().unwrap().definition;
 
     let subform_collection_end_doc = format!
     (
@@ -833,7 +833,7 @@ with the new content generated during the subforming process.
   -> Result< ( TokenStream, TokenStream ) >
   {
 
-    // if self.attrs.subform.is_none()
+    // if self.attrs.subform_entry.is_none()
     // {
     //   return Ok( qt!{ } );
     // }
@@ -841,7 +841,7 @@ with the new content generated during the subforming process.
     use convert_case::{ Case, Casing };
     let field_ident = self.ident;
     let field_typ = self.non_optional_ty;
-    let attr = self.attrs.subform.as_ref().unwrap();
+    let attr = self.attrs.subform_entry.as_ref().unwrap();
     // let params = typ::type_parameters( &self.non_optional_ty, .. );
 
     // example : `child`
@@ -1109,7 +1109,7 @@ formation process of the `{stru}`.
   pub fn collection_setter_name( &self ) -> Option< &syn::Ident >
   {
 
-    if let Some( ref attr ) = self.attrs.collection
+    if let Some( ref attr ) = self.attrs.subform_collection
     {
       if attr.setter()
       {
@@ -1131,7 +1131,7 @@ formation process of the `{stru}`.
   pub fn subform_setter_name( &self ) -> Option< &syn::Ident >
   {
 
-    if let Some( ref attr ) = self.attrs.subform
+    if let Some( ref attr ) = self.attrs.subform_entry
     {
       if attr.setter()
       {
@@ -1170,12 +1170,12 @@ formation process of the `{stru}`.
       }
     }
 
-    if self.attrs.collection.is_some() && !explicit
+    if self.attrs.subform_collection.is_some() && !explicit
     {
       return false;
     }
 
-    if self.attrs.subform.is_some() && !explicit
+    if self.attrs.subform_entry.is_some() && !explicit
     {
       return false;
     }
