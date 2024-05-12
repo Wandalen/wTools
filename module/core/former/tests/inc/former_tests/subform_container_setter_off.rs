@@ -40,10 +40,10 @@ where
   pub fn children2( self ) -> former::ContainerFormer::
   <
     Child,
-    former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, >
+    former::VectorDefinition< Child, Self, Self, ParentSubformContainerChildrenEnd< Definition >, >
   >
   {
-    self._children_container_former::< _ >()
+    self._children_subform_container::< _ >()
   }
 
 }

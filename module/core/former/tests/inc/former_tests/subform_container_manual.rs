@@ -30,21 +30,21 @@ where
 {
 
   #[ inline( always ) ]
-  pub fn _children_container_former< Former2 >( self ) -> Former2
+  pub fn _children_subform_container< Former2 >( self ) -> Former2
   where
-    Former2 : former::FormerBegin< former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, > >,
+    Former2 : former::FormerBegin< former::VectorDefinition< Child, Self, Self, ParentSubformContainerChildrenEnd< Definition >, > >,
   {
-    Former2::former_begin( None, Some( self ), ParentFormerAssignChildrenEnd::< Definition >::default() )
+    Former2::former_begin( None, Some( self ), ParentSubformContainerChildrenEnd::< Definition >::default() )
   }
 
   #[ inline( always ) ]
   pub fn children( self ) -> former::ContainerFormer::
   <
     Child,
-    former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, >
+    former::VectorDefinition< Child, Self, Self, ParentSubformContainerChildrenEnd< Definition >, >
   >
   {
-    self._children_container_former::< former::ContainerFormer::< Child, former::VectorDefinition< Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, > > >()
+    self._children_subform_container::< former::ContainerFormer::< Child, former::VectorDefinition< Child, Self, Self, ParentSubformContainerChildrenEnd< Definition >, > > >()
   }
 
 }
@@ -52,12 +52,12 @@ where
 //
 
 #[ doc = r"Callback to return original former after forming of container for `vec_1` is done. Callback replace content of container assigning new content from subformer's storage." ]
-pub struct ParentFormerAssignChildrenEnd< Definition >
+pub struct ParentSubformContainerChildrenEnd< Definition >
 {
   _phantom : core::marker::PhantomData< ( Definition, ) >,
 }
 
-impl< Definition > Default for ParentFormerAssignChildrenEnd< Definition >
+impl< Definition > Default for ParentSubformContainerChildrenEnd< Definition >
 {
 
   #[ inline( always ) ]
@@ -78,7 +78,7 @@ impl< Definition, > former::FormingEnd
     Vec< Child > as former::EntityToDefinitionTypes< ParentFormer< Definition, >, ParentFormer< Definition, > >
   >::Types
 >
-for ParentFormerAssignChildrenEnd< Definition >
+for ParentSubformContainerChildrenEnd< Definition >
 where
   Definition : former::FormerDefinition< Storage = ParentFormerStorage< > >,
 {

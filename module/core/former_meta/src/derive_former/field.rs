@@ -33,9 +33,9 @@ storage_field_optional
 storage_field_preform
 storage_field_name
 former_field_setter
+scalar_setter
 subform_entry_setter
 subform_container_setter
-scalar_setter
 
 scalar_setter_name
 container_setter_name
@@ -510,10 +510,10 @@ where
     let params = typ::type_parameters( &field_typ, .. );
 
     use convert_case::{ Case, Casing };
-    let former_assign_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
-    let former_assign_end = syn::Ident::new( &former_assign_end_name, field_ident.span() );
-    let field_assign_name = format!( "_{}_container_former", field_ident );
-    let field_assign = syn::Ident::new( &field_assign_name, field_ident.span() );
+    let subform_container_end_name = format!( "{}SubformContainer{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
+    let subform_container_end = syn::Ident::new( &subform_container_end_name, field_ident.span() );
+    let subform_container_name = format!( "_{}_subform_container", field_ident );
+    let subform_container = syn::Ident::new( &subform_container_name, field_ident.span() );
 
     // example : `former::VectorDefinition`
     let subformer_definition = &attr.definition;
@@ -526,27 +526,27 @@ where
           #( #params, )*
           Self,
           Self,
-          #former_assign_end< Definition >,
+          #subform_container_end< Definition >,
         >
       }
-      // former::VectorDefinition< String, Self, Self, Struct1FormerAssignVec1End, >
+      // former::VectorDefinition< String, Self, Self, Struct1SubformContainerVec1End, >
     }
     else
     {
       qt!
       {
         <
-          #field_typ as former::EntityToDefinition< Self, Self, #former_assign_end< Definition > >
+          #field_typ as former::EntityToDefinition< Self, Self, #subform_container_end< Definition > >
         >::Definition
       }
-      // < Vec< String > as former::EntityToDefinition< Self, Self, Struct1FormerAssignVec1End > >::Definition
+      // < Vec< String > as former::EntityToDefinition< Self, Self, Struct1SubformContainerVec1End > >::Definition
     };
 
     let doc = format!
     (
       "Container setter for the '{}' field. Method {} unlike method {} accept custom container subformer.",
       field_ident,
-      field_assign_name,
+      subform_container_name,
       field_ident,
     );
 
@@ -556,7 +556,7 @@ where
 
       #[ doc = #doc ]
       #[ inline( always ) ]
-      pub fn #field_assign< Former2 >( self ) -> Former2
+      pub fn #subform_container< Former2 >( self ) -> Former2
       where
         Former2 : former::FormerBegin
         <
@@ -567,10 +567,10 @@ where
           // Storage : former::ContainerAdd< Entry = < #field_typ as former::Container >::Entry >,
           Storage = #field_typ,
           Context = #former< #former_generics_ty >,
-          End = #former_assign_end< Definition >,
+          End = #subform_container_end< Definition >,
         >,
       {
-        Former2::former_begin( None, Some( self ), #former_assign_end::< Definition >::default() )
+        Former2::former_begin( None, Some( self ), #subform_container_end::< Definition >::default() )
       }
 
       // #[ inline( always ) ]
@@ -578,16 +578,16 @@ where
       // where
       //   Former2 : former::FormerBegin
       //   <
-      //     former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
+      //     former::HashSetDefinition< String, Self, Self, Struct1SubformContainerHashset1End< Definition > >,
       //   >,
-      //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > > : former::FormerDefinition
+      //   former::HashSetDefinition< String, Self, Self, Struct1SubformContainerHashset1End< Definition > > : former::FormerDefinition
       //   <
       //     Storage : former::ContainerAdd< Entry = < collection_tools::HashSet< String > as former::Container >::Entry >,
       //     Context = Struct1Former< Definition >,
-      //     End = Struct1FormerAssignHashset1End< Definition >,
+      //     End = Struct1SubformContainerHashset1End< Definition >,
       //   >,
       // {
-      //   Former2::former_begin( None, Some( self ), Struct1FormerAssignHashset1End::< Definition >::default() )
+      //   Former2::former_begin( None, Some( self ), Struct1SubformContainerHashset1End::< Definition >::default() )
       // }
 
     };
@@ -612,10 +612,10 @@ where
             // Storage : former::ContainerAdd< Entry = < #field_typ as former::Container >::Entry >,
             Storage = #field_typ,
             Context = #former< #former_generics_ty >,
-            End = #former_assign_end < Definition >,
+            End = #subform_container_end < Definition >,
           >,
         {
-          self.#field_assign::< former::ContainerFormer::
+          self.#subform_container::< former::ContainerFormer::
           <
             _,
             _,
@@ -628,20 +628,20 @@ where
         // pub fn hashset_1( self ) -> former::ContainerFormer::
         // <
         //   String,
-        //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
+        //   former::HashSetDefinition< String, Self, Self, Struct1SubformContainerHashset1End< Definition > >,
         // >
         // where
-        //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > > : former::FormerDefinition
+        //   former::HashSetDefinition< String, Self, Self, Struct1SubformContainerHashset1End< Definition > > : former::FormerDefinition
         //   <
         //     Storage : former::ContainerAdd< Entry = < collection_tools::HashSet< String > as former::Container >::Entry >,
         //     Context = Struct1Former< Definition >,
-        //     End = Struct1FormerAssignHashset1End< Definition >,
+        //     End = Struct1SubformContainerHashset1End< Definition >,
         //   >,
         // {
         //   self._hashset_1_assign::< former::ContainerFormer::
         //   <
         //     String,
-        //     former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
+        //     former::HashSetDefinition< String, Self, Self, Struct1SubformContainerHashset1End< Definition > >,
         //   > > ()
         // }
 
@@ -684,8 +684,8 @@ where
         field_ident,
         format!( "{}", qt!{ #( #params, )* } ),
         format!( "{}", qt!{ #( #params, )* } ),
-        former_assign_end,
-        field_assign,
+        subform_container_end,
+        subform_container,
       );
       let about = format!
       (
@@ -705,7 +705,7 @@ field : {field_ident}"#,
     // example : `former::VectorDefinition``
     let subformer_definition = &self.attrs.container.as_ref().unwrap().definition;
 
-    let former_assign_end_doc = format!
+    let subform_container_end_doc = format!
     (
       r#"
 A callback structure to manage the final stage of forming a `{0}` for the `{stru}` container.
@@ -748,14 +748,14 @@ with the new content generated during the subforming process.
     let r = qt!
     {
 
-      #[ doc = #former_assign_end_doc ]
-      pub struct #former_assign_end< Definition >
+      #[ doc = #subform_container_end_doc ]
+      pub struct #subform_container_end< Definition >
       {
         _phantom : core::marker::PhantomData< ( Definition, ) >,
       }
 
       impl< Definition > Default
-      for #former_assign_end< Definition >
+      for #subform_container_end< Definition >
       {
 
         #[ inline( always ) ]
@@ -775,7 +775,7 @@ with the new content generated during the subforming process.
         // VectorDefinitionTypes
         #subformer_definition_types,
       >
-      for #former_assign_end< Definition >
+      for #subform_container_end< Definition >
       where
         #former_generics_where
       {

@@ -9,17 +9,6 @@ mod former_tests
   #[ allow( unused_imports ) ]
   use super::*;
 
-  // = container former
-
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod container_former_common;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod container_former_vec;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod container_former_hashset;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod container_former_hashmap;
-
   // = basic
 
   mod a_basic_manual;
@@ -75,6 +64,17 @@ mod former_tests
   mod user_type_no_default;
   mod user_type_no_debug;
   mod visibility;
+
+  // = container former
+
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod container_former_common;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod container_former_vec;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod container_former_hashset;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod container_former_hashmap;
 
   // = subform container
 

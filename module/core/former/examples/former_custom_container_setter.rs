@@ -58,10 +58,10 @@ fn main()
     pub fn children( self ) -> former::ContainerFormer::
     <
       ( String, Child ),
-      former::HashMapDefinition< String, Child, Self, Self, ParentFormerAssignChildrenEnd< Definition >, >
+      former::HashMapDefinition< String, Child, Self, Self, ParentSubformContainerChildrenEnd< Definition >, >
     >
     {
-      self._children_container_former()
+      self._children_subform_container()
     }
 
   }
