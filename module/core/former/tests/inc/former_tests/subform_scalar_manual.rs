@@ -28,21 +28,6 @@ where
 {
 
   #[ inline( always ) ]
-  pub fn child( self ) ->
-  ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
-  {
-    self._child_scalar_subformer
-    ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
-  }
-
-}
-
-impl< Definition > ParentFormer< Definition >
-where
-  Definition : former::FormerDefinition< Storage = < Parent as former::EntityToStorage >::Storage >,
-{
-
-  #[ inline( always ) ]
   pub fn _child_scalar_subformer< Former2, Definition2 >( self ) ->
   Former2
   where
@@ -62,6 +47,21 @@ where
     Former2 : former::FormerBegin< Definition2 >,
   {
     Former2::former_begin( None, Some( self ), ParentFormerSubformScalarChildEnd::default() )
+  }
+
+}
+
+impl< Definition > ParentFormer< Definition >
+where
+  Definition : former::FormerDefinition< Storage = < Parent as former::EntityToStorage >::Storage >,
+{
+
+  #[ inline( always ) ]
+  pub fn child( self ) ->
+  ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
+  {
+    self._child_scalar_subformer
+    ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
   }
 
 }

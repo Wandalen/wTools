@@ -343,6 +343,8 @@ scalar_setter_required
   )
   -> Result< ( TokenStream, TokenStream ) >
   {
+
+    // scalar setter
     let namespace_code = qt! {};
     let setters_code = self.scalar_setter
     (
@@ -350,7 +352,27 @@ scalar_setter_required
       former_storage,
     );
 
-    // collection setter
+    // subform scalar setter
+    let ( setters_code, namespace_code ) = if self.attrs.subform_scalar.is_some()
+    {
+      let ( setters_code2, namespace_code2 ) = self.subform_scalar_setter
+      (
+        stru,
+        former,
+        former_storage,
+        former_generics_ty,
+        struct_generics_impl,
+        struct_generics_ty,
+        struct_generics_where,
+      )?;
+      ( qt! { #setters_code #setters_code2 }, qt! { #namespace_code #namespace_code2 } )
+    }
+    else
+    {
+      ( setters_code, namespace_code )
+    };
+
+    // subform collection setter
     let ( setters_code, namespace_code ) = if let Some( _ ) = &self.attrs.subform_collection
     {
       let ( setters_code2, namespace_code2 ) = self.subform_collection_setter
@@ -370,7 +392,7 @@ scalar_setter_required
       ( setters_code, namespace_code )
     };
 
-    // subform setter
+    // subform entry setter
     let ( setters_code, namespace_code ) = if self.attrs.subform_entry.is_some()
     {
       let ( setters_code2, namespace_code2 ) = self.subform_entry_setter
@@ -485,6 +507,7 @@ where
         self
       }
     }
+
   }
 
   ///
@@ -1092,7 +1115,7 @@ formation process of the `{stru}`.
   }
 
 
-  /// Generates setter functions to subform entries of a collection.
+  /// Generates setter functions to subform scalar.
   ///
   /// See `tests/inc/former_tests/subform_scalar_manual.rs` for example of generated code.
   ///
@@ -1156,18 +1179,19 @@ allowing for dynamic and flexible construction of the `{stru}` entity's {field_i
 
       #[ doc = #doc ]
       #[ inline( always ) ]
-      pub fn #subform_scalar< Former2, Definition2 >( self ) -> Former2
+      pub fn #subform_scalar< Former2, Definition2 >( self ) ->
+      Former2
       where
         Definition2 : former::FormerDefinition
         <
           End = #subform_scalar_end< Definition >,
-          Storage = < < #field_typ as former::Collection >::Val as former::EntityToStorage >::Storage,
+          Storage = < #field_typ as former::EntityToStorage >::Storage,
           Formed = Self,
           Context = Self,
         >,
         Definition2::Types : former::FormerDefinitionTypes
         <
-          Storage = < < #field_typ as former::Collection >::Val as former::EntityToStorage >::Storage,
+          Storage = < #field_typ as former::EntityToStorage >::Storage,
           Formed = Self,
           Context = Self,
         >,
@@ -1175,6 +1199,28 @@ allowing for dynamic and flexible construction of the `{stru}` entity's {field_i
       {
         Former2::former_begin( None, Some( self ), #subform_scalar_end::default() )
       }
+
+      // #[ inline( always ) ]
+      // pub fn _child_scalar_subformer< Former2, Definition2 >( self ) ->
+      // Former2
+      // where
+      //   Definition2 : former::FormerDefinition
+      //   <
+      //     End = ParentFormerSubformScalarChildEnd< Definition >,
+      //     Storage = < Child as former::EntityToStorage >::Storage,
+      //     Formed = Self,
+      //     Context = Self,
+      //   >,
+      //   Definition2::Types : former::FormerDefinitionTypes
+      //   <
+      //     Storage = < Child as former::EntityToStorage >::Storage,
+      //     Formed = Self,
+      //     Context = Self,
+      //   >,
+      //   Former2 : former::FormerBegin< Definition2 >,
+      // {
+      //   Former2::former_begin( None, Some( self ), ParentFormerSubformScalarChildEnd::default() )
+      // }
 
     };
 
@@ -1200,21 +1246,46 @@ allowing for dynamic and flexible construction of the `{stru}` entity's {field_i
       {
         #setters_code
 
+        // #[ doc = #doc ]
+        // #[ inline( always ) ]
+        // pub fn #setter_name( self ) ->
+        // < < #field_typ as former::Collection >::Val as former::EntityToFormer
+        //   <
+        //     <
+        //       < #field_typ as former::Collection >::Val as former::EntityToDefinition< Self, Self, #subform_scalar_end < Definition > >
+        //     >::Definition,
+        //   >
+        // >::Former
+        // {
+        //   self.#subform_scalar
+        //   ::< < < #field_typ as former::Collection >::Val as former::EntityToFormer< _ > >::Former, _, >()
+        //   // ::< #former< _ >, _, >()
+        // }
+        // xxx : clean
+
         #[ doc = #doc ]
         #[ inline( always ) ]
         pub fn #setter_name( self ) ->
-        < < #field_typ as former::Collection >::Val as former::EntityToFormer
+        < #field_typ as former::EntityToFormer
           <
             <
-              < #field_typ as former::Collection >::Val as former::EntityToDefinition< Self, Self, #subform_scalar_end < Definition > >
+              #field_typ as former::EntityToDefinition< Self, Self, #subform_scalar_end < Definition > >
             >::Definition,
           >
         >::Former
         {
           self.#subform_scalar
-          ::< < < #field_typ as former::Collection >::Val as former::EntityToFormer< _ > >::Former, _, >()
-          // ::< #former< _ >, _, >()
+          ::< < #field_typ as former::EntityToFormer< _ > >::Former, _, >()
         }
+
+        // #[ inline( always ) ]
+        // pub fn child( self ) ->
+        // ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
+        // {
+        //   self._child_scalar_subformer
+        //   ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
+        // }
+
       }
 
       // #[ inline( always ) ]
@@ -1488,6 +1559,11 @@ Essentially, this end action integrates the individually formed scalar value bac
       {
         explicit = true;
       }
+    }
+
+    if self.attrs.subform_scalar.is_some() && !explicit
+    {
+      return false;
     }
 
     if self.attrs.subform_collection.is_some() && !explicit

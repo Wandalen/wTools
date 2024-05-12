@@ -32,5 +32,5 @@ where
 
 // == end of generated
 
-// include!( "./only_test/subformer_scalar.rs" );
+include!( "./only_test/subformer_scalar_subform.rs" );
 // xxx : uncomment
