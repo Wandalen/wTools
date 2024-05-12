@@ -74,8 +74,6 @@ where
     Former2::former_begin( None, Some( self ), former::FormingEndClosure::new( on_end ) )
   }
 
-  // < < #field_ty as former::Container >::Val as former::ValToEntry< #field_ty > >
-
   // less generic, but more concise way to define custom subform setter
   #[ inline( always ) ]
   pub fn child( self, name : &str ) ->
@@ -120,6 +118,7 @@ where
   // Definition::Types : former::FormerDefinitionTypes< Storage = < Parent as former::EntityToStorage >::Storage >,
 {
 
+  // xxx : rename
   #[ inline( always ) ]
   pub fn _children_add< Former2, Definition2 >( self ) ->
   Former2

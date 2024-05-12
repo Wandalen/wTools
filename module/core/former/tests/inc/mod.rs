@@ -66,6 +66,12 @@ mod former_tests
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subformer_basic;
 
+  // xxx
+  // #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  // mod subformer_scalar;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subformer_scalar_manual;
+
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subformer_container;
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
@@ -103,6 +109,7 @@ mod former_tests
   mod subformer_subform_and_container_private;
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
   mod subformer_subform_and_container_parametrized;
+
 
 }
 
