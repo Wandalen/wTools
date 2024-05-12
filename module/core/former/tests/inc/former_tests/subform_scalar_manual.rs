@@ -68,7 +68,23 @@ where
 
 // = end
 
-/// Handles the completion of and element of subformer's collection.
+/// Represents the endpoint for the forming process of a scalar field managed by a subformer within a `Parent` entity.
+///
+/// This structure is a critical component of the forming process when using a subform scalar setter. It handles
+/// the finalization of the scalar field's value that has been configured through its dedicated subformer.
+/// Essentially, this end action integrates the individually formed scalar value back into the parent structure.
+///
+/// ## Type Parameters
+///
+/// - `Definition`: The type that defines the former setup for the `Parent` entity, influencing storage and behavior during forming.
+///
+/// ## Parameters of `call`
+///
+/// - `substorage`: Storage type specific to the `Child`, containing the newly formed scalar value.
+/// - `super_former`: An optional context of the `ParentFormer`, which will receive the value. The function ensures
+///   that this context is not `None` and inserts the formed value into the designated field within `Parent`'s storage.
+///
+
 pub struct ParentFormerSubformScalarChildEnd< Definition >
 {
   _phantom : core::marker::PhantomData< fn( Definition ) >,

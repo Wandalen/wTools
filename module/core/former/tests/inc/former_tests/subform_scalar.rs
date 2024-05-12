@@ -17,7 +17,7 @@ pub struct Child
 // #[ derive( Debug, Default, PartialEq ) ]
 pub struct Parent
 {
-  #[ scalar_subform ]
+  #[ subform_scalar ]
   child : Child,
 }
 

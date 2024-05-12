@@ -1269,36 +1269,25 @@ where
     (
       r#"
 
-Implements the `FormingEnd` trait for `{subform_scalar_end}` to handle the final
-stage of the forming process for a `{stru}` collection that contains `{0}` elements.
+Represents the endpoint for the forming process of a scalar field managed by a subformer within a `{stru}` entity.
 
-This implementation is tailored to manage the transition of {field_ident} elements from a substorage
-temporary state into their final state within the `{stru}`'s storage. The function ensures
-that the `{stru}`'s {field_ident} storage is initialized if not already set, and then adds the
-preformed elements to this storage.
+This structure is a critical component of the forming process when using a subform scalar setter. It handles
+the finalization of the scalar field's value that has been configured through its dedicated subformer.
+Essentially, this end action integrates the individually formed scalar value back into the parent structure.
 
-# Type Parameters
+## Type Parameters
 
-- `Types2`: Represents the specific types associated with the `Former` trait being applied,
-  which include storage, formed type, and context.
-- `Definition`: Defines the `FormerDefinition` that outlines the storage structure and
-  the end conditions for the formation process.
+- `Definition`: The type that defines the former setup for the `{stru}` entity, influencing storage and behavior during forming.
 
-# Parameters
+## Parameters of `call`
 
-- `substorage`: The storage from which {field_ident} elements are preformed and retrieved.
-- `super_former`: An optional context which, upon invocation, contains the `{former}`
-  instance being formed.
-
-# Returns
-
-Returns the updated `{former}` instance with newly added {field_ident}, completing the
-formation process of the `{stru}`.
+- `substorage`: Storage type specific to the `{0}`, containing the newly formed scalar value.
+- `super_former`: An optional context of the `{former}`, which will receive the value. The function ensures
+  that this context is not `None` and inserts the formed value into the designated field within `{stru}`'s storage.
 
       "#,
       format!( "{}", qt!{ #field_typ } ),
     );
-    // xxx : outdated
 
     let namespace_code = qt!
     {
@@ -1331,7 +1320,7 @@ formation process of the `{stru}`.
         >,
         Types2 : former::FormerDefinitionTypes
         <
-          Storage = < < #field_typ as former::Collection >::Val as former::EntityToStorage >::Storage,
+          Storage = < #field_typ as former::EntityToStorage >::Storage,
           Formed = #former< #former_generics_ty >,
           Context = #former< #former_generics_ty >,
         >,
@@ -1347,22 +1336,59 @@ formation process of the `{stru}`.
         -> Types2::Formed
         {
           let mut super_former = super_former.unwrap();
-          if super_former.storage.#field_ident.is_none()
-          {
-            super_former.storage.#field_ident = Some( Default::default() );
-          }
-          if let Some( ref mut field ) = super_former.storage.#field_ident
-          {
-            former::CollectionAdd::add
-            (
-              field,
-              < < #field_typ as former::Collection >::Val as former::ValToEntry< #field_typ > >
-              ::val_to_entry( former::StoragePreform::preform( substorage ) ),
-            );
-          }
+          debug_assert!( super_former.storage.#field_ident.is_none() );
+          super_former.storage.#field_ident = Some( ::core::convert::Into::into( former::StoragePreform::preform( substorage ) ) );
           super_former
         }
       }
+
+//       pub struct ParentFormerSubformScalarChildEnd< Definition >
+//       {
+//         _phantom : core::marker::PhantomData< fn( Definition ) >,
+//       }
+//
+//       impl< Definition > Default
+//       for ParentFormerSubformScalarChildEnd< Definition >
+//       {
+//         #[ inline( always ) ]
+//         fn default() -> Self
+//         {
+//           Self
+//           {
+//             _phantom : core::marker::PhantomData,
+//           }
+//         }
+//       }
+//
+//       impl< Types2, Definition > former::FormingEnd< Types2, >
+//       for ParentFormerSubformScalarChildEnd< Definition >
+//       where
+//         Definition : former::FormerDefinition
+//         <
+//           Storage = < Parent as former::EntityToStorage >::Storage,
+//         >,
+//         Types2 : former::FormerDefinitionTypes
+//         <
+//           Storage = < Child as former::EntityToStorage >::Storage,
+//           Formed = ParentFormer< Definition >,
+//           Context = ParentFormer< Definition >,
+//         >,
+//       {
+//         #[ inline( always ) ]
+//         fn call
+//         (
+//           &self,
+//           substorage : Types2::Storage,
+//           super_former : core::option::Option< Types2::Context >,
+//         )
+//         -> Types2::Formed
+//         {
+//           let mut super_former = super_former.unwrap();
+//           debug_assert!( super_former.storage.child.is_none() );
+//           super_former.storage.child = Some( ::core::convert::Into::into( former::StoragePreform::preform( substorage ) ) );
+//           super_former
+//         }
+//       }
 
     };
 
