@@ -35,7 +35,7 @@ full = [
 
 enabled = [
   "mod_interface/enabled",
-  "former/enabled",
+  # "former/enabled",
   "proper_path_tools/enabled",
   "error_tools/enabled",
   "iter_tools/enabled",
