@@ -117,12 +117,7 @@ pub( crate ) mod private
 
     #[ former( default = Verifier ) ]
     verifier : Verifier,
-
-    // #[ former( default = true ) ]
     
-    //
-    
-
     callback_fn : Option< CommandsAggregatorCallback >,
   }
 
@@ -135,15 +130,16 @@ pub( crate ) mod private
 
       let help_generator = std::mem::take( &mut ca.help_generator ).unwrap_or_default();
       let help_variants = std::mem::take( &mut ca.help_variants ).unwrap_or_else( || HashSet::from([ HelpVariants::All ]) );
-      dbg!(&ca.with_nature_sort);
-      dbg!(&ca.order);
-      let order = if ca.with_nature_sort.unwrap_or_default() {
-        std::mem::take(&mut ca.order)
-      } else {
+      
+      let order = if ca.with_nature_sort.unwrap_or_default() 
+      {
+        std::mem::take( &mut ca.order )
+      } 
+      else 
+      {
         None
       };
-      dbg!(&order);
-
+      
       if help_variants.contains( &HelpVariants::All )
       {
         HelpVariants::All.generate( &help_generator, dictionary, order.clone() );
@@ -173,8 +169,8 @@ pub( crate ) mod private
     {
       let name = name.into();
       let mut order = self.storage.order.unwrap_or_default();
-      order.push(name.clone());
-      self.storage.order = Some(order);
+      order.push( name.clone() );
+      self.storage.order = Some( order );
       let on_end = | command : CommandFormerStorage, super_former : Option< Self > | -> Self
       {
         let mut super_former = super_former.unwrap();

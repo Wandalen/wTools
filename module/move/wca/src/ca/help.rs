@@ -63,7 +63,6 @@ pub( crate ) mod private
   // qqq : for Barsik : make possible to change properties order
   pub( crate ) fn generate_help_content( dictionary : &Dictionary, o : HelpGeneratorOptions< '_ > ) -> String
   {
-    dbg!(&o);
     struct Row
     {
       name : String,
@@ -103,15 +102,12 @@ pub( crate ) mod private
       let footer = if o.with_footer
       {
         let full_subjects = command.subjects.iter().map( | subj | format!( "- {} [{}{:?}]", subj.hint, if subj.optional { "?" } else { "" }, subj.kind ) ).join( "\n\t" );
-        dbg!(o.with_nature_order);
         let full_properties =  if o.with_nature_order
         {
-          dbg!("with");
           format_table( command.properties_order.iter().map( | name | [ name.clone(), format!( "- {} [{}{:?}]", command.properties.get(name).unwrap().hint, if command.properties.get(name).unwrap().optional { "?" } else { "" }, command.properties.get(name).unwrap().kind ) ] ) ).unwrap().replace( '\n', "\n\t" )
         }
         else 
         {
-          dbg!("without");
           format_table( command.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| [ name.clone(), format!( "- {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ] ) ).unwrap().replace( '\n', "\n\t" )
         };
         format!
@@ -205,7 +201,6 @@ pub( crate ) mod private
     // .help
     fn general_help( &self, helper : &HelpGeneratorFn, dictionary : &mut Dictionary, order : Option< Vec< String > > )
     {
-      dbg!(&order);
       let phrase = "help".to_string();
 
       let grammar = dictionary.clone();
@@ -243,15 +238,13 @@ pub( crate ) mod private
               {
                 options = options.order( order.clone() );
               }
-              dbg!(&options.storage.with_nature_order);
               println!
               (
                 "Help command\n\n{text}",
                 text = generator.exec
                 (
                   &grammar,
-                  dbg!(options
-                    .form())
+                  options.form()
                 )
               );
             }
@@ -429,7 +422,6 @@ pub( crate ) mod private
     /// Executes the function to generate help content
     pub fn exec( &self, dictionary : &Dictionary, args : HelpGeneratorOptions< '_ > ) -> String
     {
-      dbg!(&args.with_nature_order);
       self.0( dictionary, args )
     }
   }

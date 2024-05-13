@@ -11,7 +11,7 @@ pub( crate ) mod private
   pub fn ca() -> CommandsAggregatorFormer
   {
     CommandsAggregator::former()
-    .with_nature_sort(true)
+
     .command( "publish" )
       .hint( "publish the specified package to `crates.io`" )
       .long_hint( "used to publish the specified local package, which is located in the provided directory path, to the `crates.io` crate registry." )
