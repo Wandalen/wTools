@@ -126,6 +126,17 @@ tests_impls!
     let inner_numbers : Vec< f64 > = numbers.into();
     a_id!( vec![ 100.0, 3.14 ], inner_numbers );
   }
+
+  fn values_list_display()
+  {
+    let origin_string = "some,string";
+    let string = Type::List( Type::String.into(), ',' ).try_cast( origin_string.into() ).unwrap();
+    a_id!( origin_string, string.to_string() );
+
+    let origin_string = "100;3.14";
+    let string = Type::List( Type::Number.into(), ';' ).try_cast( origin_string.into() ).unwrap();
+    a_id!( origin_string, string.to_string() );
+  }
 }
 
 //
@@ -137,4 +148,5 @@ tests_index!
   path,
   boolean,
   values_list,
+  values_list_display,
 }
