@@ -1,7 +1,9 @@
 #[allow(unused_imports)]
+
 use super::*;
 
 mod absolute_path;
+mod path_change_ext;
 mod path_common;
 mod path_ext;
 mod path_exts;
