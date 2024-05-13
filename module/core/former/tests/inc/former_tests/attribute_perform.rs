@@ -7,6 +7,8 @@ pub struct Struct0
   pub int_1 : i32,
 }
 
+// #[ derive( Debug, PartialEq ) ]
+// #[ derive( Debug, PartialEq, the_module::Former ) ] #[ debug ]
 #[ derive( Debug, PartialEq, the_module::Former ) ]
 #[ perform( fn perform1< 'a >() -> Option< &'a str > ) ]
 pub struct Struct1
@@ -14,7 +16,9 @@ pub struct Struct1
   pub int_1 : i32,
 }
 
-//
+// == begin of generated
+
+// == end of generated
 
 impl Struct1
 {

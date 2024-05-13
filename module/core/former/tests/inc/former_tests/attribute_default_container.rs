@@ -8,18 +8,18 @@ use std::collections::HashSet;
 pub struct Struct1
 {
 
-  #[ default( vec![ 1, 2, 3 ] ) ]
+  #[ former( default = vec![ 1, 2, 3 ] ) ]
   vec_ints : Vec< i32 >,
-  #[ default( hmap!{ 1 => 11 } ) ]
+  #[ former( default = hmap!{ 1 => 11 } ) ]
   hashmap_ints : HashMap< i32, i32 >,
-  #[ default( hset!{ 11 } ) ]
+  #[ former( default = hset!{ 11 } ) ]
   hashset_ints : HashSet< i32 >,
 
-  #[ default( vec![ "abc".to_string(), "def".to_string() ] ) ]
+  #[ former( default = vec![ "abc".to_string(), "def".to_string() ] ) ]
   vec_strings : Vec< String >,
-  #[ default( hmap!{ "k1".to_string() => "v1".to_string() } ) ]
+  #[ former( default = hmap!{ "k1".to_string() => "v1".to_string() } ) ]
   hashmap_strings : HashMap< String, String >,
-  #[ default( hset!{ "k1".to_string() } ) ]
+  #[ former( default = hset!{ "k1".to_string() } ) ]
   hashset_strings : HashSet< String >,
 
 }

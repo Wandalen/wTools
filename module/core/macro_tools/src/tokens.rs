@@ -6,7 +6,7 @@
 pub( crate ) mod private
 {
   use super::super::*;
-  use std::fmt;
+  use core::fmt;
 
   /// `Tokens` is a wrapper around `proc_macro2::TokenStream`.
   /// It is designed to facilitate the parsing and manipulation of token streams
@@ -63,9 +63,9 @@ pub( crate ) mod private
     }
   }
 
-  impl std::fmt::Display for Tokens
+  impl core::fmt::Display for Tokens
   {
-    fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f : &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
     {
       write!( f, "{}", self.inner.to_string() )
     }
@@ -137,9 +137,9 @@ pub( crate ) mod private
     }
   }
 
-  // impl std::fmt::Display for Equation
+  // impl core::fmt::Display for Equation
   // {
-  //   fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
+  //   fn fmt( &self, f : &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
   //   {
   //     write!( f, "{}", self.left.to_string() );
   //     write!( f, "{}", self.op.to_string() );

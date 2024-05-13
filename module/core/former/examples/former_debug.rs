@@ -13,8 +13,8 @@ fn main()
 
 
   #[ derive( Debug, PartialEq, Former ) ]
+  // Use `#[ debug ]` to expand and debug generate code.
   // #[ debug ]
-  // Uncomment to see what derive expand into
   pub struct UserProfile
   {
     age : i32,

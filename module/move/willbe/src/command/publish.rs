@@ -9,12 +9,13 @@ mod private
   use former::Former;
   use std::fmt::Write;
 
+  // qqq: `Former` forces the struct to be public
   #[ derive( Former ) ]
-  struct PublishProperties
+  pub struct PublishProperties
   {
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     dry : bool,
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     temp : bool,
   }
 

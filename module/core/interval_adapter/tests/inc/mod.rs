@@ -31,6 +31,8 @@ tests_impls!
     let got = [ 0, 3 ].into_interval();
     a_id!( got, exp );
 
+    // assert( false );
+
   }
 
   //
