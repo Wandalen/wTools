@@ -20,7 +20,7 @@ fn main()
     .property( "a-property" ).kind( Type::String ).optional( true ).end()
     .routine( | o : VerifiedCommand | { println!("a") } )
     .end()
-    .with_nature_sort( true )
+  .with_nature_sort( true )
   .perform();
 
   let args = std::env::args().skip( 1 ).collect::< Vec< String > >();

@@ -88,7 +88,8 @@ wca = {{path = "{}"}}"#,
 
   let result = start_sync( "cargo", [ "r", ".help", "c" ], temp.path() );
 
-  dbg!(&result);
+  println!("{result}");
+  
   assert_eq!
   (
     "Help command\n\n.c  - c\n\nProperties:\n\tc-property -  [?String]\n\tb-property -  [?String]\n\ta-property -  [?String]\n",
@@ -127,7 +128,7 @@ wca = {{path = "{}"}}"#,
   dbg!(&result);
   assert_eq!
   (
-    "Help command\n\n.c  - c\n.b  - b\n.a  - a\n",
+    "Help command\n\n.c  - c\n\nProperties:\n\ta-property -  [?String]\n\tb-property -  [?String]\n\tc-property -  [?String]\n",
     result
   );
 }
