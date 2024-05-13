@@ -77,7 +77,7 @@ You can do
 
 <!-- // zzz : aaa : rid off `#[ cfg( not( feature = "use_alloc" ) ) ]` -- Rid of by not relying on std -->
 ```rust
-# #[ cfg( all( feature = "enabled", feature = "collection_std" ) ) ]
+# #[ cfg( feature = "enabled" ) ]
 # #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 # {
 use collection_tools::HashSet;
