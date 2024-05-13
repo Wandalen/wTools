@@ -104,7 +104,7 @@ pub( crate ) mod private
         let full_subjects = command.subjects.iter().map( | subj | format!( "- {} [{}{:?}]", subj.hint, if subj.optional { "?" } else { "" }, subj.kind ) ).join( "\n\t" );
         let full_properties =  if o.with_nature_order
         {
-          format_table( command.properties_order.iter().map( | name | [ name.clone(), format!( "- {} [{}{:?}]", command.properties.get(name).unwrap().hint, if command.properties.get(name).unwrap().optional { "?" } else { "" }, command.properties.get(name).unwrap().kind ) ] ) ).unwrap().replace( '\n', "\n\t" )
+          format_table( command.properties_order.iter().map( | name | [ name.clone(), format!( "- {} [{}{:?}]", command.properties.get( name ).unwrap().hint, if command.properties.get( name ).unwrap().optional { "?" } else { "" }, command.properties.get( name ).unwrap().kind ) ] ) ).unwrap().replace( '\n', "\n\t" )
         }
         else 
         {
@@ -143,14 +143,17 @@ pub( crate ) mod private
     }
     else
     {
-      if let Some(order) = o.order{
+      if let Some(order) = o.order
+      {
         let rows = order
         .iter()
         .map( | k | dictionary.commands.get( k ).unwrap() )
         .map( for_single_command )
         .map( | row | [ row.name, row.args, row.hint ] );
         format_table( rows ).unwrap()
-      } else {
+      } 
+      else 
+      {
         let rows = dictionary.commands
         .iter()
         .sorted_by_key( |( name, _ )| *name )
