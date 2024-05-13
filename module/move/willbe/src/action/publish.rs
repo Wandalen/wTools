@@ -77,13 +77,13 @@ mod private
           {
             if let Some( pos ) = actually_published.iter().position( | p | p == &path )
             {
-              write!( f, "✅ {name} {}", version.new_version )?;
+              writeln!( f, "✅ {name} {}", version.new_version )?;
               // want to check that only expected packages actually published
               _ = actually_published.remove( pos );
             }
             else
             {
-              write!( f, "❌ {name} {}", version.old_version )?;
+              writeln!( f, "❌ {name} {}", version.old_version )?;
             }
           }
           if !actually_published.is_empty()
