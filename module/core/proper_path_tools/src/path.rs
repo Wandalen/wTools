@@ -309,6 +309,136 @@ pub( crate ) mod private
 
     Ok( std::format!( "{}_{}_{}_{}", timestamp, pid, tid, count ) )
   }
+  /// Joins a list of file system paths into a single absolute path.
+  ///
+  /// This function takes a list of file system paths and joins them into a single path,
+  /// normalizing and simplifying them as it goes. The result is returned as a PathBuf.
+  ///
+  /// Examples:
+  ///
+  /// ```
+  ///
+  /// let paths = vec![ "a/b/c", "/d/e", "f/g" ];
+  /// let joined = proper_path_tools::path::join_paths( paths.into_iter() );
+  /// assert_eq!( joined, std::path::PathBuf::from( "/d/e/f/g" ) );
+  ///
+  /// let paths = vec![];
+  /// let joined = proper_path_tools::path::join_paths( paths.into_iter() );
+  /// assert_eq!( joined, std::path::PathBuf::from( "" ) );
+  ///
+  /// let paths = vec![ "", "a/b", "", "c", "" ];
+  /// let joined = proper_path_tools::path::join_paths( paths.into_iter() );
+  /// assert_eq!( joined, std::path::PathBuf::from( "/a/b/c" ) );
+  ///
+  /// ```
+  pub fn join_paths< 'a, I >( paths : I ) -> std::path::PathBuf
+  where
+    I : Iterator< Item = &'a str >,
+  {
+    #[ cfg( feature = "no_std" ) ]
+    extern crate alloc;
+    #[ cfg( feature = "no_std" ) ]
+    use alloc::string::String;
+    #[ cfg( feature = "no_std" ) ]
+    use alloc::vec::Vec;
+
+    let mut result = String::new();
+
+    for path in paths {
+      let mut path = path.replace( '\\', "/" );
+      path = path.replace( ':', "" );
+
+      let mut added_slah = false;
+
+      // If the path is empty, skip it
+      if path.is_empty() 
+      {
+        continue;
+      }
+
+      // If the path starts with '/', clear the result and set it to '/'
+      if path.starts_with('/') 
+      {
+        result.clear();
+        result.push( '/' );
+      }
+      // If the result doesn't end with '/', append '/'
+      else if !result.ends_with( '/' ) 
+      {
+        added_slah = true;
+        result.push( '/' );
+      }
+      let components: Vec<&str> = path.split( '/' ).collect();
+      // Split the path into components
+      for ( idx, component ) in components.clone().into_iter().enumerate() 
+      {
+        match component 
+        {
+          "." => 
+          {
+            if ( result.ends_with( '/' ) && components.len() > idx + 1 && components[ idx + 1 ].is_empty() )
+            || components.len() == idx + 1
+            {
+              result.pop();
+            }
+          }
+          ".." => 
+          {
+            if result != "/" 
+            {
+              if added_slah 
+              {
+                result.pop();
+                added_slah = false;
+              }
+              let mut parts : Vec< _ > = result.split( '/' ).collect();
+              parts.pop();
+              if let Some( part ) = parts.last() 
+              {
+                if part.is_empty() 
+                {
+                  parts.push( "" );
+                }
+              }
+              result = parts.join( "/" );
+              if result.is_empty() 
+              {
+                result.push( '/' );
+              }
+            } else 
+            {
+              result.push_str( &components[ idx.. ].to_vec().join( "/" ) );
+              break;
+            }
+          }
+          _ => 
+          {
+            if !component.is_empty() 
+            {
+              if result.ends_with( '/' ) 
+              {
+                result.push_str( component );
+              } else 
+              {
+                result.push( '/' );
+                result.push_str( component );
+              }
+            } else if components.len() > idx + 1 && components[ idx + 1 ].is_empty() && path != "/" 
+            {
+              result.push( '/' );
+            }
+          }
+        }
+      }
+
+      if path.ends_with( '/' ) && result != "/" 
+      {
+        result.push( '/' );
+      }
+    }
+
+    result.into()
+  }
 
   /// Extracts multiple extensions from the given path.
   ///
@@ -719,7 +849,7 @@ pub( crate ) mod private
   /// assert_eq!( rebased_path, PathBuf::from( "/mnt/storage/documents/file.txt" ) );
   /// ```
   ///
-  pub fn rebase< T : AsRef< std::path::Path > >( file_path : T, new_path : T, old_path : Option< T > ) -> Option< std::path::PathBuf > 
+   pub fn rebase< T : AsRef< std::path::Path > >( file_path : T, new_path : T, old_path : Option< T > ) -> Option< std::path::PathBuf > 
   {
     use std::path::Path;
     use std::path::PathBuf;
@@ -740,6 +870,8 @@ pub( crate ) mod private
     rebased_path.push( main_file_path.strip_prefix( "/" ).unwrap_or( main_file_path ) );
     Some( normalize( rebased_path ) )
   }
+
+
   /// Computes the relative path from one path to another.
   ///
   /// This function takes two paths and returns a relative path from the `from` path to the `to` path.
@@ -853,6 +985,9 @@ pub( crate ) mod private
     PathBuf::from( relative_path )
   }
 
+
+
+
   /// Extracts the extension from the given path.
   ///
   /// This function takes a path and returns a string representing the extension of the file.
@@ -912,6 +1047,7 @@ crate::mod_interface! {
   protected use path_relative;
   protected use rebase;
   protected use path_common;
+  protected use join_paths;
   protected use without_ext;
   protected use is_glob;
   protected use normalize;

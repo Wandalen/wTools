@@ -5,6 +5,7 @@ use super::*;
 
 pub trait CloneAny{}
 pub trait End{}
+pub trait Formed{}
 pub trait OnEnd{}
 
 #[ derive( Clone, the_module::Former ) ]

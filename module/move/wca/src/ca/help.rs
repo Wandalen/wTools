@@ -29,7 +29,7 @@ pub( crate ) mod private
   pub struct HelpGeneratorOptions< 'a >
   {
     /// Prefix that will be shown before command name
-    #[ default( String::new() ) ]
+    #[ former( default = String::new() ) ]
     pub command_prefix : String,
     /// Show help for the specified commands
     pub for_commands : Vec< &'a Command >,

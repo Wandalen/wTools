@@ -1,4 +1,5 @@
 #[allow(unused_imports)]
+
 use super::*;
 
 mod absolute_path;
@@ -7,6 +8,7 @@ mod path_common;
 mod path_ext;
 mod path_exts;
 mod path_is_glob;
+mod path_join;
 mod path_normalize;
 mod path_relative;
 mod rebase_path;

@@ -14,35 +14,36 @@ mod private
   use channel::Channel;
   use error_tools::for_app::bail;
   use optimization::Optimization;
-  
+
+  // qqq: `Former` forces the struct to be public
   #[ derive( Former, Debug ) ]
-  struct TestsProperties
+  pub struct TestsProperties
   {
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     dry : bool,
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     with_stable : bool,
-    #[ default( false ) ]
+    #[ former( default = false ) ]
     with_nightly : bool,
-    #[ default( 0u32 ) ]
+    #[ former( default = 0u32 ) ]
     concurrent : u32,
-    #[ default( 1u32 ) ]
+    #[ former( default = 1u32 ) ]
     power : u32,
     include : Vec< String >,
-    #[ default ( [ "full".to_string(), "default".to_string() ] ) ]
+    #[ former( default  = [ "full".to_string(), "default".to_string() ] ) ]
     exclude : Vec< String >,
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     temp : bool,
     enabled_features : Vec< String >,
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     with_all_features : bool,
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     with_none_features : bool,
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     with_debug : bool,
-    #[ default( false ) ]
+    #[ former( default = false ) ]
     with_release : bool,
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     with_progress : bool,
   }
 

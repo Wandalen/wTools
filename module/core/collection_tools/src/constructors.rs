@@ -199,7 +199,7 @@ macro_rules! heap
 /// Creates a `HashMap` from a list of key-value pairs.
 ///
 /// The `hmap` macro allows for convenient creation of a `HashMap` with initial elements.
-/// 
+///
 /// # Origin
 ///
 /// This collection can be reexported from different crates:
@@ -276,9 +276,9 @@ macro_rules! hmap
 /// Creates a `HashSet` from a list of elements.
 ///
 /// The `hset` macro allows for convenient creation of a `HashSet` with initial elements.
-/// 
+///
 /// # Origin
-/// 
+///
 /// This collection can be reexported from different crates:
 /// - from `std`, if `no_std` flag if off
 /// - from `hashbrown`, if `use_alloc` flag if on
@@ -354,7 +354,7 @@ macro_rules! hset
 ///
 /// The `list` macro facilitates the creation of a `LinkedList` with initial elements.
 ///
-/// 
+///
 /// # Origin
 ///
 /// This collection is reexported from `alloc`.

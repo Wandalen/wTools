@@ -336,11 +336,11 @@ mod private
     optimization : Optimization,
     /// Determines whether to use default features in the test.
     /// Enabled by default.
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     with_default_features : bool,
     /// Determines whether to use all available features in the test.
     /// Disabled by default.
-    #[ default( false ) ]
+    #[ former( default = false ) ]
     with_all_features : bool,
     /// Specifies a list of features to be enabled in the test.
     enable_features : BTreeSet< String >,
@@ -349,7 +349,7 @@ mod private
     /// A boolean indicating whether to perform a dry run or not.
     dry : bool,
     /// RUST_BACKTRACE
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     backtrace : bool,
   }
 
