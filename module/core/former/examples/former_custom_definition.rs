@@ -1,8 +1,8 @@
 //! ## Example : Custom Definition
 //!
-//! Define a custom former definition and custom forming logic, and apply them to a container.
+//! Define a custom former definition and custom forming logic, and apply them to a collection.
 //!
-//! The example showcases how to accumulate elements into a container and then transform them into a single result
+//! The example showcases how to accumulate elements into a collection and then transform them into a single result
 //! using a custom `FormingEnd` implementation. This pattern is useful for scenarios where the formation process
 //! involves aggregation or transformation of input elements into a different type or form.
 
@@ -19,7 +19,7 @@ fn main()
   // This trait defines the types used during the forming process.
   impl former::FormerDefinitionTypes for Sum
   {
-    type Storage = Vec<i32>; // Container for the integers.
+    type Storage = Vec<i32>; // Collection for the integers.
     type Formed = i32;       // The final type after forming, which is a single integer.
     type Context = ();       // No additional context is used in this example.
   }
@@ -59,7 +59,7 @@ fn main()
   }
 
   // Use the custom `Former` to sum a list of integers.
-  let got = former::ContainerFormer::<i32, Sum>::new(Sum)
+  let got = former::CollectionFormer::<i32, Sum>::new(Sum)
   .add( 1 )  // Add an integer to the storage.
   .add( 2 )  // Add another integer.
   .add( 10 ) // Add another integer.

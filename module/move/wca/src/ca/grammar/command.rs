@@ -96,7 +96,7 @@ pub( crate ) mod private
     /// Phrase descriptor for command.
     pub phrase : String,
     /// Command subjects hints and types.
-    #[ subform( setter = true ) ]
+    #[ subform_entry( setter = true ) ]
     pub subjects : Vec< ValueDescription >,
     /// Hints and types for command options.
     pub properties : HashMap< String, ValueDescription >,
@@ -179,7 +179,7 @@ pub( crate ) mod private
     /// It returns a `ValueDescriptionFormer` which can be used to further build the super-former.
     pub fn subject( self ) -> ValueDescriptionAsSubformer< Self, impl ValueDescriptionAsSubformerEnd< Self > >
     {
-      self._subjects_add()
+      self._subjects_subform_entry()
     }
 
     /// Sets the name and other properties of the current property.

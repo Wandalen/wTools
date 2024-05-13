@@ -57,7 +57,7 @@ where
 /// Implementors can define how to transform or pass through the context during the forming process's completion.
 ///
 /// # Parameters
-/// - `Storage`: The type of the container being processed.
+/// - `Storage`: The type of the collection being processed.
 /// - `Context`: The type of the context that might be altered or returned upon completion.
 
 pub trait FormingEnd< Definition : crate::FormerDefinitionTypes >
@@ -65,7 +65,7 @@ pub trait FormingEnd< Definition : crate::FormerDefinitionTypes >
   /// Called at the end of the subforming process to return the modified or original context.
   ///
   /// # Parameters
-  /// - `container`: The container being processed.
+  /// - `collection`: The collection being processed.
   /// - `context`: Optional context to be transformed or returned.
   ///
   /// # Returns
@@ -85,9 +85,9 @@ where
   }
 }
 
-/// A `FormingEnd` implementation that directly returns the formed container as the final product of the forming process.
+/// A `FormingEnd` implementation that directly returns the formed collection as the final product of the forming process.
 ///
-/// This struct is particularly useful when the end result of the forming process is simply the formed container itself,
+/// This struct is particularly useful when the end result of the forming process is simply the formed collection itself,
 /// without needing to integrate or process additional contextual information. It's ideal for scenarios where the final
 /// entity is directly derived from the storage state without further transformations or context-dependent adjustments.
 #[ derive( Debug, Default ) ]
@@ -193,7 +193,7 @@ impl< Definition : crate::FormerDefinitionTypes > FormingEndClosure< Definition 
   ///
   /// # Parameters
   ///
-  /// * `closure` - A closure that matches the expected signature for transforming a container
+  /// * `closure` - A closure that matches the expected signature for transforming a collection
   ///               and context into a new context. This closure is stored and called by the
   ///               `call` method of the `FormingEnd` trait implementation.
   ///

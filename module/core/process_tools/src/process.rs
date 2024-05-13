@@ -298,6 +298,7 @@ pub( crate ) mod private
       }
     }
   }
+
   impl core::fmt::Display for Report
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> core::fmt::Result

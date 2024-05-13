@@ -30,7 +30,7 @@ where
   K : core::hash::Hash + std::cmp::Eq,
 {
   pub name : String,
-  // #[ container( definition = former::HashMapDefinition ) ]
+  // #[ subform_collection( definition = former::HashMapDefinition ) ]
   pub properties : collection_tools::HashMap< K, Property< K > >,
 }
 
@@ -318,9 +318,9 @@ where
   }
 
   #[ inline( always ) ]
-  pub fn properties( self ) -> former::ContainerFormer::< ( K, Property< K >, ), former::HashMapDefinition< K, Property< K >, Self, Self, ChildFormerPropertiesEnd > >
+  pub fn properties( self ) -> former::CollectionFormer::< ( K, Property< K >, ), former::HashMapDefinition< K, Property< K >, Self, Self, ChildFormerPropertiesEnd > >
   {
-    self.properties_set::< former::ContainerFormer::< ( K, Property< K >, ), former::HashMapDefinition< K, Property< K >, Self, Self, ChildFormerPropertiesEnd > >>()
+    self.properties_set::< former::CollectionFormer::< ( K, Property< K >, ), former::HashMapDefinition< K, Property< K >, Self, Self, ChildFormerPropertiesEnd > >>()
   }
 }
 
@@ -356,7 +356,7 @@ where
     let mut super_former = super_former.unwrap();
     if let Some( ref mut field ) = super_former.storage.properties
     {
-      former::ContainerAssign::assign( field, storage );
+      former::CollectionAssign::assign( field, storage );
     }
     else
     {

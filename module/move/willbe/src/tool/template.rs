@@ -107,7 +107,7 @@ mod private
   #[ derive( Debug, Default, Former ) ]
   pub struct TemplateParameters
   {
-    #[ subform( setter = false ) ]
+    #[ subform_entry( setter = false ) ]
     descriptors : Vec< TemplateParameterDescriptor >
   }
 
@@ -147,7 +147,7 @@ mod private
     pub fn parameter( self, name : &str ) ->
     TemplateParameterDescriptorAsSubformer< Self, impl TemplateParameterDescriptorAsSubformerEnd< Self > >
     {
-      self._descriptors_add::< TemplateParameterDescriptorFormer< _ >, _ >()
+      self._descriptors_subform_entry::< TemplateParameterDescriptorFormer< _ >, _ >()
       .parameter( name )
     }
   }
@@ -302,7 +302,7 @@ mod private
   pub struct TemplateFilesBuilder
   {
     /// Stores all file descriptors for current template.
-    #[ subform( setter = true ) ]
+    #[ subform_entry( setter = true ) ]
     #[ scalar( setter = false, hint = false ) ]
     pub files : Vec< TemplateFileDescriptor >,
   }
@@ -314,7 +314,7 @@ mod private
     #[ inline( always ) ]
     pub fn file( self ) -> TemplateFileDescriptorAsSubformer< Self, impl TemplateFileDescriptorAsSubformerEnd< Self > >
     {
-      self._files_add()
+      self._files_subform_entry()
     }
   }
 
