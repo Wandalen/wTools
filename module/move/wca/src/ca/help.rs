@@ -53,6 +53,11 @@ pub( crate ) mod private
     pub description_detailing : LevelOfDetail,
     /// If enabled - shows complete description of subjects and properties
     pub with_footer : bool,
+
+    order : Option< Vec< String > >,
+
+    #[ default( true ) ]
+    with_nature_order : bool,
   }
 
   // qqq : for Barsik : make possible to change properties order
@@ -90,13 +95,24 @@ pub( crate ) mod private
         LevelOfDetail::None => "".into(),
         _ if command.subjects.is_empty() => "".into(),
         LevelOfDetail::Simple => "< properties >".into(),
+        LevelOfDetail::Detailed if o.with_nature_order => command.properties_order.iter().map( | n | format!( "< {n}:{}{:?} >", if command.properties.get(n).unwrap().optional { "?" } else { "" }, command.properties.get(n).unwrap().kind ) ).collect::< Vec< _ > >().join( " " ),
         LevelOfDetail::Detailed => command.properties.iter().map( |( n, v )| format!( "< {n}:{}{:?} >", if v.optional { "?" } else { "" }, v.kind ) ).collect::< Vec< _ > >().join( " " ),
       };
 
       let footer = if o.with_footer
       {
         let full_subjects = command.subjects.iter().map( | subj | format!( "- {} [{}{:?}]", subj.hint, if subj.optional { "?" } else { "" }, subj.kind ) ).join( "\n\t" );
-        let full_properties = format_table( command.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| [ name.clone(), format!( "- {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ] ) ).unwrap().replace( '\n', "\n\t" );
+        dbg!(o.with_nature_order);
+        let full_properties =  if o.with_nature_order
+        {
+          dbg!("with");
+          format_table( command.properties_order.iter().map( | name | [ name.clone(), format!( "- {} [{}{:?}]", command.properties.get(name).unwrap().hint, if command.properties.get(name).unwrap().optional { "?" } else { "" }, command.properties.get(name).unwrap().kind ) ] ) ).unwrap().replace( '\n', "\n\t" )
+        }
+        else 
+        {
+          dbg!("without");
+          format_table( command.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| [ name.clone(), format!( "- {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ] ) ).unwrap().replace( '\n', "\n\t" )
+        };
         format!
         (
           "{}{}",
@@ -130,14 +146,22 @@ pub( crate ) mod private
     }
     else
     {
-      let rows = dictionary.commands
-      .iter()
-      .sorted_by_key( |( name, _ )| *name )
-      .map( |( _, cmd )| cmd )
-      .map( for_single_command )
-      .map( | row | [ row.name, row.args, row.hint ] );
-
-      format_table( rows ).unwrap()
+      if let Some(order) = o.order{
+        let rows = order
+        .iter()
+        .map( | k | dictionary.commands.get( k ).unwrap() )
+        .map( for_single_command )
+        .map( | row | [ row.name, row.args, row.hint ] );
+        format_table( rows ).unwrap()
+      } else {
+        let rows = dictionary.commands
+        .iter()
+        .sorted_by_key( |( name, _ )| *name )
+        .map( |( _, cmd )| cmd )
+        .map( for_single_command )
+        .map( | row | [ row.name, row.args, row.hint ] );
+        format_table( rows ).unwrap()
+      }
     }
   }
 
@@ -158,17 +182,20 @@ pub( crate ) mod private
   impl HelpVariants
   {
     /// Generates help commands
-    pub fn generate( &self, helper : &HelpGeneratorFn, dictionary : &mut Dictionary )
+    pub fn generate( &self, helper : &HelpGeneratorFn, dictionary : &mut Dictionary, order : Option< Vec< String > > )
     {
+      dbg!((dictionary.commands.len(), order.as_ref().map(|a|a.len())));
+      debug_assert!( dictionary.commands.len() == order.as_ref().map( | o | o.len() ).unwrap_or( dictionary.commands.len() ) );
+      dictionary.commands.keys().for_each( | k | assert!( order.as_ref().map( | a | a.contains( &k ) ).unwrap_or( true ) ) );
       match self
       {
         HelpVariants::All =>
         {
-          self.general_help( helper, dictionary );
+          self.general_help( helper, dictionary, order );
           self.subject_command_help( helper, dictionary );
           // self.dot_command_help( helper, dictionary );
         },
-        HelpVariants::General => self.general_help( helper, dictionary ),
+        HelpVariants::General => self.general_help( helper, dictionary, order ),
         HelpVariants::SubjectCommand => self.subject_command_help( helper, dictionary ),
         _ => unimplemented!()
         // HelpVariants::DotCommand => self.dot_command_help( helper, dictionary ),
@@ -176,7 +203,7 @@ pub( crate ) mod private
     }
 
     // .help
-    fn general_help( &self, helper : &HelpGeneratorFn, dictionary : &mut Dictionary )
+    fn general_help( &self, helper : &HelpGeneratorFn, dictionary : &mut Dictionary, order : Option< Vec< String > > )
     {
       let phrase = "help".to_string();
 
@@ -205,17 +232,23 @@ pub( crate ) mod private
             }
             else
             {
+              let mut options = HelpGeneratorOptions::former()
+              .command_prefix( "." )
+              .description_detailing( LevelOfDetail::Simple )
+              .subject_detailing( LevelOfDetail::Simple )
+              .property_detailing( LevelOfDetail::Simple )
+              .with_nature_order( order.is_some() );
+              if let Some(order) = order.as_ref() 
+              {
+                options = options.order( order.clone() );
+              }
               println!
               (
                 "Help command\n\n{text}",
                 text = generator.exec
                 (
                   &grammar,
-                  HelpGeneratorOptions::former()
-                  .command_prefix( "." )
-                  .description_detailing( LevelOfDetail::Simple )
-                  .subject_detailing( LevelOfDetail::Simple )
-                  .property_detailing( LevelOfDetail::Simple )
+                  options
                   .form()
                 )
               );

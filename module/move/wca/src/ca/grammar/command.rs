@@ -100,6 +100,8 @@ pub( crate ) mod private
     pub subjects : Vec< ValueDescription >,
     /// Hints and types for command options.
     pub properties : HashMap< String, ValueDescription >,
+    ///
+    pub properties_order : Vec< String >,
     /// Map of aliases.
     // Aliased key -> Original key
     pub properties_aliases : HashMap< String, String >,
@@ -209,6 +211,8 @@ pub( crate ) mod private
       {
         let mut super_former = super_former.unwrap();
         let mut properties = super_former.storage.properties.unwrap_or_default();
+        let mut order = super_former.storage.properties_order.unwrap_or_default();
+        
         let value = ValueDescription
         {
           hint : property.hint,
@@ -217,6 +221,7 @@ pub( crate ) mod private
         };
         debug_assert!( !properties.contains_key( &property.name ), "Property name `{}` is already used for `{:?}`", property.name, properties[ &property.name ] );
         properties.insert( property.name.clone(), value );
+        order.push( property.name.clone() );
 
         let mut aliases = super_former.storage.properties_aliases.unwrap_or_default();
         debug_assert!( !aliases.contains_key( &property.name ), "Name `{}` is already used for `{}` as alias", property.name, aliases[ &property.name ] );
@@ -225,6 +230,7 @@ pub( crate ) mod private
 
         super_former.storage.properties = Some( properties );
         super_former.storage.properties_aliases = Some( aliases );
+        super_former.storage.properties_order = Some( order );
 
         super_former
       };

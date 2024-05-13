@@ -59,3 +59,75 @@ wca = {{path = "{}"}}"#,
     result
   );
 }
+
+#[ test ]
+fn help_command_with_nature_order()
+{
+  let toml = format!
+  (
+    r#"[package]
+name = "wca_hello_test"
+version = "0.1.0"
+edition = "2021"
+[dependencies]
+wca = {{path = "{}"}}"#,
+    env!( "CARGO_MANIFEST_DIR" ).replace( "\\", "/" )
+  ) ;
+
+  let temp = arrange( "wca_help_test_nature_order" );
+  let mut file = File::create( temp.path().join( "Cargo.toml" ) ).unwrap();
+  file.write_all( toml.as_bytes() ).unwrap();
+  let result = start_sync( "cargo", [ "r", ".help" ], temp.path() );
+
+  // dbg!(&result);
+  assert_eq!
+  (
+    "Help command\n\n.c  - c\n.b  - b\n.a  - a\n",
+    result
+  );
+
+  let result = start_sync( "cargo", [ "r", ".help", "c" ], temp.path() );
+
+  dbg!(&result);
+  assert_eq!
+  (
+    "Help command\n\n.c  - c\n\nProperties:\n\tc-property -  [?String]\n\tb-property -  [?String]\n\ta-property -  [?String]\n",
+    result
+  );
+}
+
+#[ test ]
+fn help_command_with_lexicography_order()
+{
+  let toml = format!
+  (
+    r#"[package]
+name = "wca_hello_test"
+version = "0.1.0"
+edition = "2021"
+[dependencies]
+wca = {{path = "{}"}}"#,
+    env!( "CARGO_MANIFEST_DIR" ).replace( "\\", "/" )
+  ) ;
+
+  let temp = arrange( "wca_help_test_lexicography_order" );
+  let mut file = File::create( temp.path().join( "Cargo.toml" ) ).unwrap();
+  file.write_all( toml.as_bytes() ).unwrap();
+  let result = start_sync( "cargo", [ "r", ".help" ], temp.path() );
+
+  // dbg!(&result);
+  assert_eq!
+  (
+    "Help command\n\n.a  - a\n.b  - b\n.c  - c\n",
+    result
+  );
+
+  let result = start_sync( "cargo", [ "r", ".help", "c" ], temp.path() );
+
+  dbg!(&result);
+  assert_eq!
+  (
+    "Help command\n\n.c  - c\n.b  - b\n.a  - a\n",
+    result
+  );
+}

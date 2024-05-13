@@ -107,6 +107,10 @@ pub( crate ) mod private
     #[ default( Executor::former().form() ) ]
     executor : Executor,
 
+    #[ default( true ) ]
+    with_nature_sort : bool,
+    
+    command_order : Option< Vec< String > >,  
     help_generator : Option< HelpGeneratorFn >,
     #[ default( HashSet::from([ HelpVariants::All ]) ) ]
     help_variants : HashSet< HelpVariants >,
@@ -133,10 +137,14 @@ pub( crate ) mod private
     /// # Arguments
     ///
     /// * `name` - The name of the command.
-    pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::FormingEnd< Command, Self > >
+    pub fn command< IntoName >( mut self, name : IntoName ) -> CommandFormer< Self, impl former::FormingEnd< Command, Self > >
     where
       IntoName : Into< String >,
     {
+      let name = name.into();
+      let mut order = self.storage.command_order.unwrap_or_default();
+      order.push(name.clone());
+      self.storage.command_order = Some(order);
       let on_end = | command : Command, super_former : Option< Self > | -> Self
       {
         let mut super_former = super_former.unwrap();
@@ -234,16 +242,23 @@ pub( crate ) mod private
 
       let help_generator = std::mem::take( &mut ca.help_generator ).unwrap_or_default();
       let help_variants = std::mem::take( &mut ca.help_variants );
-
+      let order = if ca.with_nature_sort 
+      {
+        std::mem::take( &mut ca.command_order )
+      } 
+      else 
+      {
+        None
+      };
       if help_variants.contains( &HelpVariants::All )
       {
-        HelpVariants::All.generate( &help_generator, &mut ca.dictionary );
+        HelpVariants::All.generate( &help_generator, &mut ca.dictionary, order.clone() );
       }
       else
       {
         for help in help_variants.iter().sorted()
         {
-          help.generate( &help_generator, &mut ca.dictionary );
+          help.generate( &help_generator, &mut ca.dictionary, order.clone() );
         }
       }
 
