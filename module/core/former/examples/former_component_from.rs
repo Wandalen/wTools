@@ -14,10 +14,10 @@
 //! - `debug` : Optional attribute to enable debug-level output during the macro expansion process.
 //!
 
-#[ cfg( not( feature = "derive_component_from" ) ) ]
+#[ cfg( not( all( feature = "enabled", feature = "derive_component_from" ) ) ) ]
 fn main() {}
 
-#[ cfg( feature = "derive_component_from" ) ]
+#[ cfg( all( feature = "enabled", feature = "derive_component_from" ) ) ]
 fn main()
 {
 
