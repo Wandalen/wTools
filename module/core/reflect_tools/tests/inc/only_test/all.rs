@@ -7,7 +7,7 @@ fn basic_test()
   let exp = IsTransparent( true );
   a_id!( got, exp );
 
-  // FromInner
+  // From
 
   let got = IsTransparent::from( true );
   let exp = IsTransparent( true );

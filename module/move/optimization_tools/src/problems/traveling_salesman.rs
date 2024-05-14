@@ -17,7 +17,7 @@
 use std::collections::HashMap;
 use crate::hybrid_optimizer::*;
 
-use derive_tools::{ FromInner, InnerFrom };
+use derive_tools::{ From, InnerFrom };
 use deterministic_rand::{ Hrng, seq::{ SliceRandom, IteratorRandom } };
 use iter_tools::Itertools;
 
@@ -89,7 +89,7 @@ pub struct Node< T >
 pub struct NodeIndex( pub usize );
 
 /// Weight of graph edge.
-#[ derive( Debug, FromInner, InnerFrom, Clone, Copy ) ]
+#[ derive( Debug, From, InnerFrom, Clone, Copy ) ]
 pub struct EdgeWeight( pub f64 );
 
 /// Edge for undirected weighted graph.
