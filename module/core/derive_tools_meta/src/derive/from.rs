@@ -1,16 +1,18 @@
 use super::*;
-use macro_tools::{ type_struct, Result };
+use macro_tools::{ type_struct, struct_like, Result };
 
 //
 
 pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
+  // let parsed = syn::parse::< struct_like::StructLike >( input )?;
   let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
+
   let field_types = parsed.field_types();
   let field_names = parsed.field_names();
   let item_name = parsed.item.ident.clone();
-  let result =
-  match ( field_types.len(), field_names )
+
+  let result = match ( field_types.len(), field_names )
   {
     ( 0, _ ) => { generate_unit(item_name) },
     ( 1, Some( field_names ) ) => generate_from_single_field_named( &field_types[ 0 ], &field_names[ 0 ], item_name ),

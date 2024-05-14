@@ -71,31 +71,6 @@ pub( crate ) mod private
     }
   }
 
-  // impl quote::spanned::Spanned for StructLike
-  // {
-  //   fn span( &self ) -> proc_macro2::Span
-  //   {
-  //     match self
-  //     {
-  //       StructLike::Unit =>
-  //       {
-  //         // You might want to return a default or dummy span since Unit types generally don't have associated spans.
-  //         proc_macro2::Span::call_site()
-  //       },
-  //       StructLike::Struct( item_struct ) =>
-  //       {
-  //         // Delegate to the span of the `ItemStruct`
-  //         quote::spanned::Spanned::span( item_struct )
-  //       },
-  //       StructLike::Union( item_union ) =>
-  //       {
-  //         // Delegate to the span of the `ItemUnion`
-  //         quote::spanned::Spanned::span( item_union )
-  //       },
-  //     }
-  //   }
-  // }
-
   impl StructLike
   {
 
@@ -137,27 +112,6 @@ pub( crate ) mod private
       self.fields().next()
       // .ok_or( syn_err!( self.span(), "Expects at least one field" ) )
     }
-
-//     /// Retrieves the name of the first field of the struct, if available.
-//     ///
-//     /// Returns `Some` with the field identifier for named fields, or `None` for unnamed fields.
-//     /// Returns an error if the struct has no fields
-//     pub fn first_field_name( &self ) -> Result< Option< syn::Ident > >
-//     {
-//       let maybe_field = match self.item.fields
-//       {
-//         syn::Fields::Named( ref fields ) => fields.named.first(),
-//         syn::Fields::Unnamed( ref fields ) => fields.unnamed.first(),
-//         _ => return Err( syn_err!( self.item.fields.span(), "Expects fields" ) ),
-//       };
-//
-//       if let Some( field ) = maybe_field
-//       {
-//         return Ok( field.ident.clone() )
-//       }
-//
-//       return Err( syn_err!( self.item.span(), "Expects type for fields" ) );
-//     }
 
   }
 
