@@ -1,5 +1,5 @@
 
-name : rust_push
+name : for_pr_push
 
 on :
 
@@ -21,7 +21,7 @@ on :
 
 concurrency :
 
-  group : fast_rust_push_${{ inputs.module_name }}_${{ github.ref }}_
+  group : for_pr_rust_push_${{ inputs.module_name }}_${{ github.ref }}_
     ${{ contains( inputs.commit_message, '+test' ) || startsWith( inputs.commit_message, 'merge' ) }}
   cancel-in-progress : true
 
@@ -36,7 +36,7 @@ jobs :
   will_test :
     if : contains( inputs.commit_message, '+test' ) || contains( inputs.commit_message, 'merge' )
     concurrency :
-      group : fast_rust_push_${{ inputs.module_name }}_${{ github.ref }}_${{ matrix.os }}
+      group : for_pr_rust_push_${{ inputs.module_name }}_${{ github.ref }}_${{ matrix.os }}
       cancel-in-progress : true
     strategy :
       fail-fast : false

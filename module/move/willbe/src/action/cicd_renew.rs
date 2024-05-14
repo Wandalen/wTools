@@ -166,7 +166,7 @@ mod private
 
     file_write( &workflow_root.join( "standard_rust_push.yml" ), include_str!( "../../template/workflow/standard_rust_push.yml" ) )?;
 
-    file_write( &workflow_root.join( "fast_rust_push.yml" ), include_str!( "../../template/workflow/fast_rust_push.yml" ) )?;
+    file_write( &workflow_root.join( "for_pr_rust_push.yml" ), include_str!( "../../template/workflow/for_pr_rust_push.yml" ) )?;
 
     file_write( &workflow_root.join( "standard_rust_scheduled.yml" ), include_str!( "../../template/workflow/standard_rust_scheduled.yml" ) )?;
 
