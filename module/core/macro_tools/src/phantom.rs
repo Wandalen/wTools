@@ -116,7 +116,7 @@ pub( crate ) mod private
   /// let generics: Punctuated< GenericParam, Comma > = parse_quote! { 'a, T, const N : usize };
   /// let phantom_type = tuple( &generics );
   /// println!( "{}", quote::quote! { #phantom_type } );
-  /// // Output: core::marker::PhantomData< ( &'a (), *const T, N ) >
+  /// // Output : ::core::marker::PhantomData< ( &'a (), *const T, N ) >
   /// ```
   ///
   pub fn tuple( input : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma > ) -> syn::Type
@@ -165,7 +165,7 @@ pub( crate ) mod private
 
     let result : syn::Type = syn::parse_quote!
     {
-      core::marker::PhantomData< #generics_tuple_type >
+      ::core::marker::PhantomData< #generics_tuple_type >
     };
 
     result

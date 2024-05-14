@@ -1,6 +1,13 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
+pub mod core {}
+pub mod std {}
+pub trait CloneAny{}
+pub trait Context{}
+pub trait Formed{}
+pub trait OnEnd{}
+
 #[ allow( dead_code ) ]
 type Option = ();
 #[ allow( dead_code ) ]
@@ -28,8 +35,8 @@ type HashMap = ();
 pub struct Struct1
 {
   vec_1 : Vec< String >,
-  hashmap_1 : std::collections::HashMap< String, String >,
-  hashset_1 : std::collections::HashSet< String >,
+  hashmap_1 : ::std::collections::HashMap< String, String >,
+  hashset_1 : ::std::collections::HashSet< String >,
 }
 
 //
