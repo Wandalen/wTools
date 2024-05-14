@@ -51,6 +51,8 @@ mod from_inner_multiple_named_test;
 mod from_inner_unit_test;
 #[ cfg( feature = "derive_from" ) ]
 mod from_inner_multiple_test;
+#[ cfg( feature = "derive_from" ) ]
+mod from_inner_variants;
 
 mod inner_from_manual_test;
 mod inner_from_named_manual_test;
