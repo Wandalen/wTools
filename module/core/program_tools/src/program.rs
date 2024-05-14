@@ -94,7 +94,7 @@ pub( crate ) mod private
     #[ inline ]
     fn from( src : &'static str ) -> Self
     {
-      Self::FromStr( core::convert::Into::into( src ) )
+      Self::FromStr( src )
     }
   }
 
@@ -103,7 +103,7 @@ pub( crate ) mod private
     #[ inline ]
     fn from( src : &'static [ u8 ] ) -> Self
     {
-      Self::FromBin( core::convert::Into::into( src ) )
+      Self::FromBin( src )
     }
   }
 
