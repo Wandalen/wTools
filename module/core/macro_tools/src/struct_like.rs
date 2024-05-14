@@ -132,32 +132,12 @@ pub( crate ) mod private
     }
 
     /// Extract the first field.
-    pub fn first_field_type( &self ) -> Option< &syn::Field >
+    pub fn first_field( &self ) -> Option< &syn::Field >
     {
       self.fields().next()
       // .ok_or( syn_err!( self.span(), "Expects at least one field" ) )
     }
 
-//     /// Retrieves the type of the first field of the struct.
-//     ///
-//     /// Returns the type if the struct has at least one field, otherwise returns an error.
-//     pub fn first_field_type( &self ) -> Result< syn::Type >
-//     {
-//       let maybe_field = match self.item.fields
-//       {
-//         syn::Fields::Named( ref fields ) => fields.named.first(),
-//         syn::Fields::Unnamed( ref fields ) => fields.unnamed.first(),
-//         _ => return Err( syn_err!( self.item.fields.span(), "Expects either named or unnamed field" ) ),
-//       };
-//
-//       if let Some( field ) = maybe_field
-//       {
-//         return Ok( field.ty.clone() )
-//       }
-//
-//       return Err( syn_err!( self.item.span(), "Expects at least one field" ) );
-//     }
-//
 //     /// Retrieves the name of the first field of the struct, if available.
 //     ///
 //     /// Returns `Some` with the field identifier for named fields, or `None` for unnamed fields.
