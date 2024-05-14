@@ -112,7 +112,7 @@ default-features = false
 ## derive
 
 [workspace.dependencies.derive_tools]
-version = "~0.21.0"
+version = "~0.22.0"
 path = "module/core/derive_tools"
 default-features = false
 features = [ "enabled" ]
@@ -206,11 +206,11 @@ default-features = false
 
 [workspace.dependencies.former_stable]
 package = "former"
-version = "=0.15.0"
+version = "=2.0.0"
 default-features = false
 
 [workspace.dependencies.former_meta]
-version = "~1.1.0"
+version = "~2.0.0"
 path = "module/core/former_meta"
 default-features = false
 
