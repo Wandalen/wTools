@@ -42,7 +42,7 @@ mod former_tests
   mod name_collision_context;
   mod name_collision_end;
   mod name_collision_on_end;
-  // mod name_collision_core;
+  mod name_collision_core;
 
   // = parametrization
 
