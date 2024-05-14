@@ -3,6 +3,9 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
+pub mod core {}
+pub mod std {}
+pub mod marker {}
 pub trait CloneAny{}
 pub trait Context{}
 pub trait Formed{}
@@ -13,7 +16,7 @@ pub trait OnEnd{}
 // #[ derive( Clone ) ]
 pub struct End
 {
-  inner : std::sync::Arc< core::cell::RefCell< dyn CloneAny > >
+  inner : ::std::sync::Arc< ::core::cell::RefCell< dyn CloneAny > >
 }
 
 // = begin_coercing of generated

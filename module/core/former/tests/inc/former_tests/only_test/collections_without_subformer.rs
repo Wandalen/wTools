@@ -20,7 +20,7 @@ tests_impls!
     a_id!( former.context, None );
     a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnPreformed ) ) );
     let former2 = Struct1Former::< Struct1FormerDefinition >::new_coercing( the_module::ReturnPreformed );
-    a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
+    a_id!( ::std::mem::size_of_val( &former ), ::std::mem::size_of_val( &former2 ) );
 
     let command = Struct1::former().form();
     a_id!( command.vec_1, Vec::< String >::new() );
