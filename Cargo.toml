@@ -104,7 +104,7 @@ default-features = false
 features = [ "enabled" ]
 
 [workspace.dependencies.collection_tools]
-version = "~0.5.0"
+version = "~0.6.0"
 path = "module/core/collection_tools"
 default-features = false
 
@@ -200,7 +200,7 @@ path = "module/core/for_each"
 default-features = false
 
 [workspace.dependencies.former]
-version = "~1.0.0"
+version = "~2.0.0"
 path = "module/core/former"
 default-features = false
 
