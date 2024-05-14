@@ -2,8 +2,6 @@
 pub( crate ) mod private
 {
 
-  // xxx2 : get completed
-
   use former::Former;
   use std::
   {
@@ -11,11 +9,54 @@ pub( crate ) mod private
     // process::Command,
   };
 
+  // xxx2 : get completed
+
   #[ derive( Debug, Default, Former ) ]
-  pub struct SourceFile
+  // #[ debug ]
+  pub struct Program
   {
-    file_path : PathBuf,
-    data : GetData,
+    pub write_path : Option< PathBuf >,
+    pub read_path : Option< PathBuf >,
+    #[ subform_entry( name = entry ) ]
+    pub entries : Vec< Entry >,
+    #[ subform_entry( name = source ) ]
+    pub sources : Vec< SourceFile >,
+    pub cargo_file : Option< CargoFile >,
+  }
+
+  #[ derive( Debug, Default, Former ) ]
+  pub struct Plan
+  {
+    #[ subform_scalar ]
+    pub program : Program,
+    pub calls : Vec< Call >,
+  }
+
+  #[ derive( Debug, Default ) ]
+  pub struct Call
+  {
+    pub action : Action,
+    pub current_path : Option< PathBuf >,
+    pub args : Vec< String >,
+    pub index_of_entry : i32,
+  }
+
+  #[ derive( Debug, Default ) ]
+  pub enum Action
+  {
+    #[ default ]
+    Run,
+    Build,
+    Test,
+  }
+
+  #[ derive( Debug, Default ) ]
+  pub enum EntryType
+  {
+    #[ default ]
+    Bin,
+    Lib,
+    Test,
   }
 
   #[ derive( Debug, Default, Former ) ]
@@ -26,31 +67,17 @@ pub( crate ) mod private
   }
 
   #[ derive( Debug, Default, Former ) ]
-  pub struct CargoFile
+  pub struct SourceFile
   {
     file_path : PathBuf,
     data : GetData,
   }
 
   #[ derive( Debug, Default, Former ) ]
-  // #[ debug ]
-  pub struct Program
+  pub struct CargoFile
   {
-    write_path : Option< PathBuf >,
-    read_path : Option< PathBuf >,
-    #[ subform_entry( name = entry ) ]
-    entries : Vec< Entry >,
-    #[ subform_entry( name = source ) ]
-    sources : Vec< SourceFile >,
-    cargo_file : Option< CargoFile >,
-  }
-
-  #[ derive( Debug, Default, Former ) ]
-  pub struct ProgramPlan
-  {
-    // #[ embed ]
-    program : Program,
-    calls : Vec< ProgramCall >,
+    file_path : PathBuf,
+    data : GetData,
   }
 
   #[ derive( Debug ) ]
@@ -70,36 +97,26 @@ pub( crate ) mod private
     }
   }
 
-  #[ derive( Debug, Default ) ]
-  pub struct ProgramCall
-  {
-    action : ProgramAction,
-    current_path : Option< PathBuf >,
-    args : Vec< String >,
-    index_of_entry : i32,
-  }
-
-  #[ derive( Debug, Default ) ]
-  pub enum ProgramAction
-  {
-    #[ default ]
-    Run,
-    Build,
-    Test,
-  }
-
-  #[ derive( Debug, Default ) ]
-  pub enum EntryType
-  {
-    #[ default ]
-    Bin,
-    Lib,
-    Test,
-  }
-
 }
 
 crate::mod_interface!
 {
-  // protected use run;
+
+  exposed use
+  {
+    Program,
+  };
+
+  protected use
+  {
+    Plan,
+    Call,
+    Action,
+    EntryType,
+    Entry,
+    SourceFile,
+    CargoFile,
+    GetData,
+  };
+
 }
