@@ -25,12 +25,12 @@
 //!
 
 
-#[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+#[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc",not( feature = "no_std" ) ) ) ) ) ]
 fn main()
 {}
 
 // Ensures the example only compiles when the appropriate features are enabled.
-#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+#[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc",not( feature = "no_std" ) ) ) ) ]
 fn main()
 {
   use former::Former;

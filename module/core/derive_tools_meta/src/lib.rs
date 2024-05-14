@@ -83,52 +83,52 @@ pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
   }
 }
 
-///
-/// Alias for derive `From`. Provides an automatic `From` implementation for struct wrapping a single value.
-///
-/// This macro simplifies the conversion of an inner type to an outer struct type
-/// when the outer type is a simple wrapper around the inner type.
-///
-/// ## Example Usage
-///
-/// Instead of manually implementing `From< bool >` for `IsTransparent`:
-///
-/// ```rust
-/// pub struct IsTransparent( bool );
-///
-/// impl From< bool > for IsTransparent
-/// {
-///   #[ inline( always ) ]
-///   fn from( src : bool ) -> Self
-///   {
-///     Self( src )
-///   }
-/// }
-/// ```
-///
-/// Use `#[ derive( FromInner ) ]` to automatically generate the implementation:
-///
-/// ```rust
-/// # use derive_tools_meta::*;
-/// #[ derive( FromInner ) ]
-/// pub struct IsTransparent( bool );
-/// ```
-///
-/// The macro facilitates the conversion without additional boilerplate code.
-///
-
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_from" ) ]
-#[ proc_macro_derive( FromInner ) ]
-pub fn from_inner( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
-{
-  let result = derive::from::from( input );
-  match result
-  {
-    Ok( stream ) => stream.into(),
-    Err( err ) => err.to_compile_error().into(),
-  }
-}
+// ///
+// /// Alias for derive `From`. Provides an automatic `From` implementation for struct wrapping a single value.
+// ///
+// /// This macro simplifies the conversion of an inner type to an outer struct type
+// /// when the outer type is a simple wrapper around the inner type.
+// ///
+// /// ## Example Usage
+// ///
+// /// Instead of manually implementing `From< bool >` for `IsTransparent`:
+// ///
+// /// ```rust
+// /// pub struct IsTransparent( bool );
+// ///
+// /// impl From< bool > for IsTransparent
+// /// {
+// ///   #[ inline( always ) ]
+// ///   fn from( src : bool ) -> Self
+// ///   {
+// ///     Self( src )
+// ///   }
+// /// }
+// /// ```
+// ///
+// /// Use `#[ derive( FromInner ) ]` to automatically generate the implementation:
+// ///
+// /// ```rust
+// /// # use derive_tools_meta::*;
+// /// #[ derive( FromInner ) ]
+// /// pub struct IsTransparent( bool );
+// /// ```
+// ///
+// /// The macro facilitates the conversion without additional boilerplate code.
+// ///
+//
+// #[ cfg( feature = "enabled" ) ]
+// #[ cfg( feature = "derive_from" ) ]
+// #[ proc_macro_derive( FromInner ) ]
+// pub fn from_inner( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+// {
+//   let result = derive::from::from( input );
+//   match result
+//   {
+//     Ok( stream ) => stream.into(),
+//     Err( err ) => err.to_compile_error().into(),
+//   }
+// }
 
 ///
 /// Derive macro to implement From converting outer type into inner when-ever it's possible to do automatically.
@@ -374,7 +374,7 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// ```
 
-// qqq : xxx : why no run/ignore? fix
+// qqq : for Petro : xxx : why no run/ignore? fix
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_variadic_from" ) ]
