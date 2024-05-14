@@ -109,9 +109,11 @@ fn default_case()
   assert!( base_path.join( "runs_clean.yml" ).exists() );
   assert!( base_path.join( "standard_rust_pull_request.yml" ).exists() );
   assert!( base_path.join( "standard_rust_push.yml" ).exists() );
+  assert!( base_path.join( "for_pr_rust_push.yml" ).exists() );
   assert!( base_path.join( "standard_rust_scheduled.yml" ).exists() );
   assert!( base_path.join( "standard_rust_status.yml" ).exists() );
   assert!( base_path.join( "status_checks_rules_update.yml" ).exists() );
+  assert!( base_path.join( "Readme.md" ).exists() );
 }
 
 // aaa : for Petro : fix styles
