@@ -4,7 +4,7 @@ use std::collections::HashSet;
 use crate::hybrid_optimizer::*;
 use crate::problems::sudoku::*;
 
-use derive_tools::{ FromInner, InnerFrom, exposed::Display };
+use derive_tools::{ From, InnerFrom, exposed::Display };
 use deterministic_rand::{ Hrng, Rng, seq::SliceRandom };
 use iter_tools::Itertools;
 
@@ -72,7 +72,7 @@ pub fn cells_pair_random_in_block( initial : &Board, block : BlockIndex, hrng : 
 }
 
 /// Represents number of errors in sudoku board.
-#[ derive( Default, Debug, Display, Clone, Copy, PartialEq, Eq, Ord, PartialOrd, Hash, FromInner, InnerFrom ) ]
+#[ derive( Default, Debug, Display, Clone, Copy, PartialEq, Eq, Ord, PartialOrd, Hash, From, InnerFrom ) ]
 pub struct SudokuCost( usize );
 
 // xxx : derive, please
@@ -113,13 +113,13 @@ impl Individual for SudokuPerson
     {
       true
     }
-    else 
+    else
     {
       false
     }
   }
 
-  fn fitness( &self ) -> usize 
+  fn fitness( &self ) -> usize
   {
     self.cost.into()
   }
@@ -153,7 +153,7 @@ impl SudokuPerson
   {
     let old_cross_error = self.board.cross_error( mutagen.cell1 )
       + self.board.cross_error( mutagen.cell2 );
-    
+
     log::trace!( "cells_swap( {:?}, {:?} )", mutagen.cell1, mutagen.cell2 );
     self.board.cells_swap( mutagen.cell1, mutagen.cell2 );
     self.cost = SudokuCost( self.cost.unwrap() - old_cross_error ) ;
@@ -174,8 +174,8 @@ impl SudokuPerson
   pub fn mutagen( &self, initial : &Board, hrng : Hrng ) -> SudokuMutagen
   {
     let mutagen;
-    loop 
-    { 
+    loop
+    {
       let rng_ref = hrng.rng_ref();
       let mut rng = rng_ref.lock().unwrap();
       let block : BlockIndex = rng.gen();
@@ -191,7 +191,7 @@ impl SudokuPerson
 }
 
 /// Represents single change(mutation) which contains indeces of two swapped cells. It is used to generate new state of the board for sudoku solving process.
-#[ derive( PartialEq, Eq, Clone, Debug, FromInner, InnerFrom ) ]
+#[ derive( PartialEq, Eq, Clone, Debug, From, InnerFrom ) ]
 pub struct SudokuMutagen
 {
   /// Index of cell swapped in mutation.
@@ -221,12 +221,12 @@ impl InitialProblem for SudokuInitial
 {
   type Person = SudokuPerson;
 
-  fn get_random_person( &self, hrng : Hrng ) -> SudokuPerson 
+  fn get_random_person( &self, hrng : Hrng ) -> SudokuPerson
   {
     SudokuPerson::new( &self.board, hrng.clone() )
   }
 
-  fn evaluate( &self, person : &SudokuPerson ) -> f64 
+  fn evaluate( &self, person : &SudokuPerson ) -> f64
   {
     person.board.total_error() as f64
   }
@@ -241,11 +241,11 @@ impl MutationOperator for RandomPairInBlockMutation
   type Person = SudokuPerson;
   type Problem = SudokuInitial;
 
-  fn mutate( &self, hrng : Hrng, person : &mut Self::Person, context : &Self::Problem ) 
+  fn mutate( &self, hrng : Hrng, person : &mut Self::Person, context : &Self::Problem )
     {
         let mutagen : SudokuMutagen =
-        loop 
-        { 
+        loop
+        {
           let rng_ref = hrng.rng_ref();
           let mut rng = rng_ref.lock().unwrap();
           let block : BlockIndex = rng.gen();
@@ -257,7 +257,7 @@ impl MutationOperator for RandomPairInBlockMutation
         }.into();
       let old_cross_error = person.board.cross_error( mutagen.cell1 )
         + person.board.cross_error( mutagen.cell2 );
-      
+
       log::trace!( "cells_swap( {:?}, {:?} )", mutagen.cell1, mutagen.cell2 );
       person.board.cells_swap( mutagen.cell1, mutagen.cell2 );
       person.cost = SudokuCost( person.cost.unwrap() - old_cross_error );
@@ -301,7 +301,7 @@ impl CrossoverOperator for MultiplePointsBlockCrossover
           child_storage[ usize::from( cell_index ) ] = parent_block[ index ];
         }
       }
-      else 
+      else
       {
         let parent_block = parent2.board.block( i ).collect_vec();
         let cells = parent2.board.block_cells( i );
@@ -311,7 +311,7 @@ impl CrossoverOperator for MultiplePointsBlockCrossover
         }
       }
     }
-    
+
     let child = SudokuPerson::with_board( Board::new( child_storage ) );
     child
   }
@@ -324,7 +324,7 @@ pub struct BestRowsColumnsCrossover;
 impl CrossoverOperator for BestRowsColumnsCrossover
 {
   type Person = < SudokuInitial as InitialProblem >::Person;
-  
+
   fn crossover( &self, _hrng : Hrng, parent1 : &Self::Person, parent2 : &Self::Person ) -> Self::Person
   {
     let mut rows_costs = vec![ Vec::new(); 2 ];
@@ -393,7 +393,7 @@ impl CrossoverOperator for BestRowsColumnsCrossover
             child2_storage[ usize::from( cell_index ) ] = parent_block[ index ];
           }
         }
-        else 
+        else
         {
           let parent_block = parent2.board.block( BlockIndex::from( ( j as u8, i as u8 ) ) ).collect_vec();
           let cells = parent2.board.block_cells( BlockIndex::from( ( j as u8, i as u8 ) ) );
@@ -411,6 +411,6 @@ impl CrossoverOperator for BestRowsColumnsCrossover
     .unwrap()
     ;
 
-    SudokuPerson::with_board( min_board )   
+    SudokuPerson::with_board( min_board )
   }
 }
