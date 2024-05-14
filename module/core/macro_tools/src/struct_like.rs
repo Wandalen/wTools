@@ -67,24 +67,31 @@ pub( crate ) mod private
   #[ derive( Debug, PartialEq ) ]
   pub enum StructLike
   {
-    /// Represents a unit type, which is a type without any fields or data.
     Unit( syn::ItemStruct ),
-    /// Represents a Rust struct, containing fields and potentially associated data.
     Struct( syn::ItemStruct ),
-    /// Represents a Rust union, useful for when multiple types may occupy the same memory space.
     Enum( syn::ItemEnum ),
   }
 
   impl syn::parse::Parse for StructLike
   {
-    fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+    fn parse( input : syn::parse::ParseStream< '_' > ) -> syn::Result< Self >
     {
+      let ahead = input.fork(); // Create a fork to attempt parsing without advancing the cursor
+      let visibility : Option< syn::Visibility > = ahead.parse().ok(); // Try to parse visibility
+
       let lookahead = input.lookahead1();
 
       if lookahead.peek( syn::Token![ struct ] )
       {
         let item_struct : syn::ItemStruct = input.parse()?;
-        Ok( StructLike::Struct( item_struct ) )
+        if item_struct.fields.is_empty()
+        {
+          Ok( StructLike::Unit( item_struct ) )
+        }
+        else
+        {
+          Ok( StructLike::Struct( item_struct ) )
+        }
       }
       else if lookahead.peek( syn::Token![ enum ] )
       {
@@ -93,8 +100,7 @@ pub( crate ) mod private
       }
       else
       {
-        Ok( StructLike::Unit )
-        // Err( lookahead.error() )
+        Err( lookahead.error() )
       }
     }
   }
@@ -105,11 +111,7 @@ pub( crate ) mod private
     {
       match self
       {
-        StructLike::Unit =>
-        {
-          quote!( ; ).to_tokens( tokens );
-        },
-        StructLike::Struct( item ) =>
+        StructLike::Unit( item ) | StructLike::Struct( item ) =>
         {
           item.to_tokens( tokens );
         },
@@ -129,7 +131,7 @@ pub( crate ) mod private
     {
       match self
       {
-        StructLike::Unit =>
+        StructLike::Unit( item ) =>
         {
           Box::new( std::iter::empty() )
         },
@@ -151,7 +153,7 @@ pub( crate ) mod private
     // {
     //   match self
     //   {
-    //     StructLike::Unit =>
+    //     StructLike::Unit( item ) =>
     //     {
     //       Box::new( std::iter::empty() )
     //     },

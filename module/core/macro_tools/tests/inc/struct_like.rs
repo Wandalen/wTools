@@ -53,7 +53,7 @@ fn basic()
 
   // - unit
 
-  let item : syn::ItemEnum = parse_quote!
+  let item : syn::ItemStruct = parse_quote!
   {
     struct Unit;
   };
