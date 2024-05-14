@@ -74,7 +74,7 @@ pub( crate ) mod private
 
   impl syn::parse::Parse for StructLike
   {
-    fn parse( input : syn::parse::ParseStream< '_' > ) -> syn::Result< Self >
+    fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
     {
       let ahead = input.fork(); // Create a fork to attempt parsing without advancing the cursor
       let visibility : Option< syn::Visibility > = ahead.parse().ok(); // Try to parse visibility
