@@ -93,6 +93,12 @@ pub( crate ) mod private
       }
     }
 
+    /// Extracts the types of each field.
+    pub fn field_types( &self ) -> Box< dyn Iterator< Item = &syn::Type > + '_ >
+    {
+      Box::new( self.fields().map( | field | &field.ty ) )
+    }
+
 //     /// Returns a vector of the struct's fields for iteration.
 //     pub fn fields_many( &self ) -> Vec< &syn::Field >
 //     {
