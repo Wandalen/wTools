@@ -11,10 +11,51 @@ pub( crate ) mod private
   #[ derive( Debug, PartialEq ) ]
   pub enum FieldOrVariant
   {
-    /// xxx : document
+    /// Represents a field within a struct or union.
     Field( syn::Field ),
-    /// xxx : document
+    /// Represents a variant within an enum.
     Variant( syn::Variant ),
+  }
+
+//   impl syn::parse::Parse for FieldOrVariant
+//   {
+//     fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+//     {
+//       let lookahead = input.lookahead1();
+//
+//       if lookahead.peek( syn::Token![ struct ] ) || lookahead.peek( syn::Token![ union ] )
+//       {
+//         let field : syn::Field = input.parse()?;
+//         Ok( FieldOrVariant::Field( field ) )
+//       }
+//       else if lookahead.peek( syn::Token![ enum ] )
+//       {
+//         let variant : syn::Variant = input.parse()?;
+//         Ok( FieldOrVariant::Variant( variant ) )
+//       }
+//       else
+//       {
+//         Err( lookahead.error() )
+//       }
+//     }
+//   }
+
+  impl quote::ToTokens for FieldOrVariant
+  {
+    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
+    {
+      match self
+      {
+        FieldOrVariant::Field( item ) =>
+        {
+          item.to_tokens( tokens );
+        },
+        FieldOrVariant::Variant( item ) =>
+        {
+          item.to_tokens( tokens );
+        },
+      }
+    }
   }
 
   /// Represents various struct-like constructs.
