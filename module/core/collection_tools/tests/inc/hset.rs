@@ -1,6 +1,6 @@
 use super::*;
 
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 #[ test ]
 fn reexport()
 {
@@ -10,12 +10,12 @@ fn reexport()
   assert_eq!( set1.contains( &1 ), true );
   assert_eq!( set1.contains( &2 ), false );
 
-//   let mut set2 : the_module::Set< i32 > = the_module::Set::new();
-//   set2.insert( 1 );
-//   assert_eq!( set2.contains( &1 ), true );
-//   assert_eq!( set2.contains( &2 ), false );
+  let mut set2 : the_module::Set< i32 > = the_module::Set::new();
+  set2.insert( 1 );
+  assert_eq!( set2.contains( &1 ), true );
+  assert_eq!( set2.contains( &2 ), false );
 
-//   assert_eq!( set1, set2 );
+  assert_eq!( set1, set2 );
 
 }
 

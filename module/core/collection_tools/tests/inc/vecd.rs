@@ -1,6 +1,6 @@
 use super::*;
 
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 #[ test ]
 fn reexport()
 {

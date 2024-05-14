@@ -1,6 +1,6 @@
 use super::*;
 
-#[ cfg( not( feature = "no_std" ) ) ]
+#[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 #[ test ]
 fn reexport()
 {
@@ -11,13 +11,13 @@ fn reexport()
   let got = *map1.get( &1 ).unwrap();
   assert_eq!( exp, got );
 
-//   let mut map2 : the_module::Map< i32, i32 > = the_module::Map::new();
-//   map2.insert( 1, 2 );
-//   let exp = 2;
-//   let got = *map2.get( &1 ).unwrap();
-//   assert_eq!( exp, got );
+  let mut map2 : the_module::Map< i32, i32 > = the_module::Map::new();
+  map2.insert( 1, 2 );
+  let exp = 2;
+  let got = *map2.get( &1 ).unwrap();
+  assert_eq!( exp, got );
 
-//   assert_eq!( map1, map2 );
+  assert_eq!( map1, map2 );
 
 }
 

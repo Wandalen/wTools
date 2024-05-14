@@ -36,27 +36,6 @@ pub mod protected
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 
-  extern crate alloc;
-
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use alloc::vec::Vec;
-
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use alloc::collections::{ BinaryHeap, BTreeMap, BTreeSet, LinkedList, VecDeque };
-
-  // qqq : what is comnination `use_alloc` + !`no_std`
-  #[ cfg( feature = "use_alloc" ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::dependency::hashbrown::{ HashMap, HashSet };
-
-  #[ cfg( not( feature = "no_std" ) ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use std::collections::{ HashMap, HashSet };
-
 }
 
 /// Parented namespace of the module.
@@ -82,30 +61,40 @@ pub mod exposed
 pub mod prelude
 {
 
-  // qqq : for Anton : uncomment, make it working and cover by tests
-  // #[ cfg( feature = "prelude" ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use crate::
-  // {
-  //   HashMap as Map,
-  //   HashSet as Set,
-  //   HashMap,
-  //   HashSet,
-  //   VecDeque,
-  //   BTreeMap,
-  //   BTreeSet,
-  //   BinaryHeap,
-  //   LinkedList,
-  // };
+  // qqq : for Anton : uncomment, make it working and cover by tests -- renamed to reexports
+  extern crate alloc;
 
-  // #[ cfg( feature = "prelude" ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use crate::
-  // {
-  //   Vec,
-  //   Vec as DynArray,
-  // };
+  pub use alloc::collections;
 
+  pub use alloc::vec;
+
+  #[ cfg( feature = "use_alloc" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::dependency::hashbrown as hash;
+
+  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use std::collections as hash;
+
+  #[ cfg( feature = "reexports" ) ]
+  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use 
+  {
+    collections::BTreeMap,
+    collections::BTreeSet,
+    collections::BinaryHeap,
+    hash::HashMap,
+    hash::HashSet,
+    collections::LinkedList,
+    vec::Vec,
+    collections::VecDeque,
+
+    HashMap as Map,
+    HashSet as Set,
+    Vec as DynArray,
+  };
 }
