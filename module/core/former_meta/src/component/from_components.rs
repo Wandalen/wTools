@@ -40,12 +40,12 @@ pub fn from_components( input : proc_macro::TokenStream ) -> Result< proc_macro2
   let has_debug = attr::has_debug( parsed.item.attrs.iter() )?;
 
   // Struct name
-  let item_name = parsed.item_name.clone();
+  let item_name = parsed.item.ident.clone();
 
   // Generate snipets
   let trait_bounds = trait_bounds( &parsed.field_types()[ .. ] );
-  let field_assigns = field_assign( &parsed.fields_many() );
-  let field_names : Vec< _ > = parsed.fields.iter().map( | field | &field.ident ).collect();
+  let field_assigns = field_assign( &parsed.item.fields_many() );
+  let field_names : Vec< _ > = parsed.item.fields.iter().map( | field | &field.ident ).collect();
 
   // Generate the From<T> trait implementation
   let result = qt!
@@ -69,7 +69,7 @@ pub fn from_components( input : proc_macro::TokenStream ) -> Result< proc_macro2
 
   if has_debug
   {
-    let about = format!( "derive : FromComponents\nstructure : {0}", &parsed.item_name );
+    let about = format!( "derive : FromComponents\nstructure : {0}", &parsed.item.ident );
     diag::report_print( about, &original_input, &result );
   }
 

@@ -10,9 +10,9 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> Result< proc_macro
   let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
   let has_debug = attr::has_debug( parsed.item.attrs.iter() )?;
 
-  let for_field = parsed.fields_many().iter().map( | field |
+  let for_field = parsed.item.fields_many().iter().map( | field |
   {
-    for_each_field( field, &parsed.item_name )
+    for_each_field( field, &parsed.item.ident )
   })
   .collect::< Result< Vec< _ > > >()?;
 
@@ -23,7 +23,7 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> Result< proc_macro
 
   if has_debug
   {
-    let about = format!( "derive : ComponentAssign\nstructure : {0}", &parsed.item_name );
+    let about = format!( "derive : ComponentAssign\nstructure : {0}", &parsed.item.ident );
     diag::report_print( about, &original_input, &result );
   }
 

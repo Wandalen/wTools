@@ -8,7 +8,7 @@ pub fn as_ref( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
 {
   let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
   let field_type = parsed.first_field_type()?;
-  let item_name = parsed.item_name;
+  let item_name = parsed.item.ident;
 
   let result = qt!
   {

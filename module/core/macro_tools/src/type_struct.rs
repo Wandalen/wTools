@@ -20,10 +20,8 @@ pub( crate ) mod private
   {
     /// The parsed structure item, encompassing the entire `struct`.
     pub item : syn::ItemStruct,
-    /// Identifier of the struct, useful for referencing in generated code.
-    pub item_name : syn::Ident,
-    /// Collection of struct's fields, including visibility, attributes, and types.
-    pub fields : syn::Fields,
+    // /// Identifier of the struct, useful for referencing in generated code.
+    // pub item_name : syn::Ident,
   }
 
   impl TypeStructParsed
@@ -32,7 +30,7 @@ pub( crate ) mod private
     /// Returns a vector of the struct's fields for iteration.
     pub fn fields_many( &self ) -> Vec< &syn::Field >
     {
-      match &self.fields
+      match &self.item.fields
       {
         syn::Fields::Unnamed( fields ) => fields.unnamed.iter().collect(),
         syn::Fields::Named( fields ) => fields.named.iter().collect(),
@@ -65,22 +63,19 @@ pub( crate ) mod private
     /// Returns the type if the struct has at least one field, otherwise returns an error.
     pub fn first_field_type( &self ) -> Result< syn::Type >
     {
-      let maybe_field = match self.fields
+      let maybe_field = match self.item.fields
       {
         syn::Fields::Named( ref fields ) => fields.named.first(),
         syn::Fields::Unnamed( ref fields ) => fields.unnamed.first(),
-        _ => return Err( syn_err!( self.fields.span(), "Expects fields" ) ),
+        _ => return Err( syn_err!( self.item.fields.span(), "Expects either named or unnamed field" ) ),
       };
-
-      // let maybe_field = self.fields.0.first();
-      // let maybe_field = self.fields;
 
       if let Some( field ) = maybe_field
       {
         return Ok( field.ty.clone() )
       }
 
-      return Err( syn_err!( self.item.span(), "Expects type for fields" ) );
+      return Err( syn_err!( self.item.span(), "Expects at least one field" ) );
     }
 
     /// Retrieves the name of the first field of the struct, if available.
@@ -89,11 +84,11 @@ pub( crate ) mod private
     /// Returns an error if the struct has no fields
     pub fn first_field_name( &self ) -> Result< Option< syn::Ident > >
     {
-      let maybe_field = match self.fields
+      let maybe_field = match self.item.fields
       {
         syn::Fields::Named( ref fields ) => fields.named.first(),
         syn::Fields::Unnamed( ref fields ) => fields.unnamed.first(),
-        _ => return Err( syn_err!( self.fields.span(), "Expects fields" ) ),
+        _ => return Err( syn_err!( self.item.fields.span(), "Expects fields" ) ),
       };
 
       if let Some( field ) = maybe_field
@@ -118,23 +113,8 @@ pub( crate ) mod private
     fn parse( input : ParseStream< '_ > ) -> Result< Self >
     {
       let item : syn::ItemStruct = input.parse()?;
-
-      let item_name = item.ident.clone();
-      let fields = item.fields.clone();
-
-//       let fields_many : Vec< syn::Field > = match item.fields
-//       {
-//         syn::Fields::Unnamed( ref fields ) => { fields.unnamed.iter().cloned().collect() },
-//         syn::Fields::Named( ref fields ) => { fields.named.iter().cloned().collect() },
-//         _ => return Ok( Self { item, item_name, fields, fields_many: Many(vec![]), field_types: vec![], field_names: None } ),
-//       };
-//
-//       let fields_many = fields_many.into();
-//       let field_types = field_types( &fields_many )?;
-//       let field_names = field_names( &fields_many )?;
-//       Ok( Self { item, item_name, fields, fields_many, field_types, field_names } )
-
-      Ok( Self { item, item_name, fields } )
+      // let item_name = item.ident.clone();
+      Ok( Self { item } )
     }
   }
 
@@ -147,33 +127,6 @@ pub( crate ) mod private
       self.item.to_tokens( tokens );
     }
   }
-
-//   fn field_types( fields : &Many< syn::Field > ) -> Result< Vec< syn::Type> >
-//   {
-//     let mut field_types : Vec< syn::Type > = vec![];
-//     for elem in fields
-//     {
-//       field_types.push( elem.ty.clone() );
-//     }
-//     Ok( field_types )
-//   }
-//
-//   fn field_names( fields : &Many< syn::Field > ) -> Result< Option< Vec< syn::Ident > > >
-//   {
-//     let mut field_names : Vec< syn::Ident > = vec![];
-//     for elem in fields
-//     {
-//       if let Some( ident ) = &elem.ident
-//       {
-//         field_names.push( ident.clone() );
-//       }
-//       else
-//       {
-//           return Ok( None );
-//       }
-//     }
-//     Ok( Some( field_names ) )
-//   }
 
 }
 

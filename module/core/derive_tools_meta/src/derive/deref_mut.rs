@@ -7,7 +7,7 @@ use macro_tools::{ type_struct, Result };
 pub fn deref_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
-  let item_name = parsed.item_name;
+  let item_name = parsed.item.ident;
 
   let result = qt!
   {
