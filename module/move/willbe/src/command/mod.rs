@@ -259,7 +259,7 @@ with_gitpod: If set to 1, a column with a link to Gitpod will be added. Clicking
 
     .command( "features" )
       .hint( "Lists features of the package" )
-      .long_hint( "TODO")
+      .long_hint( "Lists features of the package located in a folder.\nWill list either separate package features or features for every package of a workspace")
       .subject()
         .hint( "Provide path to the package that you want to check.\n\t  The path should point to a directory that contains a `Cargo.toml` file." )
         .kind( Type::Path )
