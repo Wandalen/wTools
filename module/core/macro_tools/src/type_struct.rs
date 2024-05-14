@@ -6,9 +6,8 @@
 pub( crate ) mod private
 {
   use super::super::*;
-  // use interval_adapter::BoundExt;
 
-  // xxx : raname to Parsed
+  // xxx : deprecate
 
   /// Represents the outcome of parsing a Rust `struct` definition.
   ///
@@ -23,6 +22,36 @@ pub( crate ) mod private
     // /// Identifier of the struct, useful for referencing in generated code.
     // pub item_name : syn::Ident,
   }
+
+  //
+
+  impl syn::parse::Parse for TypeStructParsed
+  {
+    // qqq : write proper documentation with examples of input
+
+    // # example of input
+    //
+    // pub struct IsTransparent( bool );
+    //
+    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    {
+      let item : syn::ItemStruct = input.parse()?;
+      // let item_name = item.ident.clone();
+      Ok( Self { item } )
+    }
+  }
+
+  //
+
+  impl quote::ToTokens for TypeStructParsed
+  {
+    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
+    {
+      self.item.to_tokens( tokens );
+    }
+  }
+
+  //
 
   impl TypeStructParsed
   {
@@ -47,7 +76,7 @@ pub( crate ) mod private
     /// Retrieves the names of each field, if they exist.
     pub fn field_names( &self ) -> Option< Vec< syn::Ident > >
     {
-      let names: Vec< Option< syn::Ident > > = self.fields_many().iter().map( |field| field.ident.clone() ).collect();
+      let names : Vec< Option< syn::Ident > > = self.fields_many().iter().map( |field| field.ident.clone() ).collect();
       if names.iter().any( Option::is_none )
       {
         None
@@ -97,34 +126,6 @@ pub( crate ) mod private
       }
 
       return Err( syn_err!( self.item.span(), "Expects type for fields" ) );
-    }
-  }
-
-  //
-
-  impl syn::parse::Parse for TypeStructParsed
-  {
-    // qqq : write proper documentation with examples of input
-
-    // # example of input
-    //
-    // pub struct IsTransparent( bool );
-    //
-    fn parse( input : ParseStream< '_ > ) -> Result< Self >
-    {
-      let item : syn::ItemStruct = input.parse()?;
-      // let item_name = item.ident.clone();
-      Ok( Self { item } )
-    }
-  }
-
-  //
-
-  impl quote::ToTokens for TypeStructParsed
-  {
-    fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
-    {
-      self.item.to_tokens( tokens );
     }
   }
 

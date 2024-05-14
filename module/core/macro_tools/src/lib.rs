@@ -21,6 +21,7 @@ mod file
   pub mod phantom;
   pub mod punctuated;
   pub mod quantifier;
+  pub mod struct_like;
   pub mod tokens;
   pub mod typ;
   pub mod type_struct;
@@ -70,6 +71,7 @@ pub mod protected
     phantom::orphan::*,
     punctuated::orphan::*,
     quantifier::orphan::*,
+    struct_like::orphan::*,
     tokens::orphan::*,
     typ::orphan::*,
     type_struct::orphan::*,
@@ -119,6 +121,7 @@ pub mod exposed
     phantom::exposed::*,
     punctuated::exposed::*,
     quantifier::exposed::*,
+    struct_like::exposed::*,
     tokens::exposed::*,
     typ::exposed::*,
     type_struct::exposed::*,
@@ -185,6 +188,7 @@ pub mod prelude
     phantom::prelude::*,
     punctuated::prelude::*,
     quantifier::prelude::*,
+    struct_like::prelude::*,
     tokens::prelude::*,
     typ::prelude::*,
     type_struct::prelude::*,
