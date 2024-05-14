@@ -13,6 +13,7 @@ pub( crate ) mod private
   /// enabling detailed syntactic analysis and manipulation within macros.
   /// `StructLike` is particularly useful in scenarios where different behaviors
   /// are needed based on the type of struct-like data being parsed.
+
   #[ derive( Debug ) ]
   pub enum StructLike
   {
@@ -70,6 +71,31 @@ pub( crate ) mod private
     }
   }
 
+  // impl quote::spanned::Spanned for StructLike
+  // {
+  //   fn span( &self ) -> proc_macro2::Span
+  //   {
+  //     match self
+  //     {
+  //       StructLike::Unit =>
+  //       {
+  //         // You might want to return a default or dummy span since Unit types generally don't have associated spans.
+  //         proc_macro2::Span::call_site()
+  //       },
+  //       StructLike::Struct( item_struct ) =>
+  //       {
+  //         // Delegate to the span of the `ItemStruct`
+  //         quote::spanned::Spanned::span( item_struct )
+  //       },
+  //       StructLike::Union( item_union ) =>
+  //       {
+  //         // Delegate to the span of the `ItemUnion`
+  //         quote::spanned::Spanned::span( item_union )
+  //       },
+  //     }
+  //   }
+  // }
+
   impl StructLike
   {
 
@@ -105,37 +131,13 @@ pub( crate ) mod private
       Box::new( self.fields().map( | field | field.ident.as_ref() ) )
     }
 
-//     /// Returns a vector of the struct's fields for iteration.
-//     pub fn fields_many( &self ) -> Vec< &syn::Field >
-//     {
-//       match &self.item.fields
-//       {
-//         syn::Fields::Unnamed( fields ) => fields.unnamed.iter().collect(),
-//         syn::Fields::Named( fields ) => fields.named.iter().collect(),
-//         syn::Fields::Unit => Vec::new(),
-//       }
-//     }
-//
-//     /// Extracts the types of each field into a vector.
-//     pub fn field_types< 'a >( &'a self ) -> Vec< &'a syn::Type >
-//     {
-//       self.fields_many().iter().map( | field | &field.ty ).collect()
-//     }
-//
-//     /// Retrieves the names of each field, if they exist.
-//     pub fn field_names( &self ) -> Option< Vec< syn::Ident > >
-//     {
-//       let names: Vec< Option< syn::Ident > > = self.fields_many().iter().map( |field| field.ident.clone() ).collect();
-//       if names.iter().any( Option::is_none )
-//       {
-//         None
-//       }
-//       else
-//       {
-//         Some( names.into_iter().filter_map( core::convert::identity ).collect() )
-//       }
-//     }
-//
+    /// Extract the first field.
+    pub fn first_field_type( &self ) -> Option< &syn::Field >
+    {
+      self.fields().next()
+      // .ok_or( syn_err!( self.span(), "Expects at least one field" ) )
+    }
+
 //     /// Retrieves the type of the first field of the struct.
 //     ///
 //     /// Returns the type if the struct has at least one field, otherwise returns an error.
