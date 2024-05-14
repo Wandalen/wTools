@@ -89,6 +89,17 @@ pub( crate ) mod private
     FromString( String ),
   }
 
+  impl< IntoVariant > From< IntoVariant > for GetData
+  where
+    IntoVariant : Into< &'static str >,
+  {
+    #[ inline ]
+    fn from( src : IntoVariant ) -> Self
+    {
+      Self::FromStr( core::convert::Into::into( src ) )
+    }
+  }
+
   impl Default for GetData
   {
     fn default() -> Self
