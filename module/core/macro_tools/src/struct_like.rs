@@ -8,6 +8,15 @@ pub( crate ) mod private
   use super::super::*;
   // use interval_adapter::BoundExt;
 
+  #[ derive( Debug, PartialEq ) ]
+  pub enum FieldOrVariant
+  {
+    /// xxx : document
+    Field( syn::Field ),
+    /// xxx : document
+    Variant( syn::Variant ),
+  }
+
   /// Represents various struct-like constructs.
   /// This enum can differentiate between unit types, structs, and unions,
   /// enabling detailed syntactic analysis and manipulation within macros.
@@ -89,10 +98,32 @@ pub( crate ) mod private
         },
         StructLike::Enum( item ) =>
         {
-          Box::new( item.variants.iter() )
+          Box::new( std::iter::empty() )
+          // Box::new( item.variants.iter() )
         },
       }
     }
+
+    // xxx
+    // /// Returns an iterator over elements of the item.
+    // pub fn elements( &self ) -> Box< dyn Iterator< Item = &FieldOrVariant > + '_ >
+    // {
+    //   match self
+    //   {
+    //     StructLike::Unit =>
+    //     {
+    //       Box::new( std::iter::empty() )
+    //     },
+    //     StructLike::Struct( item ) =>
+    //     {
+    //       Box::new( item.fields.iter() )
+    //     },
+    //     StructLike::Enum( item ) =>
+    //     {
+    //       Box::new( item.variants.iter() )
+    //     },
+    //   }
+    // }
 
     /// Extracts the name of each field.
     pub fn field_names( &self ) -> Box< dyn Iterator< Item = Option< &syn::Ident > > + '_ >
