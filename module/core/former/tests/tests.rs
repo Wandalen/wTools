@@ -6,4 +6,5 @@ use test_tools::exposed::*;
 #[ allow( unused_imports ) ]
 use former as the_module;
 
+#[ cfg( enabled ) ]
 mod inc;

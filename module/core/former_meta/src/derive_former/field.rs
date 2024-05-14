@@ -33,13 +33,14 @@ storage_field_optional
 storage_field_preform
 storage_field_name
 former_field_setter
-subform_setter
-container_setter
 scalar_setter
+subform_entry_setter
+subform_collection_setter
 
 scalar_setter_name
-container_setter_name
-subform_setter_name
+subform_scalar_setter_name,
+subform_collection_setter_name
+subform_entry_setter_name
 scalar_setter_required
 
 */
@@ -75,7 +76,7 @@ scalar_setter_required
   ///
   /// Generate fields for initializer of a struct setting each field to `None`.
   ///
-  /// Used for initializing a Container, where on initialization all fields are None. User can alter them through builder pattern
+  /// Used for initializing a Collection, where on initialization all fields are None. User can alter them through builder pattern
   ///
   /// ### Basic use-case. of output
   ///
@@ -102,7 +103,7 @@ scalar_setter_required
   ///
   /// Generate field of the former for a field of the structure
   ///
-  /// Used to generate a Container
+  /// Used to generate a Collection
   ///
   /// ### Basic use-case. of output
   ///
@@ -306,7 +307,7 @@ scalar_setter_required
   ///
   /// This function is responsible for dynamically creating code that allows for the building
   /// or modifying of fields within a `Former`-enabled struct or enum. It supports different
-  /// types of setters based on the field attributes, such as scalar setters, container setters,
+  /// types of setters based on the field attributes, such as scalar setters, collection setters,
   /// and subform setters.
   ///
   /// # Returns
@@ -319,7 +320,7 @@ scalar_setter_required
   ///
   /// The generation of setters is dependent on the attributes of the field:
   /// - **Scalar Setters**: Created for basic data types and simple fields.
-  /// - **Container Setters**: Generated when the field is annotated to behave as a container,
+  /// - **Collection Setters**: Generated when the field is annotated to behave as a collection,
   ///   supporting operations like adding or replacing elements.
   /// - **Subform Setters**: Generated for fields annotated as subforms, allowing for nested
   ///   forming processes where a field itself can be formed using a dedicated former.
@@ -330,6 +331,7 @@ scalar_setter_required
   (
     &self,
     stru : &syn::Ident,
+    original_input : &proc_macro::TokenStream,
     struct_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     struct_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     struct_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
@@ -338,21 +340,45 @@ scalar_setter_required
     former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
     former_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
     former_storage : &syn::Ident,
-    original_input : &proc_macro::TokenStream,
   )
   -> Result< ( TokenStream, TokenStream ) >
   {
+
+    // scalar setter
     let namespace_code = qt! {};
     let setters_code = self.scalar_setter
     (
+      stru,
       former,
       former_storage,
+      original_input,
     );
 
-    // container setter
-    let ( setters_code, namespace_code ) = if let Some( _ ) = &self.attrs.container
+    // subform scalar setter
+    let ( setters_code, namespace_code ) = if self.attrs.subform_scalar.is_some()
     {
-      let ( setters_code2, namespace_code2 ) = self.container_setter
+      let ( setters_code2, namespace_code2 ) = self.subform_scalar_setter
+      (
+        stru,
+        former,
+        former_storage,
+        former_generics_ty,
+        struct_generics_impl,
+        struct_generics_ty,
+        struct_generics_where,
+        original_input,
+      )?;
+      ( qt! { #setters_code #setters_code2 }, qt! { #namespace_code #namespace_code2 } )
+    }
+    else
+    {
+      ( setters_code, namespace_code )
+    };
+
+    // subform collection setter
+    let ( setters_code, namespace_code ) = if let Some( _ ) = &self.attrs.subform_collection
+    {
+      let ( setters_code2, namespace_code2 ) = self.subform_collection_setter
       (
         stru,
         former,
@@ -369,10 +395,10 @@ scalar_setter_required
       ( setters_code, namespace_code )
     };
 
-    // subform setter
-    let ( setters_code, namespace_code ) = if self.attrs.subform.is_some()
+    // subform entry setter
+    let ( setters_code, namespace_code ) = if self.attrs.subform_entry.is_some()
     {
-      let ( setters_code2, namespace_code2 ) = self.subform_setter
+      let ( setters_code2, namespace_code2 ) = self.subform_entry_setter
       (
         stru,
         former,
@@ -381,6 +407,7 @@ scalar_setter_required
         struct_generics_impl,
         struct_generics_ty,
         struct_generics_where,
+        original_input,
       )?;
       ( qt! { #setters_code #setters_code2 }, qt! { #namespace_code #namespace_code2 } )
     }
@@ -393,296 +420,108 @@ scalar_setter_required
     Ok( ( setters_code, namespace_code ) )
   }
 
-  /// Generates setter functions for subforms within a container structure in a builder pattern.
   ///
-  /// This function is a key component of the `former` crate's capability to dynamically create setters for manipulating
-  /// data within a nested container structure like a `HashMap` or a `Vec`. The setters facilitate the addition or
-  /// modification of entries within the container, directly from the parent former's context.
+  /// Generate a single scalar setter for the 'field_ident' with the 'setter_name' name.
   ///
-  /// See `examples/subformer_subform_manual.rs` for example of generated code.
+  /// Used as a helper function for former_field_setter(), which generates alias setters
   ///
+  /// # Example of generated code
+  ///
+  /// ```ignore
+  /// #[ doc = "Setter for the 'int_1' field." ]
+  /// #[ inline ]
+  /// pub fn int_1< Src >( mut self, src : Src ) -> Self
+  /// where
+  ///   Src : ::core::convert::Into< i32 >,
+  /// {
+  ///   debug_assert!( self.int_1.is_none() );
+  ///   self.storage.int_1 = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
+  ///   self
+  /// }
+  /// ```
 
   #[ inline ]
-  pub fn subform_setter
+  pub fn scalar_setter
   (
     &self,
     stru : &syn::Ident,
     former : &syn::Ident,
     former_storage : &syn::Ident,
-    former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-    struct_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-    struct_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-    struct_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+    original_input : &proc_macro::TokenStream,
   )
-  -> Result< ( TokenStream, TokenStream ) >
+  -> TokenStream
   {
-
-    // if self.attrs.subform.is_none()
-    // {
-    //   return Ok( qt!{ } );
-    // }
-
-    use convert_case::{ Case, Casing };
     let field_ident = self.ident;
-    let field_typ = self.non_optional_ty;
-    let attr = self.attrs.subform.as_ref().unwrap();
-    // let params = typ::type_parameters( &self.non_optional_ty, .. );
+    let typ = self.non_optional_ty;
+    let setter_name = self.scalar_setter_name();
+    let attr = self.attrs.scalar.as_ref();
 
-    // example : `child`
-    let setter_name = self.subform_setter_name();
-
-    // example : `ParentFormerAddChildrenEnd``
-    let former_add_end_name = format!( "{}FormerAdd{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
-    let former_add_end = syn::Ident::new( &former_add_end_name, field_ident.span() );
-
-    // example : `_children_former`
-    let field_add_name = format!( "_{}_add", field_ident );
-    let field_add = syn::Ident::new( &field_add_name, field_ident.span() );
-
-    let doc = format!
-    (
-      r#"
-
-Initiates the addition of {field_ident} to the `{stru}` entity using a dedicated subformer.
-
-This method configures and returns a subformer specialized for the `{0}` entities' formation process,
-which is part of the `{stru}` entity's construction. The subformer is set up with a specific end condition
-handled by `{former_add_end}`, ensuring that the {field_ident} are properly integrated into the
-parent's structure once formed.
-
-# Returns
-
-Returns an instance of `Former2`, a subformer ready to begin the formation process for `{0}` entities,
-allowing for dynamic and flexible construction of the `{stru}` entity's {field_ident}.
-
-      "#,
-      format!( "{}", qt!{ #field_typ } ),
-    );
-
-    let setters_code = qt!
-    {
-
-      #[ doc = #doc ]
-      #[ inline( always ) ]
-      pub fn #field_add< Former2, Definition2 >( self ) -> Former2
-      where
-        Definition2 : former::FormerDefinition
-        <
-          End = #former_add_end< Definition >,
-          Storage = < < #field_typ as former::Container >::Val as former::EntityToStorage >::Storage,
-          Formed = Self,
-          Context = Self,
-        >,
-        Definition2::Types : former::FormerDefinitionTypes
-        <
-          Storage = < < #field_typ as former::Container >::Val as former::EntityToStorage >::Storage,
-          Formed = Self,
-          Context = Self,
-        >,
-        Former2 : former::FormerBegin< Definition2 >,
-      {
-        Former2::former_begin( None, Some( self ), #former_add_end::default() )
-      }
-
-    };
-
-    let setters_code = if attr.setter()
-    {
-
-      let doc = format!
-      (
-        r#"
-Provides a user-friendly interface to add an instancce of {field_ident} to the {stru}.
-
-# Returns
-
-Returns an instance of `Former2`, a subformer ready to begin the formation process for `{0}` entities,
-allowing for dynamic and flexible construction of the `{stru}` entity's {field_ident}.
-
-        "#,
-        format!( "{}", qt!{ #field_typ } ),
-      );
-
-      qt!
-      {
-        #setters_code
-
-        #[ doc = #doc ]
-        #[ inline( always ) ]
-        pub fn #setter_name( self ) ->
-        < < #field_typ as former::Container >::Val as former::EntityToFormer
-          <
-            <
-              < #field_typ as former::Container >::Val as former::EntityToDefinition< Self, Self, #former_add_end < Definition > >
-            >::Definition,
-          >
-        >::Former
-        // #as_subformer< Self, impl #as_subformer_end< Self > >
-        {
-          self.#field_add
-          ::< < < #field_typ as former::Container >::Val as former::EntityToFormer< _ > >::Former, _, >()
-          // ::< #former< _ >, _, >()
-        }
-      }
-
-      // #[ inline( always ) ]
-      // pub fn child( self ) ->
-      // ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
-      // {
-      //   self._children_add
-      //   ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
-      // }
-
-    }
-    else
-    {
-      setters_code
-    };
-
-    if attr.hint
+    if attr.is_some() && attr.unwrap().hint
     {
       let hint = format!
       (
         r#"
-
-/// Initializes and configures a subformer for adding named child entities. This method leverages an internal function
-/// to create and return a configured subformer instance. It allows for the dynamic addition of children with specific names,
-/// integrating them into the formation process of the parent entity.
-
-impl< Definition > {}< Definition >
+impl< Definition > {former}< Definition >
 where
-  Definition : former::FormerDefinition< Storage = {} >,
+  Definition : former::FormerDefinition< Storage = {former_storage} >,
 {{
-
-  #[ inline( always ) ]
-  pub fn {}( self ) -> ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
+  #[ inline ]
+  pub fn {field_ident}< Src >( mut self, src : Src ) -> Self
+  where
+    Src : ::core::convert::Into< {0} >,
   {{
-    self.{}::< ChildFormer< _ >, _, >()
+    debug_assert!( self.storage.{field_ident}.is_none() );
+    self.storage.{field_ident} = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
+    self
   }}
-  // Replace Child with name of type of element value.
-
 }}
         "#,
-        former,
-        former_storage,
-        field_ident,
-        field_add_name,
+        format!( "{}", qt!{ #typ } ),
       );
-      println!( "{hint}" );
+      let about = format!
+      (
+r#"derive : Former
+structure : {stru}
+field : {field_ident}"#,
+      );
+      diag::report_print( about, original_input, hint );
+    }
+
+    if !self.scalar_setter_required()
+    {
+      return qt! {};
     }
 
     let doc = format!
     (
-      r#"
-
-Implements the `FormingEnd` trait for `{former_add_end}` to handle the final
-stage of the forming process for a `{stru}` container that contains `{0}` elements.
-
-This implementation is tailored to manage the transition of {field_ident} elements from a substorage
-temporary state into their final state within the `{stru}`'s storage. The function ensures
-that the `{stru}`'s {field_ident} storage is initialized if not already set, and then adds the
-preformed elements to this storage.
-
-# Type Parameters
-
-- `Types2`: Represents the specific types associated with the `Former` trait being applied,
-  which include storage, formed type, and context.
-- `Definition`: Defines the `FormerDefinition` that outlines the storage structure and
-  the end conditions for the formation process.
-
-# Parameters
-
-- `substorage`: The storage from which {field_ident} elements are preformed and retrieved.
-- `super_former`: An optional context which, upon invocation, contains the `{former}`
-  instance being formed.
-
-# Returns
-
-Returns the updated `{former}` instance with newly added {field_ident}, completing the
-formation process of the `{stru}`.
-
-      "#,
-      format!( "{}", qt!{ #field_typ } ),
+      "Scalar setter for the '{}' field.",
+      field_ident,
     );
 
-
-    let namespace_code = qt!
+    qt!
     {
-
       #[ doc = #doc ]
-      pub struct #former_add_end< Definition >
-      {
-        _phantom : core::marker::PhantomData< fn( Definition ) >,
-      }
-
-      impl< Definition > Default
-      for #former_add_end< Definition >
-      {
-        #[ inline( always ) ]
-        fn default() -> Self
-        {
-          Self
-          {
-            _phantom : core::marker::PhantomData,
-          }
-        }
-      }
-
-      impl< #struct_generics_impl Types2, Definition > former::FormingEnd< Types2, >
-      for #former_add_end< Definition >
+      #[ inline ]
+      pub fn #setter_name< Src >( mut self, src : Src ) -> Self
       where
-        Definition : former::FormerDefinition
-        <
-          Storage = < #stru < #struct_generics_ty > as former::EntityToStorage >::Storage,
-        >,
-        Types2 : former::FormerDefinitionTypes
-        <
-          Storage = < < #field_typ as former::Container >::Val as former::EntityToStorage >::Storage,
-          Formed = #former< #former_generics_ty >,
-          Context = #former< #former_generics_ty >,
-        >,
-        #struct_generics_where
+        Src : ::core::convert::Into< #typ >,
       {
-        #[ inline( always ) ]
-        fn call
-        (
-          &self,
-          substorage : Types2::Storage,
-          super_former : core::option::Option< Types2::Context >,
-        )
-        -> Types2::Formed
-        {
-          let mut super_former = super_former.unwrap();
-          if super_former.storage.#field_ident.is_none()
-          {
-            super_former.storage.#field_ident = Some( Default::default() );
-          }
-          if let Some( ref mut field ) = super_former.storage.#field_ident
-          {
-            former::ContainerAdd::add
-            (
-              field,
-              < < #field_typ as former::Container >::Val as former::ValToEntry< #field_typ > >
-              ::val_to_entry( former::StoragePreform::preform( substorage ) ),
-            );
-          }
-          super_former
-        }
+        debug_assert!( self.storage.#field_ident.is_none() );
+        self.storage.#field_ident = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
+        self
       }
+    }
 
-    };
-
-    // tree_print!( setters_code.as_ref().unwrap() );
-    Ok( ( setters_code, namespace_code ) )
   }
 
   ///
-  /// Generate a container setter for the 'field_ident' with the 'setter_name' name.
+  /// Generate a collection setter for the 'field_ident' with the 'setter_name' name.
   ///
-  /// See `examples/subformer_container_manual.rs` for example of generated code.
+  /// See `tests/inc/former_tests/subform_collection_manual.rs` for example of generated code.
+  ///
 
   #[ inline ]
-  pub fn container_setter
+  pub fn subform_collection_setter
   (
     &self,
     stru : &syn::Ident,
@@ -695,16 +534,16 @@ formation process of the `{stru}`.
   )
   -> Result< ( TokenStream, TokenStream ) >
   {
-    let attr = self.attrs.container.as_ref().unwrap();
+    let attr = self.attrs.subform_collection.as_ref().unwrap();
     let field_ident = &self.ident;
     let field_typ = &self.non_optional_ty;
     let params = typ::type_parameters( &field_typ, .. );
 
     use convert_case::{ Case, Casing };
-    let former_assign_end_name = format!( "{}FormerAssign{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
-    let former_assign_end = syn::Ident::new( &former_assign_end_name, field_ident.span() );
-    let field_assign_name = format!( "_{}_container_former", field_ident );
-    let field_assign = syn::Ident::new( &field_assign_name, field_ident.span() );
+    let subform_collection_end_name = format!( "{}SubformCollection{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
+    let subform_collection_end = syn::Ident::new( &subform_collection_end_name, field_ident.span() );
+    let subform_collection_name = format!( "_{}_subform_collection", field_ident );
+    let subform_collection = syn::Ident::new( &subform_collection_name, field_ident.span() );
 
     // example : `former::VectorDefinition`
     let subformer_definition = &attr.definition;
@@ -717,27 +556,27 @@ formation process of the `{stru}`.
           #( #params, )*
           Self,
           Self,
-          #former_assign_end< Definition >,
+          #subform_collection_end< Definition >,
         >
       }
-      // former::VectorDefinition< String, Self, Self, Struct1FormerAssignVec1End, >
+      // former::VectorDefinition< String, Self, Self, Struct1SubformCollectionVec1End, >
     }
     else
     {
       qt!
       {
         <
-          #field_typ as former::EntityToDefinition< Self, Self, #former_assign_end< Definition > >
+          #field_typ as former::EntityToDefinition< Self, Self, #subform_collection_end< Definition > >
         >::Definition
       }
-      // < Vec< String > as former::EntityToDefinition< Self, Self, Struct1FormerAssignVec1End > >::Definition
+      // < Vec< String > as former::EntityToDefinition< Self, Self, Struct1SubformCollectionVec1End > >::Definition
     };
 
     let doc = format!
     (
-      "Container setter for the '{}' field. Method {} unlike method {} accept custom container subformer.",
+      "Collection setter for the '{}' field. Method {} unlike method {} accept custom collection subformer.",
       field_ident,
-      field_assign_name,
+      subform_collection_name,
       field_ident,
     );
 
@@ -747,7 +586,7 @@ formation process of the `{stru}`.
 
       #[ doc = #doc ]
       #[ inline( always ) ]
-      pub fn #field_assign< Former2 >( self ) -> Former2
+      pub fn #subform_collection< Former2 >( self ) -> Former2
       where
         Former2 : former::FormerBegin
         <
@@ -755,13 +594,13 @@ formation process of the `{stru}`.
         >,
         #subformer_definition : former::FormerDefinition
         <
-          // Storage : former::ContainerAdd< Entry = < #field_typ as former::Container >::Entry >,
+          // Storage : former::CollectionAdd< Entry = < #field_typ as former::Collection >::Entry >,
           Storage = #field_typ,
           Context = #former< #former_generics_ty >,
-          End = #former_assign_end< Definition >,
+          End = #subform_collection_end< Definition >,
         >,
       {
-        Former2::former_begin( None, Some( self ), #former_assign_end::< Definition >::default() )
+        Former2::former_begin( None, Some( self ), #subform_collection_end::< Definition >::default() )
       }
 
       // #[ inline( always ) ]
@@ -769,21 +608,21 @@ formation process of the `{stru}`.
       // where
       //   Former2 : former::FormerBegin
       //   <
-      //     former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
+      //     former::HashSetDefinition< String, Self, Self, Struct1SubformCollectionHashset1End< Definition > >,
       //   >,
-      //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > > : former::FormerDefinition
+      //   former::HashSetDefinition< String, Self, Self, Struct1SubformCollectionHashset1End< Definition > > : former::FormerDefinition
       //   <
-      //     Storage : former::ContainerAdd< Entry = < collection_tools::HashSet< String > as former::Container >::Entry >,
+      //     Storage : former::CollectionAdd< Entry = < collection_tools::HashSet< String > as former::Collection >::Entry >,
       //     Context = Struct1Former< Definition >,
-      //     End = Struct1FormerAssignHashset1End< Definition >,
+      //     End = Struct1SubformCollectionHashset1End< Definition >,
       //   >,
       // {
-      //   Former2::former_begin( None, Some( self ), Struct1FormerAssignHashset1End::< Definition >::default() )
+      //   Former2::former_begin( None, Some( self ), Struct1SubformCollectionHashset1End::< Definition >::default() )
       // }
 
     };
 
-    let setter_name = self.container_setter_name();
+    let setter_name = self.subform_collection_setter_name();
     let setter2 = if let Some( setter_name ) = setter_name
     {
       qt!
@@ -791,22 +630,22 @@ formation process of the `{stru}`.
 
         #[ doc = #doc ]
         #[ inline( always ) ]
-        pub fn #setter_name( self ) -> former::ContainerFormer::
+        pub fn #setter_name( self ) -> former::CollectionFormer::
         <
           // ( #( #params, )* ),
-          < #field_typ as former::Container >::Entry,
+          < #field_typ as former::Collection >::Entry,
           #subformer_definition,
         >
         where
           #subformer_definition : former::FormerDefinition
           <
-            // Storage : former::ContainerAdd< Entry = < #field_typ as former::Container >::Entry >,
+            // Storage : former::CollectionAdd< Entry = < #field_typ as former::Collection >::Entry >,
             Storage = #field_typ,
             Context = #former< #former_generics_ty >,
-            End = #former_assign_end < Definition >,
+            End = #subform_collection_end < Definition >,
           >,
         {
-          self.#field_assign::< former::ContainerFormer::
+          self.#subform_collection::< former::CollectionFormer::
           <
             _,
             _,
@@ -816,23 +655,23 @@ formation process of the `{stru}`.
         }
 
         // #[ inline( always ) ]
-        // pub fn hashset_1( self ) -> former::ContainerFormer::
+        // pub fn hashset_1( self ) -> former::CollectionFormer::
         // <
         //   String,
-        //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
+        //   former::HashSetDefinition< String, Self, Self, Struct1SubformCollectionHashset1End< Definition > >,
         // >
         // where
-        //   former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > > : former::FormerDefinition
+        //   former::HashSetDefinition< String, Self, Self, Struct1SubformCollectionHashset1End< Definition > > : former::FormerDefinition
         //   <
-        //     Storage : former::ContainerAdd< Entry = < collection_tools::HashSet< String > as former::Container >::Entry >,
+        //     Storage : former::CollectionAdd< Entry = < collection_tools::HashSet< String > as former::Collection >::Entry >,
         //     Context = Struct1Former< Definition >,
-        //     End = Struct1FormerAssignHashset1End< Definition >,
+        //     End = Struct1SubformCollectionHashset1End< Definition >,
         //   >,
         // {
-        //   self._hashset_1_assign::< former::ContainerFormer::
+        //   self._hashset_1_assign::< former::CollectionFormer::
         //   <
         //     String,
-        //     former::HashSetDefinition< String, Self, Self, Struct1FormerAssignHashset1End< Definition > >,
+        //     former::HashSetDefinition< String, Self, Self, Struct1SubformCollectionHashset1End< Definition > >,
         //   > > ()
         // }
 
@@ -848,35 +687,27 @@ formation process of the `{stru}`.
       let hint = format!
       (
         r#"
+/// The collection setter provides a collection setter that returns a CollectionFormer tailored for managing a collection of child entities. It employs a generic collection definition to facilitate operations on the entire collection, such as adding or updating elements.
 
-/// The containr setter provides a container setter that returns a ContainerFormer tailored for managing a collection of child entities. It employs a generic container definition to facilitate operations on the entire collection, such as adding or updating elements.
-
-impl< Definition, > {}< Definition, >
+impl< Definition, > {former}< Definition, >
 where
-  Definition : former::FormerDefinition< Storage = {} >,
+  Definition : former::FormerDefinition< Storage = {former_storage} >,
 {{
 
   #[ inline( always ) ]
-  pub fn {}( self ) -> former::ContainerFormer::
+  pub fn {field_ident}( self ) -> former::CollectionFormer::
   <
-    ( {} ),
-    former::HashMapDefinition< {} Self, Self, {}< Definition >, >
-    // Replace `HashMapDefinition` with definition for your container
+    ( {0} ),
+    former::HashMapDefinition< {0} Self, Self, {subform_collection_end}< Definition >, >
+    // Replace `HashMapDefinition` with definition for your collection
   >
   {{
-    self.{}()
+    self.{subform_collection}()
   }}
 
 }}
-
         "#,
-        former,
-        former_storage,
-        field_ident,
         format!( "{}", qt!{ #( #params, )* } ),
-        format!( "{}", qt!{ #( #params, )* } ),
-        former_assign_end,
-        field_assign,
       );
       let about = format!
       (
@@ -894,12 +725,12 @@ field : {field_ident}"#,
     };
 
     // example : `former::VectorDefinition``
-    let subformer_definition = &self.attrs.container.as_ref().unwrap().definition;
+    let subformer_definition = &self.attrs.subform_collection.as_ref().unwrap().definition;
 
-    let former_assign_end_doc = format!
+    let subform_collection_end_doc = format!
     (
       r#"
-A callback structure to manage the final stage of forming a `{0}` for the `{stru}` container.
+A callback structure to manage the final stage of forming a `{0}` for the `{stru}` collection.
 
 This callback is used to integrate the contents of a temporary `{0}` back into the original `{stru}` former
 after the subforming process is completed. It replaces the existing content of the `{field_ident}` field in `{stru}`
@@ -939,14 +770,14 @@ with the new content generated during the subforming process.
     let r = qt!
     {
 
-      #[ doc = #former_assign_end_doc ]
-      pub struct #former_assign_end< Definition >
+      #[ doc = #subform_collection_end_doc ]
+      pub struct #subform_collection_end< Definition >
       {
         _phantom : core::marker::PhantomData< ( Definition, ) >,
       }
 
       impl< Definition > Default
-      for #former_assign_end< Definition >
+      for #subform_collection_end< Definition >
       {
 
         #[ inline( always ) ]
@@ -966,7 +797,7 @@ with the new content generated during the subforming process.
         // VectorDefinitionTypes
         #subformer_definition_types,
       >
-      for #former_assign_end< Definition >
+      for #subform_collection_end< Definition >
       where
         #former_generics_where
       {
@@ -982,7 +813,7 @@ with the new content generated during the subforming process.
           let mut super_former = super_former.unwrap();
           if let Some( ref mut field ) = super_former.storage.#field_ident
           {
-            former::ContainerAssign::assign( field, storage );
+            former::CollectionAssign::assign( field, storage );
           }
           else
           {
@@ -1000,96 +831,619 @@ with the new content generated during the subforming process.
     Ok( ( setters_code, namespace_code ) )
   }
 
+  /// Generates setter functions to subform entries of a collection.
   ///
-  /// Generate a single scalar setter for the 'field_ident' with the 'setter_name' name.
+  /// This function is a key component of the `former` crate's capability to dynamically create setters for manipulating
+  /// data within a nested collection structure like a `HashMap` or a `Vec`. The setters facilitate the addition or
+  /// modification of entries within the collection, directly from the parent former's context.
   ///
-  /// Used as a helper function for former_field_setter(), which generates alias setters
+  /// See `tests/inc/former_tests/subform_entry_manual.rs` for example of generated code.
   ///
-  /// # Example of generated code
-  ///
-  /// ```ignore
-  /// #[ doc = "Setter for the 'int_1' field." ]
-  /// #[ inline ]
-  /// pub fn int_1< Src >( mut self, src : Src ) -> Self
-  /// where
-  ///   Src : ::core::convert::Into< i32 >,
-  /// {
-  ///   debug_assert!( self.int_1.is_none() );
-  ///   self.storage.int_1 = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
-  ///   self
-  /// }
-  /// ```
 
   #[ inline ]
-  pub fn scalar_setter
+  pub fn subform_entry_setter
   (
     &self,
+    stru : &syn::Ident,
     former : &syn::Ident,
     former_storage : &syn::Ident,
+    former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+    struct_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+    struct_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+    struct_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+    original_input : &proc_macro::TokenStream,
   )
-  -> TokenStream
+  -> Result< ( TokenStream, TokenStream ) >
   {
-    let field_ident = self.ident;
-    let typ = self.non_optional_ty;
-    let setter_name = self.scalar_setter_name();
-    let attr = self.attrs.scalar.as_ref();
 
-    if attr.is_some() && attr.unwrap().hint
+    use convert_case::{ Case, Casing };
+    let field_ident = self.ident;
+    let field_typ = self.non_optional_ty;
+    let entry_typ : &syn::Type = typ::parameter_first( field_typ )?;
+
+    let attr = self.attrs.subform_entry.as_ref().unwrap();
+    // let params = typ::type_parameters( &self.non_optional_ty, .. );
+
+    // example : `children`
+    let setter_name = self.subform_entry_setter_name();
+
+    // example : `ParentSubformEntryChildrenEnd``
+    let subform_entry_end_name = format!( "{}SubformEntry{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
+    let subform_entry_end = syn::Ident::new( &subform_entry_end_name, field_ident.span() );
+
+    // example : `_children_subform_entry`
+    let subform_entry_name = format!( "_{}_subform_entry", field_ident );
+    let subform_entry = syn::Ident::new( &subform_entry_name, field_ident.span() );
+
+    let doc = format!
+    (
+      r#"
+
+Initiates the addition of {field_ident} to the `{stru}` entity using a dedicated subformer.
+
+This method configures and returns a subformer specialized for the `{0}` entities' formation process,
+which is part of the `{stru}` entity's construction. The subformer is set up with a specific end condition
+handled by `{subform_entry_end}`, ensuring that the {field_ident} are properly integrated into the
+parent's structure once formed.
+
+# Returns
+
+Returns an instance of `Former2`, a subformer ready to begin the formation process for `{0}` entities,
+allowing for dynamic and flexible construction of the `{stru}` entity's {field_ident}.
+
+      "#,
+      format!( "{}", qt!{ #field_typ } ),
+    );
+
+    let setters_code = qt!
+    {
+
+      #[ doc = #doc ]
+      #[ inline( always ) ]
+      pub fn #subform_entry< Former2, Definition2 >( self ) -> Former2
+      where
+        Definition2 : former::FormerDefinition
+        <
+          End = #subform_entry_end< Definition >,
+          Storage = < < #field_typ as former::Collection >::Val as former::EntityToStorage >::Storage,
+          Formed = Self,
+          Context = Self,
+        >,
+        Definition2::Types : former::FormerDefinitionTypes
+        <
+          Storage = < < #field_typ as former::Collection >::Val as former::EntityToStorage >::Storage,
+          Formed = Self,
+          Context = Self,
+        >,
+        Former2 : former::FormerBegin< Definition2 >,
+      {
+        Former2::former_begin( None, Some( self ), #subform_entry_end::default() )
+      }
+
+    };
+
+    let setters_code = if attr.setter()
+    {
+
+      let doc = format!
+      (
+        r#"
+Provides a user-friendly interface to add an instancce of {field_ident} to the {stru}.
+
+# Returns
+
+Returns an instance of `Former2`, a subformer ready to begin the formation process for `{0}` entities,
+allowing for dynamic and flexible construction of the `{stru}` entity's {field_ident}.
+
+        "#,
+        format!( "{}", qt!{ #field_typ } ),
+      );
+
+      qt!
+      {
+        #setters_code
+
+        #[ doc = #doc ]
+        #[ inline( always ) ]
+        pub fn #setter_name( self ) ->
+        < < #field_typ as former::Collection >::Val as former::EntityToFormer
+          <
+            <
+              < #field_typ as former::Collection >::Val as former::EntityToDefinition< Self, Self, #subform_entry_end < Definition > >
+            >::Definition,
+          >
+        >::Former
+        // #as_subformer< Self, impl #as_subformer_end< Self > >
+        {
+          self.#subform_entry
+          ::< < < #field_typ as former::Collection >::Val as former::EntityToFormer< _ > >::Former, _, >()
+          // ::< #former< _ >, _, >()
+        }
+      }
+
+      // #[ inline( always ) ]
+      // pub fn child( self ) ->
+      // ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
+      // {
+      //   self._children_subform_entry
+      //   ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
+      // }
+
+    }
+    else
+    {
+      setters_code
+    };
+
+    if attr.hint
     {
       let hint = format!
       (
         r#"
+/// Initializes and configures a subformer for adding named child entities. This method leverages an internal function
+/// to create and return a configured subformer instance. It allows for the dynamic addition of children with specific names,
+/// integrating them into the formation process of the parent entity.
 
-impl< Definition > {}< Definition >
+impl< Definition > {former}< Definition >
 where
-  Definition : former::FormerDefinition< Storage = {} >,
+  Definition : former::FormerDefinition< Storage = {former_storage} >,
 {{
-  #[ inline ]
-  pub fn {}< Src >( mut self, src : Src ) -> Self
-  where
-    Src : ::core::convert::Into< {} >,
+
+  #[ inline( always ) ]
+  pub fn {field_ident}( self ) -> {0}AsSubformer< Self, impl {0}AsSubformerEnd< Self > >
   {{
-    debug_assert!( self.storage.{}.is_none() );
-    self.storage.{} = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
-    self
+    self.{subform_entry_name}::< {0}Former< _ >, _, >()
   }}
+  // Replace {0} with name of type of entry value.
+
 }}
-
         "#,
-        former,
-        former_storage,
-        field_ident,
-        format!( "{}", qt!{ #typ } ),
-        field_ident,
-        field_ident,
+        format!( "{}", qt!{ #entry_typ } ),
       );
-      println!( "{hint}" );
-    }
-
-    if !self.scalar_setter_required()
-    {
-      return qt! {};
+      let about = format!
+      (
+r#"derive : Former
+structure : {stru}
+field : {field_ident}"#,
+      );
+      diag::report_print( about, original_input, hint );
     }
 
     let doc = format!
     (
-      "Scalar setter for the '{}' field.",
-      field_ident,
+      r#"
+
+Implements the `FormingEnd` trait for `{subform_entry_end}` to handle the final
+stage of the forming process for a `{stru}` collection that contains `{0}` elements.
+
+This implementation is tailored to manage the transition of {field_ident} elements from a substorage
+temporary state into their final state within the `{stru}`'s storage. The function ensures
+that the `{stru}`'s {field_ident} storage is initialized if not already set, and then adds the
+preformed elements to this storage.
+
+# Type Parameters
+
+- `Types2`: Represents the specific types associated with the `Former` trait being applied,
+  which include storage, formed type, and context.
+- `Definition`: Defines the `FormerDefinition` that outlines the storage structure and
+  the end conditions for the formation process.
+
+# Parameters
+
+- `substorage`: The storage from which {field_ident} elements are preformed and retrieved.
+- `super_former`: An optional context which, upon invocation, contains the `{former}`
+  instance being formed.
+
+# Returns
+
+Returns the updated `{former}` instance with newly added {field_ident}, completing the
+formation process of the `{stru}`.
+
+      "#,
+      format!( "{}", qt!{ #field_typ } ),
     );
 
-    qt!
+
+    let namespace_code = qt!
     {
+
       #[ doc = #doc ]
-      #[ inline ]
-      pub fn #setter_name< Src >( mut self, src : Src ) -> Self
-      where
-        Src : ::core::convert::Into< #typ >,
+      pub struct #subform_entry_end< Definition >
       {
-        debug_assert!( self.storage.#field_ident.is_none() );
-        self.storage.#field_ident = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
-        self
+        _phantom : core::marker::PhantomData< fn( Definition ) >,
       }
+
+      impl< Definition > Default
+      for #subform_entry_end< Definition >
+      {
+        #[ inline( always ) ]
+        fn default() -> Self
+        {
+          Self
+          {
+            _phantom : core::marker::PhantomData,
+          }
+        }
+      }
+
+      impl< #struct_generics_impl Types2, Definition > former::FormingEnd< Types2, >
+      for #subform_entry_end< Definition >
+      where
+        Definition : former::FormerDefinition
+        <
+          Storage = < #stru < #struct_generics_ty > as former::EntityToStorage >::Storage,
+        >,
+        Types2 : former::FormerDefinitionTypes
+        <
+          Storage = < < #field_typ as former::Collection >::Val as former::EntityToStorage >::Storage,
+          Formed = #former< #former_generics_ty >,
+          Context = #former< #former_generics_ty >,
+        >,
+        #struct_generics_where
+      {
+        #[ inline( always ) ]
+        fn call
+        (
+          &self,
+          substorage : Types2::Storage,
+          super_former : core::option::Option< Types2::Context >,
+        )
+        -> Types2::Formed
+        {
+          let mut super_former = super_former.unwrap();
+          if super_former.storage.#field_ident.is_none()
+          {
+            super_former.storage.#field_ident = Some( Default::default() );
+          }
+          if let Some( ref mut field ) = super_former.storage.#field_ident
+          {
+            former::CollectionAdd::add
+            (
+              field,
+              < < #field_typ as former::Collection >::Val as former::ValToEntry< #field_typ > >
+              ::val_to_entry( former::StoragePreform::preform( substorage ) ),
+            );
+          }
+          super_former
+        }
+      }
+
+    };
+
+    // tree_print!( setters_code.as_ref().unwrap() );
+    Ok( ( setters_code, namespace_code ) )
+  }
+
+  /// Generates setter functions to subform scalar and all corresponding helpers.
+  ///
+  /// See `tests/inc/former_tests/subform_scalar_manual.rs` for example of generated code.
+
+  #[ inline ]
+  pub fn subform_scalar_setter
+  (
+    &self,
+    stru : &syn::Ident,
+    former : &syn::Ident,
+    _former_storage : &syn::Ident,
+    former_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+    struct_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+    struct_generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+    struct_generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+    original_input : &proc_macro::TokenStream,
+  )
+  -> Result< ( TokenStream, TokenStream ) >
+  {
+
+    use convert_case::{ Case, Casing };
+    let field_ident = self.ident;
+    let field_typ = self.non_optional_ty;
+    let attr = self.attrs.subform_scalar.as_ref().unwrap();
+    // let params = typ::type_parameters( &self.non_optional_ty, .. );
+
+    // example : `children`
+    let setter_name = self.subform_scalar_setter_name();
+
+    // example : `ParentSubformScalarChildrenEnd``
+    let subform_scalar_end_name = format!( "{}SubformScalar{}End", stru, field_ident.to_string().to_case( Case::Pascal ) );
+    let subform_scalar_end = syn::Ident::new( &subform_scalar_end_name, field_ident.span() );
+
+    // example : `_children_subform_scalar`
+    let subform_scalar_name = format!( "_{}_subform_scalar", field_ident );
+    let subform_scalar = syn::Ident::new( &subform_scalar_name, field_ident.span() );
+
+    let doc = format!
+    (
+      r#"
+
+Initiates the scalar subformer for a `{0}` entity within a `{stru}`.
+
+This function creates a subformer specifically for handling scalar values associated with a `{0}` entity,
+leveraging a dedicated end structure to integrate the formed value seamlessly back into the `{stru}`.
+
+## Type Parameters
+
+- `Former2`: Represents the specific former to be returned.
+- `Definition2`: Defines the former's setup including its end action and storage specifics.
+
+## Returns
+
+- `Former2`: An instance of the former configured to handle the scalar formation of a `{0}`.
+
+This method prepares the forming context, ensuring that the subforming process for a scalar field in `{stru}`
+is properly initialized with all necessary configurations, including the default end action for integration.
+
+## Usage
+
+This function is typically called internally by a more user-friendly method that abstracts away the complex
+generics, providing a cleaner interface for initiating subform operations on scalar fields.
+
+      "#,
+      format!( "{}", qt!{ #field_typ } ),
+    );
+
+    let setters_code = qt!
+    {
+
+      #[ doc = #doc ]
+      #[ inline( always ) ]
+      pub fn #subform_scalar< Former2, Definition2 >( self ) ->
+      Former2
+      where
+        Definition2 : former::FormerDefinition
+        <
+          End = #subform_scalar_end< Definition >,
+          Storage = < #field_typ as former::EntityToStorage >::Storage,
+          Formed = Self,
+          Context = Self,
+        >,
+        Definition2::Types : former::FormerDefinitionTypes
+        <
+          Storage = < #field_typ as former::EntityToStorage >::Storage,
+          Formed = Self,
+          Context = Self,
+        >,
+        Former2 : former::FormerBegin< Definition2 >,
+      {
+        Former2::former_begin( None, Some( self ), #subform_scalar_end::default() )
+      }
+
+      // #[ inline( always ) ]
+      // pub fn _child_scalar_subformer< Former2, Definition2 >( self ) ->
+      // Former2
+      // where
+      //   Definition2 : former::FormerDefinition
+      //   <
+      //     End = ParentFormerSubformScalarChildEnd< Definition >,
+      //     Storage = < Child as former::EntityToStorage >::Storage,
+      //     Formed = Self,
+      //     Context = Self,
+      //   >,
+      //   Definition2::Types : former::FormerDefinitionTypes
+      //   <
+      //     Storage = < Child as former::EntityToStorage >::Storage,
+      //     Formed = Self,
+      //     Context = Self,
+      //   >,
+      //   Former2 : former::FormerBegin< Definition2 >,
+      // {
+      //   Former2::former_begin( None, Some( self ), ParentFormerSubformScalarChildEnd::default() )
+      // }
+
+    };
+
+    let setters_code = if attr.setter()
+    {
+
+      let doc = format!
+      (
+        r#"
+Provides a user-friendly interface to begin subforming a scalar `{0}` field within a `{stru}`.
+
+This method abstracts the underlying complex generics involved in setting up the former, simplifying the
+user interaction needed to initiate the subform process for a scalar field associated with a `{0}`.
+
+This method utilizes the more generic `{subform_scalar}` method to set up and return the subformer,
+providing a straightforward and type-safe interface for client code. It encapsulates details about the specific
+former and end action types, ensuring a seamless developer experience when forming parts of a `{stru}`.
+
+        "#,
+        format!( "{}", qt!{ #field_typ } ),
+      );
+
+      qt!
+      {
+        #setters_code
+
+        #[ doc = #doc ]
+        #[ inline( always ) ]
+        pub fn #setter_name( self ) ->
+        < #field_typ as former::EntityToFormer
+          <
+            <
+              #field_typ as former::EntityToDefinition< Self, Self, #subform_scalar_end < Definition > >
+            >::Definition,
+          >
+        >::Former
+        {
+          self.#subform_scalar
+          ::< < #field_typ as former::EntityToFormer< _ > >::Former, _, >()
+        }
+
+        // #[ inline( always ) ]
+        // pub fn child( self ) ->
+        // ChildAsSubformer< Self, impl ChildAsSubformerEnd< Self > >
+        // {
+        //   self._child_scalar_subformer
+        //   ::< < Child as former::EntityToFormer< _ > >::Former, _, >()
+        // }
+
+      }
+
     }
+    else
+    {
+      setters_code
+    };
+
+    if attr.hint
+    {
+      let hint = format!
+      (
+        r#"
+/// Extends `{former}` to include a method that initializes and configures a subformer for the '{field_ident}' field.
+/// This function demonstrates the dynamic addition of a named {field_ident}, leveraging a subformer to specify detailed properties.
+
+impl< Definition > {former}< Definition >
+where
+  Definition : former::FormerDefinition< Storage = < {stru} as former::EntityToStorage >::Storage >,
+{{
+  #[ inline( always ) ]
+  pub fn {field_ident}( self, name : &str ) -> {0}AsSubformer< Self, impl {0}AsSubformerEnd< Self > >
+  {{
+    self._{field_ident}_subform_scalar::< {0}Former< _ >, _, >().name( name )
+  }}
+}}
+        "#,
+        format!( "{}", qt!{ #field_typ } ),
+      );
+      let about = format!
+      (
+r#"derive : Former
+structure : {stru}
+field : {field_ident}"#,
+      );
+      diag::report_print( about, original_input, hint );
+    }
+
+    let doc = format!
+    (
+      r#"
+
+Represents the endpoint for the forming process of a scalar field managed by a subformer within a `{stru}` entity.
+
+This structure is a critical component of the forming process when using a subform scalar setter. It handles
+the finalization of the scalar field's value that has been configured through its dedicated subformer.
+Essentially, this end action integrates the individually formed scalar value back into the parent structure.
+
+## Type Parameters
+
+- `Definition`: The type that defines the former setup for the `{stru}` entity, influencing storage and behavior during forming.
+
+## Parameters of `call`
+
+- `substorage`: Storage type specific to the `{0}`, containing the newly formed scalar value.
+- `super_former`: An optional context of the `{former}`, which will receive the value. The function ensures
+  that this context is not `None` and inserts the formed value into the designated field within `{stru}`'s storage.
+
+      "#,
+      format!( "{}", qt!{ #field_typ } ),
+    );
+
+    let namespace_code = qt!
+    {
+
+      #[ doc = #doc ]
+      pub struct #subform_scalar_end< Definition >
+      {
+        _phantom : core::marker::PhantomData< fn( Definition ) >,
+      }
+
+      impl< Definition > Default
+      for #subform_scalar_end< Definition >
+      {
+        #[ inline( always ) ]
+        fn default() -> Self
+        {
+          Self
+          {
+            _phantom : core::marker::PhantomData,
+          }
+        }
+      }
+
+      impl< #struct_generics_impl Types2, Definition > former::FormingEnd< Types2, >
+      for #subform_scalar_end< Definition >
+      where
+        Definition : former::FormerDefinition
+        <
+          Storage = < #stru < #struct_generics_ty > as former::EntityToStorage >::Storage,
+        >,
+        Types2 : former::FormerDefinitionTypes
+        <
+          Storage = < #field_typ as former::EntityToStorage >::Storage,
+          Formed = #former< #former_generics_ty >,
+          Context = #former< #former_generics_ty >,
+        >,
+        #struct_generics_where
+      {
+        #[ inline( always ) ]
+        fn call
+        (
+          &self,
+          substorage : Types2::Storage,
+          super_former : core::option::Option< Types2::Context >,
+        )
+        -> Types2::Formed
+        {
+          let mut super_former = super_former.unwrap();
+          debug_assert!( super_former.storage.#field_ident.is_none() );
+          super_former.storage.#field_ident = Some( ::core::convert::Into::into( former::StoragePreform::preform( substorage ) ) );
+          super_former
+        }
+      }
+
+//       pub struct ParentFormerSubformScalarChildEnd< Definition >
+//       {
+//         _phantom : core::marker::PhantomData< fn( Definition ) >,
+//       }
+//
+//       impl< Definition > Default
+//       for ParentFormerSubformScalarChildEnd< Definition >
+//       {
+//         #[ inline( always ) ]
+//         fn default() -> Self
+//         {
+//           Self
+//           {
+//             _phantom : core::marker::PhantomData,
+//           }
+//         }
+//       }
+//
+//       impl< Types2, Definition > former::FormingEnd< Types2, >
+//       for ParentFormerSubformScalarChildEnd< Definition >
+//       where
+//         Definition : former::FormerDefinition
+//         <
+//           Storage = < Parent as former::EntityToStorage >::Storage,
+//         >,
+//         Types2 : former::FormerDefinitionTypes
+//         <
+//           Storage = < Child as former::EntityToStorage >::Storage,
+//           Formed = ParentFormer< Definition >,
+//           Context = ParentFormer< Definition >,
+//         >,
+//       {
+//         #[ inline( always ) ]
+//         fn call
+//         (
+//           &self,
+//           substorage : Types2::Storage,
+//           super_former : core::option::Option< Types2::Context >,
+//         )
+//         -> Types2::Formed
+//         {
+//           let mut super_former = super_former.unwrap();
+//           debug_assert!( super_former.storage.child.is_none() );
+//           super_former.storage.child = Some( ::core::convert::Into::into( former::StoragePreform::preform( substorage ) ) );
+//           super_former
+//         }
+//       }
+
+    };
+
+    // tree_print!( setters_code.as_ref().unwrap() );
+    Ok( ( setters_code, namespace_code ) )
   }
 
   /// Get name of scalar setter.
@@ -1105,11 +1459,10 @@ where
     return &self.ident;
   }
 
-  /// Get name of setter for container if such setter should be generated.
-  pub fn container_setter_name( &self ) -> Option< &syn::Ident >
+  /// Get name of setter for subform scalar if such setter should be generated.
+  pub fn subform_scalar_setter_name( &self ) -> Option< &syn::Ident >
   {
-
-    if let Some( ref attr ) = self.attrs.container
+    if let Some( ref attr ) = self.attrs.subform_scalar
     {
       if attr.setter()
       {
@@ -1123,15 +1476,33 @@ where
         }
       }
     }
+    return None;
+  }
 
+  /// Get name of setter for collection if such setter should be generated.
+  pub fn subform_collection_setter_name( &self ) -> Option< &syn::Ident >
+  {
+    if let Some( ref attr ) = self.attrs.subform_collection
+    {
+      if attr.setter()
+      {
+        if let Some( ref name ) = attr.name
+        {
+          return Some( &name )
+        }
+        else
+        {
+          return Some( &self.ident )
+        }
+      }
+    }
     return None;
   }
 
   /// Get name of setter for subform if such setter should be generated.
-  pub fn subform_setter_name( &self ) -> Option< &syn::Ident >
+  pub fn subform_entry_setter_name( &self ) -> Option< &syn::Ident >
   {
-
-    if let Some( ref attr ) = self.attrs.subform
+    if let Some( ref attr ) = self.attrs.subform_entry
     {
       if attr.setter()
       {
@@ -1145,11 +1516,10 @@ where
         }
       }
     }
-
     return None;
   }
 
-  /// Is scalar setter required. Does not if container of subformer setter requested.
+  /// Is scalar setter required. Does not if collection of subformer setter requested.
   pub fn scalar_setter_required( &self ) -> bool
   {
 
@@ -1170,12 +1540,17 @@ where
       }
     }
 
-    if self.attrs.container.is_some() && !explicit
+    if self.attrs.subform_scalar.is_some() && !explicit
     {
       return false;
     }
 
-    if self.attrs.subform.is_some() && !explicit
+    if self.attrs.subform_collection.is_some() && !explicit
+    {
+      return false;
+    }
+
+    if self.attrs.subform_entry.is_some() && !explicit
     {
       return false;
     }

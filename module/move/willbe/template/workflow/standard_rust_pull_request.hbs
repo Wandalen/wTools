@@ -43,8 +43,9 @@ jobs :
   tested :
     needs: check
     if : $\{{ needs.check.outputs.should_run == 'true' }}
-    uses : {{username_and_repository}}/.github/workflows/standard_rust_push.yml@alpha
+    uses : {{username_and_repository}}/.github/workflows/for_pr_rust_push.yml@alpha
     with :
       manifest_path : './Cargo.toml'
       module_name : $\{{ github.event.base.ref }}_$\{{ github.event.number }}
       commit_message : "+test_$\{{ github.event.base.ref }}_$\{{ github.event.number }}"
+      with_smoke : false

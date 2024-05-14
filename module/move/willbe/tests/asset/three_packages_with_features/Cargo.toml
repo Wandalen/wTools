@@ -1,0 +1,8 @@
+[workspace]
+resolver = "2"
+members = [
+    "*",
+]
+
+[workspace.metadata]
+discord_url = "https://discord.gg/123456789"

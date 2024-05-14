@@ -71,7 +71,7 @@ fn generate_from_single_field
   }
 }
 
-// qqq  : document, add example of generated code
+// qqq : for Petro : document, add example of generated code
 fn generate_from_multiple_fields_named
 (
   field_types : &Vec< &syn::Type >,

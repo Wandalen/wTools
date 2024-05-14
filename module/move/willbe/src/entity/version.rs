@@ -68,13 +68,8 @@ mod private
     pub fn bump( self ) -> Self
     {
       let mut ver = self.0;
-      if ver.major != 0
-      {
-        ver.major += 1;
-        ver.minor = 0;
-        ver.patch = 0;
-      }
-      else if ver.minor != 0
+      // we shouldn't change the major part of a version yet
+      if ver.minor != 0 || ver.major != 0
       {
         ver.minor += 1;
         ver.patch = 0;

@@ -28,7 +28,7 @@ impl< Name > Property< Name >
 pub struct Child< K : core::hash::Hash + std::cmp::Eq >
 {
   pub name : String,
-  #[ container( definition = former::HashMapDefinition ) ]
+  #[ subform_collection( definition = former::HashMapDefinition ) ]
   pub properties : collection_tools::HashMap< K, Property< K > >,
 }
 
