@@ -9,7 +9,7 @@ fn basic()
 
   // - struct
 
-  let input_struct : ItemStruct = parse_quote!
+  let item : ItemStruct = parse_quote!
   {
     struct Example
     {
@@ -17,7 +17,7 @@ fn basic()
       field2 : String
     }
   };
-  let exp = struct_like::StructLike::Struct( input_struct );
+  let exp = struct_like::StructLike::Struct( item );
 
   let got : struct_like::StructLike = parse_quote!
   {
@@ -31,7 +31,7 @@ fn basic()
 
   // - enum
 
-  let input_struct : ItemStruct = parse_quote!
+  let item : syn::ItemEnum = parse_quote!
   {
     enum Example
     {
@@ -39,7 +39,7 @@ fn basic()
       field2( i32 ),
     }
   };
-  let exp = struct_like::StructLike::Struct( input_struct );
+  let exp = struct_like::StructLike::Enum( item );
 
   let got : struct_like::StructLike = parse_quote!
   {
@@ -48,6 +48,20 @@ fn basic()
       field1,
       field2( i32 ),
     }
+  };
+  a_id!( got, exp );
+
+  // - unit
+
+  let item : syn::ItemEnum = parse_quote!
+  {
+    struct Unit;
+  };
+  let exp = struct_like::StructLike::Unit( item );
+
+  let got : struct_like::StructLike = parse_quote!
+  {
+    struct Unit;
   };
   a_id!( got, exp );
 

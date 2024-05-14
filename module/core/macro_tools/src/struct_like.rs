@@ -68,7 +68,7 @@ pub( crate ) mod private
   pub enum StructLike
   {
     /// Represents a unit type, which is a type without any fields or data.
-    Unit,
+    Unit( syn::ItemStruct ),
     /// Represents a Rust struct, containing fields and potentially associated data.
     Struct( syn::ItemStruct ),
     /// Represents a Rust union, useful for when multiple types may occupy the same memory space.
