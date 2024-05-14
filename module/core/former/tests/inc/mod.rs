@@ -17,9 +17,9 @@ mod former_tests
   mod a_primitives;
 
   mod subform_collection_basic_scalar;
-  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
   mod subform_collection_basic_manual;
-  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
   mod subform_collection_basic;
 
   // = attribute
@@ -81,55 +81,55 @@ mod former_tests
 
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_collection_playground;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_collection;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_collection_manual;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_collection_implicit;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_collection_setter_off;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_collection_named;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_collection_custom;
 
   // = subform scalar
 
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_scalar_manual;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_scalar;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_scalar_name;
 
   // = subform entry
 
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_entry;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_entry_manual;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_entry_named;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_entry_named_manual;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_entry_setter_off;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_entry_setter_on;
 
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_entry_hashmap;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_entry_hashmap_custom;
 
   // = subform all : scalar, subform_scalar, subform_entry, subform_collection
 
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_all;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_all_private;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod subform_all_parametrized;
 
 }
