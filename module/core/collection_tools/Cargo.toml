@@ -1,6 +1,6 @@
 [package]
 name = "collection_tools"
-version = "0.4.0"
+version = "0.6.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -25,36 +25,40 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-
-
 [features]
 
 no_std = [
   "test_tools/no_std",
 ]
+
 use_alloc = [
-  "no_std",
+  "no_std", # qqq : for Anton : why is that better?
   "hashbrown",
-  "test_tools/use_alloc",
+  # "test_tools/use_alloc", // why is it needed?
 ]
 
 default = [
   "enabled",
+  "prelude",
   "collection_constructors",
-  "collection_std",
+  "collection_into_constructors",
 ]
+
 full = [
   "enabled",
+  "prelude",
   "collection_constructors",
-  "collection_std",
+  "collection_into_constructors",
 ]
+
 enabled = []
+prelude = []
 
 # Collection constructors, like `hmap!{ "key" => "val" }`
 collection_constructors = []
-# STD collection for no_std.
-collection_std = []
-
+# Collection constructors, using `into()` under the hood, like `into_hmap!( "key" => "val" )`
+collection_into_constructors = []
+# qqq : is this feature used? seems not. if yes, what is it responsible for? discuss -- not needed, removed
 
 [dependencies]
 

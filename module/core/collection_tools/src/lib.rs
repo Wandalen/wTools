@@ -4,6 +4,14 @@
 #![ doc( html_root_url = "https://docs.rs/collection_tools/latest/collection_tools/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+// qqq : make subdirectory for each container -- done
+
+// qqq : move out of lib.rs file -- moved to `collections.rs`
+
+/// Module containing all collection macros
+#[ cfg( feature = "enabled" ) ]
+pub mod collections;
+
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
@@ -29,23 +37,26 @@ pub mod protected
   pub use super::orphan::*;
 
   extern crate alloc;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use alloc::vec;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use alloc::vec::Vec;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use alloc::collections::{ BinaryHeap, BTreeMap, BTreeSet, LinkedList, VecDeque };
+
+  // qqq : what is comnination `use_alloc` + !`no_std`
   #[ cfg( feature = "use_alloc" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use hashbrown::{ HashMap, HashSet };
+  pub use super::dependency::hashbrown::{ HashMap, HashSet };
+
   #[ cfg( not( feature = "no_std" ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use std::collections::{ HashMap, HashSet };
+
 }
 
 /// Parented namespace of the module.
@@ -70,13 +81,31 @@ pub mod exposed
 #[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
-  #[ cfg( feature = "collection_constructors" ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::constructors::*;
-}
 
-/// Macros to construct the collections.
-/// Basically a tweaked version of `literally` crate but using `alloc` / `hashbrown` instead of `std`
-#[ cfg( all( feature = "enabled", feature = "collection_constructors" ) ) ]
-pub mod constructors;
+  // qqq : for Anton : uncomment, make it working and cover by tests
+  // #[ cfg( feature = "prelude" ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use crate::
+  // {
+  //   HashMap as Map,
+  //   HashSet as Set,
+  //   HashMap,
+  //   HashSet,
+  //   VecDeque,
+  //   BTreeMap,
+  //   BTreeSet,
+  //   BinaryHeap,
+  //   LinkedList,
+  // };
+
+  // #[ cfg( feature = "prelude" ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use crate::
+  // {
+  //   Vec,
+  //   Vec as DynArray,
+  // };
+
+}

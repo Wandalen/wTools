@@ -245,7 +245,7 @@ pub struct TablesColumnsReport( pub Vec< ColumnsReport > );
 
 impl std::fmt::Display for TablesColumnsReport
 {
-  fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
+  fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
   {
     for report in &self.0
     {
@@ -283,7 +283,7 @@ impl ColumnsReport
 
 impl std::fmt::Display for ColumnsReport
 {
-  fn fmt( &self, f : &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
+  fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
   {
     writeln!( f, "Table name: {}", self.table_name )?;
     writeln!( f, "Description: {}", self.table_description )?;

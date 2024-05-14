@@ -192,4 +192,4 @@ where
 
 //
 
-include!( "../only_test/components_components_assign.rs" );
+include!( "./only_test/components_components_assign.rs" );

@@ -10,18 +10,25 @@ tests_impls!
   fn test_alias()
   {
     #[ derive( Debug, PartialEq, the_module::Former ) ]
+    // #[ derive( Debug, PartialEq, the_module::Former ) ] #[ debug ]
+    // #[ derive( Debug, PartialEq ) ]
     pub struct AliasTestStruct
     {
-      #[ alias( first_field ) ]
+      #[ scalar( name = first_field ) ]
       string_field : String,
-      #[ alias( second_field ) ]
+      #[ scalar( name = second_field ) ]
       i32_field : i32,
       i8_field : i8,
     }
 
+    // == begin of generated
+
+    // == end of generated
+
     let test_struct = AliasTestStruct::former()
     .first_field( "first_field" )
-    .i32_field( 2 )
+    .second_field( 2 )
+    // .i32_field( 2 )
     .i8_field( 1 )
     .form();
 

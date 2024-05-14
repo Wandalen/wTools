@@ -1,0 +1,11 @@
+error: Unknown field attribute #[defaultx(31)]
+ --> tests/inc/former_tests/compiletime/field_attr_bad.rs:6:3
+  |
+6 |   #[ defaultx( 31 ) ]
+  |   ^^^^^^^^^^^^^^^^^^^
+
+error: cannot find attribute `defaultx` in this scope
+ --> tests/inc/former_tests/compiletime/field_attr_bad.rs:6:6
+  |
+6 |   #[ defaultx( 31 ) ]
+  |      ^^^^^^^^

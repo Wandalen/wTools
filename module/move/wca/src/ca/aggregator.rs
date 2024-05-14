@@ -5,13 +5,19 @@ pub( crate ) mod private
   {
     Verifier,
     Executor,
-    Command,
-    grammar::command::private::CommandFormer,
+    grammar::command::private::
+    {
+      CommandFormer,
+      CommandAsSubformer,
+      CommandAsSubformerEnd,
+      CommandFormerStorage
+    },
     help::{ HelpGeneratorFn, HelpGeneratorOptions, HelpVariants },
   };
 
   use std::collections::HashSet;
   use std::fmt;
+  use former::StoragePreform;
   use wtools::thiserror;
   use wtools::error::
   {
@@ -94,55 +100,70 @@ pub( crate ) mod private
   /// ```
   #[ derive( Debug ) ]
   #[ derive( former::Former ) ]
-  #[ perform( fn build() -> CommandsAggregator ) ]
+  #[ storage_fields( help_generator : HelpGeneratorFn, help_variants : HashSet< HelpVariants > ) ]
+  #[ mutator( custom = true ) ]
+  // #[ debug ]
   pub struct CommandsAggregator
   {
-    #[ default( Dictionary::default() ) ]
+    #[ former( default = Dictionary::default() ) ]
     dictionary : Dictionary,
 
-    #[ default( Parser ) ]
+    #[ former( default = Parser ) ]
     parser : Parser,
 
-    #[ setter( false ) ]
-    #[ default( Executor::former().form() ) ]
+    #[ scalar( setter = false, hint = false ) ]
+    #[ former( default = Executor::former().form() ) ]
     executor : Executor,
 
-    help_generator : Option< HelpGeneratorFn >,
-    #[ default( HashSet::from([ HelpVariants::All ]) ) ]
-    help_variants : HashSet< HelpVariants >,
-    // aaa : for Bohdan : should not have fields help_generator and help_variants
-    // help_generator generateds VerifiedCommand(s) and stop to exist
-    // aaa : Defaults after formation
-
-    // #[ default( Verifier::former().form() ) ]
-    #[ default( Verifier ) ]
+    #[ former( default = Verifier ) ]
     verifier : Verifier,
-
-    // #[ default( ExecutorConverter::former().form() ) ]
-    // executor_converter : ExecutorConverter,
 
     callback_fn : Option< CommandsAggregatorCallback >,
   }
 
-  impl< Context, End > CommandsAggregatorFormer< Context, End >
+  impl< Context, Formed > former::FormerMutator for CommandsAggregatorFormerDefinitionTypes< Context, Formed >
+  {
+    fn form_mutation( storage : &mut Self::Storage, _context : &mut Option< Self::Context > )
+    {
+      let ca = storage;
+      let dictionary = ca.dictionary.get_or_insert_with( Dictionary::default );
+
+      let help_generator = std::mem::take( &mut ca.help_generator ).unwrap_or_default();
+      let help_variants = std::mem::take( &mut ca.help_variants ).unwrap_or_else( || HashSet::from([ HelpVariants::All ]) );
+
+      if help_variants.contains( &HelpVariants::All )
+      {
+        HelpVariants::All.generate( &help_generator, dictionary );
+      }
+      else
+      {
+        for help in help_variants.iter().sorted()
+        {
+          help.generate( &help_generator, dictionary );
+        }
+      }
+    }
+  }
+
+  impl< Definition > CommandsAggregatorFormer< Definition >
   where
-    End : former::FormingEnd< CommandsAggregator, Context >,
+    Definition : former::FormerDefinition< Storage = < CommandsAggregator as former::EntityToStorage >::Storage >,
   {
     /// Creates a command in the command chain.
     ///
     /// # Arguments
     ///
     /// * `name` - The name of the command.
-    pub fn command< IntoName >( self, name : IntoName ) -> CommandFormer< Self, impl former::FormingEnd< Command, Self > >
+    pub fn command< IntoName >( self, name : IntoName ) -> CommandAsSubformer< Self, impl CommandAsSubformerEnd< Self > >
     where
       IntoName : Into< String >,
     {
-      let on_end = | command : Command, super_former : Option< Self > | -> Self
+      let on_end = | command : CommandFormerStorage, super_former : Option< Self > | -> Self
       {
         let mut super_former = super_former.unwrap();
         let mut dictionary = super_former.storage.dictionary.unwrap_or_default();
 
-        dictionary.register( command );
+        dictionary.register( command.preform() );
 
         super_former.storage.dictionary = Some( dictionary );
 
@@ -199,7 +220,8 @@ pub( crate ) mod private
       self.storage.help_generator = Some( HelpGeneratorFn::new( func ) );
       self
     }
-    // qqq : it is good access method, but formed structure should not have help_generator anymore
+    // aaa : it is good access method, but formed structure should not have help_generator anymore
+    // aaa : mutator used
 
     /// Set callback function that will be executed after validation state
     ///
@@ -227,29 +249,6 @@ pub( crate ) mod private
 
   impl CommandsAggregator
   {
-    /// Construct CommandsAggregator
-    fn build( self ) -> CommandsAggregator
-    {
-      let mut ca = self;
-
-      let help_generator = std::mem::take( &mut ca.help_generator ).unwrap_or_default();
-      let help_variants = std::mem::take( &mut ca.help_variants );
-
-      if help_variants.contains( &HelpVariants::All )
-      {
-        HelpVariants::All.generate( &help_generator, &mut ca.dictionary );
-      }
-      else
-      {
-        for help in help_variants.iter().sorted()
-        {
-          help.generate( &help_generator, &mut ca.dictionary );
-        }
-      }
-
-      ca
-    }
-
     /// Parse, converts and executes a program
     ///
     /// Takes a string with program and executes it

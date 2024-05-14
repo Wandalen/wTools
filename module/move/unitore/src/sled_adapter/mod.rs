@@ -23,17 +23,13 @@ mod config;
 
 /// Storage for feed frames.
 #[ derive( Clone ) ]
-pub struct FeedStorage< S : GStore + GStoreMut + Send >
-{
-  /// GlueSQL storage.
-  pub storage : Arc< Mutex< Glue< S > > >,
-}
+pub struct FeedStorage< S : GStore + GStoreMut + Send >( Arc< Mutex< Glue< S > > > );
 
 impl< S : GStore + GStoreMut + Send > std::fmt::Debug for FeedStorage< S >
 {
-  fn fmt( &self, f: &mut std::fmt::Formatter<'_> ) -> std::fmt::Result
+  fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
   {
-    writeln!(f, "GlueSQL storage" )
+    writeln!( f, "GlueSQL storage" )
   }
 }
 
@@ -93,7 +89,7 @@ impl FeedStorage< SledStorage >
 
     frame_table.execute( &mut glue ).await?;
 
-    Ok( Self{ storage : Arc::new( Mutex::new( glue ) ) } )
+    Ok( Self( Arc::new( Mutex::new( glue ) ) ) )
   }
 }
 
@@ -103,15 +99,15 @@ impl FeedStorage< SledStorage >
 pub trait Store
 {
   /// Execute custom query passed as String.
-  async fn execute_query( &mut self, query : String ) -> Result< QueryReport >;
+  async fn query_execute( &mut self, query : String ) -> Result< QueryReport >;
 }
 
 #[ async_trait::async_trait( ?Send ) ]
 impl< S : GStore + GStoreMut + Send > Store for FeedStorage< S >
 {
-  async fn execute_query( &mut self, query : String ) -> Result< QueryReport >
+  async fn query_execute( &mut self, query : String ) -> Result< QueryReport >
   {
-    let glue = &mut *self.storage.lock().await;
+    let glue = &mut *self.0.lock().await;
     let payloads = glue.execute( &query ).await.context( "Failed to execute query" )?;
 
     let report = QueryReport ( payloads );

@@ -107,6 +107,7 @@ mod private
   #[ derive( Debug, Default, Former ) ]
   pub struct TemplateParameters
   {
+    #[ subform_entry( setter = false ) ]
     descriptors : Vec< TemplateParameterDescriptor >
   }
 
@@ -138,28 +139,16 @@ mod private
     is_mandatory : bool,
   }
 
-  impl< Context, End > TemplateParametersFormer< Context, End >
+  impl< Definition > TemplateParametersFormer< Definition >
   where
-    End : former::FormingEnd< TemplateParameters, Context >,
+    Definition : former::FormerDefinition< Storage = < TemplateParameters as former::EntityToStorage >::Storage >,
   {
     #[ inline( always ) ]
     pub fn parameter( self, name : &str ) ->
-    TemplateParameterDescriptorFormer< Self, impl former::FormingEnd< TemplateParameterDescriptor, Self > >
+    TemplateParameterDescriptorAsSubformer< Self, impl TemplateParameterDescriptorAsSubformerEnd< Self > >
     {
-      let on_end = | descriptor : TemplateParameterDescriptor, super_former : core::option::Option< Self > | -> Self
-      {
-        let mut super_former = super_former.unwrap();
-        if let Some( ref mut descriptors ) = super_former.storage.descriptors
-        {
-          descriptors.push( descriptor );
-        }
-        else
-        {
-          super_former.storage.descriptors = Some( vec![ descriptor ] );
-        }
-        super_former
-      };
-      TemplateParameterDescriptorFormer::begin( None, Some( self ), on_end ).parameter( name )
+      self._descriptors_subform_entry::< TemplateParameterDescriptorFormer< _ >, _ >()
+      .parameter( name )
     }
   }
 
@@ -313,31 +302,19 @@ mod private
   pub struct TemplateFilesBuilder
   {
     /// Stores all file descriptors for current template.
-    #[ setter( false ) ]
+    #[ subform_entry( setter = true ) ]
+    #[ scalar( setter = false, hint = false ) ]
     pub files : Vec< TemplateFileDescriptor >,
   }
 
-  impl< Context, End > TemplateFilesBuilderFormer< Context, End >
+  impl< Description > TemplateFilesBuilderFormer< Description >
   where
-    End : former::FormingEnd< TemplateFilesBuilder, Context >,
+    Description : former::FormerDefinition< Storage = < TemplateFilesBuilder as former::EntityToStorage >::Storage >,
   {
     #[ inline( always ) ]
-    pub fn file( self ) -> TemplateFileDescriptorFormer< Self, impl former::FormingEnd< TemplateFileDescriptor, Self > >
+    pub fn file( self ) -> TemplateFileDescriptorAsSubformer< Self, impl TemplateFileDescriptorAsSubformerEnd< Self > >
     {
-      let on_end = | descriptor : TemplateFileDescriptor, super_former : core::option::Option< Self > | -> Self
-      {
-        let mut super_former = super_former.unwrap();
-        if let Some( ref mut files ) = super_former.storage.files
-        {
-          files.push( descriptor );
-        }
-        else
-        {
-          super_former.storage.files = Some( vec![ descriptor ] );
-        }
-        super_former
-      };
-      TemplateFileDescriptorFormer::begin( None, Some( self ), on_end )
+      self._files_subform_entry()
     }
   }
 

@@ -1,3 +1,5 @@
+// #![ deny( missing_docs ) ]
+
 #[ allow( unused_imports ) ]
 use super::*;
 
@@ -7,26 +9,32 @@ mod former_tests
   #[ allow( unused_imports ) ]
   use super::*;
 
-  mod a_primitives_manual;
-  mod a_containers_without_runtime_manual;
-  mod a_containers_without_runtime;
-  #[ cfg( not( feature = "no_std" ) ) ]
-  mod a_containers_with_runtime_manual;
-  #[ cfg( not( feature = "no_std" ) ) ]
-  mod a_containers_with_runtime ;
+  // = basic
 
-  mod attribute_default_container;
+  mod a_basic_manual;
+  mod a_basic;
+  mod a_primitives_manual;
+  mod a_primitives;
+
+  mod subform_collection_basic_scalar;
+  #[ cfg( not( feature = "no_std" ) ) ]
+  mod subform_collection_basic_manual;
+  #[ cfg( not( feature = "no_std" ) ) ]
+  mod subform_collection_basic;
+
+  // = attribute
+
+  mod attribute_default_collection;
   mod attribute_default_primitive;
+  mod attribute_default_conflict;
+  mod attribute_storage_with_end;
+  mod attribute_storage_with_mutator;
   mod attribute_perform;
   mod attribute_setter;
   mod attribute_alias;
+  mod attribute_feature;
 
-  mod string_slice_manual;
-  mod string_slice;
-  mod unsigned_primitive_types;
-  mod default_user_type;
-  mod user_type_no_default;
-  mod user_type_no_debug;
+  // = name collision
 
   mod name_collision_former_hashmap_without_parameter;
   mod name_collision_former_vector_without_parameter;
@@ -35,27 +43,93 @@ mod former_tests
   mod name_collision_end;
   mod name_collision_on_end;
 
+  // = parametrization
+
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod parametrized_struct_manual;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod parametrized_struct_imm;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod parametrized_struct_where;
+  mod parametrized_field;
+  mod parametrized_field_where;
+
+  mod parametrized_slice_manual;
+  mod parametrized_slice;
+
+  // = etc
+
+  mod unsigned_primitive_types;
+  mod default_user_type;
+  mod user_type_no_default;
+  mod user_type_no_debug;
+  mod visibility;
+
+  // = collection former
 
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod subformer_basic_manual;
+  mod collection_former_common;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod subformer_basic;
+  mod collection_former_vec;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod subformer_vec;
+  mod collection_former_hashset;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod subformer_hashset;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod subformer_hashmap;
+  mod collection_former_hashmap;
 
+  // = subform collection
+
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_collection_playground;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subform_collection;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subform_collection_manual;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subform_collection_implicit;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subform_collection_setter_off;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subform_collection_named;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subform_collection_custom;
+
+  // = subform scalar
 
   #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_shortcut;
+  mod subform_scalar_manual;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subform_scalar;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subform_scalar_name;
+
+  // = subform entry
+
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subform_entry;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subform_entry_manual;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subform_entry_named;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subform_entry_named_manual;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subform_entry_setter_off;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subform_entry_setter_on;
+
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subform_entry_hashmap;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subform_entry_hashmap_custom;
+
+  // = subform all : scalar, subform_scalar, subform_entry, subform_collection
+
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subform_all;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subform_all_private;
+  #[ cfg( any( not( feature = "no_std" ) ) ) ]
+  mod subform_all_parametrized;
 
 }
 
@@ -96,6 +170,8 @@ only_for_terminal_module!
 
   // stable have different information about error
   // that's why these tests are active only for nightly
+
+  #[ cfg( feature = "derive_former" ) ]
   #[ test_tools::nightly ]
   #[ test ]
   fn former_trybuild()
@@ -104,11 +180,25 @@ only_for_terminal_module!
     println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
     let t = test_tools::compiletime::TestCases::new();
 
-    t.compile_fail( "tests/inc/compiletime/former_bad_attr.rs" );
-    t.pass( "tests/inc/compiletime/former_hashmap_without_parameter.rs" );
-    t.pass( "tests/inc/compiletime/former_vector_without_parameter.rs" );
+    t.compile_fail( "tests/inc/former_tests/compiletime/field_attr_bad.rs" );
+    t.compile_fail( "tests/inc/former_tests/compiletime/struct_attr_bad.rs" );
+    t.pass( "tests/inc/former_tests/compiletime/hashmap_without_parameter.rs" );
+    t.pass( "tests/inc/former_tests/compiletime/vector_without_parameter.rs" );
 
-    //t.compile_fail( "tests/inc/compiletime/components_component_from_debug.rs" );
+  }
+
+  // stable have different information about error
+  // that's why these tests are active only for nightly
+  #[ test_tools::nightly ]
+  #[ test ]
+  fn components_trybuild()
+  {
+
+    println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+    let _t = test_tools::compiletime::TestCases::new();
+
+    // zzz : make it working test
+    //t.run( "tests/inc/components_tests/compiletime/components_component_from_debug.rs" );
 
   }
 

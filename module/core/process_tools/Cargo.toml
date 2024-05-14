@@ -1,6 +1,6 @@
 [package]
 name = "process_tools"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -28,22 +28,6 @@ all-features = false
 [features]
 default = [ "enabled", "process_environment_is_cicd" ]
 full = [ "enabled", "process_environment_is_cicd" ]
-no_std = [
-  "former/no_std",
-  # xxx
-  # "proper_path_tools/no_std",
-  # "error_tools/no_std",
-  # "iter_tools/no_std",
-  "test_tools/no_std",
-]
-use_alloc = [
-  "no_std",
-  "former/use_alloc",
-  # "proper_path_tools/use_alloc",
-  # "error_tools/use_alloc",
-  # "iter_tools/use_alloc",
-  "test_tools/use_alloc",
-]
 enabled = [
   "mod_interface/enabled",
   "former/enabled",

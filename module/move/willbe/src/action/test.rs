@@ -69,24 +69,24 @@ mod private
   {
     dir : AbsolutePath,
     channels : HashSet< channel::Channel >,
-    #[ default( 0u32 ) ]
+    #[ former( default = 0u32 ) ]
     concurrent : u32,
-    #[ default( 1u32 ) ]
+    #[ former( default = 1u32 ) ]
     power : u32,
     include_features : Vec< String >,
-    #[ default ( [ "full".to_string(), "default".to_string() ] ) ]
+    #[ former( default  = [ "full".to_string(), "default".to_string() ] ) ]
     exclude_features : Vec< String >,
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     temp : bool,
     enabled_features : Vec< String >,
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     with_all_features : bool,
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     with_none_features : bool,
     optimizations : HashSet< optimization::Optimization >,
-    #[ default( 1000u32 ) ]
+    #[ former( default = 1000u32 ) ]
     variants_cap : u32,
-    #[ default( false ) ]
+    #[ former( default = false ) ]
     with_progress : bool,
   }
   
