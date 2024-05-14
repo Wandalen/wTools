@@ -107,27 +107,23 @@ pub( crate ) mod private
     }
   }
 
-//   impl< IntoVariant > From< IntoVariant > for GetData
-//   where
-//     IntoVariant : Into< PathBuf >,
-//   {
-//     #[ inline ]
-//     fn from( src : IntoVariant ) -> Self
-//     {
-//       Self::FromStr( core::convert::Into::into( src ) )
-//     }
-//   }
-//
-//   impl< IntoVariant > From< IntoVariant > for GetData
-//   where
-//     IntoVariant : Into< String >,
-//   {
-//     #[ inline ]
-//     fn from( src : IntoVariant ) -> Self
-//     {
-//       Self::FromStr( core::convert::Into::into( src ) )
-//     }
-//   }
+  impl From< PathBuf > for GetData
+  {
+    #[ inline ]
+    fn from( src : PathBuf ) -> Self
+    {
+      Self::FromFile( src )
+    }
+  }
+
+  impl From< String > for GetData
+  {
+    #[ inline ]
+    fn from( src : String ) -> Self
+    {
+      Self::FromString( src )
+    }
+  }
 
   impl Default for GetData
   {
