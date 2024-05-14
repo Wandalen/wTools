@@ -89,16 +89,45 @@ pub( crate ) mod private
     FromString( String ),
   }
 
-  impl< IntoVariant > From< IntoVariant > for GetData
-  where
-    IntoVariant : Into< &'static str >,
+  impl From< &'static str > for GetData
   {
     #[ inline ]
-    fn from( src : IntoVariant ) -> Self
+    fn from( src : &'static str ) -> Self
     {
       Self::FromStr( core::convert::Into::into( src ) )
     }
   }
+
+  impl From< &'static [ u8 ] > for GetData
+  {
+    #[ inline ]
+    fn from( src : &'static [ u8 ] ) -> Self
+    {
+      Self::FromBin( core::convert::Into::into( src ) )
+    }
+  }
+
+//   impl< IntoVariant > From< IntoVariant > for GetData
+//   where
+//     IntoVariant : Into< PathBuf >,
+//   {
+//     #[ inline ]
+//     fn from( src : IntoVariant ) -> Self
+//     {
+//       Self::FromStr( core::convert::Into::into( src ) )
+//     }
+//   }
+//
+//   impl< IntoVariant > From< IntoVariant > for GetData
+//   where
+//     IntoVariant : Into< String >,
+//   {
+//     #[ inline ]
+//     fn from( src : IntoVariant ) -> Self
+//     {
+//       Self::FromStr( core::convert::Into::into( src ) )
+//     }
+//   }
 
   impl Default for GetData
   {
