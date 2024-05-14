@@ -21,6 +21,7 @@ mod if_enabled
   mod item;
   mod phantom;
   mod quantifier;
+  mod struct_like;
   mod syntax;
   mod tokens;
   mod typ;

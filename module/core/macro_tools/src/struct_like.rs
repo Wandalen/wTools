@@ -14,7 +14,7 @@ pub( crate ) mod private
   /// `StructLike` is particularly useful in scenarios where different behaviors
   /// are needed based on the type of struct-like data being parsed.
 
-  #[ derive( Debug ) ]
+  #[ derive( Debug, PartialEq ) ]
   pub enum StructLike
   {
     /// Represents a unit type, which is a type without any fields or data.
@@ -22,7 +22,7 @@ pub( crate ) mod private
     /// Represents a Rust struct, containing fields and potentially associated data.
     Struct( syn::ItemStruct ),
     /// Represents a Rust union, useful for when multiple types may occupy the same memory space.
-    Union( syn::ItemUnion ),
+    Enum( syn::ItemEnum ),
   }
 
   impl syn::parse::Parse for StructLike
@@ -36,10 +36,10 @@ pub( crate ) mod private
         let item_struct : syn::ItemStruct = input.parse()?;
         Ok( StructLike::Struct( item_struct ) )
       }
-      else if lookahead.peek( syn::Token![ union ] )
+      else if lookahead.peek( syn::Token![ enum ] )
       {
-        let item_union : syn::ItemUnion = input.parse()?;
-        Ok( StructLike::Union( item_union ) )
+        let item_enum : syn::ItemEnum = input.parse()?;
+        Ok( StructLike::Enum( item_enum ) )
       }
       else
       {
@@ -63,7 +63,7 @@ pub( crate ) mod private
         {
           item.to_tokens( tokens );
         },
-        StructLike::Union( item ) =>
+        StructLike::Enum( item ) =>
         {
           item.to_tokens( tokens );
         },
@@ -87,11 +87,17 @@ pub( crate ) mod private
         {
           Box::new( item.fields.iter() )
         },
-        StructLike::Union( item ) =>
+        StructLike::Enum( item ) =>
         {
-          Box::new( item.fields.named.iter() )
+          Box::new( item.variants.iter() )
         },
       }
+    }
+
+    /// Extracts the name of each field.
+    pub fn field_names( &self ) -> Box< dyn Iterator< Item = Option< &syn::Ident > > + '_ >
+    {
+      Box::new( self.fields().map( | field | field.ident.as_ref() ) )
     }
 
     /// Extracts the type of each field.
@@ -101,9 +107,9 @@ pub( crate ) mod private
     }
 
     /// Extracts the name of each field.
-    pub fn field_names( &self ) -> Box< dyn Iterator< Item = Option< &syn::Ident > > + '_ >
+    pub fn field_attrs( &self ) -> Box< dyn Iterator< Item = &Vec< syn::Attribute > > + '_ >
     {
-      Box::new( self.fields().map( | field | field.ident.as_ref() ) )
+      Box::new( self.fields().map( | field | &field.attrs ) )
     }
 
     /// Extract the first field.
