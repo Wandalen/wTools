@@ -374,7 +374,7 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// ```
 
-// qqq : xxx : why no run/ignore? fix
+// qqq : for Petro : xxx : why no run/ignore? fix
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_variadic_from" ) ]

@@ -12,7 +12,7 @@ tests_impls!
   {
     use the_module::*;
 
-    // xxx : qqq : make it working
+    // xxx : qqq : for Petro : make it working
     #[ derive( From, InnerFrom, Display, FromStr, PartialEq, Debug ) ]
     #[ display( "{a}-{b}" ) ]
     struct Struct1
