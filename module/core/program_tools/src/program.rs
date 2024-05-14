@@ -9,76 +9,40 @@ pub( crate ) mod private
     // process::Command,
   };
 
-  #[ derive( Debug, Default, Former ) ]
-  pub struct SourceFile
-  {
-    file_path : PathBuf,
-    data : GetData,
-  }
-
-  #[ derive( Debug, Default, Former ) ]
-  pub struct Entry
-  {
-    source_file : SourceFile,
-    typ : EntryType,
-  }
-
-  #[ derive( Debug, Default, Former ) ]
-  pub struct CargoFile
-  {
-    file_path : PathBuf,
-    data : GetData,
-  }
+  // xxx2 : get completed
 
   #[ derive( Debug, Default, Former ) ]
   // #[ debug ]
   pub struct Program
   {
-    write_path : Option< PathBuf >,
-    read_path : Option< PathBuf >,
+    pub write_path : Option< PathBuf >,
+    pub read_path : Option< PathBuf >,
     #[ subform_entry( name = entry ) ]
-    entries : Vec< Entry >,
+    pub entries : Vec< Entry >,
     #[ subform_entry( name = source ) ]
-    sources : Vec< SourceFile >,
-    cargo_file : Option< CargoFile >,
+    pub sources : Vec< SourceFile >,
+    pub cargo_file : Option< CargoFile >,
   }
 
   #[ derive( Debug, Default, Former ) ]
-  pub struct ProgramPlan
+  pub struct Plan
   {
-    // #[ embed ]
-    program : Program,
-    calls : Vec< ProgramCall >,
-  }
-
-  #[ derive( Debug ) ]
-  pub enum GetData
-  {
-    FromStr( &'static str ),
-    FromBin( &'static [ u8 ] ),
-    FromFile( PathBuf ),
-    FromString( String ),
-  }
-
-  impl Default for GetData
-  {
-    fn default() -> Self
-    {
-      GetData::FromStr( "" )
-    }
+    #[ subform_scalar ]
+    pub program : Program,
+    pub calls : Vec< Call >,
   }
 
   #[ derive( Debug, Default ) ]
-  pub struct ProgramCall
+  pub struct Call
   {
-    action : ProgramAction,
-    current_path : Option< PathBuf >,
-    args : Vec< String >,
-    index_of_entry : i32,
+    pub action : Action,
+    pub current_path : Option< PathBuf >,
+    pub args : Vec< String >,
+    pub index_of_entry : i32,
   }
 
   #[ derive( Debug, Default ) ]
-  pub enum ProgramAction
+  pub enum Action
   {
     #[ default ]
     Run,
@@ -95,9 +59,104 @@ pub( crate ) mod private
     Test,
   }
 
+  #[ derive( Debug, Default, Former ) ]
+  pub struct Entry
+  {
+    source_file : SourceFile,
+    typ : EntryType,
+  }
+
+  #[ derive( Debug, Default, Former ) ]
+  pub struct SourceFile
+  {
+    file_path : PathBuf,
+    data : GetData,
+  }
+
+  #[ derive( Debug, Default, Former ) ]
+  pub struct CargoFile
+  {
+    file_path : PathBuf,
+    data : GetData,
+  }
+
+  #[ derive( Debug ) ]
+  pub enum GetData
+  {
+    FromStr( &'static str ),
+    FromBin( &'static [ u8 ] ),
+    FromFile( PathBuf ),
+    FromString( String ),
+  }
+
+  impl From< &'static str > for GetData
+  {
+    #[ inline ]
+    fn from( src : &'static str ) -> Self
+    {
+      Self::FromStr( src )
+    }
+  }
+
+  impl From< &'static [ u8 ] > for GetData
+  {
+    #[ inline ]
+    fn from( src : &'static [ u8 ] ) -> Self
+    {
+      Self::FromBin( src )
+    }
+  }
+
+//   impl< IntoVariant > From< IntoVariant > for GetData
+//   where
+//     IntoVariant : Into< PathBuf >,
+//   {
+//     #[ inline ]
+//     fn from( src : IntoVariant ) -> Self
+//     {
+//       Self::FromStr( core::convert::Into::into( src ) )
+//     }
+//   }
+//
+//   impl< IntoVariant > From< IntoVariant > for GetData
+//   where
+//     IntoVariant : Into< String >,
+//   {
+//     #[ inline ]
+//     fn from( src : IntoVariant ) -> Self
+//     {
+//       Self::FromStr( core::convert::Into::into( src ) )
+//     }
+//   }
+
+  impl Default for GetData
+  {
+    fn default() -> Self
+    {
+      GetData::FromStr( "" )
+    }
+  }
+
 }
 
 crate::mod_interface!
 {
-  // protected use run;
+
+  exposed use
+  {
+    Program,
+  };
+
+  protected use
+  {
+    Plan,
+    Call,
+    Action,
+    EntryType,
+    Entry,
+    SourceFile,
+    CargoFile,
+    GetData,
+  };
+
 }

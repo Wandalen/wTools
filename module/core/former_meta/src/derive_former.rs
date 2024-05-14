@@ -6,6 +6,7 @@ use proc_macro2::TokenStream;
 
 // qqq : implement interfaces for other collections
 
+
 mod field;
 use field::*;
 mod field_attrs;
@@ -399,7 +400,7 @@ specific needs of the broader forming context. It mandates the implementation of
     where
       #former_definition_types_generics_where
     {
-      // _phantom : core::marker::PhantomData< ( __Context, __Formed ) >,
+      // _phantom : ::core::marker::PhantomData< ( __Context, __Formed ) >,
       _phantom : #former_definition_types_phantom,
     }
 
@@ -412,7 +413,7 @@ specific needs of the broader forming context. It mandates the implementation of
       {
         Self
         {
-          _phantom : core::marker::PhantomData,
+          _phantom : ::core::marker::PhantomData,
         }
       }
     }
@@ -435,7 +436,7 @@ specific needs of the broader forming context. It mandates the implementation of
     where
       #former_definition_generics_where
     {
-      // _phantom : core::marker::PhantomData< ( __Context, __Formed, __End ) >,
+      // _phantom : ::core::marker::PhantomData< ( __Context, __Formed, __End ) >,
       _phantom : #former_definition_phantom,
     }
 
@@ -448,7 +449,7 @@ specific needs of the broader forming context. It mandates the implementation of
       {
         Self
         {
-          _phantom : core::marker::PhantomData,
+          _phantom : ::core::marker::PhantomData,
         }
       }
     }
@@ -543,10 +544,10 @@ specific needs of the broader forming context. It mandates the implementation of
       pub storage : Definition::Storage,
       /// An optional context providing additional data or state necessary for custom
       ///   formation logic or to facilitate this former's role as a subformer within another former.
-      pub context : core::option::Option< Definition::Context >,
+      pub context : ::core::option::Option< Definition::Context >,
       /// An optional closure or handler that is invoked to transform the accumulated
       ///   temporary storage into the final object structure once formation is complete.
-      pub on_end : core::option::Option< Definition::End >,
+      pub on_end : ::core::option::Option< Definition::End >,
     }
 
     #[ automatically_derived ]
@@ -586,8 +587,8 @@ specific needs of the broader forming context. It mandates the implementation of
       #[ inline( always ) ]
       pub fn begin
       (
-        mut storage : core::option::Option< Definition::Storage >,
-        context : core::option::Option< Definition::Context >,
+        mut storage : ::core::option::Option< Definition::Storage >,
+        context : ::core::option::Option< Definition::Context >,
         on_end : < Definition as former::FormerDefinition >::End,
       )
       -> Self
@@ -610,8 +611,8 @@ specific needs of the broader forming context. It mandates the implementation of
       #[ inline( always ) ]
       pub fn begin_coercing< IntoEnd >
       (
-        mut storage : core::option::Option< Definition::Storage >,
-        context : core::option::Option< Definition::Context >,
+        mut storage : ::core::option::Option< Definition::Storage >,
+        context : ::core::option::Option< Definition::Context >,
         on_end : IntoEnd,
       ) -> Self
       where
@@ -713,8 +714,8 @@ specific needs of the broader forming context. It mandates the implementation of
       #[ inline( always ) ]
       fn former_begin
       (
-        storage : core::option::Option< Definition::Storage >,
-        context : core::option::Option< Definition::Context >,
+        storage : ::core::option::Option< Definition::Storage >,
+        context : ::core::option::Option< Definition::Context >,
         on_end : Definition::End,
       )
       -> Self

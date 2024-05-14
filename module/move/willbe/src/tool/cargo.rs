@@ -5,6 +5,7 @@ mod private
 
   use std::path::PathBuf;
   use error_tools::err;
+  use error_tools::for_app::format_err;
   use former::Former;
   use process_tools::process::*;
   use wtools::error::Result;
@@ -92,6 +93,8 @@ mod private
   {
     pub( crate ) path : PathBuf,
     pub( crate ) temp_path : Option< PathBuf >,
+    #[ former( default = 0usize ) ]
+    pub( crate ) retry_count : usize,
     pub( crate ) dry : bool,
   }
 
@@ -140,11 +143,29 @@ mod private
     }
     else
     {
-      Run::former()
-      .bin_path( program )
-      .args( arguments.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-      .current_path( args.path )
-      .run().map_err( | report  | err!( report.to_string() ) )
+      let mut results = Vec::with_capacity( args.retry_count + 1 );
+      let run_args =  arguments.into_iter().map( OsString::from ).collect::< Vec< _ > >();
+      for _ in 0 .. args.retry_count + 1
+      {
+        let result = Run::former()
+        .bin_path( program )
+        .args( run_args.clone() )
+        .current_path( &args.path )
+        .run();
+        match result
+        {
+          Ok( report ) => return Ok( report ),
+          Err( e ) => results.push( e ),
+        }
+      }
+      if args.retry_count > 0
+      {
+        Err( format_err!( "It took {} attempts, but still failed. Here are the errors:\n{}", args.retry_count + 1, results.into_iter().map( | r | format!( "- {r}" ) ).collect::< Vec< _ > >().join( "\n" ) ) )
+      }
+      else
+      {
+        Err( results.remove( 0 ) ).map_err( | report  | err!( report.to_string() ) )
+      }
     }
   }
 }
