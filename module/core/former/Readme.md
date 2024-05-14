@@ -677,10 +677,10 @@ These setters ensure that developers can precisely and efficiently set propertie
 This example demonstrates how to employ the `Former` trait to configure a `Vec` using a collection setter in a structured manner.
 
 ```rust
-# #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+# #[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
 # fn main() {}
 
-# #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+# #[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
 # fn main()
 # {
 
@@ -713,10 +713,10 @@ Try out `cargo run --example former_collection_vector`.
 This example demonstrates how to effectively employ the `Former` trait to configure a `HashMap` using a collection setter.
 
 ```rust
-# #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+# #[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
 # fn main() {}
 
-# #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+# #[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
 # fn main()
 # {
   use collection_tools::{ HashMap, hmap };
@@ -750,10 +750,10 @@ Try out `cargo run --example former_collection_hashmap`.
 This example demonstrates the use of the `Former` trait to build a `collection_tools::HashSet` through subforming.
 
 ```rust
-# #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+# #[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
 # fn main() {}
 
-# #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+# #[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
 # fn main()
 {
   use collection_tools::{ HashSet, hset };
@@ -789,10 +789,10 @@ This example demonstrates the implementation of a scalar setter using the `Forme
 The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a collection—each child entity in this case.
 
 ```rust
-# #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+# #[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
 # fn main() {}
 
-# #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+# #[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
 # fn main()
 # {
   use collection_tools::HashMap;
@@ -878,12 +878,12 @@ their own formers, allowing for detailed configuration within a nested builder p
 
 ```rust
 
-# #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+# #[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
 # fn main()
 # {}
 #
 # // Ensures the example only compiles when the appropriate features are enabled.
-# #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+# #[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
 # fn main()
 # {
 
@@ -950,11 +950,11 @@ This example demonstrates the use of collection setters to manage complex nested
 The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a collection—each child entity in this case.
 
 ```rust
-# #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+# #[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
 # fn main() {}
 
 // Ensure the example only compiles when the appropriate features are enabled.
-# #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+# #[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
 # fn main()
 # {
   use collection_tools::HashMap;
@@ -1031,11 +1031,11 @@ This example illustrates the implementation of nested builder patterns using the
 The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a collection—each child entity in this case.
 
 ```rust
-# #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+# #[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
 # fn main() {}
 
 # // Ensure the example only compiles when the appropriate features are enabled.
-# #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+# #[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
 # fn main()
 # {
   use collection_tools::HashMap;

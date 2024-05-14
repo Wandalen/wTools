@@ -6,7 +6,7 @@ use super::*;
 use collection_tools::HashMap;
 
 // qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
-#[ cfg( not( feature = "use_alloc" ) ) ]
+// #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn add()
 {

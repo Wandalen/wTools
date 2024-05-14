@@ -2,9 +2,9 @@
 //! This example demonstrates the use of the `Former` trait to build a `collection_tools::HashSet` through subforming.
 //!
 
-#[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+#[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
 fn main() {}
-#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+#[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
 fn main()
 {
   use collection_tools::{ HashSet, hset };

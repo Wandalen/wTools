@@ -5,6 +5,7 @@
 //! by logging each addition. This example illustrates how to integrate such custom collections with the
 //! Former trait system for use in structured data types.
 
+// qqq : replace !no_std with !no_std || use_alloc when collection_tools reexports iterators
 #[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
 fn main() {}
 #[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]

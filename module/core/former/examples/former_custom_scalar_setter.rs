@@ -21,11 +21,11 @@
 //! These setters ensure that developers can precisely and efficiently set properties, manage collections, and configure complex structures within their applications.
 //!
 
-#[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+#[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
 fn main() {}
 
 // Ensure the example only compiles when the appropriate features are enabled.
-#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+#[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
 fn main()
 {
   use collection_tools::HashMap;
