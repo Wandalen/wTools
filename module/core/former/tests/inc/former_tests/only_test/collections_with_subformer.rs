@@ -51,12 +51,12 @@ tests_impls!
     let former = Struct1::former();
     a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnPreformed ) ) );
     let former2 = Struct1Former::< Struct1FormerDefinition >::new_coercing( former::ReturnPreformed );
-    a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
+    a_id!( ::std::mem::size_of_val( &former ), ::std::mem::size_of_val( &former2 ) );
 
     // default parameters
     let former = Struct1::former();
     let former2 : Struct1Former = Struct1Former::new_coercing( former::ReturnPreformed );
-    a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
+    a_id!( ::std::mem::size_of_val( &former ), ::std::mem::size_of_val( &former2 ) );
 
     // closure without helper
     let got : Struct1 = Struct1Former

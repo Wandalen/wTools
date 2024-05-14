@@ -16,9 +16,9 @@ tests_impls!
     a_id!( former.context, None );
     a_id!( print!( "{:?}", former.on_end ), print!( "{:?}", Some( the_module::ReturnPreformed ) ) );
     let former2 = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::new_coercing( former::ReturnPreformed );
-    a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
+    a_id!( ::std::mem::size_of_val( &former ), ::std::mem::size_of_val( &former2 ) );
     let former2 = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::new( former::ReturnPreformed );
-    a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
+    a_id!( ::std::mem::size_of_val( &former ), ::std::mem::size_of_val( &former2 ) );
 
     let command = Struct1::former().form();
     a_id!( command.int_1, 0 );
@@ -255,7 +255,7 @@ tests_impls!
     // basic case
     let former = Struct1::former();
     let former2 = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::new( former::ReturnPreformed );
-    a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
+    a_id!( ::std::mem::size_of_val( &former ), ::std::mem::size_of_val( &former2 ) );
     let exp = former.form();
     let got = former2.form();
     a_id!( got, exp );
@@ -324,7 +324,7 @@ tests_impls!
     // basic case
     let former = Struct1::former();
     let former2 = Struct1Former::< Struct1FormerDefinition< (), Struct1, former::ReturnPreformed > >::new( former::ReturnPreformed );
-    a_id!( std::mem::size_of_val( &former ), std::mem::size_of_val( &former2 ) );
+    a_id!( ::std::mem::size_of_val( &former ), ::std::mem::size_of_val( &former2 ) );
     let exp = former.form();
     let got = former2.form();
     a_id!( got, exp );

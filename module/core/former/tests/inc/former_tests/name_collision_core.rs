@@ -9,10 +9,10 @@ pub mod marker {}
 pub trait CloneAny{}
 pub trait Context{}
 pub trait Formed{}
-// pub trait OnEnd{}
+pub trait OnEnd{}
 
 #[ derive( Clone, the_module::Former ) ]
-pub struct OnEnd
+pub struct Context
 {
   inner : ::std::sync::Arc< ::core::cell::RefCell< dyn CloneAny > >
 }
