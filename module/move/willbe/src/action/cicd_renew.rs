@@ -173,6 +173,9 @@ mod private
     file_write( &workflow_root.join( "standard_rust_status.yml" ), include_str!( "../../template/workflow/standard_rust_status.yml" ) )?;
 
     file_write( &workflow_root.join( "status_checks_rules_update.yml" ), include_str!( "../../template/workflow/status_checks_rules_update.yml" ) )?;
+
+    file_write( &workflow_root.join( "Readme.md" ), include_str!( "../../template/workflow/Readme.md" ) )?;
+    
     Ok( () )
   }
 

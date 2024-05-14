@@ -1,3 +1,6 @@
+# healthtable
+
+[healthtable](../../Readme.md) - in addition to information about modules, their stability contains the results of CI/CD of the master and alpha branches.
 
 # for_pr_rust_push.yml
 
@@ -53,14 +56,15 @@ actions:
 actions:
 - call [standard_rust_push.yml](#standard_rust_pushyml) for `{module_name}` every day at 1:00 a.m.
 
-Affects badges in the header of the workspace readme.md file.
+Affects badges in the header of the workspace readme.md file, looks like this [![wTools](https://img.shields.io/github/actions/workflow/status/Wandalen/wTools/standard_rust_scheduled.yml?label=master&logo=github&branch=master)](https://github.com/Wandalen/wTools/actions/workflows/standard_rust_scheduled.yml).
 
 # module_{module_name}_push.yml
 
 actions:
 - call [standard_rust_push.yml](#standard_rust_pushyml) for `{module_name}`.
 
-Affects badges that are opposite to modules in the main table, as well as badges in the header of the crate readme.md files.
+Affects badges that are opposite to modules in the **[healthtable](#healthtable)**, as well as badges in the header of the crate readme.md files.
+
 
 # appropriate_branch.yml
 
