@@ -1,6 +1,5 @@
 use super::*;
 
-#[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 #[ test ]
 fn reexport()
 {
@@ -50,7 +49,6 @@ fn into_constructor()
 
 }
 
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 #[ test ]
 fn iters()
 {
