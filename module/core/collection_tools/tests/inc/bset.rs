@@ -49,3 +49,47 @@ fn into_constructor()
   assert_eq!( got, exp );
 
 }
+
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[ test ]
+fn iters()
+{
+
+  struct MyContainer
+  {
+    entries : the_module::BTreeSet< i32 >,
+  }
+
+  impl IntoIterator for MyContainer
+  {
+    type Item = i32;
+    type IntoIter = the_module::bset::IntoIter< i32 >;
+
+    fn into_iter( self ) -> Self::IntoIter
+    {
+      self.entries.into_iter()
+    }
+  }
+
+  impl< 'a > IntoIterator for &'a MyContainer
+  {
+    type Item = &'a i32;
+    type IntoIter = the_module::bset::Iter< 'a, i32 >;
+
+    fn into_iter( self ) -> Self::IntoIter
+    {
+      self.entries.iter()
+    }
+  }
+
+  let instance = MyContainer { entries : the_module::BTreeSet::from( [ 1, 2, 3 ] ) };
+  let got : the_module::BTreeSet< _ > = instance.into_iter().collect();
+  let exp = the_module::BTreeSet::from( [ 1, 2, 3 ] );
+  a_id!( got, exp );
+
+  let instance = MyContainer { entries : the_module::BTreeSet::from( [ 1, 2, 3 ] ) };
+  let got : the_module::BTreeSet< _ > = ( &instance ).into_iter().cloned().collect();
+  let exp = the_module::BTreeSet::from( [ 1, 2, 3 ] );
+  a_id!( got, exp );
+
+}

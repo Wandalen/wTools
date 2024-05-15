@@ -9,4 +9,5 @@ use test_tools::exposed::*;
 #[ allow( unused_imports ) ]
 use ::collection_tools as the_module;
 
+#[ cfg( feature = "enabled" ) ]
 mod inc;

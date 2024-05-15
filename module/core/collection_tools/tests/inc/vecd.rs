@@ -49,3 +49,62 @@ fn into_constructor()
   assert_eq!( got, exp );
 
 }
+
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[ test ]
+fn iters()
+{
+  struct MyContainer
+  {
+    entries : the_module::VecDeque< i32 >,
+  }
+
+  impl IntoIterator for MyContainer
+  {
+    type Item = i32;
+    type IntoIter = the_module::vecd::IntoIter< i32 >;
+
+    fn into_iter( self ) -> Self::IntoIter
+    {
+      self.entries.into_iter()
+    }
+  }
+
+  impl< 'a > IntoIterator for &'a MyContainer
+  {
+    type Item = &'a i32;
+    type IntoIter = the_module::vecd::Iter< 'a, i32 >;
+
+    fn into_iter( self ) -> Self::IntoIter
+    {
+      self.entries.iter()
+    }
+  }
+
+  impl< 'a > IntoIterator for &'a mut MyContainer
+  {
+    type Item = &'a mut i32;
+    type IntoIter = the_module::vecd::IterMut< 'a, i32 >;
+
+    fn into_iter( self ) -> Self::IntoIter
+    {
+      self.entries.iter_mut()
+    }
+  }
+
+  let instance = MyContainer { entries : the_module::VecDeque::from( [ 1, 2, 3 ] ) };
+  let got : the_module::VecDeque< _ > = instance.into_iter().collect();
+  let exp = the_module::VecDeque::from( [ 1, 2, 3 ] );
+  a_id!( got, exp );
+
+  let instance = MyContainer { entries : the_module::VecDeque::from( [ 1, 2, 3 ] ) };
+  let got : the_module::VecDeque< _ > = ( &instance ).into_iter().cloned().collect();
+  let exp = the_module::VecDeque::from( [ 1, 2, 3 ] );
+  a_id!( got, exp );
+
+  let mut instance = MyContainer { entries : the_module::VecDeque::from( [ 1, 2, 3 ] ) };
+  ( &mut instance ).into_iter().for_each( | v | *v *= 2 );
+  let exp = the_module::VecDeque::from( [ 2, 4, 6 ] );
+  a_id!( instance.entries, exp );
+
+}

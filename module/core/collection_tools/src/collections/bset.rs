@@ -1,3 +1,7 @@
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use alloc::collections::btree_set::*;
+
 /// Creates a `BTreeSet` from a list of elements.
 ///
 /// The `bset` macro allows for convenient creation of a `BTreeSet` with initial elements.
@@ -52,7 +56,7 @@ macro_rules! bset
   )
   =>
   {{
-    let mut _set = collection_tools::BTreeSet::new();
+    let mut _set = $crate::bset::BTreeSet::new();
     $(
       _set.insert( $key );
     )*
@@ -145,7 +149,7 @@ macro_rules! into_bset
   )
   =>
   {{
-    let mut _set = collection_tools::BTreeSet::new();
+    let mut _set = $crate::bset::BTreeSet::new();
     $(
       _set.insert( Into::into( $key ) );
     )*

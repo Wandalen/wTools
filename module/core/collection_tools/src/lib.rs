@@ -4,13 +4,16 @@
 #![ doc( html_root_url = "https://docs.rs/collection_tools/latest/collection_tools/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+extern crate alloc;
+
 // qqq : make subdirectory for each container -- done
 
 // qqq : move out of lib.rs file -- moved to `collections.rs`
 
 /// Module containing all collection macros
 #[ cfg( feature = "enabled" ) ]
-pub mod collections;
+mod collections;
+pub use collections::*;
 
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
@@ -62,21 +65,21 @@ pub mod prelude
 {
 
   // qqq : for Anton : uncomment, make it working and cover by tests -- renamed to reexports
-  extern crate alloc;
-
-  pub use alloc::collections;
-
-  pub use alloc::vec;
-
-  #[ cfg( feature = "use_alloc" ) ]
+  #[ cfg( feature = "reexports" ) ]
+  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::dependency::hashbrown as hash;
-
-  #[ cfg( not( feature = "no_std" ) ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use std::collections as hash;
+  pub use crate::
+  {
+    bmap::BTreeMap,
+    bset::BTreeSet,
+    heap::BinaryHeap,
+    hmap::HashMap,
+    hset::HashSet,
+    list::LinkedList,
+    vec::Vec,
+    vecd::VecDeque,
+  };
 
   #[ cfg( feature = "reexports" ) ]
   #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
@@ -84,15 +87,6 @@ pub mod prelude
   #[ allow( unused_imports ) ]
   pub use 
   {
-    collections::BTreeMap,
-    collections::BTreeSet,
-    collections::BinaryHeap,
-    hash::HashMap,
-    hash::HashSet,
-    collections::LinkedList,
-    vec::Vec,
-    collections::VecDeque,
-
     HashMap as Map,
     HashSet as Set,
     Vec as DynArray,

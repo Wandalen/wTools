@@ -1,3 +1,7 @@
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use alloc::collections::linked_list::*;
+
 /// Creates a `LinkedList` from a list of elements.
 ///
 /// The `list` macro facilitates the creation of a `LinkedList` with initial elements.
@@ -66,7 +70,7 @@ macro_rules! list
   {{
     // "The LinkedList allows pushing and popping elements at either end in constant time."
     // So no `with_capacity`
-    let mut _lst = collection_tools::LinkedList::new();
+    let mut _lst = $crate::list::LinkedList::new();
     $(
       _lst.push_back( $key );
     )*
@@ -160,7 +164,7 @@ macro_rules! into_list
   {{
     // "The LinkedList allows pushing and popping elements at either end in constant time."
     // So no `with_capacity`
-    let mut _lst = collection_tools::LinkedList::new();
+    let mut _lst = $crate::list::LinkedList::new();
     $(
       _lst.push_back( Into::into( $key ) );
     )*

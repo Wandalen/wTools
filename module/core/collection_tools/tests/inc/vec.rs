@@ -63,10 +63,10 @@ fn into_constructor()
 
 }
 
-// qqq : implement similar test for all containers
+// qqq : implement similar test for all containers -- done
 #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 #[ test ]
-fn vec_iters()
+fn iters()
 {
 
   struct MyContainer
@@ -82,29 +82,25 @@ fn vec_iters()
 
     fn into_iter( self ) -> Self::IntoIter
     {
-      self.entries.into_iter() // Create an iterator from the internal HashSet.
+      self.entries.into_iter()
     }
   }
 
   impl< 'a > IntoIterator for &'a MyContainer
   {
     type Item = &'a i32;
-    type IntoIter = std::slice::Iter< 'a, i32 >;
-    // type IntoIter = the_module::vec::Iter< 'a, i32 >;
-    // qqq : should work
+    type IntoIter = the_module::vec::Iter< 'a, i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {
-      self.entries.iter() // Borrow the elements via an iterator.
+      self.entries.iter()
     }
   }
 
   impl< 'a > IntoIterator for &'a mut MyContainer
   {
     type Item = &'a mut i32;
-    type IntoIter = std::slice::IterMut< 'a, i32 >;
-    // type IntoIter = the_module::vec::IterMut< 'a, i32 >;
-    // qqq : should work
+    type IntoIter = the_module::vec::IterMut< 'a, i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -112,14 +108,19 @@ fn vec_iters()
     }
   }
 
-  let instance = MyContainer { entries : vec![ 1, 2, 3 ] };
-  let got : Vec< _ > = ( &instance ).into_iter().cloned().collect();
-  let exp = vec![ 1, 2, 3 ];
+  let instance = MyContainer { entries : the_module::Vec::from( [ 1, 2, 3 ] ) };
+  let got : Vec< _ > = instance.into_iter().collect();
+  let exp = the_module::Vec::from( [ 1, 2, 3 ] );
   a_id!( got, exp );
 
-  let instance = MyContainer { entries : vec![ 1, 2, 3 ] };
-  let got : Vec< _ > = instance.into_iter().collect();
-  let exp = vec![ 1, 2, 3 ];
+  let instance = MyContainer { entries : the_module::Vec::from( [ 1, 2, 3 ] ) };
+  let got : Vec< _ > = ( &instance ).into_iter().cloned().collect();
+  let exp = the_module::Vec::from( [ 1, 2, 3 ] );
   a_id!( got, exp );
+
+  let mut instance = MyContainer { entries : the_module::Vec::from( [ 1, 2, 3 ] ) };
+  ( &mut instance ).into_iter().for_each( | v | *v *= 2 );
+  let exp = the_module::Vec::from( [ 2, 4, 6 ] );
+  a_id!( instance.entries, exp );
 
 }
