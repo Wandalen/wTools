@@ -33,6 +33,7 @@ mod private
   use former::Former;
   use workspace::WorkspacePackage;
   use diff::crate_diff;
+  use version::version_revert;
   use error_tools::for_app::Error;
 
   ///
@@ -302,7 +303,7 @@ mod private
     pub commit : Option< process::Report >,
     pub push : Option< process::Report >,
   }
-  
+
   impl std::fmt::Display for ExtendedGitReport
   {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
@@ -310,7 +311,7 @@ mod private
       if let Some( add ) = add { writeln!( f, "{add}" )? }
       if let Some( commit ) = commit { writeln!( f, "{commit}" )? }
       if let Some( push ) = push { writeln!( f, "{push}" )? }
-      
+
       Ok( () )
     }
   }
@@ -324,7 +325,7 @@ mod private
     pub dry : bool,
   }
 
-  fn perform_git_operations( o : GitThingsOptions ) -> Result< ExtendedGitReport >
+  fn perform_git_commit( o : GitThingsOptions ) -> Result< ExtendedGitReport >
   {
     let mut report = ExtendedGitReport::default();
     if o.items.is_empty() { return Ok( report ); }
@@ -341,8 +342,6 @@ mod private
     report.add = Some( res );
     let res = git::commit( &o.git_root, &o.message, o.dry ).map_err( | e | format_err!( "{report}\n{e}" ) )?;
     report.commit = Some( res );
-    let res = git::push( &o.git_root, o.dry ).map_err( | e | format_err!( "{report}\n{e}" ) )?;
-    report.push = Some( res );
 
     Ok( report )
   }
@@ -367,7 +366,7 @@ mod private
     workspace_dir : CrateDir,
     package : Package,
     base_temp_dir : Option< PathBuf >,
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     dry : bool,
   }
 
@@ -408,6 +407,7 @@ mod private
       {
         path : crate_dir.as_ref().into(),
         temp_path : self.base_temp_dir.clone(),
+        retry_count : 2,
         dry : self.dry,
       };
 
@@ -452,12 +452,42 @@ mod private
     report.get_info = Some( cargo::pack( pack ).map_err( | e | ( report.clone(), e ) )? );
     // qqq : redundant field?
     report.publish_required = true;
-    report.bump = Some( version::version_bump( version_bump ).map_err( | e | ( report.clone(), e ) )? );
-    let git = perform_git_operations( git_things ).map_err( | e | ( report.clone(), e ) )?;
+    let bump_report = version::version_bump( version_bump ).map_err( | e | ( report.clone(), e ) )?;
+    report.bump = Some( bump_report.clone() );
+    let git_root = git_things.git_root.clone();
+    let git = match perform_git_commit( git_things )
+    {
+      Ok( git ) => git,
+      Err( e ) =>
+      {
+        version_revert( &bump_report )
+        .map_err( | le |
+        (
+          report.clone(),
+          format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) )
+        ))?;
+        return Err(( report, e ));
+      }
+    };
     report.add = git.add;
     report.commit = git.commit;
-    report.push = git.push;
-    report.publish = Some( cargo::publish( publish ).map_err( | e | ( report.clone(), e ) )? );
+    report.publish = match cargo::publish( publish )
+    {
+      Ok( publish ) => Some( publish ),
+      Err( e ) =>
+      {
+        git::reset( git_root.as_ref(), true, 1, false )
+        .map_err( | le |
+        (
+          report.clone(),
+          format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) )
+        ))?;
+        return Err(( report, e ));
+      }
+    };
+
+    let res = git::push( &git_root, dry ).map_err( | e | ( report.clone(), e ) )?;
+    report.push = Some( res );
 
     Ok( report )
   }
@@ -483,7 +513,7 @@ mod private
     /// `dry` - A boolean value indicating whether to do a dry run. If set to `true`, the application performs
     /// a simulated run without making any actual changes. If set to `false`, the operations are actually executed.
     /// This property is optional and defaults to `true`.
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     pub dry : bool,
 
     /// Required for tree view only
@@ -494,7 +524,7 @@ mod private
     /// how to build and where to publish the package amongst other instructions. The `#[setter( false )]`
     /// attribute indicates that there is no setter method for the `plans` variable and it can only be modified
     /// within the struct.
-    #[ setter( false ) ]
+    #[ scalar( setter = false, hint = false ) ]
     pub plans : Vec< PackagePublishInstruction >,
   }
 

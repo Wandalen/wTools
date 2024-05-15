@@ -5,7 +5,7 @@ pub( crate ) mod private
   use { Handler, Routine, Type };
 
   use std::collections::HashMap;
-  use former::Former;
+  use former::{ Former, StoragePreform };
 
   /// A description of a Value in a command. Used to specify the expected type and provide a hint for the Value.
   ///
@@ -27,7 +27,7 @@ pub( crate ) mod private
     /// expected type of a value
     pub kind : Type,
     /// subject optional parameter
-    #[ default( false ) ]
+    #[ former( default = false ) ]
     pub optional : bool,
   }
 
@@ -42,16 +42,16 @@ pub( crate ) mod private
     /// expected type of a value
     kind : Type,
     /// subject optional parameter
-    #[ default( false ) ]
+    #[ former( default = false ) ]
     optional : bool,
-    #[ setter( false ) ]
-    #[ default( Vec::new() ) ]
+    #[ scalar( setter = false ) ]
+    #[ former( default = Vec::new() ) ]
     properties_aliases : Vec< String >,
   }
 
-  impl< C, End > PropertyDescriptionFormer< C, End >
+  impl< Definition > PropertyDescriptionFormer< Definition >
   where
-    End : former::FormingEnd< PropertyDescription, C >,
+    Definition : former::FormerDefinition< Storage = < PropertyDescription as former::EntityToStorage >::Storage >,
   {
     pub fn alias< IntoName >( mut self, name : IntoName ) -> Self
     where
@@ -86,17 +86,17 @@ pub( crate ) mod private
 
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
   #[ derive( Former ) ]
+  // #[ debug ]
   pub struct Command
   {
     /// Command common hint.
-    #[ alias( h ) ]
     pub hint : String,
     /// Command full hint.
-    #[ alias( lh ) ]
     pub long_hint : String,
     /// Phrase descriptor for command.
     pub phrase : String,
     /// Command subjects hints and types.
+    #[ subform_entry( setter = true ) ]
     pub subjects : Vec< ValueDescription >,
     /// Hints and types for command options.
     pub properties : HashMap< String, ValueDescription >,
@@ -107,14 +107,14 @@ pub( crate ) mod private
     // aaa : here it is
     // qqq : make it usable and remove default(?)
     /// The type `Routine` represents the specific implementation of the routine.
-    #[ setter( false ) ]
-    #[ default( Routine::from( Handler::from( || { panic!( "No routine available: A handler function for the command is missing" ) } ) ) ) ]
+    #[ scalar( setter = false ) ]
+    #[ former( default = Routine::from( Handler::from( || { panic!( "No routine available: A handler function for the command is missing" ) } ) ) ) ]
     pub routine : Routine,
   }
 
-  impl< Context, End > CommandFormer< Context, End >
+  impl< Definition > CommandFormer< Definition >
   where
-    End : former::FormingEnd< Command, Context >,
+    Definition : former::FormerDefinition< Storage = < Command as former::EntityToStorage >::Storage >,
   {
     /// Setter for separate properties aliases.
     pub fn property_alias< S : Into< String > >( mut self, key : S, alias : S ) -> Self
@@ -169,27 +169,17 @@ pub( crate ) mod private
     }
   }
 
-  impl< Context, End > CommandFormer< Context, End >
+  impl< Definition > CommandFormer< Definition >
   where
-    End : former::FormingEnd< Command, Context >,
+    Definition : former::FormerDefinition< Storage = < Command as former::EntityToStorage >::Storage >,
   {
     /// Implements the `subject` method for a value.
     ///
     /// This method allows chaining, where `subject` is the current value and `ValueDescription` is the super-former.
     /// It returns a `ValueDescriptionFormer` which can be used to further build the super-former.
-    pub fn subject( self ) -> ValueDescriptionFormer< Self, impl former::FormingEnd< ValueDescription, Self > >
+    pub fn subject( self ) -> ValueDescriptionAsSubformer< Self, impl ValueDescriptionAsSubformerEnd< Self > >
     {
-      let on_end = | subject : ValueDescription, super_former : Option< Self > | -> Self
-      {
-        let mut super_former = super_former.unwrap();
-        let mut subjects = super_former.storage.subjects.unwrap_or_default();
-        subjects.push( subject );
-
-        super_former.storage.subjects = Some( subjects );
-
-        super_former
-      };
-      ValueDescriptionFormer::begin( None, Some( self ), on_end )
+      self._subjects_subform_entry()
     }
 
     /// Sets the name and other properties of the current property.
@@ -201,14 +191,15 @@ pub( crate ) mod private
     /// # Arguments
     ///
     /// * `name` - The name of the property. It should implement the `Into< String >` trait.
-    pub fn property< IntoName >( self, name : IntoName ) -> PropertyDescriptionFormer< Self, impl former::FormingEnd< PropertyDescription, Self > >
+    pub fn property< IntoName >( self, name : IntoName ) -> PropertyDescriptionAsSubformer< Self, impl PropertyDescriptionAsSubformerEnd< Self > >
     where
       IntoName : Into< String >,
     {
-      let on_end = | property : PropertyDescription, super_former : Option< Self > | -> Self
+      let on_end = | property : PropertyDescriptionFormerStorage, super_former : Option< Self > | -> Self
       {
         let mut super_former = super_former.unwrap();
         let mut properties = super_former.storage.properties.unwrap_or_default();
+        let property = property.preform();
         let value = ValueDescription
         {
           hint : property.hint,

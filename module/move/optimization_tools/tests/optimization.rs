@@ -58,9 +58,8 @@ fn initial_temperature()
 ///
 /// # Usage
 ///
-/// cargo test solve_with_sa --release --features rapidity_6
+/// cargo test solve_with_sa --release
 ///
-#[ cfg( feature = "rapidity_6" ) ]
 #[ ignore ]
 #[ test ]
 fn solve_with_sa()
@@ -104,9 +103,8 @@ fn solve_with_sa()
 ///
 /// # Usage
 ///
-/// cargo test solve_empty_full_block --release --features rapidity_6
+/// cargo test solve_empty_full_block --release
 ///
-#[ cfg( feature = "rapidity_6" ) ]
 #[ ignore ]
 #[ test ]
 fn solve_empty_full_block()
@@ -181,9 +179,8 @@ fn solve_empty_full_block()
 ///
 /// # Usage
 ///
-/// cargo test time_measure --release --features rapidity_6
+/// cargo test time_measure --release
 ///
-#[ cfg( feature = "rapidity_6" ) ]
 #[ ignore ]
 #[ test ]
 fn time_measure()

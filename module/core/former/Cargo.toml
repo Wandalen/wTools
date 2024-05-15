@@ -1,6 +1,6 @@
 [package]
 name = "former"
-version = "0.16.0"
+version = "2.0.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -59,7 +59,7 @@ derive_from_components = [ "derive_components", "former_meta/derive_from_compone
 
 [dependencies]
 former_meta = { workspace = true }
-collection_tools = { workspace = true, features = [ "collection_std" ] }
+collection_tools = { workspace = true, features = [ "collection_constructors" ] }
 
 
 [dev-dependencies]

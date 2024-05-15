@@ -8,7 +8,6 @@ pub( crate ) mod private
   use wtools::{ error, error::Result, err };
   use ca::help::private::{ HelpGeneratorOptions, LevelOfDetail, generate_help_content };
 
-  // TODO: Remove Clone
   /// Converts a `ParsedCommand` to a `VerifiedCommand` by performing validation and type casting on values.
   ///
   /// ```
@@ -33,47 +32,7 @@ pub( crate ) mod private
   /// # }
   /// ```
   #[ derive( Debug, Clone ) ]
-  // #[ derive( Former ) ]
   pub struct Verifier;
-  // qqq : delete on completion
-  // {
-  //   // TODO: Make getters
-  //   /// all available commands
-  //   #[ setter( false ) ]
-  //   pub commands : &'a Dictionary, // qqq : for Bohdan : <- introduce Dictionary for HashMap< String, Vec< Command > >
-  // }
-
-  // impl VerifierFormer
-  // {
-  //   /// Insert a command to the commands list
-  //   pub fn command( mut self, command : Command ) -> Self
-  //   {
-  //     let mut commands = self.storage.commands.unwrap_or_default();
-  //
-  //     let command_variants = commands.entry( command.phrase.to_owned() ).or_insert_with( Vec::new );
-  //     command_variants.push( command );
-  //
-  //     self.storage.commands = Some( commands );
-  //     self
-  //   }
-  //
-  //   /// Expands the list of commands with received commands
-  //   pub fn commands< V >( mut self, commands : V ) -> Self
-  //   where
-  //     V : Into< Vec< Command > >
-  //   {
-  //     let mut self_commands = self.storage.commands.unwrap_or_default();
-  //
-  //     for command in commands.into()
-  //     {
-  //       let command_variants = self_commands.entry( command.phrase.to_owned() ).or_insert_with( Vec::new );
-  //       command_variants.push( command );
-  //     }
-  //
-  //     self.storage.commands = Some( self_commands );
-  //     self
-  //   }
-  // }
 
   impl Verifier
   {

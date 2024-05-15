@@ -1,6 +1,6 @@
 [package]
 name = "derive_tools_meta"
-version = "0.17.0"
+version = "0.18.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -63,7 +63,7 @@ derive_variadic_from = []
 [dependencies]
 macro_tools = { workspace = true, features = [ "full" ] }
 iter_tools = { workspace = true, features = [ "full" ] }
-# xxx : qqq : optimize features set
+# xxx : qqq : for Petro : optimize features set
 
 [dev-dependencies]
 test_tools = { workspace = true }

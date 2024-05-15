@@ -2,7 +2,7 @@
 
 # Module :: collection_tools
 <!--{ generate.module_header.start() }-->
- [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental)[![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_collection_tools_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_collection_tools_push.yml)[![docs.rs](https://img.shields.io/docsrs/collection_tools?color=e3e8f0&logo=docs.rs)](https://docs.rs/collection_tools)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module/core/collection_tools/examples/collection_tools_trivial.rs,RUN_POSTFIX=--example%20/home/sakapoi/Документи/wTools_fork/module/core/collection_tools/examples/collection_tools_trivial/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+ [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_collection_tools_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_collection_tools_push.yml) [![docs.rs](https://img.shields.io/docsrs/collection_tools?color=e3e8f0&logo=docs.rs)](https://docs.rs/collection_tools) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module/core/collection_tools/examples/collection_tools_trivial.rs,RUN_POSTFIX=--example%20/home/sakapoi/Документи/wTools_fork/module/core/collection_tools/examples/collection_tools_trivial/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 <!--{ generate.module_header.end }-->
 
 Collection of general purpose tools to manipulate collections( containers like Vec/HashMap/HashSet... ).
@@ -77,7 +77,7 @@ You can do
 
 <!-- // zzz : aaa : rid off `#[ cfg( not( feature = "use_alloc" ) ) ]` -- Rid of by not relying on std -->
 ```rust
-# #[ cfg( all( feature = "enabled", feature = "collection_std" ) ) ]
+# #[ cfg( feature = "enabled" ) ]
 # #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 # {
 use collection_tools::HashSet;
@@ -94,6 +94,10 @@ Instead of
 <summary>Click to see</summary>
 
 ```rust
+# #[ cfg( all( feature = "enabled", feature = "collection_std" ) ) ]
+# #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+# {
+
 #[ cfg( feature = "use_alloc" ) ]
 use hashbrown::HashSet; // a `no_std` replacement for `HashSet`
 #[ cfg( not( feature = "no_std" ) ) ]
@@ -102,6 +106,8 @@ use std::collections::HashSet;
 let mut vec : HashSet< i32 > = HashSet::new();
 vec.insert( 1 );
 assert_eq!( vec.contains( &1 ), true );
+
+# }
 ```
 
 </details>

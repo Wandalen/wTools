@@ -77,13 +77,13 @@ mod private
           {
             if let Some( pos ) = actually_published.iter().position( | p | p == &path )
             {
-              write!( f, "✅ {name} {}", version.new_version )?;
+              writeln!( f, "✅ {name} {}", version.new_version )?;
               // want to check that only expected packages actually published
               _ = actually_published.remove( pos );
             }
             else
             {
-              write!( f, "❌ {name} {}", version.old_version )?;
+              writeln!( f, "❌ {name} {}", version.old_version )?;
             }
           }
           if !actually_published.is_empty()
@@ -166,7 +166,7 @@ mod private
       None
     };
 
-    let subgraph = graph::remove_not_required_to_publish( &package_map, &tmp, &packages_to_publish, dir.clone() ).err_with( || report.clone() )?;
+    let subgraph = graph::remove_not_required_to_publish( &package_map, &tmp, &packages_to_publish, dir.clone() )?;
     let subgraph = subgraph.map( | _, n | n, | _, e | e );
 
     let queue = graph::toposort( subgraph ).unwrap().into_iter().map( | n | package_map.get( &n ).unwrap() ).cloned().collect::< Vec< _ > >();

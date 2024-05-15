@@ -7,8 +7,9 @@ mod private
   use wtools::error::{ anyhow::Context, Result };
   use action::WorkspaceTemplate;
 
+  // qqq: `Former` forces the struct to be public
   #[ derive( Former ) ]
-  struct WorkspaceNewProperties
+  pub struct WorkspaceNewProperties
   {
     repository_url : String,
     branches : Vec< String >,

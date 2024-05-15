@@ -1,6 +1,6 @@
 [package]
 name = "former_meta"
-version = "0.14.0"
+version = "2.0.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -46,7 +46,7 @@ full = [
 ]
 enabled = [ "macro_tools/enabled", "iter_tools/enabled" ]
 
-derive_former = []
+derive_former = [ "convert_case" ]
 derive_components = []
 derive_component_assign = []
 derive_components_assign = [ "derive_components", "derive_component_assign", "convert_case" ]

@@ -1,0 +1,12 @@
+error: Known structure attirbutes are : `storage_fields`, `perform`, `debug`.
+       Unknown structure attribute : #[defaultx]
+ --> tests/inc/former_tests/compiletime/struct_attr_bad.rs:4:1
+  |
+4 | #[ defaultx ]
+  | ^^^^^^^^^^^^^
+
+error: cannot find attribute `defaultx` in this scope
+ --> tests/inc/former_tests/compiletime/struct_attr_bad.rs:4:4
+  |
+4 | #[ defaultx ]
+  |    ^^^^^^^^

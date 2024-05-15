@@ -7,7 +7,7 @@
 // zzz : proc macro for standard lib epilogue
 // zzz : expose one_cell
 
-/// Collection of primal data types.
+/// Wrap dependencies under a namespace.
 pub mod dt;
 
 /// Namespace with dependencies.
@@ -17,10 +17,12 @@ pub mod dependency
 {
   #[ cfg( feature = "either" ) ]
   pub use ::either;
-  #[ cfg( feature = "type_constructor" ) ]
-  pub use ::type_constructor;
-  #[ cfg( feature = "interval" ) ]
+  // #[ cfg( feature = "type_constructor" ) ]
+  // pub use ::type_constructor; // xxx : rid off
+  #[ cfg( feature = "dt_interval" ) ]
   pub use ::interval_adapter;
+  #[ cfg( feature = "dt_collection" ) ]
+  pub use ::collection_tools;
 }
 
 #[ doc( inline ) ]
@@ -49,50 +51,74 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::dt::exposed::*;
+
+  #[ cfg( feature = "dt_interval" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use crate::dependency::interval_adapter::exposed::*;
+
+  #[ cfg( feature = "dt_collection" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use crate::dependency::collection_tools::exposed::*;
+
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::dt::prelude::*;
 
-  #[ cfg( not( feature = "no_std" ) ) ]
-  #[ cfg( feature = "prelude" ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use std::collections::
-  {
-    HashMap as Map,
-    HashSet as Set,
-    HashMap,
-    HashSet,
-    VecDeque,
-    BTreeMap,
-    BTreeSet,
-    BinaryHeap,
-    LinkedList,
-  };
-
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  #[ cfg( feature = "prelude" ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use std::vec::
-  {
-    Vec,
-    Vec as DynArray,
-  };
+  // #[ cfg( not( feature = "no_std" ) ) ]
+  // #[ cfg( feature = "prelude" ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use std::collections::
+  // {
+  //   HashMap as Map,
+  //   HashSet as Set,
+  //   HashMap,
+  //   HashSet,
+  //   VecDeque,
+  //   BTreeMap,
+  //   BTreeSet,
+  //   BinaryHeap,
+  //   LinkedList,
+  // };
 
   // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  #[ cfg( feature = "prelude" ) ]
+  // #[ cfg( feature = "prelude" ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use std::vec::
+  // {
+  //   Vec,
+  //   Vec as DynArray,
+  // };
+
+  #[ cfg( feature = "dt_interval" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use crate::dependency::interval_adapter::prelude::*;
+
+  #[ cfg( feature = "dt_collection" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use crate::dependency::collection_tools::prelude::*;
+
+  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  #[ cfg( feature = "dt_prelude" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use core::

@@ -39,9 +39,13 @@ pub mod dependency
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::diagnostics_tools;
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use ::process_tools;
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use ::process_tools_published;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use ::process_tools_published as process_tools;
 
 }
 
