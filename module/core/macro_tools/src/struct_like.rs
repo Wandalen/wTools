@@ -17,6 +17,22 @@ pub( crate ) mod private
     Variant( syn::Variant ),
   }
 
+  impl From< syn::Field > for FieldOrVariant
+  {
+    fn from( field : syn::Field ) -> Self
+    {
+      FieldOrVariant::Field( field )
+    }
+  }
+
+  impl From< syn::Variant > for FieldOrVariant
+  {
+    fn from( variant : syn::Variant ) -> Self
+    {
+      FieldOrVariant::Variant( variant )
+    }
+  }
+
 //   impl syn::parse::Parse for FieldOrVariant
 //   {
 //     fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
@@ -83,13 +99,35 @@ pub( crate ) mod private
     Enum( syn::ItemEnum ),
   }
 
+  impl From< syn::ItemStruct > for StructLike
+  {
+    fn from( item_struct : syn::ItemStruct ) -> Self
+    {
+      if item_struct.fields.is_empty()
+      {
+        StructLike::Unit( item_struct )
+      }
+      else
+      {
+        StructLike::Struct( item_struct )
+      }
+    }
+  }
+
+  impl From< syn::ItemEnum > for StructLike
+  {
+    fn from( item_enum : syn::ItemEnum ) -> Self
+    {
+      StructLike::Enum( item_enum )
+    }
+  }
+
   impl syn::parse::Parse for StructLike
   {
     fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
     {
-      let ahead = input.fork(); // Create a fork to attempt parsing without advancing the cursor
-
-      let _visibility : Option< syn::Visibility > = ahead.parse().ok(); // Try to parse visibility
+      let ahead = input.fork();
+      let _visibility : Option< syn::Visibility > = ahead.parse().ok(); // Skip visibility
 
       let lookahead = ahead.lookahead1();
       if lookahead.peek( syn::Token![ struct ] )
@@ -142,7 +180,7 @@ pub( crate ) mod private
     {
       match self
       {
-        StructLike::Unit( item ) =>
+        StructLike::Unit( _item ) =>
         {
           Box::new( std::iter::empty() )
         },
@@ -150,7 +188,7 @@ pub( crate ) mod private
         {
           Box::new( item.fields.iter() )
         },
-        StructLike::Enum( item ) =>
+        StructLike::Enum( _item ) =>
         {
           Box::new( std::iter::empty() )
           // Box::new( item.variants.iter() )
