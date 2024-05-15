@@ -58,17 +58,28 @@ pub( crate ) mod private
     }
   }
 
-  /// Represents various struct-like constructs.
-  /// This enum can differentiate between unit types, structs, and unions,
-  /// enabling detailed syntactic analysis and manipulation within macros.
-  /// `StructLike` is particularly useful in scenarios where different behaviors
-  /// are needed based on the type of struct-like data being parsed.
-
+  /// Represents various struct-like constructs in Rust code.
+  ///
+  /// This enum enables differentiation among unit types, structs, and enums, allowing
+  /// for syntactic analysis and manipulation within macros. `StructLike` is designed to be
+  /// used in macro contexts where behaviors may vary based on the struct-like type being processed.
+  ///
+  /// Variants:
+  /// - `Unit`: Represents unit structs, which are types without any fields or data. Useful in scenarios where
+  ///   a type needs to exist but does not hold any data itself, typically used for type-safe markers.
+  /// - `Struct`: Represents regular Rust structs that contain fields. This variant is used to handle data structures
+  ///   that hold multiple related data pieces together in a named format.
+  /// - `Enum`: Represents enums in Rust, which are types that can hold one of multiple possible variants. This is particularly
+  ///   useful for type-safe state or option handling without the use of external discriminators.
+  ///
   #[ derive( Debug, PartialEq ) ]
   pub enum StructLike
   {
+    /// A unit struct with no fields.
     Unit( syn::ItemStruct ),
+    /// A typical Rust struct with named fields.
     Struct( syn::ItemStruct ),
+    /// A Rust enum, which can be one of several defined variants.
     Enum( syn::ItemEnum ),
   }
 
@@ -77,10 +88,10 @@ pub( crate ) mod private
     fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
     {
       let ahead = input.fork(); // Create a fork to attempt parsing without advancing the cursor
-      let visibility : Option< syn::Visibility > = ahead.parse().ok(); // Try to parse visibility
 
-      let lookahead = input.lookahead1();
+      let _visibility : Option< syn::Visibility > = ahead.parse().ok(); // Try to parse visibility
 
+      let lookahead = ahead.lookahead1();
       if lookahead.peek( syn::Token![ struct ] )
       {
         let item_struct : syn::ItemStruct = input.parse()?;

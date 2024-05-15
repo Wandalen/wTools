@@ -29,6 +29,28 @@ fn basic()
   };
   a_id!( got, exp );
 
+  // - pub struct
+
+  let item : ItemStruct = parse_quote!
+  {
+    pub( crate ) struct Example
+    {
+      field1 : i32,
+      field2 : String
+    }
+  };
+  let exp = struct_like::StructLike::Struct( item );
+
+  let got : struct_like::StructLike = parse_quote!
+  {
+    pub( crate ) struct Example
+    {
+      field1 : i32,
+      field2 : String
+    }
+  };
+  a_id!( got, exp );
+
   // - enum
 
   let item : syn::ItemEnum = parse_quote!
@@ -51,6 +73,28 @@ fn basic()
   };
   a_id!( got, exp );
 
+  // - pub enum
+
+  let item : syn::ItemEnum = parse_quote!
+  {
+    pub( crate ) enum Example
+    {
+      field1,
+      field2( i32 ),
+    }
+  };
+  let exp = struct_like::StructLike::Enum( item );
+
+  let got : struct_like::StructLike = parse_quote!
+  {
+    pub( crate ) enum Example
+    {
+      field1,
+      field2( i32 ),
+    }
+  };
+  a_id!( got, exp );
+
   // - unit
 
   let item : syn::ItemStruct = parse_quote!
@@ -64,5 +108,21 @@ fn basic()
     struct Unit;
   };
   a_id!( got, exp );
+
+  // - pub unit
+
+  let item : syn::ItemStruct = parse_quote!
+  {
+    pub( crate ) struct Unit;
+  };
+  let exp = struct_like::StructLike::Unit( item );
+
+  let got : struct_like::StructLike = parse_quote!
+  {
+    pub( crate ) struct Unit;
+  };
+  a_id!( got, exp );
+
+// xxx
 
 }
