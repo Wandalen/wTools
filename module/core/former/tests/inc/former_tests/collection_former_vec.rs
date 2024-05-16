@@ -19,7 +19,7 @@ fn add()
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = vec!
+  let exp = collection_tools::vec!
   [
     "a".to_string(),
     "b".to_string(),
@@ -33,7 +33,7 @@ fn add()
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = vec!
+  let exp = collection_tools::vec!
   [
     "a".to_string(),
     "b".to_string(),
@@ -46,7 +46,7 @@ fn add()
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = vec!
+  let exp = collection_tools::vec!
   [
     "a".to_string(),
     "b".to_string(),
@@ -56,10 +56,10 @@ fn add()
   // with begin_coercing
 
   let got : Vec< String > = the_module::VectorFormer
-  ::begin( Some( vec![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
+  ::begin( Some( collection_tools::vec![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
   .add( "b" )
   .form();
-  let exp = vec!
+  let exp = collection_tools::vec!
   [
     "a".to_string(),
     "b".to_string(),
@@ -73,7 +73,7 @@ fn add()
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = vec!
+  let exp = collection_tools::vec!
   [
     "a".to_string(),
     "b".to_string(),
@@ -92,9 +92,9 @@ fn replace()
 
   let got : Vec< String > = the_module::VectorFormer::new( former::ReturnStorage )
   .add( "x" )
-  .replace( vec![ "a".to_string(), "b".to_string() ] )
+  .replace( collection_tools::vec![ "a".to_string(), "b".to_string() ] )
   .form();
-  let exp = vec!
+  let exp = collection_tools::vec!
   [
     "a".to_string(),
     "b".to_string(),
@@ -115,7 +115,7 @@ fn entity_to()
   // ::Former::new( former::ReturnPreformed )
   // .add( 13 )
   // .form();
-  // let exp = vec![ 13 ];
+  // let exp = collection_tools::vec![ 13 ];
   // a_id!( got, exp );
 
 // qqq : uncomment and make it working

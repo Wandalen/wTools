@@ -278,9 +278,9 @@ pub( crate ) mod private
     /// impl IntoIterator for MyCollection
     /// {
     ///   type Item = i32;
-    ///   type IntoIter = std::vec::IntoIter< i32 >;
-    ///   // type IntoIter = collection_tools::vec::IntoIter< i32 >;
-    ///   // qqq : zzz : make sure collection_tools has itearators
+    ///   // type IntoIter = std::vec::IntoIter< i32 >;
+    ///   type IntoIter = collection_tools::vec::IntoIter< i32 >;
+    ///   // qqq : zzz : make sure collection_tools has itearators -- done
     ///
     ///   fn into_iter( self ) -> Self::IntoIter
     ///   {

@@ -5,7 +5,7 @@ use super::*;
 #[ allow( unused_imports ) ]
 use collection_tools::HashMap;
 
-// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
+// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ] -- done
 // #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn add()
@@ -20,7 +20,7 @@ fn add()
   .add( ( "a".into(), "x".into() ) )
   .add( ( "b".into(), "y".into() ) )
   .form();
-  let exp = hmap!
+  let exp = collection_tools::hmap!
   [
     "a".to_string() => "x".to_string(),
     "b".to_string() => "y".to_string(),
@@ -34,7 +34,7 @@ fn add()
   .add( ( "a".into(), "x".into() ) )
   .add( ( "b".into(), "y".into() ) )
   .form();
-  let exp = hmap!
+  let exp = collection_tools::hmap!
   [
     "a".to_string() => "x".to_string(),
     "b".to_string() => "y".to_string(),
@@ -47,7 +47,7 @@ fn add()
   .add( ( "a".into(), "x".into() ) )
   .add( ( "b".into(), "y".into() ) )
   .form();
-  let exp = hmap!
+  let exp = collection_tools::hmap!
   [
     "a".to_string() => "x".to_string(),
     "b".to_string() => "y".to_string(),
@@ -57,10 +57,10 @@ fn add()
   // with begin
 
   let got : HashMap< String, String > = the_module::HashMapFormer
-  ::begin( Some( hmap![ "a".to_string() => "x".to_string() ] ), Some( () ), former::ReturnStorage )
+  ::begin( Some( collection_tools::hmap![ "a".to_string() => "x".to_string() ] ), Some( () ), former::ReturnStorage )
   .add( ( "b".into(), "y".into() ) )
   .form();
-  let exp = hmap!
+  let exp = collection_tools::hmap!
   [
     "a".to_string() => "x".to_string(),
     "b".to_string() => "y".to_string(),
@@ -74,7 +74,7 @@ fn add()
   .add( ( "a".into(), "x".into() ) )
   .add( ( "b".into(), "y".into() ) )
   .form();
-  let exp = hmap!
+  let exp = collection_tools::hmap!
   [
     "a".to_string() => "x".to_string(),
     "b".to_string() => "y".to_string(),
@@ -85,17 +85,17 @@ fn add()
 
 }
 
-// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
-#[ cfg( not( feature = "use_alloc" ) ) ]
+// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ] -- done
+// #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn replace()
 {
 
   let got : HashMap< String, String > = the_module::HashMapFormer::new( former::ReturnStorage )
   .add( ( "x".to_string(), "y".to_string() ) )
-  .replace( hmap![ "a".to_string() => "x".to_string(), "b".to_string() => "y".to_string(), ] )
+  .replace( collection_tools::hmap![ "a".to_string() => "x".to_string(), "b".to_string() => "y".to_string(), ] )
   .form();
-  let exp = hmap!
+  let exp = collection_tools::hmap!
   [
     "a".to_string() => "x".to_string(),
     "b".to_string() => "y".to_string(),

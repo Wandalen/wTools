@@ -878,12 +878,12 @@ their own formers, allowing for detailed configuration within a nested builder p
 
 ```rust
 
-# #[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
+# #[ cfg( not( all( feature = "enabled", feature = "derive_former" ) ) ) ]
 # fn main()
 # {}
 #
 # // Ensures the example only compiles when the appropriate features are enabled.
-# #[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
+# #[ cfg( all( feature = "enabled", feature = "derive_former" ) ) ]
 # fn main()
 # {
 
@@ -1270,10 +1270,10 @@ Define a custom former definition and custom forming logic, and apply them to a 
 The example showcases how to accumulate elements into a collection and then transform them into a single result using a custom `FormingEnd` implementation. This pattern is useful for scenarios where the formation process involves aggregation or transformation of input elements into a different type or form.
 
 ```rust
-# #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
+# #[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
 # fn main() {}
 
-# #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+# #[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
 # fn main()
 # {
 

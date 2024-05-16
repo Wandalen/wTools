@@ -5,8 +5,8 @@ use super::*;
 #[ allow( unused_imports ) ]
 use collection_tools::HashSet;
 
-// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
-#[ cfg( not( feature = "use_alloc" ) ) ]
+// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ] -- done
+// #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn add()
 {
@@ -20,7 +20,7 @@ fn add()
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = hset!
+  let exp = collection_tools::hset!
   [
     "a".to_string(),
     "b".to_string(),
@@ -34,7 +34,7 @@ fn add()
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = hset!
+  let exp = collection_tools::hset!
   [
     "a".to_string(),
     "b".to_string(),
@@ -47,7 +47,7 @@ fn add()
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = hset!
+  let exp = collection_tools::hset!
   [
     "a".to_string(),
     "b".to_string(),
@@ -57,10 +57,10 @@ fn add()
   // with begin_coercing
 
   let got : HashSet< String > = the_module::HashSetFormer
-  ::begin( Some( hset![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
+  ::begin( Some( collection_tools::hset![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
   .add( "b" )
   .form();
-  let exp = hset!
+  let exp = collection_tools::hset!
   [
     "a".to_string(),
     "b".to_string(),
@@ -74,7 +74,7 @@ fn add()
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = hset!
+  let exp = collection_tools::hset!
   [
     "a".to_string(),
     "b".to_string(),
@@ -85,17 +85,17 @@ fn add()
 
 }
 
-// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
-#[ cfg( not( feature = "use_alloc" ) ) ]
+// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ] -- done
+// #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn replace()
 {
 
   let got : HashSet< String > = the_module::HashSetFormer::new( former::ReturnStorage )
   .add( "x" )
-  .replace( hset![ "a".to_string(), "b".to_string() ] )
+  .replace( collection_tools::hset![ "a".to_string(), "b".to_string() ] )
   .form();
-  let exp = hset!
+  let exp = collection_tools::hset!
   [
     "a".to_string(),
     "b".to_string(),

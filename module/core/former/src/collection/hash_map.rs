@@ -6,9 +6,9 @@
 //!
 
 use crate::*;
-use collection_tools::HashMap;
+use collection_tools::hmap::HashMap;
 
-impl< K, V > Collection for collection_tools::HashMap< K, V >
+impl< K, V > Collection for HashMap< K, V >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
@@ -23,7 +23,7 @@ where
 
 }
 
-impl< K, V > CollectionAdd for collection_tools::HashMap< K, V >
+impl< K, V > CollectionAdd for HashMap< K, V >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
@@ -36,7 +36,7 @@ where
 
 }
 
-impl< K, V > CollectionAssign for collection_tools::HashMap< K, V >
+impl< K, V > CollectionAssign for HashMap< K, V >
 where
   K : core::cmp::Eq + core::hash::Hash,
 {
