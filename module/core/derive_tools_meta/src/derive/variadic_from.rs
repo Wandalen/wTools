@@ -5,6 +5,7 @@ use iter::{ IterExt, Itertools };
 
 //
 
+// xxx : investigate
 pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
 
