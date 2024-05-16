@@ -105,6 +105,48 @@ fn replace()
 }
 
 #[ test ]
+fn entity_to()
+{
+
+  let got = < HashMap< i32, i32 > as former::EntityToFormer< former::HashMapDefinition< i32, i32, (), HashMap< i32, i32 >, former::ReturnStorage > > >
+  ::Former::new( former::ReturnStorage )
+  .add( ( 13, 14 ) )
+  .form();
+  let exp = collection_tools::hmap![ 13 => 14 ];
+  a_id!( got, exp );
+
+  let got = < HashMap< i32, i32 > as former::EntityToStorage >::Storage::default();
+  let exp =
+  <
+    HashMap< i32, i32 > as former::EntityToFormer
+    <
+      former::HashMapDefinition
+      <
+        i32,
+        i32,
+        (),
+        HashMap< i32, i32 >,
+        former::ReturnStorage,
+      >
+    >
+  >::Former::new( former::ReturnStorage )
+  .form();
+  a_id!( got, exp );
+
+  let got = < HashMap< i32, i32 > as former::EntityToStorage >::Storage::default();
+  let exp =
+  <
+    HashMap< i32, i32 > as former::EntityToFormer
+    <
+      < HashMap< i32, i32 > as former::EntityToDefinition< (), HashMap< i32, i32 >, former::ReturnPreformed > >::Definition
+    >
+  >::Former::new( former::ReturnPreformed )
+  .form();
+  a_id!( got, exp );
+
+}
+
+#[ test ]
 fn entry_to_val()
 {
   let got = former::EntryToVal::< HashMap< u32, i32 > >::entry_to_val( ( 1u32, 13i32 ) );
@@ -136,5 +178,44 @@ fn val_to_entry()
   let got = former::ValToEntry::< HashMap< u32, Val > >::val_to_entry( Val { key : 1u32, data : 13i32 } );
   let exp = ( 1u32, Val { key : 1u32, data : 13i32 } );
   a_id!( got, exp )
+
+}
+
+#[ test ]
+fn subformer()
+{
+
+  /// Parameter description.
+  #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
+  pub struct Child
+  {
+    name : String,
+    data : bool,
+  }
+
+  /// Parent required for the template.
+  #[ derive( Debug, Default, PartialEq, the_module::Former ) ]
+  // #[ derive( Debug, Default, PartialEq, the_module::Former ) ] #[ debug ]
+  // #[ derive( Debug, Default, PartialEq ) ]
+  pub struct Parent
+  {
+    #[ subform_collection( definition = former::HashMapDefinition ) ]
+    children : HashMap< u32, Child >,
+  }
+
+  let got = Parent::former()
+  .children()
+    .add( ( 0, Child::former().name( "a" ).form() ) )
+    .add( ( 1, Child::former().name( "b" ).form() ) )
+    .end()
+  .form();
+
+  let children = collection_tools::hmap!
+  [
+    0 => Child { name : "a".to_string(), data : false },
+    1 => Child { name : "b".to_string(), data : false },
+  ];
+  let exp = Parent { children };
+  a_id!( got, exp );
 
 }
