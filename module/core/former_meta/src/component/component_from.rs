@@ -9,7 +9,7 @@ pub fn component_from( input : proc_macro::TokenStream ) -> Result< proc_macro2:
   let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
   let has_debug = attr::has_debug( parsed.item.attrs.iter() )?;
 
-  let for_field = parsed.item.fields_many().iter().map( | field |
+  let for_field = parsed.fields_many().iter().map( | field |
   {
     for_each_field( field, &parsed.item.ident )
   })
