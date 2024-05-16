@@ -9,54 +9,31 @@ pub( crate ) mod private
   // use interval_adapter::BoundExt;
 
   #[ derive( Debug, PartialEq ) ]
-  pub enum FieldOrVariant
+  pub enum FieldOrVariant< 'a >
   {
     /// Represents a field within a struct or union.
-    Field( syn::Field ),
+    Field( &'a syn::Field ),
     /// Represents a variant within an enum.
-    Variant( syn::Variant ),
+    Variant( &'a syn::Variant ),
   }
 
-  impl From< syn::Field > for FieldOrVariant
+  impl< 'a > From< &'a syn::Field > for FieldOrVariant< 'a >
   {
-    fn from( field : syn::Field ) -> Self
+    fn from( field : &'a syn::Field ) -> Self
     {
       FieldOrVariant::Field( field )
     }
   }
 
-  impl From< syn::Variant > for FieldOrVariant
+  impl< 'a > From< &'a syn::Variant > for FieldOrVariant< 'a >
   {
-    fn from( variant : syn::Variant ) -> Self
+    fn from( variant : &'a syn::Variant ) -> Self
     {
       FieldOrVariant::Variant( variant )
     }
   }
 
-//   impl syn::parse::Parse for FieldOrVariant
-//   {
-//     fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
-//     {
-//       let lookahead = input.lookahead1();
-//
-//       if lookahead.peek( syn::Token![ struct ] ) || lookahead.peek( syn::Token![ union ] )
-//       {
-//         let field : syn::Field = input.parse()?;
-//         Ok( FieldOrVariant::Field( field ) )
-//       }
-//       else if lookahead.peek( syn::Token![ enum ] )
-//       {
-//         let variant : syn::Variant = input.parse()?;
-//         Ok( FieldOrVariant::Variant( variant ) )
-//       }
-//       else
-//       {
-//         Err( lookahead.error() )
-//       }
-//     }
-//   }
-
-  impl quote::ToTokens for FieldOrVariant
+  impl quote::ToTokens for FieldOrVariant< '_ >
   {
     fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
     {
@@ -175,6 +152,30 @@ pub( crate ) mod private
   impl StructLike
   {
 
+    // // xxx
+    // /// Returns an iterator over elements of the item.
+    // pub fn elements< 'a >( &'a self ) -> impl Iterator< Item = &'a FieldOrVariant > + 'a
+    // {
+    //   match self
+    //   {
+    //     StructLike::Unit( _ ) =>
+    //     {
+    //       let empty : Vec< &FieldOrVariant > = vec![];
+    //       Box::new( empty.into_iter() ) as Box< dyn Iterator< Item = &'a FieldOrVariant > >
+    //     },
+    //     StructLike::Struct( item ) =>
+    //     {
+    //       let fields = item.fields.iter().map( FieldOrVariant::from );
+    //       Box::new( fields ) as Box< dyn Iterator< Item = &'a FieldOrVariant > >
+    //     },
+    //     StructLike::Enum( item ) =>
+    //     {
+    //       let variants = item.variants.iter().map( FieldOrVariant::from );
+    //       Box::new( variants ) as Box< dyn Iterator< Item = &'a FieldOrVariant > >
+    //     },
+    //   }
+    // }
+
     /// Returns an iterator over fields of the item.
     pub fn fields( &self ) -> Box< dyn Iterator< Item = &syn::Field > + '_ >
     {
@@ -195,27 +196,6 @@ pub( crate ) mod private
         },
       }
     }
-
-    // xxx
-    // /// Returns an iterator over elements of the item.
-    // pub fn elements( &self ) -> Box< dyn Iterator< Item = &FieldOrVariant > + '_ >
-    // {
-    //   match self
-    //   {
-    //     StructLike::Unit( item ) =>
-    //     {
-    //       Box::new( std::iter::empty() )
-    //     },
-    //     StructLike::Struct( item ) =>
-    //     {
-    //       Box::new( item.fields.iter() )
-    //     },
-    //     StructLike::Enum( item ) =>
-    //     {
-    //       Box::new( item.variants.iter() )
-    //     },
-    //   }
-    // }
 
     /// Extracts the name of each field.
     pub fn field_names( &self ) -> Box< dyn Iterator< Item = Option< &syn::Ident > > + '_ >
