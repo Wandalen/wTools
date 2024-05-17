@@ -77,6 +77,8 @@ mod former_tests
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod collection_former_common;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod collection_former_btree_map;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod collection_former_btree_set;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod collection_former_binary_heap;
