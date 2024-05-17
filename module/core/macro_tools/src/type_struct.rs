@@ -49,14 +49,14 @@ pub( crate ) mod private
     /// Retrieves the names of each field, if they exist.
     pub fn field_names( &self ) -> Option< Vec< syn::Ident > >
     {
-      let names: Vec< Option< syn::Ident > > = self.fields_many().iter().map( |field| field.ident.clone() ).collect();
-      if names.iter().any( Option::is_none )
+      let names: Vec< syn::Ident > = self.fields_many().iter().filter_map( | field | field.ident.clone() ).collect();
+      if !names.is_empty() 
       {
-        None
+        Some( names )
       }
-      else
-      {
-        Some( names.into_iter().filter_map( core::convert::identity ).collect() )
+      else 
+      { 
+        None
       }
     }
 
