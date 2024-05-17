@@ -18,7 +18,6 @@ pub( crate ) mod private
     Variant( &'a syn::Variant ),
   }
 
-
   impl< 'a > From< &'a syn::Field > for FieldOrVariant< 'a >
   {
     fn from( field : &'a syn::Field ) -> Self
@@ -412,7 +411,11 @@ pub mod protected
   pub use super::orphan::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::StructLike;
+  pub use super::private::
+  {
+    StructLike,
+    FieldOrVariant,
+  };
 }
 
 /// Orphan namespace of the module.
