@@ -14,9 +14,9 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
   match ( field_types.len(), field_names )
   {
     ( 0, _ ) => unit( item_name ),
-    ( 1, Some( field_names ) ) =>
+    ( 1, Some( mut field_names ) ) =>
     {
-      let field_name = field_names.get( 0 ).unwrap();
+      let field_name = field_names.next().unwrap();
       let field_type = field_types.get( 0 ).unwrap();
       from_impl_named( item_name, field_type, field_name )
     }
@@ -27,7 +27,7 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
     }
     ( _, Some( field_names ) ) =>
     {
-      let params : Vec< proc_macro2::TokenStream > = field_names.iter()
+      let params : Vec< proc_macro2::TokenStream > = field_names
       .map( | field_name | qt! { src.#field_name } )
       .collect();
       from_impl_multiple_fields( item_name, &field_types, &params )
