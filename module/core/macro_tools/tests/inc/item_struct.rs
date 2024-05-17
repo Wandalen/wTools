@@ -51,7 +51,10 @@ fn field_names_with_unit_struct()
   };
 
   let names = field_names( &item_struct );
-  assert!( names.is_none(), "Expected None for unit struct" );
+  assert!( names.is_some(), "Expected None for unit struct" );
+  let names = names.unwrap();
+  assert_eq!( names.len(), 0 );
+
 }
 
 #[ test ]
@@ -73,6 +76,7 @@ fn field_names_with_reserved_keywords()
   assert!( names.is_some(), "Expected to extract field names" );
   let names = names.unwrap();
   assert_eq!( names.len(), 2, "Expected two field names" );
-  assert_eq!( names[ 0 ], "type", "First field name mismatch" );
-  assert_eq!( names[ 1 ], "fn", "Second field name mismatch" );
+  assert_eq!( names[ 0 ], &syn::Ident::new_raw( "type", proc_macro2::Span::call_site() ), "First field name mismatch" );
+  assert_eq!( names[ 1 ], &syn::Ident::new_raw( "fn", proc_macro2::Span::call_site() ), "Second field name mismatch" );
+
 }

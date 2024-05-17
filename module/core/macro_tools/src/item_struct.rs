@@ -18,24 +18,24 @@ pub( crate ) mod private
   // xxx : rename
   // xxx : return iterator?
 
-  /// Returns an iterator over struct's fields for iteration.
-  // pub fn fields_many( t : &syn::ItemStruct ) -> Vec< &syn::Field >
-  pub fn fields_many( t : &syn::ItemStruct ) -> impl Iterator< Item = &syn::Field >
-  {
-    t.fields.iter()
-    // match &t.fields
-    // {
-    //   syn::Fields::Unnamed( fields ) => fields.unnamed.iter(),
-    //   syn::Fields::Named( fields ) => fields.named.iter(),
-    //   syn::Fields::Unit => Box::new(drop::NoDrop::new(core::iter::empty())),
-    //   // syn::Fields::Unit => Vec::new().into_iter(),
-    // }
-  }
+  // /// Returns an iterator over struct's fields for iteration.
+  // // pub fn fields_many( t : &syn::ItemStruct ) -> Vec< &syn::Field >
+  // pub fn fields_many( t : &syn::ItemStruct ) -> impl Iterator< Item = &syn::Field >
+  // {
+  //   t.fields.iter()
+  //   // match &t.fields
+  //   // {
+  //   //   syn::Fields::Unnamed( fields ) => fields.unnamed.iter(),
+  //   //   syn::Fields::Named( fields ) => fields.named.iter(),
+  //   //   syn::Fields::Unit => Box::new(drop::NoDrop::new(core::iter::empty())),
+  //   //   // syn::Fields::Unit => Vec::new().into_iter(),
+  //   // }
+  // }
 
   /// Extracts the types of each field into a vector.
   pub fn field_types( t : &syn::ItemStruct ) -> Vec< &syn::Type >
   {
-    fields_many( t ).map( | field | &field.ty ).collect()
+    t.fields.iter().map( | field | &field.ty ).collect()
   }
 
   /// Retrieves the names of each field, if they exist.
@@ -111,7 +111,7 @@ pub mod protected
   #[ allow( unused_imports ) ]
   pub use super::private::
   {
-    fields_many,
+    // fields_many,
     field_types,
     field_names,
     first_field_type,
