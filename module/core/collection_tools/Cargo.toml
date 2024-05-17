@@ -32,27 +32,27 @@ no_std = [
 ]
 
 use_alloc = [
-  "no_std", # qqq : for Anton : why is that better?
+  "no_std", # qqq : for Anton : why is that better? -- use_alloc means that we do not use std, but alloc and hashbrown
   "hashbrown",
-  # "test_tools/use_alloc", // why is it needed?
+  # "test_tools/use_alloc", // why is it needed? -- not needed, removed
 ]
 
 default = [
   "enabled",
-  "prelude",
+  "reexports",
   "collection_constructors",
   "collection_into_constructors",
 ]
 
 full = [
   "enabled",
-  "prelude",
+  "reexports",
   "collection_constructors",
   "collection_into_constructors",
 ]
 
 enabled = []
-prelude = []
+reexports = []
 
 # Collection constructors, like `hmap!{ "key" => "val" }`
 collection_constructors = []

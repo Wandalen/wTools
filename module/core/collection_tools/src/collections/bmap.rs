@@ -1,3 +1,7 @@
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use alloc::collections::btree_map::*;
+
 /// Creates a `BTreeMap` from a list of key-value pairs.
 ///
 /// The `bmap` macro facilitates the convenient creation of a `BTreeMap` with initial elements.
@@ -66,7 +70,7 @@ macro_rules! bmap
   )
   =>
   {{
-    let mut _map = collection_tools::BTreeMap::new();
+    let mut _map = $crate::bmap::BTreeMap::new();
     $(
       let _ = _map.insert( $key , $value );
     )*
@@ -159,7 +163,7 @@ macro_rules! into_bmap
   )
   =>
   {{
-    let mut _map = collection_tools::BTreeMap::new();
+    let mut _map = $crate::bmap::BTreeMap::new();
     $(
       let _ = _map.insert( Into::into( $key ), Into::into( $value ) );
     )*
