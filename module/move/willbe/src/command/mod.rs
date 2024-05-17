@@ -256,6 +256,22 @@ with_gitpod: If set to 1, a column with a link to Gitpod will be added. Clicking
       .long_hint( "For use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml." )
       .routine( command::readme_modules_headers_renew )
       .end()
+
+    .command( "features" )
+      .hint( "Lists features of the package" )
+      .long_hint( "Lists features of the package located in a folder.\nWill list either separate package features or features for every package of a workspace")
+      .subject()
+        .hint( "Provide path to the package that you want to check.\n\t  The path should point to a directory that contains a `Cargo.toml` file." )
+        .kind( Type::Path )
+        .optional( true )
+        .end()
+      .property("with_features_deps")
+        .hint( "Display dependencies of features of the package" )
+        .kind( Type::Bool )
+        .optional( true )
+        .end()
+      .routine( command::features )
+      .end()
   }
 }
 
@@ -286,5 +302,6 @@ crate::mod_interface!
   layer main_header;
   /// Generate headers
   layer readme_modules_headers_renew;
-
+  /// List features
+  layer features;
 }

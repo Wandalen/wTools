@@ -92,7 +92,7 @@ default-features = false
 # path = "module/core/type_constructor_derive_pair_meta"
 
 [workspace.dependencies.interval_adapter]
-version = "~0.19.0"
+version = "~0.20.0"
 path = "module/core/interval_adapter"
 default-features = false
 features = [ "enabled" ]
@@ -104,7 +104,7 @@ default-features = false
 features = [ "enabled" ]
 
 [workspace.dependencies.collection_tools]
-version = "~0.4.0"
+version = "~0.6.0"
 path = "module/core/collection_tools"
 default-features = false
 
@@ -112,7 +112,7 @@ default-features = false
 ## derive
 
 [workspace.dependencies.derive_tools]
-version = "~0.21.0"
+version = "~0.22.0"
 path = "module/core/derive_tools"
 default-features = false
 features = [ "enabled" ]
@@ -200,17 +200,17 @@ path = "module/core/for_each"
 default-features = false
 
 [workspace.dependencies.former]
-version = "~1.0.0"
+version = "~2.0.0"
 path = "module/core/former"
 default-features = false
 
 [workspace.dependencies.former_stable]
 package = "former"
-version = "=0.15.0"
+version = "=2.0.0"
 default-features = false
 
 [workspace.dependencies.former_meta]
-version = "~1.0.0"
+version = "~2.0.0"
 path = "module/core/former_meta"
 default-features = false
 
@@ -224,12 +224,12 @@ version = "~0.7.0"
 path = "module/core/impls_index_meta"
 
 [workspace.dependencies.mod_interface]
-version = "~0.18.0"
+version = "~0.19.0"
 path = "module/core/mod_interface"
 default-features = false
 
 [workspace.dependencies.mod_interface_meta]
-version = "~0.18.0"
+version = "~0.19.0"
 path = "module/core/mod_interface_meta"
 default-features = false
 
@@ -321,7 +321,7 @@ path = "module/alias/werror"
 ## string tools
 
 [workspace.dependencies.strs_tools]
-version = "~0.11.0"
+version = "~0.12.0"
 path = "module/core/strs_tools"
 default-features = false
 
@@ -343,7 +343,7 @@ path = "module/alias/file_tools"
 default-features = false
 
 [workspace.dependencies.proper_path_tools]
-version = "~0.4.0"
+version = "~0.5.0"
 path = "module/core/proper_path_tools"
 default-features = false
 
@@ -351,7 +351,7 @@ default-features = false
 ## process tools
 
 [workspace.dependencies.process_tools]
-version = "~0.3.0"
+version = "~0.4.0"
 path = "module/core/process_tools"
 default-features = false
 
@@ -398,7 +398,7 @@ default-features = false
 ## ca
 
 [workspace.dependencies.wca]
-version = "~0.15.0"
+version = "~0.16.0"
 path = "module/move/wca"
 
 
@@ -412,7 +412,7 @@ path = "module/move/wcensor"
 ## willbe
 
 [workspace.dependencies.willbe]
-version = "~0.9.0"
+version = "~0.10.0"
 path = "module/move/willbe"
 
 
@@ -452,7 +452,7 @@ version = "~0.5.0"
 path = "module/move/deterministic_rand"
 
 [workspace.dependencies.crates_tools]
-version = "~0.8.0"
+version = "~0.9.0"
 path = "module/move/crates_tools"
 
 

@@ -4,7 +4,8 @@ use iter_tools::{ Itertools, process_results };
 use macro_tools::{ attr, diag, generic_params, generic_args, typ, derive, Result };
 use proc_macro2::TokenStream;
 
-// qqq : implement interfaces for other containers
+// qqq : implement interfaces for other collections
+
 
 mod field;
 use field::*;
@@ -43,6 +44,8 @@ use struct_attrs::*;
 
 pub fn mutator
 (
+  stru : &syn::Ident,
+  original_input : &proc_macro::TokenStream,
   mutator : &AttributeMutator,
   former_definition_types : &syn::Ident,
   former_definition_types_generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
@@ -76,7 +79,7 @@ pub fn mutator
 = Example of custom mutator
 
 impl< {} > former::FormerMutator
-for {} < {} >
+for {former_definition_types} < {} >
 where
   {}
 {{
@@ -88,11 +91,16 @@ where
 }}
       "#,
       format!( "{}", qt!{ #former_definition_types_generics_impl } ),
-      former_definition_types,
       format!( "{}", qt!{ #former_definition_types_generics_ty } ),
       format!( "{}", qt!{ #former_definition_types_generics_where } ),
     );
-    println!( "{hint}" );
+    // println!( "{hint}" );
+    let about = format!
+    (
+r#"derive : Former
+structure : {stru}"#,
+    );
+    diag::report_print( about, original_input, hint );
   };
 
   Ok( former_mutator_code )
@@ -296,6 +304,7 @@ specific needs of the broader forming context. It mandates the implementation of
     field.former_field_setter
     (
       &stru,
+      &original_input,
       &struct_generics_impl,
       &struct_generics_ty,
       &struct_generics_where,
@@ -304,7 +313,6 @@ specific needs of the broader forming context. It mandates the implementation of
       &former_generics_ty,
       &former_generics_where,
       &former_storage,
-      &original_input,
     ),
   )}).multiunzip();
 
@@ -315,6 +323,8 @@ specific needs of the broader forming context. It mandates the implementation of
 
   let former_mutator_code = mutator
   (
+    &stru,
+    &original_input,
     &struct_attrs.mutator,
     &former_definition_types,
     &former_definition_types_generics_impl,
@@ -390,7 +400,7 @@ specific needs of the broader forming context. It mandates the implementation of
     where
       #former_definition_types_generics_where
     {
-      // _phantom : core::marker::PhantomData< ( __Context, __Formed ) >,
+      // _phantom : ::core::marker::PhantomData< ( __Context, __Formed ) >,
       _phantom : #former_definition_types_phantom,
     }
 
@@ -403,7 +413,7 @@ specific needs of the broader forming context. It mandates the implementation of
       {
         Self
         {
-          _phantom : core::marker::PhantomData,
+          _phantom : ::core::marker::PhantomData,
         }
       }
     }
@@ -426,7 +436,7 @@ specific needs of the broader forming context. It mandates the implementation of
     where
       #former_definition_generics_where
     {
-      // _phantom : core::marker::PhantomData< ( __Context, __Formed, __End ) >,
+      // _phantom : ::core::marker::PhantomData< ( __Context, __Formed, __End ) >,
       _phantom : #former_definition_phantom,
     }
 
@@ -439,7 +449,7 @@ specific needs of the broader forming context. It mandates the implementation of
       {
         Self
         {
-          _phantom : core::marker::PhantomData,
+          _phantom : ::core::marker::PhantomData,
         }
       }
     }
@@ -534,10 +544,10 @@ specific needs of the broader forming context. It mandates the implementation of
       pub storage : Definition::Storage,
       /// An optional context providing additional data or state necessary for custom
       ///   formation logic or to facilitate this former's role as a subformer within another former.
-      pub context : core::option::Option< Definition::Context >,
+      pub context : ::core::option::Option< Definition::Context >,
       /// An optional closure or handler that is invoked to transform the accumulated
       ///   temporary storage into the final object structure once formation is complete.
-      pub on_end : core::option::Option< Definition::End >,
+      pub on_end : ::core::option::Option< Definition::End >,
     }
 
     #[ automatically_derived ]
@@ -577,8 +587,8 @@ specific needs of the broader forming context. It mandates the implementation of
       #[ inline( always ) ]
       pub fn begin
       (
-        mut storage : core::option::Option< Definition::Storage >,
-        context : core::option::Option< Definition::Context >,
+        mut storage : ::core::option::Option< Definition::Storage >,
+        context : ::core::option::Option< Definition::Context >,
         on_end : < Definition as former::FormerDefinition >::End,
       )
       -> Self
@@ -601,8 +611,8 @@ specific needs of the broader forming context. It mandates the implementation of
       #[ inline( always ) ]
       pub fn begin_coercing< IntoEnd >
       (
-        mut storage : core::option::Option< Definition::Storage >,
-        context : core::option::Option< Definition::Context >,
+        mut storage : ::core::option::Option< Definition::Storage >,
+        context : ::core::option::Option< Definition::Context >,
         on_end : IntoEnd,
       ) -> Self
       where
@@ -704,8 +714,8 @@ specific needs of the broader forming context. It mandates the implementation of
       #[ inline( always ) ]
       fn former_begin
       (
-        storage : core::option::Option< Definition::Storage >,
-        context : core::option::Option< Definition::Context >,
+        storage : ::core::option::Option< Definition::Storage >,
+        context : ::core::option::Option< Definition::Context >,
         on_end : Definition::End,
       )
       -> Self

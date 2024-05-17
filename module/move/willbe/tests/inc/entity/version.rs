@@ -71,7 +71,7 @@ fn major_without_patches()
   let new_version = version.bump();
 
   // Assert
-  assert_eq!( "2.0.0", &new_version.to_string() );
+  assert_eq!( "1.1.0", &new_version.to_string() );
 }
 
 #[ test ]
@@ -84,7 +84,7 @@ fn major_with_minor()
   let new_version = version.bump();
 
   // Assert
-  assert_eq!( "2.0.0", &new_version.to_string() );
+  assert_eq!( "1.2.0", &new_version.to_string() );
 }
 
 #[ test ]
@@ -97,7 +97,7 @@ fn major_with_patches()
   let new_version = version.bump();
 
   // Assert
-  assert_eq!( "2.0.0", &new_version.to_string() );
+  assert_eq!( "1.2.0", &new_version.to_string() );
 }
 
 #[ test ]

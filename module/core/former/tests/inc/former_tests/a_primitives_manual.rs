@@ -203,7 +203,6 @@ where
     return result;
   }
 
-  // xxx : update description
   #[ inline( always ) ]
   pub fn new( on_end : Definition::End ) -> Self
   {

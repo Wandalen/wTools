@@ -1,8 +1,8 @@
 //! Implementation of Simulated Annealing for Hybrid Optimizer.
 
-use derive_tools::{ FromInner, InnerFrom, exposed::Display };
+use derive_tools::{ From, InnerFrom, exposed::Display };
 /// Represents temperature of SA process.
-#[ derive( Default, Debug, Display, Clone, Copy, PartialEq, PartialOrd, FromInner, InnerFrom ) ]
+#[ derive( Default, Debug, Display, Clone, Copy, PartialEq, PartialOrd, From, InnerFrom ) ]
 pub struct Temperature( f64 );
 
 impl Temperature
@@ -27,7 +27,7 @@ impl From< f32 > for Temperature
 // use derive_tools::{ Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign };
 
 /// Struct that represents coefficient to change temperature value.
-#[ derive( Debug, Display, Clone, Copy, PartialEq, PartialOrd, FromInner, InnerFrom ) ]
+#[ derive( Debug, Display, Clone, Copy, PartialEq, PartialOrd, From, InnerFrom ) ]
 // #[ derive( Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign ) ]
 pub struct TemperatureFactor( pub f64 );
 
@@ -83,12 +83,12 @@ pub struct LinearTempSchedule
 
 impl TemperatureSchedule for LinearTempSchedule
 {
-  fn calculate_next_temp( &self, prev_temp : Temperature ) -> Temperature 
+  fn calculate_next_temp( &self, prev_temp : Temperature ) -> Temperature
   {
     Temperature::from( prev_temp.unwrap() * self.coefficient.unwrap() + self.constant.unwrap() )
   }
 
-  fn reset_temperature( &self, prev_temp : Temperature ) -> Temperature 
+  fn reset_temperature( &self, prev_temp : Temperature ) -> Temperature
   {
     Temperature( prev_temp.unwrap() + self.reset_increase_value.unwrap() )
   }

@@ -142,7 +142,7 @@ mod private
 
     estimate
   }
-  
+
 }
 
 crate::mod_interface!

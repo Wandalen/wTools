@@ -21,11 +21,11 @@ mod forming;
 #[ cfg( feature = "derive_former" ) ]
 mod storage;
 
-/// Interface for containers.
+/// Interface for collections.
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 #[ cfg( feature = "derive_former" ) ]
-mod container;
+mod collection;
 
 /// Component-based forming.
 #[ cfg( feature = "enabled" ) ]
@@ -95,7 +95,7 @@ pub mod exposed
   #[ cfg( feature = "enabled" ) ]
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   #[ cfg( feature = "derive_former" ) ]
-  pub use super::container::*;
+  pub use super::collection::*;
 
 }
 

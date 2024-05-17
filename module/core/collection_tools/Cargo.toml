@@ -1,6 +1,6 @@
 [package]
 name = "collection_tools"
-version = "0.4.0"
+version = "0.6.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -32,37 +32,33 @@ no_std = [
 ]
 
 use_alloc = [
-  "no_std", # qqq : for Anton : why is that better?
+  "no_std", # qqq : for Anton : why is that better? -- use_alloc means that we do not use std, but alloc and hashbrown
   "hashbrown",
-  # "test_tools/use_alloc", // why is it needed?
+  # "test_tools/use_alloc", // why is it needed? -- not needed, removed
 ]
 
 default = [
   "enabled",
-  "prelude",
+  "reexports",
   "collection_constructors",
   "collection_into_constructors",
-  "collection_std",
 ]
 
 full = [
   "enabled",
-  "prelude",
+  "reexports",
   "collection_constructors",
   "collection_into_constructors",
-  "collection_std",
 ]
 
 enabled = []
-prelude = []
+reexports = []
 
 # Collection constructors, like `hmap!{ "key" => "val" }`
 collection_constructors = []
 # Collection constructors, using `into()` under the hood, like `into_hmap!( "key" => "val" )`
 collection_into_constructors = []
-# STD collection for no_std.
-collection_std = []
-# qqq : is this feature used? seems not. if yes, what is it responsible for? discuss
+# qqq : is this feature used? seems not. if yes, what is it responsible for? discuss -- not needed, removed
 
 [dependencies]
 

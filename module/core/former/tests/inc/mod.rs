@@ -9,27 +9,22 @@ mod former_tests
   #[ allow( unused_imports ) ]
   use super::*;
 
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod container_former_common;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod container_former_vec;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod container_former_hashset;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod container_former_hashmap;
+  // = basic
 
   mod a_basic_manual;
   mod a_basic;
   mod a_primitives_manual;
   mod a_primitives;
 
-  mod a_containers_scalar;
-  #[ cfg( not( feature = "no_std" ) ) ]
-  mod a_containers_manual;
-  #[ cfg( not( feature = "no_std" ) ) ]
-  mod a_containers;
+  mod subform_collection_basic_scalar;
+  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+  mod subform_collection_basic_manual;
+  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+  mod subform_collection_basic;
 
-  mod attribute_default_container;
+  // = attribute
+
+  mod attribute_default_collection;
   mod attribute_default_primitive;
   mod attribute_default_conflict;
   mod attribute_storage_with_end;
@@ -39,13 +34,7 @@ mod former_tests
   mod attribute_alias;
   mod attribute_feature;
 
-  mod string_slice_manual;
-  mod string_slice;
-  mod unsigned_primitive_types;
-  mod default_user_type;
-  mod user_type_no_default;
-  mod user_type_no_debug;
-  mod visibility;
+  // = name collision
 
   mod name_collision_former_hashmap_without_parameter;
   mod name_collision_former_vector_without_parameter;
@@ -53,6 +42,9 @@ mod former_tests
   mod name_collision_context;
   mod name_collision_end;
   mod name_collision_on_end;
+  mod name_collision_core;
+
+  // = parametrization
 
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod parametrized_struct_manual;
@@ -63,46 +55,82 @@ mod former_tests
   mod parametrized_field;
   mod parametrized_field_where;
 
+  mod parametrized_slice_manual;
+  mod parametrized_slice;
+
+  // = etc
+
+  mod unsigned_primitive_types;
+  mod default_user_type;
+  mod user_type_no_default;
+  mod user_type_no_debug;
+  mod visibility;
+
+  // = collection former
+
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod subformer_basic;
+  mod collection_former_common;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod collection_former_vec;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod collection_former_hashset;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod collection_former_hashmap;
 
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_container;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_container_manual;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_container_implicit;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_container_setter_off;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_container_named;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_container_custom;
+  // = subform collection
 
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_subform;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_subform_manual;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_subform_named;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_subform_named_manual;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_subform_setter_off;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_subform_setter_on;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_collection_playground;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_collection;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_collection_manual;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_collection_implicit;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_collection_setter_off;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_collection_named;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_collection_custom;
 
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_subform_hashmap;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_subform_hashmap_custom;
+  // = subform scalar
 
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_subform_and_container;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_subform_and_container_private;
-  #[ cfg( any( not( feature = "no_std" ) ) ) ]
-  mod subformer_subform_and_container_parametrized;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_scalar_manual;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_scalar;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_scalar_name;
+
+  // = subform entry
+
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_entry;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_entry_manual;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_entry_named;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_entry_named_manual;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_entry_setter_off;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_entry_setter_on;
+
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_entry_hashmap;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_entry_hashmap_custom;
+
+  // = subform all : scalar, subform_scalar, subform_entry, subform_collection
+
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_all;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_all_private;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod subform_all_parametrized;
 
 }
 

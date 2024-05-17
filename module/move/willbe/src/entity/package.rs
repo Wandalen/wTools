@@ -407,6 +407,7 @@ mod private
       {
         path : crate_dir.as_ref().into(),
         temp_path : self.base_temp_dir.clone(),
+        retry_count : 2,
         dry : self.dry,
       };
 
