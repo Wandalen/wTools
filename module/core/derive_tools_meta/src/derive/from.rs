@@ -22,56 +22,141 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
   Ok( result )
 }
 
-// qqq  : document, add example of generated code
+// qqq  : document, add example of generated code -- done
+/// Generates `From` implementation for tuple structs with a single field
+///
+/// # Example
+///
+/// ## Input
+/// ```rust
+/// # use derive_tools_meta::From;
+/// #[ derive( From ) ]
+/// pub struct IsTransparent
+/// {
+///   value : bool,
+/// }
+/// ```
+///
+/// ## Output
+/// ```rust
+/// pub struct IsTransparent
+/// {
+///   value : bool,
+/// }
+/// #[ automatically_derived ]
+/// impl From< bool > for IsTransparent
+/// {
+///   #[ inline( always ) ]
+///   fn from( src : bool ) -> Self
+///   {
+///     Self { value : src }
+///   }
+/// }
+/// ```
+///
 fn generate_from_single_field_named
 (
-  field_type: &syn::Type,
-  field_name: &syn::Ident,
-  item_name: syn::Ident,
+  field_type : &syn::Type,
+  field_name : &syn::Ident,
+  item_name : syn::Ident,
 ) -> proc_macro2::TokenStream
 {
   qt!
   {
     #[ automatically_derived ]
-    // impl From < i32 > for MyStruct
     impl From< #field_type > for #item_name
     {
       #[ inline( always ) ]
-      // fn from( src: i32 ) -> Self
-      fn from( src: #field_type ) -> Self
+      fn from( src : #field_type ) -> Self
       {
-        // Self { a: src }
-        Self { #field_name: src }
+        Self { #field_name : src }
       }
     }
   }
 }
 
-// qqq  : document, add example of generated code
+// qqq  : document, add example of generated code -- done
+/// Generates `From`` implementation for structs with a single named field
+///
+/// # Example of generated code
+///
+/// ## Input
+/// ```rust
+/// # use derive_tools_meta::From;
+/// #[ derive( From ) ]
+/// pub struct IsTransparent( bool );
+/// ```
+/// 
+/// ## Output
+/// ```rust
+/// pub struct IsTransparent( bool );
+/// #[ automatically_derived ]
+/// impl From< bool > for IsTransparent
+/// {
+///   #[ inline( always ) ]
+///   fn from( src : bool ) -> Self
+///   {
+///     Self( src )
+///   }
+/// }
+/// ```
+///
 fn generate_from_single_field
 (
-  field_type: &syn::Type,
-  item_name: syn::Ident,
+  field_type : &syn::Type,
+  item_name : syn::Ident,
 ) -> proc_macro2::TokenStream
 {
   qt!
   {
     #[automatically_derived]
-    // impl From< bool > for IsTransparent
     impl From< #field_type > for #item_name
     {
       #[ inline( always ) ]
-      // fn from( src: bool ) -> Self
-      fn from( src: #field_type ) -> Self
+      fn from( src : #field_type ) -> Self
       {
-        // Self(src)
-        Self(src)
+        Self( src )
       }
     }
   }
 }
 
-// qqq : for Petro : document, add example of generated code
+// qqq : document, add example of generated code -- done
+/// Generates `From` implementation for structs with multiple named fields
+///
+/// # Example
+///
+/// ## Input
+/// ```rust
+/// # use derive_tools_meta::From;
+/// #[ derive( From ) ]
+/// pub struct Struct
+/// {
+///   value1 : bool,
+///   value2 : i32,
+/// }
+/// ```
+///
+/// ## Output
+/// ```rust
+/// pub struct Struct
+/// {
+///   value1 : bool,
+///   value2 : i32,
+/// }
+/// impl From< ( bool, i32 ) > for Struct
+/// {
+///   #[ inline( always ) ]
+///   fn from( src : ( bool, i32 ) ) -> Self
+///   {
+///     Struct
+///     {
+///       value1 : src.0,
+///       value2 : src.1,
+///     }
+///   }
+/// }
+/// ```
 fn generate_from_multiple_fields_named
 (
   field_types : &Vec< &syn::Type >,
@@ -91,28 +176,48 @@ fn generate_from_multiple_fields_named
 
   qt!
   {
-    // impl From< (i32, bool) > for StructNamedFields
-    impl From< (#(#field_types), *) > for #item_name
+    impl From< ( #( #field_types ), * ) > for #item_name
     {
       #[ inline( always ) ]
-      // fn from( src: (i32, bool) ) -> Self
-      fn from( src: (#(#field_types), *) ) -> Self
+      fn from( src : ( #( #field_types ), * ) ) -> Self
       {
-        // StructNamedFields{ a: src.0, b: src.1 }
-        #item_name { #(#params), * }
+        #item_name { #( #params ), * }
       }
     }
   }
 }
 
-// qqq  : document, add example of generated code
+// qqq  : document, add example of generated code -- done
+/// Generates `From` implementation for tuple structs with multiple fields
+///
+/// # Example
+///
+/// ## Input
+/// ```rust
+/// # use derive_tools_meta::From;
+/// #[ derive( From ) ]
+/// pub struct Struct( bool, i32 );
+/// ```
+///
+/// ## Output
+/// ```rust
+/// pub struct Struct( bool, i32 );
+/// impl From< ( bool, i32 ) > for Struct
+/// {
+///   #[ inline( always ) ]
+///   fn from( src : ( bool, i32 ) ) -> Self
+///   {
+///     Struct( src.0, src.1 )
+///   }
+/// }
+/// ```
 fn generate_from_multiple_fields
 (
   field_types : &Vec< &syn::Type >,
-  item_name: syn::Ident,
+  item_name : syn::Ident,
 ) -> proc_macro2::TokenStream
 {
-  let params: Vec< proc_macro2::TokenStream > = ( 0..field_types.len() )
+  let params : Vec< proc_macro2::TokenStream > = ( 0..field_types.len() )
   .map( | index |
     {
       let index = index.to_string().parse::< proc_macro2::TokenStream >().unwrap();
@@ -122,30 +227,50 @@ fn generate_from_multiple_fields
 
   qt!
   {
-    // impl From< (i32, bool) > for StructWithManyFields
-    impl From< (#(#field_types), *) > for #item_name
+    impl From< ( #( #field_types ), * ) > for #item_name
     {
       #[ inline( always ) ]
-      // fn from( src: (i32, bool) ) -> Self
-      fn from( src: (#(#field_types), *) ) -> Self
+      fn from( src : ( #( #field_types ), * ) ) -> Self
       {
-        // StructWithManyFields( src.0, src.1 )
-        #item_name( #(#params), *)
+        #item_name( #( #params ), * )
       }
     }
   }
 }
 
-// qqq  : document, add example of generated code
-fn generate_unit( item_name: syn::Ident ) -> proc_macro2::TokenStream
+// qqq  : document, add example of generated code -- done
+/// Generates `From` implementation for unit structs
+///
+/// # Example
+///
+/// ## Input
+/// ```rust
+/// # use derive_tools_meta::From;
+/// #[ derive( From ) ]
+/// pub struct IsTransparent;
+/// ```
+///
+/// ## Output
+/// ```rust
+/// pub struct IsTransparent;
+/// impl From< () > for IsTransparent
+/// {
+///   #[ inline( always ) ]
+///   fn from( src : () ) -> Self
+///   {
+///     Self
+///   }
+/// }
+/// ```
+///
+fn generate_unit( item_name : syn::Ident ) -> proc_macro2::TokenStream
 {
   qt!
   {
-    // impl From< () > for UnitStruct
     impl From< () > for #item_name
     {
       #[ inline( always ) ]
-      fn from( src: () ) -> Self
+      fn from( src : () ) -> Self
       {
         Self
       }
