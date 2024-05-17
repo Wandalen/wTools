@@ -14,12 +14,13 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
 
   let result = match ( field_types.len(), field_names )
   {
-    ( 0, _ ) => { generate_unit(item_name) },
+    ( 0, _ ) => { generate_unit( item_name ) },
     ( 1, Some( field_names ) ) => generate_from_single_field_named( &field_types[ 0 ], &field_names[ 0 ], item_name ),
     ( 1, None ) => generate_from_single_field( &field_types[ 0 ], item_name ),
     ( _, Some( field_names ) ) => generate_from_multiple_fields_named( &field_types, &field_names, item_name ),
     ( _, None ) => generate_from_multiple_fields( &field_types, item_name ),
   };
+
 
   Ok( result )
 }
@@ -32,6 +33,7 @@ fn generate_from_single_field_named
   item_name: syn::Ident,
 ) -> proc_macro2::TokenStream
 {
+
   qt!
   {
     #[ automatically_derived ]
@@ -56,6 +58,7 @@ fn generate_from_single_field
   item_name: syn::Ident,
 ) -> proc_macro2::TokenStream
 {
+
   qt!
   {
     #[automatically_derived]
@@ -77,19 +80,20 @@ fn generate_from_single_field
 fn generate_from_multiple_fields_named
 (
   field_types : &Vec< &syn::Type >,
-  field_names : &Vec< syn::Ident >,
+  field_names : &Vec< &syn::Ident >,
   item_name : syn::Ident
 ) -> proc_macro2::TokenStream
 {
+
   let params: Vec< proc_macro2::TokenStream > = field_names
-    .iter()
-    .enumerate()
-    .map(| ( index, field_name ) |
-      {
-        let index = index.to_string().parse::< proc_macro2::TokenStream >().unwrap();
-        qt! { #field_name : src.#index }
-      })
-      .collect();
+  .iter()
+  .enumerate()
+  .map(| ( index, field_name ) |
+  {
+    let index = index.to_string().parse::< proc_macro2::TokenStream >().unwrap();
+    qt! { #field_name : src.#index }
+  })
+  .collect();
 
   qt!
   {
@@ -105,6 +109,7 @@ fn generate_from_multiple_fields_named
       }
     }
   }
+
 }
 
 // qqq  : document, add example of generated code
@@ -114,6 +119,7 @@ fn generate_from_multiple_fields
   item_name: syn::Ident,
 ) -> proc_macro2::TokenStream
 {
+
   let params: Vec< proc_macro2::TokenStream > = ( 0..field_types.len() )
   .map( | index |
     {

@@ -13,10 +13,12 @@ mod file
   pub mod container_kind;
   pub mod derive;
   pub mod diag;
+  pub mod drop;
   pub mod generic_analyze;
   pub mod generic_args;
   pub mod generic_params;
   pub mod item;
+  pub mod item_struct;
   pub mod name;
   pub mod phantom;
   pub mod punctuated;
@@ -24,7 +26,6 @@ mod file
   pub mod struct_like;
   pub mod tokens;
   pub mod typ;
-  pub mod item_struct;
 }
 
 ///
@@ -63,10 +64,12 @@ pub mod protected
     container_kind::orphan::*,
     derive::orphan::*,
     diag::orphan::*,
+    drop::orphan::*,
     generic_analyze::orphan::*,
     generic_args::orphan::*,
     generic_params::orphan::*,
     item::orphan::*,
+    item_struct::orphan::*,
     name::orphan::*,
     phantom::orphan::*,
     punctuated::orphan::*,
@@ -74,7 +77,6 @@ pub mod protected
     struct_like::orphan::*,
     tokens::orphan::*,
     typ::orphan::*,
-    item_struct::orphan::*,
   };
 }
 
@@ -113,10 +115,12 @@ pub mod exposed
     container_kind::exposed::*,
     derive::orphan::*,
     diag::exposed::*,
+    drop::exposed::*,
     generic_analyze::exposed::*,
     generic_args::exposed::*,
     generic_params::exposed::*,
     item::exposed::*,
+    item_struct::exposed::*,
     name::exposed::*,
     phantom::exposed::*,
     punctuated::exposed::*,
@@ -124,7 +128,6 @@ pub mod exposed
     struct_like::exposed::*,
     tokens::exposed::*,
     typ::exposed::*,
-    item_struct::exposed::*,
   };
 }
 
@@ -180,10 +183,12 @@ pub mod prelude
     container_kind::prelude::*,
     derive::orphan::*,
     diag::prelude::*,
+    drop::prelude::*,
     generic_analyze::prelude::*,
     generic_args::prelude::*,
     generic_params::prelude::*,
     item::prelude::*,
+    item_struct::prelude::*,
     name::prelude::*,
     phantom::prelude::*,
     punctuated::prelude::*,
@@ -191,7 +196,6 @@ pub mod prelude
     struct_like::prelude::*,
     tokens::prelude::*,
     typ::prelude::*,
-    item_struct::prelude::*,
   };
 
 }

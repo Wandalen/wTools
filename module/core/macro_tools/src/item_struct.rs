@@ -7,37 +7,49 @@ pub( crate ) mod private
 {
   use super::super::*;
 
+  // xxx
+  // pub fn empty_punctuated_iter<'a, T>() -> syn::punctuated::Iter<'a, T> {
+  //     syn::punctuated::Iter
+  //     {
+  //         inner: Box::new(drop::NoDrop::new(std::iter::empty())),
+  //     }
+  // }
+
   // xxx : rename
   // xxx : return iterator?
 
-  /// Returns a vector of the struct's fields for iteration.
-  pub fn fields_many( t : &syn::ItemStruct ) -> Vec< &syn::Field >
+  /// Returns an iterator over struct's fields for iteration.
+  // pub fn fields_many( t : &syn::ItemStruct ) -> Vec< &syn::Field >
+  pub fn fields_many( t : &syn::ItemStruct ) -> impl Iterator< Item = &syn::Field >
   {
-    match &t.fields
-    {
-      syn::Fields::Unnamed( fields ) => fields.unnamed.iter().collect(),
-      syn::Fields::Named( fields ) => fields.named.iter().collect(),
-      syn::Fields::Unit => Vec::new(),
-    }
+    t.fields.iter()
+    // match &t.fields
+    // {
+    //   syn::Fields::Unnamed( fields ) => fields.unnamed.iter(),
+    //   syn::Fields::Named( fields ) => fields.named.iter(),
+    //   syn::Fields::Unit => Box::new(drop::NoDrop::new(core::iter::empty())),
+    //   // syn::Fields::Unit => Vec::new().into_iter(),
+    // }
   }
 
   /// Extracts the types of each field into a vector.
   pub fn field_types( t : &syn::ItemStruct ) -> Vec< &syn::Type >
   {
-    fields_many( t ).iter().map( | field | &field.ty ).collect()
+    fields_many( t ).map( | field | &field.ty ).collect()
   }
 
   /// Retrieves the names of each field, if they exist.
-  pub fn field_names( t : &syn::ItemStruct ) -> Option< Vec< syn::Ident > >
+  pub fn field_names( t : &syn::ItemStruct ) -> Option< Vec< &syn::Ident > >
   {
-    let names : Vec< Option< syn::Ident > > = fields_many( &t ).iter().map( |field| field.ident.clone() ).collect();
-    if names.iter().any( Option::is_none )
+    let names = t.fields.iter().map( | field | field.ident.as_ref() );
+
+    if names.clone().any( | ident | ident.is_none() )
     {
       None
     }
     else
     {
-      Some( names.into_iter().filter_map( core::convert::identity ).collect() )
+      Some( names.filter_map( core::convert::identity ).collect() )
     }
   }
 
