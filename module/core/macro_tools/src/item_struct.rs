@@ -7,30 +7,7 @@ pub( crate ) mod private
 {
   use super::super::*;
 
-  // xxx
-  // pub fn empty_punctuated_iter<'a, T>() -> syn::punctuated::Iter<'a, T> {
-  //     syn::punctuated::Iter
-  //     {
-  //         inner: Box::new(drop::NoDrop::new(std::iter::empty())),
-  //     }
-  // }
-
-  // xxx : rename
-  // xxx : return iterator?
-
-  // /// Returns an iterator over struct's fields for iteration.
-  // // pub fn fields_many( t : &syn::ItemStruct ) -> Vec< &syn::Field >
-  // pub fn fields_many( t : &syn::ItemStruct ) -> impl Iterator< Item = &syn::Field >
-  // {
-  //   t.fields.iter()
-  //   // match &t.fields
-  //   // {
-  //   //   syn::Fields::Unnamed( fields ) => fields.unnamed.iter(),
-  //   //   syn::Fields::Named( fields ) => fields.named.iter(),
-  //   //   syn::Fields::Unit => Box::new(drop::NoDrop::new(core::iter::empty())),
-  //   //   // syn::Fields::Unit => Vec::new().into_iter(),
-  //   // }
-  // }
+  // xxx : make a macro ident_format!()
 
   /// Extracts the types of each field into a vector.
   pub fn field_types( t : &syn::ItemStruct ) -> Vec< &syn::Type >
@@ -38,18 +15,25 @@ pub( crate ) mod private
     t.fields.iter().map( | field | &field.ty ).collect()
   }
 
-  /// Retrieves the names of each field, if they exist.
-  pub fn field_names( t : &syn::ItemStruct ) -> Option< Vec< &syn::Ident > >
-  {
-    let names = t.fields.iter().map( | field | field.ident.as_ref() );
+  // /// Retrieves the names of each field, if they exist.
+  // pub fn field_names( t : &syn::ItemStruct ) -> Option< impl Iterator< Item = &syn::Ident > >
+  // {
+  //   match t.fields
+  //   {
+  //     syn::Fields::Named( ref fields ) => Some( fields.named.iter().map( | field | field.ident.as_ref().unwrap() ) ),
+  //     syn::Fields::Unit => Some( core::iter::empty() ),
+  //     _ => None,
+  //   }
+  // }
 
-    if names.clone().any( | ident | ident.is_none() )
+  /// Retrieves the names of each field, if they exist.
+  pub fn field_names( t : &syn::ItemStruct ) -> Option< Box< dyn Iterator< Item = &syn::Ident > + '_ > >
+  {
+    match &t.fields
     {
-      None
-    }
-    else
-    {
-      Some( names.filter_map( core::convert::identity ).collect() )
+      syn::Fields::Named( fields ) => Some( Box::new( fields.named.iter().map( | field | field.ident.as_ref().unwrap() ) ) ),
+      syn::Fields::Unit => Some( Box::new( core::iter::empty() ) ),
+      _ => None,
     }
   }
 
