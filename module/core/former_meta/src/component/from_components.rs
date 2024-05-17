@@ -1,5 +1,5 @@
 use super::*;
-use macro_tools::{ attr, diag, type_struct, Result };
+use macro_tools::{ attr, diag, item_struct, Result };
 
 ///
 /// Generates an implementation of the `From< T >` trait for a custom struct, enabling
@@ -36,16 +36,16 @@ use macro_tools::{ attr, diag, type_struct, Result };
 pub fn from_components( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   let original_input = input.clone();
-  let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
-  let has_debug = attr::has_debug( parsed.item.attrs.iter() )?;
+  let parsed = syn::parse::< syn::ItemStruct >( input )?;
+  let has_debug = attr::has_debug( parsed.attrs.iter() )?;
 
   // Struct name
-  let item_name = parsed.item.ident.clone();
+  let item_name = parsed.ident.clone();
 
   // Generate snipets
-  let trait_bounds = trait_bounds( &parsed.field_types()[ .. ] );
+  let trait_bounds = trait_bounds( &item_struct::field_types( &parsed )[ .. ] );
   let field_assigns = field_assign( &parsed.fields_many() );
-  let field_names : Vec< _ > = parsed.item.fields.iter().map( | field | &field.ident ).collect();
+  let field_names : Vec< _ > = parsed.fields.iter().map( | field | &field.ident ).collect();
 
   // Generate the From<T> trait implementation
   let result = qt!
@@ -69,7 +69,7 @@ pub fn from_components( input : proc_macro::TokenStream ) -> Result< proc_macro2
 
   if has_debug
   {
-    let about = format!( "derive : FromComponents\nstructure : {0}", &parsed.item.ident );
+    let about = format!( "derive : FromComponents\nstructure : {0}", &parsed.ident );
     diag::report_print( about, &original_input, &result );
   }
 

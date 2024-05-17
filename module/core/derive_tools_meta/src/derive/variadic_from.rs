@@ -1,6 +1,6 @@
 
 use super::*;
-use macro_tools::{ type_struct, Result };
+use macro_tools::{ item_struct, Result };
 use iter::{ IterExt, Itertools };
 
 //
@@ -9,11 +9,11 @@ use iter::{ IterExt, Itertools };
 pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
 
-  let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
-  // let item_name = parsed.item.ident;
-  let item_name = &parsed.item.ident;
+  let parsed = syn::parse::< syn::ItemStruct >( input )?;
+  // let item_name = parsed.ident;
+  let item_name = &parsed.ident;
 
-  let result = match &parsed.item.fields
+  let result = match &parsed.fields
   {
     syn::Fields::Named( _ ) =>
     {
@@ -24,9 +24,9 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
         fn_params,
         src_into_vars,
         vars
-      ) : ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > ) = parsed.item.fields.iter().map_result( | field |
+      ) : ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > ) = parsed.fields.iter().map_result( | field |
       {
-        let ident = field.ident.clone().ok_or_else( || syn_err!( parsed.item.span(), "Fields should be named" ) )?;
+        let ident = field.ident.clone().ok_or_else( || syn_err!( parsed.span(), "Fields should be named" ) )?;
         let ty = field.ty.clone();
         Result::Ok
         ((
@@ -38,7 +38,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
       })?
       .into_iter().multiunzip();
 
-      let l = format!( "{}", parsed.item.fields.len() );
+      let l = format!( "{}", parsed.fields.len() );
       let from_trait = macro_tools::format_ident!( "From_{l}" );
       let from_method = macro_tools::format_ident!( "from_{l}" );
 
@@ -89,7 +89,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
         vars_assing_default,
         src_into_vars,
         vars
-      ) : ( Vec< _ >, Vec< _ >, Vec< _ > ) = parsed.item.fields.iter().map_result( | _field |
+      ) : ( Vec< _ >, Vec< _ >, Vec< _ > ) = parsed.fields.iter().map_result( | _field |
       {
         let ident = macro_tools::format_ident!( "_{}", format!( "{counter}" ) );
         counter += 1;
@@ -149,7 +149,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
       }
 
     }
-    _ => return Err( syn_err!( parsed.item.fields.span(), "Expects fields" ) ),
+    _ => return Err( syn_err!( parsed.fields.span(), "Expects fields" ) ),
   };
 
   Ok( result )

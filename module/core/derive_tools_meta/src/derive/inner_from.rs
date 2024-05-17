@@ -1,15 +1,15 @@
 
 use super::*;
-use macro_tools::{ type_struct, Result };
+use macro_tools::{ item_struct, Result };
 
 //
 
 pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
-  let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
-  let field_types = parsed.field_types();
-  let field_names = parsed.field_names();
-  let item_name = parsed.item.ident.clone();
+  let parsed = syn::parse::< syn::ItemStruct >( input )?;
+  let field_types = item_struct::field_types( &parsed );
+  let field_names = item_struct::field_names( &parsed );
+  let item_name = parsed.ident.clone();
   let result =
   match ( field_types.len(), field_names )
   {
