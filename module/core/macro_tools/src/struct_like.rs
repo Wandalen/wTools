@@ -18,6 +18,7 @@ pub( crate ) mod private
     Variant( &'a syn::Variant ),
   }
 
+
   impl< 'a > From< &'a syn::Field > for FieldOrVariant< 'a >
   {
     fn from( field : &'a syn::Field ) -> Self
@@ -50,6 +51,97 @@ pub( crate ) mod private
         },
       }
     }
+  }
+
+  impl< 'a > FieldOrVariant< 'a >
+  {
+
+    /// Returns an iterator over elements of the item.
+    pub fn typ( &self ) -> Option< &syn::Type >
+    {
+      match self
+      {
+        FieldOrVariant::Field( e ) =>
+        {
+          Some( &e.ty )
+        },
+        FieldOrVariant::Variant( _e ) =>
+        {
+          None
+        },
+      }
+    }
+
+    /// Returns a reference to the attributes of the item.
+    pub fn attrs( &self ) -> &Vec< syn::Attribute >
+    {
+      match self
+      {
+        FieldOrVariant::Field( e ) => &e.attrs,
+        FieldOrVariant::Variant( e ) => &e.attrs,
+      }
+    }
+
+    /// Returns a reference to the visibility of the item.
+    pub fn vis( &self ) -> Option< &syn::Visibility >
+    {
+      match self
+      {
+        FieldOrVariant::Field( e ) => Some( &e.vis ),
+        FieldOrVariant::Variant( _ ) => None,
+      }
+    }
+
+    /// Returns a reference to the mutability of the item.
+    pub fn mutability( &self ) -> Option< &syn::FieldMutability >
+    {
+      match self
+      {
+        FieldOrVariant::Field( e ) => Some( &e.mutability ),
+        FieldOrVariant::Variant( _ ) => None,
+      }
+    }
+
+    /// Returns a reference to the identifier of the item.
+    pub fn ident( &self ) -> Option< &syn::Ident >
+    {
+      match self
+      {
+        FieldOrVariant::Field( e ) => e.ident.as_ref(),
+        FieldOrVariant::Variant( e ) => Some( &e.ident ),
+      }
+    }
+
+    /// Returns a reference to the type of the item.
+    pub fn ty( &self ) -> Option< &syn::Type >
+    {
+      match self
+      {
+        FieldOrVariant::Field( e ) => Some( &e.ty ),
+        FieldOrVariant::Variant( _ ) => None,
+      }
+    }
+
+    /// Returns a reference to the fields of the item.
+    pub fn fields( &self ) -> Option< &syn::Fields >
+    {
+      match self
+      {
+        FieldOrVariant::Field( _ ) => None,
+        FieldOrVariant::Variant( e ) => Some( &e.fields ),
+      }
+    }
+
+    /// Returns a reference to the discriminant of the item.
+    pub fn discriminant( &self ) -> Option< &( syn::token::Eq, syn::Expr ) >
+    {
+      match self
+      {
+        FieldOrVariant::Field( _ ) => None,
+        FieldOrVariant::Variant( e ) => e.discriminant.as_ref(),
+      }
+    }
+
   }
 
   /// Represents various struct-like constructs in Rust code.
@@ -154,6 +246,29 @@ pub( crate ) mod private
   {
 
     /// Returns an iterator over elements of the item.
+    pub fn elements< 'a >( &'a self ) -> impl Iterator< Item = FieldOrVariant< 'a > > + 'a
+    {
+      match self
+      {
+        StructLike::Unit( _ ) =>
+        {
+          let empty : Vec< FieldOrVariant< 'a > > = vec![];
+          Box::new( empty.into_iter() ) as Box< dyn Iterator< Item = FieldOrVariant< 'a > > >
+        },
+        StructLike::Struct( item ) =>
+        {
+          let fields = item.fields.iter().map( FieldOrVariant::from );
+          Box::new( fields ) as Box< dyn Iterator< Item = FieldOrVariant< 'a > > >
+        },
+        StructLike::Enum( item ) =>
+        {
+          let variants = item.variants.iter().map( FieldOrVariant::from );
+          Box::new( variants ) as Box< dyn Iterator< Item = FieldOrVariant< 'a > > >
+        },
+      }
+    }
+
+    /// Returns an iterator over elements of the item.
     pub fn attrs( &self ) -> &Vec< syn::Attribute >
     {
       match self
@@ -174,24 +289,61 @@ pub( crate ) mod private
     }
 
     /// Returns an iterator over elements of the item.
-    pub fn elements< 'a >( &'a self ) -> impl Iterator< Item = FieldOrVariant< 'a > > + 'a
+    pub fn vis( &self ) -> &syn::Visibility
     {
       match self
       {
-        StructLike::Unit( _ ) =>
+        StructLike::Unit( item ) =>
         {
-          let empty : Vec< FieldOrVariant< 'a > > = vec![];
-          Box::new( empty.into_iter() ) as Box< dyn Iterator< Item = FieldOrVariant< 'a > > >
+          &item.vis
         },
         StructLike::Struct( item ) =>
         {
-          let fields = item.fields.iter().map( FieldOrVariant::from );
-          Box::new( fields ) as Box< dyn Iterator< Item = FieldOrVariant< 'a > > >
+          &item.vis
         },
         StructLike::Enum( item ) =>
         {
-          let variants = item.variants.iter().map( FieldOrVariant::from );
-          Box::new( variants ) as Box< dyn Iterator< Item = FieldOrVariant< 'a > > >
+          &item.vis
+        },
+      }
+    }
+
+    /// Returns an iterator over elements of the item.
+    pub fn ident( &self ) -> &syn::Ident
+    {
+      match self
+      {
+        StructLike::Unit( item ) =>
+        {
+          &item.ident
+        },
+        StructLike::Struct( item ) =>
+        {
+          &item.ident
+        },
+        StructLike::Enum( item ) =>
+        {
+          &item.ident
+        },
+      }
+    }
+
+    /// Returns an iterator over elements of the item.
+    pub fn generics( &self ) -> &syn::Generics
+    {
+      match self
+      {
+        StructLike::Unit( item ) =>
+        {
+          &item.generics
+        },
+        StructLike::Struct( item ) =>
+        {
+          &item.generics
+        },
+        StructLike::Enum( item ) =>
+        {
+          &item.generics
         },
       }
     }

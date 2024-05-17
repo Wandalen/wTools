@@ -126,3 +126,65 @@ fn basic()
 // xxx
 
 }
+
+//
+
+#[ test ]
+fn structlike_unit_struct()
+{
+  use syn::parse_quote;
+  use the_module::struct_like::StructLike;
+
+  let item_struct : syn::ItemStruct = parse_quote!
+  {
+    struct UnitStruct;
+  };
+
+  let struct_like = StructLike::from( item_struct );
+
+  assert!( matches!( struct_like, StructLike::Unit( _ ) ), "Expected StructLike::Unit variant" );
+  assert_eq!( struct_like.ident().to_string(), "UnitStruct", "Struct name mismatch" );
+}
+
+#[ test ]
+fn structlike_struct()
+{
+  use syn::parse_quote;
+  use the_module::struct_like::StructLike;
+
+  let item_struct : syn::ItemStruct = parse_quote!
+  {
+    struct RegularStruct
+    {
+      a : i32,
+      b : String,
+    }
+  };
+
+  let struct_like = StructLike::from( item_struct );
+
+  assert!( matches!( struct_like, StructLike::Struct( _ ) ), "Expected StructLike::Struct variant" );
+  assert_eq!( struct_like.ident().to_string(), "RegularStruct", "Struct name mismatch" );
+  assert_eq!( struct_like.fields().count(), 2, "Expected two fields" );
+}
+
+#[ test ]
+fn structlike_enum()
+{
+  use syn::parse_quote;
+  use the_module::struct_like::StructLike;
+
+  let item_enum : syn::ItemEnum = parse_quote!
+  {
+    enum TestEnum
+    {
+      Variant1,
+      Variant2 { x : i32, y : String },
+    }
+  };
+
+  let struct_like = StructLike::from( item_enum );
+
+  assert!( matches!( struct_like, StructLike::Enum( _ ) ), "Expected StructLike::Enum variant" );
+  assert_eq!( struct_like.ident().to_string(), "TestEnum", "Enum name mismatch" );
+}
