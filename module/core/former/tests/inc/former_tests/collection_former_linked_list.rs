@@ -10,7 +10,7 @@ use collection_tools::LinkedList;
 fn add()
 {
 
-  // expliccit with CollectionFormer
+  // explicit with CollectionFormer
 
   let got : LinkedList< String > = the_module
   ::CollectionFormer
@@ -26,7 +26,7 @@ fn add()
   ];
   a_id!( got, exp );
 
-  // expliccit with Former
+  // explicit with LinkedListFormer
 
   let got : LinkedList< String > = the_module::LinkedListFormer::< String, (), LinkedList< String >, the_module::ReturnStorage >
   ::new( former::ReturnStorage )

@@ -10,7 +10,7 @@ use collection_tools::VecDeque;
 fn add()
 {
 
-  // expliccit with CollectionFormer
+  // explicit with CollectionFormer
 
   let got : VecDeque< String > = the_module
   ::CollectionFormer
@@ -26,7 +26,7 @@ fn add()
   ];
   a_id!( got, exp );
 
-  // expliccit with VecDequeFormer
+  // explicit with VecDequeFormer
 
   let got : VecDeque< String > = the_module::VecDequeFormer::< String, (), VecDeque< String >, the_module::ReturnStorage >
   ::new( former::ReturnStorage )

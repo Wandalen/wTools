@@ -77,9 +77,11 @@ mod former_tests
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod collection_former_common;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod collection_former_hashset;
+  mod collection_former_btree_set;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod collection_former_hashmap;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod collection_former_hashset;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod collection_former_linked_list;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
