@@ -24,7 +24,7 @@ impl< E > Collection for BTreeSet< E >
 
 impl< E > CollectionAdd for BTreeSet< E >
 where
-  E: Ord
+  E : Ord
 {
 
   #[ inline( always ) ]
@@ -38,7 +38,7 @@ where
 
 impl< E > CollectionAssign for BTreeSet< E >
 where
-  E: Ord
+  E : Ord
 {
   #[ inline( always ) ]
   fn assign< Elements >( &mut self, elements : Elements ) -> usize
@@ -155,7 +155,7 @@ for BTreeSetDefinitionTypes< E, Context, Formed >
 impl< E, Definition > EntityToFormer< Definition >
 for BTreeSet< E >
 where
-  E: Ord,
+  E : Ord,
   Definition : FormerDefinition
   <
     Storage = BTreeSet< E >,
@@ -220,7 +220,7 @@ CollectionFormer::< E, BTreeSetDefinition< E, Context, Formed, End > >;
 ///
 pub trait BTreeSetExt< E > : sealed::Sealed
 where
-  E: Ord
+  E : Ord
 {
   /// Initializes a builder pattern for `BTreeSet` using a default `BTreeSetFormer`.
   fn former() -> BTreeSetFormer< E, (), BTreeSet< E >, ReturnStorage >;
@@ -228,7 +228,7 @@ where
 
 impl< E > BTreeSetExt< E > for BTreeSet< E >
 where
-  E: Ord
+  E : Ord
 {
   fn former() -> BTreeSetFormer< E, (), BTreeSet< E >, ReturnStorage >
   {
