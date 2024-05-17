@@ -44,7 +44,7 @@ pub fn from_components( input : proc_macro::TokenStream ) -> Result< proc_macro2
 
   // Generate snipets
   let trait_bounds = trait_bounds( &item_struct::field_types( &parsed )[ .. ] );
-  let field_assigns = field_assign( &parsed.fields_many() );
+  let field_assigns = field_assign( parsed.fields.iter() );
   let field_names : Vec< _ > = parsed.fields.iter().map( | field | &field.ident ).collect();
 
   // Generate the From<T> trait implementation
@@ -125,9 +125,9 @@ fn trait_bounds( field_types : &[ &syn::Type ] ) -> Vec< proc_macro2::TokenStrea
 ///
 
 #[ inline ]
-fn field_assign( fields : &[ &syn::Field ] ) -> Vec< proc_macro2::TokenStream >
+fn field_assign< 'a >( fields : impl Iterator< Item = &'a syn::Field > ) -> Vec< proc_macro2::TokenStream >
 {
-  fields.iter().map( | field |
+  fields.map( | field |
   {
     let field_ident = &field.ident;
     let field_type = &field.ty;

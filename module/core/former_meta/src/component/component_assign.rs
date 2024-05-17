@@ -10,7 +10,7 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> Result< proc_macro
   let parsed = syn::parse::< syn::ItemStruct >( input )?;
   let has_debug = attr::has_debug( parsed.attrs.iter() )?;
 
-  let for_field = parsed.fields.iter().iter().map( | field |
+  let for_field = parsed.fields.iter().map( | field |
   {
     for_each_field( field, &parsed.ident )
   })
