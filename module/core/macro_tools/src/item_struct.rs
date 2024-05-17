@@ -8,6 +8,7 @@ pub( crate ) mod private
   use super::super::*;
 
   // xxx : make a macro ident_format!()
+  // xxx : iterator, not vector
 
   /// Extracts the types of each field into a vector.
   pub fn field_types( t : &syn::ItemStruct ) -> Vec< &syn::Type >
@@ -15,16 +16,6 @@ pub( crate ) mod private
     t.fields.iter().map( | field | &field.ty ).collect()
   }
 
-  // /// Retrieves the names of each field, if they exist.
-  // pub fn field_names( t : &syn::ItemStruct ) -> Option< impl Iterator< Item = &syn::Ident > >
-  // {
-  //   match t.fields
-  //   {
-  //     syn::Fields::Named( ref fields ) => Some( fields.named.iter().map( | field | field.ident.as_ref().unwrap() ) ),
-  //     syn::Fields::Unit => Some( core::iter::empty() ),
-  //     _ => None,
-  //   }
-  // }
 
   /// Retrieves the names of each field, if they exist.
   pub fn field_names( t : &syn::ItemStruct ) -> Option< Box< dyn Iterator< Item = &syn::Ident > + '_ > >
