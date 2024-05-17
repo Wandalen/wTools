@@ -1,5 +1,5 @@
 use super::*;
-use macro_tools::{ attr, diag, item_struct, Result };
+use macro_tools::{ attr, diag, Result };
 
 ///
 /// Generates implementations of the `ComponentAssign` trait for each field of a struct.

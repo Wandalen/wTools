@@ -1,6 +1,6 @@
 
 use super::*;
-use macro_tools::{ item_struct, Result };
+use macro_tools::{ Result };
 use iter::{ IterExt, Itertools };
 
 //

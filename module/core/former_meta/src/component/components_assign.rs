@@ -1,5 +1,5 @@
 use super::*;
-use macro_tools::{ attr, diag, item_struct, Result };
+use macro_tools::{ attr, diag, Result };
 use iter_tools::{ Itertools, process_results };
 
 ///

@@ -1,6 +1,6 @@
 
 use super::*;
-use macro_tools::{ attr, diag, item_struct, Result };
+use macro_tools::{ attr, diag, Result };
 
 /// Generates `From` implementations for each unique component (field) of the structure.
 pub fn component_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
