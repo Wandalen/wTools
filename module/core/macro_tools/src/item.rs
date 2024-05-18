@@ -86,7 +86,11 @@ pub( crate ) mod private
 #[ allow( unused_imports ) ]
 pub use protected::*;
 
-/// Protected namespace of the module.
+// qqq : zzz : make sure documentation look good. generate, review and fix every file
+/// This module provides various utilities and namespaces for working with `syn::Item`, specifically focusing on
+/// ensuring syntactical correctness and managing different visibility levels within the code. It includes functions
+/// to manipulate the structure of items, handle different kinds of fields, and provide a structured approach to
+/// organizing the codebase into different access levels.
 pub mod protected
 {
   #[ doc( inline ) ]
@@ -100,7 +104,6 @@ pub mod protected
   };
 }
 
-// xxx : external attr instead of internal?
 /// Orphan namespace of the module.
 pub mod orphan
 {
@@ -117,6 +120,7 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  // pub use super::protected as item;
   pub use super::protected as item;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

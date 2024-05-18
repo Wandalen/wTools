@@ -95,6 +95,7 @@ pub mod orphan
 #[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use quote::
@@ -103,12 +104,14 @@ pub mod exposed
     quote,
     quote_spanned,
   };
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::
   {
     prelude::*,
   };
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::file::
@@ -132,6 +135,7 @@ pub mod exposed
     tokens::exposed::*,
     typ::exposed::*,
   };
+
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
