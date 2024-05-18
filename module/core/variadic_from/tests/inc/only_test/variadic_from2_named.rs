@@ -1,3 +1,5 @@
+#[ test ]
+fn variadic_from2_named()
 {
 
   //

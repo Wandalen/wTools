@@ -317,7 +317,7 @@ pub( crate ) mod private
       (
         concat!
         (
-          "Variadic constructor supports up to 1 arguments.\n",
+          "Variadic constructor supports up to 3 arguments.\n",
           "Open an issue if you need more.\n",
           "You passed:\n",
           stringify!
