@@ -1,6 +1,6 @@
 #[ allow( unused_imports ) ]
 use super::*;
-use the_module::Into1;
+use the_module::variadic::Into1;
 
 #[ derive( Debug, PartialEq ) ]
 struct Struct1

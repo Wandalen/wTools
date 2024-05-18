@@ -1,6 +1,6 @@
 #[ allow( unused_imports ) ]
 use super::*;
-use the_module::Into1;
+use the_module::prelude::Into1;
 
 #[ derive( Debug, PartialEq ) ]
 struct Struct1( i32, i32, i32, i32 );

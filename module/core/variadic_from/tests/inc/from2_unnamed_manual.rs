@@ -1,12 +1,12 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-use the_module::{ from, From1, From2, Into1 };
+use variadic_from::{ from, From1, From2, Into1 };
 
 #[ derive( Debug, PartialEq ) ]
 struct Struct1( i32, i32 );
 
-impl the_module::From2< i32, i32 > for Struct1
+impl variadic_from::From2< i32, i32 > for Struct1
 {
   fn from2( a : i32, b : i32 ) -> Self { Self( a, b ) }
 }

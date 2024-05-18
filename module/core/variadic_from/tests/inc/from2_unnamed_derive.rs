@@ -1,10 +1,10 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-use the_module::{ from, From1, From2, Into1 };
+use variadic_from::{ from, From1, From2, Into1 };
 
 
-#[ derive( Debug, PartialEq, the_module::VariadicFrom ) ]
+#[ derive( Debug, PartialEq, variadic_from::VariadicFrom ) ]
 struct Struct1( i32, i32 );
 
 include!( "./only_test/from2_unnamed.rs" );

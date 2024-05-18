@@ -1,8 +1,18 @@
 use super::*;
 
+// = import tests of clone_dyn
+
 #[ cfg( feature = "derive_clone_dyn" ) ]
 #[ path = "../../../../core/clone_dyn/tests/inc/mod.rs" ]
 mod clone_dyn_test;
+
+// = import tests of variadic_from
+
+#[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
+#[ path = "../../../../../module/core/variadic_from/tests/inc/mod.rs" ]
+mod variadic_from_test;
+
+// = own tests
 
 mod all_manual_test;
 #[ cfg
@@ -71,20 +81,3 @@ mod inner_from_multiple_named_test;
 mod inner_from_unit_test;
 #[ cfg( feature = "derive_inner_from" ) ]
 mod inner_from_multiple_test;
-
-// xxx : fix
-// #[ cfg( all( feature = "type_variadic_from" ) ) ]
-// mod variadic_from_manual_test;
-//
-// #[ cfg( all( feature = "type_variadic_from" ) ) ]
-// mod variadic_from_manual_beyond_test;
-//
-// // #[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
-// // mod variadic_from_derive_test;
-// // xxx : fix
-// #[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
-// mod variadic_from2_derive;
-
-// #[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
-// #[ path = "../../../../../module/core/variadic_from/tests/inc/mod.rs" ]
-// mod variadic_tests;
