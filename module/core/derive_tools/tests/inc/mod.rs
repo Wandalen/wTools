@@ -1,10 +1,9 @@
 use super::*;
 
-// xxx
-#[ cfg( any( feature = "derive_clone_dyn_use_std", feature = "derive_clone_dyn_use_alloc" ) ) ]
+#[ cfg( feature = "derive_clone_dyn" ) ]
+#[ path = "../../../../core/clone_dyn/tests/inc/mod.rs" ]
 mod clone_dyn_test;
 
-// xxx
 mod all_manual_test;
 #[ cfg
 (
