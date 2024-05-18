@@ -353,7 +353,8 @@ pub( crate ) mod private
     }
 
     /// Returns an iterator over fields of the item.
-    pub fn fields( &self ) -> Box< dyn Iterator< Item = &syn::Field > + '_ >
+    // pub fn fields( &self ) -> Box< dyn Iterator< Item = &syn::Field > + '_ >
+    pub fn fields< 'a >( &'a self ) -> Box< dyn IterTrait< 'a, &'a syn::Field > + '_ >
     {
       match self
       {
@@ -373,19 +374,22 @@ pub( crate ) mod private
     }
 
     /// Extracts the name of each field.
-    pub fn field_names( &self ) -> Box< dyn Iterator< Item = Option< &syn::Ident > > + '_ >
+    // pub fn field_names( &self ) -> Box< dyn Iterator< Item = Option< &syn::Ident > > + '_ >
+    pub fn field_names< 'a >( &'a self ) -> Box< dyn IterTrait< 'a, Option< &'a syn::Ident > > + '_ >
     {
       Box::new( self.fields().map( | field | field.ident.as_ref() ) )
     }
 
     /// Extracts the type of each field.
-    pub fn field_types( &self ) -> Box< dyn Iterator< Item = &syn::Type > + '_ >
+    // pub fn field_types( &self ) -> Box< dyn Iterator< Item = &syn::Type > + '_ >
+    pub fn field_types< 'a >( &'a self ) -> Box< dyn IterTrait< 'a, &'a syn::Type > + '_ >
     {
       Box::new( self.fields().map( | field | &field.ty ) )
     }
 
     /// Extracts the name of each field.
-    pub fn field_attrs( &self ) -> Box< dyn Iterator< Item = &Vec< syn::Attribute > > + '_ >
+    // pub fn field_attrs( &self ) -> Box< dyn Iterator< Item = &Vec< syn::Attribute > > + '_ >
+    pub fn field_attrs< 'a >( &'a self ) -> Box< dyn IterTrait< 'a, &'a Vec< syn::Attribute > > + '_ >
     {
       Box::new( self.fields().map( | field | &field.attrs ) )
     }
