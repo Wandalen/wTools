@@ -1,6 +1,8 @@
 use super::*;
 use macro_tools::{ item_struct, struct_like, Result };
 
+// xxx2 : get complete From for enums
+
 //
 
 pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
@@ -83,16 +85,13 @@ fn generate_from_single_field
 // qqq : for Petro : document, add example of generated code
 fn generate_from_multiple_fields_named< 'a >
 (
-  // field_types : &Vec< &syn::Type >,
   field_types : impl macro_tools::IterTrait< 'a, syn::Type >,
   field_names : Box< dyn macro_tools::IterTrait< 'a, syn::Ident > + '_ >,
-  // field_names : Box< dyn Iterator< Item = &syn::Ident > + '_ >,
   item_name : &syn::Ident
 ) -> proc_macro2::TokenStream
 {
 
   let params : Vec< proc_macro2::TokenStream > = field_names
-  // .iter()
   .enumerate()
   .map(| ( index, field_name ) |
   {

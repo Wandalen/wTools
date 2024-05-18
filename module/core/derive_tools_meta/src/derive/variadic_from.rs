@@ -1,6 +1,6 @@
 
 use super::*;
-use macro_tools::{ Result };
+use macro_tools::{ Result, format_ident };
 use iter::{ IterExt, Itertools };
 
 //
@@ -10,7 +10,6 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
 {
 
   let parsed = syn::parse::< syn::ItemStruct >( input )?;
-  // let item_name = parsed.ident;
   let item_name = &parsed.ident;
 
   let result = match &parsed.fields
@@ -24,7 +23,10 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
         fn_params,
         src_into_vars,
         vars
-      ) : ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > ) = parsed.fields.iter().map_result( | field |
+      )
+      :
+      ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
+      = parsed.fields.iter().map_result( | field |
       {
         let ident = field.ident.clone().ok_or_else( || syn_err!( parsed.span(), "Fields should be named" ) )?;
         let ty = field.ty.clone();
@@ -36,15 +38,17 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
           qt!{ #ident, },
         ))
       })?
-      .into_iter().multiunzip();
+      .into_iter()
+      .multiunzip();
 
       let l = format!( "{}", parsed.fields.len() );
-      let from_trait = macro_tools::format_ident!( "From_{l}" );
-      let from_method = macro_tools::format_ident!( "from_{l}" );
+      let from_trait = format_ident!( "From_{l}" );
+      let from_method = format_ident!( "from_{l}" );
 
-      qt!
+      let from_n_code = qt!
       {
 
+        // xxx
         #[ automatically_derived ]
         // impl wtools::From_2< i32 > for StructNamedFields
         impl wtools::#from_trait< #( #types )* > for #item_name
@@ -67,18 +71,20 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
           }
         }
 
-        impl From< ( i32, i32 ) > for StructNamedFields
+        // xxx
+        impl From< ( #( #types )* ) > for #item_name
         {
           /// Returns the argument unchanged.
           #[ inline( always ) ]
-          fn from( src : ( i32, i32 ) ) -> Self
+          fn from( src : ( #( #types )* ) ) -> Self
           {
             Self::from_1( src )
           }
         }
 
-      }
+      };
 
+      from_n_code
     }
     syn::Fields::Unnamed( _ ) =>
     {

@@ -13,8 +13,11 @@ mod from4_tuple_manual;
 mod auto_std_named_manual;
 
 // #[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
-// mod variadic_from_derive_test;
+// mod variadic_from_derive;
 // xxx : fix
 
 #[ cfg( all( feature = "type_variadic_from" ) ) ]
-mod variadic_from_manual_beyond_test;
+mod variadic_from_manual_beyond;
+
+#[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
+mod sample;
