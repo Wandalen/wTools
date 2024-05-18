@@ -22,8 +22,8 @@ mod from4_beyond_unnamed;
 
 #[ cfg( all( feature = "type_variadic_from" ) ) ]
 mod from0_named_manual;
-// #[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
-// mod from0_named_derive;
+#[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
+mod from0_named_derive;
 // #[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
 // mod from0_unnamed_derive;
 // xxx

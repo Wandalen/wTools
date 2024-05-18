@@ -1,20 +1,13 @@
 #[ allow( unused_imports ) ]
 use super::*;
+use the_module::exposed::*;
 
-#[ derive( Debug, PartialEq ) ]
-struct Struct1( i32, i32, i32, i32 );
+#[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
+struct Struct1();
 
-impl Default for Struct1
+impl From< () > for Struct1
 {
-  fn default() -> Self
-  {
-    let a = Default::default();
-    let b = Default::default();
-    let c = Default::default();
-    let d = Default::default();
-    Self( a, b, c, d )
-  }
+  fn from( _a : () ) -> Self { Self::default() }
 }
 
 include!( "./only_test/from0.rs" );
-

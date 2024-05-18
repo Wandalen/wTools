@@ -102,11 +102,6 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
     syn::Fields::Unnamed( _ ) =>
     {
 
-      // if len == 1
-      // {
-      //   panic!( "not tested" );
-      // }
-      // else
       if len <= 3
       {
         qt!
@@ -152,7 +147,13 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
       }
 
     }
-    _ => return Err( syn_err!( parsed.fields.span(), "Expects fields" ) ),
+    syn::Fields::Unit =>
+    {
+
+      qt!{}
+
+    }
+    // _ => return Err( syn_err!( parsed.fields.span(), "Expects fields" ) ),
   };
 
   if has_debug
