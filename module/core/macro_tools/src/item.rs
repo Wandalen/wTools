@@ -1,4 +1,7 @@
-//! xxx : update documentation of file
+//! This module provides various utilities and namespaces for working with `syn::Item`, specifically focusing on
+//! ensuring syntactical correctness and managing different visibility levels within the code. It includes functions
+//! to manipulate the structure of items, handle different kinds of fields, and provide a structured approach to
+//! organizing the codebase into different access levels.
 
 /// Internal namespace.
 pub( crate ) mod private

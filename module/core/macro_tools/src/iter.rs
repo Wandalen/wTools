@@ -1,5 +1,5 @@
 //!
-//! Parse structures, like `struct { a : i32 }`.
+//! Iterators.
 //!
 
 /// Internal namespace.
@@ -7,8 +7,14 @@ pub( crate ) mod private
 {
   // use crate::*;
 
-  /// xxx : write description
-  /// Syn's iterator.
+  /// Trait that encapsulates an iterator with specific characteristics, tailored for use with the `syn` crate.
+  ///
+  /// The `IterTrait` trait is designed to represent iterators that yield references to items (`&'a T`) within the `syn` crate.
+  /// These iterators must also implement the `ExactSizeIterator` and `DoubleEndedIterator` traits.
+  /// This combination ensures that the iterator can:
+  /// - Provide an exact size hint (`ExactSizeIterator`),
+  /// - Be traversed from both ends (`DoubleEndedIterator`).
+  ///
   pub trait IterTrait< 'a, T : 'a >
   where
     Self : Iterator< Item = &'a T > + ExactSizeIterator< Item = &'a T > + DoubleEndedIterator,
