@@ -11,13 +11,13 @@ pub( crate ) mod private
   /// Syn's iterator.
   pub trait IterTrait< 'a, T : 'a >
   where
-    Self : Clone + Iterator< Item = &'a T > + ExactSizeIterator< Item = &'a T > + DoubleEndedIterator,
+    Self : Iterator< Item = &'a T > + ExactSizeIterator< Item = &'a T > + DoubleEndedIterator,
   {
   }
 
   impl< 'a, T : 'a, I > IterTrait< 'a, T > for I
   where
-    Self : Clone + Iterator< Item = &'a T > + ExactSizeIterator< Item = &'a T > + DoubleEndedIterator,
+    Self : Iterator< Item = &'a T > + ExactSizeIterator< Item = &'a T > + DoubleEndedIterator,
   {
   }
 
