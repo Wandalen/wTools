@@ -4,9 +4,9 @@ use super::*;
 #[ derive( Debug, PartialEq ) ]
 struct Struct1( i32, i32, i32, i32 );
 
-impl the_module::From_0 for Struct1
+impl Default for Struct1
 {
-  fn from_0() -> Self
+  fn default() -> Self
   {
     let a = Default::default();
     let b = Default::default();

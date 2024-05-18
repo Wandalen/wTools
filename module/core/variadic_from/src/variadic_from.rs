@@ -225,9 +225,9 @@ pub( crate ) mod private
   /// - Constructor with 2 arguments set individual values of each field.
   ///
   /// ```rust
-  /// # ##[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
+  /// # #[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
   /// # {
-  ///   use type_constructor::prelude::*;
+  ///   use variadic_from::prelude::*;
   ///
   ///   #[ derive( Debug, PartialEq ) ]
   ///   struct Struct1
