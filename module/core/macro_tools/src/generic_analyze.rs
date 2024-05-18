@@ -2,13 +2,12 @@
 // //! Analyze generic to provide more information than trivial syntax node.
 // //!
 //
-// // xxx : clean
+// // zzz : qqq : clean
 //
 // /// Internal namespace.
 // pub( crate ) mod private
 // {
 //
-//   // xxx : qqq : examples. documentation
 //   /// Result of generics analyze.
 //   #[ derive( Debug ) ]
 //   pub struct GenericsAnalysis

@@ -63,7 +63,7 @@ fn is_optional_with_empty_input()
   assert!( parsed_type_result.is_err(), "Expected parsing to fail for empty input" );
 }
 
-// xxx
+//
 
 #[ test ]
 fn parameter_first_with_multiple_generics()

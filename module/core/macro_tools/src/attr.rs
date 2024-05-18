@@ -275,8 +275,12 @@ pub( crate ) mod private
     }
   }
 
-  //
-
+  /// Represents a collection of outer attributes.
+  ///
+  /// This struct wraps a `Vec< syn::Attribute >`, providing utility methods for parsing,
+  /// converting, and iterating over outer attributes. Outer attributes are those that
+  /// appear outside of an item, such as `#[ ... ]` annotations in Rust.
+  ///
   #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
   pub struct AttributesOuter( pub Vec< syn::Attribute > );
 
@@ -345,29 +349,29 @@ pub( crate ) mod private
     }
   }
 
-  ///
-  /// Attribute and ident.
-  ///
-
-  // qqq : example?
-
-  pub type AttributedIdent = Pair< Many< AttributesInner >, syn::Ident >;
-
-  impl From< syn::Ident > for AttributedIdent
-  {
-    fn from( src : syn::Ident ) -> Self
-    {
-      Self( Vec::< AttributesInner >::new().into(), src )
-    }
-  }
-
-  impl From< AttributedIdent > for syn::Ident
-  {
-    fn from( src : AttributedIdent ) -> Self
-    {
-      src.1
-    }
-  }
+//   ///
+//   /// Attribute and ident.
+//   ///
+//
+//   // qqq : example?
+//
+//   pub type AttributedIdent = Pair< Many< AttributesInner >, syn::Ident >;
+//
+//   impl From< syn::Ident > for AttributedIdent
+//   {
+//     fn from( src : syn::Ident ) -> Self
+//     {
+//       Self( Vec::< AttributesInner >::new().into(), src )
+//     }
+//   }
+//
+//   impl From< AttributedIdent > for syn::Ident
+//   {
+//     fn from( src : AttributedIdent ) -> Self
+//     {
+//       src.1
+//     }
+//   }
 
 }
 
@@ -407,7 +411,7 @@ pub mod exposed
     is_standard,
     AttributesInner,
     AttributesOuter,
-    AttributedIdent,
+    // AttributedIdent,
   };
 }
 
