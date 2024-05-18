@@ -3,7 +3,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use super::super::*;
+  use crate::*;
 
   /// Adds a `PhantomData` field to a struct to manage generic parameter usage.
   ///

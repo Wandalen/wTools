@@ -5,7 +5,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use super::super::*;
+  use crate::*;
 
   ///
   /// Marker saying how to parse several elements of such type in a row.

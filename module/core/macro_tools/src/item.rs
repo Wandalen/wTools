@@ -3,7 +3,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use super::super::*;
+  use crate::*;
 
   /// Ensures the last field in a struct has a trailing comma.
   ///

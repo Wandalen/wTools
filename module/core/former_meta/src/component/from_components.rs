@@ -99,7 +99,7 @@ pub fn from_components( input : proc_macro::TokenStream ) -> Result< proc_macro2
 
 #[ inline ]
 // fn trait_bounds( field_types : &[ &syn::Type ] ) -> Vec< proc_macro2::TokenStream >
-fn trait_bounds< 'a >( field_types : impl macro_tools::IterTrait< 'a, macro_tools::syn::Type > ) -> Vec< proc_macro2::TokenStream >
+fn trait_bounds< 'a >( field_types : impl macro_tools::IterTrait< 'a, syn::Type > ) -> Vec< proc_macro2::TokenStream >
 {
   field_types.map( | field_type |
   {

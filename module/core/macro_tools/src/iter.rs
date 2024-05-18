@@ -5,7 +5,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use super::super::*;
+  // use crate::*;
 
   /// xxx : write description
   /// Syn's iterator.

@@ -5,7 +5,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use super::super::*;
+  use crate::*;
   // use interval_adapter::BoundExt;
 
   /// Enum to encapsulate either a field from a struct or a variant from an enum.

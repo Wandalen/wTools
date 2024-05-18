@@ -8,7 +8,7 @@
 #[ path = "." ]
 mod file
 {
-  use super::*;
+  // use super::*;
   pub mod attr;
   pub mod container_kind;
   pub mod derive;

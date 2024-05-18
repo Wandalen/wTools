@@ -9,7 +9,7 @@
 /// Internal namespace.
 pub mod private
 {
-  // use super::super::*;
+  // use crate::*;
 
 //   /// zzz : write documentation
 //   #[ repr( transparent ) ]

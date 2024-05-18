@@ -5,7 +5,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use super::super::*;
+  use crate::*;
 
   ///
   /// For attribute like `#[former( default = 31 ) ]` return key `default` and value `31`,

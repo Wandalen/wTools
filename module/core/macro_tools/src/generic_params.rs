@@ -24,7 +24,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use super::super::*;
+  use crate::*;
 
   /// A `GenericsWithWhere` struct to handle the parsing of Rust generics with an explicit `where` clause.
   ///
