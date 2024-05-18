@@ -7,8 +7,9 @@ use macro_tools::{ attr, diag, item_struct, struct_like, Result };
 
 pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
-  // let parsed = syn::parse::< struct_like::StructLike >( input )?;
+
   let original_input = input.clone();
+  // let parsed = syn::parse::< struct_like::StructLike >( input )?;
   let parsed = syn::parse::< syn::ItemStruct >( input )?;
   let has_debug = attr::has_debug( parsed.attrs.iter() )?;
   let item_name = &parsed.ident;
