@@ -43,7 +43,7 @@ pub fn from_components( input : proc_macro::TokenStream ) -> Result< proc_macro2
   let item_name = parsed.ident.clone();
 
   // Generate snipets
-  let trait_bounds = trait_bounds( &item_struct::field_types( &parsed )[ .. ] );
+  let trait_bounds = trait_bounds( item_struct::field_types( &parsed ) );
   let field_assigns = field_assign( parsed.fields.iter() );
   let field_names : Vec< _ > = parsed.fields.iter().map( | field | &field.ident ).collect();
 
@@ -98,9 +98,10 @@ pub fn from_components( input : proc_macro::TokenStream ) -> Result< proc_macro2
 /// These trait bounds are then used in the `From<T>` implementation to ensure type compatibility.
 
 #[ inline ]
-fn trait_bounds( field_types : &[ &syn::Type ] ) -> Vec< proc_macro2::TokenStream >
+// fn trait_bounds( field_types : &[ &syn::Type ] ) -> Vec< proc_macro2::TokenStream >
+fn trait_bounds< 'a >( field_types : impl macro_tools::IterTrait< 'a, macro_tools::syn::Type > ) -> Vec< proc_macro2::TokenStream >
 {
-  field_types.iter().map( | field_type |
+  field_types.map( | field_type |
   {
     qt!
     {

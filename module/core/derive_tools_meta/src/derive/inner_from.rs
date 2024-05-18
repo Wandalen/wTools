@@ -7,7 +7,7 @@ use macro_tools::{ item_struct, Result };
 pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   let parsed = syn::parse::< syn::ItemStruct >( input )?;
-  let field_types = item_struct::field_types( &parsed );
+  let mut field_types = item_struct::field_types( &parsed );
   let field_names = item_struct::field_names( &parsed );
   let item_name = parsed.ident.clone();
   let result =
@@ -17,12 +17,12 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
     ( 1, Some( mut field_names ) ) =>
     {
       let field_name = field_names.next().unwrap();
-      let field_type = field_types.get( 0 ).unwrap();
+      let field_type = field_types.next().unwrap();
       from_impl_named( item_name, field_type, field_name )
     }
     ( 1, None ) =>
     {
-      let field_type = field_types.get( 0 ).unwrap();
+      let field_type = field_types.next().unwrap();
       from_impl( item_name, field_type )
     }
     ( _, Some( field_names ) ) =>
@@ -30,7 +30,7 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
       let params : Vec< proc_macro2::TokenStream > = field_names
       .map( | field_name | qt! { src.#field_name } )
       .collect();
-      from_impl_multiple_fields( item_name, &field_types, &params )
+      from_impl_multiple_fields( item_name, field_types, &params )
     }
     ( _, None ) =>
     {
@@ -41,7 +41,7 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
         qt! { src.#index }
       })
       .collect();
-      from_impl_multiple_fields( item_name, &field_types, &params )
+      from_impl_multiple_fields( item_name, field_types, &params )
     }
   };
   Ok( result )
@@ -98,10 +98,11 @@ fn from_impl
 }
 
 // qqq  : document, add example of generated code
-fn from_impl_multiple_fields
+fn from_impl_multiple_fields< 'a >
 (
   item_name : syn::Ident,
-  field_types : &Vec< &syn::Type >,
+  field_types : impl macro_tools::IterTrait< 'a, macro_tools::syn::Type >,
+  // field_types : &Vec< &syn::Type >,
   params : &Vec< proc_macro2::TokenStream >,
 ) -> proc_macro2::TokenStream
 {

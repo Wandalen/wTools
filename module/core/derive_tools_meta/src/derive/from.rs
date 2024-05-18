@@ -8,17 +8,22 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
   // let parsed = syn::parse::< struct_like::StructLike >( input )?;
   let parsed = syn::parse::< syn::ItemStruct >( input )?;
 
-  let field_types = item_struct::field_types( &parsed );
+  let mut field_types = item_struct::field_types( &parsed );
   let field_names = item_struct::field_names( &parsed );
   let item_name = &parsed.ident;
 
-  let result = match ( field_types.len(), field_names )
+  let result = match ( field_types.clone().count(), field_names )
   {
-    ( 0, _ ) => { generate_unit( item_name ) },
-    ( 1, Some( mut field_names ) ) => generate_from_single_field_named( &field_types[ 0 ], field_names.next().unwrap(), item_name ),
-    ( 1, None ) => generate_from_single_field( &field_types[ 0 ], item_name ),
-    ( _, Some( field_names ) ) => generate_from_multiple_fields_named( &field_types, field_names, item_name ),
-    ( _, None ) => generate_from_multiple_fields( &field_types, item_name ),
+    ( 0, _ ) =>
+    generate_unit( item_name ),
+    ( 1, Some( mut field_names ) ) =>
+    generate_from_single_field_named( &field_types.next().unwrap(), field_names.next().unwrap(), item_name ),
+    ( 1, None ) =>
+    generate_from_single_field( &field_types.next().unwrap(), item_name ),
+    ( _, Some( field_names ) ) =>
+    generate_from_multiple_fields_named( field_types, field_names, item_name ),
+    ( _, None ) =>
+    generate_from_multiple_fields( field_types, item_name ),
   };
 
   Ok( result )
@@ -76,9 +81,10 @@ fn generate_from_single_field
 }
 
 // qqq : for Petro : document, add example of generated code
-fn generate_from_multiple_fields_named
+fn generate_from_multiple_fields_named< 'a >
 (
-  field_types : &Vec< &syn::Type >,
+  // field_types : &Vec< &syn::Type >,
+  field_types : impl macro_tools::IterTrait< 'a, macro_tools::syn::Type >,
   field_names : Box< dyn Iterator< Item = &syn::Ident > + '_ >,
   item_name : &syn::Ident
 ) -> proc_macro2::TokenStream
@@ -94,17 +100,18 @@ fn generate_from_multiple_fields_named
   })
   .collect();
 
+  let field_types : Vec< _ > = field_types.collect();
   qt!
   {
     // impl From< (i32, bool) > for StructNamedFields
-    impl From< (#(#field_types), *) > for #item_name
+    impl From< ( #( #field_types ),* ) > for #item_name
     {
       #[ inline( always ) ]
       // fn from( src: (i32, bool) ) -> Self
-      fn from( src: (#(#field_types), *) ) -> Self
+      fn from( src : ( #( #field_types ),* ) ) -> Self
       {
         // StructNamedFields{ a: src.0, b: src.1 }
-        #item_name { #(#params), * }
+        #item_name { #(#params),* }
       }
     }
   }
@@ -112,32 +119,36 @@ fn generate_from_multiple_fields_named
 }
 
 // qqq  : document, add example of generated code
-fn generate_from_multiple_fields
+fn generate_from_multiple_fields< 'a >
 (
-  field_types : &Vec< &syn::Type >,
+  field_types : impl macro_tools::IterTrait< 'a, macro_tools::syn::Type >,
+  // field_types : &Vec< &syn::Type >,
   item_name : &syn::Ident,
-) -> proc_macro2::TokenStream
+)
+-> proc_macro2::TokenStream
 {
 
-  let params: Vec< proc_macro2::TokenStream > = ( 0..field_types.len() )
+  let params : Vec< proc_macro2::TokenStream > = ( 0..field_types.len() )
   .map( | index |
-    {
-      let index = index.to_string().parse::< proc_macro2::TokenStream >().unwrap();
-        qt!( src.#index )
-    } )
+  {
+    let index = index.to_string().parse::< proc_macro2::TokenStream >().unwrap();
+    qt!( src.#index )
+  })
   .collect();
+
+  let field_types : Vec< _ > = field_types.collect();
 
   qt!
   {
     // impl From< (i32, bool) > for StructWithManyFields
-    impl From< (#(#field_types), *) > for #item_name
+    impl From< (# ( #field_types ),* ) > for #item_name
     {
       #[ inline( always ) ]
       // fn from( src: (i32, bool) ) -> Self
-      fn from( src: (#(#field_types), *) ) -> Self
+      fn from( src : ( #( #field_types ),* ) ) -> Self
       {
         // StructWithManyFields( src.0, src.1 )
-        #item_name( #(#params), *)
+        #item_name( #( #params ),* )
       }
     }
   }

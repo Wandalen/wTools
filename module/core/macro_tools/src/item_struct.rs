@@ -5,20 +5,22 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use super::super::*;
+  use crate::*;
 
   // xxx : make a macro ident_format!()
   // xxx : iterator, not vector
 
   /// Extracts the types of each field into a vector.
-  pub fn field_types( t : &syn::ItemStruct ) -> Vec< &syn::Type >
+  // pub fn field_types( t : &syn::ItemStruct ) -> Vec< &syn::Type >
+  pub fn field_types< 'a >( t : &'a syn::ItemStruct ) -> impl IterTrait< 'a, syn::Type >
   {
-    t.fields.iter().map( | field | &field.ty ).collect()
+    t.fields.iter().map( | field | &field.ty )
   }
 
 
   /// Retrieves the names of each field, if they exist.
   pub fn field_names( t : &syn::ItemStruct ) -> Option< Box< dyn Iterator< Item = &syn::Ident > + '_ > >
+  // xxx : + Clone + DoubleEndedIterator + ExactSizeIterator
   {
     match &t.fields
     {

@@ -19,6 +19,7 @@ mod file
   pub mod generic_params;
   pub mod item;
   pub mod item_struct;
+  pub mod iter;
   pub mod name;
   pub mod phantom;
   pub mod punctuated;
@@ -70,6 +71,7 @@ pub mod protected
     generic_params::orphan::*,
     item::orphan::*,
     item_struct::orphan::*,
+    iter::orphan::*,
     name::orphan::*,
     phantom::orphan::*,
     punctuated::orphan::*,
@@ -121,6 +123,7 @@ pub mod exposed
     generic_params::exposed::*,
     item::exposed::*,
     item_struct::exposed::*,
+    iter::exposed::*,
     name::exposed::*,
     phantom::exposed::*,
     punctuated::exposed::*,
@@ -189,6 +192,7 @@ pub mod prelude
     generic_params::prelude::*,
     item::prelude::*,
     item_struct::prelude::*,
+    iter::prelude::*,
     name::prelude::*,
     phantom::prelude::*,
     punctuated::prelude::*,
