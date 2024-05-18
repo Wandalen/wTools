@@ -4,9 +4,6 @@
 //! Functions and structures to handle and manipulate `PhantomData` fields in structs using the `syn` crate. These utilities ensure that generic parameters are correctly accounted for in type checking, even if they are not directly used in the struct's fields.
 //!
 
-stress that this file responsible fore generating marker phantom to avoid rule requiring to use all generic parameters in struct. often that is necessary
-
-
 /// Internal namespace.
 pub( crate ) mod private
 {

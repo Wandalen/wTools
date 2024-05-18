@@ -14,11 +14,6 @@ pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStrea
   };
 
   let name_ident = &item_parsed.ident;
-  // let generics = &item_parsed.generics;
-  // let generics_analyzed = item_parsed.generics_analyze();
-  // let generic_params = &generics_analyzed.generics.params;
-  // let generics_where = &generics_analyzed.generics.where_clause;
-  // let generics_names = &generics_analyzed.names;
 
   let generic_params = &item_parsed.generics.params;
   let generics_where = &item_parsed.generics.where_clause;
