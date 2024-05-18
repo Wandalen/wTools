@@ -72,7 +72,7 @@ mod derive;
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_from" ) ]
-#[ proc_macro_derive( From ) ]
+#[ proc_macro_derive( From, attributes( debug ) ) ]
 pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::from::from( input );
@@ -119,7 +119,7 @@ pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 //
 // #[ cfg( feature = "enabled" ) ]
 // #[ cfg( feature = "derive_from" ) ]
-// #[ proc_macro_derive( FromInner ) ]
+// #[ proc_macro_derive( FromInner, attributes( debug ) ) ]
 // pub fn from_inner( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 // {
 //   let result = derive::from::from( input );
@@ -159,7 +159,7 @@ pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_inner_from" ) ]
-#[ proc_macro_derive( InnerFrom ) ]
+#[ proc_macro_derive( InnerFrom, attributes( debug ) ) ]
 pub fn inner_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::inner_from::inner_from( input );
@@ -200,7 +200,7 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_deref" ) ]
-#[ proc_macro_derive( Deref ) ]
+#[ proc_macro_derive( Deref, attributes( debug ) ) ]
 pub fn deref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::deref::deref( input );
@@ -250,7 +250,7 @@ pub fn deref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_deref_mut" ) ]
-#[ proc_macro_derive( DerefMut ) ]
+#[ proc_macro_derive( DerefMut, attributes( debug ) ) ]
 pub fn deref_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::deref_mut::deref_mut( input );
@@ -289,7 +289,7 @@ pub fn deref_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_as_ref" ) ]
-#[ proc_macro_derive( AsRef ) ]
+#[ proc_macro_derive( AsRef, attributes( debug ) ) ]
 pub fn as_ref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::as_ref::as_ref( input );
@@ -329,7 +329,7 @@ pub fn as_ref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_as_mut" ) ]
-#[ proc_macro_derive( AsMut ) ]
+#[ proc_macro_derive( AsMut, attributes( debug ) ) ]
 pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::as_mut::as_mut( input );
@@ -378,7 +378,7 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_variadic_from" ) ]
-#[ proc_macro_derive( VariadicFrom ) ]
+#[ proc_macro_derive( VariadicFrom, attributes( debug ) ) ]
 pub fn derive_variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::variadic_from::variadic_from( input );

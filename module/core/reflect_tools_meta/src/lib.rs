@@ -34,7 +34,7 @@ use implementation::*;
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_reflect" ) ]
-#[ proc_macro_derive( Reflect ) ]
+#[ proc_macro_derive( Reflect, attributes( debug ) ) ]
 pub fn derive_reflect( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = reflect::reflect( input );
