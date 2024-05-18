@@ -465,7 +465,6 @@ pub mod protected
   };
 }
 
-// xxx : external attr instead of internal?
 /// Orphan namespace of the module.
 pub mod orphan
 {
