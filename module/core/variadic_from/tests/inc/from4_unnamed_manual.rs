@@ -31,6 +31,6 @@ impl the_module::wtools::From_1< i32 > for StructTuple
 //     fn from_3( a : i32, b : i32, c : i32 ) -> Self { Self( a, b, c, c ) }
 //   }
 
-include!( "./only_test/from4_tuple.rs" );
+include!( "./only_test/from4_unnamed.rs" );
 
 //
