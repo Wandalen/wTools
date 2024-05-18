@@ -44,12 +44,7 @@ pub( crate ) mod private
   where
     Self : Sized,
   {
-    // /// Constructor without arguments.
-    // fn from( arg : Arg ) -> Self
-    // {
-    //   Self::from_1( arg )
-    // }
-    /// Constructor without arguments.
+    /// Constructor with a single arguments.
     fn from_1( arg : Arg ) -> Self;
   }
 

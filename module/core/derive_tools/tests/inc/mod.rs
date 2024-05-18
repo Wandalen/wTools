@@ -41,8 +41,6 @@ mod deref_mut_test;
 mod from_inner_named_test;
 mod from_inner_named_manual_test;
 
-// xxx
-
 mod from_inner_manual_test;
 mod from_inner_multiple_named_manual_test;
 mod from_inner_multiple_manual_test;
@@ -74,7 +72,7 @@ mod inner_from_unit_test;
 #[ cfg( feature = "derive_inner_from" ) ]
 mod inner_from_multiple_test;
 
-// qqq : for Petro : xxx : fix
+// xxx : fix
 // #[ cfg( all( feature = "type_variadic_from" ) ) ]
 // mod variadic_from_manual_test;
 //

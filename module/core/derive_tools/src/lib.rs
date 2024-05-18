@@ -28,8 +28,8 @@
 //   }
 // }
 
-#[ cfg( feature = "enabled" ) ]
-pub mod wtools;
+// #[ cfg( feature = "enabled" ) ]
+// pub mod wtools;
 
 #[ cfg( all( feature = "derive_more" ) ) ]
 #[ allow( unused_imports ) ]
@@ -113,9 +113,9 @@ pub mod protected
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::clone_dyn::orphan::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::wtools::orphan::*;
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::wtools::orphan::*;
   // #[ cfg( feature = "derive_reflect" ) ]
   // #[ doc( inline ) ]
   // #[ allow( unused_imports ) ]
@@ -232,9 +232,9 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use ::clone_dyn::exposed::*;
 
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::wtools::exposed::*;
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::wtools::exposed::*;
 
   // #[ cfg( feature = "derive_reflect" ) ]
   // #[ doc( inline ) ]
@@ -279,10 +279,10 @@ pub mod prelude
   // #[ allow( unused_imports ) ]
   // pub use super::reflect::prelude::*;
 
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::wtools::prelude::*;
-  #[ doc( no_inline ) ]
-  pub use super::wtools;
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::wtools::prelude::*;
+  // #[ doc( no_inline ) ]
+  // pub use super::wtools;
 
 }

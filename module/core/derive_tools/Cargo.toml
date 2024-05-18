@@ -184,7 +184,6 @@ parse-display = { version = "~0.8.2", optional = true, default-features = false 
 derive_tools_meta = { workspace = true, features = [ "enabled" ] }
 variadic_from = { workspace = true, features = [] }
 clone_dyn = { workspace = true, optional = true }
-# xxx
 
 [dev-dependencies]
 test_tools = { workspace = true }
