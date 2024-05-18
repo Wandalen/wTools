@@ -18,9 +18,8 @@ pub( crate ) mod private
 
 
   /// Retrieves the names of each field, if they exist.
-  // pub fn field_names( t : &syn::ItemStruct ) -> Option< Box< dyn Iterator< Item = &syn::Ident > + '_ > >
   pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> Option< Box< dyn IterTrait< 'a, syn::Ident > + '_ > >
-  // xxx : + Clone + DoubleEndedIterator + ExactSizeIterator
+  // pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> impl IterTrait< 'a, syn::Ident >
   {
     match &t.fields
     {
