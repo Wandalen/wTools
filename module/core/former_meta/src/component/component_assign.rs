@@ -9,7 +9,7 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> Result< proc_macro
   let original_input = input.clone();
   let parsed = syn::parse::< syn::ItemStruct >( input )?;
   let has_debug = attr::has_debug( parsed.attrs.iter() )?;
-  let item_name = parsed.ident.clone();
+  let item_name = &parsed.ident.clone();
 
   let for_field = parsed.fields.iter().map( | field |
   {

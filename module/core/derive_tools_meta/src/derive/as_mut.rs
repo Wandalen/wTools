@@ -7,7 +7,7 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   let original_input = input.clone();
   let parsed = syn::parse::< syn::ItemStruct >( input )?;
   let has_debug = attr::has_debug( parsed.attrs.iter() )?;
-  let item_name = parsed.ident;
+  let item_name = &parsed.ident;
   let field_type = item_struct::first_field_type( &parsed )?;
 
   let result = qt!

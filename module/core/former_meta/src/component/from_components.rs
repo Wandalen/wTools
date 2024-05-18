@@ -40,7 +40,7 @@ pub fn from_components( input : proc_macro::TokenStream ) -> Result< proc_macro2
   let has_debug = attr::has_debug( parsed.attrs.iter() )?;
 
   // Struct name
-  let item_name = parsed.ident.clone();
+  let item_name = &parsed.ident;
 
   // Generate snipets
   let trait_bounds = trait_bounds( item_struct::field_types( &parsed ) );

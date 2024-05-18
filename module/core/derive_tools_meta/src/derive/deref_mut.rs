@@ -9,7 +9,7 @@ pub fn deref_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::Toke
   let original_input = input.clone();
   let parsed = syn::parse::< syn::ItemStruct >( input )?;
   let has_debug = attr::has_debug( parsed.attrs.iter() )?;
-  let item_name = parsed.ident;
+  let item_name = &parsed.ident;
 
   let result = qt!
   {

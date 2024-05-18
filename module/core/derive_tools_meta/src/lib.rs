@@ -420,9 +420,10 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// If your struct has a `debug` attribute, the macro will print information about the generated code for diagnostic purposes.
 ///
-/// ```rust
+/// ```rust, ignore
 /// #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
-/// #[ debug ]
+/// // Use `#[ debug ]` to expand and debug generate code.
+/// // #[ debug ]
 /// struct MyStruct
 /// {
 ///   a: i32,

@@ -1,6 +1,6 @@
 
 use super::*;
-use macro_tools::{ attr, diagm, item_struct, Result };
+use macro_tools::{ attr, diag, item_struct, Result };
 
 //
 
@@ -60,7 +60,7 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
 // qqq  : document, add example of generated code
 fn from_impl_named
 (
-  item_name : syn::Ident,
+  item_name : &syn::Ident,
   field_type : &syn::Type,
   field_name : &syn::Ident,
 ) -> proc_macro2::TokenStream
@@ -86,7 +86,7 @@ fn from_impl_named
 // qqq  : document, add example of generated code
 fn from_impl
 (
-  item_name : syn::Ident,
+  item_name : &syn::Ident,
   field_type : &syn::Type,
 ) -> proc_macro2::TokenStream
 {
@@ -110,9 +110,8 @@ fn from_impl
 // qqq  : document, add example of generated code
 fn from_impl_multiple_fields< 'a >
 (
-  item_name : syn::Ident,
+  item_name : &syn::Ident,
   field_types : impl macro_tools::IterTrait< 'a, macro_tools::syn::Type >,
-  // field_types : &Vec< &syn::Type >,
   params : &Vec< proc_macro2::TokenStream >,
 ) -> proc_macro2::TokenStream
 {
@@ -135,7 +134,7 @@ fn from_impl_multiple_fields< 'a >
 }
 
 // qqq  : document, add example of generated code
-fn unit( item_name : syn::Ident ) -> proc_macro2::TokenStream
+fn unit( item_name : &syn::Ident ) -> proc_macro2::TokenStream
 {
   qt!
   {
