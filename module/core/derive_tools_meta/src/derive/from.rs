@@ -84,8 +84,9 @@ fn generate_from_single_field
 fn generate_from_multiple_fields_named< 'a >
 (
   // field_types : &Vec< &syn::Type >,
-  field_types : impl macro_tools::IterTrait< 'a, macro_tools::syn::Type >,
-  field_names : Box< dyn Iterator< Item = &syn::Ident > + '_ >,
+  field_types : impl macro_tools::IterTrait< 'a, syn::Type >,
+  field_names : Box< dyn macro_tools::IterTrait< 'a, syn::Ident > + '_ >,
+  // field_names : Box< dyn Iterator< Item = &syn::Ident > + '_ >,
   item_name : &syn::Ident
 ) -> proc_macro2::TokenStream
 {

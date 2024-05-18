@@ -1,25 +1,6 @@
 //!
-//! Manipulations on generic parameters.
+//! Functions and structures to handle and manipulate generic parameters using the `syn` crate. It's designed to support macro-driven code generation by simplifying, merging, extracting, and decomposing `syn::Generics`.
 //!
-//! # Example of generic parameters
-//!
-//!```rust
-//!
-//! pub struct CommandFormer< K, Context = () >
-//! where
-//!   K : core::hash::Hash + std::cmp::Eq,
-//! {
-//!   properties : core::option::Option< std::collections::HashMap< K, String > >,
-//!   _phantom : core::marker::PhantomData< Context >,
-//! }
-//!
-//! impl< K, Context >
-//! CommandFormer< K, Context >
-//! where
-//!   K : core::hash::Hash + std::cmp::Eq,
-//! {}
-//!```
-//! xxx : update documentation of file
 
 /// Internal namespace.
 pub( crate ) mod private
@@ -34,8 +15,10 @@ pub( crate ) mod private
   /// in scenarios where the `where` clause is crucial for type constraints and bounds in Rust macros and code generation.
   ///
   /// Usage:
+  ///
   /// ```
-  /// let parsed_generics : macro_tools::GenericsWithWhere = syn::parse_str( "< T : Clone, U : Default = Default1 > where T : Default").unwrap();
+  /// let parsed_generics : macro_tools::GenericsWithWhere
+  /// = syn::parse_str( "< T : Clone, U : Default = Default1 > where T : Default" ).unwrap();
   /// assert!( parsed_generics.generics.params.len() == 2 );
   /// assert!( parsed_generics.generics.where_clause.is_some() );
   /// ```
@@ -264,11 +247,42 @@ pub( crate ) mod private
     result
   }
 
+  /// Extracts the names of type parameters, lifetimes, and const parameters from the given `Generics`.
+  ///
+  /// This function returns an iterator over the names of the parameters in the `Generics`,
+  /// which can be useful for generating code that requires just the names of the parameters
+  /// without their associated bounds or default values.
+  ///
+  /// # Arguments
+  ///
+  /// * `generics` - The `Generics` instance from which to extract parameter names.
+  ///
+  /// # Returns
+  ///
+  /// Returns an iterator over the names of the parameters.
+  ///
+  /// # Examples
+  ///
+  /// ```rust
+  /// # use macro_tools::syn::parse_quote;
+  ///
+  /// let generics : syn::Generics = parse_quote!
+  /// {
+  ///   < T : Clone + Default, U, 'a, const N : usize >
+  /// };
+  /// let names : Vec< _ > = macro_tools::generic_params::names( &generics ).collect();
+  ///
+  /// assert_eq!( names, vec!
+  /// [
+  ///   &syn::Ident::new( "T", proc_macro2::Span::call_site() ),
+  ///   &syn::Ident::new( "U", proc_macro2::Span::call_site() ),
+  ///   &syn::Ident::new( "a", proc_macro2::Span::call_site() ),
+  ///   &syn::Ident::new( "N", proc_macro2::Span::call_site() )
+  /// ]);
+  /// ```
+
   pub fn names< 'a >( generics : &'a syn::Generics ) -> impl IterTrait< 'a, syn::Ident > + Clone
   {
-    use syn::{ Generics, GenericParam, LifetimeParam, TypeParam, ConstParam };
-    // let mut names = vec![];
-
     generics.params.iter().map( | param | match param
     {
       syn::GenericParam::Type( type_param ) => &type_param.ident,
