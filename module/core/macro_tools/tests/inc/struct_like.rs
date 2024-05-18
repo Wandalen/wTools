@@ -313,7 +313,6 @@ fn test_ident()
   assert_eq!( field_or_variant.ident().unwrap(), "my_field" );
 }
 
-
 //
 
 #[ test ]
@@ -325,7 +324,7 @@ fn struct_with_attrs()
   {
     #[ derive( From, InnerFrom, Display, FromStr, PartialEq, Debug ) ]
     #[ display( "{a}-{b}" ) ]
-    struct Struct1
+    pub struct Struct1
     {
       a : i32,
       b : i32,
@@ -336,4 +335,31 @@ fn struct_with_attrs()
   let field = ast.fields().next().unwrap();
   let field_or_variant = the_module::struct_like::FieldOrVariant::from( field );
   assert_eq!( field_or_variant.ident().unwrap(), "a" );
+}
+
+//
+
+#[ test ]
+fn struct_with_attrs2()
+{
+  use the_module::struct_like::StructLike;
+
+  let input : proc_macro2::TokenStream = quote::quote!
+  {
+    #[ derive( Debug, PartialEq, the_module::From ) ]
+    #[ debug ]
+    pub enum GetData
+    {
+      #[ allow( dead_code ) ]
+      Nothing,
+      FromString( String ),
+      FromBin( &'static [ u8 ] ),
+    }
+  };
+
+  let ast : StructLike = syn::parse2( input ).unwrap();
+  let field = ast.elements().next().unwrap();
+  let field_or_variant = the_module::struct_like::FieldOrVariant::from( field );
+  assert_eq!( field_or_variant.ident().unwrap().to_string(), "Nothing" );
+
 }

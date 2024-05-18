@@ -1,7 +1,10 @@
+#[ allow( unused_imports ) ]
+use super::*;
 
 #[ derive( Debug, PartialEq ) ]
 pub enum GetData
 {
+  #[ allow( dead_code ) ]
   Nothing,
   FromString( String ),
   FromBin( &'static [ u8 ] ),

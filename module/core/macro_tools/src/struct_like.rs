@@ -197,11 +197,10 @@ pub( crate ) mod private
     {
       use syn::{ ItemStruct, ItemEnum, Visibility, Attribute };
 
-      // Parse visibility
-      let visibility : Visibility = input.parse().unwrap_or( syn::Visibility::Inherited );
-
       // Parse attributes
       let attributes : Vec< Attribute > = input.call( Attribute::parse_outer )?;
+      // Parse visibility
+      let visibility : Visibility = input.parse().unwrap_or( syn::Visibility::Inherited );
 
       // Fork input stream to handle struct/enum keyword without consuming
       let lookahead = input.lookahead1();
@@ -210,7 +209,7 @@ pub( crate ) mod private
         // Parse ItemStruct
         let mut item_struct : ItemStruct = input.parse()?;
         item_struct.vis = visibility;
-        item_struct.attrs = attributes;
+        item_struct.attrs = attributes.into();
         if item_struct.fields.is_empty()
         {
           Ok( StructLike::Unit( item_struct ) )
@@ -225,7 +224,7 @@ pub( crate ) mod private
         // Parse ItemEnum
         let mut item_enum : ItemEnum = input.parse()?;
         item_enum.vis = visibility;
-        item_enum.attrs = attributes;
+        item_enum.attrs = attributes.into();
         Ok( StructLike::Enum( item_enum ) )
       }
       else
