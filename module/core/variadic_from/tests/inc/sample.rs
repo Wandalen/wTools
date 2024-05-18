@@ -26,6 +26,18 @@ fn sample()
   let exp = MyStruct { a : 13, b : 13 };
   assert_eq!( got, exp );
 
+  let got : MyStruct = from!( 13, 14 );
+  let exp = MyStruct { a : 13, b : 14 };
+  assert_eq!( got, exp );
+
+  let got : MyStruct = From::from( ( 13, 14 ) );
+  let exp = MyStruct { a : 13, b : 14 };
+  assert_eq!( got, exp );
+
+  let got : MyStruct = ( 13, 14 ).into();
+  let exp = MyStruct { a : 13, b : 14 };
+  assert_eq!( got, exp );
+
 }
 
 // qqq : xxx : add to examples and to readme
