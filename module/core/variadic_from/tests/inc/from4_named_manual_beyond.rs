@@ -2,7 +2,7 @@
 use super::*;
 
 #[ test ]
-fn from_named_fields()
+fn from_named4()
 {
 
   #[ derive( Debug, PartialEq ) ]
@@ -49,7 +49,15 @@ fn from_named_fields()
   let exp = StructNamedFields{ a : 13, b : 13, c : 13, d : 13 };
   a_id!( got, exp );
 
+  let got : StructNamedFields = the_module::from!( ( 13, ) );
+  let exp = StructNamedFields{ a : 13, b : 13, c : 13, d : 13 };
+  a_id!( got, exp );
+
   let got : StructNamedFields = the_module::from!( 0, 1 );
+  let exp = StructNamedFields{ a : 0, b : 1, c : 1, d : 1 };
+  a_id!( got, exp );
+
+  let got : StructNamedFields = the_module::from!( ( 0, 1 ) );
   let exp = StructNamedFields{ a : 0, b : 1, c : 1, d : 1 };
   a_id!( got, exp );
 
@@ -57,96 +65,8 @@ fn from_named_fields()
   let exp = StructNamedFields{ a : 0, b : 1, c : 2, d : 2 };
   a_id!( got, exp );
 
-}
-
-//
-
-#[ test ]
-fn from_tuple()
-{
-
-  #[ derive( Debug, PartialEq ) ]
-  struct StructTuple( i32, i32, i32, i32 );
-
-  impl the_module::wtools::From_0 for StructTuple
-  {
-    fn from_0() -> Self
-    {
-      let a = Default::default();
-      let b = Default::default();
-      let c = Default::default();
-      let d = Default::default();
-      Self( a, b, c, d )
-    }
-  }
-
-  impl the_module::wtools::From_1< i32 > for StructTuple
-  {
-    fn from_1( a : i32 ) -> Self { Self( a, a, a, a ) }
-  }
-
-  impl the_module::wtools::From_2< i32, i32 > for StructTuple
-  {
-    fn from_2( a : i32, b : i32 ) -> Self { Self( a, b, b, b ) }
-  }
-
-  impl the_module::wtools::From_3< i32, i32, i32 > for StructTuple
-  {
-    fn from_3( a : i32, b : i32, c : i32 ) -> Self { Self( a, b, c, c ) }
-  }
-
-  let got : StructTuple = the_module::from!();
-  let exp = StructTuple( 0, 0, 0, 0 );
-  a_id!( got, exp );
-
-  let got : StructTuple = the_module::from!( 13 );
-  let exp = StructTuple( 13, 13, 13, 13 );
-  a_id!( got, exp );
-
-  let got : StructTuple = the_module::from!( 0, 1 );
-  let exp = StructTuple( 0, 1, 1, 1 );
-  a_id!( got, exp );
-
-  let got : StructTuple = the_module::from!( 0, 1, 2 );
-  let exp = StructTuple( 0, 1, 2, 2 );
-  a_id!( got, exp );
-
-}
-
-//
-
-/// From_0 is auto implemented from Default.
-#[ test ]
-fn from0_from_default()
-{
-
-  #[ derive( Debug, PartialEq, Default ) ]
-  struct StructNamedFields
-  {
-    a : i32,
-    b : i32,
-  }
-
-  // impl the_module::wtools::From_0 for StructNamedFields
-  // {
-  //   fn from_0() -> Self
-  //   {
-  //     let a = Default::default();
-  //     let b = Default::default();
-  //     Self{ a, b }
-  //   }
-  // }
-
-  let got : StructNamedFields = the_module::from!();
-  let exp = StructNamedFields{ a : 0, b : 0 };
-  a_id!( got, exp );
-
-  let got : StructNamedFields = the_module::From_0::from_0();
-  let exp = StructNamedFields{ a : 0, b : 0 };
-  a_id!( got, exp );
-
-  let got : StructNamedFields = Default::default();
-  let exp = StructNamedFields{ a : 0, b : 0 };
+  let got : StructNamedFields = the_module::from!( ( 0, 1, 2 ) );
+  let exp = StructNamedFields{ a : 0, b : 1, c : 2, d : 2 };
   a_id!( got, exp );
 
 }
@@ -156,7 +76,7 @@ fn from0_from_default()
 /// Into1 is auto implemented from From_1.
 /// From_1< ( All, ) > is auto implemented for From_1< All >.
 #[ test ]
-fn from_tuple_from_from1()
+fn from_tuple_1()
 {
   use the_module::prelude::*;
 
