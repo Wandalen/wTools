@@ -24,7 +24,7 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
 //   let mut field_types = parsed.field_types();
 //   let field_names = parsed.field_names();
 
-  let result = match ( field_types.clone().count(), field_names )
+  let result = match ( field_types.len(), field_names )
   {
     ( 0, _ ) =>
     generate_unit( item_name ),
