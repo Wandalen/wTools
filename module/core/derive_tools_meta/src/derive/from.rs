@@ -1,5 +1,5 @@
 use super::*;
-use macro_tools::{ attr, diag, item_struct, struct_like, struct_like::StructLike, Result };
+use macro_tools::{ attr, diag, item_struct, struct_like::StructLike, Result };
 
 // xxx2 : get complete From for enums
 
@@ -7,6 +7,7 @@ use macro_tools::{ attr, diag, item_struct, struct_like, struct_like::StructLike
 
 pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
+  use macro_tools::quote::ToTokens;
 
   let original_input = input.clone();
 
@@ -48,7 +49,27 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
     },
     StructLike::Enum( ref item ) =>
     {
-      let variants = item.variants.iter().map( | v | variant_generate( item_name, v ) );
+
+      let mut map = std::collections::HashMap::new();
+      item.variants.iter().for_each( | v |
+      {
+        map
+        .entry( v.fields.to_token_stream().to_string() )
+        .and_modify( | e | *e += 1 )
+        .or_insert( 1 );
+      });
+
+      let variants = item.variants.iter().map( | v |
+      {
+        if map[ &v.fields.to_token_stream().to_string() ] <= 1
+        {
+          variant_generate( item_name, v )
+        }
+        else
+        {
+          qt!{}
+        }
+      });
       qt!
       {
         #( #variants )*
@@ -81,18 +102,41 @@ fn variant_generate
     return qt!{}
   }
 
+  let ( args, use_src ) = if fields.len() == 1
+  {
+    let field = fields.iter().next().unwrap();
+    (
+      qt!{ #field },
+      qt!{ src },
+    )
+  }
+  else
+  {
+    let src_i = ( 0..fields.len() ).map( | e |
+    {
+      let i = syn::Index::from( e );
+      qt!{ src.#i, }
+    });
+    (
+      qt!{ #fields },
+      qt!{ #( #src_i )* },
+      // qt!{ src.0, src.1 },
+    )
+  };
+
   qt!
   {
     #[ automatically_derived ]
-    impl From< #fields > for #item_name
+    impl From< #args > for #item_name
     {
       #[ inline ]
-      fn from( src : #fields ) -> Self
+      fn from( src : #args ) -> Self
       {
-        Self::#variant_name( src )
+        Self::#variant_name( #use_src )
       }
     }
   }
+
 }
 
 // qqq  : document, add example of generated code
