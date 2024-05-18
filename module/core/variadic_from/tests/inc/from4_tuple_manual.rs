@@ -1,31 +1,25 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-//
+#[ derive( Debug, PartialEq ) ]
+struct StructTuple( i32, i32, i32, i32 );
 
-#[ test ]
-fn from4_tuple()
+impl the_module::wtools::From_0 for StructTuple
 {
-
-  #[ derive( Debug, PartialEq ) ]
-  struct StructTuple( i32, i32, i32, i32 );
-
-  impl the_module::wtools::From_0 for StructTuple
+  fn from_0() -> Self
   {
-    fn from_0() -> Self
-    {
-      let a = Default::default();
-      let b = Default::default();
-      let c = Default::default();
-      let d = Default::default();
-      Self( a, b, c, d )
-    }
+    let a = Default::default();
+    let b = Default::default();
+    let c = Default::default();
+    let d = Default::default();
+    Self( a, b, c, d )
   }
+}
 
-  impl the_module::wtools::From_1< i32 > for StructTuple
-  {
-    fn from_1( a : i32 ) -> Self { Self( a, a, a, a ) }
-  }
+impl the_module::wtools::From_1< i32 > for StructTuple
+{
+  fn from_1( a : i32 ) -> Self { Self( a, a, a, a ) }
+}
 
 //   impl the_module::wtools::From_2< i32, i32 > for StructTuple
 //   {
@@ -37,7 +31,6 @@ fn from4_tuple()
 //     fn from_3( a : i32, b : i32, c : i32 ) -> Self { Self( a, b, c, c ) }
 //   }
 
-  include!( "./only_test/from4_tuple.rs" );
-}
+include!( "./only_test/from4_tuple.rs" );
 
 //

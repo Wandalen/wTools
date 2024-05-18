@@ -35,4 +35,3 @@ impl From< ( i32, i32 ) > for StructNamedFields
 
 include!( "./only_test/variadic_from2_named.rs" );
 include!( "./only_test/variadic_std_from2_named.rs" );
-

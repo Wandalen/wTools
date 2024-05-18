@@ -1,3 +1,5 @@
+#[ test ]
+fn from4_tuple()
 {
 
   // #[ derive( Debug, PartialEq ) ]

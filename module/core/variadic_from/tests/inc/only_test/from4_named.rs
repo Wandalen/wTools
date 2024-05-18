@@ -1,3 +1,5 @@
+#[ test ]
+fn from4_named_fields()
 {
 
   // #[ derive( Debug, PartialEq ) ]
