@@ -18,4 +18,4 @@ pub enum GetData
 
 include!( "./only_test/from_inner_variants.rs" );
 
-// xxx2 : get completed
+// xxx2 : qqq : write test with generics and make sure derive works
