@@ -17,12 +17,12 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
   let mut field_types = item_struct::field_types( &parsed );
   let field_names = item_struct::field_names( &parsed );
 
-  // let parsed = syn::parse::< struct_like::StructLike >( input )?;
-  // let has_debug = attr::has_debug( parsed.attrs().iter() )?;
-  // let item_name = &parsed.ident();
-
-  // let mut field_types = parsed.field_types();
-  // let field_names = parsed.field_names();
+//   let parsed = syn::parse::< struct_like::StructLike >( input )?;
+//   let has_debug = attr::has_debug( parsed.attrs().iter() )?;
+//   let item_name = &parsed.ident();
+//
+//   let mut field_types = parsed.field_types();
+//   let field_names = parsed.field_names();
 
   let result = match ( field_types.clone().count(), field_names )
   {

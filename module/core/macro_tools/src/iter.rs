@@ -15,16 +15,25 @@ pub( crate ) mod private
   /// - Provide an exact size hint (`ExactSizeIterator`),
   /// - Be traversed from both ends (`DoubleEndedIterator`).
   ///
-  pub trait IterTrait< 'a, T : 'a >
+  pub trait IterTrait< 'a, T >
   where
+    T : 'a,
     Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
   {
+    // fn clone_box( &self ) -> Box< dyn IterTrait< 'a, T > + 'a >;
   }
 
-  impl< 'a, T : 'a, I > IterTrait< 'a, T > for I
+  impl< 'a, T, I > IterTrait< 'a, T > for I
   where
-    Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
+    T : 'a,
+    Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator // + Clone,
   {
+
+    // fn clone_box( &self ) -> Box< dyn IterTrait< 'a, T > + 'a >
+    // {
+    //   Box::new( self.clone() )
+    // }
+
   }
 
 //   /// Trait that encapsulates an iterator with specific characteristics, tailored for use with the `syn` crate.
