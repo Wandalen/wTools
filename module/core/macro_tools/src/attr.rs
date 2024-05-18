@@ -12,6 +12,7 @@ pub( crate ) mod private
   /// as well as syn::Meta as the last element of result tuple.
   ///
   /// ### Basic use-case.
+  ///
   /// ```rust
   /// use macro_tools::exposed::*;
   /// let attr : syn::Attribute = syn::parse_quote!( #[ former( default = 31 ) ] );
@@ -276,23 +277,8 @@ pub( crate ) mod private
 
   //
 
-  // types!
-  // {
-
-    ///
-    /// Attribute which is outer.
-    ///
-    /// For example: `#[ derive( Copy ) ]`.
-    ///
-
-    // #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
-    // pub many AttributesOuter : syn::Attribute;
-    // xxx : apply maybe collection of derives for TDD
-
-    #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
-    pub struct AttributesOuter( pub Vec< syn::Attribute > );
-
-  // }
+  #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
+  pub struct AttributesOuter( pub Vec< syn::Attribute > );
 
   impl From< Vec< syn::Attribute > > for AttributesOuter
   {
