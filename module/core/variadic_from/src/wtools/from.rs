@@ -189,6 +189,20 @@ pub( crate ) mod private
 //     fn from_4( arg1 : Arg1, arg2 : Arg2, arg3 : Arg3, arg4 : Arg4 ) -> Self;
 //   }
 
+  // not possible
+  //
+  // impl< T, F > From< T > for F
+  // where
+  //   F : From_1< T >,
+  // {
+  //   /// Returns the argument unchanged.
+  //   #[ inline( always ) ]
+  //   fn from( src : T ) -> Self
+  //   {
+  //     Self::from_1( src )
+  //   }
+  // }
+
   ///
   /// Variadic constructor.
   ///

@@ -71,10 +71,9 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
           }
         }
 
-        // xxx
         impl From< ( #( #types )* ) > for #item_name
         {
-          /// Returns the argument unchanged.
+          /// Reuse From_1.
           #[ inline( always ) ]
           fn from( src : ( #( #types )* ) ) -> Self
           {
