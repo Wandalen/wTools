@@ -195,13 +195,22 @@ pub( crate ) mod private
   {
     fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
     {
-      let ahead = input.fork();
-      let _visibility : Option< syn::Visibility > = ahead.parse().ok(); // Skip visibility
+      use syn::{ ItemStruct, ItemEnum, Visibility, Attribute };
 
-      let lookahead = ahead.lookahead1();
+      // Parse visibility
+      let visibility : Visibility = input.parse().unwrap_or( syn::Visibility::Inherited );
+
+      // Parse attributes
+      let attributes : Vec< Attribute > = input.call( Attribute::parse_outer )?;
+
+      // Fork input stream to handle struct/enum keyword without consuming
+      let lookahead = input.lookahead1();
       if lookahead.peek( syn::Token![ struct ] )
       {
-        let item_struct : syn::ItemStruct = input.parse()?;
+        // Parse ItemStruct
+        let mut item_struct : ItemStruct = input.parse()?;
+        item_struct.vis = visibility;
+        item_struct.attrs = attributes;
         if item_struct.fields.is_empty()
         {
           Ok( StructLike::Unit( item_struct ) )
@@ -213,7 +222,10 @@ pub( crate ) mod private
       }
       else if lookahead.peek( syn::Token![ enum ] )
       {
-        let item_enum : syn::ItemEnum = input.parse()?;
+        // Parse ItemEnum
+        let mut item_enum : ItemEnum = input.parse()?;
+        item_enum.vis = visibility;
+        item_enum.attrs = attributes;
         Ok( StructLike::Enum( item_enum ) )
       }
       else
@@ -222,6 +234,38 @@ pub( crate ) mod private
       }
     }
   }
+
+//   impl syn::parse::Parse for StructLike
+//   {
+//     fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+//     {
+//       let ahead = input.fork();
+//       let _visibility : Option< syn::Visibility > = ahead.parse().ok(); // Skip visibility
+//
+//       let lookahead = ahead.lookahead1();
+//       if lookahead.peek( syn::Token![ struct ] )
+//       {
+//         let item_struct : syn::ItemStruct = input.parse()?;
+//         if item_struct.fields.is_empty()
+//         {
+//           Ok( StructLike::Unit( item_struct ) )
+//         }
+//         else
+//         {
+//           Ok( StructLike::Struct( item_struct ) )
+//         }
+//       }
+//       else if lookahead.peek( syn::Token![ enum ] )
+//       {
+//         let item_enum : syn::ItemEnum = input.parse()?;
+//         Ok( StructLike::Enum( item_enum ) )
+//       }
+//       else
+//       {
+//         Err( lookahead.error() )
+//       }
+//     }
+//   }
 
   impl quote::ToTokens for StructLike
   {

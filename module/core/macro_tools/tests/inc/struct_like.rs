@@ -133,12 +133,10 @@ fn structlike_unit_struct()
   use syn::parse_quote;
   use the_module::struct_like::StructLike;
 
-  let item_struct : syn::ItemStruct = parse_quote!
+  let struct_like : StructLike = parse_quote!
   {
     struct UnitStruct;
   };
-
-  let struct_like = StructLike::from( item_struct );
 
   assert!( matches!( struct_like, StructLike::Unit( _ ) ), "Expected StructLike::Unit variant" );
   assert_eq!( struct_like.ident().to_string(), "UnitStruct", "Struct name mismatch" );
@@ -150,7 +148,7 @@ fn structlike_struct()
   use syn::parse_quote;
   use the_module::struct_like::StructLike;
 
-  let item_struct : syn::ItemStruct = parse_quote!
+  let struct_like : StructLike = parse_quote!
   {
     struct RegularStruct
     {
@@ -158,8 +156,6 @@ fn structlike_struct()
       b : String,
     }
   };
-
-  let struct_like = StructLike::from( item_struct );
 
   assert!( matches!( struct_like, StructLike::Struct( _ ) ), "Expected StructLike::Struct variant" );
   assert_eq!( struct_like.ident().to_string(), "RegularStruct", "Struct name mismatch" );
@@ -172,7 +168,7 @@ fn structlike_enum()
   use syn::parse_quote;
   use the_module::struct_like::StructLike;
 
-  let item_enum : syn::ItemEnum = parse_quote!
+  let struct_like : StructLike = parse_quote!
   {
     enum TestEnum
     {
@@ -181,8 +177,6 @@ fn structlike_enum()
     }
   };
 
-  let struct_like = StructLike::from( item_enum );
-
   assert!( matches!( struct_like, StructLike::Enum( _ ) ), "Expected StructLike::Enum variant" );
   assert_eq!( struct_like.ident().to_string(), "TestEnum", "Enum name mismatch" );
 }
@@ -190,7 +184,10 @@ fn structlike_enum()
 #[ test ]
 fn test_field_or_variant_field()
 {
-  let input : proc_macro2::TokenStream = quote::quote!
+  use syn::parse_quote;
+  use the_module::struct_like::{ FieldOrVariant, StructLike };
+
+  let input : StructLike = parse_quote!
   {
     struct MyStruct
     {
@@ -198,16 +195,12 @@ fn test_field_or_variant_field()
     }
   };
 
-  let ast : syn::ItemStruct = syn::parse2( input ).unwrap();
-  let field = ast.fields.iter().next().unwrap();
-  let field_or_variant = the_module::struct_like::FieldOrVariant::from( field );
+  let field = input.fields().next().expect( "Expected at least one field" );
+  let field_or_variant = FieldOrVariant::from( field );
 
   match field_or_variant
   {
-    the_module::struct_like::FieldOrVariant::Field( f ) =>
-    {
-      assert_eq!( f.ty, syn::parse_quote!( i32 ) );
-    },
+    FieldOrVariant::Field( f ) => assert_eq!( f.ty, parse_quote!( i32 ) ),
     _ => panic!( "Expected Field variant" ),
   }
 }
@@ -215,7 +208,10 @@ fn test_field_or_variant_field()
 #[ test ]
 fn test_field_or_variant_variant()
 {
-  let input : proc_macro2::TokenStream = quote::quote!
+  use syn::parse_quote;
+  use the_module::struct_like::{ FieldOrVariant, StructLike };
+
+  let input : StructLike = parse_quote!
   {
     enum MyEnum
     {
@@ -223,15 +219,14 @@ fn test_field_or_variant_variant()
     }
   };
 
-  let ast : syn::ItemEnum = syn::parse2( input ).unwrap();
-  let variant = ast.variants.iter().next().unwrap();
-  let field_or_variant = the_module::struct_like::FieldOrVariant::from( variant );
+  let variant = input.elements().next().expect( "Expected at least one variant" );
+  let field_or_variant = FieldOrVariant::from( variant );
 
   match field_or_variant
   {
-    the_module::struct_like::FieldOrVariant::Variant( v ) =>
+    FieldOrVariant::Variant( v ) =>
     {
-      let exp : syn::Ident = syn::parse_quote!( Variant1 );
+      let exp : syn::Ident = parse_quote!( Variant1 );
       assert_eq!( v.ident, exp );
     },
     _ => panic!( "Expected Variant variant" ),
@@ -241,7 +236,10 @@ fn test_field_or_variant_variant()
 #[ test ]
 fn test_typ()
 {
-  let input : proc_macro2::TokenStream = quote::quote!
+  use syn::parse_quote;
+  use the_module::struct_like::{ FieldOrVariant, StructLike };
+
+  let input : StructLike = parse_quote!
   {
     struct MyStruct
     {
@@ -249,16 +247,18 @@ fn test_typ()
     }
   };
 
-  let ast : syn::ItemStruct = syn::parse2( input ).unwrap();
-  let field = ast.fields.iter().next().unwrap();
-  let field_or_variant = the_module::struct_like::FieldOrVariant::from( field );
-  assert_eq!( field_or_variant.typ(), Some( &syn::parse_quote!( i32 ) ) );
+  let field = input.fields().next().expect( "Expected at least one field" );
+  let field_or_variant = FieldOrVariant::from( field );
+  assert_eq!( field_or_variant.typ(), Some( &parse_quote!( i32 ) ) );
 }
 
 #[ test ]
 fn test_attrs()
 {
-  let input : proc_macro2::TokenStream = quote::quote!
+  use syn::parse_quote;
+  use the_module::struct_like::{ FieldOrVariant, StructLike };
+
+  let input : StructLike = parse_quote!
   {
     struct MyStruct
     {
@@ -267,16 +267,18 @@ fn test_attrs()
     }
   };
 
-  let ast : syn::ItemStruct = syn::parse2( input ).unwrap();
-  let field = ast.fields.iter().next().unwrap();
-  let field_or_variant = the_module::struct_like::FieldOrVariant::from( field );
+  let field = input.fields().next().expect( "Expected at least one field" );
+  let field_or_variant = FieldOrVariant::from( field );
   assert!( field_or_variant.attrs().iter().any( | attr | attr.path().is_ident( "some_attr" ) ) );
 }
 
 #[ test ]
 fn test_vis()
 {
-  let input : proc_macro2::TokenStream = quote::quote!
+  use syn::parse_quote;
+  use the_module::struct_like::{ FieldOrVariant, StructLike };
+
+  let input : StructLike = parse_quote!
   {
     struct MyStruct
     {
@@ -284,16 +286,19 @@ fn test_vis()
     }
   };
 
-  let ast : syn::ItemStruct = syn::parse2( input ).unwrap();
-  let field = ast.fields.iter().next().unwrap();
-  let field_or_variant = the_module::struct_like::FieldOrVariant::from( field );
+  let field = input.fields().next().expect( "Expected at least one field" );
+  let field_or_variant = FieldOrVariant::from( field );
   assert!( matches!( field_or_variant.vis(), Some( syn::Visibility::Public( _ ) ) ) );
 }
 
 #[ test ]
 fn test_ident()
 {
-  let input : proc_macro2::TokenStream = quote::quote!
+  use the_module::struct_like::StructLike;
+  use syn::parse_quote;
+  use the_module::struct_like::FieldOrVariant;
+
+  let input : StructLike = parse_quote!
   {
     struct MyStruct
     {
@@ -301,15 +306,21 @@ fn test_ident()
     }
   };
 
-  let ast : syn::ItemStruct = syn::parse2( input ).unwrap();
-  let field = ast.fields.iter().next().unwrap();
-  let field_or_variant = the_module::struct_like::FieldOrVariant::from( field );
+  // Extract the first field using the fields iterator from StructLike
+  let field = input.fields().next().expect( "Expected at least one field" );
+
+  let field_or_variant = FieldOrVariant::from( field );
   assert_eq!( field_or_variant.ident().unwrap(), "my_field" );
 }
+
+
+//
 
 #[ test ]
 fn struct_with_attrs()
 {
+  use the_module::struct_like::StructLike;
+
   let input : proc_macro2::TokenStream = quote::quote!
   {
     #[ derive( From, InnerFrom, Display, FromStr, PartialEq, Debug ) ]
@@ -321,8 +332,8 @@ fn struct_with_attrs()
     }
   };
 
-  let ast : syn::ItemStruct = syn::parse2( input ).unwrap();
-  let field = ast.fields.iter().next().unwrap();
+  let ast : StructLike = syn::parse2( input ).unwrap();
+  let field = ast.fields().next().unwrap();
   let field_or_variant = the_module::struct_like::FieldOrVariant::from( field );
   assert_eq!( field_or_variant.ident().unwrap(), "a" );
 }
