@@ -19,9 +19,9 @@ fn sample()
     b : i32,
   }
 
-  // Implement the `From_1` trait for `MyStruct`, which allows constructing a `MyStruct` instance
+  // Implement the `From1` trait for `MyStruct`, which allows constructing a `MyStruct` instance
   // from a single `i32` value by assigning it to both `a` and `b` fields.
-  impl From_1< i32 > for MyStruct
+  impl From1< i32 > for MyStruct
   {
     fn from_1( a : i32 ) -> Self { Self { a, b : a } }
   }

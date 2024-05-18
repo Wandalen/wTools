@@ -22,19 +22,19 @@ impl the_module::From_0 for Struct1
   }
 }
 
-impl the_module::From_1< i32 > for Struct1
+impl the_module::From1< i32 > for Struct1
 {
   fn from_1( a : i32 ) -> Self { Self{ a, b : a, c : a, d : a } }
 }
 
-//   impl the_module::From_2< i32, i32 > for Struct1
+//   impl the_module::From2< i32, i32 > for Struct1
 //   {
-//     fn from_2( a : i32, b : i32 ) -> Self { Self{ a, b, c : b, d : b } }
+//     fn from2( a : i32, b : i32 ) -> Self { Self{ a, b, c : b, d : b } }
 //   }
 //
-//   impl the_module::From_3< i32, i32, i32 > for Struct1
+//   impl the_module::From3< i32, i32, i32 > for Struct1
 //   {
-//     fn from_3( a : i32, b : i32, c : i32 ) -> Self { Self{ a, b, c, d : c } }
+//     fn from3( a : i32, b : i32, c : i32 ) -> Self { Self{ a, b, c, d : c } }
 //   }
 
 include!( "./only_test/from4_named.rs" );

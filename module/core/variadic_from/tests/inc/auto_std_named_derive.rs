@@ -11,7 +11,7 @@ struct Struct1
   b : i32,
 }
 
-// Standard From and Into auto derive From_1 and To_1.
+// Standard From and Into auto derive From1 and To_1.
 
 include!( "./only_test/from2_named.rs" );
 include!( "./only_test/from2_std_named.rs" );

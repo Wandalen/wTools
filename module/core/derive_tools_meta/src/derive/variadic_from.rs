@@ -48,13 +48,18 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
     syn::Fields::Named( _ ) =>
     {
 
+      // if len == 1
+      // {
+      //   panic!( "not tested" );
+      // }
+      // else
       if len <= 3
       {
         qt!
         {
 
           #[ automatically_derived ]
-          // impl variadic_from::From_2< i32 > for StructNamedFields
+          // impl variadic_from::From2< i32 > for StructNamedFields
           impl variadic_from::#from_trait< #( #types )* > for #item_name
           {
             // fn from_1( a : i32, b : i32 ) -> Self
@@ -77,7 +82,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
 
           impl From< ( #( #types )* ) > for #item_name
           {
-            /// Reuse From_1.
+            /// Reuse From1.
             #[ inline( always ) ]
             fn from( src : ( #( #types )* ) ) -> Self
             {
@@ -96,13 +101,18 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
     syn::Fields::Unnamed( _ ) =>
     {
 
+      // if len == 1
+      // {
+      //   panic!( "not tested" );
+      // }
+      // else
       if len <= 3
       {
         qt!
         {
 
           #[ automatically_derived ]
-          // impl variadic_from::From_2< i32 > for StructNamedFields
+          // impl variadic_from::From2< i32 > for StructNamedFields
           impl variadic_from::#from_trait< #( #types )* > for #item_name
           {
             // fn from_1( a : i32, b : i32 ) -> Self
@@ -125,7 +135,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
 
           impl From< ( #( #types )* ) > for #item_name
           {
-            /// Reuse From_1.
+            /// Reuse From1.
             #[ inline( always ) ]
             fn from( src : ( #( #types )* ) ) -> Self
             {

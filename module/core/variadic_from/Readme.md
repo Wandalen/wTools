@@ -38,10 +38,10 @@ fn main()
     b : i32,
   }
 
-  // Implement the `From_1` trait for `MyStruct`, which allows constructing a `MyStruct` instance
+  // Implement the `From1` trait for `MyStruct`, which allows constructing a `MyStruct` instance
   // from a single `i32` value by assigning it to both `a` and `b` fields.
 
-  impl From_1< i32 > for MyStruct
+  impl From1< i32 > for MyStruct
   {
     fn from_1( a : i32 ) -> Self { Self { a, b : a } }
   }
@@ -88,18 +88,18 @@ fn main()
     b : i32,
   }
 
-  // Implement the `From_1` trait for `MyStruct`, which allows constructing a `MyStruct` instance
+  // Implement the `From1` trait for `MyStruct`, which allows constructing a `MyStruct` instance
   // from a single `i32` value by assigning it to both `a` and `b` fields.
-  impl From_1< i32 > for MyStruct
+  impl From1< i32 > for MyStruct
   {
     fn from_1( a : i32 ) -> Self { Self { a, b : a } }
   }
 
   // == begin of generated
 
-  impl From_2< i32, i32 > for MyStruct
+  impl From2< i32, i32 > for MyStruct
   {
-    fn from_2( a : i32, b : i32 ) -> Self { Self{ a : a, b : b } }
+    fn from2( a : i32, b : i32 ) -> Self { Self{ a : a, b : b } }
   }
 
   impl From< ( i32, i32 ) > for MyStruct
@@ -107,7 +107,7 @@ fn main()
     #[ inline( always ) ]
     fn from( ( a, b ) : ( i32, i32 ) ) -> Self
     {
-      Self::from_2( a, b )
+      Self::from2( a, b )
     }
   }
 

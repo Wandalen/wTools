@@ -46,7 +46,7 @@ Macro [types](https://docs.rs/type_constructor/latest/type_constructor/types/mac
 
 ### Basic Use Case :: make - variadic constructor
 
-Implement traits [From_0], [From_1] up to MakeN to provide the interface to construct your structure with a different set of arguments.
+Implement traits [From_0], [From1] up to MakeN to provide the interface to construct your structure with a different set of arguments.
 In this example structure, Struct1 could be constructed either without arguments, with a single argument, or with two arguments.
 - Constructor without arguments fills fields with zero.
 - Constructor with a single argument sets both fields to the value of the argument.
@@ -74,7 +74,7 @@ In this example structure, Struct1 could be constructed either without arguments
     }
   }
 
-  impl From_1< i32 > for Struct1
+  impl From1< i32 > for Struct1
   {
     fn from_1( val : i32 ) -> Self
     {
@@ -82,9 +82,9 @@ In this example structure, Struct1 could be constructed either without arguments
     }
   }
 
-  impl From_2< i32, i32 > for Struct1
+  impl From2< i32, i32 > for Struct1
   {
-    fn from_2( val1 : i32, val2 : i32 ) -> Self
+    fn from2( val1 : i32, val2 : i32 ) -> Self
     {
       Self { a : val1, b : val2 }
     }
