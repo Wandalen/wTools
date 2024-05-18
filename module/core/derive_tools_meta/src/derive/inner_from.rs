@@ -1,15 +1,18 @@
 
 use super::*;
-use macro_tools::{ item_struct, Result };
+use macro_tools::{ attr, diagm, item_struct, Result };
 
 //
 
 pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
+  let original_input = input.clone();
   let parsed = syn::parse::< syn::ItemStruct >( input )?;
+  let has_debug = attr::has_debug( parsed.attrs.iter() )?;
+  let item_name = &parsed.ident;
+
   let mut field_types = item_struct::field_types( &parsed );
   let field_names = item_struct::field_names( &parsed );
-  let item_name = parsed.ident.clone();
   let result =
   match ( field_types.len(), field_names )
   {
@@ -44,6 +47,13 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
       from_impl_multiple_fields( item_name, field_types, &params )
     }
   };
+
+  if has_debug
+  {
+    let about = format!( "derive : InnerFrom\nstructure : {item_name}" );
+    diag::report_print( about, &original_input, &result );
+  }
+
   Ok( result )
 }
 

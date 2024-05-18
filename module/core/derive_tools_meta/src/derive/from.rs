@@ -1,5 +1,5 @@
 use super::*;
-use macro_tools::{ item_struct, struct_like, Result };
+use macro_tools::{ attr, diag, item_struct, struct_like, Result };
 
 // xxx2 : get complete From for enums
 
@@ -8,11 +8,13 @@ use macro_tools::{ item_struct, struct_like, Result };
 pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   // let parsed = syn::parse::< struct_like::StructLike >( input )?;
+  let original_input = input.clone();
   let parsed = syn::parse::< syn::ItemStruct >( input )?;
+  let has_debug = attr::has_debug( parsed.attrs.iter() )?;
+  let item_name = &parsed.ident;
 
   let mut field_types = item_struct::field_types( &parsed );
   let field_names = item_struct::field_names( &parsed );
-  let item_name = &parsed.ident;
 
   let result = match ( field_types.clone().count(), field_names )
   {
@@ -27,6 +29,12 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
     ( _, None ) =>
     generate_from_multiple_fields( field_types, item_name ),
   };
+
+  if has_debug
+  {
+    let about = format!( "derive : From\nstructure : {item_name}" );
+    diag::report_print( about, &original_input, &result );
+  }
 
   Ok( result )
 }

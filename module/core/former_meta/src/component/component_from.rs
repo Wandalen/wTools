@@ -8,6 +8,7 @@ pub fn component_from( input : proc_macro::TokenStream ) -> Result< proc_macro2:
   let original_input = input.clone();
   let parsed = syn::parse::< syn::ItemStruct >( input )?;
   let has_debug = attr::has_debug( parsed.attrs.iter() )?;
+  let item_name = &parsed.ident;
 
   let for_field = parsed.fields.iter().map( | field |
   {
@@ -22,7 +23,7 @@ pub fn component_from( input : proc_macro::TokenStream ) -> Result< proc_macro2:
 
   if has_debug
   {
-    let about = format!( "derive : ComponentFrom\nstructure : {0}", &parsed.ident );
+    let about = format!( "derive : ComponentFrom\nstructure : {item_name}" );
     diag::report_print( about, &original_input, &result );
   }
 
