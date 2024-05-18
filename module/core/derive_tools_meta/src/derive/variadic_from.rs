@@ -14,31 +14,6 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
   let has_debug = attr::has_debug( parsed.attrs.iter() )?;
   let item_name = &parsed.ident;
 
-  let
-  (
-    types,
-    fn_params,
-    src_into_vars,
-    vars
-  )
-  :
-  ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
-  = parsed.fields.iter().map_result( | field |
-  {
-    let ident = field.ident.clone().ok_or_else( || syn_err!( parsed.span(), "Fields should be named" ) )?;
-    let ty = field.ty.clone();
-    Result::Ok
-    ((
-      qt!{ #ty, },
-      qt!{ #ident : #ty, },
-      qt!{ let #ident = ::core::convert::Into::into( #ident ); },
-      qt!{ #ident, },
-    ))
-  })?
-  .into_iter()
-  .multiunzip();
-
-  // let l = format!( "{}", parsed.fields.len() );
   let len = parsed.fields.len();
   let from_trait = format_ident!( "From_{len}",  );
   let from_method = format_ident!( "from_{len}" );
@@ -48,34 +23,29 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
     syn::Fields::Named( _ ) =>
     {
 
-//       let
-//       (
-//         types,
-//         fn_params,
-//         src_into_vars,
-//         vars
-//       )
-//       :
-//       ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
-//       = parsed.fields.iter().map_result( | field |
-//       {
-//         let ident = field.ident.clone().ok_or_else( || syn_err!( parsed.span(), "Fields should be named" ) )?;
-//         let ty = field.ty.clone();
-//         Result::Ok
-//         ((
-//           qt!{ #ty, },
-//           qt!{ #ident : #ty, },
-//           qt!{ let #ident = ::core::convert::Into::into( #ident ); },
-//           qt!{ #ident, },
-//         ))
-//       })?
-//       .into_iter()
-//       .multiunzip();
-//
-//       // let l = format!( "{}", parsed.fields.len() );
-//       let len = parsed.fields.len();
-//       let from_trait = format_ident!( "From_{len}",  );
-//       let from_method = format_ident!( "from_{len}" );
+      let
+      (
+        types,
+        fn_params,
+        src_into_vars,
+        vars
+      )
+      :
+      ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
+      = parsed.fields.iter().map_result( | field |
+      {
+        let ident = field.ident.clone().ok_or_else( || syn_err!( parsed.span(), "Fields should be named" ) )?;
+        let ty = field.ty.clone();
+        Result::Ok
+        ((
+          qt!{ #ty, },
+          qt!{ #ident : #ty, },
+          qt!{ let #ident = ::core::convert::Into::into( #ident ); },
+          qt!{ #ident, },
+        ))
+      })?
+      .into_iter()
+      .multiunzip();
 
       if len <= 3
       {
@@ -126,28 +96,32 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
     syn::Fields::Unnamed( _ ) =>
     {
 
-      // let mut counter = 0;
-      // let
-      // (
-      //   vars_assing_default,
-      //   src_into_vars,
-      //   vars
-      // ) : ( Vec< _ >, Vec< _ >, Vec< _ > ) = parsed.fields.iter().map_result( | _field |
-      // {
-      //   let ident = format_ident!( "_{}", format!( "{counter}" ) );
-      //   counter += 1;
-      //   Result::Ok
-      //   ((
-      //     qt!{ let #ident = ::core::default::Default::default(); },
-      //     qt!{ let #ident = ::core::convert::Into::into( #ident ); },
-      //     qt!{ #ident, },
-      //   ))
-      // })?
-      // .into_iter().multiunzip();
 
-      // let len = parsed.fields.len();
-      // let from_trait = format_ident!( "From_{len}",  );
-      // let from_method = format_ident!( "from_{len}" );
+      let
+      (
+        types,
+        fn_params,
+        src_into_vars,
+        vars
+      )
+      :
+      ( Vec< _ >, Vec< _ >, Vec< _ >, Vec< _ > )
+      = parsed.fields.iter().enumerate().map_result( | ( i, field ) |
+      {
+        // let ident = field.ident.clone().ok_or_else( || syn_err!( parsed.span(), "Fields should be named" ) )?;
+        let ident = format_ident!( "_{i}" );
+        let ty = field.ty.clone();
+        Result::Ok
+        ((
+          qt!{ #ty, },
+          qt!{ #ident : #ty, },
+          qt!{ let #ident = ::core::convert::Into::into( #ident ); },
+          qt!{ #ident, },
+        ))
+      })?
+      .into_iter()
+      .multiunzip();
+      // xxx : reduce maybe
 
       if len <= 3
       {

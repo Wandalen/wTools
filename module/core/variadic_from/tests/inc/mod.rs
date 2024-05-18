@@ -17,9 +17,9 @@ mod auto_std_named_manual;
 // xxx : fix
 
 #[ cfg( all( feature = "type_variadic_from" ) ) ]
-mod from4_named_manual_beyond;
+mod from4_beyond_named;
 #[ cfg( all( feature = "type_variadic_from" ) ) ]
-mod from4_unnamed_manual_beyond;
+mod from4_beyond_unnamed;
 
 #[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
 mod sample;
