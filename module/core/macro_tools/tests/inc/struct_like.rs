@@ -306,3 +306,23 @@ fn test_ident()
   let field_or_variant = the_module::struct_like::FieldOrVariant::from( field );
   assert_eq!( field_or_variant.ident().unwrap(), "my_field" );
 }
+
+#[ test ]
+fn struct_with_attrs()
+{
+  let input : proc_macro2::TokenStream = quote::quote!
+  {
+    #[ derive( From, InnerFrom, Display, FromStr, PartialEq, Debug ) ]
+    #[ display( "{a}-{b}" ) ]
+    struct Struct1
+    {
+      a : i32,
+      b : i32,
+    }
+  };
+
+  let ast : syn::ItemStruct = syn::parse2( input ).unwrap();
+  let field = ast.fields.iter().next().unwrap();
+  let field_or_variant = the_module::struct_like::FieldOrVariant::from( field );
+  assert_eq!( field_or_variant.ident().unwrap(), "a" );
+}
