@@ -13,6 +13,11 @@ fn sample()
     b : i32,
   }
 
+  impl From_1< i32 > for MyStruct
+  {
+    fn from_1( a : i32 ) -> Self { Self{ a, b : a } }
+  }
+
   let got : MyStruct = from!();
   let exp = MyStruct { a : 0, b : 0 };
   assert_eq!( got, exp );
