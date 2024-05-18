@@ -1,8 +1,8 @@
 use super::*;
 
 // xxx
-// #[ cfg( any( feature = "derive_clone_dyn_use_std", feature = "derive_clone_dyn_use_alloc" ) ) ]
-// mod clone_dyn_test;
+#[ cfg( any( feature = "derive_clone_dyn_use_std", feature = "derive_clone_dyn_use_alloc" ) ) ]
+mod clone_dyn_test;
 
 // xxx
 mod all_manual_test;
