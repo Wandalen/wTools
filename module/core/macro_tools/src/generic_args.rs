@@ -1,7 +1,6 @@
 //!
-//! Manipulations on generic arguments.
+//! This module provides utilities to handle and manipulate generic arguments using the `syn` crate. It includes traits and functions for transforming, merging, and managing generic parameters within procedural macros, enabling seamless syntactic analysis and code generation.
 //!
-//! xxx : update documentation of file
 
 /// Internal namespace.
 pub( crate ) mod private
@@ -148,6 +147,11 @@ pub use protected::*;
 /// Protected namespace of the module.
 pub mod protected
 {
+
+  //!
+  //! This module provides utilities to handle and manipulate generic arguments using the `syn` crate. It includes traits and functions for transforming, merging, and managing generic parameters within procedural macros, enabling seamless syntactic analysis and code generation.
+  //!
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
