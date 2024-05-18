@@ -13,5 +13,5 @@ struct StructNamedFields
 
 // Standard From and Into auto derive From_1 and To_1.
 
-include!( "./only_test/variadic_from2_named.rs" );
-include!( "./only_test/variadic_std_from2_named.rs" );
+include!( "./only_test/from2_named.rs" );
+include!( "./only_test/from2_std_named.rs" );
