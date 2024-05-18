@@ -75,6 +75,12 @@ fn variant_generate
 {
   let variant_name = &variant.ident;
   let fields = &variant.fields;
+
+  if fields.len() <= 0
+  {
+    return qt!{}
+  }
+
   qt!
   {
     #[ automatically_derived ]
