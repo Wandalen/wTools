@@ -55,22 +55,6 @@ pub( crate ) mod private
   impl< 'a > FieldOrVariant< 'a >
   {
 
-    /// Returns an iterator over elements of the item.
-    pub fn typ( &self ) -> Option< &syn::Type >
-    {
-      match self
-      {
-        FieldOrVariant::Field( e ) =>
-        {
-          Some( &e.ty )
-        },
-        FieldOrVariant::Variant( _e ) =>
-        {
-          None
-        },
-      }
-    }
-
     /// Returns a reference to the attributes of the item.
     pub fn attrs( &self ) -> &Vec< syn::Attribute >
     {
@@ -111,13 +95,19 @@ pub( crate ) mod private
       }
     }
 
-    /// Returns a reference to the type of the item.
-    pub fn ty( &self ) -> Option< &syn::Type >
+    /// Returns an iterator over elements of the item.
+    pub fn typ( &self ) -> Option< &syn::Type >
     {
       match self
       {
-        FieldOrVariant::Field( e ) => Some( &e.ty ),
-        FieldOrVariant::Variant( _ ) => None,
+        FieldOrVariant::Field( e ) =>
+        {
+          Some( &e.ty )
+        },
+        FieldOrVariant::Variant( _e ) =>
+        {
+          None
+        },
       }
     }
 

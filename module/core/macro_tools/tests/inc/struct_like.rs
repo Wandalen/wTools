@@ -339,10 +339,36 @@ fn struct_with_attrs()
 
 //
 
+// #[ test ]
+// fn struct_with_attrs2()
+// {
+//   use the_module::struct_like::StructLike;
+//
+//   let input : proc_macro2::TokenStream = quote::quote!
+//   {
+//     #[ derive( Debug, PartialEq, the_module::From ) ]
+//     #[ debug ]
+//     pub enum GetData
+//     {
+//       #[ allow( dead_code ) ]
+//       Nothing,
+//       FromString( String ),
+//       FromBin( &'static [ u8 ] ),
+//     }
+//   };
+//
+//   let ast : StructLike = syn::parse2( input ).unwrap();
+//   let field = ast.elements().next().unwrap();
+//   let field_or_variant = the_module::struct_like::FieldOrVariant::from( field );
+//   assert_eq!( field_or_variant.ident().unwrap().to_string(), "Nothing" );
+//
+// }
+
 #[ test ]
 fn struct_with_attrs2()
 {
-  use the_module::struct_like::StructLike;
+  use quote::ToTokens;
+  use the_module::struct_like::{ StructLike, FieldOrVariant };
 
   let input : proc_macro2::TokenStream = quote::quote!
   {
@@ -353,13 +379,54 @@ fn struct_with_attrs2()
       #[ allow( dead_code ) ]
       Nothing,
       FromString( String ),
-      FromBin( &'static [ u8 ] ),
+      FromBin( & 'static [u8] ),
     }
   };
 
+  // Parse the input into a StructLike enum
   let ast : StructLike = syn::parse2( input ).unwrap();
-  let field = ast.elements().next().unwrap();
-  let field_or_variant = the_module::struct_like::FieldOrVariant::from( field );
-  assert_eq!( field_or_variant.ident().unwrap().to_string(), "Nothing" );
 
+  // Ensure the parsed item is an enum
+  assert!( matches!( ast, StructLike::Enum( _ ) ), "Expected StructLike::Enum variant" );
+
+  // Check the attributes of the enum
+  let attrs = ast.attrs();
+  assert!( attrs.iter().any( | attr | attr.path().is_ident( "derive" ) ), "Missing derive attribute" );
+  assert!( attrs.iter().any( | attr | attr.path().is_ident( "debug" ) ), "Missing debug attribute" );
+
+  // Check the visibility of the enum
+  assert!( matches!( ast.vis(), syn::Visibility::Public( _ ) ), "Expected public visibility" );
+
+  // Check all elements
+  let elements : Vec< FieldOrVariant< '_ > > = ast.elements().map( FieldOrVariant::from ).collect();
+
+  // Check the first variant
+  let first_field_or_variant = &elements[ 0 ];
+  assert_eq!( first_field_or_variant.ident().unwrap().to_string(), "Nothing" );
+
+  // Check the attributes of the first variant
+  let variant_attrs = first_field_or_variant.attrs();
+  assert!( variant_attrs.iter().any( | attr | attr.path().is_ident( "allow" ) ), "Missing allow attribute" );
+
+  // Check all variant names
+  let variant_names : Vec< String > = elements.iter().map( | elem | elem.ident().unwrap().to_string() ).collect();
+  assert_eq!( variant_names, vec![ "Nothing", "FromString", "FromBin" ], "Variant names do not match" );
+
+  // Check the types of the variants
+  let variant_types : Vec< Option< &syn::Type > > = elements.iter().map( | elem | elem.typ() ).collect();
+
+  // let variant_fields: Vec< syn::Fields > = ast.elements().map( | e | e.fields() ).collect();
+  let variant_fields : Vec< syn::Fields > = elements.iter().filter_map( | elem | elem.fields().cloned() ).collect();
+  // dbg!( &variant_types );
+
+  assert_eq!( variant_types.len(), 3, "Expected three variants" );
+  assert!( variant_types[ 0 ].is_none(), "First variant should have no type" );
+
+  assert!( variant_types[ 0 ].is_none() );
+  assert!( variant_types[ 1 ].is_none() );
+  assert!( variant_types[ 2 ].is_none() );
+
+  // tree_print!( variant_fields[1] );
+  assert_eq!( variant_fields[ 1 ].to_token_stream().to_string(), "(String)", "Second variant should be of type String" );
+  assert_eq!( variant_fields[ 2 ].to_token_stream().to_string(), "(& 'static [u8])", "Third variant should be of type & 'static [u8]" );
 }

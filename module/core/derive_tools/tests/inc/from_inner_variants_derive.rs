@@ -11,23 +11,29 @@ pub enum GetData
   FromBin( &'static [ u8 ] ),
 }
 
-// impl From< String > for GetData
-// {
-//   #[ inline ]
-//   fn from( src : String ) -> Self
-//   {
-//     Self::FromString( src )
-//   }
-// }
-//
-// impl From< &'static [ u8 ] > for GetData
-// {
-//   #[ inline ]
-//   fn from( src : &'static [ u8 ] ) -> Self
-//   {
-//     Self::FromBin( src )
-//   }
-// }
+// == begin of generated
+
+#[ automatically_derived ]
+impl From< (String) > for GetData
+{
+  #[ inline ]
+  fn from( src : (String) ) -> Self
+  {
+    Self::FromString( src )
+  }
+}
+
+#[ automatically_derived ]
+impl From< ( & 'static [u8] ) > for GetData
+{
+  #[ inline ]
+  fn from( src : ( & 'static [u8] ) ) -> Self
+  {
+    Self::FromBin( src )
+  }
+}
+
+// == end of generated
 
 include!( "./only_test/from_inner_variants.rs" );
 
