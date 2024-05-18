@@ -2,7 +2,7 @@
 use super::*;
 
 #[ derive( Debug, PartialEq ) ]
-struct StructNamedFields
+struct Struct1
 {
   a : i32,
   b : i32,
@@ -10,7 +10,7 @@ struct StructNamedFields
   d : i32,
 }
 
-impl the_module::From_0 for StructNamedFields
+impl the_module::From_0 for Struct1
 {
   fn from_0() -> Self
   {
@@ -22,17 +22,17 @@ impl the_module::From_0 for StructNamedFields
   }
 }
 
-impl the_module::From_1< i32 > for StructNamedFields
+impl the_module::From_1< i32 > for Struct1
 {
   fn from_1( a : i32 ) -> Self { Self{ a, b : a, c : a, d : a } }
 }
 
-//   impl the_module::From_2< i32, i32 > for StructNamedFields
+//   impl the_module::From_2< i32, i32 > for Struct1
 //   {
 //     fn from_2( a : i32, b : i32 ) -> Self { Self{ a, b, c : b, d : b } }
 //   }
 //
-//   impl the_module::From_3< i32, i32, i32 > for StructNamedFields
+//   impl the_module::From_3< i32, i32, i32 > for Struct1
 //   {
 //     fn from_3( a : i32, b : i32, c : i32 ) -> Self { Self{ a, b, c, d : c } }
 //   }

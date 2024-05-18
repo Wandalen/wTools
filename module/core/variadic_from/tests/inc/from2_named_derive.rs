@@ -4,7 +4,7 @@ use super::*;
 use the_module::prelude::*;
 
 #[ derive( Debug, PartialEq, the_module::VariadicFrom ) ]
-struct StructNamedFields
+struct Struct1
 {
   a : i32,
   b : i32,

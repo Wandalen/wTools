@@ -5,7 +5,7 @@ use super::*;
 use the_module::exposed::*;
 
 #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
-struct StructNamedFields
+struct Struct1
 {
   a : i32,
   b : i32,
