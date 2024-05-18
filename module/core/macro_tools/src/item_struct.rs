@@ -11,15 +11,15 @@ pub( crate ) mod private
   // xxx : iterator, not vector
 
   /// Extracts the types of each field into a vector.
-  pub fn field_types< 'a >( t : &'a syn::ItemStruct ) -> impl IterTrait< 'a, syn::Type >
+  pub fn field_types< 'a >( t : &'a syn::ItemStruct ) -> impl IterTrait< 'a, syn::Type > + Clone
   {
     t.fields.iter().map( | field | &field.ty )
   }
 
 
   /// Retrieves the names of each field, if they exist.
-  pub fn field_names( t : &syn::ItemStruct ) -> Option< Box< dyn Iterator< Item = &syn::Ident > + '_ > >
-  // pub fn field_names( t : &syn::ItemStruct ) -> Option< Box< dyn for< 'a > IterTrait< 'a, syn::Ident > + '_ > >
+  // pub fn field_names( t : &syn::ItemStruct ) -> Option< Box< dyn Iterator< Item = &syn::Ident > + '_ > >
+  pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> Option< Box< dyn IterTrait< 'a, syn::Ident > + '_ > >
   // xxx : + Clone + DoubleEndedIterator + ExactSizeIterator
   {
     match &t.fields
