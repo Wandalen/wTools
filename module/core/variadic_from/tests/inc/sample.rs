@@ -1,6 +1,8 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
+/// This test function validates the `VariadicFrom` trait implementation for the `MyStruct` struct.
+/// It checks the conversion from tuples and individual values into an instance of `MyStruct`.
 #[ test ]
 fn sample()
 {
@@ -15,7 +17,7 @@ fn sample()
 
   impl From_1< i32 > for MyStruct
   {
-    fn from_1( a : i32 ) -> Self { Self{ a, b : a } }
+    fn from_1( a : i32 ) -> Self { Self { a, b : a } }
   }
 
   let got : MyStruct = from!();
@@ -39,5 +41,3 @@ fn sample()
   assert_eq!( got, exp );
 
 }
-
-// qqq : xxx : add to examples and to readme
