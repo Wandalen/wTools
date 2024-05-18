@@ -5,8 +5,10 @@ mod from2_named_manual;
 #[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
 mod from2_named_derive;
 
+#[ cfg( all( feature = "type_variadic_from" ) ) ]
+mod from2_unnamed_manual;
 // #[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
-// mod from2_unnamed;
+// mod from2_unnamed_derive;
 // xxx : fix
 
 #[ cfg( all( feature = "type_variadic_from" ) ) ]
