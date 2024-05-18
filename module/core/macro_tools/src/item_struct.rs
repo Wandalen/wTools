@@ -7,8 +7,6 @@ pub( crate ) mod private
 {
   use crate::*;
 
-  // xxx : make a macro ident_format!()
-
   /// Extracts the types of each field into a vector.
   pub fn field_types< 'a >( t : &'a syn::ItemStruct ) -> impl IterTrait< 'a, syn::Type > + Clone
   {

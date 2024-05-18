@@ -331,6 +331,7 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::private::
   {
+    AsMuchAsPossibleNoDelimiter,
     Pair,
     Many,
   };
@@ -343,6 +344,5 @@ pub mod prelude
   #[ allow( unused_imports ) ]
   pub use super::private::
   {
-    AsMuchAsPossibleNoDelimiter,
   };
 }
