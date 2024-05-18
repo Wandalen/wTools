@@ -9,7 +9,7 @@ pub( crate ) mod private
 
   /// Trait that encapsulates an iterator with specific characteristics, tailored for use with the `syn` crate.
   ///
-  /// The `IterTrait` trait is designed to represent iterators that yield references to items (`&'a T`) within the `syn` crate.
+  /// The `IterTrait` trait is designed to represent iterators that may yield references to items (`&'a T`) within the `syn` crate.
   /// These iterators must also implement the `ExactSizeIterator` and `DoubleEndedIterator` traits.
   /// This combination ensures that the iterator can:
   /// - Provide an exact size hint (`ExactSizeIterator`),
@@ -17,35 +17,55 @@ pub( crate ) mod private
   ///
   pub trait IterTrait< 'a, T : 'a >
   where
-    Self : Iterator< Item = &'a T > + ExactSizeIterator< Item = &'a T > + DoubleEndedIterator,
+    Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
   {
   }
 
   impl< 'a, T : 'a, I > IterTrait< 'a, T > for I
   where
-    Self : Iterator< Item = &'a T > + ExactSizeIterator< Item = &'a T > + DoubleEndedIterator,
-  {
-  }
-
-  /// Trait that encapsulates an iterator with specific characteristics, tailored for use with the `syn` crate.
-  ///
-  /// The `IterTrait2` trait is designed to represent iterators that yield references to items (`&'a T`) within the `syn` crate.
-  /// These iterators must also implement the `ExactSizeIterator` and `DoubleEndedIterator` traits.
-  /// This combination ensures that the iterator can:
-  /// - Provide an exact size hint (`ExactSizeIterator`),
-  /// - Be traversed from both ends (`DoubleEndedIterator`).
-  ///
-  pub trait IterTrait2< T >
-  where
     Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
   {
   }
 
-  impl< T, I > IterTrait2< T > for I
-  where
-    Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
-  {
-  }
+//   /// Trait that encapsulates an iterator with specific characteristics, tailored for use with the `syn` crate.
+//   ///
+//   /// The `IterTrait2` trait is designed to represent iterators that yield references to items (`&'a T`) within the `syn` crate.
+//   /// These iterators must also implement the `ExactSizeIterator` and `DoubleEndedIterator` traits.
+//   /// This combination ensures that the iterator can:
+//   /// - Provide an exact size hint (`ExactSizeIterator`),
+//   /// - Be traversed from both ends (`DoubleEndedIterator`).
+//   ///
+//   pub trait IterTrait2< T >
+//   where
+//     Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
+//   {
+//   }
+//
+//   impl< T, I > IterTrait2< T > for I
+//   where
+//     Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
+//   {
+//   }
+//
+//   /// Trait that encapsulates an iterator with specific characteristics, tailored for use with the `syn` crate.
+//   ///
+//   /// The `IterTrait3` trait is designed to represent iterators that yield references to items (`&'a T`) within the `syn` crate.
+//   /// These iterators must also implement the `ExactSizeIterator` and `DoubleEndedIterator` traits.
+//   /// This combination ensures that the iterator can:
+//   /// - Provide an exact size hint (`ExactSizeIterator`),
+//   /// - Be traversed from both ends (`DoubleEndedIterator`).
+//   ///
+//   pub trait IterTrait3< 'a, T : 'a >
+//   where
+//     Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
+//   {
+//   }
+//
+//   impl< 'a, T : 'a, I > IterTrait3< 'a, T > for I
+//   where
+//     Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
+//   {
+//   }
 
 }
 
@@ -86,7 +106,8 @@ pub mod exposed
   pub use super::private::
   {
     IterTrait,
-    IterTrait2,
+    // IterTrait2,
+    // IterTrait3,
   };
 }
 

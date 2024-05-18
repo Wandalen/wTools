@@ -101,8 +101,8 @@ fn generate_from_single_field
 // qqq : for Petro : document, add example of generated code
 fn generate_from_multiple_fields_named< 'a >
 (
-  field_types : impl macro_tools::IterTrait< 'a, syn::Type >,
-  field_names : Box< dyn macro_tools::IterTrait< 'a, syn::Ident > + '_ >,
+  field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type >,
+  field_names : Box< dyn macro_tools::IterTrait< 'a, &'a syn::Ident > + '_ >,
   item_name : &syn::Ident
 ) -> proc_macro2::TokenStream
 {
@@ -137,8 +137,7 @@ fn generate_from_multiple_fields_named< 'a >
 // qqq  : document, add example of generated code
 fn generate_from_multiple_fields< 'a >
 (
-  field_types : impl macro_tools::IterTrait< 'a, macro_tools::syn::Type >,
-  // field_types : &Vec< &syn::Type >,
+  field_types : impl macro_tools::IterTrait< 'a, &'a macro_tools::syn::Type >,
   item_name : &syn::Ident,
 )
 -> proc_macro2::TokenStream

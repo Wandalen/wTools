@@ -244,11 +244,10 @@ pub( crate ) mod private
   impl StructLike
   {
 
-
     // xxx2 : continue
     /// Returns an iterator over elements of the item.
     // pub fn elements< 'a >( &'a self ) -> impl Iterator< Item = FieldOrVariant< 'a > > + 'a
-    pub fn elements< 'a >( &'a self ) -> impl IterTrait2< FieldOrVariant< 'a > > + 'a
+    pub fn elements< 'a >( &'a self ) -> impl IterTrait< 'a, FieldOrVariant< 'a > > + 'a
     {
       match self
       {
@@ -256,19 +255,19 @@ pub( crate ) mod private
         {
           let empty : Vec< FieldOrVariant< 'a > > = vec![];
           // Box::new( empty.into_iter() ) as Box< dyn Iterator< Item = FieldOrVariant< 'a > > >
-          Box::new( empty.into_iter() ) as Box< dyn IterTrait2< FieldOrVariant< 'a > > >
+          Box::new( empty.into_iter() ) as Box< dyn IterTrait< 'a, FieldOrVariant< 'a > > >
         },
         StructLike::Struct( item ) =>
         {
           let fields = item.fields.iter().map( FieldOrVariant::from );
           // Box::new( fields ) as Box< dyn Iterator< Item = FieldOrVariant< 'a > > >
-          Box::new( fields ) as Box< dyn IterTrait2< FieldOrVariant< 'a > > >
+          Box::new( fields ) as Box< dyn IterTrait< 'a, FieldOrVariant< 'a > > >
         },
         StructLike::Enum( item ) =>
         {
           let variants = item.variants.iter().map( FieldOrVariant::from );
           // Box::new( variants ) as Box< dyn Iterator< Item = FieldOrVariant< 'a > > >
-          Box::new( variants ) as Box< dyn IterTrait2< FieldOrVariant< 'a > > >
+          Box::new( variants ) as Box< dyn IterTrait< 'a, FieldOrVariant< 'a > > >
         },
       }
     }
