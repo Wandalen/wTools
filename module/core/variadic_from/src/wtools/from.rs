@@ -189,6 +189,18 @@ pub( crate ) mod private
 //     fn from_4( arg1 : Arg1, arg2 : Arg2, arg3 : Arg3, arg4 : Arg4 ) -> Self;
 //   }
 
+  // impl< T, E > From< ( E, ) > for T
+  // where
+  //   T : From_1< ( E, ) >,
+  // {
+  //   /// Returns the argument unchanged.
+  //   #[ inline( always ) ]
+  //   fn from( src : T ) -> Self
+  //   {
+  //     Self::from_1( src )
+  //   }
+  // }
+
   // not possible
   //
   // impl< T, F > From< T > for F
