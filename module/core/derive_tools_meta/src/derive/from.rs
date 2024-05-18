@@ -24,6 +24,8 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
 //   let mut field_types = parsed.field_types();
 //   let field_names = parsed.field_names();
 
+  dbg!( ( field_types.len(), field_names.is_some() ) );
+
   let result = match ( field_types.len(), field_names )
   {
     ( 0, _ ) =>
