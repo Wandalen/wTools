@@ -2,6 +2,7 @@
 #[ derive( Debug, PartialEq ) ]
 pub enum GetData
 {
+  Nothing,
   FromString( String ),
   FromBin( &'static [ u8 ] ),
 }

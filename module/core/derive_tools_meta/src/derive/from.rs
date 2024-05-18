@@ -1,5 +1,5 @@
 use super::*;
-use macro_tools::{ attr, diag, item_struct, struct_like, Result };
+use macro_tools::{ attr, diag, item_struct, struct_like, struct_like::StructLike, Result };
 
 // xxx2 : get complete From for enums
 
@@ -16,26 +16,44 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
   // let mut field_types = item_struct::field_types( &parsed );
   // let field_names = item_struct::field_names( &parsed );
 
-  let parsed = syn::parse::< struct_like::StructLike >( input )?;
+  let parsed = syn::parse::< StructLike >( input )?;
   let has_debug = attr::has_debug( parsed.attrs().iter() )?;
   let item_name = &parsed.ident();
-  let mut field_types = parsed.field_types();
-  let field_names = parsed.field_names();
 
-  // dbg!( ( field_types.len(), field_names.is_some() ) );
+  // let mut field_types = parsed.field_types();
+  // let field_names = parsed.field_names();
 
-  let result = match ( field_types.len(), field_names )
+  let result = match parsed
   {
-    ( 0, _ ) =>
-    generate_unit( item_name ),
-    ( 1, Some( mut field_names ) ) =>
-    generate_from_single_field_named( &field_types.next().unwrap(), field_names.next().unwrap(), item_name ),
-    ( 1, None ) =>
-    generate_from_single_field( &field_types.next().unwrap(), item_name ),
-    ( _, Some( field_names ) ) =>
-    generate_from_multiple_fields_named( field_types, field_names, item_name ),
-    ( _, None ) =>
-    generate_from_multiple_fields( field_types, item_name ),
+    StructLike::Unit( ref item ) | StructLike::Struct( ref item ) =>
+    {
+
+      let mut field_types = item_struct::field_types( &item );
+      let field_names = item_struct::field_names( &item );
+
+      match ( field_types.len(), field_names )
+      {
+        ( 0, _ ) =>
+        generate_unit( item_name ),
+        ( 1, Some( mut field_names ) ) =>
+        generate_from_single_field_named( &field_types.next().unwrap(), field_names.next().unwrap(), item_name ),
+        ( 1, None ) =>
+        generate_from_single_field( &field_types.next().unwrap(), item_name ),
+        ( _, Some( field_names ) ) =>
+        generate_from_multiple_fields_named( field_types, field_names, item_name ),
+        ( _, None ) =>
+        generate_from_multiple_fields( field_types, item_name ),
+      }
+
+    },
+    StructLike::Enum( ref item ) =>
+    {
+      let variants = item.variants.iter().map( | v | variant_generate( item_name, v ) );
+      qt!
+      {
+        #( #variants )*
+      }
+    },
   };
 
   if has_debug
@@ -48,14 +66,38 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
 }
 
 // qqq  : document, add example of generated code
+fn variant_generate
+(
+  item_name : &syn::Ident,
+  variant : &syn::Variant,
+)
+-> proc_macro2::TokenStream
+{
+  let variant_name = &variant.ident;
+  let fields = &variant.fields;
+  qt!
+  {
+    #[ automatically_derived ]
+    impl From< #fields > for #item_name
+    {
+      #[ inline ]
+      fn from( src : #fields ) -> Self
+      {
+        Self::#variant_name( src )
+      }
+    }
+  }
+}
+
+// qqq  : document, add example of generated code
 fn generate_from_single_field_named
 (
   field_type : &syn::Type,
   field_name : &syn::Ident,
   item_name : &syn::Ident,
-) -> proc_macro2::TokenStream
+)
+-> proc_macro2::TokenStream
 {
-
   qt!
   {
     #[ automatically_derived ]
