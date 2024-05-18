@@ -43,7 +43,7 @@ fn main()
 
   impl From1< i32 > for MyStruct
   {
-    fn from_1( a : i32 ) -> Self { Self { a, b : a } }
+    fn from1( a : i32 ) -> Self { Self { a, b : a } }
   }
 
   let got : MyStruct = from!();
@@ -92,7 +92,7 @@ fn main()
   // from a single `i32` value by assigning it to both `a` and `b` fields.
   impl From1< i32 > for MyStruct
   {
-    fn from_1( a : i32 ) -> Self { Self { a, b : a } }
+    fn from1( a : i32 ) -> Self { Self { a, b : a } }
   }
 
   // == begin of generated

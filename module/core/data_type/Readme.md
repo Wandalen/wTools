@@ -76,7 +76,7 @@ In this example structure, Struct1 could be constructed either without arguments
 
   impl From1< i32 > for Struct1
   {
-    fn from_1( val : i32 ) -> Self
+    fn from1( val : i32 ) -> Self
     {
       Self { a : val, b : val }
     }

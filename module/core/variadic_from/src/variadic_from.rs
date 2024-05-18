@@ -45,24 +45,38 @@ pub( crate ) mod private
     Self : Sized,
   {
     /// Constructor with a single arguments.
-    fn from_1( arg : Arg ) -> Self;
+    fn from1( arg : Arg ) -> Self;
   }
 
   impl< T, All > From1< ( T, ) > for All
   where
     All : From1< T >,
   {
-    fn from_1( arg : ( T, ) ) -> Self
+    fn from1( arg : ( T, ) ) -> Self
     {
-      From1::< T >::from_1( arg.0 )
+      From1::< T >::from1( arg.0 )
     }
   }
+
+  impl< All > From1< () > for All
+  where
+    All : Default,
+  {
+    fn from1( _a : () ) -> Self { Self::default() }
+  }
+
+  // impl< All > From< () > for All
+  // where
+  //   All : Default,
+  // {
+  //   fn from( _a : () ) -> Self { Self::default() }
+  // }
 
   // impl< T, All > From1< T > for All
   // where
   //   All : core::convert::From< T >,
   // {
-  //   fn from_1( arg : T ) -> Self
+  //   fn from1( arg : T ) -> Self
   //   {
   //     core::convert::From::< T >::from( arg )
   //   }
@@ -72,7 +86,7 @@ pub( crate ) mod private
   // where
   //   All : core::convert::From< ( T1, T2 ) >,
   // {
-  //   fn from_1( arg : ( T1, T2 ) ) -> Self
+  //   fn from1( arg : ( T1, T2 ) ) -> Self
   //   {
   //     core::convert::From::< ( T1, T2 ) >::from( arg )
   //   }
@@ -93,7 +107,7 @@ pub( crate ) mod private
     #[ inline ]
     fn to( self ) -> F
     {
-      F::from_1( self )
+      F::from1( self )
     }
   }
 
@@ -105,7 +119,7 @@ pub( crate ) mod private
   //   #[ inline ]
   //   fn to( self ) -> F
   //   {
-  //     F::from_1( From::from( self ) )
+  //     F::from1( From::from( self ) )
   //   }
   // }
 
@@ -137,7 +151,7 @@ pub( crate ) mod private
   where
     All : From2< T1, T2 >,
   {
-    fn from_1( arg : ( T1, T2 ) ) -> Self
+    fn from1( arg : ( T1, T2 ) ) -> Self
     {
       From2::< T1, T2 >::from2( arg.0, arg.1 )
     }
@@ -165,7 +179,7 @@ pub( crate ) mod private
   where
     All : From3< T1, T2, T3 >,
   {
-    fn from_1( arg : ( T1, T2, T3 ) ) -> Self
+    fn from1( arg : ( T1, T2, T3 ) ) -> Self
     {
       From3::< T1, T2, T3 >::from3( arg.0, arg.1, arg.2 )
     }
@@ -197,7 +211,7 @@ pub( crate ) mod private
   //   #[ inline( always ) ]
   //   fn from( src : T ) -> Self
   //   {
-  //     Self::from_1( src )
+  //     Self::from1( src )
   //   }
   // }
 
@@ -211,7 +225,7 @@ pub( crate ) mod private
   //   #[ inline( always ) ]
   //   fn from( src : T ) -> Self
   //   {
-  //     Self::from_1( src )
+  //     Self::from1( src )
   //   }
   // }
 
@@ -246,7 +260,7 @@ pub( crate ) mod private
   ///
   ///   impl From1< i32 > for Struct1
   ///   {
-  ///     fn from_1( val : i32 ) -> Self
+  ///     fn from1( val : i32 ) -> Self
   ///     {
   ///       Self { a : val, b : val }
   ///     }
@@ -307,7 +321,7 @@ pub( crate ) mod private
     )
     =>
     {
-      $crate::From1::from_1( $Arg1 );
+      $crate::From1::from1( $Arg1 );
     };
 
     (

@@ -63,7 +63,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
           // impl variadic_from::From2< i32 > for StructNamedFields
           impl variadic_from::#from_trait< #( #types )* > for #item_name
           {
-            // fn from_1( a : i32, b : i32 ) -> Self
+            // fn from1( a : i32, b : i32 ) -> Self
             fn #from_method
             (
               #( #fn_params )*
@@ -87,7 +87,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
             #[ inline( always ) ]
             fn from( src : ( #( #types )* ) ) -> Self
             {
-              Self::from_1( src )
+              Self::from1( src )
             }
           }
 
@@ -116,7 +116,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
           // impl variadic_from::From2< i32 > for StructNamedFields
           impl variadic_from::#from_trait< #( #types )* > for #item_name
           {
-            // fn from_1( a : i32, b : i32 ) -> Self
+            // fn from1( a : i32, b : i32 ) -> Self
             fn #from_method
             (
               #( #fn_params )*
@@ -140,7 +140,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
             #[ inline( always ) ]
             fn from( src : ( #( #types )* ) ) -> Self
             {
-              Self::from_1( src )
+              Self::from1( src )
             }
           }
 

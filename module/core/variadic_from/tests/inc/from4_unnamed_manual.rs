@@ -1,5 +1,6 @@
 #[ allow( unused_imports ) ]
 use super::*;
+use the_module::Into1;
 
 #[ derive( Debug, PartialEq ) ]
 struct Struct1( i32, i32, i32, i32 );
@@ -18,7 +19,7 @@ impl Default for Struct1
 
 impl the_module::From1< i32 > for Struct1
 {
-  fn from_1( a : i32 ) -> Self { Self( a, a, a, a ) }
+  fn from1( a : i32 ) -> Self { Self( a, a, a, a ) }
 }
 
 //   impl the_module::From2< i32, i32 > for Struct1

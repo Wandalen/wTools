@@ -14,7 +14,7 @@ struct Struct1
 
 impl the_module::From1< i32 > for Struct1
 {
-  fn from_1( a : i32 ) -> Self { Self{ a : a, b : a } }
+  fn from1( a : i32 ) -> Self { Self{ a : a, b : a } }
 }
 
 impl the_module::From2< i32, i32 > for Struct1

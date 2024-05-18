@@ -16,9 +16,9 @@ fn from2_named()
   let exp = Struct1( 13, 14 );
   a_id!( got, exp );
 
-  // - from_1
+  // - from1
 
-  let got : Struct1 = Struct1::from_1( ( 13, 14 ) );
+  let got : Struct1 = Struct1::from1( ( 13, 14 ) );
   let exp = Struct1( 13, 14 );
   a_id!( got, exp );
 
@@ -26,7 +26,7 @@ fn from2_named()
   let exp = Struct1( 13, 14 );
   a_id!( got, exp );
 
-  let got : Struct1 = Struct1::from_1( ( ( 13, 14 ), ) );
+  let got : Struct1 = Struct1::from1( ( ( 13, 14 ), ) );
   let exp = Struct1( 13, 14 );
   a_id!( got, exp );
 
