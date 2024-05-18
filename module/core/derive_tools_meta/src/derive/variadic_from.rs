@@ -49,12 +49,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
     syn::Fields::Named( _ ) =>
     {
 
-      // if len == 1
-      // {
-      //   panic!( "not tested" );
-      // }
-      // else
-      if len <= 3
+      if 1 <= len && len <= 3
       {
         qt!
         {
@@ -102,7 +97,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
     syn::Fields::Unnamed( _ ) =>
     {
 
-      if len <= 3
+      if 1 <= len && len <= 3
       {
         qt!
         {
