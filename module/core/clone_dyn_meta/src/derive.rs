@@ -22,7 +22,7 @@ pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStrea
 
   let generic_params = &item_parsed.generics.params;
   let generics_where = &item_parsed.generics.where_clause;
-  let generics_names = generic_params::names( &item_parsed.generics );
+  let generics_names : Vec< _ > = generic_params::names( &item_parsed.generics ).collect();
 
   let result = qt!
   {
