@@ -299,7 +299,7 @@ pub( crate ) mod private
     )
     =>
     {
-      $crate::wtools::From_0::from_0();
+      $crate::From_0::from_0();
     };
 
     (
@@ -307,7 +307,7 @@ pub( crate ) mod private
     )
     =>
     {
-      $crate::wtools::From_1::from_1( $Arg1 );
+      $crate::From_1::from_1( $Arg1 );
     };
 
     (
@@ -315,7 +315,7 @@ pub( crate ) mod private
     )
     =>
     {
-      $crate::wtools::From_2::from_2( $Arg1, $Arg2 );
+      $crate::From_2::from_2( $Arg1, $Arg2 );
     };
 
     (
@@ -323,7 +323,7 @@ pub( crate ) mod private
     )
     =>
     {
-      $crate::wtools::From_3::from_3( $Arg1, $Arg2, $Arg3 );
+      $crate::From_3::from_3( $Arg1, $Arg2, $Arg3 );
     };
 
     // (
@@ -331,7 +331,7 @@ pub( crate ) mod private
     // )
     // =>
     // {
-    //   $crate::wtools::From_4::from_4( $Arg1, $Arg2, $Arg3, $Arg4 );
+    //   $crate::From_4::from_4( $Arg1, $Arg2, $Arg3, $Arg4 );
     // };
 
     (

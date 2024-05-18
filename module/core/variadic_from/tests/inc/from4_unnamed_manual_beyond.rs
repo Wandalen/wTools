@@ -14,7 +14,7 @@ fn from_named_fields()
     d : i32,
   }
 
-  impl the_module::wtools::From_0 for StructNamedFields
+  impl the_module::From_0 for StructNamedFields
   {
     fn from_0() -> Self
     {
@@ -26,17 +26,17 @@ fn from_named_fields()
     }
   }
 
-  impl the_module::wtools::From_1< i32 > for StructNamedFields
+  impl the_module::From_1< i32 > for StructNamedFields
   {
     fn from_1( a : i32 ) -> Self { Self{ a, b : a, c : a, d : a } }
   }
 
-  impl the_module::wtools::From_2< i32, i32 > for StructNamedFields
+  impl the_module::From_2< i32, i32 > for StructNamedFields
   {
     fn from_2( a : i32, b : i32 ) -> Self { Self{ a, b, c : b, d : b } }
   }
 
-  impl the_module::wtools::From_3< i32, i32, i32 > for StructNamedFields
+  impl the_module::From_3< i32, i32, i32 > for StructNamedFields
   {
     fn from_3( a : i32, b : i32, c : i32 ) -> Self { Self{ a, b, c, d : c } }
   }
@@ -68,7 +68,7 @@ fn from_tuple()
   #[ derive( Debug, PartialEq ) ]
   struct StructTuple( i32, i32, i32, i32 );
 
-  impl the_module::wtools::From_0 for StructTuple
+  impl the_module::From_0 for StructTuple
   {
     fn from_0() -> Self
     {
@@ -80,17 +80,17 @@ fn from_tuple()
     }
   }
 
-  impl the_module::wtools::From_1< i32 > for StructTuple
+  impl the_module::From_1< i32 > for StructTuple
   {
     fn from_1( a : i32 ) -> Self { Self( a, a, a, a ) }
   }
 
-  impl the_module::wtools::From_2< i32, i32 > for StructTuple
+  impl the_module::From_2< i32, i32 > for StructTuple
   {
     fn from_2( a : i32, b : i32 ) -> Self { Self( a, b, b, b ) }
   }
 
-  impl the_module::wtools::From_3< i32, i32, i32 > for StructTuple
+  impl the_module::From_3< i32, i32, i32 > for StructTuple
   {
     fn from_3( a : i32, b : i32, c : i32 ) -> Self { Self( a, b, c, c ) }
   }
@@ -127,7 +127,7 @@ fn from0_from_default()
     b : i32,
   }
 
-  // impl the_module::wtools::From_0 for StructNamedFields
+  // impl the_module::From_0 for StructNamedFields
   // {
   //   fn from_0() -> Self
   //   {
@@ -169,7 +169,7 @@ fn from_tuple_from_from1()
     d : i32,
   }
 
-  impl the_module::wtools::From_1< i32 > for StructNamedFields
+  impl the_module::From_1< i32 > for StructNamedFields
   {
     fn from_1( a : i32 ) -> Self { Self{ a, b : a, c : a, d : a } }
   }
@@ -230,7 +230,7 @@ fn from_tuple_from_from2()
     d : i32,
   }
 
-  impl the_module::wtools::From_2< i32, i32 > for StructNamedFields
+  impl the_module::From_2< i32, i32 > for StructNamedFields
   {
     fn from_2( a : i32, b : i32 ) -> Self { Self{ a, b, c : b, d : b } }
   }
@@ -287,7 +287,7 @@ fn from_tuple_from_from3()
     d : i32,
   }
 
-  impl the_module::wtools::From_3< i32, i32, i32 > for StructNamedFields
+  impl the_module::From_3< i32, i32, i32 > for StructNamedFields
   {
     fn from_3( a : i32, b : i32, c : i32 ) -> Self { Self{ a, b, c, d : c } }
   }

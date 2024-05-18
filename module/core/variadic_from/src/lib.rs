@@ -5,7 +5,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 #[ cfg( feature = "enabled" ) ]
-pub mod wtools;
+pub( crate ) mod variadic_from;
 
 /// Namespace with dependencies.
 
@@ -31,7 +31,7 @@ pub mod protected
   pub use super::orphan::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::wtools::orphan::*;
+  pub use super::variadic_from::orphan::*;
 }
 
 /// Orphan namespace of the module.
@@ -66,9 +66,9 @@ pub mod prelude
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::wtools::prelude::*;
-  #[ doc( no_inline ) ]
-  pub use super::wtools;
+  pub use super::variadic_from::prelude::*;
+  // #[ doc( no_inline ) ]
+  // pub use super::variadic_from;
   // #[ doc( no_inline ) ]
   // pub use ::derive_tools_meta::VariadicFrom;
 

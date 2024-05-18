@@ -41,49 +41,56 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
       .into_iter()
       .multiunzip();
 
-      let l = format!( "{}", parsed.fields.len() );
-      let from_trait = format_ident!( "From_{l}" );
-      let from_method = format_ident!( "from_{l}" );
+      // let l = format!( "{}", parsed.fields.len() );
+      let len = parsed.fields.len();
+      let from_trait = format_ident!( "From_{len}",  );
+      let from_method = format_ident!( "from_{len}" );
 
-      let from_n_code = qt!
+      if len <= 3
       {
-
-        // xxx
-        #[ automatically_derived ]
-        // impl wtools::From_2< i32 > for StructNamedFields
-        impl wtools::#from_trait< #( #types )* > for #item_name
+        qt!
         {
-          // fn from_1( a : i32, b : i32 ) -> Self
-          fn #from_method
-          (
-            #( #fn_params )*
-          ) -> Self
+
+          // xxx
+          #[ automatically_derived ]
+          // impl variadic_from::From_2< i32 > for StructNamedFields
+          impl variadic_from::#from_trait< #( #types )* > for #item_name
           {
-            #( #src_into_vars )*
-            // let a = core::convert::Into::into( a );
-            // let b = core::convert::Into::into( b );
-            Self
+            // fn from_1( a : i32, b : i32 ) -> Self
+            fn #from_method
+            (
+              #( #fn_params )*
+            ) -> Self
             {
-              #( #vars )*
-              // a,
-              // b,
+              #( #src_into_vars )*
+              // let a = core::convert::Into::into( a );
+              // let b = core::convert::Into::into( b );
+              Self
+              {
+                #( #vars )*
+                // a,
+                // b,
+              }
             }
           }
-        }
 
-        impl From< ( #( #types )* ) > for #item_name
-        {
-          /// Reuse From_1.
-          #[ inline( always ) ]
-          fn from( src : ( #( #types )* ) ) -> Self
+          impl From< ( #( #types )* ) > for #item_name
           {
-            Self::from_1( src )
+            /// Reuse From_1.
+            #[ inline( always ) ]
+            fn from( src : ( #( #types )* ) ) -> Self
+            {
+              Self::from_1( src )
+            }
           }
+
         }
+      }
+      else
+      {
+        qt!{}
+      }
 
-      };
-
-      from_n_code
     }
     syn::Fields::Unnamed( _ ) =>
     {
@@ -110,7 +117,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
       qt!
       {
         #[ automatically_derived ]
-        impl wtools::From_0 for #item_name
+        impl variadic_from::From_0 for #item_name
         {
           fn from_0() -> Self
           {
@@ -131,7 +138,7 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
         }
 
         #[ automatically_derived ]
-        impl wtools::From_1< i32 > for #item_name
+        impl variadic_from::From_1< i32 > for #item_name
         {
           fn from_1( src : i32 ) -> Self
           {
