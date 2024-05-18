@@ -1,22 +1,19 @@
-// variadic_from_trivial.rs
-
 //! This example demonstrates the use of the `variadic_from` macro to implement flexible
 //! constructors for a struct, allowing it to be instantiated from different numbers of
 //! arguments or tuples. It also showcases how to derive common traits like `Debug`,
 //! `PartialEq`, `Default`, and `VariadicFrom` for the struct.
 
-#[ cfg( not( all(feature = "enabled", feature = "type_variadic_from", feature = "derive_variadic_from" ) ) ) ]
+#[ cfg( not( all(feature = "enabled", feature = "type_variadic_from" ) ) ) ]
 fn main(){}
-#[ cfg( all( feature = "enabled", feature = "type_variadic_from", feature = "derive_variadic_from" ) )]
+#[ cfg( all( feature = "enabled", feature = "type_variadic_from" ) )]
 fn main()
 {
   use variadic_from::exposed::*;
 
   // Define a struct `MyStruct` with fields `a` and `b`.
-  // The struct derives common traits like `Debug`, `PartialEq`, `Default`, and `VariadicFrom`.
-  #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
-  // Use `#[ debug ]` to expand and debug generate code.
-  // #[ debug ]
+  // The struct derives common traits like `Debug`, `PartialEq`, `Default`
+  // `VariadicFrom` defined manually.
+  #[ derive( Debug, PartialEq, Default ) ]
   struct MyStruct
   {
     a : i32,
@@ -25,11 +22,28 @@ fn main()
 
   // Implement the `From_1` trait for `MyStruct`, which allows constructing a `MyStruct` instance
   // from a single `i32` value by assigning it to both `a` and `b` fields.
-
   impl From_1< i32 > for MyStruct
   {
     fn from_1( a : i32 ) -> Self { Self { a, b : a } }
   }
+
+  // == begin of generated
+
+  impl From_2< i32, i32 > for MyStruct
+  {
+    fn from_2( a : i32, b : i32 ) -> Self { Self{ a : a, b : b } }
+  }
+
+  impl From< ( i32, i32 ) > for MyStruct
+  {
+    #[ inline( always ) ]
+    fn from( ( a, b ) : ( i32, i32 ) ) -> Self
+    {
+      Self::from_2( a, b )
+    }
+  }
+
+  // == end of generated
 
   let got : MyStruct = from!();
   let exp = MyStruct { a : 0, b : 0 };

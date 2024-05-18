@@ -8,13 +8,19 @@ fn sample()
 {
   use variadic_from::exposed::*;
 
+  // Define a struct `MyStruct` with fields `a` and `b`.
+  // The struct derives common traits like `Debug`, `PartialEq`, `Default`, and `VariadicFrom`.
   #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
+  // Use `#[ debug ]` to expand and debug generate code.
+  // #[ debug ]
   struct MyStruct
   {
     a : i32,
     b : i32,
   }
 
+  // Implement the `From_1` trait for `MyStruct`, which allows constructing a `MyStruct` instance
+  // from a single `i32` value by assigning it to both `a` and `b` fields.
   impl From_1< i32 > for MyStruct
   {
     fn from_1( a : i32 ) -> Self { Self { a, b : a } }
