@@ -1,4 +1,4 @@
-<!-- {{# generate.module_header{} #}} -->
+{{# generate.module_header{} #}}
 
 # Module :: variadic_from
 <!--{ generate.module_header.start() }-->
@@ -138,7 +138,7 @@ fn main()
 </details>
 
 Try out `cargo run --example variadic_from_trivial`.
-</br>
+<br/>
 [See code](./examples/variadic_from_trivial.rs).
 
 ### To add to your project

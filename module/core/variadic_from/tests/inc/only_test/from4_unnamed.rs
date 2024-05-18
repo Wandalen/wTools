@@ -20,10 +20,11 @@ fn from4_tuple()
 //   let got : Struct1 = the_module::from!( 0, 1, 2 );
 //   let exp = Struct1( 0, 1, 2, 2 );
 //   a_id!( got, exp );
+//
+//   let got : Struct1 = the_module::from!( 0, 1, 2, 3 );
+//   let exp = Struct1( 0, 1, 2, 3 );
+//   a_id!( got, exp );
 
   // qqq : write negative test
-  // let got : Struct1 = the_module::from!( 0, 1, 2, 3 );
-  // let exp = Struct1( 0, 1, 2, 3 );
-  // a_id!( got, exp );
 
 }

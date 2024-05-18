@@ -3,6 +3,23 @@
 #![ doc( html_root_url = "https://docs.rs/proc_macro_tools/latest/proc_macro_tools/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+// qqq : review every page of generated documentation improve how it look as well as its content
+//
+// attr
+// Protected namespace of the module.
+// container_kind
+// Protected namespace of the module.
+// dependency
+// Dependencies of the module.
+// derive
+// Protected namespace of the module.
+// diag
+// Protected namespace of the module.
+// drop
+// Protected namespace of the module.
+// exposed
+// Exposed namespace of the module.
+
 /// Modular files.
 #[ cfg( feature = "enabled" ) ]
 #[ path = "." ]
