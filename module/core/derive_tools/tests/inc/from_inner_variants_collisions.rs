@@ -26,9 +26,6 @@ pub enum GetData
 
 include!( "./only_test/from_inner_variants.rs" );
 
-// xxx2 : get complete
-// xxx2 : test name conflicts
-
 // xxx2 : implement attribute `#[ from( off ) ]`
 //
 // #[ derive( Debug, PartialEq, From ) ]
