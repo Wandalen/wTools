@@ -3,18 +3,13 @@ use super::*;
 use macro_tools::{ attr, Result };
 
 ///
-/// Definition of a field.
-///
-
-///
 /// Attributes of a struct.
 ///
-
 pub struct StructAttributes
 {
-  pub perform : Option< AttributePerform >,
   pub storage_fields : Option< AttributeStorageFields >,
   pub mutator : AttributeMutator,
+  pub perform : Option< AttributePerform >,
 }
 
 impl StructAttributes
@@ -22,9 +17,9 @@ impl StructAttributes
 
   pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
   {
-    let mut perform = None;
     let mut storage_fields = None;
-    let mut mutator = Default::default();
+    let mut mutator : AttributeMutator = Default::default();
+    let mut perform = None;
 
     for attr in attrs
     {
@@ -37,45 +32,20 @@ impl StructAttributes
         continue;
       }
 
+      // qqq : qqq for Anton : xxx : refactor field_attrs::FieldAttributes::from_attrs to make it similar to this function
       match key_str.as_ref()
       {
-        "storage_fields" =>
+        AttributeStorageFields::KEYWORD =>
         {
-          match attr.meta
-          {
-            syn::Meta::List( ref meta_list ) =>
-            {
-              storage_fields.replace( syn::parse2::< AttributeStorageFields >( meta_list.tokens.clone() )? );
-            },
-            _ => return_syn_err!( attr, "Expects an attribute of format #[ storage_fields( a : i32, b : Option< String > ) ]
-.\nGot: {}", qt!{ #attr } ),
-          }
+          storage_fields.replace( AttributeStorageFields::from_meta( attr )? );
         }
-        "perform" =>
+        AttributeMutator::KEYWORD =>
         {
-          match attr.meta
-          {
-            syn::Meta::List( ref meta_list ) =>
-            {
-              perform.replace( syn::parse2::< AttributePerform >( meta_list.tokens.clone() )? );
-            },
-            _ => return_syn_err!( attr, "Expects an attribute of format #[ perform( fn parse( mut self ) -> Request ) ]
-.\nGot: {}", qt!{ #attr } ),
-          }
+          mutator = AttributeMutator::from_meta( attr )?;
         }
-        "mutator" =>
+        AttributePerform::KEYWORD =>
         {
-          match attr.meta
-          {
-            syn::Meta::List( ref meta_list ) =>
-            {
-              mutator = syn::parse2::< AttributeMutator >( meta_list.tokens.clone() )?
-            },
-            syn::Meta::Path( ref _path ) =>
-            {
-            },
-            _ => return_syn_err!( attr, "Expects an attribute of format `#[ mutator( custom = true, hint = true ) ]`. \nGot: {}", qt!{ #attr } ),
-          }
+          perform.replace( AttributePerform::from_meta( attr )? );
         }
         "debug" =>
         {
@@ -89,7 +59,6 @@ impl StructAttributes
 
     Ok( StructAttributes { perform, storage_fields, mutator } )
   }
-
 
   ///
   /// Generate parts, used for generating `perform()`` method.
@@ -172,31 +141,6 @@ impl StructAttributes
 }
 
 ///
-/// Attribute to hold information about method to call after form.
-///
-/// `#[ perform( fn after1< 'a >() -> Option< &'a str > ) ]`
-///
-
-pub struct AttributePerform
-{
-  pub signature : syn::Signature,
-}
-
-impl syn::parse::Parse for AttributePerform
-{
-  fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
-  {
-    // let input2;
-    Ok( Self
-    {
-      // paren_token : syn::parenthesized!( input2 in input ),
-      // signature : input2.parse()?,
-      signature : input.parse()?,
-    })
-  }
-}
-
-///
 /// Attribute to hold storage-specific fields.
 /// Useful if formed structure should not have such fields.
 ///
@@ -206,6 +150,26 @@ impl syn::parse::Parse for AttributePerform
 pub struct AttributeStorageFields
 {
   pub fields : syn::punctuated::Punctuated< syn::Field, syn::token::Comma >,
+}
+
+impl AttributeStorageFields
+{
+
+  const KEYWORD : &'static str = "storage_fields";
+
+  pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+  {
+    match attr.meta
+    {
+      syn::Meta::List( ref meta_list ) =>
+      {
+        return syn::parse2::< AttributeStorageFields >( meta_list.tokens.clone() );
+      },
+      _ => return_syn_err!( attr, "Expects an attribute of format #[ storage_fields( a : i32, b : Option< String > ) ]
+.\nGot: {}", qt!{ #attr } ),
+    }
+  }
+
 }
 
 impl syn::parse::Parse for AttributeStorageFields
@@ -219,11 +183,6 @@ impl syn::parse::Parse for AttributeStorageFields
     Ok( Self
     {
       fields,
-      // fields : syn::Fields::Named( syn::FieldsNamed
-      // {
-      //   brace_token : Default::default(),
-      //   named : fields,
-      // }),
     })
   }
 }
@@ -249,6 +208,29 @@ pub struct AttributeMutator
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
   pub hint : bool,
 }
+
+impl AttributeMutator
+{
+  const KEYWORD : &'static str = "mutator";
+
+  pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+  {
+    match attr.meta
+    {
+      syn::Meta::List( ref meta_list ) =>
+      {
+        return syn::parse2::< AttributeMutator >( meta_list.tokens.clone() );
+      },
+      syn::Meta::Path( ref _path ) =>
+      {
+        return Ok( Default::default() )
+      },
+      _ => return_syn_err!( attr, "Expects an attribute of format `#[ mutator( custom = true, hint = true ) ]`. \nGot: {}", qt!{ #attr } ),
+    }
+  }
+
+}
+
 
 impl syn::parse::Parse for AttributeMutator
 {
@@ -295,6 +277,51 @@ impl syn::parse::Parse for AttributeMutator
     {
       custom,
       hint,
+    })
+  }
+}
+
+///
+/// Attribute to hold information about method to call after form.
+///
+/// `#[ perform( fn after1< 'a >() -> Option< &'a str > ) ]`
+///
+
+pub struct AttributePerform
+{
+  pub signature : syn::Signature,
+}
+
+impl AttributePerform
+{
+  const KEYWORD : &'static str = "perform";
+
+  pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+  {
+
+    match attr.meta
+    {
+      syn::Meta::List( ref meta_list ) =>
+      {
+        return syn::parse2::< AttributePerform >( meta_list.tokens.clone() );
+      },
+      _ => return_syn_err!( attr, "Expects an attribute of format #[ perform( fn parse( mut self ) -> Request ) ]
+.\nGot: {}", qt!{ #attr } ),
+    }
+  }
+
+}
+
+impl syn::parse::Parse for AttributePerform
+{
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+  {
+    // let input2;
+    Ok( Self
+    {
+      // paren_token : syn::parenthesized!( input2 in input ),
+      // signature : input2.parse()?,
+      signature : input.parse()?,
     })
   }
 }
