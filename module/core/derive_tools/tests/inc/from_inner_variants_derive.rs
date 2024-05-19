@@ -13,9 +13,6 @@ pub enum GetData
 }
 
 // == begin of generated
-
 // == end of generated
 
 include!( "./only_test/from_inner_variants.rs" );
-
-// xxx2 : qqq : write test with generics and make sure derive works
