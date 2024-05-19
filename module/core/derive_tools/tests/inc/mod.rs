@@ -74,6 +74,8 @@ mod from_inner_variants_duplicates;
 mod from_inner_variants_generics;
 #[ cfg( feature = "derive_from" ) ]
 mod from_inner_variants_generics_where;
+#[ cfg( feature = "derive_from" ) ]
+mod from_inner_variants_collisions;
 
 mod inner_from_manual_test;
 mod inner_from_named_manual_test;
