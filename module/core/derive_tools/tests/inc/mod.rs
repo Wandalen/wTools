@@ -72,9 +72,8 @@ mod from_inner_variants_derive;
 mod from_inner_variants_duplicates;
 #[ cfg( feature = "derive_from" ) ]
 mod from_inner_variants_generics;
-// #[ cfg( feature = "derive_from" ) ]
-// mod from_inner_variants_generics_where;
-// xxx
+#[ cfg( feature = "derive_from" ) ]
+mod from_inner_variants_generics_where;
 
 mod inner_from_manual_test;
 mod inner_from_named_manual_test;
