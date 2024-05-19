@@ -302,6 +302,13 @@ pub( crate ) mod private
   /// This helps in situations where you need different representations of generics for implementing traits,
   /// defining types, or specifying trait bounds and conditions.
   ///
+  /// This function is similar to `syn::Generics::split_for_impl`, which also splits generics into components
+  /// suitable for `impl` blocks and type definitions. However, `split_for_impl` wraps the tokens in `<>`, which
+  /// can reduce the flexibility of the results. The `decompose` function provides more control over the output
+  /// by not wrapping the tokens, allowing for more precise usage in macros and other contexts.
+  /// Additionally, `decompose` returns an extra component with the generics including defaults, which is often
+  /// in demand for certain macro or code generation tasks.
+  ///
   /// # Examples
   ///
   /// ```rust
@@ -332,7 +339,15 @@ pub( crate ) mod private
   /// - `syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>`: Simplified generics for type definitions, only identifiers.
   /// - `syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>`: Where clauses, properly punctuated for use in where conditions.
   ///
-  /// # Example of signature of function which reuse `generic_params::decompose`
+  /// # Differences from `syn::Generics::split_for_impl`
+  ///
+  /// While both `decompose` and `split_for_impl` functions split generics into components for `impl` blocks, type definitions, and where clauses,
+  /// there are key differences:
+  /// - `split_for_impl` wraps the generics in `<>`, which can be limiting when you need to use the generics in a different context or format.
+  /// - `decompose` provides raw punctuated generic parameters, offering greater flexibility and control over the output format.
+  /// - `decompose` returns an extra component with the generics including defaults, which is often needed for certain macro or code generation tasks.
+  ///
+  /// # Example of function signature using `decompose`
   ///
   /// ```rust
   /// use macro_tools::{ syn, proc_macro2, qt };
