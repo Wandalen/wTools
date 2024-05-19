@@ -1,4 +1,8 @@
-// ! xxx : write description
+//!
+//! Structures and functions for handling `syn::punctuated::Punctuated` collections.
+//!
+//! This module provides functionality to manipulate and ensure correct punctuation in `syn::punctuated::Punctuated` collections, commonly used in procedural macros to represent sequences of elements separated by punctuation marks, such as commas.
+//!
 
 /// Internal namespace.
 pub( crate ) mod private
@@ -20,9 +24,14 @@ pub( crate ) mod private
 #[ allow( unused_imports ) ]
 pub use protected::*;
 
-/// Protected namespace of the module.
 pub mod protected
 {
+  //!
+  //! Structures and functions for handling `syn::punctuated::Punctuated` collections.
+  //!
+  //! This module provides functionality to manipulate and ensure correct punctuation in `syn::punctuated::Punctuated` collections, commonly used in procedural macros to represent sequences of elements separated by punctuation marks, such as commas.
+  //!
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;

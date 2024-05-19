@@ -1,9 +1,13 @@
-//! xxx : update documentation of file
+//!
+//! Responsible for generating marker `PhantomData` fields to avoid the rule requiring the usage of all generic parameters in a struct. This is often necessary to ensure that Rust's type system correctly tracks the ownership and lifetimes of these parameters without needing them to be explicitly used in the struct's fields.
+//!
+//! Functions and structures to handle and manipulate `PhantomData` fields in structs using the `syn` crate. These utilities ensure that generic parameters are correctly accounted for in type checking, even if they are not directly used in the struct's fields.
+//!
 
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use super::super::*;
+  use crate::*;
 
   /// Adds a `PhantomData` field to a struct to manage generic parameter usage.
   ///
@@ -177,9 +181,15 @@ pub( crate ) mod private
 #[ allow( unused_imports ) ]
 pub use protected::*;
 
-/// Protected namespace of the module.
 pub mod protected
 {
+
+  //!
+  //! Responsible for generating marker `PhantomData` fields to avoid the rule requiring the usage of all generic parameters in a struct. This is often necessary to ensure that Rust's type system correctly tracks the ownership and lifetimes of these parameters without needing them to be explicitly used in the struct's fields.
+  //!
+  //! Functions and structures to handle and manipulate `PhantomData` fields in structs using the `syn` crate. These utilities ensure that generic parameters are correctly accounted for in type checking, even if they are not directly used in the struct's fields.
+  //!
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
@@ -192,7 +202,6 @@ pub mod protected
   };
 }
 
-// xxx : external attr instead of internal?
 /// Orphan namespace of the module.
 pub mod orphan
 {

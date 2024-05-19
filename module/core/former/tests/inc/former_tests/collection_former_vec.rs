@@ -118,6 +118,7 @@ fn entity_to()
   // let exp = vec![ 13 ];
   // a_id!( got, exp );
 
+// xxx
 // qqq : uncomment and make it working
 //   let got = < Vec< i32 > as former::EntityToStorage >::Storage::default();
 //   let exp =

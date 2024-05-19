@@ -5,7 +5,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use super::super::*;
+  use crate::*;
   use interval_adapter::BoundExt;
 
   /// Check is the rightmost item of path refering a type is specified type.

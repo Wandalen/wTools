@@ -1,30 +1,11 @@
 //!
-//! Manipulations on generic parameters.
+//! Functions and structures to handle and manipulate generic parameters using the `syn` crate. It's designed to support macro-driven code generation by simplifying, merging, extracting, and decomposing `syn::Generics`.
 //!
-//! # Example of generic parameters
-//!
-//!```rust
-//!
-//! pub struct CommandFormer< K, Context = () >
-//! where
-//!   K : core::hash::Hash + std::cmp::Eq,
-//! {
-//!   properties : core::option::Option< std::collections::HashMap< K, String > >,
-//!   _phantom : core::marker::PhantomData< Context >,
-//! }
-//!
-//! impl< K, Context >
-//! CommandFormer< K, Context >
-//! where
-//!   K : core::hash::Hash + std::cmp::Eq,
-//! {}
-//!```
-//! xxx : update documentation of file
 
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use super::super::*;
+  use crate::*;
 
   /// A `GenericsWithWhere` struct to handle the parsing of Rust generics with an explicit `where` clause.
   ///
@@ -34,8 +15,10 @@ pub( crate ) mod private
   /// in scenarios where the `where` clause is crucial for type constraints and bounds in Rust macros and code generation.
   ///
   /// Usage:
+  ///
   /// ```
-  /// let parsed_generics : macro_tools::GenericsWithWhere = syn::parse_str( "< T : Clone, U : Default = Default1 > where T : Default").unwrap();
+  /// let parsed_generics : macro_tools::GenericsWithWhere
+  /// = syn::parse_str( "< T : Clone, U : Default = Default1 > where T : Default" ).unwrap();
   /// assert!( parsed_generics.generics.params.len() == 2 );
   /// assert!( parsed_generics.generics.where_clause.is_some() );
   /// ```
@@ -214,13 +197,13 @@ pub( crate ) mod private
   /// let mut generics : syn::Generics = parse_quote!{ < T : Clone + Default, U, 'a, const N : usize > };
   /// generics.where_clause = parse_quote!{ where T: core::fmt::Debug };
   /// // let generics : Generics = parse_quote!{ < T : Clone + Default, U, 'a, const N : usize > where T: core::fmt::Debug };
-  /// let simplified_generics = macro_tools::generic_params::names( &generics );
+  /// let simplified_generics = macro_tools::generic_params::only_names( &generics );
   ///
   /// assert_eq!( simplified_generics.params.len(), 4 ); // Contains T, U, 'a, and N
   /// assert!( simplified_generics.where_clause.is_none() ); // Where clause is removed
   /// ```
 
-  pub fn names( generics : &syn::Generics ) -> syn::Generics
+  pub fn only_names( generics : &syn::Generics ) -> syn::Generics
   {
     // use syn::{ Generics, GenericParam, LifetimeDef, TypeParam, ConstParam };
     use syn::{ Generics, GenericParam, LifetimeParam, TypeParam, ConstParam };
@@ -264,6 +247,50 @@ pub( crate ) mod private
     result
   }
 
+  /// Extracts the names of type parameters, lifetimes, and const parameters from the given `Generics`.
+  ///
+  /// This function returns an iterator over the names of the parameters in the `Generics`,
+  /// which can be useful for generating code that requires just the names of the parameters
+  /// without their associated bounds or default values.
+  ///
+  /// # Arguments
+  ///
+  /// * `generics` - The `Generics` instance from which to extract parameter names.
+  ///
+  /// # Returns
+  ///
+  /// Returns an iterator over the names of the parameters.
+  ///
+  /// # Examples
+  ///
+  /// ```rust
+  /// # use macro_tools::syn::parse_quote;
+  ///
+  /// let generics : syn::Generics = parse_quote!
+  /// {
+  ///   < T : Clone + Default, U, 'a, const N : usize >
+  /// };
+  /// let names : Vec< _ > = macro_tools::generic_params::names( &generics ).collect();
+  ///
+  /// assert_eq!( names, vec!
+  /// [
+  ///   &syn::Ident::new( "T", proc_macro2::Span::call_site() ),
+  ///   &syn::Ident::new( "U", proc_macro2::Span::call_site() ),
+  ///   &syn::Ident::new( "a", proc_macro2::Span::call_site() ),
+  ///   &syn::Ident::new( "N", proc_macro2::Span::call_site() )
+  /// ]);
+  /// ```
+
+  pub fn names< 'a >( generics : &'a syn::Generics ) -> impl IterTrait< 'a, &'a syn::Ident > + Clone
+  {
+    generics.params.iter().map( | param | match param
+    {
+      syn::GenericParam::Type( type_param ) => &type_param.ident,
+      syn::GenericParam::Lifetime( lifetime_def ) => &lifetime_def.lifetime.ident,
+      syn::GenericParam::Const( const_param ) => &const_param.ident,
+    })
+  }
+
   /// Decomposes `syn::Generics` into components suitable for different usage contexts in Rust implementations,
   /// specifically focusing on different requirements for `impl` blocks and type definitions.
   ///
@@ -304,6 +331,39 @@ pub( crate ) mod private
   /// - `syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>`: Generics for `impl` blocks, retaining bounds but no defaults.
   /// - `syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>`: Simplified generics for type definitions, only identifiers.
   /// - `syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>`: Where clauses, properly punctuated for use in where conditions.
+  ///
+  /// # Example of signature of function which reuse `generic_params::decompose`
+  ///
+  /// ```rust
+  /// use macro_tools::{ syn, proc_macro2, qt };
+  ///
+  /// fn generate_unit
+  /// (
+  ///   item_name : &syn::Ident,
+  ///   generics_with_defaults : syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  ///   generics_impl : syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  ///   generics_ty : syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  ///   generics_where: syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  /// )
+  /// -> proc_macro2::TokenStream
+  /// {
+  ///   qt!
+  ///   {
+  ///     #[ automatically_derived ]
+  ///     impl< #generics_impl > From< i32 > for #item_name< #generics_ty >
+  ///     where
+  ///       #generics_where
+  ///     {
+  ///       #[ inline ]
+  ///       fn from( src : i32 ) -> Self
+  ///       {
+  ///         Wrap( src )
+  ///       }
+  ///     }
+  ///   }
+  /// }
+  /// ```
+  ///
 
   pub fn decompose
   (
@@ -411,84 +471,19 @@ pub( crate ) mod private
     ( generics_with_defaults, generics_for_impl, generics_for_ty, generics_where )
   }
 
-//   pub fn decompose
-//   (
-//     generics : &syn::Generics
-//   )
-//   ->
-//   (
-//     syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-//     syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-//     syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-//   )
-//   {
-//     let mut generics_for_impl = generics.params.clone();
-//     punctuated::ensure_trailing_comma( &mut generics_for_impl );
-//
-//     let mut generics_for_ty = syn::punctuated::Punctuated::new();
-//     for param in &generics.params
-//     {
-//       match param
-//       {
-//         syn::GenericParam::Type( type_param ) =>
-//         {
-//           let simplified = syn::GenericParam::Type( syn::TypeParam
-//           {
-//             attrs : vec![],
-//             ident : type_param.ident.clone(),
-//             colon_token : None,
-//             bounds : syn::punctuated::Punctuated::new(),
-//             eq_token : None,
-//             default : None,
-//           });
-//           generics_for_ty.push_value( simplified );
-//           generics_for_ty.push_punct( syn::token::Comma::default() );
-//         },
-//         syn::GenericParam::Const( const_param ) =>
-//         {
-//           let simplified = syn::GenericParam::Type( syn::TypeParam
-//           {
-//             attrs : vec![],
-//             ident : const_param.ident.clone(),
-//             colon_token : None,
-//             bounds : syn::punctuated::Punctuated::new(),
-//             eq_token : None,
-//             default : None,
-//           });
-//           generics_for_ty.push_value( simplified );
-//           generics_for_ty.push_punct( syn::token::Comma::default() );
-//         },
-//         syn::GenericParam::Lifetime( lifetime_param ) =>
-//         {
-//           generics_for_ty.push_value( syn::GenericParam::Lifetime( lifetime_param.clone() ) );
-//           generics_for_ty.push_punct( syn::token::Comma::default() );
-//         }
-//       }
-//     }
-//
-//     let generics_where = if let Some( where_clause ) = &generics.where_clause
-//     {
-//       let mut predicates = where_clause.predicates.clone();
-//       punctuated::ensure_trailing_comma( &mut predicates );
-//       predicates
-//     }
-//     else
-//     {
-//       syn::punctuated::Punctuated::new()
-//     };
-//
-//     ( generics_for_impl, generics_for_ty, generics_where )
-//   }
-
 }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use protected::*;
 
-/// Protected namespace of the module.
 pub mod protected
 {
+
+  //!
+  //! Functions and structures to handle and manipulate generic parameters using the `syn` crate. It's designed to support macro-driven code generation by simplifying, merging, extracting, and decomposing `syn::Generics`.
+  //!
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
@@ -497,12 +492,12 @@ pub mod protected
   pub use super::private::
   {
     merge,
+    only_names,
     names,
     decompose,
   };
 }
 
-// xxx : external attr instead of internal?
 /// Orphan namespace of the module.
 pub mod orphan
 {

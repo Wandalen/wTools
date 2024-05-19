@@ -157,6 +157,7 @@ impl StructAttributes
       || &*Box::leak( Box::new( syn::punctuated::Punctuated::new() ) ),
       | attr | &attr.fields
     )
+
     // qqq : find better solutioin
 
     // self.storage_fields

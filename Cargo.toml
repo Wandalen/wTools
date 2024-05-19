@@ -92,7 +92,7 @@ default-features = false
 # path = "module/core/type_constructor_derive_pair_meta"
 
 [workspace.dependencies.interval_adapter]
-version = "~0.20.0"
+version = "~0.21.0"
 path = "module/core/interval_adapter"
 default-features = false
 features = [ "enabled" ]
@@ -118,7 +118,7 @@ default-features = false
 features = [ "enabled" ]
 
 [workspace.dependencies.derive_tools_meta]
-version = "~0.18.0"
+version = "~0.21.0"
 path = "module/core/derive_tools_meta"
 default-features = false
 features = [ "enabled" ]
@@ -146,7 +146,7 @@ path = "module/alias/fundamental_data_type"
 default-features = false
 
 [workspace.dependencies.variadic_from]
-version = "~0.14.0"
+version = "~0.17.0"
 path = "module/core/variadic_from"
 default-features = false
 features = [ "enabled" ]
@@ -182,7 +182,7 @@ default-features = false
 ## iter
 
 [workspace.dependencies.iter_tools]
-version = "~0.16.0"
+version = "~0.17.0"
 path = "module/core/iter_tools"
 default-features = false
 
@@ -255,7 +255,7 @@ default-features = false
 ## macro tools
 
 [workspace.dependencies.macro_tools]
-version = "~0.24.0"
+version = "~0.26.0"
 path = "module/core/macro_tools"
 default-features = false
 
