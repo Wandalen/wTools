@@ -1,6 +1,5 @@
 use super::*;
 
-#[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 #[ test ]
 fn reexport()
 {
@@ -19,8 +18,8 @@ fn reexport()
 
 }
 
-#[ test ]
 #[ cfg( feature = "collection_constructors" ) ]
+#[ test ]
 fn constructor()
 {
 
@@ -38,8 +37,8 @@ fn constructor()
 
 }
 
-#[ test ]
 #[ cfg( feature = "collection_into_constructors" ) ]
+#[ test ]
 fn into_constructor()
 {
 
@@ -57,7 +56,6 @@ fn into_constructor()
 
 }
 
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 #[ test ]
 fn iters()
 {

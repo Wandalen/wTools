@@ -10,4 +10,5 @@ use test_tools::exposed::*;
 use ::collection_tools as the_module;
 
 #[ cfg( feature = "enabled" ) ]
+#[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 mod inc;

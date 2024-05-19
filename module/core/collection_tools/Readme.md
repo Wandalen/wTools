@@ -120,7 +120,7 @@ While strict macros require you to have all members of the same type, more relax
 
 For example:
 ```rust
-# #[ cfg( all( feature = "enabled", feature = "collection_into_constructors" ) ) ]
+# #[ cfg( all( feature = "enabled", feature = "collection_into_constructors", any( not( feature = "no_std" ), feature = "use_alloc" ) ) ) ]
 # {
 use std::borrow::Cow;
 let vec : Vec< String > = collection_tools::into_vec!( "&str", "String".to_string(), Cow::from( "Cow" ) );
