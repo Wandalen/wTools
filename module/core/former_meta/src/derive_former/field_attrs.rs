@@ -17,7 +17,6 @@ pub struct FieldAttributes
 
 impl FieldAttributes
 {
-  // fn from_attrs( attributes : & Vec< syn::Attribute > ) -> Result< Self >
   pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
   {
     let mut config = None;

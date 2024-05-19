@@ -32,6 +32,7 @@ impl StructAttributes
         continue;
       }
 
+      // qqq : qqq for Anton : xxx : refactor field_attrs::FieldAttributes::from_attrs to make it similar to this function
       match key_str.as_ref()
       {
         AttributeStorageFields::KEYWORD =>
@@ -214,7 +215,6 @@ impl AttributeMutator
 
   pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
-
     match attr.meta
     {
       syn::Meta::List( ref meta_list ) =>
@@ -227,16 +227,6 @@ impl AttributeMutator
       },
       _ => return_syn_err!( attr, "Expects an attribute of format `#[ mutator( custom = true, hint = true ) ]`. \nGot: {}", qt!{ #attr } ),
     }
-
-//     match attr.meta
-//     {
-//       syn::Meta::List( ref meta_list ) =>
-//       {
-//         return syn::parse2::< AttributeStorageFields >( meta_list.tokens.clone() );
-//       },
-//       _ => return_syn_err!( attr, "Expects an attribute of format #[ storage_fields( a : i32, b : Option< String > ) ]
-// .\nGot: {}", qt!{ #attr } ),
-//     }
   }
 
 }
@@ -297,10 +287,6 @@ impl syn::parse::Parse for AttributeMutator
 /// `#[ perform( fn after1< 'a >() -> Option< &'a str > ) ]`
 ///
 
-// storage_fields
-// perform
-// mutator
-
 pub struct AttributePerform
 {
   pub signature : syn::Signature,
@@ -322,16 +308,6 @@ impl AttributePerform
       _ => return_syn_err!( attr, "Expects an attribute of format #[ perform( fn parse( mut self ) -> Request ) ]
 .\nGot: {}", qt!{ #attr } ),
     }
-
-//     match attr.meta
-//     {
-//       syn::Meta::List( ref meta_list ) =>
-//       {
-//         return syn::parse2::< AttributeStorageFields >( meta_list.tokens.clone() );
-//       },
-//       _ => return_syn_err!( attr, "Expects an attribute of format #[ storage_fields( a : i32, b : Option< String > ) ]
-// .\nGot: {}", qt!{ #attr } ),
-//     }
   }
 
 }
