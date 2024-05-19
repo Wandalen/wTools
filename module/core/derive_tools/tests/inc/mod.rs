@@ -70,6 +70,8 @@ mod from_inner_variants_manual;
 mod from_inner_variants_derive;
 #[ cfg( feature = "derive_from" ) ]
 mod from_inner_variants_duplicates;
+#[ cfg( feature = "derive_from" ) ]
+mod from_inner_variants_generics;
 
 mod inner_from_manual_test;
 mod inner_from_named_manual_test;
