@@ -14,5 +14,5 @@ pub enum GetData< 'a, T : ToString >
 // == begin of generated
 // == end of generated
 
-// include!( "./only_test/from_inner_variants_generics.rs" );
+include!( "./only_test/from_inner_variants_generics.rs" );
 // xxx2 : get complete

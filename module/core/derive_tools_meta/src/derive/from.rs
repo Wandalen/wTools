@@ -1,5 +1,5 @@
 use super::*;
-use macro_tools::{ attr, diag, item_struct, struct_like::StructLike, Result };
+use macro_tools::{ attr, diag, generic_params, item_struct, struct_like::StructLike, Result };
 
 // xxx2 : get complete From for enums
 
@@ -21,8 +21,8 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
   let has_debug = attr::has_debug( parsed.attrs().iter() )?;
   let item_name = &parsed.ident();
 
-  // let mut field_types = parsed.field_types();
-  // let field_names = parsed.field_names();
+  let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
+  = generic_params::decompose( &parsed.generics() );
 
   let result = match parsed
   {
@@ -35,15 +35,51 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
       match ( field_types.len(), field_names )
       {
         ( 0, _ ) =>
-        generate_unit( item_name ),
+        generate_unit
+        (
+          item_name,
+          &generics_impl,
+          &generics_ty,
+          &generics_where,
+        ),
         ( 1, Some( mut field_names ) ) =>
-        generate_from_single_field_named( &field_types.next().unwrap(), field_names.next().unwrap(), item_name ),
+        generate_from_single_field_named
+        (
+          item_name,
+          &generics_impl,
+          &generics_ty,
+          &generics_where,
+          field_names.next().unwrap(), // xxx : ?
+          &field_types.next().unwrap(),
+        ),
         ( 1, None ) =>
-        generate_from_single_field( &field_types.next().unwrap(), item_name ),
+        generate_from_single_field
+        (
+          item_name,
+          &generics_impl,
+          &generics_ty,
+          &generics_where,
+          &field_types.next().unwrap(),
+        ),
         ( _, Some( field_names ) ) =>
-        generate_from_multiple_fields_named( field_types, field_names, item_name ),
+        generate_from_multiple_fields_named
+        (
+          item_name,
+          &generics_impl,
+          &generics_ty,
+          &generics_where,
+          field_names,
+          field_types,
+        ),
         ( _, None ) =>
-        generate_from_multiple_fields( field_types, item_name ),
+        generate_from_multiple_fields
+        (
+          item_name,
+          &generics_impl,
+          &generics_ty,
+          &generics_where,
+          field_types,
+        ),
       }
 
     },
@@ -51,19 +87,26 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
     {
 
       let mut map = std::collections::HashMap::new();
-      item.variants.iter().for_each( | v |
+      item.variants.iter().for_each( | variant |
       {
         map
-        .entry( v.fields.to_token_stream().to_string() )
+        .entry( variant.fields.to_token_stream().to_string() )
         .and_modify( | e | *e += 1 )
         .or_insert( 1 );
       });
 
-      let variants = item.variants.iter().map( | v |
+      let variants = item.variants.iter().map( | variant |
       {
-        if map[ &v.fields.to_token_stream().to_string() ] <= 1
+        if map[ &variant.fields.to_token_stream().to_string() ] <= 1
         {
-          variant_generate( item_name, v )
+          variant_generate
+          (
+            item_name,
+            &generics_impl,
+            &generics_ty,
+            &generics_where,
+            variant,
+          )
         }
         else
         {
@@ -90,6 +133,9 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
 fn variant_generate
 (
   item_name : &syn::Ident,
+  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
   variant : &syn::Variant,
 )
 -> proc_macro2::TokenStream
@@ -127,7 +173,9 @@ fn variant_generate
   qt!
   {
     #[ automatically_derived ]
-    impl From< #args > for #item_name
+    impl< #generics_impl > From< #args > for #item_name< #generics_ty >
+    where
+      #generics_where
     {
       #[ inline ]
       fn from( src : #args ) -> Self
@@ -142,9 +190,12 @@ fn variant_generate
 // qqq  : document, add example of generated code
 fn generate_from_single_field_named
 (
-  field_type : &syn::Type,
-  field_name : &syn::Ident,
   item_name : &syn::Ident,
+  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  field_name : &syn::Ident,
+  field_type : &syn::Type,
 )
 -> proc_macro2::TokenStream
 {
@@ -152,7 +203,9 @@ fn generate_from_single_field_named
   {
     #[ automatically_derived ]
     // impl From < i32 > for MyStruct
-    impl From< #field_type > for #item_name
+    impl< #generics_impl > From< #field_type > for #item_name< #generics_ty >
+    where
+      #generics_where
     {
       #[ inline( always ) ]
       // fn from( src: i32 ) -> Self
@@ -168,8 +221,11 @@ fn generate_from_single_field_named
 // qqq  : document, add example of generated code
 fn generate_from_single_field
 (
-  field_type : &syn::Type,
   item_name : &syn::Ident,
+  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  field_type : &syn::Type,
 ) -> proc_macro2::TokenStream
 {
 
@@ -177,7 +233,9 @@ fn generate_from_single_field
   {
     #[automatically_derived]
     // impl From< bool > for IsTransparent
-    impl From< #field_type > for #item_name
+    impl< #generics_impl > From< #field_type > for #item_name< #generics_ty >
+    where
+      #generics_where
     {
       #[ inline( always ) ]
       // fn from( src: bool ) -> Self
@@ -193,9 +251,12 @@ fn generate_from_single_field
 // qqq : for Petro : document, add example of generated code
 fn generate_from_multiple_fields_named< 'a >
 (
-  field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type >,
+  item_name : &syn::Ident,
+  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
   field_names : Box< dyn macro_tools::IterTrait< 'a, &'a syn::Ident > + '_ >,
-  item_name : &syn::Ident
+  field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type >,
 ) -> proc_macro2::TokenStream
 {
 
@@ -212,7 +273,9 @@ fn generate_from_multiple_fields_named< 'a >
   qt!
   {
     // impl From< (i32, bool) > for StructNamedFields
-    impl From< ( #( #field_types ),* ) > for #item_name
+    impl< #generics_impl > From< (# ( #field_types ),* ) > for #item_name< #generics_ty >
+    where
+      #generics_where
     {
       #[ inline( always ) ]
       // fn from( src: (i32, bool) ) -> Self
@@ -229,8 +292,11 @@ fn generate_from_multiple_fields_named< 'a >
 // qqq  : document, add example of generated code
 fn generate_from_multiple_fields< 'a >
 (
-  field_types : impl macro_tools::IterTrait< 'a, &'a macro_tools::syn::Type >,
   item_name : &syn::Ident,
+  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  field_types : impl macro_tools::IterTrait< 'a, &'a macro_tools::syn::Type >,
 )
 -> proc_macro2::TokenStream
 {
@@ -248,7 +314,9 @@ fn generate_from_multiple_fields< 'a >
   qt!
   {
     // impl From< (i32, bool) > for StructWithManyFields
-    impl From< (# ( #field_types ),* ) > for #item_name
+    impl< #generics_impl > From< (# ( #field_types ),* ) > for #item_name< #generics_ty >
+    where
+      #generics_where
     {
       #[ inline( always ) ]
       // fn from( src: (i32, bool) ) -> Self
@@ -261,16 +329,25 @@ fn generate_from_multiple_fields< 'a >
   }
 }
 
+
 // qqq  : document, add example of generated code
-fn generate_unit( item_name : &syn::Ident ) -> proc_macro2::TokenStream
+fn generate_unit
+(
+  item_name : &syn::Ident,
+  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+) -> proc_macro2::TokenStream
 {
   qt!
   {
     // impl From< () > for UnitStruct
-    impl From< () > for #item_name
+    impl< #generics_impl > From< () > for #item_name< #generics_ty >
+    where
+      #generics_where
     {
       #[ inline( always ) ]
-      fn from( src: () ) -> Self
+      fn from( src : () ) -> Self
       {
         Self
       }

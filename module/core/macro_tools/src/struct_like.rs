@@ -224,38 +224,6 @@ pub( crate ) mod private
     }
   }
 
-//   impl syn::parse::Parse for StructLike
-//   {
-//     fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
-//     {
-//       let ahead = input.fork();
-//       let _visibility : Option< syn::Visibility > = ahead.parse().ok(); // Skip visibility
-//
-//       let lookahead = ahead.lookahead1();
-//       if lookahead.peek( syn::Token![ struct ] )
-//       {
-//         let item_struct : syn::ItemStruct = input.parse()?;
-//         if item_struct.fields.is_empty()
-//         {
-//           Ok( StructLike::Unit( item_struct ) )
-//         }
-//         else
-//         {
-//           Ok( StructLike::Struct( item_struct ) )
-//         }
-//       }
-//       else if lookahead.peek( syn::Token![ enum ] )
-//       {
-//         let item_enum : syn::ItemEnum = input.parse()?;
-//         Ok( StructLike::Enum( item_enum ) )
-//       }
-//       else
-//       {
-//         Err( lookahead.error() )
-//       }
-//     }
-//   }
-
   impl quote::ToTokens for StructLike
   {
     fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
@@ -287,19 +255,16 @@ pub( crate ) mod private
         StructLike::Unit( _ ) =>
         {
           let empty : Vec< FieldOrVariant< 'a > > = vec![];
-          // Box::new( empty.into_iter() ) as Box< dyn Iterator< Item = FieldOrVariant< 'a > > >
           Box::new( empty.into_iter() ) as Box< dyn IterTrait< 'a, FieldOrVariant< 'a > > >
         },
         StructLike::Struct( item ) =>
         {
           let fields = item.fields.iter().map( FieldOrVariant::from );
-          // Box::new( fields ) as Box< dyn Iterator< Item = FieldOrVariant< 'a > > >
           Box::new( fields ) as Box< dyn IterTrait< 'a, FieldOrVariant< 'a > > >
         },
         StructLike::Enum( item ) =>
         {
           let variants = item.variants.iter().map( FieldOrVariant::from );
-          // Box::new( variants ) as Box< dyn Iterator< Item = FieldOrVariant< 'a > > >
           Box::new( variants ) as Box< dyn IterTrait< 'a, FieldOrVariant< 'a > > >
         },
       }
@@ -388,6 +353,7 @@ pub( crate ) mod private
     /// Returns an iterator over fields of the item.
     // pub fn fields( &self ) -> Box< dyn Iterator< Item = &syn::Field > + '_ >
     pub fn fields< 'a >( &'a self ) -> Box< dyn IterTrait< 'a, &'a syn::Field > + '_ >
+    // pub fn fields< 'a >( &'a self ) -> impl IterTrait< 'a, &'a syn::Field >
     {
       match self
       {
@@ -409,7 +375,8 @@ pub( crate ) mod private
     /// Extracts the name of each field.
     // pub fn field_names( &self ) -> Box< dyn Iterator< Item = Option< &syn::Ident > > + '_ >
     // pub fn field_names< 'a >( &'a self ) -> Box< dyn IterTrait< 'a, Option< &'a syn::Ident > > + '_ >
-    pub fn field_names< 'a >( &'a self ) -> Option< Box< dyn IterTrait< 'a, &'a syn::Ident > + '_ > >
+    // pub fn field_names< 'a >( &'a self ) -> Option< Box< dyn IterTrait< 'a, &'a syn::Ident > + '_ > >
+    pub fn field_names< 'a >( &'a self ) -> Option< impl IterTrait< 'a, &'a syn::Ident > + '_ >
     {
       match self
       {
@@ -433,14 +400,16 @@ pub( crate ) mod private
 
     /// Extracts the type of each field.
     // pub fn field_types( &self ) -> Box< dyn Iterator< Item = &syn::Type > + '_ >
-    pub fn field_types< 'a >( &'a self ) -> Box< dyn IterTrait< 'a, &'a syn::Type > + '_ >
+    // pub fn field_types< 'a >( &'a self ) -> Box< dyn IterTrait< 'a, &'a syn::Type > + '_ >
+    pub fn field_types< 'a >( &'a self ) -> impl IterTrait< 'a, &'a syn::Type >
     {
       Box::new( self.fields().map( | field | &field.ty ) )
     }
 
     /// Extracts the name of each field.
     // pub fn field_attrs( &self ) -> Box< dyn Iterator< Item = &Vec< syn::Attribute > > + '_ >
-    pub fn field_attrs< 'a >( &'a self ) -> Box< dyn IterTrait< 'a, &'a Vec< syn::Attribute > > + '_ >
+    // pub fn field_attrs< 'a >( &'a self ) -> Box< dyn IterTrait< 'a, &'a Vec< syn::Attribute > > + '_ >
+    pub fn field_attrs< 'a >( &'a self ) -> impl IterTrait< 'a, &'a Vec< syn::Attribute > >
     {
       Box::new( self.fields().map( | field | &field.attrs ) )
     }

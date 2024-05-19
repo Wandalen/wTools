@@ -331,6 +331,39 @@ pub( crate ) mod private
   /// - `syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>`: Generics for `impl` blocks, retaining bounds but no defaults.
   /// - `syn::punctuated::Punctuated<syn::GenericParam, syn::token::Comma>`: Simplified generics for type definitions, only identifiers.
   /// - `syn::punctuated::Punctuated<syn::WherePredicate, syn::token::Comma>`: Where clauses, properly punctuated for use in where conditions.
+  ///
+  /// # Example of signature of function which reuse `generic_params::decompose`
+  ///
+  /// ```rust
+  /// use macro_tools::{ syn, proc_macro2, qt };
+  ///
+  /// fn generate_unit
+  /// (
+  ///   item_name : &syn::Ident,
+  ///   generics_with_defaults : syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  ///   generics_impl : syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  ///   generics_ty : syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  ///   generics_where: syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  /// )
+  /// -> proc_macro2::TokenStream
+  /// {
+  ///   qt!
+  ///   {
+  ///     #[ automatically_derived ]
+  ///     impl< #generics_impl > From< i32 > for #item_name< #generics_ty >
+  ///     where
+  ///       #generics_where
+  ///     {
+  ///       #[ inline ]
+  ///       fn from( src : i32 ) -> Self
+  ///       {
+  ///         Wrap( src )
+  ///       }
+  ///     }
+  ///   }
+  /// }
+  /// ```
+  ///
 
   pub fn decompose
   (
