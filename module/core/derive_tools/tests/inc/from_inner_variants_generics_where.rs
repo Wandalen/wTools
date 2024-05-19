@@ -5,7 +5,7 @@ use derive_tools::From;
 
 #[ derive( Debug, PartialEq, From ) ]
 // #[ debug ]
-pub enum GetData< 'a, T >
+pub enum GetData< 'a, T = str >
 where
   T : ToString + ?Sized,
 {
