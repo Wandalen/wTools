@@ -72,7 +72,15 @@ mod derive;
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_from" ) ]
-#[ proc_macro_derive( From, attributes( debug ) ) ]
+#[ proc_macro_derive
+(
+  From,
+  attributes
+  (
+    debug, // struct
+    from, // field
+  )
+)]
 pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::from::from( input );

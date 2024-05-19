@@ -10,13 +10,6 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
   use macro_tools::quote::ToTokens;
 
   let original_input = input.clone();
-
-  // let parsed = syn::parse::< syn::ItemStruct >( input )?;
-  // let has_debug = attr::has_debug( parsed.attrs.iter() )?;
-  // let item_name = &parsed.ident;
-  // let mut field_types = item_struct::field_types( &parsed );
-  // let field_names = item_struct::field_names( &parsed );
-
   let parsed = syn::parse::< StructLike >( input )?;
   let has_debug = attr::has_debug( parsed.attrs().iter() )?;
   let item_name = &parsed.ident();
@@ -226,7 +219,8 @@ fn generate_from_single_field
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
   field_type : &syn::Type,
-) -> proc_macro2::TokenStream
+)
+-> proc_macro2::TokenStream
 {
 
   qt!
@@ -257,7 +251,8 @@ fn generate_from_multiple_fields_named< 'a >
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
   field_names : Box< dyn macro_tools::IterTrait< 'a, &'a syn::Ident > + '_ >,
   field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type >,
-) -> proc_macro2::TokenStream
+)
+-> proc_macro2::TokenStream
 {
 
   let params : Vec< proc_macro2::TokenStream > = field_names
@@ -337,7 +332,8 @@ fn generate_unit
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-) -> proc_macro2::TokenStream
+)
+-> proc_macro2::TokenStream
 {
   qt!
   {
