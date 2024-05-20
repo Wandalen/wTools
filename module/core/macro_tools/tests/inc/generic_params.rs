@@ -112,13 +112,13 @@ fn merge_defaults()
 //
 
 #[ test ]
-fn names()
+fn only_names()
 {
 
   use macro_tools::syn::parse_quote;
 
   let generics : the_module::GenericsWithWhere = parse_quote!{ < T : Clone + Default, U, 'a, const N : usize > where T: core::fmt::Debug };
-  let simplified_generics = macro_tools::generic_params::names( &generics.unwrap() );
+  let simplified_generics = macro_tools::generic_params::only_names( &generics.unwrap() );
 
   assert_eq!( simplified_generics.params.len(), 4 ); // Contains T, U, 'a, and N
   assert!( simplified_generics.where_clause.is_none() ); // Where clause is removed
@@ -152,7 +152,8 @@ fn decompose_generics_without_where_clause()
   a_id!( impl_gen, exp.params );
   let exp : syn::Generics = syn::parse_quote! { < T, U, > };
   a_id!( ty_gen, exp.params );
-  // xxx : extend other tests
+
+  // qqq : extend other tests with a_id
 
 }
 

@@ -1,5 +1,5 @@
 use super::*;
-use macro_tools::{ attr, diag, type_struct, Result };
+use macro_tools::{ attr, diag, item_struct, Result };
 
 ///
 /// Generates an implementation of the `From< T >` trait for a custom struct, enabling
@@ -36,15 +36,15 @@ use macro_tools::{ attr, diag, type_struct, Result };
 pub fn from_components( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   let original_input = input.clone();
-  let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
-  let has_debug = attr::has_debug( parsed.item.attrs.iter() )?;
+  let parsed = syn::parse::< syn::ItemStruct >( input )?;
+  let has_debug = attr::has_debug( parsed.attrs.iter() )?;
 
   // Struct name
-  let item_name = parsed.item_name.clone();
+  let item_name = &parsed.ident;
 
   // Generate snipets
-  let trait_bounds = trait_bounds( &parsed.field_types()[ .. ] );
-  let field_assigns = field_assign( &parsed.fields_many() );
+  let trait_bounds = trait_bounds( item_struct::field_types( &parsed ) );
+  let field_assigns = field_assign( parsed.fields.iter() );
   let field_names : Vec< _ > = parsed.fields.iter().map( | field | &field.ident ).collect();
 
   // Generate the From<T> trait implementation
@@ -69,7 +69,7 @@ pub fn from_components( input : proc_macro::TokenStream ) -> Result< proc_macro2
 
   if has_debug
   {
-    let about = format!( "derive : FromComponents\nstructure : {0}", &parsed.item_name );
+    let about = format!( "derive : FromComponents\nstructure : {0}", &parsed.ident );
     diag::report_print( about, &original_input, &result );
   }
 
@@ -98,9 +98,10 @@ pub fn from_components( input : proc_macro::TokenStream ) -> Result< proc_macro2
 /// These trait bounds are then used in the `From<T>` implementation to ensure type compatibility.
 
 #[ inline ]
-fn trait_bounds( field_types : &[ &syn::Type ] ) -> Vec< proc_macro2::TokenStream >
+// fn trait_bounds( field_types : &[ &syn::Type ] ) -> Vec< proc_macro2::TokenStream >
+fn trait_bounds< 'a >( field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type > ) -> Vec< proc_macro2::TokenStream >
 {
-  field_types.iter().map( | field_type |
+  field_types.map( | field_type |
   {
     qt!
     {
@@ -125,9 +126,9 @@ fn trait_bounds( field_types : &[ &syn::Type ] ) -> Vec< proc_macro2::TokenStrea
 ///
 
 #[ inline ]
-fn field_assign( fields : &[ &syn::Field ] ) -> Vec< proc_macro2::TokenStream >
+fn field_assign< 'a >( fields : impl Iterator< Item = &'a syn::Field > ) -> Vec< proc_macro2::TokenStream >
 {
-  fields.iter().map( | field |
+  fields.map( | field |
   {
     let field_ident = &field.ident;
     let field_type = &field.ty;

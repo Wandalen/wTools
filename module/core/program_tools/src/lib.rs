@@ -9,6 +9,11 @@
 #[ cfg( feature = "enabled" ) ]
 use mod_interface::mod_interface;
 
+// xxx : move is_cicd here
+// println!( "MODULES_PATH : {}", env!( "MODULES_PATH" ) );
+// println!( "WORKSPACE_PATH : {}", env!( "WORKSPACE_PATH" ) );
+// // xxx : add to program_tools::{ path::modules(), path::workspace() }
+
 #[ cfg( feature = "enabled" ) ]
 mod_interface!
 {

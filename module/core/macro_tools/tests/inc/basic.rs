@@ -345,84 +345,61 @@ TokenStream [
 
   //
 
-  // fn equation( attr : &syn::Attribute ) -> Result< ( String, syn::Lit, syn::Meta ), syn::Error >
+  #[ test ]
+  fn attr_pair_single_basic() -> Result< () >
+  {
+    use syn::spanned::Spanned;
 
-  // qqq : xxx : fix
-  // #[test]
-  // fn attr_pair_single_basic() -> Result< (), syn::Error >
-  // {
-  //   use syn::spanned::Spanned;
-  //
-  //   // test.case( "basic" );
-  //   let input = qt!
-  //   {
-  //     #[ derive( Former ) ]
-  //     pub struct Struct1
-  //     {
-  //       #[former( default = 31 ) ]
-  //       pub int_1 : i32,
-  //     }
-  //   };
-  //
-  //   let ast = match syn::parse2::< syn::DeriveInput >( input )
-  //   {
-  //     Ok( syntax_tree ) => syntax_tree,
-  //     Err( err ) => return Err( err ),
-  //   };
-  //
-  //   let fields = match ast.data
-  //   {
-  //     syn::Data::Struct( ref data_struct ) => match data_struct.fields
-  //     {
-  //       syn::Fields::Named( ref fields_named ) =>
-  //       {
-  //         &fields_named.named
-  //       },
-  //       _ => return Err( syn::Error::new( ast.span(), "Unknown format of data, expected syn::Fields::Named( ref fields_named )" ) ),
-  //     },
-  //     _ => return Err( syn::Error::new( ast.span(), "Unknown format of data, expected syn::Data::Struct( ref data_struct )" ) ),
-  //   };
-  //
-  //   let attr = fields.first().ok_or_else( || err( "No field" ) )?.attrs.first().ok_or_else( || err( "No attr" ) )?;
-  //
-  //   let ( key, val, meta ) = the_module::equation( &attr )?;
-  //   a_id!( key, "default".to_string() );
-  //   a_id!( qt!( #val ).to_string(), "31".to_string() );
-  //   let is = match meta
-  //   {
-  //     syn::Meta::List( _ ) => true,
-  //     _ => false,
-  //   };
-  //   assert!( is );
-  //
-  //   return Ok( () );
-  //
-  //   fn err( src : &str ) -> syn::Error
-  //   {
-  //     syn::Error::new( proc_macro2::Span::call_site(), src )
-  //   }
-  // }
-//
-//   //
-//
-//   fn path_of() -> Result< (), syn::Error >
-//   {
-//
-//     let input = qt!
-//     {
-//       This::is::path
-//     };
-//     let ast = match syn::parse2::< syn::Path >( input )
-//     {
-//       Ok( syntax_tree ) => syntax_tree,
-//       Err( err ) => return Err( err ),
-//     };
-//
-//     let got = macro_tools::path_of( &ast );
-//     a_id!( got, "This::is::path" );
-//
-//     return Ok( () );
-//   }
+    // test.case( "basic" );
+    let input = qt!
+    {
+      #[ derive( Former ) ]
+      pub struct Struct1
+      {
+        #[former( default = 31 ) ]
+        pub int_1 : i32,
+      }
+    };
+
+    let ast = match syn::parse2::< syn::DeriveInput >( input )
+    {
+      Ok( syntax_tree ) => syntax_tree,
+      Err( err ) => return Err( err ),
+    };
+
+    let fields = match ast.data
+    {
+      syn::Data::Struct( ref data_struct ) => match data_struct.fields
+      {
+        syn::Fields::Named( ref fields_named ) =>
+        {
+          &fields_named.named
+        },
+        _ => return Err( syn::Error::new( ast.span(), "Unknown format of data, expected syn::Fields::Named( ref fields_named )" ) ),
+      },
+      _ => return Err( syn::Error::new( ast.span(), "Unknown format of data, expected syn::Data::Struct( ref data_struct )" ) ),
+    };
+
+    let attr = fields.first().ok_or_else( || err( "No field" ) )?.attrs.first().ok_or_else( || err( "No attr" ) )?;
+
+    let exp = Equation
+    {
+      left : parse_quote!{ default },
+      op : parse_quote!{ = },
+      right : parse_quote!{ 31 },
+    };
+    let got = the_module::equation( &attr )?;
+    a_id!( got.left, exp.left );
+    a_id!( format!( "{:?}", got ), format!( "{:?}", exp ) );
+    // a_id!( got.right, exp.right );
+
+    return Ok( () );
+
+    fn err( src : &str ) -> syn::Error
+    {
+      syn::Error::new( proc_macro2::Span::call_site(), src )
+    }
+  }
 
 }
 
@@ -436,6 +413,5 @@ tests_index!
   type_optional_container_kind_basic,
   type_rightmost_basic,
   type_parameters_basic,
-  // attr_pair_single_basic,
-  // path_of,
+  attr_pair_single_basic,
 }

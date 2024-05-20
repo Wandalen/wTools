@@ -23,6 +23,7 @@ mod private
   };
   use _path::AbsolutePath;
   use { CrateDir, query, url, Workspace, wtools };
+  use error_tools::for_app::Context;
   use wtools::error::anyhow::
   {
     format_err
@@ -78,12 +79,12 @@ mod private
       (
         format!
         (
-          r#"[![{}](https://img.shields.io/github/actions/workflow/status/{}/auto_merge_to_beta.yml?branch=master&label={}&logo=github)](https://github.com/{}/actions/workflows/auto_merge_to_beta.yml){}
-[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial/https://github.com/{})
+         r#"[![{}](https://img.shields.io/github/actions/workflow/status/{}/standard_rust_scheduled.yml?label={}&logo=github&branch={})](https://github.com/{}/actions/workflows/standard_rust_scheduled.yml){}
+[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F{}_trivial_sample%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20{}_trivial_sample/https://github.com/{})
 [![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/{})"#,
-          self.master_branch, url::git_info_extract( &self.repository_url )?, self.master_branch, url::git_info_extract( &self.repository_url )?,
+          self.workspace_name, url::git_info_extract( &self.repository_url )?, self.workspace_name, self.master_branch, url::git_info_extract( &self.repository_url )?,
           discord,
-          self.workspace_name, self.workspace_name, url::git_info_extract( &self.repository_url )?,
+          self.workspace_name.to_lowercase(), self.workspace_name.to_lowercase(), url::git_info_extract( &self.repository_url )?,
           self.workspace_name,
         )
       )
@@ -137,7 +138,7 @@ mod private
     .map( | m | m.as_str() )
     .unwrap_or_default();
 
-    _ = query::parse( raw_params )?;
+    _ = query::parse( raw_params ).context( "Fail to parse arguments" );
 
     let header = header_param.to_header()?;
     let content : String = TAGS_TEMPLATE.get().unwrap().replace( &content, &format!( "<!--{{ generate.main_header.start{raw_params} }}-->\n{header}\n<!--{{ generate.main_header.end }}-->" ) ).into();

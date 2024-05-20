@@ -1,12 +1,15 @@
 
 use super::*;
-use macro_tools::{ type_struct, Result };
+use macro_tools::{ attr, diag, Result };
 
 //
 
 pub fn deref_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
+  let original_input = input.clone();
   let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
+  let has_debug = attr::has_debug( parsed.attrs.iter() )?;
+
   let generic_arguments = parsed.generic_arguments();
   let item_name = parsed.item_name;
   let generics = parsed.generics;
@@ -23,6 +26,12 @@ pub fn deref_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::Toke
       }
     }
   };
+
+  if has_debug
+  {
+    let about = format!( "derive : DerefMut\nstructure : {item_name}" );
+    diag::report_print( about, &original_input, &result );
+  }
 
   Ok( result )
 }

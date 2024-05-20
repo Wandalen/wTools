@@ -1,5 +1,5 @@
 
-use macro_tools::{ Result, Many };
+use macro_tools::{ Result, Many, AsMuchAsPossibleNoDelimiter };
 use macro_tools::prelude::*;
 
 ///

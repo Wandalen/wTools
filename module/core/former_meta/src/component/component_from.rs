@@ -1,17 +1,18 @@
 
 use super::*;
-use macro_tools::{ attr, diag, type_struct, Result };
+use macro_tools::{ attr, diag, Result };
 
 /// Generates `From` implementations for each unique component (field) of the structure.
 pub fn component_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   let original_input = input.clone();
-  let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
-  let has_debug = attr::has_debug( parsed.item.attrs.iter() )?;
+  let parsed = syn::parse::< syn::ItemStruct >( input )?;
+  let has_debug = attr::has_debug( parsed.attrs.iter() )?;
+  let item_name = &parsed.ident;
 
-  let for_field = parsed.fields_many().iter().map( | field |
+  let for_field = parsed.fields.iter().map( | field |
   {
-    for_each_field( field, &parsed.item_name )
+    for_each_field( field, &parsed.ident )
   })
   .collect::< Result< Vec< _ >  > >()?;
 
@@ -22,7 +23,7 @@ pub fn component_from( input : proc_macro::TokenStream ) -> Result< proc_macro2:
 
   if has_debug
   {
-    let about = format!( "derive : ComponentFrom\nstructure : {0}", &parsed.item_name );
+    let about = format!( "derive : ComponentFrom\nstructure : {item_name}" );
     diag::report_print( about, &original_input, &result );
   }
 
