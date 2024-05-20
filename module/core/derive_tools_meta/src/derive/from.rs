@@ -350,3 +350,175 @@ fn generate_unit
     }
   }
 }
+
+// xxx2 : get completed
+
+// ///
+// /// Attributes of a field / variant
+// ///
+//
+// pub struct FieldAttributes
+// {
+//   pub from : Option< AttributeFrom >,
+// }
+//
+// impl FieldAttributes
+// {
+//
+//   pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
+//   {
+//     let mut from : AttributeFrom = None;
+//
+//     for attr in attrs
+//     {
+//       let key_ident = attr.path().get_ident()
+//       .ok_or_else( || syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ) )?;
+//       let key_str = format!( "{}", key_ident );
+//
+//       if attr::is_standard( &key_str )
+//       {
+//         continue;
+//       }
+//
+//       // qqq : qqq for Anton : xxx : refactor field_attrs::FieldAttributes::from_attrs to make it similar to this function
+//       match key_str.as_ref()
+//       {
+//         AttributeFrom::KEYWORD =>
+//         {
+//           from.replace( AttributeFrom::from_meta( attr )? );
+//         }
+//         "debug" =>
+//         {
+//         }
+//         _ =>
+//         {
+//           return Err( syn_err!( attr, "Known field attirbutes are : `from`, `debug`.\nUnknown structure attribute : {}", qt!{ #attr } ) );
+//         }
+//       }
+//     }
+//
+//     Ok( FieldAttributes { from } )
+//   }
+//
+// }
+//
+//
+// ///
+// /// Attribute to hold parameters of forming for a specific field or variant.
+// /// For example to avoid code From generation for it.
+// ///
+// /// `#[ from( off, hint : true ) ]`
+// ///
+//
+// pub struct AttributeFrom
+// {
+//   /// Explicitly enable generation of From for a specific field/variant.
+//   /// By default From is generated, but at some circumstances it's required to opt in explicitly.
+//   pub on : Option< syn::Ident >,
+//   /// Disable generation of From for a specific field/variant.
+//   pub off : Option< syn::Ident >,
+//   /// Specifies whether to provide a sketch of generated From or not.
+//   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
+//   pub hint : bool,
+// }
+//
+// impl AttributeFrom
+// {
+//
+//   const KEYWORD : &'static str = "from";
+//
+//   pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+//   {
+//     match attr.meta
+//     {
+//       syn::Meta::List( ref meta_list ) =>
+//       {
+//         return syn::parse2::< AttributeFrom >( meta_list.tokens.clone() );
+//       },
+//       syn::Meta::Path( ref _path ) =>
+//       {
+//         return Ok( Default::default() )
+//       },
+//       _ => return_syn_err!( attr, "Expects an attribute of format #[ from( off ) ]
+// .\nGot: {}", qt!{ #attr } ),
+//     }
+//   }
+//
+// }
+//
+// impl syn::parse::Parse for AttributeFrom
+// {
+//   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+//   {
+//     let mut off : bool = false;
+//     let mut on : bool = false;
+//     let mut hint = false;
+//
+//     while !input.is_empty()
+//     {
+//       let lookahead = input.lookahead1();
+//       if lookahead.peek( syn::Ident )
+//       {
+//         let ident : syn::Ident = input.parse()?;
+//         // xxx : qqq for Anton : use match here and for all attributes
+//         if ident == "off"
+//         {
+//           input.parse::< syn::Token![ = ] >()?;
+//           let value : syn::LitBool = input.parse()?;
+//           off = value.value();
+//         }
+//         else if ident == "on"
+//         {
+//           input.parse::< syn::Token![ = ] >()?;
+//           let value : syn::LitBool = input.parse()?;
+//           on = value.value();
+//         }
+//         else if ident == "hint"
+//         {
+//           input.parse::< syn::Token![ = ] >()?;
+//           let value : syn::LitBool = input.parse()?;
+//           hint = value.value;
+//         }
+//         else
+//         {
+//           return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'on', 'off', or 'hint'. For example: `#[ from( off, hint : true ) ]`", ident ) ) );
+//         }
+//       }
+//       else
+//       {
+//         return Err( syn::Error::new( input.span(), "Unexpected identifier '{}'. Expected 'on', 'off', or 'hint'. For example: `#[ from( off, hint : true ) ]`" ) );
+//       }
+//
+//     }
+//
+//     // xxx : move on / off logic into a helper
+//
+//     let mut enabled : Option< bool >;
+//
+//     if on && off
+//     {
+//       return Err( syn_err!( input, "`on` and `off` are mutually exclusive .\nIllegal attribute usage : {}", qt!{ #input } ) )
+//       // xxx : test
+//     }
+//
+//     if !on && !off
+//     {
+//       enabled = None;
+//     }
+//     else if on
+//     {
+//       enabled = Some( true )
+//     }
+//     else if off
+//     {
+//       enabled = Some( false )
+//     }
+//
+//     // Optional comma handling
+//     if input.peek( syn::Token![,] )
+//     {
+//       input.parse::< syn::Token![,] >()?;
+//     }
+//     Ok( Self { enabled, hint } )
+//   }
+// }
