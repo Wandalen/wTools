@@ -8,7 +8,7 @@ fn child()
   .child( "b" ).end()
   .form();
 
-  let children = vec!
+  let children = collection_tools::vec!
   [
     Child { name : "a".to_string(), data : false },
     Child { name : "b".to_string(), data : false },
@@ -27,7 +27,7 @@ fn _child()
   ._child().name( "b" ).end()
   .form();
 
-  let children = vec!
+  let children = collection_tools::vec!
   [
     Child { name : "a".to_string(), data : false },
     Child { name : "b".to_string(), data : false },

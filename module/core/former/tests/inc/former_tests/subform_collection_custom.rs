@@ -36,7 +36,7 @@ where
   K : std::cmp::Eq + std::hash::Hash,
 {
   type Item = K;
-  type IntoIter = std::collections::hash_set::IntoIter< K >;
+  type IntoIter = collection_tools::hset::IntoIter< K >;
 
   fn into_iter( self ) -> Self::IntoIter
   {
@@ -49,7 +49,7 @@ where
   K : std::cmp::Eq + std::hash::Hash,
 {
   type Item = &'a K;
-  type IntoIter = std::collections::hash_set::Iter< 'a, K >;
+  type IntoIter = collection_tools::hset::Iter< 'a, K >;
 
   fn into_iter( self ) -> Self::IntoIter
   {
