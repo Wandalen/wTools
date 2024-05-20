@@ -5,13 +5,14 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use super::super::*;
+  use crate::*;
 
   ///
   /// For attribute like `#[former( default = 31 ) ]` return key `default` and value `31`,
   /// as well as syn::Meta as the last element of result tuple.
   ///
   /// ### Basic use-case.
+  ///
   /// ```rust
   /// use macro_tools::exposed::*;
   /// let attr : syn::Attribute = syn::parse_quote!( #[ former( default = 31 ) ] );
@@ -274,25 +275,14 @@ pub( crate ) mod private
     }
   }
 
-  //
-
-  // types!
-  // {
-
-    ///
-    /// Attribute which is outer.
-    ///
-    /// For example: `#[ derive( Copy ) ]`.
-    ///
-
-    // #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
-    // pub many AttributesOuter : syn::Attribute;
-    // xxx : apply maybe collection of derives for TDD
-
-    #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
-    pub struct AttributesOuter( pub Vec< syn::Attribute > );
-
-  // }
+  /// Represents a collection of outer attributes.
+  ///
+  /// This struct wraps a `Vec< syn::Attribute >`, providing utility methods for parsing,
+  /// converting, and iterating over outer attributes. Outer attributes are those that
+  /// appear outside of an item, such as `#[ ... ]` annotations in Rust.
+  ///
+  #[ derive( Debug, PartialEq, Eq, Clone, Default ) ]
+  pub struct AttributesOuter( pub Vec< syn::Attribute > );
 
   impl From< Vec< syn::Attribute > > for AttributesOuter
   {
@@ -359,29 +349,29 @@ pub( crate ) mod private
     }
   }
 
-  ///
-  /// Attribute and ident.
-  ///
-
-  // qqq : example?
-
-  pub type AttributedIdent = Pair< Many< AttributesInner >, syn::Ident >;
-
-  impl From< syn::Ident > for AttributedIdent
-  {
-    fn from( src : syn::Ident ) -> Self
-    {
-      Self( Vec::< AttributesInner >::new().into(), src )
-    }
-  }
-
-  impl From< AttributedIdent > for syn::Ident
-  {
-    fn from( src : AttributedIdent ) -> Self
-    {
-      src.1
-    }
-  }
+//   ///
+//   /// Attribute and ident.
+//   ///
+//
+//   // qqq : example?
+//
+//   pub type AttributedIdent = Pair< Many< AttributesInner >, syn::Ident >;
+//
+//   impl From< syn::Ident > for AttributedIdent
+//   {
+//     fn from( src : syn::Ident ) -> Self
+//     {
+//       Self( Vec::< AttributesInner >::new().into(), src )
+//     }
+//   }
+//
+//   impl From< AttributedIdent > for syn::Ident
+//   {
+//     fn from( src : AttributedIdent ) -> Self
+//     {
+//       src.1
+//     }
+//   }
 
 }
 
@@ -421,7 +411,7 @@ pub mod exposed
     is_standard,
     AttributesInner,
     AttributesOuter,
-    AttributedIdent,
+    // AttributedIdent,
   };
 }
 

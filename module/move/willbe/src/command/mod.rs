@@ -247,13 +247,13 @@ with_gitpod: If set to 1, a column with a link to Gitpod will be added. Clicking
 
     .command( "readme.header.renew" )
       .hint( "Generate header in workspace`s Readme.md file")
-      .long_hint( "For use this command you need to specify:\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nworkspace_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml.")
+      .long_hint( "Generate header which contains a badge with the general status of workspace, a link to discord, an example in gitpod and documentation in workspace`s Readme.md file.\n For use this command you need to specify:\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nworkspace_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml.")
       .routine( command::readme_header_renew )
       .end()
 
     .command( "readme.modules.headers.renew" )
       .hint( "Generates header for each workspace member." )
-      .long_hint( "For use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml." )
+      .long_hint( "Generates header for each workspace member which contains a badge with the status of crate, a link to discord, an example in gitpod and documentation in crate Readme.md file.\nFor use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml." )
       .routine( command::readme_modules_headers_renew )
       .end()
 

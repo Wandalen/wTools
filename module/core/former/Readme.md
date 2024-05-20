@@ -2,7 +2,7 @@
 
 # Module :: former
 <!--{ generate.module_header.start() }-->
- [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_former_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_former_push.yml) [![docs.rs](https://img.shields.io/docsrs/former?color=e3e8f0&logo=docs.rs)](https://docs.rs/former) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module/core/former/examples/former_trivial.rs,RUN_POSTFIX=--example%20/home/sakapoi/Документи/wTools_fork/module/core/former/examples/former_trivial/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
+ [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_former_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_former_push.yml) [![docs.rs](https://img.shields.io/docsrs/former?color=e3e8f0&logo=docs.rs)](https://docs.rs/former) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fcore%2Fformer%2Fexamples%2Fformer_trivial.rs,RUN_POSTFIX=--example%20former_trivial/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 <!--{ generate.module_header.end }-->
 
 A flexible and extensible implementation of the builder pattern.
@@ -465,7 +465,7 @@ The provided code snippet illustrates a basic use-case of the Former, which is u
 </details>
 
 Try out `cargo run --example former_trivial`.
-</br>
+<br/>
 [See code](./examples/former_trivial.rs).
 
 ## Example : Custom and Alternative Setters
@@ -518,7 +518,7 @@ assert_eq!( example.word, "Hello!".to_string() );
 In the example above showcases a custom alternative setter, `word_exclaimed`, which appends an exclamation mark to the input string before storing it. This approach allows for additional processing or validation of the input data without compromising the simplicity of the builder pattern.
 
 Try out `cargo run --example former_custom_setter`.
-</br>
+<br/>
 [See code](./examples/former_custom_setter.rs).
 
 ## Example : Custom Setter Overriding
@@ -575,7 +575,7 @@ But it's also possible to completely override setter and write its own from scra
 In the example above, the default setter for `word` is disabled, and a custom setter is defined to automatically append an exclamation mark to the string. This method allows for complete control over the data assignment process, enabling the inclusion of any necessary logic or validation steps.
 
 Try out `cargo run --example former_custom_setter_overriden`.
-</br>
+<br/>
 [See code](./examples/former_custom_setter_overriden.rs).
 
 ## Example : Custom Defaults
@@ -634,7 +634,7 @@ The above code snippet showcases the `Former` crate's ability to initialize stru
 This approach significantly simplifies struct construction, particularly for complex types or where defaults beyond the `Default` trait's capability are required. By utilizing the `default` attribute, developers can ensure their structs are initialized safely and predictably, enhancing code clarity and maintainability.
 
 Try out `cargo run --example former_custom_defaults`.
-</br>
+<br/>
 [See code](./examples/former_custom_defaults.rs).
 
 ## Concept of Storage and Former
@@ -705,7 +705,7 @@ This example demonstrates how to employ the `Former` trait to configure a `Vec` 
 ```
 
 Try out `cargo run --example former_collection_vector`.
-</br>
+<br/>
 [See code](./examples/former_collection_vector.rs).
 
 ## Example : Collection Setter for a Hashmap
@@ -742,7 +742,7 @@ This example demonstrates how to effectively employ the `Former` trait to config
 ```
 
 Try out `cargo run --example former_collection_hashmap`.
-</br>
+<br/>
 [See code](./examples/former_collection_hashmap.rs).
 
 ## Example : Collection Setter for a Hashset
@@ -779,7 +779,7 @@ This example demonstrates the use of the `Former` trait to build a `collection_t
 ```
 
 Try out `cargo run --example former_collection_hashset`.
-</br>
+<br/>
 [See code](./examples/former_collection_hashset.rs).
 
 ## Example : Custom Scalar Setter
@@ -865,7 +865,7 @@ In this example, the `Parent` struct functions as a collection for multiple `Chi
 - **Custom Subformer Integration**: The `child` method in the `ParentFormer` initializes a `ChildFormer` with a closure that integrates the `Child` into the `Parent`'s `child` map upon completion.
 
 Try out `cargo run --example former_custom_scalar_setter`.
-</br>
+<br/>
 [See code](./examples/former_custom_scalar_setter.rs).
 
 ## Example : Custom Subform Scalar Setter
@@ -1021,7 +1021,7 @@ The `child` function within `ParentFormer` is a custom subform setter that plays
 ```
 
 Try out `cargo run --example former_custom_subform_collection`.
-</br>
+<br/>
 [See code](./examples/former_custom_subform_collection.rs).
 
 ## Example : Custom Subform Entry Setter
@@ -1115,7 +1115,7 @@ The `child` function within `ParentFormer` is a custom subform setter that plays
 ```
 
 Try out `cargo run --example former_custom_subform_entry`.
-</br>
+<br/>
 [See code](./examples/former_custom_subform_entry.rs).
 
 ## General Collection Interface
@@ -1133,7 +1133,7 @@ There are suite of traits designed to abstract and enhance the functionality of 
 Collection interface is defined in the crate and implemented for collections like vectors, hash maps, etc, but if you want to use non-standard collection you can implement collection interface for the collection. This example demonstrate how to do that.
 
 Try out `cargo run --example former_custom_collection`.
-</br>
+<br/>
 [See code](./examples/former_custom_collection.rs).
 
 ## Concept of Mutator
@@ -1231,7 +1231,7 @@ held within the storage.
 ```
 
 Try out `cargo run --example former_custom_mutator`.
-</br>
+<br/>
 [See code](./examples/former_custom_mutator.rs).
 
 ## Concept of Definitions

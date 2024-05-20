@@ -1,9 +1,18 @@
 use super::*;
 
-mod basic_test;
+// = import tests of clone_dyn
 
-// #[ cfg( any( feature = "derive_clone_dyn_use_std", feature = "derive_clone_dyn_use_alloc" ) ) ]
-// mod clone_dyn_test;
+#[ cfg( feature = "derive_clone_dyn" ) ]
+#[ path = "../../../../core/clone_dyn/tests/inc/mod.rs" ]
+mod clone_dyn_test;
+
+// = import tests of variadic_from
+
+#[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
+#[ path = "../../../../../module/core/variadic_from/tests/inc/mod.rs" ]
+mod variadic_from_test;
+
+// = own tests
 
 mod all_manual_test;
 #[ cfg
@@ -19,6 +28,8 @@ mod all_manual_test;
 	)
 )]
 mod all_test;
+
+mod basic_test;
 
 mod as_mut_manual_test;
 #[ cfg( feature = "derive_as_mut" ) ]
@@ -36,23 +47,35 @@ mod deref_mut_manual_test;
 #[ cfg( feature = "derive_deref_mut" ) ]
 mod deref_mut_test;
 
-mod from_inner_manual_test;
+#[ cfg( feature = "derive_from" ) ]
+mod from_inner_named_test;
 mod from_inner_named_manual_test;
+
+mod from_inner_manual_test;
 mod from_inner_multiple_named_manual_test;
 mod from_inner_multiple_manual_test;
 mod from_inner_unit_manual_test;
 #[ cfg( feature = "derive_from" ) ]
 mod from_inner_test;
 #[ cfg( feature = "derive_from" ) ]
-mod from_inner_named_test;
-#[ cfg( feature = "derive_from" ) ]
 mod from_inner_multiple_named_test;
 #[ cfg( feature = "derive_from" ) ]
 mod from_inner_unit_test;
 #[ cfg( feature = "derive_from" ) ]
 mod from_inner_multiple_test;
+
 #[ cfg( feature = "derive_from" ) ]
-mod from_inner_variants;
+mod from_inner_variants_manual;
+#[ cfg( feature = "derive_from" ) ]
+mod from_inner_variants_derive;
+#[ cfg( feature = "derive_from" ) ]
+mod from_inner_variants_duplicates;
+#[ cfg( feature = "derive_from" ) ]
+mod from_inner_variants_generics;
+#[ cfg( feature = "derive_from" ) ]
+mod from_inner_variants_generics_where;
+#[ cfg( feature = "derive_from" ) ]
+mod from_inner_variants_collisions;
 
 mod inner_from_manual_test;
 mod inner_from_named_manual_test;
@@ -70,19 +93,4 @@ mod inner_from_unit_test;
 #[ cfg( feature = "derive_inner_from" ) ]
 mod inner_from_multiple_test;
 
-// qqq : for Petro : xxx : fix
-// #[ cfg( all( feature = "type_variadic_from" ) ) ]
-// mod variadic_from_manual_test;
-//
-// #[ cfg( all( feature = "type_variadic_from" ) ) ]
-// mod variadic_from_manual_beyond_test;
-//
-// // #[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
-// // mod variadic_from_derive_test;
-// // xxx : fix
-// #[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
-// mod variadic_from2_derive;
-
-// #[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
-// #[ path = "../../../../../module/core/variadic_from/tests/inc/mod.rs" ]
-// mod variadic_tests;
+// xxx

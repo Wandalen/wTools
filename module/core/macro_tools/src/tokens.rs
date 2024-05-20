@@ -5,7 +5,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use super::super::*;
+  use crate::*;
   use core::fmt;
 
   /// `Tokens` is a wrapper around `proc_macro2::TokenStream`.

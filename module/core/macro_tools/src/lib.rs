@@ -3,27 +3,47 @@
 #![ doc( html_root_url = "https://docs.rs/proc_macro_tools/latest/proc_macro_tools/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+// qqq : review every page of generated documentation improve how it look as well as its content
+//
+// attr
+// Protected namespace of the module.
+// container_kind
+// Protected namespace of the module.
+// dependency
+// Dependencies of the module.
+// derive
+// Protected namespace of the module.
+// diag
+// Protected namespace of the module.
+// drop
+// Protected namespace of the module.
+// exposed
+// Exposed namespace of the module.
+
 /// Modular files.
 #[ cfg( feature = "enabled" ) ]
 #[ path = "." ]
 mod file
 {
-  use super::*;
+  // use super::*;
   pub mod attr;
   pub mod container_kind;
   pub mod derive;
   pub mod diag;
-  pub mod generic_analyze;
+  pub mod drop;
+  // pub mod generic_analyze;
   pub mod generic_args;
   pub mod generic_params;
   pub mod item;
+  pub mod item_struct;
+  pub mod iter;
   pub mod name;
   pub mod phantom;
   pub mod punctuated;
   pub mod quantifier;
+  pub mod struct_like;
   pub mod tokens;
   pub mod typ;
-  pub mod type_struct;
 }
 
 ///
@@ -62,17 +82,20 @@ pub mod protected
     container_kind::orphan::*,
     derive::orphan::*,
     diag::orphan::*,
-    generic_analyze::orphan::*,
+    drop::orphan::*,
+    // generic_analyze::orphan::*,
     generic_args::orphan::*,
     generic_params::orphan::*,
     item::orphan::*,
+    item_struct::orphan::*,
+    iter::orphan::*,
     name::orphan::*,
     phantom::orphan::*,
     punctuated::orphan::*,
     quantifier::orphan::*,
+    struct_like::orphan::*,
     tokens::orphan::*,
     typ::orphan::*,
-    type_struct::orphan::*,
   };
 }
 
@@ -89,6 +112,7 @@ pub mod orphan
 #[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use quote::
@@ -97,12 +121,14 @@ pub mod exposed
     quote,
     quote_spanned,
   };
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::
   {
     prelude::*,
   };
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::file::
@@ -111,18 +137,22 @@ pub mod exposed
     container_kind::exposed::*,
     derive::orphan::*,
     diag::exposed::*,
-    generic_analyze::exposed::*,
+    drop::exposed::*,
+    // generic_analyze::exposed::*,
     generic_args::exposed::*,
     generic_params::exposed::*,
     item::exposed::*,
+    item_struct::exposed::*,
+    iter::exposed::*,
     name::exposed::*,
     phantom::exposed::*,
     punctuated::exposed::*,
     quantifier::exposed::*,
+    struct_like::exposed::*,
     tokens::exposed::*,
     typ::exposed::*,
-    type_struct::exposed::*,
   };
+
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -177,17 +207,20 @@ pub mod prelude
     container_kind::prelude::*,
     derive::orphan::*,
     diag::prelude::*,
-    generic_analyze::prelude::*,
+    drop::prelude::*,
+    // generic_analyze::prelude::*,
     generic_args::prelude::*,
     generic_params::prelude::*,
     item::prelude::*,
+    item_struct::prelude::*,
+    iter::prelude::*,
     name::prelude::*,
     phantom::prelude::*,
     punctuated::prelude::*,
     quantifier::prelude::*,
+    struct_like::prelude::*,
     tokens::prelude::*,
     typ::prelude::*,
-    type_struct::prelude::*,
   };
 
 }

@@ -35,7 +35,7 @@
 //   use super::*;
 //   pub mod tokens;
 //   pub mod typ;
-//   pub mod type_struct;
+//   pub mod item_struct;
 // }
 
 mod impls;

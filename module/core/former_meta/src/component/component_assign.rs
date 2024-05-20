@@ -1,5 +1,5 @@
 use super::*;
-use macro_tools::{ attr, diag, type_struct, Result };
+use macro_tools::{ attr, diag, Result };
 
 ///
 /// Generates implementations of the `ComponentAssign` trait for each field of a struct.
@@ -7,12 +7,13 @@ use macro_tools::{ attr, diag, type_struct, Result };
 pub fn component_assign( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   let original_input = input.clone();
-  let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
-  let has_debug = attr::has_debug( parsed.item.attrs.iter() )?;
+  let parsed = syn::parse::< syn::ItemStruct >( input )?;
+  let has_debug = attr::has_debug( parsed.attrs.iter() )?;
+  let item_name = &parsed.ident.clone();
 
-  let for_field = parsed.fields_many().iter().map( | field |
+  let for_field = parsed.fields.iter().map( | field |
   {
-    for_each_field( field, &parsed.item_name )
+    for_each_field( field, &parsed.ident )
   })
   .collect::< Result< Vec< _ > > >()?;
 
@@ -23,14 +24,9 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> Result< proc_macro
 
   if has_debug
   {
-    let about = format!( "derive : ComponentAssign\nstructure : {0}", &parsed.item_name );
+    let about = format!( "derive : ComponentAssign\nstructure : {item_name}" );
     diag::report_print( about, &original_input, &result );
   }
-
-  // if has_debug
-  // {
-  //   diag::report_print( "derive : ComponentAssign", original_input, &result );
-  // }
 
   Ok( result )
 }
