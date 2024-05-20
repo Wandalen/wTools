@@ -32,7 +32,7 @@ impl StructAttributes
         continue;
       }
 
-      // qqq : qqq for Anton : xxx : refactor field_attrs::FieldAttributes::from_attrs to make it similar to this function
+      // qqq : qqq for Anton : xxx : refactor field_attrs::FieldAttributes::from_attrs to make it similar to this function -- done
       match key_str.as_ref()
       {
         AttributeStorageFields::KEYWORD =>

@@ -37,81 +37,26 @@ impl FieldAttributes
 
       match key_str.as_ref()
       {
-        "former" =>
+        AttributeConfig::KEYWORD =>
         {
-          match attr.meta
-          {
-            syn::Meta::List( ref meta_list ) =>
-            {
-              config.replace( syn::parse2::< AttributeConfig >( meta_list.tokens.clone() )? );
-            },
-            syn::Meta::Path( ref _path ) =>
-            {
-              config.replace( syn::parse2::< AttributeConfig >( Default::default() )? );
-            },
-            _ => return_syn_err!( attr, "Expects an attribute of format #[ former( default = 13 ) ].\nGot: {}", qt!{ #attr } ),
-          }
+          config.replace( AttributeConfig::from_meta( &attr )? );
         }
-        "scalar" =>
+        AttributeScalarSetter::KEYWORD =>
         {
-          // qqq : move this part of parsing into attribute. do that for all attributes
-          match attr.meta
-          {
-            syn::Meta::List( ref meta_list ) =>
-            {
-              scalar.replace( syn::parse2::< AttributeScalarSetter >( meta_list.tokens.clone() )? );
-            },
-            syn::Meta::Path( ref _path ) =>
-            {
-              scalar.replace( syn::parse2::< AttributeScalarSetter >( Default::default() )? );
-            },
-            _ => return_syn_err!( attr, "Expects an attribute of format `#[ scalar( setter = false ) ]` or `#[ scalar( setter = true, name = my_name ) ]`. \nGot: {}", qt!{ #attr } ),
-          }
+          // qqq : move this part of parsing into attribute. do that for all attributes -- done
+          scalar.replace( AttributeScalarSetter::from_meta( &attr )? );
         }
-        "subform_scalar" =>
+        AttributeSubformScalarSetter::KEYWORD =>
         {
-          match attr.meta
-          {
-            syn::Meta::List( ref meta_list ) =>
-            {
-              subform_scalar.replace( syn::parse2::< AttributeSubformScalarSetter >( meta_list.tokens.clone() )? );
-            },
-            syn::Meta::Path( ref _path ) =>
-            {
-              subform_scalar.replace( syn::parse2::< AttributeSubformScalarSetter >( Default::default() )? );
-            },
-            _ => return_syn_err!( attr, "Expects an attribute of format `#[ subform_scalar( setter = false ) ]` or `#[ subform_scalar( setter = true, name = my_name ) ]`. \nGot: {}", qt!{ #attr } ),
-          }
+          subform_scalar.replace( AttributeSubformScalarSetter::from_meta( &attr )? );
         }
-        "subform_collection" =>
+        AttributeSubformCollectionSetter::KEYWORD =>
         {
-          match attr.meta
-          {
-            syn::Meta::List( ref meta_list ) =>
-            {
-              subform_collection.replace( syn::parse2::< AttributeSubformCollectionSetter >( meta_list.tokens.clone() )? );
-            },
-            syn::Meta::Path( ref _path ) =>
-            {
-              subform_collection.replace( syn::parse2::< AttributeSubformCollectionSetter >( Default::default() )? );
-            },
-            _ => return_syn_err!( attr, "Expects an attribute of format `#[ subform_collection ]` or `#[ subform_collection( definition = former::VectorDefinition ) ]` if you want to use default collection defition. \nGot: {}", qt!{ #attr } ),
-          }
+          subform_collection.replace( AttributeSubformCollectionSetter::from_meta( &attr )? );
         }
-        "subform_entry" =>
+        AttributeSubformEntrySetter::KEYWORD =>
         {
-          match attr.meta
-          {
-            syn::Meta::List( ref meta_list ) =>
-            {
-              subform_entry.replace( syn::parse2::< AttributeSubformEntrySetter >( meta_list.tokens.clone() )? );
-            },
-            syn::Meta::Path( ref _path ) =>
-            {
-              subform_entry.replace( syn::parse2::< AttributeSubformEntrySetter >( Default::default() )? );
-            },
-            _ => return_syn_err!( attr, "Expects an attribute of format `#[ subform_entry ]` or `#[ subform_entry( name : child )` ], \nGot: {}", qt!{ #attr } ),
-          }
+          subform_entry.replace( AttributeSubformEntrySetter::from_meta( &attr )? );
         }
         _ =>
         {
@@ -140,6 +85,25 @@ pub struct AttributeConfig
 
 impl AttributeConfig
 {
+
+  const KEYWORD: &'static str = "former";
+
+  pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+  {
+    match attr.meta
+    {
+      syn::Meta::List( ref meta_list ) =>
+      {
+        syn::parse2::< AttributeConfig >( meta_list.tokens.clone() )
+      },
+      syn::Meta::Path( ref _path ) =>
+      {
+        syn::parse2::< AttributeConfig >( Default::default() )
+      },
+      _ => return_syn_err!( attr, "Expects an attribute of format #[ former( default = 13 ) ].\nGot: {}", qt!{ #attr } ),
+    }
+  }
+
 }
 
 impl syn::parse::Parse for AttributeConfig
@@ -155,14 +119,17 @@ impl syn::parse::Parse for AttributeConfig
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
-        if ident == "default"
+        match ident.to_string().as_str()
         {
-          input.parse::< syn::Token![ = ] >()?;
-          default = Some( input.parse()? );
-        }
-        else
-        {
-          return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'default'. For example: `former( default = 13 )`", ident ) ) );
+          "default" =>
+          {
+            input.parse::< syn::Token![ = ] >()?;
+            default = Some( input.parse()? );
+          }
+          _ =>
+          {
+            return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'default'. For example: `former( default = 13 )`", ident ) ) );
+          }
         }
       }
 
@@ -209,6 +176,24 @@ pub struct AttributeScalarSetter
 impl AttributeScalarSetter
 {
 
+  const KEYWORD : &'static str = "scalar";
+
+  pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+  {
+    match attr.meta
+    {
+      syn::Meta::List( ref meta_list ) =>
+      {
+        syn::parse2::< AttributeScalarSetter >( meta_list.tokens.clone() )
+      },
+      syn::Meta::Path( ref _path ) =>
+      {
+        syn::parse2::< AttributeScalarSetter >( Default::default() )
+      },
+      _ => return_syn_err!( attr, "Expects an attribute of format `#[ scalar( setter = false ) ]` or `#[ scalar( setter = true, name = my_name ) ]`. \nGot: {}", qt!{ #attr } ),
+    }
+  }
+
   /// Should setter be generated or not?
   pub fn setter( &self ) -> bool
   {
@@ -231,26 +216,29 @@ impl syn::parse::Parse for AttributeScalarSetter
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
-        if ident == "name"
+        match ident.to_string().as_str()
         {
-          input.parse::< syn::Token![ = ] >()?;
-          name = Some( input.parse()? );
-        }
-        else if ident == "setter"
-        {
-          input.parse::< syn::Token![ = ] >()?;
-          let value : syn::LitBool = input.parse()?;
-          setter = Some( value.value() );
-        }
-        else if ident == "hint"
-        {
-          input.parse::< syn::Token![ = ] >()?;
-          let value : syn::LitBool = input.parse()?;
-          hint = value.value;
-        }
-        else
-        {
-          return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `scalar( name = myName, setter = true )`", ident ) ) );
+          "name" =>
+          {
+            input.parse::< syn::Token![ = ] >()?;
+            name = Some( input.parse()? );
+          }
+          "setter" =>
+          {
+            input.parse::< syn::Token![ = ] >()?;
+            let value : syn::LitBool = input.parse()?;
+            setter = Some( value.value() );
+          }
+          "hint" =>
+          {
+            input.parse::< syn::Token![ = ] >()?;
+            let value : syn::LitBool = input.parse()?;
+            hint = value.value;
+          }
+          _ =>
+          {
+            return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `scalar( name = myName, setter = true )`", ident ) ) );
+          }
         }
       }
       else
@@ -296,6 +284,24 @@ pub struct AttributeSubformScalarSetter
 impl AttributeSubformScalarSetter
 {
 
+  const KEYWORD: &'static str = "subform_scalar";
+
+  pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+  {
+    match attr.meta
+    {
+      syn::Meta::List( ref meta_list ) =>
+      {
+        syn::parse2::< AttributeSubformScalarSetter >( meta_list.tokens.clone() )
+      },
+      syn::Meta::Path( ref _path ) =>
+      {
+        syn::parse2::< AttributeSubformScalarSetter >( Default::default() )
+      },
+      _ => return_syn_err!( attr, "Expects an attribute of format `#[ subform_scalar( setter = false ) ]` or `#[ subform_scalar( setter = true, name = my_name ) ]`. \nGot: {}", qt!{ #attr } ),
+    }
+  }
+
   /// Should setter be generated or not?
   pub fn setter( &self ) -> bool
   {
@@ -318,26 +324,29 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
-        if ident == "name"
+        match ident.to_string().as_str()
         {
-          input.parse::< syn::Token![ = ] >()?;
-          name = Some( input.parse()? );
-        }
-        else if ident == "setter"
-        {
-          input.parse::< syn::Token![ = ] >()?;
-          let value : syn::LitBool = input.parse()?;
-          setter = Some( value.value() );
-        }
-        else if ident == "hint"
-        {
-          input.parse::< syn::Token![ = ] >()?;
-          let value : syn::LitBool = input.parse()?;
-          hint = value.value;
-        }
-        else
-        {
-          return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `subform_scalar( name = myName, setter = true )`", ident ) ) );
+          "name" =>
+          {
+            input.parse::< syn::Token![ = ] >()?;
+            name = Some( input.parse()? );
+          }
+          "setter" =>
+          {
+            input.parse::< syn::Token![ = ] >()?;
+            let value : syn::LitBool = input.parse()?;
+            setter = Some( value.value() );
+          }
+          "hint" =>
+          {
+            input.parse::< syn::Token![ = ] >()?;
+            let value : syn::LitBool = input.parse()?;
+            hint = value.value;
+          }
+          _ =>
+          {
+            return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `subform_scalar( name = myName, setter = true )`", ident ) ) );
+          }
         }
       }
       else
@@ -385,6 +394,24 @@ pub struct AttributeSubformCollectionSetter
 impl AttributeSubformCollectionSetter
 {
 
+  const KEYWORD: &'static str = "subform_collection";
+
+  pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+  {
+    match attr.meta
+    {
+      syn::Meta::List( ref meta_list ) =>
+      {
+        syn::parse2::< AttributeSubformCollectionSetter >( meta_list.tokens.clone() )
+      },
+      syn::Meta::Path( ref _path ) =>
+      {
+        syn::parse2::< AttributeSubformCollectionSetter >( Default::default() )
+      },
+      _ => return_syn_err!( attr, "Expects an attribute of format `#[ subform_collection ]` or `#[ subform_collection( definition = former::VectorDefinition ) ]` if you want to use default collection defition. \nGot: {}", qt!{ #attr } ),
+    }
+  }
+
   /// Should setter be generated or not?
   pub fn setter( &self ) -> bool
   {
@@ -408,31 +435,34 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
-        if ident == "name"
+        match ident.to_string().as_str()
         {
-          input.parse::< syn::Token![ = ] >()?;
-          name = Some( input.parse()? );
-        }
-        else if ident == "setter"
-        {
-          input.parse::< syn::Token![ = ] >()?;
-          let value : syn::LitBool = input.parse()?;
-          setter = Some( value.value );
-        }
-        else if ident == "hint"
-        {
-          input.parse::< syn::Token![ = ] >()?;
-          let value : syn::LitBool = input.parse()?;
-          hint = value.value;
-        }
-        else if ident == "definition"
-        {
-          input.parse::< syn::Token![ = ] >()?;
-          definition = Some( input.parse()? );
-        }
-        else
-        {
-          return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `collection( name = myName, setter = true, definition = MyDefinition )`", ident ) ) );
+          "name" =>
+          {
+            input.parse::< syn::Token![ = ] >()?;
+            name = Some( input.parse()? );
+          }
+          "setter" =>
+          {
+            input.parse::< syn::Token![ = ] >()?;
+            let value : syn::LitBool = input.parse()?;
+            setter = Some( value.value );
+          }
+          "hint" =>
+          {
+            input.parse::< syn::Token![ = ] >()?;
+            let value : syn::LitBool = input.parse()?;
+            hint = value.value;
+          }
+          "definition" =>
+          {
+            input.parse::< syn::Token![ = ] >()?;
+            definition = Some( input.parse()? );
+          }
+          _ =>
+          {
+            return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `collection( name = myName, setter = true, definition = MyDefinition )`", ident ) ) );
+          }
         }
       }
       else
@@ -484,6 +514,24 @@ pub struct AttributeSubformEntrySetter
 
 impl AttributeSubformEntrySetter
 {
+
+  const KEYWORD: &'static str = "subform_entry";
+
+  pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+  {
+    match attr.meta
+    {
+      syn::Meta::List( ref meta_list ) =>
+      {
+        syn::parse2::< AttributeSubformEntrySetter >( meta_list.tokens.clone() )
+      },
+      syn::Meta::Path( ref _path ) =>
+      {
+        syn::parse2::< AttributeSubformEntrySetter >( Default::default() )
+      },
+      _ => return_syn_err!( attr, "Expects an attribute of format `#[ subform_entry ]` or `#[ subform_entry( name : child )` ], \nGot: {}", qt!{ #attr } ),
+    }
+  }
 
   /// Should setter be generated or not?
   pub fn setter( &self ) -> bool
