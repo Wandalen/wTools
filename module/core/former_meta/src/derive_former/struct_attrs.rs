@@ -239,6 +239,7 @@ impl syn::parse::Parse for AttributeMutator
     let mut custom = false;
     let mut hint = false;
 
+    // xxx : qqq for Anton : use match here and for all attributes
     while !input.is_empty()
     {
       let lookahead = input.lookahead1();
