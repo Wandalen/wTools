@@ -2,7 +2,7 @@
 
 use super::*;
 #[ allow( unused_imports ) ]
-use collection_tools::Vec;
+use collection_tools::VecDeque;
 
 //
 
@@ -10,43 +10,43 @@ use collection_tools::Vec;
 fn add()
 {
 
-  // expliccit with CollectionFormer
+  // explicit with CollectionFormer
 
-  let got : Vec< String > = the_module
+  let got : VecDeque< String > = the_module
   ::CollectionFormer
-  ::< String, former::VectorDefinition< String, (), Vec< String >, the_module::ReturnStorage > >
+  ::< String, former::VecDequeDefinition< String, (), VecDeque< String >, the_module::ReturnStorage > >
   ::new( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = collection_tools::vec!
+  let exp = collection_tools::vecd!
   [
     "a".to_string(),
     "b".to_string(),
   ];
   a_id!( got, exp );
 
-  // expliccit with VectorFormer
+  // explicit with VecDequeFormer
 
-  let got : Vec< String > = the_module::VectorFormer::< String, (), Vec< String >, the_module::ReturnStorage >
+  let got : VecDeque< String > = the_module::VecDequeFormer::< String, (), VecDeque< String >, the_module::ReturnStorage >
   ::new( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = collection_tools::vec!
+  let exp = collection_tools::vecd!
   [
     "a".to_string(),
     "b".to_string(),
   ];
   a_id!( got, exp );
 
-  // compact with VectorFormer
+  // compact with VecDequeFormer
 
-  let got : Vec< String > = the_module::VectorFormer::new( former::ReturnStorage )
+  let got : VecDeque< String > = the_module::VecDequeFormer::new( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = collection_tools::vec!
+  let exp = collection_tools::vecd!
   [
     "a".to_string(),
     "b".to_string(),
@@ -55,11 +55,11 @@ fn add()
 
   // with begin_coercing
 
-  let got : Vec< String > = the_module::VectorFormer
-  ::begin( Some( collection_tools::vec![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
+  let got : VecDeque< String > = the_module::VecDequeFormer
+  ::begin( Some( collection_tools::vecd![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
   .add( "b" )
   .form();
-  let exp = collection_tools::vec!
+  let exp = collection_tools::vecd!
   [
     "a".to_string(),
     "b".to_string(),
@@ -68,12 +68,12 @@ fn add()
 
   // with help of ext
 
-  use the_module::VecExt;
-  let got : Vec< String > = Vec::former()
+  use the_module::VecDequeExt;
+  let got : VecDeque< String > = VecDeque::former()
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = collection_tools::vec!
+  let exp = collection_tools::vecd!
   [
     "a".to_string(),
     "b".to_string(),
@@ -90,11 +90,11 @@ fn add()
 fn replace()
 {
 
-  let got : Vec< String > = the_module::VectorFormer::new( former::ReturnStorage )
+  let got : VecDeque< String > = the_module::VecDequeFormer::new( former::ReturnStorage )
   .add( "x" )
-  .replace( collection_tools::vec![ "a".to_string(), "b".to_string() ] )
+  .replace( collection_tools::vecd![ "a".to_string(), "b".to_string() ] )
   .form();
-  let exp = collection_tools::vec!
+  let exp = collection_tools::vecd!
   [
     "a".to_string(),
     "b".to_string(),
@@ -111,37 +111,37 @@ fn entity_to()
 {
 
   // qqq : uncomment and make it working -- done
-  let got = < Vec< i32 > as former::EntityToFormer< former::VectorDefinition< i32, (), Vec< i32 >, former::ReturnPreformed > > >
-  ::Former::new( former::ReturnPreformed )
+  let got = < VecDeque< i32 > as former::EntityToFormer< former::VecDequeDefinition< i32, (), VecDeque< i32 >, former::ReturnStorage > > >
+  ::Former::new( former::ReturnStorage )
   .add( 13 )
   .form();
-  let exp = collection_tools::vec![ 13 ];
+  let exp = collection_tools::vecd![ 13 ];
   a_id!( got, exp );
 
   // qqq : uncomment and make it working
-  let got = < Vec< i32 > as former::EntityToStorage >::Storage::default();
+  let got = < VecDeque< i32 > as former::EntityToStorage >::Storage::default();
   let exp =
   <
-    Vec< i32 > as former::EntityToFormer
+    VecDeque< i32 > as former::EntityToFormer
     <
-      former::VectorDefinition
+      former::VecDequeDefinition
       <
         i32,
         (),
-        Vec< i32 >,
-        former::ReturnPreformed,
+        VecDeque< i32 >,
+        former::ReturnStorage,
       >
     >
-  >::Former::new( former::ReturnPreformed )
+  >::Former::new( former::ReturnStorage )
   .form();
   a_id!( got, exp );
 
-  let got = < Vec< i32 > as former::EntityToStorage >::Storage::default();
+  let got = < VecDeque< i32 > as former::EntityToStorage >::Storage::default();
   let exp =
   <
-    Vec< i32 > as former::EntityToFormer
+    VecDeque< i32 > as former::EntityToFormer
     <
-      < Vec< i32 > as former::EntityToDefinition< (), Vec< i32 >, former::ReturnPreformed > >::Definition
+      < VecDeque< i32 > as former::EntityToDefinition< (), VecDeque< i32 >, former::ReturnPreformed > >::Definition
     >
   >::Former::new( former::ReturnPreformed )
   .form();
@@ -152,16 +152,16 @@ fn entity_to()
 #[ test ]
 fn entry_to_val()
 {
-  let got = former::EntryToVal::< Vec< i32 > >::entry_to_val( 13i32 );
-  let exp = 13i32;
+  let got = former::EntryToVal::< VecDeque< i32 > >::entry_to_val( 13 );
+  let exp = 13;
   a_id!( got, exp )
 }
 
 #[ test ]
 fn val_to_entry()
 {
-  let got = former::ValToEntry::< Vec< i32 > >::val_to_entry( 13i32 );
-  let exp = 13i32;
+  let got = former::ValToEntry::< VecDeque< i32 > >::val_to_entry( 13 );
+  let exp = 13;
   a_id!( got, exp )
 }
 
@@ -183,8 +183,8 @@ fn subformer()
   // #[ derive( Debug, Default, PartialEq ) ]
   pub struct Parent
   {
-    #[ subform_collection( definition = former::VectorDefinition ) ]
-    children : Vec< Child >,
+    #[ subform_collection( definition = former::VecDequeDefinition ) ]
+    children : VecDeque< Child >,
   }
 
   let got = Parent::former()
@@ -194,7 +194,7 @@ fn subformer()
     .end()
   .form();
 
-  let children = collection_tools::vec!
+  let children = collection_tools::vecd!
   [
     Child { name : "a".to_string(), data : false },
     Child { name : "b".to_string(), data : false },

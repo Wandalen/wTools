@@ -1,25 +1,25 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-use std::collections::HashMap;
-use std::collections::HashSet;
+use collection_tools::HashMap;
+use collection_tools::HashSet;
 
 #[ derive( Debug, PartialEq, the_module::Former ) ]
 pub struct Struct1
 {
 
-  #[ former( default = vec![ 1, 2, 3 ] ) ]
+  #[ former( default = collection_tools::vec![ 1, 2, 3 ] ) ]
   vec_ints : Vec< i32 >,
-  #[ former( default = hmap!{ 1 => 11 } ) ]
+  #[ former( default = collection_tools::hmap!{ 1 => 11 } ) ]
   hashmap_ints : HashMap< i32, i32 >,
-  #[ former( default = hset!{ 11 } ) ]
+  #[ former( default = collection_tools::hset!{ 11 } ) ]
   hashset_ints : HashSet< i32 >,
 
-  #[ former( default = vec![ "abc".to_string(), "def".to_string() ] ) ]
+  #[ former( default = collection_tools::vec![ "abc".to_string(), "def".to_string() ] ) ]
   vec_strings : Vec< String >,
-  #[ former( default = hmap!{ "k1".to_string() => "v1".to_string() } ) ]
+  #[ former( default = collection_tools::hmap!{ "k1".to_string() => "v1".to_string() } ) ]
   hashmap_strings : HashMap< String, String >,
-  #[ former( default = hset!{ "k1".to_string() } ) ]
+  #[ former( default = collection_tools::hset!{ "k1".to_string() } ) ]
   hashset_strings : HashSet< String >,
 
 }
@@ -33,12 +33,12 @@ tests_impls!
     let command = Struct1::former().form();
     let expected = Struct1
     {
-      vec_ints : vec![ 1, 2, 3 ],
-      hashmap_ints : hmap!{ 1 => 11 },
-      hashset_ints : hset!{ 11 },
-      vec_strings : vec![ "abc".to_string(), "def".to_string() ],
-      hashmap_strings : hmap!{ "k1".to_string() => "v1".to_string() },
-      hashset_strings : hset!{ "k1".to_string() },
+      vec_ints : collection_tools::vec![ 1, 2, 3 ],
+      hashmap_ints : collection_tools::hmap!{ 1 => 11 },
+      hashset_ints : collection_tools::hset!{ 11 },
+      vec_strings : collection_tools::vec![ "abc".to_string(), "def".to_string() ],
+      hashmap_strings : collection_tools::hmap!{ "k1".to_string() => "v1".to_string() },
+      hashset_strings : collection_tools::hset!{ "k1".to_string() },
     };
     a_id!( command, expected );
   }

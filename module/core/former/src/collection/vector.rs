@@ -7,9 +7,9 @@
 
 use crate::*;
 #[ allow( unused ) ]
-use collection_tools::Vec;
+use collection_tools::vec::Vec;
 
-impl< E > Collection for collection_tools::Vec< E >
+impl< E > Collection for Vec< E >
 {
   type Entry = E;
   type Val = E;
@@ -22,7 +22,7 @@ impl< E > Collection for collection_tools::Vec< E >
 
 }
 
-impl< E > CollectionAdd for collection_tools::Vec< E >
+impl< E > CollectionAdd for Vec< E >
 {
 
   #[ inline( always ) ]
@@ -34,7 +34,7 @@ impl< E > CollectionAdd for collection_tools::Vec< E >
 
 }
 
-impl< E > CollectionAssign for collection_tools::Vec< E >
+impl< E > CollectionAssign for Vec< E >
 {
   #[ inline( always ) ]
   fn assign< Elements >( &mut self, elements : Elements ) -> usize
@@ -48,7 +48,7 @@ impl< E > CollectionAssign for collection_tools::Vec< E >
 
 }
 
-impl< E > CollectionValToEntry< E > for collection_tools::Vec< E >
+impl< E > CollectionValToEntry< E > for Vec< E >
 where
 {
   type Entry = E;

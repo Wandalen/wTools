@@ -3,51 +3,49 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
-use collection_tools::HashSet;
+use collection_tools::BTreeSet;
 
-// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ] -- done
-// #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn add()
 {
 
   // explicit with CollectionFormer
 
-  let got : HashSet< String > = the_module
+  let got : BTreeSet< String > = the_module
   ::CollectionFormer
-  ::< String, former::HashSetDefinition< String, (), HashSet< String >, the_module::ReturnStorage > >
+  ::< String, former::BTreeSetDefinition< String, (), BTreeSet< String >, the_module::ReturnStorage > >
   ::new( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = collection_tools::hset!
+  let exp = collection_tools::bset!
   [
     "a".to_string(),
     "b".to_string(),
   ];
   a_id!( got, exp );
 
-  // explicit with HashSetFormer
+  // explicit with BTreeSetFormer
 
-  let got : HashSet< String > = the_module::HashSetFormer::< String, (), HashSet< String >, the_module::ReturnStorage >
+  let got : BTreeSet< String > = the_module::BTreeSetFormer::< String, (), BTreeSet< String >, the_module::ReturnStorage >
   ::new( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = collection_tools::hset!
+  let exp = collection_tools::bset!
   [
     "a".to_string(),
     "b".to_string(),
   ];
   a_id!( got, exp );
 
-  // compact with HashSetFormer
+  // compact with BTreeSetFormer
 
-  let got : HashSet< String > = the_module::HashSetFormer::new( former::ReturnStorage )
+  let got : BTreeSet< String > = the_module::BTreeSetFormer::new( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = collection_tools::hset!
+  let exp = collection_tools::bset!
   [
     "a".to_string(),
     "b".to_string(),
@@ -56,11 +54,11 @@ fn add()
 
   // with begin_coercing
 
-  let got : HashSet< String > = the_module::HashSetFormer
-  ::begin( Some( collection_tools::hset![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
+  let got : BTreeSet< String > = the_module::BTreeSetFormer
+  ::begin( Some( collection_tools::bset![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
   .add( "b" )
   .form();
-  let exp = collection_tools::hset!
+  let exp = collection_tools::bset!
   [
     "a".to_string(),
     "b".to_string(),
@@ -69,12 +67,12 @@ fn add()
 
   // with help of ext
 
-  use the_module::HashSetExt;
-  let got : HashSet< String > = HashSet::former()
+  use the_module::BTreeSetExt;
+  let got : BTreeSet< String > = BTreeSet::former()
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = collection_tools::hset!
+  let exp = collection_tools::bset!
   [
     "a".to_string(),
     "b".to_string(),
@@ -91,11 +89,11 @@ fn add()
 fn replace()
 {
 
-  let got : HashSet< String > = the_module::HashSetFormer::new( former::ReturnStorage )
+  let got : BTreeSet< String > = the_module::BTreeSetFormer::new( former::ReturnStorage )
   .add( "x" )
-  .replace( collection_tools::hset![ "a".to_string(), "b".to_string() ] )
+  .replace( collection_tools::bset![ "a".to_string(), "b".to_string() ] )
   .form();
-  let exp = collection_tools::hset!
+  let exp = collection_tools::bset!
   [
     "a".to_string(),
     "b".to_string(),
@@ -108,23 +106,23 @@ fn replace()
 fn entity_to()
 {
 
-  let got = < HashSet< i32 > as former::EntityToFormer< former::HashSetDefinition< i32, (), HashSet< i32 >, former::ReturnStorage > > >
+  let got = < BTreeSet< i32 > as former::EntityToFormer< former::BTreeSetDefinition< i32, (), BTreeSet< i32 >, former::ReturnStorage > > >
   ::Former::new( former::ReturnStorage )
   .add( 13 )
   .form();
-  let exp = collection_tools::hset![ 13 ];
+  let exp = collection_tools::bset![ 13 ];
   a_id!( got, exp );
 
-  let got = < HashSet< i32 > as former::EntityToStorage >::Storage::default();
+  let got = < BTreeSet< i32 > as former::EntityToStorage >::Storage::default();
   let exp =
   <
-    HashSet< i32 > as former::EntityToFormer
+    BTreeSet< i32 > as former::EntityToFormer
     <
-      former::HashSetDefinition
+      former::BTreeSetDefinition
       <
         i32,
         (),
-        HashSet< i32 >,
+        BTreeSet< i32 >,
         former::ReturnStorage,
       >
     >
@@ -132,12 +130,12 @@ fn entity_to()
   .form();
   a_id!( got, exp );
 
-  let got = < HashSet< i32 > as former::EntityToStorage >::Storage::default();
+  let got = < BTreeSet< i32 > as former::EntityToStorage >::Storage::default();
   let exp =
   <
-    HashSet< i32 > as former::EntityToFormer
+    BTreeSet< i32 > as former::EntityToFormer
     <
-      < HashSet< i32 > as former::EntityToDefinition< (), HashSet< i32 >, former::ReturnPreformed > >::Definition
+      < BTreeSet< i32 > as former::EntityToDefinition< (), BTreeSet< i32 >, former::ReturnPreformed > >::Definition
     >
   >::Former::new( former::ReturnPreformed )
   .form();
@@ -148,7 +146,7 @@ fn entity_to()
 #[ test ]
 fn entry_to_val()
 {
-  let got = former::EntryToVal::< HashSet< i32 > >::entry_to_val( 13i32 );
+  let got = former::EntryToVal::< BTreeSet< i32 > >::entry_to_val( 13i32 );
   let exp = 13i32;
   a_id!( got, exp )
 }
@@ -156,7 +154,7 @@ fn entry_to_val()
 #[ test ]
 fn val_to_entry()
 {
-  let got = former::ValToEntry::< HashSet< i32 > >::val_to_entry( 13i32 );
+  let got = former::ValToEntry::< BTreeSet< i32 > >::val_to_entry( 13i32 );
   let exp = 13i32;
   a_id!( got, exp )
 }
@@ -166,7 +164,7 @@ fn subformer()
 {
 
   /// Parameter description.
-  #[ derive( Debug, Default, PartialEq, Eq, Hash, the_module::Former ) ]
+  #[ derive( Debug, Default, PartialEq, Eq, PartialOrd, Ord, the_module::Former ) ]
   pub struct Child
   {
     name : String,
@@ -179,8 +177,8 @@ fn subformer()
   // #[ derive( Debug, Default, PartialEq ) ]
   pub struct Parent
   {
-    #[ subform_collection( definition = former::HashSetDefinition ) ]
-    children : HashSet< Child >,
+    #[ subform_collection( definition = former::BTreeSetDefinition ) ]
+    children : BTreeSet< Child >,
   }
 
   let got = Parent::former()
@@ -190,7 +188,7 @@ fn subformer()
     .end()
   .form();
 
-  let children = collection_tools::hset!
+  let children = collection_tools::bset!
   [
     Child { name : "a".to_string(), data : false },
     Child { name : "b".to_string(), data : false },

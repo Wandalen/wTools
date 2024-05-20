@@ -13,8 +13,8 @@
 // ;
 // ca.execute( input ).unwrap();
 
-// qqq : for Anton : zzz : here and in all similar tests remove `#[ cfg( not( feature = "use_alloc" ) ) ]`
-#[ cfg( not( feature = "use_alloc" ) ) ]
+// qqq : for Anton : zzz : here and in all similar tests remove `#[ cfg( not( feature = "use_alloc" ) ) ]` -- done
+// #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn command_with_closure()
 {
@@ -59,8 +59,8 @@ fn command_with_closure()
 
 //
 
-// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
-#[ cfg( not( feature = "use_alloc" ) ) ]
+// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ] -- done
+// #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn command_properties()
 {
@@ -77,7 +77,7 @@ fn command_properties()
   {
     name : "a".to_string(),
     subject : "b".to_string(),
-    properties : hmap!
+    properties : collection_tools::hmap!
     {
       "property1" => Property::new( "property1", "simple property", 13isize ),
       "property2" => Property::new( "property2", "simple property 3", 113isize ),
@@ -100,7 +100,7 @@ fn command_properties()
   {
     name : "a".to_string(),
     subject : "b".to_string(),
-    properties : hmap!
+    properties : collection_tools::hmap!
     {
       "property1" => Property::new( "property1", "simple property", 13isize ),
       "property2" => Property::new( "property2", "simple property 3", 113isize ),
@@ -113,8 +113,8 @@ fn command_properties()
 
 //
 
-// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
-#[ cfg( not( feature = "use_alloc" ) ) ]
+// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ] -- done
+// #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn aggregator()
 {
@@ -130,12 +130,12 @@ fn aggregator()
   {
     name : "name1".to_string(),
     subject : "s".to_string(),
-    properties : hmap!{},
+    properties : collection_tools::hmap!{},
   };
   let exp = Parent
   {
     parameter1 : "p1".to_string(),
-    commands : hmap!{ "name1" => name1 },
+    commands : collection_tools::hmap!{ "name1".to_string() => name1 },
   };
   dbg!( &got );
   dbg!( &exp );

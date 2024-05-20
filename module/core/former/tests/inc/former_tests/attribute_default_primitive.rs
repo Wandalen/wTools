@@ -1,8 +1,8 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-use std::collections::HashMap;
-use std::collections::HashSet;
+use collection_tools::HashMap;
+use collection_tools::HashSet;
 
 #[ derive( Debug, PartialEq, the_module::Former ) ]
 pub struct Struct1
@@ -35,9 +35,9 @@ tests_impls!
       string_1 : "abc".to_string(),
       int_optional_1 : Some( 31 ),
       string_optional_1 : Some( "abc".to_string() ),
-      vec_1 : vec![],
-      hashmap_1 : hmap!{},
-      hashset_1 : hset!{},
+      vec_1 : collection_tools::vec![],
+      hashmap_1 : collection_tools::hmap!{},
+      hashset_1 : collection_tools::hset!{},
     };
     a_id!( command, expected );
   }
