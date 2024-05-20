@@ -3,7 +3,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
-use collection_tools::HashMap;
+use collection_tools::BTreeMap;
 
 // qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ] -- done
 // #[ cfg( not( feature = "use_alloc" ) ) ]
@@ -13,41 +13,41 @@ fn add()
 
   // expliccit with CollectionFormer
 
-  let got : HashMap< String, String > = the_module
+  let got : BTreeMap< String, String > = the_module
   ::CollectionFormer
-  ::< ( String, String ), former::HashMapDefinition< String, String, (), HashMap< String, String >, the_module::ReturnStorage > >
+  ::< ( String, String ), former::BTreeMapDefinition< String, String, (), BTreeMap< String, String >, the_module::ReturnStorage > >
   ::new( former::ReturnStorage )
   .add( ( "a".into(), "x".into() ) )
   .add( ( "b".into(), "y".into() ) )
   .form();
-  let exp = collection_tools::hmap!
+  let exp = collection_tools::bmap!
   [
     "a".to_string() => "x".to_string(),
     "b".to_string() => "y".to_string(),
   ];
   a_id!( got, exp );
 
-  // expliccit with HashMapFormer
+  // expliccit with BTreeMapFormer
 
-  let got : HashMap< String, String > = the_module::HashMapFormer::< String, String, (), HashMap< String, String >, the_module::ReturnStorage >
+  let got : BTreeMap< String, String > = the_module::BTreeMapFormer::< String, String, (), BTreeMap< String, String >, the_module::ReturnStorage >
   ::new( former::ReturnStorage )
   .add( ( "a".into(), "x".into() ) )
   .add( ( "b".into(), "y".into() ) )
   .form();
-  let exp = collection_tools::hmap!
+  let exp = collection_tools::bmap!
   [
     "a".to_string() => "x".to_string(),
     "b".to_string() => "y".to_string(),
   ];
   a_id!( got, exp );
 
-  // compact with HashMapFormer
+  // compact with BTreeMapFormer
 
-  let got : HashMap< String, String > = the_module::HashMapFormer::new( former::ReturnStorage )
+  let got : BTreeMap< String, String > = the_module::BTreeMapFormer::new( former::ReturnStorage )
   .add( ( "a".into(), "x".into() ) )
   .add( ( "b".into(), "y".into() ) )
   .form();
-  let exp = collection_tools::hmap!
+  let exp = collection_tools::bmap!
   [
     "a".to_string() => "x".to_string(),
     "b".to_string() => "y".to_string(),
@@ -56,11 +56,11 @@ fn add()
 
   // with begin
 
-  let got : HashMap< String, String > = the_module::HashMapFormer
-  ::begin( Some( collection_tools::hmap![ "a".to_string() => "x".to_string() ] ), Some( () ), former::ReturnStorage )
+  let got : BTreeMap< String, String > = the_module::BTreeMapFormer
+  ::begin( Some( collection_tools::bmap![ "a".to_string() => "x".to_string() ] ), Some( () ), former::ReturnStorage )
   .add( ( "b".into(), "y".into() ) )
   .form();
-  let exp = collection_tools::hmap!
+  let exp = collection_tools::bmap!
   [
     "a".to_string() => "x".to_string(),
     "b".to_string() => "y".to_string(),
@@ -69,12 +69,12 @@ fn add()
 
   // with help of ext
 
-  use the_module::HashMapExt;
-  let got : HashMap< String, String > = HashMap::former()
+  use the_module::BTreeMapExt;
+  let got : BTreeMap< String, String > = BTreeMap::former()
   .add( ( "a".into(), "x".into() ) )
   .add( ( "b".into(), "y".into() ) )
   .form();
-  let exp = collection_tools::hmap!
+  let exp = collection_tools::bmap!
   [
     "a".to_string() => "x".to_string(),
     "b".to_string() => "y".to_string(),
@@ -91,11 +91,11 @@ fn add()
 fn replace()
 {
 
-  let got : HashMap< String, String > = the_module::HashMapFormer::new( former::ReturnStorage )
+  let got : BTreeMap< String, String > = the_module::BTreeMapFormer::new( former::ReturnStorage )
   .add( ( "x".to_string(), "y".to_string() ) )
-  .replace( collection_tools::hmap![ "a".to_string() => "x".to_string(), "b".to_string() => "y".to_string(), ] )
+  .replace( collection_tools::bmap![ "a".to_string() => "x".to_string(), "b".to_string() => "y".to_string(), ] )
   .form();
-  let exp = collection_tools::hmap!
+  let exp = collection_tools::bmap!
   [
     "a".to_string() => "x".to_string(),
     "b".to_string() => "y".to_string(),
@@ -108,24 +108,24 @@ fn replace()
 fn entity_to()
 {
 
-  let got = < HashMap< i32, i32 > as former::EntityToFormer< former::HashMapDefinition< i32, i32, (), HashMap< i32, i32 >, former::ReturnStorage > > >
+  let got = < BTreeMap< i32, i32 > as former::EntityToFormer< former::BTreeMapDefinition< i32, i32, (), BTreeMap< i32, i32 >, former::ReturnStorage > > >
   ::Former::new( former::ReturnStorage )
   .add( ( 13, 14 ) )
   .form();
-  let exp = collection_tools::hmap![ 13 => 14 ];
+  let exp = collection_tools::bmap![ 13 => 14 ];
   a_id!( got, exp );
 
-  let got = < HashMap< i32, i32 > as former::EntityToStorage >::Storage::default();
+  let got = < BTreeMap< i32, i32 > as former::EntityToStorage >::Storage::default();
   let exp =
   <
-    HashMap< i32, i32 > as former::EntityToFormer
+    BTreeMap< i32, i32 > as former::EntityToFormer
     <
-      former::HashMapDefinition
+      former::BTreeMapDefinition
       <
         i32,
         i32,
         (),
-        HashMap< i32, i32 >,
+        BTreeMap< i32, i32 >,
         former::ReturnStorage,
       >
     >
@@ -133,12 +133,12 @@ fn entity_to()
   .form();
   a_id!( got, exp );
 
-  let got = < HashMap< i32, i32 > as former::EntityToStorage >::Storage::default();
+  let got = < BTreeMap< i32, i32 > as former::EntityToStorage >::Storage::default();
   let exp =
   <
-    HashMap< i32, i32 > as former::EntityToFormer
+    BTreeMap< i32, i32 > as former::EntityToFormer
     <
-      < HashMap< i32, i32 > as former::EntityToDefinition< (), HashMap< i32, i32 >, former::ReturnPreformed > >::Definition
+      < BTreeMap< i32, i32 > as former::EntityToDefinition< (), BTreeMap< i32, i32 >, former::ReturnPreformed > >::Definition
     >
   >::Former::new( former::ReturnPreformed )
   .form();
@@ -149,7 +149,7 @@ fn entity_to()
 #[ test ]
 fn entry_to_val()
 {
-  let got = former::EntryToVal::< HashMap< u32, i32 > >::entry_to_val( ( 1u32, 13i32 ) );
+  let got = former::EntryToVal::< BTreeMap< u32, i32 > >::entry_to_val( ( 1u32, 13i32 ) );
   let exp = 13i32;
   a_id!( got, exp )
 }
@@ -165,7 +165,7 @@ fn val_to_entry()
     data : i32,
   }
 
-  impl former::ValToEntry< HashMap< u32, Val > > for Val
+  impl former::ValToEntry< BTreeMap< u32, Val > > for Val
   {
     type Entry = ( u32, Val );
     #[ inline( always ) ]
@@ -175,7 +175,7 @@ fn val_to_entry()
     }
   }
 
-  let got = former::ValToEntry::< HashMap< u32, Val > >::val_to_entry( Val { key : 1u32, data : 13i32 } );
+  let got = former::ValToEntry::< BTreeMap< u32, Val > >::val_to_entry( Val { key : 1u32, data : 13i32 } );
   let exp = ( 1u32, Val { key : 1u32, data : 13i32 } );
   a_id!( got, exp )
 
@@ -199,8 +199,8 @@ fn subformer()
   // #[ derive( Debug, Default, PartialEq ) ]
   pub struct Parent
   {
-    #[ subform_collection( definition = former::HashMapDefinition ) ]
-    children : HashMap< u32, Child >,
+    #[ subform_collection( definition = former::BTreeMapDefinition ) ]
+    children : BTreeMap< u32, Child >,
   }
 
   let got = Parent::former()
@@ -210,7 +210,7 @@ fn subformer()
     .end()
   .form();
 
-  let children = collection_tools::hmap!
+  let children = collection_tools::bmap!
   [
     0 => Child { name : "a".to_string(), data : false },
     1 => Child { name : "b".to_string(), data : false },

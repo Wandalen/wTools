@@ -1,16 +1,16 @@
-//! This module provides a comprehensive approach to applying the builder pattern to `HashMap` collections.
+//! This module provides a comprehensive approach to applying the builder pattern to `BTreeMap` collections.
 //!
 //! By leveraging traits such as `Collection`, `CollectionAdd`, `CollectionAssign`, and `CollectionValToEntry`,
-//! this module abstracts the operations on hashmap-like data structures, making them more flexible and easier to integrate as
-//! as subformer, enabling fluid and intuitive manipulation of hashmaps via builder patterns.
+//! this module abstracts the operations on binary tree map-like data structures, making them more flexible and easier to integrate as
+//! as subformer, enabling fluid and intuitive manipulation of binary tree maps via builder patterns.
 //!
 
 use crate::*;
-use collection_tools::hmap::HashMap;
+use collection_tools::bmap::BTreeMap;
 
-impl< K, V > Collection for HashMap< K, V >
+impl< K, V > Collection for BTreeMap< K, V >
 where
-  K : core::cmp::Eq + core::hash::Hash,
+  K : Ord,
 {
   type Entry = ( K, V );
   type Val = V;
@@ -23,9 +23,9 @@ where
 
 }
 
-impl< K, V > CollectionAdd for HashMap< K, V >
+impl< K, V > CollectionAdd for BTreeMap< K, V >
 where
-  K : core::cmp::Eq + core::hash::Hash,
+  K : Ord,
 {
 
   #[ inline( always ) ]
@@ -36,9 +36,9 @@ where
 
 }
 
-impl< K, V > CollectionAssign for HashMap< K, V >
+impl< K, V > CollectionAssign for BTreeMap< K, V >
 where
-  K : core::cmp::Eq + core::hash::Hash,
+  K : Ord,
 {
 
   fn assign< Elements >( &mut self, elements : Elements ) -> usize
@@ -54,17 +54,17 @@ where
 // = storage
 
 impl< K, E > Storage
-for HashMap< K, E >
+for BTreeMap< K, E >
 where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
+  K : Ord,
 {
-  type Preformed = HashMap< K, E >;
+  type Preformed = BTreeMap< K, E >;
 }
 
 impl< K, E > StoragePreform
-for HashMap< K, E >
+for BTreeMap< K, E >
 where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
+  K : Ord,
 {
   fn preform( self ) -> Self::Preformed
   {
@@ -85,40 +85,40 @@ where
 /// - `K`: The key type of the hash map.
 /// - `E`: The value type of the hash map.
 /// - `Context`: The optional context provided during the formation process.
-/// - `Formed`: The type of the entity produced, typically a `HashMap<K, E>`.
+/// - `Formed`: The type of the entity produced, typically a `BTreeMap<K, E>`.
 /// - `End`: A trait defining the end behavior of the formation process, managing how the hash map is finalized.
 ///
 
 #[ derive( Debug, Default ) ]
-pub struct HashMapDefinition< K, E, Context = (), Formed = HashMap< K, E >, End = ReturnStorage >
+pub struct BTreeMapDefinition< K, E, Context = (), Formed = BTreeMap< K, E >, End = ReturnStorage >
 where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-  End : FormingEnd< HashMapDefinitionTypes< K, E, Context, Formed > >,
+  K : Ord,
+  End : FormingEnd< BTreeMapDefinitionTypes< K, E, Context, Formed > >,
 {
   _phantom : core::marker::PhantomData< ( K, E, Context, Formed, End ) >,
 }
 
 impl< K, E, Context, Formed, End > FormerDefinition
-for HashMapDefinition< K, E, Context, Formed, End >
+for BTreeMapDefinition< K, E, Context, Formed, End >
 where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-  End : FormingEnd< HashMapDefinitionTypes< K, E, Context, Formed > >,
+  K : Ord,
+  End : FormingEnd< BTreeMapDefinitionTypes< K, E, Context, Formed > >,
 {
 
-  type Storage = HashMap< K, E >;
+  type Storage = BTreeMap< K, E >;
   type Formed = Formed;
   type Context = Context;
 
-  type Types = HashMapDefinitionTypes< K, E, Context, Formed >;
+  type Types = BTreeMapDefinitionTypes< K, E, Context, Formed >;
   type End = End;
 
 }
 
 // = definition types
 
-/// Holds the generic parameters for the `HashMapDefinition`.
+/// Holds the generic parameters for the `BTreeMapDefinition`.
 ///
-/// This companion struct to `HashMapDefinition` defines the storage type and the context, along with the
+/// This companion struct to `BTreeMapDefinition` defines the storage type and the context, along with the
 /// type that is ultimately formed through the process. It is crucial for maintaining the integrity and
 /// consistency of type relations throughout the former lifecycle.
 ///
@@ -126,20 +126,20 @@ where
 /// - `K`: The key type of the hash map.
 /// - `E`: The value type of the hash map.
 /// - `Context`: The operational context in which the hash map is formed.
-/// - `Formed`: The type produced, typically mirroring the structure of a `HashMap<K, E>`.
+/// - `Formed`: The type produced, typically mirroring the structure of a `BTreeMap<K, E>`.
 
 #[ derive( Debug, Default ) ]
-pub struct HashMapDefinitionTypes< K, E, Context = (), Formed = HashMap< K, E > >
+pub struct BTreeMapDefinitionTypes< K, E, Context = (), Formed = BTreeMap< K, E > >
 {
   _phantom : core::marker::PhantomData< ( K, E, Context, Formed ) >,
 }
 
 impl< K, E, Context, Formed > FormerDefinitionTypes
-for HashMapDefinitionTypes< K, E, Context, Formed >
+for BTreeMapDefinitionTypes< K, E, Context, Formed >
 where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
+  K : Ord,
 {
-  type Storage = HashMap< K, E >;
+  type Storage = BTreeMap< K, E >;
   type Formed = Formed;
   type Context = Context;
 }
@@ -147,21 +147,21 @@ where
 // = mutator
 
 impl< K, E, Context, Formed > FormerMutator
-for HashMapDefinitionTypes< K, E, Context, Formed >
+for BTreeMapDefinitionTypes< K, E, Context, Formed >
 where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
+  K : Ord,
 {
 }
 
 // = Entity To
 
-impl< K, E, Definition > EntityToFormer< Definition > for HashMap< K, E >
+impl< K, E, Definition > EntityToFormer< Definition > for BTreeMap< K, E >
 where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
+  K : Ord,
   Definition : FormerDefinition
   <
-    Storage = HashMap< K, E >,
-    Types = HashMapDefinitionTypes
+    Storage = BTreeMap< K, E >,
+    Types = BTreeMapDefinitionTypes
     <
       K,
       E,
@@ -171,82 +171,82 @@ where
   >,
   Definition::End : forming::FormingEnd< Definition::Types >,
 {
-  type Former = HashMapFormer< K, E, Definition::Context, Definition::Formed, Definition::End >;
+  type Former = BTreeMapFormer< K, E, Definition::Context, Definition::Formed, Definition::End >;
 }
 
 impl< K, E > crate::EntityToStorage
-for HashMap< K, E >
+for BTreeMap< K, E >
 where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
+  K : Ord,
 {
-  type Storage = HashMap< K, E >;
+  type Storage = BTreeMap< K, E >;
 }
 
 impl< K, E, Context, Formed, End > crate::EntityToDefinition< Context, Formed, End >
-for HashMap< K, E >
+for BTreeMap< K, E >
 where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
-  End : crate::FormingEnd< HashMapDefinitionTypes< K, E, Context, Formed > >,
+  K : Ord,
+  End : crate::FormingEnd< BTreeMapDefinitionTypes< K, E, Context, Formed > >,
 {
-  type Definition = HashMapDefinition< K, E, Context, Formed, End >;
-  type Types = HashMapDefinitionTypes< K, E, Context, Formed >;
+  type Definition = BTreeMapDefinition< K, E, Context, Formed, End >;
+  type Types = BTreeMapDefinitionTypes< K, E, Context, Formed >;
 }
 
 impl< K, E, Context, Formed > crate::EntityToDefinitionTypes< Context, Formed >
-for HashMap< K, E >
+for BTreeMap< K, E >
 where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
+  K : Ord,
 {
-  type Types = HashMapDefinitionTypes< K, E, Context, Formed >;
+  type Types = BTreeMapDefinitionTypes< K, E, Context, Formed >;
 }
 
 // = subformer
 
 /// Provides a streamlined builder interface for constructing hash map-like collections.
 ///
-/// `HashMapFormer` is a type alias that configures the `CollectionFormer` specifically for hash maps,
+/// `BTreeMapFormer` is a type alias that configures the `CollectionFormer` specifically for hash maps,
 /// facilitating a more intuitive and flexible way to build and manipulate hash maps within custom data structures.
 /// This type alias simplifies the usage of hash maps in builder patterns by encapsulating complex generic parameters
-/// and leveraging the `HashMapDefinition` to handle the construction logic. It supports fluent chaining of key-value
+/// and leveraging the `BTreeMapDefinition` to handle the construction logic. It supports fluent chaining of key-value
 /// insertions and can be customized with various end actions to finalize the hash map upon completion.
 ///
 /// The alias helps reduce boilerplate code and enhances readability, making the construction of hash maps in
 /// a builder pattern both efficient and expressive.
 
-pub type HashMapFormer< K, E, Context, Formed, End > =
-CollectionFormer::< ( K, E ), HashMapDefinition< K, E, Context, Formed, End > >;
+pub type BTreeMapFormer< K, E, Context, Formed, End > =
+CollectionFormer::< ( K, E ), BTreeMapDefinition< K, E, Context, Formed, End > >;
 
 // = extension
 
 /// Provides an extension method for hash maps to facilitate the use of the builder pattern.
 ///
-/// This trait extends the `HashMap` type, enabling it to use the `HashMapFormer` interface directly.
+/// This trait extends the `BTreeMap` type, enabling it to use the `BTreeMapFormer` interface directly.
 /// It allows for fluent, expressive construction and manipulation of hash maps, integrating seamlessly
 /// with the builder pattern provided by the `former` framework. It's a convenience trait that simplifies
 /// creating configured hash map builders with default settings.
 ///
 
-pub trait HashMapExt< K, E > : sealed::Sealed
+pub trait BTreeMapExt< K, E > : sealed::Sealed
 where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
+  K : Ord,
 {
-  /// Initializes a builder pattern for `HashMap` using a default `HashMapFormer`.
-  fn former() -> HashMapFormer< K, E, (), HashMap< K, E >, ReturnStorage >;
+  /// Initializes a builder pattern for `BTreeMap` using a default `BTreeMapFormer`.
+  fn former() -> BTreeMapFormer< K, E, (), BTreeMap< K, E >, ReturnStorage >;
 }
 
-impl< K, E > HashMapExt< K, E > for HashMap< K, E >
+impl< K, E > BTreeMapExt< K, E > for BTreeMap< K, E >
 where
-  K : ::core::cmp::Eq + ::core::hash::Hash,
+  K : Ord,
 {
-  fn former() -> HashMapFormer< K, E, (), HashMap< K, E >, ReturnStorage >
+  fn former() -> BTreeMapFormer< K, E, (), BTreeMap< K, E >, ReturnStorage >
   {
-    HashMapFormer::< K, E, (), HashMap< K, E >, ReturnStorage >::new( ReturnStorage::default() )
+    BTreeMapFormer::< K, E, (), BTreeMap< K, E >, ReturnStorage >::new( ReturnStorage::default() )
   }
 }
 
 mod sealed
 {
-  use super::HashMap;
+  use super::BTreeMap;
   pub trait Sealed {}
-  impl< K, E > Sealed for HashMap< K, E > {}
+  impl< K, E > Sealed for BTreeMap< K, E > {}
 }

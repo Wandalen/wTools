@@ -278,9 +278,9 @@ pub( crate ) mod private
     /// impl IntoIterator for MyCollection
     /// {
     ///   type Item = i32;
-    ///   type IntoIter = std::vec::IntoIter< i32 >;
-    ///   // type IntoIter = collection_tools::vec::IntoIter< i32 >;
-    ///   // qqq : zzz : make sure collection_tools has itearators
+    ///   // type IntoIter = std::vec::IntoIter< i32 >;
+    ///   type IntoIter = collection_tools::vec::IntoIter< i32 >;
+    ///   // qqq : zzz : make sure collection_tools has itearators -- done
     ///
     ///   fn into_iter( self ) -> Self::IntoIter
     ///   {
@@ -496,12 +496,22 @@ pub( crate ) mod private
 
 }
 
-/// Former of a vector.
-mod vector;
+/// Former of a binary tree map.
+mod btree_map;
+/// Former of a binary tree set.
+mod btree_set;
+/// Former of a binary heap.
+mod binary_heap;
 /// Former of a hash map.
 mod hash_map;
 /// Former of a hash set.
 mod hash_set;
+/// Former of a linked list.
+mod linked_list;
+/// Former of a vector.
+mod vector;
+/// Former of a vector deque.
+mod vector_deque;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
@@ -551,9 +561,14 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::
   {
-    vector::*,
+    btree_map::*,
+    btree_set::*,
+    binary_heap::*,
     hash_map::*,
     hash_set::*,
+    linked_list::*,
+    vector::*,
+    vector_deque::*,
   };
 
 }

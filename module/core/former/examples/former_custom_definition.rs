@@ -6,10 +6,10 @@
 //! using a custom `FormingEnd` implementation. This pattern is useful for scenarios where the formation process
 //! involves aggregation or transformation of input elements into a different type or form.
 
-#[ cfg( not( all( feature = "derive_former", feature = "enabled" ) ) ) ]
+#[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
 fn main() {}
 
-#[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+#[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
 fn main()
 {
   // Define a struct `Sum` that will act as a custom former definition.

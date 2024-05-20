@@ -2,7 +2,7 @@
 
 use super::*;
 #[ allow( unused_imports ) ]
-use collection_tools::Vec;
+use collection_tools::LinkedList;
 
 //
 
@@ -10,43 +10,43 @@ use collection_tools::Vec;
 fn add()
 {
 
-  // expliccit with CollectionFormer
+  // explicit with CollectionFormer
 
-  let got : Vec< String > = the_module
+  let got : LinkedList< String > = the_module
   ::CollectionFormer
-  ::< String, former::VectorDefinition< String, (), Vec< String >, the_module::ReturnStorage > >
+  ::< String, former::LinkedListDefinition< String, (), LinkedList< String >, the_module::ReturnStorage > >
   ::new( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = collection_tools::vec!
+  let exp = collection_tools::list!
   [
     "a".to_string(),
     "b".to_string(),
   ];
   a_id!( got, exp );
 
-  // expliccit with VectorFormer
+  // explicit with LinkedListFormer
 
-  let got : Vec< String > = the_module::VectorFormer::< String, (), Vec< String >, the_module::ReturnStorage >
+  let got : LinkedList< String > = the_module::LinkedListFormer::< String, (), LinkedList< String >, the_module::ReturnStorage >
   ::new( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = collection_tools::vec!
+  let exp = collection_tools::list!
   [
     "a".to_string(),
     "b".to_string(),
   ];
   a_id!( got, exp );
 
-  // compact with VectorFormer
+  // compact with Former
 
-  let got : Vec< String > = the_module::VectorFormer::new( former::ReturnStorage )
+  let got : LinkedList< String > = the_module::LinkedListFormer::new( former::ReturnStorage )
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = collection_tools::vec!
+  let exp = collection_tools::list!
   [
     "a".to_string(),
     "b".to_string(),
@@ -55,11 +55,11 @@ fn add()
 
   // with begin_coercing
 
-  let got : Vec< String > = the_module::VectorFormer
-  ::begin( Some( collection_tools::vec![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
+  let got : LinkedList< String > = the_module::LinkedListFormer
+  ::begin( Some( collection_tools::list![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
   .add( "b" )
   .form();
-  let exp = collection_tools::vec!
+  let exp = collection_tools::list!
   [
     "a".to_string(),
     "b".to_string(),
@@ -68,12 +68,12 @@ fn add()
 
   // with help of ext
 
-  use the_module::VecExt;
-  let got : Vec< String > = Vec::former()
+  use the_module::LinkedListExt;
+  let got : LinkedList< String > = LinkedList::former()
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = collection_tools::vec!
+  let exp = collection_tools::list!
   [
     "a".to_string(),
     "b".to_string(),
@@ -90,11 +90,11 @@ fn add()
 fn replace()
 {
 
-  let got : Vec< String > = the_module::VectorFormer::new( former::ReturnStorage )
+  let got : LinkedList< String > = the_module::LinkedListFormer::new( former::ReturnStorage )
   .add( "x" )
-  .replace( collection_tools::vec![ "a".to_string(), "b".to_string() ] )
+  .replace( collection_tools::list![ "a".to_string(), "b".to_string() ] )
   .form();
-  let exp = collection_tools::vec!
+  let exp = collection_tools::list!
   [
     "a".to_string(),
     "b".to_string(),
@@ -105,30 +105,28 @@ fn replace()
 
 //
 
-// qqq : make similar test for all collections -- done
 #[ test ]
 fn entity_to()
 {
 
-  // qqq : uncomment and make it working -- done
-  let got = < Vec< i32 > as former::EntityToFormer< former::VectorDefinition< i32, (), Vec< i32 >, former::ReturnPreformed > > >
+  let got = < LinkedList< i32 > as former::EntityToFormer< former::LinkedListDefinition< i32, (), LinkedList< i32 >, former::ReturnPreformed > > >
   ::Former::new( former::ReturnPreformed )
   .add( 13 )
   .form();
-  let exp = collection_tools::vec![ 13 ];
+  let exp = collection_tools::list![ 13 ];
   a_id!( got, exp );
 
   // qqq : uncomment and make it working
-  let got = < Vec< i32 > as former::EntityToStorage >::Storage::default();
+  let got = < LinkedList< i32 > as former::EntityToStorage >::Storage::default();
   let exp =
   <
-    Vec< i32 > as former::EntityToFormer
+    LinkedList< i32 > as former::EntityToFormer
     <
-      former::VectorDefinition
+      former::LinkedListDefinition
       <
         i32,
         (),
-        Vec< i32 >,
+        LinkedList< i32 >,
         former::ReturnPreformed,
       >
     >
@@ -136,12 +134,12 @@ fn entity_to()
   .form();
   a_id!( got, exp );
 
-  let got = < Vec< i32 > as former::EntityToStorage >::Storage::default();
+  let got = < LinkedList< i32 > as former::EntityToStorage >::Storage::default();
   let exp =
   <
-    Vec< i32 > as former::EntityToFormer
+    LinkedList< i32 > as former::EntityToFormer
     <
-      < Vec< i32 > as former::EntityToDefinition< (), Vec< i32 >, former::ReturnPreformed > >::Definition
+      < LinkedList< i32 > as former::EntityToDefinition< (), LinkedList< i32 >, former::ReturnPreformed > >::Definition
     >
   >::Former::new( former::ReturnPreformed )
   .form();
@@ -152,7 +150,7 @@ fn entity_to()
 #[ test ]
 fn entry_to_val()
 {
-  let got = former::EntryToVal::< Vec< i32 > >::entry_to_val( 13i32 );
+  let got = former::EntryToVal::< LinkedList< i32 > >::entry_to_val( 13 );
   let exp = 13i32;
   a_id!( got, exp )
 }
@@ -160,8 +158,8 @@ fn entry_to_val()
 #[ test ]
 fn val_to_entry()
 {
-  let got = former::ValToEntry::< Vec< i32 > >::val_to_entry( 13i32 );
-  let exp = 13i32;
+  let got = former::ValToEntry::< LinkedList< i32 > >::val_to_entry( 13 );
+  let exp = 13;
   a_id!( got, exp )
 }
 
@@ -183,8 +181,8 @@ fn subformer()
   // #[ derive( Debug, Default, PartialEq ) ]
   pub struct Parent
   {
-    #[ subform_collection( definition = former::VectorDefinition ) ]
-    children : Vec< Child >,
+    #[ subform_collection( definition = former::LinkedListDefinition ) ]
+    children : LinkedList< Child >,
   }
 
   let got = Parent::former()
@@ -194,7 +192,7 @@ fn subformer()
     .end()
   .form();
 
-  let children = collection_tools::vec!
+  let children = collection_tools::list!
   [
     Child { name : "a".to_string(), data : false },
     Child { name : "b".to_string(), data : false },

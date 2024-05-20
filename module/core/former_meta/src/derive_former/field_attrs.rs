@@ -501,6 +501,7 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
     let mut setter : Option< bool > = None;
     let mut hint = false;
 
+    // xxx : qqq for Anton : use match here and for all attributes
     while !input.is_empty()
     {
       let lookahead = input.lookahead1();
