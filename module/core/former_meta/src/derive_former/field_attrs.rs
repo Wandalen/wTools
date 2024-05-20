@@ -501,33 +501,36 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
     let mut setter : Option< bool > = None;
     let mut hint = false;
 
-    // xxx : qqq for Anton : use match here and for all attributes
+    // xxx : qqq for Anton : use match here and for all attributes -- done
     while !input.is_empty()
     {
       let lookahead = input.lookahead1();
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
-        if ident == "name"
+        match ident.to_string().as_str()
         {
-          input.parse::< syn::Token![ = ] >()?;
-          name = Some( input.parse()? );
-        }
-        else if ident == "setter"
-        {
-          input.parse::< syn::Token![ = ] >()?;
-          let value : syn::LitBool = input.parse()?;
-          setter = Some( value.value() );
-        }
-        else if ident == "hint"
-        {
-          input.parse::< syn::Token![ = ] >()?;
-          let value : syn::LitBool = input.parse()?;
-          hint = value.value;
-        }
-        else
-        {
-          return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `subform( name = myName, setter = true )`", ident ) ) );
+          "name" =>
+          {
+            input.parse::< syn::Token![ = ] >()?;
+            name = Some( input.parse()? );
+          }
+          "setter" =>
+          {
+            input.parse::< syn::Token![ = ] >()?;
+            let value : syn::LitBool = input.parse()?;
+            setter = Some( value.value() );
+          }
+          "hint" =>
+          {
+            input.parse::< syn::Token![ = ] >()?;
+            let value : syn::LitBool = input.parse()?;
+            hint = value.value;
+          }
+          _ =>
+          {
+            return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `subform( name = myName, setter = true )`", ident ) ) );
+          }
         }
       }
       else
