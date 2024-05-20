@@ -7,7 +7,7 @@
 
 use crate::*;
 #[ allow( unused ) ]
-use collection_tools::vec::Vec;
+use collection_tools::Vec;
 
 impl< E > Collection for Vec< E >
 {

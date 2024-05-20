@@ -7,7 +7,7 @@
 
 use crate::*;
 #[ allow( unused ) ]
-use collection_tools::bset::BTreeSet;
+use collection_tools::BTreeSet;
 
 impl< E > Collection for BTreeSet< E >
 {
