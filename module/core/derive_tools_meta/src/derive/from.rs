@@ -487,35 +487,36 @@ impl syn::parse::Parse for AttributeFrom
         return Err( syn::Error::new( input.span(), "Unexpected identifier '{}'. Expected 'on', 'off', or 'hint'. For example: `#[ from( off, hint : true ) ]`" ) );
       }
 
-      // xxx : move on / off logic into a helper
-
-      let mut enabled = Option< bool >;
-
-      if on && off
-      {
-        return Err( syn_err!( attr, "`on` and `off` are mutually exclusive .\nIllegal attribute usage : {}", qt!{ #attr } ) )
-      }
-
-      if !on && !off
-      {
-        enabled = None;
-      }
-      else if on
-      {
-        enabled = Some( true )
-      }
-      else if off
-      {
-        enabled = Some( false )
-      }
-
-      // Optional comma handling
-      if input.peek( syn::Token![,] )
-      {
-        input.parse::< syn::Token![,] >()?;
-      }
     }
 
+    // xxx : move on / off logic into a helper
+
+    let mut enabled : Option< bool >;
+
+    if on && off
+    {
+      return Err( syn_err!( input, "`on` and `off` are mutually exclusive .\nIllegal attribute usage : {}", qt!{ #input } ) )
+      // xxx : test
+    }
+
+    if !on && !off
+    {
+      enabled = None;
+    }
+    else if on
+    {
+      enabled = Some( true )
+    }
+    else if off
+    {
+      enabled = Some( false )
+    }
+
+    // Optional comma handling
+    if input.peek( syn::Token![,] )
+    {
+      input.parse::< syn::Token![,] >()?;
+    }
     Ok( Self { enabled, hint } )
   }
 }
