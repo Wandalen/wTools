@@ -19,7 +19,7 @@
 /// Implementing `ComponentAssign` to set a name string on a struct :
 ///
 /// ```rust
-/// use former::ComponentAssign;
+/// use former_types::ComponentAssign; // use crate `former` instead of crate `former_types` unless you need to use crate `former_types` directly
 ///
 /// struct MyStruct
 /// {
@@ -66,7 +66,7 @@ where
 /// ### Example
 ///
 /// ```rust
-/// use former::{ ComponentAssign, AssignWithType };
+/// use former_types::{ ComponentAssign, AssignWithType }; // use crate `former` instead of crate `former_types` unless you need to use crate `former_types` directly
 ///
 /// struct UserProfile
 /// {
