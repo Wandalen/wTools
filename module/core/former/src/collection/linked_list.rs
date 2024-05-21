@@ -7,7 +7,7 @@
 
 use crate::*;
 #[ allow( unused ) ]
-use collection_tools::list::LinkedList;
+use collection_tools::LinkedList;
 
 impl< E > Collection for LinkedList< E >
 {

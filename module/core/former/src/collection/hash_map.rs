@@ -6,7 +6,7 @@
 //!
 
 use crate::*;
-use collection_tools::hmap::HashMap;
+use collection_tools::HashMap;
 
 impl< K, V > Collection for HashMap< K, V >
 where

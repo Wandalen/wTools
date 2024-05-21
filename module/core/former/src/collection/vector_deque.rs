@@ -7,7 +7,7 @@
 
 use crate::*;
 #[ allow( unused ) ]
-use collection_tools::vecd::VecDeque;
+use collection_tools::VecDeque;
 
 impl< E > Collection for VecDeque< E >
 {
