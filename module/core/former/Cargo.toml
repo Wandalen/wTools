@@ -59,7 +59,7 @@ derive_from_components = [ "derive_components", "former_meta/derive_from_compone
 
 [dependencies]
 former_meta = { workspace = true }
-collection_tools = { workspace = true, features = [ "collection_constructors" ] }
+collection_tools = { workspace = true, features = [ "collection_constructors", "reexports" ] }
 
 
 [dev-dependencies]
