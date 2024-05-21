@@ -4,6 +4,7 @@
 #![ doc( html_root_url = "https://docs.rs/collection_tools/latest/collection_tools/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+#[ cfg( feature = "enabled" ) ]
 #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 extern crate alloc;
 
