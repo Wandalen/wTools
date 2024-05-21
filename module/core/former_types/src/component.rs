@@ -38,7 +38,7 @@
 /// obj.assign( "New Name" );
 /// assert_eq!( obj.name, "New Name" );
 /// ```
-#[ cfg( any( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
+#[ cfg( any( feature = "types_component_assign" ) ) ]
 pub trait ComponentAssign< T, IntoT >
 where
   IntoT : Into< T >,
@@ -89,7 +89,7 @@ where
 /// ```
 ///
 
-#[ cfg( any( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
+#[ cfg( any( feature = "types_component_assign" ) ) ]
 pub trait AssignWithType
 {
   /// Function to set value of a component by its type.
@@ -99,7 +99,7 @@ pub trait AssignWithType
     Self : ComponentAssign< T, IntoT >;
 }
 
-#[ cfg( any( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
+#[ cfg( any( feature = "types_component_assign" ) ) ]
 impl< S > AssignWithType for S
 {
 

@@ -31,34 +31,26 @@ use_alloc = [ "no_std", "collection_tools/use_alloc" ]
 default = [
   "enabled",
   "derive_former",
-  "derive_components",
-  "derive_component_from",
-  "derive_component_assign",
-  "derive_components_assign",
-  "derive_from_components",
+  "types_components",
+  "types_component_assign",
 ]
 full = [
   "enabled",
   "derive_former",
-  "derive_components",
-  "derive_component_from",
-  "derive_component_assign",
-  "derive_components_assign",
-  "derive_from_components",
+  "types_components",
+  "types_component_assign",
 ]
 enabled = [ "collection_tools/enabled" ]
 
 derive_former = []
-derive_components = []
-derive_component_assign = [ "derive_components" ]
-derive_components_assign = [ "derive_components", "derive_component_assign" ]
-derive_component_from = [ "derive_components" ]
-derive_from_components = [ "derive_components" ]
+types_components = []
+types_component_assign = [ "types_components" ]
 
 
 [dependencies]
 collection_tools = { workspace = true, features = [ "collection_constructors" ] }
 # qqq : optimize also make sure collection_tools expose enough features
+
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }

@@ -29,7 +29,7 @@ mod collection;
 
 /// Component-based forming.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( any( feature = "derive_component_from", feature = "derive_component_assign" ) ) ]
+#[ cfg( any( feature = "types_component_assign" ) ) ]
 mod component;
 
 /// Namespace with dependencies.
@@ -96,6 +96,6 @@ pub mod prelude
 {
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  #[ cfg( any( feature = "derive_component_from", feature = "derive_component_assign" ) ) ]
+  #[ cfg( any( feature = "types_component_assign" ) ) ]
   pub use super::component::*;
 }

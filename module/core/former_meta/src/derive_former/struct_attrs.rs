@@ -1,6 +1,7 @@
 
 use super::*;
 use macro_tools::{ attr, Result };
+use former_types::{ ComponentAssign };
 
 ///
 /// Attributes of a struct.
@@ -18,7 +19,7 @@ where
 {
   fn assign( &mut self, component : IntoT )
   {
-    self.storage_fields = component.into();
+    self.storage_fields = Some( component.into() );
   }
 }
 

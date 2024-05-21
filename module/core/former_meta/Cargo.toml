@@ -44,7 +44,7 @@ full = [
   "derive_components_assign",
   "derive_from_components",
 ]
-enabled = [ "macro_tools/enabled", "iter_tools/enabled" ]
+enabled = [ "macro_tools/enabled", "iter_tools/enabled", "former_types/enabled" ]
 
 derive_former = [ "convert_case" ]
 derive_components = []
@@ -58,7 +58,7 @@ proc-macro = true
 
 [dependencies]
 macro_tools = { workspace = true } # qqq : optimize set of features
-former_types = { workspace = true } # qqq : optimize set of features
+former_types = { workspace = true, features = [ "types_component_assign" ] } # qqq : optimize set of features
 iter_tools = { workspace = true }
 convert_case = { version = "0.6.0", default-features = false, optional = true, features = [] }
 
