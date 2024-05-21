@@ -57,7 +57,8 @@ derive_from_components = [ "derive_components" ]
 proc-macro = true
 
 [dependencies]
-macro_tools = { workspace = true }
+macro_tools = { workspace = true } # qqq : optimize set of features
+former_types = { workspace = true } # qqq : optimize set of features
 iter_tools = { workspace = true }
 convert_case = { version = "0.6.0", default-features = false, optional = true, features = [] }
 

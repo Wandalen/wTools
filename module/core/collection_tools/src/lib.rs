@@ -89,7 +89,7 @@ pub mod prelude
   #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use 
+  pub use
   {
     HashMap as Map,
     HashSet as Set,

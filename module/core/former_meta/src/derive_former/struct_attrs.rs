@@ -12,6 +12,16 @@ pub struct StructAttributes
   pub perform : Option< AttributePerform >,
 }
 
+impl< IntoT > ComponentAssign< AttributeStorageFields, IntoT > for StructAttributes
+where
+  IntoT : Into< AttributeStorageFields >,
+{
+  fn assign( &mut self, component : IntoT )
+  {
+    self.storage_fields = component.into();
+  }
+}
+
 impl StructAttributes
 {
 
@@ -238,7 +248,6 @@ impl syn::parse::Parse for AttributeMutator
     let mut custom = false;
     let mut hint = false;
 
-    // xxx : qqq for Anton : use match here and for all attributes -- done
     while !input.is_empty()
     {
       let lookahead = input.lookahead1();
