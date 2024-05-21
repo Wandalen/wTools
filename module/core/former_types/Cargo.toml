@@ -48,7 +48,7 @@ types_component_assign = [ "types_components" ]
 
 
 [dependencies]
-collection_tools = { workspace = true, features = [ "collection_constructors" ] }
+collection_tools = { workspace = true, features = [ "collection_constructors", "reexports" ] }
 # qqq : optimize also make sure collection_tools expose enough features
 
 
