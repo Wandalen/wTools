@@ -23,6 +23,26 @@ where
   }
 }
 
+impl< IntoT > ComponentAssign< AttributeMutator, IntoT > for StructAttributes
+where
+  IntoT : Into< AttributeMutator >,
+{
+  fn assign( &mut self, component : IntoT )
+  {
+    self.mutator = component.into();
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributePerform, IntoT > for StructAttributes
+where
+  IntoT : Into< AttributePerform >,
+{
+  fn assign( &mut self, component : IntoT )
+  {
+    self.perform = Some( component.into() );
+  }
+}
+
 impl StructAttributes
 {
 
