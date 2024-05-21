@@ -6,7 +6,7 @@
 //!
 
 use crate::*;
-use collection_tools::bmap::BTreeMap;
+use collection_tools::BTreeMap;
 
 impl< K, V > Collection for BTreeMap< K, V >
 where

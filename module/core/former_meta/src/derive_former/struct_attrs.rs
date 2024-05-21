@@ -32,7 +32,7 @@ impl StructAttributes
         continue;
       }
 
-      // qqq : qqq for Anton : xxx : refactor field_attrs::FieldAttributes::from_attrs to make it similar to this function
+      // qqq : qqq for Anton : xxx : refactor field_attrs::FieldAttributes::from_attrs to make it similar to this function -- done
       match key_str.as_ref()
       {
         AttributeStorageFields::KEYWORD =>
@@ -239,7 +239,7 @@ impl syn::parse::Parse for AttributeMutator
     let mut custom = false;
     let mut hint = false;
 
-    // xxx : qqq for Anton : use match here and for all attributes
+    // xxx : qqq for Anton : use match here and for all attributes -- done
     while !input.is_empty()
     {
       let lookahead = input.lookahead1();
@@ -247,19 +247,22 @@ impl syn::parse::Parse for AttributeMutator
       {
         let ident : syn::Ident = input.parse()?;
         input.parse::< syn::Token![=] >()?;
-        if ident == "custom"
+        match ident.to_string().as_str()
         {
-          let value : syn::LitBool = input.parse()?;
-          custom = value.value;
-        }
-        else if ident == "hint"
-        {
-          let value : syn::LitBool = input.parse()?;
-          hint = value.value;
-        }
-        else
-        {
-          return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'custom' or 'hint'.", ident ) ) );
+          "custom" =>
+          {
+            let value : syn::LitBool = input.parse()?;
+            custom = value.value;
+          }
+          "hint" =>
+          {
+            let value : syn::LitBool = input.parse()?;
+            hint = value.value;
+          }
+          _ =>
+          {
+            return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'custom' or 'hint'.", ident ) ) );
+          }
         }
       }
       else

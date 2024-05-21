@@ -7,7 +7,7 @@
 
 use crate::*;
 #[ allow( unused ) ]
-use collection_tools::heap::BinaryHeap;
+use collection_tools::BinaryHeap;
 
 impl< E > Collection for BinaryHeap< E >
 {
