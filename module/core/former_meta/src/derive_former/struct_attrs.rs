@@ -32,7 +32,6 @@ impl StructAttributes
         continue;
       }
 
-      // qqq : qqq for Anton : xxx : refactor field_attrs::FieldAttributes::from_attrs to make it similar to this function -- done
       match key_str.as_ref()
       {
         AttributeStorageFields::KEYWORD =>
@@ -52,7 +51,7 @@ impl StructAttributes
         }
         _ =>
         {
-          return Err( syn_err!( attr, "Known structure attirbutes are : `storage_fields`, `perform`, `debug`.\nUnknown structure attribute : {}", qt!{ #attr } ) );
+          return Err( syn_err!( attr, "Known structure attirbutes are : `storage_fields`, `mutator`, `perform`, `debug`.\nUnknown structure attribute : {}", qt!{ #attr } ) );
         }
       }
     }

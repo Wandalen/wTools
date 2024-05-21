@@ -24,6 +24,7 @@ impl FieldAttributes
     let mut subform_scalar = None;
     let mut subform_collection = None;
     let mut subform_entry = None;
+
     for attr in attrs
     {
       let key_ident = attr.path().get_ident()
@@ -43,7 +44,6 @@ impl FieldAttributes
         }
         AttributeScalarSetter::KEYWORD =>
         {
-          // qqq : move this part of parsing into attribute. do that for all attributes -- done
           scalar.replace( AttributeScalarSetter::from_meta( &attr )? );
         }
         AttributeSubformScalarSetter::KEYWORD =>
@@ -86,7 +86,7 @@ pub struct AttributeConfig
 impl AttributeConfig
 {
 
-  const KEYWORD: &'static str = "former";
+  const KEYWORD : &'static str = "former";
 
   pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
@@ -284,7 +284,7 @@ pub struct AttributeSubformScalarSetter
 impl AttributeSubformScalarSetter
 {
 
-  const KEYWORD: &'static str = "subform_scalar";
+  const KEYWORD : &'static str = "subform_scalar";
 
   pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
@@ -394,7 +394,7 @@ pub struct AttributeSubformCollectionSetter
 impl AttributeSubformCollectionSetter
 {
 
-  const KEYWORD: &'static str = "subform_collection";
+  const KEYWORD : &'static str = "subform_collection";
 
   pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
@@ -515,7 +515,7 @@ pub struct AttributeSubformEntrySetter
 impl AttributeSubformEntrySetter
 {
 
-  const KEYWORD: &'static str = "subform_entry";
+  const KEYWORD : &'static str = "subform_entry";
 
   pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
