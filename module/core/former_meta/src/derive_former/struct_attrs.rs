@@ -74,18 +74,27 @@ impl StructAttributes
   {
     let mut result = Self::default();
     // let known_attributes = "Known structure attirbutes are : `storage_fields`, `mutator`, `perform`, `debug`.";
-    let known_attributes = const_format::concatcp!
-    (
-      "Known attirbutes are : ",
-      "debug",
-      ", ", AttributeStorageFields::KEYWORD,
-      ", ", AttributeMutator::KEYWORD,
-      ", ", AttributePerform::KEYWORD,
-      ".",
-    );
+    // let known_attributes = const_format::concatcp!
+    // (
+    //   "Known attirbutes are : ",
+    //   "debug",
+    //   ", ", AttributeStorageFields::KEYWORD,
+    //   ", ", AttributeMutator::KEYWORD,
+    //   ", ", AttributePerform::KEYWORD,
+    //   ".",
+    // );
 
     let error = | attr : &syn::Attribute | -> syn::Error
     {
+      let known_attributes = const_format::concatcp!
+      (
+        "Known attirbutes are : ",
+        "debug",
+        ", ", AttributeStorageFields::KEYWORD,
+        ", ", AttributeMutator::KEYWORD,
+        ", ", AttributePerform::KEYWORD,
+        ".",
+      );
       syn_err!
       (
         attr,
