@@ -1,3 +1,4 @@
+
 /// Provides a generic interface for setting a component of a certain type on an object.
 ///
 /// This trait abstracts the action of setting or replacing a component, where a component

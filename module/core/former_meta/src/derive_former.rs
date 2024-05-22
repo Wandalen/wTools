@@ -71,7 +71,7 @@ pub fn mutator
     }
   };
 
-  if mutator.hint
+  if mutator.hint.into()
   {
     let hint = format!
     (

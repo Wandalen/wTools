@@ -73,16 +73,6 @@ impl StructAttributes
   pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
   {
     let mut result = Self::default();
-    // let known_attributes = "Known structure attirbutes are : `storage_fields`, `mutator`, `perform`, `debug`.";
-    // let known_attributes = const_format::concatcp!
-    // (
-    //   "Known attirbutes are : ",
-    //   "debug",
-    //   ", ", AttributeStorageFields::KEYWORD,
-    //   ", ", AttributeMutator::KEYWORD,
-    //   ", ", AttributePerform::KEYWORD,
-    //   ".",
-    // );
 
     let error = | attr : &syn::Attribute | -> syn::Error
     {
@@ -106,10 +96,7 @@ impl StructAttributes
     for attr in attrs
     {
 
-      // return Err( error( attr ) );
-
-      let key_ident = attr.path().get_ident()
-      .ok_or_else( || error( attr ) )?;
+      let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
       let key_str = format!( "{}", key_ident );
 
       if attr::is_standard( &key_str )
@@ -332,7 +319,7 @@ pub struct AttributeMutator
   pub custom : bool,
   /// Specifies whether to provide a sketch of the mutator as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : bool,
+  pub hint : AttributeEntryHint,
 }
 
 impl AttributeComponent for AttributeMutator
@@ -365,6 +352,42 @@ where
   fn assign( &mut self, component : IntoT )
   {
     self.mutator = component.into();
+  }
+}
+
+// xxx2 : qqq : continue and get it implemented for all entries of all attribures
+
+/// Specifies whether to provide a sketch as a hint.
+/// Defaults to `false`, which means no hint is provided unless explicitly requested.
+#[ derive( Debug, Default, Clone, Copy ) ]
+pub struct AttributeEntryHint( bool );
+
+impl From< bool > for AttributeEntryHint
+{
+  #[ inline( always ) ]
+  fn from( src : bool ) -> Self
+  {
+    Self( src )
+  }
+}
+
+impl From< AttributeEntryHint > for bool
+{
+  #[ inline( always ) ]
+  fn from( src : AttributeEntryHint ) -> Self
+  {
+    src.0
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributeEntryHint, IntoT > for AttributeMutator
+where
+  IntoT : Into< AttributeEntryHint >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.hint = component.into();
   }
 }
 
@@ -415,7 +438,7 @@ impl syn::parse::Parse for AttributeMutator
     Ok( Self
     {
       custom,
-      hint,
+      hint : hint.into(),
     })
   }
 }
@@ -467,11 +490,8 @@ impl syn::parse::Parse for AttributePerform
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
   {
-    // let input2;
     Ok( Self
     {
-      // paren_token : syn::parenthesized!( input2 in input ),
-      // signature : input2.parse()?,
       signature : input.parse()?,
     })
   }
