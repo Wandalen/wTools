@@ -3,6 +3,17 @@ use super::*;
 use macro_tools::{ attr, Result };
 use former_types::{ ComponentAssign };
 
+pub trait AttributeComponent
+where
+  Self : Sized,
+{
+
+  const KEYWORD : &'static str;
+
+  fn from_meta( attr : &syn::Attribute ) -> Result< Self >;
+
+}
+
 ///
 /// Attributes of a struct.
 ///
