@@ -6,6 +6,8 @@ use former_types::{ ComponentAssign };
 ///
 /// Attributes of a struct.
 ///
+
+#[ derive( Debug, Default ) ]
 pub struct StructAttributes
 {
   pub storage_fields : Option< AttributeStorageFields >,
@@ -17,6 +19,7 @@ impl< IntoT > ComponentAssign< AttributeStorageFields, IntoT > for StructAttribu
 where
   IntoT : Into< AttributeStorageFields >,
 {
+  #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
     self.storage_fields = Some( component.into() );
@@ -27,6 +30,7 @@ impl< IntoT > ComponentAssign< AttributeMutator, IntoT > for StructAttributes
 where
   IntoT : Into< AttributeMutator >,
 {
+  #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
     self.mutator = component.into();
@@ -37,6 +41,7 @@ impl< IntoT > ComponentAssign< AttributePerform, IntoT > for StructAttributes
 where
   IntoT : Into< AttributePerform >,
 {
+  #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
     self.perform = Some( component.into() );
@@ -48,14 +53,35 @@ impl StructAttributes
 
   pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
   {
-    let mut storage_fields = None;
-    let mut mutator : AttributeMutator = Default::default();
-    let mut perform = None;
+    let mut result = Self::default();
+    // let known_attributes = "Known structure attirbutes are : `storage_fields`, `mutator`, `perform`, `debug`.";
+    let known_attributes = const_format::concatcp!
+    (
+      "Known attirbutes are : ",
+      "debug",
+      ", ", AttributeStorageFields::KEYWORD,
+      ", ", AttributeMutator::KEYWORD,
+      ", ", AttributePerform::KEYWORD,
+      ".",
+    );
+
+    let error = | attr : &syn::Attribute | -> syn::Error
+    {
+      syn_err!
+      (
+        attr,
+        "Expects an attribute of format `#[ attribute( val ) ]`\n  {known_attributes}\n  But got:\n    `{}`",
+        qt!{ #attr }
+      )
+    };
 
     for attr in attrs
     {
+
+      // return Err( error( attr ) );
+
       let key_ident = attr.path().get_ident()
-      .ok_or_else( || syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ) )?;
+      .ok_or_else( || error( attr ) )?;
       let key_str = format!( "{}", key_ident );
 
       if attr::is_standard( &key_str )
@@ -65,30 +91,60 @@ impl StructAttributes
 
       match key_str.as_ref()
       {
-        AttributeStorageFields::KEYWORD =>
-        {
-          storage_fields.replace( AttributeStorageFields::from_meta( attr )? );
-        }
-        AttributeMutator::KEYWORD =>
-        {
-          mutator = AttributeMutator::from_meta( attr )?;
-        }
-        AttributePerform::KEYWORD =>
-        {
-          perform.replace( AttributePerform::from_meta( attr )? );
-        }
-        "debug" =>
-        {
-        }
-        _ =>
-        {
-          return Err( syn_err!( attr, "Known structure attirbutes are : `storage_fields`, `mutator`, `perform`, `debug`.\nUnknown structure attribute : {}", qt!{ #attr } ) );
-        }
+        AttributeStorageFields::KEYWORD => result.assign( AttributeStorageFields::from_meta( attr )? ),
+        AttributeMutator::KEYWORD => result.assign( AttributeMutator::from_meta( attr )? ),
+        AttributePerform::KEYWORD => result.assign( AttributePerform::from_meta( attr )? ),
+        "debug" => {}
+        _ => return Err( error( attr ) ),
       }
     }
 
-    Ok( StructAttributes { perform, storage_fields, mutator } )
+    Ok( result )
   }
+
+//   pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
+//   {
+//     let mut storage_fields = None;
+//     let mut mutator : AttributeMutator = Default::default();
+//     let mut perform = None;
+//
+//     for attr in attrs
+//     {
+//       let key_ident = attr.path().get_ident()
+//       .ok_or_else( || syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ) )?;
+//       let key_str = format!( "{}", key_ident );
+//
+//       if attr::is_standard( &key_str )
+//       {
+//         continue;
+//       }
+//
+//       match key_str.as_ref()
+//       {
+//         AttributeStorageFields::KEYWORD =>
+//         {
+//           storage_fields.replace( AttributeStorageFields::from_meta( attr )? );
+//         }
+//         AttributeMutator::KEYWORD =>
+//         {
+//           mutator = AttributeMutator::from_meta( attr )?;
+//         }
+//         AttributePerform::KEYWORD =>
+//         {
+//           perform.replace( AttributePerform::from_meta( attr )? );
+//         }
+//         "debug" =>
+//         {
+//         }
+//         _ =>
+//         {
+//           return Err( syn_err!( attr, "Known structure attirbutes are : `storage_fields`, `mutator`, `perform`, `debug`.\nUnknown structure attribute : {}", qt!{ #attr } ) );
+//         }
+//       }
+//     }
+//
+//     Ok( StructAttributes { perform, storage_fields, mutator } )
+//   }
 
   ///
   /// Generate parts, used for generating `perform()`` method.
@@ -177,6 +233,7 @@ impl StructAttributes
 /// `#[ storage_fields( a : i32, b : Option< String > ) ]`
 ///
 
+#[ derive( Debug, Default ) ]
 pub struct AttributeStorageFields
 {
   pub fields : syn::punctuated::Punctuated< syn::Field, syn::token::Comma >,
@@ -320,6 +377,7 @@ impl syn::parse::Parse for AttributeMutator
 /// `#[ perform( fn after1< 'a >() -> Option< &'a str > ) ]`
 ///
 
+#[ derive( Debug ) ]
 pub struct AttributePerform
 {
   pub signature : syn::Signature,

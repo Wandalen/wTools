@@ -1,6 +1,7 @@
 
 use super::*;
 use macro_tools::{ attr, Result };
+use former_types::{ ComponentAssign };
 
 ///
 /// Attributes of a field.
@@ -15,20 +16,96 @@ pub struct FieldAttributes
   pub subform_entry : Option< AttributeSubformEntrySetter >,
 }
 
+impl< IntoT > ComponentAssign< AttributeConfig, IntoT > for FieldAttributes
+where
+  IntoT : Into< AttributeConfig >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.config = Some( component.into() );
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributeScalarSetter, IntoT > for FieldAttributes
+where
+  IntoT : Into< AttributeScalarSetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.scalar = Some( component.into() );
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributeSubformScalarSetter, IntoT > for FieldAttributes
+where
+  IntoT : Into< AttributeSubformScalarSetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.subform_scalar = Some( component.into() );
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributeSubformCollectionSetter, IntoT > for FieldAttributes
+where
+  IntoT : Into< AttributeSubformCollectionSetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.subform_collection = Some( component.into() );
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributeSubformEntrySetter, IntoT > for FieldAttributes
+where
+  IntoT : Into< AttributeSubformEntrySetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.subform_entry = Some( component.into() );
+  }
+}
+
 impl FieldAttributes
 {
+
   pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
   {
-    let mut config = None;
-    let mut scalar = None;
-    let mut subform_scalar = None;
-    let mut subform_collection = None;
-    let mut subform_entry = None;
+    let mut result = Self::default();
+    // let known_attributes = "Known structure attirbutes are : `storage_fields`, `mutator`, `perform`, `debug`.";
+    let known_attributes = const_format::concatcp!
+    (
+      "Known attirbutes are : ",
+      "debug",
+      ", ", AttributeConfig::KEYWORD,
+      ", ", AttributeScalarSetter::KEYWORD,
+      ", ", AttributeSubformScalarSetter::KEYWORD,
+      ", ", AttributeSubformCollectionSetter::KEYWORD,
+      ", ", AttributeSubformEntrySetter::KEYWORD,
+      ".",
+    );
+
+    let error = | attr : &syn::Attribute | -> syn::Error
+    {
+      syn_err!
+      (
+        attr,
+        "Expects an attribute of format `#[ attribute( val ) ]`\n  {known_attributes}\n  But got:\n    `{}`",
+        qt!{ #attr }
+      )
+    };
 
     for attr in attrs
     {
-      let key_ident = attr.path().get_ident()
-      .ok_or_else( || syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ) )?;
+
+      // return Err( error( attr ) );
+
+      let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
       let key_str = format!( "{}", key_ident );
 
       if attr::is_standard( &key_str )
@@ -38,36 +115,74 @@ impl FieldAttributes
 
       match key_str.as_ref()
       {
-        AttributeConfig::KEYWORD =>
-        {
-          config.replace( AttributeConfig::from_meta( &attr )? );
-        }
-        AttributeScalarSetter::KEYWORD =>
-        {
-          scalar.replace( AttributeScalarSetter::from_meta( &attr )? );
-        }
-        AttributeSubformScalarSetter::KEYWORD =>
-        {
-          subform_scalar.replace( AttributeSubformScalarSetter::from_meta( &attr )? );
-        }
-        AttributeSubformCollectionSetter::KEYWORD =>
-        {
-          subform_collection.replace( AttributeSubformCollectionSetter::from_meta( &attr )? );
-        }
-        AttributeSubformEntrySetter::KEYWORD =>
-        {
-          subform_entry.replace( AttributeSubformEntrySetter::from_meta( &attr )? );
-        }
-        _ =>
-        {
-          return Err( syn_err!( attr, "Unknown field attribute {}", qt!{ #attr } ) );
-        }
+        AttributeConfig::KEYWORD => result.assign( AttributeConfig::from_meta( attr )? ),
+        AttributeScalarSetter::KEYWORD => result.assign( AttributeScalarSetter::from_meta( attr )? ),
+        AttributeSubformScalarSetter::KEYWORD => result.assign( AttributeSubformScalarSetter::from_meta( attr )? ),
+        AttributeSubformCollectionSetter::KEYWORD => result.assign( AttributeSubformCollectionSetter::from_meta( attr )? ),
+        AttributeSubformEntrySetter::KEYWORD => result.assign( AttributeSubformEntrySetter::from_meta( attr )? ),
+        "debug" => {}
+        _ => return Err( error( attr ) ),
       }
     }
 
-    Ok( FieldAttributes { config, scalar, subform_scalar, subform_collection, subform_entry } )
+    Ok( result )
   }
+
 }
+
+// impl FieldAttributes
+// {
+//   pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
+//   {
+//     let mut config = None;
+//     let mut scalar = None;
+//     let mut subform_scalar = None;
+//     let mut subform_collection = None;
+//     let mut subform_entry = None;
+//
+//     for attr in attrs
+//     {
+//       let key_ident = attr.path().get_ident()
+//       .ok_or_else( || syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ) )?;
+//       let key_str = format!( "{}", key_ident );
+//
+//       if attr::is_standard( &key_str )
+//       {
+//         continue;
+//       }
+//
+//       match key_str.as_ref()
+//       {
+//         AttributeConfig::KEYWORD =>
+//         {
+//           config.replace( AttributeConfig::from_meta( &attr )? );
+//         }
+//         AttributeScalarSetter::KEYWORD =>
+//         {
+//           scalar.replace( AttributeScalarSetter::from_meta( &attr )? );
+//         }
+//         AttributeSubformScalarSetter::KEYWORD =>
+//         {
+//           subform_scalar.replace( AttributeSubformScalarSetter::from_meta( &attr )? );
+//         }
+//         AttributeSubformCollectionSetter::KEYWORD =>
+//         {
+//           subform_collection.replace( AttributeSubformCollectionSetter::from_meta( &attr )? );
+//         }
+//         AttributeSubformEntrySetter::KEYWORD =>
+//         {
+//           subform_entry.replace( AttributeSubformEntrySetter::from_meta( &attr )? );
+//         }
+//         _ =>
+//         {
+//           return Err( syn_err!( attr, "Unknown field attribute {}", qt!{ #attr } ) );
+//         }
+//       }
+//     }
+//
+//     Ok( FieldAttributes { config, scalar, subform_scalar, subform_collection, subform_entry } )
+//   }
+// }
 
 ///
 /// Attribute to hold configuration information about the field such as default value.

@@ -61,6 +61,8 @@ macro_tools = { workspace = true } # qqq : optimize set of features
 former_types = { workspace = true, features = [ "types_component_assign" ] } # qqq : optimize set of features
 iter_tools = { workspace = true }
 convert_case = { version = "0.6.0", default-features = false, optional = true, features = [] }
+const_format = { version = "0.2.32" }
+# zzz : reexport const_format
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }
