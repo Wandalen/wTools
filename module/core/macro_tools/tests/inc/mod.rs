@@ -3,6 +3,8 @@
 use super::*;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
+#[ allow( unused_imports ) ]
+use the_module::protected::*;
 
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
@@ -11,8 +13,6 @@ mod if_enabled
 {
 
   use super::*;
-  use the_module::exposed::*;
-  // xxx : use protected
 
   mod attr_test;
   mod basic_test;
