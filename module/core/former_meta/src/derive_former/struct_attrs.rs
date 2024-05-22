@@ -88,7 +88,7 @@ impl StructAttributes
       syn_err!
       (
         attr,
-        "Expects an attribute of format `#[ attribute( val ) ]`\n  {known_attributes}\n  But got:\n    `{}`",
+        "Expects an attribute of format '#[ attribute( key1 = val1, key2 = val2 ) ]'\n  {known_attributes}\n  But got: '{}'",
         qt!{ #attr }
       )
     };
@@ -126,7 +126,7 @@ impl StructAttributes
 //     for attr in attrs
 //     {
 //       let key_ident = attr.path().get_ident()
-//       .ok_or_else( || syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ) )?;
+//       .ok_or_else( || syn_err!( attr, "Expects an attribute of format #[ attribute( key1 = val1, key2 = val2 ) ], but got:\n  {}", qt!{ #attr } ) )?;
 //       let key_str = format!( "{}", key_ident );
 //
 //       if attr::is_standard( &key_str )
@@ -290,8 +290,8 @@ impl syn::parse::Parse for AttributeStorageFields
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
 
-    let fields : syn::punctuated::Punctuated< syn::Field, syn::Token![,] > =
-    input.parse_terminated( syn::Field::parse_named, Token![,] )?;
+    let fields : syn::punctuated::Punctuated< syn::Field, syn::Token![ , ] > =
+    input.parse_terminated( syn::Field::parse_named, Token![ , ] )?;
 
     Ok( Self
     {
@@ -316,7 +316,7 @@ pub struct AttributeMutator
 {
   /// Indicates whether a custom mutator should be generated.
   /// Defaults to `false`, meaning no custom mutator is generated unless explicitly requested.
-  pub custom : bool,
+  pub custom : AttributeEntryCustom,
   /// Specifies whether to provide a sketch of the mutator as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
   pub hint : AttributeEntryHint,
@@ -355,31 +355,6 @@ where
   }
 }
 
-// xxx2 : qqq : continue and get it implemented for all entries of all attribures
-
-/// Specifies whether to provide a sketch as a hint.
-/// Defaults to `false`, which means no hint is provided unless explicitly requested.
-#[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributeEntryHint( bool );
-
-impl From< bool > for AttributeEntryHint
-{
-  #[ inline( always ) ]
-  fn from( src : bool ) -> Self
-  {
-    Self( src )
-  }
-}
-
-impl From< AttributeEntryHint > for bool
-{
-  #[ inline( always ) ]
-  fn from( src : AttributeEntryHint ) -> Self
-  {
-    src.0
-  }
-}
-
 impl< IntoT > ComponentAssign< AttributeEntryHint, IntoT > for AttributeMutator
 where
   IntoT : Into< AttributeEntryHint >,
@@ -395,8 +370,24 @@ impl syn::parse::Parse for AttributeMutator
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
-    let mut custom = false;
-    let mut hint = false;
+    let mut result = Self::default();
+
+    let error = | ident : &syn::Ident | -> syn::Error
+    {
+      let known = const_format::concatcp!
+      (
+        "Known entries of attribute ", AttributeMutator::KEYWORD, " are : ",
+        AttributeEntryCustom::KEYWORD,
+        ", ", AttributeEntryHint::KEYWORD,
+        ".",
+      );
+      syn_err!
+      (
+        ident,
+        "Expects an attribute of format '#[ attribute( key1 = val1, key2 = val2 ) ]' \n  {known}\n  But got: '{}'",
+        qt!{ #ident }
+      )
+    };
 
     while !input.is_empty()
     {
@@ -404,22 +395,17 @@ impl syn::parse::Parse for AttributeMutator
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
+
+        // return Err( error( &ident ) );
+
         input.parse::< syn::Token![=] >()?;
         match ident.to_string().as_str()
         {
-          "custom" =>
-          {
-            let value : syn::LitBool = input.parse()?;
-            custom = value.value;
-          }
-          "hint" =>
-          {
-            let value : syn::LitBool = input.parse()?;
-            hint = value.value;
-          }
+          AttributeEntryCustom::KEYWORD => result.custom = input.parse()?,
+          AttributeEntryHint::KEYWORD => result.hint = input.parse()?,
           _ =>
           {
-            return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'custom' or 'hint'.", ident ) ) );
+            return Err( error( &ident ) );
           }
         }
       }
@@ -429,17 +415,13 @@ impl syn::parse::Parse for AttributeMutator
       }
 
       // Optional comma handling
-      if input.peek( syn::Token![,] )
+      if input.peek( syn::Token![ , ] )
       {
-        input.parse::< syn::Token![,] >()?;
+        input.parse::< syn::Token![ , ] >()?;
       }
     }
 
-    Ok( Self
-    {
-      custom,
-      hint : hint.into(),
-    })
+    Ok( result )
   }
 }
 
@@ -494,6 +476,86 @@ impl syn::parse::Parse for AttributePerform
     {
       signature : input.parse()?,
     })
+  }
+}
+
+// == attribute entries
+
+// xxx2 : qqq : continue and get it implemented for all entries of all attribures
+
+/// Specifies whether to provide a sketch as a hint.
+/// Defaults to `false`, which means no hint is provided unless explicitly requested.
+#[ derive( Debug, Default, Clone, Copy ) ]
+pub struct AttributeEntryHint( bool );
+
+impl AttributeEntryHint
+{
+  const KEYWORD : &'static str = "mutator";
+}
+
+impl syn::parse::Parse for AttributeEntryHint
+{
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+  {
+    let value : syn::LitBool = input.parse()?;
+    Ok( value.value.into() )
+  }
+}
+
+impl From< bool > for AttributeEntryHint
+{
+  #[ inline( always ) ]
+  fn from( src : bool ) -> Self
+  {
+    Self( src )
+  }
+}
+
+impl From< AttributeEntryHint > for bool
+{
+  #[ inline( always ) ]
+  fn from( src : AttributeEntryHint ) -> Self
+  {
+    src.0
+  }
+}
+
+// =
+
+/// Indicates whether a custom code should be generated.
+/// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
+#[ derive( Debug, Default, Clone, Copy ) ]
+pub struct AttributeEntryCustom( bool );
+
+impl AttributeEntryCustom
+{
+  const KEYWORD : &'static str = "custom";
+}
+
+impl syn::parse::Parse for AttributeEntryCustom
+{
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+  {
+    let value : syn::LitBool = input.parse()?;
+    Ok( value.value.into() )
+  }
+}
+
+impl From< bool > for AttributeEntryCustom
+{
+  #[ inline( always ) ]
+  fn from( src : bool ) -> Self
+  {
+    Self( src )
+  }
+}
+
+impl From< AttributeEntryCustom > for bool
+{
+  #[ inline( always ) ]
+  fn from( src : AttributeEntryCustom ) -> Self
+  {
+    src.0
   }
 }
 

@@ -43,7 +43,7 @@ impl FieldAttributes
       syn_err!
       (
         attr,
-        "Expects an attribute of format `#[ attribute( val ) ]`\n  {known_attributes}\n  But got:\n    `{}`",
+        "Expects an attribute of format `#[ attribute( key1 = val1, key2 = val2 ) ]`\n  {known_attributes}\n  But got:\n    `{}`",
         qt!{ #attr }
       )
     };
@@ -91,7 +91,7 @@ impl FieldAttributes
 //     for attr in attrs
 //     {
 //       let key_ident = attr.path().get_ident()
-//       .ok_or_else( || syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ) )?;
+//       .ok_or_else( || syn_err!( attr, "Expects an attribute of format #[ attribute( key1 = val1, key2 = val2 ) ], but got:\n  {}", qt!{ #attr } ) )?;
 //       let key_str = format!( "{}", key_ident );
 //
 //       if attr::is_standard( &key_str )
@@ -334,9 +334,9 @@ impl syn::parse::Parse for AttributeScalarSetter
       }
 
       // Optional comma handling
-      if input.peek( syn::Token![,] )
+      if input.peek( syn::Token![ , ] )
       {
-        input.parse::< syn::Token![,] >()?;
+        input.parse::< syn::Token![ , ] >()?;
       }
     }
 
@@ -454,9 +454,9 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
       }
 
       // Optional comma handling
-      if input.peek( syn::Token![,] )
+      if input.peek( syn::Token![ , ] )
       {
-        input.parse::< syn::Token![,] >()?;
+        input.parse::< syn::Token![ , ] >()?;
       }
     }
 
@@ -709,9 +709,9 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
       }
 
       // Optional comma handling
-      if input.peek( syn::Token![,] )
+      if input.peek( syn::Token![ , ] )
       {
-        input.parse::< syn::Token![,] >()?;
+        input.parse::< syn::Token![ , ] >()?;
       }
     }
 
