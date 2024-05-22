@@ -7,6 +7,7 @@ use former_types::{ ComponentAssign };
 /// Attributes of a field.
 ///
 
+#[ derive( Debug, Default ) ]
 pub struct FieldAttributes
 {
   pub config : Option< AttributeConfig >,
@@ -14,17 +15,6 @@ pub struct FieldAttributes
   pub subform_scalar : Option< AttributeSubformScalarSetter >,
   pub subform_collection : Option< AttributeSubformCollectionSetter >,
   pub subform_entry : Option< AttributeSubformEntrySetter >,
-}
-
-impl< IntoT > ComponentAssign< AttributeConfig, IntoT > for FieldAttributes
-where
-  IntoT : Into< AttributeConfig >,
-{
-  #[ inline( always ) ]
-  fn assign( &mut self, component : IntoT )
-  {
-    self.config = Some( component.into() );
-  }
 }
 
 impl< IntoT > ComponentAssign< AttributeScalarSetter, IntoT > for FieldAttributes
@@ -190,6 +180,7 @@ impl FieldAttributes
 /// `#[ default( 13 ) ]`
 ///
 
+#[ derive( Debug, Default ) ]
 pub struct AttributeConfig
 {
 
@@ -264,6 +255,17 @@ impl syn::parse::Parse for AttributeConfig
   }
 }
 
+impl< IntoT > ComponentAssign< AttributeConfig, IntoT > for FieldAttributes
+where
+  IntoT : Into< AttributeConfig >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.config = Some( component.into() );
+  }
+}
+
 ///
 /// Attribute to enable/disable scalar setter generation.
 ///
@@ -276,6 +278,7 @@ impl syn::parse::Parse for AttributeConfig
 /// ```
 ///
 
+#[ derive( Debug, Default ) ]
 pub struct AttributeScalarSetter
 {
   /// Optional identifier for naming the setter.
@@ -384,6 +387,7 @@ impl syn::parse::Parse for AttributeScalarSetter
 /// ```
 ///
 
+#[ derive( Debug, Default ) ]
 pub struct AttributeSubformScalarSetter
 {
   /// Optional identifier for naming the setter.
@@ -493,6 +497,7 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
 /// ```
 ///
 
+#[ derive( Debug, Default ) ]
 pub struct AttributeSubformCollectionSetter
 {
   /// Optional identifier for naming the setter.
@@ -614,6 +619,7 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
 /// mame = field_name
 /// ```
 
+#[ derive( Debug, Default ) ]
 pub struct AttributeSubformEntrySetter
 {
   /// An optional identifier that names the setter. It is parsed from inputs
