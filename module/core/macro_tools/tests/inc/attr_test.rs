@@ -32,29 +32,45 @@ fn is_standard_edge_cases()
   assert!( !attr::is_standard( "cfg_attr_extra" ), "Expected 'cfg_attr_extra' to not be a standard attribute." );
 }
 
-// xxx
-// #[ test ]
-// fn attribute_component_from_meta()
-// {
-//   // Define a sample attribute
-//   let got : Attribute = parse_quote!( #[ my_component = "value" ] );
-//
-//   // Attempt to construct MyComponent from the attribute
-//   let result = MyComponent::from_meta( &got );
-//
-//   // Assert that the construction was successful
-//   assert!( result.is_ok() );
-// }
-//
-// #[ test ]
-// fn attribute_component_attribute()
-// {
-//   // Define a sample invalid attribute
-//   let got : Attribute = parse_quote!( #[ other_component = "value" ] );
-//
-//   // Attempt to construct MyComponent from the invalid attribute
-//   let result = MyComponent::from_meta( &got );
-//
-//   // Assert that the construction failed
-//   assert!( result.is_err() );
-// }
+#[ test ]
+fn attribute_component_from_meta()
+{
+  struct MyComponent;
+
+  impl AttributeComponent for MyComponent
+  {
+    const KEYWORD : &'static str = "my_component";
+
+    fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+    {
+      match &attr.meta
+      {
+        syn::Meta::NameValue( meta_name_value ) if meta_name_value.path.is_ident( Self::KEYWORD ) =>
+        {
+          Ok( MyComponent )
+        }
+        _ => Err( syn::Error::new_spanned( attr, "Failed to parse attribute as MyComponent" ) ),
+      }
+    }
+  }
+
+  // Define a sample attribute
+  let attr : syn::Attribute = syn::parse_quote!( #[ my_component = "value" ] );
+
+  // Attempt to construct MyComponent from the attribute
+  let result = MyComponent::from_meta( &attr );
+
+  // Assert that the construction was successful
+  assert!( result.is_ok() );
+
+  // Negative testing
+
+  // Define a sample invalid attribute
+  let attr : syn::Attribute = syn::parse_quote!( #[ other_component = "value" ] );
+
+  // Attempt to construct MyComponent from the invalid attribute
+  let result = MyComponent::from_meta( &attr );
+
+  // Assert that the construction failed
+  assert!( result.is_err() );
+}
