@@ -258,12 +258,12 @@ pub struct AttributeStorageFields
   pub fields : syn::punctuated::Punctuated< syn::Field, syn::token::Comma >,
 }
 
-impl AttributeStorageFields
+impl AttributeComponent for AttributeStorageFields
 {
 
   const KEYWORD : &'static str = "storage_fields";
 
-  pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+  fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
     match attr.meta
     {
@@ -326,11 +326,11 @@ pub struct AttributeMutator
   pub hint : bool,
 }
 
-impl AttributeMutator
+impl AttributeComponent for AttributeMutator
 {
   const KEYWORD : &'static str = "mutator";
 
-  pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+  fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
     match attr.meta
     {
@@ -423,11 +423,11 @@ pub struct AttributePerform
   pub signature : syn::Signature,
 }
 
-impl AttributePerform
+impl AttributeComponent for AttributePerform
 {
   const KEYWORD : &'static str = "perform";
 
-  pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+  fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
 
     match attr.meta

@@ -31,7 +31,7 @@ mod file
   pub mod derive;
   pub mod diag;
   pub mod drop;
-  // pub mod generic_analyze;
+  pub mod equation;
   pub mod generic_args;
   pub mod generic_params;
   pub mod item;
@@ -83,7 +83,7 @@ pub mod protected
     derive::orphan::*,
     diag::orphan::*,
     drop::orphan::*,
-    // generic_analyze::orphan::*,
+    equation::orphan::*,
     generic_args::orphan::*,
     generic_params::orphan::*,
     item::orphan::*,
@@ -138,7 +138,7 @@ pub mod exposed
     derive::orphan::*,
     diag::exposed::*,
     drop::exposed::*,
-    // generic_analyze::exposed::*,
+    equation::exposed::*,
     generic_args::exposed::*,
     generic_params::exposed::*,
     item::exposed::*,
@@ -208,7 +208,7 @@ pub mod prelude
     derive::orphan::*,
     diag::prelude::*,
     drop::prelude::*,
-    // generic_analyze::prelude::*,
+    equation::prelude::*,
     generic_args::prelude::*,
     generic_params::prelude::*,
     item::prelude::*,
