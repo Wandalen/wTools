@@ -3,60 +3,68 @@ use super::*;
 use macro_tools::{ attr, Result };
 use former_types::{ ComponentAssign };
 
+/// Trait for components that can be constructed from a meta attribute.
+///
+/// The `AttributeComponent` trait defines the interface for components that can be created
+/// from a `syn::Attribute` meta item. Implementors of this trait are required to define
+/// a constant `KEYWORD` that identifies the type of the component and a method `from_meta`
+/// that handles the construction of the component from the given attribute.
+///
+/// # Example
+///
+/// ```ignore
+/// struct MyComponent;
+///
+/// impl AttributeComponent for MyComponent {
+///     const KEYWORD: &'static str = "my_component";
+///
+///     fn from_meta(attr: &syn::Attribute) -> Result<Self> {
+///         // Parsing logic here
+///     }
+/// }
+/// ```
 pub trait AttributeComponent
 where
   Self : Sized,
 {
-
+  /// The keyword that identifies the component.
+  ///
+  /// This constant is used to match the attribute to the corresponding component.
+  /// Each implementor of this trait must provide a unique keyword for its type.
   const KEYWORD : &'static str;
 
+  /// Constructs the component from the given meta attribute.
+  ///
+  /// This method is responsible for parsing the provided `syn::Attribute` and
+  /// returning an instance of the component. If the attribute cannot be parsed
+  /// into the component, an error should be returned.
+  ///
+  /// # Parameters
+  ///
+  /// - `attr` : A reference to the `syn::Attribute` from which the component is to be constructed.
+  ///
+  /// # Returns
+  ///
+  /// A `Result` containing the constructed component if successful, or an error if the parsing fails.
   fn from_meta( attr : &syn::Attribute ) -> Result< Self >;
-
 }
 
-///
-/// Attributes of a struct.
-///
+/// Represents the attributes of a struct, including storage fields, mutator, and perform attributes.
 
 #[ derive( Debug, Default ) ]
 pub struct StructAttributes
 {
+  /// Optional attribute for storage-specific fields.
+  /// This field is used to specify fields that should be part of the storage but not the final formed structure.
   pub storage_fields : Option< AttributeStorageFields >,
+
+  /// Attribute for customizing the mutation process in a forming operation.
+  /// The `mutator` attribute allows for specifying whether a custom mutator should be used or if a sketch should be provided as a hint.
   pub mutator : AttributeMutator,
+
+  /// Optional attribute for specifying a method to call after forming.
+  /// This attribute can hold information about a method that should be invoked after the form operation is complete.
   pub perform : Option< AttributePerform >,
-}
-
-impl< IntoT > ComponentAssign< AttributeStorageFields, IntoT > for StructAttributes
-where
-  IntoT : Into< AttributeStorageFields >,
-{
-  #[ inline( always ) ]
-  fn assign( &mut self, component : IntoT )
-  {
-    self.storage_fields = Some( component.into() );
-  }
-}
-
-impl< IntoT > ComponentAssign< AttributeMutator, IntoT > for StructAttributes
-where
-  IntoT : Into< AttributeMutator >,
-{
-  #[ inline( always ) ]
-  fn assign( &mut self, component : IntoT )
-  {
-    self.mutator = component.into();
-  }
-}
-
-impl< IntoT > ComponentAssign< AttributePerform, IntoT > for StructAttributes
-where
-  IntoT : Into< AttributePerform >,
-{
-  #[ inline( always ) ]
-  fn assign( &mut self, component : IntoT )
-  {
-    self.perform = Some( component.into() );
-  }
 }
 
 impl StructAttributes
@@ -270,6 +278,17 @@ impl AttributeStorageFields
 
 }
 
+impl< IntoT > ComponentAssign< AttributeStorageFields, IntoT > for StructAttributes
+where
+  IntoT : Into< AttributeStorageFields >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.storage_fields = Some( component.into() );
+  }
+}
+
 impl syn::parse::Parse for AttributeStorageFields
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
@@ -329,6 +348,16 @@ impl AttributeMutator
 
 }
 
+impl< IntoT > ComponentAssign< AttributeMutator, IntoT > for StructAttributes
+where
+  IntoT : Into< AttributeMutator >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.mutator = component.into();
+  }
+}
 
 impl syn::parse::Parse for AttributeMutator
 {
@@ -412,6 +441,17 @@ impl AttributePerform
     }
   }
 
+}
+
+impl< IntoT > ComponentAssign< AttributePerform, IntoT > for StructAttributes
+where
+  IntoT : Into< AttributePerform >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.perform = Some( component.into() );
+  }
 }
 
 impl syn::parse::Parse for AttributePerform

@@ -3,6 +3,8 @@ use super::*;
 use macro_tools::{ attr, Result };
 use former_types::{ ComponentAssign };
 
+// xxx : document
+
 ///
 /// Attributes of a field.
 ///
