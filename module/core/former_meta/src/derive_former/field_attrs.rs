@@ -17,50 +17,6 @@ pub struct FieldAttributes
   pub subform_entry : Option< AttributeSubformEntrySetter >,
 }
 
-impl< IntoT > ComponentAssign< AttributeScalarSetter, IntoT > for FieldAttributes
-where
-  IntoT : Into< AttributeScalarSetter >,
-{
-  #[ inline( always ) ]
-  fn assign( &mut self, component : IntoT )
-  {
-    self.scalar = Some( component.into() );
-  }
-}
-
-impl< IntoT > ComponentAssign< AttributeSubformScalarSetter, IntoT > for FieldAttributes
-where
-  IntoT : Into< AttributeSubformScalarSetter >,
-{
-  #[ inline( always ) ]
-  fn assign( &mut self, component : IntoT )
-  {
-    self.subform_scalar = Some( component.into() );
-  }
-}
-
-impl< IntoT > ComponentAssign< AttributeSubformCollectionSetter, IntoT > for FieldAttributes
-where
-  IntoT : Into< AttributeSubformCollectionSetter >,
-{
-  #[ inline( always ) ]
-  fn assign( &mut self, component : IntoT )
-  {
-    self.subform_collection = Some( component.into() );
-  }
-}
-
-impl< IntoT > ComponentAssign< AttributeSubformEntrySetter, IntoT > for FieldAttributes
-where
-  IntoT : Into< AttributeSubformEntrySetter >,
-{
-  #[ inline( always ) ]
-  fn assign( &mut self, component : IntoT )
-  {
-    self.subform_entry = Some( component.into() );
-  }
-}
-
 impl FieldAttributes
 {
 
@@ -212,6 +168,17 @@ impl AttributeConfig
 
 }
 
+impl< IntoT > ComponentAssign< AttributeConfig, IntoT > for FieldAttributes
+where
+  IntoT : Into< AttributeConfig >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.config = Some( component.into() );
+  }
+}
+
 impl syn::parse::Parse for AttributeConfig
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
@@ -252,17 +219,6 @@ impl syn::parse::Parse for AttributeConfig
     }
 
     Ok( Self { default } )
-  }
-}
-
-impl< IntoT > ComponentAssign< AttributeConfig, IntoT > for FieldAttributes
-where
-  IntoT : Into< AttributeConfig >,
-{
-  #[ inline( always ) ]
-  fn assign( &mut self, component : IntoT )
-  {
-    self.config = Some( component.into() );
   }
 }
 
@@ -318,6 +274,17 @@ impl AttributeScalarSetter
     self.setter.is_none() || self.setter.unwrap()
   }
 
+}
+
+impl< IntoT > ComponentAssign< AttributeScalarSetter, IntoT > for FieldAttributes
+where
+  IntoT : Into< AttributeScalarSetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.scalar = Some( component.into() );
+  }
 }
 
 impl syn::parse::Parse for AttributeScalarSetter
@@ -429,6 +396,17 @@ impl AttributeSubformScalarSetter
 
 }
 
+impl< IntoT > ComponentAssign< AttributeSubformScalarSetter, IntoT > for FieldAttributes
+where
+  IntoT : Into< AttributeSubformScalarSetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.subform_scalar = Some( component.into() );
+  }
+}
+
 impl syn::parse::Parse for AttributeSubformScalarSetter
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
@@ -538,6 +516,17 @@ impl AttributeSubformCollectionSetter
     self.setter.is_none() || self.setter.unwrap()
   }
 
+}
+
+impl< IntoT > ComponentAssign< AttributeSubformCollectionSetter, IntoT > for FieldAttributes
+where
+  IntoT : Into< AttributeSubformCollectionSetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.subform_collection = Some( component.into() );
+  }
 }
 
 impl syn::parse::Parse for AttributeSubformCollectionSetter
@@ -660,6 +649,17 @@ impl AttributeSubformEntrySetter
     self.setter.is_none() || self.setter.unwrap()
   }
 
+}
+
+impl< IntoT > ComponentAssign< AttributeSubformEntrySetter, IntoT > for FieldAttributes
+where
+  IntoT : Into< AttributeSubformEntrySetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.subform_entry = Some( component.into() );
+  }
 }
 
 impl syn::parse::Parse for AttributeSubformEntrySetter
