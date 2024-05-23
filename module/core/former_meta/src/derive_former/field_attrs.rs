@@ -719,4 +719,150 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
   }
 }
 
+// == attribute entries
+
+// = AttributeEntryHint
+
+/// Specifies whether to provide a sketch as a hint.
+/// Defaults to `false`, which means no hint is provided unless explicitly requested.
+#[ derive( Debug, Default, Clone, Copy ) ]
+pub struct AttributeEntryHint( bool );
+
+impl AttributeEntryHint
+{
+  const KEYWORD : &'static str = "hint";
+}
+
+impl syn::parse::Parse for AttributeEntryHint
+{
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+  {
+    let value : syn::LitBool = input.parse()?;
+    Ok( value.value.into() )
+  }
+}
+
+impl From< bool > for AttributeEntryHint
+{
+  #[ inline( always ) ]
+  fn from( src : bool ) -> Self
+  {
+    Self( src )
+  }
+}
+
+impl From< AttributeEntryHint > for bool
+{
+  #[ inline( always ) ]
+  fn from( src : AttributeEntryHint ) -> Self
+  {
+    src.0
+  }
+}
+
+// = AttributeEntrySetter
+
+/// Disable generation of setter.
+/// Attributes still might generate some helper methods to reuse by custom setter.
+#[ derive( Debug, Default, Clone, Copy ) ]
+pub struct AttributeEntrySetter( Option< bool > );
+
+impl AttributeEntrySetter
+{
+  const KEYWORD : &'static str = "setter";
+}
+
+impl syn::parse::Parse for AttributeEntrySetter
+{
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+  {
+    let value : syn::LitBool = input.parse()?;
+    Ok( value.value.into() )
+  }
+}
+
+impl From< bool > for AttributeEntrySetter
+{
+  #[ inline( always ) ]
+  fn from( src : bool ) -> Self
+  {
+    Self( Some( src ) )
+  }
+}
+
+impl From< Option< bool > > for AttributeEntrySetter
+{
+  #[ inline( always ) ]
+  fn from( src : Option< bool > ) -> Self
+  {
+    Self( src )
+  }
+}
+
+impl From< AttributeEntrySetter > for Option< bool >
+{
+  #[ inline( always ) ]
+  fn from( src : AttributeEntrySetter ) -> Self
+  {
+    src.0
+  }
+}
+
+// = AttributeEntryName
+
+/// An optional identifier that names the setter. It is parsed from inputs
+/// like `name = my_field`.
+#[ derive( Debug, Default, Clone ) ]
+pub struct AttributeEntryName( Option< syn::Ident > );
+
+impl AttributeEntryName
+{
+  const KEYWORD : &'static str = "name";
+}
+
+impl syn::parse::Parse for AttributeEntryName
+{
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+  {
+    let value : syn::Ident = input.parse()?;
+    Ok( value.into() )
+  }
+}
+
+impl From< syn::Ident > for AttributeEntryName
+{
+  #[ inline( always ) ]
+  fn from( src : syn::Ident ) -> Self
+  {
+    Self( Some( src ) )
+  }
+}
+
+impl From< Option< syn::Ident > > for AttributeEntryName
+{
+  #[ inline( always ) ]
+  fn from( src : Option< syn::Ident > ) -> Self
+  {
+    Self( src )
+  }
+}
+
+impl From< AttributeEntryName > for Option< syn::Ident >
+{
+  #[ inline( always ) ]
+  fn from( src : AttributeEntryName ) -> Self
+  {
+    src.0
+  }
+}
+
+impl< 'a > From< &'a AttributeEntryName > for Option< &'a syn::Ident >
+{
+  #[ inline( always ) ]
+  fn from( src : &'a AttributeEntryName ) -> Self
+  {
+    src.0.as_ref()
+  }
+}
+
 // xxx : continue

@@ -396,8 +396,6 @@ impl syn::parse::Parse for AttributeMutator
       {
         let ident : syn::Ident = input.parse()?;
 
-        // return Err( error( &ident ) );
-
         input.parse::< syn::Token![=] >()?;
         match ident.to_string().as_str()
         {
@@ -490,7 +488,7 @@ pub struct AttributeEntryHint( bool );
 
 impl AttributeEntryHint
 {
-  const KEYWORD : &'static str = "mutator";
+  const KEYWORD : &'static str = "hint";
 }
 
 impl syn::parse::Parse for AttributeEntryHint
