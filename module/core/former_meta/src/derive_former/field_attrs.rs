@@ -684,6 +684,7 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
         ", ", AttributeEntryHint::KEYWORD,
         ".",
       );
+      // xxx : test
       syn_err!
       (
         ident,
@@ -708,10 +709,7 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
           AttributeEntryName::KEYWORD => result.name = input.parse()?,
           AttributeEntrySetter::KEYWORD => result.setter = input.parse()?,
           AttributeEntryHint::KEYWORD => result.hint = input.parse()?,
-          _ =>
-          {
-            return Err( error( &ident ) );
-          }
+          _ => return Err( error( &ident ) ),
         }
       }
       else

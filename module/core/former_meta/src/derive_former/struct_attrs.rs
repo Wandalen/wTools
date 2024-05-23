@@ -381,11 +381,14 @@ impl syn::parse::Parse for AttributeMutator
         ", ", AttributeEntryHint::KEYWORD,
         ".",
       );
-      // xxx : improve hint
+      // xxx : test
       syn_err!
       (
         ident,
-        "Expects an attribute of format '#[ attribute( key1 = val1, key2 = val2 ) ]' \n  {known}\n  But got: '{}'",
+        r#"Expects an attribute of format '#[ mutator( custom = false, hint = false ) ]'
+  {known}
+  But got: '{}'
+"#,
         qt!{ #ident }
       )
     };
@@ -403,10 +406,7 @@ impl syn::parse::Parse for AttributeMutator
           // xxx : use assign
           AttributeEntryCustom::KEYWORD => result.custom = input.parse()?,
           AttributeEntryHint::KEYWORD => result.hint = input.parse()?,
-          _ =>
-          {
-            return Err( error( &ident ) );
-          }
+          _ => return Err( error( &ident ) ),
         }
       }
       else
