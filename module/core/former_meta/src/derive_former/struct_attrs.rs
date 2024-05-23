@@ -381,6 +381,7 @@ impl syn::parse::Parse for AttributeMutator
         ", ", AttributeEntryHint::KEYWORD,
         ".",
       );
+      // xxx : improve hint
       syn_err!
       (
         ident,
@@ -399,6 +400,7 @@ impl syn::parse::Parse for AttributeMutator
         input.parse::< syn::Token![=] >()?;
         match ident.to_string().as_str()
         {
+          // xxx : use assign
           AttributeEntryCustom::KEYWORD => result.custom = input.parse()?,
           AttributeEntryHint::KEYWORD => result.hint = input.parse()?,
           _ =>

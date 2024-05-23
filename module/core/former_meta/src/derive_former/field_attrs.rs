@@ -615,13 +615,16 @@ pub struct AttributeSubformEntrySetter
 {
   /// An optional identifier that names the setter. It is parsed from inputs
   /// like `name = my_field`.
-  pub name : Option< syn::Ident >,
+  // pub name : Option< syn::Ident >,
+  pub name : AttributeEntryName,
   /// Disable generation of setter.
   /// It still generate `_field_subform_entry` method, so it could be used to make a setter with custom arguments.
-  pub setter : Option< bool >,
+  // pub setter : Option< bool >,
+  pub setter : AttributeEntrySetter,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : bool,
+  // pub hint : bool,
+  pub hint : AttributeEntryHint,
 }
 
 impl AttributeSubformEntrySetter
@@ -648,7 +651,7 @@ impl AttributeSubformEntrySetter
   /// Should setter be generated or not?
   pub fn setter( &self ) -> bool
   {
-    self.setter.is_none() || self.setter.unwrap()
+    self.setter.as_ref().is_none() || self.setter.as_ref().unwrap()
   }
 
 }
@@ -664,13 +667,33 @@ where
   }
 }
 
+
 impl syn::parse::Parse for AttributeSubformEntrySetter
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
-    let mut name : Option< syn::Ident > = None;
-    let mut setter : Option< bool > = None;
-    let mut hint = false;
+    let mut result = Self::default();
+
+    let error = | ident : &syn::Ident | -> syn::Error
+    {
+      let known = const_format::concatcp!
+      (
+        "Known entries of attribute ", AttributeSubformEntrySetter::KEYWORD, " are : ",
+        AttributeEntryName::KEYWORD,
+        ", ", AttributeEntrySetter::KEYWORD,
+        ", ", AttributeEntryHint::KEYWORD,
+        ".",
+      );
+      syn_err!
+      (
+        ident,
+        r#"Expects an attribute of format '#[ subform( name = myName, setter = true ) ]'
+  {known}
+  But got: '{}'
+"#,
+        qt!{ #ident }
+      )
+    };
 
     while !input.is_empty()
     {
@@ -678,34 +701,22 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
+
+        input.parse::< syn::Token![=] >()?;
         match ident.to_string().as_str()
         {
-          "name" =>
-          {
-            input.parse::< syn::Token![ = ] >()?;
-            name = Some( input.parse()? );
-          }
-          "setter" =>
-          {
-            input.parse::< syn::Token![ = ] >()?;
-            let value : syn::LitBool = input.parse()?;
-            setter = Some( value.value() );
-          }
-          "hint" =>
-          {
-            input.parse::< syn::Token![ = ] >()?;
-            let value : syn::LitBool = input.parse()?;
-            hint = value.value;
-          }
+          AttributeEntryName::KEYWORD => result.name = input.parse()?,
+          AttributeEntrySetter::KEYWORD => result.setter = input.parse()?,
+          AttributeEntryHint::KEYWORD => result.hint = input.parse()?,
           _ =>
           {
-            return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `subform( name = myName, setter = true )`", ident ) ) );
+            return Err( error( &ident ) );
           }
         }
       }
       else
       {
-        return Err( syn::Error::new( input.span(), "Expected 'name', 'setter', or 'definition' identifier. For example: `subform( name = myName, setter = true )`" ) );
+        return Err( lookahead.error() );
       }
 
       // Optional comma handling
@@ -715,9 +726,64 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
       }
     }
 
-    Ok( Self { name, setter, hint } )
+    Ok( result )
   }
 }
+
+// impl syn::parse::Parse for AttributeSubformEntrySetter
+// {
+//   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+//   {
+//     let mut name : Option< syn::Ident > = None;
+//     let mut setter : Option< bool > = None;
+//     let mut hint = false;
+//
+//     while !input.is_empty()
+//     {
+//       let lookahead = input.lookahead1();
+//       if lookahead.peek( syn::Ident )
+//       {
+//         let ident : syn::Ident = input.parse()?;
+//         match ident.to_string().as_str()
+//         {
+//           "name" =>
+//           {
+//             input.parse::< syn::Token![ = ] >()?;
+//             name = Some( input.parse()? );
+//           }
+//           "setter" =>
+//           {
+//             input.parse::< syn::Token![ = ] >()?;
+//             let value : syn::LitBool = input.parse()?;
+//             setter = Some( value.value() );
+//           }
+//           "hint" =>
+//           {
+//             input.parse::< syn::Token![ = ] >()?;
+//             let value : syn::LitBool = input.parse()?;
+//             hint = value.value;
+//           }
+//           _ =>
+//           {
+//             return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `subform( name = myName, setter = true )`", ident ) ) );
+//           }
+//         }
+//       }
+//       else
+//       {
+//         return Err( syn::Error::new( input.span(), "Expected 'name', 'setter', or 'definition' identifier. For example: `subform( name = myName, setter = true )`" ) );
+//       }
+//
+//       // Optional comma handling
+//       if input.peek( syn::Token![ , ] )
+//       {
+//         input.parse::< syn::Token![ , ] >()?;
+//       }
+//     }
+//
+//     Ok( Self { name, setter, hint } )
+//   }
+// }
 
 // == attribute entries
 
@@ -781,6 +847,15 @@ impl syn::parse::Parse for AttributeEntrySetter
   }
 }
 
+impl AsRef< Option< bool > > for AttributeEntrySetter
+{
+  #[ inline( always ) ]
+  fn as_ref( &self ) -> &Option< bool >
+  {
+    &self.0
+  }
+}
+
 impl From< bool > for AttributeEntrySetter
 {
   #[ inline( always ) ]
@@ -829,6 +904,15 @@ impl syn::parse::Parse for AttributeEntryName
   }
 }
 
+impl AsRef< Option< syn::Ident > > for AttributeEntryName
+{
+  #[ inline( always ) ]
+  fn as_ref( &self ) -> &Option< syn::Ident >
+  {
+    &self.0
+  }
+}
+
 impl From< syn::Ident > for AttributeEntryName
 {
   #[ inline( always ) ]
@@ -865,4 +949,4 @@ impl< 'a > From< &'a AttributeEntryName > for Option< &'a syn::Ident >
   }
 }
 
-// xxx : continue
+// xxx2 : continue

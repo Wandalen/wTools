@@ -975,7 +975,7 @@ allowing for dynamic and flexible construction of the `{stru}` entity's {field_i
       setters_code
     };
 
-    if attr.hint
+    if attr.hint.into()
     {
       let hint = format!
       (
@@ -1506,7 +1506,7 @@ Essentially, this end action integrates the individually formed scalar value bac
     {
       if attr.setter()
       {
-        if let Some( ref name ) = attr.name
+        if let Some( ref name ) = attr.name.as_ref()
         {
           return Some( &name )
         }
