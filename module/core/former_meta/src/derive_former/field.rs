@@ -184,7 +184,7 @@ scalar_setter_required
     let ident = self.ident;
     let ty = self.ty;
     let default : Option< &syn::Expr > = self.attrs.config.as_ref()
-    .and_then( | attr | attr.default.as_ref() );
+    .and_then( | attr | attr.default.into().as_ref() );
 
     let tokens = if self.is_optional
     {

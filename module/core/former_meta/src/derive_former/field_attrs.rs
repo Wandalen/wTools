@@ -142,8 +142,9 @@ impl FieldAttributes
 pub struct AttributeConfig
 {
 
-  /// Default value to use for the field.
-  pub default : Option< syn::Expr >,
+  /// Default value to use for a field.
+  pub default : AttributePropertyOptionalSyn< syn::Expr >,
+  // pub default : Option< syn::Expr >,
 
 }
 
@@ -178,6 +179,17 @@ where
   fn assign( &mut self, component : IntoT )
   {
     self.config = Some( component.into() );
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributePropertyOptionalSyn< syn::Expr >, IntoT > for AttributeConfig
+where
+  IntoT : Into< AttributePropertyOptionalSyn< syn::Expr > >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.default = component.into();
   }
 }
 
@@ -240,12 +252,12 @@ impl syn::parse::Parse for AttributeConfig
 pub struct AttributeScalarSetter
 {
   /// Optional identifier for naming the setter.
-  pub name : Option< syn::Ident >,
+  pub name : AttributePropertyOptionalSyn< syn::Ident >,
   /// Controls the generation of a setter method. If false, a setter method is not generated.
-  pub setter : Option< bool >,
+  pub setter : AttributePropertySetter,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : bool,
+  pub hint : AttributePropertyHint,
 }
 
 #[ allow( dead_code ) ]
@@ -286,6 +298,39 @@ where
   fn assign( &mut self, component : IntoT )
   {
     self.scalar = Some( component.into() );
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributePropertyOptionalSyn< syn::Ident >, IntoT > for AttributeScalarSetter
+where
+  IntoT : Into< AttributePropertyOptionalSyn< syn::Ident > >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.name = component.into();
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributePropertySetter, IntoT > for AttributeScalarSetter
+where
+  IntoT : Into< AttributePropertySetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.setter = component.into();
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributePropertyHint, IntoT > for AttributeScalarSetter
+where
+  IntoT : Into< AttributePropertyHint >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.hint = component.into();
   }
 }
 
@@ -357,15 +402,16 @@ impl syn::parse::Parse for AttributeScalarSetter
 ///
 
 #[ derive( Debug, Default ) ]
+
 pub struct AttributeSubformScalarSetter
 {
   /// Optional identifier for naming the setter.
-  pub name : Option< syn::Ident >,
+  pub name : AttributePropertyOptionalSyn< syn::Ident >,
   /// Controls the generation of a setter method. If false, a setter method is not generated.
-  pub setter : Option< bool >,
+  pub setter : AttributePropertySetter,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : bool,
+  pub hint : AttributePropertyHint,
 }
 
 #[ allow( dead_code ) ]
@@ -406,6 +452,39 @@ where
   fn assign( &mut self, component : IntoT )
   {
     self.subform_scalar = Some( component.into() );
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributePropertyOptionalSyn< syn::Ident >, IntoT > for AttributeSubformScalarSetter
+where
+  IntoT : Into< AttributePropertyOptionalSyn< syn::Ident > >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.name = component.into();
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributePropertySetter, IntoT > for AttributeSubformScalarSetter
+where
+  IntoT : Into< AttributePropertySetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.setter = component.into();
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributePropertyHint, IntoT > for AttributeSubformScalarSetter
+where
+  IntoT : Into< AttributePropertyHint >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.hint = component.into();
   }
 }
 
@@ -481,16 +560,17 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
 pub struct AttributeSubformCollectionSetter
 {
   /// Optional identifier for naming the setter.
-  pub name : Option< syn::Ident >,
+  pub name : AttributePropertyOptionalSyn< syn::Ident >,
   /// Controls the generation of a setter method. If false, a setter method is not generated.
-  pub setter : Option< bool >,
+  pub setter : AttributePropertySetter,
   /// Definition of the collection former to use, e.g., `former::VectorFormer`.
-  pub definition : Option< syn::Type >,
+  pub definition : AttributePropertyOptionalSyn< syn::Type >,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : bool,
+  pub hint : AttributePropertyHint,
 }
 
+// xxx
 impl AttributeSubformCollectionSetter
 {
 
@@ -528,6 +608,50 @@ where
   fn assign( &mut self, component : IntoT )
   {
     self.subform_collection = Some( component.into() );
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributePropertyOptionalSyn< syn::Ident >, IntoT > for AttributeSubformCollectionSetter
+where
+  IntoT : Into< AttributePropertyOptionalSyn< syn::Ident > >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.name = component.into();
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributePropertySetter, IntoT > for AttributeSubformCollectionSetter
+where
+  IntoT : Into< AttributePropertySetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.setter = component.into();
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributePropertyOptionalSyn< syn::Type >, IntoT > for AttributeSubformCollectionSetter
+where
+  IntoT : Into< AttributePropertyOptionalSyn< syn::Type > >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.definition = component.into();
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributePropertyHint, IntoT > for AttributeSubformCollectionSetter
+where
+  IntoT : Into< AttributePropertyHint >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.hint = component.into();
   }
 }
 
@@ -616,7 +740,7 @@ pub struct AttributeSubformEntrySetter
   /// An optional identifier that names the setter. It is parsed from inputs
   /// like `name = my_field`.
   // pub name : Option< syn::Ident >,
-  pub name : AttributePropertyName,
+  pub name : AttributePropertyOptionalSyn< syn::Ident >,
   /// Disable generation of setter.
   /// It still generate `_field_subform_entry` method, so it could be used to make a setter with custom arguments.
   // pub setter : Option< bool >,
@@ -667,9 +791,9 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyName, IntoT > for AttributeSubformEntrySetter
+impl< IntoT > ComponentAssign< AttributePropertyOptionalSyn< syn::Ident >, IntoT > for AttributeSubformEntrySetter
 where
-  IntoT : Into< AttributePropertyName >,
+  IntoT : Into< AttributePropertyOptionalSyn< syn::Ident > >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
@@ -711,7 +835,7 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
       let known = const_format::concatcp!
       (
         "Known entries of attribute ", AttributeSubformEntrySetter::KEYWORD, " are : ",
-        AttributePropertyName::KEYWORD,
+        AttributePropertyOptionalSyn::< syn::Ident >::KEYWORD,
         ", ", AttributePropertySetter::KEYWORD,
         ", ", AttributePropertyHint::KEYWORD,
         ".",
@@ -737,7 +861,8 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
         input.parse::< syn::Token![=] >()?;
         match ident.to_string().as_str()
         {
-          AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
+          // xxx
+          AttributePropertyOptionalSyn::< syn::Ident >::KEYWORD => result.assign( AttributePropertyOptionalSyn::< syn::Ident >::parse( input )? ),
           AttributePropertySetter::KEYWORD => result.assign( AttributePropertySetter::parse( input )? ),
           AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
           _ => return Err( error( &ident ) ),
@@ -912,67 +1037,215 @@ impl From< AttributePropertySetter > for Option< bool >
   }
 }
 
-// = AttributePropertyName
+// // = AttributePropertyName
+//
+// /// An optional identifier that names the setter. It is parsed from inputs
+// /// like `name = my_field`.
+// #[ derive( Debug, Default, Clone ) ]
+// pub struct AttributePropertyName( Option< syn::Ident > );
+//
+// impl AttributePropertyName
+// {
+//   const KEYWORD : &'static str = "name";
+// }
+//
+// impl syn::parse::Parse for AttributePropertyName
+// {
+//   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+//   {
+//     let value : syn::Ident = input.parse()?;
+//     Ok( value.into() )
+//   }
+// }
+//
+// impl AsRef< Option< syn::Ident > > for AttributePropertyName
+// {
+//   #[ inline( always ) ]
+//   fn as_ref( &self ) -> &Option< syn::Ident >
+//   {
+//     &self.0
+//   }
+// }
+//
+// impl From< syn::Ident > for AttributePropertyName
+// {
+//   #[ inline( always ) ]
+//   fn from( src : syn::Ident ) -> Self
+//   {
+//     Self( Some( src ) )
+//   }
+// }
+//
+// impl From< Option< syn::Ident > > for AttributePropertyName
+// {
+//   #[ inline( always ) ]
+//   fn from( src : Option< syn::Ident > ) -> Self
+//   {
+//     Self( src )
+//   }
+// }
+//
+// impl From< AttributePropertyName > for Option< syn::Ident >
+// {
+//   #[ inline( always ) ]
+//   fn from( src : AttributePropertyName ) -> Self
+//   {
+//     src.0
+//   }
+// }
+//
+// impl< 'a > From< &'a AttributePropertyName > for Option< &'a syn::Ident >
+// {
+//   #[ inline( always ) ]
+//   fn from( src : &'a AttributePropertyName ) -> Self
+//   {
+//     src.0.as_ref()
+//   }
+// }
+//
+// // = AttributePropertyDefault
+//
+// /// Default value to use for a field.
+// #[ derive( Debug, Default, Clone ) ]
+// pub struct AttributePropertyDefault( Option< syn::Expr > );
+//
+// impl AttributePropertyDefault
+// {
+//   const KEYWORD : &'static str = "name";
+// }
+//
+// impl syn::parse::Parse for AttributePropertyDefault
+// {
+//   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+//   {
+//     let value : syn::Expr = input.parse()?;
+//     Ok( value.into() )
+//   }
+// }
+//
+// impl AsRef< Option< syn::Expr > > for AttributePropertyDefault
+// {
+//   #[ inline( always ) ]
+//   fn as_ref( &self ) -> &Option< syn::Expr >
+//   {
+//     &self.0
+//   }
+// }
+//
+// impl From< syn::Expr > for AttributePropertyDefault
+// {
+//   #[ inline( always ) ]
+//   fn from( src : syn::Expr ) -> Self
+//   {
+//     Self( Some( src ) )
+//   }
+// }
+//
+// impl From< Option< syn::Expr > > for AttributePropertyDefault
+// {
+//   #[ inline( always ) ]
+//   fn from( src : Option< syn::Expr > ) -> Self
+//   {
+//     Self( src )
+//   }
+// }
+//
+// impl From< AttributePropertyDefault > for Option< syn::Expr >
+// {
+//   #[ inline( always ) ]
+//   fn from( src : AttributePropertyDefault ) -> Self
+//   {
+//     src.0
+//   }
+// }
+//
+// impl< 'a > From< &'a AttributePropertyDefault > for Option< &'a syn::Expr >
+// {
+//   #[ inline( always ) ]
+//   fn from( src : &'a AttributePropertyDefault ) -> Self
+//   {
+//     src.0.as_ref()
+//   }
+// }
 
-/// An optional identifier that names the setter. It is parsed from inputs
-/// like `name = my_field`.
+// = AttributePropertyOptionalSyn
+
+/// Property of an attribute which simply wrap one of standard of `syn` type and keep it optional.
 #[ derive( Debug, Default, Clone ) ]
-pub struct AttributePropertyName( Option< syn::Ident > );
+pub struct AttributePropertyOptionalSyn< T >( Option< T > )
+where T : syn::parse::Parse + quote::ToTokens;
 
-impl AttributePropertyName
+impl< T > AttributePropertyOptionalSyn< T >
+where T : syn::parse::Parse + quote::ToTokens
 {
   const KEYWORD : &'static str = "name";
 }
 
-impl syn::parse::Parse for AttributePropertyName
+impl< T > syn::parse::Parse for AttributePropertyOptionalSyn< T >
+where T : syn::parse::Parse + quote::ToTokens
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
-    let value : syn::Ident = input.parse()?;
+    let value : T = input.parse()?;
     Ok( value.into() )
   }
 }
 
-impl AsRef< Option< syn::Ident > > for AttributePropertyName
+// xxx
+impl< T > quote::ToTokens for AttributePropertyOptionalSyn< T >
+where T : syn::parse::Parse + quote::ToTokens
+{
+  fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
+  {
+    self.0.to_tokens( tokens );
+  }
+}
+
+impl< T > AsRef< Option< T > > for AttributePropertyOptionalSyn< T >
+where T : syn::parse::Parse + quote::ToTokens
 {
   #[ inline( always ) ]
-  fn as_ref( &self ) -> &Option< syn::Ident >
+  fn as_ref( &self ) -> &Option< T >
   {
     &self.0
   }
 }
 
-impl From< syn::Ident > for AttributePropertyName
+impl< T > From< T > for AttributePropertyOptionalSyn< T >
+where T : syn::parse::Parse + quote::ToTokens
 {
   #[ inline( always ) ]
-  fn from( src : syn::Ident ) -> Self
+  fn from( src : T ) -> Self
   {
     Self( Some( src ) )
   }
 }
 
-impl From< Option< syn::Ident > > for AttributePropertyName
+impl< T > From< Option< T > > for AttributePropertyOptionalSyn< T >
+where T : syn::parse::Parse + quote::ToTokens
 {
   #[ inline( always ) ]
-  fn from( src : Option< syn::Ident > ) -> Self
+  fn from( src : Option< T > ) -> Self
   {
     Self( src )
   }
 }
 
-impl From< AttributePropertyName > for Option< syn::Ident >
+impl< T > From< AttributePropertyOptionalSyn< T > > for Option< T >
+where T : syn::parse::Parse + quote::ToTokens
 {
   #[ inline( always ) ]
-  fn from( src : AttributePropertyName ) -> Self
+  fn from( src : AttributePropertyOptionalSyn< T > ) -> Self
   {
     src.0
   }
 }
 
-impl< 'a > From< &'a AttributePropertyName > for Option< &'a syn::Ident >
+impl< 'a, T > From< &'a AttributePropertyOptionalSyn< T > > for Option< &'a T >
+where T : syn::parse::Parse + quote::ToTokens
 {
   #[ inline( always ) ]
-  fn from( src : &'a AttributePropertyName ) -> Self
+  fn from( src : &'a AttributePropertyOptionalSyn< T > ) -> Self
   {
     src.0.as_ref()
   }
