@@ -316,10 +316,10 @@ pub struct AttributeMutator
 {
   /// Indicates whether a custom mutator should be generated.
   /// Defaults to `false`, meaning no custom mutator is generated unless explicitly requested.
-  pub custom : AttributeEntryCustom,
+  pub custom : AttributePropertyCustom,
   /// Specifies whether to provide a sketch of the mutator as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : AttributeEntryHint,
+  pub hint : AttributePropertyHint,
 }
 
 impl AttributeComponent for AttributeMutator
@@ -355,14 +355,25 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributeEntryHint, IntoT > for AttributeMutator
+impl< IntoT > ComponentAssign< AttributePropertyHint, IntoT > for AttributeMutator
 where
-  IntoT : Into< AttributeEntryHint >,
+  IntoT : Into< AttributePropertyHint >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
     self.hint = component.into();
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributePropertyCustom, IntoT > for AttributeMutator
+where
+  IntoT : Into< AttributePropertyCustom >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.custom = component.into();
   }
 }
 
@@ -377,11 +388,10 @@ impl syn::parse::Parse for AttributeMutator
       let known = const_format::concatcp!
       (
         "Known entries of attribute ", AttributeMutator::KEYWORD, " are : ",
-        AttributeEntryCustom::KEYWORD,
-        ", ", AttributeEntryHint::KEYWORD,
+        AttributePropertyCustom::KEYWORD,
+        ", ", AttributePropertyHint::KEYWORD,
         ".",
       );
-      // xxx : test
       syn_err!
       (
         ident,
@@ -403,9 +413,8 @@ impl syn::parse::Parse for AttributeMutator
         input.parse::< syn::Token![=] >()?;
         match ident.to_string().as_str()
         {
-          // xxx : use assign
-          AttributeEntryCustom::KEYWORD => result.custom = input.parse()?,
-          AttributeEntryHint::KEYWORD => result.hint = input.parse()?,
+          AttributePropertyCustom::KEYWORD => result.assign( AttributePropertyCustom::parse( input )? ),
+          AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
           _ => return Err( error( &ident ) ),
         }
       }
@@ -486,14 +495,14 @@ impl syn::parse::Parse for AttributePerform
 /// Specifies whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributeEntryHint( bool );
+pub struct AttributePropertyHint( bool );
 
-impl AttributeEntryHint
+impl AttributePropertyHint
 {
   const KEYWORD : &'static str = "hint";
 }
 
-impl syn::parse::Parse for AttributeEntryHint
+impl syn::parse::Parse for AttributePropertyHint
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
@@ -502,7 +511,7 @@ impl syn::parse::Parse for AttributeEntryHint
   }
 }
 
-impl From< bool > for AttributeEntryHint
+impl From< bool > for AttributePropertyHint
 {
   #[ inline( always ) ]
   fn from( src : bool ) -> Self
@@ -511,10 +520,10 @@ impl From< bool > for AttributeEntryHint
   }
 }
 
-impl From< AttributeEntryHint > for bool
+impl From< AttributePropertyHint > for bool
 {
   #[ inline( always ) ]
-  fn from( src : AttributeEntryHint ) -> Self
+  fn from( src : AttributePropertyHint ) -> Self
   {
     src.0
   }
@@ -525,14 +534,14 @@ impl From< AttributeEntryHint > for bool
 /// Indicates whether a custom code should be generated.
 /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributeEntryCustom( bool );
+pub struct AttributePropertyCustom( bool );
 
-impl AttributeEntryCustom
+impl AttributePropertyCustom
 {
   const KEYWORD : &'static str = "custom";
 }
 
-impl syn::parse::Parse for AttributeEntryCustom
+impl syn::parse::Parse for AttributePropertyCustom
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
@@ -541,7 +550,7 @@ impl syn::parse::Parse for AttributeEntryCustom
   }
 }
 
-impl From< bool > for AttributeEntryCustom
+impl From< bool > for AttributePropertyCustom
 {
   #[ inline( always ) ]
   fn from( src : bool ) -> Self
@@ -550,13 +559,11 @@ impl From< bool > for AttributeEntryCustom
   }
 }
 
-impl From< AttributeEntryCustom > for bool
+impl From< AttributePropertyCustom > for bool
 {
   #[ inline( always ) ]
-  fn from( src : AttributeEntryCustom ) -> Self
+  fn from( src : AttributePropertyCustom ) -> Self
   {
     src.0
   }
 }
-
-// xxx : continue

@@ -616,15 +616,15 @@ pub struct AttributeSubformEntrySetter
   /// An optional identifier that names the setter. It is parsed from inputs
   /// like `name = my_field`.
   // pub name : Option< syn::Ident >,
-  pub name : AttributeEntryName,
+  pub name : AttributePropertyName,
   /// Disable generation of setter.
   /// It still generate `_field_subform_entry` method, so it could be used to make a setter with custom arguments.
   // pub setter : Option< bool >,
-  pub setter : AttributeEntrySetter,
+  pub setter : AttributePropertySetter,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
   // pub hint : bool,
-  pub hint : AttributeEntryHint,
+  pub hint : AttributePropertyHint,
 }
 
 impl AttributeSubformEntrySetter
@@ -667,6 +667,38 @@ where
   }
 }
 
+impl< IntoT > ComponentAssign< AttributePropertyName, IntoT > for AttributeSubformEntrySetter
+where
+  IntoT : Into< AttributePropertyName >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.name = component.into();
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributePropertySetter, IntoT > for AttributeSubformEntrySetter
+where
+  IntoT : Into< AttributePropertySetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.setter = component.into();
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributePropertyHint, IntoT > for AttributeSubformEntrySetter
+where
+  IntoT : Into< AttributePropertyHint >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.hint = component.into();
+  }
+}
 
 impl syn::parse::Parse for AttributeSubformEntrySetter
 {
@@ -679,12 +711,11 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
       let known = const_format::concatcp!
       (
         "Known entries of attribute ", AttributeSubformEntrySetter::KEYWORD, " are : ",
-        AttributeEntryName::KEYWORD,
-        ", ", AttributeEntrySetter::KEYWORD,
-        ", ", AttributeEntryHint::KEYWORD,
+        AttributePropertyName::KEYWORD,
+        ", ", AttributePropertySetter::KEYWORD,
+        ", ", AttributePropertyHint::KEYWORD,
         ".",
       );
-      // xxx : test
       syn_err!
       (
         ident,
@@ -706,9 +737,9 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
         input.parse::< syn::Token![=] >()?;
         match ident.to_string().as_str()
         {
-          AttributeEntryName::KEYWORD => result.name = input.parse()?,
-          AttributeEntrySetter::KEYWORD => result.setter = input.parse()?,
-          AttributeEntryHint::KEYWORD => result.hint = input.parse()?,
+          AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
+          AttributePropertySetter::KEYWORD => result.assign( AttributePropertySetter::parse( input )? ),
+          AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
           _ => return Err( error( &ident ) ),
         }
       }
@@ -785,19 +816,19 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
 
 // == attribute entries
 
-// = AttributeEntryHint
+// = AttributePropertyHint
 
 /// Specifies whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributeEntryHint( bool );
+pub struct AttributePropertyHint( bool );
 
-impl AttributeEntryHint
+impl AttributePropertyHint
 {
   const KEYWORD : &'static str = "hint";
 }
 
-impl syn::parse::Parse for AttributeEntryHint
+impl syn::parse::Parse for AttributePropertyHint
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
@@ -806,7 +837,7 @@ impl syn::parse::Parse for AttributeEntryHint
   }
 }
 
-impl From< bool > for AttributeEntryHint
+impl From< bool > for AttributePropertyHint
 {
   #[ inline( always ) ]
   fn from( src : bool ) -> Self
@@ -815,28 +846,28 @@ impl From< bool > for AttributeEntryHint
   }
 }
 
-impl From< AttributeEntryHint > for bool
+impl From< AttributePropertyHint > for bool
 {
   #[ inline( always ) ]
-  fn from( src : AttributeEntryHint ) -> Self
+  fn from( src : AttributePropertyHint ) -> Self
   {
     src.0
   }
 }
 
-// = AttributeEntrySetter
+// = AttributePropertySetter
 
 /// Disable generation of setter.
 /// Attributes still might generate some helper methods to reuse by custom setter.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributeEntrySetter( Option< bool > );
+pub struct AttributePropertySetter( Option< bool > );
 
-impl AttributeEntrySetter
+impl AttributePropertySetter
 {
   const KEYWORD : &'static str = "setter";
 }
 
-impl syn::parse::Parse for AttributeEntrySetter
+impl syn::parse::Parse for AttributePropertySetter
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
@@ -845,7 +876,7 @@ impl syn::parse::Parse for AttributeEntrySetter
   }
 }
 
-impl AsRef< Option< bool > > for AttributeEntrySetter
+impl AsRef< Option< bool > > for AttributePropertySetter
 {
   #[ inline( always ) ]
   fn as_ref( &self ) -> &Option< bool >
@@ -854,7 +885,7 @@ impl AsRef< Option< bool > > for AttributeEntrySetter
   }
 }
 
-impl From< bool > for AttributeEntrySetter
+impl From< bool > for AttributePropertySetter
 {
   #[ inline( always ) ]
   fn from( src : bool ) -> Self
@@ -863,7 +894,7 @@ impl From< bool > for AttributeEntrySetter
   }
 }
 
-impl From< Option< bool > > for AttributeEntrySetter
+impl From< Option< bool > > for AttributePropertySetter
 {
   #[ inline( always ) ]
   fn from( src : Option< bool > ) -> Self
@@ -872,28 +903,28 @@ impl From< Option< bool > > for AttributeEntrySetter
   }
 }
 
-impl From< AttributeEntrySetter > for Option< bool >
+impl From< AttributePropertySetter > for Option< bool >
 {
   #[ inline( always ) ]
-  fn from( src : AttributeEntrySetter ) -> Self
+  fn from( src : AttributePropertySetter ) -> Self
   {
     src.0
   }
 }
 
-// = AttributeEntryName
+// = AttributePropertyName
 
 /// An optional identifier that names the setter. It is parsed from inputs
 /// like `name = my_field`.
 #[ derive( Debug, Default, Clone ) ]
-pub struct AttributeEntryName( Option< syn::Ident > );
+pub struct AttributePropertyName( Option< syn::Ident > );
 
-impl AttributeEntryName
+impl AttributePropertyName
 {
   const KEYWORD : &'static str = "name";
 }
 
-impl syn::parse::Parse for AttributeEntryName
+impl syn::parse::Parse for AttributePropertyName
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
@@ -902,7 +933,7 @@ impl syn::parse::Parse for AttributeEntryName
   }
 }
 
-impl AsRef< Option< syn::Ident > > for AttributeEntryName
+impl AsRef< Option< syn::Ident > > for AttributePropertyName
 {
   #[ inline( always ) ]
   fn as_ref( &self ) -> &Option< syn::Ident >
@@ -911,7 +942,7 @@ impl AsRef< Option< syn::Ident > > for AttributeEntryName
   }
 }
 
-impl From< syn::Ident > for AttributeEntryName
+impl From< syn::Ident > for AttributePropertyName
 {
   #[ inline( always ) ]
   fn from( src : syn::Ident ) -> Self
@@ -920,7 +951,7 @@ impl From< syn::Ident > for AttributeEntryName
   }
 }
 
-impl From< Option< syn::Ident > > for AttributeEntryName
+impl From< Option< syn::Ident > > for AttributePropertyName
 {
   #[ inline( always ) ]
   fn from( src : Option< syn::Ident > ) -> Self
@@ -929,19 +960,19 @@ impl From< Option< syn::Ident > > for AttributeEntryName
   }
 }
 
-impl From< AttributeEntryName > for Option< syn::Ident >
+impl From< AttributePropertyName > for Option< syn::Ident >
 {
   #[ inline( always ) ]
-  fn from( src : AttributeEntryName ) -> Self
+  fn from( src : AttributePropertyName ) -> Self
   {
     src.0
   }
 }
 
-impl< 'a > From< &'a AttributeEntryName > for Option< &'a syn::Ident >
+impl< 'a > From< &'a AttributePropertyName > for Option< &'a syn::Ident >
 {
   #[ inline( always ) ]
-  fn from( src : &'a AttributeEntryName ) -> Self
+  fn from( src : &'a AttributePropertyName ) -> Self
   {
     src.0.as_ref()
   }
