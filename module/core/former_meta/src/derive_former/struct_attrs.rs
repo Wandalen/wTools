@@ -452,19 +452,29 @@ impl syn::parse::Parse for AttributePerform
 /// Marker type for to attribute property to specify whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct Hint;
+pub struct AttributePropertyHintMarker;
+
+impl AttributePropertyComponent for AttributePropertyHintMarker
+{
+  const KEYWORD : &'static str = "hint";
+}
 
 /// Specifies whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-pub type AttributePropertyHint = AttributePropertyBoolean< Hint >;
+pub type AttributePropertyHint = AttributePropertyBoolean< AttributePropertyHintMarker >;
 
 // =
 
 /// Marker type for to attribute property to indicates whether a custom code should be generated.
 /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct Custom;
+pub struct AttributePropertyCustomMarker;
+
+impl AttributePropertyComponent for AttributePropertyCustomMarker
+{
+  const KEYWORD : &'static str = "custom";
+}
 
 /// Indicates whether a custom code should be generated.
 /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
-pub type AttributePropertyCustom = AttributePropertyBoolean< Custom >;
+pub type AttributePropertyCustom = AttributePropertyBoolean< AttributePropertyCustomMarker >;

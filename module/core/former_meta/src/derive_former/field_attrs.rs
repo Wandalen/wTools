@@ -983,98 +983,112 @@ impl From< AttributePropertyHint > for bool
   }
 }
 
-// = AttributePropertySetter
+// = Marker type for AttributePropertySetter
 
 /// Disable generation of setter.
 /// Attributes still might generate some helper methods to reuse by custom setter.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertySetter( Option< bool > );
+pub struct AttributePropertySetterMarker;
 
-impl AttributePropertySetter
+/// Disable generation of setter.
+/// Attributes still might generate some helper methods to reuse by custom setter.
+pub type AttributePropertySetter = AttributePropertyOptionalBoolean< AttributePropertySetterMarker >;
+
+impl AttributePropertyComponent for AttributePropertySetter
 {
   const KEYWORD : &'static str = "setter";
-
-  /// Just unwrap, returning internal data.
-  pub fn internal( self ) -> Option< bool >
-  {
-    self.0
-  }
-
-  /// Returns Option< &bool > instead of &Option< bool >
-  pub fn ref_internal( &self ) -> Option< &bool >
-  {
-    self.0.as_ref()
-  }
-
 }
 
-impl syn::parse::Parse for AttributePropertySetter
-{
-  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
-  {
-    let value : syn::LitBool = input.parse()?;
-    Ok( value.value.into() )
-  }
-}
-
-impl core::ops::Deref for AttributePropertySetter
-{
-  type Target = Option< bool >;
-  #[ inline( always ) ]
-  fn deref( &self ) -> &Option< bool >
-  {
-    &self.0
-  }
-}
-
-impl AsRef< Option< bool > > for AttributePropertySetter
-{
-  #[ inline( always ) ]
-  fn as_ref( &self ) -> &Option< bool >
-  {
-    &self.0
-  }
-}
-
-impl From< bool > for AttributePropertySetter
-{
-  #[ inline( always ) ]
-  fn from( src : bool ) -> Self
-  {
-    Self( Some( src ) )
-  }
-}
-
-impl From< Option< bool > > for AttributePropertySetter
-{
-  #[ inline( always ) ]
-  fn from( src : Option< bool > ) -> Self
-  {
-    Self( src )
-  }
-}
-
-impl From< AttributePropertySetter > for Option< bool >
-{
-  #[ inline( always ) ]
-  fn from( src : AttributePropertySetter ) -> Self
-  {
-    src.0
-  }
-}
+// /// Disable generation of setter.
+// /// Attributes still might generate some helper methods to reuse by custom setter.
+// #[ derive( Debug, Default, Clone, Copy ) ]
+// pub struct AttributePropertySetter( Option< bool > );
+//
+// impl AttributePropertySetter
+// {
+//   const KEYWORD : &'static str = "setter";
+//
+//   /// Just unwrap, returning internal data.
+//   pub fn internal( self ) -> Option< bool >
+//   {
+//     self.0
+//   }
+//
+//   /// Returns Option< &bool > instead of &Option< bool >
+//   pub fn ref_internal( &self ) -> Option< &bool >
+//   {
+//     self.0.as_ref()
+//   }
+//
+// }
+//
+// impl syn::parse::Parse for AttributePropertySetter
+// {
+//   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+//   {
+//     let value : syn::LitBool = input.parse()?;
+//     Ok( value.value.into() )
+//   }
+// }
+//
+// impl core::ops::Deref for AttributePropertySetter
+// {
+//   type Target = Option< bool >;
+//   #[ inline( always ) ]
+//   fn deref( &self ) -> &Option< bool >
+//   {
+//     &self.0
+//   }
+// }
+//
+// impl AsRef< Option< bool > > for AttributePropertySetter
+// {
+//   #[ inline( always ) ]
+//   fn as_ref( &self ) -> &Option< bool >
+//   {
+//     &self.0
+//   }
+// }
+//
+// impl From< bool > for AttributePropertySetter
+// {
+//   #[ inline( always ) ]
+//   fn from( src : bool ) -> Self
+//   {
+//     Self( Some( src ) )
+//   }
+// }
+//
+// impl From< Option< bool > > for AttributePropertySetter
+// {
+//   #[ inline( always ) ]
+//   fn from( src : Option< bool > ) -> Self
+//   {
+//     Self( src )
+//   }
+// }
+//
+// impl From< AttributePropertySetter > for Option< bool >
+// {
+//   #[ inline( always ) ]
+//   fn from( src : AttributePropertySetter ) -> Self
+//   {
+//     src.0
+//   }
+// }
 
 // =
 
 /// Marker type for attribute property of optional identifier that names the setter. It is parsed from inputs
 /// like `name = my_field`.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct Name;
+pub struct AttributePropertyNameMarker;
 
 /// An optional identifier that names the setter. It is parsed from inputs
 /// like `name = my_field`.
-pub type AttributePropertyName = AttributePropertyOptionalSyn< syn::Ident, Name >;
+pub type AttributePropertyName = AttributePropertyOptionalSyn< syn::Ident, AttributePropertyNameMarker >;
 
-impl AttributePropertyComponent for AttributePropertyOptionalSyn< syn::Ident, Name >
+impl AttributePropertyComponent for AttributePropertyName
 {
   const KEYWORD : &'static str = "name";
 }
@@ -1083,19 +1097,29 @@ impl AttributePropertyComponent for AttributePropertyOptionalSyn< syn::Ident, Na
 
 /// Marker type for default value to use for a field.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct DefaultValue;
+pub struct AttributePropertyDefaultMarker;
 
 /// An optional identifier that names the setter. It is parsed from inputs
 /// like `name = my_field`.
-pub type AttributePropertyDefault = AttributePropertyOptionalSyn< syn::Expr, DefaultValue >;
+pub type AttributePropertyDefault = AttributePropertyOptionalSyn< syn::Expr, AttributePropertyDefaultMarker >;
+
+impl AttributePropertyComponent for AttributePropertyDefault
+{
+  const KEYWORD : &'static str = "default";
+}
 
 // =
 
 /// Marker type for definition of the collection former to use, e.g., `former::VectorFormer`.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct Definition;
+pub struct AttributePropertyDefinitionMarker;
 
 /// Definition of the collection former to use, e.g., `former::VectorFormer`.
-pub type AttributePropertyDefinition = AttributePropertyOptionalSyn< syn::Type, Definition >;
+pub type AttributePropertyDefinition = AttributePropertyOptionalSyn< syn::Type, AttributePropertyDefinitionMarker >;
+
+impl AttributePropertyComponent for AttributePropertyDefinition
+{
+  const KEYWORD : &'static str = "component";
+}
 
 // xxx2 : continue
