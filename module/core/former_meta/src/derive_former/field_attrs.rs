@@ -192,12 +192,31 @@ where
   }
 }
 
+
 impl syn::parse::Parse for AttributeConfig
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
-    let mut default : Option< syn::Expr > = None;
-    // let mut only_storage : Option< bool > = None;
+    let mut result = Self::default();
+
+    let error = | ident : &syn::Ident | -> syn::Error
+    {
+      let known = const_format::concatcp!
+      (
+        "Known entries of attribute ", AttributeConfig::KEYWORD, " are : ",
+        AttributePropertyDefault::KEYWORD,
+        ".",
+      );
+      syn_err!
+      (
+        ident,
+        r#"Expects an attribute of format '#[ former( default = 13 ) ]'
+  {known}
+  But got: '{}'
+"#,
+        qt!{ #ident }
+      )
+    };
 
     while !input.is_empty()
     {
@@ -205,23 +224,17 @@ impl syn::parse::Parse for AttributeConfig
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
+
+        input.parse::< syn::Token![=] >()?;
         match ident.to_string().as_str()
         {
-          "default" =>
-          {
-            input.parse::< syn::Token![ = ] >()?;
-            default = Some( input.parse()? );
-          }
-          _ =>
-          {
-            return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'default'. For example: `former( default = 13 )`", ident ) ) );
-          }
+          AttributePropertyDefault::KEYWORD => result.assign( AttributePropertyDefault::parse( input )? ),
+          _ => return Err( error( &ident ) ),
         }
       }
-
       else
       {
-        return Err( syn::Error::new( input.span(), "Expected 'default'. For example: `former( default = 13 )`" ) );
+        return Err( lookahead.error() );
       }
 
       // Optional comma handling
@@ -231,9 +244,52 @@ impl syn::parse::Parse for AttributeConfig
       }
     }
 
-    Ok( Self { default : default.into() } )
+    Ok( result )
   }
 }
+
+// impl syn::parse::Parse for AttributeConfig
+// {
+//   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+//   {
+//     let mut default : Option< syn::Expr > = None;
+//     // let mut only_storage : Option< bool > = None;
+//
+//     while !input.is_empty()
+//     {
+//       let lookahead = input.lookahead1();
+//       if lookahead.peek( syn::Ident )
+//       {
+//         let ident : syn::Ident = input.parse()?;
+//         match ident.to_string().as_str()
+//         {
+//           "default" =>
+//           {
+//             input.parse::< syn::Token![ = ] >()?;
+//             default = Some( input.parse()? );
+//           }
+//           _ =>
+//           {
+//             return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'default'. For example: `former( default = 13 )`", ident ) ) );
+//           }
+//         }
+//       }
+//
+//       else
+//       {
+//         return Err( syn::Error::new( input.span(), "Expected 'default'. For example: `former( default = 13 )`" ) );
+//       }
+//
+//       // Optional comma handling
+//       if input.peek( syn::Token![ , ] )
+//       {
+//         input.parse::< syn::Token![ , ] >()?;
+//       }
+//     }
+//
+//     Ok( Self { default : default.into() } )
+//   }
+// }
 
 ///
 /// Attribute to enable/disable scalar setter generation.
@@ -337,9 +393,28 @@ impl syn::parse::Parse for AttributeScalarSetter
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
-    let mut name : Option< syn::Ident > = None;
-    let mut setter : Option< bool > = None;
-    let mut hint = false;
+    let mut result = Self::default();
+
+    let error = | ident : &syn::Ident | -> syn::Error
+    {
+      let known = const_format::concatcp!
+      (
+        "Known entries of attribute ", AttributeScalarSetter::KEYWORD, " are : ",
+        AttributePropertyName::KEYWORD,
+        ", ", AttributePropertySetter::KEYWORD,
+        ", ", AttributePropertyHint::KEYWORD,
+        ".",
+      );
+      syn_err!
+      (
+        ident,
+        r#"Expects an attribute of format '#[ scalar( name = myName, setter = true, hint = false ) ]'
+  {known}
+  But got: '{}'
+"#,
+        qt!{ #ident }
+      )
+    };
 
     while !input.is_empty()
     {
@@ -347,34 +422,19 @@ impl syn::parse::Parse for AttributeScalarSetter
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
+
+        input.parse::< syn::Token![=] >()?;
         match ident.to_string().as_str()
         {
-          "name" =>
-          {
-            input.parse::< syn::Token![ = ] >()?;
-            name = Some( input.parse()? );
-          }
-          "setter" =>
-          {
-            input.parse::< syn::Token![ = ] >()?;
-            let value : syn::LitBool = input.parse()?;
-            setter = Some( value.value() );
-          }
-          "hint" =>
-          {
-            input.parse::< syn::Token![ = ] >()?;
-            let value : syn::LitBool = input.parse()?;
-            hint = value.value;
-          }
-          _ =>
-          {
-            return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `scalar( name = myName, setter = true )`", ident ) ) );
-          }
+          AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
+          AttributePropertySetter::KEYWORD => result.assign( AttributePropertySetter::parse( input )? ),
+          AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
+          _ => return Err( error( &ident ) ),
         }
       }
       else
       {
-        return Err( syn::Error::new( input.span(), "Expected 'name', 'setter', or 'definition' identifier. For example: `scalar( name = myName, setter = true )`" ) );
+        return Err( lookahead.error() );
       }
 
       // Optional comma handling
@@ -384,7 +444,7 @@ impl syn::parse::Parse for AttributeScalarSetter
       }
     }
 
-    Ok( Self { name : name.into(), setter : setter.into(), hint : hint.into() } )
+    Ok( result )
   }
 }
 
@@ -491,9 +551,28 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
-    let mut name : Option< syn::Ident > = None;
-    let mut setter : Option< bool > = None;
-    let mut hint = false;
+    let mut result = Self::default();
+
+    let error = | ident : &syn::Ident | -> syn::Error
+    {
+      let known = const_format::concatcp!
+      (
+        "Known entries of attribute ", AttributeSubformScalarSetter::KEYWORD, " are : ",
+        AttributePropertyName::KEYWORD,
+        ", ", AttributePropertySetter::KEYWORD,
+        ", ", AttributePropertyHint::KEYWORD,
+        ".",
+      );
+      syn_err!
+      (
+        ident,
+        r#"Expects an attribute of format '#[ subform_scalar( name = myName, setter = true, hint = false ) ]'
+  {known}
+  But got: '{}'
+"#,
+        qt!{ #ident }
+      )
+    };
 
     while !input.is_empty()
     {
@@ -501,34 +580,19 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
+
+        input.parse::< syn::Token![=] >()?;
         match ident.to_string().as_str()
         {
-          "name" =>
-          {
-            input.parse::< syn::Token![ = ] >()?;
-            name = Some( input.parse()? );
-          }
-          "setter" =>
-          {
-            input.parse::< syn::Token![ = ] >()?;
-            let value : syn::LitBool = input.parse()?;
-            setter = Some( value.value() );
-          }
-          "hint" =>
-          {
-            input.parse::< syn::Token![ = ] >()?;
-            let value : syn::LitBool = input.parse()?;
-            hint = value.value;
-          }
-          _ =>
-          {
-            return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `subform_scalar( name = myName, setter = true )`", ident ) ) );
-          }
+          AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
+          AttributePropertySetter::KEYWORD => result.assign( AttributePropertySetter::parse( input )? ),
+          AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
+          _ => return Err( error( &ident ) ),
         }
       }
       else
       {
-        return Err( syn::Error::new( input.span(), "Expected 'name', 'setter', or 'definition' identifier. For example: `subform_scalar( name = myName, setter = true )`" ) );
+        return Err( lookahead.error() );
       }
 
       // Optional comma handling
@@ -538,9 +602,64 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
       }
     }
 
-    Ok( Self { name : name.into(), setter : setter.into(), hint : hint.into() } )
+    Ok( result )
   }
 }
+
+// impl syn::parse::Parse for AttributeSubformScalarSetter
+// {
+//   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+//   {
+//     let mut name : Option< syn::Ident > = None;
+//     let mut setter : Option< bool > = None;
+//     let mut hint = false;
+//
+//     while !input.is_empty()
+//     {
+//       let lookahead = input.lookahead1();
+//       if lookahead.peek( syn::Ident )
+//       {
+//         let ident : syn::Ident = input.parse()?;
+//         match ident.to_string().as_str()
+//         {
+//           "name" =>
+//           {
+//             input.parse::< syn::Token![ = ] >()?;
+//             name = Some( input.parse()? );
+//           }
+//           "setter" =>
+//           {
+//             input.parse::< syn::Token![ = ] >()?;
+//             let value : syn::LitBool = input.parse()?;
+//             setter = Some( value.value() );
+//           }
+//           "hint" =>
+//           {
+//             input.parse::< syn::Token![ = ] >()?;
+//             let value : syn::LitBool = input.parse()?;
+//             hint = value.value;
+//           }
+//           _ =>
+//           {
+//             return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `subform_scalar( name = myName, setter = true )`", ident ) ) );
+//           }
+//         }
+//       }
+//       else
+//       {
+//         return Err( syn::Error::new( input.span(), "Expected 'name', 'setter', or 'definition' identifier. For example: `subform_scalar( name = myName, setter = true )`" ) );
+//       }
+//
+//       // Optional comma handling
+//       if input.peek( syn::Token![ , ] )
+//       {
+//         input.parse::< syn::Token![ , ] >()?;
+//       }
+//     }
+//
+//     Ok( Self { name : name.into(), setter : setter.into(), hint : hint.into() } )
+//   }
+// }
 
 /// Represents an attribute for configuring collection setter generation.
 ///
@@ -714,67 +833,6 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
     Ok( result )
   }
 }
-
-// impl syn::parse::Parse for AttributeSubformCollectionSetter
-// {
-//   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
-//   {
-//     let mut name : Option< syn::Ident > = None;
-//     let mut setter : Option< bool > = None; // Default is to generate a setter
-//     let mut hint = false;
-//     let mut definition : Option< syn::Type > = None;
-//
-//     while !input.is_empty()
-//     {
-//       let lookahead = input.lookahead1();
-//       if lookahead.peek( syn::Ident )
-//       {
-//         let ident : syn::Ident = input.parse()?;
-//         match ident.to_string().as_str()
-//         {
-//           "name" =>
-//           {
-//             input.parse::< syn::Token![ = ] >()?;
-//             name = Some( input.parse()? );
-//           }
-//           "setter" =>
-//           {
-//             input.parse::< syn::Token![ = ] >()?;
-//             let value : syn::LitBool = input.parse()?;
-//             setter = Some( value.value );
-//           }
-//           "hint" =>
-//           {
-//             input.parse::< syn::Token![ = ] >()?;
-//             let value : syn::LitBool = input.parse()?;
-//             hint = value.value;
-//           }
-//           "definition" =>
-//           {
-//             input.parse::< syn::Token![ = ] >()?;
-//             definition = Some( input.parse()? );
-//           }
-//           _ =>
-//           {
-//             return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `collection( name = myName, setter = true, definition = MyDefinition )`", ident ) ) );
-//           }
-//         }
-//       }
-//       else
-//       {
-//         return Err( syn::Error::new( input.span(), "Expected 'name', 'setter', or 'definition' identifier. For example: `subform_collection( name = myName, setter = true, hint = false, definition = MyDefinition )`" ) );
-//       }
-//
-//       // Optional comma handling
-//       if input.peek( syn::Token![ , ] )
-//       {
-//         input.parse::< syn::Token![ , ] >()?;
-//       }
-//     }
-//
-//     Ok( Self { name : name.into(), setter : setter.into(), hint : hint.into(), definition : definition.into() } )
-//   }
-// }
 
 /// Represents a subform attribute to control subform setter generation.
 /// Used to specify extra options for using one former as subformer of another one.
