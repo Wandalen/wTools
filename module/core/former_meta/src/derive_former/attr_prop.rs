@@ -6,6 +6,7 @@ use macro_tools::{ AttributePropertyComponent };
 
 AttributePropertyBoolean
 AttributePropertyOptionalBoolean
+AttributePropertySyn
 AttributePropertyOptionalSyn
 
 */
@@ -167,6 +168,122 @@ impl< Marker > AsRef< Option< bool > > for AttributePropertyOptionalBoolean< Mar
   }
 }
 
+// = AttributePropertySyn
+
+/// Property of an attribute which simply wrap one of standard of `syn` type and keep it optional.
+#[ derive( Debug, Clone ) ]
+pub struct AttributePropertySyn< T, Marker >( T, ::core::marker::PhantomData< Marker > )
+where
+  T : syn::parse::Parse + quote::ToTokens,
+;
+
+impl< T, Marker > AttributePropertySyn< T, Marker >
+where
+  T : syn::parse::Parse + quote::ToTokens,
+{
+  /// Just unwrap, returning internal data.
+  pub fn internal( self ) -> T
+  {
+    self.0
+  }
+  /// Returns Option< &T > instead of &Option< T >
+  pub fn ref_internal( &self ) -> &T
+  {
+    &self.0
+  }
+}
+
+impl< T, Marker > AttributePropertyComponent for AttributePropertySyn< T, Marker >
+where
+  T : syn::parse::Parse + quote::ToTokens,
+  Marker : AttributePropertyComponent,
+{
+  const KEYWORD : &'static str = Marker::KEYWORD;
+}
+
+// xxx
+// impl< T, Marker > Default for AttributePropertySyn< T, Marker >
+// where
+//   T : syn::parse::Parse + quote::ToTokens,
+// {
+//   fn default() -> Self
+//   {
+//     Self( Default::default(), Default::default() )
+//   }
+// }
+
+impl< T, Marker > syn::parse::Parse for AttributePropertySyn< T, Marker >
+where
+  T : syn::parse::Parse + quote::ToTokens,
+{
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+  {
+    let value : T = input.parse()?;
+    Ok( value.into() )
+  }
+}
+
+impl< T, Marker > quote::ToTokens for AttributePropertySyn< T, Marker >
+where
+  T : syn::parse::Parse + quote::ToTokens,
+{
+  fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
+  {
+    self.0.to_tokens( tokens );
+  }
+}
+
+impl< T, Marker > core::ops::Deref for AttributePropertySyn< T, Marker >
+where T : syn::parse::Parse + quote::ToTokens
+{
+  type Target = T;
+  #[ inline( always ) ]
+  fn deref( &self ) -> &T
+  {
+    &self.0
+  }
+}
+
+impl< T, Marker > AsRef< T > for AttributePropertySyn< T, Marker >
+where T : syn::parse::Parse + quote::ToTokens
+{
+  #[ inline( always ) ]
+  fn as_ref( &self ) -> &T
+  {
+    &self.0
+  }
+}
+
+impl< T, Marker > From< T > for AttributePropertySyn< T, Marker >
+where T : syn::parse::Parse + quote::ToTokens
+{
+  #[ inline( always ) ]
+  fn from( src : T ) -> Self
+  {
+    Self( src, Default::default() )
+  }
+}
+
+// impl< T, Marker > From< AttributePropertySyn< T, Marker > > for T
+// where T : syn::parse::Parse + quote::ToTokens
+// {
+//   #[ inline( always ) ]
+//   fn from( src : AttributePropertySyn< T, Marker > ) -> Self
+//   {
+//     src.0
+//   }
+// }
+
+// impl< 'a, T, Marker > From< &'a AttributePropertySyn< T, Marker > > for Option< &'a T >
+// where T : syn::parse::Parse + quote::ToTokens
+// {
+//   #[ inline( always ) ]
+//   fn from( src : &'a AttributePropertySyn< T, Marker > ) -> Self
+//   {
+//     &src.0
+//   }
+// }
+
 // = AttributePropertyOptionalSyn
 
 /// Property of an attribute which simply wrap one of standard of `syn` type and keep it optional.
@@ -221,7 +338,6 @@ where
   }
 }
 
-// xxx
 impl< T, Marker > quote::ToTokens for AttributePropertyOptionalSyn< T, Marker >
 where
   T : syn::parse::Parse + quote::ToTokens,
