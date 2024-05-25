@@ -346,6 +346,7 @@ pub( crate ) mod private
   ///   }
   /// }
   /// ```
+  /// xxx : improve documentation
   pub trait AttributeComponent
   where
     Self : Sized,
@@ -370,6 +371,18 @@ pub( crate ) mod private
     ///
     /// A `Result` containing the constructed component if successful, or an error if the parsing fails.
     fn from_meta( attr : &syn::Attribute ) -> Result< Self >;
+  }
+
+  /// xxx : write documentation
+  pub trait AttributePropertyComponent
+  where
+    Self : Sized,
+  {
+    /// The keyword that identifies the component.
+    ///
+    /// This constant is used to match the attribute to the corresponding component.
+    /// Each implementor of this trait must provide a unique keyword for its type.
+    const KEYWORD : &'static str;
   }
 
 }
@@ -415,8 +428,9 @@ pub mod exposed
   {
     AttributesInner,
     AttributesOuter,
-    // AttributedIdent,
+
     AttributeComponent,
+    AttributePropertyComponent,
   };
 }
 

@@ -1,6 +1,6 @@
 
 use super::*;
-use macro_tools::{ attr, Result, AttributeComponent };
+use macro_tools::{ attr, Result, AttributeComponent, AttributePropertyComponent };
 use former_types::{ ComponentAssign };
 
 /// Represents the attributes of a struct, including storage fields, mutator, and perform attributes.
@@ -449,130 +449,22 @@ impl syn::parse::Parse for AttributePerform
 
 // xxx : reuse more generic structure
 
-/// Specifies whether to provide a sketch as a hint.
+/// Marker type for to attribute property to specify whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyHint( bool );
+pub struct Hint;
 
-impl AttributePropertyHint
-{
-  const KEYWORD : &'static str = "hint";
-
-  /// Just unwrap, returning internal data.
-  pub fn internal( self ) -> bool
-  {
-    self.0
-  }
-
-}
-
-impl syn::parse::Parse for AttributePropertyHint
-{
-  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
-  {
-    let value : syn::LitBool = input.parse()?;
-    Ok( value.value.into() )
-  }
-}
-
-impl From< bool > for AttributePropertyHint
-{
-  #[ inline( always ) ]
-  fn from( src : bool ) -> Self
-  {
-    Self( src )
-  }
-}
-
-impl From< AttributePropertyHint > for bool
-{
-  #[ inline( always ) ]
-  fn from( src : AttributePropertyHint ) -> Self
-  {
-    src.0
-  }
-}
+/// Specifies whether to provide a sketch as a hint.
+/// Defaults to `false`, which means no hint is provided unless explicitly requested.
+pub type AttributePropertyHint = AttributePropertyBoolean< Hint >;
 
 // =
+
+/// Marker type for to attribute property to indicates whether a custom code should be generated.
+/// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
+#[ derive( Debug, Default, Clone, Copy ) ]
+pub struct Custom;
 
 /// Indicates whether a custom code should be generated.
 /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
-#[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyCustom( bool );
-
-impl AttributePropertyCustom
-{
-  const KEYWORD : &'static str = "custom";
-}
-
-impl syn::parse::Parse for AttributePropertyCustom
-{
-  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
-  {
-    let value : syn::LitBool = input.parse()?;
-    Ok( value.value.into() )
-  }
-}
-
-impl From< bool > for AttributePropertyCustom
-{
-  #[ inline( always ) ]
-  fn from( src : bool ) -> Self
-  {
-    Self( src )
-  }
-}
-
-impl From< AttributePropertyCustom > for bool
-{
-  #[ inline( always ) ]
-  fn from( src : AttributePropertyCustom ) -> Self
-  {
-    src.0
-  }
-}
-
-// =
-
-// xxx
-// #[ derive( Debug, Default, Clone, Copy ) ]
-// pub struct AttributePropertyBoolean< const KEYWORD : &'static str >( bool );
-
-// =
-
-/// Generics bolean attirbute property.
-/// Defaults to `false`.
-#[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyBoolean< const T : i32 >( bool );
-
-impl< const T : i32 > AttributePropertyBoolean< T >
-{
-  const KEYWORD : &'static str = "custom";
-}
-
-impl< const T : i32 > syn::parse::Parse for AttributePropertyBoolean< T >
-{
-  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
-  {
-    let value : syn::LitBool = input.parse()?;
-    Ok( value.value.into() )
-  }
-}
-
-impl< const T : i32 > From< bool > for AttributePropertyBoolean< T >
-{
-  #[ inline( always ) ]
-  fn from( src : bool ) -> Self
-  {
-    Self( src )
-  }
-}
-
-impl< const T : i32 > From< AttributePropertyBoolean< T > > for bool
-{
-  #[ inline( always ) ]
-  fn from( src : AttributePropertyBoolean< T > ) -> Self
-  {
-    src.0
-  }
-}
+pub type AttributePropertyCustom = AttributePropertyBoolean< Custom >;
