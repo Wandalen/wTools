@@ -232,7 +232,7 @@ impl syn::parse::Parse for AttributeConfig
       }
     }
 
-    Ok( Self { default } )
+    Ok( Self { default : default.into() } )
   }
 }
 
@@ -385,7 +385,7 @@ impl syn::parse::Parse for AttributeScalarSetter
       }
     }
 
-    Ok( Self { name, setter, hint } )
+    Ok( Self { name : name.into(), setter : setter.into(), hint : hint.into() } )
   }
 }
 
@@ -539,7 +539,7 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
       }
     }
 
-    Ok( Self { name, setter, hint } )
+    Ok( Self { name : name.into(), setter : setter.into(), hint : hint.into() } )
   }
 }
 
@@ -712,7 +712,7 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
       }
     }
 
-    Ok( Self { name, setter, hint, definition } )
+    Ok( Self { name : name.into(), setter : setter.into(), hint : hint.into(), definition : definition.into() } )
   }
 }
 
@@ -951,6 +951,13 @@ pub struct AttributePropertyHint( bool );
 impl AttributePropertyHint
 {
   const KEYWORD : &'static str = "hint";
+
+  /// Just unwrap, returning internal data.
+  pub fn internal( self ) -> bool
+  {
+    self.0
+  }
+
 }
 
 impl syn::parse::Parse for AttributePropertyHint
@@ -990,6 +997,19 @@ pub struct AttributePropertySetter( Option< bool > );
 impl AttributePropertySetter
 {
   const KEYWORD : &'static str = "setter";
+
+  /// Just unwrap, returning internal data.
+  pub fn internal( self ) -> Option< bool >
+  {
+    self.0
+  }
+
+  /// Returns Option< &bool > instead of &Option< bool >
+  pub fn ref_internal( &self ) -> Option< &bool >
+  {
+    self.0.as_ref()
+  }
+
 }
 
 impl syn::parse::Parse for AttributePropertySetter
@@ -998,6 +1018,16 @@ impl syn::parse::Parse for AttributePropertySetter
   {
     let value : syn::LitBool = input.parse()?;
     Ok( value.value.into() )
+  }
+}
+
+impl core::ops::Deref for AttributePropertySetter
+{
+  type Target = Option< bool >;
+  #[ inline( always ) ]
+  fn deref( &self ) -> &Option< bool >
+  {
+    &self.0
   }
 }
 
@@ -1037,143 +1067,36 @@ impl From< AttributePropertySetter > for Option< bool >
   }
 }
 
-// // = AttributePropertyName
-//
-// /// An optional identifier that names the setter. It is parsed from inputs
-// /// like `name = my_field`.
-// #[ derive( Debug, Default, Clone ) ]
-// pub struct AttributePropertyName( Option< syn::Ident > );
-//
-// impl AttributePropertyName
-// {
-//   const KEYWORD : &'static str = "name";
-// }
-//
-// impl syn::parse::Parse for AttributePropertyName
-// {
-//   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
-//   {
-//     let value : syn::Ident = input.parse()?;
-//     Ok( value.into() )
-//   }
-// }
-//
-// impl AsRef< Option< syn::Ident > > for AttributePropertyName
-// {
-//   #[ inline( always ) ]
-//   fn as_ref( &self ) -> &Option< syn::Ident >
-//   {
-//     &self.0
-//   }
-// }
-//
-// impl From< syn::Ident > for AttributePropertyName
-// {
-//   #[ inline( always ) ]
-//   fn from( src : syn::Ident ) -> Self
-//   {
-//     Self( Some( src ) )
-//   }
-// }
-//
-// impl From< Option< syn::Ident > > for AttributePropertyName
-// {
-//   #[ inline( always ) ]
-//   fn from( src : Option< syn::Ident > ) -> Self
-//   {
-//     Self( src )
-//   }
-// }
-//
-// impl From< AttributePropertyName > for Option< syn::Ident >
-// {
-//   #[ inline( always ) ]
-//   fn from( src : AttributePropertyName ) -> Self
-//   {
-//     src.0
-//   }
-// }
-//
-// impl< 'a > From< &'a AttributePropertyName > for Option< &'a syn::Ident >
-// {
-//   #[ inline( always ) ]
-//   fn from( src : &'a AttributePropertyName ) -> Self
-//   {
-//     src.0.as_ref()
-//   }
-// }
-//
-// // = AttributePropertyDefault
-//
-// /// Default value to use for a field.
-// #[ derive( Debug, Default, Clone ) ]
-// pub struct AttributePropertyDefault( Option< syn::Expr > );
-//
-// impl AttributePropertyDefault
-// {
-//   const KEYWORD : &'static str = "name";
-// }
-//
-// impl syn::parse::Parse for AttributePropertyDefault
-// {
-//   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
-//   {
-//     let value : syn::Expr = input.parse()?;
-//     Ok( value.into() )
-//   }
-// }
-//
-// impl AsRef< Option< syn::Expr > > for AttributePropertyDefault
-// {
-//   #[ inline( always ) ]
-//   fn as_ref( &self ) -> &Option< syn::Expr >
-//   {
-//     &self.0
-//   }
-// }
-//
-// impl From< syn::Expr > for AttributePropertyDefault
-// {
-//   #[ inline( always ) ]
-//   fn from( src : syn::Expr ) -> Self
-//   {
-//     Self( Some( src ) )
-//   }
-// }
-//
-// impl From< Option< syn::Expr > > for AttributePropertyDefault
-// {
-//   #[ inline( always ) ]
-//   fn from( src : Option< syn::Expr > ) -> Self
-//   {
-//     Self( src )
-//   }
-// }
-//
-// impl From< AttributePropertyDefault > for Option< syn::Expr >
-// {
-//   #[ inline( always ) ]
-//   fn from( src : AttributePropertyDefault ) -> Self
-//   {
-//     src.0
-//   }
-// }
-//
-// impl< 'a > From< &'a AttributePropertyDefault > for Option< &'a syn::Expr >
-// {
-//   #[ inline( always ) ]
-//   fn from( src : &'a AttributePropertyDefault ) -> Self
-//   {
-//     src.0.as_ref()
-//   }
-// }
-
 // = AttributePropertyOptionalSyn
 
 /// Property of an attribute which simply wrap one of standard of `syn` type and keep it optional.
-#[ derive( Debug, Default, Clone ) ]
+#[ derive( Debug, Clone ) ]
 pub struct AttributePropertyOptionalSyn< T >( Option< T > )
 where T : syn::parse::Parse + quote::ToTokens;
+
+impl< T > Default for AttributePropertyOptionalSyn< T >
+where T : syn::parse::Parse + quote::ToTokens
+{
+  fn default() -> Self
+  {
+    Self( None )
+  }
+}
+
+impl< T > AttributePropertyOptionalSyn< T >
+where T : syn::parse::Parse + quote::ToTokens
+{
+  /// Just unwrap, returning internal data.
+  pub fn internal( self ) -> Option< T >
+  {
+    self.0
+  }
+  /// Returns Option< &T > instead of &Option< T >
+  pub fn ref_internal( &self ) -> Option< &T >
+  {
+    self.0.as_ref()
+  }
+}
 
 impl< T > AttributePropertyOptionalSyn< T >
 where T : syn::parse::Parse + quote::ToTokens
@@ -1198,6 +1121,17 @@ where T : syn::parse::Parse + quote::ToTokens
   fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
   {
     self.0.to_tokens( tokens );
+  }
+}
+
+impl< T > core::ops::Deref for AttributePropertyOptionalSyn< T >
+where T : syn::parse::Parse + quote::ToTokens
+{
+  type Target = Option< T >;
+  #[ inline( always ) ]
+  fn deref( &self ) -> &Option< T >
+  {
+    &self.0
   }
 }
 

@@ -440,6 +440,7 @@ impl syn::parse::Parse for AttributeMutator
 /// `#[ perform( fn after1< 'a >() -> Option< &'a str > ) ]`
 ///
 
+// xxx : reuse more generic structure
 #[ derive( Debug ) ]
 pub struct AttributePerform
 {
@@ -492,6 +493,8 @@ impl syn::parse::Parse for AttributePerform
 
 // xxx2 : qqq : continue and get it implemented for all entries of all attribures
 
+// xxx : reuse more generic structure
+
 /// Specifies whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
 #[ derive( Debug, Default, Clone, Copy ) ]
@@ -500,6 +503,13 @@ pub struct AttributePropertyHint( bool );
 impl AttributePropertyHint
 {
   const KEYWORD : &'static str = "hint";
+
+  /// Just unwrap, returning internal data.
+  pub fn internal( self ) -> bool
+  {
+    self.0
+  }
+
 }
 
 impl syn::parse::Parse for AttributePropertyHint
