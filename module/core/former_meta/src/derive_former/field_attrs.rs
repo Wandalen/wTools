@@ -562,14 +562,14 @@ pub struct AttributeSubformCollectionSetter
   pub name : AttributePropertyName,
   /// Controls the generation of a setter method. If false, a setter method is not generated.
   pub setter : AttributePropertySetter,
-  /// Definition of the collection former to use, e.g., `former::VectorFormer`.
-  pub definition : AttributePropertyDefinition,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
   pub hint : AttributePropertyHint,
+  /// Definition of the collection former to use, e.g., `former::VectorFormer`.
+  pub definition : AttributePropertyDefinition,
 }
 
-// xxx
+// xxx : use trait
 impl AttributeSubformCollectionSetter
 {
 
@@ -658,10 +658,29 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
-    let mut name : Option< syn::Ident > = None;
-    let mut setter : Option< bool > = None; // Default is to generate a setter
-    let mut hint = false;
-    let mut definition : Option< syn::Type > = None;
+    let mut result = Self::default();
+
+    let error = | ident : &syn::Ident | -> syn::Error
+    {
+      let known = const_format::concatcp!
+      (
+        "Known entries of attribute ", AttributeSubformCollectionSetter::KEYWORD, " are : ",
+        AttributePropertyName::KEYWORD,
+        ", ", AttributePropertySetter::KEYWORD,
+        ", ", AttributePropertyHint::KEYWORD,
+        ", ", AttributePropertyDefinition::KEYWORD,
+        ".",
+      );
+      syn_err!
+      (
+        ident,
+        r#"Expects an attribute of format '#[ subform_collection( name = myName, setter = true, hint = false, definition = MyDefinition ) ]'
+  {known}
+  But got: '{}'
+"#,
+        qt!{ #ident }
+      )
+    };
 
     while !input.is_empty()
     {
@@ -669,39 +688,20 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
+
+        input.parse::< syn::Token![=] >()?;
         match ident.to_string().as_str()
         {
-          "name" =>
-          {
-            input.parse::< syn::Token![ = ] >()?;
-            name = Some( input.parse()? );
-          }
-          "setter" =>
-          {
-            input.parse::< syn::Token![ = ] >()?;
-            let value : syn::LitBool = input.parse()?;
-            setter = Some( value.value );
-          }
-          "hint" =>
-          {
-            input.parse::< syn::Token![ = ] >()?;
-            let value : syn::LitBool = input.parse()?;
-            hint = value.value;
-          }
-          "definition" =>
-          {
-            input.parse::< syn::Token![ = ] >()?;
-            definition = Some( input.parse()? );
-          }
-          _ =>
-          {
-            return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `collection( name = myName, setter = true, definition = MyDefinition )`", ident ) ) );
-          }
+          AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
+          AttributePropertySetter::KEYWORD => result.assign( AttributePropertySetter::parse( input )? ),
+          AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
+          AttributePropertyDefinition::KEYWORD => result.assign( AttributePropertyDefinition::parse( input )? ),
+          _ => return Err( error( &ident ) ),
         }
       }
       else
       {
-        return Err( syn::Error::new( input.span(), "Expected 'name', 'setter', or 'definition' identifier. For example: `collection( name = myName, setter = true, definition = MyDefinition )`" ) );
+        return Err( lookahead.error() );
       }
 
       // Optional comma handling
@@ -711,9 +711,70 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
       }
     }
 
-    Ok( Self { name : name.into(), setter : setter.into(), hint : hint.into(), definition : definition.into() } )
+    Ok( result )
   }
 }
+
+// impl syn::parse::Parse for AttributeSubformCollectionSetter
+// {
+//   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+//   {
+//     let mut name : Option< syn::Ident > = None;
+//     let mut setter : Option< bool > = None; // Default is to generate a setter
+//     let mut hint = false;
+//     let mut definition : Option< syn::Type > = None;
+//
+//     while !input.is_empty()
+//     {
+//       let lookahead = input.lookahead1();
+//       if lookahead.peek( syn::Ident )
+//       {
+//         let ident : syn::Ident = input.parse()?;
+//         match ident.to_string().as_str()
+//         {
+//           "name" =>
+//           {
+//             input.parse::< syn::Token![ = ] >()?;
+//             name = Some( input.parse()? );
+//           }
+//           "setter" =>
+//           {
+//             input.parse::< syn::Token![ = ] >()?;
+//             let value : syn::LitBool = input.parse()?;
+//             setter = Some( value.value );
+//           }
+//           "hint" =>
+//           {
+//             input.parse::< syn::Token![ = ] >()?;
+//             let value : syn::LitBool = input.parse()?;
+//             hint = value.value;
+//           }
+//           "definition" =>
+//           {
+//             input.parse::< syn::Token![ = ] >()?;
+//             definition = Some( input.parse()? );
+//           }
+//           _ =>
+//           {
+//             return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `collection( name = myName, setter = true, definition = MyDefinition )`", ident ) ) );
+//           }
+//         }
+//       }
+//       else
+//       {
+//         return Err( syn::Error::new( input.span(), "Expected 'name', 'setter', or 'definition' identifier. For example: `subform_collection( name = myName, setter = true, hint = false, definition = MyDefinition )`" ) );
+//       }
+//
+//       // Optional comma handling
+//       if input.peek( syn::Token![ , ] )
+//       {
+//         input.parse::< syn::Token![ , ] >()?;
+//       }
+//     }
+//
+//     Ok( Self { name : name.into(), setter : setter.into(), hint : hint.into(), definition : definition.into() } )
+//   }
+// }
 
 /// Represents a subform attribute to control subform setter generation.
 /// Used to specify extra options for using one former as subformer of another one.
@@ -747,6 +808,7 @@ pub struct AttributeSubformEntrySetter
   pub hint : AttributePropertyHint,
 }
 
+// xxx : use trait
 impl AttributeSubformEntrySetter
 {
 
@@ -857,7 +919,6 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
         input.parse::< syn::Token![=] >()?;
         match ident.to_string().as_str()
         {
-          // xxx
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
           AttributePropertySetter::KEYWORD => result.assign( AttributePropertySetter::parse( input )? ),
           AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
@@ -880,61 +941,6 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
   }
 }
 
-// impl syn::parse::Parse for AttributeSubformEntrySetter
-// {
-//   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
-//   {
-//     let mut name : Option< syn::Ident > = None;
-//     let mut setter : Option< bool > = None;
-//     let mut hint = false;
-//
-//     while !input.is_empty()
-//     {
-//       let lookahead = input.lookahead1();
-//       if lookahead.peek( syn::Ident )
-//       {
-//         let ident : syn::Ident = input.parse()?;
-//         match ident.to_string().as_str()
-//         {
-//           "name" =>
-//           {
-//             input.parse::< syn::Token![ = ] >()?;
-//             name = Some( input.parse()? );
-//           }
-//           "setter" =>
-//           {
-//             input.parse::< syn::Token![ = ] >()?;
-//             let value : syn::LitBool = input.parse()?;
-//             setter = Some( value.value() );
-//           }
-//           "hint" =>
-//           {
-//             input.parse::< syn::Token![ = ] >()?;
-//             let value : syn::LitBool = input.parse()?;
-//             hint = value.value;
-//           }
-//           _ =>
-//           {
-//             return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `subform( name = myName, setter = true )`", ident ) ) );
-//           }
-//         }
-//       }
-//       else
-//       {
-//         return Err( syn::Error::new( input.span(), "Expected 'name', 'setter', or 'definition' identifier. For example: `subform( name = myName, setter = true )`" ) );
-//       }
-//
-//       // Optional comma handling
-//       if input.peek( syn::Token![ , ] )
-//       {
-//         input.parse::< syn::Token![ , ] >()?;
-//       }
-//     }
-//
-//     Ok( Self { name, setter, hint } )
-//   }
-// }
-
 // == attribute entries
 
 // = AttributePropertyHint
@@ -950,6 +956,10 @@ impl AttributePropertyComponent for AttributePropertyHintMarker
 {
   const KEYWORD : &'static str = "hint";
 }
+
+/// Specifies whether to provide a sketch as a hint.
+/// Defaults to `false`, which means no hint is provided unless explicitly requested.
+pub type AttributePropertyHint = AttributePropertyBoolean< AttributePropertyHintMarker >;
 
 // = Marker type for AttributePropertySetter
 
@@ -1006,7 +1016,7 @@ pub struct AttributePropertyDefinitionMarker;
 
 impl AttributePropertyComponent for AttributePropertyDefinitionMarker
 {
-  const KEYWORD : &'static str = "component";
+  const KEYWORD : &'static str = "definition";
 }
 
 /// Definition of the collection former to use, e.g., `former::VectorFormer`.
