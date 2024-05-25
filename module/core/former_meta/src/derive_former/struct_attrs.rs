@@ -394,7 +394,6 @@ impl syn::parse::Parse for AttributeMutator
 /// `#[ perform( fn after1< 'a >() -> Option< &'a str > ) ]`
 ///
 
-// xxx : reuse more generic structure
 #[ derive( Debug ) ]
 pub struct AttributePerform
 {
@@ -421,17 +420,6 @@ impl AttributeComponent for AttributePerform
 
 }
 
-impl< IntoT > ComponentAssign< AttributePerform, IntoT > for StructAttributes
-where
-  IntoT : Into< AttributePerform >,
-{
-  #[ inline( always ) ]
-  fn assign( &mut self, component : IntoT )
-  {
-    self.perform = Some( component.into() );
-  }
-}
-
 impl syn::parse::Parse for AttributePerform
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
@@ -443,11 +431,18 @@ impl syn::parse::Parse for AttributePerform
   }
 }
 
-// == attribute entries
+impl< IntoT > ComponentAssign< AttributePerform, IntoT > for StructAttributes
+where
+  IntoT : Into< AttributePerform >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.perform = Some( component.into() );
+  }
+}
 
-// xxx2 : qqq : continue and get it implemented for all entries of all attribures
-
-// xxx : reuse more generic structure
+// == attribute properties
 
 /// Marker type for attribute property to specify whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.

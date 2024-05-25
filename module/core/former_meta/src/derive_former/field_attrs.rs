@@ -960,9 +960,9 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
   }
 }
 
-// == attribute entries
+// == attribute properties
 
-// = AttributePropertyHint
+// =
 
 /// Marker type for attribute property to specify whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
@@ -980,7 +980,7 @@ impl AttributePropertyComponent for AttributePropertyHintMarker
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
 pub type AttributePropertyHint = AttributePropertyBoolean< AttributePropertyHintMarker >;
 
-// = Marker type for AttributePropertySetter
+// =
 
 /// Disable generation of setter.
 /// Attributes still might generate some helper methods to reuse by custom setter.
@@ -1040,5 +1040,3 @@ impl AttributePropertyComponent for AttributePropertyDefinitionMarker
 
 /// Definition of the collection former to use, e.g., `former::VectorFormer`.
 pub type AttributePropertyDefinition = AttributePropertyOptionalSyn< syn::Type, AttributePropertyDefinitionMarker >;
-
-// xxx2 : continue

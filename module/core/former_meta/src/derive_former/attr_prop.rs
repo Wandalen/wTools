@@ -1,4 +1,3 @@
-
 use super::*;
 use macro_tools::{ AttributePropertyComponent };
 
@@ -13,19 +12,20 @@ AttributePropertyOptionalSyn
 
 // = AttributePropertyBoolean
 
-/// Generics bolean attirbute property.
+/// A generic boolean attribute property.
 /// Defaults to `false`.
 #[ derive( Debug, Default, Clone, Copy ) ]
 pub struct AttributePropertyBoolean< Marker >( bool, ::core::marker::PhantomData< Marker > );
 
 impl< Marker > AttributePropertyBoolean< Marker >
 {
-  /// Just unwrap, returning internal data.
+  /// Just unwraps and returns the internal data.
   pub fn internal( self ) -> bool
   {
     self.0
   }
-  /// Returns Option< &T > instead of &Option< T >
+
+  /// Returns a reference to the internal boolean value.
   pub fn ref_internal( &self ) -> &bool
   {
     &self.0
@@ -87,19 +87,20 @@ impl< Marker > AsRef< bool > for AttributePropertyBoolean< Marker >
 
 // = AttributePropertyOptionalBoolean
 
-/// Generics optional bolean attirbute property: `Option< bool >`.
+/// A generic optional boolean attribute property: `Option< bool >`.
 /// Defaults to `false`.
 #[ derive( Debug, Default, Clone, Copy ) ]
 pub struct AttributePropertyOptionalBoolean< Marker >( Option< bool >, ::core::marker::PhantomData< Marker > );
 
 impl< Marker > AttributePropertyOptionalBoolean< Marker >
 {
-  /// Just unwrap, returning internal data.
+  /// Just unwraps and returns the internal data.
   pub fn internal( self ) -> Option< bool >
   {
     self.0
   }
-  /// Returns Option< &T > instead of &Option< T >
+
+  /// Returns a reference to the internal optional boolean value.
   pub fn ref_internal( &self ) -> Option< &bool >
   {
     self.0.as_ref()
@@ -170,24 +171,24 @@ impl< Marker > AsRef< Option< bool > > for AttributePropertyOptionalBoolean< Mar
 
 // = AttributePropertySyn
 
-/// Property of an attribute which simply wrap one of standard of `syn` type and keep it optional.
+/// Property of an attribute which simply wraps one of the standard `syn` types.
 #[ derive( Debug, Clone ) ]
 pub struct AttributePropertySyn< T, Marker >( T, ::core::marker::PhantomData< Marker > )
 where
-  T : syn::parse::Parse + quote::ToTokens,
-;
+  T : syn::parse::Parse + quote::ToTokens;
 
 impl< T, Marker > AttributePropertySyn< T, Marker >
 where
   T : syn::parse::Parse + quote::ToTokens,
 {
-  /// Just unwrap, returning internal data.
+  /// Just unwraps and returns the internal data.
   #[ allow( dead_code ) ]
   pub fn internal( self ) -> T
   {
     self.0
   }
-  /// Returns Option< &T > instead of &Option< T >
+
+  /// Returns a reference to the internal data.
   #[ allow( dead_code ) ]
   pub fn ref_internal( &self ) -> &T
   {
@@ -202,17 +203,6 @@ where
 {
   const KEYWORD : &'static str = Marker::KEYWORD;
 }
-
-// xxx
-// impl< T, Marker > Default for AttributePropertySyn< T, Marker >
-// where
-//   T : syn::parse::Parse + quote::ToTokens,
-// {
-//   fn default() -> Self
-//   {
-//     Self( Default::default(), Default::default() )
-//   }
-// }
 
 impl< T, Marker > syn::parse::Parse for AttributePropertySyn< T, Marker >
 where
@@ -288,23 +278,23 @@ where T : syn::parse::Parse + quote::ToTokens
 
 // = AttributePropertyOptionalSyn
 
-/// Property of an attribute which simply wrap one of standard of `syn` type and keep it optional.
+/// Property of an attribute which simply wraps one of the standard `syn` types and keeps it optional.
 #[ derive( Debug, Clone ) ]
 pub struct AttributePropertyOptionalSyn< T, Marker >( Option< T >, ::core::marker::PhantomData< Marker > )
 where
-  T : syn::parse::Parse + quote::ToTokens,
-;
+  T : syn::parse::Parse + quote::ToTokens;
 
 impl< T, Marker > AttributePropertyOptionalSyn< T, Marker >
 where
   T : syn::parse::Parse + quote::ToTokens,
 {
-  /// Just unwrap, returning internal data.
+  /// Just unwraps and returns the internal data.
   pub fn internal( self ) -> Option< T >
   {
     self.0
   }
-  /// Returns Option< &T > instead of &Option< T >
+
+  /// Returns an Option reference to the internal data.
   pub fn ref_internal( &self ) -> Option< &T >
   {
     self.0.as_ref()
