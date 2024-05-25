@@ -1,6 +1,15 @@
 
 use super::*;
-use macro_tools::{ attr, Result, AttributeComponent, AttributePropertyComponent };
+
+use macro_tools::
+{
+  attr,
+  Result,
+  AttributeComponent,
+  AttributePropertyComponent,
+  AttributePropertyBoolean,
+};
+
 use former_types::{ ComponentAssign };
 
 /// Represents the attributes of a struct, including storage fields, mutator, and perform attributes.

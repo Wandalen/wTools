@@ -6,8 +6,6 @@ use proc_macro2::TokenStream;
 
 // qqq : implement interfaces for other collections
 
-mod attr_prop;
-use attr_prop::*;
 mod field_attrs;
 use field_attrs::*;
 mod field;

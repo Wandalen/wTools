@@ -27,6 +27,7 @@ mod file
 {
   // use super::*;
   pub mod attr;
+  pub mod attr_prop;
   pub mod container_kind;
   pub mod derive;
   pub mod diag;
@@ -79,6 +80,7 @@ pub mod protected
   pub use super::file::
   {
     attr::orphan::*,
+    attr_prop::orphan::*,
     container_kind::orphan::*,
     derive::orphan::*,
     diag::orphan::*,
@@ -134,6 +136,7 @@ pub mod exposed
   pub use super::file::
   {
     attr::exposed::*,
+    attr_prop::exposed::*,
     container_kind::exposed::*,
     derive::orphan::*,
     diag::exposed::*,
@@ -204,6 +207,7 @@ pub mod prelude
   pub use super::file::
   {
     attr::prelude::*,
+    attr_prop::prelude::*,
     container_kind::prelude::*,
     derive::orphan::*,
     diag::prelude::*,
