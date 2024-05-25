@@ -263,6 +263,7 @@ impl AttributeScalarSetter
 {
 
   /// Should setter be generated or not?
+  #[ allow( dead_code ) ]
   pub fn setter( &self ) -> bool
   {
     self.setter.is_none() || self.setter.unwrap()

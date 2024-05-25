@@ -182,11 +182,13 @@ where
   T : syn::parse::Parse + quote::ToTokens,
 {
   /// Just unwrap, returning internal data.
+  #[ allow( dead_code ) ]
   pub fn internal( self ) -> T
   {
     self.0
   }
   /// Returns Option< &T > instead of &Option< T >
+  #[ allow( dead_code ) ]
   pub fn ref_internal( &self ) -> &T
   {
     &self.0
