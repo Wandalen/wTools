@@ -1,53 +1,7 @@
 
 use super::*;
-use macro_tools::{ attr, Result };
+use macro_tools::{ attr, Result, AttributeComponent };
 use former_types::{ ComponentAssign };
-
-/// Trait for components that can be constructed from a meta attribute.
-///
-/// The `AttributeComponent` trait defines the interface for components that can be created
-/// from a `syn::Attribute` meta item. Implementors of this trait are required to define
-/// a constant `KEYWORD` that identifies the type of the component and a method `from_meta`
-/// that handles the construction of the component from the given attribute.
-///
-/// # Example
-///
-/// ```ignore
-/// struct MyComponent;
-///
-/// impl AttributeComponent for MyComponent {
-///     const KEYWORD: &'static str = "my_component";
-///
-///     fn from_meta(attr: &syn::Attribute) -> Result<Self> {
-///         // Parsing logic here
-///     }
-/// }
-/// ```
-pub trait AttributeComponent
-where
-  Self : Sized,
-{
-  /// The keyword that identifies the component.
-  ///
-  /// This constant is used to match the attribute to the corresponding component.
-  /// Each implementor of this trait must provide a unique keyword for its type.
-  const KEYWORD : &'static str;
-
-  /// Constructs the component from the given meta attribute.
-  ///
-  /// This method is responsible for parsing the provided `syn::Attribute` and
-  /// returning an instance of the component. If the attribute cannot be parsed
-  /// into the component, an error should be returned.
-  ///
-  /// # Parameters
-  ///
-  /// - `attr` : A reference to the `syn::Attribute` from which the component is to be constructed.
-  ///
-  /// # Returns
-  ///
-  /// A `Result` containing the constructed component if successful, or an error if the parsing fails.
-  fn from_meta( attr : &syn::Attribute ) -> Result< Self >;
-}
 
 /// Represents the attributes of a struct, including storage fields, mutator, and perform attributes.
 
@@ -583,3 +537,42 @@ impl From< AttributePropertyCustom > for bool
 // xxx
 // #[ derive( Debug, Default, Clone, Copy ) ]
 // pub struct AttributePropertyBoolean< const KEYWORD : &'static str >( bool );
+
+// =
+
+/// Generics bolean attirbute property.
+/// Defaults to `false`.
+#[ derive( Debug, Default, Clone, Copy ) ]
+pub struct AttributePropertyBoolean< const T : i32 >( bool );
+
+impl< const T : i32 > AttributePropertyBoolean< T >
+{
+  const KEYWORD : &'static str = "custom";
+}
+
+impl< const T : i32 > syn::parse::Parse for AttributePropertyBoolean< T >
+{
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+  {
+    let value : syn::LitBool = input.parse()?;
+    Ok( value.value.into() )
+  }
+}
+
+impl< const T : i32 > From< bool > for AttributePropertyBoolean< T >
+{
+  #[ inline( always ) ]
+  fn from( src : bool ) -> Self
+  {
+    Self( src )
+  }
+}
+
+impl< const T : i32 > From< AttributePropertyBoolean< T > > for bool
+{
+  #[ inline( always ) ]
+  fn from( src : AttributePropertyBoolean< T > ) -> Self
+  {
+    src.0
+  }
+}

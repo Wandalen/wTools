@@ -321,31 +321,7 @@ pub( crate ) mod private
     }
   }
 
-//   ///
-//   /// Attribute and ident.
-//   ///
-//
-//   // qqq : example?
-//
-//   pub type AttributedIdent = Pair< Many< AttributesInner >, syn::Ident >;
-//
-//   impl From< syn::Ident > for AttributedIdent
-//   {
-//     fn from( src : syn::Ident ) -> Self
-//     {
-//       Self( Vec::< AttributesInner >::new().into(), src )
-//     }
-//   }
-//
-//   impl From< AttributedIdent > for syn::Ident
-//   {
-//     fn from( src : AttributedIdent ) -> Self
-//     {
-//       src.1
-//     }
-//   }
-
-  /// Trait for components that can be constructed from a meta attribute.
+  /// Trait for components of strcuture aggregating attributes that can be constructed from a meta attribute.
   ///
   /// The `AttributeComponent` trait defines the interface for components that can be created
   /// from a `syn::Attribute` meta item. Implementors of this trait are required to define
