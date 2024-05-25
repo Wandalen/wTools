@@ -939,48 +939,16 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
 
 // = AttributePropertyHint
 
-/// Specifies whether to provide a sketch as a hint.
+/// Marker type for attribute property to specify whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyHint( bool );
+pub struct AttributePropertyHintMarker;
 
-impl AttributePropertyHint
+/// Specifies whether to provide a sketch as a hint.
+/// Defaults to `false`, which means no hint is provided unless explicitly requested.
+impl AttributePropertyComponent for AttributePropertyHintMarker
 {
   const KEYWORD : &'static str = "hint";
-
-  /// Just unwrap, returning internal data.
-  pub fn internal( self ) -> bool
-  {
-    self.0
-  }
-
-}
-
-impl syn::parse::Parse for AttributePropertyHint
-{
-  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
-  {
-    let value : syn::LitBool = input.parse()?;
-    Ok( value.value.into() )
-  }
-}
-
-impl From< bool > for AttributePropertyHint
-{
-  #[ inline( always ) ]
-  fn from( src : bool ) -> Self
-  {
-    Self( src )
-  }
-}
-
-impl From< AttributePropertyHint > for bool
-{
-  #[ inline( always ) ]
-  fn from( src : AttributePropertyHint ) -> Self
-  {
-    src.0
-  }
 }
 
 // = Marker type for AttributePropertySetter

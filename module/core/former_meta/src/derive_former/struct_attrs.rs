@@ -449,7 +449,7 @@ impl syn::parse::Parse for AttributePerform
 
 // xxx : reuse more generic structure
 
-/// Marker type for to attribute property to specify whether to provide a sketch as a hint.
+/// Marker type for attribute property to specify whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
 #[ derive( Debug, Default, Clone, Copy ) ]
 pub struct AttributePropertyHintMarker;
@@ -465,7 +465,7 @@ pub type AttributePropertyHint = AttributePropertyBoolean< AttributePropertyHint
 
 // =
 
-/// Marker type for to attribute property to indicates whether a custom code should be generated.
+/// Marker type for attribute property to indicates whether a custom code should be generated.
 /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
 #[ derive( Debug, Default, Clone, Copy ) ]
 pub struct AttributePropertyCustomMarker;
