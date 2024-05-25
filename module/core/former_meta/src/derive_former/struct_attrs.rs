@@ -577,3 +577,9 @@ impl From< AttributePropertyCustom > for bool
     src.0
   }
 }
+
+// =
+
+// xxx
+// #[ derive( Debug, Default, Clone, Copy ) ]
+// pub struct AttributePropertyBoolean< const KEYWORD : &'static str >( bool );
