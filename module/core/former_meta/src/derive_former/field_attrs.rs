@@ -1,6 +1,6 @@
 
 use super::*;
-use macro_tools::{ attr, Result, AttributePropertyComponent };
+use macro_tools::{ attr, Result, AttributeComponent, AttributePropertyComponent };
 use former_types::{ ComponentAssign };
 
 // xxx : document
@@ -147,12 +147,12 @@ pub struct AttributeConfig
 
 }
 
-impl AttributeConfig
+impl AttributeComponent for AttributeConfig
 {
 
   const KEYWORD : &'static str = "former";
 
-  pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+  fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
     match attr.meta
     {
@@ -191,7 +191,6 @@ where
     self.default = component.into();
   }
 }
-
 
 impl syn::parse::Parse for AttributeConfig
 {
@@ -248,61 +247,6 @@ impl syn::parse::Parse for AttributeConfig
   }
 }
 
-// impl syn::parse::Parse for AttributeConfig
-// {
-//   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
-//   {
-//     let mut default : Option< syn::Expr > = None;
-//     // let mut only_storage : Option< bool > = None;
-//
-//     while !input.is_empty()
-//     {
-//       let lookahead = input.lookahead1();
-//       if lookahead.peek( syn::Ident )
-//       {
-//         let ident : syn::Ident = input.parse()?;
-//         match ident.to_string().as_str()
-//         {
-//           "default" =>
-//           {
-//             input.parse::< syn::Token![ = ] >()?;
-//             default = Some( input.parse()? );
-//           }
-//           _ =>
-//           {
-//             return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'default'. For example: `former( default = 13 )`", ident ) ) );
-//           }
-//         }
-//       }
-//
-//       else
-//       {
-//         return Err( syn::Error::new( input.span(), "Expected 'default'. For example: `former( default = 13 )`" ) );
-//       }
-//
-//       // Optional comma handling
-//       if input.peek( syn::Token![ , ] )
-//       {
-//         input.parse::< syn::Token![ , ] >()?;
-//       }
-//     }
-//
-//     Ok( Self { default : default.into() } )
-//   }
-// }
-
-///
-/// Attribute to enable/disable scalar setter generation.
-///
-/// ## Example Input
-///
-/// A typical input to parse might look like the following:
-///
-/// ```ignore
-/// name = field_name, setter = true
-/// ```
-///
-
 #[ derive( Debug, Default ) ]
 pub struct AttributeScalarSetter
 {
@@ -315,13 +259,23 @@ pub struct AttributeScalarSetter
   pub hint : AttributePropertyHint,
 }
 
-#[ allow( dead_code ) ]
 impl AttributeScalarSetter
+{
+
+  /// Should setter be generated or not?
+  pub fn setter( &self ) -> bool
+  {
+    self.setter.is_none() || self.setter.unwrap()
+  }
+
+}
+
+impl AttributeComponent for AttributeScalarSetter
 {
 
   const KEYWORD : &'static str = "scalar";
 
-  pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+  fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
     match attr.meta
     {
@@ -335,12 +289,6 @@ impl AttributeScalarSetter
       },
       _ => return_syn_err!( attr, "Expects an attribute of format `#[ scalar( setter = false ) ]` or `#[ scalar( setter = true, name = my_name ) ]`. \nGot: {}", qt!{ #attr } ),
     }
-  }
-
-  /// Should setter be generated or not?
-  pub fn setter( &self ) -> bool
-  {
-    self.setter.is_none() || self.setter.unwrap()
   }
 
 }
@@ -473,13 +421,23 @@ pub struct AttributeSubformScalarSetter
   pub hint : AttributePropertyHint,
 }
 
-#[ allow( dead_code ) ]
 impl AttributeSubformScalarSetter
+{
+
+  /// Should setter be generated or not?
+  pub fn setter( &self ) -> bool
+  {
+    self.setter.is_none() || self.setter.unwrap()
+  }
+
+}
+
+impl AttributeComponent for AttributeSubformScalarSetter
 {
 
   const KEYWORD : &'static str = "subform_scalar";
 
-  pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+  fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
     match attr.meta
     {
@@ -493,12 +451,6 @@ impl AttributeSubformScalarSetter
       },
       _ => return_syn_err!( attr, "Expects an attribute of format `#[ subform_scalar( setter = false ) ]` or `#[ subform_scalar( setter = true, name = my_name ) ]`. \nGot: {}", qt!{ #attr } ),
     }
-  }
-
-  /// Should setter be generated or not?
-  pub fn setter( &self ) -> bool
-  {
-    self.setter.is_none() || self.setter.unwrap()
   }
 
 }
@@ -688,13 +640,23 @@ pub struct AttributeSubformCollectionSetter
   pub definition : AttributePropertyDefinition,
 }
 
-// xxx : use trait
 impl AttributeSubformCollectionSetter
+{
+
+  /// Should setter be generated or not?
+  pub fn setter( &self ) -> bool
+  {
+    self.setter.is_none() || self.setter.unwrap()
+  }
+
+}
+
+impl AttributeComponent for AttributeSubformCollectionSetter
 {
 
   const KEYWORD : &'static str = "subform_collection";
 
-  pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+  fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
     match attr.meta
     {
@@ -708,12 +670,6 @@ impl AttributeSubformCollectionSetter
       },
       _ => return_syn_err!( attr, "Expects an attribute of format `#[ subform_collection ]` or `#[ subform_collection( definition = former::VectorDefinition ) ]` if you want to use default collection defition. \nGot: {}", qt!{ #attr } ),
     }
-  }
-
-  /// Should setter be generated or not?
-  pub fn setter( &self ) -> bool
-  {
-    self.setter.is_none() || self.setter.unwrap()
   }
 
 }
@@ -866,13 +822,23 @@ pub struct AttributeSubformEntrySetter
   pub hint : AttributePropertyHint,
 }
 
-// xxx : use trait
 impl AttributeSubformEntrySetter
+{
+
+  /// Should setter be generated or not?
+  pub fn setter( &self ) -> bool
+  {
+    self.setter.as_ref().is_none() || self.setter.as_ref().unwrap()
+  }
+
+}
+
+impl AttributeComponent for AttributeSubformEntrySetter
 {
 
   const KEYWORD : &'static str = "subform_entry";
 
-  pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+  fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
     match attr.meta
     {
@@ -886,12 +852,6 @@ impl AttributeSubformEntrySetter
       },
       _ => return_syn_err!( attr, "Expects an attribute of format `#[ subform_entry ]` or `#[ subform_entry( name : child )` ], \nGot: {}", qt!{ #attr } ),
     }
-  }
-
-  /// Should setter be generated or not?
-  pub fn setter( &self ) -> bool
-  {
-    self.setter.as_ref().is_none() || self.setter.as_ref().unwrap()
   }
 
 }
