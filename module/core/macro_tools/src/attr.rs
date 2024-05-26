@@ -7,34 +7,6 @@ pub( crate ) mod private
 {
   use crate::*;
 
-  ///
-  /// For attribute like `#[former( default = 31 ) ]` return key `default` and value `31`,
-  /// as well as syn::Meta as the last element of result tuple.
-  ///
-  /// ### Basic use-case.
-  ///
-  /// ```rust
-  /// use macro_tools::exposed::*;
-  /// let attr : syn::Attribute = syn::parse_quote!( #[ former( default = 31 ) ] );
-  /// // tree_print!( attr );
-  /// let got = equation( &attr ).unwrap();
-  /// assert_eq!( code_to_str!( got ), "default = 31".to_string() );
-  /// ```
-
-  pub fn equation( attr : &syn::Attribute ) -> Result< tokens::Equation >
-  {
-    let meta = &attr.meta;
-    return match meta
-    {
-      syn::Meta::List( ref meta_list ) =>
-      {
-        let eq : tokens::Equation = syn::parse2( meta_list.tokens.clone() )?;
-        Ok( eq )
-      }
-      _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected syn::Meta::List( meta_list )" ) ),
-    };
-  }
-
   /// Checks if the given iterator of attributes contains an attribute named `debug`.
   ///
   /// This function iterates over an input sequence of `syn::Attribute`, typically associated with a struct,
@@ -349,29 +321,69 @@ pub( crate ) mod private
     }
   }
 
-//   ///
-//   /// Attribute and ident.
-//   ///
-//
-//   // qqq : example?
-//
-//   pub type AttributedIdent = Pair< Many< AttributesInner >, syn::Ident >;
-//
-//   impl From< syn::Ident > for AttributedIdent
-//   {
-//     fn from( src : syn::Ident ) -> Self
-//     {
-//       Self( Vec::< AttributesInner >::new().into(), src )
-//     }
-//   }
-//
-//   impl From< AttributedIdent > for syn::Ident
-//   {
-//     fn from( src : AttributedIdent ) -> Self
-//     {
-//       src.1
-//     }
-//   }
+  /// Trait for components of strcuture aggregating attributes that can be constructed from a meta attribute.
+  ///
+  /// The `AttributeComponent` trait defines the interface for components that can be created
+  /// from a `syn::Attribute` meta item. Implementors of this trait are required to define
+  /// a constant `KEYWORD` that identifies the type of the component and a method `from_meta`
+  /// that handles the construction of the component from the given attribute.
+  ///
+  /// # Example
+  ///
+  /// ```rust
+  /// use macro_tools::{ AttributeComponent, Result };
+  ///
+  /// struct MyComponent;
+  ///
+  /// impl AttributeComponent for MyComponent
+  /// {
+  ///   const KEYWORD : &'static str = "my_component";
+  ///
+  ///   fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+  ///   {
+  ///     // Parsing logic here
+  ///     Ok( MyComponent )
+  ///   }
+  /// }
+  /// ```
+  /// xxx : improve documentation
+  pub trait AttributeComponent
+  where
+    Self : Sized,
+  {
+    /// The keyword that identifies the component.
+    ///
+    /// This constant is used to match the attribute to the corresponding component.
+    /// Each implementor of this trait must provide a unique keyword for its type.
+    const KEYWORD : &'static str;
+
+    /// Constructs the component from the given meta attribute.
+    ///
+    /// This method is responsible for parsing the provided `syn::Attribute` and
+    /// returning an instance of the component. If the attribute cannot be parsed
+    /// into the component, an error should be returned.
+    ///
+    /// # Parameters
+    ///
+    /// - `attr` : A reference to the `syn::Attribute` from which the component is to be constructed.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` containing the constructed component if successful, or an error if the parsing fails.
+    fn from_meta( attr : &syn::Attribute ) -> Result< Self >;
+  }
+
+  /// xxx : write documentation
+  pub trait AttributePropertyComponent
+  where
+    Self : Sized,
+  {
+    /// The keyword that identifies the component.
+    ///
+    /// This constant is used to match the attribute to the corresponding component.
+    /// Each implementor of this trait must provide a unique keyword for its type.
+    const KEYWORD : &'static str;
+  }
 
 }
 
@@ -385,6 +397,14 @@ pub mod protected
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::private::
+  {
+    // equation,
+    has_debug,
+    is_standard,
+  };
 }
 
 /// Orphan namespace of the module.
@@ -406,12 +426,11 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::private::
   {
-    equation,
-    has_debug,
-    is_standard,
     AttributesInner,
     AttributesOuter,
-    // AttributedIdent,
+
+    AttributeComponent,
+    AttributePropertyComponent,
   };
 }
 

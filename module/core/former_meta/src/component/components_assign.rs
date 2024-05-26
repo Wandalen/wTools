@@ -21,7 +21,7 @@ pub fn components_assign( input : proc_macro::TokenStream ) -> Result< proc_macr
   let trait_ident = syn::Ident::new( &trait_name, item_name.span() );
   let method_name = format!( "{}_assign", item_name.to_string().to_case( Case::Snake ) );
   let method_ident = syn::Ident::new( &method_name, item_name.span() );
-  // xxx : make a macro ident_format!()
+  // xxx : use macro ident_format!()
 
   // fields
   let ( bounds1, bounds2, component_assigns ) : ( Vec< _ >, Vec< _ >, Vec< _ > ) = parsed.fields.iter().map( | field |

@@ -3,8 +3,14 @@
 #![ doc( html_root_url = "https://docs.rs/former_derive_meta/latest/former_derive_meta/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+#[ allow( unused_imports ) ]
+use macro_tools::prelude::*;
+
+#[ cfg( feature = "derive_former" ) ]
+mod derive_former;
+
 #[ cfg( feature = "enabled" ) ]
-// #[ cfg( feature = "derive_component_from" ) ]
+#[ cfg( feature = "derive_components" ) ]
 mod component
 {
 
@@ -25,11 +31,6 @@ mod component
   pub mod components_assign;
 
 }
-
-#[ allow( unused_imports ) ]
-use macro_tools::prelude::*;
-#[ cfg( feature = "derive_former" ) ]
-mod derive_former;
 
 /// Derive macro for generating a `Former` struct, applying a Builder Pattern to the annotated struct.
 ///
@@ -613,4 +614,3 @@ pub fn from_components( input : proc_macro::TokenStream ) -> proc_macro::TokenSt
     Err( err ) => err.to_compile_error().into(),
   }
 }
-

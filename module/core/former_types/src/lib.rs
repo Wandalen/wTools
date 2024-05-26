@@ -1,29 +1,42 @@
 #![ cfg_attr( feature = "no_std", no_std ) ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
-#![ doc( html_root_url = "https://docs.rs/collection_tools/latest/collection_tools/" ) ]
+#![ doc( html_root_url = "https://docs.rs/former_types/latest/former_types/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+/// Axiomatic things.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-extern crate alloc;
+#[ cfg( feature = "derive_former" ) ]
+mod axiomatic;
+/// Forming process.
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_former" ) ]
+mod definition;
+/// Forming process.
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_former" ) ]
+mod forming;
+/// Storage.
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_former" ) ]
+mod storage;
 
-/// Module containing all collection macros
+/// Interface for collections.
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-mod collections;
+#[ cfg( feature = "derive_former" ) ]
+mod collection;
+
+/// Component-based forming.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-pub use collections::*;
+#[ cfg( any( feature = "types_component_assign" ) ) ]
+mod component;
 
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
-
-  #[ cfg( feature = "use_alloc" ) ]
-  pub use ::hashbrown;
-
+  pub use ::collection_tools;
 }
 
 #[ doc( inline ) ]
@@ -35,11 +48,9 @@ pub use protected::*;
 #[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
-
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
-
 }
 
 /// Parented namespace of the module.
@@ -60,34 +71,22 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 
-  // #[ cfg( feature = "reexports" ) ]
-  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use crate::
+  #[ cfg( feature = "derive_former" ) ]
+  pub use super::
   {
-    bmap::BTreeMap,
-    bset::BTreeSet,
-    heap::BinaryHeap,
-    hmap::HashMap,
-    hset::HashSet,
-    list::LinkedList,
-    vec::Vec,
-    vecd::VecDeque,
+    axiomatic::*,
+    definition::*,
+    forming::*,
+    storage::*,
   };
 
-  // #[ cfg( feature = "reexports" ) ]
-  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use
-  {
-    HashMap as Map,
-    HashSet as Set,
-    Vec as DynArray,
-  };
-
-  // qqq : cover by tests presence of all containers immidiately in collection_tools::* and in collection_tools::exposed::*
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  #[ cfg( feature = "derive_former" ) ]
+  pub use super::collection::*;
 
 }
 
@@ -95,4 +94,8 @@ pub mod exposed
 #[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  #[ cfg( any( feature = "types_component_assign" ) ) ]
+  pub use super::component::*;
 }

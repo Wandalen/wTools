@@ -1,6 +1,6 @@
 [package]
 name = "collection_tools"
-version = "0.6.0"
+version = "0.8.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -39,20 +39,20 @@ use_alloc = [
 
 default = [
   "enabled",
-  "reexports",
+  # "reexports",
   "collection_constructors",
   "collection_into_constructors",
 ]
 
 full = [
   "enabled",
-  "reexports",
+  # "reexports",
   "collection_constructors",
   "collection_into_constructors",
 ]
 
 enabled = []
-reexports = []
+# reexports = []
 
 # Collection constructors, like `hmap!{ "key" => "val" }`
 collection_constructors = []

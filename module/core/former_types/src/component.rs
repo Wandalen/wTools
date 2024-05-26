@@ -1,3 +1,4 @@
+
 /// Provides a generic interface for setting a component of a certain type on an object.
 ///
 /// This trait abstracts the action of setting or replacing a component, where a component
@@ -19,7 +20,7 @@
 /// Implementing `ComponentAssign` to set a name string on a struct :
 ///
 /// ```rust
-/// use former::ComponentAssign;
+/// use former_types::ComponentAssign; // use crate `former` instead of crate `former_types` unless you need to use crate `former_types` directly
 ///
 /// struct MyStruct
 /// {
@@ -38,7 +39,7 @@
 /// obj.assign( "New Name" );
 /// assert_eq!( obj.name, "New Name" );
 /// ```
-#[ cfg( any( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
+#[ cfg( any( feature = "types_component_assign" ) ) ]
 pub trait ComponentAssign< T, IntoT >
 where
   IntoT : Into< T >,
@@ -66,7 +67,7 @@ where
 /// ### Example
 ///
 /// ```rust
-/// use former::{ ComponentAssign, AssignWithType };
+/// use former_types::{ ComponentAssign, AssignWithType }; // use crate `former` instead of crate `former_types` unless you need to use crate `former_types` directly
 ///
 /// struct UserProfile
 /// {
@@ -89,7 +90,7 @@ where
 /// ```
 ///
 
-#[ cfg( any( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
+#[ cfg( any( feature = "types_component_assign" ) ) ]
 pub trait AssignWithType
 {
   /// Function to set value of a component by its type.
@@ -99,7 +100,7 @@ pub trait AssignWithType
     Self : ComponentAssign< T, IntoT >;
 }
 
-#[ cfg( any( feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
+#[ cfg( any( feature = "types_component_assign" ) ) ]
 impl< S > AssignWithType for S
 {
 
