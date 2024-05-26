@@ -1,3 +1,4 @@
+//! Attributes of the whole item.
 
 use super::*;
 

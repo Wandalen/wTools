@@ -1,3 +1,4 @@
+//! Attributes of a field.
 
 use super::*;
 use macro_tools::
@@ -12,8 +13,6 @@ use macro_tools::
 };
 use former_types::{ ComponentAssign };
 
-// xxx : document
-
 ///
 /// Attributes of a field.
 ///
@@ -21,23 +20,46 @@ use former_types::{ ComponentAssign };
 #[ derive( Debug, Default ) ]
 pub struct FieldAttributes
 {
+  /// Configuration attribute for a field.
   pub config : Option< AttributeConfig >,
+
+  /// Scalar setter attribute for a field.
   pub scalar : Option< AttributeScalarSetter >,
+
+  /// Subform scalar setter attribute for a field.
   pub subform_scalar : Option< AttributeSubformScalarSetter >,
+
+  /// Subform collection setter attribute for a field.
   pub subform_collection : Option< AttributeSubformCollectionSetter >,
+
+  /// Subform entry setter attribute for a field.
   pub subform_entry : Option< AttributeSubformEntrySetter >,
 }
 
 impl FieldAttributes
 {
 
+  /// Creates an instance of `FieldAttributes` from a list of attributes.
+  ///
+  /// # Parameters
+  ///
+  /// * `attrs`: An iterator over references to `syn::Attribute`.
+  ///
+  /// # Returns
+  ///
+  /// * `Result< Self >`: A result containing an instance of `FieldAttributes` on success,
+  ///   or a `syn::Error` on failure.
+  ///
+  /// This function processes each attribute in the provided iterator and assigns the
+  /// appropriate attribute type to the respective field in the `FieldAttributes` struct.
+  ///
   pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
   {
     let mut result = Self::default();
-    // let known_attributes = "Known structure attirbutes are : `storage_fields`, `mutator`, `perform`, `debug`.";
+    // Known attributes for error reporting
     let known_attributes = const_format::concatcp!
     (
-      "Known attirbutes are : ",
+      "Known attributes are : ",
       "debug",
       ", ", AttributeConfig::KEYWORD,
       ", ", AttributeScalarSetter::KEYWORD,
@@ -47,6 +69,7 @@ impl FieldAttributes
       ".",
     );
 
+    // Helper closure to create a syn::Error for unknown attributes
     let error = | attr : &syn::Attribute | -> syn::Error
     {
       syn_err!
@@ -57,19 +80,20 @@ impl FieldAttributes
       )
     };
 
+    // Iterate over the provided attributes
     for attr in attrs
     {
-
-      // return Err( error( attr ) );
-
+      // Get the attribute key as a string
       let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
       let key_str = format!( "{}", key_ident );
 
+      // Skip standard attributes
       if attr::is_standard( &key_str )
       {
         continue;
       }
 
+      // Match the attribute key and assign to the appropriate field
       match key_str.as_ref()
       {
         AttributeConfig::KEYWORD => result.assign( AttributeConfig::from_meta( attr )? ),

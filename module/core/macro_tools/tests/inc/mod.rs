@@ -15,6 +15,7 @@ mod if_enabled
   use super::*;
 
   mod attr_test;
+  mod attr_prop_test;
   mod basic_test;
   mod container_kind_test;
   mod derive_test;
