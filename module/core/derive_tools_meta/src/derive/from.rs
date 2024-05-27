@@ -357,9 +357,28 @@ fn generate_unit
 /// Attributes of a field / variant
 ///
 
+// xxx
+use macro_tools::
+{
+  attr,
+  syn_err,
+  return_syn_err,
+  qt,
+  Result,
+  AttributeComponent,
+  AttributePropertyComponent,
+  AttributePropertyBoolean,
+  AttributePropertyEnabled,
+};
+
+use former_types::{ ComponentAssign };
+
+/// Represents the attributes of a struct. Aggregates all its attributes.
+#[ derive( Debug, Default ) ]
 pub struct FieldAttributes
 {
-  pub from : Option< AttributeFrom >,
+  /// Attribute for customizing the mutation process.
+  pub from : AttributeFrom,
 }
 
 impl FieldAttributes
@@ -367,12 +386,29 @@ impl FieldAttributes
 
   pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
   {
-    let mut from : Option< AttributeFrom > = None;
+    let mut result = Self::default();
+
+    let error = | attr : &syn::Attribute | -> syn::Error
+    {
+      let known_attributes = const_format::concatcp!
+      (
+        "Known attirbutes are : ",
+        "debug",
+        ", ", AttributeFrom::KEYWORD,
+        ".",
+      );
+      syn_err!
+      (
+        attr,
+        "Expects an attribute of format '#[ attribute( key1 = val1, key2 = val2 ) ]'\n  {known_attributes}\n  But got: '{}'",
+        qt!{ #attr }
+      )
+    };
 
     for attr in attrs
     {
-      let key_ident = attr.path().get_ident()
-      .ok_or_else( || syn_err!( attr, "Expects an attribute of format #[ attribute( key1 = val1, key2 = val2 ) ], but got:\n  {}", qt!{ #attr } ) )?;
+
+      let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
       let key_str = format!( "{}", key_ident );
 
       if attr::is_standard( &key_str )
@@ -380,24 +416,15 @@ impl FieldAttributes
         continue;
       }
 
-      // qqq : qqq for Anton : xxx : refactor field_attrs::FieldAttributes::from_attrs to make it similar to this function
       match key_str.as_ref()
       {
-        AttributeFrom::KEYWORD =>
-        {
-          from.replace( AttributeFrom::from_meta( attr )? );
-        }
-        "debug" =>
-        {
-        }
-        _ =>
-        {
-          return Err( syn_err!( attr, "Known field attirbutes are : `from`, `debug`.\nUnknown structure attribute : {}", qt!{ #attr } ) );
-        }
+        AttributeFrom::KEYWORD => result.assign( AttributeFrom::from_meta( attr )? ),
+        "debug" => {}
+        _ => return Err( error( attr ) ),
       }
     }
 
-    Ok( FieldAttributes { from } )
+    Ok( result )
   }
 
 }
@@ -410,23 +437,57 @@ impl FieldAttributes
 /// `#[ from( off, hint : true ) ]`
 ///
 
-#[ derive( Default ) ]
+// #[ derive( Default ) ]
+// pub struct AttributeFrom
+// {
+//   /// Specifies whether we should generate From implementation for the field.
+//   /// Can be altered using `on` and `off` attributes
+//   pub enabled : Option< bool >,
+//   /// Specifies whether to provide a sketch of generated From or not.
+//   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
+//   pub hint : bool,
+// }
+//
+// impl AttributeFrom
+// {
+//
+//   const KEYWORD : &'static str = "from";
+//
+//   pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+//   {
+//     match attr.meta
+//     {
+//       syn::Meta::List( ref meta_list ) =>
+//       {
+//         return syn::parse2::< AttributeFrom >( meta_list.tokens.clone() );
+//       },
+//       syn::Meta::Path( ref _path ) =>
+//       {
+//         return Ok( Default::default() )
+//       },
+//       _ => return_syn_err!( attr, "Expects an attribute of format #[ from( off ) ]
+// .\nGot: {}", qt!{ #attr } ),
+//     }
+//   }
+//
+// }
+
+#[ derive( Debug, Default ) ]
 pub struct AttributeFrom
 {
   /// Specifies whether we should generate From implementation for the field.
   /// Can be altered using `on` and `off` attributes
-  pub enabled : Option< bool >,
+  pub enabled : AttributePropertyEnabled,
   /// Specifies whether to provide a sketch of generated From or not.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : bool,
+  pub hint : AttributePropertyHint,
 }
 
-impl AttributeFrom
+impl AttributeComponent for AttributeFrom
 {
-
   const KEYWORD : &'static str = "from";
 
-  pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+  fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
     match attr.meta
     {
@@ -438,20 +499,70 @@ impl AttributeFrom
       {
         return Ok( Default::default() )
       },
-      _ => return_syn_err!( attr, "Expects an attribute of format #[ from( off ) ]
-.\nGot: {}", qt!{ #attr } ),
+      _ => return_syn_err!( attr, "Expects an attribute of format `#[ from( on, hint = true ) ]`. \nGot: {}", qt!{ #attr } ),
     }
   }
 
+}
+
+impl< IntoT > ComponentAssign< AttributeFrom, IntoT > for FieldAttributes
+where
+  IntoT : Into< AttributeFrom >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.from = component.into();
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributePropertyHint, IntoT > for AttributeFrom
+where
+  IntoT : Into< AttributePropertyHint >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.hint = component.into();
+  }
+}
+
+impl< IntoT > ComponentAssign< AttributePropertyEnabled, IntoT > for AttributeFrom
+where
+  IntoT : Into< AttributePropertyEnabled >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.custom = component.into();
+  }
 }
 
 impl syn::parse::Parse for AttributeFrom
 {
   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   {
-    let mut off : bool = false;
-    let mut on : bool = false;
-    let mut hint = false;
+    let mut result = Self::default();
+
+    let error = | ident : &syn::Ident | -> syn::Error
+    {
+      let known = const_format::concatcp!
+      (
+        "Known entries of attribute ", AttributeFrom::KEYWORD, " are : ",
+        AttributePropertyEnabled::KEYWORD,
+        ", ", AttributePropertyHint::KEYWORD,
+        ".",
+      );
+      syn_err!
+      (
+        ident,
+        r#"Expects an attribute of format '#[ from( custom = false, hint = false ) ]'
+  {known}
+  But got: '{}'
+"#,
+        qt!{ #ident }
+      )
+    };
 
     while !input.is_empty()
     {
@@ -459,69 +570,228 @@ impl syn::parse::Parse for AttributeFrom
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
-        // xxx : qqq for Anton : use match here and for all attributes -- done
+
+        input.parse::< syn::Token![=] >()?;
         match ident.to_string().as_str()
         {
-          "off" =>
-          {
-            input.parse::< syn::Token![ = ] >()?;
-            let value : syn::LitBool = input.parse()?;
-            off = value.value();
-          },
-          "on" =>
-          {
-            input.parse::< syn::Token![ = ] >()?;
-            let value : syn::LitBool = input.parse()?;
-            on = value.value();
-          }
-          "hint" =>
-          {
-            input.parse::< syn::Token![ = ] >()?;
-            let value : syn::LitBool = input.parse()?;
-            hint = value.value;
-          }
-          _ =>
-          {
-            return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'on', 'off', or 'hint'. For example: `#[ from( off, hint : true ) ]`", ident ) ) );
-          }
+          AttributePropertyEnabled::KEYWORD => result.assign( AttributePropertyEnabled::parse( input )? ),
+          AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
+          _ => return Err( error( &ident ) ),
         }
       }
       else
       {
-        return Err( syn::Error::new( input.span(), "Unexpected identifier '{}'. Expected 'on', 'off', or 'hint'. For example: `#[ from( off, hint : true ) ]`" ) );
+        return Err( lookahead.error() );
       }
 
+      // Optional comma handling
+      if input.peek( syn::Token![ , ] )
+      {
+        input.parse::< syn::Token![ , ] >()?;
+      }
     }
 
-    // xxx : move on / off logic into a helper
-
-    let mut enabled : Option< bool > = None;
-
-    if on && off
-    {
-      // return Err( syn_err!( input, "`on` and `off` are mutually exclusive .\nIllegal attribute usage : {}", qt!{ #input } ) )
-      return Err( syn::Error::new( input.span(), "`on` and `off` are mutually exclusive .\nIllegal attribute usage" ) );
-      // xxx : test
-    }
-
-    if !on && !off
-    {
-      enabled = None;
-    }
-    else if on
-    {
-      enabled = Some( true )
-    }
-    else if off
-    {
-      enabled = Some( false )
-    }
-
-    // Optional comma handling
-    if input.peek( syn::Token![ , ] )
-    {
-      input.parse::< syn::Token![ , ] >()?;
-    }
-    Ok( Self { enabled, hint } )
+    Ok( result )
   }
 }
+
+// == attribute properties
+
+/// Marker type for attribute property to specify whether to provide a sketch as a hint.
+/// Defaults to `false`, which means no hint is provided unless explicitly requested.
+#[ derive( Debug, Default, Clone, Copy ) ]
+pub struct AttributePropertyHintMarker;
+
+impl AttributePropertyComponent for AttributePropertyHintMarker
+{
+  const KEYWORD : &'static str = "hint";
+}
+
+/// Specifies whether to provide a sketch as a hint.
+/// Defaults to `false`, which means no hint is provided unless explicitly requested.
+pub type AttributePropertyHint = AttributePropertyBoolean< AttributePropertyHintMarker >;
+
+// =
+
+/// Marker type for attribute property to indicates whether a custom code should be generated.
+/// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
+#[ derive( Debug, Default, Clone, Copy ) ]
+pub struct AttributePropertyEnabledMarker;
+
+impl AttributePropertyComponent for AttributePropertyEnabledMarker
+{
+  const KEYWORD : &'static str = "custom";
+}
+
+/// Indicates whether a custom code should be generated.
+/// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
+pub type AttributePropertyEnabled = AttributePropertyEnabled< AttributePropertyEnabledMarker >;
+
+// pub struct FieldAttributes
+// {
+//   pub from : Option< AttributeFrom >,
+// }
+//
+// impl FieldAttributes
+// {
+//
+//   pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
+//   {
+//     let mut from : Option< AttributeFrom > = None;
+//
+//     for attr in attrs
+//     {
+//       let key_ident = attr.path().get_ident()
+//       .ok_or_else( || syn_err!( attr, "Expects an attribute of format #[ attribute( key1 = val1, key2 = val2 ) ], but got:\n  {}", qt!{ #attr } ) )?;
+//       let key_str = format!( "{}", key_ident );
+//
+//       if attr::is_standard( &key_str )
+//       {
+//         continue;
+//       }
+//
+//       // qqq : qqq for Anton : xxx : refactor field_attrs::FieldAttributes::from_attrs to make it similar to this function
+//       match key_str.as_ref()
+//       {
+//         AttributeFrom::KEYWORD =>
+//         {
+//           from.replace( AttributeFrom::from_meta( attr )? );
+//         }
+//         "debug" =>
+//         {
+//         }
+//         _ =>
+//         {
+//           return Err( syn_err!( attr, "Known field attirbutes are : `from`, `debug`.\nUnknown structure attribute : {}", qt!{ #attr } ) );
+//         }
+//       }
+//     }
+//
+//     Ok( FieldAttributes { from } )
+//   }
+//
+// }
+//
+//
+// ///
+// /// Attribute to hold parameters of forming for a specific field or variant.
+// /// For example to avoid code From generation for it.
+// ///
+// /// `#[ from( off, hint : true ) ]`
+// ///
+//
+// #[ derive( Default ) ]
+// pub struct AttributeFrom
+// {
+//   /// Specifies whether we should generate From implementation for the field.
+//   /// Can be altered using `on` and `off` attributes
+//   pub enabled : Option< bool >,
+//   /// Specifies whether to provide a sketch of generated From or not.
+//   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
+//   pub hint : bool,
+// }
+//
+// impl AttributeFrom
+// {
+//
+//   const KEYWORD : &'static str = "from";
+//
+//   pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+//   {
+//     match attr.meta
+//     {
+//       syn::Meta::List( ref meta_list ) =>
+//       {
+//         return syn::parse2::< AttributeFrom >( meta_list.tokens.clone() );
+//       },
+//       syn::Meta::Path( ref _path ) =>
+//       {
+//         return Ok( Default::default() )
+//       },
+//       _ => return_syn_err!( attr, "Expects an attribute of format #[ from( off ) ]
+// .\nGot: {}", qt!{ #attr } ),
+//     }
+//   }
+//
+// }
+//
+// impl syn::parse::Parse for AttributeFrom
+// {
+//   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+//   {
+//     let mut off : bool = false;
+//     let mut on : bool = false;
+//     let mut hint = false;
+//
+//     while !input.is_empty()
+//     {
+//       let lookahead = input.lookahead1();
+//       if lookahead.peek( syn::Ident )
+//       {
+//         let ident : syn::Ident = input.parse()?;
+//         // xxx : qqq for Anton : use match here and for all attributes -- done
+//         match ident.to_string().as_str()
+//         {
+//           "off" =>
+//           {
+//             input.parse::< syn::Token![ = ] >()?;
+//             let value : syn::LitBool = input.parse()?;
+//             off = value.value();
+//           },
+//           "on" =>
+//           {
+//             input.parse::< syn::Token![ = ] >()?;
+//             let value : syn::LitBool = input.parse()?;
+//             on = value.value();
+//           }
+//           "hint" =>
+//           {
+//             input.parse::< syn::Token![ = ] >()?;
+//             let value : syn::LitBool = input.parse()?;
+//             hint = value.value;
+//           }
+//           _ =>
+//           {
+//             return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'on', 'off', or 'hint'. For example: `#[ from( off, hint : true ) ]`", ident ) ) );
+//           }
+//         }
+//       }
+//       else
+//       {
+//         return Err( syn::Error::new( input.span(), "Unexpected identifier '{}'. Expected 'on', 'off', or 'hint'. For example: `#[ from( off, hint : true ) ]`" ) );
+//       }
+//
+//     }
+//
+//     // xxx : move on / off logic into a helper
+//
+//     let mut enabled : Option< bool > = None;
+//
+//     if on && off
+//     {
+//       // return Err( syn_err!( input, "`on` and `off` are mutually exclusive .\nIllegal attribute usage : {}", qt!{ #input } ) )
+//       return Err( syn::Error::new( input.span(), "`on` and `off` are mutually exclusive .\nIllegal attribute usage" ) );
+//       // xxx : test
+//     }
+//
+//     if !on && !off
+//     {
+//       enabled = None;
+//     }
+//     else if on
+//     {
+//       enabled = Some( true )
+//     }
+//     else if off
+//     {
+//       enabled = Some( false )
+//     }
+//
+//     // Optional comma handling
+//     if input.peek( syn::Token![ , ] )
+//     {
+//       input.parse::< syn::Token![ , ] >()?;
+//     }
+//     Ok( Self { enabled, hint } )
+//   }
+// }

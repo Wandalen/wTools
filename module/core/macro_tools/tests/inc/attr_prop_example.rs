@@ -1,5 +1,4 @@
 // use super::*;
-// use quote::ToTokens;
 
 #[ test ]
 fn attr_props_draft()
@@ -238,7 +237,7 @@ fn attr_props_draft()
   /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
   pub type AttributePropertyCustom = AttributePropertyBoolean< AttributePropertyCustomMarker >;
 
-  // == Test code
+  // == test code
 
   let input : syn::Attribute = syn::parse_quote!( #[ mutator( custom = true, hint = false ) ] );
   let meta = match input.meta
