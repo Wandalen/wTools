@@ -571,7 +571,7 @@ impl syn::parse::Parse for AttributeFrom
       {
         let ident : syn::Ident = input.parse()?;
 
-        input.parse::< syn::Token![=] >()?;
+        input.parse::< syn::Token![ = ] >()?;
         match ident.to_string().as_str()
         {
           AttributePropertyEnabled::KEYWORD => result.assign( AttributePropertyEnabled::parse( input )? ),

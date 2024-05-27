@@ -203,7 +203,7 @@ impl syn::parse::Parse for AttributeConfig
       {
         let ident : syn::Ident = input.parse()?;
 
-        input.parse::< syn::Token![=] >()?;
+        input.parse::< syn::Token![ = ] >()?;
         match ident.to_string().as_str()
         {
           AttributePropertyDefault::KEYWORD => result.assign( AttributePropertyDefault::parse( input )? ),
@@ -351,7 +351,7 @@ impl syn::parse::Parse for AttributeScalarSetter
       {
         let ident : syn::Ident = input.parse()?;
 
-        input.parse::< syn::Token![=] >()?;
+        input.parse::< syn::Token![ = ] >()?;
         match ident.to_string().as_str()
         {
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
@@ -513,7 +513,7 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
       {
         let ident : syn::Ident = input.parse()?;
 
-        input.parse::< syn::Token![=] >()?;
+        input.parse::< syn::Token![ = ] >()?;
         match ident.to_string().as_str()
         {
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
@@ -744,7 +744,7 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
       {
         let ident : syn::Ident = input.parse()?;
 
-        input.parse::< syn::Token![=] >()?;
+        input.parse::< syn::Token![ = ] >()?;
         match ident.to_string().as_str()
         {
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
@@ -914,7 +914,7 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
       {
         let ident : syn::Ident = input.parse()?;
 
-        input.parse::< syn::Token![=] >()?;
+        input.parse::< syn::Token![ = ] >()?;
         match ident.to_string().as_str()
         {
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),

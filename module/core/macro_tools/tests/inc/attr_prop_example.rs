@@ -181,7 +181,7 @@ fn attr_props_draft()
         {
           let ident : syn::Ident = input.parse()?;
 
-          input.parse::< syn::Token![=] >()?;
+          input.parse::< syn::Token![ = ] >()?;
           match ident.to_string().as_str()
           {
             AttributePropertyCustom::KEYWORD => result.assign( AttributePropertyCustom::parse( input )? ),
