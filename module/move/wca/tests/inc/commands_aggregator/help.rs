@@ -29,7 +29,6 @@ pub fn start_sync< AP, Args, Arg, P >
   let args = args.into_iter().map( | a | a.as_ref().into() ).collect::< Vec< std::ffi::OsString > >();
   let child = Command::new( application ).args( &args ).stdout( Stdio::piped() ).stderr( Stdio::piped() ).current_dir( path ).spawn().unwrap();
   let output = child.wait_with_output().unwrap();
-  dbg!( &output );
   
   String::from_utf8( output.stdout ).unwrap()
 }
@@ -110,7 +109,6 @@ wca = {{path = "{}"}}"#,
   file.write_all( toml.as_bytes() ).unwrap();
   let result = start_sync( "cargo", [ "r", ".help" ], temp.path() );
 
-  // dbg!(&result);
   assert_eq!
   (
     "Help command\n\n.c  - c\n.b  - b\n.a  - a\n",
@@ -178,7 +176,6 @@ wca = {{path = "{}"}}"#,
   file.write_all( toml.as_bytes() ).unwrap();
   let result = start_sync( "cargo", [ "r", ".help" ], temp.path() );
 
-  // dbg!(&result);
   assert_eq!
   (
     "Help command\n\n.a  - a\n.b  - b\n.c  - c\n",
@@ -187,7 +184,6 @@ wca = {{path = "{}"}}"#,
 
   let result = start_sync( "cargo", [ "r", ".help", "c" ], temp.path() );
 
-  dbg!(&result);
   assert_eq!
   (
     "Help command\n\n.c  - c\n\nProperties:\n\ta-property -  [?String]\n\tb-property -  [?String]\n\tc-property -  [?String]\n",

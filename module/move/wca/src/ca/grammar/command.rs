@@ -4,8 +4,11 @@ pub( crate ) mod private
 
   use { Handler, Routine, Type };
 
-  use std::collections::HashMap;
+  use std::collections::{ BTreeMap, HashMap };
   use former::{ Former, StoragePreform };
+  use crate::ca::aggregator::private::Order;
+  use crate::ca::grammar::dictionary::private::CommandName;
+  use crate::wtools::Itertools;
 
   /// A description of a Value in a command. Used to specify the expected type and provide a hint for the Value.
   ///
@@ -98,9 +101,10 @@ pub( crate ) mod private
     #[ subform_entry( setter = true ) ]
     pub subjects : Vec< ValueDescription >,
     /// Hints and types for command options.
-    pub properties : HashMap< String, ValueDescription >,
-    /// Stores the order in which the properties were described.
-    pub properties_order : Vec< String >,
+    pub properties : BTreeMap< CommandName, ValueDescription >,
+    /// Last inserted command id.
+    #[ scalar( setter = false ) ]
+    last_id : usize,
     /// Map of aliases.
     // Aliased key -> Original key
     pub properties_aliases : HashMap< String, String >,
@@ -111,6 +115,24 @@ pub( crate ) mod private
     #[ scalar( setter = false ) ]
     #[ former( default = Routine::from( Handler::from( || { panic!( "No routine available: A handler function for the command is missing" ) } ) ) ) ]
     pub routine : Routine,
+  }
+  
+  impl Command
+  {
+    pub( crate ) fn properties( &self, order : Order ) -> Vec< ( &String, &ValueDescription ) >
+    {
+      match order 
+      {
+        Order::Nature => 
+        {
+          self.properties.iter().map( | ( key, value ) | ( &key.name, value ) ).collect()
+        }
+        Order::Lexicography => 
+        {
+          self.properties.iter().map( | ( key, value ) | ( &key.name, value ) ).sorted_by_key( | ( k, _ ) | *k ).collect()
+        }
+      }
+    }
   }
 
   impl< Definition > CommandFormer< Definition >
@@ -201,7 +223,6 @@ pub( crate ) mod private
         let mut super_former = super_former.unwrap();
         let mut properties = super_former.storage.properties.unwrap_or_default();
         let property = property.preform();
-        let mut order = super_former.storage.properties_order.unwrap_or_default();
 
         let value = ValueDescription
         {
@@ -210,8 +231,9 @@ pub( crate ) mod private
           optional : property.optional,
         };
         debug_assert!( !properties.contains_key( &property.name ), "Property name `{}` is already used for `{:?}`", property.name, properties[ &property.name ] );
-        properties.insert( property.name.clone(), value );
-        order.push( property.name.clone() );
+        super_former.storage.last_id = Some( super_former.storage.last_id.unwrap_or_default() + 1 );
+        let name = CommandName{ id : super_former.storage.last_id.unwrap(), name : property.name.clone() };
+        properties.insert( name, value );
 
         let mut aliases = super_former.storage.properties_aliases.unwrap_or_default();
         debug_assert!( !aliases.contains_key( &property.name ), "Name `{}` is already used for `{}` as alias", property.name, aliases[ &property.name ] );
@@ -220,7 +242,6 @@ pub( crate ) mod private
 
         super_former.storage.properties = Some( properties );
         super_former.storage.properties_aliases = Some( aliases );
-        super_former.storage.properties_order = Some( order );
 
         super_former
       };

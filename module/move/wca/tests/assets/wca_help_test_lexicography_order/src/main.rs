@@ -1,6 +1,6 @@
 fn main()
 {
-  use wca::{ Type, VerifiedCommand };
+  use wca::{ Type, VerifiedCommand, Order };
 
   let ca = wca::CommandsAggregator::former()
   .command( "c" )
@@ -20,7 +20,7 @@ fn main()
     .property( "a-property" ).kind( Type::String ).optional( true ).end()
     .routine( | o : VerifiedCommand | { println!("a") } )
     .end()
-    .with_nature_sort( false )
+    .order( Order::Lexicography )
   .perform();
 
   let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
