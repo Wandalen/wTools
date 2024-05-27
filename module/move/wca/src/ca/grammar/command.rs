@@ -99,7 +99,7 @@ pub( crate ) mod private
     pub subjects : Vec< ValueDescription >,
     /// Hints and types for command options.
     pub properties : HashMap< String, ValueDescription >,
-    ///
+    /// Stores the order in which the properties were described.
     pub properties_order : Vec< String >,
     /// Map of aliases.
     // Aliased key -> Original key

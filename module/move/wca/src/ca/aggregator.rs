@@ -117,7 +117,7 @@ pub( crate ) mod private
 
     #[ former( default = Verifier ) ]
     verifier : Verifier,
-    
+
     callback_fn : Option< CommandsAggregatorCallback >,
   }
 

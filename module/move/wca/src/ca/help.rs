@@ -53,10 +53,9 @@ pub( crate ) mod private
     pub description_detailing : LevelOfDetail,
     /// If enabled - shows complete description of subjects and properties
     pub with_footer : bool,
-
+    /// Stores the order in which the properties were described. 
     order : Option< Vec< String > >,
-
-    // #[ former( default = true ) ]
+    /// Flag which means in what order the commands and properties to them will be displayed.
     with_nature_order : bool,
   }
 
@@ -102,14 +101,19 @@ pub( crate ) mod private
       let footer = if o.with_footer
       {
         let full_subjects = command.subjects.iter().map( | subj | format!( "- {} [{}{:?}]", subj.hint, if subj.optional { "?" } else { "" }, subj.kind ) ).join( "\n\t" );
-        let full_properties =  if o.with_nature_order
-        {
-          format_table( command.properties_order.iter().map( | name | [ name.clone(), format!( "- {} [{}{:?}]", command.properties.get( name ).unwrap().hint, if command.properties.get( name ).unwrap().optional { "?" } else { "" }, command.properties.get( name ).unwrap().kind ) ] ) ).unwrap().replace( '\n', "\n\t" )
-        }
-        else 
-        {
-          format_table( command.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| [ name.clone(), format!( "- {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ] ) ).unwrap().replace( '\n', "\n\t" )
-        };
+        let full_properties = format_table
+        ( 
+          if o.with_nature_order 
+          { 
+            command.properties_order.iter().map( | name | ( name, command.properties.get( name ).unwrap() ) ).collect::< Vec< _ > >() 
+          } 
+          else 
+          { 
+            command.properties.iter().sorted_by_key( | ( name, _ ) | *name ).collect::< Vec< _ > >() 
+          }
+          .into_iter().map( | ( name, value ) | [ name.clone(), format!( "- {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ] ) 
+        ).unwrap().replace( '\n', "\n\t" );
+        
         format!
         (
           "{}{}",
@@ -184,8 +188,6 @@ pub( crate ) mod private
     /// Generates help commands
     pub fn generate( &self, helper : &HelpGeneratorFn, dictionary : &mut Dictionary, order : Option< Vec< String > > )
     {
-      // debug_assert!( dictionary.commands.len() == order.as_ref().map( | o | o.len() ).unwrap_or( dictionary.commands.len() ) );
-      // dictionary.commands.keys().for_each( | k | assert!( order.as_ref().map( | a | a.contains( &k ) ).unwrap_or( true ) ) );
       match self
       {
         HelpVariants::All =>
