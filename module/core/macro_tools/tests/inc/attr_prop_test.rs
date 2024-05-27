@@ -2,7 +2,7 @@ use super::*;
 use quote::ToTokens;
 
 #[ test ]
-fn test_attribute_property_boolean()
+fn attr_prop_test()
 {
 
   #[ derive( Debug, Default, Clone, Copy ) ]
@@ -99,4 +99,5 @@ fn test_attribute_property_boolean()
   let parsed : MyAttributes = syn::parse2( nested_meta_stream ).unwrap();
   assert_eq!( parsed.enabled.internal(), true );
   assert_eq!( parsed.debug.internal(), false );
+
 }

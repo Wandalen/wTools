@@ -1,7 +1,6 @@
 //!
 //! Attribute's properties. Reuse them to define how to parse properties of an attribute.
 //!
-//!
 //! # Example
 //!
 //! ```rust
@@ -96,8 +95,6 @@
 //!
 //! The `parse_quote!` macro is used to create a `syn::Attribute` instance with the attribute syntax,
 //! which is then parsed into the `MyAttributes` struct. The resulting `MyAttributes` instance is printed to the console.
-
-// xxx : qqq : improve documentation, add examples
 
 /// Internal namespace.
 pub( crate ) mod private
@@ -362,7 +359,9 @@ pub( crate ) mod private
 
   // = AttributePropertySyn
 
+  ///
   /// Property of an attribute which simply wraps one of the standard `syn` types.
+  ///
   #[ derive( Debug, Clone ) ]
   pub struct AttributePropertySyn< T, Marker >( T, ::core::marker::PhantomData< Marker > )
   where
@@ -449,7 +448,9 @@ pub( crate ) mod private
 
   // = AttributePropertyOptionalSyn
 
+  ///
   /// Property of an attribute which simply wraps one of the standard `syn` types and keeps it optional.
+  ///
   #[ derive( Debug, Clone ) ]
   pub struct AttributePropertyOptionalSyn< T, Marker >( Option< T >, ::core::marker::PhantomData< Marker > )
   where

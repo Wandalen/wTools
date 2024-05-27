@@ -45,3 +45,5 @@ interval_adapter = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
+former_types = { workspace = true, features = [ "enabled", "types_component_assign" ] }
+const_format = { version = "0.2.32" }
