@@ -4,15 +4,16 @@
 #![ doc( html_root_url = "https://docs.rs/collection_tools/latest/collection_tools/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 extern crate alloc;
-
-// qqq : make subdirectory for each container -- done
-
-// qqq : move out of lib.rs file -- moved to `collections.rs`
 
 /// Module containing all collection macros
 #[ cfg( feature = "enabled" ) ]
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 mod collections;
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 pub use collections::*;
 
 /// Namespace with dependencies.
@@ -54,18 +55,12 @@ pub mod orphan
 #[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
-}
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
-#[ cfg( feature = "enabled" ) ]
-pub mod prelude
-{
-
-  // qqq : for Anton : uncomment, make it working and cover by tests -- renamed to reexports
-  #[ cfg( feature = "reexports" ) ]
+  // #[ cfg( feature = "reexports" ) ]
   #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -81,14 +76,23 @@ pub mod prelude
     vecd::VecDeque,
   };
 
-  #[ cfg( feature = "reexports" ) ]
+  // #[ cfg( feature = "reexports" ) ]
   #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use 
+  pub use
   {
     HashMap as Map,
     HashSet as Set,
     Vec as DynArray,
   };
+
+  // qqq : cover by tests presence of all containers immidiately in collection_tools::* and in collection_tools::exposed::*
+
+}
+
+/// Prelude to use essentials: `use my_module::prelude::*`.
+#[ cfg( feature = "enabled" ) ]
+pub mod prelude
+{
 }

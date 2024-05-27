@@ -3,8 +3,8 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-use std::collections::HashMap;
-use std::collections::HashSet;
+use collection_tools::HashMap;
+use collection_tools::HashSet;
 
 #[ derive( Debug, PartialEq, the_module::Former ) ]
 // #[ derive( Debug, PartialEq, the_module::Former ) ] #[ debug ]

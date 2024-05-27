@@ -6,11 +6,10 @@ use proc_macro2::TokenStream;
 
 // qqq : implement interfaces for other collections
 
-
-mod field;
-use field::*;
 mod field_attrs;
 use field_attrs::*;
+mod field;
+use field::*;
 mod struct_attrs;
 use struct_attrs::*;
 
@@ -54,7 +53,7 @@ pub fn mutator
 )
 -> Result< TokenStream >
 {
-  let former_mutator_code = if mutator.custom
+  let former_mutator_code = if mutator.custom.into()
   {
     qt!{}
   }
@@ -71,7 +70,7 @@ pub fn mutator
     }
   };
 
-  if mutator.hint
+  if mutator.hint.into()
   {
     let hint = format!
     (

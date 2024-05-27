@@ -10,7 +10,7 @@ fn collection()
     .end()
   .form();
 
-  let children = vec!
+  let children = collection_tools::vec!
   [
     Child { name : "a".to_string(), data : false },
     Child { name : "b".to_string(), data : false },

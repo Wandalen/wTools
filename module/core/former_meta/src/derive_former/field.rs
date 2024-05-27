@@ -184,7 +184,7 @@ scalar_setter_required
     let ident = self.ident;
     let ty = self.ty;
     let default : Option< &syn::Expr > = self.attrs.config.as_ref()
-    .and_then( | attr | attr.default.as_ref() );
+    .and_then( | attr | attr.default.ref_internal() );
 
     let tokens = if self.is_optional
     {
@@ -456,7 +456,7 @@ scalar_setter_required
     let setter_name = self.scalar_setter_name();
     let attr = self.attrs.scalar.as_ref();
 
-    if attr.is_some() && attr.unwrap().hint
+    if attr.is_some() && attr.unwrap().hint.into()
     {
       let hint = format!
       (
@@ -682,7 +682,7 @@ field : {field_ident}"#,
       qt!{}
     };
 
-    if attr.hint
+    if attr.hint.into()
     {
       let hint = format!
       (
@@ -725,7 +725,7 @@ field : {field_ident}"#,
     };
 
     // example : `former::VectorDefinition``
-    let subformer_definition = &self.attrs.subform_collection.as_ref().unwrap().definition;
+    let subformer_definition = self.attrs.subform_collection.as_ref().unwrap().definition.ref_internal();
 
     let subform_collection_end_doc = format!
     (
@@ -975,7 +975,7 @@ allowing for dynamic and flexible construction of the `{stru}` entity's {field_i
       setters_code
     };
 
-    if attr.hint
+    if attr.hint.into()
     {
       let hint = format!
       (
@@ -1285,7 +1285,7 @@ former and end action types, ensuring a seamless developer experience when formi
       setters_code
     };
 
-    if attr.hint
+    if attr.hint.into()
     {
       let hint = format!
       (
@@ -1451,7 +1451,7 @@ Essentially, this end action integrates the individually formed scalar value bac
   {
     if let Some( ref attr ) = self.attrs.scalar
     {
-      if let Some( ref name ) = attr.name
+      if let Some( ref name ) = attr.name.ref_internal()
       {
         return name
       }
@@ -1466,7 +1466,7 @@ Essentially, this end action integrates the individually formed scalar value bac
     {
       if attr.setter()
       {
-        if let Some( ref name ) = attr.name
+        if let Some( ref name ) = attr.name.ref_internal()
         {
           return Some( &name )
         }
@@ -1486,7 +1486,7 @@ Essentially, this end action integrates the individually formed scalar value bac
     {
       if attr.setter()
       {
-        if let Some( ref name ) = attr.name
+        if let Some( ref name ) = attr.name.ref_internal()
         {
           return Some( &name )
         }
@@ -1506,7 +1506,7 @@ Essentially, this end action integrates the individually formed scalar value bac
     {
       if attr.setter()
       {
-        if let Some( ref name ) = attr.name
+        if let Some( ref name ) = attr.name.as_ref()
         {
           return Some( &name )
         }
@@ -1526,7 +1526,7 @@ Essentially, this end action integrates the individually formed scalar value bac
     let mut explicit = false;
     if let Some( ref attr ) = self.attrs.scalar
     {
-      if let Some( setter ) = attr.setter
+      if let Some( setter ) = attr.setter.internal()
       {
         if setter == false
         {
@@ -1534,7 +1534,7 @@ Essentially, this end action integrates the individually formed scalar value bac
         }
         explicit = true;
       }
-      if let Some( ref _name ) = attr.name
+      if let Some( ref _name ) = attr.name.ref_internal()
       {
         explicit = true;
       }

@@ -35,8 +35,8 @@ type HashMap = ();
 pub struct Struct1
 {
   vec_1 : Vec< String >,
-  hashmap_1 : ::std::collections::HashMap< String, String >,
-  hashset_1 : ::std::collections::HashSet< String >,
+  hashmap_1 : collection_tools::HashMap< String, String >,
+  hashset_1 : collection_tools::HashSet< String >,
 }
 
 //

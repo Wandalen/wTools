@@ -39,8 +39,8 @@ fn command_form()
 
 //
 
-// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ]
-#[ cfg( not( feature = "use_alloc" ) ) ]
+// qqq : zzz : remove #[ cfg( not( feature = "use_alloc" ) ) ] -- done
+// #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ test ]
 fn command_properties()
 {
@@ -57,7 +57,7 @@ fn command_properties()
   let exp = Child::< &str >
   {
     name : "a".to_string(),
-    properties : hmap!
+    properties : collection_tools::hmap!
     {
       "property1" => Property::new( "property1", 13isize ),
       "property2" => Property::new( "property2", 113isize ),
