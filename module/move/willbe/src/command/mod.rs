@@ -196,7 +196,6 @@ with_gitpod: If set to 1, a column with a link to Gitpod will be added. Clicking
       .routine( command::test )
       .end()
 
-    // qqq : is it right?
     .command( "cicd.renew" )
       .hint( "generate a CI/CD for the workspace" )
       .long_hint( "this command generates a development workflow for the entire workspace inferred from the current directory. The workflow outlines the build steps, dependencies, test processes, and more for all modules within the workspace." )

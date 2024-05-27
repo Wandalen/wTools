@@ -440,7 +440,7 @@ mod private
     pub feature : Option< TestOptionsProgressBarFeature >,
   }
 
-  // qqq : remove after Former fix
+  // qqq : for Petro : remove after Former fix
   /// Structure for progress bar feature field
   pub struct TestOptionsProgressBarFeature
   {

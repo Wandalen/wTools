@@ -19,9 +19,8 @@ mod private
   use action::{ list as l, list::{ ListFormat, ListOptions } };
   use former::Former;
 
-  // qqq: `Former` forces the struct to be public
   #[ derive( Former ) ]
-  pub struct ListProperties
+  struct ListProperties
   {
     #[ former( default = ListFormat::Tree ) ]
     format : ListFormat,
