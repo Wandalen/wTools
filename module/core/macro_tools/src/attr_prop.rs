@@ -47,7 +47,6 @@
 //!       if lookahead.peek( syn::Ident )
 //!       {
 //!         let ident : syn::Ident = input.parse()?;
-//!         input.parse::< syn::Token![ = ] >()?;
 //!         match ident.to_string().as_str()
 //!         {
 //!           DebugMarker::KEYWORD => debug = input.parse()?,
@@ -152,7 +151,6 @@ pub( crate ) mod private
   ///       if lookahead.peek( syn::Ident )
   ///       {
   ///         let ident : syn::Ident = input.parse()?;
-  ///         input.parse::< syn::Token![ = ] >()?;
   ///         match ident.to_string().as_str()
   ///         {
   ///           DebugMarker::KEYWORD => debug = input.parse()?,
@@ -230,6 +228,7 @@ pub( crate ) mod private
   {
     fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
     {
+      input.parse::< syn::Token![ = ] >()?;
       let value : syn::LitBool = input.parse()?;
       Ok( value.value.into() )
     }
@@ -306,6 +305,7 @@ pub( crate ) mod private
   {
     fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
     {
+      input.parse::< syn::Token![ = ] >()?;
       let value : syn::LitBool = input.parse()?;
       Ok( value.value.into() )
     }
@@ -400,6 +400,7 @@ pub( crate ) mod private
   {
     fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
     {
+      input.parse::< syn::Token![ = ] >()?;
       let value : T = input.parse()?;
       Ok( value.into() )
     }
@@ -497,6 +498,7 @@ pub( crate ) mod private
   {
     fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
     {
+      input.parse::< syn::Token![ = ] >()?;
       let value : T = input.parse()?;
       Ok( value.into() )
     }

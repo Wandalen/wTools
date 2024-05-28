@@ -202,8 +202,6 @@ impl syn::parse::Parse for AttributeConfig
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
-
-        input.parse::< syn::Token![ = ] >()?;
         match ident.to_string().as_str()
         {
           AttributePropertyDefault::KEYWORD => result.assign( AttributePropertyDefault::parse( input )? ),
@@ -350,8 +348,6 @@ impl syn::parse::Parse for AttributeScalarSetter
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
-
-        input.parse::< syn::Token![ = ] >()?;
         match ident.to_string().as_str()
         {
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
@@ -743,8 +739,6 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
-
-        input.parse::< syn::Token![ = ] >()?;
         match ident.to_string().as_str()
         {
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
@@ -913,8 +907,6 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
-
-        input.parse::< syn::Token![ = ] >()?;
         match ident.to_string().as_str()
         {
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),

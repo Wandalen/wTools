@@ -429,7 +429,6 @@ impl FieldAttributes
 
 }
 
-
 ///
 /// Attribute to hold parameters of forming for a specific field or variant.
 /// For example to avoid code From generation for it.
@@ -571,7 +570,6 @@ impl syn::parse::Parse for AttributeFrom
       {
         let ident : syn::Ident = input.parse()?;
 
-        input.parse::< syn::Token![ = ] >()?;
         match ident.to_string().as_str()
         {
           AttributePropertyEnabled::KEYWORD => result.assign( AttributePropertyEnabled::parse( input )? ),

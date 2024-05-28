@@ -375,9 +375,6 @@ impl syn::parse::Parse for AttributeMutator
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
-
-        // xxx2 : move syn::Token![ = ] to attr prop
-        input.parse::< syn::Token![ = ] >()?;
         match ident.to_string().as_str()
         {
           AttributePropertyCustom::KEYWORD => result.assign( AttributePropertyCustom::parse( input )? ),
