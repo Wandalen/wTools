@@ -76,56 +76,14 @@ impl ItemAttributes
         AttributeMutator::KEYWORD => result.assign( AttributeMutator::from_meta( attr )? ),
         AttributePerform::KEYWORD => result.assign( AttributePerform::from_meta( attr )? ),
         "debug" => {}
-        _ => return Err( error( attr ) ),
+        _ => {},
+        // _ => return Err( error( attr ) ),
+        // attributes does not have to be known
       }
     }
 
     Ok( result )
   }
-
-//   pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
-//   {
-//     let mut storage_fields = None;
-//     let mut mutator : AttributeMutator = Default::default();
-//     let mut perform = None;
-//
-//     for attr in attrs
-//     {
-//       let key_ident = attr.path().get_ident()
-//       .ok_or_else( || syn_err!( attr, "Expects an attribute of format #[ attribute( key1 = val1, key2 = val2 ) ], but got:\n  {}", qt!{ #attr } ) )?;
-//       let key_str = format!( "{}", key_ident );
-//
-//       if attr::is_standard( &key_str )
-//       {
-//         continue;
-//       }
-//
-//       match key_str.as_ref()
-//       {
-//         AttributeStorageFields::KEYWORD =>
-//         {
-//           storage_fields.replace( AttributeStorageFields::from_meta( attr )? );
-//         }
-//         AttributeMutator::KEYWORD =>
-//         {
-//           mutator = AttributeMutator::from_meta( attr )?;
-//         }
-//         AttributePerform::KEYWORD =>
-//         {
-//           perform.replace( AttributePerform::from_meta( attr )? );
-//         }
-//         "debug" =>
-//         {
-//         }
-//         _ =>
-//         {
-//           return Err( syn_err!( attr, "Known structure attirbutes are : `storage_fields`, `mutator`, `perform`, `debug`.\nUnknown structure attribute : {}", qt!{ #attr } ) );
-//         }
-//       }
-//     }
-//
-//     Ok( ItemAttributes { perform, storage_fields, mutator } )
-//   }
 
   ///
   /// Generate parts, used for generating `perform()`` method.

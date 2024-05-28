@@ -97,7 +97,7 @@ where
     let about = format!
     (
 r#"derive : Former
-structure : {stru}"#,
+item : {stru}"#,
     );
     diag::report_print( about, original_input, hint );
   };

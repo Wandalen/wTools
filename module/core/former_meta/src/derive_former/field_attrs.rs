@@ -101,8 +101,10 @@ impl FieldAttributes
         AttributeSubformScalarSetter::KEYWORD => result.assign( AttributeSubformScalarSetter::from_meta( attr )? ),
         AttributeSubformCollectionSetter::KEYWORD => result.assign( AttributeSubformCollectionSetter::from_meta( attr )? ),
         AttributeSubformEntrySetter::KEYWORD => result.assign( AttributeSubformEntrySetter::from_meta( attr )? ),
-        "debug" => {}
-        _ => return Err( error( attr ) ),
+        "debug" => {},
+        _ => {},
+        // _ => return Err( error( attr ) ),
+        // attributes does not have to be known
       }
     }
 

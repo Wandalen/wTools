@@ -190,6 +190,34 @@ fn variant_generate
     )
   };
 
+  if attr.hint.into()
+  {
+    let hint = format!
+    (
+      r#"
+#[ automatically_derived ]
+impl< {generics_impl} > From< {args} > for {item_name}< {generics_ty} >
+where
+  {generics_where}
+{{
+  #[ inline ]
+  fn from( src : {args} ) -> Self
+  {{
+    Self::{variant_name}( {use_src} )
+  }}
+}}
+      "#,
+      // format!( "{}", qt!{ #entry_typ } ),
+    );
+    let about = format!
+    (
+r#"derive : From
+item : {item_name}
+field : {variant_name}"#,
+    );
+    diag::report_print( about, original_input, hint );
+  }
+
   Ok
   (
     qt!
@@ -436,9 +464,9 @@ impl ItemAttributes
       {
         ItemAttributeConfig::KEYWORD => result.assign( ItemAttributeConfig::from_meta( attr )? ),
         "debug" => {}
-        _ => (),
+        _ => {},
         // _ => return Err( error( attr ) ),
-        // xxx
+        // attributes does not have to be known
       }
     }
 

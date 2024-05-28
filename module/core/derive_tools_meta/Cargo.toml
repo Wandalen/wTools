@@ -66,7 +66,7 @@ iter_tools = { workspace = true, features = [ "full" ] }
 former_types = { workspace = true, features = [ "enabled", "types_component_assign" ] }
 const_format = { version = "0.2.32" }
 
-# xxx : qqq : optimize features set
+# qqq : optimize features set
 
 [dev-dependencies]
 test_tools = { workspace = true }

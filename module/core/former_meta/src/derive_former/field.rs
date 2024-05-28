@@ -481,7 +481,7 @@ where
       let about = format!
       (
 r#"derive : Former
-structure : {stru}
+item : {stru}
 field : {field_ident}"#,
       );
       diag::report_print( about, original_input, hint );
@@ -712,7 +712,7 @@ where
       let about = format!
       (
 r#"derive : Former
-structure : {stru}
+item : {stru}
 field : {field_ident}"#,
       );
       diag::report_print( about, original_input, hint );
@@ -1003,7 +1003,7 @@ where
       let about = format!
       (
 r#"derive : Former
-structure : {stru}
+item : {stru}
 field : {field_ident}"#,
       );
       diag::report_print( about, original_input, hint );
@@ -1309,7 +1309,7 @@ where
       let about = format!
       (
 r#"derive : Former
-structure : {stru}
+item : {stru}
 field : {field_ident}"#,
       );
       diag::report_print( about, original_input, hint );
