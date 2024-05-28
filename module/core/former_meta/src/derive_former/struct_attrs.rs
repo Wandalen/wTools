@@ -235,8 +235,6 @@ impl syn::parse::Parse for AttributeStorageFields
 /// custom, debug
 /// ```
 
-// xxx
-
 #[ derive( Debug, Default ) ]
 pub struct AttributeMutator
 {
@@ -246,7 +244,6 @@ pub struct AttributeMutator
   /// Specifies whether to provide a sketch of the mutator as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
   pub debug : AttributePropertyDebug,
-  // qqq : xxx : use the property. currently it's not used
 }
 
 impl AttributeComponent for AttributeMutator
