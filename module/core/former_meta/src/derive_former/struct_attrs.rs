@@ -18,7 +18,7 @@ use former_types::{ ComponentAssign };
 /// Represents the attributes of a struct, including storage fields, mutator, and perform attributes.
 
 #[ derive( Debug, Default ) ]
-pub struct StructAttributes
+pub struct ItemAttributes
 {
   /// Optional attribute for storage-specific fields.
   /// This field is used to specify fields that should be part of the storage but not the final formed structure.
@@ -33,7 +33,7 @@ pub struct StructAttributes
   pub perform : Option< AttributePerform >,
 }
 
-impl StructAttributes
+impl ItemAttributes
 {
 
   pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
@@ -124,7 +124,7 @@ impl StructAttributes
 //       }
 //     }
 //
-//     Ok( StructAttributes { perform, storage_fields, mutator } )
+//     Ok( ItemAttributes { perform, storage_fields, mutator } )
 //   }
 
   ///
@@ -240,7 +240,7 @@ impl AttributeComponent for AttributeStorageFields
 
 }
 
-impl< IntoT > ComponentAssign< AttributeStorageFields, IntoT > for StructAttributes
+impl< IntoT > ComponentAssign< AttributeStorageFields, IntoT > for ItemAttributes
 where
   IntoT : Into< AttributeStorageFields >,
 {
@@ -311,7 +311,7 @@ impl AttributeComponent for AttributeMutator
 
 }
 
-impl< IntoT > ComponentAssign< AttributeMutator, IntoT > for StructAttributes
+impl< IntoT > ComponentAssign< AttributeMutator, IntoT > for ItemAttributes
 where
   IntoT : Into< AttributeMutator >,
 {
@@ -442,7 +442,7 @@ impl syn::parse::Parse for AttributePerform
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePerform, IntoT > for StructAttributes
+impl< IntoT > ComponentAssign< AttributePerform, IntoT > for ItemAttributes
 where
   IntoT : Into< AttributePerform >,
 {

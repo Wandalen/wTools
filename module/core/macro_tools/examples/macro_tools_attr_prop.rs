@@ -8,7 +8,7 @@
 //! `AttributePropertyComponent` and `AttributeComponent`. The `ComponentAssign` trait is
 //! also used to simplify the logic of assigning fields.
 //!
-//! Attributes are collected into a `StructAttributes` struct, and attribute properties are parsed
+//! Attributes are collected into a `ItemAttributes` struct, and attribute properties are parsed
 //! using reusable components like `AttributePropertyBoolean`.
 //!
 //! - `AttributeComponent`: A trait that defines how an attribute should be parsed from a `syn::Attribute`.
@@ -47,18 +47,18 @@ fn main()
 
   /// Represents the attributes of a struct. Aggregates all its attributes.
   #[ derive( Debug, Default ) ]
-  pub struct StructAttributes
+  pub struct ItemAttributes
   {
     /// Attribute for customizing the mutation process.
     pub mutator : AttributeMutator,
   }
 
-  impl StructAttributes
+  impl ItemAttributes
   {
-    /// Constructs a `StructAttributes` instance from an iterator of attributes.
+    /// Constructs a `ItemAttributes` instance from an iterator of attributes.
     ///
     /// This function parses the provided attributes and assigns them to the
-    /// appropriate fields in the `StructAttributes` struct.
+    /// appropriate fields in the `ItemAttributes` struct.
     pub fn from_attrs< 'a >( attrs : impl Iterator< Item = & 'a syn::Attribute > ) -> Result< Self >
     {
       let mut result = Self::default();
@@ -146,8 +146,8 @@ fn main()
     }
   }
 
-  // Implement `ComponentAssign` trait to allow assigning `AttributeMutator` to `StructAttributes`.
-  impl< IntoT > ComponentAssign< AttributeMutator, IntoT > for StructAttributes
+  // Implement `ComponentAssign` trait to allow assigning `AttributeMutator` to `ItemAttributes`.
+  impl< IntoT > ComponentAssign< AttributeMutator, IntoT > for ItemAttributes
   where
     IntoT : Into< AttributeMutator >,
   {
@@ -272,9 +272,9 @@ fn main()
 
   // == test code
 
-  // Parse an attribute and construct a `StructAttributes` instance.
+  // Parse an attribute and construct a `ItemAttributes` instance.
   let input : syn::Attribute = syn::parse_quote!( #[ mutator( custom = true, hint = false ) ] );
-  let attrs : StructAttributes = StructAttributes::from_attrs( std::iter::once( & input ) ).unwrap();
+  let attrs : ItemAttributes = ItemAttributes::from_attrs( std::iter::once( & input ) ).unwrap();
   println!( "{:?}", attrs );
 
   // Test `AttributePropertyBoolean` functionality.

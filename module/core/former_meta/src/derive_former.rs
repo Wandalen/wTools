@@ -150,7 +150,7 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
     Err( err ) => return Err( err ),
   };
   let has_debug = attr::has_debug( ast.attrs.iter() )?;
-  let struct_attrs = StructAttributes::from_attrs( ast.attrs.iter() )?;
+  let struct_attrs = ItemAttributes::from_attrs( ast.attrs.iter() )?;
 
   /* names */
 
