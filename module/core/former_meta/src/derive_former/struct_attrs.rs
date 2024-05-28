@@ -10,7 +10,6 @@ use macro_tools::
   Result,
   AttributeComponent,
   AttributePropertyComponent,
-  AttributePropertyBoolean,
   AttributePropertySingletone,
 };
 
@@ -233,7 +232,7 @@ impl syn::parse::Parse for AttributeStorageFields
 ///
 /// ## Example of code
 /// ```ignore
-/// custom = true, debug
+/// custom, debug
 /// ```
 
 // xxx
@@ -266,7 +265,7 @@ impl AttributeComponent for AttributeMutator
       {
         return Ok( Default::default() )
       },
-      _ => return_syn_err!( attr, "Expects an attribute of format `#[ mutator( custom = true ) ]`. \nGot: {}", qt!{ #attr } ),
+      _ => return_syn_err!( attr, "Expects an attribute of format `#[ mutator( custom ) ]`. \nGot: {}", qt!{ #attr } ),
     }
   }
 
@@ -324,7 +323,7 @@ impl syn::parse::Parse for AttributeMutator
       (
         ident,
         // xxx
-        r#"Expects an attribute of format '#[ mutator( custom = false ) ]'
+        r#"Expects an attribute of format '#[ mutator( custom ) ]'
   {known}
   But got: '{}'
 "#,
@@ -340,7 +339,7 @@ impl syn::parse::Parse for AttributeMutator
         let ident : syn::Ident = input.parse()?;
         match ident.to_string().as_str()
         {
-          AttributePropertyCustom::KEYWORD => result.assign( AttributePropertyCustom::parse( input )? ),
+          AttributePropertyCustom::KEYWORD => result.assign( AttributePropertyCustom::from( true ) ),
           AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::from( true ) ),
           _ => return Err( error( &ident ) ),
         }
@@ -445,4 +444,4 @@ impl AttributePropertyComponent for AttributePropertyCustomMarker
 
 /// Indicates whether a custom code should be generated.
 /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
-pub type AttributePropertyCustom = AttributePropertyBoolean< AttributePropertyCustomMarker >;
+pub type AttributePropertyCustom = AttributePropertySingletone< AttributePropertyCustomMarker >;
