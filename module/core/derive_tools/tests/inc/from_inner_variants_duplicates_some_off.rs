@@ -8,30 +8,14 @@ pub enum GetData
 {
   Nothing,
   Nothing2,
+  #[ from( off ) ]
   FromString( String ),
   FromString2( String ),
+  #[ from( off ) ]
   FromPair( String, String ),
   FromPair2( String, String ),
   FromBin( &'static [ u8 ] ),
   Nothing3,
-}
-
-impl From< String > for GetData
-{
-  #[ inline ]
-  fn from( src : String ) -> Self
-  {
-    Self::FromString2( src )
-  }
-}
-
-impl From< ( String, String ) > for GetData
-{
-  #[ inline ]
-  fn from( src : ( String, String ) ) -> Self
-  {
-    Self::FromPair2( src.0, src.1 )
-  }
 }
 
 // == begin of generated

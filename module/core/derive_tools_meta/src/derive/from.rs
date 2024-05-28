@@ -104,7 +104,9 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
 
       let variants_result : Result< Vec< proc_macro2::TokenStream > > = item.variants.iter().map( | variant |
       {
-        if map[ & variant.fields.to_token_stream().to_string() ] <= 1
+        // don't do automatic off
+        // if map[ & variant.fields.to_token_stream().to_string() ] <= 1
+        if true
         {
           variant_generate
           (
@@ -445,42 +447,6 @@ impl FieldAttributes
 ///
 /// `#[ from( off, hint : true ) ]`
 ///
-
-// #[ derive( Default ) ]
-// pub struct AttributeFrom
-// {
-//   /// Specifies whether we should generate From implementation for the field.
-//   /// Can be altered using `on` and `off` attributes
-//   pub enabled : Option< bool >,
-//   /// Specifies whether to provide a sketch of generated From or not.
-//   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-//   pub hint : bool,
-// }
-//
-// impl AttributeFrom
-// {
-//
-//   const KEYWORD : &'static str = "from";
-//
-//   pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
-//   {
-//     match attr.meta
-//     {
-//       syn::Meta::List( ref meta_list ) =>
-//       {
-//         return syn::parse2::< AttributeFrom >( meta_list.tokens.clone() );
-//       },
-//       syn::Meta::Path( ref _path ) =>
-//       {
-//         return Ok( Default::default() )
-//       },
-//       _ => return_syn_err!( attr, "Expects an attribute of format #[ from( off ) ]
-// .\nGot: {}", qt!{ #attr } ),
-//     }
-//   }
-//
-// }
-// xxx : clean
 
 #[ derive( Debug, Default ) ]
 pub struct AttributeFrom
