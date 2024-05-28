@@ -88,8 +88,14 @@ fn main()
 
   use macro_tools::
   {
-    attr, syn_err, return_syn_err, qt, Result, AttributeComponent,
-    AttributePropertyComponent, AttributePropertyBoolean,
+    attr,
+    syn_err,
+    return_syn_err,
+    qt,
+    Result,
+    AttributeComponent,
+    AttributePropertyComponent,
+    AttributePropertyBoolean,
   };
   use former_types::ComponentAssign;
 

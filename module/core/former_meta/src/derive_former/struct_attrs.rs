@@ -286,6 +286,7 @@ pub struct AttributeMutator
   /// Specifies whether to provide a sketch of the mutator as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
   pub hint : AttributePropertyHint,
+  // qqq : xxx : use the property. currently it's not used
 }
 
 impl AttributeComponent for AttributeMutator

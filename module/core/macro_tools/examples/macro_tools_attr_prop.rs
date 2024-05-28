@@ -34,8 +34,14 @@ fn main()
 
   use macro_tools::
   {
-    attr, syn_err, return_syn_err, qt, Result, AttributeComponent,
-    AttributePropertyComponent, AttributePropertyBoolean,
+    attr,
+    syn_err,
+    return_syn_err,
+    qt,
+    Result,
+    AttributeComponent,
+    AttributePropertyComponent,
+    AttributePropertyBoolean,
   };
   use former_types::ComponentAssign;
 
@@ -264,7 +270,7 @@ fn main()
   /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
   pub type AttributePropertyCustom = AttributePropertyBoolean< AttributePropertyCustomMarker >;
 
-  // == Test code
+  // == test code
 
   // Parse an attribute and construct a `StructAttributes` instance.
   let input : syn::Attribute = syn::parse_quote!( #[ mutator( custom = true, hint = false ) ] );
@@ -278,4 +284,5 @@ fn main()
   assert_eq!( attr.internal(), true );
   let attr : AttributePropertyBoolean< AttributePropertyHintMarker > = false.into();
   assert_eq!( attr.internal(), false );
+
 }

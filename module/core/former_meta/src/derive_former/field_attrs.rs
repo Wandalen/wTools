@@ -532,61 +532,6 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
   }
 }
 
-// impl syn::parse::Parse for AttributeSubformScalarSetter
-// {
-//   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
-//   {
-//     let mut name : Option< syn::Ident > = None;
-//     let mut setter : Option< bool > = None;
-//     let mut hint = false;
-//
-//     while !input.is_empty()
-//     {
-//       let lookahead = input.lookahead1();
-//       if lookahead.peek( syn::Ident )
-//       {
-//         let ident : syn::Ident = input.parse()?;
-//         match ident.to_string().as_str()
-//         {
-//           "name" =>
-//           {
-//             input.parse::< syn::Token![ = ] >()?;
-//             name = Some( input.parse()? );
-//           }
-//           "setter" =>
-//           {
-//             input.parse::< syn::Token![ = ] >()?;
-//             let value : syn::LitBool = input.parse()?;
-//             setter = Some( value.value() );
-//           }
-//           "hint" =>
-//           {
-//             input.parse::< syn::Token![ = ] >()?;
-//             let value : syn::LitBool = input.parse()?;
-//             hint = value.value;
-//           }
-//           _ =>
-//           {
-//             return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `subform_scalar( name = myName, setter = true )`", ident ) ) );
-//           }
-//         }
-//       }
-//       else
-//       {
-//         return Err( syn::Error::new( input.span(), "Expected 'name', 'setter', or 'definition' identifier. For example: `subform_scalar( name = myName, setter = true )`" ) );
-//       }
-//
-//       // Optional comma handling
-//       if input.peek( syn::Token![ , ] )
-//       {
-//         input.parse::< syn::Token![ , ] >()?;
-//       }
-//     }
-//
-//     Ok( Self { name : name.into(), setter : setter.into(), hint : hint.into() } )
-//   }
-// }
-
 /// Represents an attribute for configuring collection setter generation.
 ///
 /// This struct is part of a meta-programming approach to enable detailed configuration of nested structs or collections such as `Vec< E >, HashMap< K, E >` and so on.

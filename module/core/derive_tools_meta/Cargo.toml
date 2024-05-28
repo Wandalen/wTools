@@ -63,7 +63,10 @@ derive_variadic_from = []
 [dependencies]
 macro_tools = { workspace = true, features = [ "full" ] }
 iter_tools = { workspace = true, features = [ "full" ] }
-# xxx : qqq : for Petro : optimize features set
+former_types = { workspace = true, features = [ "enabled", "types_component_assign" ] }
+const_format = { version = "0.2.32" }
+
+# xxx : qqq : optimize features set
 
 [dev-dependencies]
 test_tools = { workspace = true }
