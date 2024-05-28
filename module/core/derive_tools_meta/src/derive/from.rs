@@ -116,6 +116,7 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
             &generics_ty,
             &generics_where,
             variant,
+            &original_input,
           )
         }
         else
@@ -151,6 +152,7 @@ fn variant_generate
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
   variant : &syn::Variant,
+  original_input : &proc_macro::TokenStream,
 )
 -> Result< proc_macro2::TokenStream >
 {
@@ -190,15 +192,15 @@ fn variant_generate
     )
   };
 
-  if attr.hint.into()
+  if attrs.config.hint.into()
   {
     let hint = format!
     (
       r#"
 #[ automatically_derived ]
-impl< {generics_impl} > From< {args} > for {item_name}< {generics_ty} >
+impl< {0} > From< {args} > for {item_name}< {1} >
 where
-  {generics_where}
+  {2}
 {{
   #[ inline ]
   fn from( src : {args} ) -> Self
@@ -207,7 +209,9 @@ where
   }}
 }}
       "#,
-      // format!( "{}", qt!{ #entry_typ } ),
+      format!( "{}", qt!{ #generics_impl } ),
+      format!( "{}", qt!{ #generics_ty } ),
+      format!( "{}", qt!{ #generics_where } ),
     );
     let about = format!
     (
