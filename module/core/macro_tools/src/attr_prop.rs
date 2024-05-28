@@ -95,12 +95,12 @@
 //! The `parse_quote!` macro is used to create a `syn::Attribute` instance with the attribute syntax,
 //! which is then parsed into the `MyAttributes` struct. The resulting `MyAttributes` instance is printed to the console.
 
-mod enabled;
-mod boolean;
-mod optional_boolean;
-mod syn;
-mod optional_syn;
 mod singletone;
+mod singletone_optional;
+mod boolean;
+mod boolean_optional;
+mod syn;
+mod syn_optional;
 
 /// Internal namespace.
 pub( crate ) mod private
@@ -145,12 +145,15 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::
   {
-    enabled::AttributePropertyEnabled,
-    enabled::AttributePropertyEnabledMarker,
+    singletone::AttributePropertySingletone,
+    singletone::AttributePropertySingletoneMarker,
+    singletone_optional::AttributePropertyEnabled,
+    singletone_optional::AttributePropertyEnabledMarker,
+
     boolean::AttributePropertyBoolean,
-    optional_boolean::AttributePropertyOptionalBoolean,
+    boolean_optional::AttributePropertyOptionalBoolean,
     syn::AttributePropertySyn,
-    optional_syn::AttributePropertyOptionalSyn,
+    syn_optional::AttributePropertyOptionalSyn,
   };
 }
 

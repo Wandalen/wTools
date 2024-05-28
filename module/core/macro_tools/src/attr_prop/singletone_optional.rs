@@ -1,4 +1,4 @@
-//! A generic boolean attribute property.
+//! A generic `Option< bool >` attribute property which consists of only keyword.
 //! Defaults to `None`.
 //!
 //! This property can have three states: `None`, `Some( true )`, or `Some( false )`.
@@ -16,6 +16,7 @@
 use crate::*;
 
 /// Default marker for `AttributePropertyEnabled`.
+/// Used if no marker is defined as parameter.
 #[ derive( Debug, Default, Clone, Copy ) ]
 pub struct AttributePropertyEnabledMarker;
 
@@ -30,18 +31,18 @@ pub struct AttributePropertyEnabledMarker;
 pub struct AttributePropertyEnabled< Marker = AttributePropertyEnabledMarker >
 (
   Option< bool >,
-  ::core::marker::PhantomData< Marker >
+  ::core::marker::PhantomData< Marker >,
 );
 
 impl< Marker > AttributePropertyEnabled< Marker >
 {
 
-  /// Keywords for parsing this attribute property.
-  pub const KEYWORDS : [ &'static str ; 2 ] = [ "on", "off" ];
-  /// Keywords for parsing this attribute property.
-  pub const KEYWORD_OFF : &'static str = "off";
-  /// Keywords for parsing this attribute property.
-  pub const KEYWORD_ON : &'static str = "on";
+  // /// Keywords for parsing this attribute property.
+  // pub const KEYWORDS : [ &'static str ; 2 ] = [ "on", "off" ];
+  // /// Keywords for parsing this attribute property.
+  // pub const KEYWORD_OFF : &'static str = "off";
+  // /// Keywords for parsing this attribute property.
+  // pub const KEYWORD_ON : &'static str = "on";
 
   /// Return bool value: on/off, use argument as default if it's `None`.
   #[ inline ]

@@ -551,8 +551,8 @@ impl syn::parse::Parse for ItemAttributeConfig
       let known = const_format::concatcp!
       (
         "Known entries of attribute ", ItemAttributeConfig::KEYWORD, " are : ",
-        AttributePropertyEnabled::KEYWORD_ON,
-        ", ", AttributePropertyEnabled::KEYWORD_OFF,
+        AttributePropertyEnabledMarker::KEYWORD_ON,
+        ", ", AttributePropertyEnabledMarker::KEYWORD_OFF,
         ".",
       );
       syn_err!
@@ -574,8 +574,8 @@ impl syn::parse::Parse for ItemAttributeConfig
         let ident : syn::Ident = input.parse()?;
         match ident.to_string().as_str()
         {
-          AttributePropertyEnabled::KEYWORD_ON => result.assign( AttributePropertyEnabled::from( true ) ),
-          AttributePropertyEnabled::KEYWORD_OFF => result.assign( AttributePropertyEnabled::from( false ) ),
+          AttributePropertyEnabledMarker::KEYWORD_ON => result.assign( AttributePropertyEnabled::from( true ) ),
+          AttributePropertyEnabledMarker::KEYWORD_OFF => result.assign( AttributePropertyEnabled::from( false ) ),
           _ => return Err( error( &ident ) ),
         }
       }
@@ -743,8 +743,8 @@ impl syn::parse::Parse for FieldAttributeConfig
       (
         "Known entries of attribute ", FieldAttributeConfig::KEYWORD, " are : ",
         AttributePropertyHint::KEYWORD,
-        ", ", AttributePropertyEnabled::KEYWORD_ON,
-        ", ", AttributePropertyEnabled::KEYWORD_OFF,
+        ", ", AttributePropertyEnabledMarker::KEYWORD_ON,
+        ", ", AttributePropertyEnabledMarker::KEYWORD_OFF,
         ".",
       );
       syn_err!
@@ -766,8 +766,8 @@ impl syn::parse::Parse for FieldAttributeConfig
         let ident : syn::Ident = input.parse()?;
         match ident.to_string().as_str()
         {
-          AttributePropertyEnabled::KEYWORD_ON => result.assign( AttributePropertyEnabled::from( true ) ),
-          AttributePropertyEnabled::KEYWORD_OFF => result.assign( AttributePropertyEnabled::from( false ) ),
+          AttributePropertyEnabledMarker::KEYWORD_ON => result.assign( AttributePropertyEnabled::from( true ) ),
+          AttributePropertyEnabledMarker::KEYWORD_OFF => result.assign( AttributePropertyEnabled::from( false ) ),
           AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
           _ => return Err( error( &ident ) ),
         }
@@ -809,6 +809,14 @@ pub type AttributePropertyHint = AttributePropertyBoolean< AttributePropertyHint
 /// Marker type for attribute property to indicates whether `From` implementation for fields/variants should be generated.
 #[ derive( Debug, Default, Clone, Copy ) ]
 pub struct AttributePropertyEnabledMarker;
+
+impl AttributePropertyEnabledMarker
+{
+  /// Keywords for parsing this attribute property.
+  pub const KEYWORD_OFF : &'static str = "off";
+  /// Keywords for parsing this attribute property.
+  pub const KEYWORD_ON : &'static str = "on";
+}
 
 /// Specifies whether `From` implementation for fields/variants should be generated.
 /// Can be altered using `on` and `off` attributes. But default it's `on`.

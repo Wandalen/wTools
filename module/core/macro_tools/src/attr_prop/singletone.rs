@@ -1,4 +1,4 @@
-//! A generic boolean attribute property.
+//! A generic `bool` attribute property which consists of only keyword.
 //! Defaults to `None`.
 //!
 //! This property can have two states: `true`, or `false`.
@@ -14,10 +14,11 @@
 use crate::*;
 
 /// Default marker for `AttributePropertySingletone`.
+/// Used if no marker is defined as parameter.
 #[ derive( Debug, Default, Clone, Copy ) ]
 pub struct AttributePropertySingletoneMarker;
 
-/// A generic attribute property for switching on/off.
+/// A generic boolean attribute property which consists of only keyword.
 /// This property can have two states: `true`, or `false`.
 /// Defaults to `false`.
 ///
@@ -26,7 +27,7 @@ pub struct AttributePropertySingletoneMarker;
 pub struct AttributePropertySingletone< Marker = AttributePropertySingletoneMarker >
 (
   bool,
-  ::core::marker::PhantomData< Marker >
+  ::core::marker::PhantomData< Marker >,
 );
 
 impl< Marker > AttributePropertySingletone< Marker >
