@@ -7,7 +7,12 @@ mod private
   use wtools::error::
   {
     err,
-    for_app::{ Result, Error },
+    for_app::
+    { 
+      Result, 
+      Error,
+      Context,
+    },
   };
   use std::borrow::Cow;
   use std::fs::{ OpenOptions };
