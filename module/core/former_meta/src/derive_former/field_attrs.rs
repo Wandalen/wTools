@@ -508,8 +508,6 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
-
-        input.parse::< syn::Token![ = ] >()?;
         match ident.to_string().as_str()
         {
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
