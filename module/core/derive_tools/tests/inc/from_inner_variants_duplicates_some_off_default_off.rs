@@ -10,8 +10,8 @@ pub enum GetData
   Nothing,
   Nothing2,
   FromString( String ),
-  #[ from( on ) ]
-  // #[ from( on, hint = true ) ]
+  // #[ from( on ) ]
+  #[ from( on, debug) ]
   // xxx : rename `hint` to `debug` and rid rid `off = true`
   FromString2( String ),
   FromPair( String, String ),

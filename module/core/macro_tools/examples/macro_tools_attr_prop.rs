@@ -106,7 +106,7 @@ fn main()
   /// ## Example of code
   ///
   /// ```ignore
-  /// #[ mutator( custom = true, hint = true ) ]
+  /// #[ mutator( custom = true, debug = true ) ]
   /// ```
   #[ derive( Debug, Default ) ]
   pub struct AttributeMutator
@@ -114,9 +114,9 @@ fn main()
     /// Indicates whether a custom mutator should be generated.
     /// Defaults to `false`, meaning no custom mutator is generated unless explicitly requested.
     pub custom : AttributePropertyCustom,
-    /// Specifies whether to provide a sketch of the mutator as a hint.
+    /// Specifies whether to print code generated for the field.
     /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-    pub hint : AttributePropertyHint,
+    pub debug : AttributePropertyDebug,
   }
 
   impl AttributeComponent for AttributeMutator
@@ -158,10 +158,10 @@ fn main()
     }
   }
 
-  // Implement `ComponentAssign` trait to allow assigning `AttributePropertyHint` to `AttributeMutator`.
-  impl< IntoT > ComponentAssign< AttributePropertyHint, IntoT > for AttributeMutator
+  // Implement `ComponentAssign` trait to allow assigning `AttributePropertyDebug` to `AttributeMutator`.
+  impl< IntoT > ComponentAssign< AttributePropertyDebug, IntoT > for AttributeMutator
   where
-    IntoT : Into< AttributePropertyHint >,
+    IntoT : Into< AttributePropertyDebug >,
   {
     #[ inline( always ) ]
     fn assign( & mut self, component : IntoT )
@@ -194,7 +194,7 @@ fn main()
         (
           "Known entries of attribute ", AttributeMutator::KEYWORD, " are: ",
           AttributePropertyCustom::KEYWORD,
-          ", ", AttributePropertyHint::KEYWORD,
+          ", ", AttributePropertyDebug::KEYWORD,
           "."
         );
         syn_err!
@@ -218,7 +218,7 @@ fn main()
           match ident.to_string().as_str()
           {
             AttributePropertyCustom::KEYWORD => result.assign( AttributePropertyCustom::parse( input )? ),
-            AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
+            AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::parse( input )? ),
             _ => return Err( error( & ident ) ),
           }
         }
@@ -243,16 +243,16 @@ fn main()
   /// Marker type for attribute property to specify whether to provide a sketch as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
   #[ derive( Debug, Default, Clone, Copy ) ]
-  pub struct AttributePropertyHintMarker;
+  pub struct AttributePropertyDebugMarker;
 
-  impl AttributePropertyComponent for AttributePropertyHintMarker
+  impl AttributePropertyComponent for AttributePropertyDebugMarker
   {
-    const KEYWORD : & 'static str = "hint";
+    const KEYWORD : & 'static str = "debug";
   }
 
   /// Specifies whether to provide a sketch as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub type AttributePropertyHint = AttributePropertyBoolean< AttributePropertyHintMarker >;
+  pub type AttributePropertyDebug = AttributePropertySingletone< AttributePropertyDebugMarker >;
 
   // ==
 
@@ -278,11 +278,11 @@ fn main()
   println!( "{:?}", attrs );
 
   // Test `AttributePropertyBoolean` functionality.
-  let attr : AttributePropertyBoolean< AttributePropertyHintMarker > = AttributePropertyBoolean::default();
+  let attr : AttributePropertyBoolean< AttributePropertyDebugMarker > = AttributePropertyBoolean::default();
   assert_eq!( attr.internal(), false );
-  let attr : AttributePropertyBoolean< AttributePropertyHintMarker > = true.into();
+  let attr : AttributePropertyBoolean< AttributePropertyDebugMarker > = true.into();
   assert_eq!( attr.internal(), true );
-  let attr : AttributePropertyBoolean< AttributePropertyHintMarker > = false.into();
+  let attr : AttributePropertyBoolean< AttributePropertyDebugMarker > = false.into();
   assert_eq!( attr.internal(), false );
 
 }

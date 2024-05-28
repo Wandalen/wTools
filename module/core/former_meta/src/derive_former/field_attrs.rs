@@ -235,7 +235,7 @@ pub struct AttributeScalarSetter
   pub setter : AttributePropertySetter,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : AttributePropertyHint,
+  pub hint : AttributePropertyDebug,
 }
 
 impl AttributeScalarSetter
@@ -306,9 +306,9 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyHint, IntoT > for AttributeScalarSetter
+impl< IntoT > ComponentAssign< AttributePropertyDebug, IntoT > for AttributeScalarSetter
 where
-  IntoT : Into< AttributePropertyHint >,
+  IntoT : Into< AttributePropertyDebug >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
@@ -330,7 +330,7 @@ impl syn::parse::Parse for AttributeScalarSetter
         "Known entries of attribute ", AttributeScalarSetter::KEYWORD, " are : ",
         AttributePropertyName::KEYWORD,
         ", ", AttributePropertySetter::KEYWORD,
-        ", ", AttributePropertyHint::KEYWORD,
+        ", ", AttributePropertyDebug::KEYWORD,
         ".",
       );
       syn_err!
@@ -354,7 +354,7 @@ impl syn::parse::Parse for AttributeScalarSetter
         {
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
           AttributePropertySetter::KEYWORD => result.assign( AttributePropertySetter::parse( input )? ),
-          AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
+          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::parse( input )? ),
           _ => return Err( error( &ident ) ),
         }
       }
@@ -396,7 +396,7 @@ pub struct AttributeSubformScalarSetter
   pub setter : AttributePropertySetter,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : AttributePropertyHint,
+  pub hint : AttributePropertyDebug,
 }
 
 impl AttributeSubformScalarSetter
@@ -466,9 +466,9 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyHint, IntoT > for AttributeSubformScalarSetter
+impl< IntoT > ComponentAssign< AttributePropertyDebug, IntoT > for AttributeSubformScalarSetter
 where
-  IntoT : Into< AttributePropertyHint >,
+  IntoT : Into< AttributePropertyDebug >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
@@ -490,7 +490,7 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
         "Known entries of attribute ", AttributeSubformScalarSetter::KEYWORD, " are : ",
         AttributePropertyName::KEYWORD,
         ", ", AttributePropertySetter::KEYWORD,
-        ", ", AttributePropertyHint::KEYWORD,
+        ", ", AttributePropertyDebug::KEYWORD,
         ".",
       );
       syn_err!
@@ -514,7 +514,7 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
         {
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
           AttributePropertySetter::KEYWORD => result.assign( AttributePropertySetter::parse( input )? ),
-          AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
+          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::parse( input )? ),
           _ => return Err( error( &ident ) ),
         }
       }
@@ -556,7 +556,7 @@ pub struct AttributeSubformCollectionSetter
   pub setter : AttributePropertySetter,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : AttributePropertyHint,
+  pub hint : AttributePropertyDebug,
   /// Definition of the collection former to use, e.g., `former::VectorFormer`.
   pub definition : AttributePropertyDefinition,
 }
@@ -639,9 +639,9 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyHint, IntoT > for AttributeSubformCollectionSetter
+impl< IntoT > ComponentAssign< AttributePropertyDebug, IntoT > for AttributeSubformCollectionSetter
 where
-  IntoT : Into< AttributePropertyHint >,
+  IntoT : Into< AttributePropertyDebug >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
@@ -663,7 +663,7 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
         "Known entries of attribute ", AttributeSubformCollectionSetter::KEYWORD, " are : ",
         AttributePropertyName::KEYWORD,
         ", ", AttributePropertySetter::KEYWORD,
-        ", ", AttributePropertyHint::KEYWORD,
+        ", ", AttributePropertyDebug::KEYWORD,
         ", ", AttributePropertyDefinition::KEYWORD,
         ".",
       );
@@ -688,7 +688,7 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
         {
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
           AttributePropertySetter::KEYWORD => result.assign( AttributePropertySetter::parse( input )? ),
-          AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
+          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::parse( input )? ),
           AttributePropertyDefinition::KEYWORD => result.assign( AttributePropertyDefinition::parse( input )? ),
           _ => return Err( error( &ident ) ),
         }
@@ -738,7 +738,7 @@ pub struct AttributeSubformEntrySetter
   pub setter : AttributePropertySetter,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : AttributePropertyHint,
+  pub hint : AttributePropertyDebug,
 }
 
 impl AttributeSubformEntrySetter
@@ -808,9 +808,9 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyHint, IntoT > for AttributeSubformEntrySetter
+impl< IntoT > ComponentAssign< AttributePropertyDebug, IntoT > for AttributeSubformEntrySetter
 where
-  IntoT : Into< AttributePropertyHint >,
+  IntoT : Into< AttributePropertyDebug >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
@@ -832,7 +832,7 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
         "Known entries of attribute ", AttributeSubformEntrySetter::KEYWORD, " are : ",
         AttributePropertyName::KEYWORD,
         ", ", AttributePropertySetter::KEYWORD,
-        ", ", AttributePropertyHint::KEYWORD,
+        ", ", AttributePropertyDebug::KEYWORD,
         ".",
       );
       syn_err!
@@ -856,7 +856,7 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
         {
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
           AttributePropertySetter::KEYWORD => result.assign( AttributePropertySetter::parse( input )? ),
-          AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
+          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::parse( input )? ),
           _ => return Err( error( &ident ) ),
         }
       }
@@ -883,18 +883,18 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
 /// Marker type for attribute property to specify whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyHintMarker;
+pub struct AttributePropertyDebugMarker;
 
 /// Specifies whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-impl AttributePropertyComponent for AttributePropertyHintMarker
+impl AttributePropertyComponent for AttributePropertyDebugMarker
 {
   const KEYWORD : &'static str = "hint";
 }
 
 /// Specifies whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-pub type AttributePropertyHint = AttributePropertyBoolean< AttributePropertyHintMarker >;
+pub type AttributePropertyDebug = AttributePropertySingletone< AttributePropertyDebugMarker >;
 
 // =
 

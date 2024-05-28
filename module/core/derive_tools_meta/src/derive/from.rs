@@ -9,7 +9,7 @@ use macro_tools::
   Result,
   AttributeComponent,
   AttributePropertyComponent,
-  AttributePropertyBoolean,
+  AttributePropertySingletone,
 };
 
 use former_types::ComponentAssign;
@@ -192,9 +192,9 @@ fn variant_generate
     )
   };
 
-  if attrs.config.hint.into()
+  if attrs.config.debug.into()
   {
-    let hint = format!
+    let debug = format!
     (
       r#"
 #[ automatically_derived ]
@@ -219,7 +219,7 @@ r#"derive : From
 item : {item_name}
 field : {variant_name}"#,
     );
-    diag::report_print( about, original_input, hint );
+    diag::report_print( about, original_input, debug );
   }
 
   Ok
@@ -483,7 +483,7 @@ impl ItemAttributes
 /// Attribute to hold parameters of forming for a specific field or variant.
 /// For example to avoid code From generation for it.
 ///
-/// `#[ from( off, hint : true ) ]`
+/// `#[ from( on, debug ) ]`
 ///
 
 #[ derive( Debug, Default ) ]
@@ -661,7 +661,7 @@ impl FieldAttributes
 /// Attribute to hold parameters of forming for a specific field or variant.
 /// For example to avoid code From generation for it.
 ///
-/// `#[ from( off, hint : true ) ]`
+/// `#[ from( on, debug ) ]`
 ///
 
 #[ derive( Debug, Default ) ]
@@ -670,9 +670,9 @@ pub struct FieldAttributeConfig
   /// Specifies whether we should generate From implementation for the field.
   /// Can be altered using `on` and `off` attributes
   pub enabled : AttributePropertyEnabled,
-  /// Specifies whether to provide a sketch of generated From or not.
-  /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : AttributePropertyHint,
+  /// Specifies whether to print a sketch of generated `From` or not.
+  /// Defaults to `false`, which means no code is printed unless explicitly requested.
+  pub debug : AttributePropertyDebug,
   // qqq : xxx : implement
 }
 
@@ -720,14 +720,14 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyHint, IntoT > for FieldAttributeConfig
+impl< IntoT > ComponentAssign< AttributePropertyDebug, IntoT > for FieldAttributeConfig
 where
-  IntoT : Into< AttributePropertyHint >,
+  IntoT : Into< AttributePropertyDebug >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.hint = component.into();
+    self.debug = component.into();
   }
 }
 
@@ -742,7 +742,7 @@ impl syn::parse::Parse for FieldAttributeConfig
       let known = const_format::concatcp!
       (
         "Known entries of attribute ", FieldAttributeConfig::KEYWORD, " are : ",
-        AttributePropertyHint::KEYWORD,
+        AttributePropertyDebug::KEYWORD,
         ", ", AttributePropertyEnabledMarker::KEYWORD_ON,
         ", ", AttributePropertyEnabledMarker::KEYWORD_OFF,
         ".",
@@ -766,9 +766,9 @@ impl syn::parse::Parse for FieldAttributeConfig
         let ident : syn::Ident = input.parse()?;
         match ident.to_string().as_str()
         {
+          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::from( true ) ),
           AttributePropertyEnabledMarker::KEYWORD_ON => result.assign( AttributePropertyEnabled::from( true ) ),
           AttributePropertyEnabledMarker::KEYWORD_OFF => result.assign( AttributePropertyEnabled::from( false ) ),
-          AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
           _ => return Err( error( &ident ) ),
         }
       }
@@ -790,19 +790,19 @@ impl syn::parse::Parse for FieldAttributeConfig
 
 // == attribute properties
 
-/// Marker type for attribute property to specify whether to provide a sketch as a hint.
-/// Defaults to `false`, which means no hint is provided unless explicitly requested.
+/// Marker type for attribute property to specify whether to provide a generated code as a hint.
+/// Defaults to `false`, which means no debug is provided unless explicitly requested.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyHintMarker;
+pub struct AttributePropertyDebugMarker;
 
-impl AttributePropertyComponent for AttributePropertyHintMarker
+impl AttributePropertyComponent for AttributePropertyDebugMarker
 {
-  const KEYWORD : &'static str = "hint";
+  const KEYWORD : &'static str = "debug";
 }
 
-/// Specifies whether to provide a sketch as a hint.
-/// Defaults to `false`, which means no hint is provided unless explicitly requested.
-pub type AttributePropertyHint = AttributePropertyBoolean< AttributePropertyHintMarker >;
+/// Specifies whether to provide a generated code as a hint.
+/// Defaults to `false`, which means no debug is provided unless explicitly requested.
+pub type AttributePropertyDebug = AttributePropertySingletone< AttributePropertyDebugMarker >;
 
 // =
 

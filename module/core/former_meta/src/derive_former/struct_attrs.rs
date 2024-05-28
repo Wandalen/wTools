@@ -243,7 +243,7 @@ pub struct AttributeMutator
   pub custom : AttributePropertyCustom,
   /// Specifies whether to provide a sketch of the mutator as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : AttributePropertyHint,
+  pub hint : AttributePropertyDebug,
   // qqq : xxx : use the property. currently it's not used
 }
 
@@ -280,9 +280,9 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyHint, IntoT > for AttributeMutator
+impl< IntoT > ComponentAssign< AttributePropertyDebug, IntoT > for AttributeMutator
 where
-  IntoT : Into< AttributePropertyHint >,
+  IntoT : Into< AttributePropertyDebug >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
@@ -314,7 +314,7 @@ impl syn::parse::Parse for AttributeMutator
       (
         "Known entries of attribute ", AttributeMutator::KEYWORD, " are : ",
         AttributePropertyCustom::KEYWORD,
-        ", ", AttributePropertyHint::KEYWORD,
+        ", ", AttributePropertyDebug::KEYWORD,
         ".",
       );
       syn_err!
@@ -337,7 +337,7 @@ impl syn::parse::Parse for AttributeMutator
         match ident.to_string().as_str()
         {
           AttributePropertyCustom::KEYWORD => result.assign( AttributePropertyCustom::parse( input )? ),
-          AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
+          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::parse( input )? ),
           _ => return Err( error( &ident ) ),
         }
       }
@@ -416,16 +416,16 @@ where
 /// Marker type for attribute property to specify whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyHintMarker;
+pub struct AttributePropertyDebugMarker;
 
-impl AttributePropertyComponent for AttributePropertyHintMarker
+impl AttributePropertyComponent for AttributePropertyDebugMarker
 {
   const KEYWORD : &'static str = "hint";
 }
 
 /// Specifies whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-pub type AttributePropertyHint = AttributePropertyBoolean< AttributePropertyHintMarker >;
+pub type AttributePropertyDebug = AttributePropertySingletone< AttributePropertyDebugMarker >;
 
 // =
 
