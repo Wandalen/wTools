@@ -18,7 +18,7 @@ fn main()
   #[ derive( Debug, Former ) ]
   pub struct StructWithCustomSetters
   {
-    // Use `hint = true` to gennerate sketch of setter.
+    // Use `debug` to gennerate sketch of setter.
     #[ scalar( setter = false, hint = false ) ]
     word : String,
   }

@@ -10,6 +10,7 @@ use macro_tools::
   AttributePropertyBoolean,
   AttributePropertyOptionalBoolean,
   AttributePropertyOptionalSyn,
+  AttributePropertySingletone,
 };
 use former_types::{ ComponentAssign };
 
@@ -354,7 +355,7 @@ impl syn::parse::Parse for AttributeScalarSetter
         {
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
           AttributePropertySetter::KEYWORD => result.assign( AttributePropertySetter::parse( input )? ),
-          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::parse( input )? ),
+          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::from( true ) ),
           _ => return Err( error( &ident ) ),
         }
       }
@@ -514,7 +515,7 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
         {
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
           AttributePropertySetter::KEYWORD => result.assign( AttributePropertySetter::parse( input )? ),
-          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::parse( input )? ),
+          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::from( true ) ),
           _ => return Err( error( &ident ) ),
         }
       }
@@ -556,7 +557,7 @@ pub struct AttributeSubformCollectionSetter
   pub setter : AttributePropertySetter,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : AttributePropertyDebug,
+  pub debug : AttributePropertyDebug,
   /// Definition of the collection former to use, e.g., `former::VectorFormer`.
   pub definition : AttributePropertyDefinition,
 }
@@ -688,7 +689,7 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
         {
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
           AttributePropertySetter::KEYWORD => result.assign( AttributePropertySetter::parse( input )? ),
-          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::parse( input )? ),
+          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::from( true ) ),
           AttributePropertyDefinition::KEYWORD => result.assign( AttributePropertyDefinition::parse( input )? ),
           _ => return Err( error( &ident ) ),
         }
@@ -856,7 +857,7 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
         {
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
           AttributePropertySetter::KEYWORD => result.assign( AttributePropertySetter::parse( input )? ),
-          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::parse( input )? ),
+          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::from( true ) ),
           _ => return Err( error( &ident ) ),
         }
       }
@@ -889,7 +890,7 @@ pub struct AttributePropertyDebugMarker;
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
 impl AttributePropertyComponent for AttributePropertyDebugMarker
 {
-  const KEYWORD : &'static str = "hint";
+  const KEYWORD : &'static str = "debug";
 }
 
 /// Specifies whether to provide a sketch as a hint.

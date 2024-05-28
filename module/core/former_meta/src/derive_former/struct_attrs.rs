@@ -11,6 +11,7 @@ use macro_tools::
   AttributeComponent,
   AttributePropertyComponent,
   AttributePropertyBoolean,
+  AttributePropertySingletone,
 };
 
 use former_types::{ ComponentAssign };
@@ -232,8 +233,10 @@ impl syn::parse::Parse for AttributeStorageFields
 ///
 /// ## Example of code
 /// ```ignore
-/// custom = true, hint = true
+/// custom = true, debug
 /// ```
+
+// xxx
 
 #[ derive( Debug, Default ) ]
 pub struct AttributeMutator
@@ -243,7 +246,7 @@ pub struct AttributeMutator
   pub custom : AttributePropertyCustom,
   /// Specifies whether to provide a sketch of the mutator as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : AttributePropertyDebug,
+  pub debug : AttributePropertyDebug,
   // qqq : xxx : use the property. currently it's not used
 }
 
@@ -263,7 +266,7 @@ impl AttributeComponent for AttributeMutator
       {
         return Ok( Default::default() )
       },
-      _ => return_syn_err!( attr, "Expects an attribute of format `#[ mutator( custom = true, hint = true ) ]`. \nGot: {}", qt!{ #attr } ),
+      _ => return_syn_err!( attr, "Expects an attribute of format `#[ mutator( custom = true, debug ) ]`. \nGot: {}", qt!{ #attr } ),
     }
   }
 
@@ -337,7 +340,7 @@ impl syn::parse::Parse for AttributeMutator
         match ident.to_string().as_str()
         {
           AttributePropertyCustom::KEYWORD => result.assign( AttributePropertyCustom::parse( input )? ),
-          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::parse( input )? ),
+          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::from( true ) ),
           _ => return Err( error( &ident ) ),
         }
       }
@@ -420,7 +423,7 @@ pub struct AttributePropertyDebugMarker;
 
 impl AttributePropertyComponent for AttributePropertyDebugMarker
 {
-  const KEYWORD : &'static str = "hint";
+  const KEYWORD : &'static str = "debug";
 }
 
 /// Specifies whether to provide a sketch as a hint.

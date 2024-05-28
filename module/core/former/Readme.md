@@ -539,7 +539,7 @@ But it's also possible to completely override setter and write its own from scra
   #[ derive( Debug, Former ) ]
   pub struct StructWithCustomSetters
   {
-    // Use `hint = true` to gennerate sketch of setter.
+    // Use `debug` to gennerate sketch of setter.
     #[ scalar( setter = false, hint = false ) ]
     word : String,
   }
@@ -812,7 +812,7 @@ The `child` function within `ParentFormer` is a custom subform setter that plays
   // #[ debug ]
   pub struct Parent
   {
-    // Use `hint = true` to gennerate sketch of setter.
+    // Use `debug` to gennerate sketch of setter.
     #[ scalar( setter = false, hint = false ) ]
     children : HashMap< String, Child >,
   }
@@ -974,7 +974,7 @@ The `child` function within `ParentFormer` is a custom subform setter that plays
   // #[ debug ]
   pub struct Parent
   {
-    // Use `hint = true` to gennerate sketch of setter.
+    // Use `debug` to gennerate sketch of setter.
     #[ scalar( setter = false, hint = false ) ]
     children : HashMap< String, Child >,
   }
@@ -1055,7 +1055,7 @@ The `child` function within `ParentFormer` is a custom subform setter that plays
   // #[ debug ]
   pub struct Parent
   {
-    // Use `hint = true` to gennerate sketch of setter.
+    // Use `debug` to gennerate sketch of setter.
     #[ subform_entry( setter = false, hint = false ) ]
     child : HashMap< String, Child >,
   }

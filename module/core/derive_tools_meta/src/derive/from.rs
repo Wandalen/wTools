@@ -692,7 +692,7 @@ impl AttributeComponent for FieldAttributeConfig
       {
         return Ok( Default::default() )
       },
-      _ => return_syn_err!( attr, "Expects an attribute of format `#[ from( on, hint = true ) ]`. \nGot: {}", qt!{ #attr } ),
+      _ => return_syn_err!( attr, "Expects an attribute of format `#[ from( on, debug ) ]`. \nGot: {}", qt!{ #attr } ),
     }
   }
 

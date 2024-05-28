@@ -160,7 +160,7 @@ fn main()
   /// ## Example of code
   ///
   /// ```ignore
-  /// #[ mutator( custom = true, hint = true ) ]
+  /// #[ mutator( custom = true, debug ) ]
   /// ```
   #[ derive( Debug, Default ) ]
   pub struct AttributeMutator
@@ -193,7 +193,7 @@ fn main()
         _ => return_syn_err!
         (
           attr,
-          "Expects an attribute of format `#[ mutator( custom = true, hint = true ) ]`. \nGot: {}",
+          "Expects an attribute of format `#[ mutator( custom = true, debug ) ]`. \nGot: {}",
           qt! { #attr }
         ),
       }
@@ -272,7 +272,7 @@ fn main()
           match ident.to_string().as_str()
           {
             AttributePropertyCustom::KEYWORD => result.assign( AttributePropertyCustom::parse( input )? ),
-            AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::parse( input )? ),
+            AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::from( true ) ),
             _ => return Err( error( & ident ) ),
           }
         }
