@@ -540,7 +540,7 @@ But it's also possible to completely override setter and write its own from scra
   pub struct StructWithCustomSetters
   {
     // Use `debug` to gennerate sketch of setter.
-    #[ scalar( setter = false, hint = false ) ]
+    #[ scalar( setter = false, hint ) ]
     word : String,
   }
 
@@ -813,7 +813,7 @@ The `child` function within `ParentFormer` is a custom subform setter that plays
   pub struct Parent
   {
     // Use `debug` to gennerate sketch of setter.
-    #[ scalar( setter = false, hint = false ) ]
+    #[ scalar( setter = false, hint ) ]
     children : HashMap< String, Child >,
   }
 
@@ -907,7 +907,7 @@ their own formers, allowing for detailed configuration within a nested builder p
   {
     // The `subform_scalar` attribute is used to specify that the 'child' field has its own former
     // and can be individually configured via a subform setter. This is not a collection but a single scalar entity.
-    #[ subform_scalar( setter = false, hint = false ) ]
+    #[ subform_scalar( setter = false, hint ) ]
     child : Child,
   }
 
@@ -975,7 +975,7 @@ The `child` function within `ParentFormer` is a custom subform setter that plays
   pub struct Parent
   {
     // Use `debug` to gennerate sketch of setter.
-    #[ scalar( setter = false, hint = false ) ]
+    #[ scalar( setter = false, hint ) ]
     children : HashMap< String, Child >,
   }
 
@@ -1056,7 +1056,7 @@ The `child` function within `ParentFormer` is a custom subform setter that plays
   pub struct Parent
   {
     // Use `debug` to gennerate sketch of setter.
-    #[ subform_entry( setter = false, hint = false ) ]
+    #[ subform_entry( setter = false, hint ) ]
     child : HashMap< String, Child >,
   }
 

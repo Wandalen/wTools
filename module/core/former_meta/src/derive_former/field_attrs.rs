@@ -337,7 +337,7 @@ impl syn::parse::Parse for AttributeScalarSetter
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ scalar( name = myName, setter = true, hint = false ) ]'
+        r#"Expects an attribute of format '#[ scalar( name = myName, setter = true, hint ) ]'
   {known}
   But got: '{}'
 "#,
@@ -497,7 +497,7 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ subform_scalar( name = myName, setter = true, hint = false ) ]'
+        r#"Expects an attribute of format '#[ subform_scalar( name = myName, setter = true, hint ) ]'
   {known}
   But got: '{}'
 "#,
@@ -647,7 +647,7 @@ where
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.hint = component.into();
+    self.debug = component.into();
   }
 }
 
@@ -671,7 +671,7 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ subform_collection( name = myName, setter = true, hint = false, definition = MyDefinition ) ]'
+        r#"Expects an attribute of format '#[ subform_collection( name = myName, setter = true, hint, definition = MyDefinition ) ]'
   {known}
   But got: '{}'
 "#,

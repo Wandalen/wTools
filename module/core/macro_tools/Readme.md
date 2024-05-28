@@ -254,7 +254,7 @@ fn main()
         syn_err!
         (
           ident,
-          r#"Expects an attribute of format '#[ mutator( custom = false, hint = false ) ]'
+          r#"Expects an attribute of format '#[ mutator( custom = false, hint ) ]'
     {known}
     But got: '{}'
   "#,
@@ -327,7 +327,7 @@ fn main()
   // == Test code
 
   // Parse an attribute and construct a `ItemAttributes` instance.
-  let input : syn::Attribute = syn::parse_quote!( #[ mutator( custom = true, hint = false ) ] );
+  let input : syn::Attribute = syn::parse_quote!( #[ mutator( custom = true, hint ) ] );
   let attrs : ItemAttributes = ItemAttributes::from_attrs( std::iter::once( & input ) ).unwrap();
   println!( "{:?}", attrs );
 

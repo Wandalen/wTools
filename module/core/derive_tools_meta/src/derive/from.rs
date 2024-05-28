@@ -750,7 +750,7 @@ impl syn::parse::Parse for FieldAttributeConfig
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ from( on, hint = false ) ]'
+        r#"Expects an attribute of format '#[ from( on, hint ) ]'
   {known}
   But got: '{}'
 "#,

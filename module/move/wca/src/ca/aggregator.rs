@@ -111,7 +111,7 @@ pub( crate ) mod private
     #[ former( default = Parser ) ]
     parser : Parser,
 
-    #[ scalar( setter = false, hint = false ) ]
+    #[ scalar( setter = false, hint ) ]
     #[ former( default = Executor::former().form() ) ]
     executor : Executor,
 

@@ -20,7 +20,7 @@ pub( crate ) mod private
   #[ derive( Debug, Default, Former, Clone ) ]
   pub struct Dictionary
   {
-    #[ scalar( setter = false, hint = false ) ]
+    #[ scalar( setter = false, hint ) ]
     pub( crate ) commands : HashMap< String, Command >,
   }
 
@@ -67,7 +67,7 @@ pub( crate ) mod private
     {
       self.commands.get( name )
     }
-    
+
     /// Find commands that match a given name part.
     ///
     /// This function accepts a `name_part` parameter which is of generic type `NamePart`.

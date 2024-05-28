@@ -48,7 +48,7 @@ fn main()
   pub struct Parent
   {
     // Use `debug` to gennerate sketch of setter.
-    #[ subform_collection( setter = false, hint = false ) ]
+    #[ subform_collection( setter = false, hint ) ]
     children : HashMap< String, Child >,
   }
 

@@ -303,7 +303,7 @@ mod private
   {
     /// Stores all file descriptors for current template.
     #[ subform_entry( setter = true ) ]
-    #[ scalar( setter = false, hint = false ) ]
+    #[ scalar( setter = false, hint ) ]
     pub files : Vec< TemplateFileDescriptor >,
   }
 
