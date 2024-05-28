@@ -77,7 +77,7 @@ use crate::*;
 ///   }
 /// }
 ///
-/// let input : syn::Attribute = syn::parse_quote!( #[ attribute( enabled = true, debug = false ) ] );
+/// let input : syn::Attribute = syn::parse_quote!( #[ attribute( enabled = true ) ] );
 /// let meta = match input.meta
 /// {
 ///   syn::Meta::List( meta_list ) => meta_list,

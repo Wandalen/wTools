@@ -266,7 +266,7 @@ impl AttributeComponent for AttributeMutator
       {
         return Ok( Default::default() )
       },
-      _ => return_syn_err!( attr, "Expects an attribute of format `#[ mutator( custom = true, debug ) ]`. \nGot: {}", qt!{ #attr } ),
+      _ => return_syn_err!( attr, "Expects an attribute of format `#[ mutator( custom = true ) ]`. \nGot: {}", qt!{ #attr } ),
     }
   }
 
@@ -290,7 +290,7 @@ where
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.hint = component.into();
+    self.debug = component.into();
   }
 }
 
@@ -323,7 +323,8 @@ impl syn::parse::Parse for AttributeMutator
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ mutator( custom = false, hint ) ]'
+        // xxx
+        r#"Expects an attribute of format '#[ mutator( custom = false ) ]'
   {known}
   But got: '{}'
 "#,

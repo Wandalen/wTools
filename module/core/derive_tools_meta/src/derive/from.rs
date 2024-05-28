@@ -483,7 +483,7 @@ impl ItemAttributes
 /// Attribute to hold parameters of forming for a specific field or variant.
 /// For example to avoid code From generation for it.
 ///
-/// `#[ from( on, debug ) ]`
+/// `#[ from( on ) ]`
 ///
 
 #[ derive( Debug, Default ) ]
@@ -661,7 +661,7 @@ impl FieldAttributes
 /// Attribute to hold parameters of forming for a specific field or variant.
 /// For example to avoid code From generation for it.
 ///
-/// `#[ from( on, debug ) ]`
+/// `#[ from( on ) ]`
 ///
 
 #[ derive( Debug, Default ) ]
@@ -692,7 +692,7 @@ impl AttributeComponent for FieldAttributeConfig
       {
         return Ok( Default::default() )
       },
-      _ => return_syn_err!( attr, "Expects an attribute of format `#[ from( on, debug ) ]`. \nGot: {}", qt!{ #attr } ),
+      _ => return_syn_err!( attr, "Expects an attribute of format `#[ from( on ) ]`. \nGot: {}", qt!{ #attr } ),
     }
   }
 
@@ -750,7 +750,7 @@ impl syn::parse::Parse for FieldAttributeConfig
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ from( on, hint ) ]'
+        r#"Expects an attribute of format '#[ from( on ) ]'
   {known}
   But got: '{}'
 "#,

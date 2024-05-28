@@ -53,7 +53,7 @@ fn main()
   {
     // The `subform_scalar` attribute is used to specify that the 'child' field has its own former
     // and can be individually configured via a subform setter. This is not a collection but a single scalar entity.
-    #[ subform_scalar( setter = false, hint ) ]
+    #[ subform_scalar( setter = false ) ]
     child : Child,
   }
 

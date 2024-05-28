@@ -69,7 +69,7 @@ fn attr_prop_test()
     }
   }
 
-  let input : syn::Attribute = syn::parse_quote!( #[ attribute( enabled = true, debug = false ) ] );
+  let input : syn::Attribute = syn::parse_quote!( #[ attribute( enabled = true ) ] );
   let meta = match input.meta
   {
     syn::Meta::List( meta_list ) => meta_list,
@@ -87,7 +87,7 @@ fn attr_prop_test()
   let attr : AttributePropertyBoolean< DebugMarker > = false.into();
   assert_eq!( attr.internal(), false );
 
-  let input : syn::Attribute = syn::parse_quote!( #[ attribute( enabled = true, debug = false ) ] );
+  let input : syn::Attribute = syn::parse_quote!( #[ attribute( enabled = true ) ] );
   let meta = match input.meta
   {
     syn::Meta::List( meta_list ) => meta_list,

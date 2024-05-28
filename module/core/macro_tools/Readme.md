@@ -160,7 +160,7 @@ fn main()
   /// ## Example of code
   ///
   /// ```ignore
-  /// #[ mutator( custom = true, debug ) ]
+  /// #[ mutator( custom = true ) ]
   /// ```
   #[ derive( Debug, Default ) ]
   pub struct AttributeMutator
@@ -170,7 +170,7 @@ fn main()
     pub custom : AttributePropertyCustom,
     /// Specifies whether to provide a sketch of the mutator as a hint.
     /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-    pub hint : AttributePropertyDebug,
+    pub debug : AttributePropertyDebug,
   }
 
   impl AttributeComponent for AttributeMutator
@@ -193,7 +193,7 @@ fn main()
         _ => return_syn_err!
         (
           attr,
-          "Expects an attribute of format `#[ mutator( custom = true, debug ) ]`. \nGot: {}",
+          "Expects an attribute of format `#[ mutator( custom = true ) ]`. \nGot: {}",
           qt! { #attr }
         ),
       }
@@ -220,7 +220,7 @@ fn main()
     #[ inline( always ) ]
     fn assign( & mut self, component : IntoT )
     {
-      self.hint = component.into();
+      self.debug = component.into();
     }
   }
 
@@ -254,7 +254,7 @@ fn main()
         syn_err!
         (
           ident,
-          r#"Expects an attribute of format '#[ mutator( custom = false, hint ) ]'
+          r#"Expects an attribute of format '#[ mutator( custom = false ) ]'
     {known}
     But got: '{}'
   "#,
@@ -327,7 +327,7 @@ fn main()
   // == Test code
 
   // Parse an attribute and construct a `ItemAttributes` instance.
-  let input : syn::Attribute = syn::parse_quote!( #[ mutator( custom = true, hint ) ] );
+  let input : syn::Attribute = syn::parse_quote!( #[ mutator( custom = true ) ] );
   let attrs : ItemAttributes = ItemAttributes::from_attrs( std::iter::once( & input ) ).unwrap();
   println!( "{:?}", attrs );
 

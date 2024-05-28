@@ -48,7 +48,7 @@ fn main()
   pub struct Parent
   {
     // Use `debug` to gennerate sketch of setter.
-    #[ scalar( setter = false, hint ) ]
+    #[ scalar( setter = false ) ]
     children : HashMap< String, Child >,
   }
 

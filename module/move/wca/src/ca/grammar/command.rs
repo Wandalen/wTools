@@ -23,7 +23,7 @@ pub( crate ) mod private
   pub struct ValueDescription
   {
     /// providing guidance to the user for entering a valid value
-    pub hint : String,
+    pub debug : String,
     /// expected type of a value
     pub kind : Type,
     /// subject optional parameter
@@ -90,7 +90,7 @@ pub( crate ) mod private
   pub struct Command
   {
     /// Command common hint.
-    pub hint : String,
+    pub debug : String,
     /// Command full hint.
     pub long_hint : String,
     /// Phrase descriptor for command.

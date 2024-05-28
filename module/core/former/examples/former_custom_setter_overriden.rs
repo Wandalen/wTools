@@ -19,7 +19,7 @@ fn main()
   pub struct StructWithCustomSetters
   {
     // Use `debug` to gennerate sketch of setter.
-    #[ scalar( setter = false, hint ) ]
+    #[ scalar( setter = false ) ]
     word : String,
   }
 

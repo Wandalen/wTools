@@ -7,7 +7,6 @@ use macro_tools::
   Result,
   AttributeComponent,
   AttributePropertyComponent,
-  AttributePropertyBoolean,
   AttributePropertyOptionalBoolean,
   AttributePropertyOptionalSyn,
   AttributePropertySingletone,
@@ -236,7 +235,7 @@ pub struct AttributeScalarSetter
   pub setter : AttributePropertySetter,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : AttributePropertyDebug,
+  pub debug : AttributePropertyDebug,
 }
 
 impl AttributeScalarSetter
@@ -314,7 +313,7 @@ where
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.hint = component.into();
+    self.debug = component.into();
   }
 }
 
@@ -337,7 +336,7 @@ impl syn::parse::Parse for AttributeScalarSetter
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ scalar( name = myName, setter = true, hint ) ]'
+        r#"Expects an attribute of format '#[ scalar( name = myName, setter = true ) ]'
   {known}
   But got: '{}'
 "#,
@@ -397,7 +396,7 @@ pub struct AttributeSubformScalarSetter
   pub setter : AttributePropertySetter,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : AttributePropertyDebug,
+  pub debug : AttributePropertyDebug,
 }
 
 impl AttributeSubformScalarSetter
@@ -474,7 +473,7 @@ where
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.hint = component.into();
+    self.debug = component.into();
   }
 }
 
@@ -497,7 +496,7 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ subform_scalar( name = myName, setter = true, hint ) ]'
+        r#"Expects an attribute of format '#[ subform_scalar( name = myName, setter = true ) ]'
   {known}
   But got: '{}'
 "#,
@@ -671,7 +670,7 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ subform_collection( name = myName, setter = true, hint, definition = MyDefinition ) ]'
+        r#"Expects an attribute of format '#[ subform_collection( name = myName, setter = true, debug, definition = MyDefinition ) ]'
   {known}
   But got: '{}'
 "#,
@@ -739,7 +738,7 @@ pub struct AttributeSubformEntrySetter
   pub setter : AttributePropertySetter,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : AttributePropertyDebug,
+  pub debug : AttributePropertyDebug,
 }
 
 impl AttributeSubformEntrySetter
@@ -816,7 +815,7 @@ where
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.hint = component.into();
+    self.debug = component.into();
   }
 }
 

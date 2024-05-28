@@ -70,9 +70,9 @@ pub fn mutator
     }
   };
 
-  if mutator.hint.into()
+  if mutator.debug.into()
   {
-    let hint = format!
+    let debug = format!
     (
       r#"
 = Example of custom mutator
@@ -93,13 +93,13 @@ where
       format!( "{}", qt!{ #former_definition_types_generics_ty } ),
       format!( "{}", qt!{ #former_definition_types_generics_where } ),
     );
-    // println!( "{hint}" );
+    // println!( "{debug}" );
     let about = format!
     (
 r#"derive : Former
 item : {stru}"#,
     );
-    diag::report_print( about, original_input, hint );
+    diag::report_print( about, original_input, debug );
   };
 
   Ok( former_mutator_code )

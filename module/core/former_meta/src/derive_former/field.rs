@@ -456,9 +456,9 @@ scalar_setter_required
     let setter_name = self.scalar_setter_name();
     let attr = self.attrs.scalar.as_ref();
 
-    if attr.is_some() && attr.unwrap().hint.into()
+    if attr.is_some() && attr.unwrap().debug.into()
     {
-      let hint = format!
+      let debug = format!
       (
         r#"
 impl< Definition > {former}< Definition >
@@ -484,7 +484,7 @@ r#"derive : Former
 item : {stru}
 field : {field_ident}"#,
       );
-      diag::report_print( about, original_input, hint );
+      diag::report_print( about, original_input, debug );
     }
 
     if !self.scalar_setter_required()
@@ -682,9 +682,9 @@ field : {field_ident}"#,
       qt!{}
     };
 
-    if attr.hint.into()
+    if attr.debug.into()
     {
-      let hint = format!
+      let debug = format!
       (
         r#"
 /// The collection setter provides a collection setter that returns a CollectionFormer tailored for managing a collection of child entities. It employs a generic collection definition to facilitate operations on the entire collection, such as adding or updating elements.
@@ -715,7 +715,7 @@ r#"derive : Former
 item : {stru}
 field : {field_ident}"#,
       );
-      diag::report_print( about, original_input, hint );
+      diag::report_print( about, original_input, debug );
     }
 
     let setters_code = qt!
@@ -975,9 +975,9 @@ allowing for dynamic and flexible construction of the `{stru}` entity's {field_i
       setters_code
     };
 
-    if attr.hint.into()
+    if attr.debug.into()
     {
-      let hint = format!
+      let debug = format!
       (
         r#"
 /// Initializes and configures a subformer for adding named child entities. This method leverages an internal function
@@ -1006,7 +1006,7 @@ r#"derive : Former
 item : {stru}
 field : {field_ident}"#,
       );
-      diag::report_print( about, original_input, hint );
+      diag::report_print( about, original_input, debug );
     }
 
     let doc = format!
@@ -1285,9 +1285,9 @@ former and end action types, ensuring a seamless developer experience when formi
       setters_code
     };
 
-    if attr.hint.into()
+    if attr.debug.into()
     {
-      let hint = format!
+      let debug = format!
       (
         r#"
 /// Extends `{former}` to include a method that initializes and configures a subformer for the '{field_ident}' field.
@@ -1312,7 +1312,7 @@ r#"derive : Former
 item : {stru}
 field : {field_ident}"#,
       );
-      diag::report_print( about, original_input, hint );
+      diag::report_print( about, original_input, debug );
     }
 
     let doc = format!
