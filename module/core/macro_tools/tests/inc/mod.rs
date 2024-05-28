@@ -16,7 +16,6 @@ mod if_enabled
 
   mod attr_test;
   mod attr_prop_test;
-  mod attr_prop_example;
   mod basic_test;
   mod container_kind_test;
   mod derive_test;
