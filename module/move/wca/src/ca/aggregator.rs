@@ -142,7 +142,7 @@ pub( crate ) mod private
 
       let help_generator = std::mem::take( &mut ca.help_generator ).unwrap_or_default();
       let help_variants = std::mem::take( &mut ca.help_variants ).unwrap_or_else( || HashSet::from([ HelpVariants::All ]) );
-      
+
       if help_variants.contains( &HelpVariants::All )
       {
         HelpVariants::All.generate( &help_generator, dictionary, ca.order.unwrap_or_default() );

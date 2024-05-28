@@ -7,7 +7,6 @@ pub( crate ) mod private
   use std::collections::{ BTreeMap, HashMap };
   use wtools::{ error, error::Result, err };
   use ca::help::private::{ HelpGeneratorOptions, LevelOfDetail, generate_help_content };
-  use crate::ca::grammar::dictionary::private::CommandName;
 
   /// Converts a `ParsedCommand` to a `VerifiedCommand` by performing validation and type casting on values.
   ///

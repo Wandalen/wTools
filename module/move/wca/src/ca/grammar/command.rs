@@ -1,14 +1,10 @@
 pub( crate ) mod private
 {
   use crate::*;
-
-  use { Handler, Routine, Type };
-
+  
   use std::collections::{ BTreeMap, HashMap };
   use former::{ Former, StoragePreform };
-  use crate::ca::aggregator::private::Order;
-  use crate::ca::grammar::dictionary::private::CommandName;
-  use crate::wtools::Itertools;
+  use wtools::Itertools;
 
   /// A description of a Value in a command. Used to specify the expected type and provide a hint for the Value.
   ///
@@ -102,7 +98,7 @@ pub( crate ) mod private
     pub subjects : Vec< ValueDescription >,
     /// Hints and types for command options.
     pub properties : BTreeMap< CommandName, ValueDescription >,
-    /// Last inserted command id.
+    /// Last inserted property id.
     #[ scalar( setter = false ) ]
     last_id : usize,
     /// Map of aliases.
@@ -232,7 +228,7 @@ pub( crate ) mod private
         };
         debug_assert!( !properties.contains_key( &property.name ), "Property name `{}` is already used for `{:?}`", property.name, properties[ &property.name ] );
         super_former.storage.last_id = Some( super_former.storage.last_id.unwrap_or_default() + 1 );
-        let name = CommandName{ id : super_former.storage.last_id.unwrap(), name : property.name.clone() };
+        let name = CommandName { id : super_former.storage.last_id.unwrap(), name : property.name.clone() };
         properties.insert( name, value );
 
         let mut aliases = super_former.storage.properties_aliases.unwrap_or_default();

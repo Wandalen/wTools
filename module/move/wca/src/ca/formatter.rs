@@ -3,7 +3,7 @@ pub( crate ) mod private
 
   use crate::*;
   use wtools::Itertools;
-  use crate::ca::aggregator::private::Order;
+  use ca::aggregator::private::Order;
 
   /// -
   #[ derive( Debug, Clone, PartialEq ) ]

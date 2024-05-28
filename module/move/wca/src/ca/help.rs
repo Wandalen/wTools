@@ -4,15 +4,20 @@ pub( crate ) mod private
   use ca::
   {
     Command,
-    Routine, Type, formatter::private::{ HelpFormat, md_generator },
+    Routine, 
+    Type, 
+    formatter::private::
+    { 
+      HelpFormat, 
+      md_generator 
+    },
+    tool::table::format_table,
   };
 
   use wtools::Itertools;
   use std::rc::Rc;
   use error_tools::for_app::anyhow;
   use former::Former;
-  use ca::tool::table::format_table;
-  use crate::ca::aggregator::private::Order;
 
   // qqq : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
 
@@ -99,7 +104,7 @@ pub( crate ) mod private
       let footer = if o.with_footer
       {
         let full_subjects = command.subjects.iter().map( | subj | format!( "- {} [{}{:?}]", subj.hint, if subj.optional { "?" } else { "" }, subj.kind ) ).join( "\n\t" );
-        let full_properties = format_table( command.properties( dictionary.order ).into_iter().map( | ( name, value ) | [ name.clone(), format!( "- {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ] )).unwrap().replace( '\n', "\n\t" );
+        let full_properties = format_table( command.properties( dictionary.order ).into_iter().map( | ( name, value ) | [ name.clone(), format!( "- {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ] ) ).unwrap().replace( '\n', "\n\t" );
         
         format!
         (

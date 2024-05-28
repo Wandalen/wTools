@@ -1,14 +1,10 @@
 pub( crate ) mod private
 {
-  use std::cmp::Ordering;
   use crate::*;
-
-  use { Command };
-  use std::collections::BTreeMap;
-  use std::fmt::Display;
   use former::Former;
-  use crate::ca::aggregator::private::Order;
-  use crate::wtools::Itertools;
+  use wtools::Itertools;
+  use std::cmp::Ordering;
+  use std::collections::BTreeMap;
 
   // qqq : `Former` does not handle this situation well
 
@@ -22,7 +18,9 @@ pub( crate ) mod private
   #[ derive( Debug, Default, Clone, Eq ) ]
   pub struct CommandName
   {
+    /// id of command.
     pub( crate ) id : usize,
+    /// Name of command.
     pub name : String,
   }
 
@@ -86,7 +84,7 @@ pub( crate ) mod private
     {
       let mut commands = self.storage.commands.unwrap_or_default();
       self.storage.dictionary_last_id = Some( self.storage.dictionary_last_id.unwrap_or_default() + 1 );
-      let name = CommandName{ id : self.storage.dictionary_last_id.unwrap(), name : command.phrase.clone() };
+      let name = CommandName { id : self.storage.dictionary_last_id.unwrap(), name : command.phrase.clone() };
       commands.insert( name, command );
       self.storage.commands = Some( commands );
 
@@ -104,7 +102,7 @@ pub( crate ) mod private
     pub fn register( &mut self, command : Command ) -> Option< Command >
     {
       self.dictionary_last_id += 1;
-      let name = CommandName{ id : self.dictionary_last_id, name : command.phrase.clone() };
+      let name = CommandName { id : self.dictionary_last_id, name : command.phrase.clone() };
       self.commands.insert( name, command )
     }
 
@@ -122,7 +120,7 @@ pub( crate ) mod private
     where
       Name : std::hash::Hash + Eq + Ord + ToString,
     {
-      self.commands.iter().find( |(k, _)| k.name == name.to_string() ).map(|(_,  v)| v)
+      self.commands.iter().find( | ( k, _ ) | k.name == name.to_string() ).map( | ( _,  v ) | v )
     }
     
     /// Find commands that match a given name part.
@@ -167,4 +165,5 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   exposed use Dictionary;
+  exposed use CommandName;
 }
