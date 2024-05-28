@@ -7,7 +7,12 @@ mod private
   use wtools::error::
   {
     err,
-    for_app::{ Result, Error },
+    for_app::
+    { 
+      Result, 
+      Error,
+      Context,
+    },
   };
   use std::borrow::Cow;
   use std::fs::{ OpenOptions };
@@ -150,7 +155,7 @@ mod private
       .map( | m | m.as_str() )
       .unwrap_or_default();
 
-      _ = query::parse( raw_params )?;
+      _ = query::parse( raw_params ).context( "Fail to parse raw params." );
 
       let content = header_content_generate( &content, header, raw_params, cargo_metadata.workspace_root()?.to_str().unwrap() )?;
 
