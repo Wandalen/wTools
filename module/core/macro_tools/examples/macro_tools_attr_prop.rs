@@ -42,6 +42,7 @@ fn main()
     AttributeComponent,
     AttributePropertyComponent,
     AttributePropertyBoolean,
+    AttributePropertySingletone,
   };
   use former_types::ComponentAssign;
 
