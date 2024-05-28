@@ -141,7 +141,6 @@ fn main()
         (
           attr,
           "Expects an attribute of format `#[ mutator( custom = true ) ]`. \nGot: {}",
-          // xxx : just custom
           qt! { #attr }
         ),
       }

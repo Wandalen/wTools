@@ -96,6 +96,7 @@ fn main()
     AttributeComponent,
     AttributePropertyComponent,
     AttributePropertyBoolean,
+    AttributePropertySingletone,
   };
   use former_types::ComponentAssign;
 
@@ -160,7 +161,7 @@ fn main()
   /// ## Example of code
   ///
   /// ```ignore
-  /// #[ mutator( custom = true ) ]
+  /// #[ mutator( custom = true, debug = true ) ]
   /// ```
   #[ derive( Debug, Default ) ]
   pub struct AttributeMutator
@@ -168,7 +169,7 @@ fn main()
     /// Indicates whether a custom mutator should be generated.
     /// Defaults to `false`, meaning no custom mutator is generated unless explicitly requested.
     pub custom : AttributePropertyCustom,
-    /// Specifies whether to provide a sketch of the mutator as a hint.
+    /// Specifies whether to print code generated for the field.
     /// Defaults to `false`, which means no hint is provided unless explicitly requested.
     pub debug : AttributePropertyDebug,
   }
@@ -301,7 +302,7 @@ fn main()
 
   impl AttributePropertyComponent for AttributePropertyDebugMarker
   {
-    const KEYWORD : & 'static str = "hint";
+    const KEYWORD : & 'static str = "debug";
   }
 
   /// Specifies whether to provide a sketch as a hint.
@@ -324,7 +325,7 @@ fn main()
   /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
   pub type AttributePropertyCustom = AttributePropertyBoolean< AttributePropertyCustomMarker >;
 
-  // == Test code
+  // == test code
 
   // Parse an attribute and construct a `ItemAttributes` instance.
   let input : syn::Attribute = syn::parse_quote!( #[ mutator( custom = true ) ] );
@@ -340,6 +341,7 @@ fn main()
   assert_eq!( attr.internal(), false );
 
 }
+
 ```
 
 Try out `cargo run --example macro_tools_attr_prop`.

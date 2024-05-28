@@ -14,8 +14,6 @@ use macro_tools::
 
 use former_types::ComponentAssign;
 
-// xxx2 : get complete From for enums
-
 //
 
 pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
@@ -56,7 +54,7 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
           &generics_impl,
           &generics_ty,
           &generics_where,
-          field_names.next().unwrap(), // xxx : ?
+          field_names.next().unwrap(),
           &field_types.next().unwrap(),
         ),
         ( 1, None ) =>
@@ -413,8 +411,6 @@ fn generate_unit
   }
 }
 
-// xxx2 : get completed
-
 // == item attributes
 
 ///
@@ -673,7 +669,7 @@ pub struct FieldAttributeConfig
   /// Specifies whether to print a sketch of generated `From` or not.
   /// Defaults to `false`, which means no code is printed unless explicitly requested.
   pub debug : AttributePropertyDebug,
-  // qqq : xxx : implement
+  // qqq : apply debug properties to all brenches, not only enums
 }
 
 impl AttributeComponent for FieldAttributeConfig

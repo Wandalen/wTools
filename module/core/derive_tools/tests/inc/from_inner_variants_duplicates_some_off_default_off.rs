@@ -11,8 +11,9 @@ pub enum GetData
   Nothing2,
   FromString( String ),
   // #[ from( on ) ]
-  #[ from( on, debug) ]
-  // xxx : rename `hint` to `debug` and rid rid `off = true`
+  #[ from( on ) ]
+  // #[ from( debug ) ]
+  // xxx : should that work?
   FromString2( String ),
   FromPair( String, String ),
   #[ from( on ) ]
