@@ -108,12 +108,14 @@ pub struct AttributePropertyBoolean< Marker >( bool, ::core::marker::PhantomData
 impl< Marker > AttributePropertyBoolean< Marker >
 {
   /// Just unwraps and returns the internal data.
+  #[ inline( always ) ]
   pub fn internal( self ) -> bool
   {
     self.0
   }
 
   /// Returns a reference to the internal boolean value.
+  #[ inline( always ) ]
   pub fn ref_internal( &self ) -> &bool
   {
     &self.0

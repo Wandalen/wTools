@@ -18,12 +18,14 @@ where
   T : syn::parse::Parse + quote::ToTokens,
 {
   /// Just unwraps and returns the internal data.
+  #[ inline( always ) ]
   pub fn internal( self ) -> Option< T >
   {
     self.0
   }
 
   /// Returns an Option reference to the internal data.
+  #[ inline( always ) ]
   pub fn ref_internal( &self ) -> Option< &T >
   {
     self.0.as_ref()

@@ -18,14 +18,16 @@ where
   T : syn::parse::Parse + quote::ToTokens,
 {
   /// Just unwraps and returns the internal data.
-  #[ allow( dead_code ) ]
+  // #[ allow( dead_code ) ]
+  #[ inline( always ) ]
   pub fn internal( self ) -> T
   {
     self.0
   }
 
   /// Returns a reference to the internal data.
-  #[ allow( dead_code ) ]
+  // #[ allow( dead_code ) ]
+  #[ inline( always ) ]
   pub fn ref_internal( &self ) -> &T
   {
     &self.0

@@ -13,12 +13,14 @@ pub struct AttributePropertyOptionalBoolean< Marker >( Option< bool >, ::core::m
 impl< Marker > AttributePropertyOptionalBoolean< Marker >
 {
   /// Just unwraps and returns the internal data.
+  #[ inline( always ) ]
   pub fn internal( self ) -> Option< bool >
   {
     self.0
   }
 
   /// Returns a reference to the internal optional boolean value.
+  #[ inline( always ) ]
   pub fn ref_internal( &self ) -> Option< &bool >
   {
     self.0.as_ref()

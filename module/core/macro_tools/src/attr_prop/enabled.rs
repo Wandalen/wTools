@@ -1,8 +1,8 @@
 //! A generic boolean attribute property.
 //! Defaults to `None`.
 //!
-//! This property can have three states: `None`, `Some(true)`, or `Some(false)`.
-//! It parses `on` and `off` keywords to represent `Some(true)` and `Some(false)` respectively.
+//! This property can have three states: `None`, `Some( true )`, or `Some( false )`.
+//! It parses `on` and `off` keywords to represent `Some( true )` and `Some( false )` respectively.
 //!
 //! # Example
 //!
@@ -35,12 +35,13 @@ pub struct AttributePropertyEnabled< Marker = AttributePropertyEnabledMarker >
 
 impl< Marker > AttributePropertyEnabled< Marker >
 {
+
   /// Keywords for parsing this attribute property.
-  pub const KEYWORDS : [& 'static str ; 2] = [ "on", "off" ];
+  pub const KEYWORDS : [ &'static str ; 2 ] = [ "on", "off" ];
   /// Keywords for parsing this attribute property.
-  pub const KEYWORD_OFF : & 'static str = "off";
+  pub const KEYWORD_OFF : &'static str = "off";
   /// Keywords for parsing this attribute property.
-  pub const KEYWORD_ON : & 'static str = "on";
+  pub const KEYWORD_ON : &'static str = "on";
 
   /// Return bool value: on/off, use argument as default if it's `None`.
   #[ inline ]
@@ -53,28 +54,27 @@ impl< Marker > AttributePropertyEnabled< Marker >
     self.0.unwrap()
   }
 
-}
-
-impl< Marker > AttributePropertyEnabled< Marker >
-{
   /// Unwraps and returns the internal optional boolean value.
+  #[ inline( always ) ]
   pub fn internal( self ) -> Option< bool >
   {
     self.0
   }
 
   /// Returns a reference to the internal optional boolean value.
-  pub fn ref_internal( & self ) -> Option< & bool >
+  #[ inline( always ) ]
+  pub fn ref_internal( &self ) -> Option< &bool >
   {
     self.0.as_ref()
   }
+
 }
 
 impl< Marker > AttributePropertyComponent for AttributePropertyEnabled< Marker >
 where
   Marker : AttributePropertyComponent,
 {
-  const KEYWORD : & 'static str = Marker::KEYWORD;
+  const KEYWORD : &'static str = Marker::KEYWORD;
 }
 
 impl< Marker > From< bool > for AttributePropertyEnabled< Marker >
@@ -109,17 +109,17 @@ impl< Marker > core::ops::Deref for AttributePropertyEnabled< Marker >
   type Target = Option< bool >;
 
   #[ inline( always ) ]
-  fn deref( & self ) -> & Option< bool >
+  fn deref( &self ) -> &Option< bool >
   {
-    & self.0
+    &self.0
   }
 }
 
 impl< Marker > AsRef< Option< bool > > for AttributePropertyEnabled< Marker >
 {
   #[ inline( always ) ]
-  fn as_ref( & self ) -> & Option< bool >
+  fn as_ref( &self ) -> &Option< bool >
   {
-    & self.0
+    &self.0
   }
 }

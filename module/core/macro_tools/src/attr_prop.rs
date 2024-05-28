@@ -100,6 +100,7 @@ mod boolean;
 mod optional_boolean;
 mod syn;
 mod optional_syn;
+mod singletone;
 
 /// Internal namespace.
 pub( crate ) mod private
