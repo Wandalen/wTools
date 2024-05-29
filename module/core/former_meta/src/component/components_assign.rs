@@ -1,6 +1,6 @@
 use super::*;
-use macro_tools::{ attr, diag, Result };
-use iter_tools::{ Itertools, process_results };
+use macro_tools::{ attr, diag, Result, format_ident };
+use iter_tools::{ Itertools };
 
 ///
 /// Generate `ComponentsAssign` trait implementation for the type, providing `components_assign` function
@@ -17,13 +17,19 @@ pub fn components_assign( input : proc_macro::TokenStream ) -> Result< proc_macr
 
   // name
   let item_name = &parsed.ident;
-  let trait_name = format!( "{}ComponentsAssign", item_name );
-  let trait_ident = syn::Ident::new( &trait_name, item_name.span() );
-  let method_name = format!( "{}_assign", item_name.to_string().to_case( Case::Snake ) );
-  let method_ident = syn::Ident::new( &method_name, item_name.span() );
-  // xxx : use macro ident_format!()
+  let trait_ident = format_ident!
+  {
+    "{}ComponentsAssign",
+    item_name
+  };
+  let method_ident = format_ident!
+  {
+    "{}_assign",
+    item_name.to_string().to_case( Case::Snake )
+  };
 
   // fields
+// fields
   let ( bounds1, bounds2, component_assigns ) : ( Vec< _ >, Vec< _ >, Vec< _ > ) = parsed.fields.iter().map( | field |
   {
     let field_type = &field.ty;
@@ -33,9 +39,9 @@ pub fn components_assign( input : proc_macro::TokenStream ) -> Result< proc_macr
     ( bound1, bound2, component_assign )
   }).multiunzip();
 
-  let bounds1 : Vec< _ > = process_results( bounds1, | iter | iter.collect() )?;
-  let bounds2 : Vec< _ > = process_results( bounds2, | iter | iter.collect() )?;
-  let component_assigns : Vec< _ > = process_results( component_assigns, | iter | iter.collect() )?;
+  let bounds1 : Vec< _ > = bounds1.into_iter().collect::< Result< _ > >()?;
+  let bounds2 : Vec< _ > = bounds2.into_iter().collect::< Result< _ > >()?;
+  let component_assigns : Vec< _ > = component_assigns.into_iter().collect::< Result< _ > >()?;
 
   // code
   let doc = format!( "Interface to assign instance from set of components exposed by a single argument." );

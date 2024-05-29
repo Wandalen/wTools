@@ -1,6 +1,6 @@
 
 use super::*;
-use iter_tools::{ Itertools, process_results };
+use iter_tools::{ Itertools };
 use macro_tools::{ attr, diag, generic_params, generic_args, typ, derive, Result };
 use proc_macro2::TokenStream;
 
@@ -43,7 +43,7 @@ use struct_attrs::*;
 
 pub fn mutator
 (
-  stru : &syn::Ident,
+  item : &syn::Ident,
   original_input : &proc_macro::TokenStream,
   mutator : &AttributeMutator,
   former_definition_types : &syn::Ident,
@@ -97,7 +97,7 @@ where
     let about = format!
     (
 r#"derive : Former
-item : {stru}"#,
+item : {item}"#,
     );
     diag::report_print( about, original_input, debug );
   };
@@ -109,14 +109,14 @@ item : {stru}"#,
 /// Generate documentation for the former.
 ///
 
-fn doc_generate( stru : &syn::Ident ) -> ( String, String )
+fn doc_generate( item : &syn::Ident ) -> ( String, String )
 {
 
   let doc_former_mod = format!
   (
 r#" Implementation of former for [{}].
 "#,
-    stru
+    item
   );
 
   let doc_former_struct = format!
@@ -127,7 +127,7 @@ Structure to form [{}]. Represents a forming entity designed to construct object
 This structure holds temporary storage and context during the formation process and
 utilizes a defined end strategy to finalize the object creation.
 "#,
-    stru
+    item
   );
 
   ( doc_former_mod, doc_former_struct )
@@ -155,24 +155,18 @@ pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
   /* names */
 
   let vis = &ast.vis;
-  let stru = &ast.ident;
-  let former_name = format!( "{}Former", stru );
-  let former = syn::Ident::new( &former_name, stru.span() );
-  let former_storage_name = format!( "{}FormerStorage", stru );
-  let former_storage = syn::Ident::new( &former_storage_name, stru.span() );
-  let former_definition_name = format!( "{}FormerDefinition", stru );
-  let former_definition = syn::Ident::new( &former_definition_name, stru.span() );
-  let former_definition_types_name = format!( "{}FormerDefinitionTypes", stru );
-  let former_definition_types = syn::Ident::new( &former_definition_types_name, stru.span() );
-  let as_subformer_name = format!( "{}AsSubformer", stru );
-  let as_subformer = syn::Ident::new( &as_subformer_name, stru.span() );
-  let as_subformer_end_name = format!( "{}AsSubformerEnd", stru );
-  let as_subformer_end = syn::Ident::new( &as_subformer_end_name, stru.span() );
+  let item = &ast.ident;
+  let former = format_ident!( "{item}Former" );
+  let former_storage = format_ident!( "{item}FormerStorage" );
+  let former_definition = format_ident!( "{item}FormerDefinition" );
+  let former_definition_types = format_ident!( "{item}FormerDefinitionTypes" );
+  let as_subformer = format_ident!( "{item}AsSubformer" );
+  let as_subformer_end = format_ident!( "{item}AsSubformerEnd" );
 
   let as_subformer_end_doc = format!
   (
     r#"
-Represents an end condition for former of [`${stru}`], tying the lifecycle of forming processes to a broader context.
+Represents an end condition for former of [`${item}`], tying the lifecycle of forming processes to a broader context.
 
 This trait is intended for use with subformer alias, ensuring that end conditions are met according to the
 specific needs of the broader forming context. It mandates the implementation of `former::FormingEnd`.
@@ -189,7 +183,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
   let extra : macro_tools::syn::AngleBracketedGenericArguments = parse_quote!
   {
-    < (), #stru < #struct_generics_ty >, former::ReturnPreformed >
+    < (), #item < #struct_generics_ty >, former::ReturnPreformed >
   };
   let former_definition_args = generic_args::merge( &generics.into_generic_args(), &extra.into() ).args;
 
@@ -216,12 +210,12 @@ specific needs of the broader forming context. It mandates the implementation of
       Definition : former::FormerDefinition
       <
         Storage = #former_storage < #struct_generics_ty >,
-        Formed = #stru < #struct_generics_ty >,
+        Formed = #item < #struct_generics_ty >,
       >,
       Definition::Types : former::FormerDefinitionTypes
       <
         Storage = #former_storage < #struct_generics_ty >,
-        Formed = #stru < #struct_generics_ty >,
+        Formed = #item < #struct_generics_ty >,
       >,
   };
   let extra = generic_params::merge( &generics, &extra.into() );
@@ -233,7 +227,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
   let extra : macro_tools::GenericsWithWhere = parse_quote!
   {
-    < __Context = (), __Formed = #stru < #struct_generics_ty > >
+    < __Context = (), __Formed = #item < #struct_generics_ty > >
   };
   let former_definition_types_generics = generic_params::merge( &generics, &extra.into() );
   let ( former_definition_types_generics_with_defaults, former_definition_types_generics_impl, former_definition_types_generics_ty, former_definition_types_generics_where )
@@ -245,7 +239,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
   let extra : macro_tools::GenericsWithWhere = parse_quote!
   {
-    < __Context = (), __Formed = #stru < #struct_generics_ty >, __End = former::ReturnPreformed >
+    < __Context = (), __Formed = #item < #struct_generics_ty >, __End = former::ReturnPreformed >
   };
   let generics_of_definition = generic_params::merge( &generics, &extra.into() );
   let ( former_definition_generics_with_defaults, former_definition_generics_impl, former_definition_generics_ty, former_definition_generics_where )
@@ -255,31 +249,29 @@ specific needs of the broader forming context. It mandates the implementation of
 
   /* struct attributes */
 
-  let ( _doc_former_mod, doc_former_struct ) = doc_generate( stru );
+  let ( _doc_former_mod, doc_former_struct ) = doc_generate( item );
   let ( perform, perform_output, perform_generics ) = struct_attrs.performer()?;
 
   /* fields */
 
   let fields = derive::named_fields( &ast )?;
 
-  let formed_fields : Vec< Result< FormerField< '_ > > > = fields
+  let formed_fields : Vec< _ > = fields
   .into_iter()
   .map( | field |
   {
     FormerField::from_syn( field, true, true )
   })
-  .collect();
-  let formed_fields : Vec< _ > = process_results( formed_fields, | iter | iter.collect() )?;
+  .collect::< Result< _ > >()?;
 
-  let storage_fields : Vec< Result< FormerField< '_ > > > = struct_attrs
+  let storage_fields : Vec< _ > = struct_attrs
   .storage_fields()
   .iter()
   .map( | field |
   {
-    FormerField::from_syn( &field, true, false )
+    FormerField::from_syn( field, true, false )
   })
-  .collect();
-  let storage_fields : Vec< _ > = process_results( storage_fields, | iter | iter.collect() )?;
+  .collect::< Result< _ > >()?;
 
   let
   (
@@ -302,7 +294,7 @@ specific needs of the broader forming context. It mandates the implementation of
     field.storage_field_preform(),
     field.former_field_setter
     (
-      &stru,
+      &item,
       &original_input,
       &struct_generics_impl,
       &struct_generics_ty,
@@ -318,11 +310,14 @@ specific needs of the broader forming context. It mandates the implementation of
   let results : Result< Vec< _ > > = former_field_setter.into_iter().collect();
   let ( former_field_setter, namespace_code ) : ( Vec< _ >, Vec< _ > ) = results?.into_iter().unzip();
 
-  let storage_field_preform : Vec< _ > = process_results( storage_field_preform, | iter | iter.collect() )?;
+  // let storage_field_preform : Vec< _ > = process_results( storage_field_preform, | iter | iter.collect() )?;
+  let storage_field_preform : Vec< _ > = storage_field_preform
+  .into_iter()
+  .collect::< Result< _ > >()?;
 
   let former_mutator_code = mutator
   (
-    &stru,
+    &item,
     &original_input,
     &struct_attrs.mutator,
     &former_definition_types,
@@ -337,7 +332,7 @@ specific needs of the broader forming context. It mandates the implementation of
     // = formed
 
     #[ automatically_derived ]
-    impl < #struct_generics_impl > #stru < #struct_generics_ty >
+    impl < #struct_generics_impl > #item < #struct_generics_ty >
     where
       #struct_generics_where
     {
@@ -357,7 +352,7 @@ specific needs of the broader forming context. It mandates the implementation of
     // = entity to former
 
     impl< #struct_generics_impl Definition > former::EntityToFormer< Definition >
-    for #stru < #struct_generics_ty >
+    for #item < #struct_generics_ty >
     where
       Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
       #struct_generics_where
@@ -366,7 +361,7 @@ specific needs of the broader forming context. It mandates the implementation of
     }
 
     impl< #struct_generics_impl > former::EntityToStorage
-    for #stru < #struct_generics_ty >
+    for #item < #struct_generics_ty >
     where
       #struct_generics_where
     {
@@ -374,7 +369,7 @@ specific needs of the broader forming context. It mandates the implementation of
     }
 
     impl< #struct_generics_impl __Context, __Formed, __End > former::EntityToDefinition< __Context, __Formed, __End >
-    for #stru < #struct_generics_ty >
+    for #item < #struct_generics_ty >
     where
       __End : former::FormingEnd< #former_definition_types < #struct_generics_ty __Context, __Formed > >,
       #struct_generics_where
@@ -384,7 +379,7 @@ specific needs of the broader forming context. It mandates the implementation of
     }
 
     impl< #struct_generics_impl __Context, __Formed > former::EntityToDefinitionTypes< __Context, __Formed >
-    for #stru < #struct_generics_ty >
+    for #item < #struct_generics_ty >
     where
       #struct_generics_where
     {
@@ -506,7 +501,7 @@ specific needs of the broader forming context. It mandates the implementation of
     where
       #struct_generics_where
     {
-      type Preformed = #stru < #struct_generics_ty >;
+      type Preformed = #item < #struct_generics_ty >;
     }
 
     impl < #struct_generics_impl > former::StoragePreform
@@ -514,14 +509,14 @@ specific needs of the broader forming context. It mandates the implementation of
     where
       #struct_generics_where
     {
-      // type Preformed = #stru < #struct_generics_ty >;
+      // type Preformed = #item < #struct_generics_ty >;
 
       fn preform( mut self ) -> Self::Preformed
       {
         #( #storage_field_preform )*
         // Rust does not support that, yet
         // let result = < Definition::Types as former::FormerDefinitionTypes >::Formed
-        let result = #stru :: < #struct_generics_ty >
+        let result = #item :: < #struct_generics_ty >
         {
           #( #storage_field_name )*
           // #( #storage_field_name, )*
@@ -660,8 +655,8 @@ specific needs of the broader forming context. It mandates the implementation of
 
     impl< #former_generics_impl > #former< #former_generics_ty >
     where
-      Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty >, Formed = #stru < #struct_generics_ty > >,
-      Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty >, Formed = #stru < #struct_generics_ty > >,
+      Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty >, Formed = #item < #struct_generics_ty > >,
+      Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty >, Formed = #item < #struct_generics_ty > >,
       #former_generics_where
     {
 
@@ -778,7 +773,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
   if has_debug
   {
-    let about = format!( "derive : Former\nstructure : {stru}" );
+    let about = format!( "derive : Former\nstructure : {item}" );
     diag::report_print( about, &original_input, &result );
   }
 

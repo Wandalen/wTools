@@ -9,7 +9,6 @@ pub fn as_ref( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenSt
   let original_input = input.clone();
   let parsed = syn::parse::< syn::ItemStruct >( input )?;
   let has_debug = attr::has_debug( parsed.attrs.iter() )?;
-
   let field_type = item_struct::first_field_type( &parsed )?;
   let item_name = &parsed.ident;
 
