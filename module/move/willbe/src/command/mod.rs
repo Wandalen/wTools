@@ -257,6 +257,12 @@ with_gitpod: If set to 1, a column with a link to Gitpod will be added. Clicking
       .routine( command::readme_modules_headers_renew )
       .end()
 
+    .command( "readme.headers.renew" )
+      .hint( "Aggregation of two command : `readme.header.renew` and `readme.modules.headers.renew`.\n Generated headers in workspace members and in main Readme.md file.")
+      .long_hint( "Generate header which contains a badge with the general status of workspace, a link to discord, an example in gitpod and documentation in workspace`s Readme.md file.\n For use this command you need to specify:\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nworkspace_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml.\n\nGenerates header for each workspace member which contains a badge with the status of crate, a link to discord, an example in gitpod and documentation in crate Readme.md file.\nFor use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml.")
+      .routine( command::readme_header_renew )
+      .end()
+      
     .command( "features" )
       .hint( "Lists features of the package" )
       .long_hint( "Lists features of the package located in a folder.\nWill list either separate package features or features for every package of a workspace")
@@ -286,6 +292,8 @@ crate::mod_interface!
   layer publish;
   /// Used to compare local and published versions of a specific package.
   layer publish_diff;
+  /// Combination of two commands `main_header` and `readme_modules_headers_renew`.
+  layer readme_headers_renew;
   /// Generates health table in main Readme.md file of workspace.
   // aaa : for Petro : what a table??
   // aaa : add more details to documentation

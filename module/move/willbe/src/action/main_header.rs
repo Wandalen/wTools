@@ -48,6 +48,7 @@ mod private
     TAGS_TEMPLATE.set( Regex::new( r"<!--\{ generate\.main_header\.start(\(\)|\{\}|\(.*?\)|\{.*?\}) \}-->(.|\n|\r\n)+<!--\{ generate\.main_header\.end \}-->" ).unwrap() ).ok();
   }
 
+  /// Report.
   #[ derive( Debug, Default, Clone ) ]
   pub struct MainHeaderRenewReport
   {
@@ -242,4 +243,6 @@ crate::mod_interface!
 {
   /// Generate header.
   orphan use readme_header_renew;
+  /// Report.
+  orphan use MainHeaderRenewReport;
 }

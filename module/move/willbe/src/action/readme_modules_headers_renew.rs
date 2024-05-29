@@ -37,7 +37,7 @@ mod private
     TAGS_TEMPLATE.set( Regex::new( r"<!--\{ generate\.module_header\.start(\(\)|\{\}|\(.*?\)|\{.*?\}) \}-->(.|\n|\r\n)+<!--\{ generate\.module_header\.end \}-->" ).unwrap() ).ok();
   }
 
-  /// Represents a vector of reposts
+  /// Report.
   #[ derive( Debug, Default, Clone ) ]
   pub struct ModulesHeadersRenewReport
   { 
@@ -242,4 +242,6 @@ crate::mod_interface!
 {
   /// Generate headers in modules
   orphan use readme_modules_headers_renew;
+  /// report
+  orphan use ModulesHeadersRenewReport;
 }
