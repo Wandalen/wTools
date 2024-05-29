@@ -4,7 +4,7 @@ pub( crate ) mod private
 
   use ca::grammar::command::ValueDescription;
   // use former::Former;
-  use std::collections::HashMap;
+  use std::collections::{ BTreeMap, HashMap };
   use wtools::{ error, error::Result, err };
   use ca::help::private::{ HelpGeneratorOptions, LevelOfDetail, generate_help_content };
 
@@ -63,7 +63,7 @@ pub( crate ) mod private
       let sim = dictionary
       .commands
       .iter()
-      .map( |( name, c )| ( jaro.for_str( name, user_input ).nsim(), c ) )
+      .map( |( name, c )| ( jaro.for_str( name.name.as_str(), user_input ).nsim(), c ) )
       .max_by( |( s1, _ ), ( s2, _ )| s1.total_cmp( s2 ) );
       if let Some(( sim, variant )) = sim
       {
@@ -79,7 +79,7 @@ pub( crate ) mod private
 
     fn get_count_from_properties
     (
-      properties : &HashMap< String, ValueDescription >,
+      properties : &BTreeMap< CommandName, ValueDescription >,
       properties_aliases : &HashMap< String, String >,
       raw_properties : &HashMap< String, String >
     ) -> usize

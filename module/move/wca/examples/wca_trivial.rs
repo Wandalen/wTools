@@ -2,7 +2,7 @@
 //! A trivial example.
 //!
 
-use wca::{ CommandsAggregator, Type, VerifiedCommand };
+use wca::{ CommandsAggregator, Order, Type, VerifiedCommand };
 
 fn f1( o : VerifiedCommand )
 {
@@ -19,16 +19,17 @@ fn exit()
 fn main()
 {
   let ca = CommandsAggregator::former()
+  .command( "exit" )
+    .hint( "just exit" )
+    .routine( || exit() )
+    .end()
   .command( "echo" )
     .hint( "prints all subjects and properties" )
     .subject().hint( "Subject" ).kind( Type::String ).optional( true ).end()
     .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
     .routine( f1 )
     .end()
-  .command( "exit" )
-    .hint( "just exit" )
-    .routine( || exit() )
-    .end()
+  .order( Order::Lexicography )
   .perform()
   ;
 

@@ -4,14 +4,20 @@ pub( crate ) mod private
   use ca::
   {
     Command,
-    Routine, Type, formatter::private::{ HelpFormat, md_generator },
+    Routine, 
+    Type, 
+    formatter::private::
+    { 
+      HelpFormat, 
+      md_generator 
+    },
+    tool::table::format_table,
   };
 
   use wtools::Itertools;
   use std::rc::Rc;
   use error_tools::for_app::anyhow;
   use former::Former;
-  use ca::tool::table::format_table;
 
   // qqq : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
 
@@ -53,6 +59,8 @@ pub( crate ) mod private
     pub description_detailing : LevelOfDetail,
     /// If enabled - shows complete description of subjects and properties
     pub with_footer : bool,
+    /// Order of property and commands.
+    pub order : Order,
   }
 
   // qqq : for Barsik : make possible to change properties order
@@ -90,13 +98,14 @@ pub( crate ) mod private
         LevelOfDetail::None => "".into(),
         _ if command.subjects.is_empty() => "".into(),
         LevelOfDetail::Simple => "< properties >".into(),
-        LevelOfDetail::Detailed => command.properties.iter().map( |( n, v )| format!( "< {n}:{}{:?} >", if v.optional { "?" } else { "" }, v.kind ) ).collect::< Vec< _ > >().join( " " ),
+        LevelOfDetail::Detailed => command.properties( dictionary.order ).iter().map( |( n, v )| format!( "< {}:{}{:?} >", if v.optional { "?" } else { "" }, n, v.kind ) ).collect::< Vec< _ > >().join( " " ),
       };
 
       let footer = if o.with_footer
       {
         let full_subjects = command.subjects.iter().map( | subj | format!( "- {} [{}{:?}]", subj.hint, if subj.optional { "?" } else { "" }, subj.kind ) ).join( "\n\t" );
-        let full_properties = format_table( command.properties.iter().sorted_by_key( |( name, _ )| *name ).map( |( name, value )| [ name.clone(), format!( "- {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ] ) ).unwrap().replace( '\n', "\n\t" );
+        let full_properties = format_table( command.properties( dictionary.order ).into_iter().map( | ( name, value ) | [ name.clone(), format!( "- {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ] ) ).unwrap().replace( '\n', "\n\t" );
+        
         format!
         (
           "{}{}",
@@ -130,13 +139,11 @@ pub( crate ) mod private
     }
     else
     {
-      let rows = dictionary.commands
-      .iter()
-      .sorted_by_key( |( name, _ )| *name )
+      let rows = dictionary.commands()
+      .into_iter()
       .map( |( _, cmd )| cmd )
       .map( for_single_command )
       .map( | row | [ row.name, row.args, row.hint ] );
-
       format_table( rows ).unwrap()
     }
   }
@@ -158,17 +165,17 @@ pub( crate ) mod private
   impl HelpVariants
   {
     /// Generates help commands
-    pub fn generate( &self, helper : &HelpGeneratorFn, dictionary : &mut Dictionary )
+    pub fn generate( &self, helper : &HelpGeneratorFn, dictionary : &mut Dictionary, order : Order )
     {
       match self
       {
         HelpVariants::All =>
         {
-          self.general_help( helper, dictionary );
+          self.general_help( helper, dictionary, order );
           self.subject_command_help( helper, dictionary );
           // self.dot_command_help( helper, dictionary );
         },
-        HelpVariants::General => self.general_help( helper, dictionary ),
+        HelpVariants::General => self.general_help( helper, dictionary, order ),
         HelpVariants::SubjectCommand => self.subject_command_help( helper, dictionary ),
         _ => unimplemented!()
         // HelpVariants::DotCommand => self.dot_command_help( helper, dictionary ),
@@ -176,7 +183,7 @@ pub( crate ) mod private
     }
 
     // .help
-    fn general_help( &self, helper : &HelpGeneratorFn, dictionary : &mut Dictionary )
+    fn general_help( &self, helper : &HelpGeneratorFn, dictionary : &mut Dictionary, order : Order )
     {
       let phrase = "help".to_string();
 
@@ -201,22 +208,22 @@ pub( crate ) mod private
             };
             if format == HelpFormat::Markdown
             {
-              println!( "Help command\n{text}", text = md_generator( &grammar ) );
+              println!( "Help command\n{text}", text = md_generator( &grammar, order ) );
             }
             else
             {
+              let options = HelpGeneratorOptions::former()
+              .command_prefix( "." )
+              .description_detailing( LevelOfDetail::Simple )
+              .subject_detailing( LevelOfDetail::Simple )
+              .property_detailing( LevelOfDetail::Simple );
               println!
               (
                 "Help command\n\n{text}",
                 text = generator.exec
                 (
                   &grammar,
-                  HelpGeneratorOptions::former()
-                  .command_prefix( "." )
-                  .description_detailing( LevelOfDetail::Simple )
-                  .subject_detailing( LevelOfDetail::Simple )
-                  .property_detailing( LevelOfDetail::Simple )
-                  .form()
+                  options.form()
                 )
               );
             }
@@ -266,9 +273,9 @@ pub( crate ) mod private
             .description_detailing( LevelOfDetail::Detailed )
             .subject_detailing( LevelOfDetail::Simple )
             .property_detailing( LevelOfDetail::Simple )
-            .with_footer( true )
-            .form();
-            let text = generator.exec( &grammar, args );
+            .with_footer( true );
+
+            let text = generator.exec( &grammar, args.form() );
 
             println!( "Help command\n\n{text}" );
           }
