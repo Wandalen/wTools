@@ -14,6 +14,7 @@
 //! This is useful for attributes that need to enable or disable features or flags.
 
 use crate::*;
+use former_types::ComponentAssign;
 
 /// Default marker for `AttributePropertyOptionalSingletone`.
 /// Used if no marker is defined as parameter.
@@ -69,6 +70,24 @@ impl< Marker > AttributePropertyOptionalSingletone< Marker >
     self.0.as_ref()
   }
 
+}
+
+impl< Marker, IntoT > ComponentAssign< AttributePropertyOptionalSingletone< Marker >, IntoT > for AttributePropertyOptionalSingletone< Marker >
+where
+  IntoT : Into< AttributePropertyOptionalSingletone< Marker > >,
+{
+  /// Inserts value of another instance into the option if it is None, then returns a mutable reference to the contained value.
+  /// If another instance does is None then do nothing.
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    match component.0
+    {
+      Some( val ) => { self.0.get_or_insert( val ); },
+      None => {},
+    }
+  }
 }
 
 impl< Marker > AttributePropertyComponent for AttributePropertyOptionalSingletone< Marker >

@@ -25,6 +25,20 @@ impl< Marker > AttributePropertyOptionalBoolean< Marker >
   {
     self.0.as_ref()
   }
+
+  // xxx
+  // /// Inserts value of another instance into the option if it is None, then returns a mutable reference to the contained value.
+  // /// If another instance does is None then do nothing.
+  // #[ inline( always ) ]
+  // pub fn get_or_insert2( &mut self, another : Self )
+  // {
+  //   match another.0
+  //   {
+  //     Some( val ) => { self.0.get_or_insert( val ); },
+  //     None => {},
+  //   }
+  // }
+
 }
 
 impl< Marker > AttributePropertyComponent for AttributePropertyOptionalBoolean< Marker >

@@ -28,7 +28,7 @@ all-features = false
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-enabled = []
+enabled = [ "former_types/enabled", "interval_adapter/enabled" ]
 
 # qqq : put all files under features: macro_attr, macro_container_kind, ...
 
@@ -40,10 +40,9 @@ quote = { version = "~1.0.35", features = [] }
 syn = { version = "~2.0.52", features = [ "full", "extra-traits" ] }
 
 ## internal
-interval_adapter = { workspace = true, features = [ "default" ] }
-# strs_tools = { workspace = true, features = [ "default" ] }
+interval_adapter = { workspace = true, features = [ "default" ] } # xxx : optimize features list
+former_types = { workspace = true, features = [ "types_component_assign" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
-former_types = { workspace = true, features = [ "enabled", "types_component_assign" ] }
 const_format = { version = "0.2.32" }

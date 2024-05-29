@@ -702,7 +702,9 @@ where
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.config = component.into();
+    let component = component.into();
+    self.config.enabled.assign( component.enabled );
+    self.config.debug.assign( component.debug );
   }
 }
 
