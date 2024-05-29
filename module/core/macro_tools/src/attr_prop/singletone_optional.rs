@@ -38,13 +38,6 @@ pub struct AttributePropertyOptionalSingletone< Marker = AttributePropertyOption
 impl< Marker > AttributePropertyOptionalSingletone< Marker >
 {
 
-  // /// Keywords for parsing this attribute property.
-  // pub const KEYWORDS : [ &'static str ; 2 ] = [ "on", "off" ];
-  // /// Keywords for parsing this attribute property.
-  // pub const KEYWORD_OFF : &'static str = "off";
-  // /// Keywords for parsing this attribute property.
-  // pub const KEYWORD_ON : &'static str = "on";
-
   /// Return bool value: on/off, use argument as default if it's `None`.
   #[ inline ]
   pub fn value( self, default : bool ) -> bool
@@ -72,7 +65,8 @@ impl< Marker > AttributePropertyOptionalSingletone< Marker >
 
 }
 
-impl< Marker, IntoT > ComponentAssign< AttributePropertyOptionalSingletone< Marker >, IntoT > for AttributePropertyOptionalSingletone< Marker >
+impl< Marker, IntoT > ComponentAssign< AttributePropertyOptionalSingletone< Marker >, IntoT >
+for AttributePropertyOptionalSingletone< Marker >
 where
   IntoT : Into< AttributePropertyOptionalSingletone< Marker > >,
 {

@@ -3,6 +3,7 @@
 //!
 
 use crate::*;
+use former_types::ComponentAssign;
 
 ///
 /// Property of an attribute which simply wraps one of the standard `syn` types and keeps it optional.
@@ -29,6 +30,26 @@ where
   pub fn ref_internal( &self ) -> Option< &T >
   {
     self.0.as_ref()
+  }
+}
+
+impl< T, Marker, IntoT > ComponentAssign< AttributePropertyOptionalSyn< T, Marker >, IntoT >
+for AttributePropertyOptionalSyn< T, Marker >
+where
+  T : syn::parse::Parse + quote::ToTokens,
+  IntoT : Into< AttributePropertyOptionalSyn< T, Marker > >,
+{
+  /// Inserts value of another instance into the option if it is None, then returns a mutable reference to the contained value.
+  /// If another instance does is None then do nothing.
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    match component.0
+    {
+      Some( val ) => { self.0.get_or_insert( val ); },
+      None => {},
+    }
   }
 }
 
