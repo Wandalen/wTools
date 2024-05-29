@@ -1,17 +1,15 @@
 use super::*;
-use wtools::err;
-use wca::
+use the_module::
 {
   Parser,
-  ProgramParser, NamespaceParser, CommandParser,
 
-  Type,
-  Verifier, ExecutorConverter,
+  Context, Type,
+  Dictionary,
+  Verifier,
 
-  Executor, ExecutorType,
-  Routine, wtools
+  Executor,
+  wtools
 };
 
 mod command;
-mod namespace;
 mod program;

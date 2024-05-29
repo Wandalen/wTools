@@ -6,33 +6,33 @@
 //
 // //
 //
-// TheModule::tests_index!
+// the_module::tests_index!
 // {
 //   trybuild_test,
 // }
 
 #[ allow( unused_imports ) ]
 use super::*;
-use ::test_tools as TheModule;
+use ::test_tools as the_module;
 
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( not( feature = "no_std" ) ) ]
-TheModule::tests_impls!
+the_module::tests_impls!
 {
 
   //
 
   fn pass1_test()
   {
-    TheModule::a_id!( true, true );
+    the_module::a_id!( true, true );
   }
 
   //
 
   fn fail1_test()
   {
-    // TheModule::a_id!( true, false );
+    // the_module::a_id!( true, false );
   }
 
   //
@@ -57,7 +57,7 @@ TheModule::tests_impls!
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( not( feature = "no_std" ) ) ]
-TheModule::tests_index!
+the_module::tests_index!
 {
   pass1_test,
   fail1_test,

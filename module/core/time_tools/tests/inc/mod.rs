@@ -1,7 +1,7 @@
 
 // #[ cfg( feature = "time" ) ]
 // #[ allow( unused_imports ) ]
-// use wtools::time as TheModule;
+// use wtools::time as the_module;
 
 // #[ cfg( feature = "time" ) ]
 // mod inc;

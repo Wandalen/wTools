@@ -1,6 +1,6 @@
 [package]
 name = "time_tools"
-version = "0.1.5"
+version = "0.2.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -24,7 +24,7 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-exclude = [ "/tests", "/examples", "-*" ]
+# exclude = [ "/tests", "/examples", "-*" ]
 # include = [
 #   "/rust/impl/time",
 #   "/Cargo.toml",
@@ -44,7 +44,7 @@ full = [
 ]
 
 no_std = []
-use_alloc = []
+use_alloc = [ "no_std" ]
 enabled = []
 
 time_now = [
@@ -64,8 +64,8 @@ time_now = [
 # path = "tests/_integration_test/smoke_test.rs"
 
 # [[example]]
-# name = "time_tools_trivial_sample"
-# path = "examples/time_tools_trivial_sample/src/main.rs"
+# name = "time_tools_trivial"
+# path = "examples/time_tools_trivial/src/main.rs"
 
 [dev-dependencies]
 test_tools = { workspace = true }

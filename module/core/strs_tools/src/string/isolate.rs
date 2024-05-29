@@ -11,17 +11,17 @@ pub( crate ) mod private
   #[ perform( fn isolate( &self ) -> ( &'a str, Option<&'a str>, &'a str ) ) ]
   pub struct IsolateOptions<'a>
   {
-    #[ default( "" ) ]
+    #[ former( default = "" ) ]
     src : &'a str,
-    #[ default( " " ) ]
+    #[ former( default = " " ) ]
     delimeter : &'a str,
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     quote : bool,
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     left : bool,
-    #[ default( 1 ) ]
+    #[ former( default = 1 ) ]
     times : u8, /* rrr : Dmytro : former do not form u16, u32, u64, usize, replace after fix */
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     none : bool,
   }
 
@@ -197,6 +197,8 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  pub use super::protected as isolate;
+
   use super::private as i;
 
   pub use i::IsolateOptionsAdapter;

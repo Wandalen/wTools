@@ -1,0 +1,23 @@
+name : unitore
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # unitore
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/move/unitore/Cargo.toml'
+      module_name : 'unitore'
+      commit_message : ${{ github.event.head_commit.message }}

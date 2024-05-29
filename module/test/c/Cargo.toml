@@ -1,8 +1,9 @@
 [package]
 name = "test_experimental_c"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 license = "MIT"
 description = """
 Module publishing test
 """
+repository = "https://github.com/Wandalen/wTools/tree/alpha/module/test/c"

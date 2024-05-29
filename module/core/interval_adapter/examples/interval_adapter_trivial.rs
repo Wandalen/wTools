@@ -1,5 +1,4 @@
-//! example
-
+//! qqq : write proper description
 fn main()
 {
   use interval_adapter::IterableInterval;

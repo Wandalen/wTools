@@ -324,4 +324,5 @@ impl< 'a > SmokeModuleTest< 'a >
     }
     Ok( () )
   }
+
 }

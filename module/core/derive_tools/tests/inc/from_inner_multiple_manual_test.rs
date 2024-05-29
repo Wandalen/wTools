@@ -1,6 +1,6 @@
 use super::*;
 
-#[derive( Debug, PartialEq, Eq ) ]
+#[ derive( Debug, PartialEq, Eq ) ]
 struct StructWithManyFields( i32, bool );
 
 impl From< ( i32, bool ) > for StructWithManyFields

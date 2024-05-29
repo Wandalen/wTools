@@ -1,0 +1,23 @@
+name : plot_interface
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # plot_interface
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/move/plot_interface/Cargo.toml'
+      module_name : 'plot_interface'
+      commit_message : ${{ github.event.head_commit.message }}

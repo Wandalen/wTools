@@ -7,7 +7,7 @@ ___
 
 ## Sample
 
-<!-- {{# generate.module_sample{} #}} -->
+<!-- {{# generate.module{} #}} -->
 
 ```rust
 use procedural_macro::*;

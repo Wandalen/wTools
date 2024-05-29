@@ -1,12 +1,10 @@
 //! Contains CellVal structure that corresponds to single digit on Sudoku field.
 //! 
 
-use derive_tools::Display;
-use derive_tools::{ Add, Sub, Mul, Div };
+use derive_tools::exposed::Display;
 
 /// Represents the value of a cell in Sudoku. It can have a value from 1 to 9 or 0 if the cell is not assigned.
 #[ derive( Default, Debug, Display, Clone, Copy, PartialEq, Eq, Ord, PartialOrd, Hash ) ]
-#[ derive( Add, Sub, Mul, Div ) ]
 pub struct CellVal( u8 );
 
 impl CellVal

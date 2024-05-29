@@ -21,7 +21,7 @@ jobs :
       - uses: actions/checkout@v3
       - id: workflow_files
         run: |
-          WORKFLOWS=$(ls .github/workflows | grep Module)
+          WORKFLOWS=$(ls .github/workflows | grep module)
           for WORKFLOW in $WORKFLOWS ; do
             NAME=$(echo $WORKFLOW | sed 's/\(\S\+\).yml/\1/')
             NAMES="$NAMES $NAME"
@@ -31,7 +31,7 @@ jobs :
           echo "files={\"modules\":$OUTPUT}" >> $GITHUB_OUTPUT
       - id: workflow_names
         run: |
-          WORKFLOWS=$(ls .github/workflows | grep Module)
+          WORKFLOWS=$(ls .github/workflows | grep module)
           for WORKFLOW in $WORKFLOWS ; do
             NAME=$(cat .github/workflows/$WORKFLOW | grep -G '^name :' | sed 's/name\s*:\s\+\(\S*\)/\1/')
             NAMES="$NAMES%0A$NAME"

@@ -2,7 +2,7 @@
 use super::*;
 // use test_tools::exposed::*;
 #[ allow( unused_imports ) ]
-use TheModule::prelude::*;
+use the_module::prelude::*;
 
 // qqq : do negative testing, don't forget about optional arguments /* aaa : Dmytro : done */
 #[ cfg( not( target_os = "windows" ) ) ]
@@ -67,11 +67,11 @@ tests_impls!
     let absolute_path = std::env::current_dir().unwrap();
     let current_dir_str = absolute_path.to_string_lossy();
 
-    let trimmed_path = if let Some( index ) = current_dir_str.find( "core/" ) 
+    let trimmed_path = if let Some( index ) = current_dir_str.find( "core/" )
     {
       &current_dir_str[ 0..index + "core/".len() ]
     }
-    else 
+    else
     {
       relative_path
     };
@@ -123,11 +123,11 @@ tests_impls!
     let absolute_path = std::env::current_dir().unwrap();
     let current_dir_str = absolute_path.to_string_lossy();
 
-    let trimmed_path = if let Some( index ) = current_dir_str.find( "core/" ) 
+    let trimmed_path = if let Some( index ) = current_dir_str.find( "core/" )
     {
       &current_dir_str[ 0..index + "core/".len() ]
     }
-    else 
+    else
     {
       relative_path
     };

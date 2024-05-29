@@ -1,0 +1,23 @@
+name : derive_tools_meta
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # derive_tools_meta
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/core/derive_tools_meta/Cargo.toml'
+      module_name : 'derive_tools_meta'
+      commit_message : ${{ github.event.head_commit.message }}

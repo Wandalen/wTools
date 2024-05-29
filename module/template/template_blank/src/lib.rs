@@ -5,6 +5,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Function description.
+#[ cfg( feature = "enabled" ) ]
 pub fn f1()
 {
 }

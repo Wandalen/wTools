@@ -1,6 +1,6 @@
 // use test_tools::exposed::*;
 use super::*;
-use TheModule::prelude::impls1;
+use the_module::prelude::impls1;
 
 //
 

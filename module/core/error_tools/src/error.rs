@@ -59,6 +59,7 @@ pub( crate ) mod private
 
   }
 
+  // xxx : deprecate maybe?
   /// baic implementation of generic BasicError
 
   #[ derive( core::fmt::Debug, core::clone::Clone, core::cmp::PartialEq, core::cmp::Eq ) ]

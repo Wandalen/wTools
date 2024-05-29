@@ -1,0 +1,23 @@
+name : wstring_tools
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # wstring_tools
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/alias/wstring_tools/Cargo.toml'
+      module_name : 'wstring_tools'
+      commit_message : ${{ github.event.head_commit.message }}

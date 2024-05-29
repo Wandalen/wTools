@@ -11,9 +11,10 @@ use mod_interface::mod_interface;
 /// Tools
 pub mod wtools;
 
-/// Errors.
-#[ cfg( not( feature = "no_std" ) ) ]
-use wtools::error::BasicError;
+// qqq : maybe remove this?
+// /// Errors.
+// #[ cfg( not( feature = "no_std" ) ) ]
+// use wtools::error::BasicError;
 // xxx : check
 
 crate::mod_interface!

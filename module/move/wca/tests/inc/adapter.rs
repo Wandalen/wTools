@@ -1,5 +1,5 @@
 use super::*;
-use TheModule::exposed::*;
+use the_module::exposed::*;
 
 tests_impls!
 {
@@ -20,7 +20,7 @@ tests_impls!
       Ok( () )
     }
 
-    let ca = TheModule::cui( () ).command( command ).command( command2 ).command( echo.arg( "string", Type::String ) ).build();
+    let ca = the_module::cui( () ).command( command ).command( command2 ).command( echo.arg( "string", Type::String ) ).build();
 
     a_id!( (), ca.perform( ".command2 .help" ).unwrap() );
 

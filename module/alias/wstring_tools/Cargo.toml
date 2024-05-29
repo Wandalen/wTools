@@ -69,8 +69,8 @@ split = [ "strs_tools/string_split" ]
 # path = "tests/_integration_test/smoke_test.rs"
 
 # [[example]]
-# name = "wstring_tools_trivial_sample"
-# path = "examples/strs_tools_trivial_sample/src/main.rs"
+# name = "wstring_tools_trivial"
+# path = "examples/strs_tools_trivial/src/main.rs"
 
 [dependencies]
 strs_tools = { workspace = true }

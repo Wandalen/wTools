@@ -1,0 +1,8 @@
+[package]
+name = "mod_interface_trivial"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+mod_interface = { workspace = true }

@@ -1,0 +1,23 @@
+name : cargo_will
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # cargo_will
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/alias/cargo_will/Cargo.toml'
+      module_name : 'cargo_will'
+      commit_message : ${{ github.event.head_commit.message }}

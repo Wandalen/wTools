@@ -15,11 +15,11 @@ pub( crate ) mod private
 
   /// A structure representing an input with a single string value.
   ///
-  /// This struct is designed to encapsulate a single piece of input data as a `String`.
+  /// This struct is designed to encapsulate a single piece of input data as a `Vec< String >`.
   /// It provides a simple wrapper that can be used to convert various types of string
   /// representations into a uniform `Input` struct.
   #[ derive( Debug ) ]
-  pub struct Input( pub String );
+  pub struct Input( pub Vec< String > );
 
   /// A trait for converting various types into `Input`.
   ///
@@ -35,6 +35,8 @@ pub( crate ) mod private
     /// Basic usage:
     ///
     /// ```
+    /// use wca::IntoInput;
+    ///
     /// let string_input: &str = "example string";
     /// let input_struct = string_input.into_input();
     ///
@@ -49,7 +51,7 @@ pub( crate ) mod private
 
     fn into_input( self ) -> Input
     {
-      Input( self.to_string() )
+      Input( self.split( ' ' ).map( ToString::to_string ).collect() )
     }
   }
 
@@ -57,7 +59,7 @@ pub( crate ) mod private
   {
     fn into_input( self ) -> Input
     {
-      Input( self )
+      Input( self.split( ' ' ).map( ToString::to_string ).collect() )
     }
   }
 
@@ -65,7 +67,7 @@ pub( crate ) mod private
   {
     fn into_input( self ) -> Input
     {
-      Input( self.join( " " ) )
+      Input( self )
     }
   }
 

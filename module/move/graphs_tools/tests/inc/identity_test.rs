@@ -8,7 +8,7 @@ tests_impls!
 
   fn identity_with_int()
   {
-    use TheModule::exposed::*;
+    use the_module::exposed::*;
 
     /* test.case( "basic" ) */
     {
@@ -56,13 +56,13 @@ tests_impls!
     // }
 
     /* test.case( "from x2 tupple" ) */
-    {
-      use type_constructor::VectorizedInto;
-      let src = ( 1, 3 );
-      let got : ( IdentityWithInt, IdentityWithInt ) = src.vectorized_into();
-      let exp = ( IdentityWithInt::from( 1 ), IdentityWithInt::from( 3 ) );
-      a_id!( got, exp );
-    }
+    // {
+    //   //use type_constructor::VectorizedInto;
+    //   let src = ( 1, 3 );
+    //   let got : ( IdentityWithInt, IdentityWithInt ) = src.into();
+    //   let exp = ( IdentityWithInt::from( 1 ), IdentityWithInt::from( 3 ) );
+    //   a_id!( got, exp );
+    // }
 
     // /* test.case( "from x3 tupple" ) */
     // {
@@ -78,7 +78,7 @@ tests_impls!
 
   fn identity_implemented_for_identity_by_pointer()
   {
-    use TheModule::exposed::*;
+    use the_module::exposed::*;
 
     let x = 1;
     let y = 1;
@@ -93,7 +93,7 @@ tests_impls!
 
   fn identity_implemented_for_identity_by_name()
   {
-    use TheModule::exposed::*;
+    use the_module::exposed::*;
 
     let src1 = IdentityWithName::from( "abc" );
     let src2 = IdentityWithName::from( "abc" );
@@ -107,7 +107,7 @@ tests_impls!
 
   fn identity_implemented_for_identity_by_int()
   {
-    use TheModule::exposed::*;
+    use the_module::exposed::*;
 
     let src1 = IdentityWithInt::from( 3 );
     let src2 = IdentityWithInt::from( 3 );

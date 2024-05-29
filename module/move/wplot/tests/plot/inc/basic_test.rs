@@ -12,8 +12,8 @@ tests_impls!
   // #[ignore]
   fn without()
   {
-    use TheModule::math::X2;
-    use TheModule::prelude::*;
+    use the_module::math::X2;
+    use the_module::prelude::*;
 
     let file_name = "./test.png";
     let dims = X2::make( 32, 32 );
@@ -53,12 +53,12 @@ tests_impls!
   // #[ignore]
 //   fn basic()
 //   {
-//     use TheModule::math::X2;
-//     use TheModule::prelude::*;
+//     use the_module::math::X2;
+//     use the_module::prelude::*;
 
-//     // let c = TheModule::context::make();
-//     let mut c = TheModule::context();
-//     // let c = TheModule::context().new();
+//     // let c = the_module::context::make();
+//     let mut c = the_module::context();
+//     // let c = the_module::context().new();
 
 //     // c.canvas.size( from!( 32, 32 ) );
 //     let c = c

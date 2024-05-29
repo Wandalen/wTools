@@ -12,7 +12,8 @@
 
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-/// Dependencies.
+/// Namespace with dependencies.
+
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
@@ -33,7 +34,6 @@ pub mod protected
 {
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -46,7 +46,6 @@ pub mod orphan
 {
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -56,10 +55,8 @@ pub mod exposed
 {
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   #[ allow( unused_imports ) ]
   pub use super::mem::exposed::*;
 }
@@ -69,7 +66,6 @@ pub mod exposed
 pub mod prelude
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   #[ allow( unused_imports ) ]
   pub use super::mem::prelude::*;
 }

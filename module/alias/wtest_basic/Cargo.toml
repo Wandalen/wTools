@@ -53,8 +53,8 @@ enabled = [ "test_tools/enabled" ]
 # path = "tests/_integration_test/smoke_test.rs"
 #
 # [[example]]
-# name = "wtest_basic_trivial_sample"
-# path = "examples/wtest_basic_trivial_sample/src/main.rs"
+# name = "wtest_basic_trivial"
+# path = "examples/wtest_basic_trivial/src/main.rs"
 
 [dependencies]
 

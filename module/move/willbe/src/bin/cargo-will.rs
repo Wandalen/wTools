@@ -4,9 +4,10 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 #[ allow( unused_imports ) ]
-use ::willbe::*;
+use::willbe::*;
 
 fn main() -> Result< (), wtools::error::for_app::Error >
 {
-  Ok( willbe::run()? )
+  let args = std::env::args().skip( 1 ).collect();
+  Ok( willbe::run( args )? )
 }

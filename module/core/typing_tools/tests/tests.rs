@@ -5,6 +5,6 @@
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 #[ allow( unused_imports ) ]
-use typing_tools as TheModule;
+use typing_tools as the_module;
 
 mod inc;

@@ -11,20 +11,21 @@ crate::mod_interface!
   /// This component is responsible for performing
   layer executor;
 
-  // /// This component is responsible for aggregating all commands
-  // layer commands_aggregator;
-
-  /// User input
+  /// Provides functionality for working with input data, including asking user questions and converting various string representations into a uniform `Input` struct.
   layer input;
-  /// The missing batteries of WCA.
-  layer facade;
+  
+  // /// The missing batteries of WCA.
+  // layer facade;
+  /// Genera-purpose tools which might be moved out one day.
+  layer tool;
 
   /// Responsible for aggregating all commands that the user defines, and for parsing and executing them
   layer aggregator;
-  /// Helper commands
+  /// This module provides functionality for generating help content for commands.
   layer help;
-  /// -
+  /// Responsible for generating Markdown formatted documentation for commands
   layer formatter;
-  // qqq : for Bohdan : write concise documentations
+  // aaa : for Bohdan : write concise documentations
+  // aaa : Is this enough or is more needed?
 
 }

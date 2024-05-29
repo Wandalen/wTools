@@ -18,7 +18,8 @@
 #[ cfg( feature = "enabled" ) ]
 pub mod now;
 
-/// Dependencies.
+/// Namespace with dependencies.
+
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {

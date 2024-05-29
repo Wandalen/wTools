@@ -15,7 +15,8 @@
 /// Collection of general purpose tools for type checking.
 pub mod typing;
 
-/// Dependencies.
+/// Namespace with dependencies.
+
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {

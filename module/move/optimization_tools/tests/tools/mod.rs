@@ -19,7 +19,7 @@ pub fn logger_init()
   {
     // let tab = record.key_values().get( "tab" );
     writeln!( buf, "{}", record.args() )
-    // record.key_values().map(|(k, v)| format!("{}: {}", k, v)).collect::<Vec<_>>().join(", ")
+    // record.key_values().map(|(k, v)| format!("{}: {}", k, v)).collect::<Vec< _ >>().join(", ")
   })
   // Ignore errors initializing the logger if tests race to configure it
   .try_init()

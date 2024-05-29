@@ -3,7 +3,7 @@ mod private
 {
   use crate::*;
 
-  use { endpoint, wtools };
+  use { action, wtools };
 
   use std::
   {
@@ -12,34 +12,35 @@ mod private
     collections::HashSet,
   };
 
-  use wca::{ Args, Props };
+  use wca::VerifiedCommand;
   use wtools::error::{ for_app::Context, Result };
 
-  use path::AbsolutePath;
-  use endpoint::{ list as l, list::{ ListFormat, ListArgs } };
+  use _path::AbsolutePath;
+  use action::{ list as l, list::{ ListFormat, ListOptions } };
   use former::Former;
 
+  // qqq: `Former` forces the struct to be public
   #[ derive( Former ) ]
-  struct ListProperties
+  pub struct ListProperties
   {
-    #[ default( ListFormat::Tree ) ]
+    #[ former( default = ListFormat::Tree ) ]
     format : ListFormat,
 
-    #[ default( false ) ]
+    #[ former( default = false ) ]
     with_version : bool,
-    #[ default( false ) ]
+    #[ former( default = false ) ]
     with_path : bool,
 
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     with_local : bool,
-    #[ default( false ) ]
+    #[ former( default = false ) ]
     with_remote : bool,
 
-    #[ default( true ) ]
+    #[ former( default = true ) ]
     with_primary : bool,
-    #[ default( false ) ]
+    #[ former( default = false ) ]
     with_dev : bool,
-    #[ default( false ) ]
+    #[ former( default = false ) ]
     with_build : bool,
   }
 
@@ -47,12 +48,12 @@ mod private
   /// List workspace packages.
   ///
 
-  pub fn list( ( args, properties ) : ( Args, Props ) ) -> Result< () >
+  pub fn list( o : VerifiedCommand ) -> Result< () >
   {
-    let path_to_workspace : PathBuf = args.get_owned( 0 ).unwrap_or( std::env::current_dir().context( "Workspace list command without subject" )? );
+    let path_to_workspace : PathBuf = o.args.get_owned( 0 ).unwrap_or( std::env::current_dir().context( "Workspace list command without subject" )? );
     let path_to_workspace = AbsolutePath::try_from( path_to_workspace )?;
 
-    let ListProperties { format, with_version, with_path, with_local, with_remote, with_primary, with_dev, with_build } = ListProperties::try_from( properties )?;
+    let ListProperties { format, with_version, with_path, with_local, with_remote, with_primary, with_dev, with_build } = o.props.try_into()?;
 
     let crate_dir = CrateDir::try_from( path_to_workspace )?;
 
@@ -69,7 +70,7 @@ mod private
     if with_dev { categories.insert( l::DependencyCategory::Dev ); }
     if with_build { categories.insert( l::DependencyCategory::Build ); }
 
-    let args = ListArgs::former()
+    let args = ListOptions::former()
     .path_to_manifest( crate_dir )
     .format( format )
     .info( additional_info )
@@ -77,7 +78,7 @@ mod private
     .dependency_categories( categories )
     .form();
 
-    match endpoint::list( args )
+    match action::list( args )
     {
       Ok( report ) =>
       {
@@ -94,10 +95,10 @@ mod private
     Ok( () )
   }
 
-  impl TryFrom< Props > for ListProperties
+  impl TryFrom< wca::Props > for ListProperties
   {
     type Error = wtools::error::for_app::Error;
-    fn try_from( value : Props ) -> Result< Self, Self::Error >
+    fn try_from( value : wca::Props ) -> Result< Self, Self::Error >
     {
       let mut this = Self::former();
 

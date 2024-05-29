@@ -1,5 +1,4 @@
-//! example
-
+//! qqq : write proper description
 #![ cfg_attr( feature = "type_name_of_val", feature( type_name_of_val ) ) ]
 
 // // #![ cfg_attr( feature = "nightly", feature( type_name_of_val ) ) ]
@@ -38,6 +37,6 @@ fn main()
   //   println!( "The command from the root of the sample :" );
   //   println!( "cargo run --features nightly\n" );
   //   println!( "The command from the root of module :" );
-  //   println!( "cargo run --example inspect_type_trivial_sample --features nightly" );
+  //   println!( "cargo run --example inspect_type_trivial --features nightly" );
   // }
 }

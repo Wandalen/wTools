@@ -1,5 +1,4 @@
-//! example
-
+//! qqq : write proper description
 use test_tools::*;
 
 tests_impls!

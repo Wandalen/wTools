@@ -1,0 +1,23 @@
+name : w4d
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # w4d
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/blank/w4d/Cargo.toml'
+      module_name : 'w4d'
+      commit_message : ${{ github.event.head_commit.message }}

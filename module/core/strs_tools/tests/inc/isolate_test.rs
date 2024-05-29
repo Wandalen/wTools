@@ -8,7 +8,7 @@ tests_impls!
   fn basic()
   {
     let src = "";
-    let req = TheModule::string::isolate_left()
+    let req = the_module::string::isolate_left()
     .src( src )
     .perform();
     let mut exp = ( "", None, "" );
@@ -21,7 +21,7 @@ tests_impls!
   {
     /* no entry */
     let src = "abaca";
-    let req = TheModule::string::isolate_left()
+    let req = the_module::string::isolate_left()
     .src( src )
     .delimeter( "f" )
     .none( true )
@@ -31,7 +31,7 @@ tests_impls!
 
     /* default */
     let src = "abaca";
-    let req = TheModule::string::isolate_left()
+    let req = the_module::string::isolate_left()
     .src( src )
     .delimeter( "a" )
     .none( true )
@@ -41,7 +41,7 @@ tests_impls!
 
     /* times - 0 */
     let src = "abaca";
-    let req = TheModule::string::isolate_left()
+    let req = the_module::string::isolate_left()
     .src( src )
     .delimeter( "a" )
     .times( 0 )
@@ -52,7 +52,7 @@ tests_impls!
 
     /* times - 1 */
     let src = "abaca";
-    let req = TheModule::string::isolate_left()
+    let req = the_module::string::isolate_left()
     .src( src )
     .delimeter( "a" )
     .times( 1 )
@@ -63,7 +63,7 @@ tests_impls!
 
     /* times - 2 */
     let src = "abaca";
-    let req = TheModule::string::isolate_left()
+    let req = the_module::string::isolate_left()
     .src( src )
     .delimeter( "a" )
     .times( 2 )
@@ -74,7 +74,7 @@ tests_impls!
 
     /* times - 3 */
     let src = "abaca";
-    let req = TheModule::string::isolate_left()
+    let req = the_module::string::isolate_left()
     .src( src )
     .delimeter( "a" )
     .times( 3 )
@@ -85,7 +85,7 @@ tests_impls!
 
     /* times - 4 */
     let src = "abaca";
-    let req = TheModule::string::isolate_left()
+    let req = the_module::string::isolate_left()
     .src( src )
     .delimeter( "a" )
     .times( 4 )
@@ -101,7 +101,7 @@ tests_impls!
   {
     /* no entry */
     let src = "abaca";
-    let req = TheModule::string::isolate_right()
+    let req = the_module::string::isolate_right()
     .src( src )
     .delimeter( "f" )
     .none( true )
@@ -111,7 +111,7 @@ tests_impls!
 
     /* default */
     let src = "abaca";
-    let req = TheModule::string::isolate_right()
+    let req = the_module::string::isolate_right()
     .src( src )
     .delimeter( "a" )
     .none( true )
@@ -121,7 +121,7 @@ tests_impls!
 
     /* times - 0 */
     let src = "abaca";
-    let req = TheModule::string::isolate_right()
+    let req = the_module::string::isolate_right()
     .src( src )
     .delimeter( "a" )
     .times( 0 )
@@ -132,7 +132,7 @@ tests_impls!
 
     /* times - 1 */
     let src = "abaca";
-    let req = TheModule::string::isolate_right()
+    let req = the_module::string::isolate_right()
     .src( src )
     .delimeter( "a" )
     .times( 1 )
@@ -143,7 +143,7 @@ tests_impls!
 
     /* times - 2 */
     let src = "abaca";
-    let req = TheModule::string::isolate_right()
+    let req = the_module::string::isolate_right()
     .src( src )
     .delimeter( "a" )
     .times( 2 )
@@ -154,7 +154,7 @@ tests_impls!
 
     /* times - 3 */
     let src = "abaca";
-    let req = TheModule::string::isolate_right()
+    let req = the_module::string::isolate_right()
     .src( src )
     .delimeter( "a" )
     .times( 3 )
@@ -165,7 +165,7 @@ tests_impls!
 
     /* times - 4 */
     let src = "abaca";
-    let req = TheModule::string::isolate_right()
+    let req = the_module::string::isolate_right()
     .src( src )
     .delimeter( "a" )
     .times( 4 )

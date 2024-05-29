@@ -1,0 +1,23 @@
+name : winterval
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # winterval
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/alias/winterval/Cargo.toml'
+      module_name : 'winterval'
+      commit_message : ${{ github.event.head_commit.message }}

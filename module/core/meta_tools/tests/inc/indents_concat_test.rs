@@ -11,7 +11,7 @@ tests_impls!
 
     println!( "MODULES_PATH : {}", env!( "MODULES_PATH" ) );
     println!( "WORKSPACE_PATH : {}", env!( "WORKSPACE_PATH" ) );
-    // xxx : add to path_tools::{ path::modules(), path::workspace() }
+    // xxx : add to program_tools::{ path::modules(), path::workspace() }
 
     macro_rules! macro1
     {
@@ -19,7 +19,7 @@ tests_impls!
       {
         a = 13;
         // let xy3_ = 13;
-        TheModule::meta_idents_concat!
+        the_module::meta_idents_concat!
         {
           let [< x $Number _ >] = 13;
         };

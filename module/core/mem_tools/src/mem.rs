@@ -21,6 +21,9 @@ pub( crate ) mod private
       return false;
     }
 
+    // Unsafe block is required because we're calling a foreign function (memcmp)
+    // and manually managing memory addresses.
+    #[ allow( unsafe_code ) ]
     unsafe { memcmp( mem1, mem2, core::mem::size_of_val( src1 ) ) == 0 }
   }
 

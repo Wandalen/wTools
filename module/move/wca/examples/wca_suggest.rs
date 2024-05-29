@@ -20,30 +20,22 @@
 //! ```
 //!
 
+use wca::{ CommandsAggregator, Type, VerifiedCommand };
+
 fn main()
 {
-  // use wca::prelude::*;
 
-  let ca = wca::CommandsAggregator::former()
-  .grammar
-  ([
-    wca::Command::former()
-    .phrase( "echo" )
+  let ca = CommandsAggregator::former()
+  .command( "echo" )
     .hint( "prints all subjects and properties" )
-    .subject( "Subject", wca::Type::String, true )
-    .property( "property", "simple property", wca::Type::String, true )
-    .form(),
-  ])
-  .executor
-  ([
-   ( "echo".to_owned(), wca::Routine::new( | ( args, props ) |
+    .subject().kind( Type::String ).optional( true ).end()
+    .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( true ).end()
+    .routine( | o : VerifiedCommand |
     {
-      println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
-      Ok( () )
+      println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props );
     })
-  ),
-  ])
-  .build();
+    .end()
+  .perform();
 
   let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
   match ca.perform( args.join( " " ) )

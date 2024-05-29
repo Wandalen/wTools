@@ -1,6 +1,6 @@
 use super::*;
 
-#[ derive( Debug, Clone, Copy, PartialEq, TheModule::InnerFrom ) ]
+#[ derive( Debug, Clone, Copy, PartialEq, the_module::InnerFrom ) ]
 pub struct UnitStruct;
 
 

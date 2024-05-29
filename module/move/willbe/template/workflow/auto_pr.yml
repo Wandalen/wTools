@@ -28,7 +28,7 @@ jobs :
     steps :
       - uses : actions/checkout@v3
       - name : Open PR
-        uses : vsoch/pull-request-action@1.0.18
+        uses : vsoch/pull-request-action@1.1.0
         env :
           GITHUB_TOKEN : ${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}
           PULL_REQUEST_BRANCH : ${{ inputs.dst_branch }}

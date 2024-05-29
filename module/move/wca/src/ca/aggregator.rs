@@ -3,16 +3,21 @@ pub( crate ) mod private
   use crate::*;
   use ca::
   {
-    Parser, Verifier, ExecutorConverter,
+    Verifier,
     Executor,
-    ProgramParser,
-    Command,
-    Routine,
-    help::{ HelpGeneratorFn, HelpVariants, dot_command },
+    grammar::command::private::
+    {
+      CommandFormer,
+      CommandAsSubformer,
+      CommandAsSubformerEnd,
+      CommandFormerStorage
+    },
+    help::{ HelpGeneratorFn, HelpGeneratorOptions, HelpVariants },
   };
 
-  use std::collections::{ HashMap, HashSet };
+  use std::collections::HashSet;
   use std::fmt;
+  use former::StoragePreform;
   use wtools::thiserror;
   use wtools::error::
   {
@@ -20,6 +25,7 @@ pub( crate ) mod private
     for_app::Error as wError,
     for_lib::*,
   };
+  use wtools::Itertools;
 
   /// Validation errors that can occur in application.
   #[ derive( Error, Debug ) ]
@@ -58,7 +64,8 @@ pub( crate ) mod private
 
   // xxx : qqq : qqq2 : for Bohdan : one level is obviously redundant
   // Program< Namespace< ExecutableCommand_ > > -> Program< ExecutableCommand_ >
-  struct CommandsAggregatorCallback( Box< dyn Fn( &str, &Program< Namespace< ExecutableCommand_ > > ) > );
+  // aaa : done. The concept of `Namespace` has been removed
+  struct CommandsAggregatorCallback( Box< dyn Fn( &str, &Program< VerifiedCommand > ) > );
 
   impl fmt::Debug for CommandsAggregatorCallback
   {
@@ -76,122 +83,156 @@ pub( crate ) mod private
   /// # Example:
   ///
   /// ```
-  /// use wca::prelude::*;
+  /// use wca::{ CommandsAggregator, VerifiedCommand, Type };
   ///
   /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
   /// let ca = CommandsAggregator::former()
-  /// .grammar(
-  /// [
-  ///   Command::former()
-  ///   .phrase( "echo" )
+  /// .command( "echo" )
   ///   .hint( "prints all subjects and properties" )
-  ///   .subject( "Subject", Type::String, false )
-  ///   .property( "property", "simple property", Type::String, false )
-  ///   .form(),
-  /// ])
-  /// .executor(
-  /// [
-  ///   ( "echo".to_owned(), Routine::new( |( args, props )|
-  ///   {
-  ///     println!( "= Args\n{args:?}\n\n= Properties\n{props:?}\n" );
-  ///     Ok( () )
-  ///   })),
-  /// ])
-  /// .build();
+  ///   .subject().hint( "argument" ).kind( Type::String ).optional( false ).end()
+  ///   .property( "property" ).hint( "simple property" ).kind( Type::String ).optional( false ).end()
+  ///   .routine( | o : VerifiedCommand | println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props ) )
+  ///   .end()
+  /// .perform();
   ///
   /// ca.perform( ".echo something" )?;
   /// # Ok( () ) }
   /// ```
   #[ derive( Debug ) ]
   #[ derive( former::Former ) ]
+  #[ storage_fields( help_generator : HelpGeneratorFn, help_variants : HashSet< HelpVariants > ) ]
+  #[ mutator( custom = true ) ]
+  // #[ debug ]
   pub struct CommandsAggregator
   {
-    #[ default( Parser::former().form() ) ]
+    #[ former( default = Dictionary::default() ) ]
+    dictionary : Dictionary,
+
+    #[ former( default = Parser ) ]
     parser : Parser,
 
-    #[ setter( false ) ]
-    #[ default( Executor::former().form() ) ]
+    #[ scalar( setter = false, hint = false ) ]
+    #[ former( default = Executor::former().form() ) ]
     executor : Executor,
 
-    help_generator : HelpGeneratorFn,
-    #[ default( HashSet::from([ HelpVariants::All ]) ) ]
-    help_variants : HashSet< HelpVariants >,
-    // qqq : for Bohdan : should not have fields help_generator and help_variants
-    // help_generator generateds VerifiedCommand(s) and stop to exist
-
-    #[ default( Verifier::former().form() ) ]
+    #[ former( default = Verifier ) ]
     verifier : Verifier,
-
-    #[ default( ExecutorConverter::former().form() ) ]
-    executor_converter : ExecutorConverter,
 
     callback_fn : Option< CommandsAggregatorCallback >,
   }
 
+  impl< Context, Formed > former::FormerMutator for CommandsAggregatorFormerDefinitionTypes< Context, Formed >
+  {
+    fn form_mutation( storage : &mut Self::Storage, _context : &mut Option< Self::Context > )
+    {
+      let ca = storage;
+      let dictionary = ca.dictionary.get_or_insert_with( Dictionary::default );
+
+      let help_generator = std::mem::take( &mut ca.help_generator ).unwrap_or_default();
+      let help_variants = std::mem::take( &mut ca.help_variants ).unwrap_or_else( || HashSet::from([ HelpVariants::All ]) );
+
+      if help_variants.contains( &HelpVariants::All )
+      {
+        HelpVariants::All.generate( &help_generator, dictionary );
+      }
+      else
+      {
+        for help in help_variants.iter().sorted()
+        {
+          help.generate( &help_generator, dictionary );
+        }
+      }
+    }
+  }
+
+  impl< Definition > CommandsAggregatorFormer< Definition >
+  where
+    Definition : former::FormerDefinition< Storage = < CommandsAggregator as former::EntityToStorage >::Storage >,
+  {
+    /// Creates a command in the command chain.
+    ///
+    /// # Arguments
+    ///
+    /// * `name` - The name of the command.
+    pub fn command< IntoName >( self, name : IntoName ) -> CommandAsSubformer< Self, impl CommandAsSubformerEnd< Self > >
+    where
+      IntoName : Into< String >,
+    {
+      let on_end = | command : CommandFormerStorage, super_former : Option< Self > | -> Self
+      {
+        let mut super_former = super_former.unwrap();
+        let mut dictionary = super_former.storage.dictionary.unwrap_or_default();
+
+        dictionary.register( command.preform() );
+
+        super_former.storage.dictionary = Some( dictionary );
+
+        super_former
+      };
+      let former = CommandFormer::begin( None, Some( self ), on_end );
+      former.phrase( name )
+    }
+  }
+
   impl CommandsAggregatorFormer
   {
-    /// Setter for grammar
+    /// Adds a context to the executor.
     ///
-    /// Gets list of available commands
-    pub fn grammar< V >( mut self, commands : V ) -> Self
-    where
-      V : Into< Vec< Command > >
-    {
-      let verifier = Verifier::former()
-      .commands( commands )
-      .form();
-      self.verifier = Some( verifier );
-      self
-    }
-
-    /// Setter for executor
+    /// # Arguments
     ///
-    /// Gets dictionary of routines( command name -> callback )
-    pub fn executor< H >( mut self, routines : H ) -> Self
+    /// * `value` - The value to be used as the context.
+    ///
+    /// # Returns
+    ///
+    /// The modified instance of `Self`.
+    // `'static` means that the value must be owned or live at least as a `Context'
+    pub fn with_context< T >( mut self, value : T ) -> Self
     where
-      H : Into< HashMap< String, Routine > >
+      T : Sync + Send + 'static,
     {
-      let executor = ExecutorConverter::former()
-      .routines( routines )
-      .form();
+      let mut executor = self.storage.executor.unwrap_or_else( || Executor::former().form() );
 
-      self.executor_converter = Some( executor );
+      executor.context = Context::new( value );
+
+      self.storage.executor = Some( executor );
+
       self
     }
 
     /// Setter for help content generator
     ///
     /// ```
-    /// use wca::prelude::*;
+    /// use wca::CommandsAggregator;
     ///
     /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
     /// let ca = CommandsAggregator::former()
     /// // ...
     /// .help( | grammar, command | format!( "Replaced help content" ) )
-    /// .build();
+    /// .perform();
     ///
     /// ca.perform( ".help" )?;
     /// # Ok( () ) }
     /// ```
     pub fn help< HelpFunction >( mut self, func : HelpFunction ) -> Self
     where
-      HelpFunction : Fn( &Verifier, Option< &Command > ) -> String + 'static
+      HelpFunction : Fn( &Dictionary, HelpGeneratorOptions< '_ > ) -> String + 'static
     {
-      self.help_generator = Some( HelpGeneratorFn::new( func ) );
+      self.storage.help_generator = Some( HelpGeneratorFn::new( func ) );
       self
     }
-    // qqq : it is good access method, but formed structure should not have help_generator anymore
+    // aaa : it is good access method, but formed structure should not have help_generator anymore
+    // aaa : mutator used
 
     /// Set callback function that will be executed after validation state
     ///
     /// ```
-    /// use wca::prelude::*;
+    /// use wca::CommandsAggregator;
     ///
     /// # fn main() -> Result< (), Box< dyn std::error::Error > > {
     /// let ca = CommandsAggregator::former()
     /// // ...
     /// .callback( | _input, _program | println!( "Program is valid" ) )
-    /// .build();
+    /// .perform();
     ///
     /// // prints the "Program is valid" and after executes the program
     /// ca.perform( ".help" )?;
@@ -199,32 +240,10 @@ pub( crate ) mod private
     /// ```
     pub fn callback< Callback >( mut self, callback : Callback ) -> Self
     where
-      Callback : Fn( &str, &Program< Namespace< ExecutableCommand_ > > ) + 'static,
+      Callback : Fn( &str, &Program< VerifiedCommand > ) + 'static,
     {
-      self.callback_fn = Some( CommandsAggregatorCallback( Box::new( callback ) ) );
+      self.storage.callback_fn = Some( CommandsAggregatorCallback( Box::new( callback ) ) );
       self
-    }
-
-    /// Construct CommandsAggregator
-    pub fn build( self ) -> CommandsAggregator
-    {
-      let mut ca = self.form();
-
-      if ca.help_variants.contains( &HelpVariants::All )
-      {
-        HelpVariants::All.generate( &ca.help_generator, &mut ca.verifier, &mut ca.executor_converter );
-      }
-      else
-      {
-        for help in &ca.help_variants
-        {
-          help.generate( &ca.help_generator, &mut ca.verifier, &mut ca.executor_converter );
-        }
-      }
-
-      dot_command( &mut ca.verifier, &mut ca.executor_converter );
-
-      ca
     }
   }
 
@@ -239,19 +258,17 @@ pub( crate ) mod private
     {
       let Input( ref program ) = program.into_input();
 
-      let raw_program = self.parser.program( program ).map_err( | e | Error::Validation( ValidationError::Parser { input : program.to_string(), error : e } ) )?;
-      let grammar_program = self.verifier.to_program( raw_program ).map_err( | e | Error::Validation( ValidationError::Verifier( e ) ) )?;
-      let exec_program = self.executor_converter.to_program( grammar_program ).map_err( | e | Error::Validation( ValidationError::ExecutorConverter( e ) ) )?;
+      let raw_program = self.parser.parse( program ).map_err( | e | Error::Validation( ValidationError::Parser { input : format!( "{:?}", program ), error : e } ) )?;
+      let grammar_program = self.verifier.to_program( &self.dictionary, raw_program ).map_err( | e | Error::Validation( ValidationError::Verifier( e ) ) )?;
 
       if let Some( callback ) = &self.callback_fn
       {
-        callback.0( program, &exec_program )
+        callback.0( &program.join( " " ), &grammar_program )
       }
 
-      self.executor.program( exec_program ).map_err( | e | Error::Execution( e ) )
+      self.executor.program( &self.dictionary, grammar_program ).map_err( | e | Error::Execution( e ) )
     }
   }
-
 }
 
 //
@@ -259,6 +276,7 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   exposed use CommandsAggregator;
+  exposed use CommandsAggregatorFormer;
   exposed use Error;
   exposed use ValidationError;
 }

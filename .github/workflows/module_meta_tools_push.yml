@@ -1,0 +1,23 @@
+name : meta_tools
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # meta_tools
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/core/meta_tools/Cargo.toml'
+      module_name : 'meta_tools'
+      commit_message : ${{ github.event.head_commit.message }}

@@ -19,6 +19,9 @@ pub( crate ) mod private
     syn::custom_keyword!( orphan );
     syn::custom_keyword!( exposed );
     syn::custom_keyword!( prelude );
+
+    pub use syn::token::Pub as public;
+
   }
 
   ///
@@ -218,7 +221,11 @@ pub( crate ) mod private
   Vis!( Orphan, VisOrphan, orphan, Orphan );
   Vis!( Exposed, VisExposed, exposed, Exposed );
   Vis!( Prelude, VisPrelude, prelude, Prelude );
-  HasClauseKind!( syn::VisPublic, Public );
+
+  Vis!( Public, VisPublic, public, Public );
+  // Vis!( Restricted, VisRestricted, restricted, Restricted );
+
+  // HasClauseKind!( syn::Visibility::Public, Public );
   HasClauseKind!( syn::VisRestricted, Restricted );
   Clause!( ClauseImmediates, Immadiate );
 
@@ -227,8 +234,10 @@ pub( crate ) mod private
   impl_valid_sub_namespace!( VisOrphan, true );
   impl_valid_sub_namespace!( VisExposed, true );
   impl_valid_sub_namespace!( VisPrelude, true );
-  impl_valid_sub_namespace!( syn::VisPublic, false );
+  impl_valid_sub_namespace!( VisPublic, false );
   impl_valid_sub_namespace!( syn::VisRestricted, false );
+  // impl_valid_sub_namespace!( syn::Visibility::Public, false );
+  // impl_valid_sub_namespace!( syn::VisRestricted, false );
 
   ///
   /// Restriction, for example `pub( crate )`.
@@ -278,7 +287,8 @@ pub( crate ) mod private
     Orphan( VisOrphan ),
     Exposed( VisExposed ),
     Prelude( VisPrelude ),
-    Public( syn::VisPublic ),
+    Public( VisPublic ),
+    // Public( syn::VisPublic ),
     // Crate( syn::VisCrate ),
     // Restricted( syn::VisRestricted ),
     #[ default ]
@@ -310,8 +320,13 @@ pub( crate ) mod private
 
     fn parse_pub( input : ParseStream< '_ > ) -> Result< Self >
     {
-      Ok( Visibility::Public( syn::VisPublic { pub_token : input.parse()? } ) )
+      Self::_parse_vis::< VisPublic >( input )
     }
+
+    // fn parse_pub( input : ParseStream< '_ > ) -> Result< Self >
+    // {
+    //   Ok( Visibility::Public( syn::VisPublic { pub_token : input.parse()? } ) )
+    // }
 
     fn _parse_vis< Vis >( input : ParseStream< '_ > ) -> Result< Self >
     where

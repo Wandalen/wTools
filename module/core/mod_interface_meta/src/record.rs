@@ -191,12 +191,13 @@ pub( crate ) mod private
     {
       self.head.iter().try_for_each( | attr |
       {
-        // code_print!( attr.path );
-        // code_print!( attr.tokens );
+        // code_print!( attr );
+        // code_print!( attr.path() );
+        // code_print!( attr.meta );
 
         let good = true
-          && code_export_str!( attr.path ) == "debug"
-          && code_export_str!( attr.tokens ).is_empty()
+          && code_to_str!( attr.path() ) == "debug"
+          // && code_to_str!( attr.meta ).is_empty()
         ;
 
         if !good
@@ -219,7 +220,7 @@ pub( crate ) mod private
     {
       self.head.iter().any( | attr |
       {
-        code_export_str!( attr.path ) == "debug"
+        code_to_str!( attr.path() ) == "debug"
       })
     }
   }

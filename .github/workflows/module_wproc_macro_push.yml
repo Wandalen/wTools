@@ -1,0 +1,23 @@
+name : wproc_macro
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # wproc_macro
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/alias/wproc_macro/Cargo.toml'
+      module_name : 'wproc_macro'
+      commit_message : ${{ github.event.head_commit.message }}

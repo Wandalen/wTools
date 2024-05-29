@@ -1,0 +1,23 @@
+name : mod_interface_meta
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # mod_interface_meta
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/core/mod_interface_meta/Cargo.toml'
+      module_name : 'mod_interface_meta'
+      commit_message : ${{ github.event.head_commit.message }}

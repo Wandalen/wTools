@@ -2,64 +2,64 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/clone_dyn_meta/latest/clone_dyn_meta/" ) ]
-// #![ deny( rust_2018_idioms ) ]
-// #![ deny( missing_debug_implementations ) ]
-// #![ deny( missing_docs ) ]
-#![ warn( clippy::undocumented_unsafe_blocks ) ]
-#![ allow( non_snake_case ) ]
-#![ allow( non_upper_case_globals ) ]
-
-// #![ feature( type_name_of_val ) ]
-// #![ feature( trace_macros ) ]
-
-//!
-//! Derive to clone dyn structures.
-//!
-
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+#[ cfg
+(
+  any
+  (
+    feature = "derive_as_mut",
+    feature = "derive_as_ref",
+    feature = "derive_deref",
+    feature = "derive_deref_mut",
+    feature = "derive_from",
+    feature = "derive_inner_from",
+    feature = "derive_variadic_from",
+  )
+)]
+#[ cfg( feature = "enabled" ) ]
+mod derive;
+#[ cfg
+(
+  any
+  (
+    feature = "derive_as_mut",
+    feature = "derive_as_ref",
+    feature = "derive_deref",
+    feature = "derive_deref_mut",
+    feature = "derive_from",
+    feature = "derive_inner_from",
+    feature = "derive_variadic_from",
+  )
+)]
 // #[ cfg( feature = "enabled" ) ]
-// use macro_tools::prelude::*;
+// use derive::*;
 
-#[ cfg
-(
-	any
-	(
-		feature = "derive_as_mut",
-		feature = "derive_as_ref",
-		feature = "derive_deref",
-		feature = "derive_deref_mut",
-		feature = "derive_from",
-		feature = "derive_inner_from",
-		feature = "derive_variadic_from",
-		feature = "derive_reflect",
-	)
-)]
-#[ cfg( feature = "enabled" ) ]
-mod implementation;
-#[ cfg
-(
-	any
-	(
-		feature = "derive_as_mut",
-		feature = "derive_as_ref",
-		feature = "derive_deref",
-		feature = "derive_deref_mut",
-		feature = "derive_from",
-		feature = "derive_inner_from",
-		feature = "derive_variadic_from",
-		feature = "derive_reflect",
-	)
-)]
-#[ cfg( feature = "enabled" ) ]
-use implementation::*;
 
 ///
-/// Derive macro to implement From converting inner type into outer when-ever it's possible to do automatically.
+/// Provides an automatic `From` implementation for struct wrapping a single value.
 ///
-/// ### Sample :: struct instead of macro.
+/// This macro simplifies the conversion of an inner type to an outer struct type
+/// when the outer type is a simple wrapper around the inner type.
 ///
-/// Write this
+/// ## Example Usage
+///
+/// Instead of manually implementing `From< bool >` for `IsTransparent`:
+///
+/// ```rust
+/// pub struct IsTransparent( bool );
+///
+/// impl From< bool > for IsTransparent
+/// {
+///   #[ inline( always ) ]
+///   fn from( src : bool ) -> Self
+///   {
+///     Self( src )
+///   }
+/// }
+/// ```
+///
+/// Use `#[ derive( From ) ]` to automatically generate the implementation:
 ///
 /// ```rust
 /// # use derive_tools_meta::*;
@@ -67,26 +67,23 @@ use implementation::*;
 /// pub struct IsTransparent( bool );
 /// ```
 ///
-/// Instead of this
+/// The macro facilitates the conversion without additional boilerplate code.
 ///
-/// ```rust
-/// pub struct IsTransparent( bool );
-/// impl From< bool > for IsTransparent
-/// {
-///   #[ inline( always ) ]
-///   fn from( src : bool ) -> Self
-///   {
-///     Self( src )
-///   }
-/// }
-/// ```
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_from" ) ]
-#[ proc_macro_derive( From ) ]
+#[ proc_macro_derive
+(
+  From,
+  attributes
+  (
+    debug, // struct
+    from, // field
+  )
+)]
 pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = from_inner::from_inner( input );
+  let result = derive::from::from( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -94,45 +91,52 @@ pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
   }
 }
 
-///
-/// Derive macro to implement From converting inner type into outer when-ever it's possible to do automatically.
-///
-/// ### Sample :: struct instead of macro.
-///
-/// Write this
-///
-/// ```rust
-/// # use derive_tools_meta::*;
-/// #[ derive( FromInner ) ]
-/// pub struct IsTransparent( bool );
-/// ```
-///
-/// Instead of this
-///
-/// ```rust
-/// pub struct IsTransparent( bool );
-/// impl From< bool > for IsTransparent
-/// {
-///   #[ inline( always ) ]
-///   fn from( src : bool ) -> Self
-///   {
-///     Self( src )
-///   }
-/// }
-/// ```
-
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_from" ) ]
-#[ proc_macro_derive( FromInner ) ]
-pub fn from_inner( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
-{
-  let result = from_inner::from_inner( input );
-  match result
-  {
-    Ok( stream ) => stream.into(),
-    Err( err ) => err.to_compile_error().into(),
-  }
-}
+// ///
+// /// Alias for derive `From`. Provides an automatic `From` implementation for struct wrapping a single value.
+// ///
+// /// This macro simplifies the conversion of an inner type to an outer struct type
+// /// when the outer type is a simple wrapper around the inner type.
+// ///
+// /// ## Example Usage
+// ///
+// /// Instead of manually implementing `From< bool >` for `IsTransparent`:
+// ///
+// /// ```rust
+// /// pub struct IsTransparent( bool );
+// ///
+// /// impl From< bool > for IsTransparent
+// /// {
+// ///   #[ inline( always ) ]
+// ///   fn from( src : bool ) -> Self
+// ///   {
+// ///     Self( src )
+// ///   }
+// /// }
+// /// ```
+// ///
+// /// Use `#[ derive( FromInner ) ]` to automatically generate the implementation:
+// ///
+// /// ```rust
+// /// # use derive_tools_meta::*;
+// /// #[ derive( FromInner ) ]
+// /// pub struct IsTransparent( bool );
+// /// ```
+// ///
+// /// The macro facilitates the conversion without additional boilerplate code.
+// ///
+//
+// #[ cfg( feature = "enabled" ) ]
+// #[ cfg( feature = "derive_from" ) ]
+// #[ proc_macro_derive( FromInner, attributes( debug ) ) ]
+// pub fn from_inner( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+// {
+//   let result = derive::from::from( input );
+//   match result
+//   {
+//     Ok( stream ) => stream.into(),
+//     Err( err ) => err.to_compile_error().into(),
+//   }
+// }
 
 ///
 /// Derive macro to implement From converting outer type into inner when-ever it's possible to do automatically.
@@ -163,10 +167,10 @@ pub fn from_inner( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_inner_from" ) ]
-#[ proc_macro_derive( InnerFrom ) ]
+#[ proc_macro_derive( InnerFrom, attributes( debug ) ) ]
 pub fn inner_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = inner_from::inner_from( input );
+  let result = derive::inner_from::inner_from( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -204,10 +208,10 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_deref" ) ]
-#[ proc_macro_derive( Deref ) ]
+#[ proc_macro_derive( Deref, attributes( debug ) ) ]
 pub fn deref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = deref::deref( input );
+  let result = derive::deref::deref( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -254,10 +258,10 @@ pub fn deref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_deref_mut" ) ]
-#[ proc_macro_derive( DerefMut ) ]
+#[ proc_macro_derive( DerefMut, attributes( debug ) ) ]
 pub fn deref_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = deref_mut::deref_mut( input );
+  let result = derive::deref_mut::deref_mut( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -293,10 +297,10 @@ pub fn deref_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_as_ref" ) ]
-#[ proc_macro_derive( AsRef ) ]
+#[ proc_macro_derive( AsRef, attributes( debug ) ) ]
 pub fn as_ref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = as_ref::as_ref( input );
+  let result = derive::as_ref::as_ref( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -333,10 +337,10 @@ pub fn as_ref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_as_mut" ) ]
-#[ proc_macro_derive( AsMut ) ]
+#[ proc_macro_derive( AsMut, attributes( debug ) ) ]
 pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = as_mut::as_mut( input );
+  let result = derive::as_mut::as_mut( input );
   match result
   {
     Ok( stream ) => stream.into(),
@@ -345,68 +349,103 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 }
 
 ///
-/// Derive macro to implement default constructors `From_0`, `From_1`, `From_2`, `From_3`.
+/// The `derive_variadic_from` macro is designed to provide a way to implement the `From`-like
+/// traits for structs with a variable number of fields, allowing them to be constructed from
+/// tuples of different lengths or from individual arguments. This functionality is particularly
+/// useful for creating flexible constructors that enable different methods of instantiation for
+/// a struct. By automating the implementation of traits, this macro reduces boilerplate code
+/// and enhances code readability and maintainability.
 ///
-/// ### Sample :: struct instead of macro.
+/// ### Key Features
 ///
-/// Write this
+/// - **Flexible Construction**: Allows a struct to be constructed from different numbers of
+///   arguments, converting each to the appropriate type.
+/// - **Tuple Conversion**: Enables the struct to be constructed from tuples, leveraging the
+///   `From` and `Into` traits for seamless conversion.
+/// - **Code Generation**: Automates the implementation of these traits, reducing the need for
+///   manual coding and ensuring consistent constructors.
 ///
-/// ```rust, ignore, no_run
-/// # use derive_tools::*;
-/// #[ derive( Make ) ]
-/// pub struct IsTransparent( bool );
+/// ### Limitations
+///
+/// Currently, the macro supports up to 3 arguments. If your struct has more than 3 fields, the
+/// derive macro will generate no implementation. It supports tuple conversion, allowing structs
+/// to be instantiated from tuples by leveraging the `From` and `Into` traits for seamless conversion.
+///
+/// ### Example Usage
+///
+/// This example demonstrates the use of the `variadic_from` macro to implement flexible
+/// constructors for a struct, allowing it to be instantiated from different numbers of
+/// arguments or tuples. It also showcases how to derive common traits like `Debug`,
+/// `PartialEq`, `Default`, and `VariadicFrom` for the struct.
+///
+/// ```rust
+/// #[ cfg( not( all(feature = "enabled", feature = "type_variadic_from", feature = "derive_variadic_from" ) ) ) ]
+/// fn main(){}
+/// #[ cfg( all( feature = "enabled", feature = "type_variadic_from", feature = "derive_variadic_from" ) )]
+/// fn main()
+/// {
+///   use variadic_from::exposed::*;
+///
+///   // Define a struct `MyStruct` with fields `a` and `b`.
+///   // The struct derives common traits like `Debug`, `PartialEq`, `Default`, and `VariadicFrom`.
+///   #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
+///   // Use `#[ debug ]` to expand and debug generate code.
+///   // #[ debug ]
+///   struct MyStruct
+///   {
+///     a : i32,
+///     b : i32,
+///   }
+///
+///   // Implement the `From1` trait for `MyStruct`, which allows constructing a `MyStruct` instance
+///   // from a single `i32` value by assigning it to both `a` and `b` fields.
+///   impl From1< i32 > for MyStruct
+///   {
+///     fn from1( a : i32 ) -> Self { Self { a, b : a } }
+///   }
+///
+///   let got : MyStruct = from!();
+///   let exp = MyStruct { a : 0, b : 0 };
+///   assert_eq!( got, exp );
+///
+///   let got : MyStruct = from!( 13 );
+///   let exp = MyStruct { a : 13, b : 13 };
+///   assert_eq!( got, exp );
+///
+///   let got : MyStruct = from!( 13, 14 );
+///   let exp = MyStruct { a : 13, b : 14 };
+///   assert_eq!( got, exp );
+///
+///   dbg!( exp );
+///   //> MyStruct {
+///   //>   a: 13,
+///   //>   b: 14,
+///   //> }
+/// }
 /// ```
 ///
-/// Instead of this
+/// ### Debugging
 ///
-/// ```rust, ignore, no_run
-/// pub struct IsTransparent( bool );
-/// impl From_0 for IsTransparent
-/// {
-///   fn make0() -> Self
-///   {
-///     Self::default();
-///   }
-/// }
-/// impl From_1 for IsTransparent
-/// {
-///   fn make1( src : bool ) -> Self
-///   {
-///     Self( src )
-///   }
-/// }
+/// If your struct has a `debug` attribute, the macro will print information about the generated code for diagnostic purposes.
 ///
+/// ```rust, ignore
+/// #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
+/// // Use `#[ debug ]` to expand and debug generate code.
+/// // #[ debug ]
+/// struct MyStruct
+/// {
+///   a: i32,
+///   b: i32,
+/// }
 /// ```
-
-// qqq : xxx : why no run?
+///
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_variadic_from" ) ]
-#[ proc_macro_derive( VariadicFrom ) ]
+#[ proc_macro_derive( VariadicFrom, attributes( debug ) ) ]
 pub fn derive_variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = variadic_from::variadic_from( input );
-  match result
-  {
-    Ok( stream ) => stream.into(),
-    Err( err ) => err.to_compile_error().into(),
-  }
-}
-
-///
-/// Reflect structure of any kind.
-///
-/// ### Sample :: trivial.
-///
-/// qqq : write, please
-///
-
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_reflect" ) ]
-#[ proc_macro_derive( Reflect ) ]
-pub fn derive_reflect( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
-{
-  let result = reflect::reflect( input );
+  let result = derive::variadic_from::variadic_from( input );
   match result
   {
     Ok( stream ) => stream.into(),

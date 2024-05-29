@@ -1,0 +1,23 @@
+name : wplot
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # wplot
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/move/wplot/Cargo.toml'
+      module_name : 'wplot'
+      commit_message : ${{ github.event.head_commit.message }}

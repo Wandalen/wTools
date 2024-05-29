@@ -2,7 +2,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
-use TheModule::typing as TheModule;
+use the_module::typing as the_module;
 
 #[ path = "../../../../core/implements/tests/inc/mod.rs" ]
 mod implements_test;

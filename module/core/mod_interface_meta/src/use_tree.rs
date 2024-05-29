@@ -8,7 +8,7 @@ pub( crate ) mod private
   #[ derive( Debug, PartialEq, Eq, Clone ) ]
   pub struct UseTree
   {
-    pub leading_colon : Option< syn::token::Colon2 >,
+    pub leading_colon : Option< syn::token::PathSep >,
     pub tree : syn::UseTree,
     pub rename : Option< syn::Ident >,
     pub glob : bool,

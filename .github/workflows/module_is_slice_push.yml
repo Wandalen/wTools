@@ -1,0 +1,23 @@
+name : is_slice
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # is_slice
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/core/is_slice/Cargo.toml'
+      module_name : 'is_slice'
+      commit_message : ${{ github.event.head_commit.message }}

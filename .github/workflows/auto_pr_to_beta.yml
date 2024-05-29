@@ -1,0 +1,17 @@
+
+name : auto_pr_to_beta
+
+on :
+  push :
+    branches :
+     - alpha
+
+jobs :
+
+  forward :
+    uses : Wandalen/wTools/.github/workflows/auto_pr.yml@alpha
+    with :
+      src_branch : 'alpha'
+      dst_branch : 'beta'
+    secrets :
+      PRIVATE_GITHUB_BOT_TOKEN : '${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}'

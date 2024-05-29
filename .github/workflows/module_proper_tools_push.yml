@@ -1,0 +1,23 @@
+name : proper_tools
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # proper_tools
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/alias/proper_tools/Cargo.toml'
+      module_name : 'proper_tools'
+      commit_message : ${{ github.event.head_commit.message }}

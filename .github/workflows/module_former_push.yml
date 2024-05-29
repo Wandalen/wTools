@@ -1,0 +1,23 @@
+name : former
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # former
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/core/former/Cargo.toml'
+      module_name : 'former'
+      commit_message : ${{ github.event.head_commit.message }}

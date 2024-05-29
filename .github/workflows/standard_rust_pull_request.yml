@@ -1,0 +1,51 @@
+
+name : rust_pull_request
+
+on : [ pull_request ]
+
+env :
+  CARGO_TERM_COLOR : always
+
+concurrency :
+  group : standard_rust_pull_request_${{ github.event.base.ref }}_${{ github.event.number }}
+  cancel-in-progress : true
+
+jobs :
+
+  check :
+    if : ${{ github.event.pull_request.head.repo.fork }}
+    runs-on : ubuntu-latest
+    outputs :
+      commit_message : ${{ steps.message.outputs.message }}
+      should_run : ${{ steps.run.outputs.should_run }}
+    steps :
+      - name : List commits on the pull request
+        run : |
+          response=$(curl --request GET \
+          --url 'https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits' \
+          --header 'Authorization: token ${{ secrets.GITHUB_TOKEN }}' \
+          --header 'Accept: application/vnd.github.v3+json' \
+          --header 'Content-Type: application/json')
+          echo $response > response.json
+      - name : Get latest commit
+        id : message
+        run : |
+          length=$(jq 'length' response.json)
+          index=$(($length - 1))
+          latest_commit=$(jq --argjson index $index '.[$index]' response.json)
+          latest_commit_message=$(echo "$latest_commit" | jq -r '.commit.message' | tr -d '\n')
+          echo "message=$latest_commit_message" >> $GITHUB_OUTPUT
+      - name : Set output
+        id: run
+        if : "!startsWith( steps.message.outputs.message, 'Merge ' )"
+        run : echo "should_run=true" >> $GITHUB_OUTPUT
+
+  tested :
+    needs: check
+    if : ${{ needs.check.outputs.should_run == 'true' }}
+    uses : Wandalen/wTools/.github/workflows/for_pr_rust_push.yml@alpha
+    with :
+      manifest_path : './Cargo.toml'
+      module_name : ${{ github.event.base.ref }}_${{ github.event.number }}
+      commit_message : "+test_${{ github.event.base.ref }}_${{ github.event.number }}"
+      with_smoke : false

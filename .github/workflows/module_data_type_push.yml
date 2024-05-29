@@ -1,0 +1,23 @@
+name : data_type
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # data_type
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/core/data_type/Cargo.toml'
+      module_name : 'data_type'
+      commit_message : ${{ github.event.head_commit.message }}

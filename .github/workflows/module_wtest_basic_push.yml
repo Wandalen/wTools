@@ -1,0 +1,23 @@
+name : wtest_basic
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # wtest_basic
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/alias/wtest_basic/Cargo.toml'
+      module_name : 'wtest_basic'
+      commit_message : ${{ github.event.head_commit.message }}

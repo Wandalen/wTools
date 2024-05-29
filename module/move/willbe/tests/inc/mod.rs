@@ -1,10 +1,10 @@
 use super::*;
 
-mod dependencies;
-mod commands;
-mod endpoints;
-mod publish_need;
-mod query;
-mod version;
-mod graph;
+mod action;
+mod package;
+mod command;
+mod entity;
+mod tool;
+mod helpers;
 
+// qqq : for Petro : for Bohdan : sort out test files to be consistent with src files

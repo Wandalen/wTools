@@ -1,6 +1,6 @@
 // #[ cfg( feature = "string" ) ]
 // use super::*;
-// use crate::TheModule::string as TheModule;
+// use crate::the_module::string as the_module;
 
 // #[ cfg( feature = "string" ) ]
 // mod inc;

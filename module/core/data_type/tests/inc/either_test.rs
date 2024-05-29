@@ -7,8 +7,8 @@ tests_impls!
 
   fn basic_test()
   {
-    let left : TheModule::Either< _, () > = TheModule::Either::Left( 13 );
-    a_id!( left.flip(), TheModule::Either::Right( 13 ) );
+    let left : the_module::Either< _, () > = the_module::Either::Left( 13 );
+    a_id!( left.flip(), the_module::Either::Right( 13 ) );
   }
 
 }

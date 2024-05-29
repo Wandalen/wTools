@@ -11,7 +11,30 @@ use tabled::{ builder::Builder, settings::Style };
 mod tools;
 use tools::*;
 
-fn named_results_list< R : RangeBounds< f64 > >( params : Vec< f64 >, stats : Stats, bounds : Vec< Option< R > > ) -> Vec< Vec< String > >
+pub struct Statistics
+{
+  pub table_params : Vec< Vec< String > >,
+  pub list_params : Vec< ( String, String ) >,
+}
+
+impl Statistics
+{
+  pub fn new() -> Self
+  {
+    Self
+    {
+      table_params : Vec::new(),
+      list_params : Vec::new(),
+    }
+  }
+}
+
+fn named_results_list< R : RangeBounds< f64 > >
+(
+  params : Vec< f64 >,
+  stats : Stats,
+  bounds : Vec< Option< R > >,
+) -> Vec< Vec< String > >
 {
   let mut str_params = Vec::new();
   str_params.push( format!( "{:.4}", params[ 0 ] ) );
@@ -25,13 +48,13 @@ fn named_results_list< R : RangeBounds< f64 > >( params : Vec< f64 >, stats : St
 
   let mut start_params = Vec::new();
   start_params.push( format!( "{:.4}", stats.starting_point.coords[ 0 ] ) );
-  start_params.push( format!( "{:?}", stats.starting_point.coords[ 1 ].into_inner() as usize ) );
+  start_params.push( format!( "{:?}", stats.starting_point.coords[ 1 ] as usize ) );
   start_params.push( format!( "{:.2}", stats.starting_point.coords[ 2 ] ) );
   start_params.push( format!( "{:.2}", stats.starting_point.coords[ 3 ] ) );
-  start_params.push( format!( "{:.2}", ( 1.0 - stats.starting_point.coords[ 2 ].into_inner() - stats.starting_point.coords[ 3 ].into_inner() ) ) );
-  start_params.push( format!( "{}", stats.starting_point.coords[ 4 ].into_inner() as usize ) );
-  start_params.push( format!( "{}", stats.starting_point.coords[ 5 ].into_inner() as usize ) );
-  start_params.push( format!( "{}", stats.starting_point.coords[ 6 ].into_inner() as usize ) );
+  start_params.push( format!( "{:.2}", ( 1.0 - stats.starting_point.coords[ 2 ] - stats.starting_point.coords[ 3 ] ) ) );
+  start_params.push( format!( "{}", stats.starting_point.coords[ 4 ] as usize ) );
+  start_params.push( format!( "{}", stats.starting_point.coords[ 5 ] as usize ) );
+  start_params.push( format!( "{}", stats.starting_point.coords[ 6 ] as usize ) );
 
   let params_name = 
   [
@@ -45,19 +68,33 @@ fn named_results_list< R : RangeBounds< f64 > >( params : Vec< f64 >, stats : St
     "dynasties limit",
   ];
 
-  let mut diff_sum_vec = stats.differences.iter().map( | vec | vec.iter().fold( 0.0, | acc, val | acc + val.abs() ) ).map( | val | format!( "{:.2}", val ) ).collect_vec();
+  let mut diff_sum_vec = stats.differences
+  .iter()
+  .map( | vec | format!( "{:.2}", vec.iter().fold( 0.0, | acc, val | acc + val.abs() ) ) )
+  .collect_vec()
+  ;
+
   diff_sum_vec.insert( 4, String::from( "-" ) );
 
   let mut expectation_vec = Vec::new();
   for i in 0..stats.differences.len()
   { 
-    expectation_vec.push( format!( "{:.2}", stats.differences[ i ].iter().fold( 0.0, | acc, val | acc + ( val + stats.starting_point.coords[ i ].into_inner() ) / stats.differences[ i ].len() as f64 ) ) );
+    expectation_vec.push
+    (
+      format!
+      (
+        "{:.2}",
+        stats.differences[ i ]
+        .iter()
+        .fold( 0.0, | acc, val | acc + val.abs() / stats.differences[ i ].len() as f64 )
+      )
+    );
   }
   expectation_vec.insert( 4, String::from( "-" ) );
 
   let mut bounds_vec = bounds.iter().map( | bounds | 
     {
-      let mut str = String::from( "-" );
+      let mut str = ( String::from( "-" ), String::from( "-" ) );
       if let Some( range ) = bounds
       {
         let mut upper = String::new();
@@ -66,11 +103,11 @@ fn named_results_list< R : RangeBounds< f64 > >( params : Vec< f64 >, stats : St
         {
           Bound::Included( val ) =>
           {
-            upper = format!( "[ {:.2}", val );
+            lower = format!( "{:.2}", val );
           },
           Bound::Excluded( val ) =>
           {
-            upper = format!( "( {:.2}", val );
+            lower = format!( "{:.2}", val );
           },
           Bound::Unbounded => {}
         }
@@ -79,38 +116,58 @@ fn named_results_list< R : RangeBounds< f64 > >( params : Vec< f64 >, stats : St
         {
           Bound::Included( val ) =>
           {
-            lower = format!( "{:.2} ]", val );
+            upper = format!( "{:.2}", val );
           },
           Bound::Excluded( val ) =>
           {
-            lower = format!( "{:.2} )", val );
+            upper = format!( "{:.2}", val );
           },
           Bound::Unbounded => {}
         }
-        str = format!( "{}; {}", upper, lower );
+        str = ( lower, upper );
       }
       str
     } ).collect_vec();
-  bounds_vec.insert( 4, String::from( "-" ) );
+  bounds_vec.insert( 4, ( String::from( "-" ), String::from( "-" ) ) );
+
+  let mut change_vec = Vec::new();
+  for i in 0..stats.positive_change.len()
+  { 
+    change_vec.push( format!( "{}", stats.positive_change[ i ] ) );
+  }
+  // elitism
+  change_vec.insert( 4, String::from( "-" ) );
 
   let mut list = Vec::new();
 
   for i in 0..params_name.len()
   {
-    list.push( vec![ params_name[ i ].to_owned(), str_params[ i ].clone(), diff_sum_vec[ i ].clone(), expectation_vec[ i ].clone(), start_params[ i ].clone(), bounds_vec[ i ].clone() ] );
+    list.push
+    ( 
+      vec!
+      [
+        params_name[ i ].to_owned(),
+        start_params[ i ].clone(),
+        bounds_vec[ i ].0.clone(),
+        bounds_vec[ i ].1.clone(),
+        diff_sum_vec[ i ].clone(),
+        expectation_vec[ i ].clone(),
+        change_vec[ i ].clone(),
+        str_params[ i ].clone()
+      ]
+    );
   }
 
   list
 }
 
-type ResWithStats = Vec< Vec< String > >;
-
-fn write_results(
+fn write_results
+(
   filename : String,
   title : String,
-  mut hybrid_res : ResWithStats,
-  mut sa_res : ResWithStats,
-  mut ga_res : ResWithStats,
+  mut hybrid_res : Statistics,
+  mut sa_res : Statistics,
+  mut ga_res : Statistics,
 ) -> Result< (), std::io::Error >
 {
   let mut file = std::fs::File::create( format!( "{}.md", filename ) )?;
@@ -119,55 +176,100 @@ fn write_results(
   for ( mode, params ) in &mut [ ( "hybrid", &mut hybrid_res ), ( "SA", &mut sa_res ), ( "GA", &mut ga_res ) ]
   {
     std::io::Write::write(&mut file, format!( "## For {}:\n\n", mode ).as_bytes() )?;
-    let exec_time = params.pop().unwrap();
-    std::io::Write::write(&mut file, format!( " - {}: {}\n\n", exec_time[ 0 ], exec_time[ 1 ] ).as_bytes() )?;
-    let level = params.pop().unwrap();
-    std::io::Write::write(&mut file, format!( " - {}: {}\n\n", level[ 0 ], level[ 1 ] ).as_bytes() )?;
+    for param in &params.list_params
+    {
+      std::io::Write::write(&mut file, format!( " - {}: {}\n\n", param.0, param.1 ).as_bytes() )?;
+    }
+
     std::io::Write::write(&mut file, format!( " - parameters: \n\n" ).as_bytes() )?;
 
     let mut builder = Builder::default();
+    let head_row = [ "", "start", "min", "max", "sum of diff", "expected", "changes", "final" ]
+    .into_iter()
+    .map( str::to_owned )
+    .collect_vec()
+    ;
 
-    let row = [ "", "calculated value", "sum of differences", "expected value", "starting value", "bounds" ].into_iter().map( str::to_owned ).collect_vec();
-    builder.push_record( row );
+    builder.push_record( head_row.clone() );
 
-    for i in 0..params.len()
+    for i in 0..params.table_params.len()
     {
       let mut row = Vec::new();
     
       if *mode == "SA" && [ 2, 3, 4, 6 ].contains( &i )
       {
-        row.push( format!( "<em>{}</em>", params[ i ][ 0 ].clone().replace( " ", "\n") ) );
+        row.push( format!( "{}", params.table_params[ i ][ 0 ].clone().replace( " ", "\n") ) );
       }
       else 
       {
-        row.push( params[ i ][ 0 ].clone().replace( " ", "\n") );
+        row.push( params.table_params[ i ][ 0 ].clone().replace( " ", "\n") );
       }
 
-      row.extend( params[ i ].iter().skip( 1 ).cloned() );
+      row.extend( params.table_params[ i ].iter().skip( 1 ).cloned() );
       builder.push_record( row );
       
     }
 
     let table = builder.build().with( Style::modern() ).to_string();
     std::io::Write::write( &mut file, format!( "```\n{}\n```", table ).as_bytes() )?;
-
     std::io::Write::write( &mut file, format!("\n\n\n" ).as_bytes() )?;
+
+    std::io::Write::write(&mut file, format!( "#### List:\n" ).as_bytes() )?;
+    let problem_level = if params.list_params[ params.list_params.len() - 2 ].0 == String::from( "level" )
+    {
+      " - `level` : sudoku board difficulty level\n"
+    }
+    else
+    {
+      " - `number of nodes` : number of nodes in graph representing cities from traveling salesman problem\n"
+    };
+
+    let list_legend = concat!
+    (
+      "\n\n",
+      " - `max number of iterations` : limit of total iterations of optimization process, termination condition\n",
+      " - `max no improvement iterations` : max amount of steps performed without detected improvement, termination condition\n",
+      " - `improvement threshold` : minimal value detected as improvement in objective function result\n",
+      " - `termination reason` : the reason why optimization process was stopped\n",
+      " - `iterations number` : actual number of iterations performed during optimization\n",
+      " - `resumed after stale` : how many times optimization progress was resumed after some iterations without improvement\n",
+      " - `points from cache` : points calculated during previous optimizations and read from cache\n",
+    );
+
+    std::io::Write::write(&mut file, list_legend.as_bytes() )?;
+    std::io::Write::write(&mut file, problem_level.as_bytes() )?;
+    std::io::Write::write(&mut file, b" - `execution time` : duration of shortest found hybrid optimization process using final parameters, measured in seconds\n" )?;
+    std::io::Write::write(&mut file, format!( "#### Table:\n" ).as_bytes() )?;
+    let str_legend = concat!
+    (
+      " - `start` : initial value of parameter in starting point\n",
+      " - `min` : lower bound of parameter\n",
+      " - `max` : upper bound of parameter\n",
+      " - `sum of diff` : sum of absolute differences between starting value and next value\n",
+      " - `expected` : mathematical expectation of difference between starting value and next value\n",
+      " - `changes` : number of successful changes of parameter value to more optimal\n",
+      " - `final` : calculated value of parameter for which execution time was the lowest\n",
+    );
+  
+    std::io::Write::write( &mut file, str_legend.as_bytes() )?;
   }
 
   //final table
   std::io::Write::write(&mut file, format!( "## Summary:\n" ).as_bytes() )?;
   let mut builder = Builder::default();
   let mut headers = vec![ String::from( "mode" ) ];
-  for i in 0..hybrid_res.len()
+  for i in 0..hybrid_res.table_params.len()
   {
-    headers.push( hybrid_res[ i ][ 0 ].clone().replace( " ", "\n") );
+    headers.push( hybrid_res.table_params[ i ][ 0 ].clone().replace( " ", "\n") );
   }
+
+  headers.push( String::from( "execution\ntime" ) );
 
   builder.push_record( headers );
   for ( mode, params ) in [ ( "hybrid", &hybrid_res ), ( "SA", &sa_res ), ( "GA", &ga_res ) ]
   {
     let mut row = Vec::new();
-    for i in 0..params.len() + 1
+    for i in 0..params.table_params.len() + 1
     {
       if i == 0
       {
@@ -175,15 +277,38 @@ fn write_results(
       }
       else
       {
-        row.push( params[ i - 1 ][ 1 ].clone() );
+        row.push( params.table_params[ i - 1 ].last().unwrap().clone() );
       }
     }
+    row.push( params.list_params.last().unwrap().1.clone() );
 
     builder.push_record( row );
   }
 
   let table = builder.build().with( Style::modern() ).to_string();
   std::io::Write::write( &mut file, format!( "```\n{}\n```", table ).as_bytes() )?;
+
+  let final_legend = concat!
+  (
+    "\n\n",
+    " - `temperature decrease coefficient` : coefficient by which temperature is lowered at each iteration of optimization process\n",
+    " - `max mutations per dynasty` : max number of mutations used to produce vital individual in dynasty\n",
+    " - `mutation rate` : percent of individuals in population that are created using mutation\n",
+    " - `crossover rate` : percent of individuals in population that are created using crossover of selected parents\n",
+    " - `elitism rate` : percent of most fit individuals in population that are cloned without changes\n",
+    " - sum of mutation rate, crossover rate and elitism rate always equals 1\n",
+    " - `max stale iterations` : max allowed number of iterations that do not produce individuals with better fittness\n",
+    " - `population size` : number of individuals in population\n",
+    " - `dynasties limit` : max number of dynasties of new solutions produced during optimization process, terminates if exceeded\n",
+    " - `execution time` : time spent searching for optimal solution, measured in seconds\n",
+  );
+  std::io::Write::write( &mut file, final_legend.as_bytes() )?;
+
+  std::io::Write::write(&mut file, format!( "## To run:\n" ).as_bytes() )?;
+  std::io::Write::write( &mut file, b" - Sudoku problem:\n" )?;
+  std::io::Write::write( &mut file, b"`cargo test -- --ignored find_opt_params_sudoku`\n" )?;
+  std::io::Write::write( &mut file, b" - Traveling salesman problem:\n" )?;
+  std::io::Write::write( &mut file, b"`cargo test -- --ignored find_opt_params_tsp`\n" )?;
 
   Ok( () )
 }
@@ -214,73 +339,76 @@ fn find_opt_params_sudoku() -> Result< (), Box< dyn std::error::Error > >
   let config = OptimalParamsConfig::default();
   let initial = SudokuInitial::new( Board::from( easy ) );
 
-  let hybrid_problem = Problem::new(
-    initial.clone(),
-    BestRowsColumnsCrossover,
-    RandomPairInBlockMutation,
-  );
-  let starting_params = hybrid_optimizer::starting_params_for_hybrid()?;
-  let res = optimal_params_search::find_hybrid_optimal_params(
-    config.clone(),
-    starting_params.clone(),
-    hybrid_problem,
-    Some( path.clone() ),
-  );
-  assert!( res.is_ok() );
-
-  let mut hybrid_res = Vec::new();
-  if let Ok( solution ) = res
+  let mut hybrid_res = Statistics::new();
+  let mut sa_res = Statistics::new();
+  let mut ga_res = Statistics::new();
+  for mode in [ "hybrid", "sa", "ga" ]
   {
-    hybrid_res = named_results_list( solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec(), solution.stats.unwrap(), starting_params.bounds );
-    hybrid_res.push( vec![ String::from( "level" ), format!( "{:?}", Board::from( easy ).calculate_level() ) ] );
-    hybrid_res.push( vec![ String::from( "execution time" ), format!( "{:.3}s", solution.objective ) ] );
+    let mut starting_params = hybrid_optimizer::starting_params_for_hybrid()?;
+    match mode
+    {
+      "hybrid" => {},
+      "sa" => starting_params = hybrid_optimizer::starting_params_for_sa()?,
+      "ga" => starting_params = hybrid_optimizer::starting_params_for_ga()?,
+      _ => unreachable!(),
+    }
+
+    let hybrid_problem = Problem::new
+    (
+      initial.clone(),
+      BestRowsColumnsCrossover,
+      RandomPairInBlockMutation,
+    );
+
+    let res = optimal_params_search::find_hybrid_optimal_params
+    (
+      config.clone(),
+      starting_params.clone(),
+      hybrid_problem,
+      Some( path.clone() ),
+    );
+    assert!( res.is_ok() );
+  
+    if let Ok( solution ) = res
+    {
+      assert!( solution.stats.is_some() );
+      let stats = solution.stats.clone().unwrap();
+      let cached = stats.cached_points;
+      let final_res = Statistics
+      {
+        table_params : named_results_list
+        (
+          solution.point.coords
+          .into_iter()
+          .map( | val | val )
+          .collect_vec(),
+          solution.stats.unwrap(),
+          starting_params.bounds,
+        ),
+        list_params : vec!
+        [ 
+          ( String::from( "max number of iterations" ), format!( "{}", config.max_iterations ) ),
+          ( String::from( "max no improvement iterations " ), format!( "{}", config.max_no_improvement_steps ) ),
+          ( String::from( "improvement threshold " ), format!( "{}s", config.improvement_threshold ) ),
+          ( String::from( "termination reason" ), format!( "{}", solution.reason ) ),
+          ( String::from( "iterations number" ), format!( "{}", stats.number_of_iterations ) ),
+          ( String::from( "resumed after stale" ), format!( "{}", stats.resumed_after_stale ) ),
+          ( String::from( "points from cache" ), format!( "{}/{}", cached.0, cached.1 + cached.0 ) ),
+          ( String::from( "level" ), format!( "{:?}", Board::from( easy ).calculate_level() ) ),
+          ( String::from( "execution time" ), format!( "{:.3}s", solution.objective ) ),
+        ]
+      };
+
+      match mode
+      {
+        "hybrid" => hybrid_res = final_res,
+        "sa" => sa_res = final_res,
+        "ga" => ga_res = final_res,
+        _ => unreachable!(),
+      }
+    }
   }
 
-  // SA
-  let hybrid_problem = Problem::new(
-    initial.clone(),
-    BestRowsColumnsCrossover,
-    RandomPairInBlockMutation,
-  );
-  let starting_params = hybrid_optimizer::starting_params_for_sa()?;
-  let res = optimal_params_search::find_hybrid_optimal_params(
-    config.clone(),
-    starting_params.clone(),
-    hybrid_problem,
-    Some( path.clone() ),
-  );
-  assert!( res.is_ok() );
-
-  let mut sa_res = Vec::new();
-  if let Ok( solution ) = res
-  {
-    sa_res = named_results_list( solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec(), solution.stats.unwrap(), starting_params.bounds );
-    sa_res.push( vec![ String::from( "level" ), format!( "{:?}", Board::from( easy ).calculate_level() ) ] );
-    sa_res.push( vec![ String::from( "execution time" ), format!( "{:.3}s", solution.objective ) ] );
-  }
-
-  // GA
-  let hybrid_problem = Problem::new(
-    initial.clone(),
-    BestRowsColumnsCrossover,
-    RandomPairInBlockMutation,
-  );
-  let starting_params = hybrid_optimizer::starting_params_for_ga()?;
-  let res = optimal_params_search::find_hybrid_optimal_params(
-    config,
-    starting_params.clone(),
-    hybrid_problem,
-    Some( path ),
-  );
-  assert!( res.is_ok() );
-
-  let mut ga_res = Vec::new();
-  if let Ok( solution ) = res
-  {
-    ga_res = named_results_list( solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec(), solution.stats.unwrap(), starting_params.bounds );
-    ga_res.push( vec![ String::from( "level" ), format!( "{:?}", Board::from( easy ).calculate_level() ) ] );
-    ga_res.push( vec![ String::from( "execution time" ), format!( "{:.3}s", solution.objective ) ] );
-  }
   write_results( String::from( "sudoku_results" ), String::from( "Sudoku Problem" ), hybrid_res, sa_res, ga_res )?;
   Ok( () )
 }
@@ -307,19 +435,40 @@ fn find_opt_params_tsp() -> Result< (), Box< dyn std::error::Error > >
     TSRouteMutation,
   );
   let starting_params = hybrid_optimizer::starting_params_for_hybrid()?;
-  let res = optimal_params_search::find_hybrid_optimal_params(
+  let res = optimal_params_search::find_hybrid_optimal_params
+  (
     config.clone(),
     starting_params.clone(),
     hybrid_problem,
     Some( path.clone() ),
   );
   assert!( res.is_ok() );
-  let mut hybrid_res = Vec::new();
+  let mut hybrid_res = Statistics::new();
   if let Ok( solution ) = res
   {
-    hybrid_res = named_results_list( solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec(), solution.stats.unwrap(), starting_params.bounds );
-    hybrid_res.push( vec![ String::from( "number of nodes" ), number_of_nodes.to_string() ] );
-    hybrid_res.push( vec![ String::from( "execution time" ), format!( "{:.3}s", solution.objective ) ] );
+    let cached = solution.stats.clone().unwrap().cached_points;
+    hybrid_res = Statistics
+    {
+      table_params : named_results_list
+      (
+        solution.point.coords
+        .into_iter()
+        .map( | val | val )
+        .collect_vec(),
+        solution.stats.unwrap(),
+        starting_params.bounds,
+      ),
+      list_params : vec!
+      [
+        ( String::from( "max number of iterations" ), format!( "{}", config.max_iterations ) ),
+        ( String::from( "max no improvement iterations " ), format!( "{}", config.max_no_improvement_steps ) ),
+        ( String::from( "improvement threshold " ), format!( "{}s", config.improvement_threshold ) ),
+        ( String::from( "calculated points" ), format!( "{} from {}", cached.1, cached.1 + cached.0 ) ),
+        ( String::from( "points from cache" ), format!( "{} from {}", cached.0, cached.1 + cached.0 ) ),
+        ( String::from( "number of nodes" ), format!( "{}", number_of_nodes ) ),
+        ( String::from( "execution time" ), format!( "{:.3}s", solution.objective ) ),
+      ]
+    }
   }
 
   // SA
@@ -336,12 +485,32 @@ fn find_opt_params_tsp() -> Result< (), Box< dyn std::error::Error > >
     Some( path.clone() ),
   );
   assert!( res.is_ok() );
-  let mut sa_res = Vec::new();
+  let mut sa_res = Statistics::new();
   if let Ok( solution ) = res
   {
-    sa_res = named_results_list( solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec(), solution.stats.unwrap(), starting_params.bounds );
-    sa_res.push( vec![ String::from( "number of nodes" ), number_of_nodes.to_string() ] );
-    sa_res.push( vec![ String::from( "execution time" ), format!( "{:.3}s", solution.objective ) ] );
+    let cached = solution.stats.clone().unwrap().cached_points;
+    sa_res = Statistics
+    {
+      table_params : named_results_list
+      (
+        solution.point.coords
+        .into_iter()
+        .map( | val | val )
+        .collect_vec(),
+        solution.stats.unwrap(),
+        starting_params.bounds,
+      ),
+      list_params : vec!
+      [
+        ( String::from( "max number of iterations" ), format!( "{}", config.max_iterations ) ),
+        ( String::from( "max no improvement iterations " ), format!( "{}", config.max_no_improvement_steps ) ),
+        ( String::from( "improvement threshold " ), format!( "{}s", config.improvement_threshold ) ),
+        ( String::from( "calculated points" ), format!( "{} from {}", cached.1, cached.1 + cached.0 ) ),
+        ( String::from( "points from cache" ), format!( "{} from {}", cached.0, cached.1 + cached.0 ) ),
+        ( String::from( "number of nodes" ), format!( "{}", number_of_nodes ) ),
+        ( String::from( "execution time" ), format!( "{:.3}s", solution.objective ) ),
+      ]
+    }
   }
 
   // GA
@@ -352,18 +521,39 @@ fn find_opt_params_tsp() -> Result< (), Box< dyn std::error::Error > >
   );
   let starting_params = hybrid_optimizer::starting_params_for_ga()?;
   let res = optimal_params_search::find_hybrid_optimal_params(
-    config,
+    config.clone(),
     starting_params.clone(),
     hybrid_problem,
     Some( path ),
   );
   assert!( res.is_ok() );
-  let mut ga_res = Vec::new();
+  let mut ga_res = Statistics::new();
+  
   if let Ok( solution ) = res
   {
-    ga_res = named_results_list( solution.point.coords.into_iter().map( | val | val.into_inner() ).collect_vec(), solution.stats.unwrap(), starting_params.bounds );
-    ga_res.push( vec![ String::from( "number of nodes" ), number_of_nodes.to_string() ] );
-    ga_res.push( vec![ String::from( "execution time" ), format!( "{:.3}s", solution.objective ) ] );
+    let cached = solution.stats.clone().unwrap().cached_points;
+    ga_res = Statistics
+    {
+      table_params : named_results_list
+      (
+        solution.point.coords
+        .into_iter()
+        .map( | val | val )
+        .collect_vec(),
+        solution.stats.unwrap(),
+        starting_params.bounds,
+      ),
+      list_params : vec!
+      [
+        ( String::from( "max number of iterations" ), format!( "{}", config.max_iterations ) ),
+        ( String::from( "max no improvement iterations " ), format!( "{}", config.max_no_improvement_steps ) ),
+        ( String::from( "improvement threshold " ), format!( "{}s", config.improvement_threshold ) ),
+        ( String::from( "calculated points" ), format!( "{} from {}", cached.1, cached.1 + cached.0 ) ),
+        ( String::from( "points from cache" ), format!( "{} from {}", cached.0, cached.1 + cached.0 ) ),
+        ( String::from( "number of nodes" ), format!( "{}", number_of_nodes ) ),
+        ( String::from( "execution time" ), format!( "{:.3}s", solution.objective ) ),
+      ]
+    }
   }
 
   write_results( String::from( "tsp_results" ), String::from( "Traveling Salesman Problem" ), hybrid_res, sa_res, ga_res )?;

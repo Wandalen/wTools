@@ -1,5 +1,4 @@
-//! example
-
+//! qqq : write proper description
 use diagnostics_tools::prelude::*;
 
 fn main()

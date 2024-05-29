@@ -6,6 +6,7 @@ pub( crate ) mod private
   use wtools::error::Result;
 
   use std::{ fmt::Formatter, rc::Rc };
+  use wtools::anyhow::anyhow;
 
   /// Command Args
   ///
@@ -14,7 +15,7 @@ pub( crate ) mod private
   /// # Example:
   ///
   /// ```
-  /// use wca::prelude::*;
+  /// use wca::{ Args, Value };
   ///
   /// let args = Args( vec![ Value::String( "Hello, World!".to_string() ) ] );
   ///
@@ -27,18 +28,16 @@ pub( crate ) mod private
   ///
   /// ## Use case
   /// ```
-  /// # use wca::{ Routine, Args };
-  /// let routine = Routine::new
+  /// # use wca::{ Routine, Handler, VerifiedCommand };
+  /// let routine = Routine::from( Handler::from
   /// (
-  ///   |( args, _ ) : ( Args, _ )|
+  ///   | o : VerifiedCommand |
   ///   {
-  ///     let first_arg : i32 = args.get_owned( 0 ).unwrap();
-  ///
-  ///     Ok( () )
+  ///     let first_arg : i32 = o.args.get_owned( 0 ).unwrap();
   ///   }
-  /// );
+  /// ) );
   /// ```
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Clone ) ]
   pub struct Args( pub Vec< Value > );
 
   impl Args
@@ -46,7 +45,7 @@ pub( crate ) mod private
     /// Returns owned casted value by its index
     ///
     /// ```
-    /// # use wca::prelude::*;
+    /// # use wca::{ Args, Value };
     ///
     /// let args = Args( vec![ Value::String( "Hello, World!".to_string() ) ] );
     ///
@@ -78,7 +77,7 @@ pub( crate ) mod private
   /// # Example:
   ///
   /// ```
-  /// use wca::prelude::*;
+  /// use wca::{ Props, Value };
   ///
   /// let props = Props( [ ( "hello".to_string(), Value::String( "World!".to_string() ) ) ].into() );
   /// let hello_prop : &str = props.get_owned( "hello" ).unwrap();
@@ -88,18 +87,16 @@ pub( crate ) mod private
   ///
   /// ## Use case
   /// ```
-  /// # use wca::{ Routine, Props };
-  /// let routine = Routine::new
+  /// # use wca::{ Routine, Handler, Props, VerifiedCommand };
+  /// let routine = Routine::from( Handler::from
   /// (
-  ///   |( _, props ) : ( _, Props )|
+  ///   | o : VerifiedCommand |
   ///   {
-  ///     let key_option : i32 = props.get_owned( "key" ).unwrap();
-  ///
-  ///     Ok( () )
+  ///     let key_option : i32 = o.props.get_owned( "key" ).unwrap();
   ///   }
-  /// );
+  /// ) );
   /// ```
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Clone ) ]
   pub struct Props( pub HashMap< String, Value > );
 
   impl Props
@@ -107,7 +104,7 @@ pub( crate ) mod private
     /// Returns owned casted value by its key
     ///
     /// ```
-    /// # use wca::prelude::*;
+    /// # use wca::{ Props, Value };
     ///
     /// let props = Props( [ ( "hello".to_string(), Value::String( "World!".to_string() ) ) ].into() );
     /// let hello_prop : &str = props.get_owned( "hello" ).unwrap();
@@ -130,38 +127,120 @@ pub( crate ) mod private
   }
 
   // qqq : make 0-arguments, 1-argument, 2-arguments, 3 arguments versions
-  type RoutineWithoutContextFn = dyn Fn( ( Args, Props ) ) -> Result< () >;
-  type RoutineWithContextFn = dyn Fn( ( Args, Props ), Context ) -> Result< () >;
+  // aaa : done. now it works with the following variants:
+  // fn(), fn(args), fn(props), fn(args, props), fn(context), fn(context, args), fn(context, props), fn(context, args, props)
+    
+  type RoutineWithoutContextFn = dyn Fn( VerifiedCommand ) -> Result< () >;
+  type RoutineWithContextFn = dyn Fn( Context, VerifiedCommand ) -> Result< () >;
 
   ///
   /// Routine handle.
-  ///
+  /// 
   /// ```
-  /// # use wca::Routine;
-  /// let routine = Routine::new
+  /// # use wca::{ Handler, Routine };
+  /// let routine = Routine::from( Handler::from
   /// (
-  ///   |( args, props )|
+  ///   ||
   ///   {
   ///     // Do what you need to do
-  ///
-  ///     Ok( () )
   ///   }
-  /// );
+  /// ) );
   /// ```
   ///
   /// ```
-  /// # use wca::Routine;
-  /// let routine = Routine::new_with_ctx
+  /// # use wca::{ Handler, Routine, VerifiedCommand };
+  /// let routine = Routine::from( Handler::from
   /// (
-  ///   | ( args, props ), ctx |
+  ///   | o : VerifiedCommand |
   ///   {
   ///     // Do what you need to do
-  ///
-  ///     Ok( () )
   ///   }
-  /// );
+  /// ) );
+  /// ```
+  ///
+  /// ```
+  /// # use wca::{ Handler, Routine };
+  /// let routine = Routine::from( Handler::from
+  /// (
+  ///   | ctx, o |
+  ///   {
+  ///     // Do what you need to do
+  ///   }
+  /// ) );
 
-  // qqq : for Bohdan : instead of array of Enums, lets better have 5 different arrays of different Routine and no enum
+  pub struct Handler< I, O >( Box< dyn Fn( I ) -> O > );
+
+  impl< I, O > std::fmt::Debug for Handler< I, O >
+  {
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    {
+      f.debug_struct( "Handler" ).finish_non_exhaustive()
+    }
+  }
+
+  // without context
+  impl< F, R > From< F > for Handler< (), R >
+  where
+    R : IntoResult + 'static,
+    F : Fn() -> R + 'static,
+  {
+    fn from( value : F ) -> Self
+    {
+      Self( Box::new( move | () | value() ) )
+    }
+  }
+
+  impl< F, R > From< F > for Handler< VerifiedCommand, R >
+    where
+      R : IntoResult + 'static,
+      F : Fn( VerifiedCommand ) -> R + 'static,
+  {
+    fn from( value : F ) -> Self
+    {
+      Self( Box::new( value ) )
+    }
+  }
+
+  // with context
+  impl< F, R > From< F > for Handler< Context, R >
+  where
+    R : IntoResult + 'static,
+    F : Fn( Context ) -> R + 'static,
+  {
+    fn from( value : F ) -> Self
+    {
+      Self( Box::new( value ) )
+    }
+  }
+
+  impl< F, R > From< F > for Handler< ( Context, VerifiedCommand ), R >
+  where
+    R : IntoResult + 'static,
+    F : Fn( Context, VerifiedCommand ) -> R + 'static,
+  {
+    fn from( value : F ) -> Self
+    {
+      Self( Box::new( move |( ctx, a )| value( ctx, a ) ) )
+    }
+  }
+
+  impl< I, O > From< Handler< I, O > > for Routine
+  where
+    I : 'static,
+    O : IntoResult + 'static,
+    Routine : From< Box< dyn Fn( I ) -> Result< () > > >,
+  {
+    fn from( value : Handler< I, O > ) -> Self
+    {
+      Routine::from( Box::new( move | x | value.0( x ).into_result() ) )
+    }
+  }
+
+  /// Represents different types of routines.
+  ///
+  /// - `WithoutContext`: A routine that does not require any context.
+  /// - `WithContext`: A routine that requires a context.
+// qqq : for Bohdan : instead of array of Enums, lets better have 5 different arrays of different Routine and no enum
   // to use statical dispatch
   #[ derive( Clone ) ]
   pub enum Routine
@@ -171,64 +250,55 @@ pub( crate ) mod private
     /// Routine with context
     WithContext( Rc< RoutineWithContextFn > ),
   }
-  // qqq : why Rc is necessary? why not just box?
-
-  impl Routine
-  {
-    ///
-    /// Create new routine.
-    ///
-    /// ```
-    /// # use wca::Routine;
-    /// let routine = Routine::new
-    /// (
-    ///   |( args, props )|
-    ///   {
-    ///     // Do what you need to do
-    ///
-    ///     Ok( () )
-    ///   }
-    /// );
-    /// ```
-
-    pub fn new< F >( callback : F ) -> Self
-    where
-      F : Fn(( Args, Props )) -> Result< () > + 'static,
-    {
-      Routine::WithoutContext( Rc::new( callback ) )
-    }
-
-    ///
-    /// Create new routine with context.
-    ///
-    /// ```
-    /// # use wca::Routine;
-    /// let routine = Routine::new_with_ctx
-    /// (
-    ///   | ( args, props ), ctx |
-    ///   {
-    ///     // Do what you need to do
-    ///
-    ///     Ok( () )
-    ///   }
-    /// );
-    /// ```
-
-    pub fn new_with_ctx< F >( callback : F ) -> Self
-    where
-      F : Fn( ( Args, Props ), Context ) -> Result< () > + 'static,
-    {
-      Routine::WithContext( Rc::new( callback ) )
-    }
-  }
 
   impl std::fmt::Debug for Routine
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
-      f.write_str( "Routine" )
+      match self
+      {
+        Routine::WithoutContext( _ ) => f.debug_struct( "Routine::WithoutContext" ).finish_non_exhaustive(),
+        Routine::WithContext( _ ) => f.debug_struct( "Routine::WithContext" ).finish_non_exhaustive(),
+      }
     }
   }
+
+  // without context
+  impl From< Box< dyn Fn( () ) -> Result< () > > > for Routine
+  {
+    fn from( value : Box< dyn Fn( () ) -> Result< () > > ) -> Self
+    {
+      Self::WithoutContext( Rc::new( move | _ | { value( () )?; Ok( () ) } ) )
+    }
+  }
+  
+  impl From< Box< dyn Fn( VerifiedCommand ) -> Result< () > > > for Routine
+  {
+    fn from( value : Box< dyn Fn( VerifiedCommand ) -> Result< () > > ) -> Self
+    {
+      Self::WithoutContext( Rc::new( move | a | { value( a )?; Ok( () ) } ) )
+    }
+  }
+
+  // with context
+  impl From< Box< dyn Fn( Context ) -> Result< () > > > for Routine
+  {
+    fn from( value : Box< dyn Fn( Context ) -> Result< () > > ) -> Self
+    {
+      Self::WithContext( Rc::new( move | ctx, _ | { value( ctx )?; Ok( () ) } ) )
+    }
+  }
+
+  impl From< Box< dyn Fn(( Context, VerifiedCommand )) -> Result< () > > > for Routine
+  {
+    fn from( value : Box< dyn Fn(( Context, VerifiedCommand )) -> Result< () > > ) -> Self
+    {
+      Self::WithContext( Rc::new( move | ctx, a | { value(( ctx, a ))?; Ok( () ) } ) )
+    }
+  }
+
+  // qqq : why Rc is necessary? why not just box?
+  // aaa : to be able to clone Routines
 
   impl PartialEq for Routine
   {
@@ -247,6 +317,15 @@ pub( crate ) mod private
   }
 
   impl Eq for Routine {}
+
+  trait IntoResult
+  {
+    fn into_result( self ) -> Result< () >;
+  }
+
+  impl IntoResult for std::convert::Infallible { fn into_result( self ) -> Result< () > { Ok( () ) } }
+  impl IntoResult for () { fn into_result( self ) -> Result< () > { Ok( () ) } }
+  impl< E : std::fmt::Debug > IntoResult for Result< (), E > { fn into_result( self ) -> Result< () > { self.map_err( | e | anyhow!( "{e:?}" )) } }
 }
 
 //
@@ -254,6 +333,7 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   exposed use Routine;
+  exposed use Handler;
   exposed use Args;
   exposed use Props;
 }

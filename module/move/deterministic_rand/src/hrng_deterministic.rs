@@ -118,7 +118,7 @@ pub( crate ) mod private
 
     /// Get a reference to the current random number generator using a reference counter and mutex.
     ///
-    /// Returns a shared `Arc<Mutex<Generator>>`.
+    /// Returns a shared `Arc<Mutex< Generator >>`.
     ///
     /// ### Example
     ///

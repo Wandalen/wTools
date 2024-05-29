@@ -1,0 +1,18 @@
+
+name : appropriate_branch_master
+
+on :
+  pull_request_target :
+    branches :
+      - main
+      - master
+
+jobs :
+
+  appropriate_branch :
+    uses : Wandalen/wTools/.github/workflows/appropriate_branch.yml@alpha
+    with :
+      src_branch : 'beta'
+      dst_branch : '${{ github.base_ref }}'
+    secrets :
+      PRIVATE_GITHUB_BOT_TOKEN : '${{ secrets.PRIVATE_GITHUB_BOT_TOKEN }}'

@@ -10,7 +10,7 @@ tests_impls!
   #[ cfg( any( feature = "chrono", feature = "time_chrono" ) ) ]
   fn basic()
   {
-    use TheModule::*;
+    use the_module::*;
 
     // test.case( "time::now" );
     let got = time::now();

@@ -1,0 +1,40 @@
+[package]
+name = "fs_tools"
+version = "0.1.0"
+edition = "2021"
+authors = [
+  "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
+]
+license = "MIT"
+readme = "Readme.md"
+documentation = "https://docs.rs/fs_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/fs_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/fs_tools"
+description = """
+Tools to manipulate files.
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose", "testing" ]
+
+[lints]
+workspace = true
+
+[lib]
+path = "src/fs/lib.rs"
+
+[package.metadata.docs.rs]
+features = [ "full" ]
+all-features = false
+
+[features]
+default = [ "enabled" ]
+full = [ "enabled" ]
+no_std = []
+use_alloc = [ "no_std" ]
+enabled = []
+
+[dependencies]
+
+[dev-dependencies]
+test_tools = { workspace = true }

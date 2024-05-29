@@ -13,11 +13,11 @@ tests_impls!
   {
 
     let exp = "sizeof( &[1, 2, 3][..] : &[i32] ) = 16".to_string();
-    let got = TheModule::inspect_to_str_type_of!( &[ 1, 2, 3 ][ .. ] );
+    let got = the_module::inspect_to_str_type_of!( &[ 1, 2, 3 ][ .. ] );
     a_id!( got, exp );
 
     let exp = "sizeof( &[1, 2, 3] : &[i32; 3] ) = 8".to_string();
-    let got = TheModule::inspect_to_str_type_of!( &[ 1, 2, 3 ] );
+    let got = the_module::inspect_to_str_type_of!( &[ 1, 2, 3 ] );
     a_id!( got, exp );
 
   }
@@ -28,11 +28,11 @@ tests_impls!
   {
 
     let exp = "sizeof( &[1, 2, 3][..] : &[i32] ) = 16".to_string();
-    let got = TheModule::inspect_type_of!( &[ 1, 2, 3 ][ .. ] );
+    let got = the_module::inspect_type_of!( &[ 1, 2, 3 ][ .. ] );
     a_id!( got, exp );
 
     let exp = "sizeof( &[1, 2, 3] : &[i32; 3] ) = 8".to_string();
-    let got = TheModule::inspect_type_of!( &[ 1, 2, 3 ] );
+    let got = the_module::inspect_type_of!( &[ 1, 2, 3 ] );
     a_id!( got, exp );
 
   }
