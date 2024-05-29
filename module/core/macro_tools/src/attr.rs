@@ -321,17 +321,22 @@ pub( crate ) mod private
     }
   }
 
-  /// Trait for components of strcuture aggregating attributes that can be constructed from a meta attribute.
+  /// Trait for components of a structure aggregating attributes that can be constructed from a meta attribute.
   ///
   /// The `AttributeComponent` trait defines the interface for components that can be created
   /// from a `syn::Attribute` meta item. Implementors of this trait are required to define
   /// a constant `KEYWORD` that identifies the type of the component and a method `from_meta`
   /// that handles the construction of the component from the given attribute.
   ///
+  /// This trait is designed to facilitate modular and reusable parsing of attributes applied
+  /// to structs, enums, or other constructs. By implementing this trait, you can create specific
+  /// components from attributes and then aggregate these components into a larger structure.
+  ///
   /// # Example
   ///
   /// ```rust
   /// use macro_tools::{ AttributeComponent, Result };
+  /// use syn::{ Attribute, Error };
   ///
   /// struct MyComponent;
   ///
@@ -339,14 +344,24 @@ pub( crate ) mod private
   /// {
   ///   const KEYWORD : &'static str = "my_component";
   ///
-  ///   fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+  ///   fn from_meta( attr : &Attribute ) -> Result<Self>
   ///   {
   ///     // Parsing logic here
+  ///     // Return Ok(MyComponent) if parsing is successful
+  ///     // Return Err(Error::new_spanned(attr, "error message")) if parsing fails
   ///     Ok( MyComponent )
   ///   }
   /// }
   /// ```
-  /// xxx : improve documentation
+  ///
+  /// # Parameters
+  ///
+  /// - `attr` : A reference to the `syn::Attribute` from which the component is to be constructed.
+  ///
+  /// # Returns
+  ///
+  /// A `Result` containing the constructed component if successful, or an error if the parsing fails.
+  ///
   pub trait AttributeComponent
   where
     Self : Sized,
@@ -373,14 +388,36 @@ pub( crate ) mod private
     fn from_meta( attr : &syn::Attribute ) -> Result< Self >;
   }
 
-  /// xxx : write documentation
+  /// Trait for properties of an attribute component that can be identified by a keyword.
+  ///
+  /// The `AttributePropertyComponent` trait defines the interface for attribute properties
+  /// that can be identified by a specific keyword. Implementors of this trait are required
+  /// to define a constant `KEYWORD` that identifies the type of the property.
+  ///
+  /// This trait is useful in scenarios where attributes may have multiple properties
+  /// that need to be parsed and handled separately. By defining a unique keyword for each property,
+  /// the parsing logic can accurately identify and process each property.
+  ///
+  /// # Example
+  ///
+  /// ```rust
+  /// use macro_tools::AttributePropertyComponent;
+  ///
+  /// struct MyProperty;
+  ///
+  /// impl AttributePropertyComponent for MyProperty
+  /// {
+  ///   const KEYWORD : &'static str = "my_property";
+  /// }
+  /// ```
+  ///
   pub trait AttributePropertyComponent
   where
     Self : Sized,
   {
     /// The keyword that identifies the component.
     ///
-    /// This constant is used to match the attribute to the corresponding component.
+    /// This constant is used to match the attribute to the corresponding property.
     /// Each implementor of this trait must provide a unique keyword for its type.
     const KEYWORD : &'static str;
   }
