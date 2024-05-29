@@ -22,19 +22,50 @@ mod private
     {
       match ( &self.main_header_renew_error, &self.modules_headers_renew_error ) 
       { 
-        (Some( main ), Some( modules ) ) => 
+        ( Some( main ), Some( modules ) ) => 
         {
-          
-        } 
+          writeln!
+          ( 
+            f, 
+            "Main header renew report : {}\nError : {:?}\nModules headers renew report : {}\nError : {:?}",
+            self.main_header_renew_report, main, self.modules_headers_renew_report, modules 
+          )?;
+        }
+        ( Some( main ), None ) =>
+        {
+          writeln!
+          (
+            f,
+            "Main header renew report : {}\nError : {:?}\nModules headers renew report : {}",
+            self.main_header_renew_report, main, self.modules_headers_renew_report
+          )?;
+        }
+        ( None, Some( modules) ) =>
+        {
+          writeln!
+          (
+            f,
+            "Main header renew report : {}\nModules headers renew report : {}Error : {:?}\n",
+            self.main_header_renew_report, self.modules_headers_renew_report, modules
+          )?;
+        }
+        ( None, None ) =>
+        {
+          writeln!
+          (
+            f,
+            "Main header renew report : {}\nModules headers renew report : {}",
+            self.main_header_renew_report, self.modules_headers_renew_report
+          )?;
+        }
       }
-      
       Ok( () )
     }
   }
   
 
   /// Aggregates two commands: `generate_modules_headers` & `generate_main_header`
-  pub fn readme_headers_renew(( _, _ ) : (wca::Args, wca::Props ) ) -> Result< () >
+  pub fn readme_headers_renew( ( _, _ ) : ( wca::Args, wca::Props ) ) -> Result< () >
   {
     let mut report = ReadmeHeadersRenewReport::default();
     let absolute_path = AbsolutePath::try_from( std::env::current_dir()? )?;
