@@ -7,11 +7,12 @@ mod private
   /// Generate headers for workspace members
   pub fn readme_modules_headers_renew() -> Result< () >
   {
-    match action::readme_modules_headers_renew(AbsolutePath::try_from(std::env::current_dir()?)?) {
+    match action::readme_modules_headers_renew( AbsolutePath::try_from( std::env::current_dir()? )? ) 
+    {
       Ok( report ) => 
       {
         println!( "{report}" );
-        Ok(())
+        Ok( () )
       }
       Err( ( e, report ) ) => 
       {
