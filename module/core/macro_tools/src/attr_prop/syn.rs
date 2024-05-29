@@ -3,6 +3,7 @@
 //!
 
 use crate::*;
+use former_types::ComponentAssign;
 
 ///
 /// Property of an attribute which simply wraps one of the standard `syn` types.
@@ -31,6 +32,19 @@ where
   pub fn ref_internal( &self ) -> &T
   {
     &self.0
+  }
+}
+
+impl< T, Marker, IntoT > ComponentAssign< AttributePropertySyn< T, Marker >, IntoT >
+for AttributePropertySyn< T, Marker >
+where
+  T : syn::parse::Parse + quote::ToTokens,
+  IntoT : Into< AttributePropertySyn< T, Marker > >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    *self = component.into();
   }
 }
 

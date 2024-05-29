@@ -12,6 +12,7 @@
 //! This is useful for attributes that need to enable or disable features or flags.
 
 use crate::*;
+use former_types::ComponentAssign;
 
 /// Default marker for `AttributePropertySingletone`.
 /// Used if no marker is defined as parameter.
@@ -47,6 +48,18 @@ impl< Marker > AttributePropertySingletone< Marker >
     &self.0
   }
 
+}
+
+impl< Marker, IntoT > ComponentAssign< AttributePropertySingletone< Marker >, IntoT >
+for AttributePropertySingletone< Marker >
+where
+  IntoT : Into< AttributePropertySingletone< Marker > >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    *self = component.into();
+  }
 }
 
 impl< Marker > AttributePropertyComponent for AttributePropertySingletone< Marker >

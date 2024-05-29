@@ -4,6 +4,7 @@
 //!
 
 use crate::*;
+use former_types::ComponentAssign;
 
 /// A generic boolean attribute property.
 /// Defaults to `false`.
@@ -119,6 +120,20 @@ impl< Marker > AttributePropertyBoolean< Marker >
   pub fn ref_internal( &self ) -> &bool
   {
     &self.0
+  }
+}
+
+// xxx : introduce default markers for all properties
+
+impl< Marker, IntoT > ComponentAssign< AttributePropertyBoolean< Marker >, IntoT >
+for AttributePropertyBoolean< Marker >
+where
+  IntoT : Into< AttributePropertyBoolean< Marker > >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    *self = component.into();
   }
 }
 
