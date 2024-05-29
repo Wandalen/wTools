@@ -36,6 +36,7 @@ pub( crate ) mod private
   {
     name : String,
     // qqq : how to re-use ValueDescriptionFormer without additional end?
+    // #[subform_scalar]
     // value : ValueDescription,
     /// providing guidance to the user for entering a valid value
     hint : String,
@@ -103,7 +104,7 @@ pub( crate ) mod private
     /// Map of aliases.
     // Aliased key -> Original key
     pub properties_aliases : HashMap< String, String >,
-    // qqq : for Bohdan : routine should also be here
+    // aaa : for Bohdan : routine should also be here
     // aaa : here it is
     // qqq : make it usable and remove default(?)
     /// The type `Routine` represents the specific implementation of the routine.

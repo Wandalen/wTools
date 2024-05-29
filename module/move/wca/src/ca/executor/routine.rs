@@ -126,7 +126,7 @@ pub( crate ) mod private
     }
   }
 
-  // qqq : make 0-arguments, 1-argument, 2-arguments, 3 arguments versions
+  // aaa : make 0-arguments, 1-argument, 2-arguments, 3 arguments versions
   // aaa : done. now it works with the following variants:
   // fn(), fn(args), fn(props), fn(args, props), fn(context), fn(context, args), fn(context, props), fn(context, args, props)
     
@@ -297,7 +297,7 @@ pub( crate ) mod private
     }
   }
 
-  // qqq : why Rc is necessary? why not just box?
+  // aaa : why Rc is necessary? why not just box?
   // aaa : to be able to clone Routines
 
   impl PartialEq for Routine
