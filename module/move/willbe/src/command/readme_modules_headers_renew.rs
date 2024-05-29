@@ -2,12 +2,23 @@ mod private
 {
   use crate::*;
   use _path::AbsolutePath;
-  use wtools::error::{ for_app::Context, Result };
+  use wtools::error::{ for_app::Error, Result };
 
   /// Generate headers for workspace members
   pub fn readme_modules_headers_renew() -> Result< () >
   {
-    action::readme_modules_headers_renew( AbsolutePath::try_from( std::env::current_dir()? )? ).context( "Fail to generate headers" )
+    match action::readme_modules_headers_renew(AbsolutePath::try_from(std::env::current_dir()?)?) {
+      Ok( report ) => 
+      {
+        println!( "{report}" );
+        Ok(())
+      }
+      Err( ( e, report ) ) => 
+      {
+        eprintln!( "{report}" );
+        Err( Error::from( e ).context( "Fail to generate modules headers." ) )
+      }
+    }
   }
 
 }

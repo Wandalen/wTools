@@ -287,6 +287,7 @@ crate::mod_interface!
   exposed use Manifest;
   exposed use CrateDir;
   orphan use ManifestError;
+  orphan use CrateDirError;
   protected use open;
   protected use repo_url;
 }
