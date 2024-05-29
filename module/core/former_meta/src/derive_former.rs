@@ -53,7 +53,7 @@ pub fn mutator
 )
 -> Result< TokenStream >
 {
-  let former_mutator_code = if mutator.custom.into()
+  let former_mutator_code = if mutator.custom.value( false )
   {
     qt!{}
   }
@@ -70,7 +70,7 @@ pub fn mutator
     }
   };
 
-  if mutator.debug.into()
+  if mutator.debug.value( false )
   {
     let debug = format!
     (

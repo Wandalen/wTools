@@ -15,10 +15,10 @@
 
 use crate::*;
 
-/// Default marker for `AttributePropertyEnabled`.
+/// Default marker for `AttributePropertyOptionalSingletone`.
 /// Used if no marker is defined as parameter.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyEnabledMarker;
+pub struct AttributePropertyOptionalSingletoneMarker;
 
 /// A generic attribute property for switching on/off.
 /// Has 3 states: `None`, `Some( true )`, `Some( false )`.
@@ -28,13 +28,13 @@ pub struct AttributePropertyEnabledMarker;
 /// For example: `#[ attribute( on ) ]` and `#[ attribute( off )]`.
 /// As a consequence, the property has two keywords.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyEnabled< Marker = AttributePropertyEnabledMarker >
+pub struct AttributePropertyOptionalSingletone< Marker = AttributePropertyOptionalSingletoneMarker >
 (
   Option< bool >,
   ::core::marker::PhantomData< Marker >,
 );
 
-impl< Marker > AttributePropertyEnabled< Marker >
+impl< Marker > AttributePropertyOptionalSingletone< Marker >
 {
 
   // /// Keywords for parsing this attribute property.
@@ -71,14 +71,14 @@ impl< Marker > AttributePropertyEnabled< Marker >
 
 }
 
-impl< Marker > AttributePropertyComponent for AttributePropertyEnabled< Marker >
+impl< Marker > AttributePropertyComponent for AttributePropertyOptionalSingletone< Marker >
 where
   Marker : AttributePropertyComponent,
 {
   const KEYWORD : &'static str = Marker::KEYWORD;
 }
 
-impl< Marker > From< bool > for AttributePropertyEnabled< Marker >
+impl< Marker > From< bool > for AttributePropertyOptionalSingletone< Marker >
 {
   #[ inline( always ) ]
   fn from( src : bool ) -> Self
@@ -87,7 +87,7 @@ impl< Marker > From< bool > for AttributePropertyEnabled< Marker >
   }
 }
 
-impl< Marker > From< Option< bool > > for AttributePropertyEnabled< Marker >
+impl< Marker > From< Option< bool > > for AttributePropertyOptionalSingletone< Marker >
 {
   #[ inline( always ) ]
   fn from( src : Option< bool > ) -> Self
@@ -96,16 +96,16 @@ impl< Marker > From< Option< bool > > for AttributePropertyEnabled< Marker >
   }
 }
 
-impl< Marker > From< AttributePropertyEnabled< Marker > > for Option< bool >
+impl< Marker > From< AttributePropertyOptionalSingletone< Marker > > for Option< bool >
 {
   #[ inline( always ) ]
-  fn from( src : AttributePropertyEnabled< Marker > ) -> Self
+  fn from( src : AttributePropertyOptionalSingletone< Marker > ) -> Self
   {
     src.0
   }
 }
 
-impl< Marker > core::ops::Deref for AttributePropertyEnabled< Marker >
+impl< Marker > core::ops::Deref for AttributePropertyOptionalSingletone< Marker >
 {
   type Target = Option< bool >;
 
@@ -116,7 +116,7 @@ impl< Marker > core::ops::Deref for AttributePropertyEnabled< Marker >
   }
 }
 
-impl< Marker > AsRef< Option< bool > > for AttributePropertyEnabled< Marker >
+impl< Marker > AsRef< Option< bool > > for AttributePropertyOptionalSingletone< Marker >
 {
   #[ inline( always ) ]
   fn as_ref( &self ) -> &Option< bool >

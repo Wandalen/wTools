@@ -105,7 +105,7 @@ fn attr_prop_test()
 fn attribute_property_enabled()
 {
   // Test default value
-  let attr : AttributePropertyEnabled = Default::default();
+  let attr : AttributePropertyOptionalSingletone = Default::default();
   assert_eq!( attr.internal(), None );
   assert_eq!( attr.value( true ), true );
   assert_eq!( attr.value( false ), false );

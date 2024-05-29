@@ -456,7 +456,7 @@ scalar_setter_required
     let setter_name = self.scalar_setter_name();
     let attr = self.attrs.scalar.as_ref();
 
-    if attr.is_some() && attr.unwrap().debug.into()
+    if attr.is_some() && attr.unwrap().debug.value( false )
     {
       let debug = format!
       (
@@ -692,7 +692,7 @@ field : {field_ident}"#,
       qt!{}
     };
 
-    if attr.debug.into()
+    if attr.debug.value( false )
     {
       let debug = format!
       (
@@ -992,7 +992,7 @@ allowing for dynamic and flexible construction of the `{item}` entity's {field_i
       setters_code
     };
 
-    if attr.debug.into()
+    if attr.debug.value( false )
     {
       let debug = format!
       (
@@ -1309,7 +1309,7 @@ former and end action types, ensuring a seamless developer experience when formi
       setters_code
     };
 
-    if attr.debug.into()
+    if attr.debug.value( false )
     {
       let debug = format!
       (

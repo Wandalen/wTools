@@ -9,7 +9,7 @@ use macro_tools::
   AttributePropertyComponent,
   AttributePropertyOptionalBoolean,
   AttributePropertyOptionalSyn,
-  AttributePropertySingletone,
+  AttributePropertyOptionalSingletone,
 };
 use former_types::{ ComponentAssign };
 
@@ -883,76 +883,76 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
 /// Marker type for attribute property to specify whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyDebugMarker;
+pub struct DebugMarker;
 
 /// Specifies whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-impl AttributePropertyComponent for AttributePropertyDebugMarker
+impl AttributePropertyComponent for DebugMarker
 {
   const KEYWORD : &'static str = "debug";
 }
 
 /// Specifies whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-pub type AttributePropertyDebug = AttributePropertySingletone< AttributePropertyDebugMarker >;
+pub type AttributePropertyDebug = AttributePropertyOptionalSingletone< DebugMarker >;
 
 // =
 
 /// Disable generation of setter.
 /// Attributes still might generate some helper methods to reuse by custom setter.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertySetterMarker;
+pub struct SetterMarker;
 
-impl AttributePropertyComponent for AttributePropertySetterMarker
+impl AttributePropertyComponent for SetterMarker
 {
   const KEYWORD : &'static str = "setter";
 }
 
 /// Disable generation of setter.
 /// Attributes still might generate some helper methods to reuse by custom setter.
-pub type AttributePropertySetter = AttributePropertyOptionalBoolean< AttributePropertySetterMarker >;
+pub type AttributePropertySetter = AttributePropertyOptionalBoolean< SetterMarker >;
 
 // =
 
 /// Marker type for attribute property of optional identifier that names the setter. It is parsed from inputs
 /// like `name = my_field`.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyNameMarker;
+pub struct NameMarker;
 
-impl AttributePropertyComponent for AttributePropertyNameMarker
+impl AttributePropertyComponent for NameMarker
 {
   const KEYWORD : &'static str = "name";
 }
 
 /// An optional identifier that names the setter. It is parsed from inputs
 /// like `name = my_field`.
-pub type AttributePropertyName = AttributePropertyOptionalSyn< syn::Ident, AttributePropertyNameMarker >;
+pub type AttributePropertyName = AttributePropertyOptionalSyn< syn::Ident, NameMarker >;
 
 // =
 
 /// Marker type for default value to use for a field.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyDefaultMarker;
+pub struct DefaultMarker;
 
-impl AttributePropertyComponent for AttributePropertyDefaultMarker
+impl AttributePropertyComponent for DefaultMarker
 {
   const KEYWORD : &'static str = "default";
 }
 
 /// An optional identifier that names the setter. It is parsed from inputs
 /// like `name = my_field`.
-pub type AttributePropertyDefault = AttributePropertyOptionalSyn< syn::Expr, AttributePropertyDefaultMarker >;
+pub type AttributePropertyDefault = AttributePropertyOptionalSyn< syn::Expr, DefaultMarker >;
 
 // =
 
 /// Marker type for definition of the collection former to use, e.g., `former::VectorFormer`.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyDefinitionMarker;
+pub struct DefinitionMarker;
 
-impl AttributePropertyComponent for AttributePropertyDefinitionMarker
+impl AttributePropertyComponent for DefinitionMarker
 {
   const KEYWORD : &'static str = "definition";
 }
 
 /// Definition of the collection former to use, e.g., `former::VectorFormer`.
-pub type AttributePropertyDefinition = AttributePropertyOptionalSyn< syn::Type, AttributePropertyDefinitionMarker >;
+pub type AttributePropertyDefinition = AttributePropertyOptionalSyn< syn::Type, DefinitionMarker >;

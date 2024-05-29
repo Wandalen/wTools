@@ -10,7 +10,7 @@ use macro_tools::
   Result,
   AttributeComponent,
   AttributePropertyComponent,
-  AttributePropertySingletone,
+  AttributePropertyOptionalSingletone,
 };
 
 use former_types::{ ComponentAssign };
@@ -415,29 +415,29 @@ where
 /// Marker type for attribute property to specify whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyDebugMarker;
+pub struct DebugMarker;
 
-impl AttributePropertyComponent for AttributePropertyDebugMarker
+impl AttributePropertyComponent for DebugMarker
 {
   const KEYWORD : &'static str = "debug";
 }
 
 /// Specifies whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-pub type AttributePropertyDebug = AttributePropertySingletone< AttributePropertyDebugMarker >;
+pub type AttributePropertyDebug = AttributePropertyOptionalSingletone< DebugMarker >;
 
 // =
 
 /// Marker type for attribute property to indicates whether a custom code should be generated.
 /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyCustomMarker;
+pub struct CustomMarker;
 
-impl AttributePropertyComponent for AttributePropertyCustomMarker
+impl AttributePropertyComponent for CustomMarker
 {
   const KEYWORD : &'static str = "custom";
 }
 
 /// Indicates whether a custom code should be generated.
 /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
-pub type AttributePropertyCustom = AttributePropertySingletone< AttributePropertyCustomMarker >;
+pub type AttributePropertyCustom = AttributePropertyOptionalSingletone< CustomMarker >;

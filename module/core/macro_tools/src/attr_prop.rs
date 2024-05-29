@@ -147,8 +147,8 @@ pub mod exposed
   {
     singletone::AttributePropertySingletone,
     singletone::AttributePropertySingletoneMarker,
-    singletone_optional::AttributePropertyEnabled,
-    singletone_optional::AttributePropertyEnabledMarker,
+    singletone_optional::AttributePropertyOptionalSingletone,
+    singletone_optional::AttributePropertyOptionalSingletoneMarker,
 
     boolean::AttributePropertyBoolean,
     boolean_optional::AttributePropertyOptionalBoolean,

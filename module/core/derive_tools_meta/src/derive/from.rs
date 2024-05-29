@@ -9,7 +9,8 @@ use macro_tools::
   Result,
   AttributeComponent,
   AttributePropertyComponent,
-  AttributePropertySingletone,
+  // AttributePropertySingletone,
+  AttributePropertyOptionalSingletone,
 };
 
 use former_types::ComponentAssign;
@@ -190,7 +191,7 @@ fn variant_generate
     )
   };
 
-  if attrs.config.debug.into()
+  if attrs.config.debug.value( false )
   {
     let debug = format!
     (
@@ -547,8 +548,8 @@ impl syn::parse::Parse for ItemAttributeConfig
       let known = const_format::concatcp!
       (
         "Known entries of attribute ", ItemAttributeConfig::KEYWORD, " are : ",
-        AttributePropertyEnabledMarker::KEYWORD_ON,
-        ", ", AttributePropertyEnabledMarker::KEYWORD_OFF,
+        EnabledMarker::KEYWORD_ON,
+        ", ", EnabledMarker::KEYWORD_OFF,
         ".",
       );
       syn_err!
@@ -570,8 +571,8 @@ impl syn::parse::Parse for ItemAttributeConfig
         let ident : syn::Ident = input.parse()?;
         match ident.to_string().as_str()
         {
-          AttributePropertyEnabledMarker::KEYWORD_ON => result.assign( AttributePropertyEnabled::from( true ) ),
-          AttributePropertyEnabledMarker::KEYWORD_OFF => result.assign( AttributePropertyEnabled::from( false ) ),
+          EnabledMarker::KEYWORD_ON => result.assign( AttributePropertyEnabled::from( true ) ),
+          EnabledMarker::KEYWORD_OFF => result.assign( AttributePropertyEnabled::from( false ) ),
           _ => return Err( error( &ident ) ),
         }
       }
@@ -739,8 +740,8 @@ impl syn::parse::Parse for FieldAttributeConfig
       (
         "Known entries of attribute ", FieldAttributeConfig::KEYWORD, " are : ",
         AttributePropertyDebug::KEYWORD,
-        ", ", AttributePropertyEnabledMarker::KEYWORD_ON,
-        ", ", AttributePropertyEnabledMarker::KEYWORD_OFF,
+        ", ", EnabledMarker::KEYWORD_ON,
+        ", ", EnabledMarker::KEYWORD_OFF,
         ".",
       );
       syn_err!
@@ -763,8 +764,8 @@ impl syn::parse::Parse for FieldAttributeConfig
         match ident.to_string().as_str()
         {
           AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::from( true ) ),
-          AttributePropertyEnabledMarker::KEYWORD_ON => result.assign( AttributePropertyEnabled::from( true ) ),
-          AttributePropertyEnabledMarker::KEYWORD_OFF => result.assign( AttributePropertyEnabled::from( false ) ),
+          EnabledMarker::KEYWORD_ON => result.assign( AttributePropertyEnabled::from( true ) ),
+          EnabledMarker::KEYWORD_OFF => result.assign( AttributePropertyEnabled::from( false ) ),
           _ => return Err( error( &ident ) ),
         }
       }
@@ -798,15 +799,15 @@ impl AttributePropertyComponent for AttributePropertyDebugMarker
 
 /// Specifies whether to provide a generated code as a hint.
 /// Defaults to `false`, which means no debug is provided unless explicitly requested.
-pub type AttributePropertyDebug = AttributePropertySingletone< AttributePropertyDebugMarker >;
+pub type AttributePropertyDebug = AttributePropertyOptionalSingletone< AttributePropertyDebugMarker >;
 
 // =
 
 /// Marker type for attribute property to indicates whether `From` implementation for fields/variants should be generated.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyEnabledMarker;
+pub struct EnabledMarker;
 
-impl AttributePropertyEnabledMarker
+impl EnabledMarker
 {
   /// Keywords for parsing this attribute property.
   pub const KEYWORD_OFF : &'static str = "off";
@@ -816,6 +817,6 @@ impl AttributePropertyEnabledMarker
 
 /// Specifies whether `From` implementation for fields/variants should be generated.
 /// Can be altered using `on` and `off` attributes. But default it's `on`.
-pub type AttributePropertyEnabled = macro_tools::AttributePropertyEnabled< AttributePropertyEnabledMarker >;
+pub type AttributePropertyEnabled = AttributePropertyOptionalSingletone< EnabledMarker >;
 
 // ==
