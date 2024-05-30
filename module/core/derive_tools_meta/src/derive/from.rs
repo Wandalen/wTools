@@ -229,7 +229,7 @@ fn generate_from_single_field
   }
 }
 
-// qqq : for Petro : document, add example of generated code
+// qqq : document, add example of generated code
 fn generate_from_multiple_fields_named< 'a >
 (
   item_name : &syn::Ident,
@@ -360,6 +360,7 @@ fn variant_generate
     )
   };
 
+  // qqq : make `debug` working for all branches
   if attrs.config.debug.value( false )
   {
     let debug = format!
