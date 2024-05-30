@@ -65,10 +65,11 @@ impl ItemAttributes
       let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
       let key_str = format!( "{}", key_ident );
 
-      if attr::is_standard( &key_str )
-      {
-        continue;
-      }
+      // attributes does not have to be known
+      // if attr::is_standard( &key_str )
+      // {
+      //   continue;
+      // }
 
       match key_str.as_ref()
       {

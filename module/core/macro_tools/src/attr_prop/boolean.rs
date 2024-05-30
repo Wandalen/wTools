@@ -128,8 +128,6 @@ impl< Marker > AttributePropertyBoolean< Marker >
   }
 }
 
-// xxx : introduce default markers for all properties
-
 impl< Marker, IntoT > Assign< AttributePropertyBoolean< Marker >, IntoT >
 for AttributePropertyBoolean< Marker >
 where

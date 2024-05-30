@@ -87,13 +87,12 @@ impl FieldAttributes
       let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
       let key_str = format!( "{}", key_ident );
 
-      // Skip standard attributes
-      if attr::is_standard( &key_str )
-      {
-        continue;
-      }
+      // // Skip standard attributes
+      // if attr::is_standard( &key_str )
+      // {
+      //   continue;
+      // }
       // attributes does not have to be known
-      // xxx
 
       // Match the attribute key and assign to the appropriate field
       match key_str.as_ref()
