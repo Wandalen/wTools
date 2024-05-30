@@ -210,7 +210,7 @@ version = "=2.0.0"
 default-features = false
 
 [workspace.dependencies.former_meta]
-version = "~2.0.0"
+version = "~2.1.0"
 path = "module/core/former_meta"
 default-features = false
 
