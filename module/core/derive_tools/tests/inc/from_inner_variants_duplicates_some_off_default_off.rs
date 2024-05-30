@@ -10,10 +10,8 @@ pub enum GetData
   Nothing,
   Nothing2,
   FromString( String ),
-  // #[ from( on ) ]
   #[ from( on ) ]
-  // #[ from( debug ) ]
-  // xxx : should that work?
+  #[ from( debug ) ]
   FromString2( String ),
   FromPair( String, String ),
   #[ from( on ) ]
@@ -24,7 +22,6 @@ pub enum GetData
 }
 
 // == begin of generated
-
 // == end of generated
 
 include!( "./only_test/from_inner_variants_duplicates.rs" );

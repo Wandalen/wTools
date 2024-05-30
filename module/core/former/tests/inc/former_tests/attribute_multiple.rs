@@ -32,5 +32,3 @@ tests_index!
 {
   test_complex,
 }
-
-// xxx2 : write
