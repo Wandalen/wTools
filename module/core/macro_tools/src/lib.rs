@@ -170,18 +170,23 @@ pub mod prelude
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::syn;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::proc_macro2;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::quote;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use ::quote::quote as qt;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use ::syn::parse_quote as parse_qt;
+  pub use ::quote::
+  {
+    quote as qt,
+    format_ident,
+  };
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::syn::spanned::Spanned;
@@ -199,7 +204,9 @@ pub mod prelude
     parenthesized,
     parse_macro_input,
     parse_quote,
+    parse_quote as parse_qt,
     parse_quote_spanned,
+    parse_quote_spanned as parse_qt_spanned,
   };
 
   #[ doc( inline ) ]

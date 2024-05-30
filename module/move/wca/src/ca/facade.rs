@@ -65,7 +65,7 @@ pub( crate ) mod private
     /// The name of the property.
     pub name : &'a str,
     /// The hint for the property.
-    pub hint : &'a str,
+    pub debug : &'a str,
     /// The tag representing the property's type.
     pub tag : Type,
   }

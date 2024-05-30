@@ -523,7 +523,7 @@ mod private
     /// how to build and where to publish the package amongst other instructions. The `#[setter( false )]`
     /// attribute indicates that there is no setter method for the `plans` variable and it can only be modified
     /// within the struct.
-    #[ scalar( setter = false, hint = false ) ]
+    #[ scalar( setter = false ) ]
     pub plans : Vec< PackagePublishInstruction >,
   }
 
@@ -612,7 +612,7 @@ mod private
       self.storage.base_temp_dir = path;
       self
     }
-    
+
     pub fn package< IntoPackage >( mut self, package : IntoPackage ) -> Self
     where
       IntoPackage : Into< Package >,

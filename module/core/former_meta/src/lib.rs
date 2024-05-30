@@ -170,10 +170,10 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
   }
 }
 
-/// Derives the `ComponentAssign` trait for struct fields, allowing each field to be set
+/// Derives the `Assign` trait for struct fields, allowing each field to be set
 /// with a value that can be converted into the field's type.
 ///
-/// This macro facilitates the automatic implementation of the `ComponentAssign` trait for all
+/// This macro facilitates the automatic implementation of the `Assign` trait for all
 /// fields within a struct, leveraging the power of Rust's type system to ensure type safety
 /// and conversion logic. It is particularly useful for builder patterns or mutating instances
 /// of data structures in a fluent and ergonomic manner.
@@ -188,12 +188,12 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 ///
 /// # Input Code Example
 ///
-/// Given a struct definition annotated with `#[ derive( ComponentAssign ) ]` :
+/// Given a struct definition annotated with `#[ derive( Assign ) ]` :
 ///
 /// ```rust
-/// use former::ComponentAssign;
+/// use former::Assign;
 ///
-/// #[ derive( Default, PartialEq, Debug, former::ComponentAssign ) ]
+/// #[ derive( Default, PartialEq, Debug, former::Assign ) ]
 /// struct Person
 /// {
 ///   age : i32,
@@ -211,7 +211,7 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 /// The procedural macro generates the following implementations for `Person` :
 ///
 /// ```rust
-/// use former::ComponentAssign;
+/// use former::Assign;
 ///
 /// #[ derive( Default, PartialEq, Debug ) ]
 /// struct Person
@@ -220,7 +220,7 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 ///   name : String,
 /// }
 ///
-/// impl< IntoT > ComponentAssign< i32, IntoT > for Person
+/// impl< IntoT > Assign< i32, IntoT > for Person
 /// where
 ///   IntoT : Into< i32 >,
 /// {
@@ -230,7 +230,7 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 ///   }
 /// }
 ///
-/// impl< IntoT > ComponentAssign< String, IntoT > for Person
+/// impl< IntoT > Assign< String, IntoT > for Person
 /// where
 ///   IntoT : Into< String >,
 /// {
@@ -250,7 +250,7 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_component_assign" ) ]
-#[ proc_macro_derive( ComponentAssign, attributes( debug ) ) ]
+#[ proc_macro_derive( Assign, attributes( debug ) ) ]
 pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = component::component_assign::component_assign( input );
@@ -274,7 +274,7 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 /// # Conditions
 ///
 /// - This macro is only enabled when the `derive_components_assign` feature is active in your `Cargo.toml`.
-/// - The type must implement `ComponentAssign` (`derive( ComponentAssign )`)
+/// - The type must implement `Assign` (`derive( Assign )`)
 ///
 /// # Limitations
 /// This trait cannot be derived, if the struct has fields with identical types
@@ -284,9 +284,9 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 /// An example when we encapsulate parameters passed to a function in a struct.
 ///
 /// ```rust
-/// use former::{ ComponentAssign, ComponentsAssign };
+/// use former::{ Assign, ComponentsAssign };
 ///
-/// #[ derive( Default, ComponentAssign, ComponentsAssign ) ]
+/// #[ derive( Default, Assign, ComponentsAssign ) ]
 /// struct BigOpts
 /// {
 ///   cond : bool,
@@ -294,7 +294,7 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 ///   str : String,
 /// }
 ///
-/// #[ derive( Default, ComponentAssign, ComponentsAssign ) ]
+/// #[ derive( Default, Assign, ComponentsAssign ) ]
 /// struct SmallerOpts
 /// {
 ///   cond: bool,
@@ -343,7 +343,7 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 /// Which expands approximately into :
 ///
 /// ```rust
-/// use former::{ ComponentAssign, ComponentsAssign };
+/// use former::{ Assign, ComponentsAssign };
 ///
 /// #[derive(Default)]
 /// struct BigOpts
@@ -353,7 +353,7 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 ///   str : String,
 /// }
 ///
-/// impl< IntoT > ComponentAssign< bool, IntoT > for BigOpts
+/// impl< IntoT > Assign< bool, IntoT > for BigOpts
 /// where
 ///   IntoT : Into< bool >,
 /// {
@@ -363,7 +363,7 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 ///   }
 /// }
 ///
-/// impl< IntoT > ComponentAssign< i32, IntoT > for BigOpts
+/// impl< IntoT > Assign< i32, IntoT > for BigOpts
 /// where
 ///   IntoT : Into< i32 >,
 /// {
@@ -373,7 +373,7 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 ///   }
 /// }
 ///
-/// impl< IntoT > ComponentAssign< String, IntoT > for BigOpts
+/// impl< IntoT > Assign< String, IntoT > for BigOpts
 /// where
 ///   IntoT : Into< String >,
 /// {
@@ -395,9 +395,9 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 ///
 /// impl< T, IntoT > BigOptsComponentsAssign< IntoT > for T
 /// where
-///   T : former::ComponentAssign< bool, IntoT >,
-///   T : former::ComponentAssign< i32, IntoT >,
-///   T : former::ComponentAssign< String, IntoT >,
+///   T : former::Assign< bool, IntoT >,
+///   T : former::Assign< i32, IntoT >,
+///   T : former::Assign< String, IntoT >,
 ///   IntoT : Into< bool >,
 ///   IntoT : Into< i32 >,
 ///   IntoT : Into< String >,
@@ -405,9 +405,9 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 /// {
 ///   fn components_assign( &mut self, component : IntoT )
 ///   {
-///     former::ComponentAssign::< bool, _ >::assign( self, component.clone() );
-///     former::ComponentAssign::< i32, _ >::assign( self, component.clone() );
-///     former::ComponentAssign::< String, _ >::assign( self, component.clone() );
+///     former::Assign::< bool, _ >::assign( self, component.clone() );
+///     former::Assign::< i32, _ >::assign( self, component.clone() );
+///     former::Assign::< String, _ >::assign( self, component.clone() );
 ///   }
 /// }
 ///
@@ -418,7 +418,7 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 ///   int : i32,
 /// }
 ///
-/// impl< IntoT > ComponentAssign< bool, IntoT > for SmallerOpts
+/// impl< IntoT > Assign< bool, IntoT > for SmallerOpts
 /// where
 ///   IntoT : Into< bool >,
 /// {
@@ -428,7 +428,7 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 ///   }
 /// }
 ///
-/// impl< IntoT > ComponentAssign< i32, IntoT > for SmallerOpts
+/// impl< IntoT > Assign< i32, IntoT > for SmallerOpts
 /// where
 ///     IntoT : Into< i32 >,
 /// {
@@ -449,16 +449,16 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 ///
 /// impl< T, IntoT > SmallerOptsComponentsAssign< IntoT > for T
 /// where
-///   T : former::ComponentAssign< bool, IntoT >,
-///   T : former::ComponentAssign< i32, IntoT >,
+///   T : former::Assign< bool, IntoT >,
+///   T : former::Assign< i32, IntoT >,
 ///   IntoT : Into< bool >,
 ///   IntoT : Into< i32 >,
 ///   IntoT : Clone,
 /// {
 ///   fn smaller_opts_assign( &mut self, component : IntoT )
 ///   {
-///     former::ComponentAssign::< bool, _ >::assign( self, component.clone() );
-///     former::ComponentAssign::< i32, _ >::assign( self, component.clone() );
+///     former::Assign::< bool, _ >::assign( self, component.clone() );
+///     former::Assign::< i32, _ >::assign( self, component.clone() );
 ///   }
 /// }
 ///

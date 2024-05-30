@@ -3,15 +3,14 @@
 use super::*;
 use macro_tools::
 {
-  attr,
   Result,
   AttributeComponent,
   AttributePropertyComponent,
-  AttributePropertyBoolean,
   AttributePropertyOptionalBoolean,
   AttributePropertyOptionalSyn,
+  AttributePropertyOptionalSingletone,
 };
-use former_types::{ ComponentAssign };
+use former_types::{ Assign, OptionExt };
 
 ///
 /// Attributes of a field.
@@ -87,11 +86,12 @@ impl FieldAttributes
       let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
       let key_str = format!( "{}", key_ident );
 
-      // Skip standard attributes
-      if attr::is_standard( &key_str )
-      {
-        continue;
-      }
+      // // Skip standard attributes
+      // if attr::is_standard( &key_str )
+      // {
+      //   continue;
+      // }
+      // attributes does not have to be known
 
       // Match the attribute key and assign to the appropriate field
       match key_str.as_ref()
@@ -101,8 +101,10 @@ impl FieldAttributes
         AttributeSubformScalarSetter::KEYWORD => result.assign( AttributeSubformScalarSetter::from_meta( attr )? ),
         AttributeSubformCollectionSetter::KEYWORD => result.assign( AttributeSubformCollectionSetter::from_meta( attr )? ),
         AttributeSubformEntrySetter::KEYWORD => result.assign( AttributeSubformEntrySetter::from_meta( attr )? ),
-        "debug" => {}
-        _ => return Err( error( attr ) ),
+        "debug" => {},
+        _ => {},
+        // _ => return Err( error( attr ) ),
+        // attributes does not have to be known
       }
     }
 
@@ -149,25 +151,39 @@ impl AttributeComponent for AttributeConfig
 
 }
 
-impl< IntoT > ComponentAssign< AttributeConfig, IntoT > for FieldAttributes
+impl< IntoT > Assign< AttributeConfig, IntoT > for FieldAttributes
 where
   IntoT : Into< AttributeConfig >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.config = Some( component.into() );
+    let component : AttributeConfig = component.into();
+    self.config.option_assign( component );
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyDefault, IntoT > for AttributeConfig
+impl< IntoT > Assign< AttributeConfig, IntoT > for AttributeConfig
+where
+  IntoT : Into< AttributeConfig >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.default.assign( component.default );
+  }
+}
+
+impl< IntoT > Assign< AttributePropertyDefault, IntoT > for AttributeConfig
 where
   IntoT : Into< AttributePropertyDefault >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.default = component.into();
+    // panic!( "" );
+    self.default.assign( component.into() );
   }
 }
 
@@ -202,8 +218,6 @@ impl syn::parse::Parse for AttributeConfig
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
-
-        input.parse::< syn::Token![=] >()?;
         match ident.to_string().as_str()
         {
           AttributePropertyDefault::KEYWORD => result.assign( AttributePropertyDefault::parse( input )? ),
@@ -235,7 +249,7 @@ pub struct AttributeScalarSetter
   pub setter : AttributePropertySetter,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : AttributePropertyHint,
+  pub debug : AttributePropertyDebug,
 }
 
 impl AttributeScalarSetter
@@ -273,18 +287,33 @@ impl AttributeComponent for AttributeScalarSetter
 
 }
 
-impl< IntoT > ComponentAssign< AttributeScalarSetter, IntoT > for FieldAttributes
+impl< IntoT > Assign< AttributeScalarSetter, IntoT > for FieldAttributes
 where
   IntoT : Into< AttributeScalarSetter >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.scalar = Some( component.into() );
+    let component = component.into();
+    self.scalar.option_assign( component );
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyName, IntoT > for AttributeScalarSetter
+impl< IntoT > Assign< AttributeScalarSetter, IntoT > for AttributeScalarSetter
+where
+  IntoT : Into< AttributeScalarSetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.name.assign( component.name );
+    self.setter.assign( component.setter );
+    self.debug.assign( component.debug );
+  }
+}
+
+impl< IntoT > Assign< AttributePropertyName, IntoT > for AttributeScalarSetter
 where
   IntoT : Into< AttributePropertyName >,
 {
@@ -295,7 +324,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertySetter, IntoT > for AttributeScalarSetter
+impl< IntoT > Assign< AttributePropertySetter, IntoT > for AttributeScalarSetter
 where
   IntoT : Into< AttributePropertySetter >,
 {
@@ -306,14 +335,14 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyHint, IntoT > for AttributeScalarSetter
+impl< IntoT > Assign< AttributePropertyDebug, IntoT > for AttributeScalarSetter
 where
-  IntoT : Into< AttributePropertyHint >,
+  IntoT : Into< AttributePropertyDebug >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.hint = component.into();
+    self.debug = component.into();
   }
 }
 
@@ -330,13 +359,13 @@ impl syn::parse::Parse for AttributeScalarSetter
         "Known entries of attribute ", AttributeScalarSetter::KEYWORD, " are : ",
         AttributePropertyName::KEYWORD,
         ", ", AttributePropertySetter::KEYWORD,
-        ", ", AttributePropertyHint::KEYWORD,
+        ", ", AttributePropertyDebug::KEYWORD,
         ".",
       );
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ scalar( name = myName, setter = true, hint = false ) ]'
+        r#"Expects an attribute of format '#[ scalar( name = myName, setter = true ) ]'
   {known}
   But got: '{}'
 "#,
@@ -350,13 +379,11 @@ impl syn::parse::Parse for AttributeScalarSetter
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
-
-        input.parse::< syn::Token![=] >()?;
         match ident.to_string().as_str()
         {
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
           AttributePropertySetter::KEYWORD => result.assign( AttributePropertySetter::parse( input )? ),
-          AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
+          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::from( true ) ),
           _ => return Err( error( &ident ) ),
         }
       }
@@ -398,7 +425,7 @@ pub struct AttributeSubformScalarSetter
   pub setter : AttributePropertySetter,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : AttributePropertyHint,
+  pub debug : AttributePropertyDebug,
 }
 
 impl AttributeSubformScalarSetter
@@ -435,18 +462,33 @@ impl AttributeComponent for AttributeSubformScalarSetter
 
 }
 
-impl< IntoT > ComponentAssign< AttributeSubformScalarSetter, IntoT > for FieldAttributes
+impl< IntoT > Assign< AttributeSubformScalarSetter, IntoT > for FieldAttributes
 where
   IntoT : Into< AttributeSubformScalarSetter >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.subform_scalar = Some( component.into() );
+    let component = component.into();
+    self.subform_scalar.option_assign( component );
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyName, IntoT > for AttributeSubformScalarSetter
+impl< IntoT > Assign< AttributeSubformScalarSetter, IntoT > for AttributeSubformScalarSetter
+where
+  IntoT : Into< AttributeSubformScalarSetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.name.assign( component.name );
+    self.setter.assign( component.setter );
+    self.debug.assign( component.debug );
+  }
+}
+
+impl< IntoT > Assign< AttributePropertyName, IntoT > for AttributeSubformScalarSetter
 where
   IntoT : Into< AttributePropertyName >,
 {
@@ -457,7 +499,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertySetter, IntoT > for AttributeSubformScalarSetter
+impl< IntoT > Assign< AttributePropertySetter, IntoT > for AttributeSubformScalarSetter
 where
   IntoT : Into< AttributePropertySetter >,
 {
@@ -468,14 +510,14 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyHint, IntoT > for AttributeSubformScalarSetter
+impl< IntoT > Assign< AttributePropertyDebug, IntoT > for AttributeSubformScalarSetter
 where
-  IntoT : Into< AttributePropertyHint >,
+  IntoT : Into< AttributePropertyDebug >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.hint = component.into();
+    self.debug = component.into();
   }
 }
 
@@ -492,13 +534,13 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
         "Known entries of attribute ", AttributeSubformScalarSetter::KEYWORD, " are : ",
         AttributePropertyName::KEYWORD,
         ", ", AttributePropertySetter::KEYWORD,
-        ", ", AttributePropertyHint::KEYWORD,
+        ", ", AttributePropertyDebug::KEYWORD,
         ".",
       );
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ subform_scalar( name = myName, setter = true, hint = false ) ]'
+        r#"Expects an attribute of format '#[ subform_scalar( name = myName, setter = true ) ]'
   {known}
   But got: '{}'
 "#,
@@ -512,13 +554,11 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
-
-        input.parse::< syn::Token![=] >()?;
         match ident.to_string().as_str()
         {
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
           AttributePropertySetter::KEYWORD => result.assign( AttributePropertySetter::parse( input )? ),
-          AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
+          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::from( true ) ),
           _ => return Err( error( &ident ) ),
         }
       }
@@ -537,61 +577,6 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
     Ok( result )
   }
 }
-
-// impl syn::parse::Parse for AttributeSubformScalarSetter
-// {
-//   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
-//   {
-//     let mut name : Option< syn::Ident > = None;
-//     let mut setter : Option< bool > = None;
-//     let mut hint = false;
-//
-//     while !input.is_empty()
-//     {
-//       let lookahead = input.lookahead1();
-//       if lookahead.peek( syn::Ident )
-//       {
-//         let ident : syn::Ident = input.parse()?;
-//         match ident.to_string().as_str()
-//         {
-//           "name" =>
-//           {
-//             input.parse::< syn::Token![ = ] >()?;
-//             name = Some( input.parse()? );
-//           }
-//           "setter" =>
-//           {
-//             input.parse::< syn::Token![ = ] >()?;
-//             let value : syn::LitBool = input.parse()?;
-//             setter = Some( value.value() );
-//           }
-//           "hint" =>
-//           {
-//             input.parse::< syn::Token![ = ] >()?;
-//             let value : syn::LitBool = input.parse()?;
-//             hint = value.value;
-//           }
-//           _ =>
-//           {
-//             return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'name', 'setter', or 'definition'. For example: `subform_scalar( name = myName, setter = true )`", ident ) ) );
-//           }
-//         }
-//       }
-//       else
-//       {
-//         return Err( syn::Error::new( input.span(), "Expected 'name', 'setter', or 'definition' identifier. For example: `subform_scalar( name = myName, setter = true )`" ) );
-//       }
-//
-//       // Optional comma handling
-//       if input.peek( syn::Token![ , ] )
-//       {
-//         input.parse::< syn::Token![ , ] >()?;
-//       }
-//     }
-//
-//     Ok( Self { name : name.into(), setter : setter.into(), hint : hint.into() } )
-//   }
-// }
 
 /// Represents an attribute for configuring collection setter generation.
 ///
@@ -615,7 +600,7 @@ pub struct AttributeSubformCollectionSetter
   pub setter : AttributePropertySetter,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : AttributePropertyHint,
+  pub debug : AttributePropertyDebug,
   /// Definition of the collection former to use, e.g., `former::VectorFormer`.
   pub definition : AttributePropertyDefinition,
 }
@@ -654,18 +639,34 @@ impl AttributeComponent for AttributeSubformCollectionSetter
 
 }
 
-impl< IntoT > ComponentAssign< AttributeSubformCollectionSetter, IntoT > for FieldAttributes
+impl< IntoT > Assign< AttributeSubformCollectionSetter, IntoT > for FieldAttributes
 where
   IntoT : Into< AttributeSubformCollectionSetter >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.subform_collection = Some( component.into() );
+    let component = component.into();
+    self.subform_collection.option_assign( component );
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyName, IntoT > for AttributeSubformCollectionSetter
+impl< IntoT > Assign< AttributeSubformCollectionSetter, IntoT > for AttributeSubformCollectionSetter
+where
+  IntoT : Into< AttributeSubformCollectionSetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.name.assign( component.name );
+    self.setter.assign( component.setter );
+    self.debug.assign( component.debug );
+    self.definition.assign( component.definition );
+  }
+}
+
+impl< IntoT > Assign< AttributePropertyName, IntoT > for AttributeSubformCollectionSetter
 where
   IntoT : Into< AttributePropertyName >,
 {
@@ -676,7 +677,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertySetter, IntoT > for AttributeSubformCollectionSetter
+impl< IntoT > Assign< AttributePropertySetter, IntoT > for AttributeSubformCollectionSetter
 where
   IntoT : Into< AttributePropertySetter >,
 {
@@ -687,7 +688,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyDefinition, IntoT > for AttributeSubformCollectionSetter
+impl< IntoT > Assign< AttributePropertyDefinition, IntoT > for AttributeSubformCollectionSetter
 where
   IntoT : Into< AttributePropertyDefinition >,
 {
@@ -698,14 +699,14 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyHint, IntoT > for AttributeSubformCollectionSetter
+impl< IntoT > Assign< AttributePropertyDebug, IntoT > for AttributeSubformCollectionSetter
 where
-  IntoT : Into< AttributePropertyHint >,
+  IntoT : Into< AttributePropertyDebug >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.hint = component.into();
+    self.debug = component.into();
   }
 }
 
@@ -722,14 +723,14 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
         "Known entries of attribute ", AttributeSubformCollectionSetter::KEYWORD, " are : ",
         AttributePropertyName::KEYWORD,
         ", ", AttributePropertySetter::KEYWORD,
-        ", ", AttributePropertyHint::KEYWORD,
+        ", ", AttributePropertyDebug::KEYWORD,
         ", ", AttributePropertyDefinition::KEYWORD,
         ".",
       );
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ subform_collection( name = myName, setter = true, hint = false, definition = MyDefinition ) ]'
+        r#"Expects an attribute of format '#[ subform_collection( name = myName, setter = true, debug, definition = MyDefinition ) ]'
   {known}
   But got: '{}'
 "#,
@@ -743,13 +744,11 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
-
-        input.parse::< syn::Token![=] >()?;
         match ident.to_string().as_str()
         {
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
           AttributePropertySetter::KEYWORD => result.assign( AttributePropertySetter::parse( input )? ),
-          AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
+          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::from( true ) ),
           AttributePropertyDefinition::KEYWORD => result.assign( AttributePropertyDefinition::parse( input )? ),
           _ => return Err( error( &ident ) ),
         }
@@ -799,7 +798,7 @@ pub struct AttributeSubformEntrySetter
   pub setter : AttributePropertySetter,
   /// Specifies whether to provide a sketch of the subform setter as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : AttributePropertyHint,
+  pub debug : AttributePropertyDebug,
 }
 
 impl AttributeSubformEntrySetter
@@ -836,18 +835,33 @@ impl AttributeComponent for AttributeSubformEntrySetter
 
 }
 
-impl< IntoT > ComponentAssign< AttributeSubformEntrySetter, IntoT > for FieldAttributes
+impl< IntoT > Assign< AttributeSubformEntrySetter, IntoT > for FieldAttributes
 where
   IntoT : Into< AttributeSubformEntrySetter >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.subform_entry = Some( component.into() );
+    let component = component.into();
+    self.subform_entry.option_assign( component );
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyName, IntoT > for AttributeSubformEntrySetter
+impl< IntoT > Assign< AttributeSubformEntrySetter, IntoT > for AttributeSubformEntrySetter
+where
+  IntoT : Into< AttributeSubformEntrySetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.name.assign( component.name );
+    self.setter.assign( component.setter );
+    self.debug.assign( component.debug );
+  }
+}
+
+impl< IntoT > Assign< AttributePropertyName, IntoT > for AttributeSubformEntrySetter
 where
   IntoT : Into< AttributePropertyName >,
 {
@@ -858,7 +872,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertySetter, IntoT > for AttributeSubformEntrySetter
+impl< IntoT > Assign< AttributePropertySetter, IntoT > for AttributeSubformEntrySetter
 where
   IntoT : Into< AttributePropertySetter >,
 {
@@ -869,14 +883,14 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyHint, IntoT > for AttributeSubformEntrySetter
+impl< IntoT > Assign< AttributePropertyDebug, IntoT > for AttributeSubformEntrySetter
 where
-  IntoT : Into< AttributePropertyHint >,
+  IntoT : Into< AttributePropertyDebug >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.hint = component.into();
+    self.debug = component.into();
   }
 }
 
@@ -893,7 +907,7 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
         "Known entries of attribute ", AttributeSubformEntrySetter::KEYWORD, " are : ",
         AttributePropertyName::KEYWORD,
         ", ", AttributePropertySetter::KEYWORD,
-        ", ", AttributePropertyHint::KEYWORD,
+        ", ", AttributePropertyDebug::KEYWORD,
         ".",
       );
       syn_err!
@@ -913,13 +927,11 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
-
-        input.parse::< syn::Token![=] >()?;
         match ident.to_string().as_str()
         {
           AttributePropertyName::KEYWORD => result.assign( AttributePropertyName::parse( input )? ),
           AttributePropertySetter::KEYWORD => result.assign( AttributePropertySetter::parse( input )? ),
-          AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
+          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::from( true ) ),
           _ => return Err( error( &ident ) ),
         }
       }
@@ -946,76 +958,76 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
 /// Marker type for attribute property to specify whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyHintMarker;
+pub struct DebugMarker;
 
 /// Specifies whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-impl AttributePropertyComponent for AttributePropertyHintMarker
+impl AttributePropertyComponent for DebugMarker
 {
-  const KEYWORD : &'static str = "hint";
+  const KEYWORD : &'static str = "debug";
 }
 
 /// Specifies whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-pub type AttributePropertyHint = AttributePropertyBoolean< AttributePropertyHintMarker >;
+pub type AttributePropertyDebug = AttributePropertyOptionalSingletone< DebugMarker >;
 
 // =
 
 /// Disable generation of setter.
 /// Attributes still might generate some helper methods to reuse by custom setter.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertySetterMarker;
+pub struct SetterMarker;
 
-impl AttributePropertyComponent for AttributePropertySetterMarker
+impl AttributePropertyComponent for SetterMarker
 {
   const KEYWORD : &'static str = "setter";
 }
 
 /// Disable generation of setter.
 /// Attributes still might generate some helper methods to reuse by custom setter.
-pub type AttributePropertySetter = AttributePropertyOptionalBoolean< AttributePropertySetterMarker >;
+pub type AttributePropertySetter = AttributePropertyOptionalBoolean< SetterMarker >;
 
 // =
 
 /// Marker type for attribute property of optional identifier that names the setter. It is parsed from inputs
 /// like `name = my_field`.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyNameMarker;
+pub struct NameMarker;
 
-impl AttributePropertyComponent for AttributePropertyNameMarker
+impl AttributePropertyComponent for NameMarker
 {
   const KEYWORD : &'static str = "name";
 }
 
 /// An optional identifier that names the setter. It is parsed from inputs
 /// like `name = my_field`.
-pub type AttributePropertyName = AttributePropertyOptionalSyn< syn::Ident, AttributePropertyNameMarker >;
+pub type AttributePropertyName = AttributePropertyOptionalSyn< syn::Ident, NameMarker >;
 
 // =
 
 /// Marker type for default value to use for a field.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyDefaultMarker;
+pub struct DefaultMarker;
 
-impl AttributePropertyComponent for AttributePropertyDefaultMarker
+impl AttributePropertyComponent for DefaultMarker
 {
   const KEYWORD : &'static str = "default";
 }
 
 /// An optional identifier that names the setter. It is parsed from inputs
 /// like `name = my_field`.
-pub type AttributePropertyDefault = AttributePropertyOptionalSyn< syn::Expr, AttributePropertyDefaultMarker >;
+pub type AttributePropertyDefault = AttributePropertyOptionalSyn< syn::Expr, DefaultMarker >;
 
 // =
 
 /// Marker type for definition of the collection former to use, e.g., `former::VectorFormer`.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyDefinitionMarker;
+pub struct DefinitionMarker;
 
-impl AttributePropertyComponent for AttributePropertyDefinitionMarker
+impl AttributePropertyComponent for DefinitionMarker
 {
   const KEYWORD : &'static str = "definition";
 }
 
 /// Definition of the collection former to use, e.g., `former::VectorFormer`.
-pub type AttributePropertyDefinition = AttributePropertyOptionalSyn< syn::Type, AttributePropertyDefinitionMarker >;
+pub type AttributePropertyDefinition = AttributePropertyOptionalSyn< syn::Type, DefinitionMarker >;

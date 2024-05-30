@@ -539,8 +539,8 @@ But it's also possible to completely override setter and write its own from scra
   #[ derive( Debug, Former ) ]
   pub struct StructWithCustomSetters
   {
-    // Use `hint = true` to gennerate sketch of setter.
-    #[ scalar( setter = false, hint = false ) ]
+    // Use `debug` to gennerate sketch of setter.
+    #[ scalar( setter = false ) ]
     word : String,
   }
 
@@ -812,8 +812,8 @@ The `child` function within `ParentFormer` is a custom subform setter that plays
   // #[ debug ]
   pub struct Parent
   {
-    // Use `hint = true` to gennerate sketch of setter.
-    #[ scalar( setter = false, hint = false ) ]
+    // Use `debug` to gennerate sketch of setter.
+    #[ scalar( setter = false ) ]
     children : HashMap< String, Child >,
   }
 
@@ -907,7 +907,7 @@ their own formers, allowing for detailed configuration within a nested builder p
   {
     // The `subform_scalar` attribute is used to specify that the 'child' field has its own former
     // and can be individually configured via a subform setter. This is not a collection but a single scalar entity.
-    #[ subform_scalar( setter = false, hint = false ) ]
+    #[ subform_scalar( setter = false ) ]
     child : Child,
   }
 
@@ -974,8 +974,8 @@ The `child` function within `ParentFormer` is a custom subform setter that plays
   // #[ debug ]
   pub struct Parent
   {
-    // Use `hint = true` to gennerate sketch of setter.
-    #[ scalar( setter = false, hint = false ) ]
+    // Use `debug` to gennerate sketch of setter.
+    #[ scalar( setter = false ) ]
     children : HashMap< String, Child >,
   }
 
@@ -1055,8 +1055,8 @@ The `child` function within `ParentFormer` is a custom subform setter that plays
   // #[ debug ]
   pub struct Parent
   {
-    // Use `hint = true` to gennerate sketch of setter.
-    #[ subform_entry( setter = false, hint = false ) ]
+    // Use `debug` to gennerate sketch of setter.
+    #[ subform_entry( setter = false ) ]
     child : HashMap< String, Child >,
   }
 
@@ -1195,7 +1195,7 @@ held within the storage.
 
   #[ derive( Debug, PartialEq, Former ) ]
   #[ storage_fields( a : i32, b : Option< String > ) ]
-  #[ mutator( custom = true ) ]
+  #[ mutator( custom ) ]
   pub struct Struct1
   {
     c : String,

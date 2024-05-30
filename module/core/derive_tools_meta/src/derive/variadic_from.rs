@@ -18,7 +18,6 @@ pub fn variadic_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::
   let len = parsed.fields.len();
   let from_trait = format_ident!( "From{len}",  );
   let from_method = format_ident!( "from{len}" );
-  // xxx : test for zero fields
 
   let
   (

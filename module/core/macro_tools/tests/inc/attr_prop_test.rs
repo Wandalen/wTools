@@ -2,7 +2,7 @@ use super::*;
 use quote::ToTokens;
 
 #[ test ]
-fn test_attribute_property_boolean()
+fn attr_prop_test()
 {
 
   #[ derive( Debug, Default, Clone, Copy ) ]
@@ -46,7 +46,6 @@ fn test_attribute_property_boolean()
         if lookahead.peek( syn::Ident )
         {
           let ident : syn::Ident = input.parse()?;
-          input.parse::< syn::Token![=] >()?;
           match ident.to_string().as_str()
           {
             DebugMarker::KEYWORD => debug = input.parse()?,
@@ -70,7 +69,7 @@ fn test_attribute_property_boolean()
     }
   }
 
-  let input : syn::Attribute = syn::parse_quote!( #[ attribute( enabled = true, debug = false ) ] );
+  let input : syn::Attribute = syn::parse_quote!( #[ attribute( enabled = true ) ] );
   let meta = match input.meta
   {
     syn::Meta::List( meta_list ) => meta_list,
@@ -88,7 +87,7 @@ fn test_attribute_property_boolean()
   let attr : AttributePropertyBoolean< DebugMarker > = false.into();
   assert_eq!( attr.internal(), false );
 
-  let input : syn::Attribute = syn::parse_quote!( #[ attribute( enabled = true, debug = false ) ] );
+  let input : syn::Attribute = syn::parse_quote!( #[ attribute( enabled = true ) ] );
   let meta = match input.meta
   {
     syn::Meta::List( meta_list ) => meta_list,
@@ -99,4 +98,16 @@ fn test_attribute_property_boolean()
   let parsed : MyAttributes = syn::parse2( nested_meta_stream ).unwrap();
   assert_eq!( parsed.enabled.internal(), true );
   assert_eq!( parsed.debug.internal(), false );
+
+}
+
+#[ test ]
+fn attribute_property_enabled()
+{
+  // Test default value
+  let attr : AttributePropertyOptionalSingletone = Default::default();
+  assert_eq!( attr.internal(), None );
+  assert_eq!( attr.value( true ), true );
+  assert_eq!( attr.value( false ), false );
+
 }

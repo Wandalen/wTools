@@ -8,7 +8,7 @@
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_former" ) ]
 mod axiomatic;
-/// Forming process.
+/// Definition of former.
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_former" ) ]
 mod definition;

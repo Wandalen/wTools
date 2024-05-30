@@ -1,22 +1,23 @@
+//!
 //! Attributes of the whole item.
+//!
 
 use super::*;
 
 use macro_tools::
 {
-  attr,
   Result,
   AttributeComponent,
   AttributePropertyComponent,
-  AttributePropertyBoolean,
+  AttributePropertyOptionalSingletone,
 };
 
-use former_types::{ ComponentAssign };
+use former_types::{ Assign, OptionExt };
 
 /// Represents the attributes of a struct, including storage fields, mutator, and perform attributes.
 
 #[ derive( Debug, Default ) ]
-pub struct StructAttributes
+pub struct ItemAttributes
 {
   /// Optional attribute for storage-specific fields.
   /// This field is used to specify fields that should be part of the storage but not the final formed structure.
@@ -31,7 +32,7 @@ pub struct StructAttributes
   pub perform : Option< AttributePerform >,
 }
 
-impl StructAttributes
+impl ItemAttributes
 {
 
   pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
@@ -63,10 +64,11 @@ impl StructAttributes
       let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
       let key_str = format!( "{}", key_ident );
 
-      if attr::is_standard( &key_str )
-      {
-        continue;
-      }
+      // attributes does not have to be known
+      // if attr::is_standard( &key_str )
+      // {
+      //   continue;
+      // }
 
       match key_str.as_ref()
       {
@@ -74,56 +76,14 @@ impl StructAttributes
         AttributeMutator::KEYWORD => result.assign( AttributeMutator::from_meta( attr )? ),
         AttributePerform::KEYWORD => result.assign( AttributePerform::from_meta( attr )? ),
         "debug" => {}
-        _ => return Err( error( attr ) ),
+        _ => {},
+        // _ => return Err( error( attr ) ),
+        // attributes does not have to be known
       }
     }
 
     Ok( result )
   }
-
-//   pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
-//   {
-//     let mut storage_fields = None;
-//     let mut mutator : AttributeMutator = Default::default();
-//     let mut perform = None;
-//
-//     for attr in attrs
-//     {
-//       let key_ident = attr.path().get_ident()
-//       .ok_or_else( || syn_err!( attr, "Expects an attribute of format #[ attribute( key1 = val1, key2 = val2 ) ], but got:\n  {}", qt!{ #attr } ) )?;
-//       let key_str = format!( "{}", key_ident );
-//
-//       if attr::is_standard( &key_str )
-//       {
-//         continue;
-//       }
-//
-//       match key_str.as_ref()
-//       {
-//         AttributeStorageFields::KEYWORD =>
-//         {
-//           storage_fields.replace( AttributeStorageFields::from_meta( attr )? );
-//         }
-//         AttributeMutator::KEYWORD =>
-//         {
-//           mutator = AttributeMutator::from_meta( attr )?;
-//         }
-//         AttributePerform::KEYWORD =>
-//         {
-//           perform.replace( AttributePerform::from_meta( attr )? );
-//         }
-//         "debug" =>
-//         {
-//         }
-//         _ =>
-//         {
-//           return Err( syn_err!( attr, "Known structure attirbutes are : `storage_fields`, `mutator`, `perform`, `debug`.\nUnknown structure attribute : {}", qt!{ #attr } ) );
-//         }
-//       }
-//     }
-//
-//     Ok( StructAttributes { perform, storage_fields, mutator } )
-//   }
 
   ///
   /// Generate parts, used for generating `perform()`` method.
@@ -238,14 +198,27 @@ impl AttributeComponent for AttributeStorageFields
 
 }
 
-impl< IntoT > ComponentAssign< AttributeStorageFields, IntoT > for StructAttributes
+impl< IntoT > Assign< AttributeStorageFields, IntoT > for ItemAttributes
 where
   IntoT : Into< AttributeStorageFields >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.storage_fields = Some( component.into() );
+    let component = component.into();
+    self.storage_fields.option_assign( component );
+  }
+}
+
+impl< IntoT > Assign< AttributeStorageFields, IntoT > for AttributeStorageFields
+where
+  IntoT : Into< AttributeStorageFields >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.fields = component.fields;
   }
 }
 
@@ -272,7 +245,7 @@ impl syn::parse::Parse for AttributeStorageFields
 ///
 /// ## Example of code
 /// ```ignore
-/// custom = true, hint = true
+/// custom, debug
 /// ```
 
 #[ derive( Debug, Default ) ]
@@ -283,7 +256,7 @@ pub struct AttributeMutator
   pub custom : AttributePropertyCustom,
   /// Specifies whether to provide a sketch of the mutator as a hint.
   /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : AttributePropertyHint,
+  pub debug : AttributePropertyDebug,
 }
 
 impl AttributeComponent for AttributeMutator
@@ -302,35 +275,49 @@ impl AttributeComponent for AttributeMutator
       {
         return Ok( Default::default() )
       },
-      _ => return_syn_err!( attr, "Expects an attribute of format `#[ mutator( custom = true, hint = true ) ]`. \nGot: {}", qt!{ #attr } ),
+      _ => return_syn_err!( attr, "Expects an attribute of format `#[ mutator( custom ) ]`. \nGot: {}", qt!{ #attr } ),
     }
   }
 
 }
 
-impl< IntoT > ComponentAssign< AttributeMutator, IntoT > for StructAttributes
+impl< IntoT > Assign< AttributeMutator, IntoT > for ItemAttributes
 where
   IntoT : Into< AttributeMutator >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.mutator = component.into();
+    let component = component.into();
+    self.mutator.assign( component );
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyHint, IntoT > for AttributeMutator
+impl< IntoT > Assign< AttributeMutator, IntoT > for AttributeMutator
 where
-  IntoT : Into< AttributePropertyHint >,
+  IntoT : Into< AttributeMutator >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.hint = component.into();
+    let component = component.into();
+    self.custom.assign( component.custom );
+    self.debug.assign( component.debug );
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyCustom, IntoT > for AttributeMutator
+impl< IntoT > Assign< AttributePropertyDebug, IntoT > for AttributeMutator
+where
+  IntoT : Into< AttributePropertyDebug >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    self.debug = component.into();
+  }
+}
+
+impl< IntoT > Assign< AttributePropertyCustom, IntoT > for AttributeMutator
 where
   IntoT : Into< AttributePropertyCustom >,
 {
@@ -353,13 +340,13 @@ impl syn::parse::Parse for AttributeMutator
       (
         "Known entries of attribute ", AttributeMutator::KEYWORD, " are : ",
         AttributePropertyCustom::KEYWORD,
-        ", ", AttributePropertyHint::KEYWORD,
+        ", ", AttributePropertyDebug::KEYWORD,
         ".",
       );
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ mutator( custom = false, hint = false ) ]'
+        r#"Expects an attribute of format '#[ mutator( custom ) ]'
   {known}
   But got: '{}'
 "#,
@@ -373,12 +360,10 @@ impl syn::parse::Parse for AttributeMutator
       if lookahead.peek( syn::Ident )
       {
         let ident : syn::Ident = input.parse()?;
-
-        input.parse::< syn::Token![=] >()?;
         match ident.to_string().as_str()
         {
-          AttributePropertyCustom::KEYWORD => result.assign( AttributePropertyCustom::parse( input )? ),
-          AttributePropertyHint::KEYWORD => result.assign( AttributePropertyHint::parse( input )? ),
+          AttributePropertyCustom::KEYWORD => result.assign( AttributePropertyCustom::from( true ) ),
+          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::from( true ) ),
           _ => return Err( error( &ident ) ),
         }
       }
@@ -441,14 +426,27 @@ impl syn::parse::Parse for AttributePerform
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePerform, IntoT > for StructAttributes
+impl< IntoT > Assign< AttributePerform, IntoT > for ItemAttributes
 where
   IntoT : Into< AttributePerform >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.perform = Some( component.into() );
+    let component = component.into();
+    self.perform.option_assign( component );
+  }
+}
+
+impl< IntoT > Assign< AttributePerform, IntoT > for AttributePerform
+where
+  IntoT : Into< AttributePerform >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.signature = component.signature;
   }
 }
 
@@ -457,29 +455,29 @@ where
 /// Marker type for attribute property to specify whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyHintMarker;
+pub struct DebugMarker;
 
-impl AttributePropertyComponent for AttributePropertyHintMarker
+impl AttributePropertyComponent for DebugMarker
 {
-  const KEYWORD : &'static str = "hint";
+  const KEYWORD : &'static str = "debug";
 }
 
 /// Specifies whether to provide a sketch as a hint.
 /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-pub type AttributePropertyHint = AttributePropertyBoolean< AttributePropertyHintMarker >;
+pub type AttributePropertyDebug = AttributePropertyOptionalSingletone< DebugMarker >;
 
 // =
 
 /// Marker type for attribute property to indicates whether a custom code should be generated.
 /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyCustomMarker;
+pub struct CustomMarker;
 
-impl AttributePropertyComponent for AttributePropertyCustomMarker
+impl AttributePropertyComponent for CustomMarker
 {
   const KEYWORD : &'static str = "custom";
 }
 
 /// Indicates whether a custom code should be generated.
 /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
-pub type AttributePropertyCustom = AttributePropertyBoolean< AttributePropertyCustomMarker >;
+pub type AttributePropertyCustom = AttributePropertyOptionalSingletone< CustomMarker >;

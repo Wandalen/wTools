@@ -3,7 +3,7 @@ use super::*;
 
 #[ derive( Debug, PartialEq, the_module::Former ) ]
 #[ storage_fields( a : i32, b : Option< String > ) ]
-#[ mutator( custom = true ) ]
+#[ mutator( custom ) ]
 // #[ debug ]
 // #[ derive( Debug, PartialEq ) ]
 pub struct Struct1

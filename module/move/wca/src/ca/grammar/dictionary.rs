@@ -26,7 +26,7 @@ pub( crate ) mod private
 
   impl std::borrow::Borrow< String > for CommandName
   {
-    fn borrow( &self ) -> &String 
+    fn borrow( &self ) -> &String
     {
       &self.name
     }
@@ -40,8 +40,8 @@ pub( crate ) mod private
       {
         Ordering::Equal
       }
-      else 
-      { 
+      else
+      {
         self.id.cmp( &other.id )
       }
     }
@@ -69,9 +69,9 @@ pub( crate ) mod private
   #[ derive( Debug, Default, Former, Clone ) ]
   pub struct Dictionary
   {
-    #[ scalar( setter = false, hint = false ) ]
+    #[ scalar( setter = false ) ]
     pub( crate ) commands : BTreeMap< CommandName, Command >,
-    #[ scalar( setter = false, hint = false ) ]
+    #[ scalar( setter = false ) ]
     dictionary_last_id : usize,
     pub( crate ) order : Order,
   }
@@ -122,7 +122,7 @@ pub( crate ) mod private
     {
       self.commands.iter().find( | ( k, _ ) | k.name == name.to_string() ).map( | ( _,  v ) | v )
     }
-    
+
     /// Find commands that match a given name part.
     ///
     /// This function accepts a `name_part` parameter which is of generic type `NamePart`.

@@ -1,7 +1,7 @@
 pub( crate ) mod private
 {
   use crate::*;
-  
+
   use std::collections::{ BTreeMap, HashMap };
   use former::{ Former, StoragePreform };
   use wtools::Itertools;
@@ -113,18 +113,18 @@ pub( crate ) mod private
     #[ former( default = Routine::from( Handler::from( || { panic!( "No routine available: A handler function for the command is missing" ) } ) ) ) ]
     pub routine : Routine,
   }
-  
+
   impl Command
   {
     pub( crate ) fn properties( &self, order : Order ) -> Vec< ( &String, &ValueDescription ) >
     {
-      match order 
+      match order
       {
-        Order::Nature => 
+        Order::Nature =>
         {
           self.properties.iter().map( | ( key, value ) | ( &key.name, value ) ).collect()
         }
-        Order::Lexicography => 
+        Order::Lexicography =>
         {
           self.properties.iter().map( | ( key, value ) | ( &key.name, value ) ).sorted_by_key( | ( k, _ ) | *k ).collect()
         }

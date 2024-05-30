@@ -1,10 +1,10 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
-use former::ComponentAssign;
+use former::Assign;
 
 
-#[ derive( Default, PartialEq, Debug, former::ComponentAssign ) ]
+#[ derive( Default, PartialEq, Debug, former::Assign ) ]
 // #[ debug ]
 struct Person
 {

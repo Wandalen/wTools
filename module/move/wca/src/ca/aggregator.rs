@@ -26,7 +26,7 @@ pub( crate ) mod private
     for_lib::*,
   };
   use wtools::Itertools;
-  
+
   /// Order of commands and properties.
   #[ derive( Debug, Default, Clone, Copy, Eq, PartialOrd, PartialEq ) ]
   pub enum Order
@@ -112,7 +112,7 @@ pub( crate ) mod private
   #[ derive( Debug ) ]
   #[ derive( former::Former ) ]
   #[ storage_fields( help_generator : HelpGeneratorFn, help_variants : HashSet< HelpVariants >, order : Order ) ]
-  #[ mutator( custom = true ) ]
+  #[ mutator( custom ) ]
   // #[ debug ]
   pub struct CommandsAggregator
   {
@@ -122,7 +122,7 @@ pub( crate ) mod private
     #[ former( default = Parser ) ]
     parser : Parser,
 
-    #[ scalar( setter = false, hint = false ) ]
+    #[ scalar( setter = false ) ]
     #[ former( default = Executor::former().form() ) ]
     executor : Executor,
 
