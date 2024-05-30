@@ -11,7 +11,7 @@ use macro_tools::
   AttributePropertyOptionalSyn,
   AttributePropertyOptionalSingletone,
 };
-use former_types::{ Assign };
+use former_types::{ Assign, OptionExt };
 
 ///
 /// Attributes of a field.
@@ -161,9 +161,7 @@ where
   fn assign( &mut self, component : IntoT )
   {
     let component : AttributeConfig = component.into();
-    component.assign_to_option( &mut self.config );
-    // self.config.assign( component.into() );
-    // xxx2 : continue
+    self.config.option_assign( component );
   }
 }
 
