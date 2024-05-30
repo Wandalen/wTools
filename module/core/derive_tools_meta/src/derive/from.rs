@@ -702,9 +702,23 @@ where
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
+    self.config.assign( component.into() );
+    // let component = component.into();
+    // self.config.enabled.assign( component.enabled );
+    // self.config.debug.assign( component.debug );
+  }
+}
+
+impl< IntoT > ComponentAssign< FieldAttributeConfig, IntoT > for FieldAttributeConfig
+where
+  IntoT : Into< FieldAttributeConfig >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
     let component = component.into();
-    self.config.enabled.assign( component.enabled );
-    self.config.debug.assign( component.debug );
+    self.enabled.assign( component.enabled );
+    self.debug.assign( component.debug );
   }
 }
 
