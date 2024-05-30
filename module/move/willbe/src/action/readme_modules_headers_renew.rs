@@ -7,7 +7,12 @@ mod private
   use wtools::error::
   {
     err,
-    for_app::{ Result, Error },
+    for_app::
+    { 
+      Result, 
+      Error,
+      Context,
+    },
   };
   use std::borrow::Cow;
   use std::fs::{ OpenOptions };
@@ -73,7 +78,7 @@ mod private
       let repo_url = url::extract_repo_url( &self.repository_url ).and_then( | r | url::git_info_extract( &r ).ok() ).ok_or_else::< Error, _ >( || err!( "Fail to parse repository url" ) )?;
       let example = if let Some( name ) = find_example_file( self.module_path.as_path(), &self.module_name )
       {
-        // qqq : for Bohdan : Hardcoded Strings, would be better to use `PathBuf` to avoid separator mismatch on Windows and Unix
+        // qqq : for Petro : Hardcoded Strings, would be better to use `PathBuf` to avoid separator mismatch on Windows and Unix
         let p = name.strip_prefix( workspace_path ).unwrap().get( 1.. ).unwrap().replace( "\\","%2F" );
         let name = name.replace( "/", "\\" );
         let name = name.split( "\\" ).last().unwrap().split( "." ).next().unwrap();
@@ -150,7 +155,7 @@ mod private
       .map( | m | m.as_str() )
       .unwrap_or_default();
 
-      _ = query::parse( raw_params )?;
+      _ = query::parse( raw_params ).context( "Fail to parse raw params." );
 
       let content = header_content_generate( &content, header, raw_params, cargo_metadata.workspace_root()?.to_str().unwrap() )?;
 
