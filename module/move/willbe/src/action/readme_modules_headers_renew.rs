@@ -61,9 +61,6 @@ mod private
         if let Some( file_path ) = path.to_str()
         {
           writeln!( f, "{file_path}" )?;
-        }
-        else
-        {
           count -= 1;
         }
       }

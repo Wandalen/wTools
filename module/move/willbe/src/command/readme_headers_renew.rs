@@ -27,7 +27,7 @@ mod private
           writeln!
           ( 
             f, 
-            "Main header renew report : {}\nError : {:?}\nModules headers renew report : {}\nError : {:?}",
+            "Main header renew report : \n{}\nError : \n{:?}\nModules headers renew report : \n{}\nError : \n{:?}",
             self.main_header_renew_report, main, self.modules_headers_renew_report, modules 
           )?;
         }
@@ -36,7 +36,7 @@ mod private
           writeln!
           (
             f,
-            "Main header renew report : {}\nError : {:?}\nModules headers renew report : {}",
+            "Main header renew report : \n{}\nError : \n{:?}\nModules headers renew report : \n{}",
             self.main_header_renew_report, main, self.modules_headers_renew_report
           )?;
         }
@@ -45,7 +45,7 @@ mod private
           writeln!
           (
             f,
-            "Main header renew report : {}\nModules headers renew report : {}Error : {:?}\n",
+            "Main header renew report : \n{}\nModules headers renew report : \n{}\nError : \n{:?}\n",
             self.main_header_renew_report, self.modules_headers_renew_report, modules
           )?;
         }
@@ -54,7 +54,7 @@ mod private
           writeln!
           (
             f,
-            "Main header renew report : {}\nModules headers renew report : {}",
+            "Main header renew report : \n{}\n\nModules headers renew report : \n{}",
             self.main_header_renew_report, self.modules_headers_renew_report
           )?;
         }
@@ -65,7 +65,7 @@ mod private
   
 
   /// Aggregates two commands: `generate_modules_headers` & `generate_main_header`
-  pub fn readme_headers_renew( ( _, _ ) : ( wca::Args, wca::Props ) ) -> Result< () >
+  pub fn readme_headers_renew() -> Result< () >
   {
     let mut report = ReadmeHeadersRenewReport::default();
     let absolute_path = AbsolutePath::try_from( std::env::current_dir()? )?;
@@ -105,6 +105,7 @@ mod private
     }
     else
     {
+      println!( "{report}" );
       Ok( () )
     }
   }
