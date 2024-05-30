@@ -38,6 +38,7 @@ mod former_tests
   mod attribute_setter;
   mod attribute_alias;
   mod attribute_feature;
+  mod attribute_multiple;
 
   // = name collision
 

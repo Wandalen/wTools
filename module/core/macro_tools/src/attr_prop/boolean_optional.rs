@@ -42,7 +42,7 @@ where
     let component = component.into();
     match component.0
     {
-      Some( val ) => { self.0.get_or_insert( val ); },
+      Some( val ) => { self.0 = Some( val ); },
       None => {},
     }
   }

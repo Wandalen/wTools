@@ -184,7 +184,8 @@ where
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.default = component.into();
+    // panic!( "" );
+    self.default.assign( component.into() );
   }
 }
 
