@@ -145,15 +145,20 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::
   {
+
     singletone::AttributePropertySingletone,
     singletone::AttributePropertySingletoneMarker,
     singletone_optional::AttributePropertyOptionalSingletone,
     singletone_optional::AttributePropertyOptionalSingletoneMarker,
-
     boolean::AttributePropertyBoolean,
+    boolean::AttributePropertyBooleanMarker,
     boolean_optional::AttributePropertyOptionalBoolean,
+    boolean_optional::AttributePropertyOptionalBooleanMarker,
     syn::AttributePropertySyn,
+    syn::AttributePropertySynMarker,
     syn_optional::AttributePropertyOptionalSyn,
+    syn_optional::AttributePropertyOptionalSynMarker,
+
   };
 }
 

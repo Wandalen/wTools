@@ -6,6 +6,11 @@
 use crate::*;
 use former_types::Assign;
 
+/// Default marker for `AttributePropertyBoolean`.
+/// Used if no marker is defined as parameter.
+#[ derive( Debug, Default, Clone, Copy ) ]
+pub struct AttributePropertyBooleanMarker;
+
 /// A generic boolean attribute property.
 /// Defaults to `false`.
 ///
@@ -104,7 +109,7 @@ use former_types::Assign;
 /// which is then parsed into the `MyAttributes` struct. The resulting `MyAttributes` instance is printed to the console.
 
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyBoolean< Marker >( bool, ::core::marker::PhantomData< Marker > );
+pub struct AttributePropertyBoolean< Marker = AttributePropertyBooleanMarker >( bool, ::core::marker::PhantomData< Marker > );
 
 impl< Marker > AttributePropertyBoolean< Marker >
 {

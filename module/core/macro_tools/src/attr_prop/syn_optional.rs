@@ -5,12 +5,17 @@
 use crate::*;
 use former_types::Assign;
 
+/// Default marker for `AttributePropertyOptionalSyn`.
+/// Used if no marker is defined as parameter.
+#[ derive( Debug, Default, Clone, Copy ) ]
+pub struct AttributePropertyOptionalSynMarker;
+
 ///
 /// Property of an attribute which simply wraps one of the standard `syn` types and keeps it optional.
 ///
 
 #[ derive( Debug, Clone ) ]
-pub struct AttributePropertyOptionalSyn< T, Marker >( Option< T >, ::core::marker::PhantomData< Marker > )
+pub struct AttributePropertyOptionalSyn< T, Marker = AttributePropertyOptionalSynMarker >( Option< T >, ::core::marker::PhantomData< Marker > )
 where
   T : syn::parse::Parse + quote::ToTokens;
 

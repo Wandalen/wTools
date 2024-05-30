@@ -6,10 +6,15 @@
 use crate::*;
 use former_types::Assign;
 
+/// Default marker for `AttributePropertyOptionalSingletone`.
+/// Used if no marker is defined as parameter.
+#[ derive( Debug, Default, Clone, Copy ) ]
+pub struct AttributePropertyOptionalBooleanMarker;
+
 /// A generic optional boolean attribute property: `Option< bool >`.
 /// Defaults to `false`.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct AttributePropertyOptionalBoolean< Marker >( Option< bool >, ::core::marker::PhantomData< Marker > );
+pub struct AttributePropertyOptionalBoolean< Marker = AttributePropertyOptionalBooleanMarker >( Option< bool >, ::core::marker::PhantomData< Marker > );
 
 impl< Marker > AttributePropertyOptionalBoolean< Marker >
 {
