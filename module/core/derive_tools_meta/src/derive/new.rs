@@ -50,7 +50,7 @@ pub fn new( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
           &generics_where,
         ),
         ( 1, Some( mut field_names ) ) =>
-        generate_from_single_field_named
+        generate_single_field_named
         (
           item_name,
           &generics_impl,
@@ -60,7 +60,7 @@ pub fn new( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
           &field_types.next().unwrap(),
         ),
         ( 1, None ) =>
-        generate_from_single_field
+        generate_single_field
         (
           item_name,
           &generics_impl,
@@ -69,7 +69,7 @@ pub fn new( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
           &field_types.next().unwrap(),
         ),
         ( _, Some( field_names ) ) =>
-        generate_from_multiple_fields_named
+        generate_multiple_fields_named
         (
           item_name,
           &generics_impl,
@@ -79,7 +79,7 @@ pub fn new( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
           field_types,
         ),
         ( _, None ) =>
-        generate_from_multiple_fields
+        generate_multiple_fields
         (
           item_name,
           &generics_impl,
@@ -170,7 +170,7 @@ fn generate_unit
 }
 
 // qqq  : document, add example of generated code
-fn generate_from_single_field_named
+fn generate_single_field_named
 (
   item_name : &syn::Ident,
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
@@ -201,7 +201,7 @@ fn generate_from_single_field_named
 }
 
 // qqq  : document, add example of generated code
-fn generate_from_single_field
+fn generate_single_field
 (
   item_name : &syn::Ident,
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
@@ -232,7 +232,7 @@ fn generate_from_single_field
 }
 
 // qqq : document, add example of generated code
-fn generate_from_multiple_fields_named< 'a >
+fn generate_multiple_fields_named< 'a >
 (
   item_name : &syn::Ident,
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
@@ -274,7 +274,7 @@ fn generate_from_multiple_fields_named< 'a >
 }
 
 // qqq  : document, add example of generated code
-fn generate_from_multiple_fields< 'a >
+fn generate_multiple_fields< 'a >
 (
   item_name : &syn::Ident,
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
@@ -352,7 +352,7 @@ fn variant_generate
   {
     let src_i = ( 0..fields.len() ).map( | e |
     {
-      let i = syn::Index::new( e );
+      let i = syn::Index::from( e );
       qt!{ src.#i, }
     });
     (
