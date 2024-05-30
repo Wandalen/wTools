@@ -317,7 +317,7 @@ fn main()
     where Src : ::core::convert::Into< i32 >,
     {
       debug_assert!(self.storage.age.is_none());
-      self.storage.age = ::core::option::Option::Some(::core::convert::Into::into(src));
+      self.storage.age = ::core::option::Option::Some(::core::convert::Into::into( src ));
       self
     }
 
@@ -326,7 +326,7 @@ fn main()
     where Src : ::core::convert::Into< String >,
     {
       debug_assert!(self.storage.username.is_none());
-      self.storage.username = ::core::option::Option::Some(::core::convert::Into::into(src));
+      self.storage.username = ::core::option::Option::Some(::core::convert::Into::into( src ));
       self
     }
 
@@ -335,7 +335,7 @@ fn main()
     where Src : ::core::convert::Into< String >,
     {
       debug_assert!(self.storage.bio_optional.is_none());
-      self.storage.bio_optional = ::core::option::Option::Some(::core::convert::Into::into(src));
+      self.storage.bio_optional = ::core::option::Option::Some(::core::convert::Into::into( src ));
       self
     }
   }

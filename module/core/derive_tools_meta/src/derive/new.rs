@@ -18,9 +18,10 @@ use item_attributes::*;
 
 //
 
+// xxx : qqq : implement
 pub fn new( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
-  use macro_tools::quote::ToTokens;
+  // use macro_tools::quote::ToTokens;
 
   let original_input = input.clone();
   let parsed = syn::parse::< StructLike >( input )?;
@@ -93,36 +94,18 @@ pub fn new( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
     StructLike::Enum( ref item ) =>
     {
 
-      let mut map = std::collections::HashMap::new();
-      item.variants.iter().for_each( | variant |
-      {
-        map
-        .entry( variant.fields.to_token_stream().to_string() )
-        .and_modify( | e | *e += 1 )
-        .or_insert( 1 );
-      });
-
       let variants_result : Result< Vec< proc_macro2::TokenStream > > = item.variants.iter().map( | variant |
       {
-        // don't do automatic off
-        // if map[ & variant.fields.to_token_stream().to_string() ] <= 1
-        if true
-        {
-          variant_generate
-          (
-            item_name,
-            &item_attrs,
-            &generics_impl,
-            &generics_ty,
-            &generics_where,
-            variant,
-            &original_input,
-          )
-        }
-        else
-        {
-          Ok( qt!{} )
-        }
+        variant_generate
+        (
+          item_name,
+          &item_attrs,
+          &generics_impl,
+          &generics_ty,
+          &generics_where,
+          variant,
+          &original_input,
+        )
       }).collect();
 
       let variants = variants_result?;
@@ -136,14 +119,15 @@ pub fn new( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
 
   if has_debug
   {
-    let about = format!( "derive : From\nstructure : {item_name}" );
+    let about = format!( "derive : New\nstructure : {item_name}" );
     diag::report_print( about, &original_input, &result );
   }
 
   Ok( result )
 }
 
-// qqq  : document, add example of generated code
+// xxx : qqq : implement
+// qqq : document, add example of generated code
 fn generate_unit
 (
   item_name : &syn::Ident,
@@ -155,13 +139,13 @@ fn generate_unit
 {
   qt!
   {
-    // impl From< () > for UnitStruct
-    impl< #generics_impl > From< () > for #item_name< #generics_ty >
+    // impl UnitStruct
+    impl< #generics_impl > #item_name< #generics_ty >
     where
       #generics_where
     {
       #[ inline( always ) ]
-      fn new( src : () ) -> Self
+      fn new() -> Self
       {
         Self
       }
@@ -169,7 +153,8 @@ fn generate_unit
   }
 }
 
-// qqq  : document, add example of generated code
+// xxx : qqq : implement
+// qqq : document, add example of generated code
 fn generate_single_field_named
 (
   item_name : &syn::Ident,
@@ -184,14 +169,14 @@ fn generate_single_field_named
   qt!
   {
     #[ automatically_derived ]
-    // impl From < i32 > for MyStruct
-    impl< #generics_impl > From< #field_type > for #item_name< #generics_ty >
+    // impl MyStruct
+    impl< #generics_impl > #item_name< #generics_ty >
     where
       #generics_where
     {
       #[ inline( always ) ]
-      // fn new( src: i32 ) -> Self
-      fn new( src: #field_type ) -> Self
+      // fn new( src : i32 ) -> Self
+      fn new( src : #field_type ) -> Self
       {
         // Self { a: src }
         Self { #field_name: src }
@@ -200,7 +185,8 @@ fn generate_single_field_named
   }
 }
 
-// qqq  : document, add example of generated code
+// xxx : qqq : implement
+// qqq : document, add example of generated code
 fn generate_single_field
 (
   item_name : &syn::Ident,
@@ -215,22 +201,23 @@ fn generate_single_field
   qt!
   {
     #[automatically_derived]
-    // impl From< bool > for IsTransparent
-    impl< #generics_impl > From< #field_type > for #item_name< #generics_ty >
+    // impl IsTransparent
+    impl< #generics_impl > #item_name< #generics_ty >
     where
       #generics_where
     {
       #[ inline( always ) ]
-      // fn new( src: bool ) -> Self
-      fn new( src: #field_type ) -> Self
+      // fn new( src : bool ) -> Self
+      fn new( src : #field_type ) -> Self
       {
-        // Self(src)
-        Self(src)
+        // Self( src )
+        Self( src )
       }
     }
   }
 }
 
+// xxx : qqq : implement
 // qqq : document, add example of generated code
 fn generate_multiple_fields_named< 'a >
 (
@@ -256,16 +243,16 @@ fn generate_multiple_fields_named< 'a >
   let field_types : Vec< _ > = field_types.collect();
   qt!
   {
-    // impl From< (i32, bool) > for StructNamedFields
-    impl< #generics_impl > From< (# ( #field_types ),* ) > for #item_name< #generics_ty >
+    // impl StructNamedFields
+    impl< #generics_impl > #item_name< #generics_ty >
     where
       #generics_where
     {
       #[ inline( always ) ]
-      // fn new( src: (i32, bool) ) -> Self
+      // fn new( src : ( i32, bool ) ) -> Self
       fn new( src : ( #( #field_types ),* ) ) -> Self
       {
-        // StructNamedFields{ a: src.0, b: src.1 }
+        // StructNamedFields{ a : src.0, b : src.1 }
         #item_name { #(#params),* }
       }
     }
@@ -273,7 +260,8 @@ fn generate_multiple_fields_named< 'a >
 
 }
 
-// qqq  : document, add example of generated code
+// xxx : qqq : implement
+// qqq : document, add example of generated code
 fn generate_multiple_fields< 'a >
 (
   item_name : &syn::Ident,
@@ -297,13 +285,13 @@ fn generate_multiple_fields< 'a >
 
   qt!
   {
-    // impl From< (i32, bool) > for StructWithManyFields
-    impl< #generics_impl > From< (# ( #field_types ),* ) > for #item_name< #generics_ty >
+    // impl StructWithManyFields
+    impl< #generics_impl > #item_name< #generics_ty >
     where
       #generics_where
     {
       #[ inline( always ) ]
-      // fn new( src: (i32, bool) ) -> Self
+      // fn new( src : (i32, bool) ) -> Self
       fn new( src : ( #( #field_types ),* ) ) -> Self
       {
         // StructWithManyFields( src.0, src.1 )
@@ -313,7 +301,8 @@ fn generate_multiple_fields< 'a >
   }
 }
 
-// qqq  : document, add example of generated code
+// xxx : qqq : implement
+// qqq : document, add example of generated code
 fn variant_generate
 (
   item_name : &syn::Ident,
@@ -369,7 +358,7 @@ fn variant_generate
     (
       r#"
 #[ automatically_derived ]
-impl< {0} > From< {args} > for {item_name}< {1} >
+impl< {0} > {item_name}< {1} >
 where
   {2}
 {{
@@ -386,7 +375,7 @@ where
     );
     let about = format!
     (
-r#"derive : From
+r#"derive : New
 item : {item_name}
 field : {variant_name}"#,
     );
@@ -398,7 +387,7 @@ field : {variant_name}"#,
     qt!
     {
       #[ automatically_derived ]
-      impl< #generics_impl > From< #args > for #item_name< #generics_ty >
+      impl< #generics_impl > #item_name< #generics_ty >
       where
         #generics_where
       {

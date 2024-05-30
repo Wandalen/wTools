@@ -18,7 +18,7 @@ use item_attributes::*;
 
 pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
-  use macro_tools::quote::ToTokens;
+  // use macro_tools::quote::ToTokens;
 
   let original_input = input.clone();
   let parsed = syn::parse::< StructLike >( input )?;
@@ -91,14 +91,14 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
     StructLike::Enum( ref item ) =>
     {
 
-      let mut map = std::collections::HashMap::new();
-      item.variants.iter().for_each( | variant |
-      {
-        map
-        .entry( variant.fields.to_token_stream().to_string() )
-        .and_modify( | e | *e += 1 )
-        .or_insert( 1 );
-      });
+      // let mut map = std::collections::HashMap::new();
+      // item.variants.iter().for_each( | variant |
+      // {
+      //   map
+      //   .entry( variant.fields.to_token_stream().to_string() )
+      //   .and_modify( | e | *e += 1 )
+      //   .or_insert( 1 );
+      // });
 
       let variants_result : Result< Vec< proc_macro2::TokenStream > > = item.variants.iter().map( | variant |
       {
@@ -141,7 +141,7 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
   Ok( result )
 }
 
-// qqq  : document, add example of generated code
+// qqq : document, add example of generated code
 fn generate_unit
 (
   item_name : &syn::Ident,
@@ -167,7 +167,7 @@ fn generate_unit
   }
 }
 
-// qqq  : document, add example of generated code
+// qqq : document, add example of generated code
 fn generate_single_field_named
 (
   item_name : &syn::Ident,
@@ -188,8 +188,8 @@ fn generate_single_field_named
       #generics_where
     {
       #[ inline( always ) ]
-      // fn from( src: i32 ) -> Self
-      fn from( src: #field_type ) -> Self
+      // fn from( src : i32 ) -> Self
+      fn from( src : #field_type ) -> Self
       {
         // Self { a: src }
         Self { #field_name: src }
@@ -198,7 +198,7 @@ fn generate_single_field_named
   }
 }
 
-// qqq  : document, add example of generated code
+// qqq : document, add example of generated code
 fn generate_single_field
 (
   item_name : &syn::Ident,
@@ -219,11 +219,11 @@ fn generate_single_field
       #generics_where
     {
       #[ inline( always ) ]
-      // fn from( src: bool ) -> Self
-      fn from( src: #field_type ) -> Self
+      // fn from( src : bool ) -> Self
+      fn from( src : #field_type ) -> Self
       {
-        // Self(src)
-        Self(src)
+        // Self( src )
+        Self( src )
       }
     }
   }
@@ -260,7 +260,7 @@ fn generate_multiple_fields_named< 'a >
       #generics_where
     {
       #[ inline( always ) ]
-      // fn from( src: (i32, bool) ) -> Self
+      // fn from( src : (i32, bool) ) -> Self
       fn from( src : ( #( #field_types ),* ) ) -> Self
       {
         // StructNamedFields{ a: src.0, b: src.1 }
@@ -271,7 +271,7 @@ fn generate_multiple_fields_named< 'a >
 
 }
 
-// qqq  : document, add example of generated code
+// qqq : document, add example of generated code
 fn generate_multiple_fields< 'a >
 (
   item_name : &syn::Ident,
@@ -301,7 +301,7 @@ fn generate_multiple_fields< 'a >
       #generics_where
     {
       #[ inline( always ) ]
-      // fn from( src: (i32, bool) ) -> Self
+      // fn from( src : (i32, bool) ) -> Self
       fn from( src : ( #( #field_types ),* ) ) -> Self
       {
         // StructWithManyFields( src.0, src.1 )
@@ -311,7 +311,7 @@ fn generate_multiple_fields< 'a >
   }
 }
 
-// qqq  : document, add example of generated code
+// qqq : document, add example of generated code
 fn variant_generate
 (
   item_name : &syn::Ident,
