@@ -295,7 +295,22 @@ where
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.scalar = Some( component.into() );
+    let component = component.into();
+    self.scalar.option_assign( component );
+  }
+}
+
+impl< IntoT > Assign< AttributeScalarSetter, IntoT > for AttributeScalarSetter
+where
+  IntoT : Into< AttributeScalarSetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.name.assign( component.name );
+    self.setter.assign( component.setter );
+    self.debug.assign( component.debug );
   }
 }
 
@@ -455,7 +470,22 @@ where
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.subform_scalar = Some( component.into() );
+    let component = component.into();
+    self.subform_scalar.option_assign( component );
+  }
+}
+
+impl< IntoT > Assign< AttributeSubformScalarSetter, IntoT > for AttributeSubformScalarSetter
+where
+  IntoT : Into< AttributeSubformScalarSetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.name.assign( component.name );
+    self.setter.assign( component.setter );
+    self.debug.assign( component.debug );
   }
 }
 
@@ -617,7 +647,23 @@ where
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.subform_collection = Some( component.into() );
+    let component = component.into();
+    self.subform_collection.option_assign( component );
+  }
+}
+
+impl< IntoT > Assign< AttributeSubformCollectionSetter, IntoT > for AttributeSubformCollectionSetter
+where
+  IntoT : Into< AttributeSubformCollectionSetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.name.assign( component.name );
+    self.setter.assign( component.setter );
+    self.debug.assign( component.debug );
+    self.definition.assign( component.definition );
   }
 }
 
@@ -797,7 +843,22 @@ where
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.subform_entry = Some( component.into() );
+    let component = component.into();
+    self.subform_entry.option_assign( component );
+  }
+}
+
+impl< IntoT > Assign< AttributeSubformEntrySetter, IntoT > for AttributeSubformEntrySetter
+where
+  IntoT : Into< AttributeSubformEntrySetter >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.name.assign( component.name );
+    self.setter.assign( component.setter );
+    self.debug.assign( component.debug );
   }
 }
 

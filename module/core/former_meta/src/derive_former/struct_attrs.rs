@@ -13,7 +13,7 @@ use macro_tools::
   AttributePropertyOptionalSingletone,
 };
 
-use former_types::{ Assign };
+use former_types::{ Assign, OptionExt };
 
 /// Represents the attributes of a struct, including storage fields, mutator, and perform attributes.
 
@@ -205,7 +205,20 @@ where
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.storage_fields = Some( component.into() );
+    let component = component.into();
+    self.storage_fields.option_assign( component );
+  }
+}
+
+impl< IntoT > Assign< AttributeStorageFields, IntoT > for AttributeStorageFields
+where
+  IntoT : Into< AttributeStorageFields >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.fields = component.fields;
   }
 }
 
@@ -275,7 +288,21 @@ where
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.mutator = component.into();
+    let component = component.into();
+    self.mutator.assign( component );
+  }
+}
+
+impl< IntoT > Assign< AttributeMutator, IntoT > for AttributeMutator
+where
+  IntoT : Into< AttributeMutator >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.custom.assign( component.custom );
+    self.debug.assign( component.debug );
   }
 }
 
@@ -406,7 +433,20 @@ where
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.perform = Some( component.into() );
+    let component = component.into();
+    self.perform.option_assign( component );
+  }
+}
+
+impl< IntoT > Assign< AttributePerform, IntoT > for AttributePerform
+where
+  IntoT : Into< AttributePerform >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.signature = component.signature;
   }
 }
 
