@@ -11,7 +11,7 @@ pub enum GetData
   Nothing2,
   FromString( String ),
   #[ from( on ) ]
-  #[ from( debug ) ]
+  // #[ from( debug ) ]
   FromString2( String ),
   FromPair( String, String ),
   #[ from( on ) ]
