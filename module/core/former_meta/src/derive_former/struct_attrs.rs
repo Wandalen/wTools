@@ -13,7 +13,7 @@ use macro_tools::
   AttributePropertyOptionalSingletone,
 };
 
-use former_types::{ ComponentAssign };
+use former_types::{ Assign };
 
 /// Represents the attributes of a struct, including storage fields, mutator, and perform attributes.
 
@@ -198,7 +198,7 @@ impl AttributeComponent for AttributeStorageFields
 
 }
 
-impl< IntoT > ComponentAssign< AttributeStorageFields, IntoT > for ItemAttributes
+impl< IntoT > Assign< AttributeStorageFields, IntoT > for ItemAttributes
 where
   IntoT : Into< AttributeStorageFields >,
 {
@@ -268,7 +268,7 @@ impl AttributeComponent for AttributeMutator
 
 }
 
-impl< IntoT > ComponentAssign< AttributeMutator, IntoT > for ItemAttributes
+impl< IntoT > Assign< AttributeMutator, IntoT > for ItemAttributes
 where
   IntoT : Into< AttributeMutator >,
 {
@@ -279,7 +279,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyDebug, IntoT > for AttributeMutator
+impl< IntoT > Assign< AttributePropertyDebug, IntoT > for AttributeMutator
 where
   IntoT : Into< AttributePropertyDebug >,
 {
@@ -290,7 +290,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyCustom, IntoT > for AttributeMutator
+impl< IntoT > Assign< AttributePropertyCustom, IntoT > for AttributeMutator
 where
   IntoT : Into< AttributePropertyCustom >,
 {
@@ -399,7 +399,7 @@ impl syn::parse::Parse for AttributePerform
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePerform, IntoT > for ItemAttributes
+impl< IntoT > Assign< AttributePerform, IntoT > for ItemAttributes
 where
   IntoT : Into< AttributePerform >,
 {

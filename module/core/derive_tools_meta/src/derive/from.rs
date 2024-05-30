@@ -13,7 +13,7 @@ use macro_tools::
   AttributePropertyOptionalSingletone,
 };
 
-use former_types::ComponentAssign;
+use former_types::Assign;
 
 //
 
@@ -515,18 +515,30 @@ impl AttributeComponent for ItemAttributeConfig
 
 }
 
-impl< IntoT > ComponentAssign< ItemAttributeConfig, IntoT > for ItemAttributes
+impl< IntoT > Assign< ItemAttributeConfig, IntoT > for ItemAttributes
 where
   IntoT : Into< ItemAttributeConfig >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.config = component.into();
+    self.config.assign( component.into() );
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyEnabled, IntoT > for ItemAttributeConfig
+impl< IntoT > Assign< ItemAttributeConfig, IntoT > for ItemAttributeConfig
+where
+  IntoT : Into< ItemAttributeConfig >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.enabled.assign( component.enabled );
+  }
+}
+
+impl< IntoT > Assign< AttributePropertyEnabled, IntoT > for ItemAttributeConfig
 where
   IntoT : Into< AttributePropertyEnabled >,
 {
@@ -695,7 +707,7 @@ impl AttributeComponent for FieldAttributeConfig
 
 }
 
-impl< IntoT > ComponentAssign< FieldAttributeConfig, IntoT > for FieldAttributes
+impl< IntoT > Assign< FieldAttributeConfig, IntoT > for FieldAttributes
 where
   IntoT : Into< FieldAttributeConfig >,
 {
@@ -703,13 +715,10 @@ where
   fn assign( &mut self, component : IntoT )
   {
     self.config.assign( component.into() );
-    // let component = component.into();
-    // self.config.enabled.assign( component.enabled );
-    // self.config.debug.assign( component.debug );
   }
 }
 
-impl< IntoT > ComponentAssign< FieldAttributeConfig, IntoT > for FieldAttributeConfig
+impl< IntoT > Assign< FieldAttributeConfig, IntoT > for FieldAttributeConfig
 where
   IntoT : Into< FieldAttributeConfig >,
 {
@@ -722,7 +731,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyEnabled, IntoT > for FieldAttributeConfig
+impl< IntoT > Assign< AttributePropertyEnabled, IntoT > for FieldAttributeConfig
 where
   IntoT : Into< AttributePropertyEnabled >,
 {
@@ -733,7 +742,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyDebug, IntoT > for FieldAttributeConfig
+impl< IntoT > Assign< AttributePropertyDebug, IntoT > for FieldAttributeConfig
 where
   IntoT : Into< AttributePropertyDebug >,
 {

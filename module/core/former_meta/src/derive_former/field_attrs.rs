@@ -11,7 +11,7 @@ use macro_tools::
   AttributePropertyOptionalSyn,
   AttributePropertyOptionalSingletone,
 };
-use former_types::{ ComponentAssign };
+use former_types::{ Assign };
 
 ///
 /// Attributes of a field.
@@ -92,6 +92,8 @@ impl FieldAttributes
       {
         continue;
       }
+      // attributes does not have to be known
+      // xxx
 
       // Match the attribute key and assign to the appropriate field
       match key_str.as_ref()
@@ -151,18 +153,33 @@ impl AttributeComponent for AttributeConfig
 
 }
 
-impl< IntoT > ComponentAssign< AttributeConfig, IntoT > for FieldAttributes
+impl< IntoT > Assign< AttributeConfig, IntoT > for FieldAttributes
 where
   IntoT : Into< AttributeConfig >,
 {
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
-    self.config = Some( component.into() );
+    let component : AttributeConfig = component.into();
+    component.assign_to_option( &mut self.config );
+    // self.config.assign( component.into() );
+    // xxx2 : continue
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyDefault, IntoT > for AttributeConfig
+impl< IntoT > Assign< AttributeConfig, IntoT > for AttributeConfig
+where
+  IntoT : Into< AttributeConfig >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, component : IntoT )
+  {
+    let component = component.into();
+    self.default.assign( component.default );
+  }
+}
+
+impl< IntoT > Assign< AttributePropertyDefault, IntoT > for AttributeConfig
 where
   IntoT : Into< AttributePropertyDefault >,
 {
@@ -273,7 +290,7 @@ impl AttributeComponent for AttributeScalarSetter
 
 }
 
-impl< IntoT > ComponentAssign< AttributeScalarSetter, IntoT > for FieldAttributes
+impl< IntoT > Assign< AttributeScalarSetter, IntoT > for FieldAttributes
 where
   IntoT : Into< AttributeScalarSetter >,
 {
@@ -284,7 +301,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyName, IntoT > for AttributeScalarSetter
+impl< IntoT > Assign< AttributePropertyName, IntoT > for AttributeScalarSetter
 where
   IntoT : Into< AttributePropertyName >,
 {
@@ -295,7 +312,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertySetter, IntoT > for AttributeScalarSetter
+impl< IntoT > Assign< AttributePropertySetter, IntoT > for AttributeScalarSetter
 where
   IntoT : Into< AttributePropertySetter >,
 {
@@ -306,7 +323,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyDebug, IntoT > for AttributeScalarSetter
+impl< IntoT > Assign< AttributePropertyDebug, IntoT > for AttributeScalarSetter
 where
   IntoT : Into< AttributePropertyDebug >,
 {
@@ -433,7 +450,7 @@ impl AttributeComponent for AttributeSubformScalarSetter
 
 }
 
-impl< IntoT > ComponentAssign< AttributeSubformScalarSetter, IntoT > for FieldAttributes
+impl< IntoT > Assign< AttributeSubformScalarSetter, IntoT > for FieldAttributes
 where
   IntoT : Into< AttributeSubformScalarSetter >,
 {
@@ -444,7 +461,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyName, IntoT > for AttributeSubformScalarSetter
+impl< IntoT > Assign< AttributePropertyName, IntoT > for AttributeSubformScalarSetter
 where
   IntoT : Into< AttributePropertyName >,
 {
@@ -455,7 +472,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertySetter, IntoT > for AttributeSubformScalarSetter
+impl< IntoT > Assign< AttributePropertySetter, IntoT > for AttributeSubformScalarSetter
 where
   IntoT : Into< AttributePropertySetter >,
 {
@@ -466,7 +483,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyDebug, IntoT > for AttributeSubformScalarSetter
+impl< IntoT > Assign< AttributePropertyDebug, IntoT > for AttributeSubformScalarSetter
 where
   IntoT : Into< AttributePropertyDebug >,
 {
@@ -595,7 +612,7 @@ impl AttributeComponent for AttributeSubformCollectionSetter
 
 }
 
-impl< IntoT > ComponentAssign< AttributeSubformCollectionSetter, IntoT > for FieldAttributes
+impl< IntoT > Assign< AttributeSubformCollectionSetter, IntoT > for FieldAttributes
 where
   IntoT : Into< AttributeSubformCollectionSetter >,
 {
@@ -606,7 +623,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyName, IntoT > for AttributeSubformCollectionSetter
+impl< IntoT > Assign< AttributePropertyName, IntoT > for AttributeSubformCollectionSetter
 where
   IntoT : Into< AttributePropertyName >,
 {
@@ -617,7 +634,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertySetter, IntoT > for AttributeSubformCollectionSetter
+impl< IntoT > Assign< AttributePropertySetter, IntoT > for AttributeSubformCollectionSetter
 where
   IntoT : Into< AttributePropertySetter >,
 {
@@ -628,7 +645,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyDefinition, IntoT > for AttributeSubformCollectionSetter
+impl< IntoT > Assign< AttributePropertyDefinition, IntoT > for AttributeSubformCollectionSetter
 where
   IntoT : Into< AttributePropertyDefinition >,
 {
@@ -639,7 +656,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyDebug, IntoT > for AttributeSubformCollectionSetter
+impl< IntoT > Assign< AttributePropertyDebug, IntoT > for AttributeSubformCollectionSetter
 where
   IntoT : Into< AttributePropertyDebug >,
 {
@@ -775,7 +792,7 @@ impl AttributeComponent for AttributeSubformEntrySetter
 
 }
 
-impl< IntoT > ComponentAssign< AttributeSubformEntrySetter, IntoT > for FieldAttributes
+impl< IntoT > Assign< AttributeSubformEntrySetter, IntoT > for FieldAttributes
 where
   IntoT : Into< AttributeSubformEntrySetter >,
 {
@@ -786,7 +803,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyName, IntoT > for AttributeSubformEntrySetter
+impl< IntoT > Assign< AttributePropertyName, IntoT > for AttributeSubformEntrySetter
 where
   IntoT : Into< AttributePropertyName >,
 {
@@ -797,7 +814,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertySetter, IntoT > for AttributeSubformEntrySetter
+impl< IntoT > Assign< AttributePropertySetter, IntoT > for AttributeSubformEntrySetter
 where
   IntoT : Into< AttributePropertySetter >,
 {
@@ -808,7 +825,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< AttributePropertyDebug, IntoT > for AttributeSubformEntrySetter
+impl< IntoT > Assign< AttributePropertyDebug, IntoT > for AttributeSubformEntrySetter
 where
   IntoT : Into< AttributePropertyDebug >,
 {

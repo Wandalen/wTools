@@ -3,7 +3,7 @@
 //!
 
 use crate::*;
-use former_types::ComponentAssign;
+use former_types::Assign;
 
 ///
 /// Property of an attribute which simply wraps one of the standard `syn` types and keeps it optional.
@@ -33,7 +33,7 @@ where
   }
 }
 
-impl< T, Marker, IntoT > ComponentAssign< AttributePropertyOptionalSyn< T, Marker >, IntoT >
+impl< T, Marker, IntoT > Assign< AttributePropertyOptionalSyn< T, Marker >, IntoT >
 for AttributePropertyOptionalSyn< T, Marker >
 where
   T : syn::parse::Parse + quote::ToTokens,

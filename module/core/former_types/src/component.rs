@@ -17,17 +17,17 @@
 ///
 /// # Examples
 ///
-/// Implementing `ComponentAssign` to set a name string on a struct :
+/// Implementing `Assign` to set a name string on a struct :
 ///
 /// ```rust
-/// use former_types::ComponentAssign; // use crate `former` instead of crate `former_types` unless you need to use crate `former_types` directly
+/// use former_types::Assign; // use crate `former` instead of crate `former_types` unless you need to use crate `former_types` directly
 ///
 /// struct MyStruct
 /// {
 ///   name : String,
 /// }
 ///
-/// impl< IntoT : Into< String > > ComponentAssign< String, IntoT > for MyStruct
+/// impl< IntoT : Into< String > > Assign< String, IntoT > for MyStruct
 /// {
 ///   fn assign( &mut self, component : IntoT )
 ///   {
@@ -40,7 +40,7 @@
 /// assert_eq!( obj.name, "New Name" );
 /// ```
 #[ cfg( any( feature = "types_component_assign" ) ) ]
-pub trait ComponentAssign< T, IntoT >
+pub trait Assign< T, IntoT >
 where
   IntoT : Into< T >,
 {
@@ -49,6 +49,19 @@ where
   /// This method takes ownership of the given value ( `component` ), which is of type `IntoT`.
   /// `component` is then converted into type `T` and set as the component of the object.
   fn assign( &mut self, component : IntoT );
+
+  #[ inline( always ) ]
+  fn assign_to_option< IntoSelf >( self, dst : &mut Option< Self > )
+  where
+    Self : Sized + Assign< Self, Self >,
+  {
+    match dst
+    {
+      Some( val ) => Assign::assign( val, self ),
+      None => *dst = Some( self ),
+    }
+  }
+
 }
 
 /// The `AssignWithType` trait provides a mechanism to set a component on an object, utilizing the type information explicitly. This trait extends the functionality of `SetComponen`t by allowing implementers to specify the component's type at the method call site, enhancing expressiveness in code that manipulates object states.
@@ -67,14 +80,14 @@ where
 /// ### Example
 ///
 /// ```rust
-/// use former_types::{ ComponentAssign, AssignWithType }; // use crate `former` instead of crate `former_types` unless you need to use crate `former_types` directly
+/// use former_types::{ Assign, AssignWithType }; // use crate `former` instead of crate `former_types` unless you need to use crate `former_types` directly
 ///
 /// struct UserProfile
 /// {
 ///   username : String,
 /// }
 ///
-/// impl< IntoT : Into< String > > ComponentAssign< String, IntoT > for UserProfile
+/// impl< IntoT : Into< String > > Assign< String, IntoT > for UserProfile
 //  where String: From< String >,
 /// {
 ///   fn assign( &mut self, component : IntoT )
@@ -97,7 +110,7 @@ pub trait AssignWithType
   fn assign_with_type< T, IntoT >( &mut self, component : IntoT )
   where
     IntoT : Into< T >,
-    Self : ComponentAssign< T, IntoT >;
+    Self : Assign< T, IntoT >;
 }
 
 #[ cfg( any( feature = "types_component_assign" ) ) ]
@@ -108,9 +121,9 @@ impl< S > AssignWithType for S
   fn assign_with_type< T, IntoT >( &mut self, component : IntoT )
   where
     IntoT : Into< T >,
-    Self : ComponentAssign< T, IntoT >,
+    Self : Assign< T, IntoT >,
   {
-    ComponentAssign::< T, IntoT >::assign( self, component );
+    Assign::< T, IntoT >::assign( self, component );
   }
 
 }

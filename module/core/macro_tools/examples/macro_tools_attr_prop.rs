@@ -5,7 +5,7 @@
 //! The attributes are collected into a struct that aggregates them, and attribute properties
 //! are parsed using reusable components from a library. The example shows how to use
 //! `AttributePropertyBoolean` for parsing boolean properties and the roles of the traits
-//! `AttributePropertyComponent` and `AttributeComponent`. The `ComponentAssign` trait is
+//! `AttributePropertyComponent` and `AttributeComponent`. The `Assign` trait is
 //! also used to simplify the logic of assigning fields.
 //!
 //! Attributes are collected into a `ItemAttributes` struct, and attribute properties are parsed
@@ -13,7 +13,7 @@
 //!
 //! - `AttributeComponent`: A trait that defines how an attribute should be parsed from a `syn::Attribute`.
 //! - `AttributePropertyComponent`: A trait that defines a marker for attribute properties.
-//! - `ComponentAssign`: A trait that simplifies the logic of assigning fields to a struct. Using a
+//! - `Assign`: A trait that simplifies the logic of assigning fields to a struct. Using a
 //! component-based approach requires each field to have a unique type, which aligns with the
 //! strengths of strongly-typed languages. This method ensures that the logic of
 //! assigning values to fields is encapsulated within the fields themselves, promoting modularity
@@ -44,7 +44,7 @@ fn main()
     AttributePropertyBoolean,
     AttributePropertySingletone,
   };
-  use former_types::ComponentAssign;
+  use former_types::Assign;
 
   /// Represents the attributes of a struct. Aggregates all its attributes.
   #[ derive( Debug, Default ) ]
@@ -147,8 +147,8 @@ fn main()
     }
   }
 
-  // Implement `ComponentAssign` trait to allow assigning `AttributeMutator` to `ItemAttributes`.
-  impl< IntoT > ComponentAssign< AttributeMutator, IntoT > for ItemAttributes
+  // Implement `Assign` trait to allow assigning `AttributeMutator` to `ItemAttributes`.
+  impl< IntoT > Assign< AttributeMutator, IntoT > for ItemAttributes
   where
     IntoT : Into< AttributeMutator >,
   {
@@ -159,8 +159,8 @@ fn main()
     }
   }
 
-  // Implement `ComponentAssign` trait to allow assigning `AttributePropertyDebug` to `AttributeMutator`.
-  impl< IntoT > ComponentAssign< AttributePropertyDebug, IntoT > for AttributeMutator
+  // Implement `Assign` trait to allow assigning `AttributePropertyDebug` to `AttributeMutator`.
+  impl< IntoT > Assign< AttributePropertyDebug, IntoT > for AttributeMutator
   where
     IntoT : Into< AttributePropertyDebug >,
   {
@@ -171,8 +171,8 @@ fn main()
     }
   }
 
-  // Implement `ComponentAssign` trait to allow assigning `AttributePropertyCustom` to `AttributeMutator`.
-  impl< IntoT > ComponentAssign< AttributePropertyCustom, IntoT > for AttributeMutator
+  // Implement `Assign` trait to allow assigning `AttributePropertyCustom` to `AttributeMutator`.
+  impl< IntoT > Assign< AttributePropertyCustom, IntoT > for AttributeMutator
   where
     IntoT : Into< AttributePropertyCustom >,
   {

@@ -4,7 +4,7 @@
 //!
 
 use crate::*;
-use former_types::ComponentAssign;
+use former_types::Assign;
 
 /// A generic optional boolean attribute property: `Option< bool >`.
 /// Defaults to `false`.
@@ -29,7 +29,7 @@ impl< Marker > AttributePropertyOptionalBoolean< Marker >
 
 }
 
-impl< Marker, IntoT > ComponentAssign< AttributePropertyOptionalBoolean< Marker >, IntoT >
+impl< Marker, IntoT > Assign< AttributePropertyOptionalBoolean< Marker >, IntoT >
 for AttributePropertyOptionalBoolean< Marker >
 where
   IntoT : Into< AttributePropertyOptionalBoolean< Marker > >,

@@ -1,17 +1,17 @@
 //!
-//! ## Example: Using Trait ComponentAssign
+//! ## Example: Using Trait Assign
 //!
 //! Demonstrates setting various components (fields) of a struct.
 //!
 //! The `former_types` crate provides a generic interface for setting components on an object. This example defines a `Person` struct
-//! and implements the `ComponentAssign` trait for its fields. It shows how to use these implementations to set the fields of a `Person`
+//! and implements the `Assign` trait for its fields. It shows how to use these implementations to set the fields of a `Person`
 //! instance using different types that can be converted into the required types.
 //!
 //! ## Explanation
 //!
 //! - **Person Struct**: The `Person` struct has two fields: `age` (an integer) and `name` (a string). The `Default` and `PartialEq` traits are derived to facilitate default construction and comparison.
 //!
-//! - **ComponentAssign Implementations**: The `ComponentAssign` trait is implemented for the `age` and `name` fields of the `Person` struct.
+//! - **Assign Implementations**: The `Assign` trait is implemented for the `age` and `name` fields of the `Person` struct.
 //!   - For `age`: The trait is implemented for any type that can be converted into an `i32`.
 //!   - For `name`: The trait is implemented for any type that can be converted into a `String`.
 //!
@@ -26,7 +26,7 @@ fn main() {}
 #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
 fn main()
 {
-  use former_types::ComponentAssign;
+  use former_types::Assign;
 
   #[ derive( Default, PartialEq, Debug ) ]
   struct Person
@@ -35,7 +35,7 @@ fn main()
     name : String,
   }
 
-  impl< IntoT > ComponentAssign< i32, IntoT > for Person
+  impl< IntoT > Assign< i32, IntoT > for Person
   where
     IntoT : Into< i32 >,
   {
@@ -45,7 +45,7 @@ fn main()
     }
   }
 
-  impl< IntoT > ComponentAssign< String, IntoT > for Person
+  impl< IntoT > Assign< String, IntoT > for Person
   where
     IntoT : Into< String >,
   {

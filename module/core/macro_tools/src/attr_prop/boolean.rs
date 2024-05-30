@@ -4,7 +4,7 @@
 //!
 
 use crate::*;
-use former_types::ComponentAssign;
+use former_types::Assign;
 
 /// A generic boolean attribute property.
 /// Defaults to `false`.
@@ -125,7 +125,7 @@ impl< Marker > AttributePropertyBoolean< Marker >
 
 // xxx : introduce default markers for all properties
 
-impl< Marker, IntoT > ComponentAssign< AttributePropertyBoolean< Marker >, IntoT >
+impl< Marker, IntoT > Assign< AttributePropertyBoolean< Marker >, IntoT >
 for AttributePropertyBoolean< Marker >
 where
   IntoT : Into< AttributePropertyBoolean< Marker > >,
