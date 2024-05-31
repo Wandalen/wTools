@@ -141,7 +141,31 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
   Ok( result )
 }
 
-// qqq  : document, add example of generated code
+// qqq  : document, add example of generated code -- done
+/// Generates `From` implementation for unit structs
+///
+/// # Example
+///
+/// ## Input
+/// ```rust
+/// # use derive_tools_meta::From;
+/// #[ derive( From ) ]
+/// pub struct IsTransparent;
+/// ```
+///
+/// ## Output
+/// ```rust
+/// pub struct IsTransparent;
+/// impl From< () > for IsTransparent
+/// {
+///   #[ inline( always ) ]
+///   fn from( src : () ) -> Self
+///   {
+///     Self
+///   }
+/// }
+/// ```
+///
 fn generate_unit
 (
   item_name : &syn::Ident,
@@ -414,32 +438,8 @@ fn generate_from_multiple_fields< 'a >
   }
 }
 
-// qqq  : document, add example of generated code -- done
-/// Generates `From` implementation for unit structs
-///
-/// # Example
-///
-/// ## Input
-/// ```rust
-/// # use derive_tools_meta::From;
-/// #[ derive( From ) ]
-/// pub struct IsTransparent;
-/// ```
-///
-/// ## Output
-/// ```rust
-/// pub struct IsTransparent;
-/// impl From< () > for IsTransparent
-/// {
-///   #[ inline( always ) ]
-///   fn from( src : () ) -> Self
-///   {
-///     Self
-///   }
-/// }
-/// ```
-///
-fn generate_unit
+// qqq  : document, add example of generated code
+fn variant_generate
 (
   item_name : &syn::Ident,
   item_attrs : &ItemAttributes,
