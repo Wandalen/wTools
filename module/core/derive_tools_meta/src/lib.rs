@@ -226,7 +226,7 @@ pub fn deref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 /// Write this
 ///
-/// ```rust ignore
+/// ```rust
 /// # use derive_tools_meta::*;
 /// #[ derive( Deref, DerefMut ) ]
 /// pub struct IsTransparent( bool );

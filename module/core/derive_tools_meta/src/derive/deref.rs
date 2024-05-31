@@ -64,6 +64,7 @@ pub fn deref( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
 ///
 /// ## Input
 /// ```rust
+/// # use derive_tools_meta::Deref;
 /// #[ derive( Deref ) ]
 /// pub struct Struct;
 /// ```
@@ -164,6 +165,7 @@ fn generate_struct
 ///
 /// ## Input
 /// ```rust
+/// # use derive_tools_meta::Deref;
 /// #[ derive( Deref ) ]
 /// pub struct Struct( i32, Vec< String > );
 /// ```
@@ -232,6 +234,7 @@ fn generate_struct_tuple_fields
 ///
 /// ## Input
 /// ```rust
+/// # use derive_tools_meta::Deref;
 /// #[ derive( Deref ) ]
 /// pub struct Struct
 /// {
@@ -376,6 +379,7 @@ fn generate_enum
 ///
 /// ## Input
 /// ```rust
+/// # use derive_tools_meta::Deref;
 /// #[ derive( Deref ) ]
 /// pub enum E
 /// {
@@ -461,6 +465,7 @@ fn generate_enum_tuple_variants
 ///
 /// ## Input
 /// ```rust
+/// # use derive_tools_meta::Deref;
 /// #[ derive( Deref ) ]
 /// pub enum E
 /// {

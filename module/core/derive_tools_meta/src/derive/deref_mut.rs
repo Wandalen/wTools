@@ -16,14 +16,7 @@ pub fn deref_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::Toke
   let result = match parsed
   {
 
-    StructLike::Unit( _ ) =>
-    generate_unit
-    (
-      item_name,
-      &generics_impl,
-      &generics_ty,
-      &generics_where,
-    ),
+    StructLike::Unit( _ ) => generate_unit(),
 
     StructLike::Struct( ref item ) =>
     generate_struct
@@ -56,66 +49,10 @@ pub fn deref_mut( input : proc_macro::TokenStream ) -> Result< proc_macro2::Toke
   Ok( result )
 }
 
-/// Generates `DerefMut` implementation for unit structs
-///
-/// # Example
-///
-/// ## Input
-/// ```rust
-/// #[ derive( Deref, DerefMut ) ]
-/// pub struct Struct;
-/// ```
-/// 
-/// ## Output
-/// ```rust
-/// pub struct Struct;
-/// #[ automatically_derived ]
-/// impl ::core::ops::Deref for Struct
-/// {
-///   type Target = ();
-///   #[ inline( always ) ]
-///   fn deref( &self ) -> &Self::Target
-///   {
-///     &()
-///   }
-/// }
-/// #[ automatically_derived ]
-/// impl ::core::ops::DerefMut for Struct
-/// {
-///   #[ inline( always ) ]
-///   fn deref_mut( &mut self ) -> &mut Self::Target
-///   {
-///     &mut ()
-///   }
-/// }
-/// ```
-///
-fn generate_unit
-(
-  item_name : &syn::Ident,
-  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-)
--> Result< proc_macro2::TokenStream >
+/// Placeholder for unit structs and enums. Does not generate any `DerefMut` implementation
+fn generate_unit() -> Result< proc_macro2::TokenStream >
 {
-  Ok
-  (
-    qt!
-    {
-      #[ automatically_derived ]
-      impl< #generics_impl > ::core::ops::DerefMut for #item_name< #generics_ty >
-      where
-        #generics_where
-      {
-        #[ inline( always ) ]
-        fn deref_mut( &mut self ) -> &mut Self::Target
-        {
-          &mut ()
-        }
-      }
-    }
-  )
+  Ok( qt!{} )
 }
 
 /// An aggregator function to generate `DerefMut` implementation for unit, tuple structs and the ones with named fields
@@ -132,14 +69,7 @@ fn generate_struct
   match fields
   {
 
-    syn::Fields::Unit =>
-    generate_unit
-    (
-      item_name,
-      generics_impl,
-      generics_ty,
-      generics_where,
-    ),
+    syn::Fields::Unit => generate_unit(),
 
     syn::Fields::Unnamed( _ ) =>
     generate_struct_tuple_fields
@@ -169,6 +99,7 @@ fn generate_struct
 ///
 /// ## Input
 /// ```rust
+/// # use derive_tools_meta::{ Deref, DerefMut };
 /// #[ derive( Deref, DerefMut ) ]
 /// pub struct Struct( i32, Vec< String > );
 /// ```
@@ -231,6 +162,7 @@ fn generate_struct_tuple_fields
 ///
 /// ## Input
 /// ```rust
+/// # use derive_tools_meta::{ Deref, DerefMut };
 /// #[ derive( Deref, DerefMut ) ]
 /// pub struct Struct
 /// {
@@ -281,13 +213,7 @@ fn generate_struct_named_fields
   let field_name = match fields.first()
   {
     Some( field ) => field.ident.as_ref().unwrap(),
-    None => return generate_unit
-    (
-      item_name,
-      generics_impl,
-      generics_ty,
-      generics_where,
-    ),
+    None => return generate_unit(),
   };
 
   Ok
@@ -300,9 +226,9 @@ fn generate_struct_named_fields
         #generics_where
       {
         #[ inline( always ) ]
-        fn deref_mut( &self ) -> &Self::Target
+        fn deref_mut( &mut self ) -> &mut Self::Target
         {
-          &self.#field_name
+          &mut self.#field_name
         }
       }
     }
@@ -323,13 +249,7 @@ fn generate_enum
   let fields = match variants.first()
   {
     Some( variant ) => &variant.fields,
-    None => return generate_unit
-    (
-      item_name,
-      &generics_impl,
-      &generics_ty,
-      &generics_where,
-    ),
+    None => return generate_unit(),
   };
 
   let idents = variants.iter().map( | v | v.ident.clone() ).collect::< Vec< _ > >();
@@ -337,14 +257,7 @@ fn generate_enum
   match fields
   {
 
-    syn::Fields::Unit =>
-    generate_unit
-    (
-      item_name,
-      &generics_impl,
-      &generics_ty,
-      &generics_where,
-    ),
+    syn::Fields::Unit => generate_unit(),
 
     syn::Fields::Unnamed( _ ) =>
     generate_enum_tuple_variants
@@ -376,6 +289,7 @@ fn generate_enum
 ///
 /// ## Input
 /// ```rust
+/// # use derive_tools_meta::{ Deref, DerefMut };
 /// #[ derive( Deref, DerefMut ) ]
 /// pub enum E
 /// {
@@ -458,6 +372,7 @@ fn generate_enum_tuple_variants
 ///
 /// ## Input
 /// ```rust
+/// # use derive_tools_meta::{ Deref, DerefMut };
 /// #[ derive( Deref, DerefMut ) ]
 /// pub enum E
 /// {
@@ -517,13 +432,7 @@ fn generate_enum_named_variants
   let field_name = match fields.first()
   {
     Some( field ) => field.ident.as_ref().unwrap(),
-    None => return generate_unit
-    (
-      item_name,
-      generics_impl,
-      generics_ty,
-      generics_where,
-    ),
+    None => return generate_unit(),
   };
 
   Ok
