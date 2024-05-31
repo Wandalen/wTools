@@ -1,10 +1,10 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
-use former::ComponentAssign;
+use former::Assign;
 
 
-#[ derive( Default, PartialEq, Debug, former::ComponentAssign ) ]
+#[ derive( Default, PartialEq, Debug, former::Assign ) ]
 // #[ debug ]
 struct Person
 {
@@ -14,4 +14,4 @@ struct Person
 
 //
 
-include!( "./only_test/components_component_assign.rs" );
+include!( "./only_test/component_assign.rs" );

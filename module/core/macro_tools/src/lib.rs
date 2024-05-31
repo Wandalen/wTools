@@ -27,11 +27,12 @@ mod file
 {
   // use super::*;
   pub mod attr;
+  pub mod attr_prop;
   pub mod container_kind;
   pub mod derive;
   pub mod diag;
   pub mod drop;
-  // pub mod generic_analyze;
+  pub mod equation;
   pub mod generic_args;
   pub mod generic_params;
   pub mod item;
@@ -79,11 +80,12 @@ pub mod protected
   pub use super::file::
   {
     attr::orphan::*,
+    attr_prop::orphan::*,
     container_kind::orphan::*,
     derive::orphan::*,
     diag::orphan::*,
     drop::orphan::*,
-    // generic_analyze::orphan::*,
+    equation::orphan::*,
     generic_args::orphan::*,
     generic_params::orphan::*,
     item::orphan::*,
@@ -134,11 +136,12 @@ pub mod exposed
   pub use super::file::
   {
     attr::exposed::*,
+    attr_prop::exposed::*,
     container_kind::exposed::*,
     derive::orphan::*,
     diag::exposed::*,
     drop::exposed::*,
-    // generic_analyze::exposed::*,
+    equation::exposed::*,
     generic_args::exposed::*,
     generic_params::exposed::*,
     item::exposed::*,
@@ -167,18 +170,23 @@ pub mod prelude
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::syn;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::proc_macro2;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::quote;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use ::quote::quote as qt;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use ::syn::parse_quote as parse_qt;
+  pub use ::quote::
+  {
+    quote as qt,
+    format_ident,
+  };
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::syn::spanned::Spanned;
@@ -196,7 +204,9 @@ pub mod prelude
     parenthesized,
     parse_macro_input,
     parse_quote,
+    parse_quote as parse_qt,
     parse_quote_spanned,
+    parse_quote_spanned as parse_qt_spanned,
   };
 
   #[ doc( inline ) ]
@@ -204,11 +214,12 @@ pub mod prelude
   pub use super::file::
   {
     attr::prelude::*,
+    attr_prop::prelude::*,
     container_kind::prelude::*,
     derive::orphan::*,
     diag::prelude::*,
     drop::prelude::*,
-    // generic_analyze::prelude::*,
+    equation::prelude::*,
     generic_args::prelude::*,
     generic_params::prelude::*,
     item::prelude::*,

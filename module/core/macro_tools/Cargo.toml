@@ -1,6 +1,6 @@
 [package]
 name = "macro_tools"
-version = "0.26.0"
+version = "0.27.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -28,7 +28,7 @@ all-features = false
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-enabled = []
+enabled = [ "former_types/enabled", "interval_adapter/enabled" ]
 
 # qqq : put all files under features: macro_attr, macro_container_kind, ...
 
@@ -39,9 +39,12 @@ proc-macro2 = { version = "~1.0.78", features = [] }
 quote = { version = "~1.0.35", features = [] }
 syn = { version = "~2.0.52", features = [ "full", "extra-traits" ] }
 
+# qqq : optimize features list
+
 ## internal
-interval_adapter = { workspace = true, features = [ "default" ] }
-# strs_tools = { workspace = true, features = [ "default" ] }
+interval_adapter = { workspace = true, features = [] }
+former_types = { workspace = true, features = [ "types_component_assign" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
+const_format = { version = "0.2.32" }

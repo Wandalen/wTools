@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
-use former::ComponentAssign;
+use former::Assign;
 
 
 #[ derive( Default, PartialEq, Debug ) ]
@@ -11,7 +11,7 @@ struct Person
   name : String,
 }
 
-impl< IntoT > ComponentAssign< i32, IntoT > for Person
+impl< IntoT > Assign< i32, IntoT > for Person
 where
   IntoT : Into< i32 >,
 {
@@ -21,7 +21,7 @@ where
   }
 }
 
-impl< IntoT > ComponentAssign< String, IntoT > for Person
+impl< IntoT > Assign< String, IntoT > for Person
 where
   IntoT : Into< String >,
 {
@@ -33,4 +33,4 @@ where
 
 //
 
-include!( "./only_test/components_component_assign.rs" );
+include!( "./only_test/component_assign.rs" );

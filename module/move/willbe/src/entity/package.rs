@@ -317,7 +317,7 @@ mod private
   }
 
   #[ derive( Debug, Clone ) ]
-  pub struct GitThingsOptions
+  pub struct GitOptions
   {
     pub git_root : AbsolutePath,
     pub items : Vec< AbsolutePath >,
@@ -325,7 +325,7 @@ mod private
     pub dry : bool,
   }
 
-  fn perform_git_commit( o : GitThingsOptions ) -> Result< ExtendedGitReport >
+  fn perform_git_commit( o : GitOptions ) -> Result< ExtendedGitReport >
   {
     let mut report = ExtendedGitReport::default();
     if o.items.is_empty() { return Ok( report ); }
@@ -352,8 +352,7 @@ mod private
     pub package_name : String,
     pub pack : cargo::PackOptions,
     pub version_bump : version::BumpOptions,
-    // qqq : rename
-    pub git_things : GitThingsOptions,
+    pub git_options : GitOptions,
     pub publish : cargo::PublishOptions,
     pub dry : bool,
   }
@@ -396,7 +395,7 @@ mod private
         dependencies : dependencies.clone(),
         dry : self.dry,
       };
-      let git_things = GitThingsOptions
+      let git_options = GitOptions
       {
         git_root : workspace_root,
         items : dependencies.iter().chain([ &crate_dir ]).map( | d | d.absolute_path().join( "Cargo.toml" ) ).collect(),
@@ -416,7 +415,7 @@ mod private
         package_name : self.package.name().unwrap(),
         pack,
         version_bump,
-        git_things,
+        git_options,
         publish,
         dry : self.dry,
       }
@@ -440,13 +439,13 @@ mod private
       package_name: _,
       mut pack,
       mut version_bump,
-      mut git_things,
+      mut git_options,
       mut publish,
       dry,
     } = instruction;
     pack.dry = dry;
     version_bump.dry = dry;
-    git_things.dry = dry;
+    git_options.dry = dry;
     publish.dry = dry;
 
     report.get_info = Some( cargo::pack( pack ).map_err( | e | ( report.clone(), e ) )? );
@@ -454,8 +453,8 @@ mod private
     report.publish_required = true;
     let bump_report = version::version_bump( version_bump ).map_err( | e | ( report.clone(), e ) )?;
     report.bump = Some( bump_report.clone() );
-    let git_root = git_things.git_root.clone();
-    let git = match perform_git_commit( git_things )
+    let git_root = git_options.git_root.clone();
+    let git = match perform_git_commit( git_options )
     {
       Ok( git ) => git,
       Err( e ) =>
@@ -524,7 +523,7 @@ mod private
     /// how to build and where to publish the package amongst other instructions. The `#[setter( false )]`
     /// attribute indicates that there is no setter method for the `plans` variable and it can only be modified
     /// within the struct.
-    #[ scalar( setter = false, hint = false ) ]
+    #[ scalar( setter = false ) ]
     pub plans : Vec< PackagePublishInstruction >,
   }
 
@@ -613,7 +612,7 @@ mod private
       self.storage.base_temp_dir = path;
       self
     }
-    
+
     pub fn package< IntoPackage >( mut self, package : IntoPackage ) -> Self
     where
       IntoPackage : Into< Package >,

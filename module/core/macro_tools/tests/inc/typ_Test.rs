@@ -126,3 +126,70 @@ fn parameter_first_with_deeply_nested_generics()
   let expected_type : Type = parse_str( "HashMap< String, Option< i32 > >" ).expect( "Expected type to parse correctly" );
   assert_eq!( format!( "{:?}", expected_type ), format!( "{:?}", first_param ), "Extracted type does not match expected" );
 }
+
+//
+
+#[ test ]
+fn type_rightmost_basic()
+{
+
+  // test.case( "core::option::Option< i32 >" );
+  let code = qt!( core::option::Option< i32 > );
+  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+  let got = the_module::typ::type_rightmost( &tree_type );
+  a_id!( got, Some( "Option".to_string() ) );
+
+}
+
+//
+
+#[ test ]
+fn type_parameters_basic()
+{
+
+  macro_rules! q
+  {
+    ( $( $Src : tt )+ ) =>
+    {
+      syn::parse2::< syn::Type >( qt!( $( $Src )+ ) ).unwrap()
+    }
+  }
+
+  // test.case( "core::option::Option< i8, i16, i32, i64 >" );
+  let code = qt!( core::option::Option< i8, i16, i32, i64 > );
+  let tree_type = syn::parse2::< syn::Type >( code ).unwrap();
+
+  let got : Vec< syn::Type > = the_module::typ::type_parameters( &tree_type, 0..=0 ).into_iter().cloned().collect();
+  let exp = vec![ q!( i8 ) ];
+  a_id!( got, exp );
+  let got : Vec< syn::Type > = the_module::typ::type_parameters( &tree_type, 0..=1 ).into_iter().cloned().collect();
+  let exp = vec![ q!( i8 ), q!( i16 ) ];
+  a_id!( got, exp );
+  let got : Vec< syn::Type > = the_module::typ::type_parameters( &tree_type, 0..=2 ).into_iter().cloned().collect();
+  let exp = vec![ q!( i8 ), q!( i16 ), q!( i32 ) ];
+  a_id!( got, exp );
+
+  let got : Vec< syn::Type > = the_module::typ::type_parameters( &tree_type, 0..0 ).into_iter().cloned().collect();
+  let exp : Vec< syn::Type > = vec![];
+  a_id!( got, exp );
+  let got : Vec< syn::Type > = the_module::typ::type_parameters( &tree_type, 0..1 ).into_iter().cloned().collect();
+  let exp = vec![ q!( i8 ) ];
+  a_id!( got, exp );
+  let got : Vec< syn::Type > = the_module::typ::type_parameters( &tree_type, 0..2 ).into_iter().cloned().collect();
+  let exp = vec![ q!( i8 ), q!( i16 ) ];
+  a_id!( got, exp );
+
+  // unbound
+  let got : Vec< syn::Type > = the_module::typ::type_parameters( &tree_type, .. ).into_iter().cloned().collect();
+  let exp = vec![ q!( i8 ), q!( i16 ), q!( i32 ), q!( i64 ) ];
+  a_id!( got, exp );
+
+  let got : Vec< syn::Type > = the_module::typ::type_parameters( &tree_type, .. ).into_iter().cloned().collect();
+  let exp = vec![ q!( i8 ), q!( i16 ), q!( i32 ), q!( i64 ) ];
+  a_id!( got, exp );
+
+  let got : Vec< syn::Type > = the_module::typ::type_parameters( &tree_type, .. ).into_iter().cloned().collect();
+  let exp = vec![ q!( i8 ), q!( i16 ), q!( i32 ), q!( i64 ) ];
+  a_id!( got, exp );
+
+}

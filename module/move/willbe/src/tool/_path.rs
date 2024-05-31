@@ -101,7 +101,7 @@ pub( crate ) mod private
 
   /// Check if path has a glob.
   #[ allow( dead_code ) ]
-  pub fn glob_is( path : &str ) -> bool
+  fn glob_is( path : &str ) -> bool
   {
     let glob_chars = "*?[{";
     let mut last_char = ' ';
@@ -159,7 +159,8 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  protected use glob_is;
+  // qqq : remove this?
+  // protected use glob_is;
   protected use canonicalize;
   protected use unique_folder_name;
 

@@ -1,6 +1,6 @@
 [package]
 name = "former_meta"
-version = "2.0.0"
+version = "2.1.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -44,7 +44,7 @@ full = [
   "derive_components_assign",
   "derive_from_components",
 ]
-enabled = [ "macro_tools/enabled", "iter_tools/enabled" ]
+enabled = [ "macro_tools/enabled", "iter_tools/enabled", "former_types/enabled" ]
 
 derive_former = [ "convert_case" ]
 derive_components = []
@@ -57,9 +57,12 @@ derive_from_components = [ "derive_components" ]
 proc-macro = true
 
 [dependencies]
-macro_tools = { workspace = true }
+macro_tools = { workspace = true } # qqq : optimize set of features
+former_types = { workspace = true, features = [ "enabled", "types_component_assign" ] }
 iter_tools = { workspace = true }
 convert_case = { version = "0.6.0", default-features = false, optional = true, features = [] }
+const_format = { version = "0.2.32" }
+# zzz : reexport const_format
 
 [dev-dependencies]
 test_tools = { workspace = true, features = [ "full" ] }

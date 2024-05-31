@@ -7,7 +7,7 @@ fn component_assign()
   let mut o2 = Options2::default();
   o2.assign( 42 );
   o2.assign( "Hello, world!" );
-  println!( "field1: {}, field2: {}", o2.field1, o2.field2 );
+  println!( "field1 : {}, field2 : {}", o2.field1, o2.field2 );
   let exp = Options2 { field1 : 42, field2 : "Hello, world!".to_string() };
   assert_eq!( o2, exp );
 

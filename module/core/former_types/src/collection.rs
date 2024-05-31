@@ -66,7 +66,7 @@ pub( crate ) mod private
     ///
     /// # Example
     /// ```
-    /// use former::CollectionValToEntry;
+    /// use former_types::CollectionValToEntry; // use crate `former` instead of crate `former_types` unless you need to use crate `former_types` directly
     ///
     /// struct PairMap;
     ///
@@ -104,7 +104,7 @@ pub( crate ) mod private
     ///
     /// # Example
     /// ```
-    /// use former::ValToEntry;
+    /// use former_types::ValToEntry; // use crate `former` instead of crate `former_types` unless you need to use crate `former_types` directly
     ///
     /// struct PairMap;
     ///
@@ -184,7 +184,7 @@ pub( crate ) mod private
     ///
     /// ```rust
     ///
-    /// use former::{ Collection, CollectionAdd };
+    /// use former_types::{ Collection, CollectionAdd }; // use crate `former` instead of crate `former_types` unless you need to use crate `former_types` directly
     ///
     /// struct MyCollection
     /// {
@@ -255,7 +255,7 @@ pub( crate ) mod private
     /// # Examples
     ///
     /// ```rust
-    /// use former::{ Collection, CollectionAssign };
+    /// use former_types::{ Collection, CollectionAssign }; // use crate `former` instead of crate `former_types` unless you need to use crate `former_types` directly
     ///
     /// struct MyCollection
     /// {

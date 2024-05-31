@@ -1,10 +1,9 @@
 pub( crate ) mod private
 {
   use crate::*;
-
-  use { Command };
-  use std::collections::HashMap;
   use former::Former;
+  use indexmap::IndexMap;
+  use wtools::Itertools;
 
   // qqq : `Former` does not handle this situation well
 
@@ -16,12 +15,14 @@ pub( crate ) mod private
 
   /// A collection of commands.
   ///
-  /// This structure holds a hashmap of commands where each command is mapped to its name.
+  /// This structure holds a btreemap of commands where each command is mapped to its name.
   #[ derive( Debug, Default, Former, Clone ) ]
   pub struct Dictionary
   {
-    #[ scalar( setter = false, hint = false ) ]
-    pub( crate ) commands : HashMap< String, Command >,
+    #[ scalar( setter = false ) ]
+    pub( crate ) commands : IndexMap< String, Command >,
+    #[ scalar( setter = false ) ]
+    pub( crate ) order : Order,
   }
 
   // qqq : IDK how to integrate it into the `CommandsAggregatorFormer`
@@ -31,9 +32,8 @@ pub( crate ) mod private
     pub fn command( mut self, command : Command ) -> Self
     {
       let mut commands = self.storage.commands.unwrap_or_default();
-      commands.extend([( command.phrase.clone(), command )]);
+      commands.insert( command.phrase.clone(), command );
       self.storage.commands = Some( commands );
-
       self
     }
   }
@@ -67,7 +67,7 @@ pub( crate ) mod private
     {
       self.commands.get( name )
     }
-    
+
     /// Find commands that match a given name part.
     ///
     /// This function accepts a `name_part` parameter which is of generic type `NamePart`.
@@ -85,6 +85,22 @@ pub( crate ) mod private
       NamePart : AsRef< str >,
     {
       self.commands.values().filter( | command | command.phrase.starts_with( name_part.as_ref() ) ).collect()
+    }
+
+    /// asd
+    pub fn commands( &self ) -> Vec< ( &String, &Command ) >
+    {
+      match self.order
+      {
+        Order::Nature =>
+        {
+          self.commands.iter().map( | ( key, value ) | ( key, value ) ).collect()
+        }
+        Order::Lexicography =>
+        {
+          self.commands.iter().map( | ( key, value ) | ( key, value ) ).sorted_by_key( | ( key, _ ) | *key ).collect()
+        }
+      }
     }
   }
 }

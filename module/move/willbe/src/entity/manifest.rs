@@ -18,9 +18,11 @@ pub( crate ) mod private
   };
   use _path::AbsolutePath;
 
+  /// `CrateDirError` enum represents errors when creating a `CrateDir` object.
   #[ derive( Debug, Error ) ]
   pub enum CrateDirError
   {
+    /// Indicates a validation error with a descriptive message.
     #[ error( "Failed to create a `CrateDir` object due to `{0}`" ) ]
     Validation( String ),
   }
@@ -287,6 +289,7 @@ crate::mod_interface!
   exposed use Manifest;
   exposed use CrateDir;
   orphan use ManifestError;
+  orphan use CrateDirError;
   protected use open;
   protected use repo_url;
 }

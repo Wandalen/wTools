@@ -27,6 +27,17 @@ pub( crate ) mod private
   };
   use wtools::Itertools;
 
+  /// Order of commands and properties.
+  #[ derive( Debug, Default, Clone, Copy, Eq, PartialOrd, PartialEq ) ]
+  pub enum Order
+  {
+    /// Natures order.
+    #[ default ]
+    Nature,
+    /// Lexicography order.
+    Lexicography,
+  }
+
   /// Validation errors that can occur in application.
   #[ derive( Error, Debug ) ]
   pub enum ValidationError
@@ -100,8 +111,8 @@ pub( crate ) mod private
   /// ```
   #[ derive( Debug ) ]
   #[ derive( former::Former ) ]
-  #[ storage_fields( help_generator : HelpGeneratorFn, help_variants : HashSet< HelpVariants > ) ]
-  #[ mutator( custom = true ) ]
+  #[ storage_fields( help_generator : HelpGeneratorFn, help_variants : HashSet< HelpVariants >, order : Order ) ]
+  #[ mutator( custom ) ]
   // #[ debug ]
   pub struct CommandsAggregator
   {
@@ -111,7 +122,7 @@ pub( crate ) mod private
     #[ former( default = Parser ) ]
     parser : Parser,
 
-    #[ scalar( setter = false, hint = false ) ]
+    #[ scalar( setter = false ) ]
     #[ former( default = Executor::former().form() ) ]
     executor : Executor,
 
@@ -127,19 +138,20 @@ pub( crate ) mod private
     {
       let ca = storage;
       let dictionary = ca.dictionary.get_or_insert_with( Dictionary::default );
+      dictionary.order = ca.order.unwrap_or_default();
 
       let help_generator = std::mem::take( &mut ca.help_generator ).unwrap_or_default();
       let help_variants = std::mem::take( &mut ca.help_variants ).unwrap_or_else( || HashSet::from([ HelpVariants::All ]) );
 
       if help_variants.contains( &HelpVariants::All )
       {
-        HelpVariants::All.generate( &help_generator, dictionary );
+        HelpVariants::All.generate( &help_generator, dictionary, ca.order.unwrap_or_default() );
       }
       else
       {
         for help in help_variants.iter().sorted()
         {
-          help.generate( &help_generator, dictionary );
+          help.generate( &help_generator, dictionary, ca.order.unwrap_or_default() );
         }
       }
     }
@@ -158,6 +170,7 @@ pub( crate ) mod private
     where
       IntoName : Into< String >,
     {
+      let name = name.into();
       let on_end = | command : CommandFormerStorage, super_former : Option< Self > | -> Self
       {
         let mut super_former = super_former.unwrap();
@@ -279,4 +292,5 @@ crate::mod_interface!
   exposed use CommandsAggregatorFormer;
   exposed use Error;
   exposed use ValidationError;
+  exposed use Order;
 }

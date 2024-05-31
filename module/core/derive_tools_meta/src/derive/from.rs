@@ -1,7 +1,18 @@
 use super::*;
-use macro_tools::{ attr, diag, generic_params, item_struct, struct_like::StructLike, Result };
+use macro_tools::
+{
+  attr,
+  diag,
+  generic_params,
+  item_struct,
+  struct_like::StructLike,
+  Result,
+};
 
-// xxx2 : get complete From for enums
+mod field_attributes;
+use field_attributes::*;
+mod item_attributes;
+use item_attributes::*;
 
 //
 
@@ -12,6 +23,7 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
   let original_input = input.clone();
   let parsed = syn::parse::< StructLike >( input )?;
   let has_debug = attr::has_debug( parsed.attrs().iter() )?;
+  let item_attrs = ItemAttributes::from_attrs( parsed.attrs().iter() )?;
   let item_name = &parsed.ident();
 
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
@@ -42,7 +54,7 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
           &generics_impl,
           &generics_ty,
           &generics_where,
-          field_names.next().unwrap(), // xxx : ?
+          field_names.next().unwrap(),
           &field_types.next().unwrap(),
         ),
         ( 1, None ) =>
@@ -88,24 +100,31 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
         .or_insert( 1 );
       });
 
-      let variants = item.variants.iter().map( | variant |
+      let variants_result : Result< Vec< proc_macro2::TokenStream > > = item.variants.iter().map( | variant |
       {
-        if map[ &variant.fields.to_token_stream().to_string() ] <= 1
+        // don't do automatic off
+        // if map[ & variant.fields.to_token_stream().to_string() ] <= 1
+        if true
         {
           variant_generate
           (
             item_name,
+            &item_attrs,
             &generics_impl,
             &generics_ty,
             &generics_where,
             variant,
+            &original_input,
           )
         }
         else
         {
-          qt!{}
+          Ok( qt!{} )
         }
-      });
+      }).collect();
+
+      let variants = variants_result?;
+
       qt!
       {
         #( #variants )*
@@ -123,61 +142,29 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
 }
 
 // qqq  : document, add example of generated code
-fn variant_generate
+fn generate_unit
 (
   item_name : &syn::Ident,
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  variant : &syn::Variant,
 )
 -> proc_macro2::TokenStream
 {
-  let variant_name = &variant.ident;
-  let fields = &variant.fields;
-
-  if fields.len() <= 0
-  {
-    return qt!{}
-  }
-
-  let ( args, use_src ) = if fields.len() == 1
-  {
-    let field = fields.iter().next().unwrap();
-    (
-      qt!{ #field },
-      qt!{ src },
-    )
-  }
-  else
-  {
-    let src_i = ( 0..fields.len() ).map( | e |
-    {
-      let i = syn::Index::from( e );
-      qt!{ src.#i, }
-    });
-    (
-      qt!{ #fields },
-      qt!{ #( #src_i )* },
-      // qt!{ src.0, src.1 },
-    )
-  };
-
   qt!
   {
-    #[ automatically_derived ]
-    impl< #generics_impl > From< #args > for #item_name< #generics_ty >
+    // impl From< () > for UnitStruct
+    impl< #generics_impl > From< () > for #item_name< #generics_ty >
     where
       #generics_where
     {
-      #[ inline ]
-      fn from( src : #args ) -> Self
+      #[ inline( always ) ]
+      fn from( src : () ) -> Self
       {
-        Self::#variant_name( #use_src )
+        Self
       }
     }
   }
-
 }
 
 // qqq  : document, add example of generated code -- done
@@ -455,198 +442,98 @@ fn generate_from_multiple_fields< 'a >
 fn generate_unit
 (
   item_name : &syn::Ident,
+  item_attrs : &ItemAttributes,
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  variant : &syn::Variant,
+  original_input : &proc_macro::TokenStream,
 )
--> proc_macro2::TokenStream
+-> Result< proc_macro2::TokenStream >
 {
-  qt!
+  let variant_name = &variant.ident;
+  let fields = &variant.fields;
+  let attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;
+
+  if !attrs.config.enabled.value( item_attrs.config.enabled.value( true ) )
   {
-    impl< #generics_impl > From< () > for #item_name< #generics_ty >
-    where
-      #generics_where
-    {
-      #[ inline( always ) ]
-      fn from( src : () ) -> Self
-      {
-        Self
-      }
-    }
-  }
-}
-
-// xxx2 : get completed
-
-///
-/// Attributes of a field / variant
-///
-
-pub struct FieldAttributes
-{
-  pub from : Option< AttributeFrom >,
-}
-
-impl FieldAttributes
-{
-
-  pub fn from_attrs< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< Self >
-  {
-    let mut from : Option< AttributeFrom > = None;
-
-    for attr in attrs
-    {
-      let key_ident = attr.path().get_ident()
-      .ok_or_else( || syn_err!( attr, "Expects an attribute of format #[ attribute( val ) ], but got:\n  {}", qt!{ #attr } ) )?;
-      let key_str = format!( "{}", key_ident );
-
-      if attr::is_standard( &key_str )
-      {
-        continue;
-      }
-
-      // qqq : qqq for Anton : xxx : refactor field_attrs::FieldAttributes::from_attrs to make it similar to this function
-      match key_str.as_ref()
-      {
-        AttributeFrom::KEYWORD =>
-        {
-          from.replace( AttributeFrom::from_meta( attr )? );
-        }
-        "debug" =>
-        {
-        }
-        _ =>
-        {
-          return Err( syn_err!( attr, "Known field attirbutes are : `from`, `debug`.\nUnknown structure attribute : {}", qt!{ #attr } ) );
-        }
-      }
-    }
-
-    Ok( FieldAttributes { from } )
+    return Ok( qt!{} )
   }
 
-}
-
-
-///
-/// Attribute to hold parameters of forming for a specific field or variant.
-/// For example to avoid code From generation for it.
-///
-/// `#[ from( off, hint : true ) ]`
-///
-
-#[ derive( Default ) ]
-pub struct AttributeFrom
-{
-  /// Specifies whether we should generate From implementation for the field.
-  /// Can be altered using `on` and `off` attributes
-  pub enabled : Option< bool >,
-  /// Specifies whether to provide a sketch of generated From or not.
-  /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub hint : bool,
-}
-
-impl AttributeFrom
-{
-
-  const KEYWORD : &'static str = "from";
-
-  pub fn from_meta( attr : &syn::Attribute ) -> Result< Self >
+  if fields.len() <= 0
   {
-    match attr.meta
-    {
-      syn::Meta::List( ref meta_list ) =>
-      {
-        return syn::parse2::< AttributeFrom >( meta_list.tokens.clone() );
-      },
-      syn::Meta::Path( ref _path ) =>
-      {
-        return Ok( Default::default() )
-      },
-      _ => return_syn_err!( attr, "Expects an attribute of format #[ from( off ) ]
-.\nGot: {}", qt!{ #attr } ),
-    }
+    return Ok( qt!{} )
   }
 
-}
-
-impl syn::parse::Parse for AttributeFrom
-{
-  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+  let ( args, use_src ) = if fields.len() == 1
   {
-    let mut off : bool = false;
-    let mut on : bool = false;
-    let mut hint = false;
-
-    while !input.is_empty()
+    let field = fields.iter().next().unwrap();
+    (
+      qt!{ #field },
+      qt!{ src },
+    )
+  }
+  else
+  {
+    let src_i = ( 0..fields.len() ).map( | e |
     {
-      let lookahead = input.lookahead1();
-      if lookahead.peek( syn::Ident )
+      let i = syn::Index::from( e );
+      qt!{ src.#i, }
+    });
+    (
+      qt!{ #fields },
+      qt!{ #( #src_i )* },
+      // qt!{ src.0, src.1 },
+    )
+  };
+
+  // qqq : make `debug` working for all branches
+  if attrs.config.debug.value( false )
+  {
+    let debug = format!
+    (
+      r#"
+#[ automatically_derived ]
+impl< {0} > From< {args} > for {item_name}< {1} >
+where
+  {2}
+{{
+  #[ inline ]
+  fn from( src : {args} ) -> Self
+  {{
+    Self::{variant_name}( {use_src} )
+  }}
+}}
+      "#,
+      format!( "{}", qt!{ #generics_impl } ),
+      format!( "{}", qt!{ #generics_ty } ),
+      format!( "{}", qt!{ #generics_where } ),
+    );
+    let about = format!
+    (
+r#"derive : From
+item : {item_name}
+field : {variant_name}"#,
+    );
+    diag::report_print( about, original_input, debug );
+  }
+
+  Ok
+  (
+    qt!
+    {
+      #[ automatically_derived ]
+      impl< #generics_impl > From< #args > for #item_name< #generics_ty >
+      where
+        #generics_where
       {
-        let ident : syn::Ident = input.parse()?;
-        // xxx : qqq for Anton : use match here and for all attributes -- done
-        match ident.to_string().as_str()
+        #[ inline ]
+        fn from( src : #args ) -> Self
         {
-          "off" =>
-          {
-            input.parse::< syn::Token![ = ] >()?;
-            let value : syn::LitBool = input.parse()?;
-            off = value.value();
-          },
-          "on" =>
-          {
-            input.parse::< syn::Token![ = ] >()?;
-            let value : syn::LitBool = input.parse()?;
-            on = value.value();
-          }
-          "hint" =>
-          {
-            input.parse::< syn::Token![ = ] >()?;
-            let value : syn::LitBool = input.parse()?;
-            hint = value.value;
-          }
-          _ =>
-          {
-            return Err( syn::Error::new_spanned( &ident, format!( "Unexpected identifier '{}'. Expected 'on', 'off', or 'hint'. For example: `#[ from( off, hint : true ) ]`", ident ) ) );
-          }
+          Self::#variant_name( #use_src )
         }
       }
-      else
-      {
-        return Err( syn::Error::new( input.span(), "Unexpected identifier '{}'. Expected 'on', 'off', or 'hint'. For example: `#[ from( off, hint : true ) ]`" ) );
-      }
-
     }
+  )
 
-    // xxx : move on / off logic into a helper
-
-    let mut enabled : Option< bool > = None;
-
-    if on && off
-    {
-      // return Err( syn_err!( input, "`on` and `off` are mutually exclusive .\nIllegal attribute usage : {}", qt!{ #input } ) )
-      return Err( syn::Error::new( input.span(), "`on` and `off` are mutually exclusive .\nIllegal attribute usage" ) );
-      // xxx : test
-    }
-
-    if !on && !off
-    {
-      enabled = None;
-    }
-    else if on
-    {
-      enabled = Some( true )
-    }
-    else if off
-    {
-      enabled = Some( false )
-    }
-
-    // Optional comma handling
-    if input.peek( syn::Token![,] )
-    {
-      input.parse::< syn::Token![,] >()?;
-    }
-    Ok( Self { enabled, hint } )
-  }
 }

@@ -41,7 +41,7 @@ fn main()
 
   #[ derive( Debug, PartialEq, Former ) ]
   #[ storage_fields( a : i32, b : Option< String > ) ]
-  #[ mutator( custom = true ) ]
+  #[ mutator( custom ) ]
   pub struct Struct1
   {
     c : String,

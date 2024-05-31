@@ -68,8 +68,14 @@ mod from_inner_multiple_test;
 mod from_inner_variants_manual;
 #[ cfg( feature = "derive_from" ) ]
 mod from_inner_variants_derive;
+
 #[ cfg( feature = "derive_from" ) ]
-mod from_inner_variants_duplicates;
+mod from_inner_variants_duplicates_all_off;
+#[ cfg( feature = "derive_from" ) ]
+mod from_inner_variants_duplicates_some_off;
+#[ cfg( feature = "derive_from" ) ]
+mod from_inner_variants_duplicates_some_off_default_off;
+
 #[ cfg( feature = "derive_from" ) ]
 mod from_inner_variants_generics;
 #[ cfg( feature = "derive_from" ) ]
@@ -92,5 +98,3 @@ mod inner_from_multiple_named_test;
 mod inner_from_unit_test;
 #[ cfg( feature = "derive_inner_from" ) ]
 mod inner_from_multiple_test;
-
-// xxx

@@ -245,9 +245,7 @@ pub( crate ) mod private
   impl StructLike
   {
 
-    // xxx2 : continue
     /// Returns an iterator over elements of the item.
-    // pub fn elements< 'a >( &'a self ) -> impl Iterator< Item = FieldOrVariant< 'a > > + 'a
     pub fn elements< 'a >( &'a self ) -> impl IterTrait< 'a, FieldOrVariant< 'a > > + 'a
     {
       match self

@@ -17,6 +17,7 @@ mod former_tests
   mod a_basic;
   mod a_primitives_manual;
   mod a_primitives;
+  mod tuple_struct;
 
   #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
   mod subform_collection_basic_scalar;
@@ -38,6 +39,7 @@ mod former_tests
   mod attribute_setter;
   mod attribute_alias;
   mod attribute_feature;
+  mod attribute_multiple;
 
   // = name collision
 
