@@ -1,18 +1,18 @@
 mod private
 {
-  use std::fmt::{Display, Formatter};
+  use crate::*;
+  use _path::AbsolutePath;
+  use action;
+  use wtools::error::anyhow::Error;
   use error_tools::{ Result, err };
-  use crate::_path::AbsolutePath;
-  use crate::action;
-  use crate::action::{MainHeaderRenewReport, ModulesHeadersRenewReport};
-  use crate::wtools::error::anyhow::Error;
+  use std::fmt::{ Display, Formatter };
 
   #[ derive( Debug, Default ) ]
   struct ReadmeHeadersRenewReport
   {
-    main_header_renew_report : MainHeaderRenewReport,
+    main_header_renew_report : action::MainHeaderRenewReport,
     main_header_renew_error : Option< Error >,
-    modules_headers_renew_report : ModulesHeadersRenewReport,
+    modules_headers_renew_report : action::ModulesHeadersRenewReport,
     modules_headers_renew_error : Option< Error >,
   }
 
@@ -77,7 +77,7 @@ mod private
       {
         report.main_header_renew_report = r;
       }
-      Err( ( error, r) ) => 
+      Err( ( r, error ) ) => 
       {
         fail = true;
         report.main_header_renew_report = r;
@@ -90,7 +90,7 @@ mod private
       {
         report.modules_headers_renew_report = r;
       }
-      Err( ( error, r) ) =>
+      Err( ( r, error ) ) =>
       {
         fail = true;
         report.modules_headers_renew_report = r;

@@ -178,7 +178,7 @@ mod private
   /// [![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/wtools)
   /// <!--{ generate.main_header.end }-->
   /// ```
-  pub fn readme_header_renew( path : AbsolutePath ) -> Result< MainHeaderRenewReport, ( MainHeaderRenewError, MainHeaderRenewReport ) >
+  pub fn readme_header_renew( path : AbsolutePath ) -> Result< MainHeaderRenewReport, ( MainHeaderRenewReport, MainHeaderRenewError ) >
   {
     let mut report = MainHeaderRenewReport::default();
     regexes_initialize();
@@ -186,20 +186,20 @@ mod private
     let mut cargo_metadata = Workspace::with_crate_dir
     ( 
       CrateDir::try_from( path )
-      .map_err( | e | ( e.into(), report.clone() ) )? 
-    ).map_err( | e | ( e.into(), report.clone() ) )?;
+      .map_err( | e | ( report.clone(), e.into() ) )? 
+    ).map_err( | e | ( report.clone(), e.into() ) )?;
     
     let workspace_root = workspace_root( &mut cargo_metadata )
-    .map_err( | e | ( e.into(), report.clone() ) )?;
+    .map_err( | e | ( report.clone(), e.into() ) )?;
     
     let header_param = HeaderParameters::from_cargo_toml( cargo_metadata )
-    .map_err( | e | ( e, report.clone() ) )?;
+    .map_err( | e | ( report.clone(), e.into() ) )?;
     
     let read_me_path = workspace_root.join
     ( 
       readme_path( &workspace_root )
       .ok_or_else( || format_err!( "Fail to find README.md" ) )
-      .map_err( | e | ( e.into(), report.clone() ) )?
+      .map_err( | e | ( report.clone(), e.into() ) )?
     );
     
     report.found_file = Some( read_me_path.clone() );
@@ -208,10 +208,10 @@ mod private
     .read( true )
     .write( true )
     .open( &read_me_path )
-    .map_err( | e | ( e.into(), report.clone() ) )?;
+    .map_err( | e | ( report.clone(), e.into() ) )?;
 
     let mut content = String::new();
-    file.read_to_string( &mut content ).map_err( | e | ( e.into(), report.clone() ) )?;
+    file.read_to_string( &mut content ).map_err( | e | ( report.clone(), e.into() ) )?;
 
     let raw_params = TAGS_TEMPLATE
     .get()
@@ -223,16 +223,16 @@ mod private
 
     _ = query::parse( raw_params ).context( "Fail to parse arguments" );
 
-    let header = header_param.to_header().map_err( | e | ( e.into(), report.clone() ) )?;
+    let header = header_param.to_header().map_err( | e | ( report.clone(), e.into() ) )?;
     let content : String = TAGS_TEMPLATE.get().unwrap().replace
     ( 
       &content, 
       &format!( "<!--{{ generate.main_header.start{raw_params} }}-->\n{header}\n<!--{{ generate.main_header.end }}-->" ) 
     ).into();
     
-    file.set_len( 0 ).map_err( | e | ( e.into(), report.clone() ) )?;
-    file.seek( SeekFrom::Start( 0 ) ).map_err( | e | ( e.into(), report.clone() ) )?;
-    file.write_all( content.as_bytes() ).map_err( | e | ( e.into(), report.clone() ) )?;
+    file.set_len( 0 ).map_err( | e | ( report.clone(), e.into() ) )?;
+    file.seek( SeekFrom::Start( 0 ) ).map_err( | e | ( report.clone(), e.into() ) )?;
+    file.write_all( content.as_bytes() ).map_err( | e | ( report.clone(), e.into() ) )?;
     report.touched_file = read_me_path;
     report.success = true;
     Ok( report )

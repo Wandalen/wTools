@@ -16,7 +16,7 @@ mod private
         println!( "{report}" );
         Ok( () )
       }
-      Err( ( e, report ) ) =>
+      Err( ( report, e ) ) =>
       {
         eprintln!( "{report}" );
         Err( Error::from( e ).context( "Fail to generate main header." ) )
