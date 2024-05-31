@@ -14,7 +14,7 @@ mod private
   };
   use std::collections::HashMap;
   use std::ffi::OsString;
-  use std::fmt::{ Debug, Display };
+  use std::fmt::{ Debug, Display }; /* qqq : import only fmt here and everywhere */
   use std::marker::PhantomData;
   use std::path::PathBuf;
   // aaa : for Petro : don't use cargo_metadata directly, use facade
@@ -24,10 +24,10 @@ mod private
   // qqq : for Petro : don't do micro imports
   #[ cfg( feature = "progress_bar" ) ]
   use indicatif::
-  { 
-    MultiProgress, 
-    ProgressBar, 
-    ProgressStyle 
+  {
+    MultiProgress,
+    ProgressBar,
+    ProgressStyle
   };
   use rayon::ThreadPoolBuilder;
   use process_tools::process::*;
@@ -173,11 +173,11 @@ mod private
       let mut table = Table::default();
       // let format = format();
       // table.set_format( format );
-      
+
       let mut header_row = Row::new();
       header_row.add_cell( "Channel" );
       header_row.add_cell( "Opt" );
-      
+
       for feature in &ff
       {
         header_row.add_cell( feature );
@@ -273,7 +273,7 @@ mod private
     }
   }
 
-  fn generate_features_cells( ff : &mut Vec< String >, variant : &TestVariant, row : &mut Row, mut counter : usize, mut flag : bool, enabled_features : &BTreeSet< String > ) 
+  fn generate_features_cells( ff : &mut Vec< String >, variant : &TestVariant, row : &mut Row, mut counter : usize, mut flag : bool, enabled_features : &BTreeSet< String > )
   {
     for feature in ff
     {
@@ -282,12 +282,12 @@ mod private
       {
         flag = false;
         row.add_cell( c );
-      } 
+      }
       else if variant.features.contains( feature )
       {
         row.add_cell( c );
-      } 
-      else 
+      }
+      else
       {
         c = "";
         row.add_cell( c );
@@ -295,7 +295,7 @@ mod private
       counter += 1;
     }
   }
-  
+
   #[ derive( Debug, Former ) ]
   pub struct PackageTestOptions< 'a >
   {
@@ -549,7 +549,7 @@ mod private
         header_row.add_cell( feature );
       }
       table.set_header( header_row );
-      
+
       writeln!( f, "{} {}\n", "\n=== Module".bold(), self.package_name.0.bold() )?;
       if self.tests.is_empty()
       {
@@ -709,11 +709,11 @@ mod private
                 let s = if let Some( multi_progress ) = options.progress_bar_feature.as_ref().and_then( | f | f.multi_progress.as_ref() )
                 {
                   let s = multi_progress.add( ProgressBar::new_spinner().with_message( format!( "{}", variant ) ) );
-                  s.enable_steady_tick( std::time::Duration::from_millis( 100 ) ); 
+                  s.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
                   Some( s )
                 }
-                else 
-                { 
+                else
+                {
                   None
                 };
                 // spinner.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
@@ -772,8 +772,8 @@ mod private
                   pb.inc( 0 );
                   Some( pb )
                 }
-                else 
-                { 
+                else
+                {
                   None
                 };
                 pb

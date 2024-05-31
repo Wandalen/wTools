@@ -152,7 +152,7 @@ fn main()
   #[ derive( Debug, Default ) ]
   pub struct LoggingSetDefinitionTypes< K, Context = (), Formed = LoggingSet< K > >
   {
-    _phantom : core::marker::PhantomData< ( K, Context, Formed ) >, // PhantomData is used to handle generic parameters safely.
+    _phantom : core::marker::PhantomData< ( K, Context, Formed ) >,
   }
 
   /// Specifies the storage, formed type, and context for the `LoggingSet` when used in a forming process.

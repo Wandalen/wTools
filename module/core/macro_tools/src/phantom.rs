@@ -28,7 +28,7 @@ pub( crate ) mod private
   /// ```rust
   /// use syn::{ parse_quote, ItemStruct };
   ///
-  /// let input_struct: ItemStruct = parse_quote!
+  /// let input_struct : ItemStruct = parse_quote!
   /// {
   ///   pub struct MyStruct< T, U >
   ///   {
