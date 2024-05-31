@@ -4,7 +4,7 @@ use super::*;
 // #[ default( value = false ) ]
 pub struct IsTransparent( bool );
 
-// qqq2 : make Default derive working
+// qqq : make Default derive working
 
 impl Default for IsTransparent
 {
