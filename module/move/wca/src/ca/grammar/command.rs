@@ -2,7 +2,8 @@ pub( crate ) mod private
 {
   use crate::*;
 
-  use std::collections::{ BTreeMap, HashMap };
+  use std::collections::{ HashMap };
+  use indexmap::IndexMap;
   use former::{ Former, StoragePreform };
   use wtools::Itertools;
 
@@ -98,10 +99,7 @@ pub( crate ) mod private
     #[ subform_entry( setter = true ) ]
     pub subjects : Vec< ValueDescription >,
     /// Hints and types for command options.
-    pub properties : BTreeMap< CommandName, ValueDescription >,
-    /// Last inserted property id.
-    #[ scalar( setter = false ) ]
-    last_id : usize,
+    pub properties : IndexMap< String, ValueDescription >,
     /// Map of aliases.
     // Aliased key -> Original key
     pub properties_aliases : HashMap< String, String >,
@@ -122,11 +120,11 @@ pub( crate ) mod private
       {
         Order::Nature =>
         {
-          self.properties.iter().map( | ( key, value ) | ( &key.name, value ) ).collect()
+          self.properties.iter().map( | ( key, value ) | ( key, value ) ).collect()
         }
         Order::Lexicography =>
         {
-          self.properties.iter().map( | ( key, value ) | ( &key.name, value ) ).sorted_by_key( | ( k, _ ) | *k ).collect()
+          self.properties.iter().map( | ( key, value ) | ( key, value ) ).sorted_by_key( | ( k, _ ) | *k ).collect()
         }
       }
     }
@@ -228,9 +226,7 @@ pub( crate ) mod private
           optional : property.optional,
         };
         debug_assert!( !properties.contains_key( &property.name ), "Property name `{}` is already used for `{:?}`", property.name, properties[ &property.name ] );
-        super_former.storage.last_id = Some( super_former.storage.last_id.unwrap_or_default() + 1 );
-        let name = CommandName { id : super_former.storage.last_id.unwrap(), name : property.name.clone() };
-        properties.insert( name, value );
+        properties.insert( property.name.clone(), value );
 
         let mut aliases = super_former.storage.properties_aliases.unwrap_or_default();
         debug_assert!( !aliases.contains_key( &property.name ), "Name `{}` is already used for `{}` as alias", property.name, aliases[ &property.name ] );
