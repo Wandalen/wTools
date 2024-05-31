@@ -57,7 +57,7 @@ pub fn inner_from( input : proc_macro::TokenStream ) -> Result< proc_macro2::Tok
   Ok( result )
 }
 
-// qqq  : document, add example of generated code
+// qqq : document, add example of generated code
 fn from_impl_named
 (
   item_name : &syn::Ident,
@@ -73,8 +73,8 @@ fn from_impl_named
     impl From< #item_name > for #field_type
     {
       #[ inline( always ) ]
-      // fm from( src: MyStruct ) -> Self
-      fn from( src: #item_name ) -> Self
+      // fm from( src : MyStruct ) -> Self
+      fn from( src : #item_name ) -> Self
       {
         // src.a
         src.#field_name
@@ -83,7 +83,7 @@ fn from_impl_named
   }
 }
 
-// qqq  : document, add example of generated code
+// qqq : document, add example of generated code
 fn from_impl
 (
   item_name : &syn::Ident,
@@ -98,8 +98,8 @@ fn from_impl
     impl From< #item_name > for #field_type
     {
       #[ inline( always ) ]
-      // fn from( src: IsTransparent ) -> Self
-      fn from( src: #item_name ) -> Self
+      // fn from( src : IsTransparent ) -> Self
+      fn from( src : #item_name ) -> Self
       {
         src.0
       }
@@ -107,7 +107,7 @@ fn from_impl
   }
 }
 
-// qqq  : document, add example of generated code
+// qqq : document, add example of generated code
 fn from_impl_multiple_fields< 'a >
 (
   item_name : &syn::Ident,
@@ -123,8 +123,8 @@ fn from_impl_multiple_fields< 'a >
     impl From< #item_name > for ( #(#field_types), *)
     {
       #[ inline( always ) ]
-      // fn from( src: StructWithManyFields ) -> Self
-      fn from( src: #item_name ) -> Self
+      // fn from( src : StructWithManyFields ) -> Self
+      fn from( src : #item_name ) -> Self
       {
         //( src.0, src.1 )
         (#(#params), *)
@@ -133,7 +133,7 @@ fn from_impl_multiple_fields< 'a >
   }
 }
 
-// qqq  : document, add example of generated code
+// qqq : document, add example of generated code
 fn unit( item_name : &syn::Ident ) -> proc_macro2::TokenStream
 {
   qt!
@@ -144,8 +144,8 @@ fn unit( item_name : &syn::Ident ) -> proc_macro2::TokenStream
     impl From< #item_name > for ()
     {
       #[ inline( always ) ]
-      // fn from( src: UnitStruct ) -> ()
-      fn from( src: #item_name ) -> ()
+      // fn from( src : UnitStruct ) -> ()
+      fn from( src : #item_name ) -> ()
       {
         ()
       }

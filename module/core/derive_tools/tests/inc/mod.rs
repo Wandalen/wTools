@@ -48,53 +48,52 @@ mod deref_mut_manual_test;
 mod deref_mut_test;
 
 #[ cfg( feature = "derive_from" ) ]
-mod from_inner_named_test;
-mod from_inner_named_manual_test;
+#[ path = "from" ]
+mod tests
+{
+	#[ allow( unused_imports ) ]
+	use super::*;
 
-mod from_inner_manual_test;
-mod from_inner_multiple_named_manual_test;
-mod from_inner_multiple_manual_test;
-mod from_inner_unit_manual_test;
-#[ cfg( feature = "derive_from" ) ]
-mod from_inner_test;
-#[ cfg( feature = "derive_from" ) ]
-mod from_inner_multiple_named_test;
-#[ cfg( feature = "derive_from" ) ]
-mod from_inner_unit_test;
-#[ cfg( feature = "derive_from" ) ]
-mod from_inner_multiple_test;
+	mod named_test;
+	mod named_manual_test;
 
-#[ cfg( feature = "derive_from" ) ]
-mod from_inner_variants_manual;
-#[ cfg( feature = "derive_from" ) ]
-mod from_inner_variants_derive;
+	mod manual_test;
+	mod multiple_named_manual_test;
+	mod multiple_manual_test;
+	mod unit_manual_test;
+	mod test;
+	mod multiple_named_test;
+	mod unit_test;
+	mod multiple_test;
 
-#[ cfg( feature = "derive_from" ) ]
-mod from_inner_variants_duplicates_all_off;
-#[ cfg( feature = "derive_from" ) ]
-mod from_inner_variants_duplicates_some_off;
-#[ cfg( feature = "derive_from" ) ]
-mod from_inner_variants_duplicates_some_off_default_off;
+	mod variants_manual;
+	mod variants_derive;
 
-#[ cfg( feature = "derive_from" ) ]
-mod from_inner_variants_generics;
-#[ cfg( feature = "derive_from" ) ]
-mod from_inner_variants_generics_where;
-#[ cfg( feature = "derive_from" ) ]
-mod from_inner_variants_collisions;
+	mod variants_duplicates_all_off;
+	mod variants_duplicates_some_off;
+	mod variants_duplicates_some_off_default_off;
 
-mod inner_from_manual_test;
-mod inner_from_named_manual_test;
-mod inner_from_multiple_named_manual_test;
-mod inner_from_multiple_manual_test;
-mod inner_from_unit_manual_test;
+	mod variants_generics;
+	mod variants_generics_where;
+	mod variants_collisions;
+}
+
 #[ cfg( feature = "derive_inner_from" ) ]
-mod inner_from_test;
-#[ cfg( feature = "derive_inner_from" ) ]
-mod inner_from_named_test;
-#[ cfg( feature = "derive_inner_from" ) ]
-mod inner_from_multiple_named_test;
-#[ cfg( feature = "derive_inner_from" ) ]
-mod inner_from_unit_test;
-#[ cfg( feature = "derive_inner_from" ) ]
-mod inner_from_multiple_test;
+#[ path = "inner_from" ]
+mod inner_from_tests
+{
+	#[ allow( unused_imports ) ]
+	use super::*;
+
+	mod manual_test;
+	mod named_manual_test;
+	mod multiple_named_manual_test;
+	mod multiple_manual_test;
+	mod unit_manual_test;
+	mod test;
+	mod named_test;
+	mod multiple_named_test;
+	mod unit_test;
+	mod multiple_test;
+
+}
