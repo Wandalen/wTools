@@ -1,4 +1,4 @@
-//! qqq : for Petro : write proper description
+//! for Petro : write proper description
 
 fn main()
 {

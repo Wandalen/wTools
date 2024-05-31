@@ -153,8 +153,6 @@ fn decompose_generics_without_where_clause()
   let exp : syn::Generics = syn::parse_quote! { < T, U, > };
   a_id!( ty_gen, exp.params );
 
-  // qqq : extend other tests with a_id
-
 }
 
 #[ test ]

@@ -68,8 +68,8 @@ mod derive_more
   #[ cfg( feature = "derive_unwrap" ) ]
   pub use ::derive_more::Unwrap;
 
-  // qqq2 : list all
-  // qqq2 : make sure all features of derive_more is reexported
+  // qqq : list all
+  // qqq : make sure all features of derive_more is reexported
 }
 
 #[ doc( inline ) ]

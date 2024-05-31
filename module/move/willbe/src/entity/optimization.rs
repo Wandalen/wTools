@@ -13,6 +13,7 @@ mod private
     Release,
   }
 
+  // qqq : use derive
   impl std::fmt::Display for Optimization
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result

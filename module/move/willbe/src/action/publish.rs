@@ -37,7 +37,6 @@ mod private
       for ( path, report ) in &self.packages
       {
         let report = report.to_string().replace("\n", "\n  ");
-        // qqq : remove unwrap
         let path = if let Some( wrd ) = &self.workspace_root_dir
         {
           path.as_ref().strip_prefix( &wrd.as_ref() ).unwrap()
@@ -172,7 +171,7 @@ mod private
     let queue = graph::toposort( subgraph ).unwrap().into_iter().map( | n | package_map.get( &n ).unwrap() ).cloned().collect::< Vec< _ > >();
 
     let roots = packages_to_publish.iter().map( | p | package_map.get( p ).unwrap().crate_dir() ).collect::< Vec< _ > >();
-    
+
     let plan = package::PublishPlan::former()
     .workspace_dir( CrateDir::try_from( workspace_root_dir ).unwrap() )
     .option_base_temp_dir( dir.clone() )
@@ -180,7 +179,7 @@ mod private
     .roots( roots )
     .packages( queue )
     .form();
-    
+
     Ok( plan )
   }
 
