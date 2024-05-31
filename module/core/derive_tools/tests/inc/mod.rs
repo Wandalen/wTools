@@ -39,17 +39,117 @@ mod as_ref_manual_test;
 #[ cfg( feature = "derive_as_ref" ) ]
 mod as_ref_test;
 
-mod deref_manual_test;
 #[ cfg( feature = "derive_deref" ) ]
-mod deref_test;
+#[ path = "deref" ]
+mod deref_tests
+{
+  #[ allow( unused_imports ) ]
+  use super::*;
 
-mod deref_mut_manual_test;
+  //
+
+  mod struct_unit;
+  mod struct_unit_manual;
+  mod struct_tuple;
+  mod struct_tuple_manual;
+  mod struct_tuple_empty;
+  mod struct_tuple_empty_manual;
+  mod struct_named;
+  mod struct_named_manual;
+  mod struct_named_empty;
+  mod struct_named_empty_manual;
+
+  mod enum_unit;
+  mod enum_unit_manual;
+  mod enum_tuple;
+  mod enum_tuple_manual;
+  mod enum_tuple_empty;
+  mod enum_tuple_empty_manual;
+  mod enum_named;
+  mod enum_named_manual;
+  mod enum_named_empty;
+  mod enum_named_empty_manual;
+
+  //
+
+  mod generics_lifetimes;
+  mod generics_lifetimes_manual;
+
+  mod generics_types;
+  mod generics_types_manual;
+  mod generics_types_default;
+  mod generics_types_default_manual;
+
+  mod generics_constants;
+  mod generics_constants_manual;
+  mod generics_constants_default;
+  mod generics_constants_default_manual;
+
+  //
+
+  mod bounds_inlined;
+  mod bounds_inlined_manual;
+  mod bounds_where;
+  mod bounds_where_manual;
+  mod bounds_mixed;
+  mod bounds_mixed_manual;
+
+  //
+
+  mod name_collisions;
+}
+
 #[ cfg( feature = "derive_deref_mut" ) ]
-mod deref_mut_test;
+#[ path = "deref_mut" ]
+mod deref_mut_tests
+{
+  #[ allow( unused_imports ) ]
+  use super::*;
+
+  //
+
+  mod struct_tuple;
+  mod struct_tuple_manual;
+  mod struct_named;
+  mod struct_named_manual;
+
+  mod enum_tuple;
+  mod enum_tuple_manual;
+  mod enum_named;
+  mod enum_named_manual;
+
+  //
+
+  mod generics_lifetimes;
+  mod generics_lifetimes_manual;
+
+  mod generics_types;
+  mod generics_types_manual;
+  mod generics_types_default;
+  mod generics_types_default_manual;
+
+  mod generics_constants;
+  mod generics_constants_manual;
+  mod generics_constants_default;
+  mod generics_constants_default_manual;
+
+  //
+
+  mod bounds_inlined;
+  mod bounds_inlined_manual;
+  mod bounds_where;
+  mod bounds_where_manual;
+  mod bounds_mixed;
+  mod bounds_mixed_manual;
+
+  //
+
+  mod name_collisions;
+}
 
 #[ cfg( feature = "derive_from" ) ]
 #[ path = "from" ]
-mod tests
+mod from
 {
 	#[ allow( unused_imports ) ]
 	use super::*;
