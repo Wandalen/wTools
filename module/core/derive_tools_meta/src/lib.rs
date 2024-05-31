@@ -183,7 +183,7 @@ pub fn new( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 // #[ cfg( feature = "enabled" ) ]
 // #[ cfg( feature = "derive_from" ) ]
 // #[ proc_macro_derive( FromInner, attributes( debug ) ) ]
-// pub fn from_inner( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+// pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 // {
 //   let result = derive::from::from( input );
 //   match result
