@@ -1,6 +1,6 @@
 use super::*;
-use macro_tools::{ attr, diag, type_struct, Result };
-use iter_tools::{ Itertools, process_results };
+use macro_tools::{ attr, diag, Result, format_ident };
+use iter_tools::{ Itertools };
 
 ///
 /// Generate `ComponentsAssign` trait implementation for the type, providing `components_assign` function
@@ -12,17 +12,24 @@ pub fn components_assign( input : proc_macro::TokenStream ) -> Result< proc_macr
 {
   use convert_case::{ Case, Casing };
   let original_input = input.clone();
-  let parsed = syn::parse::< type_struct::TypeStructParsed >( input )?;
-  let has_debug = attr::has_debug( parsed.item.attrs.iter() )?;
+  let parsed = syn::parse::< syn::ItemStruct >( input )?;
+  let has_debug = attr::has_debug( parsed.attrs.iter() )?;
 
   // name
-  let item_name = &parsed.item_name;
-  let trait_name = format!( "{}ComponentsAssign", item_name );
-  let trait_ident = syn::Ident::new( &trait_name, item_name.span() );
-  let method_name = format!( "{}_assign", item_name.to_string().to_case( Case::Snake ) );
-  let method_ident = syn::Ident::new( &method_name, item_name.span() );
+  let item_name = &parsed.ident;
+  let trait_ident = format_ident!
+  {
+    "{}ComponentsAssign",
+    item_name
+  };
+  let method_ident = format_ident!
+  {
+    "{}_assign",
+    item_name.to_string().to_case( Case::Snake )
+  };
 
   // fields
+// fields
   let ( bounds1, bounds2, component_assigns ) : ( Vec< _ >, Vec< _ >, Vec< _ > ) = parsed.fields.iter().map( | field |
   {
     let field_type = &field.ty;
@@ -32,9 +39,9 @@ pub fn components_assign( input : proc_macro::TokenStream ) -> Result< proc_macr
     ( bound1, bound2, component_assign )
   }).multiunzip();
 
-  let bounds1 : Vec< _ > = process_results( bounds1, | iter | iter.collect() )?;
-  let bounds2 : Vec< _ > = process_results( bounds2, | iter | iter.collect() )?;
-  let component_assigns : Vec< _ > = process_results( component_assigns, | iter | iter.collect() )?;
+  let bounds1 : Vec< _ > = bounds1.into_iter().collect::< Result< _ > >()?;
+  let bounds2 : Vec< _ > = bounds2.into_iter().collect::< Result< _ > >()?;
+  let component_assigns : Vec< _ > = component_assigns.into_iter().collect::< Result< _ > >()?;
 
   // code
   let doc = format!( "Interface to assign instance from set of components exposed by a single argument." );
@@ -106,7 +113,7 @@ fn generate_trait_bounds( field_type : &syn::Type ) -> Result< proc_macro2::Toke
 /// ### Output example
 ///
 /// ```ignore
-/// T : former::ComponentAssign< i32, IntoT >,
+/// T : former::Assign< i32, IntoT >,
 /// ```
 ///
 fn generate_impl_bounds( field_type : &syn::Type ) -> Result< proc_macro2::TokenStream >
@@ -115,7 +122,7 @@ fn generate_impl_bounds( field_type : &syn::Type ) -> Result< proc_macro2::Token
   (
     qt!
     {
-      T : former::ComponentAssign< #field_type, IntoT >,
+      T : former::Assign< #field_type, IntoT >,
     }
   )
 }
@@ -127,7 +134,7 @@ fn generate_impl_bounds( field_type : &syn::Type ) -> Result< proc_macro2::Token
 /// Output example
 ///
 /// ```ignore
-/// former::ComponentAssign::< i32, _ >::assign( self.component.clone() );
+/// former::Assign::< i32, _ >::assign( self.component.clone() );
 /// ```
 ///
 fn generate_component_assign_call( field : &syn::Field ) -> Result< proc_macro2::TokenStream >
@@ -138,7 +145,7 @@ fn generate_component_assign_call( field : &syn::Field ) -> Result< proc_macro2:
   (
     qt!
     {
-      former::ComponentAssign::< #field_type, _ >::assign( self, component.clone() );
+      former::Assign::< #field_type, _ >::assign( self, component.clone() );
     }
   )
 }

@@ -1,3 +1,12 @@
+#[ cfg( feature = "use_alloc" ) ]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use crate::dependency::hashbrown::hash_set::*;
+#[ cfg( not( feature = "no_std" ) ) ]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use std::collections::hash_set::*;
+
 /// Creates a `HashSet` from a list of elements.
 ///
 /// The `hset` macro allows for convenient creation of a `HashSet` with initial elements.
@@ -68,7 +77,7 @@ macro_rules! hset
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _set = collection_tools::HashSet::with_capacity( _cap );
+    let mut _set = $crate::hset::HashSet::with_capacity( _cap );
     $(
       let _ = _set.insert( $key );
     )*
@@ -164,7 +173,7 @@ macro_rules! into_hset
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _set = collection_tools::HashSet::with_capacity( _cap );
+    let mut _set = $crate::hset::HashSet::with_capacity( _cap );
     $(
       let _ = _set.insert( Into::into( $key ) );
     )*

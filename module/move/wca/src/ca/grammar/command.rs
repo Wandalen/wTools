@@ -2,10 +2,10 @@ pub( crate ) mod private
 {
   use crate::*;
 
-  use { Handler, Routine, Type };
-
-  use std::collections::HashMap;
+  use std::collections::{ HashMap };
+  use indexmap::IndexMap;
   use former::{ Former, StoragePreform };
+  use wtools::Itertools;
 
   /// A description of a Value in a command. Used to specify the expected type and provide a hint for the Value.
   ///
@@ -36,6 +36,7 @@ pub( crate ) mod private
   {
     name : String,
     // qqq : how to re-use ValueDescriptionFormer without additional end?
+    // #[subform_scalar]
     // value : ValueDescription,
     /// providing guidance to the user for entering a valid value
     hint : String,
@@ -86,7 +87,6 @@ pub( crate ) mod private
 
   #[ derive( Debug, Clone, PartialEq, Eq ) ]
   #[ derive( Former ) ]
-  // #[ debug ]
   pub struct Command
   {
     /// Command common hint.
@@ -99,17 +99,35 @@ pub( crate ) mod private
     #[ subform_entry( setter = true ) ]
     pub subjects : Vec< ValueDescription >,
     /// Hints and types for command options.
-    pub properties : HashMap< String, ValueDescription >,
+    pub properties : IndexMap< String, ValueDescription >,
     /// Map of aliases.
     // Aliased key -> Original key
     pub properties_aliases : HashMap< String, String >,
-    // qqq : for Bohdan : routine should also be here
+    // aaa : for Bohdan : routine should also be here
     // aaa : here it is
     // qqq : make it usable and remove default(?)
     /// The type `Routine` represents the specific implementation of the routine.
     #[ scalar( setter = false ) ]
     #[ former( default = Routine::from( Handler::from( || { panic!( "No routine available: A handler function for the command is missing" ) } ) ) ) ]
     pub routine : Routine,
+  }
+
+  impl Command
+  {
+    pub( crate ) fn properties( &self, order : Order ) -> Vec< ( &String, &ValueDescription ) >
+    {
+      match order
+      {
+        Order::Nature =>
+        {
+          self.properties.iter().map( | ( key, value ) | ( key, value ) ).collect()
+        }
+        Order::Lexicography =>
+        {
+          self.properties.iter().map( | ( key, value ) | ( key, value ) ).sorted_by_key( | ( k, _ ) | *k ).collect()
+        }
+      }
+    }
   }
 
   impl< Definition > CommandFormer< Definition >
@@ -200,6 +218,7 @@ pub( crate ) mod private
         let mut super_former = super_former.unwrap();
         let mut properties = super_former.storage.properties.unwrap_or_default();
         let property = property.preform();
+
         let value = ValueDescription
         {
           hint : property.hint,

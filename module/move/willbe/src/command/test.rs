@@ -15,9 +15,8 @@ mod private
   use error_tools::for_app::bail;
   use optimization::Optimization;
 
-  // qqq: `Former` forces the struct to be public
   #[ derive( Former, Debug ) ]
-  pub struct TestsProperties
+  struct TestsProperties
   {
     #[ former( default = true ) ]
     dry : bool,

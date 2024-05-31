@@ -1,3 +1,12 @@
+#[ cfg( feature = "use_alloc" ) ]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use crate::dependency::hashbrown::hash_map::*;
+#[ cfg( not( feature = "no_std" ) ) ]
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use std::collections::hash_map::*;
+
 /// Creates a `HashMap` from a list of key-value pairs.
 ///
 /// The `hmap` macro allows for convenient creation of a `HashMap` with initial elements.
@@ -68,7 +77,7 @@ macro_rules! hmap
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _map = collection_tools::HashMap::with_capacity( _cap );
+    let mut _map = $crate::hmap::HashMap::with_capacity( _cap );
     $(
       let _ = _map.insert( $key, $value );
     )*
@@ -163,7 +172,7 @@ macro_rules! into_hmap
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _map = collection_tools::HashMap::with_capacity( _cap );
+    let mut _map = $crate::hmap::HashMap::with_capacity( _cap );
     $(
       let _ = _map.insert( Into::into( $key ), Into::into( $value ) );
     )*

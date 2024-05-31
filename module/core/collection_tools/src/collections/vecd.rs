@@ -1,3 +1,7 @@
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use alloc::collections::vec_deque::*;
+
 /// Creates a `VecDeque` from a list of elements.
 ///
 /// The `vecd` macro allows for the convenient creation of a `VecDeque` with initial elements.
@@ -71,7 +75,7 @@ macro_rules! vecd
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _vecd = collection_tools::VecDeque::with_capacity( _cap );
+    let mut _vecd = $crate::vecd::VecDeque::with_capacity( _cap );
     $(
       _vecd.push_back( $key );
     )*
@@ -164,7 +168,7 @@ macro_rules! into_vecd
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _vecd = collection_tools::VecDeque::with_capacity( _cap );
+    let mut _vecd = $crate::vecd::VecDeque::with_capacity( _cap );
     $(
       _vecd.push_back( Into::into( $key ) );
     )*

@@ -165,6 +165,7 @@ mod private
   }
 
   // qqq : we have to replace the implementation above with the implementation below, don't we?
+  // qqq : for Bohdan : duplication?
 
   /// `BumpOptions` manages the details necessary for the version bump process for crates.
   /// This includes the directory of the crate whose version is being bumped, the old and new version numbers,
@@ -295,7 +296,7 @@ mod private
 
     Ok( report )
   }
-  
+
   /// Reverts the version of a package in the provided `ExtendedBumpReport`.
   ///
   /// # Arguments
@@ -310,7 +311,7 @@ mod private
     let Some( name ) = report.name.as_ref() else { return Ok( () ) };
     let Some( old_version ) = report.old_version.as_ref() else { return Ok( () ) };
     let Some( new_version ) = report.new_version.as_ref() else { return Ok( () ) };
-    
+
     let dependencies = | item_maybe_with_dependencies : &mut toml_edit::Item |
     {
       if let Some( dependency ) = item_maybe_with_dependencies.get_mut( "dependencies" ).and_then( | ds | ds.get_mut( name ) )
@@ -330,10 +331,10 @@ mod private
           }
         }
       }
-      
+
       Ok( () )
     };
-    
+
     for path in &report.changed_files
     {
       let mut manifest = manifest::open( path.clone() )?;

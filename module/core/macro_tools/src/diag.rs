@@ -5,7 +5,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use super::super::*;
+  use crate::*;
 
   ///
   /// Result with syn::Error.
@@ -229,13 +229,13 @@ pub( crate ) mod private
   #[ macro_export ]
   macro_rules! tree_print
   {
-    ( $src:expr ) =>
+    ( $src :expr ) =>
     {{
       let result = $crate::tree_diagnostics_str!( $src );
       println!( "{}", result );
       result
     }};
-    ( $( $src:expr ),+ $(,)? ) =>
+    ( $( $src :expr ),+ $(,)? ) =>
     {{
       $( $crate::tree_print!( $src ) );+
     }};
@@ -257,13 +257,13 @@ pub( crate ) mod private
   #[ macro_export ]
   macro_rules! code_print
   {
-    ( $src:expr ) =>
+    ( $src :expr ) =>
     {{
       let result = $crate::code_diagnostics_str!( $src );
       println!( "{}", result );
       result
     }};
-    ( $( $src:expr ),+ $(,)? ) =>
+    ( $( $src :expr ),+ $(,)? ) =>
     {{
       $( $crate::code_print!( $src ) );+
     }};
@@ -276,7 +276,7 @@ pub( crate ) mod private
   #[ macro_export ]
   macro_rules! tree_diagnostics_str
   {
-    ( $src:expr ) =>
+    ( $src :expr ) =>
     {{
       let src2 = &$src;
       format!( "{} : {} :\n{:#?}", stringify!( $src ), $crate::qt!{ #src2 }, $src )
@@ -290,7 +290,7 @@ pub( crate ) mod private
   #[ macro_export ]
   macro_rules! code_diagnostics_str
   {
-    ( $src:expr ) =>
+    ( $src :expr ) =>
     {{
       let src2 = &$src;
       format!( "{} : {}", stringify!( $src ), $crate::qt!{ #src2 } )
@@ -304,7 +304,7 @@ pub( crate ) mod private
   #[ macro_export ]
   macro_rules! code_to_str
   {
-    ( $src:expr ) =>
+    ( $src :expr ) =>
     {{
       let src2 = &$src;
       format!( "{}", $crate::qt!{ #src2 } )

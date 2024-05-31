@@ -1,3 +1,7 @@
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+ pub use alloc::collections::binary_heap::*;
+
 /// Creates a `BinaryHeap` from a list of elements.
 ///
 /// The `into_heap` macro simplifies the creation of a `BinaryHeap` with initial elements.
@@ -53,7 +57,7 @@ macro_rules! heap
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _heap = collection_tools::BinaryHeap::with_capacity( _cap );
+    let mut _heap = $crate::heap::BinaryHeap::with_capacity( _cap );
     $(
       _heap.push( $key );
     )*
@@ -142,7 +146,7 @@ macro_rules! into_heap
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _heap = collection_tools::BinaryHeap::with_capacity( _cap );
+    let mut _heap = $crate::heap::BinaryHeap::with_capacity( _cap );
     $(
       _heap.push( Into::into( $key ) );
     )*

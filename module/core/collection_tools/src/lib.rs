@@ -4,13 +4,17 @@
 #![ doc( html_root_url = "https://docs.rs/collection_tools/latest/collection_tools/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-// qqq : make subdirectory for each container -- done
-
-// qqq : move out of lib.rs file -- moved to `collections.rs`
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+extern crate alloc;
 
 /// Module containing all collection macros
 #[ cfg( feature = "enabled" ) ]
-pub mod collections;
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+mod collections;
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+pub use collections::*;
 
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
@@ -36,27 +40,6 @@ pub mod protected
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 
-  extern crate alloc;
-
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use alloc::vec::Vec;
-
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use alloc::collections::{ BinaryHeap, BTreeMap, BTreeSet, LinkedList, VecDeque };
-
-  // qqq : what is comnination `use_alloc` + !`no_std`
-  #[ cfg( feature = "use_alloc" ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::dependency::hashbrown::{ HashMap, HashSet };
-
-  #[ cfg( not( feature = "no_std" ) ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use std::collections::{ HashMap, HashSet };
-
 }
 
 /// Parented namespace of the module.
@@ -72,40 +55,44 @@ pub mod orphan
 #[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
+
+  // #[ cfg( feature = "reexports" ) ]
+  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use crate::
+  {
+    bmap::BTreeMap,
+    bset::BTreeSet,
+    heap::BinaryHeap,
+    hmap::HashMap,
+    hset::HashSet,
+    list::LinkedList,
+    vec::Vec,
+    vecd::VecDeque,
+  };
+
+  // #[ cfg( feature = "reexports" ) ]
+  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use
+  {
+    HashMap as Map,
+    HashSet as Set,
+    Vec as DynArray,
+  };
+
+  // qqq : cover by tests presence of all containers immidiately in collection_tools::* and in collection_tools::exposed::*
+
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
-
-  // qqq : for Anton : uncomment, make it working and cover by tests
-  // #[ cfg( feature = "prelude" ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use crate::
-  // {
-  //   HashMap as Map,
-  //   HashSet as Set,
-  //   HashMap,
-  //   HashSet,
-  //   VecDeque,
-  //   BTreeMap,
-  //   BTreeSet,
-  //   BinaryHeap,
-  //   LinkedList,
-  // };
-
-  // #[ cfg( feature = "prelude" ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use crate::
-  // {
-  //   Vec,
-  //   Vec as DynArray,
-  // };
-
 }

@@ -5,10 +5,11 @@
 //! by logging each addition. This example illustrates how to integrate such custom collections with the
 //! Former trait system for use in structured data types.
 
-// qqq : replace !no_std with !no_std || use_alloc when collection_tools reexports iterators
-#[ cfg( not( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ) ]
+// qqq : replace !no_std with !no_std || use_alloc when collection_tools reexports iterators -- done
+#[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
 fn main() {}
-#[ cfg( all( feature = "enabled", feature = "derive_former", not( feature = "no_std" ) ) ) ]
+
+#[ cfg( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ]
 fn main()
 {
   use collection_tools::HashSet;
@@ -43,7 +44,7 @@ fn main()
     K : std::cmp::Eq + std::hash::Hash,
   {
     type Item = K;
-    type IntoIter = std::collections::hash_set::IntoIter< K >;
+    type IntoIter = collection_tools::hset::IntoIter< K >;
 
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -57,7 +58,7 @@ fn main()
     K : std::cmp::Eq + std::hash::Hash,
   {
     type Item = &'a K;
-    type IntoIter = std::collections::hash_set::Iter< 'a, K >;
+    type IntoIter = collection_tools::hset::Iter< 'a, K >;
 
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -151,7 +152,7 @@ fn main()
   #[ derive( Debug, Default ) ]
   pub struct LoggingSetDefinitionTypes< K, Context = (), Formed = LoggingSet< K > >
   {
-    _phantom : core::marker::PhantomData< ( K, Context, Formed ) >, // PhantomData is used to handle generic parameters safely.
+    _phantom : core::marker::PhantomData< ( K, Context, Formed ) >,
   }
 
   /// Specifies the storage, formed type, and context for the `LoggingSet` when used in a forming process.

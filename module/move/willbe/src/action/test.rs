@@ -8,38 +8,9 @@ mod private
   use std::collections::HashSet;
 
   use std::{ env, fs };
-  // qqq : for Petro : https://github.com/obox-systems/conventions/blob/master/code_style.md#importing-structuring-std-imports
 
   #[ cfg( feature = "progress_bar" ) ]
   use indicatif::{ MultiProgress, ProgressStyle };
-  // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
-  // aaa : ✅
-
-  // qqq : for Petro : don't use Package directly. rid it off for the whole willbe
-
-  // qqq : for Petro : should not be such combinations full,no_std
-  // [ release | nightly | full,no_std ]: ❌  failed
-
-  // qqq : for Petro : improve formatting
-  //
-  // [ optimization : debug | channel : stable | feature : derive_component_from,use_alloc ]
-  // [ optimization : debug | channel : stable | feature : default,enabled ]
-  // [ optimization : debug | channel : stable | feature : derive_components_assign ]
-  // [ optimization : debug | channel : stable | feature : derive_component_from,derive_component_assign ]
-  // [ optimization : debug | channel : stable | feature : derive_former,derive_component_assign ]
-  // [ optimization : debug | channel : stable | feature : enabled ]
-  // [ optimization : debug | channel : stable | feature : derive_component_assign,no_std ]
-  // [ optimization : debug | channel : stable | feature : default,derive_component_assign ]
-  // [ optimization : debug | channel : stable | feature : no-features ]
-  //
-  // should be
-  //
-  // [ optimization : release | channel : nightly | feature : full ] -> [ optimization : release | channel : nightly | feature : [ list all features ] ]
-  // [ optimization : debug | channel : stable | feature : [] ]
-  //
-  // don't create artifical categories as no-features
-  //
-  // make table out of that
 
   use former::Former;
   use wtools::
@@ -89,7 +60,7 @@ mod private
     #[ former( default = false ) ]
     with_progress : bool,
   }
-  
+
 
   /// The function runs tests with a different set of features in the selected crate (the path to the crate is specified in the dir variable).
   /// Tests are run with each feature separately, with all features together, and without any features.
@@ -131,7 +102,7 @@ mod private
       with_all_features,
       with_none_features,
       optimizations,
-      variants_cap, 
+      variants_cap,
       with_progress,
     } = args;
 
@@ -189,12 +160,12 @@ mod private
 
     #[ cfg( feature = "progress_bar" ) ]
     let test_options_former = if with_progress
-    { 
+    {
       let test_options_former = test_options_former.feature( TestOptionsProgressBarFeature{ multiprocess, style } );
       test_options_former
     }
     else
-    { 
+    {
       test_options_former
     };
 

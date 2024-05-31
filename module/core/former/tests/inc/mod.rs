@@ -11,11 +11,15 @@ mod former_tests
 
   // = basic
 
+  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
   mod a_basic_manual;
+  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
   mod a_basic;
   mod a_primitives_manual;
   mod a_primitives;
+  mod tuple_struct;
 
+  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
   mod subform_collection_basic_scalar;
   #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
   mod subform_collection_basic_manual;
@@ -24,7 +28,9 @@ mod former_tests
 
   // = attribute
 
+  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
   mod attribute_default_collection;
+  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
   mod attribute_default_primitive;
   mod attribute_default_conflict;
   mod attribute_storage_with_end;
@@ -33,11 +39,13 @@ mod former_tests
   mod attribute_setter;
   mod attribute_alias;
   mod attribute_feature;
+  mod attribute_multiple;
 
   // = name collision
 
   mod name_collision_former_hashmap_without_parameter;
   mod name_collision_former_vector_without_parameter;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod name_collisions;
   mod name_collision_context;
   mod name_collision_end;
@@ -71,11 +79,21 @@ mod former_tests
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod collection_former_common;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod collection_former_vec;
+  mod collection_former_btree_map;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod collection_former_btree_set;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod collection_former_binary_heap;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod collection_former_hashmap;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod collection_former_hashset;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  mod collection_former_hashmap;
+  mod collection_former_linked_list;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod collection_former_vec;
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  mod collection_former_vec_deque;
 
   // = subform collection
 

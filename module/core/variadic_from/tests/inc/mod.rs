@@ -1,14 +1,35 @@
+#![ allow( unused_imports ) ]
+
 use super::*;
 
 #[ cfg( all( feature = "type_variadic_from" ) ) ]
-mod variadic_from_manual_test;
+mod from2_named_manual;
+#[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
+mod from2_named_derive;
 
 #[ cfg( all( feature = "type_variadic_from" ) ) ]
-mod variadic_from_manual_beyond_test;
+mod from2_unnamed_manual;
+#[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
+mod from2_unnamed_derive;
 
-// #[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
-// mod variadic_from_derive_test;
-// xxx : fix
+#[ cfg( all( feature = "type_variadic_from" ) ) ]
+mod from4_named_manual;
+#[ cfg( all( feature = "type_variadic_from" ) ) ]
+mod from4_unnamed_manual;
+
+#[ cfg( all( feature = "type_variadic_from" ) ) ]
+mod from4_beyond_named;
+#[ cfg( all( feature = "type_variadic_from" ) ) ]
+mod from4_beyond_unnamed;
+
+#[ cfg( all( feature = "type_variadic_from" ) ) ]
+mod from0_named_manual;
+#[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
+mod from0_named_derive;
+#[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
+mod from0_unnamed_derive;
 
 #[ cfg( all( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
-mod variadic_from2_derive;
+mod sample;
+#[ cfg( all( feature = "type_variadic_from" ) ) ]
+mod exports;

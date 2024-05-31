@@ -55,7 +55,7 @@ fn subform_child()
   .child( "b" ).data( "bb" ).end()
   .form();
 
-  let children = vec!
+  let children = collection_tools::vec!
   [
     Child { name : "a".to_string(), data : "aa" },
     Child { name : "b".to_string(), data : "bb" },
@@ -74,7 +74,7 @@ fn subform_child_generated()
   ._child().name( "b" ).data( "bb" ).end()
   .form();
 
-  let children = vec!
+  let children = collection_tools::vec!
   [
     Child { name : "a".to_string(), data : "aa" },
     Child { name : "b".to_string(), data : "bb" },
@@ -95,7 +95,7 @@ fn collection()
     .end()
   .form();
 
-  let children = vec!
+  let children = collection_tools::vec!
   [
     Child { name : "a".to_string(), data : "aa" },
     Child { name : "b".to_string(), data : "bb" },
@@ -110,7 +110,7 @@ fn collection()
 fn scalar()
 {
 
-  let children = vec!
+  let children = collection_tools::vec!
   [
     Child { name : "a".to_string(), data : "aa" },
     Child { name : "b".to_string(), data : "bb" },
@@ -119,7 +119,7 @@ fn scalar()
   .children3( children )
   .form();
 
-  let children = vec!
+  let children = collection_tools::vec!
   [
     Child { name : "a".to_string(), data : "aa" },
     Child { name : "b".to_string(), data : "bb" },

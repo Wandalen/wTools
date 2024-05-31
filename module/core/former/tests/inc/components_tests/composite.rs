@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 #[ allow( unused_imports ) ]
-use former::{ ComponentAssign, AssignWithType };
+use former::{ Assign, AssignWithType };
 
 ///
 /// Options1
@@ -14,7 +14,7 @@ use former::{ ComponentAssign, AssignWithType };
     Default,
     PartialEq,
     the_module::ComponentFrom,
-    the_module::ComponentAssign,
+    the_module::Assign,
     the_module::ComponentsAssign,
     the_module::FromComponents,
   )
@@ -38,7 +38,7 @@ pub struct Options1
     Default,
     PartialEq,
     the_module::ComponentFrom,
-    the_module::ComponentAssign,
+    the_module::Assign,
     the_module::ComponentsAssign,
     the_module::FromComponents,
   )
@@ -72,4 +72,4 @@ pub struct Options2
 
 //
 
-include!( "./only_test/components_composite.rs" );
+include!( "./only_test/composite.rs" );

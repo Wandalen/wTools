@@ -1,3 +1,10 @@
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use alloc::vec::*;
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use core::slice::{ Iter, IterMut };
+
 /// Creates a `Vec` from a list of elements.
 ///
 /// The `vec` macro simplifies the creation of a `Vec` with initial elements.
@@ -66,7 +73,7 @@ macro_rules! vec
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _vec = collection_tools::Vec::with_capacity( _cap );
+    let mut _vec = $crate::vec::Vec::with_capacity( _cap );
     $(
       _vec.push( $key );
     )*
@@ -160,7 +167,7 @@ macro_rules! into_vec
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _vec = collection_tools::Vec::with_capacity( _cap );
+    let mut _vec = $crate::vec::Vec::with_capacity( _cap );
     $(
       _vec.push( Into::into( $key ) );
     )*

@@ -8,9 +8,8 @@ mod private
   use wtools::error::Result;
   use _path::AbsolutePath;
 
-  // qqq: `Former` forces the struct to be public
   #[ derive( former::Former ) ]
-  pub struct PublishDiffProperties
+  struct PublishDiffProperties
   {
     keep_archive : Option< PathBuf >,
   }

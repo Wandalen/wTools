@@ -1,6 +1,6 @@
 [package]
 name = "derive_tools"
-version = "0.22.0"
+version = "0.23.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -67,6 +67,7 @@ default = [
 
   "derive_from",
   "derive_inner_from",
+  "derive_new",
 
   # "use_std",
 ]
@@ -102,7 +103,7 @@ full = [
 
   "derive_display",
   "derive_from_str",
-  
+
   "derive_clone_dyn",
   # "derive_clone_dyn_use_std",
 
@@ -111,16 +112,17 @@ full = [
 
   "derive_from",
   "derive_inner_from",
+  "derive_new",
 
   # "use_std",
 ]
 no_std = []
-use_alloc = [ "no_std" ]
-enabled = []
+use_alloc = [ "no_std", "clone_dyn/use_alloc" ]
+enabled = [ "derive_tools_meta/enabled" ]
 
 # nightly = [ "derive_more/nightly" ]
 
-type_variadic_from = [ "variadic_from/type_variadic_from" ]
+type_variadic_from = [ "variadic_from/enabled", "variadic_from/type_variadic_from" ]
 derive_variadic_from = [ "type_variadic_from", "derive_tools_meta/derive_variadic_from", "variadic_from/derive_variadic_from" ]
 
 # enable_track_caller = [ "derive_more", "derive_more/track-caller" ]
@@ -163,13 +165,15 @@ derive_strum = [ "strum/std", "strum/derive", "strum/strum_macros" ]
 strum_phf = [ "strum/std", "strum/phf", "strum/strum_macros" ]
 # zzz : review features
 
-derive_clone_dyn = [ "clone_dyn" ]
+derive_clone_dyn = [ "clone_dyn/enabled" ]
 # derive_clone_dyn_use_std = [ "derive_clone_dyn", "clone_dyn/use_std" ]
 # derive_clone_dyn_no_std = [ "derive_clone_dyn", "clone_dyn/no_std" ]
-derive_clone_dyn_use_alloc = [ "derive_clone_dyn", "clone_dyn/use_alloc" ]
+# derive_clone_dyn_use_alloc = [ "derive_clone_dyn", "clone_dyn/use_alloc" ]
 
 derive_from = [ "derive_tools_meta/derive_from" ]
 derive_inner_from = [ "derive_tools_meta/derive_inner_from" ]
+derive_new = [ "derive_tools_meta/derive_new" ]
+
 parse_display = [ "parse-display" ]
 
 [dependencies]
@@ -180,11 +184,11 @@ strum = { version = "~0.25", optional = true, default-features = false }
 # strum_macros = { version = "~0.25.3", optional = true, default-features = false }
 parse-display = { version = "~0.8.2", optional = true, default-features = false }
 
+
 ## internal
-derive_tools_meta = { workspace = true, features = [ "enabled" ] }
+derive_tools_meta = { workspace = true, features = [] }
 variadic_from = { workspace = true, features = [] }
-clone_dyn = { workspace = true, optional = true }
-# xxx
+clone_dyn = { workspace = true, features = [] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
