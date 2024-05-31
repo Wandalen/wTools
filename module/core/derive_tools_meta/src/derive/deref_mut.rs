@@ -211,7 +211,7 @@ fn generate_struct_tuple_fields
     qt!
     {
       #[ automatically_derived ]
-      impl< #generics_impl > ::core::ops::Deref for #item_name< #generics_ty >
+      impl< #generics_impl > ::core::ops::DerefMut for #item_name< #generics_ty >
       where
         #generics_where
       {
