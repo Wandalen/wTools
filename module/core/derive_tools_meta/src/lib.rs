@@ -19,19 +19,19 @@
 )]
 #[ cfg( feature = "enabled" ) ]
 mod derive;
-#[ cfg
-(
-  any
-  (
-    feature = "derive_as_mut",
-    feature = "derive_as_ref",
-    feature = "derive_deref",
-    feature = "derive_deref_mut",
-    feature = "derive_from",
-    feature = "derive_inner_from",
-    feature = "derive_variadic_from",
-  )
-)]
+// #[ cfg
+// (
+//   any
+//   (
+//     feature = "derive_as_mut",
+//     feature = "derive_as_ref",
+//     feature = "derive_deref",
+//     feature = "derive_deref_mut",
+//     feature = "derive_from",
+//     feature = "derive_inner_from",
+//     feature = "derive_variadic_from",
+//   )
+// )]
 // #[ cfg( feature = "enabled" ) ]
 // use derive::*;
 
@@ -91,6 +91,61 @@ pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
   }
 }
 
+///
+/// Provides an automatic `new` implementation for struct wrapping a single value.
+///
+/// This macro simplifies the conversion of an inner type to an outer struct type
+/// when the outer type is a simple wrapper around the inner type.
+///
+/// ## Example Usage
+///
+/// Instead of manually implementing `new` for `IsTransparent`:
+///
+/// ```rust
+/// pub struct IsTransparent( bool );
+///
+/// impl IsTransparent
+/// {
+///   #[ inline( always ) ]
+///   fn new( src : bool ) -> Self
+///   {
+///     Self( src )
+///   }
+/// }
+/// ```
+///
+/// Use `#[ derive( New ) ]` to automatically generate the implementation:
+///
+/// ```rust
+/// # use derive_tools_meta::*;
+/// #[ derive( New ) ]
+/// pub struct IsTransparent( bool );
+/// ```
+///
+/// The macro facilitates the conversion without additional boilerplate code.
+///
+
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_new" ) ]
+#[ proc_macro_derive
+(
+  New,
+  attributes
+  (
+    debug, // struct
+    new, // field
+  )
+)]
+pub fn new( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+{
+  let result = derive::new::new( input );
+  match result
+  {
+    Ok( stream ) => stream.into(),
+    Err( err ) => err.to_compile_error().into(),
+  }
+}
+
 // ///
 // /// Alias for derive `From`. Provides an automatic `From` implementation for struct wrapping a single value.
 // ///
@@ -128,7 +183,7 @@ pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 // #[ cfg( feature = "enabled" ) ]
 // #[ cfg( feature = "derive_from" ) ]
 // #[ proc_macro_derive( FromInner, attributes( debug ) ) ]
-// pub fn from_inner( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+// pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 // {
 //   let result = derive::from::from( input );
 //   match result

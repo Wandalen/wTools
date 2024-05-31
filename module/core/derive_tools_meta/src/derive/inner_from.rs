@@ -105,7 +105,8 @@ fn from_impl_named
     impl From< #item_name > for #field_type
     {
       #[ inline( always ) ]
-      fn from( src: #item_name ) -> Self
+      // fm from( src : MyStruct ) -> Self
+      fn from( src : #item_name ) -> Self
       {
         src.#field_name
       }
@@ -153,7 +154,8 @@ fn from_impl
     impl From< #item_name > for #field_type
     {
       #[ inline( always ) ]
-      fn from( src: #item_name ) -> Self
+      // fn from( src : IsTransparent ) -> Self
+      fn from( src : #item_name ) -> Self
       {
         src.0
       }
@@ -203,6 +205,7 @@ fn from_impl_multiple_fields< 'a >
     impl From< #item_name > for ( #( #field_types ), *)
     {
       #[ inline( always ) ]
+      // fn from( src : StructWithManyFields ) -> Self
       fn from( src : #item_name ) -> Self
       {
         ( #( #params ), * )
@@ -249,7 +252,8 @@ fn unit( item_name : &syn::Ident ) -> proc_macro2::TokenStream
     impl From< #item_name > for ()
     {
       #[ inline( always ) ]
-      fn from( src: #item_name ) -> ()
+      // fn from( src : UnitStruct ) -> ()
+      fn from( src : #item_name ) -> ()
       {
         ()
       }

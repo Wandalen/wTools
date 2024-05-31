@@ -9,14 +9,17 @@ use macro_tools::
   Result,
 };
 
+#[ path = "from/field_attributes.rs" ]
 mod field_attributes;
 use field_attributes::*;
+#[ path = "from/item_attributes.rs" ]
 mod item_attributes;
 use item_attributes::*;
 
 //
 
-pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
+// xxx : qqq : implement
+pub fn new( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   // use macro_tools::quote::ToTokens;
 
@@ -91,36 +94,18 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
     StructLike::Enum( ref item ) =>
     {
 
-      // let mut map = std::collections::HashMap::new();
-      // item.variants.iter().for_each( | variant |
-      // {
-      //   map
-      //   .entry( variant.fields.to_token_stream().to_string() )
-      //   .and_modify( | e | *e += 1 )
-      //   .or_insert( 1 );
-      // });
-
       let variants_result : Result< Vec< proc_macro2::TokenStream > > = item.variants.iter().map( | variant |
       {
-        // don't do automatic off
-        // if map[ & variant.fields.to_token_stream().to_string() ] <= 1
-        if true
-        {
-          variant_generate
-          (
-            item_name,
-            &item_attrs,
-            &generics_impl,
-            &generics_ty,
-            &generics_where,
-            variant,
-            &original_input,
-          )
-        }
-        else
-        {
-          Ok( qt!{} )
-        }
+        variant_generate
+        (
+          item_name,
+          &item_attrs,
+          &generics_impl,
+          &generics_ty,
+          &generics_where,
+          variant,
+          &original_input,
+        )
       }).collect();
 
       let variants = variants_result?;
@@ -134,38 +119,15 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
 
   if has_debug
   {
-    let about = format!( "derive : From\nstructure : {item_name}" );
+    let about = format!( "derive : New\nstructure : {item_name}" );
     diag::report_print( about, &original_input, &result );
   }
 
   Ok( result )
 }
 
-// qqq  : document, add example of generated code -- done
-/// Generates `From` implementation for unit structs
-///
-/// # Example
-///
-/// ## Input
-/// ```rust
-/// # use derive_tools_meta::From;
-/// #[ derive( From ) ]
-/// pub struct IsTransparent;
-/// ```
-///
-/// ## Output
-/// ```rust
-/// pub struct IsTransparent;
-/// impl From< () > for IsTransparent
-/// {
-///   #[ inline( always ) ]
-///   fn from( src : () ) -> Self
-///   {
-///     Self
-///   }
-/// }
-/// ```
-///
+// xxx : qqq : implement
+// qqq : document, add example of generated code
 fn generate_unit
 (
   item_name : &syn::Ident,
@@ -177,13 +139,13 @@ fn generate_unit
 {
   qt!
   {
-    // impl From< () > for UnitStruct
-    impl< #generics_impl > From< () > for #item_name< #generics_ty >
+    // impl UnitStruct
+    impl< #generics_impl > #item_name< #generics_ty >
     where
       #generics_where
     {
       #[ inline( always ) ]
-      fn from( src : () ) -> Self
+      fn new() -> Self
       {
         Self
       }
@@ -191,38 +153,8 @@ fn generate_unit
   }
 }
 
-// qqq  : document, add example of generated code -- done
-/// Generates `From` implementation for tuple structs with a single field
-///
-/// # Example
-///
-/// ## Input
-/// ```rust
-/// # use derive_tools_meta::From;
-/// #[ derive( From ) ]
-/// pub struct IsTransparent
-/// {
-///   value : bool,
-/// }
-/// ```
-///
-/// ## Output
-/// ```rust
-/// pub struct IsTransparent
-/// {
-///   value : bool,
-/// }
-/// #[ automatically_derived ]
-/// impl From< bool > for IsTransparent
-/// {
-///   #[ inline( always ) ]
-///   fn from( src : bool ) -> Self
-///   {
-///     Self { value : src }
-///   }
-/// }
-/// ```
-///
+// xxx : qqq : implement
+// qqq : document, add example of generated code
 fn generate_single_field_named
 (
   item_name : &syn::Ident,
@@ -237,46 +169,24 @@ fn generate_single_field_named
   qt!
   {
     #[ automatically_derived ]
-    impl< #generics_impl > From< #field_type > for #item_name< #generics_ty >
+    // impl MyStruct
+    impl< #generics_impl > #item_name< #generics_ty >
     where
       #generics_where
     {
       #[ inline( always ) ]
-      // fn from( src : i32 ) -> Self
-      fn from( src : #field_type ) -> Self
+      // fn new( src : i32 ) -> Self
+      fn new( src : #field_type ) -> Self
       {
-        Self { #field_name : src }
+        // Self { a: src }
+        Self { #field_name: src }
       }
     }
   }
 }
 
-// qqq  : document, add example of generated code -- done
-/// Generates `From`` implementation for structs with a single named field
-///
-/// # Example of generated code
-///
-/// ## Input
-/// ```rust
-/// # use derive_tools_meta::From;
-/// #[ derive( From ) ]
-/// pub struct IsTransparent( bool );
-/// ```
-/// 
-/// ## Output
-/// ```rust
-/// pub struct IsTransparent( bool );
-/// #[ automatically_derived ]
-/// impl From< bool > for IsTransparent
-/// {
-///   #[ inline( always ) ]
-///   fn from( src : bool ) -> Self
-///   {
-///     Self( src )
-///   }
-/// }
-/// ```
-///
+// xxx : qqq : implement
+// qqq : document, add example of generated code
 fn generate_single_field
 (
   item_name : &syn::Ident,
@@ -291,13 +201,14 @@ fn generate_single_field
   qt!
   {
     #[automatically_derived]
-    impl< #generics_impl > From< #field_type > for #item_name< #generics_ty >
+    // impl IsTransparent
+    impl< #generics_impl > #item_name< #generics_ty >
     where
       #generics_where
     {
       #[ inline( always ) ]
-      // fn from( src : bool ) -> Self
-      fn from( src : #field_type ) -> Self
+      // fn new( src : bool ) -> Self
+      fn new( src : #field_type ) -> Self
       {
         // Self( src )
         Self( src )
@@ -306,42 +217,8 @@ fn generate_single_field
   }
 }
 
-// qqq : document, add example of generated code -- done
-/// Generates `From` implementation for structs with multiple named fields
-///
-/// # Example
-///
-/// ## Input
-/// ```rust
-/// # use derive_tools_meta::From;
-/// #[ derive( From ) ]
-/// pub struct Struct
-/// {
-///   value1 : bool,
-///   value2 : i32,
-/// }
-/// ```
-///
-/// ## Output
-/// ```rust
-/// pub struct Struct
-/// {
-///   value1 : bool,
-///   value2 : i32,
-/// }
-/// impl From< ( bool, i32 ) > for Struct
-/// {
-///   #[ inline( always ) ]
-///   fn from( src : ( bool, i32 ) ) -> Self
-///   {
-///     Struct
-///     {
-///       value1 : src.0,
-///       value2 : src.1,
-///     }
-///   }
-/// }
-/// ```
+// xxx : qqq : implement
+// qqq : document, add example of generated code
 fn generate_multiple_fields_named< 'a >
 (
   item_name : &syn::Ident,
@@ -366,14 +243,16 @@ fn generate_multiple_fields_named< 'a >
   let field_types : Vec< _ > = field_types.collect();
   qt!
   {
-    impl< #generics_impl > From< (# ( #field_types ),* ) > for #item_name< #generics_ty >
+    // impl StructNamedFields
+    impl< #generics_impl > #item_name< #generics_ty >
     where
       #generics_where
     {
       #[ inline( always ) ]
-      // fn from( src : (i32, bool) ) -> Self
-      fn from( src : ( #( #field_types ),* ) ) -> Self
+      // fn new( src : ( i32, bool ) ) -> Self
+      fn new( src : ( #( #field_types ),* ) ) -> Self
       {
+        // StructNamedFields{ a : src.0, b : src.1 }
         #item_name { #(#params),* }
       }
     }
@@ -381,31 +260,8 @@ fn generate_multiple_fields_named< 'a >
 
 }
 
-// qqq  : document, add example of generated code -- done
-/// Generates `From` implementation for tuple structs with multiple fields
-///
-/// # Example
-///
-/// ## Input
-/// ```rust
-/// # use derive_tools_meta::From;
-/// #[ derive( From ) ]
-/// pub struct Struct( bool, i32 );
-/// ```
-///
-/// ## Output
-/// ```rust
-/// pub struct Struct( bool, i32 );
-/// impl From< ( bool, i32 ) > for Struct
-/// {
-///   #[ inline( always ) ]
-///   fn from( src : ( bool, i32 ) ) -> Self
-///   {
-///     Struct( src.0, src.1 )
-///   }
-/// }
-/// ```
-///
+// xxx : qqq : implement
+// qqq : document, add example of generated code
 fn generate_multiple_fields< 'a >
 (
   item_name : &syn::Ident,
@@ -429,20 +285,23 @@ fn generate_multiple_fields< 'a >
 
   qt!
   {
-    impl< #generics_impl > From< (# ( #field_types ),* ) > for #item_name< #generics_ty >
+    // impl StructWithManyFields
+    impl< #generics_impl > #item_name< #generics_ty >
     where
       #generics_where
     {
       #[ inline( always ) ]
-      // fn from( src : (i32, bool) ) -> Self
-      fn from( src : ( #( #field_types ),* ) ) -> Self
+      // fn new( src : (i32, bool) ) -> Self
+      fn new( src : ( #( #field_types ),* ) ) -> Self
       {
+        // StructWithManyFields( src.0, src.1 )
         #item_name( #( #params ),* )
       }
     }
   }
 }
 
+// xxx : qqq : implement
 // qqq : document, add example of generated code
 fn variant_generate
 (
@@ -499,12 +358,12 @@ fn variant_generate
     (
       r#"
 #[ automatically_derived ]
-impl< {0} > From< {args} > for {item_name}< {1} >
+impl< {0} > {item_name}< {1} >
 where
   {2}
 {{
   #[ inline ]
-  fn from( src : {args} ) -> Self
+  fn new( src : {args} ) -> Self
   {{
     Self::{variant_name}( {use_src} )
   }}
@@ -516,7 +375,7 @@ where
     );
     let about = format!
     (
-r#"derive : From
+r#"derive : New
 item : {item_name}
 field : {variant_name}"#,
     );
@@ -528,12 +387,12 @@ field : {variant_name}"#,
     qt!
     {
       #[ automatically_derived ]
-      impl< #generics_impl > From< #args > for #item_name< #generics_ty >
+      impl< #generics_impl > #item_name< #generics_ty >
       where
         #generics_where
       {
         #[ inline ]
-        fn from( src : #args ) -> Self
+        fn new( src : #args ) -> Self
         {
           Self::#variant_name( #use_src )
         }

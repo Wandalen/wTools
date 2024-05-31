@@ -35,6 +35,7 @@ default = [
   "derive_deref_mut",
   "derive_deref",
   "derive_from",
+  "derive_new",
   "derive_inner_from",
   "derive_as_ref",
   "derive_as_mut",
@@ -45,28 +46,29 @@ full = [
   "derive_deref_mut",
   "derive_deref",
   "derive_from",
+  "derive_new",
   "derive_inner_from",
   "derive_as_ref",
   "derive_as_mut",
   "derive_variadic_from",
 ]
-enabled = []
+enabled = [ "macro_tools/enabled", "iter_tools/enabled", "former_types/enabled" ]
 
 derive_as_mut = []
 derive_as_ref = []
 derive_deref = []
 derive_deref_mut = []
 derive_from = []
+derive_new = []
 derive_inner_from = []
 derive_variadic_from = []
 
 [dependencies]
+# xxx : qqq : optimize features set
 macro_tools = { workspace = true, features = [ "full" ] }
 iter_tools = { workspace = true, features = [ "full" ] }
-former_types = { workspace = true, features = [ "enabled", "types_component_assign" ] }
+former_types = { workspace = true, features = [ "types_component_assign" ] }
 const_format = { version = "0.2.32" }
-
-# qqq : optimize features set
 
 [dev-dependencies]
 test_tools = { workspace = true }
