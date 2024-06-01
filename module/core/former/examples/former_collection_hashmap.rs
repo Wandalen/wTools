@@ -1,5 +1,5 @@
 //!
-//! This example demonstrates how to effectively employ the `Former` trait to configure a `HashMap` using a collection setter.
+//! This example demonstrates how to effectively employ the `Former` to configure a `HashMap` using a collection setter.
 //!
 
 #[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
