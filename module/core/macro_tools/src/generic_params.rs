@@ -462,10 +462,18 @@ pub( crate ) mod private
         },
         syn::GenericParam::Lifetime( lifetime_param ) =>
         {
-          // Lifetimes are added as-is to both generics_for_impl and generics_for_ty
+          // Lifetimes are added as-is to generics_for_impl and without bounds to generics_for_ty
           generics_for_impl.push_value( syn::GenericParam::Lifetime( lifetime_param.clone() ) );
           generics_for_impl.push_punct( syn::token::Comma::default() );
-          generics_for_ty.push_value( syn::GenericParam::Lifetime( lifetime_param.clone() ) );
+
+          let ty_param = syn::GenericParam::Lifetime( syn::LifetimeParam
+          {
+            attrs : vec![],
+            lifetime : lifetime_param.lifetime.clone(),
+            colon_token : None,
+            bounds : syn::punctuated::Punctuated::new(),
+          });
+          generics_for_ty.push_value( ty_param );
           generics_for_ty.push_punct( syn::token::Comma::default() );
         }
       }

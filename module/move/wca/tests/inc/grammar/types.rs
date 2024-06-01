@@ -103,7 +103,7 @@ tests_impls!
     // strings
     let string = Type::List( Type::String.into(), ',' ).try_cast( "some,string".into() ).unwrap();
 
-    a_id!( 
+    a_id!(
       Value::List( vec![ Value::String( "some".into() ), Value::String( "string".into() ) ] )
     , string );
 
@@ -126,6 +126,20 @@ tests_impls!
     let inner_numbers : Vec< f64 > = numbers.into();
     a_id!( vec![ 100.0, 3.14 ], inner_numbers );
   }
+
+  // xxx : The try_cast method on value is designed to convert user input strings into parsed values, such as lists of strings or numbers. However, when converting these parsed values back into their original string representations using the display method, the resulting string may not match the original user input.
+  fn values_list_display()
+  {
+    let origin_string = "some,string";
+    let string = Type::List( Type::String.into(), ',' ).try_cast( origin_string.into() ).unwrap();
+    a_id!( origin_string, string.to_string() );
+
+    // xxx : qqq : that fails now. suggest solution
+    // let origin_string = "100;3.14";
+    // let string = Type::List( Type::Number.into(), ';' ).try_cast( origin_string.into() ).unwrap();
+    // a_id!( origin_string, string.to_string() );
+  }
+
 }
 
 //
@@ -137,4 +151,5 @@ tests_index!
   path,
   boolean,
   values_list,
+  values_list_display,
 }
