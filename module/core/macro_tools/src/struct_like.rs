@@ -371,10 +371,8 @@ pub( crate ) mod private
     }
 
     /// Extracts the name of each field.
-    // pub fn field_names( &self ) -> Box< dyn Iterator< Item = Option< &syn::Ident > > + '_ >
-    // pub fn field_names< 'a >( &'a self ) -> Box< dyn IterTrait< 'a, Option< &'a syn::Ident > > + '_ >
-    // pub fn field_names< 'a >( &'a self ) -> Option< Box< dyn IterTrait< 'a, &'a syn::Ident > + '_ > >
-    pub fn field_names< 'a >( &'a self ) -> Option< impl IterTrait< 'a, &'a syn::Ident > + '_ >
+    // pub fn field_names< 'a >( &'a self ) -> Option< impl IterTrait< 'a, &'a syn::Ident > + '_ >
+    pub fn field_names< 'a >( &'a self ) -> Option< DynIter< 'a, syn::Ident > >
     {
       match self
       {
@@ -388,11 +386,11 @@ pub( crate ) mod private
         },
         StructLike::Enum( _item ) =>
         {
-          Some( Box::new( self.fields().map( | field | field.ident.as_ref().unwrap() ) ) )
+          Some( DynIter::new( self.fields().map( | field | field.ident.as_ref().unwrap() ) ) )
+          // Some( DynIterFrom::dyn_iter_from( self.fields().map( | field | field.ident.as_ref().unwrap() ) ) )
           // Box::new( std::iter::empty() )
         },
       }
-
       // Box::new( self.fields().map( | field | field.ident.as_ref() ) )
     }
 

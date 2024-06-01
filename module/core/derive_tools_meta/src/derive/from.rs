@@ -262,7 +262,7 @@ fn generate_single_field_named
 /// #[ derive( From ) ]
 /// pub struct IsTransparent( bool );
 /// ```
-/// 
+///
 /// ## Output
 /// ```rust
 /// pub struct IsTransparent( bool );
@@ -348,21 +348,21 @@ fn generate_multiple_fields_named< 'a >
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  field_names : Box< dyn macro_tools::IterTrait< 'a, &'a syn::Ident > + '_ >,
+  field_names : impl macro_tools::IterTrait< 'a, &'a syn::Ident >,
   field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type >,
 )
 -> proc_macro2::TokenStream
 {
 
-  let params : Vec< proc_macro2::TokenStream > = field_names
+  let params = field_names
   .enumerate()
   .map(| ( index, field_name ) |
   {
     let index = index.to_string().parse::< proc_macro2::TokenStream >().unwrap();
     qt! { #field_name : src.#index }
-  })
-  .collect();
+  });
 
+  // xxx : qqq : rid off collects
   let field_types : Vec< _ > = field_types.collect();
   qt!
   {
@@ -417,13 +417,12 @@ fn generate_multiple_fields< 'a >
 -> proc_macro2::TokenStream
 {
 
-  let params : Vec< proc_macro2::TokenStream > = ( 0..field_types.len() )
+  let params = ( 0..field_types.len() )
   .map( | index |
   {
     let index = index.to_string().parse::< proc_macro2::TokenStream >().unwrap();
     qt!( src.#index )
-  })
-  .collect();
+  });
 
   let field_types : Vec< _ > = field_types.collect();
 

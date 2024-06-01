@@ -90,7 +90,7 @@ pub trait FormerDefinition : Sized
   type Storage : Default;
 
   /// The type of the entity being formed. It is
-  /// generally the structure for which the `Former` trait is derived, representing the fully formed
+  /// generally the structure for which the `Former` is derived, representing the fully formed
   /// state of the entity. However, it can differ if a custom `FormingEnd` or a different `Formed` type
   /// is defined to handle specific forming logic or requirements.
   type Formed;

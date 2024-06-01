@@ -227,36 +227,21 @@ fn generate_multiple_fields_named< 'a >
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
   field_names : impl macro_tools::IterTrait< 'a, &'a syn::Ident >,
   field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type >,
-  // xxx
 )
 -> proc_macro2::TokenStream
-// where
-  // dyn macro_tools::IterTrait< 'a, &'a syn::Ident > : Clone,
 {
 
-  // xxx : is collect required?
-  // let params : Vec< proc_macro2::TokenStream > = field_names
-  // .enumerate()
-  // .map(| ( index, field_name ) |
-  // {
-  //   let index = index.to_string().parse::< proc_macro2::TokenStream >().unwrap();
-  //   qt! { #field_name : src.#index }
-  // })
-  // .collect();
+  let field_names : Vec< _ > = field_names.collect(); // xxx : qqq : rid off collects
 
-  let field_names : Vec< _ > = field_names.collect(); // xxx
-
-  let val_type : Vec< proc_macro2::TokenStream > = field_names.iter()
+  let val_type = field_names.iter()
   .zip( field_types )
   .enumerate()
   .map(| ( index, ( field_name, field_type ) ) |
   {
-    let index = index.to_string().parse::< proc_macro2::TokenStream >().unwrap();
+    // let index = index.to_string().parse::< proc_macro2::TokenStream >().unwrap();
     qt! { #field_name : #field_type }
-  })
-  .collect();
+  });
 
-  // let field_types : Vec< _ > = field_types.collect();
   qt!
   {
     // impl StructNamedFields
@@ -289,15 +274,12 @@ fn generate_multiple_fields< 'a >
 -> proc_macro2::TokenStream
 {
 
-  let params : Vec< proc_macro2::TokenStream > = ( 0..field_types.len() )
+  let params = ( 0..field_types.len() )
   .map( | index |
   {
     let index = index.to_string().parse::< proc_macro2::TokenStream >().unwrap();
     qt!( src.#index )
-  })
-  .collect();
-
-  let field_types : Vec< _ > = field_types.collect();
+  });
 
   qt!
   {
