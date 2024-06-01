@@ -178,7 +178,7 @@ fn generate_single_field_named
       // fn new( src : i32 ) -> Self
       fn new( src : #field_type ) -> Self
       {
-        // Self { a: src }
+        // Self { a : src }
         Self { #field_name: src }
       }
     }

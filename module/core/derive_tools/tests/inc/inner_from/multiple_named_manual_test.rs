@@ -3,8 +3,8 @@ use super::*;
 #[ derive( Debug, PartialEq, Eq ) ]
 struct StructNamedFields
 {
-  a: i32,
-  b: bool,
+  a : i32,
+  b : bool,
 }
 
 impl From< StructNamedFields > for ( i32, bool )

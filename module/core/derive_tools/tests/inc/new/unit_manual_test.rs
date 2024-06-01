@@ -6,7 +6,7 @@ struct UnitStruct;
 impl UnitStruct
 {
   #[ inline( always ) ]
-  fn new( _src : () ) -> Self
+  fn new() -> Self
   {
     Self
   }

@@ -3,16 +3,16 @@ use super::*;
 #[ derive( Debug, PartialEq, Eq ) ]
 struct StructNamedFields
 {
-  a: i32,
-  b: bool,
+  a : i32,
+  b : bool,
 }
 
 impl StructNamedFields
 {
   #[ inline( always ) ]
-  fn new( src : ( i32, bool ) ) -> Self
+  fn new( a : i32, b : bool ) -> Self
   {
-    Self{ a: src.0, b: src.1 }
+    Self{ a, b }
   }
 }
 

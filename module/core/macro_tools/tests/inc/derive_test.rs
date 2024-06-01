@@ -21,8 +21,8 @@ fn named_fields_with_named_fields()
   let result = derive::named_fields( &ast ).expect( "Expected successful extraction of named fields" );
 
   let mut expected_fields = Punctuated::new();
-  let field_a : Field = parse_quote! { a: i32 };
-  let field_b : Field = parse_quote! { b: String };
+  let field_a : Field = parse_quote! { a : i32 };
+  let field_b : Field = parse_quote! { b : String };
   expected_fields.push_value( field_a);
   expected_fields.push_punct( Comma::default() );
   expected_fields.push_value( field_b );

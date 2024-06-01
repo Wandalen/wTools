@@ -157,33 +157,33 @@ mod deref_mut_tests
   mod name_collisions;
 }
 
-// #[ cfg( feature = "derive_new" ) ]
-// #[ path = "new" ]
-// mod from
-// {
-// 	#[ allow( unused_imports ) ]
-// 	use super::*;
-//
-//   //
-//
-//   mod basic_test;
-//   mod basic_manual_test;
-// 	mod named_test;
-// 	mod named_manual_test;
-// 	mod multiple_named_manual_test;
-// 	mod multiple_unnamed_manual_test;
-// 	mod unit_manual_test;
-// 	mod multiple_named_test;
-// 	mod unit_test;
-// 	mod multiple_test;
-//
-//   //
-//
-// }
+#[ cfg( feature = "derive_new" ) ]
+#[ path = "new" ]
+mod new_tests
+{
+	#[ allow( unused_imports ) ]
+	use super::*;
+
+  //
+
+  mod basic_manual_test;
+  // mod basic_test;
+	mod unit_manual_test;
+	// mod unit_test;
+	mod named_manual_test;
+	// mod named_test;
+	mod multiple_named_manual_test;
+	// mod multiple_named_test;
+	mod multiple_unnamed_manual_test;
+	// mod multiple_unnamed_test;
+
+  //
+
+}
 
 #[ cfg( feature = "derive_from" ) ]
 #[ path = "from" ]
-mod from
+mod from_tests
 {
 	#[ allow( unused_imports ) ]
 	use super::*;

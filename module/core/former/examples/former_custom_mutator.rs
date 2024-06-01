@@ -70,7 +70,7 @@ fn main()
   assert_eq!( got, exp );
   dbg!( got );
   // > got = Struct1 {
-  // >  c: "13 - abc",
+  // >  c : "13 - abc",
   // > }
 
 }

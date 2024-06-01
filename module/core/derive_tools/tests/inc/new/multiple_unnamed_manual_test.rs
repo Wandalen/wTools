@@ -6,9 +6,9 @@ struct StructWithManyFields( i32, bool );
 impl StructWithManyFields
 {
   #[ inline( always ) ]
-  fn new( src : ( i32, bool ) ) -> Self
+  fn new( src1 : i32, src2 : bool ) -> Self
   {
-    Self( src.0, src.1 )
+    Self( src1, src2 )
   }
 }
 

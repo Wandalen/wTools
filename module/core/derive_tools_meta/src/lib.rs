@@ -473,8 +473,8 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 ///   dbg!( exp );
 ///   //> MyStruct {
-///   //>   a: 13,
-///   //>   b: 14,
+///   //>   a : 13,
+///   //>   b : 14,
 ///   //> }
 /// }
 /// ```
@@ -489,8 +489,8 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// // #[ debug ]
 /// struct MyStruct
 /// {
-///   a: i32,
-///   b: i32,
+///   a : i32,
+///   b : i32,
 /// }
 /// ```
 ///

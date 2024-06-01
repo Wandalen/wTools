@@ -3,7 +3,7 @@ use super::*;
 #[ derive( Debug, PartialEq, Eq ) ]
 struct MyStruct
 {
-  a: i32,
+  a : i32,
 }
 
 impl From< i32 > for MyStruct
@@ -11,7 +11,7 @@ impl From< i32 > for MyStruct
   #[ inline( always ) ]
   fn from( src : i32 ) -> Self
   {
-    Self{ a: src }
+    Self{ a : src }
   }
 }
 
