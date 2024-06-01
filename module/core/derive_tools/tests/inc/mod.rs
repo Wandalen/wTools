@@ -157,6 +157,30 @@ mod deref_mut_tests
   mod name_collisions;
 }
 
+// #[ cfg( feature = "derive_new" ) ]
+// #[ path = "new" ]
+// mod from
+// {
+// 	#[ allow( unused_imports ) ]
+// 	use super::*;
+//
+//   //
+//
+//   mod basic_test;
+//   mod basic_manual_test;
+// 	mod named_test;
+// 	mod named_manual_test;
+// 	mod multiple_named_manual_test;
+// 	mod multiple_unnamed_manual_test;
+// 	mod unit_manual_test;
+// 	mod multiple_named_test;
+// 	mod unit_test;
+// 	mod multiple_test;
+//
+//   //
+//
+// }
+
 #[ cfg( feature = "derive_from" ) ]
 #[ path = "from" ]
 mod from
@@ -175,11 +199,11 @@ mod from
 	mod named_manual_test;
 
 	mod multiple_named_manual_test;
-	mod multiple_manual_test;
+	mod multiple_unnamed_manual_test;
 	mod unit_manual_test;
 	mod multiple_named_test;
 	mod unit_test;
-	mod multiple_test;
+	mod multiple_unnamed_test;
 
 	mod variants_manual;
 	mod variants_derive;
@@ -207,13 +231,13 @@ mod inner_from_tests
 
   //
 
+	mod unit_test;
 	mod named_manual_test;
 	mod multiple_named_manual_test;
-	mod multiple_manual_test;
 	mod unit_manual_test;
 	mod named_test;
 	mod multiple_named_test;
-	mod unit_test;
-	mod multiple_test;
+	mod multiple_unnamed_manual_test;
+	mod multiple_unnamed_test;
 
 }
