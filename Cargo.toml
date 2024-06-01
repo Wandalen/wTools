@@ -204,10 +204,10 @@ version = "~2.2.0"
 path = "module/core/former"
 default-features = false
 
-[workspace.dependencies.former_stable]
-package = "former"
-version = "=2.0.0"
-default-features = false
+# [workspace.dependencies.former_stable]
+# package = "former"
+# version = "=2.2.0"
+# default-features = false
 
 [workspace.dependencies.former_meta]
 version = "~2.2.0"

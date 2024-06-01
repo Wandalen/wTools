@@ -11,7 +11,7 @@ documentation = "https://docs.rs/former"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/former"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/former"
 description = """
-A flexible and extensible implementation of the builder pattern. Its compile-time structures and traits that are not generated but reused.
+A flexible implementation of the Builder pattern supporting nested builders and collection-specific subformers. Its compile-time structures and traits that are not generated but reused.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]

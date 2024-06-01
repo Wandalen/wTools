@@ -12,7 +12,7 @@ documentation = "https://docs.rs/former_meta"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/former_meta"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/former_meta"
 description = """
-Former - a variation of builder pattern. Implementation of its derive macro. Should not be used independently, instead use module::former which relies on the module.
+A flexible implementation of the Builder pattern supporting nested builders and collection-specific subformers. Implementation of its derive macro. Should not be used independently, instead use module::former which relies on the module.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
@@ -57,8 +57,8 @@ derive_from_components = [ "derive_components" ]
 proc-macro = true
 
 [dependencies]
-macro_tools = { workspace = true } # qqq : optimize set of features
-former_types = { workspace = true, features = [ "enabled", "types_component_assign" ] }
+macro_tools = { workspace = true } # qqq : xxx : optimize set of features
+former_types = { workspace = true, features = [ "types_component_assign" ] }
 iter_tools = { workspace = true }
 convert_case = { version = "0.6.0", default-features = false, optional = true, features = [] }
 const_format = { version = "0.2.32" }
