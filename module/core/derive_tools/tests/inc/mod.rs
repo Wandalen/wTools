@@ -164,16 +164,18 @@ mod new_tests
 	#[ allow( unused_imports ) ]
 	use super::*;
 
+  // qqq : for each branch add generic test
+
   //
 
   mod basic_manual_test;
-  // mod basic_test;
+  mod basic_test;
 	mod unit_manual_test;
-	// mod unit_test;
+	mod unit_test;
 	mod named_manual_test;
-	// mod named_test;
+	mod named_test;
 	mod multiple_named_manual_test;
-	// mod multiple_named_test;
+	mod multiple_named_test;
 	mod multiple_unnamed_manual_test;
 	// mod multiple_unnamed_test;
 
@@ -187,6 +189,8 @@ mod from_tests
 {
 	#[ allow( unused_imports ) ]
 	use super::*;
+
+  // qqq : for each branch add generic test
 
   //
 

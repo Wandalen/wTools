@@ -225,22 +225,38 @@ fn generate_multiple_fields_named< 'a >
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  field_names : Box< dyn macro_tools::IterTrait< 'a, &'a syn::Ident > + '_ >,
+  field_names : impl macro_tools::IterTrait< 'a, &'a syn::Ident >,
   field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type >,
+  // xxx
 )
 -> proc_macro2::TokenStream
+// where
+  // dyn macro_tools::IterTrait< 'a, &'a syn::Ident > : Clone,
 {
 
-  let params : Vec< proc_macro2::TokenStream > = field_names
+  // xxx : is collect required?
+  // let params : Vec< proc_macro2::TokenStream > = field_names
+  // .enumerate()
+  // .map(| ( index, field_name ) |
+  // {
+  //   let index = index.to_string().parse::< proc_macro2::TokenStream >().unwrap();
+  //   qt! { #field_name : src.#index }
+  // })
+  // .collect();
+
+  let field_names : Vec< _ > = field_names.collect(); // xxx
+
+  let val_type : Vec< proc_macro2::TokenStream > = field_names.iter()
+  .zip( field_types )
   .enumerate()
-  .map(| ( index, field_name ) |
+  .map(| ( index, ( field_name, field_type ) ) |
   {
     let index = index.to_string().parse::< proc_macro2::TokenStream >().unwrap();
-    qt! { #field_name : src.#index }
+    qt! { #field_name : #field_type }
   })
   .collect();
 
-  let field_types : Vec< _ > = field_types.collect();
+  // let field_types : Vec< _ > = field_types.collect();
   qt!
   {
     // impl StructNamedFields
@@ -250,10 +266,10 @@ fn generate_multiple_fields_named< 'a >
     {
       #[ inline( always ) ]
       // fn new( src : ( i32, bool ) ) -> Self
-      fn new( src : ( #( #field_types ),* ) ) -> Self
+      fn new( #( #val_type ),* ) -> Self
       {
         // StructNamedFields{ a : src.0, b : src.1 }
-        #item_name { #(#params),* }
+        #item_name { #( #field_names ),* }
       }
     }
   }
