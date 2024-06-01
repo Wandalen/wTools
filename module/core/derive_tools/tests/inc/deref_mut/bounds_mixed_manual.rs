@@ -28,4 +28,4 @@ where
 }
 
 
-include!( "./only_tests/bounds_mixed.rs" );
+include!( "./only_test/bounds_mixed.rs" );

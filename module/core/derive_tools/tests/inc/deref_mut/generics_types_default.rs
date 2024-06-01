@@ -5,4 +5,4 @@ use derive_tools::{ Deref, DerefMut };
 #[ derive ( Deref, DerefMut ) ]
 struct GenericsTypesDefault< T = i32 >( T );
 
-include!( "./only_tests/generics_types_default.rs" );
+include!( "./only_test/generics_types_default.rs" );

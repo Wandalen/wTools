@@ -5,4 +5,4 @@ use derive_tools::{ Deref, DerefMut };
 #[ derive( Deref, DerefMut ) ]
 struct GenericsLifetimes< 'a >( &'a i32 );
 
-include!( "./only_tests/generics_lifetimes.rs" );
+include!( "./only_test/generics_lifetimes.rs" );

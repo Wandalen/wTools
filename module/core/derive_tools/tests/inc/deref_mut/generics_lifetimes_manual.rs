@@ -19,4 +19,4 @@ impl< 'a > DerefMut for GenericsLifetimes< 'a >
   }
 }
 
-include!( "./only_tests/generics_lifetimes.rs" );
+include!( "./only_test/generics_lifetimes.rs" );

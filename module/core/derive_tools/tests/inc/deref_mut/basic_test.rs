@@ -12,4 +12,4 @@ where
     'a : 'b,
     T : AsRef< U >;
 
-include!( "./only_test/deref_mut.rs" );
+include!( "./only_test/basic.rs" );

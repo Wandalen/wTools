@@ -48,6 +48,11 @@ mod deref_tests
 
   //
 
+  mod basic_test;
+  mod basic_manual_test;
+
+  //
+
   mod struct_unit;
   mod struct_unit_manual;
   mod struct_tuple;
@@ -108,6 +113,11 @@ mod deref_mut_tests
 
   //
 
+  mod basic_test;
+  mod basic_manual_test;
+
+  //
+
   mod struct_tuple;
   mod struct_tuple_manual;
   mod struct_named;
@@ -154,14 +164,19 @@ mod from
 	#[ allow( unused_imports ) ]
 	use super::*;
 
+  //
+
+  mod basic_test;
+  mod basic_manual_test;
+
+  //
+
 	mod named_test;
 	mod named_manual_test;
 
-	mod manual_test;
 	mod multiple_named_manual_test;
 	mod multiple_manual_test;
 	mod unit_manual_test;
-	mod test;
 	mod multiple_named_test;
 	mod unit_test;
 	mod multiple_test;
@@ -185,12 +200,17 @@ mod inner_from_tests
 	#[ allow( unused_imports ) ]
 	use super::*;
 
-	mod manual_test;
+  //
+
+  mod basic_test;
+  mod basic_manual_test;
+
+  //
+
 	mod named_manual_test;
 	mod multiple_named_manual_test;
 	mod multiple_manual_test;
 	mod unit_manual_test;
-	mod test;
 	mod named_test;
 	mod multiple_named_test;
 	mod unit_test;

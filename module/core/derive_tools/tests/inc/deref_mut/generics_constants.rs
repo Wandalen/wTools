@@ -5,4 +5,4 @@ use derive_tools::{ Deref, DerefMut };
 #[ derive( Deref, DerefMut ) ]
 struct GenericsConstants< const N : usize >( i32 );
 
-include!( "./only_tests/generics_constants.rs" );
+include!( "./only_test/generics_constants.rs" );

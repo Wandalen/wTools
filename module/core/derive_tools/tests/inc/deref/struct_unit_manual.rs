@@ -12,4 +12,4 @@ impl Deref for StructUnit
   }
 }
 
-include!( "./only_tests/struct_unit.rs" );
+include!( "./only_test/struct_unit.rs" );

@@ -12,4 +12,4 @@ impl< const N : usize > Deref for GenericsConstantsDefault< N >
   }
 }
 
-include!( "./only_tests/generics_constants_default.rs" );
+include!( "./only_test/generics_constants_default.rs" );

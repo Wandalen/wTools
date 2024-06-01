@@ -12,4 +12,4 @@ impl< T > Deref for GenericsTypesDefault< T >
   }
 }
 
-include!( "./only_tests/generics_types_default.rs" );
+include!( "./only_test/generics_types_default.rs" );
