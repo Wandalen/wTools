@@ -1,19 +1,43 @@
 
 #[ test ]
-fn deref_mut_test()
+fn simple()
 {
 
   // Deref
 
-  let got = IsTransparent( true );
+  let got = IsTransparentSimple( true );
   let exp = true;
   a_id!( *got, exp );
 
   // DerefMut
 
-  let mut got = IsTransparent( true );
+  let mut got = IsTransparentSimple( true );
   *got = false;
   let exp = false;
   a_id!( *got, exp );
+
+}
+
+#[ test ]
+fn complex()
+{
+
+  // Deref
+
+  let got_tmp = "start".to_string();
+  let got = IsTransparentComplex::< '_, '_, String, str, 0 >( &got_tmp, core::marker::PhantomData );
+  let exp_tmp = "start".to_string();
+  let exp = &exp_tmp;
+  assert_eq!( *got, exp );
+
+  // DerefMut
+
+  let got_tmp = "start".to_string();
+  let mut got = IsTransparentComplex::< '_, '_, String, str, 0 >( &got_tmp, core::marker::PhantomData );
+  let got_tmp = "end".to_string();
+  *got = &got_tmp;
+  let exp_tmp = "end".to_string();
+  let exp = &exp_tmp;
+  assert_eq!( *got, exp );
 
 }
