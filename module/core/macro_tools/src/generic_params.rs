@@ -281,7 +281,7 @@ pub( crate ) mod private
   /// ]);
   /// ```
 
-  pub fn names< 'a >( generics : &'a syn::Generics ) -> impl IterTrait< 'a, &'a syn::Ident > + Clone
+  pub fn names< 'a >( generics : &'a syn::Generics ) -> impl IterTraitClonable< 'a, &'a syn::Ident > + Clone
   {
     generics.params.iter().map( | param | match param
     {

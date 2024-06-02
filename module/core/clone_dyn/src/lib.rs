@@ -5,6 +5,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 #[ allow( unused_extern_crates ) ]
+#[ cfg( feature = "enabled" ) ]
 #[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
 extern crate alloc;
 

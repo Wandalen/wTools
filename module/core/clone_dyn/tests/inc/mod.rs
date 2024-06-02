@@ -9,7 +9,7 @@ tests_impls!
 
   //
 
-  // qqq : organize tests in the same way tests organized for derive_tools
+  // qqq2 : organize tests in the same way tests organized for derive_tools
   fn manual()
   {
 

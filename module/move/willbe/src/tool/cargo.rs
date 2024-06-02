@@ -17,7 +17,9 @@ mod private
     pub( crate ) path : PathBuf,
     #[ former( default = true ) ]
     pub( crate ) allow_dirty : bool,
-    #[ former( default = true ) ]
+    // qqq : rename to checking_changes
+    #[ former( default = false ) ]
+    // qqq : don't abuse negative form, rename to checking_consistency
     pub( crate ) no_verify : bool,
     pub( crate ) temp_path : Option< PathBuf >,
     pub( crate ) dry : bool,

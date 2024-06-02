@@ -348,8 +348,8 @@ fn generate_multiple_fields_named< 'a >
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  field_names : impl macro_tools::IterTrait< 'a, &'a syn::Ident >,
-  field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type >,
+  field_names : impl macro_tools::IterTraitClonable< 'a, &'a syn::Ident >,
+  field_types : impl macro_tools::IterTraitClonable< 'a, &'a syn::Type >,
 )
 -> proc_macro2::TokenStream
 {
@@ -412,7 +412,7 @@ fn generate_multiple_fields< 'a >
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  field_types : impl macro_tools::IterTrait< 'a, &'a macro_tools::syn::Type >,
+  field_types : impl macro_tools::IterTraitClonable< 'a, &'a macro_tools::syn::Type >,
 )
 -> proc_macro2::TokenStream
 {

@@ -13,25 +13,48 @@ pub( crate ) mod private
 
   /// Trait that encapsulates an iterator with specific characteristics, tailored for use with the `syn` crate.
   ///
-  /// The `IterTrait` trait is designed to represent iterators that may yield references to items (`&'a T`) within the `syn` crate.
+  /// The `_IterTrait` trait is designed to represent iterators that may yield references to items (`&'a T`) within the `syn` crate.
   /// These iterators must also implement the `ExactSizeIterator` and `DoubleEndedIterator` traits.
   /// This combination ensures that the iterator can:
   /// - Provide an exact size hint (`ExactSizeIterator`),
   /// - Be traversed from both ends (`DoubleEndedIterator`).
   ///
-  pub trait IterTrait< 'a, T >
+  pub trait _IterTrait< 'a, T >
   where
     T : 'a,
     Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
   {
   }
 
-  impl< 'a, T, I > IterTrait< 'a, T > for I
+  impl< 'a, T, I > _IterTrait< 'a, T > for I
   where
     T : 'a,
-    I : 'a,
     Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
   {
+  }
+
+  pub type DynIter2< 'a, T > = Box< dyn _IterTrait< 'a, T > + 'a >;
+  // xxx
+
+  impl< 'c, 'a, T > Clone
+  for Box< dyn _IterTrait< 'a, T > + 'c >
+  {
+    #[ inline ]
+    fn clone( &self ) -> Self { _clone_boxed( &**self ) }
+  }
+
+  #[ inline ]
+  fn _clone_boxed< T >( t : &T ) -> Box< T >
+  where
+    T : ?Sized,
+  {
+    unsafe
+    {
+      let mut ptr = t as *const T;
+      let data_ptr = &mut ptr as *mut *const T as *mut *mut ();
+      *data_ptr = Box::into_raw( Box::new( t.clone() ) ) as *mut ();
+      Box::from_raw( ptr as *mut T )
+    }
   }
 
   /// Trait that encapsulates a clonable iterator with specific characteristics, tailored for use with the `syn` crate.
@@ -46,175 +69,137 @@ pub( crate ) mod private
   pub trait IterTraitClonable< 'a, T >
   where
     T : 'a,
-    Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator + Clone,
+    Self : _IterTrait< 'a, T > + Clone,
   {
   }
 
   impl< 'a, T, I > IterTraitClonable< 'a, T > for I
   where
     T : 'a,
-    Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator + Clone,
+    Self : _IterTrait< 'a, T > + Clone,
   {
   }
 
-  /// Wrapper around a boxed iterator that implements `IterTrait`.
-  ///
-  /// The `DynIter` struct provides a way to work with trait objects that implement the `IterTrait` trait. It acts as a
-  /// wrapper around a boxed iterator and provides methods to interact with the iterator in a type-safe manner.
-  ///
-  /// # Examples
-  ///
-  /// ```rust
-  /// use crate::DynIter;
-  /// use std::vec::Vec;
-  ///
-  /// let v = vec![1, 2, 3];
-  /// let iter = DynIter::new(v.iter());
-  /// for val in iter {
-  ///     println!("{}", val);
-  /// }
-  /// ```
-  pub struct DynIter< 'a, T >( Box< dyn IterTrait< 'a, & 'a T > + 'a > );
-
-  impl< 'a, T > fmt::Debug for DynIter< 'a, T >
-  {
-    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
-    {
-      f.write_fmt( format_args!( "DynIter" ) )
-    }
-  }
-
-  impl< 'a, T > DynIter< 'a, T >
-  {
-    /// Creates a new `DynIter` from an iterator that implements `IterTrait`.
-    ///
-    /// # Parameters
-    ///
-    /// - `src`: The source iterator to be wrapped.
-    ///
-    /// # Returns
-    ///
-    /// A new instance of `DynIter`.
-    pub fn new< It >( src : It ) -> Self
-    where
-      It : IterTrait< 'a, & 'a T > + 'a,
-    {
-      Self( Box::new( src ) )
-    }
-  }
-
-  impl< 'a, T > From< DynIter< 'a, T > > for Box< dyn IterTrait< 'a, & 'a T > + 'a >
-  {
-    fn from( src : DynIter< 'a, T > ) -> Self
-    {
-      src.0
-    }
-  }
-
-  impl< 'a, T > core::ops::Deref for DynIter< 'a, T >
-  {
-    type Target = Box< dyn IterTrait< 'a, & 'a T > + 'a >;
-
-    fn deref( & self ) -> & Self::Target
-    {
-      & self.0
-    }
-  }
-
-  impl< 'a, T > core::convert::AsRef< Box< dyn IterTrait< 'a, & 'a T > + 'a > > for DynIter< 'a, T >
-  {
-    fn as_ref( & self ) -> & Box< dyn IterTrait< 'a, & 'a T > + 'a >
-    {
-      & self.0
-    }
-  }
-
-  impl< 'a, T > Iterator for DynIter< 'a, T >
-  {
-    type Item = & 'a T;
-
-    fn next( & mut self ) -> Option< Self::Item >
-    {
-      self.0.next()
-    }
-  }
-
-  impl< 'a, T > ExactSizeIterator for DynIter< 'a, T >
-  {
-    fn len( & self ) -> usize
-    {
-      self.0.len()
-    }
-  }
-
-  impl< 'a, T > DoubleEndedIterator for DynIter< 'a, T >
-  {
-    fn next_back( & mut self ) -> Option< Self::Item >
-    {
-      self.0.next_back()
-    }
-  }
-
-//   pub trait IterTrait< 'a, T >
-//   where
-//     T : 'a,
-//     Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator + Clone,
-//   {
-//     // fn clone_box( self ) -> Box< dyn IterTrait< 'a, T > + 'a >;
-//   }
-//
-//   impl< 'a, T, I > IterTrait< 'a, T > for I
-//   where
-//     T : 'a,
-//     I : 'a,
-//     Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator + Clone,
-//   {
-//
-//     // fn clone_box( self ) -> Box< dyn IterTrait< 'a, T > + 'a >
-//     // {
-//     //   Box::new( self ).clone()
-//     // }
-//
-//   }
-
-//   /// Trait that encapsulates an iterator with specific characteristics, tailored for use with the `syn` crate.
+// xxx : qqq : make command to autogenerate it
+//   /// Wrapper around a boxed iterator that implements `_IterTrait`.
 //   ///
-//   /// The `IterTrait2` trait is designed to represent iterators that yield references to items (`&'a T`) within the `syn` crate.
-//   /// These iterators must also implement the `ExactSizeIterator` and `DoubleEndedIterator` traits.
-//   /// This combination ensures that the iterator can:
-//   /// - Provide an exact size hint (`ExactSizeIterator`),
-//   /// - Be traversed from both ends (`DoubleEndedIterator`).
+//   /// The `DynIter` struct provides a way to work with trait objects that implement the `_IterTrait` trait. It acts as a
+//   /// wrapper around a boxed iterator and provides methods to interact with the iterator in a type-safe manner.
 //   ///
-//   pub trait IterTrait2< T >
-//   where
-//     Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
+//   /// # Examples
+//   ///
+//   /// ```rust
+//   /// use crate::DynIter;
+//   /// use std::vec::Vec;
+//   ///
+//   /// let v = vec![ 1, 2, 3 ];
+//   /// let iter = DynIter::new( v.iter() );
+//   /// for val in iter
+//   /// {
+//   ///   println!( "{}", val );
+//   /// }
+//   /// ```
+//   pub struct DynIter< 'a, T >( Box< dyn _IterTrait< 'a, & 'a T > + 'a > );
+//
+//   impl< 'a, T > fmt::Debug for DynIter< 'a, T >
 //   {
+//     fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+//     {
+//       f.write_fmt( format_args!( "DynIter" ) )
+//     }
 //   }
 //
-//   impl< T, I > IterTrait2< T > for I
-//   where
-//     Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
+//   impl< 'a, T > DynIter< 'a, T >
 //   {
+//     /// Creates a new `DynIter` from an iterator that implements `_IterTrait`.
+//     ///
+//     /// # Parameters
+//     ///
+//     /// - `src`: The source iterator to be wrapped.
+//     ///
+//     /// # Returns
+//     ///
+//     /// A new instance of `DynIter`.
+//     pub fn new< It >( src : It ) -> Self
+//     where
+//       It : _IterTrait< 'a, & 'a T > + 'a,
+//     {
+//       Self( Box::new( src ) )
+//     }
 //   }
 //
-//   /// Trait that encapsulates an iterator with specific characteristics, tailored for use with the `syn` crate.
-//   ///
-//   /// The `IterTrait3` trait is designed to represent iterators that yield references to items (`&'a T`) within the `syn` crate.
-//   /// These iterators must also implement the `ExactSizeIterator` and `DoubleEndedIterator` traits.
-//   /// This combination ensures that the iterator can:
-//   /// - Provide an exact size hint (`ExactSizeIterator`),
-//   /// - Be traversed from both ends (`DoubleEndedIterator`).
-//   ///
-//   pub trait IterTrait3< 'a, T : 'a >
-//   where
-//     Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
+//   impl< 'a, T > From< DynIter< 'a, T > > for Box< dyn _IterTrait< 'a, & 'a T > + 'a >
 //   {
+//     fn from( src : DynIter< 'a, T > ) -> Self
+//     {
+//       src.0
+//     }
 //   }
 //
-//   impl< 'a, T : 'a, I > IterTrait3< 'a, T > for I
-//   where
-//     Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
+//   impl< 'a, T > core::ops::Deref for DynIter< 'a, T >
 //   {
+//     type Target = Box< dyn _IterTrait< 'a, & 'a T > + 'a >;
+//
+//     fn deref( & self ) -> & Self::Target
+//     {
+//       & self.0
+//     }
+//   }
+//
+//   impl< 'a, T > core::convert::AsRef< Box< dyn _IterTrait< 'a, & 'a T > + 'a > > for DynIter< 'a, T >
+//   {
+//     fn as_ref( & self ) -> & Box< dyn _IterTrait< 'a, & 'a T > + 'a >
+//     {
+//       & self.0
+//     }
+//   }
+//
+//   impl< 'a, T > Iterator for DynIter< 'a, T >
+//   {
+//     type Item = & 'a T;
+//
+//     fn next( & mut self ) -> Option< Self::Item >
+//     {
+//       self.0.next()
+//     }
+//   }
+//
+//   impl< 'a, T > ExactSizeIterator for DynIter< 'a, T >
+//   {
+//     fn len( & self ) -> usize
+//     {
+//       self.0.len()
+//     }
+//   }
+//
+//   impl< 'a, T > DoubleEndedIterator for DynIter< 'a, T >
+//   {
+//     fn next_back( & mut self ) -> Option< Self::Item >
+//     {
+//       self.0.next_back()
+//     }
+//   }
+
+  // =
+
+//   trait Cloneable : Clone
+//   {
+//     fn clone_box( & self ) -> Box< dyn Cloneable >;
+//   }
+//
+//   impl< T > Cloneable for T
+//   where
+//     T : 'static + Clone,
+//   {
+//     fn clone_box( & self ) -> Box< dyn Cloneable >
+//     {
+//       Box::new( self.clone() )
+//     }
+//   }
+//
+//   pub fn clone_boxed( t : & dyn Cloneable ) -> Box< dyn Cloneable >
+//   {
+//     t.clone_box()
 //   }
 
 }
@@ -255,9 +240,10 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::private::
   {
-    IterTrait,
+    _IterTrait,
     IterTraitClonable,
-    DynIter,
+    DynIter2,
+    // DynIter,
     // DynIterFrom,
     // IterTrait2,
     // IterTrait3,
