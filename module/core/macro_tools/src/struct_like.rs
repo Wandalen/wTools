@@ -246,24 +246,24 @@ pub( crate ) mod private
   {
 
     /// Returns an iterator over elements of the item.
-    pub fn elements< 'a >( &'a self ) -> impl IterTraitClonable< 'a, FieldOrVariant< 'a > > + 'a
+    pub fn elements< 'a >( &'a self ) -> impl IterTrait< 'a, FieldOrVariant< 'a > > + 'a
     {
       match self
       {
         StructLike::Unit( _ ) =>
         {
           let empty : Vec< FieldOrVariant< 'a > > = vec![];
-          Box::new( empty.into_iter() ) as DynIter2< 'a, FieldOrVariant< 'a > >
+          Box::new( empty.into_iter() ) as BoxedIter< 'a, FieldOrVariant< 'a > >
         },
         StructLike::Struct( item ) =>
         {
           let fields = item.fields.iter().map( FieldOrVariant::from );
-          Box::new( fields ) as DynIter2< 'a, FieldOrVariant< 'a > >
+          Box::new( fields ) as BoxedIter< 'a, FieldOrVariant< 'a > >
         },
         StructLike::Enum( item ) =>
         {
           let variants = item.variants.iter().map( FieldOrVariant::from );
-          Box::new( variants ) as DynIter2< 'a, FieldOrVariant< 'a > >
+          Box::new( variants ) as BoxedIter< 'a, FieldOrVariant< 'a > >
         },
       }
     }
@@ -349,11 +349,11 @@ pub( crate ) mod private
     }
 
     /// Returns an iterator over fields of the item.
-    // pub fn fields< 'a >( &'a self ) -> DynIter2< 'a, &'a syn::Field >
-    pub fn fields< 'a >( &'a self ) -> impl IterTraitClonable< 'a, &'a syn::Field >
+    // pub fn fields< 'a >( &'a self ) -> BoxedIter< 'a, &'a syn::Field >
+    pub fn fields< 'a >( &'a self ) -> impl IterTrait< 'a, &'a syn::Field >
     // xxx
     {
-      let result : DynIter2< 'a, &'a syn::Field > = match self
+      let result : BoxedIter< 'a, &'a syn::Field > = match self
       {
         StructLike::Unit( _item ) =>
         {
@@ -372,7 +372,7 @@ pub( crate ) mod private
     }
 
     /// Extracts the name of each field.
-    pub fn field_names< 'a >( &'a self ) -> Option< impl IterTraitClonable< 'a, &'a syn::Ident > + '_ >
+    pub fn field_names< 'a >( &'a self ) -> Option< impl IterTrait< 'a, &'a syn::Ident > + '_ >
     // pub fn field_names< 'a >( &'a self ) -> Option< DynIter< 'a, syn::Ident > >
     {
       match self
@@ -387,7 +387,7 @@ pub( crate ) mod private
         },
         StructLike::Enum( _item ) =>
         {
-          let iter : DynIter2< 'a, &'a syn::Ident > = Box::new( self.fields().map( | field | field.ident.as_ref().unwrap() ) );
+          let iter : BoxedIter< 'a, &'a syn::Ident > = Box::new( self.fields().map( | field | field.ident.as_ref().unwrap() ) );
           Some( iter )
           // Some( DynIter::new( self.fields().map( | field | field.ident.as_ref().unwrap() ) ) )
           // Some( DynIterFrom::dyn_iter_from( self.fields().map( | field | field.ident.as_ref().unwrap() ) ) )
@@ -398,19 +398,21 @@ pub( crate ) mod private
     }
 
     /// Extracts the type of each field.
-    // pub fn field_types( &self ) -> Box< dyn Iterator< Item = &syn::Type > + '_ >
-    // pub fn field_types< 'a >( &'a self ) -> Box< dyn _IterTrait< 'a, &'a syn::Type > + '_ >
-    pub fn field_types< 'a >( &'a self ) -> impl IterTraitClonable< 'a, &'a syn::Type >
+    pub fn field_types< 'a >( &'a self ) -> impl IterTrait< 'a, &'a syn::Type >
+    // pub fn field_types< 'a >( &'a self ) -> BoxedIter< 'a, &'a syn::Type >
     {
-      Box::new( self.fields().map( | field | &field.ty ) )
+      // Box::new( self.fields().map( | field | &field.ty ) )
+      self.fields().map( | field | &field.ty )
     }
 
     /// Extracts the name of each field.
     // pub fn field_attrs( &self ) -> Box< dyn Iterator< Item = &Vec< syn::Attribute > > + '_ >
-    // pub fn field_attrs< 'a >( &'a self ) -> Box< dyn _IterTrait< 'a, &'a Vec< syn::Attribute > > + '_ >
-    pub fn field_attrs< 'a >( &'a self ) -> impl IterTraitClonable< 'a, &'a Vec< syn::Attribute > >
+    pub fn field_attrs< 'a >( &'a self ) -> impl IterTrait< 'a, &'a Vec< syn::Attribute > >
+    // pub fn field_attrs< 'a >( &'a self ) -> BoxedIter< 'a, &'a Vec< syn::Attribute > >
     {
-      Box::new( self.fields().map( | field | &field.attrs ) )
+      self.fields().map( | field | &field.attrs )
+      // Box::new( self.fields().map( | field | &field.attrs ) )
+      // xxx
     }
 
     /// Extract the first field.

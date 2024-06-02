@@ -225,19 +225,22 @@ fn generate_multiple_fields_named< 'a >
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  field_names : impl macro_tools::IterTraitClonable< 'a, &'a syn::Ident > + Clone, // xxx
-  field_types : impl macro_tools::IterTraitClonable< 'a, &'a syn::Type > + Clone, // xxx
+  field_names : impl macro_tools::IterTrait< 'a, &'a syn::Ident >,
+  field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type >,
 )
 -> proc_macro2::TokenStream
 {
 
-  let field_names : Vec< _ > = field_names.collect(); // xxx : qqq : rid off collects
+  // let field_names : Vec< _ > = field_names.collect(); // xxx : qqq : rid off collects
 
-  let val_type = field_names.iter()
+  let val_type = field_names
+  // .iter()
+  .clone()
   .zip( field_types )
   .enumerate()
-  .map(| ( index, ( field_name, field_type ) ) |
+  .map(| ( _index, ( field_name, field_type ) ) |
   {
+    // xxx
     // let index = index.to_string().parse::< proc_macro2::TokenStream >().unwrap();
     qt! { #field_name : #field_type }
   });
@@ -269,7 +272,7 @@ fn generate_multiple_fields< 'a >
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  field_types : impl macro_tools::IterTraitClonable< 'a, &'a macro_tools::syn::Type >,
+  field_types : impl macro_tools::IterTrait< 'a, &'a macro_tools::syn::Type >,
 )
 -> proc_macro2::TokenStream
 {

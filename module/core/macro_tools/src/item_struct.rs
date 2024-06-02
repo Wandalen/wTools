@@ -8,18 +8,17 @@ pub( crate ) mod private
   use crate::*;
 
   /// Extracts the types of each field into a vector.
-  // pub fn field_types< 'a >( t : &'a syn::ItemStruct ) -> impl IterTrait< 'a, &'a syn::Type > + Clone
-  pub fn field_types< 'a >( t : &'a syn::ItemStruct ) -> impl IterTraitClonable< 'a, &'a syn::Type > + Clone
+  pub fn field_types< 'a >( t : &'a syn::ItemStruct ) -> impl IterTrait< 'a, &'a syn::Type > + Clone
   {
     t.fields.iter().map( | field | &field.ty )
   }
 
   /// Retrieves the names of each field, if they exist.
-  // pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> Option< impl IterTraitClonable< 'a, &'a syn::Ident > >
-  // pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> Option< Box< dyn _IterTrait< 'a, &'a syn::Ident > + '_ > >
-  pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> Option< DynIter2< 'a, &'a syn::Ident > >
+  // pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> Option< impl IterTrait< 'a, &'a syn::Ident > >
+  pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> Option< BoxedIter< 'a, &'a syn::Ident > >
+  // xxx
   {
-    let result : Option< Box< dyn _IterTrait< 'a, &'a syn::Ident > + '_ > > = match &t.fields
+    let result : Option< BoxedIter< 'a, &'a syn::Ident > > = match &t.fields
     {
       syn::Fields::Named( fields ) => Some( Box::new( fields.named.iter().map( | field | field.ident.as_ref().unwrap() ) ) ),
       syn::Fields::Unit => Some( Box::new( core::iter::empty() ) ),

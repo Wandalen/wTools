@@ -194,7 +194,7 @@ fn from_impl
 fn from_impl_multiple_fields< 'a >
 (
   item_name : &syn::Ident,
-  field_types : impl macro_tools::IterTraitClonable< 'a, &'a macro_tools::syn::Type >,
+  field_types : impl macro_tools::IterTrait< 'a, &'a macro_tools::syn::Type >,
   params : &Vec< proc_macro2::TokenStream >,
 ) -> proc_macro2::TokenStream
 {

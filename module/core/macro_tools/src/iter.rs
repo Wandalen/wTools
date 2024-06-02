@@ -7,8 +7,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use std::fmt;
-
+  // use std::fmt;
   // use crate::*;
 
   /// Trait that encapsulates an iterator with specific characteristics, tailored for use with the `syn` crate.
@@ -33,18 +32,16 @@ pub( crate ) mod private
   {
   }
 
-  pub type DynIter2< 'a, T > = Box< dyn _IterTrait< 'a, T > + 'a >;
-  // xxx
-
   impl< 'c, 'a, T > Clone
   for Box< dyn _IterTrait< 'a, T > + 'c >
   {
     #[ inline ]
-    fn clone( &self ) -> Self { _clone_boxed( &**self ) }
+    fn clone( &self ) -> Self { clone_into_box( &**self ) }
   }
 
+  // xxx2
   #[ inline ]
-  fn _clone_boxed< T >( t : &T ) -> Box< T >
+  fn clone_into_box< T >( t : &T ) -> Box< T >
   where
     T : ?Sized,
   {
@@ -57,23 +54,26 @@ pub( crate ) mod private
     }
   }
 
+  // xxx
+  pub type BoxedIter< 'a, T > = Box< dyn _IterTrait< 'a, T > + 'a >;
+
   /// Trait that encapsulates a clonable iterator with specific characteristics, tailored for use with the `syn` crate.
   ///
-  /// The `IterTraitClonable` trait is designed to represent iterators that may yield references to items (`&'a T`) within the `syn` crate.
+  /// The `IterTrait` trait is designed to represent iterators that may yield references to items (`&'a T`) within the `syn` crate.
   /// These iterators must also implement the `ExactSizeIterator`, `DoubleEndedIterator`, and `Clone` traits.
   /// This combination ensures that the iterator can:
   /// - Provide an exact size hint (`ExactSizeIterator`),
   /// - Be traversed from both ends (`DoubleEndedIterator`),
   /// - Be clonable (`Clone`).
   ///
-  pub trait IterTraitClonable< 'a, T >
+  pub trait IterTrait< 'a, T >
   where
     T : 'a,
     Self : _IterTrait< 'a, T > + Clone,
   {
   }
 
-  impl< 'a, T, I > IterTraitClonable< 'a, T > for I
+  impl< 'a, T, I > IterTrait< 'a, T > for I
   where
     T : 'a,
     Self : _IterTrait< 'a, T > + Clone,
@@ -241,8 +241,8 @@ pub mod exposed
   pub use super::private::
   {
     _IterTrait,
-    IterTraitClonable,
-    DynIter2,
+    IterTrait,
+    BoxedIter,
     // DynIter,
     // DynIterFrom,
     // IterTrait2,

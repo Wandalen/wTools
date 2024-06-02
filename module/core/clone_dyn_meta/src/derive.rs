@@ -30,7 +30,7 @@ pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStrea
       #generics_where
     {
       #[ inline ]
-      fn clone( &self ) -> Self { clone_dyn::_clone_boxed( &**self ) }
+      fn clone( &self ) -> Self { clone_dyn::clone_into_box( &**self ) }
     }
 
     #[ allow( non_local_definitions ) ]
@@ -40,7 +40,7 @@ pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStrea
       #generics_where
     {
       #[ inline ]
-      fn clone( &self ) -> Self { clone_dyn::_clone_boxed( &**self ) }
+      fn clone( &self ) -> Self { clone_dyn::clone_into_box( &**self ) }
     }
 
     #[ allow( non_local_definitions ) ]
@@ -50,7 +50,7 @@ pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStrea
       #generics_where
     {
       #[ inline ]
-      fn clone( &self ) -> Self { clone_dyn::_clone_boxed( &**self ) }
+      fn clone( &self ) -> Self { clone_dyn::clone_into_box( &**self ) }
     }
 
     #[ allow( non_local_definitions ) ]
@@ -60,7 +60,7 @@ pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStrea
       #generics_where
     {
       #[ inline ]
-      fn clone( &self ) -> Self { clone_dyn::_clone_boxed( &**self ) }
+      fn clone( &self ) -> Self { clone_dyn::clone_into_box( &**self ) }
     }
 
   };

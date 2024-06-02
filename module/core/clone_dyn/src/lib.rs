@@ -31,13 +31,64 @@ pub( crate ) mod private
   #[ cfg( all( feature = "use_std", not( feature = "use_alloc" ) ) ) ]
   use std::boxed::Box;
 
+  /// A trait to upcast a clonable entity and clone it.
+  /// It's implemented for all entities which can be cloned.
+  pub trait CloneDyn
+  {
+    fn __clone_dyn( &self ) -> *mut ();
+  }
+
+  // clonable
+  impl< T > CloneDyn for T
+  where
+    T : Clone,
+  {
+    fn __clone_dyn( &self ) -> *mut ()
+    {
+      Box::< T >::into_raw( Box::new( self.clone() ) ) as *mut ()
+    }
+  }
+
+  // slice
+  impl< T > CloneDyn for [ T ]
+  where
+    T : Clone,
+  {
+    fn __clone_dyn( &self ) -> *mut ()
+    {
+      Box::< [ T ] >::into_raw( self.iter().cloned().collect() ) as *mut ()
+    }
+  }
+
+  // str slice
+  impl CloneDyn for str
+  {
+    fn __clone_dyn( &self ) -> *mut ()
+    {
+      Box::< str >::into_raw( Box::from( self ) ) as *mut ()
+    }
+  }
+
+  ///
+  /// True clone which is applicable not only to clonable entities, but to trait object implementing CloneDyn.
+  ///
+  pub fn clone< T >( src : &T ) -> T
+  where
+    T : CloneDyn,
+  {
+    unsafe
+    {
+      *Box::from_raw( < T as CloneDyn >::__clone_dyn( src ) as *mut T )
+    }
+  }
+
   /// Clone boxed dyn.
   ///
   /// Not intended to be used directly.
   #[ inline ]
-  pub fn _clone_boxed< T >( t : &T ) -> Box< T >
+  pub fn clone_into_box< T >( ref_dyn : &T ) -> Box< T >
   where
-    T : ?Sized,
+    T : ?Sized + CloneDyn,
   {
     // Explanation for the use of `unsafe`:
     // The `unsafe` block is necessary here because we're performing low-level memory manipulations
@@ -50,9 +101,16 @@ pub( crate ) mod private
     #[ allow( unsafe_code ) ]
     unsafe
     {
-      let mut ptr = t as *const T;
+      let mut ptr = ref_dyn as *const T;
+      // println!( "ptr : {:p} | size : {}", ptr, core::mem::size_of_val( &ptr ) );
+      // inspect_type::inspect_type_of!( ptr );
       let data_ptr = &mut ptr as *mut *const T as *mut *mut ();
-      *data_ptr = Box::into_raw( Box::new( < &T >::clone( &t ) ) ) as *mut ();
+      // println!( "data_ptr : {:p} | size : {}", data_ptr, core::mem::size_of_val( &data_ptr ) );
+      // inspect_type::inspect_type_of!( data_ptr );
+      // println!( "*data_ptr : {:p} | size : {}", *data_ptr, core::mem::size_of_val( &*data_ptr ) );
+      // inspect_type::inspect_type_of!( data_ptr );
+      *data_ptr = < T as CloneDyn >::__clone_dyn( ref_dyn );
+      // println!( "" );
       Box::from_raw( ptr as *mut T )
     }
   }
@@ -102,5 +160,10 @@ pub mod prelude
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  pub use super::private::_clone_boxed;
+  pub use super::private::
+  {
+    CloneDyn,
+    clone_into_box,
+    clone,
+  };
 }
