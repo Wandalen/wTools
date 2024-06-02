@@ -15,9 +15,9 @@ pub( crate ) mod private
   }
 
   /// Retrieves the names of each field, if they exist.
-  pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> Option< impl IterTraitClonable< 'a, &'a syn::Ident > >
+  // pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> Option< impl IterTraitClonable< 'a, &'a syn::Ident > >
   // pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> Option< Box< dyn _IterTrait< 'a, &'a syn::Ident > + '_ > >
-  // pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> Option< DynIter< 'a, syn::Ident > >
+  pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> Option< DynIter2< 'a, &'a syn::Ident > >
   {
     let result : Option< Box< dyn _IterTrait< 'a, &'a syn::Ident > + '_ > > = match &t.fields
     {
