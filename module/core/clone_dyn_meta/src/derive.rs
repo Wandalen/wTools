@@ -1,22 +1,45 @@
 
 use macro_tools::prelude::*;
-use macro_tools::{ Result, generic_params };
+use macro_tools::
+{
+  Result,
+  AttributePropertyOptionalSingletone,
+  AttributePropertyComponent,
+  attr,
+  diag,
+  generic_params,
+};
+use former_types::{ Assign };
+// use const_format::concatcp;
+// xxx : incapsulate into macro_tools and put all that udner features
 
 //
 
-pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
+pub fn clone_dyn( attr_input : proc_macro::TokenStream, item_input : proc_macro::TokenStream )
+-> Result< proc_macro2::TokenStream >
 {
 
-  let item_parsed = match syn::parse::< syn::ItemTrait >( item )
+  println!( "attr_input : \"{}\"", attr_input.to_string() );
+  println!( "item_input : \"{}\"", item_input.to_string() );
+
+  // let attrs : ItemAttributes = item_input.parse()?;
+  let attrs = syn::parse::< ItemAttributes >( attr_input )?;
+  let original_input = item_input.clone();
+  let item_parsed = match syn::parse::< syn::ItemTrait >( item_input )
   {
     Ok( original ) => original,
     Err( err ) => return Err( err ),
   };
 
-  let name_ident = &item_parsed.ident;
+  // let has_debug = attr::has_debug( item_parsed.attrs.iter() )?;
+  let has_debug = attrs.debug.value( false );
+  let item_name = &item_parsed.ident;
 
-  let generic_params = &item_parsed.generics.params;
-  let generics_where = &item_parsed.generics.where_clause;
+  let ( _generics_with_defaults, generics_impl, _generics_ty, generics_where )
+  = generic_params::decompose( &item_parsed.generics );
+
+  // let generic_params = &item_parsed.generics.params;
+  // let generics_where = &item_parsed.generics.where_clause;
   let generics_names : Vec< _ > = generic_params::names( &item_parsed.generics ).collect();
 
   let result = qt!
@@ -24,40 +47,40 @@ pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStrea
     #item_parsed
 
     #[ allow( non_local_definitions ) ]
-    impl < 'c, #generic_params > Clone
-    for Box< dyn #name_ident< #( #generics_names ),* > + 'c >
+    impl < 'c, #generics_impl > Clone
+    for Box< dyn #item_name< #( #generics_names ),* > + 'c >
     // where
-      #generics_where
+    //   #generics_where
     {
       #[ inline ]
       fn clone( &self ) -> Self { clone_dyn::clone_into_box( &**self ) }
     }
 
     #[ allow( non_local_definitions ) ]
-    impl < 'c, #generic_params > Clone
-    for Box< dyn #name_ident< #( #generics_names ),* > + Send + 'c >
+    impl < 'c, #generics_impl > Clone
+    for Box< dyn #item_name< #( #generics_names ),* > + Send + 'c >
     // where
-      #generics_where
+    //   #generics_where
     {
       #[ inline ]
       fn clone( &self ) -> Self { clone_dyn::clone_into_box( &**self ) }
     }
 
     #[ allow( non_local_definitions ) ]
-    impl < 'c, #generic_params > Clone
-    for Box< dyn #name_ident< #( #generics_names ),* > + Sync + 'c >
+    impl < 'c, #generics_impl > Clone
+    for Box< dyn #item_name< #( #generics_names ),* > + Sync + 'c >
     // where
-      #generics_where
+    //   #generics_where
     {
       #[ inline ]
       fn clone( &self ) -> Self { clone_dyn::clone_into_box( &**self ) }
     }
 
     #[ allow( non_local_definitions ) ]
-    impl < 'c, #generic_params > Clone
-    for Box< dyn #name_ident< #( #generics_names ),* > + Send + Sync + 'c >
+    impl < 'c, #generics_impl > Clone
+    for Box< dyn #item_name< #( #generics_names ),* > + Send + Sync + 'c >
     // where
-      #generics_where
+    //   #generics_where
     {
       #[ inline ]
       fn clone( &self ) -> Self { clone_dyn::clone_into_box( &**self ) }
@@ -65,5 +88,101 @@ pub fn clone_dyn( _attr : proc_macro::TokenStream, item : proc_macro::TokenStrea
 
   };
 
+  if has_debug
+  {
+    let about = format!( "macro : CloneDny\ntrait : {item_name}" );
+    diag::report_print( about, &original_input, &result );
+  }
+
   Ok( result )
 }
+
+// == attributes
+
+/// Represents the attributes of a struct. Aggregates all its attributes.
+#[ derive( Debug, Default ) ]
+pub struct ItemAttributes
+{
+  /// Attribute for customizing generated code.
+  pub debug : AttributePropertyDebug,
+}
+
+impl syn::parse::Parse for ItemAttributes
+{
+  fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
+  {
+    let mut result = Self::default();
+
+    let error = | ident : &syn::Ident | -> syn::Error
+    {
+      let known = const_format::concatcp!
+      (
+        "Known properties of attribute `clone_dyn` are : ",
+        AttributePropertyDebug::KEYWORD,
+        ".",
+      );
+      syn_err!
+      (
+        ident,
+        r#"Expects an attribute of format '#[ clone_dyn( {} ) ]'
+  {known}
+  But got: '{}'
+"#,
+        AttributePropertyDebug::KEYWORD,
+        qt!{ #ident }
+      )
+    };
+
+    while !input.is_empty()
+    {
+      let lookahead = input.lookahead1();
+      if lookahead.peek( syn::Ident )
+      {
+        let ident : syn::Ident = input.parse()?;
+        match ident.to_string().as_str()
+        {
+          AttributePropertyDebug::KEYWORD => result.assign( AttributePropertyDebug::from( true ) ),
+          _ => return Err( error( &ident ) ),
+        }
+      }
+      else
+      {
+        return Err( lookahead.error() );
+      }
+
+      // Optional comma handling
+      if input.peek( syn::Token![ , ] )
+      {
+        input.parse::< syn::Token![ , ] >()?;
+      }
+    }
+
+    Ok( result )
+  }
+}
+
+impl< IntoT > Assign< AttributePropertyDebug, IntoT > for ItemAttributes
+where
+  IntoT : Into< AttributePropertyDebug >,
+{
+  #[ inline( always ) ]
+  fn assign( &mut self, prop : IntoT )
+  {
+    self.debug = prop.into();
+  }
+}
+
+// == attribute properties
+
+/// Marker type for attribute property to specify whether to provide a generated code as a hint.
+#[ derive( Debug, Default, Clone, Copy ) ]
+pub struct AttributePropertyDebugMarker;
+
+impl AttributePropertyComponent for AttributePropertyDebugMarker
+{
+  const KEYWORD : &'static str = "debug";
+}
+
+/// Specifies whether to provide a generated code as a hint.
+/// Defaults to `false`, which means no debug is provided unless explicitly requested.
+pub type AttributePropertyDebug = AttributePropertyOptionalSingletone< AttributePropertyDebugMarker >;
