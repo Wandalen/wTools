@@ -19,15 +19,6 @@ impl Trait1 for i32
   }
 }
 
-// xxx : ?
-// impl Trait1 for &i32
-// {
-//   fn val( &self ) -> i32
-//   {
-//     **self
-//   }
-// }
-
 impl Trait1 for i64
 {
   fn val( &self ) -> i32
@@ -53,16 +44,6 @@ where
     self.len().try_into().unwrap()
   }
 }
-
-// impl< T > Trait1 for &[ &T ]
-// where
-//   T : clone_dyn::CloneDyn,
-// {
-//   fn val( &self ) -> i32
-//   {
-//     self.len().try_into().unwrap()
-//   }
-// }
 
 impl Trait1 for &str
 {
