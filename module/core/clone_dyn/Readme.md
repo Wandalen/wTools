@@ -10,7 +10,7 @@ By default, Rust does not support cloning for trait objects due to the `Clone` t
 
 ### Alternative
 
-There are few alternatives [dyn-clone](https://github.com/dtolnay/dyn-clone), [dyn-clonable](https://github.com/kardeiz/objekt-clonable). Unlike other options, this solution is more concise and demands less effort to use, all without compromising the quality of the outcome. Also, you can ask an inquiry and get answers, which is problematic in the case of alternatives.
+There are few alternatives [dyn-clone](https://github.com/dtolnay/dyn-clone), [dyn-clonable](https://github.com/kardeiz/objekt-clonable). Unlike other options, this solution is more concise and demands less effort to use, all without compromising the quality of the outcome.
 
 ### Basic use-case
 

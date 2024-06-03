@@ -19,28 +19,26 @@ pub fn clone_dyn( attr_input : proc_macro::TokenStream, item_input : proc_macro:
 -> Result< proc_macro2::TokenStream >
 {
 
-  println!( "attr_input : \"{}\"", attr_input.to_string() );
-  println!( "item_input : \"{}\"", item_input.to_string() );
-
-  // let attrs : ItemAttributes = item_input.parse()?;
   let attrs = syn::parse::< ItemAttributes >( attr_input )?;
   let original_input = item_input.clone();
-  let item_parsed = match syn::parse::< syn::ItemTrait >( item_input )
+  let mut item_parsed = match syn::parse::< syn::ItemTrait >( item_input )
   {
     Ok( original ) => original,
     Err( err ) => return Err( err ),
   };
 
-  // let has_debug = attr::has_debug( item_parsed.attrs.iter() )?;
   let has_debug = attrs.debug.value( false );
   let item_name = &item_parsed.ident;
 
-  let ( _generics_with_defaults, generics_impl, _generics_ty, generics_where )
+  let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
   = generic_params::decompose( &item_parsed.generics );
 
-  // let generic_params = &item_parsed.generics.params;
-  // let generics_where = &item_parsed.generics.where_clause;
-  let generics_names : Vec< _ > = generic_params::names( &item_parsed.generics ).collect();
+  let extra : macro_tools::GenericsWithWhere = parse_quote!
+  {
+    where
+      Self : clone_dyn::CloneDyn,
+  };
+  item_parsed.generics = generic_params::merge( &item_parsed.generics, &extra.into() );
 
   let result = qt!
   {
@@ -48,9 +46,9 @@ pub fn clone_dyn( attr_input : proc_macro::TokenStream, item_input : proc_macro:
 
     #[ allow( non_local_definitions ) ]
     impl < 'c, #generics_impl > Clone
-    for Box< dyn #item_name< #( #generics_names ),* > + 'c >
-    // where
-    //   #generics_where
+    for Box< dyn #item_name< #generics_ty > + 'c >
+    where
+      #generics_where
     {
       #[ inline ]
       fn clone( &self ) -> Self { clone_dyn::clone_into_box( &**self ) }
@@ -58,9 +56,9 @@ pub fn clone_dyn( attr_input : proc_macro::TokenStream, item_input : proc_macro:
 
     #[ allow( non_local_definitions ) ]
     impl < 'c, #generics_impl > Clone
-    for Box< dyn #item_name< #( #generics_names ),* > + Send + 'c >
-    // where
-    //   #generics_where
+    for Box< dyn #item_name< #generics_ty > + Send + 'c >
+    where
+      #generics_where
     {
       #[ inline ]
       fn clone( &self ) -> Self { clone_dyn::clone_into_box( &**self ) }
@@ -68,9 +66,9 @@ pub fn clone_dyn( attr_input : proc_macro::TokenStream, item_input : proc_macro:
 
     #[ allow( non_local_definitions ) ]
     impl < 'c, #generics_impl > Clone
-    for Box< dyn #item_name< #( #generics_names ),* > + Sync + 'c >
-    // where
-    //   #generics_where
+    for Box< dyn #item_name< #generics_ty > + Sync + 'c >
+    where
+      #generics_where
     {
       #[ inline ]
       fn clone( &self ) -> Self { clone_dyn::clone_into_box( &**self ) }
@@ -78,9 +76,9 @@ pub fn clone_dyn( attr_input : proc_macro::TokenStream, item_input : proc_macro:
 
     #[ allow( non_local_definitions ) ]
     impl < 'c, #generics_impl > Clone
-    for Box< dyn #item_name< #( #generics_names ),* > + Send + Sync + 'c >
-    // where
-    //   #generics_where
+    for Box< dyn #item_name< #generics_ty > + Send + Sync + 'c >
+    where
+      #generics_where
     {
       #[ inline ]
       fn clone( &self ) -> Self { clone_dyn::clone_into_box( &**self ) }

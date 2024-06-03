@@ -62,9 +62,6 @@ for Box< dyn Trait1 + 'c >
   #[ inline ]
   fn clone( &self ) -> Self
   {
-    // let x = &**self;
-    // inspect_type::inspect_type_of!( x );
-    // clone_dyn::clone( self )
     clone_dyn::clone_into_box( &**self )
   }
 }

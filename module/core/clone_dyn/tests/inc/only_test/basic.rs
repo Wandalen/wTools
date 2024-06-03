@@ -64,7 +64,7 @@ fn clone()
 }
 
 #[ test ]
-fn vector()
+fn basic()
 {
 
   //

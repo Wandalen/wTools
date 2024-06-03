@@ -4,10 +4,8 @@ use super::*;
 
 use the_module::clone_dyn;
 
-#[ clone_dyn( debug ) ]
+#[ clone_dyn ]
 trait Trait1
-where
-  Self : clone_dyn::CloneDyn,
 {
   fn val( &self ) -> i32;
 }

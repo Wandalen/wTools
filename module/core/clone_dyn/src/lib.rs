@@ -2,7 +2,8 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/clone_dyn/latest/clone_dyn/" ) ]
-#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+// #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+// xxx
 
 #[ allow( unused_extern_crates ) ]
 #[ cfg( feature = "enabled" ) ]
@@ -33,9 +34,9 @@ pub( crate ) mod private
 
   /// A trait to upcast a clonable entity and clone it.
   /// It's implemented for all entities which can be cloned.
-  pub trait CloneDyn
+  pub trait CloneDyn : Sealed
   {
-    fn __clone_dyn( &self ) -> *mut ();
+    fn __clone_dyn( &self, _ : DontCallMe ) -> *mut ();
   }
 
   // clonable
@@ -43,7 +44,8 @@ pub( crate ) mod private
   where
     T : Clone,
   {
-    fn __clone_dyn( &self ) -> *mut ()
+    #[ inline ]
+    fn __clone_dyn( &self, _ : DontCallMe ) -> *mut ()
     {
       Box::< T >::into_raw( Box::new( self.clone() ) ) as *mut ()
     }
@@ -54,7 +56,8 @@ pub( crate ) mod private
   where
     T : Clone,
   {
-    fn __clone_dyn( &self ) -> *mut ()
+    #[ inline ]
+    fn __clone_dyn( &self, _ : DontCallMe ) -> *mut ()
     {
       Box::< [ T ] >::into_raw( self.iter().cloned().collect() ) as *mut ()
     }
@@ -63,57 +66,119 @@ pub( crate ) mod private
   // str slice
   impl CloneDyn for str
   {
-    fn __clone_dyn( &self ) -> *mut ()
+    #[ inline ]
+    fn __clone_dyn( &self, _ : DontCallMe ) -> *mut ()
     {
       Box::< str >::into_raw( Box::from( self ) ) as *mut ()
     }
   }
 
   ///
-  /// True clone which is applicable not only to clonable entities, but to trait object implementing CloneDyn.
+  /// True clone which is applicable not only to clonable entities, but to trait objects implementing CloneDyn.
   ///
+  /// # Example
+  ///
+  /// ```
+  /// use clone_dyn::clone;
+  ///
+  /// #[ derive( Clone ) ]
+  /// struct MyStruct
+  /// {
+  ///   value : i32,
+  /// }
+  ///
+  /// let original = MyStruct { value : 42 };
+  /// let cloned = clone( &original );
+  ///
+  /// assert_eq!( original.value, cloned.value );
+  /// ```
+
+  #[ inline ]
   pub fn clone< T >( src : &T ) -> T
   where
     T : CloneDyn,
   {
+    /// # Safety
+    ///
+    /// This function uses an `unsafe` block because it performs low-level memory manipulations. Specifically, it handles
+    /// raw pointers and converts them to and from `Box< T >`. This is necessary to dynamically clone a trait object, which
+    /// does not support cloning through the standard `Clone` trait. The safety of this function depends on the guarantee
+    /// that the `CloneDyn` trait is correctly implemented for the given type `T`, ensuring that `__clone_dyn` returns a
+    /// valid pointer to a cloned instance of `T`.
+    ///
+    #[ allow( unsafe_code ) ]
     unsafe
     {
-      *Box::from_raw( < T as CloneDyn >::__clone_dyn( src ) as *mut T )
+      *Box::from_raw( < T as CloneDyn >::__clone_dyn( src, DontCallMe ) as *mut T )
     }
   }
 
+  ///
   /// Clone boxed dyn.
   ///
-  /// Not intended to be used directly.
+  /// Clones a dynamically sized trait object into a `Box< T >`.
+  ///
+  /// # Example
+  ///
+  /// ```
+  /// use clone_dyn::{ clone_into_box, clone_dyn };
+  ///
+  /// #[ derive( Clone ) ]
+  /// struct MyStruct
+  /// {
+  ///   value : i32,
+  /// }
+  ///
+  /// #[ clone_dyn ]
+  /// trait MyTrait
+  /// {
+  ///   fn val( &self ) -> i32;
+  /// }
+  ///
+  /// impl MyTrait for MyStruct
+  /// {
+  ///   fn val( &self ) -> i32
+  ///   {
+  ///     self.value
+  ///   }
+  /// }
+  ///
+  /// let cloned : Box< dyn MyTrait > = clone_into_box( &MyStruct { value : 42 } );
+  ///
+  /// ```
+
   #[ inline ]
   pub fn clone_into_box< T >( ref_dyn : &T ) -> Box< T >
   where
     T : ?Sized + CloneDyn,
   {
-    // Explanation for the use of `unsafe`:
-    // The `unsafe` block is necessary here because we're performing low-level memory manipulations
-    // that cannot be checked by the Rust compiler for safety. Specifically, we're manually handling
-    // raw pointers and converting them to and from `Box< T >`, which is considered unsafe as it
-    // bypasses Rust's ownership and borrowing rules. This is done to dynamically clone a boxed
-    // trait object, which doesn't support cloning through the standard `Clone` trait. The operations
-    // within this block are carefully crafted to ensure memory safety manually, including proper
-    // allocation and deallocation of heap memory for the clone.
+    /// # Safety
+    ///
+    /// This function uses an `unsafe` block because it performs low-level memory manipulations involving raw pointers.
+    /// The `unsafe` block is necessary here because we're manually handling raw pointers and converting them to and from
+    /// `Box<T>`. This bypasses Rust's ownership and borrowing rules to achieve dynamic cloning of a boxed trait object.
+    /// The safety of this function relies on the correct implementation of the `CloneDyn` trait for the given type `T`.
+    /// Specifically, `__clone_dyn` must return a valid pointer to a cloned instance of `T`.
+    ///
     #[ allow( unsafe_code ) ]
     unsafe
     {
       let mut ptr = ref_dyn as *const T;
-      // println!( "ptr : {:p} | size : {}", ptr, core::mem::size_of_val( &ptr ) );
-      // inspect_type::inspect_type_of!( ptr );
       let data_ptr = &mut ptr as *mut *const T as *mut *mut ();
-      // println!( "data_ptr : {:p} | size : {}", data_ptr, core::mem::size_of_val( &data_ptr ) );
-      // inspect_type::inspect_type_of!( data_ptr );
-      // println!( "*data_ptr : {:p} | size : {}", *data_ptr, core::mem::size_of_val( &*data_ptr ) );
-      // inspect_type::inspect_type_of!( data_ptr );
-      *data_ptr = < T as CloneDyn >::__clone_dyn( ref_dyn );
-      // println!( "" );
+      *data_ptr = < T as CloneDyn >::__clone_dyn( ref_dyn, DontCallMe );
       Box::from_raw( ptr as *mut T )
     }
   }
+
+  mod sealed
+  {
+    pub struct DontCallMe;
+    pub trait Sealed {}
+    impl< T : Clone > Sealed for T {}
+    impl< T : Clone > Sealed for [ T ] {}
+    impl Sealed for str {}
+  }
+  use sealed::*;
 
 }
 
