@@ -73,7 +73,7 @@ fn vector()
   let e_i64 : Box< dyn Trait1 > = Box::new( 13 );
   let e_string : Box< dyn Trait1 > = Box::new( "abc".to_string() );
   let e_str_slice : Box< dyn Trait1 > = Box::new( "abc" );
-  // let e_slice : Box< dyn Trait1 > = Box::new( &[ 1, 2, 3 ][ 0 ] );
+  let e_slice : Box< dyn Trait1 > = Box::new( &[ 1i32, 2i32, 3i32 ][ 0 ] );
   // xxx2 : continue
 
   let vec : Vec< Box< dyn Trait1 > > = vec![ e_i32, e_i64, e_string, e_str_slice ];

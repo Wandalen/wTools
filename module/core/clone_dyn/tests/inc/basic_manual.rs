@@ -15,9 +15,18 @@ impl Trait1 for i32
 {
   fn val( &self ) -> i32
   {
-    self.clone()
+    *self
   }
 }
+
+// xxx : ?
+// impl Trait1 for &i32
+// {
+//   fn val( &self ) -> i32
+//   {
+//     **self
+//   }
+// }
 
 impl Trait1 for i64
 {
@@ -36,14 +45,24 @@ impl Trait1 for String
 }
 
 impl< T > Trait1 for &[ T ]
-// where
-//   T : clone_dyn::CloneDyn,
+where
+  T : clone_dyn::CloneDyn,
 {
   fn val( &self ) -> i32
   {
     self.len().try_into().unwrap()
   }
 }
+
+// impl< T > Trait1 for &[ &T ]
+// where
+//   T : clone_dyn::CloneDyn,
+// {
+//   fn val( &self ) -> i32
+//   {
+//     self.len().try_into().unwrap()
+//   }
+// }
 
 impl Trait1 for &str
 {
@@ -62,7 +81,7 @@ for Box< dyn Trait1 + 'c >
   #[ inline ]
   fn clone( &self ) -> Self
   {
-    let x = &**self;
+    // let x = &**self;
     // inspect_type::inspect_type_of!( x );
     // clone_dyn::clone( self )
     clone_dyn::clone_into_box( &**self )
