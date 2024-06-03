@@ -35,7 +35,7 @@ enabled = [ "clone_dyn_meta/enabled" ]
 
 [dependencies]
 clone_dyn_meta = { workspace = true }
-inspect_type = { workspace = true, features = [ "full" ] }
+# inspect_type = { workspace = true, features = [ "full" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
