@@ -72,22 +72,26 @@ where
   }
 }
 
-// impl< T, Row, Key, Cell, Title, K > TableRows< Row = Row, Key = Key, Cell = Cell >
-// for AsTable< T, Row, Key, Cell, Title >
-// where
-//   T : TableRows< Row = Row, Key = Key, Cell = Cell >,
-//   T : TableHeader< Key = Key, Title = Title >,
-//   T : TableSize,
-//   T : Fields< K, Row >,
-//   Row : Cells< Key = Key, Cell = Cell >,
-//   Title : fmt::Debug,
-//   Cell : fmt::Debug,
-// {
-//   fn rows( &self ) -> impl IteratorTrait< Item = Row >
-//   {
-//     self.fields().map( | ( k, e ) | e )
-//   }
-// }
+impl< T, Row, Key, Cell, Title > TableRows
+for AsTable< T, Row, Key, Cell, Title >
+where
+  T : TableRows< Row = Row, Key = Key, Cell = Cell >,
+  T : TableHeader< Key = Key, Title = Title >,
+  T : TableSize,
+  T : Fields< Key, Row >,
+  Row : Cells< Key = Key, Cell = Cell >,
+  Title : fmt::Debug,
+  Cell : fmt::Debug,
+{
+  type Row = Row;
+  type Key = Key;
+  type Cell = Cell;
+
+  fn rows( &self ) -> impl IteratorTrait< Item = Row >
+  {
+    self.fields().map( | ( _k, e ) | e )
+  }
+}
 
 // impl< T, Row > TableSize
 // for T
