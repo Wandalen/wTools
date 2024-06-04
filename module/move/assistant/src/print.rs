@@ -44,6 +44,46 @@ where
 
 // ==
 
+impl< T, Row, Cell, Title > TableSize
+for AsTable< T, Row, Cell, Title >
+where
+  T : TableRows< Row, Cell >,
+  T : TableHeader< Title >,
+  T : TableSize,
+  T : FieldsLen< Row >,
+  Row : Cells< Cell >,
+  Row : FieldsLen< Cell >,
+  Title : fmt::Debug,
+  Cell : fmt::Debug,
+{
+  fn size( &self ) -> [ usize ; 2 ]
+  {
+    let mut rows = self.rows();
+    let nrows = rows.len();
+    let row = rows.next();
+    if let Some( row ) = row
+    {
+      let ncells = row.cells().len();
+      [ nrows, ncells ]
+    }
+    else
+    {
+      [ 0, 0 ]
+    }
+  }
+}
+
+// impl< T, Row > TableSize
+// for T
+// where
+//   T : FieldsLen< Row >,
+// {
+//   fn size( &self ) -> [ usize ; 2 ]
+//   {
+//     [ 0, 0 ]
+//   }
+// }
+
 // ==
 
 /// Struct to hold options to print data as table.
@@ -61,6 +101,18 @@ pub struct Formatter< 'a >
   styles : Styles,
 }
 
+impl fmt::Debug for Formatter< '_ >
+{
+  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+  {
+    f
+    .debug_struct( "Formatter" )
+    .field( "buf", &"dyn fmt::Write" )
+    .field( "styles", &self.styles )
+    .finish()
+  }
+}
+
 impl< 'a > Formatter< 'a >
 {
   /// Creates a new `Formatter` with the given buffer and separator.
@@ -71,8 +123,14 @@ impl< 'a > Formatter< 'a >
 }
 
 /// A trait for formatting tables.
+///
+/// This trait defines a method for formatting tables, allowing implementations
+/// to specify how a table should be formatted and displayed.
+///
+
 pub trait TableFormatter
 {
+  /// Formats the table and writes the result to the given formatter.
   fn fmt( &self, f : &mut Formatter< '_ > ) -> fmt::Result;
 }
 
@@ -107,6 +165,7 @@ where
         // zzz : avoid extra allocation of memory
         write!( f.buf, "{:?}", title )?;
         first = false;
+        i += 1;
       }
       writeln!( f.buf )?;
     }

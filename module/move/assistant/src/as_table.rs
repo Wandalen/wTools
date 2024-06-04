@@ -5,7 +5,7 @@ use core::marker::PhantomData;
 use core::fmt;
 
 /// Transparent wrapper for table-like structures.
-#[ derive( Debug ) ]
+// #[ derive( Debug ) ]
 #[ repr( transparent ) ]
 pub struct AsTable< T, Row, Cell, Title >( T, ::core::marker::PhantomData< fn () -> ( Row, Title, Cell ) > )
 where
@@ -107,5 +107,20 @@ where
   fn default() -> Self
   {
     AsTable( T::default(), PhantomData )
+  }
+}
+
+impl< T, Row, Cell, Title > fmt::Debug for AsTable< T, Row, Cell, Title >
+where
+  T : TableRows< Row, Cell > + TableHeader< Title > + TableSize + fmt::Debug,
+  Row : Cells< Cell >,
+  Title : fmt::Debug,
+  Cell : fmt::Debug
+{
+  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+  {
+    f.debug_struct( "AsTable" )
+    .field( "0", &self.0 )
+    .finish()
   }
 }
