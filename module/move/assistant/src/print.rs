@@ -5,6 +5,14 @@ use former::Former;
 
 /// Struct to hold options to print data as table.
 #[ derive( Debug, Default, Former ) ]
+pub struct Styles
+{
+  /// Optional delimiter for separating table columns.
+  pub delimiter : Option< String >,
+}
+
+/// Struct to hold options to print data as table.
+#[ derive( Debug, Default, Former ) ]
 pub struct TableOptions
 {
   /// Optional header row for the table.
@@ -12,26 +20,86 @@ pub struct TableOptions
   /// Rows with data for the table.
   /// Its length should be equal to header length.
   pub rows : Vec< String >,
-  /// Optional delimiter for separating table columns.
-  pub delimiter : Option< String >,
+  /// Styles.
+  pub styles : Styles,
 }
 
-impl TableOptions
+/// A trait for iterating over all fields of a specified type within an entity to print it.
+pub trait TableRows< Row, Cell >
+where
+  Row : RowFields< Cell >,
+  Cell : fmt::Debug,
 {
-  /// Function to print a table based on the iterator of items implementing `Fields` trait.
-  pub fn perform< I, F, K, E >( &self, iter : I )
+  /// Returns an iterator over all fields of the specified type within the entity.
+  fn rows( &self ) -> impl Iterator< Item = Row > + Clone;
+}
+
+/// A trait for iterating over all fields of a specified type within an entity to print it.
+pub trait RowFields< Cell >
+where
+  Cell : fmt::Debug,
+{
+  /// Returns an iterator over all fields of the specified type within the entity.
+  fn row_fields( &self ) -> impl Iterator< Item = Cell > + Clone;
+}
+
+/// Trait returning headers of a table if any.
+pub trait TableHeader< Title >
+where
+  Title : fmt::Debug,
+{
+  /// Returns an iterator over all fields of the specified type within the entity.
+  fn header( &self ) -> Option< impl Iterator< Item = Title > + Clone >;
+}
+
+// impl TableHeader for I
+// where
+//   I : Fields< K, E >,
+// {
+// }
+
+/// Struct for formatting tables.
+pub struct Formatter< 'a >
+{
+  buf : &'a mut dyn fmt::Write,
+  styles : Styles,
+}
+
+impl< 'a > Formatter< 'a >
+{
+  /// Creates a new `Formatter` with the given buffer and delimiter.
+  pub fn new( buf : &'a mut dyn fmt::Write, styles : Styles ) -> Self
+  {
+    Formatter { buf, styles }
+  }
+}
+
+/// A trait for formatting tables.
+pub trait TableFormatter
+{
+  fn fmt< I, F, K, E >( &self, f : &mut Formatter<'_>, iter : I ) -> fmt::Result
+  where
+    I : Iterator< Item = F >,
+    F : Fields< K, E >,
+    K : fmt::Debug,
+    E : fmt::Debug;
+}
+
+impl TableFormatter for TableOptions
+{
+  fn fmt< I, F, K, E >( &self, f : &mut Formatter<'_>, iter : I ) -> fmt::Result
   where
     I : Iterator< Item = F >,
     F : Fields< K, E >,
     K : fmt::Debug,
     E : fmt::Debug,
   {
-    let delimiter = self.delimiter.clone().unwrap_or_else( || ",".to_string() );
+    let delimiter = &self.styles.delimiter.clone().unwrap_or_else( || ",".to_string() );
 
-    // Print the header if provided
+    // Write the header if provided
     if let Some( header ) = &self.header
     {
-      println!( "{}", header.join( &delimiter ) );
+      writeln!( f.buf, "{}", header.join( delimiter ) )?;
     }
 
     // Collect rows
@@ -70,7 +138,7 @@ impl TableOptions
       }
     }
 
-    // Print rows with proper alignment
+    // Write rows with proper alignment
     for row in all_rows
     {
       let formatted_row : Vec< String > = row
@@ -78,7 +146,9 @@ impl TableOptions
         .enumerate()
         .map( | ( i, col ) | format!( "{:width$}", col, width = col_widths[ i ] ) )
         .collect();
-      println!( "{}", formatted_row.join( &delimiter ) );
+      writeln!( f.buf, "{}", formatted_row.join( delimiter ) )?;
     }
+
+    Ok(())
   }
 }
