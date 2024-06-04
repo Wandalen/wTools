@@ -1,6 +1,7 @@
 
 use super::*;
 use core::fmt;
+use std::borrow::Cow;
 use former::Former;
 
 // ==
@@ -122,21 +123,20 @@ where
 //   }
 //
 // }
-//
-// impl< 'a, Row, Key, Cell > Cells< Key, Cell >
-// for Row
-// where
-//   // Row : Clone + Cells< Key, Cell >,
-//   Row : Fields< 'a, Key, Cell >,
-//   Cell : fmt::Debug + Clone,
-// {
-//
-//   fn cells( &self ) -> impl IteratorTrait< Item = ( Key, Cell ) >
-//   {
-//     self.fields()
-//   }
-//
-// }
+
+impl< Row, Key, Cell > Cells< Key, Cell >
+for Row
+where
+  Row : for< 'a > Fields< 'a, Key, Cell >,
+  Cell : fmt::Debug + Clone + 'static,
+{
+
+  fn cells( &self ) -> impl IteratorTrait< Item = ( Key, Cell ) >
+  {
+    self.fields().map( move | ( key, cell ) | ( key, cell.into_owned() ) )
+  }
+
+}
 
 // ==
 
