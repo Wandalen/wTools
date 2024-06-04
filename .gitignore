@@ -9,6 +9,7 @@
 /target
 /node_modules
 /.module
+/.data
 /package-lock.json
 /Cargo.lock
 /.vscode
