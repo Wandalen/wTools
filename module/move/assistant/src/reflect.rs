@@ -36,7 +36,8 @@ where
 /// - `E`: The element type.
 pub trait Fields< 'a, K, E >
 where
-  E : Clone + 'a,
+  E : Clone + 'static,
+  // K : 'static,
 {
   /// Returns an iterator over all fields of the specified type within the entity.
   fn fields( &'a self ) -> impl IteratorTrait< Item = ( K, std::borrow::Cow< 'a, E > ) >;

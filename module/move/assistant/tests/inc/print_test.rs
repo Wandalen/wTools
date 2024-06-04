@@ -14,6 +14,7 @@ use std::
 };
 
 /// Struct representing a test object with various fields.
+#[ derive( Clone ) ]
 pub struct TestObject
 {
   pub id : String,
@@ -41,13 +42,13 @@ impl< 'a > Fields< 'a, &'static str, String > for TestObject
   }
 }
 
-// impl< 'a > Fields< usize, &'a TestObject > for Vec< TestObject >
-// {
-//   fn fields( &'a self ) -> impl IteratorTrait< Item = ( usize, &'a TestObject ) >
-//   {
-//     self.iter().enumerate()
-//   }
-// }
+impl< 'a > Fields< 'a, usize, TestObject > for Vec< TestObject >
+{
+  fn fields( &'a self ) -> impl IteratorTrait< Item = ( usize, Cow< 'a, TestObject > ) >
+  {
+    self.iter().enumerate().map( | ( key, val ) | ( key, Cow::Borrowed( val ) ) )
+  }
+}
 
 //
 

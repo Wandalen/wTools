@@ -17,7 +17,7 @@ pub trait TableSize
 pub trait TableRows< 'a, Row, Key, Cell >
 where
   Row : Clone + Cells< 'a, Key, Cell >,
-  Cell : fmt::Debug + Clone,
+  Cell : fmt::Debug + Clone + 'static,
 {
   /// Returns an iterator over all rows of the table.
   fn rows( &'a self ) -> impl IteratorTrait< Item = Row >;
@@ -37,7 +37,7 @@ where
 /// A trait for iterating over all cells of a row.
 pub trait Cells< 'a, Key, Cell >
 where
-  Cell : fmt::Debug + Clone,
+  Cell : fmt::Debug + Clone + 'static,
 {
   /// Returns an iterator over all cells of the row.
   fn cells( &'a self ) -> impl IteratorTrait< Item = ( Key, Cell ) >
@@ -102,40 +102,47 @@ where
 //
 // }
 
-// impl< 'a, T, Row, Key, Cell, Title > TableHeader< 'a, Key, Title >
-// for AsTable< 'a, T, Row, Key, Cell, Title >
-// where
-//   T : TableRows< 'a, Row, Key, Cell >,
-//   T : TableHeader< 'a, Key, Title >,
-//   T : TableSize,
-//   Row : Clone + Cells< 'a, Key, Cell >,
-//   Row : Fields< 'a, Key, Title >,
-//   Key : Clone,
-//   Title : fmt::Debug + Clone,
-//   Cell : fmt::Debug + Clone,
-// {
-//
-//   fn header( &self ) -> Option< impl IteratorTrait< Item = ( Key, Title ) > >
-//   {
-//     let mut rows = self.rows();
-//     let row = rows.next();
-//     if let Some( row ) = row
-//     {
-//       Some( row.fields().collect::< Vec< _ > >().into_iter() )
-//     }
-//     else
-//     {
-//       None
-//     }
-//   }
-//
-// }
+impl< 'a, T, Row, Key, Cell, Title > TableHeader< 'a, Key, Title >
+for AsTable< 'a, T, Row, Key, Cell, Title >
+where
+  T : TableRows< 'a, Row, Key, Cell >,
+  T : TableHeader< 'a, Key, Title >,
+  T : TableSize,
+  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell >,
+  Row : for< 'cell > Fields< 'cell, Key, Title >,
+  Key : Clone + 'static,
+  Title : fmt::Debug + Clone + 'static,
+  Cell : fmt::Debug + Clone + 'static,
+{
+
+  fn header( &'a self ) -> Option< impl IteratorTrait< Item = ( Key, Title ) > >
+  {
+    let mut rows = self.rows();
+    let row = rows.next();
+    if let Some( row ) = row
+    {
+      Some
+      (
+        row
+        .fields()
+        .map( | ( key, title ) | ( key, title.into_owned() ) )
+        .collect::< Vec< _ > >()
+        .into_iter()
+      )
+    }
+    else
+    {
+      None
+    }
+  }
+
+}
 
 impl< 'a, Row, Key, Cell > Cells< 'a, Key, Cell >
 for Row
 where
   Row : Fields< 'a, Key, Cell >,
-  Cell : fmt::Debug + Clone + 'a, // xxx
+  Cell : fmt::Debug + Clone + 'static,
 {
 
   fn cells( &'a self ) -> impl IteratorTrait< Item = ( Key, Cell ) >
@@ -144,38 +151,6 @@ where
   }
 
 }
-
-// /// A trait for iterating over all cells of a row.
-// pub trait Cells2< 'a, Key, Cell >
-// where
-//   Cell : fmt::Debug + Clone,
-// {
-//   /// Returns an iterator over all cells of the row.
-//   fn cells( &'a self ) -> impl IteratorTrait< Item = ( Key, Cell ) >
-//   where
-//     // Self : 'a,
-//     // Cell : 'a,
-//     // Key : 'static,
-//   ;
-// }
-//
-// impl< 'a, Row, Key, Cell > Cells2< 'a, Key, Cell >
-// for Row
-// where
-//   Row : Fields< 'a, Key, Cell >,
-//   Cell : fmt::Debug + Clone + 'static,
-// {
-//
-//   fn cells( &'a self ) -> impl IteratorTrait< Item = ( Key, Cell ) >
-//   where
-//     // Self : 'a,
-//     // Cell : 'a,
-//     // Key : 'static,
-//   {
-//     self.fields().map( move | ( key, cell ) | ( key, cell.into_owned() ) )
-//   }
-//
-// }
 
 // ==
 
@@ -264,7 +239,7 @@ where
   T : TableSize,
   Row : Clone + for< 'cell > Cells< 'cell, Key, Cell >,
   Title : fmt::Debug,
-  Cell : fmt::Debug + Clone,
+  Cell : fmt::Debug + Clone + 'static,
   // 'b : 'a,
 {
   fn fmt( &'a self, f : &'a mut Formatter< '_ > ) -> fmt::Result
