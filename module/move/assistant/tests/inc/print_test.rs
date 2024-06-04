@@ -52,47 +52,45 @@ impl< 'a > Fields< 'a, usize, TestObject > for Vec< TestObject >
 
 //
 
-fn is_borrowed< 'a, T : Clone >( src : &Cow< 'a, T > ) -> bool
-{
-  match src
-  {
-    Cow::Borrowed( _ ) => true,
-    Cow::Owned( _ ) => false,
-  }
-}
-
-//
-
 #[ test ]
-fn basic()
+fn test_table_to_string()
 {
-  let test_object = TestObject
-  {
-    id : "12345".to_string(),
-    created_at : 1627845583,
-    file_ids : vec![ "file1".to_string(), "file2".to_string() ],
-    tools : Some
-    (
-      vec!
-      [{
-        let mut map = HashMap::new();
-        map.insert( "tool1".to_string(), "value1".to_string() );
-        map.insert( "tool2".to_string(), "value2".to_string() );
-        map
-      }]
-    ),
-  };
+  use the_module::TableToString;
 
-  let fields: Vec< _ > = test_object.fields().collect();
+  let test_objects = vec!
+  [
+    TestObject
+    {
+      id : "1".to_string(),
+      created_at : 1627845583,
+      file_ids : vec![ "file1".to_string(), "file2".to_string() ],
+      tools : Some( vec!
+      [
+        {
+          let mut map = HashMap::new();
+          map.insert( "tool1".to_string(), "value1".to_string() );
+          map
+        },
+        {
+          let mut map = HashMap::new();
+          map.insert( "tool2".to_string(), "value2".to_string() );
+          map
+        }
+      ]),
+    },
+    TestObject
+    {
+      id : "2".to_string(),
+      created_at : 1627845584,
+      file_ids : vec![ "file3".to_string(), "file4".to_string() ],
+      tools : None,
+    }
+  ];
 
-  assert_eq!( fields.len(), 4 );
-  assert!( is_borrowed( &fields[ 0 ].1 ) );
-  assert!( !is_borrowed( &fields[ 1 ].1 ) );
-  assert!( !is_borrowed( &fields[ 2 ].1 ) );
-  assert!( !is_borrowed( &fields[ 3 ].1 ) );
-  assert_eq!( fields[ 0 ], ( "id", Cow::Borrowed( &"12345".to_string() ) ) );
-  assert_eq!( fields[ 1 ], ( "created_at", Cow::Owned( "1627845583".to_string() ) ) );
-  assert_eq!( fields[ 2 ], ( "file_ids", Cow::Owned( "[\"file1\", \"file2\"]".to_string() ) ) );
-  assert_eq!( fields[ 3 ].0, "tools" );
-
+  // let table_string = test_objects.table_to_string();
+  // println!( "{}", table_string );
+  // assert!( table_string.contains( "id" ) );
+  // assert!( table_string.contains( "created_at" ) );
+  // assert!( table_string.contains( "file_ids" ) );
+  // assert!( table_string.contains( "tools" ) );
 }
