@@ -91,6 +91,38 @@ where
   {
     self.fields().map( | ( _k, e ) | e )
   }
+
+}
+
+impl< T, Row, Key, Cell, Title > TableHeader
+for AsTable< T, Row, Key, Cell, Title >
+where
+  T : TableRows< Row = Row, Key = Key, Cell = Cell >,
+  T : TableHeader< Key = Key, Title = Title >,
+  T : TableSize,
+  Row : Cells< Key = Key, Cell = Cell >,
+  Row : Fields< Key, Title >,
+  Key : Clone,
+  Title : fmt::Debug + Clone,
+  Cell : fmt::Debug,
+{
+  type Key = Key;
+  type Title = Title;
+
+  fn header( &self ) -> Option< impl IteratorTrait< Item = ( Self::Key, Self::Title ) > >
+  {
+    let mut rows = self.rows();
+    let row = rows.next();
+    if let Some( row ) = row
+    {
+      Some( row.fields().collect::< Vec< _ > >().into_iter() )
+    }
+    else
+    {
+      None
+    }
+  }
+
 }
 
 // impl< T, Row > TableSize
