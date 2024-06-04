@@ -13,34 +13,31 @@ pub trait TableSize
 }
 
 /// A trait for iterating over all rows of a table.
-pub trait TableRows
+pub trait TableRows< Row, Key, Cell >
+where
+  Row : Cells< Key, Cell >,
+  Cell : fmt::Debug,
 {
-  type Row : Cells< Key = Self::Key, Cell = Self::Cell >;
-  type Key;
-  type Cell : fmt::Debug;
-
   /// Returns an iterator over all rows of the table.
-  fn rows( &self ) -> impl IteratorTrait< Item = Self::Row >;
+  fn rows( &self ) -> impl IteratorTrait< Item = Row >;
 }
 
 /// Trait returning headers of a table if any.
-pub trait TableHeader
+pub trait TableHeader< Key, Title >
+where
+  Title : fmt::Debug,
 {
-  type Key;
-  type Title : fmt::Debug;
-
   /// Returns an iterator over all fields of the specified type within the entity.
-  fn header( &self ) -> Option< impl IteratorTrait< Item = ( Self::Key, Self::Title ) > >;
+  fn header( &self ) -> Option< impl IteratorTrait< Item = ( Key, Title ) > >;
 }
 
 /// A trait for iterating over all cells of a row.
-pub trait Cells
+pub trait Cells< Key, Cell >
+where
+  Cell : fmt::Debug,
 {
-  type Key;
-  type Cell : fmt::Debug;
-
   /// Returns an iterator over all cells of the row.
-  fn cells( &self ) -> impl IteratorTrait< Item = ( Self::Key, Self::Cell ) >;
+  fn cells( &self ) -> impl IteratorTrait< Item = ( Key, Cell ) >;
 }
 
 // ==
@@ -48,10 +45,10 @@ pub trait Cells
 impl< T, Row, Key, Cell, Title > TableSize
 for AsTable< T, Row, Key, Cell, Title >
 where
-  T : TableRows< Row = Row, Key = Key, Cell = Cell >,
-  T : TableHeader< Key = Key, Title = Title >,
+  T : TableRows< Row, Key, Cell >,
+  T : TableHeader< Key, Title >,
   T : TableSize,
-  Row : Cells< Key = Key, Cell = Cell >,
+  Row : Cells< Key, Cell >,
   Title : fmt::Debug,
   Cell : fmt::Debug,
 {
@@ -72,20 +69,17 @@ where
   }
 }
 
-impl< T, Row, Key, Cell, Title > TableRows
+impl< T, Row, Key, Cell, Title > TableRows< Row, Key, Cell >
 for AsTable< T, Row, Key, Cell, Title >
 where
-  T : TableRows< Row = Row, Key = Key, Cell = Cell >,
-  T : TableHeader< Key = Key, Title = Title >,
+  T : TableRows< Row, Key, Cell >,
+  T : TableHeader< Key, Title >,
   T : TableSize,
   T : Fields< Key, Row >,
-  Row : Cells< Key = Key, Cell = Cell >,
+  Row : Cells< Key, Cell >,
   Title : fmt::Debug,
   Cell : fmt::Debug,
 {
-  type Row = Row;
-  type Key = Key;
-  type Cell = Cell;
 
   fn rows( &self ) -> impl IteratorTrait< Item = Row >
   {
@@ -94,22 +88,20 @@ where
 
 }
 
-impl< T, Row, Key, Cell, Title > TableHeader
+impl< T, Row, Key, Cell, Title > TableHeader< Key, Title >
 for AsTable< T, Row, Key, Cell, Title >
 where
-  T : TableRows< Row = Row, Key = Key, Cell = Cell >,
-  T : TableHeader< Key = Key, Title = Title >,
+  T : TableRows< Row, Key, Cell >,
+  T : TableHeader< Key, Title >,
   T : TableSize,
-  Row : Cells< Key = Key, Cell = Cell >,
+  Row : Cells< Key, Cell >,
   Row : Fields< Key, Title >,
   Key : Clone,
   Title : fmt::Debug + Clone,
   Cell : fmt::Debug,
 {
-  type Key = Key;
-  type Title = Title;
 
-  fn header( &self ) -> Option< impl IteratorTrait< Item = ( Self::Key, Self::Title ) > >
+  fn header( &self ) -> Option< impl IteratorTrait< Item = ( Key, Title ) > >
   {
     let mut rows = self.rows();
     let row = rows.next();
@@ -134,20 +126,20 @@ where
 //   fn cells( &self ) -> impl IteratorTrait< Item = ( Key, Cell ) >;
 // }
 
-// impl< Row, Key, Cell > Cells< Key, Cell >
-// for Row
-// where
-//   // Row : Cells< Key = Key, Cell = Cell >,
-//   Row : Fields< Key, Cell >,
-//   Cell : fmt::Debug,
-// {
-//
-//   fn cells( &self ) -> impl IteratorTrait< Item = ( Key, Cell ) >
-//   {
-//     self.fields()
-//   }
-//
-// }
+impl< Row, Key, Cell > Cells< Key, Cell >
+for Row
+where
+  // Row : Cells< Key, Cell >,
+  Row : Fields< Key, Cell >,
+  Cell : fmt::Debug,
+{
+
+  fn cells( &self ) -> impl IteratorTrait< Item = ( Key, Cell ) >
+  {
+    self.fields()
+  }
+
+}
 
 // ==
 
@@ -230,10 +222,10 @@ pub trait TableFormatter
 /// A trait for formatting tables.
 impl< T, Row, Key, Cell, Title > TableFormatter for AsTable< T, Row, Key, Cell, Title >
 where
-  T : TableRows< Row = Row, Key = Key, Cell = Cell >,
-  T : TableHeader< Key = Key, Title = Title >,
+  T : TableRows< Row, Key, Cell >,
+  T : TableHeader< Key, Title >,
   T : TableSize,
-  Row : Cells< Key = Key, Cell = Cell >,
+  Row : Cells< Key, Cell >,
   Title : fmt::Debug,
   Cell : fmt::Debug,
 {
