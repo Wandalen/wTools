@@ -27,6 +27,8 @@ where
 pub trait TableHeader< Key, Title >
 where
   Title : fmt::Debug,
+  // Title : 'a,
+  // Self : 'a,
 {
   /// Returns an iterator over all fields of the specified type within the entity.
   fn header( &self ) -> Option< impl IteratorTrait< Item = ( Key, Title ) > >;
@@ -38,7 +40,12 @@ where
   Cell : fmt::Debug + Clone,
 {
   /// Returns an iterator over all cells of the row.
-  fn cells( &self ) -> impl IteratorTrait< Item = ( Key, Cell ) >;
+  fn cells( &self ) -> impl IteratorTrait< Item = ( Key, Cell ) >
+  // where
+  //   Self : 'a,
+  //   Cell : 'a,
+  //   Key : 'static,
+  ;
 }
 
 // ==
@@ -94,7 +101,7 @@ where
 //   }
 //
 // }
-//
+
 // impl< 'a, T, Row, Key, Cell, Title > TableHeader< Key, Title >
 // for AsTable< 'a, T, Row, Key, Cell, Title >
 // where
@@ -137,6 +144,38 @@ where
   }
 
 }
+
+// /// A trait for iterating over all cells of a row.
+// pub trait Cells2< 'a, Key, Cell >
+// where
+//   Cell : fmt::Debug + Clone,
+// {
+//   /// Returns an iterator over all cells of the row.
+//   fn cells( &'a self ) -> impl IteratorTrait< Item = ( Key, Cell ) >
+//   where
+//     // Self : 'a,
+//     // Cell : 'a,
+//     // Key : 'static,
+//   ;
+// }
+//
+// impl< 'a, Row, Key, Cell > Cells2< 'a, Key, Cell >
+// for Row
+// where
+//   Row : Fields< 'a, Key, Cell >,
+//   Cell : fmt::Debug + Clone + 'static,
+// {
+//
+//   fn cells( &'a self ) -> impl IteratorTrait< Item = ( Key, Cell ) >
+//   where
+//     // Self : 'a,
+//     // Cell : 'a,
+//     // Key : 'static,
+//   {
+//     self.fields().map( move | ( key, cell ) | ( key, cell.into_owned() ) )
+//   }
+//
+// }
 
 // ==
 
