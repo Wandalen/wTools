@@ -7,22 +7,22 @@ use core::fmt;
 /// Transparent wrapper for table-like structures.
 // #[ derive( Debug ) ]
 #[ repr( transparent ) ]
-pub struct AsTable< T, Row, Key, Cell, Title >( T, ::core::marker::PhantomData< fn () -> ( Row, Key, Cell, Title ) > )
+pub struct AsTable< 'a, T, Row, Key, Cell, Title >( T, ::core::marker::PhantomData< fn () -> ( Row, Key, Cell, Title, &'a () ) > )
 where
   T : TableRows< Row, Key, Cell >,
   T : TableHeader< Key, Title >,
   T : TableSize,
-  Row : Cells< Key, Cell >,
+  Row : 'a + Clone + Cells< Key, Cell >,
   Title : fmt::Debug,
-  Cell : fmt::Debug,
+  Cell : fmt::Debug + Clone,
 ;
 
-impl< T, Row, Key, Cell, Title > AsRef< T > for AsTable< T, Row, Key, Cell, Title >
+impl< 'a, T, Row, Key, Cell, Title > AsRef< T > for AsTable< 'a, T, Row, Key, Cell, Title >
 where
   T : TableRows< Row, Key, Cell > + TableHeader< Key, Title > + TableSize,
-  Row : Cells< Key, Cell >,
+  Row : 'a + Clone + Cells< Key, Cell >,
   Title : fmt::Debug,
-  Cell : fmt::Debug
+  Cell : fmt::Debug + Clone
 {
   fn as_ref( &self ) -> &T
   {
@@ -30,12 +30,12 @@ where
   }
 }
 
-impl< T, Row, Key, Cell, Title > AsMut< T > for AsTable< T, Row, Key, Cell, Title >
+impl< 'a, T, Row, Key, Cell, Title > AsMut< T > for AsTable< 'a, T, Row, Key, Cell, Title >
 where
   T : TableRows< Row, Key, Cell > + TableHeader< Key, Title > + TableSize,
-  Row : Cells< Key, Cell >,
+  Row : 'a + Clone + Cells< Key, Cell >,
   Title : fmt::Debug,
-  Cell : fmt::Debug
+  Cell : fmt::Debug + Clone
 {
   fn as_mut( &mut self ) -> &mut T
   {
@@ -43,12 +43,12 @@ where
   }
 }
 
-impl< T, Row, Key, Cell, Title > Deref for AsTable< T, Row, Key, Cell, Title >
+impl< 'a, T, Row, Key, Cell, Title > Deref for AsTable< 'a, T, Row, Key, Cell, Title >
 where
   T : TableRows< Row, Key, Cell > + TableHeader< Key, Title > + TableSize,
-  Row : Cells< Key, Cell >,
+  Row : 'a + Clone + Cells< Key, Cell >,
   Title : fmt::Debug,
-  Cell : fmt::Debug
+  Cell : fmt::Debug + Clone
 {
   type Target = T;
 
@@ -58,12 +58,12 @@ where
   }
 }
 
-impl< T, Row, Key, Cell, Title > DerefMut for AsTable< T, Row, Key, Cell, Title >
+impl< 'a, T, Row, Key, Cell, Title > DerefMut for AsTable< 'a, T, Row, Key, Cell, Title >
 where
   T : TableRows< Row, Key, Cell > + TableHeader< Key, Title > + TableSize,
-  Row : Cells< Key, Cell >,
+  Row : 'a + Clone + Cells< Key, Cell >,
   Title : fmt::Debug,
-  Cell : fmt::Debug
+  Cell : fmt::Debug + Clone
 {
   fn deref_mut( &mut self ) -> &mut Self::Target
   {
@@ -71,12 +71,12 @@ where
   }
 }
 
-impl< T, Row, Key, Cell, Title > From< T > for AsTable< T, Row, Key, Cell, Title >
+impl< 'a, T, Row, Key, Cell, Title > From< T > for AsTable< 'a, T, Row, Key, Cell, Title >
 where
   T : TableRows< Row, Key, Cell > + TableHeader< Key, Title > + TableSize,
-  Row : Cells< Key, Cell >,
+  Row : 'a + Clone + Cells< Key, Cell >,
   Title : fmt::Debug,
-  Cell : fmt::Debug
+  Cell : fmt::Debug + Clone
 {
   fn from( table : T ) -> Self
   {
@@ -84,25 +84,25 @@ where
   }
 }
 
-// impl< T, Row, Key, Cell, Title > From< AsTable< T, Row, Key, Cell, Title > > for T
+// impl< 'a, T, Row, Key, Cell, Title > From< AsTable< 'a, T, Row, Key, Cell, Title > > for T
 // where
 //   T : TableRows< Row, Key, Cell > + TableHeader< Key, Title > + TableSize,
-//   Row : Cells< Key, Cell >,
+//   Row : 'a + Clone + Cells< Key, Cell >,
 //   Title : fmt::Debug,
-//   Cell : fmt::Debug
+//   Cell : fmt::Debug + Clone
 // {
-//   fn from( as_table : AsTable< T, Row, Key, Cell, Title > ) -> Self
+//   fn from( as_table : AsTable< 'a, T, Row, Key, Cell, Title > ) -> Self
 //   {
 //     as_table.0
 //   }
 // }
 
-impl< T, Row, Key, Cell, Title > Default for AsTable< T, Row, Key, Cell, Title >
+impl< 'a, T, Row, Key, Cell, Title > Default for AsTable< 'a, T, Row, Key, Cell, Title >
 where
   T : Default + TableRows< Row, Key, Cell > + TableHeader< Key, Title > + TableSize,
-  Row : Cells< Key, Cell >,
+  Row : 'a + Clone + Cells< Key, Cell >,
   Title : fmt::Debug,
-  Cell : fmt::Debug
+  Cell : fmt::Debug + Clone
 {
   fn default() -> Self
   {
@@ -110,12 +110,12 @@ where
   }
 }
 
-impl< T, Row, Key, Cell, Title > fmt::Debug for AsTable< T, Row, Key, Cell, Title >
+impl< 'a, T, Row, Key, Cell, Title > fmt::Debug for AsTable< 'a, T, Row, Key, Cell, Title >
 where
   T : TableRows< Row, Key, Cell > + TableHeader< Key, Title > + TableSize + fmt::Debug,
-  Row : Cells< Key, Cell >,
+  Row : 'a + Clone + Cells< Key, Cell >,
   Title : fmt::Debug,
-  Cell : fmt::Debug
+  Cell : fmt::Debug + Clone
 {
   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {

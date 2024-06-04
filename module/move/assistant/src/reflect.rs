@@ -34,10 +34,12 @@ where
 ///
 /// - `K`: The key type.
 /// - `E`: The element type.
-pub trait Fields< K, E >
+pub trait Fields< 'a, K, E >
+where
+  E : Clone + 'a,
 {
   /// Returns an iterator over all fields of the specified type within the entity.
-  fn fields( &self ) -> impl IteratorTrait< Item = ( K, E ) >;
+  fn fields( &'a self ) -> impl IteratorTrait< Item = ( K, std::borrow::Cow< 'a, E > ) >;
 }
 
 // /// Return number of fields convertible into a specified type withing an entity.
