@@ -36,7 +36,7 @@ where
 /// - `E`: The element type.
 pub trait Fields< 'a, K, E >
 where
-  E : Clone + 'static,
+  E : Clone + 'a,
   // K : 'static,
 {
   /// Returns an iterator over all fields of the specified type within the entity.

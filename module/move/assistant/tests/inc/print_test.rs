@@ -14,7 +14,7 @@ use std::
 };
 
 /// Struct representing a test object with various fields.
-#[ derive( Clone ) ]
+#[ derive( Clone, Debug ) ]
 pub struct TestObject
 {
   pub id : String,
