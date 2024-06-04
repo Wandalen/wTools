@@ -4,8 +4,38 @@
 #![ doc( html_root_url = "https://docs.rs/assistant/latest/assistant/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-/// Function description.
-#[ cfg( feature = "enabled" ) ]
-pub fn f1()
+pub use openai_api_rs::v1::
 {
+  api::Client,
+  assistant::AssistantObject,
+};
+
+use std::
+{
+  env,
+  error::Error,
+};
+
+use former::Former;
+
+/// Reflections.
+pub mod reflect;
+pub use reflect::*;
+/// Nice print.
+pub mod print;
+pub use print::*;
+
+/// Options for configuring the OpenAI API client.
+#[ derive( Former, Debug ) ]
+pub struct ClientOptions
+{
+  /// The API key for authenticating with the OpenAI API.
+  pub api_key : Option< String >,
+}
+
+/// Creates a new OpenAI API client using the API key from the environment variable `OPENAI_API_KEY`.
+pub fn client() -> Result< Client, Box< dyn Error > >
+{
+  let api_key = env::var( "OPENAI_API_KEY" )?;
+  Ok( Client::new( api_key ) )
 }

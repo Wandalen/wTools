@@ -4,11 +4,25 @@
 #![ doc( html_root_url = "https://docs.rs/assistant/latest/assistant/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-/// Entry point.
-#[ cfg( feature = "enabled" ) ]
-pub fn main()
+use std::
 {
+  env,
+  error::Error,
+};
 
+use dotenv::dotenv;
 
+use assistant::
+{
+  client,
+};
 
+#[ tokio::main ]
+async fn main() -> Result< (), Box< dyn Error > >
+{
+  dotenv().ok();
+  let client = client()?;
+  let assistants = client.list_assistant( None, None, None, None )?;
+  println!( "Assistants: {:?}", assistants.data );
+  Ok( () )
 }
