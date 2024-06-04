@@ -24,15 +24,6 @@ where
   fn rows( &self ) -> impl Iterator< Item = Row > + ExactSizeIterator + Clone;
 }
 
-/// A trait for iterating over all cells of a row.
-pub trait Cells< Cell >
-where
-  Cell : fmt::Debug,
-{
-  /// Returns an iterator over all cells of the row.
-  fn cells( &self ) -> impl Iterator< Item = Cell > + ExactSizeIterator + Clone;
-}
-
 /// Trait returning headers of a table if any.
 pub trait TableHeader< Title >
 where
@@ -42,10 +33,19 @@ where
   fn header( &self ) -> Option< impl Iterator< Item = Title > + ExactSizeIterator + Clone >;
 }
 
+/// A trait for iterating over all cells of a row.
+pub trait Cells< Cell >
+where
+  Cell : fmt::Debug,
+{
+  /// Returns an iterator over all cells of the row.
+  fn cells( &self ) -> impl Iterator< Item = Cell > + ExactSizeIterator + Clone;
+}
+
 // ==
 
-impl< T, Row, Cell, Title > TableSize
-for AsTable< T, Row, Cell, Title >
+impl< T, Row, Key, Cell, Title > TableSize
+for AsTable< T, Row, Key, Cell, Title >
 where
   T : TableRows< Row, Cell >,
   T : TableHeader< Title >,
@@ -72,6 +72,23 @@ where
     }
   }
 }
+
+// impl< T, Row, Key, Cell, Title, K > TableRows< Row, Cell >
+// for AsTable< T, Row, Key, Cell, Title >
+// where
+//   T : TableRows< Row, Cell >,
+//   T : TableHeader< Title >,
+//   T : TableSize,
+//   T : Fields< K, Row >,
+//   Row : Cells< Cell >,
+//   Title : fmt::Debug,
+//   Cell : fmt::Debug,
+// {
+//   fn rows( &self ) -> impl Iterator< Item = Row > + ExactSizeIterator + Clone
+//   {
+//     self.fields().map( | ( k, e ) | e )
+//   }
+// }
 
 // impl< T, Row > TableSize
 // for T
@@ -163,7 +180,7 @@ pub trait TableFormatter
 }
 
 /// A trait for formatting tables.
-impl< T, Row, Cell, Title > TableFormatter for AsTable< T, Row, Cell, Title >
+impl< T, Row, Key, Cell, Title > TableFormatter for AsTable< T, Row, Key, Cell, Title >
 where
   T : TableRows< Row, Cell >,
   T : TableHeader< Title >,
