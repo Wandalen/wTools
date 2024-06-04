@@ -25,21 +25,21 @@ where
 }
 
 /// Trait returning headers of a table if any.
-pub trait TableHeader< Title >
+pub trait TableHeader< Key, Title >
 where
   Title : fmt::Debug,
 {
   /// Returns an iterator over all fields of the specified type within the entity.
-  fn header( &self ) -> Option< impl Iterator< Item = Title > + ExactSizeIterator + Clone >;
+  fn header( &self ) -> Option< impl Iterator< Item = ( Key, Title ) > + ExactSizeIterator + Clone >;
 }
 
 /// A trait for iterating over all cells of a row.
-pub trait Cells< Cell >
+pub trait Cells< Key, Cell >
 where
   Cell : fmt::Debug,
 {
   /// Returns an iterator over all cells of the row.
-  fn cells( &self ) -> impl Iterator< Item = Cell > + ExactSizeIterator + Clone;
+  fn cells( &self ) -> impl Iterator< Item = ( Key, Cell ) > + ExactSizeIterator + Clone;
 }
 
 // ==
