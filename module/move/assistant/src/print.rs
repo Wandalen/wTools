@@ -15,9 +15,9 @@ pub trait TableSize
 }
 
 /// A trait for iterating over all rows of a table.
-pub trait TableRows< Row, Cell >
+pub trait TableRows< Row, Key, Cell >
 where
-  Row : Cells< Cell >,
+  Row : Cells< Key, Cell >,
   Cell : fmt::Debug,
 {
   /// Returns an iterator over all rows of the table.
@@ -47,11 +47,11 @@ where
 impl< T, Row, Key, Cell, Title > TableSize
 for AsTable< T, Row, Key, Cell, Title >
 where
-  T : TableRows< Row, Cell >,
-  T : TableHeader< Title >,
+  T : TableRows< Row, Key, Cell >,
+  T : TableHeader< Key, Title >,
   T : TableSize,
   T : FieldsLen< Row >,
-  Row : Cells< Cell >,
+  Row : Cells< Key, Cell >,
   Row : FieldsLen< Cell >,
   Title : fmt::Debug,
   Cell : fmt::Debug,
@@ -73,14 +73,14 @@ where
   }
 }
 
-// impl< T, Row, Key, Cell, Title, K > TableRows< Row, Cell >
+// impl< T, Row, Key, Cell, Title, K > TableRows< Row, Key, Cell >
 // for AsTable< T, Row, Key, Cell, Title >
 // where
-//   T : TableRows< Row, Cell >,
-//   T : TableHeader< Title >,
+//   T : TableRows< Row, Key, Cell >,
+//   T : TableHeader< Key, Title >,
 //   T : TableSize,
 //   T : Fields< K, Row >,
-//   Row : Cells< Cell >,
+//   Row : Cells< Key, Cell >,
 //   Title : fmt::Debug,
 //   Cell : fmt::Debug,
 // {
@@ -182,10 +182,10 @@ pub trait TableFormatter
 /// A trait for formatting tables.
 impl< T, Row, Key, Cell, Title > TableFormatter for AsTable< T, Row, Key, Cell, Title >
 where
-  T : TableRows< Row, Cell >,
-  T : TableHeader< Title >,
+  T : TableRows< Row, Key, Cell >,
+  T : TableHeader< Key, Title >,
   T : TableSize,
-  Row : Cells< Cell >,
+  Row : Cells< Key, Cell >,
   Title : fmt::Debug,
   Cell : fmt::Debug,
 {
@@ -200,7 +200,7 @@ where
     {
       let mut first = true;
       let mut i = 0;
-      for title in header
+      for ( _key, title ) in header
       {
         if !first
         {
@@ -222,7 +222,7 @@ where
       let fields : Vec< String > = row
       .cells()
       // .map( | ( key, value ) | format!( "{:?}: {:?}", key, value ) )
-      .map( | e | format!( "{:?}", e ) )
+      .map( | ( _key, cell ) | format!( "{:?}", cell ) )
       .collect();
       all_rows.push( fields );
     }
@@ -248,7 +248,7 @@ where
       let formatted_row : Vec< String > = row
       .iter()
       .enumerate()
-      .map( | ( i, col ) | format!( "{:width$}", col, width = col_widths[ i ] ) )
+      .map( | ( i, cell ) | format!( "{:width$}", cell, width = col_widths[ i ] ) )
       .collect();
       writeln!( f.buf, "{}", formatted_row.join( separator ) )?;
     }

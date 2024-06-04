@@ -9,18 +9,18 @@ use core::fmt;
 #[ repr( transparent ) ]
 pub struct AsTable< T, Row, Key, Cell, Title >( T, ::core::marker::PhantomData< fn () -> ( Row, Key, Cell, Title ) > )
 where
-  T : TableRows< Row, Cell >,
-  T : TableHeader< Title >,
+  T : TableRows< Row, Key, Cell >,
+  T : TableHeader< Key, Title >,
   T : TableSize,
-  Row : Cells< Cell >,
+  Row : Cells< Key, Cell >,
   Title : fmt::Debug,
   Cell : fmt::Debug,
 ;
 
 impl< T, Row, Key, Cell, Title > AsRef< T > for AsTable< T, Row, Key, Cell, Title >
 where
-  T : TableRows< Row, Cell > + TableHeader< Title > + TableSize,
-  Row : Cells< Cell >,
+  T : TableRows< Row, Key, Cell > + TableHeader< Key, Title > + TableSize,
+  Row : Cells< Key, Cell >,
   Title : fmt::Debug,
   Cell : fmt::Debug
 {
@@ -32,8 +32,8 @@ where
 
 impl< T, Row, Key, Cell, Title > AsMut< T > for AsTable< T, Row, Key, Cell, Title >
 where
-  T : TableRows< Row, Cell > + TableHeader< Title > + TableSize,
-  Row : Cells< Cell >,
+  T : TableRows< Row, Key, Cell > + TableHeader< Key, Title > + TableSize,
+  Row : Cells< Key, Cell >,
   Title : fmt::Debug,
   Cell : fmt::Debug
 {
@@ -45,8 +45,8 @@ where
 
 impl< T, Row, Key, Cell, Title > Deref for AsTable< T, Row, Key, Cell, Title >
 where
-  T : TableRows< Row, Cell > + TableHeader< Title > + TableSize,
-  Row : Cells< Cell >,
+  T : TableRows< Row, Key, Cell > + TableHeader< Key, Title > + TableSize,
+  Row : Cells< Key, Cell >,
   Title : fmt::Debug,
   Cell : fmt::Debug
 {
@@ -60,8 +60,8 @@ where
 
 impl< T, Row, Key, Cell, Title > DerefMut for AsTable< T, Row, Key, Cell, Title >
 where
-  T : TableRows< Row, Cell > + TableHeader< Title > + TableSize,
-  Row : Cells< Cell >,
+  T : TableRows< Row, Key, Cell > + TableHeader< Key, Title > + TableSize,
+  Row : Cells< Key, Cell >,
   Title : fmt::Debug,
   Cell : fmt::Debug
 {
@@ -73,8 +73,8 @@ where
 
 impl< T, Row, Key, Cell, Title > From< T > for AsTable< T, Row, Key, Cell, Title >
 where
-  T : TableRows< Row, Cell > + TableHeader< Title > + TableSize,
-  Row : Cells< Cell >,
+  T : TableRows< Row, Key, Cell > + TableHeader< Key, Title > + TableSize,
+  Row : Cells< Key, Cell >,
   Title : fmt::Debug,
   Cell : fmt::Debug
 {
@@ -86,8 +86,8 @@ where
 
 // impl< T, Row, Key, Cell, Title > From< AsTable< T, Row, Key, Cell, Title > > for T
 // where
-//   T : TableRows< Row, Cell > + TableHeader< Title > + TableSize,
-//   Row : Cells< Cell >,
+//   T : TableRows< Row, Key, Cell > + TableHeader< Key, Title > + TableSize,
+//   Row : Cells< Key, Cell >,
 //   Title : fmt::Debug,
 //   Cell : fmt::Debug
 // {
@@ -99,8 +99,8 @@ where
 
 impl< T, Row, Key, Cell, Title > Default for AsTable< T, Row, Key, Cell, Title >
 where
-  T : Default + TableRows< Row, Cell > + TableHeader< Title > + TableSize,
-  Row : Cells< Cell >,
+  T : Default + TableRows< Row, Key, Cell > + TableHeader< Key, Title > + TableSize,
+  Row : Cells< Key, Cell >,
   Title : fmt::Debug,
   Cell : fmt::Debug
 {
@@ -112,8 +112,8 @@ where
 
 impl< T, Row, Key, Cell, Title > fmt::Debug for AsTable< T, Row, Key, Cell, Title >
 where
-  T : TableRows< Row, Cell > + TableHeader< Title > + TableSize + fmt::Debug,
-  Row : Cells< Cell >,
+  T : TableRows< Row, Key, Cell > + TableHeader< Key, Title > + TableSize + fmt::Debug,
+  Row : Cells< Key, Cell >,
   Title : fmt::Debug,
   Cell : fmt::Debug
 {
