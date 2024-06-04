@@ -50,9 +50,9 @@ where
   T : TableRows< Row, Key, Cell >,
   T : TableHeader< Key, Title >,
   T : TableSize,
-  T : FieldsLen< Row >,
+  // T : FieldsLen< Row >,
   Row : Cells< Key, Cell >,
-  Row : FieldsLen< Cell >,
+  // Row : FieldsLen< Cell >,
   Title : fmt::Debug,
   Cell : fmt::Debug,
 {

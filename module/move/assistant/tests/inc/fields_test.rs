@@ -22,7 +22,7 @@ pub struct TestObject
 
 impl Fields< &'static str, String > for TestObject
 {
-  fn fields( &self ) -> impl Iterator< Item = ( &'static str, String ) > + Clone
+  fn fields( &self ) -> impl Iterator< Item = ( &'static str, String ) > + ExactSizeIterator + Clone
   {
     let mut vec : Vec< ( &'static str, String ) > = Vec::new();
 
