@@ -13,31 +13,34 @@ pub trait TableSize
 }
 
 /// A trait for iterating over all rows of a table.
-pub trait TableRows< Row, Key, Cell >
-where
-  Row : Cells< Key, Cell >,
-  Cell : fmt::Debug,
+pub trait TableRows
 {
+  type Row : Cells< Key = Self::Key, Cell = Self::Cell >;
+  type Key;
+  type Cell : fmt::Debug;
+
   /// Returns an iterator over all rows of the table.
-  fn rows( &self ) -> impl IteratorTrait< Item = Row >;
+  fn rows( &self ) -> impl IteratorTrait< Item = Self::Row >;
 }
 
 /// Trait returning headers of a table if any.
-pub trait TableHeader< Key, Title >
-where
-  Title : fmt::Debug,
+pub trait TableHeader
 {
+  type Key;
+  type Title : fmt::Debug;
+
   /// Returns an iterator over all fields of the specified type within the entity.
-  fn header( &self ) -> Option< impl Iterator< Item = ( Key, Title ) > + ExactSizeIterator + Clone >;
+  fn header( &self ) -> Option< impl IteratorTrait< Item = ( Self::Key, Self::Title ) > >;
 }
 
 /// A trait for iterating over all cells of a row.
-pub trait Cells< Key, Cell >
-where
-  Cell : fmt::Debug,
+pub trait Cells
 {
+  type Key;
+  type Cell : fmt::Debug;
+
   /// Returns an iterator over all cells of the row.
-  fn cells( &self ) -> impl Iterator< Item = ( Key, Cell ) > + ExactSizeIterator + Clone;
+  fn cells( &self ) -> impl IteratorTrait< Item = ( Self::Key, Self::Cell ) >;
 }
 
 // ==
@@ -45,12 +48,10 @@ where
 impl< T, Row, Key, Cell, Title > TableSize
 for AsTable< T, Row, Key, Cell, Title >
 where
-  T : TableRows< Row, Key, Cell >,
-  T : TableHeader< Key, Title >,
+  T : TableRows< Row = Row, Key = Key, Cell = Cell >,
+  T : TableHeader< Key = Key, Title = Title >,
   T : TableSize,
-  // T : FieldsLen< Row >,
-  Row : Cells< Key, Cell >,
-  // Row : FieldsLen< Cell >,
+  Row : Cells< Key = Key, Cell = Cell >,
   Title : fmt::Debug,
   Cell : fmt::Debug,
 {
@@ -71,14 +72,14 @@ where
   }
 }
 
-// impl< T, Row, Key, Cell, Title, K > TableRows< Row, Key, Cell >
+// impl< T, Row, Key, Cell, Title, K > TableRows< Row = Row, Key = Key, Cell = Cell >
 // for AsTable< T, Row, Key, Cell, Title >
 // where
-//   T : TableRows< Row, Key, Cell >,
-//   T : TableHeader< Key, Title >,
+//   T : TableRows< Row = Row, Key = Key, Cell = Cell >,
+//   T : TableHeader< Key = Key, Title = Title >,
 //   T : TableSize,
 //   T : Fields< K, Row >,
-//   Row : Cells< Key, Cell >,
+//   Row : Cells< Key = Key, Cell = Cell >,
 //   Title : fmt::Debug,
 //   Cell : fmt::Debug,
 // {
@@ -180,10 +181,10 @@ pub trait TableFormatter
 /// A trait for formatting tables.
 impl< T, Row, Key, Cell, Title > TableFormatter for AsTable< T, Row, Key, Cell, Title >
 where
-  T : TableRows< Row, Key, Cell >,
-  T : TableHeader< Key, Title >,
+  T : TableRows< Row = Row, Key = Key, Cell = Cell >,
+  T : TableHeader< Key = Key, Title = Title >,
   T : TableSize,
-  Row : Cells< Key, Cell >,
+  Row : Cells< Key = Key, Cell = Cell >,
   Title : fmt::Debug,
   Cell : fmt::Debug,
 {
