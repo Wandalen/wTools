@@ -125,15 +125,28 @@ where
 
 }
 
-// impl< T, Row > TableSize
-// for T
+// /// A trait for iterating over all cells of a row.
+// pub trait Cells2< Key, Cell >
 // where
-//   T : FieldsLen< Row >,
+//   Cell : fmt::Debug,
 // {
-//   fn size( &self ) -> [ usize ; 2 ]
+//   /// Returns an iterator over all cells of the row.
+//   fn cells( &self ) -> impl IteratorTrait< Item = ( Key, Cell ) >;
+// }
+
+// impl< Row, Key, Cell > Cells< Key, Cell >
+// for Row
+// where
+//   // Row : Cells< Key = Key, Cell = Cell >,
+//   Row : Fields< Key, Cell >,
+//   Cell : fmt::Debug,
+// {
+//
+//   fn cells( &self ) -> impl IteratorTrait< Item = ( Key, Cell ) >
 //   {
-//     [ 0, 0 ]
+//     self.fields()
 //   }
+//
 // }
 
 // ==
