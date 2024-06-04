@@ -40,6 +40,14 @@ impl Fields< &'static str, String > for TestObject
   }
 }
 
+// impl< 'a > Fields< usize, &'a TestObject > for Vec< TestObject >
+// {
+//   fn fields( &'a self ) -> impl IteratorTrait< Item = ( usize, &'a TestObject ) >
+//   {
+//     self.iter().enumerate()
+//   }
+// }
+
 #[ test ]
 fn basic()
 {

@@ -117,15 +117,6 @@ where
 
 }
 
-// /// A trait for iterating over all cells of a row.
-// pub trait Cells2< Key, Cell >
-// where
-//   Cell : fmt::Debug,
-// {
-//   /// Returns an iterator over all cells of the row.
-//   fn cells( &self ) -> impl IteratorTrait< Item = ( Key, Cell ) >;
-// }
-
 impl< Row, Key, Cell > Cells< Key, Cell >
 for Row
 where
