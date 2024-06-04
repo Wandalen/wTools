@@ -44,25 +44,14 @@ where
 
 // ==
 
+// ==
+
 /// Struct to hold options to print data as table.
 #[ derive( Debug, Default, Former ) ]
 pub struct Styles
 {
   /// Delimiter for separating table columns.
   pub separator : String,
-}
-
-/// Struct to hold options to print data as table.
-#[ derive( Debug, Default, Former ) ]
-pub struct TableOptions
-{
-  /// Optional header row for the table.
-  pub header : Option< Vec< String > >,
-  /// Rows with data for the table.
-  /// Its length should be equal to header length.
-  pub rows : Vec< String >,
-  /// Styles.
-  pub styles : Styles,
 }
 
 /// Struct for formatting tables.
@@ -82,11 +71,17 @@ impl< 'a > Formatter< 'a >
 }
 
 /// A trait for formatting tables.
-pub trait TableFormatter< Row, Cell, Title >
+pub trait TableFormatter
+{
+  fn fmt( &self, f : &mut Formatter< '_ > ) -> fmt::Result;
+}
+
+/// A trait for formatting tables.
+impl< T, Row, Cell, Title > TableFormatter for AsTable< T, Row, Cell, Title >
 where
-  Self : TableRows< Row, Cell >,
-  Self : TableHeader< Title >,
-  Self : TableSize,
+  T : TableRows< Row, Cell >,
+  T : TableHeader< Title >,
+  T : TableSize,
   Row : Cells< Cell >,
   Title : fmt::Debug,
   Cell : fmt::Debug,
@@ -127,16 +122,6 @@ where
       .collect();
       all_rows.push( fields );
     }
-
-    // // Find the maximum width for each column
-    // let mut col_widths : Vec< usize > = Vec::new();
-    // if let Some( header ) = self.header()
-    // {
-    //   for col in header
-    //   {
-    //     col_widths.push( col.len() );
-    //   }
-    // }
 
     for row in &all_rows
     {

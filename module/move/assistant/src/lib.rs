@@ -24,6 +24,9 @@ pub use reflect::*;
 /// Nice print.
 pub mod print;
 pub use print::*;
+/// Nice print's wrapper.
+pub mod as_table;
+pub use as_table::*;
 
 /// Options for configuring the OpenAI API client.
 #[ derive( Former, Debug ) ]
