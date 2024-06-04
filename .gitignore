@@ -3,8 +3,6 @@
 !/.circleci
 !/.*
 
-/build
-/builder
 /binding
 /target
 /node_modules
@@ -14,6 +12,7 @@
 /.vscode
 /_*
 
+.env
 _key
 _data
 target

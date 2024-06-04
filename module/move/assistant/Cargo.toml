@@ -26,9 +26,10 @@ all-features = false
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-enabled = []
+enabled = [ "former/enabled" ]
 
 [dependencies]
+former = { workspace = true, features = [ "full" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
