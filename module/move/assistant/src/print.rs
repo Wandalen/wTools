@@ -3,53 +3,21 @@ use super::*;
 use core::fmt;
 use former::Former;
 
-// ///
-// /// A trait for converting any type that implements `Debug` into a `String`.
-// ///
-// pub trait DebugToString
-// {
-//   /// Converts the value into a `String` using its `Debug` representation.
-//   ///
-//   /// # Returns
-//   /// A `String` containing the `Debug` representation of the value.
-//   fn debug_to_string( &self ) -> String;
-// }
-//
-// impl< T > DebugToString for T
-// where
-//   T : fmt::Debug,
-// {
-//   /// Converts the value into a `String` using its `Debug` representation.
-//   ///
-//   /// # Returns
-//   ///
-//   /// A `String` containing the `Debug` representation of the value.
-//   ///
-//   fn debug_to_string( &self ) -> String
-//   {
-//     format!( "{:?}", self )
-//   }
-// }
-
-/// Struct to hold table options.
+/// Struct to hold options to print data as table.
 #[ derive( Debug, Default, Former ) ]
 pub struct TableOptions
 {
   /// Optional header row for the table.
   pub header : Option< Vec< String > >,
+  /// Rows with data for the table.
+  /// Its length should be equal to header length.
+  pub rows : Vec< String >,
   /// Optional delimiter for separating table columns.
   pub delimiter : Option< String >,
 }
 
 impl TableOptions
 {
-
-  /// Creates a new instance of `TableOptions`.
-  pub fn new( header : Option< Vec< String > >, delimiter : Option< String > ) -> Self
-  {
-    TableOptions { header, delimiter }
-  }
-
   /// Function to print a table based on the iterator of items implementing `Fields` trait.
   pub fn perform< I, F, K, E >( &self, iter : I )
   where
@@ -66,16 +34,51 @@ impl TableOptions
       println!( "{}", header.join( &delimiter ) );
     }
 
-    // Print each row
+    // Collect rows
+    let mut all_rows : Vec< Vec< String > > = Vec::new();
     for item in iter
     {
       let fields : Vec< String > = item
-      .fields()
-      .map( |field| format!( "{:?}", field ) )
-      .collect();
+        .fields()
+        .map( | ( key, value ) | format!( "{:?}: {:?}", key, value ) )
+        .collect();
+      all_rows.push( fields );
+    }
 
-      println!( "{}", fields.join( &delimiter ) );
+    // Find the maximum width for each column
+    let mut col_widths : Vec< usize > = Vec::new();
+    if let Some( header ) = &self.header
+    {
+      for col in header
+      {
+        col_widths.push( col.len() );
+      }
+    }
+
+    for row in &all_rows
+    {
+      for ( i, col ) in row.iter().enumerate()
+      {
+        if col_widths.len() <= i
+        {
+          col_widths.push( col.len() );
+        }
+        else if col.len() > col_widths[ i ]
+        {
+          col_widths[ i ] = col.len();
+        }
+      }
+    }
+
+    // Print rows with proper alignment
+    for row in all_rows
+    {
+      let formatted_row : Vec< String > = row
+        .iter()
+        .enumerate()
+        .map( | ( i, col ) | format!( "{:width$}", col, width = col_widths[ i ] ) )
+        .collect();
+      println!( "{}", formatted_row.join( &delimiter ) );
     }
   }
-
 }
