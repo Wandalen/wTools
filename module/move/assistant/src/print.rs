@@ -5,8 +5,6 @@ use former::Former;
 
 // ==
 
-// pub type Iterator2< Item > = Iterator< Item = Item > + ExactSizeIterator + Clone;
-
 /// A trait for iterating over all rows of a table.
 pub trait TableSize
 {
@@ -21,7 +19,7 @@ where
   Cell : fmt::Debug,
 {
   /// Returns an iterator over all rows of the table.
-  fn rows( &self ) -> impl Iterator< Item = Row > + ExactSizeIterator + Clone;
+  fn rows( &self ) -> impl IteratorTrait< Item = Row >;
 }
 
 /// Trait returning headers of a table if any.
@@ -84,7 +82,7 @@ where
 //   Title : fmt::Debug,
 //   Cell : fmt::Debug,
 // {
-//   fn rows( &self ) -> impl Iterator< Item = Row > + ExactSizeIterator + Clone
+//   fn rows( &self ) -> impl IteratorTrait< Item = Row >
 //   {
 //     self.fields().map( | ( k, e ) | e )
 //   }

@@ -4,6 +4,7 @@ use super::*;
 use assistant::
 {
   Fields,
+  IteratorTrait,
 };
 
 use std::
@@ -22,7 +23,7 @@ pub struct TestObject
 
 impl Fields< &'static str, String > for TestObject
 {
-  fn fields( &self ) -> impl Iterator< Item = ( &'static str, String ) > + ExactSizeIterator + Clone
+  fn fields( &self ) -> impl IteratorTrait< Item = ( &'static str, String ) >
   {
     let mut vec : Vec< ( &'static str, String ) > = Vec::new();
 

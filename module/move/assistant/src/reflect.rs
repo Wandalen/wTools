@@ -2,29 +2,31 @@
 
 // use core::fmt;
 
-// pub trait _IteratorTrait< T >
-// where
-//   Self : core::iter::Iterator + ExactSizeIterator
-// {
-// }
-//
-// impl _IteratorTrait for T
-// where
-//   Self : core::iter::Iterator + ExactSizeIterator
-// {
-// }
-//
-// pub trait Iterator
-// where
-//   Self : _IteratorTrait + Clone
-// {
-// }
-//
-// impl Iterator for T
-// where
-//   Self : _IteratorTrait + Clone
-// {
-// }
+/// A trait for iterators that are also `ExactSizeIterator`.
+pub trait _IteratorTrait
+where
+  Self : core::iter::Iterator + ExactSizeIterator
+{
+}
+
+impl< T > _IteratorTrait for T
+where
+  Self : core::iter::Iterator + ExactSizeIterator
+{
+}
+
+/// A trait for iterators that implement `_IteratorTrait` and `Clone`.
+pub trait IteratorTrait
+where
+  Self : _IteratorTrait + Clone
+{
+}
+
+impl< T > IteratorTrait for T
+where
+  Self : _IteratorTrait + Clone
+{
+}
 
 /// A trait for iterating over all fields convertible into a specified type within an entity.
 ///
@@ -35,7 +37,7 @@
 pub trait Fields< K, E >
 {
   /// Returns an iterator over all fields of the specified type within the entity.
-  fn fields( &self ) -> impl Iterator< Item = ( K, E ) > + ExactSizeIterator + Clone;
+  fn fields( &self ) -> impl IteratorTrait< Item = ( K, E ) >;
 }
 
 // /// Return number of fields convertible into a specified type withing an entity.
