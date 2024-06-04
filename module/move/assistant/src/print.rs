@@ -301,7 +301,7 @@ where
       .cells()
       .map( | ( _key, cell ) | format!( "{:?}", &cell ) )
       .collect();
-      // all_rows.push( fields );
+      all_rows.push( fields );
     }
 
     for row in &all_rows
