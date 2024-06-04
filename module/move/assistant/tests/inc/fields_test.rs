@@ -96,3 +96,41 @@ fn basic()
   assert_eq!( fields[ 3 ].0, "tools" );
 
 }
+
+//
+
+#[ test ]
+fn test_vec_fields()
+{
+  let test_objects = vec!
+  [
+    TestObject
+    {
+      id : "12345".to_string(),
+      created_at : 1627845583,
+      file_ids : vec![ "file1".to_string(), "file2".to_string() ],
+      tools : Some
+      (
+        vec!
+        [{
+          let mut map = HashMap::new();
+          map.insert( "tool1".to_string(), "value1".to_string() );
+          map.insert( "tool2".to_string(), "value2".to_string() );
+          map
+        }]
+      ),
+    },
+    TestObject
+    {
+      id : "67890".to_string(),
+      created_at : 1627845584,
+      file_ids : vec![ "file3".to_string(), "file4".to_string() ],
+      tools : None,
+    }
+  ];
+
+  let fields: Vec< _ > = test_objects.fields().collect();
+  assert_eq!( fields.len(), 2 );
+  assert_eq!( fields[ 0 ].0, 0 );
+  assert_eq!( fields[ 1 ].0, 1 );
+}
