@@ -122,6 +122,34 @@ impl< 'a > Formatter< 'a >
   }
 }
 
+/// A trait for converting tables to a string representation.
+pub trait TableToString
+{
+  /// Converts the table to a string representation.
+  ///
+  /// # Returns
+  ///
+  /// A `String` containing the formatted table.
+  fn table_to_string( &self ) -> String;
+}
+
+impl< T > TableToString for T
+where
+  T : TableFormatter
+{
+  fn table_to_string( &self ) -> String
+  {
+    let mut output = String::new();
+    let mut formatter = Formatter
+    {
+      buf : &mut output,
+      styles : Styles::default(),
+    };
+    T::fmt( self, &mut formatter ).expect( "Formatting failed" );
+    output
+  }
+}
+
 /// A trait for formatting tables.
 ///
 /// This trait defines a method for formatting tables, allowing implementations
