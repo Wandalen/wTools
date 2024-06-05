@@ -12,17 +12,18 @@ where
   T : TableRows< 'a, Row, Key, Cell >,
   T : TableHeader< 'a, Key, Title >,
   T : TableSize< 'a >,
-  Row : 'a + Clone + Cells< 'a, Key, Cell >,
+  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
   Title : fmt::Debug,
   Cell : fmt::Debug + Clone + 'static,
 ;
+// xxx : use maybe ref inside
 
 impl< 'a, T, Row, Key, Cell, Title > AsTable< 'a, T, Row, Key, Cell, Title >
 where
   T : TableRows< 'a, Row, Key, Cell >,
   T : TableHeader< 'a, Key, Title >,
   T : TableSize< 'a >,
-  Row : 'a + Clone + Cells< 'a, Key, Cell >,
+  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
   Title : fmt::Debug,
   Cell : fmt::Debug + Clone + 'static,
 {
@@ -38,7 +39,7 @@ where
   T : TableRows< 'a, Row, Key, Cell >,
   T : TableHeader< 'a, Key, Title >,
   T : TableSize< 'a >,
-  Row : 'a + Clone + Cells< 'a, Key, Cell >,
+  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
   Title : fmt::Debug,
   Cell : fmt::Debug + Clone + 'static,
 {
@@ -53,7 +54,7 @@ where
   T : TableRows< 'a, Row, Key, Cell >,
   T : TableHeader< 'a, Key, Title >,
   T : TableSize< 'a >,
-  Row : 'a + Clone + Cells< 'a, Key, Cell >,
+  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
   Title : fmt::Debug,
   Cell : fmt::Debug + Clone + 'static,
 {
@@ -68,7 +69,7 @@ where
   T : TableRows< 'a, Row, Key, Cell >,
   T : TableHeader< 'a, Key, Title >,
   T : TableSize< 'a >,
-  Row : 'a + Clone + Cells< 'a, Key, Cell >,
+  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
   Title : fmt::Debug,
   Cell : fmt::Debug + Clone + 'static,
 {
@@ -85,7 +86,7 @@ where
   T : TableRows< 'a, Row, Key, Cell >,
   T : TableHeader< 'a, Key, Title >,
   T : TableSize< 'a >,
-  Row : 'a + Clone + Cells< 'a, Key, Cell >,
+  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
   Title : fmt::Debug,
   Cell : fmt::Debug + Clone + 'static,
 {
@@ -100,7 +101,7 @@ where
   T : TableRows< 'a, Row, Key, Cell >,
   T : TableHeader< 'a, Key, Title >,
   T : TableSize< 'a >,
-  Row : 'a + Clone + Cells< 'a, Key, Cell >,
+  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
   Title : fmt::Debug,
   Cell : fmt::Debug + Clone + 'static,
 {
@@ -113,7 +114,7 @@ where
 // impl< 'a, T, Row, Key, Cell, Title > From< AsTable< 'a, T, Row, Key, Cell, Title > > for T
 // where
 //   T : TableRows< 'a, Row, Key, Cell > + TableHeader< 'a, Key, Title > + TableSize< 'a >,
-//   Row : 'a + Clone + Cells< 'a, Key, Cell >,
+//   Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
 //   Title : fmt::Debug,
 //   Cell : fmt::Debug + Clone + 'static,
 // {
@@ -129,7 +130,7 @@ where
   T : TableRows< 'a, Row, Key, Cell >,
   T : TableHeader< 'a, Key, Title >,
   T : TableSize< 'a >,
-  Row : 'a + Clone + Cells< 'a, Key, Cell >,
+  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
   Title : fmt::Debug,
   Cell : fmt::Debug + Clone + 'static,
 {
@@ -145,7 +146,7 @@ where
   T : TableRows< 'a, Row, Key, Cell >,
   T : TableHeader< 'a, Key, Title >,
   T : TableSize< 'a >,
-  Row : 'a + Clone + Cells< 'a, Key, Cell >,
+  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
   Title : fmt::Debug,
   Cell : fmt::Debug + Clone + 'static,
 {

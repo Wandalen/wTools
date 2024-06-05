@@ -16,7 +16,7 @@ pub trait TableSize< 'a >
 /// A trait for iterating over all rows of a table.
 pub trait TableRows< 'a, Row, Key, Cell >
 where
-  Row : Clone + Cells< 'a, Key, Cell >,
+  Row : Clone + Cells< 'a, Key, Cell > + 'a,
   Cell : fmt::Debug + Clone + 'static,
 {
   /// Returns an iterator over all rows of the table.
@@ -56,9 +56,9 @@ where
   T : TableRows< 'a, Row, Key, Cell >,
   T : TableHeader< 'a, Key, Title >,
   T : TableSize< 'a >,
-  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell >,
+  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
   Title : fmt::Debug,
-  Cell : fmt::Debug + Clone,
+  Cell : fmt::Debug + Clone + 'static,
 {
   fn size( &'a self ) -> [ usize ; 2 ]
   {
@@ -83,13 +83,12 @@ where
   // Self : 'a,
   // Self : 'static,
   T : TableRows< 'a, Row, Key, Cell >,
+  T : Fields< 'a, Key, Row >,
   T : TableHeader< 'a, Key, Title >,
   T : TableSize< 'a >,
-  T : Fields< 'a, Key, Row >,
-  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell >,
-  // Row : 'static,
+  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
   Title : fmt::Debug,
-  Cell : fmt::Debug + Clone,
+  Cell : fmt::Debug + Clone +  'static,
 {
 
   fn rows( &'a self ) -> impl IteratorTrait< Item = Row >
@@ -108,10 +107,10 @@ where
   T : TableRows< 'a, Row, Key, Cell >,
   T : TableHeader< 'a, Key, Title >,
   T : TableSize< 'a >,
-  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell >,
-  Row : for< 'cell > Fields< 'cell, Key, Title >,
-  Key : Clone + 'static,
-  Title : fmt::Debug + Clone + 'static,
+  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
+  Row : for< 'cell > Fields< 'cell, Key, Title > + 'a,
+  Key : Clone,
+  Title : fmt::Debug + Clone,
   Cell : fmt::Debug + Clone + 'static,
 {
 
@@ -141,7 +140,7 @@ where
 impl< 'a, Row, Key, Cell > Cells< 'a, Key, Cell >
 for Row
 where
-  Row : Fields< 'a, Key, Cell >,
+  Row : Fields< 'a, Key, Cell > + 'a,
   Cell : fmt::Debug + Clone + 'static,
 {
 
@@ -237,7 +236,7 @@ where
   T : TableRows< 'a, Row, Key, Cell >,
   T : TableHeader< 'a, Key, Title >,
   T : TableSize< 'a >,
-  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell >,
+  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
   Title : fmt::Debug,
   Cell : fmt::Debug + Clone + 'static,
   // 'b : 'a,
