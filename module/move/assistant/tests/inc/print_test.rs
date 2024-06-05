@@ -11,6 +11,7 @@ use assistant::
   TableRows,
   TableHeader,
   TableFormatter,
+  Context,
 };
 
 use std::
@@ -114,16 +115,13 @@ where
   // dbg!( header.collect::< Vec< _ > >() );
 
   let mut output = String::new();
-  let mut formatter = the_module::Formatter::new( &mut output, Default::default() );
+  let mut formatter = Context::new( &mut output, Default::default() );
   let got = the_module::TableFormatter::fmt( &as_table, &mut formatter );
   assert!( got.is_ok() );
   println!( "{}", &output );
 
-  // use the_module::{ TableFormatter, TableToString };
-  // AsTable::new( test_objects );
-  // // let table_string = AsTable::new( test_objects ).table_to_string();
+  let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, String, &str > = AsTable::new( &test_objects );
   let table_string = as_table.table_to_string();
-  // println!( "{}", table_string );
   assert!( table_string.contains( "id" ) );
   assert!( table_string.contains( "created_at" ) );
   assert!( table_string.contains( "file_ids" ) );

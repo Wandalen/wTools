@@ -27,6 +27,9 @@ pub use print::*;
 /// Nice print's wrapper.
 pub mod as_table;
 pub use as_table::*;
+/// Table interface.
+pub mod table;
+pub use table::*;
 
 /// Options for configuring the OpenAI API client.
 #[ derive( Former, Debug ) ]
