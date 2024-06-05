@@ -10,7 +10,7 @@ use former::Former;
 pub trait TableSize< 'a >
 {
   /// Returns size of a table.
-  fn size( &'a self ) -> [ usize ; 2 ];
+  fn table_size( &'a self ) -> [ usize ; 2 ];
 }
 
 /// A trait for iterating over all rows of a table.
@@ -60,7 +60,7 @@ where
   Title : fmt::Debug,
   Cell : fmt::Debug + Clone + 'static,
 {
-  fn size( &'a self ) -> [ usize ; 2 ]
+  fn table_size( &'a self ) -> [ usize ; 2 ]
   {
     let mut rows = self.rows();
     let nrows = rows.len();
@@ -243,8 +243,8 @@ where
 {
   fn fmt( &'a self, f : &'a mut Formatter< '_ > ) -> fmt::Result
   {
-    let size = self.size();
-    let mut col_widths : Vec< usize > = vec![ 0 ; size[ 1 ] ];
+    let table_size = self.table_size();
+    let mut col_widths : Vec< usize > = vec![ 0 ; table_size[ 1 ] ];
     let separator = &f.styles.separator;
 
     // Write the header if provided

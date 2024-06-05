@@ -7,6 +7,7 @@ use assistant::
   IteratorTrait,
   AsTable,
   Cells,
+  TableSize,
 };
 
 use std::
@@ -92,6 +93,9 @@ fn test_table_to_string()
   let cells = Cells::< '_, &'static str, String >::cells( &test_objects[ 0 ] );
   assert_eq!( cells.len(), 4 );
   dbg!( cells.collect::< Vec< _ > >() );
+
+  // let size = TableSize::< '_ >::table_size( &test_objects );
+  // assert_eq!( size, [ 2, 4 ] );
 
   // AsTable::new( test_objects );
   // let table_string = AsTable::new( test_objects ).table_to_string();
