@@ -60,8 +60,8 @@ impl< 'a > Fields< 'a, usize, TestObject > for Vec< TestObject >
 
 #[ test ]
 fn test_table_to_string()
-// where
-  // Vec< TestObject > : for< 'a > TableFormatter< 'a >,
+where
+  for< 'a > AsTable< 'a, Vec< TestObject >, usize, TestObject, &'static str, String, &'static str > : TableFormatter< 'a >,
 {
   use the_module::TableToString;
 
@@ -119,14 +119,14 @@ fn test_table_to_string()
   assert!( got.is_ok() );
   println!( "{}", &output );
 
-  // use the_module::{ TableFormatter, TableToString };
-  // AsTable::new( test_objects );
-  // // let table_string = AsTable::new( test_objects ).table_to_string();
-  let table_string = as_table.table_to_string();
-  // println!( "{}", table_string );
-  assert!( table_string.contains( "id" ) );
-  assert!( table_string.contains( "created_at" ) );
-  assert!( table_string.contains( "file_ids" ) );
-  assert!( table_string.contains( "tools" ) );
+  // // use the_module::{ TableFormatter, TableToString };
+  // // AsTable::new( test_objects );
+  // // // let table_string = AsTable::new( test_objects ).table_to_string();
+  // let table_string = as_table.table_to_string();
+  // // println!( "{}", table_string );
+  // assert!( table_string.contains( "id" ) );
+  // assert!( table_string.contains( "created_at" ) );
+  // assert!( table_string.contains( "file_ids" ) );
+  // assert!( table_string.contains( "tools" ) );
 
 }

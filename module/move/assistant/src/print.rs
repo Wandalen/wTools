@@ -94,7 +94,7 @@ where
 
   fn rows( &'a self ) -> impl IteratorTrait< Item = Row >
   {
-    self.fields().map( move | ( _k, e ) | e.into_owned() )
+    self.as_ref().fields().map( move | ( _k, e ) | e.into_owned() )
   }
 
 }
@@ -202,7 +202,7 @@ pub trait TableToString
 
 impl< T > TableToString for T
 where
-  T : for< 'b > TableFormatter< 'b >,
+  T : for< 'b > TableFormatter< 'b >
 {
   fn table_to_string( &self ) -> String
   {
@@ -226,7 +226,7 @@ where
 pub trait TableFormatter< 'b >
 {
   /// Formats the table and writes the result to the given formatter.
-  fn fmt( &'b self, f : &'b mut Formatter< 'b > ) -> fmt::Result;
+  fn fmt( &'b self, f : &'b mut Formatter< '_ > ) -> fmt::Result;
 }
 
 /// A trait for formatting tables.
@@ -241,7 +241,7 @@ where
   Cell : fmt::Debug + Clone + 'a,
   CellKey : fmt::Debug + Clone,
 {
-  fn fmt( &'a self, f : &'a mut Formatter< 'a > ) -> fmt::Result
+  fn fmt( &'a self, f : &'a mut Formatter< '_ > ) -> fmt::Result
   {
     let table_size = self.table_size();
     let mut col_widths : Vec< usize > = vec![ 0 ; table_size[ 1 ] ];
