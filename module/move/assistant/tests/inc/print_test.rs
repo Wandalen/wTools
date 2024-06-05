@@ -94,14 +94,15 @@ fn test_table_to_string()
 
   let cells = Cells::< '_, &'static str, String >::cells( &test_objects[ 0 ] );
   assert_eq!( cells.len(), 4 );
-  dbg!( cells.collect::< Vec< _ > >() );
+  // dbg!( cells.collect::< Vec< _ > >() );
+  drop( cells );
 
   let as_table = AsTable::< Vec< TestObject >, usize, TestObject, &'static str, String, &'static str >::new( test_objects );
   let size = TableSize::< '_ >::table_size( &as_table );
   assert_eq!( size, [ 2, 4 ] );
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
-  dbg!( rows.collect::< Vec< _ > >() );
+  // dbg!( rows.collect::< Vec< _ > >() );
   let header = TableHeader::header( &as_table );
   assert!( header.is_some() );
   let header = header.unwrap();
@@ -109,9 +110,16 @@ fn test_table_to_string()
   assert_eq!( header.collect::< Vec< _ > >(), vec![ ( "id", "id" ), ( "created_at", "created_at" ), ( "file_ids", "file_ids" ), ( "tools", "tools" ) ] );
   // dbg!( header.collect::< Vec< _ > >() );
 
-  // AsTable::new( test_objects );
-  // let table_string = AsTable::new( test_objects ).table_to_string();
-  // println!( "{}", table_string );
+  // let mut output = String::new();
+  // let mut formatter = the_module::Formatter::new( &mut output, Default::default() );
+  // let got = the_module::TableFormatter::fmt( &as_table, &mut formatter );
+  // assert!( got.is_ok() );
+  // println!( "{}", &output );
+
+  // // AsTable::new( test_objects );
+  // // // let table_string = AsTable::new( test_objects ).table_to_string();
+  // let table_string = as_table.table_to_string();
+  // // println!( "{}", table_string );
   // assert!( table_string.contains( "id" ) );
   // assert!( table_string.contains( "created_at" ) );
   // assert!( table_string.contains( "file_ids" ) );

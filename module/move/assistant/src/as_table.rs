@@ -12,9 +12,10 @@ where
   // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
   // T : TableHeader< 'a, CellKey, Title >,
   // T : TableSize< 'a >,
-  // Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-  // Title : fmt::Debug,
-  // Cell : fmt::Debug + Clone + 'a,
+  Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+  Title : fmt::Debug,
+  Cell : fmt::Debug + Clone + 'a,
+  CellKey : fmt::Debug + Clone,
 ;
 // xxx : use maybe ref inside
 
@@ -23,9 +24,10 @@ where
   // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
   // T : TableHeader< 'a, CellKey, Title >,
   // T : TableSize< 'a >,
-  // Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-  // Title : fmt::Debug,
-  // Cell : fmt::Debug + Clone + 'a,
+  Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+  Title : fmt::Debug,
+  Cell : fmt::Debug + Clone + 'a,
+  CellKey : fmt::Debug + Clone,
 {
   /// Just a constructor.
   pub fn new( src : T ) -> Self
@@ -39,9 +41,10 @@ where
   // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
   // T : TableHeader< 'a, CellKey, Title >,
   // T : TableSize< 'a >,
-  // Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-  // Title : fmt::Debug,
-  // Cell : fmt::Debug + Clone + 'a,
+  Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+  Title : fmt::Debug,
+  Cell : fmt::Debug + Clone + 'a,
+  CellKey : fmt::Debug + Clone,
 {
   fn as_ref( &self ) -> &T
   {
@@ -54,9 +57,10 @@ where
   // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
   // T : TableHeader< 'a, CellKey, Title >,
   // T : TableSize< 'a >,
-  // Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-  // Title : fmt::Debug,
-  // Cell : fmt::Debug + Clone + 'a,
+  Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+  Title : fmt::Debug,
+  Cell : fmt::Debug + Clone + 'a,
+  CellKey : fmt::Debug + Clone,
 {
   fn as_mut( &mut self ) -> &mut T
   {
@@ -69,9 +73,10 @@ where
   // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
   // T : TableHeader< 'a, CellKey, Title >,
   // T : TableSize< 'a >,
-  // Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-  // Title : fmt::Debug,
-  // Cell : fmt::Debug + Clone + 'a,
+  Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+  Title : fmt::Debug,
+  Cell : fmt::Debug + Clone + 'a,
+  CellKey : fmt::Debug + Clone,
 {
   type Target = T;
 
@@ -86,9 +91,10 @@ where
   // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
   // T : TableHeader< 'a, CellKey, Title >,
   // T : TableSize< 'a >,
-  // Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-  // Title : fmt::Debug,
-  // Cell : fmt::Debug + Clone + 'a,
+  Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+  Title : fmt::Debug,
+  Cell : fmt::Debug + Clone + 'a,
+  CellKey : fmt::Debug + Clone,
 {
   fn deref_mut( &mut self ) -> &mut Self::Target
   {
@@ -101,9 +107,10 @@ where
   // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
   // T : TableHeader< 'a, CellKey, Title >,
   // T : TableSize< 'a >,
-  // Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-  // Title : fmt::Debug,
-  // Cell : fmt::Debug + Clone + 'a,
+  Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+  Title : fmt::Debug,
+  Cell : fmt::Debug + Clone + 'a,
+  CellKey : fmt::Debug + Clone,
 {
   fn from( table : T ) -> Self
   {
@@ -111,28 +118,16 @@ where
   }
 }
 
-// impl< 'a, T, RowKey, Row, CellKey, Cell, Title > From< AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title > > for T
-// where
-//   T : TableRows< 'a, RowKey, Row, CellKey, Cell > + TableHeader< 'a, CellKey, Title > + TableSize< 'a >,
-//   Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-//   Title : fmt::Debug,
-//   Cell : fmt::Debug + Clone + 'a,
-// {
-//   fn from( as_table : AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title > ) -> Self
-//   {
-//     as_table.0
-//   }
-// }
-
 impl< 'a, T, RowKey, Row, CellKey, Cell, Title > Default for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
 where
   T : Default,
   // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
   // T : TableHeader< 'a, CellKey, Title >,
   // T : TableSize< 'a >,
-  // Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-  // Title : fmt::Debug,
-  // Cell : fmt::Debug + Clone + 'a,
+  Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+  Title : fmt::Debug,
+  Cell : fmt::Debug + Clone + 'a,
+  CellKey : fmt::Debug + Clone,
 {
   fn default() -> Self
   {
@@ -146,9 +141,10 @@ where
   // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
   // T : TableHeader< 'a, CellKey, Title >,
   // T : TableSize< 'a >,
-  // Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-  // Title : fmt::Debug,
-  // Cell : fmt::Debug + Clone + 'a,
+  Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+  Title : fmt::Debug,
+  Cell : fmt::Debug + Clone + 'a,
+  CellKey : fmt::Debug + Clone,
 {
   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {

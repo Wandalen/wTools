@@ -16,7 +16,7 @@ pub trait TableSize< 'a >
 /// A trait for iterating over all rows of a table.
 pub trait TableRows< 'a, RowKey, Row, CellKey, Cell >
 where
-  Row : Clone + Cells< 'a, CellKey, Cell > + 'a,
+  Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
   Cell : fmt::Debug + Clone + 'a,
 {
   /// Returns an iterator over all rows of the table.
@@ -57,8 +57,9 @@ where
   // T : TableHeader< 'a, CellKey, Title >,
   // T : TableSize< 'a >,
   Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-  // Title : fmt::Debug,
+  Title : fmt::Debug,
   Cell : fmt::Debug + Clone + 'a,
+  CellKey : fmt::Debug + Clone,
 {
   fn table_size( &'a self ) -> [ usize ; 2 ]
   {
@@ -88,6 +89,7 @@ where
   Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
   Title : fmt::Debug,
   Cell : fmt::Debug + Clone + 'a,
+  CellKey : fmt::Debug + Clone,
 {
 
   fn rows( &'a self ) -> impl IteratorTrait< Item = Row >
@@ -105,9 +107,10 @@ where
   // T : TableSize< 'a >,
   Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
   // Row : for< 'cell > Fields< 'cell, CellKey, Cell > + 'a,
-  CellKey : Clone,
+  // CellKey : Clone,
   CellKey : fmt::Debug + Clone,
   Cell : fmt::Debug + Clone + 'a,
+  CellKey : fmt::Debug + Clone,
 {
 
   fn header( &'a self ) -> Option< impl IteratorTrait< Item = ( CellKey, CellKey ) > >
@@ -136,6 +139,7 @@ where
 impl< 'a, Row, CellKey, Cell > Cells< 'a, CellKey, Cell >
 for Row
 where
+  // Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
   Row : Fields< 'a, CellKey, Cell > + 'a,
   Cell : fmt::Debug + Clone + 'a,
 {
@@ -164,6 +168,15 @@ pub struct Formatter< 'a >
   styles : Styles,
 }
 
+impl< 'a > Formatter< 'a >
+{
+  /// Just constructr.
+  pub fn new( buf : &'a mut dyn fmt::Write, styles : Styles ) -> Self
+  {
+    Self { buf, styles }
+  }
+}
+
 impl fmt::Debug for Formatter< '_ >
 {
   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
@@ -173,15 +186,6 @@ impl fmt::Debug for Formatter< '_ >
     .field( "buf", &"dyn fmt::Write" )
     .field( "styles", &self.styles )
     .finish()
-  }
-}
-
-impl< 'a > Formatter< 'a >
-{
-  /// Creates a new `Formatter` with the given buffer and separator.
-  pub fn new( buf : &'a mut dyn fmt::Write, styles : Styles ) -> Self
-  {
-    Formatter { buf, styles }
   }
 }
 
@@ -229,13 +233,13 @@ pub trait TableFormatter< 'b >
 impl< 'a, T, RowKey, Row, CellKey, Cell, Title > TableFormatter< 'a >
 for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
 where
-  T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
-  T : TableHeader< 'a, CellKey, Title >,
-  T : TableSize< 'a >,
+  Self : TableRows< 'a, RowKey, Row, CellKey, Cell >,
+  Self : TableHeader< 'a, CellKey, Title >,
+  Self : TableSize< 'a >,
   Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
   Title : fmt::Debug,
   Cell : fmt::Debug + Clone + 'a,
-  // 'b : 'a,
+  CellKey : fmt::Debug + Clone,
 {
   fn fmt( &'a self, f : &'a mut Formatter< '_ > ) -> fmt::Result
   {
