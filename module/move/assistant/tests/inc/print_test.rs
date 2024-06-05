@@ -100,7 +100,7 @@ where
   // dbg!( cells.collect::< Vec< _ > >() );
   drop( cells );
 
-  let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, String, &str > = AsTable::new( test_objects );
+  let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, String, &str > = AsTable::new( &test_objects );
   let size = TableSize::< '_ >::table_size( &as_table );
   assert_eq!( size, [ 2, 4 ] );
   let rows = TableRows::rows( &as_table );
