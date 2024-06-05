@@ -226,7 +226,7 @@ where
 pub trait TableFormatter< 'b >
 {
   /// Formats the table and writes the result to the given formatter.
-  fn fmt( &'b self, f : &mut Formatter< '_ > ) -> fmt::Result;
+  fn fmt< 'a >( &'b self, f : &mut Formatter< 'a > ) -> fmt::Result;
 }
 
 /// A trait for formatting tables.
