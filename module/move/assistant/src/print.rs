@@ -17,7 +17,7 @@ pub trait TableSize< 'a >
 pub trait TableRows< 'a, Row, Key, Cell >
 where
   Row : Clone + Cells< 'a, Key, Cell > + 'a,
-  Cell : fmt::Debug + Clone + 'static,
+  Cell : fmt::Debug + Clone + 'a,
 {
   /// Returns an iterator over all rows of the table.
   fn rows( &'a self ) -> impl IteratorTrait< Item = Row >;
@@ -37,7 +37,7 @@ where
 /// A trait for iterating over all cells of a row.
 pub trait Cells< 'a, Key, Cell >
 where
-  Cell : fmt::Debug + Clone + 'static,
+  Cell : fmt::Debug + Clone + 'a,
 {
   /// Returns an iterator over all cells of the row.
   fn cells( &'a self ) -> impl IteratorTrait< Item = ( Key, Cell ) >
@@ -58,7 +58,7 @@ where
   T : TableSize< 'a >,
   Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
   Title : fmt::Debug,
-  Cell : fmt::Debug + Clone + 'static,
+  Cell : fmt::Debug + Clone + 'a,
 {
   fn table_size( &'a self ) -> [ usize ; 2 ]
   {
@@ -88,7 +88,7 @@ where
   T : TableSize< 'a >,
   Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
   Title : fmt::Debug,
-  Cell : fmt::Debug + Clone +  'static,
+  Cell : fmt::Debug + Clone + 'a,
 {
 
   fn rows( &'a self ) -> impl IteratorTrait< Item = Row >
@@ -111,7 +111,7 @@ where
   Row : for< 'cell > Fields< 'cell, Key, Title > + 'a,
   Key : Clone,
   Title : fmt::Debug + Clone,
-  Cell : fmt::Debug + Clone + 'static,
+  Cell : fmt::Debug + Clone + 'a,
 {
 
   fn header( &'a self ) -> Option< impl IteratorTrait< Item = ( Key, Title ) > >
@@ -141,7 +141,7 @@ impl< 'a, Row, Key, Cell > Cells< 'a, Key, Cell >
 for Row
 where
   Row : Fields< 'a, Key, Cell > + 'a,
-  Cell : fmt::Debug + Clone + 'static,
+  Cell : fmt::Debug + Clone + 'a,
 {
 
   fn cells( &'a self ) -> impl IteratorTrait< Item = ( Key, Cell ) >
@@ -238,7 +238,7 @@ where
   T : TableSize< 'a >,
   Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
   Title : fmt::Debug,
-  Cell : fmt::Debug + Clone + 'static,
+  Cell : fmt::Debug + Clone + 'a,
   // 'b : 'a,
 {
   fn fmt( &'a self, f : &'a mut Formatter< '_ > ) -> fmt::Result
