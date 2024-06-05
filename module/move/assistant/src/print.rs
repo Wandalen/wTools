@@ -6,11 +6,20 @@ use former::Former;
 //=
 
 /// Struct to hold options to print data as table.
-#[ derive( Debug, Default, Former ) ]
+#[ derive( Debug, Former ) ]
 pub struct Styles
 {
   /// Delimiter for separating table columns.
   pub separator : String,
+}
+
+impl Default for Styles
+{
+  fn default() -> Self
+  {
+    let separator = "|".to_string();
+    Styles { separator }
+  }
 }
 
 /// Struct for formatting tables.
