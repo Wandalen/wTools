@@ -73,30 +73,35 @@ where
       id : "1".to_string(),
       created_at : 1627845583,
       file_ids : vec![ "file1".to_string(), "file2".to_string() ],
-      tools : Some( vec!
-      [
-        {
-          let mut map = HashMap::new();
-          map.insert( "tool1".to_string(), "value1".to_string() );
-          map
-        },
-        {
-          let mut map = HashMap::new();
-          map.insert( "tool2".to_string(), "value2".to_string() );
-          map
-        }
-      ]),
+      tools : None
     },
     TestObject
     {
       id : "2".to_string(),
-      created_at : 1627845584,
+      created_at : 13,
       file_ids : vec![ "file3".to_string(), "file4".to_string() ],
-      tools : None,
-    }
+      tools : Some
+      (
+        vec!
+        [
+          {
+            let mut map = HashMap::new();
+            map.insert( "tool1".to_string(), "value1".to_string() );
+            map
+          },
+          {
+            let mut map = HashMap::new();
+            map.insert( "tool2".to_string(), "value2".to_string() );
+            map
+          }
+        ]
+      ),
+    },
   ];
 
   let cells = Cells::< '_, &'static str, String >::cells( &test_objects[ 0 ] );
+  assert_eq!( cells.len(), 4 );
+  let cells = Cells::< '_, &'static str, String >::cells( &test_objects[ 1 ] );
   assert_eq!( cells.len(), 4 );
   // dbg!( cells.collect::< Vec< _ > >() );
   drop( cells );

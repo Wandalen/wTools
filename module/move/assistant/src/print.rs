@@ -17,7 +17,7 @@ impl Default for Styles
 {
   fn default() -> Self
   {
-    let separator = "|".to_string();
+    let separator = " | ".to_string();
     Styles { separator }
   }
 }
@@ -108,25 +108,20 @@ where
     let mut col_widths : Vec< usize > = vec![ 0 ; table_size[ 1 ] ];
     let separator = &f.styles.separator;
 
-    // Write the header if provided
+    // println!( "{}", self.header().is_some() );
+
     if let Some( header ) = self.header()
     {
-      let mut first = true;
       let mut i = 0;
       for ( _key, title ) in header
       {
-        if !first
-        {
-          write!( f.buf, "{}", separator )?;
-        }
         col_widths[ i ] = format!( "{:?}", title ).len();
-        // zzz : avoid extra allocation of memory
-        write!( f.buf, "{:?}", title )?;
-        first = false;
         i += 1;
       }
       writeln!( f.buf )?;
     }
+
+    // dbg!( &col_widths );
 
     // Collect rows
     let mut all_rows : Vec< Vec< String > > = Vec::new();
@@ -154,16 +149,51 @@ where
       }
     }
 
-    // Write rows with proper alignment
-    for row in all_rows
+    // Write the header if provided
+    if let Some( header ) = self.header()
     {
-      let formatted_row : Vec< String > = row
-      .iter()
-      .enumerate()
-      .map( | ( i, cell ) | format!( "{:width$}", cell, width = col_widths[ i ] ) )
-      .collect();
-      writeln!( f.buf, "{}", formatted_row.join( separator ) )?;
+      let mut i = 0;
+      for ( _key, title ) in header
+      {
+        if i > 0
+        {
+          write!( f.buf, "{}", separator )?;
+        }
+        write!( f.buf, "{:^width$}", format!( "{:?}", title ), width = col_widths[ i ] )?;
+        // write!( f.buf, "{:?}", title )?;
+        i += 1;
+      }
+      writeln!( f.buf )?;
     }
+
+    // dbg!( &col_widths );
+
+    // Write rows with proper alignment
+    for row in &all_rows
+    {
+      let mut i = 0;
+      for cell in row
+      {
+        if i > 0
+        {
+          write!( f.buf, "{}", separator )?;
+        }
+        write!( f.buf, "{:^width$}", format!( "{:?}", cell ), width = col_widths[ i ] )?;
+        i += 1;
+      }
+      writeln!( f.buf )?;
+    }
+
+    // // Write rows with proper alignment
+    // for row in all_rows
+    // {
+    //   let formatted_row : Vec< String > = row
+    //   .iter()
+    //   .enumerate()
+    //   .map( | ( i, cell ) | format!( "{:?^width$}", cell, width = col_widths[ i ] ) )
+    //   .collect();
+    //   writeln!( f.buf, "{}", formatted_row.join( separator ) )?;
+    // }
 
     Ok(())
   }

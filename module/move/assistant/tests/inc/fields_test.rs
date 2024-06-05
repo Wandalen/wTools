@@ -123,7 +123,7 @@ fn test_vec_fields()
     TestObject
     {
       id : "67890".to_string(),
-      created_at : 1627845584,
+      created_at : 13,
       file_ids : vec![ "file3".to_string(), "file4".to_string() ],
       tools : None,
     }
