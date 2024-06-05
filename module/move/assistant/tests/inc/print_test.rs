@@ -9,6 +9,7 @@ use assistant::
   Cells,
   TableSize,
   TableRows,
+  TableHeader,
 };
 
 use std::
@@ -101,6 +102,9 @@ fn test_table_to_string()
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
   dbg!( rows.collect::< Vec< _ > >() );
+  // let header = TableHeader::header( &as_table );
+  // assert_eq!( header.len(), 2 );
+  // dbg!( header.collect::< Vec< _ > >() );
 
   // AsTable::new( test_objects );
   // let table_string = AsTable::new( test_objects ).table_to_string();

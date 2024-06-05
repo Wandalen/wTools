@@ -100,9 +100,9 @@ where
 impl< 'a, T, RowKey, Row, CellKey, Cell, Title > TableHeader< 'a, CellKey, Title >
 for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
 where
-  T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
-  T : TableHeader< 'a, CellKey, Title >,
-  T : TableSize< 'a >,
+  Self : TableRows< 'a, RowKey, Row, CellKey, Cell >,
+  // T : TableHeader< 'a, CellKey, Title >,
+  // T : TableSize< 'a >,
   Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
   Row : for< 'cell > Fields< 'cell, CellKey, Title > + 'a,
   CellKey : Clone,
