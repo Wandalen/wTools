@@ -10,6 +10,7 @@ use assistant::
   TableSize,
   TableRows,
   TableHeader,
+  TableFormatter,
 };
 
 use std::
@@ -59,6 +60,8 @@ impl< 'a > Fields< 'a, usize, TestObject > for Vec< TestObject >
 
 #[ test ]
 fn test_table_to_string()
+// where
+  // Vec< TestObject > : for< 'a > TableFormatter< 'a >,
 {
   use the_module::TableToString;
 
@@ -97,7 +100,7 @@ fn test_table_to_string()
   // dbg!( cells.collect::< Vec< _ > >() );
   drop( cells );
 
-  let as_table = AsTable::< Vec< TestObject >, usize, TestObject, &'static str, String, &'static str >::new( test_objects );
+  let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, String, &str > = AsTable::new( test_objects );
   let size = TableSize::< '_ >::table_size( &as_table );
   assert_eq!( size, [ 2, 4 ] );
   let rows = TableRows::rows( &as_table );
@@ -110,19 +113,20 @@ fn test_table_to_string()
   assert_eq!( header.collect::< Vec< _ > >(), vec![ ( "id", "id" ), ( "created_at", "created_at" ), ( "file_ids", "file_ids" ), ( "tools", "tools" ) ] );
   // dbg!( header.collect::< Vec< _ > >() );
 
-  // let mut output = String::new();
-  // let mut formatter = the_module::Formatter::new( &mut output, Default::default() );
-  // let got = the_module::TableFormatter::fmt( &as_table, &mut formatter );
-  // assert!( got.is_ok() );
-  // println!( "{}", &output );
+  let mut output = String::new();
+  let mut formatter = the_module::Formatter::new( &mut output, Default::default() );
+  let got = the_module::TableFormatter::fmt( &as_table, &mut formatter );
+  assert!( got.is_ok() );
+  println!( "{}", &output );
 
-  // // AsTable::new( test_objects );
-  // // // let table_string = AsTable::new( test_objects ).table_to_string();
-  // let table_string = as_table.table_to_string();
-  // // println!( "{}", table_string );
-  // assert!( table_string.contains( "id" ) );
-  // assert!( table_string.contains( "created_at" ) );
-  // assert!( table_string.contains( "file_ids" ) );
-  // assert!( table_string.contains( "tools" ) );
+  // use the_module::{ TableFormatter, TableToString };
+  // AsTable::new( test_objects );
+  // // let table_string = AsTable::new( test_objects ).table_to_string();
+  let table_string = as_table.table_to_string();
+  // println!( "{}", table_string );
+  assert!( table_string.contains( "id" ) );
+  assert!( table_string.contains( "created_at" ) );
+  assert!( table_string.contains( "file_ids" ) );
+  assert!( table_string.contains( "tools" ) );
 
 }
