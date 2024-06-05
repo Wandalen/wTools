@@ -1,7 +1,6 @@
 
 use super::*;
 use core::fmt;
-// use std::borrow::Cow;
 use former::Former;
 
 // ==
@@ -27,8 +26,6 @@ where
 pub trait TableHeader< 'a, CellKey, Title >
 where
   Title : fmt::Debug,
-  // Title : 'a,
-  // Self : 'a,
 {
   /// Returns an iterator over all fields of the specified type within the entity.
   fn header( &'a self ) -> Option< impl IteratorTrait< Item = ( CellKey, Title ) > >;
@@ -41,10 +38,6 @@ where
 {
   /// Returns an iterator over all cells of the row.
   fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, Cell ) >
-  // where
-  //   Self : 'a,
-  //   Cell : 'a,
-  //   CellKey : 'static,
   ;
 }
 
@@ -54,8 +47,6 @@ impl< 'a, T, RowKey, Row, CellKey, Cell, Title > TableSize< 'a >
 for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
 where
   Self : TableRows< 'a, RowKey, Row, CellKey, Cell >,
-  // T : TableHeader< 'a, CellKey, Title >,
-  // T : TableSize< 'a >,
   Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
   Title : fmt::Debug,
   Cell : fmt::Debug + Clone + 'a,
@@ -63,7 +54,6 @@ where
 {
   fn table_size( &'a self ) -> [ usize ; 2 ]
   {
-    // [ 0, 0 ]
     let mut rows = self.rows();
     let nrows = rows.len();
     let row = rows.next();
@@ -82,10 +72,7 @@ where
 impl< 'a, T, RowKey, Row, CellKey, Cell, Title > TableRows< 'a, RowKey, Row, CellKey, Cell >
 for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
 where
-  // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
   T : Fields< 'a, RowKey, Row >,
-  // T : TableHeader< 'a, CellKey, Title >,
-  // T : TableSize< 'a >,
   Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
   Title : fmt::Debug,
   Cell : fmt::Debug + Clone + 'a,
@@ -103,11 +90,7 @@ impl< 'a, T, RowKey, Row, CellKey, Cell > TableHeader< 'a, CellKey, CellKey >
 for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKey >
 where
   Self : TableRows< 'a, RowKey, Row, CellKey, Cell >,
-  // T : TableHeader< 'a, CellKey, Title >,
-  // T : TableSize< 'a >,
   Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-  // Row : for< 'cell > Fields< 'cell, CellKey, Cell > + 'a,
-  // CellKey : Clone,
   CellKey : fmt::Debug + Clone,
   Cell : fmt::Debug + Clone + 'a,
   CellKey : fmt::Debug + Clone,
@@ -139,7 +122,6 @@ where
 impl< 'a, Row, CellKey, Cell > Cells< 'a, CellKey, Cell >
 for Row
 where
-  // Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
   Row : Fields< 'a, CellKey, Cell > + 'a,
   Cell : fmt::Debug + Clone + 'a,
 {
@@ -307,110 +289,3 @@ where
     Ok(())
   }
 }
-
-// = xxx
-
-// /// Struct for formatting tables.
-// pub struct Formatter2<'a>
-// {
-//   buf: &'a mut dyn fmt::Write,
-// }
-//
-// impl<'a> Formatter2<'a>
-// {
-//   /// Just constructr.
-//   pub fn new(buf: &'a mut dyn fmt::Write) -> Self
-//   {
-//     Self { buf }
-//   }
-// }
-//
-// /// A trait for converting tables to a string representation.
-// pub trait TableToString2<'b>
-// {
-//   /// Converts the table to a string representation.
-//   ///
-//   /// # Returns
-//   ///
-//   /// A `String` containing the formatted table.
-//   fn table_to_string(&'b self) -> String;
-// }
-//
-// impl<'b, T> TableToString2<'b> for T
-// where
-//   T: TableFormatter2<'b>,
-// {
-//   fn table_to_string(&'b self) -> String
-//   {
-//     let mut output = String::new();
-//     {
-//       let mut formatter = Formatter2
-//       {
-//         buf : &mut output,
-//       };
-//       T::fmt(self, &mut formatter).expect("Formatting failed");
-//     }
-//     output
-//   }
-// }
-//
-// pub trait TableFormatter2<'b>
-// {
-//   /// Formats the table and writes the result to the given formatter.
-//   fn fmt(&'b self, f: &mut Formatter2<'_>) -> fmt::Result;
-// }
-
-// = xxx
-
-// /// Struct for formatting tables.
-// pub struct Formatter2< 'a >
-// {
-//   buf : &'a mut dyn fmt::Write,
-// }
-//
-// impl< 'a > Formatter2< 'a >
-// {
-//   /// Just constructr.
-//   pub fn new( buf : &'a mut dyn fmt::Write ) -> Self
-//   {
-//     Self { buf }
-//   }
-// }
-//
-// /// A trait for converting tables to a string representation.
-// pub trait TableToString2< 'b >
-// {
-//   /// Converts the table to a string representation.
-//   ///
-//   /// # Returns
-//   ///
-//   /// A `String` containing the formatted table.
-//   fn table_to_string( &'b self ) -> String;
-// }
-//
-// impl< 'b, T > TableToString2< 'b > for T
-// where
-//   T : TableFormatter2< 'b >,
-//   // Self : 'static,
-// {
-//   fn table_to_string( &'b self ) -> String
-//   {
-//     let mut output = String::new();
-//     {
-//       let mut formatter = Formatter2
-//       {
-//         buf : &mut output,
-//       };
-//       T::fmt( self, &mut formatter ).expect( "Formatting failed" );
-//     }
-//     output
-//   }
-// }
-//
-// pub trait TableFormatter2< 'b >
-// {
-//   /// Formats the table and writes the result to the given formatter.
-//   fn fmt( &'b self, f : &'b mut Formatter2< '_ > ) -> fmt::Result;
-// }
-
-// = xxx
