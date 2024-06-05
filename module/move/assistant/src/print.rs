@@ -14,9 +14,9 @@ pub trait TableSize< 'a >
 }
 
 /// A trait for iterating over all rows of a table.
-pub trait TableRows< 'a, Row, Key, Cell >
+pub trait TableRows< 'a, RowKey, Row, CellKey, Cell >
 where
-  Row : Clone + Cells< 'a, Key, Cell > + 'a,
+  Row : Clone + Cells< 'a, CellKey, Cell > + 'a,
   Cell : fmt::Debug + Clone + 'a,
 {
   /// Returns an iterator over all rows of the table.
@@ -24,68 +24,68 @@ where
 }
 
 /// Trait returning headers of a table if any.
-pub trait TableHeader< 'a, Key, Title >
+pub trait TableHeader< 'a, CellKey, Title >
 where
   Title : fmt::Debug,
   // Title : 'a,
   // Self : 'a,
 {
   /// Returns an iterator over all fields of the specified type within the entity.
-  fn header( &'a self ) -> Option< impl IteratorTrait< Item = ( Key, Title ) > >;
+  fn header( &'a self ) -> Option< impl IteratorTrait< Item = ( CellKey, Title ) > >;
 }
 
 /// A trait for iterating over all cells of a row.
-pub trait Cells< 'a, Key, Cell >
+pub trait Cells< 'a, CellKey, Cell >
 where
   Cell : fmt::Debug + Clone + 'a,
 {
   /// Returns an iterator over all cells of the row.
-  fn cells( &'a self ) -> impl IteratorTrait< Item = ( Key, Cell ) >
+  fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, Cell ) >
   // where
   //   Self : 'a,
   //   Cell : 'a,
-  //   Key : 'static,
+  //   CellKey : 'static,
   ;
 }
 
 // ==
 
-impl< 'a, T, Row, Key, Cell, Title > TableSize< 'a >
-for AsTable< 'a, T, Row, Key, Cell, Title >
+impl< 'a, T, RowKey, Row, CellKey, Cell, Title > TableSize< 'a >
+for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
 where
-  // T : TableRows< 'a, Row, Key, Cell >,
-  // T : TableHeader< 'a, Key, Title >,
+  Self : TableRows< 'a, RowKey, Row, CellKey, Cell >,
+  // T : TableHeader< 'a, CellKey, Title >,
   // T : TableSize< 'a >,
-  // Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
+  Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
   // Title : fmt::Debug,
-  // Cell : fmt::Debug + Clone + 'a,
+  Cell : fmt::Debug + Clone + 'a,
 {
   fn table_size( &'a self ) -> [ usize ; 2 ]
   {
-    [ 0, 0 ]
-    // let mut rows = self.rows();
-    // let nrows = rows.len();
-    // let row = rows.next();
-    // if let Some( row ) = row
-    // {
-    //   let ncells = row.cells().len();
-    //   [ nrows, ncells ]
-    // }
-    // else
-    // {
-    //   [ 0, 0 ]
-    // }
+    // [ 0, 0 ]
+    let mut rows = self.rows();
+    let nrows = rows.len();
+    let row = rows.next();
+    if let Some( row ) = row
+    {
+      let ncells = row.cells().len();
+      [ nrows, ncells ]
+    }
+    else
+    {
+      [ 0, 0 ]
+    }
   }
 }
 
-impl< 'a, T, Row, Key, Cell, Title > TableRows< 'a, Row, Key, Cell >
-for AsTable< 'a, T, Row, Key, Cell, Title >
+impl< 'a, T, RowKey, Row, CellKey, Cell, Title > TableRows< 'a, RowKey, Row, CellKey, Cell >
+for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
 where
-  // T : TableRows< 'a, Row, Key, Cell >,
-  T : Fields< 'a, Key, Row >,
-  // T : TableHeader< 'a, Key, Title >,
+  // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
+  T : Fields< 'a, RowKey, Row >,
+  // T : TableHeader< 'a, CellKey, Title >,
   // T : TableSize< 'a >,
-  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
+  Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
   Title : fmt::Debug,
   Cell : fmt::Debug + Clone + 'a,
 {
@@ -97,20 +97,20 @@ where
 
 }
 
-impl< 'a, T, Row, Key, Cell, Title > TableHeader< 'a, Key, Title >
-for AsTable< 'a, T, Row, Key, Cell, Title >
+impl< 'a, T, RowKey, Row, CellKey, Cell, Title > TableHeader< 'a, CellKey, Title >
+for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
 where
-  T : TableRows< 'a, Row, Key, Cell >,
-  T : TableHeader< 'a, Key, Title >,
+  T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
+  T : TableHeader< 'a, CellKey, Title >,
   T : TableSize< 'a >,
-  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
-  Row : for< 'cell > Fields< 'cell, Key, Title > + 'a,
-  Key : Clone,
+  Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+  Row : for< 'cell > Fields< 'cell, CellKey, Title > + 'a,
+  CellKey : Clone,
   Title : fmt::Debug + Clone,
   Cell : fmt::Debug + Clone + 'a,
 {
 
-  fn header( &'a self ) -> Option< impl IteratorTrait< Item = ( Key, Title ) > >
+  fn header( &'a self ) -> Option< impl IteratorTrait< Item = ( CellKey, Title ) > >
   {
     let mut rows = self.rows();
     let row = rows.next();
@@ -133,14 +133,14 @@ where
 
 }
 
-impl< 'a, Row, Key, Cell > Cells< 'a, Key, Cell >
+impl< 'a, Row, CellKey, Cell > Cells< 'a, CellKey, Cell >
 for Row
 where
-  Row : Fields< 'a, Key, Cell > + 'a,
+  Row : Fields< 'a, CellKey, Cell > + 'a,
   Cell : fmt::Debug + Clone + 'a,
 {
 
-  fn cells( &'a self ) -> impl IteratorTrait< Item = ( Key, Cell ) >
+  fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, Cell ) >
   {
     self.fields().map( move | ( key, cell ) | ( key, cell.into_owned() ) )
   }
@@ -226,13 +226,13 @@ pub trait TableFormatter< 'b >
 }
 
 /// A trait for formatting tables.
-impl< 'a, T, Row, Key, Cell, Title > TableFormatter< 'a >
-for AsTable< 'a, T, Row, Key, Cell, Title >
+impl< 'a, T, RowKey, Row, CellKey, Cell, Title > TableFormatter< 'a >
+for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
 where
-  T : TableRows< 'a, Row, Key, Cell >,
-  T : TableHeader< 'a, Key, Title >,
+  T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
+  T : TableHeader< 'a, CellKey, Title >,
   T : TableSize< 'a >,
-  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
+  Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
   Title : fmt::Debug,
   Cell : fmt::Debug + Clone + 'a,
   // 'b : 'a,
