@@ -53,48 +53,44 @@ where
 impl< 'a, T, Row, Key, Cell, Title > TableSize< 'a >
 for AsTable< 'a, T, Row, Key, Cell, Title >
 where
-  T : TableRows< 'a, Row, Key, Cell >,
-  T : TableHeader< 'a, Key, Title >,
-  T : TableSize< 'a >,
-  Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
-  Title : fmt::Debug,
-  Cell : fmt::Debug + Clone + 'a,
+  // T : TableRows< 'a, Row, Key, Cell >,
+  // T : TableHeader< 'a, Key, Title >,
+  // T : TableSize< 'a >,
+  // Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
+  // Title : fmt::Debug,
+  // Cell : fmt::Debug + Clone + 'a,
 {
   fn table_size( &'a self ) -> [ usize ; 2 ]
   {
-    let mut rows = self.rows();
-    let nrows = rows.len();
-    let row = rows.next();
-    if let Some( row ) = row
-    {
-      let ncells = row.cells().len();
-      [ nrows, ncells ]
-    }
-    else
-    {
-      [ 0, 0 ]
-    }
+    [ 0, 0 ]
+    // let mut rows = self.rows();
+    // let nrows = rows.len();
+    // let row = rows.next();
+    // if let Some( row ) = row
+    // {
+    //   let ncells = row.cells().len();
+    //   [ nrows, ncells ]
+    // }
+    // else
+    // {
+    //   [ 0, 0 ]
+    // }
   }
 }
 
 impl< 'a, T, Row, Key, Cell, Title > TableRows< 'a, Row, Key, Cell >
 for AsTable< 'a, T, Row, Key, Cell, Title >
 where
-  // Self : 'a,
-  // Self : 'static,
-  T : TableRows< 'a, Row, Key, Cell >,
+  // T : TableRows< 'a, Row, Key, Cell >,
   T : Fields< 'a, Key, Row >,
-  T : TableHeader< 'a, Key, Title >,
-  T : TableSize< 'a >,
+  // T : TableHeader< 'a, Key, Title >,
+  // T : TableSize< 'a >,
   Row : Clone + for< 'cell > Cells< 'cell, Key, Cell > + 'a,
   Title : fmt::Debug,
   Cell : fmt::Debug + Clone + 'a,
 {
 
   fn rows( &'a self ) -> impl IteratorTrait< Item = Row >
-  where
-    // Self : 'a,
-    // Self : 'static,
   {
     self.fields().map( move | ( _k, e ) | e.into_owned() )
   }

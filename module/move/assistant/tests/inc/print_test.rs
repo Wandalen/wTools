@@ -8,6 +8,7 @@ use assistant::
   AsTable,
   Cells,
   TableSize,
+  TableRows,
 };
 
 use std::
@@ -94,8 +95,12 @@ fn test_table_to_string()
   assert_eq!( cells.len(), 4 );
   dbg!( cells.collect::< Vec< _ > >() );
 
-  // let size = TableSize::< '_ >::table_size( &test_objects );
+  let as_table = AsTable::< Vec< TestObject >, TestObject, &'static str, String, &'static str >::new( test_objects );
+  // let size = TableSize::< '_ >::table_size( &as_table );
   // assert_eq!( size, [ 2, 4 ] );
+  // let rows = TableRows::rows( &as_table );
+  // assert_eq!( rows.len(), 2 );
+  // dbg!( rows.collect::< Vec< _ > >() );
 
   // AsTable::new( test_objects );
   // let table_string = AsTable::new( test_objects ).table_to_string();
