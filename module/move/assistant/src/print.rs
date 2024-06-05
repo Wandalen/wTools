@@ -190,21 +190,21 @@ impl fmt::Debug for Formatter< '_ >
 }
 
 /// A trait for converting tables to a string representation.
-pub trait TableToString
+pub trait TableToString< 'a >
 {
   /// Converts the table to a string representation.
   ///
   /// # Returns
   ///
   /// A `String` containing the formatted table.
-  fn table_to_string( &self ) -> String;
+  fn table_to_string( &'a self ) -> String;
 }
 
-impl< T > TableToString for T
+impl< 'a, T > TableToString< 'a > for T
 where
-  T : for< 'b > TableFormatter< 'b >
+  T : TableFormatter< 'a >
 {
-  fn table_to_string( &self ) -> String
+  fn table_to_string( &'a self ) -> String
   {
     let mut output = String::new();
     let mut formatter = Formatter
@@ -226,7 +226,7 @@ where
 pub trait TableFormatter< 'b >
 {
   /// Formats the table and writes the result to the given formatter.
-  fn fmt( &'b self, f : &'b mut Formatter< '_ > ) -> fmt::Result;
+  fn fmt( &'b self, f : &mut Formatter< '_ > ) -> fmt::Result;
 }
 
 /// A trait for formatting tables.
@@ -241,7 +241,7 @@ where
   Cell : fmt::Debug + Clone + 'a,
   CellKey : fmt::Debug + Clone,
 {
-  fn fmt( &'a self, f : &'a mut Formatter< '_ > ) -> fmt::Result
+  fn fmt( &'a self, f : &mut Formatter< '_ > ) -> fmt::Result
   {
     let table_size = self.table_size();
     let mut col_widths : Vec< usize > = vec![ 0 ; table_size[ 1 ] ];
@@ -307,3 +307,110 @@ where
     Ok(())
   }
 }
+
+// = xxx
+
+// /// Struct for formatting tables.
+// pub struct Formatter2<'a>
+// {
+//   buf: &'a mut dyn fmt::Write,
+// }
+//
+// impl<'a> Formatter2<'a>
+// {
+//   /// Just constructr.
+//   pub fn new(buf: &'a mut dyn fmt::Write) -> Self
+//   {
+//     Self { buf }
+//   }
+// }
+//
+// /// A trait for converting tables to a string representation.
+// pub trait TableToString2<'b>
+// {
+//   /// Converts the table to a string representation.
+//   ///
+//   /// # Returns
+//   ///
+//   /// A `String` containing the formatted table.
+//   fn table_to_string(&'b self) -> String;
+// }
+//
+// impl<'b, T> TableToString2<'b> for T
+// where
+//   T: TableFormatter2<'b>,
+// {
+//   fn table_to_string(&'b self) -> String
+//   {
+//     let mut output = String::new();
+//     {
+//       let mut formatter = Formatter2
+//       {
+//         buf : &mut output,
+//       };
+//       T::fmt(self, &mut formatter).expect("Formatting failed");
+//     }
+//     output
+//   }
+// }
+//
+// pub trait TableFormatter2<'b>
+// {
+//   /// Formats the table and writes the result to the given formatter.
+//   fn fmt(&'b self, f: &mut Formatter2<'_>) -> fmt::Result;
+// }
+
+// = xxx
+
+// /// Struct for formatting tables.
+// pub struct Formatter2< 'a >
+// {
+//   buf : &'a mut dyn fmt::Write,
+// }
+//
+// impl< 'a > Formatter2< 'a >
+// {
+//   /// Just constructr.
+//   pub fn new( buf : &'a mut dyn fmt::Write ) -> Self
+//   {
+//     Self { buf }
+//   }
+// }
+//
+// /// A trait for converting tables to a string representation.
+// pub trait TableToString2< 'b >
+// {
+//   /// Converts the table to a string representation.
+//   ///
+//   /// # Returns
+//   ///
+//   /// A `String` containing the formatted table.
+//   fn table_to_string( &'b self ) -> String;
+// }
+//
+// impl< 'b, T > TableToString2< 'b > for T
+// where
+//   T : TableFormatter2< 'b >,
+//   // Self : 'static,
+// {
+//   fn table_to_string( &'b self ) -> String
+//   {
+//     let mut output = String::new();
+//     {
+//       let mut formatter = Formatter2
+//       {
+//         buf : &mut output,
+//       };
+//       T::fmt( self, &mut formatter ).expect( "Formatting failed" );
+//     }
+//     output
+//   }
+// }
+//
+// pub trait TableFormatter2< 'b >
+// {
+//   /// Formats the table and writes the result to the given formatter.
+//   fn fmt( &'b self, f : &'b mut Formatter2< '_ > ) -> fmt::Result;
+// }
+
+// = xxx

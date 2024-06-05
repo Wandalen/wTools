@@ -119,14 +119,14 @@ where
   assert!( got.is_ok() );
   println!( "{}", &output );
 
-  // // use the_module::{ TableFormatter, TableToString };
-  // // AsTable::new( test_objects );
-  // // // let table_string = AsTable::new( test_objects ).table_to_string();
-  // let table_string = as_table.table_to_string();
-  // // println!( "{}", table_string );
-  // assert!( table_string.contains( "id" ) );
-  // assert!( table_string.contains( "created_at" ) );
-  // assert!( table_string.contains( "file_ids" ) );
-  // assert!( table_string.contains( "tools" ) );
+  // use the_module::{ TableFormatter, TableToString };
+  // AsTable::new( test_objects );
+  // // let table_string = AsTable::new( test_objects ).table_to_string();
+  let table_string = as_table.table_to_string();
+  // println!( "{}", table_string );
+  assert!( table_string.contains( "id" ) );
+  assert!( table_string.contains( "created_at" ) );
+  assert!( table_string.contains( "file_ids" ) );
+  assert!( table_string.contains( "tools" ) );
 
 }
