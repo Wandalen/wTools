@@ -17,6 +17,20 @@ where
   Cell : fmt::Debug + Clone + 'static,
 ;
 
+impl< 'a, T, Row, Key, Cell, Title > AsTable< 'a, T, Row, Key, Cell, Title >
+where
+  T : TableRows< 'a, Row, Key, Cell > + TableHeader< 'a, Key, Title > + TableSize< 'a >,
+  Row : 'a + Clone + Cells< 'a, Key, Cell >,
+  Title : fmt::Debug,
+  Cell : fmt::Debug + Clone + 'static,
+{
+  /// Just a constructor.
+  pub fn new( src : T ) -> Self
+  {
+    Self( src, Default::default() )
+  }
+}
+
 impl< 'a, T, Row, Key, Cell, Title > AsRef< T > for AsTable< 'a, T, Row, Key, Cell, Title >
 where
   T : TableRows< 'a, Row, Key, Cell > + TableHeader< 'a, Key, Title > + TableSize< 'a >,

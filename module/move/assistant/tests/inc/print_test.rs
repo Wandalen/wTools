@@ -5,6 +5,8 @@ use assistant::
 {
   Fields,
   IteratorTrait,
+  AsTable,
+  Cells,
 };
 
 use std::
@@ -87,10 +89,16 @@ fn test_table_to_string()
     }
   ];
 
-  // let table_string = test_objects.table_to_string();
+  let cells = Cells::< '_, &'static str, String >::cells( &test_objects[ 0 ] );
+  assert_eq!( cells.len(), 4 );
+  dbg!( cells.collect::< Vec< _ > >() );
+
+  // AsTable::new( test_objects );
+  // let table_string = AsTable::new( test_objects ).table_to_string();
   // println!( "{}", table_string );
   // assert!( table_string.contains( "id" ) );
   // assert!( table_string.contains( "created_at" ) );
   // assert!( table_string.contains( "file_ids" ) );
   // assert!( table_string.contains( "tools" ) );
+
 }
