@@ -102,8 +102,11 @@ fn test_table_to_string()
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
   dbg!( rows.collect::< Vec< _ > >() );
-  // let header = TableHeader::header( &as_table );
-  // assert_eq!( header.len(), 2 );
+  let header = TableHeader::header( &as_table );
+  assert!( header.is_some() );
+  let header = header.unwrap();
+  assert_eq!( header.len(), 4 );
+  assert_eq!( header.collect::< Vec< _ > >(), vec![ ( "id", "id" ), ( "created_at", "created_at" ), ( "file_ids", "file_ids" ), ( "tools", "tools" ) ] );
   // dbg!( header.collect::< Vec< _ > >() );
 
   // AsTable::new( test_objects );

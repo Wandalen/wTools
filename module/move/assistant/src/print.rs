@@ -97,20 +97,20 @@ where
 
 }
 
-impl< 'a, T, RowKey, Row, CellKey, Cell, Title > TableHeader< 'a, CellKey, Title >
-for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
+impl< 'a, T, RowKey, Row, CellKey, Cell > TableHeader< 'a, CellKey, CellKey >
+for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKey >
 where
   Self : TableRows< 'a, RowKey, Row, CellKey, Cell >,
   // T : TableHeader< 'a, CellKey, Title >,
   // T : TableSize< 'a >,
   Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-  Row : for< 'cell > Fields< 'cell, CellKey, Title > + 'a,
+  // Row : for< 'cell > Fields< 'cell, CellKey, Cell > + 'a,
   CellKey : Clone,
-  Title : fmt::Debug + Clone,
+  CellKey : fmt::Debug + Clone,
   Cell : fmt::Debug + Clone + 'a,
 {
 
-  fn header( &'a self ) -> Option< impl IteratorTrait< Item = ( CellKey, Title ) > >
+  fn header( &'a self ) -> Option< impl IteratorTrait< Item = ( CellKey, CellKey ) > >
   {
     let mut rows = self.rows();
     let row = rows.next();
@@ -119,8 +119,8 @@ where
       Some
       (
         row
-        .fields()
-        .map( | ( key, title ) | ( key, title.into_owned() ) )
+        .cells()
+        .map( | ( key, _title ) | ( key.clone(), key ) )
         .collect::< Vec< _ > >()
         .into_iter()
       )
