@@ -129,7 +129,17 @@ where
     {
       let fields : Vec< String > = row
       .cells()
-      .map( | ( _key, cell ) | format!( "{:?}", &cell ) )
+      .map
+      (
+        | ( _key, cell ) |
+        {
+          match cell
+          {
+            Some( cell ) => format!( "{:?}", &cell ),
+            None => "".to_string(),
+          }
+        }
+      )
       .collect();
       all_rows.push( fields );
     }
@@ -178,7 +188,7 @@ where
         {
           write!( f.buf, "{}", separator )?;
         }
-        write!( f.buf, "{:^width$}", format!( "{:?}", cell ), width = col_widths[ i ] )?;
+        write!( f.buf, "{:^width$}", cell, width = col_widths[ i ] )?;
         i += 1;
       }
       writeln!( f.buf )?;
