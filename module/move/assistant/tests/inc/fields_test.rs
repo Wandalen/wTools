@@ -39,7 +39,7 @@ impl< 'a > Fields< 'a, &'static str, String > for TestObject
     }
     else
     {
-      vec.push( None )
+      vec.push( ( "tools", None ) );
     }
 
     vec.into_iter()
@@ -48,7 +48,7 @@ impl< 'a > Fields< 'a, &'static str, String > for TestObject
 
 impl< 'a > Fields< 'a, usize, TestObject > for Vec< TestObject >
 {
-  fn fields( &'a self ) -> impl IteratorTrait< Item = ( usize, Cow< 'a, TestObject > ) >
+  fn fields( &'a self ) -> impl IteratorTrait< Item = ( usize, Option< Cow< 'a, TestObject > > ) >
   {
     self.iter().enumerate().map( | ( key, val ) | ( key, Some( Cow::Borrowed( val ) ) ) )
   }
@@ -56,9 +56,13 @@ impl< 'a > Fields< 'a, usize, TestObject > for Vec< TestObject >
 
 //
 
-fn is_borrowed< 'a, T : Clone >( src : &Cow< 'a, T > ) -> bool
+fn is_borrowed< 'a, T : Clone >( src : &Option< Cow< 'a, T > > ) -> bool
 {
-  match src
+  if src.is_none()
+  {
+    return false;
+  }
+  match src.as_ref().unwrap()
   {
     Cow::Borrowed( _ ) => true,
     Cow::Owned( _ ) => false,
@@ -94,9 +98,9 @@ fn basic()
   assert!( !is_borrowed( &fields[ 1 ].1 ) );
   assert!( !is_borrowed( &fields[ 2 ].1 ) );
   assert!( !is_borrowed( &fields[ 3 ].1 ) );
-  assert_eq!( fields[ 0 ], ( "id", Cow::Borrowed( &"12345".to_string() ) ) );
-  assert_eq!( fields[ 1 ], ( "created_at", Cow::Owned( "1627845583".to_string() ) ) );
-  assert_eq!( fields[ 2 ], ( "file_ids", Cow::Owned( "[\"file1\", \"file2\"]".to_string() ) ) );
+  assert_eq!( fields[ 0 ], ( "id", Some( Cow::Borrowed( &"12345".to_string() ) ) ) );
+  assert_eq!( fields[ 1 ], ( "created_at", Some( Cow::Owned( "1627845583".to_string() ) ) ) );
+  assert_eq!( fields[ 2 ], ( "file_ids", Some( Cow::Owned( "[\"file1\", \"file2\"]".to_string() ) ) ) );
   assert_eq!( fields[ 3 ].0, "tools" );
 
 }
