@@ -36,7 +36,7 @@ impl< 'a > Fields< 'a, &'static str, String > for TestObject
   {
     let mut vec : Vec< ( &'static str, Option< Cow< 'a, String > > ) > = Vec::new();
 
-    vec.push( ( "id", Some( Cow::Borrowed( &self.id ) ) ) ) );
+    vec.push( ( "id", Some( Cow::Borrowed( &self.id ) ) ) );
     vec.push( ( "created_at", Some( Cow::Owned( self.created_at.to_string() ) ) ) );
     vec.push( ( "file_ids", Some( Cow::Owned( format!( "{:?}", self.file_ids ) ) ) ) );
 

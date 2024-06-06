@@ -134,7 +134,7 @@ where
 
   fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, Option< Cell > ) >
   {
-    self.fields().filter
+    self.fields().map
     (
       move | ( key, cell ) |
       {
