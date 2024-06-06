@@ -36,7 +36,7 @@ where
   Cell : fmt::Debug + Clone + 'a,
 {
   /// Returns an iterator over all cells of the row.
-  fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, Cell ) >
+  fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, Option< Cell > ) >
   ;
 }
 
@@ -80,7 +80,14 @@ where
 
   fn rows( &'a self ) -> impl IteratorTrait< Item = Row >
   {
-    self.as_ref().fields().map( move | ( _k, e ) | e.into_owned() )
+    self.as_ref().fields().filter_map( move | ( _k, e ) |
+    {
+      match e
+      {
+        Some( e ) => Some( e.into_owned() ),
+        None => None,
+      }
+    }).collect::< Vec< _ > >().into_iter()
   }
 
 }
@@ -125,9 +132,19 @@ where
   Cell : fmt::Debug + Clone + 'a,
 {
 
-  fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, Cell ) >
+  fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, Option< Cell > ) >
   {
-    self.fields().map( move | ( key, cell ) | ( key, cell.into_owned() ) )
+    self.fields().filter
+    (
+      move | ( key, cell ) |
+      {
+        match cell
+        {
+          Some( cell ) => ( key, Some( cell.into_owned() ) ),
+          None => ( key, None )
+        }
+      }
+    )
   }
 
 }

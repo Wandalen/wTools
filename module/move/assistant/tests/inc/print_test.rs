@@ -32,17 +32,21 @@ pub struct TestObject
 
 impl< 'a > Fields< 'a, &'static str, String > for TestObject
 {
-  fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, Cow< 'a, String > ) >
+  fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, Option< Cow< 'a, String > > ) >
   {
-    let mut vec : Vec< ( &'static str, Cow< 'a, String > ) > = Vec::new();
+    let mut vec : Vec< ( &'static str, Option< Cow< 'a, String > > ) > = Vec::new();
 
-    vec.push( ( "id", Cow::Borrowed( &self.id ) ) );
-    vec.push( ( "created_at", Cow::Owned( self.created_at.to_string() ) ) );
-    vec.push( ( "file_ids", Cow::Owned( format!( "{:?}", self.file_ids ) ) ) );
+    vec.push( ( "id", Some( Cow::Borrowed( &self.id ) ) ) ) );
+    vec.push( ( "created_at", Some( Cow::Owned( self.created_at.to_string() ) ) ) );
+    vec.push( ( "file_ids", Some( Cow::Owned( format!( "{:?}", self.file_ids ) ) ) ) );
 
     if let Some( tools ) = &self.tools
     {
-      vec.push( ( "tools", Cow::Owned( format!( "{:?}", tools ) ) ) );
+      vec.push( ( "tools", Some( Cow::Owned( format!( "{:?}", tools ) ) ) ) );
+    }
+    else
+    {
+      vec.push( None )
     }
 
     vec.into_iter()
@@ -53,7 +57,7 @@ impl< 'a > Fields< 'a, usize, TestObject > for Vec< TestObject >
 {
   fn fields( &'a self ) -> impl IteratorTrait< Item = ( usize, Cow< 'a, TestObject > ) >
   {
-    self.iter().enumerate().map( | ( key, val ) | ( key, Cow::Borrowed( val ) ) )
+    self.iter().enumerate().map( | ( key, val ) | ( key, Some( Cow::Borrowed( val ) ) ) )
   }
 }
 

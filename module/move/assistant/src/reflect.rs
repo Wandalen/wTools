@@ -1,17 +1,17 @@
 
-
 // use core::fmt;
+use std::borrow::Cow;
 
 /// A trait for iterators that are also `ExactSizeIterator`.
 pub trait _IteratorTrait
 where
-  Self : core::iter::Iterator + ExactSizeIterator
+  Self : core::iter::Iterator + ExactSizeIterator + DoubleEndedIterator
 {
 }
 
 impl< T > _IteratorTrait for T
 where
-  Self : core::iter::Iterator + ExactSizeIterator
+  Self : core::iter::Iterator + ExactSizeIterator + DoubleEndedIterator
 {
 }
 
@@ -40,7 +40,7 @@ where
   // K : 'static,
 {
   /// Returns an iterator over all fields of the specified type within the entity.
-  fn fields( &'a self ) -> impl IteratorTrait< Item = ( K, std::borrow::Cow< 'a, E > ) >;
+  fn fields( &'a self ) -> impl IteratorTrait< Item = ( K, Option< Cow< 'a, E > > ) >;
 }
 
 // /// Return number of fields convertible into a specified type withing an entity.
