@@ -22,8 +22,8 @@ use former::Former;
 pub mod reflect;
 pub use reflect::*;
 /// Universal wrapper.
-pub mod as_wrapper;
-pub use as_wrapper::*;
+pub mod wrapper_ref;
+pub use wrapper_ref::*;
 
 /// Nice print.
 pub mod print;
