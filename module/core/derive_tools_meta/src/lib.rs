@@ -539,7 +539,6 @@ pub fn derive_variadic_from( input : proc_macro::TokenStream ) -> proc_macro::To
 ///     data: i32,
 ///     _phantom: PhantomData<T>,
 /// }
-///
 /// ```
 ///
 /// Use `#[ derive( PhantomData ) ]` to automatically generate the `PhantomData` field:
