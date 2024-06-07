@@ -37,7 +37,6 @@ where
 pub trait Fields< 'a, K, E >
 where
   E : Clone + 'a,
-  // K : 'static,
 {
   /// Returns an iterator over all fields of the specified type within the entity.
   fn fields( &'a self ) -> impl IteratorTrait< Item = ( K, Option< Cow< 'a, E > > ) >;

@@ -21,7 +21,6 @@ where
   Cell : fmt::Debug + Clone + 'a,
   CellKey : fmt::Debug + Clone,
 ;
-// xxx : use maybe ref inside
 
 impl< 'a, T, RowKey, Row, CellKey, Cell, Title > AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
 where
@@ -125,7 +124,22 @@ where
   }
 }
 
-// impl< 'a, T, RowKey, Row, CellKey, Cell, Title > Default for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
+// impl< 'a, T, RowKey, Row, CellKey, Cell, Title > From< AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title > >
+// for &'a T
+// where
+//   Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+//   Title : fmt::Debug,
+//   Cell : fmt::Debug + Clone + 'a,
+//   CellKey : fmt::Debug + Clone,
+// {
+//   fn from( wrapper : AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title > ) -> &'a T
+//   {
+//     wrapper.0
+//   }
+// }
+
+// impl< 'a, T, RowKey, Row, CellKey, Cell, Title > Default
+// for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
 // where
 //   T : Default,
 //   // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,

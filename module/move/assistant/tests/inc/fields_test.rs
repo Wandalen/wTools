@@ -46,6 +46,30 @@ impl< 'a > Fields< 'a, &'static str, String > for TestObject
   }
 }
 
+// impl< 'a, V > Fields< 'a, &'static str, V >
+// for TestObject
+// {
+//   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, Option< Cow< 'a, V > > ) >
+//   {
+//     let mut vec : Vec< ( &'static str, Option< Cow< 'a, V > > ) > = Vec::new();
+//
+//     vec.push( ( "id", Some( Cow::Borrowed( &self.id ) ) ) );
+//     vec.push( ( "created_at", Some( Cow::Owned( self.created_at.to_string() ) ) ) );
+//     vec.push( ( "file_ids", Some( Cow::Owned( format!( "{:?}", self.file_ids ) ) ) ) );
+//
+//     if let Some( tools ) = &self.tools
+//     {
+//       vec.push( ( "tools", Some( Cow::Owned( format!( "{:?}", tools ) ) ) ) );
+//     }
+//     else
+//     {
+//       vec.push( ( "tools", None ) );
+//     }
+//
+//     vec.into_iter()
+//   }
+// }
+
 impl< 'a > Fields< 'a, usize, TestObject > for Vec< TestObject >
 {
   fn fields( &'a self ) -> impl IteratorTrait< Item = ( usize, Option< Cow< 'a, TestObject > > ) >
@@ -134,10 +158,10 @@ fn test_vec_fields()
       created_at : 13,
       file_ids : vec![ "file3".to_string(), "file4".to_string() ],
       tools : None,
-    }
+    },
   ];
 
-  let fields: Vec< _ > = test_objects.fields().collect();
+  let fields : Vec< _ > = test_objects.fields().collect();
   assert_eq!( fields.len(), 2 );
   assert_eq!( fields[ 0 ].0, 0 );
   assert_eq!( fields[ 1 ].0, 1 );
