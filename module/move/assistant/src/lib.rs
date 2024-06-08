@@ -25,8 +25,8 @@ pub use reflect::*;
 pub mod wrapper_ref;
 pub use wrapper_ref::*;
 /// Universal wrapper.
-pub mod wrapper_cow;
-pub use wrapper_cow::*;
+pub mod wrapper_option_cow_ref;
+pub use wrapper_option_cow_ref::*;
 
 /// Nice print.
 pub mod print;

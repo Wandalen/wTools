@@ -1,7 +1,23 @@
 use core::fmt;
 use core::ops::{ Deref };
 
-/// Transparent reference wrapper to emphasizing a specific aspect of identity of its internal type.
+/// Converter into universal wrapper with transparent option of copy on write reference emphasizing a specific aspect of identity of its internal type.
+pub trait IntoRef< 'a, T >
+{
+  /// Converter into universal wrapper with transparent option of copy on write reference emphasizing a specific aspect of identity of its internal type.
+  fn into_option_cow( self ) -> Ref< 'a, T >;
+}
+
+impl< 'a, T > IntoRef< 'a, T > for &'a T
+{
+  #[ inline( always ) ]
+  fn into_option_cow( self ) -> Ref< 'a, T >
+  {
+    Ref::< 'a, T >( self )
+  }
+}
+
+/// Transparent reference wrapper emphasizing a specific aspect of identity of its internal type.
 #[ repr( transparent ) ]
 #[ derive( Clone, Copy ) ]
 pub struct Ref< 'a, T >( &'a T );
