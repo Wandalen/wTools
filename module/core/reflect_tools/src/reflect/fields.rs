@@ -35,28 +35,30 @@ pub( crate ) mod private
   {
   }
 
+  ///
   /// A trait for iterating over all fields convertible into a specified type within an entity.
   ///
   /// # Type Parameters
   ///
   /// - `K`: The key type.
-  /// - `E`: The element type.
-  pub trait Fields< 'a, K, E >
+  /// - `V`: The value type.
+  ///
+  pub trait Fields< 'a, K, V >
   where
-    E : Clone + 'a,
+    V : Clone + 'a,
   {
     /// Returns an iterator over all fields of the specified type within the entity.
-    fn fields( &'a self ) -> impl IteratorTrait< Item = ( K, E ) >;
-    // fn fields( &'a self ) -> impl IteratorTrait< Item = ( K, Option< Cow< 'a, E > > ) >;
+    fn fields( &'a self ) -> impl IteratorTrait< Item = ( K, V ) >;
+    // fn fields( &'a self ) -> impl IteratorTrait< Item = ( K, Option< Cow< 'a, V > > ) >;
   }
 
   // /// Return number of fields convertible into a specified type withing an entity.
   // ///
   // /// # Type Parameters
   // ///
-  // /// - `E`: The element type.
+  // /// - `V`: The value type.
   // ///
-  // pub trait FieldsLen< E >
+  // pub trait FieldsLen< V >
   // {
   //   /// Return number of fields convertible into a specified type withing an entity.
   //   fn len( &self ) -> usize;
