@@ -62,14 +62,77 @@ where
 
 //
 
+/// Macro to convert a value to a string using a specified formatting method with a fallback.
+///
+/// # Parameters
+/// - `$how`: The primary formatting type (e.g., `WithDebug`, `WithDisplay`).
+/// - `$fallback`: The fallback formatting type.
+/// - `$src`: The source value to format.
+///
+/// # Example
+/// ```rust
+/// use core::fmt;
+/// use assistant::
+/// {
+///   WithDebug,
+///   WithDisplay,
+///   to_string_with_fallback,
+/// };
+///
+/// // Define a struct that implements both Debug and Display traits.
+/// struct Both;
+///
+/// impl fmt::Debug for Both
+/// {
+///   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+///   {
+///     write!( f, "This is debug" )
+///   }
+/// }
+///
+/// impl fmt::Display for Both
+/// {
+///   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+///   {
+///     write!( f, "This is display" )
+///   }
+/// }
+///
+/// // Define a struct that implements only the Debug trait.
+/// struct OnlyDebug;
+///
+/// impl fmt::Debug for OnlyDebug
+/// {
+///   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+///   {
+///     write!( f, "This is debug" )
+///   }
+/// }
+///
+/// // Example usage: Using Both which implements both Debug and Display.
+/// let src = Both;
+/// let got = to_string_with_fallback!( WithDisplay, WithDebug, src );
+/// let exp = "This is display".to_string();
+/// // The primary formatting method WithDisplay is used.
+/// assert_eq!( got, exp );
+///
+/// // Example usage: Using OnlyDebug which implements only Debug.
+/// let src = OnlyDebug;
+/// let got = to_string_with_fallback!( WithDisplay, WithDebug, src );
+/// let exp = "This is debug".to_string();
+/// // The primary formatting method WithDisplay is not available, so the fallback WithDebug is used.
+/// assert_eq!( got, exp );
+/// ```
+
 #[ macro_export( local_inner_macros ) ]
 macro_rules! to_string_with_fallback
 {
   ( $how : ty, $fallback : ty, $src : expr )
   =>
   {{
+    use assistant::ToStringWithFallback;
     (
-      &::assistant::Ref::< '_, _, ToStringWithFallbackParams< $how, $fallback > >::from( &$src )
+      &assistant::Ref::< '_, _, assistant::ToStringWithFallbackParams< $how, $fallback > >::from( &$src )
     )
     .to_string_with_fallback()
   }};

@@ -155,6 +155,11 @@ fn to_string_with_fallback_variants()
   let exp = "This is display".to_string();
   a_id!( got, exp );
 
+  let src = Both;
+  let got = ( &Ref::< '_, _, ToStringWithFallbackParams< WithDebug, WithDisplay > >::from( &src ) ).to_string_with_fallback();
+  let exp = "This is debug".to_string();
+  a_id!( got, exp );
+
   // -
 
 }
@@ -187,6 +192,12 @@ fn to_string_with_fallback_macro()
   // let got = ( &Ref::< '_, _, ToStringWithFallbackParams< WithDisplay, WithDebug > >::from( &src ) ).to_string_with_fallback();
   let got = to_string_with_fallback!( WithDisplay, WithDebug, src );
   let exp = "This is display".to_string();
+  a_id!( got, exp );
+
+  let src = Both;
+  // let got = ( &Ref::< '_, _, ToStringWithFallbackParams< WithDisplay, WithDebug > >::from( &src ) ).to_string_with_fallback();
+  let got = to_string_with_fallback!( WithDebug, WithDisplay, src );
+  let exp = "This is debug".to_string();
   a_id!( got, exp );
 
 }

@@ -4,5 +4,6 @@ use super::*;
 mod fields_test;
 mod print_test;
 mod to_string_test;
+mod to_string_example;
 
 mod experiment;
