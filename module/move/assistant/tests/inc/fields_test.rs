@@ -88,45 +88,74 @@ where
   }
 }
 
-// impl< 'a > Fields< 'a, &'static str, MaybeAs< 'a, String, StringFromDebug > >
 impl< 'a, How > Fields< 'a, &'static str, MaybeAs< 'a, String, How > >
 for TestObject
 where
-  // V : ToStringWith< 'a, How > + Clone + 'a,
-  // MaybeAs< 'a, V, WithDebug > : From< String >,
-  // String : Into< MaybeAs< 'a, V, How > >,
-  // MaybeAs< 'a, String, How > : From< String >,
   How : Clone + Copy + 'static,
   String : ToStringWith< 'a, How >,
+  i64 : ToStringWith< 'a, How >,
+  Vec< String > : ToStringWith< 'a, How >,
+  Option< Vec< HashMap< String, String > > > : ToStringWith< 'a, How >,
 {
-  // fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, String, StringFromDebug > ) >
   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, String, How > ) >
   {
-    // let mut vec : Vec< ( &'static str, MaybeAs< 'a, String, StringFromDebug > ) > = Vec::new();
     let mut vec : Vec< ( &'static str, MaybeAs< 'a, String, How > ) > = Vec::new();
 
     fn into< 'a, V, How >( src : &'a V ) -> MaybeAs< 'a, String, How >
     where
-
-      V : ToStringWith< 'a, How > + 'a,
-      // How : Clone + Copy + 'static,
-      // // String : Into< MaybeAs< 'a, V, How > >,
-      // String : ToStringWith< 'a, How >,
-
-      // MaybeAs< 'a, String, How > : From< String >,
       How : Clone + Copy + 'static,
-      V : ToStringWith< 'a, How >,
-
+      V : ToStringWith< 'a, How > + 'a,
     {
       MaybeAs::< 'a, String, How >::from
       (
         < V as ToStringWith< '_, How > >::to_string_with( src )
       )
-      // ToStringWith::< '_, How >::to_string_with( src ).into()
     }
 
+    fn add< 'a, V, How >
+    (
+      dst : &mut Vec< ( &'static str, MaybeAs< 'a, String, How > ) >,
+      key : &'static str,
+      src : &'a V
+    )
+    where
+      How : Clone + Copy + 'static,
+      V : ToStringWith< 'a, How > + 'a,
+    {
+      let val = MaybeAs::< 'a, String, How >::from
+      (
+        < V as ToStringWith< '_, How > >::to_string_with( src )
+      );
+      dst.push( ( key, val ) );
+    }
+
+    add( &mut vec, "id", &self.id );
+    add( &mut vec, "created_at", &self.created_at );
+    add( &mut vec, "file_ids", &self.file_ids );
+
+    if let Some( tools ) = &self.tools
+    {
+      add( &mut vec, "tools", &self.tools );
+    }
+    else
+    {
+      vec.push( ( "tools", MaybeAs::none() ) );
+    }
+
+//     vec.push( ( "id", into( &self.id ) ) );
+//     vec.push( ( "created_at", into( &self.created_at ) ) );
+//     vec.push( ( "file_ids", into( &self.file_ids ) ) );
+//
+//     if let Some( tools ) = &self.tools
+//     {
+//       vec.push( ( "tools", into( &self.tools ) ) );
+//     }
+//     else
+//     {
+//       vec.push( ( "tools", MaybeAs::none() ) );
+//     }
+
     // vec.push( ( "id", MaybeAs::< 'a, String, How >::from( < String as ToStringWith< '_, How > >::to_string_with( &self.id ) ) ) );
-    vec.push( ( "id", into( &self.id ) ) );
 //     vec.push( ( "created_at", self.created_at.to_string_with().into() ) );
 //     vec.push( ( "file_ids", self.file_ids.to_string_with().into() ) );
 //
