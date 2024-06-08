@@ -2,34 +2,34 @@ use core::fmt;
 use core::ops::{ Deref };
 
 /// Converter into universal wrapper with transparent option of copy on write reference emphasizing a specific aspect of identity of its internal type.
-pub trait IntoRef< 'a, T >
+pub trait IntoRef< 'a, T, Marker >
 {
   /// Converter into universal wrapper with transparent option of copy on write reference emphasizing a specific aspect of identity of its internal type.
-  fn into_option_cow( self ) -> Ref< 'a, T >;
+  fn into_ref( self ) -> Ref< 'a, T, Marker >;
 }
 
-impl< 'a, T > IntoRef< 'a, T > for &'a T
+impl< 'a, T, Marker > IntoRef< 'a, T, Marker > for &'a T
 {
   #[ inline( always ) ]
-  fn into_option_cow( self ) -> Ref< 'a, T >
+  fn into_ref( self ) -> Ref< 'a, T, Marker >
   {
-    Ref::< 'a, T >( self )
+    Ref::< 'a, T, Marker >::new( self )
   }
 }
 
 /// Transparent reference wrapper emphasizing a specific aspect of identity of its internal type.
 #[ repr( transparent ) ]
 #[ derive( Clone, Copy ) ]
-pub struct Ref< 'a, T >( &'a T );
+pub struct Ref< 'a, T, Marker >( &'a T, ::core::marker::PhantomData< fn() -> Marker > );
 
-impl< 'a, T > Ref< 'a, T >
+impl< 'a, T, Marker > Ref< 'a, T, Marker >
 {
 
   /// Just a constructor.
   #[ inline( always ) ]
   pub fn new( src : &'a T ) -> Self
   {
-    Self( src )
+    Self( src, ::core::marker::PhantomData )
   }
 
   /// Just a constructor.
@@ -41,7 +41,7 @@ impl< 'a, T > Ref< 'a, T >
 
 }
 
-impl< 'a, T > AsRef< T > for Ref< 'a, T >
+impl< 'a, T, Marker > AsRef< T > for Ref< 'a, T, Marker >
 {
   fn as_ref( &self ) -> &T
   {
@@ -49,7 +49,7 @@ impl< 'a, T > AsRef< T > for Ref< 'a, T >
   }
 }
 
-impl< 'a, T > Deref for Ref< 'a, T >
+impl< 'a, T, Marker > Deref for Ref< 'a, T, Marker >
 {
   type Target = T;
   fn deref( &self ) -> &Self::Target
@@ -58,23 +58,23 @@ impl< 'a, T > Deref for Ref< 'a, T >
   }
 }
 
-impl< 'a, T > From< &'a T > for Ref< 'a, T >
+impl< 'a, T, Marker > From< &'a T > for Ref< 'a, T, Marker >
 {
-  fn from( table : &'a T ) -> Self
+  fn from( src : &'a T ) -> Self
   {
-    Ref( table )
+    Ref::new( src )
   }
 }
 
-// impl< 'a, T > From< Ref< 'a, T > > for &'a T
+// impl< 'a, T, Marker > From< Ref< 'a, T, Marker > > for &'a T
 // {
-//   fn from( wrapper : Ref< 'a, T > ) -> &'a T
+//   fn from( wrapper : Ref< 'a, T, Marker > ) -> &'a T
 //   {
 //     wrapper.0
 //   }
 // }
 
-// impl< 'a, T > Default for Ref< 'a, T >
+// impl< 'a, T, Marker > Default for Ref< 'a, T, Marker >
 // where
 //   T : Default,
 // {
@@ -84,7 +84,7 @@ impl< 'a, T > From< &'a T > for Ref< 'a, T >
 //   }
 // }
 
-impl< 'a, T > fmt::Debug for Ref< 'a, T >
+impl< 'a, T, Marker > fmt::Debug for Ref< 'a, T, Marker >
 where
   T : fmt::Debug,
 {
