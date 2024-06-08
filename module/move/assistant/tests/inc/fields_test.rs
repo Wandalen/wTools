@@ -5,6 +5,7 @@ use assistant::
 {
   Fields,
   IteratorTrait,
+  MaybeAs,
 };
 
 use std::
@@ -61,6 +62,8 @@ where
     Cow::Owned( format!( "{:?}", self ) )
   }
 }
+
+// pub type Wrap< 'a, T : DebugToString< 'a > > = MaybeAs< 'a, T >;
 
 // impl< 'a, V > Fields< 'a, &'static str, V >
 // for TestObject
