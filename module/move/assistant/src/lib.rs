@@ -27,6 +27,9 @@ pub use wrapper_ref::*;
 /// Universal wrapper.
 pub mod wrapper_option_cow_ref;
 pub use wrapper_option_cow_ref::*;
+/// Conversion to string.
+pub mod to_string;
+pub use to_string::*;
 
 /// Nice print.
 pub mod print;
