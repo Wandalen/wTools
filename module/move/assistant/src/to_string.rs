@@ -26,10 +26,10 @@ pub struct WithWell;
 
 /// Marker type for ToStringWithFallback.
 #[ derive( Debug, Default, Clone, Copy ) ]
-pub struct ToStringWithFallbackMarker;
+pub struct ToStringWithFallbackParams< How, Fallback >( ::core::marker::PhantomData< fn() -> ( How, Fallback ) > );
 
 /// Trait to convert a type to a string with a fallback formatting.
-pub trait ToStringWithFallback
+pub trait ToStringWithFallback< How, Fallback >
 {
   /// Converts the type to a string using the specified formatting or a fallback.
   // fn to_string_with_fallback( self ) -> String;
@@ -39,9 +39,10 @@ pub trait ToStringWithFallback
   ;
 }
 
-impl< T > ToStringWithFallback for Ref< '_, T, ToStringWithFallbackMarker >
+impl< T, How, Fallback > ToStringWithFallback< How, Fallback >
+for Ref< '_, T, ToStringWithFallbackParams< How, Fallback > >
 where
-  T : ToStringWith< WithDebug >,
+  T : ToStringWith< Fallback >,
 {
   /// Converts the type to a string using the specified formatting.
   fn to_string_with_fallback( self : Self ) -> String
@@ -49,13 +50,14 @@ where
   // where
   //   T : ToStringWith< Fallback >,
   {
-    < T as ToStringWith< WithDebug > >::to_string_with( self.0 )
+    < T as ToStringWith< Fallback > >::to_string_with( self.0 )
   }
 }
 
-impl< T > ToStringWithFallback for &Ref< '_, T, ToStringWithFallbackMarker >
+impl< T, How, Fallback > ToStringWithFallback< How, Fallback >
+for &Ref< '_, T, ToStringWithFallbackParams< How, Fallback > >
 where
-  T : ToStringWith< WithDisplay >,
+  T : ToStringWith< How >,
 {
   /// Converts the type to a string using the fallback formatting.
   // fn to_string_with_fallback( self ) -> String
@@ -63,7 +65,7 @@ where
   // where
   //   T : ToStringWith< Fallback >,
   {
-    < T as ToStringWith< WithDisplay > >::to_string_with( self.0 )
+    < T as ToStringWith< How > >::to_string_with( self.0 )
   }
 }
 

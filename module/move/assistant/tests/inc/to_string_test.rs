@@ -8,6 +8,7 @@ use assistant::
   // MaybeAs,
   ToStringWith,
   ToStringWithFallback,
+  ToStringWithFallbackParams,
   WithDebug,
   WithDisplay,
   Ref,
@@ -120,7 +121,34 @@ fn to_string_with_fallback_test()
 //   let exp = "This is debug".to_string();
 //   a_id!( got, exp );
 
-  // -
+  // - only debug
 
+  #[ derive( Clone, Copy ) ]
+  struct OnlyDebug;
+
+  impl fmt::Debug for OnlyDebug
+  {
+    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+    {
+      write!( f, "This is debug" )
+    }
+  }
+
+  impl fmt::Display for OnlyDebug
+  {
+    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+    {
+      write!( f, "This is display" )
+    }
+  }
+
+  let src = OnlyDebug;
+  // let got = ToStringWithFallback::to_string_with_fallback( &Ref::from( &src ) );
+  let ref1 = Ref::< '_, _, ToStringWithFallbackParams< WithDisplay, WithDebug > >::from( &src );
+  let got = ( &Ref::< '_, _, ToStringWithFallbackParams< WithDisplay, WithDebug > >::from( &src ) ).to_string_with_fallback();
+  let exp = "This is debug".to_string();
+  a_id!( got, exp );
+
+  // -
 
 }
