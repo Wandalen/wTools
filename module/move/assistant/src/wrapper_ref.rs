@@ -20,7 +20,7 @@ impl< 'a, T, Marker > IntoRef< 'a, T, Marker > for &'a T
 /// Transparent reference wrapper emphasizing a specific aspect of identity of its internal type.
 #[ repr( transparent ) ]
 #[ derive( Clone, Copy ) ]
-pub struct Ref< 'a, T, Marker >( &'a T, ::core::marker::PhantomData< fn() -> Marker > );
+pub struct Ref< 'a, T, Marker >( pub &'a T, ::core::marker::PhantomData< fn() -> Marker > );
 
 impl< 'a, T, Marker > Ref< 'a, T, Marker >
 {
@@ -84,14 +84,14 @@ impl< 'a, T, Marker > From< &'a T > for Ref< 'a, T, Marker >
 //   }
 // }
 
-impl< 'a, T, Marker > fmt::Debug for Ref< 'a, T, Marker >
-where
-  T : fmt::Debug,
-{
-  fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
-  {
-    f.debug_struct( "Ref" )
-    .field( "0", &self.0 )
-    .finish()
-  }
-}
+// impl< 'a, T, Marker > fmt::Debug for Ref< 'a, T, Marker >
+// where
+//   T : fmt::Debug,
+// {
+//   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+//   {
+//     f.debug_struct( "Ref" )
+//     .field( "0", &self.0 )
+//     .finish()
+//   }
+// }

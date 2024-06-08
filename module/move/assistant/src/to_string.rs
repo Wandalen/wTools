@@ -24,6 +24,10 @@ pub struct WithWell;
 
 // ==
 
+/// Marker type for ToStringWithFallback.
+#[ derive( Debug, Default, Clone, Copy ) ]
+pub struct ToStringWithFallbackMarker;
+
 /// Trait to convert a type to a string with a fallback formatting.
 pub trait ToStringWithFallback< How, Fallback >
 {
@@ -31,7 +35,7 @@ pub trait ToStringWithFallback< How, Fallback >
   fn to_string_with_fallback( &self ) -> String;
 }
 
-impl< T, How, Fallback > ToStringWithFallback< How, Fallback > for ( &T, )
+impl< T, How, Fallback > ToStringWithFallback< How, Fallback > for Ref< '_, T, ToStringWithFallbackMarker >
 where
   T : ToStringWith< Fallback >,
 {
@@ -42,7 +46,7 @@ where
   }
 }
 
-impl< T, How, Fallback > ToStringWithFallback< How, Fallback > for &( &T, )
+impl< T, How, Fallback > ToStringWithFallback< How, Fallback > for &Ref< '_, T, ToStringWithFallbackMarker >
 where
   T : ToStringWith< How >,
 {
