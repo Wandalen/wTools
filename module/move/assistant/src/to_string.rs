@@ -8,6 +8,8 @@ use std::
   // borrow::Cow,
 };
 
+// ==
+
 /// Marker type for using Debug formatting.
 #[ derive( Debug, Default, Clone, Copy ) ]
 pub struct WithDebug;
@@ -19,6 +21,8 @@ pub struct WithDisplay;
 /// Marker type for usign Well formatting.
 #[ derive( Debug, Default, Clone, Copy ) ]
 pub struct WithWell;
+
+// ==
 
 /// Trait to convert a type to a string with a fallback formatting.
 pub trait ToStringWithFallback< How, Fallback >
@@ -34,7 +38,7 @@ where
   /// Converts the type to a string using the specified formatting.
   fn to_string_with_fallback( &self ) -> String
   {
-    <T as ToStringWith< How >>::to_string_with( self.0 )
+    < T as ToStringWith< How > >::to_string_with( self.0 )
   }
 }
 
@@ -45,9 +49,15 @@ where
   /// Converts the type to a string using the fallback formatting.
   fn to_string_with_fallback( &self ) -> String
   {
-    <T as ToStringWith< Fallback >>::to_string_with( self.0 )
+    < T as ToStringWith< Fallback > >::to_string_with( self.0 )
   }
 }
+
+// pub fn to_string_with_fallback( src : &T )
+// {
+// }
+
+// ==
 
 /// Trait to convert a type to a string using a specified formatting method.
 pub trait ToStringWith< How >
