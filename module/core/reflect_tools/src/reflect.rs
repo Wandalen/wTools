@@ -67,6 +67,7 @@ pub mod primitive;
 
 pub mod fields;
 pub mod to_string;
+pub mod to_string_with_fallback;
 pub mod wrapper;
 
 #[ doc( inline ) ]
@@ -108,6 +109,9 @@ pub mod protected
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::to_string::orphan::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::to_string_with_fallback::orphan::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::wrapper::orphan::*;
@@ -161,6 +165,9 @@ pub mod exposed
   pub use super::to_string::exposed::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
+  pub use super::to_string_with_fallback::exposed::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
   pub use super::wrapper::exposed::*;
 
 }
@@ -197,6 +204,9 @@ pub mod prelude
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::to_string::prelude::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::to_string_with_fallback::prelude::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::wrapper::prelude::*;

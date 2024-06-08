@@ -11,6 +11,7 @@ mod fundamental
   mod fields_test;
   mod to_string_test;
   mod to_string_example;
+  mod to_string_with_fallback_test;
 
 }
 

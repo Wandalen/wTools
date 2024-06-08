@@ -7,8 +7,8 @@ pub( crate ) mod private
 {
 }
 
-pub mod aref;
-pub mod maybe_as;
+mod aref;
+mod maybe_as;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
@@ -19,16 +19,7 @@ pub mod protected
 {
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::
-  {
-    aref::orphan::*,
-    maybe_as::orphan::*,
-  };
-
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
-
 }
 
 /// Orphan namespace of the module.
@@ -46,19 +37,14 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::
   {
-    aref::exposed::*,
-    maybe_as::exposed::*,
+    aref::IntoRef,
+    aref::Ref,
+    maybe_as::IntoMaybeAs,
+    maybe_as::MaybeAs,
   };
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::
-  {
-    aref::prelude::*,
-    maybe_as::prelude::*,
-  };
 }
