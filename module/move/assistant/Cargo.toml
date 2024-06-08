@@ -31,6 +31,7 @@ enabled = [ "former/enabled" ]
 [dependencies]
 # xxx : qqq : optimze features
 former = { workspace = true, features = [ "full" ] }
+format_tools = { workspace = true, features = [ "full" ] }
 reflect_tools = { workspace = true, features = [ "full" ] }
 openai-api-rs = { version = "4.0.9" }
 tokio = { version = "1", features = ["full"] }

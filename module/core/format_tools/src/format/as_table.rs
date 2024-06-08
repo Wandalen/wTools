@@ -1,3 +1,6 @@
+//!
+//! Nice print's wrapper.
+//!
 
 /// Internal namespace.
 pub( crate ) mod private

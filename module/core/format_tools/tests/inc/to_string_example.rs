@@ -8,7 +8,7 @@ fn exmaple()
 {
 
   use core::fmt;
-  use reflect_tools::
+  use format_tools::
   {
     WithDebug,
     WithDisplay,

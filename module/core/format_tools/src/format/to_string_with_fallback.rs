@@ -60,7 +60,7 @@ pub( crate ) mod private
   /// # Example
   /// ```rust
   /// use core::fmt;
-  /// use reflect_tools::
+  /// use format_tools::
   /// {
   ///   WithDebug,
   ///   WithDisplay,
@@ -118,9 +118,9 @@ pub( crate ) mod private
     ( $how : ty, $fallback : ty, $src : expr )
     =>
     {{
-      use reflect_tools::_ToStringWithFallback;
+      use format_tools::_ToStringWithFallback;
       (
-        &reflect_tools::ToStringWithFallbackRef::< '_, _, reflect_tools::ToStringWithFallbackParams< $how, $fallback > >::from( &$src )
+        &format_tools::ToStringWithFallbackRef::< '_, _, format_tools::ToStringWithFallbackParams< $how, $fallback > >::from( &$src )
       )
       .to_string_with_fallback()
     }};
