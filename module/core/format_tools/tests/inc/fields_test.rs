@@ -40,16 +40,16 @@ where
   {
     let mut dst : Vec< ( &'static str, MaybeAs< 'a, String, How > ) > = Vec::new();
 
-    // fn into< 'a, V, How >( src : &'a V ) -> MaybeAs< 'a, String, How >
-    // where
-    //   How : Clone + Copy + 'static,
-    //   V : ToStringWith< How > + 'a,
-    // {
-    //   MaybeAs::< 'a, String, How >::from
-    //   (
-    //     < V as ToStringWith< How > >::to_string_with( src )
-    //   )
-    // }
+    fn from< 'a, V, How >( src : &'a V ) -> MaybeAs< 'a, String, How >
+    where
+      How : Clone + Copy + 'static,
+      V : ToStringWith< How > + 'a,
+    {
+      MaybeAs::< 'a, String, How >::from
+      (
+        < V as ToStringWith< How > >::to_string_with( src )
+      )
+    }
 
     fn add< 'a, V, How >
     (
@@ -61,15 +61,12 @@ where
       How : Clone + Copy + 'static,
       V : ToStringWith< How > + 'a,
     {
-      let val = MaybeAs::< 'a, String, How >::from
-      (
-        < V as ToStringWith< How > >::to_string_with( src )
-      );
+      let val = from( src );
       dst.push( ( key, val ) );
     }
 
-    // dst.push( ( "id", MaybeAs::< 'a, String, How >::from( &self.id ) ) );
-    add( &mut dst, "id", &self.id );
+    dst.push( ( "id", from( &self.id ) ) );
+    // add( &mut dst, "id", &self.id );
     add( &mut dst, "created_at", &self.created_at );
     add( &mut dst, "file_ids", &self.file_ids );
 
