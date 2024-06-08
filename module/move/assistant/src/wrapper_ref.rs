@@ -19,8 +19,22 @@ impl< 'a, T, Marker > IntoRef< 'a, T, Marker > for &'a T
 
 /// Transparent reference wrapper emphasizing a specific aspect of identity of its internal type.
 #[ repr( transparent ) ]
-#[ derive( Clone, Copy ) ]
-pub struct Ref< 'a, T, Marker >( pub &'a T, ::core::marker::PhantomData< fn() -> Marker > );
+pub struct Ref< 'a, T, Marker >( pub &'a T, ::core::marker::PhantomData< fn() -> Marker > )
+where
+  ::core::marker::PhantomData< fn( Marker ) > : Copy,
+  &'a T : Copy,
+;
+
+impl< 'a, T, Marker > Clone for Ref< 'a, T, Marker >
+{
+  #[ inline( always ) ]
+  fn clone( &self ) -> Self
+  {
+    Self::new( self.0 )
+  }
+}
+
+impl< 'a, T, Marker > Copy for Ref< 'a, T, Marker > {}
 
 impl< 'a, T, Marker > Ref< 'a, T, Marker >
 {

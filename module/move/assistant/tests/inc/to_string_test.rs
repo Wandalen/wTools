@@ -55,16 +55,23 @@ fn to_string_with_test()
 
 }
 
-//
-
-macro_rules! to_string_with_fallback
-{
-  () => { < < Self as GraphNodesNominalInterface >::NodeHandle as HasId >::Id };
-}
-
 #[ test ]
 fn to_string_with_fallback_test()
 {
+
+  // - Ref should implement copy
+
+  fn f1( src : Ref::< '_, Struct1, ToStringWithFallbackParams< WithDisplay, WithDebug > > )
+  where
+    for< 'a > Ref::< 'a, Struct1, ToStringWithFallbackParams< WithDisplay, WithDebug > > : Copy + Clone,
+  {}
+
+  struct Struct1;
+  let src = Struct1;
+  let ref1 = Ref::< '_, _, ToStringWithFallbackParams< WithDisplay, WithDebug > >::from( &src );
+  let ref2 = ref1;
+  f1( ref1 );
+  f1( ref2 );
 
   // -
 
@@ -86,44 +93,19 @@ fn to_string_with_fallback_test()
 //   {
 //     fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
 //     {
-//       write!( f, "This is OnlyDisplay" )
+//       write!( f, "This is display" )
 //     }
 //   }
 //
 //   let src = OnlyDisplay;
-//   let got = ToStringWithFallback::< WithDisplay, WithDebug >::to_string_with_fallback( &( &src, ) );
-//   let exp = "This is OnlyDisplay".to_string();
+//   // let got = ToStringWithFallback::< WithDisplay, WithDebug >::to_string_with_fallback( &( &src, ) );
+//   let got = ( &Ref::< '_, _, ToStringWithFallbackParams< WithDisplay, WithDebug > >::from( &src ) ).to_string_with_fallback();
+//   let exp = "This is display".to_string();
 //   a_id!( got, exp );
 
   // - only debug
 
-//   #[ derive( Clone, Copy ) ]
-//   struct OnlyDebug;
-//
-//   impl fmt::Debug for OnlyDebug
-//   {
-//     fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
-//     {
-//       write!( f, "This is debug" )
-//     }
-//   }
-//
-//   // impl fmt::Display for OnlyDebug
-//   // {
-//   //   fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
-//   //   {
-//   //     write!( f, "This is display" )
-//   //   }
-//   // }
-//
-//   let src = OnlyDebug;
-//   let got = ToStringWithFallback::< WithDisplay, WithDebug >::to_string_with_fallback( &Ref::from( &src ) );
-//   let exp = "This is debug".to_string();
-//   a_id!( got, exp );
-
-  // - only debug
-
-  #[ derive( Clone, Copy ) ]
+  // #[ derive( Clone, Copy ) ]
   struct OnlyDebug;
 
   impl fmt::Debug for OnlyDebug
@@ -143,12 +125,19 @@ fn to_string_with_fallback_test()
   }
 
   let src = OnlyDebug;
-  // let got = ToStringWithFallback::to_string_with_fallback( &Ref::from( &src ) );
-  let ref1 = Ref::< '_, _, ToStringWithFallbackParams< WithDisplay, WithDebug > >::from( &src );
+  let _ref1 = Ref::< '_, _, ToStringWithFallbackParams< WithDisplay, WithDebug > >::from( &src );
   let got = ( &Ref::< '_, _, ToStringWithFallbackParams< WithDisplay, WithDebug > >::from( &src ) ).to_string_with_fallback();
   let exp = "This is debug".to_string();
   a_id!( got, exp );
 
   // -
 
+}
+
+
+//
+
+macro_rules! to_string_with_fallback
+{
+  () => { < < Self as GraphNodesNominalInterface >::NodeHandle as HasId >::Id };
 }

@@ -32,10 +32,7 @@ pub struct ToStringWithFallbackParams< How, Fallback >( ::core::marker::PhantomD
 pub trait ToStringWithFallback< How, Fallback >
 {
   /// Converts the type to a string using the specified formatting or a fallback.
-  // fn to_string_with_fallback( self ) -> String;
-  fn to_string_with_fallback( self : Self ) -> String
-  // where
-  //   T : ToStringWith< Fallback >,
+  fn to_string_with_fallback( self ) -> String
   ;
 }
 
@@ -45,10 +42,7 @@ where
   T : ToStringWith< Fallback >,
 {
   /// Converts the type to a string using the specified formatting.
-  fn to_string_with_fallback( self : Self ) -> String
-  // fn to_string_with_fallback< How, Fallback >( self ) -> String
-  // where
-  //   T : ToStringWith< Fallback >,
+  fn to_string_with_fallback( self ) -> String
   {
     < T as ToStringWith< Fallback > >::to_string_with( self.0 )
   }
@@ -60,21 +54,11 @@ where
   T : ToStringWith< How >,
 {
   /// Converts the type to a string using the fallback formatting.
-  // fn to_string_with_fallback( self ) -> String
-  fn to_string_with_fallback( self : Self ) -> String
-  // where
-  //   T : ToStringWith< Fallback >,
+  fn to_string_with_fallback( self ) -> String
   {
     < T as ToStringWith< How > >::to_string_with( self.0 )
   }
 }
-
-// pub fn to_string_with_fallback< T, How, Fallback >( src : &T ) -> String
-// where
-//   T : ToStringWithFallback< How, Fallback >,
-// {
-//   ToStringWithFallback::< How, Fallback >::to_string_with_fallback( &( src, ) )
-// }
 
 // ==
 
