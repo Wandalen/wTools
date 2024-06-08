@@ -89,32 +89,32 @@ where
 }
 
 // impl< 'a > Fields< 'a, &'static str, MaybeAs< 'a, String, StringFromDebug > >
-impl< 'a, V, How > Fields< 'a, &'static str, MaybeAs< 'a, V, How > >
+impl< 'a, How > Fields< 'a, &'static str, MaybeAs< 'a, String, How > >
 for TestObject
 where
-  V : ToStringWith< 'a, How > + Clone + 'a,
+  // V : ToStringWith< 'a, How > + Clone + 'a,
   // MaybeAs< 'a, V, WithDebug > : From< String >,
   // String : Into< MaybeAs< 'a, V, How > >,
-  MaybeAs< 'a, V, How > : From< String >,
+  MaybeAs< 'a, String, How > : From< String >,
   How : Clone + Copy + 'static,
   String : ToStringWith< 'a, How >,
 {
   // fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, String, StringFromDebug > ) >
-  fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, V, How > ) >
+  fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, String, How > ) >
   {
     // let mut vec : Vec< ( &'static str, MaybeAs< 'a, String, StringFromDebug > ) > = Vec::new();
-    let mut vec : Vec< ( &'static str, MaybeAs< 'a, V, How > ) > = Vec::new();
+    let mut vec : Vec< ( &'static str, MaybeAs< 'a, String, How > ) > = Vec::new();
 
-    // fn into< 'a, V, How >( src : &'a V ) -> MaybeAs< 'a, V, How >
+    // fn into< 'a, String, How >( src : &'a String ) -> MaybeAs< 'a, String, How >
     // where
-    //   V : ToStringWith< 'a, How > + Clone + 'a,
+    //   String : ToStringWith< 'a, How > + Clone + 'a,
     //   How : Clone + Copy + 'static,
-    //   String : Into< MaybeAs< 'a, V, How > >,
+    //   String : Into< MaybeAs< 'a, String, How > >,
     // {
     //   ToStringWith::< '_, How >::to_string_with( src ).into()
     // }
 
-    vec.push( ( "id", MaybeAs::< 'a, V, How >::from( < String as ToStringWith< '_, How > >::to_string_with( &self.id ) ) ) );
+    vec.push( ( "id", MaybeAs::< 'a, String, How >::from( < String as ToStringWith< '_, How > >::to_string_with( &self.id ) ) ) );
 //     vec.push( ( "id", into( &self.id ) ) );
 //     vec.push( ( "created_at", self.created_at.to_string_with().into() ) );
 //     vec.push( ( "file_ids", self.file_ids.to_string_with().into() ) );
