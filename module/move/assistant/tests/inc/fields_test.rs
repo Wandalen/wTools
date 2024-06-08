@@ -95,7 +95,7 @@ where
   // V : ToStringWith< 'a, How > + Clone + 'a,
   // MaybeAs< 'a, V, WithDebug > : From< String >,
   // String : Into< MaybeAs< 'a, V, How > >,
-  MaybeAs< 'a, String, How > : From< String >,
+  // MaybeAs< 'a, String, How > : From< String >,
   How : Clone + Copy + 'static,
   String : ToStringWith< 'a, How >,
 {
@@ -105,17 +105,28 @@ where
     // let mut vec : Vec< ( &'static str, MaybeAs< 'a, String, StringFromDebug > ) > = Vec::new();
     let mut vec : Vec< ( &'static str, MaybeAs< 'a, String, How > ) > = Vec::new();
 
-    // fn into< 'a, String, How >( src : &'a String ) -> MaybeAs< 'a, String, How >
-    // where
-    //   String : ToStringWith< 'a, How > + Clone + 'a,
-    //   How : Clone + Copy + 'static,
-    //   String : Into< MaybeAs< 'a, String, How > >,
-    // {
-    //   ToStringWith::< '_, How >::to_string_with( src ).into()
-    // }
+    fn into< 'a, V, How >( src : &'a V ) -> MaybeAs< 'a, String, How >
+    where
 
-    vec.push( ( "id", MaybeAs::< 'a, String, How >::from( < String as ToStringWith< '_, How > >::to_string_with( &self.id ) ) ) );
-//     vec.push( ( "id", into( &self.id ) ) );
+      V : ToStringWith< 'a, How > + 'a,
+      // How : Clone + Copy + 'static,
+      // // String : Into< MaybeAs< 'a, V, How > >,
+      // String : ToStringWith< 'a, How >,
+
+      // MaybeAs< 'a, String, How > : From< String >,
+      How : Clone + Copy + 'static,
+      V : ToStringWith< 'a, How >,
+
+    {
+      MaybeAs::< 'a, String, How >::from
+      (
+        < V as ToStringWith< '_, How > >::to_string_with( src )
+      )
+      // ToStringWith::< '_, How >::to_string_with( src ).into()
+    }
+
+    // vec.push( ( "id", MaybeAs::< 'a, String, How >::from( < String as ToStringWith< '_, How > >::to_string_with( &self.id ) ) ) );
+    vec.push( ( "id", into( &self.id ) ) );
 //     vec.push( ( "created_at", self.created_at.to_string_with().into() ) );
 //     vec.push( ( "file_ids", self.file_ids.to_string_with().into() ) );
 //
