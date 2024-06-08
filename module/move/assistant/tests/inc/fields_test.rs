@@ -49,22 +49,24 @@ for TestObject
   }
 }
 
+pub struct StringFromDebug;
+
 pub trait DebugToString< 'a >
 {
-  fn debug_to_string( &'a self ) -> Cow< 'a, String >;
+  fn debug_to_string( &'a self ) -> MaybeAs< 'a, String, StringFromDebug >;
 }
 
 impl< 'a, T > DebugToString< 'a > for T
 where
   T : fmt::Debug,
 {
-  fn debug_to_string( &'a self ) -> Cow< 'a, String >
+  fn debug_to_string( &'a self ) -> MaybeAs< 'a, String, StringFromDebug >
   {
-    Cow::Owned( format!( "{:?}", self ) )
+    MaybeAs::from( format!( "{:?}", self ) )
   }
 }
 
-// impl< 'a, V > Fields< 'a, &'static str, V >
+// impl< 'a, V > Fields< 'a, &'static str, Option< Cow< 'a, V > > >
 // for TestObject
 // where
 //   V : DebugToString< 'a > + Clone + 'a,
