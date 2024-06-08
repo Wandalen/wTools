@@ -24,6 +24,11 @@ pub mod protected
     aref::orphan::*,
     maybe_as::orphan::*,
   };
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::orphan::*;
+
 }
 
 /// Orphan namespace of the module.

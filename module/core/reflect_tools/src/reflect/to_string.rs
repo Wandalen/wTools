@@ -189,6 +189,9 @@ pub use protected::*;
 /// Protected namespace of the module.
 pub mod protected
 {
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::orphan::*;
 }
 
 /// Orphan namespace of the module.

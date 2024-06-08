@@ -4,54 +4,140 @@
 #![ doc( html_root_url = "https://docs.rs/assistant/latest/assistant/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-pub use openai_api_rs::v1::
+
+/// Internal namespace.
+pub( crate ) mod private
 {
-  api::Client,
-  assistant::AssistantObject,
-};
 
-use std::
-{
-  env,
-  error::Error,
-};
+  pub use openai_api_rs::v1::
+  {
+    api::Client,
+    assistant::AssistantObject,
+  };
 
-use former::Former;
+  use std::
+  {
+    env,
+    error::Error,
+  };
 
-/// Reflections.
-pub mod reflect;
-pub use reflect::*;
-/// Universal wrapper.
-pub mod wrapper_ref;
-pub use wrapper_ref::*;
-/// Universal wrapper.
-pub mod wrapper_option_cow_ref;
-pub use wrapper_option_cow_ref::*;
-/// Conversion to string.
-pub mod to_string;
-pub use to_string::*;
+  use former::Former;
+
+  /// Options for configuring the OpenAI API client.
+  #[ derive( Former, Debug ) ]
+  pub struct ClientOptions
+  {
+    /// The API key for authenticating with the OpenAI API.
+    pub api_key : Option< String >,
+  }
+
+  /// Creates a new OpenAI API client using the API key from the environment variable `OPENAI_API_KEY`.
+  pub fn client() -> Result< Client, Box< dyn Error > >
+  {
+    let api_key = env::var( "OPENAI_API_KEY" )?;
+    Ok( Client::new( api_key ) )
+  }
+
+
+}
+
+// /// Reflections.
+// pub mod reflect;
+// pub use reflect::*;
+// /// Universal wrapper.
+// pub mod wrapper_ref;
+// pub use wrapper_ref::*;
+// /// Universal wrapper.
+// pub mod wrapper_option_cow_ref;
+// pub use wrapper_option_cow_ref::*;
+// /// Conversion to string.
+// pub mod to_string;
+// pub use to_string::*;
 
 /// Nice print.
 pub mod print;
-pub use print::*;
+// pub use print::*;
 /// Nice print's wrapper.
 pub mod as_table;
-pub use as_table::*;
+// pub use as_table::*;
 /// Table interface.
 pub mod table;
-pub use table::*;
+// pub use table::*;
 
-/// Options for configuring the OpenAI API client.
-#[ derive( Former, Debug ) ]
-pub struct ClientOptions
+#[ allow( unused_imports ) ]
+pub use protected::*;
+
+/// Protected namespace of the module.
+pub mod protected
 {
-  /// The API key for authenticating with the OpenAI API.
-  pub api_key : Option< String >,
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::
+  {
+    print::orphan::*,
+    as_table::orphan::*,
+    table::orphan::*,
+  };
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::orphan::*;
+
 }
 
-/// Creates a new OpenAI API client using the API key from the environment variable `OPENAI_API_KEY`.
-pub fn client() -> Result< Client, Box< dyn Error > >
+/// Orphan namespace of the module.
+pub mod orphan
 {
-  let api_key = env::var( "OPENAI_API_KEY" )?;
-  Ok( Client::new( api_key ) )
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::exposed::*;
+}
+
+/// Exposed namespace of the module.
+pub mod exposed
+{
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::
+  {
+    print::exposed::*,
+    as_table::exposed::*,
+    table::exposed::*,
+  };
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::private::
+  {
+    ClientOptions,
+    client,
+    AssistantObject,
+  };
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use reflect_tools::
+  {
+    Fields,
+    _IteratorTrait,
+    IteratorTrait,
+  };
+
+}
+
+/// Prelude to use essentials: `use my_module::prelude::*`.
+pub mod prelude
+{
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::
+  {
+    print::prelude::*,
+    as_table::prelude::*,
+    table::prelude::*,
+  };
+
 }
