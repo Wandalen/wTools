@@ -10,7 +10,7 @@ use assistant::
   TableSize,
   TableRows,
   TableHeader,
-  TableFormatter,
+  // TableFormatter,
   Context,
 };
 

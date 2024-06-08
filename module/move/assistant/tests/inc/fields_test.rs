@@ -12,7 +12,7 @@ use assistant::
 
 use std::
 {
-  fmt,
+  // fmt,
   collections::HashMap,
   borrow::Cow,
 };
@@ -58,22 +58,22 @@ where
   String : ToStringWith< How >,
   i64 : ToStringWith< How >,
   Vec< String > : ToStringWith< How >,
-  Option< Vec< HashMap< String, String > > > : ToStringWith< How >,
+  Vec< HashMap< String, String > > : ToStringWith< How >,
 {
   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, String, How > ) >
   {
     let mut dst : Vec< ( &'static str, MaybeAs< 'a, String, How > ) > = Vec::new();
 
-    fn into< 'a, V, How >( src : &'a V ) -> MaybeAs< 'a, String, How >
-    where
-      How : Clone + Copy + 'static,
-      V : ToStringWith< How > + 'a,
-    {
-      MaybeAs::< 'a, String, How >::from
-      (
-        < V as ToStringWith< How > >::to_string_with( src )
-      )
-    }
+    // fn into< 'a, V, How >( src : &'a V ) -> MaybeAs< 'a, String, How >
+    // where
+    //   How : Clone + Copy + 'static,
+    //   V : ToStringWith< How > + 'a,
+    // {
+    //   MaybeAs::< 'a, String, How >::from
+    //   (
+    //     < V as ToStringWith< How > >::to_string_with( src )
+    //   )
+    // }
 
     fn add< 'a, V, How >
     (
@@ -99,7 +99,7 @@ where
 
     if let Some( tools ) = &self.tools
     {
-      add( &mut dst, "tools", &self.tools );
+      add( &mut dst, "tools", tools );
     }
     else
     {
@@ -138,6 +138,7 @@ where
 
 //
 
+#[ allow( dead_code ) ]
 fn is_borrowed< 'a, T : Clone >( src : &Option< Cow< 'a, T > > ) -> bool
 {
   if src.is_none()
