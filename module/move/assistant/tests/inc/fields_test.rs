@@ -30,22 +30,22 @@ pub struct TestObject
 // {
 //   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, Option< Cow< 'a, String > > ) >
 //   {
-//     let mut vec : Vec< ( &'static str, Option< Cow< 'a, String > > ) > = Vec::new();
+//     let mut dst : Vec< ( &'static str, Option< Cow< 'a, String > > ) > = Vec::new();
 //
-//     vec.push( ( "id", Some( Cow::Borrowed( &self.id ) ) ) );
-//     vec.push( ( "created_at", Some( Cow::Owned( self.created_at.to_string() ) ) ) );
-//     vec.push( ( "file_ids", Some( Cow::Owned( format!( "{:?}", self.file_ids ) ) ) ) );
+//     dst.push( ( "id", Some( Cow::Borrowed( &self.id ) ) ) );
+//     dst.push( ( "created_at", Some( Cow::Owned( self.created_at.to_string() ) ) ) );
+//     dst.push( ( "file_ids", Some( Cow::Owned( format!( "{:?}", self.file_ids ) ) ) ) );
 //
 //     if let Some( tools ) = &self.tools
 //     {
-//       vec.push( ( "tools", Some( Cow::Owned( format!( "{:?}", tools ) ) ) ) );
+//       dst.push( ( "tools", Some( Cow::Owned( format!( "{:?}", tools ) ) ) ) );
 //     }
 //     else
 //     {
-//       vec.push( ( "tools", None ) );
+//       dst.push( ( "tools", None ) );
 //     }
 //
-//     vec.into_iter()
+//     dst.into_iter()
 //   }
 // }
 
@@ -99,7 +99,7 @@ where
 {
   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, String, How > ) >
   {
-    let mut vec : Vec< ( &'static str, MaybeAs< 'a, String, How > ) > = Vec::new();
+    let mut dst : Vec< ( &'static str, MaybeAs< 'a, String, How > ) > = Vec::new();
 
     fn into< 'a, V, How >( src : &'a V ) -> MaybeAs< 'a, String, How >
     where
@@ -129,46 +129,47 @@ where
       dst.push( ( key, val ) );
     }
 
-    add( &mut vec, "id", &self.id );
-    add( &mut vec, "created_at", &self.created_at );
-    add( &mut vec, "file_ids", &self.file_ids );
+    // dst.push( ( "id", MaybeAs::< 'a, String, How >::from( &self.id ) ) );
+    add( &mut dst, "id", &self.id );
+    add( &mut dst, "created_at", &self.created_at );
+    add( &mut dst, "file_ids", &self.file_ids );
 
     if let Some( tools ) = &self.tools
     {
-      add( &mut vec, "tools", &self.tools );
+      add( &mut dst, "tools", &self.tools );
     }
     else
     {
-      vec.push( ( "tools", MaybeAs::none() ) );
+      dst.push( ( "tools", MaybeAs::none() ) );
     }
 
-//     vec.push( ( "id", into( &self.id ) ) );
-//     vec.push( ( "created_at", into( &self.created_at ) ) );
-//     vec.push( ( "file_ids", into( &self.file_ids ) ) );
+//     dst.push( ( "id", into( &self.id ) ) );
+//     dst.push( ( "created_at", into( &self.created_at ) ) );
+//     dst.push( ( "file_ids", into( &self.file_ids ) ) );
 //
 //     if let Some( tools ) = &self.tools
 //     {
-//       vec.push( ( "tools", into( &self.tools ) ) );
+//       dst.push( ( "tools", into( &self.tools ) ) );
 //     }
 //     else
 //     {
-//       vec.push( ( "tools", MaybeAs::none() ) );
+//       dst.push( ( "tools", MaybeAs::none() ) );
 //     }
 
-    // vec.push( ( "id", MaybeAs::< 'a, String, How >::from( < String as ToStringWith< '_, How > >::to_string_with( &self.id ) ) ) );
-//     vec.push( ( "created_at", self.created_at.to_string_with().into() ) );
-//     vec.push( ( "file_ids", self.file_ids.to_string_with().into() ) );
+    // dst.push( ( "id", MaybeAs::< 'a, String, How >::from( < String as ToStringWith< '_, How > >::to_string_with( &self.id ) ) ) );
+//     dst.push( ( "created_at", self.created_at.to_string_with().into() ) );
+//     dst.push( ( "file_ids", self.file_ids.to_string_with().into() ) );
 //
 //     if let Some( tools ) = &self.tools
 //     {
-//       vec.push( ( "tools", self.tools.to_string_with().into() ) );
+//       dst.push( ( "tools", self.tools.to_string_with().into() ) );
 //     }
 //     else
 //     {
-//       vec.push( ( "tools", MaybeAs::none() ) );
+//       dst.push( ( "tools", MaybeAs::none() ) );
 //     }
 
-    vec.into_iter()
+    dst.into_iter()
   }
 }
 
