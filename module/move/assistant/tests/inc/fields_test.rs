@@ -78,33 +78,55 @@ where
   }
 }
 
+impl< 'a, T > ToStringWith< 'a, WithDisplay > for T
+where
+  T : fmt::Display,
+{
+  fn to_string_with( &'a self ) -> String
+  {
+    format!( "{}", self )
+  }
+}
+
 // impl< 'a > Fields< 'a, &'static str, MaybeAs< 'a, String, StringFromDebug > >
-impl< 'a, V > Fields< 'a, &'static str, MaybeAs< 'a, V, WithDebug > >
+impl< 'a, V, How > Fields< 'a, &'static str, MaybeAs< 'a, V, How > >
 for TestObject
 where
-  V : ToStringWith< 'a, WithDebug > + Clone + 'a,
+  V : ToStringWith< 'a, How > + Clone + 'a,
   // MaybeAs< 'a, V, WithDebug > : From< String >,
-  String : Into< MaybeAs< 'a, V, WithDebug > >,
+  // String : Into< MaybeAs< 'a, V, How > >,
+  MaybeAs< 'a, V, How > : From< String >,
+  How : Clone + Copy + 'static,
+  String : ToStringWith< 'a, How >,
 {
   // fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, String, StringFromDebug > ) >
-  fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, V, WithDebug > ) >
+  fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, V, How > ) >
   {
     // let mut vec : Vec< ( &'static str, MaybeAs< 'a, String, StringFromDebug > ) > = Vec::new();
-    let mut vec : Vec< ( &'static str, MaybeAs< 'a, V, WithDebug > ) > = Vec::new();
+    let mut vec : Vec< ( &'static str, MaybeAs< 'a, V, How > ) > = Vec::new();
 
-    // vec.push( ( "id", MaybeAs::< 'a, V, WithDebug >::from( self.id.to_string_with() ) ) );
-    vec.push( ( "id", self.id.to_string_with().into() ) );
-    vec.push( ( "created_at", self.created_at.to_string_with().into() ) );
-    vec.push( ( "file_ids", self.file_ids.to_string_with().into() ) );
+    // fn into< 'a, V, How >( src : &'a V ) -> MaybeAs< 'a, V, How >
+    // where
+    //   V : ToStringWith< 'a, How > + Clone + 'a,
+    //   How : Clone + Copy + 'static,
+    //   String : Into< MaybeAs< 'a, V, How > >,
+    // {
+    //   ToStringWith::< '_, How >::to_string_with( src ).into()
+    // }
 
-    if let Some( tools ) = &self.tools
-    {
-      vec.push( ( "tools", self.tools.to_string_with().into() ) );
-    }
-    else
-    {
-      vec.push( ( "tools", MaybeAs::none() ) );
-    }
+    vec.push( ( "id", MaybeAs::< 'a, V, How >::from( < String as ToStringWith< '_, How > >::to_string_with( &self.id ) ) ) );
+//     vec.push( ( "id", into( &self.id ) ) );
+//     vec.push( ( "created_at", self.created_at.to_string_with().into() ) );
+//     vec.push( ( "file_ids", self.file_ids.to_string_with().into() ) );
+//
+//     if let Some( tools ) = &self.tools
+//     {
+//       vec.push( ( "tools", self.tools.to_string_with().into() ) );
+//     }
+//     else
+//     {
+//       vec.push( ( "tools", MaybeAs::none() ) );
+//     }
 
     vec.into_iter()
   }
@@ -147,7 +169,7 @@ fn basic()
     ),
   };
 
-  let fields: Vec< _ > = test_object.fields().collect();
+  let fields : Vec< ( &str, MaybeAs< '_, String, WithDebug > ) > = test_object.fields().collect();
 
   assert_eq!( fields.len(), 4 );
   // assert!( is_borrowed( &fields[ 0 ].1 ) );
