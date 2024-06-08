@@ -3,57 +3,57 @@ use std::borrow::Cow;
 use core::ops::{ Deref };
 
 /// Converter into universal wrapper with transparent option of copy on write reference emphasizing a specific aspect of identity of its internal type.
-pub trait IntoOptionCow< 'a, T >
+pub trait IntoOptionCow< 'a, T, Marker >
 where
   T : Clone,
 {
   /// Converter into universal wrapper with transparent option of copy on write reference emphasizing a specific aspect of identity of its internal type.
-  fn into_option_cow( self ) -> MaybeAs< 'a, T >;
+  fn into_option_cow( self ) -> MaybeAs< 'a, T, Marker >;
 }
 
-impl< 'a, T > IntoOptionCow< 'a, T > for T
+impl< 'a, T, Marker > IntoOptionCow< 'a, T, Marker > for T
 where
   T : Clone,
 {
   #[ inline( always ) ]
-  fn into_option_cow( self ) -> MaybeAs< 'a, T >
+  fn into_option_cow( self ) -> MaybeAs< 'a, T, Marker >
   {
-    MaybeAs::< 'a, T >( Some( Cow::Owned( self ) ) )
+    MaybeAs::< 'a, T, Marker >::new( self )
   }
 }
 
-impl< 'a, T > IntoOptionCow< 'a, T > for &'a T
+impl< 'a, T, Marker > IntoOptionCow< 'a, T, Marker > for &'a T
 where
   T : Clone,
 {
   #[ inline( always ) ]
-  fn into_option_cow( self ) -> MaybeAs< 'a, T >
+  fn into_option_cow( self ) -> MaybeAs< 'a, T, Marker >
   {
-    MaybeAs::< 'a, T >( Some( Cow::Borrowed( self ) ) )
+    MaybeAs::< 'a, T, Marker >::new_with_ref( self )
   }
 }
 
 // xxx
-// impl< 'a, T > IntoOptionCow< 'a, T > for ()
+// impl< 'a, T, Marker > IntoOptionCow< 'a, T, Marker > for ()
 // where
 //   T : Clone,
 // {
 //   #[ inline( always ) ]
-//   fn into_option_cow( self ) -> MaybeAs< 'a, T >
+//   fn into_option_cow( self ) -> MaybeAs< 'a, T, Marker >
 //   {
-//     MaybeAs::< 'a, T >( None )
+//     MaybeAs::< 'a, T, Marker >( None )
 //   }
 // }
 
 /// Universal wrapper with transparent option of copy on write reference emphasizing a specific aspect of identity of its internal type.
 #[ repr( transparent ) ]
 #[ derive( Clone ) ]
-pub struct MaybeAs< 'a, T >( pub Option< Cow< 'a, T > > )
+pub struct MaybeAs< 'a, T, Marker >( pub Option< Cow< 'a, T > >, ::core::marker::PhantomData< fn() -> Marker > )
 where
   T : Clone,
 ;
 
-impl< 'a, T > MaybeAs< 'a, T >
+impl< 'a, T, Marker > MaybeAs< 'a, T, Marker >
 where
   T : Clone,
 {
@@ -62,14 +62,14 @@ where
   #[ inline( always ) ]
   pub fn new( src : T ) -> Self
   {
-    Self( Some( Cow::Owned( src ) ) )
+    Self( Some( Cow::Owned( src ) ), ::core::marker::PhantomData )
   }
 
   /// Just a constructor.
   #[ inline( always ) ]
   pub fn new_with_ref( src : &'a T ) -> Self
   {
-    Self( Some( Cow::Borrowed( src ) ) )
+    Self( Some( Cow::Borrowed( src ) ), ::core::marker::PhantomData )
   }
 
   /// Just a constructor.
@@ -81,7 +81,7 @@ where
 
 }
 
-// impl< 'a, T > AsRef< T > for MaybeAs< 'a, T >
+// impl< 'a, T, Marker > AsRef< T > for MaybeAs< 'a, T, Marker >
 // where
 //   T : Clone,
 //   Self : 'a,
@@ -103,7 +103,7 @@ where
 //   }
 // }
 //
-// impl< 'a, T > Deref for MaybeAs< 'a, T >
+// impl< 'a, T, Marker > Deref for MaybeAs< 'a, T, Marker >
 // where
 //   T : Clone,
 // {
@@ -114,7 +114,7 @@ where
 //   }
 // }
 
-impl< 'a, T > From< T > for MaybeAs< 'a, T >
+impl< 'a, T, Marker > From< T > for MaybeAs< 'a, T, Marker >
 where
   T : Clone,
 {
@@ -124,7 +124,7 @@ where
   }
 }
 
-impl< 'a, T > From< &'a T > for MaybeAs< 'a, T >
+impl< 'a, T, Marker > From< &'a T > for MaybeAs< 'a, T, Marker >
 where
   T : Clone,
 {
@@ -134,7 +134,7 @@ where
   }
 }
 
-// impl< 'a, T > From< () > for MaybeAs< 'a, T >
+// impl< 'a, T, Marker > From< () > for MaybeAs< 'a, T, Marker >
 // where
 //   T : (),
 // {
@@ -146,17 +146,17 @@ where
 
 // xxx : more from
 
-// impl< 'a, T > From< MaybeAs< 'a, T > > for &'a T
+// impl< 'a, T, Marker > From< MaybeAs< 'a, T, Marker > > for &'a T
 // where
 //   T : Clone,
 // {
-//   fn from( wrapper : MaybeAs< 'a, T > ) -> &'a T
+//   fn from( wrapper : MaybeAs< 'a, T, Marker > ) -> &'a T
 //   {
 //     wrapper.0
 //   }
 // }
 
-impl< 'a, T > Default for MaybeAs< 'a, T >
+impl< 'a, T, Marker > Default for MaybeAs< 'a, T, Marker >
 where
   T : Clone,
   T : Default,
@@ -167,7 +167,7 @@ where
   }
 }
 
-impl< 'a, T > fmt::Debug for MaybeAs< 'a, T >
+impl< 'a, T, Marker > fmt::Debug for MaybeAs< 'a, T, Marker >
 where
   T : fmt::Debug,
   T : Clone,

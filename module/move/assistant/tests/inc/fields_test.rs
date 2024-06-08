@@ -25,7 +25,8 @@ pub struct TestObject
   pub tools : Option< Vec< HashMap< String, String > > >,
 }
 
-impl< 'a > Fields< 'a, &'static str, String > for TestObject
+impl< 'a > Fields< 'a, &'static str, String >
+for TestObject
 {
   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, Option< Cow< 'a, String > > ) >
   {
@@ -63,22 +64,22 @@ where
   }
 }
 
-// pub type Wrap< 'a, T : DebugToString< 'a > > = MaybeAs< 'a, T >;
-
 // impl< 'a, V > Fields< 'a, &'static str, V >
 // for TestObject
+// where
+//   V : DebugToString< 'a > + Clone + 'a,
 // {
 //   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, Option< Cow< 'a, V > > ) >
 //   {
 //     let mut vec : Vec< ( &'static str, Option< Cow< 'a, V > > ) > = Vec::new();
 //
-//     vec.push( ( "id", Some( Cow::Borrowed( &self.id ) ) ) );
-//     vec.push( ( "created_at", Some( Cow::Owned( self.created_at.to_string() ) ) ) );
-//     vec.push( ( "file_ids", Some( Cow::Owned( format!( "{:?}", self.file_ids ) ) ) ) );
+//     vec.push( ( "id", Some( self.id.debug_to_string() ) ) );
+//     vec.push( ( "created_at", Some( self.created_at.debug_to_string() ) ) );
+//     vec.push( ( "file_ids", Some( self.file_ids.debug_to_string() ) ) );
 //
 //     if let Some( tools ) = &self.tools
 //     {
-//       vec.push( ( "tools", Some( Cow::Owned( format!( "{:?}", tools ) ) ) ) );
+//       vec.push( ( "tools", Some( self.tools.debug_to_string() ) ) );
 //     }
 //     else
 //     {
