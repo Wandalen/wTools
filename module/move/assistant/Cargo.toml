@@ -26,7 +26,11 @@ all-features = false
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-enabled = [ "former/enabled" ]
+enabled = [
+  "former/enabled",
+  "format_tools/enabled",
+  "reflect_tools/enabled",
+]
 
 [dependencies]
 # xxx : qqq : optimze features
