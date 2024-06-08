@@ -88,6 +88,14 @@ where
   }
 }
 
+// impl< 'a > ToStringWith< 'a, WithDisplay > for String
+// {
+//   fn to_string_with( &'a self ) -> String
+//   {
+//     format!( "String : {}", self )
+//   }
+// }
+
 impl< 'a, How > Fields< 'a, &'static str, MaybeAs< 'a, String, How > >
 for TestObject
 where
