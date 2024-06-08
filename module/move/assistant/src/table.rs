@@ -1,6 +1,7 @@
 
 use super::*;
 use core::fmt;
+use std::borrow::Cow;
 
 // ==
 
@@ -71,7 +72,7 @@ where
 impl< 'a, T, RowKey, Row, CellKey, Cell, Title > TableRows< 'a, RowKey, Row, CellKey, Cell >
 for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
 where
-  T : Fields< 'a, RowKey, Row >,
+  T : Fields< 'a, RowKey, Option< Cow< 'a, Row > > >,
   Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
   Title : fmt::Debug,
   Cell : fmt::Debug + Clone + 'a,
@@ -128,7 +129,7 @@ where
 impl< 'a, Row, CellKey, Cell > Cells< 'a, CellKey, Cell >
 for Row
 where
-  Row : Fields< 'a, CellKey, Cell > + 'a,
+  Row : Fields< 'a, CellKey, Option< Cow< 'a, Cell > > > + 'a,
   Cell : fmt::Debug + Clone + 'a,
 {
 

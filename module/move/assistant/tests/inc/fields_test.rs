@@ -25,7 +25,7 @@ pub struct TestObject
   pub tools : Option< Vec< HashMap< String, String > > >,
 }
 
-impl< 'a > Fields< 'a, &'static str, String >
+impl< 'a > Fields< 'a, &'static str, Option< Cow< 'a, String > > >
 for TestObject
 {
   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, Option< Cow< 'a, String > > ) >
@@ -90,13 +90,13 @@ where
 //   }
 // }
 
-impl< 'a > Fields< 'a, usize, TestObject > for Vec< TestObject >
-{
-  fn fields( &'a self ) -> impl IteratorTrait< Item = ( usize, Option< Cow< 'a, TestObject > > ) >
-  {
-    self.iter().enumerate().map( | ( key, val ) | ( key, Some( Cow::Borrowed( val ) ) ) )
-  }
-}
+// impl< 'a > Fields< 'a, usize, Option< Cow< 'a, TestObject > > > for Vec< TestObject >
+// {
+//   fn fields( &'a self ) -> impl IteratorTrait< Item = ( usize, Option< Cow< 'a, TestObject > > ) >
+//   {
+//     self.iter().enumerate().map( | ( key, val ) | ( key, Some( Cow::Borrowed( val ) ) ) )
+//   }
+// }
 
 //
 

@@ -30,7 +30,8 @@ pub struct TestObject
   pub tools : Option< Vec< HashMap< String, String > > >,
 }
 
-impl< 'a > Fields< 'a, &'static str, String > for TestObject
+impl< 'a > Fields< 'a, &'static str, Option< Cow< 'a, String > > >
+for TestObject
 {
   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, Option< Cow< 'a, String > > ) >
   {
@@ -53,20 +54,20 @@ impl< 'a > Fields< 'a, &'static str, String > for TestObject
   }
 }
 
-impl< 'a > Fields< 'a, usize, TestObject > for Vec< TestObject >
-{
-  fn fields( &'a self ) -> impl IteratorTrait< Item = ( usize, Option< Cow< 'a, TestObject > > ) >
-  {
-    self.iter().enumerate().map( | ( key, val ) | ( key, Some( Cow::Borrowed( val ) ) ) )
-  }
-}
+// impl< 'a > Fields< 'a, usize, TestObject > for Vec< TestObject >
+// {
+//   fn fields( &'a self ) -> impl IteratorTrait< Item = ( usize, Option< Cow< 'a, TestObject > > ) >
+//   {
+//     self.iter().enumerate().map( | ( key, val ) | ( key, Some( Cow::Borrowed( val ) ) ) )
+//   }
+// }
 
 //
 
 #[ test ]
 fn test_table_to_string()
-where
-  for< 'a > AsTable< 'a, Vec< TestObject >, usize, TestObject, &'static str, String, &'static str > : TableFormatter< 'a >,
+// where
+  // for< 'a > AsTable< 'a, Vec< TestObject >, usize, TestObject, &'static str, String, &'static str > : TableFormatter< 'a >,
 {
   use the_module::TableToString;
 

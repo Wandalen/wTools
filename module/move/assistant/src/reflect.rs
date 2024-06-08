@@ -39,7 +39,8 @@ where
   E : Clone + 'a,
 {
   /// Returns an iterator over all fields of the specified type within the entity.
-  fn fields( &'a self ) -> impl IteratorTrait< Item = ( K, Option< Cow< 'a, E > > ) >;
+  fn fields( &'a self ) -> impl IteratorTrait< Item = ( K, E ) >;
+  // fn fields( &'a self ) -> impl IteratorTrait< Item = ( K, Option< Cow< 'a, E > > ) >;
 }
 
 // /// Return number of fields convertible into a specified type withing an entity.
@@ -71,3 +72,17 @@ where
     ::core::any::type_name_of_val( self )
   }
 }
+
+// == implementations for collections
+
+impl< 'a, T > Fields< 'a, usize, Option< Cow< 'a, T > > > for Vec< T >
+where
+  T : Clone
+{
+  fn fields( &'a self ) -> impl IteratorTrait< Item = ( usize, Option< Cow< 'a, T > > ) >
+  {
+    self.iter().enumerate().map( | ( key, val ) | ( key, Some( Cow::Borrowed( val ) ) ) )
+  }
+}
+
+// ==
