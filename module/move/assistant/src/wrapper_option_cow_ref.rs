@@ -114,23 +114,25 @@ where
 //   }
 // }
 
-impl< 'a, T, Marker > From< T > for MaybeAs< 'a, T, Marker >
+impl< 'a, T, Marker > From< T >
+for MaybeAs< 'a, T, Marker >
 where
   T : Clone,
 {
-  fn from( table : T ) -> Self
+  fn from( src : T ) -> Self
   {
-    MaybeAs( Some( Cow::Owned( table ) ) )
+    MaybeAs::new( src )
   }
 }
 
-impl< 'a, T, Marker > From< &'a T > for MaybeAs< 'a, T, Marker >
+impl< 'a, T, Marker > From< &'a T >
+for MaybeAs< 'a, T, Marker >
 where
   T : Clone,
 {
-  fn from( table : &'a T ) -> Self
+  fn from( src : &'a T ) -> Self
   {
-    MaybeAs( Some( Cow::Borrowed( table ) ) )
+    MaybeAs::new_with_ref( src )
   }
 }
 
@@ -138,7 +140,7 @@ where
 // where
 //   T : (),
 // {
-//   fn from( table : &'a T ) -> Self
+//   fn from( src : &'a T ) -> Self
 //   {
 //     MaybeAs( None )
 //   }
@@ -163,7 +165,7 @@ where
 {
   fn default() -> Self
   {
-    MaybeAs( Some( Cow::Owned( T::default() ) ) )
+    MaybeAs::new( T::default() )
   }
 }
 
