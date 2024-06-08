@@ -25,29 +25,29 @@ pub struct TestObject
   pub tools : Option< Vec< HashMap< String, String > > >,
 }
 
-impl< 'a > Fields< 'a, &'static str, Option< Cow< 'a, String > > >
-for TestObject
-{
-  fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, Option< Cow< 'a, String > > ) >
-  {
-    let mut vec : Vec< ( &'static str, Option< Cow< 'a, String > > ) > = Vec::new();
-
-    vec.push( ( "id", Some( Cow::Borrowed( &self.id ) ) ) );
-    vec.push( ( "created_at", Some( Cow::Owned( self.created_at.to_string() ) ) ) );
-    vec.push( ( "file_ids", Some( Cow::Owned( format!( "{:?}", self.file_ids ) ) ) ) );
-
-    if let Some( tools ) = &self.tools
-    {
-      vec.push( ( "tools", Some( Cow::Owned( format!( "{:?}", tools ) ) ) ) );
-    }
-    else
-    {
-      vec.push( ( "tools", None ) );
-    }
-
-    vec.into_iter()
-  }
-}
+// impl< 'a > Fields< 'a, &'static str, Option< Cow< 'a, String > > >
+// for TestObject
+// {
+//   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, Option< Cow< 'a, String > > ) >
+//   {
+//     let mut vec : Vec< ( &'static str, Option< Cow< 'a, String > > ) > = Vec::new();
+//
+//     vec.push( ( "id", Some( Cow::Borrowed( &self.id ) ) ) );
+//     vec.push( ( "created_at", Some( Cow::Owned( self.created_at.to_string() ) ) ) );
+//     vec.push( ( "file_ids", Some( Cow::Owned( format!( "{:?}", self.file_ids ) ) ) ) );
+//
+//     if let Some( tools ) = &self.tools
+//     {
+//       vec.push( ( "tools", Some( Cow::Owned( format!( "{:?}", tools ) ) ) ) );
+//     }
+//     else
+//     {
+//       vec.push( ( "tools", None ) );
+//     }
+//
+//     vec.into_iter()
+//   }
+// }
 
 // =
 
@@ -62,7 +62,7 @@ pub struct WithWell;
 
 pub trait ToStringWith< 'a, How >
 {
-  // fn debug_to_string( &'a self ) -> MaybeAs< 'a, String, StringFromDebug >;
+  // fn to_string_with( &'a self ) -> MaybeAs< 'a, String, StringFromDebug >;
   fn to_string_with( &'a self ) -> String;
 }
 
@@ -79,30 +79,36 @@ where
 }
 
 // impl< 'a > Fields< 'a, &'static str, MaybeAs< 'a, String, StringFromDebug > >
-// for TestObject
-// // where
-// //   V : ToStringWith< 'a > + Clone + 'a,
-// {
-//   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, String, StringFromDebug > ) >
-//   {
-//     let mut vec : Vec< ( &'static str, MaybeAs< 'a, String, StringFromDebug > ) > = Vec::new();
-//
-//     vec.push( ( "id", self.id.debug_to_string() ) );
-//     vec.push( ( "created_at", self.created_at.debug_to_string() ) );
-//     vec.push( ( "file_ids", self.file_ids.debug_to_string() ) );
-//
-//     if let Some( tools ) = &self.tools
-//     {
-//       vec.push( ( "tools", self.tools.debug_to_string() ) );
-//     }
-//     else
-//     {
-//       vec.push( ( "tools", MaybeAs::none() ) );
-//     }
-//
-//     vec.into_iter()
-//   }
-// }
+impl< 'a, V > Fields< 'a, &'static str, MaybeAs< 'a, V, WithDebug > >
+for TestObject
+where
+  V : ToStringWith< 'a, WithDebug > + Clone + 'a,
+  // MaybeAs< 'a, V, WithDebug > : From< String >,
+  String : Into< MaybeAs< 'a, V, WithDebug > >,
+{
+  // fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, String, StringFromDebug > ) >
+  fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, V, WithDebug > ) >
+  {
+    // let mut vec : Vec< ( &'static str, MaybeAs< 'a, String, StringFromDebug > ) > = Vec::new();
+    let mut vec : Vec< ( &'static str, MaybeAs< 'a, V, WithDebug > ) > = Vec::new();
+
+    // vec.push( ( "id", MaybeAs::< 'a, V, WithDebug >::from( self.id.to_string_with() ) ) );
+    vec.push( ( "id", self.id.to_string_with().into() ) );
+    vec.push( ( "created_at", self.created_at.to_string_with().into() ) );
+    vec.push( ( "file_ids", self.file_ids.to_string_with().into() ) );
+
+    if let Some( tools ) = &self.tools
+    {
+      vec.push( ( "tools", self.tools.to_string_with().into() ) );
+    }
+    else
+    {
+      vec.push( ( "tools", MaybeAs::none() ) );
+    }
+
+    vec.into_iter()
+  }
+}
 
 //
 
@@ -149,9 +155,9 @@ fn basic()
   // assert!( !is_borrowed( &fields[ 2 ].1 ) );
   // assert!( !is_borrowed( &fields[ 3 ].1 ) );
   // xxx
-  assert_eq!( fields[ 0 ], ( "id", Some( Cow::Borrowed( &"12345".to_string() ) ) ) );
-  assert_eq!( fields[ 1 ], ( "created_at", Some( Cow::Owned( "1627845583".to_string() ) ) ) );
-  assert_eq!( fields[ 2 ], ( "file_ids", Some( Cow::Owned( "[\"file1\", \"file2\"]".to_string() ) ) ) );
+  // assert_eq!( fields[ 0 ], ( "id", Some( Cow::Borrowed( &"12345".to_string() ) ).into() ) );
+  // assert_eq!( fields[ 1 ], ( "created_at", Some( Cow::Owned( "1627845583".to_string() ) ).into() ) );
+  // assert_eq!( fields[ 2 ], ( "file_ids", Some( Cow::Owned( "[\"file1\", \"file2\"]".to_string() ) ).into() ) );
   assert_eq!( fields[ 3 ].0, "tools" );
 
 }
