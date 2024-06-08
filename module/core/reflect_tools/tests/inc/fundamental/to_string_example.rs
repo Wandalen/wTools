@@ -1,13 +1,14 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
+// xxx : qqq : make example from this test and add also into readme
 
 #[ test ]
 fn exmaple()
 {
 
   use core::fmt;
-  use assistant::
+  use reflect_tools::
   {
     WithDebug,
     WithDisplay,

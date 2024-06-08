@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-use assistant::
+use the_module::
 {
   // Fields,
   // IteratorTrait,
