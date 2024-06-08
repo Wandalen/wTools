@@ -33,28 +33,31 @@ pub trait ToStringWithFallback< How, Fallback >
 
 impl< T, How, Fallback > ToStringWithFallback< How, Fallback > for ( &T, )
 where
-  T : ToStringWith< How >,
-{
-  /// Converts the type to a string using the specified formatting.
-  fn to_string_with_fallback( &self ) -> String
-  {
-    < T as ToStringWith< How > >::to_string_with( self.0 )
-  }
-}
-
-impl< T, How, Fallback > ToStringWithFallback< How, Fallback > for &( &T, )
-where
   T : ToStringWith< Fallback >,
 {
-  /// Converts the type to a string using the fallback formatting.
+  /// Converts the type to a string using the specified formatting.
   fn to_string_with_fallback( &self ) -> String
   {
     < T as ToStringWith< Fallback > >::to_string_with( self.0 )
   }
 }
 
-// pub fn to_string_with_fallback( src : &T )
+impl< T, How, Fallback > ToStringWithFallback< How, Fallback > for &( &T, )
+where
+  T : ToStringWith< How >,
+{
+  /// Converts the type to a string using the fallback formatting.
+  fn to_string_with_fallback( &self ) -> String
+  {
+    < T as ToStringWith< How > >::to_string_with( self.0 )
+  }
+}
+
+// pub fn to_string_with_fallback< T, How, Fallback >( src : &T ) -> String
+// where
+//   T : ToStringWithFallback< How, Fallback >,
 // {
+//   ToStringWithFallback::< How, Fallback >::to_string_with_fallback( &( src, ) )
 // }
 
 // ==

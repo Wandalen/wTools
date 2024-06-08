@@ -55,6 +55,11 @@ fn to_string_with_test()
 
 //
 
+macro_rules! to_string_with_fallback
+{
+  () => { < < Self as GraphNodesNominalInterface >::NodeHandle as HasId >::Id };
+}
+
 #[ test ]
 fn to_string_with_fallback_test()
 {
@@ -62,10 +67,49 @@ fn to_string_with_fallback_test()
   // -
 
   let src = 13i32;
-  let got = ToStringWithFallback::< WithDisplay, WithDebug >::to_string_with_fallback( &( &src, ) );
+  // let got = ToStringWithFallback::< WithDisplay, WithDebug >::to_string_with_fallback( &( &src, ) );
+  let got = ( &( &src, ) ).to_string_with_fallback();
   let exp = "13".to_string();
   a_id!( got, exp );
 
+  // let src = "abc".to_string();
+  // let got = ToStringWithFallback::< WithDisplay, WithDebug >::to_string_with_fallback( &( &src, ) );
+  // let exp = "abc".to_string();
+  // a_id!( got, exp );
+
+  // - only display
+
+//   struct OnlyDisplay;
+//   impl fmt::Display for OnlyDisplay
+//   {
+//     fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+//     {
+//       write!( f, "This is OnlyDisplay" )
+//     }
+//   }
+//
+//   let src = OnlyDisplay;
+//   let got = ToStringWithFallback::< WithDisplay, WithDebug >::to_string_with_fallback( &( &src, ) );
+//   let exp = "This is OnlyDisplay".to_string();
+//   a_id!( got, exp );
+
+  // - only debug
+
+//   struct OnlyDebug;
+//   impl fmt::Debug for OnlyDebug
+//   {
+//     fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+//     {
+//       write!( f, "This is OnlyDebug" )
+//     }
+//   }
+//
+//   let src = OnlyDebug;
+//   let got = ToStringWithFallback::< WithDisplay, WithDebug >::to_string_with_fallback( &( &src, ) );
+//   let exp = "This is OnlyDebug".to_string();
+//   a_id!( got, exp );
+
   // -
+
 
 }
