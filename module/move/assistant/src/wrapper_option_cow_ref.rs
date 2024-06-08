@@ -60,6 +60,13 @@ where
 
   /// Just a constructor.
   #[ inline( always ) ]
+  pub fn none() -> Self
+  {
+    Self( None, ::core::marker::PhantomData )
+  }
+
+  /// Just a constructor.
+  #[ inline( always ) ]
   pub fn new( src : T ) -> Self
   {
     Self( Some( Cow::Owned( src ) ), ::core::marker::PhantomData )
