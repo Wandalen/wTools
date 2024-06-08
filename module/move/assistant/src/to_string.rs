@@ -19,51 +19,51 @@ pub struct WithDisplay;
 #[ derive( Debug, Default, Clone, Copy ) ]
 pub struct WithWell;
 
-pub trait ToStringWithFallback< 'a, How, Fallback >
+pub trait ToStringWithFallback< How, Fallback >
 {
-  fn to_string_with_fallback( &'a self ) -> String;
+  fn to_string_with_fallback( &self ) -> String;
 }
 
-impl< 'a, T, How, Fallback > ToStringWithFallback< 'a, How, Fallback > for ( &T, )
+impl< T, How, Fallback > ToStringWithFallback< How, Fallback > for ( &T, )
 where
-  T : ToStringWith< 'a, How >,
+  T : ToStringWith< How >,
 {
-  fn to_string_with_fallback( &'a self ) -> String
+  fn to_string_with_fallback( &self ) -> String
   {
-    < T as ToStringWith< 'a, How > >::to_string_with( self.0 )
+    < T as ToStringWith< How > >::to_string_with( self.0 )
   }
 }
 
-impl< 'a, T, How, Fallback > ToStringWithFallback< 'a, How, Fallback > for &( &T, )
+impl< T, How, Fallback > ToStringWithFallback< How, Fallback > for &( &T, )
 where
-  T : ToStringWith< 'a, Fallback >,
+  T : ToStringWith< Fallback >,
 {
-  fn to_string_with_fallback( &'a self ) -> String
+  fn to_string_with_fallback( &self ) -> String
   {
-    < T as ToStringWith< 'a, Fallback > >::to_string_with( self.0 )
+    < T as ToStringWith< Fallback > >::to_string_with( self.0 )
   }
 }
 
-pub trait ToStringWith< 'a, How >
+pub trait ToStringWith< How >
 {
-  fn to_string_with( &'a self ) -> String;
+  fn to_string_with( &self ) -> String;
 }
 
-impl< 'a, T > ToStringWith< 'a, WithDebug > for T
+impl< T > ToStringWith< WithDebug > for T
 where
   T : fmt::Debug,
 {
-  fn to_string_with( &'a self ) -> String
+  fn to_string_with( &self ) -> String
   {
     format!( "{:?}", self )
   }
 }
 
-impl< 'a, T > ToStringWith< 'a, WithDisplay > for T
+impl< T > ToStringWith< WithDisplay > for T
 where
   T : fmt::Display,
 {
-  fn to_string_with( &'a self ) -> String
+  fn to_string_with( &self ) -> String
   {
     format!( "{}", self )
   }

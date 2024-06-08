@@ -55,10 +55,10 @@ impl< 'a, How > Fields< 'a, &'static str, MaybeAs< 'a, String, How > >
 for TestObject
 where
   How : Clone + Copy + 'static,
-  String : ToStringWith< 'a, How >,
-  i64 : ToStringWith< 'a, How >,
-  Vec< String > : ToStringWith< 'a, How >,
-  Option< Vec< HashMap< String, String > > > : ToStringWith< 'a, How >,
+  String : ToStringWith< How >,
+  i64 : ToStringWith< How >,
+  Vec< String > : ToStringWith< How >,
+  Option< Vec< HashMap< String, String > > > : ToStringWith< How >,
 {
   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, String, How > ) >
   {
@@ -67,11 +67,11 @@ where
     fn into< 'a, V, How >( src : &'a V ) -> MaybeAs< 'a, String, How >
     where
       How : Clone + Copy + 'static,
-      V : ToStringWith< 'a, How > + 'a,
+      V : ToStringWith< How > + 'a,
     {
       MaybeAs::< 'a, String, How >::from
       (
-        < V as ToStringWith< '_, How > >::to_string_with( src )
+        < V as ToStringWith< How > >::to_string_with( src )
       )
     }
 
@@ -83,11 +83,11 @@ where
     )
     where
       How : Clone + Copy + 'static,
-      V : ToStringWith< 'a, How > + 'a,
+      V : ToStringWith< How > + 'a,
     {
       let val = MaybeAs::< 'a, String, How >::from
       (
-        < V as ToStringWith< '_, How > >::to_string_with( src )
+        < V as ToStringWith< How > >::to_string_with( src )
       );
       dst.push( ( key, val ) );
     }
@@ -119,7 +119,7 @@ where
 //       dst.push( ( "tools", MaybeAs::none() ) );
 //     }
 
-    // dst.push( ( "id", MaybeAs::< 'a, String, How >::from( < String as ToStringWith< '_, How > >::to_string_with( &self.id ) ) ) );
+    // dst.push( ( "id", MaybeAs::< 'a, String, How >::from( < String as ToStringWith< How > >::to_string_with( &self.id ) ) ) );
 //     dst.push( ( "created_at", self.created_at.to_string_with().into() ) );
 //     dst.push( ( "file_ids", self.file_ids.to_string_with().into() ) );
 //
