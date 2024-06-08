@@ -81,11 +81,41 @@ where
 
   /// Just a constructor.
   #[ inline( always ) ]
+  pub fn new_with_inner( src : Option< Cow< 'a, T > > ) -> Self
+  {
+    Self( src, ::core::marker::PhantomData )
+  }
+
+  /// Just a constructor.
+  #[ inline( always ) ]
   pub fn inner( self ) -> Option< Cow< 'a, T > >
   {
     self.0
   }
 
+}
+
+impl< 'a, T, Marker > AsRef< Option< Cow< 'a, T > > > for MaybeAs< 'a, T, Marker >
+where
+  T : Clone,
+  Self : 'a,
+{
+  fn as_ref( &self ) -> &Option< Cow< 'a, T > >
+  {
+    &self.0
+  }
+}
+
+impl< 'a, T, Marker > Deref for MaybeAs< 'a, T, Marker >
+where
+  T : Clone,
+  Marker : 'static,
+{
+  type Target = Option< Cow< 'a, T > >;
+  fn deref( &self ) -> &Option< Cow< 'a, T > >
+  {
+    self.as_ref()
+  }
 }
 
 // impl< 'a, T, Marker > AsRef< T > for MaybeAs< 'a, T, Marker >
@@ -129,6 +159,17 @@ where
   fn from( src : T ) -> Self
   {
     MaybeAs::new( src )
+  }
+}
+
+impl< 'a, T, Marker > From< Option< Cow< 'a, T > > >
+for MaybeAs< 'a, T, Marker >
+where
+  T : Clone,
+{
+  fn from( src : Option< Cow< 'a, T > > ) -> Self
+  {
+    MaybeAs::new_with_inner( src )
   }
 }
 
@@ -187,4 +228,20 @@ where
     .field( "0", &self.0 )
     .finish()
   }
+}
+
+impl< 'a, T, Marker > PartialEq for MaybeAs< 'a, T, Marker >
+where
+  T : Clone + PartialEq,
+{
+  fn eq( &self, other : &Self ) -> bool
+  {
+    self.as_ref() == other.as_ref()
+  }
+}
+
+impl< 'a, T, Marker > Eq for MaybeAs< 'a, T, Marker >
+where
+  T : Clone + Eq,
+{
 }
