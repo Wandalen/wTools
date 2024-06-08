@@ -1,4 +1,4 @@
-use core::fmt;
+// use core::fmt;
 use core::ops::{ Deref };
 
 /// Converter into universal wrapper with transparent option of copy on write reference emphasizing a specific aspect of identity of its internal type.
@@ -18,6 +18,7 @@ impl< 'a, T, Marker > IntoRef< 'a, T, Marker > for &'a T
 }
 
 /// Transparent reference wrapper emphasizing a specific aspect of identity of its internal type.
+#[ allow( missing_debug_implementations ) ]
 #[ repr( transparent ) ]
 pub struct Ref< 'a, T, Marker >( pub &'a T, ::core::marker::PhantomData< fn() -> Marker > )
 where

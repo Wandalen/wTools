@@ -60,6 +60,21 @@ where
   }
 }
 
+//
+
+#[ macro_export( local_inner_macros ) ]
+macro_rules! to_string_with_fallback
+{
+  ( $how : ty, $fallback : ty, $src : expr )
+  =>
+  {{
+    (
+      &::assistant::Ref::< '_, _, ToStringWithFallbackParams< $how, $fallback > >::from( &$src )
+    )
+    .to_string_with_fallback()
+  }};
+}
+
 // ==
 
 /// Trait to convert a type to a string using a specified formatting method.

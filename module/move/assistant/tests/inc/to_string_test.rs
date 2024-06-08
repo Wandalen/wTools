@@ -12,6 +12,7 @@ use assistant::
   WithDebug,
   WithDisplay,
   Ref,
+  to_string_with_fallback,
 };
 
 // use std::
@@ -56,12 +57,12 @@ fn to_string_with_test()
 }
 
 #[ test ]
-fn to_string_with_fallback_test()
+fn to_string_with_fallback_basic()
 {
 
   // - Ref should implement copy
 
-  fn f1( src : Ref::< '_, Struct1, ToStringWithFallbackParams< WithDisplay, WithDebug > > )
+  fn f1( _src : Ref::< '_, Struct1, ToStringWithFallbackParams< WithDisplay, WithDebug > > )
   where
     for< 'a > Ref::< 'a, Struct1, ToStringWithFallbackParams< WithDisplay, WithDebug > > : Copy + Clone,
   {}
@@ -75,37 +76,44 @@ fn to_string_with_fallback_test()
 
   // -
 
-//   let src = 13i32;
-//   let got = ToStringWithFallback::< WithDisplay, WithDebug >::to_string_with_fallback( &Ref::from( &src ) );
-//   // let got = ( &Ref::from( &src ) ).to_string_with_fallback();
-//   let exp = "13".to_string();
-//   a_id!( got, exp );
+  let src = 13i32;
+  let got = ( &Ref::< '_, _, ToStringWithFallbackParams< WithDisplay, WithDebug > >::from( &src ) ).to_string_with_fallback();
+  let exp = "13".to_string();
+  a_id!( got, exp );
+
+  let src = "abc".to_string();
+  let got = ( &Ref::< '_, _, ToStringWithFallbackParams< WithDisplay, WithDebug > >::from( &src ) ).to_string_with_fallback();
+  let exp = "abc".to_string();
+  a_id!( got, exp );
+
+  // -
+
+}
+
 //
-//   let src = "abc".to_string();
-//   let got = ToStringWithFallback::< WithDisplay, WithDebug >::to_string_with_fallback( &Ref::from( &src ) );
-//   let exp = "abc".to_string();
-//   a_id!( got, exp );
+
+#[ test ]
+fn to_string_with_fallback_variants()
+{
 
   // - only display
 
-//   struct OnlyDisplay;
-//   impl fmt::Display for OnlyDisplay
-//   {
-//     fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
-//     {
-//       write!( f, "This is display" )
-//     }
-//   }
-//
-//   let src = OnlyDisplay;
-//   // let got = ToStringWithFallback::< WithDisplay, WithDebug >::to_string_with_fallback( &( &src, ) );
-//   let got = ( &Ref::< '_, _, ToStringWithFallbackParams< WithDisplay, WithDebug > >::from( &src ) ).to_string_with_fallback();
-//   let exp = "This is display".to_string();
-//   a_id!( got, exp );
+  struct OnlyDisplay;
+  impl fmt::Display for OnlyDisplay
+  {
+    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+    {
+      write!( f, "This is display" )
+    }
+  }
+
+  let src = OnlyDisplay;
+  let got = ( &Ref::< '_, _, ToStringWithFallbackParams< WithDisplay, WithDebug > >::from( &src ) ).to_string_with_fallback();
+  let exp = "This is display".to_string();
+  a_id!( got, exp );
 
   // - only debug
 
-  // #[ derive( Clone, Copy ) ]
   struct OnlyDebug;
 
   impl fmt::Debug for OnlyDebug
@@ -116,7 +124,25 @@ fn to_string_with_fallback_test()
     }
   }
 
-  impl fmt::Display for OnlyDebug
+  let src = OnlyDebug;
+  let _ref1 = Ref::< '_, _, ToStringWithFallbackParams< WithDisplay, WithDebug > >::from( &src );
+  let got = ( &Ref::< '_, _, ToStringWithFallbackParams< WithDisplay, WithDebug > >::from( &src ) ).to_string_with_fallback();
+  let exp = "This is debug".to_string();
+  a_id!( got, exp );
+
+  // - both debug and display
+
+  struct Both;
+
+  impl fmt::Debug for Both
+  {
+    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+    {
+      write!( f, "This is debug" )
+    }
+  }
+
+  impl fmt::Display for Both
   {
     fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
     {
@@ -124,20 +150,43 @@ fn to_string_with_fallback_test()
     }
   }
 
-  let src = OnlyDebug;
-  let _ref1 = Ref::< '_, _, ToStringWithFallbackParams< WithDisplay, WithDebug > >::from( &src );
+  let src = Both;
   let got = ( &Ref::< '_, _, ToStringWithFallbackParams< WithDisplay, WithDebug > >::from( &src ) ).to_string_with_fallback();
-  let exp = "This is debug".to_string();
+  let exp = "This is display".to_string();
   a_id!( got, exp );
 
   // -
 
 }
 
-
 //
 
-macro_rules! to_string_with_fallback
+#[ test ]
+fn to_string_with_fallback_macro()
 {
-  () => { < < Self as GraphNodesNominalInterface >::NodeHandle as HasId >::Id };
+
+  struct Both;
+
+  impl fmt::Debug for Both
+  {
+    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+    {
+      write!( f, "This is debug" )
+    }
+  }
+
+  impl fmt::Display for Both
+  {
+    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+    {
+      write!( f, "This is display" )
+    }
+  }
+
+  let src = Both;
+  // let got = ( &Ref::< '_, _, ToStringWithFallbackParams< WithDisplay, WithDebug > >::from( &src ) ).to_string_with_fallback();
+  let got = to_string_with_fallback!( WithDisplay, WithDebug, src );
+  let exp = "This is display".to_string();
+  a_id!( got, exp );
+
 }
