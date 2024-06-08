@@ -32,7 +32,7 @@ pub struct ToStringWithFallbackMarker;
 pub trait ToStringWithFallback< How, Fallback >
 {
   /// Converts the type to a string using the specified formatting or a fallback.
-  fn to_string_with_fallback( &self ) -> String;
+  fn to_string_with_fallback( self ) -> String;
 }
 
 impl< T, How, Fallback > ToStringWithFallback< How, Fallback > for Ref< '_, T, ToStringWithFallbackMarker >
@@ -40,7 +40,7 @@ where
   T : ToStringWith< Fallback >,
 {
   /// Converts the type to a string using the specified formatting.
-  fn to_string_with_fallback( &self ) -> String
+  fn to_string_with_fallback( self ) -> String
   {
     < T as ToStringWith< Fallback > >::to_string_with( self.0 )
   }
@@ -51,7 +51,7 @@ where
   T : ToStringWith< How >,
 {
   /// Converts the type to a string using the fallback formatting.
-  fn to_string_with_fallback( &self ) -> String
+  fn to_string_with_fallback( self ) -> String
   {
     < T as ToStringWith< How > >::to_string_with( self.0 )
   }
