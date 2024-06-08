@@ -9,6 +9,7 @@ use assistant::
 
 use std::
 {
+  fmt,
   collections::HashMap,
   borrow::Cow,
 };
@@ -43,6 +44,21 @@ impl< 'a > Fields< 'a, &'static str, String > for TestObject
     }
 
     vec.into_iter()
+  }
+}
+
+pub trait DebugToString< 'a >
+{
+  fn debug_to_string( &'a self ) -> Cow< 'a, String >;
+}
+
+impl< 'a, T > DebugToString< 'a > for T
+where
+  T : fmt::Debug,
+{
+  fn debug_to_string( &'a self ) -> Cow< 'a, String >
+  {
+    Cow::Owned( format!( "{:?}", self ) )
   }
 }
 
