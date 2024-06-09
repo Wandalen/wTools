@@ -6,25 +6,25 @@ fn clone_into_box()
   // copyable
 
   let a : i32 = 13;
-  let b : Box< i32 > = clone_dyn::clone_into_box( &a );
+  let b : Box< i32 > = the_module::clone_into_box( &a );
   a_id!( a, *b );
 
   // clonable
 
   let a : String = "abc".to_string();
-  let b : Box< String > = clone_dyn::clone_into_box( &a );
+  let b : Box< String > = the_module::clone_into_box( &a );
   a_id!( a, *b );
 
   // str slice
 
   let a : &str = "abc";
-  let b : Box< str > = clone_dyn::clone_into_box( a );
+  let b : Box< str > = the_module::clone_into_box( a );
   a_id!( *a, *b );
 
   // slice
 
   let a : &[ i32 ] = &[ 1, 2, 3 ];
-  let b : Box< [ i32 ] > = clone_dyn::clone_into_box( a );
+  let b : Box< [ i32 ] > = the_module::clone_into_box( a );
   a_id!( *a, *b );
 
   //
@@ -38,25 +38,25 @@ fn clone()
   // copyable
 
   let a : i32 = 13;
-  let b : i32 = clone_dyn::clone( &a );
+  let b : i32 = the_module::clone( &a );
   a_id!( a, b );
 
   // clonable
 
   let a : String = "abc".to_string();
-  let b : String = clone_dyn::clone( &a );
+  let b : String = the_module::clone( &a );
   a_id!( a, b );
 
   // str slice
 
   let a : &str = "abc";
-  let b : &str = clone_dyn::clone( &a );
+  let b : &str = the_module::clone( &a );
   a_id!( a, b );
 
   // slice
 
   let a : &[ i32 ] = &[ 1, 2, 3 ];
-  let b : &[ i32 ] = clone_dyn::clone( &a );
+  let b : &[ i32 ] = the_module::clone( &a );
   a_id!( a, b );
 
   //
@@ -85,7 +85,7 @@ fn basic()
   //
 
   let vec : Vec< Box< dyn Trait1 > > = vec![ e_i32.clone(), e_i64.clone(), e_string.clone(), e_str_slice.clone(), e_slice.clone() ];
-  let vec2 = clone_dyn::clone( &vec );
+  let vec2 = the_module::clone( &vec );
   let vec = vec.iter().map( | e | e.val() ).collect::< Vec< _ > >();
   let vec2 = vec2.iter().map( | e | e.val() ).collect::< Vec< _ > >();
   a_id!( vec, vec2 );

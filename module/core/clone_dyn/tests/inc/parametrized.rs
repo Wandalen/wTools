@@ -65,7 +65,7 @@ impl Trait1< i32, char > for String
 
 impl< T > Trait1< i32, char > for &[ T ]
 where
-  T : clone_dyn::CloneDyn,
+  T : the_module::CloneDyn,
   Self : ::core::fmt::Debug,
 {
   fn dbg( &self ) -> String
@@ -112,7 +112,7 @@ fn basic()
   //
 
   let vec : Vec< Box< dyn Trait1< i32, char > > > = vec![ e_i32.clone(), e_i64.clone(), e_string.clone(), e_str_slice.clone(), e_slice.clone() ];
-  let vec2 = clone_dyn::clone( &vec );
+  let vec2 = the_module::clone( &vec );
   let vec = vec.iter().map( | e | e.dbg() ).collect::< Vec< _ > >();
   let vec2 = vec2.iter().map( | e | e.dbg() ).collect::< Vec< _ > >();
   a_id!( vec, vec2 );

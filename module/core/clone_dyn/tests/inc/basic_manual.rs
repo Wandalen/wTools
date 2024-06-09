@@ -4,7 +4,7 @@ use super::*;
 
 trait Trait1
 where
-  Self : clone_dyn::CloneDyn,
+  Self : the_module::CloneDyn,
 {
   fn val( &self ) -> i32;
 }
@@ -37,7 +37,7 @@ impl Trait1 for String
 
 impl< T > Trait1 for &[ T ]
 where
-  T : clone_dyn::CloneDyn,
+  T : the_module::CloneDyn,
 {
   fn val( &self ) -> i32
   {
@@ -62,7 +62,7 @@ for Box< dyn Trait1 + 'c >
   #[ inline ]
   fn clone( &self ) -> Self
   {
-    clone_dyn::clone_into_box( &**self )
+    the_module::clone_into_box( &**self )
   }
 }
 
@@ -71,7 +71,7 @@ impl < 'c > Clone
 for Box< dyn Trait1 + Send + 'c >
 {
   #[ inline ]
-  fn clone( &self ) -> Self { clone_dyn::clone_into_box( &**self ) }
+  fn clone( &self ) -> Self { the_module::clone_into_box( &**self ) }
 }
 
 #[ allow( non_local_definitions ) ]
@@ -79,7 +79,7 @@ impl < 'c > Clone
 for Box< dyn Trait1 + Sync + 'c >
 {
   #[ inline ]
-  fn clone( &self ) -> Self { clone_dyn::clone_into_box( &**self ) }
+  fn clone( &self ) -> Self { the_module::clone_into_box( &**self ) }
 }
 
 #[ allow( non_local_definitions ) ]
@@ -87,7 +87,7 @@ impl < 'c > Clone
 for Box< dyn Trait1 + Send + Sync + 'c >
 {
   #[ inline ]
-  fn clone( &self ) -> Self { clone_dyn::clone_into_box( &**self ) }
+  fn clone( &self ) -> Self { the_module::clone_into_box( &**self ) }
 }
 
 // == end of generated

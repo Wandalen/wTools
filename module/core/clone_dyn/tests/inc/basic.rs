@@ -38,7 +38,7 @@ impl Trait1 for String
 
 impl< T > Trait1 for &[ T ]
 where
-  T : clone_dyn::CloneDyn,
+  T : the_module::CloneDyn,
 {
   fn val( &self ) -> i32
   {

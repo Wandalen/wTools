@@ -9,13 +9,18 @@ pub( crate ) mod private
   // use interval_adapter::BoundExt;
 
   /// Enum to encapsulate either a field from a struct or a variant from an enum.
-  #[ derive( Debug, PartialEq ) ]
+  #[ derive( Debug, PartialEq, Clone ) ]
   pub enum FieldOrVariant< 'a >
   {
     /// Represents a field within a struct or union.
     Field( &'a syn::Field ),
     /// Represents a variant within an enum.
     Variant( &'a syn::Variant ),
+  }
+
+  // xxx
+  impl< 'a > Copy for FieldOrVariant< 'a >
+  {
   }
 
   impl< 'a > From< &'a syn::Field > for FieldOrVariant< 'a >

@@ -121,7 +121,7 @@ pub( crate ) mod private
   /// # Example
   ///
   /// ```
-  /// use clone_dyn_types::{ clone_into_box, clone_dyn_types };
+  /// use clone_dyn_types::{ CloneDyn, clone_into_box };
   ///
   /// #[ derive( Clone ) ]
   /// struct MyStruct
@@ -129,8 +129,7 @@ pub( crate ) mod private
   ///   value : i32,
   /// }
   ///
-  /// #[ clone_dyn_types ]
-  /// trait MyTrait
+  /// trait MyTrait : CloneDyn
   /// {
   ///   fn val( &self ) -> i32;
   /// }
@@ -141,6 +140,38 @@ pub( crate ) mod private
   ///   {
   ///     self.value
   ///   }
+  /// }
+  ///
+  /// #[ allow( non_local_definitions ) ]
+  /// impl < 'c > Clone
+  /// for Box< dyn MyTrait + 'c >
+  /// {
+  ///   #[ inline ]
+  ///   fn clone( &self ) -> Self { clone_into_box( &**self ) }
+  /// }
+  ///
+  /// #[ allow( non_local_definitions ) ]
+  /// impl < 'c > Clone
+  /// for Box< dyn MyTrait + Send + 'c >
+  /// {
+  ///   #[ inline ]
+  ///   fn clone( &self ) -> Self { clone_into_box( &**self ) }
+  /// }
+  ///
+  /// #[ allow( non_local_definitions ) ]
+  /// impl < 'c > Clone
+  /// for Box< dyn MyTrait + Sync + 'c >
+  /// {
+  ///   #[ inline ]
+  ///   fn clone( &self ) -> Self { clone_into_box( &**self ) }
+  /// }
+  ///
+  /// #[ allow( non_local_definitions ) ]
+  /// impl < 'c > Clone
+  /// for Box< dyn MyTrait + Send + Sync + 'c >
+  /// {
+  ///   #[ inline ]
+  ///   fn clone( &self ) -> Self { clone_into_box( &**self ) }
   /// }
   ///
   /// let cloned : Box< dyn MyTrait > = clone_into_box( &MyStruct { value : 42 } );
