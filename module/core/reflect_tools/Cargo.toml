@@ -37,13 +37,17 @@ full = [
   "reflect_reflect",
   "reflect_newtype",
 ]
-enabled = []
+enabled = [
+  "reflect_tools_meta/enabled",
+  "derive_tools/enabled"
+]
 reflect_reflect = []
 reflect_newtype = []
 
 [dependencies]
-reflect_tools_meta = { workspace = true, features = [ "enabled" ] }
-derive_tools = { workspace = true, features = [ "enabled", "derive_from", "derive_inner_from" ] }
+reflect_tools_meta = { workspace = true, features = [] }
+derive_tools = { workspace = true, features = ["derive_from", "derive_inner_from" ] }
+# qqq : xxx : optimize features set
 
 [dev-dependencies]
 test_tools = { workspace = true }

@@ -65,7 +65,16 @@ mod private
       let root = AbsolutePath::try_from( path ).unwrap();
       let diff = self.diffs.get( &root ).unwrap();
       
-      write!( f, "Tree:\n{}\nChanges in `{root_name} {root_version}`:\n{}", tree, diff )?;
+      writeln!( f, "Tree:\n{}", tree )?;
+      if diff.has_changes()
+      {
+        writeln!( f, "Changes detected in `{root_name} {root_version}`:" )?;
+      }
+      else
+      {
+        writeln!( f, "No changes found in `{root_name} {root_version}`. Files:" )?;
+      }
+      write!( f, "{}", diff )?;
       
       Ok( () )
     }

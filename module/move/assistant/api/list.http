@@ -1,0 +1,3 @@
+get https://api.openai.com/v1/models
+Authorization: Bearer {{openai_token}}
+# Content-Type: application/json

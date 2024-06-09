@@ -135,6 +135,13 @@ path = "module/core/reflect_tools_meta"
 default-features = false
 features = [ "enabled" ]
 
+[workspace.dependencies.format_tools]
+version = "~0.1.0"
+path = "module/core/format_tools"
+default-features = false
+features = [ "enabled" ]
+# xxx : remove features, maybe
+
 # [workspace.dependencies.type_constructor]
 # version = "~0.3.0"
 # path = "module/core/type_constructor"

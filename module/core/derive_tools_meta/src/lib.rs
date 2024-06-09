@@ -282,16 +282,11 @@ pub fn deref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// Write this
 ///
 /// ```rust
-/// # use derive_tools_meta::*;
-/// #[ derive( Deref, DerefMut ) ]
+/// # use derive_tools_meta::DerefMut;
+/// #[ derive( DerefMut ) ]
 /// pub struct IsTransparent( bool );
-/// ```
 ///
-/// Instead of this
-///
-/// ```rust
-/// pub struct IsTransparent( bool );
-/// impl core::ops::Deref for IsTransparent
+/// impl ::core::ops::Deref for IsTransparent
 /// {
 ///   type Target = bool;
 ///   #[ inline( always ) ]
@@ -300,7 +295,22 @@ pub fn deref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///     &self.0
 ///   }
 /// }
-/// impl core::ops::DerefMut for IsTransparent
+/// ```
+///
+/// Instead of this
+///
+/// ```rust
+/// pub struct IsTransparent( bool );
+/// impl ::core::ops::Deref for IsTransparent
+/// {
+///   type Target = bool;
+///   #[ inline( always ) ]
+///   fn deref( &self ) -> &Self::Target
+///   {
+///     &self.0
+///   }
+/// }
+/// impl ::core::ops::DerefMut for IsTransparent
 /// {
 ///   #[ inline( always ) ]
 ///   fn deref_mut( &mut self ) -> &mut Self::Target

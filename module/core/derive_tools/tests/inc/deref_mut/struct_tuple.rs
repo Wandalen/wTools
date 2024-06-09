@@ -1,8 +1,17 @@
-use core::ops::{ Deref };
-use derive_tools::{ Deref, DerefMut };
+use core::ops::Deref;
+use derive_tools::DerefMut;
 
 #[ allow( dead_code ) ]
-#[ derive ( Deref, DerefMut ) ]
+#[ derive ( DerefMut ) ]
 struct StructTuple( String, i32 );
+
+impl Deref for StructTuple
+{
+  type Target = String;
+  fn deref( &self ) -> &Self::Target
+  {
+    &self.0
+  }
+}
 
 include!( "./only_test/struct_tuple.rs" );

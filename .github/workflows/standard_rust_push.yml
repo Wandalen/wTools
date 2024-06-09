@@ -57,8 +57,10 @@ jobs :
       - name: Set MANIFEST_ROOT_PATH
         id: rootpath
         run: echo "::set-output name=path::$(dirname ${{ inputs.manifest_path }})"
+      - name: Build module
+        run: cd ${{ steps.rootpath.outputs.path }} && cargo build && cd -
       - name: Audit the modules
-        run: cd ${{ steps.rootpath.outputs.path }} && make audit
+        run: make audit
         continue-on-error: true
       - name: Generate documentation for the modules
         run: make doc open=no manifest_path=${{ inputs.manifest_path }}

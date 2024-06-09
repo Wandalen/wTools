@@ -65,6 +65,11 @@ pub mod entity_hashmap;
 pub mod entity_hashset;
 pub mod primitive;
 
+pub mod fields;
+// pub mod to_string;
+// pub mod to_string_with_fallback;
+pub mod wrapper;
+
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use protected::*;
@@ -96,6 +101,21 @@ pub mod protected
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::primitive::orphan::*;
+
+  // xxx : add features
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::fields::orphan::*;
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::to_string::orphan::*;
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::to_string_with_fallback::orphan::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::wrapper::orphan::*;
+
   // pub use super::private::
   // {
   // };
@@ -136,11 +156,26 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::primitive::exposed::*;
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::fields::exposed::*;
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::to_string::exposed::*;
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::to_string_with_fallback::exposed::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::wrapper::exposed::*;
+
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 pub mod prelude
 {
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::axiomatic::prelude::*;
@@ -162,4 +197,18 @@ pub mod prelude
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::primitive::prelude::*;
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::fields::prelude::*;
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::to_string::prelude::*;
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::to_string_with_fallback::prelude::*;
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::wrapper::prelude::*;
+
 }
