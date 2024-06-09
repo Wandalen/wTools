@@ -42,10 +42,7 @@ pub( crate ) mod private
   for Box< dyn _IterTrait< 'c, T > + 'c >
   {
     #[ inline ]
-    fn clone( &self ) -> Self
-    {
-      clone_dyn_types::clone_into_box( &**self )
-    }
+    fn clone( &self ) -> Self { clone_dyn_types::clone_into_box( &**self ) }
   }
 
   #[ allow( non_local_definitions ) ]
@@ -73,28 +70,6 @@ pub( crate ) mod private
   }
 
   // =
-
-  // impl< 'c, 'a, T > Clone
-  // for Box< dyn _IterTrait< 'a, T > + 'c >
-  // {
-  //   #[ inline ]
-  //   fn clone( &self ) -> Self { clone_into_box( &**self ) }
-  // }
-
-  // // xxx2
-  // #[ inline ]
-  // fn clone_into_box< T >( t : &T ) -> Box< T >
-  // where
-  //   T : ?Sized,
-  // {
-  //   unsafe
-  //   {
-  //     let mut ptr = t as *const T;
-  //     let data_ptr = &mut ptr as *mut *const T as *mut *mut ();
-  //     *data_ptr = Box::into_raw( Box::new( t.clone() ) ) as *mut ();
-  //     Box::from_raw( ptr as *mut T )
-  //   }
-  // }
 
   // xxx
   pub type BoxedIter< 'a, T > = Box< dyn _IterTrait< 'a, T > + 'a >;
