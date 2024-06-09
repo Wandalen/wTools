@@ -14,6 +14,7 @@ There are few alternatives [dyn-clone](https://github.com/dtolnay/dyn-clone), [d
 
 ### Basic use-case
 
+<!-- xxx : qqq : rewrite example -->
 <!-- begin {{# generate.module( "example/clone_dyn_trivail.rs" ) #}} -->
 
 ```rust

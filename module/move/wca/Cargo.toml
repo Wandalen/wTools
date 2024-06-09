@@ -45,6 +45,7 @@ strs_tools = { workspace = true, features = [ "default" ] }
 mod_interface = { workspace = true, features = [ "default" ] }
 iter_tools = { workspace = true, features = [ "default" ] }
 former = { workspace = true, features = [ "default" ] }
+# xxx : qqq : optimize set of features
 
 ## external
 log = "0.4"

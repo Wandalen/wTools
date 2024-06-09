@@ -9,6 +9,7 @@ pub( crate ) mod private
 {
   // use std::fmt;
   // use crate::*;
+  use clone_dyn_types::CloneDyn;
 
   /// Trait that encapsulates an iterator with specific characteristics, tailored for use with the `syn` crate.
   ///
@@ -22,6 +23,7 @@ pub( crate ) mod private
   where
     T : 'a,
     Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
+    Self : CloneDyn,
   {
   }
 
@@ -29,8 +31,48 @@ pub( crate ) mod private
   where
     T : 'a,
     Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
+    Self : CloneDyn,
   {
   }
+
+  // =
+
+  #[ allow( non_local_definitions ) ]
+  impl< 'c, T > Clone
+  for Box< dyn _IterTrait< 'c, T > + 'c >
+  {
+    #[ inline ]
+    fn clone( &self ) -> Self
+    {
+      clone_dyn_types::clone_into_box( &**self )
+    }
+  }
+
+  #[ allow( non_local_definitions ) ]
+  impl< 'c, T > Clone
+  for Box< dyn _IterTrait< 'c, T > + Send + 'c >
+  {
+    #[ inline ]
+    fn clone( &self ) -> Self { clone_dyn_types::clone_into_box( &**self ) }
+  }
+
+  #[ allow( non_local_definitions ) ]
+  impl< 'c, T > Clone
+  for Box< dyn _IterTrait< 'c, T > + Sync + 'c >
+  {
+    #[ inline ]
+    fn clone( &self ) -> Self { clone_dyn_types::clone_into_box( &**self ) }
+  }
+
+  #[ allow( non_local_definitions ) ]
+  impl< 'c, T > Clone
+  for Box< dyn _IterTrait< 'c, T > + Send + Sync + 'c >
+  {
+    #[ inline ]
+    fn clone( &self ) -> Self { clone_dyn_types::clone_into_box( &**self ) }
+  }
+
+  // =
 
   // impl< 'c, 'a, T > Clone
   // for Box< dyn _IterTrait< 'a, T > + 'c >
@@ -69,14 +111,14 @@ pub( crate ) mod private
   pub trait IterTrait< 'a, T >
   where
     T : 'a,
-    Self : _IterTrait< 'a, T > + CloneDyn,
+    Self : _IterTrait< 'a, T > + Clone,
   {
   }
 
   impl< 'a, T, I > IterTrait< 'a, T > for I
   where
     T : 'a,
-    Self : _IterTrait< 'a, T > + CloneDyn,
+    Self : _IterTrait< 'a, T > + Clone,
   {
   }
 
