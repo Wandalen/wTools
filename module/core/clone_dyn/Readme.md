@@ -17,7 +17,7 @@ There are few alternatives [dyn-clone](https://github.com/dtolnay/dyn-clone), [d
 <!-- xxx : qqq : rewrite example -->
 <!-- begin {{# generate.module( "example/clone_dyn_trivail.rs" ) #}} -->
 
-```rust
+<!-- ```rust
 # #[ cfg( all( feature = "enabled", any( not( feature = "no_std" ), feature = "use_alloc" ) ) ) ]
 # {
   use clone_dyn::clone_dyn;
@@ -30,7 +30,7 @@ There are few alternatives [dyn-clone](https://github.com/dtolnay/dyn-clone), [d
   let vec = Vec::< Box< dyn Trait1 > >::new();
   let vec2 = vec.clone(); /* <- it does not work without `clone_dyn` */
 # }
-```
+``` -->
 
 <!-- end -->
 

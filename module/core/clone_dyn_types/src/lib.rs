@@ -2,7 +2,7 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/clone_dyn_types/latest/clone_dyn_types/" ) ]
-// #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+#![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 // xxx : fix
 
 #[ allow( unused_extern_crates ) ]
@@ -36,6 +36,7 @@ pub( crate ) mod private
   /// It's implemented for all entities which can be cloned.
   pub trait CloneDyn : Sealed
   {
+    #[ doc( hidden ) ]
     fn __clone_dyn( &self, _ : DontCallMe ) -> *mut ();
   }
 
@@ -98,14 +99,14 @@ pub( crate ) mod private
   where
     T : CloneDyn,
   {
-    /// # Safety
-    ///
-    /// This function uses an `unsafe` block because it performs low-level memory manipulations. Specifically, it handles
-    /// raw pointers and converts them to and from `Box< T >`. This is necessary to dynamically clone a trait object, which
-    /// does not support cloning through the standard `Clone` trait. The safety of this function depends on the guarantee
-    /// that the `CloneDyn` trait is correctly implemented for the given type `T`, ensuring that `__clone_dyn` returns a
-    /// valid pointer to a cloned instance of `T`.
-    ///
+    // # Safety
+    //
+    // This function uses an `unsafe` block because it performs low-level memory manipulations. Specifically, it handles
+    // raw pointers and converts them to and from `Box< T >`. This is necessary to dynamically clone a trait object, which
+    // does not support cloning through the standard `Clone` trait. The safety of this function depends on the guarantee
+    // that the `CloneDyn` trait is correctly implemented for the given type `T`, ensuring that `__clone_dyn` returns a
+    // valid pointer to a cloned instance of `T`.
+    //
     #[ allow( unsafe_code ) ]
     unsafe
     {
@@ -183,14 +184,14 @@ pub( crate ) mod private
   where
     T : ?Sized + CloneDyn,
   {
-    /// # Safety
-    ///
-    /// This function uses an `unsafe` block because it performs low-level memory manipulations involving raw pointers.
-    /// The `unsafe` block is necessary here because we're manually handling raw pointers and converting them to and from
-    /// `Box<T>`. This bypasses Rust's ownership and borrowing rules to achieve dynamic cloning of a boxed trait object.
-    /// The safety of this function relies on the correct implementation of the `CloneDyn` trait for the given type `T`.
-    /// Specifically, `__clone_dyn` must return a valid pointer to a cloned instance of `T`.
-    ///
+    // # Safety
+    //
+    // This function uses an `unsafe` block because it performs low-level memory manipulations involving raw pointers.
+    // The `unsafe` block is necessary here because we're manually handling raw pointers and converting them to and from
+    // `Box<T>`. This bypasses Rust's ownership and borrowing rules to achieve dynamic cloning of a boxed trait object.
+    // The safety of this function relies on the correct implementation of the `CloneDyn` trait for the given type `T`.
+    // Specifically, `__clone_dyn` must return a valid pointer to a cloned instance of `T`.
+    //
     #[ allow( unsafe_code ) ]
     unsafe
     {
@@ -201,9 +202,13 @@ pub( crate ) mod private
     }
   }
 
+  #[ doc( hidden ) ]
   mod sealed
   {
+    #[ doc( hidden ) ]
+    #[ allow( missing_debug_implementations ) ]
     pub struct DontCallMe;
+    #[ doc( hidden ) ]
     pub trait Sealed {}
     impl< T : Clone > Sealed for T {}
     impl< T : Clone > Sealed for [ T ] {}

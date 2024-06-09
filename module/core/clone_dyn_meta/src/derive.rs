@@ -5,7 +5,7 @@ use macro_tools::
   Result,
   AttributePropertyOptionalSingletone,
   AttributePropertyComponent,
-  attr,
+  // attr,
   diag,
   generic_params,
 };
