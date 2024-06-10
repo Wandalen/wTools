@@ -3,8 +3,14 @@ use super::*;
 // = import tests of clone_dyn
 
 #[ cfg( feature = "derive_clone_dyn" ) ]
-#[ path = "../../../../core/clone_dyn/tests/inc/mod.rs" ]
-mod clone_dyn_test;
+mod clone_dyn_test
+{
+  use super::*;
+
+  #[ path = "../../../../../core/clone_dyn/tests/inc/mod.rs" ]
+  mod clone_dyn_test;
+
+}
 
 // = import tests of variadic_from
 

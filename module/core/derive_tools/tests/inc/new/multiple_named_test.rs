@@ -1,7 +1,7 @@
 use super::*;
 
 #[ derive( Debug, PartialEq, Eq, the_module::New ) ]
-#[ debug ]
+// #[ debug ]
 struct StructNamedFields
 {
   a : i32,

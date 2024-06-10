@@ -248,7 +248,6 @@ pub mod prelude
 {
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   pub use super::private::
   {
     CloneDyn,

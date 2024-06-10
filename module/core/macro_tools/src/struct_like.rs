@@ -401,27 +401,27 @@ pub( crate ) mod private
 
     /// Extracts the type of each field.
     pub fn field_types<'a>( &'a self )
-    -> std::iter::Map
-    <
-      std::boxed::Box< dyn _IterTrait< '_, &syn::Field > + 'a >,
-      impl FnMut( &'a syn::Field ) -> &'a syn::Type + 'a,
-    >
+    -> BoxedIter< 'a, &'a syn::Type >
+    // -> std::iter::Map
+    // <
+    //   std::boxed::Box< dyn _IterTrait< '_, &syn::Field > + 'a >,
+    //   impl FnMut( &'a syn::Field ) -> &'a syn::Type + 'a,
+    // >
     {
-      self.fields().map( move | field | &field.ty )
+      Box::new( self.fields().map( move | field | &field.ty ) )
     }
 
     /// Extracts the name of each field.
     // pub fn field_attrs< 'a >( &'a self ) -> impl IterTrait< 'a, &'a Vec< syn::Attribute > >
     pub fn field_attrs<'a>( &'a self )
-    -> std::iter::Map
-    <
-      std::boxed::Box< dyn _IterTrait< '_, &syn::Field > + 'a >,
-      impl FnMut( &'a syn::Field ) -> &'a Vec< syn::Attribute > + 'a,
-    >
+    -> BoxedIter< 'a, &'a Vec< syn::Attribute > >
+    // -> std::iter::Map
+    // <
+    //   std::boxed::Box< dyn _IterTrait< '_, &syn::Field > + 'a >,
+    //   impl FnMut( &'a syn::Field ) -> &'a Vec< syn::Attribute > + 'a,
+    // >
     {
-      self.fields().map( | field | &field.attrs )
-      // Box::new( self.fields().map( | field | &field.attrs ) )
-      // xxx
+      Box::new( self.fields().map( | field | &field.attrs ) )
     }
 
     /// Extract the first field.

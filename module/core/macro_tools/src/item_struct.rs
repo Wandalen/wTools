@@ -9,13 +9,12 @@ pub( crate ) mod private
 
   /// Extracts the types of each field into a vector.
   pub fn field_types< 'a >( t : &'a syn::ItemStruct )
-  // -> impl IterTrait< 'a, &'a syn::Type > + Clone
-  -> std::iter::Map
-  <
-    // std::boxed::Box< dyn _IterTrait< '_, &syn::Field > + 'a >,
-    syn::punctuated::Iter< 'a, syn::Field >,
-    impl FnMut( &'a syn::Field ) -> &'a syn::Type + 'a,
-  >
+  -> impl IterTrait< 'a, &'a syn::Type >
+  // -> std::iter::Map
+  // <
+  //   syn::punctuated::Iter< 'a, syn::Field >,
+  //   impl FnMut( &'a syn::Field ) -> &'a syn::Type + 'a,
+  // >
   {
     t.fields.iter().map( | field | &field.ty )
   }

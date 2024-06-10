@@ -192,7 +192,7 @@ parse-display = { version = "~0.8.2", optional = true, default-features = false 
 ## internal
 derive_tools_meta = { workspace = true, features = [] }
 variadic_from = { workspace = true, features = [] }
-clone_dyn = { workspace = true, features = [] }
+clone_dyn = { workspace = true, features = [ "clone_dyn_types", "clone_dyn_meta" ] }
 
 
 [dev-dependencies]
