@@ -11,6 +11,7 @@ mod private
   use _path::AbsolutePath;
   use workspace::Workspace;
   use package::Package;
+  use channel::Channel;
 
   /// Represents a report of publishing packages
   #[ derive( Debug, Default, Clone ) ]
@@ -107,7 +108,7 @@ mod private
   /// # Returns
   /// A Result containing a `PublishPlan` if successful, or an `Error` otherwise.
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
-  pub fn publish_plan( patterns : Vec< String >, dry : bool, temp : bool  ) -> Result< package::PublishPlan, Error >
+  pub fn publish_plan( patterns : Vec< String >, channel : Channel, dry : bool, temp : bool  ) -> Result< package::PublishPlan, Error >
   {
     let mut paths = HashSet::new();
     // find all packages by specified folders
@@ -173,6 +174,7 @@ mod private
     let roots = packages_to_publish.iter().map( | p | package_map.get( p ).unwrap().crate_dir() ).collect::< Vec< _ > >();
 
     let plan = package::PublishPlan::former()
+    .channel( channel )
     .workspace_dir( CrateDir::try_from( workspace_root_dir ).unwrap() )
     .option_base_temp_dir( dir.clone() )
     .dry( dry )

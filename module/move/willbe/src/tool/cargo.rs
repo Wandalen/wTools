@@ -9,12 +9,14 @@ mod private
   use former::Former;
   use process_tools::process::*;
   use wtools::error::Result;
+  use channel::Channel;
 
   /// Represents pack options
   #[ derive( Debug, Former, Clone ) ]
   pub struct PackOptions
   {
-    pub( crate ) path : PathBuf,
+    pub( crate ) path : PathBuf, 
+    pub( crate ) channel : Channel,
     #[ former( default = true ) ]
     pub( crate ) allow_dirty : bool,
     // qqq : rename to checking_changes
@@ -38,7 +40,7 @@ mod private
   {
     fn to_pack_args( &self ) -> Vec< String >
     {
-      [ "package".to_string() ]
+      [ "run".to_string(), self.channel.to_string(), "cargo".into(), "package".into() ]
       .into_iter()
       .chain( if self.allow_dirty { Some( "--allow-dirty".to_string() ) } else { None } )
       .chain( if self.no_verify { Some( "--no-verify".to_string() ) } else { None } )
@@ -62,7 +64,7 @@ mod private
   )]
   pub fn pack( args : PackOptions ) -> Result< Report >
   {
-    let ( program, options ) = ( "cargo", args.to_pack_args() );
+    let ( program, options ) = ( "rustup", args.to_pack_args() );
 
     if args.dry
     {

@@ -34,6 +34,20 @@ mod private
       }
     }
   }
+  
+  impl TryFrom< String > for Channel
+  {
+    type Error = error::for_app::Error;
+    fn try_from( value : String ) -> Result< Self, Self::Error >
+    {
+      Ok( match value.as_ref()
+      {
+        "stable" => Self::Stable,
+        "nightly" => Self::Nightly,
+        other => error::for_app::bail!( "Unexpected channel value. Expected [stable, channel]. Got: `{other}`" ),
+      })
+    }
+  }
 
   /// Retrieves a list of available channels.
   ///

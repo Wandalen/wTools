@@ -8,10 +8,13 @@ mod private
   use wtools::error::{ Result, for_app::Context };
   use former::Former;
   use std::fmt::Write;
+  use channel::Channel;
 
   #[ derive( Former ) ]
   struct PublishProperties
   {
+    #[ former( default = Channel::Stable ) ]
+    channel : Channel,
     #[ former( default = true ) ]
     dry : bool,
     #[ former( default = true ) ]
@@ -29,8 +32,8 @@ mod private
 
     let patterns : Vec< _ > = o.args.get_owned( 0 ).unwrap_or_else( || vec![ "./".into() ] );
 
-    let PublishProperties { dry, temp } = o.props.try_into()?;
-    let plan = action::publish_plan( patterns, dry, temp ).context( "Failed to plan the publication process" )?;
+    let PublishProperties { channel, dry, temp } = o.props.try_into()?;
+    let plan = action::publish_plan( patterns, channel, dry, temp ).context( "Failed to plan the publication process" )?;
 
     let mut formatted_plan = String::new();
     writeln!( &mut formatted_plan, "Tree :" )?;
@@ -75,6 +78,7 @@ mod private
     {
       let mut this = Self::former();
 
+      this = if let Some( v ) = value.get_owned( "channel" ) { this.channel::< Channel >( { let v : String = v; Channel::try_from( v )? } ) } else { this };
       this = if let Some( v ) = value.get_owned( "dry" ) { this.dry::< bool >( v ) } else { this };
       this = if let Some( v ) = value.get_owned( "temp" ) { this.temp::< bool >( v ) } else { this };
 
