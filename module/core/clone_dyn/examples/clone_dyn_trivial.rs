@@ -70,7 +70,7 @@ fn main()
     T : 'a,
     Self : Iterator< Item = T > + ExactSizeIterator< Item = T > + DoubleEndedIterator,
     // Self : CloneDyn,
-    // no need to explicitly to define this bound, because macro will do it for you anyway
+    // There’s no need to explicitly define this bound because the macro will handle it for you.
   {
   }
 
@@ -126,6 +126,7 @@ fn main()
     // Nevertheless, thanks to CloneDyn, the object is clonable.
     //
     // This line demonstrates cloning the iterator and iterating over the cloned iterator.
+    // Without `CloneDyn`, you would need to collect the iterator into a container, allocating memory on the heap.
     iter.clone().for_each( | e | println!( "{e}" ) );
 
     // Iterate over the original iterator and print each element.
