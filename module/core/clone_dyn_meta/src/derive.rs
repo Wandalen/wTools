@@ -5,13 +5,12 @@ use macro_tools::
   Result,
   AttributePropertyOptionalSingletone,
   AttributePropertyComponent,
-  // attr,
   diag,
   generic_params,
 };
 use former_types::{ Assign };
 // use const_format::concatcp;
-// xxx : incapsulate into macro_tools and put all that udner features
+// xxx : incapsulate into macro_tools and put all that under features
 
 //
 

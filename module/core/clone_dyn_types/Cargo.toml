@@ -27,9 +27,6 @@ all-features = false
 
 default = [ "enabled" ]
 full = [ "enabled" ]
-no_std = []
-use_alloc = [ "no_std" ]
-# xxx : implement no_std
 enabled = []
 
 [dependencies]

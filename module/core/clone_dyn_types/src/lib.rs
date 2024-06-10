@@ -1,21 +1,13 @@
-#![ cfg_attr( feature = "no_std", no_std ) ]
+#![ no_std ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/clone_dyn_types/latest/clone_dyn_types/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
-// xxx : fix
-
-#[ allow( unused_extern_crates ) ]
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
-extern crate alloc;
 
 /// Namespace with dependencies.
-
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
-  // pub use ::clone_dyn_meta;
 }
 
 /// Internal namespace.
@@ -24,13 +16,13 @@ pub mod dependency
 pub( crate ) mod private
 {
 
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   extern crate alloc;
-  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  #[ allow( unused_imports ) ]
+  // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  // #[ allow( unused_imports ) ]
   use alloc::boxed::Box;
-  #[ cfg( all( feature = "use_std", not( feature = "use_alloc" ) ) ) ]
-  use std::boxed::Box;
+  // #[ cfg( all( feature = "use_std", not( feature = "use_alloc" ) ) ) ]
+  // use std::boxed::Box;
 
   /// A trait to upcast a clonable entity and clone it.
   /// It's implemented for all entities which can be cloned.

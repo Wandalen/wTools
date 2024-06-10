@@ -1,14 +1,8 @@
-#![ cfg_attr( feature = "no_std", no_std ) ]
+#![ no_std ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/clone_dyn/latest/clone_dyn/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
-// xxx
-
-// #[ allow( unused_extern_crates ) ]
-// #[ cfg( feature = "enabled" ) ]
-// #[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
-// extern crate alloc;
 
 /// Namespace with dependencies.
 
@@ -22,7 +16,6 @@ pub mod dependency
 }
 
 /// Internal namespace.
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 #[ cfg( feature = "enabled" ) ]
 pub( crate ) mod private
 {
