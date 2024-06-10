@@ -9,7 +9,7 @@ use macro_tools::
   syn::ItemStruct,
 };
 
-pub fn phantom_data( input : proc_macro::TokenStream  ) -> Result< proc_macro2::TokenStream >
+pub fn phantom( input : proc_macro::TokenStream  ) -> Result< proc_macro2::TokenStream >
 {
   let original_input = input.clone();
   let parsed = syn::parse::< ItemStruct >( input )?;

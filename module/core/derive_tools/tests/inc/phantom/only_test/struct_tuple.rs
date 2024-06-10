@@ -1,5 +1,5 @@
 #[ test ]
-fn phantom_data()
+fn phantom()
 {
   let _ = StructTuple::< bool >( "boo".into(), 3, Default::default() );
 }

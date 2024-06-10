@@ -26,5 +26,5 @@ pub mod new;
 pub mod variadic_from;
 #[ cfg( feature = "derive_reflect" ) ]
 pub mod reflect;
-#[ cfg( feature = "derive_phantom_data" ) ]
-pub mod phantom_data;
+#[ cfg( feature = "derive_phantom" ) ]
+pub mod phantom;

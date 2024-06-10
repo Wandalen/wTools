@@ -25,7 +25,7 @@ mod all_manual_test;
 		feature = "derive_deref_mut",
 		feature = "derive_from",
 		feature = "derive_inner_from",
-        feature = "derive_phantom_data"
+        feature = "derive_phantom"
 	)
 )]
 mod all_test;
@@ -247,9 +247,9 @@ mod inner_from_tests
 
 }
 
-#[ cfg( feature = "derive_phantom_data" ) ]
-#[ path = "phantom_data" ]
-mod phantom_data_tests
+#[ cfg( feature = "derive_phantom" ) ]
+#[ path = "phantom" ]
+mod phantom_tests
 {
   #[ allow( unused_imports ) ]
   use super::*;

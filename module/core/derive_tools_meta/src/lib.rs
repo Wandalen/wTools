@@ -15,7 +15,7 @@
     feature = "derive_from",
     feature = "derive_inner_from",
     feature = "derive_variadic_from",
-    feature = "derive_phantom_data"
+    feature = "derive_phantom"
   )
 )]
 #[ cfg( feature = "enabled" ) ]
@@ -31,7 +31,7 @@ mod derive;
 //     feature = "derive_from",
 //     feature = "derive_inner_from",
 //     feature = "derive_variadic_from",
-//     feature = "derive_phantom_data"
+//     feature = "derive_phantom"
 //   )
 // )]
 // #[ cfg( feature = "enabled" ) ]
@@ -541,12 +541,12 @@ pub fn derive_variadic_from( input : proc_macro::TokenStream ) -> proc_macro::To
 /// }
 /// ```
 ///
-/// Use `#[ phantom_data ]` to automatically generate the `PhantomData` field:
+/// Use `#[ phantom ]` to automatically generate the `PhantomData` field:
 ///
 /// ```rust
 /// use derive_tools_meta::*;
 ///
-/// #[ phantom_data ]
+/// #[ phantom ]
 /// pub struct MyStruct< T >
 /// {
 ///     data: i32,
@@ -557,11 +557,11 @@ pub fn derive_variadic_from( input : proc_macro::TokenStream ) -> proc_macro::To
 ///
 
 #[ cfg( feature = "enabled" ) ]
-#[ cfg ( feature = "derive_phantom_data" ) ]
+#[ cfg ( feature = "derive_phantom" ) ]
 #[ proc_macro_attribute ]
-pub fn phantom_data( _attr: proc_macro::TokenStream, input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+pub fn phantom( _attr: proc_macro::TokenStream, input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = derive::phantom_data::phantom_data( input );
+  let result = derive::phantom::phantom( input );
   match result
   {
     Ok( stream ) => stream.into(),
