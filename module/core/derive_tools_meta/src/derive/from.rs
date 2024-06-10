@@ -363,7 +363,8 @@ fn generate_multiple_fields_named< 'a >
   });
 
   // xxx : qqq : rid off collects
-  let field_types : Vec< _ > = field_types.collect();
+  // let field_types : Vec< _ > = field_types.collect();
+  let field_types2 = field_types.clone();
   qt!
   {
     impl< #generics_impl > From< (# ( #field_types ),* ) > for #item_name< #generics_ty >
@@ -372,9 +373,9 @@ fn generate_multiple_fields_named< 'a >
     {
       #[ inline( always ) ]
       // fn from( src : (i32, bool) ) -> Self
-      fn from( src : ( #( #field_types ),* ) ) -> Self
+      fn from( src : ( #( #field_types2 ),* ) ) -> Self
       {
-        #item_name { #(#params),* }
+        #item_name { #( #params ),* }
       }
     }
   }

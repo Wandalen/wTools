@@ -392,6 +392,7 @@ pub( crate ) mod private
         },
         StructLike::Enum( _item ) =>
         {
+          // xxx
           let iter : BoxedIter< 'a, &'a syn::Ident > = Box::new( self.fields().map( | field | field.ident.as_ref().unwrap() ) );
           Some( iter )
           // Some( DynIter::new( self.fields().map( | field | field.ident.as_ref().unwrap() ) ) )

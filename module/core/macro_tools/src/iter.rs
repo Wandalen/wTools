@@ -2,13 +2,9 @@
 //! Iterators.
 //!
 
-// use std::fmt::Debug;
-
 /// Internal namespace.
 pub( crate ) mod private
 {
-  // use std::fmt;
-  // use crate::*;
   use clone_dyn_types::CloneDyn;
 
   /// Trait that encapsulates an iterator with specific characteristics, tailored for use with the `syn` crate.
@@ -19,6 +15,7 @@ pub( crate ) mod private
   /// - Provide an exact size hint (`ExactSizeIterator`),
   /// - Be traversed from both ends (`DoubleEndedIterator`).
   ///
+
   pub trait _IterTrait< 'a, T >
   where
     T : 'a,
@@ -71,7 +68,8 @@ pub( crate ) mod private
 
   // =
 
-  // xxx
+  // xxx : write docuemntation
+  /// Prefer `BoxedIter` over `impl IterTrait` always when ypu use trait object ( dyn Itrator ) because concrete type in return is less restrictive than `impl IterTrait`.
   pub type BoxedIter< 'a, T > = Box< dyn _IterTrait< 'a, T > + 'a >;
 
   /// Trait that encapsulates a clonable iterator with specific characteristics, tailored for use with the `syn` crate.
