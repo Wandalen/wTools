@@ -541,12 +541,12 @@ pub fn derive_variadic_from( input : proc_macro::TokenStream ) -> proc_macro::To
 /// }
 /// ```
 ///
-/// Use `#[ derive( PhantomData ) ]` to automatically generate the `PhantomData` field:
+/// Use `#[ phantom_data ]` to automatically generate the `PhantomData` field:
 ///
 /// ```rust
 /// use derive_tools_meta::*;
 ///
-/// #[ derive( PhantomData ) ]
+/// #[ phantom_data ]
 /// pub struct MyStruct< T >
 /// {
 ///     data: i32,
@@ -558,8 +558,8 @@ pub fn derive_variadic_from( input : proc_macro::TokenStream ) -> proc_macro::To
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg ( feature = "derive_phantom_data" ) ]
-#[ proc_macro_derive( PhantomData, attributes( debug ) ) ]
-pub fn derive_phantom_data( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+#[ proc_macro_attribute ]
+pub fn phantom_data( _attr: proc_macro::TokenStream, input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::phantom_data::phantom_data( input );
   match result
