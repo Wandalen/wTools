@@ -69,6 +69,8 @@ default = [
   "derive_inner_from",
   "derive_new",
 
+  "derive_phantom_data"
+
   # "use_std",
 ]
 
@@ -113,6 +115,8 @@ full = [
   "derive_from",
   "derive_inner_from",
   "derive_new",
+
+  "derive_phantom_data"
 
   # "use_std",
 ]
@@ -173,6 +177,8 @@ derive_clone_dyn = [ "clone_dyn/enabled" ]
 derive_from = [ "derive_tools_meta/derive_from" ]
 derive_inner_from = [ "derive_tools_meta/derive_inner_from" ]
 derive_new = [ "derive_tools_meta/derive_new" ]
+
+derive_phantom_data = [ "derive_tools_meta/derive_phantom_data" ]
 
 parse_display = [ "parse-display" ]
 
