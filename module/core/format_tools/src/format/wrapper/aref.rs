@@ -2,6 +2,8 @@
 //! It's often necessary to wrap something inot a local structure and this file contains a resusable local structure for wrapping.
 //!
 
+// xxx : make command to autogenerate it, maybe
+
 // use core::fmt;
 use core::ops::{ Deref };
 

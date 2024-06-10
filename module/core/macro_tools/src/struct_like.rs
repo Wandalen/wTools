@@ -250,25 +250,27 @@ pub( crate ) mod private
   impl StructLike
   {
 
+
     /// Returns an iterator over elements of the item.
-    pub fn elements< 'a >( &'a self ) -> impl IterTrait< 'a, FieldOrVariant< 'a > > + 'a
+    // pub fn elements< 'a >( &'a self ) -> impl IterTrait< 'a, FieldOrVariant< 'a > > + 'a
+    pub fn elements< 'a >( &'a self ) -> BoxedIter< 'a, FieldOrVariant< 'a > >
     {
       match self
       {
         StructLike::Unit( _ ) =>
         {
           let empty : Vec< FieldOrVariant< 'a > > = vec![];
-          Box::new( empty.into_iter() ) as BoxedIter< 'a, FieldOrVariant< 'a > >
+          Box::new( empty.into_iter() )
         },
         StructLike::Struct( item ) =>
         {
           let fields = item.fields.iter().map( FieldOrVariant::from );
-          Box::new( fields ) as BoxedIter< 'a, FieldOrVariant< 'a > >
+          Box::new( fields )
         },
         StructLike::Enum( item ) =>
         {
           let variants = item.variants.iter().map( FieldOrVariant::from );
-          Box::new( variants ) as BoxedIter< 'a, FieldOrVariant< 'a > >
+          Box::new( variants )
         },
       }
     }
@@ -354,9 +356,8 @@ pub( crate ) mod private
     }
 
     /// Returns an iterator over fields of the item.
-    // pub fn fields< 'a >( &'a self ) -> BoxedIter< 'a, &'a syn::Field >
-    pub fn fields< 'a >( &'a self ) -> impl IterTrait< 'a, &'a syn::Field >
-    // xxx
+    // pub fn fields< 'a >( &'a self ) -> impl IterTrait< 'a, &'a syn::Field >
+    pub fn fields< 'a >( &'a self ) -> BoxedIter< 'a, &'a syn::Field >
     {
       let result : BoxedIter< 'a, &'a syn::Field > = match self
       {
@@ -377,8 +378,8 @@ pub( crate ) mod private
     }
 
     /// Extracts the name of each field.
-    pub fn field_names< 'a >( &'a self ) -> Option< impl IterTrait< 'a, &'a syn::Ident > + '_ >
-    // pub fn field_names< 'a >( &'a self ) -> Option< DynIter< 'a, syn::Ident > >
+    // pub fn field_names< 'a >( &'a self ) -> Option< impl IterTrait< 'a, &'a syn::Ident > + '_ >
+    pub fn field_names< 'a >( &'a self ) -> Option< BoxedIter< 'a, &'a syn::Ident >>
     {
       match self
       {
@@ -392,29 +393,31 @@ pub( crate ) mod private
         },
         StructLike::Enum( _item ) =>
         {
-          // xxx
-          let iter : BoxedIter< 'a, &'a syn::Ident > = Box::new( self.fields().map( | field | field.ident.as_ref().unwrap() ) );
+          let iter = Box::new( self.fields().map( | field | field.ident.as_ref().unwrap() ) );
           Some( iter )
-          // Some( DynIter::new( self.fields().map( | field | field.ident.as_ref().unwrap() ) ) )
-          // Some( DynIterFrom::dyn_iter_from( self.fields().map( | field | field.ident.as_ref().unwrap() ) ) )
-          // Box::new( std::iter::empty() )
         },
       }
-      // Box::new( self.fields().map( | field | field.ident.as_ref() ) )
     }
 
     /// Extracts the type of each field.
-    pub fn field_types< 'a >( &'a self ) -> impl IterTrait< 'a, &'a syn::Type >
-    // pub fn field_types< 'a >( &'a self ) -> BoxedIter< 'a, &'a syn::Type >
+    pub fn field_types<'a>( &'a self )
+    -> std::iter::Map
+    <
+      std::boxed::Box< dyn _IterTrait< '_, &syn::Field > + 'a >,
+      impl FnMut( &'a syn::Field ) -> &'a syn::Type + 'a,
+    >
     {
-      // Box::new( self.fields().map( | field | &field.ty ) )
-      self.fields().map( | field | &field.ty )
+      self.fields().map( move | field | &field.ty )
     }
 
     /// Extracts the name of each field.
-    // pub fn field_attrs( &self ) -> Box< dyn Iterator< Item = &Vec< syn::Attribute > > + '_ >
-    pub fn field_attrs< 'a >( &'a self ) -> impl IterTrait< 'a, &'a Vec< syn::Attribute > >
-    // pub fn field_attrs< 'a >( &'a self ) -> BoxedIter< 'a, &'a Vec< syn::Attribute > >
+    // pub fn field_attrs< 'a >( &'a self ) -> impl IterTrait< 'a, &'a Vec< syn::Attribute > >
+    pub fn field_attrs<'a>( &'a self )
+    -> std::iter::Map
+    <
+      std::boxed::Box< dyn _IterTrait< '_, &syn::Field > + 'a >,
+      impl FnMut( &'a syn::Field ) -> &'a Vec< syn::Attribute > + 'a,
+    >
     {
       self.fields().map( | field | &field.attrs )
       // Box::new( self.fields().map( | field | &field.attrs ) )
