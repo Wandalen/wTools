@@ -28,6 +28,8 @@ mod file
   // use super::*;
   pub mod attr;
   pub mod attr_prop;
+  pub mod components;
+  pub mod ct;
   pub mod container_kind;
   pub mod derive;
   pub mod diag;
@@ -47,6 +49,31 @@ mod file
   pub mod typ;
 }
 
+pub use file::
+{
+  // attr,
+  // attr_prop,
+  components,
+  ct,
+  // container_kind,
+  // derive,
+  // diag,
+  // drop,
+  // equation,
+  // generic_args,
+  // generic_params,
+  // item,
+  // item_struct,
+  // iter,
+  // name,
+  // phantom,
+  // punctuated,
+  // quantifier,
+  // struct_like,
+  // tokens,
+  // typ,
+};
+
 ///
 /// Dependencies of the module.
 ///
@@ -65,6 +92,8 @@ pub mod dependency
 #[ cfg( feature = "enabled" ) ]
 pub use protected::*;
 
+// qqq : put every file of the first level under feature
+
 /// Protected namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 pub mod protected
@@ -81,7 +110,9 @@ pub mod protected
   {
     attr::orphan::*,
     attr_prop::orphan::*,
+    components::orphan::*,
     container_kind::orphan::*,
+    ct::orphan::*,
     derive::orphan::*,
     diag::orphan::*,
     drop::orphan::*,
@@ -137,6 +168,9 @@ pub mod exposed
   {
     attr::exposed::*,
     attr_prop::exposed::*,
+    components::orphan::*,
+    container_kind::orphan::*,
+    ct::orphan::*,
     container_kind::exposed::*,
     derive::orphan::*,
     diag::exposed::*,
@@ -215,6 +249,9 @@ pub mod prelude
   {
     attr::prelude::*,
     attr_prop::prelude::*,
+    components::orphan::*,
+    container_kind::orphan::*,
+    ct::orphan::*,
     container_kind::prelude::*,
     derive::orphan::*,
     diag::prelude::*,

@@ -47,9 +47,11 @@ syn = { version = "~2.0.52", features = [ "full", "extra-traits" ] }
 
 ## internal
 interval_adapter = { workspace = true, features = [] }
+clone_dyn_types = { workspace = true, features = [] }
 former_types = { workspace = true, features = [ "types_component_assign" ] }
-clone_dyn_types = { workspace = true, features = [] } # xxx : qqq : optimize features
+const_format = { version = "0.2.32", features = [] }
+
+# xxx : qqq : optimize features
 
 [dev-dependencies]
 test_tools = { workspace = true }
-const_format = { version = "0.2.32" }

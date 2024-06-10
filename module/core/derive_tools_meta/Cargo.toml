@@ -65,10 +65,11 @@ derive_variadic_from = []
 
 [dependencies]
 # zzz : qqq : optimize features set
-macro_tools = { workspace = true, features = [ "full" ] }
-iter_tools = { workspace = true, features = [ "full" ] }
+macro_tools = { workspace = true, features = [] }
+iter_tools = { workspace = true, features = [] }
 former_types = { workspace = true, features = [ "types_component_assign" ] }
 const_format = { version = "0.2.32" }
+# xxx2 : continue
 
 [dev-dependencies]
 test_tools = { workspace = true }

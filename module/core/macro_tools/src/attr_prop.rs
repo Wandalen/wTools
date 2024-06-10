@@ -150,10 +150,12 @@ pub mod exposed
     singletone::AttributePropertySingletoneMarker,
     singletone_optional::AttributePropertyOptionalSingletone,
     singletone_optional::AttributePropertyOptionalSingletoneMarker,
+
     boolean::AttributePropertyBoolean,
     boolean::AttributePropertyBooleanMarker,
     boolean_optional::AttributePropertyOptionalBoolean,
     boolean_optional::AttributePropertyOptionalBooleanMarker,
+
     syn::AttributePropertySyn,
     syn::AttributePropertySynMarker,
     syn_optional::AttributePropertyOptionalSyn,

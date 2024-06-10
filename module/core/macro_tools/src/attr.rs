@@ -386,6 +386,7 @@ pub( crate ) mod private
     ///
     /// A `Result` containing the constructed component if successful, or an error if the parsing fails.
     fn from_meta( attr : &syn::Attribute ) -> Result< Self >;
+    // xxx : redo
   }
 
   /// Trait for properties of an attribute component that can be identified by a keyword.

@@ -1,5 +1,5 @@
 //!
-//! Iterators.
+//! Tailoted iterator.
 //!
 
 /// Internal namespace.
@@ -152,7 +152,7 @@ pub( crate ) mod private
 #[ allow( unused_imports ) ]
 pub use protected::*;
 
-/// Protected namespace of the module.
+/// Tailoted iterator.
 pub mod protected
 {
   #[ doc( inline ) ]
