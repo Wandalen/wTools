@@ -255,4 +255,6 @@ mod phantom_data_tests {
 
   mod struct_named;
   mod struct_named_manual;
+  mod struct_tuple;
+  mod struct_tuple_manual;
 }
