@@ -1,14 +1,15 @@
 use super::*;
-use macro_tools::{
-    attr,
-    diag,
-    Result,
-    phantom::add_to_item,
-    quote::ToTokens,
-    syn::ItemStruct,
+use macro_tools::
+{
+  attr,
+  diag,
+  Result,
+  phantom::add_to_item,
+  quote::ToTokens,
+  syn::ItemStruct,
 };
 
-pub fn phantom_data( input : proc_macro::TokenStream  ) -> Result<proc_macro2::TokenStream>
+pub fn phantom_data( input : proc_macro::TokenStream  ) -> Result< proc_macro2::TokenStream >
 {
   let original_input = input.clone();
   let parsed = syn::parse::< ItemStruct >( input )?;

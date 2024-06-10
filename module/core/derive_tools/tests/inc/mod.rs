@@ -249,8 +249,9 @@ mod inner_from_tests
 
 #[ cfg( feature = "derive_phantom_data" ) ]
 #[ path = "phantom_data" ]
-mod phantom_data_tests {
-#[ allow( unused_imports ) ]
+mod phantom_data_tests
+{
+  #[ allow( unused_imports ) ]
   use super::*;
 
   mod struct_named;
