@@ -40,16 +40,16 @@ where
   {
     let mut dst : Vec< ( &'static str, MaybeAs< 'a, String, How > ) > = Vec::new();
 
-    // fn into< 'a, V, How >( src : &'a V ) -> MaybeAs< 'a, String, How >
-    // where
-    //   How : Clone + Copy + 'static,
-    //   V : ToStringWith< How > + 'a,
-    // {
-    //   MaybeAs::< 'a, String, How >::from
-    //   (
-    //     < V as ToStringWith< How > >::to_string_with( src )
-    //   )
-    // }
+    fn from< 'a, V, How >( src : &'a V ) -> MaybeAs< 'a, String, How >
+    where
+      How : Clone + Copy + 'static,
+      V : ToStringWith< How > + 'a,
+    {
+      MaybeAs::< 'a, String, How >::from
+      (
+        < V as ToStringWith< How > >::to_string_with( src )
+      )
+    }
 
     fn add< 'a, V, How >
     (
@@ -61,15 +61,12 @@ where
       How : Clone + Copy + 'static,
       V : ToStringWith< How > + 'a,
     {
-      let val = MaybeAs::< 'a, String, How >::from
-      (
-        < V as ToStringWith< How > >::to_string_with( src )
-      );
+      let val = from( src );
       dst.push( ( key, val ) );
     }
 
-    // dst.push( ( "id", MaybeAs::< 'a, String, How >::from( &self.id ) ) );
-    add( &mut dst, "id", &self.id );
+    dst.push( ( "id", from( &self.id ) ) );
+    // add( &mut dst, "id", &self.id );
     add( &mut dst, "created_at", &self.created_at );
     add( &mut dst, "file_ids", &self.file_ids );
 
@@ -81,32 +78,6 @@ where
     {
       dst.push( ( "tools", MaybeAs::none() ) );
     }
-
-//     dst.push( ( "id", into( &self.id ) ) );
-//     dst.push( ( "created_at", into( &self.created_at ) ) );
-//     dst.push( ( "file_ids", into( &self.file_ids ) ) );
-//
-//     if let Some( tools ) = &self.tools
-//     {
-//       dst.push( ( "tools", into( &self.tools ) ) );
-//     }
-//     else
-//     {
-//       dst.push( ( "tools", MaybeAs::none() ) );
-//     }
-
-    // dst.push( ( "id", MaybeAs::< 'a, String, How >::from( < String as ToStringWith< How > >::to_string_with( &self.id ) ) ) );
-//     dst.push( ( "created_at", self.created_at.to_string_with().into() ) );
-//     dst.push( ( "file_ids", self.file_ids.to_string_with().into() ) );
-//
-//     if let Some( tools ) = &self.tools
-//     {
-//       dst.push( ( "tools", self.tools.to_string_with().into() ) );
-//     }
-//     else
-//     {
-//       dst.push( ( "tools", MaybeAs::none() ) );
-//     }
 
     dst.into_iter()
   }
@@ -170,6 +141,7 @@ fn basic()
 #[ test ]
 fn test_vec_fields()
 {
+
   let test_objects = vec!
   [
     TestObject
@@ -201,4 +173,5 @@ fn test_vec_fields()
   assert_eq!( fields.len(), 2 );
   assert_eq!( fields[ 0 ].0, 0 );
   assert_eq!( fields[ 1 ].0, 1 );
+
 }
