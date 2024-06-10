@@ -23,13 +23,12 @@ pub( crate ) mod private
   /// Retrieves the names of each field, if they exist.
   pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> Option< BoxedIter< 'a, &'a syn::Ident > >
   {
-    let result : Option< BoxedIter< 'a, &'a syn::Ident > > = match &t.fields
+    match &t.fields
     {
       syn::Fields::Named( fields ) => Some( Box::new( fields.named.iter().map( | field | field.ident.as_ref().unwrap() ) ) ),
       syn::Fields::Unit => Some( Box::new( core::iter::empty() ) ),
       _ => None,
-    };
-    return result;
+    }
   }
 
   /// Retrieves the type of the first field of the struct.
