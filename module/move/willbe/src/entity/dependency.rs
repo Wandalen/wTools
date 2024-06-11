@@ -43,9 +43,9 @@ mod private
     }
   }
 
-  impl From< &cargo_metadata::Dependency > for Dependency< '_ >
+  impl< 'a > From< &'a cargo_metadata::Dependency > for Dependency< 'a >
   {
-    fn from( inner : &cargo_metadata::Dependency ) -> Self
+    fn from( inner : &'a cargo_metadata::Dependency ) -> Self
     {
       Self
       {
