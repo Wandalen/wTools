@@ -38,6 +38,7 @@ default = [
   "derive_as_ref",
   "derive_as_mut",
   "derive_variadic_from",
+  "derive_phantom"
 ]
 full = [
   "enabled",
@@ -49,6 +50,7 @@ full = [
   "derive_as_ref",
   "derive_as_mut",
   "derive_variadic_from",
+  "derive_phantom"
 ]
 enabled = [ "macro_tools/enabled", "iter_tools/enabled", "former_types/enabled" ]
 
@@ -60,6 +62,7 @@ derive_from = []
 derive_new = []
 derive_inner_from = []
 derive_variadic_from = []
+derive_phantom = []
 
 [dependencies]
 # zzz : qqq : optimize features set
