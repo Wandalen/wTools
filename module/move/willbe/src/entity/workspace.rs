@@ -26,7 +26,7 @@ mod private
 
   impl From< cargo_metadata::Package > for WorkspacePackage
   {
-    fn from( inner : cargo_metadata::Package) -> Self
+    fn from( inner : cargo_metadata::Package ) -> Self
     {
       Self
       {
@@ -182,6 +182,7 @@ mod private
   #[ derive( Debug, Clone ) ]
   pub struct Workspace
   {
+    // qqq : for Bohdan : for Petro : describe all fields
     metadata : Option< cargo_metadata::Metadata >,
     manifest_dir : CrateDir,
   }
@@ -240,7 +241,7 @@ mod private
   impl Workspace
   {
     /// Load data from the current location or from cache
-    // FIX : Maybe unsafe. Take metadata of workspace in current dir.
+    // qqq : Maybe unsafe. Take metadata of workspace in current dir.
     pub fn load( &mut self ) -> Result< &mut Self >
     {
       if self.metadata.is_none()
@@ -253,7 +254,7 @@ mod private
     }
 
     /// Force loads data from the current location
-    // FIX : Maybe unsafe. Take metadata of workspace in current dir.
+    // qqq : Maybe unsafe. Take metadata of workspace in current dir.
     pub fn force_reload( &mut self ) -> Result< &mut Self >
     {
       let metadata = Self::with_crate_dir( self.manifest_dir.clone() )?.metadata.unwrap();
@@ -276,7 +277,6 @@ mod private
       .map( | p | p.into_iter().map( WorkspacePackage::from ).collect() )
     }
 
-
     /// Returns the path to workspace root
     pub fn workspace_root( &self ) -> Result< &Path, WorkspaceError >
     {
@@ -289,6 +289,7 @@ mod private
       Ok( self.metadata.as_ref().ok_or_else( || WorkspaceError::MetadataError )?.target_directory.as_std_path() )
     }
 
+    // qqq : bad : for Petro : that should not be here as it's very task specific
     /// Return discord url
     pub fn discord_url( &self ) -> Result< Option< String >, WorkspaceError >
     {
@@ -361,9 +362,9 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use Workspace;
-  orphan use WorkspaceError;
   protected use WorkspacePackage;
   protected use Dependency;
   protected use DependencyKind;
+  orphan use WorkspaceError;
+  exposed use Workspace;
 }

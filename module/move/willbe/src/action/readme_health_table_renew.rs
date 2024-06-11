@@ -11,10 +11,6 @@ mod private
     collections::HashMap,
   };
 
-  // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
-  // aaa : ✅
-
-
   use convert_case::{ Case, Casing };
   use toml_edit::Document;
   use regex::bytes::Regex;
@@ -43,7 +39,6 @@ mod private
     TAG_TEMPLATE.set( regex::bytes::Regex::new( r#"<!--\{ generate.healthtable(\(\)|\{\}|\(.*?\)|\{.*?\}) \} -->"# ).unwrap() ).ok();
     CLOSE_TAG.set( regex::bytes::Regex::new( r#"<!--\{ generate\.healthtable\.end \} -->"# ).unwrap() ).ok();
   }
-
 
   /// `Stability` is an enumeration that represents the stability level of a feature.
   #[ derive( Debug ) ]
@@ -81,7 +76,7 @@ mod private
   }
 
   /// Retrieves the stability level of a package from its `Cargo.toml` file.
-  fn stability_get( package_path: &Path ) -> Result< Stability >
+  fn stability_get( package_path : &Path ) -> Result< Stability >
   {
     let path = package_path.join( "Cargo.toml" );
     if path.exists()
@@ -107,37 +102,38 @@ mod private
 
   /// Represents parameters that are common for all tables
   #[ derive( Debug ) ]
-  struct GlobalTableParameters
+  struct GlobalTableOptions
   {
     /// Path to the root repository.
-    core_url: String,
+    core_url : String,
     /// User and repository name, written through '/'.
-    user_and_repo: String,
+    user_and_repo : String,
     /// List of branches in the repository.
-    branches: Option< Vec< String > >,
+    branches : Option< Vec< String > >,
     /// workspace root
     workspace_root : String,
+    // qqq : for Petro : is not that path?
   }
 
   /// Structure that holds the parameters for generating a table.
   #[ derive( Debug ) ]
-  struct TableParameters
+  struct TableOptions
   {
     // Relative path from workspace root to directory with modules
-    base_path: String,
+    base_path : String,
     // include branches column flag
-    include_branches: bool,
+    include_branches : bool,
     // include stability column flag
-    include_stability: bool,
+    include_stability : bool,
     // include docs column flag
-    include_docs: bool,
+    include_docs : bool,
     // include sample column flag
-    include: bool,
+    include : bool,
   }
 
-  impl From< HashMap< String, query::Value > > for TableParameters
+  impl From< HashMap< String, query::Value > > for TableOptions
   {
-    fn from( value : HashMap< String, query::Value >) -> Self
+    fn from( value : HashMap< String, query::Value > ) -> Self
     {
       let include_branches = value.get( "with_branches" ).map( | v | bool::from( v ) ).unwrap_or( true );
       let include_stability = value.get( "with_stability" ).map( | v | bool::from( v ) ).unwrap_or( true );
@@ -156,11 +152,12 @@ mod private
     }
   }
 
-  impl GlobalTableParameters
+  impl GlobalTableOptions
   {
     /// Initializes the struct's fields from a `Cargo.toml` file located at a specified path.
-    fn initialize_from_path( path: &Path ) -> Result< Self >
+    fn initialize_from_path( path : &Path ) -> Result< Self >
     {
+
       let cargo_toml_path = path.join( "Cargo.toml" );
       if !cargo_toml_path.exists()
       {
@@ -200,7 +197,7 @@ mod private
         {
           user_and_repo = url::git_info_extract( core_url )?;
         }
-        Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches, workspace_root: path.to_string_lossy().to_string() } )
+        Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches, workspace_root : path.to_string_lossy().to_string() } )
       }
     }
 
@@ -222,7 +219,7 @@ mod private
     let absolute_path = AbsolutePath::try_from( path )?;
     let mut cargo_metadata = Workspace::with_crate_dir( CrateDir::try_from( absolute_path )? )?;
     let workspace_root = workspace_root( &mut cargo_metadata )?;
-    let mut parameters = GlobalTableParameters::initialize_from_path( &workspace_root )?;
+    let mut parameters = GlobalTableOptions::initialize_from_path( &workspace_root )?;
 
     let read_me_path = workspace_root.join( readme_path(&workspace_root ).ok_or_else( || format_err!( "Fail to find README.md" ) )?);
     let mut file = OpenOptions::new()
@@ -253,7 +250,7 @@ mod private
           .ok_or( format_err!( "Fail to parse group" ) )?
           .as_bytes()
           )?;
-          let params: TableParameters  = query::parse( raw_table_params ).unwrap().into_map( vec![] ).into();
+          let params: TableOptions  = query::parse( raw_table_params ).unwrap().into_map( vec![] ).into();
           let table = package_readme_health_table_generate( &mut cargo_metadata, &params, &mut parameters )?;
           tables.push( table );
           tags_closures.push( ( open.end(), close.start() ) );
@@ -285,7 +282,7 @@ mod private
 
   /// Generate table from `table_parameters`.
   /// Generate header, iterate over all modules in package (from table_parameters) and append row.
-  fn package_readme_health_table_generate( workspace : &mut Workspace, table_parameters: &TableParameters, parameters: & mut GlobalTableParameters ) -> Result< String, Error >
+  fn package_readme_health_table_generate( workspace : &mut Workspace, table_parameters: &TableOptions, parameters: & mut GlobalTableOptions ) -> Result< String, Error >
   {
     let directory_names = directory_names
     (
@@ -364,7 +361,7 @@ mod private
   }
 
   /// Generate row that represents a module, with a link to it in the repository and optionals for stability, branches, documentation and links to the gitpod.
-  fn row_generate( module_name : &str, stability : Option< &Stability >, parameters : &GlobalTableParameters, table_parameters : &TableParameters ) -> String
+  fn row_generate( module_name : &str, stability : Option< &Stability >, parameters : &GlobalTableOptions, table_parameters : &TableOptions ) -> String
   {
     let mut rou = format!( "| [{}]({}/{}) |", &module_name, &table_parameters.base_path, &module_name );
     if table_parameters.include_stability
@@ -465,7 +462,7 @@ mod private
   }
 
   /// Generate table header
-  fn table_header_generate( parameters : &GlobalTableParameters, table_parameters : &TableParameters ) -> String
+  fn table_header_generate( parameters : &GlobalTableOptions, table_parameters : &TableOptions ) -> String
   {
     let mut header = String::from( "| Module |" );
     let mut separator = String::from( "|--------|" );
@@ -504,7 +501,7 @@ mod private
   }
 
   /// Generate cells for each branch
-  fn branch_cells_generate( table_parameters : &GlobalTableParameters, module_name : &str ) -> String
+  fn branch_cells_generate( table_parameters : &GlobalTableOptions, module_name : &str ) -> String
   {
     let cells = table_parameters
     .branches

@@ -41,8 +41,6 @@ pub( crate ) mod private
 
   impl TryFrom< AbsolutePath > for CrateDir
   {
-    // aaa : make better errors
-    // aaa : use `CrateDirError` for it
     type Error = CrateDirError;
 
     fn try_from( crate_dir_path : AbsolutePath ) -> Result< Self, Self::Error >
@@ -51,7 +49,6 @@ pub( crate ) mod private
       {
         return Err( CrateDirError::Validation( "The path is not a crate directory path".into() ) );
       }
-
       Ok( Self( crate_dir_path ) )
     }
   }
@@ -73,13 +70,13 @@ pub( crate ) mod private
 
   impl CrateDir
   {
+    // qqq : bad : for Petro : why clone?
     /// Returns an absolute path.
     pub fn absolute_path( &self ) -> AbsolutePath
     {
       self.0.clone()
     }
   }
-
 
 
 /// Represents errors related to manifest data processing.
@@ -111,6 +108,7 @@ pub( crate ) mod private
   {
     /// Path to `Cargo.toml`
     pub manifest_path : AbsolutePath,
+    // qqq : for Bohdan : for Petro : why not CrateDir?
     /// Strict type of `Cargo.toml` manifest.
     pub manifest_data : Option< toml_edit::Document >,
   }

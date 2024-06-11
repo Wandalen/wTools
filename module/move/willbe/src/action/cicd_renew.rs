@@ -175,7 +175,7 @@ mod private
     file_write( &workflow_root.join( "status_checks_rules_update.yml" ), include_str!( "../../template/workflow/status_checks_rules_update.yml" ) )?;
 
     file_write( &workflow_root.join( "Readme.md" ), include_str!( "../../template/workflow/Readme.md" ) )?;
-    
+
     Ok( () )
   }
 
@@ -231,7 +231,8 @@ mod private
   /// if not found there, it is then searched in the Cargo.toml file of the module.
   /// If it is still not found, the search continues in the GitHub remotes.
   /// Result looks like this: `Wandalen/wTools`
-  fn username_and_repository( cargo_toml_path : &AbsolutePath, packages : &[ WorkspacePackage ] ) -> Result< UsernameAndRepository >
+  fn username_and_repository( cargo_toml_path : &AbsolutePath, packages : &[ WorkspacePackage ] )
+  -> Result< UsernameAndRepository >
   {
       let mut contents = String::new();
       File::open( cargo_toml_path )?.read_to_string( &mut contents )?;
