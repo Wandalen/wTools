@@ -34,7 +34,6 @@ fn main()
 
   use macro_tools::
   {
-    attr,
     syn_err,
     return_syn_err,
     qt,

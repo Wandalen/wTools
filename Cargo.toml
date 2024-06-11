@@ -104,7 +104,7 @@ default-features = false
 features = [ "enabled" ]
 
 [workspace.dependencies.collection_tools]
-version = "~0.8.0"
+version = "~0.9.0"
 path = "module/core/collection_tools"
 default-features = false
 
@@ -135,6 +135,13 @@ path = "module/core/reflect_tools_meta"
 default-features = false
 features = [ "enabled" ]
 
+[workspace.dependencies.format_tools]
+version = "~0.1.0"
+path = "module/core/format_tools"
+default-features = false
+features = [ "enabled" ]
+# xxx : remove features, maybe
+
 # [workspace.dependencies.type_constructor]
 # version = "~0.3.0"
 # path = "module/core/type_constructor"
@@ -152,14 +159,20 @@ default-features = false
 features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn]
-version = "~0.18.0"
+version = "~0.19.0"
 path = "module/core/clone_dyn"
 default-features = false
 features = [ "enabled" ]
 
 [workspace.dependencies.clone_dyn_meta]
-version = "~0.18.0"
+version = "~0.19.0"
 path = "module/core/clone_dyn_meta"
+features = [ "enabled" ]
+
+[workspace.dependencies.clone_dyn_types]
+version = "~0.20.0"
+path = "module/core/clone_dyn_types"
+default-features = false
 features = [ "enabled" ]
 
 
@@ -182,7 +195,7 @@ default-features = false
 ## iter
 
 [workspace.dependencies.iter_tools]
-version = "~0.17.0"
+version = "~0.18.0"
 path = "module/core/iter_tools"
 default-features = false
 
@@ -200,7 +213,7 @@ path = "module/core/for_each"
 default-features = false
 
 [workspace.dependencies.former]
-version = "~2.3.0"
+version = "~2.4.0"
 path = "module/core/former"
 default-features = false
 
@@ -210,12 +223,12 @@ default-features = false
 # default-features = false
 
 [workspace.dependencies.former_meta]
-version = "~2.3.0"
+version = "~2.4.0"
 path = "module/core/former_meta"
 default-features = false
 
 [workspace.dependencies.former_types]
-version = "~2.4.0"
+version = "~2.5.0"
 path = "module/core/former_types"
 default-features = false
 
@@ -260,7 +273,7 @@ default-features = false
 ## macro tools
 
 [workspace.dependencies.macro_tools]
-version = "~0.30.0"
+version = "~0.32.0"
 path = "module/core/macro_tools"
 default-features = false
 

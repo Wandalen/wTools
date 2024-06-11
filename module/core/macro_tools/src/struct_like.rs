@@ -9,13 +9,18 @@ pub( crate ) mod private
   // use interval_adapter::BoundExt;
 
   /// Enum to encapsulate either a field from a struct or a variant from an enum.
-  #[ derive( Debug, PartialEq ) ]
+  #[ derive( Debug, PartialEq, Clone ) ]
   pub enum FieldOrVariant< 'a >
   {
     /// Represents a field within a struct or union.
     Field( &'a syn::Field ),
     /// Represents a variant within an enum.
     Variant( &'a syn::Variant ),
+  }
+
+  // xxx
+  impl< 'a > Copy for FieldOrVariant< 'a >
+  {
   }
 
   impl< 'a > From< &'a syn::Field > for FieldOrVariant< 'a >
@@ -245,25 +250,27 @@ pub( crate ) mod private
   impl StructLike
   {
 
+
     /// Returns an iterator over elements of the item.
-    pub fn elements< 'a >( &'a self ) -> impl IterTrait< 'a, FieldOrVariant< 'a > > + 'a
+    // pub fn elements< 'a >( &'a self ) -> impl IterTrait< 'a, FieldOrVariant< 'a > > + 'a
+    pub fn elements< 'a >( &'a self ) -> BoxedIter< 'a, FieldOrVariant< 'a > >
     {
       match self
       {
         StructLike::Unit( _ ) =>
         {
           let empty : Vec< FieldOrVariant< 'a > > = vec![];
-          Box::new( empty.into_iter() ) as Box< dyn IterTrait< 'a, FieldOrVariant< 'a > > >
+          Box::new( empty.into_iter() )
         },
         StructLike::Struct( item ) =>
         {
           let fields = item.fields.iter().map( FieldOrVariant::from );
-          Box::new( fields ) as Box< dyn IterTrait< 'a, FieldOrVariant< 'a > > >
+          Box::new( fields )
         },
         StructLike::Enum( item ) =>
         {
           let variants = item.variants.iter().map( FieldOrVariant::from );
-          Box::new( variants ) as Box< dyn IterTrait< 'a, FieldOrVariant< 'a > > >
+          Box::new( variants )
         },
       }
     }
@@ -349,11 +356,10 @@ pub( crate ) mod private
     }
 
     /// Returns an iterator over fields of the item.
-    // pub fn fields( &self ) -> Box< dyn Iterator< Item = &syn::Field > + '_ >
-    pub fn fields< 'a >( &'a self ) -> Box< dyn IterTrait< 'a, &'a syn::Field > + '_ >
     // pub fn fields< 'a >( &'a self ) -> impl IterTrait< 'a, &'a syn::Field >
+    pub fn fields< 'a >( &'a self ) -> BoxedIter< 'a, &'a syn::Field >
     {
-      match self
+      let result : BoxedIter< 'a, &'a syn::Field > = match self
       {
         StructLike::Unit( _item ) =>
         {
@@ -367,12 +373,13 @@ pub( crate ) mod private
         {
           Box::new( std::iter::empty() )
         },
-      }
+      };
+      result
     }
 
     /// Extracts the name of each field.
     // pub fn field_names< 'a >( &'a self ) -> Option< impl IterTrait< 'a, &'a syn::Ident > + '_ >
-    pub fn field_names< 'a >( &'a self ) -> Option< DynIter< 'a, syn::Ident > >
+    pub fn field_names< 'a >( &'a self ) -> Option< BoxedIter< 'a, &'a syn::Ident >>
     {
       match self
       {
@@ -386,26 +393,33 @@ pub( crate ) mod private
         },
         StructLike::Enum( _item ) =>
         {
-          Some( DynIter::new( self.fields().map( | field | field.ident.as_ref().unwrap() ) ) )
-          // Some( DynIterFrom::dyn_iter_from( self.fields().map( | field | field.ident.as_ref().unwrap() ) ) )
-          // Box::new( std::iter::empty() )
+          let iter = Box::new( self.fields().map( | field | field.ident.as_ref().unwrap() ) );
+          Some( iter )
         },
       }
-      // Box::new( self.fields().map( | field | field.ident.as_ref() ) )
     }
 
     /// Extracts the type of each field.
-    // pub fn field_types( &self ) -> Box< dyn Iterator< Item = &syn::Type > + '_ >
-    // pub fn field_types< 'a >( &'a self ) -> Box< dyn IterTrait< 'a, &'a syn::Type > + '_ >
-    pub fn field_types< 'a >( &'a self ) -> impl IterTrait< 'a, &'a syn::Type >
+    pub fn field_types<'a>( &'a self )
+    -> BoxedIter< 'a, &'a syn::Type >
+    // -> std::iter::Map
+    // <
+    //   std::boxed::Box< dyn _IterTrait< '_, &syn::Field > + 'a >,
+    //   impl FnMut( &'a syn::Field ) -> &'a syn::Type + 'a,
+    // >
     {
-      Box::new( self.fields().map( | field | &field.ty ) )
+      Box::new( self.fields().map( move | field | &field.ty ) )
     }
 
     /// Extracts the name of each field.
-    // pub fn field_attrs( &self ) -> Box< dyn Iterator< Item = &Vec< syn::Attribute > > + '_ >
-    // pub fn field_attrs< 'a >( &'a self ) -> Box< dyn IterTrait< 'a, &'a Vec< syn::Attribute > > + '_ >
-    pub fn field_attrs< 'a >( &'a self ) -> impl IterTrait< 'a, &'a Vec< syn::Attribute > >
+    // pub fn field_attrs< 'a >( &'a self ) -> impl IterTrait< 'a, &'a Vec< syn::Attribute > >
+    pub fn field_attrs<'a>( &'a self )
+    -> BoxedIter< 'a, &'a Vec< syn::Attribute > >
+    // -> std::iter::Map
+    // <
+    //   std::boxed::Box< dyn _IterTrait< '_, &syn::Field > + 'a >,
+    //   impl FnMut( &'a syn::Field ) -> &'a Vec< syn::Attribute > + 'a,
+    // >
     {
       Box::new( self.fields().map( | field | &field.attrs ) )
     }

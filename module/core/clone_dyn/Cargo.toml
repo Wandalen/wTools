@@ -1,6 +1,6 @@
 [package]
 name = "clone_dyn"
-version = "0.18.0"
+version = "0.19.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -23,18 +23,20 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-# exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
 
-default = [ "enabled" ]
-full = [ "enabled" ]
-no_std = []
-use_alloc = [ "no_std" ]
-enabled = [ "clone_dyn_meta/enabled" ]
+default = [ "enabled", "clone_dyn_types", "clone_dyn_meta" ]
+full = [ "enabled", "clone_dyn_types", "clone_dyn_meta" ]
+enabled = []
+
+clone_dyn_types = [ "dep:clone_dyn_types", "clone_dyn_types/enabled" ]
+clone_dyn_meta = [ "dep:clone_dyn_meta", "clone_dyn_meta/enabled", "clone_dyn_types" ]
 
 [dependencies]
-clone_dyn_meta = { workspace = true }
+clone_dyn_meta = { workspace = true, optional = true }
+clone_dyn_types = { workspace = true, optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
+inspect_type = { workspace = true, features = [ "full" ] }

@@ -35,6 +35,7 @@ mod private
   use diff::crate_diff;
   use version::version_revert;
   use error_tools::for_app::Error;
+  use channel::Channel;
 
   ///
   #[ derive( Debug, Clone ) ]
@@ -364,6 +365,7 @@ mod private
   {
     workspace_dir : CrateDir,
     package : Package,
+    channel : Channel,
     base_temp_dir : Option< PathBuf >,
     #[ former( default = true ) ]
     dry : bool,
@@ -378,6 +380,7 @@ mod private
       let pack = cargo::PackOptions
       {
         path : crate_dir.as_ref().into(),
+        channel : self.channel,
         allow_dirty : self.dry,
         no_verify : self.dry,
         temp_path : self.base_temp_dir.clone(),
@@ -508,6 +511,9 @@ mod private
     /// optional as not all operations will require temporary storage. The type used is `PathBuf` which allows
     /// manipulation of the filesystem paths.
     pub base_temp_dir : Option< PathBuf >,
+    
+    /// Release channels for rust.
+    pub channel : Channel,
 
     /// `dry` - A boolean value indicating whether to do a dry run. If set to `true`, the application performs
     /// a simulated run without making any actual changes. If set to `false`, the operations are actually executed.
@@ -617,6 +623,7 @@ mod private
     where
       IntoPackage : Into< Package >,
     {
+      let channel = self.storage.channel.unwrap_or_default();
       let mut plan = PublishSinglePackagePlanner::former();
       if let Some( workspace ) = &self.storage.workspace_dir
       {
@@ -631,6 +638,7 @@ mod private
         plan = plan.dry( dry );
       }
       let plan = plan
+      .channel( channel )
       .package( package )
       .perform();
       let mut plans = self.storage.plans.unwrap_or_default();

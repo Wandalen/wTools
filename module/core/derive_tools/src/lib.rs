@@ -84,9 +84,23 @@ pub use variadic_from as variadic;
 
 /// Namespace with dependencies.
 
+#[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
+
+  #[ doc( inline ) ]
+  #[ cfg( any_derive ) ]
+  pub use ::derive_tools_meta;
+
+  #[ doc( inline ) ]
+  #[ cfg( feature = "clone_dyn" ) ]
+  pub use ::clone_dyn::{ self, dependency::* };
+
+  #[ doc( inline ) ]
+  #[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
+  pub use ::variadic_from::{ self, dependency::* };
+
   #[ doc( inline ) ]
   #[ cfg( feature = "derive_more" ) ]
   pub use ::derive_more;
@@ -96,18 +110,7 @@ pub mod dependency
   #[ doc( inline ) ]
   #[ cfg( feature = "parse_display" ) ]
   pub use ::parse_display;
-  #[ doc( inline ) ]
-  #[ cfg( feature = "clone_dyn" ) ]
-  pub use ::clone_dyn;
-  #[ doc( inline ) ]
-  #[ cfg( feature = "clone_dyn" ) ]
-  pub use ::clone_dyn::dependency::*;
-  #[ doc( inline ) ]
-  #[ cfg( any_derive ) ]
-  pub use ::derive_tools_meta;
-  #[ doc( inline ) ]
-  #[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
-  pub use ::variadic_from;
+
 }
 
 #[ doc( inline ) ]
@@ -248,6 +251,11 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use ::clone_dyn::exposed::*;
+
+  #[ cfg( feature = "derive_clone_dyn" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use ::clone_dyn;
 
   // #[ doc( inline ) ]
   // #[ allow( unused_imports ) ]

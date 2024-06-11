@@ -18,7 +18,7 @@ use item_attributes::*;
 
 //
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 pub fn new( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   // use macro_tools::quote::ToTokens;
@@ -126,7 +126,7 @@ pub fn new( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
   Ok( result )
 }
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 // qqq : document, add example of generated code
 fn generate_unit
 (
@@ -153,7 +153,7 @@ fn generate_unit
   }
 }
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 // qqq : document, add example of generated code
 fn generate_single_field_named
 (
@@ -185,7 +185,7 @@ fn generate_single_field_named
   }
 }
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 // qqq : document, add example of generated code
 fn generate_single_field
 (
@@ -217,7 +217,7 @@ fn generate_single_field
   }
 }
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 // qqq : document, add example of generated code
 fn generate_multiple_fields_named< 'a >
 (
@@ -231,14 +231,12 @@ fn generate_multiple_fields_named< 'a >
 -> proc_macro2::TokenStream
 {
 
-  let field_names : Vec< _ > = field_names.collect(); // xxx : qqq : rid off collects
-
-  let val_type = field_names.iter()
+  let val_type = field_names
+  .clone()
   .zip( field_types )
   .enumerate()
-  .map(| ( index, ( field_name, field_type ) ) |
+  .map(| ( _index, ( field_name, field_type ) ) |
   {
-    // let index = index.to_string().parse::< proc_macro2::TokenStream >().unwrap();
     qt! { #field_name : #field_type }
   });
 
@@ -261,7 +259,7 @@ fn generate_multiple_fields_named< 'a >
 
 }
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 // qqq : document, add example of generated code
 fn generate_multiple_fields< 'a >
 (
@@ -299,7 +297,7 @@ fn generate_multiple_fields< 'a >
   }
 }
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 // qqq : document, add example of generated code
 fn variant_generate
 (

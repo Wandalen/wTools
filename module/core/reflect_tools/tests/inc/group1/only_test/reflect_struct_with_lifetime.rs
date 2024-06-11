@@ -30,7 +30,7 @@ fn reflect_struct_with_lifetime()
   // inspection of structure
   a_id!( reflect::reflect( &ins ).is_container(), true );
   a_id!( reflect::reflect( &ins ).len(), 3 );
-  a_id!( reflect::reflect( &ins ).type_name(), "tests::inc::reflect_struct_with_lifetime_manual_test::Struct1" );
+  a_id!( reflect::reflect( &ins ).type_name(), "tests::inc::group1::struct_with_lifetime_manual_test::Struct1" );
   a_id!( reflect::reflect( &ins ).type_id(), core::any::TypeId::of::< Struct1< 'static, 'static > >() );
   let names = reflect::reflect( &ins ).elements().map( | e | e.key ).collect::< Vec< _ > >();
   a_id!( names, vec![ reflect::Primitive::str( "f1" ), reflect::Primitive::str( "f2" ), reflect::Primitive::str( "f3" ) ] );

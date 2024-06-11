@@ -67,7 +67,7 @@ derive_variadic_from = []
 derive_phantom = []
 
 [dependencies]
-# xxx : qqq : optimize features set
+# zzz : qqq : optimize features set
 macro_tools = { workspace = true, features = [ "full" ] }
 iter_tools = { workspace = true, features = [ "full" ] }
 former_types = { workspace = true, features = [ "types_component_assign" ] }

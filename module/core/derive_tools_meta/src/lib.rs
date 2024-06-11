@@ -79,7 +79,7 @@ mod derive;
   From,
   attributes
   (
-    debug, // struct
+    debug, // item
     from, // field
   )
 )]
@@ -134,7 +134,7 @@ pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
   New,
   attributes
   (
-    debug, // struct
+    debug, // item
     new, // field
   )
 )]
@@ -499,7 +499,7 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
 /// // Use `#[ debug ]` to expand and debug generate code.
 /// // #[ debug ]
-/// struct MyStruct
+/// item MyStruct
 /// {
 ///   a : i32,
 ///   b : i32,

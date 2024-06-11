@@ -281,7 +281,13 @@ pub( crate ) mod private
   /// ]);
   /// ```
 
-  pub fn names< 'a >( generics : &'a syn::Generics ) -> impl IterTrait< 'a, &'a syn::Ident > + Clone
+  pub fn names< 'a >( generics : &'a syn::Generics )
+  -> impl IterTrait< 'a, &'a syn::Ident >
+  // -> std::iter::Map
+  // <
+  //   syn::punctuated::Iter< 'a, syn::GenericParam >,
+  //   impl FnMut( &'a syn::GenericParam ) -> &'a syn::Ident + 'a,
+  // >
   {
     generics.params.iter().map( | param | match param
     {

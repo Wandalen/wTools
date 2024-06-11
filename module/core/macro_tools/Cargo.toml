@@ -1,6 +1,6 @@
 [package]
 name = "macro_tools"
-version = "0.30.0"
+version = "0.32.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -28,7 +28,11 @@ all-features = false
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-enabled = [ "former_types/enabled", "interval_adapter/enabled" ]
+enabled = [
+  "former_types/enabled",
+  "interval_adapter/enabled",
+  "clone_dyn_types/enabled",
+]
 
 # qqq : put all files under features: macro_attr, macro_container_kind, ...
 
@@ -44,6 +48,7 @@ syn = { version = "~2.0.52", features = [ "full", "extra-traits" ] }
 ## internal
 interval_adapter = { workspace = true, features = [] }
 former_types = { workspace = true, features = [ "types_component_assign" ] }
+clone_dyn_types = { workspace = true, features = [] } # xxx : qqq : optimize features
 
 [dev-dependencies]
 test_tools = { workspace = true }

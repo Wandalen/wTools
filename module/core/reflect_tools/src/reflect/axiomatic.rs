@@ -357,7 +357,7 @@ pub( crate ) mod private
     fn fmt( &self, f: &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
     {
       f
-      .write_str( &format!( "{}#{:?}", self.type_name(), self.type_id() ) )
+      .write_str( &format!( "{}#{:?}", Entity::type_name( self ), self.type_id() ) )
     }
   }
 
@@ -369,7 +369,7 @@ pub( crate ) mod private
     fn fmt( &self, f: &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
     {
       f
-      .write_str( &format!( "{}#{:?}", self.type_name(), self.type_id() ) )
+      .write_str( &format!( "{}#{:?}", Entity::type_name( self ), self.type_id() ) )
     }
   }
 
@@ -381,7 +381,7 @@ pub( crate ) mod private
     fn fmt( &self, f: &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
     {
       f
-      .write_str( &format!( "{}#{:?}", self.type_name(), self.type_id() ) )
+      .write_str( &format!( "{}#{:?}", Entity::type_name( self ), self.type_id() ) )
     }
   }
 
