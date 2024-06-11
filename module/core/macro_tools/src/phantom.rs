@@ -93,6 +93,7 @@ pub( crate ) mod private
       },
       syn::Fields::Unit =>
       {
+        // TODO: make tuple struct with single `PhantomData` field from Unit
         // No fields to modify in a unit struct
       }
     };
