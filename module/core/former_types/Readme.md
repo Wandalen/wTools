@@ -17,10 +17,10 @@ and implements the `Assign` trait for its fields. It shows how to use these impl
 instance using different types that can be converted into the required types.
 
 ```rust
-#[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
+#[ cfg( any( not( feature = "types_former" ), not( feature = "enabled" ) ) ) ]
 fn main() {}
 
-#[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
+#[ cfg( all( feature = "types_former", feature = "enabled" ) ) ]
 fn main()
 {
   use former_types::Assign;

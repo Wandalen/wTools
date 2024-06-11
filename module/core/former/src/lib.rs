@@ -4,34 +4,6 @@
 #![ doc( html_root_url = "https://docs.rs/former/latest/former/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-// /// Axiomatic things.
-// #[ cfg( feature = "enabled" ) ]
-// #[ cfg( feature = "derive_former" ) ]
-// mod axiomatic;
-// /// Forming process.
-// #[ cfg( feature = "enabled" ) ]
-// #[ cfg( feature = "derive_former" ) ]
-// mod definition;
-// /// Forming process.
-// #[ cfg( feature = "enabled" ) ]
-// #[ cfg( feature = "derive_former" ) ]
-// mod forming;
-// /// Storage.
-// #[ cfg( feature = "enabled" ) ]
-// #[ cfg( feature = "derive_former" ) ]
-// mod storage;
-//
-// /// Interface for collections.
-// #[ cfg( feature = "enabled" ) ]
-// #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-// #[ cfg( feature = "derive_former" ) ]
-// mod collection;
-//
-// /// Component-based forming.
-// #[ cfg( feature = "enabled" ) ]
-// #[ cfg( any( feature = "derive_component_from", feature = "derive_component_assign" ) ) ]
-// mod component;
-
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
@@ -83,34 +55,12 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use former_types::exposed::*;
 
-//   #[ doc( inline ) ]
-//   #[ allow( unused_imports ) ]
-//   #[ cfg( feature = "derive_former" ) ]
-//   pub use super::
-//   {
-//     axiomatic::*,
-//     definition::*,
-//     forming::*,
-//     storage::*,
-//   };
-//
-//   #[ doc( inline ) ]
-//   #[ allow( unused_imports ) ]
-//   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-//   #[ cfg( feature = "derive_former" ) ]
-//   pub use super::collection::*;
-
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
-
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // #[ cfg( any( feature = "derive_component_from", feature = "derive_component_assign" ) ) ]
-  // pub use super::component::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

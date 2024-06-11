@@ -30,21 +30,18 @@ use_alloc = [ "no_std", "collection_tools/use_alloc" ]
 
 default = [
   "enabled",
-  "derive_former",
-  "types_components",
+  "types_former",
   "types_component_assign",
 ]
 full = [
   "enabled",
-  "derive_former",
-  "types_components",
+  "types_former",
   "types_component_assign",
 ]
 enabled = [ "collection_tools/enabled" ]
 
-derive_former = []
-types_components = []
-types_component_assign = [ "types_components" ]
+types_former = []
+types_component_assign = []
 
 
 [dependencies]

@@ -1,5 +1,7 @@
 
 use super::*;
+use the_module::parse_quote;
+// xxx : move `parse_quote` under a namespace `typed`
 
 //
 

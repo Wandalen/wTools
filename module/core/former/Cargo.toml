@@ -29,7 +29,6 @@ all-features = false
 no_std = [ "former_types/no_std", "collection_tools/no_std" ]
 use_alloc = [ "no_std", "former_types/use_alloc", "collection_tools/use_alloc" ]
 
-
 # no_std = [ "collection_tools/no_std" ]
 # use_alloc = [ "no_std", "collection_tools/use_alloc" ]
 
@@ -41,6 +40,8 @@ default = [
   "derive_component_assign",
   "derive_components_assign",
   "derive_from_components",
+  "types_former",
+  "types_component_assign",
 ]
 full = [
   "enabled",
@@ -50,16 +51,20 @@ full = [
   "derive_component_assign",
   "derive_components_assign",
   "derive_from_components",
+  "types_former",
+  "types_component_assign",
 ]
 enabled = [ "former_meta/enabled", "former_types/enabled" ]
 
-derive_former = [ "former_meta/derive_former", "former_types/derive_former" ]
-derive_components = [ "former_meta/derive_components", "former_types/types_components" ]
-derive_component_assign = [ "derive_components", "former_meta/derive_component_assign", "former_types/types_component_assign" ]
-derive_components_assign = [ "derive_components", "derive_component_assign", "former_meta/derive_components_assign" ]
-derive_component_from = [ "derive_components", "former_meta/derive_component_from" ]
-derive_from_components = [ "derive_components", "former_meta/derive_from_components" ]
+derive_former = [ "former_meta/derive_former", "types_former" ]
+derive_components = [ "former_meta/derive_components", "derive_component_assign", "derive_components_assign", "derive_component_from", "derive_from_components" ]
+derive_component_assign = [ "former_meta/derive_component_assign", "types_component_assign" ]
+derive_components_assign = [ "derive_component_assign", "former_meta/derive_components_assign" ]
+derive_component_from = [ "former_meta/derive_component_from" ]
+derive_from_components = [ "former_meta/derive_from_components" ]
 
+types_former = [ "former_types/types_former" ]
+types_component_assign = [ "former_types/types_component_assign" ]
 
 [dependencies]
 former_meta = { workspace = true }

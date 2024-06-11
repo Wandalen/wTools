@@ -47,11 +47,11 @@ full = [
 enabled = [ "macro_tools/enabled", "iter_tools/enabled", "former_types/enabled" ]
 
 derive_former = [ "convert_case" ]
-derive_components = []
+derive_components = [ "derive_component_assign", "derive_components_assign", "derive_component_from", "derive_from_components" ]
 derive_component_assign = []
-derive_components_assign = [ "derive_components", "derive_component_assign", "convert_case" ]
-derive_component_from = [ "derive_components" ]
-derive_from_components = [ "derive_components" ]
+derive_components_assign = [ "derive_component_assign", "convert_case" ]
+derive_component_from = []
+derive_from_components = []
 
 [lib]
 proc-macro = true

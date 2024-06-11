@@ -1,5 +1,6 @@
 
 use super::*;
+use the_module::qt;
 
 //
 
@@ -7,7 +8,7 @@ use super::*;
 fn is_optional_with_option_type()
 {
   use syn::parse_str;
-  use macro_tools::typ::is_optional;
+  use the_module::typ::is_optional;
 
   let type_string = "Option<i32>";
   let parsed_type : syn::Type = parse_str( type_string ).expect( "Type should parse correctly" );
@@ -19,7 +20,7 @@ fn is_optional_with_option_type()
 fn is_optional_with_non_option_type()
 {
   use syn::parse_str;
-  use macro_tools::typ::is_optional;
+  use the_module::typ::is_optional;
 
   let type_string = "Vec<i32>";
   let parsed_type : syn::Type = parse_str( type_string ).expect( "Type should parse correctly" );
@@ -31,7 +32,7 @@ fn is_optional_with_non_option_type()
 fn is_optional_with_nested_option_type()
 {
   use syn::parse_str;
-  use macro_tools::typ::is_optional;
+  use the_module::typ::is_optional;
 
   let type_string = "Option<Option<i32>>";
   let parsed_type : syn::Type = parse_str( type_string ).expect( "Type should parse correctly" );
@@ -43,7 +44,7 @@ fn is_optional_with_nested_option_type()
 fn is_optional_with_similar_name_type()
 {
   use syn::parse_str;
-  use macro_tools::typ::is_optional;
+  use the_module::typ::is_optional;
 
   let type_string = "OptionalValue";
   let parsed_type : syn::Type = parse_str( type_string ).expect( "Type should parse correctly" );
@@ -55,7 +56,7 @@ fn is_optional_with_similar_name_type()
 fn is_optional_with_empty_input()
 {
   use syn::{ parse_str, Type };
-  use macro_tools::typ::is_optional;
+  use the_module::typ::is_optional;
 
   let type_string = "";
   let parsed_type_result = parse_str::< Type >( type_string );
@@ -69,7 +70,7 @@ fn is_optional_with_empty_input()
 fn parameter_first_with_multiple_generics()
 {
   use syn::{ parse_str, Type };
-  use macro_tools::typ::parameter_first;
+  use the_module::typ::parameter_first;
 
   let type_string = "Result<Option<i32>, Error>";
   let parsed_type : Type = parse_str( type_string ).expect( "Type should parse correctly" );
@@ -84,7 +85,7 @@ fn parameter_first_with_multiple_generics()
 fn parameter_first_with_no_generics()
 {
   use syn::{ parse_str, Type };
-  use macro_tools::typ::parameter_first;
+  use the_module::typ::parameter_first;
 
   let type_string = "i32";
   let parsed_type : Type = parse_str( type_string ).expect( "Type should parse correctly" );
@@ -101,7 +102,7 @@ fn parameter_first_with_no_generics()
 fn parameter_first_with_single_generic()
 {
   use syn::{ parse_str, Type };
-  use macro_tools::typ::parameter_first;
+  use the_module::typ::parameter_first;
 
   let type_string = "Vec< i32 >";
   let parsed_type : Type = parse_str( type_string ).expect( "Type should parse correctly" );
@@ -116,7 +117,7 @@ fn parameter_first_with_single_generic()
 fn parameter_first_with_deeply_nested_generics()
 {
   use syn::{ parse_str, Type };
-  use macro_tools::typ::parameter_first;
+  use the_module::typ::parameter_first;
 
   let type_string = "Vec< HashMap< String, Option< i32 >  > >";
   let parsed_type : Type = parse_str( type_string ).expect( "Type should parse correctly" );

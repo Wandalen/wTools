@@ -49,6 +49,8 @@ mod file
   pub mod typ;
 }
 
+// xxx
+#[ cfg( feature = "enabled" ) ]
 pub use file::
 {
   // attr,

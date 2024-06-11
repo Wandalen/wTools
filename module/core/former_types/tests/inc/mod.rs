@@ -3,7 +3,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-#[ cfg( feature = "derive_former" ) ]
+#[ cfg( feature = "types_former" ) ]
 #[ path = "../../../former/tests/inc/former_tests" ]
 mod former_tests
 {
@@ -27,7 +27,6 @@ mod former_tests
 
 }
 
-#[ cfg( feature = "types_components" ) ]
 #[ path = "../../../former/tests/inc/components_tests" ]
 mod components_tests
 {

@@ -26,15 +26,85 @@ all-features = false
 # exclude = [ "/tests", "/examples", "-*" ]
 
 [features]
-default = [ "enabled" ]
-full = [ "enabled" ]
+default = [
+  "enabled",
+  "attr",
+  "attr_prop",
+  "components",
+  "ct",
+  "container_kind",
+  "derive",
+  "diag",
+  "drop",
+  "equation",
+  "generic_args",
+  "generic_params",
+  "item",
+  "item_struct",
+  "iter",
+  "name",
+  "phantom",
+  "punctuated",
+  "quantifier",
+  "struct_like",
+  "tokens",
+  "typ",
+]
+full = [
+  "enabled",
+  "attr",
+  "attr_prop",
+  "components",
+  "ct",
+  "container_kind",
+  "derive",
+  "diag",
+  "drop",
+  "equation",
+  "generic_args",
+  "generic_params",
+  "item",
+  "item_struct",
+  "iter",
+  "name",
+  "phantom",
+  "punctuated",
+  "quantifier",
+  "struct_like",
+  "tokens",
+  "typ",
+]
+
 enabled = [
   "former_types/enabled",
   "interval_adapter/enabled",
   "clone_dyn_types/enabled",
 ]
 
-# qqq : put all files under features: macro_attr, macro_container_kind, ...
+attr = []
+attr_prop = []
+components = []
+ct = []
+container_kind = []
+derive = []
+diag = []
+drop = []
+equation = []
+generic_args = []
+generic_params = []
+item = []
+item_struct = []
+iter = []
+name = []
+phantom = []
+punctuated = []
+quantifier = []
+struct_like = []
+tokens = []
+typ = []
+
+# qqq : xxx : put all files under features: macro_attr, macro_container_kind, ...
+# qqq : xxx : optimize features list
 
 [dependencies]
 
@@ -42,16 +112,12 @@ enabled = [
 proc-macro2 = { version = "~1.0.78", features = [] }
 quote = { version = "~1.0.35", features = [] }
 syn = { version = "~2.0.52", features = [ "full", "extra-traits" ] }
-
-# qqq : optimize features list
+const_format = { version = "0.2.32", features = [] }
 
 ## internal
 interval_adapter = { workspace = true, features = [] }
 clone_dyn_types = { workspace = true, features = [] }
 former_types = { workspace = true, features = [ "types_component_assign" ] }
-const_format = { version = "0.2.32", features = [] }
-
-# xxx : qqq : optimize features
 
 [dev-dependencies]
 test_tools = { workspace = true }
