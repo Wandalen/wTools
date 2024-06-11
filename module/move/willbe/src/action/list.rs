@@ -335,7 +335,7 @@ mod private
   fn process_dependency
   (
     workspace : &Workspace,
-    dep : &Dependency,
+    dep : &Dependency< '_ >,
     args : &ListOptions,
     visited : &mut HashSet< String >
   )
@@ -461,7 +461,7 @@ mod private
         .map( | m | m[ "name" ].to_string().trim().replace( '\"', "" ) )
         .unwrap_or_default();
 
-        let dep_filter = move | _p : &WorkspacePackage, d : &Dependency |
+        let dep_filter = move | _p : &WorkspacePackage, d : &Dependency< '_ > |
         {
           (
             args.dependency_categories.contains( &DependencyCategory::Primary ) && d.kind() == DependencyKind::Normal

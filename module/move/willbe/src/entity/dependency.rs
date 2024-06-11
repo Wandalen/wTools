@@ -4,12 +4,12 @@ mod private
 
   /// A dependency of the main crate
   #[ derive( Debug, Clone, Copy ) ]
-  pub struct Dependency< &'a >
+  pub struct Dependency< 'a >
   {
     inner : &'a cargo_metadata::Dependency,
   }
 
-  impl< &'a > Dependency< &'a >
+  impl< 'a > Dependency< 'a >
   {
     /// The file system path for a local path dependency.
     /// Only produced on cargo 1.51+
@@ -43,7 +43,7 @@ mod private
     }
   }
 
-  impl From< cargo_metadata::Dependency > for Dependency
+  impl From< &cargo_metadata::Dependency > for Dependency< '_ >
   {
     fn from( inner : &cargo_metadata::Dependency ) -> Self
     {

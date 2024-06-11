@@ -190,7 +190,7 @@ mod private
       (
         Box::new( move | p | p.publish().is_none() )
       );
-      let module_dependency_filter : Option< Box< dyn Fn( &WorkspacePackage, &Dependency ) -> bool > > = Some
+      let module_dependency_filter : Option< Box< dyn Fn( &WorkspacePackage, &Dependency< '_ > ) -> bool > > = Some
       (
         Box::new
         (

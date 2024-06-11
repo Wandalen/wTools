@@ -823,9 +823,9 @@ mod private
     }
   }
 
-  impl From< &Dependency > for CrateId
+  impl From< &Dependency< '_ > > for CrateId
   {
-    fn from( value : &Dependency ) -> Self
+    fn from( value : &Dependency< '_ > ) -> Self
     {
       Self
       {

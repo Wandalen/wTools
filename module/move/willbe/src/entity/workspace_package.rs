@@ -45,9 +45,17 @@ mod private
     }
 
     /// List of dependencies of this particular package
-    pub fn dependencies( &self ) -> Vec< Dependency >
+    // pub fn dependencies( &self ) -> Vec< Dependency< '_ > >
+    pub fn dependencies< 'a >( &'a self )
+    // -> core::slice::Iter< '_, Dependency< '_ > >
+    -> core::iter::Map
+    <
+      core::slice::Iter< 'a, &'a cargo_metadata::Dependency >,
+      fn( &'a cargo_metadata::Dependency ) -> Dependency< 'a >,
+    >
     {
-      self.inner.dependencies.iter().cloned().map( Dependency::from ).collect()
+      self.inner.dependencies.iter().map( Dependency::from )
+      // self.inner.dependencies.iter().cloned().map( Dependency::from ).collect()
     }
 
     /// Path containing the Cargo.toml
