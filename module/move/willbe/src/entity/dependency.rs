@@ -1,29 +1,15 @@
 mod private
 {
-//   use std::collections::BTreeMap;
-//   use crate::*;
-//
-//   use std::path::Path;
   use cargo_metadata::camino::{ Utf8Path, Utf8PathBuf };
-//   use petgraph::Graph;
-//   use serde::Deserialize;
-//   use serde_json::Value;
-//   use wtools::error::
-//   {
-//     for_app::Context,
-//     for_lib::Error,
-//     Result
-//   };
-//   use _path::AbsolutePath;
 
   /// A dependency of the main crate
-  #[ derive( Debug ) ]
-  pub struct Dependency
+  #[ derive( Debug, Clone, Copy ) ]
+  pub struct Dependency< &'a >
   {
-    inner : cargo_metadata::Dependency,
+    inner : &'a cargo_metadata::Dependency,
   }
 
-  impl Dependency
+  impl< &'a > Dependency< &'a >
   {
     /// The file system path for a local path dependency.
     /// Only produced on cargo 1.51+
@@ -59,7 +45,7 @@ mod private
 
   impl From< cargo_metadata::Dependency > for Dependency
   {
-    fn from( inner : cargo_metadata::Dependency ) -> Self
+    fn from( inner : &cargo_metadata::Dependency ) -> Self
     {
       Self
       {
@@ -69,7 +55,7 @@ mod private
   }
 
   /// Dependencies can come in three kinds
-  #[ derive( Eq, PartialEq, Debug ) ]
+  #[ derive( Eq, PartialEq, Debug, Clone, Copy ) ]
   pub enum DependencyKind
   {
     /// The 'normal' kind
