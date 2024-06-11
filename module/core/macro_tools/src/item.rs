@@ -120,8 +120,12 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  use super::*;
+  pub use super::super::item;
+
   // pub use super::protected as item;
-  pub use super::protected as item;
+  // pub use super::protected as item;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::

@@ -142,7 +142,10 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  pub use super::protected as equation;
+  use super::*;
+  pub use super::super::equation;
+  // pub use super::protected as equation;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;

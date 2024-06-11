@@ -84,7 +84,10 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  pub use super::protected as drop;
+  use super::*;
+  pub use super::super::drop;
+  // pub use super::protected as drop;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;

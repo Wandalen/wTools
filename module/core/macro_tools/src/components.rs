@@ -39,6 +39,8 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  use super::*;
+  pub use super::super::components;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

@@ -454,10 +454,14 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  // pub use super::protected as attr;
+  use super::*;
   pub use super::super::attr;
+
+  // pub use super::protected as attr;
+  // pub use super::super::attr;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

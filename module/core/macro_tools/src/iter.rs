@@ -176,7 +176,11 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  pub use super::protected as iter;
+  use super::*;
+  pub use super::super::iter;
+
+  // pub use super::protected as iter;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;

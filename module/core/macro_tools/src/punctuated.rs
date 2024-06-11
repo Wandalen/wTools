@@ -54,7 +54,10 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  pub use super::protected as punctuated;
+  use super::*;
+  pub use super::super::punctuated;
+  // pub use super::protected as punctuated;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::

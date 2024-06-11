@@ -77,7 +77,9 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  pub use super::protected as derive;
+  use super::*;
+  pub use super::super::derive;
+  // pub use super::protected as derive;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

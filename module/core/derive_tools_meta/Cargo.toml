@@ -24,8 +24,6 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-# exclude = [ "/tests", "/examples", "-*" ]
-
 [lib]
 proc-macro = true
 
@@ -65,7 +63,7 @@ derive_variadic_from = []
 
 [dependencies]
 # zzz : qqq : optimize features set
-macro_tools = { workspace = true, features = [] }
+macro_tools = { workspace = true, features = [ "full" ] }
 iter_tools = { workspace = true, features = [] }
 former_types = { workspace = true, features = [ "types_component_assign" ] }
 const_format = { version = "0.2.32" }

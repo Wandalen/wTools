@@ -467,7 +467,11 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  pub use super::protected as struct_like;
+  use super::*;
+  pub use super::super::struct_like;
+
+  // pub use super::protected as struct_like;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;

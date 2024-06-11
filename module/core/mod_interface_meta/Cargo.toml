@@ -24,7 +24,7 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-# exclude = [ "/tests", "/examples", "-*" ]
+
 include = [
   "/rust/impl/meta/mod_interface_meta_lib.rs",
   "/rust/impl/meta/mod_interface/meta",

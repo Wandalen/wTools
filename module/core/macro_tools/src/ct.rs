@@ -42,6 +42,9 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
+  use super::*;
+  pub use super::super::ct;
+
   // pub use super::protected as ct;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
