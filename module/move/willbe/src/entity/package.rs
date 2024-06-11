@@ -132,6 +132,7 @@ mod private
 
   impl Package
   {
+    // qqq : introdcue newtype ManifestPath
     /// Path to `Cargo.toml`
     pub fn manifest_path( &self ) -> AbsolutePath
     {
@@ -199,6 +200,8 @@ mod private
     /// Stability
     pub fn stability( &self ) -> Result< Stability, PackageError >
     {
+      // qqq : for Petro : bad : first of all it should be in trait. also there is duplicated code
+      // qqq : for Petro : review other similar places
       match self
       {
         Self::Manifest( manifest ) =>

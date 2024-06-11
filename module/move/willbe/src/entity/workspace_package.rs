@@ -1,7 +1,7 @@
 mod private
 {
-  use std::collections::BTreeMap;
   use crate::*;
+  use std::collections::BTreeMap;
 
   use std::path::Path;
   use cargo_metadata::camino::{ Utf8Path, Utf8PathBuf };
