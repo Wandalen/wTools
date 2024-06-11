@@ -25,7 +25,7 @@ mod all_manual_test;
 		feature = "derive_deref_mut",
 		feature = "derive_from",
 		feature = "derive_inner_from",
-        feature = "derive_phantom"
+    feature = "derive_phantom",
 	)
 )]
 mod all_test;
