@@ -23,10 +23,10 @@ mod private
     #[ serde( flatten ) ]
     inner : cargo_metadata::Package
   }
-  
+
   impl From< cargo_metadata::Package > for WorkspacePackage
   {
-    fn from( inner : cargo_metadata::Package) -> Self 
+    fn from( inner : cargo_metadata::Package) -> Self
     {
       Self
       {
@@ -34,7 +34,7 @@ mod private
       }
     }
   }
-  
+
   impl WorkspacePackage
   {
     /// The name field as given in the Cargo.toml
@@ -42,25 +42,25 @@ mod private
     {
       &self.inner.name
     }
-    
+
     /// List of dependencies of this particular package
     pub fn dependencies( &self ) -> Vec< Dependency >
     {
       self.inner.dependencies.iter().cloned().map( Dependency::from ).collect()
     }
-    
+
     /// Path containing the Cargo.toml
     pub fn manifest_path( &self ) -> &Utf8Path
     {
       self.inner.manifest_path.as_path()
     }
-    
+
     /// The version field as specified in the Cargo.toml
     pub fn version( &self ) -> semver::Version
     {
       self.inner.version.clone()
     }
-    
+
     /// List of registries to which this package may be published (derived from the publish field).
     /// Publishing is unrestricted if None, and forbidden if the Vec is empty.
     /// This is always None if running with a version of Cargo older than 1.39.
@@ -68,26 +68,26 @@ mod private
     {
       self.inner.publish.as_ref()
     }
-    
+
     ///Contents of the free form package.metadata section.
     /// This contents can be serialized to a struct using serde:
     /// ``` rust
     /// use serde::Deserialize;
     /// use serde_json::json;
-    /// 
+    ///
     /// #[ derive( Debug, Deserialize ) ]
-    /// struct SomePackageMetadata 
+    /// struct SomePackageMetadata
     /// {
     ///   some_value : i32,
     /// }
-    /// 
-    /// fn main() 
+    ///
+    /// fn main()
     /// {
     ///   let value = json!
     ///   ({
     ///     "some_value" : 42,
     ///   });
-    /// 
+    ///
     ///   let package_metadata : SomePackageMetadata = serde_json::from_value( value ).unwrap();
     ///   assert_eq!( package_metadata.some_value, 42 );
     /// }
@@ -96,27 +96,27 @@ mod private
     {
       &self.inner.metadata
     }
-    
+
     /// The repository URL as specified in the Cargo.toml
     pub fn repository( &self ) -> Option< &String >
     {
       self.inner.repository.as_ref()
     }
-    
+
     /// Features provided by the crate, mapped to the features required by that feature.
     pub fn features( &self ) -> &BTreeMap< String, Vec< String > >
     {
       &self.inner.features
     }
   }
-  
+
   /// A dependency of the main crate
   #[ derive( Debug ) ]
   pub struct Dependency
   {
     inner : cargo_metadata::Dependency,
   }
-  
+
   impl Dependency
   {
     /// The file system path for a local path dependency.
@@ -125,17 +125,17 @@ mod private
     {
       self.inner.path.clone()
     }
-    
+
     /// Name as given in the Cargo.toml.
     pub fn name( &self ) -> String
     {
       self.inner.name.clone()
     }
-    
+
     /// The kind of dependency this is.
     pub fn kind( &self ) -> DependencyKind
     {
-      match self.inner.kind 
+      match self.inner.kind
       {
         cargo_metadata::DependencyKind::Normal => DependencyKind::Normal,
         cargo_metadata::DependencyKind::Development => DependencyKind::Development,
@@ -143,17 +143,17 @@ mod private
         cargo_metadata::DependencyKind::Unknown => DependencyKind::Unknown,
       }
     }
-    
+
     /// he required version
     pub fn req( &self ) -> semver::VersionReq
     {
       self.inner.req.clone()
     }
   }
-  
+
   impl From< cargo_metadata::Dependency > for Dependency
   {
-    fn from( inner : cargo_metadata::Dependency ) -> Self 
+    fn from( inner : cargo_metadata::Dependency ) -> Self
     {
       Self
       {
@@ -175,7 +175,9 @@ mod private
     /// The 'unknown' kind
     Unknown,
   }
-    
+
+  // qqq : for Bohdan : for Petro : what manifest_dir is?
+
   /// Stores information about current workspace.
   #[ derive( Debug, Clone ) ]
   pub struct Workspace
@@ -264,7 +266,7 @@ mod private
   impl Workspace
   {
     /// Returns list of all packages
-    pub fn packages( &self ) -> Result< Vec< WorkspacePackage >, WorkspaceError > 
+    pub fn packages( &self ) -> Result< Vec< WorkspacePackage >, WorkspaceError >
     {
       self
       .metadata

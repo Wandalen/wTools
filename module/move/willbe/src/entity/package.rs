@@ -511,7 +511,7 @@ mod private
     /// optional as not all operations will require temporary storage. The type used is `PathBuf` which allows
     /// manipulation of the filesystem paths.
     pub base_temp_dir : Option< PathBuf >,
-    
+
     /// Release channels for rust.
     pub channel : Channel,
 

@@ -55,7 +55,7 @@ pub( crate ) mod private
       Ok( Self( crate_dir_path ) )
     }
   }
-  
+
   impl TryFrom< PathBuf > for CrateDir
   {
     type Error = CrateDirError;
@@ -165,10 +165,10 @@ pub( crate ) mod private
     pub fn data( &mut self ) -> &mut toml_edit::Document
     {
       if self.manifest_data.is_none() { self.load().unwrap() }
-      
+
       self.manifest_data.as_mut().unwrap()
     }
-    
+
     /// Returns path to `Cargo.toml`.
     pub fn manifest_path( &self ) -> &AbsolutePath
     {

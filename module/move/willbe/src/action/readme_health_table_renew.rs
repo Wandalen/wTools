@@ -37,7 +37,6 @@ mod private
   static TAG_TEMPLATE: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
   static CLOSE_TAG: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 
-
   /// Initializes two global regular expressions that are used to match tags.
   fn regexes_initialize()
   {
@@ -62,6 +61,7 @@ mod private
     Deprecated,
   }
 
+  // xxx : derive?
   impl FromStr for Stability
   {
     type Err = Error;
@@ -285,14 +285,14 @@ mod private
 
   /// Generate table from `table_parameters`.
   /// Generate header, iterate over all modules in package (from table_parameters) and append row.
-  fn package_readme_health_table_generate(  cache : &mut Workspace, table_parameters: &TableParameters, parameters: & mut GlobalTableParameters ) -> Result< String, Error >
+  fn package_readme_health_table_generate( workspace : &mut Workspace, table_parameters: &TableParameters, parameters: & mut GlobalTableParameters ) -> Result< String, Error >
   {
     let directory_names = directory_names
     (
-      cache
+      workspace
       .workspace_root()?
       .join( &table_parameters.base_path ),
-      &cache
+      &workspace
       .load()?
       .packages()
       .map_err( | err | format_err!( err ) )?
@@ -302,7 +302,7 @@ mod private
     {
       let stability = if table_parameters.include_stability
       {
-        Some( stability_get( &cache.workspace_root()?.join( &table_parameters.base_path ).join( &package_name ) )? )
+        Some( stability_get( &workspace.workspace_root()?.join( &table_parameters.base_path ).join( &package_name ) )? )
       }
       else
       {
@@ -310,11 +310,11 @@ mod private
       };
       if parameters.core_url == ""
       {
-        let module_path = &cache.workspace_root()?.join( &table_parameters.base_path ).join( &package_name );
+        let module_path = &workspace.workspace_root()?.join( &table_parameters.base_path ).join( &package_name );
         parameters.core_url = repo_url( &module_path )
         .context
         (
-          format_err!( "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) in {} OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR ensure that at least one remotest is present in git. ", module_path.display(), cache.workspace_root()?.join( "Cargo.toml" ).display(), module_path.join( "Cargo.toml" ).display() )
+          format_err!( "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) in {} OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR ensure that at least one remotest is present in git. ", module_path.display(), workspace.workspace_root()?.join( "Cargo.toml" ).display(), module_path.join( "Cargo.toml" ).display() )
         )?;
         parameters.user_and_repo = url::git_info_extract( &parameters.core_url )?;
       }
@@ -352,14 +352,14 @@ mod private
     let names = graph::topological_sort_with_grouping( module_graph )
     .into_iter()
     .map
-    ( 
-      | mut group | 
+    (
+      | mut group |
       {
         group.sort();
-        group 
-      } 
+        group
+      }
     ).flatten().collect::< Vec< _ > >();
-    
+
     Ok(names)
   }
 
@@ -394,7 +394,7 @@ mod private
         let name = file_name.strip_suffix( ".rs" ).unwrap();
         format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={path}%2Fexamples%2F{file_name},RUN_POSTFIX=--example%20{name}/{})", parameters.core_url )
       }
-      else 
+      else
       {
         "".into()
       };
@@ -402,24 +402,24 @@ mod private
     }
     format!( "{rou}\n" )
   }
-  
+
   /// todo
-  pub fn find_example_file(base_path : &Path, module_name : &str ) -> Option< String > 
+  pub fn find_example_file(base_path : &Path, module_name : &str ) -> Option< String >
   {
     let examples_dir = base_path.join("examples" );
 
     if examples_dir.exists() && examples_dir.is_dir()
     {
-      if let Ok( entries ) = std::fs::read_dir( &examples_dir ) 
+      if let Ok( entries ) = std::fs::read_dir( &examples_dir )
       {
-        for entry in entries 
+        for entry in entries
         {
-          if let Ok( entry ) = entry 
+          if let Ok( entry ) = entry
           {
             let file_name = entry.file_name();
-            if let Some( file_name_str ) = file_name.to_str() 
+            if let Some( file_name_str ) = file_name.to_str()
             {
-              if file_name_str == format!( "{module_name}_trivial.rs" ) 
+              if file_name_str == format!( "{module_name}_trivial.rs" )
               {
                 return Some( entry.path().to_string_lossy().into() )
               }
@@ -430,16 +430,16 @@ mod private
     }
 
     // If module_trivial.rs doesn't exist, return any other file in the examples directory
-    if let Ok( entries ) = std::fs::read_dir( &examples_dir ) 
+    if let Ok( entries ) = std::fs::read_dir( &examples_dir )
     {
-      for entry in entries 
+      for entry in entries
       {
-        if let Ok( entry ) = entry 
+        if let Ok( entry ) = entry
         {
           let file_name = entry.file_name();
-          if let Some( file_name_str ) = file_name.to_str() 
+          if let Some( file_name_str ) = file_name.to_str()
           {
-            if file_name_str.ends_with( ".rs" ) 
+            if file_name_str.ends_with( ".rs" )
             {
               return Some( entry.path().to_string_lossy().into() )
             }
@@ -504,7 +504,7 @@ mod private
   }
 
   /// Generate cells for each branch
-  fn branch_cells_generate( table_parameters: &GlobalTableParameters, module_name: &str ) -> String
+  fn branch_cells_generate( table_parameters : &GlobalTableParameters, module_name : &str ) -> String
   {
     let cells = table_parameters
     .branches
@@ -522,9 +522,10 @@ mod private
   }
 
   /// Return workspace root
-  pub fn workspace_root( metadata : &mut Workspace ) -> Result< PathBuf >
+  // xxx : ?
+  pub fn workspace_root( workspace : &mut Workspace ) -> Result< PathBuf >
   {
-    Ok( metadata.load()?.workspace_root()?.to_path_buf() )
+    Ok( workspace.load()?.workspace_root()?.to_path_buf() )
   }
 
   fn range_to_target_copy< T : Clone >( source : &[ T ], target : &mut Vec< T >, from : usize, to : usize ) -> Result< () >

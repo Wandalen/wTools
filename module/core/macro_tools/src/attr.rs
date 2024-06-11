@@ -454,6 +454,8 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+// xxx2 : continue
+// xxx2 : put #[ allow( unused_imports ) ] before every namespace
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
