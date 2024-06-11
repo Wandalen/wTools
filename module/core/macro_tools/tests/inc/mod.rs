@@ -3,8 +3,6 @@
 use super::*;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
-// #[ allow( unused_imports ) ]
-// use the_module::protected::*;
 
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
@@ -31,6 +29,6 @@ mod if_enabled
   mod quantifier_test;
   mod struct_like_test;
   mod tokens_test;
-  mod typ__test;
+  mod typ_test;
 
 }

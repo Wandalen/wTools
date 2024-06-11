@@ -26,8 +26,8 @@
 mod file
 {
   // use super::*;
-  pub mod attr;
-  pub mod attr_prop;
+  // pub mod attr;
+  // pub mod attr_prop;
   pub mod components;
   pub mod ct;
   pub mod container_kind;
@@ -48,6 +48,9 @@ mod file
   pub mod tokens;
   pub mod typ;
 }
+
+pub mod attr;
+pub mod attr_prop;
 
 // xxx
 #[ cfg( feature = "enabled" ) ]
@@ -98,20 +101,30 @@ pub use protected::*;
 
 /// Protected namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod protected
 {
+
+  mod all
+  {
+    use super::super::*;
+    pub use attr::orphan::*;
+    pub use attr_prop::orphan::*;
+  }
+
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+  pub use all::*;
+
+  #[ doc( inline ) ]
   pub use super::
   {
     orphan::*,
   };
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::file::
   {
-    attr::orphan::*,
-    attr_prop::orphan::*,
+    // attr::orphan::*,
+    // attr_prop::orphan::*,
     components::orphan::*,
     container_kind::orphan::*,
     ct::orphan::*,
@@ -145,11 +158,21 @@ pub mod orphan
 
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+  #[ allow( unused_imports ) ]
 pub mod exposed
 {
 
+  mod all
+  {
+    use super::super::*;
+    pub use attr::exposed::*;
+    pub use attr_prop::exposed::*;
+  }
+
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+  pub use all::*;
+
+  #[ doc( inline ) ]
   pub use quote::
   {
     format_ident,
@@ -158,18 +181,16 @@ pub mod exposed
   };
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::
   {
     prelude::*,
   };
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::file::
   {
-    attr::exposed::*,
-    attr_prop::exposed::*,
+    // attr::exposed::*,
+    // attr_prop::exposed::*,
     components::orphan::*,
     container_kind::orphan::*,
     ct::orphan::*,
@@ -196,8 +217,20 @@ pub mod exposed
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+
+  mod all
+  {
+    use super::super::*;
+    pub use attr::prelude::*;
+    pub use attr_prop::prelude::*;
+  }
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use all::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -249,8 +282,8 @@ pub mod prelude
   #[ allow( unused_imports ) ]
   pub use super::file::
   {
-    attr::prelude::*,
-    attr_prop::prelude::*,
+    // attr::prelude::*,
+    // attr_prop::prelude::*,
     components::orphan::*,
     container_kind::orphan::*,
     ct::orphan::*,

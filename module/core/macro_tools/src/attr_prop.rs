@@ -137,7 +137,9 @@ pub mod orphan
 /// Exposed namespace of the module.
 pub mod exposed
 {
-  pub use super::protected as attr_prop;
+  // pub use super::protected as attr_prop;
+  pub use super::super::attr_prop;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
