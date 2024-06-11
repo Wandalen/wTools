@@ -22,6 +22,7 @@ mod private
   {
     #[ serde( flatten ) ]
     inner : cargo_metadata::Package
+    // qqq : why no CrateDir is here?
   }
 
   impl From< cargo_metadata::Package > for WorkspacePackage
@@ -198,11 +199,16 @@ mod private
 
   impl Workspace
   {
+
+    // qqq : typed errors
     /// Load data from current directory
     pub fn from_current_path() -> Result< Self >
     {
       let current_path = AbsolutePath::try_from( std::env::current_dir().unwrap_or_default() )?;
-      let metadata = cargo_metadata::MetadataCommand::new().no_deps().exec().context("fail to load CargoMetadata")?;
+      let metadata = cargo_metadata::MetadataCommand::new()
+      .no_deps()
+      .exec()
+      .context( "fail to load CargoMetadata" )?;
       Ok( Self
       {
         metadata : Some( metadata ),
@@ -210,6 +216,7 @@ mod private
       })
     }
 
+    // qqq : typed errors
     /// Load data from current directory
     pub fn with_crate_dir( crate_dir : CrateDir ) -> Result< Self >
     {
