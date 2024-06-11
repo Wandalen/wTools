@@ -5,7 +5,7 @@ use the_module::features::features_powerset;
 
 use std::collections::HashMap;
 use serde::Deserialize;
-use the_module::workspace::WorkspacePackage;
+use the_module::WorkspacePackage;
 use willbe::features::estimate_with;
 
 /// Constructs a mock `Package` with specified features for testing.

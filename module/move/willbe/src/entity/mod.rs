@@ -12,7 +12,7 @@ crate::mod_interface!
   /// Handles operations related to packed Rust crates
   layer packed_crate;
   orphan use super::packed_crate;
-  
+
   /// Facade for `preatytable` crate.
   layer table;
   orphan use super::table;
@@ -28,6 +28,12 @@ crate::mod_interface!
   /// It features the ability to interact with workspaces, manage their participants, and other functionalities.
   layer workspace;
   orphan use super::workspace;
+  /// Packages of workspace.
+  layer workspace_package;
+  orphan use super::workspace_package;
+  /// Dependency of a package.
+  layer dependency;
+  orphan use super::dependency;
 
   /// To manipulate manifest data.
   layer manifest;
@@ -40,12 +46,13 @@ crate::mod_interface!
   /// Operations with tests
   layer test;
   orphan use super::test;
-  
+
   /// Rust toolchain channel: stable/nightly.
   layer channel;
   orphan use super::channel;
-  
+
   /// Rust build optimization: debug/release
   layer optimization;
   orphan use super::optimization;
+
 }

@@ -17,10 +17,10 @@ mod private
   use toml_edit::Document;
 
   use _path::AbsolutePath;
-  use crate::manifest::private::CrateDirError;
+  use manifest::private::CrateDirError;
   use error_tools::for_lib::Error;
   use error_tools::dependency::*;
-  use workspace::WorkspacePackage;
+  // use entity::WorkspacePackage;
 
   use wtools::error::for_app::{ Result, Error as wError };
   use entity::WorkspaceError;

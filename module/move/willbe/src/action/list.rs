@@ -30,7 +30,7 @@ mod private
 
   use workspace::Workspace;
   use _path::AbsolutePath;
-  use workspace::WorkspacePackage;
+  // use workspace::WorkspacePackage;
 
   /// Args for `list` action.
   #[ derive( Debug, Default, Copy, Clone ) ]
@@ -322,9 +322,9 @@ mod private
 
       match dependency.kind()
       {
-        workspace::DependencyKind::Normal if args.dependency_categories.contains( &DependencyCategory::Primary ) => dep_rep.normal_dependencies.push( dependency_rep ),
-        workspace::DependencyKind::Development if args.dependency_categories.contains( &DependencyCategory::Dev ) => dep_rep.dev_dependencies.push( dependency_rep ),
-        workspace::DependencyKind::Build if args.dependency_categories.contains( &DependencyCategory::Build ) => dep_rep.build_dependencies.push( dependency_rep ),
+        DependencyKind::Normal if args.dependency_categories.contains( &DependencyCategory::Primary ) => dep_rep.normal_dependencies.push( dependency_rep ),
+        DependencyKind::Development if args.dependency_categories.contains( &DependencyCategory::Dev ) => dep_rep.dev_dependencies.push( dependency_rep ),
+        DependencyKind::Build if args.dependency_categories.contains( &DependencyCategory::Build ) => dep_rep.build_dependencies.push( dependency_rep ),
         _ => { visited.remove( &dep_id ); std::mem::swap( &mut temp_vis, visited ); }
       }
 
@@ -332,7 +332,14 @@ mod private
     }
   }
 
-  fn process_dependency( workspace : &Workspace, dep : &workspace::Dependency, args : &ListOptions, visited : &mut HashSet< String > ) -> ListNodeReport
+  fn process_dependency
+  (
+    workspace : &Workspace,
+    dep : &Dependency,
+    args : &ListOptions,
+    visited : &mut HashSet< String >
+  )
+  -> ListNodeReport
   {
     let mut dep_rep = ListNodeReport
     {
@@ -454,12 +461,12 @@ mod private
         .map( | m | m[ "name" ].to_string().trim().replace( '\"', "" ) )
         .unwrap_or_default();
 
-        let dep_filter = move | _p : &WorkspacePackage, d : &workspace::Dependency |
+        let dep_filter = move | _p : &WorkspacePackage, d : &Dependency |
         {
           (
-            args.dependency_categories.contains( &DependencyCategory::Primary ) && d.kind() == workspace::DependencyKind::Normal
-            || args.dependency_categories.contains( &DependencyCategory::Dev ) && d.kind() == workspace::DependencyKind::Development
-            || args.dependency_categories.contains( &DependencyCategory::Build ) && d.kind() == workspace::DependencyKind::Build
+            args.dependency_categories.contains( &DependencyCategory::Primary ) && d.kind() == DependencyKind::Normal
+            || args.dependency_categories.contains( &DependencyCategory::Dev ) && d.kind() == DependencyKind::Development
+            || args.dependency_categories.contains( &DependencyCategory::Build ) && d.kind() == DependencyKind::Build
           )
           &&
           (
@@ -573,7 +580,7 @@ mod private
 
     report
   }
-  
+
   fn merge_build_dependencies_impl( report : &mut ListNodeReport, mut build_deps_acc : Vec< ListNodeReport > ) -> Vec< ListNodeReport >
   {
     for dep in report.normal_dependencies.iter_mut()
@@ -593,7 +600,7 @@ mod private
 
     build_deps_acc
   }
-  
+
   fn merge_dev_dependencies( mut report: Vec< ListNodeReport > ) -> Vec< ListNodeReport >
   {
     let mut dev_dependencies = vec![];
@@ -628,7 +635,7 @@ mod private
 
     dev_deps_acc
   }
-  
+
   fn rearrange_duplicates( mut report : Vec< ListNodeReport > ) -> Vec< ListNodeReport >
   {
     let mut required_normal : HashMap< usize, Vec< ListNodeReport > > = HashMap::new();
@@ -638,16 +645,16 @@ mod private
       report[ i ].normal_dependencies = exist;
       required_normal.insert( i, required );
     }
-    
+
     rearrange_duplicates_resolver( &mut report, &mut required_normal );
     for ( i, deps ) in required_normal
     {
       report[ i ].normal_dependencies.extend( deps );
     }
-    
+
     report
   }
-  
+
   fn rearrange_duplicates_resolver( report : &mut [ ListNodeReport ], required : &mut HashMap< usize, Vec< ListNodeReport > > )
   {
     for node in report

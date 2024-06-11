@@ -2,11 +2,9 @@ mod private
 {
   use crate::*;
   use std::collections::{ BTreeSet, HashSet };
-  // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
-  // aaa : ✅
   use error_tools::for_app::{ bail, Result };
   use wtools::iter::Itertools;
-  use workspace::WorkspacePackage;
+  // use workspace::WorkspacePackage;
 
   /// Generates a powerset of the features available in the given `package`,
   /// filtered according to specified inclusion and exclusion criteria,
@@ -109,14 +107,14 @@ mod private
     with_none_features : bool,
     enabled_features : &[ String ],
     total_features : usize
-  ) 
-    -> usize 
+  )
+    -> usize
   {
     let mut estimate = 0;
     let mut binom = 1;
     let power = power.min( n );
 
-    for k in 0..=power 
+    for k in 0..=power
     {
       estimate += binom;
       binom = binom * ( n - k ) / ( k + 1 );
@@ -125,13 +123,13 @@ mod private
     if with_all_features { estimate += 1; }
     if with_none_features { estimate += 1; }
 
-    if !enabled_features.is_empty() 
+    if !enabled_features.is_empty()
     {
       let len = enabled_features.len();
-      let combinations = ( 0..=len.min( total_features ) ).map( | k | 
+      let combinations = ( 0..=len.min( total_features ) ).map( | k |
       {
         let mut binom = 1;
-        for i in 0..k 
+        for i in 0..k
         {
           binom = binom * ( len - i ) / ( i + 1 );
         }

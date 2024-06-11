@@ -31,7 +31,7 @@ mod private
   };
   use action::readme_health_table_renew::Stability;
   use former::Former;
-  use workspace::WorkspacePackage;
+  // use workspace::WorkspacePackage;
   use diff::crate_diff;
   use version::version_revert;
   use error_tools::for_app::Error;
@@ -666,7 +666,6 @@ mod private
     }
   }
 
-
   /// Perform publishing of multiple packages based on the provided publish plan.
   ///
   /// # Arguments
@@ -687,6 +686,8 @@ mod private
 
     Ok( report )
   }
+
+  // xxx : qqq : bad : for Bohdan : report is not part of entity package
 
   /// Holds information about the publishing process.
   #[ derive( Debug, Default, Clone ) ]
@@ -806,9 +807,7 @@ mod private
   #[ derive( Debug, Clone, Hash, Eq, PartialEq ) ]
   pub struct CrateId
   {
-    /// TODO : make it private
     pub name : String,
-    /// TODO : make it private
     pub path : Option< AbsolutePath >,
   }
 
@@ -824,9 +823,9 @@ mod private
     }
   }
 
-  impl From< &workspace::Dependency > for CrateId
+  impl From< &Dependency > for CrateId
   {
-    fn from( value : &workspace::Dependency ) -> Self
+    fn from( value : &Dependency ) -> Self
     {
       Self
       {
@@ -864,7 +863,7 @@ mod private
     let deps = package
     .dependencies()
     .iter()
-    .filter( | dep | ( with_remote || dep.path().is_some() ) && ( with_dev || dep.kind() != workspace::DependencyKind::Development ) )
+    .filter( | dep | ( with_remote || dep.path().is_some() ) && ( with_dev || dep.kind() != DependencyKind::Development ) )
     .map( CrateId::from )
     .collect::< HashSet< _ > >();
 

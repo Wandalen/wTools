@@ -26,7 +26,7 @@ mod private
     },
     iter::Itertools,
   };
-  use workspace::WorkspacePackage;
+  // use workspace::WorkspacePackage;
 
   /// Used to store arguments for running tests.
   ///

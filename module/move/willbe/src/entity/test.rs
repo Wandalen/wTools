@@ -1,8 +1,6 @@
 mod private
 {
 
-  // qqq : for Petro : use https://github.com/console-rs/indicatif
-
   use crate::*;
   use table::*;
   use std::
@@ -17,10 +15,7 @@ mod private
   use std::fmt::{ Debug, Display }; /* qqq : import only fmt here and everywhere */
   use std::marker::PhantomData;
   use std::path::PathBuf;
-  // aaa : for Petro : don't use cargo_metadata directly, use facade
-  // aaa : ✅
   use colored::Colorize;
-  // qqq : for Petro : don't do micro imports
   // qqq : for Petro : don't do micro imports
   #[ cfg( feature = "progress_bar" ) ]
   use indicatif::
@@ -37,7 +32,7 @@ mod private
   use former::Former;
   use channel::Channel;
   use optimization::Optimization;
-  use workspace::WorkspacePackage;
+  // use workspace::WorkspacePackage;
 
   /// Newtype for package name
   #[ derive( Debug, Default, Clone ) ]

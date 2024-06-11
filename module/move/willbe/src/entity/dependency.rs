@@ -4,7 +4,7 @@ mod private
 //   use crate::*;
 //
 //   use std::path::Path;
-//   use cargo_metadata::camino::{ Utf8Path, Utf8PathBuf };
+  use cargo_metadata::camino::{ Utf8Path, Utf8PathBuf };
 //   use petgraph::Graph;
 //   use serde::Deserialize;
 //   use serde_json::Value;
@@ -88,6 +88,6 @@ mod private
 
 crate::mod_interface!
 {
-  orphan use Dependency;
-  orphan use DependencyKind;
+  exposed use Dependency;
+  exposed use DependencyKind;
 }

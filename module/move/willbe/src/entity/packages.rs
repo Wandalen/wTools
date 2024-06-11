@@ -6,8 +6,8 @@ mod private
     fmt::Formatter,
     collections::{ HashMap, HashSet },
   };
-  use workspace::WorkspacePackage;
-  use crate::workspace::Dependency;
+  // use workspace::WorkspacePackage;
+  // use Dependency;
 
   /// Type aliasing for String
   pub type PackageName = String;
