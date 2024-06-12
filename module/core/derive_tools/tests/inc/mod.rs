@@ -259,4 +259,6 @@ mod phantom_tests
   mod struct_named_manual;
   mod struct_tuple;
   mod struct_tuple_manual;
+  mod struct_unit_to_tuple;
+  mod struct_unit_to_tuple_manual;
 }
