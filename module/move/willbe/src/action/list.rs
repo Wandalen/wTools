@@ -311,7 +311,7 @@ mod private
     visited : &mut HashSet< String >
   )
   {
-    for dependency in &package.dependencies()
+    for dependency in package.dependencies()
     {
       if dependency.path().is_some() && !args.dependency_sources.contains( &DependencySource::Local ) { continue; }
       if dependency.path().is_none() && !args.dependency_sources.contains( &DependencySource::Remote ) { continue; }

@@ -862,7 +862,7 @@ mod private
 
     let deps = package
     .dependencies()
-    .iter()
+    // .iter()
     .filter( | dep | ( with_remote || dep.path().is_some() ) && ( with_dev || dep.kind() != DependencyKind::Development ) )
     .map( CrateId::from )
     .collect::< HashSet< _ > >();
@@ -877,7 +877,13 @@ mod private
         if graph.get( &dep ).is_none()
         {
           // unwrap because `recursive` + `with_remote` not yet implemented
-          _dependencies( workspace, &dep.path.as_ref().unwrap().join( "Cargo.toml" ).try_into().unwrap(), graph, opts.clone() )?;
+          _dependencies
+          (
+            workspace,
+            &dep.path.as_ref().unwrap().join( "Cargo.toml" ).try_into().unwrap(),
+            graph,
+            opts.clone(),
+          )?;
         }
       }
     }

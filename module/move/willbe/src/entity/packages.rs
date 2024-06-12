@@ -87,8 +87,8 @@ mod private
       (
         package.name().clone(),
         package.dependencies()
-        .iter()
-        .filter( | &d | dependency_filter( package, d ) )
+        // .iter()
+        .filter( | d | dependency_filter( package, &d ) )
         .map( | d | d.name().clone() )
         .collect::< HashSet< _ > >()
       )
