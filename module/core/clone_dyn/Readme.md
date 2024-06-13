@@ -79,6 +79,8 @@ The main function demonstrates the overall usage by creating a vector, obtaining
   use clone_dyn::{ clone_dyn, CloneDyn };
 
   /// Trait that encapsulates an iterator with specific characteristics, tailored for your needs.
+  // Uncomment to see what macro expand into
+  // #[ clone_dyn( debug ) ]
   #[ clone_dyn ]
   pub trait IterTrait< 'a, T >
   where

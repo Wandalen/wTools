@@ -28,7 +28,7 @@ mod private
     /// is applied to each dependency of each package, and only dependencies
     /// that satisfy the condition are included in the final result. If not
     /// provided, a default filter that accepts all dependencies is used.
-    pub dependency_filter : Option< Box< dyn Fn( &WorkspacePackage, &Dependency< '_ > ) -> bool  > >,
+    pub dependency_filter : Option< Box< dyn Fn( &WorkspacePackage, DependencyRef< '_ > ) -> bool  > >,
   }
 
   impl std::fmt::Debug for FilterMapOptions
@@ -88,7 +88,7 @@ mod private
         package.name().clone(),
         package.dependencies()
         // .iter()
-        .filter( | d | dependency_filter( package, &d ) )
+        .filter( | d | dependency_filter( package, *d ) ) // xxx : ?
         .map( | d | d.name().clone() )
         .collect::< HashSet< _ > >()
       )

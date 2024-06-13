@@ -22,8 +22,6 @@ mod private
     for_app::{ Error, Context },
     err
   };
-  // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
-  // aaa : ✅
 
   use petgraph::prelude::{ Dfs, EdgeRef };
   use former::Former;
@@ -335,7 +333,7 @@ mod private
   fn process_dependency
   (
     workspace : &Workspace,
-    dep : &Dependency< '_ >,
+    dep : DependencyRef< '_ >,
     args : &ListOptions,
     visited : &mut HashSet< String >
   )
@@ -461,7 +459,7 @@ mod private
         .map( | m | m[ "name" ].to_string().trim().replace( '\"', "" ) )
         .unwrap_or_default();
 
-        let dep_filter = move | _p : &WorkspacePackage, d : &Dependency< '_ > |
+        let dep_filter = move | _p : &WorkspacePackage, d : DependencyRef< '_ > |
         {
           (
             args.dependency_categories.contains( &DependencyCategory::Primary ) && d.kind() == DependencyKind::Normal

@@ -823,9 +823,9 @@ mod private
     }
   }
 
-  impl From< &Dependency< '_ > > for CrateId
+  impl From< &DependencyRef< '_ > > for CrateId
   {
-    fn from( value : &Dependency< '_ > ) -> Self
+    fn from( value : &DependencyRef< '_ > ) -> Self
     {
       Self
       {
@@ -835,10 +835,11 @@ mod private
     }
   }
 
+  // xxx : move out
   /// Recursive implementation of the `dependencies` function
   pub fn _dependencies
   (
-    workspace : &mut Workspace,
+    workspace : &mut Workspace, // xxx : qqq : for Bohdan : ??
     manifest : &Package,
     graph : &mut HashMap< CrateId, HashSet< CrateId > >,
     opts : DependenciesOptions
@@ -864,7 +865,7 @@ mod private
     .dependencies()
     // .iter()
     .filter( | dep | ( with_remote || dep.path().is_some() ) && ( with_dev || dep.kind() != DependencyKind::Development ) )
-    .map( CrateId::from )
+    .map( | dep | CrateId::from( &dep ) )
     .collect::< HashSet< _ > >();
 
     let package = CrateId::from( &package );
@@ -902,7 +903,13 @@ mod private
   /// # Returns
   ///
   /// If the operation is successful, returns a vector of `PathBuf` objects, where each `PathBuf` represents the path to a local dependency of the specified package.
-  pub fn dependencies( workspace : &mut Workspace, manifest : &Package, opts : DependenciesOptions ) -> Result< Vec< CrateId > >
+  pub fn dependencies
+  (
+    workspace : &mut Workspace,
+    manifest : &Package,
+    opts : DependenciesOptions
+  )
+  -> Result< Vec< CrateId > >
   {
     let mut graph = HashMap::new();
     let root = _dependencies( workspace, manifest, &mut graph, opts.clone() )?;

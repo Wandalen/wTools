@@ -332,7 +332,7 @@ mod private
         p.publish().is_none() && p.manifest_path().starts_with( &path )
       )
     );
-    let module_dependency_filter: Option< Box< dyn Fn( &WorkspacePackage, &Dependency< '_ > ) -> bool > > = Some
+    let module_dependency_filter: Option< Box< dyn Fn( &WorkspacePackage, DependencyRef< '_ > ) -> bool > > = Some
     (
       Box::new
       (

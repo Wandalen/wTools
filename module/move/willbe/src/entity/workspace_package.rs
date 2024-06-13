@@ -49,10 +49,10 @@ mod private
     -> core::iter::Map
     <
       core::slice::Iter< 'a, cargo_metadata::Dependency >,
-      fn( &'a cargo_metadata::Dependency ) -> &'a Dependency< 'a >,
+      fn( &'a cargo_metadata::Dependency ) -> DependencyRef< 'a >,
     >
     {
-      fn dependency_from( dependency : &cargo_metadata::Dependency ) -> &Dependency< '_ >
+      fn dependency_from( dependency : &cargo_metadata::Dependency ) -> DependencyRef< '_ >
       {
         dependency.into()
         // Dependency::from( dependency )

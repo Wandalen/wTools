@@ -5,15 +5,13 @@ mod private
   /// A dependency of the main crate
   #[ derive( Debug, Clone, Copy ) ]
   #[ repr( transparent ) ]
-  pub struct Dependency< 'a >
+  pub struct DependencyRef< 'a >
   {
     inner : &'a cargo_metadata::Dependency,
   }
 
-  impl< 'a > Dependency< 'a >
+  impl< 'a > DependencyRef< 'a >
   {
-
-
 
     /// The file system path for a local path dependency.
     /// Only produced on cargo 1.51+
@@ -47,16 +45,12 @@ mod private
     }
   }
 
-  impl< 'a > From< &'a cargo_metadata::Dependency > for &'a Dependency< 'a >
+  impl< 'a > From< &'a cargo_metadata::Dependency > for DependencyRef< 'a >
   {
+    #[ inline( always ) ]
     fn from( inner : &'a cargo_metadata::Dependency ) -> Self
     {
-      // xxx
-      // SAFETY :
-      // `Dependency` is transperent type and as so has exactly the same layout as argo_metadata::Dependency.
-      // The types have identical memory layouts and lifetimes so it's safe.
-      #[ allow( unsafe_code ) ]
-      unsafe { core::mem::transmute( &inner ) }
+      Self { inner }
     }
   }
 
@@ -80,6 +74,6 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use Dependency;
+  exposed use DependencyRef;
   exposed use DependencyKind;
 }
