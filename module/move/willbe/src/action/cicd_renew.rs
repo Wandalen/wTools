@@ -20,7 +20,6 @@ mod private
   use manifest::private::CrateDirError;
   use error_tools::for_lib::Error;
   use error_tools::dependency::*;
-  // use entity::WorkspacePackage;
 
   use wtools::error::for_app::{ Result, Error as wError };
   use entity::WorkspaceError;
@@ -49,7 +48,12 @@ mod private
   {
     let workspace_cache = Workspace::with_crate_dir( AbsolutePath::try_from( base_path )?.try_into()? )?;
     let packages = workspace_cache.packages()?;
-    let username_and_repository = &username_and_repository( &workspace_cache.workspace_root()?.join( "Cargo.toml" ).try_into()?, packages.as_slice() )?;
+    let username_and_repository = &username_and_repository
+    (
+      &workspace_cache.workspace_root()?.join( "Cargo.toml" ).try_into()?,
+      packages,
+      // packages.as_slice(),
+    )?;
     let workspace_root = workspace_cache.workspace_root()?;
     // find directory for workflows
     let workflow_root = workspace_root.join( ".github" ).join( "workflows" );
@@ -231,7 +235,7 @@ mod private
   /// if not found there, it is then searched in the Cargo.toml file of the module.
   /// If it is still not found, the search continues in the GitHub remotes.
   /// Result looks like this: `Wandalen/wTools`
-  fn username_and_repository( cargo_toml_path : &AbsolutePath, packages : &[ WorkspacePackage ] )
+  fn username_and_repository< 'a >( cargo_toml_path : &AbsolutePath, packages : &[ WorkspacePackageRef< 'a > ] )
   -> Result< UsernameAndRepository >
   {
       let mut contents = String::new();

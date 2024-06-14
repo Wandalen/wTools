@@ -26,7 +26,6 @@ mod private
     },
     iter::Itertools,
   };
-  // use workspace::WorkspacePackage;
 
   /// Used to store arguments for running tests.
   ///
@@ -180,7 +179,7 @@ mod private
     result
   }
 
-  fn needed_packages( path : AbsolutePath ) -> Result< Vec< WorkspacePackage > >
+  fn needed_packages< 'a >( path : AbsolutePath ) -> Result< Vec< WorkspacePackageRef< 'a > > >
   {
     let path = if path.as_ref().file_name() == Some( "Cargo.toml".as_ref() )
     {

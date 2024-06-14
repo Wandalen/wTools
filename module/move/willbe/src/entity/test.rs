@@ -32,7 +32,6 @@ mod private
   use former::Former;
   use channel::Channel;
   use optimization::Optimization;
-  // use workspace::WorkspacePackage;
 
   /// Newtype for package name
   #[ derive( Debug, Default, Clone ) ]
@@ -93,9 +92,9 @@ mod private
     /// `with_all_features` - If it's true - add to powerset one subset which contains all features.
     /// `with_none_features` - If it's true - add to powerset one empty subset.
     /// `variants_cap` - Maximum of subset in powerset
-    pub fn try_from
+    pub fn try_from< 'a >
     (
-      packages : &[ WorkspacePackage ],
+      packages : &[ WorkspacePackageRef< 'a > ],
       channels : &HashSet< Channel >,
       power : u32,
       include_features : Vec< String >,
@@ -211,9 +210,9 @@ mod private
     /// `with_all_features` - If it's true - add to powerset one subset which contains all features.
     /// `with_none_features` - If it's true - add to powerset one empty subset.
     /// `variants_cap` - Maximum of subset in powerset
-    fn try_from
+    fn try_from< 'a >
     (
-      package : &WorkspacePackage,
+      package : &WorkspacePackageRef< 'a >,
       channels : &HashSet< Channel >,
       power : u32,
       include_features : &[ String ],

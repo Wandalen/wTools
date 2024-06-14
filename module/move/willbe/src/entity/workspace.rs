@@ -116,16 +116,41 @@ mod private
   {
 
     // qqq : replace all Vec by Iterators over refs
+
     /// Returns list of all packages
-    pub fn packages( &self ) -> Result< Vec< WorkspacePackage >, WorkspaceError >
+    pub fn packages< 'a >( &'a self )
+    // -> Result< Vec< WorkspacePackageRef< '_ > >, WorkspaceError >
+    ->
+    std::result::Result
+    <
+      core::iter::Map
+      <
+        std::slice::Iter< 'a, cargo_metadata::Package >,
+        impl Fn( &'a cargo_metadata::Package ) -> WorkspacePackageRef< 'a >,
+        // fn( cargo_metadata::Package ) -> WorkspacePackageRef,
+      >,
+      WorkspaceError,
+    >
     {
       self
       .metadata
       .as_ref()
       .ok_or_else( || WorkspaceError::MetadataError )
-      .map( | metadata | metadata.packages.clone() )
-      .map( | p | p.into_iter().map( WorkspacePackage::from ).collect() )
+      .map( move | p | p.packages.iter().map( WorkspacePackageRef::from ) )
+      // .map( | p | p.packages.clone().into_iter().map( WorkspacePackageRef::from ) )
+      // .map( | p | p.into_iter().map( WorkspacePackageRef::from ) )
     }
+
+    // /// Returns list of all packages
+    // pub fn packages( &self ) -> Result< Vec< WorkspacePackageRef< '_ > >, WorkspaceError >
+    // {
+    //   self
+    //   .metadata
+    //   .as_ref()
+    //   .ok_or_else( || WorkspaceError::MetadataError )
+    //   .map( | metadata | metadata.packages.clone() )
+    //   .map( | p | p.into_iter().map( WorkspacePackageRef::from ).collect() )
+    // }
 
     /// Returns the path to workspace root
     pub fn workspace_root( &self ) -> Result< &Path, WorkspaceError >
@@ -165,7 +190,7 @@ mod private
     }
 
     /// Find a package by its manifest file path
-    pub fn package_find_by_manifest< P >( &self, manifest_path : P ) -> Option< WorkspacePackage >
+    pub fn package_find_by_manifest< 'a, P >( &self, manifest_path : P ) -> Option< WorkspacePackageRef< 'a > >
     where
       P : AsRef< Path >,
     {
@@ -176,21 +201,23 @@ mod private
       (
         | packages |
         packages
-        .iter()
+        // .iter()
         .find( | &p | p.manifest_path().as_std_path() == manifest_path.as_ref() )
-        .cloned()
+        // .cloned()
       )
     }
+
+    // xxx : qqq : for Bohdan : should not be here
 
     /// Returns a graph of packages.
     pub( crate ) fn graph( &self ) -> Graph< String, String >
     {
       let packages = self.packages().unwrap();
-      let module_package_filter : Option< Box< dyn Fn( &WorkspacePackage ) -> bool > > = Some
+      let module_package_filter : Option< Box< dyn Fn( &'a WorkspacePackageRef< 'a > ) -> bool > > = Some
       (
         Box::new( move | p | p.publish().is_none() )
       );
-      let module_dependency_filter : Option< Box< dyn Fn( &WorkspacePackage, DependencyRef< '_ > ) -> bool > > = Some
+      let module_dependency_filter : Option< Box< dyn Fn( &'a WorkspacePackageRef< 'a >, DependencyRef< '_ > ) -> bool > > = Some
       (
         Box::new
         (
@@ -199,7 +226,8 @@ mod private
       );
       let module_packages_map = packages::filter
       (
-        packages.as_slice(),
+        // packages.as_slice(),
+        packages,
         packages::FilterMapOptions { package_filter : module_package_filter, dependency_filter : module_dependency_filter },
       );
 

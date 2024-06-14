@@ -321,10 +321,10 @@ mod private
   }
 
   /// Return topologically sorted modules name, from packages list, in specified directory.
-  fn directory_names( path : PathBuf, packages : &[ WorkspacePackage ] ) -> Result< Vec< String > >
+  fn directory_names( path : PathBuf, packages : &[ WorkspacePackageRef< '_ > ] ) -> Result< Vec< String > >
   {
     let path_clone = path.clone();
-    let module_package_filter: Option< Box< dyn Fn( &WorkspacePackage ) -> bool > > = Some
+    let module_package_filter: Option< Box< dyn Fn( &WorkspacePackageRef< '_ > ) -> bool > > = Some
     (
       Box::new
       (
@@ -332,7 +332,7 @@ mod private
         p.publish().is_none() && p.manifest_path().starts_with( &path )
       )
     );
-    let module_dependency_filter: Option< Box< dyn Fn( &WorkspacePackage, DependencyRef< '_ > ) -> bool > > = Some
+    let module_dependency_filter: Option< Box< dyn Fn( &WorkspacePackageRef< '_ >, DependencyRef< '_ > ) -> bool > > = Some
     (
       Box::new
       (

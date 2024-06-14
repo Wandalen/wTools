@@ -4,7 +4,7 @@ mod private
   use std::collections::{ BTreeSet, HashSet };
   use error_tools::for_app::{ bail, Result };
   use wtools::iter::Itertools;
-  // use workspace::WorkspacePackage;
+  // use workspace::WorkspacePackageRef< '_ >;
 
   /// Generates a powerset of the features available in the given `package`,
   /// filtered according to specified inclusion and exclusion criteria,
@@ -45,7 +45,7 @@ mod private
 
   pub fn features_powerset
   (
-    package : &WorkspacePackage,
+    package : &WorkspacePackageRef< '_ >,
     power : usize,
     exclude_features : &[ String ],
     include_features : &[ String ],

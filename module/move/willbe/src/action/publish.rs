@@ -136,7 +136,7 @@ mod private
     .try_into()?;
     let packages = metadata.load()?.packages()?;
     let packages_to_publish : Vec< _ > = packages
-    .iter()
+    // .iter()
     .filter( | &package | paths.contains( &AbsolutePath::try_from( package.manifest_path().as_std_path().parent().unwrap() ).unwrap() ) )
     .map( | p | p.name().clone() )
     .collect();

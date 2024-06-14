@@ -6,7 +6,7 @@ mod private
     fmt::Formatter,
     collections::{ HashMap, HashSet },
   };
-  // use workspace::WorkspacePackage;
+  // use workspace::WorkspacePackageRef< '_ >;
   // use Dependency;
 
   /// Type aliasing for String
@@ -22,13 +22,13 @@ mod private
     /// applied to each package, and only packages that satisfy the condition
     /// are included in the final result. If not provided, a default filter that
     /// accepts all packages is used.
-    pub package_filter : Option< Box< dyn Fn( &WorkspacePackage ) -> bool > >,
+    pub package_filter : Option< Box< dyn Fn( WorkspacePackageRef< '_ > ) -> bool > >,
 
     /// An optional dependency filtering function. If provided, this function
     /// is applied to each dependency of each package, and only dependencies
     /// that satisfy the condition are included in the final result. If not
     /// provided, a default filter that accepts all dependencies is used.
-    pub dependency_filter : Option< Box< dyn Fn( &WorkspacePackage, DependencyRef< '_ > ) -> bool  > >,
+    pub dependency_filter : Option< Box< dyn Fn( WorkspacePackageRef< '_ >, DependencyRef< '_ > ) -> bool  > >,
   }
 
   impl std::fmt::Debug for FilterMapOptions
@@ -73,13 +73,19 @@ mod private
 
   // qqq : for Bohdan : for Petro : bad. don't use PackageMetadata directly, use its abstraction only!
 
-  pub fn filter( packages : &[ WorkspacePackage ], options : FilterMapOptions ) -> HashMap< PackageName, HashSet< PackageName > >
+  pub fn filter< 'a >
+  (
+    // packages : &[ WorkspacePackageRef< '_ > ],
+    packages : impl Iterator< Item = WorkspacePackageRef< 'a > >,
+    options : FilterMapOptions,
+  )
+  -> HashMap< PackageName, HashSet< PackageName > >
   {
     let FilterMapOptions { package_filter, dependency_filter } = options;
     let package_filter = package_filter.unwrap_or_else( || Box::new( | _ | true ) );
     let dependency_filter = dependency_filter.unwrap_or_else( || Box::new( | _, _ | true ) );
     packages
-    .iter()
+    // .iter()
     .filter( | &p | package_filter( p ) )
     .map
     (
@@ -88,7 +94,7 @@ mod private
         package.name().clone(),
         package.dependencies()
         // .iter()
-        .filter( | d | dependency_filter( package, *d ) ) // xxx : ?
+        .filter( | d | dependency_filter( package, *d ) )
         .map( | d | d.name().clone() )
         .collect::< HashSet< _ > >()
       )

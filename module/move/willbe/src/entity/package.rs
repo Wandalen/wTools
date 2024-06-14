@@ -31,7 +31,6 @@ mod private
   };
   use action::readme_health_table_renew::Stability;
   use former::Former;
-  // use workspace::WorkspacePackage;
   use diff::crate_diff;
   use version::version_revert;
   use error_tools::for_app::Error;
@@ -39,12 +38,12 @@ mod private
 
   ///
   #[ derive( Debug, Clone ) ]
-  pub enum Package
+  pub enum Package< 'a >
   {
     /// `Cargo.toml` file.
     Manifest( Manifest ),
     /// Cargo metadata package.
-    Metadata( WorkspacePackage ),
+    Metadata( WorkspacePackageRef< 'a > ),
   }
 
   /// Represents errors related to package handling.
@@ -71,7 +70,7 @@ mod private
     NotAPackage,
   }
 
-  impl TryFrom< AbsolutePath > for Package
+  impl< 'a > TryFrom< AbsolutePath > for Package< 'a >
   {
     // aaa : make better errors
     // aaa : return `PackageError` instead of `anohow` message
@@ -89,7 +88,7 @@ mod private
     }
   }
 
-  impl TryFrom< CrateDir > for Package
+  impl< 'a > TryFrom< CrateDir > for Package< 'a >
   {
     type Error = PackageError;
 
@@ -105,7 +104,7 @@ mod private
     }
   }
 
-  impl TryFrom< Manifest > for Package
+  impl< 'a > TryFrom< Manifest > for Package< 'a >
   {
     // aaa : make better errors
     // aaa : return `PackageError` instead of `anohow` message
@@ -122,15 +121,15 @@ mod private
     }
   }
 
-  impl From< WorkspacePackage > for Package
+  impl< 'a > From< WorkspacePackageRef< 'a > > for Package< 'a >
   {
-    fn from( value : WorkspacePackage ) -> Self
+    fn from( value : WorkspacePackageRef< 'a > ) -> Self
     {
       Self::Metadata( value )
     }
   }
 
-  impl Package
+  impl< 'a > Package< 'a >
   {
     // qqq : introdcue newtype ManifestPath
     /// Path to `Cargo.toml`
@@ -287,7 +286,8 @@ mod private
     }
 
     /// Returns the `Metadata`
-    pub fn metadata( &self ) -> Result< WorkspacePackage, PackageError >
+    // xxx : rename
+    pub fn metadata( &self ) -> Result< WorkspacePackageRef< 'a >, PackageError >
     {
       match self
       {
@@ -364,17 +364,17 @@ mod private
   /// Represents a planner for publishing a single package.
   #[ derive( Debug, Former ) ]
   #[ perform( fn build() -> PackagePublishInstruction ) ]
-  pub struct PublishSinglePackagePlanner
+  pub struct PublishSinglePackagePlanner< 'a >
   {
     workspace_dir : CrateDir,
-    package : Package,
+    package : Package< 'a >,
     channel : Channel,
     base_temp_dir : Option< PathBuf >,
     #[ former( default = true ) ]
     dry : bool,
   }
 
-  impl PublishSinglePackagePlanner
+  impl< 'a > PublishSinglePackagePlanner< 'a >
   {
     fn build( self ) -> PackagePublishInstruction
     {
@@ -497,6 +497,8 @@ mod private
     Ok( report )
   }
 
+  // xxx : qqq : bad : move out
+
   /// `PublishPlan` manages the overall publication process for multiple packages.
   /// It organizes the necessary details required for publishing each individual package.
   /// This includes the workspace root directory, any temporary directories used during the process,
@@ -614,7 +616,7 @@ mod private
     }
   }
 
-  impl PublishPlanFormer
+  impl< 'a > PublishPlanFormer
   {
     pub fn option_base_temp_dir( mut self, path : Option< PathBuf > ) -> Self
     {
@@ -624,7 +626,7 @@ mod private
 
     pub fn package< IntoPackage >( mut self, package : IntoPackage ) -> Self
     where
-      IntoPackage : Into< Package >,
+      IntoPackage : Into< Package< 'a > >,
     {
       let channel = self.storage.channel.unwrap_or_default();
       let mut plan = PublishSinglePackagePlanner::former();
@@ -655,7 +657,7 @@ mod private
     pub fn packages< IntoPackageIter, IntoPackage >( mut self, packages : IntoPackageIter ) -> Self
     where
       IntoPackageIter : IntoIterator< Item = IntoPackage >,
-      IntoPackage : Into< Package >,
+      IntoPackage : Into< Package< 'a > >,
     {
       for package in packages
       {
@@ -664,6 +666,7 @@ mod private
 
       self
     }
+
   }
 
   /// Perform publishing of multiple packages based on the provided publish plan.
@@ -811,9 +814,9 @@ mod private
     pub path : Option< AbsolutePath >,
   }
 
-  impl From< &WorkspacePackage > for CrateId
+  impl< 'a > From< &WorkspacePackageRef< 'a > > for CrateId
   {
-    fn from( value : &WorkspacePackage ) -> Self
+    fn from( value : &WorkspacePackageRef< 'a > ) -> Self
     {
       Self
       {
@@ -837,10 +840,11 @@ mod private
 
   // xxx : move out
   /// Recursive implementation of the `dependencies` function
-  pub fn _dependencies
+  pub fn _dependencies< 'a >
   (
-    workspace : &mut Workspace, // xxx : qqq : for Bohdan : ??
-    manifest : &Package,
+    workspace : &mut Workspace, // xxx : qqq : for Bohdan : why mut? o.O
+    manifest : &Package< 'a >, // xxx : rename
+    // xxx : firain type
     graph : &mut HashMap< CrateId, HashSet< CrateId > >,
     opts : DependenciesOptions
   ) -> Result< CrateId >
@@ -903,10 +907,10 @@ mod private
   /// # Returns
   ///
   /// If the operation is successful, returns a vector of `PathBuf` objects, where each `PathBuf` represents the path to a local dependency of the specified package.
-  pub fn dependencies
+  pub fn dependencies< 'a >
   (
     workspace : &mut Workspace,
-    manifest : &Package,
+    manifest : &Package< 'a >, // xxx : rename
     opts : DependenciesOptions
   )
   -> Result< Vec< CrateId > >
@@ -951,7 +955,7 @@ mod private
   ///
   /// Panics if the manifest is not loaded or local package is not packed.
 
-  pub fn publish_need( package : &Package, path : Option< PathBuf > ) -> Result< bool, PackageError >
+  pub fn publish_need< 'a >( package : &Package< 'a >, path : Option< PathBuf > ) -> Result< bool, PackageError >
   {
     let name = package.name()?;
     let version = package.version()?;

@@ -17,17 +17,18 @@ mod private
   use _path::AbsolutePath;
 
   /// Facade for cargo_metadata::Package
-  #[ derive( Debug, Clone, Deserialize ) ]
-  pub struct WorkspacePackage
+  #[ derive( Debug, Clone, Copy ) ]
+  #[ repr( transparent ) ]
+  pub struct WorkspacePackageRef< 'a >
   {
     #[ serde( flatten ) ]
-    inner : cargo_metadata::Package
-    // qqq : why no CrateDir is here?
+    inner : &'a cargo_metadata::Package
+    // qqq : xxx : why no CrateDir is here?
   }
 
-  impl From< cargo_metadata::Package > for WorkspacePackage
+  impl< 'a > From< &'a cargo_metadata::Package > for WorkspacePackageRef< 'a >
   {
-    fn from( inner : cargo_metadata::Package ) -> Self
+    fn from( inner : &'a cargo_metadata::Package ) -> Self
     {
       Self
       {
@@ -36,7 +37,7 @@ mod private
     }
   }
 
-  impl WorkspacePackage
+  impl< 'a > WorkspacePackageRef< 'a >
   {
     /// The name field as given in the Cargo.toml
     pub fn name( &self ) -> &String
@@ -45,7 +46,7 @@ mod private
     }
 
     /// List of dependencies of this particular package
-    pub fn dependencies< 'a >( &'a self )
+    pub fn dependencies( &'a self )
     -> core::iter::Map
     <
       core::slice::Iter< 'a, cargo_metadata::Dependency >,
@@ -141,5 +142,5 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use WorkspacePackage;
+  exposed use WorkspacePackageRef;
 }

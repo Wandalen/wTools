@@ -28,7 +28,6 @@ mod private
 
   use workspace::Workspace;
   use _path::AbsolutePath;
-  // use workspace::WorkspacePackage;
 
   /// Args for `list` action.
   #[ derive( Debug, Default, Copy, Clone ) ]
@@ -300,10 +299,10 @@ mod private
     }
   }
 
-  fn process_package_dependency
+  fn process_package_dependency< 'a >
   (
     workspace : &Workspace,
-    package : &WorkspacePackage,
+    package : &WorkspacePackageRef< 'a >,
     args : &ListOptions,
     dep_rep : &mut ListNodeReport,
     visited : &mut HashSet< String >
@@ -441,7 +440,11 @@ mod private
       ListFormat::Tree =>
       {
         let packages = metadata.packages().context( "workspace packages" ).err_with( report.clone() )?;
-        let mut visited = packages.iter().map( | p | format!( "{}+{}+{}", p.name(), p.version().to_string(), p.manifest_path() ) ).collect();
+        let mut visited = packages.map
+        (
+          | p | format!( "{}+{}+{}", p.name(), p.version().to_string(), p.manifest_path() )
+        )
+        .collect();
         for package in packages
         {
           tree_package_report( package.manifest_path().as_std_path().try_into().unwrap(), &mut report, &mut visited )
@@ -459,7 +462,7 @@ mod private
         .map( | m | m[ "name" ].to_string().trim().replace( '\"', "" ) )
         .unwrap_or_default();
 
-        let dep_filter = move | _p : &WorkspacePackage, d : DependencyRef< '_ > |
+        let dep_filter = move | _p : &WorkspacePackageRef< '_ >, d : DependencyRef< '_ > |
         {
           (
             args.dependency_categories.contains( &DependencyCategory::Primary ) && d.kind() == DependencyKind::Normal
@@ -476,7 +479,8 @@ mod private
         let packages = metadata.packages().context( "workspace packages" ).err_with( report.clone() )?;
         let packages_map =  packages::filter
         (
-          packages.as_slice(),
+          packages,
+          // packages.as_slice(),
           FilterMapOptions { dependency_filter : Some( Box::new( dep_filter ) ), ..Default::default() }
         );
 

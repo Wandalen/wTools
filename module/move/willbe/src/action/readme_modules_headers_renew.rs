@@ -8,8 +8,8 @@ mod private
   {
     err,
     for_app::
-    { 
-      Result, 
+    {
+      Result,
       Error as wError,
       Context,
     },
@@ -40,8 +40,8 @@ mod private
   /// Report.
   #[ derive( Debug, Default, Clone ) ]
   pub struct ModulesHeadersRenewReport
-  { 
-    found_files : BTreeSet< PathBuf >, 
+  {
+    found_files : BTreeSet< PathBuf >,
     touched_files : BTreeSet< PathBuf >,
   }
 
@@ -49,14 +49,14 @@ mod private
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
-      if self.touched_files.len() < self.found_files.len() 
+      if self.touched_files.len() < self.found_files.len()
       {
         writeln!( f, "Something went wrong.\n{}/{} was touched.", self.found_files.len(), self.touched_files.len() )?;
         return Ok(())
       }
       writeln!( f, "Touched files :" )?;
       let mut count = self.found_files.len();
-      for path in &self.touched_files 
+      for path in &self.touched_files
       {
         if let Some( file_path ) = path.to_str()
         {
@@ -101,7 +101,12 @@ mod private
   {
 
     /// Create `ModuleHeader` instance from the folder where Cargo.toml is stored.
-    fn from_cargo_toml( package : Package, default_discord_url : &Option< String > ) -> Result< Self, ModulesHeadersRenewError >
+    fn from_cargo_toml< 'a >
+    (
+      package : Package< 'a >,
+      default_discord_url : &Option< String >,
+    )
+    -> Result< Self, ModulesHeadersRenewError >
     {
       let stability = package.stability()?;
 

@@ -116,37 +116,37 @@ pub( crate ) mod private
   pub fn topological_sort_with_grouping< 'a, PackageIdentifier : Clone + std::fmt::Debug >
   (
     graph : Graph< &'a PackageIdentifier, &'a PackageIdentifier >
-  ) 
-  -> Vec< Vec< PackageIdentifier > > 
+  )
+  -> Vec< Vec< PackageIdentifier > >
   {
     let mut in_degree = HashMap::new();
-    for node in graph.node_indices() 
+    for node in graph.node_indices()
     {
       in_degree.insert( node, graph.neighbors_directed( node, Incoming ).count() );
     }
 
     let mut roots = VecDeque::new();
-    for ( node, &degree ) in in_degree.iter() 
+    for ( node, &degree ) in in_degree.iter()
     {
-      if degree == 0 
+      if degree == 0
       {
         roots.push_back( *node );
       }
     }
 
     let mut result = Vec::new();
-    while !roots.is_empty() 
+    while !roots.is_empty()
     {
       let mut next_roots = Vec::new();
       let mut group = Vec::new();
-      while let Some( node ) = roots.pop_front() 
+      while let Some( node ) = roots.pop_front()
       {
         group.push( node );
-        for edge in graph.neighbors( node ) 
+        for edge in graph.neighbors( node )
         {
           let degree = in_degree.get_mut( &edge ).unwrap();
           *degree -= 1;
-          if *degree == 0 
+          if *degree == 0
           {
             next_roots.push( edge );
           }
@@ -158,12 +158,12 @@ pub( crate ) mod private
     result
     .into_iter()
     .map
-    ( 
-      | vec | 
+    (
+      | vec |
       vec
       .iter()
       .map( | dep_idx | ( *graph.node_weight( *dep_idx ).unwrap() ).clone() )
-      .collect() 
+      .collect()
     )
     .rev()
     .collect()
@@ -236,13 +236,13 @@ pub( crate ) mod private
   /// # Returns
   ///
   /// A new `Graph` with the nodes that are not required to be published removed.
-  pub fn remove_not_required_to_publish
-  ( 
-    package_map : &HashMap< String, Package >, 
-    graph : &Graph< String, String >, 
-    roots : &[ String ], 
+  pub fn remove_not_required_to_publish< 'a >
+  (
+    package_map : &HashMap< String, Package< 'a > >,
+    graph : &Graph< String, String >,
+    roots : &[ String ],
     temp_path : Option< PathBuf >,
-  ) 
+  )
   -> Result< Graph< String, String > >
   {
     let mut nodes = HashSet::new();
@@ -264,7 +264,7 @@ pub( crate ) mod private
         }
         let package = package_map.get( &graph[ n ] ).unwrap();
         _ = cargo::pack
-        ( 
+        (
           cargo::PackOptions::former()
           .path( package.crate_dir().absolute_path().as_ref().to_path_buf() )
           .option_temp_path( temp_path.clone() )
