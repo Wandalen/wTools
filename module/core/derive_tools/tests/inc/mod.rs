@@ -252,6 +252,7 @@ mod inner_from_tests
 #[ path = "phantom" ]
 mod phantom_tests
 {
+  // use crate::only_for_aggregating_module;
   #[ allow( unused_imports ) ]
   use super::*;
 
@@ -261,4 +262,16 @@ mod phantom_tests
   mod struct_tuple_manual;
   mod struct_unit_to_tuple;
   mod struct_unit_to_tuple_manual;
+  #[ test_tools::nightly ]
+  #[ test ]
+  fn phantom_trybuild()
+  {
+
+    println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+    let t = test_tools::compiletime::TestCases::new();
+
+    // Fail test for applying macros to enum
+    t.compile_fail( "tests/inc/phantom/compiletime/enum.rs" );
+
+  }
 }
