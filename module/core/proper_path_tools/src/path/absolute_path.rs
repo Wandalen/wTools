@@ -10,8 +10,12 @@ pub( crate ) mod private
     fmt,
     path::{ Path, PathBuf },
   };
+
   #[ cfg( feature = "derive_serde" ) ]
   use serde::{ Serialize, Deserialize };
+
+  #[ cfg( feature = "path_utf8" ) ]
+  use camino::{ Utf8Path, Utf8PathBuf };
 
   /// Absolute path.
   #[ cfg_attr( feature = "derive_serde", derive( Serialize, Deserialize ) ) ]
@@ -54,6 +58,28 @@ pub( crate ) mod private
     fn try_from( value : &Path ) -> Result< Self, Self::Error >
     {
       Ok( Self( path::canonicalize( value )? ) )
+    }
+  }
+
+  #[ cfg( feature = "path_utf8" ) ]
+  impl TryFrom< Utf8PathBuf > for AbsolutePath
+  {
+    type Error = std::io::Error;
+
+    fn try_from( value : Utf8PathBuf ) -> Result< Self, Self::Error >
+    {
+      AbsolutePath::try_from( value.as_std_path() )
+    }
+  }
+
+  #[ cfg( feature = "path_utf8" ) ]
+  impl TryFrom< &Utf8Path > for AbsolutePath
+  {
+    type Error = std::io::Error;
+
+    fn try_from( value : &Utf8Path ) -> Result< Self, Self::Error >
+    {
+      AbsolutePath::try_from( value.as_std_path() )
     }
   }
 
@@ -116,6 +142,13 @@ pub( crate ) mod private
     pub fn to_string_lossy( &self ) -> Cow< '_, str >
     {
       self.0.to_string_lossy()
+    }
+
+    /// Returns inner type which is PathBuf.
+    #[ inline( always ) ]
+    pub fn inner( self ) -> PathBuf
+    {
+      self.0
     }
 
   }

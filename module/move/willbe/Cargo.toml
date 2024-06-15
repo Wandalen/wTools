@@ -27,8 +27,13 @@ all-features = false
 
 
 [features]
-default = [ "enabled", "progress_bar" ]
-full = [ "enabled", "progress_bar" ]
+default = [
+  "enabled",
+  "progress_bar",
+]
+full = [
+  "default"
+]
 enabled = []
 tracing = [ "dep:tracing", "dep:tracing-subscriber" ]
 progress_bar = [ "dep:indicatif" ]
@@ -65,7 +70,7 @@ former = { workspace = true, features = [ "default" ] }
 iter_tools = { workspace = true, features = [ "default" ] }
 mod_interface = { workspace = true, features = [ "default" ] }
 wca = { workspace = true, features = [ "default" ] }
-proper_path_tools = { workspace = true, features = [ "default" ] }
+proper_path_tools = { workspace = true, features = [ "default", "path_utf8" ] }
 process_tools = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
