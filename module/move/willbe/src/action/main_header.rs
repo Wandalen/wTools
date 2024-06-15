@@ -19,7 +19,7 @@ mod private
   use action::readme_health_table_renew::
   {
     readme_path,
-    workspace_root
+    // workspace_root
   };
   use _path::AbsolutePath;
   use { CrateDir, query, url, Workspace, wtools };
@@ -40,7 +40,7 @@ mod private
     dependency::*,
     for_lib::Error,
   };
-  
+
   static TAGS_TEMPLATE : std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 
   fn regexes_initialize()
@@ -67,12 +67,12 @@ mod private
         {
           writeln!( f, "File successful changed : {file_path}." )?;
         }
-        else 
+        else
         {
           writeln!( f, "File successful changed but contains non-UTF-8 characters." )?;
         }
       }
-      else 
+      else
       {
         if let Some( Some( file_path ) ) = self.found_file.as_ref().map( | p | p.to_str() )
         {
@@ -112,7 +112,7 @@ mod private
   impl HeaderParameters
   {
     /// Create `HeaderParameters` instance from the folder where Cargo.toml is stored.
-    fn from_cargo_toml( workspace : Workspace ) -> Result< Self, MainHeaderRenewError >
+    fn from_cargo_toml( workspace : &Workspace ) -> Result< Self, MainHeaderRenewError >
     {
       let repository_url = workspace.repository_url()?.ok_or_else::< Error, _ >( || err!( "repo_url not found in workspace Cargo.toml" ) )?;
       let master_branch = workspace.master_branch()?.unwrap_or( "master".into() );
@@ -183,27 +183,29 @@ mod private
     let mut report = MainHeaderRenewReport::default();
     regexes_initialize();
 
-    let mut cargo_metadata = Workspace::with_crate_dir
-    ( 
+    let mut workspace = Workspace::with_crate_dir
+    (
       CrateDir::try_from( path )
-      .map_err( | e | ( report.clone(), e.into() ) )? 
+      .map_err( | e | ( report.clone(), e.into() ) )?
     ).map_err( | e | ( report.clone(), e.into() ) )?;
-    
-    let workspace_root = workspace_root( &mut cargo_metadata )
+
+    workspace.load().map_err( | e | ( report.clone(), e.into() ) )?;
+    let workspace_root = workspace
+    .workspace_root()
     .map_err( | e | ( report.clone(), e.into() ) )?;
-    
-    let header_param = HeaderParameters::from_cargo_toml( cargo_metadata )
+
+    let header_param = HeaderParameters::from_cargo_toml( &workspace )
     .map_err( | e | ( report.clone(), e.into() ) )?;
-    
+
     let read_me_path = workspace_root.join
-    ( 
+    (
       readme_path( &workspace_root )
       .ok_or_else( || format_err!( "Fail to find README.md" ) )
       .map_err( | e | ( report.clone(), e.into() ) )?
     );
-    
+
     report.found_file = Some( read_me_path.clone() );
-    
+
     let mut file = OpenOptions::new()
     .read( true )
     .write( true )
@@ -225,11 +227,11 @@ mod private
 
     let header = header_param.to_header().map_err( | e | ( report.clone(), e.into() ) )?;
     let content : String = TAGS_TEMPLATE.get().unwrap().replace
-    ( 
-      &content, 
-      &format!( "<!--{{ generate.main_header.start{raw_params} }}-->\n{header}\n<!--{{ generate.main_header.end }}-->" ) 
+    (
+      &content,
+      &format!( "<!--{{ generate.main_header.start{raw_params} }}-->\n{header}\n<!--{{ generate.main_header.end }}-->" )
     ).into();
-    
+
     file.set_len( 0 ).map_err( | e | ( report.clone(), e.into() ) )?;
     file.seek( SeekFrom::Start( 0 ) ).map_err( | e | ( report.clone(), e.into() ) )?;
     file.write_all( content.as_bytes() ).map_err( | e | ( report.clone(), e.into() ) )?;

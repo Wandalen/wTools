@@ -63,16 +63,7 @@ mod private
 
     // map packages path to relative paths fom workspace root,
     // for example D:/work/wTools/module/core/iter_tools => module/core/iter_tools
-
-    // let relative_paths : Vec< String > =
-    // packages
-    // .map( | p | p.manifest_path().to_string() )
-    // .filter_map( | p | p.strip_prefix( workspace_root.as_os_str() ).ok() )
-    // .map( | p | std::path::PathBuf::from( p ).with_file_name( "" ) )
-    // .collect();
-    // xxx : ?
-
-    let relative_paths : Vec< PathBuf > = packages
+    let relative_paths = packages
     .map( |p| p.manifest_path().to_string() )
     .filter_map( |p|
     {
@@ -86,9 +77,7 @@ mod private
       let mut path = PathBuf::from( p );
       path.set_file_name( "" );
       path
-      // path.to_string_lossy().into_owned()
-    })
-    .collect();
+    });
 
     // preparing templates
     let mut handlebars = handlebars::Handlebars::new();
@@ -105,7 +94,7 @@ mod private
     // use similar::DiffableStr;
 
     // creating workflow for each module
-    for ( name, relative_path ) in names.zip( relative_paths.iter() )
+    for ( name, relative_path ) in names.zip( relative_paths )
     {
       // generate file names
       let workflow_file_name = workflow_root.join( format!( "module_{}_push.yml", name.to_case( Case::Snake ) ) );

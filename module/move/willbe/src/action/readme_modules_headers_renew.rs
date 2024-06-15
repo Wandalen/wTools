@@ -188,9 +188,18 @@ mod private
   {
     let mut report = ModulesHeadersRenewReport::default();
     regexes_initialize();
-    let cargo_metadata = Workspace::with_crate_dir( CrateDir::try_from( path ).map_err( | e | ( report.clone(), e.into() ) )? ).map_err( | e | ( report.clone(), e.into() ) )?;
-    let discord_url = cargo_metadata.discord_url().map_err( | e | ( report.clone(), e.into() ) )?;
-    let paths = cargo_metadata.packages().map_err( | e | ( report.clone(), e.into() ) )?.into_iter().filter_map( | p | AbsolutePath::try_from( p.manifest_path() ).ok()).collect::< Vec< _ > >();
+    let workspace = Workspace::with_crate_dir( CrateDir::try_from( path ).map_err( | e | ( report.clone(), e.into() ) )? ).map_err( | e | ( report.clone(), e.into() ) )?;
+    let discord_url = workspace.discord_url().map_err( | e | ( report.clone(), e.into() ) )?;
+
+    // qqq : inspect each collect in willbe and rid off most of them
+
+    let paths = workspace
+    .packages()
+    .map_err( | e | ( report.clone(), e.into() ) )?
+    .into_iter()
+    .filter_map( | p | AbsolutePath::try_from( p.manifest_path() ).ok() )
+    .collect::< Vec< _ > >();
+
     report.found_files = paths.iter().map( | ap | ap.as_ref().to_path_buf() ).collect();
     for path in paths
     {
@@ -221,7 +230,7 @@ mod private
 
       _ = query::parse( raw_params ).context( "Fail to parse raw params." );
 
-      let content = header_content_generate( &content, header, raw_params, cargo_metadata.workspace_root().map_err( | e | ( report.clone(), e.into() ) )?.to_str().unwrap() ).map_err( | e | ( report.clone(), e.into() ) )?;
+      let content = header_content_generate( &content, header, raw_params, workspace.workspace_root().map_err( | e | ( report.clone(), e.into() ) )?.to_str().unwrap() ).map_err( | e | ( report.clone(), e.into() ) )?;
 
       file.set_len( 0 ).map_err( | e | ( report.clone(), e.into() ) )?;
       file.seek( SeekFrom::Start( 0 ) ).map_err( | e | ( report.clone(), e.into() ) )?;

@@ -56,7 +56,7 @@ mod private
     Deprecated,
   }
 
-  // xxx : derive?
+  // zzz : qqq : derive?
   impl FromStr for Stability
   {
     type Err = Error;
@@ -217,8 +217,9 @@ mod private
   {
     regexes_initialize();
     let absolute_path = AbsolutePath::try_from( path )?;
-    let mut cargo_metadata = Workspace::with_crate_dir( CrateDir::try_from( absolute_path )? )?;
-    let workspace_root = workspace_root( &mut cargo_metadata )?;
+    let mut workspace = Workspace::with_crate_dir( CrateDir::try_from( absolute_path )? )?;
+    workspace.load()?;
+    let workspace_root = workspace.workspace_root()?;
     let mut parameters = GlobalTableOptions::initialize_from_path( &workspace_root )?;
 
     let read_me_path = workspace_root.join( readme_path(&workspace_root ).ok_or_else( || format_err!( "Fail to find README.md" ) )?);
@@ -251,7 +252,7 @@ mod private
           .as_bytes()
           )?;
           let params: TableOptions  = query::parse( raw_table_params ).unwrap().into_map( vec![] ).into();
-          let table = package_readme_health_table_generate( &mut cargo_metadata, &params, &mut parameters )?;
+          let table = package_readme_health_table_generate( &mut workspace, &params, &mut parameters )?;
           tables.push( table );
           tags_closures.push( ( open.end(), close.start() ) );
         }
@@ -529,13 +530,13 @@ mod private
     format!( " {cells} |" )
   }
 
-  /// Return workspace root
-  // xxx : ?
-  pub fn workspace_root( workspace : &mut Workspace ) -> Result< PathBuf >
-  {
-    workspace.load()?;
-    Ok( workspace.workspace_root()?.to_path_buf() )
-  }
+  // /// Return workspace root
+  // // xxx : ?
+  // pub fn workspace_root( workspace : &mut Workspace ) -> Result< PathBuf >
+  // {
+  //   workspace.load()?;
+  //   Ok( workspace.workspace_root()?.to_path_buf() )
+  // }
 
   fn range_to_target_copy< T : Clone >( source : &[ T ], target : &mut Vec< T >, from : usize, to : usize ) -> Result< () >
   {
@@ -602,8 +603,8 @@ mod private
 
 crate::mod_interface!
 {
-  /// Return workspace root
-  protected use workspace_root;
+  // /// Return workspace root
+  // protected use workspace_root;
   /// Find readme.md file in directory
   protected use readme_path;
   /// Stability
