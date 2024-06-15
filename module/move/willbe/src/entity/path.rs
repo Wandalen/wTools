@@ -13,10 +13,10 @@ pub( crate ) mod private
   //   },
   // };
 
-  // use std::
-  // {
-  //   path::{ Path, PathBuf },
-  // };
+  use std::
+  {
+    io,
+  };
   use wtools::error::
   {
     // Result,
@@ -32,6 +32,9 @@ pub( crate ) mod private
     /// Indicates a validation error with a descriptive message.
     #[ error( "Failed to create a `CrateDir` object due to `{0}`" ) ]
     Validation( String ),
+    /// Try to read or write
+    #[ error( "IO operation failed. Details : {0}" ) ]
+    Io( #[ from ] io::Error ),
   }
 
 }
@@ -39,13 +42,13 @@ pub( crate ) mod private
 //
 
 mod crate_dir;
-mod manifest_file;
+// mod manifest_file;
 
 //
 
 crate::mod_interface!
 {
   exposed use super::crate_dir::CrateDir;
-  exposed use super::manifest_file::ManifestFile;
+  // exposed use super::manifest_file::ManifestFile;
   orphan use PathError;
 }

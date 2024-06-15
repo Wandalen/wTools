@@ -42,12 +42,13 @@ impl ManifestFile
     self.0
   }
 
-  /// Returns path to manifest aka cargo file.
-  #[ inline( always ) ]
-  pub fn manifest_path( self ) -> AbsolutePath
-  {
-    self.inner().join( "Cargo.toml" )
-  }
+  // xxx
+  // /// Returns path to manifest aka cargo file.
+  // #[ inline( always ) ]
+  // pub fn manifest_path( self ) -> AbsolutePath
+  // {
+  //   self.inner().join( "Cargo.toml" )
+  // }
 
 }
 
@@ -55,7 +56,7 @@ impl fmt::Display for ManifestFile
 {
   fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
   {
-    write!( f, "crate dir :: {}", self.0.display() )
+    write!( f, "manifest file :: {}", self.0.display() )
   }
 }
 
@@ -74,10 +75,18 @@ impl TryFrom< AbsolutePath > for ManifestFile
   #[ inline( always ) ]
   fn try_from( crate_dir_path : AbsolutePath ) -> Result< Self, Self::Error >
   {
+
+    if !manifest_path.as_ref().ends_with( "Cargo.toml" )
+    {
+      let err =  io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find manifest at {manifest_path:?}" ) );
+      return Err( ManifestError::Io( err ) );
+    }
+
     if !crate_dir_path.as_ref().join( "Cargo.toml" ).exists()
     {
       return Err( PathError::Validation( "The path is not a crate directory path".into() ) );
     }
+
     Ok( Self( crate_dir_path ) )
   }
 }

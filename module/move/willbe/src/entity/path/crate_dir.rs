@@ -14,6 +14,7 @@ use core::
 use std::
 {
   path::{ Path, PathBuf },
+  io::{ self, Read },
 };
 use wtools::error::
 {
@@ -74,9 +75,11 @@ impl TryFrom< AbsolutePath > for CrateDir
   #[ inline( always ) ]
   fn try_from( crate_dir_path : AbsolutePath ) -> Result< Self, Self::Error >
   {
-    if !crate_dir_path.as_ref().join( "Cargo.toml" ).exists()
+    if !crate_dir_path.as_ref().join( "Cargo.toml" ).is_file()
     {
-      return Err( PathError::Validation( "The path is not a crate directory path".into() ) );
+      let err =  io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find crate dir at {crate_dir_path:?}" ) );
+      return Err( PathError::Io( err ) );
+      // return Err( PathError::Validation( "The path is not a crate directory path".into() ) );
     }
     Ok( Self( crate_dir_path ) )
   }
@@ -89,12 +92,7 @@ impl TryFrom< PathBuf > for CrateDir
   #[ inline( always ) ]
   fn try_from( crate_dir_path : PathBuf ) -> Result< Self, Self::Error >
   {
-    if !crate_dir_path.join( "Cargo.toml" ).exists()
-    {
-      return Err( PathError::Validation( "The path is not a crate directory path".into() ) );
-    }
-
-    Ok( Self( AbsolutePath::try_from( crate_dir_path ).unwrap() ) )
+    Self::try_from( AbsolutePath::try_from( crate_dir_path ).unwrap() )
   }
 }
 

@@ -47,6 +47,7 @@ pub( crate ) mod private
   {
     /// Path to `Cargo.toml`
     pub manifest_path : AbsolutePath,
+    // pub manifest_path : ManifestFile, // xxx
     // qqq : for Bohdan : for Petro : why not CrateDir?
     /// Strict type of `Cargo.toml` manifest.
     pub data : toml_edit::Document,
