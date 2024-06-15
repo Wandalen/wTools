@@ -17,7 +17,7 @@ mod private
   /// # Args :
   /// - `name` - the name of the package.
   /// - `version` - the version of the package.
-  /// - `manifest_path` - path to the package `Cargo.toml` file.
+  /// - `manifest_file` - path to the package `Cargo.toml` file.
   ///
   /// # Returns :
   /// The local packed `.crate` file of the package

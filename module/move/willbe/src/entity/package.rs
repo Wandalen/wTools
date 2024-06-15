@@ -42,7 +42,7 @@ mod private
   {
     /// `Cargo.toml` file.
     Manifest( Manifest ),
-    /// Cargo metadata package.
+    /// Cargo package package.
     WorkspacePackageRef( WorkspacePackageRef< 'a > ),
   }
 
@@ -53,8 +53,8 @@ mod private
     /// Manifest error.
     #[ error( "Manifest error. Reason : {0}." ) ]
     Manifest( #[ from ] ManifestError ),
-    /// Fail to load metadata.
-    #[ error( "Fail to load metadata." ) ]
+    /// Fail to load package.
+    #[ error( "Fail to load package." ) ]
     WorkspacePackageRef,
     /// Fail to load remote package.
     #[ error( "Fail to load remote package." ) ]
@@ -70,13 +70,11 @@ mod private
     NotAPackage,
   }
 
-  impl< 'a > TryFrom< AbsolutePath > for Package< 'a >
+  impl< 'a > TryFrom< ManifestFile > for Package< 'a >
   {
-    // aaa : make better errors
-    // aaa : return `PackageError` instead of `anohow` message
     type Error = PackageError;
 
-    fn try_from( value : AbsolutePath ) -> Result< Self, Self::Error >
+    fn try_from( value : ManifestFile ) -> Result< Self, Self::Error >
     {
       let manifest = Manifest::try_from( value )?;
       if !manifest.package_is()
@@ -94,7 +92,7 @@ mod private
 
     fn try_from( value : CrateDir ) -> Result< Self, Self::Error >
     {
-      let manifest = Manifest::try_from( value.manifest_path() )?;
+      let manifest = Manifest::try_from( value )?;
       if !manifest.package_is()
       {
         return Err( PackageError::NotAPackage );
@@ -131,14 +129,20 @@ mod private
 
   impl< 'a > Package< 'a >
   {
+
     // qqq : introdcue newtype ManifestPath
     /// Path to `Cargo.toml`
-    pub fn manifest_path( &self ) -> AbsolutePath
+    // xxx : ref?
+    pub fn manifest_file( &self ) -> ManifestFile
     {
       match self
       {
-        Self::Manifest( manifest ) => manifest.manifest_path.clone(),
-        Self::WorkspacePackageRef( metadata ) => AbsolutePath::try_from( metadata.manifest_path().as_std_path().to_path_buf() ).unwrap(),
+        Self::Manifest( manifest ) => manifest.manifest_file.clone(),
+        Self::WorkspacePackageRef( package ) =>
+        {
+          package.manifest_file().unwrap()
+          // ManifestFile::try_from( package.manifest_file().as_std_path().to_path_buf() ).unwrap()
+        },
       }
     }
 
@@ -148,12 +152,12 @@ mod private
       match self
       {
         Self::Manifest( manifest ) => manifest.crate_dir(),
-        Self::WorkspacePackageRef( metadata ) =>
+        Self::WorkspacePackageRef( package ) =>
         {
-          let path = metadata.manifest_path().parent().unwrap().as_std_path().to_path_buf();
-          let absolute = AbsolutePath::try_from( path ).unwrap();
-
-          CrateDir::try_from( absolute ).unwrap()
+          package.crate_dir().unwrap()
+          // let path = package.manifest_file().parent().unwrap().as_std_path().to_path_buf();
+          // let absolute = AbsolutePath::try_from( path ).unwrap();
+          // CrateDir::try_from( absolute ).unwrap()
         },
       }
     }
@@ -173,9 +177,9 @@ mod private
           // Ok( data[ "package" ][ "name" ].as_str().unwrap().to_string() )
           Ok( data[ "package" ][ "name" ].as_str().unwrap() )
         }
-        Self::WorkspacePackageRef( metadata ) =>
+        Self::WorkspacePackageRef( package ) =>
         {
-          Ok( metadata.name() )
+          Ok( package.name() )
         }
       }
     }
@@ -193,9 +197,9 @@ mod private
           // Unwrap safely because of the `Package` type guarantee
           Ok( data[ "package" ][ "version" ].as_str().unwrap().to_string() )
         }
-        Self::WorkspacePackageRef( metadata ) =>
+        Self::WorkspacePackageRef( package ) =>
         {
-          Ok( metadata.version().to_string() )
+          Ok( package.version().to_string() )
         }
       }
     }
@@ -213,11 +217,18 @@ mod private
           let data = &manifest.data;
 
           // Unwrap safely because of the `Package` type guarantee
-          Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "stability" ) ).and_then( | s | s.as_str() ).and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental)  )
+          Ok( data[ "package" ].get( "package" ).and_then( | m | m.get( "stability" ) ).and_then( | s | s.as_str() ).and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental)  )
         }
-        Self::WorkspacePackageRef( metadata ) =>
+        Self::WorkspacePackageRef( package ) =>
         {
-          Ok( metadata.metadata()[ "stability" ].as_str().and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental) )
+          Ok
+          (
+            package
+            .metadata()[ "stability" ]
+            .as_str()
+            .and_then( | s | s.parse::< Stability >().ok() )
+            .unwrap_or( Stability::Experimental)
+          )
         }
       }
     }
@@ -235,9 +246,9 @@ mod private
           // Unwrap safely because of the `Package` type guarantee
           Ok( data[ "package" ].get( "repository" ).and_then( | r | r.as_str() ).map( | r | r.to_string()) )
         }
-        Self::WorkspacePackageRef( metadata ) =>
+        Self::WorkspacePackageRef( package ) =>
         {
-          Ok( metadata.repository().cloned() )
+          Ok( package.repository().cloned() )
         }
       }
     }
@@ -252,11 +263,11 @@ mod private
           // let data = manifest.data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
           let data = &manifest.data;
 
-          Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "discord_url" ) ).and_then( | url | url.as_str() ).map( | r | r.to_string() ) )
+          Ok( data[ "package" ].get( "package" ).and_then( | m | m.get( "discord_url" ) ).and_then( | url | url.as_str() ).map( | r | r.to_string() ) )
         }
-        Self::WorkspacePackageRef( metadata ) =>
+        Self::WorkspacePackageRef( package ) =>
         {
-          Ok( metadata.metadata()[ "discord_url" ].as_str().map( | url | url.to_string() ) )
+          Ok( package.metadata()[ "discord_url" ].as_str().map( | url | url.to_string() ) )
         }
       }
     }
@@ -272,10 +283,10 @@ mod private
           // verify that manifest not empty
           manifest.local_is()
         }
-        Self::WorkspacePackageRef( metadata ) =>
+        Self::WorkspacePackageRef( package ) =>
         {
-          !( metadata.publish().is_none() || metadata.publish().as_ref().is_some_and( | p | p.is_empty() ) )
-          // Ok( !( metadata.publish().is_none() || metadata.publish().as_ref().is_some_and( | p | p.is_empty() ) ) )
+          !( package.publish().is_none() || package.publish().as_ref().is_some_and( | p | p.is_empty() ) )
+          // Ok( !( package.publish().is_none() || package.publish().as_ref().is_some_and( | p | p.is_empty() ) ) )
         }
       }
     }
@@ -286,9 +297,10 @@ mod private
       match self
       {
         Package::Manifest( manifest ) => Ok( manifest.clone() ),
-        Package::WorkspacePackageRef( metadata ) => Manifest::try_from
+        Package::WorkspacePackageRef( package ) => Manifest::try_from
         (
-          AbsolutePath::try_from( metadata.manifest_path() ).map_err( | _ | PackageError::LocalPath )?
+          package.manifest_file().map_err( | _ | PackageError::LocalPath )? // xxx : use trait
+          // AbsolutePath::try_from( package.manifest_file() ).map_err( | _ | PackageError::LocalPath )?
         )
         .map_err( | _ | PackageError::WorkspacePackageRef ),
       }
@@ -296,7 +308,7 @@ mod private
 
     // /// Returns the `Metadata`
     // // xxx : rename
-    // pub fn metadata( &'a self ) -> Result< WorkspacePackageRef< 'a >, PackageError >
+    // pub fn package( &'a self ) -> Result< WorkspacePackageRef< 'a >, PackageError >
     // {
     //   match self
     //   {
@@ -307,10 +319,10 @@ mod private
     //       // let workspace = Workspace::with_crate_dir( manifest.crate_dir() )
     //       // .map_err( |_| PackageError::WorkspacePackageRef )?;
     //       // workspace
-    //       // .package_find_by_manifest( &manifest.manifest_path )
+    //       // .package_find_by_manifest( &manifest.manifest_file )
     //       // .ok_or_else( || PackageError::WorkspacePackageRef )
     //     },
-    //     Package::WorkspacePackageRef( metadata ) => Ok( metadata.clone() ),
+    //     Package::WorkspacePackageRef( package ) => Ok( package.clone() ),
     //   }
     // }
   }
@@ -828,7 +840,8 @@ mod private
     /// The name of the crate.
     pub name : String,
     /// The absolute path to the crate, if available.
-    pub path : Option< AbsolutePath >,
+    pub crate_dir : Option< CrateDir >,
+    // pub path : Option< AbsolutePath >,
   }
 
   impl< 'a > From< &WorkspacePackageRef< 'a > > for CrateId
@@ -838,7 +851,8 @@ mod private
       Self
       {
         name : value.name().into(),
-        path : Some( AbsolutePath::try_from( value.manifest_path().parent().unwrap() ).unwrap() ),
+        crate_dir : Some( value.crate_dir().unwrap() )
+        // path : Some( AbsolutePath::try_from( value.manifest_file().parent().unwrap() ).unwrap() ),
       }
     }
   }
@@ -850,7 +864,8 @@ mod private
       Self
       {
         name : value.name().into(),
-        path : value.path().clone().map( | path | AbsolutePath::try_from( path ).unwrap() ),
+        crate_dir : value.crate_dir(),
+        // path : value.path().clone().map( | path | AbsolutePath::try_from( path ).unwrap() ),
       }
     }
   }
@@ -875,20 +890,20 @@ mod private
     } = opts;
     if recursive && with_remote { unimplemented!( "`recursive` + `with_remote` options") }
 
-    let manifest_path = &manifest.manifest_path();
+    let manifest_file = &manifest.manifest_file();
 
     workspace.load()?;
 
     let package = workspace
-    .package_find_by_manifest( &manifest_path )
-    .ok_or( format_err!( "Package not found in the workspace with path : `{}`", manifest_path.as_ref().display() ) )?;
+    .package_find_by_manifest( &manifest_file )
+    .ok_or( format_err!( "Package not found in the workspace with path : `{}`", manifest_file.as_ref().display() ) )?;
 
-    let deps = package
+    let deps : HashSet< _ > = package
     .dependencies()
     // .iter()
-    .filter( | dep | ( with_remote || dep.path().is_some() ) && ( with_dev || dep.kind() != DependencyKind::Development ) )
+    .filter( | dep | ( with_remote || dep.crate_dir().is_some() ) && ( with_dev || dep.kind() != DependencyKind::Development ) )
     .map( | dep | CrateId::from( &dep ) )
-    .collect::< HashSet< _ > >();
+    .collect();
 
     let package = CrateId::from( &package );
     graph.insert( package.clone(), deps.clone() );
@@ -903,7 +918,8 @@ mod private
           _dependencies
           (
             workspace,
-            &dep.path.as_ref().unwrap().join( "Cargo.toml" ).try_into().unwrap(),
+            &dep.crate_dir.unwrap().try_into()?,
+            // &dep.path.as_ref().unwrap().join( "Cargo.toml" ).try_into().unwrap(),
             graph,
             opts.clone(),
           )?;
@@ -919,7 +935,7 @@ mod private
   /// # Arguments
   ///
   /// - `workspace` - holds cached information about the workspace, such as the packages it contains and their dependencies. By passing it as a mutable reference, function can update the cache as needed.
-  /// - `manifest` - The package manifest file contains metadata about the package such as its name, version, and dependencies.
+  /// - `manifest` - The package manifest file contains package about the package such as its name, version, and dependencies.
   /// - `opts` - used to specify options or configurations for fetching local dependencies.
   ///
   /// # Returns

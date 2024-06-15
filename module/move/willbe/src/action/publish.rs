@@ -120,7 +120,8 @@ mod private
     // find all packages by specified folders
     for pattern in &patterns
     {
-      let current_path = AbsolutePath::try_from( std::path::PathBuf::from( pattern ) )?;
+      let current_path = AbsolutePath::try_from( pattern.as_str() )?;
+      // let current_path = AbsolutePath::try_from( std::path::PathBuf::from( pattern ) )?;
       // let current_paths = files::find( current_path, &[ "Cargo.toml" ] );
       paths.extend( Some( current_path ) );
     }
@@ -137,6 +138,7 @@ mod private
       let dir = CrateDir::try_from( current_path )?;
       Workspace::with_crate_dir( dir )?
     };
+
     let workspace_root_dir : AbsolutePath = workspace
     .workspace_root()?
     .try_into()?;
@@ -146,7 +148,9 @@ mod private
     let packages_to_publish : Vec< String > = packages
     .clone()
     // .iter()
-    .filter( | &package | paths.contains( &AbsolutePath::try_from( package.manifest_path().as_std_path().parent().unwrap() ).unwrap() ) )
+    // .filter( | &package | paths.contains( &AbsolutePath::try_from( package.manifest_file().as_std_path().parent().unwrap() ).unwrap() ) )
+    // .filter( | &package | paths.contains( &AbsolutePath::try_from( package.crate_dir().unwrap() ) ) )
+    .filter( | &package | paths.contains( &package.crate_dir().unwrap().into() ) ) // xxx : qqq : check
     .map( | p | p.name().to_string() )
     .collect();
     let package_map : HashMap< String, Package< '_ > > = packages

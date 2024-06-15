@@ -8,6 +8,7 @@ pub( crate ) mod private
   {
     borrow::Cow,
     path::{ Path, PathBuf },
+    io,
   };
 
   use core::
@@ -136,6 +137,29 @@ pub( crate ) mod private
     }
   }
 
+  impl< 'a > TryFrom< &'a AbsolutePath > for &'a str
+  {
+    type Error = std::io::Error;
+    fn try_from( src : &'a AbsolutePath ) -> Result< &'a str, Self::Error >
+    {
+      src
+      .to_str()
+      .ok_or_else
+      (
+        move || io::Error::new( io::ErrorKind::Other, format!( "Can't convert &PathBuf into &str {src}" ) )
+      )
+    }
+  }
+
+  impl TryFrom< &AbsolutePath > for String
+  {
+    type Error = std::io::Error;
+    fn try_from( src : &AbsolutePath ) -> Result< String, Self::Error >
+    {
+      let src2 : &str = src.try_into()?;
+      Ok( src2.into() )
+    }
+  }
 
 //   impl TryFrom< Utf8PathBuf > for AbsolutePath
 //   {

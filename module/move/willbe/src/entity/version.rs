@@ -207,7 +207,7 @@ mod private
     /// Package new version.
     pub new_version : Option< String >,
     /// Files that should(already) changed for bump.
-    pub changed_files : Vec< AbsolutePath >
+    pub changed_files : Vec< ManifestFile >
   }
 
   impl std::fmt::Display for ExtendedBumpReport
@@ -247,9 +247,9 @@ mod private
   pub fn version_bump( o : BumpOptions ) -> Result< ExtendedBumpReport >
   {
     let mut report = ExtendedBumpReport::default();
-    // let package_path = o.crate_dir.inner().join( "Cargo.toml" );
-    let package_path = o.crate_dir.manifest_path();
-    let package = Package::try_from( package_path.clone() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+    // let manifest_file = o.crate_dir.inner().join( "Cargo.toml" );
+    let manifest_file = o.crate_dir.manifest_file();
+    let package = Package::try_from( manifest_file.clone() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
     let name = package.name().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
     report.name = Some( name.into() );
     let package_version = package.version().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
@@ -269,13 +269,13 @@ mod private
       data[ "package" ][ "version" ] = value( &o.new_version.to_string() );
       package_manifest.store()?;
     }
-    report.changed_files = vec![ package_path ];
+    report.changed_files = vec![ manifest_file ];
     let new_version = &o.new_version.to_string();
     for dep in &o.dependencies
     {
-      // let manifest_path = dep.absolute_path().join( "Cargo.toml" );
-      let manifest_path = dep.clone().manifest_path();
-      let mut manifest = Manifest::try_from( manifest_path.clone() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+      // let manifest_file = dep.absolute_path().join( "Cargo.toml" );
+      let manifest_file = dep.clone().manifest_file();
+      let mut manifest = Manifest::try_from( manifest_file.clone() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
       // let data = manifest.data.as_mut().unwrap();
       let data = &mut manifest.data;
       let item = if let Some( item ) = data.get_mut( "package" ) { item }
@@ -296,7 +296,7 @@ mod private
         }
       }
       if !o.dry { manifest.store().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?; }
-      report.changed_files.push( manifest_path );
+      report.changed_files.push( manifest_file );
     }
 
     Ok( report )

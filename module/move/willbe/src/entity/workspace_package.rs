@@ -2,21 +2,8 @@ mod private
 {
   use crate::*;
   use std::collections::BTreeMap;
-
-  // use std::path::Path;
-  use cargo_metadata::camino::{ Utf8Path };
-  // use petgraph::Graph;
-  // use serde::Serialize;
-  // use serde::Deserialize;
-  // use serde::{ serde };
+  // use cargo_metadata::camino::{ Utf8Path };
   use serde_json::Value;
-  // use wtools::error::
-  // {
-  //   for_app::Context,
-  //   for_lib::Error,
-  //   Result
-  // };
-  // use path::AbsolutePath;
 
   /// Facade for cargo_metadata::Package
   #[ derive( Debug, Clone, Copy ) ]
@@ -25,7 +12,6 @@ mod private
   {
     // #[ serde( flatten ) ]
     inner : &'a cargo_metadata::Package
-    // qqq : xxx : why no CrateDir is here?
   }
 
   impl< 'a > From< &'a cargo_metadata::Package > for WorkspacePackageRef< 'a >
@@ -78,9 +64,16 @@ mod private
     // }
 
     /// Path containing the Cargo.toml
-    pub fn manifest_path( &self ) -> &Utf8Path
+    // pub fn manifest_file( &self ) -> &Utf8Path
+    pub fn manifest_file( &self ) -> Result< ManifestFile, PathError >
     {
-      self.inner.manifest_path.as_path()
+      self.inner.manifest_path.as_path().try_into()
+    }
+
+    // pub fn crate_dir( &self ) -> CrateDir
+    pub fn crate_dir( &self ) -> Result< CrateDir, PathError >
+    {
+      self.inner.manifest_path.as_path().try_into()
     }
 
     /// The version field as specified in the Cargo.toml

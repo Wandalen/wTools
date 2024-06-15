@@ -117,7 +117,7 @@ mod private
         (
           Self
           {
-            module_path: package.manifest_path().parent().unwrap().as_ref().to_path_buf(),
+            module_path: package.manifest_file().parent().unwrap().as_ref().to_path_buf(),
             stability,
             module_name : module_name.to_string(),
             repository_url,
@@ -192,12 +192,13 @@ mod private
 
     // qqq : inspect each collect in willbe and rid off most of them
 
-    let paths = workspace
+    let paths : Vec< AbsolutePath > = workspace
     .packages()
     .map_err( | e | ( report.clone(), e.into() ) )?
     .into_iter()
-    .filter_map( | p | AbsolutePath::try_from( p.manifest_path() ).ok() )
-    .collect::< Vec< _ > >();
+    // .filter_map( | p | AbsolutePath::try_from( p.manifest_file() ).ok() )
+    .filter_map( | p | p.manifest_file().map( | e | e.into() ).ok() )
+    .collect();
 
     report.found_files = paths.iter().map( | ap | ap.as_ref().to_path_buf() ).collect();
     for path in paths
@@ -207,8 +208,11 @@ mod private
       .unwrap()
       .join( readme_path( path.parent().unwrap().as_ref() ).ok_or_else::< wError, _ >( || err!( "Fail to find README.md" ) ).map_err( | e | ( report.clone(), e.into() ) )? );
 
-      let pakage = Package::try_from( path.clone() ).map_err( | e | ( report.clone(), e.into() ) )?;
-      let header = ModuleHeader::from_cargo_toml( pakage.into(), &discord_url ).map_err( | e | ( report.clone(), e.into() ) )?;
+      let pakage = Package::try_from( path.clone() )
+      .map_err( | e | ( report.clone(), e.into() ) )?;
+
+      let header = ModuleHeader::from_cargo_toml( pakage.into(), &discord_url )
+      .map_err( | e | ( report.clone(), e.into() ) )?;
 
       let mut file = OpenOptions::new()
       .read( true )

@@ -64,7 +64,7 @@ mod private
     // map packages path to relative paths fom workspace root,
     // for example D:/work/wTools/module/core/iter_tools => module/core/iter_tools
     let relative_paths = packages
-    .map( |p| p.manifest_path().to_string() )
+    .map( |p| p.manifest_file().to_string() )
     .filter_map( |p|
     {
       workspace_root.to_str().and_then( | root_str |
@@ -98,14 +98,14 @@ mod private
     {
       // generate file names
       let workflow_file_name = workflow_root.join( format!( "module_{}_push.yml", name.to_case( Case::Snake ) ) );
-      let manifest_path = relative_path.join( "Cargo.toml" );
+      let manifest_file = relative_path.join( "Cargo.toml" );
       let mut data : BTreeMap< &str, &str > = BTreeMap::new();
       data.insert( "name", name.as_str() );
       data.insert( "username_and_repository", username_and_repository.0.as_str() );
       data.insert( "branch", "alpha" );
-      let manifest_path = manifest_path.to_string_lossy().replace( "\\", "/" );
-      let manifest_path = manifest_path.trim_start_matches( '/' );
-      data.insert( "manifest_path", manifest_path );
+      let manifest_file = manifest_file.to_string_lossy().replace( "\\", "/" );
+      let manifest_file = manifest_file.trim_start_matches( '/' );
+      data.insert( "manifest_file", manifest_file );
       let content = handlebars.render( "module_push", &data )?;
       file_write( &workflow_file_name, &content )?;
     }
@@ -277,7 +277,7 @@ mod private
         let mut url = None;
         for package in packages
         {
-          if let Ok( wu ) = manifest::private::repo_url( package.manifest_path().parent().unwrap().as_std_path() )
+          if let Ok( wu ) = manifest::private::repo_url( package.manifest_file().parent().unwrap().as_std_path() )
           {
             url = Some( wu );
             break;

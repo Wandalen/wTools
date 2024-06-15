@@ -1,6 +1,8 @@
 mod private
 {
-  use cargo_metadata::camino::{ Utf8PathBuf };
+
+  use crate::*;
+  // use cargo_metadata::camino::{ Utf8PathBuf };
 
   /// A dependency of the main crate
   #[ derive( Debug, Clone, Copy ) ]
@@ -15,9 +17,16 @@ mod private
 
     /// The file system path for a local path dependency.
     /// Only produced on cargo 1.51+
-    pub fn path( &self ) -> Option< Utf8PathBuf >
+    // pub fn path( &self ) -> Option< Utf8PathBuf >
+    pub fn crate_dir( &self ) -> Option< CrateDir >
     {
-      self.inner.path.clone()
+      panic!( "xxx : test me" );
+      match self.inner.path
+      {
+        // Some( path ) => AsRef::< Utf8Path >::as_ref( &path ).try_into().ok(),
+        Some( path ) => path.try_into().ok(),
+        None => None,
+      }
     }
 
     /// Name as given in the Cargo.toml.
@@ -38,7 +47,7 @@ mod private
       }
     }
 
-    /// he required version
+    /// Required version
     pub fn req( &self ) -> semver::VersionReq
     {
       self.inner.req.clone()

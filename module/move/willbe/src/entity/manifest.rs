@@ -46,28 +46,28 @@ pub( crate ) mod private
   pub struct Manifest
   {
     /// Path to `Cargo.toml`
-    pub manifest_path : AbsolutePath,
-    // pub manifest_path : ManifestFile, // xxx
+    // pub manifest_file : AbsolutePath,
+    pub manifest_file : ManifestFile, // xxx
     // qqq : for Bohdan : for Petro : why not CrateDir?
     /// Strict type of `Cargo.toml` manifest.
     pub data : toml_edit::Document,
     // pub data : Option< toml_edit::Document >,
   }
 
-  impl TryFrom< AbsolutePath > for Manifest
+  impl TryFrom< ManifestFile > for Manifest
   {
     type Error = ManifestError;
 
     // xxx
-    fn try_from( manifest_path : AbsolutePath ) -> Result< Self, Self::Error >
+    fn try_from( manifest_file : ManifestFile ) -> Result< Self, Self::Error >
     {
-      if !manifest_path.as_ref().ends_with( "Cargo.toml" )
-      {
-        let err =  io::Error::new( io::ErrorKind::NotFound, format!( "Cannot find manifest at {manifest_path:?}" ) );
-        return Err( ManifestError::Io( err ) );
-      }
+      // if !manifest_file.as_ref().ends_with( "Cargo.toml" )
+      // {
+      //   let err =  io::Error::new( io::ErrorKind::NotFound, format!( "Cannot find manifest at {manifest_file:?}" ) );
+      //   return Err( ManifestError::Io( err ) );
+      // }
 
-      let read = fs::read_to_string( &manifest_path )?;
+      let read = fs::read_to_string( &manifest_file )?;
       let data = read.parse::< toml_edit::Document >()
       .map_err( | e | io::Error::new( io::ErrorKind::InvalidData, e ) )?;
 
@@ -75,7 +75,7 @@ pub( crate ) mod private
       (
         Manifest
         {
-          manifest_path,
+          manifest_file,
           data,
         }
       )
@@ -89,10 +89,10 @@ pub( crate ) mod private
     // qqq : xxx : introduce ManifestPath
     fn try_from( src : CrateDir ) -> Result< Self, Self::Error >
     {
-      Self::try_from( src.manifest_path() )
+      Self::try_from( src.manifest_file() )
       // Self
       // {
-      //   manifest_path : src.inner().join( "Cargo.toml" ),
+      //   manifest_file : src.inner().join( "Cargo.toml" ),
       //   data : None,
       // }
     }
@@ -116,22 +116,22 @@ pub( crate ) mod private
     }
 
     /// Returns path to `Cargo.toml`.
-    pub fn manifest_path( &self ) -> &AbsolutePath
+    pub fn manifest_file( &self ) -> &AbsolutePath
     {
-      &self.manifest_path
+      &self.manifest_file
     }
 
     /// Path to directory where `Cargo.toml` located.
     pub fn crate_dir( &self ) -> CrateDir
     {
-      self.manifest_path.parent().unwrap().try_into().unwrap()
-      // CrateDir( self.manifest_path.parent().unwrap() )
+      self.manifest_file.parent().unwrap().try_into().unwrap()
+      // CrateDir( self.manifest_file.parent().unwrap() )
     }
 
     // /// Load manifest from path.
     // pub fn load( &mut self ) -> Result< (), ManifestError >
     // {
-    //   let read = fs::read_to_string( &self.manifest_path )?;
+    //   let read = fs::read_to_string( &self.manifest_file )?;
     //   let result = read.parse::< toml_edit::Document >().map_err( | e | io::Error::new( io::ErrorKind::InvalidData, e ) )?;
     //   self.data = Some( result );
     //   Ok( () )
@@ -145,7 +145,7 @@ pub( crate ) mod private
       // If the `data` doesn't contain any data, then there's no point in attempting to write
       // if let Some( data ) = &self.data
       // {
-        fs::write( &self.manifest_path, self.data.to_string() )?;
+        fs::write( &self.manifest_file, self.data.to_string() )?;
       // }
 
       Ok( () )

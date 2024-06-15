@@ -5,7 +5,7 @@ mod private
   use std::
   {
     fmt::{ Formatter, Write },
-    path::PathBuf,
+    // path::PathBuf,
     collections::HashSet,
   };
   use std::collections::HashMap;
@@ -182,7 +182,7 @@ mod private
     pub version : Option< String >,
     /// The path to the node's source files in the local filesystem. This is
     /// optional as not all nodes may have a local presence (e.g., nodes representing remote crates).
-    pub path : Option< PathBuf >,
+    pub crate_dir : Option< CrateDir >,
     /// This field is a flag indicating whether the Node is a duplicate or not.
     pub duplicate : bool,
     /// A list that stores normal dependencies.
@@ -216,7 +216,7 @@ mod private
 
       write!( f, "{}", self.name )?;
       if let Some( version ) = &self.version { write!( f, " {version}" )? }
-      if let Some( path ) = &self.path { write!( f, " {}", path.display() )? }
+      if let Some( crate_dir ) = &self.crate_dir { write!( f, " {}", crate_dir )? }
       if self.duplicate { write!( f, "(*)" )? }
       write!( f, "\n" )?;
 
@@ -310,9 +310,13 @@ mod private
   {
     for dependency in package.dependencies()
     {
-      if dependency.path().is_some() && !args.dependency_sources.contains( &DependencySource::Local ) { continue; }
-      if dependency.path().is_none() && !args.dependency_sources.contains( &DependencySource::Remote ) { continue; }
-      let dep_id = format!( "{}+{}+{}", dependency.name(), dependency.req(), dependency.path().as_ref().map( | p | p.join( "Cargo.toml" ) ).unwrap_or_default() );
+      // qqq : for Bohdan : bad : suboptimal
+      if dependency.crate_dir().is_some() && !args.dependency_sources.contains( &DependencySource::Local ) { continue; }
+      if dependency.crate_dir().is_none() && !args.dependency_sources.contains( &DependencySource::Remote ) { continue; }
+
+      // qqq : xxx : extend test coverage
+      let dep_id = format!( "{}+{}+{}", dependency.name(), dependency.req(), dependency.crate_dir().unwrap().manifest_file() );
+      // let dep_id = format!( "{}+{}+{}", dependency.name(), dependency.req(), dependency.path().as_ref().map( | p | p.join( "Cargo.toml" ) ).unwrap_or_default() );
 
       let mut temp_vis = visited.clone();
       let dependency_rep = process_dependency( workspace, dependency, args, &mut temp_vis );
@@ -342,14 +346,15 @@ mod private
     {
       name : dep.name().clone(),
       version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( dep.req().to_string() ) } else { None },
-      path : if args.info.contains( &PackageAdditionalInfo::Path ) { dep.path().as_ref().map( | p | p.clone().into_std_path_buf() ) } else { None },
+      // manifest_file : if args.info.contains( &PackageAdditionalInfo::Path ) { dep.manifest_file().as_ref().map( | p | p.clone().into_std_path_buf() ) } else { None },
+      crate_dir : if args.info.contains( &PackageAdditionalInfo::Path ) { dep.crate_dir() } else { None },
       duplicate : false,
       normal_dependencies : vec![],
       dev_dependencies : vec![],
       build_dependencies : vec![],
     };
 
-    let dep_id = format!( "{}+{}+{}", dep.name(), dep.req(), dep.path().as_ref().map( | p | p.join( "Cargo.toml" ) ).unwrap_or_default() );
+    let dep_id = format!( "{}+{}+{}", dep.name(), dep.req(), dep.crate_dir().as_ref().map( | p | p.join( "Cargo.toml" ) ).unwrap_or_default() );
     // if this is a cycle (we have visited this node before)
     if visited.contains( &dep_id )
     {
@@ -360,9 +365,9 @@ mod private
 
     // if we have not visited this node before, mark it as visited
     visited.insert( dep_id );
-    if let Some( path ) = &dep.path()
+    if let Some( crate_dir ) = &dep.crate_dir()
     {
-      if let Some( package ) = workspace.package_find_by_manifest( path.as_std_path().join( "Cargo.toml" ) )
+      if let Some( package ) = workspace.package_find_by_manifest( crate_dir.manifest_file() )
       {
         process_package_dependency( workspace, &package, args, &mut dep_rep, visited );
       }
@@ -411,15 +416,17 @@ mod private
     let is_package = manifest.package_is();
     // let is_package = manifest.package_is().context( "try to identify manifest type" ).err_with( report.clone() )?;
 
-    let tree_package_report = | path : AbsolutePath, report : &mut ListReport, visited : &mut HashSet< String > |
+    let tree_package_report = | manifest_file : ManifestFile, report : &mut ListReport, visited : &mut HashSet< String > |
     {
 
-      let package = workspace.package_find_by_manifest( path ).unwrap();
+      // qqq : is it safe to use unwrap here?
+      let package = workspace.package_find_by_manifest( manifest_file ).unwrap();
       let mut package_report = ListNodeReport
       {
         name : package.name().to_string(),
         version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( package.version().to_string() ) } else { None },
-        path : if args.info.contains( &PackageAdditionalInfo::Path ) { Some( package.manifest_path().as_std_path().to_path_buf() ) } else { None },
+        crate_dir : if args.info.contains( &PackageAdditionalInfo::Path ) { Some( package.crate_dir().unwrap() ) } else { None },
+        // qqq : is it safe to use unwrap here?
         duplicate : false,
         normal_dependencies : vec![],
         dev_dependencies : vec![],
@@ -441,7 +448,7 @@ mod private
       ListFormat::Tree if is_package =>
       {
         let mut visited = HashSet::new();
-        tree_package_report( manifest.manifest_path, &mut report, &mut visited );
+        tree_package_report( manifest.manifest_file, &mut report, &mut visited );
         let ListReport::Tree( tree ) = report else { unreachable!() };
         let tree = rearrange_duplicates( merge_dev_dependencies( merge_build_dependencies( tree ) ) );
         report = ListReport::Tree( tree );
@@ -453,12 +460,13 @@ mod private
         .clone()
         .map
         (
-          | p | format!( "{}+{}+{}", p.name(), p.version().to_string(), p.manifest_path() )
+          // qqq : is it safe to use unwrap here
+          | p | format!( "{}+{}+{}", p.name(), p.version().to_string(), p.manifest_file().unwrap() )
         )
         .collect();
         for package in packages
         {
-          tree_package_report( package.manifest_path().as_std_path().try_into().unwrap(), &mut report, &mut visited )
+          tree_package_report( package.manifest_file().unwrap(), &mut report, &mut visited )
         }
         let ListReport::Tree( tree ) = report else { unreachable!() };
         let tree = merge_dev_dependencies( merge_build_dependencies( tree ) );
@@ -487,8 +495,8 @@ mod private
           )
           &&
           (
-            args.dependency_sources.contains( &DependencySource::Remote ) && d.path().is_none()
-            || args.dependency_sources.contains( &DependencySource::Local ) && d.path().is_some()
+            args.dependency_sources.contains( &DependencySource::Remote ) && d.crate_dir().is_none()
+            || args.dependency_sources.contains( &DependencySource::Local ) && d.crate_dir().is_some()
           )
         };
 
@@ -535,7 +543,8 @@ mod private
                 if args.info.contains( &PackageAdditionalInfo::Path )
                 {
                   name.push_str( " " );
-                  name.push_str( &p.manifest_path().to_string() );
+                  name.push_str( &p.manifest_file().unwrap().to_string() );
+                  // qqq : is it safe to use unwrap here?
                 }
               }
               name
@@ -579,7 +588,7 @@ mod private
               if args.info.contains( &PackageAdditionalInfo::Path )
               {
                 name.push_str( " " );
-                name.push_str( &p.manifest_path().to_string() );
+                name.push_str( &p.manifest_file().unwrap().to_string() );
               }
             }
             names.push( name );
@@ -694,7 +703,7 @@ mod private
       if !node.duplicate
       {
         if let Some( r ) = required.iter_mut().flat_map( |( _, v )| v )
-        .find( | r | r.name == node.name && r.version == node.version && r.path == node.path )
+        .find( | r | r.name == node.name && r.version == node.version && r.crate_dir == node.crate_dir )
         {
           std::mem::swap( r, node );
         }

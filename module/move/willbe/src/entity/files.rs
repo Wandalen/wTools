@@ -49,6 +49,6 @@ mod manifest_file;
 crate::mod_interface!
 {
   exposed use super::crate_dir::CrateDir;
-  // exposed use super::manifest_file::ManifestFile;
-  orphan use PathError;
+  exposed use super::manifest_file::ManifestFile;
+  exposed use PathError;
 }

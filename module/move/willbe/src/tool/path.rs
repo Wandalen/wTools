@@ -6,11 +6,13 @@ pub( crate ) mod private
   pub use proper_path_tools::
   {
     AbsolutePath,
-    path::
-    {
-      canonicalize,
-      unique_folder_name,
-    },
+    Utf8Path,
+    Utf8PathBuf,
+    path::protected::*,
+    // {
+    //   canonicalize,
+    //   unique_folder_name,
+    // },
   };
 
 }
@@ -19,5 +21,7 @@ crate::mod_interface!
 {
   protected use canonicalize;
   protected use unique_folder_name;
-  protected use AbsolutePath;
+  exposed use AbsolutePath;
+  exposed use Utf8PathBuf;
+  exposed use Utf8Path;
 }

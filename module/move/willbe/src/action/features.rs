@@ -71,7 +71,7 @@ mod private
     let workspace = Workspace::with_crate_dir( CrateDir::try_from( manifest_dir.clone() )? ).context( "Failed to find workspace" )?;
     let packages = workspace.packages()?.into_iter().filter
     ( | package |
-      package.manifest_path().as_str().starts_with( manifest_dir.as_ref().as_os_str().to_str().unwrap() )
+      package.manifest_file().as_str().starts_with( manifest_dir.as_ref().as_os_str().to_str().unwrap() )
     ).collect::< Vec< _ > >();
     let mut report = FeaturesReport
     {

@@ -1,6 +1,10 @@
 use crate::*;
 
-use entity::PathError;
+use entity::
+{
+  PathError,
+  CrateDir,
+};
 use core::
 {
   fmt,
@@ -15,14 +19,16 @@ use std::
   path::{ Path, PathBuf },
   io,
 };
+
+use path::{ AbsolutePath, Utf8Path };
+
 use wtools::error::
 {
   Result,
 };
-use path::AbsolutePath;
 
 /// Path to crate directory
-#[ derive( Debug, Clone ) ]
+#[ derive( Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
 pub struct ManifestFile( AbsolutePath );
 
 impl ManifestFile
@@ -43,9 +49,9 @@ impl ManifestFile
 
   /// Returns path to crate dir.
   #[ inline( always ) ]
-  pub fn manifest_path( self ) -> CrateDir
+  pub fn manifest_file( self ) -> CrateDir
   {
-    self.inner().parent().unwrap().try_into().unwrap()
+    self.into()
   }
 
 }
@@ -66,6 +72,57 @@ impl fmt::Display for ManifestFile
 //   }
 // }
 
+impl From< CrateDir > for ManifestFile
+{
+  fn from( src : CrateDir ) -> Self
+  {
+    Self( src.inner().join( "Cargo.toml" ) )
+  }
+}
+
+impl From< ManifestFile > for AbsolutePath
+{
+  fn from( src : ManifestFile ) -> Self
+  {
+    src.inner()
+  }
+}
+
+impl From< ManifestFile > for PathBuf
+{
+  fn from( src : ManifestFile ) -> Self
+  {
+    src.inner().inner()
+  }
+}
+
+// impl From< &ManifestFile > for &str
+// {
+//   fn from( src : &ManifestFile ) -> Self
+//   {
+//     src.to_str()
+//   }
+// }
+
+impl< 'a > TryFrom< &'a ManifestFile > for &'a str
+{
+  type Error = std::io::Error;
+  fn try_from( src : &'a ManifestFile ) -> Result< &'a str, Self::Error >
+  {
+    ( &src.0 ).try_into()
+  }
+}
+
+impl TryFrom< &ManifestFile > for String
+{
+  type Error = std::io::Error;
+  fn try_from( src : &ManifestFile ) -> Result< String, Self::Error >
+  {
+    let src2 : &str = src.try_into()?;
+    Ok( src2.into() )
+  }
+}
+
 impl TryFrom< AbsolutePath > for ManifestFile
 {
   type Error = PathError;
@@ -73,9 +130,16 @@ impl TryFrom< AbsolutePath > for ManifestFile
   #[ inline( always ) ]
   fn try_from( manifest_file : AbsolutePath ) -> Result< Self, Self::Error >
   {
+
+    if !manifest_file.as_ref().ends_with( "Cargo.toml" )
+    {
+      let err = io::Error::new( io::ErrorKind::Other, format!( "File path does not end with Cargo.toml as it should {manifest_file:?}" ) );
+      return Err( PathError::Io( err ) );
+    }
+
     if !manifest_file.as_ref().is_file()
     {
-      let err =  io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find crate dir at {manifest_file:?}" ) );
+      let err = io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find crate dir at {manifest_file:?}" ) );
       return Err( PathError::Io( err ) );
     }
     Ok( Self( manifest_file ) )
@@ -89,7 +153,40 @@ impl TryFrom< PathBuf > for ManifestFile
   #[ inline( always ) ]
   fn try_from( manifest_file : PathBuf ) -> Result< Self, Self::Error >
   {
-    Self::try_from( AbsolutePath::try_from( manifest_file ).unwrap() )
+    Self::try_from( AbsolutePath::try_from( manifest_file )? )
+  }
+}
+
+impl TryFrom< &Path > for ManifestFile
+{
+  type Error = PathError;
+
+  #[ inline( always ) ]
+  fn try_from( manifest_file : &Path ) -> Result< Self, Self::Error >
+  {
+    Self::try_from( AbsolutePath::try_from( manifest_file )? )
+  }
+}
+
+impl TryFrom< Utf8PathBuf > for ManifestFile
+{
+  type Error = PathError;
+
+  #[ inline( always ) ]
+  fn try_from( manifest_file : Utf8PathBuf ) -> Result< Self, Self::Error >
+  {
+    Self::try_from( AbsolutePath::try_from( manifest_file )? )
+  }
+}
+
+impl TryFrom< &Utf8Path > for ManifestFile
+{
+  type Error = PathError;
+
+  #[ inline( always ) ]
+  fn try_from( manifest_file : &Utf8Path ) -> Result< Self, Self::Error >
+  {
+    Self::try_from( AbsolutePath::try_from( manifest_file )? )
   }
 }
 

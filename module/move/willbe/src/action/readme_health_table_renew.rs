@@ -341,7 +341,7 @@ mod private
       Box::new
       (
         move | p |
-        p.publish().is_none() && p.manifest_path().starts_with( &path )
+        p.publish().is_none() && p.manifest_file().unwrap().starts_with( &path ) // qqq : rid off unwraps
       )
     );
     let module_dependency_filter : Option< Box< dyn Fn( WorkspacePackageRef< '_ >, DependencyRef< '_ > ) -> bool > > = Some
@@ -349,7 +349,7 @@ mod private
       Box::new
       (
         move | _, d |
-        d.path().is_some() && d.kind() != DependencyKind::Development && d.path().as_ref().unwrap().starts_with( &path_clone )
+        d.crate_dir().is_some() && d.kind() != DependencyKind::Development && d.crate_dir().as_ref().unwrap().starts_with( &path_clone )
       )
     );
     let module_packages_map = packages::filter

@@ -36,14 +36,15 @@ mod private
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
       let mut tree = self.tree.clone();
-      let root_path = tree.path.as_ref().unwrap().clone();
+      let root_path = tree.crate_dir.as_ref().unwrap().clone();
       let root_name = tree.name.clone();
       let root_version = tree.version.as_ref().unwrap().clone();
 
       fn modify( diffs : &HashMap< AbsolutePath, DiffReport >, tree : &mut ListNodeReport )
       {
-        let path = tree.path.take().unwrap();
-        let path = path.as_path().to_string_lossy();
+        let path = tree.crate_dir.take().unwrap();
+        // let path = path.as_path().to_string_lossy();
+        let path : String = ( &path ).try_into().unwrap(); // qqq : is it safe?
         let path = path.strip_suffix( "Cargo.toml" ).unwrap_or( &path );
         let root = AbsolutePath::try_from( path ).unwrap();
 
@@ -60,7 +61,8 @@ mod private
       }
       modify( &self.diffs, &mut tree );
 
-      let path = root_path.as_path().to_string_lossy();
+      // let path = root_path.as_path().to_string_lossy();
+      let path : String = ( &root_path ).try_into().unwrap(); // qqq : is it safe?
       let path = path.strip_suffix( "Cargo.toml" ).unwrap_or( &path );
       let root = AbsolutePath::try_from( path ).unwrap();
       let diff = self.diffs.get( &root ).unwrap();
@@ -104,8 +106,9 @@ mod private
     let mut current_idx = 0;
     while current_idx < tasks.len()
     {
-      let path = tasks[ current_idx ].path.as_ref().unwrap().to_string_lossy();
-      let path = path.strip_suffix( "Cargo.toml" ).unwrap_or( &path );
+      // let path = tasks[ current_idx ].crate_dir.as_ref().unwrap().to_string_lossy();
+      let path : String = ( &tasks[ current_idx ].crate_dir.unwrap() ).try_into().unwrap();
+      let path = path.strip_suffix( "Cargo.toml" ).unwrap_or( &path ); // xxx : qqq : looks bad. why not using parent()
       let path = AbsolutePath::try_from( path )?;
       let dir = CrateDir::try_from( path.clone() )?;
 

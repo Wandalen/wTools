@@ -199,7 +199,7 @@ mod private
     }
 
     /// Find a package by its manifest file path
-    pub fn package_find_by_manifest< 'a, P >( &'a self, manifest_path : P ) -> Option< WorkspacePackageRef< 'a > >
+    pub fn package_find_by_manifest< 'a, P >( &'a self, manifest_file : P ) -> Option< WorkspacePackageRef< 'a > >
     where
       P : AsRef< Path >,
     {
@@ -211,7 +211,8 @@ mod private
         move | mut packages |
         packages
         // .iter()
-        .find( | &p | p.manifest_path().as_std_path() == manifest_path.as_ref() )
+        // .find( | &p | p.manifest_file().as_std_path() == manifest_file.as_ref() )
+        .find( | &p | p.manifest_file().unwrap().as_ref() == manifest_file.as_ref() )
         // .cloned()
       )
     }
@@ -230,7 +231,7 @@ mod private
       (
         Box::new
         (
-          move | _, d | d.path().is_some() && d.kind() != DependencyKind::Development
+          move | _, d | d.crate_dir().is_some() && d.kind() != DependencyKind::Development
         )
       );
       let module_packages_map = packages::filter

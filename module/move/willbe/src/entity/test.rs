@@ -138,7 +138,8 @@ mod private
   pub struct TestPackagePlan
   {
     enabled_features : BTreeSet< String >,
-    package : PathBuf,
+    // package : PathBuf,
+    crate_dir : CrateDir,
     test_variants : BTreeSet< TestVariant >,
   }
 
@@ -146,7 +147,7 @@ mod private
   {
     fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
     {
-      writeln!( f, "Package : {}\nThe tests will be executed using the following configurations :", self.package.file_name().unwrap().to_string_lossy() )?;
+      writeln!( f, "Package : {}\nThe tests will be executed using the following configurations :", self.crate_dir.clone().inner() )?;
       let mut all_features = BTreeSet::new();
       for variant in &self.test_variants
       {
@@ -225,7 +226,8 @@ mod private
       variants_cap : u32,
     ) -> Result< Self >
     {
-      let dir = package.manifest_path().parent().unwrap().as_std_path().to_path_buf();
+      // let crate_dir = package.manifest_file().parent().unwrap().as_std_path().to_path_buf();
+      let crate_dir = package.crate_dir()?;
       let mut test_variants = BTreeSet::new();
       let features_powerset = features::features_powerset
       (
@@ -261,7 +263,7 @@ mod private
         Self
         {
           enabled_features: enabled_features.iter().cloned().collect(),
-          package : dir,
+          crate_dir,
           test_variants,
         }
       )
@@ -669,7 +671,7 @@ mod private
     report.dry = options.dry;
     report.enabled_features = options.plan.enabled_features.clone();
     let report = Arc::new( Mutex::new( report ) );
-    let dir = options.plan.package.clone();
+    let crate_dir = options.plan.crate_dir.clone();
 
     rayon::scope
     (
@@ -679,7 +681,7 @@ mod private
         {
           let TestVariant{ channel, optimization, features } = variant;
           let r = report.clone();
-          let dir = dir.clone();
+          let crate_dir = crate_dir.clone();
           s.spawn
           (
             move | _ |
@@ -716,7 +718,7 @@ mod private
               };
               let args = args_t.form();
               let temp_dir = args.temp_directory_path.clone();
-              let cmd_rep = _run( dir, args );
+              let cmd_rep = _run( crate_dir, args );
               r.lock().unwrap().tests.insert( variant.clone(), cmd_rep );
               #[ cfg( feature = "progress_bar" ) ]
               options.progress_bar_feature.as_ref().unwrap().progress_bar.as_ref().map( | b | b.inc( 1 ) );
