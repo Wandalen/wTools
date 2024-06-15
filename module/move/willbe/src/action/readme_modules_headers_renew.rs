@@ -22,7 +22,7 @@ mod private
   use std::path::PathBuf;
   use convert_case::{ Case, Casing };
   use regex::Regex;
-  use entity::{ WorkspaceError, CrateDirError };
+  use entity::{ WorkspaceError, PathError };
   use package::PackageError;
   use error_tools::for_lib::Error;
   use error_tools::dependency::*;
@@ -83,7 +83,7 @@ mod private
     #[ error( "Package error: {0}" ) ]
     Package( #[ from ] PackageError),
     #[ error( "Directory error: {0}" ) ]
-    Directory( #[ from ] CrateDirError ),
+    Directory( #[ from ] PathError ),
   }
 
   /// The `ModuleHeader` structure represents a set of parameters, used for creating url for header.

@@ -1,15 +1,27 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  #[cfg(feature="no_std")]
-  extern crate std;
+
   use crate::*;
+
   use std::
   {
     borrow::Cow,
-    fmt,
     path::{ Path, PathBuf },
   };
+
+  use core::
+  {
+    fmt,
+    ops::
+    {
+      Deref,
+      DerefMut,
+    },
+  };
+
+  #[cfg(feature="no_std")]
+  extern crate std;
 
   #[ cfg( feature = "derive_serde" ) ]
   use serde::{ Serialize, Deserialize };
@@ -21,6 +33,39 @@ pub( crate ) mod private
   #[ cfg_attr( feature = "derive_serde", derive( Serialize, Deserialize ) ) ]
   #[ derive( Debug, Default, Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
   pub struct AbsolutePath( PathBuf );
+
+  impl AbsolutePath
+  {
+
+    /// Returns the Path without its final component, if there is one.
+    /// Returns None if the path terminates in a root or prefix, or if it's the empty string.
+    pub fn parent( &self ) -> Option< AbsolutePath >
+    {
+      self.0.parent().map( PathBuf::from ).map( AbsolutePath )
+    }
+
+    /// Creates an owned `AbsolutePath` with path adjoined to self.
+    pub fn join< P >( &self, path : P ) -> AbsolutePath
+    where
+      P : AsRef< Path >,
+    {
+      Self::try_from( self.0.join( path ) ).unwrap()
+    }
+
+    /// Converts a `AbsolutePath` to a `Cow<str>`
+    pub fn to_string_lossy( &self ) -> Cow< '_, str >
+    {
+      self.0.to_string_lossy()
+    }
+
+    /// Returns inner type which is PathBuf.
+    #[ inline( always ) ]
+    pub fn inner( self ) -> PathBuf
+    {
+      self.0
+    }
+
+  }
 
   impl fmt::Display for AbsolutePath
   {
@@ -112,7 +157,15 @@ pub( crate ) mod private
 //     }
 //   }
 
-  // xxx : use derives
+  // // xxx : use derives
+  // impl AsRef< Path > for AbsolutePath
+  // {
+  //   fn as_ref( &self ) -> &Path
+  //   {
+  //     self.0.as_ref()
+  //   }
+  // }
+
   impl AsRef< Path > for AbsolutePath
   {
     fn as_ref( &self ) -> &Path
@@ -121,36 +174,29 @@ pub( crate ) mod private
     }
   }
 
-  impl AbsolutePath
+  impl AsMut< Path > for AbsolutePath
   {
-    /// Returns the Path without its final component, if there is one.
-    /// Returns None if the path terminates in a root or prefix, or if it's the empty string.
-    pub fn parent( &self ) -> Option< AbsolutePath >
+    fn as_mut( &mut self ) -> &mut Path
     {
-      self.0.parent().map( PathBuf::from ).map( AbsolutePath )
+      &mut self.0
     }
+  }
 
-    /// Creates an owned `AbsolutePath` with path adjoined to self.
-    pub fn join< P >( &self, path : P ) -> AbsolutePath
-    where
-      P : AsRef< Path >,
+  impl Deref for AbsolutePath
+  {
+    type Target = Path;
+    fn deref( &self ) -> &Self::Target
     {
-      Self::try_from( self.0.join( path ) ).unwrap()
+      &self.0
     }
+  }
 
-    /// Converts a `AbsolutePath` to a `Cow<str>`
-    pub fn to_string_lossy( &self ) -> Cow< '_, str >
+  impl DerefMut for AbsolutePath
+  {
+    fn deref_mut( &mut self ) -> &mut Self::Target
     {
-      self.0.to_string_lossy()
+      &mut self.0
     }
-
-    /// Returns inner type which is PathBuf.
-    #[ inline( always ) ]
-    pub fn inner( self ) -> PathBuf
-    {
-      self.0
-    }
-
   }
 
 }

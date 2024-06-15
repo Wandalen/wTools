@@ -17,7 +17,7 @@ mod private
   use toml_edit::Document;
 
   use _path::AbsolutePath;
-  use entity::CrateDirError;
+  use entity::PathError;
   use error_tools::for_lib::Error;
   use error_tools::dependency::*;
 
@@ -33,7 +33,7 @@ mod private
     #[ error( "I/O error: {0}" ) ]
     IO( #[ from ] std::io::Error ),
     #[ error( "Crate directory error: {0}" ) ]
-    CrateDir( #[ from ] CrateDirError ),
+    CrateDir( #[ from ] PathError ),
     #[ error( "Workspace error: {0}" ) ]
     Workspace( #[ from ] WorkspaceError),
     #[ error( "Template error: {0}" ) ]

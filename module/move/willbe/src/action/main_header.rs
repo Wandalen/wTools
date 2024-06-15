@@ -23,7 +23,7 @@ mod private
   };
   use _path::AbsolutePath;
   use { CrateDir, query, url, Workspace, wtools };
-  use entity::{ CrateDirError, WorkspaceError };
+  use entity::{ PathError, WorkspaceError };
   use wtools::error::
   {
     anyhow::format_err,
@@ -97,7 +97,7 @@ mod private
     #[ error( "Workspace error: {0}" ) ]
     Workspace( #[ from ] WorkspaceError),
     #[ error( "Directory error: {0}" ) ]
-    Directory( #[ from ] CrateDirError ),
+    Directory( #[ from ] PathError ),
   }
 
   /// The `HeaderParameters` structure represents a set of parameters, used for creating url for header.
