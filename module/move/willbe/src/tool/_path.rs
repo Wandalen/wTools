@@ -103,7 +103,7 @@ pub( crate ) mod private
 //   impl AbsolutePath
 //   {
 //
-//     /// Returns inner type what is an absolute path.
+//     /// Returns inner type whicj is an absolute path.
 //     #[ inline( always ) ]
 //     pub fn inner( self ) -> PathBuf
 //     {

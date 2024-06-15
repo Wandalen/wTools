@@ -1,7 +1,6 @@
 use crate::*;
 
 use entity::PathError;
-
 use core::
 {
   fmt,
@@ -11,10 +10,10 @@ use core::
     DerefMut,
   },
 };
-
 use std::
 {
   path::{ Path, PathBuf },
+  io,
 };
 use wtools::error::
 {
@@ -35,20 +34,19 @@ impl ManifestFile
   //   self.0.clone()
   // }
 
-  /// Returns inner type what is an absolute path.
+  /// Returns inner type whicj is an absolute path.
   #[ inline( always ) ]
   pub fn inner( self ) -> AbsolutePath
   {
     self.0
   }
 
-  // xxx
-  // /// Returns path to manifest aka cargo file.
-  // #[ inline( always ) ]
-  // pub fn manifest_path( self ) -> AbsolutePath
-  // {
-  //   self.inner().join( "Cargo.toml" )
-  // }
+  /// Returns path to crate dir.
+  #[ inline( always ) ]
+  pub fn manifest_path( self ) -> CrateDir
+  {
+    self.inner().parent().unwrap().try_into().unwrap()
+  }
 
 }
 
@@ -73,21 +71,14 @@ impl TryFrom< AbsolutePath > for ManifestFile
   type Error = PathError;
 
   #[ inline( always ) ]
-  fn try_from( crate_dir_path : AbsolutePath ) -> Result< Self, Self::Error >
+  fn try_from( manifest_file : AbsolutePath ) -> Result< Self, Self::Error >
   {
-
-    if !manifest_path.as_ref().ends_with( "Cargo.toml" )
+    if !manifest_file.as_ref().is_file()
     {
-      let err =  io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find manifest at {manifest_path:?}" ) );
-      return Err( ManifestError::Io( err ) );
+      let err =  io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find crate dir at {manifest_file:?}" ) );
+      return Err( PathError::Io( err ) );
     }
-
-    if !crate_dir_path.as_ref().join( "Cargo.toml" ).exists()
-    {
-      return Err( PathError::Validation( "The path is not a crate directory path".into() ) );
-    }
-
-    Ok( Self( crate_dir_path ) )
+    Ok( Self( manifest_file ) )
   }
 }
 
@@ -96,14 +87,9 @@ impl TryFrom< PathBuf > for ManifestFile
   type Error = PathError;
 
   #[ inline( always ) ]
-  fn try_from( crate_dir_path : PathBuf ) -> Result< Self, Self::Error >
+  fn try_from( manifest_file : PathBuf ) -> Result< Self, Self::Error >
   {
-    if !crate_dir_path.join( "Cargo.toml" ).exists()
-    {
-      return Err( PathError::Validation( "The path is not a crate directory path".into() ) );
-    }
-
-    Ok( Self( AbsolutePath::try_from( crate_dir_path ).unwrap() ) )
+    Self::try_from( AbsolutePath::try_from( manifest_file ).unwrap() )
   }
 }
 

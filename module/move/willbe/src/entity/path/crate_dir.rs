@@ -10,11 +10,10 @@ use core::
     DerefMut,
   },
 };
-
 use std::
 {
   path::{ Path, PathBuf },
-  io::{ self, Read },
+  io,
 };
 use wtools::error::
 {
@@ -36,7 +35,7 @@ impl CrateDir
   //   self.0.clone()
   // }
 
-  /// Returns inner type what is an absolute path.
+  /// Returns inner type whicj is an absolute path.
   #[ inline( always ) ]
   pub fn inner( self ) -> AbsolutePath
   {
@@ -79,7 +78,6 @@ impl TryFrom< AbsolutePath > for CrateDir
     {
       let err =  io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find crate dir at {crate_dir_path:?}" ) );
       return Err( PathError::Io( err ) );
-      // return Err( PathError::Validation( "The path is not a crate directory path".into() ) );
     }
     Ok( Self( crate_dir_path ) )
   }

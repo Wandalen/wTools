@@ -42,7 +42,7 @@ pub( crate ) mod private
 //
 
 mod crate_dir;
-// mod manifest_file;
+mod manifest_file;
 
 //
 
