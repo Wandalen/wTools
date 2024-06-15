@@ -1,13 +1,13 @@
 mod private
 {
-  use std::collections::BTreeMap;
   use crate::*;
 
+  // use std::collections::BTreeMap;
   use std::path::Path;
-  use cargo_metadata::camino::{ Utf8Path, Utf8PathBuf };
+  // use cargo_metadata::camino::{ Utf8Path, Utf8PathBuf };
   use petgraph::Graph;
-  use serde::Deserialize;
-  use serde_json::Value;
+  // use serde::Deserialize;
+  // use serde_json::Value;
   use wtools::error::
   {
     for_app::Context,
@@ -18,13 +18,17 @@ mod private
 
   // qqq : for Bohdan : for Petro : what manifest_dir is?
 
-  /// Stores information about current workspace.
+  /// Stores information about the current workspace.
   #[ derive( Debug, Clone ) ]
   pub struct Workspace
   {
     // qqq : for Bohdan : for Petro : describe all fields
     // qqq : for Bohdan : for Petro : is Option required?
+    /// Metadata of the workspace, containing detailed information about the packages, dependencies, and other workspace-related data.
+    /// This field is optional and may be `None` if the metadata has not been loaded yet.
     pub metadata : Option< cargo_metadata::Metadata >,
+
+    /// The directory containing the manifest file (`Cargo.toml`) of the workspace.
     pub manifest_dir : CrateDir,
   }
 
@@ -87,29 +91,31 @@ mod private
 
   impl Workspace
   {
+
     /// Load data from the current location or from cache
     // qqq : Maybe unsafe. Take metadata of workspace in current dir.
-    pub fn load( &mut self ) -> Result< &mut Self >
+    #[ inline( always ) ]
+    pub fn load( &mut self ) -> Result< () >
     {
       if self.metadata.is_none()
       {
         let metadata = Self::with_crate_dir( self.manifest_dir.clone() )?.metadata.unwrap();
         _ = self.metadata.insert( metadata );
       }
-
-      Ok( self )
+      Ok( () )
     }
 
     /// Force loads data from the current location
     // qqq : Maybe unsafe. Take metadata of workspace in current dir.
     // qqq : for Petro : for Bohdan : why is it necessary?
-    pub fn force_reload( &mut self ) -> Result< &mut Self >
+    #[ inline( always ) ]
+    pub fn force_reload( &mut self ) -> Result< () >
     {
       let metadata = Self::with_crate_dir( self.manifest_dir.clone() )?.metadata.unwrap();
       _ = self.metadata.insert( metadata );
-
-      Ok( self )
+      Ok( () )
     }
+
   }
 
   impl Workspace
@@ -119,15 +125,13 @@ mod private
 
     /// Returns list of all packages
     pub fn packages< 'a >( &'a self )
-    // -> Result< Vec< WorkspacePackageRef< '_ > >, WorkspaceError >
     ->
     std::result::Result
     <
       core::iter::Map
       <
         std::slice::Iter< 'a, cargo_metadata::Package >,
-        impl Fn( &'a cargo_metadata::Package ) -> WorkspacePackageRef< 'a >,
-        // fn( cargo_metadata::Package ) -> WorkspacePackageRef,
+        impl Fn( &'a cargo_metadata::Package ) -> WorkspacePackageRef< 'a > + Clone,
       >,
       WorkspaceError,
     >
@@ -137,8 +141,6 @@ mod private
       .as_ref()
       .ok_or_else( || WorkspaceError::MetadataError )
       .map( move | p | p.packages.iter().map( WorkspacePackageRef::from ) )
-      // .map( | p | p.packages.clone().into_iter().map( WorkspacePackageRef::from ) )
-      // .map( | p | p.into_iter().map( WorkspacePackageRef::from ) )
     }
 
     // /// Returns list of all packages
@@ -190,7 +192,7 @@ mod private
     }
 
     /// Find a package by its manifest file path
-    pub fn package_find_by_manifest< 'a, P >( &self, manifest_path : P ) -> Option< WorkspacePackageRef< 'a > >
+    pub fn package_find_by_manifest< 'a, P >( &'a self, manifest_path : P ) -> Option< WorkspacePackageRef< 'a > >
     where
       P : AsRef< Path >,
     {
@@ -199,7 +201,7 @@ mod private
       .ok()
       .and_then
       (
-        | packages |
+        move | mut packages |
         packages
         // .iter()
         .find( | &p | p.manifest_path().as_std_path() == manifest_path.as_ref() )
@@ -213,11 +215,11 @@ mod private
     pub( crate ) fn graph( &self ) -> Graph< String, String >
     {
       let packages = self.packages().unwrap();
-      let module_package_filter : Option< Box< dyn Fn( &'a WorkspacePackageRef< 'a > ) -> bool > > = Some
+      let module_package_filter : Option< Box< dyn Fn( WorkspacePackageRef< '_ > ) -> bool > > = Some
       (
         Box::new( move | p | p.publish().is_none() )
       );
-      let module_dependency_filter : Option< Box< dyn Fn( &'a WorkspacePackageRef< 'a >, DependencyRef< '_ > ) -> bool > > = Some
+      let module_dependency_filter : Option< Box< dyn Fn( WorkspacePackageRef< '_ >, DependencyRef< '_ > ) -> bool > > = Some
       (
         Box::new
         (

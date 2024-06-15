@@ -282,15 +282,20 @@ mod private
 
   /// Generate table from `table_parameters`.
   /// Generate header, iterate over all modules in package (from table_parameters) and append row.
-  fn package_readme_health_table_generate( workspace : &mut Workspace, table_parameters: &TableOptions, parameters: & mut GlobalTableOptions ) -> Result< String, Error >
+  fn package_readme_health_table_generate
+  (
+    workspace : &mut Workspace,
+    table_parameters: &TableOptions,
+    parameters: & mut GlobalTableOptions,
+  ) -> Result< String, Error >
   {
+    workspace.load()?;
     let directory_names = directory_names
     (
       workspace
       .workspace_root()?
       .join( &table_parameters.base_path ),
-      &workspace
-      .load()?
+      workspace
       .packages()
       .map_err( | err | format_err!( err ) )?
     )?;
@@ -311,6 +316,7 @@ mod private
         parameters.core_url = repo_url( &module_path )
         .context
         (
+          // qqq : for Petro : unreadable
           format_err!( "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) in {} OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR ensure that at least one remotest is present in git. ", module_path.display(), workspace.workspace_root()?.join( "Cargo.toml" ).display(), module_path.join( "Cargo.toml" ).display() )
         )?;
         parameters.user_and_repo = url::git_info_extract( &parameters.core_url )?;
@@ -321,10 +327,15 @@ mod private
   }
 
   /// Return topologically sorted modules name, from packages list, in specified directory.
-  fn directory_names( path : PathBuf, packages : &[ WorkspacePackageRef< '_ > ] ) -> Result< Vec< String > >
+  // fn directory_names( path : PathBuf, packages : &[ WorkspacePackageRef< '_ > ] ) -> Result< Vec< String > >
+  fn directory_names< 'a >
+  (
+    path : PathBuf,
+    packages : impl Iterator< Item = WorkspacePackageRef< 'a > >,
+  ) -> Result< Vec< String > >
   {
     let path_clone = path.clone();
-    let module_package_filter: Option< Box< dyn Fn( &WorkspacePackageRef< '_ > ) -> bool > > = Some
+    let module_package_filter : Option< Box< dyn Fn( WorkspacePackageRef< '_ > ) -> bool > > = Some
     (
       Box::new
       (
@@ -332,7 +343,7 @@ mod private
         p.publish().is_none() && p.manifest_path().starts_with( &path )
       )
     );
-    let module_dependency_filter: Option< Box< dyn Fn( &WorkspacePackageRef< '_ >, DependencyRef< '_ > ) -> bool > > = Some
+    let module_dependency_filter : Option< Box< dyn Fn( WorkspacePackageRef< '_ >, DependencyRef< '_ > ) -> bool > > = Some
     (
       Box::new
       (
@@ -522,7 +533,8 @@ mod private
   // xxx : ?
   pub fn workspace_root( workspace : &mut Workspace ) -> Result< PathBuf >
   {
-    Ok( workspace.load()?.workspace_root()?.to_path_buf() )
+    workspace.load()?;
+    Ok( workspace.workspace_root()?.to_path_buf() )
   }
 
   fn range_to_target_copy< T : Clone >( source : &[ T ], target : &mut Vec< T >, from : usize, to : usize ) -> Result< () >

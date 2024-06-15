@@ -4,7 +4,7 @@ mod private
 
   use std::
   {
-    path::Path,
+    path::{ Path, PathBuf },
     fs::File,
     io::{ Write, Read },
     collections::BTreeMap
@@ -51,24 +51,44 @@ mod private
     let username_and_repository = &username_and_repository
     (
       &workspace_cache.workspace_root()?.join( "Cargo.toml" ).try_into()?,
-      packages,
+      packages.clone(),
       // packages.as_slice(),
     )?;
-    let workspace_root = workspace_cache.workspace_root()?;
+    let workspace_root : &Path = workspace_cache.workspace_root()?;
     // find directory for workflows
     let workflow_root = workspace_root.join( ".github" ).join( "workflows" );
     // map packages name's to naming standard
-    // aaa : for Petro : avoid calling packages_get twice
-    // aaa : remove it
-    let names = packages.iter().map( | p | p.name() ).collect::< Vec< _ > >();
-    // map packages path to relative paths fom workspace root, for example D :/work/wTools/module/core/iter_tools => module/core/iter_tools
-    let relative_paths =
-    packages
-    .iter()
-    .map( | p | p.manifest_path() )
-    .filter_map( | p | p.strip_prefix( workspace_root ).ok() )
-    .map( | p | p.with_file_name( "" ) )
-    .collect::< Vec< _ > >();
+    // let names = packages.map( | p | p.name() ).collect::< Vec< _ > >();
+    let names = packages.clone().map( | p | p.name().to_string() );
+
+    // map packages path to relative paths fom workspace root,
+    // for example D:/work/wTools/module/core/iter_tools => module/core/iter_tools
+
+    // let relative_paths : Vec< String > =
+    // packages
+    // .map( | p | p.manifest_path().to_string() )
+    // .filter_map( | p | p.strip_prefix( workspace_root.as_os_str() ).ok() )
+    // .map( | p | std::path::PathBuf::from( p ).with_file_name( "" ) )
+    // .collect();
+    // xxx : ?
+
+    let relative_paths : Vec< PathBuf > = packages
+    .map( |p| p.manifest_path().to_string() )
+    .filter_map( |p|
+    {
+      workspace_root.to_str().and_then( | root_str |
+      {
+        p.strip_prefix( root_str ).map( |s| s.to_string() )
+      })
+    })
+    .map( |p|
+    {
+      let mut path = PathBuf::from( p );
+      path.set_file_name( "" );
+      path
+      // path.to_string_lossy().into_owned()
+    })
+    .collect();
 
     // preparing templates
     let mut handlebars = handlebars::Handlebars::new();
@@ -82,18 +102,21 @@ mod private
 
     // qqq : for Petro : instead of iterating each file manually, iterate each file in loop
 
+    // use similar::DiffableStr;
+
     // creating workflow for each module
-    for ( name, relative_path ) in names.iter().zip( relative_paths.iter() )
+    for ( name, relative_path ) in names.zip( relative_paths.iter() )
     {
       // generate file names
       let workflow_file_name = workflow_root.join( format!( "module_{}_push.yml", name.to_case( Case::Snake ) ) );
-      let path = relative_path.join( "Cargo.toml" );
-      let mut data = BTreeMap::new();
+      let manifest_path = relative_path.join( "Cargo.toml" );
+      let mut data : BTreeMap< &str, &str > = BTreeMap::new();
       data.insert( "name", name.as_str() );
       data.insert( "username_and_repository", username_and_repository.0.as_str() );
       data.insert( "branch", "alpha" );
-      let path = path.as_str().replace( "\\", "/" );
-      data.insert( "manifest_path", path.as_str() );
+      let manifest_path = manifest_path.to_string_lossy().replace( "\\", "/" );
+      let manifest_path = manifest_path.trim_start_matches( '/' );
+      data.insert( "manifest_path", manifest_path );
       let content = handlebars.render( "module_push", &data )?;
       file_write( &workflow_file_name, &content )?;
     }
@@ -235,7 +258,12 @@ mod private
   /// if not found there, it is then searched in the Cargo.toml file of the module.
   /// If it is still not found, the search continues in the GitHub remotes.
   /// Result looks like this: `Wandalen/wTools`
-  fn username_and_repository< 'a >( cargo_toml_path : &AbsolutePath, packages : &[ WorkspacePackageRef< 'a > ] )
+  fn username_and_repository< 'a >
+  (
+    cargo_toml_path : &AbsolutePath,
+    packages : impl Iterator< Item = WorkspacePackageRef< 'a > >,
+    // packages : &[ WorkspacePackageRef< 'a > ],
+  )
   -> Result< UsernameAndRepository >
   {
       let mut contents = String::new();

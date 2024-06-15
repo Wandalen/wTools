@@ -67,8 +67,11 @@ mod private
   /// It is possible to enable and disable various features of the crate.
   /// The function also has the ability to run tests in parallel using `Rayon` crate.
   /// The result of the tests is written to the structure `TestsReport` and returned as a result of the function execution.
-  pub fn test( args : TestsCommandOptions, dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
+  // xxx : it probably should not be here
+  pub fn test( o : TestsCommandOptions, dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
   {
+
+    // qqq : incapsulate progress bar logic into some function of struct. don't keep it here
     #[ cfg( feature = "progress_bar" ) ]
     let multiprocess = MultiProgress::new();
     #[ cfg( feature = "progress_bar" ) ]
@@ -79,15 +82,16 @@ mod private
     .unwrap()
     .progress_chars( "##-" );
 
-    let mut reports = TestsReport::default();
+    let mut report = TestsReport::default();
     // fail fast if some additional installations required
-    let channels = channel::available_channels( args.dir.as_ref() ).map_err( | e | ( reports.clone(), e ) )?;
-    let channels_diff = args.channels.difference( &channels ).collect::< Vec< _ > >();
+    let channels = channel::available_channels( o.dir.as_ref() ).map_err( | e | ( report.clone(), e ) )?;
+    let channels_diff = o.channels.difference( &channels ).collect::< Vec< _ > >();
     if !channels_diff.is_empty()
     {
-      return Err(( reports, format_err!( "Missing toolchain(-s) that was required : [{}]. Try to install it with `rustup install {{toolchain name}}` command(-s)", channels_diff.into_iter().join( ", " ) ) ))
+      // qqq : for Petro : non readable
+      return Err(( report, format_err!( "Missing toolchain(-s) that was required : [{}]. Try to install it with `rustup install {{toolchain name}}` command(-s)", channels_diff.into_iter().join( ", " ) ) ))
     }
-    reports.dry = dry;
+    report.dry = dry;
     let TestsCommandOptions
     {
       dir : _ ,
@@ -103,13 +107,34 @@ mod private
       optimizations,
       variants_cap,
       with_progress,
-    } = args;
+    } = o;
 
-    let packages = needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?;
+    // qqq : xxx : use relevant entity
+    let path = if o.dir.as_ref().file_name() == Some( "Cargo.toml".as_ref() )
+    {
+      o.dir.parent().unwrap()
+    }
+    else
+    {
+      o.dir
+    };
+
+    let workspace = Workspace
+    ::with_crate_dir( CrateDir::try_from( path.clone() ).map_err( | e | ( report.clone(), e.into() ) )? )
+    .map_err( | e | ( report.clone(), e.into() ) )?
+    // xxx : clone?
+    ;
+
+    // let packages = needed_packages( &workspace );
+    let packages = workspace
+    .packages()
+    .map_err( | e | ( report.clone(), e.into() ) )?
+    .filter( move | x | x.manifest_path().starts_with( path.as_ref() ) )
+    ;
 
     let plan = TestPlan::try_from
     (
-      &packages,
+      packages,
       &channels,
       power,
       include_features,
@@ -119,7 +144,7 @@ mod private
       with_all_features,
       with_none_features,
       variants_cap,
-    ).map_err( | e | ( reports.clone(), e ) )?;
+    ).map_err( | e | ( report.clone(), e ) )?;
 
     println!( "{plan}" );
 
@@ -128,7 +153,7 @@ mod private
       let mut unique_name = format!
       (
         "temp_dir_for_test_command_{}",
-        path_tools::path::unique_folder_name().map_err( | e | ( reports.clone(), e.into() ) )?
+        path_tools::path::unique_folder_name().map_err( | e | ( report.clone(), e.into() ) )?
       );
 
       let mut temp_dir = env::temp_dir().join( unique_name );
@@ -138,12 +163,12 @@ mod private
         unique_name = format!
         (
           "temp_dir_for_test_command_{}",
-          path_tools::path::unique_folder_name().map_err( | e | ( reports.clone(), e.into() ) )?
+          path_tools::path::unique_folder_name().map_err( | e | ( report.clone(), e.into() ) )?
         );
         temp_dir = env::temp_dir().join( unique_name );
       }
 
-      fs::create_dir( &temp_dir ).map_err( | e | ( reports.clone(), e.into() ) )?;
+      fs::create_dir( &temp_dir ).map_err( | e | ( report.clone(), e.into() ) )?;
       Some( temp_dir )
     }
     else
@@ -173,31 +198,12 @@ mod private
 
     if temp
     {
-      fs::remove_dir_all( options.temp_path.unwrap() ).map_err( | e | ( reports.clone(), e.into() ) )?;
+      fs::remove_dir_all( options.temp_path.unwrap() ).map_err( | e | ( report.clone(), e.into() ) )?;
     }
 
     result
   }
 
-  fn needed_packages< 'a >( path : AbsolutePath ) -> Result< Vec< WorkspacePackageRef< 'a > > >
-  {
-    let path = if path.as_ref().file_name() == Some( "Cargo.toml".as_ref() )
-    {
-      path.parent().unwrap()
-    }
-    else
-    {
-      path
-    };
-    let metadata = Workspace::with_crate_dir( CrateDir::try_from( path.clone() )? )?;
-
-    let result = metadata
-    .packages()?
-    .into_iter()
-    .filter( move | x | x.manifest_path().starts_with( path.as_ref() ) )
-    .collect();
-    Ok( result )
-  }
 }
 
 crate::mod_interface!

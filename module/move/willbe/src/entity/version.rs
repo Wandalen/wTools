@@ -249,7 +249,7 @@ mod private
     let package_path = o.crate_dir.absolute_path().join( "Cargo.toml" );
     let package = Package::try_from( package_path.clone() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
     let name = package.name().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
-    report.name = Some( name.clone() );
+    report.name = Some( name.into() );
     let package_version = package.version().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
     let current_version = version::Version::try_from( package_version.as_str() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
     if current_version > o.new_version

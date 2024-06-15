@@ -16,7 +16,7 @@ mod private
     visit::Topo,
   };
   use std::str::FromStr;
-  use packages::FilterMapOptions;
+  use packages::{ FilterMapOptions, PackageName };
   use wtools::error::
   {
     for_app::{ Error, Context },
@@ -400,13 +400,13 @@ mod private
     let mut report = ListReport::default();
 
     let manifest = manifest::open( args.path_to_manifest.absolute_path() ).context( "List of packages by specified manifest path" ).err_with( report.clone() )?;
-    let metadata = Workspace::with_crate_dir( manifest.crate_dir() ).err_with( report.clone() )?;
+    let workspace = Workspace::with_crate_dir( manifest.crate_dir() ).err_with( report.clone() )?;
 
     let is_package = manifest.package_is().context( "try to identify manifest type" ).err_with( report.clone() )?;
 
     let tree_package_report = | path : AbsolutePath, report : &mut ListReport, visited : &mut HashSet< String > |
     {
-      let package = metadata.package_find_by_manifest( path ).unwrap();
+      let package = workspace.package_find_by_manifest( path ).unwrap();
       let mut package_report = ListNodeReport
       {
         name : package.name().to_string(),
@@ -418,7 +418,7 @@ mod private
         build_dependencies : vec![],
       };
 
-      process_package_dependency( &metadata, &package, &args, &mut package_report, visited );
+      process_package_dependency( &workspace, &package, &args, &mut package_report, visited );
 
       *report = match report
       {
@@ -439,8 +439,10 @@ mod private
       }
       ListFormat::Tree =>
       {
-        let packages = metadata.packages().context( "workspace packages" ).err_with( report.clone() )?;
-        let mut visited = packages.map
+        let packages = workspace.packages().context( "workspace packages" ).err_with( report.clone() )?;
+        let mut visited = packages
+        .clone()
+        .map
         (
           | p | format!( "{}+{}+{}", p.name(), p.version().to_string(), p.manifest_path() )
         )
@@ -462,7 +464,7 @@ mod private
         .map( | m | m[ "name" ].to_string().trim().replace( '\"', "" ) )
         .unwrap_or_default();
 
-        let dep_filter = move | _p : &WorkspacePackageRef< '_ >, d : DependencyRef< '_ > |
+        let dep_filter = move | _p : WorkspacePackageRef< '_ >, d : DependencyRef< '_ > |
         {
           (
             args.dependency_categories.contains( &DependencyCategory::Primary ) && d.kind() == DependencyKind::Normal
@@ -476,30 +478,40 @@ mod private
           )
         };
 
-        let packages = metadata.packages().context( "workspace packages" ).err_with( report.clone() )?;
-        let packages_map =  packages::filter
+        let packages = workspace.packages().context( "workspace packages" ).err_with( report.clone() )?;
+        let packages_map : HashMap< PackageName, HashSet< PackageName > > = packages::filter
         (
-          packages,
+          packages.clone(),
           // packages.as_slice(),
           FilterMapOptions { dependency_filter : Some( Box::new( dep_filter ) ), ..Default::default() }
         );
 
         let graph = graph::construct( &packages_map );
 
-        let sorted = toposort( &graph, None ).map_err( | e | { use std::ops::Index; ( report.clone(), err!( "Failed to process toposort for package : {:?}", graph.index( e.node_id() ) ) ) } )?;
-        let packages_info = packages.iter().map( | p | ( p.name().clone(), p ) ).collect::< HashMap< _, _ > >();
+        let sorted = toposort( &graph, None )
+        .map_err
+        (
+          | e |
+          {
+            use std::ops::Index;
+            ( report.clone(), err!( "Failed to process toposort for package : {:?}", graph.index( e.node_id() ) ) )
+          }
+        )?;
+        let packages_info : HashMap< String, WorkspacePackageRef< '_ > > =
+          packages.map( | p | ( p.name().to_string(), p ) ).collect();
 
         if root_crate.is_empty()
         {
-          let names = sorted
-          .iter()
+          let names : Vec< String > = sorted
+          .into_iter()
           .rev()
-          .map( | dep_idx | graph.node_weight( *dep_idx ).unwrap().to_string() )
+          .map( | dep_idx | graph.node_weight( dep_idx ).unwrap() )
           .map
           (
-            | mut name |
+            | name : &&String |
             {
-              if let Some( p ) = packages_info.get( &name )
+              let mut name : String = name.to_string();
+              if let Some( p ) = packages_info.get( &name[ .. ] )
               {
                 if args.info.contains( &PackageAdditionalInfo::Version )
                 {
@@ -515,7 +527,7 @@ mod private
               name
             }
           )
-          .collect::< Vec< String > >();
+          .collect();
 
           report = ListReport::List( names );
         }
@@ -542,8 +554,8 @@ mod private
           let mut names = Vec::new();
           while let Some( n ) = topo.next( &subgraph )
           {
-            let mut name = subgraph[ n ].clone();
-            if let Some( p ) = packages_info.get( &name )
+            let mut name : String = subgraph[ n ].clone();
+            if let Some( p ) = packages_info.get( &name[ .. ] )
             {
               if args.info.contains( &PackageAdditionalInfo::Version )
               {

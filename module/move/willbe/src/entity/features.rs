@@ -40,12 +40,9 @@ mod private
   /// // Use `feature_combinations` as needed.
   /// ```
 
-  // aaa : for Petro : bad, don't use ignore with need
-  // aaa : I have to ignore this test because the function accepts &Package as input, and to mock it requires a lot of lines
-
   pub fn features_powerset
   (
-    package : &WorkspacePackageRef< '_ >,
+    package : WorkspacePackageRef< '_ >,
     power : usize,
     exclude_features : &[ String ],
     include_features : &[ String ],

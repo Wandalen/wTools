@@ -108,7 +108,13 @@ mod private
   /// # Returns
   /// A Result containing a `PublishPlan` if successful, or an `Error` otherwise.
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
-  pub fn publish_plan( patterns : Vec< String >, channel : Channel, dry : bool, temp : bool  ) -> Result< package::PublishPlan, Error >
+  pub fn publish_plan
+  (
+    patterns : Vec< String >,
+    channel : Channel,
+    dry : bool,
+    temp : bool
+  ) -> Result< package::PublishPlan, Error >
   {
     let mut paths = HashSet::new();
     // find all packages by specified folders
@@ -119,31 +125,37 @@ mod private
       paths.extend( Some( current_path ) );
     }
 
-    let mut metadata = if paths.is_empty()
+    let mut workspace = if paths.is_empty()
     {
       Workspace::from_current_path()?
     }
     else
     {
-      // FIX : patterns can point to different workspaces. Current solution take first random path from list
+      // qqq : patterns can point to different workspaces. Current solution take first random path from list
+      // qqq : for Bohdan : what do you mean?
       let current_path = paths.iter().next().unwrap().clone();
       let dir = CrateDir::try_from( current_path )?;
-
       Workspace::with_crate_dir( dir )?
     };
-    let workspace_root_dir : AbsolutePath = metadata
+    let workspace_root_dir : AbsolutePath = workspace
     .workspace_root()?
     .try_into()?;
-    let packages = metadata.load()?.packages()?;
-    let packages_to_publish : Vec< _ > = packages
+
+    workspace.load()?;
+    let packages = workspace.packages()?;
+    let packages_to_publish : Vec< String > = packages
+    .clone()
     // .iter()
     .filter( | &package | paths.contains( &AbsolutePath::try_from( package.manifest_path().as_std_path().parent().unwrap() ).unwrap() ) )
-    .map( | p | p.name().clone() )
+    .map( | p | p.name().to_string() )
     .collect();
-    let package_map = packages.into_iter().map( | p | ( p.name().clone(), Package::from( p.clone() ) ) ).collect::< HashMap< _, _ > >();
+    let package_map : HashMap< String, Package< '_ > > = packages
+    .map( | p | ( p.name().to_string(), Package::from( p.clone() ) ) )
+    .collect();
+    // qqq : many redundant clones
 
-    let graph = metadata.graph();
-    let subgraph_wanted = graph::subgraph( &graph, &packages_to_publish );
+    let graph = workspace.graph();
+    let subgraph_wanted = graph::subgraph( &graph, &packages_to_publish[ .. ] );
     let tmp = subgraph_wanted.map( | _, n | graph[ *n ].clone(), | _, e | graph[ *e ].clone() );
 
     let mut unique_name = format!( "temp_dir_for_publish_command_{}", path_tools::path::unique_folder_name()? );
@@ -169,7 +181,12 @@ mod private
     let subgraph = graph::remove_not_required_to_publish( &package_map, &tmp, &packages_to_publish, dir.clone() )?;
     let subgraph = subgraph.map( | _, n | n, | _, e | e );
 
-    let queue = graph::toposort( subgraph ).unwrap().into_iter().map( | n | package_map.get( &n ).unwrap() ).cloned().collect::< Vec< _ > >();
+    let queue = graph::toposort( subgraph )
+    .unwrap()
+    .into_iter()
+    .map( | n | package_map.get( &n ).unwrap() )
+    .cloned()
+    .collect::< Vec< _ > >();
 
     let roots = packages_to_publish.iter().map( | p | package_map.get( p ).unwrap().crate_dir() ).collect::< Vec< _ > >();
 

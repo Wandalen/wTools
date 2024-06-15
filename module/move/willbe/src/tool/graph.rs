@@ -40,8 +40,11 @@ pub( crate ) mod private
   /// The graph with all accepted packages
   pub fn construct< PackageIdentifier >
   (
-    packages : &HashMap< PackageIdentifier,
-    HashSet< PackageIdentifier > >
+    packages : &HashMap
+    <
+      PackageIdentifier,
+      HashSet< PackageIdentifier >,
+    >
   )
   -> Graph< &PackageIdentifier, &PackageIdentifier >
   where

@@ -27,6 +27,7 @@ pub( crate ) mod private
     Validation( String ),
   }
 
+  // xxx : move out
   /// Path to crate directory
   #[ derive( Debug, Clone ) ]
   pub struct CrateDir( AbsolutePath );
@@ -78,8 +79,7 @@ pub( crate ) mod private
     }
   }
 
-
-/// Represents errors related to manifest data processing.
+  /// Represents errors related to manifest data processing.
   #[ derive( Debug, Error ) ]
   pub enum  ManifestError
   {
@@ -115,8 +115,6 @@ pub( crate ) mod private
 
   impl TryFrom< AbsolutePath > for Manifest
   {
-    // aaa : make better errors
-    // aaa : return `ManifestError`
     type Error = ManifestError;
 
     fn try_from( manifest_path : AbsolutePath ) -> Result< Self, Self::Error >

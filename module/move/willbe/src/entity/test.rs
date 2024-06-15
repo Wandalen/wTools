@@ -94,7 +94,8 @@ mod private
     /// `variants_cap` - Maximum of subset in powerset
     pub fn try_from< 'a >
     (
-      packages : &[ WorkspacePackageRef< 'a > ],
+      // packages : &[ WorkspacePackageRef< 'a > ],
+      packages : impl core::iter::Iterator< Item = WorkspacePackageRef< 'a > >,
       channels : &HashSet< Channel >,
       power : u32,
       include_features : Vec< String >,
@@ -212,7 +213,7 @@ mod private
     /// `variants_cap` - Maximum of subset in powerset
     fn try_from< 'a >
     (
-      package : &WorkspacePackageRef< 'a >,
+      package : WorkspacePackageRef< 'a >,
       channels : &HashSet< Channel >,
       power : u32,
       include_features : &[ String ],

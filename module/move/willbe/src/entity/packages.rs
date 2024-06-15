@@ -91,11 +91,11 @@ mod private
     (
       | package |
       (
-        package.name().clone(),
+        package.name().into(),
         package.dependencies()
         // .iter()
         .filter( | d | dependency_filter( package, *d ) )
-        .map( | d | d.name().clone() )
+        .map( | d | d.name().into() )
         .collect::< HashSet< _ > >()
       )
     )

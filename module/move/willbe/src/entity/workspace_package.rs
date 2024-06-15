@@ -3,25 +3,27 @@ mod private
   use crate::*;
   use std::collections::BTreeMap;
 
-  use std::path::Path;
-  use cargo_metadata::camino::{ Utf8Path, Utf8PathBuf };
-  use petgraph::Graph;
-  use serde::Deserialize;
+  // use std::path::Path;
+  use cargo_metadata::camino::{ Utf8Path };
+  // use petgraph::Graph;
+  // use serde::Serialize;
+  // use serde::Deserialize;
+  // use serde::{ serde };
   use serde_json::Value;
-  use wtools::error::
-  {
-    for_app::Context,
-    for_lib::Error,
-    Result
-  };
-  use _path::AbsolutePath;
+  // use wtools::error::
+  // {
+  //   for_app::Context,
+  //   for_lib::Error,
+  //   Result
+  // };
+  // use _path::AbsolutePath;
 
   /// Facade for cargo_metadata::Package
   #[ derive( Debug, Clone, Copy ) ]
   #[ repr( transparent ) ]
   pub struct WorkspacePackageRef< 'a >
   {
-    #[ serde( flatten ) ]
+    // #[ serde( flatten ) ]
     inner : &'a cargo_metadata::Package
     // qqq : xxx : why no CrateDir is here?
   }
@@ -40,7 +42,7 @@ mod private
   impl< 'a > WorkspacePackageRef< 'a >
   {
     /// The name field as given in the Cargo.toml
-    pub fn name( &self ) -> &String
+    pub fn name( &'a self ) -> &'a str
     {
       &self.inner.name
     }

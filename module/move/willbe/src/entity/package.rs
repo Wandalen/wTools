@@ -43,7 +43,7 @@ mod private
     /// `Cargo.toml` file.
     Manifest( Manifest ),
     /// Cargo metadata package.
-    Metadata( WorkspacePackageRef< 'a > ),
+    WorkspacePackageRef( WorkspacePackageRef< 'a > ),
   }
 
   /// Represents errors related to package handling.
@@ -55,7 +55,7 @@ mod private
     Manifest( #[ from ] ManifestError ),
     /// Fail to load metadata.
     #[ error( "Fail to load metadata." ) ]
-    Metadata,
+    WorkspacePackageRef,
     /// Fail to load remote package.
     #[ error( "Fail to load remote package." ) ]
     LoadRemotePackage,
@@ -125,7 +125,7 @@ mod private
   {
     fn from( value : WorkspacePackageRef< 'a > ) -> Self
     {
-      Self::Metadata( value )
+      Self::WorkspacePackageRef( value )
     }
   }
 
@@ -138,7 +138,7 @@ mod private
       match self
       {
         Self::Manifest( manifest ) => manifest.manifest_path.clone(),
-        Self::Metadata( metadata ) => AbsolutePath::try_from( metadata.manifest_path().as_std_path().to_path_buf() ).unwrap(),
+        Self::WorkspacePackageRef( metadata ) => AbsolutePath::try_from( metadata.manifest_path().as_std_path().to_path_buf() ).unwrap(),
       }
     }
 
@@ -148,7 +148,7 @@ mod private
       match self
       {
         Self::Manifest( manifest ) => manifest.crate_dir(),
-        Self::Metadata( metadata ) =>
+        Self::WorkspacePackageRef( metadata ) =>
         {
           let path = metadata.manifest_path().parent().unwrap().as_std_path().to_path_buf();
           let absolute = AbsolutePath::try_from( path ).unwrap();
@@ -159,7 +159,8 @@ mod private
     }
 
     /// Package name
-    pub fn name( &self ) -> Result< String, PackageError >
+    // pub fn name( &self ) -> Result< String, PackageError >
+    pub fn name( &self ) -> Result< &str, PackageError >
     {
       match self
       {
@@ -168,11 +169,12 @@ mod private
           let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
 
           // Unwrap safely because of the `Package` type guarantee
-          Ok( data[ "package" ][ "name" ].as_str().unwrap().to_string() )
+          // Ok( data[ "package" ][ "name" ].as_str().unwrap().to_string() )
+          Ok( data[ "package" ][ "name" ].as_str().unwrap() )
         }
-        Self::Metadata( metadata ) =>
+        Self::WorkspacePackageRef( metadata ) =>
         {
-          Ok( metadata.name().clone() )
+          Ok( metadata.name() )
         }
       }
     }
@@ -189,7 +191,7 @@ mod private
           // Unwrap safely because of the `Package` type guarantee
           Ok( data[ "package" ][ "version" ].as_str().unwrap().to_string() )
         }
-        Self::Metadata( metadata ) =>
+        Self::WorkspacePackageRef( metadata ) =>
         {
           Ok( metadata.version().to_string() )
         }
@@ -210,7 +212,7 @@ mod private
           // Unwrap safely because of the `Package` type guarantee
           Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "stability" ) ).and_then( | s | s.as_str() ).and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental)  )
         }
-        Self::Metadata( metadata ) =>
+        Self::WorkspacePackageRef( metadata ) =>
         {
           Ok( metadata.metadata()[ "stability" ].as_str().and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental) )
         }
@@ -229,7 +231,7 @@ mod private
           // Unwrap safely because of the `Package` type guarantee
           Ok( data[ "package" ].get( "repository" ).and_then( | r | r.as_str() ).map( | r | r.to_string()) )
         }
-        Self::Metadata( metadata ) =>
+        Self::WorkspacePackageRef( metadata ) =>
         {
           Ok( metadata.repository().cloned() )
         }
@@ -247,7 +249,7 @@ mod private
 
           Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "discord_url" ) ).and_then( | url | url.as_str() ).map( | r | r.to_string() ) )
         }
-        Self::Metadata( metadata ) =>
+        Self::WorkspacePackageRef( metadata ) =>
         {
           Ok( metadata.metadata()[ "discord_url" ].as_str().map( | url | url.to_string() ) )
         }
@@ -264,7 +266,7 @@ mod private
           // verify that manifest not empty
           manifest.local_is()
         }
-        Self::Metadata( metadata ) =>
+        Self::WorkspacePackageRef( metadata ) =>
         {
           Ok( !( metadata.publish().is_none() || metadata.publish().as_ref().is_some_and( | p | p.is_empty() ) ) )
         }
@@ -277,27 +279,33 @@ mod private
       match self
       {
         Package::Manifest( manifest ) => Ok( manifest.clone() ),
-        Package::Metadata( metadata ) => manifest::open
+        Package::WorkspacePackageRef( metadata ) => manifest::open
         (
           AbsolutePath::try_from( metadata.manifest_path() ).map_err( | _ | PackageError::LocalPath )?
         )
-        .map_err( | _ | PackageError::Metadata ),
+        .map_err( | _ | PackageError::WorkspacePackageRef ),
       }
     }
 
-    /// Returns the `Metadata`
-    // xxx : rename
-    pub fn metadata( &self ) -> Result< WorkspacePackageRef< 'a >, PackageError >
-    {
-      match self
-      {
-        Package::Manifest( manifest ) =>
-        Workspace::with_crate_dir( manifest.crate_dir() ).map_err( | _ | PackageError::Metadata )?
-        .package_find_by_manifest( &manifest.manifest_path )
-        .ok_or_else( || PackageError::Metadata ),
-        Package::Metadata( metadata ) => Ok( metadata.clone() ),
-      }
-    }
+    // /// Returns the `Metadata`
+    // // xxx : rename
+    // pub fn metadata( &'a self ) -> Result< WorkspacePackageRef< 'a >, PackageError >
+    // {
+    //   match self
+    //   {
+    //     Package::Manifest( manifest ) =>
+    //     {
+    //       // xxx : qqq : !
+    //       panic!( "Can't be implemented" );
+    //       // let workspace = Workspace::with_crate_dir( manifest.crate_dir() )
+    //       // .map_err( |_| PackageError::WorkspacePackageRef )?;
+    //       // workspace
+    //       // .package_find_by_manifest( &manifest.manifest_path )
+    //       // .ok_or_else( || PackageError::WorkspacePackageRef )
+    //     },
+    //     Package::WorkspacePackageRef( metadata ) => Ok( metadata.clone() ),
+    //   }
+    // }
   }
 
   #[ derive( Debug, Default, Clone ) ]
@@ -418,7 +426,7 @@ mod private
 
       PackagePublishInstruction
       {
-        package_name : self.package.name().unwrap(),
+        package_name : self.package.name().unwrap().into(),
         pack,
         version_bump,
         git_options,
@@ -806,11 +814,13 @@ mod private
 
   //
 
-  /// Identifier of any crate(local and remote)
+  /// Identifier of any crate (local and remote).
   #[ derive( Debug, Clone, Hash, Eq, PartialEq ) ]
   pub struct CrateId
   {
+    /// The name of the crate.
     pub name : String,
+    /// The absolute path to the crate, if available.
     pub path : Option< AbsolutePath >,
   }
 
@@ -820,7 +830,7 @@ mod private
     {
       Self
       {
-        name : value.name().clone(),
+        name : value.name().into(),
         path : Some( AbsolutePath::try_from( value.manifest_path().parent().unwrap() ).unwrap() ),
       }
     }
@@ -832,7 +842,7 @@ mod private
     {
       Self
       {
-        name : value.name().clone(),
+        name : value.name().into(),
         path : value.path().clone().map( | path | AbsolutePath::try_from( path ).unwrap() ),
       }
     }
@@ -860,8 +870,9 @@ mod private
 
     let manifest_path = &manifest.manifest_path();
 
+    workspace.load()?;
+
     let package = workspace
-    .load()?
     .package_find_by_manifest( &manifest_path )
     .ok_or( format_err!( "Package not found in the workspace with path : `{}`", manifest_path.as_ref().display() ) )?;
 

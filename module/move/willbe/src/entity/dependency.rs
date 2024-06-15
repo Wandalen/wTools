@@ -1,6 +1,6 @@
 mod private
 {
-  use cargo_metadata::camino::{ Utf8Path, Utf8PathBuf };
+  use cargo_metadata::camino::{ Utf8PathBuf };
 
   /// A dependency of the main crate
   #[ derive( Debug, Clone, Copy ) ]

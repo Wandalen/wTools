@@ -109,10 +109,9 @@ mod private
     -> Result< Self, ModulesHeadersRenewError >
     {
       let stability = package.stability()?;
-
       let module_name = package.name()?;
-
-      let repository_url = package.repository()?.ok_or_else::< wError, _ >( || err!( "Fail to find repository_url in module`s Cargo.toml" ) )?;
+      let repository_url = package.repository()?
+      .ok_or_else::< wError, _ >( || err!( "Fail to find repository_url in module`s Cargo.toml" ) )?;
 
       let discord_url = package.discord_url()?.or_else( || default_discord_url.clone() );
       Ok
@@ -121,7 +120,7 @@ mod private
           {
             module_path: package.manifest_path().parent().unwrap().as_ref().to_path_buf(),
             stability,
-            module_name,
+            module_name : module_name.to_string(),
             repository_url,
             discord_url,
           }

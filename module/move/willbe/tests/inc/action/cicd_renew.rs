@@ -4,8 +4,6 @@ use the_module::action;
 
 //
 
-// aaa : for Petro : rid off redundant namespace. ask
-// aaa : remove
 use std::
 {
   fs::File,
@@ -69,10 +67,10 @@ fn default_case()
     uses : "Username/test/.github/workflows/standard_rust_push.yml@alpha".into(),
     with
   };
-  let expected = Workflow
+  let exp = Workflow
   {
     name : "test_module".into(),
-    on : 
+    on :
     {
       let mut map = HashMap::new();
       let mut push_map = HashMap::new();
@@ -95,8 +93,8 @@ fn default_case()
   let mut file = File::open( file_path ).unwrap();
   let mut content = String::new();
   _ = file.read_to_string( &mut content ).unwrap();
-  let actual: Workflow = serde_yaml::from_str( &content ).unwrap();
-  assert_eq!( expected, actual );
+  let got : Workflow = serde_yaml::from_str( &content ).unwrap();
+  assert_eq!( got, exp );
 
   assert!( base_path.join( "appropriate_branch.yml" ).exists() );
   assert!( base_path.join( "appropriate_branch_beta.yml" ).exists() );
