@@ -112,7 +112,7 @@ fn package_version_bump()
   let c_temp_path = temp_module.join( "c" );
   let c_temp_absolute_path = AbsolutePath::try_from( c_temp_path ).unwrap();
   let c_temp_crate_dir = CrateDir::try_from( c_temp_absolute_path.clone() ).unwrap();
-  let c_package = Package::try_from( c_temp_absolute_path.clone() ).unwrap();
+  let c_package = Package::try_from( c_temp_crate_dir.clone() ).unwrap();
   let version = c_package.version().unwrap();
 
   let root_manifest_path =  temp.join( "Cargo.toml" );
@@ -135,7 +135,7 @@ default-features = true
   // Act
   let options = BumpOptions
   {
-    crate_dir : c_temp_crate_dir,
+    crate_dir : c_temp_crate_dir.clone(),
     old_version : version.clone(),
     new_version : bumped_version.clone(),
     dependencies : vec![ CrateDir::try_from( root_manifest_absolute_path.parent().unwrap() ).unwrap() ],
@@ -159,7 +159,7 @@ default-features = true
       v
     }
   );
-  let c_package = Package::try_from( c_temp_absolute_path.clone() ).unwrap();
+  let c_package = Package::try_from( c_temp_crate_dir.clone() ).unwrap();
   let name = c_package.name().unwrap();
   assert_eq!( bumped_version.to_string(), c_package.version().unwrap() );
   let mut root_manifest = Manifest::try_from( root_manifest_absolute_path ).unwrap();
@@ -182,7 +182,7 @@ fn package_version_bump_revert()
   let c_temp_path = temp_module.join( "c" );
   let c_temp_absolute_path = AbsolutePath::try_from( c_temp_path ).unwrap();
   let c_temp_crate_dir = CrateDir::try_from( c_temp_absolute_path.clone() ).unwrap();
-  let c_package = Package::try_from( c_temp_absolute_path.clone() ).unwrap();
+  let c_package = Package::try_from( c_temp_crate_dir.clone() ).unwrap();
   let version = c_package.version().unwrap();
 
   let root_manifest_path =  temp.join( "Cargo.toml" );
@@ -205,7 +205,7 @@ default-features = true
   // Act
   let options = BumpOptions
   {
-    crate_dir : c_temp_crate_dir,
+    crate_dir : c_temp_crate_dir.clone(),
     old_version : version.clone(),
     new_version : bumped_version.clone(),
     dependencies : vec![ CrateDir::try_from( root_manifest_absolute_path.parent().unwrap() ).unwrap() ],
@@ -215,7 +215,7 @@ default-features = true
   version_revert( &bump_report ).unwrap();
 
   // Assert
-  let c_package = Package::try_from( c_temp_absolute_path.clone() ).unwrap();
+  let c_package = Package::try_from( c_temp_crate_dir.clone() ).unwrap();
   let name = c_package.name().unwrap();
   assert_eq!( version.to_string(), c_package.version().unwrap() );
   let mut root_manifest = Manifest::try_from( root_manifest_absolute_path ).unwrap();

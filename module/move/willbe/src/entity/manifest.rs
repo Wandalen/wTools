@@ -62,7 +62,7 @@ pub( crate ) mod private
     {
       if !manifest_path.as_ref().ends_with( "Cargo.toml" )
       {
-        let err =  io::Error::new( io::ErrorKind::NotFound, "Cannot find manifest" );
+        let err =  io::Error::new( io::ErrorKind::NotFound, format!( "Cannot find manifest at {manifest_path:?}" ) );
         return Err( ManifestError::Io( err ) );
       }
 
