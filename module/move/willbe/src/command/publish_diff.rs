@@ -6,7 +6,7 @@ mod private
   use wca::VerifiedCommand;
 
   use wtools::error::Result;
-  use _path::AbsolutePath;
+  use path::AbsolutePath;
 
   #[ derive( former::Former ) ]
   struct PublishDiffProperties

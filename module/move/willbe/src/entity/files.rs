@@ -23,7 +23,7 @@ pub( crate ) mod private
     thiserror,
     for_lib::Error,
   };
-  // use _path::AbsolutePath;
+  // use path::AbsolutePath;
 
   /// `PathError` enum represents errors when creating a `CrateDir` object.
   #[ derive( Debug, Error ) ]

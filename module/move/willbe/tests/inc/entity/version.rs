@@ -9,7 +9,7 @@ use the_module::
   CrateDir,
   Manifest,
   version::Version,
-  _path::AbsolutePath,
+  path::AbsolutePath,
   package::Package,
   version::{ BumpOptions, version_bump, version_revert },
 };

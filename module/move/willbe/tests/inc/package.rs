@@ -2,11 +2,11 @@
 // use the_module::
 // {
 //   Workspace,
-//   _path::AbsolutePath,
+//   path::AbsolutePath,
 //   package::PublishPlan,
 // };
 // use willbe::package::perform_packages_publish;
-// 
+//
 // #[ test ]
 // fn plan_publish_many_packages()
 // {

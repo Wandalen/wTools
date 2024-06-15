@@ -16,7 +16,7 @@ mod private
   use handlebars::{ RenderError, TemplateError };
   use toml_edit::Document;
 
-  use _path::AbsolutePath;
+  use path::AbsolutePath;
   use entity::PathError;
   use error_tools::for_lib::Error;
   use error_tools::dependency::*;

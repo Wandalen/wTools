@@ -28,7 +28,7 @@ mod private
     }
   };
   use manifest::repo_url;
-  use _path::AbsolutePath;
+  use path::AbsolutePath;
 
   static TAG_TEMPLATE: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
   static CLOSE_TAG: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();

@@ -19,7 +19,7 @@ use wtools::error::
 {
   Result,
 };
-use _path::AbsolutePath;
+use path::AbsolutePath;
 
 /// Path to crate directory
 #[ derive( Debug, Clone ) ]

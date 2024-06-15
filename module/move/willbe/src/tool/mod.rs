@@ -8,10 +8,10 @@ crate::mod_interface!
   /// Operate over files.
   layer files;
   orphan use super::files;
-  
+
   /// Work with paths.
-  layer _path;
-  orphan use super::_path;
+  layer path;
+  orphan use super::path;
 
   /// Tools for working with dependencies graph.
   layer graph;
@@ -28,7 +28,7 @@ crate::mod_interface!
   /// Interaction module with the `cargo` utilities.
   layer cargo;
   orphan use super::cargo;
-  
+
   /// The parse function parses an input string into a HashMap where the keys are String and the values are of type Value.
   layer query;
   orphan use super::query;
@@ -36,4 +36,5 @@ crate::mod_interface!
   /// Tools for parsing and extracting information from url.
   layer url;
   orphan use super::url;
+
 }

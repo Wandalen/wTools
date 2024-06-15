@@ -10,7 +10,7 @@ mod private
   use crates_tools::CrateArchive;
 
   use action::list::{ ListReport, ListNodeReport };
-  use _path::AbsolutePath;
+  use path::AbsolutePath;
   use wtools::error::for_app::Result;
   use diff::{ DiffReport, crate_diff };
   use error_tools::for_app::format_err;
@@ -22,7 +22,7 @@ mod private
     path : PathBuf,
     keep_archive : Option< PathBuf >,
   }
-  
+
   #[ derive( Debug ) ]
   pub struct PublishDiffReport
   {
@@ -30,7 +30,7 @@ mod private
     pub root_path : AbsolutePath,
     pub tree : ListNodeReport,
   }
-  
+
   impl std::fmt::Display for PublishDiffReport
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
@@ -39,7 +39,7 @@ mod private
       let root_path = tree.path.as_ref().unwrap().clone();
       let root_name = tree.name.clone();
       let root_version = tree.version.as_ref().unwrap().clone();
-      
+
       fn modify( diffs : &HashMap< AbsolutePath, DiffReport >, tree : &mut ListNodeReport )
       {
         let path = tree.path.take().unwrap();
@@ -52,7 +52,7 @@ mod private
         let has_changes = diff.has_changes();
         tree.name = if has_changes { format!( "{}", tree.name.yellow() ) } else { tree.name.clone() };
         tree.version.as_mut().map( | v | *v = format!( "{} {}", if has_changes { v.yellow() } else { v.as_str().into() }, if has_changes { "MODIFIED" } else { "" } ) );
-        
+
         for dep in &mut tree.normal_dependencies
         {
           modify( diffs, dep )
@@ -64,7 +64,7 @@ mod private
       let path = path.strip_suffix( "Cargo.toml" ).unwrap_or( &path );
       let root = AbsolutePath::try_from( path ).unwrap();
       let diff = self.diffs.get( &root ).unwrap();
-      
+
       writeln!( f, "Tree:\n{}", tree )?;
       if diff.has_changes()
       {
@@ -75,7 +75,7 @@ mod private
         writeln!( f, "No changes found in `{root_name} {root_version}`. Files:" )?;
       }
       write!( f, "{}", diff )?;
-      
+
       Ok( () )
     }
   }
@@ -86,7 +86,7 @@ mod private
   {
     let path = AbsolutePath::try_from( o.path )?;
     let dir = CrateDir::try_from( path.clone() )?;
-    
+
     let list = action::list
     (
       action::list::ListOptions::former()
@@ -134,7 +134,7 @@ mod private
       }
       diffs.insert( path, crate_diff( &l, &r ).exclude( diff::PUBLISH_IGNORE_LIST ) );
       tasks.extend( tasks[ current_idx ].normal_dependencies.clone() );
-      
+
       current_idx += 1;
     }
     let report = PublishDiffReport

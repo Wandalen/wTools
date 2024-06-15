@@ -16,7 +16,7 @@ mod private
   use crates_tools::CrateArchive;
 
   use workspace::Workspace;
-  use _path::AbsolutePath;
+  use path::AbsolutePath;
 
   use wtools::
   {

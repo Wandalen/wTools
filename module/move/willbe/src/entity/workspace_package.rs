@@ -16,7 +16,7 @@ mod private
   //   for_lib::Error,
   //   Result
   // };
-  // use _path::AbsolutePath;
+  // use path::AbsolutePath;
 
   /// Facade for cargo_metadata::Package
   #[ derive( Debug, Clone, Copy ) ]

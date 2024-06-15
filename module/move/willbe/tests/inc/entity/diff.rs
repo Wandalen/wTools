@@ -4,7 +4,7 @@ use std::path::{ Path, PathBuf };
 use assert_fs::{ TempDir, prelude::* };
 use crates_tools::CrateArchive;
 use the_module::*;
-use _path::AbsolutePath;
+use path::AbsolutePath;
 use package::Package;
 use diff::crate_diff;
 use the_module::version::{ Version, BumpOptions, version_bump };
@@ -16,17 +16,17 @@ fn no_changes()
 {
   let tmp = &TempDir::new().unwrap();
   let package_path = package_path( "c" );
-  
+
   let left = prepare( tmp, "left", &package_path );
   let left_crate = crate_file_path( &left );
   let left_archive = CrateArchive::read( &left_crate ).unwrap();
-  
+
   let right = prepare( tmp, "right", &package_path );
   let right_crate = crate_file_path( &right );
   let right_archive = CrateArchive::read( &right_crate ).unwrap();
-  
+
   let has_changes = crate_diff( &left_archive, &right_archive ).exclude( diff::PUBLISH_IGNORE_LIST ).has_changes();
-  
+
   assert!( !has_changes );
 }
 

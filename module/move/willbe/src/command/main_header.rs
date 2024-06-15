@@ -2,7 +2,7 @@ mod private
 {
   use crate::*;
   use action;
-  use _path::AbsolutePath;
+  use path::AbsolutePath;
   use error_tools::Result;
   use wtools::error::anyhow::Error;
 
@@ -11,8 +11,8 @@ mod private
   {
     match action::readme_header_renew( AbsolutePath::try_from( std::env::current_dir()? )? )
     {
-      Ok( report ) => 
-      { 
+      Ok( report ) =>
+      {
         println!( "{report}" );
         Ok( () )
       }

@@ -19,7 +19,7 @@ use wtools::error::
 {
   Result,
 };
-use _path::AbsolutePath;
+use path::AbsolutePath;
 // xxx
 
 /// Path to crate directory

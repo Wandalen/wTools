@@ -14,7 +14,7 @@ mod private
     for_lib::Error,
     Result
   };
-  use _path::AbsolutePath;
+  use path::AbsolutePath;
 
   // qqq : for Bohdan : for Petro : what manifest_dir is?
 

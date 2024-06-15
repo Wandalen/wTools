@@ -41,9 +41,9 @@ crate::mod_interface!
   layer manifest;
   orphan use super::manifest;
 
-  /// Paths.
-  layer path;
-  orphan use super::path;
+  /// Paths and files.
+  layer files;
+  orphan use super::files;
 
   /// Provides an opportunity to work with versions.
   layer version;

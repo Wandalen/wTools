@@ -15,7 +15,7 @@ mod private
   use wca::VerifiedCommand;
   use wtools::error::{ for_app::Context, Result };
 
-  use _path::AbsolutePath;
+  use path::AbsolutePath;
   use action::{ list as l, list::{ ListFormat, ListOptions } };
   use former::Former;
 

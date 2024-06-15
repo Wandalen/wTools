@@ -8,7 +8,7 @@ mod private
   use colored::Colorize;
   use wca::VerifiedCommand;
   use wtools::error::Result;
-  use _path::AbsolutePath;
+  use path::AbsolutePath;
   use action::test::TestsCommandOptions;
   use former::Former;
   use channel::Channel;
@@ -68,7 +68,7 @@ mod private
       with_all_features,
       with_none_features,
       with_debug,
-      with_release, 
+      with_release,
       with_progress
     } = o.props.try_into()?;
 
@@ -103,7 +103,7 @@ mod private
 
     match action::test( args, dry )
     {
-      
+
       Ok( report ) =>
       {
         if dry
@@ -113,11 +113,11 @@ mod private
           let line = format!("will .publish{}{} dry:0", args, prop);
           println!("To apply plan, call the command `{}`", line.blue());
         }
-        else 
-        { 
+        else
+        {
           println!( "{report} ");
         }
-        
+
         Ok( () )
       }
       Err( ( report, e ) ) =>

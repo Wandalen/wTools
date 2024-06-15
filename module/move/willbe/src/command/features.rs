@@ -4,7 +4,7 @@ mod private
 
   use action::features::FeaturesOptions;
   use std::path::PathBuf;
-  use _path::AbsolutePath;
+  use path::AbsolutePath;
   use wca::VerifiedCommand;
   use wtools::error::Result;
 

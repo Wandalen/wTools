@@ -6,7 +6,7 @@ use assert_fs::TempDir;
 
 use crate::the_module::*;
 use action::test::{test, TestsCommandOptions};
-use _path::AbsolutePath;
+use path::AbsolutePath;
 use channel::*;
 use optimization::*;
 use willbe::test::TestVariant;

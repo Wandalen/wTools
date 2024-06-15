@@ -27,7 +27,7 @@ mod private
   use former::Former;
 
   use workspace::Workspace;
-  use _path::AbsolutePath;
+  use path::AbsolutePath;
 
   /// Args for `list` action.
   #[ derive( Debug, Default, Copy, Clone ) ]

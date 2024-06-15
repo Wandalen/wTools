@@ -14,7 +14,7 @@ mod private
 
   use wtools::error::for_app::Result;
   use manifest::Manifest;
-  use _path::AbsolutePath;
+  use path::AbsolutePath;
   use package::Package;
   use wtools::{ error::anyhow::format_err, iter::Itertools };
 

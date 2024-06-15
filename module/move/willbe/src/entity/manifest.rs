@@ -16,7 +16,7 @@ pub( crate ) mod private
     for_lib::Error,
     for_app::format_err,
   };
-  use _path::AbsolutePath;
+  use path::AbsolutePath;
 
   /// Represents errors related to manifest data processing.
   #[ derive( Debug, Error ) ]
