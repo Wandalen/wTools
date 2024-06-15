@@ -71,6 +71,15 @@ pub( crate ) mod private
     }
   }
 
+  impl From< AbsolutePath > for PathBuf
+  {
+    #[ inline( always ) ]
+    fn from( abs_path: AbsolutePath ) -> Self
+    {
+      abs_path.0
+    }
+  }
+
   impl AsRef< Path > for AbsolutePath
   {
     fn as_ref( &self ) -> &Path
@@ -81,6 +90,14 @@ pub( crate ) mod private
 
   impl AbsolutePath
   {
+
+    /// Returns inner type what is an absolute path.
+    #[ inline( always ) ]
+    pub fn inner( self ) -> PathBuf
+    {
+      self.0
+    }
+
     /// Returns the Path without its final component, if there is one.
     /// Returns None if the path terminates in a root or prefix, or if it's the empty string.
     pub fn parent( &self ) -> Option< AbsolutePath >
@@ -95,6 +112,7 @@ pub( crate ) mod private
     {
       Self::try_from( self.0.join( path ) ).unwrap()
     }
+
   }
 
   // qqq : for Petro : for Bohdan : bad. move out

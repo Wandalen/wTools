@@ -57,9 +57,9 @@ pub( crate ) mod private
     }
   }
 
-  impl From< AbsolutePath > for PathBuf 
+  impl From< AbsolutePath > for PathBuf
   {
-    fn from( abs_path: AbsolutePath ) -> Self 
+    fn from( abs_path: AbsolutePath ) -> Self
     {
       abs_path.0
     }

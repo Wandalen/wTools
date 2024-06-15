@@ -28,9 +28,11 @@ crate::mod_interface!
   /// It features the ability to interact with workspaces, manage their participants, and other functionalities.
   layer workspace;
   orphan use super::workspace;
+
   /// Packages of workspace.
   layer workspace_package;
   orphan use super::workspace_package;
+
   /// Dependency of a package.
   layer dependency;
   orphan use super::dependency;
@@ -38,6 +40,10 @@ crate::mod_interface!
   /// To manipulate manifest data.
   layer manifest;
   orphan use super::manifest;
+
+  /// Paths.
+  layer path;
+  orphan use super::path;
 
   /// Provides an opportunity to work with versions.
   layer version;

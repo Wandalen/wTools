@@ -78,8 +78,8 @@ mod private
 
     fn try_from( value : AbsolutePath ) -> Result< Self, Self::Error >
     {
-      let manifest =  manifest::open( value.clone() )?;
-      if !manifest.package_is()?
+      let manifest = Manifest::try_from( value )?;
+      if !manifest.package_is()
       {
         return Err( PackageError::NotAPackage );
       }
@@ -94,8 +94,8 @@ mod private
 
     fn try_from( value : CrateDir ) -> Result< Self, Self::Error >
     {
-      let manifest =  manifest::open( value.absolute_path().join( "Cargo.toml" ) )?;
-      if !manifest.package_is()?
+      let manifest = Manifest::try_from( value.manifest_path() )?;
+      if !manifest.package_is()
       {
         return Err( PackageError::NotAPackage );
       }
@@ -112,7 +112,7 @@ mod private
 
     fn try_from( value : Manifest ) -> Result< Self, Self::Error >
     {
-      if !value.package_is()?
+      if !value.package_is()
       {
         return Err( PackageError::NotAPackage );
       }
@@ -166,7 +166,8 @@ mod private
       {
         Self::Manifest( manifest ) =>
         {
-          let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+          // let data = manifest.data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+          let data = &manifest.data;
 
           // Unwrap safely because of the `Package` type guarantee
           // Ok( data[ "package" ][ "name" ].as_str().unwrap().to_string() )
@@ -186,7 +187,8 @@ mod private
       {
         Self::Manifest( manifest ) =>
         {
-          let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+          // let data = manifest.data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+          let data = &manifest.data;
 
           // Unwrap safely because of the `Package` type guarantee
           Ok( data[ "package" ][ "version" ].as_str().unwrap().to_string() )
@@ -207,7 +209,8 @@ mod private
       {
         Self::Manifest( manifest ) =>
         {
-          let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+          // let data = manifest.data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+          let data = &manifest.data;
 
           // Unwrap safely because of the `Package` type guarantee
           Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "stability" ) ).and_then( | s | s.as_str() ).and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental)  )
@@ -226,7 +229,8 @@ mod private
       {
         Self::Manifest( manifest ) =>
         {
-          let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+          // let data = manifest.data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+          let data = &manifest.data;
 
           // Unwrap safely because of the `Package` type guarantee
           Ok( data[ "package" ].get( "repository" ).and_then( | r | r.as_str() ).map( | r | r.to_string()) )
@@ -245,7 +249,8 @@ mod private
       {
         Self::Manifest( manifest ) =>
         {
-          let data = manifest.manifest_data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+          // let data = manifest.data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+          let data = &manifest.data;
 
           Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "discord_url" ) ).and_then( | url | url.as_str() ).map( | r | r.to_string() ) )
         }
@@ -257,7 +262,8 @@ mod private
     }
 
     /// Check that module is local.
-    pub fn local_is( &self ) -> Result< bool, ManifestError >
+    // pub fn local_is( &self ) -> Result< bool, ManifestError >
+    pub fn local_is( &self ) -> bool
     {
       match self
       {
@@ -268,7 +274,8 @@ mod private
         }
         Self::WorkspacePackageRef( metadata ) =>
         {
-          Ok( !( metadata.publish().is_none() || metadata.publish().as_ref().is_some_and( | p | p.is_empty() ) ) )
+          !( metadata.publish().is_none() || metadata.publish().as_ref().is_some_and( | p | p.is_empty() ) )
+          // Ok( !( metadata.publish().is_none() || metadata.publish().as_ref().is_some_and( | p | p.is_empty() ) ) )
         }
       }
     }
@@ -279,7 +286,7 @@ mod private
       match self
       {
         Package::Manifest( manifest ) => Ok( manifest.clone() ),
-        Package::WorkspacePackageRef( metadata ) => manifest::open
+        Package::WorkspacePackageRef( metadata ) => Manifest::try_from
         (
           AbsolutePath::try_from( metadata.manifest_path() ).map_err( | _ | PackageError::LocalPath )?
         )
@@ -387,10 +394,10 @@ mod private
     fn build( self ) -> PackagePublishInstruction
     {
       let crate_dir = self.package.crate_dir();
-      let workspace_root : AbsolutePath = self.workspace_dir.absolute_path();
+      let workspace_root : AbsolutePath = self.workspace_dir.clone().inner();
       let pack = cargo::PackOptions
       {
-        path : crate_dir.as_ref().into(),
+        path : crate_dir.clone().inner().inner(),
         channel : self.channel,
         allow_dirty : self.dry,
         no_verify : self.dry,
@@ -404,7 +411,7 @@ mod private
       let version_bump = version::BumpOptions
       {
         crate_dir : crate_dir.clone(),
-        old_version : old_version.clone(),
+        old_version : old_version.clone(), // xxx2 : ??
         new_version : new_version.clone(),
         dependencies : dependencies.clone(),
         dry : self.dry,
@@ -412,13 +419,13 @@ mod private
       let git_options = GitOptions
       {
         git_root : workspace_root,
-        items : dependencies.iter().chain([ &crate_dir ]).map( | d | d.absolute_path().join( "Cargo.toml" ) ).collect(),
+        items : dependencies.iter().chain([ &crate_dir ]).map( | d | d.clone().inner().join( "Cargo.toml" ) ).collect(),
         message : format!( "{}-v{}", self.package.name().unwrap(), new_version ),
         dry : self.dry,
       };
       let publish = cargo::PublishOptions
       {
-        path : crate_dir.as_ref().into(),
+        path : crate_dir.clone().inner().inner(),
         temp_path : self.base_temp_dir.clone(),
         retry_count : 2,
         dry : self.dry,
@@ -974,8 +981,6 @@ mod private
     .map( | p | p.join( format!( "package/{0}-{1}.crate", name, version ) ) )
     .unwrap_or( packed_crate::local_path( &name, &version, package.crate_dir() ).map_err( | _ | PackageError::LocalPath )? );
 
-    // aaa : for Bohdan : bad, properly handle errors
-    // aaa : return result instead of panic
     let local_package = CrateArchive::read( local_package_path ).map_err( | _ | PackageError::ReadArchive )?;
     let remote_package = match CrateArchive::download_crates_io( name, version )
     {

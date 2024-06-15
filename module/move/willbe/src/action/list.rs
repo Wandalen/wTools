@@ -371,14 +371,15 @@ mod private
     dep_rep
   }
 
-  trait ErrWith< T, T1, E >
+  // xxx : qqq : for Petro : for Bohdan : good one, apply it to all code
+  trait ErrWith< V, R, E >
   {
-    fn err_with( self, v : T ) -> std::result::Result< T1, ( T, E ) >;
+    fn err_with( self, v : V ) -> std::result::Result< R, ( V, E ) >;
   }
 
-  impl< T, T1, E > ErrWith< T, T1, E > for Result< T1, E >
+  impl< V, R, E > ErrWith< V, R, E > for std::result::Result< R, E >
   {
-    fn err_with( self, v : T ) -> Result< T1, ( T, E ) >
+    fn err_with( self, v : V ) -> std::result::Result< R, ( V, E ) >
     {
       self.map_err( | e | ( v, e ) )
     }
@@ -395,17 +396,24 @@ mod private
   /// - `Result<ListReport, (ListReport, Error)>` - A result containing the list report if successful,
   ///   or a tuple containing the list report and error if not successful.
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
-  pub fn list( args : ListOptions ) -> Result< ListReport, ( ListReport, Error ) >
+  pub fn list( args : ListOptions ) -> Result< ListReport, ( ListReport, Error ) > // xxx : rename
   {
     let mut report = ListReport::default();
 
-    let manifest = manifest::open( args.path_to_manifest.absolute_path() ).context( "List of packages by specified manifest path" ).err_with( report.clone() )?;
+    // let manifest = Manifest::try_from( args.path_to_manifest.absolute_path() )
+    dbg!( &args.path_to_manifest );
+    let manifest = Manifest::try_from( args.path_to_manifest.clone() )
+    .context( "List of packages by specified manifest path" )
+    .err_with( report.clone() )?;
+
     let workspace = Workspace::with_crate_dir( manifest.crate_dir() ).err_with( report.clone() )?;
 
-    let is_package = manifest.package_is().context( "try to identify manifest type" ).err_with( report.clone() )?;
+    let is_package = manifest.package_is();
+    // let is_package = manifest.package_is().context( "try to identify manifest type" ).err_with( report.clone() )?;
 
     let tree_package_report = | path : AbsolutePath, report : &mut ListReport, visited : &mut HashSet< String > |
     {
+
       let package = workspace.package_find_by_manifest( path ).unwrap();
       let mut package_report = ListNodeReport
       {
@@ -427,6 +435,7 @@ mod private
         ListReport::List( _ ) => unreachable!(),
       };
     };
+
     match args.format
     {
       ListFormat::Tree if is_package =>
@@ -457,12 +466,17 @@ mod private
       }
       ListFormat::Topological =>
       {
-        let root_crate = manifest
-        .manifest_data
-        .as_ref()
-        .and_then( | m | m.get( "package" ) )
+
+        let root_crate = manifest.data.get( "package" )
         .map( | m | m[ "name" ].to_string().trim().replace( '\"', "" ) )
         .unwrap_or_default();
+
+        // let root_crate = manifest
+        // .data
+        // // .as_ref()
+        // .and_then( | m | m.get( "package" ) )
+        // .map( | m | m[ "name" ].to_string().trim().replace( '\"', "" ) )
+        // .unwrap_or_default();
 
         let dep_filter = move | _p : WorkspacePackageRef< '_ >, d : DependencyRef< '_ > |
         {

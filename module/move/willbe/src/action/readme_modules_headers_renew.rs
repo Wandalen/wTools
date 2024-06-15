@@ -22,8 +22,7 @@ mod private
   use std::path::PathBuf;
   use convert_case::{ Case, Casing };
   use regex::Regex;
-  use entity::WorkspaceError;
-  use manifest::private::CrateDirError;
+  use entity::{ WorkspaceError, CrateDirError };
   use package::PackageError;
   use error_tools::for_lib::Error;
   use error_tools::dependency::*;

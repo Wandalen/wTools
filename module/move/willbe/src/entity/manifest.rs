@@ -7,7 +7,7 @@ pub( crate ) mod private
   {
     io::{ self, Read },
     fs,
-    path::{ Path, PathBuf },
+    path::{ Path },
   };
   use wtools::error::
   {
@@ -17,67 +17,6 @@ pub( crate ) mod private
     for_app::format_err,
   };
   use _path::AbsolutePath;
-
-  /// `CrateDirError` enum represents errors when creating a `CrateDir` object.
-  #[ derive( Debug, Error ) ]
-  pub enum CrateDirError
-  {
-    /// Indicates a validation error with a descriptive message.
-    #[ error( "Failed to create a `CrateDir` object due to `{0}`" ) ]
-    Validation( String ),
-  }
-
-  // xxx : move out
-  /// Path to crate directory
-  #[ derive( Debug, Clone ) ]
-  pub struct CrateDir( AbsolutePath );
-
-  impl AsRef< Path > for CrateDir
-  {
-    fn as_ref( &self ) -> &Path
-    {
-      self.0.as_ref()
-    }
-  }
-
-  impl TryFrom< AbsolutePath > for CrateDir
-  {
-    type Error = CrateDirError;
-
-    fn try_from( crate_dir_path : AbsolutePath ) -> Result< Self, Self::Error >
-    {
-      if !crate_dir_path.as_ref().join( "Cargo.toml" ).exists()
-      {
-        return Err( CrateDirError::Validation( "The path is not a crate directory path".into() ) );
-      }
-      Ok( Self( crate_dir_path ) )
-    }
-  }
-
-  impl TryFrom< PathBuf > for CrateDir
-  {
-    type Error = CrateDirError;
-
-    fn try_from( crate_dir_path : PathBuf ) -> Result< Self, Self::Error >
-    {
-      if !crate_dir_path.join( "Cargo.toml" ).exists()
-      {
-        return Err( CrateDirError::Validation( "The path is not a crate directory path".into() ) );
-      }
-
-      Ok( Self( AbsolutePath::try_from( crate_dir_path ).unwrap() ) )
-    }
-  }
-
-  impl CrateDir
-  {
-    // qqq : bad : for Petro : why clone?
-    /// Returns an absolute path.
-    pub fn absolute_path( &self ) -> AbsolutePath
-    {
-      self.0.clone()
-    }
-  }
 
   /// Represents errors related to manifest data processing.
   #[ derive( Debug, Error ) ]
@@ -110,13 +49,15 @@ pub( crate ) mod private
     pub manifest_path : AbsolutePath,
     // qqq : for Bohdan : for Petro : why not CrateDir?
     /// Strict type of `Cargo.toml` manifest.
-    pub manifest_data : Option< toml_edit::Document >,
+    pub data : toml_edit::Document,
+    // pub data : Option< toml_edit::Document >,
   }
 
   impl TryFrom< AbsolutePath > for Manifest
   {
     type Error = ManifestError;
 
+    // xxx
     fn try_from( manifest_path : AbsolutePath ) -> Result< Self, Self::Error >
     {
       if !manifest_path.as_ref().ends_with( "Cargo.toml" )
@@ -125,26 +66,34 @@ pub( crate ) mod private
         return Err( ManifestError::Io( err ) );
       }
 
+      let read = fs::read_to_string( &manifest_path )?;
+      let data = read.parse::< toml_edit::Document >()
+      .map_err( | e | io::Error::new( io::ErrorKind::InvalidData, e ) )?;
+
       Ok
       (
         Manifest
         {
           manifest_path,
-          manifest_data : None,
+          data,
         }
       )
     }
   }
 
-  impl From< CrateDir > for Manifest
+  impl TryFrom< CrateDir > for Manifest
   {
-    fn from( value : CrateDir ) -> Self
+    type Error = ManifestError;
+
+    // qqq : xxx : introduce ManifestPath
+    fn try_from( src : CrateDir ) -> Result< Self, Self::Error >
     {
-      Self
-      {
-        manifest_path : value.0.join( "Cargo.toml" ),
-        manifest_data : None,
-      }
+      Self::try_from( src.manifest_path() )
+      // Self
+      // {
+      //   manifest_path : src.inner().join( "Cargo.toml" ),
+      //   data : None,
+      // }
     }
   }
 
@@ -160,9 +109,9 @@ pub( crate ) mod private
     /// A mutable reference to the TOML document.
     pub fn data( &mut self ) -> &mut toml_edit::Document
     {
-      if self.manifest_data.is_none() { self.load().unwrap() }
-
-      self.manifest_data.as_mut().unwrap()
+      // if self.data.is_none() { self.load().unwrap() }
+      // self.data.as_mut().unwrap()
+      &mut self.data
     }
 
     /// Returns path to `Cargo.toml`.
@@ -174,77 +123,87 @@ pub( crate ) mod private
     /// Path to directory where `Cargo.toml` located.
     pub fn crate_dir( &self ) -> CrateDir
     {
-      CrateDir( self.manifest_path.parent().unwrap() )
+      self.manifest_path.parent().unwrap().try_into().unwrap()
+      // CrateDir( self.manifest_path.parent().unwrap() )
     }
 
-    /// Load manifest from path.
-    pub fn load( &mut self ) -> Result< (), ManifestError >
-    {
-      let read = fs::read_to_string( &self.manifest_path )?;
-      let result = read.parse::< toml_edit::Document >().map_err( | e | io::Error::new( io::ErrorKind::InvalidData, e ) )?;
-      self.manifest_data = Some( result );
-
-      Ok( () )
-    }
+    // /// Load manifest from path.
+    // pub fn load( &mut self ) -> Result< (), ManifestError >
+    // {
+    //   let read = fs::read_to_string( &self.manifest_path )?;
+    //   let result = read.parse::< toml_edit::Document >().map_err( | e | io::Error::new( io::ErrorKind::InvalidData, e ) )?;
+    //   self.data = Some( result );
+    //   Ok( () )
+    // }
 
     // aaa : for Bohdan : don't abuse anyhow
     // aaa : return `io` error
     /// Store manifest.
     pub fn store( &self ) -> io::Result< () >
     {
-      // If the `manifest_data` doesn't contain any data, then there's no point in attempting to write
-      if let Some( data ) = &self.manifest_data
-      {
-        fs::write( &self.manifest_path, data.to_string() )?;
-      }
+      // If the `data` doesn't contain any data, then there's no point in attempting to write
+      // if let Some( data ) = &self.data
+      // {
+        fs::write( &self.manifest_path, self.data.to_string() )?;
+      // }
 
       Ok( () )
     }
 
     /// Check that the current manifest is the manifest of the package (can also be a virtual workspace).
-    pub fn package_is( &self ) -> Result< bool, ManifestError>
+    // pub fn package_is( &self ) -> Result< bool, ManifestError >
+    pub fn package_is( &self ) -> bool
     {
-      let data = self.manifest_data.as_ref().ok_or_else( || ManifestError::EmptyManifestData )?;
-      if data.get( "package" ).is_some() && data[ "package" ].get( "name" ).is_some()
-      {
-        return Ok( true );
-      }
-      Ok( false )
+      // let data = self.data.as_ref().ok_or_else( || ManifestError::EmptyManifestData )?;
+      let data = &self.data;
+      data.get( "package" ).is_some() && data[ "package" ].get( "name" ).is_some()
+      // {
+      //   return true;
+      //   // return Ok( true );
+      // }
+      // Ok( false )
     }
 
     /// Check that module is local.
     /// The package is defined as local if the `publish` field is set to `false' or the registers are specified.
-    pub fn local_is( &self ) -> Result<bool, ManifestError>
+    // pub fn local_is( &self ) -> Result<bool, ManifestError>
+    pub fn local_is( &self ) -> bool
     {
-      let data = self.manifest_data.as_ref().ok_or_else( || ManifestError::EmptyManifestData )?;
+      // let data = self.data.as_ref().ok_or_else( || ManifestError::EmptyManifestData )?;
+      let data = &self.data;
       if data.get( "package" ).is_some() && data[ "package" ].get( "name" ).is_some()
       {
         let remote = data[ "package" ].get( "publish" ).is_none()
-                     || data[ "package" ][ "publish" ].as_bool().ok_or_else( || ManifestError::CannotFindValue( "[package], [publish]".into() ) )?;
-        return Ok(!remote);
+        || data[ "package" ][ "publish" ].as_bool().or( Some( true ) ).unwrap();
+        // .ok_or_else
+        // (
+        //   || ManifestError::CannotFindValue( "[package], [publish]".into() )
+        // )?;
+        // qqq : for Bohdan : bad. logic was wrong
+        // In a Cargo.toml file, the package.publish field is used to control whether a package can be published to a registry like crates.io. By default, if the package.publish field is not specified, the package is allowed to be published. In other words, the default behavior is equivalent to having package.publish set to true.
+        return !remote;
       }
-      Ok(true)
+      true
     }
   }
 
-  /// Create and load manifest by specified path
-  // aaa : for Bohdan : use newtype, add proper errors handing
-  // aaa : return `ManifestError`
-  pub fn open( path : AbsolutePath ) -> Result< Manifest, ManifestError >
-  {
-    let mut manifest = if let Ok( dir ) = CrateDir::try_from( path.clone() )
-    {
-      Manifest::from( dir )
-    }
-    else
-    {
-      Manifest::try_from( path )?
-    };
-
-    manifest.load()?;
-
-    Ok( manifest )
-  }
+//   /// Create and load manifest by specified path
+//   pub fn open( path : AbsolutePath ) -> Result< Manifest, ManifestError >
+//   {
+//     // xxx
+//     let mut manifest = if let Ok( dir ) = CrateDir::try_from( path.clone() )
+//     {
+//       Manifest::from( dir )
+//     }
+//     else
+//     {
+//       Manifest::try_from( path )?
+//     };
+//
+//     manifest.load()?;
+//
+//     Ok( manifest )
+//   }
 
   /// Retrieves the repository URL of a package from its `Cargo.toml` file.
   pub fn repo_url( package_path : &Path ) -> Result< String >
@@ -283,9 +242,7 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   exposed use Manifest;
-  exposed use CrateDir;
   orphan use ManifestError;
-  orphan use CrateDirError;
-  protected use open;
+  // protected use open;
   protected use repo_url;
 }

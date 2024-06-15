@@ -131,7 +131,7 @@ default-features = true
 "# ).unwrap();
   let version = Version::try_from( &version ).unwrap();
   let bumped_version = version.clone().bump();
-  
+
   // Act
   let options = BumpOptions
   {
@@ -163,7 +163,7 @@ default-features = true
   let name = c_package.name().unwrap();
   assert_eq!( bumped_version.to_string(), c_package.version().unwrap() );
   let mut root_manifest = Manifest::try_from( root_manifest_absolute_path ).unwrap();
-  root_manifest.load().unwrap();
+  // root_manifest.load().unwrap();
   let data = root_manifest.data();
   let current_version_item = data.get( "workspace" ).and_then( | w | w.get( "dependencies" ) ).and_then( | d | d.get( &name ) ).and_then( | p | p.get( "version" ) ).unwrap();
   let current_version = current_version_item.as_str().unwrap();
@@ -219,7 +219,7 @@ default-features = true
   let name = c_package.name().unwrap();
   assert_eq!( version.to_string(), c_package.version().unwrap() );
   let mut root_manifest = Manifest::try_from( root_manifest_absolute_path ).unwrap();
-  root_manifest.load().unwrap();
+  // root_manifest.load().unwrap();
   let data = root_manifest.data();
   let current_version_item = data.get( "workspace" ).and_then( | w | w.get( "dependencies" ) ).and_then( | d | d.get( &name ) ).and_then( | p | p.get( "version" ) ).unwrap();
   let current_version = current_version_item.as_str().unwrap();

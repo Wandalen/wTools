@@ -1,8 +1,8 @@
 mod private
 {
-  use std::ffi::OsString;
   use crate::*;
 
+  use std::ffi::OsString;
   use std::path::PathBuf;
   use error_tools::err;
   use error_tools::for_app::format_err;
@@ -11,11 +11,13 @@ mod private
   use wtools::error::Result;
   use channel::Channel;
 
+  // qqq : documentation
+
   /// Represents pack options
   #[ derive( Debug, Former, Clone ) ]
   pub struct PackOptions
   {
-    pub( crate ) path : PathBuf, 
+    pub( crate ) path : PathBuf,
     pub( crate ) channel : Channel,
     #[ former( default = true ) ]
     pub( crate ) allow_dirty : bool,

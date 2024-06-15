@@ -67,7 +67,7 @@ mod private
   /// It is possible to enable and disable various features of the crate.
   /// The function also has the ability to run tests in parallel using `Rayon` crate.
   /// The result of the tests is written to the structure `TestsReport` and returned as a result of the function execution.
-  // xxx : it probably should not be here
+  // zzz : it probably should not be here
   pub fn test( o : TestsCommandOptions, dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
   {
 

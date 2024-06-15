@@ -27,7 +27,7 @@ mod private
       bail,
     }
   };
-  use manifest::private::repo_url;
+  use manifest::repo_url;
   use _path::AbsolutePath;
 
   static TAG_TEMPLATE: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
@@ -529,14 +529,6 @@ mod private
     .join( " | " );
     format!( " {cells} |" )
   }
-
-  // /// Return workspace root
-  // // xxx : ?
-  // pub fn workspace_root( workspace : &mut Workspace ) -> Result< PathBuf >
-  // {
-  //   workspace.load()?;
-  //   Ok( workspace.workspace_root()?.to_path_buf() )
-  // }
 
   fn range_to_target_copy< T : Clone >( source : &[ T ], target : &mut Vec< T >, from : usize, to : usize ) -> Result< () >
   {

@@ -17,7 +17,7 @@ mod private
   use toml_edit::Document;
 
   use _path::AbsolutePath;
-  use manifest::private::CrateDirError;
+  use entity::CrateDirError;
   use error_tools::for_lib::Error;
   use error_tools::dependency::*;
 

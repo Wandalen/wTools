@@ -73,16 +73,16 @@ mod chain_of_three_packages
   }
 
   #[ test ]
-  fn list_format_for_single_package()
+  fn list_format_for_single_package_1()
   {
     // Arrange
     let temp = arrange();
     let args = ListOptions::former()
-      .path_to_manifest( crate_dir( &temp.join( "a" ) ) )
-      .format( ListFormat::Topological )
-      .dependency_sources([ DependencySource::Local ])
-      .dependency_categories([ DependencyCategory::Primary ])
-      .form();
+    .path_to_manifest( crate_dir( &temp.join( "a" ) ) )
+    .format( ListFormat::Topological )
+    .dependency_sources([ DependencySource::Local ])
+    .dependency_categories([ DependencyCategory::Primary ])
+    .form();
 
     // Act
     let output = action::list( args ).unwrap();
@@ -171,7 +171,7 @@ mod package_with_remote_dependency
   }
 
   #[ test ]
-  fn list_format_for_single_package()
+  fn list_format_for_single_package_2()
   {
     // Arrange
     let temp = arrange();

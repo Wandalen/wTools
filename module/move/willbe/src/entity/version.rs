@@ -128,12 +128,12 @@ mod private
 
     let version=
     {
-      if manifest.manifest_data.is_none()
-      {
-        manifest.load()?;
-      }
-      let data = manifest.manifest_data.as_ref().unwrap();
-      if !manifest.package_is()?
+      // if manifest.data.is_none()
+      // {
+      //   manifest.load()?;
+      // }
+      let data = &manifest.data;
+      if !manifest.package_is()
       {
         return Err( manifest::ManifestError::NotAPackage );
       }
@@ -156,7 +156,8 @@ mod private
 
     if !dry
     {
-      let data = manifest.manifest_data.as_mut().unwrap();
+      // let data = manifest.data.as_mut().unwrap();
+      let data = &mut manifest.data;
       data[ "package" ][ "version" ] = value( &new_version );
       manifest.store()?;
     }
@@ -246,7 +247,8 @@ mod private
   pub fn version_bump( o : BumpOptions ) -> Result< ExtendedBumpReport >
   {
     let mut report = ExtendedBumpReport::default();
-    let package_path = o.crate_dir.absolute_path().join( "Cargo.toml" );
+    // let package_path = o.crate_dir.inner().join( "Cargo.toml" );
+    let package_path = o.crate_dir.manifest_path();
     let package = Package::try_from( package_path.clone() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
     let name = package.name().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
     report.name = Some( name.into() );
@@ -262,7 +264,8 @@ mod private
     let mut package_manifest = package.manifest().map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
     if !o.dry
     {
-      let data = package_manifest.manifest_data.as_mut().unwrap();
+      // let data = package_manifest.data.as_mut().unwrap();
+      let data = &mut package_manifest.data;
       data[ "package" ][ "version" ] = value( &o.new_version.to_string() );
       package_manifest.store()?;
     }
@@ -270,9 +273,11 @@ mod private
     let new_version = &o.new_version.to_string();
     for dep in &o.dependencies
     {
-      let manifest_path = dep.absolute_path().join( "Cargo.toml" );
-      let mut manifest = manifest::open( manifest_path.clone() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
-      let data = manifest.manifest_data.as_mut().unwrap();
+      // let manifest_path = dep.absolute_path().join( "Cargo.toml" );
+      let manifest_path = dep.clone().manifest_path();
+      let mut manifest = Manifest::try_from( manifest_path.clone() ).map_err( | e | format_err!( "{report:?}\n{e:#?}" ) )?;
+      // let data = manifest.data.as_mut().unwrap();
+      let data = &mut manifest.data;
       let item = if let Some( item ) = data.get_mut( "package" ) { item }
       else if let Some( item ) = data.get_mut( "workspace" ) { item }
       else { return Err( format_err!( "{report:?}\nThe manifest nor the package and nor the workspace" ) ); };
@@ -337,7 +342,7 @@ mod private
 
     for path in &report.changed_files
     {
-      let mut manifest = manifest::open( path.clone() )?;
+      let mut manifest = Manifest::try_from( path.clone() )?;
       let data = manifest.data();
       if let Some( workspace ) = data.get_mut( "workspace" )
       {

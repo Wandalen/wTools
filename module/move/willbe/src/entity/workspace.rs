@@ -68,7 +68,14 @@ mod private
       (
         Self
         {
-          metadata : Some( cargo_metadata::MetadataCommand::new().current_dir( crate_dir.as_ref() ).no_deps().exec().context( "fail to load CargoMetadata" )? ),
+          metadata : Some
+          (
+            cargo_metadata::MetadataCommand::new()
+            .current_dir( crate_dir.as_ref() )
+            .no_deps()
+            .exec()
+            .context( "fail to load CargoMetadata" )?
+          ),
           manifest_dir : crate_dir,
         }
       )
