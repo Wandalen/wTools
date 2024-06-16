@@ -27,7 +27,7 @@ mod private
   use former::Former;
 
   use workspace::Workspace;
-  use path::AbsolutePath;
+  // use path::AbsolutePath;
 
   /// Args for `list` action.
   #[ derive( Debug, Default, Copy, Clone ) ]
@@ -367,7 +367,7 @@ mod private
     visited.insert( dep_id );
     if let Some( crate_dir ) = &dep.crate_dir()
     {
-      if let Some( package ) = workspace.package_find_by_manifest( crate_dir.manifest_file() )
+      if let Some( package ) = workspace.package_find_by_manifest( crate_dir.clone().manifest_file() )
       {
         process_package_dependency( workspace, &package, args, &mut dep_rep, visited );
       }

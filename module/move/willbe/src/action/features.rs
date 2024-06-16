@@ -8,7 +8,7 @@ mod private
     fmt
   };
 
-  use path::AbsolutePath;
+  // use path::AbsolutePath;
   use former::Former;
   use error_tools::{ for_app::Context, Result };
   use workspace::Workspace;
@@ -17,7 +17,8 @@ mod private
   #[ derive( Debug, Former ) ]
   pub struct FeaturesOptions
   {
-    manifest_dir : AbsolutePath,
+    // crate_dir : AbsolutePath,
+    crate_dir : CrateDir,
     with_features_deps : bool,
   }
 
@@ -66,19 +67,26 @@ mod private
   }
 
   /// List features
-  pub fn features( FeaturesOptions { manifest_dir, with_features_deps } : FeaturesOptions ) -> Result< FeaturesReport >
+  pub fn features( FeaturesOptions { crate_dir, with_features_deps } : FeaturesOptions ) -> Result< FeaturesReport >
   {
-    let workspace = Workspace::with_crate_dir( CrateDir::try_from( manifest_dir.clone() )? ).context( "Failed to find workspace" )?;
+    // let workspace = Workspace::with_crate_dir( CrateDir::try_from( crate_dir.clone() )? ).context( "Failed to find workspace" )?;
+    let workspace = Workspace::with_crate_dir( crate_dir.clone() ).context( "Failed to find workspace" )?;
     let packages = workspace.packages()?.into_iter().filter
-    ( | package |
-      package.manifest_file().as_str().starts_with( manifest_dir.as_ref().as_os_str().to_str().unwrap() )
-    ).collect::< Vec< _ > >();
+    (
+      | package |
+      package.manifest_file().unwrap().inner().starts_with( crate_dir.clone().inner() ) // qqq : remove unwrap
+    );
+    //.collect();
+    // xxx
+    // ).collect::< Vec< _ > >(); qqq : xxx : rid off. put type at var
     let mut report = FeaturesReport
     {
       with_features_deps,
       ..Default::default()
     };
-    packages.iter().for_each
+    packages
+    // .iter()
+    .for_each
     ( | package |
     {
       let features = package.features();

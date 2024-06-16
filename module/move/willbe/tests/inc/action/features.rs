@@ -18,8 +18,9 @@ fn package_no_features()
 {
   // Arrange
   let temp = arrange( "three_packages/b" );
+  // let x : PathBuf = temp.path().to_owned();
   let options = willbe::action::features::FeaturesOptions::former()
-  .manifest_dir( willbe::path::AbsolutePath::try_from( temp.path().to_owned() ).unwrap() )
+  .crate_dir( willbe::CrateDir::try_from( temp.path().to_owned() ).unwrap() )
   .form();
 
   // Act
@@ -38,7 +39,7 @@ fn package_features()
   // Arrange
   let temp = arrange( "three_packages_with_features/b" );
   let options = willbe::action::features::FeaturesOptions::former()
-  .manifest_dir( willbe::path::AbsolutePath::try_from( temp.path().to_owned() ).unwrap() )
+  .crate_dir( willbe::CrateDir::try_from( temp.path().to_owned() ).unwrap() )
   .form();
 
   // Act
@@ -60,7 +61,7 @@ fn package_features_with_features_deps()
 {
   let temp = arrange( "three_packages_with_features/b" );
   let options = willbe::action::features::FeaturesOptions::former()
-  .manifest_dir( willbe::path::AbsolutePath::try_from( temp.path().to_owned() ).unwrap() )
+  .crate_dir( willbe::CrateDir::try_from( temp.path().to_owned() ).unwrap() )
   .with_features_deps( true )
   .form();
 
@@ -84,7 +85,7 @@ fn workspace_no_features()
   // Arrange
   let temp = arrange( "three_packages" );
   let options = willbe::action::features::FeaturesOptions::former()
-  .manifest_dir( willbe::path::AbsolutePath::try_from( temp.path().to_owned() ).unwrap() )
+  .crate_dir( willbe::CrateDir::try_from( temp.path().to_owned() ).unwrap() )
   .form();
 
   // Act
@@ -113,7 +114,7 @@ fn workspace_features()
   // Arrange
   let temp = arrange( "three_packages_with_features" );
   let options = willbe::action::features::FeaturesOptions::former()
-  .manifest_dir( willbe::path::AbsolutePath::try_from( temp.path().to_owned() ).unwrap() )
+  .crate_dir( willbe::CrateDir::try_from( temp.path().to_owned() ).unwrap() )
   .form();
 
   // Act
@@ -150,7 +151,7 @@ fn workspace_features_with_features_deps()
   // Arrange
   let temp = arrange( "three_packages_with_features" );
   let options = willbe::action::features::FeaturesOptions::former()
-  .manifest_dir( willbe::path::AbsolutePath::try_from( temp.path().to_owned() ).unwrap() )
+  .crate_dir( willbe::CrateDir::try_from( temp.path().to_owned() ).unwrap() )
   .with_features_deps( true )
   .form();
 

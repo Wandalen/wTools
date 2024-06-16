@@ -16,7 +16,7 @@ mod private
   };
   use path::AbsolutePath;
 
-  // qqq : for Bohdan : for Petro : what manifest_dir is?
+  // qqq : for Bohdan : for Petro : what crate_dir is?
 
   /// Stores information about the current workspace.
   #[ derive( Debug, Clone ) ]
@@ -29,7 +29,7 @@ mod private
     pub metadata : Option< cargo_metadata::Metadata >,
 
     /// The directory containing the manifest file (`Cargo.toml`) of the workspace.
-    pub manifest_dir : CrateDir,
+    pub crate_dir : CrateDir,
   }
 
   /// Represents errors related to workspace operations.
@@ -56,7 +56,7 @@ mod private
       Ok( Self
       {
         metadata : Some( metadata ),
-        manifest_dir : CrateDir::try_from( current_path )?,
+        crate_dir : CrateDir::try_from( current_path )?,
       })
     }
 
@@ -76,7 +76,7 @@ mod private
             .exec()
             .context( "fail to load CargoMetadata" )?
           ),
-          manifest_dir : crate_dir,
+          crate_dir : crate_dir,
         }
       )
     }
@@ -91,7 +91,7 @@ mod private
       Self
       {
         metadata : Some( value ),
-        manifest_dir : CrateDir::try_from( path ).unwrap(),
+        crate_dir : CrateDir::try_from( path ).unwrap(),
       }
     }
   }
@@ -106,7 +106,7 @@ mod private
     {
       if self.metadata.is_none()
       {
-        let metadata = Self::with_crate_dir( self.manifest_dir.clone() )?.metadata.unwrap();
+        let metadata = Self::with_crate_dir( self.crate_dir.clone() )?.metadata.unwrap();
         _ = self.metadata.insert( metadata );
       }
       Ok( () )
@@ -118,7 +118,7 @@ mod private
     #[ inline( always ) ]
     pub fn force_reload( &mut self ) -> Result< () >
     {
-      let metadata = Self::with_crate_dir( self.manifest_dir.clone() )?.metadata.unwrap();
+      let metadata = Self::with_crate_dir( self.crate_dir.clone() )?.metadata.unwrap();
       _ = self.metadata.insert( metadata );
       Ok( () )
     }

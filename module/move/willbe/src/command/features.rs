@@ -4,7 +4,7 @@ mod private
 
   use action::features::FeaturesOptions;
   use std::path::PathBuf;
-  use path::AbsolutePath;
+  // use path::AbsolutePath;
   use wca::VerifiedCommand;
   use wtools::error::Result;
 
@@ -15,17 +15,17 @@ mod private
   pub fn features( o : VerifiedCommand ) -> Result< () >
   {
     let path : PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );
-    let path = AbsolutePath::try_from( path )?;
+    let crate_dir = CrateDir::try_from( path )?;
     let with_features_deps = o.props.get_owned( "with_features_deps" ).unwrap_or( false );
-    let options = FeaturesOptions::former()
-    .manifest_dir( path )
+    let o = FeaturesOptions::former()
+    .crate_dir( crate_dir )
     .with_features_deps( with_features_deps )
     .form();
-    let report = action::features( options );
+    let report = action::features( o );
     match report
     {
-      Ok(success) => println!("{success}"),
-      Err(failure) => eprintln!("{failure}"),
+      Ok( success ) => println!( "{success}" ),
+      Err( failure ) => eprintln!( "{failure}" ),
     }
     Ok( () )
   }

@@ -59,6 +59,14 @@ pub( crate ) mod private
       self.0.to_string_lossy()
     }
 
+    /// Determines whether base is a prefix of self.
+    ///
+    /// Only considers whole path components to match.
+    pub fn starts_with< P : AsRef< Path > >( &self, base : P ) -> bool
+    {
+      self.0.starts_with( base )
+    }
+
     /// Returns inner type which is PathBuf.
     #[ inline( always ) ]
     pub fn inner( self ) -> PathBuf

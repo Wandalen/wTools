@@ -110,14 +110,15 @@ fn package_version_bump()
   std::fs::create_dir( &temp_module ).unwrap();
   temp_module.child( "c" ).copy_from( &c, &[ "**" ] ).unwrap();
   let c_temp_path = temp_module.join( "c" );
-  let c_temp_absolute_path = AbsolutePath::try_from( c_temp_path ).unwrap();
+  let c_temp_absolute_path = CrateDir::try_from( c_temp_path ).unwrap();
   let c_temp_crate_dir = CrateDir::try_from( c_temp_absolute_path.clone() ).unwrap();
   let c_package = Package::try_from( c_temp_crate_dir.clone() ).unwrap();
   let version = c_package.version().unwrap();
 
   let root_manifest_path =  temp.join( "Cargo.toml" );
   let mut cargo_toml = std::fs::File::create( &root_manifest_path ).unwrap();
-  let root_manifest_absolute_path = AbsolutePath::try_from( root_manifest_path.as_path() ).unwrap();
+  // let root_manifest_absolute_path = AbsolutePath::try_from( root_manifest_path.as_path() ).unwrap();
+  let root_manifest_absolute_path = CrateDir::try_from( root_manifest_path.as_path() ).unwrap();
   write!( cargo_toml, r#"
 [workspace]
 resolver = "2"
@@ -149,7 +150,8 @@ default-features = true
   assert_eq!
   (
     {
-      let mut v = vec![ root_manifest_absolute_path.clone(), c_temp_absolute_path.join( "Cargo.toml" ) ];
+      // let mut v = vec![ root_manifest_absolute_path.clone(), c_temp_absolute_path.join( "Cargo.toml" ) ];
+      let mut v = vec![ root_manifest_absolute_path.clone().manifest_file(), c_temp_absolute_path.manifest_file() ];
       v.sort();
       v
     },
@@ -187,7 +189,7 @@ fn package_version_bump_revert()
 
   let root_manifest_path =  temp.join( "Cargo.toml" );
   let mut cargo_toml = std::fs::File::create( &root_manifest_path ).unwrap();
-  let root_manifest_absolute_path = AbsolutePath::try_from( root_manifest_path.as_path() ).unwrap();
+  let root_manifest_absolute_path = CrateDir::try_from( root_manifest_path.as_path() ).unwrap();
   write!( cargo_toml, r#"
 [workspace]
 resolver = "2"

@@ -107,7 +107,7 @@ mod private
     while current_idx < tasks.len()
     {
       // let path = tasks[ current_idx ].crate_dir.as_ref().unwrap().to_string_lossy();
-      let path : String = ( &tasks[ current_idx ].crate_dir.unwrap() ).try_into().unwrap();
+      let path : String = ( tasks[ current_idx ].crate_dir.as_ref().unwrap() ).try_into().unwrap();
       let path = path.strip_suffix( "Cargo.toml" ).unwrap_or( &path ); // xxx : qqq : looks bad. why not using parent()
       let path = AbsolutePath::try_from( path )?;
       let dir = CrateDir::try_from( path.clone() )?;

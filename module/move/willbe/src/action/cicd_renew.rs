@@ -47,6 +47,7 @@ mod private
   pub fn cicd_renew( base_path : &Path ) -> Result< (), CiCdGenerateError >
   {
     let workspace_cache = Workspace::with_crate_dir( AbsolutePath::try_from( base_path )?.try_into()? )?;
+    dbg!( &workspace_cache ); // xxx
     let packages = workspace_cache.packages()?;
     let username_and_repository = &username_and_repository
     (
@@ -64,7 +65,7 @@ mod private
     // map packages path to relative paths fom workspace root,
     // for example D:/work/wTools/module/core/iter_tools => module/core/iter_tools
     let relative_paths = packages
-    .map( |p| p.manifest_file().to_string() )
+    .map( | p | p.manifest_file().unwrap().to_string() ) // qqq : rid off unwrap
     .filter_map( |p|
     {
       workspace_root.to_str().and_then( | root_str |
@@ -87,7 +88,6 @@ mod private
     handlebars.register_template_string( "auto_merge_to", include_str!( "../../template/workflow/auto_merge_to.hbs" ) )?;
     handlebars.register_template_string( "standard_rust_pull_request", include_str!( "../../template/workflow/standard_rust_pull_request.hbs" ) )?;
     handlebars.register_template_string( "module_push", include_str!( "../../template/workflow/module_push.hbs" ) )?;
-
 
     // qqq : for Petro : instead of iterating each file manually, iterate each file in loop
 
@@ -124,7 +124,6 @@ mod private
     data.insert( "branch", "alpha" );
 
     file_write( &workflow_root.join( "auto_merge_to_beta.yml" ), &handlebars.render( "auto_merge_to", &data )? )?;
-
     file_write( &workflow_root.join( "auto_pr.yml" ), include_str!( "../../template/workflow/auto_pr.yml" ) )?;
 
     let mut data = BTreeMap::new();
@@ -236,12 +235,6 @@ mod private
   #[derive( Debug ) ]
   struct UsernameAndRepository( String );
 
-  // aaa : for Petro : not clear how output should look
-  // aaa : add to documentation
-  // aaa : for Petro : newtype?
-  // aaa : replace to AbsolutePath
-  // aaa : for Petro : why mut?
-  // aaa : change signature
   /// Searches and extracts the username and repository name from the repository URL.
   /// The repository URL is first sought in the Cargo.toml file of the workspace;
   /// if not found there, it is then searched in the Cargo.toml file of the module.
@@ -251,7 +244,6 @@ mod private
   (
     cargo_toml_path : &AbsolutePath,
     packages : impl Iterator< Item = WorkspacePackageRef< 'a > >,
-    // packages : &[ WorkspacePackageRef< 'a > ],
   )
   -> Result< UsernameAndRepository >
   {
@@ -277,7 +269,8 @@ mod private
         let mut url = None;
         for package in packages
         {
-          if let Ok( wu ) = manifest::private::repo_url( package.manifest_file().parent().unwrap().as_std_path() )
+          // if let Ok( wu ) = manifest::private::repo_url( package.manifest_file().parent().unwrap().as_std_path() )
+          if let Ok( wu ) = manifest::repo_url( &package.crate_dir()? )
           {
             url = Some( wu );
             break;

@@ -35,22 +35,32 @@ fn chain_of_three_packages()
   // Arrange
   let ( temp, mut workspace ) = arrange( "chain_of_packages" );
 
-  let a = Package::try_from( AbsolutePath::try_from( temp.join( "a" ) ).unwrap() ).unwrap();
-  let b = Package::try_from( AbsolutePath::try_from( temp.join( "b" ) ).unwrap() ).unwrap();
-  let c = Package::try_from( AbsolutePath::try_from( temp.join( "c" ) ).unwrap() ).unwrap();
+  let a = Package::try_from( willbe::CrateDir::try_from( temp.join( "a" ) ).unwrap() ).unwrap();
+  let b = Package::try_from( willbe::CrateDir::try_from( temp.join( "b" ) ).unwrap() ).unwrap();
+  let c = Package::try_from( willbe::CrateDir::try_from( temp.join( "c" ) ).unwrap() ).unwrap();
 
   // Act
   let output = dependencies( &mut workspace, &a, DependenciesOptions::default() ).unwrap();
-  let output : Vec< _ > = output.iter().filter_map( | o | o.path.as_ref() ).map( | x | x.as_ref() ).collect();
+  let output : Vec< CrateDir > = output
+  .into_iter()
+  .filter_map( | p | p.crate_dir )
+  .collect();
 
   // Assert
   assert_eq!( 2, output.len() );
-  assert!( ( c.crate_dir().as_ref() == output[ 0 ] && b.crate_dir().as_ref() == output[ 1 ] ) || ( c.crate_dir().as_ref() == output[ 1 ] && b.crate_dir().as_ref() == output[ 0 ] ) );
+  assert!
+  (
+    ( c.crate_dir() == output[ 0 ] && b.crate_dir() == output[ 1 ] ) ||
+    ( c.crate_dir() == output[ 1 ] && b.crate_dir() == output[ 0 ] ),
+  );
 
   let output = dependencies( &mut workspace, &b, DependenciesOptions::default() ).unwrap();
-  let output : Vec< _ > = output.iter().filter_map( | o | o.path.as_ref() ).map( | x | x.as_ref() ).collect();
+  let output : Vec< CrateDir > = output
+  .into_iter()
+  .filter_map( | p | p.crate_dir )
+  .collect();
   assert_eq!( 1, output.len() );
-  assert_eq!( c.crate_dir().as_ref(), output[ 0 ] );
+  assert_eq!( c.crate_dir(), output[ 0 ] );
 
   let output = dependencies( &mut workspace, &c, DependenciesOptions::default() ).unwrap();
   assert!( output.is_empty() );
@@ -63,20 +73,31 @@ fn chain_of_three_packages_topologically_sorted()
   // Arrange
   let ( temp, mut workspace ) = arrange( "chain_of_packages" );
 
-  let a = Package::try_from( AbsolutePath::try_from( temp.join( "a" ) ).unwrap() ).unwrap();
-  let b = Package::try_from( AbsolutePath::try_from( temp.join( "b" ) ).unwrap() ).unwrap();
-  let c = Package::try_from( AbsolutePath::try_from( temp.join( "c" ) ).unwrap() ).unwrap();
+  let a = Package::try_from( willbe::CrateDir::try_from( temp.join( "a" ) ).unwrap() ).unwrap();
+  let b = Package::try_from( willbe::CrateDir::try_from( temp.join( "b" ) ).unwrap() ).unwrap();
+  let c = Package::try_from( willbe::CrateDir::try_from( temp.join( "c" ) ).unwrap() ).unwrap();
 
   // Act
-  let output = dependencies( &mut workspace, &a, DependenciesOptions { sort : DependenciesSort::Topological, ..Default::default() } ).unwrap();
-  let output : Vec< _ > = output.iter().filter_map( | o | o.path.as_ref() ).map( | x | x.as_ref() ).collect();
+  let output = dependencies
+  (
+    &mut workspace,
+    &a,
+    DependenciesOptions { sort : DependenciesSort::Topological, ..Default::default() },
+  ).unwrap();
+  let output : Vec< CrateDir > = output
+  .into_iter()
+  .filter_map( | p | p.crate_dir )
+  .collect();
 
   // Assert
-   assert_eq!( &[ c.crate_dir().as_ref(), b.crate_dir().as_ref() ], output.as_slice() );
+   assert_eq!( &[ c.crate_dir(), b.crate_dir() ], output.as_slice() );
 
   let output = dependencies( &mut workspace, &b, DependenciesOptions { sort : DependenciesSort::Topological, ..Default::default() } ).unwrap();
-  let output : Vec< _ > = output.iter().filter_map( | o | o.path.as_ref() ).map( | x | x.as_ref() ).collect();
-   assert_eq!( &[ c.crate_dir().as_ref() ], output.as_slice() );
+  let output : Vec< CrateDir > = output
+  .into_iter()
+  .filter_map( | p | p.crate_dir )
+  .collect();
+  assert_eq!( &[ c.crate_dir() ], output.as_slice() );
 
   let output = dependencies( &mut workspace, &c, DependenciesOptions { sort : DependenciesSort::Topological, ..Default::default() } ).unwrap();
   assert!( output.is_empty() );
@@ -89,16 +110,19 @@ fn package_with_remote_dependency()
   // Arrange
   let ( temp, mut workspace ) = arrange( "package_with_remote_dependency" );
 
-  let a = Package::try_from( AbsolutePath::try_from( temp.join( "a" ) ).unwrap() ).unwrap();
-  let b = Package::try_from( AbsolutePath::try_from( temp.join( "b" ) ).unwrap() ).unwrap();
+  let a = Package::try_from( willbe::CrateDir::try_from( temp.join( "a" ) ).unwrap() ).unwrap();
+  let b = Package::try_from( willbe::CrateDir::try_from( temp.join( "b" ) ).unwrap() ).unwrap();
 
   // Act
   let output = dependencies( &mut workspace, &a, DependenciesOptions::default() ).unwrap();
-  let output : Vec< _ > = output.iter().filter_map( | o | o.path.as_ref() ).map( | x | x.as_ref() ).collect();
+  let output : Vec< CrateDir > = output
+  .into_iter()
+  .filter_map( | p | p.crate_dir )
+  .collect();
 
   // Assert
   assert_eq!( 1, output.len() );
-  assert_eq!( b.crate_dir().as_ref(), output[ 0 ] );
+  assert_eq!( b.crate_dir(), output[ 0 ] );
 }
 
 // a -> b -> a
@@ -108,22 +132,28 @@ fn workspace_with_cyclic_dependency()
   // Arrange
   let ( temp, mut workspace ) = arrange( "workspace_with_cyclic_dependency" );
 
-  let a = Package::try_from( AbsolutePath::try_from( temp.join( "a" ) ).unwrap() ).unwrap();
-  let b = Package::try_from( AbsolutePath::try_from( temp.join( "b" ) ).unwrap() ).unwrap();
+  let a = Package::try_from( willbe::CrateDir::try_from( temp.join( "a" ) ).unwrap() ).unwrap();
+  let b = Package::try_from( willbe::CrateDir::try_from( temp.join( "b" ) ).unwrap() ).unwrap();
 
   // Act
   let output = dependencies( &mut workspace, &a, DependenciesOptions::default() ).unwrap();
-  let output : Vec< _ > = output.iter().filter_map( | o | o.path.as_ref() ).map( | x | x.as_ref() ).collect();
+  let output : Vec< CrateDir > = output
+  .into_iter()
+  .filter_map( | p | p.crate_dir )
+  .collect();
 
   // Assert
   assert_eq!( 1, output.len() );
-  assert!( b.crate_dir().as_ref() == output[ 0 ] );
+  assert!( b.crate_dir() == output[ 0 ] );
 
   // Act
   let output = dependencies( &mut workspace, &b, DependenciesOptions::default() ).unwrap();
-  let output : Vec< _ > = output.iter().filter_map( | o | o.path.as_ref() ).map( | x | x.as_ref() ).collect();
+  let output : Vec< CrateDir > = output
+  .into_iter()
+  .filter_map( | p | p.crate_dir )
+  .collect();
 
   // Assert
   assert_eq!( 1, output.len() );
-  assert!( a.crate_dir().as_ref() == output[ 0 ] );
+  assert!( a.crate_dir() == output[ 0 ] );
 }

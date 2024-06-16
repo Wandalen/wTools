@@ -7,7 +7,7 @@ pub( crate ) mod private
   {
     io::{ self, Read },
     fs,
-    path::{ Path },
+    // path::{ Path },
   };
   use wtools::error::
   {
@@ -207,9 +207,11 @@ pub( crate ) mod private
 //   }
 
   /// Retrieves the repository URL of a package from its `Cargo.toml` file.
-  pub fn repo_url( package_path : &Path ) -> Result< String >
+  // pub fn repo_url( package_path : &Path ) -> Result< String >
+  pub fn repo_url( crate_dir : &CrateDir ) -> Result< String >
   {
-    let path = package_path.join( "Cargo.toml" );
+    // let path = package_path.join( "Cargo.toml" );
+    let path = crate_dir.clone().manifest_file().inner().inner();
     if path.exists()
     {
       let mut contents = String::new();
@@ -226,7 +228,7 @@ pub( crate ) mod private
       }
       else
       {
-        let report = git::ls_remote_url( package_path )?;
+        let report = git::ls_remote_url( crate_dir.clone().inner() )?;
         url::extract_repo_url( &report.out.trim() ).ok_or_else( || format_err!( "Fail to extract repository url from git remote.") )
       }
     }

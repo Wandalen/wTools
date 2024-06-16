@@ -88,6 +88,7 @@ fn default_case()
 
   // Act
   _ = action::cicd_renew( &temp ).unwrap();
+  dbg!( &file_path );
 
   // Assert
   let mut file = File::open( file_path ).unwrap();

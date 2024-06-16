@@ -123,6 +123,17 @@ impl TryFrom< &ManifestFile > for String
   }
 }
 
+impl TryFrom< &AbsolutePath > for ManifestFile
+{
+  type Error = PathError;
+
+  #[ inline( always ) ]
+  fn try_from( manifest_file : &AbsolutePath ) -> Result< Self, Self::Error >
+  {
+    manifest_file.clone().try_into()
+  }
+}
+
 impl TryFrom< AbsolutePath > for ManifestFile
 {
   type Error = PathError;

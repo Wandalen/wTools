@@ -116,6 +116,17 @@ impl TryFrom< &CrateDir > for String
   }
 }
 
+impl TryFrom< &AbsolutePath > for CrateDir
+{
+  type Error = PathError;
+
+  #[ inline( always ) ]
+  fn try_from( crate_dir_path : &AbsolutePath ) -> Result< Self, Self::Error >
+  {
+    crate_dir_path.clone().try_into()
+  }
+}
+
 impl TryFrom< AbsolutePath > for CrateDir
 {
   type Error = PathError;

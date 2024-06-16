@@ -1,10 +1,9 @@
 use crate::*;
 
+use the_module::*;
 use std::path::{ Path, PathBuf };
 use assert_fs::{ TempDir, prelude::* };
 use crates_tools::CrateArchive;
-use the_module::*;
-use path::AbsolutePath;
 use package::Package;
 use diff::crate_diff;
 use the_module::version::{ Version, BumpOptions, version_bump };
@@ -47,7 +46,8 @@ fn with_changes()
   {
     let right = prepare( tmp, "right", &package_path );
 
-    let absolute = AbsolutePath::try_from( right.as_path() ).unwrap();
+    // let absolute = AbsolutePath::try_from( right.as_path() ).unwrap();
+    let absolute = CrateDir::try_from( right.as_path() ).unwrap();
     let right_package = Package::try_from( absolute ).unwrap();
     let right_version = Version::try_from( &right_package.version().unwrap() ).unwrap();
 
@@ -89,10 +89,11 @@ fn crate_file_path( manifest_dir_path : &Path ) -> PathBuf
 {
   _ = cargo::pack( cargo::PackOptions::former().path( manifest_dir_path ).dry( false ).form() ).expect( "Failed to package a package" );
 
-  let absolute = AbsolutePath::try_from( manifest_dir_path ).unwrap();
+  let absolute = CrateDir::try_from( manifest_dir_path ).unwrap();
   let package = Package::try_from( absolute ).unwrap();
   manifest_dir_path
-    .join( "target" )
-    .join( "package" )
-    .join( format!( "{}-{}.crate", package.name().unwrap(), package.version().unwrap() ) )
+  .join( "target" )
+  .join( "package" )
+  .join( format!( "{}-{}.crate", package.name().unwrap(), package.version().unwrap() ) )
+
 }

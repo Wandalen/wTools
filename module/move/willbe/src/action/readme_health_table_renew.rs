@@ -313,16 +313,26 @@ mod private
       };
       if parameters.core_url == ""
       {
-        let module_path = &workspace.workspace_root()?.join( &table_parameters.base_path ).join( &package_name );
-        parameters.core_url = repo_url( &module_path )
+        let module_path = workspace
+        .workspace_root()?
+        .join( &table_parameters.base_path )
+        .join( &package_name );
+        // parameters.core_url = repo_url( &module_path )
+        parameters.core_url = repo_url( &module_path.clone().try_into()? )
         .context
         (
           // qqq : for Petro : unreadable
-          format_err!( "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) in {} OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR ensure that at least one remotest is present in git. ", module_path.display(), workspace.workspace_root()?.join( "Cargo.toml" ).display(), module_path.join( "Cargo.toml" ).display() )
+          format_err!
+          (
+            "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) in {} OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR ensure that at least one remotest is present in git. ",
+            module_path.display(),
+            workspace.workspace_root()?.join( "Cargo.toml" ).display(),
+            module_path.join( "Cargo.toml" ).display()
+          )
         )?;
         parameters.user_and_repo = url::git_info_extract( &parameters.core_url )?;
       }
-      table.push_str( &row_generate(&package_name, stability.as_ref(), parameters, &table_parameters) );
+      table.push_str( &row_generate( &package_name, stability.as_ref(), parameters, &table_parameters) );
     }
     Ok( table )
   }

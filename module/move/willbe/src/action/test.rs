@@ -129,7 +129,7 @@ mod private
     let packages = workspace
     .packages()
     .map_err( | e | ( report.clone(), e.into() ) )?
-    .filter( move | x | x.manifest_file().starts_with( path.as_ref() ) )
+    .filter( move | p | p.manifest_file().unwrap().starts_with( path.as_ref() ) ) // qqq : rid off unwrap
     ;
 
     let plan = TestPlan::try_from

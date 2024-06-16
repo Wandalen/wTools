@@ -63,13 +63,14 @@ mod private
     //   // self.inner.dependencies.iter().cloned().map( Dependency::from ).collect()
     // }
 
-    /// Path containing the Cargo.toml
+    /// Path to the manifest Cargo.toml
     // pub fn manifest_file( &self ) -> &Utf8Path
     pub fn manifest_file( &self ) -> Result< ManifestFile, PathError >
     {
       self.inner.manifest_path.as_path().try_into()
     }
 
+    /// Path to the directory with manifest Cargo.toml.
     // pub fn crate_dir( &self ) -> CrateDir
     pub fn crate_dir( &self ) -> Result< CrateDir, PathError >
     {
