@@ -20,11 +20,11 @@ mod private
     // pub fn path( &self ) -> Option< Utf8PathBuf >
     pub fn crate_dir( &self ) -> Option< CrateDir >
     {
-      panic!( "xxx : test me" );
-      match self.inner.path
+      // panic!( "xxx : test me" );
+      match &self.inner.path
       {
         // Some( path ) => AsRef::< Utf8Path >::as_ref( &path ).try_into().ok(),
-        Some( path ) => path.try_into().ok(),
+        Some( path ) => path.as_path().try_into().ok(),
         None => None,
       }
     }
