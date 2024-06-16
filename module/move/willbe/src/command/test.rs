@@ -8,7 +8,7 @@ mod private
   use colored::Colorize;
   use wca::VerifiedCommand;
   use wtools::error::Result;
-  use path::AbsolutePath;
+  // use path::AbsolutePath;
   use action::test::TestsCommandOptions;
   use former::Former;
   use channel::Channel;

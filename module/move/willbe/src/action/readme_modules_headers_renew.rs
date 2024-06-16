@@ -1,7 +1,7 @@
 mod private
 {
   use crate::*;
-  use path::AbsolutePath;
+  // use path::AbsolutePath;
   use action::readme_health_table_renew::{ readme_path, Stability, stability_generate, find_example_file };
   use package::Package;
   use wtools::error::
@@ -184,11 +184,18 @@ mod private
   /// <!--{ generate.module_header.end }-->
   /// ```
   // qqq : typed error should be
-  pub fn readme_modules_headers_renew( path : AbsolutePath ) -> Result< ModulesHeadersRenewReport, ( ModulesHeadersRenewReport, ModulesHeadersRenewError ) >
+  pub fn readme_modules_headers_renew( crate_dir : CrateDir ) ->
+  Result< ModulesHeadersRenewReport, ( ModulesHeadersRenewReport, ModulesHeadersRenewError ) >
   {
     let mut report = ModulesHeadersRenewReport::default();
     regexes_initialize();
-    let workspace = Workspace::with_crate_dir( CrateDir::try_from( path ).map_err( | e | ( report.clone(), e.into() ) )? ).map_err( | e | ( report.clone(), e.into() ) )?;
+    let workspace = Workspace::with_crate_dir
+    (
+      crate_dir
+      // CrateDir::try_from( path )
+      // .map_err( | e | ( report.clone(), e.into() ) )?
+    )
+    .map_err( | e | ( report.clone(), e.into() ) )?; // xxx : qqq : use trait
     let discord_url = workspace.discord_url().map_err( | e | ( report.clone(), e.into() ) )?;
 
     // qqq : inspect each collect in willbe and rid off most of them
@@ -198,7 +205,7 @@ mod private
     .map_err( | e | ( report.clone(), e.into() ) )?
     .into_iter()
     // .filter_map( | p | AbsolutePath::try_from( p.manifest_file() ).ok() )
-    .filter_map( | p | p.manifest_file().map( | e | e.into() ).ok() )
+    .filter_map( | p | p.crate_dir().map( | e | e.into() ).ok() )
     .collect();
 
     report.found_files = paths.iter().map( | ap | ap.as_ref().to_path_buf() ).collect();
@@ -210,7 +217,7 @@ mod private
       .join
       (
         readme_path( path.parent().unwrap().as_ref() )
-        .ok_or_else::< wError, _ >( || err!( "Fail to find README.md" ) )
+        // .ok_or_else::< wError, _ >( || err!( "Fail to find README.md at {}", &path ) )
         .map_err( | e | ( report.clone(), e.into() ) )?
       );
 

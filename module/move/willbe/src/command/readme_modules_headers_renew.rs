@@ -1,13 +1,14 @@
 mod private
 {
   use crate::*;
-  use path::AbsolutePath;
+  // use path::AbsolutePath;
   use wtools::error::{ for_app::Error, Result };
 
   /// Generate headers for workspace members
   pub fn readme_modules_headers_renew() -> Result< () >
   {
-    match action::readme_modules_headers_renew( AbsolutePath::try_from( std::env::current_dir()? )? )
+    // match action::readme_modules_headers_renew( AbsolutePath::try_from( std::env::current_dir()? )? )
+    match action::readme_modules_headers_renew( CrateDir::try_from( std::env::current_dir()? )? )
     {
       Ok( report ) =>
       {

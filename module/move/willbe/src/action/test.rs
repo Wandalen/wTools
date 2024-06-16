@@ -3,7 +3,7 @@ mod private
 {
   use crate::*;
   use test::*;
-  use path::AbsolutePath;
+  // use path::AbsolutePath;
 
   use std::collections::HashSet;
 

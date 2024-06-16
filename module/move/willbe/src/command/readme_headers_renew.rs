@@ -1,7 +1,7 @@
 mod private
 {
   use crate::*;
-  use path::AbsolutePath;
+  // use path::AbsolutePath;
   use action;
   use wtools::error::anyhow::Error;
   use error_tools::{ Result, err };
@@ -68,10 +68,11 @@ mod private
   pub fn readme_headers_renew() -> Result< () >
   {
     let mut report = ReadmeHeadersRenewReport::default();
-    let absolute_path = AbsolutePath::try_from( std::env::current_dir()? )?;
+    // let absolute_path = AbsolutePath::try_from( std::env::current_dir()? )?;
+    let crate_dir = CrateDir::try_from( std::env::current_dir()? )?;
     let mut fail = false;
 
-    match action::readme_header_renew( absolute_path.clone() )
+    match action::readme_header_renew( crate_dir.clone() )
     {
       Ok( r ) =>
       {
@@ -84,7 +85,7 @@ mod private
         report.main_header_renew_error = Some( Error::from( error ) );
       }
     };
-    match action::readme_modules_headers_renew( absolute_path )
+    match action::readme_modules_headers_renew( crate_dir )
     {
       Ok( r ) =>
       {

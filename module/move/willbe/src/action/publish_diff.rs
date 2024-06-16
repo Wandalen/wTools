@@ -10,7 +10,7 @@ mod private
   use crates_tools::CrateArchive;
 
   use action::list::{ ListReport, ListNodeReport };
-  use path::AbsolutePath;
+  // use path::AbsolutePath;
   use wtools::error::for_app::Result;
   use diff::{ DiffReport, crate_diff };
   use error_tools::for_app::format_err;

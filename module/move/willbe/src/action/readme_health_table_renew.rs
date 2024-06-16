@@ -7,7 +7,7 @@ mod private
     str::FromStr,
     fs::{ OpenOptions, File, read_dir },
     path::{ Path, PathBuf },
-    io::{ Write, Read, Seek, SeekFrom },
+    io::{ self, Write, Read, Seek, SeekFrom },
     collections::HashMap,
   };
 
@@ -28,7 +28,7 @@ mod private
     }
   };
   use manifest::repo_url;
-  use path::AbsolutePath;
+  // use path::AbsolutePath;
 
   static TAG_TEMPLATE: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
   static CLOSE_TAG: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
@@ -222,7 +222,8 @@ mod private
     let workspace_root = workspace.workspace_root()?;
     let mut parameters = GlobalTableOptions::initialize_from_path( &workspace_root )?;
 
-    let read_me_path = workspace_root.join( readme_path(&workspace_root ).ok_or_else( || format_err!( "Fail to find README.md" ) )?);
+    let read_me_path = workspace_root
+    .join( readme_path( &workspace_root )? );
     let mut file = OpenOptions::new()
     .read( true )
     .write( true )
@@ -558,23 +559,24 @@ mod private
   /// This function attempts to find a README file in the following subdirectories: ".github",
   /// the root directory, and "./docs". It returns the path to the first found README file, or
   /// `None` if no README file is found in any of these locations.
-  pub fn readme_path( dir_path : &Path ) -> Option< PathBuf >
+  // xxx : qqq : move out
+  pub fn readme_path( dir_path : &Path ) -> Result< PathBuf, io::Error >
   {
     if let Some( path ) = readme_in_dir_find( &dir_path.join( ".github" ) )
     {
-      Some( path )
+      Ok( path )
     }
     else if let Some( path )  = readme_in_dir_find( dir_path )
     {
-      Some( path )
+      Ok( path )
     }
     else if let Some( path )  = readme_in_dir_find( &dir_path.join( "docs" ) )
     {
-      Some( path )
+      Ok( path )
     }
     else
     {
-      None
+      Err( io::Error::new( io::ErrorKind::NotFound, format!( "Fail to find README.md at {}", &dir_path.display() ) ) )
     }
   }
 

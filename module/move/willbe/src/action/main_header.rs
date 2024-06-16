@@ -21,12 +21,12 @@ mod private
     readme_path,
     // workspace_root
   };
-  use path::AbsolutePath;
+  // use path::AbsolutePath;
   use { CrateDir, query, url, Workspace, wtools };
   use entity::{ PathError, WorkspaceError };
   use wtools::error::
   {
-    anyhow::format_err,
+    // anyhow::format_err,
     err,
     for_app::
     {
@@ -178,15 +178,17 @@ mod private
   /// [![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/wtools)
   /// <!--{ generate.main_header.end }-->
   /// ```
-  pub fn readme_header_renew( path : AbsolutePath ) -> Result< MainHeaderRenewReport, ( MainHeaderRenewReport, MainHeaderRenewError ) >
+  pub fn readme_header_renew( crate_dir : CrateDir )
+  -> Result< MainHeaderRenewReport, ( MainHeaderRenewReport, MainHeaderRenewError ) >
   {
     let mut report = MainHeaderRenewReport::default();
     regexes_initialize();
 
     let mut workspace = Workspace::with_crate_dir
     (
-      CrateDir::try_from( path )
-      .map_err( | e | ( report.clone(), e.into() ) )?
+      crate_dir
+      // CrateDir::try_from( path )
+      // .map_err( | e | ( report.clone(), e.into() ) )?
     ).map_err( | e | ( report.clone(), e.into() ) )?;
 
     workspace.load().map_err( | e | ( report.clone(), e.into() ) )?;
@@ -200,7 +202,7 @@ mod private
     let read_me_path = workspace_root.join
     (
       readme_path( &workspace_root )
-      .ok_or_else( || format_err!( "Fail to find README.md" ) )
+      // .ok_or_else( || format_err!( "Fail to find README.md" ) )
       .map_err( | e | ( report.clone(), e.into() ) )?
     );
 

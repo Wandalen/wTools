@@ -14,7 +14,7 @@ mod private
     for_lib::Error,
     Result
   };
-  use path::AbsolutePath;
+  // use path::AbsolutePath;
 
   // qqq : for Bohdan : for Petro : what crate_dir is?
 
