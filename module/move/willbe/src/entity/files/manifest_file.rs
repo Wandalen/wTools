@@ -28,7 +28,7 @@ use wtools::error::
 };
 
 /// Path to crate directory
-#[ derive( Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
+#[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
 pub struct ManifestFile( AbsolutePath );
 
 impl ManifestFile
@@ -57,6 +57,14 @@ impl ManifestFile
 }
 
 impl fmt::Display for ManifestFile
+{
+  fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+  {
+    write!( f, "{}", self.0.display() )
+  }
+}
+
+impl fmt::Debug for ManifestFile
 {
   fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
   {

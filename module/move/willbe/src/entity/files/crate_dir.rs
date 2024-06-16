@@ -29,7 +29,7 @@ use path::{ AbsolutePath, Utf8Path };
 
 /// Path to crate directory
 // #[ derive( Debug, Clone ) ]
-#[ derive( Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
+#[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
 pub struct CrateDir( AbsolutePath );
 
 impl CrateDir
@@ -58,6 +58,14 @@ impl CrateDir
 }
 
 impl fmt::Display for CrateDir
+{
+  fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+  {
+    write!( f, "{}", self.0.display() )
+  }
+}
+
+impl fmt::Debug for CrateDir
 {
   fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
   {

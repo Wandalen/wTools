@@ -4,13 +4,11 @@ mod private
 
   use std::
   {
-    path::{ Path, PathBuf },
+    path::{ Path },
     fs::File,
     io::{ Write, Read },
     collections::BTreeMap
   };
-  // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
-  // aaa : ✅
 
   use convert_case::{ Casing, Case };
   use handlebars::{ RenderError, TemplateError };
@@ -47,11 +45,11 @@ mod private
   pub fn cicd_renew( base_path : &Path ) -> Result< (), CiCdGenerateError >
   {
     let workspace_cache = Workspace::with_crate_dir( AbsolutePath::try_from( base_path )?.try_into()? )?;
-    dbg!( &workspace_cache ); // xxx
+    // dbg!( &workspace_cache ); // xxx
     let packages = workspace_cache.packages()?;
     let username_and_repository = &username_and_repository
     (
-      &workspace_cache.workspace_root()?.join( "Cargo.toml" ).try_into()?,
+      &workspace_cache.workspace_root()?.join( "Cargo.toml" ).try_into()?, // xxx
       packages.clone(),
       // packages.as_slice(),
     )?;
@@ -62,22 +60,32 @@ mod private
     // let names = packages.map( | p | p.name() ).collect::< Vec< _ > >();
     let names = packages.clone().map( | p | p.name().to_string() );
 
+    // dbg!( &workflow_root );
+
     // map packages path to relative paths fom workspace root,
     // for example D:/work/wTools/module/core/iter_tools => module/core/iter_tools
     let relative_paths = packages
-    .map( | p | p.manifest_file().unwrap().to_string() ) // qqq : rid off unwrap
-    .filter_map( |p|
+    .map( | p | p.manifest_file().unwrap() ) // qqq : rid off unwrap
+    .filter_map( | p |
     {
-      workspace_root.to_str().and_then( | root_str |
+      // dbg!( &workspace_root );
+      Some( path::normalize( workspace_root ) ).and_then( | root_str |
       {
-        p.strip_prefix( root_str ).map( |s| s.to_string() )
+
+        dbg!( &root_str );
+        dbg!( &p );
+
+        Some( p.clone().strip_prefix( root_str ).ok()?.to_path_buf() )
+        //.map( | s | s.display().to_string() ).ok()
       })
     })
-    .map( |p|
+    .map( | p |
     {
-      let mut path = PathBuf::from( p );
-      path.set_file_name( "" );
-      path
+      path::normalize( p.parent().unwrap() )
+      // dbg!( &p );
+      // let mut path = PathBuf::from( p );
+      // path.set_file_name( "" );
+      // path
     });
 
     // preparing templates
@@ -92,6 +100,9 @@ mod private
     // qqq : for Petro : instead of iterating each file manually, iterate each file in loop
 
     // use similar::DiffableStr;
+
+    dbg!( relative_paths.clone().collect::< Vec< _ > >() );
+    dbg!( names.clone().collect::< Vec< _ > >() );
 
     // creating workflow for each module
     for ( name, relative_path ) in names.zip( relative_paths )
@@ -108,7 +119,11 @@ mod private
       data.insert( "manifest_file", manifest_file );
       let content = handlebars.render( "module_push", &data )?;
       file_write( &workflow_file_name, &content )?;
+
+      println!( "file_write : {:?}", &workflow_file_name )
     }
+
+    dbg!( &workflow_root );
 
     file_write( &workflow_root.join( "appropriate_branch.yml" ), include_str!( "../../template/workflow/appropriate_branch.yml" ) )?;
 

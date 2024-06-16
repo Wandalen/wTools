@@ -20,6 +20,7 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   protected use canonicalize;
+  protected use normalize;
   protected use unique_folder_name;
   exposed use AbsolutePath;
   exposed use Utf8PathBuf;
