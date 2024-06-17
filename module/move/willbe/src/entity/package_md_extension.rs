@@ -45,20 +45,18 @@ pub( crate ) mod private
     /// Stability
     pub fn stability( &self ) -> Result< action::readme_health_table_renew::Stability, package::PackageError >
     {
-      // qqq : for Petro : bad : first of all it should be in trait. also there is duplicated code
-      // qqq : for Petro : review other similar places
+      // aaa : for Petro : bad : first of all it should be in trait. also there is duplicated code
+      // aaa : done
+      // aaa : for Petro : review other similar places
+      // aaa : done
       match self
       {
-        Self::Manifest( manifest ) => 
+        Self::Manifest( _ ) => 
         {
-          // let data = manifest.data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
-          let data = &manifest.data;
-          
           // Unwrap safely because of the `Package` type guarantee
           Ok
           ( 
-            data[ "package" ]
-            .get( "metadata" )
+            self.package_metadata()
             .and_then( | m | m.get( "stability" ) )
             .and_then( | s | s.as_str() )
             .and_then( | s | s.parse::< action::readme_health_table_renew::Stability >().ok() )
@@ -110,15 +108,12 @@ pub( crate ) mod private
     { 
       match self
       {
-        Self::Manifest( manifest ) => 
+        Self::Manifest( _ ) => 
         {
           // let data = manifest.data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
-          let data = &manifest.data;
-          
           Ok
           ( 
-            data[ "package" ]
-            .get( "metadata" )
+            self.package_metadata()
             .and_then( | m | m.get( "discord_url" ) )
             .and_then( | url | url.as_str() )
             .map( | r | r.to_string() ) 
@@ -127,6 +122,23 @@ pub( crate ) mod private
         Self::WorkspacePackageRef( package ) => 
         {
           Ok( package.metadata()[ "discord_url" ].as_str().map( | url | url.to_string() ) )
+        }
+      }
+    }
+    
+    fn package_metadata( &self ) -> Option< &toml_edit::Item >
+    {
+      match self {
+        package::Package::Manifest( manifest ) => 
+        {
+          let data = &manifest.data;
+          
+          data[ "package" ]
+          .get( "metadata" )
+        }
+        package::Package::WorkspacePackageRef(_) => 
+        {
+          None
         }
       }
     }

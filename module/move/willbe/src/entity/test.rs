@@ -670,7 +670,8 @@ mod private
               if let Some( p ) = options.temp_path.clone()
               {
                 let path = p.join( path_tools::path::unique_folder_name().unwrap() );
-                // qqq : for Petro : rid off unwrap
+                // aaa : for Petro : rid off unwrap
+                // aaa : we discuss it
                 std::fs::create_dir_all( &path ).unwrap();
                 args_t = args_t.temp_directory_path( path );
               }
