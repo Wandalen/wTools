@@ -4,7 +4,7 @@ mod private
 
   use wca::VerifiedCommand;
   use wtools::error::{ anyhow::Context, Result };
-  use tool::template::Template;
+  //use tool::template::Template;
   use action::deploy_renew::*;
 
   ///
@@ -14,6 +14,7 @@ mod private
   pub fn deploy_renew( o : VerifiedCommand ) -> Result< () >
   {
     let current_dir = std::env::current_dir()?;
+    use crate::tool::DeployTemplate;
     let mut template = DeployTemplate::default();
     _ = template.load_existing_params( &current_dir );
     let parameters = template.parameters();

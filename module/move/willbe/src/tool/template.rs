@@ -16,30 +16,58 @@ mod private
   // DeployTemplate - move here
   // DeployTemplateFiles - remove
 
-  /// Trait for creating a template for a file structure.
-  pub trait Template< F > : Sized
-  where
-    F : TemplateFiles + Default
+  /// Template for creating deploy files.
+  ///
+  /// Includes terraform deploy options to GCP, and Hetzner,
+  /// a Makefile for useful commands, and a key directory.
+  #[ derive( Debug ) ]
+  pub struct DeployTemplate
   {
-    /// Creates all files in the template.
-    ///
-    /// Path is the base path for the template to be created in.
-    fn create_all( self, path : &Path ) -> Result< () >;
+    files : Vec< TemplateFileDescriptor >,
+    parameters : TemplateParameters,
+    pub values : TemplateValues,
+  }
 
-    /// Returns all parameters used by the template.
-    fn parameters( &self ) -> &TemplateParameters;
+  impl TemplateFiles for Vec< TemplateFileDescriptor > {}
 
-    /// Sets values for provided parameters.
-    fn set_values( &mut self, values : TemplateValues );
+  // qqq : for Viktor : why DeployTemplate can't be part of template.rs?
 
-    /// Relative path for parameter values storage.
-    fn parameter_storage( &self ) -> &Path;
+  impl DeployTemplate
+  {
+    pub fn create_all( self, path : &Path ) -> Result< () >
+    {
+      self.files.create_all( path, &self.values )
+    }
 
-    ///
-    fn template_name( &self ) -> &'static str;
+    pub fn parameters( &self ) -> &TemplateParameters
+    {
+      &self.parameters
+    }
 
-    /// Loads provided parameters from previous run.
-    fn load_existing_params( &mut self, path : &Path ) -> Option< () >
+    pub fn set_values( &mut self, values : TemplateValues )
+    {
+      self.values = values
+    }
+
+    pub fn get_values( &self ) -> &TemplateValues
+    {
+      &self.values
+    }
+
+    pub fn get_values_mut( &mut self ) -> &mut TemplateValues
+    {
+      &mut self.values
+    }
+
+    pub fn parameter_storage( &self ) -> &Path {
+      "./.deploy_template.toml".as_ref()
+    }
+
+    pub fn template_name( &self ) -> &'static str {
+      "deploy"
+    }
+
+    pub fn load_existing_params( &mut self, path : &Path ) -> Option< () >
     {
       let data = fs::read_to_string( path.join( self.parameter_storage() ) ).ok()?;
       let document = data.parse::< toml_edit::Document >().ok()?;
@@ -65,14 +93,8 @@ mod private
       Some( () )
     }
 
-    /// Get all template values.
-    fn get_values( &self ) -> &TemplateValues;
-
-    /// Get all template values as a mutable reference.
-    fn get_values_mut( &mut self ) -> &mut TemplateValues;
-
     /// Fetches mandatory parameters that are not set yet.
-    fn get_missing_mandatory( &self ) -> Vec< &str >
+    pub fn get_missing_mandatory( &self ) -> Vec< &str >
     {
       let values = self.get_values();
       self
@@ -83,6 +105,94 @@ mod private
       .collect()
     }
   }
+
+  impl Default for DeployTemplate
+  {
+    fn default() -> Self
+    {
+      let parameters = TemplateParameters::former()
+      .parameter( "gcp_project_id" ).is_mandatory( true ).end()
+      .parameter( "gcp_region" ).end()
+      .parameter( "gcp_artifact_repo_name" ).end()
+      .parameter( "docker_image_name" ).end()
+      .form();
+
+      Self
+      {
+        files : Default::default(),
+        parameters,
+        values : Default::default(),
+      }
+    }
+  }
+
+  // /// Trait for creating a template for a file structure.
+  // pub trait Template< F > : Sized
+  // where
+  //   F : TemplateFiles + Default
+  // {
+  //   /// Creates all files in the template.
+  //   ///
+  //   /// Path is the base path for the template to be created in.
+  //   fn create_all( self, path : &Path ) -> Result< () >;
+
+  //   /// Returns all parameters used by the template.
+  //   fn parameters( &self ) -> &TemplateParameters;
+
+  //   /// Sets values for provided parameters.
+  //   fn set_values( &mut self, values : TemplateValues );
+
+  //   /// Relative path for parameter values storage.
+  //   fn parameter_storage( &self ) -> &Path;
+
+  //   ///
+  //   fn template_name( &self ) -> &'static str;
+
+  //   /// Loads provided parameters from previous run.
+  //   fn load_existing_params( &mut self, path : &Path ) -> Option< () >
+  //   {
+  //     let data = fs::read_to_string( path.join( self.parameter_storage() ) ).ok()?;
+  //     let document = data.parse::< toml_edit::Document >().ok()?;
+  //     let parameters : Vec< _ > = self.parameters().descriptors.iter().map( | d | &d.parameter ).cloned().collect();
+  //     let template_table = document.get( self.template_name() )?;
+  //     for parameter in parameters
+  //     {
+  //       let value = template_table.get( &parameter )
+  //       .and_then
+  //       (
+  //         | item |
+  //         match item
+  //         {
+  //           toml_edit::Item::Value( toml_edit::Value::String( val ) ) => Some( val.value() ),
+  //           _ => None
+  //         }
+  //       );
+  //       if let Some( value ) = value
+  //       {
+  //         self.get_values_mut().insert_if_empty( &parameter, Value::String( value.into() ) );
+  //       }
+  //     }
+  //     Some( () )
+  //   }
+
+  //   /// Get all template values.
+  //   fn get_values( &self ) -> &TemplateValues;
+
+  //   /// Get all template values as a mutable reference.
+  //   fn get_values_mut( &mut self ) -> &mut TemplateValues;
+
+  //   /// Fetches mandatory parameters that are not set yet.
+  //   fn get_missing_mandatory( &self ) -> Vec< &str >
+  //   {
+  //     let values = self.get_values();
+  //     self
+  //     .parameters()
+  //     .list_mandatory()
+  //     .into_iter()
+  //     .filter( | key | values.0.get( *key ).map( | val | val.as_ref() ).flatten().is_none() )
+  //     .collect()
+  //   }
+  // }
 
   /// Files stored in a template.
   ///
@@ -372,7 +482,8 @@ mod private
 
 crate::mod_interface!
 {
-  orphan use Template;
+  //orphan use Template;
+  orphan use DeployTemplate;
   orphan use TemplateFiles;
   orphan use TemplateFileDescriptor;
   orphan use TemplateParameters;
