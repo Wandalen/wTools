@@ -34,6 +34,7 @@ mod private
   use version::version_revert;
   use error_tools::for_app::Error;
   use channel::Channel;
+  use tool::error_with::ErrWith;
 
   ///
   #[ derive( Debug, Clone ) ]
@@ -391,10 +392,10 @@ mod private
     git_options.dry = dry;
     publish.dry = dry;
 
-    report.get_info = Some( cargo::pack( pack ).map_err( | e | ( report.clone(), e ) )? );
+    report.get_info = Some( cargo::pack( pack ).err_with( || report.clone() )? );
     // qqq : redundant field?
     report.publish_required = true;
-    let bump_report = version::version_bump( version_bump ).map_err( | e | ( report.clone(), e ) )?;
+    let bump_report = version::version_bump( version_bump ).err_with( || report.clone() )?;
     report.bump = Some( bump_report.clone() );
     let git_root = git_options.git_root.clone();
     let git = match perform_git_commit( git_options )
@@ -403,11 +404,8 @@ mod private
       Err( e ) =>
       {
         version_revert( &bump_report )
-        .map_err( | le |
-        (
-          report.clone(),
-          format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) )
-        ))?;
+        .map_err( | le | format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) ) )
+        .err_with( || report.clone() )?;
         return Err(( report, e ));
       }
     };
@@ -420,15 +418,13 @@ mod private
       {
         git::reset( git_root.as_ref(), true, 1, false )
         .map_err( | le |
-        (
-          report.clone(),
-          format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) )
-        ))?;
+        format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) ) )
+        .err_with( || report.clone() )?;
         return Err(( report, e ));
       }
     };
 
-    let res = git::push( &git_root, dry ).map_err( | e | ( report.clone(), e ) )?;
+    let res = git::push( &git_root, dry ).err_with( || report.clone() )?;
     report.push = Some( res );
 
     Ok( report )

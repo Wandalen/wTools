@@ -19,7 +19,7 @@ mod private
   use packages::{ FilterMapOptions, PackageName };
   use wtools::error::
   {
-    for_app::{ Error, Context },
+    for_app::{ Error, Context, format_err },
     err
   };
 
@@ -28,6 +28,7 @@ mod private
 
   use workspace::Workspace;
   // // use path::AbsolutePath;
+  use tool::error_with::ErrWith;
 
   /// Args for `list` action.
   #[ derive( Debug, Default, Copy, Clone ) ]
@@ -397,20 +398,6 @@ mod private
     dep_rep
   }
 
-  // xxx : qqq : for Petro : for Bohdan : good one, apply it to all code
-  trait ErrWith< V, R, E >
-  {
-    fn err_with( self, v : V ) -> std::result::Result< R, ( V, E ) >;
-  }
-
-  impl< V, R, E > ErrWith< V, R, E > for std::result::Result< R, E >
-  {
-    fn err_with( self, v : V ) -> std::result::Result< R, ( V, E ) >
-    {
-      self.map_err( | e | ( v, e ) )
-    }
-  }
-
   /// Retrieve a list of packages based on the given arguments.
   ///
   /// # Arguments
@@ -430,11 +417,11 @@ mod private
     dbg!( &args.path_to_manifest );
     let manifest = Manifest::try_from( args.path_to_manifest.clone() )
     .context( "List of packages by specified manifest path" )
-    .err_with( report.clone() )?;
+    .err_with( || report.clone() )?;
 
     let workspace = Workspace::with_crate_dir( manifest.crate_dir() )
     .context( "Reading workspace" )
-    .err_with( report.clone() )?;
+    .err_with( || report.clone() )?;
 
     let is_package = manifest.package_is();
     // let is_package = manifest.package_is().context( "try to identify manifest type" ).err_with( report.clone() )?;
@@ -540,9 +527,10 @@ mod private
           | e |
           {
             use std::ops::Index;
-            ( report.clone(), err!( "Failed to process toposort for package : {:?}", graph.index( e.node_id() ) ) )
+            format_err!( "Failed to process toposort for package : {:?}", graph.index( e.node_id() ) )
           }
-        )?;
+        )
+        .err_with( || report.clone() )?;
         let packages_info : HashMap< String, WorkspacePackageRef< '_ > > =
           packages.map( | p | ( p.name().to_string(), p ) ).collect();
 

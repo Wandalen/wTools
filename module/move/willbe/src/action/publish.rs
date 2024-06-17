@@ -12,6 +12,7 @@ mod private
   use workspace::Workspace;
   use package::Package;
   use channel::Channel;
+  use tool::error_with::ErrWith;
 
   /// Represents a report of publishing packages
   #[ derive( Debug, Default, Clone ) ]
@@ -230,26 +231,6 @@ mod private
     }
 
     Ok( report )
-  }
-
-
-  trait ErrWith< T, T1, E >
-  {
-    fn err_with< F >( self, f : F ) -> std::result::Result< T1, ( T, E ) >
-    where
-      F : FnOnce() -> T;
-  }
-
-  impl< T, T1, E > ErrWith< T, T1, Error > for Result< T1, E >
-  where
-    E : std::fmt::Debug + std::fmt::Display + Send + Sync + 'static,
-  {
-    fn err_with< F >( self, f : F ) -> Result< T1, ( T, Error ) >
-    where
-      F : FnOnce() -> T,
-    {
-      self.map_err( | e | ( f(), anyhow!( e ) ) )
-    }
   }
 }
 

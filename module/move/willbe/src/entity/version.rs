@@ -238,7 +238,7 @@ mod private
   ///
   /// # Arguments
   ///
-  /// * `args` - The options for version bumping.
+  /// * `o` - The options for version bumping.
   ///
   /// # Returns
   ///

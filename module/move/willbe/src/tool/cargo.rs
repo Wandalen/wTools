@@ -170,7 +170,7 @@ mod private
       }
       else
       {
-        Err( results.remove( 0 ) ).map_err( | report  | err!( report.to_string() ) )
+        Err( results.remove( 0 ) ).map_err( | report | err!( report.to_string() ) )
       }
     }
   }
