@@ -62,7 +62,8 @@ mod private
       })
     }
 
-    // qqq : typed errors
+    // aaa : typed errors
+    // aaa : done
     /// Load data from current directory
     pub fn with_crate_dir( crate_dir : CrateDir ) -> Result< Self, WorkspaceInitError >
     {
