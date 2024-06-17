@@ -88,14 +88,16 @@ mod private
     let channels_diff = o.channels.difference( &channels ).collect::< Vec< _ > >();
     if !channels_diff.is_empty()
     {
-      // qqq : for Petro : non readable
+      // aaa : for Petro : non readable
+      // aaa : readable and with actual command
       return Err
       ((
         report,
         format_err!
         (
-          "Missing toolchain(-s) that was required : [{}]. Try to install it with `rustup install {{toolchain name}}` command(-s)",
-          channels_diff.into_iter().join( ", " )
+          "Missing toolchain(-s) that was required : [{}]. Try to install it with `rustup install {}` command(-s)",
+          channels_diff.iter().join( ", " ),
+          channels_diff.iter().join( " " )
         )
       ))
     }
