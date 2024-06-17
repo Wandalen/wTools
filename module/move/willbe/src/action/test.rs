@@ -109,7 +109,7 @@ mod private
       with_progress,
     } = o;
 
-    // qqq : xxx : use relevant entity
+    // qqq : xxx : use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >
     let path = if o.dir.as_ref().file_name() == Some( "Cargo.toml".as_ref() )
     {
       o.dir.parent().unwrap()

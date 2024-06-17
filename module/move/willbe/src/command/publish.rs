@@ -38,7 +38,7 @@ mod private
     let mut formatted_plan = String::new();
     writeln!( &mut formatted_plan, "Tree :" )?;
     plan.write_as_tree( &mut formatted_plan )?;
-    
+
     if !plan.plans.is_empty()
     {
       writeln!( &mut formatted_plan, "The following packages are pending for publication :" )?;
@@ -56,8 +56,8 @@ mod private
         {
           let args = if args_line.is_empty() { String::new() } else { format!(" {}", args_line) };
           let prop = if prop_line.is_empty() { String::new() } else { format!(" {}", prop_line) };
-          let line = format!("will .publish{}{} dry:0", args, prop);
-          println!("To apply plan, call the command `{}`", line.blue());
+          let line = format!("will .publish{}{} dry:0", args, prop );
+          println!("To apply plan, call the command `{}`", line.blue() );
           // qqq : for Petro : for Bohdan : bad. should be exact command with exact parameters
         }
 

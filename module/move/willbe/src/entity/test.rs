@@ -386,9 +386,6 @@ mod private
     P : AsRef< Path >
   {
     let ( program, args ) = ( "rustup", options.as_rustup_args() );
-    // qqq : for Petro : rustup ???
-    // aaa : for Petro : RUST_BACKTRACE=1 ?? //  add to SingleTestOptions, by default true
-    // aaa : add
 
     if options.dry
     {

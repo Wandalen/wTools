@@ -159,7 +159,7 @@ mod private
     right : &'static str,
   }
 
-  // qqq : fro Bohdan : abstract and move out tree printing. or reuse ready solution for tree printing
+  // qqq : fro Bohdan : make facade, abstract and move out tree printing. or reuse ready solution for tree printing
   // stick to single responsibility
   const UTF8_SYMBOLS : Symbols = Symbols
   {

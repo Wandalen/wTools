@@ -47,8 +47,8 @@ pub( crate ) mod private
   {
     /// Path to `Cargo.toml`
     // pub manifest_file : AbsolutePath,
-    pub manifest_file : ManifestFile, // xxx
-    // qqq : for Bohdan : for Petro : why not CrateDir?
+    pub manifest_file : ManifestFile,
+    // qqq : for Bohdan : for Petro : why not ManifestFile?
     /// Strict type of `Cargo.toml` manifest.
     pub data : toml_edit::Document,
     // pub data : Option< toml_edit::Document >,
@@ -86,7 +86,7 @@ pub( crate ) mod private
   {
     type Error = ManifestError;
 
-    // qqq : xxx : introduce ManifestPath
+    // qqq : xxx : implement TryFrom< ManifestFile > also
     fn try_from( src : CrateDir ) -> Result< Self, Self::Error >
     {
       Self::try_from( src.manifest_file() )

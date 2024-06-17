@@ -9,6 +9,7 @@ mod private
   // use workspace::WorkspacePackageRef< '_ >;
   // use Dependency;
 
+  // qqq : poor description
   /// Type aliasing for String
   pub type PackageName = String;
 

@@ -138,6 +138,7 @@ mod private
       let example = if let Some( name ) = find_example_file( self.module_path.as_path(), &self.module_name )
       {
         // qqq : for Petro : Hardcoded Strings, would be better to use `PathBuf` to avoid separator mismatch on Windows and Unix
+        // qqq : for Petro : use path_toools
         let p = name.strip_prefix( workspace_path ).unwrap().get( 1.. ).unwrap().replace( "\\","%2F" );
         let name = name.replace( "/", "\\" );
         let name = name.split( "\\" ).last().unwrap().split( "." ).next().unwrap();
