@@ -195,7 +195,7 @@ fn with_many_members_and_varius_config()
   _ = file_d.read_to_string( &mut actual_d ).unwrap();
 
   assert!( actual_b.contains( "[![stability-stable]" ) );
-  assert!( actual_c.contains( "(https://discord.gg/123456789)" ) );
+  assert!( actual_c.contains( "(https://discord.gg/m3YfbXpUUY)" ) );
   assert!( actual_d.contains( "(https://discord.gg/123456789)" ) );
 }
 
