@@ -323,9 +323,13 @@ mod private
         .context
         (
           // qqq : for Petro : unreadable
+          // aaa : done
           format_err!
           (
-            "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) in {} OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR ensure that at least one remotest is present in git. ",
+            "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n\
+specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) in {} \
+OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR\
+ensure that at least one remotest is present in git. ",
             module_path.display(),
             workspace.workspace_root()?.join( "Cargo.toml" ).display(),
             module_path.join( "Cargo.toml" ).display()
