@@ -322,8 +322,7 @@ mod private
         parameters.core_url = repo_url( &module_path.clone().try_into()? )
         .context
         (
-          // qqq : for Petro : unreadable
-          // aaa : done
+          // qqq : for Petro : unreadable : check other lines of code which are long
           format_err!
           (
             "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n\

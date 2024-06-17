@@ -217,7 +217,7 @@ mod private
       )
     }
 
-    // xxx : qqq : for Bohdan : should not be here
+    // xxx : qqq : for Bohdan : should not be here entity/workspace-graph.rs
 
     /// Returns a graph of packages.
     pub( crate ) fn graph( &self ) -> Graph< String, String >

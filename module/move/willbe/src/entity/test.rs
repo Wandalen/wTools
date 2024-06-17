@@ -298,6 +298,7 @@ mod private
     temp_path : Option< PathBuf >,
     plan : &'a TestPackagePlan,
     dry : bool,
+    with_progress : bool,
     #[ cfg( feature = "progress_bar" ) ]
     multi_progress : &'a MultiProgress ,
     #[ cfg( feature = "progress_bar" ) ]
@@ -422,6 +423,9 @@ mod private
 
     /// A boolean indicating whether to perform a dry run or not.
     pub dry : bool,
+
+    /// Progress bar flag.
+    pub with_progress : bool,
 
     #[ cfg( feature = "progress_bar" ) ]
     /// Base progress bar
@@ -678,18 +682,24 @@ mod private
                 args_t = args_t.temp_directory_path( path );
               }
               #[ cfg( feature = "progress_bar" ) ]
-              let _s =
+              if options.with_progress
               {
-                let s = options.multi_progress.add( ProgressBar::new_spinner().with_message( format!( "{}", variant ) ) );
-                s.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
-                s
-              };
+                let _s =
+                {
+                  let s = options.multi_progress.add( ProgressBar::new_spinner().with_message( format!( "{}", variant ) ) );
+                  s.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
+                  s
+                };
+              }
               let args = args_t.form();
               let temp_dir = args.temp_directory_path.clone();
               let cmd_rep = _run( crate_dir, args );
               r.lock().unwrap().tests.insert( variant.clone(), cmd_rep );
               #[ cfg( feature = "progress_bar" ) ]
-              options.progress_bar.inc( 1 );
+              if options.with_progress
+              {
+                options.progress_bar.inc( 1 );
+              }
               if let Some( path ) = temp_dir
               {
                 std::fs::remove_dir_all( path ).unwrap();
@@ -735,7 +745,12 @@ mod private
                 pb.inc( 0 );
                 pb
               };
-              let test_package_options = PackageTestOptions::former().option_temp( args.temp_path.clone() ).plan( plan ).dry( args.dry );
+              let test_package_options = PackageTestOptions::former()
+              .option_temp( args.temp_path.clone() )
+              .plan( plan )
+              .dry( args.dry )
+              .with_progress( args.with_progress );
+              
               #[ cfg( feature = "progress_bar" ) ] 
               let test_package_options = 
               {

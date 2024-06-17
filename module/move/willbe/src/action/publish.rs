@@ -132,8 +132,8 @@ mod private
     }
     else
     {
-      // qqq : patterns can point to different workspaces. Current solution take first random path from list
-      // qqq : for Bohdan : what do you mean?
+      // qqq : patterns can point to different workspaces. Current solution take first random path from list.
+      // qqq : for Bohdan : what do you mean? write more
       let current_path = paths.iter().next().unwrap().clone();
       let dir = CrateDir::try_from( current_path )?;
       Workspace::with_crate_dir( dir )?
@@ -154,7 +154,7 @@ mod private
     .map( | p | p.name().to_string() )
     .collect();
     let package_map : HashMap< String, Package< '_ > > = packages
-    .map( | p | ( p.name().to_string(), Package::from( p.clone() ) ) )
+    .map( | p | ( p.name().to_string(), Package::from( p ) ) )
     .collect();
     // qqq : many redundant clones
 

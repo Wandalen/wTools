@@ -137,7 +137,6 @@ mod private
       let repo_url = url::extract_repo_url( &self.repository_url ).and_then( | r | url::git_info_extract( &r ).ok() ).ok_or_else::< wError, _ >( || err!( "Fail to parse repository url" ) )?;
       let example = if let Some( name ) = find_example_file( self.module_path.as_path(), &self.module_name )
       {
-        // qqq : for Petro : Hardcoded Strings, would be better to use `PathBuf` to avoid separator mismatch on Windows and Unix
         // qqq : for Petro : use path_toools
         let p = name.strip_prefix( workspace_path ).unwrap().get( 1.. ).unwrap().replace( "\\","%2F" );
         let name = name.replace( "/", "\\" );
@@ -184,7 +183,6 @@ mod private
   /// [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://github.com/Username/test/actions/workflows/ModuleChainOfPackagesAPush.yml/badge.svg)](https://github.com/Username/test/actions/workflows/ModuleChainOfPackagesAPush.yml)[![docs.rs](https://img.shields.io/docsrs/_chain_of_packages_a?color=e3e8f0&logo=docs.rs)](https://docs.rs/_chain_of_packages_a)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F_chain_of_packages_a_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20_chain_of_packages_a_trivial/https://github.com/Username/test)
   /// <!--{ generate.module_header.end }-->
   /// ```
-  // qqq : typed error should be
   pub fn readme_modules_headers_renew( crate_dir : CrateDir ) ->
   Result< ModulesHeadersRenewReport, ( ModulesHeadersRenewReport, ModulesHeadersRenewError ) >
   {
@@ -196,7 +194,7 @@ mod private
       // CrateDir::try_from( path )
       // .map_err( | e | ( report.clone(), e.into() ) )?
     )
-    .map_err( | e | ( report.clone(), e.into() ) )?; // xxx : qqq : use trait
+    .map_err( | e | ( report.clone(), e.into() ) )?; // xxx : qqq : use trait. everywhere
     let discord_url = workspace.discord_url().map_err( | e | ( report.clone(), e.into() ) )?;
 
     // qqq : inspect each collect in willbe and rid off most of them
@@ -205,8 +203,7 @@ mod private
     .packages()
     .map_err( | e | ( report.clone(), e.into() ) )?
     .into_iter()
-    // .filter_map( | p | AbsolutePath::try_from( p.manifest_file() ).ok() )
-    .filter_map( | p | p.crate_dir().map( | e | e.into() ).ok() )
+    .filter_map( | p | p.manifest_file().ok().and_then( | a | Some( a.inner() ) ) )
     .collect();
 
     report.found_files = paths.iter().map( | ap | ap.as_ref().to_path_buf() ).collect();
@@ -222,7 +219,7 @@ mod private
         .map_err( | e | ( report.clone(), e.into() ) )?
       );
 
-      let pakage = Package::try_from( CrateDir::try_from( &path ).map_err( | e | ( report.clone(), e.into() ) )? )
+      let pakage = Package::try_from( CrateDir::try_from( &path.parent().unwrap() ).map_err( | e | ( report.clone(), e.into() ) )? )
       .map_err( | e | ( report.clone(), e.into() ) )?;
 
       let header = ModuleHeader::from_cargo_toml( pakage.into(), &discord_url )

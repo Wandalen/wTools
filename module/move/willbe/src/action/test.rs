@@ -88,17 +88,18 @@ mod private
     let channels_diff = o.channels.difference( &channels ).collect::< Vec< _ > >();
     if !channels_diff.is_empty()
     {
-      // qqq : for Petro : non readable
-      // aaa : done
+      // aaa : for Petro : non readable
+      // aaa : readable and with actual command
       return Err
-      (( 
-        report, 
+      ((
+        report,
         format_err!
-        ( 
+        (
           "Missing toolchain(-s) that was required : [{}]. \
-Try to install it with `rustup install {{toolchain name}}` command(-s)", 
-          channels_diff.into_iter().join( ", " ) 
-        ) 
+Try to install it with `rustup install {}` command(-s)",
+          channels_diff.iter().join( ", " ),
+          channels_diff.iter().join( " " )
+        )
       ))
     }
     report.dry = dry;
@@ -119,7 +120,7 @@ Try to install it with `rustup install {{toolchain name}}` command(-s)",
       with_progress,
     } = o;
 
-    // qqq : xxx : use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >
+    // qqq : for Petro : xxx : use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >
     let path = if o.dir.as_ref().file_name() == Some( "Cargo.toml".as_ref() )
     {
       o.dir.parent().unwrap()
@@ -157,6 +158,7 @@ Try to install it with `rustup install {{toolchain name}}` command(-s)",
     ).map_err( | e | ( report.clone(), e ) )?;
 
     println!( "{plan}" );
+      // qqq : split on two functions for create plan and for execute
 
     let temp_path =  if temp
     {
@@ -193,15 +195,8 @@ Try to install it with `rustup install {{toolchain name}}` command(-s)",
     .dry( dry );
 
     #[ cfg( feature = "progress_bar" ) ]
-    let test_options_former = if with_progress
-    {
-      let test_options_former = test_options_former.multiprocess( multiprocess ).style( style );
-      test_options_former
-    }
-    else
-    {
-      test_options_former
-    };
+    let test_options_former = test_options_former.multiprocess( multiprocess ).style( style );
+    
 
     let options = test_options_former.form();
     let result = tests_run( &options );
