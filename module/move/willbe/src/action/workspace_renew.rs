@@ -122,7 +122,13 @@ mod private
   // qqq : for Petro : should have typed error
   /// Creates workspace template
   // qqq : for Petro : too long line, review all your files
-  pub fn workspace_renew( path : &Path, mut template : WorkspaceTemplate, repository_url : String, branches : Vec< String > ) -> Result< () >
+  pub fn workspace_renew
+  ( 
+    path : &Path, 
+    mut template : WorkspaceTemplate, 
+    repository_url : String, 
+    branches : Vec< String > 
+  ) -> Result< () >
   {
     if fs::read_dir(path)?.count() != 0
     {

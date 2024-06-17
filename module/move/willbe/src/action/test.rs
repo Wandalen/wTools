@@ -192,7 +192,8 @@ Try to install it with `rustup install {}` command(-s)",
     .concurrent( concurrent )
     .plan( plan )
     .option_temp( temp_path )
-    .dry( dry );
+    .dry( dry )
+    .with_progress( with_progress );
 
     #[ cfg( feature = "progress_bar" ) ]
     let test_options_former = test_options_former.multiprocess( multiprocess ).style( style );

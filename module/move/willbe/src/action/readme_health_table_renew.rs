@@ -323,6 +323,7 @@ mod private
         .context
         (
           // qqq : for Petro : unreadable : check other lines of code which are long
+          // aaa : done
           format_err!
           (
             "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n\
