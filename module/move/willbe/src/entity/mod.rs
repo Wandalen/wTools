@@ -29,6 +29,10 @@ crate::mod_interface!
   layer workspace;
   orphan use super::workspace;
 
+  /// Workspace' graph.
+  layer workspace_graph;
+  orphan use super::workspace_graph;
+  
   /// Packages of workspace.
   layer workspace_package;
   orphan use super::workspace_package;

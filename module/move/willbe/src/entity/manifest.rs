@@ -228,7 +228,7 @@ pub( crate ) mod private
       }
       else
       {
-        let report = git::ls_remote_url( crate_dir.clone().inner() )?;
+        let report = git::ls_remote_url( crate_dir.clone().absolute_path() )?;
         url::extract_repo_url( &report.out.trim() ).ok_or_else( || format_err!( "Fail to extract repository url from git remote.") )
       }
     }

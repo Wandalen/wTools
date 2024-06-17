@@ -1,5 +1,6 @@
 mod private
 {
+
   use crate::*;
   use table::*;
   use std::
@@ -121,17 +122,17 @@ mod private
   #[ derive( Debug ) ]
   pub struct TestPackagePlan
   {
-    enabled_features : collections::BTreeSet<String>,
+    enabled_features : collections::BTreeSet< String >,
     // package : PathBuf,
     crate_dir : CrateDir,
-    test_variants : collections::BTreeSet<TestVariant>,
+    test_variants : collections::BTreeSet< TestVariant >,
   }
 
   impl fmt::Display for TestPackagePlan
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ >) -> std::fmt::Result
     {
-      writeln!( f, "Package : {}\nThe tests will be executed using the following configurations :", self.crate_dir.clone().inner() )?;
+      writeln!( f, "Package : {}\nThe tests will be executed using the following configurations :", self.crate_dir.clone().absolute_path() )?;
       let mut all_features = collections::BTreeSet::new();
       for variant in &self.test_variants
       {
@@ -255,13 +256,13 @@ mod private
   }
 
   fn generate_features_cells
-  ( 
-    ff : &mut Vec< String >, 
-    variant : &TestVariant, 
-    row : &mut Row, 
-    mut counter : usize, 
-    mut flag : bool, 
-    enabled_features : &collections::BTreeSet< String > 
+  (
+    ff : &mut Vec< String >,
+    variant : &TestVariant,
+    row : &mut Row,
+    mut counter : usize,
+    mut flag : bool,
+    enabled_features : &collections::BTreeSet< String >
   )
   {
     for feature in ff
@@ -431,7 +432,7 @@ mod private
 
   // aaa : for Petro : remove after Former fix
   // aaa : done
-  
+
   impl fmt::Debug for TestOptions
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ >) -> std::fmt::Result {
@@ -744,9 +745,9 @@ mod private
               .plan( plan )
               .dry( args.dry )
               .with_progress( args.with_progress );
-              
-              #[ cfg( feature = "progress_bar" ) ] 
-              let test_package_options = 
+
+              #[ cfg( feature = "progress_bar" ) ]
+              let test_package_options =
               {
                 test_package_options.multi_progress( &args.multiprocess ).progress_bar( &pb )
               };

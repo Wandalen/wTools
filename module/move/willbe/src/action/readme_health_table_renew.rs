@@ -219,8 +219,7 @@ mod private
     regexes_initialize();
     let absolute_path = AbsolutePath::try_from( path )?;
     let mut workspace = Workspace::with_crate_dir( CrateDir::try_from( absolute_path )? )?;
-    workspace.load()?;
-    let workspace_root = workspace.workspace_root()?;
+    let workspace_root = workspace.workspace_root();
     let mut parameters = GlobalTableOptions::initialize_from_path( &workspace_root )?;
 
     let read_me_path = workspace_root
@@ -295,18 +294,17 @@ mod private
     let directory_names = directory_names
     (
       workspace
-      .workspace_root()?
+      .workspace_root()
       .join( &table_parameters.base_path ),
       workspace
       .packages()
-      .map_err( | err | format_err!( err ) )?
     )?;
     let mut table = table_header_generate( parameters, &table_parameters );
     for package_name in directory_names
     {
       let stability = if table_parameters.include_stability
       {
-        Some( stability_get( &workspace.workspace_root()?.join( &table_parameters.base_path ).join( &package_name ) )? )
+        Some( stability_get( &workspace.workspace_root().join( &table_parameters.base_path ).join( &package_name ) )? )
       }
       else
       {
@@ -315,7 +313,7 @@ mod private
       if parameters.core_url == ""
       {
         let module_path = workspace
-        .workspace_root()?
+        .workspace_root()
         .join( &table_parameters.base_path )
         .join( &package_name );
         // parameters.core_url = repo_url( &module_path )
@@ -331,7 +329,7 @@ specify the correct path to the main repository in Cargo.toml of workspace (in t
 OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR\
 ensure that at least one remotest is present in git. ",
             module_path.display(),
-            workspace.workspace_root()?.join( "Cargo.toml" ).display(),
+            workspace.workspace_root().join( "Cargo.toml" ).display(),
             module_path.join( "Cargo.toml" ).display()
           )
         )?;

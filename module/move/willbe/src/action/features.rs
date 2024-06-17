@@ -71,10 +71,10 @@ mod private
   {
     // let workspace = Workspace::with_crate_dir( CrateDir::try_from( crate_dir.clone() )? ).context( "Failed to find workspace" )?;
     let workspace = Workspace::with_crate_dir( crate_dir.clone() ).context( "Failed to find workspace" )?;
-    let packages = workspace.packages()?.into_iter().filter
+    let packages = workspace.packages().filter
     (
       | package |
-      package.manifest_file().unwrap().inner().starts_with( crate_dir.clone().inner() ) // qqq : remove unwrap
+      package.manifest_file().unwrap().inner().starts_with( crate_dir.clone().absolute_path() ) // qqq : remove unwrap
     );
     //.collect();
     // xxx

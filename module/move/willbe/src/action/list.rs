@@ -432,7 +432,9 @@ mod private
     .context( "List of packages by specified manifest path" )
     .err_with( report.clone() )?;
 
-    let workspace = Workspace::with_crate_dir( manifest.crate_dir() ).err_with( report.clone() )?;
+    let workspace = Workspace::with_crate_dir( manifest.crate_dir() )
+    .context( "Reading workspace" )
+    .err_with( report.clone() )?;
 
     let is_package = manifest.package_is();
     // let is_package = manifest.package_is().context( "try to identify manifest type" ).err_with( report.clone() )?;
@@ -476,7 +478,7 @@ mod private
       }
       ListFormat::Tree =>
       {
-        let packages = workspace.packages().context( "workspace packages" ).err_with( report.clone() )?;
+        let packages = workspace.packages();
         let mut visited = packages
         .clone()
         .map
@@ -522,7 +524,7 @@ mod private
           )
         };
 
-        let packages = workspace.packages().context( "workspace packages" ).err_with( report.clone() )?;
+        let packages = workspace.packages();
         let packages_map : HashMap< PackageName, HashSet< PackageName > > = packages::filter
         (
           packages.clone(),
