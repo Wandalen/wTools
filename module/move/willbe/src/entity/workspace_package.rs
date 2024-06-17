@@ -74,7 +74,7 @@ mod private
     // pub fn crate_dir( &self ) -> CrateDir
     pub fn crate_dir( &self ) -> Result< CrateDir, PathError >
     {
-      self.inner.manifest_path.as_path().try_into()
+      self.inner.manifest_path.as_path().parent().unwrap().try_into()
     }
 
     /// The version field as specified in the Cargo.toml

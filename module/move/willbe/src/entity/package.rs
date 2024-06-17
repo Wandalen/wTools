@@ -217,7 +217,7 @@ mod private
           let data = &manifest.data;
 
           // Unwrap safely because of the `Package` type guarantee
-          Ok( data[ "package" ].get( "package" ).and_then( | m | m.get( "stability" ) ).and_then( | s | s.as_str() ).and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental)  )
+          Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "stability" ) ).and_then( | s | s.as_str() ).and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental ) ) 
         }
         Self::WorkspacePackageRef( package ) =>
         {

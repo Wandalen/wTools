@@ -205,8 +205,7 @@ mod private
     .packages()
     .map_err( | e | ( report.clone(), e.into() ) )?
     .into_iter()
-    // .filter_map( | p | AbsolutePath::try_from( p.manifest_file() ).ok() )
-    .filter_map( | p | p.crate_dir().map( | e | e.into() ).ok() )
+    .filter_map( | p | p.manifest_file().ok().and_then( | a | Some( a.inner() ) ) )
     .collect();
 
     report.found_files = paths.iter().map( | ap | ap.as_ref().to_path_buf() ).collect();
@@ -222,7 +221,7 @@ mod private
         .map_err( | e | ( report.clone(), e.into() ) )?
       );
 
-      let pakage = Package::try_from( CrateDir::try_from( &path ).map_err( | e | ( report.clone(), e.into() ) )? )
+      let pakage = Package::try_from( CrateDir::try_from( &path.parent().unwrap() ).map_err( | e | ( report.clone(), e.into() ) )? )
       .map_err( | e | ( report.clone(), e.into() ) )?;
 
       let header = ModuleHeader::from_cargo_toml( pakage.into(), &discord_url )
