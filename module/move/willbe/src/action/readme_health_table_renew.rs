@@ -112,7 +112,7 @@ mod private
     branches : Option< Vec< String > >,
     /// workspace root
     workspace_root : &'a Path,
-    // qqq : for Petro : is not that path?
+    // aaa : for Petro : is not that path?
     // aaa : done
   }
 
@@ -322,7 +322,7 @@ mod private
         parameters.core_url = repo_url( &module_path.clone().try_into()? )
         .context
         (
-          // qqq : for Petro : unreadable : check other lines of code which are long
+          // aaa : for Petro : unreadable : check other lines of code which are long
           // aaa : done
           format_err!
           (

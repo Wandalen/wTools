@@ -121,7 +121,8 @@ mod private
   // qqq : for Petro : should return report
   // qqq : for Petro : should have typed error
   /// Creates workspace template
-  // qqq : for Petro : too long line, review all your files
+  // aaa : for Petro : too long line, review all your files
+  // aaa : this done
   pub fn workspace_renew
   ( 
     path : &Path, 

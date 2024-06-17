@@ -11,7 +11,7 @@ mod private
   };
   use colored::Colorize as _;
   use iter_tools::Itertools as _;
-  // qqq : for Petro : don't do micro imports
+  // aaa : for Petro : don't do micro imports
   // aaa : done
   use process_tools::process::*;
   use wtools::error::anyhow;
@@ -345,10 +345,10 @@ mod private
       .into_iter()
       .chain( if self.optimization == optimization::Optimization::Release { Some( "--release".into() ) } else { None } )
       .chain( if self.with_default_features { None } else { Some( "--no-default-features".into() ) } )
-      // qqq : for Petro : bad, --no-default-features is always enabled!
+      // aaa : for Petro : bad, --no-default-features is always enabled!
       // aaa : add `debug_assert!( !self.with_default_features )`
       .chain( if self.with_all_features { Some( "--all-features".into() ) } else { None } )
-      // qqq : for Petro : bad, --all-features is always disabled!
+      // aaa : for Petro : bad, --all-features is always disabled!
       // aaa : add `debug_assert!( !self.with_all_features )`
       .chain( if self.enable_features.is_empty() { None } else { Some([ "--features".into(), self.enable_features.iter().join( "," ) ]) }.into_iter().flatten() )
       .chain( self.temp_directory_path.clone().map( | p | vec![ "--target-dir".to_string(), p.to_string_lossy().into() ] ).into_iter().flatten() )
@@ -429,7 +429,7 @@ mod private
     pub style : indicatif::ProgressStyle,
   }
 
-  // qqq : for Petro : remove after Former fix
+  // aaa : for Petro : remove after Former fix
   // aaa : done
   
   impl fmt::Debug for TestOptions
@@ -478,7 +478,7 @@ mod private
     pub tests : collections::BTreeMap<TestVariant, Result<Report, Report>>,
     /// Enabled features
     pub enabled_features : collections::BTreeSet<String>,
-    // qqq : for Petro : rid off map of map of map, keep flat map
+    // aaa : for Petro : rid off map of map of map, keep flat map
     // aaa : done
   }
 
