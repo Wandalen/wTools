@@ -28,7 +28,7 @@ mod private
     let workspace = Workspace::with_crate_dir( crate_dir )?;
 
     let mut local_package_path = PathBuf::new();
-    local_package_path.push( workspace.target_directory()? );
+    local_package_path.push( workspace.target_directory() );
     local_package_path.push( buf );
 
     Ok( local_package_path )

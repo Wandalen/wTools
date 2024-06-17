@@ -55,7 +55,7 @@ mod private
           let expected_to_publish = plan
           .plans
           .iter()
-          .map( | p | ( p.version_bump.crate_dir.clone().inner(), p.package_name.clone(), p.version_bump.clone() ) )
+          .map( | p | ( p.version_bump.crate_dir.clone().absolute_path(), p.package_name.clone(), p.version_bump.clone() ) )
           .collect::< Vec< _ > >();
           let mut actually_published = self.packages.iter()
           .filter_map
@@ -126,7 +126,7 @@ mod private
       paths.extend( Some( current_path ) );
     }
 
-    let mut workspace = if paths.is_empty()
+    let workspace = if paths.is_empty()
     {
       Workspace::from_current_path()?
     }
@@ -140,11 +140,10 @@ mod private
     };
 
     let workspace_root_dir : AbsolutePath = workspace
-    .workspace_root()?
+    .workspace_root()
     .try_into()?;
 
-    workspace.load()?;
-    let packages = workspace.packages()?;
+    let packages = workspace.packages();
     let packages_to_publish : Vec< String > = packages
     .clone()
     // .iter()
@@ -158,7 +157,7 @@ mod private
     .collect();
     // qqq : many redundant clones
 
-    let graph = workspace.graph();
+    let graph = workspace_graph::graph( &workspace );
     let subgraph_wanted = graph::subgraph( &graph, &packages_to_publish[ .. ] );
     let tmp = subgraph_wanted.map( | _, n | graph[ *n ].clone(), | _, e | graph[ *e ].clone() );
 

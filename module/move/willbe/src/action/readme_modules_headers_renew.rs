@@ -22,7 +22,7 @@ mod private
   use std::path::PathBuf;
   use convert_case::{ Case, Casing };
   use regex::Regex;
-  use entity::{ WorkspaceError, PathError };
+  use entity::{ WorkspaceInitError, PathError };
   use package::PackageError;
   use error_tools::for_lib::Error;
   use error_tools::dependency::*;
@@ -79,9 +79,9 @@ mod private
     #[ error( "I/O error: {0}" ) ]
     IO( #[ from ] std::io::Error ),
     #[ error( "Workspace error: {0}" ) ]
-    Workspace( #[ from ] WorkspaceError),
+    Workspace( #[ from ] WorkspaceInitError ),
     #[ error( "Package error: {0}" ) ]
-    Package( #[ from ] PackageError),
+    Package( #[ from ] PackageError ),
     #[ error( "Directory error: {0}" ) ]
     Directory( #[ from ] PathError ),
   }
@@ -195,14 +195,12 @@ mod private
       // .map_err( | e | ( report.clone(), e.into() ) )?
     )
     .map_err( | e | ( report.clone(), e.into() ) )?; // xxx : qqq : use trait. everywhere
-    let discord_url = workspace.discord_url().map_err( | e | ( report.clone(), e.into() ) )?;
+    let discord_url = workspace.discord_url();
 
     // qqq : inspect each collect in willbe and rid off most of them
 
     let paths : Vec< AbsolutePath > = workspace
     .packages()
-    .map_err( | e | ( report.clone(), e.into() ) )?
-    .into_iter()
     .filter_map( | p | p.manifest_file().ok().and_then( | a | Some( a.inner() ) ) )
     .collect();
 
@@ -244,7 +242,7 @@ mod private
 
       _ = query::parse( raw_params ).context( "Fail to parse raw params." );
 
-      let content = header_content_generate( &content, header, raw_params, workspace.workspace_root().map_err( | e | ( report.clone(), e.into() ) )?.to_str().unwrap() ).map_err( | e | ( report.clone(), e.into() ) )?;
+      let content = header_content_generate( &content, header, raw_params, workspace.workspace_root().to_str().unwrap() ).map_err( | e | ( report.clone(), e.into() ) )?;
 
       file.set_len( 0 ).map_err( | e | ( report.clone(), e.into() ) )?;
       file.seek( SeekFrom::Start( 0 ) ).map_err( | e | ( report.clone(), e.into() ) )?;

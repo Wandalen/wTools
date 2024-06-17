@@ -269,7 +269,7 @@ pub( crate ) mod private
         _ = cargo::pack
         (
           cargo::PackOptions::former()
-          .path( package.crate_dir().inner() )
+          .path( package.crate_dir().absolute_path() )
           .option_temp_path( temp_path.clone() )
           .dry( false )
           .allow_dirty( true )
