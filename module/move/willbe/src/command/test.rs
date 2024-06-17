@@ -51,7 +51,6 @@ mod private
   {
     let args_line = format!( "{}", o.args.get_owned( 0 ).unwrap_or( std::path::PathBuf::from( "" ) ).display() );
     let prop_line = format!( "{}", o.props.iter().map( | p | format!( "{}:{}", p.0, p.1.to_string() ) ).collect::< Vec< _ > >().join(" ") );
-    // qqq : remove all collect::< ... >, specify type in type `let y : Type = x.collect();`
 
     let path : PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );
     let path = AbsolutePath::try_from( path )?;

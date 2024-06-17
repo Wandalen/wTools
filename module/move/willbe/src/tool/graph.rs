@@ -99,7 +99,7 @@ pub( crate ) mod private
         .iter()
         .rev()
         .map( | dep_idx | ( *graph.node_weight( *dep_idx ).unwrap() ).clone() )
-        .collect::< Vec< _ > >()
+        .collect()
       ),
       Err( index ) => Err( GraphError::Cycle( ( *graph.index( index.node_id() ) ).clone() ) ),
       // aaa : for Bohdan : bad, make proper error handling

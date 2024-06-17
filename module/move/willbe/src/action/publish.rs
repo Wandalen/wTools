@@ -52,12 +52,12 @@ mod private
       {
         if !plan.dry
         {
-          let expected_to_publish = plan
+          let expected_to_publish : Vec< _ > = plan
           .plans
           .iter()
           .map( | p | ( p.version_bump.crate_dir.clone().inner(), p.package_name.clone(), p.version_bump.clone() ) )
-          .collect::< Vec< _ > >();
-          let mut actually_published = self.packages.iter()
+          .collect();
+          let mut actually_published : Vec< _ > = self.packages.iter()
           .filter_map
           (
             |( path, repo )|
@@ -70,7 +70,7 @@ mod private
               None
             }
           )
-          .collect::< Vec< _ > >();
+          .collect();
 
           writeln!( f, "Status :" )?;
           for ( path, name, version )  in expected_to_publish
@@ -185,14 +185,14 @@ mod private
     let subgraph = graph::remove_not_required_to_publish( &package_map, &tmp, &packages_to_publish, dir.clone() )?;
     let subgraph = subgraph.map( | _, n | n, | _, e | e );
 
-    let queue = graph::toposort( subgraph )
+    let queue : Vec< _ > = graph::toposort( subgraph )
     .unwrap()
     .into_iter()
     .map( | n | package_map.get( &n ).unwrap() )
     .cloned()
-    .collect::< Vec< _ > >();
+    .collect();
 
-    let roots = packages_to_publish.iter().map( | p | package_map.get( p ).unwrap().crate_dir() ).collect::< Vec< _ > >();
+    let roots : Vec< _ > = packages_to_publish.iter().map( | p | package_map.get( p ).unwrap().crate_dir() ).collect();
 
     let plan = package::PublishPlan::former()
     .channel( channel )

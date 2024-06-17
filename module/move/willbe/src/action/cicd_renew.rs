@@ -101,9 +101,6 @@ mod private
 
     // use similar::DiffableStr;
 
-    dbg!( relative_paths.clone().collect::< Vec< _ > >() );
-    dbg!( names.clone().collect::< Vec< _ > >() );
-
     // creating workflow for each module
     for ( name, relative_path ) in names.zip( relative_paths )
     {

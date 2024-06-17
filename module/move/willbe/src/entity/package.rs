@@ -580,11 +580,11 @@ mod private
     where
       W : std::fmt::Write
     {
-      let name_bump_report = self
+      let name_bump_report : HashMap< _, _ > = self
       .plans
       .iter()
       .map( | x | ( &x.package_name, ( x.version_bump.old_version.to_string(), x.version_bump.new_version.to_string() ) ) )
-      .collect::< HashMap< _, _ > >();
+      .collect();
       for wanted in &self.roots
       {
         let list = action::list

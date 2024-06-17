@@ -369,7 +369,7 @@ mod private
       packages::FilterMapOptions { package_filter: module_package_filter, dependency_filter: module_dependency_filter },
     );
     let module_graph = graph::construct( &module_packages_map );
-    let names = graph::topological_sort_with_grouping( module_graph )
+    let names : Vec< _ > = graph::topological_sort_with_grouping( module_graph )
     .into_iter()
     .map
     (
@@ -378,7 +378,7 @@ mod private
         group.sort();
         group
       }
-    ).flatten().collect::< Vec< _ > >();
+    ).flatten().collect();
 
     Ok(names)
   }

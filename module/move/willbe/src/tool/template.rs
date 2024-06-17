@@ -43,7 +43,7 @@ mod private
     {
       let data = fs::read_to_string( path.join( self.parameter_storage() ) ).ok()?;
       let document = data.parse::< toml_edit::Document >().ok()?;
-      let parameters = self.parameters().descriptors.iter().map( | d | &d.parameter ).cloned().collect::< Vec< _ > >();
+      let parameters : Vec< _ > = self.parameters().descriptors.iter().map( | d | &d.parameter ).cloned().collect();
       let template_table = document.get( self.template_name() )?;
       for parameter in parameters
       {

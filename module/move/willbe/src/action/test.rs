@@ -85,7 +85,7 @@ mod private
     let mut report = TestsReport::default();
     // fail fast if some additional installations required
     let channels = channel::available_channels( o.dir.as_ref() ).map_err( | e | ( report.clone(), e ) )?;
-    let channels_diff = o.channels.difference( &channels ).collect::< Vec< _ > >();
+    let channels_diff : Vec< _ > = o.channels.difference( &channels ).collect();
     if !channels_diff.is_empty()
     {
       // qqq : for Petro : non readable

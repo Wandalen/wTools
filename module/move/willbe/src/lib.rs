@@ -25,7 +25,7 @@ pub( crate ) mod private
       tracing_subscriber::fmt().pretty().init();
     }
 
-    let args = args.into_iter().skip( 1 ).collect::< Vec< String > >();
+    let args : Vec< String > = args.into_iter().skip( 1 ).collect();
 
     let ca = command::ca()
     .help_variants( [ wca::HelpVariants::General, wca::HelpVariants::SubjectCommand ] )
