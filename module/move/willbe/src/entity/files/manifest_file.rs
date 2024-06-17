@@ -49,7 +49,7 @@ impl ManifestFile
 
   /// Returns path to crate dir.
   #[ inline( always ) ]
-  pub fn manifest_file( self ) -> CrateDir
+  pub fn crate_dir( self ) -> CrateDir
   {
     self.into()
   }
