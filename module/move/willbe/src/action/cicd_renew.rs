@@ -49,7 +49,7 @@ mod private
     let packages = workspace_cache.packages()?;
     let username_and_repository = &username_and_repository
     (
-      &workspace_cache.workspace_root()?.join( "Cargo.toml" ).try_into()?, // xxx
+      &workspace_cache.workspace_root()?.join( "Cargo.toml" ).try_into()?, // qqq
       packages.clone(),
       // packages.as_slice(),
     )?;
