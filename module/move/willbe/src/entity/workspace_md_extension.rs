@@ -7,77 +7,57 @@ pub( crate ) mod private
   pub trait WorkspaceMdExtension
   {
     /// Return discord url
-    fn discord_url( &self ) -> Result< Option< String >, WorkspaceError >;
+    fn discord_url( &self ) -> Option< String >;
 
     /// Return the master branch
-    fn master_branch( &self ) -> Result< Option< String >, WorkspaceError >;
+    fn master_branch( &self ) -> Option< String >;
 
     /// Return the repository url
-    fn repository_url( &self ) -> Result< Option< String >, WorkspaceError >;
+    fn repository_url( &self ) -> Option< String >;
 
     /// Return the workspace_name
-    fn workspace_name( &self ) -> Result< Option< String >, WorkspaceError >;
+    fn workspace_name( &self ) -> Option< String >;
   }
 
   impl WorkspaceMdExtension for Workspace
   {
-    fn discord_url( &self ) -> Result< Option< String >, WorkspaceError > 
+    fn discord_url( &self ) -> Option< String > 
     {
-      Ok
-      ( 
-        self
-        .metadata
-        .as_ref()
-        .ok_or_else( || WorkspaceError::MetadataError )?
-        .workspace_metadata[ "discord_url" ]
-        .as_str()
-        .map( | url | url.to_string() ) 
-      )
+      self
+      .metadata
+      .workspace_metadata[ "discord_url" ]
+      .as_str()
+      .map( | url | url.to_string() )
     }
 
-    fn master_branch( &self ) -> Result< Option< String >, WorkspaceError > 
+    fn master_branch( &self ) -> Option< String > 
     {
-      Ok
-      ( 
-        self
-        .metadata
-        .as_ref()
-        .ok_or_else( || WorkspaceError::MetadataError )?
-        .workspace_metadata
-        .get( "master_branch" )
-        .and_then( | b | b.as_str() )
-        .map( | b | b.to_string() ) 
-      )
+      self
+      .metadata
+      .workspace_metadata
+      .get( "master_branch" )
+      .and_then( | b | b.as_str() )
+      .map( | b | b.to_string() )
     }
 
-    fn repository_url( &self ) -> Result< Option< String >, WorkspaceError > 
+    fn repository_url( &self ) -> Option< String > 
     {
-      Ok
-      ( 
-        self
-        .metadata
-        .as_ref()
-        .ok_or_else( || WorkspaceError::MetadataError )?
-        .workspace_metadata
-        .get( "repo_url" )
-        .and_then( | b | b.as_str() )
-        .map( | b | b.to_string() ) 
-      )
+      self
+      .metadata
+      .workspace_metadata
+      .get( "repo_url" )
+      .and_then( | b | b.as_str() )
+      .map( | b | b.to_string() )
     }
 
-    fn workspace_name( &self ) -> Result< Option< String >, WorkspaceError > 
+    fn workspace_name( &self ) -> Option< String > 
     {
-      Ok
-      ( 
-        self
-        .metadata
-        .as_ref()
-        .ok_or_else( || WorkspaceError::MetadataError )?
-        .workspace_metadata
-        .get( "workspace_name" )
-        .and_then( | b | b.as_str() )
-        .map( | b | b.to_string() ) 
-      )
+      self
+      .metadata
+      .workspace_metadata
+      .get( "workspace_name" )
+      .and_then( | b | b.as_str() )
+      .map( | b | b.to_string() )
     }
   }
 
