@@ -2,6 +2,9 @@ mod private
 {
 	// xxx : aaa : for Nikita : for Petro : for Bohdan : good one, apply it to all code
   // added error trait
+  /// The `ErrWith` trait provides a way to wrap errors in a custom error type, 
+  /// allowing you to handle and transform
+  /// errors in a more flexible and expressive way.
 	pub trait ErrWith< V, R, E >
   {
     fn err_with< F >( self, f : F ) -> std::result::Result< R, ( V, E ) >
