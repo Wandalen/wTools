@@ -5,9 +5,9 @@ mod private
   use std::
   {
     str::FromStr,
-    fs::{ OpenOptions, File, read_dir },
+    fs::{ OpenOptions, File },
     path::{ Path, PathBuf },
-    io::{ self, Write, Read, Seek, SeekFrom },
+    io::{ Write, Read, Seek, SeekFrom },
     collections::HashMap,
   };
 
@@ -224,7 +224,7 @@ mod private
     let mut parameters = GlobalTableOptions::initialize_from_path( &workspace_root )?;
 
     let read_me_path = workspace_root
-    .join( readme_path( &workspace_root )? );
+    .join( repository::readme_path( &workspace_root )? );
     let mut file = OpenOptions::new()
     .read( true )
     .write( true )
@@ -568,64 +568,12 @@ ensure that at least one remotest is present in git. ",
       bail!( "Incorrect indexes" )
     }
   }
-
-  /// Searches for a README file in specific subdirectories of the given directory path.
-  ///
-  /// This function attempts to find a README file in the following subdirectories: ".github",
-  /// the root directory, and "./docs". It returns the path to the first found README file, or
-  /// `None` if no README file is found in any of these locations.
-  // xxx : qqq : move out
-  pub fn readme_path( dir_path : &Path ) -> Result< PathBuf, io::Error >
-  {
-    if let Some( path ) = readme_in_dir_find( &dir_path.join( ".github" ) )
-    {
-      Ok( path )
-    }
-    else if let Some( path )  = readme_in_dir_find( dir_path )
-    {
-      Ok( path )
-    }
-    else if let Some( path )  = readme_in_dir_find( &dir_path.join( "docs" ) )
-    {
-      Ok( path )
-    }
-    else
-    {
-      Err( io::Error::new( io::ErrorKind::NotFound, format!( "Fail to find README.md at {}", &dir_path.display() ) ) )
-    }
-  }
-
-  /// Searches for a file named "readme.md" in the specified directory path.
-  ///
-  /// Given a directory path, this function searches for a file named "readme.md" in the specified
-  /// directory.
-  fn readme_in_dir_find( path : &Path ) -> Option< PathBuf >
-  {
-    read_dir( path )
-    .ok()?
-    .filter_map( Result::ok )
-    .filter( | p | p.path().is_file() )
-    .filter_map( | f |
-    {
-      let l_f = f.file_name().to_ascii_lowercase();
-      if l_f == "readme.md"
-      {
-        return Some( f.file_name() )
-      }
-      None
-    })
-    .max()
-    .map( PathBuf::from )
-  }
-
 }
 
 crate::mod_interface!
 {
   // /// Return workspace root
   // protected use workspace_root;
-  /// Find readme.md file in directory
-  protected use readme_path;
   /// Stability
   protected use Stability;
   /// Generate Stability badge
