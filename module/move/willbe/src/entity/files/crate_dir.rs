@@ -41,7 +41,7 @@ impl CrateDir
   //   self.0.clone()
   // }
 
-  /// Returns inner type whicj is an absolute path.
+  /// Returns inner type which is an absolute path.
   #[ inline( always ) ]
   pub fn inner( self ) -> AbsolutePath
   {

@@ -524,7 +524,7 @@ mod private
     Ok( report )
   }
 
-  // xxx : qqq : bad : move out
+  // xxx : qqq : bad : move out to publish.rs
 
   /// `PublishPlan` manages the overall publication process for multiple packages.
   /// It organizes the necessary details required for publishing each individual package.

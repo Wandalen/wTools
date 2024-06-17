@@ -74,6 +74,7 @@ mod private
     // pub fn crate_dir( &self ) -> CrateDir
     pub fn crate_dir( &self ) -> Result< CrateDir, PathError >
     {
+      // SAFE because `manifest_path containing the Cargo.toml`
       self.inner.manifest_path.as_path().parent().unwrap().try_into()
     }
 
