@@ -40,6 +40,7 @@ mod private
     dependency::*,
     for_lib::Error,
   };
+  use workspace_md_extension::WorkspaceMdExtension;
 
   static TAGS_TEMPLATE : std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 

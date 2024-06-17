@@ -26,6 +26,7 @@ mod private
   use package::PackageError;
   use error_tools::for_lib::Error;
   use error_tools::dependency::*;
+  use workspace_md_extension::WorkspaceMdExtension;
   // aaa : for Petro : rid off crate::x. ask
   // aaa : add `use crate::*` first
 
