@@ -1,8 +1,7 @@
-use core::ops::Deref;
-use derive_tools::Deref;
+use derive_tools::AsRef;
 
 #[ allow( dead_code ) ]
-#[ derive( Deref ) ]
+#[ derive( AsRef ) ]
 struct GenericsTypesDefault< T = i32 >( T );
 
 include!( "./only_test/generics_types_default.rs" );

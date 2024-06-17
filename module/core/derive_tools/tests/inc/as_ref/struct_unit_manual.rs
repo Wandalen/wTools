@@ -1,8 +1,12 @@
-use core::ops::Deref;
-use derive_tools::Deref;
-
 #[ allow( dead_code ) ]
-#[ derive( Deref ) ]
 struct StructUnit;
+
+impl AsRef< () > for StructUnit
+{
+  fn as_ref( &self ) -> &()
+  {
+    &()
+  }
+}
 
 include!( "./only_test/struct_unit.rs" );
