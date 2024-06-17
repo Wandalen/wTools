@@ -133,7 +133,9 @@ mod private
     else
     {
       // qqq : patterns can point to different workspaces. Current solution take first random path from list.
-      // qqq : for Bohdan : what do you mean? write more
+      // aaa : for Bohdan : what do you mean? write more
+      // A problem may arise if a user provides paths to packages from different workspaces
+      // and we do not check whether all packages are within the same workspace
       let current_path = paths.iter().next().unwrap().clone();
       let dir = CrateDir::try_from( current_path )?;
       Workspace::with_crate_dir( dir )?
