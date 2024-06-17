@@ -13,7 +13,6 @@ mod private
   use std::collections::HashMap;
   use std::ffi::OsString;
   use std::fmt::{ Debug, Display }; /* qqq : import only fmt here and everywhere */
-  use std::marker::PhantomData;
   use std::path::PathBuf;
   use colored::Colorize;
   // qqq : for Petro : don't do micro imports

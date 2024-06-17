@@ -102,7 +102,7 @@ mod private
 
   /// Represents parameters that are common for all tables
   #[ derive( Debug ) ]
-  struct GlobalTableOptions
+  struct GlobalTableOptions< 'a >
   {
     /// Path to the root repository.
     core_url : String,
@@ -111,8 +111,9 @@ mod private
     /// List of branches in the repository.
     branches : Option< Vec< String > >,
     /// workspace root
-    workspace_root : String,
+    workspace_root : &'a Path,
     // qqq : for Petro : is not that path?
+    // aaa : done
   }
 
   /// Structure that holds the parameters for generating a table.
@@ -152,10 +153,10 @@ mod private
     }
   }
 
-  impl GlobalTableOptions
+  impl < 'a >GlobalTableOptions< 'a >
   {
     /// Initializes the struct's fields from a `Cargo.toml` file located at a specified path.
-    fn initialize_from_path( path : &Path ) -> Result< Self >
+    fn initialize_from_path( path : &'a Path ) -> Result< Self >
     {
 
       let cargo_toml_path = path.join( "Cargo.toml" );
@@ -197,7 +198,7 @@ mod private
         {
           user_and_repo = url::git_info_extract( core_url )?;
         }
-        Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches, workspace_root : path.to_string_lossy().to_string() } )
+        Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches, workspace_root : path } )
       }
     }
 
@@ -253,7 +254,7 @@ mod private
           .as_bytes()
           )?;
           let params: TableOptions  = query::parse( raw_table_params ).unwrap().into_map( vec![] ).into();
-          let table = package_readme_health_table_generate( &mut workspace, &params, &mut parameters )?;
+          let table = package_readme_health_table_generate( &workspace, &params, &mut parameters )?;
           tables.push( table );
           tags_closures.push( ( open.end(), close.start() ) );
         }
@@ -286,12 +287,11 @@ mod private
   /// Generate header, iterate over all modules in package (from table_parameters) and append row.
   fn package_readme_health_table_generate
   (
-    workspace : &mut Workspace,
+    workspace : &Workspace,
     table_parameters: &TableOptions,
-    parameters: & mut GlobalTableOptions,
+    parameters: & mut GlobalTableOptions< '_ >,
   ) -> Result< String, Error >
   {
-    workspace.load()?;
     let directory_names = directory_names
     (
       workspace
@@ -388,7 +388,7 @@ ensure that at least one remotest is present in git. ",
   }
 
   /// Generate row that represents a module, with a link to it in the repository and optionals for stability, branches, documentation and links to the gitpod.
-  fn row_generate( module_name : &str, stability : Option< &Stability >, parameters : &GlobalTableOptions, table_parameters : &TableOptions ) -> String
+  fn row_generate( module_name : &str, stability : Option< &Stability >, parameters : &GlobalTableOptions< '_ >, table_parameters : &TableOptions ) -> String
   {
     let mut rou = format!( "| [{}]({}/{}) |", &module_name, &table_parameters.base_path, &module_name );
     if table_parameters.include_stability
@@ -489,7 +489,7 @@ ensure that at least one remotest is present in git. ",
   }
 
   /// Generate table header
-  fn table_header_generate( parameters : &GlobalTableOptions, table_parameters : &TableOptions ) -> String
+  fn table_header_generate( parameters : &GlobalTableOptions< '_ >, table_parameters : &TableOptions ) -> String
   {
     let mut header = String::from( "| Module |" );
     let mut separator = String::from( "|--------|" );
@@ -528,7 +528,7 @@ ensure that at least one remotest is present in git. ",
   }
 
   /// Generate cells for each branch
-  fn branch_cells_generate( table_parameters : &GlobalTableOptions, module_name : &str ) -> String
+  fn branch_cells_generate( table_parameters : &GlobalTableOptions< '_ >, module_name : &str ) -> String
   {
     let cells = table_parameters
     .branches
