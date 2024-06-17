@@ -5,53 +5,38 @@ mod private
   use table::*;
   use std::
   {
-    collections::{ BTreeMap, BTreeSet, HashSet },
-    fmt::Formatter,
-    sync::{ Arc, Mutex },
-    path::Path,
+    collections,
+    fmt,
+    sync,
+    path,
   };
-  use std::collections::HashMap;
-  use std::ffi::OsString;
-  use std::fmt::{ Debug, Display }; /* qqq : import only fmt here and everywhere */
-  use std::marker::PhantomData;
-  use std::path::PathBuf;
-  use colored::Colorize;
-  // qqq : for Petro : don't do micro imports
-  #[ cfg( feature = "progress_bar" ) ]
-  use indicatif::
-  {
-    MultiProgress,
-    ProgressBar,
-    ProgressStyle
-  };
-  use rayon::ThreadPoolBuilder;
+  use colored::Colorize as _;
+  use iter_tools::Itertools as _;
+  // aaa : for Petro : don't do micro imports
+  // aaa : done
   use process_tools::process::*;
-  use wtools::error::anyhow::{ Error, format_err };
-  use wtools::iter::Itertools;
-  use wtools::error::Result;
-  use former::Former;
-  use channel::Channel;
-  use optimization::Optimization;
+  use wtools::error::anyhow;
+  use wtools::error::anyhow::format_err;
 
   /// Newtype for package name
   #[ derive( Debug, Default, Clone ) ]
   pub struct PackageName( String );
 
   /// Represents a variant for testing purposes.
-  #[ derive( Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Former ) ]
+  #[ derive( Debug, Clone, Eq, PartialEq, Ord, PartialOrd, former::Former ) ]
   pub struct TestVariant
   {
     /// Represents the channel for the test variant.
-    channel : Channel,
+    channel : channel::Channel,
     /// Represents the optimization setting for the test variant.
-    optimization : Optimization,
+    optimization : optimization::Optimization,
     /// Contains additional features or characteristics of the test variant.
-    features : BTreeSet< String >,
+    features : collections::BTreeSet<String>,
   }
 
-  impl Display for TestVariant
+  impl fmt::Display for TestVariant
   {
-    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter< '_ >) -> fmt::Result
     {
       let features = if self.features.is_empty() { " ".to_string() } else { self.features.iter().join( " " ) };
       writeln!( f, "{} {} {}", self.optimization, self.channel, features )?;
@@ -66,9 +51,9 @@ mod private
     packages_plan : Vec< TestPackagePlan >,
   }
 
-  impl Display for TestPlan
+  impl fmt::Display for TestPlan
   {
-    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter< '_ >) -> std::fmt::Result
     {
       writeln!( f, "Plan: " )?;
       for plan in &self.packages_plan
@@ -96,16 +81,16 @@ mod private
     (
       // packages : &[ WorkspacePackageRef< 'a > ],
       packages : impl core::iter::Iterator< Item = WorkspacePackageRef< 'a > >,
-      channels : &HashSet< Channel >,
+      channels : &collections::HashSet< channel::Channel >,
       power : u32,
       include_features : Vec< String >,
       exclude_features : Vec< String >,
-      optimizations : &HashSet< Optimization >,
+      optimizations : &collections::HashSet< optimization::Optimization >,
       enabled_features : Vec< String >,
       with_all_features : bool,
       with_none_features : bool,
       variants_cap : u32,
-    ) -> Result< Self >
+    ) -> anyhow::Result< Self >
     {
       let mut packages_plan = vec![];
       for package in packages
@@ -137,18 +122,18 @@ mod private
   #[ derive( Debug ) ]
   pub struct TestPackagePlan
   {
-    enabled_features : BTreeSet< String >,
+    enabled_features : collections::BTreeSet< String >,
     // package : PathBuf,
     crate_dir : CrateDir,
-    test_variants : BTreeSet< TestVariant >,
+    test_variants : collections::BTreeSet< TestVariant >,
   }
 
-  impl Display for TestPackagePlan
+  impl fmt::Display for TestPackagePlan
   {
-    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter< '_ >) -> std::fmt::Result
     {
       writeln!( f, "Package : {}\nThe tests will be executed using the following configurations :", self.crate_dir.clone().absolute_path() )?;
-      let mut all_features = BTreeSet::new();
+      let mut all_features = collections::BTreeSet::new();
       for variant in &self.test_variants
       {
         let features = variant.features.iter().cloned();
@@ -215,20 +200,20 @@ mod private
     fn try_from< 'a >
     (
       package : WorkspacePackageRef< 'a >,
-      channels : &HashSet< Channel >,
+      channels : &collections::HashSet< channel::Channel >,
       power : u32,
       include_features : &[ String ],
       exclude_features : &[ String ],
-      optimizations : &HashSet< Optimization >,
+      optimizations : &collections::HashSet< optimization::Optimization >,
       enabled_features : &[ String ],
       with_all_features : bool,
       with_none_features : bool,
       variants_cap : u32,
-    ) -> Result< Self >
+    ) -> anyhow::Result< Self >
     {
       // let crate_dir = package.manifest_file().parent().unwrap().as_std_path().to_path_buf();
       let crate_dir = package.crate_dir()?;
-      let mut test_variants = BTreeSet::new();
+      let mut test_variants = std::collections::BTreeSet::new();
       let features_powerset = features::features_powerset
       (
         package,
@@ -270,7 +255,15 @@ mod private
     }
   }
 
-  fn generate_features_cells( ff : &mut Vec< String >, variant : &TestVariant, row : &mut Row, mut counter : usize, mut flag : bool, enabled_features : &BTreeSet< String > )
+  fn generate_features_cells
+  (
+    ff : &mut Vec< String >,
+    variant : &TestVariant,
+    row : &mut Row,
+    mut counter : usize,
+    mut flag : bool,
+    enabled_features : &collections::BTreeSet< String >
+  )
   {
     for feature in ff
     {
@@ -293,29 +286,22 @@ mod private
     }
   }
 
-  #[ derive( Debug, Former ) ]
+  #[ derive( Debug, former::Former ) ]
   pub struct PackageTestOptions< 'a >
   {
-    temp_path : Option< PathBuf >,
+    temp_path : Option< path::PathBuf >,
     plan : &'a TestPackagePlan,
     dry : bool,
-    progress_bar_feature : Option< PackageTestOptionsProgressBarFeature< 'a > >,
-  }
-
-  #[ derive( Debug ) ]
-  struct PackageTestOptionsProgressBarFeature< 'a >
-  {
-    phantom : PhantomData< &'a () >,
+    with_progress : bool,
     #[ cfg( feature = "progress_bar" ) ]
-    multi_progress : &'a Option< &'a MultiProgress >,
+    multi_progress : &'a indicatif::MultiProgress,
     #[ cfg( feature = "progress_bar" ) ]
-    progress_bar : &'a Option< ProgressBar >
+    progress_bar : &'a indicatif::ProgressBar
   }
-
 
   impl PackageTestOptionsFormer< '_ >
   {
-    pub fn option_temp(  mut self, value : impl Into< Option< PathBuf > > ) -> Self
+    pub fn option_temp( mut self, value : impl Into< Option< path::PathBuf > > ) -> Self
     {
       self.storage.temp_path = value.into();
       self
@@ -323,14 +309,14 @@ mod private
   }
 
   /// Represents the options for the test.
-  #[ derive( Debug, Former, Clone ) ]
+  #[ derive( Debug, former::Former, Clone ) ]
   pub struct SingleTestOptions
   {
     /// Specifies the release channels for rust.
     /// More details : https://rust-lang.github.io/rustup/concepts/channels.html#:~:text=Rust%20is%20released%20to%20three,releases%20are%20made%20every%20night.
-    channel : Channel,
+    channel : channel::Channel,
     /// Specifies the optimization for rust.
-    optimization : Optimization,
+    optimization : optimization::Optimization,
     /// Determines whether to use default features in the test.
     /// Enabled by default.
     #[ former( default = true ) ]
@@ -340,9 +326,9 @@ mod private
     #[ former( default = false ) ]
     with_all_features : bool,
     /// Specifies a list of features to be enabled in the test.
-    enable_features : BTreeSet< String >,
+    enable_features : collections::BTreeSet< String >,
     /// Temp directory path
-    temp_directory_path : Option< PathBuf >,
+    temp_directory_path : Option< path::PathBuf >,
     /// A boolean indicating whether to perform a dry run or not.
     dry : bool,
     /// RUST_BACKTRACE
@@ -358,11 +344,13 @@ mod private
       debug_assert!( !self.with_all_features ); // qqq : remove later
       [ "run".into(), self.channel.to_string(), "cargo".into(), "test".into() ]
       .into_iter()
-      .chain( if self.optimization == Optimization::Release { Some( "--release".into() ) } else { None } )
+      .chain( if self.optimization == optimization::Optimization::Release { Some( "--release".into() ) } else { None } )
       .chain( if self.with_default_features { None } else { Some( "--no-default-features".into() ) } )
-      // qqq : for Petro : bad, --no-default-features is always enabled!
+      // aaa : for Petro : bad, --no-default-features is always enabled!
+      // aaa : add `debug_assert!( !self.with_default_features )`
       .chain( if self.with_all_features { Some( "--all-features".into() ) } else { None } )
-      // qqq : for Petro : bad, --all-features is always disabled!
+      // aaa : for Petro : bad, --all-features is always disabled!
+      // aaa : add `debug_assert!( !self.with_all_features )`
       .chain( if self.enable_features.is_empty() { None } else { Some([ "--features".into(), self.enable_features.iter().join( "," ) ]) }.into_iter().flatten() )
       .chain( self.temp_directory_path.clone().map( | p | vec![ "--target-dir".to_string(), p.to_string_lossy().into() ] ).into_iter().flatten() )
       .collect()
@@ -383,7 +371,7 @@ mod private
   /// or an error if the command fails to execute.
   pub fn _run< P >( path : P, options : SingleTestOptions ) -> Result< Report, Report >
   where
-    P : AsRef< Path >
+    P : AsRef< path::Path >
   {
     let ( program, args ) = ( "rustup", options.as_rustup_args() );
 
@@ -403,10 +391,10 @@ mod private
     }
     else
     {
-      let envs = if options.backtrace { [( "RUST_BACKTRACE".to_string(), "full".to_string() )].into_iter().collect() } else { HashMap::new() };
+      let envs = if options.backtrace { [( "RUST_BACKTRACE".to_string(), "full".to_string() )].into_iter().collect() } else { collections::HashMap::new() };
       Run::former()
       .bin_path( program )
-      .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+      .args( args.into_iter().map( std::ffi::OsString::from ).collect::< Vec< _ > >() )
       .current_path( path.as_ref().to_path_buf() )
       .joining_streams( true )
       .env_variable( envs )
@@ -415,7 +403,7 @@ mod private
   }
 
   /// `TestOptions` is a structure used to store the arguments for tests.
-  #[ derive( Former ) ]
+  #[ derive( former::Former ) ]
   pub struct TestOptions
   {
     /// Plan for testing
@@ -425,40 +413,29 @@ mod private
     pub concurrent : u32,
 
     /// `temp_path` - path to temp directory.
-    pub temp_path : Option< PathBuf >,
+    pub temp_path : Option< path::PathBuf >,
 
     /// A boolean indicating whether to perform a dry run or not.
     pub dry : bool,
 
-    /// This field contains fields for progress_bar feature
-    pub feature : Option< TestOptionsProgressBarFeature >,
-  }
+    /// Progress bar flag.
+    pub with_progress : bool,
 
-  // qqq : for Petro : remove after Former fix
-  /// Structure for progress bar feature field
-  pub struct TestOptionsProgressBarFeature
-  {
     #[ cfg( feature = "progress_bar" ) ]
     /// Base progress bar
-    pub multiprocess : MultiProgress,
+    pub multiprocess : indicatif::MultiProgress,
 
     #[ cfg( feature = "progress_bar" ) ]
     /// Style for progress bar
-    pub style : ProgressStyle,
+    pub style : indicatif::ProgressStyle,
   }
 
-  impl Debug for TestOptionsProgressBarFeature
-  {
-    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
-    {
-      f.debug_struct( "TestOptionsProgressBarFeature" )
-      .finish()
-    }
-  }
+  // aaa : for Petro : remove after Former fix
+  // aaa : done
 
-  impl Debug for TestOptions
+  impl fmt::Debug for TestOptions
   {
-    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result {
+    fn fmt( &self, f : &mut fmt::Formatter< '_ >) -> std::fmt::Result {
       f.debug_struct( "TestOptions" )
       .field( "plan", &self.plan)
       .field( "concurrent", &self.concurrent)
@@ -470,7 +447,7 @@ mod private
 
   impl TestOptionsFormer
   {
-    pub fn option_temp(  mut self, value : impl Into< Option< PathBuf > > ) -> Self
+    pub fn option_temp(  mut self, value : impl Into< Option< path::PathBuf > > ) -> Self
     {
       self.storage.temp_path = value.into();
       self
@@ -499,15 +476,16 @@ mod private
     ///   for which the tests were run, and the values are nested `BTreeMap` where the keys are
     ///   feature names and the values are `Report` structs representing the test results for
     ///   the specific feature and channel.
-    pub tests : BTreeMap< TestVariant, Result< Report, Report > > ,
+    pub tests : collections::BTreeMap<TestVariant, Result<Report, Report>>,
     /// Enabled features
-    pub enabled_features : BTreeSet< String >,
-    // qqq : for Petro : rid off map of map of map, keep flat map
+    pub enabled_features : collections::BTreeSet<String>,
+    // aaa : for Petro : rid off map of map of map, keep flat map
+    // aaa : done
   }
 
-  impl Display for TestReport
+  impl fmt::Display for TestReport
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> std::fmt::Result
     {
       if self.dry
       {
@@ -515,7 +493,7 @@ mod private
       }
       let mut failed = 0;
       let mut success = 0;
-      let mut all_features = BTreeSet::new();
+      let mut all_features = collections::BTreeSet::new();
       for variant in self.tests.keys()
       {
         let features = variant.features.iter().cloned();
@@ -622,9 +600,9 @@ mod private
     pub failure_reports : Vec< TestReport >,
   }
 
-  impl Display for TestsReport
+  impl fmt::Display for TestsReport
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> std::fmt::Result
     {
       if self.dry
       {
@@ -662,12 +640,12 @@ mod private
 
   /// `tests_run` is a function that runs tests on a given package with specified arguments.
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
-  pub fn run( options : &PackageTestOptions< '_ > ) -> Result< TestReport, ( TestReport, Error ) >
+  pub fn run( options : &PackageTestOptions< '_ > ) -> Result< TestReport, ( TestReport, anyhow::Error ) >
   {
     let mut report = TestReport::default();
     report.dry = options.dry;
     report.enabled_features = options.plan.enabled_features.clone();
-    let report = Arc::new( Mutex::new( report ) );
+    let report = sync::Arc::new( sync::Mutex::new( report ) );
     let crate_dir = options.plan.crate_dir.clone();
 
     rayon::scope
@@ -693,32 +671,30 @@ mod private
               if let Some( p ) = options.temp_path.clone()
               {
                 let path = p.join( path_tools::path::unique_folder_name().unwrap() );
-                // qqq : for Petro : rid off unwrap
+                // aaa : for Petro : rid off unwrap
+                // aaa : we discuss it
                 std::fs::create_dir_all( &path ).unwrap();
                 args_t = args_t.temp_directory_path( path );
               }
               #[ cfg( feature = "progress_bar" ) ]
-              let _s =
+              if options.with_progress
               {
-                let s = if let Some( multi_progress ) = options.progress_bar_feature.as_ref().and_then( | f | f.multi_progress.as_ref() )
+                let _s =
                 {
-                  let s = multi_progress.add( ProgressBar::new_spinner().with_message( format!( "{}", variant ) ) );
+                  let s = options.multi_progress.add( indicatif::ProgressBar::new_spinner().with_message( format!( "{}", variant ) ) );
                   s.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
-                  Some( s )
-                }
-                else
-                {
-                  None
+                  s
                 };
-                // spinner.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
-                s
-              };
+              }
               let args = args_t.form();
               let temp_dir = args.temp_directory_path.clone();
               let cmd_rep = _run( crate_dir, args );
               r.lock().unwrap().tests.insert( variant.clone(), cmd_rep );
               #[ cfg( feature = "progress_bar" ) ]
-              options.progress_bar_feature.as_ref().unwrap().progress_bar.as_ref().map( | b | b.inc( 1 ) );
+              if options.with_progress
+              {
+                options.progress_bar.inc( 1 );
+              }
               if let Some( path ) = temp_dir
               {
                 std::fs::remove_dir_all( path ).unwrap();
@@ -730,7 +706,7 @@ mod private
     );
 
     // unpack. all tasks must be completed until now
-    let report = Mutex::into_inner( Arc::into_inner( report ).unwrap() ).unwrap();
+    let report = sync::Mutex::into_inner( sync::Arc::into_inner( report ).unwrap() ).unwrap();
     let at_least_one_failed = report
     .tests
     .iter()
@@ -739,12 +715,12 @@ mod private
   }
 
   /// Run tests for given packages.
-  pub fn tests_run( args : &TestOptions ) -> Result< TestsReport, ( TestsReport, Error ) >
+  pub fn tests_run( args : &TestOptions ) -> Result< TestsReport, ( TestsReport, anyhow::Error ) >
   {
     let mut report = TestsReport::default();
     report.dry = args.dry;
-    let report = Arc::new( Mutex::new( report ) );
-    let pool = ThreadPoolBuilder::new().use_current_thread().num_threads( args.concurrent as usize ).build().unwrap();
+    let report = sync::Arc::new( sync::Mutex::new( report ) );
+    let pool = rayon::ThreadPoolBuilder::new().use_current_thread().num_threads( args.concurrent as usize ).build().unwrap();
     pool.scope
     (
       | s |
@@ -759,32 +735,22 @@ mod private
               #[ cfg( feature = "progress_bar" ) ]
               let pb =
               {
-                let pb = if let Some( feature ) = args.feature.as_ref()
-                {
-                  let pb = feature.multiprocess.add(ProgressBar::new(plan.test_variants.len() as u64));
-                  pb.set_style( args.feature.as_ref().unwrap().style.clone() );
-                  pb.inc( 0 );
-                  Some( pb )
-                }
-                else
-                {
-                  None
-                };
+                let pb = args.multiprocess.add( indicatif::ProgressBar::new( plan.test_variants.len() as u64 ) );
+                pb.set_style( args.style.clone() );
+                pb.inc( 0 );
                 pb
               };
+              let test_package_options = PackageTestOptions::former()
+              .option_temp( args.temp_path.clone() )
+              .plan( plan )
+              .dry( args.dry )
+              .with_progress( args.with_progress );
+
               #[ cfg( feature = "progress_bar" ) ]
-              let multi_progress = args.feature.as_ref().map( | f | &f.multiprocess );
-              let test_package_options = PackageTestOptions::former().option_temp( args.temp_path.clone() ).plan( plan ).dry( args.dry );
-              #[ cfg( feature = "progress_bar" ) ]
-              let test_package_options = test_package_options.progress_bar_feature
-              (
-                PackageTestOptionsProgressBarFeature
-                {
-                  phantom : PhantomData,
-                  multi_progress : &multi_progress,
-                  progress_bar : &pb,
-                }
-              );
+              let test_package_options =
+              {
+                test_package_options.multi_progress( &args.multiprocess ).progress_bar( &pb )
+              };
               let options = test_package_options.form();
               match run( &options )
               {
@@ -802,7 +768,7 @@ mod private
         }
       }
     );
-    let report = Arc::into_inner( report ).unwrap().into_inner().unwrap();
+    let report = sync::Arc::into_inner( report ).unwrap().into_inner().unwrap();
     if report.failure_reports.is_empty()
     {
       Ok( report )
@@ -828,6 +794,4 @@ crate::mod_interface!
   protected use TestsReport;
   protected use run;
   protected use tests_run;
-
-  protected use TestOptionsProgressBarFeature;
 }

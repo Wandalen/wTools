@@ -16,11 +16,6 @@ mod private
   use std::path::PathBuf;
   use regex::Regex;
   use wca::wtools::anyhow::Error;
-  use action::readme_health_table_renew::
-  {
-    readme_path,
-    // workspace_root
-  };
   // use path::AbsolutePath;
   use { CrateDir, query, url, Workspace, wtools };
   use entity::{ PathError, WorkspaceInitError };
@@ -40,6 +35,7 @@ mod private
     dependency::*,
     for_lib::Error,
   };
+  use workspace_md_extension::WorkspaceMdExtension;
 
   static TAGS_TEMPLATE : std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 
@@ -199,7 +195,7 @@ mod private
 
     let read_me_path = workspace_root.join
     (
-      readme_path( &workspace_root )
+      repository::readme_path( &workspace_root )
       // .ok_or_else( || format_err!( "Fail to find README.md" ) )
       .map_err( | e | ( report.clone(), e.into() ) )?
     );

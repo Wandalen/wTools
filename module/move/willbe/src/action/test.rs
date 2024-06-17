@@ -95,7 +95,8 @@ mod private
         report,
         format_err!
         (
-          "Missing toolchain(-s) that was required : [{}]. Try to install it with `rustup install {}` command(-s)",
+          "Missing toolchain(-s) that was required : [{}]. \
+Try to install it with `rustup install {}` command(-s)",
           channels_diff.iter().join( ", " ),
           channels_diff.iter().join( " " )
         )
@@ -190,18 +191,12 @@ mod private
     .concurrent( concurrent )
     .plan( plan )
     .option_temp( temp_path )
-    .dry( dry );
+    .dry( dry )
+    .with_progress( with_progress );
 
     #[ cfg( feature = "progress_bar" ) ]
-    let test_options_former = if with_progress
-    {
-      let test_options_former = test_options_former.feature( TestOptionsProgressBarFeature{ multiprocess, style } );
-      test_options_former
-    }
-    else
-    {
-      test_options_former
-    };
+    let test_options_former = test_options_former.multiprocess( multiprocess ).style( style );
+    
 
     let options = test_options_former.form();
     let result = tests_run( &options );

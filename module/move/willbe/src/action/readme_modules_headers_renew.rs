@@ -2,7 +2,7 @@ mod private
 {
   use crate::*;
   // use path::AbsolutePath;
-  use action::readme_health_table_renew::{ readme_path, Stability, stability_generate, find_example_file };
+  use action::readme_health_table_renew::{ Stability, stability_generate, find_example_file };
   use package::Package;
   use wtools::error::
   {
@@ -26,6 +26,7 @@ mod private
   use package::PackageError;
   use error_tools::for_lib::Error;
   use error_tools::dependency::*;
+  use workspace_md_extension::WorkspaceMdExtension;
   // aaa : for Petro : rid off crate::x. ask
   // aaa : add `use crate::*` first
 
@@ -212,7 +213,7 @@ mod private
       .unwrap()
       .join
       (
-        readme_path( path.parent().unwrap().as_ref() )
+        repository::readme_path( path.parent().unwrap().as_ref() )
         // .ok_or_else::< wError, _ >( || err!( "Fail to find README.md at {}", &path ) )
         .map_err( | e | ( report.clone(), e.into() ) )?
       );

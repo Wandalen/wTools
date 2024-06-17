@@ -64,5 +64,17 @@ crate::mod_interface!
   /// Rust build optimization: debug/release
   layer optimization;
   orphan use super::optimization;
+  
+  /// Md's extension for workspace.
+  layer workspace_md_extension;
+  orphan use super::workspace_md_extension;
+  
+  /// Md's extension for workspace.
+  layer package_md_extension;
+  orphan use super::package_md_extension;
+  
+  /// Repository utils.
+  layer repository;
+  orphan use super::repository;
 
 }
