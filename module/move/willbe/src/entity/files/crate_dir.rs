@@ -43,7 +43,7 @@ impl CrateDir
 
   /// Returns inner type which is an absolute path.
   #[ inline( always ) ]
-  pub fn inner( self ) -> AbsolutePath
+  pub fn absolute_path( self ) -> AbsolutePath
   {
     self.0
   }
@@ -93,7 +93,7 @@ impl From< CrateDir > for AbsolutePath
 {
   fn from( src : CrateDir ) -> Self
   {
-    src.inner()
+    src.absolute_path()
   }
 }
 
@@ -101,7 +101,7 @@ impl From< CrateDir > for PathBuf
 {
   fn from( src : CrateDir ) -> Self
   {
-    src.inner().inner()
+    src.absolute_path().inner()
   }
 }
 

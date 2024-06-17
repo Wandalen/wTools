@@ -147,7 +147,7 @@ mod private
   {
     fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
     {
-      writeln!( f, "Package : {}\nThe tests will be executed using the following configurations :", self.crate_dir.clone().inner() )?;
+      writeln!( f, "Package : {}\nThe tests will be executed using the following configurations :", self.crate_dir.clone().absolute_path() )?;
       let mut all_features = BTreeSet::new();
       for variant in &self.test_variants
       {
