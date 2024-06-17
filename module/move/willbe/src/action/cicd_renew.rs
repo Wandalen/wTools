@@ -116,7 +116,7 @@ mod private
       data.insert( "branch", "alpha" );
       let manifest_file = manifest_file.to_string_lossy().replace( "\\", "/" );
       let manifest_file = manifest_file.trim_start_matches( '/' );
-      data.insert( "manifest_file", manifest_file );
+      data.insert( "manifest_path", manifest_file );
       let content = handlebars.render( "module_push", &data )?;
       file_write( &workflow_file_name, &content )?;
 
