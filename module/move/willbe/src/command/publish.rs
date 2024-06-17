@@ -59,6 +59,7 @@ mod private
           let line = format!("will .publish{}{} dry:0", args, prop );
           println!("To apply plan, call the command `{}`", line.blue() );
           // qqq : for Petro : for Bohdan : bad. should be exact command with exact parameters
+          // aaa : it`s already works
         }
 
         Ok( () )

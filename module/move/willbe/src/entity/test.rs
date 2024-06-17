@@ -299,19 +299,11 @@ mod private
     temp_path : Option< PathBuf >,
     plan : &'a TestPackagePlan,
     dry : bool,
-    progress_bar_feature : Option< PackageTestOptionsProgressBarFeature< 'a > >,
-  }
-
-  #[ derive( Debug ) ]
-  struct PackageTestOptionsProgressBarFeature< 'a >
-  {
-    phantom : PhantomData< &'a () >,
     #[ cfg( feature = "progress_bar" ) ]
-    multi_progress : &'a Option< &'a MultiProgress >,
+    multi_progress : &'a MultiProgress ,
     #[ cfg( feature = "progress_bar" ) ]
-    progress_bar : &'a Option< ProgressBar >
+    progress_bar : &'a ProgressBar
   }
-
 
   impl PackageTestOptionsFormer< '_ >
   {
@@ -361,8 +353,10 @@ mod private
       .chain( if self.optimization == Optimization::Release { Some( "--release".into() ) } else { None } )
       .chain( if self.with_default_features { None } else { Some( "--no-default-features".into() ) } )
       // qqq : for Petro : bad, --no-default-features is always enabled!
+      // aaa : add `debug_assert!( !self.with_default_features )`
       .chain( if self.with_all_features { Some( "--all-features".into() ) } else { None } )
       // qqq : for Petro : bad, --all-features is always disabled!
+      // aaa : add `debug_assert!( !self.with_all_features )`
       .chain( if self.enable_features.is_empty() { None } else { Some([ "--features".into(), self.enable_features.iter().join( "," ) ]) }.into_iter().flatten() )
       .chain( self.temp_directory_path.clone().map( | p | vec![ "--target-dir".to_string(), p.to_string_lossy().into() ] ).into_iter().flatten() )
       .collect()
@@ -430,14 +424,6 @@ mod private
     /// A boolean indicating whether to perform a dry run or not.
     pub dry : bool,
 
-    /// This field contains fields for progress_bar feature
-    pub feature : Option< TestOptionsProgressBarFeature >,
-  }
-
-  // qqq : for Petro : remove after Former fix
-  /// Structure for progress bar feature field
-  pub struct TestOptionsProgressBarFeature
-  {
     #[ cfg( feature = "progress_bar" ) ]
     /// Base progress bar
     pub multiprocess : MultiProgress,
@@ -447,15 +433,9 @@ mod private
     pub style : ProgressStyle,
   }
 
-  impl Debug for TestOptionsProgressBarFeature
-  {
-    fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result
-    {
-      f.debug_struct( "TestOptionsProgressBarFeature" )
-      .finish()
-    }
-  }
-
+  // qqq : for Petro : remove after Former fix
+  // aaa : done
+  
   impl Debug for TestOptions
   {
     fn fmt( &self, f : &mut Formatter< '_ >) -> std::fmt::Result {
@@ -503,6 +483,7 @@ mod private
     /// Enabled features
     pub enabled_features : BTreeSet< String >,
     // qqq : for Petro : rid off map of map of map, keep flat map
+    // aaa : done
   }
 
   impl Display for TestReport
@@ -700,17 +681,8 @@ mod private
               #[ cfg( feature = "progress_bar" ) ]
               let _s =
               {
-                let s = if let Some( multi_progress ) = options.progress_bar_feature.as_ref().and_then( | f | f.multi_progress.as_ref() )
-                {
-                  let s = multi_progress.add( ProgressBar::new_spinner().with_message( format!( "{}", variant ) ) );
-                  s.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
-                  Some( s )
-                }
-                else
-                {
-                  None
-                };
-                // spinner.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
+                let s = options.multi_progress.add( ProgressBar::new_spinner().with_message( format!( "{}", variant ) ) );
+                s.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
                 s
               };
               let args = args_t.form();
@@ -718,7 +690,7 @@ mod private
               let cmd_rep = _run( crate_dir, args );
               r.lock().unwrap().tests.insert( variant.clone(), cmd_rep );
               #[ cfg( feature = "progress_bar" ) ]
-              options.progress_bar_feature.as_ref().unwrap().progress_bar.as_ref().map( | b | b.inc( 1 ) );
+              options.progress_bar.inc( 1 );
               if let Some( path ) = temp_dir
               {
                 std::fs::remove_dir_all( path ).unwrap();
@@ -759,32 +731,17 @@ mod private
               #[ cfg( feature = "progress_bar" ) ]
               let pb =
               {
-                let pb = if let Some( feature ) = args.feature.as_ref()
-                {
-                  let pb = feature.multiprocess.add(ProgressBar::new(plan.test_variants.len() as u64));
-                  pb.set_style( args.feature.as_ref().unwrap().style.clone() );
-                  pb.inc( 0 );
-                  Some( pb )
-                }
-                else
-                {
-                  None
-                };
+                let pb = args.multiprocess.add( ProgressBar::new( plan.test_variants.len() as u64 ) );
+                pb.set_style( args.style.clone() );
+                pb.inc( 0 );
                 pb
               };
-              #[ cfg( feature = "progress_bar" ) ]
-              let multi_progress = args.feature.as_ref().map( | f | &f.multiprocess );
               let test_package_options = PackageTestOptions::former().option_temp( args.temp_path.clone() ).plan( plan ).dry( args.dry );
-              #[ cfg( feature = "progress_bar" ) ]
-              let test_package_options = test_package_options.progress_bar_feature
-              (
-                PackageTestOptionsProgressBarFeature
-                {
-                  phantom : PhantomData,
-                  multi_progress : &multi_progress,
-                  progress_bar : &pb,
-                }
-              );
+              #[ cfg( feature = "progress_bar" ) ] 
+              let test_package_options = 
+              {
+                test_package_options.multi_progress( &args.multiprocess ).progress_bar( &pb )
+              };
               let options = test_package_options.form();
               match run( &options )
               {
@@ -828,6 +785,4 @@ crate::mod_interface!
   protected use TestsReport;
   protected use run;
   protected use tests_run;
-
-  protected use TestOptionsProgressBarFeature;
 }
