@@ -272,6 +272,7 @@ mod phantom_tests
   mod bounds_mixed_manual;
   mod bounds_where;
   mod bounds_where_manual;
+  mod name_collisions;
   #[ test_tools::nightly ]
   #[ test ]
   fn phantom_trybuild()
