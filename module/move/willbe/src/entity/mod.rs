@@ -64,5 +64,9 @@ crate::mod_interface!
   /// Md's extension for workspace.
   layer workspace_md_extension;
   orphan use super::workspace_md_extension;
+  
+  /// Md's extension for workspace.
+  layer package_md_extension;
+  orphan use super::package_md_extension;
 
 }
