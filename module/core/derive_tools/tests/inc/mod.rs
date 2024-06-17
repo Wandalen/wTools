@@ -258,8 +258,12 @@ mod phantom_tests
 
   mod struct_named;
   mod struct_named_manual;
+  mod struct_named_empty;
+  mod struct_named_empty_manual;
   mod struct_tuple;
   mod struct_tuple_manual;
+  mod struct_tuple_empty;
+  mod struct_tuple_empty_manual;
   mod struct_unit_to_tuple;
   mod struct_unit_to_tuple_manual;
   #[ test_tools::nightly ]
