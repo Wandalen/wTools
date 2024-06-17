@@ -266,6 +266,12 @@ mod phantom_tests
   mod struct_tuple_empty_manual;
   mod struct_unit_to_tuple;
   mod struct_unit_to_tuple_manual;
+  mod bounds_inlined;
+  mod bounds_inlined_manual;
+  mod bounds_mixed;
+  mod bounds_mixed_manual;
+  mod bounds_where;
+  mod bounds_where_manual;
   #[ test_tools::nightly ]
   #[ test ]
   fn phantom_trybuild()
