@@ -322,7 +322,7 @@ mod private
         parameters.core_url = repo_url( &module_path.clone().try_into()? )
         .context
         (
-          // qqq : for Petro : unreadable
+          // qqq : for Petro : unreadable : check other lines of code which are long
           format_err!
           (
             "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) in {} OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR ensure that at least one remotest is present in git. ",

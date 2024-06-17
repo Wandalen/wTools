@@ -159,7 +159,7 @@ mod private
     right : &'static str,
   }
 
-  // qqq : fro Bohdan : make facade, abstract and move out tree printing. or reuse ready solution for tree printing
+  // qqq : for Mykyta : make facade, abstract and move out tree printing. or reuse ready solution for tree printing
   // stick to single responsibility
   const UTF8_SYMBOLS : Symbols = Symbols
   {
@@ -221,7 +221,6 @@ mod private
       write!( f, "\n" )?;
 
       let mut new_spacer = format!( "{spacer}{}  ", if self.normal_dependencies.len() < 2 { " " } else { UTF8_SYMBOLS.down } );
-
       let mut normal_dependencies_iter = self.normal_dependencies.iter();
       let last = normal_dependencies_iter.next_back();
 
