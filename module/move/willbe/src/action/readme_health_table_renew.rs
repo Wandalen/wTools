@@ -356,7 +356,18 @@ ensure that at least one remotest is present in git. ",
       Box::new
       (
         move | p |
-        p.publish().is_none() && p.manifest_file().unwrap().starts_with( &path ) // qqq : rid off unwraps
+        {
+          let manifest_file = p.manifest_file();
+          if let Ok( pa ) = manifest_file
+          {
+            p.publish().is_none() && pa.starts_with( &path )
+          }
+          else 
+          {
+            false
+          }
+        } // aaa : rid off unwraps
+        // aaa : done
       )
     );
     let module_dependency_filter : Option< Box< dyn Fn( WorkspacePackageRef< '_ >, DependencyRef< '_ > ) -> bool > > = Some
