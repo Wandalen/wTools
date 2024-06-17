@@ -118,7 +118,7 @@ fn package_version_bump()
   let root_manifest_path =  temp.join( "Cargo.toml" );
   let mut cargo_toml = std::fs::File::create( &root_manifest_path ).unwrap();
   // let root_manifest_absolute_path = AbsolutePath::try_from( root_manifest_path.as_path() ).unwrap();
-  let root_manifest_absolute_path = CrateDir::try_from( root_manifest_path.as_path() ).unwrap();
+  let root_manifest_absolute_path = ManifestFile::try_from( root_manifest_path ).unwrap();
   write!( cargo_toml, r#"
 [workspace]
 resolver = "2"

@@ -89,7 +89,15 @@ mod private
     if !channels_diff.is_empty()
     {
       // qqq : for Petro : non readable
-      return Err(( report, format_err!( "Missing toolchain(-s) that was required : [{}]. Try to install it with `rustup install {{toolchain name}}` command(-s)", channels_diff.into_iter().join( ", " ) ) ))
+      return Err
+      ((
+        report,
+        format_err!
+        (
+          "Missing toolchain(-s) that was required : [{}]. Try to install it with `rustup install {{toolchain name}}` command(-s)",
+          channels_diff.into_iter().join( ", " )
+        )
+      ))
     }
     report.dry = dry;
     let TestsCommandOptions
@@ -147,6 +155,7 @@ mod private
     ).map_err( | e | ( report.clone(), e ) )?;
 
     println!( "{plan}" );
+      // qqq : split on two functions for create plan and for execute
 
     let temp_path =  if temp
     {

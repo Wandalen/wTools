@@ -196,7 +196,7 @@ mod private
       // CrateDir::try_from( path )
       // .map_err( | e | ( report.clone(), e.into() ) )?
     )
-    .map_err( | e | ( report.clone(), e.into() ) )?; // xxx : qqq : use trait
+    .map_err( | e | ( report.clone(), e.into() ) )?; // xxx : qqq : use trait. everywhere
     let discord_url = workspace.discord_url().map_err( | e | ( report.clone(), e.into() ) )?;
 
     // qqq : inspect each collect in willbe and rid off most of them
