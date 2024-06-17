@@ -55,7 +55,7 @@ mod private
           let expected_to_publish : Vec< _ > = plan
           .plans
           .iter()
-          .map( | p | ( p.version_bump.crate_dir.clone().inner(), p.package_name.clone(), p.version_bump.clone() ) )
+          .map( | p | ( p.version_bump.crate_dir.clone().absolute_path(), p.package_name.clone(), p.version_bump.clone() ) )
           .collect();
           let mut actually_published : Vec< _ > = self.packages.iter()
           .filter_map
@@ -126,25 +126,26 @@ mod private
       paths.extend( Some( current_path ) );
     }
 
-    let mut workspace = if paths.is_empty()
+    let workspace = if paths.is_empty()
     {
       Workspace::from_current_path()?
     }
     else
     {
-      // qqq : patterns can point to different workspaces. Current solution take first random path from list
-      // qqq : for Bohdan : what do you mean?
+      // qqq : patterns can point to different workspaces. Current solution take first random path from list.
+      // aaa : for Bohdan : what do you mean? write more
+      // A problem may arise if a user provides paths to packages from different workspaces
+      // and we do not check whether all packages are within the same workspace
       let current_path = paths.iter().next().unwrap().clone();
       let dir = CrateDir::try_from( current_path )?;
       Workspace::with_crate_dir( dir )?
     };
 
     let workspace_root_dir : AbsolutePath = workspace
-    .workspace_root()?
+    .workspace_root()
     .try_into()?;
 
-    workspace.load()?;
-    let packages = workspace.packages()?;
+    let packages = workspace.packages();
     let packages_to_publish : Vec< String > = packages
     .clone()
     // .iter()
@@ -154,11 +155,11 @@ mod private
     .map( | p | p.name().to_string() )
     .collect();
     let package_map : HashMap< String, Package< '_ > > = packages
-    .map( | p | ( p.name().to_string(), Package::from( p.clone() ) ) )
+    .map( | p | ( p.name().to_string(), Package::from( p ) ) )
     .collect();
     // qqq : many redundant clones
 
-    let graph = workspace.graph();
+    let graph = workspace_graph::graph( &workspace );
     let subgraph_wanted = graph::subgraph( &graph, &packages_to_publish[ .. ] );
     let tmp = subgraph_wanted.map( | _, n | graph[ *n ].clone(), | _, e | graph[ *e ].clone() );
 

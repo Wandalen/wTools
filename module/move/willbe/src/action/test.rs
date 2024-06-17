@@ -88,8 +88,19 @@ mod private
     let channels_diff : Vec< _ > = o.channels.difference( &channels ).collect();
     if !channels_diff.is_empty()
     {
-      // qqq : for Petro : non readable
-      return Err(( report, format_err!( "Missing toolchain(-s) that was required : [{}]. Try to install it with `rustup install {{toolchain name}}` command(-s)", channels_diff.into_iter().join( ", " ) ) ))
+      // aaa : for Petro : non readable
+      // aaa : readable and with actual command
+      return Err
+      ((
+        report,
+        format_err!
+        (
+          "Missing toolchain(-s) that was required : [{}]. \
+Try to install it with `rustup install {}` command(-s)",
+          channels_diff.iter().join( ", " ),
+          channels_diff.iter().join( " " )
+        )
+      ))
     }
     report.dry = dry;
     let TestsCommandOptions
@@ -109,7 +120,7 @@ mod private
       with_progress,
     } = o;
 
-    // qqq : xxx : use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >
+    // qqq : for Petro : xxx : use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >
     let path = if o.dir.as_ref().file_name() == Some( "Cargo.toml".as_ref() )
     {
       o.dir.parent().unwrap()
@@ -128,7 +139,6 @@ mod private
     // let packages = needed_packages( &workspace );
     let packages = workspace
     .packages()
-    .map_err( | e | ( report.clone(), e.into() ) )?
     .filter( move | p | p.manifest_file().unwrap().starts_with( path.as_ref() ) ) // qqq : rid off unwrap
     ;
 
@@ -147,6 +157,7 @@ mod private
     ).map_err( | e | ( report.clone(), e ) )?;
 
     println!( "{plan}" );
+      // qqq : split on two functions for create plan and for execute
 
     let temp_path =  if temp
     {
@@ -180,18 +191,12 @@ mod private
     .concurrent( concurrent )
     .plan( plan )
     .option_temp( temp_path )
-    .dry( dry );
+    .dry( dry )
+    .with_progress( with_progress );
 
     #[ cfg( feature = "progress_bar" ) ]
-    let test_options_former = if with_progress
-    {
-      let test_options_former = test_options_former.feature( TestOptionsProgressBarFeature{ multiprocess, style } );
-      test_options_former
-    }
-    else
-    {
-      test_options_former
-    };
+    let test_options_former = test_options_former.multiprocess( multiprocess ).style( style );
+    
 
     let options = test_options_former.form();
     let result = tests_run( &options );

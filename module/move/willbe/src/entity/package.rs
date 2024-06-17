@@ -29,7 +29,6 @@ mod private
       for_app::{ format_err, Context },
     }
   };
-  use action::readme_health_table_renew::Stability;
   use former::Former;
   use diff::crate_diff;
   use version::version_revert;
@@ -161,28 +160,7 @@ mod private
         },
       }
     }
-
-    /// Package name
-    // pub fn name( &self ) -> Result< String, PackageError >
-    pub fn name( &self ) -> Result< &str, PackageError >
-    {
-      match self
-      {
-        Self::Manifest( manifest ) =>
-        {
-          // let data = manifest.data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
-          let data = &manifest.data;
-
-          // Unwrap safely because of the `Package` type guarantee
-          // Ok( data[ "package" ][ "name" ].as_str().unwrap().to_string() )
-          Ok( data[ "package" ][ "name" ].as_str().unwrap() )
-        }
-        Self::WorkspacePackageRef( package ) =>
-        {
-          Ok( package.name() )
-        }
-      }
-    }
+    
 
     /// Package version
     pub fn version( &self ) -> Result< String, PackageError >
@@ -203,75 +181,7 @@ mod private
         }
       }
     }
-
-    /// Stability
-    pub fn stability( &self ) -> Result< Stability, PackageError >
-    {
-      // qqq : for Petro : bad : first of all it should be in trait. also there is duplicated code
-      // qqq : for Petro : review other similar places
-      match self
-      {
-        Self::Manifest( manifest ) =>
-        {
-          // let data = manifest.data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
-          let data = &manifest.data;
-
-          // Unwrap safely because of the `Package` type guarantee
-          Ok( data[ "package" ].get( "package" ).and_then( | m | m.get( "stability" ) ).and_then( | s | s.as_str() ).and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental)  )
-        }
-        Self::WorkspacePackageRef( package ) =>
-        {
-          Ok
-          (
-            package
-            .metadata()[ "stability" ]
-            .as_str()
-            .and_then( | s | s.parse::< Stability >().ok() )
-            .unwrap_or( Stability::Experimental)
-          )
-        }
-      }
-    }
-
-    /// Repository
-    pub fn repository( &self ) -> Result< Option< String >, PackageError >
-    {
-      match self
-      {
-        Self::Manifest( manifest ) =>
-        {
-          // let data = manifest.data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
-          let data = &manifest.data;
-
-          // Unwrap safely because of the `Package` type guarantee
-          Ok( data[ "package" ].get( "repository" ).and_then( | r | r.as_str() ).map( | r | r.to_string()) )
-        }
-        Self::WorkspacePackageRef( package ) =>
-        {
-          Ok( package.repository().cloned() )
-        }
-      }
-    }
-
-    /// Discord url
-    pub fn discord_url( &self ) -> Result< Option< String >, PackageError >
-    {
-      match self
-      {
-        Self::Manifest( manifest ) =>
-        {
-          // let data = manifest.data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
-          let data = &manifest.data;
-
-          Ok( data[ "package" ].get( "package" ).and_then( | m | m.get( "discord_url" ) ).and_then( | url | url.as_str() ).map( | r | r.to_string() ) )
-        }
-        Self::WorkspacePackageRef( package ) =>
-        {
-          Ok( package.metadata()[ "discord_url" ].as_str().map( | url | url.to_string() ) )
-        }
-      }
-    }
-
+    
     /// Check that module is local.
     // pub fn local_is( &self ) -> Result< bool, ManifestError >
     pub fn local_is( &self ) -> bool
@@ -406,10 +316,10 @@ mod private
     fn build( self ) -> PackagePublishInstruction
     {
       let crate_dir = self.package.crate_dir();
-      let workspace_root : AbsolutePath = self.workspace_dir.clone().inner();
+      let workspace_root : AbsolutePath = self.workspace_dir.clone().absolute_path();
       let pack = cargo::PackOptions
       {
-        path : crate_dir.clone().inner().inner(),
+        path : crate_dir.clone().absolute_path().inner(),
         channel : self.channel,
         allow_dirty : self.dry,
         no_verify : self.dry,
@@ -431,13 +341,13 @@ mod private
       let git_options = GitOptions
       {
         git_root : workspace_root,
-        items : dependencies.iter().chain([ &crate_dir ]).map( | d | d.clone().inner().join( "Cargo.toml" ) ).collect(),
+        items : dependencies.iter().chain([ &crate_dir ]).map( | d | d.clone().absolute_path().join( "Cargo.toml" ) ).collect(),
         message : format!( "{}-v{}", self.package.name().unwrap(), new_version ),
         dry : self.dry,
       };
       let publish = cargo::PublishOptions
       {
-        path : crate_dir.clone().inner().inner(),
+        path : crate_dir.clone().absolute_path().inner(),
         temp_path : self.base_temp_dir.clone(),
         retry_count : 2,
         dry : self.dry,
@@ -524,7 +434,7 @@ mod private
     Ok( report )
   }
 
-  // xxx : qqq : bad : move out
+  // xxx : qqq : bad : move out to publish.rs
 
   /// `PublishPlan` manages the overall publication process for multiple packages.
   /// It organizes the necessary details required for publishing each individual package.
@@ -891,8 +801,6 @@ mod private
     if recursive && with_remote { unimplemented!( "`recursive` + `with_remote` options") }
 
     let manifest_file = &manifest.manifest_file();
-
-    workspace.load()?;
 
     let package = workspace
     .package_find_by_manifest( &manifest_file )

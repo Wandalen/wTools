@@ -1,9 +1,8 @@
 mod private
 {
-  use std::fmt::Formatter;
-
   /// Rust optimization
-  #[ derive( Debug, Default, Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd ) ]
+  #[ derive( Debug, Default, Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, derive_tools::Display ) ]
+  #[ display( style = "snake_case" ) ]
   pub enum Optimization
   {
     /// Debug
@@ -14,19 +13,10 @@ mod private
   }
 
   // qqq : use derive
-  impl std::fmt::Display for Optimization
-  {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
-    {
-      match self
-      {
-        Optimization::Debug => write!( f, "debug" ),
-        Optimization::Release => write!( f, "release" ),
-      }
-    }
-  }
+  // aaa : done
 }
-// qqq : for Petro : why is it here?
+// aaa : for Petro : why is it here?
+// aaa : as we discuss it`s already in place
 
 crate::mod_interface!
 {

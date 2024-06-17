@@ -16,14 +16,9 @@ mod private
   use std::path::PathBuf;
   use regex::Regex;
   use wca::wtools::anyhow::Error;
-  use action::readme_health_table_renew::
-  {
-    readme_path,
-    // workspace_root
-  };
   // use path::AbsolutePath;
   use { CrateDir, query, url, Workspace, wtools };
-  use entity::{ PathError, WorkspaceError };
+  use entity::{ PathError, WorkspaceInitError };
   use wtools::error::
   {
     // anyhow::format_err,
@@ -40,6 +35,7 @@ mod private
     dependency::*,
     for_lib::Error,
   };
+  use workspace_md_extension::WorkspaceMdExtension;
 
   static TAGS_TEMPLATE : std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 
@@ -95,7 +91,7 @@ mod private
     #[ error( "I/O error: {0}" ) ]
     IO( #[ from ] std::io::Error ),
     #[ error( "Workspace error: {0}" ) ]
-    Workspace( #[ from ] WorkspaceError),
+    Workspace( #[ from ] WorkspaceInitError ),
     #[ error( "Directory error: {0}" ) ]
     Directory( #[ from ] PathError ),
   }
@@ -114,10 +110,10 @@ mod private
     /// Create `HeaderParameters` instance from the folder where Cargo.toml is stored.
     fn from_cargo_toml( workspace : &Workspace ) -> Result< Self, MainHeaderRenewError >
     {
-      let repository_url = workspace.repository_url()?.ok_or_else::< Error, _ >( || err!( "repo_url not found in workspace Cargo.toml" ) )?;
-      let master_branch = workspace.master_branch()?.unwrap_or( "master".into() );
-      let workspace_name = workspace.workspace_name()?.ok_or_else::< Error, _ >( || err!( "workspace_name not found in workspace Cargo.toml" ) )?;
-      let discord_url = workspace.discord_url()?;
+      let repository_url = workspace.repository_url().ok_or_else::< Error, _ >( || err!( "repo_url not found in workspace Cargo.toml" ) )?;
+      let master_branch = workspace.master_branch().unwrap_or( "master".into() );
+      let workspace_name = workspace.workspace_name().ok_or_else::< Error, _ >( || err!( "workspace_name not found in workspace Cargo.toml" ) )?;
+      let discord_url = workspace.discord_url();
 
       Ok
       (
@@ -184,24 +180,22 @@ mod private
     let mut report = MainHeaderRenewReport::default();
     regexes_initialize();
 
-    let mut workspace = Workspace::with_crate_dir
+    let workspace = Workspace::with_crate_dir
     (
       crate_dir
       // CrateDir::try_from( path )
       // .map_err( | e | ( report.clone(), e.into() ) )?
     ).map_err( | e | ( report.clone(), e.into() ) )?;
 
-    workspace.load().map_err( | e | ( report.clone(), e.into() ) )?;
     let workspace_root = workspace
-    .workspace_root()
-    .map_err( | e | ( report.clone(), e.into() ) )?;
+    .workspace_root();
 
     let header_param = HeaderParameters::from_cargo_toml( &workspace )
     .map_err( | e | ( report.clone(), e.into() ) )?;
 
     let read_me_path = workspace_root.join
     (
-      readme_path( &workspace_root )
+      repository::readme_path( &workspace_root )
       // .ok_or_else( || format_err!( "Fail to find README.md" ) )
       .map_err( | e | ( report.clone(), e.into() ) )?
     );

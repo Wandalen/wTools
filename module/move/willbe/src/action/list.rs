@@ -159,7 +159,7 @@ mod private
     right : &'static str,
   }
 
-  // qqq : fro Bohdan : make facade, abstract and move out tree printing. or reuse ready solution for tree printing
+  // qqq : for Mykyta : make facade, abstract and move out tree printing. or reuse ready solution for tree printing
   // stick to single responsibility
   const UTF8_SYMBOLS : Symbols = Symbols
   {
@@ -221,7 +221,6 @@ mod private
       write!( f, "\n" )?;
 
       let mut new_spacer = format!( "{spacer}{}  ", if self.normal_dependencies.len() < 2 { " " } else { UTF8_SYMBOLS.down } );
-
       let mut normal_dependencies_iter = self.normal_dependencies.iter();
       let last = normal_dependencies_iter.next_back();
 
@@ -298,6 +297,14 @@ mod private
       }
     }
   }
+  
+  #[ derive( Debug, Clone, PartialEq, Eq, Hash ) ]
+  pub struct DependencyId
+  {
+    pub name : String,
+    pub version : semver::VersionReq,
+    pub path : Option< ManifestFile >,
+  }
 
   fn process_package_dependency< 'a >
   (
@@ -305,7 +312,7 @@ mod private
     package : &WorkspacePackageRef< 'a >,
     args : &ListOptions,
     dep_rep : &mut ListNodeReport,
-    visited : &mut HashSet< String >
+    visited : &mut HashSet< DependencyId >
   )
   {
     for dependency in package.dependencies()
@@ -314,8 +321,15 @@ mod private
       if dependency.crate_dir().is_some() && !args.dependency_sources.contains( &DependencySource::Local ) { continue; }
       if dependency.crate_dir().is_none() && !args.dependency_sources.contains( &DependencySource::Remote ) { continue; }
 
-      // qqq : xxx : extend test coverage
-      let dep_id = format!( "{}+{}+{}", dependency.name(), dependency.req(), dependency.crate_dir().unwrap().manifest_file() );
+      // qqq : xxx : extend test coverage. NewType
+      let dep_id = DependencyId
+      {
+        name : dependency.name(),
+        // unwrap should be safe because of `semver::VersionReq`
+        version : dependency.req(),
+        path : dependency.crate_dir().map( | p | p.manifest_file() ),
+      };
+      // format!( "{}+{}+{}", dependency.name(), dependency.req(), dependency.crate_dir().unwrap().manifest_file() );
       // let dep_id = format!( "{}+{}+{}", dependency.name(), dependency.req(), dependency.path().as_ref().map( | p | p.join( "Cargo.toml" ) ).unwrap_or_default() );
 
       let mut temp_vis = visited.clone();
@@ -338,7 +352,7 @@ mod private
     workspace : &Workspace,
     dep : DependencyRef< '_ >,
     args : &ListOptions,
-    visited : &mut HashSet< String >
+    visited : &mut HashSet< DependencyId >
   )
   -> ListNodeReport
   {
@@ -354,7 +368,14 @@ mod private
       build_dependencies : vec![],
     };
 
-    let dep_id = format!( "{}+{}+{}", dep.name(), dep.req(), dep.crate_dir().as_ref().map( | p | p.join( "Cargo.toml" ) ).unwrap_or_default() );
+    // let dep_id = format!( "{}+{}+{}", dep.name(), dep.req(), dep.crate_dir().as_ref().map( | p | p.join( "Cargo.toml" ) ).unwrap_or_default() );
+    let dep_id = DependencyId
+    {
+      name : dep.name(),
+      // unwrap should be safe because of `semver::VersionReq`
+      version : dep.req(),
+      path : dep.crate_dir().map( | p | p.manifest_file() ),
+    };
     // if this is a cycle (we have visited this node before)
     if visited.contains( &dep_id )
     {
@@ -411,12 +432,14 @@ mod private
     .context( "List of packages by specified manifest path" )
     .err_with( report.clone() )?;
 
-    let workspace = Workspace::with_crate_dir( manifest.crate_dir() ).err_with( report.clone() )?;
+    let workspace = Workspace::with_crate_dir( manifest.crate_dir() )
+    .context( "Reading workspace" )
+    .err_with( report.clone() )?;
 
     let is_package = manifest.package_is();
     // let is_package = manifest.package_is().context( "try to identify manifest type" ).err_with( report.clone() )?;
 
-    let tree_package_report = | manifest_file : ManifestFile, report : &mut ListReport, visited : &mut HashSet< String > |
+    let tree_package_report = | manifest_file : ManifestFile, report : &mut ListReport, visited : &mut HashSet< DependencyId > |
     {
 
       // qqq : is it safe to use unwrap here?
@@ -455,13 +478,14 @@ mod private
       }
       ListFormat::Tree =>
       {
-        let packages = workspace.packages().context( "workspace packages" ).err_with( report.clone() )?;
+        let packages = workspace.packages();
         let mut visited = packages
         .clone()
         .map
         (
-          // qqq : is it safe to use unwrap here
-          | p | format!( "{}+{}+{}", p.name(), p.version().to_string(), p.manifest_file().unwrap() )
+          // aaa : is it safe to use unwrap here
+          // unwrap is safe because Version has less information than VersionReq
+          | p | DependencyId { name : p.name().into(), version : semver::VersionReq::parse( &p.version().to_string() ).unwrap(), path : p.manifest_file().ok() }
         )
         .collect();
         for package in packages
@@ -500,7 +524,7 @@ mod private
           )
         };
 
-        let packages = workspace.packages().context( "workspace packages" ).err_with( report.clone() )?;
+        let packages = workspace.packages();
         let packages_map : HashMap< PackageName, HashSet< PackageName > > = packages::filter
         (
           packages.clone(),

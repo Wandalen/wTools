@@ -117,12 +117,19 @@ mod private
     }
   }
 
+  // zzz
   // qqq : for Petro : should return report
   // qqq : for Petro : should have typed error
-  // aaa : parametrized templates??
-  // aaa : use Viktor lib
   /// Creates workspace template
-  pub fn workspace_renew( path : &Path, mut template : WorkspaceTemplate, repository_url : String, branches : Vec< String > ) -> Result< () >
+  // aaa : for Petro : too long line, review all your files
+  // aaa : this done
+  pub fn workspace_renew
+  ( 
+    path : &Path, 
+    mut template : WorkspaceTemplate, 
+    repository_url : String, 
+    branches : Vec< String > 
+  ) -> Result< () >
   {
     if fs::read_dir(path)?.count() != 0
     {

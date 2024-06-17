@@ -20,7 +20,7 @@ mod private
   use error_tools::dependency::*;
 
   use wtools::error::for_app::{ Result, Error as wError };
-  use entity::WorkspaceError;
+  use entity::WorkspaceInitError;
   use error_tools::err;
 
   #[ derive( Debug, Error ) ]
@@ -33,7 +33,7 @@ mod private
     #[ error( "Crate directory error: {0}" ) ]
     CrateDir( #[ from ] PathError ),
     #[ error( "Workspace error: {0}" ) ]
-    Workspace( #[ from ] WorkspaceError),
+    Workspace( #[ from ] WorkspaceInitError ),
     #[ error( "Template error: {0}" ) ]
     Template( #[ from ] TemplateError ),
     #[ error( "Render error: {0}" ) ]
@@ -46,14 +46,14 @@ mod private
   {
     let workspace_cache = Workspace::with_crate_dir( AbsolutePath::try_from( base_path )?.try_into()? )?;
     // dbg!( &workspace_cache ); // xxx
-    let packages = workspace_cache.packages()?;
+    let packages = workspace_cache.packages();
     let username_and_repository = &username_and_repository
     (
-      &workspace_cache.workspace_root()?.join( "Cargo.toml" ).try_into()?, // xxx
+      &workspace_cache.workspace_root().join( "Cargo.toml" ).try_into()?, // qqq
       packages.clone(),
       // packages.as_slice(),
     )?;
-    let workspace_root : &Path = workspace_cache.workspace_root()?;
+    let workspace_root : &Path = workspace_cache.workspace_root();
     // find directory for workflows
     let workflow_root = workspace_root.join( ".github" ).join( "workflows" );
     // map packages name's to naming standard
@@ -113,7 +113,7 @@ mod private
       data.insert( "branch", "alpha" );
       let manifest_file = manifest_file.to_string_lossy().replace( "\\", "/" );
       let manifest_file = manifest_file.trim_start_matches( '/' );
-      data.insert( "manifest_file", manifest_file );
+      data.insert( "manifest_path", manifest_file );
       let content = handlebars.render( "module_push", &data )?;
       file_write( &workflow_file_name, &content )?;
 

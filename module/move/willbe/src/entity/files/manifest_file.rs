@@ -49,7 +49,7 @@ impl ManifestFile
 
   /// Returns path to crate dir.
   #[ inline( always ) ]
-  pub fn manifest_file( self ) -> CrateDir
+  pub fn crate_dir( self ) -> CrateDir
   {
     self.into()
   }
@@ -84,7 +84,7 @@ impl From< CrateDir > for ManifestFile
 {
   fn from( src : CrateDir ) -> Self
   {
-    Self( src.inner().join( "Cargo.toml" ) )
+    Self( src.absolute_path().join( "Cargo.toml" ) )
   }
 }
 

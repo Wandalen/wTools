@@ -5,9 +5,9 @@ mod private
   use std::
   {
     str::FromStr,
-    fs::{ OpenOptions, File, read_dir },
+    fs::{ OpenOptions, File },
     path::{ Path, PathBuf },
-    io::{ self, Write, Read, Seek, SeekFrom },
+    io::{ Write, Read, Seek, SeekFrom },
     collections::HashMap,
   };
 
@@ -102,7 +102,7 @@ mod private
 
   /// Represents parameters that are common for all tables
   #[ derive( Debug ) ]
-  struct GlobalTableOptions
+  struct GlobalTableOptions< 'a >
   {
     /// Path to the root repository.
     core_url : String,
@@ -111,8 +111,9 @@ mod private
     /// List of branches in the repository.
     branches : Option< Vec< String > >,
     /// workspace root
-    workspace_root : String,
-    // qqq : for Petro : is not that path?
+    workspace_root : &'a Path,
+    // aaa : for Petro : is not that path?
+    // aaa : done
   }
 
   /// Structure that holds the parameters for generating a table.
@@ -152,10 +153,10 @@ mod private
     }
   }
 
-  impl GlobalTableOptions
+  impl < 'a >GlobalTableOptions< 'a >
   {
     /// Initializes the struct's fields from a `Cargo.toml` file located at a specified path.
-    fn initialize_from_path( path : &Path ) -> Result< Self >
+    fn initialize_from_path( path : &'a Path ) -> Result< Self >
     {
 
       let cargo_toml_path = path.join( "Cargo.toml" );
@@ -197,7 +198,7 @@ mod private
         {
           user_and_repo = url::git_info_extract( core_url )?;
         }
-        Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches, workspace_root : path.to_string_lossy().to_string() } )
+        Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches, workspace_root : path } )
       }
     }
 
@@ -218,12 +219,11 @@ mod private
     regexes_initialize();
     let absolute_path = AbsolutePath::try_from( path )?;
     let mut workspace = Workspace::with_crate_dir( CrateDir::try_from( absolute_path )? )?;
-    workspace.load()?;
-    let workspace_root = workspace.workspace_root()?;
+    let workspace_root = workspace.workspace_root();
     let mut parameters = GlobalTableOptions::initialize_from_path( &workspace_root )?;
 
     let read_me_path = workspace_root
-    .join( readme_path( &workspace_root )? );
+    .join( repository::readme_path( &workspace_root )? );
     let mut file = OpenOptions::new()
     .read( true )
     .write( true )
@@ -253,7 +253,7 @@ mod private
           .as_bytes()
           )?;
           let params: TableOptions  = query::parse( raw_table_params ).unwrap().into_map( vec![] ).into();
-          let table = package_readme_health_table_generate( &mut workspace, &params, &mut parameters )?;
+          let table = package_readme_health_table_generate( &workspace, &params, &mut parameters )?;
           tables.push( table );
           tags_closures.push( ( open.end(), close.start() ) );
         }
@@ -286,27 +286,25 @@ mod private
   /// Generate header, iterate over all modules in package (from table_parameters) and append row.
   fn package_readme_health_table_generate
   (
-    workspace : &mut Workspace,
+    workspace : &Workspace,
     table_parameters: &TableOptions,
-    parameters: & mut GlobalTableOptions,
+    parameters: & mut GlobalTableOptions< '_ >,
   ) -> Result< String, Error >
   {
-    workspace.load()?;
     let directory_names = directory_names
     (
       workspace
-      .workspace_root()?
+      .workspace_root()
       .join( &table_parameters.base_path ),
       workspace
       .packages()
-      .map_err( | err | format_err!( err ) )?
     )?;
     let mut table = table_header_generate( parameters, &table_parameters );
     for package_name in directory_names
     {
       let stability = if table_parameters.include_stability
       {
-        Some( stability_get( &workspace.workspace_root()?.join( &table_parameters.base_path ).join( &package_name ) )? )
+        Some( stability_get( &workspace.workspace_root().join( &table_parameters.base_path ).join( &package_name ) )? )
       }
       else
       {
@@ -315,19 +313,23 @@ mod private
       if parameters.core_url == ""
       {
         let module_path = workspace
-        .workspace_root()?
+        .workspace_root()
         .join( &table_parameters.base_path )
         .join( &package_name );
         // parameters.core_url = repo_url( &module_path )
         parameters.core_url = repo_url( &module_path.clone().try_into()? )
         .context
         (
-          // qqq : for Petro : unreadable
+          // aaa : for Petro : unreadable : check other lines of code which are long
+          // aaa : done
           format_err!
           (
-            "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) in {} OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR ensure that at least one remotest is present in git. ",
+            "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n\
+specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) in {} \
+OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR\
+ensure that at least one remotest is present in git. ",
             module_path.display(),
-            workspace.workspace_root()?.join( "Cargo.toml" ).display(),
+            workspace.workspace_root().join( "Cargo.toml" ).display(),
             module_path.join( "Cargo.toml" ).display()
           )
         )?;
@@ -352,7 +354,18 @@ mod private
       Box::new
       (
         move | p |
-        p.publish().is_none() && p.manifest_file().unwrap().starts_with( &path ) // qqq : rid off unwraps
+        {
+          let manifest_file = p.manifest_file();
+          if let Ok( pa ) = manifest_file
+          {
+            p.publish().is_none() && pa.starts_with( &path )
+          }
+          else 
+          {
+            false
+          }
+        } // aaa : rid off unwraps
+        // aaa : done
       )
     );
     let module_dependency_filter : Option< Box< dyn Fn( WorkspacePackageRef< '_ >, DependencyRef< '_ > ) -> bool > > = Some
@@ -384,7 +397,7 @@ mod private
   }
 
   /// Generate row that represents a module, with a link to it in the repository and optionals for stability, branches, documentation and links to the gitpod.
-  fn row_generate( module_name : &str, stability : Option< &Stability >, parameters : &GlobalTableOptions, table_parameters : &TableOptions ) -> String
+  fn row_generate( module_name : &str, stability : Option< &Stability >, parameters : &GlobalTableOptions< '_ >, table_parameters : &TableOptions ) -> String
   {
     let mut rou = format!( "| [{}]({}/{}) |", &module_name, &table_parameters.base_path, &module_name );
     if table_parameters.include_stability
@@ -485,7 +498,7 @@ mod private
   }
 
   /// Generate table header
-  fn table_header_generate( parameters : &GlobalTableOptions, table_parameters : &TableOptions ) -> String
+  fn table_header_generate( parameters : &GlobalTableOptions< '_ >, table_parameters : &TableOptions ) -> String
   {
     let mut header = String::from( "| Module |" );
     let mut separator = String::from( "|--------|" );
@@ -524,7 +537,7 @@ mod private
   }
 
   /// Generate cells for each branch
-  fn branch_cells_generate( table_parameters : &GlobalTableOptions, module_name : &str ) -> String
+  fn branch_cells_generate( table_parameters : &GlobalTableOptions< '_ >, module_name : &str ) -> String
   {
     let cells = table_parameters
     .branches
@@ -553,64 +566,12 @@ mod private
       bail!( "Incorrect indexes" )
     }
   }
-
-  /// Searches for a README file in specific subdirectories of the given directory path.
-  ///
-  /// This function attempts to find a README file in the following subdirectories: ".github",
-  /// the root directory, and "./docs". It returns the path to the first found README file, or
-  /// `None` if no README file is found in any of these locations.
-  // xxx : qqq : move out
-  pub fn readme_path( dir_path : &Path ) -> Result< PathBuf, io::Error >
-  {
-    if let Some( path ) = readme_in_dir_find( &dir_path.join( ".github" ) )
-    {
-      Ok( path )
-    }
-    else if let Some( path )  = readme_in_dir_find( dir_path )
-    {
-      Ok( path )
-    }
-    else if let Some( path )  = readme_in_dir_find( &dir_path.join( "docs" ) )
-    {
-      Ok( path )
-    }
-    else
-    {
-      Err( io::Error::new( io::ErrorKind::NotFound, format!( "Fail to find README.md at {}", &dir_path.display() ) ) )
-    }
-  }
-
-  /// Searches for a file named "readme.md" in the specified directory path.
-  ///
-  /// Given a directory path, this function searches for a file named "readme.md" in the specified
-  /// directory.
-  fn readme_in_dir_find( path : &Path ) -> Option< PathBuf >
-  {
-    read_dir( path )
-    .ok()?
-    .filter_map( Result::ok )
-    .filter( | p | p.path().is_file() )
-    .filter_map( | f |
-    {
-      let l_f = f.file_name().to_ascii_lowercase();
-      if l_f == "readme.md"
-      {
-        return Some( f.file_name() )
-      }
-      None
-    })
-    .max()
-    .map( PathBuf::from )
-  }
-
 }
 
 crate::mod_interface!
 {
   // /// Return workspace root
   // protected use workspace_root;
-  /// Find readme.md file in directory
-  protected use readme_path;
   /// Stability
   protected use Stability;
   /// Generate Stability badge
