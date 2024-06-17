@@ -49,7 +49,7 @@ mod private
     let packages = workspace_cache.packages()?;
     let username_and_repository = &username_and_repository
     (
-      &workspace_cache.workspace_root()?.join( "Cargo.toml" ).try_into()?, // xxx
+      &workspace_cache.workspace_root()?.join( "Cargo.toml" ).try_into()?, // qqq
       packages.clone(),
       // packages.as_slice(),
     )?;
@@ -116,7 +116,7 @@ mod private
       data.insert( "branch", "alpha" );
       let manifest_file = manifest_file.to_string_lossy().replace( "\\", "/" );
       let manifest_file = manifest_file.trim_start_matches( '/' );
-      data.insert( "manifest_file", manifest_file );
+      data.insert( "manifest_path", manifest_file );
       let content = handlebars.render( "module_push", &data )?;
       file_write( &workflow_file_name, &content )?;
 

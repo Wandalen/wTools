@@ -217,7 +217,7 @@ mod private
           let data = &manifest.data;
 
           // Unwrap safely because of the `Package` type guarantee
-          Ok( data[ "package" ].get( "package" ).and_then( | m | m.get( "stability" ) ).and_then( | s | s.as_str() ).and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental)  )
+          Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "stability" ) ).and_then( | s | s.as_str() ).and_then( | s | s.parse::< Stability >().ok() ).unwrap_or( Stability::Experimental ) ) 
         }
         Self::WorkspacePackageRef( package ) =>
         {
@@ -263,7 +263,7 @@ mod private
           // let data = manifest.data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
           let data = &manifest.data;
 
-          Ok( data[ "package" ].get( "package" ).and_then( | m | m.get( "discord_url" ) ).and_then( | url | url.as_str() ).map( | r | r.to_string() ) )
+          Ok( data[ "package" ].get( "metadata" ).and_then( | m | m.get( "discord_url" ) ).and_then( | url | url.as_str() ).map( | r | r.to_string() ) )
         }
         Self::WorkspacePackageRef( package ) =>
         {
@@ -524,7 +524,7 @@ mod private
     Ok( report )
   }
 
-  // xxx : qqq : bad : move out
+  // xxx : qqq : bad : move out to publish.rs
 
   /// `PublishPlan` manages the overall publication process for multiple packages.
   /// It organizes the necessary details required for publishing each individual package.
