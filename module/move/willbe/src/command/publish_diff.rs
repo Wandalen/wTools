@@ -5,7 +5,7 @@ mod private
   use std::path::PathBuf;
   use wca::VerifiedCommand;
 
-  use wtools::error::Result;
+  use error::Result;
   // use path::AbsolutePath;
 
   #[ derive( former::Former ) ]
@@ -49,7 +49,7 @@ mod private
 
   impl TryFrom< wca::Props > for PublishDiffProperties
   {
-    type Error = wtools::error::for_app::Error;
+    type Error = error::untyped::Error;
     fn try_from( value : wca::Props ) -> Result< Self, Self::Error >
     {
       let mut this = Self::former();

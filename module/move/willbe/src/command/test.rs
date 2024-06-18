@@ -7,12 +7,12 @@ mod private
   use std::path::PathBuf;
   use colored::Colorize;
   use wca::VerifiedCommand;
-  use wtools::error::Result;
+  use error::Result;
   use path::AbsolutePath;
   use action::test::TestsCommandOptions;
   use former::Former;
   use channel::Channel;
-  use error_tools::for_app::bail;
+  use error::untyped::bail;
   use optimization::Optimization;
 
   #[ derive( Former, Debug ) ]
@@ -131,7 +131,7 @@ mod private
 
   impl TryFrom< wca::Props > for TestsProperties
   {
-    type Error = wtools::error::for_app::Error;
+    type Error = error::untyped::Error;
     fn try_from( value : wca::Props ) -> Result< Self, Self::Error >
     {
       let mut this = Self::former();

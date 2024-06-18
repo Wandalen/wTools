@@ -5,9 +5,21 @@ crate::mod_interface!
   layer sha;
   orphan use super::sha;
 
+  /// Errors handling.
+  layer error;
+  orphan use super::error;
+
   /// Operate over files.
   layer files;
   orphan use super::files;
+
+  /// Http requests.
+  layer http;
+  orphan use super::http;
+
+  /// Iterating things.
+  layer iter;
+  orphan use super::iter;
 
   /// Work with paths.
   layer path;

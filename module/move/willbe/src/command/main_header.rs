@@ -3,8 +3,8 @@ mod private
   use crate::*;
   use action;
   // use path::AbsolutePath;
-  use error_tools::Result;
-  use wtools::error::anyhow::Error;
+  use error::Result;
+  use error::untyped::Error;
 
   /// Generates header to main Readme.md file.
   pub fn readme_header_renew() -> Result< () >

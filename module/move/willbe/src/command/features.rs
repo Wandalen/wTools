@@ -6,7 +6,7 @@ mod private
   use std::path::PathBuf;
   // // use path::AbsolutePath;
   use wca::VerifiedCommand;
-  use wtools::error::Result;
+  use error::Result;
 
   ///
   /// List features of a package.

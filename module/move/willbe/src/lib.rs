@@ -3,10 +3,10 @@
 #![ doc( html_root_url = "https://docs.rs/willbe/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-use mod_interface::mod_interface;
-/// Micro wtools
-pub mod wtools;
-use wtools::*;
+pub use mod_interface::mod_interface;
+// /// Micro wtools
+// pub mod wtools;
+// use *;
 
 /// Internal namespace.
 pub( crate ) mod private
@@ -18,7 +18,7 @@ pub( crate ) mod private
   /// It then terminates the program with an exit code of 1 to indicate an error due to the lack of input.
   ///
   /// Do not support interactive mode.
-  pub fn run( args : Vec< String > ) -> Result< (), wtools::error::for_app::Error >
+  pub fn run( args : Vec< String > ) -> Result< (), error::untyped::Error >
   {
     #[ cfg( feature = "tracing" ) ]
     {
@@ -44,6 +44,7 @@ pub( crate ) mod private
     }
 
   }
+
 }
 
 mod_interface!

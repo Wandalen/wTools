@@ -32,20 +32,18 @@ all-features = false
 [features]
 default = [
   "enabled",
-  "error_for_lib",
-  "error_for_app",
+  "error_typed",
+  "error_untyped",
 ]
 full = [
-  "enabled",
-  "error_for_lib",
-  "error_for_app",
+  "default",
 ]
 no_std = []
 use_alloc = [ "no_std" ]
 enabled = []
 
-error_for_lib = [ "thiserror" ]
-error_for_app = [ "anyhow" ]
+error_typed = [ "thiserror" ]
+error_untyped = [ "anyhow" ]
 
 # = entry
 

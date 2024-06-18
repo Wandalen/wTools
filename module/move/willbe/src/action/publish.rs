@@ -7,7 +7,7 @@ mod private
   use core::fmt::Formatter;
   use std::{ env, fs };
 
-  use wtools::error::for_app::{ Error, anyhow };
+  use error::untyped::{ Error, anyhow };
   // use path::AbsolutePath;
   use workspace::Workspace;
   use package::Package;
@@ -159,7 +159,7 @@ mod private
     let subgraph_wanted = graph::subgraph( &graph, &packages_to_publish[ .. ] );
     let tmp = subgraph_wanted.map( | _, n | graph[ *n ].clone(), | _, e | graph[ *e ].clone() );
 
-    let mut unique_name = format!( "temp_dir_for_publish_command_{}", path_tools::path::unique_folder_name()? );
+    let mut unique_name = format!( "temp_dir_for_publish_command_{}", path::unique_folder_name()? );
 
     let dir = if temp
     {
@@ -167,7 +167,7 @@ mod private
 
       while temp_dir.exists()
       {
-        unique_name = format!( "temp_dir_for_publish_command_{}", path_tools::path::unique_folder_name()? );
+        unique_name = format!( "temp_dir_for_publish_command_{}", path::unique_folder_name()? );
         temp_dir = env::temp_dir().join( unique_name );
       }
 

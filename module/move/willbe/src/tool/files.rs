@@ -1,8 +1,10 @@
 
-
 /// Internal namespace.
 pub( crate ) mod private
 {
+  #[ allow( unused_imports ) ]
+  use crate::tool::*;
+
   use std::path::{ Path, PathBuf };
 
   ///

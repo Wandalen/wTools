@@ -2,37 +2,28 @@ mod private
 {
   use crate::*;
 
-  use std::*;
-  // use std::collections::BTreeMap;
-  // use cargo_metadata::camino::{ Utf8Path, Utf8PathBuf };
-  // use serde::Deserialize;
-  // use serde_json::Value;
-  use wtools::error::
-  {
-    thiserror,
-    Result
-  };
-  // use path::AbsolutePath;
+  // qqq : for Bohdan : bad
+  // use std::*;
+  // use error::
+  // {
+  //   // typed,
+  //   Result
+  // };
 
-  // aaa : for Bohdan : for Petro : what crate_dir is?
-  // aaa : `crate_dir` is path to a folder with `Cargo.toml` file(not a path to `Cargo.toml` file)
+  use std::{ env, slice };
 
   /// Stores information about the current workspace.
   #[ derive( Debug, Clone ) ]
   pub struct Workspace
   {
-    // aaa : for Bohdan : for Petro : describe all fields
-    // aaa : for Bohdan : for Petro : is Option required?
-    // aaa : The `Option` removed
     /// Metadata of the workspace, containing detailed information about the packages, dependencies, and other workspace-related data.
     pub metadata : cargo_metadata::Metadata,
-
     /// The directory containing the manifest file (`Cargo.toml`) of the workspace.
     pub crate_dir : CrateDir,
   }
 
   /// Represents errors related to workspace operations.
-  #[ derive( Debug, thiserror::Error ) ]
+  #[ derive( Debug, error::typed::Error ) ]
   pub enum WorkspaceInitError
   {
     /// Something went wrong with path to a workspace.

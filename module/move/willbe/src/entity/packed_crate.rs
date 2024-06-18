@@ -9,7 +9,7 @@ mod private
     time::Duration,
     path::PathBuf,
   };
-  use wtools::error::{ for_app::Context, Result };
+  use error::{ untyped::Context, Result };
   use ureq::Agent;
 
   /// Returns the local path of a packed `.crate` file based on its name, version, and manifest path.

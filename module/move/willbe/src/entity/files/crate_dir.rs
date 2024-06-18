@@ -19,11 +19,11 @@ use std::
   path::{ Path, PathBuf },
   io,
 };
-use wtools::error::
+use error::
 {
   Result,
 };
-use path::{ AbsolutePath, Utf8Path };
+use path::{ AbsolutePath, Utf8Path, Utf8PathBuf };
 
 /// Path to crate directory
 #[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
