@@ -1,6 +1,10 @@
+/// Internal namespace.
 mod private
 {
-  use error_tools::for_app::
+  #[ allow( unused_imports ) ]
+  use crate::tool::*;
+
+  use error::untyped::
   {
     format_err,
     Result,

@@ -14,10 +14,10 @@ mod private
   use toml_edit::Document;
   use regex::bytes::Regex;
 
-  use wtools::error::
+  use error::
   {
     err,
-    for_app::
+    untyped::
     {
       Error,
       Result,

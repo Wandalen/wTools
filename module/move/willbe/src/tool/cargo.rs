@@ -1,15 +1,18 @@
+/// Internal namespace.
 mod private
 {
-  use crate::*;
+  #[ allow( unused_imports ) ]
+  use crate::tool::*;
 
   use std::ffi::OsString;
   use std::path::PathBuf;
-  use error_tools::err;
-  use error_tools::for_app::format_err;
+  use error::err;
+  use error::untyped::format_err;
   use former::Former;
   use process_tools::process::*;
-  use wtools::error::Result;
-  use channel::Channel;
+  use error::Result;
+  // qqq : for Bohdan : bad : tools can't depend on entitties!
+  use crate::channel::Channel;
 
   // qqq : documentation
 

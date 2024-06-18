@@ -1,13 +1,18 @@
+/// Internal namespace.
 mod private
 {
+  #[ allow( unused_imports ) ]
+  use crate::tool::*;
+
   use std::collections::BTreeMap;
   use std::fs;
-  use error_tools::for_app::Context;
-  use error_tools::Result;
+  use error::untyped::Context;
+  use error::Result;
   use former::Former;
   use wca::Props;
   use std::path::Path;
   use std::path::PathBuf;
+  // qqq : for Petro : group, don't repeat prefixes
   use wca::Value;
   use std::collections::HashMap;
 

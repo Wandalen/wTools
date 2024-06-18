@@ -73,23 +73,18 @@ pub mod protected
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::orphan::*;
+
 }
 
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 pub mod orphan
 {
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::exposed::*;
-}
 
-/// Exposed namespace of the module.
-pub mod exposed
-{
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -132,12 +127,22 @@ pub mod exposed
     unfold,
     // zip,
     zip_eq,
+    Itertools,
   };
 
   #[ cfg( not( feature = "no_std" ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use std::iter::zip;
+
+}
+
+/// Exposed namespace of the module.
+pub mod exposed
+{
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use super::prelude::*;
 
 }
 

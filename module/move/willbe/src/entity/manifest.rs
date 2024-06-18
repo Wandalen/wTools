@@ -9,12 +9,12 @@ pub( crate ) mod private
     fs,
     // path::{ Path },
   };
-  use wtools::error::
+  use error::
   {
     Result,
-    thiserror,
-    for_lib::Error,
-    for_app::format_err,
+    // thiserror,
+    typed::Error,
+    untyped::format_err,
   };
   // use path::AbsolutePath;
 
@@ -85,16 +85,6 @@ pub( crate ) mod private
       Self::try_from( src.manifest_file() )
     }
   }
-
-//   impl TryFrom< ManifestFile > for Manifest
-//   {
-//     type Error = ManifestError;
-//
-//     fn try_from( src : ManifestFile ) -> Result< Self, Self::Error >
-//     {
-//       Self::try_from( src )
-//     }
-//   }
 
   impl Manifest
   {

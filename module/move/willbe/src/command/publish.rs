@@ -5,7 +5,7 @@ mod private
   use colored::Colorize;
 
   use wca::VerifiedCommand;
-  use wtools::error::{ Result, for_app::Context };
+  use error::{ Result, untyped::Context };
   use former::Former;
   use std::fmt::Write;
   use channel::Channel;
@@ -74,7 +74,7 @@ mod private
 
   impl TryFrom< wca::Props > for PublishProperties
   {
-    type Error = wtools::error::for_app::Error;
+    type Error = error::untyped::Error;
     fn try_from( value : wca::Props ) -> Result< Self, Self::Error >
     {
       let mut this = Self::former();

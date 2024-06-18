@@ -2,7 +2,7 @@ mod private
 {
   use crate::*;
 
-  use wtools::error::{ for_app::Context, Result };
+  use error::{ untyped::Context, Result };
 
   ///
   /// Generate table.

@@ -10,11 +10,11 @@ mod private
   use std::{ env, fs };
 
   use former::Former;
-  use wtools::
+  use
   {
     error::
     {
-      for_app::
+      untyped::
       {
         Error,
         format_err
@@ -109,7 +109,7 @@ Try to install it with `rustup install {}` command(-s)",
       with_progress,
     } = o;
 
-    // xxx : watch and review after been ready
+    // zzz : watch and review after been ready
     // qqq : for Petro : use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >
     let path = if o.dir.as_ref().file_name() == Some( "Cargo.toml".as_ref() )
     {
@@ -155,7 +155,7 @@ Try to install it with `rustup install {}` command(-s)",
       let mut unique_name = format!
       (
         "temp_dir_for_test_command_{}",
-        path_tools::path::unique_folder_name().map_err( | e | ( report.clone(), e.into() ) )?
+        path::unique_folder_name().map_err( | e | ( report.clone(), e.into() ) )?
       );
 
       let mut temp_dir = env::temp_dir().join( unique_name );
@@ -165,7 +165,7 @@ Try to install it with `rustup install {}` command(-s)",
         unique_name = format!
         (
           "temp_dir_for_test_command_{}",
-          path_tools::path::unique_folder_name().map_err( | e | ( report.clone(), e.into() ) )?
+          path::unique_folder_name().map_err( | e | ( report.clone(), e.into() ) )?
         );
         temp_dir = env::temp_dir().join( unique_name );
       }

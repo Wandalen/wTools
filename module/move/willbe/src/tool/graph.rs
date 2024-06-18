@@ -1,7 +1,8 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::*;
+  #[ allow( unused_imports ) ]
+  use crate::tool::*;
 
   use std::
   {
@@ -20,9 +21,11 @@ pub( crate ) mod private
   use petgraph::graph::NodeIndex;
   use petgraph::prelude::*;
 
-  use error_tools::for_lib::Error;
+  use error::typed::Error;
   use error::Result;
-  use package::{ Package, publish_need };
+
+  use crate::package::{ Package, publish_need };
+  // qqq : for Bohdan : bad : tools can't depend on entitties!
 
   #[ derive( Debug, Error ) ]
   pub enum GraphError< T : Debug >

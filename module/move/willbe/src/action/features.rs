@@ -10,7 +10,7 @@ mod private
 
   // // use path::AbsolutePath;
   use former::Former;
-  use error_tools::{ for_app::Context, Result };
+  use error::{ untyped::Context, Result };
   use workspace::Workspace;
 
   /// Options available for the .features command

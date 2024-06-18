@@ -21,49 +21,81 @@ pub mod dependency
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  #[ cfg( feature = "error_for_lib" ) ]
+  #[ cfg( feature = "error_typed" ) ]
   pub use ::thiserror;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  #[ cfg( feature = "error_for_app" ) ]
+  #[ cfg( feature = "error_untyped" ) ]
   pub use ::anyhow;
 
 }
 
 #[ cfg( feature = "enabled" ) ]
-/// Exceptions handling mechanism for libs.
-pub mod for_lib
-{
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  #[ cfg( feature = "error_for_lib" ) ]
-  pub use ::thiserror::*;
-}
+#[ cfg( feature = "error_typed" ) ]
+/// Typed exceptions handling mechanism.
+pub mod typed;
 
 #[ cfg( feature = "enabled" ) ]
-// qqq : cover by simple test /* aaa : Dmytro : added trivial test routine `basic` */
-/// Exceptions handling mechanism for apps.
-pub mod for_app
-{
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  #[ cfg( feature = "error_for_app" ) ]
-  pub use ::anyhow::*;
-}
+#[ cfg( feature = "error_untyped" ) ]
+/// Untyped exceptions handling mechanism.
+pub mod untyped;
+
+// #[ cfg( feature = "enabled" ) ]
+// /// Exceptions handling mechanism for libs.
+// pub mod typed
+// {
+//   #[ doc( inline ) ]
+//   #[ allow( unused_imports ) ]
+//   #[ cfg( feature = "error_typed" ) ]
+//   pub use ::thiserror::*;
+// }
+//
+// #[ cfg( feature = "enabled" ) ]
+// // qqq : cover by simple test /* aaa : Dmytro : added trivial test routine `basic` */
+// /// Exceptions handling mechanism for apps.
+// pub mod untyped
+// {
+//   #[ doc( inline ) ]
+//   #[ allow( unused_imports ) ]
+//   #[ cfg( feature = "error_untyped" ) ]
+//   pub use ::anyhow::*;
+// }
 
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use protected::*;
 
+// use protected::Result as xxx;
+// use protected::Result2 as yyy;
+
 /// Protected namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 pub mod protected
 {
+  #[ allow( unused_imports ) ]
+  use super::*;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use assert::orphan::*;
+
+  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use error::orphan::*;
+
+  #[ cfg( feature = "error_untyped" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use untyped::orphan::*;
+
+  #[ cfg( feature = "error_typed" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use typed::orphan::*;
+
 }
 
 /// Shared with parent namespace of the module
@@ -75,8 +107,8 @@ pub mod orphan
   #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 
-  #[ cfg( feature = "error_for_app" ) ]
-  pub use super::for_app::Result;
+  // #[ cfg( feature = "error_untyped" ) ]
+  // pub use super::untyped::Result;
 
 }
 
@@ -84,17 +116,31 @@ pub mod orphan
 #[ cfg( feature = "enabled" ) ]
 pub mod exposed
 {
+  #[ allow( unused_imports ) ]
+  use super::*;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::assert::exposed::*;
+  pub use assert::exposed::*;
 
   #[ cfg( not( feature = "no_std" ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::error::exposed::*;
+  pub use error::exposed::*;
+
+  #[ cfg( feature = "error_untyped" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use untyped::exposed::*;
+
+  #[ cfg( feature = "error_typed" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use typed::exposed::*;
 
 }
 
@@ -102,4 +148,26 @@ pub mod exposed
 #[ cfg( feature = "enabled" ) ]
 pub mod prelude
 {
+  #[ allow( unused_imports ) ]
+  use super::*;
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use assert::prelude::*;
+
+  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use error::prelude::*;
+
+  #[ cfg( feature = "error_untyped" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use untyped::prelude::*;
+
+  #[ cfg( feature = "error_typed" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use typed::prelude::*;
+
 }

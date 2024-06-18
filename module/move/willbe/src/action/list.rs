@@ -17,9 +17,9 @@ mod private
   };
   use std::str::FromStr;
   use packages::{ FilterMapOptions, PackageName };
-  use wtools::error::
+  use error::
   {
-    for_app::{ Error, Context },
+    untyped::{ Error, Context },
     err
   };
 
@@ -398,19 +398,19 @@ mod private
     dep_rep
   }
 
-  // xxx : qqq : for Petro : for Bohdan : good one, apply it to all code
-  trait ErrWith< V, R, E >
-  {
-    fn err_with( self, v : V ) -> std::result::Result< R, ( V, E ) >;
-  }
-
-  impl< V, R, E > ErrWith< V, R, E > for std::result::Result< R, E >
-  {
-    fn err_with( self, v : V ) -> std::result::Result< R, ( V, E ) >
-    {
-      self.map_err( | e | ( v, e ) )
-    }
-  }
+//   // xxx : qqq : for Petro : for Bohdan : good one, apply it to all code
+//   trait ErrWith< V, R, E >
+//   {
+//     fn err_with( self, v : V ) -> std::result::Result< R, ( V, E ) >;
+//   }
+//
+//   impl< V, R, E > ErrWith< V, R, E > for std::result::Result< R, E >
+//   {
+//     fn err_with( self, v : V ) -> std::result::Result< R, ( V, E ) >
+//     {
+//       self.map_err( | e | ( v, e ) )
+//     }
+//   }
 
   /// Retrieve a list of packages based on the given arguments.
   ///

@@ -3,7 +3,7 @@ mod private
 {
   use crate::*;
 
-  use { action, wtools };
+  // use { action, wtools };
 
   use std::
   {
@@ -13,7 +13,7 @@ mod private
   };
 
   use wca::VerifiedCommand;
-  use wtools::error::{ for_app::Context, Result };
+  use error::{ untyped::Context, Result };
 
   // use path::AbsolutePath;
   use action::{ list as l, list::{ ListFormat, ListOptions } };
@@ -96,7 +96,7 @@ mod private
 
   impl TryFrom< wca::Props > for ListProperties
   {
-    type Error = wtools::error::for_app::Error;
+    type Error = error::untyped::Error;
     fn try_from( value : wca::Props ) -> Result< Self, Self::Error >
     {
       let mut this = Self::former();

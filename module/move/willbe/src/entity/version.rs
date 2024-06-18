@@ -12,11 +12,11 @@ mod private
   use toml_edit::value;
   use semver::Version as SemVersion;
 
-  use wtools::error::for_app::Result;
+  use error::untyped::Result;
   use manifest::Manifest;
   // // use path::AbsolutePath;
   use package::Package;
-  use wtools::{ error::anyhow::format_err, iter::Itertools };
+  use { error::untyped::format_err, iter::Itertools };
 
   /// Wrapper for a SemVer structure
   #[ derive( Debug, Clone, Eq, PartialEq, Ord, PartialOrd ) ]
