@@ -37,4 +37,8 @@ crate::mod_interface!
   layer url;
   orphan use super::url;
 
+  /// Repository tools.
+  layer repository;
+  orphan use super::repository;
+
 }

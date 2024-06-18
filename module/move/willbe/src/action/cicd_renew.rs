@@ -45,7 +45,6 @@ mod private
   pub fn cicd_renew( base_path : &Path ) -> Result< (), CiCdGenerateError >
   {
     let workspace_cache = Workspace::with_crate_dir( AbsolutePath::try_from( base_path )?.try_into()? )?;
-    // dbg!( &workspace_cache ); // xxx
     let packages = workspace_cache.packages();
     let username_and_repository = &username_and_repository
     (
@@ -65,7 +64,7 @@ mod private
     // map packages path to relative paths fom workspace root,
     // for example D:/work/wTools/module/core/iter_tools => module/core/iter_tools
     let relative_paths = packages
-    .map( | p | p.manifest_file().unwrap() ) // qqq : rid off unwrap
+    .map( | p | p.manifest_file().unwrap() ) // qqq : rid of unwrap
     .filter_map( | p |
     {
       // dbg!( &workspace_root );

@@ -297,7 +297,8 @@ mod private
       }
     }
   }
-  
+
+  // qqq : for Bohdan : descirption
   #[ derive( Debug, Clone, PartialEq, Eq, Hash ) ]
   pub struct DependencyId
   {
@@ -321,7 +322,7 @@ mod private
       if dependency.crate_dir().is_some() && !args.dependency_sources.contains( &DependencySource::Local ) { continue; }
       if dependency.crate_dir().is_none() && !args.dependency_sources.contains( &DependencySource::Remote ) { continue; }
 
-      // qqq : xxx : extend test coverage. NewType
+      // qqq : extend test coverage. NewType
       let dep_id = DependencyId
       {
         name : dependency.name(),
@@ -422,7 +423,7 @@ mod private
   /// - `Result<ListReport, (ListReport, Error)>` - A result containing the list report if successful,
   ///   or a tuple containing the list report and error if not successful.
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
-  pub fn list( args : ListOptions ) -> Result< ListReport, ( ListReport, Error ) > // xxx : rename
+  pub fn list( args : ListOptions ) -> Result< ListReport, ( ListReport, Error ) > // qqq : should be specific error
   {
     let mut report = ListReport::default();
 

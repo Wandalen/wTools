@@ -86,9 +86,7 @@ mod private
       } // aaa : remove unwrap
       // aaa : done
     );
-    //.collect();
-    // xxx
-    // ).collect::< Vec< _ > >(); qqq : xxx : rid off. put type at var
+    // ).collect::< Vec< _ > >(); qqq : rid of. put type at var
     let mut report = FeaturesReport
     {
       with_features_deps,
