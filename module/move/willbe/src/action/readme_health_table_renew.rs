@@ -406,7 +406,7 @@ ensure that at least one remotest is present in git. ",
       let example = if let Some( name ) = find_example_file( p.as_path(), &module_name )
       {
         let path = path.to_string_lossy().replace( '\\', "/" ).replace( "/", "%2F" );
-        let tmp = name.replace( '\\', "/" );
+        let tmp = name.to_string_lossy().replace( '\\', "/" );
         let file_name = tmp.split( '/' ).last().unwrap();
         let name = file_name.strip_suffix( ".rs" ).unwrap();
         format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={path}%2Fexamples%2F{file_name},RUN_POSTFIX=--example%20{name}/{})", parameters.core_url )
@@ -421,7 +421,7 @@ ensure that at least one remotest is present in git. ",
   }
 
   /// todo
-  pub fn find_example_file(base_path : &Path, module_name : &str ) -> Option< String >
+  pub fn find_example_file(base_path : &Path, module_name : &str ) -> Option< PathBuf >
   {
     let examples_dir = base_path.join("examples" );
 
@@ -438,7 +438,7 @@ ensure that at least one remotest is present in git. ",
             {
               if file_name_str == format!( "{module_name}_trivial.rs" )
               {
-                return Some( entry.path().to_string_lossy().into() )
+                return Some( entry.path() )
               }
             }
           }
@@ -458,7 +458,7 @@ ensure that at least one remotest is present in git. ",
           {
             if file_name_str.ends_with( ".rs" )
             {
-              return Some( entry.path().to_string_lossy().into() )
+              return Some( entry.path() )
             }
           }
         }
