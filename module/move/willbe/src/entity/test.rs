@@ -294,9 +294,24 @@ mod private
     dry : bool,
     with_progress : bool,
     #[ cfg( feature = "progress_bar" ) ]
-    multi_progress : &'a indicatif::MultiProgress,
-    #[ cfg( feature = "progress_bar" ) ]
-    progress_bar : &'a indicatif::ProgressBar
+    progress_bar : ProgressBar< 'a >
+  }
+
+  #[ cfg( feature = "progress_bar" ) ]
+  struct ProgressBar< 'a >
+  {
+    multi_progress: &'a indicatif::MultiProgress,
+    progress_bar: indicatif::ProgressBar,
+  }
+
+  #[ cfg( feature = "progress_bar" ) ]
+  impl < 'a > fmt::Debug for ProgressBar< 'a >
+  {
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+    {
+      f.debug_struct( "ProgressBar" )
+        .finish()
+    }
   }
 
   impl PackageTestOptionsFormer< '_ >
@@ -420,14 +435,6 @@ mod private
 
     /// Progress bar flag.
     pub with_progress : bool,
-
-    #[ cfg( feature = "progress_bar" ) ]
-    /// Base progress bar
-    pub multiprocess : indicatif::MultiProgress,
-
-    #[ cfg( feature = "progress_bar" ) ]
-    /// Style for progress bar
-    pub style : indicatif::ProgressStyle,
   }
 
   // aaa : for Petro : remove after Former fix
@@ -681,7 +688,7 @@ mod private
               {
                 let _s =
                 {
-                  let s = options.multi_progress.add( indicatif::ProgressBar::new_spinner().with_message( format!( "{}", variant ) ) );
+                  let s = options.progress_bar.multi_progress.add( indicatif::ProgressBar::new_spinner().with_message( format!( "{}", variant ) ) );
                   s.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
                   s
                 };
@@ -693,7 +700,7 @@ mod private
               #[ cfg( feature = "progress_bar" ) ]
               if options.with_progress
               {
-                options.progress_bar.inc( 1 );
+                options.progress_bar.progress_bar.inc( 1 );
               }
               if let Some( path ) = temp_dir
               {
@@ -717,6 +724,10 @@ mod private
   /// Run tests for given packages.
   pub fn tests_run( args : &TestOptions ) -> Result< TestsReport, ( TestsReport, anyhow::Error ) >
   {
+    #[ cfg( feature = "progress_bar" ) ]
+    let multi_progress = MultiProgress::default();
+    #[ cfg( feature = "progress_bar" ) ]
+    let mm = &multi_progress;
     let mut report = TestsReport::default();
     report.dry = args.dry;
     let report = sync::Arc::new( sync::Mutex::new( report ) );
@@ -732,14 +743,6 @@ mod private
           (
             move | _ |
             {
-              #[ cfg( feature = "progress_bar" ) ]
-              let pb =
-              {
-                let pb = args.multiprocess.add( indicatif::ProgressBar::new( plan.test_variants.len() as u64 ) );
-                pb.set_style( args.style.clone() );
-                pb.inc( 0 );
-                pb
-              };
               let test_package_options = PackageTestOptions::former()
               .option_temp( args.temp_path.clone() )
               .plan( plan )
@@ -749,7 +752,7 @@ mod private
               #[ cfg( feature = "progress_bar" ) ]
               let test_package_options =
               {
-                test_package_options.multi_progress( &args.multiprocess ).progress_bar( &pb )
+                test_package_options.progress_bar( mm.progress_bar( plan.test_variants.len() as u64  ) )
               };
               let options = test_package_options.form();
               match run( &options )
@@ -776,6 +779,62 @@ mod private
     else
     {
       Err(( report, format_err!( "Some tests was failed" ) ))
+    }
+  }
+
+  #[ cfg( feature = "progress_bar" ) ]
+  struct MultiProgress
+  {
+    multi_progress: indicatif::MultiProgress,
+    progress_style: indicatif::ProgressStyle,
+  }
+
+  #[ cfg( feature = "progress_bar" ) ]
+  impl MultiProgress
+  {
+    fn progress_bar< 'a >( &'a self, variants_len : u64 ) -> ProgressBar< 'a >
+    {
+      let progress_bar =
+      {
+        let pb = self.multi_progress.add( indicatif::ProgressBar::new( variants_len ) );
+        pb.set_style( self.progress_style.clone() );
+        pb.inc( 0 );
+        pb
+      };
+      ProgressBar
+      {
+        multi_progress : &self.multi_progress,
+        progress_bar,
+      }
+    }
+  }
+
+  #[ cfg( feature = "progress_bar" ) ]
+  impl fmt::Debug for MultiProgress
+  {
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result 
+    {
+      f.debug_struct( "MultiprogressProgress" )
+      .finish()
+    }
+  }
+
+
+  #[ cfg( feature = "progress_bar" ) ]
+  impl Default for MultiProgress
+  {
+    fn default() -> Self
+    {
+      Self
+      {
+        multi_progress: indicatif::MultiProgress::new(),
+        progress_style: indicatif::ProgressStyle::with_template
+        (
+          "[{elapsed_precise}] {bar:40.cyan/blue} {pos:>7}/{len:7} {msg}",
+        )
+        .unwrap()
+        .progress_chars( "##-" ),
+      }
     }
   }
 }
