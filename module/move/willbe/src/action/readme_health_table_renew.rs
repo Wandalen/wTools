@@ -4,7 +4,6 @@ mod private
 
   use std::
   {
-    str::FromStr,
     fs::{ OpenOptions, File },
     path::{ Path, PathBuf },
     io::{ Write, Read, Seek, SeekFrom },
@@ -41,7 +40,8 @@ mod private
   }
 
   /// `Stability` is an enumeration that represents the stability level of a feature.
-  #[ derive( Debug ) ]
+  #[ derive( Debug, derive_tools::FromStr ) ]
+  #[ display( style = "snake_case" ) ]
   pub enum Stability
   {
     /// The feature is still being tested and may change.
@@ -56,24 +56,8 @@ mod private
     Deprecated,
   }
 
-  // zzz : qqq : derive?
-  impl FromStr for Stability
-  {
-    type Err = Error;
-
-    fn from_str( s : &str ) -> Result< Self, Self::Err >
-    {
-      match s
-      {
-        "experimental" => Ok( Stability::Experimental ),
-        "unstable" => Ok( Stability::Unstable ),
-        "stable" => Ok( Stability::Stable ),
-        "frozen" => Ok( Stability::Frozen ),
-        "deprecated" => Ok( Stability::Deprecated ),
-        _ => Err( err!( "Fail to parse stability" ) ),
-      }
-    }
-  }
+  // aaa : qqq : derive?
+  // aaa : add
 
   /// Retrieves the stability level of a package from its `Cargo.toml` file.
   fn stability_get( package_path : &Path ) -> Result< Stability >
