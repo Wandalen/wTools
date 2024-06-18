@@ -5,7 +5,8 @@ mod private
 	pub struct TreePrinter
 	{
 		pub symbols : Symbols,
-		pub report : ListNodeReport,
+		pub info : Info,
+		pub dependencies : Dependencies,
 	}
 
 	impl TreePrinter 
@@ -119,11 +120,6 @@ mod private
 		/// Each element in the list is also of the same 'ListNodeReport' type to allow
 		/// storage of nested dependencies.
 		pub build_dependencies : Vec< ListNodeReport >,
-	}
-
-	impl ListNodeReport
-	{
-		
 	}
 
 	impl std::fmt::Display for ListNodeReport

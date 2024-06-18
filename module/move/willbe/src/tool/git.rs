@@ -27,7 +27,7 @@ mod private
   {
     let objects = objects.as_ref().iter().map( | x | x.as_ref() );
 
-    let ( program, args ) : (_, Vec< _ > ) = ( "git", Some( "add" ).into_iter().chain( objects ).collect() );
+    let ( program, args ) : ( _, Vec< _ > ) = ( "git", Some( "add" ).into_iter().chain( objects ).collect() );
 
     if dry
     {

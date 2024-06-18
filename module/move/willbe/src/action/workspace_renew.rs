@@ -6,7 +6,10 @@ mod private
   use error_tools::for_app::bail;
   use error_tools::Result;
   use wtools::iter::Itertools;
-  use crate::template::{TemplateFileDescriptor, TemplateFiles, TemplateFilesBuilder, TemplateParameters, TemplateValues};
+  use template::
+  {
+    TemplateFileDescriptor, TemplateFiles, TemplateFilesBuilder, TemplateParameters, TemplateValues
+  };
 
   /// Template for creating workspace files.
   #[ derive( Debug ) ]
