@@ -1,6 +1,8 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+  #[ allow( unused_imports ) ]
+  use crate::tool::*;
 
   /// Searches for a README file in specific subdirectories of the given directory path.
   ///

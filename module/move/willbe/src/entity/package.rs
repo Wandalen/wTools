@@ -18,21 +18,21 @@ mod private
   use workspace::Workspace;
   // use path::AbsolutePath;
 
-  use wtools::
+  use
   {
     iter::Itertools,
     error::
     {
-      thiserror,
+      // thiserror,
       Result,
-      for_lib::Error,
-      for_app::{ format_err, Context },
+      typed::Error,
+      untyped::{ format_err, Context },
     }
   };
   use former::Former;
   use diff::crate_diff;
   use version::version_revert;
-  use error_tools::for_app::Error;
+  use error::untyped::Error;
   use channel::Channel;
 
   ///
@@ -311,7 +311,7 @@ mod private
       let version_bump = version::BumpOptions
       {
         crate_dir : crate_dir.clone(),
-        old_version : old_version.clone(), // xxx2 : ??
+        old_version : old_version.clone(), // xxx : ?
         new_version : new_version.clone(),
         dependencies : dependencies.clone(),
         dry : self.dry,
@@ -605,7 +605,7 @@ mod private
     Ok( report )
   }
 
-  // xxx : qqq : bad : for Bohdan : report is not part of entity package
+  // qqq : bad : for Bohdan : publish is not part of entity package
 
   /// Holds information about the publishing process.
   #[ derive( Debug, Default, Clone ) ]
@@ -820,7 +820,7 @@ mod private
   pub fn dependencies< 'a >
   (
     workspace : &mut Workspace,
-    package : &Package< 'a >, // xxx : rename
+    package : &Package< 'a >,
     opts : DependenciesOptions
   )
   -> Result< Vec< CrateId > >

@@ -4,7 +4,7 @@ mod private
   use former::Former;
 
   use wca::VerifiedCommand;
-  use wtools::error::{ anyhow::Context, Result };
+  use error::{ untyped::Context, Result };
   use action::WorkspaceTemplate;
 
   #[ derive( Former ) ]
@@ -27,7 +27,7 @@ mod private
 
   impl TryFrom< wca::Props > for WorkspaceNewProperties
   {
-    type Error = wtools::error::for_app::Error;
+    type Error = error::untyped::Error;
 
     fn try_from( value : wca::Props ) -> std::result::Result< Self, Self::Error >
     {

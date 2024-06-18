@@ -20,9 +20,9 @@ use std::
   io,
 };
 
-use path::{ AbsolutePath, Utf8Path };
+use path::{ AbsolutePath, Utf8Path, Utf8PathBuf };
 
-use wtools::error::
+use error::
 {
   Result,
 };

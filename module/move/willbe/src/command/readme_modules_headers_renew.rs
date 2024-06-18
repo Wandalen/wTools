@@ -2,7 +2,7 @@ mod private
 {
   use crate::*;
   // use path::AbsolutePath;
-  use wtools::error::{ for_app::Error, Result };
+  use error::{ untyped::Error, Result };
 
   /// Generate headers for workspace members
   pub fn readme_modules_headers_renew() -> Result< () >

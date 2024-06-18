@@ -1043,19 +1043,20 @@ pub( crate ) mod private
 crate::mod_interface!
 {
 
-  protected use ext;
-  protected use exts;
-  protected use change_ext;
-  protected use path_relative;
-  protected use rebase;
-  protected use path_common;
-  protected use join_paths;
-  protected use without_ext;
-  protected use is_glob;
-  protected use normalize;
-  protected use canonicalize;
+  orphan use ext;
+  orphan use exts;
+  orphan use change_ext;
+  orphan use path_relative;
+  orphan use rebase;
+  orphan use path_common;
+  orphan use join_paths;
+  orphan use without_ext;
+  orphan use is_glob;
+  orphan use normalize;
+  orphan use canonicalize;
+
   #[ cfg( feature = "path_unique_folder_name" ) ]
-  protected use unique_folder_name;
+  orphan use unique_folder_name;
 
   /// Describe absolute path. Prefer using absolute path instead of relative when ever possible.
   layer absolute_path;

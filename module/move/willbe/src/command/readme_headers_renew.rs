@@ -3,17 +3,18 @@ mod private
   use crate::*;
   // use path::AbsolutePath;
   use action;
-  use wtools::error::anyhow::Error;
-  use error_tools::{ Result, err };
+  // use error::untyped::Error;
+  use error::untyped::Error;
+  use error::{ Result, err };
   use std::fmt::{ Display, Formatter };
 
   #[ derive( Debug, Default ) ]
   struct ReadmeHeadersRenewReport
   {
     main_header_renew_report : action::MainHeaderRenewReport,
-    main_header_renew_error : Option< Error >,
+    main_header_renew_error : Option< Error >, // qqq : for Petro : typed error
     modules_headers_renew_report : action::ModulesHeadersRenewReport,
-    modules_headers_renew_error : Option< Error >,
+    modules_headers_renew_error : Option< Error >, // qqq : for Petro : typed error
   }
 
   impl Display for ReadmeHeadersRenewReport

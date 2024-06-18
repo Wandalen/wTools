@@ -173,19 +173,19 @@ string_split = [ "string", "wtools/string_split" ]
 error = [ "wtools/error" ]
 error_default = [
   "error",
-  "error_for_lib",
-  "error_for_app",
+  "error_typed",
+  "error_untyped",
 ]
 error_full = [
   "error",
-  "error_for_lib",
-  "error_for_app",
+  "error_typed",
+  "error_untyped",
 ]
 error_no_std = [ "error", "wtools/error_no_std" ]
 error_use_alloc = [ "error", "wtools/error_use_alloc" ]
 
-error_for_lib = [ "error", "wtools/error_for_lib" ]
-error_for_app = [ "error", "wtools/error_for_app" ]
+error_typed = [ "error", "wtools/error_typed" ]
+error_untyped = [ "error", "wtools/error_untyped" ]
 
 # derive
 
