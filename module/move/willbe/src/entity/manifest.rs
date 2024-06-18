@@ -80,10 +80,19 @@ pub( crate ) mod private
   {
     type Error = ManifestError;
 
-    // qqq : xxx : implement TryFrom< ManifestFile > also
     fn try_from( src : CrateDir ) -> Result< Self, Self::Error >
     {
       Self::try_from( src.manifest_file() )
+    }
+  }
+
+  impl TryFrom< ManifestFile > for Manifest
+  {
+    type Error = ManifestError;
+
+    fn try_from( src : ManifestFile ) -> Result< Self, Self::Error >
+    {
+      Self::try_from( src )
     }
   }
 
