@@ -41,7 +41,7 @@ crate::mod_interface!
   // layer tree;
   // orphan use super::tree;
 
-  /// Tools for printing a tree
+  /// Tools for wrap errors
   layer error_with;
   orphan use super::error_with;
 
