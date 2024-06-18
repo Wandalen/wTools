@@ -453,7 +453,7 @@ mod private
     fn read( &self, instruction : &FileReadInstruction ) -> Result< Vec< u8 > >;
   }
 
-  // qqq : xxx : why not public?
+  // qqq : zzz : why not public?
   struct FileSystem;
   impl FileSystemPort for FileSystem
   {

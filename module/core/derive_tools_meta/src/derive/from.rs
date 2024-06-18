@@ -362,7 +362,7 @@ fn generate_multiple_fields_named< 'a >
     qt! { #field_name : src.#index }
   });
 
-  // xxx : qqq : rid off collects
+  // xxx : qqq : rid of collects
   // let field_types : Vec< _ > = field_types.collect();
   let field_types2 = field_types.clone();
   qt!

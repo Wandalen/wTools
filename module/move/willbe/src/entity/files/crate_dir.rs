@@ -25,21 +25,12 @@ use wtools::error::
 };
 use path::{ AbsolutePath, Utf8Path };
 
-// xxx : make generic
-
 /// Path to crate directory
-// #[ derive( Debug, Clone ) ]
 #[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
 pub struct CrateDir( AbsolutePath );
 
 impl CrateDir
 {
-  // qqq : bad : for Petro : why clone?
-  // /// Returns an absolute path.
-  // pub fn absolute_path( &self ) -> AbsolutePath
-  // {
-  //   self.0.clone()
-  // }
 
   /// Returns inner type which is an absolute path.
   #[ inline( always ) ]
@@ -72,14 +63,6 @@ impl fmt::Debug for CrateDir
     write!( f, "crate dir :: {}", self.0.display() )
   }
 }
-
-// impl AsRef< AbsolutePath > for CrateDir
-// {
-//   fn as_ref( &self ) -> &AbsolutePath
-//   {
-//     &self.0
-//   }
-// }
 
 impl From< ManifestFile > for CrateDir
 {
@@ -206,6 +189,14 @@ impl TryFrom< &Utf8Path > for CrateDir
     Self::try_from( AbsolutePath::try_from( crate_dir_path )? )
   }
 }
+
+// impl AsRef< AbsolutePath > for CrateDir
+// {
+//   fn as_ref( &self ) -> &AbsolutePath
+//   {
+//     &self.0
+//   }
+// }
 
 impl AsRef< Path > for CrateDir
 {

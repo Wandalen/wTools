@@ -1,13 +1,12 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+
   /// Searches for a README file in specific subdirectories of the given directory path.
   ///
   /// This function attempts to find a README file in the following subdirectories: ".github",
   /// the root directory, and "./docs". It returns the path to the first found README file, or
   /// `None` if no README file is found in any of these locations.
-  // xxx : aaa : move out
-  // aaa : done
   pub fn readme_path( dir_path : &std::path::Path ) -> Result< std::path::PathBuf, std::io::Error >
   {
     if let Some( path ) = readme_in_dir_find( &dir_path.join( ".github" ) )
@@ -38,7 +37,7 @@ pub( crate ) mod private
     .ok()?
     .filter_map( Result::ok )
     .filter( | p | p.path().is_file() )
-    .filter_map( | f | 
+    .filter_map( | f |
     {
       let l_f = f.file_name().to_ascii_lowercase();
       if l_f == "readme.md"

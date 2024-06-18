@@ -44,4 +44,8 @@ crate::mod_interface!
   /// Tools for printing a tree
   layer error_with;
   orphan use super::error_with;
+
+  /// Repository tools.
+  layer repository;
+  orphan use super::repository;
 }

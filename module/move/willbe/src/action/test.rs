@@ -121,7 +121,8 @@ Try to install it with `rustup install {}` command(-s)",
       with_progress,
     } = o;
 
-    // qqq : for Petro : xxx : use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >
+    // xxx : watch and review after been ready
+    // qqq : for Petro : use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >
     let path = if o.dir.as_ref().file_name() == Some( "Cargo.toml".as_ref() )
     {
       o.dir.parent().unwrap()
@@ -140,7 +141,7 @@ Try to install it with `rustup install {}` command(-s)",
     // let packages = needed_packages( &workspace );
     let packages = workspace
     .packages()
-    .filter( move | p | p.manifest_file().unwrap().starts_with( path.as_ref() ) ) // qqq : rid off unwrap
+    .filter( move | p | p.manifest_file().unwrap().starts_with( path.as_ref() ) ) // qqq : rid of unwrap
     ;
 
     let plan = TestPlan::try_from
@@ -197,7 +198,7 @@ Try to install it with `rustup install {}` command(-s)",
 
     #[ cfg( feature = "progress_bar" ) ]
     let test_options_former = test_options_former.multiprocess( multiprocess ).style( style );
-    
+
 
     let options = test_options_former.form();
     let result = tests_run( &options );

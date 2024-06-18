@@ -187,19 +187,18 @@ mod private
   /// ```
   pub fn readme_modules_headers_renew( crate_dir : CrateDir ) ->
   Result< ModulesHeadersRenewReport, ( ModulesHeadersRenewReport, ModulesHeadersRenewError ) >
+  // xxx : newtype
   {
     let mut report = ModulesHeadersRenewReport::default();
     regexes_initialize();
     let workspace = Workspace::with_crate_dir
     (
       crate_dir
-      // CrateDir::try_from( path )
-      // .map_err( | e | ( report.clone(), e.into() ) )?
     )
     .err_with( || report.clone() )?; // xxx : qqq : use trait. everywhere
     let discord_url = workspace.discord_url();
 
-    // qqq : inspect each collect in willbe and rid off most of them
+    // qqq : inspect each collect in willbe and rid of most of them
 
     let paths : Vec< AbsolutePath > = workspace
     .packages()

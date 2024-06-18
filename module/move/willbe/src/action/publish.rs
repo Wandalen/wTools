@@ -149,16 +149,12 @@ mod private
     let packages = workspace.packages();
     let packages_to_publish : Vec< String > = packages
     .clone()
-    // .iter()
-    // .filter( | &package | paths.contains( &AbsolutePath::try_from( package.manifest_file().as_std_path().parent().unwrap() ).unwrap() ) )
-    // .filter( | &package | paths.contains( &AbsolutePath::try_from( package.crate_dir().unwrap() ) ) )
-    .filter( | &package | paths.contains( &package.crate_dir().unwrap().into() ) ) // xxx : qqq : check
+    .filter( | &package | paths.contains( &package.crate_dir().unwrap().into() ) )
     .map( | p | p.name().to_string() )
     .collect();
     let package_map : HashMap< String, Package< '_ > > = packages
     .map( | p | ( p.name().to_string(), Package::from( p ) ) )
     .collect();
-    // qqq : many redundant clones
 
     let graph = workspace_graph::graph( &workspace );
     let subgraph_wanted = graph::subgraph( &graph, &packages_to_publish[ .. ] );

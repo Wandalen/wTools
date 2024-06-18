@@ -58,14 +58,8 @@ pub( crate ) mod private
   {
     type Error = ManifestError;
 
-    // xxx
     fn try_from( manifest_file : ManifestFile ) -> Result< Self, Self::Error >
     {
-      // if !manifest_file.as_ref().ends_with( "Cargo.toml" )
-      // {
-      //   let err =  io::Error::new( io::ErrorKind::NotFound, format!( "Cannot find manifest at {manifest_file:?}" ) );
-      //   return Err( ManifestError::Io( err ) );
-      // }
 
       let read = fs::read_to_string( &manifest_file )?;
       let data = read.parse::< toml_edit::Document >()
@@ -86,17 +80,21 @@ pub( crate ) mod private
   {
     type Error = ManifestError;
 
-    // qqq : xxx : implement TryFrom< ManifestFile > also
     fn try_from( src : CrateDir ) -> Result< Self, Self::Error >
     {
       Self::try_from( src.manifest_file() )
-      // Self
-      // {
-      //   manifest_file : src.inner().join( "Cargo.toml" ),
-      //   data : None,
-      // }
     }
   }
+
+//   impl TryFrom< ManifestFile > for Manifest
+//   {
+//     type Error = ManifestError;
+//
+//     fn try_from( src : ManifestFile ) -> Result< Self, Self::Error >
+//     {
+//       Self::try_from( src )
+//     }
+//   }
 
   impl Manifest
   {
@@ -128,26 +126,10 @@ pub( crate ) mod private
       // CrateDir( self.manifest_file.parent().unwrap() )
     }
 
-    // /// Load manifest from path.
-    // pub fn load( &mut self ) -> Result< (), ManifestError >
-    // {
-    //   let read = fs::read_to_string( &self.manifest_file )?;
-    //   let result = read.parse::< toml_edit::Document >().map_err( | e | io::Error::new( io::ErrorKind::InvalidData, e ) )?;
-    //   self.data = Some( result );
-    //   Ok( () )
-    // }
-
-    // aaa : for Bohdan : don't abuse anyhow
-    // aaa : return `io` error
     /// Store manifest.
     pub fn store( &self ) -> io::Result< () >
     {
-      // If the `data` doesn't contain any data, then there's no point in attempting to write
-      // if let Some( data ) = &self.data
-      // {
-        fs::write( &self.manifest_file, self.data.to_string() )?;
-      // }
-
+      fs::write( &self.manifest_file, self.data.to_string() )?;
       Ok( () )
     }
 
@@ -158,11 +140,6 @@ pub( crate ) mod private
       // let data = self.data.as_ref().ok_or_else( || ManifestError::EmptyManifestData )?;
       let data = &self.data;
       data.get( "package" ).is_some() && data[ "package" ].get( "name" ).is_some()
-      // {
-      //   return true;
-      //   // return Ok( true );
-      // }
-      // Ok( false )
     }
 
     /// Check that module is local.
@@ -176,38 +153,13 @@ pub( crate ) mod private
       {
         let remote = data[ "package" ].get( "publish" ).is_none()
         || data[ "package" ][ "publish" ].as_bool().or( Some( true ) ).unwrap();
-        // .ok_or_else
-        // (
-        //   || ManifestError::CannotFindValue( "[package], [publish]".into() )
-        // )?;
-        // qqq : for Bohdan : bad. logic was wrong
-        // In a Cargo.toml file, the package.publish field is used to control whether a package can be published to a registry like crates.io. By default, if the package.publish field is not specified, the package is allowed to be published. In other words, the default behavior is equivalent to having package.publish set to true.
         return !remote;
       }
       true
     }
   }
 
-//   /// Create and load manifest by specified path
-//   pub fn open( path : AbsolutePath ) -> Result< Manifest, ManifestError >
-//   {
-//     // xxx
-//     let mut manifest = if let Ok( dir ) = CrateDir::try_from( path.clone() )
-//     {
-//       Manifest::from( dir )
-//     }
-//     else
-//     {
-//       Manifest::try_from( path )?
-//     };
-//
-//     manifest.load()?;
-//
-//     Ok( manifest )
-//   }
-
   /// Retrieves the repository URL of a package from its `Cargo.toml` file.
-  // pub fn repo_url( package_path : &Path ) -> Result< String >
   pub fn repo_url( crate_dir : &CrateDir ) -> Result< String >
   {
     // let path = package_path.join( "Cargo.toml" );
@@ -246,6 +198,5 @@ crate::mod_interface!
 {
   exposed use Manifest;
   orphan use ManifestError;
-  // protected use open;
   protected use repo_url;
 }
