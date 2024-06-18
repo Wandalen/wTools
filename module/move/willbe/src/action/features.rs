@@ -74,7 +74,17 @@ mod private
     let packages = workspace.packages().filter
     (
       | package |
-      package.manifest_file().unwrap().inner().starts_with( crate_dir.clone().absolute_path() ) // qqq : remove unwrap
+      {
+        if let Ok( manifest_file ) = package.manifest_file() 
+        {
+          manifest_file.inner().starts_with(crate_dir.clone().absolute_path())
+        }
+        else 
+        {
+          false
+        }
+      } // aaa : remove unwrap
+      // aaa : done
     );
     //.collect();
     // xxx
