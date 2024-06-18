@@ -25,6 +25,8 @@ use wtools::error::
 };
 use path::{ AbsolutePath, Utf8Path };
 
+// xxx : make generic
+
 /// Path to crate directory
 #[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
 pub struct CrateDir( AbsolutePath );

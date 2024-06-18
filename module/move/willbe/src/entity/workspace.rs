@@ -110,6 +110,7 @@ mod private
       self.metadata.packages.iter().map( WorkspacePackageRef::from )
     }
 
+    // qqq : return `CrateDir` instead of `std::path::Path`
     /// Returns the path to workspace root
     pub fn workspace_root( &self ) -> &std::path::Path
     {

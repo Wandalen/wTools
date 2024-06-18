@@ -11,7 +11,7 @@ mod private
   use wca::Value;
   use std::collections::HashMap;
 
-  // qqq : for Viktor : is that trait really necessary?
+  // qqq : for Nikita : is that trait really necessary?
   // Template - remove
   // DeployTemplate - move here
   // DeployTemplateFiles - remove
@@ -343,7 +343,7 @@ mod private
     fn read( &self, instruction : &FileReadInstruction ) -> Result< Vec< u8 > >;
   }
 
-  // qqq : zzz : why not public?
+  // xxx : zzz : why not public?
   struct FileSystem;
   impl FileSystemPort for FileSystem
   {

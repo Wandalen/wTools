@@ -149,7 +149,6 @@ mod private
       }
     }
 
-
     /// Package version
     pub fn version( &self ) -> Result< String, PackageError >
     {

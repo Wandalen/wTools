@@ -72,7 +72,7 @@ mod private
   ///   which dependencies should be included in the return for that package. If not provided, all
   ///   dependencies for a package are included.
 
-  // qqq : for Bohdan : for Petro : bad. don't use PackageMetadata directly, use its abstraction only!
+  // aaa : for Bohdan : for Petro : bad. don't use PackageMetadata directly, use its abstraction only!
 
   pub fn filter< 'a >
   (

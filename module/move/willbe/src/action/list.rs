@@ -322,7 +322,7 @@ mod private
       if dependency.crate_dir().is_some() && !args.dependency_sources.contains( &DependencySource::Local ) { continue; }
       if dependency.crate_dir().is_none() && !args.dependency_sources.contains( &DependencySource::Remote ) { continue; }
 
-      // qqq : extend test coverage. NewType
+      // qqq : extend test coverage. NewType. Description
       let dep_id = DependencyId
       {
         name : dependency.name(),

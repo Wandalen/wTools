@@ -213,7 +213,7 @@ mod private
     {
       // let crate_dir = package.manifest_file().parent().unwrap().as_std_path().to_path_buf();
       let crate_dir = package.crate_dir()?;
-      let mut test_variants = std::collections::BTreeSet::new();
+      let mut test_variants = collections::BTreeSet::new();
       let features_powerset = features::features_powerset
       (
         package,
@@ -340,8 +340,8 @@ mod private
   {
     fn as_rustup_args( &self ) -> Vec< String >
     {
-      debug_assert!( !self.with_default_features ); // qqq : remove later
-      debug_assert!( !self.with_all_features ); // qqq : remove later
+      debug_assert!( !self.with_default_features ); // aaa : remove later
+      debug_assert!( !self.with_all_features ); // aaa : remove later
       [ "run".into(), self.channel.to_string(), "cargo".into(), "test".into() ]
       .into_iter()
       .chain( if self.optimization == optimization::Optimization::Release { Some( "--release".into() ) } else { None } )
