@@ -139,7 +139,7 @@ Try to install it with `rustup install {}` command(-s)",
     // let packages = needed_packages( &workspace );
     let packages = workspace
     .packages()
-    .filter( move | p | p.manifest_file().unwrap().starts_with( path.as_ref() ) ) // qqq : rid off unwrap
+    .filter( move | p | p.manifest_file().is_ok() && p.manifest_file().unwrap().starts_with( path.as_ref() ) ) // aaa : rid off unwrap // aaa : now its save
     ;
 
     let plan = TestPlan::try_from
