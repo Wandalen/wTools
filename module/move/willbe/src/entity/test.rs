@@ -611,12 +611,13 @@ mod private
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> std::fmt::Result
     {
-      if self.dry
-      {
-        writeln!( f, "\nYou can execute the plan with 'will .test dry : 0'." )?;
-        // qqq : for Petro : bad. should be exact command with exact parameters / при виклику зовнішніх команд повинен бути вивід у консоль про цей виклик і його аргументи за виключенням коли ційлий блок виводу прихований (у моєму випадку при фейлі)
-        return Ok( () )
-      }
+      // if self.dry
+      // {
+      //   writeln!( f, "\nYou can execute the plan with 'will .test dry : 0'." )?;
+      //   // aaa : for Petro : bad. should be exact command with exact parameters / при виклику зовнішніх команд повинен бути вивід у консоль про цей виклик і його аргументи за виключенням коли ційлий блок виводу прихований (у моєму випадку при фейлі)
+      //   // aaa : coment in because its redundant, this behavior already implemented  
+      // return Ok( () )
+      // }
       if self.success_reports.is_empty() && self.failure_reports.is_empty()
       {
         writeln!( f, "The tests have not been run."  )?;

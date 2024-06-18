@@ -69,6 +69,7 @@ mod private
   {
 
     // qqq : incapsulate progress bar logic into some function of struct. don't keep it here
+    // aaa : done
 
     let mut report = TestsReport::default();
     // fail fast if some additional installations required
