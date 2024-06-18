@@ -99,13 +99,9 @@ mod private
   impl Workspace
   {
 
-    // aaa : replace all Vec by Iterators over refs
-    // aaa : understood
-
     /// Returns list of all packages
     pub fn packages< 'a >( &'a self )
-    ->
-    core::iter::Map
+    -> core::iter::Map
     <
       slice::Iter< 'a, cargo_metadata::Package >,
       impl Fn( &'a cargo_metadata::Package ) -> WorkspacePackageRef< 'a > + Clone,
@@ -113,17 +109,6 @@ mod private
     {
       self.metadata.packages.iter().map( WorkspacePackageRef::from )
     }
-
-    // /// Returns list of all packages
-    // pub fn packages( &self ) -> Result< Vec< WorkspacePackageRef< '_ > >, WorkspaceError >
-    // {
-    //   self
-    //   .metadata
-    //   .as_ref()
-    //   .ok_or_else( || WorkspaceError::MetadataError )
-    //   .map( | metadata | metadata.packages.clone() )
-    //   .map( | p | p.into_iter().map( WorkspacePackageRef::from ).collect() )
-    // }
 
     /// Returns the path to workspace root
     pub fn workspace_root( &self ) -> &std::path::Path
@@ -137,8 +122,6 @@ mod private
       self.metadata.target_directory.as_std_path()
     }
 
-    // aaa : bad : for Petro : that should not be here as it's very task specific
-    // aaa : done
     /// Find a package by its manifest file path
     pub fn package_find_by_manifest< 'a, P >( &'a self, manifest_file : P ) -> Option< WorkspacePackageRef< 'a > >
     where
@@ -146,14 +129,8 @@ mod private
     {
       self
       .packages()
-      // .iter()
-      // .find( | &p | p.manifest_file().as_std_path() == manifest_file.as_ref() )
       .find( | &p | p.manifest_file().unwrap().as_ref() == manifest_file.as_ref() )
-      // .cloned()
     }
-
-    // xxx : aaa : for Bohdan : should not be here entity/workspace-graph.rs
-    // aaa : moved out
   }
 }
 

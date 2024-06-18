@@ -75,13 +75,13 @@ mod private
 
     fn try_from( value : ManifestFile ) -> Result< Self, Self::Error >
     {
-      let manifest = Manifest::try_from( value )?;
-      if !manifest.package_is()
+      let package = Manifest::try_from( value )?;
+      if !package.package_is()
       {
         return Err( PackageError::NotAPackage );
       }
 
-      Ok( Self::Manifest( manifest ) )
+      Ok( Self::Manifest( package ) )
     }
   }
 
@@ -91,13 +91,13 @@ mod private
 
     fn try_from( value : CrateDir ) -> Result< Self, Self::Error >
     {
-      let manifest = Manifest::try_from( value )?;
-      if !manifest.package_is()
+      let package = Manifest::try_from( value )?;
+      if !package.package_is()
       {
         return Err( PackageError::NotAPackage );
       }
 
-      Ok( Self::Manifest( manifest ) )
+      Ok( Self::Manifest( package ) )
     }
   }
 
@@ -129,14 +129,12 @@ mod private
   impl< 'a > Package< 'a >
   {
 
-    // qqq : introdcue newtype ManifestPath
     /// Path to `Cargo.toml`
-    // xxx : ref?
     pub fn manifest_file( &self ) -> ManifestFile
     {
       match self
       {
-        Self::Manifest( manifest ) => manifest.manifest_file.clone(),
+        Self::Manifest( package ) => package.manifest_file.clone(),
         Self::WorkspacePackageRef( package ) => package.manifest_file().unwrap(),
       }
     }
@@ -146,14 +144,8 @@ mod private
     {
       match self
       {
-        Self::Manifest( manifest ) => manifest.crate_dir(),
-        Self::WorkspacePackageRef( package ) =>
-        {
-          package.crate_dir().unwrap()
-          // let path = package.manifest_file().parent().unwrap().as_std_path().to_path_buf();
-          // let absolute = AbsolutePath::try_from( path ).unwrap();
-          // CrateDir::try_from( absolute ).unwrap()
-        },
+        Self::Manifest( package ) => package.crate_dir(),
+        Self::WorkspacePackageRef( package ) => package.crate_dir().unwrap(),
       }
     }
 
@@ -163,10 +155,10 @@ mod private
     {
       match self
       {
-        Self::Manifest( manifest ) =>
+        Self::Manifest( package ) =>
         {
-          // let data = manifest.data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
-          let data = &manifest.data;
+          // let data = package.data.as_ref().ok_or_else( || PackageError::Manifest( ManifestError::EmptyManifestData ) )?;
+          let data = &package.data;
 
           // Unwrap safely because of the `Package` type guarantee
           Ok( data[ "package" ][ "version" ].as_str().unwrap().to_string() )
@@ -179,15 +171,14 @@ mod private
     }
 
     /// Check that module is local.
-    // pub fn local_is( &self ) -> Result< bool, ManifestError >
     pub fn local_is( &self ) -> bool
     {
       match self
       {
-        Self::Manifest( manifest ) =>
+        Self::Manifest( package ) =>
         {
-          // verify that manifest not empty
-          manifest.local_is()
+          // verify that package not empty
+          package.local_is()
         }
         Self::WorkspacePackageRef( package ) =>
         {
@@ -202,37 +193,18 @@ mod private
     {
       match self
       {
-        Package::Manifest( manifest ) => Ok( manifest.clone() ),
+        Package::Manifest( package ) => Ok( package.clone() ),
         Package::WorkspacePackageRef( package ) => Manifest::try_from
         (
-          package.manifest_file().map_err( | _ | PackageError::LocalPath )? // xxx : use trait
-          // AbsolutePath::try_from( package.manifest_file() ).map_err( | _ | PackageError::LocalPath )?
+          package.manifest_file().map_err( | _ | PackageError::LocalPath )? // qqq : use trait
         )
         .map_err( | _ | PackageError::WorkspacePackageRef ),
       }
     }
 
-    // /// Returns the `Metadata`
-    // // xxx : rename
-    // pub fn package( &'a self ) -> Result< WorkspacePackageRef< 'a >, PackageError >
-    // {
-    //   match self
-    //   {
-    //     Package::Manifest( manifest ) =>
-    //     {
-    //       // xxx : qqq : !
-    //       panic!( "Can't be implemented" );
-    //       // let workspace = Workspace::with_crate_dir( manifest.crate_dir() )
-    //       // .map_err( |_| PackageError::WorkspacePackageRef )?;
-    //       // workspace
-    //       // .package_find_by_manifest( &manifest.manifest_file )
-    //       // .ok_or_else( || PackageError::WorkspacePackageRef )
-    //     },
-    //     Package::WorkspacePackageRef( package ) => Ok( package.clone() ),
-    //   }
-    // }
   }
 
+  // qqq : for Bohdan : should not be here
   #[ derive( Debug, Default, Clone ) ]
   pub struct ExtendedGitReport
   {
@@ -243,8 +215,10 @@ mod private
 
   impl std::fmt::Display for ExtendedGitReport
   {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt( &self, f : &mut Formatter<'_> ) -> std::fmt::Result
+    {
       let Self { add, commit, push } = &self;
+
       if let Some( add ) = add { writeln!( f, "{add}" )? }
       if let Some( commit ) = commit { writeln!( f, "{commit}" )? }
       if let Some( push ) = push { writeln!( f, "{push}" )? }
@@ -253,6 +227,8 @@ mod private
     }
   }
 
+  // qqq : for Bohdan : should not be here
+  // qqq : for Bohdan : documentation
   #[ derive( Debug, Clone ) ]
   pub struct GitOptions
   {
@@ -262,6 +238,8 @@ mod private
     pub dry : bool,
   }
 
+  // qqq : for Bohdan : should not be here
+  // qqq : for Bohdan : documentation
   fn perform_git_commit( o : GitOptions ) -> Result< ExtendedGitReport >
   {
     let mut report = ExtendedGitReport::default();
@@ -283,6 +261,8 @@ mod private
     Ok( report )
   }
 
+  // qqq : for Bohdan : should not be here
+  // qqq : for Bohdan : documentation
   #[ derive( Debug, Clone ) ]
   pub struct PackagePublishInstruction
   {
@@ -293,6 +273,9 @@ mod private
     pub publish : cargo::PublishOptions,
     pub dry : bool,
   }
+
+  // qqq : for Bohdan : should not be here
+  // qqq : for Bohdan : documentation
 
   /// Represents a planner for publishing a single package.
   #[ derive( Debug, Former ) ]
@@ -776,13 +759,12 @@ mod private
     }
   }
 
-  // xxx : move out
+  // qqq : for Bohdan : move out
   /// Recursive implementation of the `dependencies` function
   pub fn _dependencies< 'a >
   (
-    workspace : &mut Workspace, // xxx : qqq : for Bohdan : why mut? o.O
-    manifest : &Package< 'a >, // xxx : rename
-    // xxx : firain type
+    workspace : &mut Workspace, // qqq : for Bohdan : no mut
+    package : &Package< 'a >, // xxx : rename
     graph : &mut HashMap< CrateId, HashSet< CrateId > >,
     opts : DependenciesOptions
   ) -> Result< CrateId >
@@ -796,7 +778,7 @@ mod private
     } = opts;
     if recursive && with_remote { unimplemented!( "`recursive` + `with_remote` options") }
 
-    let manifest_file = &manifest.manifest_file();
+    let manifest_file = &package.manifest_file();
 
     let package = workspace
     .package_find_by_manifest( &manifest_file )
@@ -834,12 +816,12 @@ mod private
     Ok( package )
   }
 
-  /// Returns local dependencies of a specified package by its manifest path from a workspace.
+  /// Returns local dependencies of a specified package by its package path from a workspace.
   ///
   /// # Arguments
   ///
   /// - `workspace` - holds cached information about the workspace, such as the packages it contains and their dependencies. By passing it as a mutable reference, function can update the cache as needed.
-  /// - `manifest` - The package manifest file contains package about the package such as its name, version, and dependencies.
+  /// - `package` - The package package file contains package about the package such as its name, version, and dependencies.
   /// - `opts` - used to specify options or configurations for fetching local dependencies.
   ///
   /// # Returns
@@ -848,13 +830,13 @@ mod private
   pub fn dependencies< 'a >
   (
     workspace : &mut Workspace,
-    manifest : &Package< 'a >, // xxx : rename
+    package : &Package< 'a >, // xxx : rename
     opts : DependenciesOptions
   )
   -> Result< Vec< CrateId > >
   {
     let mut graph = HashMap::new();
-    let root = _dependencies( workspace, manifest, &mut graph, opts.clone() )?;
+    let root = _dependencies( workspace, package, &mut graph, opts.clone() )?;
 
     let output = match opts.sort
     {
@@ -891,7 +873,7 @@ mod private
   /// - `true` if the package needs to be published.
   /// - `false` if there is no need to publish the package.
   ///
-  /// Panics if the manifest is not loaded or local package is not packed.
+  /// Panics if the package is not loaded or local package is not packed.
 
   pub fn publish_need< 'a >( package : &Package< 'a >, path : Option< PathBuf > ) -> Result< bool, PackageError >
   {

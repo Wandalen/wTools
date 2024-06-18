@@ -218,7 +218,7 @@ mod private
   {
     regexes_initialize();
     let absolute_path = AbsolutePath::try_from( path )?;
-    let mut workspace = Workspace::with_crate_dir( CrateDir::try_from( absolute_path )? )?;
+    let workspace = Workspace::with_crate_dir( CrateDir::try_from( absolute_path )? )?;
     let workspace_root = workspace.workspace_root();
     let mut parameters = GlobalTableOptions::initialize_from_path( &workspace_root )?;
 
