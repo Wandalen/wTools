@@ -86,15 +86,15 @@ pub( crate ) mod private
     }
   }
 
-  impl TryFrom< ManifestFile > for Manifest
-  {
-    type Error = ManifestError;
-
-    fn try_from( src : ManifestFile ) -> Result< Self, Self::Error >
-    {
-      Self::try_from( src )
-    }
-  }
+//   impl TryFrom< ManifestFile > for Manifest
+//   {
+//     type Error = ManifestError;
+//
+//     fn try_from( src : ManifestFile ) -> Result< Self, Self::Error >
+//     {
+//       Self::try_from( src )
+//     }
+//   }
 
   impl Manifest
   {
