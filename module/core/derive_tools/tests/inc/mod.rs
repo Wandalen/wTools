@@ -32,9 +32,53 @@ mod all_test;
 
 mod basic_test;
 
-mod as_mut_manual_test;
 #[ cfg( feature = "derive_as_mut" ) ]
-mod as_mut_test;
+#[ path = "as_mut" ]
+mod as_mut_test
+{
+  #[ allow( unused_imports ) ]
+  use super::*;
+
+  //
+
+  mod struct_tuple;
+  mod struct_tuple_manual;
+  mod struct_named;
+  mod struct_named_manual;
+
+  mod enum_tuple;
+  mod enum_tuple_manual;
+  mod enum_named;
+  mod enum_named_manual;
+
+  //
+
+  mod generics_lifetimes;
+  mod generics_lifetimes_manual;
+
+  mod generics_types;
+  mod generics_types_manual;
+  mod generics_types_default;
+  mod generics_types_default_manual;
+
+  mod generics_constants;
+  mod generics_constants_manual;
+  mod generics_constants_default;
+  mod generics_constants_default_manual;
+
+  //
+
+  mod bounds_inlined;
+  mod bounds_inlined_manual;
+  mod bounds_where;
+  mod bounds_where_manual;
+  mod bounds_mixed;
+  mod bounds_mixed_manual;
+
+  //
+
+  mod name_collisions;
+}
 
 #[ cfg( feature = "derive_as_ref" ) ]
 #[ path = "as_ref" ]
