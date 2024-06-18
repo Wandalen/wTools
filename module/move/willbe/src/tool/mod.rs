@@ -37,9 +37,9 @@ crate::mod_interface!
   layer url;
   orphan use super::url;
 
-  // /// Tools for printing a tree
-  // layer tree;
-  // orphan use super::tree;
+  /// Tools for printing a tree
+  layer tree;
+  orphan use super::tree;
 
   /// Tools for wrap errors
   layer error_with;

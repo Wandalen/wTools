@@ -4,7 +4,7 @@ mod private
   use crate::*;
   use std::
   {
-    fmt::{ Formatter, Write },
+    fmt::Formatter,
     // path::PathBuf,
     collections::HashSet,
   };
@@ -29,6 +29,7 @@ mod private
   use workspace::Workspace;
   // // use path::AbsolutePath;
   use tool::error_with::ErrWith;
+  use tool::{ TreePrinter, ListNodeReport };
 
   /// Args for `list` action.
   #[ derive( Debug, Default, Copy, Clone ) ]
@@ -152,133 +153,133 @@ mod private
     dependency_categories : HashSet< DependencyCategory >,
   }
 
-  struct Symbols
-  {
-    down : &'static str,
-    tee : &'static str,
-    ell : &'static str,
-    right : &'static str,
-  }
+  // struct Symbols
+  // {
+  //   down : &'static str,
+  //   tee : &'static str,
+  //   ell : &'static str,
+  //   right : &'static str,
+  // }
 
-  // qqq : for Mykyta : make facade, abstract and move out tree printing. or reuse ready solution for tree printing
-  // stick to single responsibility
-  const UTF8_SYMBOLS : Symbols = Symbols
-  {
-    down : "│",
-    tee  : "├",
-    ell  : "└",
-    right : "─",
-  };
+  // // qqq : for Mykyta : make facade, abstract and move out tree printing. or reuse ready solution for tree printing
+  // // stick to single responsibility
+  // const UTF8_SYMBOLS : Symbols = Symbols
+  // {
+  //   down : "│",
+  //   tee  : "├",
+  //   ell  : "└",
+  //   right : "─",
+  // };
 
-  /// Represents a node in a dependency graph.
-  /// It holds essential information about the project dependencies. It is also capable
-  /// of holding any nested dependencies in a recursive manner, allowing the modeling
-  /// of complex dependency structures.
-  #[ derive( Debug, Clone, Eq, PartialEq ) ]
-  pub struct ListNodeReport
-  {
-    /// This could be the name of the library or crate.
-    pub name : String,
-    /// Ihe version of the crate.
-    pub version : Option< String >,
-    /// The path to the node's source files in the local filesystem. This is
-    /// optional as not all nodes may have a local presence (e.g., nodes representing remote crates).
-    pub crate_dir : Option< CrateDir >,
-    /// This field is a flag indicating whether the Node is a duplicate or not.
-    pub duplicate : bool,
-    /// A list that stores normal dependencies.
-    /// Each element in the list is also of the same 'ListNodeReport' type to allow
-    /// storage of nested dependencies.
-    pub normal_dependencies : Vec< ListNodeReport >,
-    /// A list that stores dev dependencies(dependencies required for tests or examples).
-    /// Each element in the list is also of the same 'ListNodeReport' type to allow
-    /// storage of nested dependencies.
-    pub dev_dependencies : Vec< ListNodeReport >,
-    /// A list that stores build dependencies.
-    /// Each element in the list is also of the same 'ListNodeReport' type to allow
-    /// storage of nested dependencies.
-    pub build_dependencies : Vec< ListNodeReport >,
-  }
+  // /// Represents a node in a dependency graph.
+  // /// It holds essential information about the project dependencies. It is also capable
+  // /// of holding any nested dependencies in a recursive manner, allowing the modeling
+  // /// of complex dependency structures.
+  // #[ derive( Debug, Clone, Eq, PartialEq ) ]
+  // pub struct ListNodeReport
+  // {
+  //   /// This could be the name of the library or crate.
+  //   pub name : String,
+  //   /// Ihe version of the crate.
+  //   pub version : Option< String >,
+  //   /// The path to the node's source files in the local filesystem. This is
+  //   /// optional as not all nodes may have a local presence (e.g., nodes representing remote crates).
+  //   pub crate_dir : Option< CrateDir >,
+  //   /// This field is a flag indicating whether the Node is a duplicate or not.
+  //   pub duplicate : bool,
+  //   /// A list that stores normal dependencies.
+  //   /// Each element in the list is also of the same 'ListNodeReport' type to allow
+  //   /// storage of nested dependencies.
+  //   pub normal_dependencies : Vec< ListNodeReport >,
+  //   /// A list that stores dev dependencies(dependencies required for tests or examples).
+  //   /// Each element in the list is also of the same 'ListNodeReport' type to allow
+  //   /// storage of nested dependencies.
+  //   pub dev_dependencies : Vec< ListNodeReport >,
+  //   /// A list that stores build dependencies.
+  //   /// Each element in the list is also of the same 'ListNodeReport' type to allow
+  //   /// storage of nested dependencies.
+  //   pub build_dependencies : Vec< ListNodeReport >,
+  // }
 
-  impl ListNodeReport
-  {
-    /// Displays the name, version, path, and dependencies of a package with appropriate indentation and spacing.
-    ///
-    /// # Arguments
-    ///
-    /// * `spacer` - A string used for indentation.
-    ///
-    /// # Returns
-    ///
-    /// * A `Result` containing the formatted string or a `std::fmt::Error` if formatting fails.
-    pub fn display_with_spacer( &self, spacer : &str ) -> Result< String, std::fmt::Error >
-    {
-      let mut f = String::new();
+  // impl ListNodeReport
+  // {
+  //   /// Displays the name, version, path, and dependencies of a package with appropriate indentation and spacing.
+  //   ///
+  //   /// # Arguments
+  //   ///
+  //   /// * `spacer` - A string used for indentation.
+  //   ///
+  //   /// # Returns
+  //   ///
+  //   /// * A `Result` containing the formatted string or a `std::fmt::Error` if formatting fails.
+  //   pub fn display_with_spacer( &self, spacer : &str ) -> Result< String, std::fmt::Error >
+  //   {
+  //     let mut f = String::new();
 
-      write!( f, "{}", self.name )?;
-      if let Some( version ) = &self.version { write!( f, " {version}" )? }
-      if let Some( crate_dir ) = &self.crate_dir { write!( f, " {}", crate_dir )? }
-      if self.duplicate { write!( f, "(*)" )? }
-      write!( f, "\n" )?;
+  //     write!( f, "{}", self.name )?;
+  //     if let Some( version ) = &self.version { write!( f, " {version}" )? }
+  //     if let Some( crate_dir ) = &self.crate_dir { write!( f, " {}", crate_dir )? }
+  //     if self.duplicate { write!( f, "(*)" )? }
+  //     write!( f, "\n" )?;
 
-      let mut new_spacer = format!( "{spacer}{}  ", if self.normal_dependencies.len() < 2 { " " } else { UTF8_SYMBOLS.down } );
-      let mut normal_dependencies_iter = self.normal_dependencies.iter();
-      let last = normal_dependencies_iter.next_back();
+  //     let mut new_spacer = format!( "{spacer}{}  ", if self.normal_dependencies.len() < 2 { " " } else { UTF8_SYMBOLS.down } );
+  //     let mut normal_dependencies_iter = self.normal_dependencies.iter();
+  //     let last = normal_dependencies_iter.next_back();
 
-      for dep in normal_dependencies_iter
-      {
-        write!( f, "{spacer}{}{} {}", UTF8_SYMBOLS.tee, UTF8_SYMBOLS.right, dep.display_with_spacer( &new_spacer )? )?;
-      }
-      if let Some( last ) = last
-      {
-        new_spacer = format!( "{spacer}   " );
-        write!( f, "{spacer}{}{} {}", UTF8_SYMBOLS.ell, UTF8_SYMBOLS.right, last.display_with_spacer( &new_spacer )? )?;
-      }
-      if !self.dev_dependencies.is_empty()
-      {
-        let mut dev_dependencies_iter = self.dev_dependencies.iter();
-        let last = dev_dependencies_iter.next_back();
-        write!( f, "{spacer}[dev-dependencies]\n" )?;
-        for dep in dev_dependencies_iter
-        {
-          write!( f, "{spacer}{}{} {}", UTF8_SYMBOLS.tee, UTF8_SYMBOLS.right, dep.display_with_spacer( &new_spacer )? )?;
-        }
-        // unwrap - safe because `is_empty` check
-        write!( f, "{spacer}{}{} {}", UTF8_SYMBOLS.ell, UTF8_SYMBOLS.right, last.unwrap().display_with_spacer( &new_spacer )? )?;
-      }
-      if !self.build_dependencies.is_empty()
-      {
-        let mut build_dependencies_iter = self.build_dependencies.iter();
-        let last = build_dependencies_iter.next_back();
-        write!( f, "{spacer}[build-dependencies]\n" )?;
-        for dep in build_dependencies_iter
-        {
-          write!( f, "{spacer}{}{} {}", UTF8_SYMBOLS.tee, UTF8_SYMBOLS.right, dep.display_with_spacer( &new_spacer )? )?;
-        }
-        // unwrap - safe because `is_empty` check
-        write!( f, "{spacer}{}{} {}", UTF8_SYMBOLS.ell, UTF8_SYMBOLS.right, last.unwrap().display_with_spacer( &new_spacer )? )?;
-      }
+  //     for dep in normal_dependencies_iter
+  //     {
+  //       write!( f, "{spacer}{}{} {}", UTF8_SYMBOLS.tee, UTF8_SYMBOLS.right, dep.display_with_spacer( &new_spacer )? )?;
+  //     }
+  //     if let Some( last ) = last
+  //     {
+  //       new_spacer = format!( "{spacer}   " );
+  //       write!( f, "{spacer}{}{} {}", UTF8_SYMBOLS.ell, UTF8_SYMBOLS.right, last.display_with_spacer( &new_spacer )? )?;
+  //     }
+  //     if !self.dev_dependencies.is_empty()
+  //     {
+  //       let mut dev_dependencies_iter = self.dev_dependencies.iter();
+  //       let last = dev_dependencies_iter.next_back();
+  //       write!( f, "{spacer}[dev-dependencies]\n" )?;
+  //       for dep in dev_dependencies_iter
+  //       {
+  //         write!( f, "{spacer}{}{} {}", UTF8_SYMBOLS.tee, UTF8_SYMBOLS.right, dep.display_with_spacer( &new_spacer )? )?;
+  //       }
+  //       // unwrap - safe because `is_empty` check
+  //       write!( f, "{spacer}{}{} {}", UTF8_SYMBOLS.ell, UTF8_SYMBOLS.right, last.unwrap().display_with_spacer( &new_spacer )? )?;
+  //     }
+  //     if !self.build_dependencies.is_empty()
+  //     {
+  //       let mut build_dependencies_iter = self.build_dependencies.iter();
+  //       let last = build_dependencies_iter.next_back();
+  //       write!( f, "{spacer}[build-dependencies]\n" )?;
+  //       for dep in build_dependencies_iter
+  //       {
+  //         write!( f, "{spacer}{}{} {}", UTF8_SYMBOLS.tee, UTF8_SYMBOLS.right, dep.display_with_spacer( &new_spacer )? )?;
+  //       }
+  //       // unwrap - safe because `is_empty` check
+  //       write!( f, "{spacer}{}{} {}", UTF8_SYMBOLS.ell, UTF8_SYMBOLS.right, last.unwrap().display_with_spacer( &new_spacer )? )?;
+  //     }
 
-      Ok( f )
-    }
-  }
+  //     Ok( f )
+  //   }
+  // }
 
-  impl std::fmt::Display for ListNodeReport
-  {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
-    {
-      write!( f, "{}", self.display_with_spacer( "" )? )?;
+  // impl std::fmt::Display for ListNodeReport
+  // {
+  //   fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+  //   {
+  //     write!( f, "{}", self.display_with_spacer( "" )? )?;
 
-      Ok( () )
-    }
-  }
+  //     Ok( () )
+  //   }
+  // }
 
   /// Represents the different report formats for the `list` action.
   #[ derive( Debug, Default, Clone ) ]
   pub enum ListReport
   {
     /// Represents a tree-like report format.
-    Tree( Vec< ListNodeReport > ),
+    Tree( Vec< TreePrinter > ),
     /// Represents a standard list report format in topological order.
     List( Vec< String > ),
     /// Represents an empty report format.
@@ -336,7 +337,6 @@ mod private
 
       let mut temp_vis = visited.clone();
       let dependency_rep = process_dependency( workspace, dependency, args, &mut temp_vis );
-
       match dependency.kind()
       {
         DependencyKind::Normal if args.dependency_categories.contains( &DependencyCategory::Primary ) => dep_rep.normal_dependencies.push( dependency_rep ),
@@ -446,10 +446,12 @@ mod private
 
       process_package_dependency( &workspace, &package, &args, &mut package_report, visited );
 
+      let printer = TreePrinter::new( &package_report );
+      
       *report = match report
       {
-        ListReport::Tree( ref mut v ) => ListReport::Tree( { v.extend([ package_report ]); v.clone() } ),
-        ListReport::Empty => ListReport::Tree( vec![ package_report ] ),
+        ListReport::Tree( ref mut v ) => ListReport::Tree( { v.extend([ printer ]); v.clone() } ),
+        ListReport::Empty => ListReport::Tree( vec![ printer ] ),
         ListReport::List( _ ) => unreachable!(),
       };
     };
@@ -461,7 +463,9 @@ mod private
         let mut visited = HashSet::new();
         tree_package_report( manifest.manifest_file, &mut report, &mut visited );
         let ListReport::Tree( tree ) = report else { unreachable!() };
-        let tree = rearrange_duplicates( merge_dev_dependencies( merge_build_dependencies( tree ) ) );
+        let printer = merge_build_dependencies( tree );
+        let rep : Vec< ListNodeReport > = printer.iter().map( | printer | printer.info.clone() ).collect();
+        let tree = rearrange_duplicates( rep );
         report = ListReport::Tree( tree );
       }
       ListFormat::Tree =>
@@ -481,7 +485,9 @@ mod private
           tree_package_report( package.manifest_file().unwrap(), &mut report, &mut visited )
         }
         let ListReport::Tree( tree ) = report else { unreachable!() };
-        let tree = merge_dev_dependencies( merge_build_dependencies( tree ) );
+        let printer = merge_build_dependencies( tree );
+        let rep : Vec< ListNodeReport > = printer.iter().map( | printer | printer.info.clone() ).collect();
+        let tree = merge_dev_dependencies( rep );
         report = ListReport::Tree( tree );
       }
       ListFormat::Topological =>
@@ -616,16 +622,16 @@ mod private
     Ok( report )
   }
 
-  fn merge_build_dependencies( mut report: Vec< ListNodeReport > ) -> Vec< ListNodeReport >
+  fn merge_build_dependencies( mut report: Vec< TreePrinter > ) -> Vec< TreePrinter >
   {
     let mut build_dependencies = vec![];
     for node_report in &mut report
     {
-      build_dependencies = merge_build_dependencies_impl( node_report, build_dependencies );
+      build_dependencies = merge_build_dependencies_impl( &mut node_report.info, build_dependencies );
     }
     if let Some( last_report ) = report.last_mut()
     {
-      last_report.build_dependencies = build_dependencies;
+      last_report.info.build_dependencies = build_dependencies;
     }
 
     report
@@ -651,7 +657,7 @@ mod private
     build_deps_acc
   }
 
-  fn merge_dev_dependencies( mut report: Vec< ListNodeReport > ) -> Vec< ListNodeReport >
+  fn merge_dev_dependencies( mut report: Vec< ListNodeReport > ) -> Vec< TreePrinter >
   {
     let mut dev_dependencies = vec![];
     for node_report in &mut report
@@ -662,8 +668,8 @@ mod private
     {
       last_report.dev_dependencies = dev_dependencies;
     }
-
-    report
+    let printer : Vec< TreePrinter > = report.iter().map( | rep | TreePrinter::new( rep ) ).collect();
+    printer
   }
 
   fn merge_dev_dependencies_impl( report : &mut ListNodeReport, mut dev_deps_acc : Vec< ListNodeReport > ) -> Vec< ListNodeReport >
@@ -686,7 +692,7 @@ mod private
     dev_deps_acc
   }
 
-  fn rearrange_duplicates( mut report : Vec< ListNodeReport > ) -> Vec< ListNodeReport >
+  fn rearrange_duplicates( mut report : Vec< ListNodeReport > ) -> Vec< TreePrinter >
   {
     let mut required_normal : HashMap< usize, Vec< ListNodeReport > > = HashMap::new();
     for i in 0 .. report.len()
@@ -702,7 +708,8 @@ mod private
       report[ i ].normal_dependencies.extend( deps );
     }
 
-    report
+    let printer : Vec< TreePrinter > = report.iter().map( | rep | TreePrinter::new( rep ) ).collect();
+    printer
   }
 
   fn rearrange_duplicates_resolver( report : &mut [ ListNodeReport ], required : &mut HashMap< usize, Vec< ListNodeReport > > )
@@ -744,7 +751,7 @@ crate::mod_interface!
   /// Contains output of the action.
   protected use ListReport;
   /// Contains output of a single node of the action.
-  protected use ListNodeReport;
+  // protected use ListNodeReport;
   /// List packages in workspace.
   orphan use list;
 }

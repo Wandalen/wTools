@@ -35,6 +35,8 @@ mod private
   use error_tools::for_app::Error;
   use channel::Channel;
   use tool::error_with::ErrWith;
+  use tool::ListNodeReport;
+  use tool::TreePrinter;
 
   ///
   #[ derive( Debug, Clone ) ]
@@ -485,7 +487,7 @@ mod private
         .map_err( |( _, _e )| std::fmt::Error )?;
         let action::list::ListReport::Tree( list ) = list else { unreachable!() };
 
-        fn callback( name_bump_report : &HashMap< &String, ( String, String ) >, mut r : action::list::ListNodeReport ) -> action::list::ListNodeReport
+        fn callback( name_bump_report : &HashMap< &String, ( String, String ) >, mut r : tool::ListNodeReport ) -> tool::ListNodeReport
         {
           if let Some(( old, new )) = name_bump_report.get( &r.name )
           {
@@ -497,9 +499,12 @@ mod private
 
           r
         }
-        let list = list.into_iter().map( | r | callback( &name_bump_report, r ) ).collect();
+        let printer = list;
+        let rep : Vec< ListNodeReport > = printer.iter().map( | printer | printer.info.clone() ).collect();
+        let list: Vec< ListNodeReport > = rep.into_iter().map( | r | callback( &name_bump_report, r ) ).collect();
+        let printer : Vec< TreePrinter > = list.iter().map( | rep | TreePrinter::new( rep ) ).collect();
 
-        let list = action::list::ListReport::Tree( list );
+        let list = action::list::ListReport::Tree( printer );
         writeln!( f, "{}", list )?;
       }
 
