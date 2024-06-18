@@ -52,7 +52,7 @@ mod private
       {
         println!( "{report}" );
 
-        if dry && report.packages.iter().find( |( _, p )| p.publish_required ).is_some()
+        if dry && !report.packages.is_empty()
         {
           let args = if args_line.is_empty() { String::new() } else { format!(" {}", args_line) };
           let prop = if prop_line.is_empty() { String::new() } else { format!(" {}", prop_line) };

@@ -43,10 +43,7 @@ mod private
       fn modify( diffs : &HashMap< AbsolutePath, DiffReport >, tree : &mut ListNodeReport )
       {
         let path = tree.crate_dir.take().unwrap();
-        // let path = path.as_path().to_string_lossy();
-        let path : String = ( &path ).try_into().unwrap(); // qqq : is it safe?
-        let path = path.strip_suffix( "Cargo.toml" ).unwrap_or( &path );
-        let root = AbsolutePath::try_from( path ).unwrap();
+        let root = AbsolutePath::from( path );
 
         let diff = diffs.get( &root ).unwrap();
 
@@ -61,10 +58,7 @@ mod private
       }
       modify( &self.diffs, &mut tree );
 
-      // let path = root_path.as_path().to_string_lossy();
-      let path : String = ( &root_path ).try_into().unwrap(); // qqq : is it safe?
-      let path = path.strip_suffix( "Cargo.toml" ).unwrap_or( &path );
-      let root = AbsolutePath::try_from( path ).unwrap();
+      let root = AbsolutePath::from( root_path );
       let diff = self.diffs.get( &root ).unwrap();
 
       writeln!( f, "Tree:\n{}", tree )?;
@@ -107,9 +101,8 @@ mod private
     while current_idx < tasks.len()
     {
       // let path = tasks[ current_idx ].crate_dir.as_ref().unwrap().to_string_lossy();
-      let path : String = ( tasks[ current_idx ].crate_dir.as_ref().unwrap() ).try_into().unwrap();
-      let path = path.strip_suffix( "Cargo.toml" ).unwrap_or( &path ); // qqq : looks bad. use ready newtypes
-      let path = AbsolutePath::try_from( path )?;
+      let path = tasks[ current_idx ].crate_dir.as_ref().unwrap().clone().absolute_path();
+      // aaa : looks bad. use ready newtypes // aaa : removed
       let dir = CrateDir::try_from( path.clone() )?;
 
       let package = package::Package::try_from( dir.clone() )?;
