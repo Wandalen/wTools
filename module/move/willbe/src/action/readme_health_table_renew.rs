@@ -382,7 +382,7 @@ ensure that at least one remotest is present in git. ",
       packages::FilterMapOptions { package_filter: module_package_filter, dependency_filter: module_dependency_filter },
     );
     let module_graph = graph::construct( &module_packages_map );
-    let names = graph::topological_sort_with_grouping( module_graph )
+    let names : Vec< String > = graph::topological_sort_with_grouping( module_graph )
     .into_iter()
     .map
     (
@@ -391,9 +391,12 @@ ensure that at least one remotest is present in git. ",
         group.sort();
         group
       }
-    ).flatten().collect::< Vec< _ > >();
+    )
+    .flatten()
+    .map( | n | n.to_string() )
+    .collect();
 
-    Ok(names)
+    Ok( names )
   }
 
   /// Generate row that represents a module, with a link to it in the repository and optionals for stability, branches, documentation and links to the gitpod.

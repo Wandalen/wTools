@@ -16,7 +16,8 @@ mod private
     visit::Topo,
   };
   use std::str::FromStr;
-  use packages::{ FilterMapOptions, PackageName };
+  use package::PackageName;
+  use packages::FilterMapOptions;
   use error::
   {
     untyped::{ Error, Context },
@@ -555,7 +556,7 @@ mod private
           .map( | dep_idx | graph.node_weight( dep_idx ).unwrap() )
           .map
           (
-            | name : &&String |
+            | name : &&PackageName |
             {
               let mut name : String = name.to_string();
               if let Some( p ) = packages_info.get( &name[ .. ] )
@@ -581,7 +582,7 @@ mod private
         }
         else
         {
-          let node = graph.node_indices().find( | n | graph.node_weight( *n ).unwrap() == &&root_crate ).unwrap();
+          let node = graph.node_indices().find( | n | graph.node_weight( *n ).unwrap().as_str() == root_crate ).unwrap();
           let mut dfs = Dfs::new( &graph, node );
           let mut subgraph = Graph::new();
           let mut node_map = HashMap::new();
@@ -602,7 +603,7 @@ mod private
           let mut names = Vec::new();
           while let Some( n ) = topo.next( &subgraph )
           {
-            let mut name : String = subgraph[ n ].clone();
+            let mut name : String = subgraph[ n ].to_string();
             if let Some( p ) = packages_info.get( &name[ .. ] )
             {
               if args.info.contains( &PackageAdditionalInfo::Version )

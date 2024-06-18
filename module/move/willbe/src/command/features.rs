@@ -3,6 +3,7 @@ mod private
   use crate::*;
 
   use action::features::FeaturesOptions;
+  use std::fs;
   use std::path::PathBuf;
   // // use path::AbsolutePath;
   use wca::VerifiedCommand;
@@ -15,7 +16,7 @@ mod private
   pub fn features( o : VerifiedCommand ) -> Result< () >
   {
     let path : PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );
-    let crate_dir = CrateDir::try_from( path )?;
+    let crate_dir = CrateDir::try_from( fs::canonicalize( path )? )?;
     let with_features_deps = o.props.get_owned( "with_features_deps" ).unwrap_or( false );
     let o = FeaturesOptions::former()
     .crate_dir( crate_dir )

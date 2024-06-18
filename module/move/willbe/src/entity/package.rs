@@ -35,6 +35,14 @@ mod private
   use error::untyped::Error;
   use channel::Channel;
 
+  /// Newtype for package name
+  #[ derive
+  (
+    Debug, Default, Clone, Hash, Ord, PartialOrd, Eq, PartialEq,
+    derive_tools::Display, derive_tools::Deref, derive_tools::From
+  ) ]
+  pub struct PackageName( String );
+  
   ///
   #[ derive( Debug, Clone ) ]
   pub enum Package< 'a >
@@ -370,7 +378,7 @@ mod private
     publish.dry = dry;
 
     report.get_info = Some( cargo::pack( pack ).map_err( | e | ( report.clone(), e ) )? );
-    // qqq : redundant field?
+    // aaa : redundant field? // aaa : removed
     let bump_report = version::version_bump( version_bump ).map_err( | e | ( report.clone(), e ) )?;
     report.bump = Some( bump_report.clone() );
     let git_root = git_options.git_root.clone();
@@ -898,6 +906,7 @@ crate::mod_interface!
 
   protected use PublishReport;
   protected use Package;
+  protected use PackageName;
   protected use PackageError;
 
   protected use publish_need;

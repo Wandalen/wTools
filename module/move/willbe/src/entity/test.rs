@@ -15,10 +15,8 @@ mod private
   use process_tools::process::*;
   // use error::untyped;
   use error::untyped::format_err;
+  use package::PackageName;
 
-  /// Newtype for package name
-  #[ derive( Debug, Default, Clone ) ]
-  pub struct PackageName( String );
 
   /// Represents a variant for testing purposes.
   #[ derive( Debug, Clone, Eq, PartialEq, Ord, PartialOrd, former::Former ) ]
@@ -524,7 +522,7 @@ mod private
       }
       table.set_header( header_row );
 
-      writeln!( f, "{} {}\n", "\n=== Module".bold(), self.package_name.0.bold() )?;
+      writeln!( f, "{} {}\n", "\n=== Module".bold(), self.package_name.bold() )?;
       if self.tests.is_empty()
       {
         writeln!( f, "unlucky" )?;
