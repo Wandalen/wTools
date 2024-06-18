@@ -5,7 +5,7 @@ mod private
   use wca::VerifiedCommand;
   use wtools::error::{ anyhow::Context, Result };
   //use tool::template::Template;
-  use action::deploy_renew::*;
+  // use action::deploy_renew::*;
 
   ///
   /// Create new deploy.

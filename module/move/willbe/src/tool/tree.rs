@@ -4,15 +4,28 @@ mod private
   use crate::CrateDir;
   use std::fmt::Formatter;
 
+  /// Struct for formatting and printing tree-like structures.
+  /// It contains symbols used for visualizing the tree and information about the tree nodes.
   #[ derive( Debug, Clone, Eq, PartialEq ) ]
   pub struct TreePrinter
   {
-    pub symbols : Symbols,
+    /// Symbols used for visualizing the tree.
+    symbols : Symbols,
+    /// Information about the tree nodes.
     pub info : ListNodeReport,
   }
 
   impl TreePrinter 
   {
+    /// Creates a new instance of `TreePrinter` with the provided node information.
+    ///
+    /// # Parameters
+    ///
+    /// - `info`: A reference to a `ListNodeReport` object containing information about the tree nodes.
+    ///
+    /// # Returns
+    ///
+    /// A new instance of `TreePrinter`.
     pub fn new(info : &ListNodeReport) -> Self 
     {
       TreePrinter

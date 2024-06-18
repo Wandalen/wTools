@@ -7,7 +7,7 @@ mod private
   use core::fmt::Formatter;
   use std::{ env, fs };
 
-  use wtools::error::for_app::{ Error, anyhow };
+  use wtools::error::for_app::Error;
   // use path::AbsolutePath;
   use workspace::Workspace;
   use package::Package;

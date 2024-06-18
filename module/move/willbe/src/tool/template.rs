@@ -25,6 +25,7 @@ mod private
   {
     files : Vec< TemplateFileDescriptor >,
     parameters : TemplateParameters,
+    /// The values associated with the template.
     pub values : TemplateValues,
   }
 
@@ -34,39 +35,87 @@ mod private
 
   impl DeployTemplate
   {
+    /// Creates all files in the specified path using the template values.
+    ///
+    /// # Parameters
+    ///
+    /// - `path`: A reference to the path where the files will be created.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` which is `Ok` if the files are created successfully, or an `Err` otherwise.
     pub fn create_all( self, path : &Path ) -> Result< () >
     {
       self.files.create_all( path, &self.values )
     }
 
+    /// Returns a reference to the template parameters.
+    ///
+    /// # Returns
+    ///
+    /// A reference to `TemplateParameters`.
     pub fn parameters( &self ) -> &TemplateParameters
     {
       &self.parameters
     }
 
+    /// Sets the template values.
+    ///
+    /// # Parameters
+    ///
+    /// - `values`: The new `TemplateValues` to be set.
     pub fn set_values( &mut self, values : TemplateValues )
     {
       self.values = values
     }
 
+    /// Returns a reference to the template values.
+    ///
+    /// # Returns
+    ///
+    /// A reference to `TemplateValues`.
     pub fn get_values( &self ) -> &TemplateValues
     {
       &self.values
     }
 
+    /// Returns a mutable reference to the template values.
+    ///
+    /// # Returns
+    ///
+    /// A mutable reference to `TemplateValues`.
     pub fn get_values_mut( &mut self ) -> &mut TemplateValues
     {
       &mut self.values
     }
 
+    /// Returns the path to the parameter storage file.
+    ///
+    /// # Returns
+    ///
+    /// A reference to a `Path` representing the parameter storage file.
     pub fn parameter_storage( &self ) -> &Path {
       "./.deploy_template.toml".as_ref()
     }
 
+    /// Returns the name of the template.
+    ///
+    /// # Returns
+    ///
+    /// A static string slice representing the template name.
     pub fn template_name( &self ) -> &'static str {
       "deploy"
     }
 
+    /// Loads existing parameters from the specified path and updates the template values.
+    ///
+    /// # Parameters
+    ///
+    /// - `path`: A reference to the path where the parameter file is located.
+    ///
+    /// # Returns
+    ///
+    /// An `Option` which is `Some(())` if the parameters are loaded successfully, or `None` otherwise.
     pub fn load_existing_params( &mut self, path : &Path ) -> Option< () >
     {
       let data = fs::read_to_string( path.join( self.parameter_storage() ) ).ok()?;
