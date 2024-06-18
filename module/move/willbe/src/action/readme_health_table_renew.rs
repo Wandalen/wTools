@@ -102,7 +102,7 @@ mod private
 
   /// Represents parameters that are common for all tables
   #[ derive( Debug ) ]
-  struct GlobalTableOptions< 'a >
+  struct GlobalTableOptions
   {
     /// Path to the root repository.
     core_url : String,
@@ -111,7 +111,7 @@ mod private
     /// List of branches in the repository.
     branches : Option< Vec< String > >,
     /// workspace root
-    workspace_root : &'a Path,
+    workspace_root : PathBuf,
     // aaa : for Petro : is not that path?
     // aaa : done
   }
@@ -153,10 +153,10 @@ mod private
     }
   }
 
-  impl < 'a >GlobalTableOptions< 'a >
+  impl GlobalTableOptions
   {
     /// Initializes the struct's fields from a `Cargo.toml` file located at a specified path.
-    fn initialize_from_path( path : &'a Path ) -> Result< Self >
+    fn initialize_from_path( path : &Path ) -> Result< Self >
     {
 
       let cargo_toml_path = path.join( "Cargo.toml" );
@@ -198,7 +198,7 @@ mod private
         {
           user_and_repo = url::git_info_extract( core_url )?;
         }
-        Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches, workspace_root : path } )
+        Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches, workspace_root : path.to_path_buf() } )
       }
     }
 
@@ -218,7 +218,7 @@ mod private
   {
     regexes_initialize();
     let absolute_path = AbsolutePath::try_from( path )?;
-    let mut workspace = Workspace::with_crate_dir( CrateDir::try_from( absolute_path )? )?;
+    let workspace = Workspace::with_crate_dir( CrateDir::try_from( absolute_path )? )?;
     let workspace_root = workspace.workspace_root();
     let mut parameters = GlobalTableOptions::initialize_from_path( &workspace_root )?;
 
@@ -288,7 +288,7 @@ mod private
   (
     workspace : &Workspace,
     table_parameters: &TableOptions,
-    parameters: & mut GlobalTableOptions< '_ >,
+    parameters: &mut GlobalTableOptions,
   ) -> Result< String, Error >
   {
     let directory_names = directory_names
@@ -397,7 +397,7 @@ ensure that at least one remotest is present in git. ",
   }
 
   /// Generate row that represents a module, with a link to it in the repository and optionals for stability, branches, documentation and links to the gitpod.
-  fn row_generate( module_name : &str, stability : Option< &Stability >, parameters : &GlobalTableOptions< '_ >, table_parameters : &TableOptions ) -> String
+  fn row_generate( module_name : &str, stability : Option< &Stability >, parameters : &GlobalTableOptions, table_parameters : &TableOptions ) -> String
   {
     let mut rou = format!( "| [{}]({}/{}) |", &module_name, &table_parameters.base_path, &module_name );
     if table_parameters.include_stability
@@ -498,7 +498,7 @@ ensure that at least one remotest is present in git. ",
   }
 
   /// Generate table header
-  fn table_header_generate( parameters : &GlobalTableOptions< '_ >, table_parameters : &TableOptions ) -> String
+  fn table_header_generate( parameters : &GlobalTableOptions, table_parameters : &TableOptions ) -> String
   {
     let mut header = String::from( "| Module |" );
     let mut separator = String::from( "|--------|" );
@@ -537,7 +537,7 @@ ensure that at least one remotest is present in git. ",
   }
 
   /// Generate cells for each branch
-  fn branch_cells_generate( table_parameters : &GlobalTableOptions< '_ >, module_name : &str ) -> String
+  fn branch_cells_generate( table_parameters : &GlobalTableOptions, module_name : &str ) -> String
   {
     let cells = table_parameters
     .branches
