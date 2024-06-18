@@ -34,11 +34,13 @@ default = [
 full = [
   "default"
 ]
-enabled = []
+enabled = [] # qqq : xxx : fill
 tracing = [ "dep:tracing", "dep:tracing-subscriber" ]
 progress_bar = [ "dep:indicatif" ]
 
 [dependencies]
+
+## external
 cargo_metadata = "~0.18.1"
 convert_case = "0.6.0"
 flate2 = "~1.0"

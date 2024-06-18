@@ -8,15 +8,13 @@ mod private
     collections,
     fmt,
     sync,
-    path,
+    // path,
   };
   use colored::Colorize as _;
-  use iter_tools::Itertools as _;
-  // aaa : for Petro : don't do micro imports
-  // aaa : done
+  // use iter_tools::Itertools as _;
   use process_tools::process::*;
-  use wtools::error::anyhow;
-  use wtools::error::anyhow::format_err;
+  // use error::untyped;
+  use error::untyped::format_err;
 
   /// Newtype for package name
   #[ derive( Debug, Default, Clone ) ]
@@ -90,7 +88,9 @@ mod private
       with_all_features : bool,
       with_none_features : bool,
       variants_cap : u32,
-    ) -> anyhow::Result< Self >
+    )
+    -> error::untyped::Result< Self >
+    // qqq : for Petro : typed error
     {
       let mut packages_plan = vec![];
       for package in packages
@@ -209,7 +209,9 @@ mod private
       with_all_features : bool,
       with_none_features : bool,
       variants_cap : u32,
-    ) -> anyhow::Result< Self >
+    )
+    -> error::untyped::Result< Self >
+    // qqq : for Petro : typed error
     {
       // let crate_dir = package.manifest_file().parent().unwrap().as_std_path().to_path_buf();
       let crate_dir = package.crate_dir()?;
@@ -640,7 +642,8 @@ mod private
 
   /// `tests_run` is a function that runs tests on a given package with specified arguments.
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
-  pub fn run( options : &PackageTestOptions< '_ > ) -> Result< TestReport, ( TestReport, anyhow::Error ) >
+  // qqq : for Petro : use typed errors
+  pub fn run( options : &PackageTestOptions< '_ > ) -> Result< TestReport, ( TestReport, error::untyped::Error ) >
   {
     let mut report = TestReport::default();
     report.dry = options.dry;
@@ -670,9 +673,7 @@ mod private
 
               if let Some( p ) = options.temp_path.clone()
               {
-                let path = p.join( path_tools::path::unique_folder_name().unwrap() );
-                // aaa : for Petro : rid of unwrap
-                // aaa : we discuss it
+                let path = p.join( path::unique_folder_name().unwrap() );
                 std::fs::create_dir_all( &path ).unwrap();
                 args_t = args_t.temp_directory_path( path );
               }
@@ -715,7 +716,8 @@ mod private
   }
 
   /// Run tests for given packages.
-  pub fn tests_run( args : &TestOptions ) -> Result< TestsReport, ( TestsReport, anyhow::Error ) >
+  // qqq : for Petro : use typed errors
+  pub fn tests_run( args : &TestOptions ) -> Result< TestsReport, ( TestsReport, error::untyped::Error ) >
   {
     let mut report = TestsReport::default();
     report.dry = args.dry;

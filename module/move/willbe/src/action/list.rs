@@ -17,9 +17,9 @@ mod private
   };
   use std::str::FromStr;
   use packages::{ FilterMapOptions, PackageName };
-  use wtools::error::
+  use error::
   {
-    for_app::{ Error, Context, format_err },
+    untyped::{ Error, Context, format_err },
     err
   };
 

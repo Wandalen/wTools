@@ -11,9 +11,9 @@ mod private
 
   use action::list::ListReport;
   // use path::AbsolutePath;
-  use wtools::error::for_app::Result;
+  use error::untyped::Result;
   use diff::{ DiffReport, crate_diff };
-  use error_tools::for_app::format_err;
+  use error::untyped::format_err;
   use tool::ListNodeReport;
   use tool::TreePrinter;
 

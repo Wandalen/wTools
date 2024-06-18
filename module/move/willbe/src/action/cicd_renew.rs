@@ -16,12 +16,12 @@ mod private
 
   // use path::AbsolutePath;
   use entity::PathError;
-  use error_tools::for_lib::Error;
-  use error_tools::dependency::*;
+  use error::typed::Error;
+  // use error_tools::dependency::*; // qqq : for Petro : don't do that, use tools::error:{ x, y, z };
 
-  use wtools::error::for_app::{ Result, Error as wError };
+  use error::untyped::{ Result, Error as wError };
   use entity::WorkspaceInitError;
-  use error_tools::err;
+  use error::err;
 
   #[ derive( Debug, Error ) ]
   pub enum CiCdGenerateError

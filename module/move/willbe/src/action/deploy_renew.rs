@@ -2,7 +2,7 @@ mod private
 {
   use crate::*;
   use std::path::Path;
-  use error_tools::{for_app::Context, Result};
+  use error::{ untyped::Context, Result };
   use tool::template::*;
 
   // /// Template for creating deploy files.

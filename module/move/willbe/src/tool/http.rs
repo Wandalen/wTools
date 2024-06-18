@@ -1,7 +1,8 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::*;
+  #[ allow( unused_imports ) ]
+  use crate::tool::*;
 
   use std::
   {
@@ -9,7 +10,7 @@ pub( crate ) mod private
     fmt::Write,
     time::Duration
   };
-  use wtools::error::{ for_app::Context, Result };
+  use error::{ untyped::Context, Result };
   use ureq::Agent;
 
   ///

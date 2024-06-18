@@ -1,11 +1,14 @@
+/// Internal namespace.
 mod private
 {
-  use crate::*;
+  #[ allow( unused_imports ) ]
+  use crate::tool::*;
+
   use std::ffi::OsString;
   use std::path::Path;
   use process_tools::process::*;
-  use wtools::error::Result;
-  use wtools::error::err;
+  use error::Result;
+  use error::err;
 
   /// Adds changes to the Git staging area.
   ///
@@ -138,7 +141,7 @@ mod private
       .run().map_err( | report | err!( report.to_string() ) )
     }
   }
-  
+
   /// This function is a wrapper around the `git reset` command.
   ///
   /// # Args :

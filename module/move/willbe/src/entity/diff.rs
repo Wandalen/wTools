@@ -11,10 +11,10 @@ mod private
   use std::collections::HashMap;
   use colored::Colorize;
   use crates_tools::CrateArchive;
-  use similar::*;
 
-  use wtools::iter::Itertools;
-  
+  use similar::{ TextDiff, ChangeTag };
+  // use similar::*; // qqq : for Bohdan : bad
+
   /// These files are ignored because they can be safely changed without affecting functionality
   ///
   /// - `.cargo_vcs_info.json` - contains the git sha1 hash that varies between different commits

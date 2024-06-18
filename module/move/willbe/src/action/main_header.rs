@@ -15,26 +15,29 @@ mod private
   };
   use std::path::PathBuf;
   use regex::Regex;
-  use wca::wtools::anyhow::Error;
+  // use wca::wtools::anyhow::Error;
   // use path::AbsolutePath;
-  use { CrateDir, query, url, Workspace, wtools };
+  use { CrateDir, query, url, Workspace };
   use entity::{ PathError, WorkspaceInitError };
-  use wtools::error::
+  // xxx : clean
+  use error::
   {
     // anyhow::format_err,
     err,
-    for_app::
+    Result,
+    untyped::
     {
-      Result,
-      Error as wError,
+      Error,
+      // Error as wError, // xxx : ?
       Context,
     },
+    // typed::prelude::*,
   };
-  use error_tools::
-  {
-    dependency::*,
-    for_lib::Error,
-  };
+  // use error::
+  // {
+  //   dependency::*,
+  //   typed::Error,
+  // };
   use workspace_md_extension::WorkspaceMdExtension;
   use tool::error_with::ErrWith;
 
@@ -84,11 +87,11 @@ mod private
     }
   }
 
-  #[ derive( Debug, Error ) ]
+  #[ derive( Debug, error::Error ) ]
   pub enum MainHeaderRenewError
   {
     #[ error( "Common error: {0}" ) ]
-    Common(#[ from ] wError ),
+    Common(#[ from ] Error ),
     #[ error( "I/O error: {0}" ) ]
     IO( #[ from ] std::io::Error ),
     #[ error( "Workspace error: {0}" ) ]
@@ -111,6 +114,7 @@ mod private
     /// Create `HeaderParameters` instance from the folder where Cargo.toml is stored.
     fn from_cargo_toml( workspace : &Workspace ) -> Result< Self, MainHeaderRenewError >
     {
+      // qqq : for Petro : too long lines, review all files
       let repository_url = workspace.repository_url().ok_or_else::< Error, _ >( || err!( "repo_url not found in workspace Cargo.toml" ) )?;
       let master_branch = workspace.master_branch().unwrap_or( "master".into() );
       let workspace_name = workspace.workspace_name().ok_or_else::< Error, _ >( || err!( "workspace_name not found in workspace Cargo.toml" ) )?;

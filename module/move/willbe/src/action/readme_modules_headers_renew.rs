@@ -4,10 +4,10 @@ mod private
   // use path::AbsolutePath;
   use action::readme_health_table_renew::{ Stability, stability_generate, find_example_file };
   use package::Package;
-  use wtools::error::
+  use error::
   {
     err,
-    for_app::
+    untyped::
     {
       Result,
       Error as wError,
@@ -19,17 +19,15 @@ mod private
   use std::fmt::{Display, Formatter};
   use std::fs::{ OpenOptions };
   use std::io::{ Read, Seek, SeekFrom, Write };
+  // qqq : for Petro : group properly, don't repeat std::
   use std::path::PathBuf;
   use convert_case::{ Case, Casing };
   use regex::Regex;
   use entity::{ WorkspaceInitError, PathError };
   use package::PackageError;
-  use error_tools::for_lib::Error;
-  use error_tools::dependency::*;
+  use error::typed::Error;
   use workspace_md_extension::WorkspaceMdExtension;
   use tool::error_with::ErrWith;
-  // aaa : for Petro : rid off crate::x. ask
-  // aaa : add `use crate::*` first
 
   static TAGS_TEMPLATE : std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 

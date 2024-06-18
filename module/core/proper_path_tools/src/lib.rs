@@ -23,3 +23,6 @@ mod_interface!
   protected use ::std::path::{ PathBuf, Path };
 
 }
+
+// exposed use Utf8PathBuf;
+// exposed use Utf8Path;

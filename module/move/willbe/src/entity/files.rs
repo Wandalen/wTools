@@ -17,11 +17,11 @@ pub( crate ) mod private
   {
     io,
   };
-  use wtools::error::
+  use error::
   {
     // Result,
-    thiserror,
-    for_lib::Error,
+    // thiserror,
+    typed::Error,
   };
   // // use path::AbsolutePath;
 

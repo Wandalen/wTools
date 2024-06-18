@@ -3,9 +3,9 @@ mod private
   use crate::*;
   use std::fs;
   use std::path::Path;
-  use error_tools::for_app::bail;
-  use error_tools::Result;
-  use wtools::iter::Itertools;
+  use error::untyped::bail;
+  use error::Result;
+  use iter::Itertools;
   use template::
   {
     TemplateFileDescriptor, TemplateFiles, TemplateFilesBuilder, TemplateParameters, TemplateValues
@@ -127,11 +127,11 @@ mod private
   // aaa : for Petro : too long line, review all your files
   // aaa : this done
   pub fn workspace_renew
-  ( 
-    path : &Path, 
-    mut template : WorkspaceTemplate, 
-    repository_url : String, 
-    branches : Vec< String > 
+  (
+    path : &Path,
+    mut template : WorkspaceTemplate,
+    repository_url : String,
+    branches : Vec< String >
   ) -> Result< () >
   {
     if fs::read_dir(path)?.count() != 0
