@@ -17,13 +17,10 @@ mod private
 
     /// The file system path for a local path dependency.
     /// Only produced on cargo 1.51+
-    // pub fn path( &self ) -> Option< Utf8PathBuf >
     pub fn crate_dir( &self ) -> Option< CrateDir >
     {
-      // panic!( "xxx : test me" );
       match &self.inner.path
       {
-        // Some( path ) => AsRef::< Utf8Path >::as_ref( &path ).try_into().ok(),
         Some( path ) => path.as_path().try_into().ok(),
         None => None,
       }

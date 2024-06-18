@@ -27,7 +27,7 @@
 )))]
 fn main(){}
 
-// zzz : aaa : rid off `#[ cfg( not( feature = "use_alloc" ) ) ]` -- Rid of by not relying on std
+// zzz : aaa : rid of `#[ cfg( not( feature = "use_alloc" ) ) ]` -- Rid of by not relying on std
 // #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ cfg( all( feature = "enabled", feature = "collection_constructors" ) ) ]
 #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]

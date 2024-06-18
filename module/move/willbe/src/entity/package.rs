@@ -137,11 +137,7 @@ mod private
       match self
       {
         Self::Manifest( manifest ) => manifest.manifest_file.clone(),
-        Self::WorkspacePackageRef( package ) =>
-        {
-          package.manifest_file().unwrap()
-          // ManifestFile::try_from( package.manifest_file().as_std_path().to_path_buf() ).unwrap()
-        },
+        Self::WorkspacePackageRef( package ) => package.manifest_file().unwrap(),
       }
     }
 
@@ -160,7 +156,7 @@ mod private
         },
       }
     }
-    
+
 
     /// Package version
     pub fn version( &self ) -> Result< String, PackageError >
@@ -181,7 +177,7 @@ mod private
         }
       }
     }
-    
+
     /// Check that module is local.
     // pub fn local_is( &self ) -> Result< bool, ManifestError >
     pub fn local_is( &self ) -> bool

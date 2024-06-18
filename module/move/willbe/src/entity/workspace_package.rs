@@ -44,34 +44,17 @@ mod private
       fn dependency_from( dependency : &cargo_metadata::Dependency ) -> DependencyRef< '_ >
       {
         dependency.into()
-        // Dependency::from( dependency )
       }
       self.inner.dependencies.iter().map( dependency_from )
     }
 
-    // /// List of dependencies of this particular package
-    // // pub fn dependencies( &self ) -> Vec< Dependency< '_ > >
-    // pub fn dependencies< 'a >( &'a self )
-    // // -> core::slice::Iter< '_, Dependency< '_ > >
-    // -> core::iter::Map
-    // <
-    //   core::slice::Iter< 'a, &'a cargo_metadata::Dependency >,
-    //   fn( &'a cargo_metadata::Dependency ) -> Dependency< 'a >,
-    // >
-    // {
-    //   self.inner.dependencies.iter().map( Dependency::from )
-    //   // self.inner.dependencies.iter().cloned().map( Dependency::from ).collect()
-    // }
-
     /// Path to the manifest Cargo.toml
-    // pub fn manifest_file( &self ) -> &Utf8Path
     pub fn manifest_file( &self ) -> Result< ManifestFile, PathError >
     {
       self.inner.manifest_path.as_path().try_into()
     }
 
     /// Path to the directory with manifest Cargo.toml.
-    // pub fn crate_dir( &self ) -> CrateDir
     pub fn crate_dir( &self ) -> Result< CrateDir, PathError >
     {
       // SAFE because `manifest_path containing the Cargo.toml`

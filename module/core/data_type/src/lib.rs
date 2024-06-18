@@ -18,7 +18,7 @@ pub mod dependency
   #[ cfg( feature = "either" ) ]
   pub use ::either;
   // #[ cfg( feature = "type_constructor" ) ]
-  // pub use ::type_constructor; // xxx : rid off
+  // pub use ::type_constructor; // xxx : rid of
   #[ cfg( feature = "dt_interval" ) ]
   pub use ::interval_adapter;
   #[ cfg( feature = "dt_collection" ) ]

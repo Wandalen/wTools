@@ -76,9 +76,7 @@ mod private
       | package |
       package.manifest_file().unwrap().inner().starts_with( crate_dir.clone().absolute_path() ) // qqq : remove unwrap
     );
-    //.collect();
-    // xxx
-    // ).collect::< Vec< _ > >(); qqq : xxx : rid off. put type at var
+    // ).collect::< Vec< _ > >(); qqq : rid of. put type at var
     let mut report = FeaturesReport
     {
       with_features_deps,

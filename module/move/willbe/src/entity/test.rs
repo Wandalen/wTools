@@ -479,7 +479,7 @@ mod private
     pub tests : collections::BTreeMap<TestVariant, Result<Report, Report>>,
     /// Enabled features
     pub enabled_features : collections::BTreeSet<String>,
-    // aaa : for Petro : rid off map of map of map, keep flat map
+    // aaa : for Petro : rid of map of map of map, keep flat map
     // aaa : done
   }
 
@@ -671,7 +671,7 @@ mod private
               if let Some( p ) = options.temp_path.clone()
               {
                 let path = p.join( path_tools::path::unique_folder_name().unwrap() );
-                // aaa : for Petro : rid off unwrap
+                // aaa : for Petro : rid of unwrap
                 // aaa : we discuss it
                 std::fs::create_dir_all( &path ).unwrap();
                 args_t = args_t.temp_directory_path( path );

@@ -27,7 +27,7 @@ mod private
   use error_tools::for_lib::Error;
   use error_tools::dependency::*;
   use workspace_md_extension::WorkspaceMdExtension;
-  // aaa : for Petro : rid off crate::x. ask
+  // aaa : for Petro : rid of crate::x. ask
   // aaa : add `use crate::*` first
 
   static TAGS_TEMPLATE : std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
@@ -186,19 +186,18 @@ mod private
   /// ```
   pub fn readme_modules_headers_renew( crate_dir : CrateDir ) ->
   Result< ModulesHeadersRenewReport, ( ModulesHeadersRenewReport, ModulesHeadersRenewError ) >
+  // xxx : newtype
   {
     let mut report = ModulesHeadersRenewReport::default();
     regexes_initialize();
     let workspace = Workspace::with_crate_dir
     (
       crate_dir
-      // CrateDir::try_from( path )
-      // .map_err( | e | ( report.clone(), e.into() ) )?
     )
-    .map_err( | e | ( report.clone(), e.into() ) )?; // xxx : qqq : use trait. everywhere
+    .map_err( | e | ( report.clone(), e.into() ) )?; // qqq : use trait. everywhere
     let discord_url = workspace.discord_url();
 
-    // qqq : inspect each collect in willbe and rid off most of them
+    // qqq : inspect each collect in willbe and rid of most of them
 
     let paths : Vec< AbsolutePath > = workspace
     .packages()

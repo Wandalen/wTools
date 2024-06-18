@@ -360,11 +360,11 @@ ensure that at least one remotest is present in git. ",
           {
             p.publish().is_none() && pa.starts_with( &path )
           }
-          else 
+          else
           {
             false
           }
-        } // aaa : rid off unwraps
+        } // aaa : rid of unwraps
         // aaa : done
       )
     );
