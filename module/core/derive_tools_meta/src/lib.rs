@@ -15,6 +15,7 @@
     feature = "derive_from",
     feature = "derive_inner_from",
     feature = "derive_variadic_from",
+    feature = "derive_not",
     feature = "derive_phantom"
   )
 )]
@@ -31,6 +32,7 @@ mod derive;
 //     feature = "derive_from",
 //     feature = "derive_inner_from",
 //     feature = "derive_variadic_from",
+//     feature = "derive_not",
 //     feature = "derive_phantom"
 //   )
 // )]
@@ -513,6 +515,54 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 pub fn derive_variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::variadic_from::variadic_from( input );
+  match result
+  {
+    Ok( stream ) => stream.into(),
+    Err( err ) => err.to_compile_error().into(),
+  }
+}
+
+/// Provides an automatic `Not` trait  implementation for struct.
+///
+/// This macro simplifies the creation of a logical negation or complement operation
+/// for structs that encapsulate values which support the `!` operator.
+///
+/// ## Example Usage
+///
+/// Instead of manually implementing `Not` for `IsActive`:
+///
+/// ```rust
+/// use std::ops::Not;
+///
+/// pub struct IsActive( bool );
+///
+/// impl Not for IsActive
+/// {
+///   type Output = IsActive;
+///
+///   fn not(self) -> Self::Output
+///   {
+///     IsActive(!self.0)
+///   }
+/// }
+/// ```
+///
+/// Use `#[ derive( Not ) ]` to automatically generate the implementation:
+///
+/// ```rust
+/// # use derive_tools_meta::*;
+/// #[ derive( Not ) ]
+/// pub struct IsActive( bool );
+/// ```
+///
+/// The macro automatically implements the `not` method, reducing boilerplate code and potential errors.
+///
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_not" ) ]
+#[ proc_macro_derive( Not, attributes( debug ) ) ]
+pub fn derive_not( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+{
+  let result = derive::not::not( input );
   match result
   {
     Ok( stream ) => stream.into(),

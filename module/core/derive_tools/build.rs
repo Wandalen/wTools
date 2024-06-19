@@ -23,6 +23,7 @@ fn main()
         feature = "derive_from",
         feature = "derive_inner_from",
         feature = "derive_variadic_from",
+        feature = "derive_not",
         feature = "derive_reflect"
       )
     },
@@ -37,6 +38,7 @@ fn main()
         feature = "derive_from",
         feature = "derive_inner_from",
         feature = "derive_variadic_from",
+        feature = "derive_not",
         feature = "derive_reflect"
       )
     },

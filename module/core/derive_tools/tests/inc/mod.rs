@@ -248,6 +248,16 @@ mod inner_from_tests
 
 }
 
+#[ cfg( feature = "derive_not" ) ]
+#[ path = "not" ]
+mod not_tests
+{
+  #[ allow( unused_imports ) ]
+  use super::*;
+
+  //
+}
+
 #[ cfg( feature = "derive_phantom" ) ]
 #[ path = "phantom" ]
 mod phantom_tests
