@@ -50,5 +50,6 @@ crate::mod_interface!
 {
   exposed use super::crate_dir::CrateDir;
   exposed use super::manifest_file::ManifestFile;
+  exposed use super::crate_dir::PathEither;
   exposed use PathError;
 }
