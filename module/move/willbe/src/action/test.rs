@@ -110,14 +110,12 @@ Try to install it with `rustup install {}` command(-s)",
     } = o;
 
     // zzz : watch and review after been ready
-    // qqq : for Petro : use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >
-    let path = if o.dir.as_ref().file_name() == Some( "Cargo.toml".as_ref() )
+    // aaa : for Petro : use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >
+    // aaa : done
+    let path = match PathEither::try_from( o.dir.as_ref() ).map_err( | e | ( report.clone(), e.into() ) )?.inner()
     {
-      o.dir.parent().unwrap()
-    }
-    else
-    {
-      o.dir
+      data_type::Either::Left( crate_dir ) => crate_dir,
+      data_type::Either::Right( manifest ) => CrateDir::from( manifest )
     };
 
     let workspace = Workspace
