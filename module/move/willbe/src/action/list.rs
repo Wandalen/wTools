@@ -299,12 +299,23 @@ mod private
     }
   }
 
-  // qqq : for Bohdan : descirption
+  // aaa : for Bohdan : descirption // aaa : done
+  /// The `DependencyId` struct encapsulates the essential attributes of a dependency,
   #[ derive( Debug, Clone, PartialEq, Eq, Hash ) ]
   pub struct DependencyId
   {
+    /// The name of the dependency.
+    ///
+    /// This is typically the name of the library or package that the package relies on.
     pub name : String,
+    /// The version requirements for the dependency.
+    /// 
+    /// Note: This will be compared to other dependencies and packages to build the tree
     pub version : semver::VersionReq,
+    /// An optional path to the manifest file of the dependency.
+    ///
+    /// This field may contain a path to the manifest file when the dependency is a local package
+    /// or when specific path information is needed to locate the dependency's manifest.
     pub path : Option< ManifestFile >,
   }
 
@@ -444,14 +455,21 @@ mod private
     let tree_package_report = | manifest_file : ManifestFile, report : &mut ListReport, visited : &mut HashSet< DependencyId > |
     {
 
-      // qqq : is it safe to use unwrap here?
-      let package = workspace.package_find_by_manifest( manifest_file ).unwrap();
+      // aaa : is it safe to use unwrap here? // aaa : done
+      let package = workspace
+      .package_find_by_manifest( manifest_file )
+      .ok_or_else( || err!( "Package not found in the workspace" ) )
+      .err_with( report.clone() )?;
       let mut package_report = ListNodeReport
       {
         name : package.name().to_string(),
         version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( package.version().to_string() ) } else { None },
-        crate_dir : if args.info.contains( &PackageAdditionalInfo::Path ) { Some( package.crate_dir().unwrap() ) } else { None },
-        // qqq : is it safe to use unwrap here?
+        crate_dir : if args.info.contains( &PackageAdditionalInfo::Path )
+        { Some( package.crate_dir().err_with( report.clone() ) ).transpose() }
+        else
+        { Ok( None ) }
+        .map_err( |( r, e )| ( r, e.into() ) )?,
+        // aaa : is it safe to use unwrap here? // aaa : now returns an error
         duplicate : false,
         normal_dependencies : vec![],
         dev_dependencies : vec![],
@@ -466,6 +484,7 @@ mod private
         ListReport::Empty => ListReport::Tree( vec![ package_report ] ),
         ListReport::List( _ ) => unreachable!(),
       };
+      Ok( () )
     };
 
     match args.format
@@ -473,7 +492,7 @@ mod private
       ListFormat::Tree if is_package =>
       {
         let mut visited = HashSet::new();
-        tree_package_report( manifest.manifest_file, &mut report, &mut visited );
+        tree_package_report( manifest.manifest_file, &mut report, &mut visited )?;
         let ListReport::Tree( tree ) = report else { unreachable!() };
         let tree = rearrange_duplicates( merge_dev_dependencies( merge_build_dependencies( tree ) ) );
         report = ListReport::Tree( tree );
@@ -492,7 +511,7 @@ mod private
         .collect();
         for package in packages
         {
-          tree_package_report( package.manifest_file().unwrap(), &mut report, &mut visited )
+          tree_package_report( package.manifest_file().unwrap(), &mut report, &mut visited )?
         }
         let ListReport::Tree( tree ) = report else { unreachable!() };
         let tree = merge_dev_dependencies( merge_build_dependencies( tree ) );
@@ -569,14 +588,15 @@ mod private
                 if args.info.contains( &PackageAdditionalInfo::Path )
                 {
                   name.push_str( " " );
-                  name.push_str( &p.manifest_file().unwrap().to_string() );
-                  // qqq : is it safe to use unwrap here?
+                  name.push_str( &p.manifest_file()?.to_string() );
+                  // aaa : is it safe to use unwrap here? // aaa : should be safe, but now returns an error
                 }
               }
-              name
+              Ok( name )
             }
           )
-          .collect();
+          .collect::< Result< _, _ >>()
+          .err_with( report.clone() )?;
 
           report = ListReport::List( names );
         }
