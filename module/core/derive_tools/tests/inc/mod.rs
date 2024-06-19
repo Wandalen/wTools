@@ -273,6 +273,10 @@ mod phantom_tests
   mod bounds_where;
   mod bounds_where_manual;
   mod name_collisions;
+  mod covariant_type;
+  mod covariant_type_manual;
+  mod contravariant_type;
+  mod contravariant_type_manual;
   #[ test_tools::nightly ]
   #[ test ]
   fn phantom_trybuild()
@@ -284,5 +288,6 @@ mod phantom_tests
     // Fail test for applying macros to enum
     t.compile_fail( "tests/inc/phantom/compiletime/enum.rs" );
 
+    t.compile_fail( "tests/inc/phantom/compiletime/invariant_type.rs" );
   }
 }
