@@ -17,7 +17,7 @@ use error::
 };
 
 /// Wrapper over `data_type::Either< CrateDir, ManifestFile >` with utils methods.
-#[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
+#[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug ) ]
 pub struct PathEither( data_type::Either< CrateDir, ManifestFile > );
 
 impl PathEither
