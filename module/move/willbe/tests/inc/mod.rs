@@ -7,4 +7,4 @@ mod entity;
 mod tool;
 mod helpers;
 
-// qqq : for Petro : for Bohdan : sort out test files to be consistent with src files
+// qqq : for Petro : for Bohdan : for Nikita : sort out test files to be consistent with src files

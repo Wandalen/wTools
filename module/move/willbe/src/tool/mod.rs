@@ -1,10 +1,6 @@
 crate::mod_interface!
 {
 
-  /// Make sha-1 hash for data.
-  layer sha;
-  orphan use super::sha;
-
   /// Errors handling.
   layer error;
   orphan use super::error;

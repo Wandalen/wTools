@@ -5,12 +5,7 @@ mod private
 
   // use { action, wtools };
 
-  use std::
-  {
-    str::FromStr,
-    path::PathBuf,
-    collections::HashSet,
-  };
+  use std::{ str::FromStr, path::PathBuf, collections::HashSet, fs };
 
   use wca::VerifiedCommand;
   use error::{ untyped::Context, Result };
@@ -50,7 +45,7 @@ mod private
   pub fn list( o : VerifiedCommand ) -> Result< () >
   {
     let path_to_workspace : PathBuf = o.args.get_owned( 0 ).unwrap_or( std::env::current_dir().context( "Workspace list command without subject" )? );
-    let path_to_workspace = AbsolutePath::try_from( path_to_workspace )?;
+    let path_to_workspace = AbsolutePath::try_from( fs::canonicalize( path_to_workspace )? )?;
 
     let ListProperties { format, with_version, with_path, with_local, with_remote, with_primary, with_dev, with_build } = o.props.try_into()?;
 

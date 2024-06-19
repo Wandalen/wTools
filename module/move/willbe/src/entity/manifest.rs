@@ -7,16 +7,12 @@ pub( crate ) mod private
   {
     io::{ self, Read },
     fs,
-    // path::{ Path },
   };
   use error::
   {
-    Result,
-    // thiserror,
     typed::Error,
-    untyped::format_err,
+    untyped::{ Result, format_err },
   };
-  // use path::AbsolutePath;
 
   /// Represents errors related to manifest data processing.
   #[ derive( Debug, Error ) ]
@@ -48,7 +44,7 @@ pub( crate ) mod private
     /// Path to `Cargo.toml`
     // pub manifest_file : AbsolutePath,
     pub manifest_file : ManifestFile,
-    // qqq : for Bohdan : for Petro : why not ManifestFile?
+    // aaa : for Bohdan : for Petro : why not ManifestFile?
     /// Strict type of `Cargo.toml` manifest.
     pub data : toml_edit::Document,
     // pub data : Option< toml_edit::Document >,
@@ -120,11 +116,11 @@ pub( crate ) mod private
     pub fn store( &self ) -> io::Result< () >
     {
       fs::write( &self.manifest_file, self.data.to_string() )?;
+
       Ok( () )
     }
 
     /// Check that the current manifest is the manifest of the package (can also be a virtual workspace).
-    // pub fn package_is( &self ) -> Result< bool, ManifestError >
     pub fn package_is( &self ) -> bool
     {
       // let data = self.data.as_ref().ok_or_else( || ManifestError::EmptyManifestData )?;
@@ -134,7 +130,6 @@ pub( crate ) mod private
 
     /// Check that module is local.
     /// The package is defined as local if the `publish` field is set to `false' or the registers are specified.
-    // pub fn local_is( &self ) -> Result<bool, ManifestError>
     pub fn local_is( &self ) -> bool
     {
       // let data = self.data.as_ref().ok_or_else( || ManifestError::EmptyManifestData )?;
@@ -143,6 +138,7 @@ pub( crate ) mod private
       {
         let remote = data[ "package" ].get( "publish" ).is_none()
         || data[ "package" ][ "publish" ].as_bool().or( Some( true ) ).unwrap();
+
         return !remote;
       }
       true
@@ -152,11 +148,11 @@ pub( crate ) mod private
   /// Retrieves the repository URL of a package from its `Cargo.toml` file.
   pub fn repo_url( crate_dir : &CrateDir ) -> Result< String >
   {
-    // let path = package_path.join( "Cargo.toml" );
     let path = crate_dir.clone().manifest_file().inner().inner();
     if path.exists()
     {
       let mut contents = String::new();
+      // qqq : zzz : for Petro : redundant read and parse
       fs::File::open( path )?.read_to_string( &mut contents )?;
       let doc = contents.parse::< toml_edit::Document >()?;
 
@@ -166,12 +162,12 @@ pub( crate ) mod private
       .and_then( | i | i.as_str() );
       if let Some( repo_url ) = repo_url
       {
-        url::extract_repo_url( repo_url ).ok_or_else( || format_err!( "Fail to extract repository url ") )
+        url::repo_url_extract( repo_url ).ok_or_else( || format_err!( "Fail to extract repository url ") )
       }
       else
       {
         let report = git::ls_remote_url( crate_dir.clone().absolute_path() )?;
-        url::extract_repo_url( &report.out.trim() ).ok_or_else( || format_err!( "Fail to extract repository url from git remote.") )
+        url::repo_url_extract( &report.out.trim() ).ok_or_else( || format_err!( "Fail to extract repository url from git remote.") )
       }
     }
     else

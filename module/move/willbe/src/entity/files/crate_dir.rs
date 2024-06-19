@@ -25,6 +25,8 @@ use error::
 };
 use path::{ AbsolutePath, Utf8Path, Utf8PathBuf };
 
+// xxx : make generic
+
 /// Path to crate directory
 #[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
 pub struct CrateDir( AbsolutePath );
@@ -156,18 +158,6 @@ impl TryFrom< &Path > for CrateDir
   }
 }
 
-// impl< AsUtf8 > TryFrom< AsUtf8 > for CrateDir
-// where
-//   AsUtf8 : AsRef< Utf8Path >,
-// {
-//   type Error = PathError;
-//   #[ inline( always ) ]
-//   fn try_from( crate_dir_path : AsUtf8 ) -> Result< Self, Self::Error >
-//   {
-//     Self::try_from( AbsolutePath::try_from( crate_dir_path.as_ref() )? )
-//   }
-// }
-
 impl TryFrom< Utf8PathBuf > for CrateDir
 {
   type Error = PathError;
@@ -189,14 +179,6 @@ impl TryFrom< &Utf8Path > for CrateDir
     Self::try_from( AbsolutePath::try_from( crate_dir_path )? )
   }
 }
-
-// impl AsRef< AbsolutePath > for CrateDir
-// {
-//   fn as_ref( &self ) -> &AbsolutePath
-//   {
-//     &self.0
-//   }
-// }
 
 impl AsRef< Path > for CrateDir
 {

@@ -234,11 +234,14 @@ pub( crate ) mod private
     let path =
     {
       const VERBATIM_PREFIX: &str = r#"\\?\"#;
+      // is necessary because of the normalization step that replaces the backslash with a slash.
+      const VERBATIM_PREFIX_MIRRORS_EDGE: &str = "//?/";
       let p = path.display().to_string();
-      if p.starts_with( VERBATIM_PREFIX )
+      if p.starts_with( VERBATIM_PREFIX ) || p.starts_with( VERBATIM_PREFIX_MIRRORS_EDGE )
       {
         PathBuf::from( &p[ VERBATIM_PREFIX.len().. ] )
-      } else
+      }
+      else
       {
         path.into()
       }

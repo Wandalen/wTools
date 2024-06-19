@@ -83,6 +83,13 @@ pub( crate ) mod private
       write!( f, "{}", self.0.display() )
     }
   }
+  
+  fn is_absolute( path : &Path ) -> bool
+  {
+    // None - not absolute
+    // with `.` or `..` at the first component - not absolute
+    !path.components().next().is_some_and( | c | c.as_os_str() == "." || c.as_os_str() == ".." )
+  }
 
   impl< 'a > TryFrom< &'a str > for AbsolutePath
   {
@@ -90,7 +97,10 @@ pub( crate ) mod private
 
     fn try_from( value : &'a str ) -> Result< Self, Self::Error >
     {
-      Ok( Self( path::canonicalize( value )? ) )
+      let path = path::canonicalize( value )?;
+      if !is_absolute( &path ) { return Err( io::Error::new( io::ErrorKind::InvalidData, "Path expected to be absolute" ) ) }
+      
+      Ok( Self( path ) )
     }
   }
 
@@ -100,7 +110,10 @@ pub( crate ) mod private
 
     fn try_from( value : PathBuf ) -> Result< Self, Self::Error >
     {
-      Ok( Self( path::canonicalize( value )? ) )
+      let path = path::canonicalize( value )?;
+      if !is_absolute( &path ) { return Err( io::Error::new( io::ErrorKind::InvalidData, "Path expected to be absolute" ) ) }
+
+      Ok( Self( path ) )
     }
   }
 
@@ -111,7 +124,10 @@ pub( crate ) mod private
 
     fn try_from( value : &Path ) -> Result< Self, Self::Error >
     {
-      Ok( Self( path::canonicalize( value )? ) )
+      let path = path::canonicalize( value )?;
+      if !is_absolute( &path ) { return Err( io::Error::new( io::ErrorKind::InvalidData, "Path expected to be absolute" ) ) }
+
+      Ok( Self( path ) )
     }
   }
 

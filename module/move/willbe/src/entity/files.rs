@@ -3,27 +3,14 @@ pub( crate ) mod private
 {
   use crate::*;
 
-  // use core::
-  // {
-  //   fmt,
-  //   ops::
-  //   {
-  //     Deref,
-  //     DerefMut,
-  //   },
-  // };
-
   use std::
   {
     io,
   };
   use error::
   {
-    // Result,
-    // thiserror,
     typed::Error,
   };
-  // // use path::AbsolutePath;
 
   /// `PathError` enum represents errors when creating a `CrateDir` object.
   #[ derive( Debug, Error ) ]
@@ -43,13 +30,18 @@ pub( crate ) mod private
 
 mod crate_dir;
 mod manifest_file;
+mod source_file;
 
 //
 
 crate::mod_interface!
 {
-  exposed use super::crate_dir::CrateDir;
-  exposed use super::manifest_file::ManifestFile;
-  exposed use super::crate_dir::PathEither;
+  exposed use super::
+  {
+    crate_dir::CrateDir,
+    manifest_file::ManifestFile,
+    source_file::SourceFile,
+    crate_dir::PathEither
+  };
   exposed use PathError;
 }

@@ -121,7 +121,7 @@ Try to install it with `rustup install {}` command(-s)",
     let workspace = Workspace
     ::with_crate_dir( CrateDir::try_from( path.clone() ).map_err( | e | ( report.clone(), e.into() ) )? )
     .map_err( | e | ( report.clone(), e.into() ) )?
-    // xxx : watch
+    // zzz : watch
     ;
 
     // let packages = needed_packages( &workspace );
