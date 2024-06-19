@@ -12,7 +12,7 @@ mod private
   use workspace::Workspace;
   use package::Package;
   use channel::Channel;
-  use tool::error_with::ErrWith;
+  use error_with::ErrWith;
 
   /// Represents a report of publishing packages
   #[ derive( Debug, Default, Clone ) ]

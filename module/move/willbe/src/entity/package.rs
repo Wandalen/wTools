@@ -34,7 +34,7 @@ mod private
   use version::revert;
   use error::untyped::Error;
   use channel::Channel;
-  use tool::error_with::ErrWith;
+  use error_with::ErrWith;
   use tool::ListNodeReport;
   use tool::TreePrinter;
 

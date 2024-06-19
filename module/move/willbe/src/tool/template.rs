@@ -26,7 +26,7 @@ mod private
   /// Includes terraform deploy options to GCP, and Hetzner,
   /// a Makefile for useful commands, and a key directory.
   #[ derive( Debug ) ]
-  pub struct DeployTemplate
+  pub struct WTemplate
   {
     files : Vec< TemplateFileDescriptor >,
     parameters : TemplateParameters,
@@ -38,7 +38,7 @@ mod private
 
   // qqq : for Viktor : why DeployTemplate can't be part of template.rs?
 
-  impl DeployTemplate
+  impl WTemplate
   {
     /// Creates all files in the specified path using the template values.
     ///
@@ -160,7 +160,7 @@ mod private
     }
   }
 
-  impl Default for DeployTemplate
+  impl Default for WTemplate
   {
     fn default() -> Self
     {
@@ -537,7 +537,7 @@ mod private
 crate::mod_interface!
 {
   //orphan use Template;
-  orphan use DeployTemplate;
+  orphan use WTemplate;
   orphan use TemplateFiles;
   orphan use TemplateFileDescriptor;
   orphan use TemplateParameters;

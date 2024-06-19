@@ -29,7 +29,7 @@ mod private
 
   use workspace::Workspace;
   // // use path::AbsolutePath;
-  use tool::error_with::ErrWith;
+  use error_with::ErrWith;
   use tool::{ TreePrinter, ListNodeReport };
 
   /// Args for `list` action.
@@ -445,17 +445,17 @@ mod private
       // aaa : is it safe to use unwrap here? // aaa : done
       let package = workspace
       .package_find_by_manifest( manifest_file )
-      .ok_or_else( || err!( "Package not found in the workspace" ) )
-      .err_with( report.clone() )?;
+      .ok_or_else( || format_err!( "Package not found in the workspace" ) )
+      .err_with( || report.clone() )?;
       let mut package_report = ListNodeReport
       {
         name : package.name().to_string(),
         version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( package.version().to_string() ) } else { None },
         crate_dir : if args.info.contains( &PackageAdditionalInfo::Path )
-        { Some( package.crate_dir().err_with( report.clone() ) ).transpose() }
+        { Some( package.crate_dir() ).transpose() }
         else
         { Ok( None ) }
-        .map_err( |( r, e )| ( r, e.into() ) )?,
+        .err_with( || report.clone() )?,
         // aaa : is it safe to use unwrap here? // aaa : now returns an error
         duplicate : false,
         normal_dependencies : vec![],
@@ -586,11 +586,11 @@ mod private
                   // aaa : is it safe to use unwrap here? // aaa : should be safe, but now returns an error
                 }
               }
-              Ok( name )
+              Ok::< String, PathError >( name )
             }
           )
           .collect::< Result< _, _ >>()
-          .err_with( report.clone() )?;
+          .err_with( || report.clone() )?;
 
           report = ListReport::List( names );
         }

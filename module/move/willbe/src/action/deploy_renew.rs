@@ -162,7 +162,7 @@ mod private
   pub fn deploy_renew
   (
     path : &Path,
-    mut template : DeployTemplate
+    mut template : WTemplate
   ) -> Result< () >
   {
     if let None = template.load_existing_params( path )

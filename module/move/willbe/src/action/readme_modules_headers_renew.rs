@@ -28,7 +28,7 @@ mod private
   use package::PackageError;
   use error::typed::Error;
   use workspace_md_extension::WorkspaceMdExtension;
-  use tool::error_with::ErrWith;
+  use error_with::ErrWith;
 
   static TAGS_TEMPLATE : std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 
