@@ -1,6 +1,8 @@
-use std::fmt::Debug;
-use std::marker::PhantomData;
-use super::*;
+use std::
+{
+  fmt::Debug,
+  marker::PhantomData,
+};
 
 #[ allow( dead_code ) ]
 struct BoundsMixed< T: ToString, U >

@@ -1,5 +1,4 @@
 use std::marker::PhantomData;
-use super::*;
 
 #[ allow( dead_code ) ]
 struct StructTupleEmpty< T >(  PhantomData< T > );
