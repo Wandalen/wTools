@@ -252,7 +252,6 @@ mod inner_from_tests
 #[ path = "phantom" ]
 mod phantom_tests
 {
-  // use crate::only_for_aggregating_module;
   #[ allow( unused_imports ) ]
   use super::*;
 

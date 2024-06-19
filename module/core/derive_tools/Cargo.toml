@@ -72,7 +72,7 @@ default = [
   "derive_inner_from",
   "derive_new",
 
-  "derive_phantom"
+  "derive_phantom",
 
   # "use_std",
 ]
@@ -119,7 +119,7 @@ full = [
   "derive_inner_from",
   "derive_new",
 
-  "derive_phantom"
+  "derive_phantom",
 
   # "use_std",
 ]
