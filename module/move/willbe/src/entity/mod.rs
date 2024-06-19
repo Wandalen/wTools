@@ -73,7 +73,7 @@ crate::mod_interface!
   layer package_md_extension;
   orphan use super::package_md_extension;
   
-  /// Md's extension for workspace.
+  /// Progress bar staff.
   layer progress_bar;
   orphan use super::progress_bar;
 }
