@@ -327,25 +327,68 @@ mod from_tests
 #[ path = "inner_from" ]
 mod inner_from_tests
 {
-	#[ allow( unused_imports ) ]
-	use super::*;
+  #[ allow( unused_imports ) ]
+  use super::*;
 
   //
 
-  mod basic_test;
-  mod basic_manual_test;
+  mod struct_unit;
+  mod struct_unit_manual;
+  mod struct_tuple;
+  mod struct_tuple_manual;
+  mod struct_tuple_single;
+  mod struct_tuple_single_manual;
+  mod struct_tuple_empty;
+  mod struct_tuple_empty_manual;
+  mod struct_named;
+  mod struct_named_manual;
+  mod struct_named_single;
+  mod struct_named_single_manual;
+  mod struct_named_empty;
+  mod struct_named_empty_manual;
+
+  mod enum_unit;
+  mod enum_unit_manual;
+  mod enum_tuple;
+  mod enum_tuple_manual;
+  mod enum_tuple_single;
+  mod enum_tuple_single_manual;
+  mod enum_tuple_empty;
+  mod enum_tuple_empty_manual;
+  mod enum_named;
+  mod enum_named_manual;
+  mod enum_named_single;
+  mod enum_named_single_manual;
+  mod enum_named_empty;
+  mod enum_named_empty_manual;
 
   //
 
-	mod unit_test;
-	mod named_manual_test;
-	mod multiple_named_manual_test;
-	mod unit_manual_test;
-	mod named_test;
-	mod multiple_named_test;
-	mod multiple_unnamed_manual_test;
-	mod multiple_unnamed_test;
+  mod generics_lifetimes;
+  mod generics_lifetimes_manual;
 
+  mod generics_types;
+  mod generics_types_manual;
+  mod generics_types_default;
+  mod generics_types_default_manual;
+
+  mod generics_constants;
+  mod generics_constants_manual;
+  mod generics_constants_default;
+  mod generics_constants_default_manual;
+
+  //
+
+  mod bounds_inlined;
+  mod bounds_inlined_manual;
+  mod bounds_where;
+  mod bounds_where_manual;
+  mod bounds_mixed;
+  mod bounds_mixed_manual;
+
+  //
+
+  mod name_collisions;
 }
 
 #[ cfg( feature = "derive_phantom" ) ]

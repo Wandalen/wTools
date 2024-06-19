@@ -1,8 +1,7 @@
 #![ allow( non_snake_case ) ]
 #![ allow( unused_imports ) ]
 
-use ::core::ops::Deref;
-use derive_tools::DerefMut;
+use derive_tools::InnerFrom;
 
 pub mod core {}
 pub mod std {}
@@ -13,20 +12,11 @@ pub mod FromPair {}
 pub mod FromBin {}
 
 #[ allow( dead_code ) ]
-#[ derive( DerefMut ) ]
+#[ derive( InnerFrom ) ]
 struct NameCollisions
 {
   a : i32,
   b : String,
-}
-
-impl Deref for NameCollisions
-{
-  type Target = i32;
-  fn deref( &self ) -> &Self::Target
-  {
-    &self.a
-  }
 }
 
 include!( "./only_test/name_collisions.rs" );
