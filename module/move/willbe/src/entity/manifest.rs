@@ -166,12 +166,12 @@ pub( crate ) mod private
       .and_then( | i | i.as_str() );
       if let Some( repo_url ) = repo_url
       {
-        url::extract_repo_url( repo_url ).ok_or_else( || format_err!( "Fail to extract repository url ") )
+        url::repo_url_extract( repo_url ).ok_or_else( || format_err!( "Fail to extract repository url ") )
       }
       else
       {
         let report = git::ls_remote_url( crate_dir.clone().absolute_path() )?;
-        url::extract_repo_url( &report.out.trim() ).ok_or_else( || format_err!( "Fail to extract repository url from git remote.") )
+        url::repo_url_extract( &report.out.trim() ).ok_or_else( || format_err!( "Fail to extract repository url from git remote.") )
       }
     }
     else

@@ -134,7 +134,7 @@ mod private
       )
       .unwrap_or_default();
 
-      let repo_url = url::extract_repo_url( &self.repository_url ).and_then( | r | url::git_info_extract( &r ).ok() ).ok_or_else::< wError, _ >( || err!( "Fail to parse repository url" ) )?;
+      let repo_url = url::repo_url_extract( &self.repository_url ).and_then( | r | url::git_info_extract( &r ).ok() ).ok_or_else::< wError, _ >( || err!( "Fail to parse repository url" ) )?;
       let example= if let Some( name ) = find_example_file( self.module_path.as_path(), &self.module_name )
       {
         let relative_path = proper_path_tools::path::path_relative(workspace_path.try_into().unwrap(), name).to_string_lossy().to_string();
@@ -185,9 +185,10 @@ mod private
   /// [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://github.com/Username/test/actions/workflows/ModuleChainOfPackagesAPush.yml/badge.svg)](https://github.com/Username/test/actions/workflows/ModuleChainOfPackagesAPush.yml)[![docs.rs](https://img.shields.io/docsrs/_chain_of_packages_a?color=e3e8f0&logo=docs.rs)](https://docs.rs/_chain_of_packages_a)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F_chain_of_packages_a_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20_chain_of_packages_a_trivial/https://github.com/Username/test)
   /// <!--{ generate.module_header.end }-->
   /// ```
-  pub fn readme_modules_headers_renew( crate_dir : CrateDir ) ->
-  Result< ModulesHeadersRenewReport, ( ModulesHeadersRenewReport, ModulesHeadersRenewError ) >
-  // xxx : newtype
+  pub fn readme_modules_headers_renew( crate_dir : CrateDir )
+  -> ResultWithReport< ModulesHeadersRenewReport, ModulesHeadersRenewError >
+  // -> Result< ModulesHeadersRenewReport, ( ModulesHeadersRenewReport, ModulesHeadersRenewError ) >
+  // zzz : newtype
   {
     let mut report = ModulesHeadersRenewReport::default();
     regexes_initialize();

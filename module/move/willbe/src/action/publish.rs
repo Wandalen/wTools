@@ -8,7 +8,6 @@ mod private
   use std::{ env, fs };
 
   use error::untyped::{ Error, anyhow };
-  // use path::AbsolutePath;
   use workspace::Workspace;
   use package::Package;
   use channel::Channel;

@@ -312,7 +312,7 @@ mod private
       let bump = version::BumpOptions
       {
         crate_dir : crate_dir.clone(),
-        old_version : old_version.clone(), // xxx : ?
+        old_version : old_version.clone(),
         new_version : new_version.clone(),
         dependencies : dependencies.clone(),
         dry : self.dry,
