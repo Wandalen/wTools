@@ -1,6 +1,6 @@
 fn assert_contravariant( x: ContravariantType< &dyn Fn( &'static str ) -> String > ) -> String
 {
-  (x.a)("test")
+  ( x.a )( "test" )
 }
 
 #[test]

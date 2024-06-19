@@ -5,7 +5,7 @@ enum Enum< T >
 {
   A,
   B,
-  C(T),
+  C( T ),
 }
 
 fn main()

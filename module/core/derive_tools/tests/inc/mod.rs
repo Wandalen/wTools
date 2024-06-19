@@ -287,9 +287,7 @@ mod phantom_tests
     println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
     let t = test_tools::compiletime::TestCases::new();
 
-    // Fail test for applying macros to enum
     t.compile_fail( "tests/inc/phantom/compiletime/enum.rs" );
-
     t.compile_fail( "tests/inc/phantom/compiletime/invariant_type.rs" );
   }
 }
