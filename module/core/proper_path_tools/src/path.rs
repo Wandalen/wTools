@@ -227,8 +227,8 @@ pub( crate ) mod private
     // println!( "b" );
     let path = normalize( path );
 
-    // In Windows the regular/legacy paths (C :\foo) are supported by all programs, but have lots of bizarre restrictions for backwards compatibility with MS-DOS.
-    // And there are Windows NT UNC paths (\\?\C :\foo), which are more robust and with fewer gotchas, but are rarely supported by Windows programs. Even Microsoft’s own!
+    // In Windows the regular/legacy paths (C:\foo) are supported by all programs, but have lots of bizarre restrictions for backwards compatibility with MS-DOS.
+    // And there are Windows NT UNC paths (\\?\C:\foo), which are more robust and with fewer gotchas, but are rarely supported by Windows programs. Even Microsoft’s own!
     //
     // https://github.com/rust-lang/rust/issues/42869
     #[ cfg( target_os = "windows" ) ]
@@ -1076,7 +1076,9 @@ crate::mod_interface!
   #[ cfg( feature = "path_unique_folder_name" ) ]
   orphan use unique_folder_name;
 
-  /// Describe absolute path. Prefer using absolute path instead of relative when ever possible.
+  /// Describe absolute path. Prefer using absolute path instead of relative paths when ever possible.
   layer absolute_path;
+  /// Describe canonical path. Prefer using canonical path instead of native paths when ever possible.
+  layer caninical_path;
 
 }

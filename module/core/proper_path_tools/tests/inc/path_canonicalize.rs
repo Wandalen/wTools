@@ -9,7 +9,6 @@ fn assumptions()
 
   assert_eq!( PathBuf::from( "c:/src/" ).is_absolute(), true );
   assert_eq!( PathBuf::from( "/c/src/" ).is_absolute(), false );
-
   assert_eq!( PathBuf::from( "/c:/src/" ).is_absolute(), false );
   assert_eq!( PathBuf::from( "/c/src/" ).is_absolute(), false );
 
