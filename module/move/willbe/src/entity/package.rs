@@ -34,6 +34,9 @@ mod private
   use version::revert;
   use error::untyped::Error;
   use channel::Channel;
+  use error_with::ErrWith;
+  use tool::ListNodeReport;
+  use tool::TreePrinter;
 
   // qqq : fro Bohdan : write better description
   /// Newtype for package name
@@ -377,9 +380,9 @@ mod private
     git_options.dry = dry;
     publish.dry = dry;
 
-    report.get_info = Some( cargo::pack( pack ).map_err( | e | ( report.clone(), e ) )? );
+    report.get_info = Some( cargo::pack( pack ).err_with( || report.clone() )? );
     // aaa : redundant field? // aaa : removed
-    let bump_report = version::bump( bump ).map_err( | e | ( report.clone(), e ) )?;
+    let bump_report = version::bump( bump ).err_with( || report.clone() )?;
     report.bump = Some( bump_report.clone() );
     let git_root = git_options.git_root.clone();
     let git = match perform_git_commit( git_options )
@@ -388,11 +391,8 @@ mod private
       Err( e ) =>
       {
         revert( &bump_report )
-        .map_err( | le |
-        (
-          report.clone(),
-          format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) )
-        ))?;
+        .map_err( | le | format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) ) )
+        .err_with( || report.clone() )?;
         return Err(( report, e ));
       }
     };
@@ -405,15 +405,13 @@ mod private
       {
         git::reset( git_root.as_ref(), true, 1, false )
         .map_err( | le |
-        (
-          report.clone(),
-          format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) )
-        ))?;
+        format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) ) )
+        .err_with( || report.clone() )?;
         return Err(( report, e ));
       }
     };
 
-    let res = git::push( &git_root, dry ).map_err( | e | ( report.clone(), e ) )?;
+    let res = git::push( &git_root, dry ).err_with( || report.clone() )?;
     report.push = Some( res );
 
     Ok( report )
@@ -476,11 +474,11 @@ mod private
     where
       W : std::fmt::Write
     {
-      let name_bump_report = self
+      let name_bump_report : HashMap< _, _ > = self
       .plans
       .iter()
       .map( | x | ( &x.package_name, ( x.bump.old_version.to_string(), x.bump.new_version.to_string() ) ) )
-      .collect::< HashMap< _, _ > >();
+      .collect();
       for wanted in &self.roots
       {
         let list = action::list
@@ -495,7 +493,7 @@ mod private
         .map_err( |( _, _e )| std::fmt::Error )?;
         let action::list::ListReport::Tree( list ) = list else { unreachable!() };
 
-        fn callback( name_bump_report : &HashMap< &String, ( String, String ) >, mut r : action::list::ListNodeReport ) -> action::list::ListNodeReport
+        fn callback( name_bump_report : &HashMap< &String, ( String, String ) >, mut r : tool::ListNodeReport ) -> tool::ListNodeReport
         {
           if let Some(( old, new )) = name_bump_report.get( &r.name )
           {
@@ -507,9 +505,12 @@ mod private
 
           r
         }
-        let list = list.into_iter().map( | r | callback( &name_bump_report, r ) ).collect();
+        let printer = list;
+        let rep : Vec< ListNodeReport > = printer.iter().map( | printer | printer.info.clone() ).collect();
+        let list: Vec< ListNodeReport > = rep.into_iter().map( | r | callback( &name_bump_report, r ) ).collect();
+        let printer : Vec< TreePrinter > = list.iter().map( | rep | TreePrinter::new( rep ) ).collect();
 
-        let list = action::list::ListReport::Tree( list );
+        let list = action::list::ListReport::Tree( printer );
         writeln!( f, "{}", list )?;
       }
 

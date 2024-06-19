@@ -78,7 +78,7 @@ mod private
       Is : Into< HashSet< I > >,
       I : AsRef< std::path::Path >,
     {
-      let current = self.0.keys().cloned().collect::< HashSet< _ > >();
+      let current : HashSet< _ > = self.0.keys().cloned().collect();
       let Some( key ) = current.iter().next() else { return self };
 
       let crate_part = std::path::Path::new( key.components().next().unwrap().as_os_str() );

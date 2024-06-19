@@ -23,6 +23,7 @@ mod private
     },
     iter::Itertools,
   };
+  use error_with::ErrWith;
 
   /// Used to store arguments for running tests.
   ///
@@ -73,8 +74,8 @@ mod private
 
     let mut report = TestsReport::default();
     // fail fast if some additional installations required
-    let channels = channel::available_channels( o.dir.as_ref() ).map_err( | e | ( report.clone(), e ) )?;
-    let channels_diff = o.channels.difference( &channels ).collect::< Vec< _ > >();
+    let channels = channel::available_channels( o.dir.as_ref() ).err_with( || report.clone() )?;
+    let channels_diff : Vec< _ > = o.channels.difference( &channels ).collect();
     if !channels_diff.is_empty()
     {
       // aaa : for Petro : non readable
@@ -110,20 +111,18 @@ Try to install it with `rustup install {}` command(-s)",
     } = o;
 
     // zzz : watch and review after been ready
-    // qqq : for Petro : use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >
-    let path = if o.dir.as_ref().file_name() == Some( "Cargo.toml".as_ref() )
+    // aaa : for Petro : use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >
+    // aaa : done
+    let path = match PathEither::try_from( o.dir.as_ref() ).map_err( | e | ( report.clone(), e.into() ) )?.inner()
     {
-      o.dir.parent().unwrap()
-    }
-    else
-    {
-      o.dir
+      data_type::Either::Left( crate_dir ) => crate_dir,
+      data_type::Either::Right( manifest ) => CrateDir::from( manifest )
     };
 
     let workspace = Workspace
-    ::with_crate_dir( CrateDir::try_from( path.clone() ).map_err( | e | ( report.clone(), e.into() ) )? )
-    .map_err( | e | ( report.clone(), e.into() ) )?
-    // zzz : watch
+    ::with_crate_dir( CrateDir::try_from( path.clone() ).err_with( || report.clone() )? )
+    .err_with( || report.clone() )?
+    // xxx : clone?
     ;
 
     // let packages = needed_packages( &workspace );
@@ -144,7 +143,7 @@ Try to install it with `rustup install {}` command(-s)",
       with_all_features,
       with_none_features,
       variants_cap,
-    ).map_err( | e | ( report.clone(), e ) )?;
+    ).err_with( || report.clone() )?;
 
     println!( "{plan}" );
       // aaa : split on two functions for create plan and for execute
@@ -155,7 +154,7 @@ Try to install it with `rustup install {}` command(-s)",
       let mut unique_name = format!
       (
         "temp_dir_for_test_command_{}",
-        path::unique_folder_name().map_err( | e | ( report.clone(), e.into() ) )?
+        path::unique_folder_name().err_with( || report.clone() )?
       );
 
       let mut temp_dir = env::temp_dir().join( unique_name );
@@ -165,12 +164,12 @@ Try to install it with `rustup install {}` command(-s)",
         unique_name = format!
         (
           "temp_dir_for_test_command_{}",
-          path::unique_folder_name().map_err( | e | ( report.clone(), e.into() ) )?
+          path::unique_folder_name().err_with( || report.clone() )?
         );
         temp_dir = env::temp_dir().join( unique_name );
       }
 
-      fs::create_dir( &temp_dir ).map_err( | e | ( report.clone(), e.into() ) )?;
+      fs::create_dir( &temp_dir ).err_with( || report.clone() )?;
       Some( temp_dir )
     }
     else
@@ -190,7 +189,7 @@ Try to install it with `rustup install {}` command(-s)",
 
     if temp
     {
-      fs::remove_dir_all( options.temp_path.unwrap() ).map_err( | e | ( report.clone(), e.into() ) )?;
+      fs::remove_dir_all( options.temp_path.unwrap() ).err_with( || report.clone() )?;
     }
 
     result

@@ -28,6 +28,7 @@ mod private
   use package::PackageError;
   use error::typed::Error;
   use workspace_md_extension::WorkspaceMdExtension;
+  use error_with::ErrWith;
 
   static TAGS_TEMPLATE : std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 
@@ -196,7 +197,7 @@ mod private
     (
       crate_dir
     )
-    .map_err( | e | ( report.clone(), e.into() ) )?; // qqq : use trait. everywhere
+    .err_with( || report.clone() )?; // xxx : qqq : use trait. everywhere
     let discord_url = workspace.discord_url();
 
     // qqq : inspect each collect in willbe and rid of most of them
@@ -216,23 +217,23 @@ mod private
       (
         repository::readme_path( path.parent().unwrap().as_ref() )
         // .ok_or_else::< wError, _ >( || err!( "Fail to find README.md at {}", &path ) )
-        .map_err( | e | ( report.clone(), e.into() ) )?
+        .err_with( || report.clone() )?
       );
 
-      let pakage = Package::try_from( CrateDir::try_from( &path.parent().unwrap() ).map_err( | e | ( report.clone(), e.into() ) )? )
-      .map_err( | e | ( report.clone(), e.into() ) )?;
+      let pakage = Package::try_from( CrateDir::try_from( &path.parent().unwrap() ).err_with( || report.clone() )? )
+      .err_with( || report.clone() )?;
 
       let header = ModuleHeader::from_cargo_toml( pakage.into(), &discord_url )
-      .map_err( | e | ( report.clone(), e.into() ) )?;
+      .err_with( || report.clone() )?;
 
       let mut file = OpenOptions::new()
       .read( true )
       .write( true )
       .open( &read_me_path )
-      .map_err( | e | ( report.clone(), e.into() ) )?;
+      .err_with( || report.clone() )?;
 
       let mut content = String::new();
-      file.read_to_string( &mut content ).map_err( | e | ( report.clone(), e.into() ) )?;
+      file.read_to_string( &mut content ).err_with( || report.clone() )?;
 
       let raw_params = TAGS_TEMPLATE
       .get()
@@ -244,11 +245,11 @@ mod private
 
       _ = query::parse( raw_params ).context( "Fail to parse raw params." );
 
-      let content = header_content_generate( &content, header, raw_params, workspace.workspace_root().to_str().unwrap() ).map_err( | e | ( report.clone(), e.into() ) )?;
+      let content = header_content_generate( &content, header, raw_params, workspace.workspace_root().to_str().unwrap() ).err_with( || report.clone() )?;
 
-      file.set_len( 0 ).map_err( | e | ( report.clone(), e.into() ) )?;
-      file.seek( SeekFrom::Start( 0 ) ).map_err( | e | ( report.clone(), e.into() ) )?;
-      file.write_all( content.as_bytes() ).map_err( | e | ( report.clone(), e.into() ) )?;
+      file.set_len( 0 ).err_with( || report.clone() )?;
+      file.seek( SeekFrom::Start( 0 ) ).err_with( || report.clone() )?;
+      file.write_all( content.as_bytes() ).err_with( || report.clone() )?;
       report.touched_files.insert( path.as_ref().to_path_buf() );
     }
     Ok( report )

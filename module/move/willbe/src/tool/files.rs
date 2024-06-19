@@ -23,7 +23,7 @@ pub( crate ) mod private
     .into_iter()
     .filter_map( Result::ok )
     .map( | s | s.path().to_path_buf() )
-    .collect::< Vec< PathBuf > >()
+    .collect()
   }
 
   /// Check if path is valid.

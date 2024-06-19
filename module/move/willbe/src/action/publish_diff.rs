@@ -9,11 +9,13 @@ mod private
   use colored::Colorize;
   use crates_tools::CrateArchive;
 
-  use action::list::{ ListReport, ListNodeReport };
+  use action::list::ListReport;
   // use path::AbsolutePath;
   use error::untyped::Result;
   use diff::{ DiffReport, crate_diff };
   use error::untyped::format_err;
+  use tool::ListNodeReport;
+  use tool::TreePrinter;
 
   /// Options for `publish_diff` command
   #[ derive( Debug, former::Former ) ]
@@ -60,8 +62,8 @@ mod private
 
       let root = AbsolutePath::from( root_path );
       let diff = self.diffs.get( &root ).unwrap();
-
-      writeln!( f, "Tree:\n{}", tree )?;
+      let printer = TreePrinter::new( &tree );
+      writeln!( f, "Tree:\n{}", printer )?;
       if diff.has_changes()
       {
         writeln!( f, "Changes detected in `{root_name} {root_version}`:" )?;
@@ -94,14 +96,14 @@ mod private
       .form()
     )
     .unwrap();
-    let ListReport::Tree( mut tree ) = list else { return Err( format_err!( "Logical error. Unexpected list format" ) ) };
+    let ListReport::Tree( tree ) = list else { return Err( format_err!( "Logical error. Unexpected list format" ) ) };
     let mut tasks = vec![ tree[ 0 ].clone() ];
     let mut diffs = HashMap::new();
     let mut current_idx = 0;
     while current_idx < tasks.len()
     {
       // let path = tasks[ current_idx ].crate_dir.as_ref().unwrap().to_string_lossy();
-      let path = tasks[ current_idx ].crate_dir.as_ref().unwrap().clone().absolute_path();
+      let path = tasks[ current_idx ].info.crate_dir.as_ref().unwrap().clone().absolute_path();
       // aaa : looks bad. use ready newtypes // aaa : removed
       let dir = CrateDir::try_from( path.clone() )?;
 
@@ -129,15 +131,19 @@ mod private
         }
       }
       diffs.insert( path, crate_diff( &l, &r ).exclude( diff::PUBLISH_IGNORE_LIST ) );
-      tasks.extend( tasks[ current_idx ].normal_dependencies.clone() );
+      let report = tasks[ current_idx ].info.normal_dependencies.clone();
+      let printer : Vec< TreePrinter > = report.iter().map( | rep | TreePrinter::new( rep ) ).collect();
+      tasks.extend( printer );
 
       current_idx += 1;
     }
+    let printer = tree;
+    let mut rep : Vec< ListNodeReport > = printer.iter().map( | printer | printer.info.clone() ).collect();
     let report = PublishDiffReport
     {
       root_path : path.clone(),
       diffs,
-      tree : tree.remove( 0 ),
+      tree : rep.remove( 0 ),
     };
 
     Ok( report )
