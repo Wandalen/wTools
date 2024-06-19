@@ -44,7 +44,7 @@ pub( crate ) mod private
     /// Path to `Cargo.toml`
     // pub manifest_file : AbsolutePath,
     pub manifest_file : ManifestFile,
-    // qqq : for Bohdan : for Petro : why not ManifestFile?
+    // aaa : for Bohdan : for Petro : why not ManifestFile?
     /// Strict type of `Cargo.toml` manifest.
     pub data : toml_edit::Document,
     // pub data : Option< toml_edit::Document >,
@@ -116,6 +116,7 @@ pub( crate ) mod private
     pub fn store( &self ) -> io::Result< () >
     {
       fs::write( &self.manifest_file, self.data.to_string() )?;
+
       Ok( () )
     }
 
@@ -137,6 +138,7 @@ pub( crate ) mod private
       {
         let remote = data[ "package" ].get( "publish" ).is_none()
         || data[ "package" ][ "publish" ].as_bool().or( Some( true ) ).unwrap();
+
         return !remote;
       }
       true

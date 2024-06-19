@@ -6,12 +6,11 @@ mod private
     fmt::Formatter,
     collections::{ HashMap, HashSet },
   };
+  use package::PackageName;
   // use workspace::WorkspacePackageRef< '_ >;
   // use Dependency;
 
-  // qqq : poor description
-  /// Type aliasing for String
-  pub type PackageName = String;
+  // aaa : poor description // aaa : removed
 
   /// A configuration struct for specifying optional filters when using the
   /// `filter` function. It allows users to provide custom filtering
@@ -72,7 +71,7 @@ mod private
   ///   which dependencies should be included in the return for that package. If not provided, all
   ///   dependencies for a package are included.
 
-  // qqq : for Bohdan : for Petro : bad. don't use PackageMetadata directly, use its abstraction only!
+  // aaa : for Bohdan : for Petro : bad. don't use PackageMetadata directly, use its abstraction only!
 
   pub fn filter< 'a >
   (
@@ -92,7 +91,7 @@ mod private
     (
       | package |
       (
-        package.name().into(),
+        package.name().to_string().into(),
         package.dependencies()
         // .iter()
         .filter( | d | dependency_filter( package, *d ) )
@@ -109,7 +108,6 @@ mod private
 crate::mod_interface!
 {
 
-  protected use PackageName;
   protected use FilterMapOptions;
   protected use filter;
 

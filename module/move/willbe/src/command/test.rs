@@ -4,6 +4,7 @@ mod private
   use crate::*;
 
   use std::collections::HashSet;
+  use std::fs;
   use std::path::PathBuf;
   use colored::Colorize;
   use wca::VerifiedCommand;
@@ -54,7 +55,7 @@ mod private
     // qqq : remove all collect::< ... >, specify type in type `let y : Type = x.collect();`
 
     let path : PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );
-    let path = AbsolutePath::try_from( path )?;
+    let path = AbsolutePath::try_from( fs::canonicalize( path )? )?;
     let TestsProperties
     {
       dry,

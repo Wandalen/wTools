@@ -35,7 +35,17 @@ mod private
   use error::untyped::Error;
   use channel::Channel;
 
+  // qqq : fro Bohdan : write better description
+  /// Newtype for package name
+  #[ derive
+  (
+    Debug, Default, Clone, Hash, Ord, PartialOrd, Eq, PartialEq,
+    derive_tools::Display, derive_tools::Deref, derive_tools::From
+  ) ]
+  pub struct PackageName( String );
+
   // qqq : fro Bohdan : write description
+  //
   #[ derive( Debug, Clone ) ]
   pub enum Package< 'a >
   {
@@ -146,7 +156,6 @@ mod private
         Self::WorkspacePackageRef( package ) => package.crate_dir().unwrap(),
       }
     }
-
 
     /// Package version
     pub fn version( &self ) -> Result< String, PackageError >
@@ -369,8 +378,7 @@ mod private
     publish.dry = dry;
 
     report.get_info = Some( cargo::pack( pack ).map_err( | e | ( report.clone(), e ) )? );
-    // qqq : redundant field?
-    report.publish_required = true;
+    // aaa : redundant field? // aaa : removed
     let bump_report = version::bump( bump ).map_err( | e | ( report.clone(), e ) )?;
     report.bump = Some( bump_report.clone() );
     let git_root = git_options.git_root.clone();
@@ -613,8 +621,6 @@ mod private
   {
     /// Retrieves information about the package.
     pub get_info : Option< process::Report >,
-    /// Indicates whether publishing is required for the package.
-    pub publish_required : bool,
     /// Bumps the version of the package.
     pub bump : Option< version::ExtendedBumpReport >,
     /// Report of adding changes to the Git repository.
@@ -634,7 +640,6 @@ mod private
       let PublishReport
       {
         get_info,
-        publish_required,
         bump,
         add,
         commit,
@@ -649,12 +654,6 @@ mod private
       }
       let info = get_info.as_ref().unwrap();
       write!( f, "{}", info )?;
-
-      if !publish_required
-      {
-        f.write_str( "The package has no changes, so no publishing is required" )?;
-        return Ok( () )
-      }
 
       if let Some( bump ) = bump
       {
@@ -762,7 +761,7 @@ mod private
   /// Recursive implementation of the `dependencies` function
   pub fn _dependencies< 'a >
   (
-    workspace : &mut Workspace, // qqq : for Bohdan : no mut
+    workspace : &Workspace, // aaa : for Bohdan : no mut // aaa : no mut
     package : &Package< 'a >,
     graph : &mut HashMap< CrateId, HashSet< CrateId > >,
     opts : DependenciesOptions
@@ -907,6 +906,7 @@ crate::mod_interface!
 
   protected use PublishReport;
   protected use Package;
+  protected use PackageName;
   protected use PackageError;
 
   protected use publish_need;

@@ -86,7 +86,7 @@ mod_interface = { workspace = true, features = [ "default" ] }
 wca = { workspace = true, features = [ "default" ] }
 proper_path_tools = { workspace = true, features = [ "default", "path_utf8" ] }
 process_tools = { workspace = true, features = [ "default" ] }
-derive_tools = { workspace = true, features = [ "derive_display", "derive_from_str" ] }
+derive_tools = { workspace = true, features = [ "derive_display", "derive_from_str", "derive_deref", "derive_from" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
