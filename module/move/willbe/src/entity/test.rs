@@ -75,7 +75,6 @@ mod private
     /// `variants_cap` - Maximum of subset in powerset
     pub fn try_from< 'a >
     (
-      // packages : &[ WorkspacePackageRef< 'a > ],
       packages : impl core::iter::Iterator< Item = WorkspacePackageRef< 'a > >,
       channels : &collections::HashSet< channel::Channel >,
       power : u32,
@@ -598,7 +597,7 @@ mod private
       // {
       //   writeln!( f, "\nYou can execute the plan with 'will .test dry : 0'." )?;
       //   // aaa : for Petro : bad. should be exact command with exact parameters / при виклику зовнішніх команд повинен бути вивід у консоль про цей виклик і його аргументи за виключенням коли ційлий блок виводу прихований (у моєму випадку при фейлі)
-      //   // aaa : coment in because its redundant, this behavior already implemented  
+      //   // aaa : coment in because its redundant, this behavior already implemented
       // return Ok( () )
       // }
       if self.success_reports.is_empty() && self.failure_reports.is_empty()

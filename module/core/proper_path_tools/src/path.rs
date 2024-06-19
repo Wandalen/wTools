@@ -48,6 +48,7 @@ pub( crate ) mod private
   /// assert_eq!( path::is_glob( "file\\[0-9].txt" ), false ); // Escaped brackets, not a glob pattern
   /// ```
 
+  // qqq : xxx : should probably be Path
   pub fn is_glob( path : &str ) -> bool
   {
     let mut chars = path.chars().peekable();
@@ -320,23 +321,24 @@ pub( crate ) mod private
   /// Examples:
   ///
   /// ```
+  /// use std::path::PathBuf;
+  /// use proper_path_tools::path;
   ///
-  /// let paths = vec![ "a/b/c", "/d/e", "f/g" ];
-  /// let joined = proper_path_tools::path::join_paths( paths.into_iter() );
+  /// let paths = vec![ PathBuf::from( "a/b/c" ), PathBuf::from( "/d/e" ), PathBuf::from( "f/g" ) ];
+  /// let joined = path::join_paths( paths.iter().map( | p | p.as_path() ) );
   /// assert_eq!( joined, std::path::PathBuf::from( "/d/e/f/g" ) );
   ///
-  /// let paths = vec![];
-  /// let joined = proper_path_tools::path::join_paths( paths.into_iter() );
-  /// assert_eq!( joined, std::path::PathBuf::from( "" ) );
-  ///
-  /// let paths = vec![ "", "a/b", "", "c", "" ];
-  /// let joined = proper_path_tools::path::join_paths( paths.into_iter() );
-  /// assert_eq!( joined, std::path::PathBuf::from( "/a/b/c" ) );
+  /// let paths = vec![ PathBuf::from( "" ), PathBuf::from( "a/b" ), PathBuf::from( "" ), PathBuf::from( "c" ), PathBuf::from( "" ) ];
+  /// let joined = path::join_paths( paths.iter().map( | p | p.as_path() ) );
+  /// assert_eq!( joined, std::path::PathBuf::from( PathBuf::from( "/a/b/c" ) ) );
   ///
   /// ```
+  // qqq : make macro paths_join!( ... )
   pub fn join_paths< 'a, I >( paths : I ) -> std::path::PathBuf
   where
-    I : Iterator< Item = &'a str >,
+    // AsPath : AsRef< std::path::Path >,
+    // I : Iterator< Item = AsPath >,
+    I : Iterator< Item = &'a std::path::Path >,
   {
     #[ cfg( feature = "no_std" ) ]
     extern crate alloc;
@@ -347,9 +349,11 @@ pub( crate ) mod private
 
     let mut result = String::new();
 
-    for path in paths {
-      let mut path = path.replace( '\\', "/" );
+    for path in paths
+    {
+      let mut path = path.to_string_lossy().replace( '\\', "/" );
       path = path.replace( ':', "" );
+      // qqq : this is a bug
 
       let mut added_slah = false;
 
@@ -360,7 +364,7 @@ pub( crate ) mod private
       }
 
       // If the path starts with '/', clear the result and set it to '/'
-      if path.starts_with('/')
+      if path.starts_with( '/' )
       {
         result.clear();
         result.push( '/' );
@@ -475,6 +479,8 @@ pub( crate ) mod private
   /// assert_eq!( extensions, expected );
   /// ```
   ///
+
+  // qqq : xxx : should return iterator
   pub fn exts( path : impl AsRef< std::path::Path > ) -> std::vec::Vec< std::string::String >
   {
     #[ cfg( feature = "no_std" ) ]
@@ -657,9 +663,11 @@ pub( crate ) mod private
   /// assert_eq!( common_path, Some( "/a/b/".to_string() ) );
   /// ```
   ///
+
+  // xxx : qqq : should probably be PathBuf?
   pub fn path_common< 'a, I >( paths : I ) -> Option< std::string::String >
   where
-    I: Iterator<Item = &'a str>,
+    I: Iterator< Item = &'a str >,
   {
     use std::collections::HashMap;
     #[ cfg( feature = "no_std" ) ]
@@ -746,6 +754,8 @@ pub( crate ) mod private
   ///
   /// * `path` - A mutable reference to a string representing the path to be cleaned.
   ///
+
+  // xxx : qqq : should probably be Path?
   fn path_remove_dots( path : &mut std::string::String )
   {
     let mut cleaned_parts = vec![];
@@ -769,6 +779,8 @@ pub( crate ) mod private
   ///
   /// * `path` - A mutable reference to a string representing the path to be cleaned.
   ///
+
+  // xxx : qqq : should probably be Path?
   fn path_remove_double_dots( path : &mut std::string::String )
   {
     #[ cfg( feature = "no_std" ) ]
@@ -852,7 +864,13 @@ pub( crate ) mod private
   /// assert_eq!( rebased_path, PathBuf::from( "/mnt/storage/documents/file.txt" ) );
   /// ```
   ///
-   pub fn rebase< T : AsRef< std::path::Path > >( file_path : T, new_path : T, old_path : Option< T > ) -> Option< std::path::PathBuf >
+   pub fn rebase< T : AsRef< std::path::Path > >
+   (
+    file_path : T,
+    new_path : T,
+    old_path : Option< T >
+  )
+  -> Option< std::path::PathBuf >
   {
     use std::path::Path;
     use std::path::PathBuf;
@@ -987,9 +1005,6 @@ pub( crate ) mod private
     }
     PathBuf::from( relative_path )
   }
-
-
-
 
   /// Extracts the extension from the given path.
   ///

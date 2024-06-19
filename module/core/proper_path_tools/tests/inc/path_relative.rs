@@ -155,7 +155,7 @@ fn test_absolute_relative_root_to_root()
 fn test_windows_disks()
 {
   let from = "d:/";
-  let to = "c :/x/y";
+  let to = "c:/x/y";
   let expected = "../c/x/y";
   assert_eq!( the_module::path::path_relative( from, to ), PathBuf::from( expected ) );
 }

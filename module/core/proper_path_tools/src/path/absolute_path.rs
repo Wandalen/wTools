@@ -83,7 +83,7 @@ pub( crate ) mod private
       write!( f, "{}", self.0.display() )
     }
   }
-  
+
   fn is_absolute( path : &Path ) -> bool
   {
     // None - not absolute
@@ -99,7 +99,7 @@ pub( crate ) mod private
     {
       let path = path::canonicalize( value )?;
       if !is_absolute( &path ) { return Err( io::Error::new( io::ErrorKind::InvalidData, "Path expected to be absolute" ) ) }
-      
+
       Ok( Self( path ) )
     }
   }
