@@ -1,12 +1,16 @@
-use std::fmt::Debug;
-use super::*;
+use std::
+{
+  fmt::Debug,
+  marker::PhantomData,
+};
 
 #[ allow( dead_code ) ]
-#[ the_module::phantom ]
 struct BoundsWhere< T, U >
-where
-  T: ToString,
-  U: Debug,
-{}
+  where
+    T: ToString,
+    U: Debug,
+{
+  _phantom: PhantomData< ( T, U ) >
+}
 
 include!( "./only_test/bounds_where.rs" );
