@@ -277,6 +277,8 @@ mod phantom_tests
   mod covariant_type_manual;
   mod contravariant_type;
   mod contravariant_type_manual;
+  mod send_sync_type;
+  mod send_sync_type_manual;
   #[ test_tools::nightly ]
   #[ test ]
   fn phantom_trybuild()
