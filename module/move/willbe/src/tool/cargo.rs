@@ -14,21 +14,41 @@ mod private
   // qqq : for Bohdan : bad : tools can't depend on entitties!
   use crate::channel::Channel;
 
-  // qqq : documentation
+  // aaa : documentation /// aaa : documented
 
-  /// Represents pack options
+  /// Represents options for packaging a project.
+  ///
+  /// The `PackOptions` struct encapsulates various options that can be configured when packaging a project,
+  /// including the path to the project, the distribution channel, and various flags for controlling the behavior of the packaging process.
   #[ derive( Debug, Former, Clone ) ]
   pub struct PackOptions
   {
+    /// The path to the project to be packaged.
+    ///
+    /// This field specifies the file system path where the project is located.
     pub( crate ) path : PathBuf,
+    /// The distribution channel for the packaging project.
+    ///
+    /// This field specifies the channel through which the packaged project will be distributed.
+    ///
     pub( crate ) channel : Channel,
+    /// Flag indicating whether to allow packaging even if the working directory is dirty.
+    ///
+    /// This field is set to `true` by default, meaning that packaging will proceed even if there are uncommitted changes.
     #[ former( default = true ) ]
     pub( crate ) allow_dirty : bool,
     // qqq : rename to checking_changes
+    /// Flag indicating whether to skip verification checks.
     #[ former( default = false ) ]
     // qqq : don't abuse negative form, rename to checking_consistency
     pub( crate ) no_verify : bool,
+    /// An optional temporary path to be used during packaging.
+    ///
+    /// This field may contain a path to a temporary directory that will be used during the packaging process.
     pub( crate ) temp_path : Option< PathBuf >,
+    /// Flag indicating whether to perform a dry run.
+    ///
+    /// This field specifies whether the packaging process should be a dry run, meaning that no actual changes will be made.
     pub( crate ) dry : bool,
   }
 

@@ -2,6 +2,7 @@ mod private
 {
   use crate::*;
 
+  use std::fs;
   use std::path::PathBuf;
   use wca::VerifiedCommand;
 
@@ -40,7 +41,7 @@ mod private
     println!( "{}", action::publish_diff( o )? );
     if let Some( keep ) = keep_archive
     {
-      let keep = AbsolutePath::try_from( keep ).unwrap();
+      let keep = AbsolutePath::try_from( fs::canonicalize( keep )? ).unwrap();
       println!( "Remote version of the package was saved at `{}`", keep.as_ref().display() );
     }
 
