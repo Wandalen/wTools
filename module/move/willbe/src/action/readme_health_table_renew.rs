@@ -4,7 +4,6 @@ mod private
 
   use std::
   {
-    str::FromStr,
     fs::{ OpenOptions, File },
     path::{ Path, PathBuf },
     io::{ Write, Read, Seek, SeekFrom },
@@ -41,7 +40,8 @@ mod private
   }
 
   /// `Stability` is an enumeration that represents the stability level of a feature.
-  #[ derive( Debug ) ]
+  #[ derive( Debug, derive_tools::FromStr ) ]
+  #[ display( style = "snake_case" ) ]
   pub enum Stability
   {
     /// The feature is still being tested and may change.
@@ -56,24 +56,8 @@ mod private
     Deprecated,
   }
 
-  // zzz : qqq : derive?
-  impl FromStr for Stability
-  {
-    type Err = Error;
-
-    fn from_str( s : &str ) -> Result< Self, Self::Err >
-    {
-      match s
-      {
-        "experimental" => Ok( Stability::Experimental ),
-        "unstable" => Ok( Stability::Unstable ),
-        "stable" => Ok( Stability::Stable ),
-        "frozen" => Ok( Stability::Frozen ),
-        "deprecated" => Ok( Stability::Deprecated ),
-        _ => Err( err!( "Fail to parse stability" ) ),
-      }
-    }
-  }
+  // aaa : qqq : derive?
+  // aaa : add
 
   /// Retrieves the stability level of a package from its `Cargo.toml` file.
   fn stability_get( package_path : &Path ) -> Result< Stability >
@@ -102,7 +86,7 @@ mod private
 
   /// Represents parameters that are common for all tables
   #[ derive( Debug ) ]
-  struct GlobalTableOptions< 'a >
+  struct GlobalTableOptions
   {
     /// Path to the root repository.
     core_url : String,
@@ -111,7 +95,7 @@ mod private
     /// List of branches in the repository.
     branches : Option< Vec< String > >,
     /// workspace root
-    workspace_root : &'a Path,
+    workspace_root : PathBuf,
     // aaa : for Petro : is not that path?
     // aaa : done
   }
@@ -153,10 +137,10 @@ mod private
     }
   }
 
-  impl < 'a >GlobalTableOptions< 'a >
+  impl GlobalTableOptions
   {
     /// Initializes the struct's fields from a `Cargo.toml` file located at a specified path.
-    fn initialize_from_path( path : &'a Path ) -> Result< Self >
+    fn initialize_from_path( path : &Path ) -> Result< Self >
     {
 
       let cargo_toml_path = path.join( "Cargo.toml" );
@@ -198,7 +182,7 @@ mod private
         {
           user_and_repo = url::git_info_extract( core_url )?;
         }
-        Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches, workspace_root : path } )
+        Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches, workspace_root : path.to_path_buf() } )
       }
     }
 
@@ -288,7 +272,7 @@ mod private
   (
     workspace : &Workspace,
     table_parameters: &TableOptions,
-    parameters: & mut GlobalTableOptions< '_ >,
+    parameters: &mut GlobalTableOptions,
   ) -> Result< String, Error >
   {
     let directory_names = directory_names
@@ -400,7 +384,7 @@ ensure that at least one remotest is present in git. ",
   }
 
   /// Generate row that represents a module, with a link to it in the repository and optionals for stability, branches, documentation and links to the gitpod.
-  fn row_generate( module_name : &str, stability : Option< &Stability >, parameters : &GlobalTableOptions< '_ >, table_parameters : &TableOptions ) -> String
+  fn row_generate( module_name : &str, stability : Option< &Stability >, parameters : &GlobalTableOptions, table_parameters : &TableOptions ) -> String
   {
     let mut rou = format!( "| [{}]({}/{}) |", &module_name, &table_parameters.base_path, &module_name );
     if table_parameters.include_stability
@@ -425,7 +409,7 @@ ensure that at least one remotest is present in git. ",
       let example = if let Some( name ) = find_example_file( p.as_path(), &module_name )
       {
         let path = path.to_string_lossy().replace( '\\', "/" ).replace( "/", "%2F" );
-        let tmp = name.replace( '\\', "/" );
+        let tmp = name.to_string_lossy().replace( '\\', "/" );
         let file_name = tmp.split( '/' ).last().unwrap();
         let name = file_name.strip_suffix( ".rs" ).unwrap();
         format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={path}%2Fexamples%2F{file_name},RUN_POSTFIX=--example%20{name}/{})", parameters.core_url )
@@ -440,7 +424,7 @@ ensure that at least one remotest is present in git. ",
   }
 
   /// todo
-  pub fn find_example_file(base_path : &Path, module_name : &str ) -> Option< String >
+  pub fn find_example_file(base_path : &Path, module_name : &str ) -> Option< PathBuf >
   {
     let examples_dir = base_path.join("examples" );
 
@@ -457,7 +441,7 @@ ensure that at least one remotest is present in git. ",
             {
               if file_name_str == format!( "{module_name}_trivial.rs" )
               {
-                return Some( entry.path().to_string_lossy().into() )
+                return Some( entry.path() )
               }
             }
           }
@@ -477,7 +461,7 @@ ensure that at least one remotest is present in git. ",
           {
             if file_name_str.ends_with( ".rs" )
             {
-              return Some( entry.path().to_string_lossy().into() )
+              return Some( entry.path() )
             }
           }
         }
@@ -501,7 +485,7 @@ ensure that at least one remotest is present in git. ",
   }
 
   /// Generate table header
-  fn table_header_generate( parameters : &GlobalTableOptions< '_ >, table_parameters : &TableOptions ) -> String
+  fn table_header_generate( parameters : &GlobalTableOptions, table_parameters : &TableOptions ) -> String
   {
     let mut header = String::from( "| Module |" );
     let mut separator = String::from( "|--------|" );
@@ -540,7 +524,7 @@ ensure that at least one remotest is present in git. ",
   }
 
   /// Generate cells for each branch
-  fn branch_cells_generate( table_parameters : &GlobalTableOptions< '_ >, module_name : &str ) -> String
+  fn branch_cells_generate( table_parameters : &GlobalTableOptions, module_name : &str ) -> String
   {
     let cells = table_parameters
     .branches

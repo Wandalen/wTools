@@ -9,8 +9,11 @@ mod private
     str::FromStr,
     collections::HashMap
   };
-  use error::untyped::bail;
-  use error::{ untyped::{ Error }, Result };
+  use error::
+  {
+    untyped::{ Error, bail },
+    Result,
+  };
 
   #[ derive( Debug, PartialEq, Eq, Clone ) ]
   /// Parser value enum

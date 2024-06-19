@@ -399,7 +399,7 @@ mod private
     dep_rep
   }
 
-//   // xxx : qqq : for Petro : for Bohdan : good one, apply it to all code
+//   // zzz : qqq : for Petro : for Bohdan : good one, apply it to all code
 //   trait ErrWith< V, R, E >
 //   {
 //     fn err_with( self, v : V ) -> std::result::Result< R, ( V, E ) >;

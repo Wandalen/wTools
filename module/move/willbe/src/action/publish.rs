@@ -8,7 +8,6 @@ mod private
   use std::{ env, fs };
 
   use error::untyped::{ Error, anyhow };
-  // use path::AbsolutePath;
   use workspace::Workspace;
   use package::Package;
   use channel::Channel;
@@ -55,7 +54,7 @@ mod private
           let expected_to_publish = plan
           .plans
           .iter()
-          .map( | p | ( p.version_bump.crate_dir.clone().absolute_path(), p.package_name.clone(), p.version_bump.clone() ) )
+          .map( | p | ( p.bump.crate_dir.clone().absolute_path(), p.package_name.clone(), p.bump.clone() ) )
           .collect::< Vec< _ > >();
           let mut actually_published = self.packages.iter()
           .filter_map

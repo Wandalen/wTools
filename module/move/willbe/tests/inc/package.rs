@@ -27,7 +27,7 @@
 // //       ),
 // //       dry: true,
 // //     },
-// //     version_bump: BumpOptions {
+// //     bump: BumpOptions {
 // //       crate_dir: CrateDir(
 // //         AbsolutePath(
 // //           ".../wTools/module/move/wca",

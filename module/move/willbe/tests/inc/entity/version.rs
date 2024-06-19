@@ -11,7 +11,7 @@ use the_module::
   version::Version,
   path::AbsolutePath,
   package::Package,
-  version::{ BumpOptions, version_bump, version_revert },
+  version::{ BumpOptions, bump, revert },
 };
 
 const TEST_MODULE_PATH : &str = "../../test/";
@@ -142,7 +142,7 @@ default-features = true
     dependencies : vec![ root_manifest_dir_absolute_path.clone() ],
     dry : false,
   };
-  let bump_report = version_bump( options ).unwrap();
+  let bump_report = bump( options ).unwrap();
 
   // Assert
   assert_eq!( Some( version.to_string() ), bump_report.old_version );
@@ -213,8 +213,8 @@ default-features = true
     dependencies : vec![ root_manifest_dir_absolute_path.clone() ],
     dry : false,
   };
-  let bump_report = version_bump( options ).unwrap();
-  version_revert( &bump_report ).unwrap();
+  let bump_report = bump( options ).unwrap();
+  revert( &bump_report ).unwrap();
 
   // Assert
   let c_package = Package::try_from( c_temp_crate_dir.clone() ).unwrap();
