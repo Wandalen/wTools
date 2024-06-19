@@ -3,6 +3,7 @@
 use super::*;
 
 mod absolute_path;
+mod path_canonicalize;
 mod path_change_ext;
 mod path_common;
 mod path_ext;

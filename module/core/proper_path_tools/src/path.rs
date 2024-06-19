@@ -234,9 +234,9 @@ pub( crate ) mod private
     #[ cfg( target_os = "windows" ) ]
     let path =
     {
-      const VERBATIM_PREFIX: &str = r#"\\?\"#;
+      const VERBATIM_PREFIX : &str = r#"\\?\"#;
       // is necessary because of the normalization step that replaces the backslash with a slash.
-      const VERBATIM_PREFIX_MIRRORS_EDGE: &str = "//?/";
+      const VERBATIM_PREFIX_MIRRORS_EDGE : &str = "//?/";
       let p = path.display().to_string();
       if p.starts_with( VERBATIM_PREFIX ) || p.starts_with( VERBATIM_PREFIX_MIRRORS_EDGE )
       {

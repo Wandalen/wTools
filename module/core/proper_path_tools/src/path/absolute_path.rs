@@ -53,11 +53,11 @@ pub( crate ) mod private
       Self::try_from( self.0.join( path ) ).unwrap()
     }
 
-    /// Converts a `AbsolutePath` to a `Cow<str>`
-    pub fn to_string_lossy( &self ) -> Cow< '_, str >
-    {
-      self.0.to_string_lossy()
-    }
+    // /// Converts a `AbsolutePath` to a `Cow<str>`
+    // pub fn to_string_lossy( &self ) -> Cow< '_, str >
+    // {
+    //   self.0.to_string_lossy()
+    // }
 
     /// Determines whether base is a prefix of self.
     ///
@@ -98,8 +98,10 @@ pub( crate ) mod private
     fn try_from( value : &'a str ) -> Result< Self, Self::Error >
     {
       let path = path::canonicalize( value )?;
-      if !is_absolute( &path ) { return Err( io::Error::new( io::ErrorKind::InvalidData, "Path expected to be absolute" ) ) }
-
+      if !is_absolute( &path )
+      {
+        return Err( io::Error::new( io::ErrorKind::InvalidData, "Path expected to be absolute" ) )
+      }
       Ok( Self( path ) )
     }
   }
