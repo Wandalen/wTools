@@ -31,26 +31,7 @@ crate::mod_interface!
   use ::error_tools;
   protected use ::error_tools::protected::*;
 
-  // protected use ::error_tools::
-  // {
-  //   untyped,
-  //   typed,
-  // };
-
-  // // xxx : fix
-  // // error: Complex group uses like `use module1::{ module2, module3 }` are not supported.
-  // use ::error_tools::
-  // {
-  //   untyped,
-  //   typed,
-  // };
-
-  // use ::error_tools::untyped;
-  // use ::error_tools::typed;
-
-  // protected use ::error_tools::*;
-  // protected use ::error_tools::typed::*;
-
   exposed use ErrWith;
   exposed use ResultWithReport;
+
 }

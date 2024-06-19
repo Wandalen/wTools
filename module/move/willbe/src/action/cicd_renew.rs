@@ -270,7 +270,7 @@ mod private
       .map( String::from );
       if let Some( url ) = url
       {
-        return url::extract_repo_url( &url )
+        return url::repo_url_extract( &url )
         .and_then( | url | url::git_info_extract( &url ).ok() )
         .map( UsernameAndRepository )
         .ok_or_else( || err!( "Fail to parse repository url from workspace Cargo.toml"))
@@ -288,7 +288,7 @@ mod private
           }
         }
         return url
-        .and_then( | url | url::extract_repo_url( &url ) )
+        .and_then( | url | url::repo_url_extract( &url ) )
         .and_then( | url | url::git_info_extract( &url ).ok() )
         .map( UsernameAndRepository )
         .ok_or_else( || err!( "Fail to extract repository url") )

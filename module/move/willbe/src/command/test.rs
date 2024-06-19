@@ -4,6 +4,7 @@ mod private
   use crate::*;
 
   use std::collections::HashSet;
+  use std::fs;
   use std::path::PathBuf;
   use colored::Colorize;
   use wca::VerifiedCommand;
@@ -53,7 +54,7 @@ mod private
     let prop_line = format!( "{}", o.props.iter().map( | p | format!( "{}:{}", p.0, p.1.to_string() ) ).collect::< Vec< _ > >().join(" ") );
 
     let path : PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );
-    let path = AbsolutePath::try_from( path )?;
+    let path = AbsolutePath::try_from( fs::canonicalize( path )? )?;
     let TestsProperties
     {
       dry,

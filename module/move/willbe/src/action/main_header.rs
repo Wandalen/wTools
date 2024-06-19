@@ -15,29 +15,18 @@ mod private
   };
   use std::path::PathBuf;
   use regex::Regex;
-  // use wca::wtools::anyhow::Error;
-  // use path::AbsolutePath;
   use { CrateDir, query, url, Workspace };
   use entity::{ PathError, WorkspaceInitError };
-  // xxx : clean
   use error::
   {
-    // anyhow::format_err,
     err,
     Result,
     untyped::
     {
       Error,
-      // Error as wError, // xxx : ?
       Context,
     },
-    // typed::prelude::*,
   };
-  // use error::
-  // {
-  //   dependency::*,
-  //   typed::Error,
-  // };
   use workspace_md_extension::WorkspaceMdExtension;
   use tool::error_with::ErrWith;
 

@@ -47,7 +47,7 @@ pub( crate ) mod private
         return Some( f.file_name() )
       }
       None
-    } )
+    })
     .max()
     .map( std::path::PathBuf::from )
   }

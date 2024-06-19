@@ -9,9 +9,6 @@ mod private
 
   use std::{ env, fs };
 
-  #[ cfg( feature = "progress_bar" ) ]
-  use indicatif::{ MultiProgress, ProgressStyle };
-
   use former::Former;
   use
   {
@@ -73,15 +70,7 @@ mod private
   {
 
     // qqq : incapsulate progress bar logic into some function of struct. don't keep it here
-    #[ cfg( feature = "progress_bar" ) ]
-    let multiprocess = MultiProgress::new();
-    #[ cfg( feature = "progress_bar" ) ]
-    let style = ProgressStyle::with_template
-    (
-      "[{elapsed_precise}] {bar:40.cyan/blue} {pos:>7}/{len:7} {msg}",
-    )
-    .unwrap()
-    .progress_chars( "##-" );
+    // aaa : done
 
     let mut report = TestsReport::default();
     // fail fast if some additional installations required
@@ -141,7 +130,7 @@ Try to install it with `rustup install {}` command(-s)",
     // let packages = needed_packages( &workspace );
     let packages = workspace
     .packages()
-    .filter( move | p | p.manifest_file().unwrap().starts_with( path.as_ref() ) ) // qqq : rid of unwrap
+    .filter( move | p | p.manifest_file().is_ok() && p.manifest_file().unwrap().starts_with( path.as_ref() ) ) // aaa : rid of unwrap // aaa : now its save
     ;
 
     let plan = TestPlan::try_from
@@ -159,7 +148,8 @@ Try to install it with `rustup install {}` command(-s)",
     ).err_with( || report.clone() )?;
 
     println!( "{plan}" );
-      // qqq : split on two functions for create plan and for execute
+      // aaa : split on two functions for create plan and for execute
+    // aaa : it's already separated, look line: 203 : let result = tests_run( &options );
 
     let temp_path =  if temp
     {
@@ -195,10 +185,6 @@ Try to install it with `rustup install {}` command(-s)",
     .option_temp( temp_path )
     .dry( dry )
     .with_progress( with_progress );
-
-    #[ cfg( feature = "progress_bar" ) ]
-    let test_options_former = test_options_former.multiprocess( multiprocess ).style( style );
-
 
     let options = test_options_former.form();
     let result = tests_run( &options );

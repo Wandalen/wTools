@@ -16,7 +16,8 @@ mod private
     visit::Topo,
   };
   use std::str::FromStr;
-  use packages::{ FilterMapOptions, PackageName };
+  use package::PackageName;
+  use packages::FilterMapOptions;
   use error::
   {
     untyped::{ Error, Context, format_err },
@@ -300,12 +301,23 @@ mod private
     }
   }
 
-  // qqq : for Bohdan : descirption
+  // aaa : for Bohdan : descirption // aaa : done
+  /// The `DependencyId` struct encapsulates the essential attributes of a dependency,
   #[ derive( Debug, Clone, PartialEq, Eq, Hash ) ]
   pub struct DependencyId
   {
+    /// The name of the dependency.
+    ///
+    /// This is typically the name of the library or package that the package relies on.
     pub name : String,
+    /// The version requirements for the dependency.
+    /// 
+    /// Note: This will be compared to other dependencies and packages to build the tree
     pub version : semver::VersionReq,
+    /// An optional path to the manifest file of the dependency.
+    ///
+    /// This field may contain a path to the manifest file when the dependency is a local package
+    /// or when specific path information is needed to locate the dependency's manifest.
     pub path : Option< ManifestFile >,
   }
 
@@ -324,7 +336,7 @@ mod private
       if dependency.crate_dir().is_some() && !args.dependency_sources.contains( &DependencySource::Local ) { continue; }
       if dependency.crate_dir().is_none() && !args.dependency_sources.contains( &DependencySource::Remote ) { continue; }
 
-      // qqq : extend test coverage. NewType
+      // qqq : extend test coverage. NewType. Description
       let dep_id = DependencyId
       {
         name : dependency.name(),
@@ -430,14 +442,21 @@ mod private
     let tree_package_report = | manifest_file : ManifestFile, report : &mut ListReport, visited : &mut HashSet< DependencyId > |
     {
 
-      // qqq : is it safe to use unwrap here?
-      let package = workspace.package_find_by_manifest( manifest_file ).unwrap();
+      // aaa : is it safe to use unwrap here? // aaa : done
+      let package = workspace
+      .package_find_by_manifest( manifest_file )
+      .ok_or_else( || err!( "Package not found in the workspace" ) )
+      .err_with( report.clone() )?;
       let mut package_report = ListNodeReport
       {
         name : package.name().to_string(),
         version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( package.version().to_string() ) } else { None },
-        crate_dir : if args.info.contains( &PackageAdditionalInfo::Path ) { Some( package.crate_dir().unwrap() ) } else { None },
-        // qqq : is it safe to use unwrap here?
+        crate_dir : if args.info.contains( &PackageAdditionalInfo::Path )
+        { Some( package.crate_dir().err_with( report.clone() ) ).transpose() }
+        else
+        { Ok( None ) }
+        .map_err( |( r, e )| ( r, e.into() ) )?,
+        // aaa : is it safe to use unwrap here? // aaa : now returns an error
         duplicate : false,
         normal_dependencies : vec![],
         dev_dependencies : vec![],
@@ -454,6 +473,7 @@ mod private
         ListReport::Empty => ListReport::Tree( vec![ printer ] ),
         ListReport::List( _ ) => unreachable!(),
       };
+      Ok( () )
     };
 
     match args.format
@@ -461,7 +481,7 @@ mod private
       ListFormat::Tree if is_package =>
       {
         let mut visited = HashSet::new();
-        tree_package_report( manifest.manifest_file, &mut report, &mut visited );
+        tree_package_report( manifest.manifest_file, &mut report, &mut visited )?;
         let ListReport::Tree( tree ) = report else { unreachable!() };
         let printer = merge_build_dependencies( tree );
         let rep : Vec< ListNodeReport > = printer.iter().map( | printer | printer.info.clone() ).collect();
@@ -482,7 +502,7 @@ mod private
         .collect();
         for package in packages
         {
-          tree_package_report( package.manifest_file().unwrap(), &mut report, &mut visited )
+          tree_package_report( package.manifest_file().unwrap(), &mut report, &mut visited )?
         }
         let ListReport::Tree( tree ) = report else { unreachable!() };
         let printer = merge_build_dependencies( tree );
@@ -549,7 +569,7 @@ mod private
           .map( | dep_idx | graph.node_weight( dep_idx ).unwrap() )
           .map
           (
-            | name : &&String |
+            | name : &&PackageName |
             {
               let mut name : String = name.to_string();
               if let Some( p ) = packages_info.get( &name[ .. ] )
@@ -562,20 +582,21 @@ mod private
                 if args.info.contains( &PackageAdditionalInfo::Path )
                 {
                   name.push_str( " " );
-                  name.push_str( &p.manifest_file().unwrap().to_string() );
-                  // qqq : is it safe to use unwrap here?
+                  name.push_str( &p.manifest_file()?.to_string() );
+                  // aaa : is it safe to use unwrap here? // aaa : should be safe, but now returns an error
                 }
               }
-              name
+              Ok( name )
             }
           )
-          .collect();
+          .collect::< Result< _, _ >>()
+          .err_with( report.clone() )?;
 
           report = ListReport::List( names );
         }
         else
         {
-          let node = graph.node_indices().find( | n | graph.node_weight( *n ).unwrap() == &&root_crate ).unwrap();
+          let node = graph.node_indices().find( | n | graph.node_weight( *n ).unwrap().as_str() == root_crate ).unwrap();
           let mut dfs = Dfs::new( &graph, node );
           let mut subgraph = Graph::new();
           let mut node_map = HashMap::new();
@@ -596,7 +617,7 @@ mod private
           let mut names = Vec::new();
           while let Some( n ) = topo.next( &subgraph )
           {
-            let mut name : String = subgraph[ n ].clone();
+            let mut name : String = subgraph[ n ].to_string();
             if let Some( p ) = packages_info.get( &name[ .. ] )
             {
               if args.info.contains( &PackageAdditionalInfo::Version )

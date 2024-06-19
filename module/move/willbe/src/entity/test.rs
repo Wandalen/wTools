@@ -15,10 +15,8 @@ mod private
   use process_tools::process::*;
   // use error::untyped;
   use error::untyped::format_err;
+  use package::PackageName;
 
-  /// Newtype for package name
-  #[ derive( Debug, Default, Clone ) ]
-  pub struct PackageName( String );
 
   /// Represents a variant for testing purposes.
   #[ derive( Debug, Clone, Eq, PartialEq, Ord, PartialOrd, former::Former ) ]
@@ -215,7 +213,7 @@ mod private
     {
       // let crate_dir = package.manifest_file().parent().unwrap().as_std_path().to_path_buf();
       let crate_dir = package.crate_dir()?;
-      let mut test_variants = std::collections::BTreeSet::new();
+      let mut test_variants = collections::BTreeSet::new();
       let features_powerset = features::features_powerset
       (
         package,
@@ -296,9 +294,24 @@ mod private
     dry : bool,
     with_progress : bool,
     #[ cfg( feature = "progress_bar" ) ]
-    multi_progress : &'a indicatif::MultiProgress,
-    #[ cfg( feature = "progress_bar" ) ]
-    progress_bar : &'a indicatif::ProgressBar
+    progress_bar : ProgressBar< 'a >
+  }
+
+  #[ cfg( feature = "progress_bar" ) ]
+  struct ProgressBar< 'a >
+  {
+    multi_progress: &'a indicatif::MultiProgress,
+    progress_bar: indicatif::ProgressBar,
+  }
+
+  #[ cfg( feature = "progress_bar" ) ]
+  impl < 'a > fmt::Debug for ProgressBar< 'a >
+  {
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+    {
+      f.debug_struct( "ProgressBar" )
+        .finish()
+    }
   }
 
   impl PackageTestOptionsFormer< '_ >
@@ -342,8 +355,8 @@ mod private
   {
     fn as_rustup_args( &self ) -> Vec< String >
     {
-      debug_assert!( !self.with_default_features ); // qqq : remove later
-      debug_assert!( !self.with_all_features ); // qqq : remove later
+      debug_assert!( !self.with_default_features ); // aaa : remove later
+      debug_assert!( !self.with_all_features ); // aaa : remove later
       [ "run".into(), self.channel.to_string(), "cargo".into(), "test".into() ]
       .into_iter()
       .chain( if self.optimization == optimization::Optimization::Release { Some( "--release".into() ) } else { None } )
@@ -422,14 +435,6 @@ mod private
 
     /// Progress bar flag.
     pub with_progress : bool,
-
-    #[ cfg( feature = "progress_bar" ) ]
-    /// Base progress bar
-    pub multiprocess : indicatif::MultiProgress,
-
-    #[ cfg( feature = "progress_bar" ) ]
-    /// Style for progress bar
-    pub style : indicatif::ProgressStyle,
   }
 
   // aaa : for Petro : remove after Former fix
@@ -524,7 +529,7 @@ mod private
       }
       table.set_header( header_row );
 
-      writeln!( f, "{} {}\n", "\n=== Module".bold(), self.package_name.0.bold() )?;
+      writeln!( f, "{} {}\n", "\n=== Module".bold(), self.package_name.bold() )?;
       if self.tests.is_empty()
       {
         writeln!( f, "unlucky" )?;
@@ -606,12 +611,13 @@ mod private
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> std::fmt::Result
     {
-      if self.dry
-      {
-        writeln!( f, "\nYou can execute the plan with 'will .test dry : 0'." )?;
-        // qqq : for Petro : bad. should be exact command with exact parameters / при виклику зовнішніх команд повинен бути вивід у консоль про цей виклик і його аргументи за виключенням коли ційлий блок виводу прихований (у моєму випадку при фейлі)
-        return Ok( () )
-      }
+      // if self.dry
+      // {
+      //   writeln!( f, "\nYou can execute the plan with 'will .test dry : 0'." )?;
+      //   // aaa : for Petro : bad. should be exact command with exact parameters / при виклику зовнішніх команд повинен бути вивід у консоль про цей виклик і його аргументи за виключенням коли ційлий блок виводу прихований (у моєму випадку при фейлі)
+      //   // aaa : coment in because its redundant, this behavior already implemented  
+      // return Ok( () )
+      // }
       if self.success_reports.is_empty() && self.failure_reports.is_empty()
       {
         writeln!( f, "The tests have not been run."  )?;
@@ -682,7 +688,7 @@ mod private
               {
                 let _s =
                 {
-                  let s = options.multi_progress.add( indicatif::ProgressBar::new_spinner().with_message( format!( "{}", variant ) ) );
+                  let s = options.progress_bar.multi_progress.add( indicatif::ProgressBar::new_spinner().with_message( format!( "{}", variant ) ) );
                   s.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
                   s
                 };
@@ -694,7 +700,7 @@ mod private
               #[ cfg( feature = "progress_bar" ) ]
               if options.with_progress
               {
-                options.progress_bar.inc( 1 );
+                options.progress_bar.progress_bar.inc( 1 );
               }
               if let Some( path ) = temp_dir
               {
@@ -719,6 +725,10 @@ mod private
   // qqq : for Petro : use typed errors
   pub fn tests_run( args : &TestOptions ) -> Result< TestsReport, ( TestsReport, error::untyped::Error ) >
   {
+    #[ cfg( feature = "progress_bar" ) ]
+    let multi_progress = MultiProgress::default();
+    #[ cfg( feature = "progress_bar" ) ]
+    let mm = &multi_progress;
     let mut report = TestsReport::default();
     report.dry = args.dry;
     let report = sync::Arc::new( sync::Mutex::new( report ) );
@@ -734,14 +744,6 @@ mod private
           (
             move | _ |
             {
-              #[ cfg( feature = "progress_bar" ) ]
-              let pb =
-              {
-                let pb = args.multiprocess.add( indicatif::ProgressBar::new( plan.test_variants.len() as u64 ) );
-                pb.set_style( args.style.clone() );
-                pb.inc( 0 );
-                pb
-              };
               let test_package_options = PackageTestOptions::former()
               .option_temp( args.temp_path.clone() )
               .plan( plan )
@@ -751,7 +753,7 @@ mod private
               #[ cfg( feature = "progress_bar" ) ]
               let test_package_options =
               {
-                test_package_options.multi_progress( &args.multiprocess ).progress_bar( &pb )
+                test_package_options.progress_bar( mm.progress_bar( plan.test_variants.len() as u64  ) )
               };
               let options = test_package_options.form();
               match run( &options )
@@ -778,6 +780,62 @@ mod private
     else
     {
       Err(( report, format_err!( "Some tests was failed" ) ))
+    }
+  }
+
+  #[ cfg( feature = "progress_bar" ) ]
+  struct MultiProgress
+  {
+    multi_progress: indicatif::MultiProgress,
+    progress_style: indicatif::ProgressStyle,
+  }
+
+  #[ cfg( feature = "progress_bar" ) ]
+  impl MultiProgress
+  {
+    fn progress_bar< 'a >( &'a self, variants_len : u64 ) -> ProgressBar< 'a >
+    {
+      let progress_bar =
+      {
+        let pb = self.multi_progress.add( indicatif::ProgressBar::new( variants_len ) );
+        pb.set_style( self.progress_style.clone() );
+        pb.inc( 0 );
+        pb
+      };
+      ProgressBar
+      {
+        multi_progress : &self.multi_progress,
+        progress_bar,
+      }
+    }
+  }
+
+  #[ cfg( feature = "progress_bar" ) ]
+  impl fmt::Debug for MultiProgress
+  {
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result 
+    {
+      f.debug_struct( "MultiprogressProgress" )
+      .finish()
+    }
+  }
+
+
+  #[ cfg( feature = "progress_bar" ) ]
+  impl Default for MultiProgress
+  {
+    fn default() -> Self
+    {
+      Self
+      {
+        multi_progress: indicatif::MultiProgress::new(),
+        progress_style: indicatif::ProgressStyle::with_template
+        (
+          "[{elapsed_precise}] {bar:40.cyan/blue} {pos:>7}/{len:7} {msg}",
+        )
+        .unwrap()
+        .progress_chars( "##-" ),
+      }
     }
   }
 }

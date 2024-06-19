@@ -6,7 +6,7 @@ use assert_fs::{ TempDir, prelude::* };
 use crates_tools::CrateArchive;
 use package::Package;
 use diff::crate_diff;
-use the_module::version::{ Version, BumpOptions, version_bump };
+use the_module::version::{ Version, BumpOptions, bump };
 
 const TEST_MODULE_PATH : &str = "../../test/";
 
@@ -59,7 +59,7 @@ fn with_changes()
       dependencies : vec![],
       dry : false,
     };
-    version_bump( bump_options ).unwrap();
+    bump( bump_options ).unwrap();
 
     let right_crate = crate_file_path( &right );
     CrateArchive::read( &right_crate ).unwrap()

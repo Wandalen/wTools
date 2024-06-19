@@ -31,12 +31,20 @@ mod private
   };
   use former::Former;
   use diff::crate_diff;
-  use version::version_revert;
+  use version::revert;
   use error::untyped::Error;
   use channel::Channel;
   use tool::error_with::ErrWith;
   use tool::ListNodeReport;
   use tool::TreePrinter;
+
+  /// Newtype for package name
+  #[ derive
+  (
+    Debug, Default, Clone, Hash, Ord, PartialOrd, Eq, PartialEq,
+    derive_tools::Display, derive_tools::Deref, derive_tools::From
+  ) ]
+  pub struct PackageName( String );
 
   ///
   #[ derive( Debug, Clone ) ]
@@ -151,7 +159,6 @@ mod private
         Self::WorkspacePackageRef( package ) => package.crate_dir().unwrap(),
       }
     }
-
 
     /// Package version
     pub fn version( &self ) -> Result< String, PackageError >
@@ -271,7 +278,7 @@ mod private
   {
     pub package_name : String,
     pub pack : cargo::PackOptions,
-    pub version_bump : version::BumpOptions,
+    pub bump : version::BumpOptions,
     pub git_options : GitOptions,
     pub publish : cargo::PublishOptions,
     pub dry : bool,
@@ -308,14 +315,14 @@ mod private
         temp_path : self.base_temp_dir.clone(),
         dry : self.dry,
       };
-      let old_version : version::Version = self.package.version().as_ref().unwrap().try_into().unwrap();
+      let old_version : Version = self.package.version().as_ref().unwrap().try_into().unwrap();
       let new_version = old_version.clone().bump();
       // bump the package version in dependents (so far, only workspace)
       let dependencies = vec![ CrateDir::try_from( workspace_root.clone() ).unwrap() ];
-      let version_bump = version::BumpOptions
+      let bump = version::BumpOptions
       {
         crate_dir : crate_dir.clone(),
-        old_version : old_version.clone(), // xxx : ?
+        old_version : old_version.clone(),
         new_version : new_version.clone(),
         dependencies : dependencies.clone(),
         dry : self.dry,
@@ -339,7 +346,7 @@ mod private
       {
         package_name : self.package.name().unwrap().into(),
         pack,
-        version_bump,
+        bump,
         git_options,
         publish,
         dry : self.dry,
@@ -363,20 +370,19 @@ mod private
     {
       package_name: _,
       mut pack,
-      mut version_bump,
+      mut bump,
       mut git_options,
       mut publish,
       dry,
     } = instruction;
     pack.dry = dry;
-    version_bump.dry = dry;
+    bump.dry = dry;
     git_options.dry = dry;
     publish.dry = dry;
 
     report.get_info = Some( cargo::pack( pack ).err_with( || report.clone() )? );
-    // qqq : redundant field?
-    report.publish_required = true;
-    let bump_report = version::version_bump( version_bump ).err_with( || report.clone() )?;
+    // aaa : redundant field? // aaa : removed
+    let bump_report = version::bump( bump ).err_with( || report.clone() )?;
     report.bump = Some( bump_report.clone() );
     let git_root = git_options.git_root.clone();
     let git = match perform_git_commit( git_options )
@@ -384,7 +390,7 @@ mod private
       Ok( git ) => git,
       Err( e ) =>
       {
-        version_revert( &bump_report )
+        revert( &bump_report )
         .map_err( | le | format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) ) )
         .err_with( || report.clone() )?;
         return Err(( report, e ));
@@ -471,7 +477,7 @@ mod private
       let name_bump_report : HashMap< _, _ > = self
       .plans
       .iter()
-      .map( | x | ( &x.package_name, ( x.version_bump.old_version.to_string(), x.version_bump.new_version.to_string() ) ) )
+      .map( | x | ( &x.package_name, ( x.bump.old_version.to_string(), x.bump.new_version.to_string() ) ) )
       .collect();
       for wanted in &self.roots
       {
@@ -526,7 +532,7 @@ mod private
     {
       for ( idx, package ) in self.plans.iter().enumerate()
       {
-        let bump = &package.version_bump;
+        let bump = &package.bump;
         writeln!( f, "[{idx}] {} ({} -> {})", package.package_name, bump.old_version, bump.new_version )?;
       }
 
@@ -616,8 +622,6 @@ mod private
   {
     /// Retrieves information about the package.
     pub get_info : Option< process::Report >,
-    /// Indicates whether publishing is required for the package.
-    pub publish_required : bool,
     /// Bumps the version of the package.
     pub bump : Option< version::ExtendedBumpReport >,
     /// Report of adding changes to the Git repository.
@@ -637,7 +641,6 @@ mod private
       let PublishReport
       {
         get_info,
-        publish_required,
         bump,
         add,
         commit,
@@ -652,12 +655,6 @@ mod private
       }
       let info = get_info.as_ref().unwrap();
       write!( f, "{}", info )?;
-
-      if !publish_required
-      {
-        f.write_str( "The package has no changes, so no publishing is required" )?;
-        return Ok( () )
-      }
 
       if let Some( bump ) = bump
       {
@@ -765,7 +762,7 @@ mod private
   /// Recursive implementation of the `dependencies` function
   pub fn _dependencies< 'a >
   (
-    workspace : &mut Workspace, // qqq : for Bohdan : no mut
+    workspace : &Workspace, // aaa : for Bohdan : no mut // aaa : no mut
     package : &Package< 'a >,
     graph : &mut HashMap< CrateId, HashSet< CrateId > >,
     opts : DependenciesOptions
@@ -910,6 +907,7 @@ crate::mod_interface!
 
   protected use PublishReport;
   protected use Package;
+  protected use PackageName;
   protected use PackageError;
 
   protected use publish_need;

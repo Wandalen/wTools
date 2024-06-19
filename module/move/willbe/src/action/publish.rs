@@ -7,7 +7,6 @@ mod private
   use core::fmt::Formatter;
   use std::{ env, fs };
 
-
   use error::untyped::Error;
   // use path::AbsolutePath;
   use workspace::Workspace;
@@ -57,7 +56,7 @@ mod private
           let expected_to_publish : Vec< _ > = plan
           .plans
           .iter()
-          .map( | p | ( p.version_bump.crate_dir.clone().absolute_path(), p.package_name.clone(), p.version_bump.clone() ) )
+          .map( | p | ( p.bump.crate_dir.clone().absolute_path(), p.package_name.clone(), p.bump.clone() ) )
           .collect();
           let mut actually_published : Vec< _ > = self.packages.iter()
           .filter_map
@@ -122,7 +121,7 @@ mod private
     // find all packages by specified folders
     for pattern in &patterns
     {
-      let current_path = AbsolutePath::try_from( pattern.as_str() )?;
+      let current_path = AbsolutePath::try_from( fs::canonicalize( pattern.as_str() )? )?;
       // let current_path = AbsolutePath::try_from( std::path::PathBuf::from( pattern ) )?;
       // let current_paths = files::find( current_path, &[ "Cargo.toml" ] );
       paths.extend( Some( current_path ) );
@@ -138,6 +137,7 @@ mod private
       // aaa : for Bohdan : what do you mean? write more
       // A problem may arise if a user provides paths to packages from different workspaces
       // and we do not check whether all packages are within the same workspace
+      // In the current solution, we'll choose the workspace related to the first package
       let current_path = paths.iter().next().unwrap().clone();
       let dir = CrateDir::try_from( current_path )?;
       Workspace::with_crate_dir( dir )?

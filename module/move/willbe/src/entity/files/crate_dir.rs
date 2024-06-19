@@ -25,6 +25,8 @@ use error::
 };
 use path::{ AbsolutePath, Utf8Path, Utf8PathBuf };
 
+// xxx : make generic
+
 /// Path to crate directory
 #[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
 pub struct CrateDir( AbsolutePath );
