@@ -7,16 +7,12 @@ pub( crate ) mod private
   {
     io::{ self, Read },
     fs,
-    // path::{ Path },
   };
   use error::
   {
-    Result,
-    // thiserror,
     typed::Error,
-    untyped::format_err,
+    untyped::{ Result, format_err },
   };
-  // use path::AbsolutePath;
 
   /// Represents errors related to manifest data processing.
   #[ derive( Debug, Error ) ]
@@ -124,7 +120,6 @@ pub( crate ) mod private
     }
 
     /// Check that the current manifest is the manifest of the package (can also be a virtual workspace).
-    // pub fn package_is( &self ) -> Result< bool, ManifestError >
     pub fn package_is( &self ) -> bool
     {
       // let data = self.data.as_ref().ok_or_else( || ManifestError::EmptyManifestData )?;
@@ -134,7 +129,6 @@ pub( crate ) mod private
 
     /// Check that module is local.
     /// The package is defined as local if the `publish` field is set to `false' or the registers are specified.
-    // pub fn local_is( &self ) -> Result<bool, ManifestError>
     pub fn local_is( &self ) -> bool
     {
       // let data = self.data.as_ref().ok_or_else( || ManifestError::EmptyManifestData )?;
@@ -152,11 +146,11 @@ pub( crate ) mod private
   /// Retrieves the repository URL of a package from its `Cargo.toml` file.
   pub fn repo_url( crate_dir : &CrateDir ) -> Result< String >
   {
-    // let path = package_path.join( "Cargo.toml" );
     let path = crate_dir.clone().manifest_file().inner().inner();
     if path.exists()
     {
       let mut contents = String::new();
+      // qqq : zzz : for Petro : redundant read and parse
       fs::File::open( path )?.read_to_string( &mut contents )?;
       let doc = contents.parse::< toml_edit::Document >()?;
 

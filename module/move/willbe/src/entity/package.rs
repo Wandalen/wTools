@@ -10,6 +10,7 @@ mod private
   use std::fmt::Formatter;
   use std::hash::Hash;
   use std::path::PathBuf;
+  // qqq : for Petro : for Bohdan : group uses
 
   use process_tools::process;
   use manifest::{ Manifest, ManifestError };
@@ -23,7 +24,6 @@ mod private
     iter::Itertools,
     error::
     {
-      // thiserror,
       Result,
       typed::Error,
       untyped::{ format_err, Context },
@@ -35,7 +35,7 @@ mod private
   use error::untyped::Error;
   use channel::Channel;
 
-  ///
+  // qqq : fro Bohdan : write description
   #[ derive( Debug, Clone ) ]
   pub enum Package< 'a >
   {
@@ -103,8 +103,6 @@ mod private
 
   impl< 'a > TryFrom< Manifest > for Package< 'a >
   {
-    // aaa : make better errors
-    // aaa : return `PackageError` instead of `anohow` message
     type Error = PackageError;
 
     fn try_from( value : Manifest ) -> Result< Self, Self::Error >

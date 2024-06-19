@@ -22,7 +22,7 @@ mod private
   // qqq : for Petro : group properly, don't repeat std::
   use std::path::PathBuf;
   use convert_case::{ Case, Casing };
-  use rayon::scope_fifo;
+  // use rayon::scope_fifo;
   use regex::Regex;
   use entity::{ WorkspaceInitError, PathError };
   use package::PackageError;

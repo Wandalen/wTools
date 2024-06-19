@@ -25,30 +25,23 @@ use error::
 };
 use path::{ AbsolutePath, Utf8Path, Utf8PathBuf };
 
-/// Path to crate directory
+/// Path to a source file
 #[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
-pub struct CrateDir( AbsolutePath );
+pub struct SourceFile( AbsolutePath );
 
-impl CrateDir
+impl SourceFile
 {
 
   /// Returns inner type which is an absolute path.
   #[ inline( always ) ]
-  pub fn absolute_path( self ) -> AbsolutePath
+  pub fn inner( self ) -> AbsolutePath
   {
     self.0
   }
 
-  /// Returns path to manifest aka cargo file.
-  #[ inline( always ) ]
-  pub fn manifest_file( self ) -> ManifestFile
-  {
-    self.into()
-  }
-
 }
 
-impl fmt::Display for CrateDir
+impl fmt::Display for SourceFile
 {
   fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
   {
@@ -56,15 +49,15 @@ impl fmt::Display for CrateDir
   }
 }
 
-impl fmt::Debug for CrateDir
+impl fmt::Debug for SourceFile
 {
   fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
   {
-    write!( f, "crate dir :: {}", self.0.display() )
+    write!( f, "source file :: {}", self.0.display() )
   }
 }
 
-impl From< ManifestFile > for CrateDir
+impl From< ManifestFile > for SourceFile
 {
   fn from( src : ManifestFile ) -> Self
   {
@@ -72,42 +65,42 @@ impl From< ManifestFile > for CrateDir
   }
 }
 
-impl From< CrateDir > for AbsolutePath
+impl From< SourceFile > for AbsolutePath
 {
-  fn from( src : CrateDir ) -> Self
+  fn from( src : SourceFile ) -> Self
   {
-    src.absolute_path()
+    src.inner()
   }
 }
 
-impl From< CrateDir > for PathBuf
+impl From< SourceFile > for PathBuf
 {
-  fn from( src : CrateDir ) -> Self
+  fn from( src : SourceFile ) -> Self
   {
-    src.absolute_path().inner()
+    src.inner().inner()
   }
 }
 
-impl< 'a > TryFrom< &'a CrateDir > for &'a str
+impl< 'a > TryFrom< &'a SourceFile > for &'a str
 {
   type Error = std::io::Error;
-  fn try_from( src : &'a CrateDir ) -> Result< &'a str, Self::Error >
+  fn try_from( src : &'a SourceFile ) -> Result< &'a str, Self::Error >
   {
     ( &src.0 ).try_into()
   }
 }
 
-impl TryFrom< &CrateDir > for String
+impl TryFrom< &SourceFile > for String
 {
   type Error = std::io::Error;
-  fn try_from( src : &CrateDir ) -> Result< String, Self::Error >
+  fn try_from( src : &SourceFile ) -> Result< String, Self::Error >
   {
     let src2 : &str = src.try_into()?;
     Ok( src2.into() )
   }
 }
 
-impl TryFrom< &AbsolutePath > for CrateDir
+impl TryFrom< &AbsolutePath > for SourceFile
 {
   type Error = PathError;
 
@@ -118,7 +111,7 @@ impl TryFrom< &AbsolutePath > for CrateDir
   }
 }
 
-impl TryFrom< AbsolutePath > for CrateDir
+impl TryFrom< AbsolutePath > for SourceFile
 {
   type Error = PathError;
 
@@ -134,7 +127,7 @@ impl TryFrom< AbsolutePath > for CrateDir
   }
 }
 
-impl TryFrom< PathBuf > for CrateDir
+impl TryFrom< PathBuf > for SourceFile
 {
   type Error = PathError;
 
@@ -145,7 +138,7 @@ impl TryFrom< PathBuf > for CrateDir
   }
 }
 
-impl TryFrom< &Path > for CrateDir
+impl TryFrom< &Path > for SourceFile
 {
   type Error = PathError;
 
@@ -156,7 +149,7 @@ impl TryFrom< &Path > for CrateDir
   }
 }
 
-impl TryFrom< Utf8PathBuf > for CrateDir
+impl TryFrom< Utf8PathBuf > for SourceFile
 {
   type Error = PathError;
 
@@ -167,7 +160,7 @@ impl TryFrom< Utf8PathBuf > for CrateDir
   }
 }
 
-impl TryFrom< &Utf8Path > for CrateDir
+impl TryFrom< &Utf8Path > for SourceFile
 {
   type Error = PathError;
 
@@ -178,7 +171,7 @@ impl TryFrom< &Utf8Path > for CrateDir
   }
 }
 
-impl AsRef< Path > for CrateDir
+impl AsRef< Path > for SourceFile
 {
   fn as_ref( &self ) -> &Path
   {
@@ -186,7 +179,7 @@ impl AsRef< Path > for CrateDir
   }
 }
 
-impl AsMut< Path > for CrateDir
+impl AsMut< Path > for SourceFile
 {
   fn as_mut( &mut self ) -> &mut Path
   {
@@ -194,7 +187,7 @@ impl AsMut< Path > for CrateDir
   }
 }
 
-impl Deref for CrateDir
+impl Deref for SourceFile
 {
   type Target = AbsolutePath;
   fn deref( &self ) -> &Self::Target
@@ -203,7 +196,7 @@ impl Deref for CrateDir
   }
 }
 
-impl DerefMut for CrateDir
+impl DerefMut for SourceFile
 {
   fn deref_mut( &mut self ) -> &mut Self::Target
   {

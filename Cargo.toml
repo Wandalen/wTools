@@ -46,6 +46,11 @@ restriction = "warn"
 pedantic = "warn"
 # Denies undocumented unsafe blocks.
 undocumented_unsafe_blocks = "deny"
+# xxx : check
+# Warns if core could be used instead of std, but didn't
+std_instead_of_core = "warn"
+# Warns if alloc could be used instead of std, but didn't
+std_instead_of_alloc = "warn"
 # xxx : document
 single_call_fn = "allow"
 inline_always = "allow"
