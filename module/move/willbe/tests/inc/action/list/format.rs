@@ -1,6 +1,7 @@
 use super::*;
 
-use the_module::action::list::ListNodeReport;
+use the_module::tree::ListNodeReport;
+use willbe::tree::TreePrinter;
 
 #[ test ]
 fn node_with_depth_two_leaves_stop_spacer()
@@ -63,7 +64,8 @@ node
    └─ sub_sub_node2
 "#.trim();
 
-  let actual = node.display_with_spacer( "" ).unwrap();
+  let printer = TreePrinter::new( &node );
+  let actual = printer.display_with_spacer( "" ).unwrap();
   let actual = actual.trim();
   println!("{actual}");
 
@@ -121,7 +123,8 @@ node
 └─ sub_node2
 "#.trim();
 
-  let actual = node.display_with_spacer( "" ).unwrap();
+  let printer = TreePrinter::new( &node );
+  let actual = printer.display_with_spacer( "" ).unwrap();
   let actual = actual.trim();
   println!("{actual}");
 
@@ -165,7 +168,8 @@ node
    └─ sub_sub_node
 "#.trim();
 
-  let actual = node.display_with_spacer( "" ).unwrap();
+  let printer = TreePrinter::new( &node );
+  let actual = printer.display_with_spacer( "" ).unwrap();
   let actual = actual.trim();
   println!("{actual}");
 
@@ -214,7 +218,8 @@ node
 └─ build_sub_node2
 "#.trim();
 
-  let actual = node.display_with_spacer( "" ).unwrap();
+  let printer = TreePrinter::new( &node );
+  let actual = printer.display_with_spacer( "" ).unwrap();
   let actual = actual.trim();
   println!("{actual}");
 
@@ -251,7 +256,8 @@ node
 └─ build_sub_node
 "#.trim();
 
-  let actual = node.display_with_spacer( "" ).unwrap();
+  let printer = TreePrinter::new( &node );
+  let actual = printer.display_with_spacer( "" ).unwrap();
   let actual = actual.trim();
   println!("{actual}");
 
@@ -300,7 +306,8 @@ node
 └─ dev_sub_node2
 "#.trim();
 
-  let actual = node.display_with_spacer( "" ).unwrap();
+  let printer = TreePrinter::new( &node );
+  let actual = printer.display_with_spacer( "" ).unwrap();
   let actual = actual.trim();
   println!("{actual}");
 
@@ -337,7 +344,8 @@ node
 └─ dev_sub_node
 "#.trim();
 
-  let actual = node.display_with_spacer( "" ).unwrap();
+  let printer = TreePrinter::new( &node );
+  let actual = printer.display_with_spacer( "" ).unwrap();
   let actual = actual.trim();
   println!("{actual}");
 
@@ -385,7 +393,8 @@ node
 └─ sub_node2
 "#.trim();
 
-  let actual = node.display_with_spacer( "" ).unwrap();
+  let printer = TreePrinter::new( &node );
+  let actual = printer.display_with_spacer( "" ).unwrap();
   let actual = actual.trim();
   println!("{actual}");
 
@@ -419,7 +428,8 @@ node
 └─ sub_node
 "#.trim();
 
-  let actual = node.display_with_spacer( "" ).unwrap();
+  let printer = TreePrinter::new( &node );
+  let actual = printer.display_with_spacer( "" ).unwrap();
   let actual = actual.trim();
   println!("{actual}");
 
@@ -441,7 +451,8 @@ fn one_node_one_line()
   };
   let expected = "node\n";
 
-  let actual = node.display_with_spacer( "" ).unwrap();
+  let printer = TreePrinter::new( &node );
+  let actual = printer.display_with_spacer( "" ).unwrap();
   println!("{actual}");
 
   assert_eq!( expected, actual );

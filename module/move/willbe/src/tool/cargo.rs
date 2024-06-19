@@ -141,7 +141,7 @@ mod private
     fn as_publish_args( &self ) -> Vec< String >
     {
       let target_dir = self.temp_path.clone().map( | p | vec![ "--target-dir".to_string(), p.to_string_lossy().into() ] );
-      [ "publish".to_string() ].into_iter().chain( target_dir.into_iter().flatten() ).collect::< Vec< String > >()
+      [ "publish".to_string() ].into_iter().chain( target_dir.into_iter().flatten() ).collect()
     }
   }
 
@@ -173,7 +173,7 @@ mod private
     else
     {
       let mut results = Vec::with_capacity( args.retry_count + 1 );
-      let run_args =  arguments.into_iter().map( OsString::from ).collect::< Vec< _ > >();
+      let run_args : Vec< _ > =  arguments.into_iter().map( OsString::from ).collect();
       for _ in 0 .. args.retry_count + 1
       {
         let result = Run::former()
@@ -193,7 +193,7 @@ mod private
       }
       else
       {
-        Err( results.remove( 0 ) ).map_err( | report  | err!( report.to_string() ) )
+        Err( results.remove( 0 ) ).map_err( | report | err!( report.to_string() ) )
       }
     }
   }

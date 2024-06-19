@@ -28,6 +28,7 @@ mod private
     },
   };
   use workspace_md_extension::WorkspaceMdExtension;
+  use error_with::ErrWith;
 
   static TAGS_TEMPLATE : std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 
@@ -177,20 +178,20 @@ mod private
     (
       crate_dir
       // CrateDir::try_from( path )
-      // .map_err( | e | ( report.clone(), e.into() ) )?
-    ).map_err( | e | ( report.clone(), e.into() ) )?;
+      // .err_with( || report.clone() )?
+    ).err_with( || report.clone() )?;
 
     let workspace_root = workspace
     .workspace_root();
 
     let header_param = HeaderParameters::from_cargo_toml( &workspace )
-    .map_err( | e | ( report.clone(), e.into() ) )?;
+    .err_with( || report.clone() )?;
 
     let read_me_path = workspace_root.join
     (
       repository::readme_path( &workspace_root )
       // .ok_or_else( || format_err!( "Fail to find README.md" ) )
-      .map_err( | e | ( report.clone(), e.into() ) )?
+      .err_with( || report.clone() )?
     );
 
     report.found_file = Some( read_me_path.clone() );
@@ -199,10 +200,10 @@ mod private
     .read( true )
     .write( true )
     .open( &read_me_path )
-    .map_err( | e | ( report.clone(), e.into() ) )?;
+    .err_with( || report.clone() )?;
 
     let mut content = String::new();
-    file.read_to_string( &mut content ).map_err( | e | ( report.clone(), e.into() ) )?;
+    file.read_to_string( &mut content ).err_with( || report.clone() )?;
 
     let raw_params = TAGS_TEMPLATE
     .get()
@@ -214,16 +215,16 @@ mod private
 
     _ = query::parse( raw_params ).context( "Fail to parse arguments" );
 
-    let header = header_param.to_header().map_err( | e | ( report.clone(), e.into() ) )?;
+    let header = header_param.to_header().err_with( || report.clone() )?;
     let content : String = TAGS_TEMPLATE.get().unwrap().replace
     (
       &content,
       &format!( "<!--{{ generate.main_header.start{raw_params} }}-->\n{header}\n<!--{{ generate.main_header.end }}-->" )
     ).into();
 
-    file.set_len( 0 ).map_err( | e | ( report.clone(), e.into() ) )?;
-    file.seek( SeekFrom::Start( 0 ) ).map_err( | e | ( report.clone(), e.into() ) )?;
-    file.write_all( content.as_bytes() ).map_err( | e | ( report.clone(), e.into() ) )?;
+    file.set_len( 0 ).err_with( || report.clone() )?;
+    file.seek( SeekFrom::Start( 0 ) ).err_with( || report.clone() )?;
+    file.write_all( content.as_bytes() ).err_with( || report.clone() )?;
     report.touched_file = read_me_path;
     report.success = true;
     Ok( report )

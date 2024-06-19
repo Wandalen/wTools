@@ -30,7 +30,7 @@ mod private
   {
     let objects = objects.as_ref().iter().map( | x | x.as_ref() );
 
-    let ( program, args ) = ( "git", Some( "add" ).into_iter().chain( objects ).collect::< Vec< _ > >() );
+    let ( program, args ) : ( _, Vec< _ > ) = ( "git", Some( "add" ).into_iter().chain( objects ).collect() );
 
     if dry
     {
@@ -159,7 +159,7 @@ mod private
     P : AsRef< Path >,
   {
     if commits_count < 1 { return Err( err!( "Cannot reset, the count of commits must be greater than 0" ) ) }
-    let ( program, args ) =
+    let ( program, args ) : ( _, Vec< _ > ) = 
     (
       "git",
       Some( "reset" )
@@ -167,7 +167,7 @@ mod private
       .chain( if hard { Some( "--hard" ) } else { None } )
       .map( String::from )
       .chain( Some( format!( "HEAD~{}", commits_count ) ) )
-      .collect::< Vec< _ > >()
+      .collect()
     );
 
     if dry

@@ -51,13 +51,13 @@ mod chain_of_three_packages
 
     assert_eq!( 1, trees.len() );
     let tree = &trees[ 0 ];
-    assert_eq!( "_chain_of_packages_a", tree.name.as_str() );
+    assert_eq!( "_chain_of_packages_a", tree.info.name.as_str() );
 
-    assert_eq!( 1, tree.normal_dependencies.len() );
-    assert!( tree.dev_dependencies.is_empty() );
-    assert!( tree.build_dependencies.is_empty() );
+    assert_eq!( 1, tree.info.normal_dependencies.len() );
+    assert!( tree.info.dev_dependencies.is_empty() );
+    assert!( tree.info.build_dependencies.is_empty() );
 
-    let sub_tree = &tree.normal_dependencies[ 0 ];
+    let sub_tree = &tree.info.normal_dependencies[ 0 ];
     assert_eq!( "_chain_of_packages_b", sub_tree.name.as_str() );
 
     assert_eq!( 1, sub_tree.normal_dependencies.len() );
@@ -152,13 +152,13 @@ mod package_with_remote_dependency
 
     assert_eq!( 1, trees.len() );
     let tree = &trees[ 0 ];
-    assert_eq!( "_package_with_remote_dep_a", tree.name.as_str() );
+    assert_eq!( "_package_with_remote_dep_a", tree.info.name.as_str() );
 
-    assert_eq!( 2, tree.normal_dependencies.len() );
-    assert!( tree.dev_dependencies.is_empty() );
-    assert!( tree.build_dependencies.is_empty() );
+    assert_eq!( 2, tree.info.normal_dependencies.len() );
+    assert!( tree.info.dev_dependencies.is_empty() );
+    assert!( tree.info.build_dependencies.is_empty() );
 
-    let [ sub_tree_1, sub_tree_2, .. ] = tree.normal_dependencies.as_slice() else { unreachable!() };
+    let [ sub_tree_1, sub_tree_2, .. ] = tree.info.normal_dependencies.as_slice() else { unreachable!() };
     assert_eq!( "_package_with_remote_dep_b", sub_tree_1.name.as_str() );
     assert!( sub_tree_1.normal_dependencies.is_empty() );
     assert!( sub_tree_1.dev_dependencies.is_empty() );
@@ -250,14 +250,14 @@ mod workspace_with_cyclic_dependency
 
     assert_eq!( 1, trees.len() );
     let tree = &trees[ 0 ];
-    assert_eq!( "_workspace_with_cyclic_dep_a", tree.name.as_str() );
-    assert_eq!( "0.1.0", tree.version.as_ref().unwrap().as_str() );
+    assert_eq!( "_workspace_with_cyclic_dep_a", tree.info.name.as_str() );
+    assert_eq!( "0.1.0", tree.info.version.as_ref().unwrap().as_str() );
 
-    assert_eq!( 1, tree.normal_dependencies.len() );
-    assert!( tree.dev_dependencies.is_empty() );
-    assert!( tree.build_dependencies.is_empty() );
+    assert_eq!( 1, tree.info.normal_dependencies.len() );
+    assert!( tree.info.dev_dependencies.is_empty() );
+    assert!( tree.info.build_dependencies.is_empty() );
 
-    let sub_tree = &tree.normal_dependencies[ 0 ];
+    let sub_tree = &tree.info.normal_dependencies[ 0 ];
     assert_eq!( "_workspace_with_cyclic_dep_b", sub_tree.name.as_str() );
     assert_eq!( "*", sub_tree.version.as_ref().unwrap().as_str() );
 

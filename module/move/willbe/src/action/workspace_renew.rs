@@ -6,7 +6,10 @@ mod private
   use error::untyped::bail;
   use error::Result;
   use iter::Itertools;
-  use crate::template::{Template, TemplateFileDescriptor, TemplateFiles, TemplateFilesBuilder, TemplateParameters, TemplateValues};
+  use template::
+  {
+    TemplateFileDescriptor, TemplateFiles, TemplateFilesBuilder, TemplateParameters, TemplateValues
+  };
 
   /// Template for creating workspace files.
   #[ derive( Debug ) ]
@@ -17,45 +20,45 @@ mod private
     values : TemplateValues,
   }
 
-  impl Template<WorkspaceTemplateFiles> for WorkspaceTemplate
-  {
-    fn create_all( self, path : &Path ) -> Result< () >
-    {
-      self.files.create_all( path, &self.values )
-    }
+  // impl Template<WorkspaceTemplateFiles> for WorkspaceTemplate
+  // {
+  //   fn create_all( self, path : &Path ) -> Result< () >
+  //   {
+  //     self.files.create_all( path, &self.values )
+  //   }
 
-    fn parameters( &self ) -> &TemplateParameters
-    {
-      &self.parameters
-    }
+  //   fn parameters( &self ) -> &TemplateParameters
+  //   {
+  //     &self.parameters
+  //   }
 
-    fn set_values( &mut self, values : TemplateValues )
-    {
-      self.values = values
-    }
+  //   fn set_values( &mut self, values : TemplateValues )
+  //   {
+  //     self.values = values
+  //   }
 
-    fn parameter_storage( &self ) -> &Path
-    {
-      "./.workspace_template.toml".as_ref()
-    }
+  //   fn parameter_storage( &self ) -> &Path
+  //   {
+  //     "./.workspace_template.toml".as_ref()
+  //   }
 
-    fn template_name( &self ) -> &'static str
-    {
-      "workspace"
-    }
+  //   fn template_name( &self ) -> &'static str
+  //   {
+  //     "workspace"
+  //   }
 
-    fn get_values( &self ) -> &TemplateValues
-    {
-      &self.values
-    }
+  //   fn get_values( &self ) -> &TemplateValues
+  //   {
+  //     &self.values
+  //   }
 
-    fn get_values_mut( &mut self ) -> &mut TemplateValues
-    {
-      &mut self.values
-    }
+  //   fn get_values_mut( &mut self ) -> &mut TemplateValues
+  //   {
+  //     &mut self.values
+  //   }
 
 
-  }
+  // }
 
   impl Default for WorkspaceTemplate
   {
@@ -138,7 +141,7 @@ mod private
     template.values.insert_if_empty( "project_name", wca::Value::String( path.file_name().unwrap().to_string_lossy().into() ) );
     template.values.insert_if_empty( "url", wca::Value::String( repository_url ) );
     template.values.insert_if_empty( "branches", wca::Value::String( branches.into_iter().map( | b | format!( r#""{}""#, b ) ).join( ", " ) ) );
-    template.create_all( path )?;
+    template.files.create_all( path, &template.values )?;
     Ok( () )
   }
 }

@@ -7,10 +7,12 @@ mod private
   use core::fmt::Formatter;
   use std::{ env, fs };
 
-  use error::untyped::{ Error, anyhow };
+  use error::untyped::Error;
+  // use path::AbsolutePath;
   use workspace::Workspace;
   use package::Package;
   use channel::Channel;
+  use error_with::ErrWith;
 
   /// Represents a report of publishing packages
   #[ derive( Debug, Default, Clone ) ]
@@ -51,12 +53,12 @@ mod private
       {
         if !plan.dry
         {
-          let expected_to_publish = plan
+          let expected_to_publish : Vec< _ > = plan
           .plans
           .iter()
           .map( | p | ( p.bump.crate_dir.clone().absolute_path(), p.package_name.clone(), p.bump.clone() ) )
-          .collect::< Vec< _ > >();
-          let mut actually_published = self.packages.iter()
+          .collect();
+          let mut actually_published : Vec< _ > = self.packages.iter()
           .filter_map
           (
             |( path, repo )|
@@ -69,7 +71,7 @@ mod private
               None
             }
           )
-          .collect::< Vec< _ > >();
+          .collect();
 
           writeln!( f, "Status :" )?;
           for ( path, name, version )  in expected_to_publish
@@ -182,14 +184,14 @@ mod private
     let subgraph = graph::remove_not_required_to_publish( &package_map, &tmp, &packages_to_publish, dir.clone() )?;
     let subgraph = subgraph.map( | _, n | n, | _, e | e );
 
-    let queue = graph::toposort( subgraph )
+    let queue : Vec< _ > = graph::toposort( subgraph )
     .unwrap()
     .into_iter()
     .map( | n | package_map.get( &n ).unwrap() )
     .cloned()
-    .collect::< Vec< _ > >();
+    .collect();
 
-    let roots = packages_to_publish.iter().map( | p | package_map.get( p ).unwrap().crate_dir() ).collect::< Vec< _ > >();
+    let roots : Vec< _ > = packages_to_publish.iter().map( | p | package_map.get( p ).unwrap().crate_dir() ).collect();
 
     let plan = package::PublishPlan::former()
     .channel( channel )
@@ -226,26 +228,6 @@ mod private
     }
 
     Ok( report )
-  }
-
-
-  trait ErrWith< T, T1, E >
-  {
-    fn err_with< F >( self, f : F ) -> std::result::Result< T1, ( T, E ) >
-    where
-      F : FnOnce() -> T;
-  }
-
-  impl< T, T1, E > ErrWith< T, T1, Error > for Result< T1, E >
-  where
-    E : std::fmt::Debug + std::fmt::Display + Send + Sync + 'static,
-  {
-    fn err_with< F >( self, f : F ) -> Result< T1, ( T, Error ) >
-    where
-      F : FnOnce() -> T,
-    {
-      self.map_err( | e | ( f(), anyhow!( e ) ) )
-    }
   }
 }
 
