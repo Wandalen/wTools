@@ -31,7 +31,7 @@ mod private
   };
   use former::Former;
   use diff::crate_diff;
-  use version::version_revert;
+  use version::revert;
   use error::untyped::Error;
   use channel::Channel;
 
@@ -268,7 +268,7 @@ mod private
   {
     pub package_name : String,
     pub pack : cargo::PackOptions,
-    pub version_bump : version::BumpOptions,
+    pub bump : version::BumpOptions,
     pub git_options : GitOptions,
     pub publish : cargo::PublishOptions,
     pub dry : bool,
@@ -305,11 +305,11 @@ mod private
         temp_path : self.base_temp_dir.clone(),
         dry : self.dry,
       };
-      let old_version : version::Version = self.package.version().as_ref().unwrap().try_into().unwrap();
+      let old_version : Version = self.package.version().as_ref().unwrap().try_into().unwrap();
       let new_version = old_version.clone().bump();
       // bump the package version in dependents (so far, only workspace)
       let dependencies = vec![ CrateDir::try_from( workspace_root.clone() ).unwrap() ];
-      let version_bump = version::BumpOptions
+      let bump = version::BumpOptions
       {
         crate_dir : crate_dir.clone(),
         old_version : old_version.clone(), // xxx : ?
@@ -336,7 +336,7 @@ mod private
       {
         package_name : self.package.name().unwrap().into(),
         pack,
-        version_bump,
+        bump,
         git_options,
         publish,
         dry : self.dry,
@@ -360,20 +360,20 @@ mod private
     {
       package_name: _,
       mut pack,
-      mut version_bump,
+      mut bump,
       mut git_options,
       mut publish,
       dry,
     } = instruction;
     pack.dry = dry;
-    version_bump.dry = dry;
+    bump.dry = dry;
     git_options.dry = dry;
     publish.dry = dry;
 
     report.get_info = Some( cargo::pack( pack ).map_err( | e | ( report.clone(), e ) )? );
     // qqq : redundant field?
     report.publish_required = true;
-    let bump_report = version::version_bump( version_bump ).map_err( | e | ( report.clone(), e ) )?;
+    let bump_report = version::bump( bump ).map_err( | e | ( report.clone(), e ) )?;
     report.bump = Some( bump_report.clone() );
     let git_root = git_options.git_root.clone();
     let git = match perform_git_commit( git_options )
@@ -381,7 +381,7 @@ mod private
       Ok( git ) => git,
       Err( e ) =>
       {
-        version_revert( &bump_report )
+        revert( &bump_report )
         .map_err( | le |
         (
           report.clone(),
@@ -473,7 +473,7 @@ mod private
       let name_bump_report = self
       .plans
       .iter()
-      .map( | x | ( &x.package_name, ( x.version_bump.old_version.to_string(), x.version_bump.new_version.to_string() ) ) )
+      .map( | x | ( &x.package_name, ( x.bump.old_version.to_string(), x.bump.new_version.to_string() ) ) )
       .collect::< HashMap< _, _ > >();
       for wanted in &self.roots
       {
@@ -525,7 +525,7 @@ mod private
     {
       for ( idx, package ) in self.plans.iter().enumerate()
       {
-        let bump = &package.version_bump;
+        let bump = &package.bump;
         writeln!( f, "[{idx}] {} ({} -> {})", package.package_name, bump.old_version, bump.new_version )?;
       }
 

@@ -14,7 +14,6 @@ mod private
 
   use error::untyped::Result;
   use manifest::Manifest;
-  // // use path::AbsolutePath;
   use package::Package;
   use { error::untyped::format_err, iter::Itertools };
 
@@ -109,62 +108,6 @@ mod private
     }
   }
 
-  /// Bump version by manifest.
-  /// It takes data from the manifest and increments the version number according to the semantic versioning scheme.
-  /// It then writes the updated manifest file back to the same path, unless the flag is set to true, in which case it only returns the new version number as a string.
-  ///
-  /// # Args :
-  /// - `manifest` - a manifest mutable reference
-  /// - `dry` - a flag that indicates whether to apply the changes or not
-  ///         - `true` - does not modify the manifest file, but only returns the new version;
-  ///         - `false` - overwrites the manifest file with the new version.
-  ///
-  /// # Returns :
-  /// - `Ok` - the new version number as a string;
-  /// - `Err` - if the manifest file cannot be read, written, parsed.
-  pub fn bump( manifest : &mut Manifest, dry : bool ) -> Result< BumpReport, manifest::ManifestError >
-  {
-    let mut report = BumpReport::default();
-
-    let version=
-    {
-      // if manifest.data.is_none()
-      // {
-      //   manifest.load()?;
-      // }
-      let data = &manifest.data;
-      if !manifest.package_is()
-      {
-        return Err( manifest::ManifestError::NotAPackage );
-      }
-      let package = data.get( "package" ).unwrap();
-
-      let version = package.get( "version" );
-      if version.is_none()
-      {
-        return Err( manifest::ManifestError::CannotFindValue( "version".into() ) );
-      }
-      let version = version.unwrap().as_str().unwrap();
-      report.name = Some( package[ "name" ].as_str().unwrap().to_string() );
-      report.old_version = Some( version.to_string() );
-
-      Version::from_str( version ).map_err( | e | manifest::ManifestError::InvalidValue( e.to_string() ) )?
-    };
-
-    let new_version = version.bump().to_string();
-    report.new_version = Some( new_version.clone() );
-
-    if !dry
-    {
-      // let data = manifest.data.as_mut().unwrap();
-      let data = &mut manifest.data;
-      data[ "package" ][ "version" ] = value( &new_version );
-      manifest.store()?;
-    }
-
-    Ok( report )
-  }
-
   // qqq : we have to replace the implementation above with the implementation below, don't we?
   // qqq : for Bohdan : duplication?
 
@@ -244,7 +187,7 @@ mod private
   ///
   /// Returns a result containing the extended bump report if successful.
   ///
-  pub fn version_bump( o : BumpOptions ) -> Result< ExtendedBumpReport >
+  pub fn bump( o : BumpOptions ) -> Result< ExtendedBumpReport >
   {
     let mut report = ExtendedBumpReport::default();
     // let manifest_file = o.crate_dir.inner().join( "Cargo.toml" );
@@ -311,7 +254,7 @@ mod private
   /// # Returns
   ///
   /// Returns `Ok(())` if the version is reverted successfully. Returns `Err` with an error message if there is any issue with reverting the version.
-  pub fn version_revert( report : &ExtendedBumpReport ) -> Result< () >
+  pub fn revert( report : &ExtendedBumpReport ) -> Result< () >
   {
     let Some( name ) = report.name.as_ref() else { return Ok( () ) };
     let Some( old_version ) = report.old_version.as_ref() else { return Ok( () ) };
@@ -366,6 +309,58 @@ mod private
 
     Ok( () )
   }
+
+  // qqq : for Bohdan : not used? why is it needed?
+  /// Bump version by manifest.
+  /// It takes data from the manifest and increments the version number according to the semantic versioning scheme.
+  /// It then writes the updated manifest file back to the same path, unless the flag is set to true, in which case it only returns the new version number as a string.
+  ///
+  /// # Args :
+  /// - `manifest` - a manifest mutable reference
+  /// - `dry` - a flag that indicates whether to apply the changes or not
+  ///         - `true` - does not modify the manifest file, but only returns the new version;
+  ///         - `false` - overwrites the manifest file with the new version.
+  ///
+  /// # Returns :
+  /// - `Ok` - the new version number as a string;
+  /// - `Err` - if the manifest file cannot be read, written, parsed.
+  pub fn manifest_bump( manifest : &mut Manifest, dry : bool ) -> Result< BumpReport, manifest::ManifestError >
+  {
+    let mut report = BumpReport::default();
+
+    let version=
+    {
+      let data = &manifest.data;
+      if !manifest.package_is()
+      {
+        return Err( manifest::ManifestError::NotAPackage );
+      }
+      let package = data.get( "package" ).unwrap();
+
+      let version = package.get( "version" );
+      if version.is_none()
+      {
+        return Err( manifest::ManifestError::CannotFindValue( "version".into() ) );
+      }
+      let version = version.unwrap().as_str().unwrap();
+      report.name = Some( package[ "name" ].as_str().unwrap().to_string() );
+      report.old_version = Some( version.to_string() );
+
+      Version::from_str( version ).map_err( | e | manifest::ManifestError::InvalidValue( e.to_string() ) )?
+    };
+
+    let new_version = version.bump().to_string();
+    report.new_version = Some( new_version.clone() );
+
+    if !dry
+    {
+      let data = &mut manifest.data;
+      data[ "package" ][ "version" ] = value( &new_version );
+      manifest.store()?;
+    }
+
+    Ok( report )
+  }
 }
 
 //
@@ -373,20 +368,21 @@ mod private
 crate::mod_interface!
 {
   /// Version entity.
-  protected use Version;
+  exposed use Version;
 
   /// Report for bump operation.
   protected use BumpReport;
-
-  /// Bump version.
-  protected use bump;
 
   /// Options for version bumping.
   protected use BumpOptions;
   /// Report about a changing version with list of files that was changed.
   protected use ExtendedBumpReport;
+
   /// Bumps the version of a package and its dependencies.
-  protected use version_bump;
+  protected use manifest_bump;
+  /// Bump version.
+  protected use bump;
+
   /// Reverts the version of a package.
-  protected use version_revert;
+  protected use revert;
 }

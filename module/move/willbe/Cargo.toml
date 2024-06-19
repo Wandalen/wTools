@@ -34,7 +34,18 @@ default = [
 full = [
   "default"
 ]
-enabled = [] # qqq : xxx : fill
+enabled = [
+  "crates_tools/enabled",
+  "error_tools/enabled",
+  "former/enabled",
+  "iter_tools/enabled",
+  "mod_interface/enabled",
+  "wca/enabled",
+  "proper_path_tools/enabled",
+  "process_tools/enabled",
+  "derive_tools/enabled",
+]
+
 tracing = [ "dep:tracing", "dep:tracing-subscriber" ]
 progress_bar = [ "dep:indicatif" ]
 
