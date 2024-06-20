@@ -17,7 +17,7 @@ use core::
 use std::
 {
   path::{ Path, PathBuf },
-  io,
+  // io,
 };
 use error::
 {
