@@ -37,8 +37,10 @@ mod private
   use tool::ListNodeReport;
   use tool::TreePrinter;
 
-  // qqq : fro Bohdan : write better description
-  /// Newtype for package name
+  // aaa : fro Bohdan : write better description : is it better?
+  /// A wrapper type for representing the name of a package.
+  ///
+  /// This struct encapsulates a `String` that holds the name of a package.
   #[ derive
   (
     Debug, Default, Clone, Hash, Ord, PartialOrd, Eq, PartialEq,
@@ -46,8 +48,12 @@ mod private
   ) ]
   pub struct PackageName( String );
 
-  // qqq : fro Bohdan : write description
+  // aaa : fro Bohdan : write description : done
   //
+  /// Represents different types of packages in a Cargo workspace.
+  ///
+  /// It is designed to accommodate the two primary types of package
+  /// representations within a Cargo workspace.
   #[ derive( Debug, Clone ) ]
   pub enum Package< 'a >
   {

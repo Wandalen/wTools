@@ -223,14 +223,25 @@ impl DerefMut for SourceFile
 }
 
 // =
-
+/// A trait that defines a method for retrieving an iterator over source files.
+///
+/// The `Sources` trait is used to represent objects that can provide an iterator over their
+/// contained source files. This can be useful in scenarios where you need to access or process
+/// all source files associated with an object.
 pub trait Sources
 {
+  /// Returns an iterator over the source files.
   fn sources( &self ) -> impl Iterator< Item = SourceFile >;
 }
 
+/// A trait that defines a method for retrieving an iterator over entries.
+///
+/// The `Entries` trait is used to represent objects that can provide an iterator over their
+/// contained entries, which are represented as source files. This can be useful in scenarios
+/// where you need to access or process all entries associated with an object.
 pub trait Entries
 {
+  /// Returns an iterator over the entries.
   fn entries( &self ) -> impl Iterator< Item = SourceFile >;
 }
 

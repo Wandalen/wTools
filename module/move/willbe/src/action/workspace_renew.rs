@@ -16,8 +16,18 @@ mod private
   pub struct WorkspaceTemplate
   {
     files : WorkspaceTemplateFiles,
+    //#[ allow( dead_code ) ]
     parameters : TemplateParameters,
     values : TemplateValues,
+  }
+
+  impl WorkspaceTemplate 
+  {
+    /// Returns template parameters 
+    pub fn get_parameters( &self ) -> &TemplateParameters
+    {
+      &self.parameters
+    }
   }
 
   // impl Template<WorkspaceTemplateFiles> for WorkspaceTemplate
