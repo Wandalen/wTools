@@ -91,34 +91,13 @@ pub( crate ) mod private
     !path.components().next().is_some_and( | c | c.as_os_str() == "." || c.as_os_str() == ".." )
   }
 
-  impl< 'a > TryFrom< &'a str > for AbsolutePath
-  {
-    type Error = std::io::Error;
-
-    fn try_from( value : &'a str ) -> Result< Self, Self::Error >
-    {
-      let path = path::canonicalize( value )?;
-      if !is_absolute( &path )
-      {
-        return Err( io::Error::new( io::ErrorKind::InvalidData, "Path expected to be absolute" ) )
-      }
-      Ok( Self( path ) )
-    }
-  }
-
   impl TryFrom< PathBuf > for AbsolutePath
   {
     type Error = std::io::Error;
 
-    fn try_from( value : PathBuf ) -> Result< Self, Self::Error >
+    fn try_from( src : PathBuf ) -> Result< Self, Self::Error >
     {
-      < Self as TryFrom< &str > >::try_from( &value.as_path().to_string_lossy() )
-      // let path = path::canonicalize( value )?;
-      // if !is_absolute( &path )
-      // {
-      //   return Err( io::Error::new( io::ErrorKind::InvalidData, "Path expected to be absolute" ) )
-      // }
-      // Ok( Self( path ) )
+      < Self as TryFrom< &Path > >::try_from( &src.as_path() )
     }
   }
 
@@ -127,23 +106,51 @@ pub( crate ) mod private
   {
     type Error = std::io::Error;
 
-    fn try_from( value : &Path ) -> Result< Self, Self::Error >
+    fn try_from( src : &Path ) -> Result< Self, Self::Error >
     {
-      let path = path::canonicalize( value )?;
-      if !is_absolute( &path ) { return Err( io::Error::new( io::ErrorKind::InvalidData, "Path expected to be absolute" ) ) }
+      // < Self as TryFrom< &str > >::try_from( src.to_string_lossy() )
+      let path = path::canonicalize( src )?;
+
+      // xxx
+      if !is_absolute( &path )
+      {
+        return Err( io::Error::new( io::ErrorKind::InvalidData, "Path expected to be absolute, but it's not {path}" ) )
+      }
 
       Ok( Self( path ) )
     }
   }
+
+  impl< 'a > TryFrom< &'a str > for AbsolutePath
+  {
+    type Error = std::io::Error;
+
+    fn try_from( src : &'a str ) -> Result< Self, Self::Error >
+    {
+      < Self as TryFrom< &Path > >::try_from( src.as_ref() )
+    }
+  }
+
+//   impl TryFrom< &str > for AbsolutePath
+//   {
+//     type Error = std::io::Error;
+//     // type Error = PathError;
+//
+//     #[ inline( always ) ]
+//     fn try_from( src : &str ) -> Result< Self, Self::Error >
+//     {
+//       Self::try_from( AbsolutePath::try_from( src )? )
+//     }
+//   }
 
   #[ cfg( feature = "path_utf8" ) ]
   impl TryFrom< Utf8PathBuf > for AbsolutePath
   {
     type Error = std::io::Error;
 
-    fn try_from( value : Utf8PathBuf ) -> Result< Self, Self::Error >
+    fn try_from( src : Utf8PathBuf ) -> Result< Self, Self::Error >
     {
-      AbsolutePath::try_from( value.as_std_path() )
+      AbsolutePath::try_from( src.as_std_path() )
     }
   }
 
@@ -152,9 +159,9 @@ pub( crate ) mod private
   {
     type Error = std::io::Error;
 
-    fn try_from( value : &Utf8Path ) -> Result< Self, Self::Error >
+    fn try_from( src : &Utf8Path ) -> Result< Self, Self::Error >
     {
-      AbsolutePath::try_from( value.as_std_path() )
+      AbsolutePath::try_from( src.as_std_path() )
     }
   }
 
@@ -194,9 +201,9 @@ pub( crate ) mod private
 //   {
 //     type Error = std::io::Error;
 //
-//     fn try_from( value : Utf8PathBuf ) -> Result< Self, Self::Error >
+//     fn try_from( src : Utf8PathBuf ) -> Result< Self, Self::Error >
 //     {
-//       AbsolutePath::try_from( value.as_std_path() )
+//       AbsolutePath::try_from( src.as_std_path() )
 //     }
 //   }
 
@@ -204,9 +211,9 @@ pub( crate ) mod private
 //   {
 //     type Error = std::io::Error;
 //
-//     fn try_from( value : &Utf8Path ) -> Result< Self, Self::Error >
+//     fn try_from( src : &Utf8Path ) -> Result< Self, Self::Error >
 //     {
-//       AbsolutePath::try_from( value.as_std_path() )
+//       AbsolutePath::try_from( src.as_std_path() )
 //     }
 //   }
 

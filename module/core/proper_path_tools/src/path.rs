@@ -1080,5 +1080,7 @@ crate::mod_interface!
   layer absolute_path;
   /// Describe canonical path. Prefer using canonical path instead of native paths when ever possible.
   layer caninical_path;
+  /// Describe native path. Use to pass path to the platfrom.
+  layer native_path;
 
 }

@@ -149,6 +149,17 @@ impl TryFrom< &Path > for SourceFile
   }
 }
 
+impl TryFrom< &str > for SourceFile
+{
+  type Error = PathError;
+
+  #[ inline( always ) ]
+  fn try_from( crate_dir_path : &str ) -> Result< Self, Self::Error >
+  {
+    Self::try_from( AbsolutePath::try_from( crate_dir_path )? )
+  }
+}
+
 impl TryFrom< Utf8PathBuf > for SourceFile
 {
   type Error = PathError;
@@ -203,3 +214,17 @@ impl DerefMut for SourceFile
     &mut self.0
   }
 }
+
+// =
+
+pub trait Sources
+{
+  fn sources( &self ) -> impl Iterator< Item = SourceFile >;
+}
+
+pub trait Entries
+{
+  fn entries( &self ) -> impl Iterator< Item = SourceFile >;
+}
+
+// =

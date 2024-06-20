@@ -187,6 +187,17 @@ impl TryFrom< &Path > for ManifestFile
   }
 }
 
+impl TryFrom< &str > for ManifestFile
+{
+  type Error = PathError;
+
+  #[ inline( always ) ]
+  fn try_from( crate_dir_path : &str ) -> Result< Self, Self::Error >
+  {
+    Self::try_from( AbsolutePath::try_from( crate_dir_path )? )
+  }
+}
+
 impl TryFrom< Utf8PathBuf > for ManifestFile
 {
   type Error = PathError;

@@ -41,7 +41,12 @@ crate::mod_interface!
   {
     crate_dir::CrateDir,
     manifest_file::ManifestFile,
-    source_file::SourceFile,
+    source_file::
+    {
+      SourceFile,
+      Sources,
+      Entries,
+    },
     path_either::PathEither
   };
   exposed use PathError;

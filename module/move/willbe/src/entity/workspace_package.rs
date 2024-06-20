@@ -2,8 +2,8 @@ mod private
 {
   use crate::*;
   use std::collections::BTreeMap;
-  // use cargo_metadata::camino::{ Utf8Path };
   use serde_json::Value;
+  use std::path::Path;
 
   /// Facade for cargo_metadata::Package
   #[ derive( Debug, Clone, Copy ) ]
@@ -114,6 +114,27 @@ mod private
     {
       &self.inner.features
     }
+  }
+
+  impl< 'a > Entries for WorkspacePackageRef< 'a >
+  {
+    fn entries( &self ) -> impl Iterator< Item = SourceFile >
+    {
+
+      self.inner.targets.iter().map( | target |
+      {
+
+        target.src_path.iter().map( | src_path |
+        {
+          let source : SourceFile = src_path.try_into().expect( "Illformed path to source file {src_path}" );
+          println!( " -- {:?} {:?}", source, target.kind );
+          source
+        })
+
+      }).flatten()
+
+    }
+
   }
 
 }

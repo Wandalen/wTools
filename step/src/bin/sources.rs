@@ -15,12 +15,14 @@ fn main() -> Result< () >
   // dbg!( &metadata.workspace_members );
   // dbg!( &metadata.packages[ 0 ] );
 
-  workspace
-  .packages()
-  .for_each( | package |
-  {
-    println!( "{}", package.name() )
-  });
+  // workspace
+  // .packages()
+  // .for_each( | package |
+  // {
+  //   println!( "{}", package.name() )
+  // });
+
+  let sources = workspa.sources();
 
   // // Iterate over all packages in the workspace
   // for package in &metadata.packages
