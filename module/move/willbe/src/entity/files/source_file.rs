@@ -105,9 +105,9 @@ impl TryFrom< &AbsolutePath > for SourceFile
   type Error = PathError;
 
   #[ inline( always ) ]
-  fn try_from( crate_dir_path : &AbsolutePath ) -> Result< Self, Self::Error >
+  fn try_from( src : &AbsolutePath ) -> Result< Self, Self::Error >
   {
-    crate_dir_path.clone().try_into()
+    src.clone().try_into()
   }
 }
 
@@ -116,14 +116,10 @@ impl TryFrom< AbsolutePath > for SourceFile
   type Error = PathError;
 
   #[ inline( always ) ]
-  fn try_from( crate_dir_path : AbsolutePath ) -> Result< Self, Self::Error >
+  fn try_from( src : AbsolutePath ) -> Result< Self, Self::Error >
   {
-    if !crate_dir_path.as_ref().join( "Cargo.toml" ).is_file()
-    {
-      let err =  io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find crate dir at {crate_dir_path:?}" ) );
-      return Err( PathError::Io( err ) );
-    }
-    Ok( Self( crate_dir_path ) )
+    // xxx : check is file exist?
+    Ok( Self( src ) )
   }
 }
 
@@ -132,9 +128,9 @@ impl TryFrom< PathBuf > for SourceFile
   type Error = PathError;
 
   #[ inline( always ) ]
-  fn try_from( crate_dir_path : PathBuf ) -> Result< Self, Self::Error >
+  fn try_from( src : PathBuf ) -> Result< Self, Self::Error >
   {
-    Self::try_from( AbsolutePath::try_from( crate_dir_path )? )
+    Self::try_from( AbsolutePath::try_from( src )? )
   }
 }
 
@@ -143,9 +139,9 @@ impl TryFrom< &Path > for SourceFile
   type Error = PathError;
 
   #[ inline( always ) ]
-  fn try_from( crate_dir_path : &Path ) -> Result< Self, Self::Error >
+  fn try_from( src : &Path ) -> Result< Self, Self::Error >
   {
-    Self::try_from( AbsolutePath::try_from( crate_dir_path )? )
+    Self::try_from( AbsolutePath::try_from( src )? )
   }
 }
 
@@ -154,9 +150,9 @@ impl TryFrom< &str > for SourceFile
   type Error = PathError;
 
   #[ inline( always ) ]
-  fn try_from( crate_dir_path : &str ) -> Result< Self, Self::Error >
+  fn try_from( src : &str ) -> Result< Self, Self::Error >
   {
-    Self::try_from( AbsolutePath::try_from( crate_dir_path )? )
+    Self::try_from( AbsolutePath::try_from( src )? )
   }
 }
 
@@ -165,9 +161,20 @@ impl TryFrom< Utf8PathBuf > for SourceFile
   type Error = PathError;
 
   #[ inline( always ) ]
-  fn try_from( crate_dir_path : Utf8PathBuf ) -> Result< Self, Self::Error >
+  fn try_from( src : Utf8PathBuf ) -> Result< Self, Self::Error >
   {
-    Self::try_from( AbsolutePath::try_from( crate_dir_path )? )
+    Self::try_from( AbsolutePath::try_from( src )? )
+  }
+}
+
+impl TryFrom< &Utf8PathBuf > for SourceFile
+{
+  type Error = PathError;
+
+  #[ inline( always ) ]
+  fn try_from( src : &Utf8PathBuf ) -> Result< Self, Self::Error >
+  {
+    Self::try_from( AbsolutePath::try_from( src )? )
   }
 }
 
@@ -176,9 +183,9 @@ impl TryFrom< &Utf8Path > for SourceFile
   type Error = PathError;
 
   #[ inline( always ) ]
-  fn try_from( crate_dir_path : &Utf8Path ) -> Result< Self, Self::Error >
+  fn try_from( src : &Utf8Path ) -> Result< Self, Self::Error >
   {
-    Self::try_from( AbsolutePath::try_from( crate_dir_path )? )
+    Self::try_from( AbsolutePath::try_from( src )? )
   }
 }
 

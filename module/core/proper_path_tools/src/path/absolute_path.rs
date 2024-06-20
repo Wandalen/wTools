@@ -40,12 +40,14 @@ pub( crate ) mod private
 
     /// Returns the Path without its final component, if there is one.
     /// Returns None if the path terminates in a root or prefix, or if it's the empty string.
+    #[ inline ]
     pub fn parent( &self ) -> Option< AbsolutePath >
     {
       self.0.parent().map( PathBuf::from ).map( AbsolutePath )
     }
 
     /// Creates an owned `AbsolutePath` with path adjoined to self.
+    #[ inline ]
     pub fn join< P >( &self, path : P ) -> AbsolutePath
     where
       P : AsRef< Path >,
@@ -62,6 +64,7 @@ pub( crate ) mod private
     /// Determines whether base is a prefix of self.
     ///
     /// Only considers whole path components to match.
+    #[ inline ]
     pub fn starts_with< P : AsRef< Path > >( &self, base : P ) -> bool
     {
       self.0.starts_with( base )
@@ -78,12 +81,14 @@ pub( crate ) mod private
 
   impl fmt::Display for AbsolutePath
   {
+    #[ inline ]
     fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
     {
       write!( f, "{}", self.0.display() )
     }
   }
 
+  #[ inline ]
   fn is_absolute( path : &Path ) -> bool
   {
     // None - not absolute
@@ -95,6 +100,7 @@ pub( crate ) mod private
   {
     type Error = std::io::Error;
 
+    #[ inline ]
     fn try_from( src : PathBuf ) -> Result< Self, Self::Error >
     {
       < Self as TryFrom< &Path > >::try_from( &src.as_path() )
@@ -106,6 +112,7 @@ pub( crate ) mod private
   {
     type Error = std::io::Error;
 
+    #[ inline ]
     fn try_from( src : &Path ) -> Result< Self, Self::Error >
     {
       // < Self as TryFrom< &str > >::try_from( src.to_string_lossy() )
@@ -125,6 +132,7 @@ pub( crate ) mod private
   {
     type Error = std::io::Error;
 
+    #[ inline ]
     fn try_from( src : &'a str ) -> Result< Self, Self::Error >
     {
       < Self as TryFrom< &Path > >::try_from( src.as_ref() )
@@ -148,7 +156,20 @@ pub( crate ) mod private
   {
     type Error = std::io::Error;
 
+    #[ inline ]
     fn try_from( src : Utf8PathBuf ) -> Result< Self, Self::Error >
+    {
+      AbsolutePath::try_from( src.as_std_path() )
+    }
+  }
+
+  #[ cfg( feature = "path_utf8" ) ]
+  impl TryFrom< &Utf8PathBuf > for AbsolutePath
+  {
+    type Error = std::io::Error;
+
+    #[ inline ]
+    fn try_from( src : &Utf8PathBuf ) -> Result< Self, Self::Error >
     {
       AbsolutePath::try_from( src.as_std_path() )
     }
@@ -159,6 +180,7 @@ pub( crate ) mod private
   {
     type Error = std::io::Error;
 
+    #[ inline ]
     fn try_from( src : &Utf8Path ) -> Result< Self, Self::Error >
     {
       AbsolutePath::try_from( src.as_std_path() )
@@ -167,6 +189,7 @@ pub( crate ) mod private
 
   impl From< AbsolutePath > for PathBuf
   {
+    #[ inline ]
     fn from( src : AbsolutePath ) -> Self
     {
       src.0
@@ -176,6 +199,7 @@ pub( crate ) mod private
   impl< 'a > TryFrom< &'a AbsolutePath > for &'a str
   {
     type Error = std::io::Error;
+    #[ inline ]
     fn try_from( src : &'a AbsolutePath ) -> Result< &'a str, Self::Error >
     {
       src
@@ -190,6 +214,7 @@ pub( crate ) mod private
   impl TryFrom< &AbsolutePath > for String
   {
     type Error = std::io::Error;
+    #[ inline ]
     fn try_from( src : &AbsolutePath ) -> Result< String, Self::Error >
     {
       let src2 : &str = src.try_into()?;
@@ -228,6 +253,7 @@ pub( crate ) mod private
 
   impl AsRef< Path > for AbsolutePath
   {
+    #[ inline ]
     fn as_ref( &self ) -> &Path
     {
       self.0.as_ref()
@@ -236,6 +262,7 @@ pub( crate ) mod private
 
   impl AsMut< Path > for AbsolutePath
   {
+    #[ inline ]
     fn as_mut( &mut self ) -> &mut Path
     {
       &mut self.0
@@ -245,6 +272,7 @@ pub( crate ) mod private
   impl Deref for AbsolutePath
   {
     type Target = Path;
+    #[ inline ]
     fn deref( &self ) -> &Self::Target
     {
       &self.0
@@ -253,6 +281,7 @@ pub( crate ) mod private
 
   impl DerefMut for AbsolutePath
   {
+    #[ inline ]
     fn deref_mut( &mut self ) -> &mut Self::Target
     {
       &mut self.0

@@ -40,12 +40,14 @@ pub( crate ) mod private
 
     /// Returns the Path without its final component, if there is one.
     /// Returns None if the path terminates in a root or prefix, or if it's the empty string.
+    #[ inline ]
     pub fn parent( &self ) -> Option< NativePath >
     {
       self.0.parent().map( PathBuf::from ).map( NativePath )
     }
 
     /// Creates an owned `NativePath` with path adjoined to self.
+    #[ inline ]
     pub fn join< P >( &self, path : P ) -> NativePath
     where
       P : AsRef< Path >,
@@ -62,6 +64,7 @@ pub( crate ) mod private
     /// Determines whether base is a prefix of self.
     ///
     /// Only considers whole path components to match.
+    #[ inline ]
     pub fn starts_with< P : AsRef< Path > >( &self, base : P ) -> bool
     {
       self.0.starts_with( base )
@@ -78,6 +81,7 @@ pub( crate ) mod private
 
   impl fmt::Display for NativePath
   {
+    #[ inline ]
     fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
     {
       write!( f, "{}", self.0.display() )
@@ -95,6 +99,7 @@ pub( crate ) mod private
   {
     type Error = std::io::Error;
 
+    #[ inline ]
     fn try_from( value : &'a str ) -> Result< Self, Self::Error >
     {
       let path = path::canonicalize( value )?;
@@ -110,6 +115,7 @@ pub( crate ) mod private
   {
     type Error = std::io::Error;
 
+    #[ inline ]
     fn try_from( value : PathBuf ) -> Result< Self, Self::Error >
     {
       let path = path::canonicalize( value )?;
@@ -125,6 +131,7 @@ pub( crate ) mod private
   {
     type Error = std::io::Error;
 
+    #[ inline ]
     fn try_from( value : &Path ) -> Result< Self, Self::Error >
     {
       let path = path::canonicalize( value )?;
@@ -140,7 +147,20 @@ pub( crate ) mod private
   {
     type Error = std::io::Error;
 
+    #[ inline ]
     fn try_from( value : Utf8PathBuf ) -> Result< Self, Self::Error >
+    {
+      NativePath::try_from( value.as_std_path() )
+    }
+  }
+
+  #[ cfg( feature = "path_utf8" ) ]
+  impl TryFrom< &Utf8PathBuf > for NativePath
+  {
+    type Error = std::io::Error;
+
+    #[ inline ]
+    fn try_from( value : &Utf8PathBuf ) -> Result< Self, Self::Error >
     {
       NativePath::try_from( value.as_std_path() )
     }
@@ -151,6 +171,7 @@ pub( crate ) mod private
   {
     type Error = std::io::Error;
 
+    #[ inline ]
     fn try_from( value : &Utf8Path ) -> Result< Self, Self::Error >
     {
       NativePath::try_from( value.as_std_path() )
@@ -159,6 +180,7 @@ pub( crate ) mod private
 
   impl From< NativePath > for PathBuf
   {
+    #[ inline ]
     fn from( src : NativePath ) -> Self
     {
       src.0
@@ -168,6 +190,7 @@ pub( crate ) mod private
   impl< 'a > TryFrom< &'a NativePath > for &'a str
   {
     type Error = std::io::Error;
+    #[ inline ]
     fn try_from( src : &'a NativePath ) -> Result< &'a str, Self::Error >
     {
       src
@@ -182,6 +205,7 @@ pub( crate ) mod private
   impl TryFrom< &NativePath > for String
   {
     type Error = std::io::Error;
+    #[ inline ]
     fn try_from( src : &NativePath ) -> Result< String, Self::Error >
     {
       let src2 : &str = src.try_into()?;
@@ -220,6 +244,7 @@ pub( crate ) mod private
 
   impl AsRef< Path > for NativePath
   {
+    #[ inline ]
     fn as_ref( &self ) -> &Path
     {
       self.0.as_ref()
@@ -228,6 +253,7 @@ pub( crate ) mod private
 
   impl AsMut< Path > for NativePath
   {
+    #[ inline ]
     fn as_mut( &mut self ) -> &mut Path
     {
       &mut self.0
@@ -237,6 +263,7 @@ pub( crate ) mod private
   impl Deref for NativePath
   {
     type Target = Path;
+    #[ inline ]
     fn deref( &self ) -> &Self::Target
     {
       &self.0
@@ -245,6 +272,7 @@ pub( crate ) mod private
 
   impl DerefMut for NativePath
   {
+    #[ inline ]
     fn deref_mut( &mut self ) -> &mut Self::Target
     {
       &mut self.0

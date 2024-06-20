@@ -122,15 +122,13 @@ mod private
     {
       self.inner.targets.iter().map( | target |
       {
+        let src_path = &target.src_path;
+        let source : SourceFile = src_path.try_into().expect( &format!( "Illformed path to source file {src_path}" ) );
+        println!( " -- {:?} {:?}", source, target.kind );
+        source
 
-        target.src_path.iter().map( | src_path |
-        {
-          let source : SourceFile = src_path.try_into().expect( "Illformed path to source file {src_path}" );
-          println!( " -- {:?} {:?}", source, target.kind );
-          source
-        })
-
-      }).flatten()
+      })
+      // .flatten()
     }
   }
 
