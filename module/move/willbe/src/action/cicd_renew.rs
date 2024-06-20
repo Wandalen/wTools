@@ -48,11 +48,11 @@ mod private
     let packages = workspace_cache.packages();
     let username_and_repository = &username_and_repository
     (
-      &workspace_cache.workspace_root().join( "Cargo.toml" ).try_into()?, // qqq
+      &workspace_cache.workspace_root().join( "Cargo.toml" ).to_path_buf().try_into()?, // qqq
       packages.clone(),
       // packages.as_slice(),
     )?;
-    let workspace_root : &Path = workspace_cache.workspace_root();
+    let workspace_root : &Path = &workspace_cache.workspace_root();
     // find directory for workflows
     let workflow_root = workspace_root.join( ".github" ).join( "workflows" );
     // map packages name's to naming standard

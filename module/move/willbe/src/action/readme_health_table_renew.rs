@@ -279,7 +279,7 @@ mod private
     (
       workspace
       .workspace_root()
-      .join( &table_parameters.base_path ),
+      .join( &table_parameters.base_path ).to_path_buf(),
       workspace
       .packages()
     )?;
