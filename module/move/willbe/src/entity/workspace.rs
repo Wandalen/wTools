@@ -124,6 +124,34 @@ mod private
       .find( | &p | p.manifest_file().unwrap().as_ref() == manifest_file.as_ref() )
     }
   }
+
+  // impl Entries for Workspace
+  // {
+  //   fn entries( &self ) -> impl Iterator< Item = SourceFile >
+  //   {
+  //     let packages : Vec< _ > = self.packages().collect();
+  //     // self
+  //     // .packages()
+  //     packages
+  //     .iter()
+  //     .map( | package |
+  //     {
+  //       package.entries()
+  //     })
+  //     .flatten()
+  //   }
+  // }
+
+  impl Entries for Workspace
+  {
+    fn entries( &self ) -> impl Iterator< Item = SourceFile >
+    {
+      self.packages()
+      .flat_map( | package | package.entries().collect::< Vec< _ > >() )
+      .into_iter()
+    }
+  }
+
 }
 
 //

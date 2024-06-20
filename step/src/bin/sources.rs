@@ -1,8 +1,8 @@
 //! List all sources
 
 use willbe::exposed::*;
-
-use willbe::wtools::error::Result;
+use willbe::{ Sources, Entries };
+// use willbe::error::Result;
 use std::path::Path;
 
 fn main() -> Result< () >
@@ -22,7 +22,7 @@ fn main() -> Result< () >
   //   println!( "{}", package.name() )
   // });
 
-  let sources = workspa.sources();
+  let sources = workspace.entries();
 
   // // Iterate over all packages in the workspace
   // for package in &metadata.packages

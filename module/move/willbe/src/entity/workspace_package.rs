@@ -120,7 +120,6 @@ mod private
   {
     fn entries( &self ) -> impl Iterator< Item = SourceFile >
     {
-
       self.inner.targets.iter().map( | target |
       {
 
@@ -132,9 +131,7 @@ mod private
         })
 
       }).flatten()
-
     }
-
   }
 
 }
