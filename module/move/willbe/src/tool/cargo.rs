@@ -40,8 +40,9 @@ mod private
     // qqq : rename to checking_changes
     /// Flag indicating whether to skip verification checks.
     #[ former( default = false ) ]
-    // qqq : don't abuse negative form, rename to checking_consistency
-    pub( crate ) no_verify : bool,
+    // aaa : don't abuse negative form, rename to checking_consistency
+    // renamed and changed logic
+    pub( crate ) checking_consistency : bool,
     /// An optional temporary path to be used during packaging.
     ///
     /// This field may contain a path to a temporary directory that will be used during the packaging process.
@@ -68,7 +69,7 @@ mod private
       [ "run".to_string(), self.channel.to_string(), "cargo".into(), "package".into() ]
       .into_iter()
       .chain( if self.allow_dirty { Some( "--allow-dirty".to_string() ) } else { None } )
-      .chain( if self.no_verify { Some( "--no-verify".to_string() ) } else { None } )
+      .chain( if !self.checking_consistency { Some( "--no-verify".to_string() ) } else { None } )
       .chain( self.temp_path.clone().map( | p | vec![ "--target-dir".to_string(), p.to_string_lossy().into() ] ).into_iter().flatten() )
       .collect()
     }

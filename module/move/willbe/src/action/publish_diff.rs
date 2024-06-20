@@ -111,7 +111,7 @@ mod private
       let name = &package.name()?;
       let version = &package.version()?;
 
-    _ = cargo::pack( cargo::PackOptions::former().path( dir.as_ref() ).allow_dirty( true ).no_verify( true ).dry( false ).form() )?;
+    _ = cargo::pack( cargo::PackOptions::former().path( dir.as_ref() ).allow_dirty( true ).checking_consistency( false ).dry( false ).form() )?;
     let l = CrateArchive::read( packed_crate::local_path( name, version, dir )? )?;
     let r = CrateArchive::download_crates_io( name, version ).unwrap();
 

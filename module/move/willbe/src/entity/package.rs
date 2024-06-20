@@ -310,7 +310,7 @@ mod private
         path : crate_dir.clone().absolute_path().inner(),
         channel : self.channel,
         allow_dirty : self.dry,
-        no_verify : self.dry,
+        checking_consistency : !self.dry,
         temp_path : self.base_temp_dir.clone(),
         dry : self.dry,
       };
