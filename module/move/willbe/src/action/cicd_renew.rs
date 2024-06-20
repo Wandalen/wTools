@@ -64,7 +64,7 @@ mod private
     // map packages path to relative paths fom workspace root,
     // for example D:/work/wTools/module/core/iter_tools => module/core/iter_tools
     let relative_paths = packages
-    .map( | p | p.manifest_file().unwrap() ) // qqq : rid of unwrap
+    .map( | p | p.manifest_file().ok() ) // aaa : rid of unwrap : removed
     .filter_map( | p |
     {
       // dbg!( &workspace_root );
@@ -74,7 +74,7 @@ mod private
         dbg!( &root_str );
         dbg!( &p );
 
-        Some( p.clone().strip_prefix( root_str ).ok()?.to_path_buf() )
+        Some( p?.strip_prefix( root_str ).ok()?.to_path_buf() )
         //.map( | s | s.display().to_string() ).ok()
       })
     })
