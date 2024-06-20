@@ -16,7 +16,6 @@ mod private
   pub struct WorkspaceTemplate
   {
     files : WorkspaceTemplateFiles,
-    //#[ allow( dead_code ) ]
     parameters : TemplateParameters,
     values : TemplateValues,
   }
