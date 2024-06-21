@@ -4,13 +4,8 @@ mod private
 
   // qqq : for Bohdan : bad
   // use std::*;
-  // use error::
-  // {
-  //   // typed,
-  //   Result
-  // };
 
-  use std::{ env, slice };
+  use std::slice;
 
   /// Stores information about the current workspace.
   #[ derive( Debug, Clone ) ]
@@ -32,25 +27,28 @@ mod private
     /// Something went wrong with the workspace' data
     #[ error( "Can not load workspace data. Details: {0}" ) ]
     Metadata( #[ from ] cargo_metadata::Error ),
+    /// Files error
+    #[ error( "I/O error: {0}" ) ]
+    IO( #[ from ] std::io::Error ),
   }
 
   impl Workspace
   {
 
-    // qqq : xxx : use try_from
-    /// Load data from current directory
-    pub fn from_current_path() -> Result< Self, WorkspaceInitError >
-    {
-      let current_path = AbsolutePath::try_from( env::current_dir().unwrap_or_default() ).map_err( PathError::Io )?;
-      let metadata = cargo_metadata::MetadataCommand::new()
-      .no_deps()
-      .exec()?;
-      Ok( Self
-      {
-        metadata,
-        crate_dir : CrateDir::try_from( current_path )?,
-      })
-    }
+    // // qqq : xxx : use try_from
+    // /// Load data from current directory
+    // pub fn from_current_path() -> Result< Self, WorkspaceInitError >
+    // {
+    //   let current_path = AbsolutePath::try_from( env::current_dir().unwrap_or_default() ).map_err( PathError::Io )?;
+    //   let metadata = cargo_metadata::MetadataCommand::new()
+    //   .no_deps()
+    //   .exec()?;
+    //   Ok( Self
+    //   {
+    //     metadata,
+    //     crate_dir : CrateDir::try_from( current_path )?,
+    //   })
+    // }
 
     // qqq : xxx : use try_from
     /// Load data from current directory
@@ -68,6 +66,28 @@ mod private
         }
       )
     }
+  }
+
+  impl TryFrom< CurrentPath > for Workspace
+  {
+    type Error = WorkspaceInitError;
+
+    /// Load data from current directory
+    fn try_from( _ : CurrentPath ) -> Result< Self, Self::Error >
+    {
+      // xxx
+      // let current_path = AbsolutePath::try_from( env::current_dir().unwrap_or_default() ).map_err( PathError::Io )?;
+      // let current_path
+      let metadata = cargo_metadata::MetadataCommand::new()
+      .no_deps()
+      .exec()?;
+      Ok( Self
+      {
+        metadata,
+        crate_dir : CrateDir::try_from( AbsolutePath::try_from( CurrentPath )? )?,
+      })
+    }
+
   }
 
   impl From< cargo_metadata::Metadata > for Workspace

@@ -5,20 +5,6 @@ pub( crate ) mod private
   #[ cfg( feature = "no_std" ) ]
   extern crate std;
 
-  // use std::
-  // {
-  //   path::{ Component, Path, PathBuf },
-  //   time::{ SystemTime, UNIX_EPOCH, SystemTimeError },
-  // };
-  // use cargo_metadata::camino::{ Utf8Path, Utf8PathBuf };
-
-  // // xxx : it's not path, but file
-  // /// Check if path is valid.
-  // pub fn valid_is( path : &str ) -> bool
-  // {
-  //   std::fs::metadata( path ).is_ok()
-  // }
-
   /// Determines if a given path string contains unescaped glob pattern characters.
   ///
   /// # Parameters:
@@ -1080,6 +1066,8 @@ crate::mod_interface!
   layer absolute_path;
   /// Describe canonical path. Prefer using canonical path instead of native paths when ever possible.
   layer caninical_path;
+  /// A type to symbolyze the crruent path.
+  layer current_path;
   /// Describe native path. Use to pass path to the platfrom.
   layer native_path;
 

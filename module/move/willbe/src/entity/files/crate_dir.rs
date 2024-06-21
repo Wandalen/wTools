@@ -136,6 +136,25 @@ impl TryFrom< AbsolutePath > for CrateDir
   }
 }
 
+// impl< IntoAbsolutePath > TryFrom< IntoAbsolutePath > for CrateDir
+// where
+//   IntoAbsolutePath : TryInto< AbsolutePath >,
+// {
+//   type Error = PathError;
+//
+//   #[ inline( always ) ]
+//   fn try_from( crate_dir_path : IntoAbsolutePath ) -> Result< Self, Self::Error >
+//   {
+//     let crate_dir_path = < IntoAbsolutePath as TryInto< AbsolutePath > >::try_into( crate_dir_path );
+//     if !crate_dir_path.as_ref().join( "Cargo.toml" ).is_file()
+//     {
+//       let err =  io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find crate dir at {crate_dir_path:?}" ) );
+//       return Err( PathError::Io( err ) );
+//     }
+//     Ok( Self( crate_dir_path ) )
+//   }
+// }
+
 impl TryFrom< PathBuf > for CrateDir
 {
   type Error = PathError;

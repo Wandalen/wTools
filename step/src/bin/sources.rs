@@ -7,7 +7,7 @@ use std::path::Path;
 
 fn main() -> Result< () >
 {
-  let workspace = Workspace::from_current_path()?;
+  let workspace = Workspace::try_from( CurrentPath )?;
 
   // let metadata = workspace.metadata.as_ref().unwrap();
   // dbg!( &metadata.packages.len() );
@@ -27,6 +27,7 @@ fn main() -> Result< () >
   // sources.collect::< Vec< _ > >();
 
   dbg!( &workspace.crate_dir );
+
   let sources = workspace.sources();
   sources.for_each( | source |
   {

@@ -129,7 +129,7 @@ mod private
 
     let workspace = if paths.is_empty()
     {
-      Workspace::from_current_path()?
+      Workspace::try_from( CurrentPath )?
     }
     else
     {
