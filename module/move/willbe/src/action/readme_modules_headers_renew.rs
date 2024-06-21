@@ -1,6 +1,20 @@
 mod private
 {
   use crate::*;
+  use std::
+  {
+    borrow::Cow,
+    collections::BTreeSet,
+    fs::OpenOptions,
+    fmt,
+    io::
+    {
+      Read, 
+      Seek, 
+      Write,
+      SeekFrom,
+    }
+  };
   // use path::AbsolutePath;
   use action::readme_health_table_renew::{ Stability, stability_generate, find_example_file };
   use package::Package;
@@ -14,12 +28,8 @@ mod private
       Context,
     },
   };
-  use std::borrow::Cow;
-  use std::collections::BTreeSet;
-  use std::fmt::{Display, Formatter};
-  use std::fs::{ OpenOptions };
-  use std::io::{ Read, Seek, SeekFrom, Write };
-  // qqq : for Petro : group properly, don't repeat std::
+  // aaa : for Petro : group properly, don't repeat std::
+  // aaa : done
   use std::path::PathBuf;
   use convert_case::{ Case, Casing };
   // use rayon::scope_fifo;
@@ -45,9 +55,9 @@ mod private
     touched_files : BTreeSet< PathBuf >,
   }
 
-  impl Display for ModulesHeadersRenewReport
+  impl fmt::Display for ModulesHeadersRenewReport
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
       if self.touched_files.len() < self.found_files.len()
       {
