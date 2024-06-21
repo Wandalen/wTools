@@ -146,7 +146,11 @@ mod private
   fn get_dir_name() -> Result< String >
   {
     let current_dir = std::env::current_dir()?;
-    let current_dir = current_dir.components().last().context( "Invalid current directory" )?;
+    let current_dir = current_dir
+    .components()
+    .last()
+    .context( "Invalid current directory" )?;
+    
     Ok( current_dir.as_os_str().to_string_lossy().into() )
   }
 
@@ -170,9 +174,16 @@ mod private
       let current_dir = get_dir_name()?;
       let artifact_repo_name = dir_name_to_formatted( &current_dir, "-" );
       let docker_image_name = dir_name_to_formatted( &current_dir, "_" );
-      template.values.insert_if_empty( "gcp_artifact_repo_name", wca::Value::String( artifact_repo_name ) );
-      template.values.insert_if_empty( "docker_image_name", wca::Value::String( docker_image_name ) );
-      template.values.insert_if_empty( "gcp_region", wca::Value::String( "europe-central2".into() ) );
+      template
+      .values
+      .insert_if_empty( "gcp_artifact_repo_name", wca::Value::String( artifact_repo_name ) );
+      
+      template
+      .values
+      .insert_if_empty( "docker_image_name", wca::Value::String( docker_image_name ) );
+      template
+      .values
+      .insert_if_empty( "gcp_region", wca::Value::String( "europe-central2".into() ) );
     }
     template.create_all( path )?;
     Ok( () )

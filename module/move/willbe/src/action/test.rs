@@ -74,7 +74,8 @@ mod private
 
     let mut report = TestsReport::default();
     // fail fast if some additional installations required
-    let channels = channel::available_channels( o.dir.as_ref() ).err_with( || report.clone() )?;
+    let channels = channel::available_channels( o.dir.as_ref() )
+    .err_with( || report.clone() )?;
     let channels_diff : Vec< _ > = o.channels.difference( &channels ).collect();
     if !channels_diff.is_empty()
     {
@@ -113,7 +114,9 @@ Try to install it with `rustup install {}` command(-s)",
     // zzz : watch and review after been ready
     // aaa : for Petro : use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >
     // aaa : done
-    let path = match PathEither::try_from( o.dir.as_ref() ).map_err( | e | ( report.clone(), e.into() ) )?.inner()
+    let path = match PathEither::try_from( o.dir.as_ref() )
+    .map_err( | e | ( report.clone(), e.into() ) )?
+    .inner()
     {
       data_type::Either::Left( crate_dir ) => crate_dir,
       data_type::Either::Right( manifest ) => CrateDir::from( manifest )
@@ -128,7 +131,12 @@ Try to install it with `rustup install {}` command(-s)",
     // let packages = needed_packages( &workspace );
     let packages = workspace
     .packages()
-    .filter( move | p | p.manifest_file().is_ok() && p.manifest_file().unwrap().starts_with( path.as_ref() ) ) // aaa : rid of unwrap // aaa : now its save
+    .filter
+    (
+      move | p | 
+      p.manifest_file().is_ok() && 
+      p.manifest_file().unwrap().starts_with( path.as_ref() ) 
+    ) // aaa : rid of unwrap // aaa : now its save
     ;
 
     let plan = TestPlan::try_from

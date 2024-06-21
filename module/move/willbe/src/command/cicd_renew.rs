@@ -9,7 +9,11 @@ mod private
   ///
   pub fn cicd_renew() -> Result< () >
   {
-    action::cicd_renew( &std::env::current_dir()? ).context( "Fail to generate workflow" )
+    action::cicd_renew
+    ( 
+      &std::env::current_dir()? 
+    )
+    .context( "Fail to generate workflow" )
   }
 }
 

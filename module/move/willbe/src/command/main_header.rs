@@ -10,7 +10,13 @@ mod private
   pub fn readme_header_renew() -> Result< () >
   {
     // match action::readme_header_renew( AbsolutePath::try_from( std::env::current_dir()? )? )
-    match action::readme_header_renew( CrateDir::try_from( std::env::current_dir()? )? )
+    match action::readme_header_renew
+    ( 
+      CrateDir::try_from
+      ( 
+        std::env::current_dir()? 
+      )? 
+    )
     {
       Ok( report ) =>
       {

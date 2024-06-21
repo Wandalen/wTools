@@ -91,25 +91,65 @@ mod private
   ///
   /// Default implementation contains all required files.
   #[ derive( Debug ) ]
-  pub struct WorkspaceTemplateFiles(Vec< TemplateFileDescriptor > );
+  pub struct WorkspaceTemplateFiles( Vec< TemplateFileDescriptor > );
 
   impl Default for WorkspaceTemplateFiles
   {
     fn default() -> Self
     {
       let formed = TemplateFilesBuilder::former()
-      .file().data( include_str!( "../../template/workspace/.gitattributes" ) ).path( "./.gitattributes" ).end()
-      .file().data( include_str!( "../../template/workspace/.gitignore1" ) ).path( "./.gitignore" ).end()
-      .file().data( include_str!( "../../template/workspace/.gitpod.yml" ) ).path( "./.gitpod.yml" ).end()
-      .file().data( include_str!( "../../template/workspace/Cargo.hbs" ) ).path( "./Cargo.toml" ).is_template( true ).end()
-      .file().data( include_str!( "../../template/workspace/Makefile" ) ).path( "./Makefile" ).end()
-      .file().data( include_str!( "../../template/workspace/Readme.md" ) ).path( "./Readme.md" ).end()
-      .file().data( include_str!( "../../template/workspace/.cargo/config.toml" ) ).path( "./.cargo/config.toml" ).end()
-      .file().data( include_str!( "../../template/workspace/module/module1/Cargo.toml.x" ) ).path( "./module/Cargo.toml" ).end()
-      .file().data( include_str!( "../../template/workspace/module/module1/Readme.md" ) ).path( "./module/module1/Readme.md" ).end()
-      .file().data( include_str!( "../../template/workspace/module/module1/examples/module1_example.rs" ) ).path( "./module/module1/examples/module1_example.rs" ).end()
-      .file().data( include_str!( "../../template/workspace/module/module1/src/lib.rs" ) ).path( "./module/module1/src/lib.rs" ).end()
-      .file().data( include_str!( "../../template/workspace/module/module1/tests/hello_test.rs" ) ).path( "./module/module1/tests/hello_test.rs" ).end()
+      .file()
+        .data( include_str!( "../../template/workspace/.gitattributes" ) )
+        .path( "./.gitattributes" )
+        .end()
+      .file()
+        .data( include_str!( "../../template/workspace/.gitignore1" ) )
+        .path( "./.gitignore" )
+        .end()
+      .file()
+        .data( include_str!( "../../template/workspace/.gitpod.yml" ) )
+        .path( "./.gitpod.yml" )
+        .end()
+      .file()
+        .data( include_str!( "../../template/workspace/Cargo.hbs" ) )
+        .path( "./Cargo.toml" )
+        .is_template( true )
+        .end()
+      .file()
+        .data( include_str!( "../../template/workspace/Makefile" ) )
+        .path( "./Makefile" )
+        .end()
+      .file()
+        .data( include_str!( "../../template/workspace/Readme.md" ) )
+        .path( "./Readme.md" )
+        .end()
+      .file()
+        .data( include_str!( "../../template/workspace/.cargo/config.toml" ) )
+        .path( "./.cargo/config.toml" )
+        .end()
+      .file()
+        .data( include_str!( "../../template/workspace/module/module1/Cargo.toml.x" ) )
+        .path( "./module/Cargo.toml" )
+        .end()
+      .file()
+        .data( include_str!( "../../template/workspace/module/module1/Readme.md" ) )
+        .path( "./module/module1/Readme.md" )
+        .end()
+      .file()
+        .data
+        ( 
+          include_str!( "../../template/workspace/module/module1/examples/module1_example.rs" ) 
+        )
+        .path( "./module/module1/examples/module1_example.rs" )
+        .end()
+      .file()
+        .data( include_str!( "../../template/workspace/module/module1/src/lib.rs" ) )
+        .path( "./module/module1/src/lib.rs" )
+        .end()
+      .file()
+        .data( include_str!( "../../template/workspace/module/module1/tests/hello_test.rs" ) )
+        .path( "./module/module1/tests/hello_test.rs" )
+        .end()
       .form();
 
       Self( formed.files )
@@ -147,9 +187,24 @@ mod private
     {
       bail!( "Directory should be empty" )
     }
-    template.values.insert_if_empty( "project_name", wca::Value::String( path.file_name().unwrap().to_string_lossy().into() ) );
+    template
+    .values
+    .insert_if_empty
+    ( 
+      "project_name", 
+      wca::Value::String( path.file_name().unwrap().to_string_lossy().into() ) 
+    );
     template.values.insert_if_empty( "url", wca::Value::String( repository_url ) );
-    template.values.insert_if_empty( "branches", wca::Value::String( branches.into_iter().map( | b | format!( r#""{}""#, b ) ).join( ", " ) ) );
+    template
+    .values
+    .insert_if_empty
+    ( 
+      "branches", 
+      wca::Value::String
+      ( 
+        branches.into_iter().map( | b | format!( r#""{}""#, b ) ).join( ", " ) 
+      ) 
+    );
     template.files.create_all( path, &template.values )?;
     Ok( () )
   }
