@@ -37,8 +37,7 @@ mod private
   impl Workspace
   {
 
-    // aaa : typed errors
-    // aaa : done
+    // qqq : xxx : use try_from
     /// Load data from current directory
     pub fn from_current_path() -> Result< Self, WorkspaceInitError >
     {
@@ -53,8 +52,7 @@ mod private
       })
     }
 
-    // aaa : typed errors
-    // aaa : done
+    // qqq : xxx : use try_from
     /// Load data from current directory
     pub fn with_crate_dir( crate_dir : CrateDir ) -> Result< Self, WorkspaceInitError >
     {
@@ -107,7 +105,7 @@ mod private
     pub fn workspace_root( &self ) -> CrateDir
     {
       // Safe because workspace_root.as_std_path() is always a path to a directory
-      CrateDir::try_from( self.metadata.workspace_root.as_std_path() ).unwrap() 
+      CrateDir::try_from( self.metadata.workspace_root.as_std_path() ).unwrap()
     }
 
     /// Returns the path to target directory
@@ -127,29 +125,24 @@ mod private
     }
   }
 
-  // impl Entries for Workspace
-  // {
-  //   fn entries( &self ) -> impl Iterator< Item = SourceFile >
-  //   {
-  //     let packages : Vec< _ > = self.packages().collect();
-  //     // self
-  //     // .packages()
-  //     packages
-  //     .iter()
-  //     .map( | package |
-  //     {
-  //       package.entries()
-  //     })
-  //     .flatten()
-  //   }
-  // }
-
   impl Entries for Workspace
   {
-    fn entries( &self ) -> impl Iterator< Item = SourceFile >
+    fn entries( &self ) -> impl Iterator< Item = SourceFile > + Clone
     {
-      self.packages()
+      self
+      .packages()
       .flat_map( | package | package.entries().collect::< Vec< _ > >() )
+      .into_iter()
+    }
+  }
+
+  impl Sources for Workspace
+  {
+    fn sources( &self ) -> impl Iterator< Item = SourceFile > + Clone
+    {
+      self
+      .packages()
+      .flat_map( | package | package.sources().collect::< Vec< _ > >() )
       .into_iter()
     }
   }

@@ -22,9 +22,16 @@ fn main() -> Result< () >
   //   println!( "{}", package.name() )
   // });
 
+  // dbg!( &workspace.crate_dir );
+  // let sources = workspace.entries();
+  // sources.collect::< Vec< _ > >();
+
   dbg!( &workspace.crate_dir );
-  let sources = workspace.entries();
-  sources.collect::< Vec< _ > >();
+  let sources = workspace.sources();
+  sources.for_each( | source |
+  {
+    println!( " - {source}" );
+  });
 
   // // Iterate over all packages in the workspace
   // for package in &metadata.packages
