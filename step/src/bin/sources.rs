@@ -23,9 +23,7 @@ fn main() -> Result< () >
   // });
 
   dbg!( &workspace.crate_dir );
-
   let sources = workspace.entries();
-
   sources.collect::< Vec< _ > >();
 
   // // Iterate over all packages in the workspace
