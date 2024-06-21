@@ -4,8 +4,6 @@ use macro_tools::
   attr,
   diag,
   Result,
-  phantom::add_to_item,
-  quote::ToTokens,
   syn::ItemStruct,
 };
 
@@ -16,7 +14,18 @@ pub fn not( input : proc_macro::TokenStream  ) -> Result< proc_macro2::TokenStre
   let has_debug = attr::has_debug( parsed.attrs.iter() )?;
   let item_name = &parsed.ident;
 
-  let result = parsed.to_token_stream();
+  let result = qt!
+  {
+    impl ::core::ops::Not for #item_name
+    {
+      type Output = ();
+
+      fn not( self ) -> Self::Output
+      {
+        ()
+      }
+    }
+};
 
   if has_debug
   {

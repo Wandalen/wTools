@@ -157,7 +157,6 @@ derive_into_iterator = [ "derive_more", "derive_more/std", "derive_more/into_ite
 # derive_iterator = [ "derive_more", "derive_more/iterator" ]
 derive_mul_assign = [ "derive_more", "derive_more/std", "derive_more/mul_assign" ]
 derive_mul = [ "derive_more", "derive_more/std", "derive_more/mul" ]
-derive_not = [ "derive_more", "derive_more/std", "derive_more/not" ]
 derive_sum = [ "derive_more", "derive_more/std", "derive_more/sum" ]
 derive_try_into = [ "derive_more", "derive_more/std", "derive_more/try_into" ]
 derive_is_variant = [ "derive_more", "derive_more/is_variant" ]
@@ -180,6 +179,8 @@ derive_clone_dyn = [ "clone_dyn/enabled" ]
 derive_from = [ "derive_tools_meta/derive_from" ]
 derive_inner_from = [ "derive_tools_meta/derive_inner_from" ]
 derive_new = [ "derive_tools_meta/derive_new" ]
+
+derive_not = [ "derive_tools_meta/derive_not" ]
 
 derive_phantom = [ "derive_tools_meta/derive_phantom" ]
 
