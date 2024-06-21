@@ -9,8 +9,7 @@ mod private
     io::{ Write, Read, Seek, SeekFrom },
     collections::HashMap,
   };
-
-  use convert_case::{ Case, Casing };
+  use convert_case::Casing;
   use toml_edit::Document;
   use regex::bytes::Regex;
 
@@ -529,8 +528,8 @@ ensure that at least one remotest is present in git. ",
           "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={}%2Fexamples%2F{},RUN_POSTFIX=--example%20{}/{})",
           path,
           file_name,
-          name
-          parameters.core_url 
+          name,
+          parameters.core_url, 
         )
       }
       else
@@ -661,11 +660,11 @@ ensure that at least one remotest is present in git. ",
       ( 
         "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/module_{}_push.yml?label=&branch={})]({}/actions/workflows/module_{}_push.yml?query=branch%3A{})", 
         table_parameters.user_and_repo, 
-        &module_name.to_case( Case::Snake ), 
-        b
+        &module_name.to_case( convert_case::Case::Snake ), 
+        b,
         table_parameters.core_url, 
-        &module_name.to_case( Case::Snake ), 
-        b 
+        &module_name.to_case( convert_case::Case::Snake ), 
+        b,
       )
     )
     .collect::< Vec< String > >()
