@@ -6,18 +6,16 @@ mod private
   {
     path::Path,
     collections::{ HashMap, HashSet },
+    fmt,
+    hash::Hash,
+    path,
   };
-  use std::fmt::Formatter;
-  use std::hash::Hash;
-  use std::path::PathBuf;
-  // qqq : for Petro : for Bohdan : group uses
+  // aaa : for Petro : for Bohdan : group uses
+  // aaa : done
 
   use process_tools::process;
   use manifest::{ Manifest, ManifestError };
   use crates_tools::CrateArchive;
-
-  use workspace::Workspace;
-
   use
   {
     iter::Itertools,
@@ -25,17 +23,10 @@ mod private
     {
       Result,
       typed::Error,
-      untyped::{ format_err, Context },
+      untyped::{ format_err, Context, Error },
     }
   };
-  use former::Former;
-  use diff::crate_diff;
-  use version::revert;
-  use error::untyped::Error;
-  use channel::Channel;
   use error_with::ErrWith;
-  use tool::ListNodeReport;
-  use tool::TreePrinter;
 
   // aaa : fro Bohdan : write better description : is it better?
   /// A wrapper type for representing the name of a package.
@@ -230,7 +221,7 @@ mod private
 
   impl std::fmt::Display for ExtendedGitReport
   {
-    fn fmt( &self, f : &mut Formatter<'_> ) -> std::fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> std::fmt::Result
     {
       let Self { add, commit, push } = &self;
 
@@ -293,14 +284,14 @@ mod private
   // qqq : for Bohdan : documentation
 
   /// Represents a planner for publishing a single package.
-  #[ derive( Debug, Former ) ]
+  #[ derive( Debug, former::Former ) ]
   #[ perform( fn build() -> PackagePublishInstruction ) ]
   pub struct PublishSinglePackagePlanner< 'a >
   {
     workspace_dir : CrateDir,
     package : Package< 'a >,
-    channel : Channel,
-    base_temp_dir : Option< PathBuf >,
+    channel : channel::Channel,
+    base_temp_dir : Option< path::PathBuf >,
     #[ former( default = true ) ]
     dry : bool,
   }
@@ -395,7 +386,7 @@ mod private
       Ok( git ) => git,
       Err( e ) =>
       {
-        revert( &bump_report )
+        version::revert( &bump_report )
         .map_err( | le | format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) ) )
         .err_with( || report.clone() )?;
         return Err(( report, e ));
@@ -429,7 +420,7 @@ mod private
   /// It organizes the necessary details required for publishing each individual package.
   /// This includes the workspace root directory, any temporary directories used during the process,
   /// and the set of specific instructions for publishing each package.
-  #[ derive( Debug, Former, Clone ) ]
+  #[ derive( Debug, former::Former, Clone ) ]
   pub struct PublishPlan
   {
     /// `workspace_dir` - This is the root directory of your workspace, containing all the Rust crates
@@ -441,10 +432,10 @@ mod private
     /// building the package or any other processes that might require the storage of transient data. It's
     /// optional as not all operations will require temporary storage. The type used is `PathBuf` which allows
     /// manipulation of the filesystem paths.
-    pub base_temp_dir : Option< PathBuf >,
+    pub base_temp_dir : Option< path::PathBuf >,
 
     /// Release channels for rust.
-    pub channel : Channel,
+    pub channel : channel::Channel,
 
     /// `dry` - A boolean value indicating whether to do a dry run. If set to `true`, the application performs
     /// a simulated run without making any actual changes. If set to `false`, the operations are actually executed.
@@ -511,9 +502,9 @@ mod private
           r
         }
         let printer = list;
-        let rep : Vec< ListNodeReport > = printer.iter().map( | printer | printer.info.clone() ).collect();
-        let list: Vec< ListNodeReport > = rep.into_iter().map( | r | callback( &name_bump_report, r ) ).collect();
-        let printer : Vec< TreePrinter > = list.iter().map( | rep | TreePrinter::new( rep ) ).collect();
+        let rep : Vec< tool::ListNodeReport > = printer.iter().map( | printer | printer.info.clone() ).collect();
+        let list: Vec< tool::ListNodeReport > = rep.into_iter().map( | r | callback( &name_bump_report, r ) ).collect();
+        let printer : Vec< tool::TreePrinter > = list.iter().map( | rep | tool::TreePrinter::new( rep ) ).collect();
 
         let list = action::list::ListReport::Tree( printer );
         writeln!( f, "{}", list )?;
@@ -547,7 +538,7 @@ mod private
 
   impl< 'a > PublishPlanFormer
   {
-    pub fn option_base_temp_dir( mut self, path : Option< PathBuf > ) -> Self
+    pub fn option_base_temp_dir( mut self, path : Option< path::PathBuf > ) -> Self
     {
       self.storage.base_temp_dir = path;
       self
@@ -641,7 +632,7 @@ mod private
 
   impl std::fmt::Display for PublishReport
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> std::fmt::Result
     {
       let PublishReport
       {
@@ -879,7 +870,7 @@ mod private
   ///
   /// Panics if the package is not loaded or local package is not packed.
 
-  pub fn publish_need< 'a >( package : &Package< 'a >, path : Option< PathBuf > ) -> Result< bool, PackageError >
+  pub fn publish_need< 'a >( package : &Package< 'a >, path : Option< path::PathBuf > ) -> Result< bool, PackageError >
   {
     let name = package.name()?;
     let version = package.version()?;
@@ -896,7 +887,7 @@ mod private
       _ => return Err( PackageError::LoadRemotePackage ),
     };
 
-    Ok( crate_diff( &local_package, &remote_package ).exclude( diff::PUBLISH_IGNORE_LIST ).has_changes() )
+    Ok( diff::crate_diff( &local_package, &remote_package ).exclude( diff::PUBLISH_IGNORE_LIST ).has_changes() )
   }
 }
 
