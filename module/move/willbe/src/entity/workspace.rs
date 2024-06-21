@@ -101,11 +101,13 @@ mod private
       self.metadata.packages.iter().map( WorkspacePackageRef::from )
     }
 
-    // qqq : return `CrateDir` instead of `std::path::Path`
+    // aaa : return `CrateDir` instead of `std::path::Path`
+    // changed the return type
     /// Returns the path to workspace root
-    pub fn workspace_root( &self ) -> &std::path::Path
+    pub fn workspace_root( &self ) -> CrateDir
     {
-      self.metadata.workspace_root.as_std_path()
+      // Safe because workspace_root.as_std_path() is always a path to a directory
+      CrateDir::try_from( self.metadata.workspace_root.as_std_path() ).unwrap() 
     }
 
     /// Returns the path to target directory

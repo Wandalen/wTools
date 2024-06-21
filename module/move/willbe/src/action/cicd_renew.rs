@@ -48,11 +48,11 @@ mod private
     let packages = workspace_cache.packages();
     let username_and_repository = &username_and_repository
     (
-      &workspace_cache.workspace_root().join( "Cargo.toml" ).try_into()?, // qqq
+      &workspace_cache.workspace_root().join( "Cargo.toml" ).to_path_buf().try_into()?, // qqq
       packages.clone(),
       // packages.as_slice(),
     )?;
-    let workspace_root : &Path = workspace_cache.workspace_root();
+    let workspace_root : &Path = &workspace_cache.workspace_root();
     // find directory for workflows
     let workflow_root = workspace_root.join( ".github" ).join( "workflows" );
     // map packages name's to naming standard
@@ -64,7 +64,7 @@ mod private
     // map packages path to relative paths fom workspace root,
     // for example D:/work/wTools/module/core/iter_tools => module/core/iter_tools
     let relative_paths = packages
-    .map( | p | p.manifest_file().unwrap() ) // qqq : rid of unwrap
+    .map( | p | p.manifest_file().ok() ) // aaa : rid of unwrap : removed
     .filter_map( | p |
     {
       // dbg!( &workspace_root );
@@ -74,7 +74,7 @@ mod private
         dbg!( &root_str );
         dbg!( &p );
 
-        Some( p.clone().strip_prefix( root_str ).ok()?.to_path_buf() )
+        Some( p?.strip_prefix( root_str ).ok()?.to_path_buf() )
         //.map( | s | s.display().to_string() ).ok()
       })
     })

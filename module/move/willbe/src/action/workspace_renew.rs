@@ -20,6 +20,15 @@ mod private
     values : TemplateValues,
   }
 
+  impl WorkspaceTemplate 
+  {
+    /// Returns template parameters 
+    pub fn get_parameters( &self ) -> &TemplateParameters
+    {
+      &self.parameters
+    }
+  }
+
   // impl Template<WorkspaceTemplateFiles> for WorkspaceTemplate
   // {
   //   fn create_all( self, path : &Path ) -> Result< () >

@@ -194,7 +194,7 @@ mod private
       .err_with( || report.clone() )?
     );
 
-    report.found_file = Some( read_me_path.clone() );
+    report.found_file = Some( read_me_path.clone().to_path_buf() );
 
     let mut file = OpenOptions::new()
     .read( true )
@@ -225,7 +225,7 @@ mod private
     file.set_len( 0 ).err_with( || report.clone() )?;
     file.seek( SeekFrom::Start( 0 ) ).err_with( || report.clone() )?;
     file.write_all( content.as_bytes() ).err_with( || report.clone() )?;
-    report.touched_file = read_me_path;
+    report.touched_file = read_me_path.to_path_buf();
     report.success = true;
     Ok( report )
   }
