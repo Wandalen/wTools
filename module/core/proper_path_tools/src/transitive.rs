@@ -70,11 +70,7 @@ pub( crate ) mod private
   /// let initial = InitialType;
   /// let final_result : Result< FinalType, ConversionError > = FinalType::transitive_try_from( initial );
   /// ```
-  pub trait TransitiveTryFrom< Transitive, Error, Initial >
-  where
-    Transitive : TryFrom< Initial >,
-    Self : TryFrom< Transitive, Error = Error >,
-    Error : From< < Transitive as TryFrom< Initial > >::Error >,
+  pub trait TransitiveTryFrom< Error, Initial >
   {
     /// Performs a transitive `try_from` conversion.
     ///
@@ -94,22 +90,22 @@ pub( crate ) mod private
     ///
     /// See the trait-level documentation for an example.
     #[ inline( always ) ]
-    fn transitive_try_from( src : Initial ) -> Result< Self, Error >
+    fn transitive_try_from< Transitive >( src : Initial ) -> Result< Self, Error >
+    where
+      Transitive : TryFrom< Initial >,
+      Self : TryFrom< Transitive, Error = Error >,
+      Error : From< < Transitive as TryFrom< Initial > >::Error >,
     {
       let src2 = TryFrom::< Initial >::try_from( src )?;
       TryFrom::< Transitive >::try_from( src2 )
     }
   }
 
-  // impl< Transitive, Initial, Error, Final >
-  // TransitiveTryFrom< Transitive, Initial, Error >
-  // for Final
-  // where
-  //   Transitive : TryFrom< Initial >,
-  //   Self : TryFrom< Transitive, Error = Error >,
-  //   Error : From< < Transitive as TryFrom< Initial > >::Error >,
-  // {
-  // }
+  impl< Initial, Error, Final >
+  TransitiveTryFrom< Initial, Error >
+  for Final
+  {
+  }
 
   pub trait TransitiveTryInto< Error, Final > : Sized
   // where

@@ -32,9 +32,9 @@ fn basic_from()
     }
   }
 
-  impl TransitiveTryFrom< IntermediateType, ConversionError, InitialType > for FinalType {}
+  // impl TransitiveTryFrom< IntermediateType, ConversionError, InitialType > for FinalType {}
 
   let initial = InitialType;
-  let _final_result : Result< FinalType, ConversionError > = FinalType::transitive_try_from( initial );
+  let _final_result : Result< FinalType, ConversionError > = FinalType::transitive_try_from::< IntermediateType >( initial );
 
 }

@@ -97,8 +97,9 @@ mod private
     /// Load data from current directory
     fn try_from( cd : CurrentPath ) -> Result< Self, Self::Error >
     {
-      let crate_dir : CrateDir = cd.transitive_try_into::< AbsolutePath >()?;
-      Self::try_from( crate_dir )
+      // let crate_dir : CrateDir = cd.transitive_try_into::< AbsolutePath >()?;
+      // Self::try_from( crate_dir )
+      Self::try_from( CrateDir::transitive_try_from::< AbsolutePath >( cd )? )
       // Self::try_from( cd.transitive_try_into::< AbsolutePath >()? )
     }
 
