@@ -100,7 +100,8 @@ pub( crate ) mod private
     }
   }
 
-  // impl< Transitive, Initial, Error, Final > TransitiveTryFrom< Transitive, Initial, Error >
+  // impl< Transitive, Initial, Error, Final >
+  // TransitiveTryFrom< Transitive, Initial, Error >
   // for Final
   // where
   //   Transitive : TryFrom< Initial >,
@@ -109,25 +110,53 @@ pub( crate ) mod private
   // {
   // }
 
+  pub trait Unwrap< T >
+  {
+    fn unwrap( self ) -> T;
+  }
+
+  impl< T > Unwrap< T > for ( T, )
+  {
+    fn unwrap( self ) -> T
+    {
+      self.0
+    }
+  }
+
   pub trait TransitiveTryInto< Transitive, Error, Final > : Sized
   where
-    Self : TryInto< Transitive >,
+    Self : Unwrap< Self::Inner >,
+    Self::Inner : TryInto< Transitive >,
     Transitive : TryInto< Final, Error = Error >,
-    Error : From< < Self as TryInto< Transitive > >::Error >,
+    Error : From< < Self::Inner as TryInto< Transitive > >::Error >,
   {
+    type Inner;
     fn transitive_try_into( self ) -> Result< Final, Error >
     {
-      let src2 = TryInto::< Transitive >::try_into( self )?;
+      let src2 = TryInto::< Transitive >::try_into( self.unwrap() )?;
       TryInto::< Final >::try_into( src2 )
     }
   }
 
-  // impl< Transitive, Initial, Error, Final > TransitiveTryInto< Transitive, Initial, Error >
-  // for Final
+  // pub trait TransitiveTryInto< Transitive, Error, Final > : Sized
   // where
-  //   Transitive : TryFrom< Initial >,
-  //   Self : TryFrom< Transitive, Error = Error >,
-  //   Error : From< < Transitive as TryFrom< Initial > >::Error >,
+  //   Self : TryInto< Transitive >,
+  //   Transitive : TryInto< Final, Error = Error >,
+  //   Error : From< < Self as TryInto< Transitive > >::Error >,
+  // {
+  //   fn transitive_try_into( self ) -> Result< Final, Error >
+  //   {
+  //     let src2 = TryInto::< Transitive >::try_into( self )?;
+  //     TryInto::< Final >::try_into( src2 )
+  //   }
+  // }
+
+  // impl< Transitive, Error, Final, Initial > TransitiveTryInto< Transitive, Error, Final >
+  // for Initial
+  // where
+  //   Self : TryInto< Transitive >,
+  //   Transitive : TryInto< Final, Error = Error >,
+  //   Error : From< < Self as TryInto< Transitive > >::Error >,
   // {
   // }
 
@@ -137,4 +166,5 @@ crate::mod_interface!
 {
   exposed use TransitiveTryFrom;
   exposed use TransitiveTryInto;
+  exposed use Unwrap;
 }

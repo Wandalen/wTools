@@ -144,15 +144,22 @@ where
 {
 }
 
-// impl< Initial > TransitiveTryInto< AbsolutePath, PathError, CrateDir >
-// for Initial
-// where
-//   Self : TryInto< AbsolutePath >,
-//   AbsolutePath : TryInto< CrateDir, Error = PathError >,
-//   PathError : From< < Self as TryInto< AbsolutePath > >::Error >,
-//   // AbsolutePath : TryInto< Initial >,
-//   // PathError : From< < AbsolutePath as TryInto< Initial > >::Error >,
+impl< Initial > TransitiveTryInto< AbsolutePath, PathError, CrateDir >
+for ( Initial, )
+where
+  Initial : TryInto< AbsolutePath >,
+  AbsolutePath : TryInto< CrateDir, Error = PathError >,
+  PathError : From< < Initial as TryInto< AbsolutePath > >::Error >,
+{
+  type Inner = Initial;
+}
+
+// impl From< ( Initial, ) > for Initial
 // {
+//   fn from( src : ( Initial, ) ) -> Self
+//   {
+//     src.0
+//   }
 // }
 
 impl TryFrom< PathBuf > for CrateDir
