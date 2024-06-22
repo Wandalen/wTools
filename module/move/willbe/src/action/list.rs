@@ -311,7 +311,7 @@ mod private
     /// This is typically the name of the library or package that the package relies on.
     pub name : String,
     /// The version requirements for the dependency.
-    /// 
+    ///
     /// Note: This will be compared to other dependencies and packages to build the tree
     pub version : semver::VersionReq,
     /// An optional path to the manifest file of the dependency.
@@ -432,7 +432,7 @@ mod private
     .context( "List of packages by specified manifest path" )
     .err_with( || report.clone() )?;
 
-    let workspace = Workspace::with_crate_dir( manifest.crate_dir() )
+    let workspace = Workspace::try_from( manifest.crate_dir() )
     .context( "Reading workspace" )
     .err_with( || report.clone() )?;
 
@@ -466,7 +466,7 @@ mod private
       process_package_dependency( &workspace, &package, &args, &mut package_report, visited );
 
       let printer = TreePrinter::new( &package_report );
-      
+
       *report = match report
       {
         ListReport::Tree( ref mut v ) => ListReport::Tree( { v.extend([ printer ]); v.clone() } ),

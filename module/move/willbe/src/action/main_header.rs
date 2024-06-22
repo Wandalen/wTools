@@ -174,11 +174,9 @@ mod private
     let mut report = MainHeaderRenewReport::default();
     regexes_initialize();
 
-    let workspace = Workspace::with_crate_dir
+    let workspace = Workspace::try_from
     (
       crate_dir
-      // CrateDir::try_from( path )
-      // .err_with( || report.clone() )?
     ).err_with( || report.clone() )?;
 
     let workspace_root = workspace

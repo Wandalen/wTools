@@ -32,42 +32,42 @@ mod private
     IO( #[ from ] std::io::Error ),
   }
 
-  impl Workspace
-  {
-
-    // // qqq : xxx : use try_from
-    // /// Load data from current directory
-    // pub fn from_current_path() -> Result< Self, WorkspaceInitError >
-    // {
-    //   let current_path = AbsolutePath::try_from( env::current_dir().unwrap_or_default() ).map_err( PathError::Io )?;
-    //   let metadata = cargo_metadata::MetadataCommand::new()
-    //   .no_deps()
-    //   .exec()?;
-    //   Ok( Self
-    //   {
-    //     metadata,
-    //     crate_dir : CrateDir::try_from( current_path )?,
-    //   })
-    // }
-
-    // qqq : xxx : use try_from
-    /// Load data from current directory
-    pub fn with_crate_dir( crate_dir : CrateDir ) -> Result< Self, WorkspaceInitError >
-    {
-      Ok
-      (
-        Self
-        {
-          metadata : cargo_metadata::MetadataCommand::new()
-          .current_dir( crate_dir.as_ref() )
-          .no_deps()
-          .exec()?,
-          crate_dir,
-        }
-      )
-    }
-
-  }
+//   impl Workspace
+//   {
+//
+//     // // qqq : xxx : use try_from
+//     // /// Load data from current directory
+//     // pub fn from_current_path() -> Result< Self, WorkspaceInitError >
+//     // {
+//     //   let current_path = AbsolutePath::try_from( env::current_dir().unwrap_or_default() ).map_err( PathError::Io )?;
+//     //   let metadata = cargo_metadata::MetadataCommand::new()
+//     //   .no_deps()
+//     //   .exec()?;
+//     //   Ok( Self
+//     //   {
+//     //     metadata,
+//     //     crate_dir : CrateDir::try_from( current_path )?,
+//     //   })
+//     // }
+//
+//     // qqq : xxx : use try_from
+//     /// Load data from current directory
+//     pub fn with_crate_dir( crate_dir : CrateDir ) -> Result< Self, WorkspaceInitError >
+//     {
+//       Ok
+//       (
+//         Self
+//         {
+//           metadata : cargo_metadata::MetadataCommand::new()
+//           .current_dir( crate_dir.as_ref() )
+//           .no_deps()
+//           .exec()?,
+//           crate_dir,
+//         }
+//       )
+//     }
+//
+//   }
 
   impl TryFrom< CrateDir > for Workspace
   {
@@ -76,7 +76,6 @@ mod private
     /// Load data from current directory
     fn try_from( crate_dir : CrateDir ) -> Result< Self, Self::Error >
     {
-      // xxx
       let metadata = cargo_metadata::MetadataCommand::new()
       .current_dir( crate_dir.as_ref() )
       .no_deps()
@@ -97,10 +96,7 @@ mod private
     /// Load data from current directory
     fn try_from( cd : CurrentPath ) -> Result< Self, Self::Error >
     {
-      // let crate_dir : CrateDir = cd.transitive_try_into::< AbsolutePath >()?;
-      // Self::try_from( crate_dir )
       Self::try_from( CrateDir::transitive_try_from::< AbsolutePath >( cd )? )
-      // Self::try_from( cd.transitive_try_into::< AbsolutePath >()? )
     }
 
   }

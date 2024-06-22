@@ -44,7 +44,7 @@ mod private
   /// Generate workflows for modules in .github/workflows directory.
   pub fn cicd_renew( base_path : &Path ) -> Result< (), CiCdGenerateError >
   {
-    let workspace_cache = Workspace::with_crate_dir( CrateDir::try_from( base_path )? )?;
+    let workspace_cache = Workspace::try_from( CrateDir::try_from( base_path )? )?;
     let packages = workspace_cache.packages();
     let username_and_repository = &username_and_repository
     (

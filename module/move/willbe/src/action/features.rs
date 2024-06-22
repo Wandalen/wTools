@@ -69,17 +69,16 @@ mod private
   /// List features
   pub fn features( FeaturesOptions { crate_dir, with_features_deps } : FeaturesOptions ) -> Result< FeaturesReport >
   {
-    // let workspace = Workspace::with_crate_dir( CrateDir::try_from( crate_dir.clone() )? ).context( "Failed to find workspace" )?;
-    let workspace = Workspace::with_crate_dir( crate_dir.clone() ).context( "Failed to find workspace" )?;
+    let workspace = Workspace::try_from( crate_dir.clone() ).context( "Failed to find workspace" )?;
     let packages = workspace.packages().filter
     (
       | package |
       {
-        if let Ok( manifest_file ) = package.manifest_file() 
+        if let Ok( manifest_file ) = package.manifest_file()
         {
           manifest_file.inner().starts_with(crate_dir.clone().absolute_path())
         }
-        else 
+        else
         {
           false
         }

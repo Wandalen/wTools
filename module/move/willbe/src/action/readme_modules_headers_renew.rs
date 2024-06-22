@@ -189,14 +189,11 @@ mod private
   pub fn readme_modules_headers_renew( crate_dir : CrateDir )
   -> ResultWithReport< ModulesHeadersRenewReport, ModulesHeadersRenewError >
   // -> Result< ModulesHeadersRenewReport, ( ModulesHeadersRenewReport, ModulesHeadersRenewError ) >
-  // zzz : newtype
+  // xxx : newtype
   {
     let mut report = ModulesHeadersRenewReport::default();
     regexes_initialize();
-    let workspace = Workspace::with_crate_dir
-    (
-      crate_dir
-    )
+    let workspace = Workspace::try_from( crate_dir )
     .err_with( || report.clone() )?; // xxx : qqq : use trait. everywhere
     let discord_url = workspace.discord_url();
 

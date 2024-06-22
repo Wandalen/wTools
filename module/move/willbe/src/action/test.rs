@@ -110,7 +110,7 @@ Try to install it with `rustup install {}` command(-s)",
       with_progress,
     } = o;
 
-    // zzz : watch and review after been ready
+    // xxx : watch and review after been ready
     // aaa : for Petro : use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >
     // aaa : done
     let path = match PathEither::try_from( o.dir.as_ref() ).map_err( | e | ( report.clone(), e.into() ) )?.inner()
@@ -120,15 +120,17 @@ Try to install it with `rustup install {}` command(-s)",
     };
 
     let workspace = Workspace
-    ::with_crate_dir( CrateDir::try_from( path.clone() ).err_with( || report.clone() )? )
+    ::try_from( CrateDir::try_from( path.clone() ).err_with( || report.clone() )? )
     .err_with( || report.clone() )?
     // xxx : clone?
+    // qqq : for Petro : use trait everywhere
     ;
 
     // let packages = needed_packages( &workspace );
     let packages = workspace
     .packages()
-    .filter( move | p | p.manifest_file().is_ok() && p.manifest_file().unwrap().starts_with( path.as_ref() ) ) // aaa : rid of unwrap // aaa : now its save
+    .filter( move | p | p.manifest_file().is_ok() && p.manifest_file().unwrap().starts_with( path.as_ref() ) )
+    // qqq : for Petro : too long line
     ;
 
     let plan = TestPlan::try_from

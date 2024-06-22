@@ -198,11 +198,11 @@ mod private
   /// will mean that at this place the table with modules located in the directory module/core will be generated.
   /// The tags do not disappear after generation.
   /// Anything between the opening and closing tag will be destroyed.
+  // qqq : for Petro : typed errors
   pub fn readme_health_table_renew( path : &Path ) -> Result< () >
   {
     regexes_initialize();
-    // let absolute_path = AbsolutePath::try_from( path )?;
-    let workspace = Workspace::with_crate_dir( CrateDir::try_from( path )? )?; // xxx
+    let workspace = Workspace::try_from( CrateDir::try_from( path )? )?;
     let workspace_root = workspace.workspace_root();
     let mut parameters = GlobalTableOptions::initialize_from_path( &workspace_root )?;
 
