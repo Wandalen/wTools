@@ -4,7 +4,7 @@ use super::*;
 use the_module::
 {
   AbsolutePath,
-  Path,
+  // Path,
   PathBuf,
 };
 

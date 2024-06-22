@@ -84,7 +84,8 @@ mod private
       Ok( Self
       {
         metadata,
-        crate_dir : CrateDir::try_from( AbsolutePath::try_from( CurrentPath )? )?,
+        crate_dir : CrateDir::transitive_try_from( CurrentPath )?,
+        // crate_dir : CrateDir::try_from( AbsolutePath::try_from( CurrentPath )? )?,
       })
     }
 

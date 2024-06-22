@@ -5,6 +5,7 @@ pub( crate ) mod private
   use crate::*;
   use std::env;
 
+  /// Symbolize current path.
   #[ derive( Clone, Copy, Debug, Default, PartialEq, Eq ) ]
   pub struct CurrentPath;
 
