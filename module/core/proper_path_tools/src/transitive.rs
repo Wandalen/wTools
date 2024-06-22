@@ -74,7 +74,7 @@ pub( crate ) mod private
   where
     Transitive : TryFrom< Initial >,
     Self : TryFrom< Transitive, Error = Error >,
-    Error : From< <Transitive as TryFrom< Initial >>::Error >,
+    Error : From< < Transitive as TryFrom< Initial > >::Error >,
   {
     /// Performs a transitive `try_from` conversion.
     ///
@@ -109,10 +109,32 @@ pub( crate ) mod private
   // {
   // }
 
+  pub trait TransitiveTryInto< Transitive, Error, Final > : Sized
+  where
+    Self : TryInto< Transitive >,
+    Transitive : TryInto< Final, Error = Error >,
+    Error : From< < Self as TryInto< Transitive > >::Error >,
+  {
+    fn transitive_try_into( self ) -> Result< Final, Error >
+    {
+      let src2 = TryInto::< Transitive >::try_into( self )?;
+      TryInto::< Final >::try_into( src2 )
+    }
+  }
+
+  // impl< Transitive, Initial, Error, Final > TransitiveTryInto< Transitive, Initial, Error >
+  // for Final
+  // where
+  //   Transitive : TryFrom< Initial >,
+  //   Self : TryFrom< Transitive, Error = Error >,
+  //   Error : From< < Transitive as TryFrom< Initial > >::Error >,
+  // {
+  // }
+
 }
 
 crate::mod_interface!
 {
   exposed use TransitiveTryFrom;
-  // exposed use TransitiveTryInto;
+  exposed use TransitiveTryInto;
 }

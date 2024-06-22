@@ -70,7 +70,7 @@ mod private
   {
     let mut report = ReadmeHeadersRenewReport::default();
     // let absolute_path = AbsolutePath::try_from( std::env::current_dir()? )?;
-    let crate_dir = CrateDir::try_from( std::env::current_dir()? )?;
+    let crate_dir = CrateDir::transitive_try_from( CurrentPath )?;
     let mut fail = false;
 
     match action::readme_header_renew( crate_dir.clone() )

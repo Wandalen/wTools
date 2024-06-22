@@ -144,6 +144,17 @@ where
 {
 }
 
+// impl< Initial > TransitiveTryInto< AbsolutePath, PathError, CrateDir >
+// for Initial
+// where
+//   Self : TryInto< AbsolutePath >,
+//   AbsolutePath : TryInto< CrateDir, Error = PathError >,
+//   PathError : From< < Self as TryInto< AbsolutePath > >::Error >,
+//   // AbsolutePath : TryInto< Initial >,
+//   // PathError : From< < AbsolutePath as TryInto< Initial > >::Error >,
+// {
+// }
+
 impl TryFrom< PathBuf > for CrateDir
 {
   type Error = PathError;

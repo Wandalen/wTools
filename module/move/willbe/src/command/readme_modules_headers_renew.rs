@@ -7,8 +7,7 @@ mod private
   /// Generate headers for workspace members
   pub fn readme_modules_headers_renew() -> Result< () >
   {
-    // match action::readme_modules_headers_renew( AbsolutePath::try_from( std::env::current_dir()? )? )
-    match action::readme_modules_headers_renew( CrateDir::try_from( std::env::current_dir()? )? )
+    match action::readme_modules_headers_renew( CrateDir::transitive_try_from( CurrentPath )? )
     {
       Ok( report ) =>
       {

@@ -20,9 +20,9 @@ mod private
     values : TemplateValues,
   }
 
-  impl WorkspaceTemplate 
+  impl WorkspaceTemplate
   {
-    /// Returns template parameters 
+    /// Returns template parameters
     pub fn get_parameters( &self ) -> &TemplateParameters
     {
       &self.parameters
@@ -133,8 +133,6 @@ mod private
   // qqq : for Petro : should return report
   // qqq : for Petro : should have typed error
   /// Creates workspace template
-  // aaa : for Petro : too long line, review all your files
-  // aaa : this done
   pub fn workspace_renew
   (
     path : &Path,
@@ -143,7 +141,7 @@ mod private
     branches : Vec< String >
   ) -> Result< () >
   {
-    if fs::read_dir(path)?.count() != 0
+    if fs::read_dir( path )?.count() != 0
     {
       bail!( "Directory should be empty" )
     }
