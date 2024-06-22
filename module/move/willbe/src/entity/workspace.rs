@@ -97,20 +97,9 @@ mod private
     /// Load data from current directory
     fn try_from( cd : CurrentPath ) -> Result< Self, Self::Error >
     {
-      // Self::try_from( CrateDir::try_from( AbsolutePath::try_from( cd )? )? )
-      let crate_dir : CrateDir = ( cd, ).transitive_try_into()?;
+      let crate_dir : CrateDir = cd.transitive_try_into::< AbsolutePath >()?;
       Self::try_from( crate_dir )
-      // // xxx
-      // // let current_path = AbsolutePath::try_from( env::current_dir().unwrap_or_default() ).map_err( PathError::Io )?;
-      // // let current_path
-      // let metadata = cargo_metadata::MetadataCommand::new()
-      // .no_deps()
-      // .exec()?;
-      // Ok( Self
-      // {
-      //   metadata,
-      //   crate_dir : CrateDir::transitive_try_from( CurrentPath )?,
-      // })
+      // Self::try_from( cd.transitive_try_into::< AbsolutePath >()? )
     }
 
   }

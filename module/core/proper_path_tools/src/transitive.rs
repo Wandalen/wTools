@@ -93,6 +93,7 @@ pub( crate ) mod private
     /// # Example
     ///
     /// See the trait-level documentation for an example.
+    #[ inline( always ) ]
     fn transitive_try_from( src : Initial ) -> Result< Self, Error >
     {
       let src2 = TryFrom::< Initial >::try_from( src )?;
@@ -110,33 +111,46 @@ pub( crate ) mod private
   // {
   // }
 
-  pub trait Unwrap< T >
-  {
-    fn unwrap( self ) -> T;
-  }
-
-  impl< T > Unwrap< T > for ( T, )
-  {
-    fn unwrap( self ) -> T
-    {
-      self.0
-    }
-  }
-
-  pub trait TransitiveTryInto< Transitive, Error, Final > : Sized
+  pub trait TransitiveTryInto< Error, Final > : Sized
   where
     Self : Unwrap< Self::Inner >,
-    Self::Inner : TryInto< Transitive >,
-    Transitive : TryInto< Final, Error = Error >,
-    Error : From< < Self::Inner as TryInto< Transitive > >::Error >,
   {
     type Inner;
-    fn transitive_try_into( self ) -> Result< Final, Error >
+    #[ inline( always ) ]
+    fn transitive_try_into< Transitive >( self ) -> Result< Final, Error >
+    where
+      Self::Inner : TryInto< Transitive >,
+      Transitive : TryInto< Final, Error = Error >,
+      Error : From< < Self::Inner as TryInto< Transitive > >::Error >,
     {
       let src2 = TryInto::< Transitive >::try_into( self.unwrap() )?;
       TryInto::< Final >::try_into( src2 )
     }
   }
+
+  impl< Error, Final, Initial > TransitiveTryInto< Error, Final >
+  for Initial
+  where
+    Self : Unwrap< Initial >,
+  {
+    type Inner = Initial;
+  }
+
+  // pub trait TransitiveTryInto< Transitive, Error, Final > : Sized
+  // where
+  //   Self : Unwrap< Self::Inner >,
+  //   Self::Inner : TryInto< Transitive >,
+  //   Transitive : TryInto< Final, Error = Error >,
+  //   Error : From< < Self::Inner as TryInto< Transitive > >::Error >,
+  // {
+  //   type Inner;
+  //   #[ inline( always ) ]
+  //   fn transitive_try_into( self ) -> Result< Final, Error >
+  //   {
+  //     let src2 = TryInto::< Transitive >::try_into( self.unwrap() )?;
+  //     TryInto::< Final >::try_into( src2 )
+  //   }
+  // }
 
   // pub trait TransitiveTryInto< Transitive, Error, Final > : Sized
   // where
@@ -158,7 +172,33 @@ pub( crate ) mod private
   //   Transitive : TryInto< Final, Error = Error >,
   //   Error : From< < Self as TryInto< Transitive > >::Error >,
   // {
+  //   type Inner = Initial;
   // }
+
+  // xxx : move out
+
+  pub trait Unwrap< T >
+  {
+    fn unwrap( self ) -> T;
+  }
+
+  impl< T > Unwrap< T > for ( T, )
+  {
+    #[ inline( always ) ]
+    fn unwrap( self ) -> T
+    {
+      self.0
+    }
+  }
+
+  impl< T > Unwrap< T > for T
+  {
+    #[ inline( always ) ]
+    fn unwrap( self ) -> T
+    {
+      self
+    }
+  }
 
 }
 
