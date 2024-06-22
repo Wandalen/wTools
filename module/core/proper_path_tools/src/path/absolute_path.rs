@@ -288,41 +288,41 @@ pub( crate ) mod private
     }
   }
 
-  /// Convertable into absolute path entity should implement the trait.
-  pub trait TryIntoAbsolutePath
-  {
-    /// Error returned if conversion is failed.
-    type Error;
-    /// Method to convert the type into absolute path.
-    fn into_absolute_path( self ) -> Result< AbsolutePath, Self::Error >;
-  }
-
-  // impl TryIntoAbsolutePath for AbsolutePath
-  // {
-  //   type Error = std::io::Error;
-  //   #[ inline ]
-  //   fn into_absolute_path( self ) -> Result< AbsolutePath, Self::Error >
-  //   {
-  //     Ok( self )
-  //   }
-  // }
-
-  impl< TryIntoAbsolutePathType > TryIntoAbsolutePath for TryIntoAbsolutePathType
-  where
-    TryIntoAbsolutePathType : TryInto< AbsolutePath >,
-  {
-    type Error = < Self as TryInto< AbsolutePath > >::Error;
-    #[ inline ]
-    fn into_absolute_path( self ) -> Result< AbsolutePath, Self::Error >
-    {
-      self.try_into()
-    }
-  }
+//   /// Convertable into absolute path entity should implement the trait.
+//   pub trait TryIntoAbsolutePath
+//   {
+//     /// Error returned if conversion is failed.
+//     type Error;
+//     /// Method to convert the type into absolute path.
+//     fn into_absolute_path( self ) -> Result< AbsolutePath, Self::Error >;
+//   }
+//
+//   // impl TryIntoAbsolutePath for AbsolutePath
+//   // {
+//   //   type Error = std::io::Error;
+//   //   #[ inline ]
+//   //   fn into_absolute_path( self ) -> Result< AbsolutePath, Self::Error >
+//   //   {
+//   //     Ok( self )
+//   //   }
+//   // }
+//
+//   impl< TryIntoAbsolutePathType > TryIntoAbsolutePath for TryIntoAbsolutePathType
+//   where
+//     TryIntoAbsolutePathType : TryInto< AbsolutePath >,
+//   {
+//     type Error = < Self as TryInto< AbsolutePath > >::Error;
+//     #[ inline ]
+//     fn into_absolute_path( self ) -> Result< AbsolutePath, Self::Error >
+//     {
+//       self.try_into()
+//     }
+//   }
 
 }
 
 crate::mod_interface!
 {
   exposed use AbsolutePath;
-  exposed use TryIntoAbsolutePath;
+  // exposed use TryIntoAbsolutePath;
 }
