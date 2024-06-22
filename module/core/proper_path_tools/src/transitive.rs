@@ -4,11 +4,13 @@ pub( crate ) mod private
 
 //   pub trait TransitiveTryFrom< Transitive, Initial >
 //   where
+//
 //     Transitive : TryFrom< Initial >,
-//     < Self as TransitiveTryFrom< Transitive, Initial > >::Error :
-//       From< < Transitive as TryFrom< Initial > >::Error >,
+//     < Self as TransitiveTryFrom< Transitive, Initial > >::Error : From< < Transitive as TryFrom< Initial > >::Error >,
+//
 //     Self : TryFrom< Transitive, Error = < Self as TransitiveTryFrom< Transitive, Initial > >::Error >,
-//     < Self as TryFrom< Transitive > >::Error : From< < Initial as TryInto< Transitive > >::Error >,
+//     // < Self as TryFrom< Transitive > >::Error : From< < Transitive as TryFrom< Initial > >::Error >,
+//
 //   {
 //     type Error;
 //
@@ -22,13 +24,9 @@ pub( crate ) mod private
 
   pub trait TransitiveTryFrom< Transitive, Initial >
   where
-
     Transitive : TryFrom< Initial >,
     < Self as TransitiveTryFrom< Transitive, Initial > >::Error : From< < Transitive as TryFrom< Initial > >::Error >,
-
     Self : TryFrom< Transitive, Error = < Self as TransitiveTryFrom< Transitive, Initial > >::Error >,
-    < Self as TryFrom< Transitive > >::Error : From< < Initial as TryInto< Transitive > >::Error >,
-
   {
     type Error;
 
