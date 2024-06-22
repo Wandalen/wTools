@@ -143,9 +143,11 @@ mod private
   //   }
   // }
 
+  // qqq : for Petro : redundant function
   fn get_dir_name() -> Result< String >
   {
     let current_dir = std::env::current_dir()?;
+  // qqq : for Petro : use file_name
     let current_dir = current_dir.components().last().context( "Invalid current directory" )?;
     Ok( current_dir.as_os_str().to_string_lossy().into() )
   }
