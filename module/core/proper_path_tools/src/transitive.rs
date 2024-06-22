@@ -2,40 +2,60 @@
 pub( crate ) mod private
 {
 
-  pub trait TransitiveTryFrom< IntoMiddle, Middle, Error > : Sized
-  {
-    // type Error;
-
-    // Required method
-    fn transitive_try_from( value : IntoMiddle ) -> Result< Self, Error >;
-  }
-
-  impl< IntoMiddle, Middle, Final, Error > TransitiveTryFrom< IntoMiddle, Middle, Error > for Final
-  where
-    IntoMiddle : TryInto< Middle >,
-    Error : From< < IntoMiddle as TryInto< Middle > >::Error >,
-    Final : TryFrom< Middle, Error = Error >,
-    < Final as TryFrom< Middle > >::Error : From< < IntoMiddle as TryInto< Middle > >::Error >
-  {
-    // type Error = Error;
-
-    #[ inline( always ) ]
-    fn transitive_try_from( src : IntoMiddle ) -> Result< Self, Error >
-    {
-      let src2 = TryInto::< Middle >::try_into( src )?;
-      TryFrom::< Middle >::try_from( src2 )
-    }
-  }
-
-//   impl< IntoMiddle, T > TransitiveTryFrom< IntoMiddle > for T
-//   where
-//     IntoMiddle : TryInto< T >,
-//     // Error : From< < IntoMiddle as TryInto< T > >::Error >,
+//   pub trait TransitiveTryFrom< IntoTransitive, Transitive, Error > : Sized
 //   {
-//     type Error = < IntoMiddle as TryInto< T > >::Error;
+//     // type Error;
+//
+//     // Required method
+//     fn transitive_try_from( value : IntoTransitive ) -> Result< Self, Error >;
+//   }
+//
+//   impl< IntoTransitive, Transitive, Final, Error > TransitiveTryFrom< IntoTransitive, Transitive, Error > for Final
+//   where
+//     IntoTransitive : TryInto< Transitive >,
+//     Error : From< < IntoTransitive as TryInto< Transitive > >::Error >,
+//     Final : TryFrom< Transitive, Error = Error >,
+//     < Final as TryFrom< Transitive > >::Error : From< < IntoTransitive as TryInto< Transitive > >::Error >
+//   {
+//     // type Error = Error;
 //
 //     #[ inline( always ) ]
-//     fn transitive_try_from( src : IntoMiddle ) -> Result< Self, Self::Error >
+//     fn transitive_try_from( src : IntoTransitive ) -> Result< Self, Error >
+//     {
+//       let src2 = TryInto::< Transitive >::try_into( src )?;
+//       TryFrom::< Transitive >::try_from( src2 )
+//     }
+//   }
+
+  pub trait TransitiveTryFrom< IntoTransitive, Error >
+  {
+
+    fn transitive_try_from< Transitive >( src : IntoTransitive ) -> Result< Self, Error >
+    where
+      IntoTransitive : TryInto< Transitive >,
+      Error : From< < IntoTransitive as TryInto< Transitive > >::Error >,
+      Self : TryFrom< Transitive, Error = Error >,
+      < Self as TryFrom< Transitive > >::Error : From< < IntoTransitive as TryInto< Transitive > >::Error >,
+    {
+      let src2 = TryInto::< Transitive >::try_into( src )?;
+      TryFrom::< Transitive >::try_from( src2 )
+    }
+
+  }
+
+  impl< IntoTransitive, Error, T > TransitiveTryFrom< IntoTransitive, Error > for T
+  {
+  }
+
+//   impl< IntoTransitive, T > TransitiveTryFrom< IntoTransitive > for T
+//   where
+//     IntoTransitive : TryInto< T >,
+//     // Error : From< < IntoTransitive as TryInto< T > >::Error >,
+//   {
+//     type Error = < IntoTransitive as TryInto< T > >::Error;
+//
+//     #[ inline( always ) ]
+//     fn transitive_try_from( src : IntoTransitive ) -> Result< Self, Self::Error >
 //     {
 //       TryInto::< T >::try_into( src )
 //     }
