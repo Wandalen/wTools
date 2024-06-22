@@ -2,7 +2,17 @@
 pub( crate ) mod private
 {
   // qqq : move to derive_tools
-  // qqq : write tests
+
+  // qqq : write tests, lool into example
+  //
+  // impl< Initial > TransitiveTryFrom< AbsolutePath, PathError, Initial >
+  // for CrateDir
+  // where
+  //   AbsolutePath : TryFrom< Initial >,
+  //   PathError : From< < AbsolutePath as TryFrom< Initial > >::Error >,
+  // {
+  // }
+
   // qqq : implement transitive_try_into
   // qqq : implement transitive_from
   // qqq : implement transitive_nto
