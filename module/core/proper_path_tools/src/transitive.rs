@@ -27,15 +27,35 @@ pub( crate ) mod private
 //     }
 //   }
 
-  pub trait TransitiveTryFrom< IntoTransitive, Error >
+//   pub trait TransitiveTryFrom< IntoTransitive, Error >
+//   {
+//
+//     fn transitive_try_from< Transitive >( src : IntoTransitive ) -> Result< Self, Error >
+//     where
+//       IntoTransitive : TryInto< Transitive >,
+//       Error : From< < IntoTransitive as TryInto< Transitive > >::Error >,
+//       Self : TryFrom< Transitive, Error = Error >,
+//       < Self as TryFrom< Transitive > >::Error : From< < IntoTransitive as TryInto< Transitive > >::Error >,
+//     {
+//       let src2 = TryInto::< Transitive >::try_into( src )?;
+//       TryFrom::< Transitive >::try_from( src2 )
+//     }
+//
+//   }
+//
+//   impl< IntoTransitive, Error, T > TransitiveTryFrom< IntoTransitive, Error > for T
+//   {
+//   }
+
+  pub trait TransitiveTryFrom< Transitive, IntoTransitive, Error >
+  where
+    IntoTransitive : TryInto< Transitive >,
+    Error : From< < IntoTransitive as TryInto< Transitive > >::Error >,
+    Self : TryFrom< Transitive, Error = Error >,
+    < Self as TryFrom< Transitive > >::Error : From< < IntoTransitive as TryInto< Transitive > >::Error >,
   {
 
-    fn transitive_try_from< Transitive >( src : IntoTransitive ) -> Result< Self, Error >
-    where
-      IntoTransitive : TryInto< Transitive >,
-      Error : From< < IntoTransitive as TryInto< Transitive > >::Error >,
-      Self : TryFrom< Transitive, Error = Error >,
-      < Self as TryFrom< Transitive > >::Error : From< < IntoTransitive as TryInto< Transitive > >::Error >,
+    fn transitive_try_from( src : IntoTransitive ) -> Result< Self, Error >
     {
       let src2 = TryInto::< Transitive >::try_into( src )?;
       TryFrom::< Transitive >::try_from( src2 )
@@ -43,9 +63,9 @@ pub( crate ) mod private
 
   }
 
-  impl< IntoTransitive, Error, T > TransitiveTryFrom< IntoTransitive, Error > for T
-  {
-  }
+  // impl< IntoTransitive, Error, T > TransitiveTryFrom< IntoTransitive, Error > for T
+  // {
+  // }
 
 //   impl< IntoTransitive, T > TransitiveTryFrom< IntoTransitive > for T
 //   where

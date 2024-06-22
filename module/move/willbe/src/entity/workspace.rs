@@ -85,8 +85,8 @@ mod private
       {
         metadata,
         // crate_dir : TransitiveTryFrom::< _, AbsolutePath, _ >::transitive_try_from( CurrentPath )?,
-        crate_dir : CrateDir::transitive_try_from::< AbsolutePath >( CurrentPath )?,
-        // crate_dir : CrateDir::transitive_try_from( CurrentPath )?,
+        // crate_dir : CrateDir::transitive_try_from::< AbsolutePath >( CurrentPath )?,
+        crate_dir : CrateDir::transitive_try_from( CurrentPath )?,
         // crate_dir : CrateDir::try_from( AbsolutePath::try_from( CurrentPath )? )?,
       })
     }
