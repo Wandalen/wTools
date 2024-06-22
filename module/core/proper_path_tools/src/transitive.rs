@@ -2,32 +2,42 @@
 pub( crate ) mod private
 {
 
-  pub trait TransitiveTryFrom< T > : Sized
+  pub trait TransitiveTryFrom< IntoMiddle, Middle, Error > : Sized
   {
-    type Error;
+    // type Error;
 
     // Required method
-    fn transitive_try_from( value : T ) -> Result< Self, Self::Error >;
+    fn transitive_try_from( value : IntoMiddle ) -> Result< Self, Error >;
   }
 
-//   impl< IntoAbsolutePathType > TransitiveTryFrom< IntoAbsolutePathType > for CrateDir
+  impl< IntoMiddle, Middle, Final, Error > TransitiveTryFrom< IntoMiddle, Middle, Error > for Final
+  where
+    IntoMiddle : TryInto< Middle >,
+    Error : From< < IntoMiddle as TryInto< Middle > >::Error >,
+    Final : TryFrom< Middle, Error = Error >,
+    < Final as TryFrom< Middle > >::Error : From< < IntoMiddle as TryInto< Middle > >::Error >
+  {
+    // type Error = Error;
+
+    #[ inline( always ) ]
+    fn transitive_try_from( src : IntoMiddle ) -> Result< Self, Error >
+    {
+      let src2 = TryInto::< Middle >::try_into( src )?;
+      TryFrom::< Middle >::try_from( src2 )
+    }
+  }
+
+//   impl< IntoMiddle, T > TransitiveTryFrom< IntoMiddle > for T
 //   where
-//     IntoAbsolutePathType : TryInto< AbsolutePath >,
-//     PathError : From< < IntoAbsolutePathType as TryInto< AbsolutePath > >::Error >,
+//     IntoMiddle : TryInto< T >,
+//     // Error : From< < IntoMiddle as TryInto< T > >::Error >,
 //   {
-//     type Error = PathError;
+//     type Error = < IntoMiddle as TryInto< T > >::Error;
 //
 //     #[ inline( always ) ]
-//     fn transitive_try_from( crate_dir_path : IntoAbsolutePathType ) -> Result< Self, Self::Error >
+//     fn transitive_try_from( src : IntoMiddle ) -> Result< Self, Self::Error >
 //     {
-//       // let crate_dir_path = IntoAbsolutePathType::into_absolute_path( crate_dir_path )?;
-//       let crate_dir_path = TryInto::< AbsolutePath >::try_into( crate_dir_path )?;
-//       if !crate_dir_path.as_ref().join( "Cargo.toml" ).is_file()
-//       {
-//         let err =  io::Error::new( io::ErrorKind::InvalidData, format!( "Cannot find crate dir at {crate_dir_path:?}" ) );
-//         return Err( PathError::Io( err ) );
-//       }
-//       Ok( Self( crate_dir_path ) )
+//       TryInto::< T >::try_into( src )
 //     }
 //   }
 
