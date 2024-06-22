@@ -2,35 +2,19 @@
 mod private
 {
   use crate::*;
-  use std::
-  {
-    fmt::Formatter,
-    // path::PathBuf,
-    collections::HashSet,
-  };
-  use std::collections::HashMap;
+  
+  use std::{ collections, fmt, str };
   use petgraph::
   {
     prelude::*,
     algo::toposort,
     visit::Topo,
   };
-  use std::str::FromStr;
-  use package::PackageName;
-  use packages::FilterMapOptions;
-  use error::
+  use
   {
-    untyped::{ Error, Context, format_err },
-    err
+    error::{ Context, untyped, format_err, err },
+    error_with::ErrWith,
   };
-
-  use petgraph::prelude::{ Dfs, EdgeRef };
-  use former::Former;
-
-  use workspace::Workspace;
-  // // use path::AbsolutePath;
-  use error_with::ErrWith;
-  use tool::{ TreePrinter, ListNodeReport };
 
   /// Args for `list` action.
   #[ derive( Debug, Default, Copy, Clone ) ]
@@ -43,9 +27,9 @@ mod private
     Topological,
   }
 
-  impl FromStr for ListFormat
+  impl str::FromStr for ListFormat
   {
-    type Err = Error;
+    type Err = untyped::Error;
 
     fn from_str( s : &str ) -> Result< Self, Self::Err >
     {
@@ -109,9 +93,9 @@ mod private
     Local,
   }
 
-  impl FromStr for ListFilter
+  impl str::FromStr for ListFilter
   {
-    type Err = Error;
+    type Err = untyped::Error;
 
     fn from_str( s : &str ) -> Result< Self, Self::Err >
     {
@@ -144,14 +128,14 @@ mod private
   /// - `path_to_manifest`: A `CrateDir` representing the path to the manifest of the crates.
   /// - `format`: A `ListFormat` enum representing the desired format of the output.
   /// - `dependency_sources`: A `HashSet` of `DependencySource` representing the sources of the dependencies.
-  #[ derive( Debug, Former ) ]
+  #[ derive( Debug, former::Former ) ]
   pub struct ListOptions
   {
     path_to_manifest : CrateDir,
     format : ListFormat,
-    info : HashSet< PackageAdditionalInfo >,
-    dependency_sources : HashSet< DependencySource >,
-    dependency_categories : HashSet< DependencyCategory >,
+    info : collections::HashSet< PackageAdditionalInfo >,
+    dependency_sources : collections::HashSet< DependencySource >,
+    dependency_categories : collections::HashSet< DependencyCategory >,
   }
 
   // struct Symbols
@@ -280,7 +264,7 @@ mod private
   pub enum ListReport
   {
     /// Represents a tree-like report format.
-    Tree( Vec< TreePrinter > ),
+    Tree( Vec< tool::TreePrinter > ),
     /// Represents a standard list report format in topological order.
     List( Vec< String > ),
     /// Represents an empty report format.
@@ -288,9 +272,9 @@ mod private
     Empty,
   }
 
-  impl std::fmt::Display for ListReport
+  impl fmt::Display for ListReport
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
       match self
       {
@@ -326,17 +310,20 @@ mod private
     workspace : &Workspace,
     package : &WorkspacePackageRef< 'a >,
     args : &ListOptions,
-    dep_rep : &mut ListNodeReport,
-    visited : &mut HashSet< DependencyId >
+    dep_rep : &mut tool::ListNodeReport,
+    visited : &mut collections::HashSet< DependencyId >
   )
   {
     for dependency in package.dependencies()
     {
-      // qqq : for Bohdan : bad : suboptimal
-      if dependency.crate_dir().is_some() && !args.dependency_sources.contains( &DependencySource::Local ) { continue; }
-      if dependency.crate_dir().is_none() && !args.dependency_sources.contains( &DependencySource::Remote ) { continue; }
+      // aaa : for Bohdan : bad : suboptimal
+      // aaa : Is that what you had in mind?
+      let dep_crate_dir = dependency.crate_dir();
+      if dep_crate_dir.is_some() && !args.dependency_sources.contains( &DependencySource::Local ) { continue; }
+      if dep_crate_dir.is_none() && !args.dependency_sources.contains( &DependencySource::Remote ) { continue; }
 
-      // qqq : extend test coverage. NewType. Description
+      // aaa : extend test coverage. NewType. Description
+      // aaa : NewType ✅ Description ✅ test coverage ❌ how to test structure without logic?
       let dep_id = DependencyId
       {
         name : dependency.name(),
@@ -366,11 +353,11 @@ mod private
     workspace : &Workspace,
     dep : DependencyRef< '_ >,
     args : &ListOptions,
-    visited : &mut HashSet< DependencyId >
+    visited : &mut collections::HashSet< DependencyId >
   )
-  -> ListNodeReport
+  -> tool::ListNodeReport
   {
-    let mut dep_rep = ListNodeReport
+    let mut dep_rep = tool::ListNodeReport
     {
       name : dep.name().clone(),
       version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( dep.req().to_string() ) } else { None },
@@ -422,7 +409,7 @@ mod private
   /// - `Result<ListReport, (ListReport, Error)>` - A result containing the list report if successful,
   ///   or a tuple containing the list report and error if not successful.
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
-  pub fn list( args : ListOptions ) -> Result< ListReport, ( ListReport, Error ) > // qqq : should be specific error
+  pub fn list( args : ListOptions ) -> ResultWithReport< ListReport, untyped::Error > // qqq : should be specific error
   {
     let mut report = ListReport::default();
 
@@ -439,7 +426,7 @@ mod private
     let is_package = manifest.package_is();
     // let is_package = manifest.package_is().context( "try to identify manifest type" ).err_with( report.clone() )?;
 
-    let tree_package_report = | manifest_file : ManifestFile, report : &mut ListReport, visited : &mut HashSet< DependencyId > |
+    let tree_package_report = | manifest_file : ManifestFile, report : &mut ListReport, visited : &mut collections::HashSet< DependencyId > |
     {
 
       // aaa : is it safe to use unwrap here? // aaa : done
@@ -447,7 +434,7 @@ mod private
       .package_find_by_manifest( manifest_file )
       .ok_or_else( || format_err!( "Package not found in the workspace" ) )
       .err_with( || report.clone() )?;
-      let mut package_report = ListNodeReport
+      let mut package_report = tool::ListNodeReport
       {
         name : package.name().to_string(),
         version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( package.version().to_string() ) } else { None },
@@ -465,7 +452,7 @@ mod private
 
       process_package_dependency( &workspace, &package, &args, &mut package_report, visited );
 
-      let printer = TreePrinter::new( &package_report );
+      let printer = tool::TreePrinter::new( &package_report );
       
       *report = match report
       {
@@ -480,11 +467,11 @@ mod private
     {
       ListFormat::Tree if is_package =>
       {
-        let mut visited = HashSet::new();
+        let mut visited = collections::HashSet::new();
         tree_package_report( manifest.manifest_file, &mut report, &mut visited )?;
         let ListReport::Tree( tree ) = report else { unreachable!() };
         let printer = merge_build_dependencies( tree );
-        let rep : Vec< ListNodeReport > = printer.iter().map( | printer | printer.info.clone() ).collect();
+        let rep : Vec< tool::ListNodeReport > = printer.iter().map( | printer | printer.info.clone() ).collect();
         let tree = rearrange_duplicates( rep );
         report = ListReport::Tree( tree );
       }
@@ -506,7 +493,7 @@ mod private
         }
         let ListReport::Tree( tree ) = report else { unreachable!() };
         let printer = merge_build_dependencies( tree );
-        let rep : Vec< ListNodeReport > = printer.iter().map( | printer | printer.info.clone() ).collect();
+        let rep : Vec< tool::ListNodeReport > = printer.iter().map( | printer | printer.info.clone() ).collect();
         let tree = merge_dev_dependencies( rep );
         report = ListReport::Tree( tree );
       }
@@ -539,11 +526,11 @@ mod private
         };
 
         let packages = workspace.packages();
-        let packages_map : HashMap< PackageName, HashSet< PackageName > > = packages::filter
+        let packages_map : collections::HashMap< package::PackageName, collections::HashSet< package::PackageName > > = packages::filter
         (
           packages.clone(),
           // packages.as_slice(),
-          FilterMapOptions { dependency_filter : Some( Box::new( dep_filter ) ), ..Default::default() }
+          packages::FilterMapOptions { dependency_filter : Some( Box::new( dep_filter ) ), ..Default::default() }
         );
 
         let graph = graph::construct( &packages_map );
@@ -558,7 +545,7 @@ mod private
           }
         )
         .err_with( || report.clone() )?;
-        let packages_info : HashMap< String, WorkspacePackageRef< '_ > > =
+        let packages_info : collections::HashMap< String, WorkspacePackageRef< '_ > > =
           packages.map( | p | ( p.name().to_string(), p ) ).collect();
 
         if root_crate.is_empty()
@@ -569,7 +556,7 @@ mod private
           .map( | dep_idx | graph.node_weight( dep_idx ).unwrap() )
           .map
           (
-            | name : &&PackageName |
+            | name : &&package::PackageName |
             {
               let mut name : String = name.to_string();
               if let Some( p ) = packages_info.get( &name[ .. ] )
@@ -599,7 +586,7 @@ mod private
           let node = graph.node_indices().find( | n | graph.node_weight( *n ).unwrap().as_str() == root_crate ).unwrap();
           let mut dfs = Dfs::new( &graph, node );
           let mut subgraph = Graph::new();
-          let mut node_map = HashMap::new();
+          let mut node_map = collections::HashMap::new();
           while let Some( n )= dfs.next( &graph )
           {
             node_map.insert( n, subgraph.add_node( graph[ n ] ) );
@@ -643,7 +630,7 @@ mod private
     Ok( report )
   }
 
-  fn merge_build_dependencies( mut report: Vec< TreePrinter > ) -> Vec< TreePrinter >
+  fn merge_build_dependencies( mut report: Vec< tool::TreePrinter > ) -> Vec< tool::TreePrinter >
   {
     let mut build_dependencies = vec![];
     for node_report in &mut report
@@ -658,11 +645,16 @@ mod private
     report
   }
 
-  fn merge_build_dependencies_impl( report : &mut ListNodeReport, mut build_deps_acc : Vec< ListNodeReport > ) -> Vec< ListNodeReport >
+  fn merge_build_dependencies_impl
+  (
+    report : &mut tool::ListNodeReport,
+    mut build_deps_acc : Vec< tool::ListNodeReport >
+  )
+  -> Vec< tool::ListNodeReport >
   {
     for dep in report.normal_dependencies.iter_mut()
-      .chain( report.dev_dependencies.iter_mut() )
-      .chain( report.build_dependencies.iter_mut() )
+    .chain( report.dev_dependencies.iter_mut() )
+    .chain( report.build_dependencies.iter_mut() )
     {
       build_deps_acc = merge_build_dependencies_impl(dep, build_deps_acc );
     }
@@ -678,7 +670,7 @@ mod private
     build_deps_acc
   }
 
-  fn merge_dev_dependencies( mut report: Vec< ListNodeReport > ) -> Vec< TreePrinter >
+  fn merge_dev_dependencies( mut report : Vec< tool::ListNodeReport > ) -> Vec< tool::TreePrinter >
   {
     let mut dev_dependencies = vec![];
     for node_report in &mut report
@@ -689,11 +681,16 @@ mod private
     {
       last_report.dev_dependencies = dev_dependencies;
     }
-    let printer : Vec< TreePrinter > = report.iter().map( | rep | TreePrinter::new( rep ) ).collect();
+    let printer : Vec< tool::TreePrinter > = report.iter().map( | rep | tool::TreePrinter::new( rep ) ).collect();
     printer
   }
 
-  fn merge_dev_dependencies_impl( report : &mut ListNodeReport, mut dev_deps_acc : Vec< ListNodeReport > ) -> Vec< ListNodeReport >
+  fn merge_dev_dependencies_impl
+  (
+    report : &mut tool::ListNodeReport,
+    mut dev_deps_acc : Vec< tool::ListNodeReport >
+  )
+  -> Vec< tool::ListNodeReport >
   {
     for dep in report.normal_dependencies.iter_mut()
     .chain( report.dev_dependencies.iter_mut() )
@@ -713,9 +710,9 @@ mod private
     dev_deps_acc
   }
 
-  fn rearrange_duplicates( mut report : Vec< ListNodeReport > ) -> Vec< TreePrinter >
+  fn rearrange_duplicates( mut report : Vec< tool::ListNodeReport > ) -> Vec< tool::TreePrinter >
   {
-    let mut required_normal : HashMap< usize, Vec< ListNodeReport > > = HashMap::new();
+    let mut required_normal : collections::HashMap< usize, Vec< tool::ListNodeReport > > = collections::HashMap::new();
     for i in 0 .. report.len()
     {
       let ( required, exist ) : ( Vec< _ >, Vec< _ > ) = std::mem::take( &mut report[ i ].normal_dependencies ).into_iter().partition( | d | d.duplicate );
@@ -729,11 +726,15 @@ mod private
       report[ i ].normal_dependencies.extend( deps );
     }
 
-    let printer : Vec< TreePrinter > = report.iter().map( | rep | TreePrinter::new( rep ) ).collect();
+    let printer : Vec< tool::TreePrinter > = report.iter().map( | rep | tool::TreePrinter::new( rep ) ).collect();
     printer
   }
 
-  fn rearrange_duplicates_resolver( report : &mut [ ListNodeReport ], required : &mut HashMap< usize, Vec< ListNodeReport > > )
+  fn rearrange_duplicates_resolver
+  (
+    report : &mut [ tool::ListNodeReport ],
+    required : &mut collections::HashMap< usize, Vec< tool::ListNodeReport > >
+  )
   {
     for node in report
     {
