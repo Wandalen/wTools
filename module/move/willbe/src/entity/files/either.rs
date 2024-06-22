@@ -18,18 +18,19 @@ use error::
 
 /// Wrapper over `data_type::Either< CrateDir, ManifestFile >` with utils methods.
 #[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug ) ]
-pub struct PathEither( data_type::Either< CrateDir, ManifestFile > );
+pub struct EitherDirOrFile( data_type::Either< CrateDir, ManifestFile > );
 
-impl PathEither
+impl EitherDirOrFile
 {
   /// Returns inner type which is an data_type::Either< CrateDir, ManifestFile >.
   pub fn inner( self ) -> data_type::Either< CrateDir, ManifestFile >
   {
     self.0
   }
+
 }
 
-impl TryFrom< &Path > for PathEither
+impl TryFrom< &Path > for EitherDirOrFile
 {
   type Error = PathError;
 
@@ -46,18 +47,19 @@ impl TryFrom< &Path > for PathEither
   }
 }
 
-impl AsRef< Path > for PathEither
+impl AsRef< Path > for EitherDirOrFile
 {
   fn as_ref( &self ) -> &Path
   {
-    match &self.0 {
+    match &self.0
+    {
       data_type::Either::Left( crate_dir ) => crate_dir.as_ref(),
       data_type::Either::Right( manifest_path ) => manifest_path.as_ref(),
     }
   }
 }
 
-impl AsMut< Path > for PathEither
+impl AsMut< Path > for EitherDirOrFile
 {
   fn as_mut( &mut self ) -> &mut Path
   {
@@ -69,7 +71,7 @@ impl AsMut< Path > for PathEither
   }
 }
 
-impl Deref for PathEither
+impl Deref for EitherDirOrFile
 {
   type Target = Path;
 
@@ -79,7 +81,7 @@ impl Deref for PathEither
   }
 }
 
-impl DerefMut for PathEither
+impl DerefMut for EitherDirOrFile
 {
   fn deref_mut( &mut self ) -> &mut Self::Target
   {

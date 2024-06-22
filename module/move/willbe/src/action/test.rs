@@ -113,7 +113,8 @@ Try to install it with `rustup install {}` command(-s)",
     // xxx : watch and review after been ready
     // aaa : for Petro : use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >
     // aaa : done
-    let path = match PathEither::try_from( o.dir.as_ref() ).map_err( | e | ( report.clone(), e.into() ) )?.inner()
+    // qqq : for Petro : nonsense
+    let path = match EitherDirOrFile::try_from( o.dir.as_ref() ).map_err( | e | ( report.clone(), e.into() ) )?.inner()
     {
       data_type::Either::Left( crate_dir ) => crate_dir,
       data_type::Either::Right( manifest ) => CrateDir::from( manifest )
@@ -123,7 +124,7 @@ Try to install it with `rustup install {}` command(-s)",
     ::try_from( CrateDir::try_from( path.clone() ).err_with( || report.clone() )? )
     .err_with( || report.clone() )?
     // xxx : clone?
-    // qqq : for Petro : use trait everywhere
+    // qqq : for Petro : use trait !everywhere!
     ;
 
     // let packages = needed_packages( &workspace );
