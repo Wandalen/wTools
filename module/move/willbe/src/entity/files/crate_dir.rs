@@ -170,12 +170,13 @@ impl TryFrom< AbsolutePath > for CrateDir
 //   }
 // }
 
-impl< IntoAbsolutePathType > TransitiveTryFrom< AbsolutePath, IntoAbsolutePathType, PathError >
+impl< IntoAbsolutePathType > TransitiveTryFrom< AbsolutePath, IntoAbsolutePathType >
 for CrateDir
 where
   IntoAbsolutePathType : TryInto< AbsolutePath >,
   PathError : From< < IntoAbsolutePathType as TryInto< AbsolutePath > >::Error >,
 {
+  type Error = PathError;
 }
 
 impl TryFrom< PathBuf > for CrateDir

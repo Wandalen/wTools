@@ -47,15 +47,16 @@ pub( crate ) mod private
 //   {
 //   }
 
-  pub trait TransitiveTryFrom< Transitive, IntoTransitive, Error >
+  pub trait TransitiveTryFrom< Transitive, IntoTransitive >
   where
     IntoTransitive : TryInto< Transitive >,
-    Error : From< < IntoTransitive as TryInto< Transitive > >::Error >,
-    Self : TryFrom< Transitive, Error = Error >,
+    < Self as TransitiveTryFrom< Transitive, IntoTransitive > >::Error : From< < IntoTransitive as TryInto< Transitive > >::Error >,
+    Self : TryFrom< Transitive, Error = < Self as TransitiveTryFrom< Transitive, IntoTransitive > >::Error >,
     < Self as TryFrom< Transitive > >::Error : From< < IntoTransitive as TryInto< Transitive > >::Error >,
   {
+    type Error;
 
-    fn transitive_try_from( src : IntoTransitive ) -> Result< Self, Error >
+    fn transitive_try_from( src : IntoTransitive ) -> Result< Self, < Self as TransitiveTryFrom< Transitive, IntoTransitive > >::Error >
     {
       let src2 = TryInto::< Transitive >::try_into( src )?;
       TryFrom::< Transitive >::try_from( src2 )
