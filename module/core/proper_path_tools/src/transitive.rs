@@ -1,6 +1,12 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+  // qqq : move to derive_tools
+  // qqq : write tests
+  // qqq : implement transitive_try_into
+  // qqq : implement transitive_from
+  // qqq : implement transitive_nto
+
   /// A trait to perform a transitive `try_from` conversion.
   ///
   /// This trait allows for a two-step conversion process where an initial type `Initial`
@@ -49,12 +55,12 @@ pub( crate ) mod private
   ///   }
   /// }
   ///
-  /// impl TransitiveTryFrom< IntermediateType, InitialType, ConversionError > for FinalType {}
+  /// impl TransitiveTryFrom< IntermediateType, ConversionError, InitialType > for FinalType {}
   ///
   /// let initial = InitialType;
   /// let final_result : Result< FinalType, ConversionError > = FinalType::transitive_try_from( initial );
   /// ```
-  pub trait TransitiveTryFrom< Transitive, Initial, Error >
+  pub trait TransitiveTryFrom< Transitive, Error, Initial >
   where
     Transitive : TryFrom< Initial >,
     Self : TryFrom< Transitive, Error = Error >,
