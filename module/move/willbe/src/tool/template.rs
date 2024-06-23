@@ -6,7 +6,6 @@ mod private
 
   use std::
   {
-    // collections,
     fs,
     path::
     {
@@ -15,8 +14,6 @@ mod private
     },
   };
   use error::untyped::Context;
-  // aaa : for Petro : group, don't repeat prefixes
-  // aaa : done
 
   // qqq : for Nikita : is that trait really necessary?
   // Template - remove
@@ -28,10 +25,10 @@ mod private
   /// Includes terraform deploy options to GCP, and Hetzner,
   /// a Makefile for useful commands, and a key directory.
   #[ derive( Debug ) ]
-  pub struct WTemplate
+  pub struct TemplateHolder
   {
-    files : Vec< TemplateFileDescriptor >,
-    parameters : TemplateParameters,
+    pub files : Vec< TemplateFileDescriptor >,
+    pub parameters : TemplateParameters,
     /// The values associated with the template.
     pub values : TemplateValues,
   }
@@ -40,7 +37,7 @@ mod private
 
   // qqq : for Viktor : why DeployTemplate can't be part of template.rs?
 
-  impl WTemplate
+  impl TemplateHolder
   {
     /// Creates all files in the specified path using the template values.
     ///
@@ -101,8 +98,10 @@ mod private
     /// # Returns
     ///
     /// A reference to a `Path` representing the parameter storage file.
-    pub fn parameter_storage( &self ) -> &Path {
+    pub fn parameter_storage( &self ) -> &Path
+    {
       "./.deploy_template.toml".as_ref()
+      // qqq : for Mykyta : hardcode?
     }
 
     /// Returns the name of the template.
@@ -110,7 +109,8 @@ mod private
     /// # Returns
     ///
     /// A static string slice representing the template name.
-    pub fn template_name( &self ) -> &'static str {
+    pub fn template_name( &self ) -> &'static str
+    {
       "deploy"
     }
 
@@ -162,7 +162,7 @@ mod private
     }
   }
 
-  impl Default for WTemplate
+  impl Default for TemplateHolder
   {
     fn default() -> Self
     {
@@ -509,7 +509,7 @@ mod private
     fn read( &self, instruction : &FileReadInstruction ) -> Result< Vec< u8 > >;
   }
 
-  // xxx : zzz : why not public?
+  // zzz : why not public?
   struct FileSystem;
   impl FileSystemPort for FileSystem
   {
@@ -539,7 +539,7 @@ mod private
 crate::mod_interface!
 {
   //orphan use Template;
-  orphan use WTemplate;
+  orphan use TemplateHolder;
   orphan use TemplateFiles;
   orphan use TemplateFileDescriptor;
   orphan use TemplateParameters;

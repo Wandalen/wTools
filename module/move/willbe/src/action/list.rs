@@ -573,8 +573,6 @@ mod private
         let packages_map : collection::HashMap< package::PackageName, collection::HashSet< package::PackageName > > = packages::filter
         (
           packages.clone(),
-          // packages.as_slice(),
-          // xxx
           packages::FilterMapOptions
           {
             dependency_filter : Some( Box::new( dep_filter ) ),

@@ -118,7 +118,6 @@ impl TryFrom< AbsolutePath > for SourceFile
   #[ inline( always ) ]
   fn try_from( src : AbsolutePath ) -> Result< Self, Self::Error >
   {
-    // xxx : check is file exist?
     Ok( Self( src ) )
   }
 }

@@ -158,7 +158,7 @@ mod private
   pub fn deploy_renew
   (
     path : &Path,
-    mut template : WTemplate
+    mut template : TemplateHolder
   ) -> Result< () >
   {
     if let None = template.load_existing_params( path )
@@ -170,7 +170,7 @@ mod private
       .components()
       .last()
       .context( "Invalid current directory" )?;
-      
+
       let current_dir = current_dir.as_os_str().to_string_lossy();
       let artifact_repo_name = dir_name_to_formatted( &current_dir, "-" );
       let docker_image_name = dir_name_to_formatted( &current_dir, "_" );

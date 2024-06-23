@@ -6,7 +6,7 @@ pub( crate ) mod private
 
   use ::error_tools::protected::*;
 
-  // xxx : for for Petro : for Bohdan : good one, apply it to all code
+  // qqq : for for Petro : for Bohdan : good one, apply it to all code
 
   /// This trait can be used to add extra information to an error, creating a tuple of the additional
   /// context and the original error. This can be particularly useful for error handling where you
