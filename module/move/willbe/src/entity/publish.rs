@@ -2,7 +2,8 @@ mod private
 {
   use crate::*;
 
-  use std::{ fmt, collections, path };
+  // use std::{ fmt, collections, path };
+  use std::fmt;
   use process_tools::process;
   use
   {
@@ -13,7 +14,7 @@ mod private
       untyped::{ format_err, Error },
     }
   };
-  use error_with::ErrWith;
+  use error::ErrWith;
 
   // aaa : for Bohdan : should not be here
   // aaa : for Bohdan : documentation
@@ -170,7 +171,7 @@ mod private
 
     Ok( report )
   }
-  
+
   /// `PublishPlan` manages the overall publication process for multiple packages.
   /// It organizes the necessary details required for publishing each individual package.
   /// This includes the workspace root directory, any temporary directories used during the process,
@@ -225,7 +226,7 @@ mod private
     where
       W : fmt::Write
     {
-      let name_bump_report : collections::HashMap< _, _ > = self
+      let name_bump_report : collection::HashMap< _, _ > = self
       .plans
       .iter()
       .map( | x | ( x.package_name.as_ref(), ( x.bump.old_version.to_string(), x.bump.new_version.to_string() ) ) )
@@ -244,7 +245,7 @@ mod private
         .map_err( |( _, _e )| fmt::Error )?;
         let action::list::ListReport::Tree( list ) = list else { unreachable!() };
 
-        fn callback( name_bump_report : &collections::HashMap< &String, ( String, String ) >, mut r : tool::ListNodeReport ) -> tool::ListNodeReport
+        fn callback( name_bump_report : &collection::HashMap< &String, ( String, String ) >, mut r : tool::ListNodeReport ) -> tool::ListNodeReport
         {
           if let Some(( old, new )) = name_bump_report.get( &r.name )
           {

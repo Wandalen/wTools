@@ -3,14 +3,13 @@ mod private
 {
   use crate::*;
 
-  use std::path::PathBuf;
-  use std::collections::HashMap;
-  use std::fmt::Formatter;
+  use path::PathBuf;
+  use collection::HashMap;
+  use std::fmt;
   use colored::Colorize;
   use crates_tools::CrateArchive;
 
   use action::list::ListReport;
-  // use path::AbsolutePath;
   use error::untyped::Result;
   use diff::{ DiffReport, crate_diff };
   use error::untyped::format_err;
@@ -35,7 +34,7 @@ mod private
 
   impl std::fmt::Display for PublishDiffReport
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> std::fmt::Result
     {
       let mut tree = self.tree.clone();
       let root_path = tree.crate_dir.as_ref().unwrap().clone();
@@ -50,26 +49,26 @@ mod private
         let diff = diffs.get( &root ).unwrap();
 
         let has_changes = diff.has_changes();
-        tree.name = if has_changes 
-        { 
-          format!( "{}", tree.name.yellow() ) 
-        } 
-        else 
-        { 
-          tree.name.clone() 
+        tree.name = if has_changes
+        {
+          format!( "{}", tree.name.yellow() )
+        }
+        else
+        {
+          tree.name.clone()
         };
         tree
         .version
         .as_mut()
         .map
-        ( 
-          | v | 
+        (
+          | v |
           *v = format!
-          ( 
-            "{} {}", 
-            if has_changes { v.yellow() } else { v.as_str().into() }, 
-            if has_changes { "MODIFIED" } else { "" } 
-          ) 
+          (
+            "{} {}",
+            if has_changes { v.yellow() } else { v.as_str().into() },
+            if has_changes { "MODIFIED" } else { "" }
+          )
         );
 
         for dep in &mut tree.normal_dependencies
@@ -115,10 +114,10 @@ mod private
       .form()
     )
     .unwrap();
-    let ListReport::Tree( tree ) = list 
-    else 
-    { 
-      return Err( format_err!( "Logical error. Unexpected list format" ) ) 
+    let ListReport::Tree( tree ) = list
+    else
+    {
+      return Err( format_err!( "Logical error. Unexpected list format" ) )
     };
     let mut tasks = vec![ tree[ 0 ].clone() ];
     let mut diffs = HashMap::new();
@@ -141,12 +140,12 @@ mod private
       let version = &package.version()?;
 
     _ = cargo::pack
-    ( 
+    (
       cargo::PackOptions::former()
       .path( dir.as_ref() )
       .allow_dirty( true )
       .checking_consistency( false )
-      .dry( false ).form() 
+      .dry( false ).form()
     )?;
     let l = CrateArchive::read( packed_crate::local_path( name, version, dir )? )?;
     let r = CrateArchive::download_crates_io( name, version ).unwrap();

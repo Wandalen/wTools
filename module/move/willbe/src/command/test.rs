@@ -3,13 +3,12 @@ mod private
 {
   use crate::*;
 
-  use std::collections::HashSet;
+  use collection::HashSet;
   use std::fs;
-  use std::path::PathBuf;
   use colored::Colorize;
   use wca::VerifiedCommand;
   use error::Result;
-  use path::AbsolutePath;
+  use path::{ AbsolutePath, PathBuf };
   use action::test::TestsCommandOptions;
   use former::Former;
   use channel::Channel;
@@ -51,22 +50,22 @@ mod private
   pub fn test( o : VerifiedCommand ) -> Result< () >
   {
     let args_line = format!
-    ( 
-      "{}", 
+    (
+      "{}",
       o
       .args
       .get_owned( 0 )
       .unwrap_or( std::path::PathBuf::from( "" ) )
-      .display() 
+      .display()
     );
     let prop_line = format!
-    ( 
-      "{}", 
+    (
+      "{}",
       o
       .props
       .iter()
       .map( | p | format!( "{}:{}", p.0, p.1.to_string() ) )
-      .collect::< Vec< _ > >().join(" ") 
+      .collect::< Vec< _ > >().join(" ")
     );
 
     let path : PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );

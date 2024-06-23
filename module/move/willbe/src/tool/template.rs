@@ -6,7 +6,7 @@ mod private
 
   use std::
   {
-    collections,
+    // collections,
     fs,
     path::
     {
@@ -320,14 +320,14 @@ mod private
 
   /// Holds a map of parameters and their values.
   #[ derive( Debug, Default ) ]
-  pub struct TemplateValues( collections::HashMap< String, Option< wca::Value > > );
+  pub struct TemplateValues( collection::HashMap< String, Option< wca::Value > > );
 
   impl TemplateValues
   {
     /// Converts values to a serializable object.
     ///
     /// Currently only `String`, `Number`, and `Bool` are supported.
-    pub fn to_serializable( &self ) -> collections::BTreeMap< String, String >
+    pub fn to_serializable( &self ) -> collection::BTreeMap< String, String >
     {
       self.0.iter().map
       (

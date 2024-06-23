@@ -4,15 +4,15 @@ mod private
 
   use std::
   {
-    collections::HashSet,
     fmt::Formatter,
-    path::PathBuf,
   };
-  use std::collections::HashMap;
+  use path::PathBuf;
+  use collection::HashMap;
   use colored::Colorize;
   use crates_tools::CrateArchive;
-
+  use collection::HashSet;
   use similar::{ TextDiff, ChangeTag };
+
   // use similar::*; // qqq : for Bohdan : bad
 
   /// These files are ignored because they can be safely changed without affecting functionality

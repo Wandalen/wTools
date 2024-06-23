@@ -4,9 +4,9 @@ mod private
 
   use std::
   {
-    collections::{ BTreeMap, HashMap },
     fmt
   };
+  use collection::{ BTreeMap, HashMap };
 
   // // use path::AbsolutePath;
   use former::Former;
@@ -75,11 +75,11 @@ mod private
     (
       | package |
       {
-        if let Ok( manifest_file ) = package.manifest_file() 
+        if let Ok( manifest_file ) = package.manifest_file()
         {
           manifest_file.inner().starts_with(crate_dir.clone().absolute_path())
         }
-        else 
+        else
         {
           false
         }

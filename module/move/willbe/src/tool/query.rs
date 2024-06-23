@@ -7,13 +7,13 @@ mod private
   use std::
   {
     str::FromStr,
-    collections::HashMap
   };
   use error::
   {
     untyped::{ Error, bail },
     Result,
   };
+  use collection::HashMap;
 
   #[ derive( Debug, PartialEq, Eq, Clone ) ]
   /// Parser value enum

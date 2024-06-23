@@ -1,10 +1,11 @@
-use crate::the_module::query::
+use super::*;
+use the_module::query::
 {
-    parse,
-    ParseResult,
-    Value,
+  parse,
+  ParseResult,
+  Value,
 };
-use std::collections::HashMap;
+use the_module::collection::HashMap;
 use std::str::FromStr;
 
 #[ test ]

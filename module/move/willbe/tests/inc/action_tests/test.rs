@@ -1,14 +1,26 @@
-use std::collections::BTreeSet;
-use std::fs::{self, File };
-use std::io::Write;
-use std::path::{ Path, PathBuf };
+use super::*;
+use the_module::*;
+
+use inc::helper::
+{
+  ProjectBuilder,
+  WorkspaceBuilder,
+  // BINARY_NAME,
+};
+
+use collection::BTreeSet;
+// use std::
+// {
+//   fs::{ self, File },
+//   io::Write,
+// };
+// use path::{ Path, PathBuf };
 use assert_fs::TempDir;
 
-use crate::the_module::*;
-use action::test::{test, TestsCommandOptions};
-use path::AbsolutePath;
+use action::test::{ test, TestsCommandOptions };
 use channel::*;
 use optimization::*;
+// qqq : for Petro : no astersisks import
 use willbe::test::TestVariant;
 
 #[ test ]
@@ -217,110 +229,4 @@ fn backtrace_should_be()
 
   assert!( !no_features.clone().unwrap_err().out.contains( "RUST_BACKTRACE" ) );
   assert!( no_features.clone().unwrap_err().out.contains( "stack backtrace" ) );
-}
-
-#[ derive( Debug ) ]
-pub struct ProjectBuilder
-{
-  name : String,
-  lib_content : Option< String >,
-  test_content : Option< String >,
-  toml_content : Option< String >,
-}
-
-impl ProjectBuilder
-{
-  pub fn new( name : &str ) -> Self
-  {
-    Self
-    {
-      name : String::from( name ),
-      lib_content : None,
-      test_content : None,
-      toml_content : None,
-    }
-  }
-
-  pub fn lib_file< S : Into< String > >( mut self, content : S ) -> Self
-  {
-    self.lib_content = Some( content.into() );
-    self
-  }
-
-  pub fn test_file< S : Into< String > >( mut self, content : S ) -> Self
-  {
-    self.test_content = Some( content.into() );
-    self
-  }
-
-  pub fn toml_file( mut self, content : &str ) -> Self
-  {
-    self.toml_content = Some( format!( "[package]\nname = \"{}\"\nversion = \"0.1.0\"\nedition = \"2021\"\n{}", self.name, content ) );
-    self
-  }
-
-  pub fn build< P : AsRef< Path > >( &self, path : P ) -> std::io::Result< PathBuf >
-  {
-    let project_path = path.as_ref();
-
-    fs::create_dir_all( project_path.join( "src" ) )?;
-    fs::create_dir_all( project_path.join( "tests" ) )?;
-
-    if let Some( content ) = &self.toml_content
-    {
-      let mut file = File::create( project_path.join( "Cargo.toml" ) )?;
-      write!( file, "{}", content )?;
-    }
-
-    let mut file = File::create( project_path.join( "src/lib.rs" ) )?;
-    if let Some( content ) = &self.lib_content
-    {
-      write!( file, "{}", content )?;
-    }
-
-    if let Some( content ) = &self.test_content
-    {
-      let mut file = File::create( project_path.join( "tests/tests.rs" ) )?;
-      write!( file, "{}", content )?;
-    }
-
-    Ok( project_path.to_path_buf() )
-  }
-}
-
-struct WorkspaceBuilder
-{
-  members : Vec< ProjectBuilder >,
-  toml_content : String,
-}
-
-impl WorkspaceBuilder
-{
-  fn new() -> Self
-  {
-    Self
-    {
-      members : vec![],
-      toml_content : "[workspace]\nresolver = \"2\"\nmembers = [\n    \"modules/*\",\n]\n".to_string(),
-    }
-  }
-
-  fn member( mut self, project : ProjectBuilder ) -> Self
-  {
-    self.members.push( project );
-    self
-  }
-
-  fn build<  P : AsRef< Path > >( self, path : P ) -> PathBuf
-  {
-    let project_path = path.as_ref();
-    fs::create_dir_all( project_path.join( "modules" ) ).unwrap();
-    let mut file = File::create( project_path.join( "Cargo.toml" ) ).unwrap();
-    write!( file, "{}", self.toml_content ).unwrap();
-    for member in self.members
-    {
-      member.build( project_path.join( "modules" ).join( &member.name ) ).unwrap();
-    }
-    project_path.into()
-  }
 }

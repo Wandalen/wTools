@@ -4,17 +4,17 @@ mod private
   use std::
   {
     borrow::Cow,
-    collections::BTreeSet,
     fs::OpenOptions,
     fmt,
     io::
     {
-      Read, 
-      Seek, 
+      Read,
+      Seek,
       Write,
       SeekFrom,
     }
   };
+  use collection::BTreeSet;
   // use path::AbsolutePath;
   use action::readme_health_table_renew::{ Stability, stability_generate, find_example_file };
   use package::Package;
@@ -38,18 +38,18 @@ mod private
   use package::PackageError;
   use error::typed::Error;
   use workspace_md_extension::WorkspaceMdExtension;
-  // use error_with::ErrWith;
+  // use error::ErrWith;
 
   static TAGS_TEMPLATE : std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 
   fn regexes_initialize()
   {
     TAGS_TEMPLATE.set
-    ( 
+    (
       Regex::new
-      ( 
-        r"<!--\{ generate\.module_header\.start(\(\)|\{\}|\(.*?\)|\{.*?\}) \}-->(.|\n|\r\n)+<!--\{ generate\.module_header\.end \}-->" 
-      ).unwrap() 
+      (
+        r"<!--\{ generate\.module_header\.start(\(\)|\{\}|\(.*?\)|\{.*?\}) \}-->(.|\n|\r\n)+<!--\{ generate\.module_header\.end \}-->"
+      ).unwrap()
     ).ok();
   }
 
@@ -68,11 +68,11 @@ mod private
       if self.touched_files.len() < self.found_files.len()
       {
         writeln!
-        ( 
-          f, 
-          "Something went wrong.\n{}/{} was touched.", 
-          self.found_files.len(), 
-          self.touched_files.len() 
+        (
+          f,
+          "Something went wrong.\n{}/{} was touched.",
+          self.found_files.len(),
+          self.touched_files.len()
         )?;
         return Ok(())
       }
@@ -163,7 +163,7 @@ mod private
     {
       let discord = self.discord_url.map( | discord_url |
         format!
-        ( 
+        (
           " [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)]({})",
           discord_url
         )
@@ -174,14 +174,14 @@ mod private
       .and_then( | r | url::git_info_extract( &r ).ok() )
       .ok_or_else::< wError, _ >( || err!( "Fail to parse repository url" ) )?;
       let example= if let Some( name ) = find_example_file
-      ( 
-        self.module_path.as_path(), 
-        &self.module_name 
+      (
+        self.module_path.as_path(),
+        &self.module_name
       )
       {
         let relative_path = proper_path_tools::path::path_relative
         (
-          workspace_path.try_into().unwrap(), 
+          workspace_path.try_into().unwrap(),
           name
         )
         .to_string_lossy()
@@ -192,11 +192,11 @@ mod private
         // aaa : used
         let p = relative_path.replace( "/","%2F" );
         format!
-        ( 
-          " [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={},RUN_POSTFIX=--example%20{}/https://github.com/{})", 
-          p, 
-          p, 
-          repo_url 
+        (
+          " [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={},RUN_POSTFIX=--example%20{}/https://github.com/{})",
+          p,
+          p,
+          repo_url
         )
       }
       else
@@ -261,7 +261,7 @@ mod private
     .iter()
     .map( | ap | ap.as_ref().to_path_buf() )
     .collect();
-    
+
     for path in paths
     {
       let read_me_path =  path
@@ -275,14 +275,14 @@ mod private
       );
 
       let pakage = Package::try_from
-      ( 
+      (
         CrateDir::try_from
-        ( 
+        (
           &path
           .parent()
-          .unwrap() 
+          .unwrap()
         )
-        .err_with( || report.clone() )? 
+        .err_with( || report.clone() )?
       )
       .err_with( || report.clone() )?;
 
@@ -309,11 +309,11 @@ mod private
       _ = query::parse( raw_params ).context( "Fail to parse raw params." );
 
       let content = header_content_generate
-      ( 
-        &content, 
-        header, 
-        raw_params, 
-        workspace.workspace_root().to_str().unwrap() 
+      (
+        &content,
+        header,
+        raw_params,
+        workspace.workspace_root().to_str().unwrap()
       ).err_with( || report.clone() )?;
 
       file.set_len( 0 ).err_with( || report.clone() )?;
@@ -325,11 +325,11 @@ mod private
   }
 
   fn header_content_generate< 'a >
-  ( 
-    content : &'a str, 
-    header : ModuleHeader, 
-    raw_params : &str, 
-    workspace_root : &str 
+  (
+    content : &'a str,
+    header : ModuleHeader,
+    raw_params : &str,
+    workspace_root : &str
   ) -> Result< Cow< 'a, str > >
   {
     let header = header.to_header( workspace_root )?;
@@ -337,14 +337,14 @@ mod private
     .get()
     .unwrap()
     .replace
-    ( 
-      &content, 
+    (
+      &content,
       &format!
-      ( 
+      (
         "<!--{{ generate.module_header.start{} }}-->\n{}\n<!--{{ generate.module_header.end }}-->",
         raw_params,
         header
-      ) 
+      )
     );
     Ok( result )
   }

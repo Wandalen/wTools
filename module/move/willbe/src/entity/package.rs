@@ -4,12 +4,12 @@ mod private
 
   use std::
   {
-    path::Path,
-    collections::{ HashMap, HashSet },
-    fmt,
+    // path::Path,
+    // fmt,
     hash::Hash,
-    path,
+    // path,
   };
+  // use collection::{ HashMap, HashSet };
   // aaa : for Petro : for Bohdan : group uses
   // aaa : done
 
@@ -25,7 +25,7 @@ mod private
       untyped::format_err,
     }
   };
-  use version::revert;
+  // use version::revert;
 
   // aaa : fro Bohdan : write better description : is it better?
   /// A wrapper type for representing the name of a package.
@@ -208,9 +208,9 @@ mod private
     }
 
   }
-  
-  // xxx 
-  
+
+  // xxx
+
   /// Sorting variants for dependencies.
   #[ derive( Debug, Copy, Clone ) ]
   pub enum DependenciesSort
@@ -294,9 +294,10 @@ mod private
   (
     workspace : &Workspace, // aaa : for Bohdan : no mut // aaa : no mut
     package : &Package< 'a >,
-    graph : &mut collections::HashMap< CrateId, collections::HashSet< CrateId > >,
+    graph : &mut collection::HashMap< CrateId, collection::HashSet< CrateId > >,
     opts : DependenciesOptions
-  ) -> Result< CrateId >
+  )
+  -> Result< CrateId >
   {
     let DependenciesOptions
     {
@@ -313,7 +314,7 @@ mod private
     .package_find_by_manifest( &manifest_file )
     .ok_or( format_err!( "Package not found in the workspace with path : `{}`", manifest_file.as_ref().display() ) )?;
 
-    let deps : collections::HashSet< _ > = package
+    let deps : collection::HashSet< _ > = package
     .dependencies()
     // .iter()
     .filter( | dep | ( with_remote || dep.crate_dir().is_some() ) && ( with_dev || dep.kind() != DependencyKind::Development ) )
@@ -365,7 +366,7 @@ mod private
   )
   -> Result< Vec< CrateId > >
   {
-    let mut graph = collections::HashMap::new();
+    let mut graph = collection::HashMap::new();
     let root = _dependencies( workspace, package, &mut graph, opts.clone() )?;
 
     let output = match opts.sort

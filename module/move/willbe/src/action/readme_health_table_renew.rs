@@ -5,13 +5,13 @@ mod private
   use std::
   {
     fs::{ OpenOptions, File },
-    path::{ Path, PathBuf },
     io::{ Write, Read, Seek, SeekFrom },
-    collections::HashMap,
   };
+  use path::{ Path, PathBuf };
   use convert_case::Casing;
   use toml_edit::Document;
   use regex::bytes::Regex;
+  use collection::HashMap;
 
   use error::
   {

@@ -1,10 +1,9 @@
 mod private
 {
   use crate::*;
-  use std::collections::{ BTreeSet, HashSet };
+  use collection::{ BTreeSet, HashSet };
   use error::untyped::{ bail, Result };
   use iter::Itertools;
-  // use workspace::WorkspacePackageRef< '_ >;
 
   /// Generates a powerset of the features available in the given `package`,
   /// filtered according to specified inclusion and exclusion criteria,

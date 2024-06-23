@@ -1,6 +1,10 @@
 use super::*;
 use assert_fs::prelude::*;
-use the_module::action;
+use the_module::
+{
+  action,
+  collection::HashMap,
+};
 
 //
 
@@ -8,7 +12,6 @@ use std::
 {
   fs::File,
   io::Read,
-  collections::HashMap
 };
 use std::fs::create_dir_all;
 use serde::Deserialize;

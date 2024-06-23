@@ -10,9 +10,13 @@ mod tool;
 mod command;
 
 /// Describes functions that can be called from an interface.
-mod action;
+mod action_tests;
 
-mod helpers;
+mod helper;
 
 // aaa : for Petro : for Bohdan : for Nikita : sort out test files to be consistent with src files
 // sorted
+
+// qqq : for Mykyta: to avoid names collisions add postfix _test for all dirs and files in dir `inc`
+// query.rs -> query_test.rs
+

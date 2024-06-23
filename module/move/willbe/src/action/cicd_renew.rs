@@ -4,20 +4,18 @@ mod private
 
   use std::
   {
-    path::{ Path },
     fs::File,
     io::{ Write, Read },
-    collections::BTreeMap
   };
 
+  use path::{ Path };
+  use collection::BTreeMap;
   use convert_case::{ Casing, Case };
   use handlebars::{ RenderError, TemplateError };
   use toml_edit::Document;
 
-  // use path::AbsolutePath;
   use entity::PathError;
   use error::typed::Error;
-  // use error_tools::dependency::*; // aaa : for Petro : don't do that, use tools::error:{ x, y, z }; aaa : ok
 
   use error::untyped::{ Result, Error as wError };
   use entity::WorkspaceInitError;

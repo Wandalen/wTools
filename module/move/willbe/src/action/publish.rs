@@ -3,14 +3,14 @@ mod private
 {
   use crate::*;
 
-  use std::{ collections, env, fmt,  fs };
+  use std::{ env, fmt, fs };
   use
   {
     error::untyped,
-    error_with::ErrWith,
+    error::ErrWith,
   };
 
-//   use std::collections::{ HashSet, HashMap };
+//   use collection::{ HashSet, HashMap };
 //   use core::fmt::Formatter;
 //   use std::{ env, fs };
 
@@ -62,13 +62,13 @@ mod private
           .plans
           .iter()
           .map
-          ( 
-            | p | 
-            ( 
-              p.bump.crate_dir.clone().absolute_path(), 
-              p.package_name.clone(), 
-              p.bump.clone() 
-            ) 
+          (
+            | p |
+            (
+              p.bump.crate_dir.clone().absolute_path(),
+              p.package_name.clone(),
+              p.bump.clone()
+            )
           )
           .collect();
           let mut actually_published : Vec< _ > = self.packages.iter()
@@ -132,13 +132,13 @@ mod private
     temp : bool
   ) -> Result< publish::PublishPlan, untyped::Error >
   {
-    let mut paths = collections::HashSet::new();
+    let mut paths = collection::HashSet::new();
     // find all packages by specified folders
     for pattern in &patterns
     {
       let current_path = AbsolutePath::try_from
-      ( 
-        fs::canonicalize( pattern.as_str() )? 
+      (
+        fs::canonicalize( pattern.as_str() )?
       )?;
       // let current_path = AbsolutePath::try_from( std::path::PathBuf::from( pattern ) )?;
       // let current_paths = files::find( current_path, &[ "Cargo.toml" ] );
@@ -170,27 +170,27 @@ mod private
     .filter( | &package | paths.contains( &package.crate_dir().unwrap().into() ) )
     .map( | p | p.name().to_string() )
     .collect();
-    let package_map : collections::HashMap< String, package::Package< '_ > > = packages
+    let package_map : collection::HashMap< String, package::Package< '_ > > = packages
     .map( | p | ( p.name().to_string(), package::Package::from( p ) ) )
     .collect();
 
     let graph = workspace_graph::graph( &workspace );
     let subgraph_wanted = graph::subgraph
-    ( 
-      &graph, 
-      &packages_to_publish[ .. ] 
+    (
+      &graph,
+      &packages_to_publish[ .. ]
     );
     let tmp = subgraph_wanted
     .map
-    ( 
-      | _, n | 
-      graph[ *n ].clone(), | _, e | graph[ *e ].clone() 
+    (
+      | _, n |
+      graph[ *n ].clone(), | _, e | graph[ *e ].clone()
     );
 
     let mut unique_name = format!
-    ( 
-      "temp_dir_for_publish_command_{}", 
-      path::unique_folder_name()? 
+    (
+      "temp_dir_for_publish_command_{}",
+      path::unique_folder_name()?
     );
 
     let dir = if temp
@@ -200,9 +200,9 @@ mod private
       while temp_dir.exists()
       {
         unique_name = format!
-        ( 
-          "temp_dir_for_publish_command_{}", 
-          path::unique_folder_name()? 
+        (
+          "temp_dir_for_publish_command_{}",
+          path::unique_folder_name()?
         );
         temp_dir = env::temp_dir().join( unique_name );
       }
@@ -216,11 +216,11 @@ mod private
     };
 
     let subgraph = graph::remove_not_required_to_publish
-    ( 
-      &package_map, 
-      &tmp, 
-      &packages_to_publish, 
-      dir.clone() 
+    (
+      &package_map,
+      &tmp,
+      &packages_to_publish,
+      dir.clone()
     )?;
     let subgraph = subgraph
     .map( | _, n | n, | _, e | e );

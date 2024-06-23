@@ -3,17 +3,15 @@ mod private
 
   use crate::*;
   use table::*;
+  // qqq : xxx : for Bohdan no asterisk imports, but in special cases
   use std::
   {
-    collections,
+    // collections,
     fmt,
     sync,
-    // path,
   };
   use colored::Colorize as _;
-  // use iter_tools::Itertools as _;
   use process_tools::process::*;
-  // use error::untyped;
   use error::
   {
     Error,
@@ -29,7 +27,7 @@ mod private
     #[ error( "Path error: {0}" ) ]
     Path( #[ from ] PathError ),
   }
-  
+
   /// Represents a variant for testing purposes.
   #[ derive( Debug, Clone, Eq, PartialEq, Ord, PartialOrd, former::Former ) ]
   pub struct TestVariant
@@ -39,7 +37,7 @@ mod private
     /// Represents the optimization setting for the test variant.
     optimization : optimization::Optimization,
     /// Contains additional features or characteristics of the test variant.
-    features : collections::BTreeSet<String>,
+    features : collection::BTreeSet<String>,
   }
 
   impl fmt::Display for TestVariant
@@ -88,11 +86,11 @@ mod private
     pub fn try_from< 'a >
     (
       packages : impl core::iter::Iterator< Item = WorkspacePackageRef< 'a > >,
-      channels : &collections::HashSet< channel::Channel >,
+      channels : &collection::HashSet< channel::Channel >,
       power : u32,
       include_features : Vec< String >,
       exclude_features : Vec< String >,
-      optimizations : &collections::HashSet< optimization::Optimization >,
+      optimizations : &collection::HashSet< optimization::Optimization >,
       enabled_features : Vec< String >,
       with_all_features : bool,
       with_none_features : bool,
@@ -132,10 +130,10 @@ mod private
   #[ derive( Debug ) ]
   pub struct TestPackagePlan
   {
-    enabled_features : collections::BTreeSet< String >,
+    enabled_features : collection::BTreeSet< String >,
     // package : PathBuf,
     crate_dir : CrateDir,
-    test_variants : collections::BTreeSet< TestVariant >,
+    test_variants : collection::BTreeSet< TestVariant >,
   }
 
   impl fmt::Display for TestPackagePlan
@@ -143,7 +141,7 @@ mod private
     fn fmt( &self, f : &mut fmt::Formatter< '_ >) -> std::fmt::Result
     {
       writeln!( f, "Package : {}\nThe tests will be executed using the following configurations :", self.crate_dir.clone().absolute_path() )?;
-      let mut all_features = collections::BTreeSet::new();
+      let mut all_features = collection::BTreeSet::new();
       for variant in &self.test_variants
       {
         let features = variant.features.iter().cloned();
@@ -210,11 +208,11 @@ mod private
     fn try_from< 'a >
     (
       package : WorkspacePackageRef< 'a >,
-      channels : &collections::HashSet< channel::Channel >,
+      channels : &collection::HashSet< channel::Channel >,
       power : u32,
       include_features : &[ String ],
       exclude_features : &[ String ],
-      optimizations : &collections::HashSet< optimization::Optimization >,
+      optimizations : &collection::HashSet< optimization::Optimization >,
       enabled_features : &[ String ],
       with_all_features : bool,
       with_none_features : bool,
@@ -226,7 +224,7 @@ mod private
     {
       // let crate_dir = package.manifest_file().parent().unwrap().as_std_path().to_path_buf();
       let crate_dir = package.crate_dir()?;
-      let mut test_variants = collections::BTreeSet::new();
+      let mut test_variants = collection::BTreeSet::new();
       let features_powerset = features::features_powerset
       (
         package,
@@ -275,7 +273,7 @@ mod private
     row : &mut Row,
     mut counter : usize,
     mut flag : bool,
-    enabled_features : &collections::BTreeSet< String >
+    enabled_features : &collection::BTreeSet< String >
   )
   {
     for feature in ff
@@ -337,7 +335,7 @@ mod private
     #[ former( default = false ) ]
     with_all_features : bool,
     /// Specifies a list of features to be enabled in the test.
-    enable_features : collections::BTreeSet< String >,
+    enable_features : collection::BTreeSet< String >,
     /// Temp directory path
     temp_directory_path : Option< path::PathBuf >,
     /// A boolean indicating whether to perform a dry run or not.
@@ -402,7 +400,7 @@ mod private
     }
     else
     {
-      let envs = if options.backtrace { [( "RUST_BACKTRACE".to_string(), "full".to_string() )].into_iter().collect() } else { collections::HashMap::new() };
+      let envs = if options.backtrace { [( "RUST_BACKTRACE".to_string(), "full".to_string() )].into_iter().collect() } else { collection::HashMap::new() };
       Run::former()
       .bin_path( program )
       .args( args.into_iter().map( std::ffi::OsString::from ).collect::< Vec< _ > >() )
@@ -479,11 +477,9 @@ mod private
     ///   for which the tests were run, and the values are nested `BTreeMap` where the keys are
     ///   feature names and the values are `Report` structs representing the test results for
     ///   the specific feature and channel.
-    pub tests : collections::BTreeMap<TestVariant, Result<Report, Report>>,
+    pub tests : collection::BTreeMap< TestVariant, Result< Report, Report > >,
     /// Enabled features
-    pub enabled_features : collections::BTreeSet<String>,
-    // aaa : for Petro : rid of map of map of map, keep flat map
-    // aaa : done
+    pub enabled_features : collection::BTreeSet<String>,
   }
 
   impl fmt::Display for TestReport
@@ -496,7 +492,7 @@ mod private
       }
       let mut failed = 0;
       let mut success = 0;
-      let mut all_features = collections::BTreeSet::new();
+      let mut all_features = collection::BTreeSet::new();
       for variant in self.tests.keys()
       {
         let features = variant.features.iter().cloned();

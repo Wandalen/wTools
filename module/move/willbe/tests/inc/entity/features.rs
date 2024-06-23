@@ -1,12 +1,11 @@
 use super::*;
 
-// use the_module::*;
-use the_module::features::features_powerset;
-
-use std::collections::HashMap;
+use the_module::
+{
+  features::{ features_powerset, estimate_with },
+  collection::HashMap,
+};
 use serde::Deserialize;
-// use the_module::WorkspacePackageRef;
-use willbe::features::estimate_with;
 
 /// Constructs a mock `Package` with specified features for testing.
 // fn mock_package( features : Vec< ( &str, Vec< &str > ) > ) -> WorkspacePackageRef< '_ >

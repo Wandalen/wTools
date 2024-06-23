@@ -7,10 +7,10 @@ mod private
   {
     str::FromStr,
     path::PathBuf,
-    collections::HashSet,
   };
   use wca::VerifiedCommand;
   use error::{ untyped::Context, Result };
+  use collection::HashSet;
 
   use action::
   {

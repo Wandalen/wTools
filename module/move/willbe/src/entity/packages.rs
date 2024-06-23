@@ -4,9 +4,10 @@ mod private
   use std::
   {
     fmt::Formatter,
-    collections::{ HashMap, HashSet },
   };
   use package::PackageName;
+  use collection::{ HashMap, HashSet };
+
   // use workspace::WorkspacePackageRef< '_ >;
   // use Dependency;
 

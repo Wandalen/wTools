@@ -28,19 +28,19 @@ mod private
     },
   };
   use workspace_md_extension::WorkspaceMdExtension;
-  // use error_with::ErrWith;
+  // use error::ErrWith;
 
   static TAGS_TEMPLATE : std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 
   fn regexes_initialize()
   {
     TAGS_TEMPLATE.set
-    ( 
+    (
       Regex::new
-      ( 
-        r"<!--\{ generate\.main_header\.start(\(\)|\{\}|\(.*?\)|\{.*?\}) \}-->(.|\n|\r\n)+<!--\{ generate\.main_header\.end \}-->" 
+      (
+        r"<!--\{ generate\.main_header\.start(\(\)|\{\}|\(.*?\)|\{.*?\}) \}-->(.|\n|\r\n)+<!--\{ generate\.main_header\.end \}-->"
       )
-      .unwrap() 
+      .unwrap()
     ).ok();
   }
 
@@ -125,13 +125,13 @@ mod private
       .repository_url()
       .ok_or_else::< Error, _ >
       ( || err!( "repo_url not found in workspace Cargo.toml" ) )?;
-      
+
       let master_branch = workspace.master_branch().unwrap_or( "master".into() );
       let workspace_name = workspace
       .workspace_name()
       .ok_or_else::< Error, _ >
       ( || err!( "workspace_name not found in workspace Cargo.toml" ) )?;
-      
+
       let discord_url = workspace.discord_url();
 
       Ok
@@ -151,10 +151,10 @@ mod private
     {
       let discord = self.discord_url
       .map
-      ( 
+      (
         | discord |
         format!
-        ( 
+        (
           "\n[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)]({})",
           discord
         )
@@ -250,7 +250,7 @@ mod private
     (
       &content,
       &format!
-      ( 
+      (
         "<!--{{ generate.main_header.start{} }}-->\n{}\n<!--{{ generate.main_header.end }}-->",
         raw_params,
         header,

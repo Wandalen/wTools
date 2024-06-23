@@ -1,9 +1,8 @@
 mod private
 {
   use crate::*;
-  use std::collections::BTreeMap;
+  use collection::BTreeMap;
   use serde_json::Value;
-  // use std::path::Path;
 
   /// Facade for cargo_metadata::Package
   #[ derive( Debug, Clone, Copy ) ]

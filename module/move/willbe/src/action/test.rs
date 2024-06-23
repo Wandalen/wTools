@@ -2,28 +2,26 @@
 mod private
 {
   use crate::*;
-  use test::*;
-  // use path::AbsolutePath;
+  use entity::test::{ TestPlan, TestOptions, TestsReport, tests_run };
 
-  use std::collections::HashSet;
+  // use test::*;
+  // qqq : for Petro : no asterisks imports
+  // qqq : for Petro : bad : not clear what is imported, there are multiple filles with name test
 
+  use collection::HashSet;
   use std::{ env, fs };
 
   use former::Former;
-  use
+  use error::
   {
-    error::
+    untyped::
     {
-      untyped::
-      {
-        Error,
-        format_err
-      },
-      Result
+      Error,
+      format_err
     },
-    iter::Itertools,
+    Result
   };
-  // use error_with::ErrWith;
+  use iter::Itertools;
 
   /// Used to store arguments for running tests.
   ///
@@ -66,6 +64,7 @@ mod private
   /// The function also has the ability to run tests in parallel using `Rayon` crate.
   /// The result of the tests is written to the structure `TestsReport` and returned as a result of the function execution.
   // zzz : it probably should not be here
+  // xxx : use newtype
   pub fn test( o : TestsCommandOptions, dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
   {
 

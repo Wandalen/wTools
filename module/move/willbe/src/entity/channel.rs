@@ -4,12 +4,12 @@ mod private
   use std::
   {
     fmt::Formatter,
-    path::Path,
-    collections::HashSet,
+    ffi::OsString,
   };
-  use std::ffi::OsString;
-  use error::untyped::Error;
-  use error::Result;
+  use path::Path;
+  use collection::HashSet;
+  use error::untyped::{ Error, Result };
+  // use error::Result; // xxx : rid of
   use process_tools::process::*;
 
   /// The `Channel` enum represents different release channels for rust.

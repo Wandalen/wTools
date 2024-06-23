@@ -9,10 +9,9 @@ pub( crate ) mod private
     ops::Index,
     fmt::Debug,
     hash::Hash,
-    collections::{ HashMap, HashSet }
   };
-  use std::collections::VecDeque;
-  use std::path::PathBuf;
+  use collection::{ HashMap, HashSet, VecDeque };
+  use path::PathBuf;
   use petgraph::
   {
     graph::Graph,
