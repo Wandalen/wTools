@@ -25,7 +25,7 @@ mod all_manual_test;
     feature = "derive_deref_mut",
     feature = "derive_from",
     feature = "derive_inner_from",
-        feature = "derive_phantom"
+    feature = "derive_phantom"
   )
 )]
 mod all_test;
@@ -257,6 +257,36 @@ mod phantom_tests
 
   mod struct_named;
   mod struct_named_manual;
+  mod struct_named_empty;
+  mod struct_named_empty_manual;
   mod struct_tuple;
   mod struct_tuple_manual;
+  mod struct_tuple_empty;
+  mod struct_tuple_empty_manual;
+  mod struct_unit_to_tuple;
+  mod struct_unit_to_tuple_manual;
+  mod bounds_inlined;
+  mod bounds_inlined_manual;
+  mod bounds_mixed;
+  mod bounds_mixed_manual;
+  mod bounds_where;
+  mod bounds_where_manual;
+  mod name_collisions;
+  mod covariant_type;
+  mod covariant_type_manual;
+  mod contravariant_type;
+  mod contravariant_type_manual;
+  mod send_sync_type;
+  mod send_sync_type_manual;
+  #[ test_tools::nightly ]
+  #[ test ]
+  fn phantom_trybuild()
+  {
+
+    println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+    let t = test_tools::compiletime::TestCases::new();
+
+    t.compile_fail( "tests/inc/phantom/compiletime/enum.rs" );
+    t.compile_fail( "tests/inc/phantom/compiletime/invariant_type.rs" );
+  }
 }

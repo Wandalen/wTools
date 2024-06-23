@@ -1,11 +1,9 @@
 use std::marker::PhantomData;
 
 #[ allow( dead_code ) ]
-struct StructNamed< T >
+struct StructNamedEmpty< T >
 {
-  a : String,
-  b : i32,
   _phantom : PhantomData< T >,
 }
 
-include!( "./only_test/struct_named.rs" );
+include!( "./only_test/struct_named_empty.rs" );

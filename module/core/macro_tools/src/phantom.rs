@@ -93,7 +93,20 @@ pub( crate ) mod private
       },
       syn::Fields::Unit =>
       {
-        // No fields to modify in a unit struct
+        let phantom_field : syn::Field = syn::parse_quote!
+        {
+          #phantom
+        };
+
+        // Replace syn::Fields::Unit to syn::Fields::Unnamed
+        input.fields = syn::Fields::Unnamed
+          (
+            syn::FieldsUnnamed
+            {
+              paren_token : Default::default(),
+              unnamed : syn::punctuated::Punctuated::from_iter( vec![phantom_field] )
+            }
+          )
       }
     };
 
