@@ -33,7 +33,7 @@ mod private
   use version::revert;
   use error::untyped::Error;
   use channel::Channel;
-  use error_with::ErrWith;
+  // use error_with::ErrWith;
   use tool::ListNodeReport;
   use tool::TreePrinter;
 
@@ -612,6 +612,7 @@ mod private
     let mut report = vec![];
     for package in plan.plans
     {
+      // qqq : Petro : too long line
       let res = perform_package_publish( package ).map_err( |( current_rep, e )| format_err!( "{}\n{current_rep}\n{e}", report.iter().map( | r | format!( "{r}" ) ).join( "\n" ) ) )?;
       report.push( res );
     }

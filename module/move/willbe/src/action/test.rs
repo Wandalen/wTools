@@ -23,7 +23,7 @@ mod private
     },
     iter::Itertools,
   };
-  use error_with::ErrWith;
+  // use error_with::ErrWith;
 
   /// Used to store arguments for running tests.
   ///
