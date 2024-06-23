@@ -15,14 +15,13 @@ mod private
 
   use error::
   {
-    err,
+    Error,
     untyped::
     {
-      Error,
+      Error as wError,
       Result,
       Context,
       format_err,
-      bail,
     }
   };
   use manifest::repo_url;
@@ -50,6 +49,23 @@ mod private
     ).ok();
   }
 
+  #[ derive( Debug, Error )]
+  pub enum HealthTableRenewError
+  {
+    #[ error( "Common error: {0}" ) ]
+    Common( #[ from ] wError ),
+    #[ error( "I/O error: {0}" ) ]
+    IO( #[ from ] std::io::Error ),
+    #[ error( "Path error: {0}" ) ]
+    Path( #[ from ] PathError ),
+    #[ error( "Workspace error: {0}" ) ]
+    Workspace( #[ from ] WorkspaceInitError ),
+    #[ error( "Utf8Error error: {0}" ) ]
+    Utf8Error( #[ from ] std::str::Utf8Error ),
+    #[ error( "Toml edit error: {0}" ) ]
+    Toml( #[ from ] toml_edit::TomlError )
+  }
+
   /// `Stability` is an enumeration that represents the stability level of a feature.
   #[ derive( Debug, derive_tools::FromStr ) ]
   #[ display( style = "snake_case" ) ]
@@ -71,7 +87,7 @@ mod private
   // aaa : add
 
   /// Retrieves the stability level of a package from its `Cargo.toml` file.
-  fn stability_get( package_path : &Path ) -> Result< Stability >
+  fn stability_get( package_path : &Path ) -> Result< Stability, HealthTableRenewError >
   {
     let path = package_path.join( "Cargo.toml" );
     if path.exists()
@@ -91,7 +107,7 @@ mod private
     }
     else
     {
-      Err( err!( "No Cargo.toml found" ) )
+      Err( HealthTableRenewError::Common( wError::msg( "Cannot find Cargo.toml" )))
     }
   }
 
@@ -174,13 +190,13 @@ mod private
   impl GlobalTableOptions
   {
     /// Initializes the struct's fields from a `Cargo.toml` file located at a specified path.
-    fn initialize_from_path( path : &Path ) -> Result< Self >
+    fn initialize_from_path( path : &Path ) -> Result< Self, HealthTableRenewError >
     {
 
       let cargo_toml_path = path.join( "Cargo.toml" );
       if !cargo_toml_path.exists()
       {
-        bail!( "Cannot find Cargo.toml" )
+        return Err( HealthTableRenewError::Common( wError::msg( "Cannot find Cargo.toml" )))
       }
       else
       {
@@ -241,8 +257,9 @@ mod private
   /// will mean that at this place the table with modules located in the directory module/core will be generated.
   /// The tags do not disappear after generation.
   /// Anything between the opening and closing tag will be destroyed.
-  // qqq : for Petro : typed errors
-  pub fn readme_health_table_renew( path : &Path ) -> Result< () >
+  // aaa : for Petro : typed errors
+  // aaa : done
+  pub fn readme_health_table_renew( path : &Path ) -> Result< (), HealthTableRenewError >
   {
     regexes_initialize();
     let workspace = Workspace::try_from( CrateDir::try_from( path )? )?;
@@ -311,7 +328,7 @@ mod private
     tables: Vec< String >,
     contents: Vec< u8 >,
     mut file: File
-  ) -> Result< () >
+  ) -> Result< (), HealthTableRenewError >
   {
     let mut buffer: Vec< u8 > = vec![];
     let mut start: usize = 0;
@@ -340,7 +357,7 @@ mod private
     workspace : &Workspace,
     table_parameters: &TableOptions,
     parameters: &mut GlobalTableOptions,
-  ) -> Result< String, Error >
+  ) -> Result< String, HealthTableRenewError >
   {
     let directory_names = directory_names
     (
@@ -412,7 +429,7 @@ ensure that at least one remotest is present in git. ",
   (
     path : PathBuf,
     packages : impl Iterator< Item = WorkspacePackageRef< 'a > >,
-  ) -> Result< Vec< String > >
+  ) -> Result< Vec< String >, HealthTableRenewError >
   {
     let path_clone = path.clone();
     let module_package_filter : Option< Box< dyn Fn( WorkspacePackageRef< '_ > ) -> bool > > = Some
@@ -675,7 +692,7 @@ ensure that at least one remotest is present in git. ",
     target : &mut Vec< T >,
     from : usize,
     to : usize
-  ) -> Result< () >
+  ) -> Result< (), HealthTableRenewError >
   {
     if from < source.len() && to < source.len() && from <= to
     {
@@ -684,7 +701,7 @@ ensure that at least one remotest is present in git. ",
     }
     else
     {
-      bail!( "Incorrect indexes" )
+      Err( HealthTableRenewError::Common( wError::msg( "Incorrect indexes" )))
     }
   }
 }
