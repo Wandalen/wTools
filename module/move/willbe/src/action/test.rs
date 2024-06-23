@@ -125,7 +125,8 @@ Try to install it with `rustup install {}` command(-s)",
     ::try_from( CrateDir::try_from( path.clone() ).err_with( || report.clone() )? )
     .err_with( || report.clone() )?
     // xxx : clone?
-    // qqq : for Petro : use trait !everywhere!
+    // aaa : for Petro : use trait !everywhere!
+    // aaa : !When I wrote this solution, pr with this changes was not yet ready.!
     ;
 
     // let packages = needed_packages( &workspace );
@@ -142,7 +143,8 @@ Try to install it with `rustup install {}` command(-s)",
       .unwrap()
       .starts_with( path.as_ref() )
     )
-    // qqq : for Petro : too long line
+    // aaa : for Petro : too long line
+    // aaa : done
     ;
 
     let plan = TestPlan::try_from

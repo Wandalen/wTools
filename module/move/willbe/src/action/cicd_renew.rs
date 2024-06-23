@@ -17,7 +17,7 @@ mod private
   // use path::AbsolutePath;
   use entity::PathError;
   use error::typed::Error;
-  // use error_tools::dependency::*; // qqq : for Petro : don't do that, use tools::error:{ x, y, z };
+  // use error_tools::dependency::*; // aaa : for Petro : don't do that, use tools::error:{ x, y, z }; aaa : ok
 
   use error::untyped::{ Result, Error as wError };
   use entity::WorkspaceInitError;
