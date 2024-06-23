@@ -255,6 +255,7 @@ mod private
 
   // qqq : for Bohdan : should not be here
   // qqq : for Bohdan : documentation
+  // qqq : should be typed error, apply err_with
   fn perform_git_commit( o : GitOptions ) -> Result< ExtendedGitReport >
   {
     let mut report = ExtendedGitReport::default();
@@ -832,6 +833,7 @@ mod private
   /// # Returns
   ///
   /// If the operation is successful, returns a vector of `PathBuf` objects, where each `PathBuf` represents the path to a local dependency of the specified package.
+  // qqq : typed error?
   pub fn dependencies< 'a >
   (
     workspace : &mut Workspace,
@@ -861,6 +863,7 @@ mod private
       }
       DependenciesSort::Topological =>
       {
+        // qqq : too long line
         graph::toposort( graph::construct( &graph ) ).map_err( | err | format_err!( "{}", err ) )?.into_iter().filter( | x | x != &root ).collect()
       },
     };

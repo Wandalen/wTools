@@ -177,7 +177,8 @@ mod private
     let workspace = Workspace::try_from
     (
       crate_dir
-    ).err_with( || report.clone() )?;
+    )
+    .err_with( || report.clone() )?;
 
     let workspace_root = workspace
     .workspace_root();
@@ -188,7 +189,6 @@ mod private
     let read_me_path = workspace_root.join
     (
       repository::readme_path( &workspace_root )
-      // .ok_or_else( || format_err!( "Fail to find README.md" ) )
       .err_with( || report.clone() )?
     );
 
