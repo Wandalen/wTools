@@ -110,7 +110,7 @@ Try to install it with `rustup install {}` command(-s)",
       with_progress,
     } = o;
 
-    // xxx : watch and review after been ready
+    // zzz : watch and review after been ready
     // aaa : for Petro : use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >
     // aaa : done
     // qqq : for Petro : nonsense

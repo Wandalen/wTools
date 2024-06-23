@@ -6,18 +6,20 @@ pub( crate ) mod private
 
   use ::error_tools::protected::*;
 
+  // xxx : aaa : for Nikita : for Petro : for Bohdan : good one, apply it to all code
+
   /// This trait can be used to add extra information to an error, creating a tuple of the additional
   /// context and the original error. This can be particularly useful for error handling where you
   /// want to include more context or details in the error without losing the original error value.
   pub trait ErrWith< V, R, E >
   {
     /// Adds additional context to an error, converting the error into a tuple of the context and the error.
-    fn err_with( self, v : V ) -> std::result::Result< R, ( V, E ) >;
+    fn err_with< IntoErr : Into< E > >( self, v : V ) -> std::result::Result< R, ( V, IntoErr ) >;
   }
 
   impl< V, R, E > ErrWith< V, R, E > for std::result::Result< R, E >
   {
-    fn err_with( self, v : V ) -> std::result::Result< R, ( V, E ) >
+    fn err_with< IntoErr : Into< E > >( self, v : V ) -> std::result::Result< R, ( V, IntoErr ) >
     {
       self.map_err( | e | ( v, e ) )
     }
