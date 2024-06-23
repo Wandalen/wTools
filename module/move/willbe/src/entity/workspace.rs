@@ -32,40 +32,24 @@ mod private
     IO( #[ from ] std::io::Error ),
   }
 
-  impl Workspace
+  impl TryFrom< CrateDir > for Workspace
   {
+    type Error = WorkspaceInitError;
 
-    // // qqq : xxx : use try_from
-    // /// Load data from current directory
-    // pub fn from_current_path() -> Result< Self, WorkspaceInitError >
-    // {
-    //   let current_path = AbsolutePath::try_from( env::current_dir().unwrap_or_default() ).map_err( PathError::Io )?;
-    //   let metadata = cargo_metadata::MetadataCommand::new()
-    //   .no_deps()
-    //   .exec()?;
-    //   Ok( Self
-    //   {
-    //     metadata,
-    //     crate_dir : CrateDir::try_from( current_path )?,
-    //   })
-    // }
-
-    // qqq : xxx : use try_from
     /// Load data from current directory
-    pub fn with_crate_dir( crate_dir : CrateDir ) -> Result< Self, WorkspaceInitError >
+    fn try_from( crate_dir : CrateDir ) -> Result< Self, Self::Error >
     {
-      Ok
-      (
-        Self
-        {
-          metadata : cargo_metadata::MetadataCommand::new()
-          .current_dir( crate_dir.as_ref() )
-          .no_deps()
-          .exec()?,
-          crate_dir,
-        }
-      )
+      let metadata = cargo_metadata::MetadataCommand::new()
+      .current_dir( crate_dir.as_ref() )
+      .no_deps()
+      .exec()?;
+      Ok( Self
+      {
+        metadata,
+        crate_dir,
+      })
     }
+
   }
 
   impl TryFrom< CurrentPath > for Workspace
@@ -73,19 +57,9 @@ mod private
     type Error = WorkspaceInitError;
 
     /// Load data from current directory
-    fn try_from( _ : CurrentPath ) -> Result< Self, Self::Error >
+    fn try_from( cd : CurrentPath ) -> Result< Self, Self::Error >
     {
-      // xxx
-      // let current_path = AbsolutePath::try_from( env::current_dir().unwrap_or_default() ).map_err( PathError::Io )?;
-      // let current_path
-      let metadata = cargo_metadata::MetadataCommand::new()
-      .no_deps()
-      .exec()?;
-      Ok( Self
-      {
-        metadata,
-        crate_dir : CrateDir::transitive_try_from( CurrentPath )?,
-      })
+      Self::try_from( CrateDir::transitive_try_from::< AbsolutePath >( cd )? )
     }
 
   }
@@ -119,8 +93,6 @@ mod private
       self.metadata.packages.iter().map( WorkspacePackageRef::from )
     }
 
-    // aaa : return `CrateDir` instead of `std::path::Path`
-    // changed the return type
     /// Returns the path to workspace root
     pub fn workspace_root( &self ) -> CrateDir
     {

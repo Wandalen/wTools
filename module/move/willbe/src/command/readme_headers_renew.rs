@@ -4,7 +4,6 @@ mod private
   // use path::AbsolutePath;
   use action;
   // use error::untyped::Error;
-  use error::untyped::Error;
   use error::{ Result, err };
   use std::fmt::{ Display, Formatter };
 
@@ -12,9 +11,9 @@ mod private
   struct ReadmeHeadersRenewReport
   {
     main_header_renew_report : action::MainHeaderRenewReport,
-    main_header_renew_error : Option< Error >, // qqq : for Petro : typed error
+    main_header_renew_error : Option< action::MainHeaderRenewError >, // aaa : for Petro : typed error // aaa : done
     modules_headers_renew_report : action::ModulesHeadersRenewReport,
-    modules_headers_renew_error : Option< Error >, // qqq : for Petro : typed error
+    modules_headers_renew_error : Option< action::ModulesHeadersRenewError >, // aaa : for Petro : typed error // aaa : done
   }
 
   impl Display for ReadmeHeadersRenewReport
@@ -28,7 +27,8 @@ mod private
           writeln!
           (
             f,
-            "Main header renew report : \n{}\nError : \n{:?}\nModules headers renew report : \n{}\nError : \n{:?}",
+            "Main header renew report : \
+{}\nError : \n{:?}\nModules headers renew report : \n{}\nError : \n{:?}",
             self.main_header_renew_report, main, self.modules_headers_renew_report, modules
           )?;
         }
@@ -37,7 +37,8 @@ mod private
           writeln!
           (
             f,
-            "Main header renew report : \n{}\nError : \n{:?}\nModules headers renew report : \n{}",
+            "Main header renew report : \
+{}\nError : \n{:?}\nModules headers renew report : \n{}",
             self.main_header_renew_report, main, self.modules_headers_renew_report
           )?;
         }
@@ -46,7 +47,8 @@ mod private
           writeln!
           (
             f,
-            "Main header renew report : \n{}\nModules headers renew report : \n{}\nError : \n{:?}\n",
+            "Main header renew report : \
+{}\nModules headers renew report : \n{}\nError : \n{:?}\n",
             self.main_header_renew_report, self.modules_headers_renew_report, modules
           )?;
         }
@@ -70,7 +72,7 @@ mod private
   {
     let mut report = ReadmeHeadersRenewReport::default();
     // let absolute_path = AbsolutePath::try_from( std::env::current_dir()? )?;
-    let crate_dir = CrateDir::try_from( std::env::current_dir()? )?;
+    let crate_dir = CrateDir::transitive_try_from::< AbsolutePath >( CurrentPath )?;
     let mut fail = false;
 
     match action::readme_header_renew( crate_dir.clone() )
@@ -83,7 +85,7 @@ mod private
       {
         fail = true;
         report.main_header_renew_report = r;
-        report.main_header_renew_error = Some( Error::from( error ) );
+        report.main_header_renew_error = Some( error );
       }
     };
     match action::readme_modules_headers_renew( crate_dir )
@@ -96,7 +98,7 @@ mod private
       {
         fail = true;
         report.modules_headers_renew_report = r;
-        report.modules_headers_renew_error = Some( Error::from( error ) );
+        report.modules_headers_renew_error = Some(  error );
       }
     }
 

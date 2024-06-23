@@ -88,6 +88,7 @@ mod private
     track_caller,
     tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
   )]
+  // qqq : should be typed error, apply err_with
   pub fn pack( args : PackOptions ) -> Result< Report >
   {
     let ( program, options ) = ( "rustup", args.to_pack_args() );

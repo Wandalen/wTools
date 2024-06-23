@@ -187,6 +187,7 @@ mod private
   ///
   /// Returns a result containing the extended bump report if successful.
   ///
+  // qqq : should be typed error, apply err_with
   pub fn bump( o : BumpOptions ) -> Result< ExtendedBumpReport >
   {
     let mut report = ExtendedBumpReport::default();

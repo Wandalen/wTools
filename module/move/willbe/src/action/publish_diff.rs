@@ -50,8 +50,27 @@ mod private
         let diff = diffs.get( &root ).unwrap();
 
         let has_changes = diff.has_changes();
-        tree.name = if has_changes { format!( "{}", tree.name.yellow() ) } else { tree.name.clone() };
-        tree.version.as_mut().map( | v | *v = format!( "{} {}", if has_changes { v.yellow() } else { v.as_str().into() }, if has_changes { "MODIFIED" } else { "" } ) );
+        tree.name = if has_changes 
+        { 
+          format!( "{}", tree.name.yellow() ) 
+        } 
+        else 
+        { 
+          tree.name.clone() 
+        };
+        tree
+        .version
+        .as_mut()
+        .map
+        ( 
+          | v | 
+          *v = format!
+          ( 
+            "{} {}", 
+            if has_changes { v.yellow() } else { v.as_str().into() }, 
+            if has_changes { "MODIFIED" } else { "" } 
+          ) 
+        );
 
         for dep in &mut tree.normal_dependencies
         {
@@ -96,14 +115,24 @@ mod private
       .form()
     )
     .unwrap();
-    let ListReport::Tree( tree ) = list else { return Err( format_err!( "Logical error. Unexpected list format" ) ) };
+    let ListReport::Tree( tree ) = list 
+    else 
+    { 
+      return Err( format_err!( "Logical error. Unexpected list format" ) ) 
+    };
     let mut tasks = vec![ tree[ 0 ].clone() ];
     let mut diffs = HashMap::new();
     let mut current_idx = 0;
     while current_idx < tasks.len()
     {
       // let path = tasks[ current_idx ].crate_dir.as_ref().unwrap().to_string_lossy();
-      let path = tasks[ current_idx ].info.crate_dir.as_ref().unwrap().clone().absolute_path();
+      let path = tasks[ current_idx ]
+      .info
+      .crate_dir
+      .as_ref()
+      .unwrap()
+      .clone()
+      .absolute_path();
       // aaa : looks bad. use ready newtypes // aaa : removed
       let dir = CrateDir::try_from( path.clone() )?;
 
@@ -111,7 +140,14 @@ mod private
       let name = &package.name()?;
       let version = &package.version()?;
 
-    _ = cargo::pack( cargo::PackOptions::former().path( dir.as_ref() ).allow_dirty( true ).checking_consistency( false ).dry( false ).form() )?;
+    _ = cargo::pack
+    ( 
+      cargo::PackOptions::former()
+      .path( dir.as_ref() )
+      .allow_dirty( true )
+      .checking_consistency( false )
+      .dry( false ).form() 
+    )?;
     let l = CrateArchive::read( packed_crate::local_path( name, version, dir )? )?;
     let r = CrateArchive::download_crates_io( name, version ).unwrap();
 
@@ -132,13 +168,19 @@ mod private
       }
       diffs.insert( path, crate_diff( &l, &r ).exclude( diff::PUBLISH_IGNORE_LIST ) );
       let report = tasks[ current_idx ].info.normal_dependencies.clone();
-      let printer : Vec< TreePrinter > = report.iter().map( | rep | TreePrinter::new( rep ) ).collect();
+      let printer : Vec< TreePrinter > = report
+      .iter()
+      .map( | rep | TreePrinter::new( rep ) )
+      .collect();
       tasks.extend( printer );
 
       current_idx += 1;
     }
     let printer = tree;
-    let mut rep : Vec< ListNodeReport > = printer.iter().map( | printer | printer.info.clone() ).collect();
+    let mut rep : Vec< ListNodeReport > = printer
+    .iter()
+    .map( | printer | printer.info.clone() )
+    .collect();
     let report = PublishDiffReport
     {
       root_path : path.clone(),

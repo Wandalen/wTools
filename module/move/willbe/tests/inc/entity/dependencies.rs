@@ -12,8 +12,8 @@ use willbe::path::AbsolutePath;
 
 fn arrange( asset_name : &str ) -> ( TempDir, Workspace )
 {
-  let path = CrateDir::try_from( AbsolutePath::try_from( std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) ) ).unwrap() ).unwrap();
-  let workspace = Workspace::with_crate_dir( path ).unwrap();
+  let path = CrateDir::try_from( std::path::Path::new( env!( "CARGO_MANIFEST_DIR" ) ) ).unwrap();
+  let workspace = Workspace::try_from( path ).unwrap();
 
   let root_path = workspace.workspace_root();
   let assets_relative_path = std::path::Path::new( ASSET_PATH );
@@ -22,7 +22,7 @@ fn arrange( asset_name : &str ) -> ( TempDir, Workspace )
   temp.copy_from( assets_path.join( asset_name ), &[ "**" ] ).unwrap();
 
   let temp_crate_dir = CrateDir::try_from( AbsolutePath::try_from( temp.to_path_buf() ).unwrap() ).unwrap();
-  let workspace = Workspace::with_crate_dir( temp_crate_dir ).unwrap();
+  let workspace = Workspace::try_from( temp_crate_dir ).unwrap();
 
   ( temp, workspace )
 }

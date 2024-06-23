@@ -55,7 +55,11 @@ mod private
     {
       let mut this = Self::former();
 
-      this = if let Some( v ) = value.get_owned( "keep_archive" ) { this.keep_archive::< PathBuf >( v ) } else { this };
+      this = if let Some( v ) = value
+      .get_owned( "keep_archive" ) 
+      { this.keep_archive::< PathBuf >( v ) } 
+      else 
+      { this };
 
       Ok( this.form() )
     }

@@ -2,8 +2,16 @@ mod private
 {
   use crate::*;
 
-  use std::{ hash::Hash, collections, path };
-  // qqq : for Petro : for Bohdan : group uses
+  use std::
+  {
+    path::Path,
+    collections::{ HashMap, HashSet },
+    fmt,
+    hash::Hash,
+    path,
+  };
+  // aaa : for Petro : for Bohdan : group uses
+  // aaa : done
 
   use crates_tools::CrateArchive;
   use workspace::Workspace;
@@ -17,6 +25,7 @@ mod private
       untyped::format_err,
     }
   };
+  use version::revert;
 
   // aaa : fro Bohdan : write better description : is it better?
   /// A wrapper type for representing the name of a package.
@@ -199,14 +208,9 @@ mod private
     }
 
   }
-
-  // aaa : for Bohdan : should not be here
-
-
-  // aaa : bad : move out to publish.rs
-  // zzz : watch
-
-
+  
+  // xxx 
+  
   /// Sorting variants for dependencies.
   #[ derive( Debug, Copy, Clone ) ]
   pub enum DependenciesSort
@@ -352,6 +356,7 @@ mod private
   /// # Returns
   ///
   /// If the operation is successful, returns a vector of `PathBuf` objects, where each `PathBuf` represents the path to a local dependency of the specified package.
+  // qqq : typed error?
   pub fn dependencies< 'a >
   (
     workspace : &mut Workspace,
@@ -381,6 +386,7 @@ mod private
       }
       DependenciesSort::Topological =>
       {
+        // qqq : too long line
         graph::toposort( graph::construct( &graph ) ).map_err( | err | format_err!( "{}", err ) )?.into_iter().filter( | x | x != &root ).collect()
       },
     };

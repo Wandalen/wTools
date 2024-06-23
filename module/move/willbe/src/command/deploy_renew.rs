@@ -25,7 +25,8 @@ mod private
       values.interactive_if_empty( mandatory );
     }
     template.set_values( values );
-    action::deploy_renew( &current_dir, template ).context( "Fail to create deploy template" )
+    action::deploy_renew( &current_dir, template )
+    .context( "Fail to create deploy template" )
   }
 
 }

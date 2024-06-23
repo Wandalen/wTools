@@ -143,14 +143,8 @@ mod private
   //   }
   // }
 
-  // qqq : for Petro : redundant function
-  fn get_dir_name() -> Result< String >
-  {
-    let current_dir = std::env::current_dir()?;
-  // qqq : for Petro : use file_name
-    let current_dir = current_dir.components().last().context( "Invalid current directory" )?;
-    Ok( current_dir.as_os_str().to_string_lossy().into() )
-  }
+  // aaa : for Petro : redundant function
+  // aaa : this function not my, but ok I'll remove it.
 
   fn dir_name_to_formatted( dir_name : &str, separator : &str ) -> String
   {
@@ -169,12 +163,27 @@ mod private
   {
     if let None = template.load_existing_params( path )
     {
-      let current_dir = get_dir_name()?;
+      let current_dir = std::env::current_dir()?;
+      // qqq : for Petro : use file_name
+      // qqq : for Kos : bad description
+      let current_dir = current_dir
+      .components()
+      .last()
+      .context( "Invalid current directory" )?;
+      
+      let current_dir = current_dir.as_os_str().to_string_lossy();
       let artifact_repo_name = dir_name_to_formatted( &current_dir, "-" );
       let docker_image_name = dir_name_to_formatted( &current_dir, "_" );
-      template.values.insert_if_empty( "gcp_artifact_repo_name", wca::Value::String( artifact_repo_name ) );
-      template.values.insert_if_empty( "docker_image_name", wca::Value::String( docker_image_name ) );
-      template.values.insert_if_empty( "gcp_region", wca::Value::String( "europe-central2".into() ) );
+      template
+      .values
+      .insert_if_empty( "gcp_artifact_repo_name", wca::Value::String( artifact_repo_name ) );
+
+      template
+      .values
+      .insert_if_empty( "docker_image_name", wca::Value::String( docker_image_name ) );
+      template
+      .values
+      .insert_if_empty( "gcp_region", wca::Value::String( "europe-central2".into() ) );
     }
     template.create_all( path )?;
     Ok( () )

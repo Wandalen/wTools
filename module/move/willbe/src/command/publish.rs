@@ -27,13 +27,36 @@ mod private
 
   pub fn publish( o : VerifiedCommand ) -> Result< () >
   {
-    let args_line = format!( "{}", o.args.get_owned( 0 ).unwrap_or( std::path::PathBuf::from( "" ) ).display() );
-    let prop_line = format!( "{}", o.props.iter().map( | p | format!( "{}:{}", p.0, p.1.to_string() ) ).collect::< Vec< _ > >().join(" ") );
+    let args_line = format!
+    ( 
+      "{}", 
+      o
+      .args
+      .get_owned( 0 )
+      .unwrap_or( std::path::PathBuf::from( "" ) ).display() 
+    );
+    let prop_line = format!
+    ( 
+      "{}", 
+      o
+      .props
+      .iter()
+      .map( | p | format!( "{}:{}", p.0, p.1.to_string() ) )
+      .collect::< Vec< _ > >().join(" ") );
 
-    let patterns : Vec< _ > = o.args.get_owned( 0 ).unwrap_or_else( || vec![ "./".into() ] );
+    let patterns : Vec< _ > = o
+    .args
+    .get_owned( 0 )
+    .unwrap_or_else( || vec![ "./".into() ] );
 
-    let PublishProperties { channel, dry, temp } = o.props.try_into()?;
-    let plan = action::publish_plan( patterns, channel, dry, temp ).context( "Failed to plan the publication process" )?;
+    let PublishProperties 
+    { 
+      channel, 
+      dry, 
+      temp 
+    } = o.props.try_into()?;
+    let plan = action::publish_plan( patterns, channel, dry, temp )
+    .context( "Failed to plan the publication process" )?;
 
     let mut formatted_plan = String::new();
     writeln!( &mut formatted_plan, "Tree :" )?;
@@ -79,9 +102,18 @@ mod private
     {
       let mut this = Self::former();
 
-      this = if let Some( v ) = value.get_owned( "channel" ) { this.channel::< Channel >( { let v : String = v; Channel::try_from( v )? } ) } else { this };
-      this = if let Some( v ) = value.get_owned( "dry" ) { this.dry::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "temp" ) { this.temp::< bool >( v ) } else { this };
+      this = if let Some( v ) = value
+      .get_owned( "channel" ) 
+      { 
+        this.channel::< Channel >( { let v : String = v; Channel::try_from( v )? } ) 
+      } 
+      else 
+      { this };
+      
+      this = if let Some( v ) = value
+      .get_owned( "dry" ) { this.dry::< bool >( v ) } else { this };
+      this = if let Some( v ) = value
+      .get_owned( "temp" ) { this.temp::< bool >( v ) } else { this };
 
       Ok( this.form() )
     }
