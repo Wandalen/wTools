@@ -208,7 +208,7 @@ Try to install it with `rustup install {}` command(-s)",
       fs::remove_dir_all( options.temp_path.unwrap() ).err_with( || report.clone() )?;
     }
 
-    result
+    result.map_err( | ( report, e) | ( report, e.into() ) )
   }
 
 }
