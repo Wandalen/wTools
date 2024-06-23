@@ -17,7 +17,10 @@ mod private
   {
     let path : PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );
     let crate_dir = CrateDir::try_from( fs::canonicalize( path )? )?;
-    let with_features_deps = o.props.get_owned( "with_features_deps" ).unwrap_or( false );
+    let with_features_deps = o
+    .props
+    .get_owned( "with_features_deps" )
+    .unwrap_or( false );
     let o = FeaturesOptions::former()
     .crate_dir( crate_dir )
     .with_features_deps( with_features_deps )

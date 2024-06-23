@@ -4,17 +4,19 @@ mod private
   #[ allow( unused_imports ) ]
   use crate::tool::*;
 
-  use std::collections::BTreeMap;
-  use std::fs;
+  use std::
+  {
+    collections,
+    fs,
+    path::
+    {
+      Path,
+      PathBuf
+    },
+  };
   use error::untyped::Context;
-  use error::Result;
-  use former::Former;
-  use wca::Props;
-  use std::path::Path;
-  use std::path::PathBuf;
-  // qqq : for Petro : group, don't repeat prefixes
-  use wca::Value;
-  use std::collections::HashMap;
+  // aaa : for Petro : group, don't repeat prefixes
+  // aaa : done
 
   // qqq : for Nikita : is that trait really necessary?
   // Template - remove
@@ -49,7 +51,7 @@ mod private
     /// # Returns
     ///
     /// A `Result` which is `Ok` if the files are created successfully, or an `Err` otherwise.
-    pub fn create_all( self, path : &Path ) -> Result< () >
+    pub fn create_all( self, path : &path::Path ) -> Result< () >
     {
       self.files.create_all( path, &self.values )
     }
@@ -141,7 +143,7 @@ mod private
         );
         if let Some( value ) = value
         {
-          self.get_values_mut().insert_if_empty( &parameter, Value::String( value.into() ) );
+          self.get_values_mut().insert_if_empty( &parameter, wca::Value::String( value.into() ) );
         }
       }
       Some( () )
@@ -268,7 +270,7 @@ mod private
   }
 
   /// Parameters required for the template.
-  #[ derive( Debug, Default, Former ) ]
+  #[ derive( Debug, Default, former::Former ) ]
   pub struct TemplateParameters
   {
     #[ subform_entry( setter = false ) ]
@@ -278,12 +280,12 @@ mod private
   impl TemplateParameters
   {
     /// Extracts template values from props for parameters required for this template.
-    pub fn values_from_props( &self, props : &Props ) -> TemplateValues
+    pub fn values_from_props( &self, props : &wca::Props ) -> TemplateValues
     {
       let values = self.descriptors
       .iter()
       .map( | d | &d.parameter )
-      .map( | param | ( param.clone(), props.get( param ).map( Value::clone ) ) )
+      .map( | param | ( param.clone(), props.get( param ).map( wca::Value::clone ) ) )
       .collect();
       TemplateValues( values )
     }
@@ -296,7 +298,7 @@ mod private
   }
 
   /// Parameter description.
-  #[ derive( Debug, Default, Former ) ]
+  #[ derive( Debug, Default, former::Former ) ]
   pub struct TemplateParameterDescriptor
   {
     parameter : String,
@@ -318,14 +320,14 @@ mod private
 
   /// Holds a map of parameters and their values.
   #[ derive( Debug, Default ) ]
-  pub struct TemplateValues( HashMap< String, Option< Value > > );
+  pub struct TemplateValues( collections::HashMap< String, Option< wca::Value > > );
 
   impl TemplateValues
   {
     /// Converts values to a serializable object.
     ///
     /// Currently only `String`, `Number`, and `Bool` are supported.
-    pub fn to_serializable( &self ) -> BTreeMap< String, String >
+    pub fn to_serializable( &self ) -> collections::BTreeMap< String, String >
     {
       self.0.iter().map
       (
@@ -337,11 +339,11 @@ mod private
             {
               match value
               {
-                Value::String( val ) => val.to_string(),
-                Value::Number( val ) => val.to_string(),
-                Value::Path( _ ) => "unsupported".to_string(),
-                Value::Bool( val ) => val.to_string(),
-                Value::List( _ ) => "unsupported".to_string(),
+                wca::Value::String( val ) => val.to_string(),
+                wca::Value::Number( val ) => val.to_string(),
+                wca::Value::Path( _ ) => "unsupported".to_string(),
+                wca::Value::Bool( val ) => val.to_string(),
+                wca::Value::List( _ ) => "unsupported".to_string(),
               }
             }
           )
@@ -353,7 +355,7 @@ mod private
     }
 
     /// Inserts new value if parameter wasn't initialized before.
-    pub fn insert_if_empty( &mut self, key : &str, value : Value )
+    pub fn insert_if_empty( &mut self, key : &str, value : wca::Value )
     {
       if let None = self.0.get( key ).and_then( | v | v.as_ref() )
       {
@@ -368,7 +370,7 @@ mod private
       {
         println! ("Parameter `{key}` is not set" );
         let answer = wca::ask( "Enter value" );
-        self.0.insert( key.into(), Some( Value::String( answer ) ) );
+        self.0.insert( key.into(), Some( wca::Value::String( answer ) ) );
       }
     }
   }
@@ -377,7 +379,7 @@ mod private
   ///
   /// Holds raw template data, relative path for the file, and a flag that
   /// specifies whether the raw data should be treated as a template.
-  #[ derive( Debug, Former ) ]
+  #[ derive( Debug, former::Former ) ]
   pub struct TemplateFileDescriptor
   {
     path : PathBuf,
@@ -462,7 +464,7 @@ mod private
   }
 
   /// Helper builder for full template file list.
-  #[ derive( Debug, Former ) ]
+  #[ derive( Debug, former::Former ) ]
   pub struct TemplateFilesBuilder
   {
     /// Stores all file descriptors for current template.

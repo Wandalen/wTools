@@ -14,10 +14,22 @@ mod private
   // use iter_tools::Itertools as _;
   use process_tools::process::*;
   // use error::untyped;
-  use error::untyped::format_err;
+  use error::
+  {
+    Error,
+    untyped::format_err,
+  };
   use package::PackageName;
 
-
+  #[ derive( Debug, Error ) ]
+  pub enum TestError
+  {
+    #[ error( "Common error: {0}" ) ]
+    Common( #[ from ] error::untyped::Error ),
+    #[ error( "Path error: {0}" ) ]
+    Path( #[ from ] PathError ),
+  }
+  
   /// Represents a variant for testing purposes.
   #[ derive( Debug, Clone, Eq, PartialEq, Ord, PartialOrd, former::Former ) ]
   pub struct TestVariant
@@ -86,8 +98,9 @@ mod private
       with_none_features : bool,
       variants_cap : u32,
     )
-    -> error::untyped::Result< Self >
-    // qqq : for Petro : typed error
+    -> error::untyped::Result< Self, TestError >
+    // aaa : for Petro : typed error
+    // aaa : done
     {
       let mut packages_plan = vec![];
       for package in packages
@@ -207,8 +220,9 @@ mod private
       with_none_features : bool,
       variants_cap : u32,
     )
-    -> error::untyped::Result< Self >
-    // qqq : for Petro : typed error
+    -> error::untyped::Result< Self, TestError >
+    // aaa : for Petro : typed error
+    // aaa : done
     {
       // let crate_dir = package.manifest_file().parent().unwrap().as_std_path().to_path_buf();
       let crate_dir = package.crate_dir()?;
@@ -630,8 +644,9 @@ mod private
 
   /// `tests_run` is a function that runs tests on a given package with specified arguments.
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
-  // qqq : for Petro : use typed errors
-  pub fn run( options : &PackageTestOptions< '_ > ) -> Result< TestReport, ( TestReport, error::untyped::Error ) >
+  // aaa : for Petro : use typed errors
+  // aaa : done
+  pub fn run( options : &PackageTestOptions< '_ > ) -> Result< TestReport, ( TestReport, TestError ) >
   {
     let mut report = TestReport::default();
     report.dry = options.dry;
@@ -700,12 +715,13 @@ mod private
     .tests
     .iter()
     .any( | ( _, result ) | result.is_err() );
-    if at_least_one_failed { Err( ( report, format_err!( "Some tests was failed" ) ) ) } else { Ok( report ) }
+    if at_least_one_failed { Err( ( report, format_err!( "Some tests was failed" ).into() ) ) } else { Ok( report ) }
   }
 
   /// Run tests for given packages.
-  // qqq : for Petro : use typed errors
-  pub fn tests_run( args : &TestOptions ) -> Result< TestsReport, ( TestsReport, error::untyped::Error ) >
+  // aaa : for Petro : use typed errors
+  // aaa : done
+  pub fn tests_run( args : &TestOptions ) -> Result< TestsReport, ( TestsReport, TestError ) >
   {
     #[ cfg( feature = "progress_bar" ) ]
     let multi_progress = progress_bar::MultiProgress::default();
@@ -761,7 +777,7 @@ mod private
     }
     else
     {
-      Err(( report, format_err!( "Some tests was failed" ) ))
+      Err(( report, format_err!( "Some tests was failed" ).into() ))
     }
   }
 }

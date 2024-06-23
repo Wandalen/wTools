@@ -1,6 +1,20 @@
 mod private
 {
   use crate::*;
+  use std::
+  {
+    borrow::Cow,
+    collections::BTreeSet,
+    fs::OpenOptions,
+    fmt,
+    io::
+    {
+      Read, 
+      Seek, 
+      Write,
+      SeekFrom,
+    }
+  };
   // use path::AbsolutePath;
   use action::readme_health_table_renew::{ Stability, stability_generate, find_example_file };
   use package::Package;
@@ -14,12 +28,8 @@ mod private
       Context,
     },
   };
-  use std::borrow::Cow;
-  use std::collections::BTreeSet;
-  use std::fmt::{Display, Formatter};
-  use std::fs::{ OpenOptions };
-  use std::io::{ Read, Seek, SeekFrom, Write };
-  // qqq : for Petro : group properly, don't repeat std::
+  // aaa : for Petro : group properly, don't repeat std::
+  // aaa : done
   use std::path::PathBuf;
   use convert_case::{ Case, Casing };
   // use rayon::scope_fifo;
@@ -34,7 +44,13 @@ mod private
 
   fn regexes_initialize()
   {
-    TAGS_TEMPLATE.set( Regex::new( r"<!--\{ generate\.module_header\.start(\(\)|\{\}|\(.*?\)|\{.*?\}) \}-->(.|\n|\r\n)+<!--\{ generate\.module_header\.end \}-->" ).unwrap() ).ok();
+    TAGS_TEMPLATE.set
+    ( 
+      Regex::new
+      ( 
+        r"<!--\{ generate\.module_header\.start(\(\)|\{\}|\(.*?\)|\{.*?\}) \}-->(.|\n|\r\n)+<!--\{ generate\.module_header\.end \}-->" 
+      ).unwrap() 
+    ).ok();
   }
 
   /// Report.
@@ -45,13 +61,19 @@ mod private
     touched_files : BTreeSet< PathBuf >,
   }
 
-  impl Display for ModulesHeadersRenewReport
+  impl fmt::Display for ModulesHeadersRenewReport
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
       if self.touched_files.len() < self.found_files.len()
       {
-        writeln!( f, "Something went wrong.\n{}/{} was touched.", self.found_files.len(), self.touched_files.len() )?;
+        writeln!
+        ( 
+          f, 
+          "Something went wrong.\n{}/{} was touched.", 
+          self.found_files.len(), 
+          self.touched_files.len() 
+        )?;
         return Ok(())
       }
       writeln!( f, "Touched files :" )?;
@@ -72,17 +94,24 @@ mod private
     }
   }
 
+  /// The `ModulesHeadersRenewError` enum represents the various errors that can occur during
+  /// the renewal of module headers.
   #[ derive( Debug, Error ) ]
   pub enum ModulesHeadersRenewError
   {
+    /// Represents a common error.
     #[ error( "Common error: {0}" ) ]
     Common(#[ from ] wError ),
+    /// Represents an I/O error.
     #[ error( "I/O error: {0}" ) ]
     IO( #[ from ] std::io::Error ),
+    /// Represents an error related to workspace initialization.
     #[ error( "Workspace error: {0}" ) ]
     Workspace( #[ from ] WorkspaceInitError ),
+    /// Represents an error related to a package.
     #[ error( "Package error: {0}" ) ]
     Package( #[ from ] PackageError ),
+    /// Represents an error related to directory paths.
     #[ error( "Directory error: {0}" ) ]
     Directory( #[ from ] PathError ),
   }
@@ -113,7 +142,9 @@ mod private
       let repository_url = package.repository()?
       .ok_or_else::< wError, _ >( || err!( "Fail to find repository_url in module`s Cargo.toml" ) )?;
 
-      let discord_url = package.discord_url()?.or_else( || default_discord_url.clone() );
+      let discord_url = package
+      .discord_url()?
+      .or_else( || default_discord_url.clone() );
       Ok
         (
           Self
@@ -131,20 +162,42 @@ mod private
     fn to_header( self, workspace_path : &str ) -> Result< String, ModulesHeadersRenewError >
     {
       let discord = self.discord_url.map( | discord_url |
-        format!( " [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)]({discord_url})" )
+        format!
+        ( 
+          " [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)]({})",
+          discord_url
+        )
       )
       .unwrap_or_default();
 
-      let repo_url = url::repo_url_extract( &self.repository_url ).and_then( | r | url::git_info_extract( &r ).ok() ).ok_or_else::< wError, _ >( || err!( "Fail to parse repository url" ) )?;
-      let example= if let Some( name ) = find_example_file( self.module_path.as_path(), &self.module_name )
+      let repo_url = url::repo_url_extract( &self.repository_url )
+      .and_then( | r | url::git_info_extract( &r ).ok() )
+      .ok_or_else::< wError, _ >( || err!( "Fail to parse repository url" ) )?;
+      let example= if let Some( name ) = find_example_file
+      ( 
+        self.module_path.as_path(), 
+        &self.module_name 
+      )
       {
-        let relative_path = proper_path_tools::path::path_relative(workspace_path.try_into().unwrap(), name).to_string_lossy().to_string();
+        let relative_path = proper_path_tools::path::path_relative
+        (
+          workspace_path.try_into().unwrap(), 
+          name
+        )
+        .to_string_lossy()
+        .to_string();
         #[ cfg( target_os = "windows" ) ]
         let relative_path = relative_path.replace( "\\", "/" );
         // aaa : for Petro : use path_toools
         // aaa : used
         let p = relative_path.replace( "/","%2F" );
-        format!( " [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={p},RUN_POSTFIX=--example%20{}/https://github.com/{})", p, repo_url )
+        format!
+        ( 
+          " [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={},RUN_POSTFIX=--example%20{}/https://github.com/{})", 
+          p, 
+          p, 
+          repo_url 
+        )
       }
       else
       {
@@ -204,7 +257,11 @@ mod private
     .filter_map( | p | p.manifest_file().ok().and_then( | a | Some( a.inner() ) ) )
     .collect();
 
-    report.found_files = paths.iter().map( | ap | ap.as_ref().to_path_buf() ).collect();
+    report.found_files = paths
+    .iter()
+    .map( | ap | ap.as_ref().to_path_buf() )
+    .collect();
+    
     for path in paths
     {
       let read_me_path =  path
@@ -217,7 +274,16 @@ mod private
         .err_with( || report.clone() )?
       );
 
-      let pakage = Package::try_from( CrateDir::try_from( &path.parent().unwrap() ).err_with( || report.clone() )? )
+      let pakage = Package::try_from
+      ( 
+        CrateDir::try_from
+        ( 
+          &path
+          .parent()
+          .unwrap() 
+        )
+        .err_with( || report.clone() )? 
+      )
       .err_with( || report.clone() )?;
 
       let header = ModuleHeader::from_cargo_toml( pakage.into(), &discord_url )
@@ -242,7 +308,13 @@ mod private
 
       _ = query::parse( raw_params ).context( "Fail to parse raw params." );
 
-      let content = header_content_generate( &content, header, raw_params, workspace.workspace_root().to_str().unwrap() ).err_with( || report.clone() )?;
+      let content = header_content_generate
+      ( 
+        &content, 
+        header, 
+        raw_params, 
+        workspace.workspace_root().to_str().unwrap() 
+      ).err_with( || report.clone() )?;
 
       file.set_len( 0 ).err_with( || report.clone() )?;
       file.seek( SeekFrom::Start( 0 ) ).err_with( || report.clone() )?;
@@ -252,10 +324,28 @@ mod private
     Ok( report )
   }
 
-  fn header_content_generate< 'a >( content : &'a str, header : ModuleHeader, raw_params : &str, workspace_root : &str ) -> Result< Cow< 'a, str > >
+  fn header_content_generate< 'a >
+  ( 
+    content : &'a str, 
+    header : ModuleHeader, 
+    raw_params : &str, 
+    workspace_root : &str 
+  ) -> Result< Cow< 'a, str > >
   {
     let header = header.to_header( workspace_root )?;
-    let result = TAGS_TEMPLATE.get().unwrap().replace( &content, &format!( "<!--{{ generate.module_header.start{raw_params} }}-->\n{header}\n<!--{{ generate.module_header.end }}-->" ) );
+    let result = TAGS_TEMPLATE
+    .get()
+    .unwrap()
+    .replace
+    ( 
+      &content, 
+      &format!
+      ( 
+        "<!--{{ generate.module_header.start{} }}-->\n{}\n<!--{{ generate.module_header.end }}-->",
+        raw_params,
+        header
+      ) 
+    );
     Ok( result )
   }
 }
@@ -266,4 +356,6 @@ crate::mod_interface!
   orphan use readme_modules_headers_renew;
   /// report
   orphan use ModulesHeadersRenewReport;
+  /// Error.
+  orphan use ModulesHeadersRenewError;
 }
