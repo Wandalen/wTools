@@ -3,7 +3,7 @@ mod private
 
   use crate::*;
   use table::*;
-  // qqq : xxx : for Bohdan no asterisk imports, but in special cases
+  // qqq : for Bohdan no asterisk imports, but in special cases
   use std::
   {
     // collections,

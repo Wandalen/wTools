@@ -2,11 +2,14 @@ use super::*;
 
 use assert_fs::prelude::*;
 use assert_fs::TempDir;
-use the_module::Workspace;
-use the_module::package::{ dependencies, DependenciesOptions, DependenciesSort };
-use willbe::CrateDir;
-use willbe::package::Package;
-use willbe::path::AbsolutePath;
+use the_module::
+{
+  Workspace,
+  dependency::{ self, DependenciesOptions, DependenciesSort },
+  CrateDir,
+  package::Package,
+  path::AbsolutePath,
+};
 
 //
 
@@ -39,7 +42,7 @@ fn chain_of_three_packages()
   let c = Package::try_from( willbe::CrateDir::try_from( temp.join( "c" ) ).unwrap() ).unwrap();
 
   // Act
-  let output = dependencies( &mut workspace, &a, DependenciesOptions::default() ).unwrap();
+  let output = dependency::list( &mut workspace, &a, DependenciesOptions::default() ).unwrap();
   let output : Vec< CrateDir > = output
   .into_iter()
   .filter_map( | p | p.crate_dir )
@@ -53,7 +56,7 @@ fn chain_of_three_packages()
     ( c.crate_dir() == output[ 1 ] && b.crate_dir() == output[ 0 ] ),
   );
 
-  let output = dependencies( &mut workspace, &b, DependenciesOptions::default() ).unwrap();
+  let output = dependency::list( &mut workspace, &b, DependenciesOptions::default() ).unwrap();
   let output : Vec< CrateDir > = output
   .into_iter()
   .filter_map( | p | p.crate_dir )
@@ -61,7 +64,7 @@ fn chain_of_three_packages()
   assert_eq!( 1, output.len() );
   assert_eq!( c.crate_dir(), output[ 0 ] );
 
-  let output = dependencies( &mut workspace, &c, DependenciesOptions::default() ).unwrap();
+  let output = dependency::list( &mut workspace, &c, DependenciesOptions::default() ).unwrap();
   assert!( output.is_empty() );
 }
 
@@ -77,7 +80,7 @@ fn chain_of_three_packages_topologically_sorted()
   let c = Package::try_from( willbe::CrateDir::try_from( temp.join( "c" ) ).unwrap() ).unwrap();
 
   // Act
-  let output = dependencies
+  let output = dependency::list
   (
     &mut workspace,
     &a,
@@ -91,14 +94,14 @@ fn chain_of_three_packages_topologically_sorted()
   // Assert
    assert_eq!( &[ c.crate_dir(), b.crate_dir() ], output.as_slice() );
 
-  let output = dependencies( &mut workspace, &b, DependenciesOptions { sort : DependenciesSort::Topological, ..Default::default() } ).unwrap();
+  let output = dependency::list( &mut workspace, &b, DependenciesOptions { sort : DependenciesSort::Topological, ..Default::default() } ).unwrap();
   let output : Vec< CrateDir > = output
   .into_iter()
   .filter_map( | p | p.crate_dir )
   .collect();
   assert_eq!( &[ c.crate_dir() ], output.as_slice() );
 
-  let output = dependencies( &mut workspace, &c, DependenciesOptions { sort : DependenciesSort::Topological, ..Default::default() } ).unwrap();
+  let output = dependency::list( &mut workspace, &c, DependenciesOptions { sort : DependenciesSort::Topological, ..Default::default() } ).unwrap();
   assert!( output.is_empty() );
 }
 
@@ -113,7 +116,7 @@ fn package_with_remote_dependency()
   let b = Package::try_from( willbe::CrateDir::try_from( temp.join( "b" ) ).unwrap() ).unwrap();
 
   // Act
-  let output = dependencies( &mut workspace, &a, DependenciesOptions::default() ).unwrap();
+  let output = dependency::list( &mut workspace, &a, DependenciesOptions::default() ).unwrap();
   let output : Vec< CrateDir > = output
   .into_iter()
   .filter_map( | p | p.crate_dir )
@@ -135,7 +138,7 @@ fn workspace_with_cyclic_dependency()
   let b = Package::try_from( willbe::CrateDir::try_from( temp.join( "b" ) ).unwrap() ).unwrap();
 
   // Act
-  let output = dependencies( &mut workspace, &a, DependenciesOptions::default() ).unwrap();
+  let output = dependency::list( &mut workspace, &a, DependenciesOptions::default() ).unwrap();
   let output : Vec< CrateDir > = output
   .into_iter()
   .filter_map( | p | p.crate_dir )
@@ -146,7 +149,7 @@ fn workspace_with_cyclic_dependency()
   assert!( b.crate_dir() == output[ 0 ] );
 
   // Act
-  let output = dependencies( &mut workspace, &b, DependenciesOptions::default() ).unwrap();
+  let output = dependency::list( &mut workspace, &b, DependenciesOptions::default() ).unwrap();
   let output : Vec< CrateDir > = output
   .into_iter()
   .filter_map( | p | p.crate_dir )

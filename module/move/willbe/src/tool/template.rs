@@ -27,7 +27,9 @@ mod private
   #[ derive( Debug ) ]
   pub struct TemplateHolder
   {
+    /// Files of the template.
     pub files : Vec< TemplateFileDescriptor >,
+    /// Parameters definitions.
     pub parameters : TemplateParameters,
     /// The values associated with the template.
     pub values : TemplateValues,

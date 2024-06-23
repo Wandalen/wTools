@@ -11,7 +11,7 @@ mod private
   // // use path::AbsolutePath;
   use former::Former;
   use error::{ untyped::Context, Result };
-  use workspace::Workspace;
+  // use workspace::Workspace;
 
   /// Options available for the .features command
   #[ derive( Debug, Former ) ]

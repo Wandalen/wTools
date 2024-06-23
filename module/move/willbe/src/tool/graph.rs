@@ -2,7 +2,10 @@
 pub( crate ) mod private
 {
   #[ allow( unused_imports ) ]
-  use crate::tool::*;
+  use crate::*;
+
+  // use crate::tool::*;
+  // qqq : bad : for Bohdan : asterist only crate::* and prelude::*
 
   use std::
   {
@@ -20,10 +23,14 @@ pub( crate ) mod private
   use petgraph::graph::NodeIndex;
   use petgraph::prelude::*;
 
-  use error::typed::Error;
-  use error::Result;
+  use error::
+  {
+    typed::Error,
+    untyped::Result,
+  };
+  // use error::Result; // xxx : rid of
 
-  use crate::package::{ Package, publish_need };
+  use package::{ Package, publish_need };
   // qqq : for Bohdan : bad : tools can't depend on entitties!
 
   #[ derive( Debug, Error ) ]
@@ -241,6 +248,8 @@ pub( crate ) mod private
   /// # Returns
   ///
   /// A new `Graph` with the nodes that are not required to be published removed.
+
+  // qqq : for Bohdan : typed error
   pub fn remove_not_required_to_publish< 'a >
   (
     package_map : &HashMap< String, Package< 'a > >,

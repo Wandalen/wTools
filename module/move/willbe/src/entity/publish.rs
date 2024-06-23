@@ -2,7 +2,6 @@ mod private
 {
   use crate::*;
 
-  // use std::{ fmt, collections, path };
   use std::fmt;
   use process_tools::process;
   use
@@ -16,10 +15,8 @@ mod private
   };
   use error::ErrWith;
 
-  // aaa : for Bohdan : should not be here
-  // aaa : for Bohdan : documentation
-  #[ derive( Debug, Clone ) ]
   /// Represents instructions for publishing a package.
+  #[ derive( Debug, Clone ) ]
   pub struct PackagePublishInstruction
   {
     /// The name of the package.
@@ -35,9 +32,6 @@ mod private
     /// Indicates whether the process should be dry-run (no actual publishing).
     pub dry : bool,
   }
-
-  // aaa : for Bohdan : should not be here
-  // aaa : for Bohdan : documentation
 
   /// Represents a planner for publishing a single package.
   #[ derive( Debug, former::Former ) ]
@@ -104,72 +98,6 @@ mod private
         dry : self.dry,
       }
     }
-  }
-
-  /// Performs package publishing based on the given arguments.
-  ///
-  /// # Arguments
-  ///
-  /// * `args` - The package publishing instructions.
-  ///
-  /// # Returns
-  ///
-  /// * `Result<PublishReport>` - The result of the publishing operation, including information about the publish, version bump, and git operations.
-  pub fn perform_package_publish( instruction : PackagePublishInstruction ) -> ResultWithReport< PublishReport, Error >
-  {
-    let mut report = PublishReport::default();
-    let PackagePublishInstruction
-    {
-      package_name: _,
-      mut pack,
-      mut bump,
-      mut git_options,
-      mut publish,
-      dry,
-    } = instruction;
-    pack.dry = dry;
-    bump.dry = dry;
-    git_options.dry = dry;
-    publish.dry = dry;
-
-    report.get_info = Some( cargo::pack( pack ).err_with( || report.clone() )? );
-    // aaa : redundant field? // aaa : removed
-    let bump_report = version::bump( bump ).err_with( || report.clone() )?;
-    report.bump = Some( bump_report.clone() );
-    let git_root = git_options.git_root.clone();
-    let git = match entity::git::perform_git_commit( git_options )
-    {
-      Ok( git ) => git,
-      Err( e ) =>
-      {
-        version::revert( &bump_report )
-        .map_err( | le | format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) ) )
-        .err_with( || report.clone() )?;
-        return Err(( report, e ));
-      }
-    };
-    report.add = git.add;
-    report.commit = git.commit;
-    report.publish = match cargo::publish( publish )
-    {
-      Ok( publish ) => Some( publish ),
-      Err( e ) =>
-      {
-        tool::git::reset( git_root.as_ref(), true, 1, false )
-        .map_err
-        (
-          | le |
-          format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) )
-        )
-        .err_with( || report.clone() )?;
-        return Err(( report, e ));
-      }
-    };
-
-    let res = tool::git::push( &git_root, dry ).err_with( || report.clone() )?;
-    report.push = Some( res );
-
-    Ok( report )
   }
 
   /// `PublishPlan` manages the overall publication process for multiple packages.
@@ -345,29 +273,6 @@ mod private
 
   }
 
-  /// Perform publishing of multiple packages based on the provided publish plan.
-  ///
-  /// # Arguments
-  ///
-  /// * `plan` - The publish plan with details of packages to be published.
-  ///
-  /// # Returns
-  ///
-  /// Returns a `Result` containing a vector of `PublishReport` if successful, else an error.
-  pub fn perform_packages_publish( plan : PublishPlan ) -> Result< Vec< PublishReport > >
-  {
-    let mut report = vec![];
-    for package in plan.plans
-    {
-      let res = perform_package_publish( package ).map_err( |( current_rep, e )| format_err!( "{}\n{current_rep}\n{e}", report.iter().map( | r | format!( "{r}" ) ).join( "\n" ) ) )?;
-      report.push( res );
-    }
-
-    Ok( report )
-  }
-
-  // aaa : bad : for Bohdan : publish is not part of entity package // aaa : done
-
   /// Holds information about the publishing process.
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport
@@ -432,6 +337,95 @@ mod private
       Ok( () )
     }
   }
+
+  /// Performs package publishing based on the given arguments.
+  ///
+  /// # Arguments
+  ///
+  /// * `args` - The package publishing instructions.
+  ///
+  /// # Returns
+  ///
+  /// * `Result<PublishReport>` - The result of the publishing operation, including information about the publish, version bump, and git operations.
+
+  pub fn perform_package_publish( instruction : PackagePublishInstruction ) -> ResultWithReport< PublishReport, Error >
+  {
+    let mut report = PublishReport::default();
+    let PackagePublishInstruction
+    {
+      package_name: _,
+      mut pack,
+      mut bump,
+      mut git_options,
+      mut publish,
+      dry,
+    } = instruction;
+    pack.dry = dry;
+    bump.dry = dry;
+    git_options.dry = dry;
+    publish.dry = dry;
+
+    report.get_info = Some( cargo::pack( pack ).err_with( || report.clone() )? );
+    // aaa : redundant field? // aaa : removed
+    let bump_report = version::bump( bump ).err_with( || report.clone() )?;
+    report.bump = Some( bump_report.clone() );
+    let git_root = git_options.git_root.clone();
+    let git = match entity::git::perform_git_commit( git_options )
+    {
+      Ok( git ) => git,
+      Err( e ) =>
+      {
+        version::revert( &bump_report )
+        .map_err( | le | format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) ) )
+        .err_with( || report.clone() )?;
+        return Err(( report, e ));
+      }
+    };
+    report.add = git.add;
+    report.commit = git.commit;
+    report.publish = match cargo::publish( publish )
+    {
+      Ok( publish ) => Some( publish ),
+      Err( e ) =>
+      {
+        tool::git::reset( git_root.as_ref(), true, 1, false )
+        .map_err
+        (
+          | le |
+          format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) )
+        )
+        .err_with( || report.clone() )?;
+        return Err(( report, e ));
+      }
+    };
+
+    let res = tool::git::push( &git_root, dry ).err_with( || report.clone() )?;
+    report.push = Some( res );
+
+    Ok( report )
+  }
+
+  /// Perform publishing of multiple packages based on the provided publish plan.
+  ///
+  /// # Arguments
+  ///
+  /// * `plan` - The publish plan with details of packages to be published.
+  ///
+  /// # Returns
+  ///
+  /// Returns a `Result` containing a vector of `PublishReport` if successful, else an error.
+  pub fn perform_packages_publish( plan : PublishPlan ) -> Result< Vec< PublishReport > >
+  {
+    let mut report = vec![];
+    for package in plan.plans
+    {
+      let res = perform_package_publish( package ).map_err( |( current_rep, e )| format_err!( "{}\n{current_rep}\n{e}", report.iter().map( | r | format!( "{r}" ) ).join( "\n" ) ) )?;
+      report.push( res );
+    }
+
+    Ok( report )
+  }
+
 }
 
 //
