@@ -31,7 +31,7 @@ pub( crate ) mod private
 mod crate_dir;
 mod manifest_file;
 mod source_file;
-mod path_either;
+mod either;
 
 //
 
@@ -47,7 +47,7 @@ crate::mod_interface!
       Sources,
       Entries,
     },
-    path_either::PathEither
+    either::EitherDirOrFile
   };
   exposed use PathError;
 }

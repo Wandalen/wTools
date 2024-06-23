@@ -23,7 +23,7 @@ mod private
     },
     iter::Itertools,
   };
-  use error_with::ErrWith;
+  // use error_with::ErrWith;
 
   /// Used to store arguments for running tests.
   ///
@@ -114,18 +114,18 @@ Try to install it with `rustup install {}` command(-s)",
     // zzz : watch and review after been ready
     // aaa : for Petro : use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >
     // aaa : done
-    let path = match PathEither::try_from( o.dir.as_ref() )
-    .map_err( | e | ( report.clone(), e.into() ) )?
-    .inner()
+    // qqq : for Petro : nonsense
+    let path = match EitherDirOrFile::try_from( o.dir.as_ref() ).map_err( | e | ( report.clone(), e.into() ) )?.inner()
     {
       data_type::Either::Left( crate_dir ) => crate_dir,
       data_type::Either::Right( manifest ) => CrateDir::from( manifest )
     };
 
     let workspace = Workspace
-    ::with_crate_dir( CrateDir::try_from( path.clone() ).err_with( || report.clone() )? )
+    ::try_from( CrateDir::try_from( path.clone() ).err_with( || report.clone() )? )
     .err_with( || report.clone() )?
     // xxx : clone?
+    // qqq : for Petro : use trait !everywhere!
     ;
 
     // let packages = needed_packages( &workspace );
@@ -133,10 +133,16 @@ Try to install it with `rustup install {}` command(-s)",
     .packages()
     .filter
     (
-      move | p | 
-      p.manifest_file().is_ok() && 
-      p.manifest_file().unwrap().starts_with( path.as_ref() ) 
-    ) // aaa : rid of unwrap // aaa : now its save
+      move | p |
+      p
+      .manifest_file()
+      .is_ok() &&
+      p.
+      manifest_file()
+      .unwrap()
+      .starts_with( path.as_ref() )
+    )
+    // qqq : for Petro : too long line
     ;
 
     let plan = TestPlan::try_from

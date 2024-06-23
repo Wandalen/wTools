@@ -136,6 +136,32 @@ impl TryFrom< AbsolutePath > for CrateDir
   }
 }
 
+// impl< Initial > TransitiveTryFrom< AbsolutePath, PathError, Initial >
+// for CrateDir
+// where
+//   AbsolutePath : TryFrom< Initial >,
+//   PathError : From< < AbsolutePath as TryFrom< Initial > >::Error >,
+// {
+// }
+
+// impl< Initial > TransitiveTryInto< AbsolutePath, PathError, CrateDir >
+// for ( Initial, )
+// where
+//   Initial : TryInto< AbsolutePath >,
+//   AbsolutePath : TryInto< CrateDir, Error = PathError >,
+//   PathError : From< < Initial as TryInto< AbsolutePath > >::Error >,
+// {
+//   type Inner = Initial;
+// }
+
+// impl From< ( Initial, ) > for Initial
+// {
+//   fn from( src : ( Initial, ) ) -> Self
+//   {
+//     src.0
+//   }
+// }
+
 impl TryFrom< PathBuf > for CrateDir
 {
   type Error = PathError;

@@ -143,14 +143,16 @@ mod private
   //   }
   // }
 
+  // qqq : for Petro : redundant function
   fn get_dir_name() -> Result< String >
   {
     let current_dir = std::env::current_dir()?;
+    // qqq : for Petro : use file_name
     let current_dir = current_dir
     .components()
     .last()
     .context( "Invalid current directory" )?;
-    
+
     Ok( current_dir.as_os_str().to_string_lossy().into() )
   }
 
@@ -177,7 +179,7 @@ mod private
       template
       .values
       .insert_if_empty( "gcp_artifact_repo_name", wca::Value::String( artifact_repo_name ) );
-      
+
       template
       .values
       .insert_if_empty( "docker_image_name", wca::Value::String( docker_image_name ) );

@@ -12,7 +12,7 @@ mod private
   use workspace::Workspace;
   use package::Package;
   use channel::Channel;
-  use error_with::ErrWith;
+  // use error_with::ErrWith;
 
   /// Represents a report of publishing packages
   #[ derive( Debug, Default, Clone ) ]
@@ -142,18 +142,17 @@ mod private
 
     let workspace = if paths.is_empty()
     {
-      Workspace::from_current_path()?
+      Workspace::try_from( CurrentPath )?
     }
     else
     {
       // qqq : patterns can point to different workspaces. Current solution take first random path from list.
-      // aaa : for Bohdan : what do you mean? write more
       // A problem may arise if a user provides paths to packages from different workspaces
       // and we do not check whether all packages are within the same workspace
       // In the current solution, we'll choose the workspace related to the first package
       let current_path = paths.iter().next().unwrap().clone();
       let dir = CrateDir::try_from( current_path )?;
-      Workspace::with_crate_dir( dir )?
+      Workspace::try_from( dir )?
     };
 
     let workspace_root_dir : AbsolutePath = workspace

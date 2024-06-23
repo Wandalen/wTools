@@ -2,20 +2,14 @@ mod private
 {
   use crate::*;
   use action;
-  // use path::AbsolutePath;
-  use error::Result;
-  use error::untyped::Error;
+  use error::untyped::{ Error, Result };
 
   /// Generates header to main Readme.md file.
   pub fn readme_header_renew() -> Result< () >
   {
-    // match action::readme_header_renew( AbsolutePath::try_from( std::env::current_dir()? )? )
     match action::readme_header_renew
-    ( 
-      CrateDir::try_from
-      ( 
-        std::env::current_dir()? 
-      )? 
+    (
+      CrateDir::transitive_try_from::< AbsolutePath >( CurrentPath )?
     )
     {
       Ok( report ) =>

@@ -35,18 +35,18 @@ mod private
   fn regexes_initialize()
   {
     TAG_TEMPLATE.set
-    ( 
+    (
       regex::bytes::Regex::new
-      ( 
-        r#"<!--\{ generate.healthtable(\(\)|\{\}|\(.*?\)|\{.*?\}) \} -->"# 
-      ).unwrap() 
+      (
+        r#"<!--\{ generate.healthtable(\(\)|\{\}|\(.*?\)|\{.*?\}) \} -->"#
+      ).unwrap()
     ).ok();
     CLOSE_TAG.set
-    ( 
+    (
       regex::bytes::Regex::new
-      ( 
-        r#"<!--\{ generate\.healthtable\.end \} -->"# 
-      ).unwrap() 
+      (
+        r#"<!--\{ generate\.healthtable\.end \} -->"#
+      ).unwrap()
     ).ok();
   }
 
@@ -135,22 +135,22 @@ mod private
       .get( "with_branches" )
       .map( | v | bool::from( v ) )
       .unwrap_or( true );
-      
+
       let include_stability = value
       .get( "with_stability" )
       .map( | v | bool::from( v ) )
       .unwrap_or( true );
-      
+
       let include_docs = value
       .get( "with_docs" )
       .map( | v | bool::from( v ) )
       .unwrap_or( true );
-      
+
       let include = value
       .get( "with_gitpod" )
       .map( | v | bool::from( v ) )
       .unwrap_or( true );
-      
+
       let b_p = value.get( "1" );
       let base_path = if let Some( query::Value::String( path ) ) = value.get( "path" ).or( b_p )
       {
@@ -160,13 +160,13 @@ mod private
       {
         "./"
       };
-      Self 
-      { 
-        base_path: base_path.to_string(), 
-        include_branches, 
-        include_stability, 
-        include_docs, 
-        include 
+      Self
+      {
+        base_path: base_path.to_string(),
+        include_branches,
+        include_stability,
+        include_docs,
+        include
       }
     }
   }
@@ -217,14 +217,14 @@ mod private
           user_and_repo = url::git_info_extract( core_url )?;
         }
         Ok
-        ( 
-          Self 
-          { 
-            core_url : core_url.unwrap_or_default(), 
-            user_and_repo, 
-            branches, 
-            workspace_root : path.to_path_buf() 
-          } 
+        (
+          Self
+          {
+            core_url : core_url.unwrap_or_default(),
+            user_and_repo,
+            branches,
+            workspace_root : path.to_path_buf()
+          }
         )
       }
     }
@@ -241,18 +241,15 @@ mod private
   /// will mean that at this place the table with modules located in the directory module/core will be generated.
   /// The tags do not disappear after generation.
   /// Anything between the opening and closing tag will be destroyed.
+  // qqq : for Petro : typed errors
   pub fn readme_health_table_renew( path : &Path ) -> Result< () >
   {
     regexes_initialize();
-    let absolute_path = AbsolutePath::try_from( path )?;
-    let workspace = Workspace::with_crate_dir
-    ( 
-      CrateDir::try_from( absolute_path )? 
-    )?;
+    let workspace = Workspace::try_from( CrateDir::try_from( path )? )?;
     let workspace_root = workspace.workspace_root();
     let mut parameters = GlobalTableOptions::initialize_from_path
-    ( 
-      &workspace_root 
+    (
+      &workspace_root
     )?;
 
     let read_me_path = workspace_root
@@ -286,16 +283,16 @@ mod private
           .as_bytes()
           )?;
           let params: TableOptions  = query::parse
-          ( 
-            raw_table_params 
+          (
+            raw_table_params
           ).unwrap()
           .into_map( vec![] )
           .into();
           let table = package_readme_health_table_generate
-          ( 
-            &workspace, 
-            &params, 
-            &mut parameters 
+          (
+            &workspace,
+            &params,
+            &mut parameters
           )?;
           tables.push( table );
           tags_closures.push( ( open.end(), close.start() ) );
@@ -309,20 +306,20 @@ mod private
 
   /// Writes tables into a file at specified positions.
   fn tables_write_into_file
-  ( 
-    tags_closures : Vec< ( usize, usize ) >, 
-    tables: Vec< String >, 
-    contents: Vec< u8 >, 
-    mut file: File 
+  (
+    tags_closures : Vec< ( usize, usize ) >,
+    tables: Vec< String >,
+    contents: Vec< u8 >,
+    mut file: File
   ) -> Result< () >
   {
     let mut buffer: Vec< u8 > = vec![];
     let mut start: usize = 0;
-    for 
-    ( 
-      ( end_of_start_tag, start_of_end_tag ), 
-      con 
-    ) 
+    for
+    (
+      ( end_of_start_tag, start_of_end_tag ),
+      con
+    )
     in tags_closures.iter().zip( tables.iter() )
     {
       range_to_target_copy( &*contents, &mut buffer, start, *end_of_start_tag )?;
@@ -359,11 +356,11 @@ mod private
       let stability = if table_parameters.include_stability
       {
         Some
-        ( 
+        (
           stability_get
-          ( 
-            &workspace.workspace_root().join( &table_parameters.base_path ).join( &package_name ) 
-          )? 
+          (
+            &workspace.workspace_root().join( &table_parameters.base_path ).join( &package_name )
+          )?
         )
       }
       else
@@ -396,14 +393,14 @@ ensure that at least one remotest is present in git. ",
         parameters.user_and_repo = url::git_info_extract( &parameters.core_url )?;
       }
       table.push_str
-      ( 
+      (
         &row_generate
-        ( 
-          &package_name, 
-          stability.as_ref(), 
-          parameters, 
+        (
+          &package_name,
+          stability.as_ref(),
+          parameters,
           &table_parameters
-        ) 
+        )
       );
     }
     Ok( table )
@@ -442,19 +439,19 @@ ensure that at least one remotest is present in git. ",
       Box::new
       (
         move | _, d |
-        d.crate_dir().is_some() && 
-        d.kind() != 
-        DependencyKind::Development && 
+        d.crate_dir().is_some() &&
+        d.kind() !=
+        DependencyKind::Development &&
         d.crate_dir().as_ref().unwrap().starts_with( &path_clone )
       )
     );
     let module_packages_map = packages::filter
     (
       packages,
-      packages::FilterMapOptions 
-      { 
-        package_filter : module_package_filter, 
-        dependency_filter : module_dependency_filter 
+      packages::FilterMapOptions
+      {
+        package_filter : module_package_filter,
+        dependency_filter : module_dependency_filter
       },
     );
     let module_graph = graph::construct( &module_packages_map );
@@ -477,19 +474,19 @@ ensure that at least one remotest is present in git. ",
 
   /// Generate row that represents a module, with a link to it in the repository and optionals for stability, branches, documentation and links to the gitpod.
   fn row_generate
-  ( 
-    module_name : &str, 
-    stability : Option< &Stability >, 
-    parameters : &GlobalTableOptions, 
-    table_parameters : &TableOptions 
+  (
+    module_name : &str,
+    stability : Option< &Stability >,
+    parameters : &GlobalTableOptions,
+    table_parameters : &TableOptions
   ) -> String
   {
     let mut rou = format!
-    ( 
-      "| [{}]({}/{}) |", 
-      &module_name, 
-      &table_parameters.base_path, 
-      &module_name 
+    (
+      "| [{}]({}/{}) |",
+      &module_name,
+      &table_parameters.base_path,
+      &module_name
     );
     if table_parameters.include_stability
     {
@@ -504,12 +501,12 @@ ensure that at least one remotest is present in git. ",
     if table_parameters.include_docs
     {
       rou.push_str
-      ( 
+      (
         &format!
-        ( 
-          " [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{}) |", 
-          &module_name 
-        ) 
+        (
+          " [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{}) |",
+          &module_name
+        )
       );
     }
     if table_parameters.include
@@ -524,12 +521,12 @@ ensure that at least one remotest is present in git. ",
         let file_name = tmp.split( '/' ).last().unwrap();
         let name = file_name.strip_suffix( ".rs" ).unwrap();
         format!
-        ( 
+        (
           "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={}%2Fexamples%2F{},RUN_POSTFIX=--example%20{}/{})",
           path,
           file_name,
           name,
-          parameters.core_url, 
+          parameters.core_url,
         )
       }
       else
@@ -604,9 +601,9 @@ ensure that at least one remotest is present in git. ",
 
   /// Generate table header
   fn table_header_generate
-  ( 
-    parameters : &GlobalTableOptions, 
-    table_parameters : &TableOptions 
+  (
+    parameters : &GlobalTableOptions,
+    table_parameters : &TableOptions
   ) -> String
   {
     let mut header = String::from( "| Module |" );
@@ -657,13 +654,13 @@ ensure that at least one remotest is present in git. ",
     (
       | b |
       format!
-      ( 
-        "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/module_{}_push.yml?label=&branch={})]({}/actions/workflows/module_{}_push.yml?query=branch%3A{})", 
-        table_parameters.user_and_repo, 
-        &module_name.to_case( convert_case::Case::Snake ), 
+      (
+        "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/module_{}_push.yml?label=&branch={})]({}/actions/workflows/module_{}_push.yml?query=branch%3A{})",
+        table_parameters.user_and_repo,
+        &module_name.to_case( convert_case::Case::Snake ),
         b,
-        table_parameters.core_url, 
-        &module_name.to_case( convert_case::Case::Snake ), 
+        table_parameters.core_url,
+        &module_name.to_case( convert_case::Case::Snake ),
         b,
       )
     )
@@ -673,11 +670,11 @@ ensure that at least one remotest is present in git. ",
   }
 
   fn range_to_target_copy< T : Clone >
-  ( 
-    source : &[ T ], 
-    target : &mut Vec< T >, 
-    from : usize, 
-    to : usize 
+  (
+    source : &[ T ],
+    target : &mut Vec< T >,
+    from : usize,
+    to : usize
   ) -> Result< () >
   {
     if from < source.len() && to < source.len() && from <= to

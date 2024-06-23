@@ -11,7 +11,7 @@ mod private
   pub struct WorkspacePackageRef< 'a >
   {
     // #[ serde( flatten ) ]
-    inner : &'a cargo_metadata::Package
+    inner : &'a cargo_metadata::Package,
   }
 
   impl< 'a > From< &'a cargo_metadata::Package > for WorkspacePackageRef< 'a >
@@ -118,7 +118,7 @@ mod private
 
   impl< 'a > Entries for WorkspacePackageRef< 'a >
   {
-    fn entries( &self ) -> impl Iterator< Item = SourceFile >
+    fn entries( &self ) -> impl Iterator< Item = SourceFile > + Clone
     {
       self.inner.targets.iter().map( | target |
       {
@@ -126,9 +126,23 @@ mod private
         let source : SourceFile = src_path.try_into().expect( &format!( "Illformed path to source file {src_path}" ) );
         println!( " -- {:?} {:?}", source, target.kind );
         source
-
       })
-      // .flatten()
+    }
+  }
+
+  impl< 'a > Sources for WorkspacePackageRef< 'a >
+  {
+    fn sources( &self ) -> impl Iterator< Item = SourceFile > + Clone
+    {
+      use walkdir::WalkDir;
+      let crate_dir = self.crate_dir().unwrap();
+      WalkDir::new( crate_dir )
+      .into_iter()
+      .filter_map( Result::ok )
+      .filter( | e | e.path().extension().map_or( false, | ext | ext == "rs" ) )
+      .map( | e | SourceFile::try_from( e.path() ).unwrap() )
+      .collect::< Vec< _ > >()
+      .into_iter()
     }
   }
 

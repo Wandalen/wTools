@@ -231,7 +231,7 @@ impl DerefMut for SourceFile
 pub trait Sources
 {
   /// Returns an iterator over the source files.
-  fn sources( &self ) -> impl Iterator< Item = SourceFile >;
+  fn sources( &self ) -> impl Iterator< Item = SourceFile > + Clone;
 }
 
 /// A trait that defines a method for retrieving an iterator over entries.
@@ -242,7 +242,7 @@ pub trait Sources
 pub trait Entries
 {
   /// Returns an iterator over the entries.
-  fn entries( &self ) -> impl Iterator< Item = SourceFile >;
+  fn entries( &self ) -> impl Iterator< Item = SourceFile > + Clone;
 }
 
 // =

@@ -13,3 +13,6 @@ fn main() -> Result< (), error::untyped::Error >
 {
   Ok( willbe::run( std::env::args().collect() )? )
 }
+
+// cargo_subcommand_metadata::description!( "xxx" );
+// xxx : use

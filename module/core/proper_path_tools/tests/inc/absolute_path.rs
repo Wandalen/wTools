@@ -1,8 +1,15 @@
 #[ allow( unused_imports ) ]
 use super::*;
-use the_module::AbsolutePath;
-use std::path::Path;
-use std::path::PathBuf;
+
+use the_module::
+{
+  AbsolutePath,
+  Path,
+  PathBuf,
+};
+
+// #[ cfg( feature = "path_utf8" ) ]
+// use the_module::Utf8PathBuf;
 
 #[ test ]
 fn basic()

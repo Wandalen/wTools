@@ -3,15 +3,20 @@ mod private
 {
   use crate::*;
 
-  // use { action, wtools };
-
-  use std::{ str::FromStr, path::PathBuf, collections::HashSet, fs };
-
+  use std::
+  {
+    str::FromStr,
+    path::PathBuf,
+    collections::HashSet,
+  };
   use wca::VerifiedCommand;
   use error::{ untyped::Context, Result };
 
-  // use path::AbsolutePath;
-  use action::{ list as l, list::{ ListFormat, ListOptions } };
+  use action::
+  {
+    list as l,
+    list::{ ListFormat, ListOptions },
+  };
   use former::Former;
 
   #[ derive( Former ) ]
@@ -44,33 +49,12 @@ mod private
 
   pub fn list( o : VerifiedCommand ) -> Result< () >
   {
-    let path_to_workspace : PathBuf = o
-    .args
+    let path_to_workspace : PathBuf = o.args
     .get_owned( 0 )
-    .unwrap_or
-    ( 
-      std::env::current_dir()
-      .context( "Workspace list command without subject" )? 
-    );
-    let path_to_workspace = AbsolutePath::try_from
-    ( 
-      fs::canonicalize
-      ( 
-        path_to_workspace 
-      )? 
-    )?;
+    .unwrap_or( std::env::current_dir().context( "Workspace list command without subject" )? );
+    // let path_to_workspace = AbsolutePath::try_from( fs::canonicalize( path_to_workspace )? )?;
 
-    let ListProperties 
-    { 
-      format, 
-      with_version, 
-      with_path, 
-      with_local, 
-      with_remote, 
-      with_primary, 
-      with_dev, 
-      with_build 
-    } = o.props.try_into()?;
+    let ListProperties { format, with_version, with_path, with_local, with_remote, with_primary, with_dev, with_build } = o.props.try_into()?;
 
     let crate_dir = CrateDir::try_from( path_to_workspace )?;
 
@@ -87,7 +71,7 @@ mod private
     if with_dev { categories.insert( l::DependencyCategory::Dev ); }
     if with_build { categories.insert( l::DependencyCategory::Build ); }
 
-    let args = ListOptions::former()
+    let o = ListOptions::former()
     .path_to_manifest( crate_dir )
     .format( format )
     .info( additional_info )
@@ -95,7 +79,7 @@ mod private
     .dependency_categories( categories )
     .form();
 
-    match action::list( args )
+    match action::list( o )
     {
       Ok( report ) =>
       {
@@ -122,7 +106,7 @@ mod private
       this = if let Some( v ) = value
       .get_owned( "format" )
       .map( ListFormat::from_str ) { this.format( v? ) } else { this };
-      
+
       this = if let Some( v ) = value
       .get_owned( "with_version" ) { this.with_version::< bool >( v ) } else { this };
       this = if let Some( v ) = value

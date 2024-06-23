@@ -6,20 +6,29 @@ pub( crate ) mod private
 
   use ::error_tools::protected::*;
 
+  // xxx : for for Petro : for Bohdan : good one, apply it to all code
+
   /// This trait can be used to add extra information to an error, creating a tuple of the additional
   /// context and the original error. This can be particularly useful for error handling where you
   /// want to include more context or details in the error without losing the original error value.
   pub trait ErrWith< V, R, E >
   {
-    /// Adds additional context to an error, converting the error into a tuple of the context and the error.
-    fn err_with( self, v : V ) -> std::result::Result< R, ( V, E ) >;
+    /// Takes a closure `f` that returns a value of type `V`, and uses it to wrap an error of type `(V, E1)`
+    /// in the context of a `Result` of type `R`.
+    fn err_with< F >( self, f : F ) -> std::result::Result< R, ( V, E ) >
+    where
+      F : FnOnce() -> V;
   }
 
-  impl< V, R, E > ErrWith< V, R, E > for std::result::Result< R, E >
+  impl< V, R, E1, E2 > ErrWith< V, R, E1 > for Result< R, E2 >
+  where
+    E2 : Into< E1 >,
   {
-    fn err_with( self, v : V ) -> std::result::Result< R, ( V, E ) >
+    fn err_with< F >( self, f : F ) -> Result< R, ( V, E1 ) >
+    where
+      F : FnOnce() -> V,
     {
-      self.map_err( | e | ( v, e ) )
+      self.map_err( | e | ( f(), e.into() ) )
     }
   }
 

@@ -28,7 +28,7 @@ mod private
     },
   };
   use workspace_md_extension::WorkspaceMdExtension;
-  use error_with::ErrWith;
+  // use error_with::ErrWith;
 
   static TAGS_TEMPLATE : std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 
@@ -200,12 +200,11 @@ mod private
     let mut report = MainHeaderRenewReport::default();
     regexes_initialize();
 
-    let workspace = Workspace::with_crate_dir
+    let workspace = Workspace::try_from
     (
       crate_dir
-      // CrateDir::try_from( path )
-      // .err_with( || report.clone() )?
-    ).err_with( || report.clone() )?;
+    )
+    .err_with( || report.clone() )?;
 
     let workspace_root = workspace
     .workspace_root();
@@ -216,7 +215,6 @@ mod private
     let read_me_path = workspace_root.join
     (
       repository::readme_path( &workspace_root )
-      // .ok_or_else( || format_err!( "Fail to find README.md" ) )
       .err_with( || report.clone() )?
     );
 

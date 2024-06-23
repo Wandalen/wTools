@@ -4,13 +4,8 @@ mod private
 
   // qqq : for Bohdan : bad
   // use std::*;
-  // use error::
-  // {
-  //   // typed,
-  //   Result
-  // };
 
-  use std::{ env, slice };
+  use std::slice;
 
   /// Stores information about the current workspace.
   #[ derive( Debug, Clone ) ]
@@ -32,44 +27,41 @@ mod private
     /// Something went wrong with the workspace' data
     #[ error( "Can not load workspace data. Details: {0}" ) ]
     Metadata( #[ from ] cargo_metadata::Error ),
+    /// Files error
+    #[ error( "I/O error: {0}" ) ]
+    IO( #[ from ] std::io::Error ),
   }
 
-  impl Workspace
+  impl TryFrom< CrateDir > for Workspace
   {
+    type Error = WorkspaceInitError;
 
-    // aaa : typed errors
-    // aaa : done
     /// Load data from current directory
-    pub fn from_current_path() -> Result< Self, WorkspaceInitError >
+    fn try_from( crate_dir : CrateDir ) -> Result< Self, Self::Error >
     {
-      let current_path = AbsolutePath::try_from( env::current_dir().unwrap_or_default() ).map_err( PathError::Io )?;
       let metadata = cargo_metadata::MetadataCommand::new()
+      .current_dir( crate_dir.as_ref() )
       .no_deps()
       .exec()?;
       Ok( Self
       {
         metadata,
-        crate_dir : CrateDir::try_from( current_path )?,
+        crate_dir,
       })
     }
 
-    // aaa : typed errors
-    // aaa : done
+  }
+
+  impl TryFrom< CurrentPath > for Workspace
+  {
+    type Error = WorkspaceInitError;
+
     /// Load data from current directory
-    pub fn with_crate_dir( crate_dir : CrateDir ) -> Result< Self, WorkspaceInitError >
+    fn try_from( cd : CurrentPath ) -> Result< Self, Self::Error >
     {
-      Ok
-      (
-        Self
-        {
-          metadata : cargo_metadata::MetadataCommand::new()
-          .current_dir( crate_dir.as_ref() )
-          .no_deps()
-          .exec()?,
-          crate_dir,
-        }
-      )
+      Self::try_from( CrateDir::transitive_try_from::< AbsolutePath >( cd )? )
     }
+
   }
 
   impl From< cargo_metadata::Metadata > for Workspace
@@ -101,13 +93,11 @@ mod private
       self.metadata.packages.iter().map( WorkspacePackageRef::from )
     }
 
-    // aaa : return `CrateDir` instead of `std::path::Path`
-    // changed the return type
     /// Returns the path to workspace root
     pub fn workspace_root( &self ) -> CrateDir
     {
       // Safe because workspace_root.as_std_path() is always a path to a directory
-      CrateDir::try_from( self.metadata.workspace_root.as_std_path() ).unwrap() 
+      CrateDir::try_from( self.metadata.workspace_root.as_std_path() ).unwrap()
     }
 
     /// Returns the path to target directory
@@ -127,29 +117,24 @@ mod private
     }
   }
 
-  // impl Entries for Workspace
-  // {
-  //   fn entries( &self ) -> impl Iterator< Item = SourceFile >
-  //   {
-  //     let packages : Vec< _ > = self.packages().collect();
-  //     // self
-  //     // .packages()
-  //     packages
-  //     .iter()
-  //     .map( | package |
-  //     {
-  //       package.entries()
-  //     })
-  //     .flatten()
-  //   }
-  // }
-
   impl Entries for Workspace
   {
-    fn entries( &self ) -> impl Iterator< Item = SourceFile >
+    fn entries( &self ) -> impl Iterator< Item = SourceFile > + Clone
     {
-      self.packages()
+      self
+      .packages()
       .flat_map( | package | package.entries().collect::< Vec< _ > >() )
+      .into_iter()
+    }
+  }
+
+  impl Sources for Workspace
+  {
+    fn sources( &self ) -> impl Iterator< Item = SourceFile > + Clone
+    {
+      self
+      .packages()
+      .flat_map( | package | package.sources().collect::< Vec< _ > >() )
       .into_iter()
     }
   }

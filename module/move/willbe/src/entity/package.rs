@@ -26,7 +26,7 @@ mod private
       untyped::{ format_err, Context, Error },
     }
   };
-  use error_with::ErrWith;
+  use version::revert;
 
   // aaa : fro Bohdan : write better description : is it better?
   /// A wrapper type for representing the name of a package.
@@ -246,6 +246,7 @@ mod private
 
   // qqq : for Bohdan : should not be here
   // qqq : for Bohdan : documentation
+  // qqq : should be typed error, apply err_with
   fn perform_git_commit( o : GitOptions ) -> Result< ExtendedGitReport >
   {
     let mut report = ExtendedGitReport::default();
@@ -386,7 +387,7 @@ mod private
       Ok( git ) => git,
       Err( e ) =>
       {
-        version::revert( &bump_report )
+        revert( &bump_report )
         .map_err( | le | format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) ) )
         .err_with( || report.clone() )?;
         return Err(( report, e ));
@@ -603,6 +604,7 @@ mod private
     let mut report = vec![];
     for package in plan.plans
     {
+      // qqq : Petro : too long line
       let res = perform_package_publish( package ).map_err( |( current_rep, e )| format_err!( "{}\n{current_rep}\n{e}", report.iter().map( | r | format!( "{r}" ) ).join( "\n" ) ) )?;
       report.push( res );
     }
@@ -822,6 +824,7 @@ mod private
   /// # Returns
   ///
   /// If the operation is successful, returns a vector of `PathBuf` objects, where each `PathBuf` represents the path to a local dependency of the specified package.
+  // qqq : typed error?
   pub fn dependencies< 'a >
   (
     workspace : &mut Workspace,
@@ -851,6 +854,7 @@ mod private
       }
       DependenciesSort::Topological =>
       {
+        // qqq : too long line
         graph::toposort( graph::construct( &graph ) ).map_err( | err | format_err!( "{}", err ) )?.into_iter().filter( | x | x != &root ).collect()
       },
     };
