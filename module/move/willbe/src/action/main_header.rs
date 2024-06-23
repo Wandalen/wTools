@@ -86,15 +86,21 @@ mod private
     }
   }
 
+  /// The `MainHeaderRenewError` enum represents the various errors that can occur during
+  /// the renewal of the main header.
   #[ derive( Debug, error::Error ) ]
   pub enum MainHeaderRenewError
   {
+    /// Represents a common error.
     #[ error( "Common error: {0}" ) ]
     Common(#[ from ] Error ),
+    /// Represents an I/O error.
     #[ error( "I/O error: {0}" ) ]
     IO( #[ from ] std::io::Error ),
+    /// Represents an error related to workspace initialization.
     #[ error( "Workspace error: {0}" ) ]
     Workspace( #[ from ] WorkspaceInitError ),
+    /// Represents an error related to directory paths.
     #[ error( "Directory error: {0}" ) ]
     Directory( #[ from ] PathError ),
   }
@@ -266,4 +272,6 @@ crate::mod_interface!
   orphan use readme_header_renew;
   /// Report.
   orphan use MainHeaderRenewReport;
+  /// Error.
+  orphan use MainHeaderRenewError;
 }

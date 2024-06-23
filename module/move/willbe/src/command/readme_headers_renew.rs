@@ -4,7 +4,6 @@ mod private
   // use path::AbsolutePath;
   use action;
   // use error::untyped::Error;
-  use error::untyped::Error;
   use error::{ Result, err };
   use std::fmt::{ Display, Formatter };
 
@@ -12,9 +11,9 @@ mod private
   struct ReadmeHeadersRenewReport
   {
     main_header_renew_report : action::MainHeaderRenewReport,
-    main_header_renew_error : Option< Error >, // qqq : for Petro : typed error
+    main_header_renew_error : Option< action::MainHeaderRenewError >, // aaa : for Petro : typed error // aaa : done
     modules_headers_renew_report : action::ModulesHeadersRenewReport,
-    modules_headers_renew_error : Option< Error >, // qqq : for Petro : typed error
+    modules_headers_renew_error : Option< action::ModulesHeadersRenewError >, // aaa : for Petro : typed error // aaa : done
   }
 
   impl Display for ReadmeHeadersRenewReport
@@ -86,7 +85,7 @@ mod private
       {
         fail = true;
         report.main_header_renew_report = r;
-        report.main_header_renew_error = Some( Error::from( error ) );
+        report.main_header_renew_error = Some( error );
       }
     };
     match action::readme_modules_headers_renew( crate_dir )
@@ -99,7 +98,7 @@ mod private
       {
         fail = true;
         report.modules_headers_renew_report = r;
-        report.modules_headers_renew_error = Some( Error::from( error ) );
+        report.modules_headers_renew_error = Some(  error );
       }
     }
 

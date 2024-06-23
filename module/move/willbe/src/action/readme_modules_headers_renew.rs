@@ -94,17 +94,24 @@ mod private
     }
   }
 
+  /// The `ModulesHeadersRenewError` enum represents the various errors that can occur during
+  /// the renewal of module headers.
   #[ derive( Debug, Error ) ]
   pub enum ModulesHeadersRenewError
   {
+    /// Represents a common error.
     #[ error( "Common error: {0}" ) ]
     Common(#[ from ] wError ),
+    /// Represents an I/O error.
     #[ error( "I/O error: {0}" ) ]
     IO( #[ from ] std::io::Error ),
+    /// Represents an error related to workspace initialization.
     #[ error( "Workspace error: {0}" ) ]
     Workspace( #[ from ] WorkspaceInitError ),
+    /// Represents an error related to a package.
     #[ error( "Package error: {0}" ) ]
     Package( #[ from ] PackageError ),
+    /// Represents an error related to directory paths.
     #[ error( "Directory error: {0}" ) ]
     Directory( #[ from ] PathError ),
   }
@@ -349,4 +356,6 @@ crate::mod_interface!
   orphan use readme_modules_headers_renew;
   /// report
   orphan use ModulesHeadersRenewReport;
+  /// Error.
+  orphan use ModulesHeadersRenewError;
 }
