@@ -22,7 +22,14 @@ mod private
   {
     let WorkspaceNewProperties { repository_url, branches } = o.props.try_into()?;
     let template = WorkspaceTemplate::default();
-    action::workspace_renew( &std::env::current_dir()?, template, repository_url, branches ).context( "Fail to create workspace" )
+    action::workspace_renew
+    ( 
+      &std::env::current_dir()?, 
+      template, 
+      repository_url, 
+      branches 
+    )
+    .context( "Fail to create workspace" )
   }
 
   impl TryFrom< wca::Props > for WorkspaceNewProperties
@@ -33,8 +40,10 @@ mod private
     {
       let mut this = Self::former();
 
-      this = if let Some( v ) = value.get_owned( "repository_url" ) { this.repository_url::< String >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "branches" ) { this.branches::< Vec< String > >( v ) } else { this };
+      this = if let Some( v ) = value
+      .get_owned( "repository_url" ) { this.repository_url::< String >( v ) } else { this };
+      this = if let Some( v ) = value
+      .get_owned( "branches" ) { this.branches::< Vec< String > >( v ) } else { this };
 
       Ok( this.form() )
     }

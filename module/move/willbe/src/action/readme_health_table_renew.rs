@@ -9,21 +9,19 @@ mod private
     io::{ Write, Read, Seek, SeekFrom },
     collections::HashMap,
   };
-
-  use convert_case::{ Case, Casing };
+  use convert_case::Casing;
   use toml_edit::Document;
   use regex::bytes::Regex;
 
   use error::
   {
-    err,
+    Error,
     untyped::
     {
-      Error,
+      Error as wError,
       Result,
       Context,
       format_err,
-      bail,
     }
   };
   use manifest::repo_url;
@@ -35,8 +33,37 @@ mod private
   /// Initializes two global regular expressions that are used to match tags.
   fn regexes_initialize()
   {
-    TAG_TEMPLATE.set( regex::bytes::Regex::new( r#"<!--\{ generate.healthtable(\(\)|\{\}|\(.*?\)|\{.*?\}) \} -->"# ).unwrap() ).ok();
-    CLOSE_TAG.set( regex::bytes::Regex::new( r#"<!--\{ generate\.healthtable\.end \} -->"# ).unwrap() ).ok();
+    TAG_TEMPLATE.set
+    (
+      regex::bytes::Regex::new
+      (
+        r#"<!--\{ generate.healthtable(\(\)|\{\}|\(.*?\)|\{.*?\}) \} -->"#
+      ).unwrap()
+    ).ok();
+    CLOSE_TAG.set
+    (
+      regex::bytes::Regex::new
+      (
+        r#"<!--\{ generate\.healthtable\.end \} -->"#
+      ).unwrap()
+    ).ok();
+  }
+
+  #[ derive( Debug, Error )]
+  pub enum HealthTableRenewError
+  {
+    #[ error( "Common error: {0}" ) ]
+    Common( #[ from ] wError ),
+    #[ error( "I/O error: {0}" ) ]
+    IO( #[ from ] std::io::Error ),
+    #[ error( "Path error: {0}" ) ]
+    Path( #[ from ] PathError ),
+    #[ error( "Workspace error: {0}" ) ]
+    Workspace( #[ from ] WorkspaceInitError ),
+    #[ error( "Utf8Error error: {0}" ) ]
+    Utf8Error( #[ from ] std::str::Utf8Error ),
+    #[ error( "Toml edit error: {0}" ) ]
+    Toml( #[ from ] toml_edit::TomlError )
   }
 
   /// `Stability` is an enumeration that represents the stability level of a feature.
@@ -60,7 +87,7 @@ mod private
   // aaa : add
 
   /// Retrieves the stability level of a package from its `Cargo.toml` file.
-  fn stability_get( package_path : &Path ) -> Result< Stability >
+  fn stability_get( package_path : &Path ) -> Result< Stability, HealthTableRenewError >
   {
     let path = package_path.join( "Cargo.toml" );
     if path.exists()
@@ -80,7 +107,7 @@ mod private
     }
     else
     {
-      Err( err!( "No Cargo.toml found" ) )
+      Err( HealthTableRenewError::Common( wError::msg( "Cannot find Cargo.toml" )))
     }
   }
 
@@ -120,10 +147,26 @@ mod private
   {
     fn from( value : HashMap< String, query::Value > ) -> Self
     {
-      let include_branches = value.get( "with_branches" ).map( | v | bool::from( v ) ).unwrap_or( true );
-      let include_stability = value.get( "with_stability" ).map( | v | bool::from( v ) ).unwrap_or( true );
-      let include_docs = value.get( "with_docs" ).map( | v | bool::from( v ) ).unwrap_or( true );
-      let include = value.get( "with_gitpod" ).map( | v | bool::from( v ) ).unwrap_or( true );
+      let include_branches = value
+      .get( "with_branches" )
+      .map( | v | bool::from( v ) )
+      .unwrap_or( true );
+
+      let include_stability = value
+      .get( "with_stability" )
+      .map( | v | bool::from( v ) )
+      .unwrap_or( true );
+
+      let include_docs = value
+      .get( "with_docs" )
+      .map( | v | bool::from( v ) )
+      .unwrap_or( true );
+
+      let include = value
+      .get( "with_gitpod" )
+      .map( | v | bool::from( v ) )
+      .unwrap_or( true );
+
       let b_p = value.get( "1" );
       let base_path = if let Some( query::Value::String( path ) ) = value.get( "path" ).or( b_p )
       {
@@ -133,20 +176,27 @@ mod private
       {
         "./"
       };
-      Self { base_path: base_path.to_string(), include_branches, include_stability, include_docs, include }
+      Self
+      {
+        base_path: base_path.to_string(),
+        include_branches,
+        include_stability,
+        include_docs,
+        include
+      }
     }
   }
 
   impl GlobalTableOptions
   {
     /// Initializes the struct's fields from a `Cargo.toml` file located at a specified path.
-    fn initialize_from_path( path : &Path ) -> Result< Self >
+    fn initialize_from_path( path : &Path ) -> Result< Self, HealthTableRenewError >
     {
 
       let cargo_toml_path = path.join( "Cargo.toml" );
       if !cargo_toml_path.exists()
       {
-        bail!( "Cannot find Cargo.toml" )
+        return Err( HealthTableRenewError::Common( wError::msg( "Cannot find Cargo.toml" )))
       }
       else
       {
@@ -182,7 +232,16 @@ mod private
         {
           user_and_repo = url::git_info_extract( core_url )?;
         }
-        Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches, workspace_root : path.to_path_buf() } )
+        Ok
+        (
+          Self
+          {
+            core_url : core_url.unwrap_or_default(),
+            user_and_repo,
+            branches,
+            workspace_root : path.to_path_buf()
+          }
+        )
       }
     }
 
@@ -198,13 +257,17 @@ mod private
   /// will mean that at this place the table with modules located in the directory module/core will be generated.
   /// The tags do not disappear after generation.
   /// Anything between the opening and closing tag will be destroyed.
-  // qqq : for Petro : typed errors
-  pub fn readme_health_table_renew( path : &Path ) -> Result< () >
+  // aaa : for Petro : typed errors
+  // aaa : done
+  pub fn readme_health_table_renew( path : &Path ) -> Result< (), HealthTableRenewError >
   {
     regexes_initialize();
     let workspace = Workspace::try_from( CrateDir::try_from( path )? )?;
     let workspace_root = workspace.workspace_root();
-    let mut parameters = GlobalTableOptions::initialize_from_path( &workspace_root )?;
+    let mut parameters = GlobalTableOptions::initialize_from_path
+    (
+      &workspace_root
+    )?;
 
     let read_me_path = workspace_root
     .join( repository::readme_path( &workspace_root )? );
@@ -236,8 +299,18 @@ mod private
           .ok_or( format_err!( "Fail to parse group" ) )?
           .as_bytes()
           )?;
-          let params: TableOptions  = query::parse( raw_table_params ).unwrap().into_map( vec![] ).into();
-          let table = package_readme_health_table_generate( &workspace, &params, &mut parameters )?;
+          let params: TableOptions  = query::parse
+          (
+            raw_table_params
+          ).unwrap()
+          .into_map( vec![] )
+          .into();
+          let table = package_readme_health_table_generate
+          (
+            &workspace,
+            &params,
+            &mut parameters
+          )?;
           tables.push( table );
           tags_closures.push( ( open.end(), close.start() ) );
         }
@@ -249,11 +322,22 @@ mod private
   }
 
   /// Writes tables into a file at specified positions.
-  fn tables_write_into_file(  tags_closures : Vec< ( usize, usize ) >, tables: Vec< String >, contents: Vec< u8 >, mut file: File ) -> Result< () >
+  fn tables_write_into_file
+  (
+    tags_closures : Vec< ( usize, usize ) >,
+    tables: Vec< String >,
+    contents: Vec< u8 >,
+    mut file: File
+  ) -> Result< (), HealthTableRenewError >
   {
     let mut buffer: Vec< u8 > = vec![];
     let mut start: usize = 0;
-    for ( ( end_of_start_tag, start_of_end_tag ), con ) in tags_closures.iter().zip( tables.iter() )
+    for
+    (
+      ( end_of_start_tag, start_of_end_tag ),
+      con
+    )
+    in tags_closures.iter().zip( tables.iter() )
     {
       range_to_target_copy( &*contents, &mut buffer, start, *end_of_start_tag )?;
       range_to_target_copy( con.as_bytes(), &mut buffer, 0,con.len() - 1 )?;
@@ -273,7 +357,7 @@ mod private
     workspace : &Workspace,
     table_parameters: &TableOptions,
     parameters: &mut GlobalTableOptions,
-  ) -> Result< String, Error >
+  ) -> Result< String, HealthTableRenewError >
   {
     let directory_names = directory_names
     (
@@ -288,7 +372,13 @@ mod private
     {
       let stability = if table_parameters.include_stability
       {
-        Some( stability_get( &workspace.workspace_root().join( &table_parameters.base_path ).join( &package_name ) )? )
+        Some
+        (
+          stability_get
+          (
+            &workspace.workspace_root().join( &table_parameters.base_path ).join( &package_name )
+          )?
+        )
       }
       else
       {
@@ -319,7 +409,16 @@ ensure that at least one remotest is present in git. ",
         )?;
         parameters.user_and_repo = url::git_info_extract( &parameters.core_url )?;
       }
-      table.push_str( &row_generate( &package_name, stability.as_ref(), parameters, &table_parameters) );
+      table.push_str
+      (
+        &row_generate
+        (
+          &package_name,
+          stability.as_ref(),
+          parameters,
+          &table_parameters
+        )
+      );
     }
     Ok( table )
   }
@@ -330,7 +429,7 @@ ensure that at least one remotest is present in git. ",
   (
     path : PathBuf,
     packages : impl Iterator< Item = WorkspacePackageRef< 'a > >,
-  ) -> Result< Vec< String > >
+  ) -> Result< Vec< String >, HealthTableRenewError >
   {
     let path_clone = path.clone();
     let module_package_filter : Option< Box< dyn Fn( WorkspacePackageRef< '_ > ) -> bool > > = Some
@@ -357,13 +456,20 @@ ensure that at least one remotest is present in git. ",
       Box::new
       (
         move | _, d |
-        d.crate_dir().is_some() && d.kind() != DependencyKind::Development && d.crate_dir().as_ref().unwrap().starts_with( &path_clone )
+        d.crate_dir().is_some() &&
+        d.kind() !=
+        DependencyKind::Development &&
+        d.crate_dir().as_ref().unwrap().starts_with( &path_clone )
       )
     );
     let module_packages_map = packages::filter
     (
       packages,
-      packages::FilterMapOptions { package_filter: module_package_filter, dependency_filter: module_dependency_filter },
+      packages::FilterMapOptions
+      {
+        package_filter : module_package_filter,
+        dependency_filter : module_dependency_filter
+      },
     );
     let module_graph = graph::construct( &module_packages_map );
     let names : Vec< String > = graph::topological_sort_with_grouping( module_graph )
@@ -384,9 +490,21 @@ ensure that at least one remotest is present in git. ",
   }
 
   /// Generate row that represents a module, with a link to it in the repository and optionals for stability, branches, documentation and links to the gitpod.
-  fn row_generate( module_name : &str, stability : Option< &Stability >, parameters : &GlobalTableOptions, table_parameters : &TableOptions ) -> String
+  fn row_generate
+  (
+    module_name : &str,
+    stability : Option< &Stability >,
+    parameters : &GlobalTableOptions,
+    table_parameters : &TableOptions
+  ) -> String
   {
-    let mut rou = format!( "| [{}]({}/{}) |", &module_name, &table_parameters.base_path, &module_name );
+    let mut rou = format!
+    (
+      "| [{}]({}/{}) |",
+      &module_name,
+      &table_parameters.base_path,
+      &module_name
+    );
     if table_parameters.include_stability
     {
       let mut stability = stability_generate( &stability.as_ref().unwrap() );
@@ -399,7 +517,14 @@ ensure that at least one remotest is present in git. ",
     }
     if table_parameters.include_docs
     {
-      rou.push_str( &format!( " [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{}) |", &module_name ) );
+      rou.push_str
+      (
+        &format!
+        (
+          " [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{}) |",
+          &module_name
+        )
+      );
     }
     if table_parameters.include
     {
@@ -412,7 +537,14 @@ ensure that at least one remotest is present in git. ",
         let tmp = name.to_string_lossy().replace( '\\', "/" );
         let file_name = tmp.split( '/' ).last().unwrap();
         let name = file_name.strip_suffix( ".rs" ).unwrap();
-        format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={path}%2Fexamples%2F{file_name},RUN_POSTFIX=--example%20{name}/{})", parameters.core_url )
+        format!
+        (
+          "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={}%2Fexamples%2F{},RUN_POSTFIX=--example%20{}/{})",
+          path,
+          file_name,
+          name,
+          parameters.core_url,
+        )
       }
       else
       {
@@ -424,7 +556,7 @@ ensure that at least one remotest is present in git. ",
   }
 
   /// todo
-  pub fn find_example_file(base_path : &Path, module_name : &str ) -> Option< PathBuf >
+  pub fn find_example_file( base_path : &Path, module_name : &str ) -> Option< PathBuf >
   {
     let examples_dir = base_path.join("examples" );
 
@@ -485,7 +617,11 @@ ensure that at least one remotest is present in git. ",
   }
 
   /// Generate table header
-  fn table_header_generate( parameters : &GlobalTableOptions, table_parameters : &TableOptions ) -> String
+  fn table_header_generate
+  (
+    parameters : &GlobalTableOptions,
+    table_parameters : &TableOptions
+  ) -> String
   {
     let mut header = String::from( "| Module |" );
     let mut separator = String::from( "|--------|" );
@@ -534,14 +670,29 @@ ensure that at least one remotest is present in git. ",
     .map
     (
       | b |
-      format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/module_{}_push.yml?label=&branch={b})]({}/actions/workflows/module_{}_push.yml?query=branch%3A{})", table_parameters.user_and_repo, &module_name.to_case( Case::Snake ), table_parameters.core_url, &module_name.to_case( Case::Snake ), b )
+      format!
+      (
+        "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/module_{}_push.yml?label=&branch={})]({}/actions/workflows/module_{}_push.yml?query=branch%3A{})",
+        table_parameters.user_and_repo,
+        &module_name.to_case( convert_case::Case::Snake ),
+        b,
+        table_parameters.core_url,
+        &module_name.to_case( convert_case::Case::Snake ),
+        b,
+      )
     )
     .collect::< Vec< String > >()
     .join( " | " );
     format!( " {cells} |" )
   }
 
-  fn range_to_target_copy< T : Clone >( source : &[ T ], target : &mut Vec< T >, from : usize, to : usize ) -> Result< () >
+  fn range_to_target_copy< T : Clone >
+  (
+    source : &[ T ],
+    target : &mut Vec< T >,
+    from : usize,
+    to : usize
+  ) -> Result< (), HealthTableRenewError >
   {
     if from < source.len() && to < source.len() && from <= to
     {
@@ -550,7 +701,7 @@ ensure that at least one remotest is present in git. ",
     }
     else
     {
-      bail!( "Incorrect indexes" )
+      Err( HealthTableRenewError::Common( wError::msg( "Incorrect indexes" )))
     }
   }
 }

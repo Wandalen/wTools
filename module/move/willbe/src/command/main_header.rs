@@ -7,7 +7,10 @@ mod private
   /// Generates header to main Readme.md file.
   pub fn readme_header_renew() -> Result< () >
   {
-    match action::readme_header_renew( CrateDir::transitive_try_from::< AbsolutePath >( CurrentPath )? )
+    match action::readme_header_renew
+    (
+      CrateDir::transitive_try_from::< AbsolutePath >( CurrentPath )?
+    )
     {
       Ok( report ) =>
       {

@@ -34,7 +34,14 @@ mod private
 
   fn regexes_initialize()
   {
-    TAGS_TEMPLATE.set( Regex::new( r"<!--\{ generate\.main_header\.start(\(\)|\{\}|\(.*?\)|\{.*?\}) \}-->(.|\n|\r\n)+<!--\{ generate\.main_header\.end \}-->" ).unwrap() ).ok();
+    TAGS_TEMPLATE.set
+    ( 
+      Regex::new
+      ( 
+        r"<!--\{ generate\.main_header\.start(\(\)|\{\}|\(.*?\)|\{.*?\}) \}-->(.|\n|\r\n)+<!--\{ generate\.main_header\.end \}-->" 
+      )
+      .unwrap() 
+    ).ok();
   }
 
   /// Report.
@@ -63,7 +70,10 @@ mod private
       }
       else
       {
-        if let Some( Some( file_path ) ) = self.found_file.as_ref().map( | p | p.to_str() )
+        if let Some( Some( file_path ) ) = self
+        .found_file
+        .as_ref()
+        .map( | p | p.to_str() )
         {
           writeln!( f, "File found but not changed : {file_path}." )?;
         }
@@ -76,15 +86,21 @@ mod private
     }
   }
 
+  /// The `MainHeaderRenewError` enum represents the various errors that can occur during
+  /// the renewal of the main header.
   #[ derive( Debug, error::Error ) ]
   pub enum MainHeaderRenewError
   {
+    /// Represents a common error.
     #[ error( "Common error: {0}" ) ]
     Common(#[ from ] Error ),
+    /// Represents an I/O error.
     #[ error( "I/O error: {0}" ) ]
     IO( #[ from ] std::io::Error ),
+    /// Represents an error related to workspace initialization.
     #[ error( "Workspace error: {0}" ) ]
     Workspace( #[ from ] WorkspaceInitError ),
+    /// Represents an error related to directory paths.
     #[ error( "Directory error: {0}" ) ]
     Directory( #[ from ] PathError ),
   }
@@ -103,10 +119,19 @@ mod private
     /// Create `HeaderParameters` instance from the folder where Cargo.toml is stored.
     fn from_cargo_toml( workspace : &Workspace ) -> Result< Self, MainHeaderRenewError >
     {
-      // qqq : for Petro : too long lines, review all files
-      let repository_url = workspace.repository_url().ok_or_else::< Error, _ >( || err!( "repo_url not found in workspace Cargo.toml" ) )?;
+      // aaa : for Petro : too long lines, review all files
+      // aaa : done
+      let repository_url = workspace
+      .repository_url()
+      .ok_or_else::< Error, _ >
+      ( || err!( "repo_url not found in workspace Cargo.toml" ) )?;
+      
       let master_branch = workspace.master_branch().unwrap_or( "master".into() );
-      let workspace_name = workspace.workspace_name().ok_or_else::< Error, _ >( || err!( "workspace_name not found in workspace Cargo.toml" ) )?;
+      let workspace_name = workspace
+      .workspace_name()
+      .ok_or_else::< Error, _ >
+      ( || err!( "workspace_name not found in workspace Cargo.toml" ) )?;
+      
       let discord_url = workspace.discord_url();
 
       Ok
@@ -124,8 +149,15 @@ mod private
     /// Convert `Self`to header.
     fn to_header( self ) -> Result< String, MainHeaderRenewError >
     {
-      let discord = self.discord_url.map( | discord |
-        format!( "\n[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)]({discord})" )
+      let discord = self.discord_url
+      .map
+      ( 
+        | discord |
+        format!
+        ( 
+          "\n[![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)]({})",
+          discord
+        )
       )
       .unwrap_or_default();
 
@@ -217,7 +249,12 @@ mod private
     let content : String = TAGS_TEMPLATE.get().unwrap().replace
     (
       &content,
-      &format!( "<!--{{ generate.main_header.start{raw_params} }}-->\n{header}\n<!--{{ generate.main_header.end }}-->" )
+      &format!
+      ( 
+        "<!--{{ generate.main_header.start{} }}-->\n{}\n<!--{{ generate.main_header.end }}-->",
+        raw_params,
+        header,
+      )
     ).into();
 
     file.set_len( 0 ).err_with( || report.clone() )?;
@@ -235,4 +272,6 @@ crate::mod_interface!
   orphan use readme_header_renew;
   /// Report.
   orphan use MainHeaderRenewReport;
+  /// Error.
+  orphan use MainHeaderRenewError;
 }

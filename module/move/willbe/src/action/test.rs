@@ -74,7 +74,8 @@ mod private
 
     let mut report = TestsReport::default();
     // fail fast if some additional installations required
-    let channels = channel::available_channels( o.dir.as_ref() ).err_with( || report.clone() )?;
+    let channels = channel::available_channels( o.dir.as_ref() )
+    .err_with( || report.clone() )?;
     let channels_diff : Vec< _ > = o.channels.difference( &channels ).collect();
     if !channels_diff.is_empty()
     {
@@ -124,14 +125,26 @@ Try to install it with `rustup install {}` command(-s)",
     ::try_from( CrateDir::try_from( path.clone() ).err_with( || report.clone() )? )
     .err_with( || report.clone() )?
     // xxx : clone?
-    // qqq : for Petro : use trait !everywhere!
+    // aaa : for Petro : use trait !everywhere!
+    // aaa : !When I wrote this solution, pr with this changes was not yet ready.!
     ;
 
     // let packages = needed_packages( &workspace );
     let packages = workspace
     .packages()
-    .filter( move | p | p.manifest_file().is_ok() && p.manifest_file().unwrap().starts_with( path.as_ref() ) )
-    // qqq : for Petro : too long line
+    .filter
+    (
+      move | p |
+      p
+      .manifest_file()
+      .is_ok() &&
+      p.
+      manifest_file()
+      .unwrap()
+      .starts_with( path.as_ref() )
+    )
+    // aaa : for Petro : too long line
+    // aaa : done
     ;
 
     let plan = TestPlan::try_from
@@ -195,7 +208,7 @@ Try to install it with `rustup install {}` command(-s)",
       fs::remove_dir_all( options.temp_path.unwrap() ).err_with( || report.clone() )?;
     }
 
-    result
+    result.map_err( | ( report, e) | ( report, e.into() ) )
   }
 
 }

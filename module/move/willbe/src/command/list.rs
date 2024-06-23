@@ -103,14 +103,24 @@ mod private
     {
       let mut this = Self::former();
 
-      this = if let Some( v ) = value.get_owned( "format" ).map( ListFormat::from_str ) { this.format( v? ) } else { this };
-      this = if let Some( v ) = value.get_owned( "with_version" ) { this.with_version::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "with_path" ) { this.with_path::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "with_local" ) { this.with_local::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "with_remote" ) { this.with_remote::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "with_primary" ) { this.with_primary::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "with_dev" ) { this.with_dev::< bool >( v ) } else { this };
-      this = if let Some( v ) = value.get_owned( "with_build" ) { this.with_build::< bool >( v ) } else { this };
+      this = if let Some( v ) = value
+      .get_owned( "format" )
+      .map( ListFormat::from_str ) { this.format( v? ) } else { this };
+
+      this = if let Some( v ) = value
+      .get_owned( "with_version" ) { this.with_version::< bool >( v ) } else { this };
+      this = if let Some( v ) = value
+      .get_owned( "with_path" ) { this.with_path::< bool >( v ) } else { this };
+      this = if let Some( v ) = value
+      .get_owned( "with_local" ) { this.with_local::< bool >( v ) } else { this };
+      this = if let Some( v ) = value
+      .get_owned( "with_remote" ) { this.with_remote::< bool >( v ) } else { this };
+      this = if let Some( v ) = value
+      .get_owned( "with_primary" ) { this.with_primary::< bool >( v ) } else { this };
+      this = if let Some( v ) = value
+      .get_owned( "with_dev" ) { this.with_dev::< bool >( v ) } else { this };
+      this = if let Some( v ) = value
+      .get_owned( "with_build" ) { this.with_build::< bool >( v ) } else { this };
 
       Ok( this.form() )
     }
