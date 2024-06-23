@@ -12,7 +12,7 @@ mod private
   use toml_edit::value;
   use semver::Version as SemVersion;
 
-  use error::untyped::Result;
+  use error::untyped::Result; // qqq : don't use untyped::Result
   use manifest::Manifest;
   use package::Package;
   use { error::untyped::format_err, iter::Itertools };

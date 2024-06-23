@@ -97,6 +97,8 @@ mod private
       variants_cap : u32,
     )
     -> error::untyped::Result< Self, TestError >
+    // qqq : don't use untyped::Result
+    // xxx2 : ?
     // aaa : for Petro : typed error
     // aaa : done
     {

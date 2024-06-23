@@ -8,6 +8,8 @@ mod private
   // // use path::AbsolutePath;
   use wca::VerifiedCommand;
   use error::Result;
+  // qqq : don't use untyped::Result
+  // qqq : group dependencies
 
   ///
   /// List features of a package.

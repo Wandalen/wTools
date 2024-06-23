@@ -5,6 +5,8 @@ mod private
   use std::path::Path;
   use error::untyped::bail;
   use error::Result;
+  // qqq : don't use untyped::Result
+  // qqq : group dependencies
   use iter::Itertools;
   use template::
   {
@@ -137,8 +139,8 @@ mod private
         .end()
       .file()
         .data
-        ( 
-          include_str!( "../../template/workspace/module/module1/examples/module1_example.rs" ) 
+        (
+          include_str!( "../../template/workspace/module/module1/examples/module1_example.rs" )
         )
         .path( "./module/module1/examples/module1_example.rs" )
         .end()
@@ -188,20 +190,20 @@ mod private
     template
     .values
     .insert_if_empty
-    ( 
-      "project_name", 
-      wca::Value::String( path.file_name().unwrap().to_string_lossy().into() ) 
+    (
+      "project_name",
+      wca::Value::String( path.file_name().unwrap().to_string_lossy().into() )
     );
     template.values.insert_if_empty( "url", wca::Value::String( repository_url ) );
     template
     .values
     .insert_if_empty
-    ( 
-      "branches", 
+    (
+      "branches",
       wca::Value::String
-      ( 
-        branches.into_iter().map( | b | format!( r#""{}""#, b ) ).join( ", " ) 
-      ) 
+      (
+        branches.into_iter().map( | b | format!( r#""{}""#, b ) ).join( ", " )
+      )
     );
     template.files.create_all( path, &template.values )?;
     Ok( () )

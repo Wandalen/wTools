@@ -7,6 +7,8 @@ mod private
   use wca::VerifiedCommand;
 
   use error::Result;
+  // qqq : don't use untyped::Result
+  // qqq : group dependencies
   // use path::AbsolutePath;
 
   #[ derive( former::Former ) ]
@@ -56,9 +58,9 @@ mod private
       let mut this = Self::former();
 
       this = if let Some( v ) = value
-      .get_owned( "keep_archive" ) 
-      { this.keep_archive::< PathBuf >( v ) } 
-      else 
+      .get_owned( "keep_archive" )
+      { this.keep_archive::< PathBuf >( v ) }
+      else
       { this };
 
       Ok( this.form() )

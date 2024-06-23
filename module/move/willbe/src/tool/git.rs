@@ -9,6 +9,8 @@ mod private
   use process_tools::process::*;
   use error::Result;
   use error::err;
+  // qqq : don't use untyped::Result
+  // qqq : group dependencies
 
   /// Adds changes to the Git staging area.
   ///

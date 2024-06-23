@@ -11,6 +11,7 @@ mod private
 
   use action::list::ListReport;
   use error::untyped::Result;
+  // qqq : don't use untyped::Result
   use diff::{ DiffReport, crate_diff };
   use error::untyped::format_err;
   use tool::ListNodeReport;

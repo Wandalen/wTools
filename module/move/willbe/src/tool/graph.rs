@@ -26,7 +26,7 @@ pub( crate ) mod private
   use error::
   {
     typed::Error,
-    untyped::Result,
+    untyped::Result, // qqq : don't use untyped::Result
   };
   // use error::Result; // xxx : rid of
 

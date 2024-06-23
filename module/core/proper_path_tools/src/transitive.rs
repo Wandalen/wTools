@@ -1,7 +1,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  // qqq : move to derive_tools
+  // xxx : move to derive_tools
 
   // qqq : write tests, lool into example
   //

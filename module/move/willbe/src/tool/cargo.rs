@@ -11,6 +11,9 @@ mod private
   use former::Former;
   use process_tools::process::*;
   use error::Result;
+  // qqq : don't use untyped::Result
+  // qqq : group dependencies
+
   // qqq : for Bohdan : bad : tools can't depend on entitties!
   use crate::channel::Channel;
 
