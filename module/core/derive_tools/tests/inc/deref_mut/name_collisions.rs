@@ -2,7 +2,7 @@
 #![ allow( unused_imports ) ]
 
 use ::core::ops::Deref;
-use derive_tools::{ DerefMut };
+use derive_tools::DerefMut;
 
 pub mod core {}
 pub mod std {}
