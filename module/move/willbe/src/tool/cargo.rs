@@ -11,7 +11,6 @@ mod private
   use former::Former;
   use process_tools::process::*;
   use error::Result;
-  // qqq : don't use untyped::Result
   // qqq : group dependencies
 
   // qqq : for Bohdan : bad : tools can't depend on entitties!
@@ -92,6 +91,7 @@ mod private
     tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
   )]
   // qqq : should be typed error, apply err_with
+  // qqq : don't use 1-prameter Result
   pub fn pack( args : PackOptions ) -> Result< Report >
   {
     let ( program, options ) = ( "rustup", args.to_pack_args() );
@@ -158,6 +158,7 @@ mod private
     tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
   )]
   pub fn publish( args : PublishOptions ) -> Result< Report >
+  // qqq : don't use 1-prameter Result
   {
     let ( program, arguments) = ( "cargo", args.as_publish_args() );
 

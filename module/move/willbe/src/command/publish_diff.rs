@@ -7,7 +7,6 @@ mod private
   use wca::VerifiedCommand;
 
   use error::Result;
-  // qqq : don't use untyped::Result
   // qqq : group dependencies
   // use path::AbsolutePath;
 
@@ -30,6 +29,8 @@ mod private
   /// # Errors
   ///
   /// Returns an error if there is an issue with the command.
+
+  // qqq : don't use 1-prameter Result
   pub fn publish_diff( o : VerifiedCommand ) -> Result< () >
   {
     let path : PathBuf = o.args.get_owned( 0 ).unwrap_or( std::env::current_dir()? );

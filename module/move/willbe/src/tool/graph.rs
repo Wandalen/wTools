@@ -26,7 +26,7 @@ pub( crate ) mod private
   use error::
   {
     typed::Error,
-    untyped::Result, // qqq : don't use untyped::Result
+    untyped::Result,
   };
   // use error::Result; // xxx : rid of
 
@@ -258,6 +258,7 @@ pub( crate ) mod private
     temp_path : Option< PathBuf >,
   )
   -> Result< Graph< String, String > >
+  // qqq : don't use 1-prameter Result
   {
     let mut nodes = HashSet::new();
     let mut cleared_graph = Graph::new();

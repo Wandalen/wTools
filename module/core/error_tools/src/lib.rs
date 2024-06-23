@@ -67,9 +67,6 @@ pub mod untyped;
 #[ allow( unused_imports ) ]
 pub use protected::*;
 
-// use protected::Result as xxx;
-// use protected::Result2 as yyy;
-
 /// Protected namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 pub mod protected
@@ -106,9 +103,6 @@ pub mod orphan
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::exposed::*;
-
-  // #[ cfg( feature = "error_untyped" ) ]
-  // pub use super::untyped::Result;
 
 }
 

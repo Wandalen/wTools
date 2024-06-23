@@ -96,11 +96,7 @@ mod private
       with_none_features : bool,
       variants_cap : u32,
     )
-    -> error::untyped::Result< Self, TestError >
-    // qqq : don't use untyped::Result
-    // xxx2 : ?
-    // aaa : for Petro : typed error
-    // aaa : done
+    -> Result< Self, TestError >
     {
       let mut packages_plan = vec![];
       for package in packages
@@ -220,9 +216,7 @@ mod private
       with_none_features : bool,
       variants_cap : u32,
     )
-    -> error::untyped::Result< Self, TestError >
-    // aaa : for Petro : typed error
-    // aaa : done
+    -> Result< Self, TestError >
     {
       // let crate_dir = package.manifest_file().parent().unwrap().as_std_path().to_path_buf();
       let crate_dir = package.crate_dir()?;
@@ -381,6 +375,7 @@ mod private
   /// Returns a `Result` containing a `Report` if the command is executed successfully,
   /// or an error if the command fails to execute.
   pub fn _run< P >( path : P, options : SingleTestOptions ) -> Result< Report, Report >
+  // xxx
   where
     P : AsRef< path::Path >
   {
@@ -438,7 +433,8 @@ mod private
 
   impl fmt::Debug for TestOptions
   {
-    fn fmt( &self, f : &mut fmt::Formatter< '_ >) -> std::fmt::Result {
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> std::fmt::Result
+    {
       f.debug_struct( "TestOptions" )
       .field( "plan", &self.plan)
       .field( "concurrent", &self.concurrent)
@@ -642,8 +638,6 @@ mod private
 
   /// `tests_run` is a function that runs tests on a given package with specified arguments.
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
-  // aaa : for Petro : use typed errors
-  // aaa : done
   pub fn run( options : &PackageTestOptions< '_ > ) -> Result< TestReport, ( TestReport, TestError ) >
   {
     let mut report = TestReport::default();
@@ -717,8 +711,6 @@ mod private
   }
 
   /// Run tests for given packages.
-  // aaa : for Petro : use typed errors
-  // aaa : done
   pub fn tests_run( args : &TestOptions ) -> Result< TestsReport, ( TestsReport, TestError ) >
   {
     #[ cfg( feature = "progress_bar" ) ]

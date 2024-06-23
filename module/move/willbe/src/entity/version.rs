@@ -12,7 +12,7 @@ mod private
   use toml_edit::value;
   use semver::Version as SemVersion;
 
-  use error::untyped::Result; // qqq : don't use untyped::Result
+  use error::untyped::Result;
   use manifest::Manifest;
   use package::Package;
   use { error::untyped::format_err, iter::Itertools };
@@ -188,6 +188,7 @@ mod private
   /// Returns a result containing the extended bump report if successful.
   ///
   // qqq : should be typed error, apply err_with
+  // qqq : don't use 1-prameter Result
   pub fn bump( o : BumpOptions ) -> Result< ExtendedBumpReport >
   {
     let mut report = ExtendedBumpReport::default();
@@ -255,6 +256,7 @@ mod private
   /// # Returns
   ///
   /// Returns `Ok(())` if the version is reverted successfully. Returns `Err` with an error message if there is any issue with reverting the version.
+  // qqq : don't use 1-prameter Result
   pub fn revert( report : &ExtendedBumpReport ) -> Result< () >
   {
     let Some( name ) = report.name.as_ref() else { return Ok( () ) };

@@ -8,7 +8,6 @@ mod private
   use colored::Colorize;
   use wca::VerifiedCommand;
   use error::Result;
-  // qqq : don't use untyped::Result
   // qqq : group dependencies
   use path::{ AbsolutePath, PathBuf };
   use action::test::TestsCommandOptions;
@@ -49,6 +48,7 @@ mod private
   }
 
   /// run tests in specified crate
+  // qqq : don't use 1-prameter Result
   pub fn test( o : VerifiedCommand ) -> Result< () >
   {
     let args_line = format!

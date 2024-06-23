@@ -11,7 +11,7 @@ mod private
 
   use action::list::ListReport;
   use error::untyped::Result;
-  // qqq : don't use untyped::Result
+  // qqq : group dependencies
   use diff::{ DiffReport, crate_diff };
   use error::untyped::format_err;
   use tool::ListNodeReport;
@@ -100,6 +100,7 @@ mod private
   /// Return the differences between a local and remote package versions.
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
   pub fn publish_diff( o : PublishDiffOptions ) -> Result< PublishDiffReport >
+  // qqq : don't use 1-prameter Result
   {
     let path = AbsolutePath::try_from( o.path )?;
     let dir = CrateDir::try_from( path.clone() )?;

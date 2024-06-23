@@ -5,7 +5,6 @@ mod private
   use std::path::Path;
   use error::untyped::bail;
   use error::Result;
-  // qqq : don't use untyped::Result
   // qqq : group dependencies
   use iter::Itertools;
   use template::
@@ -181,7 +180,9 @@ mod private
     mut template : WorkspaceTemplate,
     repository_url : String,
     branches : Vec< String >
-  ) -> Result< () >
+  )
+  -> Result< () >
+  // qqq : don't use 1-prameter Result
   {
     if fs::read_dir( path )?.count() != 0
     {
