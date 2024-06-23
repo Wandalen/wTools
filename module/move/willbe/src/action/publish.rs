@@ -3,16 +3,21 @@ mod private
 {
   use crate::*;
 
-  use std::collections::{ HashSet, HashMap };
-  use core::fmt::Formatter;
-  use std::{ env, fs };
+  use std::{ collections, env, fmt,  fs };
+  use
+  {
+    error::untyped,
+    error_with::ErrWith,
+  };
 
-  use error::untyped::Error;
-  // use path::AbsolutePath;
-  use workspace::Workspace;
-  use package::Package;
-  use channel::Channel;
-  // use error_with::ErrWith;
+//   use std::collections::{ HashSet, HashMap };
+//   use core::fmt::Formatter;
+//   use std::{ env, fs };
+
+//   use error::untyped::Error;
+//   use workspace::Workspace;
+//   use package::Package;
+//   use channel::Channel;
 
   /// Represents a report of publishing packages
   #[ derive( Debug, Default, Clone ) ]
@@ -20,14 +25,14 @@ mod private
   {
     /// Represents the absolute path to the root directory of the workspace.
     pub workspace_root_dir : Option< AbsolutePath >,
-    pub plan : Option< package::PublishPlan >,
+    pub plan : Option< publish::PublishPlan >,
     /// Represents a collection of packages and their associated publishing reports.
-    pub packages : Vec<( AbsolutePath, package::PublishReport )>
+    pub packages : Vec<( AbsolutePath, publish::PublishReport )>
   }
 
-  impl std::fmt::Display for PublishReport
+  impl fmt::Display for PublishReport
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
       if self.packages.is_empty()
       {
@@ -122,12 +127,12 @@ mod private
   pub fn publish_plan
   (
     patterns : Vec< String >,
-    channel : Channel,
+    channel : channel::Channel,
     dry : bool,
     temp : bool
-  ) -> Result< package::PublishPlan, Error >
+  ) -> Result< publish::PublishPlan, untyped::Error >
   {
-    let mut paths = HashSet::new();
+    let mut paths = collections::HashSet::new();
     // find all packages by specified folders
     for pattern in &patterns
     {
@@ -165,8 +170,8 @@ mod private
     .filter( | &package | paths.contains( &package.crate_dir().unwrap().into() ) )
     .map( | p | p.name().to_string() )
     .collect();
-    let package_map : HashMap< String, Package< '_ > > = packages
-    .map( | p | ( p.name().to_string(), Package::from( p ) ) )
+    let package_map : collections::HashMap< String, package::Package< '_ > > = packages
+    .map( | p | ( p.name().to_string(), package::Package::from( p ) ) )
     .collect();
 
     let graph = workspace_graph::graph( &workspace );
@@ -231,7 +236,7 @@ mod private
     .iter()
     .map( | p | package_map.get( p ).unwrap().crate_dir() ).collect();
 
-    let plan = package::PublishPlan::former()
+    let plan = publish::PublishPlan::former()
     .channel( channel )
     .workspace_dir( CrateDir::try_from( workspace_root_dir ).unwrap() )
     .option_base_temp_dir( dir.clone() )
@@ -248,13 +253,13 @@ mod private
   ///
 
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
-  pub fn publish( plan : package::PublishPlan ) -> Result< PublishReport, ( PublishReport, Error ) >
+  pub fn publish( plan : publish::PublishPlan ) -> ResultWithReport< PublishReport, untyped::Error >
   {
     let mut report = PublishReport::default();
     let temp = plan.base_temp_dir.clone();
 
     report.plan = Some( plan.clone() );
-    for package_report in package::perform_packages_publish( plan ).err_with( || report.clone() )?
+    for package_report in publish::perform_packages_publish( plan ).err_with( || report.clone() )?
     {
       let path : &std::path::Path = package_report.get_info.as_ref().unwrap().current_path.as_ref();
       report.packages.push(( AbsolutePath::try_from( path ).unwrap(), package_report ));
