@@ -41,27 +41,6 @@ pub mod typed;
 /// Untyped exceptions handling mechanism.
 pub mod untyped;
 
-// #[ cfg( feature = "enabled" ) ]
-// /// Exceptions handling mechanism for libs.
-// pub mod typed
-// {
-//   #[ doc( inline ) ]
-//   #[ allow( unused_imports ) ]
-//   #[ cfg( feature = "error_typed" ) ]
-//   pub use ::thiserror::*;
-// }
-//
-// #[ cfg( feature = "enabled" ) ]
-// // qqq : cover by simple test /* aaa : Dmytro : added trivial test routine `basic` */
-// /// Exceptions handling mechanism for apps.
-// pub mod untyped
-// {
-//   #[ doc( inline ) ]
-//   #[ allow( unused_imports ) ]
-//   #[ cfg( feature = "error_untyped" ) ]
-//   pub use ::anyhow::*;
-// }
-
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]

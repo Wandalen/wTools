@@ -26,7 +26,6 @@ pub( crate ) mod private
   use error::
   {
     typed::Error,
-    untyped::Result,
   };
   // use error::Result; // xxx : rid of
 
@@ -98,7 +97,7 @@ pub( crate ) mod private
   (
     graph : Graph< &'a PackageIdentifier, &'a PackageIdentifier >
   )
-  -> Result< Vec< PackageIdentifier >, GraphError< PackageIdentifier > >
+  -> error::Result< Vec< PackageIdentifier >, GraphError< PackageIdentifier > >
   {
     match pg_toposort( &graph, None )
     {
@@ -257,7 +256,7 @@ pub( crate ) mod private
     roots : &[ String ],
     temp_path : Option< PathBuf >,
   )
-  -> Result< Graph< String, String > >
+  -> error::Result< Graph< String, String > >
   // qqq : don't use 1-prameter Result
   {
     let mut nodes = HashSet::new();

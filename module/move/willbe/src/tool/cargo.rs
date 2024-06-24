@@ -10,7 +10,7 @@ mod private
   use error::untyped::format_err;
   use former::Former;
   use process_tools::process::*;
-  use error::Result;
+  // use error::Result;
   // qqq : group dependencies
 
   // qqq : for Bohdan : bad : tools can't depend on entitties!

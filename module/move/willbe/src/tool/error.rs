@@ -20,11 +20,11 @@ pub( crate ) mod private
       F : FnOnce() -> V;
   }
 
-  impl< V, R, E1, E2 > ErrWith< V, R, E1 > for Result< R, E2 >
+  impl< V, R, E1, E2 > ErrWith< V, R, E1 > for error_tools::Result< R, E2 >
   where
     E2 : Into< E1 >,
   {
-    fn err_with< F >( self, f : F ) -> Result< R, ( V, E1 ) >
+    fn err_with< F >( self, f : F ) -> error_tools::Result< R, ( V, E1 ) >
     where
       F : FnOnce() -> V,
     {
@@ -50,5 +50,6 @@ crate::mod_interface!
 
   exposed use ErrWith;
   exposed use ResultWithReport;
+  exposed use ::error_tools::Result;
 
 }

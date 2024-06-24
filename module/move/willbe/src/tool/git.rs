@@ -7,7 +7,6 @@ mod private
   use std::ffi::OsString;
   use std::path::Path;
   use process_tools::process::*;
-  use error::Result;
   use error::err;
   // qqq : group dependencies
 

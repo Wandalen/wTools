@@ -4,9 +4,6 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 pub use mod_interface::mod_interface;
-// /// Micro wtools
-// pub mod wtools;
-// use *;
 
 /// Internal namespace.
 pub( crate ) mod private
