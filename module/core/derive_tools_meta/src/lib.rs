@@ -611,7 +611,7 @@ pub fn derive_not( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 #[ proc_macro_attribute ]
 pub fn phantom( _attr: proc_macro::TokenStream, input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
-  let result = derive::phantom::phantom( input );
+  let result = derive::phantom::phantom( _attr, input );
   match result
   {
     Ok( stream ) => stream.into(),
