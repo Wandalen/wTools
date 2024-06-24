@@ -780,7 +780,6 @@ crate::mod_interface!
   protected use _run;
 
   protected use TestPlan;
-
   protected use TestOptions;
   protected use TestReport;
   protected use TestsReport;
