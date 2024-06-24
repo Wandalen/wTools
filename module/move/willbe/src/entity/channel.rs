@@ -9,7 +9,6 @@ mod private
   use path::Path;
   use collection::HashSet;
   use error::untyped::{ Error, Result };
-  // use error::Result; // xxx : rid of
   use process_tools::process::*;
 
   /// The `Channel` enum represents different release channels for rust.

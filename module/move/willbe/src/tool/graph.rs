@@ -27,7 +27,6 @@ pub( crate ) mod private
   {
     typed::Error,
   };
-  // use error::Result; // xxx : rid of
 
   use package::{ Package, publish_need };
   // qqq : for Bohdan : bad : tools can't depend on entitties!
