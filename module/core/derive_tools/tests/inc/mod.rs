@@ -272,6 +272,8 @@ mod not_tests
   mod bounds_mixed_manual;
   // mod bounds_where;
   mod bounds_where_manual;
+  // mod with_custom_type;
+  // mod name_collisions;
 }
 
 #[ cfg( feature = "derive_phantom" ) ]
