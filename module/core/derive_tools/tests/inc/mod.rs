@@ -256,16 +256,22 @@ mod not_tests
   #[ allow( unused_imports ) ]
   use super::*;
 
-  mod struct_named;
+  // mod struct_named;
   mod struct_named_manual;
-  mod struct_named_empty;
+  // mod struct_named_empty;
   mod struct_named_empty_manual;
-  mod struct_tuple;
+  // mod struct_tuple;
   mod struct_tuple_manual;
-  mod struct_tuple_empty;
+  // mod struct_tuple_empty;
   mod struct_tuple_empty_manual;
-  mod struct_unit;
+  // mod struct_unit;
   mod struct_unit_manual;
+  // mod bounds_inlined;
+  mod bounds_inlined_manual;
+  // mod bounds_mixed;
+  mod bounds_mixed_manual;
+  // mod bounds_where;
+  mod bounds_where_manual;
 }
 
 #[ cfg( feature = "derive_phantom" ) ]

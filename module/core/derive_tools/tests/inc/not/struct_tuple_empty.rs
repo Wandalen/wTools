@@ -4,4 +4,4 @@ use super::*;
 #[ derive( the_module::Not ) ]
 struct StructTupleEmpty();
 
-// include!( "./only_test/struct_tuple_empty.rs" );
+include!( "./only_test/struct_tuple_empty.rs" );

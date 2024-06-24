@@ -4,4 +4,4 @@ use super::*;
 #[ derive( the_module::Not ) ]
 struct StructUnit;
 
-// include!( "./only_test/struct_unit.rs" );
+include!( "./only_test/struct_unit.rs" );
