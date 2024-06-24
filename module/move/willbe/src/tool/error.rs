@@ -20,11 +20,11 @@ pub( crate ) mod private
       F : FnOnce() -> V;
   }
 
-  impl< V, R, E1, E2 > ErrWith< V, R, E1 > for error_tools::Result< R, E2 >
+  impl< V, R, E1, E2 > ErrWith< V, R, E1 > for std::result::Result< R, E2 >
   where
     E2 : Into< E1 >,
   {
-    fn err_with< F >( self, f : F ) -> error_tools::Result< R, ( V, E1 ) >
+    fn err_with< F >( self, f : F ) -> std::result::Result< R, ( V, E1 ) >
     where
       F : FnOnce() -> V,
     {
