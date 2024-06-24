@@ -1,9 +1,5 @@
-use std::
-{
-  fmt::Debug,
-  ops::Not,
-};
-
+use std::fmt::Debug;
+use core::ops::Not;
 use super::*;
 
 #[ allow( dead_code ) ]

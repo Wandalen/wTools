@@ -1,8 +1,5 @@
-use std::
-{
-  fmt::Debug,
-  ops::Not,
-};
+use std::fmt::Debug;
+use core::ops::Not;
 
 #[ allow( dead_code ) ]
 struct BoundsInlined< T: ToString + Not<Output = T>, U: Debug + Not<Output = U>>
