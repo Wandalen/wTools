@@ -9,6 +9,7 @@ use macro_tools::
   syn::ItemStruct
 };
 
+/// Generates [Not](core::ops::Not) trait implementation for input struct.
 pub fn not( input : proc_macro::TokenStream  ) -> Result< proc_macro2::TokenStream >
 {
   let original_input = input.clone();
@@ -45,6 +46,7 @@ pub fn not( input : proc_macro::TokenStream  ) -> Result< proc_macro2::TokenStre
   Ok( result )
 }
 
+/// Produces body for [not](core::ops::Not::not) method depending on type of input [ItemStruct](ItemStruct).
 fn generate_method_body(item_struct: &ItemStruct ) -> proc_macro2::TokenStream
 {
   let field_types = item_struct::field_types( &item_struct );

@@ -522,17 +522,17 @@ pub fn derive_variadic_from( input : proc_macro::TokenStream ) -> proc_macro::To
   }
 }
 
-/// Provides an automatic `Not` trait  implementation for struct.
+/// Provides an automatic [Not](core::ops::Not) trait  implementation for struct.
 ///
 /// This macro simplifies the creation of a logical negation or complement operation
 /// for structs that encapsulate values which support the `!` operator.
 ///
 /// ## Example Usage
 ///
-/// Instead of manually implementing `Not` for `IsActive`:
+/// Instead of manually implementing [Not](core::ops::Not) for [IsActive]:
 ///
 /// ```rust
-/// use std::ops::Not;
+/// use core::ops::Not;
 ///
 /// pub struct IsActive( bool );
 ///
@@ -555,7 +555,7 @@ pub fn derive_variadic_from( input : proc_macro::TokenStream ) -> proc_macro::To
 /// pub struct IsActive( bool );
 /// ```
 ///
-/// The macro automatically implements the `not` method, reducing boilerplate code and potential errors.
+/// The macro automatically implements the [not](core::ops::Not::not) method, reducing boilerplate code and potential errors.
 ///
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_not" ) ]
