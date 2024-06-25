@@ -6,7 +6,7 @@ mod private
   // use std::*;
 
   use std::slice;
-  use former::Former;
+  use former::{ Former, Assign };
 
   /// Stores information about the current workspace.
   #[ derive( Debug, Clone ) ]
@@ -125,7 +125,8 @@ mod private
 
   }
 
-  #[ derive( Debug, Former ) ]
+  #[ derive( Debug, Former /*, Assign*/ ) ]
+  // #[ debug ]
   pub struct PackagesFilter< 'a >
   {
     workspace : &'a Workspace,

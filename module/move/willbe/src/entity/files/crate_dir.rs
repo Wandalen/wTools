@@ -107,17 +107,19 @@ impl TryFrom< &CrateDir > for String
   }
 }
 
-// impl< IntoPath : AsRef< Path > > TryFrom< IntoPath >
-// for CrateDir
-// {
-//   type Error = PathError;
-//
-//   #[ inline( always ) ]
-//   fn try_from( crate_dir_path : IntoPath ) -> Result< Self, Self::Error >
-//   {
-//     Self::try_from( AbsolutePath::try_from( crate_dir_path.as_ref() )? )
-//   }
-// }
+impl< IntoPath : TryInto< PathBuf > > TryFrom< ( IntoPath, ) >
+for CrateDir
+where
+  PathError : From< < IntoPath as TryInto< PathBuf > >::Error >,
+{
+  type Error = PathError;
+
+  #[ inline( always ) ]
+  fn try_from( ( crate_dir_path, ) : ( IntoPath, ) ) -> Result< Self, Self::Error >
+  {
+    Self::try_from( AbsolutePath::try_from( crate_dir_path.try_into()? )? )
+  }
+}
 
 impl TryFrom< &AbsolutePath > for CrateDir
 {
