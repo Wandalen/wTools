@@ -126,15 +126,15 @@ mod private
 
   }
 
-  #[ derive( Debug, Former, Assign ) ]
+  #[ derive( Former ) ]
   // #[ debug ]
   // xxx : use ref
   pub struct PackagesFilter // < 'a >
   {
 
     workspace : Workspace, /* &'a Workspace, */
-    crate_dir : Option< CrateDir >,
-    manifest_file : Option< ManifestFile >,
+    crate_dir : Box< dyn PackageFilter >,
+    manifest_file : Box< dyn PackageFilter >,
 
     // crate_dir : Option< CrateDir >,
     // manifest_file : Option< ManifestFile >,
@@ -144,6 +144,14 @@ mod private
   pub trait PackageFilter
   {
     fn include( &self, package : WorkspacePackageRef< '_ > ) -> bool;
+  }
+
+  impl Default for Box< dyn PackageFilter >
+  {
+    fn default() -> Self
+    {
+      Box::new( PackageFilterAll )
+    }
   }
 
   pub struct PackageFilterAll;
@@ -156,8 +164,8 @@ mod private
     }
   }
 
-  pub struct CrateDirFilter( CrateDir );
-  impl PackageFilter for CrateDirFilter
+  pub struct PackageFilterCrateDir( CrateDir );
+  impl PackageFilter for PackageFilterCrateDir
   {
     #[ inline( always ) ]
     fn include( &self, package : WorkspacePackageRef< '_ > ) -> bool
@@ -166,13 +174,31 @@ mod private
     }
   }
 
-  pub struct ManifestFileFilter( ManifestFile );
-  impl PackageFilter for ManifestFileFilter
+  impl From< CrateDir > for Box< dyn PackageFilter >
+  {
+    #[ inline( always ) ]
+    fn from( src : CrateDir ) -> Self
+    {
+      Box::new( PackageFilterCrateDir( src ) )
+    }
+  }
+
+  pub struct PackageFilterManifestFile( ManifestFile );
+  impl PackageFilter for PackageFilterManifestFile
   {
     #[ inline( always ) ]
     fn include( &self, package : WorkspacePackageRef< '_ > ) -> bool
     {
       self.0 == package.manifest_file().unwrap()
+    }
+  }
+
+  impl From< ManifestFile > for Box< dyn PackageFilter >
+  {
+    #[ inline( always ) ]
+    fn from( src : ManifestFile ) -> Self
+    {
+      Box::new( PackageFilterManifestFile( src ) )
     }
   }
 
@@ -184,8 +210,8 @@ mod private
       Self
       {
         workspace,
-        crate_dir : None,
-        manifest_file : None,
+        crate_dir : Default::default(),
+        manifest_file : Default::default(),
       }
     }
 

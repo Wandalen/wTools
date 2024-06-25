@@ -15,17 +15,17 @@ fn main() -> Result< () >
   // dbg!( &metadata.workspace_members );
   // dbg!( &metadata.packages[ 0 ] );
 
-  let packages = workspace
-  .clone()
-  .packages_which()
-  .impute( CrateDir::try_from( ( CurrentPath, ) )? )
-  .iter();
-  //.next().unwrap();
-
-  packages.for_each( | package |
-  {
-    println!( " - {}", package.crate_dir().unwrap() );
-  });
+//   let packages = workspace
+//   .clone()
+//   .packages_which()
+//   .impute( CrateDir::try_from( ( CurrentPath, ) )? )
+//   .iter();
+//   //.next().unwrap();
+//
+//   packages.for_each( | package |
+//   {
+//     println!( " - {}", package.crate_dir().unwrap() );
+//   });
 
   // workspace
   // .packages()
@@ -38,7 +38,7 @@ fn main() -> Result< () >
   // let sources = workspace.entries();
   // sources.collect::< Vec< _ > >();
 
-  dbg!( &workspace.crate_dir );
+  dbg!( &workspace.crate_dir ); // xxx : wrong
 
   let sources = workspace.sources();
   sources.for_each( | _source |
