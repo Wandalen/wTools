@@ -1,5 +1,13 @@
 use super::*;
-use macro_tools::{attr, diag, generic_params, item_struct, Result, syn::ItemStruct};
+use macro_tools::
+{
+  attr,
+  diag,
+  generic_params,
+  item_struct,
+  Result,
+  syn::ItemStruct
+};
 
 pub fn not( input : proc_macro::TokenStream  ) -> Result< proc_macro2::TokenStream >
 {
@@ -11,7 +19,7 @@ pub fn not( input : proc_macro::TokenStream  ) -> Result< proc_macro2::TokenStre
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
     = generic_params::decompose( &parsed.generics );
 
-  let constructor = generate_struct_constructor( &parsed );
+  let body = generate_method_body( &parsed );
 
   let result = qt!
   {
@@ -23,7 +31,7 @@ pub fn not( input : proc_macro::TokenStream  ) -> Result< proc_macro2::TokenStre
 
       fn not( self ) -> Self::Output
       {
-        #constructor
+        #body
       }
     }
 };
@@ -37,48 +45,96 @@ pub fn not( input : proc_macro::TokenStream  ) -> Result< proc_macro2::TokenStre
   Ok( result )
 }
 
-fn generate_struct_constructor( item_struct: &ItemStruct ) -> proc_macro2::TokenStream
+fn generate_method_body(item_struct: &ItemStruct ) -> proc_macro2::TokenStream
 {
   let field_types = item_struct::field_types( &item_struct );
   let field_names = item_struct::field_names( &item_struct );
 
   match ( field_types.len(), field_names )
   {
-    ( 0, _ ) => generate_unit_constructor(),
-    ( _, Some( field_names )) => generate_named_constructor( field_names ),
-    ( _, None ) => generate_tuple_constructor( field_types.len() ),
+    ( 0, _ ) => generate_for_unit(),
+    ( _, Some( field_names ) ) => generate_for_named(field_types, field_names ),
+    ( _, None ) => generate_for_tuple( field_types ),
   }
 }
 
-fn generate_unit_constructor() -> proc_macro2::TokenStream
+fn generate_for_unit() -> proc_macro2::TokenStream
 {
   qt! { Self {} }
 }
 
-fn generate_named_constructor<'a>
+fn generate_for_named<'a>
 (
-  field_names : impl macro_tools::IterTrait< 'a, &'a syn::Ident >
+  field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type >,
+  field_names : impl macro_tools::IterTrait< 'a, &'a syn::Ident >,
 )
 -> proc_macro2::TokenStream
 {
-  let values = field_names
-    .clone()
-    .map( | field_name  |
+  let ( mut_ref_transformations, values ): (Vec< proc_macro2::TokenStream >, Vec< proc_macro2::TokenStream > ) =
+  field_types
+  .clone()
+  .zip( field_names )
+  .map( | ( field_type, field_name ) |
+  {
+    match field_type
     {
-      qt! { #field_name: !self.#field_name }
-    });
+      syn::Type::Reference( reference ) =>
+      {
+        if reference.mutability.is_some()
+        {
+          ( qt! { *self.#field_name = !*self.#field_name; }, qt! { #field_name: self.#field_name } )
+        }
+        else
+        {
+          ( qt! {}, qt! { #field_name: self.#field_name } )
+        }
+      }
+      _ => { ( qt!{}, qt! { #field_name: !self.#field_name } ) }
+    }
+  })
+  .unzip();
 
-  qt! { Self { #(#values),* } }
+  qt!
+  {
+    #(#mut_ref_transformations)*
+    Self { #(#values),* }
+  }
 }
 
-fn generate_tuple_constructor(fields_len : usize) -> proc_macro2::TokenStream
+fn generate_for_tuple<'a>
+(
+  field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type >,
+)
+-> proc_macro2::TokenStream
 {
-  let values = (0..fields_len)
-    .map(|i|
+  let ( mut_ref_transformations, values ): (Vec< proc_macro2::TokenStream >, Vec< proc_macro2::TokenStream > ) =
+  field_types
+  .clone()
+  .enumerate()
+  .map( | ( index, field_type ) |
+  {
+    let index = syn::Index::from( index );
+    match field_type
     {
-      let index = syn::Index::from(i);
-      qt! { !self.#index }
-    });
+      syn::Type::Reference( reference ) =>
+      {
+        if reference.mutability.is_some()
+        {
+          ( qt! { *self.#index = !*self.#index; }, qt! { self.#index } )
+        }
+        else
+        {
+          ( qt! {}, qt! { self.#index } )
+        }
+      }
+      _ => { ( qt!{}, qt! { !self.#index } ) }
+    }
+  })
+  .unzip();
 
-  qt! { Self ( #(#values),* ) }
+  qt!
+  {
+    #(#mut_ref_transformations)*
+    Self ( #(#values),* )
+  }
 }
