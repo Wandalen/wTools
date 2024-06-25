@@ -56,4 +56,18 @@ crate::mod_interface!
   /// Repository tools.
   layer repository;
   orphan use super::repository;
+
+  exposed use ::former::
+  {
+    Former,
+    Assign,
+  };
+
+  // xxx : check
+  // exposed use
+  // {
+  //   ::former::Former,
+  //   ::former::Assign,
+  // };
+
 }

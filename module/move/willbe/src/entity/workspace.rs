@@ -118,26 +118,100 @@ mod private
     }
 
     /// Filter of packages.
-    pub fn packages_which< 'a >( &'a self ) -> PackagesFilterFormer< 'a >
+    pub fn packages_which( self ) -> PackagesFilter
     {
-      PackagesFilter::former().workspace( self )
+      PackagesFilter::new( self )
+      // PackagesFilter::former().workspace( self )
     }
 
   }
 
-  #[ derive( Debug, Former /*, Assign*/ ) ]
+  #[ derive( Debug, Former, Assign ) ]
   // #[ debug ]
-  pub struct PackagesFilter< 'a >
+  // xxx : use ref
+  pub struct PackagesFilter // < 'a >
   {
-    workspace : &'a Workspace,
+
+    workspace : Workspace, /* &'a Workspace, */
     crate_dir : Option< CrateDir >,
     manifest_file : Option< ManifestFile >,
+
+    // crate_dir : Option< CrateDir >,
+    // manifest_file : Option< ManifestFile >,
+
   }
 
-  impl< 'a > PackagesFilterFormer< 'a >
+  pub trait PackageFilter
+  {
+    fn include( &self, package : WorkspacePackageRef< '_ > ) -> bool;
+  }
+
+  pub struct PackageFilterAll;
+  impl PackageFilter for PackageFilterAll
   {
     #[ inline( always ) ]
-    pub fn filter( self ) -> impl Iterator< Item = WorkspacePackageRef< 'a > > + Clone
+    fn include( &self, _package : WorkspacePackageRef< '_ > ) -> bool
+    {
+      true
+    }
+  }
+
+  pub struct CrateDirFilter( CrateDir );
+  impl PackageFilter for CrateDirFilter
+  {
+    #[ inline( always ) ]
+    fn include( &self, package : WorkspacePackageRef< '_ > ) -> bool
+    {
+      self.0 == package.crate_dir().unwrap()
+    }
+  }
+
+  pub struct ManifestFileFilter( ManifestFile );
+  impl PackageFilter for ManifestFileFilter
+  {
+    #[ inline( always ) ]
+    fn include( &self, package : WorkspacePackageRef< '_ > ) -> bool
+    {
+      self.0 == package.manifest_file().unwrap()
+    }
+  }
+
+  impl PackagesFilter
+  {
+
+    pub fn new( workspace : Workspace ) -> Self
+    {
+      Self
+      {
+        workspace,
+        crate_dir : None,
+        manifest_file : None,
+      }
+    }
+
+    #[ inline( always ) ]
+    pub fn iter< 'a >( self ) -> impl Iterator< Item = WorkspacePackageRef< 'a > > + Clone
+    {
+
+      // self
+      // .workspace
+      // .packages()
+      // .find( | &p | p.manifest_file().unwrap().as_ref() == manifest_file.as_ref() )
+
+      // let filter_crate_dir = if Some( crate_dir ) = self.crate_dir
+      // {
+      //   | p | p.manifest_file().unwrap().as_ref() == manifest_file.as_ref()
+      // }
+
+      std::iter::empty()
+    }
+
+  }
+
+  impl PackagesFilterFormer
+  {
+    #[ inline( always ) ]
+    pub fn iter< 'a >( self ) -> impl Iterator< Item = WorkspacePackageRef< 'a > > + Clone
     {
       // let filter_crate_dir = if Some( crate_dir ) = self.crate_dir
       // {

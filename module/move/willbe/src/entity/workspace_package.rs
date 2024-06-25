@@ -4,6 +4,8 @@ mod private
   use collection::BTreeMap;
   use serde_json::Value;
 
+  // xxx : qqq : Deref, DerefMut, AsRef, AsMut
+
   /// Facade for cargo_metadata::Package
   #[ derive( Debug, Clone, Copy ) ]
   #[ repr( transparent ) ]

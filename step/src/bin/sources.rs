@@ -15,8 +15,17 @@ fn main() -> Result< () >
   // dbg!( &metadata.workspace_members );
   // dbg!( &metadata.packages[ 0 ] );
 
-  let package = workspace.packages_which().crate_dir( CrateDir::try_from( ( CurrentPath, ) )? ).filter();
+  let packages = workspace
+  .clone()
+  .packages_which()
+  .impute( CrateDir::try_from( ( CurrentPath, ) )? )
+  .iter();
   //.next().unwrap();
+
+  packages.for_each( | package |
+  {
+    println!( " - {}", package.crate_dir().unwrap() );
+  });
 
   // workspace
   // .packages()
@@ -32,9 +41,9 @@ fn main() -> Result< () >
   dbg!( &workspace.crate_dir );
 
   let sources = workspace.sources();
-  sources.for_each( | source |
+  sources.for_each( | _source |
   {
-    println!( " - {source}" );
+    // println!( " - {_source}" );
   });
 
   // // Iterate over all packages in the workspace
