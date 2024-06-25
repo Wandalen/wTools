@@ -6,6 +6,7 @@ mod private
   // use std::*;
 
   use std::slice;
+  use former::Former;
 
   /// Stores information about the current workspace.
   #[ derive( Debug, Clone ) ]
@@ -114,6 +115,34 @@ mod private
       self
       .packages()
       .find( | &p | p.manifest_file().unwrap().as_ref() == manifest_file.as_ref() )
+    }
+
+    /// Filter of packages.
+    pub fn packages_which< 'a >( &'a self ) -> PackagesFilterFormer< 'a >
+    {
+      PackagesFilter::former().workspace( self )
+    }
+
+  }
+
+  #[ derive( Debug, Former ) ]
+  pub struct PackagesFilter< 'a >
+  {
+    workspace : &'a Workspace,
+    crate_dir : Option< CrateDir >,
+    manifest_file : Option< ManifestFile >,
+  }
+
+  impl< 'a > PackagesFilterFormer< 'a >
+  {
+    #[ inline( always ) ]
+    pub fn filter( self ) -> impl Iterator< Item = WorkspacePackageRef< 'a > > + Clone
+    {
+      // let filter_crate_dir = if Some( crate_dir ) = self.crate_dir
+      // {
+      //   | p | p.manifest_file().unwrap().as_ref() == manifest_file.as_ref()
+      // }
+      std::iter::empty()
     }
   }
 

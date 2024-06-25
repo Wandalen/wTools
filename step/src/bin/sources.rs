@@ -15,6 +15,9 @@ fn main() -> Result< () >
   // dbg!( &metadata.workspace_members );
   // dbg!( &metadata.packages[ 0 ] );
 
+  // let package = workspace.packages_which().crate_dir( CrateDir::try_from( CurrentPath ) ).select();
+  //.next().unwrap();
+
   // workspace
   // .packages()
   // .for_each( | package |
