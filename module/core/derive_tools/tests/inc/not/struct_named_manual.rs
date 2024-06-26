@@ -11,8 +11,9 @@ impl Not for StructNamed
 {
   type Output = Self;
 
-  fn not(self) -> Self::Output {
-    Self { a: !self.a, b: !self.b }
+  fn not( self ) -> Self::Output
+  {
+    Self { a : !self.a, b : !self.b }
   }
 }
 

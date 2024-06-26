@@ -14,7 +14,7 @@ impl< 'a > Not for NamedMutReferenceField< 'a >
   fn not( self ) -> Self::Output
   {
     *self.a = !*self.a;
-    Self { a: self.a, b: !self.b }
+    Self { a : self.a, b : !self.b }
   }
 }
 

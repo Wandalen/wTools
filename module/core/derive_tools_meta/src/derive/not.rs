@@ -47,7 +47,7 @@ pub fn not( input : proc_macro::TokenStream  ) -> Result< proc_macro2::TokenStre
 }
 
 /// Produces body for [not](core::ops::Not::not) method depending on type of input [ItemStruct](ItemStruct).
-fn generate_method_body(item_struct: &ItemStruct ) -> proc_macro2::TokenStream
+fn generate_method_body( item_struct: &ItemStruct ) -> proc_macro2::TokenStream
 {
   let field_types = item_struct::field_types( &item_struct );
   let field_names = item_struct::field_names( &item_struct );
@@ -55,7 +55,7 @@ fn generate_method_body(item_struct: &ItemStruct ) -> proc_macro2::TokenStream
   match ( field_types.len(), field_names )
   {
     ( 0, _ ) => generate_for_unit(),
-    ( _, Some( field_names ) ) => generate_for_named(field_types, field_names ),
+    ( _, Some( field_names ) ) => generate_for_named( field_types, field_names ),
     ( _, None ) => generate_for_tuple( field_types ),
   }
 }
@@ -65,14 +65,14 @@ fn generate_for_unit() -> proc_macro2::TokenStream
   qt! { Self {} }
 }
 
-fn generate_for_named<'a>
+fn generate_for_named< 'a >
 (
   field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type >,
   field_names : impl macro_tools::IterTrait< 'a, &'a syn::Ident >,
 )
 -> proc_macro2::TokenStream
 {
-  let ( mut_ref_transformations, values ): (Vec< proc_macro2::TokenStream >, Vec< proc_macro2::TokenStream > ) =
+  let ( mut_ref_transformations, values ): ( Vec< proc_macro2::TokenStream >, Vec< proc_macro2::TokenStream > ) =
   field_types
   .clone()
   .zip( field_names )
@@ -103,7 +103,7 @@ fn generate_for_named<'a>
   }
 }
 
-fn generate_for_tuple<'a>
+fn generate_for_tuple< 'a >
 (
   field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type >,
 )

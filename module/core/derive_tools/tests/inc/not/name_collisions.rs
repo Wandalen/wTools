@@ -3,7 +3,6 @@ use super::*;
 pub mod core {}
 pub mod std {}
 
-
 #[ allow( dead_code ) ]
 #[ derive( the_module::Not ) ]
 struct NameCollisions

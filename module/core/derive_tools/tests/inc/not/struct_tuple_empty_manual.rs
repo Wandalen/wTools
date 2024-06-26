@@ -3,10 +3,12 @@ use core::ops::Not;
 #[ allow( dead_code ) ]
 struct StructTupleEmpty();
 
-impl Not for StructTupleEmpty {
+impl Not for StructTupleEmpty
+{
   type Output = Self;
 
-  fn not(self) -> Self::Output {
+  fn not(self) -> Self::Output
+  {
     Self()
   }
 }

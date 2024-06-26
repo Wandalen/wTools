@@ -2,10 +2,10 @@
 fn not()
 {
   let value = true;
-  let mut x = NamedReferenceField { a: &value, b: 0 };
+  let mut x = NamedReferenceField { a : &value, b : 0 };
 
   x = !x;
 
-  assert_eq!(*x.a, true);
-  assert_eq!(x.b, 255);
+  assert_eq!( *x.a, true );
+  assert_eq!( x.b, 255 );
 }

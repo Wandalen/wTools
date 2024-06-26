@@ -6,11 +6,11 @@ use super::*;
 #[ derive( the_module::Not ) ]
 struct BoundsWhere< T, U >
 where
-  T: ToString + Not<Output = T>,
-  U: Debug + Not<Output = U>,
+  T : ToString + Not< Output = T >,
+  U : Debug + Not< Output = U >,
 {
-  a: T,
-  b: U,
+  a : T,
+  b : U,
 }
 
 include!( "./only_test/bounds_where.rs" );

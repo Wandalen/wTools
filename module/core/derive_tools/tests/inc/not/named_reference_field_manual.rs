@@ -11,9 +11,9 @@ impl< 'a > Not for NamedReferenceField< 'a >
 {
   type Output = Self;
 
-  fn not(self) -> Self::Output
+  fn not( self ) -> Self::Output
   {
-    Self { a: self.a, b: !self.b }
+    Self { a : self.a, b : !self.b }
   }
 }
 

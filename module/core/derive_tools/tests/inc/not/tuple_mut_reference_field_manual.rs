@@ -3,7 +3,6 @@ use core::ops::Not;
 #[ allow( dead_code ) ]
 struct TupleMutReferenceField< 'a >( &'a mut bool, u8 );
 
-
 impl< 'a > Not for TupleMutReferenceField< 'a >
 {
   type Output = Self;
