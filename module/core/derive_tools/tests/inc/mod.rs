@@ -25,7 +25,8 @@ mod all_manual_test;
 		feature = "derive_deref_mut",
 		feature = "derive_from",
 		feature = "derive_inner_from",
-    feature = "derive_phantom",
+    feature = "derive_not",
+    feature = "derive_phantom"
 	)
 )]
 mod all_test;
@@ -221,6 +222,41 @@ mod from_tests
 	mod variants_generics;
 	mod variants_generics_where;
 	mod variants_collisions;
+}
+
+#[ cfg( feature = "derive_not" ) ]
+#[ path = "not" ]
+mod not_tests
+{
+  #[ allow( unused_imports ) ]
+  use super::*;
+
+  mod struct_named;
+  mod struct_named_manual;
+  mod struct_named_empty;
+  mod struct_named_empty_manual;
+  mod struct_tuple;
+  mod struct_tuple_manual;
+  mod struct_tuple_empty;
+  mod struct_tuple_empty_manual;
+  mod struct_unit;
+  mod struct_unit_manual;
+  mod named_reference_field;
+  mod named_reference_field_manual;
+  mod named_mut_reference_field;
+  mod named_mut_reference_field_manual;
+  mod tuple_reference_field;
+  mod tuple_reference_field_manual;
+  mod tuple_mut_reference_field;
+  mod tuple_mut_reference_field_manual;
+  mod bounds_inlined;
+  mod bounds_inlined_manual;
+  mod bounds_mixed;
+  mod bounds_mixed_manual;
+  mod bounds_where;
+  mod bounds_where_manual;
+  mod with_custom_type;
+  mod name_collisions;
 }
 
 #[ cfg( feature = "derive_inner_from" ) ]
