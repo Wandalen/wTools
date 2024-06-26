@@ -126,7 +126,7 @@ mod private
 
   }
 
-  #[ derive( Debug, Former ) ]
+  #[ derive( Former ) ]
   // #[ debug ]
   // xxx : use ref
   pub struct PackagesFilter< 'a >
