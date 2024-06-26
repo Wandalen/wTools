@@ -22,7 +22,7 @@ fn main() -> Result< () >
   .find();
   //.next().unwrap();
 
-  println!( " - found - {}", package.unwrap().crate_dir().unwrap() );
+  println!( " - package - {}", package.unwrap().crate_dir().unwrap() );
 
   // packages.for_each( | package |
   // {
