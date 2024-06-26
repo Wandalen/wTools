@@ -118,21 +118,21 @@ mod private
     }
 
     /// Filter of packages.
-    pub fn packages_which( self ) -> PackagesFilter
+    pub fn packages_which< 'a >( &'a self ) -> PackagesFilterFormer< 'a >
     {
-      PackagesFilter::new( self )
-      // PackagesFilter::former().workspace( self )
+      // PackagesFilter::new( self )
+      PackagesFilter::former().workspace( self )
     }
 
   }
 
-  #[ derive( Former ) ]
+  #[ derive( Debug, Former ) ]
   // #[ debug ]
   // xxx : use ref
-  pub struct PackagesFilter // < 'a >
+  pub struct PackagesFilter< 'a >
   {
 
-    workspace : Workspace, /* &'a Workspace, */
+    workspace : &'a Workspace,
     crate_dir : Box< dyn PackageFilter >,
     manifest_file : Box< dyn PackageFilter >,
 
@@ -202,10 +202,10 @@ mod private
     }
   }
 
-  impl PackagesFilter
+  impl< 'a > PackagesFilter< 'a >
   {
 
-    pub fn new( workspace : Workspace ) -> Self
+    pub fn new( workspace : &'a Workspace ) -> Self
     {
       Self
       {
@@ -216,7 +216,7 @@ mod private
     }
 
     #[ inline( always ) ]
-    pub fn iter< 'a >( self ) -> impl Iterator< Item = WorkspacePackageRef< 'a > > + Clone
+    pub fn iter( &'a self ) -> impl Iterator< Item = WorkspacePackageRef< 'a > > + Clone
     {
 
       // self
@@ -234,16 +234,32 @@ mod private
 
   }
 
-  impl PackagesFilterFormer
+  impl< 'a > PackagesFilterFormer< 'a >
   {
     #[ inline( always ) ]
-    pub fn iter< 'a >( self ) -> impl Iterator< Item = WorkspacePackageRef< 'a > > + Clone
+    // pub fn find< 'a >( self ) -> impl Iterator< Item = WorkspacePackageRef< 'a > > + Clone
+    pub fn find( self ) -> Option< WorkspacePackageRef< 'a > >
     {
+      let formed = self.form();
+
+      formed
+      .workspace
+      .packages()
+      .find( | &p |
+      {
+        if !formed.crate_dir.include( p ) { return false };
+        if !formed.manifest_file.include( p ) { return false };
+        return true;
+      })
+      .clone()
+      // .unwrap()
+
       // let filter_crate_dir = if Some( crate_dir ) = self.crate_dir
       // {
       //   | p | p.manifest_file().unwrap().as_ref() == manifest_file.as_ref()
       // }
-      std::iter::empty()
+
+      // std::iter::empty()
     }
   }
 

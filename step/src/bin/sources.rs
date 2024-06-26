@@ -15,17 +15,19 @@ fn main() -> Result< () >
   // dbg!( &metadata.workspace_members );
   // dbg!( &metadata.packages[ 0 ] );
 
-//   let packages = workspace
-//   .clone()
-//   .packages_which()
-//   .impute( CrateDir::try_from( ( CurrentPath, ) )? )
-//   .iter();
-//   //.next().unwrap();
-//
-//   packages.for_each( | package |
-//   {
-//     println!( " - {}", package.crate_dir().unwrap() );
-//   });
+  let package = workspace
+  .clone()
+  .packages_which()
+  .crate_dir( CrateDir::try_from( ( CurrentPath, ) )? )
+  .find();
+  //.next().unwrap();
+
+  println!( " - found - {}", package.crate_dir().unwrap() );
+
+  // packages.for_each( | package |
+  // {
+  //   println!( " - {}", package.crate_dir().unwrap() );
+  // });
 
   // workspace
   // .packages()
