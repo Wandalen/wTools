@@ -16,13 +16,13 @@ fn main() -> Result< () >
   // dbg!( &metadata.packages[ 0 ] );
 
   let package = workspace
-  .clone()
+  // .clone()
   .packages_which()
   .crate_dir( CrateDir::try_from( ( CurrentPath, ) )? )
   .find();
   //.next().unwrap();
 
-  println!( " - found - {}", package.crate_dir().unwrap() );
+  println!( " - found - {}", package.unwrap().crate_dir().unwrap() );
 
   // packages.for_each( | package |
   // {
