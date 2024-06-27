@@ -6,7 +6,7 @@ mod private
   // use std::*;
 
   use std::slice;
-  use former::{ Former, Assign };
+  use former::{ Former };
 
   /// Stores information about the current workspace.
   #[ derive( Debug, Clone ) ]
@@ -38,12 +38,14 @@ mod private
     type Error = WorkspaceInitError;
 
     /// Load data from current directory
-    fn try_from( crate_dir : CrateDir ) -> Result< Self, Self::Error >
+    fn try_from( mut crate_dir : CrateDir ) -> Result< Self, Self::Error >
     {
       let metadata = cargo_metadata::MetadataCommand::new()
       .current_dir( crate_dir.as_ref() )
       .no_deps()
       .exec()?;
+      // inout crate dir may refer on crate's manifest dir, not workspace's manifest dir
+      crate_dir = ( &metadata.workspace_root ).try_into()?;
       Ok( Self
       {
         metadata,
@@ -71,11 +73,11 @@ mod private
     {
       // SAFE: `workspace_root` is a path to a`Cargo.toml` file, therefor the parent is the directory
       let path = metadata.workspace_root.as_std_path().parent().unwrap().to_path_buf();
-      let path = AbsolutePath::try_from( path ).unwrap();
+      let crate_dir = CrateDir::try_from( path ).unwrap();
       Self
       {
         metadata,
-        crate_dir : CrateDir::try_from( path ).unwrap(),
+        crate_dir,
       }
     }
   }
@@ -128,17 +130,11 @@ mod private
 
   #[ derive( Former ) ]
   // #[ debug ]
-  // xxx : use ref
   pub struct PackagesFilter< 'a >
   {
-
     workspace : &'a Workspace,
     crate_dir : Box< dyn PackageFilter >,
     manifest_file : Box< dyn PackageFilter >,
-
-    // crate_dir : Option< CrateDir >,
-    // manifest_file : Option< ManifestFile >,
-
   }
 
   pub trait PackageFilter

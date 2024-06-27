@@ -174,6 +174,17 @@ impl TryFrom< AbsolutePath > for CrateDir
 //   }
 // }
 
+impl TryFrom< &PathBuf > for CrateDir
+{
+  type Error = PathError;
+
+  #[ inline( always ) ]
+  fn try_from( crate_dir_path : &PathBuf ) -> Result< Self, Self::Error >
+  {
+    Self::try_from( AbsolutePath::try_from( crate_dir_path )? )
+  }
+}
+
 impl TryFrom< PathBuf > for CrateDir
 {
   type Error = PathError;
@@ -213,6 +224,17 @@ impl TryFrom< Utf8PathBuf > for CrateDir
 
   #[ inline( always ) ]
   fn try_from( crate_dir_path : Utf8PathBuf ) -> Result< Self, Self::Error >
+  {
+    Self::try_from( AbsolutePath::try_from( crate_dir_path )? )
+  }
+}
+
+impl TryFrom< &Utf8PathBuf > for CrateDir
+{
+  type Error = PathError;
+
+  #[ inline( always ) ]
+  fn try_from( crate_dir_path : &Utf8PathBuf ) -> Result< Self, Self::Error >
   {
     Self::try_from( AbsolutePath::try_from( crate_dir_path )? )
   }

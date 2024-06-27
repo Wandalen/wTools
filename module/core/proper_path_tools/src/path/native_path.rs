@@ -126,6 +126,21 @@ pub( crate ) mod private
     }
   }
 
+  impl TryFrom< &PathBuf > for NativePath
+  {
+    type Error = std::io::Error;
+
+    #[ inline ]
+    fn try_from( value : &PathBuf ) -> Result< Self, Self::Error >
+    {
+      let path = path::canonicalize( value )?;
+
+      // if !is_absolute( &path ) { return Err( io::Error::new( io::ErrorKind::InvalidData, "Path expected to be absolute" ) ) }
+
+      Ok( Self( path ) )
+    }
+  }
+
   // xxx : qqq : use Into< Path >
   impl TryFrom< &Path > for NativePath
   {

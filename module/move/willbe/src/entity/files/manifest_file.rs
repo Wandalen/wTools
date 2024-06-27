@@ -176,6 +176,17 @@ impl TryFrom< PathBuf > for ManifestFile
   }
 }
 
+impl TryFrom< &PathBuf > for ManifestFile
+{
+  type Error = PathError;
+
+  #[ inline( always ) ]
+  fn try_from( manifest_file : &PathBuf ) -> Result< Self, Self::Error >
+  {
+    Self::try_from( AbsolutePath::try_from( manifest_file )? )
+  }
+}
+
 impl TryFrom< &Path > for ManifestFile
 {
   type Error = PathError;
@@ -204,6 +215,17 @@ impl TryFrom< Utf8PathBuf > for ManifestFile
 
   #[ inline( always ) ]
   fn try_from( manifest_file : Utf8PathBuf ) -> Result< Self, Self::Error >
+  {
+    Self::try_from( AbsolutePath::try_from( manifest_file )? )
+  }
+}
+
+impl TryFrom< &Utf8PathBuf > for ManifestFile
+{
+  type Error = PathError;
+
+  #[ inline( always ) ]
+  fn try_from( manifest_file : &Utf8PathBuf ) -> Result< Self, Self::Error >
   {
     Self::try_from( AbsolutePath::try_from( manifest_file )? )
   }

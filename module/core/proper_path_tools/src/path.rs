@@ -1065,7 +1065,7 @@ crate::mod_interface!
   /// Describe absolute path. Prefer using absolute path instead of relative paths when ever possible.
   layer absolute_path;
   /// Describe canonical path. Prefer using canonical path instead of native paths when ever possible.
-  layer caninical_path;
+  layer canonical_path;
   /// A type to symbolyze the crruent path.
   layer current_path;
   /// Describe native path. Use to pass path to the platfrom.

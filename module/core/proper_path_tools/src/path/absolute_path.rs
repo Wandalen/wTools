@@ -107,6 +107,17 @@ pub( crate ) mod private
     }
   }
 
+  impl TryFrom< &PathBuf > for AbsolutePath
+  {
+    type Error = std::io::Error;
+
+    #[ inline ]
+    fn try_from( src : &PathBuf ) -> Result< Self, Self::Error >
+    {
+      < Self as TryFrom< &Path > >::try_from( &src.as_path() )
+    }
+  }
+
   // xxx : qqq : use Into< Path >
   impl TryFrom< &Path > for AbsolutePath
   {
