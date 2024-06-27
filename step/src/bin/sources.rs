@@ -19,10 +19,17 @@ fn main() -> Result< () >
   // .clone()
   .packages_which()
   .crate_dir( CrateDir::try_from( ( CurrentPath, ) )? )
-  .find();
+  .find()
+  .unwrap()
+  ;
   //.next().unwrap();
 
-  println!( " - package - {}", package.unwrap().crate_dir().unwrap() );
+  println!( " = package - {}", package.crate_dir().unwrap() );
+
+  package.sources().for_each( | source |
+  {
+    println!( " - {source}" );
+  });
 
   // packages.for_each( | package |
   // {
