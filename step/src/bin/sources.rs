@@ -24,7 +24,7 @@ fn main() -> Result< () >
     .items()
     .for_each( | item |
     {
-      println!( std::any::type_name_of_val( &item ) );
+      println!( "{}", std::any::type_name_of_val( &item ) );
       println!( "     - item : {item:?}" );
     });
 
