@@ -19,6 +19,11 @@ fn main() -> Result< () >
   package.sources().for_each( | source |
   {
     println!( "   - {source}" );
+
+    // source.items_mut()
+    // .for_each( | item | println!( "     - item : {item:?}" ) )
+    // ;
+
   });
 
   dbg!( &workspace.crate_dir );

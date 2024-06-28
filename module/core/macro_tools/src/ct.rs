@@ -1,5 +1,5 @@
 //!
-//! Compile-time const expressions.
+//! Compile-time tools.
 //!
 
 /// Internal namespace.
@@ -10,7 +10,7 @@ pub( crate ) mod private
 /// Compile-time const expressions for strings.
 pub mod str;
 
-/// Compile-time const expressions.
+/// Compile-time tools.
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use protected::*;
