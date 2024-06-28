@@ -22,8 +22,11 @@ fn main() -> Result< () >
 
     source
     .items()
-    .for_each( | item | println!( "     - item : {item:?}" ) )
-    ;
+    .for_each( | item |
+    {
+      println!( std::any::type_name_of_val( &item ) );
+      println!( "     - item : {item:?}" );
+    });
 
   });
 
