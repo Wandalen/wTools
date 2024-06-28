@@ -107,19 +107,19 @@ impl TryFrom< &CrateDir > for String
   }
 }
 
-impl< IntoPath : TryInto< PathBuf > > TryFrom< ( IntoPath, ) >
-for CrateDir
-where
-  PathError : From< < IntoPath as TryInto< PathBuf > >::Error >,
-{
-  type Error = PathError;
-
-  #[ inline( always ) ]
-  fn try_from( ( crate_dir_path, ) : ( IntoPath, ) ) -> Result< Self, Self::Error >
-  {
-    Self::try_from( AbsolutePath::try_from( crate_dir_path.try_into()? )? )
-  }
-}
+// impl< IntoPath : TryInto< PathBuf > > TryFrom< ( IntoPath, ) >
+// for CrateDir
+// where
+//   PathError : From< < IntoPath as TryInto< PathBuf > >::Error >,
+// {
+//   type Error = PathError;
+//
+//   #[ inline( always ) ]
+//   fn try_from( ( crate_dir_path, ) : ( IntoPath, ) ) -> Result< Self, Self::Error >
+//   {
+//     Self::try_from( AbsolutePath::try_from( crate_dir_path.try_into()? )? )
+//   }
+// }
 
 impl TryFrom< &AbsolutePath > for CrateDir
 {
@@ -147,32 +147,6 @@ impl TryFrom< AbsolutePath > for CrateDir
     Ok( Self( crate_dir_path ) )
   }
 }
-
-// impl< Initial > TransitiveTryFrom< AbsolutePath, PathError, Initial >
-// for CrateDir
-// where
-//   AbsolutePath : TryFrom< Initial >,
-//   PathError : From< < AbsolutePath as TryFrom< Initial > >::Error >,
-// {
-// }
-
-// impl< Initial > TransitiveTryInto< AbsolutePath, PathError, CrateDir >
-// for ( Initial, )
-// where
-//   Initial : TryInto< AbsolutePath >,
-//   AbsolutePath : TryInto< CrateDir, Error = PathError >,
-//   PathError : From< < Initial as TryInto< AbsolutePath > >::Error >,
-// {
-//   type Inner = Initial;
-// }
-
-// impl From< ( Initial, ) > for Initial
-// {
-//   fn from( src : ( Initial, ) ) -> Self
-//   {
-//     src.0
-//   }
-// }
 
 impl TryFrom< &PathBuf > for CrateDir
 {

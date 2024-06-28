@@ -18,7 +18,7 @@ fn main() -> Result< () >
   let package = workspace
   // .clone()
   .packages_which()
-  .crate_dir( CrateDir::try_from( ( CurrentPath, ) )? )
+  .crate_dir( CrateDir::transitive_try_from::< AbsolutePath >( CurrentPath )? )
   .find()
   .unwrap()
   ;
