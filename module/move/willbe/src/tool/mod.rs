@@ -26,6 +26,10 @@ crate::mod_interface!
   orphan use super::iter;
 
   /// Work with paths.
+  layer macro_tools;
+  orphan use super::macro_tools;
+
+  /// Work with paths.
   layer path;
   orphan use super::path;
 

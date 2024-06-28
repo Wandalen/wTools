@@ -4,28 +4,16 @@ mod private
 
   use std::
   {
-    // path::Path,
-    // fmt,
     hash::Hash,
-    // path,
   };
-  // use collection::{ HashMap, HashSet };
-  // aaa : for Petro : for Bohdan : group uses
-  // aaa : done
 
   use crates_tools::CrateArchive;
-  // use workspace::Workspace;
-  // use iter::Itertools;
   use error::
   {
     Result,
     typed::Error,
-    // untyped::format_err,
   };
 
-  // use version::revert;
-
-  // aaa : fro Bohdan : write better description : is it better?
   /// A wrapper type for representing the name of a package.
   ///
   /// This struct encapsulates a `String` that holds the name of a package.
@@ -36,7 +24,6 @@ mod private
   ) ]
   pub struct PackageName( String );
 
-  // aaa : fro Bohdan : write description : done
   //
   /// Represents different types of packages in a Cargo workspace.
   ///

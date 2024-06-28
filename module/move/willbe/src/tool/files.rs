@@ -11,7 +11,7 @@ pub( crate ) mod private
   /// Find paths.
   ///
 
-  /* rrr : Dmytro : dubious prototype */
+  /* xxx : check */
   pub fn find< P, S >( base_dir : P, patterns : &[ S ] ) -> Vec< PathBuf >
   where
     P : AsRef< Path >,

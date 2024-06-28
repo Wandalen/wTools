@@ -46,6 +46,7 @@ enabled = [
   "derive_tools/enabled",
   "data_type/enabled",
   "collection_tools/enabled",
+  "macro_tools/enabled",
 ]
 
 tracing = [ "dep:tracing", "dep:tracing-subscriber" ]
@@ -92,6 +93,7 @@ process_tools = { workspace = true, features = [ "default" ] }
 derive_tools = { workspace = true, features = [ "derive_display", "derive_from_str", "derive_deref", "derive_from", "derive_as_ref" ] }
 data_type = { workspace = true, features = [ "either" ] }
 collection_tools = { workspace = true, features = [ "collection_constructors", "collection_into_constructors" ] }
+macro_tools = { workspace = true, features = [] } # qqq : xxx : put under feature
 
 [dev-dependencies]
 test_tools = { workspace = true }

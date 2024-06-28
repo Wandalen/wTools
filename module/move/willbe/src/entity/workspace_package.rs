@@ -125,7 +125,7 @@ mod private
       {
         let src_path = &target.src_path;
         let source : SourceFile = src_path.try_into().expect( &format!( "Illformed path to source file {src_path}" ) );
-        println!( " -- {:?} {:?}", source, target.kind );
+        // println!( " -- {:?} {:?}", source, target.kind );
         source
       })
     }
