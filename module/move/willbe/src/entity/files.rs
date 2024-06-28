@@ -44,8 +44,9 @@ crate::mod_interface!
     source_file::
     {
       SourceFile,
-      Sources,
       Entries,
+      Sources,
+      Items,
     },
     either::EitherDirOrFile
   };

@@ -17,6 +17,7 @@ use core::
 use std::
 {
   path::{ Path, PathBuf },
+  fs,
 };
 use error::
 {
@@ -217,6 +218,18 @@ impl DerefMut for SourceFile
   fn deref_mut( &mut self ) -> &mut Self::Target
   {
     &mut self.0
+  }
+}
+
+// =
+
+impl Items for SourceFile
+{
+  fn items( &self ) -> impl Iterator< Item = syn::Item > + Clone
+  {
+    let content = fs::read_to_string( self.as_ref() ).expect( "Failed to read file {self}" );
+    let parsed : syn::File = syn::parse_file( &content ).expect( "Failed to parse file {self}" );
+    parsed.items.into_iter()
   }
 }
 

@@ -1,7 +1,7 @@
 //! List all sources
 
 use willbe::exposed::*;
-use willbe::{ Sources, Entries };
+use willbe::{ Entries, Sources, Items };
 
 fn main() -> Result< () >
 {
@@ -20,9 +20,10 @@ fn main() -> Result< () >
   {
     println!( "   - {source}" );
 
-    // source.items_mut()
-    // .for_each( | item | println!( "     - item : {item:?}" ) )
-    // ;
+    source
+    .items()
+    .for_each( | item | println!( "     - item : {item:?}" ) )
+    ;
 
   });
 
