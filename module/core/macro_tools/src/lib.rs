@@ -20,35 +20,6 @@
 // exposed
 // Exposed namespace of the module.
 
-// /// Modular files.
-// #[ cfg( feature = "enabled" ) ]
-// #[ path = "." ]
-// mod file
-// {
-//   // use super::*;
-//   // pub mod attr;
-//   // pub mod attr_prop;
-//   pub mod components;
-//   pub mod ct;
-//   pub mod container_kind;
-//   pub mod derive;
-//   pub mod diag;
-//   pub mod drop;
-//   pub mod equation;
-//   pub mod generic_args;
-//   pub mod generic_params;
-//   pub mod item;
-//   pub mod item_struct;
-//   pub mod iter;
-//   pub mod name;
-//   pub mod phantom;
-//   pub mod punctuated;
-//   pub mod quantifier;
-//   pub mod struct_like;
-//   pub mod tokens;
-//   pub mod typ;
-// }
-
 #[ cfg( all( feature = "enabled", feature = "attr" ) ) ]
 pub mod attr;
 #[ cfg( all( feature = "enabled", feature = "attr_prop" ) ) ]

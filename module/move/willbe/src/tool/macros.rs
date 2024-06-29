@@ -10,3 +10,6 @@ crate::mod_interface!
   protected use ::macro_tools::protected::*;
 
 }
+
+// use protected::macro_tools as xxx;
+// use protected::macro_tools2 as xxx2;

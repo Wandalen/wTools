@@ -9,7 +9,9 @@ mod private
   use error::err;
   use error::untyped::format_err;
   use former::Former;
-  use process_tools::process::*;
+  use process_tools::process;
+  // use process_tools::process::*;
+  // qqq : for Bohdan : bad
   // use error::Result;
   // qqq : group dependencies
 
@@ -92,7 +94,7 @@ mod private
   )]
   // qqq : should be typed error, apply err_with
   // qqq : don't use 1-prameter Result
-  pub fn pack( args : PackOptions ) -> Result< Report >
+  pub fn pack( args : PackOptions ) -> Result< process::Report >
   {
     let ( program, options ) = ( "rustup", args.to_pack_args() );
 
@@ -100,7 +102,7 @@ mod private
     {
       Ok
       (
-        Report
+        process::Report
         {
           command : format!( "{program} {}", options.join( " " ) ),
           out : String::new(),
@@ -112,7 +114,7 @@ mod private
     }
     else
     {
-      Run::former()
+      process::Run::former()
       .bin_path( program )
       .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .current_path( args.path )
@@ -157,7 +159,7 @@ mod private
     track_caller,
     tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
   )]
-  pub fn publish( args : PublishOptions ) -> Result< Report >
+  pub fn publish( args : PublishOptions ) -> Result< process::Report >
   // qqq : don't use 1-prameter Result
   {
     let ( program, arguments) = ( "cargo", args.as_publish_args() );
@@ -166,7 +168,7 @@ mod private
     {
       Ok
         (
-          Report
+          process::Report
           {
             command : format!( "{program} {}", arguments.join( " " ) ),
             out : String::new(),
@@ -182,7 +184,7 @@ mod private
       let run_args : Vec< _ > =  arguments.into_iter().map( OsString::from ).collect();
       for _ in 0 .. args.retry_count + 1
       {
-        let result = Run::former()
+        let result = process::Run::former()
         .bin_path( program )
         .args( run_args.clone() )
         .current_path( &args.path )
