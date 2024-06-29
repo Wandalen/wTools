@@ -128,8 +128,10 @@ mod private
 
   }
 
+
   #[ derive( Former ) ]
   // #[ debug ]
+  #[ allow( missing_debug_implementations ) ]
   pub struct PackagesFilter< 'a >
   {
     workspace : &'a Workspace,

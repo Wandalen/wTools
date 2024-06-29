@@ -2,7 +2,7 @@
 pub( crate ) mod private
 {
   use macro_tools::prelude::*;
-  use macro_tools::syn::Result;
+  // use macro_tools::syn::Result;
   // use macro_tools::err;
 
   #[ derive( Debug, PartialEq, Eq, Clone ) ]

@@ -5,7 +5,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::*;
+  // use crate::*;
 
   const KEYWORDS : &[ &str ] =
   &[

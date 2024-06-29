@@ -2,7 +2,7 @@
 pub( crate ) mod private
 {
   use macro_tools::prelude::*;
-  use macro_tools::syn::Result;
+  // use macro_tools::syn::Result;
   use core::hash::{ Hash, Hasher };
 
   pub const VALID_VISIBILITY_LIST_STR : &str = "[ private, protected, orphan, exposed, prelude ]";
