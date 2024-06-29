@@ -30,6 +30,8 @@ fn main() -> Result< () >
 
   });
 
+  println!( "{}", package.as_code().unwrap() );
+
   dbg!( &workspace.crate_dir );
 
   return Ok( () );

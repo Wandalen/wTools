@@ -4,6 +4,11 @@ mod private
   use collection::BTreeMap;
   use serde_json::Value;
 
+  use std::
+  {
+    borrow::Cow,
+  };
+
   // xxx : qqq : Deref, DerefMut, AsRef, AsMut
 
   /// Facade for cargo_metadata::Package
@@ -160,15 +165,19 @@ mod private
 
   impl< 'a > AsCode for WorkspacePackageRef< 'a >
   {
-    fn as_code< 'a >( &'a self ) -> std::borrow::Cow< 'a, str >
+    fn as_code< 'b >( &'b self ) -> std::io::Result< Cow< 'b, str > >
     {
-      std::borrow::Cow::Owned
-      (
-        self
-        .sources()
-        .flat( | source | source.as_code() )
-        .join( "\n" )
-      )
+      let mut results : Vec< String > = Vec::new();
+
+      for source in self.sources()
+      {
+        let code = source.as_code()?.into_owned();
+        results.push( format!( "// === File {}", source.as_ref().display() ) );
+        results.push( code );
+      }
+
+      let joined = results.join( "\n" );
+      Ok( Cow::Owned( joined ) )
     }
   }
 
