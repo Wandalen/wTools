@@ -15,6 +15,7 @@ pub use protected::*;
 
 /// Protected namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod protected
 {
   #[ allow( unused_imports ) ]
@@ -24,6 +25,7 @@ pub mod protected
 
 /// Parented namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   #[ allow( unused_imports ) ]
@@ -41,6 +43,7 @@ pub mod exposed
 
 /// Namespace of the module to include with `use module::*`.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
   pub use super::string::prelude::*;

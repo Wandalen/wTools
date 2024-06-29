@@ -75,6 +75,7 @@ pub mod wrapper;
 pub use protected::*;
 
 /// Protected namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
@@ -122,6 +123,7 @@ pub mod protected
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
@@ -175,6 +177,7 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
 

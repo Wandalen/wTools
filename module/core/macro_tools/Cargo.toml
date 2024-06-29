@@ -35,7 +35,6 @@ default = [
   "container_kind",
   "derive",
   "diag",
-  "drop",
   "equation",
   "generic_args",
   "generic_params",
@@ -49,6 +48,7 @@ default = [
   "struct_like",
   "tokens",
   "typ",
+  "typed",
 ]
 full = [
   "default",
@@ -68,7 +68,6 @@ ct = []
 container_kind = [ "typ" ]
 derive = []
 diag = []
-drop = []
 equation = []
 generic_args = []
 generic_params = [ "punctuated" ]
@@ -83,6 +82,7 @@ quantifier = []
 struct_like = [ "item_struct" ]
 tokens = []
 typ = []
+typed = []
 
 # qqq : zzz : put all files under features: macro_attr, macro_container_kind, ...
 # qqq : zzz : optimize features list

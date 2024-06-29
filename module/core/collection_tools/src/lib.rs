@@ -33,6 +33,7 @@ pub use protected::*;
 
 /// Protected namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod protected
 {
 
@@ -44,6 +45,7 @@ pub mod protected
 
 /// Parented namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
@@ -95,6 +97,7 @@ pub mod exposed
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
 }

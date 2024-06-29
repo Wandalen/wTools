@@ -100,6 +100,7 @@ pub mod inner
 }
 
 /// Protected namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod protected
 {
   pub use super::orphan::*;
@@ -108,6 +109,7 @@ pub mod protected
 pub use protected::*;
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   pub use super::exposed::*;
@@ -123,6 +125,7 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
   pub use super::inner::prelude::*;

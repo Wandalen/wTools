@@ -175,6 +175,7 @@ pub( crate ) mod private
 }
 
 /// Owned namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod protected
 {
   use super::private as i;
@@ -189,6 +190,7 @@ pub mod protected
 pub use protected::*;
 
 /// Parented namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   pub use super::exposed::*;
@@ -210,6 +212,7 @@ pub mod exposed
 }
 
 /// Namespace of the module to include with `use module::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
   use super::private as i;

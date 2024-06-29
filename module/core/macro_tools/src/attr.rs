@@ -386,7 +386,8 @@ pub( crate ) mod private
     ///
     /// A `syn::Result` containing the constructed component if successful, or an error if the parsing fails.
     fn from_meta( attr : &syn::Attribute ) -> syn::Result< Self >;
-    // xxx : redo
+
+    // zzz : redo maybe
   }
 
 }
@@ -396,6 +397,7 @@ pub( crate ) mod private
 pub use protected::*;
 
 /// Protected namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
@@ -412,6 +414,7 @@ pub mod protected
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
@@ -420,7 +423,6 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
-// xxx2 : continue
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
@@ -436,13 +438,12 @@ pub mod exposed
   {
     AttributesInner,
     AttributesOuter,
-
     AttributeComponent,
-    // AttributePropertyComponent,
   };
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
 }

@@ -18,22 +18,7 @@ pub( crate ) mod private
 
 }
 
-// qqq : review every page of generated documentation improve how it look as well as its content
-//
-// attr
-// Protected namespace of the module.
-// container_kind
-// Protected namespace of the module.
-// dependency
-// Dependencies of the module.
-// derive
-// Protected namespace of the module.
-// diag
-// Protected namespace of the module.
-// drop
-// Protected namespace of the module.
-// exposed
-// Exposed namespace of the module.
+// qqq : improve description of each file
 
 #[ cfg( all( feature = "enabled", feature = "attr" ) ) ]
 pub mod attr;
@@ -49,8 +34,6 @@ pub mod container_kind;
 pub mod derive;
 #[ cfg( all( feature = "enabled", feature = "diag" ) ) ]
 pub mod diag;
-#[ cfg( all( feature = "enabled", feature = "drop" ) ) ]
-pub mod drop;
 #[ cfg( all( feature = "enabled", feature = "equation" ) ) ]
 pub mod equation;
 #[ cfg( all( feature = "enabled", feature = "generic_args" ) ) ]
@@ -77,6 +60,8 @@ pub mod struct_like;
 pub mod tokens;
 #[ cfg( all( feature = "enabled", feature = "typ" ) ) ]
 pub mod typ;
+#[ cfg( all( feature = "enabled", feature = "typed" ) ) ]
+pub mod typed;
 
 #[ cfg( all( feature = "enabled" ) ) ]
 pub mod iter;
@@ -134,8 +119,6 @@ pub mod protected
     pub use derive::orphan::*;
     #[ cfg( feature = "diag" ) ]
     pub use diag::orphan::*;
-    #[ cfg( feature = "drop" ) ]
-    pub use drop::orphan::*;
     #[ cfg( feature = "equation" ) ]
     pub use equation::orphan::*;
     #[ cfg( feature = "generic_args" ) ]
@@ -162,6 +145,8 @@ pub mod protected
     pub use tokens::orphan::*;
     #[ cfg( feature = "typ" ) ]
     pub use typ::orphan::*;
+    #[ cfg( feature = "typed" ) ]
+    pub use typed::orphan::*;
 
     pub use iter::orphan::*;
 
@@ -216,8 +201,6 @@ pub mod exposed
     pub use derive::exposed::*;
     #[ cfg( feature = "diag" ) ]
     pub use diag::exposed::*;
-    #[ cfg( feature = "drop" ) ]
-    pub use drop::exposed::*;
     #[ cfg( feature = "equation" ) ]
     pub use equation::exposed::*;
     #[ cfg( feature = "generic_args" ) ]
@@ -244,6 +227,8 @@ pub mod exposed
     pub use tokens::exposed::*;
     #[ cfg( feature = "typ" ) ]
     pub use typ::exposed::*;
+    #[ cfg( feature = "typed" ) ]
+    pub use typed::exposed::*;
 
     pub use iter::exposed::*;
 
@@ -279,8 +264,6 @@ pub mod prelude
     pub use derive::prelude::*;
     #[ cfg( feature = "diag" ) ]
     pub use diag::prelude::*;
-    #[ cfg( feature = "drop" ) ]
-    pub use drop::prelude::*;
     #[ cfg( feature = "equation" ) ]
     pub use equation::prelude::*;
     #[ cfg( feature = "generic_args" ) ]
@@ -307,6 +290,8 @@ pub mod prelude
     pub use tokens::prelude::*;
     #[ cfg( feature = "typ" ) ]
     pub use typ::prelude::*;
+    #[ cfg( feature = "typed" ) ]
+    pub use typed::prelude::*;
 
     pub use iter::prelude::*;
 

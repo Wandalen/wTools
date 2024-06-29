@@ -22,6 +22,7 @@ pub mod dependency
 }
 
 /// Protected namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
@@ -34,6 +35,7 @@ pub mod protected
 pub use protected::*;
 
 /// Parented namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
@@ -53,6 +55,7 @@ pub mod exposed
 // pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
 }

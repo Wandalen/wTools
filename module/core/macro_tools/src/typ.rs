@@ -90,25 +90,6 @@ pub( crate ) mod private
     vec![ ty ]
   }
 
-//   /// Extract generics from a type.
-//   pub fn all_type_parameters( type_example : &syn::Type )
-//   ->
-//   Option< syn::punctuated::Punctuated< syn::GenericArgument, syn::token::Comma > >
-//   {
-//     if let syn::Type::Path( type_path ) = type_example
-//     {
-//       let segments = &type_path.path.segments;
-//       let last_segment = segments.last()?;
-//
-//       if let syn::PathArguments::AngleBracketed( generics ) = &last_segment.arguments
-//       {
-//         return Some( generics.args.clone() );
-//       }
-//     }
-//     None
-//   }
-
-
   /// Checks if a given [`syn::Type`] is an `Option` type.
   ///
   /// This function examines a type to determine if it represents an `Option`.
@@ -159,6 +140,7 @@ pub( crate ) mod private
 pub use protected::*;
 
 /// Protected namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
@@ -170,13 +152,13 @@ pub mod protected
   {
     type_rightmost,
     type_parameters,
-    // all_type_parameters,
     is_optional,
     parameter_first,
   };
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
@@ -200,6 +182,7 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
 }
