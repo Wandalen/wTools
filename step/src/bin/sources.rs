@@ -2,6 +2,11 @@
 
 use willbe::exposed::*;
 use willbe::{ Entries, Sources, CodeItems};
+use std::
+{
+  fs::File,
+  io::Write,
+};
 
 fn main() -> Result< () >
 {
@@ -30,7 +35,9 @@ fn main() -> Result< () >
 
   });
 
-  println!( "{}", package.as_code().unwrap() );
+  // println!( "{}", package.as_code().unwrap() );
+  let mut file = File::create( format!( "{}.rs", package.name() ) )?;
+  file.write_all( package.as_code().unwrap().as_bytes() )?;
 
   dbg!( &workspace.crate_dir );
 
