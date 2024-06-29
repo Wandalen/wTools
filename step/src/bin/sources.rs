@@ -23,17 +23,17 @@ fn main() -> Result< () >
 
   println!( " = package - {}", package.crate_dir().unwrap() );
 
-  let ins = r#"
-pub mod exposed
-{
-"#;
-
-  let sub = r#"
-pub mod exposed
-{
-  #[ allow( unused_imports ) ]
-  use super::*;
-"#;
+//   let ins = r#"
+// pub mod exposed
+// {
+// "#;
+//
+//   let sub = r#"
+// pub mod exposed
+// {
+//   #[ allow( unused_imports ) ]
+//   use super::*;
+// "#;
 
   package.sources().for_each( | source |
   {
