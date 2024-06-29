@@ -158,13 +158,19 @@ mod private
     }
   }
 
-  // impl< 'a > AsCode for WorkspacePackageRef< 'a >
-  // {
-  //   fn as_code< 'a >( &'a self ) -> std::borrow::Cow< 'a, str >
-  //   {
-  //     std::fs::read_to_string( self.as_ref() )
-  //   }
-  // }
+  impl< 'a > AsCode for WorkspacePackageRef< 'a >
+  {
+    fn as_code< 'a >( &'a self ) -> std::borrow::Cow< 'a, str >
+    {
+      std::borrow::Cow::Owned
+      (
+        self
+        .sources()
+        .flat( | source | source.as_code() )
+        .join( "\n" )
+      )
+    }
+  }
 
 }
 
