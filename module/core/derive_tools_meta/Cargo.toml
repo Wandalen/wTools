@@ -66,7 +66,7 @@ derive_phantom = []
 
 [dependencies]
 # zzz : qqq : optimize features set
-macro_tools = { workspace = true, features = [ "full" ] }
+macro_tools = { workspace = true, features = [ "attr", "attr_prop", "container_kind", "diag", "generic_args", "typ", "derive", "generic_params", "name", "struct_like", "quantifier" ] }
 iter_tools = { workspace = true, features = [] }
 former_types = { workspace = true, features = [ "types_component_assign" ] }
 const_format = { version = "0.2.32" }

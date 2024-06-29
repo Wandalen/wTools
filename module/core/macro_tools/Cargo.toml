@@ -41,7 +41,6 @@ default = [
   "generic_params",
   "item",
   "item_struct",
-  # "iter",
   "name",
   "kw",
   "phantom",
@@ -62,11 +61,11 @@ enabled = [
   "iter_tools/enabled",
 ]
 
-attr = []
-attr_prop = []
+attr = [ "diag" ]
+attr_prop = [ "components" ]
 components = []
 ct = []
-container_kind = []
+container_kind = [ "typ" ]
 derive = []
 diag = []
 drop = []
@@ -78,7 +77,7 @@ item_struct = []
 iter = []
 name = []
 kw = []
-phantom = []
+phantom = [ "item" ]
 punctuated = []
 quantifier = []
 struct_like = []

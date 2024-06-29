@@ -34,7 +34,7 @@ full = [ "enabled" ]
 enabled = [ "macro_tools/enabled", "former_types/enabled" ]
 
 [dependencies]
-macro_tools = { workspace = true } # qqq : xxx : optimize set of features
+macro_tools = { workspace = true, features = [ "attr", "diag", "generic_params", "punctuated", "phantom", "item_struct"] } # qqq : xxx : optimize set of features
 former_types = { workspace = true, features = [ "types_component_assign" ] }
 # xxx : incapsulate into macro_tools
 const_format = { version = "0.2.32" }

@@ -75,7 +75,7 @@ pub( crate ) mod private
     T1 : Element + syn::parse::Parse,
     T2 : Element + syn::parse::Parse,
   {
-    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       Ok( Self( input.parse()?, input.parse()? ) )
     }
@@ -195,7 +195,7 @@ pub( crate ) mod private
   where
     T : Element + syn::parse::Parse + AsMuchAsPossibleNoDelimiter,
   {
-    fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+    fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
     {
       let mut items = vec![];
       while !input.is_empty()
@@ -214,7 +214,7 @@ pub( crate ) mod private
 //   where
 //     T : Element + WhileDelimiter,
 //   {
-//     fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+//     fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
 //     {
 //       let mut result = Self::new();
 //       loop
@@ -245,7 +245,7 @@ pub( crate ) mod private
   impl syn::parse::Parse
   for Many< AttributesInner >
   {
-    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       let mut result = Self::new();
       loop
@@ -264,7 +264,7 @@ pub( crate ) mod private
   impl syn::parse::Parse
   for Many< AttributesOuter >
   {
-    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       let mut result = Self::new();
       loop
@@ -285,7 +285,7 @@ pub( crate ) mod private
   // impl syn::parse::Parse
   // for Many< syn::Item >
   // {
-  //   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+  //   fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
   //   {
   //     let mut items = vec![];
   //     while !input.is_empty()

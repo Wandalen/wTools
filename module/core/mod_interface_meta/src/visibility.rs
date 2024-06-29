@@ -2,7 +2,7 @@
 pub( crate ) mod private
 {
   use macro_tools::prelude::*;
-  use macro_tools::Result;
+  use macro_tools::syn::Result;
   use core::hash::{ Hash, Hasher };
 
   pub const VALID_VISIBILITY_LIST_STR : &str = "[ private, protected, orphan, exposed, prelude ]";
@@ -298,37 +298,37 @@ pub( crate ) mod private
   impl Visibility
   {
 
-    fn parse_protected( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse_protected( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       Self::_parse_vis::< VisProtected >( input )
     }
 
-    fn parse_orphan( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse_orphan( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       Self::_parse_vis::< VisOrphan >( input )
     }
 
-    fn parse_exposed( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse_exposed( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       Self::_parse_vis::< VisExposed >( input )
     }
 
-    fn parse_prelude( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse_prelude( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       Self::_parse_vis::< VisPrelude >( input )
     }
 
-    fn parse_pub( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse_pub( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       Self::_parse_vis::< VisPublic >( input )
     }
 
-    // fn parse_pub( input : ParseStream< '_ > ) -> Result< Self >
+    // fn parse_pub( input : ParseStream< '_ > ) -> syn::Result< Self >
     // {
     //   Ok( Visibility::Public( syn::VisPublic { pub_token : input.parse()? } ) )
     // }
 
-    fn _parse_vis< Vis >( input : ParseStream< '_ > ) -> Result< Self >
+    fn _parse_vis< Vis >( input : ParseStream< '_ > ) -> syn::Result< Self >
     where
       Vis : Into< Visibility > + VisibilityInterface,
     {
@@ -380,7 +380,7 @@ pub( crate ) mod private
       ).into() )
     }
 
-    // fn parse_in_crate( input : ParseStream< '_ > ) -> Result< Self >
+    // fn parse_in_crate( input : ParseStream< '_ > ) -> syn::Result< Self >
     // {
     //   if input.peek2( Token![ :: ] )
     //   {
@@ -435,7 +435,7 @@ pub( crate ) mod private
 
   impl syn::parse::Parse for Visibility
   {
-    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       // Recognize an empty None-delimited group, as produced by a $:vis
       // matcher that matched no tokens.

@@ -1,7 +1,7 @@
 mod private
 {
   use crate::*;
-  use macro_tools::kw;
+  use macros::kw;
   use collection::BTreeMap;
   use serde_json::Value;
 
@@ -184,7 +184,6 @@ mod private
 
         if kw::is( &filename )
         {
-          panic!( "kw!" );
           filename.push_str( "_rs" );
         }
 
