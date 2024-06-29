@@ -4,12 +4,14 @@ use willbe::exposed::*;
 use willbe::{ Entries, Sources, CodeItems};
 use std::
 {
+  fs,
   fs::File,
   io::Write,
 };
 
 fn main() -> Result< () >
 {
+
   let workspace = Workspace::try_from( CurrentPath )?;
 
   let package = workspace
@@ -36,8 +38,13 @@ fn main() -> Result< () >
   });
 
   // println!( "{}", package.as_code().unwrap() );
-  let mut file = File::create( format!( "{}.rs", package.name() ) )?;
-  file.write_all( package.as_code().unwrap().as_bytes() )?;
+
+  let dst_path = format!( "{}.rs", package.name() );
+  let _ = fs::remove_file( &dst_path );
+
+  let code = package.as_code().unwrap();
+  let mut file = File::create( dst_path )?;
+  file.write_all( code.as_bytes() )?;
 
   dbg!( &workspace.crate_dir );
 

@@ -168,12 +168,26 @@ mod private
     fn as_code< 'b >( &'b self ) -> std::io::Result< Cow< 'b, str > >
     {
       let mut results : Vec< String > = Vec::new();
+      // zzz : introduce formatter
 
       for source in self.sources()
       {
         let code = source.as_code()?.into_owned();
-        results.push( format!( "// === File {}", source.as_ref().display() ) );
+        let filename = source
+        .as_ref()
+        .file_name()
+        .expect( &format!( "Cant get file name of path {}", source.as_ref().display() ) )
+        .to_string_lossy()
+        .replace( ".", "_" );
+
+        // qqq : xxx : use callbacks instead of expect
+
+        results.push( format!( "// === Begin of File {}", source.as_ref().display() ) );
+        results.push( format!( "mod {}\n{{\n", filename ) );
         results.push( code );
+        results.push( "\n}".to_string() );
+        results.push( format!( "// === End of File {}", source.as_ref().display() ) );
+
       }
 
       let joined = results.join( "\n" );
