@@ -149,7 +149,6 @@ mod private
 
   impl< 'a > CodeItems for WorkspacePackageRef< 'a >
   {
-    // fn items( &self ) -> impl Iterator< Item = syn::Item > + ExactSizeIterator< Item = syn::Item > + DoubleEndedIterator + Clone
     fn items( &self ) -> impl IterTrait< '_, syn::Item >
     {
       self
