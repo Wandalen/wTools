@@ -77,6 +77,8 @@ pub mod item;
 pub mod item_struct;
 #[ cfg( all( feature = "enabled", feature = "name" ) ) ]
 pub mod name;
+#[ cfg( all( feature = "enabled", feature = "kw" ) ) ]
+pub mod kw;
 #[ cfg( all( feature = "enabled", feature = "phantom" ) ) ]
 pub mod phantom;
 #[ cfg( all( feature = "enabled", feature = "punctuated" ) ) ]
@@ -155,6 +157,8 @@ pub mod protected
     pub use item_struct::orphan::*;
     #[ cfg( feature = "name" ) ]
     pub use name::orphan::*;
+    #[ cfg( feature = "kw" ) ]
+    pub use kw::orphan::*;
     #[ cfg( feature = "phantom" ) ]
     pub use phantom::orphan::*;
     #[ cfg( feature = "punctuated" ) ]
@@ -234,6 +238,8 @@ pub mod exposed
     pub use item_struct::exposed::*;
     #[ cfg( feature = "name" ) ]
     pub use name::exposed::*;
+    #[ cfg( feature = "kw" ) ]
+    pub use kw::exposed::*;
     #[ cfg( feature = "phantom" ) ]
     pub use phantom::exposed::*;
     #[ cfg( feature = "punctuated" ) ]
@@ -295,6 +301,8 @@ pub mod prelude
     pub use item_struct::prelude::*;
     #[ cfg( feature = "name" ) ]
     pub use name::prelude::*;
+    #[ cfg( feature = "kw" ) ]
+    pub use kw::exposed::*;
     #[ cfg( feature = "phantom" ) ]
     pub use phantom::prelude::*;
     #[ cfg( feature = "punctuated" ) ]

@@ -173,12 +173,19 @@ mod private
       for source in self.sources()
       {
         let code = source.as_code()?.into_owned();
-        let filename = source
+        let mut filename = source
         .as_ref()
+        .with_extension( "" )
         .file_name()
         .expect( &format!( "Cant get file name of path {}", source.as_ref().display() ) )
         .to_string_lossy()
         .replace( ".", "_" );
+
+        if kw::is( &filename )
+        {
+          panic!( "kw!" );
+          filename.push_str( "_rs" );
+        }
 
         // qqq : xxx : use callbacks instead of expect
 

@@ -43,6 +43,7 @@ default = [
   "item_struct",
   # "iter",
   "name",
+  "kw",
   "phantom",
   "punctuated",
   "quantifier",
@@ -76,6 +77,7 @@ item = []
 item_struct = []
 iter = []
 name = []
+kw = []
 phantom = []
 punctuated = []
 quantifier = []
