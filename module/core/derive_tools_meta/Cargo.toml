@@ -69,7 +69,7 @@ derive_phantom = []
 macro_tools = { workspace = true, features = [ "attr", "attr_prop", "container_kind", "ct", "diag", "generic_args", "typ", "derive", "generic_params", "name", "phantom", "struct_like", "quantifier" ] }
 iter_tools = { workspace = true, features = [] }
 former_types = { workspace = true, features = [ "types_component_assign" ] }
-const_format = { version = "0.2.32" }
+# const_format = { version = "0.2.32" }
 # xxx2 : continue
 
 [dev-dependencies]
