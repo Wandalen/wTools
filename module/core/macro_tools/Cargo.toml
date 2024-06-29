@@ -86,6 +86,8 @@ typed = []
 
 # qqq : zzz : put all files under features: macro_attr, macro_container_kind, ...
 # qqq : zzz : optimize features list
+# qqq : zzz : make sure all combinations of features are working and passing test
+
 
 [dependencies]
 

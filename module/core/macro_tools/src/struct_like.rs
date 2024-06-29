@@ -6,8 +6,6 @@
 pub( crate ) mod private
 {
   use crate::*;
-  // use iter_tools::{ IterTrait, BoxedIter };
-  // use interval_adapter::BoundExt;
 
   /// Enum to encapsulate either a field from a struct or a variant from an enum.
   #[ derive( Debug, PartialEq, Clone ) ]
@@ -19,7 +17,6 @@ pub( crate ) mod private
     Variant( &'a syn::Variant ),
   }
 
-  // xxx
   impl< 'a > Copy for FieldOrVariant< 'a >
   {
   }
@@ -472,10 +469,7 @@ pub mod orphan
 pub mod exposed
 {
   use super::*;
-
   pub use super::super::struct_like;
-
-  // pub use super::protected as struct_like;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
