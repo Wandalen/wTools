@@ -34,7 +34,7 @@ pub mod orphan
 pub mod exposed
 {
   use super::*;
-  pub use super::super::iter;
+  // pub use super::super::iter;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

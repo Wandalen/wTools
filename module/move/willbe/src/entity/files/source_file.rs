@@ -263,7 +263,7 @@ pub trait Entries
 pub trait Sources
 {
   /// Returns an iterator over the source files.
-  fn sources( &self ) -> impl IterTrait< Item = SourceFile >;
+  fn sources( &self ) -> impl IterTrait< '_, SourceFile >;
 }
 
 // =
