@@ -133,7 +133,7 @@ mod private
 
   impl< 'a > Sources for WorkspacePackageRef< 'a >
   {
-    fn sources( &self ) -> impl Iterator< Item = SourceFile > + Clone
+    fn sources( &self ) -> impl Iterator< Item = SourceFile > + ExactSizeIterator< Item = SourceFile > + DoubleEndedIterator + Clone
     {
       use walkdir::WalkDir;
       let crate_dir = self.crate_dir().unwrap();
@@ -149,13 +149,12 @@ mod private
 
   impl< 'a > CodeItems for WorkspacePackageRef< 'a >
   {
-    fn items( &self ) -> impl Iterator< Item = syn::Item > + Clone
+    fn items( &self ) -> impl Iterator< Item = syn::Item > + ExactSizeIterator< Item = syn::Item > + DoubleEndedIterator + Clone
     {
       self
       .sources()
-      .flat_map( | source | source.items() )
-      .collect::< Vec< _ > >()
-      .into_iter()
+      .flat_map( | source | source.items().collect::< Vec< _ > >().into_iter() )
+      .collect::< Vec< _ > >().into_iter()
     }
   }
 

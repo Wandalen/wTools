@@ -29,7 +29,7 @@ mod private
   pub trait CodeItems
   {
     /// Returns an iterator over the source files.
-    fn items( &self ) -> impl Iterator< Item = syn::Item > + Clone;
+    fn items( &self ) -> impl Iterator< Item = syn::Item > + ExactSizeIterator< Item = syn::Item > + DoubleEndedIterator + Clone;
   }
 
 }

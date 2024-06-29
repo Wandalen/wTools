@@ -6,6 +6,7 @@
 pub( crate ) mod private
 {
   use crate::*;
+  // use iter_tools::{ IterTrait, BoxedIter };
   // use interval_adapter::BoundExt;
 
   /// Enum to encapsulate either a field from a struct or a variant from an enum.

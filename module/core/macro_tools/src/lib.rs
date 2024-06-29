@@ -75,8 +75,6 @@ pub mod generic_params;
 pub mod item;
 #[ cfg( all( feature = "enabled", feature = "item_struct" ) ) ]
 pub mod item_struct;
-#[ cfg( all( feature = "enabled", feature = "iter" ) ) ]
-pub mod iter;
 #[ cfg( all( feature = "enabled", feature = "name" ) ) ]
 pub mod name;
 #[ cfg( all( feature = "enabled", feature = "phantom" ) ) ]
@@ -92,32 +90,8 @@ pub mod tokens;
 #[ cfg( all( feature = "enabled", feature = "typ" ) ) ]
 pub mod typ;
 
-// // xxx
-// #[ cfg( feature = "enabled" ) ]
-// pub use file::
-// {
-//   // attr,
-//   // attr_prop,
-//   components,
-//   ct,
-//   // container_kind,
-//   // derive,
-//   // diag,
-//   // drop,
-//   // equation,
-//   // generic_args,
-//   // generic_params,
-//   // item,
-//   // item_struct,
-//   // iter,
-//   // name,
-//   // phantom,
-//   // punctuated,
-//   // quantifier,
-//   // struct_like,
-//   // tokens,
-//   // typ,
-// };
+#[ cfg( all( feature = "enabled" ) ) ]
+pub mod iter;
 
 ///
 /// Dependencies of the module.
@@ -179,8 +153,6 @@ pub mod protected
     pub use item::orphan::*;
     #[ cfg( feature = "item_struct" ) ]
     pub use item_struct::orphan::*;
-    #[ cfg( feature = "iter" ) ]
-    pub use iter::orphan::*;
     #[ cfg( feature = "name" ) ]
     pub use name::orphan::*;
     #[ cfg( feature = "phantom" ) ]
@@ -196,36 +168,12 @@ pub mod protected
     #[ cfg( feature = "typ" ) ]
     pub use typ::orphan::*;
 
+    pub use iter::orphan::*;
+
   }
 
   #[ doc( inline ) ]
   pub use _all::*;
-
-  // #[ doc( inline ) ]
-  // pub use super::file::
-  // {
-  //   // attr::orphan::*,
-  //   // attr_prop::orphan::*,
-  //   components::orphan::*,
-  //   container_kind::orphan::*,
-  //   ct::orphan::*,
-  //   derive::orphan::*,
-  //   diag::orphan::*,
-  //   drop::orphan::*,
-  //   equation::orphan::*,
-  //   generic_args::orphan::*,
-  //   generic_params::orphan::*,
-  //   item::orphan::*,
-  //   item_struct::orphan::*,
-  //   iter::orphan::*,
-  //   name::orphan::*,
-  //   phantom::orphan::*,
-  //   punctuated::orphan::*,
-  //   quantifier::orphan::*,
-  //   struct_like::orphan::*,
-  //   tokens::orphan::*,
-  //   typ::orphan::*,
-  // };
 
 }
 
@@ -284,8 +232,6 @@ pub mod exposed
     pub use item::exposed::*;
     #[ cfg( feature = "item_struct" ) ]
     pub use item_struct::exposed::*;
-    #[ cfg( feature = "iter" ) ]
-    pub use iter::exposed::*;
     #[ cfg( feature = "name" ) ]
     pub use name::exposed::*;
     #[ cfg( feature = "phantom" ) ]
@@ -301,61 +247,12 @@ pub mod exposed
     #[ cfg( feature = "typ" ) ]
     pub use typ::exposed::*;
 
+    pub use iter::exposed::*;
+
   }
 
   #[ doc( inline ) ]
   pub use _all::*;
-
-//   mod all
-//   {
-//     use super::super::*;
-//     pub use attr::exposed::*;
-//     pub use attr_prop::exposed::*;
-//   }
-//
-//   #[ doc( inline ) ]
-//   pub use all::*;
-
-  // #[ doc( inline ) ]
-  // pub use quote::
-  // {
-  //   format_ident,
-  //   quote,
-  //   quote_spanned,
-  // };
-
-  // #[ doc( inline ) ]
-  // pub use super::
-  // {
-  //   prelude::*,
-  // };
-
-  // #[ doc( inline ) ]
-  // pub use super::file::
-  // {
-  //   // attr::exposed::*,
-  //   // attr_prop::exposed::*,
-  //   components::orphan::*,
-  //   container_kind::orphan::*,
-  //   ct::orphan::*,
-  //   container_kind::exposed::*,
-  //   derive::orphan::*,
-  //   diag::exposed::*,
-  //   drop::exposed::*,
-  //   equation::exposed::*,
-  //   generic_args::exposed::*,
-  //   generic_params::exposed::*,
-  //   item::exposed::*,
-  //   item_struct::exposed::*,
-  //   iter::exposed::*,
-  //   name::exposed::*,
-  //   phantom::exposed::*,
-  //   punctuated::exposed::*,
-  //   quantifier::exposed::*,
-  //   struct_like::exposed::*,
-  //   tokens::exposed::*,
-  //   typ::exposed::*,
-  // };
 
 }
 
@@ -396,8 +293,6 @@ pub mod prelude
     pub use item::prelude::*;
     #[ cfg( feature = "item_struct" ) ]
     pub use item_struct::prelude::*;
-    #[ cfg( feature = "iter" ) ]
-    pub use iter::prelude::*;
     #[ cfg( feature = "name" ) ]
     pub use name::prelude::*;
     #[ cfg( feature = "phantom" ) ]
@@ -412,6 +307,8 @@ pub mod prelude
     pub use tokens::prelude::*;
     #[ cfg( feature = "typ" ) ]
     pub use typ::prelude::*;
+
+    pub use iter::prelude::*;
 
   }
 
@@ -436,6 +333,7 @@ pub mod prelude
   #[ allow( unused_imports ) ]
   pub use ::quote::
   {
+    quote,
     quote as qt,
     quote_spanned,
     format_ident,
@@ -463,34 +361,6 @@ pub mod prelude
     parse_quote_spanned,
     parse_quote_spanned as parse_qt_spanned,
   };
-
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::file::
-  // {
-  //   // attr::prelude::*,
-  //   // attr_prop::prelude::*,
-  //   components::orphan::*,
-  //   container_kind::orphan::*,
-  //   ct::orphan::*,
-  //   container_kind::prelude::*,
-  //   derive::orphan::*,
-  //   diag::prelude::*,
-  //   drop::prelude::*,
-  //   equation::prelude::*,
-  //   generic_args::prelude::*,
-  //   generic_params::prelude::*,
-  //   item::prelude::*,
-  //   item_struct::prelude::*,
-  //   iter::prelude::*,
-  //   name::prelude::*,
-  //   phantom::prelude::*,
-  //   punctuated::prelude::*,
-  //   quantifier::prelude::*,
-  //   struct_like::prelude::*,
-  //   tokens::prelude::*,
-  //   typ::prelude::*,
-  // };
 
 }
 

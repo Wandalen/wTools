@@ -6,6 +6,8 @@
 pub( crate ) mod private
 {
   use crate::*;
+  use crate::IterTrait;
+  // use iter_tools::IterTrait;
 
   /// A `GenericsWithWhere` struct to handle the parsing of Rust generics with an explicit `where` clause.
   ///

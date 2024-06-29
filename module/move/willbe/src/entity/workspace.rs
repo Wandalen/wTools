@@ -272,12 +272,13 @@ mod private
 
   impl Sources for Workspace
   {
-    fn sources( &self ) -> impl Iterator< Item = SourceFile > + Clone
+    fn sources( &self ) -> impl Iterator< Item = SourceFile > + ExactSizeIterator< Item = SourceFile > + DoubleEndedIterator + Clone
     {
       self
       .packages()
       .flat_map( | package | package.sources().collect::< Vec< _ > >() )
-      .into_iter()
+      .collect::< Vec< _ > >().into_iter()
+      // .into_iter()
     }
   }
 
