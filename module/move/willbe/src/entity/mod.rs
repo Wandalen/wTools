@@ -4,6 +4,10 @@ crate::mod_interface!
   layer channel;
   orphan use super::channel;
 
+  /// Source code.
+  layer code;
+  orphan use super::code;
+
   /// Dependency of a package.
   layer dependency;
   orphan use super::dependency;
@@ -19,7 +23,7 @@ crate::mod_interface!
   /// Paths and files.
   layer files;
   orphan use super::files;
-  
+
   /// Git.
   layer git;
   orphan use super::git;
@@ -39,7 +43,7 @@ crate::mod_interface!
   /// Md's extension for workspace.
   layer package_md_extension;
   orphan use super::package_md_extension;
-  
+
   /// Provides a set of functionalities for handling and manipulating packages.
   layer packages;
   orphan use super::packages;
@@ -51,11 +55,11 @@ crate::mod_interface!
   /// Progress bar staff.
   layer progress_bar;
   orphan use super::progress_bar;
-  
+
   /// Publish.
   layer publish;
   orphan use super::publish;
-  
+
   /// Facade for `preatytable` crate.
   layer table;
   orphan use super::table;

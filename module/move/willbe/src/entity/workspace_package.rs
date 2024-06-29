@@ -147,6 +147,22 @@ mod private
     }
   }
 
+  // impl< 'a > CodeItems for WorkspacePackageRef< 'a >
+  // {
+  //   fn items( &self ) -> impl Iterator< Item = syn::Item > + Clone
+  //   {
+  //     self.sources().map( | source | source.items() )
+  //   }
+  // }
+
+  // impl< 'a > AsCode for WorkspacePackageRef< 'a >
+  // {
+  //   fn as_code< 'a >( &'a self ) -> std::borrow::Cow< 'a, str >
+  //   {
+  //     std::fs::read_to_string( self.as_ref() )
+  //   }
+  // }
+
 }
 
 //

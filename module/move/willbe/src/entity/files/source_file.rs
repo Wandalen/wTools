@@ -16,8 +16,9 @@ use core::
 };
 use std::
 {
-  path::{ Path, PathBuf },
   fs,
+  path::{ Path, PathBuf },
+  borrow::Cow,
 };
 use error::
 {
@@ -223,13 +224,21 @@ impl DerefMut for SourceFile
 
 // =
 
-impl Items for SourceFile
+impl CodeItems for SourceFile
 {
   fn items( &self ) -> impl Iterator< Item = syn::Item > + Clone
   {
     let content = fs::read_to_string( self.as_ref() ).expect( "Failed to read file {self}" );
     let parsed : syn::File = syn::parse_file( &content ).expect( "Failed to parse file {self}" );
     parsed.items.into_iter()
+  }
+}
+
+impl AsCode for SourceFile
+{
+  fn as_code< 'a >( &'a self ) -> std::io::Result< Cow< 'a, str > >
+  {
+    Ok( Cow::Owned( std::fs::read_to_string( self.as_ref() )? ) )
   }
 }
 
@@ -255,17 +264,6 @@ pub trait Sources
 {
   /// Returns an iterator over the source files.
   fn sources( &self ) -> impl Iterator< Item = SourceFile > + Clone;
-}
-
-/// A trait that defines a method for retrieving an iterator over items of a source file.
-///
-/// The `Sources` trait is used to represent objects that can provide an iterator over their
-/// contained source files. This can be useful in scenarios where you need to access or process
-/// all source files associated with an object.
-pub trait Items
-{
-  /// Returns an iterator over the source files.
-  fn items( &self ) -> impl Iterator< Item = syn::Item > + Clone;
 }
 
 // =
