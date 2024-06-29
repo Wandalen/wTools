@@ -226,7 +226,7 @@ impl DerefMut for SourceFile
 
 impl CodeItems for SourceFile
 {
-  fn items( &self ) -> impl Iterator< Item = syn::Item > + ExactSizeIterator< Item = syn::Item > + DoubleEndedIterator + Clone
+  fn items( &self ) -> impl IterTrait< '_, syn::Item >
   {
     let content = fs::read_to_string( self.as_ref() ).expect( "Failed to read file {self}" );
     let parsed : syn::File = syn::parse_file( &content ).expect( "Failed to parse file {self}" );
@@ -252,7 +252,7 @@ impl AsCode for SourceFile
 pub trait Entries
 {
   /// Returns an iterator over the entries.
-  fn entries( &self ) -> impl Iterator< Item = SourceFile > + Clone;
+  fn entries( &self ) -> impl IterTrait< '_, SourceFile >;
 }
 
 /// A trait that defines a method for retrieving an iterator over source files.

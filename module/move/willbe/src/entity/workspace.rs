@@ -261,18 +261,19 @@ mod private
 
   impl Entries for Workspace
   {
-    fn entries( &self ) -> impl Iterator< Item = SourceFile > + Clone
+    fn entries( &self ) -> impl IterTrait< '_, SourceFile >
     {
       self
       .packages()
       .flat_map( | package | package.entries().collect::< Vec< _ > >() )
+      .collect::< Vec< _ > >()
       .into_iter()
     }
   }
 
   impl Sources for Workspace
   {
-    fn sources( &self ) -> impl Iterator< Item = SourceFile > + ExactSizeIterator< Item = SourceFile > + DoubleEndedIterator + Clone
+    fn sources( &self ) -> impl IterTrait< '_, SourceFile >
     {
       self
       .packages()
