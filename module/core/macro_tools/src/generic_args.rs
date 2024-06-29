@@ -178,13 +178,11 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  #[ allow( unused_imports ) ]
   use super::*;
-
   pub use super::super::generic_args;
-  // pub use super::protected as generic_args;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

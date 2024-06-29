@@ -37,33 +37,33 @@ pub mod private
     {
       true
     }
-  
+
     #[ inline( always ) ]
     fn len( &self ) -> usize
     {
       self.len
     }
-  
+
     #[ inline( always ) ]
     fn type_name( &self ) -> &'static str
     {
       core::any::type_name::< &'static [ T ] >()
     }
-  
+
     #[ inline( always ) ]
     fn type_id( &self ) -> core::any::TypeId
     {
       core::any::TypeId::of::< &'static [ T ] >()
     }
-  
+
     #[ inline( always ) ]
     fn elements( &self ) -> Box< dyn Iterator< Item = KeyVal > >
     {
-  
+
       let result : Vec< KeyVal > = ( 0 .. self.len() )
       .map( | k | KeyVal { key : Primitive::usize( k ), val : Box::new( < T as Instance >::Reflect() ) } )
       .collect();
-  
+
       Box::new( result.into_iter() )
     }
   }
@@ -93,8 +93,10 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;

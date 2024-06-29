@@ -127,11 +127,10 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  #[ allow( unused_imports ) ]
   use super::*;
-
   pub use super::super::container_kind;
 
   // pub use super::protected as container_kind;

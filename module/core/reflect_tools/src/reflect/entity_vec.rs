@@ -26,7 +26,7 @@ pub mod private
       CollectionDescriptor::< Self >::new( 0 )
     }
   }
-  
+
   impl< T > Entity for CollectionDescriptor< Vec< T > >
   where
     T : 'static + Instance,
@@ -92,8 +92,10 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;

@@ -106,14 +106,11 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  #[ allow( unused_imports ) ]
   use super::*;
-
   pub use super::super::item_struct;
-
-  // pub use super::protected as item_struct;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

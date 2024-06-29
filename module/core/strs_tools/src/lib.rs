@@ -32,8 +32,10 @@ pub mod orphan
 
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   pub use super::string::exposed::*;
 }
 

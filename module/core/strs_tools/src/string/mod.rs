@@ -54,8 +54,10 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
   #[ allow( unused_imports ) ]
   pub use super::indentation::exposed::*;

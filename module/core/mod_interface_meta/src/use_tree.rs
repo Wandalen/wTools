@@ -224,8 +224,10 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 

@@ -506,8 +506,10 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   pub use super::protected as parse_request;
 
   pub use super::private::

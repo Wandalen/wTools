@@ -34,8 +34,10 @@ pub mod protected
 pub use protected::*;
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   pub use super::prelude::*;
   pub use meta::*;
 }

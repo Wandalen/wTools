@@ -36,8 +36,10 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

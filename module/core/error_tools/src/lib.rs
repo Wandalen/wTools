@@ -87,9 +87,9 @@ pub mod orphan
 
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  #[ allow( unused_imports ) ]
   use super::*;
 
   #[ doc( inline ) ]

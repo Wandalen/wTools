@@ -175,6 +175,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
 
   mod _all
   {

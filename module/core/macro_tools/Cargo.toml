@@ -84,8 +84,8 @@ struct_like = []
 tokens = []
 typ = []
 
-# qqq : xxx : put all files under features: macro_attr, macro_container_kind, ...
-# qqq : xxx : optimize features list
+# qqq : zzz : put all files under features: macro_attr, macro_container_kind, ...
+# qqq : zzz : optimize features list
 
 [dependencies]
 
