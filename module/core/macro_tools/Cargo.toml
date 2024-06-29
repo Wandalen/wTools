@@ -84,10 +84,15 @@ tokens = []
 typ = []
 typed = []
 
-# qqq : zzz : put all files under features: macro_attr, macro_container_kind, ...
-# qqq : zzz : optimize features list
-# qqq : zzz : make sure all combinations of features are working and passing test
+# qqq : put all files under features: macro_attr, macro_container_kind, ...
+# qqq : optimize features list
+# qqq : make sure all combinations of features are working and passing test
 
+# qqq : expose features
+# syn_derive
+# syn_parsing
+# syn_printing
+# syn_clone
 
 [dependencies]
 
@@ -96,6 +101,7 @@ proc-macro2 = { version = "~1.0.78", features = [] }
 quote = { version = "~1.0.35", features = [] }
 syn = { version = "~2.0.52", features = [ "full", "extra-traits" ] }
 const_format = { version = "0.2.32", features = [] }
+# xxx : reuse const_format
 
 ## internal
 interval_adapter = { workspace = true, features = [] }

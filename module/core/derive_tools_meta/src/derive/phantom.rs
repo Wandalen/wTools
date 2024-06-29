@@ -48,7 +48,7 @@ impl syn::parse::Parse for ItemAttributes
 
     let error = | ident : &syn::Ident | -> syn::Error
       {
-        let known = const_format::concatcp!
+        let known = ct::concatcp!
         (
         "Known properties of attribute `phantom` are : ",
         AttributePropertyDebug::KEYWORD,

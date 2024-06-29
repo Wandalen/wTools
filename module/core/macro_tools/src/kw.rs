@@ -15,7 +15,7 @@ pub( crate ) mod private
     "use", "where", "while", "async", "await", "dyn",
   ];
 
-  // qqq : zzz : cover by tests
+  // qqq : cover by test
   /// Check is string a keyword.
   pub fn is( src : &str ) -> bool
   {

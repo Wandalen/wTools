@@ -321,6 +321,46 @@ pub( crate ) mod private
     }
   }
 
+  impl syn::parse::Parse
+  for Many< AttributesInner >
+  {
+    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
+    {
+      let mut result = Self::new();
+      loop
+      {
+        // let lookahead = input.lookahead1();
+        if !input.peek( Token![ # ] )
+        {
+          break;
+        }
+        result.0.push( input.parse()? );
+      }
+      Ok( result )
+    }
+  }
+
+  impl syn::parse::Parse
+  for Many< AttributesOuter >
+  {
+    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
+    {
+      let mut result = Self::new();
+      loop
+      {
+        // let lookahead = input.lookahead1();
+        if !input.peek( Token![ # ] )
+        {
+          break;
+        }
+        result.0.push( input.parse()? );
+      }
+      Ok( result )
+    }
+  }
+
+  impl AsMuchAsPossibleNoDelimiter for syn::Item {}
+
   /// Trait for components of a structure aggregating attributes that can be constructed from a meta attribute.
   ///
   /// The `AttributeComponent` trait defines the interface for components that can be created
