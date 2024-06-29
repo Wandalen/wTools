@@ -93,8 +93,7 @@ process_tools = { workspace = true, features = [ "default" ] }
 derive_tools = { workspace = true, features = [ "derive_display", "derive_from_str", "derive_deref", "derive_from", "derive_as_ref" ] }
 data_type = { workspace = true, features = [ "either" ] }
 collection_tools = { workspace = true, features = [ "collection_constructors", "collection_into_constructors" ] }
-# macro_tools = { workspace = true, features = [ "kw" ] }
-macro_tools = { workspace = true, features = [ "default" ] } # qqq : xxx : put under feature
+macro_tools = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
