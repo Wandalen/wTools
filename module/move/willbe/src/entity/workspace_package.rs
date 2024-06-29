@@ -147,13 +147,17 @@ mod private
     }
   }
 
-  // impl< 'a > CodeItems for WorkspacePackageRef< 'a >
-  // {
-  //   fn items( &self ) -> impl Iterator< Item = syn::Item > + Clone
-  //   {
-  //     self.sources().map( | source | source.items() )
-  //   }
-  // }
+  impl< 'a > CodeItems for WorkspacePackageRef< 'a >
+  {
+    fn items( &self ) -> impl Iterator< Item = syn::Item > + Clone
+    {
+      self
+      .sources()
+      .flat_map( | source | source.items() )
+      .collect::< Vec< _ > >()
+      .into_iter()
+    }
+  }
 
   // impl< 'a > AsCode for WorkspacePackageRef< 'a >
   // {
