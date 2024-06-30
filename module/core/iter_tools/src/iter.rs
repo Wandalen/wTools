@@ -1,9 +1,10 @@
 
-#[ cfg( not( feature = "no_std" ) ) ]
+// #[ cfg( not( feature = "no_std" ) ) ]
 pub( crate ) mod private
 {
-  use ::itertools::process_results;
-
+  #[ allow( unused_imports ) ]
+  use crate::*;
+  // use ::itertools::process_results;
   use clone_dyn_types::CloneDyn;
 
   /// Trait that encapsulates an iterator with specific characteristics and implemetning `CloneDyn`.
@@ -58,6 +59,7 @@ pub( crate ) mod private
   ///
   /// ```
 
+  #[ cfg( feature = "iter_trait" ) ]
   pub trait _IterTrait< 'a, T >
   where
     T : 'a,
@@ -66,6 +68,7 @@ pub( crate ) mod private
   {
   }
 
+  #[ cfg( feature = "iter_trait" ) ]
   impl< 'a, T, I > _IterTrait< 'a, T > for I
   where
     T : 'a,
@@ -83,6 +86,7 @@ pub( crate ) mod private
   /// - Be traversed from both ends ( `DoubleEndedIterator` ),
   /// - Be clonable ( `Clone` ).
   ///
+  #[ cfg( feature = "iter_trait" ) ]
   pub trait IterTrait< 'a, T >
   where
     T : 'a,
@@ -90,6 +94,7 @@ pub( crate ) mod private
   {
   }
 
+  #[ cfg( feature = "iter_trait" ) ]
   impl< 'a, T, I > IterTrait< 'a, T > for I
   where
     T : 'a,
@@ -100,6 +105,8 @@ pub( crate ) mod private
   /// Implement `Clone` for boxed `_IterTrait` trait objects.
   ///
   /// This allows cloning of boxed iterators that implement `_IterTrait`.
+  #[ cfg( feature = "iter_trait" ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   #[ allow( non_local_definitions ) ]
   impl< 'c, T > Clone for Box< dyn _IterTrait< 'c, T > + 'c >
   {
@@ -110,6 +117,8 @@ pub( crate ) mod private
     }
   }
 
+  #[ cfg( feature = "iter_trait" ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   #[ allow( non_local_definitions ) ]
   impl< 'c, T > Clone for Box< dyn _IterTrait< 'c, T > + Send + 'c >
   {
@@ -120,6 +129,8 @@ pub( crate ) mod private
     }
   }
 
+  #[ cfg( feature = "iter_trait" ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   #[ allow( non_local_definitions ) ]
   impl< 'c, T > Clone for Box< dyn _IterTrait< 'c, T > + Sync + 'c >
   {
@@ -130,6 +141,8 @@ pub( crate ) mod private
     }
   }
 
+  #[ cfg( feature = "iter_trait" ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   #[ allow( non_local_definitions ) ]
   impl< 'c, T > Clone for Box< dyn _IterTrait< 'c, T > + Send + Sync + 'c >
   {
@@ -144,11 +157,15 @@ pub( crate ) mod private
   ///
   /// Prefer `BoxedIter` over `impl _IterTrait` when using trait objects ( `dyn _IterTrait` ) because the concrete type in return is less restrictive than `impl _IterTrait`.
   ///
+  #[ cfg( feature = "iter_trait" ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   pub type BoxedIter< 'a, T > = Box< dyn _IterTrait< 'a, T > + 'a >;
 
   /// Extension of iterator.
 
-  // xxx : review
+  // zzz : review
+  #[ cfg( feature = "iter_ext" ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   pub trait IterExt
   where
     Self : core::iter::Iterator,
@@ -162,6 +179,8 @@ pub( crate ) mod private
     ;
   }
 
+  #[ cfg( feature = "iter_ext" ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   impl< Iterator > IterExt for Iterator
   where
     Iterator : core::iter::Iterator,
@@ -173,7 +192,7 @@ pub( crate ) mod private
       RE : core::fmt::Debug,
     {
       let vars_maybe = self.map( f );
-      let vars : Vec< _ > = process_results( vars_maybe, | iter | iter.collect() )?;
+      let vars : Vec< _ > = ::itertools::process_results( vars_maybe, | iter | iter.collect() )?;
       Ok( vars )
     }
   }
@@ -182,33 +201,26 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-#[ cfg( feature = "enabled" ) ]
 pub use protected::*;
 
 /// Protected namespace of the module.
-#[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 
 }
 
 /// Orphan namespace of the module.
-#[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 
-
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::itertools::
   {
     all,
@@ -253,7 +265,6 @@ pub mod orphan
 
   #[ cfg( not( feature = "no_std" ) ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use std::iter::zip;
 
 }
@@ -265,17 +276,25 @@ pub mod exposed
   use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  #[ cfg( feature = "iter_trait" ) ]
+  pub use private::
   {
     _IterTrait,
     IterTrait,
+  };
+
+  #[ doc( inline ) ]
+  #[ cfg( feature = "iter_trait" ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  pub use private::
+  {
     BoxedIter,
   };
+
+
 
 }
 
@@ -285,7 +304,6 @@ pub mod prelude
 {
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::itertools::
   {
     Diff,
@@ -299,8 +317,8 @@ pub mod prelude
   };
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ cfg( feature = "iter_ext" ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   pub use super::private::IterExt;
 
 }

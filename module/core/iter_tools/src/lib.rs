@@ -4,6 +4,13 @@
 #![ doc( html_root_url = "https://docs.rs/iter_tools/latest/iter_tools/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+#[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
+extern crate alloc;
+#[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
+use alloc::boxed::Box;
+#[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
+use alloc::vec::Vec;
+
 /// Core module.
 #[ cfg( feature = "enabled" ) ]
 pub mod iter;
@@ -28,6 +35,7 @@ pub mod protected
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
+  // xxx
   pub use super::orphan::*;
 
   #[ doc( inline ) ]

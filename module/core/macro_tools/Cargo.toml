@@ -104,7 +104,7 @@ const_format = { version = "0.2.32", features = [] }
 
 ## internal
 interval_adapter = { workspace = true, features = [] }
-iter_tools = { workspace = true, features = [] }
+iter_tools = { workspace = true, features = [ "iter_trait" ] }
 clone_dyn_types = { workspace = true, features = [] }
 former_types = { workspace = true, features = [ "types_component_assign" ] }
 

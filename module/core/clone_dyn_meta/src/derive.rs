@@ -11,9 +11,6 @@ use macro_tools::
 };
 use former_types::{ Assign };
 
-// use const_format::concatcp;
-// xxx : incapsulate into macro_tools and put all that under features
-
 //
 
 pub fn clone_dyn( attr_input : proc_macro::TokenStream, item_input : proc_macro::TokenStream )

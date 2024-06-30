@@ -61,13 +61,14 @@ derive_deref_mut = []
 derive_from = []
 derive_new = []
 derive_inner_from = []
-derive_variadic_from = []
+derive_variadic_from = [ "iter_tools/iter_ext" ]
 derive_phantom = []
 
 [dependencies]
 # zzz : qqq : optimize features set
 macro_tools = { workspace = true, features = [ "attr", "attr_prop", "container_kind", "ct", "diag", "generic_args", "typ", "derive", "generic_params", "name", "phantom", "struct_like", "quantifier" ] }
-iter_tools = { workspace = true, features = [] }
+# zzz : qqq : optimize features set
+iter_tools = { workspace = true, features = [ "iter_trait" ] }
 former_types = { workspace = true, features = [ "types_component_assign" ] }
 
 [dev-dependencies]

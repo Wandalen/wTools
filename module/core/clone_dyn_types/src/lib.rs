@@ -16,6 +16,7 @@ pub mod dependency
 pub( crate ) mod private
 {
 
+  // xxx : ?
   // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   extern crate alloc;
   // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]

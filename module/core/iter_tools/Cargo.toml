@@ -24,14 +24,21 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-
-
 [features]
-default = [ "enabled" ]
-full = [ "enabled" ]
+default = [
+  "enabled",
+  "iter_trait",
+  "iter_ext",
+]
+full = [ "default" ]
 no_std = []
 use_alloc = [ "itertools/use_alloc" ]
 enabled = [ "clone_dyn_types/enabled" ]
+
+iter_trait = []
+iter_ext = []
+
+# qqq : work out set of features
 
 [dependencies]
 

@@ -362,8 +362,6 @@ fn generate_multiple_fields_named< 'a >
     qt! { #field_name : src.#index }
   });
 
-  // xxx : qqq : rid of collects
-  // let field_types : Vec< _ > = field_types.collect();
   let field_types2 = field_types.clone();
   qt!
   {
@@ -382,7 +380,6 @@ fn generate_multiple_fields_named< 'a >
 
 }
 
-// qqq  : document, add example of generated code -- done
 /// Generates `From` implementation for tuple structs with multiple fields
 ///
 /// # Example
