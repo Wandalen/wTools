@@ -11,7 +11,6 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod protected
 {
-  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   #[ allow( unused_imports ) ]
   pub use super::private::
@@ -27,7 +26,6 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
   #[ allow( unused_imports ) ]
   pub use super::private::

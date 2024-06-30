@@ -488,7 +488,6 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod protected
 {
-  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   pub use super::private::
   {

@@ -386,7 +386,6 @@ pub mod protected
 {
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 
 }
@@ -396,7 +395,6 @@ pub mod protected
 pub mod orphan
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 
   // #[ doc( inline ) ]
@@ -416,7 +414,6 @@ pub mod exposed
   pub use super::super::diag;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 
   #[ doc( inline ) ]

@@ -56,7 +56,6 @@ pub( crate ) mod private
 pub mod protected
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
 
@@ -69,7 +68,6 @@ pub use protected::*;
 pub mod orphan
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 
 }
@@ -80,7 +78,6 @@ pub mod exposed
 {
   use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   // use super::private::TempDir;
 }

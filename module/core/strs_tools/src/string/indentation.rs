@@ -96,7 +96,6 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
   #[ allow( unused_imports ) ]
   pub use super::private::

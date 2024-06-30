@@ -16,7 +16,6 @@ pub mod mod_prelude;
 pub mod protected
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   pub use super::mod_protected;
 }
@@ -30,7 +29,6 @@ pub use protected::*;
 pub mod orphan
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
   pub use super::mod_orphan;
 }
@@ -41,7 +39,6 @@ pub mod exposed
 {
   use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   pub use super::mod_exposed;
 }

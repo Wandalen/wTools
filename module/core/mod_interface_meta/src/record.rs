@@ -262,7 +262,6 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod protected
 {
-  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
 
@@ -270,7 +269,6 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
@@ -279,7 +277,6 @@ pub mod orphan
 pub mod exposed
 {
   use super::*;
-  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ allow( unused_imports ) ]
   pub use super::private::
