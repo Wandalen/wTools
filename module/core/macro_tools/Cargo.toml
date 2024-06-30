@@ -101,7 +101,6 @@ proc-macro2 = { version = "~1.0.78", features = [] }
 quote = { version = "~1.0.35", features = [] }
 syn = { version = "~2.0.52", features = [ "full", "extra-traits" ] }
 const_format = { version = "0.2.32", features = [] }
-# xxx : reuse const_format
 
 ## internal
 interval_adapter = { workspace = true, features = [] }
