@@ -20,7 +20,15 @@ pub fn not( input : proc_macro::TokenStream  ) -> Result< proc_macro2::TokenStre
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
     = generic_params::decompose( &parsed.generics );
 
-  let body = generate_method_body( &parsed );
+  let field_types = item_struct::field_types( &parsed );
+  let field_names = item_struct::field_names( &parsed );
+
+  let body = match ( field_types.len(), field_names )
+  {
+    ( 0, _ ) => generate_for_unit(),
+    ( _, Some( field_names ) ) => generate_for_named( field_types, field_names ),
+    ( _, None ) => generate_for_tuple( field_types ),
+  };
 
   let result = qt!
   {
@@ -44,20 +52,6 @@ pub fn not( input : proc_macro::TokenStream  ) -> Result< proc_macro2::TokenStre
   }
 
   Ok( result )
-}
-
-/// Produces body for [not](core::ops::Not::not) method depending on type of input [ItemStruct](ItemStruct).
-fn generate_method_body( item_struct: &ItemStruct ) -> proc_macro2::TokenStream
-{
-  let field_types = item_struct::field_types( &item_struct );
-  let field_names = item_struct::field_names( &item_struct );
-
-  match ( field_types.len(), field_names )
-  {
-    ( 0, _ ) => generate_for_unit(),
-    ( _, Some( field_names ) ) => generate_for_named( field_types, field_names ),
-    ( _, None ) => generate_for_tuple( field_types ),
-  }
 }
 
 fn generate_for_unit() -> proc_macro2::TokenStream
