@@ -15,30 +15,33 @@ pub use protected::*;
 
 /// Protected namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod protected
 {
-  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   pub use super::string::orphan::*;
 }
 
 /// Parented namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
-  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   pub use super::string::exposed::*;
 }
 
 /// Namespace of the module to include with `use module::*`.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
   pub use super::string::prelude::*;

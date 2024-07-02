@@ -9,4 +9,4 @@ enum EnumUnit
   B,
 }
 
-include!( "./only_tests/enum_unit.rs" );
+include!( "./only_test/enum_unit.rs" );

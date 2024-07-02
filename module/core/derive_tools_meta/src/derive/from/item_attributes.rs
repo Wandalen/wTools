@@ -1,6 +1,7 @@
 use super::*;
 use macro_tools::
 {
+  ct,
   Result,
   AttributeComponent,
 };
@@ -28,7 +29,7 @@ impl ItemAttributes
 
     let error = | attr : &syn::Attribute | -> syn::Error
     {
-      let known_attributes = const_format::concatcp!
+      let known_attributes = ct::concatcp!
       (
         "Known attirbutes are : ",
         "debug",
@@ -151,7 +152,7 @@ impl syn::parse::Parse for ItemAttributeConfig
 
     let error = | ident : &syn::Ident | -> syn::Error
     {
-      let known = const_format::concatcp!
+      let known = ct::concatcp!
       (
         "Known entries of attribute ", ItemAttributeConfig::KEYWORD, " are : ",
         EnabledMarker::KEYWORD_ON,

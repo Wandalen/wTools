@@ -5,19 +5,29 @@
  [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_former_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_former_push.yml) [![docs.rs](https://img.shields.io/docsrs/former?color=e3e8f0&logo=docs.rs)](https://docs.rs/former) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fcore%2Fformer%2Fexamples%2Fformer_trivial.rs,RUN_POSTFIX=--example%20former_trivial/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 <!--{ generate.module_header.end }-->
 
-A flexible and extensible implementation of the builder pattern.
+A flexible implementation of the Builder pattern supporting nested builders and collection-specific subformers.
 
-It offers specialized subformers for common Rust collections like `Vec`, `HashMap`, and `HashSet`, enabling the construction of complex data structures in a fluent and intuitive manner.
+The Builder pattern allows you to construct objects step by step, using only the steps you need. Any fields not explicitly set will receive default values. By implementing this pattern, you can avoid passing numerous parameters into your constructors.
+
+This crate offers specialized subformers for common Rust collections, enabling the construction of complex data structures in a fluent and intuitive manner. Additionally, it provides the ability to define and reuse formers as subformers within other formers.
 
 ## How Former Works
 
-- **Trait Derivation** : By deriving `Former` on a struct, you automatically generate builder methods for each field.
-- **Fluent Interface** : Each field's builder method allows for setting the value of that field and returns a mutable reference to the builder,
-  enabling method chaining.
-- **Optional Fields** : Optional fields can be easily handled without needing to explicitly set them to `None`.
-- **Finalization** : The `.form()` method finalizes the building process and returns the constructed struct instance.
+- **Derivation**: By deriving `Former` on a struct, you automatically generate builder methods for each field.
+- **Fluent Interface**: Each field's builder method allows for setting the value of that field and returns a mutable reference to the builder, enabling method chaining.
+- **Optional Fields**: Optional fields can be easily handled without needing to explicitly set them to `None`.
+- **Finalization**: The `.form()` method finalizes the building process and returns the constructed struct instance.
+- **Subforming**: If a field has its own former defined or is a container of items for which a former is defined, it can be used as a subformer.
 
-This approach abstracts away the need for manually implementing a builder for each struct, making code more readable and maintainable.
+This approach abstracts away the need for manually implementing a builder for each struct, making the code more readable and maintainable.
+
+## Comparison
+
+The Former crate and the abstract Builder pattern concept share a common goal: to construct complex objects step-by-step, ensuring they are always in a valid state and hiding internal structures. Both use a fluent interface for setting fields and support default values for fields that aren't explicitly set. They also have a finalization method to return the constructed object (.form() in Former, build() in [traditional Builder](https://refactoring.guru/design-patterns/builder)).
+
+However, the Former crate extends the traditional Builder pattern by automating the generation of builder methods using macros. This eliminates the need for manual implementation, which is often required in the abstract concept. Additionally, Former supports nested builders and subformers for complex data structures, allowing for more sophisticated object construction.
+
+Advanced features such as custom setters, subformer reuse, storage-specific fields, mutators, and context management further differentiate Former from the [traditional approach](https://refactoring.guru/design-patterns/builder), which generally focuses on simpler use-cases without these capabilities. Moreover, while the traditional Builder pattern often includes a director class to manage the construction process, Former is not responsible for that aspect.
 
 ## Example : Trivial
 
@@ -28,7 +38,7 @@ This approach abstracts away the need for manually implementing a builder for ea
 <!--{ example.use{ code : "former_trivial", hidden_code : "former_trivial_expanded", link : true, try_out : true } }-->
 <!--{ example.use.end }-->
 
-The provided code snippet illustrates a basic use-case of the Former, which is used to apply the builder pattern for structured and flexible object creation. Below is a detailed explanation of each part of the markdown chapter, aimed at clarifying how the Former trait simplifies struct instantiation.
+The provided code snippet illustrates a basic use-case of the Former, which is used to apply the builder pattern for to construct complex objects step-by-step, ensuring they are always in a valid state and hiding internal structures.
 
 ```rust
 # #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]
@@ -674,7 +684,7 @@ These setters ensure that developers can precisely and efficiently set propertie
 
 ## Example : Collection Setter for a Vector
 
-This example demonstrates how to employ the `Former` trait to configure a `Vec` using a collection setter in a structured manner.
+This example demonstrates how to employ the `Former` to configure a `Vec` using a collection setter in a structured manner.
 
 ```rust
 # #[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
@@ -710,7 +720,7 @@ Try out `cargo run --example former_collection_vector`.
 
 ## Example : Collection Setter for a Hashmap
 
-This example demonstrates how to effectively employ the `Former` trait to configure a `HashMap` using a collection setter.
+This example demonstrates how to effectively employ the `Former` to configure a `HashMap` using a collection setter.
 
 ```rust
 # #[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
@@ -747,7 +757,7 @@ Try out `cargo run --example former_collection_hashmap`.
 
 ## Example : Collection Setter for a Hashset
 
-This example demonstrates the use of the `Former` trait to build a `collection_tools::HashSet` through subforming.
+This example demonstrates the use of the `Former` to build a `collection_tools::HashSet` through subforming.
 
 ```rust
 # #[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]
@@ -784,7 +794,7 @@ Try out `cargo run --example former_collection_hashset`.
 
 ## Example : Custom Scalar Setter
 
-This example demonstrates the implementation of a scalar setter using the `Former` trait. Unlike the more complex subform and collection setters shown in previous examples, this example focuses on a straightforward approach to directly set a scalar value within a parent entity. The `Parent` struct manages a `HashMap` of `Child` entities, and the scalar setter is used to set the entire `HashMap` directly.
+This example demonstrates the implementation of a scalar setter using the `Former`. Unlike the more complex subform and collection setters shown in previous examples, this example focuses on a straightforward approach to directly set a scalar value within a parent entity. The `Parent` struct manages a `HashMap` of `Child` entities, and the scalar setter is used to set the entire `HashMap` directly.
 
 The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a collection—each child entity in this case.
 
@@ -870,7 +880,7 @@ Try out `cargo run --example former_custom_scalar_setter`.
 
 ## Example : Custom Subform Scalar Setter
 
-Implementation of a custom subform scalar setter using the `Former` trait in Rust.
+Implementation of a custom subform scalar setter using the `Former`.
 
 This example focuses on the usage of a subform scalar setter to manage complex scalar types within a parent structure.
 Unlike more general subform setters that handle collections, this setter specifically configures scalar fields that have
@@ -945,7 +955,7 @@ their own formers, allowing for detailed configuration within a nested builder p
 
 ## Example : Custom Subform Collection Setter
 
-This example demonstrates the use of collection setters to manage complex nested data structures with the `Former` trait, focusing on a parent-child relationship structured around a collection `HashMap`. Unlike typical builder patterns that add individual elements using subform setters, this example uses a collection setter to manage the entire collection of children.
+This example demonstrates the use of collection setters to manage complex nested data structures with the `Former`, focusing on a parent-child relationship structured around a collection `HashMap`. Unlike typical builder patterns that add individual elements using subform setters, this example uses a collection setter to manage the entire collection of children.
 
 The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a collection—each child entity in this case.
 
@@ -1026,7 +1036,7 @@ Try out `cargo run --example former_custom_subform_collection`.
 
 ## Example : Custom Subform Entry Setter
 
-This example illustrates the implementation of nested builder patterns using the `Former` trait, emphasizing a parent-child relationship. Here, the `Parent` struct utilizes `ChildFormer` as a custom subformer to dynamically manage its `child` field—a `HashMap`. Each child in the `HashMap` is uniquely identified and configured via the `ChildFormer`.
+This example illustrates the implementation of nested builder patterns using the `Former`, emphasizing a parent-child relationship. Here, the `Parent` struct utilizes `ChildFormer` as a custom subformer to dynamically manage its `child` field—a `HashMap`. Each child in the `HashMap` is uniquely identified and configured via the `ChildFormer`.
 
 The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a collection—each child entity in this case.
 
@@ -1224,7 +1234,7 @@ held within the storage.
   assert_eq!( got, exp );
   dbg!( got );
   // > got = Struct1 {
-  // >  c: "13 - abc",
+  // >  c : "13 - abc",
   // > }
 
 # }
@@ -1246,7 +1256,7 @@ Two key definition Traits:
    - Building upon `FormerDefinitionTypes`, this trait incorporates the `FormingEnd` callback, linking the formation types with a definitive ending. It specifies how the formation process should conclude, which may involve validations, transformations, or integrations into larger structures.
    - The inclusion of the `End` type parameter specifies the end conditions of the formation process, effectively connecting the temporary state held in storage to its ultimate form.
 
-## Overview of Formation Traits
+## Overview of Formation Traits System
 
 The formation process utilizes several core traits, each serving a specific purpose in the lifecycle of entity creation. These traits ensure that entities are constructed methodically, adhering to a structured pattern that enhances maintainability and scalability. Below is a summary of these key traits:
 

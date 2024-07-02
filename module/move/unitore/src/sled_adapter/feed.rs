@@ -2,7 +2,7 @@
 
 use crate::*;
 use std::time::Duration;
-use error_tools::{ Result, for_app::Context };
+use error_tools::{ Result, untyped::Context };
 use gluesql::
 {
   core::
@@ -38,7 +38,7 @@ impl FeedStore for FeedStorage< SledStorage >
     .execute( &mut *self.0.lock().await )
     .await?
     ;
-  
+
     let mut report = FeedsReport::new();
     match res
     {

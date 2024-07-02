@@ -1,5 +1,6 @@
 
 use super::*;
+use the_module::{ parse_quote, qt, code_to_str, tree_print, Result };
 
 //
 
@@ -10,6 +11,7 @@ tests_impls!
   fn equation_test() -> Result< () >
   {
     use syn::spanned::Spanned;
+    use the_module::equation;
 
     // test.case( "basic" );
     let input = qt!
@@ -77,6 +79,7 @@ tests_impls!
 
   fn equation_from_meta_test()
   {
+    use the_module::equation;
 
     let attr1 : syn::Attribute = syn::parse_quote!( #[ default( 31 ) ] );
     tree_print!( attr1 );

@@ -1040,7 +1040,7 @@ preformed elements to this storage.
 
 # Type Parameters
 
-- `Types2`: Represents the specific types associated with the `Former` trait being applied,
+- `Types2`: Represents the specific types associated with the `Former` being applied,
   which include storage, formed type, and context.
 - `Definition`: Defines the `FormerDefinition` that outlines the storage structure and
   the end conditions for the formation process.

@@ -3,7 +3,7 @@
 //!
 //! ## Example : Custom Subform Collection Setter
 //!
-//! This example demonstrates the use of collection setters to manage complex nested data structures with the `Former` trait, focusing on a parent-child relationship structured around a collection `HashMap`. Unlike typical builder patterns that add individual elements using subform setters, this example uses a collection setter to manage the entire collection of children.
+//! This example demonstrates the use of collection setters to manage complex nested data structures with the `Former`, focusing on a parent-child relationship structured around a collection `HashMap`. Unlike typical builder patterns that add individual elements using subform setters, this example uses a collection setter to manage the entire collection of children.
 //!
 //! The `child` function within `ParentFormer` is a custom subform setter that plays a crucial role. It uniquely employs the `ChildFormer` to add and configure children by their names within the parent's builder pattern. This method demonstrates a powerful technique for integrating subformers that manage specific elements of a collection—each child entity in this case.
 //!

@@ -7,4 +7,4 @@ use derive_tools::Deref;
 #[ derive( Deref ) ]
 struct BoundsInlined< T : ToString, U : Debug >( T, U );
 
-include!( "./only_tests/bounds_inlined.rs" );
+include!( "./only_test/bounds_inlined.rs" );

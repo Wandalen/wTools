@@ -1,19 +1,6 @@
-//! # Builder Pattern Implementation with Former
+//! ## Example : Trivial
 //!
-//! This module demonstrates the use of the `Former` trait to apply the builder pattern for Rust structs.
-//! The `Former` trait simplifies the instantiation of structs by enabling a fluent, method-chaining approach
-//! to set fields before finalizing the instance with `.form()`. It is particularly useful for structs with optional fields
-//! or when a clear and concise way to instantiate complex data structures is needed.
-//!
-//! ## How Former Works
-//!
-//! - **Trait Derivation** : By deriving `Former` on a struct, you automatically generate builder methods for each field.
-//! - **Fluent Interface** : Each field's builder method allows for setting the value of that field and returns a mutable reference to the builder,
-//!   enabling method chaining.
-//! - **Optional Fields** : Optional fields can be easily handled without needing to explicitly set them to `None`.
-//! - **Finalization** : The `.form()` method finalizes the building process and returns the constructed struct instance.
-//!
-//! This approach abstracts away the need for manually implementing a builder for each struct, making code more readable and maintainable.
+//! The provided code snippet illustrates a basic use-case of the Former, which is used to apply the builder pattern for to construct complex objects step-by-step, ensuring they are always in a valid state and hiding internal structures.
 //!
 
 #[ cfg( any( not( feature = "derive_former" ), not( feature = "enabled" ) ) ) ]

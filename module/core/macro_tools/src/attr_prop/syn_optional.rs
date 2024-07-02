@@ -3,7 +3,7 @@
 //!
 
 use crate::*;
-use former_types::Assign;
+// use former_types::Assign;
 
 /// Default marker for `AttributePropertyOptionalSyn`.
 /// Used if no marker is defined as parameter.

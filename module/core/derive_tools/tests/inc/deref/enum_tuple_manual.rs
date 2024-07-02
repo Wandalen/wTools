@@ -19,4 +19,4 @@ impl Deref for EnumTuple
   }
 }
 
-include!( "./only_tests/enum_tuple.rs" );
+include!( "./only_test/enum_tuple.rs" );

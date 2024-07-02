@@ -18,4 +18,11 @@ mod_interface!
   /// Basic functionality.
   layer path;
 
+  /// Transitive TryFrom and TryInto.
+  layer transitive;
+
+  #[ cfg( feature = "path_utf8" ) ]
+  protected use ::camino::{ Utf8Path, Utf8PathBuf };
+  protected use ::std::path::{ PathBuf, Path };
+
 }

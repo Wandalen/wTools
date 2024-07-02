@@ -1,8 +1,15 @@
 #[ allow( unused_imports ) ]
 use super::*;
-use the_module::AbsolutePath;
-use std::path::Path;
-use std::path::PathBuf;
+
+use the_module::
+{
+  AbsolutePath,
+  Path,
+  PathBuf,
+};
+
+// #[ cfg( feature = "path_utf8" ) ]
+// use the_module::Utf8PathBuf;
 
 #[ test ]
 fn basic()
@@ -15,32 +22,31 @@ fn basic()
 }
 
 #[ test ]
-fn test_to_string_lossy() 
+fn test_to_string_lossy()
 {
   let path : AbsolutePath = "/path/to/file.txt".try_into().unwrap();
   let result = path.to_string_lossy();
   assert_eq!( result, "/path/to/file.txt" );
 }
 #[test]
-fn test_to_string_lossy_hard() 
+fn test_to_string_lossy_hard()
 {
   let abs_path : AbsolutePath = "/path/with/😀/unicode.txt".try_into().unwrap();
   let string_lossy = abs_path.to_string_lossy();
   assert_eq!( string_lossy, "/path/with/\u{1F600}/unicode.txt" );
 }
 
-
 #[test]
-fn test_try_from_pathbuf() 
+fn test_try_from_pathbuf()
 {
-  
+
   let path_buf = PathBuf::from( "/path/to/some/file.txt" );
   let abs_path : AbsolutePath = path_buf.try_into().unwrap();
   assert_eq!( abs_path.to_string_lossy(), "/path/to/some/file.txt" );
 }
 
 #[test]
-fn test_try_from_path() 
+fn test_try_from_path()
 {
   let path = Path::new( "/path/to/some/file.txt" );
   let abs_path : AbsolutePath = path.try_into().unwrap();
@@ -48,7 +54,7 @@ fn test_try_from_path()
 }
 
 #[test]
-fn test_parent() 
+fn test_parent()
 {
   let abs_path : AbsolutePath = "/path/to/some/file.txt".try_into().unwrap();
   let parent_path = abs_path.parent().unwrap();
@@ -56,7 +62,7 @@ fn test_parent()
 }
 
 #[test]
-fn test_join() 
+fn test_join()
 {
   let abs_path : AbsolutePath = "/path/to/some".try_into().unwrap();
   let joined_path = abs_path.join( "file.txt" );
@@ -65,7 +71,7 @@ fn test_join()
 
 
 #[test]
-fn test_relative_path_try_from_str() 
+fn test_relative_path_try_from_str()
 {
   let rel_path_str = "src/main.rs";
   let rel_path = AbsolutePath::try_from( rel_path_str ).unwrap();
@@ -73,7 +79,7 @@ fn test_relative_path_try_from_str()
 }
 
 #[test]
-fn test_relative_path_try_from_pathbuf() 
+fn test_relative_path_try_from_pathbuf()
 {
   let rel_path_buf = PathBuf::from( "src/main.rs" );
   let rel_path = AbsolutePath::try_from( rel_path_buf.clone() ).unwrap();
@@ -81,7 +87,7 @@ fn test_relative_path_try_from_pathbuf()
 }
 
 #[test]
-fn test_relative_path_try_from_path() 
+fn test_relative_path_try_from_path()
 {
   let rel_path = Path::new( "src/main.rs" );
   let rel_path_result = AbsolutePath::try_from( rel_path );
@@ -90,7 +96,7 @@ fn test_relative_path_try_from_path()
 }
 
 #[test]
-fn test_relative_path_parent() 
+fn test_relative_path_parent()
 {
   let rel_path = AbsolutePath::try_from( "src/main.rs" ).unwrap();
   let parent_path = rel_path.parent().unwrap();
@@ -98,7 +104,7 @@ fn test_relative_path_parent()
 }
 
 #[test]
-fn test_relative_path_join() 
+fn test_relative_path_join()
 {
   let rel_path = AbsolutePath::try_from( "src" ).unwrap();
   let joined = rel_path.join( "main.rs" );

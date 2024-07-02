@@ -110,7 +110,7 @@ pub( crate ) mod private
     // clauses_map : &mut HashMap< u32, Vec< proc_macro2::TokenStream > >,
   )
   ->
-  Result< () >
+  syn::Result< () >
   {
 
     let attrs1 = &record.attrs;
@@ -183,7 +183,7 @@ pub( crate ) mod private
     // clauses_map : &mut HashMap< u32, Vec< proc_macro2::TokenStream > >,
   )
   ->
-  Result< () >
+  syn::Result< () >
   {
     let attrs1 = &record.attrs;
     let path = record.use_elements.as_ref().unwrap();
@@ -233,7 +233,7 @@ pub( crate ) mod private
     c : &'_ mut RecordContext< '_ >,
   )
   ->
-  Result< () >
+  syn::Result< () >
   {
     let attrs1 = &record.attrs;
     let attrs2 = &element.0;
@@ -280,7 +280,7 @@ pub( crate ) mod private
     c : &'_ mut RecordContext< '_ >,
   )
   ->
-  Result< () >
+  syn::Result< () >
   {
     let attrs1 = &record.attrs;
     let attrs2 = &element.0;
@@ -337,7 +337,7 @@ pub( crate ) mod private
   /// Protocol of modularity unifying interface of a module and introducing layers.
   ///
   #[ allow ( dead_code ) ]
-  pub fn mod_interface( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
+  pub fn mod_interface( input : proc_macro::TokenStream ) -> syn::Result< proc_macro2::TokenStream >
   {
     use ElementType::*;
 
@@ -384,7 +384,7 @@ pub( crate ) mod private
         },
         _ =>
         {
-          record.elements.iter().try_for_each( | element | -> Result::< () >
+          record.elements.iter().try_for_each( | element | -> syn::Result::< () >
           {
             match record.element_type
             {
@@ -400,12 +400,12 @@ pub( crate ) mod private
               {
               },
             }
-            Result::Ok( () )
+            syn::Result::Ok( () )
           })?;
         }
       };
 
-      Result::Ok( () )
+      syn::Result::Ok( () )
     })?;
 
     let immediates_clause = clauses_map.get( &ClauseImmediates::Kind() ).unwrap();
@@ -424,33 +424,34 @@ pub( crate ) mod private
       pub use protected::*;
 
       /// Protected namespace of the module.
+      #[ allow( unused_imports ) ]
       pub mod protected
       {
         #[ doc( inline ) ]
-        #[ allow( unused_imports ) ]
         pub use super::orphan::*;
         #( #protected_clause )*
       }
 
       /// Orphan namespace of the module.
+      #[ allow( unused_imports ) ]
       pub mod orphan
       {
         #[ doc( inline ) ]
-        #[ allow( unused_imports ) ]
         pub use super::exposed::*;
         #( #orphan_clause )*
       }
 
       /// Exposed namespace of the module.
+      #[ allow( unused_imports ) ]
       pub mod exposed
       {
         #[ doc( inline ) ]
-        #[ allow( unused_imports ) ]
         pub use super::prelude::*;
         #( #exposed_clause )*
       }
 
       /// Prelude to use essentials: `use my_module::prelude::*`.
+      #[ allow( unused_imports ) ]
       pub mod prelude
       {
         #( #prelude_clause )*
@@ -475,6 +476,7 @@ pub( crate ) mod private
 }
 
 /// Protected namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod protected
 {
   pub use super::orphan::*;
@@ -483,14 +485,17 @@ pub mod protected
 pub use protected::*;
 
 /// Parented namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   pub use super::prelude::*;
   #[ allow( unused_imports ) ]
   pub use super::private::
@@ -499,6 +504,7 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
   #[ allow( unused_imports ) ]

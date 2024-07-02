@@ -10,7 +10,7 @@ use macro_tools::prelude::*;
 mod derive_former;
 
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_components" ) ]
+#[ cfg( any( feature = "derive_components", feature = "derive_component_from", feature = "derive_from_components", feature = "derive_component_assign", feature = "derive_component_assign", feature = "derive_components_assign" ) ) ]
 mod component
 {
 

@@ -4,12 +4,11 @@ mod private
   use std::
   {
     fmt::Formatter,
-    path::Path,
-    collections::HashSet,
+    ffi::OsString,
   };
-  use std::ffi::OsString;
-  use error_tools::for_app::Error;
-  use wtools::error::Result;
+  use path::Path;
+  use collection::HashSet;
+  use error::untyped::{ Error };
   use process_tools::process::*;
 
   /// The `Channel` enum represents different release channels for rust.
@@ -35,10 +34,25 @@ mod private
     }
   }
 
+  impl TryFrom< String > for Channel
+  {
+    type Error = error::untyped::Error;
+    fn try_from( value : String ) -> Result< Self, Self::Error >
+    {
+      Ok( match value.as_ref()
+      {
+        "stable" => Self::Stable,
+        "nightly" => Self::Nightly,
+        other => error::untyped::bail!( "Unexpected channel value. Expected [stable, channel]. Got: `{other}`" ),
+      })
+    }
+  }
+
   /// Retrieves a list of available channels.
   ///
   /// This function takes a path and returns a `Result` with a vector of strings representing the available channels.
-  pub fn available_channels< P >( path : P ) -> Result< HashSet< Channel > >
+  // qqq : typed error
+  pub fn available_channels< P >( path : P ) -> error::untyped::Result< HashSet< Channel > >
   where
     P : AsRef< Path >,
   {

@@ -6,7 +6,7 @@
 #[ allow( unused_imports ) ]
 use ::willbe2::*;
 
-// fn main() -> Result< (), wtools::error::for_app::Error >
+// fn main() -> Result< (), wtools::error::untyped::Error >
 // {
 //   Ok( willbe::run()? )
 // }

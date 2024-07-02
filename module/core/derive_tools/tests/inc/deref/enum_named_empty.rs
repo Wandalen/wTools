@@ -9,4 +9,4 @@ enum EnumNamedEmpty
   B {},
 }
 
-include!( "./only_tests/enum_named_empty.rs" );
+include!( "./only_test/enum_named_empty.rs" );

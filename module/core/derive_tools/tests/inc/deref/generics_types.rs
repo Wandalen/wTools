@@ -5,4 +5,4 @@ use derive_tools::Deref;
 #[ derive( Deref ) ]
 struct GenericsTypes< T >( T );
 
-include!( "./only_tests/generics_types.rs" );
+include!( "./only_test/generics_types.rs" );

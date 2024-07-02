@@ -1,10 +1,19 @@
 use core::fmt::Debug;
 
-use core::ops::{ Deref };
-use derive_tools::{ Deref, DerefMut };
+use core::ops::Deref;
+use derive_tools::DerefMut;
 
 #[ allow( dead_code ) ]
-#[ derive( Deref, DerefMut ) ]
+#[ derive( DerefMut ) ]
 struct BoundsInlined< T : ToString, U : Debug >( T, U );
 
-include!( "./only_tests/bounds_inlined.rs" );
+impl< T : ToString, U : Debug > Deref for BoundsInlined< T, U >
+{
+  type Target = T;
+  fn deref( &self ) -> &Self::Target
+  {
+    &self.0
+  }
+}
+
+include!( "./only_test/bounds_inlined.rs" );

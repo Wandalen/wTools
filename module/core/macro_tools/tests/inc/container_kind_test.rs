@@ -1,5 +1,6 @@
 
 use super::*;
+use the_module::qt;
 
 //
 

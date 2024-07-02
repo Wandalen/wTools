@@ -1,6 +1,6 @@
 [package]
 name = "error_tools"
-version = "0.14.0"
+version = "0.15.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -25,27 +25,25 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-# exclude = [ "/tests", "/examples", "-*" ]
+
 
 # = features
 
 [features]
 default = [
   "enabled",
-  "error_for_lib",
-  "error_for_app",
+  "error_typed",
+  "error_untyped",
 ]
 full = [
-  "enabled",
-  "error_for_lib",
-  "error_for_app",
+  "default",
 ]
 no_std = []
 use_alloc = [ "no_std" ]
 enabled = []
 
-error_for_lib = [ "thiserror" ]
-error_for_app = [ "anyhow" ]
+error_typed = [ "thiserror" ]
+error_untyped = [ "anyhow" ]
 
 # = entry
 

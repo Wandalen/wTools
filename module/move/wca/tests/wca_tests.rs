@@ -6,7 +6,7 @@
 use wca as the_module;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
-#[ allow( unused_imports ) ]
-use wca::wtools::*;
+// #[ allow( unused_imports ) ]
+// use wca::wtools::*;
 
 mod inc;

@@ -6,7 +6,7 @@
 #[ allow( unused_imports ) ]
 use::willbe::*;
 
-fn main() -> Result< (), wtools::error::for_app::Error >
+fn main() -> Result< (), wtools::error::untyped::Error >
 {
   let args = std::env::args().skip( 1 ).collect();
   Ok( willbe::run( args )? )

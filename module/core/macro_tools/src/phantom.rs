@@ -93,7 +93,20 @@ pub( crate ) mod private
       },
       syn::Fields::Unit =>
       {
-        // No fields to modify in a unit struct
+        let phantom_field : syn::Field = syn::parse_quote!
+        {
+          #phantom
+        };
+
+        // Replace syn::Fields::Unit to syn::Fields::Unnamed
+        input.fields = syn::Fields::Unnamed
+          (
+            syn::FieldsUnnamed
+            {
+              paren_token : Default::default(),
+              unnamed : syn::punctuated::Punctuated::from_iter( vec![phantom_field] )
+            }
+          )
       }
     };
 
@@ -181,6 +194,7 @@ pub( crate ) mod private
 #[ allow( unused_imports ) ]
 pub use protected::*;
 
+#[ allow( unused_imports ) ]
 pub mod protected
 {
 
@@ -191,7 +205,6 @@ pub mod protected
   //!
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -203,10 +216,10 @@ pub mod protected
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -216,9 +229,14 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as phantom;
+  use super::*;
+
+  pub use super::super::phantom;
+  // pub use super::protected as phantom;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::
@@ -228,6 +246,7 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
 }

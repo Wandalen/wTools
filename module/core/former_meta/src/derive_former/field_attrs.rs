@@ -3,6 +3,7 @@
 use super::*;
 use macro_tools::
 {
+  ct,
   Result,
   AttributeComponent,
   AttributePropertyComponent,
@@ -56,7 +57,7 @@ impl FieldAttributes
   {
     let mut result = Self::default();
     // Known attributes for error reporting
-    let known_attributes = const_format::concatcp!
+    let known_attributes = ct::concatcp!
     (
       "Known attributes are : ",
       "debug",
@@ -195,7 +196,7 @@ impl syn::parse::Parse for AttributeConfig
 
     let error = | ident : &syn::Ident | -> syn::Error
     {
-      let known = const_format::concatcp!
+      let known = ct::concatcp!
       (
         "Known entries of attribute ", AttributeConfig::KEYWORD, " are : ",
         AttributePropertyDefault::KEYWORD,
@@ -354,7 +355,7 @@ impl syn::parse::Parse for AttributeScalarSetter
 
     let error = | ident : &syn::Ident | -> syn::Error
     {
-      let known = const_format::concatcp!
+      let known = ct::concatcp!
       (
         "Known entries of attribute ", AttributeScalarSetter::KEYWORD, " are : ",
         AttributePropertyName::KEYWORD,
@@ -529,7 +530,7 @@ impl syn::parse::Parse for AttributeSubformScalarSetter
 
     let error = | ident : &syn::Ident | -> syn::Error
     {
-      let known = const_format::concatcp!
+      let known = ct::concatcp!
       (
         "Known entries of attribute ", AttributeSubformScalarSetter::KEYWORD, " are : ",
         AttributePropertyName::KEYWORD,
@@ -718,7 +719,7 @@ impl syn::parse::Parse for AttributeSubformCollectionSetter
 
     let error = | ident : &syn::Ident | -> syn::Error
     {
-      let known = const_format::concatcp!
+      let known = ct::concatcp!
       (
         "Known entries of attribute ", AttributeSubformCollectionSetter::KEYWORD, " are : ",
         AttributePropertyName::KEYWORD,
@@ -902,7 +903,7 @@ impl syn::parse::Parse for AttributeSubformEntrySetter
 
     let error = | ident : &syn::Ident | -> syn::Error
     {
-      let known = const_format::concatcp!
+      let known = ct::concatcp!
       (
         "Known entries of attribute ", AttributeSubformEntrySetter::KEYWORD, " are : ",
         AttributePropertyName::KEYWORD,

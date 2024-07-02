@@ -12,4 +12,4 @@ impl Deref for StructTuple
   }
 }
 
-include!( "./only_tests/struct_tuple.rs" );
+include!( "./only_test/struct_tuple.rs" );

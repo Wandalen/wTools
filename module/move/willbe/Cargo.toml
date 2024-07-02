@@ -1,6 +1,6 @@
 [package]
 name = "willbe"
-version = "0.12.0"
+version = "0.13.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -24,16 +24,37 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-# exclude = [ "/tests", "/examples", "-*" ]
+
 
 [features]
-default = [ "enabled", "progress_bar" ]
-full = [ "enabled", "progress_bar" ]
-enabled = []
+default = [
+  "enabled",
+  "progress_bar",
+]
+full = [
+  "default"
+]
+enabled = [
+  "crates_tools/enabled",
+  "error_tools/enabled",
+  "former/enabled",
+  "iter_tools/enabled",
+  "mod_interface/enabled",
+  "wca/enabled",
+  "proper_path_tools/enabled",
+  "process_tools/enabled",
+  "derive_tools/enabled",
+  "data_type/enabled",
+  "collection_tools/enabled",
+  "macro_tools/enabled",
+]
+
 tracing = [ "dep:tracing", "dep:tracing-subscriber" ]
 progress_bar = [ "dep:indicatif" ]
 
 [dependencies]
+
+## external
 cargo_metadata = "~0.18.1"
 convert_case = "0.6.0"
 flate2 = "~1.0"
@@ -57,6 +78,8 @@ indicatif = { version = "0.17", optional = true }
 prettytable-rs = "0.10"
 serde_json = "1.0" # for CargoMetadata::Package::metadata (need serde_json::Value)
 serde = "1.0" # for CargoMetadata::Package
+parse-display = "0.9" # need because derive_tools don't reexport this correctly
+walkdir = "2.3"
 
 ## internal
 crates_tools = { workspace = true }
@@ -65,8 +88,12 @@ former = { workspace = true, features = [ "default" ] }
 iter_tools = { workspace = true, features = [ "default" ] }
 mod_interface = { workspace = true, features = [ "default" ] }
 wca = { workspace = true, features = [ "default" ] }
-proper_path_tools = { workspace = true, features = [ "default" ] }
+proper_path_tools = { workspace = true, features = [ "default", "path_utf8" ] }
 process_tools = { workspace = true, features = [ "default" ] }
+derive_tools = { workspace = true, features = [ "derive_display", "derive_from_str", "derive_deref", "derive_from", "derive_as_ref" ] }
+data_type = { workspace = true, features = [ "either" ] }
+collection_tools = { workspace = true, features = [ "collection_constructors", "collection_into_constructors" ] }
+macro_tools = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }

@@ -1,12 +1,11 @@
 use super::*;
+
 // use the_module::*;
 use assert_cmd::Command;
-use inc::
+use inc::helper::
 {
-  action::test::ProjectBuilder,
-  // aaa : for Petro : move to helper. don't reuse test-rs files in command and endpoints
-  // aaa : move to helper module
-  helpers::BINARY_NAME,
+  ProjectBuilder,
+  BINARY_NAME,
 };
 
 use assert_fs::TempDir;

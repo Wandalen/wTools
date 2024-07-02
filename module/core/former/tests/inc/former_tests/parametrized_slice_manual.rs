@@ -122,20 +122,20 @@ impl< 'a > former::StoragePreform for Struct1FormerStorage< 'a >
       {
         trait MaybeDefault< T >
         {
-          fn maybe_default( self : & Self ) -> T
+          fn maybe_default( self : &Self ) -> T
           {
             panic!( "Field 'string_slice_1' isn't initialized" )
           }
         }
 
-        impl< T > MaybeDefault< T > for & ::core::marker::PhantomData< T > {}
+        impl< T > MaybeDefault< T > for &::core::marker::PhantomData< T > {}
         impl< T > MaybeDefault< T > for ::core::marker::PhantomData< T >
         where T : ::core::default::Default,
         {
-          fn maybe_default( self : & Self ) -> T { T::default() }
+          fn maybe_default( self : &Self ) -> T { T::default() }
         }
 
-        (& ::core::marker::PhantomData::< &'a str >).maybe_default()
+        ( &::core::marker::PhantomData::< &'a str > ).maybe_default()
       }
     };
     let result = Struct1 { string_slice_1, };

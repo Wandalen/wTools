@@ -3,5 +3,5 @@
 /// Example
 pub fn hello() -> String
 {
-	"hello world!".into()
+  "hello world!".into()
 }

@@ -45,7 +45,7 @@ enabled = [
 mod_interface = { workspace = true }
 former = { workspace = true, features = [ "derive_former" ] }
 proper_path_tools = { workspace = true }
-error_tools = { workspace = true, features = [ "error_for_app" ] } # qqq : xxx : rid off error_for_app
+error_tools = { workspace = true, features = [ "error_untyped" ] } # qqq : xxx : rid of error_untyped
 iter_tools = { workspace = true }
 
 # ## external

@@ -12,4 +12,4 @@ impl< T > Deref for GenericsTypes< T >
   }
 }
 
-include!( "./only_tests/generics_types.rs" );
+include!( "./only_test/generics_types.rs" );

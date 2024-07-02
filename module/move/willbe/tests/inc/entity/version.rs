@@ -9,9 +9,9 @@ use the_module::
   CrateDir,
   Manifest,
   version::Version,
-  _path::AbsolutePath,
+  path::AbsolutePath,
   package::Package,
-  version::{ BumpOptions, version_bump, version_revert },
+  version::{ BumpOptions, bump, revert },
 };
 
 const TEST_MODULE_PATH : &str = "../../test/";
@@ -110,14 +110,15 @@ fn package_version_bump()
   std::fs::create_dir( &temp_module ).unwrap();
   temp_module.child( "c" ).copy_from( &c, &[ "**" ] ).unwrap();
   let c_temp_path = temp_module.join( "c" );
-  let c_temp_absolute_path = AbsolutePath::try_from( c_temp_path ).unwrap();
+  let c_temp_absolute_path = CrateDir::try_from( c_temp_path ).unwrap();
   let c_temp_crate_dir = CrateDir::try_from( c_temp_absolute_path.clone() ).unwrap();
-  let c_package = Package::try_from( c_temp_absolute_path.clone() ).unwrap();
+  let c_package = Package::try_from( c_temp_crate_dir.clone() ).unwrap();
   let version = c_package.version().unwrap();
 
   let root_manifest_path =  temp.join( "Cargo.toml" );
   let mut cargo_toml = std::fs::File::create( &root_manifest_path ).unwrap();
-  let root_manifest_absolute_path = AbsolutePath::try_from( root_manifest_path.as_path() ).unwrap();
+  // let root_manifest_absolute_path = AbsolutePath::try_from( root_manifest_path.as_path() ).unwrap();
+  let root_manifest_dir_absolute_path = CrateDir::try_from( root_manifest_path.as_path().parent().unwrap() ).unwrap();
   write!( cargo_toml, r#"
 [workspace]
 resolver = "2"
@@ -131,17 +132,17 @@ default-features = true
 "# ).unwrap();
   let version = Version::try_from( &version ).unwrap();
   let bumped_version = version.clone().bump();
-  
+
   // Act
   let options = BumpOptions
   {
-    crate_dir : c_temp_crate_dir,
+    crate_dir : c_temp_crate_dir.clone(),
     old_version : version.clone(),
     new_version : bumped_version.clone(),
-    dependencies : vec![ CrateDir::try_from( root_manifest_absolute_path.parent().unwrap() ).unwrap() ],
+    dependencies : vec![ root_manifest_dir_absolute_path.clone() ],
     dry : false,
   };
-  let bump_report = version_bump( options ).unwrap();
+  let bump_report = bump( options ).unwrap();
 
   // Assert
   assert_eq!( Some( version.to_string() ), bump_report.old_version );
@@ -149,7 +150,8 @@ default-features = true
   assert_eq!
   (
     {
-      let mut v = vec![ root_manifest_absolute_path.clone(), c_temp_absolute_path.join( "Cargo.toml" ) ];
+      // let mut v = vec![ root_manifest_absolute_path.clone(), c_temp_absolute_path.join( "Cargo.toml" ) ];
+      let mut v = vec![ root_manifest_dir_absolute_path.clone().manifest_file(), c_temp_absolute_path.manifest_file() ];
       v.sort();
       v
     },
@@ -159,11 +161,11 @@ default-features = true
       v
     }
   );
-  let c_package = Package::try_from( c_temp_absolute_path.clone() ).unwrap();
+  let c_package = Package::try_from( c_temp_crate_dir.clone() ).unwrap();
   let name = c_package.name().unwrap();
   assert_eq!( bumped_version.to_string(), c_package.version().unwrap() );
-  let mut root_manifest = Manifest::try_from( root_manifest_absolute_path ).unwrap();
-  root_manifest.load().unwrap();
+  let mut root_manifest = Manifest::try_from( root_manifest_dir_absolute_path ).unwrap();
+  // root_manifest.load().unwrap();
   let data = root_manifest.data();
   let current_version_item = data.get( "workspace" ).and_then( | w | w.get( "dependencies" ) ).and_then( | d | d.get( &name ) ).and_then( | p | p.get( "version" ) ).unwrap();
   let current_version = current_version_item.as_str().unwrap();
@@ -182,12 +184,12 @@ fn package_version_bump_revert()
   let c_temp_path = temp_module.join( "c" );
   let c_temp_absolute_path = AbsolutePath::try_from( c_temp_path ).unwrap();
   let c_temp_crate_dir = CrateDir::try_from( c_temp_absolute_path.clone() ).unwrap();
-  let c_package = Package::try_from( c_temp_absolute_path.clone() ).unwrap();
+  let c_package = Package::try_from( c_temp_crate_dir.clone() ).unwrap();
   let version = c_package.version().unwrap();
 
   let root_manifest_path =  temp.join( "Cargo.toml" );
   let mut cargo_toml = std::fs::File::create( &root_manifest_path ).unwrap();
-  let root_manifest_absolute_path = AbsolutePath::try_from( root_manifest_path.as_path() ).unwrap();
+  let root_manifest_dir_absolute_path = CrateDir::try_from( root_manifest_path.as_path().parent().unwrap() ).unwrap();
   write!( cargo_toml, r#"
 [workspace]
 resolver = "2"
@@ -205,21 +207,21 @@ default-features = true
   // Act
   let options = BumpOptions
   {
-    crate_dir : c_temp_crate_dir,
+    crate_dir : c_temp_crate_dir.clone(),
     old_version : version.clone(),
     new_version : bumped_version.clone(),
-    dependencies : vec![ CrateDir::try_from( root_manifest_absolute_path.parent().unwrap() ).unwrap() ],
+    dependencies : vec![ root_manifest_dir_absolute_path.clone() ],
     dry : false,
   };
-  let bump_report = version_bump( options ).unwrap();
-  version_revert( &bump_report ).unwrap();
+  let bump_report = bump( options ).unwrap();
+  revert( &bump_report ).unwrap();
 
   // Assert
-  let c_package = Package::try_from( c_temp_absolute_path.clone() ).unwrap();
+  let c_package = Package::try_from( c_temp_crate_dir.clone() ).unwrap();
   let name = c_package.name().unwrap();
   assert_eq!( version.to_string(), c_package.version().unwrap() );
-  let mut root_manifest = Manifest::try_from( root_manifest_absolute_path ).unwrap();
-  root_manifest.load().unwrap();
+  let mut root_manifest = Manifest::try_from( root_manifest_dir_absolute_path ).unwrap();
+  // root_manifest.load().unwrap();
   let data = root_manifest.data();
   let current_version_item = data.get( "workspace" ).and_then( | w | w.get( "dependencies" ) ).and_then( | d | d.get( &name ) ).and_then( | p | p.get( "version" ) ).unwrap();
   let current_version = current_version_item.as_str().unwrap();

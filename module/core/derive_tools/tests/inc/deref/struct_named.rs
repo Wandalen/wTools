@@ -9,4 +9,4 @@ struct StructNamed
   b : i32,
 }
 
-include!( "./only_tests/struct_named.rs" );
+include!( "./only_test/struct_named.rs" );

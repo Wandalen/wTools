@@ -5,7 +5,6 @@
 
 #[ allow( unused_imports ) ]
 use macro_tools::prelude::*;
-// pub use macro_tools::{ Result, Many };
 pub use iter_tools as iter;
 
 #[ cfg( feature = "derive_as_mut" ) ]
@@ -26,3 +25,5 @@ pub mod new;
 pub mod variadic_from;
 #[ cfg( feature = "derive_reflect" ) ]
 pub mod reflect;
+#[ cfg( feature = "derive_phantom" ) ]
+pub mod phantom;

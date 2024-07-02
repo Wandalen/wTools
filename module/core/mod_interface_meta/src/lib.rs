@@ -38,6 +38,23 @@
 //   pub mod item_struct;
 // }
 
+// xxx : check
+//
+// - does not work
+// exposed use
+// {
+//   ::former::Former,
+//   ::former::Assign,
+// };
+//
+// - work
+//
+// exposed use ::former::
+// {
+//   Former,
+//   Assign,
+// };
+
 mod impls;
 #[ allow( unused_imports ) ]
 use impls::exposed::*;

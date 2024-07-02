@@ -3,14 +3,12 @@ mod private
 {
   use crate::*;
 
-  use std::collections::{ HashSet, HashMap };
-  use core::fmt::Formatter;
-  use std::{ env, fs };
-
-  use wtools::error::for_app::{ Error, anyhow };
-  use _path::AbsolutePath;
-  use workspace::Workspace;
-  use package::Package;
+  use std::{ env, fmt, fs };
+  use
+  {
+    // error::untyped,
+    error::ErrWith,
+  };
 
   /// Represents a report of publishing packages
   #[ derive( Debug, Default, Clone ) ]
@@ -18,14 +16,14 @@ mod private
   {
     /// Represents the absolute path to the root directory of the workspace.
     pub workspace_root_dir : Option< AbsolutePath >,
-    pub plan : Option< package::PublishPlan >,
+    pub plan : Option< publish::PublishPlan >,
     /// Represents a collection of packages and their associated publishing reports.
-    pub packages : Vec<( AbsolutePath, package::PublishReport )>
+    pub packages : Vec<( AbsolutePath, publish::PublishReport )>
   }
 
-  impl std::fmt::Display for PublishReport
+  impl fmt::Display for PublishReport
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
       if self.packages.is_empty()
       {
@@ -51,12 +49,20 @@ mod private
       {
         if !plan.dry
         {
-          let expected_to_publish = plan
+          let expected_to_publish : Vec< _ > = plan
           .plans
           .iter()
-          .map( | p | ( p.version_bump.crate_dir.absolute_path(), p.package_name.clone(), p.version_bump.clone() ) )
-          .collect::< Vec< _ > >();
-          let mut actually_published = self.packages.iter()
+          .map
+          (
+            | p |
+            (
+              p.bump.crate_dir.clone().absolute_path(),
+              p.package_name.clone(),
+              p.bump.clone()
+            )
+          )
+          .collect();
+          let mut actually_published : Vec< _ > = self.packages.iter()
           .filter_map
           (
             |( path, repo )|
@@ -69,12 +75,14 @@ mod private
               None
             }
           )
-          .collect::< Vec< _ > >();
+          .collect();
 
           writeln!( f, "Status :" )?;
-          for ( path, name, version )  in expected_to_publish
+          for ( path, name, version ) in expected_to_publish
           {
-            if let Some( pos ) = actually_published.iter().position( | p | p == &path )
+            if let Some( pos ) = actually_published
+            .iter()
+            .position( | p | p == &path )
             {
               writeln!( f, "✅ {name} {}", version.new_version )?;
               // want to check that only expected packages actually published
@@ -107,45 +115,76 @@ mod private
   /// # Returns
   /// A Result containing a `PublishPlan` if successful, or an `Error` otherwise.
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
-  pub fn publish_plan( patterns : Vec< String >, dry : bool, temp : bool  ) -> Result< package::PublishPlan, Error >
+  pub fn publish_plan
+  (
+    patterns : Vec< String >,
+    channel : channel::Channel,
+    dry : bool,
+    temp : bool
+  )
+  -> Result< publish::PublishPlan, error::untyped::Error >
+  // qqq : use typed error
   {
-    let mut paths = HashSet::new();
+    let mut paths = collection::HashSet::new();
     // find all packages by specified folders
     for pattern in &patterns
     {
-      let current_path = AbsolutePath::try_from( std::path::PathBuf::from( pattern ) )?;
+      let current_path = AbsolutePath::try_from
+      (
+        fs::canonicalize( pattern.as_str() )?
+      )?;
+      // let current_path = AbsolutePath::try_from( std::path::PathBuf::from( pattern ) )?;
       // let current_paths = files::find( current_path, &[ "Cargo.toml" ] );
       paths.extend( Some( current_path ) );
     }
 
-    let mut metadata = if paths.is_empty()
+    let workspace = if paths.is_empty()
     {
-      Workspace::from_current_path()?
+      Workspace::try_from( CurrentPath )?
     }
     else
     {
-      // FIX : patterns can point to different workspaces. Current solution take first random path from list
+      // qqq : patterns can point to different workspaces. Current solution take first random path from list.
+      // A problem may arise if a user provides paths to packages from different workspaces
+      // and we do not check whether all packages are within the same workspace
+      // In the current solution, we'll choose the workspace related to the first package
       let current_path = paths.iter().next().unwrap().clone();
       let dir = CrateDir::try_from( current_path )?;
-
-      Workspace::with_crate_dir( dir )?
+      Workspace::try_from( dir )?
     };
-    let workspace_root_dir : AbsolutePath = metadata
-    .workspace_root()?
+
+    let workspace_root_dir : AbsolutePath = workspace
+    .workspace_root()
     .try_into()?;
-    let packages = metadata.load()?.packages()?;
-    let packages_to_publish : Vec< _ > = packages
-    .iter()
-    .filter( | &package | paths.contains( &AbsolutePath::try_from( package.manifest_path().as_std_path().parent().unwrap() ).unwrap() ) )
-    .map( | p | p.name().clone() )
+
+    let packages = workspace.packages();
+    let packages_to_publish : Vec< String > = packages
+    .clone()
+    .filter( | &package | paths.contains( &package.crate_dir().unwrap().into() ) )
+    .map( | p | p.name().to_string() )
     .collect();
-    let package_map = packages.into_iter().map( | p | ( p.name().clone(), Package::from( p.clone() ) ) ).collect::< HashMap< _, _ > >();
+    let package_map : collection::HashMap< String, package::Package< '_ > > = packages
+    .map( | p | ( p.name().to_string(), package::Package::from( p ) ) )
+    .collect();
 
-    let graph = metadata.graph();
-    let subgraph_wanted = graph::subgraph( &graph, &packages_to_publish );
-    let tmp = subgraph_wanted.map( | _, n | graph[ *n ].clone(), | _, e | graph[ *e ].clone() );
+    let graph = workspace_graph::graph( &workspace );
+    let subgraph_wanted = graph::subgraph
+    (
+      &graph,
+      &packages_to_publish[ .. ]
+    );
+    let tmp = subgraph_wanted
+    .map
+    (
+      | _, n |
+      graph[ *n ].clone(), | _, e | graph[ *e ].clone()
+    );
 
-    let mut unique_name = format!( "temp_dir_for_publish_command_{}", path_tools::path::unique_folder_name()? );
+    let mut unique_name = format!
+    (
+      "temp_dir_for_publish_command_{}",
+      path::unique_folder_name()?
+    );
 
     let dir = if temp
     {
@@ -153,7 +192,11 @@ mod private
 
       while temp_dir.exists()
       {
-        unique_name = format!( "temp_dir_for_publish_command_{}", path_tools::path::unique_folder_name()? );
+        unique_name = format!
+        (
+          "temp_dir_for_publish_command_{}",
+          path::unique_folder_name()?
+        );
         temp_dir = env::temp_dir().join( unique_name );
       }
 
@@ -165,14 +208,29 @@ mod private
       None
     };
 
-    let subgraph = graph::remove_not_required_to_publish( &package_map, &tmp, &packages_to_publish, dir.clone() )?;
-    let subgraph = subgraph.map( | _, n | n, | _, e | e );
+    let subgraph = graph::remove_not_required_to_publish
+    (
+      &package_map,
+      &tmp,
+      &packages_to_publish,
+      dir.clone()
+    )?;
+    let subgraph = subgraph
+    .map( | _, n | n, | _, e | e );
 
-    let queue = graph::toposort( subgraph ).unwrap().into_iter().map( | n | package_map.get( &n ).unwrap() ).cloned().collect::< Vec< _ > >();
+    let queue : Vec< _ > = graph::toposort( subgraph )
+    .unwrap()
+    .into_iter()
+    .map( | n | package_map.get( &n ).unwrap() )
+    .cloned()
+    .collect();
 
-    let roots = packages_to_publish.iter().map( | p | package_map.get( p ).unwrap().crate_dir() ).collect::< Vec< _ > >();
+    let roots : Vec< _ > = packages_to_publish
+    .iter()
+    .map( | p | package_map.get( p ).unwrap().crate_dir() ).collect();
 
-    let plan = package::PublishPlan::former()
+    let plan = publish::PublishPlan::former()
+    .channel( channel )
     .workspace_dir( CrateDir::try_from( workspace_root_dir ).unwrap() )
     .option_base_temp_dir( dir.clone() )
     .dry( dry )
@@ -188,13 +246,16 @@ mod private
   ///
 
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
-  pub fn publish( plan : package::PublishPlan ) -> Result< PublishReport, ( PublishReport, Error ) >
+  pub fn publish( plan : publish::PublishPlan )
+  ->
+  ResultWithReport< PublishReport, error::untyped::Error >
+  // qqq : use typed error
   {
     let mut report = PublishReport::default();
     let temp = plan.base_temp_dir.clone();
 
     report.plan = Some( plan.clone() );
-    for package_report in package::perform_packages_publish( plan ).err_with( || report.clone() )?
+    for package_report in publish::perform_packages_publish( plan ).err_with_report( &report )?
     {
       let path : &std::path::Path = package_report.get_info.as_ref().unwrap().current_path.as_ref();
       report.packages.push(( AbsolutePath::try_from( path ).unwrap(), package_report ));
@@ -202,30 +263,10 @@ mod private
 
     if let Some( dir ) = temp
     {
-      fs::remove_dir_all( dir ).err_with( || report.clone() )?;
+      fs::remove_dir_all( dir ).err_with_report( &report )?;
     }
 
     Ok( report )
-  }
-
-
-  trait ErrWith< T, T1, E >
-  {
-    fn err_with< F >( self, f : F ) -> std::result::Result< T1, ( T, E ) >
-    where
-      F : FnOnce() -> T;
-  }
-
-  impl< T, T1, E > ErrWith< T, T1, Error > for Result< T1, E >
-  where
-    E : std::fmt::Debug + std::fmt::Display + Send + Sync + 'static,
-  {
-    fn err_with< F >( self, f : F ) -> Result< T1, ( T, Error ) >
-    where
-      F : FnOnce() -> T,
-    {
-      self.map_err( | e | ( f(), anyhow!( e ) ) )
-    }
   }
 }
 

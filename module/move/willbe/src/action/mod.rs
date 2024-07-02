@@ -11,8 +11,6 @@ crate::mod_interface!
   /// Return the differences between a local and remote package versions.
   layer publish_diff;
   /// Generates health table in main Readme.md file of workspace.
-  // aaa : for Petro : give high quality explanations
-  // aaa : add more details to description
   layer readme_health_table_renew;
   /// Module headers.
   layer readme_modules_headers_renew;

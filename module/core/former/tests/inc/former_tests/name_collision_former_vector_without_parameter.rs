@@ -1,3 +1,5 @@
+#![ allow( dead_code ) ]
+
 use super::*;
 use the_module::Former;
 

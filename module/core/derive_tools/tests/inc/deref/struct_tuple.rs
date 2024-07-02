@@ -5,4 +5,4 @@ use derive_tools::Deref;
 #[ derive ( Deref ) ]
 struct StructTuple( String, i32 );
 
-include!( "./only_tests/struct_tuple.rs" );
+include!( "./only_test/struct_tuple.rs" );

@@ -12,4 +12,4 @@ impl< 'a > Deref for GenericsLifetimes< 'a >
   }
 }
 
-include!( "./only_tests/generics_lifetimes.rs" );
+include!( "./only_test/generics_lifetimes.rs" );

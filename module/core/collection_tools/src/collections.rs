@@ -14,19 +14,19 @@ macro_rules! count
   );
 }
 
-/// [BTreeMap] macros
+/// [std::collections::BTreeMap] macros
 pub mod bmap;
-/// [BTreeSet] macros
+/// [std::collections::BTreeSet] macros
 pub mod bset;
-/// [BinaryHeap] macros
+/// [std::collections::BinaryHeap] macros
 pub mod heap;
-/// [HashMap] macros
+/// [std::collections::HashMap] macros
 pub mod hmap;
-/// [HashSet] macros
+/// [std::collections::HashSet] macros
 pub mod hset;
-/// [LinkedList] macros
+/// [std::collections::LinkedList] macros
 pub mod list;
 /// [Vec] macros
 pub mod vec;
-/// [VecDeque] macros
+/// [std::collections::VecDeque] macros
 pub mod vecd;

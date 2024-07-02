@@ -84,9 +84,23 @@ pub use variadic_from as variadic;
 
 /// Namespace with dependencies.
 
+#[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
+
+  #[ doc( inline ) ]
+  #[ cfg( any_derive ) ]
+  pub use ::derive_tools_meta;
+
+  #[ doc( inline ) ]
+  #[ cfg( feature = "clone_dyn" ) ]
+  pub use ::clone_dyn::{ self, dependency::* };
+
+  #[ doc( inline ) ]
+  #[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
+  pub use ::variadic_from::{ self, dependency::* };
+
   #[ doc( inline ) ]
   #[ cfg( feature = "derive_more" ) ]
   pub use ::derive_more;
@@ -96,18 +110,7 @@ pub mod dependency
   #[ doc( inline ) ]
   #[ cfg( feature = "parse_display" ) ]
   pub use ::parse_display;
-  #[ doc( inline ) ]
-  #[ cfg( feature = "clone_dyn" ) ]
-  pub use ::clone_dyn;
-  #[ doc( inline ) ]
-  #[ cfg( feature = "clone_dyn" ) ]
-  pub use ::clone_dyn::dependency::*;
-  #[ doc( inline ) ]
-  #[ cfg( any_derive ) ]
-  pub use ::derive_tools_meta;
-  #[ doc( inline ) ]
-  #[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
-  pub use ::variadic_from;
+
 }
 
 #[ doc( inline ) ]
@@ -117,10 +120,10 @@ pub use protected::*;
 
 /// Protected namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
@@ -137,19 +140,20 @@ pub mod protected
 
 /// Orphan namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 
   #[ cfg( all( feature = "derive_more" ) ) ]
@@ -249,6 +253,11 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use ::clone_dyn::exposed::*;
 
+  #[ cfg( feature = "derive_clone_dyn" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use ::clone_dyn;
+
   // #[ doc( inline ) ]
   // #[ allow( unused_imports ) ]
   // pub use super::wtools::exposed::*;
@@ -277,6 +286,7 @@ pub mod exposed
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
   #[ cfg( feature = "derive_clone_dyn" ) ]

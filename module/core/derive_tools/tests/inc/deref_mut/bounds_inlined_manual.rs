@@ -21,4 +21,4 @@ impl< T : ToString, U : Debug > DerefMut for BoundsInlined< T, U >
   }
 }
 
-include!( "./only_tests/bounds_inlined.rs" );
+include!( "./only_test/bounds_inlined.rs" );

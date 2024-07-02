@@ -125,8 +125,7 @@ where
 /// Holds the generic parameters for the `BinaryHeapDefinition`.
 ///
 /// This struct acts as a companion to `BinaryHeapDefinition`, providing a concrete definition of types used
-/// in the formation process. It is crucial for linking the type parameters with the operational mechanics
-/// of the formation and ensuring type safety and correctness throughout the formation lifecycle.
+/// in the formation process.
 ///
 /// # Type Parameters
 ///

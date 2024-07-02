@@ -2,7 +2,7 @@ pub( crate ) mod private
 {
 
   use crate::*;
-  use wtools::Itertools;
+  use iter_tools::Itertools;
   use ca::aggregator::private::Order;
 
   /// -

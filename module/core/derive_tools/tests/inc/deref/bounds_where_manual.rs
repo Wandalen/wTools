@@ -21,4 +21,4 @@ where
   }
 }
 
-include!( "./only_tests/bounds_where.rs" );
+include!( "./only_test/bounds_where.rs" );

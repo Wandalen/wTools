@@ -23,7 +23,8 @@ fn main()
         feature = "derive_from",
         feature = "derive_inner_from",
         feature = "derive_variadic_from",
-        feature = "derive_reflect"
+        feature = "derive_reflect",
+        feature = "derive_phantom"
       )
     },
     any_derive :
@@ -37,7 +38,8 @@ fn main()
         feature = "derive_from",
         feature = "derive_inner_from",
         feature = "derive_variadic_from",
-        feature = "derive_reflect"
+        feature = "derive_reflect",
+        feature = "derive_phantom"
       )
     },
   }

@@ -5,4 +5,4 @@ use derive_tools::Deref;
 #[ derive ( Deref ) ]
 struct StructUnit;
 
-include!( "./only_tests/struct_unit.rs" );
+include!( "./only_test/struct_unit.rs" );

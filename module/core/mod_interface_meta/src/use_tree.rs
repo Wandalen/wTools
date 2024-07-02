@@ -2,7 +2,7 @@
 pub( crate ) mod private
 {
   use macro_tools::prelude::*;
-  use macro_tools::Result;
+  // use macro_tools::syn::Result;
   // use macro_tools::err;
 
   #[ derive( Debug, PartialEq, Eq, Clone ) ]
@@ -44,7 +44,7 @@ pub( crate ) mod private
     }
 
     /// Get pure path, cutting off `as module2` from `use module1 as module2`.
-    pub fn pure_path( &self ) -> Result< syn::punctuated::Punctuated< syn::Ident, Token![::] > >
+    pub fn pure_path( &self ) -> syn::Result< syn::punctuated::Punctuated< syn::Ident, Token![::] > >
     {
       use syn::UseTree::*;
 
@@ -89,7 +89,7 @@ pub( crate ) mod private
     /// Pure path without super.
     /// Get pure path, cutting off `as module2` from `use module1 as module2`.
     /// Strip first `super::` in `super::some::module`
-    pub fn pure_without_super_path( &self ) -> Result< syn::punctuated::Punctuated< syn::Ident, Token![::] > >
+    pub fn pure_without_super_path( &self ) -> syn::Result< syn::punctuated::Punctuated< syn::Ident, Token![::] > >
     {
       let path = self.pure_path()?;
       if path.len() < 1
@@ -107,7 +107,7 @@ pub( crate ) mod private
 
     /// Adjusted path.
     /// Add `super::private::` to path unless it starts from `::` or `super` or `crate`.
-    pub fn adjsuted_implicit_path( &self ) -> Result< syn::punctuated::Punctuated< syn::Ident, Token![::] > >
+    pub fn adjsuted_implicit_path( &self ) -> syn::Result< syn::punctuated::Punctuated< syn::Ident, Token![::] > >
     {
       // use syn::UseTree::*;
       let pure_path = self.pure_path()?;
@@ -144,7 +144,7 @@ pub( crate ) mod private
 
   impl syn::parse::Parse for UseTree
   {
-    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       use syn::UseTree::*;
       let leading_colon = input.parse()?;
@@ -210,23 +210,24 @@ pub( crate ) mod private
 pub use protected::*;
 
 /// Protected namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod protected
 {
-  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
 
 /// Parented namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
-  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  #[ allow( unused_imports ) ]
+  use super::*;
   pub use super::prelude::*;
 
   #[ allow( unused_imports ) ]
@@ -238,6 +239,7 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
 }

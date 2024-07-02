@@ -2,11 +2,11 @@
 // use the_module::
 // {
 //   Workspace,
-//   _path::AbsolutePath,
+//   path::AbsolutePath,
 //   package::PublishPlan,
 // };
 // use willbe::package::perform_packages_publish;
-// 
+//
 // #[ test ]
 // fn plan_publish_many_packages()
 // {
@@ -27,7 +27,7 @@
 // //       ),
 // //       dry: true,
 // //     },
-// //     version_bump: BumpOptions {
+// //     bump: BumpOptions {
 // //       crate_dir: CrateDir(
 // //         AbsolutePath(
 // //           ".../wTools/module/move/wca",
@@ -170,3 +170,5 @@
 // // )
 //   panic!()
 // }
+
+// qqq : for Bohdan : fix the test

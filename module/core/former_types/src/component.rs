@@ -47,6 +47,18 @@ where
   /// This method takes ownership of the given value (`component`), which is of type `IntoT`.
   /// `component` is then converted into type `T` and set as the component of the object.
   fn assign( &mut self, component : IntoT );
+
+  /// Sets or replaces the component on the object with the given value.
+  /// Unlike function (`assing`) function (`impute`) also consumes self and return it what is useful for builder pattern.
+  #[ inline( always ) ]
+  fn impute( mut self, component : IntoT ) -> Self
+  where
+    Self : Sized,
+  {
+    self.assign( component );
+    self
+  }
+
 }
 
 /// Extension trait to provide a method for setting a component on an `Option<Self>`

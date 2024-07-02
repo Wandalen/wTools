@@ -45,6 +45,7 @@ pub mod enumerable;
 pub mod make;
 
 /// Protected namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
@@ -87,6 +88,7 @@ pub mod protected
 pub use protected::*;
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
@@ -95,8 +97,10 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::prelude::*;
@@ -133,6 +137,7 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
   #[ doc( inline ) ]

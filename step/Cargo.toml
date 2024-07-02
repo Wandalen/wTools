@@ -1,0 +1,24 @@
+[package]
+name = "step"
+version = "0.0.0"
+edition = "2021"
+license = "MIT"
+publish = false
+readme = "Readme.md"
+description = """
+Build and deploy steps.
+"""
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+features = [ "full" ]
+all-features = false
+
+[dependencies]
+# former = { workspace = true, features = [ "full" ] }
+willbe = { workspace = true, features = [ "full" ] }
+
+[dev-dependencies]
+test_tools = { workspace = true }

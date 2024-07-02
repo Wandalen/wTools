@@ -14,8 +14,8 @@ pub( crate ) mod private
   use duct::cmd;
   use error_tools::
   {
-    for_app::{ Error, Context, anyhow },
-    Result,
+    untyped::{ Error, Context, anyhow },
+    // Result,
   };
   use former::Former;
   use iter_tools::iter::Itertools;
@@ -272,7 +272,7 @@ pub( crate ) mod private
   {
     fn clone( &self ) -> Self
     {
-      Report
+      Self
       {
         command : self.command.clone(),
         current_path : self.current_path.clone(),

@@ -3,7 +3,7 @@ use core::ops::Deref;
 #[ allow( dead_code) ]
 enum EnumNamedEmpty
 {
-  A {}, 
+  A {},
   B {},
 }
 
@@ -16,4 +16,4 @@ impl Deref for EnumNamedEmpty
   }
 }
 
-include!( "./only_tests/enum_named_empty.rs" );
+include!( "./only_test/enum_named_empty.rs" );

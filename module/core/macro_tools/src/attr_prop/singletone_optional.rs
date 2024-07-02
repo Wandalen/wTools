@@ -14,7 +14,7 @@
 //! This is useful for attributes that need to enable or disable features or flags.
 
 use crate::*;
-use former_types::Assign;
+// use former_types::Assign;
 
 /// Default marker for `AttributePropertyOptionalSingletone`.
 /// Used if no marker is defined as parameter.

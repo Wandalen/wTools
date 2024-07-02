@@ -5,10 +5,10 @@ mod private
 }
 
 /// Protected namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   /// layer_b_protected
   pub fn layer_b_protected() -> bool
@@ -22,10 +22,10 @@ pub mod protected
 pub use protected::*;
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
   /// layer_b_orphan
   pub fn layer_b_orphan() -> bool
@@ -35,10 +35,11 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   /// layer_b_exposed
   pub fn layer_b_exposed() -> bool
@@ -48,6 +49,7 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
   /// layer_b_prelude

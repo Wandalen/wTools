@@ -99,9 +99,18 @@ fn generate_struct
 ///
 /// ## Input
 /// ```rust
-/// # use derive_tools_meta::{ Deref, DerefMut };
-/// #[ derive( Deref, DerefMut ) ]
+/// # use derive_tools_meta::DerefMut;
+/// #[ derive( DerefMut ) ]
 /// pub struct Struct( i32, Vec< String > );
+///
+/// impl ::core::ops::Deref for Struct
+/// {
+///   type Target = i32;
+///   fn deref( &self ) -> &Self::Target
+///   {
+///     &self.0
+///   }
+/// }
 /// ```
 ///
 /// ## Output
@@ -162,12 +171,21 @@ fn generate_struct_tuple_fields
 ///
 /// ## Input
 /// ```rust
-/// # use derive_tools_meta::{ Deref, DerefMut };
-/// #[ derive( Deref, DerefMut ) ]
+/// # use derive_tools_meta::DerefMut;
+/// #[ derive( DerefMut ) ]
 /// pub struct Struct
 /// {
 ///   a : i32,
 ///   b : Vec< String >,
+/// }
+///
+/// impl ::core::ops::Deref for Struct
+/// {
+///   type Target = i32;
+///   fn deref( &self ) -> &Self::Target
+///   {
+///     &self.a
+///   }
 /// }
 /// ```
 ///
@@ -289,13 +307,25 @@ fn generate_enum
 ///
 /// ## Input
 /// ```rust
-/// # use derive_tools_meta::{ Deref, DerefMut };
-/// #[ derive( Deref, DerefMut ) ]
+/// # use derive_tools_meta::DerefMut;
+/// #[ derive( DerefMut ) ]
 /// pub enum E
 /// {
 ///   A ( i32, Vec< String > ),
 ///   B ( i32, Vec< String > ),
 ///   C ( i32, Vec< String > ),
+/// }
+///
+/// impl ::core::ops::Deref for E
+/// {
+///   type Target = i32;
+///   fn deref( &self ) -> &Self::Target
+///   {
+///     match self
+///     {
+///       E::A( v, .. ) | E::B( v, .. ) | E::C( v, .. ) => v,
+///     }
+///   }
 /// }
 /// ```
 ///
@@ -372,13 +402,25 @@ fn generate_enum_tuple_variants
 ///
 /// ## Input
 /// ```rust
-/// # use derive_tools_meta::{ Deref, DerefMut };
-/// #[ derive( Deref, DerefMut ) ]
+/// # use derive_tools_meta::DerefMut;
+/// #[ derive( DerefMut ) ]
 /// pub enum E
 /// {
 ///   A { a : i32, b : Vec< String > },
 ///   B { a : i32, b : Vec< String > },
 ///   C { a : i32, b : Vec< String > },
+/// }
+///
+/// impl ::core::ops::Deref for E
+/// {
+///   type Target = i32;
+///   fn deref( &self ) -> &Self::Target
+///   {
+///     match self
+///     {
+///       E::A { a : v, .. } | E::B { a : v, .. } | E::C { a : v, .. } => v,
+///     }
+///   }
 /// }
 /// ```
 ///

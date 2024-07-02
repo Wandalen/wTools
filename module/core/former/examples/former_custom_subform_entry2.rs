@@ -1,7 +1,7 @@
 // Example former_custom_subformer2.rs
 
 //!
-//! This example extends the demonstration of nested builder patterns using the `Former` trait, highlighting a parent-child relationship similar to the `former_custom_subformer.rs`. However, this variant, `former_custom_subformer2.rs`, showcases a more flexible but complex approach to managing the `child` field in the `Parent` struct—a `HashMap` of `Child` entities. Instead of relying on a predefined subformer setter (`_child_subform_entry`), this example constructs the subformer logic directly using closures. This method provides greater control over how children are added and managed within the `Parent`.
+//! This example extends the demonstration of nested builder patterns using the `Former`, highlighting a parent-child relationship similar to the `former_custom_subformer.rs`. However, this variant, `former_custom_subformer2.rs`, showcases a more flexible but complex approach to managing the `child` field in the `Parent` struct—a `HashMap` of `Child` entities. Instead of relying on a predefined subformer setter (`_child_subform_entry`), this example constructs the subformer logic directly using closures. This method provides greater control over how children are added and managed within the `Parent`.
 //!
 //! #### Custom Subform Setter
 //!

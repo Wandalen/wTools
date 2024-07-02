@@ -2,8 +2,8 @@ pub( crate ) mod private
 {
   use crate::*;
 
-  use wtools::error::Result;
-  use error_tools::return_err;
+  // use wtools::error::Result;
+  use error::return_err;
   use ca::help::private::{ HelpGeneratorOptions, LevelOfDetail, generate_help_content };
 
   // aaa : for Bohdan : how is it useful? where is it used?
@@ -34,9 +34,11 @@ pub( crate ) mod private
     ///
     /// # Returns
     ///
-    /// A `Result` with `Ok(())` if the execution was successful, or an `Err` containing an error message if an error occurred.
+    /// A `Result` with `Ok( () )` if the execution was successful, or an `Err` containing an error message if an error occurred.
     ///
-    pub fn program( &self, dictionary : &Dictionary, program : Program< VerifiedCommand > ) -> Result< () >
+    // qqq : use typed error
+    pub fn program( &self, dictionary : &Dictionary, program : Program< VerifiedCommand > )
+    -> error::untyped::Result< () >
     {
       for command in program.commands
       {
@@ -58,7 +60,9 @@ pub( crate ) mod private
     /// # Returns
     ///
     /// Returns a Result indicating success or failure. If successful, returns `Ok(())`, otherwise returns an error.
-    pub fn command( &self, dictionary : &Dictionary, command : VerifiedCommand ) -> Result< () >
+    // qqq : use typed error
+    pub fn command( &self, dictionary : &Dictionary, command : VerifiedCommand )
+    -> error::untyped::Result< () >
     {
       if command.internal_command
       {
@@ -70,12 +74,14 @@ pub( crate ) mod private
         _exec_command( command, routine, self.context.clone() )
       }
     }
-    
+
     // aaa : for Bohdan : probably redundant
     // aaa : removed `parallel_execution_loop`
   }
-  
-  fn _exec_command( command : VerifiedCommand, routine : Routine, ctx : Context ) -> Result< () >
+
+  // qqq : use typed error
+  fn _exec_command( command : VerifiedCommand, routine : Routine, ctx : Context )
+  -> error::untyped::Result< () >
   {
     match routine
     {
@@ -83,8 +89,10 @@ pub( crate ) mod private
       Routine::WithContext( routine ) => routine( ctx, command ),
     }
   }
-  
-  fn _exec_internal_command( dictionary : &Dictionary, command : VerifiedCommand ) -> Result< () >
+
+  // qqq : use typed error
+  fn _exec_internal_command( dictionary : &Dictionary, command : VerifiedCommand )
+  -> error::untyped::Result< () >
   {
     match command.phrase.as_str()
     {
@@ -93,7 +101,7 @@ pub( crate ) mod private
         let generator_args = HelpGeneratorOptions::former()
         .command_prefix( "." )
         .form();
-        
+
         let content = generate_help_content( dictionary, generator_args );
         println!( "{content}" );
       }
@@ -104,7 +112,7 @@ pub( crate ) mod private
         .subject_detailing( LevelOfDetail::Simple )
         .property_detailing( LevelOfDetail::Simple )
         .form();
-        
+
         let content = generate_help_content( dictionary, generator_args );
         println!( "{content}" );
       }
@@ -137,7 +145,7 @@ pub( crate ) mod private
           .property_detailing( LevelOfDetail::Simple )
           .with_footer( true )
           .form();
-          
+
           let content = generate_help_content( dictionary, generator_args );
           println!( "{content}" );
         }
@@ -148,7 +156,7 @@ pub( crate ) mod private
       }
       unexpected => return_err!( "Encountered an unrecognized internal command: `.{}`.", unexpected ),
     }
-    
+
     Ok( () )
   }
 }

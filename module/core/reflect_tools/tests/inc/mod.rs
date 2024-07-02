@@ -2,25 +2,37 @@
 use super::*;
 
 #[ cfg( feature = "reflect_newtype" ) ]
-mod newtype_experiment;
+// #[ path = "fundamental" ]
+mod fundamental
+{
+  #[ allow( unused_imports ) ]
+  use super::*;
 
-#[ cfg( feature = "reflect_reflect" ) ]
-mod reflect_common_test;
-#[ cfg( feature = "reflect_reflect" ) ]
-mod reflect_primitive_test;
-#[ cfg( feature = "reflect_reflect" ) ]
-mod reflect_struct_manual_test;
-#[ cfg( feature = "reflect_reflect" ) ]
-mod reflect_struct_in_struct_manual_test;
-#[ cfg( feature = "reflect_reflect" ) ]
-mod reflect_struct_with_lifetime_manual_test;
-#[ cfg( feature = "reflect_reflect" ) ]
-mod reflect_slice_test;
-#[ cfg( feature = "reflect_reflect" ) ]
-mod reflect_vec_test;
-#[ cfg( feature = "reflect_reflect" ) ]
-mod reflect_hashset_test;
-#[ cfg( feature = "reflect_reflect" ) ]
-mod reflect_hashmap_test;
-#[ cfg( feature = "reflect_reflect" ) ]
-mod reflect_array_test;
+  mod fields_test;
+  // mod to_string_test;
+  // mod to_string_example;
+  // mod to_string_with_fallback_test;
+
+}
+
+#[ cfg( feature = "reflect_newtype" ) ]
+// #[ path = "group1" ]
+mod group1
+{
+  #[ allow( unused_imports ) ]
+  use super::*;
+
+  mod newtype_experiment;
+
+  mod common_test;
+  mod primitive_test;
+  mod struct_manual_test;
+  mod struct_in_struct_manual_test;
+  mod struct_with_lifetime_manual_test;
+  mod slice_test;
+  mod vec_test;
+  mod hashset_test;
+  mod hashmap_test;
+  mod array_test;
+
+}

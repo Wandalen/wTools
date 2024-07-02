@@ -1,15 +1,15 @@
 use super::*;
 
-// use the_module::*;
-use the_module::features::features_powerset;
-
-use std::collections::HashMap;
+use the_module::
+{
+  features::{ features_powerset, estimate_with },
+  collection::HashMap,
+};
 use serde::Deserialize;
-use the_module::workspace::WorkspacePackage;
-use willbe::features::estimate_with;
 
 /// Constructs a mock `Package` with specified features for testing.
-fn mock_package( features : Vec< ( &str, Vec< &str > ) > ) -> WorkspacePackage
+// fn mock_package( features : Vec< ( &str, Vec< &str > ) > ) -> WorkspacePackageRef< '_ >
+fn mock_package( features : Vec< ( &str, Vec< &str > ) > ) -> cargo_metadata::Package
 {
   let mut features_map : HashMap< String, Vec< _ > > = HashMap::new();
   for ( feature, deps ) in features
@@ -34,7 +34,7 @@ fn mock_package( features : Vec< ( &str, Vec< &str > ) > ) -> WorkspacePackage
     }
   );
 
-  WorkspacePackage::deserialize( json ).unwrap()
+  cargo_metadata::Package::deserialize( json ).unwrap()
 }
 
 #[ test ]
@@ -57,7 +57,7 @@ fn case_1()
   let enabled_features = vec![ "f2".to_string() ];
   let result = features_powerset
   (
-    &package,
+    ( &package ).into(),
     power,
     &exclude_features,
     &include_features,
@@ -93,7 +93,7 @@ fn case_2()
   let enabled_features = vec![ "f2".to_string() ];
   let result = features_powerset
   (
-    &package,
+    ( &package ).into(),
     power,
     &exclude_features,
     &include_features,
@@ -130,7 +130,7 @@ fn case_3()
   let enabled_features = vec![ "f2".to_string() ];
   let result = features_powerset
   (
-    &package,
+    ( &package ).into(),
     power,
     &exclude_features,
     &include_features,
@@ -167,7 +167,7 @@ fn case_4()
   let enabled_features = vec![ "f2".to_string() ];
   let result = features_powerset
   (
-    &package,
+    ( &package ).into(),
     power,
     &exclude_features,
     &include_features,
@@ -205,7 +205,7 @@ fn case_5()
   let enabled_features = vec![ "f2".to_string() ];
   let result = features_powerset
   (
-    &package,
+    ( &package ).into(),
     power,
     &exclude_features,
     &include_features,
@@ -240,7 +240,7 @@ fn case_6()
   let enabled_features = vec![ "f2".to_string() ];
   let result = features_powerset
   (
-    &package,
+    ( &package ).into(),
     power,
     &exclude_features,
     &include_features,

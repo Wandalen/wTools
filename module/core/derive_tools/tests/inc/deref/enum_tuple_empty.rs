@@ -9,4 +9,4 @@ enum EnumTupleEmpty
   B(),
 }
 
-include!( "./only_tests/enum_tuple_empty.rs" );
+include!( "./only_test/enum_tuple_empty.rs" );

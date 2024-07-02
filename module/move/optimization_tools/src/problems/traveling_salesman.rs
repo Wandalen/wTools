@@ -98,10 +98,20 @@ pub struct Edge( NodeIndex, NodeIndex, EdgeWeight );
 
 impl Edge
 {
+  /// Create new Edge
+  pub fn new( node1 : NodeIndex, node2 : NodeIndex, weight : EdgeWeight ) -> Self
+  {
+    Edge( node1, node2, weight )
+  }
   /// Get weight of the edge.
   pub fn weight( &self ) -> EdgeWeight
   {
     self.2
+  }
+  /// Get nodes of the edge
+  pub fn nodes( &self ) -> ( NodeIndex, NodeIndex )
+  {
+    ( self.0, self.1 )
   }
 }
 
@@ -127,7 +137,7 @@ impl Graph for TSPGraph
     {
       if let Some( ( _, weight ) ) = node_vec.iter().find( | ( n, _ ) | n == node2 )
       {
-        return Some( Edge( *node1, *node2, *weight ) );
+        return Some( Edge::new( *node1, *node2, *weight ) );
       }
     }
     None

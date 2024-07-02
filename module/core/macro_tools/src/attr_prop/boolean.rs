@@ -4,7 +4,7 @@
 //!
 
 use crate::*;
-use former_types::Assign;
+// use former_types::Assign;
 
 /// Default marker for `AttributePropertyBoolean`.
 /// Used if no marker is defined as parameter.
