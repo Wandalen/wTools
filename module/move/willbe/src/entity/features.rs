@@ -2,7 +2,7 @@ mod private
 {
   use crate::*;
   use collection::{ BTreeSet, HashSet };
-  use error::untyped::{ bail, Result };
+  use error::untyped::{ bail }; // xxx
   use iter::Itertools;
 
   /// Generates a powerset of the features available in the given `package`,
@@ -50,7 +50,8 @@ mod private
     with_none_features : bool,
     variants_cap : u32,
   )
-    -> Result< HashSet< BTreeSet< String > > >
+  // qqq : for Petro : typed error
+  -> error::untyped::Result< HashSet< BTreeSet< String > > >
   {
     let mut features_powerset = HashSet::new();
 

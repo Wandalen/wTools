@@ -10,7 +10,7 @@ mod private
 
   // // use path::AbsolutePath;
   use former::Former;
-  use error::{ untyped::Context, Result };
+  use error::{ untyped::Context };
   // use workspace::Workspace;
 
   /// Options available for the .features command
@@ -68,7 +68,8 @@ mod private
 
   /// List features
   pub fn features( FeaturesOptions { crate_dir, with_features_deps } : FeaturesOptions )
-  -> Result< FeaturesReport >
+  -> error::untyped::Result< FeaturesReport >
+  // qqq : typed error
   {
     let workspace = Workspace::try_from( crate_dir.clone() ).context( "Failed to find workspace" )?;
     let packages = workspace.packages().filter

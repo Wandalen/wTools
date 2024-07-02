@@ -2,10 +2,11 @@ mod private
 {
   use crate::*;
   use action;
-  use error::untyped::{ Error, Result };
+  use error::untyped::{ Error };
 
   /// Generates header to main Readme.md file.
-  pub fn readme_header_renew() -> Result< () >
+  // qqq : typed error
+  pub fn readme_header_renew() -> error::untyped::Result< () >
   {
     match action::readme_header_renew
     (

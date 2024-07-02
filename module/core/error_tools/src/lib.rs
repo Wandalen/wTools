@@ -14,7 +14,6 @@ pub mod assert;
 pub mod error;
 
 /// Namespace with dependencies.
-
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {

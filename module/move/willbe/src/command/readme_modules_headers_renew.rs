@@ -2,10 +2,11 @@ mod private
 {
   use crate::*;
   // use path::AbsolutePath;
-  use error::{ untyped::Error, Result };
+  use error::{ untyped::Error };
 
   /// Generate headers for workspace members
-  pub fn readme_modules_headers_renew() -> Result< () >
+  // qqq : typed error
+  pub fn readme_modules_headers_renew() -> error::untyped::Result< () >
   {
     match action::readme_modules_headers_renew( CrateDir::transitive_try_from::< AbsolutePath >( CurrentPath )? )
     {

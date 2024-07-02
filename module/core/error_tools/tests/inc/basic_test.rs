@@ -38,7 +38,7 @@ tests_impls!
 
   fn use1()
   {
-    use std::error::Error as ErrorInterface;
+    use std::error::Error as ErrorTrait;
     use the_module::BasicError as Error;
 
     // test.case( "basic" );
@@ -54,7 +54,7 @@ tests_impls!
 
   fn use2()
   {
-    use the_module::{ BasicError, ErrorInterface };
+    use the_module::{ BasicError, ErrorTrait };
 
     // test.case( "basic" );
 

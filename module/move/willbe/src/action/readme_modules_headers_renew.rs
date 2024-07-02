@@ -306,6 +306,7 @@ mod private
       .unwrap_or_default();
 
       _ = query::parse( raw_params ).context( "Fail to parse raw params." );
+      // qqq : for Petro : why ignored?
 
       let content = header_content_generate
       (

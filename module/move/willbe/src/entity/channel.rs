@@ -8,7 +8,7 @@ mod private
   };
   use path::Path;
   use collection::HashSet;
-  use error::untyped::{ Error, Result };
+  use error::untyped::{ Error };
   use process_tools::process::*;
 
   /// The `Channel` enum represents different release channels for rust.
@@ -51,7 +51,8 @@ mod private
   /// Retrieves a list of available channels.
   ///
   /// This function takes a path and returns a `Result` with a vector of strings representing the available channels.
-  pub fn available_channels< P >( path : P ) -> Result< HashSet< Channel > >
+  // qqq : typed error
+  pub fn available_channels< P >( path : P ) -> error::untyped::Result< HashSet< Channel > >
   where
     P : AsRef< Path >,
   {

@@ -436,8 +436,8 @@ mod private
   /// - `Result<ListReport, (ListReport, Error)>` - A result containing the list report if successful,
   ///   or a tuple containing the list report and error if not successful.
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
-  pub fn list( args : ListOptions ) -> ResultWithReport< ListReport, untyped::Error > // qqq : should be specific error
-  // xxx
+  pub fn list( args : ListOptions )
+  -> ResultWithReport< ListReport, untyped::Error > // qqq : should be specific error
   {
     let mut report = ListReport::default();
 

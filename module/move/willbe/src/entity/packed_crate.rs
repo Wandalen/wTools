@@ -9,7 +9,7 @@ mod private
     time::Duration,
     path::PathBuf,
   };
-  use error::{ untyped::Context, Result };
+  use error::{ untyped::Context };
   use ureq::Agent;
 
   /// Returns the local path of a packed `.crate` file based on its name, version, and manifest path.
@@ -21,7 +21,8 @@ mod private
   ///
   /// # Returns :
   /// The local packed `.crate` file of the package
-  pub fn local_path< 'a >( name : &'a str, version : &'a str, crate_dir : CrateDir ) -> Result< PathBuf >
+  // qqq : typed error
+  pub fn local_path< 'a >( name : &'a str, version : &'a str, crate_dir : CrateDir ) -> error::untyped::Result< PathBuf >
   {
     let buf = format!( "package/{0}-{1}.crate", name, version );
     let workspace = Workspace::try_from( crate_dir )?;
@@ -36,7 +37,8 @@ mod private
   ///
   /// Get data of remote package from crates.io.
   ///
-  pub fn download< 'a >( name : &'a str, version : &'a str ) -> Result< Vec< u8 > >
+  // qqq : typed error
+  pub fn download< 'a >( name : &'a str, version : &'a str ) -> error::untyped::Result< Vec< u8 > >
   {
     let agent : Agent = ureq::AgentBuilder::new()
     .timeout_read( Duration::from_secs( 5 ) )

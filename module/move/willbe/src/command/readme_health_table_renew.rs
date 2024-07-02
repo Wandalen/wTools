@@ -2,16 +2,17 @@ mod private
 {
   use crate::*;
 
-  use error::{ untyped::Context, Result };
+  use error::{ untyped::Context };
 
   ///
   /// Generate table.
   ///
-  pub fn readme_health_table_renew() -> Result< () >
+  // qqq : typed error
+  pub fn readme_health_table_renew() -> error::untyped::Result< () >
   {
     action::readme_health_table_renew
-    ( 
-      &std::env::current_dir()? 
+    (
+      &std::env::current_dir()?
     )
     .context( "Fail to create table" )
   }
