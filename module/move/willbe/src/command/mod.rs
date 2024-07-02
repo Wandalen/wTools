@@ -108,17 +108,17 @@ pub( crate ) mod private
 
     .command( "readme.health.table.renew" )
       .hint( "Generate a table for the root `Readme.md`" )
-      .long_hint( 
+      .long_hint(
         r#"Generates a data summary table for the `Readme.md` file located in the root of the workspace.
 To ensure the proper execution of the command, the following tags need to be specified in the Readme.md file:
-        
+
 <!--{ generate.healthtable( './', with_branches:1 ) } -->
 <!--{ generate.healthtable.end } -->
-        
+
 After executing the command, the tags will not be modified.
-        
+
 Tags can contains params:
-        
+
 path: The relative path to the directory from workspace root, which crates will be taken. Default is './'.
 with_branches: If set to 1, it will display the status of workflow execution on branches specified in branches under workspace.metadata in the Cargo.toml of your workspace. For example, branches = ["master", "alpha"]. Default is 1.
 with_stability: If set to 1, a column indicating the stability of the module will be added. Information is taken from package.metadata of each module (package.metadata.stability = "stable"). By default, the module is considered experimental. Default is 1.
@@ -266,7 +266,7 @@ with_gitpod: If set to 1, a column with a link to Gitpod will be added. Clicking
       .long_hint( "Generate header which contains a badge with the general status of workspace, a link to discord, an example in gitpod and documentation in workspace`s Readme.md file.\n For use this command you need to specify:\n\n[workspace.metadata]\nmaster_branch = \"alpha\"\nworkspace_name = \"wtools\"\nrepo_url = \"https://github.com/Wandalen/wTools\"\ndiscord_url = \"https://discord.gg/123123\"\n\nin workspace's Cargo.toml.\n\nGenerates header for each workspace member which contains a badge with the status of crate, a link to discord, an example in gitpod and documentation in crate Readme.md file.\nFor use this command you need to specify:\n\n[package]\nname = \"test_module\"\nrepository = \"https://github.com/Username/ProjectName/tree/master/module/test_module\"\n...\n[package.metadata]\nstability = \"stable\" (Optional)\ndiscord_url = \"https://discord.gg/1234567890\" (Optional)\n\nin module's Cargo.toml.")
       .routine( command::readme_headers_renew )
       .end()
-      
+
     .command( "features" )
       .hint( "Lists features of the package" )
       .long_hint( "Lists features of the package located in a folder.\nWill list either separate package features or features for every package of a workspace")
@@ -288,7 +288,7 @@ with_gitpod: If set to 1, a column with a link to Gitpod will be added. Clicking
 crate::mod_interface!
 {
 
-  protected use ca;
+  own use ca;
 
   /// List packages.
   layer list;

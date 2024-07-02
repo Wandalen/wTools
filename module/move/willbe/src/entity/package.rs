@@ -234,9 +234,9 @@ crate::mod_interface!
 {
 
   exposed use Package;
-  protected use PackageName;
-  protected use PackageError;
+  own use PackageName;
+  own use PackageError;
 
-  protected use publish_need;
+  own use publish_need;
 
 }

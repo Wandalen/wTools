@@ -7,8 +7,8 @@
 //   pub type Result< T, E = BasicError > = std::result::Result< T, E >;
 // }
 //
-// /// Protected namespace of the module.
-// pub mod protected
+// /// Own namespace of the module.
+// pub mod own
 // {
 //   #[ doc( inline ) ]
 //   #[ allow( unused_imports ) ]
@@ -17,7 +17,7 @@
 //
 // #[ doc( inline ) ]
 // #[ allow( unused_imports ) ]
-// pub use protected::*;
+// pub use own::*;
 //
 // /// Shared with parent namespace of the module
 // pub mod orphan

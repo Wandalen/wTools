@@ -324,8 +324,8 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  // protected use run_with_shell;
-  protected use run;
-  protected use Run;
-  protected use Report;
+  // own use run_with_shell;
+  own use run;
+  own use Run;
+  own use Report;
 }

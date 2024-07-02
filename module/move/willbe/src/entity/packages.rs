@@ -109,7 +109,7 @@ mod private
 crate::mod_interface!
 {
 
-  protected use FilterMapOptions;
-  protected use filter;
+  own use FilterMapOptions;
+  own use filter;
 
 }

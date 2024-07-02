@@ -261,7 +261,7 @@ mod private
 
 crate::mod_interface!
 {
-  protected use parse;
-  protected use Value;
-  protected use ParseResult;
+  own use parse;
+  own use Value;
+  own use ParseResult;
 }

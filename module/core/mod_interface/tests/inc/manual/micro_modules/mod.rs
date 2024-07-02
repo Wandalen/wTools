@@ -6,24 +6,24 @@ mod private
 {
 }
 
-pub mod mod_protected;
+pub mod mod_own;
 pub mod mod_orphan;
 pub mod mod_exposed;
 pub mod mod_prelude;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
-  pub use super::mod_protected;
+  pub use super::mod_own;
 }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]

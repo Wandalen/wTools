@@ -7,6 +7,6 @@ crate::mod_interface!
 {
 
   use ::proper_path_tools;
-  protected use ::proper_path_tools::protected::*;
+  own use ::proper_path_tools::own::*;
 
 }

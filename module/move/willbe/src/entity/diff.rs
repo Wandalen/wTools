@@ -218,9 +218,9 @@ mod private
 
 crate::mod_interface!
 {
-  protected use Diff;
-  protected use DiffItem;
-  protected use DiffReport;
-  protected use crate_diff;
-  protected use PUBLISH_IGNORE_LIST;
+  own use Diff;
+  own use DiffItem;
+  own use DiffReport;
+  own use crate_diff;
+  own use PUBLISH_IGNORE_LIST;
 }

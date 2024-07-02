@@ -82,7 +82,7 @@ mod private
 
 crate::mod_interface!
 {
-  protected use ExtendedGitReport;
-  protected use GitOptions;
-  protected use perform_git_commit;
+  own use ExtendedGitReport;
+  own use GitOptions;
+  own use perform_git_commit;
 }

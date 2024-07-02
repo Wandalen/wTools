@@ -57,5 +57,5 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  protected use readme_path;
+  own use readme_path;
 }

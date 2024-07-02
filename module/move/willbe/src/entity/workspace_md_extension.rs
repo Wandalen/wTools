@@ -2,7 +2,7 @@
 pub( crate ) mod private
 {
   use crate::*;
-  
+
   /// Md's extension for workspace
   pub trait WorkspaceMdExtension
   {
@@ -21,7 +21,7 @@ pub( crate ) mod private
 
   impl WorkspaceMdExtension for Workspace
   {
-    fn discord_url( &self ) -> Option< String > 
+    fn discord_url( &self ) -> Option< String >
     {
       self
       .metadata
@@ -30,7 +30,7 @@ pub( crate ) mod private
       .map( | url | url.to_string() )
     }
 
-    fn master_branch( &self ) -> Option< String > 
+    fn master_branch( &self ) -> Option< String >
     {
       self
       .metadata
@@ -40,7 +40,7 @@ pub( crate ) mod private
       .map( | b | b.to_string() )
     }
 
-    fn repository_url( &self ) -> Option< String > 
+    fn repository_url( &self ) -> Option< String >
     {
       self
       .metadata
@@ -50,7 +50,7 @@ pub( crate ) mod private
       .map( | b | b.to_string() )
     }
 
-    fn workspace_name( &self ) -> Option< String > 
+    fn workspace_name( &self ) -> Option< String >
     {
       self
       .metadata
@@ -66,5 +66,5 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  protected use WorkspaceMdExtension;
+  own use WorkspaceMdExtension;
 }

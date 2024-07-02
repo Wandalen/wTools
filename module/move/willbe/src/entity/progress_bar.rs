@@ -102,7 +102,7 @@ mod private
 crate::mod_interface!
 {
   #[ cfg( feature = "progress_bar" ) ]
-  protected use ProgressBar;
+  own use ProgressBar;
   #[ cfg( feature = "progress_bar" ) ]
-  protected use MultiProgress;
+  own use MultiProgress;
 }

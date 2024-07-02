@@ -1,7 +1,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  // use crate::protected::*;
+  // use crate::own::*;
   use core::fmt;
   use num_traits::{ Zero }; /* zzz : consider as submodule for wtools */
 
@@ -93,7 +93,7 @@ pub( crate ) mod private
 ::meta_tools::mod_interface!
 {
 
-  protected use ::rgb::*;
+  own use ::rgb::*;
 
   #[ cfg( not( feature = "no_std" ) ) ]
   exposed use Rgba;

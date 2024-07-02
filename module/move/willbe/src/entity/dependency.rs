@@ -278,10 +278,10 @@ crate::mod_interface!
   exposed use DependencyRef;
   exposed use DependencyKind;
 
-  protected use CrateId;
-  protected use DependenciesSort;
-  protected use DependenciesOptions;
-  protected use _list;
-  protected use list;
+  own use CrateId;
+  own use DependenciesSort;
+  own use DependenciesOptions;
+  own use _list;
+  own use list;
 
 }

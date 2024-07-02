@@ -124,5 +124,5 @@ mod private
 
 crate::mod_interface!
 {
-  protected use format_table;
+  own use format_table;
 }

@@ -433,10 +433,10 @@ mod private
 
 crate::mod_interface!
 {
-  protected use PublishPlan;
-  protected use PackagePublishInstruction;
-  protected use PublishSinglePackagePlanner;
-  protected use PublishReport;
-  protected use perform_package_publish;
-  protected use perform_packages_publish;
+  own use PublishPlan;
+  own use PackagePublishInstruction;
+  own use PublishSinglePackagePlanner;
+  own use PublishReport;
+  own use perform_package_publish;
+  own use perform_packages_publish;
 }

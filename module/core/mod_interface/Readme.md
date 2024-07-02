@@ -73,12 +73,12 @@ pub mod inner
     pub fn inner_is() -> bool { true }
   }
 
-  /// Protected namespace of the module.
-  pub mod protected
+  /// Own namespace of the module.
+  pub mod own
   {
     pub use orphan::*;
   }
-  pub use protected::*;
+  pub use own::*;
 
   /// Orphan namespace of the module.
   pub mod orphan
@@ -99,15 +99,15 @@ pub mod inner
   }
 }
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
   use super::*;
   pub use orphan::*;
   pub use super::inner::orphan::*;
 }
-pub use protected::*;
+pub use own::*;
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]

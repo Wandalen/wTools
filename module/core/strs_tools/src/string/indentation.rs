@@ -79,11 +79,11 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
   use super::*;
   pub use orphan::*;
@@ -110,7 +110,7 @@ pub mod orphan
 pub mod exposed
 {
   use super::*;
-  pub use super::protected as indentation;
+  pub use super::own as indentation;
 
   #[ allow( unused_imports ) ]
   pub use private::

@@ -3,7 +3,7 @@
 pub( crate ) mod private
 {
   use crate::tool::*;
-  use ::error_tools::protected::*;
+  use ::error_tools::own::*;
 
 }
 
@@ -12,7 +12,7 @@ crate::mod_interface!
   // #![ debug ]
 
   use ::error_tools;
-  protected use ::error_tools::protected::*;
+  own use ::error_tools::own::*;
 
   // exposed use ErrWith;
   // exposed use ResultWithReport;

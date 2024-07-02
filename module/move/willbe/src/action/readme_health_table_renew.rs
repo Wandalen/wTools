@@ -709,12 +709,12 @@ ensure that at least one remotest is present in git. ",
 crate::mod_interface!
 {
   // /// Return workspace root
-  // protected use workspace_root;
+  // own use workspace_root;
   /// Stability
-  protected use Stability;
+  own use Stability;
   /// Generate Stability badge
-  protected use stability_generate;
-  protected use find_example_file;
+  own use stability_generate;
+  own use find_example_file;
   /// Create Table.
   orphan use readme_health_table_renew;
 }

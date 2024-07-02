@@ -116,12 +116,12 @@ pub mod dependency
 #[ doc( inline ) ]
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
   use super::*;
   #[ doc( inline ) ]

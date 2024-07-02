@@ -317,9 +317,9 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  protected use construct;
-  protected use toposort;
-  protected use topological_sort_with_grouping;
-  protected use subgraph;
-  protected use remove_not_required_to_publish;
+  own use construct;
+  own use toposort;
+  own use topological_sort_with_grouping;
+  own use subgraph;
+  own use remove_not_required_to_publish;
 }

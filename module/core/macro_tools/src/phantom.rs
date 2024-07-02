@@ -192,11 +192,11 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
 #[ allow( unused_imports ) ]
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+pub mod own
 {
   use super::*;
 
@@ -232,7 +232,7 @@ pub mod exposed
   use super::*;
 
   pub use super::super::phantom;
-  // pub use super::protected as phantom;
+  // pub use super::own as phantom;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

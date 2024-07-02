@@ -234,8 +234,8 @@
 //   pub use make;
 // }
 //
-// /// Protected namespace of the module.
-// pub mod protected
+// /// Own namespace of the module.
+// pub mod own
 // {
 //   #[ doc( inline ) ]
   // #[ allow( unused_imports ) ]
@@ -244,7 +244,7 @@
 //
 // #[ doc( inline ) ]
 // #[ allow( unused_imports ) ]
-// pub use protected::*;
+// pub use own::*;
 //
 // /// Orphan namespace of the module.
 // pub mod orphan

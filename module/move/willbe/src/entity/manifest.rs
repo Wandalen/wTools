@@ -185,5 +185,5 @@ crate::mod_interface!
 {
   exposed use Manifest;
   orphan use ManifestError;
-  protected use repo_url;
+  own use repo_url;
 }

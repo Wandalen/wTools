@@ -1,7 +1,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  // use crate::protected::*;
+  // use crate::own::*;
   use crate::abs::{change::private::ChangeInterface, identity::private::Id};
 
   /// ChangerInterface of brush stroke.

@@ -68,7 +68,7 @@ mod private
 crate::mod_interface!
 {
 
-  protected use local_path;
-  protected use download;
+  own use local_path;
+  own use download;
 
 }

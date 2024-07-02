@@ -7,6 +7,6 @@ crate::mod_interface!
 {
 
   use ::collection_tools;
-  protected use ::collection_tools::protected::*;
+  own use ::collection_tools::own::*;
 
 }

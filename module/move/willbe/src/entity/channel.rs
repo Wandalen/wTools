@@ -83,6 +83,6 @@ mod private
 
 crate::mod_interface!
 {
-  protected use Channel;
-  protected use available_channels;
+  own use Channel;
+  own use available_channels;
 }

@@ -50,5 +50,5 @@ pub( crate ) mod private
 crate::mod_interface!
 {
   #[ cfg( feature = "process_environment_is_cicd" ) ]
-  protected use is_cicd;
+  own use is_cicd;
 }

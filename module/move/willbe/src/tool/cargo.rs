@@ -211,10 +211,10 @@ mod private
 
 crate::mod_interface!
 {
-  protected use pack;
-  protected use publish;
+  own use pack;
+  own use publish;
 
-  protected use PublishOptions;
-  protected use PackOptions;
+  own use PublishOptions;
+  own use PackOptions;
 
 }

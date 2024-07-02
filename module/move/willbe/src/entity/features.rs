@@ -143,6 +143,6 @@ mod private
 crate::mod_interface!
 {
   /// Features
-  protected use features_powerset;
-  protected use estimate_with;
+  own use features_powerset;
+  own use estimate_with;
 }

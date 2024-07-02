@@ -32,7 +32,7 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  protected use graph;
+  own use graph;
 }
 
 // xxx : move

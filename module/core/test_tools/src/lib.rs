@@ -55,7 +55,7 @@ pub mod dependency
 {
   // #![ debug ]
 
-  protected use super::dependency::*;
+  own use super::dependency::*;
 
   layer test;
 

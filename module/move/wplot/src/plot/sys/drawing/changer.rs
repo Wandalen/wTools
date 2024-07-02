@@ -1,7 +1,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  // use crate::protected::*;
+  // use crate::own::*;
 
   use crate::{abs::{identity::private::{Id, HasIdInterface}, changer::private::ChangerInterface}, ContextChanger, sys::drawing::{rect_changer::private::RectChanger, change_new::private::DrawingChangeNew}};
   use crate::abs::change::private::ChangeInterface;

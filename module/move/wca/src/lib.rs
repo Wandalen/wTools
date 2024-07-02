@@ -13,5 +13,5 @@ pub mod ca;
 crate::mod_interface!
 {
   use super::ca;
-  protected use super::ca::protected::*;
+  own use super::ca::own::*;
 }

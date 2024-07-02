@@ -833,21 +833,21 @@ mod private
 crate::mod_interface!
 {
   /// Arguments for `list` action.
-  protected use ListOptions;
+  own use ListOptions;
   /// Additional information to include in a package report.
-  protected use PackageAdditionalInfo;
+  own use PackageAdditionalInfo;
   /// Represents where a dependency located.
-  protected use DependencySource;
+  own use DependencySource;
   /// Represents the category of a dependency.
-  protected use DependencyCategory;
+  own use DependencyCategory;
   /// Argument for `list` action. Sets the output format.
-  protected use ListFormat;
+  own use ListFormat;
   /// Argument for `list` action. Sets filter(local or all) packages should be in the output.
-  protected use ListFilter;
+  own use ListFilter;
   /// Contains output of the action.
-  protected use ListReport;
+  own use ListReport;
   /// Contains output of a single node of the action.
-  // protected use ListNodeReport;
+  // own use ListNodeReport;
   /// List packages in workspace.
   orphan use list;
 }

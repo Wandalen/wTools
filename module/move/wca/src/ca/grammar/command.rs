@@ -250,7 +250,7 @@ crate::mod_interface!
 {
   exposed use Command;
   exposed use CommandFormer;
-  protected use ValueDescription;
+  own use ValueDescription;
 }
 
 // qqq : use orphan instead of exposed for ALL files in the folder, dont use prelude for structs

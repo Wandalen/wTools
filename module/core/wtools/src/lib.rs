@@ -50,9 +50,9 @@ pub mod dependency
 
 }
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
   use super::*;
   #[ doc( inline ) ]
@@ -111,7 +111,7 @@ pub mod protected
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]

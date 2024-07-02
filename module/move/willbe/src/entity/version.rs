@@ -374,18 +374,18 @@ crate::mod_interface!
   exposed use Version;
 
   /// Report for bump operation.
-  protected use BumpReport;
+  own use BumpReport;
 
   /// Options for version bumping.
-  protected use BumpOptions;
+  own use BumpOptions;
   /// Report about a changing version with list of files that was changed.
-  protected use ExtendedBumpReport;
+  own use ExtendedBumpReport;
 
   /// Bumps the version of a package and its dependencies.
-  protected use manifest_bump;
+  own use manifest_bump;
   /// Bump version.
-  protected use bump;
+  own use bump;
 
   /// Reverts the version of a package.
-  protected use revert;
+  own use revert;
 }

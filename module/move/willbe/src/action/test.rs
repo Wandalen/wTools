@@ -219,5 +219,5 @@ crate::mod_interface!
 {
   /// run all tests in all crates
   orphan use test;
-  protected use TestsCommandOptions;
+  own use TestsCommandOptions;
 }

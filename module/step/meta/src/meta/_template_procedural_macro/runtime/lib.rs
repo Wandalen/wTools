@@ -18,15 +18,15 @@ pub mod dependency
 {
 }
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
   use super::*;
   pub use exposed::*;
 }
 
-pub use protected::*;
+pub use own::*;
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]

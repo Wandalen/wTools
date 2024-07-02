@@ -46,6 +46,6 @@ mod private
 
 crate::mod_interface!
 {
-  protected use repo_url_extract;
-  protected use git_info_extract;
+  own use repo_url_extract;
+  own use git_info_extract;
 }

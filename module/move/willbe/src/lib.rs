@@ -47,7 +47,7 @@ pub( crate ) mod private
 mod_interface!
 {
 
-  protected use run;
+  own use run;
 
   /// Entities of which spaces consists of.
   layer entity;

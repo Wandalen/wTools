@@ -5,9 +5,9 @@ use layer_x as layer_a;
 #[allow(unused_imports)]
 pub use protected :: * ;
 
-#[doc = r" Protected namespace of the module."]
+#[doc = r" Own namespace of the module."]
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
   use super::*;
 

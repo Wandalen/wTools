@@ -416,7 +416,7 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  protected use HelpGeneratorFn;
-  protected use HelpGeneratorOptions;
+  own use HelpGeneratorFn;
+  own use HelpGeneratorOptions;
   prelude use HelpVariants;
 }

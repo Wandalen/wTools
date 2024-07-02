@@ -240,9 +240,9 @@ mod private
 
 crate::mod_interface!
 {
-  protected use add;
-  protected use commit;
-  protected use push;
-  protected use reset;
-  protected use ls_remote_url;
+  own use add;
+  own use commit;
+  own use push;
+  own use reset;
+  own use ls_remote_url;
 }

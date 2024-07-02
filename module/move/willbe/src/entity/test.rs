@@ -778,14 +778,14 @@ mod private
 crate::mod_interface!
 {
 
-  protected use SingleTestOptions;
-  protected use TestVariant;
-  protected use _run;
+  own use SingleTestOptions;
+  own use TestVariant;
+  own use _run;
 
-  protected use TestPlan;
-  protected use TestOptions;
-  protected use TestReport;
-  protected use TestsReport;
-  protected use run;
-  protected use tests_run;
+  own use TestPlan;
+  own use TestOptions;
+  own use TestReport;
+  own use TestsReport;
+  own use run;
+  own use tests_run;
 }

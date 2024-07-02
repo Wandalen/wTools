@@ -3,8 +3,8 @@
 mod private
 {
 
-  /// layer_b_protected
-  pub fn layer_b_protected() -> bool
+  /// layer_b_own
+  pub fn layer_b_own() -> bool
   {
     true
   }
@@ -29,21 +29,21 @@ mod private
 
 }
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use private::layer_b_protected;
+  pub use private::layer_b_own;
 }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]

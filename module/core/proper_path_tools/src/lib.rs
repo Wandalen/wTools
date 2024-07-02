@@ -22,7 +22,7 @@ mod_interface!
   layer transitive;
 
   #[ cfg( feature = "path_utf8" ) ]
-  protected use ::camino::{ Utf8Path, Utf8PathBuf };
-  protected use ::std::path::{ PathBuf, Path };
+  own use ::camino::{ Utf8Path, Utf8PathBuf };
+  own use ::std::path::{ PathBuf, Path };
 
 }

@@ -4,7 +4,7 @@ mod change_new;
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::protected::*;
+  use crate::own::*;
   use crate::abs::identity::private::Id;
   use crate::abs::identity::private::HasIdInterface;
 
