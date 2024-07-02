@@ -302,6 +302,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 
   #[ doc( inline ) ]
   pub use ::itertools::

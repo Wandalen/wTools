@@ -117,6 +117,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   #[ cfg( feature = "diagnostics_compiletime_assertions" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

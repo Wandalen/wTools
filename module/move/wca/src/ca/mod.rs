@@ -1,3 +1,6 @@
+//!
+//! Commands aggregator library.
+//!
 
 crate::mod_interface!
 {

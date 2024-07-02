@@ -122,6 +122,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   #[ allow( unused_imports ) ]
   use super::*;
 

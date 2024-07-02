@@ -52,6 +52,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   /// layer_b_prelude
   pub fn layer_b_prelude() -> bool
   {

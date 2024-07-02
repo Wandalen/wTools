@@ -77,6 +77,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
   #[ allow( unused_imports ) ]
   pub use super::indentation::prelude::*;

@@ -245,6 +245,8 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
+
   // xxx
 
   pub use super::private::err;

@@ -147,6 +147,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   pub use super::private::debug_assert_id;
   pub use super::private::debug_assert_identical;
   pub use super::private::debug_assert_ni;

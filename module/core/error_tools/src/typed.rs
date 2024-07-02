@@ -50,6 +50,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
