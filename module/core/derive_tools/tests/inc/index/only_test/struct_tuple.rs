@@ -1,10 +1,11 @@
-use super::*;
-
-#[ test ]
+#[test ]
 fn index()
 {
   let x = StructTuple(7);
+  let exp = 7;
+  let got = x[0];
 
-  a_id!(x[0], 7);
+  assert_eq!(got, exp);
+
 }
 

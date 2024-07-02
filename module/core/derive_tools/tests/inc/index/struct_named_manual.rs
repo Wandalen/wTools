@@ -1,13 +1,13 @@
 use core::ops::Index;
 
-struct StructNamed<T>
+struct StructNamed
 {
-  a : T,
+  a : bool,
 }
 
-impl<T> Index<usize> for StructNamed<T>
+impl Index<usize> for StructNamed
 {
-    type Output = T;
+    type Output = bool;
     
     fn index(&self, index: usize) -> &Self::Output {
         match index {

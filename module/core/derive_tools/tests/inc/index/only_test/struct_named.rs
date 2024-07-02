@@ -1,10 +1,11 @@
-use super::*;
 
 #[ test ]
 fn index()
 {
   let x = StructNamed { a : true};
+  let exp = true;
+  let got = x[0];
 
-  a_id!(x[0], true);
+  assert_eq!(got, exp);
 }
 
