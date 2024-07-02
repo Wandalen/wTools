@@ -22,10 +22,10 @@ use std::
 
 use path::{ AbsolutePath, Utf8Path, Utf8PathBuf };
 
-use error::
-{
-  Result,
-};
+// use error::
+// {
+//   Result,
+// };
 
 /// Path to crate directory
 #[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]

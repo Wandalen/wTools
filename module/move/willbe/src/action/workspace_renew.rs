@@ -4,7 +4,7 @@ mod private
   use std::fs;
   use std::path::Path;
   use error::untyped::bail;
-  use error::Result;
+  // use error::Result;
   // qqq : group dependencies
   use iter::Itertools;
   use template::
@@ -29,46 +29,6 @@ mod private
       &self.parameters
     }
   }
-
-  // impl Template<WorkspaceTemplateFiles> for WorkspaceTemplate
-  // {
-  //   fn create_all( self, path : &Path ) -> Result< () >
-  //   {
-  //     self.files.create_all( path, &self.values )
-  //   }
-
-  //   fn parameters( &self ) -> &TemplateParameters
-  //   {
-  //     &self.parameters
-  //   }
-
-  //   fn set_values( &mut self, values : TemplateValues )
-  //   {
-  //     self.values = values
-  //   }
-
-  //   fn parameter_storage( &self ) -> &Path
-  //   {
-  //     "./.workspace_template.toml".as_ref()
-  //   }
-
-  //   fn template_name( &self ) -> &'static str
-  //   {
-  //     "workspace"
-  //   }
-
-  //   fn get_values( &self ) -> &TemplateValues
-  //   {
-  //     &self.values
-  //   }
-
-  //   fn get_values_mut( &mut self ) -> &mut TemplateValues
-  //   {
-  //     &mut self.values
-  //   }
-
-
-  // }
 
   impl Default for WorkspaceTemplate
   {
@@ -181,8 +141,7 @@ mod private
     repository_url : String,
     branches : Vec< String >
   )
-  -> Result< () >
-  // qqq : don't use 1-prameter Result
+  -> error::untyped::Result< () > // qqq : use typed error
   {
     if fs::read_dir( path )?.count() != 0
     {

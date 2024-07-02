@@ -15,9 +15,9 @@ mod private
   use toml_edit::Document;
 
   use entity::PathError;
-  use error::typed::Error;
+  use error::typed::Error; // xxx
 
-  use error::untyped::{ Result, Error as wError };
+  use error::untyped::{ Error as wError }; // xxx
   use entity::WorkspaceInitError;
   use error::err;
 
@@ -325,7 +325,7 @@ mod private
   }
 
   /// Create and write or rewrite content in file.
-  pub fn file_write( filename : &Path, content : &str ) -> Result< () >
+  pub fn file_write( filename : &Path, content : &str ) -> error::untyped::Result< () > // qqq : use typed error
   {
     if let Some( folder ) = filename.parent()
     {
@@ -355,7 +355,8 @@ mod private
     cargo_toml_path : &AbsolutePath,
     packages : impl Iterator< Item = WorkspacePackageRef< 'a > >,
   )
-  -> Result< UsernameAndRepository >
+  -> error::untyped::Result< UsernameAndRepository >
+  // qqq : use typed error
   {
       let mut contents = String::new();
       File::open( cargo_toml_path )?.read_to_string( &mut contents )?;

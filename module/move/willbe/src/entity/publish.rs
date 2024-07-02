@@ -9,7 +9,7 @@ mod private
     iter::Itertools,
     error::
     {
-      Result,
+      // Result,
       untyped::{ format_err, Error },
     }
   };
@@ -414,7 +414,8 @@ mod private
   /// # Returns
   ///
   /// Returns a `Result` containing a vector of `PublishReport` if successful, else an error.
-  pub fn perform_packages_publish( plan : PublishPlan ) -> Result< Vec< PublishReport > >
+  pub fn perform_packages_publish( plan : PublishPlan ) -> error::untyped::Result< Vec< PublishReport > >
+  // qqq : use typed error
   {
     let mut report = vec![];
     for package in plan.plans

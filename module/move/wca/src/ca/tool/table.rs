@@ -1,9 +1,10 @@
 mod private
 {
   use crate::*;
-  
-  use wtools::error::{ Result, err };
-  
+
+  // use wtools::error::{ Result, err };
+  use error::err;
+
   /// Represents a table composed of multiple rows.
   ///
   /// The `Table` struct is a simple container that holds multiple `Row` objects.
@@ -20,7 +21,7 @@ mod private
       Self( value.into_iter().map( Into::into ).collect() )
     }
   }
-  
+
   impl Table
   {
     /// Validates the structure of the given `self` object.
@@ -44,7 +45,7 @@ mod private
           return false;
         }
       }
-      
+
       true
     }
   }
@@ -54,7 +55,7 @@ mod private
   /// The `Row` struct is a container that holds multiple `String` objects representing the values in a table row.
   #[ derive( Debug ) ]
   pub struct Row( Vec< String > );
-  
+
   impl< R, V > From< R > for Row
   where
     R : IntoIterator< Item = V >,
@@ -65,7 +66,7 @@ mod private
       Self( value.into_iter().map( Into::into ).collect() )
     }
   }
-  
+
   fn max_column_lengths( table : &Table ) -> Vec< usize >
   {
     let num_columns = table.0.get( 0 ).map_or( 0, | row | row.0.len() );
@@ -79,7 +80,7 @@ mod private
     })
     .collect()
   }
-  
+
   /// Formats a table into a readable string representation.
   ///
   /// # Arguments
@@ -88,8 +89,9 @@ mod private
   ///
   /// # Returns
   ///
-  /// * `Result<String, Error>` - A `Result` containing the formatted table as a `String`, or an `Error` if the table is invalid.
-  pub fn format_table< IntoTable >( table : IntoTable ) -> Result< String >
+  /// * `error::untyped::Result<String, Error>` - A `error::untyped::Result` containing the formatted table as a `String`, or an `Error` if the table is invalid.
+  // qqq : use typed error
+  pub fn format_table< IntoTable >( table : IntoTable ) -> error::untyped::Result< String >
   where
     IntoTable : Into< Table >,
   {
@@ -98,9 +100,9 @@ mod private
     {
       return Err( err!( "Invalid table" ) );
     }
-    
+
     let max_lengths = max_column_lengths( &table );
-    
+
     let mut formatted_table = String::new();
     for row in table.0
     {
@@ -113,7 +115,7 @@ mod private
       formatted_table.push( '\n' );
     }
     formatted_table.pop(); // trailing end of line
-    
+
     Ok( formatted_table )
   }
 }

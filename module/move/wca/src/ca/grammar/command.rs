@@ -5,7 +5,7 @@ pub( crate ) mod private
   use std::collections::{ HashMap };
   use indexmap::IndexMap;
   use former::{ Former, StoragePreform };
-  use wtools::Itertools;
+  use iter_tools::Itertools;
 
   /// A description of a Value in a command. Used to specify the expected type and provide a hint for the Value.
   ///

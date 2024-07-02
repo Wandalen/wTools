@@ -257,7 +257,7 @@ mod private
   ///
   /// Returns `Ok(())` if the version is reverted successfully. Returns `Err` with an error message if there is any issue with reverting the version.
   // qqq : don't use 1-prameter Result
-  pub fn revert( report : &ExtendedBumpReport ) -> Result< () >
+  pub fn revert( report : &ExtendedBumpReport ) -> error::untyped::Result< () > // qqq : use typed error
   {
     let Some( name ) = report.name.as_ref() else { return Ok( () ) };
     let Some( old_version ) = report.old_version.as_ref() else { return Ok( () ) };

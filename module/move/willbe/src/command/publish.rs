@@ -5,7 +5,7 @@ mod private
   use colored::Colorize;
 
   use wca::VerifiedCommand;
-  use error::{ Result, untyped::Context };
+  use error::{ untyped::Context }; // xxx
   use former::Former;
   use std::fmt::Write;
   use channel::Channel;
@@ -25,19 +25,19 @@ mod private
   /// Publish package.
   ///
 
-  pub fn publish( o : VerifiedCommand ) -> Result< () >
+  pub fn publish( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
   {
     let args_line = format!
-    ( 
-      "{}", 
+    (
+      "{}",
       o
       .args
       .get_owned( 0 )
-      .unwrap_or( std::path::PathBuf::from( "" ) ).display() 
+      .unwrap_or( std::path::PathBuf::from( "" ) ).display()
     );
     let prop_line = format!
-    ( 
-      "{}", 
+    (
+      "{}",
       o
       .props
       .iter()
@@ -49,11 +49,11 @@ mod private
     .get_owned( 0 )
     .unwrap_or_else( || vec![ "./".into() ] );
 
-    let PublishProperties 
-    { 
-      channel, 
-      dry, 
-      temp 
+    let PublishProperties
+    {
+      channel,
+      dry,
+      temp
     } = o.props.try_into()?;
     let plan = action::publish_plan( patterns, channel, dry, temp )
     .context( "Failed to plan the publication process" )?;
@@ -103,13 +103,13 @@ mod private
       let mut this = Self::former();
 
       this = if let Some( v ) = value
-      .get_owned( "channel" ) 
-      { 
-        this.channel::< Channel >( { let v : String = v; Channel::try_from( v )? } ) 
-      } 
-      else 
+      .get_owned( "channel" )
+      {
+        this.channel::< Channel >( { let v : String = v; Channel::try_from( v )? } )
+      }
+      else
       { this };
-      
+
       this = if let Some( v ) = value
       .get_owned( "dry" ) { this.dry::< bool >( v ) } else { this };
       this = if let Some( v ) = value

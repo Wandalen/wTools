@@ -7,7 +7,7 @@ mod private
   use error::untyped::
   {
     format_err,
-    Result,
+    // Result,
   };
 
   /// Extracts the repository URL from a full URL.
@@ -29,7 +29,8 @@ mod private
   }
 
   /// Extracts the username and repository name from a given URL.
-  pub fn git_info_extract( url : &String ) -> Result< String >
+  // qqq : use typed error
+  pub fn git_info_extract( url : &String ) -> error::untyped::Result< String >
   {
     let parts : Vec< &str > = url.split( '/' ).collect();
     if parts.len() >= 2

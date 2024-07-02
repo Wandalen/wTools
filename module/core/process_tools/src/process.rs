@@ -14,8 +14,8 @@ pub( crate ) mod private
   use duct::cmd;
   use error_tools::
   {
-    for_app::{ Error, Context, anyhow },
-    Result,
+    untyped::{ Error, Context, anyhow },
+    // Result,
   };
   use former::Former;
   use iter_tools::iter::Itertools;

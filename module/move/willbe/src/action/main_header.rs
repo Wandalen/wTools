@@ -20,7 +20,7 @@ mod private
   use error::
   {
     err,
-    Result,
+    // Result,
     untyped::
     {
       Error,

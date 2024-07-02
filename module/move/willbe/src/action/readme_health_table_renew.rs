@@ -18,8 +18,8 @@ mod private
     Error,
     untyped::
     {
-      Error as wError,
-      Result,
+      Error as wError, // xxx
+      // Result,
       Context,
       format_err,
     }

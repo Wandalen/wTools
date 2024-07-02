@@ -50,7 +50,7 @@ mod private
     /// # Returns
     ///
     /// A `Result` which is `Ok` if the files are created successfully, or an `Err` otherwise.
-    pub fn create_all( self, path : &path::Path ) -> Result< () >
+    pub fn create_all( self, path : &path::Path ) -> error::untyped::Result< () > // qqq : use typed error
     {
       self.files.create_all( path, &self.values )
     }
@@ -184,74 +184,6 @@ mod private
     }
   }
 
-  // /// Trait for creating a template for a file structure.
-  // pub trait Template< F > : Sized
-  // where
-  //   F : TemplateFiles + Default
-  // {
-  //   /// Creates all files in the template.
-  //   ///
-  //   /// Path is the base path for the template to be created in.
-  //   fn create_all( self, path : &Path ) -> Result< () >;
-
-  //   /// Returns all parameters used by the template.
-  //   fn parameters( &self ) -> &TemplateParameters;
-
-  //   /// Sets values for provided parameters.
-  //   fn set_values( &mut self, values : TemplateValues );
-
-  //   /// Relative path for parameter values storage.
-  //   fn parameter_storage( &self ) -> &Path;
-
-  //   ///
-  //   fn template_name( &self ) -> &'static str;
-
-  //   /// Loads provided parameters from previous run.
-  //   fn load_existing_params( &mut self, path : &Path ) -> Option< () >
-  //   {
-  //     let data = fs::read_to_string( path.join( self.parameter_storage() ) ).ok()?;
-  //     let document = data.parse::< toml_edit::Document >().ok()?;
-  //     let parameters : Vec< _ > = self.parameters().descriptors.iter().map( | d | &d.parameter ).cloned().collect();
-  //     let template_table = document.get( self.template_name() )?;
-  //     for parameter in parameters
-  //     {
-  //       let value = template_table.get( &parameter )
-  //       .and_then
-  //       (
-  //         | item |
-  //         match item
-  //         {
-  //           toml_edit::Item::Value( toml_edit::Value::String( val ) ) => Some( val.value() ),
-  //           _ => None
-  //         }
-  //       );
-  //       if let Some( value ) = value
-  //       {
-  //         self.get_values_mut().insert_if_empty( &parameter, Value::String( value.into() ) );
-  //       }
-  //     }
-  //     Some( () )
-  //   }
-
-  //   /// Get all template values.
-  //   fn get_values( &self ) -> &TemplateValues;
-
-  //   /// Get all template values as a mutable reference.
-  //   fn get_values_mut( &mut self ) -> &mut TemplateValues;
-
-  //   /// Fetches mandatory parameters that are not set yet.
-  //   fn get_missing_mandatory( &self ) -> Vec< &str >
-  //   {
-  //     let values = self.get_values();
-  //     self
-  //     .parameters()
-  //     .list_mandatory()
-  //     .into_iter()
-  //     .filter( | key | values.0.get( *key ).map( | val | val.as_ref() ).flatten().is_none() )
-  //     .collect()
-  //   }
-  // }
-
   /// Files stored in a template.
   ///
   /// Can be iterated over, consuming the owner of the files.
@@ -260,7 +192,7 @@ mod private
     /// Creates all files in provided path with values for required parameters.
     ///
     /// Consumes owner of the files.
-    fn create_all( self, path : &Path, values : &TemplateValues ) -> Result< () >
+    fn create_all( self, path : &Path, values : &TemplateValues ) -> error::untyped::Result< () > // qqq : use typed error
     {
       let fsw = FileSystem;
       for file in self.into_iter()
@@ -393,7 +325,7 @@ mod private
   impl TemplateFileDescriptor
   {
     fn contents< FS : FileSystemPort >( &self, fs : &FS, path : &PathBuf, values : &TemplateValues )
-    -> Result< String >
+    -> error::untyped::Result< String >
     {
       let contents = if self.is_template
       {
@@ -431,7 +363,8 @@ mod private
       }
     }
 
-    fn build_template( &self, values : &TemplateValues ) -> Result< String >
+    // qqq : use typed error
+    fn build_template( &self, values : &TemplateValues ) -> error::untyped::Result< String >
     {
       let mut handlebars = handlebars::Handlebars::new();
       handlebars.register_escape_fn( handlebars::no_escape );
@@ -439,7 +372,7 @@ mod private
       handlebars.render( "templated_file", &values.to_serializable() ).context( "Failed creating a templated file" )
     }
 
-    fn create_file< FS : FileSystemPort >( &self, fs : &FS, path : &Path, values : &TemplateValues ) -> Result< () >
+    fn create_file< FS : FileSystemPort >( &self, fs : &FS, path : &Path, values : &TemplateValues ) -> error::untyped::Result< () > // qqq : use typed error
     {
       let path = path.join( &self.path );
       let data = self.contents( fs, &path, values )?.as_bytes().to_vec();
@@ -505,17 +438,17 @@ mod private
   pub trait FileSystemPort
   {
     /// Writing to file implementation.
-    fn write( &self, instruction : &FileWriteInstruction ) -> Result< () >;
+    fn write( &self, instruction : &FileWriteInstruction ) -> error::untyped::Result< () >; // qqq : use typed error
 
     /// Reading from a file implementation.
-    fn read( &self, instruction : &FileReadInstruction ) -> Result< Vec< u8 > >;
+    fn read( &self, instruction : &FileReadInstruction ) -> error::untyped::Result< Vec< u8 > >; // qqq : use typed error
   }
 
   // zzz : why not public?
   struct FileSystem;
   impl FileSystemPort for FileSystem
   {
-    fn write( &self, instruction : &FileWriteInstruction ) -> Result< () >
+    fn write( &self, instruction : &FileWriteInstruction ) -> error::untyped::Result< () > // qqq : use typed error
     {
       let FileWriteInstruction { path, data } = instruction;
       let dir = path.parent().context( "Invalid file path provided" )?;
@@ -526,7 +459,8 @@ mod private
       fs::write( path, data ).context( "Failed creating and writing to file" )
     }
 
-    fn read( &self, instruction : &FileReadInstruction ) -> Result< Vec< u8 > >
+  // qqq : use typed error
+    fn read( &self, instruction : &FileReadInstruction ) -> error::untyped::Result< Vec< u8 > >
     {
       let FileReadInstruction { path } = instruction;
       fs::read( path ).context( "Failed reading a file" )

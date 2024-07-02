@@ -1,12 +1,11 @@
 mod private
 {
   use crate::*;
-  
+
   use std::fmt;
   use process_tools::process;
   use error::
   {
-    Result,
     untyped::{ format_err, Context },
   };
 
@@ -53,14 +52,14 @@ mod private
     pub dry : bool,
   }
 
-  // aaa : for Bohdan : should not be here // aaa : done
-  // aaa : for Bohdan : documentation // aaa : done
   /// Performs a Git commit operation using the provided options
-  pub fn perform_git_commit( o : GitOptions ) -> Result< ExtendedGitReport >
+  pub fn perform_git_commit( o : GitOptions ) -> error::untyped::Result< ExtendedGitReport >
+  // qqq : use typed error
   {
+    use tool::git;
     let mut report = ExtendedGitReport::default();
     if o.items.is_empty() { return Ok( report ); }
-    let items = o
+    let items : error::untyped::Result< Vec< _ > > = o
     .items
     .iter()
     .map
@@ -68,10 +67,11 @@ mod private
       | item | item.as_ref().strip_prefix( o.git_root.as_ref() ).map( std::path::Path::to_string_lossy )
       .with_context( || format!("git_root: {}, item: {}", o.git_root.as_ref().display(), item.as_ref().display() ) )
     )
-    .collect::< Result< Vec< _ > > >()?;
-    let res = tool::git::add( &o.git_root, &items, o.dry ).map_err( | e | format_err!( "{report}\n{e}" ) )?;
+    .collect();
+
+    let res = git::add( &o.git_root, &items?, o.dry ).map_err( | e | format_err!( "{report}\n{e}" ) )?;
     report.add = Some( res );
-    let res = tool::git::commit( &o.git_root, &o.message, o.dry ).map_err( | e | format_err!( "{report}\n{e}" ) )?;
+    let res = git::commit( &o.git_root, &o.message, o.dry ).map_err( | e | format_err!( "{report}\n{e}" ) )?;
     report.commit = Some( res );
 
     Ok( report )

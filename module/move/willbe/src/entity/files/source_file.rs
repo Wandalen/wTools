@@ -20,10 +20,10 @@ use std::
   path::{ Path, PathBuf },
   borrow::Cow,
 };
-use error::
-{
-  Result,
-};
+// use error::
+// {
+//   Result,
+// };
 use path::{ AbsolutePath, Utf8Path, Utf8PathBuf };
 
 /// Path to a source file

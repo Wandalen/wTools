@@ -3,7 +3,7 @@ pub( crate ) mod private
   use crate::*;
   use former::Former;
   use indexmap::IndexMap;
-  use wtools::Itertools;
+  use iter_tools::Itertools;
 
   // qqq : `Former` does not handle this situation well
 

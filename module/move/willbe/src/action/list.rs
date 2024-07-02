@@ -11,10 +11,10 @@ mod private
     visit::Topo,
     Graph,
   };
-  use
+  use error::
   {
-    error::{ Context, untyped, format_err, err },
-    error::ErrWith,
+    ErrWith, err,
+    untyped::{ Context, format_err },
   };
   use tool::{ TreePrinter, ListNodeReport };
 
@@ -31,7 +31,7 @@ mod private
 
   impl str::FromStr for ListFormat
   {
-    type Err = untyped::Error;
+    type Err = error::untyped::Error;
 
     fn from_str( s : &str ) -> Result< Self, Self::Err >
     {
@@ -97,7 +97,7 @@ mod private
 
   impl str::FromStr for ListFilter
   {
-    type Err = untyped::Error;
+    type Err = error::untyped::Error;
 
     fn from_str( s : &str ) -> Result< Self, Self::Err >
     {
@@ -437,7 +437,9 @@ mod private
   ///   or a tuple containing the list report and error if not successful.
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
   pub fn list( args : ListOptions )
-  -> ResultWithReport< ListReport, untyped::Error > // qqq : should be specific error
+  ->
+  ResultWithReport< ListReport, error::untyped::Error > // qqq : should be specific error
+  // qqq : use typed error
   {
     let mut report = ListReport::default();
 

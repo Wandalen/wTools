@@ -98,7 +98,7 @@ tests_impls!
   fn sample()
   {
     #[ cfg( not( feature = "no_std" ) ) ]
-    fn f1() -> the_module::Result< () >
+    fn f1() -> the_module::untyped::Result< () >
     {
       let _read = std::fs::read_to_string( "Cargo.toml" )?;
       Err( the_module::BasicError::new( "Some error" ).into() )

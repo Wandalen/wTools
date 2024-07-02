@@ -10,7 +10,7 @@ mod private
   use crates_tools::CrateArchive;
   use error::
   {
-    Result,
+    // Result,
     typed::Error,
   };
 

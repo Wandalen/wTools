@@ -7,15 +7,14 @@ mod private
   use std::path::PathBuf;
   // // use path::AbsolutePath;
   use wca::VerifiedCommand;
-  use error::Result;
+  // use error::Result;
   // qqq : group dependencies
 
   ///
   /// List features of a package.
   ///
 
-  // qqq : don't use 1-prameter Result
-  pub fn features( o : VerifiedCommand ) -> Result< () >
+  pub fn features( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
   {
     let path : PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );
     let crate_dir = CrateDir::try_from( fs::canonicalize( path )? )?;

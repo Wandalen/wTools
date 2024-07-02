@@ -14,6 +14,17 @@ pub mod protected
 {
   #[ doc( inline ) ]
   pub use super::orphan::*;
+
+  #[ doc( inline ) ]
+  pub use ::anyhow::
+  {
+    Chain,
+    Context,
+    Error,
+    Ok,
+    Result,
+  };
+
 }
 
 /// Shared with parent namespace of the module
@@ -27,10 +38,13 @@ pub mod orphan
   pub use super::exposed::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use ::anyhow::*;
-
-  // xxx : qqq : be specific
+  pub use ::anyhow::
+  {
+    anyhow,
+    format_err,
+    ensure,
+    bail,
+  };
 
 }
 
@@ -42,14 +56,6 @@ pub mod exposed
 
   #[ doc( inline ) ]
   pub use super::prelude::*;
-
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use ::anyhow::Result;
-
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use ::anyhow::prelude::*;
 
 }
 

@@ -21,7 +21,7 @@ mod private
 
   // impl Template< DeployTemplateFiles > for DeployTemplate
   // {
-  //   fn create_all( self, path : &Path ) -> Result< () >
+  //   fn create_all( self, path : &Path ) -> error::untyped::Result< () >
   //   {
   //     self.files.create_all( path, &self.values )
   //   }

@@ -2,7 +2,7 @@ mod private
 {
   use crate::*;
   // use path::AbsolutePath;
-  use error::{ untyped::Error };
+  // use error::{ untyped::Error };
 
   /// Generate headers for workspace members
   // qqq : typed error
@@ -18,7 +18,8 @@ mod private
       Err( ( report, e ) ) =>
       {
         eprintln!( "{report}" );
-        Err( Error::from( e ).context( "Fail to generate modules headers." ) )
+        Err( error::untyped::Error::from( e ).context( "Fail to generate modules headers." ) )
+        // qqq : use typed error
       }
     }
   }

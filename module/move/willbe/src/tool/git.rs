@@ -23,8 +23,9 @@ mod private
   /// Returns a result containing a report indicating the result of the operation.
   // qqq : should be typed error, apply err_with
   #[ cfg_attr( feature = "tracing", tracing::instrument( skip( path, objects ), fields( path = %path.as_ref().display() ) ) ) ]
-  pub fn add< P, Os, O >( path : P, objects : Os, dry : bool ) -> Result< Report >
-  // qqq : don't use 1-prameter Result
+  pub fn add< P, Os, O >( path : P, objects : Os, dry : bool )
+  -> error::untyped::Result< Report >
+  // qqq : use typed error
   where
     P : AsRef< Path >,
     Os : AsRef< [ O ] >,
@@ -32,6 +33,7 @@ mod private
   {
     let objects = objects.as_ref().iter().map( | x | x.as_ref() );
 
+    // qqq : for Bohdan : don't enlarge length of lines artificially
     let ( program, args ) : ( _, Vec< _ > ) = ( "git", Some( "add" ).into_iter().chain( objects ).collect() );
 
     if dry
@@ -72,7 +74,7 @@ mod private
   /// Returns a result containing a report indicating the result of the operation.
   // qqq : should be typed error, apply err_with
   #[ cfg_attr( feature = "tracing", tracing::instrument( skip( path, message ), fields( path = %path.as_ref().display(), message = %message.as_ref() ) ) ) ]
-  pub fn commit< P, M >( path : P, message : M, dry : bool ) -> Result< Report >
+  pub fn commit< P, M >( path : P, message : M, dry : bool ) -> error::untyped::Result< Report >
   // qqq : don't use 1-prameter Result
   where
     P : AsRef< Path >,
@@ -119,7 +121,7 @@ mod private
   // qqq : should be typed error, apply err_with
 
   #[ cfg_attr( feature = "tracing", tracing::instrument( skip( path ), fields( path = %path.as_ref().display() ) ) ) ]
-  pub fn push< P >( path : P, dry : bool ) -> Result< Report >
+  pub fn push< P >( path : P, dry : bool ) -> error::untyped::Result< Report >
   // qqq : don't use 1-prameter Result
   where
     P : AsRef< Path >,
@@ -165,7 +167,8 @@ mod private
 
   // qqq : should be typed error, apply err_with
 
-  pub fn reset< P >( path : P, hard : bool, commits_count : usize, dry : bool ) -> Result< Report >
+  pub fn reset< P >( path : P, hard : bool, commits_count : usize, dry : bool )
+  -> error::untyped::Result< Report >
   // qqq : don't use 1-prameter Result
   where
     P : AsRef< Path >,
@@ -219,7 +222,7 @@ mod private
   // qqq : should be typed error, apply err_with
   // qqq : don't use 1-prameter Result
 
-  pub fn ls_remote_url< P >( path : P ) -> Result< Report >
+  pub fn ls_remote_url< P >( path : P ) -> error::untyped::Result< Report >
   where
     P : AsRef< Path >,
   {

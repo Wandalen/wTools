@@ -19,7 +19,7 @@ mod private
   ///
 
   // qqq : typed error
-  pub fn workspace_renew( o : VerifiedCommand ) -> Result< () >
+  pub fn workspace_renew( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
   {
     let WorkspaceNewProperties { repository_url, branches } = o.props.try_into()?;
     let template = WorkspaceTemplate::default();

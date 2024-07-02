@@ -23,7 +23,7 @@ mod private
     err,
     untyped::
     {
-      Result,
+      // Result,
       Error as wError,
       Context,
     },
@@ -330,7 +330,9 @@ mod private
     header : ModuleHeader,
     raw_params : &str,
     workspace_root : &str
-  ) -> Result< Cow< 'a, str > >
+  )
+  // qqq : use typed error
+  -> error::untyped::Result< Cow< 'a, str > >
   {
     let header = header.to_header( workspace_root )?;
     let result = TAGS_TEMPLATE

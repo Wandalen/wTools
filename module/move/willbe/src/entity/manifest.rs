@@ -11,7 +11,7 @@ pub( crate ) mod private
   use error::
   {
     typed::Error,
-    untyped::{ Result, format_err },
+    untyped::{ format_err },
   };
 
   /// Represents errors related to manifest data processing.
@@ -146,7 +146,8 @@ pub( crate ) mod private
   }
 
   /// Retrieves the repository URL of a package from its `Cargo.toml` file.
-  pub fn repo_url( crate_dir : &CrateDir ) -> Result< String >
+  // qqq : use typed error
+  pub fn repo_url( crate_dir : &CrateDir ) -> error::untyped::Result< String >
   {
     let path = crate_dir.clone().manifest_file().inner().inner();
     if path.exists()

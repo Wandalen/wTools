@@ -6,7 +6,7 @@ mod private
   use std::{ env, fmt, fs };
   use
   {
-    error::untyped,
+    // error::untyped,
     error::ErrWith,
   };
 
@@ -121,7 +121,9 @@ mod private
     channel : channel::Channel,
     dry : bool,
     temp : bool
-  ) -> Result< publish::PublishPlan, untyped::Error >
+  )
+  -> Result< publish::PublishPlan, error::untyped::Error >
+  // qqq : use typed error
   {
     let mut paths = collection::HashSet::new();
     // find all packages by specified folders
@@ -244,7 +246,10 @@ mod private
   ///
 
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
-  pub fn publish( plan : publish::PublishPlan ) -> ResultWithReport< PublishReport, untyped::Error >
+  pub fn publish( plan : publish::PublishPlan )
+  ->
+  ResultWithReport< PublishReport, error::untyped::Error >
+  // qqq : use typed error
   {
     let mut report = PublishReport::default();
     let temp = plan.base_temp_dir.clone();
