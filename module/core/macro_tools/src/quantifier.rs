@@ -253,16 +253,18 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod protected
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
@@ -275,10 +277,10 @@ pub mod exposed
   // pub use super::protected as quantifier;
 
   #[ doc( inline ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     AsMuchAsPossibleNoDelimiter,
     Pair,
@@ -293,7 +295,7 @@ pub mod prelude
   use super::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
   };
 }

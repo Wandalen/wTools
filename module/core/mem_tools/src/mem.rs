@@ -68,6 +68,7 @@ pub( crate ) mod private
 #[ allow( unused_imports ) ]
 pub mod protected
 {
+  use super::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::
@@ -84,6 +85,7 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::
@@ -102,7 +104,7 @@ pub mod exposed
 {
   use super::*;
   #[ doc( inline ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

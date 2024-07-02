@@ -12,19 +12,21 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod protected
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 }
 
 /// Shared with parent namespace of the module
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   pub use super::super::typed;
   pub use super::super::typed as for_lib;
 
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -42,7 +44,7 @@ pub mod exposed
   use super::*;
 
   #[ doc( inline ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 
 }
 

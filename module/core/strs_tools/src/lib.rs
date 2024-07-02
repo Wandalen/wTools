@@ -18,7 +18,8 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod protected
 {
-  pub use super::orphan::*;
+  use super::*;
+  pub use orphan::*;
   pub use super::string::orphan::*;
 }
 
@@ -27,7 +28,8 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  pub use super::exposed::*;
+  use super::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.

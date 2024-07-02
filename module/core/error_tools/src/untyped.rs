@@ -12,8 +12,9 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod protected
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 
   #[ doc( inline ) ]
   pub use ::anyhow::
@@ -31,11 +32,12 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   pub use super::super::untyped;
   pub use super::super::untyped as for_app;
 
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 
   #[ doc( inline ) ]
   pub use ::anyhow::
@@ -54,7 +56,7 @@ pub mod exposed
   use super::*;
 
   #[ doc( inline ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 
 }
 

@@ -27,7 +27,8 @@ pub mod dependency
 #[ allow( unused_imports ) ]
 pub mod protected
 {
-  pub use super::exposed::*;
+  use super::*;
+  pub use exposed::*;
   pub use procedural_macro_runtime as runtime;
   pub use procedural_macro_meta as meta;
 }
@@ -39,7 +40,7 @@ pub use protected::*;
 pub mod exposed
 {
   use super::*;
-  pub use super::prelude::*;
+  pub use prelude::*;
   pub use meta::*;
 }
 

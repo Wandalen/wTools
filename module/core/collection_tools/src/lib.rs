@@ -36,9 +36,10 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod protected
 {
+  use super::*;
 
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 
 }
 
@@ -47,8 +48,9 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
@@ -59,7 +61,7 @@ pub mod exposed
   use super::*;
 
   #[ doc( inline ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 
   // #[ cfg( feature = "reexports" ) ]
   #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]

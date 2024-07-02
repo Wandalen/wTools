@@ -509,18 +509,16 @@ pub( crate ) mod private
 pub use protected::*;
 
 #[ allow( unused_imports ) ]
+/// Protected namespace of the module.
 pub mod protected
 {
-
-  //!
-  //! Functions and structures to handle and manipulate generic parameters using the `syn` crate. It's designed to support macro-driven code generation by simplifying, merging, extracting, and decomposing `syn::Generics`.
-  //!
+  use super::*;
 
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     merge,
     only_names,
@@ -533,11 +531,12 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     GenericsWithWhere,
   };

@@ -33,11 +33,12 @@ mod private
 #[ allow( unused_imports ) ]
 pub mod protected
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::layer_a_protected;
+  pub use private::layer_a_protected;
 }
 
 #[ doc( inline ) ]
@@ -48,11 +49,12 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::layer_a_orphan;
+  pub use private::layer_a_orphan;
 }
 
 /// Exposed namespace of the module.
@@ -61,10 +63,10 @@ pub mod exposed
 {
   use super::*;
   #[ doc( inline ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::layer_a_exposed;
+  pub use private::layer_a_exposed;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -74,5 +76,5 @@ pub mod prelude
   use super::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::layer_a_prelude;
+  pub use private::layer_a_prelude;
 }

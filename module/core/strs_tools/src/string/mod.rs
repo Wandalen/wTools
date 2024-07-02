@@ -33,7 +33,8 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod protected
 {
-  pub use super::orphan::*;
+  use super::*;
+  pub use orphan::*;
   #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
   pub use super::indentation::orphan::*;
   #[ cfg( all( feature = "string_isolate", not( feature = "no_std" ) ) ) ]
@@ -51,7 +52,8 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  pub use super::exposed::*;
+  use super::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.

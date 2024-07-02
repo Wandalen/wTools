@@ -178,6 +178,7 @@ pub( crate ) mod private
 #[ allow( unused_imports ) ]
 pub mod protected
 {
+  use super::*;
   use super::private as i;
 
   pub use i::IsolateOptions;
@@ -193,7 +194,8 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  pub use super::exposed::*;
+  use super::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.

@@ -104,14 +104,16 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod protected
 {
+  use super::*;
 }
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
@@ -121,7 +123,7 @@ pub mod exposed
   use super::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     _IteratorTrait,
     IteratorTrait,

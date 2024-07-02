@@ -488,8 +488,9 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod protected
 {
-  pub use super::orphan::*;
-  pub use super::private::
+  use super::*;
+  pub use orphan::*;
+  pub use private::
   {
     OpType,
     Request,
@@ -503,7 +504,8 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  pub use super::exposed::*;
+  use super::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
@@ -513,7 +515,7 @@ pub mod exposed
   use super::*;
   pub use super::protected as parse_request;
 
-  pub use super::private::
+  pub use private::
   {
     ParseOptionsAdapter,
     request_parse,
@@ -525,5 +527,5 @@ pub mod exposed
 pub mod prelude
 {
   use super::*;
-  pub use super::private::ParseOptionsAdapter;
+  pub use private::ParseOptionsAdapter;
 }

@@ -90,11 +90,12 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod protected
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     ensure_comma,
   };
@@ -104,11 +105,12 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
   };
 }

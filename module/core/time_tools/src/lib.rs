@@ -30,8 +30,9 @@ pub mod dependency
 #[ allow( unused_imports ) ]
 pub mod protected
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 }
 
 #[ doc( inline ) ]
@@ -44,8 +45,9 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
@@ -55,7 +57,7 @@ pub mod exposed
 {
   use super::*;
   #[ doc( inline ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
   #[ cfg( feature = "time_now" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

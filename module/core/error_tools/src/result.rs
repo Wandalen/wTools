@@ -12,7 +12,7 @@
 // {
 //   #[ doc( inline ) ]
 //   #[ allow( unused_imports ) ]
-//   pub use super::orphan::*;
+//   pub use orphan::*;
 // }
 //
 // #[ doc( inline ) ]
@@ -24,7 +24,7 @@
 // {
 //   #[ doc( inline ) ]
 //   #[ allow( unused_imports ) ]
-//   pub use super::exposed::*;
+//   pub use exposed::*;
 // }
 //
 // /// Exposed namespace of the module.
@@ -32,12 +32,12 @@
 // {
 //   #[ doc( inline ) ]
 //   #[ allow( unused_imports ) ]
-//   pub use super::prelude::*;
+//   pub use prelude::*;
 // }
 //
 // /// Prelude to use essentials: `use my_module::prelude::*`.
 // pub mod prelude
 // {
-//   pub use super::private::Result;
+//   pub use private::Result;
 // }
 //

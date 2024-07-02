@@ -216,16 +216,18 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod protected
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 }
 
 /// Shared with parent namespace of the module
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
@@ -238,7 +240,7 @@ pub mod exposed
   pub use private::ResultWithReport;
 
   #[ doc( inline ) ]
-  pub use super::prelude::*; // xxx
+  pub use prelude::*; // xxx
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -249,10 +251,13 @@ pub mod prelude
 
   // xxx
 
-  pub use super::private::err;
-  pub use super::private::return_err;
-  pub use super::private::ErrorTrait;
-  pub use super::private::BasicError;
+  pub use private::
+  {
+    err,
+    return_err,
+    ErrorTrait,
+    BasicError,
+  };
 
 }
 // xxx : review

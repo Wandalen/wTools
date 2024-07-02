@@ -381,7 +381,7 @@ pub mod exposed
 {
   use super::*;
   #[ doc( inline ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 }
 
 
@@ -392,7 +392,7 @@ pub mod prelude
   use super::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     index,
     tests_index,

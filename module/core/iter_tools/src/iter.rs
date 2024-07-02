@@ -207,8 +207,9 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod protected
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 
 }
 
@@ -216,9 +217,10 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
 
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 
   #[ doc( inline ) ]
   pub use ::itertools::
@@ -320,6 +322,6 @@ pub mod prelude
   #[ doc( inline ) ]
   #[ cfg( feature = "iter_ext" ) ]
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  pub use super::private::IterExt;
+  pub use private::IterExt;
 
 }

@@ -148,16 +148,13 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod protected
 {
-
-  //!
-  //! This module provides utilities to handle and manipulate generic arguments using the `syn` crate. It includes traits and functions for transforming, merging, and managing generic parameters within procedural macros, enabling seamless syntactic analysis and code generation.
-  //!
+  use super::*;
 
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     merge,
   };
@@ -167,11 +164,12 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     IntoGenericArgs,
   };

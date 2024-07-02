@@ -25,19 +25,16 @@ pub( crate ) mod private
 pub use protected::*;
 
 #[ allow( unused_imports ) ]
+/// Protected namespace of the module.
 pub mod protected
 {
-  //!
-  //! Structures and functions for handling `syn::punctuated::Punctuated` collections.
-  //!
-  //! This module provides functionality to manipulate and ensure correct punctuation in `syn::punctuated::Punctuated` collections, commonly used in procedural macros to represent sequences of elements separated by punctuation marks, such as commas.
-  //!
+  use super::*;
 
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     ensure_trailing_comma,
   };
@@ -47,8 +44,9 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.

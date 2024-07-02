@@ -50,6 +50,7 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod protected
 {
+  use super::*;
   #[ allow( unused_imports ) ]
   use super::*;
 
@@ -79,9 +80,10 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
 
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 
 }
 

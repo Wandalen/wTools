@@ -31,8 +31,9 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod protected
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
@@ -40,9 +41,10 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
 
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -58,7 +60,7 @@ pub mod exposed
 {
   use super::*;
   #[ doc( inline ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

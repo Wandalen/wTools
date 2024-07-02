@@ -264,6 +264,7 @@ pub( crate ) mod private
       #attrs1
       #attrs2
       pub use super::#path;
+      // xxx : remove super?
     });
 
     Ok( () )
@@ -427,8 +428,9 @@ pub( crate ) mod private
       #[ allow( unused_imports ) ]
       pub mod protected
       {
+        use super::*;
         #[ doc( inline ) ]
-        pub use super::orphan::*;
+        pub use orphan::*;
         #( #protected_clause )*
       }
 
@@ -436,8 +438,9 @@ pub( crate ) mod private
       #[ allow( unused_imports ) ]
       pub mod orphan
       {
+        use super::*;
         #[ doc( inline ) ]
-        pub use super::exposed::*;
+        pub use exposed::*;
         #( #orphan_clause )*
       }
 
@@ -445,8 +448,9 @@ pub( crate ) mod private
       #[ allow( unused_imports ) ]
       pub mod exposed
       {
+        use super::*;
         #[ doc( inline ) ]
-        pub use super::prelude::*;
+        pub use prelude::*;
         #( #exposed_clause )*
       }
 
@@ -454,6 +458,7 @@ pub( crate ) mod private
       #[ allow( unused_imports ) ]
       pub mod prelude
       {
+        use super::*;
         #( #prelude_clause )*
       }
 
@@ -479,7 +484,8 @@ pub( crate ) mod private
 #[ allow( unused_imports ) ]
 pub mod protected
 {
-  pub use super::orphan::*;
+  use super::*;
+  pub use orphan::*;
 }
 
 pub use protected::*;
@@ -488,7 +494,8 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  pub use super::exposed::*;
+  use super::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
@@ -496,9 +503,9 @@ pub mod orphan
 pub mod exposed
 {
   use super::*;
-  pub use super::prelude::*;
+  pub use prelude::*;
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
   };
 }
@@ -509,7 +516,7 @@ pub mod prelude
 {
   use super::*;
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     mod_interface,
   };

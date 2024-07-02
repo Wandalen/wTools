@@ -520,14 +520,16 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod protected
 {
-  pub use super::orphan::*;
+  use super::*;
+  pub use orphan::*;
 }
 
 /// Parented namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  pub use super::exposed::*;
+  use super::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
@@ -535,10 +537,10 @@ pub mod orphan
 pub mod exposed
 {
   use super::*;
-  pub use super::prelude::*;
+  pub use prelude::*;
 
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     kw,
     VALID_VISIBILITY_LIST_STR,

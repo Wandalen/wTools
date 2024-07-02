@@ -8,8 +8,9 @@ mod private
 #[ allow( unused_imports ) ]
 pub mod protected
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
   /// layer_b_protected
   pub fn layer_b_protected() -> bool
   {
@@ -25,8 +26,9 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
   /// layer_b_orphan
   pub fn layer_b_orphan() -> bool
   {
@@ -40,7 +42,7 @@ pub mod exposed
 {
   use super::*;
   #[ doc( inline ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
   /// layer_b_exposed
   pub fn layer_b_exposed() -> bool
   {

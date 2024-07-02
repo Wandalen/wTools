@@ -118,8 +118,9 @@ pub( crate ) mod private
 #[ allow( unused_imports ) ]
 pub mod protected
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 }
 
 #[ doc( inline ) ]
@@ -130,8 +131,9 @@ pub use protected::*;
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
@@ -140,7 +142,7 @@ pub mod exposed
 {
   use super::*;
   #[ doc( inline ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -148,8 +150,8 @@ pub mod exposed
 pub mod prelude
 {
   use super::*;
-  pub use super::private::debug_assert_id;
-  pub use super::private::debug_assert_identical;
-  pub use super::private::debug_assert_ni;
-  pub use super::private::debug_assert_not_identical;
+  pub use private::debug_assert_id;
+  pub use private::debug_assert_identical;
+  pub use private::debug_assert_ni;
+  pub use private::debug_assert_not_identical;
 }

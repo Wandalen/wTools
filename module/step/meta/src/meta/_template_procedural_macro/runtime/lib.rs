@@ -22,7 +22,8 @@ pub mod dependency
 #[ allow( unused_imports ) ]
 pub mod protected
 {
-  pub use super::exposed::*;
+  use super::*;
+  pub use exposed::*;
 }
 
 pub use protected::*;
@@ -32,7 +33,7 @@ pub use protected::*;
 pub mod exposed
 {
   use super::*;
-  pub use super::prelude::*;
+  pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

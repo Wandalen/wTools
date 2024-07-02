@@ -9,6 +9,7 @@ pub use protected :: * ;
 #[ allow( unused_imports ) ]
 pub mod protected
 {
+  use super::*;
 
   #[doc(inline)]
   #[allow(unused_imports)]
@@ -25,6 +26,7 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
 
   #[doc(inline)]
   #[allow(unused_imports)]
