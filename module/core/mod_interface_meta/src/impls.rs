@@ -263,7 +263,7 @@ pub( crate ) mod private
       #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
-      pub use super::#path;
+      pub use #path;
       // xxx : remove super?
     });
 
@@ -310,7 +310,7 @@ pub( crate ) mod private
       #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
-      pub use super::#path::orphan::*;
+      pub use #path::orphan::*;
     });
 
     c.clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
@@ -319,7 +319,7 @@ pub( crate ) mod private
       #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
-      pub use super::#path::exposed::*;
+      pub use #path::exposed::*;
     });
 
     c.clauses_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
@@ -328,7 +328,7 @@ pub( crate ) mod private
       #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
-      pub use super::#path::prelude::*;
+      pub use #path::prelude::*;
     });
 
     Ok( () )
