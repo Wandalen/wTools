@@ -6,6 +6,8 @@
 pub( crate ) mod private
 {
   use crate::*;
+  use crate::IterTrait;
+  // use iter_tools::IterTrait;
 
   /// A `GenericsWithWhere` struct to handle the parsing of Rust generics with an explicit `where` clause.
   ///
@@ -281,7 +283,13 @@ pub( crate ) mod private
   /// ]);
   /// ```
 
-  pub fn names< 'a >( generics : &'a syn::Generics ) -> impl IterTrait< 'a, &'a syn::Ident > + Clone
+  pub fn names< 'a >( generics : &'a syn::Generics )
+  -> impl IterTrait< 'a, &'a syn::Ident >
+  // -> std::iter::Map
+  // <
+  //   syn::punctuated::Iter< 'a, syn::GenericParam >,
+  //   impl FnMut( &'a syn::GenericParam ) -> &'a syn::Ident + 'a,
+  // >
   {
     generics.params.iter().map( | param | match param
     {
@@ -500,6 +508,7 @@ pub( crate ) mod private
 #[ allow( unused_imports ) ]
 pub use protected::*;
 
+#[ allow( unused_imports ) ]
 pub mod protected
 {
 
@@ -508,7 +517,6 @@ pub mod protected
   //!
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -522,10 +530,10 @@ pub mod protected
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -536,9 +544,12 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as generic_params;
+  use super::*;
+  pub use super::super::generic_params;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::
@@ -548,6 +559,7 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
 }

@@ -23,4 +23,4 @@ impl DerefMut for StructNamed
   }
 }
 
-include!( "./only_tests/struct_named.rs" );
+include!( "./only_test/struct_named.rs" );

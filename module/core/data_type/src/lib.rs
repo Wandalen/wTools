@@ -18,7 +18,7 @@ pub mod dependency
   #[ cfg( feature = "either" ) ]
   pub use ::either;
   // #[ cfg( feature = "type_constructor" ) ]
-  // pub use ::type_constructor; // xxx : rid off
+  // pub use ::type_constructor; // xxx : rid of
   #[ cfg( feature = "dt_interval" ) ]
   pub use ::interval_adapter;
   #[ cfg( feature = "dt_collection" ) ]
@@ -30,10 +30,10 @@ pub mod dependency
 pub use protected::*;
 
 /// Protected namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -41,19 +41,20 @@ pub mod protected
 }
 
 /// Shared with parent namespace of the module
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 
   #[ doc( inline ) ]
@@ -73,6 +74,7 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
 

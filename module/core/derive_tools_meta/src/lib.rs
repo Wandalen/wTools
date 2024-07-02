@@ -15,6 +15,7 @@
     feature = "derive_from",
     feature = "derive_inner_from",
     feature = "derive_variadic_from",
+    feature = "derive_phantom"
   )
 )]
 #[ cfg( feature = "enabled" ) ]
@@ -30,6 +31,7 @@ mod derive;
 //     feature = "derive_from",
 //     feature = "derive_inner_from",
 //     feature = "derive_variadic_from",
+//     feature = "derive_phantom"
 //   )
 // )]
 // #[ cfg( feature = "enabled" ) ]
@@ -77,7 +79,7 @@ mod derive;
   From,
   attributes
   (
-    debug, // struct
+    debug, // item
     from, // field
   )
 )]
@@ -132,7 +134,7 @@ pub fn from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
   New,
   attributes
   (
-    debug, // struct
+    debug, // item
     new, // field
   )
 )]
@@ -282,16 +284,11 @@ pub fn deref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// Write this
 ///
 /// ```rust
-/// # use derive_tools_meta::*;
-/// #[ derive( Deref, DerefMut ) ]
+/// # use derive_tools_meta::DerefMut;
+/// #[ derive( DerefMut ) ]
 /// pub struct IsTransparent( bool );
-/// ```
 ///
-/// Instead of this
-///
-/// ```rust
-/// pub struct IsTransparent( bool );
-/// impl core::ops::Deref for IsTransparent
+/// impl ::core::ops::Deref for IsTransparent
 /// {
 ///   type Target = bool;
 ///   #[ inline( always ) ]
@@ -300,7 +297,22 @@ pub fn deref( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///     &self.0
 ///   }
 /// }
-/// impl core::ops::DerefMut for IsTransparent
+/// ```
+///
+/// Instead of this
+///
+/// ```rust
+/// pub struct IsTransparent( bool );
+/// impl ::core::ops::Deref for IsTransparent
+/// {
+///   type Target = bool;
+///   #[ inline( always ) ]
+///   fn deref( &self ) -> &Self::Target
+///   {
+///     &self.0
+///   }
+/// }
+/// impl ::core::ops::DerefMut for IsTransparent
 /// {
 ///   #[ inline( always ) ]
 ///   fn deref_mut( &mut self ) -> &mut Self::Target
@@ -473,8 +485,8 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 ///
 ///   dbg!( exp );
 ///   //> MyStruct {
-///   //>   a: 13,
-///   //>   b: 14,
+///   //>   a : 13,
+///   //>   b : 14,
 ///   //> }
 /// }
 /// ```
@@ -487,10 +499,10 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// #[ derive( Debug, PartialEq, Default, VariadicFrom ) ]
 /// // Use `#[ debug ]` to expand and debug generate code.
 /// // #[ debug ]
-/// struct MyStruct
+/// item MyStruct
 /// {
-///   a: i32,
-///   b: i32,
+///   a : i32,
+///   b : i32,
 /// }
 /// ```
 ///
@@ -501,6 +513,55 @@ pub fn as_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 pub fn derive_variadic_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::variadic_from::variadic_from( input );
+  match result
+  {
+    Ok( stream ) => stream.into(),
+    Err( err ) => err.to_compile_error().into(),
+  }
+}
+
+///
+/// Provides an automatic `PhantomData` field for a struct based on its generic types.
+///
+/// This macro simplifies the addition of a `PhantomData` field to a struct
+/// to indicate that the struct logically owns instances of the generic types,
+/// even though it does not store them.
+///
+/// ## Example Usage
+///
+/// Instead of manually adding `PhantomData<T>` to `MyStruct`:
+///
+/// ```rust
+/// use std::marker::PhantomData;
+///
+/// pub struct MyStruct<T>
+/// {
+///     data: i32,
+///     _phantom: PhantomData<T>,
+/// }
+/// ```
+///
+/// Use `#[ phantom ]` to automatically generate the `PhantomData` field:
+///
+/// ```rust
+/// use derive_tools_meta::*;
+///
+/// #[ phantom ]
+/// pub struct MyStruct< T >
+/// {
+///     data: i32,
+/// }
+/// ```
+///
+/// The macro facilitates the addition of the `PhantomData` field without additional boilerplate code.
+///
+
+#[ cfg( feature = "enabled" ) ]
+#[ cfg ( feature = "derive_phantom" ) ]
+#[ proc_macro_attribute ]
+pub fn phantom( _attr: proc_macro::TokenStream, input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+{
+  let result = derive::phantom::phantom( _attr, input );
   match result
   {
     Ok( stream ) => stream.into(),

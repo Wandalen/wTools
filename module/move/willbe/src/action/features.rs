@@ -4,20 +4,21 @@ mod private
 
   use std::
   {
-    collections::{ BTreeMap, HashMap },
     fmt
   };
+  use collection::{ BTreeMap, HashMap };
 
-  use _path::AbsolutePath;
+  // // use path::AbsolutePath;
   use former::Former;
-  use error_tools::{ for_app::Context, Result };
-  use workspace::Workspace;
+  use error::{ untyped::Context, Result };
+  // use workspace::Workspace;
 
   /// Options available for the .features command
   #[ derive( Debug, Former ) ]
   pub struct FeaturesOptions
   {
-    manifest_dir : AbsolutePath,
+    // crate_dir : AbsolutePath,
+    crate_dir : CrateDir,
     with_features_deps : bool,
   }
 
@@ -62,23 +63,38 @@ mod private
         )
       }
       )
-    } 
+    }
   }
 
   /// List features
-  pub fn features( FeaturesOptions { manifest_dir, with_features_deps } : FeaturesOptions ) -> Result< FeaturesReport >
+  pub fn features( FeaturesOptions { crate_dir, with_features_deps } : FeaturesOptions )
+  -> Result< FeaturesReport >
   {
-    let workspace = Workspace::with_crate_dir( CrateDir::try_from( manifest_dir.clone() )? ).context( "Failed to find workspace" )?;
-    let packages = workspace.packages()?.into_iter().filter
-    ( | package |
-      package.manifest_path().as_str().starts_with( manifest_dir.as_ref().as_os_str().to_str().unwrap() )
-    ).collect::< Vec< _ > >();
+    let workspace = Workspace::try_from( crate_dir.clone() ).context( "Failed to find workspace" )?;
+    let packages = workspace.packages().filter
+    (
+      | package |
+      {
+        if let Ok( manifest_file ) = package.manifest_file()
+        {
+          manifest_file.inner().starts_with(crate_dir.clone().absolute_path())
+        }
+        else
+        {
+          false
+        }
+      } // aaa : remove unwrap
+      // aaa : done
+    );
+    // ).collect::< Vec< _ > >(); qqq : rid of. put type at var
     let mut report = FeaturesReport
     {
       with_features_deps,
       ..Default::default()
     };
-    packages.iter().for_each
+    packages
+    // .iter()
+    .for_each
     ( | package |
     {
       let features = package.features();

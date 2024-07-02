@@ -1,5 +1,5 @@
 //!
-//! This example demonstrates how to employ the `Former` trait to configure a `Vec` using a collection setter in a structured manner.
+//! This example demonstrates how to employ the `Former` to configure a `Vec` using a collection setter in a structured manner.
 //!
 
 #[ cfg( not( all( feature = "enabled", feature = "derive_former", any( feature = "use_alloc", not( feature = "no_std" ) ) ) ) ) ]

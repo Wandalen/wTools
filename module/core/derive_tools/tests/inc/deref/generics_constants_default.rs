@@ -5,4 +5,4 @@ use derive_tools::Deref;
 #[ derive( Deref ) ]
 struct GenericsConstantsDefault< const N : usize = 0 >( i32 );
 
-include!( "./only_tests/generics_constants_default.rs" );
+include!( "./only_test/generics_constants_default.rs" );

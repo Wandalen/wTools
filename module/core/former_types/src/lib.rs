@@ -6,25 +6,25 @@
 
 /// Axiomatic things.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_former" ) ]
+#[ cfg( feature = "types_former" ) ]
 mod axiomatic;
 /// Definition of former.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_former" ) ]
+#[ cfg( feature = "types_former" ) ]
 mod definition;
 /// Forming process.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_former" ) ]
+#[ cfg( feature = "types_former" ) ]
 mod forming;
 /// Storage.
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "derive_former" ) ]
+#[ cfg( feature = "types_former" ) ]
 mod storage;
 
 /// Interface for collections.
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-#[ cfg( feature = "derive_former" ) ]
+#[ cfg( feature = "types_former" ) ]
 mod collection;
 
 /// Component-based forming.
@@ -46,34 +46,35 @@ pub use protected::*;
 
 /// Protected namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
 
 /// Parented namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  #[ cfg( feature = "derive_former" ) ]
+  #[ cfg( feature = "types_former" ) ]
   pub use super::
   {
     axiomatic::*,
@@ -85,13 +86,14 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  #[ cfg( feature = "derive_former" ) ]
+  #[ cfg( feature = "types_former" ) ]
   pub use super::collection::*;
 
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
   #[ doc( inline ) ]

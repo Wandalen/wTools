@@ -6,19 +6,23 @@
 pub( crate ) mod private
 {
   use crate::*;
+  // use iter_tools::{ IterTrait, BoxedIter };
 
   /// Extracts the types of each field into a vector.
-  // pub fn field_types< 'a >( t : &'a syn::ItemStruct ) -> impl IterTrait< 'a, &'a syn::Type > + Clone
-  pub fn field_types< 'a >( t : &'a syn::ItemStruct ) -> impl IterTrait< 'a, &'a syn::Type > + Clone
+  pub fn field_types< 'a >( t : &'a syn::ItemStruct )
+  ->
+  impl IterTrait< 'a, &'a syn::Type >
+  // -> std::iter::Map
+  // <
+  //   syn::punctuated::Iter< 'a, syn::Field >,
+  //   impl FnMut( &'a syn::Field ) -> &'a syn::Type + 'a,
+  // >
   {
     t.fields.iter().map( | field | &field.ty )
   }
 
   /// Retrieves the names of each field, if they exist.
-  // pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> Option< impl IterTrait< 'a, &'a syn::Ident > + 'a >
-  pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> Option< Box< dyn IterTrait< 'a, &'a syn::Ident > + '_ > >
-  // pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> Option< Box< dyn IterTrait< 'a, syn::Ident > + '_ > >
-  // pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> impl IterTrait< 'a, syn::Ident >
+  pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> Option< BoxedIter< 'a, &'a syn::Ident > >
   {
     match &t.fields
     {
@@ -77,16 +81,15 @@ pub( crate ) mod private
 pub use protected::*;
 
 /// Protected namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::private::
   {
-    // fields_many,
     field_types,
     field_names,
     first_field_type,
@@ -95,23 +98,26 @@ pub mod protected
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as item_struct;
+  use super::*;
+  pub use super::super::item_struct;
+
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
 }

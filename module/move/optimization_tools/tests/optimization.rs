@@ -79,7 +79,6 @@ fn solve_with_sa()
   000000013
   "#;
 
-  let seed : Seed = "seed3".into();
   let initial = SudokuInitial::new( Board::from( input ) );
   let problem = Problem::new( initial, BestRowsColumnsCrossover, RandomPairInBlockMutation );
   let optimizer = HybridOptimizer::new( Config::default(), problem );

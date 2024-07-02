@@ -4,17 +4,17 @@ mod private
 
   use std::
   {
-    collections::HashSet,
     fmt::Formatter,
-    path::PathBuf,
   };
-  use std::collections::HashMap;
+  use path::PathBuf;
+  use collection::HashMap;
   use colored::Colorize;
   use crates_tools::CrateArchive;
-  use similar::*;
+  use collection::HashSet;
+  use similar::{ TextDiff, ChangeTag };
 
-  use wtools::iter::Itertools;
-  
+  // use similar::*; // qqq : for Bohdan : bad
+
   /// These files are ignored because they can be safely changed without affecting functionality
   ///
   /// - `.cargo_vcs_info.json` - contains the git sha1 hash that varies between different commits
@@ -78,7 +78,7 @@ mod private
       Is : Into< HashSet< I > >,
       I : AsRef< std::path::Path >,
     {
-      let current = self.0.keys().cloned().collect::< HashSet< _ > >();
+      let current : HashSet< _ > = self.0.keys().cloned().collect();
       let Some( key ) = current.iter().next() else { return self };
 
       let crate_part = std::path::Path::new( key.components().next().unwrap().as_os_str() );

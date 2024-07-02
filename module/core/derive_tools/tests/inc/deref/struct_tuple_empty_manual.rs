@@ -12,4 +12,4 @@ impl Deref for StructTupleEmpty
   }
 }
 
-include!( "./only_tests/struct_tuple_empty.rs" );
+include!( "./only_test/struct_tuple_empty.rs" );

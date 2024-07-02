@@ -18,7 +18,7 @@ use item_attributes::*;
 
 //
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 pub fn new( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream >
 {
   // use macro_tools::quote::ToTokens;
@@ -126,7 +126,7 @@ pub fn new( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStrea
   Ok( result )
 }
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 // qqq : document, add example of generated code
 fn generate_unit
 (
@@ -153,7 +153,7 @@ fn generate_unit
   }
 }
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 // qqq : document, add example of generated code
 fn generate_single_field_named
 (
@@ -178,14 +178,14 @@ fn generate_single_field_named
       // fn new( src : i32 ) -> Self
       fn new( src : #field_type ) -> Self
       {
-        // Self { a: src }
+        // Self { a : src }
         Self { #field_name: src }
       }
     }
   }
 }
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 // qqq : document, add example of generated code
 fn generate_single_field
 (
@@ -217,7 +217,7 @@ fn generate_single_field
   }
 }
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 // qqq : document, add example of generated code
 fn generate_multiple_fields_named< 'a >
 (
@@ -225,22 +225,21 @@ fn generate_multiple_fields_named< 'a >
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  field_names : Box< dyn macro_tools::IterTrait< 'a, &'a syn::Ident > + '_ >,
+  field_names : impl macro_tools::IterTrait< 'a, &'a syn::Ident >,
   field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type >,
 )
 -> proc_macro2::TokenStream
 {
 
-  let params : Vec< proc_macro2::TokenStream > = field_names
+  let val_type = field_names
+  .clone()
+  .zip( field_types )
   .enumerate()
-  .map(| ( index, field_name ) |
+  .map(| ( _index, ( field_name, field_type ) ) |
   {
-    let index = index.to_string().parse::< proc_macro2::TokenStream >().unwrap();
-    qt! { #field_name : src.#index }
-  })
-  .collect();
+    qt! { #field_name : #field_type }
+  });
 
-  let field_types : Vec< _ > = field_types.collect();
   qt!
   {
     // impl StructNamedFields
@@ -250,17 +249,17 @@ fn generate_multiple_fields_named< 'a >
     {
       #[ inline( always ) ]
       // fn new( src : ( i32, bool ) ) -> Self
-      fn new( src : ( #( #field_types ),* ) ) -> Self
+      fn new( #( #val_type ),* ) -> Self
       {
         // StructNamedFields{ a : src.0, b : src.1 }
-        #item_name { #(#params),* }
+        #item_name { #( #field_names ),* }
       }
     }
   }
 
 }
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 // qqq : document, add example of generated code
 fn generate_multiple_fields< 'a >
 (
@@ -273,15 +272,12 @@ fn generate_multiple_fields< 'a >
 -> proc_macro2::TokenStream
 {
 
-  let params : Vec< proc_macro2::TokenStream > = ( 0..field_types.len() )
+  let params = ( 0..field_types.len() )
   .map( | index |
   {
     let index = index.to_string().parse::< proc_macro2::TokenStream >().unwrap();
     qt!( src.#index )
-  })
-  .collect();
-
-  let field_types : Vec< _ > = field_types.collect();
+  });
 
   qt!
   {
@@ -301,7 +297,7 @@ fn generate_multiple_fields< 'a >
   }
 }
 
-// xxx : qqq : implement
+// zzz : qqq : implement
 // qqq : document, add example of generated code
 fn variant_generate
 (

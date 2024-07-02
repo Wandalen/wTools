@@ -4,6 +4,7 @@ use quote::ToTokens;
 #[ test ]
 fn attr_prop_test()
 {
+  use the_module::{ AttributePropertyComponent, AttributePropertyBoolean, AttributePropertyOptionalSingletone };
 
   #[ derive( Debug, Default, Clone, Copy ) ]
   pub struct DebugMarker;
@@ -11,10 +12,10 @@ fn attr_prop_test()
   #[ derive( Debug, Default, Clone, Copy ) ]
   pub struct EnabledMarker;
 
-  pub trait AttributePropertyComponent
-  {
-    const KEYWORD : &'static str;
-  }
+  // pub trait AttributePropertyComponent
+  // {
+  //   const KEYWORD : &'static str;
+  // }
 
   impl AttributePropertyComponent for DebugMarker
   {
@@ -104,6 +105,8 @@ fn attr_prop_test()
 #[ test ]
 fn attribute_property_enabled()
 {
+  use the_module::AttributePropertyOptionalSingletone;
+
   // Test default value
   let attr : AttributePropertyOptionalSingletone = Default::default();
   assert_eq!( attr.internal(), None );

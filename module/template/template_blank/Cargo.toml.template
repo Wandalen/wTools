@@ -26,8 +26,6 @@ all-features = false
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-no_std = []
-use_alloc = [ "no_std" ]
 enabled = []
 
 [dependencies]

@@ -4,12 +4,11 @@ mod private
   use std::
   {
     fmt::Formatter,
-    path::Path,
-    collections::HashSet,
+    ffi::OsString,
   };
-  use std::ffi::OsString;
-  use error_tools::for_app::Error;
-  use wtools::error::Result;
+  use path::Path;
+  use collection::HashSet;
+  use error::untyped::{ Error, Result };
   use process_tools::process::*;
 
   /// The `Channel` enum represents different release channels for rust.
@@ -32,6 +31,20 @@ mod private
         Self::Stable => write!( f, "stable" ),
         Self::Nightly => write!( f, "nightly" ),
       }
+    }
+  }
+
+  impl TryFrom< String > for Channel
+  {
+    type Error = error::untyped::Error;
+    fn try_from( value : String ) -> Result< Self, Self::Error >
+    {
+      Ok( match value.as_ref()
+      {
+        "stable" => Self::Stable,
+        "nightly" => Self::Nightly,
+        other => error::untyped::bail!( "Unexpected channel value. Expected [stable, channel]. Got: `{other}`" ),
+      })
     }
   }
 

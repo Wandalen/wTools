@@ -1,8 +1,17 @@
-use core::ops::{ Deref };
-use derive_tools::{ Deref, DerefMut };
+use core::ops::Deref;
+use derive_tools::{ DerefMut };
 
 #[ allow( dead_code ) ]
-#[ derive( Deref, DerefMut ) ]
+#[ derive( DerefMut ) ]
 struct GenericsConstants< const N : usize >( i32 );
 
-include!( "./only_tests/generics_constants.rs" );
+impl< const N : usize > Deref for GenericsConstants< N >
+{
+  type Target = i32;
+  fn deref( &self ) -> &Self::Target
+  {
+    &self.0
+  }
+}
+
+include!( "./only_test/generics_constants.rs" );

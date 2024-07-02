@@ -3,7 +3,7 @@
 //!
 //! ## Example : Custom Subform Scalar Setter
 //!
-//! Implementation of a custom subform scalar setter using the `Former` trait in Rust.
+//! Implementation of a custom subform scalar setter using the `Former`.
 //!
 //! This example focuses on the usage of a subform scalar setter to manage complex scalar types within a parent structure.
 //! Unlike more general subform setters that handle collections, this setter specifically configures scalar fields that have

@@ -1,25 +1,59 @@
+/// Internal namespace.
 mod private
 {
+  #[ allow( unused_imports ) ]
+  use crate::tool::*;
+
   use std::ffi::OsString;
-  use crate::*;
-
   use std::path::PathBuf;
-  use error_tools::err;
-  use error_tools::for_app::format_err;
+  use error::err;
+  use error::untyped::format_err;
   use former::Former;
-  use process_tools::process::*;
-  use wtools::error::Result;
+  use process_tools::process;
+  // use process_tools::process::*;
+  // qqq : for Bohdan : bad
+  // use error::Result;
+  // qqq : group dependencies
 
-  /// Represents pack options
+  // qqq : for Bohdan : bad : tools can't depend on entitties!
+  use crate::channel::Channel;
+
+  // aaa : documentation /// aaa : documented
+
+  /// Represents options for packaging a project.
+  ///
+  /// The `PackOptions` struct encapsulates various options that can be configured when packaging a project,
+  /// including the path to the project, the distribution channel, and various flags for controlling the behavior of the packaging process.
   #[ derive( Debug, Former, Clone ) ]
   pub struct PackOptions
   {
+    /// The path to the project to be packaged.
+    ///
+    /// This field specifies the file system path where the project is located.
     pub( crate ) path : PathBuf,
-    #[ former( default = false ) ]
+    /// The distribution channel for the packaging project.
+    ///
+    /// This field specifies the channel through which the packaged project will be distributed.
+    ///
+    pub( crate ) channel : Channel,
+    /// Flag indicating whether to allow packaging even if the working directory is dirty.
+    ///
+    /// This field is set to `true` by default, meaning that packaging will proceed even if there are uncommitted changes.
+    #[ former( default = true ) ]
     pub( crate ) allow_dirty : bool,
+    // qqq : rename to checking_changes
+    /// Flag indicating whether to skip verification checks.
     #[ former( default = false ) ]
-    pub( crate ) no_verify : bool,
+    // aaa : don't abuse negative form, rename to checking_consistency
+    // renamed and changed logic
+    pub( crate ) checking_consistency : bool,
+    /// An optional temporary path to be used during packaging.
+    ///
+    /// This field may contain a path to a temporary directory that will be used during the packaging process.
     pub( crate ) temp_path : Option< PathBuf >,
+    /// Flag indicating whether to perform a dry run.
+    ///
+    /// This field specifies whether the packaging process should be a dry run, meaning that no actual changes will be made.
     pub( crate ) dry : bool,
   }
 
@@ -36,10 +70,10 @@ mod private
   {
     fn to_pack_args( &self ) -> Vec< String >
     {
-      [ "package".to_string() ]
+      [ "run".to_string(), self.channel.to_string(), "cargo".into(), "package".into() ]
       .into_iter()
       .chain( if self.allow_dirty { Some( "--allow-dirty".to_string() ) } else { None } )
-      .chain( if self.no_verify { Some( "--no-verify".to_string() ) } else { None } )
+      .chain( if !self.checking_consistency { Some( "--no-verify".to_string() ) } else { None } )
       .chain( self.temp_path.clone().map( | p | vec![ "--target-dir".to_string(), p.to_string_lossy().into() ] ).into_iter().flatten() )
       .collect()
     }
@@ -58,15 +92,17 @@ mod private
     track_caller,
     tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
   )]
-  pub fn pack( args : PackOptions ) -> Result< Report >
+  // qqq : should be typed error, apply err_with
+  // qqq : don't use 1-prameter Result
+  pub fn pack( args : PackOptions ) -> Result< process::Report >
   {
-    let ( program, options ) = ( "cargo", args.to_pack_args() );
+    let ( program, options ) = ( "rustup", args.to_pack_args() );
 
     if args.dry
     {
       Ok
       (
-        Report
+        process::Report
         {
           command : format!( "{program} {}", options.join( " " ) ),
           out : String::new(),
@@ -78,7 +114,7 @@ mod private
     }
     else
     {
-      Run::former()
+      process::Run::former()
       .bin_path( program )
       .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .current_path( args.path )
@@ -112,7 +148,7 @@ mod private
     fn as_publish_args( &self ) -> Vec< String >
     {
       let target_dir = self.temp_path.clone().map( | p | vec![ "--target-dir".to_string(), p.to_string_lossy().into() ] );
-      [ "publish".to_string() ].into_iter().chain( target_dir.into_iter().flatten() ).collect::< Vec< String > >()
+      [ "publish".to_string() ].into_iter().chain( target_dir.into_iter().flatten() ).collect()
     }
   }
 
@@ -123,7 +159,8 @@ mod private
     track_caller,
     tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
   )]
-  pub fn publish( args : PublishOptions ) -> Result< Report >
+  pub fn publish( args : PublishOptions ) -> Result< process::Report >
+  // qqq : don't use 1-prameter Result
   {
     let ( program, arguments) = ( "cargo", args.as_publish_args() );
 
@@ -131,7 +168,7 @@ mod private
     {
       Ok
         (
-          Report
+          process::Report
           {
             command : format!( "{program} {}", arguments.join( " " ) ),
             out : String::new(),
@@ -144,10 +181,10 @@ mod private
     else
     {
       let mut results = Vec::with_capacity( args.retry_count + 1 );
-      let run_args =  arguments.into_iter().map( OsString::from ).collect::< Vec< _ > >();
+      let run_args : Vec< _ > =  arguments.into_iter().map( OsString::from ).collect();
       for _ in 0 .. args.retry_count + 1
       {
-        let result = Run::former()
+        let result = process::Run::former()
         .bin_path( program )
         .args( run_args.clone() )
         .current_path( &args.path )
@@ -164,7 +201,7 @@ mod private
       }
       else
       {
-        Err( results.remove( 0 ) ).map_err( | report  | err!( report.to_string() ) )
+        Err( results.remove( 0 ) ).map_err( | report | err!( report.to_string() ) )
       }
     }
   }

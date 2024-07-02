@@ -4,50 +4,71 @@ mod private
 
   use std::
   {
-    str::FromStr,
-    fs::{ OpenOptions, File, read_dir },
-    path::{ Path, PathBuf },
+    fs::{ OpenOptions, File },
     io::{ Write, Read, Seek, SeekFrom },
-    collections::HashMap,
   };
-
-  // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
-  // aaa : ✅
-
-
-  use convert_case::{ Case, Casing };
+  use path::{ Path, PathBuf };
+  use convert_case::Casing;
   use toml_edit::Document;
   use regex::bytes::Regex;
+  use collection::HashMap;
 
-  use wtools::error::
+  use error::
   {
-    err,
-    for_app::
+    Error,
+    untyped::
     {
-      Error,
+      Error as wError,
       Result,
       Context,
       format_err,
-      bail,
     }
   };
-  use manifest::private::repo_url;
-  use _path::AbsolutePath;
+  use manifest::repo_url;
+  // use path::AbsolutePath;
 
   static TAG_TEMPLATE: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
   static CLOSE_TAG: std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 
-
   /// Initializes two global regular expressions that are used to match tags.
   fn regexes_initialize()
   {
-    TAG_TEMPLATE.set( regex::bytes::Regex::new( r#"<!--\{ generate.healthtable(\(\)|\{\}|\(.*?\)|\{.*?\}) \} -->"# ).unwrap() ).ok();
-    CLOSE_TAG.set( regex::bytes::Regex::new( r#"<!--\{ generate\.healthtable\.end \} -->"# ).unwrap() ).ok();
+    TAG_TEMPLATE.set
+    (
+      regex::bytes::Regex::new
+      (
+        r#"<!--\{ generate.healthtable(\(\)|\{\}|\(.*?\)|\{.*?\}) \} -->"#
+      ).unwrap()
+    ).ok();
+    CLOSE_TAG.set
+    (
+      regex::bytes::Regex::new
+      (
+        r#"<!--\{ generate\.healthtable\.end \} -->"#
+      ).unwrap()
+    ).ok();
   }
 
+  #[ derive( Debug, Error )]
+  pub enum HealthTableRenewError
+  {
+    #[ error( "Common error: {0}" ) ]
+    Common( #[ from ] wError ),
+    #[ error( "I/O error: {0}" ) ]
+    IO( #[ from ] std::io::Error ),
+    #[ error( "Path error: {0}" ) ]
+    Path( #[ from ] PathError ),
+    #[ error( "Workspace error: {0}" ) ]
+    Workspace( #[ from ] WorkspaceInitError ),
+    #[ error( "Utf8Error error: {0}" ) ]
+    Utf8Error( #[ from ] std::str::Utf8Error ),
+    #[ error( "Toml edit error: {0}" ) ]
+    Toml( #[ from ] toml_edit::TomlError )
+  }
 
   /// `Stability` is an enumeration that represents the stability level of a feature.
-  #[ derive( Debug ) ]
+  #[ derive( Debug, derive_tools::FromStr ) ]
+  #[ display( style = "snake_case" ) ]
   pub enum Stability
   {
     /// The feature is still being tested and may change.
@@ -62,26 +83,11 @@ mod private
     Deprecated,
   }
 
-  impl FromStr for Stability
-  {
-    type Err = Error;
-
-    fn from_str( s : &str ) -> Result< Self, Self::Err >
-    {
-      match s
-      {
-        "experimental" => Ok( Stability::Experimental ),
-        "unstable" => Ok( Stability::Unstable ),
-        "stable" => Ok( Stability::Stable ),
-        "frozen" => Ok( Stability::Frozen ),
-        "deprecated" => Ok( Stability::Deprecated ),
-        _ => Err( err!( "Fail to parse stability" ) ),
-      }
-    }
-  }
+  // aaa : qqq : derive?
+  // aaa : add
 
   /// Retrieves the stability level of a package from its `Cargo.toml` file.
-  fn stability_get( package_path: &Path ) -> Result< Stability >
+  fn stability_get( package_path : &Path ) -> Result< Stability, HealthTableRenewError >
   {
     let path = package_path.join( "Cargo.toml" );
     if path.exists()
@@ -101,48 +107,66 @@ mod private
     }
     else
     {
-      Err( err!( "No Cargo.toml found" ) )
+      Err( HealthTableRenewError::Common( wError::msg( "Cannot find Cargo.toml" )))
     }
   }
 
   /// Represents parameters that are common for all tables
   #[ derive( Debug ) ]
-  struct GlobalTableParameters
+  struct GlobalTableOptions
   {
     /// Path to the root repository.
-    core_url: String,
+    core_url : String,
     /// User and repository name, written through '/'.
-    user_and_repo: String,
+    user_and_repo : String,
     /// List of branches in the repository.
-    branches: Option< Vec< String > >,
+    branches : Option< Vec< String > >,
     /// workspace root
-    workspace_root : String,
+    workspace_root : PathBuf,
+    // aaa : for Petro : is not that path?
+    // aaa : done
   }
 
   /// Structure that holds the parameters for generating a table.
   #[ derive( Debug ) ]
-  struct TableParameters
+  struct TableOptions
   {
     // Relative path from workspace root to directory with modules
-    base_path: String,
+    base_path : String,
     // include branches column flag
-    include_branches: bool,
+    include_branches : bool,
     // include stability column flag
-    include_stability: bool,
+    include_stability : bool,
     // include docs column flag
-    include_docs: bool,
+    include_docs : bool,
     // include sample column flag
-    include: bool,
+    include : bool,
   }
 
-  impl From< HashMap< String, query::Value > > for TableParameters
+  impl From< HashMap< String, query::Value > > for TableOptions
   {
-    fn from( value : HashMap< String, query::Value >) -> Self
+    fn from( value : HashMap< String, query::Value > ) -> Self
     {
-      let include_branches = value.get( "with_branches" ).map( | v | bool::from( v ) ).unwrap_or( true );
-      let include_stability = value.get( "with_stability" ).map( | v | bool::from( v ) ).unwrap_or( true );
-      let include_docs = value.get( "with_docs" ).map( | v | bool::from( v ) ).unwrap_or( true );
-      let include = value.get( "with_gitpod" ).map( | v | bool::from( v ) ).unwrap_or( true );
+      let include_branches = value
+      .get( "with_branches" )
+      .map( | v | bool::from( v ) )
+      .unwrap_or( true );
+
+      let include_stability = value
+      .get( "with_stability" )
+      .map( | v | bool::from( v ) )
+      .unwrap_or( true );
+
+      let include_docs = value
+      .get( "with_docs" )
+      .map( | v | bool::from( v ) )
+      .unwrap_or( true );
+
+      let include = value
+      .get( "with_gitpod" )
+      .map( | v | bool::from( v ) )
+      .unwrap_or( true );
+
       let b_p = value.get( "1" );
       let base_path = if let Some( query::Value::String( path ) ) = value.get( "path" ).or( b_p )
       {
@@ -152,19 +176,27 @@ mod private
       {
         "./"
       };
-      Self { base_path: base_path.to_string(), include_branches, include_stability, include_docs, include }
+      Self
+      {
+        base_path: base_path.to_string(),
+        include_branches,
+        include_stability,
+        include_docs,
+        include
+      }
     }
   }
 
-  impl GlobalTableParameters
+  impl GlobalTableOptions
   {
     /// Initializes the struct's fields from a `Cargo.toml` file located at a specified path.
-    fn initialize_from_path( path: &Path ) -> Result< Self >
+    fn initialize_from_path( path : &Path ) -> Result< Self, HealthTableRenewError >
     {
+
       let cargo_toml_path = path.join( "Cargo.toml" );
       if !cargo_toml_path.exists()
       {
-        bail!( "Cannot find Cargo.toml" )
+        return Err( HealthTableRenewError::Common( wError::msg( "Cannot find Cargo.toml" )))
       }
       else
       {
@@ -200,7 +232,16 @@ mod private
         {
           user_and_repo = url::git_info_extract( core_url )?;
         }
-        Ok( Self { core_url: core_url.unwrap_or_default(), user_and_repo, branches, workspace_root: path.to_string_lossy().to_string() } )
+        Ok
+        (
+          Self
+          {
+            core_url : core_url.unwrap_or_default(),
+            user_and_repo,
+            branches,
+            workspace_root : path.to_path_buf()
+          }
+        )
       }
     }
 
@@ -216,15 +257,20 @@ mod private
   /// will mean that at this place the table with modules located in the directory module/core will be generated.
   /// The tags do not disappear after generation.
   /// Anything between the opening and closing tag will be destroyed.
-  pub fn readme_health_table_renew( path : &Path ) -> Result< () >
+  // aaa : for Petro : typed errors
+  // aaa : done
+  pub fn readme_health_table_renew( path : &Path ) -> Result< (), HealthTableRenewError >
   {
     regexes_initialize();
-    let absolute_path = AbsolutePath::try_from( path )?;
-    let mut cargo_metadata = Workspace::with_crate_dir( CrateDir::try_from( absolute_path )? )?;
-    let workspace_root = workspace_root( &mut cargo_metadata )?;
-    let mut parameters = GlobalTableParameters::initialize_from_path( &workspace_root )?;
+    let workspace = Workspace::try_from( CrateDir::try_from( path )? )?;
+    let workspace_root = workspace.workspace_root();
+    let mut parameters = GlobalTableOptions::initialize_from_path
+    (
+      &workspace_root
+    )?;
 
-    let read_me_path = workspace_root.join( readme_path(&workspace_root ).ok_or_else( || format_err!( "Fail to find README.md" ) )?);
+    let read_me_path = workspace_root
+    .join( repository::readme_path( &workspace_root )? );
     let mut file = OpenOptions::new()
     .read( true )
     .write( true )
@@ -253,8 +299,18 @@ mod private
           .ok_or( format_err!( "Fail to parse group" ) )?
           .as_bytes()
           )?;
-          let params: TableParameters  = query::parse( raw_table_params ).unwrap().into_map( vec![] ).into();
-          let table = package_readme_health_table_generate( &mut cargo_metadata, &params, &mut parameters )?;
+          let params: TableOptions  = query::parse
+          (
+            raw_table_params
+          ).unwrap()
+          .into_map( vec![] )
+          .into();
+          let table = package_readme_health_table_generate
+          (
+            &workspace,
+            &params,
+            &mut parameters
+          )?;
           tables.push( table );
           tags_closures.push( ( open.end(), close.start() ) );
         }
@@ -266,11 +322,22 @@ mod private
   }
 
   /// Writes tables into a file at specified positions.
-  fn tables_write_into_file(  tags_closures : Vec< ( usize, usize ) >, tables: Vec< String >, contents: Vec< u8 >, mut file: File ) -> Result< () >
+  fn tables_write_into_file
+  (
+    tags_closures : Vec< ( usize, usize ) >,
+    tables: Vec< String >,
+    contents: Vec< u8 >,
+    mut file: File
+  ) -> Result< (), HealthTableRenewError >
   {
     let mut buffer: Vec< u8 > = vec![];
     let mut start: usize = 0;
-    for ( ( end_of_start_tag, start_of_end_tag ), con ) in tags_closures.iter().zip( tables.iter() )
+    for
+    (
+      ( end_of_start_tag, start_of_end_tag ),
+      con
+    )
+    in tags_closures.iter().zip( tables.iter() )
     {
       range_to_target_copy( &*contents, &mut buffer, start, *end_of_start_tag )?;
       range_to_target_copy( con.as_bytes(), &mut buffer, 0,con.len() - 1 )?;
@@ -285,24 +352,33 @@ mod private
 
   /// Generate table from `table_parameters`.
   /// Generate header, iterate over all modules in package (from table_parameters) and append row.
-  fn package_readme_health_table_generate(  cache : &mut Workspace, table_parameters: &TableParameters, parameters: & mut GlobalTableParameters ) -> Result< String, Error >
+  fn package_readme_health_table_generate
+  (
+    workspace : &Workspace,
+    table_parameters: &TableOptions,
+    parameters: &mut GlobalTableOptions,
+  ) -> Result< String, HealthTableRenewError >
   {
     let directory_names = directory_names
     (
-      cache
-      .workspace_root()?
-      .join( &table_parameters.base_path ),
-      &cache
-      .load()?
+      workspace
+      .workspace_root()
+      .join( &table_parameters.base_path ).to_path_buf(),
+      workspace
       .packages()
-      .map_err( | err | format_err!( err ) )?
     )?;
     let mut table = table_header_generate( parameters, &table_parameters );
     for package_name in directory_names
     {
       let stability = if table_parameters.include_stability
       {
-        Some( stability_get( &cache.workspace_root()?.join( &table_parameters.base_path ).join( &package_name ) )? )
+        Some
+        (
+          stability_get
+          (
+            &workspace.workspace_root().join( &table_parameters.base_path ).join( &package_name )
+          )?
+        )
       }
       else
       {
@@ -310,63 +386,125 @@ mod private
       };
       if parameters.core_url == ""
       {
-        let module_path = &cache.workspace_root()?.join( &table_parameters.base_path ).join( &package_name );
-        parameters.core_url = repo_url( &module_path )
+        let module_path = workspace
+        .workspace_root()
+        .join( &table_parameters.base_path )
+        .join( &package_name );
+        // parameters.core_url = repo_url( &module_path )
+        parameters.core_url = repo_url( &module_path.clone().try_into()? )
         .context
         (
-          format_err!( "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) in {} OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR ensure that at least one remotest is present in git. ", module_path.display(), cache.workspace_root()?.join( "Cargo.toml" ).display(), module_path.join( "Cargo.toml" ).display() )
+          // aaa : for Petro : unreadable : check other lines of code which are long
+          // aaa : done
+          format_err!
+          (
+            "Can not find Cargo.toml in {} or Fail to extract repository url from git remote.\n\
+specify the correct path to the main repository in Cargo.toml of workspace (in the [workspace.metadata] section named repo_url) in {} \
+OR in Cargo.toml of each module (in the [package] section named repository, specify the full path to the module) for example {} OR\
+ensure that at least one remotest is present in git. ",
+            module_path.display(),
+            workspace.workspace_root().join( "Cargo.toml" ).display(),
+            module_path.join( "Cargo.toml" ).display()
+          )
         )?;
         parameters.user_and_repo = url::git_info_extract( &parameters.core_url )?;
       }
-      table.push_str( &row_generate(&package_name, stability.as_ref(), parameters, &table_parameters) );
+      table.push_str
+      (
+        &row_generate
+        (
+          &package_name,
+          stability.as_ref(),
+          parameters,
+          &table_parameters
+        )
+      );
     }
     Ok( table )
   }
 
   /// Return topologically sorted modules name, from packages list, in specified directory.
-  fn directory_names( path : PathBuf, packages : &[ workspace::WorkspacePackage ] ) -> Result< Vec< String > >
+  // fn directory_names( path : PathBuf, packages : &[ WorkspacePackageRef< '_ > ] ) -> Result< Vec< String > >
+  fn directory_names< 'a >
+  (
+    path : PathBuf,
+    packages : impl Iterator< Item = WorkspacePackageRef< 'a > >,
+  ) -> Result< Vec< String >, HealthTableRenewError >
   {
     let path_clone = path.clone();
-    let module_package_filter: Option< Box< dyn Fn( &workspace::WorkspacePackage ) -> bool > > = Some
+    let module_package_filter : Option< Box< dyn Fn( WorkspacePackageRef< '_ > ) -> bool > > = Some
     (
       Box::new
       (
         move | p |
-        p.publish().is_none() && p.manifest_path().starts_with( &path )
+        {
+          let manifest_file = p.manifest_file();
+          if let Ok( pa ) = manifest_file
+          {
+            p.publish().is_none() && pa.starts_with( &path )
+          }
+          else
+          {
+            false
+          }
+        } // aaa : rid of unwraps
+        // aaa : done
       )
     );
-    let module_dependency_filter: Option< Box< dyn Fn( &workspace::WorkspacePackage, &workspace::Dependency ) -> bool > > = Some
+    let module_dependency_filter : Option< Box< dyn Fn( WorkspacePackageRef< '_ >, DependencyRef< '_ > ) -> bool > > = Some
     (
       Box::new
       (
         move | _, d |
-        d.path().is_some() && d.kind() != workspace::DependencyKind::Development && d.path().as_ref().unwrap().starts_with( &path_clone )
+        d.crate_dir().is_some() &&
+        d.kind() !=
+        DependencyKind::Development &&
+        d.crate_dir().as_ref().unwrap().starts_with( &path_clone )
       )
     );
     let module_packages_map = packages::filter
     (
       packages,
-      packages::FilterMapOptions { package_filter: module_package_filter, dependency_filter: module_dependency_filter },
+      packages::FilterMapOptions
+      {
+        package_filter : module_package_filter,
+        dependency_filter : module_dependency_filter
+      },
     );
     let module_graph = graph::construct( &module_packages_map );
-    let names = graph::topological_sort_with_grouping( module_graph )
+    let names : Vec< String > = graph::topological_sort_with_grouping( module_graph )
     .into_iter()
     .map
-    ( 
-      | mut group | 
+    (
+      | mut group |
       {
         group.sort();
-        group 
-      } 
-    ).flatten().collect::< Vec< _ > >();
-    
-    Ok(names)
+        group
+      }
+    )
+    .flatten()
+    .map( | n | n.to_string() )
+    .collect();
+
+    Ok( names )
   }
 
   /// Generate row that represents a module, with a link to it in the repository and optionals for stability, branches, documentation and links to the gitpod.
-  fn row_generate( module_name : &str, stability : Option< &Stability >, parameters : &GlobalTableParameters, table_parameters : &TableParameters ) -> String
+  fn row_generate
+  (
+    module_name : &str,
+    stability : Option< &Stability >,
+    parameters : &GlobalTableOptions,
+    table_parameters : &TableOptions
+  ) -> String
   {
-    let mut rou = format!( "| [{}]({}/{}) |", &module_name, &table_parameters.base_path, &module_name );
+    let mut rou = format!
+    (
+      "| [{}]({}/{}) |",
+      &module_name,
+      &table_parameters.base_path,
+      &module_name
+    );
     if table_parameters.include_stability
     {
       let mut stability = stability_generate( &stability.as_ref().unwrap() );
@@ -379,7 +517,14 @@ mod private
     }
     if table_parameters.include_docs
     {
-      rou.push_str( &format!( " [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{}) |", &module_name ) );
+      rou.push_str
+      (
+        &format!
+        (
+          " [![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/{}) |",
+          &module_name
+        )
+      );
     }
     if table_parameters.include
     {
@@ -389,12 +534,19 @@ mod private
       let example = if let Some( name ) = find_example_file( p.as_path(), &module_name )
       {
         let path = path.to_string_lossy().replace( '\\', "/" ).replace( "/", "%2F" );
-        let tmp = name.replace( '\\', "/" );
+        let tmp = name.to_string_lossy().replace( '\\', "/" );
         let file_name = tmp.split( '/' ).last().unwrap();
         let name = file_name.strip_suffix( ".rs" ).unwrap();
-        format!( "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={path}%2Fexamples%2F{file_name},RUN_POSTFIX=--example%20{name}/{})", parameters.core_url )
+        format!
+        (
+          "[![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={}%2Fexamples%2F{},RUN_POSTFIX=--example%20{}/{})",
+          path,
+          file_name,
+          name,
+          parameters.core_url,
+        )
       }
-      else 
+      else
       {
         "".into()
       };
@@ -402,26 +554,26 @@ mod private
     }
     format!( "{rou}\n" )
   }
-  
+
   /// todo
-  pub fn find_example_file(base_path : &Path, module_name : &str ) -> Option< String > 
+  pub fn find_example_file( base_path : &Path, module_name : &str ) -> Option< PathBuf >
   {
     let examples_dir = base_path.join("examples" );
 
     if examples_dir.exists() && examples_dir.is_dir()
     {
-      if let Ok( entries ) = std::fs::read_dir( &examples_dir ) 
+      if let Ok( entries ) = std::fs::read_dir( &examples_dir )
       {
-        for entry in entries 
+        for entry in entries
         {
-          if let Ok( entry ) = entry 
+          if let Ok( entry ) = entry
           {
             let file_name = entry.file_name();
-            if let Some( file_name_str ) = file_name.to_str() 
+            if let Some( file_name_str ) = file_name.to_str()
             {
-              if file_name_str == format!( "{module_name}_trivial.rs" ) 
+              if file_name_str == format!( "{module_name}_trivial.rs" )
               {
-                return Some( entry.path().to_string_lossy().into() )
+                return Some( entry.path() )
               }
             }
           }
@@ -430,18 +582,18 @@ mod private
     }
 
     // If module_trivial.rs doesn't exist, return any other file in the examples directory
-    if let Ok( entries ) = std::fs::read_dir( &examples_dir ) 
+    if let Ok( entries ) = std::fs::read_dir( &examples_dir )
     {
-      for entry in entries 
+      for entry in entries
       {
-        if let Ok( entry ) = entry 
+        if let Ok( entry ) = entry
         {
           let file_name = entry.file_name();
-          if let Some( file_name_str ) = file_name.to_str() 
+          if let Some( file_name_str ) = file_name.to_str()
           {
-            if file_name_str.ends_with( ".rs" ) 
+            if file_name_str.ends_with( ".rs" )
             {
-              return Some( entry.path().to_string_lossy().into() )
+              return Some( entry.path() )
             }
           }
         }
@@ -465,7 +617,11 @@ mod private
   }
 
   /// Generate table header
-  fn table_header_generate( parameters : &GlobalTableParameters, table_parameters : &TableParameters ) -> String
+  fn table_header_generate
+  (
+    parameters : &GlobalTableOptions,
+    table_parameters : &TableOptions
+  ) -> String
   {
     let mut header = String::from( "| Module |" );
     let mut separator = String::from( "|--------|" );
@@ -504,7 +660,7 @@ mod private
   }
 
   /// Generate cells for each branch
-  fn branch_cells_generate( table_parameters: &GlobalTableParameters, module_name: &str ) -> String
+  fn branch_cells_generate( table_parameters : &GlobalTableOptions, module_name : &str ) -> String
   {
     let cells = table_parameters
     .branches
@@ -514,20 +670,29 @@ mod private
     .map
     (
       | b |
-      format!( "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/module_{}_push.yml?label=&branch={b})]({}/actions/workflows/module_{}_push.yml?query=branch%3A{})", table_parameters.user_and_repo, &module_name.to_case( Case::Snake ), table_parameters.core_url, &module_name.to_case( Case::Snake ), b )
+      format!
+      (
+        "[![rust-status](https://img.shields.io/github/actions/workflow/status/{}/module_{}_push.yml?label=&branch={})]({}/actions/workflows/module_{}_push.yml?query=branch%3A{})",
+        table_parameters.user_and_repo,
+        &module_name.to_case( convert_case::Case::Snake ),
+        b,
+        table_parameters.core_url,
+        &module_name.to_case( convert_case::Case::Snake ),
+        b,
+      )
     )
     .collect::< Vec< String > >()
     .join( " | " );
     format!( " {cells} |" )
   }
 
-  /// Return workspace root
-  pub fn workspace_root( metadata : &mut Workspace ) -> Result< PathBuf >
-  {
-    Ok( metadata.load()?.workspace_root()?.to_path_buf() )
-  }
-
-  fn range_to_target_copy< T : Clone >( source : &[ T ], target : &mut Vec< T >, from : usize, to : usize ) -> Result< () >
+  fn range_to_target_copy< T : Clone >
+  (
+    source : &[ T ],
+    target : &mut Vec< T >,
+    from : usize,
+    to : usize
+  ) -> Result< (), HealthTableRenewError >
   {
     if from < source.len() && to < source.len() && from <= to
     {
@@ -536,66 +701,15 @@ mod private
     }
     else
     {
-      bail!( "Incorrect indexes" )
+      Err( HealthTableRenewError::Common( wError::msg( "Incorrect indexes" )))
     }
   }
-
-  /// Searches for a README file in specific subdirectories of the given directory path.
-  ///
-  /// This function attempts to find a README file in the following subdirectories: ".github",
-  /// the root directory, and "./docs". It returns the path to the first found README file, or
-  /// `None` if no README file is found in any of these locations.
-  pub fn readme_path( dir_path : &Path ) -> Option< PathBuf >
-  {
-    if let Some( path ) = readme_in_dir_find( &dir_path.join( ".github" ) )
-    {
-      Some( path )
-    }
-    else if let Some( path )  = readme_in_dir_find( dir_path )
-    {
-      Some( path )
-    }
-    else if let Some( path )  = readme_in_dir_find( &dir_path.join( "docs" ) )
-    {
-      Some( path )
-    }
-    else
-    {
-      None
-    }
-  }
-
-  /// Searches for a file named "readme.md" in the specified directory path.
-  ///
-  /// Given a directory path, this function searches for a file named "readme.md" in the specified
-  /// directory.
-  fn readme_in_dir_find( path : &Path ) -> Option< PathBuf >
-  {
-    read_dir( path )
-    .ok()?
-    .filter_map( Result::ok )
-    .filter( | p | p.path().is_file() )
-    .filter_map( | f |
-    {
-      let l_f = f.file_name().to_ascii_lowercase();
-      if l_f == "readme.md"
-      {
-        return Some( f.file_name() )
-      }
-      None
-    })
-    .max()
-    .map( PathBuf::from )
-  }
-
 }
 
 crate::mod_interface!
 {
-  /// Return workspace root
-  protected use workspace_root;
-  /// Find readme.md file in directory
-  protected use readme_path;
+  // /// Return workspace root
+  // protected use workspace_root;
   /// Stability
   protected use Stability;
   /// Generate Stability badge

@@ -7,12 +7,6 @@ pub( crate ) mod private
 {
   use crate::*;
 
-  ///
-  /// Result with syn::Error.
-  ///
-
-  pub type Result< T > = std::result::Result< T, syn::Error >;
-
   /// Adds indentation and optional prefix/postfix to each line of the given string.
   ///
   /// This function iterates over each line in the input string and applies the specified
@@ -387,35 +381,45 @@ pub( crate ) mod private
 pub use protected::*;
 
 /// Protected namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod protected
 {
+
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
+
 }
 
 /// Parented namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
+
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use super::private::
+  // {
+  //   Result,
+  // };
+
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as diag;
+  use super::*;
+  pub use super::super::diag;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::private::
   {
-    Result,
     indentation,
     report_format,
     report_print,
@@ -424,6 +428,7 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
 

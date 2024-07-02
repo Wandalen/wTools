@@ -357,7 +357,7 @@ pub( crate ) mod private
     fn fmt( &self, f: &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
     {
       f
-      .write_str( &format!( "{}#{:?}", self.type_name(), self.type_id() ) )
+      .write_str( &format!( "{}#{:?}", Entity::type_name( self ), self.type_id() ) )
     }
   }
 
@@ -369,7 +369,7 @@ pub( crate ) mod private
     fn fmt( &self, f: &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
     {
       f
-      .write_str( &format!( "{}#{:?}", self.type_name(), self.type_id() ) )
+      .write_str( &format!( "{}#{:?}", Entity::type_name( self ), self.type_id() ) )
     }
   }
 
@@ -381,7 +381,7 @@ pub( crate ) mod private
     fn fmt( &self, f: &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
     {
       f
-      .write_str( &format!( "{}#{:?}", self.type_name(), self.type_id() ) )
+      .write_str( &format!( "{}#{:?}", Entity::type_name( self ), self.type_id() ) )
     }
   }
 
@@ -496,18 +496,18 @@ pub( crate ) mod private
 pub use protected::*;
 
 /// Protected namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod protected
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::orphan::*;
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::exposed::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -527,10 +527,11 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::prelude::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -545,6 +546,7 @@ pub mod exposed
 pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
 }

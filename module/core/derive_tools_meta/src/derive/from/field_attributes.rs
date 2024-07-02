@@ -1,6 +1,7 @@
 use super::*;
 use macro_tools::
 {
+  ct,
   Result,
   AttributeComponent,
   AttributePropertyComponent,
@@ -30,7 +31,7 @@ impl FieldAttributes
 
     let error = | attr : &syn::Attribute | -> syn::Error
     {
-      let known_attributes = const_format::concatcp!
+      let known_attributes = ct::concatcp!
       (
         "Known attirbutes are : ",
         "debug",
@@ -166,7 +167,7 @@ impl syn::parse::Parse for FieldAttributeConfig
 
     let error = | ident : &syn::Ident | -> syn::Error
     {
-      let known = const_format::concatcp!
+      let known = ct::concatcp!
       (
         "Known entries of attribute ", FieldAttributeConfig::KEYWORD, " are : ",
         AttributePropertyDebug::KEYWORD,

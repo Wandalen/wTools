@@ -23,7 +23,7 @@ concurrency :
 
   group : standard_rust_push_${{ inputs.module_name }}_${{ github.ref }}_
     ${{ contains( inputs.commit_message, '+test' ) || startsWith( inputs.commit_message, 'merge' ) }}
-  cancel-in-progress : true
+  cancel-in-progress : ${{ contains( inputs.commit_message, '+test' ) || startsWith( inputs.commit_message, 'merge' ) }}
 
 env :
 
@@ -57,8 +57,10 @@ jobs :
       - name: Set MANIFEST_ROOT_PATH
         id: rootpath
         run: echo "::set-output name=path::$(dirname ${{ inputs.manifest_path }})"
+      - name: Build module
+        run: cd ${{ steps.rootpath.outputs.path }} && cargo build && cd -
       - name: Audit the modules
-        run: cd ${{ steps.rootpath.outputs.path }} && make audit
+        run: make audit
         continue-on-error: true
       - name: Generate documentation for the modules
         run: make doc open=no manifest_path=${{ inputs.manifest_path }}

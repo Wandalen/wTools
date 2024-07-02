@@ -272,7 +272,7 @@ pub( crate ) mod private
   {
     fn clone( &self ) -> Self
     {
-      Report
+      Self
       {
         command : self.command.clone(),
         current_path : self.current_path.clone(),

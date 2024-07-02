@@ -6,6 +6,7 @@ use layer_x as layer_a;
 pub use protected :: * ;
 
 #[doc = r" Protected namespace of the module."]
+#[ allow( unused_imports ) ]
 pub mod protected
 {
 
@@ -21,6 +22,7 @@ pub mod protected
 }
 
 #[doc = r" Orphan namespace of the module."]
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
 
@@ -31,8 +33,10 @@ pub mod orphan
 }
 
 #[doc = r" Exposed namespace of the module."]
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   #[doc(inline)]
   #[allow(unused_imports)]
   pub use super :: prelude :: * ;
@@ -44,6 +48,7 @@ pub mod exposed
 }
 
 #[doc = r" Prelude to use essentials: `use my_module::prelude::*`."]
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
   #[doc(inline)]

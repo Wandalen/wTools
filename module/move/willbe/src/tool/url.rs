@@ -1,13 +1,17 @@
+/// Internal namespace.
 mod private
 {
-  use error_tools::for_app::
+  #[ allow( unused_imports ) ]
+  use crate::tool::*;
+
+  use error::untyped::
   {
     format_err,
     Result,
   };
 
   /// Extracts the repository URL from a full URL.
-  pub fn extract_repo_url( full_url : &str ) -> Option< String >
+  pub fn repo_url_extract( full_url : &str ) -> Option< String >
   {
     let parts : Vec< &str > = full_url.split( '/' ).collect();
 
@@ -34,13 +38,13 @@ mod private
     }
     else
     {
-      Err( format_err!( "Fail to extract  git username and repository name" ) )
+      Err( format_err!( "Fail to extract git username and repository name" ) )
     }
   }
 }
 
 crate::mod_interface!
 {
-  protected use extract_repo_url;
+  protected use repo_url_extract;
   protected use git_info_extract;
 }

@@ -4,7 +4,7 @@
 #![ doc( html_root_url = "https://docs.rs/program_tools/latest/program_tools/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-#![ allow( unused_imports, dead_code, missing_docs ) ] // xxx : rid off
+#![ allow( unused_imports, dead_code, missing_docs ) ] // xxx : rid of
 
 #[ cfg( feature = "enabled" ) ]
 use mod_interface::mod_interface;

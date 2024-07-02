@@ -1,6 +1,6 @@
 [package]
 name = "former"
-version = "2.2.0"
+version = "2.6.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -12,7 +12,7 @@ documentation = "https://docs.rs/former"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/core/former"
 homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/former"
 description = """
-A flexible and extensible implementation of the builder pattern.
+A flexible implementation of the Builder pattern supporting nested builders and collection-specific subformers.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose", "builder-pattern" ]
@@ -29,7 +29,6 @@ all-features = false
 no_std = [ "former_types/no_std", "collection_tools/no_std" ]
 use_alloc = [ "no_std", "former_types/use_alloc", "collection_tools/use_alloc" ]
 
-
 # no_std = [ "collection_tools/no_std" ]
 # use_alloc = [ "no_std", "collection_tools/use_alloc" ]
 
@@ -41,6 +40,8 @@ default = [
   "derive_component_assign",
   "derive_components_assign",
   "derive_from_components",
+  "types_former",
+  "types_component_assign",
 ]
 full = [
   "enabled",
@@ -50,16 +51,20 @@ full = [
   "derive_component_assign",
   "derive_components_assign",
   "derive_from_components",
+  "types_former",
+  "types_component_assign",
 ]
 enabled = [ "former_meta/enabled", "former_types/enabled" ]
 
-derive_former = [ "former_meta/derive_former", "former_types/derive_former" ]
-derive_components = [ "former_meta/derive_components", "former_types/types_components" ]
-derive_component_assign = [ "derive_components", "former_meta/derive_component_assign", "former_types/types_component_assign" ]
-derive_components_assign = [ "derive_components", "derive_component_assign", "former_meta/derive_components_assign" ]
-derive_component_from = [ "derive_components", "former_meta/derive_component_from" ]
-derive_from_components = [ "derive_components", "former_meta/derive_from_components" ]
+derive_former = [ "former_meta/derive_former", "types_former" ]
+derive_components = [ "former_meta/derive_components", "derive_component_assign", "derive_components_assign", "derive_component_from", "derive_from_components" ]
+derive_component_assign = [ "former_meta/derive_component_assign", "types_component_assign" ]
+derive_components_assign = [ "derive_component_assign", "former_meta/derive_components_assign" ]
+derive_component_from = [ "former_meta/derive_component_from" ]
+derive_from_components = [ "former_meta/derive_from_components" ]
 
+types_former = [ "former_types/types_former" ]
+types_component_assign = [ "former_types/types_component_assign" ]
 
 [dependencies]
 former_meta = { workspace = true }

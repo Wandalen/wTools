@@ -9,4 +9,4 @@ enum EnumNamed
   B { a : String, b : i32 },
 }
 
-include!( "./only_tests/enum_named.rs" );
+include!( "./only_test/enum_named.rs" );

@@ -1,17 +1,37 @@
 crate::mod_interface!
 {
 
-  /// Make sha-1 hash for data.
-  layer sha;
-  orphan use super::sha;
+  /// Interaction module with the `cargo` utilities.
+  layer cargo;
+  orphan use super::cargo;
+
+  /// Function and structures to work with collections.
+  layer collection;
+  orphan use super::collection;
+
+  /// Errors handling.
+  layer error;
+  orphan use super::error;
 
   /// Operate over files.
   layer files;
   orphan use super::files;
-  
+
+  /// Http requests.
+  layer http;
+  orphan use super::http;
+
+  /// Iterating things.
+  layer iter;
+  orphan use super::iter;
+
   /// Work with paths.
-  layer _path;
-  orphan use super::_path;
+  layer macros;
+  orphan use super::macros;
+
+  /// Work with paths.
+  layer path;
+  orphan use super::path;
 
   /// Tools for working with dependencies graph.
   layer graph;
@@ -25,10 +45,6 @@ crate::mod_interface!
   layer git;
   orphan use super::git;
 
-  /// Interaction module with the `cargo` utilities.
-  layer cargo;
-  orphan use super::cargo;
-  
   /// The parse function parses an input string into a HashMap where the keys are String and the values are of type Value.
   layer query;
   orphan use super::query;
@@ -36,4 +52,26 @@ crate::mod_interface!
   /// Tools for parsing and extracting information from url.
   layer url;
   orphan use super::url;
+
+  /// Tools for printing a tree
+  layer tree;
+  orphan use super::tree;
+
+  /// Repository tools.
+  layer repository;
+  orphan use super::repository;
+
+  exposed use ::former::
+  {
+    Former,
+    Assign,
+  };
+
+  // xxx : check
+  // exposed use
+  // {
+  //   ::former::Former,
+  //   ::former::Assign,
+  // };
+
 }

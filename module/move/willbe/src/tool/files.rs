@@ -1,15 +1,17 @@
 
-
 /// Internal namespace.
 pub( crate ) mod private
 {
+  #[ allow( unused_imports ) ]
+  use crate::tool::*;
+
   use std::path::{ Path, PathBuf };
 
   ///
   /// Find paths.
   ///
 
-  /* rrr : Dmytro : dubious prototype */
+  /* xxx : check */
   pub fn find< P, S >( base_dir : P, patterns : &[ S ] ) -> Vec< PathBuf >
   where
     P : AsRef< Path >,
@@ -21,7 +23,7 @@ pub( crate ) mod private
     .into_iter()
     .filter_map( Result::ok )
     .map( | s | s.path().to_path_buf() )
-    .collect::< Vec< PathBuf > >()
+    .collect()
   }
 
   /// Check if path is valid.

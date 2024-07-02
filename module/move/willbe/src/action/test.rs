@@ -2,31 +2,26 @@
 mod private
 {
   use crate::*;
-  use test::*;
-  use _path::AbsolutePath;
+  use entity::test::{ TestPlan, TestOptions, TestsReport, tests_run };
 
-  use std::collections::HashSet;
+  // use test::*;
+  // qqq : for Petro : no asterisks imports
+  // qqq : for Petro : bad : not clear what is imported, there are multiple filles with name test
 
+  use collection::HashSet;
   use std::{ env, fs };
 
-  #[ cfg( feature = "progress_bar" ) ]
-  use indicatif::{ MultiProgress, ProgressStyle };
-
   use former::Former;
-  use wtools::
+  use error::
   {
-    error::
+    untyped::
     {
-      for_app::
-      {
-        Error,
-        format_err
-      },
-      Result
+      Error,
+      format_err
     },
-    iter::Itertools,
+    Result
   };
-  use workspace::WorkspacePackage;
+  use iter::Itertools;
 
   /// Used to store arguments for running tests.
   ///
@@ -68,27 +63,36 @@ mod private
   /// It is possible to enable and disable various features of the crate.
   /// The function also has the ability to run tests in parallel using `Rayon` crate.
   /// The result of the tests is written to the structure `TestsReport` and returned as a result of the function execution.
-  pub fn test( args : TestsCommandOptions, dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
+  // zzz : it probably should not be here
+  // xxx : use newtype
+  pub fn test( o : TestsCommandOptions, dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
   {
-    #[ cfg( feature = "progress_bar" ) ]
-    let multiprocess = MultiProgress::new();
-    #[ cfg( feature = "progress_bar" ) ]
-    let style = ProgressStyle::with_template
-    (
-      "[{elapsed_precise}] {bar:40.cyan/blue} {pos:>7}/{len:7} {msg}",
-    )
-    .unwrap()
-    .progress_chars( "##-" );
 
-    let mut reports = TestsReport::default();
+    // qqq : incapsulate progress bar logic into some function of struct. don't keep it here
+    // aaa : done
+
+    let mut report = TestsReport::default();
     // fail fast if some additional installations required
-    let channels = channel::available_channels( args.dir.as_ref() ).map_err( | e | ( reports.clone(), e ) )?;
-    let channels_diff = args.channels.difference( &channels ).collect::< Vec< _ > >();
+    let channels = channel::available_channels( o.dir.as_ref() )
+    .err_with( || report.clone() )?;
+    let channels_diff : Vec< _ > = o.channels.difference( &channels ).collect();
     if !channels_diff.is_empty()
     {
-      return Err(( reports, format_err!( "Missing toolchain(-s) that was required : [{}]. Try to install it with `rustup install {{toolchain name}}` command(-s)", channels_diff.into_iter().join( ", " ) ) ))
+      // aaa : for Petro : non readable
+      // aaa : readable and with actual command
+      return Err
+      ((
+        report,
+        format_err!
+        (
+          "Missing toolchain(-s) that was required : [{}]. \
+Try to install it with `rustup install {}` command(-s)",
+          channels_diff.iter().join( ", " ),
+          channels_diff.iter().join( " " )
+        )
+      ))
     }
-    reports.dry = dry;
+    report.dry = dry;
     let TestsCommandOptions
     {
       dir : _ ,
@@ -104,13 +108,47 @@ mod private
       optimizations,
       variants_cap,
       with_progress,
-    } = args;
+    } = o;
 
-    let packages = needed_packages( args.dir.clone() ).map_err( | e | ( reports.clone(), e ) )?;
+    // zzz : watch and review after been ready
+    // aaa : for Petro : use relevant entity. use either, implement TryFrom< Either< CrateDir, ManifestFile > >
+    // aaa : done
+    // qqq : for Petro : nonsense
+    let path = match EitherDirOrFile::try_from( o.dir.as_ref() ).map_err( | e | ( report.clone(), e.into() ) )?.inner()
+    {
+      data_type::Either::Left( crate_dir ) => crate_dir,
+      data_type::Either::Right( manifest ) => CrateDir::from( manifest )
+    };
+
+    let workspace = Workspace
+    ::try_from( CrateDir::try_from( path.clone() ).err_with( || report.clone() )? )
+    .err_with( || report.clone() )?
+    // xxx : clone?
+    // aaa : for Petro : use trait !everywhere!
+    // aaa : !When I wrote this solution, pr with this changes was not yet ready.!
+    ;
+
+    // let packages = needed_packages( &workspace );
+    let packages = workspace
+    .packages()
+    .filter
+    (
+      move | p |
+      p
+      .manifest_file()
+      .is_ok() &&
+      p.
+      manifest_file()
+      .unwrap()
+      .starts_with( path.as_ref() )
+    )
+    // aaa : for Petro : too long line
+    // aaa : done
+    ;
 
     let plan = TestPlan::try_from
     (
-      &packages,
+      packages,
       &channels,
       power,
       include_features,
@@ -120,16 +158,18 @@ mod private
       with_all_features,
       with_none_features,
       variants_cap,
-    ).map_err( | e | ( reports.clone(), e ) )?;
+    ).err_with( || report.clone() )?;
 
     println!( "{plan}" );
+      // aaa : split on two functions for create plan and for execute
+    // aaa : it's already separated, look line: 203 : let result = tests_run( &options );
 
     let temp_path =  if temp
     {
       let mut unique_name = format!
       (
         "temp_dir_for_test_command_{}",
-        path_tools::path::unique_folder_name().map_err( | e | ( reports.clone(), e.into() ) )?
+        path::unique_folder_name().err_with( || report.clone() )?
       );
 
       let mut temp_dir = env::temp_dir().join( unique_name );
@@ -139,12 +179,12 @@ mod private
         unique_name = format!
         (
           "temp_dir_for_test_command_{}",
-          path_tools::path::unique_folder_name().map_err( | e | ( reports.clone(), e.into() ) )?
+          path::unique_folder_name().err_with( || report.clone() )?
         );
         temp_dir = env::temp_dir().join( unique_name );
       }
 
-      fs::create_dir( &temp_dir ).map_err( | e | ( reports.clone(), e.into() ) )?;
+      fs::create_dir( &temp_dir ).err_with( || report.clone() )?;
       Some( temp_dir )
     }
     else
@@ -156,49 +196,20 @@ mod private
     .concurrent( concurrent )
     .plan( plan )
     .option_temp( temp_path )
-    .dry( dry );
-
-    #[ cfg( feature = "progress_bar" ) ]
-    let test_options_former = if with_progress
-    {
-      let test_options_former = test_options_former.feature( TestOptionsProgressBarFeature{ multiprocess, style } );
-      test_options_former
-    }
-    else
-    {
-      test_options_former
-    };
+    .dry( dry )
+    .with_progress( with_progress );
 
     let options = test_options_former.form();
     let result = tests_run( &options );
 
     if temp
     {
-      fs::remove_dir_all( options.temp_path.unwrap() ).map_err( | e | ( reports.clone(), e.into() ) )?;
+      fs::remove_dir_all( options.temp_path.unwrap() ).err_with( || report.clone() )?;
     }
 
-    result
+    result.map_err( | ( report, e) | ( report, e.into() ) )
   }
 
-  fn needed_packages( path : AbsolutePath ) -> Result< Vec< WorkspacePackage > >
-  {
-    let path = if path.as_ref().file_name() == Some( "Cargo.toml".as_ref() )
-    {
-      path.parent().unwrap()
-    }
-    else
-    {
-      path
-    };
-    let metadata = Workspace::with_crate_dir( CrateDir::try_from( path.clone() )? )?;
-
-    let result = metadata
-    .packages()?
-    .into_iter()
-    .filter( move | x | x.manifest_path().starts_with( path.as_ref() ) )
-    .collect();
-    Ok( result )
-  }
 }
 
 crate::mod_interface!

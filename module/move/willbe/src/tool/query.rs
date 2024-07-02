@@ -1,14 +1,19 @@
+/// Internal namespace.
 mod private
 {
-  use crate::*;
+  #[ allow( unused_imports ) ]
+  use crate::tool::*;
 
   use std::
   {
     str::FromStr,
-    collections::HashMap
   };
-  use error_tools::for_app::bail;
-  use wtools::error::{ for_app::{ Error }, Result };
+  use error::
+  {
+    untyped::{ Error, bail },
+    Result,
+  };
+  use collection::HashMap;
 
   #[ derive( Debug, PartialEq, Eq, Clone ) ]
   /// Parser value enum

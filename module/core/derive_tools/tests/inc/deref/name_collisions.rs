@@ -20,4 +20,4 @@ struct NameCollisions
   b : String,
 }
 
-include!( "./only_tests/name_collisions.rs" );
+include!( "./only_test/name_collisions.rs" );

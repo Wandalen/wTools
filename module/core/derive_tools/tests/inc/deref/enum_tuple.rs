@@ -9,4 +9,4 @@ enum EnumTuple
   B( String, i32 ),
 }
 
-include!( "./only_tests/enum_tuple.rs" );
+include!( "./only_test/enum_tuple.rs" );
