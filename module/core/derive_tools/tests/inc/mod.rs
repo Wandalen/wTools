@@ -197,3 +197,16 @@ mod inner_from_tests
 	mod multiple_test;
 
 }
+
+
+
+#[ cfg( feature = "derive_index" ) ]
+#[ path = "index" ]
+mod index_tests
+{
+	#[ allow( unused_imports ) ]
+	use super::*;
+
+	mod struct_named_manual;
+	mod struct_tuple_manual;
+}
