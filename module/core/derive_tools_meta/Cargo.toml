@@ -34,6 +34,7 @@ default = [
   "derive_deref",
   "derive_from",
   "derive_new",
+  "derive_index",
   "derive_inner_from",
   "derive_as_ref",
   "derive_as_mut",
@@ -46,6 +47,7 @@ full = [
   "derive_deref",
   "derive_from",
   "derive_new",
+  "derive_index",
   "derive_inner_from",
   "derive_as_ref",
   "derive_as_mut",
@@ -60,6 +62,7 @@ derive_deref = []
 derive_deref_mut = []
 derive_from = []
 derive_new = []
+derive_index = []
 derive_inner_from = []
 derive_variadic_from = [ "iter_tools/iter_ext" ]
 derive_phantom = []

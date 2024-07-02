@@ -24,6 +24,7 @@ mod all_manual_test;
     feature = "derive_deref",
     feature = "derive_deref_mut",
     feature = "derive_from",
+    feature = "derive_index",
     feature = "derive_inner_from",
     feature = "derive_phantom"
   )
@@ -248,6 +249,7 @@ mod inner_from_tests
 
 }
 
+  
 #[ cfg( feature = "derive_phantom" ) ]
 #[ path = "phantom" ]
 mod phantom_tests
@@ -289,4 +291,18 @@ mod phantom_tests
     t.compile_fail( "tests/inc/phantom/compiletime/enum.rs" );
     t.compile_fail( "tests/inc/phantom/compiletime/invariant_type.rs" );
   }
+}
+
+
+#[ cfg( feature = "derive_index" ) ]
+#[ path = "index" ]
+mod index_tests
+{
+	#[ allow( unused_imports ) ]
+	use super::*;
+
+	mod struct_named;
+	mod struct_named_manual;
+	mod struct_tuple_manual;
+
 }
