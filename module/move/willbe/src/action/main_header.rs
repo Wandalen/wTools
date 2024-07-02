@@ -201,7 +201,8 @@ mod private
   /// <!--{ generate.main_header.end }-->
   /// ```
   pub fn readme_header_renew( crate_dir : CrateDir )
-  -> Result< MainHeaderRenewReport, ( MainHeaderRenewReport, MainHeaderRenewError ) >
+  // -> Result< MainHeaderRenewReport, ( MainHeaderRenewReport, MainHeaderRenewError ) >
+  -> ResultWithReport< MainHeaderRenewReport, MainHeaderRenewError >
   {
     let mut report = MainHeaderRenewReport::default();
     regexes_initialize();

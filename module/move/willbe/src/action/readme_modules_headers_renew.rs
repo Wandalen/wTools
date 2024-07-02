@@ -242,12 +242,11 @@ mod private
   pub fn readme_modules_headers_renew( crate_dir : CrateDir )
   -> ResultWithReport< ModulesHeadersRenewReport, ModulesHeadersRenewError >
   // -> Result< ModulesHeadersRenewReport, ( ModulesHeadersRenewReport, ModulesHeadersRenewError ) >
-  // xxx : newtype
   {
     let mut report = ModulesHeadersRenewReport::default();
     regexes_initialize();
     let workspace = Workspace::try_from( crate_dir )
-    .err_with( || report.clone() )?; // xxx : qqq : use trait. everywhere
+    .err_with( || report.clone() )?;
     let discord_url = workspace.discord_url();
 
     // qqq : inspect each collect in willbe and rid of most of them

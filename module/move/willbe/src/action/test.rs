@@ -19,7 +19,7 @@ mod private
       Error,
       format_err
     },
-    Result
+    // Result
   };
   use iter::Itertools;
 
@@ -65,7 +65,10 @@ mod private
   /// The result of the tests is written to the structure `TestsReport` and returned as a result of the function execution.
   // zzz : it probably should not be here
   // xxx : use newtype
-  pub fn test( o : TestsCommandOptions, dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
+  pub fn test( o : TestsCommandOptions, dry : bool )
+  -> ResultWithReport< TestsReport, Error >
+  // qqq : for Petro : typed error
+  // -> Result< TestsReport, ( TestsReport, Error ) >
   {
 
     // qqq : incapsulate progress bar logic into some function of struct. don't keep it here
