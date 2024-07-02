@@ -365,9 +365,9 @@ mod private
     git_options.dry = dry;
     publish.dry = dry;
 
-    report.get_info = Some( cargo::pack( pack ).err_with( || report.clone() )? );
+    report.get_info = Some( cargo::pack( pack ).err_with_report( &report )? );
     // aaa : redundant field? // aaa : removed
-    let bump_report = version::bump( bump ).err_with( || report.clone() )?;
+    let bump_report = version::bump( bump ).err_with_report( &report )?;
     report.bump = Some( bump_report.clone() );
     let git_root = git_options.git_root.clone();
     let git = match entity::git::perform_git_commit( git_options )
@@ -377,7 +377,7 @@ mod private
       {
         version::revert( &bump_report )
         .map_err( | le | format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) ) )
-        .err_with( || report.clone() )?;
+        .err_with_report( &report )?;
         return Err(( report, e ));
       }
     };
@@ -394,12 +394,12 @@ mod private
           | le |
           format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) )
         )
-        .err_with( || report.clone() )?;
+        .err_with_report( &report )?;
         return Err(( report, e ));
       }
     };
 
-    let res = tool::git::push( &git_root, dry ).err_with( || report.clone() )?;
+    let res = tool::git::push( &git_root, dry ).err_with_report( &report )?;
     report.push = Some( res );
 
     Ok( report )

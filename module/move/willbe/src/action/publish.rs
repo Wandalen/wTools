@@ -259,7 +259,7 @@ mod private
     let temp = plan.base_temp_dir.clone();
 
     report.plan = Some( plan.clone() );
-    for package_report in publish::perform_packages_publish( plan ).err_with( || report.clone() )?
+    for package_report in publish::perform_packages_publish( plan ).err_with_report( &report )?
     {
       let path : &std::path::Path = package_report.get_info.as_ref().unwrap().current_path.as_ref();
       report.packages.push(( AbsolutePath::try_from( path ).unwrap(), package_report ));
@@ -267,7 +267,7 @@ mod private
 
     if let Some( dir ) = temp
     {
-      fs::remove_dir_all( dir ).err_with( || report.clone() )?;
+      fs::remove_dir_all( dir ).err_with_report( &report )?;
     }
 
     Ok( report )

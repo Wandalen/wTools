@@ -18,10 +18,6 @@ mod private
   };
   use tool::{ TreePrinter, ListNodeReport };
 
-//   use petgraph::prelude::{ Dfs, EdgeRef };
-//   use former::Former;
-//   use workspace::Workspace;
-
   /// Args for `list` action.
   #[ derive( Debug, Default, Copy, Clone ) ]
   pub enum ListFormat
@@ -441,6 +437,7 @@ mod private
   ///   or a tuple containing the list report and error if not successful.
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
   pub fn list( args : ListOptions ) -> ResultWithReport< ListReport, untyped::Error > // qqq : should be specific error
+  // xxx
   {
     let mut report = ListReport::default();
 
@@ -448,11 +445,11 @@ mod private
     // dbg!( &args.path_to_manifest );
     let manifest = Manifest::try_from( args.path_to_manifest.clone() )
     .context( "List of packages by specified manifest path" )
-    .err_with( || report.clone() )?;
+    .err_with_report( &report )?;
 
     let workspace = Workspace::try_from( manifest.crate_dir() )
     .context( "Reading workspace" )
-    .err_with( || report.clone() )?;
+    .err_with_report( &report )?;
 
     let is_package = manifest.package_is();
     // let is_package = manifest.package_is().context( "try to identify manifest type" ).err_with( report.clone() )?;
@@ -461,21 +458,21 @@ mod private
     | manifest_file : ManifestFile, report : &mut ListReport, visited : &mut HashSet< DependencyId > |
     {
 
-      // aaa : is it safe to use unwrap here? // aaa : done
       let package = workspace
       .package_find_by_manifest( manifest_file )
       .ok_or_else( || format_err!( "Package not found in the workspace" ) )
-      .err_with( || report.clone() )?;
+      .err_with_report( report )?;
       let mut package_report = tool::ListNodeReport
       {
         name : package.name().to_string(),
+        // qqq : for Bohdan : too long lines
         version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( package.version().to_string() ) } else { None },
+        // qqq : for Bohdan : don't put multiline if into struct constructor
         crate_dir : if args.info.contains( &PackageAdditionalInfo::Path )
         { Some( package.crate_dir() ).transpose() }
         else
         { Ok( None ) }
-        .err_with( || report.clone() )?,
-        // aaa : is it safe to use unwrap here? // aaa : now returns an error
+        .err_with_report( report )?,
         duplicate : false,
         normal_dependencies : vec![],
         dev_dependencies : vec![],
@@ -595,7 +592,7 @@ mod private
             )
           }
         )
-        .err_with( || report.clone() )?;
+        .err_with_report( &report )?;
         let packages_info : collection::HashMap< String, WorkspacePackageRef< '_ > > =
           packages.map( | p | ( p.name().to_string(), p ) ).collect();
 
@@ -628,7 +625,7 @@ mod private
             }
           )
           .collect::< Result< _, _ >>()
-          .err_with( || report.clone() )?;
+          .err_with_report( &report )?;
 
           report = ListReport::List( names );
         }

@@ -6,30 +6,88 @@ pub( crate ) mod private
 
   use ::error_tools::protected::*;
 
-  // qqq : for for Petro : for Bohdan : good one, apply it to all code
-
-  /// This trait can be used to add extra information to an error, creating a tuple of the additional
-  /// context and the original error. This can be particularly useful for error handling where you
-  /// want to include more context or details in the error without losing the original error value.
-  pub trait ErrWith< V, R, E >
+  /// This trait allows adding extra context or information to an error, creating a tuple of the additional
+  /// context and the original error. This is particularly useful for error handling when you want to include
+  /// more details in the error without losing the original error value.
+  ///
+  /// The `ErrWith` trait provides methods to wrap an error with additional context, either by using a closure
+  /// that generates the context or by directly providing the context.
+  ///
+  /// ```
+  pub trait ErrWith< ReportErr, ReportOk, E >
   {
-    /// Takes a closure `f` that returns a value of type `V`, and uses it to wrap an error of type `(V, E1)`
-    /// in the context of a `Result` of type `R`.
-    fn err_with< F >( self, f : F ) -> std::result::Result< R, ( V, E ) >
+    /// Takes a closure `f` that returns a value of type `ReportErr`, and uses it to wrap an error of type `(ReportErr, E)`
+    /// in the context of a `Result` of type `ReportOk`.
+    ///
+    /// This method allows you to add additional context to an error by providing a closure that generates the context.
+    ///
+    /// # Arguments
+    ///
+    /// * `f` - A closure that returns the additional context of type `ReportErr`.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` of type `ReportOk` if the original result is `Ok`, or a tuple `(ReportErr, E)` containing the additional
+    /// context and the original error if the original result is `Err`.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// let result : Result< (), io::Error > = Err( io::Error::new( io::ErrorKind::Other, "an error occurred" ) );
+    /// let result_with_context = result.err_with( || "additional context" );
+    /// ```
+    fn err_with< F >( self, f : F ) -> std::result::Result< ReportOk, ( ReportErr, E ) >
     where
-      F : FnOnce() -> V;
+      F : FnOnce() -> ReportErr;
+
+    /// Takes a reference to a `ReportErr` value and uses it to wrap an error of type `(ReportErr, E)`
+    /// in the context of a `Result` of type `ReportOk`.
+    ///
+    /// This method allows you to add additional context to an error by providing a reference to the context.
+    ///
+    /// # Arguments
+    ///
+    /// * `report` - A reference to the additional context of type `ReportErr`.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` of type `ReportOk` if the original result is `Ok`, or a tuple `(ReportErr, E)` containing the additional
+    /// context and the original error if the original result is `Err`.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// let result : Result< (), io::Error > = Err( io::Error::new( io::ErrorKind::Other, "an error occurred" ) );
+    /// let report = "additional context";
+    /// let result_with_report = result.err_with_report( &report )?;
+    /// ```
+    fn err_with_report( self, report : &ReportErr ) -> std::result::Result< ReportOk, ( ReportErr, E ) >
+    where
+      ReportErr : Clone;
   }
 
-  impl< V, R, E1, E2 > ErrWith< V, R, E1 > for std::result::Result< R, E2 >
+  impl< ReportErr, ReportOk, E, IntoError > ErrWith< ReportErr, ReportOk, E >
+  for std::result::Result< ReportOk, IntoError >
   where
-    E2 : Into< E1 >,
+    IntoError : Into< E >,
   {
-    fn err_with< F >( self, f : F ) -> std::result::Result< R, ( V, E1 ) >
+
+    fn err_with< F >( self, f : F ) -> std::result::Result< ReportOk, ( ReportErr, E ) >
     where
-      F : FnOnce() -> V,
+      F : FnOnce() -> ReportErr,
     {
       self.map_err( | e | ( f(), e.into() ) )
     }
+
+    #[ inline( always ) ]
+    fn err_with_report( self, report : &ReportErr ) -> std::result::Result< ReportOk, ( ReportErr, E ) >
+    where
+      ReportErr : Clone,
+      Self : Sized,
+    {
+      self.map_err( | e | ( report.clone(), e.into() ) )
+    }
+
   }
 
   /// A type alias for a `Result` that contains an error which is a tuple of a report and an original error.
