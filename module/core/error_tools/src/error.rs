@@ -236,11 +236,15 @@ pub mod exposed
 {
   use super::*;
 
-  pub use private::ErrWith;
-  pub use private::ResultWithReport;
+  #[ doc( inline ) ]
+  pub use private::
+  {
+    ErrWith,
+    ResultWithReport,
+  };
 
   #[ doc( inline ) ]
-  pub use prelude::*; // xxx
+  pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -249,8 +253,7 @@ pub mod prelude
 {
   use super::*;
 
-  // xxx
-
+  #[ doc( inline ) ]
   pub use private::
   {
     err,
@@ -260,4 +263,3 @@ pub mod prelude
   };
 
 }
-// xxx : review
