@@ -6,7 +6,6 @@ mod private
   // qqq : for Bohdan no asterisk imports, but in special cases
   use std::
   {
-    // collections,
     fmt,
     sync,
   };

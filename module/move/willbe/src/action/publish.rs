@@ -10,15 +10,6 @@ mod private
     error::ErrWith,
   };
 
-//   use collection::{ HashSet, HashMap };
-//   use core::fmt::Formatter;
-//   use std::{ env, fs };
-
-//   use error::untyped::Error;
-//   use workspace::Workspace;
-//   use package::Package;
-//   use channel::Channel;
-
   /// Represents a report of publishing packages
   #[ derive( Debug, Default, Clone ) ]
   pub struct PublishReport

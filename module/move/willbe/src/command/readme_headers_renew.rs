@@ -1,9 +1,7 @@
 mod private
 {
   use crate::*;
-  // use path::AbsolutePath;
   use action;
-  // use error::untyped::Error;
   use error::{ Result, err };
   use std::fmt::{ Display, Formatter };
 

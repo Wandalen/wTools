@@ -33,8 +33,9 @@ pub( crate ) mod private
     /// # Example
     ///
     /// ```rust
-    /// let result : Result< (), io::Error > = Err( io::Error::new( io::ErrorKind::Other, "an error occurred" ) );
-    /// let result_with_context = result.err_with( || "additional context" );
+    /// use willbe::ErrWith;
+    /// let result : Result< (), std::io::Error > = Err( std::io::Error::new( std::io::ErrorKind::Other, "an error occurred" ) );
+    /// let result_with_context : Result< (), ( &str, std::io::Error ) > = result.err_with( || "additional context" );
     /// ```
     fn err_with< F >( self, f : F ) -> std::result::Result< ReportOk, ( ReportErr, E ) >
     where
@@ -57,9 +58,10 @@ pub( crate ) mod private
     /// # Example
     ///
     /// ```rust
-    /// let result : Result< (), io::Error > = Err( io::Error::new( io::ErrorKind::Other, "an error occurred" ) );
+    /// use willbe::ErrWith;
+    /// let result : Result< (), std::io::Error > = Err( std::io::Error::new( std::io::ErrorKind::Other, "an error occurred" ) );
     /// let report = "additional context";
-    /// let result_with_report = result.err_with_report( &report )?;
+    /// let result_with_report : Result< (), ( &str, std::io::Error ) > = result.err_with_report( &report );
     /// ```
     fn err_with_report( self, report : &ReportErr ) -> std::result::Result< ReportOk, ( ReportErr, E ) >
     where
