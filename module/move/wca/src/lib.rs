@@ -8,16 +8,10 @@
 
 use mod_interface::mod_interface;
 
-mod ca;
+pub mod ca;
 
 crate::mod_interface!
 {
-  // #![ debug ]
-
-  // xxx : syntax for that, please
   use super::ca;
   protected use super::ca::protected::*;
-
-  // /// Commands aggregator library.
-  // layer ca;
 }
