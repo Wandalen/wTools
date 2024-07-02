@@ -334,7 +334,8 @@ pub( crate ) mod private
   {
     fn into_result( self ) -> error::untyped::Result< () >
     {
-      self.map_err( | e | error::untyped::anyhow!( "{e:?}" ))
+      self.map_err( | e | error::untyped::format_err!( "{e:?}" ))
+      // xxx : qqq : ?
     }
   }
 }

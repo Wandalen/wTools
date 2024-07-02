@@ -40,7 +40,7 @@ pub mod orphan
   #[ doc( inline ) ]
   pub use ::anyhow::
   {
-    anyhow, // xxx : disable
+    // anyhow, // xxx : disable
     format_err,
     ensure,
     bail,

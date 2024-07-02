@@ -16,7 +16,7 @@ pub( crate ) mod private
 
   use iter_tools::Itertools;
   use std::rc::Rc;
-  use error::untyped::anyhow;
+  use error::untyped::format_err;
   use former::Former;
 
   // qqq : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
@@ -265,7 +265,9 @@ pub( crate ) mod private
           _ =>
           {
             let command = o.args.get_owned::< String >( 0 ).unwrap();
-            let cmd = grammar.commands.get( &command ).ok_or_else( || anyhow!( "Can not found help for command `{command}`" ) )?;
+            let cmd = grammar.commands
+            .get( &command )
+            .ok_or_else( || format_err!( "Can not found help for command `{command}`" ) )?;
 
             let args = HelpGeneratorOptions::former()
             .command_prefix( "." )

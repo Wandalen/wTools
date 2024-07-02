@@ -28,8 +28,10 @@ pub mod orphan
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use ::thiserror::*;
-  // xxx : qqq : be specific
+  pub use ::thiserror::
+  {
+    Error,
+  };
 
 }
 
@@ -41,10 +43,6 @@ pub mod exposed
 
   #[ doc( inline ) ]
   pub use super::prelude::*;
-
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use ::thiserror::prelude::*;
 
 }
 
