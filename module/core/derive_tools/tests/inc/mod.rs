@@ -278,15 +278,19 @@ mod phantom_tests
   mod contravariant_type_manual;
   mod send_sync_type;
   mod send_sync_type_manual;
-  #[ test_tools::nightly ]
-  #[ test ]
-  fn phantom_trybuild()
+
+  only_for_terminal_module!
   {
+    #[ test_tools::nightly ]
+    #[ test ]
+    fn phantom_trybuild()
+    {
 
-    println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
-    let t = test_tools::compiletime::TestCases::new();
+      println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+      let t = test_tools::compiletime::TestCases::new();
 
-    t.compile_fail( "tests/inc/phantom/compiletime/enum.rs" );
-    t.compile_fail( "tests/inc/phantom/compiletime/invariant_type.rs" );
+      t.compile_fail( "tests/inc/phantom/compiletime/enum.rs" );
+      t.compile_fail( "tests/inc/phantom/compiletime/invariant_type.rs" );
+    }
   }
 }
