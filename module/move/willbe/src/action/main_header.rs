@@ -15,20 +15,13 @@ mod private
   };
   use std::path::PathBuf;
   use regex::Regex;
-  use { CrateDir, query, url, Workspace };
   use entity::{ PathError, WorkspaceInitError };
   use error::
   {
     err,
-    Result,
-    untyped::
-    {
-      Error,
-      Context,
-    },
+    untyped::Error,
   };
   use workspace_md_extension::WorkspaceMdExtension;
-  // use error::ErrWith;
 
   static TAGS_TEMPLATE : std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 
@@ -201,7 +194,8 @@ mod private
   /// <!--{ generate.main_header.end }-->
   /// ```
   pub fn readme_header_renew( crate_dir : CrateDir )
-  -> Result< MainHeaderRenewReport, ( MainHeaderRenewReport, MainHeaderRenewError ) >
+  // -> Result< MainHeaderRenewReport, ( MainHeaderRenewReport, MainHeaderRenewError ) >
+  -> ResultWithReport< MainHeaderRenewReport, MainHeaderRenewError >
   {
     let mut report = MainHeaderRenewReport::default();
     regexes_initialize();
@@ -210,18 +204,18 @@ mod private
     (
       crate_dir
     )
-    .err_with( || report.clone() )?;
+    .err_with_report( &report )?;
 
     let workspace_root = workspace
     .workspace_root();
 
     let header_param = HeaderParameters::from_cargo_toml( &workspace )
-    .err_with( || report.clone() )?;
+    .err_with_report( &report )?;
 
     let read_me_path = workspace_root.join
     (
       repository::readme_path( &workspace_root )
-      .err_with( || report.clone() )?
+      .err_with_report( &report )?
     );
 
     report.found_file = Some( read_me_path.clone().to_path_buf() );
@@ -230,10 +224,10 @@ mod private
     .read( true )
     .write( true )
     .open( &read_me_path )
-    .err_with( || report.clone() )?;
+    .err_with_report( &report )?;
 
     let mut content = String::new();
-    file.read_to_string( &mut content ).err_with( || report.clone() )?;
+    file.read_to_string( &mut content ).err_with_report( &report )?;
 
     let raw_params = TAGS_TEMPLATE
     .get()
@@ -243,9 +237,11 @@ mod private
     .map( | m | m.as_str() )
     .unwrap_or_default();
 
-    _ = query::parse( raw_params ).context( "Fail to parse arguments" );
+    // _ = query::parse( raw_params ).context( "Fail to parse arguments" );
+    // qqq : for Petro : why ignored?
+    // aaa : commented
 
-    let header = header_param.to_header().err_with( || report.clone() )?;
+    let header = header_param.to_header().err_with_report( &report )?;
     let content : String = TAGS_TEMPLATE.get().unwrap().replace
     (
       &content,
@@ -257,9 +253,9 @@ mod private
       )
     ).into();
 
-    file.set_len( 0 ).err_with( || report.clone() )?;
-    file.seek( SeekFrom::Start( 0 ) ).err_with( || report.clone() )?;
-    file.write_all( content.as_bytes() ).err_with( || report.clone() )?;
+    file.set_len( 0 ).err_with_report( &report )?;
+    file.seek( SeekFrom::Start( 0 ) ).err_with_report( &report )?;
+    file.write_all( content.as_bytes() ).err_with_report( &report )?;
     report.touched_file = read_me_path.to_path_buf();
     report.success = true;
     Ok( report )

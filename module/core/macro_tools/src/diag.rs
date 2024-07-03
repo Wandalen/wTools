@@ -378,15 +378,16 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
+  use super::*;
 
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 
 }
 
@@ -394,12 +395,13 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 
   // #[ doc( inline ) ]
   // #[ allow( unused_imports ) ]
-  // pub use super::private::
+  // pub use private::
   // {
   //   Result,
   // };
@@ -414,11 +416,11 @@ pub mod exposed
   pub use super::super::diag;
 
   #[ doc( inline ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     indentation,
     report_format,
@@ -431,10 +433,11 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     tree_print,
     code_print,
@@ -446,5 +449,5 @@ pub mod prelude
   };
 
   // #[ doc( inline ) ]
-  // pub use super::private::Result;
+  // pub use private::Result;
 }

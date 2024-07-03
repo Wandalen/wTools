@@ -7,24 +7,24 @@
 //   pub type Result< T, E = BasicError > = std::result::Result< T, E >;
 // }
 //
-// /// Protected namespace of the module.
-// pub mod protected
+// /// Own namespace of the module.
+// pub mod own
 // {
 //   #[ doc( inline ) ]
 //   #[ allow( unused_imports ) ]
-//   pub use super::orphan::*;
+//   pub use orphan::*;
 // }
 //
 // #[ doc( inline ) ]
 // #[ allow( unused_imports ) ]
-// pub use protected::*;
+// pub use own::*;
 //
 // /// Shared with parent namespace of the module
 // pub mod orphan
 // {
 //   #[ doc( inline ) ]
 //   #[ allow( unused_imports ) ]
-//   pub use super::exposed::*;
+//   pub use exposed::*;
 // }
 //
 // /// Exposed namespace of the module.
@@ -32,12 +32,12 @@
 // {
 //   #[ doc( inline ) ]
 //   #[ allow( unused_imports ) ]
-//   pub use super::prelude::*;
+//   pub use prelude::*;
 // }
 //
 // /// Prelude to use essentials: `use my_module::prelude::*`.
 // pub mod prelude
 // {
-//   pub use super::private::Result;
+//   pub use private::Result;
 // }
 //

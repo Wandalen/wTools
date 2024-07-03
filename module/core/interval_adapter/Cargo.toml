@@ -25,10 +25,9 @@ features = [ "full" ]
 all-features = false
 
 
-
 [features]
-default = [ "enabled" ]
-full = [ "enabled" ]
+default = [ "enabled", "no_std" ]
+full = [ "default" ]
 no_std = []
 use_alloc = [ "no_std" ]
 enabled = []

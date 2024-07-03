@@ -7,7 +7,7 @@ mod private
   use std::fs;
   use colored::Colorize;
   use wca::VerifiedCommand;
-  use error::Result;
+  // use error::Result;
   // qqq : group dependencies
   use path::{ AbsolutePath, PathBuf };
   use action::test::TestsCommandOptions;
@@ -49,7 +49,7 @@ mod private
 
   /// run tests in specified crate
   // qqq : don't use 1-prameter Result
-  pub fn test( o : VerifiedCommand ) -> Result< () >
+  pub fn test( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
   {
     let args_line = format!
     (

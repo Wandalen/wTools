@@ -17,7 +17,7 @@ crate::mod_interface!
   // xxx : make it working
   // exposed use super;
   exposed use super::super::compiletime;
-  protected use
+  own use
   {
     *
   };

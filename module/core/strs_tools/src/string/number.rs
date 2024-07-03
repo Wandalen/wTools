@@ -5,15 +5,16 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
-  pub use super::orphan::*;
+  use super::*;
+  pub use orphan::*;
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
   };
   #[ cfg( all( feature = "string_parse_number" ) ) ]
@@ -26,9 +27,10 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  pub use super::exposed::*;
+  use super::*;
+  pub use exposed::*;
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
   };
 }
@@ -38,10 +40,10 @@ pub mod orphan
 pub mod exposed
 {
   use super::*;
-  pub use super::protected as number;
+  pub use super::own as number;
 
   #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
   };
 }
@@ -50,4 +52,5 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

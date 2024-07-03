@@ -2,7 +2,7 @@ mod private
 {
   use crate::*;
   use std::path::Path;
-  use error::{ untyped::Context, Result };
+  use error::{ untyped::Context };
   use tool::template::*;
 
   // /// Template for creating deploy files.
@@ -21,7 +21,7 @@ mod private
 
   // impl Template< DeployTemplateFiles > for DeployTemplate
   // {
-  //   fn create_all( self, path : &Path ) -> Result< () >
+  //   fn create_all( self, path : &Path ) -> error::untyped::Result< () >
   //   {
   //     self.files.create_all( path, &self.values )
   //   }
@@ -159,7 +159,9 @@ mod private
   (
     path : &Path,
     mut template : TemplateHolder
-  ) -> Result< () >
+  )
+  -> error::untyped::Result< () >
+  // qqq : typed error
   {
     if let None = template.load_existing_params( path )
     {

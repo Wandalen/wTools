@@ -1,3 +1,4 @@
+
 #[ allow( unused_imports ) ]
 use super::*;
 
@@ -193,6 +194,7 @@ tests_impls!
     {
       for i in interval
       {
+        #[ cfg( not( feature = "no_std" ) ) ]
         println!( "{i}" );
       }
     }
@@ -216,6 +218,7 @@ tests_impls!
 
     fn f1( interval : impl NonIterableInterval )
     {
+      #[ cfg( not( feature = "no_std" ) ) ]
       println!( "Do something with this {:?} .. {:?} interval", interval.left(), interval.right() );
     }
 

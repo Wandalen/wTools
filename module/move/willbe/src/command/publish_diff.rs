@@ -6,7 +6,7 @@ mod private
   use std::path::PathBuf;
   use wca::VerifiedCommand;
 
-  use error::Result;
+  // use error::Result;
   // qqq : group dependencies
   // use path::AbsolutePath;
 
@@ -30,8 +30,7 @@ mod private
   ///
   /// Returns an error if there is an issue with the command.
 
-  // qqq : don't use 1-prameter Result
-  pub fn publish_diff( o : VerifiedCommand ) -> Result< () >
+  pub fn publish_diff( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
   {
     let path : PathBuf = o.args.get_owned( 0 ).unwrap_or( std::env::current_dir()? );
     let PublishDiffProperties { keep_archive } = o.props.try_into()?;

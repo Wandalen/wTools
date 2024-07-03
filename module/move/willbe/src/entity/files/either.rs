@@ -11,10 +11,10 @@ use std::
 {
   path::Path,
 };
-use error::
-{
-  Result,
-};
+// use error::
+// {
+//   Result,
+// };
 
 /// Wrapper over `data_type::Either< CrateDir, ManifestFile >` with utils methods.
 #[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug ) ]

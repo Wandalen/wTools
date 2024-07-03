@@ -2,16 +2,17 @@ mod private
 {
   use crate::*;
 
-  use error::{ untyped::Context, Result };
+  use error::{ untyped::Context };
 
   ///
   /// Generate table.
   ///
-  pub fn cicd_renew() -> Result< () >
+  // qqq : typed error
+  pub fn cicd_renew() -> error::untyped::Result< () >
   {
     action::cicd_renew
-    ( 
-      &std::env::current_dir()? 
+    (
+      &std::env::current_dir()?
     )
     .context( "Fail to generate workflow" )
   }

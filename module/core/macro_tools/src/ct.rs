@@ -13,16 +13,18 @@ pub mod str;
 /// Compile-time tools.
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
+  use super::*;
+
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
   #[ doc( inline ) ]
-  pub use super::private::
+  pub use private::
   {
   };
   #[ doc( inline ) ]
@@ -33,8 +35,9 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
@@ -44,11 +47,11 @@ pub mod exposed
   use super::*;
   pub use super::super::ct;
 
-  // pub use super::protected as ct;
+  // pub use super::own as ct;
   #[ doc( inline ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
   #[ doc( inline ) ]
-  pub use super::private::
+  pub use private::
   {
   };
 }
@@ -57,4 +60,5 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

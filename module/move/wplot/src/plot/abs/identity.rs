@@ -2,7 +2,7 @@
 #[ cfg( not( feature = "no_std" ) ) ]
 pub( crate ) mod private
 {
-  // use crate::protected::*;
+  // use crate::own::*;
   use once_cell::sync::Lazy;
   use std::sync::Mutex;
   use core::{hash::Hash, fmt};

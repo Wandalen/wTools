@@ -19,10 +19,10 @@ use std::
   path::{ Path, PathBuf },
   io,
 };
-use error::
-{
-  Result,
-};
+// use error::
+// {
+//   Result,
+// };
 use path::{ AbsolutePath, Utf8Path, Utf8PathBuf };
 
 /// Path to crate directory

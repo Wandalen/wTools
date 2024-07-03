@@ -128,7 +128,8 @@ fn module_cell()
   let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
-  assert!( actual.contains( "[_willbe_variadic_tag_configurations_c](./_willbe_variadic_tag_configurations_c)" ) );
+  // qqq : do not do like that. If it will fail how will I know what went wrong? What is the name of the package here?
+  assert!( actual.contains( "[_willbe_variadic_tag_configurations_full_config_c](./_willbe_variadic_tag_configurations_full_config_c)" ) );
 }
 
 #[ test ]
@@ -163,7 +164,8 @@ fn branches_cell()
   let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
-  assert!( actual.contains( "[![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/module_willbe_variadic_tag_configurations_c_push.yml?label=&branch=test_branch1)](https://github.com/SomeName/SomeCrate/C/actions/workflows/module_willbe_variadic_tag_configurations_c_push.yml?query=branch%3Atest_branch1) | [![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/module_willbe_variadic_tag_configurations_c_push.yml?label=&branch=test_branch2)](https://github.com/SomeName/SomeCrate/C/actions/workflows/module_willbe_variadic_tag_configurations_c_push.yml?query=branch%3Atest_branch2)" ) );
+  // qqq : do not do like that. If it will fail how will I know what went wrong? What is the name of the package here?
+  assert!( actual.contains( "[![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/module_willbe_variadic_tag_configurations_full_config_c_push.yml?label=&branch=test_branch1)](https://github.com/SomeName/SomeCrate/C/actions/workflows/module_willbe_variadic_tag_configurations_full_config_c_push.yml?query=branch%3Atest_branch1) | [![rust-status](https://img.shields.io/github/actions/workflow/status/SomeCrate/C/module_willbe_variadic_tag_configurations_full_config_c_push.yml?label=&branch=test_branch2)](https://github.com/SomeName/SomeCrate/C/actions/workflows/module_willbe_variadic_tag_configurations_full_config_c_push.yml?query=branch%3Atest_branch2)" ) );
 }
 
 #[ test ]
@@ -180,7 +182,8 @@ fn docs_cell()
   let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
-  assert!( actual.contains( "[![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/_willbe_variadic_tag_configurations_c)" ) );
+  // qqq : do not do like that. If it will fail how will I know what went wrong? What is the name of the package here?
+  assert!( actual.contains( "[![docs.rs](https://raster.shields.io/static/v1?label=&message=docs&color=eee)](https://docs.rs/_willbe_variadic_tag_configurations_full_config_c)" ) );
 }
 
 #[ test ]
@@ -197,5 +200,6 @@ fn sample_cell()
   let mut actual = String::new();
   _ = file.read_to_string( &mut actual ).unwrap();
 
-  assert!( actual.contains( " [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=.%2F_willbe_variadic_tag_configurations_c%2Fexamples%2F_willbe_variadic_tag_configurations_c_trivial.rs,RUN_POSTFIX=--example%20_willbe_variadic_tag_configurations_c_trivial/https://github.com/SomeName/SomeCrate/C)" ) );
+  // qqq : do not do like that. If it will fail how will I know what went wrong? What is the name of the package here?
+  assert!( actual.contains( " [![Open in Gitpod](https://raster.shields.io/static/v1?label=&message=try&color=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=.%2F_willbe_variadic_tag_configurations_full_config_c%2Fexamples%2F_willbe_variadic_tag_configurations_c_trivial.rs,RUN_POSTFIX=--example%20_willbe_variadic_tag_configurations_c_trivial/https://github.com/SomeName/SomeCrate/C)" ) );
 }

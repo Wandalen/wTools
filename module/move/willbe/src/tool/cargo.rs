@@ -93,8 +93,8 @@ mod private
     tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
   )]
   // qqq : should be typed error, apply err_with
-  // qqq : don't use 1-prameter Result
-  pub fn pack( args : PackOptions ) -> Result< process::Report >
+  // qqq : use typed error
+  pub fn pack( args : PackOptions ) -> error::untyped::Result< process::Report >
   {
     let ( program, options ) = ( "rustup", args.to_pack_args() );
 
@@ -159,8 +159,8 @@ mod private
     track_caller,
     tracing::instrument( fields( caller = ?{ let x = std::panic::Location::caller(); ( x.file(), x.line() ) } ) )
   )]
-  pub fn publish( args : PublishOptions ) -> Result< process::Report >
-  // qqq : don't use 1-prameter Result
+  pub fn publish( args : PublishOptions ) -> error::untyped::Result< process::Report >
+  // qqq : use typed error
   {
     let ( program, arguments) = ( "cargo", args.as_publish_args() );
 
@@ -211,10 +211,10 @@ mod private
 
 crate::mod_interface!
 {
-  protected use pack;
-  protected use publish;
+  own use pack;
+  own use publish;
 
-  protected use PublishOptions;
-  protected use PackOptions;
+  own use PublishOptions;
+  own use PackOptions;
 
 }

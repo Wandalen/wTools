@@ -257,7 +257,7 @@ mod private
   ///
   /// Returns `Ok(())` if the version is reverted successfully. Returns `Err` with an error message if there is any issue with reverting the version.
   // qqq : don't use 1-prameter Result
-  pub fn revert( report : &ExtendedBumpReport ) -> Result< () >
+  pub fn revert( report : &ExtendedBumpReport ) -> error::untyped::Result< () > // qqq : use typed error
   {
     let Some( name ) = report.name.as_ref() else { return Ok( () ) };
     let Some( old_version ) = report.old_version.as_ref() else { return Ok( () ) };
@@ -374,18 +374,18 @@ crate::mod_interface!
   exposed use Version;
 
   /// Report for bump operation.
-  protected use BumpReport;
+  own use BumpReport;
 
   /// Options for version bumping.
-  protected use BumpOptions;
+  own use BumpOptions;
   /// Report about a changing version with list of files that was changed.
-  protected use ExtendedBumpReport;
+  own use ExtendedBumpReport;
 
   /// Bumps the version of a package and its dependencies.
-  protected use manifest_bump;
+  own use manifest_bump;
   /// Bump version.
-  protected use bump;
+  own use bump;
 
   /// Reverts the version of a package.
-  protected use revert;
+  own use revert;
 }

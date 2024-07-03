@@ -23,7 +23,7 @@ mod private
     err,
     untyped::
     {
-      Result,
+      // Result,
       Error as wError,
       Context,
     },
@@ -242,12 +242,11 @@ mod private
   pub fn readme_modules_headers_renew( crate_dir : CrateDir )
   -> ResultWithReport< ModulesHeadersRenewReport, ModulesHeadersRenewError >
   // -> Result< ModulesHeadersRenewReport, ( ModulesHeadersRenewReport, ModulesHeadersRenewError ) >
-  // xxx : newtype
   {
     let mut report = ModulesHeadersRenewReport::default();
     regexes_initialize();
     let workspace = Workspace::try_from( crate_dir )
-    .err_with( || report.clone() )?; // xxx : qqq : use trait. everywhere
+    .err_with_report( &report )?;
     let discord_url = workspace.discord_url();
 
     // qqq : inspect each collect in willbe and rid of most of them
@@ -271,7 +270,7 @@ mod private
       (
         repository::readme_path( path.parent().unwrap().as_ref() )
         // .ok_or_else::< wError, _ >( || err!( "Fail to find README.md at {}", &path ) )
-        .err_with( || report.clone() )?
+        .err_with_report( &report )?
       );
 
       let pakage = Package::try_from
@@ -282,21 +281,21 @@ mod private
           .parent()
           .unwrap()
         )
-        .err_with( || report.clone() )?
+        .err_with_report( &report )?
       )
-      .err_with( || report.clone() )?;
+      .err_with_report( &report )?;
 
       let header = ModuleHeader::from_cargo_toml( pakage.into(), &discord_url )
-      .err_with( || report.clone() )?;
+      .err_with_report( &report )?;
 
       let mut file = OpenOptions::new()
       .read( true )
       .write( true )
       .open( &read_me_path )
-      .err_with( || report.clone() )?;
+      .err_with_report( &report )?;
 
       let mut content = String::new();
-      file.read_to_string( &mut content ).err_with( || report.clone() )?;
+      file.read_to_string( &mut content ).err_with_report( &report )?;
 
       let raw_params = TAGS_TEMPLATE
       .get()
@@ -307,6 +306,7 @@ mod private
       .unwrap_or_default();
 
       _ = query::parse( raw_params ).context( "Fail to parse raw params." );
+      // qqq : for Petro : why ignored?
 
       let content = header_content_generate
       (
@@ -314,11 +314,11 @@ mod private
         header,
         raw_params,
         workspace.workspace_root().to_str().unwrap()
-      ).err_with( || report.clone() )?;
+      ).err_with_report( &report )?;
 
-      file.set_len( 0 ).err_with( || report.clone() )?;
-      file.seek( SeekFrom::Start( 0 ) ).err_with( || report.clone() )?;
-      file.write_all( content.as_bytes() ).err_with( || report.clone() )?;
+      file.set_len( 0 ).err_with_report( &report )?;
+      file.seek( SeekFrom::Start( 0 ) ).err_with_report( &report )?;
+      file.write_all( content.as_bytes() ).err_with_report( &report )?;
       report.touched_files.insert( path.as_ref().to_path_buf() );
     }
     Ok( report )
@@ -330,7 +330,9 @@ mod private
     header : ModuleHeader,
     raw_params : &str,
     workspace_root : &str
-  ) -> Result< Cow< 'a, str > >
+  )
+  // qqq : use typed error
+  -> error::untyped::Result< Cow< 'a, str > >
   {
     let header = header.to_header( workspace_root )?;
     let result = TAGS_TEMPLATE

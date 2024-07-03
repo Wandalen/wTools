@@ -47,8 +47,8 @@ mod derive_more
   pub use ::derive_more::IndexMut;
   #[ cfg( feature = "derive_into" ) ]
   pub use ::derive_more::Into;
-  #[ cfg( feature = "derive_iterator" ) ]
-  pub use ::derive_more::Iterator;
+  // #[ cfg( feature = "derive_iterator" ) ]
+  // pub use ::derive_more::Iterator;
   #[ cfg( feature = "derive_into_iterator" ) ]
   pub use ::derive_more::IntoIterator;
   #[ cfg( feature = "derive_mul" ) ]
@@ -74,12 +74,6 @@ mod derive_more
 #[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
 pub use variadic_from as variadic;
 
-// #[ cfg( feature = "derive_reflect" ) ]
-// pub mod reflect;
-
-// use derive_tools_meta::Deref;
-// use derive_tools_meta::VariadicFrom;
-
 /// Namespace with dependencies.
 
 #[ allow( unused_imports ) ]
@@ -88,11 +82,10 @@ pub mod dependency
 {
 
   #[ doc( inline ) ]
-  #[ cfg( any_derive ) ]
   pub use ::derive_tools_meta;
 
   #[ doc( inline ) ]
-  #[ cfg( feature = "clone_dyn" ) ]
+  #[ cfg( feature = "derive_clone_dyn" ) ]
   pub use ::clone_dyn::{ self, dependency::* };
 
   #[ doc( inline ) ]
@@ -114,26 +107,19 @@ pub mod dependency
 #[ doc( inline ) ]
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::clone_dyn::orphan::*;
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::wtools::orphan::*;
-  // #[ cfg( feature = "derive_reflect" ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::reflect::orphan::*;
 }
 
 /// Orphan namespace of the module.
@@ -141,8 +127,9 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
@@ -152,131 +139,48 @@ pub mod exposed
 {
   use super::*;
   #[ doc( inline ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 
   #[ cfg( all( feature = "derive_more" ) ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::derive_more::*;
 
   #[ cfg( feature = "derive_strum" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::strum::*;
 
   #[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
   #[ doc( inline ) ]
   pub use ::variadic_from::exposed::*;
 
-  // #[ cfg( all( feature = "derive_more", feature = "derive_add" ) ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use ::derive_more::Add;
-
-  // #[ allow( ambiguous_glob_reexports ) ]
-  // #[ cfg( feature = "derive_more" ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use ::derive_more::
-  // {
-  //   Add,
-  //   AddAssign,
-  //   AsMut,
-  //   AsRef,
-  //   Binary,
-  //   BitAnd,
-  //   BitAndAssign,
-  //   BitOr,
-  //   BitOrAssign,
-  //   BitXor,
-  //   BitXorAssign,
-  //   Constructor,
-  //   Debug,
-  //   Deref,
-  //   DerefMut,
-  //   Display,
-  //   Div,
-  //   DivAssign,
-  //   Error,
-  //   From,
-  //   FromStr,
-  //   Index,
-  //   IndexMut,
-  //   Into,
-  //   IntoIterator,
-  //   IsVariant,
-  //   LowerExp,
-  //   LowerHex,
-  //   Mul,
-  //   MulAssign,
-  //   Neg,
-  //   Not,
-  //   Octal,
-  //   Pointer,
-  //   Product,
-  //   Rem,
-  //   RemAssign,
-  //   Shl,
-  //   ShlAssign,
-  //   Shr,
-  //   ShrAssign,
-  //   Sub,
-  //   SubAssign,
-  //   Sum,
-  //   TryFrom,
-  //   TryInto,
-  //   TryUnwrap,
-  //   Unwrap,
-  //   UpperExp,
-  //   UpperHex,
-  // };
-
   #[ cfg( feature = "derive_strum" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::strum::*;
 
   #[ cfg( feature = "derive_display" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::parse_display::Display;
 
   #[ cfg( feature = "derive_from_str" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::parse_display::FromStr;
 
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::clone_dyn::exposed::*;
 
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::clone_dyn;
 
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::wtools::exposed::*;
-
-  // #[ cfg( feature = "derive_reflect" ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::reflect::exposed::*;
-
-  // #[ cfg( any_derive ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::derive_tools_meta::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   #[ cfg( feature = "derive_from" ) ]
   pub use ::derive_tools_meta::From;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   #[ cfg( feature = "derive_inner_from" ) ]
   pub use ::derive_tools_meta::InnerFrom;
 
@@ -287,35 +191,17 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::clone_dyn;
 
   #[ cfg( feature = "derive_clone_dyn" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::clone_dyn::prelude::*;
-
-  // it should already be in predlue of clone_dyn
-  // #[ cfg( feature = "derive_clone_dyn" ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use ::clone_dyn::clone_dyn;
 
   #[ cfg( any( feature = "derive_variadic_from", feature = "type_variadic_from" ) ) ]
   #[ doc( inline ) ]
   pub use ::variadic_from::prelude::*;
-
-  // #[ cfg( feature = "derive_reflect" ) ]
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::reflect::prelude::*;
-
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use super::wtools::prelude::*;
-  // #[ doc( no_inline ) ]
-  // pub use super::wtools;
 
 }

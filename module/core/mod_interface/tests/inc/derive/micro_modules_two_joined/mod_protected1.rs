@@ -1,5 +1,5 @@
-/// has_protected1
-pub fn has_protected1() -> bool
+/// has_own1
+pub fn has_own1() -> bool
 {
   true
 }

@@ -9,10 +9,10 @@ mod private
 mod_interface!
 {
 
-  /// mod_protected1
-  protected mod mod_protected1;
-  /// mod_protected2
-  protected mod mod_protected2;
+  /// mod_own1
+  own mod mod_own1;
+  /// mod_own2
+  own mod mod_own2;
   /// mod_orphan1
   orphan mod mod_orphan1;
   /// mod_orphan2

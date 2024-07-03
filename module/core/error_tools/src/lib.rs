@@ -14,7 +14,6 @@ pub mod assert;
 pub mod error;
 
 /// Namespace with dependencies.
-
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
@@ -44,13 +43,14 @@ pub mod untyped;
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
+  use super::*;
   #[ allow( unused_imports ) ]
   use super::*;
 
@@ -80,9 +80,10 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
 
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 
 }
 
@@ -123,6 +124,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   #[ allow( unused_imports ) ]
   use super::*;
 

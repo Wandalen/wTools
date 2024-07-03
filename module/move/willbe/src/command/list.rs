@@ -9,7 +9,7 @@ mod private
     path::PathBuf,
   };
   use wca::VerifiedCommand;
-  use error::{ untyped::Context, Result };
+  use error::{ untyped::Context };
   use collection::HashSet;
 
   use action::
@@ -47,7 +47,8 @@ mod private
   /// List workspace packages.
   ///
 
-  pub fn list( o : VerifiedCommand ) -> Result< () >
+  // qqq : typed error
+  pub fn list( o : VerifiedCommand ) -> error::untyped::Result< () >
   {
     let path_to_workspace : PathBuf = o.args
     .get_owned( 0 )

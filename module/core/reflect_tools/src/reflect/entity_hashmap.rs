@@ -82,23 +82,25 @@ pub mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::exposed::*;
-  // pub use super::private::
+  pub use exposed::*;
+  // pub use private::
   // {
   // };
 }
@@ -109,7 +111,7 @@ pub mod exposed
 {
   use super::*;
   #[ doc( inline ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 }
 
 #[ doc( inline ) ]
@@ -120,4 +122,5 @@ pub use exposed::*;
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

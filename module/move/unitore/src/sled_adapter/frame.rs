@@ -2,7 +2,7 @@
 
 use crate::*;
 use std::collections::HashMap;
-use error_tools::{ Result, for_app::Context };
+use error_tools::{ Result, untyped::Context };
 use gluesql::
 {
   core::
@@ -26,7 +26,7 @@ impl FrameStore for FeedStorage< SledStorage >
     let res = table( "frame" ).select().execute( &mut *self.0.lock().await ).await?;
 
     let mut reports = Vec::new();
-    let all_frames = 
+    let all_frames =
     if let Payload::Select { labels: label_vec, rows: rows_vec } = res
     {
       SelectedEntries
@@ -39,7 +39,7 @@ impl FrameStore for FeedStorage< SledStorage >
     {
       SelectedEntries::new()
     };
-    
+
     let mut feeds_map = HashMap::new();
 
     for row in all_frames.selected_rows

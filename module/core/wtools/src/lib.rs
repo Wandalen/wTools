@@ -50,12 +50,13 @@ pub mod dependency
 
 }
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 
   #[ cfg( feature = "iter" ) ]
   #[ doc( inline ) ]
@@ -110,14 +111,15 @@ pub mod protected
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
@@ -126,7 +128,7 @@ pub mod exposed
 {
   use super::*;
   #[ doc( inline ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
   #[ cfg( feature = "iter" ) ]
   pub use super::iter::exposed::*;
   #[ cfg( feature = "meta" ) ]
@@ -159,6 +161,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   #[ cfg( feature = "iter" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

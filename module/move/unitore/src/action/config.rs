@@ -3,7 +3,7 @@
 use std::path::PathBuf;
 
 use crate::*;
-use error_tools::{ for_app::Context, Result };
+use error_tools::{ untyped::Context, Result };
 use sled_adapter::FeedStorage;
 use entity::
 {
@@ -37,7 +37,7 @@ pub async fn config_add( mut storage : FeedStorage< SledStorage >, path : &PathB
 
   if !path.exists()
   {
-    return Err( error_tools::for_app::Error::msg( err_str ) );
+    return Err( error_tools::untyped::Error::msg( err_str ) );
   }
 
   let abs_path = path.canonicalize()?;

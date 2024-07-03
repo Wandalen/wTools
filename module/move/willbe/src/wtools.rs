@@ -21,8 +21,8 @@
 // /// Collection of function and structures to manipulate paths.
 // pub mod path_tools
 // {
-//   // pub use proper_path_tools::protected::*;
-//   // pub use proper_path_tools::protected::path;
-//   // zzz : make use proper_path_tools::protected::path working
-//   pub use proper_path::protected as path;
+//   // pub use proper_path_tools::own::*;
+//   // pub use proper_path_tools::own::path;
+//   // zzz : make use proper_path_tools::own::path working
+//   pub use proper_path::own as path;
 // }

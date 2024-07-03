@@ -11,14 +11,15 @@ pub mod string;
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
-  pub use super::orphan::*;
+  use super::*;
+  pub use orphan::*;
   pub use super::string::orphan::*;
 }
 
@@ -27,7 +28,8 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  pub use super::exposed::*;
+  use super::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
@@ -44,5 +46,6 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   pub use super::string::prelude::*;
 }

@@ -7,9 +7,6 @@ crate::mod_interface!
 {
 
   use ::macro_tools;
-  protected use ::macro_tools::protected::*;
+  own use ::macro_tools::own::*;
 
 }
-
-// use protected::macro_tools as xxx;
-// use protected::macro_tools2 as xxx2;

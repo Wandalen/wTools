@@ -1,18 +1,8 @@
-#![ cfg_attr( feature = "no_std", no_std ) ]
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/inspect_type/latest/inspect_type/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-
-// #[ cfg( not( feature = "no_std" ) ) ]
-// /// Little experiment.
-// #[ derive( Debug ) ]
-// pub struct Experimental( i32 );
-
-// #[ cfg( feature = "nightly" ) ]
-// #[ cfg( feature = "type_name_of_val" ) ]
-// #[ rustversion::nightly ]
 #[ cfg( RUSTC_IS_NIGHTLY ) ]
 mod nightly
 {
@@ -65,22 +55,24 @@ mod nightly
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
@@ -89,18 +81,18 @@ pub mod exposed
 {
   use super::*;
   #[ doc( inline ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   // #[ cfg( feature = "nightly" ) ]
   // #[ rustversion::nightly ]
   // #[ cfg( feature = "type_name_of_val" ) ]
   #[ cfg( RUSTC_IS_NIGHTLY ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::nightly::*;
 }

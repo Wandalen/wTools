@@ -6,7 +6,6 @@ mod private
   // qqq : for Bohdan no asterisk imports, but in special cases
   use std::
   {
-    // collections,
     fmt,
     sync,
   };
@@ -638,7 +637,9 @@ mod private
 
   /// `tests_run` is a function that runs tests on a given package with specified arguments.
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
-  pub fn run( options : &PackageTestOptions< '_ > ) -> Result< TestReport, ( TestReport, TestError ) >
+  pub fn run( options : &PackageTestOptions< '_ > )
+  -> ResultWithReport< TestReport, TestError >
+  // -> Result< TestReport, ( TestReport, TestError ) >
   {
     let mut report = TestReport::default();
     report.dry = options.dry;
@@ -711,7 +712,9 @@ mod private
   }
 
   /// Run tests for given packages.
-  pub fn tests_run( args : &TestOptions ) -> Result< TestsReport, ( TestsReport, TestError ) >
+  pub fn tests_run( args : &TestOptions )
+  -> ResultWithReport< TestsReport, TestError >
+  // -> Result< TestsReport, ( TestsReport, TestError ) >
   {
     #[ cfg( feature = "progress_bar" ) ]
     let multi_progress = progress_bar::MultiProgress::default();
@@ -775,14 +778,14 @@ mod private
 crate::mod_interface!
 {
 
-  protected use SingleTestOptions;
-  protected use TestVariant;
-  protected use _run;
+  own use SingleTestOptions;
+  own use TestVariant;
+  own use _run;
 
-  protected use TestPlan;
-  protected use TestOptions;
-  protected use TestReport;
-  protected use TestsReport;
-  protected use run;
-  protected use tests_run;
+  own use TestPlan;
+  own use TestOptions;
+  own use TestReport;
+  own use TestsReport;
+  own use run;
+  own use tests_run;
 }

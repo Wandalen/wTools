@@ -6,18 +6,9 @@ mod private
   use std::{ env, fmt, fs };
   use
   {
-    error::untyped,
+    // error::untyped,
     error::ErrWith,
   };
-
-//   use collection::{ HashSet, HashMap };
-//   use core::fmt::Formatter;
-//   use std::{ env, fs };
-
-//   use error::untyped::Error;
-//   use workspace::Workspace;
-//   use package::Package;
-//   use channel::Channel;
 
   /// Represents a report of publishing packages
   #[ derive( Debug, Default, Clone ) ]
@@ -130,7 +121,9 @@ mod private
     channel : channel::Channel,
     dry : bool,
     temp : bool
-  ) -> Result< publish::PublishPlan, untyped::Error >
+  )
+  -> Result< publish::PublishPlan, error::untyped::Error >
+  // qqq : use typed error
   {
     let mut paths = collection::HashSet::new();
     // find all packages by specified folders
@@ -253,13 +246,16 @@ mod private
   ///
 
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
-  pub fn publish( plan : publish::PublishPlan ) -> ResultWithReport< PublishReport, untyped::Error >
+  pub fn publish( plan : publish::PublishPlan )
+  ->
+  ResultWithReport< PublishReport, error::untyped::Error >
+  // qqq : use typed error
   {
     let mut report = PublishReport::default();
     let temp = plan.base_temp_dir.clone();
 
     report.plan = Some( plan.clone() );
-    for package_report in publish::perform_packages_publish( plan ).err_with( || report.clone() )?
+    for package_report in publish::perform_packages_publish( plan ).err_with_report( &report )?
     {
       let path : &std::path::Path = package_report.get_info.as_ref().unwrap().current_path.as_ref();
       report.packages.push(( AbsolutePath::try_from( path ).unwrap(), package_report ));
@@ -267,7 +263,7 @@ mod private
 
     if let Some( dir ) = temp
     {
-      fs::remove_dir_all( dir ).err_with( || report.clone() )?;
+      fs::remove_dir_all( dir ).err_with_report( &report )?;
     }
 
     Ok( report )

@@ -29,7 +29,7 @@ fn package_no_features()
   // Assert
   assert!( report.contains(
 "\
-Package _chain_of_packages_b:\
+Package _three_packages_b:\
 " ) );
 }
 
@@ -48,8 +48,8 @@ fn package_features()
   // Assert
   assert!( report.contains(
 "\
-Package _chain_of_packages_b:
-\t_chain_of_packages_c
+Package _three_packages_with_features_b:
+\t_three_packages_with_features_c
 \tboo
 \tdefault
 \tenabled\
@@ -71,9 +71,9 @@ fn package_features_with_features_deps()
   // Assert
   assert!( report.contains(
 "\
-Package _chain_of_packages_b:
-\t_chain_of_packages_c: [dep:_chain_of_packages_c]
-\tboo: [_chain_of_packages_c]
+Package _three_packages_with_features_b:
+\t_three_packages_with_features_c: [dep:_three_packages_with_features_c]
+\tboo: [_three_packages_with_features_c]
 \tdefault: [boo]
 \tenabled: []\
 " ) );
@@ -94,17 +94,17 @@ fn workspace_no_features()
   // Assert
   assert!( report.contains(
 "\
-Package _chain_of_packages_b:\
+Package _three_packages_b:\
 " ) );
 
   assert!( report.contains(
 "\
-Package _chain_of_packages_c:\
+Package _three_packages_c:\
 " ) );
 
   assert!( report.contains(
 "\
-Package _chain_of_packages_d:\
+Package _three_packages_d:\
 " ) );
 }
 
@@ -123,8 +123,8 @@ fn workspace_features()
   // Assert
   assert!( report.contains(
 "\
-Package _chain_of_packages_b:
-\t_chain_of_packages_c
+Package _three_packages_with_features_b:
+\t_three_packages_with_features_c
 \tboo
 \tdefault
 \tenabled\
@@ -132,7 +132,7 @@ Package _chain_of_packages_b:
 
   assert!( report.contains(
 "\
-Package _chain_of_packages_c:
+Package _three_packages_with_features_c:
 \tdefault
 \tenabled
 \tfoo\
@@ -140,7 +140,7 @@ Package _chain_of_packages_c:
 
   assert!( report.contains(
 "\
-Package _chain_of_packages_d:
+Package _three_packages_with_features_d:
 \tenabled\
 " ) );
 }
@@ -161,16 +161,16 @@ fn workspace_features_with_features_deps()
   // Assert
   assert!( report.contains(
 "\
-Package _chain_of_packages_b:
-\t_chain_of_packages_c: [dep:_chain_of_packages_c]
-\tboo: [_chain_of_packages_c]
+Package _three_packages_with_features_b:
+\t_three_packages_with_features_c: [dep:_three_packages_with_features_c]
+\tboo: [_three_packages_with_features_c]
 \tdefault: [boo]
 \tenabled: []\
 " ) );
 
   assert!( report.contains(
 "\
-Package _chain_of_packages_c:
+Package _three_packages_with_features_c:
 \tdefault: [foo]
 \tenabled: []
 \tfoo: []\
@@ -178,7 +178,7 @@ Package _chain_of_packages_c:
 
   assert!( report.contains(
 "\
-Package _chain_of_packages_d:
+Package _three_packages_with_features_d:
 \tenabled: []\
 " ) );
 }

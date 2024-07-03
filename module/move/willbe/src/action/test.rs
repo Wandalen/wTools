@@ -19,7 +19,7 @@ mod private
       Error,
       format_err
     },
-    Result
+    // Result
   };
   use iter::Itertools;
 
@@ -65,7 +65,10 @@ mod private
   /// The result of the tests is written to the structure `TestsReport` and returned as a result of the function execution.
   // zzz : it probably should not be here
   // xxx : use newtype
-  pub fn test( o : TestsCommandOptions, dry : bool ) -> Result< TestsReport, ( TestsReport, Error ) >
+  pub fn test( o : TestsCommandOptions, dry : bool )
+  -> ResultWithReport< TestsReport, Error >
+  // qqq : for Petro : typed error
+  // -> Result< TestsReport, ( TestsReport, Error ) >
   {
 
     // qqq : incapsulate progress bar logic into some function of struct. don't keep it here
@@ -74,7 +77,7 @@ mod private
     let mut report = TestsReport::default();
     // fail fast if some additional installations required
     let channels = channel::available_channels( o.dir.as_ref() )
-    .err_with( || report.clone() )?;
+    .err_with_report( &report )?;
     let channels_diff : Vec< _ > = o.channels.difference( &channels ).collect();
     if !channels_diff.is_empty()
     {
@@ -121,8 +124,8 @@ Try to install it with `rustup install {}` command(-s)",
     };
 
     let workspace = Workspace
-    ::try_from( CrateDir::try_from( path.clone() ).err_with( || report.clone() )? )
-    .err_with( || report.clone() )?
+    ::try_from( CrateDir::try_from( path.clone() ).err_with_report( &report )? )
+    .err_with_report( &report )?
     // xxx : clone?
     // aaa : for Petro : use trait !everywhere!
     // aaa : !When I wrote this solution, pr with this changes was not yet ready.!
@@ -158,7 +161,7 @@ Try to install it with `rustup install {}` command(-s)",
       with_all_features,
       with_none_features,
       variants_cap,
-    ).err_with( || report.clone() )?;
+    ).err_with_report( &report )?;
 
     println!( "{plan}" );
       // aaa : split on two functions for create plan and for execute
@@ -169,7 +172,7 @@ Try to install it with `rustup install {}` command(-s)",
       let mut unique_name = format!
       (
         "temp_dir_for_test_command_{}",
-        path::unique_folder_name().err_with( || report.clone() )?
+        path::unique_folder_name().err_with_report( &report )?
       );
 
       let mut temp_dir = env::temp_dir().join( unique_name );
@@ -179,12 +182,12 @@ Try to install it with `rustup install {}` command(-s)",
         unique_name = format!
         (
           "temp_dir_for_test_command_{}",
-          path::unique_folder_name().err_with( || report.clone() )?
+          path::unique_folder_name().err_with_report( &report )?
         );
         temp_dir = env::temp_dir().join( unique_name );
       }
 
-      fs::create_dir( &temp_dir ).err_with( || report.clone() )?;
+      fs::create_dir( &temp_dir ).err_with_report( &report )?;
       Some( temp_dir )
     }
     else
@@ -204,7 +207,7 @@ Try to install it with `rustup install {}` command(-s)",
 
     if temp
     {
-      fs::remove_dir_all( options.temp_path.unwrap() ).err_with( || report.clone() )?;
+      fs::remove_dir_all( options.temp_path.unwrap() ).err_with_report( &report )?;
     }
 
     result.map_err( | ( report, e) | ( report, e.into() ) )
@@ -216,5 +219,5 @@ crate::mod_interface!
 {
   /// run all tests in all crates
   orphan use test;
-  protected use TestsCommandOptions;
+  own use TestsCommandOptions;
 }

@@ -73,46 +73,48 @@ pub mod inner
     pub fn inner_is() -> bool { true }
   }
 
-  /// Protected namespace of the module.
-  pub mod protected
+  /// Own namespace of the module.
+  pub mod own
   {
-    pub use super::orphan::*;
+    pub use orphan::*;
   }
-  pub use protected::*;
+  pub use own::*;
 
   /// Orphan namespace of the module.
   pub mod orphan
   {
-    pub use super::exposed::*;
+    pub use exposed::*;
   }
 
   /// Exposed namespace of the module.
   pub mod exposed
   {
-    pub use super::prelude::*;
+    pub use prelude::*;
   }
 
   /// Prelude to use essentials: `use my_module::prelude::*`.
   pub mod prelude
   {
-    pub use super::private::inner_is;
+    pub use private::inner_is;
   }
 }
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
-  pub use super::orphan::*;
+  use super::*;
+  pub use orphan::*;
   pub use super::inner::orphan::*;
 }
-pub use protected::*;
+pub use own::*;
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  pub use super::exposed::*;
+  use super::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
@@ -120,7 +122,7 @@ pub mod orphan
 pub mod exposed
 {
   use super::*;
-  pub use super::prelude::*;
+  pub use prelude::*;
   pub use super::inner::exposed::*;
 }
 
@@ -128,6 +130,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   pub use super::inner::prelude::*;
 }
 ```

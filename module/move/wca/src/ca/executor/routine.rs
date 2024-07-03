@@ -2,11 +2,13 @@ pub( crate ) mod private
 {
   use crate::*;
 
+  // qqq : group
+
   use std::collections::HashMap;
-  use wtools::error::Result;
+  // use wtools::error::Result;
 
   use std::{ fmt::Formatter, rc::Rc };
-  use wtools::anyhow::anyhow;
+  // use wtools::anyhow::anyhow;
 
   /// Command Args
   ///
@@ -129,13 +131,14 @@ pub( crate ) mod private
   // aaa : make 0-arguments, 1-argument, 2-arguments, 3 arguments versions
   // aaa : done. now it works with the following variants:
   // fn(), fn(args), fn(props), fn(args, props), fn(context), fn(context, args), fn(context, props), fn(context, args, props)
-    
-  type RoutineWithoutContextFn = dyn Fn( VerifiedCommand ) -> Result< () >;
-  type RoutineWithContextFn = dyn Fn( Context, VerifiedCommand ) -> Result< () >;
+
+  // qqq : why not public?
+  type RoutineWithoutContextFn = dyn Fn( VerifiedCommand ) -> error::untyped::Result< () >;
+  type RoutineWithContextFn = dyn Fn( Context, VerifiedCommand ) -> error::untyped::Result< () >;
 
   ///
   /// Routine handle.
-  /// 
+  ///
   /// ```
   /// # use wca::{ Handler, Routine };
   /// let routine = Routine::from( Handler::from
@@ -228,7 +231,7 @@ pub( crate ) mod private
   where
     I : 'static,
     O : IntoResult + 'static,
-    Routine : From< Box< dyn Fn( I ) -> Result< () > > >,
+    Routine : From< Box< dyn Fn( I ) -> error::untyped::Result< () > > >,
   {
     fn from( value : Handler< I, O > ) -> Self
     {
@@ -264,34 +267,34 @@ pub( crate ) mod private
   }
 
   // without context
-  impl From< Box< dyn Fn( () ) -> Result< () > > > for Routine
+  impl From< Box< dyn Fn( () ) -> error::untyped::Result< () > > > for Routine
   {
-    fn from( value : Box< dyn Fn( () ) -> Result< () > > ) -> Self
+    fn from( value : Box< dyn Fn( () ) -> error::untyped::Result< () > > ) -> Self
     {
       Self::WithoutContext( Rc::new( move | _ | { value( () )?; Ok( () ) } ) )
     }
   }
-  
-  impl From< Box< dyn Fn( VerifiedCommand ) -> Result< () > > > for Routine
+
+  impl From< Box< dyn Fn( VerifiedCommand ) -> error::untyped::Result< () > > > for Routine
   {
-    fn from( value : Box< dyn Fn( VerifiedCommand ) -> Result< () > > ) -> Self
+    fn from( value : Box< dyn Fn( VerifiedCommand ) -> error::untyped::Result< () > > ) -> Self
     {
       Self::WithoutContext( Rc::new( move | a | { value( a )?; Ok( () ) } ) )
     }
   }
 
   // with context
-  impl From< Box< dyn Fn( Context ) -> Result< () > > > for Routine
+  impl From< Box< dyn Fn( Context ) -> error::untyped::Result< () > > > for Routine
   {
-    fn from( value : Box< dyn Fn( Context ) -> Result< () > > ) -> Self
+    fn from( value : Box< dyn Fn( Context ) -> error::untyped::Result< () > > ) -> Self
     {
       Self::WithContext( Rc::new( move | ctx, _ | { value( ctx )?; Ok( () ) } ) )
     }
   }
 
-  impl From< Box< dyn Fn(( Context, VerifiedCommand )) -> Result< () > > > for Routine
+  impl From< Box< dyn Fn(( Context, VerifiedCommand )) -> error::untyped::Result< () > > > for Routine
   {
-    fn from( value : Box< dyn Fn(( Context, VerifiedCommand )) -> Result< () > > ) -> Self
+    fn from( value : Box< dyn Fn(( Context, VerifiedCommand )) -> error::untyped::Result< () > > ) -> Self
     {
       Self::WithContext( Rc::new( move | ctx, a | { value(( ctx, a ))?; Ok( () ) } ) )
     }
@@ -320,12 +323,21 @@ pub( crate ) mod private
 
   trait IntoResult
   {
-    fn into_result( self ) -> Result< () >;
+    fn into_result( self ) -> error::untyped::Result< () >;
   }
 
-  impl IntoResult for std::convert::Infallible { fn into_result( self ) -> Result< () > { Ok( () ) } }
-  impl IntoResult for () { fn into_result( self ) -> Result< () > { Ok( () ) } }
-  impl< E : std::fmt::Debug > IntoResult for Result< (), E > { fn into_result( self ) -> Result< () > { self.map_err( | e | anyhow!( "{e:?}" )) } }
+  // xxx
+  impl IntoResult for std::convert::Infallible { fn into_result( self ) -> error::untyped::Result< () > { Ok( () ) } }
+  impl IntoResult for () { fn into_result( self ) -> error::untyped::Result< () > { Ok( () ) } }
+  impl< E : std::fmt::Debug > IntoResult
+  for error::untyped::Result< (), E >
+  {
+    fn into_result( self ) -> error::untyped::Result< () >
+    {
+      self.map_err( | e | error::untyped::format_err!( "{e:?}" ))
+      // xxx : qqq : ?
+    }
+  }
 }
 
 //

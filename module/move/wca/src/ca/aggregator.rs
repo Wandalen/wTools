@@ -15,17 +15,21 @@ pub( crate ) mod private
     help::{ HelpGeneratorFn, HelpGeneratorOptions, HelpVariants },
   };
 
+  // qqq : group uses
   use std::collections::HashSet;
   use std::fmt;
   use former::StoragePreform;
-  use wtools::thiserror;
-  use wtools::error::
+  // use wtools::
+  // {
+  // };
+  // use wtools::thiserror;
+  use error::
   {
-    Result,
-    for_app::Error as wError,
+    // Result,
+    untyped::Error as wError, // xxx
     for_lib::*,
   };
-  use wtools::Itertools;
+  use iter_tools::Itertools;
 
   /// Order of commands and properties.
   #[ derive( Debug, Default, Clone, Copy, Eq, PartialOrd, PartialEq ) ]

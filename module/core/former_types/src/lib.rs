@@ -42,15 +42,16 @@ pub mod dependency
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 }
 
 /// Parented namespace of the module.
@@ -58,8 +59,16 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
+
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
+
+  #[ doc( inline ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  #[ cfg( feature = "types_former" ) ]
+  pub use collection::orphan::*;
+
 }
 
 /// Exposed namespace of the module.
@@ -70,10 +79,9 @@ pub mod exposed
   use super::*;
 
   #[ doc( inline ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   #[ cfg( feature = "types_former" ) ]
   pub use super::
   {
@@ -84,10 +92,9 @@ pub mod exposed
   };
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   #[ cfg( feature = "types_former" ) ]
-  pub use super::collection::*;
+  pub use collection::exposed::*;
 
 }
 
@@ -96,8 +103,15 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
+
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   #[ cfg( any( feature = "types_component_assign" ) ) ]
-  pub use super::component::*;
+  pub use component::*;
+
+  #[ doc( inline ) ]
+  #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+  #[ cfg( feature = "types_former" ) ]
+  pub use collection::prelude::*;
+
 }

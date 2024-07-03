@@ -4,7 +4,7 @@ mod private
   use former::Former;
 
   use wca::VerifiedCommand;
-  use error::{ untyped::Context, Result };
+  use error::{ untyped::Context };
   use action::WorkspaceTemplate;
 
   #[ derive( Former ) ]
@@ -18,16 +18,17 @@ mod private
   /// Create new workspace.
   ///
 
-  pub fn workspace_renew( o : VerifiedCommand ) -> Result< () >
+  // qqq : typed error
+  pub fn workspace_renew( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
   {
     let WorkspaceNewProperties { repository_url, branches } = o.props.try_into()?;
     let template = WorkspaceTemplate::default();
     action::workspace_renew
-    ( 
-      &std::env::current_dir()?, 
-      template, 
-      repository_url, 
-      branches 
+    (
+      &std::env::current_dir()?,
+      template,
+      repository_url,
+      branches
     )
     .context( "Fail to create workspace" )
   }

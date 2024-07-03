@@ -37,6 +37,6 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  protected use valid_is;
+  own use valid_is;
   orphan use find;
 }

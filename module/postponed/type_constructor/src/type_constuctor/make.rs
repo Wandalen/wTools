@@ -234,24 +234,24 @@
 //   pub use make;
 // }
 //
-// /// Protected namespace of the module.
-// pub mod protected
+// /// Own namespace of the module.
+// pub mod own
 // {
 //   #[ doc( inline ) ]
   // #[ allow( unused_imports ) ]
-//   pub use super::orphan::*;
+//   pub use orphan::*;
 // }
 //
 // #[ doc( inline ) ]
 // #[ allow( unused_imports ) ]
-// pub use protected::*;
+// pub use own::*;
 //
 // /// Orphan namespace of the module.
 // pub mod orphan
 // {
 //   #[ doc( inline ) ]
   // #[ allow( unused_imports ) ]
-//   pub use super::exposed::*;
+//   pub use exposed::*;
 // }
 //
 // /// Exposed namespace of the module.
@@ -259,7 +259,7 @@
 // {
 //   #[ doc( inline ) ]
   // #[ allow( unused_imports ) ]
-//   pub use super::prelude::*;
+//   pub use prelude::*;
 // }
 //
 // #[ doc( inline ) ]
@@ -272,7 +272,7 @@
 //   #[ cfg( feature = "make" ) ]
 //   #[ doc( inline ) ]
   // // #[ allow( unused_imports ) ]
-//   pub use super::private::
+//   pub use private::
 //   {
 //
 //     From_0,

@@ -168,7 +168,8 @@ mod private
     graph : &mut collection::HashMap< CrateId, collection::HashSet< CrateId > >,
     opts : DependenciesOptions
   )
-  -> Result< CrateId >
+  // qqq : use typed error
+  -> error::untyped::Result< CrateId >
   {
     let DependenciesOptions
     {
@@ -235,7 +236,8 @@ mod private
     package : &Package< 'a >,
     opts : DependenciesOptions
   )
-  -> Result< Vec< CrateId > >
+  // qqq : use typed error
+  -> error::untyped::Result< Vec< CrateId > >
   {
     let mut graph = collection::HashMap::new();
     let root = _list( workspace, package, &mut graph, opts.clone() )?;
@@ -276,10 +278,10 @@ crate::mod_interface!
   exposed use DependencyRef;
   exposed use DependencyKind;
 
-  protected use CrateId;
-  protected use DependenciesSort;
-  protected use DependenciesOptions;
-  protected use _list;
-  protected use list;
+  own use CrateId;
+  own use DependenciesSort;
+  own use DependenciesOptions;
+  own use _list;
+  own use list;
 
 }

@@ -1,10 +1,8 @@
 mod private
 {
   use crate::*;
-  // use path::AbsolutePath;
   use action;
-  // use error::untyped::Error;
-  use error::{ Result, err };
+  use error::{ err };
   use std::fmt::{ Display, Formatter };
 
   #[ derive( Debug, Default ) ]
@@ -68,7 +66,7 @@ mod private
 
 
   /// Aggregates two commands: `generate_modules_headers` & `generate_main_header`
-  pub fn readme_headers_renew() -> Result< () >
+  pub fn readme_headers_renew() -> error::untyped::Result< () > // qqq : use typed error
   {
     let mut report = ReadmeHeadersRenewReport::default();
     // let absolute_path = AbsolutePath::try_from( std::env::current_dir()? )?;

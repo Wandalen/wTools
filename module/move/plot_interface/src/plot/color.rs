@@ -1,7 +1,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::protected::*;
+  use crate::own::*;
   use num_traits::{ Zero }; /* zzz : consider as submodule for wtools */
 
   /// Convertable into RGBA.
@@ -92,7 +92,7 @@ pub( crate ) mod private
 crate::mod_interface!
 {
 
-  protected use ::rgb::*;
+  own use ::rgb::*;
 
   #[ cfg( not( feature = "no_std" ) ) ]
   exposed use Rgba;

@@ -4,14 +4,15 @@ mod private
 {
 }
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::orphan::*;
-  /// layer_a_protected
-  pub fn layer_a_protected() -> bool
+  pub use orphan::*;
+  /// layer_a_own
+  pub fn layer_a_own() -> bool
   {
     true
   }
@@ -19,14 +20,15 @@ pub mod protected
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
   /// layer_a_orphan
   pub fn layer_a_orphan() -> bool
   {
@@ -40,7 +42,7 @@ pub mod exposed
 {
   use super::*;
   #[ doc( inline ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
   /// layer_a_exposed
   pub fn layer_a_exposed() -> bool
   {
@@ -52,6 +54,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   /// layer_a_prelude
   pub fn layer_a_prelude() -> bool
   {

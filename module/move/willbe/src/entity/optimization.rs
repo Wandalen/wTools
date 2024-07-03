@@ -15,5 +15,5 @@ mod private
 
 crate::mod_interface!
 {
-  protected use Optimization;
+  own use Optimization;
 }

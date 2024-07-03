@@ -3,7 +3,7 @@ mod private
   use crate::*;
 
   use wca::VerifiedCommand;
-  use error::{ untyped::Context, Result };
+  use error::{ untyped::Context };
   use tool::TemplateHolder;
   //use tool::template::Template;
   // use action::deploy_renew::*;
@@ -12,7 +12,8 @@ mod private
   /// Create new deploy.
   ///
 
-  pub fn deploy_renew( o : VerifiedCommand ) -> Result< () >
+  // xxx : qqq : typed error
+  pub fn deploy_renew( o : VerifiedCommand ) -> error::untyped::Result< () >
   {
     let current_dir = std::env::current_dir()?;
 

@@ -482,14 +482,15 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
-  pub use super::orphan::*;
-  pub use super::private::
+  use super::*;
+  pub use orphan::*;
+  pub use private::
   {
     OpType,
     Request,
@@ -503,7 +504,8 @@ pub mod protected
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  pub use super::exposed::*;
+  use super::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
@@ -511,9 +513,9 @@ pub mod orphan
 pub mod exposed
 {
   use super::*;
-  pub use super::protected as parse_request;
+  pub use super::own as parse_request;
 
-  pub use super::private::
+  pub use private::
   {
     ParseOptionsAdapter,
     request_parse,
@@ -524,5 +526,6 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  pub use super::private::ParseOptionsAdapter;
+  use super::*;
+  pub use private::ParseOptionsAdapter;
 }

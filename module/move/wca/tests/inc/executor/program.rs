@@ -38,7 +38,7 @@ tests_impls!
   fn with_context()
   {
     use std::sync::{ Arc, Mutex };
-    use wtools::error::for_app::Error;
+    use error::untyped::Error;
 
     // init parser
     let parser = Parser;

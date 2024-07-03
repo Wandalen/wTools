@@ -238,24 +238,25 @@ pub mod exposed
 {
   use super::*;
   #[ doc( inline ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::fn_rename;
+  pub use private::fn_rename;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::fn_name;
+  pub use private::fn_name;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::fns;
+  pub use private::fns;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::fns2;
-  // pub use super::private::ignore_macro;
+  pub use private::fns2;
+  // pub use private::ignore_macro;
 }

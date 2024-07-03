@@ -4,19 +4,19 @@ pub( crate ) mod private
   use ca::
   {
     Command,
-    Routine, 
-    Type, 
+    Routine,
+    Type,
     formatter::private::
-    { 
-      HelpFormat, 
-      md_generator 
+    {
+      HelpFormat,
+      md_generator
     },
     tool::table::format_table,
   };
 
-  use wtools::Itertools;
+  use iter_tools::Itertools;
   use std::rc::Rc;
-  use error_tools::for_app::anyhow;
+  use error::untyped::format_err;
   use former::Former;
 
   // qqq : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
@@ -105,7 +105,7 @@ pub( crate ) mod private
       {
         let full_subjects = command.subjects.iter().map( | subj | format!( "- {} [{}{:?}]", subj.hint, if subj.optional { "?" } else { "" }, subj.kind ) ).join( "\n\t" );
         let full_properties = format_table( command.properties( dictionary.order ).into_iter().map( | ( name, value ) | [ name.clone(), format!( "- {} [{}{:?}]", value.hint, if value.optional { "?" } else { "" }, value.kind ) ] ) ).unwrap().replace( '\n', "\n\t" );
-        
+
         format!
         (
           "{}{}",
@@ -230,7 +230,7 @@ pub( crate ) mod private
           }
         }
 
-        Ok::< _, error_tools::for_app::Error >( () )
+        Ok::< _, error_tools::untyped::Error >( () )
       };
       let help = Command::former()
       .hint( "prints information about existing commands" )
@@ -265,7 +265,9 @@ pub( crate ) mod private
           _ =>
           {
             let command = o.args.get_owned::< String >( 0 ).unwrap();
-            let cmd = grammar.commands.get( &command ).ok_or_else( || anyhow!( "Can not found help for command `{command}`" ) )?;
+            let cmd = grammar.commands
+            .get( &command )
+            .ok_or_else( || format_err!( "Can not found help for command `{command}`" ) )?;
 
             let args = HelpGeneratorOptions::former()
             .command_prefix( "." )
@@ -281,7 +283,7 @@ pub( crate ) mod private
           }
         };
 
-        Ok::< _, error_tools::for_app::Error >( () )
+        Ok::< _, error_tools::untyped::Error >( () )
       };
 
       let help = Command::former()
@@ -414,7 +416,7 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  protected use HelpGeneratorFn;
-  protected use HelpGeneratorOptions;
+  own use HelpGeneratorFn;
+  own use HelpGeneratorOptions;
   prelude use HelpVariants;
 }

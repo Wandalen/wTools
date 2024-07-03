@@ -6,31 +6,46 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ allow( unused_imports ) ]
-pub mod protected
+pub mod own
 {
+  use super::*;
   #[ doc( inline ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
+
+  #[ doc( inline ) ]
+  pub use ::anyhow::
+  {
+    Chain,
+    Context,
+    Error,
+    Ok,
+    Result,
+  };
+
 }
 
 /// Shared with parent namespace of the module
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   pub use super::super::untyped;
   pub use super::super::untyped as for_app;
 
   #[ doc( inline ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use ::anyhow::*;
-
-  // xxx : qqq : be specific
+  pub use ::anyhow::
+  {
+    format_err,
+    ensure,
+    bail,
+  };
 
 }
 
@@ -41,15 +56,7 @@ pub mod exposed
   use super::*;
 
   #[ doc( inline ) ]
-  pub use super::prelude::*;
-
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use ::anyhow::Result;
-
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use ::anyhow::prelude::*;
+  pub use prelude::*;
 
 }
 
@@ -57,4 +64,5 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

@@ -10,13 +10,14 @@ pub( crate ) mod private
     fmt::Write,
     time::Duration
   };
-  use error::{ untyped::Context, Result };
+  use error::{ untyped::Context };
   use ureq::Agent;
 
   ///
   /// Get data of remote package.
   ///
-  pub fn download< 'a >( name : &'a str, version : &'a str ) -> Result< Vec< u8 > >
+  // qqq : typed error
+  pub fn download< 'a >( name : &'a str, version : &'a str ) -> error::untyped::Result< Vec< u8 > >
   {
     let agent : Agent = ureq::AgentBuilder::new()
     .timeout_read( Duration::from_secs( 5 ) )

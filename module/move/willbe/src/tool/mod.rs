@@ -67,11 +67,4 @@ crate::mod_interface!
     Assign,
   };
 
-  // xxx : check
-  // exposed use
-  // {
-  //   ::former::Former,
-  //   ::former::Assign,
-  // };
-
 }
