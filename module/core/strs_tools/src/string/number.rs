@@ -13,7 +13,6 @@ pub mod own
 {
   use super::*;
   pub use orphan::*;
-  #[ allow( unused_imports ) ]
   pub use private::
   {
   };
@@ -29,7 +28,6 @@ pub mod orphan
 {
   use super::*;
   pub use exposed::*;
-  #[ allow( unused_imports ) ]
   pub use private::
   {
   };
@@ -42,7 +40,6 @@ pub mod exposed
   use super::*;
   pub use super::own as number;
 
-  #[ allow( unused_imports ) ]
   pub use private::
   {
   };

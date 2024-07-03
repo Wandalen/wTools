@@ -280,7 +280,6 @@ pub mod exposed
 {
   use super::*;
   pub use prelude::*;
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     ElementType,
@@ -295,7 +294,6 @@ pub mod exposed
 pub mod prelude
 {
   use super::*;
-  #[ allow( unused_imports ) ]
   pub use private::
   {
   };

@@ -125,7 +125,6 @@ pub mod own
   #[ doc( inline ) ]
   pub use orphan::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     from_meta,
@@ -151,7 +150,6 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use prelude::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     Equation,

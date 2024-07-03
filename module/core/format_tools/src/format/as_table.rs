@@ -20,9 +20,6 @@ pub( crate ) mod private
     ::core::marker::PhantomData< ( &'a (), fn () -> ( RowKey, Row, CellKey, Cell, Title ) ) >,
   )
   where
-    // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
-    // T : TableHeader< 'a, CellKey, Title >,
-    // T : TableSize< 'a >,
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + Clone + 'a,
@@ -31,9 +28,6 @@ pub( crate ) mod private
 
   impl< 'a, T, RowKey, Row, CellKey, Cell, Title > AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
   where
-    // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
-    // T : TableHeader< 'a, CellKey, Title >,
-    // T : TableSize< 'a >,
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + Clone + 'a,
@@ -48,9 +42,6 @@ pub( crate ) mod private
 
   impl< 'a, T, RowKey, Row, CellKey, Cell, Title > AsRef< T > for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
   where
-    // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
-    // T : TableHeader< 'a, CellKey, Title >,
-    // T : TableSize< 'a >,
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + Clone + 'a,
@@ -62,28 +53,8 @@ pub( crate ) mod private
     }
   }
 
-  // impl< 'a, T, RowKey, Row, CellKey, Cell, Title > AsMut< T >
-  // for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
-  // where
-  //   // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
-  //   // T : TableHeader< 'a, CellKey, Title >,
-  //   // T : TableSize< 'a >,
-  //   Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-  //   Title : fmt::Debug,
-  //   Cell : fmt::Debug + Clone + 'a,
-  //   CellKey : fmt::Debug + Clone,
-  // {
-  //   fn as_mut( &mut self ) -> &mut T
-  //   {
-  //     &mut self.0
-  //   }
-  // }
-
   impl< 'a, T, RowKey, Row, CellKey, Cell, Title > Deref for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
   where
-    // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
-    // T : TableHeader< 'a, CellKey, Title >,
-    // T : TableSize< 'a >,
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + Clone + 'a,
@@ -97,29 +68,9 @@ pub( crate ) mod private
     }
   }
 
-  // impl< 'a, T, RowKey, Row, CellKey, Cell, Title > DerefMut
-  // for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
-  // where
-  //   // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
-  //   // T : TableHeader< 'a, CellKey, Title >,
-  //   // T : TableSize< 'a >,
-  //   Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-  //   Title : fmt::Debug,
-  //   Cell : fmt::Debug + Clone + 'a,
-  //   CellKey : fmt::Debug + Clone,
-  // {
-  //   fn deref_mut( &mut self ) -> &mut Self::Target
-  //   {
-  //     &mut self.0
-  //   }
-  // }
-
   impl< 'a, T, RowKey, Row, CellKey, Cell, Title > From< &'a T >
   for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
   where
-    // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
-    // T : TableHeader< 'a, CellKey, Title >,
-    // T : TableSize< 'a >,
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + Clone + 'a,
@@ -131,44 +82,9 @@ pub( crate ) mod private
     }
   }
 
-  // impl< 'a, T, RowKey, Row, CellKey, Cell, Title > From< AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title > >
-  // for &'a T
-  // where
-  //   Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-  //   Title : fmt::Debug,
-  //   Cell : fmt::Debug + Clone + 'a,
-  //   CellKey : fmt::Debug + Clone,
-  // {
-  //   fn from( wrapper : AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title > ) -> &'a T
-  //   {
-  //     wrapper.0
-  //   }
-  // }
-
-  // impl< 'a, T, RowKey, Row, CellKey, Cell, Title > Default
-  // for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
-  // where
-  //   T : Default,
-  //   // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
-  //   // T : TableHeader< 'a, CellKey, Title >,
-  //   // T : TableSize< 'a >,
-  //   Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
-  //   Title : fmt::Debug,
-  //   Cell : fmt::Debug + Clone + 'a,
-  //   CellKey : fmt::Debug + Clone,
-  // {
-  //   fn default() -> Self
-  //   {
-  //     AsTable( T::default(), PhantomData )
-  //   }
-  // }
-
   impl< 'a, T, RowKey, Row, CellKey, Cell, Title > fmt::Debug for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
   where
     T : fmt::Debug,
-    // T : TableRows< 'a, RowKey, Row, CellKey, Cell >,
-    // T : TableHeader< 'a, CellKey, Title >,
-    // T : TableSize< 'a >,
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + Clone + 'a,
@@ -192,6 +108,7 @@ pub use own::*;
 pub mod own
 {
   use super::*;
+
   #[ doc( inline ) ]
   pub use orphan::*;
 }
@@ -212,7 +129,6 @@ pub mod exposed
   use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     AsTable,

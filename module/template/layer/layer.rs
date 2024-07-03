@@ -20,7 +20,6 @@ pub mod own
   #[ allow( unused_imports ) ]
   pub use orphan::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     // ... list all items of private which should be visible outside
@@ -36,7 +35,6 @@ pub mod orphan
   #[ allow( unused_imports ) ]
   pub use exposed::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
   };
@@ -51,7 +49,6 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use prelude::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
   };

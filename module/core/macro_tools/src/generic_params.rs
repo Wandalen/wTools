@@ -517,7 +517,6 @@ pub mod own
   #[ doc( inline ) ]
   pub use orphan::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     merge,
@@ -535,7 +534,6 @@ pub mod orphan
   #[ doc( inline ) ]
   pub use exposed::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     GenericsWithWhere,

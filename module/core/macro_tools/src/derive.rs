@@ -59,7 +59,6 @@ pub mod own
   pub use orphan::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     named_fields,
@@ -87,7 +86,6 @@ pub mod exposed
   pub use prelude::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
   };
@@ -101,7 +99,6 @@ pub mod prelude
   use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
   };

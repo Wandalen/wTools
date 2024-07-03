@@ -109,7 +109,6 @@ pub mod own
   pub use orphan::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     ContainerKind,

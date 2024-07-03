@@ -122,7 +122,6 @@ pub mod prelude
   use super::*;
   #[ cfg( feature = "diagnostics_compiletime_assertions" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     cta_type_same_size,

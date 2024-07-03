@@ -116,7 +116,6 @@ pub mod prelude
   // pub use super::nightly::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     is_slice,

@@ -262,7 +262,6 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use prelude::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     EnumerableIteratorCopy,
@@ -278,7 +277,6 @@ pub mod prelude
 {
   use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     Enumerable,

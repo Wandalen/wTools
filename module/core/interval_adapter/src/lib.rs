@@ -607,7 +607,6 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use prelude::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     Bound,
@@ -633,7 +632,6 @@ pub mod prelude
 {
   use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     IterableInterval,
