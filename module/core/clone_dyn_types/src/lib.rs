@@ -11,7 +11,7 @@ pub mod dependency
 }
 
 /// Internal namespace.
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+// #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 #[ cfg( feature = "enabled" ) ]
 pub( crate ) mod private
 {

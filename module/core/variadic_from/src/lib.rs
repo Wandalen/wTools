@@ -12,7 +12,6 @@ pub mod variadic;
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
-  #[ cfg( derive_variadic_from ) ]
   pub use ::derive_tools_meta;
 }
 
