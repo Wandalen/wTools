@@ -103,8 +103,6 @@ pub( crate ) mod private
     /// Map of aliases.
     // Aliased key -> Original key
     pub properties_aliases : HashMap< String, String >,
-    // aaa : for Bohdan : routine should also be here
-    // aaa : here it is
     // qqq : make it usable and remove default(?)
     /// The type `Routine` represents the specific implementation of the routine.
     #[ scalar( setter = false ) ]
