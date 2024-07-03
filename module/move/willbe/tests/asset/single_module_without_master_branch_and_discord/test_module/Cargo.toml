@@ -1,5 +1,5 @@
 [package]
-name = "test_module"
+name = "single_module_without_master_branch_and_discord_test_module"
 version = "0.1.0"
 edition = "2021"
 

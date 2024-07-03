@@ -15,20 +15,13 @@ mod private
   };
   use std::path::PathBuf;
   use regex::Regex;
-  use { CrateDir, query, url, Workspace };
   use entity::{ PathError, WorkspaceInitError };
   use error::
   {
     err,
-    // Result,
-    untyped::
-    {
-      Error,
-      Context,
-    },
+    untyped::Error,
   };
   use workspace_md_extension::WorkspaceMdExtension;
-  // use error::ErrWith;
 
   static TAGS_TEMPLATE : std::sync::OnceLock< Regex > = std::sync::OnceLock::new();
 

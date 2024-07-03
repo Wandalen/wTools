@@ -1,5 +1,5 @@
 [package]
-name = "test_module"
+name = "single_module_with_example_test_module"
 version = "0.1.0"
 edition = "2021"
 repository = "https://github.com/Wandalen/wTools/tree/master/module/move/test_module"

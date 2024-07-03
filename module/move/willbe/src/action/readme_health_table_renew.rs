@@ -374,8 +374,10 @@ mod private
       {
         Some
         (
+          // qqq : use new-type. for example `CrateDir`
           stability_get
           (
+            // qqq : the folder name may not match the package name
             &workspace.workspace_root().join( &table_parameters.base_path ).join( &package_name )
           )?
         )
