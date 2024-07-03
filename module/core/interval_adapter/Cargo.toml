@@ -23,7 +23,8 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-
+no_std = []
+use_alloc = [ "no_std" ]
 
 
 [features]

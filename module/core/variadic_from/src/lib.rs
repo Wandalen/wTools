@@ -53,9 +53,7 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use prelude::*;
 
-  // #[ cfg( any_derive ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::derive_tools_meta::*;
 
 }
