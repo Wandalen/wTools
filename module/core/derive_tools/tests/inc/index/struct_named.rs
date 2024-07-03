@@ -1,10 +1,11 @@
 use super::*;
 
-#[allow(dead_code)]
-#[derive(the_module::Index, Debug)]
-struct StructNamed<T> {
-  a: T,
-  b: T,
+#[ allow( dead_code ) ]
+#[ derive( the_module::Index ) ]
+struct StructNamed<T> 
+{
+  a : T,
+  b : T,
 }
 
-include!("./only_test/struct_named.rs");
+include!( "./only_test/struct_named.rs" );

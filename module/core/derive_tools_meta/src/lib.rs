@@ -581,21 +581,24 @@ pub fn phantom( _attr: proc_macro::TokenStream, input : proc_macro::TokenStream 
 /// Instead of manually implementing `Index< T >` for `IsTransparent`:
 ///
 /// ```rust
-/// pub struct IsTransparent<T>{
-///     a : T,
-/// };
-///
-/// impl Index< usize  > for IsTransparent
+/// pub struct IsTransparent< T >
 /// {
-///   type Output = T;
+///     a : T,
+/// }
 ///
-///   #[ inline( always ) ]
-///   fn index(&self, index: usize ) -> &Self::Output {
-///       match index {
-///           0 => &self.a,
-///           _ => panic!("Index out of bounds"),
+/// impl< T > Index< usize > for IsTransparent< T > 
+/// {
+///    type Output = T;
+///
+///    #[ inline( always ) ]
+///    fn index( &self, index: usize ) -> &Self::Output 
+///    {
+///       match index 
+///       {
+///            0 => &self.a,
+///            _ => panic!( "Index out of bounds" ),
 ///       }
-///   }
+///    }
 /// }
 /// ```
 ///
@@ -604,8 +607,8 @@ pub fn phantom( _attr: proc_macro::TokenStream, input : proc_macro::TokenStream 
 /// ```rust
 /// # use derive_tools_meta::*;
 /// #[ derive( Index ) ]
-/// pub struct IsTransparent<T> {
-///    a: T  
+/// pub struct IsTransparent< T > {
+///    a : T  
 ///};
 /// ```
 ///
