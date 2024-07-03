@@ -49,8 +49,8 @@ mod derive_more
   pub use ::derive_more::Index;
   #[ cfg( feature = "derive_into" ) ]
   pub use ::derive_more::Into;
-  #[ cfg( feature = "derive_iterator" ) ]
-  pub use ::derive_more::Iterator;
+  // #[ cfg( feature = "derive_iterator" ) ]
+  // pub use ::derive_more::Iterator;
   #[ cfg( feature = "derive_into_iterator" ) ]
   pub use ::derive_more::IntoIterator;
   #[ cfg( feature = "derive_mul" ) ]

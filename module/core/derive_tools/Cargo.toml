@@ -59,7 +59,6 @@ default = [
   "derive_unwrap",
   # "derive_convert_case",
   "derive_into",
-  "derive_iterator",
 
   "derive_display",
   "derive_from_str",
@@ -157,6 +156,7 @@ derive_index_mut = [ "derive_more", "derive_more/std", "derive_more/index_mut" ]
 # derive_inner_from = [ "derive_more", "derive_more/into" ]
 derive_into_iterator = [ "derive_more", "derive_more/std", "derive_more/into_iterator" ]
 # derive_iterator = [ "derive_more", "derive_more/iterator" ]
+derive_into = [ "derive_more", "derive_more/into" ]
 derive_mul_assign = [ "derive_more", "derive_more/std", "derive_more/mul_assign" ]
 derive_mul = [ "derive_more", "derive_more/std", "derive_more/mul" ]
 derive_not = [ "derive_more", "derive_more/std", "derive_more/not" ]
