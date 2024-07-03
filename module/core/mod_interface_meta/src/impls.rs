@@ -521,7 +521,3 @@ pub mod prelude
     mod_interface,
   };
 }
-
-// xxx : clean up, ad solve problems
-// - example based on simpified version of test::layer_have_layer with single sublayer
-// - example with attribute `#![ debug ]`

@@ -14,18 +14,20 @@ mod private
   use handlebars::{ RenderError, TemplateError };
   use toml_edit::Document;
 
-  use entity::PathError;
-  use error::typed::Error; // xxx
+  use entity::{ PathError, WorkspaceInitError };
 
-  use error::untyped::{ Error as wError }; // xxx
-  use entity::WorkspaceInitError;
-  use error::err;
+  use error::
+  {
+    typed::Error,
+    err,
+  };
 
   #[ derive( Debug, Error ) ]
   pub enum CiCdGenerateError
   {
+    // qqq : rid of the branch
     #[ error( "Common error: {0}" ) ]
-    Common(#[ from ] wError ),
+    Common( #[ from ] error::untyped::Error ),
     #[ error( "I/O error: {0}" ) ]
     IO( #[ from ] std::io::Error ),
     #[ error( "Crate directory error: {0}" ) ]

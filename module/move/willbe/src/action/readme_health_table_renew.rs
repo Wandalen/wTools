@@ -18,7 +18,7 @@ mod private
     Error,
     untyped::
     {
-      Error as wError, // xxx
+      // Error as wError, // xxx
       // Result,
       Context,
       format_err,
@@ -52,8 +52,9 @@ mod private
   #[ derive( Debug, Error )]
   pub enum HealthTableRenewError
   {
+    // qqq : rid of the branch
     #[ error( "Common error: {0}" ) ]
-    Common( #[ from ] wError ),
+    Common( #[ from ] error::untyped::Error ),
     #[ error( "I/O error: {0}" ) ]
     IO( #[ from ] std::io::Error ),
     #[ error( "Path error: {0}" ) ]
@@ -107,7 +108,8 @@ mod private
     }
     else
     {
-      Err( HealthTableRenewError::Common( wError::msg( "Cannot find Cargo.toml" )))
+      // qqq : for Petro : use typed error
+      Err( HealthTableRenewError::Common( error::untyped::Error::msg( "Cannot find Cargo.toml" )))
     }
   }
 
@@ -196,7 +198,7 @@ mod private
       let cargo_toml_path = path.join( "Cargo.toml" );
       if !cargo_toml_path.exists()
       {
-        return Err( HealthTableRenewError::Common( wError::msg( "Cannot find Cargo.toml" )))
+        return Err( HealthTableRenewError::Common( error::untyped::Error::msg( "Cannot find Cargo.toml" )))
       }
       else
       {
@@ -703,7 +705,7 @@ ensure that at least one remotest is present in git. ",
     }
     else
     {
-      Err( HealthTableRenewError::Common( wError::msg( "Incorrect indexes" )))
+      Err( HealthTableRenewError::Common( error::untyped::Error::msg( "Incorrect indexes" )))
     }
   }
 }

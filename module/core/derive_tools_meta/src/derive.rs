@@ -5,6 +5,7 @@
 
 #[ allow( unused_imports ) ]
 use macro_tools::prelude::*;
+#[ allow( unused_imports ) ]
 pub use iter_tools as iter;
 
 #[ cfg( feature = "derive_as_mut" ) ]
