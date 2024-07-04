@@ -83,7 +83,14 @@ fn to_string_with_fallback_variants()
 
   let src = OnlyDebug;
   let _ref1 = ToStringWithFallbackRef::< '_, _, ToStringWithFallbackParams< WithDisplay, WithDebug > >::from( &src );
+
+  let src = OnlyDebug;
   let got = ( &ToStringWithFallbackRef::< '_, _, ToStringWithFallbackParams< WithDisplay, WithDebug > >::from( &src ) ).to_string_with_fallback();
+  let exp = "This is debug".to_string();
+  a_id!( got, exp );
+
+  let src = OnlyDebug;
+  let got = ( &ToStringWithFallbackRef::< '_, _, ToStringWithFallbackParams< WithDebug, WithDisplay > >::from( &src ) ).to_string_with_fallback();
   let exp = "This is debug".to_string();
   a_id!( got, exp );
 
@@ -126,6 +133,30 @@ fn to_string_with_fallback_variants()
 #[ test ]
 fn to_string_with_fallback_macro()
 {
+
+  // - only debug
+
+  struct OnlyDebug;
+
+  impl fmt::Debug for OnlyDebug
+  {
+    fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
+    {
+      write!( f, "This is debug" )
+    }
+  }
+
+  let src = OnlyDebug;
+  let got = to_string_with_fallback!( WithDisplay, WithDebug, src );
+  let exp = "This is debug".to_string();
+  a_id!( got, exp );
+
+  let src = OnlyDebug;
+  let got = to_string_with_fallback!( WithDebug, WithDisplay, src );
+  let exp = "This is debug".to_string();
+  a_id!( got, exp );
+
+  // - both debug and display
 
   struct Both;
 
