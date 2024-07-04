@@ -2,7 +2,7 @@ use super::*;
 
 #[ allow( dead_code ) ]
 #[ derive( the_module::Index ) ]
-struct StructNamed<T> 
+struct StructNamed< T > 
 {
   a : T,
   b : T,

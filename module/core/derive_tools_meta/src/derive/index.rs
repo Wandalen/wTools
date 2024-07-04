@@ -8,6 +8,8 @@ use macro_tools::
   Result
 };
 
+
+/// Generates [Index](core::ops::Index) trait implementation.
 pub fn index( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream > {
   let original_input = input.clone();
   let parsed = syn::parse::< StructLike >( input )?;
@@ -28,10 +30,21 @@ pub fn index( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
         &generics_where, 
         &item.fields 
       ),
-    StructLike::Enum(_) => 
-    todo!(),
-    StructLike::Unit(_) => 
-    todo!(),
+    StructLike::Enum( ref item ) =>
+      generate_enum
+      (
+        item_name,
+        &generics_impl,
+        &generics_ty,
+        &generics_where,
+        &item.variants,
+      ),
+    StructLike::Unit( ref item ) => Err( 
+      syn::Error::new(
+        item.fields.span(),
+        "cannot infer type: Empty type cannot be indexed",
+      ) 
+    ),
   }?;
 
   if has_debug 
@@ -43,7 +56,7 @@ pub fn index( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
   Ok( result )
 }
 
-/// An aggregator function to generate `Index` implementation for unit, tuple structs and the ones with named fields
+/// An aggregator function to generate `Index` implementation for tuple and named structs 
 fn generate_struct
 (
   item_name: &syn::Ident,
@@ -56,7 +69,6 @@ fn generate_struct
 {
   match fields 
   {
-    
     syn::Fields::Named( fields ) => 
     generate_struct_named_fields
     (
@@ -86,6 +98,8 @@ fn generate_struct
   }
 }
 
+
+
 /// Generates `Index` implementation for structs with tuple fields
 ///
 /// # Example
@@ -109,8 +123,8 @@ fn generate_struct
 ///   {
 ///     match index 
 ///     {
-///        0 => &self.0,
-///        _ => panic!( "Index out of bounds" ),
+///       0 => &self.0,
+///       _ => panic!( "Index out of bounds" ),
 ///     }
 ///   }
 /// }
@@ -129,21 +143,13 @@ fn generate_struct_tuple_fields
 {
   let fields = fields.unnamed.clone();
 
-  // Get the type of the first field as the output type
-  let field_type = match fields.first() {
-    Some(field) => &field.ty,
-    None => return Err(
-        syn::Error::new( fields.span(), "cannot infer type: Empty type cannot be indexed" )
-      ),
-  };
-
   // Generate match arms for each field
-  let match_arms = fields.iter().enumerate().map(|( index, field )| 
+  let match_arms = fields.iter().enumerate().map(|( index, _field )| 
     {
-      let field_name = &field.ident;
+      let index = syn::Index::from( index );
       qt! 
       {
-        #index => &self.#field_name
+        #index => &self.#index
       }
     }
   );
@@ -157,22 +163,22 @@ fn generate_struct_tuple_fields
       where
         #generics_where
       {
-        type Output = #field_type;
+        type Output = T;
         #[ inline( always ) ]
         fn index( &self, index: usize ) -> &Self::Output
         {
-           match index 
-           {
-             #(#match_arms,)*
-             _ => panic!( "Index out of bounds" ),
-           }
+          match index 
+          {
+            #(#match_arms,)*
+            _ => panic!( "Index out of bounds" ),
+          }
         }
       }
     }
   )
 }
 
-/// Generates `Index` implementation for structs with tuple fields
+/// Generates `Index` implementation for structs with named fields
 ///
 /// # Example
 ///
@@ -180,7 +186,7 @@ fn generate_struct_tuple_fields
 /// ```rust
 /// # use derive_tools_meta::Index;
 /// #[ derive( Index ) ]
-/// pub struct Struct< T > i
+/// pub struct Struct< T > 
 /// {
 ///   a: T,    
 /// }
@@ -222,17 +228,10 @@ fn generate_struct_named_fields
 {
   let fields = fields.named.clone();
 
-  // Get the type of the first field as the output type
-  let field_type = match fields.first() {
-    Some(field) => &field.ty,
-    None => return Err(
-      syn::Error::new(fields.span(), "Empty type cannot be indexed")
-    ),
-  };
-
   // Generate match arms for each field
   let match_arms = fields.iter().enumerate().map(|( index, field )| 
     {
+      let index = syn::Index::from( index );
       let field_name = &field.ident;
       qt! 
       {
@@ -250,7 +249,7 @@ fn generate_struct_named_fields
       where
         #generics_where
       {
-        type Output = #field_type;
+        type Output = T;
         #[ inline( always ) ]
         fn index( &self, index: usize ) -> &Self::Output
         {
@@ -264,3 +263,260 @@ fn generate_struct_named_fields
     }
   )
 }
+
+
+
+/// An aggregator function to generate `Index` implementation for Enum
+fn generate_enum
+(
+  item_name: &syn::Ident,
+  generics_impl: &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty: &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  variants : &syn::punctuated::Punctuated<syn::Variant, syn::Token![,]>,
+) 
+-> Result< proc_macro2::TokenStream > 
+{
+  let fields = match variants.first()
+  {
+    Some( variant ) => &variant.fields,
+    None => return Err( 
+      syn::Error::new(
+        generics_ty.span(),
+        "cannot infer type: Empty type cannot be indexed",
+      ) 
+    ),
+  };
+
+  let idents = variants.iter().map( | v | v.ident.clone() ).collect::< Vec< _ > >();
+
+
+  match fields 
+  {
+    syn::Fields::Named( ref item) => 
+    generate_enum_named_fields
+    (
+      item_name, 
+      generics_impl, 
+      generics_ty, 
+      generics_where, 
+      &idents,
+      item
+    ),
+    syn::Fields::Unnamed( ref item ) => 
+    generate_enum_tuple_fields
+    (
+      item_name, 
+      generics_impl, 
+      generics_ty, 
+      generics_where, 
+      &idents,
+      item
+    ),  
+    syn::Fields::Unit => Err( 
+      syn::Error::new(
+        fields.span(),
+        "cannot infer type: Empty type cannot be indexed",
+      ) 
+    ),
+  }
+}
+
+
+/// Generates `Index` implementation for enums with tuple fields
+///
+/// # Example
+///
+/// ## Input
+/// ```rust
+/// # use derive_tools_meta::Index;
+/// #[ derive( Index ) ]
+/// pub enum EnumTuple< T > 
+/// {
+///   A( T ),
+///   B( T ),    
+/// }
+/// ```
+///
+/// ## Output
+/// ```rust
+/// pub enum EnumTuple< T > 
+/// {
+///   A( T ),
+///   B( T ),    
+/// }
+///
+/// #[ automatically_derived ]
+/// impl< T > ::core::ops::Index< usize > for EnumTuple< T >
+/// {
+///   type Output = T;
+///   #[ inline( always ) ]
+///   fn index( &self, index: usize ) -> &Self::Output
+///   {
+///   match index 
+///     {
+///       0 => match self
+///       {
+///         EnumTuple::A( a ) | EnumTuple::B( a ) => a, 
+///       },
+///       _ => panic!( "Index out of bounds" ),
+///     }
+///   }
+/// }
+/// ```
+///
+
+fn generate_enum_tuple_fields
+(
+  item_name: &syn::Ident,
+  generics_impl: &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty: &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  variant_idents : &[ syn::Ident ],
+  fields: &syn::FieldsUnnamed,
+) 
+-> Result< proc_macro2::TokenStream > 
+{
+  let fields = fields.unnamed.clone();
+
+  // Generate match arms for each field
+  let match_arms = fields.iter().enumerate().map(|( index, _field )| 
+    {
+      let index = syn::Index::from( index );
+      qt! 
+      {
+        #index => match self 
+        {
+          #( #item_name::#variant_idents( v ) )|* => v
+        }
+      }
+    }
+  );
+
+  Ok
+  (
+    qt! 
+    {
+      #[ automatically_derived ]
+      impl< #generics_impl > ::core::ops::Index< usize > for #item_name< #generics_ty >
+      where
+        #generics_where
+      {
+        type Output = T;
+        #[ inline( always ) ]
+        fn index( &self, index: usize ) -> &Self::Output
+        {
+          match index 
+          {
+            #(#match_arms)*
+            _ => panic!( "Index out of bounds" ),
+          }
+        }
+      }
+    }
+  )
+}
+
+
+
+
+
+/// Generates `Index` implementation for enums with named fields
+///
+/// # Example
+///
+/// ## Input
+/// ```rust
+/// # use derive_tools_meta::Index;
+/// #[ derive( Index ) ]
+/// pub enum EnumNamed< T > 
+/// {
+///   A { a: T, b: T },
+///   B { a: T, b: T },    
+/// }
+/// ```
+///
+/// ## Output
+/// ```rust
+/// pub enum EnumNamed< T > 
+/// {
+///   A { a: T, b: T },
+///   B { a: T, b: T },    
+/// }
+///
+/// #[ automatically_derived ]
+/// impl< T > ::core::ops::Index< usize > for EnumNamed< T >
+/// {
+///   type Output = T;
+///   #[ inline( always ) ]
+///   fn index( &self, index: usize ) -> &Self::Output
+///   {
+///       match index 
+///       {
+///         0 => match self 
+///         {
+///            EnumNamed::A { a, .. } | EnumNamed::B { a, .. } => a,
+///         },
+///         1 => match self 
+//          {
+///            EnumNamed::A { b, .. } | EnumNamed::B { b, .. } => b,
+///         },
+///         _ => panic!( "Index out of bounds" ),
+///     }
+///   }
+/// }
+/// ```
+///
+fn generate_enum_named_fields
+(
+  item_name: &syn::Ident,
+  generics_impl: &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty: &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  variant_idents : &[ syn::Ident ],
+  fields: &syn::FieldsNamed,
+) 
+-> Result< proc_macro2::TokenStream > 
+{
+  let fields = fields.named.clone();
+
+  // Generate match arms for each field
+  let match_arms = fields.iter().enumerate().map(|( index, field )| 
+    {
+      let index = syn::Index::from( index );
+      let field_name = &field.ident;
+      qt! 
+      {
+        #index => match self 
+        {
+          #( #item_name::#variant_idents { #field_name: v, .. } )|* => v,   
+        }
+      }
+    }
+  );
+
+  Ok
+  (
+    qt! 
+    {
+      #[ automatically_derived ]
+      impl< #generics_impl > ::core::ops::Index< usize > for #item_name< #generics_ty >
+      where
+        #generics_where
+      {
+        type Output = T;
+        #[ inline( always ) ]
+        fn index( &self, index: usize ) -> &Self::Output
+        {
+          match index 
+          {
+            #(#match_arms)*
+            _ => panic!( "Index out of bounds" ),
+          }
+        }
+      }
+    }
+  )
+}
+
+  

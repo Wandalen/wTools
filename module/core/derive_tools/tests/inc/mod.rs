@@ -303,6 +303,11 @@ mod index_tests
 
 	mod struct_named;
 	mod struct_named_manual;
+	mod struct_tuple;
 	mod struct_tuple_manual;
+    mod enum_named;
+	mod enum_named_manual;
+	mod enum_tuple;
+	mod enum_tuple_manual;
 
 }
