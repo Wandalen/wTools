@@ -56,6 +56,15 @@ pub( crate ) mod private
     }
   }
 
+  // impl ToStringWith< WithDisplay > for String
+  // {
+  //   /// Converts the type to a string using Display formatting.
+  //   fn to_string_with( &self ) -> String
+  //   {
+  //     format!( "x{}", self )
+  //   }
+  // }
+
 }
 
 #[ doc( inline ) ]
