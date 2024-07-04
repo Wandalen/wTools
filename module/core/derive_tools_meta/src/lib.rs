@@ -615,7 +615,14 @@ pub fn phantom( _attr: proc_macro::TokenStream, input : proc_macro::TokenStream 
 
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_index" ) ]
-#[ proc_macro_derive( Index, attributes( debug ) ) ]
+#[ proc_macro_derive
+( 
+  Index, 
+  attributes( 
+    debug, 
+    index 
+  ) 
+)]
 pub fn derive_index( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::index::index( input );

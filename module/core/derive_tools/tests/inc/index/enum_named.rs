@@ -4,8 +4,7 @@ use super::*;
 #[ derive( the_module::Index ) ]
 enum EnumNamed < T >
 {
-  A { a : T, b : T },
-  B { a : T, b : T }
-}
+  A { a : T },
+ }
 
 include!( "./only_test/enum_named.rs" );

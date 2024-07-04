@@ -1,12 +1,19 @@
+
 use super::*;
 use macro_tools::
 {
-  attr, 
-  diag, 
-  generic_params, 
-  struct_like::StructLike, 
-  Result
+  attr, diag, generic_params, proc_macro2::TokenStream, struct_like::StructLike, Result
 };
+
+#[ path = "index/field_attributes.rs" ]
+mod field_attributes;
+use field_attributes::*;
+
+#[ path = "index/item_attributes.rs" ]
+mod item_attributes;
+use item_attributes::*;
+
+
 
 
 /// Generates [Index](core::ops::Index) trait implementation.
@@ -15,29 +22,49 @@ pub fn index( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
   let parsed = syn::parse::< StructLike >( input )?;
   let has_debug = attr::has_debug( parsed.attrs().iter() )?;
   let item_name = &parsed.ident();
-
+  let item_attrs = ItemAttributes::from_attrs( parsed.attrs().iter() )?;
+   
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where ) 
   = generic_params::decompose( &parsed.generics() );
 
   let result = match parsed 
   {
-    StructLike::Struct( ref item ) => 
-    generate_struct
+    StructLike::Enum( ref item ) => 
+    {
+      let variants_result : Result< Vec< proc_macro2::TokenStream > > = item.variants.iter().map( | variant |
+      {
+ generate_enum
       ( 
-        item_name, 
+        item_name,
+        &item_attrs, 
         &generics_impl, 
         &generics_ty, 
-        &generics_where, 
-        &item.fields 
-      ),
-    StructLike::Enum( ref item ) =>
-      generate_enum
+        &generics_where,
+        variant, 
+        &original_input,
+        &item.variants,
+      )?;
+
+Ok( qt!{} )
+        }
+      
+      ).collect();
+
+      let variants = variants_result?;
+
+      Ok(qt!
+      {
+        #( #variants )*
+      })
+    },
+       StructLike::Struct( ref item ) =>
+      generate_struct
       (
         item_name,
         &generics_impl,
         &generics_ty,
         &generics_where,
-        &item.variants,
+        &item.fields,
       ),
     StructLike::Unit( ref item ) => Err( 
       syn::Error::new(
@@ -67,6 +94,7 @@ fn generate_struct
 ) 
 -> Result< proc_macro2::TokenStream > 
 {
+
   match fields 
   {
     syn::Fields::Named( fields ) => 
@@ -149,7 +177,7 @@ fn generate_struct_tuple_fields
       let index = syn::Index::from( index );
       qt! 
       {
-        #index => &self.#index
+        #index => &self.0[index]
       }
     }
   );
@@ -229,13 +257,13 @@ fn generate_struct_named_fields
   let fields = fields.named.clone();
 
   // Generate match arms for each field
-  let match_arms = fields.iter().enumerate().map(|( index, field )| 
+  let generated = fields.iter().enumerate().map(|( _index, field )| 
     {
-      let index = syn::Index::from( index );
       let field_name = &field.ident;
+
       qt! 
       {
-        #index => &self.#field_name
+        &self.#field_name[index]
       }
     }
   );
@@ -253,11 +281,8 @@ fn generate_struct_named_fields
         #[ inline( always ) ]
         fn index( &self, index: usize ) -> &Self::Output
         {
-          match index 
-          {
-            #(#match_arms,)*
-            _ => panic!( "Index out of bounds" ),
-          }
+           
+            #(#generated)*
         }
       }
     }
@@ -270,30 +295,60 @@ fn generate_struct_named_fields
 fn generate_enum
 (
   item_name: &syn::Ident,
+  item_attrs : &ItemAttributes,
   generics_impl: &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty: &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  variant : &syn::Variant,
+  _original_input : &proc_macro::TokenStream,
   variants : &syn::punctuated::Punctuated<syn::Variant, syn::Token![,]>,
 ) 
 -> Result< proc_macro2::TokenStream > 
 {
-  let fields = match variants.first()
-  {
-    Some( variant ) => &variant.fields,
-    None => return Err( 
-      syn::Error::new(
-        generics_ty.span(),
-        "cannot infer type: Empty type cannot be indexed",
-      ) 
-    ),
-  };
+
+  let fields = &variant.fields;
 
   let idents = variants.iter().map( | v | v.ident.clone() ).collect::< Vec< _ > >();
 
+  let attrs = FieldAttributes::from_attrs( variant.attrs.iter() )?;
 
+
+ if !attrs.index.value( item_attrs.index.value( true ) )
+  {
+    return Ok( qt!{} )
+  }
+
+    if fields.len() <= 0
+  {
+    return Ok( qt!{} )
+  }
+
+  let ( args, _use_src ) = if fields.len() == 1
+  {
+    let field = fields.iter().next().unwrap();
+    (
+      qt!{ #field },
+      qt!{ src },
+    )
+  }
+  else
+  {
+    let src_i = ( 0..fields.len() ).map( | e |
+    {
+      let i = syn::Index::from( e );
+      qt!{ src.#i, }
+    });
+    (
+      qt!{ #fields },
+      qt!{ #( #src_i )* },
+      // qt!{ src.0, src.1 },
+    )
+  };
+
+    
   match fields 
   {
-    syn::Fields::Named( ref item) => 
+    syn::Fields::Named( ref item ) => 
     generate_enum_named_fields
     (
       item_name, 
@@ -310,16 +365,18 @@ fn generate_enum
       generics_impl, 
       generics_ty, 
       generics_where, 
+      item,
       &idents,
-      item
+      &args,
     ),  
     syn::Fields::Unit => Err( 
       syn::Error::new(
-        fields.span(),
+        variant.fields.span(),
         "cannot infer type: Empty type cannot be indexed",
       ) 
     ),
   }
+  
 }
 
 
@@ -372,13 +429,57 @@ fn generate_enum_tuple_fields
   generics_impl: &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty: &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  variant_idents : &[ syn::Ident ],
   fields: &syn::FieldsUnnamed,
+  variant_idents : &[ syn::Ident ],
+  _args: &TokenStream
 ) 
 -> Result< proc_macro2::TokenStream > 
 {
   let fields = fields.unnamed.clone();
 
+
+ // Generate match arms for each field
+  let match_arms = fields.iter().enumerate().map(|( index, _field )| 
+    {
+      let index = syn::Index::from( index );
+
+
+      qt! 
+      {
+        #index => match self 
+        {
+           #( #item_name::#variant_idents( v ) )|* => &v[index]
+        }
+      }
+    }
+  );
+
+
+  Ok
+  (
+    qt!
+    {
+      #[ automatically_derived ]
+      impl< #generics_impl > ::core::ops::Index< usize > for #item_name< #generics_ty >
+      where
+        #generics_where
+      {
+        type Output = T;
+        #[ inline( always ) ]
+        fn index( &self, index: usize ) -> &Self::Output
+        {
+          match index 
+          {
+           
+            #(#match_arms)*
+            _ => panic!( "Index out of bounds" ),
+          }
+        }
+      }
+    }
+  )
+
+/*
   // Generate match arms for each field
   let match_arms = fields.iter().enumerate().map(|( index, _field )| 
     {
@@ -414,7 +515,7 @@ fn generate_enum_tuple_fields
         }
       }
     }
-  )
+  )*/
 }
 
 
@@ -485,11 +586,13 @@ fn generate_enum_named_fields
     {
       let index = syn::Index::from( index );
       let field_name = &field.ident;
+
+      dbg!(&field_name);
       qt! 
       {
         #index => match self 
         {
-          #( #item_name::#variant_idents { #field_name: v, .. } )|* => v,   
+          #( #item_name::#variant_idents { #field_name: v, .. } )|* => v[index],   
         }
       }
     }
@@ -519,4 +622,4 @@ fn generate_enum_named_fields
   )
 }
 
-  
+

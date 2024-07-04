@@ -1,24 +1,18 @@
 use core::ops::Index;
 
 #[ allow( dead_code ) ]
-struct StructNamed< T > 
+struct StructNamed< T >
 {
-  a: T,
-  b: T,
+  a: Vec< T >
 }
 
-impl< T > Index< usize > for StructNamed< T > 
+impl< T > Index< usize > for StructNamed< T >
 {
   type Output = T;
 
   fn index( &self, index: usize ) -> &Self::Output 
   {
-    match index 
-    {
-      0 => &self.a,
-      1 => &self.b,
-      _ => panic!( "Index out of bounds" ),
-    }
+    &self.a[index]
   }
 }
 

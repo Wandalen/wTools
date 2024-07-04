@@ -1,14 +1,12 @@
  use core::ops::Index;
 
 #[ allow( dead_code) ]
-
-enum EnumTuple < T >
+enum Enum < T >
 {
-  A ( T ),
-  B ( T )
+  IndexVector( Vec< T > ),
 }
 
-impl< T > Index< usize > for EnumTuple< T >
+impl< T > Index< usize > for Enum< T >
 {
     type Output = T;
     
@@ -18,11 +16,15 @@ impl< T > Index< usize > for EnumTuple< T >
         {   
             0 => match self
             {
-                EnumTuple::A( a ) | EnumTuple::B( a ) => a,
+                Enum::IndexVector( a ) => &a[0],
+            },
+            1 => match self
+            {
+                Enum::IndexVector( a ) => &a[1],
             },
             _ => panic!( "Index out of bounds" ),
         }
     }
 }
 
-include!( "./only_test/enum_tuple.rs" );
+include!( "./only_test/enum_unnamed.rs" );

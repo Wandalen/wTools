@@ -4,8 +4,7 @@
 
 enum EnumNamed < T >
 {
-  A { a : T, b : T },
-  B { a : T, b : T },
+  A { a : Vec< T > },
 }
 
 impl< T > Index< usize > for EnumNamed< T >
@@ -18,11 +17,15 @@ impl< T > Index< usize > for EnumNamed< T >
     {   
       0 => match self 
       {
-        EnumNamed::A { a, .. } | EnumNamed::B { a, .. } => a,          
+        EnumNamed::A { a, .. } => &a[0],          
       },
       1 => match self 
       {
-        EnumNamed::A { b, .. } | EnumNamed::B { b, .. } => b,
+        EnumNamed::A { a, .. } => &a[1],
+      },
+      2 => match self 
+      {
+        EnumNamed::A { a, .. } => &a[2],
       },
       _ => panic!( "Index out of bounds" ),
     }
