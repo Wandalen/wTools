@@ -3,10 +3,13 @@
 use super::*;
 
 #[ derive( the_module::Index ) ]
-struct StructNamed< T > 
-{
+struct StructMultipleTuple< T > 
+(
+  bool,
   #[ index ]
-  a : Vec< T >,
-}
+  Vec< T >,
+);
 
-include!( "./only_test/struct_named.rs" );
+include!( "./only_test/struct_multiple_tuple.rs" );
+
+

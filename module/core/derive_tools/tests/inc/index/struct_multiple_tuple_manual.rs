@@ -1,9 +1,9 @@
 use core::ops::Index;
 
 #[ allow( dead_code) ]
-struct StructTupleMultiple< T >( bool, Vec< T > );
+struct StructMultipleTuple< T >( bool, Vec< T > );
 
-impl< T > Index< usize > for StructTupleMultiple< T >
+impl< T > Index< usize > for StructMultipleTuple< T >
 {
   type Output = T;
 

@@ -302,19 +302,21 @@ mod phantom_tests
 #[ path = "index" ]
 mod index_tests
 {
-	#[ allow( unused_imports ) ]
-	use super::*;
+  #[ allow( unused_imports ) ]
+  use super::*;
 
-    // Must be implemented: 
-    // - Try-build test for Enum
-    // - Try-build test for Unit
-    // - Try-build test for Named Struct without fields
+  // Must be implemented: 
+  // - Try-build test for Enum
+  // - Try-build test for Unit
+  // - Try-build test for Named Struct without fields
     
-	// mod struct_named;
-	mod struct_named_manual;
-	mod struct_multiple_named_manual;
-	// mod struct_tuple;
-	mod struct_tuple_manual;
-	mod struct_multiple_tuple_manual;
-  
+  mod struct_named;
+  mod struct_multiple_named;
+  mod struct_named_manual;
+  mod struct_multiple_named_manual;
+  mod struct_tuple;
+  mod struct_multiple_tuple;
+  mod struct_tuple_manual;
+  mod struct_multiple_tuple_manual;
+
 }
