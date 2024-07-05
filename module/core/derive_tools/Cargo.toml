@@ -172,7 +172,7 @@ derive_from_str = [ "parse-display", "parse-display/std", "parse-display/regex" 
 
 derive_strum = [ "strum/std", "strum/derive", "strum/strum_macros" ]
 strum_phf = [ "strum/std", "strum/phf", "strum/strum_macros" ]
-# zzz : review features
+# zzz : qqq : review features
 
 derive_clone_dyn = [ "clone_dyn/enabled" ]
 # derive_clone_dyn_use_std = [ "derive_clone_dyn", "clone_dyn/use_std" ]

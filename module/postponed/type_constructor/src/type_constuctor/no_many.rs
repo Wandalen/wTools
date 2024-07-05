@@ -62,7 +62,6 @@ pub mod exposed
   pub use prelude::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     _many,

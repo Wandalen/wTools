@@ -512,7 +512,6 @@ pub mod orphan
   #[ doc( inline ) ]
   pub use exposed::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     // reflect,
@@ -536,7 +535,6 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use prelude::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     reflect,

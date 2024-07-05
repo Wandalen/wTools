@@ -278,7 +278,6 @@ pub mod prelude
   pub use private::a_not_id;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     a_true,

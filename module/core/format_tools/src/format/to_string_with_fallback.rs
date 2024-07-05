@@ -120,7 +120,10 @@ pub( crate ) mod private
     {{
       use format_tools::_ToStringWithFallback;
       (
-        &format_tools::ToStringWithFallbackRef::< '_, _, format_tools::ToStringWithFallbackParams< $how, $fallback > >::from( &$src )
+        &format_tools
+        ::ToStringWithFallbackRef
+        ::< '_, _, format_tools::ToStringWithFallbackParams< $how, $fallback > >
+        ::from( &$src )
       )
       .to_string_with_fallback()
     }};
@@ -159,7 +162,6 @@ pub mod exposed
 {
   use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     ToStringWithFallbackRef,

@@ -575,7 +575,6 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use prelude::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     _many,
@@ -591,7 +590,6 @@ pub mod prelude
 {
   use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     Many,

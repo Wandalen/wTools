@@ -5,7 +5,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "doc/", "wca.md" ) ) ]
 
 #![ allow( where_clauses_object_safety ) ] // https://github.com/chris-morgan/anymap/issues/31
-// qqq : xxx : is in neccessary?
+// qqq : xxx : is it neccessary?
 
 use mod_interface::mod_interface;
 

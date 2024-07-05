@@ -1,5 +1,5 @@
 
-include!( "../../../../module/step/meta/src/module/terminal.rs" );
+include!( "../../../../module/step/meta/src/module/aggregating.rs" );
 
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;

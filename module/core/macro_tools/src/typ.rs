@@ -147,7 +147,6 @@ pub mod own
   #[ doc( inline ) ]
   pub use orphan::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     type_rightmost,

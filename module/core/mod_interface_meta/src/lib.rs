@@ -4,6 +4,10 @@
 #![ deny( dead_code ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+// xxx : clean up, ad solve problems
+// - example based on simpified version of test::layer_have_layer with single sublayer
+// - example with attribute `#![ debug ]`
+
 // xxx : write good description and the main use-case
 
 // xxx : does not work. make it working

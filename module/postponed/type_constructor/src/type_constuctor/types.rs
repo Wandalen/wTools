@@ -851,7 +851,6 @@ pub mod prelude
 {
   use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     types,

@@ -3,24 +3,10 @@ use super::*;
 
 use the_module::
 {
-  // Fields,
-  // IteratorTrait,
-  // MaybeAs,
   ToStringWith,
-  // _ToStringWithFallback,
-  // ToStringWithFallbackParams,
   WithDebug,
   WithDisplay,
-  // Ref,
-  // to_string_with_fallback,
 };
-
-// use std::
-// {
-//   // fmt,
-//   // collections::HashMap,
-//   // borrow::Cow,
-// };
 
 //
 

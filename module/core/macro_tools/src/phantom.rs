@@ -203,7 +203,6 @@ pub mod own
   #[ doc( inline ) ]
   pub use orphan::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     add_to_item,
@@ -219,7 +218,6 @@ pub mod orphan
   #[ doc( inline ) ]
   pub use exposed::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
   };

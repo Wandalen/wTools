@@ -419,7 +419,6 @@ pub mod exposed
   pub use prelude::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     indentation,
@@ -436,7 +435,6 @@ pub mod prelude
   use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     tree_print,

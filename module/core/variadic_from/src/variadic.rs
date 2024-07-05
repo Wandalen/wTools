@@ -395,7 +395,6 @@ pub mod orphan
   pub use exposed::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
   };
@@ -418,7 +417,6 @@ pub mod prelude
 {
   use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
 

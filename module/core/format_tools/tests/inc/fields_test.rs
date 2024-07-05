@@ -8,6 +8,7 @@ use the_module::
   MaybeAs,
   ToStringWith,
   WithDebug,
+  WithDisplay,
 };
 
 use std::
@@ -67,6 +68,7 @@ where
 
     dst.push( ( "id", from( &self.id ) ) );
     // add( &mut dst, "id", &self.id );
+    // dst.push( ( "id", MaybeAs::< 'a, String, How >::from( &self.id ) ) );
     add( &mut dst, "created_at", &self.created_at );
     add( &mut dst, "file_ids", &self.file_ids );
 

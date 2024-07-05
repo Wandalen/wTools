@@ -94,7 +94,6 @@ pub mod own
   #[ doc( inline ) ]
   pub use orphan::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
     ensure_comma,
@@ -109,7 +108,6 @@ pub mod orphan
   #[ doc( inline ) ]
   pub use exposed::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use private::
   {
   };
