@@ -301,13 +301,16 @@ mod index_tests
 	#[ allow( unused_imports ) ]
 	use super::*;
 
-	mod struct_named;
+    // Must be implemented: 
+    // - Try-build test for Enum
+    // - Try-build test for Unit
+    // - Try-build test for Named Struct without fields
+    
+	// mod struct_named;
 	mod struct_named_manual;
+	mod struct_multiple_named_manual;
 	// mod struct_tuple;
 	mod struct_tuple_manual;
-    // mod enum_named;
-	mod enum_named_manual;
-	// mod enum_unnamed;
-	mod enum_unnamed_manual;
-
+	mod struct_multiple_tuple_manual;
+  
 }

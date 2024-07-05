@@ -1,74 +1,72 @@
+use macro_tools::
+{
+  ct,
+  syn_err,
+  syn,
+  qt,
+  Result,
+  AttributePropertyComponent,
+  AttributePropertyOptionalSingletone,
+  Assign,
+};
 
-  use macro_tools::
+///
+/// Attributes of a field / variant
+///
+
+/// Represents the attributes of a struct. Aggregates all its attributes.
+#[ derive( Debug, Default ) ]
+pub struct FieldAttributes
+{
+  /// Specifies whether we should generate Index implementation for the field.
+  pub index : AttributePropertyIndex,
+}
+
+impl FieldAttributes
+{
+  /// Constructs a `ItemAttributes` instance from an iterator of attributes.
+  ///
+  /// This function parses the provided attributes and assigns them to the
+  /// appropriate fields in the `ItemAttributes` struct.
+  pub fn from_attrs< 'a >( attrs : impl Iterator< Item = & 'a syn::Attribute > ) -> Result< Self >
   {
-    ct,
-    syn_err,
-    syn,
-    qt,
-    Result,
-    AttributePropertyComponent,
-    AttributePropertyOptionalSingletone,
-    Assign,
-  };
+    let mut result = Self::default();
 
-  /// Represents the attributes of a struct. Aggregates all its attributes.
-  #[ derive( Debug, Default ) ]
-  pub struct FieldAttributes
+    // Closure to generate an error message for unknown attributes.
+    let error = | attr : & syn::Attribute | -> syn::Error
     {
-    /// Attribute for customizing the mutation process.
-    pub index : AttributePropertyIndex,
+      let known_attributes = ct::concatcp!
+      (
+        "Known attributes are : ",
+        "debug",
+        ", ", AttributePropertyIndex::KEYWORD,
+        ".",
+      );
+      syn_err!
+      (
+        attr,
+         "Expects an attribute of format '#[ attribute ]'\n  {known_attributes}\n  But got: '{}'",
+         qt! { #attr }
+      )
+    };
 
-    pub debug : AttributePropertyDebug,
-  }
-
-  impl FieldAttributes
-  {
-    /// Constructs a `ItemAttributes` instance from an iterator of attributes.
-    ///
-    /// This function parses the provided attributes and assigns them to the
-    /// appropriate fields in the `ItemAttributes` struct.
-    pub fn from_attrs< 'a >( attrs : impl Iterator< Item = & 'a syn::Attribute > ) -> Result< Self >
+    for attr in attrs
     {
-      let mut result = Self::default();
-
-      // Closure to generate an error message for unknown attributes.
-      let error = | attr : & syn::Attribute | -> syn::Error
+      let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
+      let key_str = format!( "{}", key_ident );
+               
+      match key_str.as_ref()
       {
-        let known_attributes = ct::str::format!
-        (
-          "Known attributes are: {}, {}.",
-          "debug",
-          AttributePropertyIndex::KEYWORD,
-        );
-        syn_err!
-        (
-          attr,
-          "Expects an attribute of format '#[ attribute( key1 = val1, key2 = val2 ) ]'\n  {known_attributes}\n  But got: '{}'",
-          qt! { #attr }
-        )
-      };
-
-      for attr in attrs
-      {
-        let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
-        let key_str = format!( "{}", key_ident );
-        // if attr::is_standard( & key_str )
-        // {
-        //   continue;
-        // }
-        match key_str.as_ref()
-        {
-          AttributePropertyIndex::KEYWORD => result.assign( AttributePropertyIndex::from( true ) ),
-          "debug" => {},
-          _ => {},
-          // _ => return Err( error( attr ) ),
-        }
+        AttributePropertyIndex::KEYWORD => result.assign( AttributePropertyIndex::from( true ) ),
+        "debug" => {},
+        _ => {},
+        // _ => return Err( error( attr ) ),
       }
-
-      Ok( result )
     }
-  }
 
+    Ok( result )
+  }
+}
 
 impl< IntoT > Assign< AttributePropertyIndex, IntoT > for FieldAttributes
 where
@@ -82,40 +80,21 @@ where
 }
 
 
+// == Attribute properties
 
+/// Marker type for attribute property to indicate whether a index code should be generated.
+/// Defaults to `false`, meaning no index code is generated unless explicitly requested.
+#[ derive( Debug, Default, Clone, Copy ) ]
+pub struct AttributePropertyIndexMarker;
 
+impl AttributePropertyComponent for AttributePropertyIndexMarker
+{
+   const KEYWORD : & 'static str = "index";
+}
 
-  // == Attribute properties
+/// Indicates whether a index code should be generated.
+/// Defaults to `false`, meaning no index code is generated unless explicitly requested.
+pub type AttributePropertyIndex = AttributePropertyOptionalSingletone< AttributePropertyIndexMarker >;
 
-  /// Marker type for attribute property to specify whether to provide a sketch as a hint.
-  /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  #[ derive( Debug, Default, Clone, Copy ) ]
-  pub struct AttributePropertyDebugMarker;
-
-  impl AttributePropertyComponent for AttributePropertyDebugMarker
-  {
-    const KEYWORD : & 'static str = "debug";
-  }
-
-  /// Specifies whether to provide a sketch as a hint.
-  /// Defaults to `false`, which means no hint is provided unless explicitly requested.
-  pub type AttributePropertyDebug = AttributePropertyOptionalSingletone< AttributePropertyDebugMarker >;
-
-  // ==
-
-  /// Marker type for attribute property to indicate whether a custom code should be generated.
-  /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
-  #[ derive( Debug, Default, Clone, Copy ) ]
-  pub struct AttributePropertyIndexMarker;
-
-  impl AttributePropertyComponent for AttributePropertyIndexMarker
-  {
-    const KEYWORD : & 'static str = "index";
-  }
-
-  /// Indicates whether a custom code should be generated.
-  /// Defaults to `false`, meaning no custom code is generated unless explicitly requested.
-  pub type AttributePropertyIndex = AttributePropertyOptionalSingletone< AttributePropertyIndexMarker >;
-
-  // == test code
+// == 
 

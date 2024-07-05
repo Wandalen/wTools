@@ -1,13 +1,15 @@
 #[ test ]
 fn index() 
 {
-  let x = StructNamed
+  let x = StructMultipleNamed
   { 
-    a: vec![ false, true ] 
+    a: vec![ 12, 22 ], 
+    b: vec![ 33, 55 ] 
   };
-  let v = vec![ false, true ];
+  let v = vec![ 33, 55 ];
   let exp =  ( v[ 0 ], v[ 1 ] );
   let got =  ( x[ 0 ], x[ 1 ] );
-
+  
   assert_eq!( got, exp );
 }
+

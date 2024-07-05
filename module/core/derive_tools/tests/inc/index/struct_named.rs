@@ -3,8 +3,10 @@
 use super::*;
 
 #[ derive( the_module::Index ) ]
+#[debug]
 struct StructNamed< T > 
 {
+  #[index]
   a : Vec< T >,
 }
 
