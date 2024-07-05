@@ -38,7 +38,6 @@ impl FieldAttributes
       let known_attributes = ct::concatcp!
       (
         "Known attributes are : ",
-        "debug",
         ", ", AttributePropertyIndex::KEYWORD,
         ".",
       );
@@ -58,7 +57,6 @@ impl FieldAttributes
       match key_str.as_ref()
       {
         AttributePropertyIndex::KEYWORD => result.assign( AttributePropertyIndex::from( true ) ),
-        "debug" => {},
         _ => {},
         // _ => return Err( error( attr ) ),
       }

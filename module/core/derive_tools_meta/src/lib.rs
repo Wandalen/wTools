@@ -574,42 +574,39 @@ pub fn phantom( _attr: proc_macro::TokenStream, input : proc_macro::TokenStream 
 ///
 /// Provides an automatic [Index](core::ops::Index) trait implementation when-ever it's possible.
 ///
-/// This macro simplifies the indexing syntzx of struct type.
+/// This macro simplifies the indexing syntax of struct type.
 ///
 /// ## Example Usage
 //
 /// Instead of manually implementing `Index< T >` for `IsTransparent`:
 ///
 /// ```rust
+/// use core::ops::Index;
 /// pub struct IsTransparent< T >
 /// {
-///     a : T,
+///     a : Vec< T >,
 /// }
 ///
 /// impl< T > Index< usize > for IsTransparent< T > 
 /// {
-///    type Output = T;
+///   type Output = T;
 ///
-///    #[ inline( always ) ]
-///    fn index( &self, index: usize ) -> &Self::Output 
-///    {
-///       match index 
-///       {
-///            0 => &self.a,
-///            _ => panic!( "Index out of bounds" ),
-///       }
-///    }
+///   #[ inline( always ) ]
+///   fn index( &self, index: usize ) -> &Self::Output 
+///   {
+///     &self.a[ index ]
+///   }
 /// }
 /// ```
 ///
-/// Use `#[ derive( Index ) ]` to automatically generate the implementation:
+/// Use `#[ index ]` to automatically generate the implementation:
 ///
 /// ```rust
 /// # use derive_tools_meta::*;
-/// #[ derive( Index ) ]
-/// pub struct IsTransparent< T > {
-///    a : T  
-///};
+/// pub struct IsTransparent< T > 
+/// {
+///   a : Vec< T >  
+/// };
 /// ```
 ///
 
