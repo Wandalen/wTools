@@ -31,15 +31,14 @@ proc-macro = true
 
 default = [
   "enabled",
-  "reflect_reflect",
+  "reflect_derive",
 ]
 
 full = [
-  "enabled",
-  "reflect_reflect",
+  "default",
 ]
 enabled = []
-reflect_reflect = []
+reflect_derive = []
 
 [dependencies]
 # iter_tools = { workspace = true, features = [ "full" ] }

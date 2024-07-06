@@ -28,20 +28,18 @@ all-features = false
 
 default = [
   "enabled",
-  "reflect_reflect",
+  "reflect_types",
   "reflect_newtype",
 ]
 
 full = [
-  "enabled",
-  "reflect_reflect",
-  "reflect_newtype",
+  "default",
 ]
 enabled = [
   "reflect_tools_meta/enabled",
   "derive_tools/enabled"
 ]
-reflect_reflect = []
+reflect_types = []
 reflect_newtype = []
 
 [dependencies]

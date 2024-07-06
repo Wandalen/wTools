@@ -40,7 +40,7 @@ enabled = [
 
 [dependencies]
 # derive_tools = { workspace = true, features = [ "derive_from", "derive_inner_from" ] }
-reflect_tools = { workspace = true, features = [ "reflect_reflect" ] }
+reflect_tools = { workspace = true, features = [ "reflect_types" ] }
 former = { workspace = true, features = [ "full" ] }
 # qqq : xxx : optmize set of features
 

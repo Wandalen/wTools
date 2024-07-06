@@ -9,15 +9,20 @@ use core::ops::{ Deref };
 /// Converter into universal wrapper with transparent option of copy on write reference emphasizing a specific aspect of identity of its internal type.
 pub trait IntoMaybeAs< 'a, T, Marker >
 where
-  T : Clone,
+  T : std::borrow::ToOwned + ?Sized + 'a,
+  < T as std::borrow::ToOwned >::Owned : Clone,
+  // T : Clone,
+
 {
   /// Converter into universal wrapper with transparent option of copy on write reference emphasizing a specific aspect of identity of its internal type.
   fn into_maybe_as( self ) -> MaybeAs< 'a, T, Marker >;
 }
 
-impl< 'a, T, Marker > IntoMaybeAs< 'a, T, Marker > for T
+impl< 'a, T, Marker > IntoMaybeAs< 'a, T, Marker > for < T as std::borrow::ToOwned >::Owned
 where
-  T : Clone,
+  T : std::borrow::ToOwned + ?Sized + 'a,
+  < T as std::borrow::ToOwned >::Owned : Clone,
+  // T : Clone,
 {
   #[ inline( always ) ]
   fn into_maybe_as( self ) -> MaybeAs< 'a, T, Marker >
@@ -26,16 +31,19 @@ where
   }
 }
 
-impl< 'a, T, Marker > IntoMaybeAs< 'a, T, Marker > for &'a T
-where
-  T : Clone,
-{
-  #[ inline( always ) ]
-  fn into_maybe_as( self ) -> MaybeAs< 'a, T, Marker >
-  {
-    MaybeAs::< 'a, T, Marker >::new_with_ref( self )
-  }
-}
+// impl< 'a, T, Marker > IntoMaybeAs< 'a, T, Marker > for &'a T
+// where
+//   T : std::borrow::ToOwned + ?Sized + 'a,
+//   < T as std::borrow::ToOwned >::Owned : Clone,
+//   // T : Clone,
+//
+// {
+//   #[ inline( always ) ]
+//   fn into_maybe_as( self ) -> MaybeAs< 'a, T, Marker >
+//   {
+//     MaybeAs::< 'a, T, Marker >::new_with_ref( self )
+//   }
+// }
 
 // xxx
 // impl< 'a, T, Marker > IntoMaybeAs< 'a, T, Marker > for ()
@@ -54,12 +62,17 @@ where
 #[ derive( Clone ) ]
 pub struct MaybeAs< 'a, T, Marker >( pub Option< Cow< 'a, T > >, ::core::marker::PhantomData< fn() -> Marker > )
 where
-  T : Clone,
+  T : std::borrow::ToOwned + ?Sized,
+  < T as std::borrow::ToOwned >::Owned : Clone,
+  // T : Clone,
 ;
 
 impl< 'a, T, Marker > MaybeAs< 'a, T, Marker >
 where
-  T : Clone,
+  T : std::borrow::ToOwned + ?Sized + 'a,
+  < T as std::borrow::ToOwned >::Owned : Clone,
+  // T : Clone,
+
 {
 
   /// Just a constructor.
@@ -71,7 +84,7 @@ where
 
   /// Just a constructor.
   #[ inline( always ) ]
-  pub fn new( src : T ) -> Self
+  pub fn new( src : < T as std::borrow::ToOwned >::Owned ) -> Self
   {
     Self( Some( Cow::Owned( src ) ), ::core::marker::PhantomData )
   }
@@ -101,7 +114,10 @@ where
 
 impl< 'a, T, Marker > AsRef< Option< Cow< 'a, T > > > for MaybeAs< 'a, T, Marker >
 where
-  T : Clone,
+  T : std::borrow::ToOwned + ?Sized + 'a,
+  < T as std::borrow::ToOwned >::Owned : Clone,
+  // T : Clone,
+
   Self : 'a,
 {
   fn as_ref( &self ) -> &Option< Cow< 'a, T > >
@@ -112,7 +128,10 @@ where
 
 impl< 'a, T, Marker > Deref for MaybeAs< 'a, T, Marker >
 where
-  T : Clone,
+  T : std::borrow::ToOwned + ?Sized + 'a,
+  < T as std::borrow::ToOwned >::Owned : Clone,
+  // T : Clone,
+
   Marker : 'static,
 {
   type Target = Option< Cow< 'a, T > >;
@@ -155,21 +174,40 @@ where
 //   }
 // }
 
-impl< 'a, T, Marker > From< T >
+// impl< 'a, T, Marker > From< &T >
+// for MaybeAs< 'a, T, Marker >
+// where
+//   T : std::borrow::ToOwned + ?Sized + 'a,
+//   < T as std::borrow::ToOwned >::Owned : Clone,
+//   // T : Clone,
+// {
+//   fn from( src : &T ) -> Self
+//   {
+//     MaybeAs::new( src )
+//   }
+// }
+
+impl< 'a, T, Marker > From< Cow< 'a, T > >
 for MaybeAs< 'a, T, Marker >
 where
-  T : Clone,
+  T : std::borrow::ToOwned + ?Sized + 'a,
+  < T as std::borrow::ToOwned >::Owned : Clone,
+  // T : Clone,
+
 {
-  fn from( src : T ) -> Self
+  fn from( src : Cow< 'a, T > ) -> Self
   {
-    MaybeAs::new( src )
+    MaybeAs::new_with_inner( Some( src ) )
   }
 }
 
 impl< 'a, T, Marker > From< Option< Cow< 'a, T > > >
 for MaybeAs< 'a, T, Marker >
 where
-  T : Clone,
+  T : std::borrow::ToOwned + ?Sized + 'a,
+  < T as std::borrow::ToOwned >::Owned : Clone,
+  // T : Clone,
+
 {
   fn from( src : Option< Cow< 'a, T > > ) -> Self
   {
@@ -180,7 +218,10 @@ where
 impl< 'a, T, Marker > From< &'a T >
 for MaybeAs< 'a, T, Marker >
 where
-  T : Clone,
+  T : std::borrow::ToOwned + ?Sized + 'a,
+  < T as std::borrow::ToOwned >::Owned : Clone,
+  // T : Clone,
+
 {
   fn from( src : &'a T ) -> Self
   {
@@ -212,12 +253,15 @@ where
 
 impl< 'a, T, Marker > Default for MaybeAs< 'a, T, Marker >
 where
-  T : Clone,
-  T : Default,
+  T : std::borrow::ToOwned + ?Sized + 'a,
+  < T as std::borrow::ToOwned >::Owned : Clone,
+  < T as std::borrow::ToOwned >::Owned : Default,
+  // T : Clone,
+  // T : Default,
 {
   fn default() -> Self
   {
-    MaybeAs::new( T::default() )
+    MaybeAs::new( < T as std::borrow::ToOwned >::Owned::default() )
   }
 }
 
