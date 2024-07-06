@@ -6,6 +6,7 @@ use core::fmt;
 use std::borrow::Cow;
 use core::ops::{ Deref };
 
+// xxx : review
 /// Converter into universal wrapper with transparent option of copy on write reference emphasizing a specific aspect of identity of its internal type.
 pub trait IntoMaybeAs< 'a, T, Marker >
 where
@@ -187,13 +188,25 @@ where
 //   }
 // }
 
+// impl< 'a, T, Marker > From< < T as std::borrow::ToOwned >::Owned >
+// for MaybeAs< 'a, T, Marker >
+// where
+//   T : std::borrow::ToOwned + ?Sized + 'a,
+//   < T as std::borrow::ToOwned >::Owned : Clone,
+//   // T : Clone,
+// {
+//   fn from( src : < T as std::borrow::ToOwned >::Owned ) -> Self
+//   {
+//     MaybeAs::new( src )
+//   }
+// }
+
 impl< 'a, T, Marker > From< Cow< 'a, T > >
 for MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized + 'a,
   < T as std::borrow::ToOwned >::Owned : Clone,
   // T : Clone,
-
 {
   fn from( src : Cow< 'a, T > ) -> Self
   {
@@ -207,7 +220,6 @@ where
   T : std::borrow::ToOwned + ?Sized + 'a,
   < T as std::borrow::ToOwned >::Owned : Clone,
   // T : Clone,
-
 {
   fn from( src : Option< Cow< 'a, T > > ) -> Self
   {
@@ -221,7 +233,6 @@ where
   T : std::borrow::ToOwned + ?Sized + 'a,
   < T as std::borrow::ToOwned >::Owned : Clone,
   // T : Clone,
-
 {
   fn from( src : &'a T ) -> Self
   {
