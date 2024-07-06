@@ -132,7 +132,7 @@ fn basic()
   // assert!( !is_borrowed( &fields[ 2 ].1 ) );
   // assert!( !is_borrowed( &fields[ 3 ].1 ) );
   // xxx
-  assert_eq!( fields[ 0 ], ( "id", Some( Cow::Borrowed( &"\"12345\"" ) ).into() ) );
+  assert_eq!( fields[ 0 ], ( "id", Some( Cow::Borrowed( "\"12345\"" ) ).into() ) );
   assert_eq!( fields[ 1 ], ( "created_at", Some( Cow::Owned( "1627845583".to_string() ) ).into() ) );
   assert_eq!( fields[ 2 ], ( "file_ids", Some( Cow::Owned( "[\"file1\", \"file2\"]".to_string() ) ).into() ) );
   assert_eq!( fields[ 3 ].0, "tools" );
