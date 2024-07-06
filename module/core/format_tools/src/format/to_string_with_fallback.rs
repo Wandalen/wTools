@@ -26,7 +26,7 @@ pub( crate ) mod private
   }
 
   impl< T, How, Fallback > _ToStringWithFallback< How, Fallback >
-  for _ToStringWithFallbackRef< '_, T, ToStringWithFallbackParams< How, Fallback > >
+  for _ToStringWithFallbackRef< '_, T, How, Fallback >
   where
     T : ToStringWith< Fallback >,
   {
@@ -38,7 +38,7 @@ pub( crate ) mod private
   }
 
   impl< T, How, Fallback > _ToStringWithFallback< How, Fallback >
-  for ToStringWithFallbackRef< '_, T, ToStringWithFallbackParams< How, Fallback > >
+  for ToStringWithFallbackRef< '_, T, How, Fallback >
   where
     T : ToStringWith< How >,
   {
@@ -50,7 +50,7 @@ pub( crate ) mod private
   }
 
   // impl< T, How, Fallback > _ToStringWithFallback< How, Fallback >
-  // for &ToStringWithFallbackRef< '_, T, ToStringWithFallbackParams< How, Fallback > >
+  // for &ToStringWithFallbackRef< '_, T, How, Fallback >
   // where
   //   T : ToStringWith< How >,
   // {
@@ -133,9 +133,10 @@ pub( crate ) mod private
     {{
       use format_tools::_ToStringWithFallback;
       (
-        &format_tools
+        format_tools
         ::ToStringWithFallbackRef
-        ::< '_, _, format_tools::ToStringWithFallbackParams< $how, $fallback > >
+        ::< '_, _, $how, $fallback >
+        // ::< '_, _, format_tools::ToStringWithFallbackParams< $how, $fallback > >
         ::from( &$src )
       )
       .to_string_with_fallback()
