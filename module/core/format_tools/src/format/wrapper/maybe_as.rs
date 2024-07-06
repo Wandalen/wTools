@@ -83,8 +83,6 @@ impl< 'a, T, Marker > MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
   < T as std::borrow::ToOwned >::Owned : Clone,
-  // T : Clone,
-
 {
 
   /// Just a constructor.
@@ -289,8 +287,10 @@ where
 
 impl< 'a, T, Marker > fmt::Debug for MaybeAs< 'a, T, Marker >
 where
+  T : std::borrow::ToOwned + ?Sized,
+  < T as std::borrow::ToOwned >::Owned : Clone + fmt::Debug,
   T : fmt::Debug,
-  T : Clone,
+  // T : Clone,
 {
   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
@@ -302,7 +302,9 @@ where
 
 impl< 'a, T, Marker > PartialEq for MaybeAs< 'a, T, Marker >
 where
-  T : Clone + PartialEq,
+  T : std::borrow::ToOwned + ?Sized,
+  < T as std::borrow::ToOwned >::Owned : Clone,
+  T : PartialEq,
 {
   fn eq( &self, other : &Self ) -> bool
   {
@@ -312,6 +314,8 @@ where
 
 impl< 'a, T, Marker > Eq for MaybeAs< 'a, T, Marker >
 where
-  T : Clone + Eq,
+  T : std::borrow::ToOwned + ?Sized,
+  < T as std::borrow::ToOwned >::Owned : Clone,
+  T : Eq,
 {
 }
