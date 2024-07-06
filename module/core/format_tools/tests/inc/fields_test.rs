@@ -28,7 +28,7 @@ pub struct TestObject
   pub tools : Option< Vec< HashMap< String, String > > >,
 }
 
-impl< 'a, How > Fields< 'a, &'static str, MaybeAs< 'a, String, How > >
+impl< 'a, How > Fields< 'a, &'static str, MaybeAs< 'a, str, How > >
 for TestObject
 where
   How : Clone + Copy + 'static,
@@ -37,11 +37,11 @@ where
   Vec< String > : ToStringWith< 'a, How >,
   Vec< HashMap< String, String > > : ToStringWith< 'a, How >,
 {
-  fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, String, How > ) >
+  fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, str, How > ) >
   {
-    let mut dst : Vec< ( &'static str, MaybeAs< 'a, String, How > ) > = Vec::new();
+    let mut dst : Vec< ( &'static str, MaybeAs< 'a, str, How > ) > = Vec::new();
 
-    fn from< 'a, V, How >( src : &'a V ) -> MaybeAs< 'a, String, How >
+    fn from< 'a, V, How >( src : &'a V ) -> MaybeAs< 'a, str, How >
     where
       How : Clone + Copy + 'static,
       V : ToStringWith< 'a, How > + 'a,
@@ -54,7 +54,7 @@ where
 
     fn add< 'a, V, How >
     (
-      dst : &mut Vec< ( &'static str, MaybeAs< 'a, String, How > ) >,
+      dst : &mut Vec< ( &'static str, MaybeAs< 'a, str, How > ) >,
       key : &'static str,
       src : &'a V
     )

@@ -10,6 +10,8 @@ use the_module::
   // WithDebug,
 };
 
+// xxx2 : check
+
 use std::
 {
   // fmt,

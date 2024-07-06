@@ -80,13 +80,21 @@ pub( crate ) mod private
     }
   }
 
-  impl< 'a, T > _DisplayString< 'a > for Ref< 'a, T, WithDisplay >
-  where
-    T : fmt::Display,
+  // impl< 'a, T > _DisplayString< 'a > for Ref< 'a, T, WithDisplay >
+  // where
+  //   T : fmt::Display,
+  // {
+  //   fn _display_string( self ) -> Cow< 'a, str >
+  //   {
+  //     Cow::Owned( format!( "{}", self.0.0 ) )
+  //   }
+  // }
+
+  impl< 'a > _DisplayString< 'a > for Ref< 'a, String, WithDisplay >
   {
     fn _display_string( self ) -> Cow< 'a, str >
     {
-      Cow::Owned( format!( "{}", self.0.0 ) )
+      Cow::Borrowed( self.0.0 )
     }
   }
 
