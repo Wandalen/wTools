@@ -9,6 +9,7 @@ pub( crate ) mod private
   pub use super::
   {
     aref::ToStringWithFallbackRef,
+    aref::_ToStringWithFallbackRef,
     params::ToStringWithFallbackParams,
   };
 
@@ -25,7 +26,7 @@ pub( crate ) mod private
   }
 
   impl< T, How, Fallback > _ToStringWithFallback< How, Fallback >
-  for ToStringWithFallbackRef< '_, T, ToStringWithFallbackParams< How, Fallback > >
+  for _ToStringWithFallbackRef< '_, T, ToStringWithFallbackParams< How, Fallback > >
   where
     T : ToStringWith< Fallback >,
   {
@@ -37,16 +38,28 @@ pub( crate ) mod private
   }
 
   impl< T, How, Fallback > _ToStringWithFallback< How, Fallback >
-  for &ToStringWithFallbackRef< '_, T, ToStringWithFallbackParams< How, Fallback > >
+  for ToStringWithFallbackRef< '_, T, ToStringWithFallbackParams< How, Fallback > >
   where
     T : ToStringWith< How >,
   {
     /// Converts the type to a string using the fallback formatting.
     fn to_string_with_fallback( self ) -> String
     {
-      < T as ToStringWith< How > >::to_string_with( self.0 )
+      < T as ToStringWith< How > >::to_string_with( self.0.0 )
     }
   }
+
+  // impl< T, How, Fallback > _ToStringWithFallback< How, Fallback >
+  // for &ToStringWithFallbackRef< '_, T, ToStringWithFallbackParams< How, Fallback > >
+  // where
+  //   T : ToStringWith< How >,
+  // {
+  //   /// Converts the type to a string using the fallback formatting.
+  //   fn to_string_with_fallback( self ) -> String
+  //   {
+  //     < T as ToStringWith< How > >::to_string_with( self.0 )
+  //   }
+  // }
 
   //
 
