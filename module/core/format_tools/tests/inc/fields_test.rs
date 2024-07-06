@@ -89,7 +89,9 @@ where
 //
 
 #[ allow( dead_code ) ]
-fn is_borrowed< 'a, T : Clone >( src : &Option< Cow< 'a, T > > ) -> bool
+fn is_borrowed< 'a, T >( src : &Option< Cow< 'a, T > > ) -> bool
+where
+  T : std::borrow::ToOwned + ?Sized,
 {
   if src.is_none()
   {
@@ -105,7 +107,7 @@ fn is_borrowed< 'a, T : Clone >( src : &Option< Cow< 'a, T > > ) -> bool
 //
 
 #[ test ]
-fn basic()
+fn basic_with_debug()
 {
   let test_object = TestObject
   {
@@ -124,20 +126,65 @@ fn basic()
     ),
   };
 
+  let fields : Vec< ( &str, MaybeAs< '_, str, WithDebug > ) > =
+  Fields::< '_, &'static str, MaybeAs< '_, str, WithDebug > >::fields( &test_object ).collect();
+
   let fields : Vec< ( &str, MaybeAs< '_, str, WithDebug > ) > = test_object.fields().collect();
 
   assert_eq!( fields.len(), 4 );
-  assert!( is_borrowed( &fields[ 0 ].1 ) );
+  assert!( !is_borrowed( &fields[ 0 ].1 ) );
   assert!( !is_borrowed( &fields[ 1 ].1 ) );
   assert!( !is_borrowed( &fields[ 2 ].1 ) );
   assert!( !is_borrowed( &fields[ 3 ].1 ) );
   // xxx
   assert_eq!( fields[ 0 ], ( "id", Some( Cow::Borrowed( "\"12345\"" ) ).into() ) );
+  assert_eq!( fields[ 0 ], ( "id", Some( Cow::Owned( "\"12345\"".to_string() ) ).into() ) );
   assert_eq!( fields[ 1 ], ( "created_at", Some( Cow::Owned( "1627845583".to_string() ) ).into() ) );
   assert_eq!( fields[ 2 ], ( "file_ids", Some( Cow::Owned( "[\"file1\", \"file2\"]".to_string() ) ).into() ) );
   assert_eq!( fields[ 3 ].0, "tools" );
 
 }
+
+//
+
+// #[ test ]
+// fn basic_with_display()
+// {
+//   let test_object = TestObject
+//   {
+//     id : "12345".to_string(),
+//     created_at : 1627845583,
+//     file_ids : vec![ "file1".to_string(), "file2".to_string() ],
+//     tools : Some
+//     (
+//       vec!
+//       [{
+//         let mut map = HashMap::new();
+//         map.insert( "tool1".to_string(), "value1".to_string() );
+//         map.insert( "tool2".to_string(), "value2".to_string() );
+//         map
+//       }]
+//     ),
+//   };
+//
+//   let fields : Vec< ( &str, MaybeAs< '_, str, WithDisplay > ) > =
+//   Fields::< '_, &'static str, MaybeAs< '_, str, WithDisplay > >::fields( &test_object ).collect();
+//
+//   // let fields : Vec< ( &str, MaybeAs< '_, str, WithDisplay > ) > = test_object.fields().collect();
+//
+//   assert_eq!( fields.len(), 4 );
+//   assert!( is_borrowed( &fields[ 0 ].1 ) );
+//   assert!( !is_borrowed( &fields[ 1 ].1 ) );
+//   assert!( !is_borrowed( &fields[ 2 ].1 ) );
+//   assert!( !is_borrowed( &fields[ 3 ].1 ) );
+//   // xxx
+//   assert_eq!( fields[ 0 ], ( "id", Some( Cow::Borrowed( "\"12345\"" ) ).into() ) );
+//   assert_eq!( fields[ 0 ], ( "id", Some( Cow::Owned( "\"12345\"".to_string() ) ).into() ) );
+//   assert_eq!( fields[ 1 ], ( "created_at", Some( Cow::Owned( "1627845583".to_string() ) ).into() ) );
+//   assert_eq!( fields[ 2 ], ( "file_ids", Some( Cow::Owned( "[\"file1\", \"file2\"]".to_string() ) ).into() ) );
+//   assert_eq!( fields[ 3 ].0, "tools" );
+//
+// }
 
 //
 
