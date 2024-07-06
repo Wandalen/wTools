@@ -127,10 +127,10 @@ fn basic()
   let fields : Vec< ( &str, MaybeAs< '_, str, WithDebug > ) > = test_object.fields().collect();
 
   assert_eq!( fields.len(), 4 );
-  // assert!( is_borrowed( &fields[ 0 ].1 ) );
-  // assert!( !is_borrowed( &fields[ 1 ].1 ) );
-  // assert!( !is_borrowed( &fields[ 2 ].1 ) );
-  // assert!( !is_borrowed( &fields[ 3 ].1 ) );
+  assert!( is_borrowed( &fields[ 0 ].1 ) );
+  assert!( !is_borrowed( &fields[ 1 ].1 ) );
+  assert!( !is_borrowed( &fields[ 2 ].1 ) );
+  assert!( !is_borrowed( &fields[ 3 ].1 ) );
   // xxx
   assert_eq!( fields[ 0 ], ( "id", Some( Cow::Borrowed( "\"12345\"" ) ).into() ) );
   assert_eq!( fields[ 1 ], ( "created_at", Some( Cow::Owned( "1627845583".to_string() ) ).into() ) );
