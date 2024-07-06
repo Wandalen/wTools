@@ -6,42 +6,47 @@
 pub( crate ) mod private
 {
 
+  use crate::*;
+
   pub use super::
   {
     aref::{ Ref, _Ref },
   };
 
-  use crate::ToStringWith;
+  use std::
+  {
+    borrow::Cow,
+  };
 
   // ==
 
   /// Trait to convert a type to a string with a fallback formatting.
-  pub trait ToStringWithFallback< How, Fallback >
+  pub trait ToStringWithFallback< 'a, How, Fallback >
   {
     /// Converts the type to a string using the specified formatting or a fallback.
-    fn to_string_with_fallback( self ) -> String
+    fn to_string_with_fallback( self ) -> Cow< 'a, str >
     ;
   }
 
-  impl< T, How, Fallback > ToStringWithFallback< How, Fallback >
-  for _Ref< '_, T, How, Fallback >
+  impl< 'a, T, How, Fallback > ToStringWithFallback< 'a, How, Fallback >
+  for _Ref< 'a, T, How, Fallback >
   where
-    T : ToStringWith< Fallback >,
+    T : ToStringWith< 'a, Fallback >,
   {
     /// Converts the type to a string using the specified formatting.
-    fn to_string_with_fallback( self ) -> String
+    fn to_string_with_fallback( self ) -> Cow< 'a, str >
     {
       < T as ToStringWith< Fallback > >::to_string_with( self.0 )
     }
   }
 
-  impl< T, How, Fallback > ToStringWithFallback< How, Fallback >
-  for Ref< '_, T, How, Fallback >
+  impl< 'a, T, How, Fallback > ToStringWithFallback< 'a, How, Fallback >
+  for Ref< 'a, T, How, Fallback >
   where
-    T : ToStringWith< How >,
+    T : ToStringWith< 'a, How >,
   {
     /// Converts the type to a string using the fallback formatting.
-    fn to_string_with_fallback( self ) -> String
+    fn to_string_with_fallback( self ) -> Cow< 'a, str >
     {
       < T as ToStringWith< How > >::to_string_with( self.0.0 )
     }

@@ -14,6 +14,7 @@ pub( crate ) mod private
   use std::
   {
     fmt,
+    borrow::Cow,
   };
 
   // ==
@@ -33,31 +34,33 @@ pub( crate ) mod private
   // ==
 
   /// Trait to convert a type to a string using a specified formatting method.
-  pub trait ToStringWith< How >
+  pub trait ToStringWith< 'a, How >
   {
     /// Converts the type to a string using the specified formatting method.
-    fn to_string_with( &self ) -> String;
+    fn to_string_with( &'a self ) -> Cow< 'a, str >;
   }
 
-  impl< T > ToStringWith< WithDebug > for T
+  impl< 'a, T > ToStringWith< 'a, WithDebug > for T
   where
     T : fmt::Debug,
   {
     /// Converts the type to a string using Debug formatting.
-    fn to_string_with( &self ) -> String
+    #[ inline ]
+    fn to_string_with( &'a self ) -> Cow< 'a, str >
     {
-      format!( "{:?}", self )
+      Cow::Owned( format!( "{:?}", self ) )
     }
   }
 
-  impl< T > ToStringWith< WithDisplay > for T
+  impl< 'a, T > ToStringWith< 'a, WithDisplay > for T
   where
     T : fmt::Display,
   {
     /// Converts the type to a string using Display formatting.
-    fn to_string_with( &self ) -> String
+    #[ inline ]
+    fn to_string_with( &'a self ) -> Cow< 'a, str >
     {
-      format!( "{}", self )
+      Cow::Owned( format!( "{}", self ) )
     }
   }
 

@@ -32,10 +32,10 @@ impl< 'a, How > Fields< 'a, &'static str, MaybeAs< 'a, String, How > >
 for TestObject
 where
   How : Clone + Copy + 'static,
-  String : ToStringWith< How >,
-  i64 : ToStringWith< How >,
-  Vec< String > : ToStringWith< How >,
-  Vec< HashMap< String, String > > : ToStringWith< How >,
+  String : ToStringWith< 'a, How >,
+  i64 : ToStringWith< 'a, How >,
+  Vec< String > : ToStringWith< 'a, How >,
+  Vec< HashMap< String, String > > : ToStringWith< 'a, How >,
 {
   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, String, How > ) >
   {
@@ -44,11 +44,11 @@ where
     fn from< 'a, V, How >( src : &'a V ) -> MaybeAs< 'a, String, How >
     where
       How : Clone + Copy + 'static,
-      V : ToStringWith< How > + 'a,
+      V : ToStringWith< 'a, How > + 'a,
     {
       MaybeAs::< 'a, String, How >::from
       (
-        < V as ToStringWith< How > >::to_string_with( src )
+        < V as ToStringWith< 'a, How > >::to_string_with( src ).into_owned() // xxx
       )
     }
 
@@ -60,7 +60,7 @@ where
     )
     where
       How : Clone + Copy + 'static,
-      V : ToStringWith< How > + 'a,
+      V : ToStringWith< 'a, How > + 'a,
     {
       let val = from( src );
       dst.push( ( key, val ) );
