@@ -8,7 +8,7 @@ pub( crate ) mod private
 
   pub use super::
   {
-    aref::Ref,
+    aref::{ Ref, _Ref },
   };
 
   use std::
@@ -60,7 +60,33 @@ pub( crate ) mod private
     #[ inline ]
     fn to_string_with( &'a self ) -> Cow< 'a, str >
     {
-      Cow::Owned( format!( "{}", self ) )
+      Ref::from( self )._display_string()
+      // Cow::Owned( format!( "{}", self ) )
+    }
+  }
+
+  trait _DisplayString< 'a >
+  {
+    fn _display_string( self ) -> Cow< 'a, str >;
+  }
+
+  impl< 'a, T > _DisplayString< 'a > for _Ref< 'a, T, WithDisplay >
+  where
+    T : fmt::Display,
+  {
+    fn _display_string( self ) -> Cow< 'a, str >
+    {
+      Cow::Owned( format!( "{}", self.0 ) )
+    }
+  }
+
+  impl< 'a, T > _DisplayString< 'a > for Ref< 'a, T, WithDisplay >
+  where
+    T : fmt::Display,
+  {
+    fn _display_string( self ) -> Cow< 'a, str >
+    {
+      Cow::Owned( format!( "{}", self.0.0 ) )
     }
   }
 
