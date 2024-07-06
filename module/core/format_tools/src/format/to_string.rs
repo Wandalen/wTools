@@ -6,6 +6,11 @@
 pub( crate ) mod private
 {
 
+  pub use super::
+  {
+    aref::Ref,
+  };
+
   use std::
   {
     fmt,
@@ -67,6 +72,8 @@ pub( crate ) mod private
 
 }
 
+mod aref;
+
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use own::*;
@@ -78,6 +85,11 @@ pub mod own
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
+  #[ doc( inline ) ]
+  pub use private::
+  {
+    Ref,
+  };
 }
 
 /// Orphan namespace of the module.
@@ -87,13 +99,7 @@ pub mod orphan
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
-}
 
-/// Exposed namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
-  use super::*;
   #[ doc( inline ) ]
   pub use private::
   {
@@ -102,6 +108,17 @@ pub mod exposed
     WithWell,
     ToStringWith,
   };
+
+}
+
+/// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod exposed
+{
+  use super::*;
+  #[ doc( inline ) ]
+  pub use prelude::*;
+
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

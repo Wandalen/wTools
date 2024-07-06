@@ -8,9 +8,7 @@ pub( crate ) mod private
 
   pub use super::
   {
-    aref::ToStringWithFallbackRef,
-    aref::_ToStringWithFallbackRef,
-    // params::ToStringWithFallbackParams,
+    aref::{ Ref, _Ref },
   };
 
   use crate::ToStringWith;
@@ -18,15 +16,15 @@ pub( crate ) mod private
   // ==
 
   /// Trait to convert a type to a string with a fallback formatting.
-  pub trait _ToStringWithFallback< How, Fallback >
+  pub trait ToStringWithFallback< How, Fallback >
   {
     /// Converts the type to a string using the specified formatting or a fallback.
     fn to_string_with_fallback( self ) -> String
     ;
   }
 
-  impl< T, How, Fallback > _ToStringWithFallback< How, Fallback >
-  for _ToStringWithFallbackRef< '_, T, How, Fallback >
+  impl< T, How, Fallback > ToStringWithFallback< How, Fallback >
+  for _Ref< '_, T, How, Fallback >
   where
     T : ToStringWith< Fallback >,
   {
@@ -37,8 +35,8 @@ pub( crate ) mod private
     }
   }
 
-  impl< T, How, Fallback > _ToStringWithFallback< How, Fallback >
-  for ToStringWithFallbackRef< '_, T, How, Fallback >
+  impl< T, How, Fallback > ToStringWithFallback< How, Fallback >
+  for Ref< '_, T, How, Fallback >
   where
     T : ToStringWith< How >,
   {
@@ -49,8 +47,8 @@ pub( crate ) mod private
     }
   }
 
-  // impl< T, How, Fallback > _ToStringWithFallback< How, Fallback >
-  // for &ToStringWithFallbackRef< '_, T, How, Fallback >
+  // impl< T, How, Fallback > ToStringWithFallback< How, Fallback >
+  // for &Ref< '_, T, How, Fallback >
   // where
   //   T : ToStringWith< How >,
   // {
@@ -125,16 +123,18 @@ pub( crate ) mod private
   /// assert_eq!( got, exp );
   /// ```
 
-  #[ macro_export( local_inner_macros ) ]
+  // #[ macro_export( local_inner_macros ) ]
+  #[ macro_export ]
   macro_rules! to_string_with_fallback
   {
     ( $how : ty, $fallback : ty, $src : expr )
     =>
     {{
-      use format_tools::_ToStringWithFallback;
+      use format_tools::ToStringWithFallback;
       (
         format_tools
-        ::ToStringWithFallbackRef
+        ::to_string_with_fallback
+        ::Ref
         ::< '_, _, $how, $fallback >
         // ::< '_, _, format_tools::ToStringWithFallbackParams< $how, $fallback > >
         ::from( &$src )
@@ -143,10 +143,10 @@ pub( crate ) mod private
     }};
   }
 
+  pub use to_string_with_fallback;
 }
 
 mod aref;
-// mod params;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
@@ -159,6 +159,11 @@ pub mod own
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
+  #[ doc( inline ) ]
+  pub use private::
+  {
+    Ref,
+  };
 }
 
 /// Orphan namespace of the module.
@@ -168,6 +173,20 @@ pub mod orphan
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
+
+  // #[ doc( inline ) ]
+  // use crate::to_string_with_fallback;
+
+  pub use super::super::to_string_with_fallback;
+
+  #[ doc( inline ) ]
+  pub use private::
+  {
+    // Ref,
+    ToStringWithFallback,
+    // to_string_with_fallback,
+  };
+
 }
 
 /// Exposed namespace of the module.
@@ -176,15 +195,16 @@ pub mod exposed
 {
   use super::*;
   #[ doc( inline ) ]
+  pub use prelude::*;
+
+  #[ doc( inline ) ]
   pub use private::
   {
-    ToStringWithFallbackRef,
-    // ToStringWithFallbackParams,
-    _ToStringWithFallback,
+    // Ref,
+    // ToStringWithFallback,
+    // to_string_with_fallback,
   };
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  use crate::to_string_with_fallback;
+
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
