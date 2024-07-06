@@ -10,7 +10,7 @@ pub( crate ) mod private
   {
     aref::ToStringWithFallbackRef,
     aref::_ToStringWithFallbackRef,
-    params::ToStringWithFallbackParams,
+    // params::ToStringWithFallbackParams,
   };
 
   use crate::ToStringWith;
@@ -146,7 +146,7 @@ pub( crate ) mod private
 }
 
 mod aref;
-mod params;
+// mod params;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
@@ -179,7 +179,7 @@ pub mod exposed
   pub use private::
   {
     ToStringWithFallbackRef,
-    ToStringWithFallbackParams,
+    // ToStringWithFallbackParams,
     _ToStringWithFallback,
   };
   #[ doc( inline ) ]
