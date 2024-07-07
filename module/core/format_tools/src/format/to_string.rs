@@ -72,7 +72,7 @@ pub( crate ) mod private
     #[ inline ]
     fn to_string_with( &'a self ) -> Cow< 'a, str >
     {
-      Ref::from( self )._display_string()
+      Ref::< '_, T, WithDisplay >::from( self )._display_string()
       // Cow::Owned( format!( "{}", self ) )
     }
   }
@@ -106,6 +106,16 @@ pub( crate ) mod private
   }
 
   impl< 'a > _DisplayString< 'a > for Ref< 'a, &String, WithDisplay >
+  {
+    #[ inline ]
+    fn _display_string( self ) -> Cow< 'a, str >
+    {
+      panic!( "yyy" );
+      Cow::Borrowed( self.0.0 )
+    }
+  }
+
+  impl< 'a > _DisplayString< 'a > for Ref< 'a, &&String, WithDisplay >
   {
     #[ inline ]
     fn _display_string( self ) -> Cow< 'a, str >
