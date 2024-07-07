@@ -28,6 +28,9 @@ pub struct TestObject
   pub tools : Option< Vec< HashMap< String, String > > >,
 }
 
+use the_module::to_string_with_fallback;
+use the_module::to_string_with_fallback::ToStringWithFallback;
+
 impl< 'a, How > Fields< 'a, &'static str, MaybeAs< 'a, str, How > >
 for TestObject
 where
@@ -37,11 +40,14 @@ where
   i64 : ToStringWith< 'a, How >,
   Vec< String > : ToStringWith< 'a, How >,
   Vec< HashMap< String, String > > : ToStringWith< 'a, How >,
+
+  to_string_with_fallback::Ref< 'a, String, How, WithDebug > : ToStringWithFallback< 'a, How, WithDebug > + 'a,
+  to_string_with_fallback::Ref< 'a, i64, How, WithDebug > : ToStringWithFallback< 'a, How, WithDebug > + 'a,
+  to_string_with_fallback::Ref< 'a, Vec< String >, How, WithDebug > : ToStringWithFallback< 'a, How, WithDebug > + 'a,
+  to_string_with_fallback::Ref< 'a, Vec< HashMap< String, String > >, How, WithDebug > : ToStringWithFallback< 'a, How, WithDebug > + 'a,
 {
   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, str, How > ) >
   {
-    use the_module::to_string_with_fallback;
-    use the_module::to_string_with_fallback::ToStringWithFallback;
 
     let mut dst : Vec< ( &'static str, MaybeAs< 'a, str, How > ) > = Vec::new();
 
@@ -49,7 +55,7 @@ where
     where
       How : Clone + Copy + 'static,
       V : ToStringWith< 'a, How > + 'a,
-      // to_string_with_fallback::Ref< 'a, V, How, How > : ToStringWithFallback< 'a, How, How > + 'a,
+      to_string_with_fallback::Ref< 'a, V, How, WithDebug > : ToStringWithFallback< 'a, How, WithDebug > + 'a,
     {
       MaybeAs::< 'a, str, How >::from
       (

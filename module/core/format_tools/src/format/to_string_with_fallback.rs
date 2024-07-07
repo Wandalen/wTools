@@ -170,6 +170,7 @@ pub mod own
   pub use private::
   {
     Ref,
+    to_string_with_fallback,
   };
 }
 
