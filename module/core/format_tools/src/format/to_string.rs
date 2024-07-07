@@ -52,6 +52,18 @@ pub( crate ) mod private
     }
   }
 
+  // impl< 'a, T > ToStringWith< 'a, WithDebug > for &T
+  // where
+  //   T : fmt::Debug,
+  // {
+  //   /// Converts the type to a string using Debug formatting.
+  //   #[ inline ]
+  //   fn to_string_with( &'a self ) -> Cow< 'a, str >
+  //   {
+  //     ToStringWith::< 'a, WithDebug >::to_string_with( *self )
+  //   }
+  // }
+
   impl< 'a, T > ToStringWith< 'a, WithDisplay > for T
   where
     T : fmt::Display,

@@ -117,14 +117,14 @@ pub( crate ) mod private
   ///
   /// // Example usage: Using Both which implements both Debug and Display.
   /// let src = Both;
-  /// let got = to_string_with_fallback!( WithDisplay, WithDebug, src );
+  /// let got = to_string_with_fallback!( WithDisplay, WithDebug, &src );
   /// let exp = "This is display".to_string();
   /// // The primary formatting method WithDisplay is used.
   /// assert_eq!( got, exp );
   ///
   /// // Example usage: Using OnlyDebug which implements only Debug.
   /// let src = OnlyDebug;
-  /// let got = to_string_with_fallback!( WithDisplay, WithDebug, src );
+  /// let got = to_string_with_fallback!( WithDisplay, WithDebug, &src );
   /// let exp = "This is debug".to_string();
   /// // The primary formatting method WithDisplay is not available, so the fallback WithDebug is used.
   /// assert_eq!( got, exp );
@@ -144,7 +144,7 @@ pub( crate ) mod private
         ::Ref
         ::< '_, _, $how, $fallback >
         // ::< '_, _, format_tools::ToStringWithFallbackParams< $how, $fallback > >
-        ::from( &$src )
+        ::from( $src )
       )
       .to_string_with_fallback()
     }};

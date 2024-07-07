@@ -49,12 +49,12 @@ where
     where
       How : Clone + Copy + 'static,
       V : ToStringWith< 'a, How > + 'a,
-      to_string_with_fallback::Ref< 'a, V, How, How > : ToStringWithFallback< 'a, How, How > + 'a,
+      // to_string_with_fallback::Ref< 'a, V, How, How > : ToStringWithFallback< 'a, How, How > + 'a,
     {
       MaybeAs::< 'a, str, How >::from
       (
-        // to_string_with_fallback!( How, How, src )
-        < V as ToStringWith< 'a, How > >::to_string_with( src )
+        to_string_with_fallback!( How, WithDebug, src )
+        // < V as ToStringWith< 'a, How > >::to_string_with( src )
       )
     }
 

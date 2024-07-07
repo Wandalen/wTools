@@ -147,12 +147,12 @@ fn to_string_with_fallback_macro()
   }
 
   let src = OnlyDebug;
-  let got = to_string_with_fallback!( WithDisplay, WithDebug, src );
+  let got = to_string_with_fallback!( WithDisplay, WithDebug, &src );
   let exp = "This is debug".to_string();
   a_id!( got, exp );
 
   let src = OnlyDebug;
-  let got = to_string_with_fallback!( WithDebug, WithDisplay, src );
+  let got = to_string_with_fallback!( WithDebug, WithDisplay, &src );
   let exp = "This is debug".to_string();
   a_id!( got, exp );
 
@@ -177,12 +177,12 @@ fn to_string_with_fallback_macro()
   }
 
   let src = Both;
-  let got = to_string_with_fallback!( WithDisplay, WithDebug, src );
+  let got = to_string_with_fallback!( WithDisplay, WithDebug, &src );
   let exp = "This is display".to_string();
   a_id!( got, exp );
 
   let src = Both;
-  let got = to_string_with_fallback!( WithDebug, WithDisplay, src );
+  let got = to_string_with_fallback!( WithDebug, WithDisplay, &src );
   let exp = "This is debug".to_string();
   a_id!( got, exp );
 

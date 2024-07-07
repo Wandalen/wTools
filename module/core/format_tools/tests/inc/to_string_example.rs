@@ -44,12 +44,12 @@ fn exmaple()
   }
 
   let src = Both;
-  let got = to_string_with_fallback!( WithDisplay, WithDebug, src );
+  let got = to_string_with_fallback!( WithDisplay, WithDebug, &src );
   let exp = "This is display".to_string();
   assert_eq!( got, exp );
 
   let src = OnlyDebug;
-  let got = to_string_with_fallback!( WithDisplay, WithDebug, src );
+  let got = to_string_with_fallback!( WithDisplay, WithDebug, &src );
   let exp = "This is debug".to_string();
   assert_eq!( got, exp );
 
