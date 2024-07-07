@@ -138,14 +138,12 @@ pub( crate ) mod private
     =>
     {{
       use format_tools::ToStringWithFallback;
-      (
-        format_tools
-        ::to_string_with_fallback
-        ::Ref
-        ::< '_, _, $how, $fallback >
-        // ::< '_, _, format_tools::ToStringWithFallbackParams< $how, $fallback > >
-        ::from( $src )
-      )
+      format_tools
+      ::to_string_with_fallback
+      ::Ref
+      ::< '_, _, $how, $fallback >
+      // ::< '_, _, format_tools::ToStringWithFallbackParams< $how, $fallback > >
+      ::from( $src )
       .to_string_with_fallback()
     }};
   }
