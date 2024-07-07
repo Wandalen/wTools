@@ -12,6 +12,7 @@ pub struct Ref< 'a, T, How >
 ( pub _Ref< 'a, T, How > )
 where
   &'a T : Copy,
+  T : ?Sized,
 ;
 
 /// Internal reference wrapper to make into string conversion with fallback.
@@ -22,6 +23,7 @@ pub struct _Ref< 'a, T, How >
 where
   ::core::marker::PhantomData< fn() -> How > : Copy,
   &'a T : Copy,
+  T : ?Sized,
 ;
 
 impl< 'a, T, How > Ref< 'a, T, How >

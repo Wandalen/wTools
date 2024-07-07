@@ -94,11 +94,43 @@ pub( crate ) mod private
   }
 
   // xxx : not only String
+
   impl< 'a > _DisplayString< 'a > for Ref< 'a, String, WithDisplay >
   {
     #[ inline ]
     fn _display_string( self ) -> Cow< 'a, str >
     {
+      panic!( "xxx" );
+      Cow::Borrowed( self.0.0 )
+    }
+  }
+
+  impl< 'a > _DisplayString< 'a > for Ref< 'a, &String, WithDisplay >
+  {
+    #[ inline ]
+    fn _display_string( self ) -> Cow< 'a, str >
+    {
+      panic!( "yyy" );
+      Cow::Borrowed( self.0.0 )
+    }
+  }
+
+  impl< 'a > _DisplayString< 'a > for Ref< 'a, str, WithDisplay >
+  {
+    #[ inline ]
+    fn _display_string( self ) -> Cow< 'a, str >
+    {
+      panic!( "zzz1" );
+      Cow::Borrowed( self.0.0 )
+    }
+  }
+
+  impl< 'a > _DisplayString< 'a > for Ref< 'a, &str, WithDisplay >
+  {
+    #[ inline ]
+    fn _display_string( self ) -> Cow< 'a, str >
+    {
+      panic!( "zzz2" );
       Cow::Borrowed( self.0.0 )
     }
   }
