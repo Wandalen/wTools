@@ -36,10 +36,11 @@ for TestObject
 where
   // MaybeAs< 'a, str, How > : Clone, // xxx
   How : Clone + Copy + 'static,
-  String : ToStringWith< 'a, How >,
-  i64 : ToStringWith< 'a, How >,
-  Vec< String > : ToStringWith< 'a, How >,
-  Vec< HashMap< String, String > > : ToStringWith< 'a, How >,
+
+  // String : ToStringWith< 'a, How >,
+  // i64 : ToStringWith< 'a, How >,
+  // Vec< String > : ToStringWith< 'a, How >,
+  // Vec< HashMap< String, String > > : ToStringWith< 'a, How >,
 
   to_string_with_fallback::Ref< 'a, String, How, WithDebug > : ToStringWithFallback< 'a, How, WithDebug > + 'a,
   to_string_with_fallback::Ref< 'a, i64, How, WithDebug > : ToStringWithFallback< 'a, How, WithDebug > + 'a,
@@ -54,7 +55,7 @@ where
     fn from< 'a, V, How >( src : &'a V ) -> MaybeAs< 'a, str, How >
     where
       How : Clone + Copy + 'static,
-      V : ToStringWith< 'a, How > + 'a,
+      // V : ToStringWith< 'a, How > + 'a,
       to_string_with_fallback::Ref< 'a, V, How, WithDebug > : ToStringWithFallback< 'a, How, WithDebug > + 'a,
     {
       MaybeAs::< 'a, str, How >::from
@@ -72,7 +73,8 @@ where
     )
     where
       How : Clone + Copy + 'static,
-      V : ToStringWith< 'a, How > + 'a,
+      // V : ToStringWith< 'a, How > + 'a,
+      to_string_with_fallback::Ref< 'a, V, How, WithDebug > : ToStringWithFallback< 'a, How, WithDebug > + 'a,
     {
       let val = from( src );
       dst.push( ( key, val ) );
