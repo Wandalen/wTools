@@ -72,7 +72,7 @@ pub( crate ) mod private
     #[ inline ]
     fn to_string_with( &'a self ) -> Cow< 'a, str >
     {
-      Ref::< '_, T, WithDisplay >::from( self )._display_string()
+      ( &Ref::< 'a, T, WithDisplay >::from( self ) )._display_string()
       // Cow::Owned( format!( "{}", self ) )
     }
   }
@@ -89,6 +89,7 @@ pub( crate ) mod private
     #[ inline ]
     fn _display_string( self ) -> Cow< 'a, str >
     {
+      // panic!( "a" );
       Cow::Owned( format!( "{}", self.0 ) )
     }
   }
@@ -96,6 +97,8 @@ pub( crate ) mod private
   // xxx : not only String
 
   impl< 'a > _DisplayString< 'a > for Ref< 'a, String, WithDisplay >
+  where
+    String : fmt::Display,
   {
     #[ inline ]
     fn _display_string( self ) -> Cow< 'a, str >
@@ -106,6 +109,8 @@ pub( crate ) mod private
   }
 
   impl< 'a > _DisplayString< 'a > for Ref< 'a, &String, WithDisplay >
+  where
+    String : fmt::Display,
   {
     #[ inline ]
     fn _display_string( self ) -> Cow< 'a, str >
@@ -116,6 +121,8 @@ pub( crate ) mod private
   }
 
   impl< 'a > _DisplayString< 'a > for Ref< 'a, &&String, WithDisplay >
+  where
+    String : fmt::Display,
   {
     #[ inline ]
     fn _display_string( self ) -> Cow< 'a, str >
@@ -126,6 +133,8 @@ pub( crate ) mod private
   }
 
   impl< 'a > _DisplayString< 'a > for Ref< 'a, str, WithDisplay >
+  where
+    str : fmt::Display,
   {
     #[ inline ]
     fn _display_string( self ) -> Cow< 'a, str >
@@ -136,6 +145,8 @@ pub( crate ) mod private
   }
 
   impl< 'a > _DisplayString< 'a > for Ref< 'a, &str, WithDisplay >
+  where
+    str : fmt::Display,
   {
     #[ inline ]
     fn _display_string( self ) -> Cow< 'a, str >
@@ -143,6 +154,27 @@ pub( crate ) mod private
       panic!( "zzz2" );
       Cow::Borrowed( self.0.0 )
     }
+  }
+
+  // xxx
+  fn _f< 'a, T : 'a >()
+  where
+    Ref::< 'a, T, WithDisplay > : _DisplayString< 'a >,
+  {
+  }
+
+  //
+
+  #[ test ]
+  fn borrowed_string_test()
+  {
+
+    let src = "string".to_string();
+    let got = ToStringWith::< WithDisplay >::to_string_with( &src );
+    let exp : Cow< '_, str > = Cow::Borrowed( "string" );
+    assert_eq!( got, exp );
+    assert!( matches!( got, Cow::Borrowed( _ ) ) );
+
   }
 
 }

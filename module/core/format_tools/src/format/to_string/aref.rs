@@ -79,6 +79,7 @@ impl< 'a, T, How > Deref for Ref< 'a, T, How >
   type Target = _Ref< 'a, T, How >;
   fn deref( &self ) -> &Self::Target
   {
+    // panic!( "deref" );
     &self.0
   }
 }
