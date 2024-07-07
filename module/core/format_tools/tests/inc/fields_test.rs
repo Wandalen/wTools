@@ -46,6 +46,7 @@ where
   to_string_with_fallback::Ref< 'a, i64, How, WithDebug > : ToStringWithFallback< 'a, How, WithDebug > + 'a,
   to_string_with_fallback::Ref< 'a, Vec< String >, How, WithDebug > : ToStringWithFallback< 'a, How, WithDebug > + 'a,
   to_string_with_fallback::Ref< 'a, Vec< HashMap< String, String > >, How, WithDebug > : ToStringWithFallback< 'a, How, WithDebug > + 'a,
+
 {
   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, str, How > ) >
   {
