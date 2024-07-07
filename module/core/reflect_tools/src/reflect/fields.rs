@@ -49,20 +49,7 @@ pub( crate ) mod private
   {
     /// Returns an iterator over all fields of the specified type within the entity.
     fn fields( &'a self ) -> impl IteratorTrait< Item = ( K, V ) >;
-    // fn fields( &'a self ) -> impl IteratorTrait< Item = ( K, Option< Cow< 'a, V > > ) >;
   }
-
-  // /// Return number of fields convertible into a specified type withing an entity.
-  // ///
-  // /// # Type Parameters
-  // ///
-  // /// - `V`: The value type.
-  // ///
-  // pub trait FieldsLen< V >
-  // {
-  //   /// Return number of fields convertible into a specified type withing an entity.
-  //   fn len( &self ) -> usize;
-  // }
 
   /// Trait returning name of type of variable.
   pub trait TypeName
