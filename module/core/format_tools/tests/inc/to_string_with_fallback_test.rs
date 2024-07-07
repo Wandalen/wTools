@@ -11,6 +11,13 @@ use the_module::
   to_string_with_fallback,
 };
 
+use std::
+{
+  // fmt,
+  // collections::HashMap,
+  borrow::Cow,
+};
+
 //
 
 #[ test ]
@@ -184,6 +191,29 @@ fn to_string_with_fallback_macro()
   let src = Both;
   let got = to_string_with_fallback!( WithDebug, WithDisplay, &src );
   let exp = "This is debug".to_string();
+  a_id!( got, exp );
+
+}
+
+//
+
+#[ test ]
+fn display_is_not_implemented()
+{
+
+  let src = vec![ 1, 2, 3 ];
+  let got = the_module
+  ::to_string_with_fallback
+  ::Ref
+  ::< '_, _, WithDisplay, WithDebug >
+  ::from( &src )
+  .to_string_with_fallback();
+  let exp : Cow< '_, String > = Cow::Owned( "[1, 2, 3]".to_string() );
+  a_id!( got, exp );
+
+  let src = vec![ 1, 2, 3 ];
+  let got = to_string_with_fallback!( WithDisplay, WithDebug, &src );
+  let exp : Cow< '_, String > = Cow::Owned( "[1, 2, 3]".to_string() );
   a_id!( got, exp );
 
 }

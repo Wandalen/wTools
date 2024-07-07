@@ -8,6 +8,11 @@ use the_module::
   WithDisplay,
 };
 
+use std::
+{
+  borrow::Cow,
+};
+
 //
 
 #[ test ]
@@ -39,5 +44,15 @@ fn to_string_with_test()
   a_id!( got, exp );
 
   // -
+
+}
+
+//
+
+#[ test ]
+fn borrowed()
+{
+
+
 
 }

@@ -6,31 +6,31 @@ use core::fmt;
 use std::borrow::Cow;
 use core::ops::{ Deref };
 
-// xxx : review
-/// Converter into universal wrapper with transparent option of copy on write reference emphasizing a specific aspect of identity of its internal type.
-pub trait IntoMaybeAs< 'a, T, Marker >
-where
-  T : std::borrow::ToOwned + ?Sized,
-  < T as std::borrow::ToOwned >::Owned : Clone,
-  // T : Clone,
-
-{
-  /// Converter into universal wrapper with transparent option of copy on write reference emphasizing a specific aspect of identity of its internal type.
-  fn into_maybe_as( self ) -> MaybeAs< 'a, T, Marker >;
-}
-
-impl< 'a, T, Marker > IntoMaybeAs< 'a, T, Marker > for < T as std::borrow::ToOwned >::Owned
-where
-  T : std::borrow::ToOwned + ?Sized,
-  < T as std::borrow::ToOwned >::Owned : Clone,
-  // T : Clone,
-{
-  #[ inline( always ) ]
-  fn into_maybe_as( self ) -> MaybeAs< 'a, T, Marker >
-  {
-    MaybeAs::< 'a, T, Marker >::new( self )
-  }
-}
+// // xxx : review
+// /// Converter into universal wrapper with transparent option of copy on write reference emphasizing a specific aspect of identity of its internal type.
+// pub trait IntoMaybeAs< 'a, T, Marker >
+// where
+//   T : std::borrow::ToOwned + ?Sized,
+//   < T as std::borrow::ToOwned >::Owned : Clone,
+//   // T : Clone,
+//
+// {
+//   /// Converter into universal wrapper with transparent option of copy on write reference emphasizing a specific aspect of identity of its internal type.
+//   fn into_maybe_as( self ) -> MaybeAs< 'a, T, Marker >;
+// }
+//
+// impl< 'a, T, Marker > IntoMaybeAs< 'a, T, Marker > for < T as std::borrow::ToOwned >::Owned
+// where
+//   T : std::borrow::ToOwned + ?Sized,
+//   < T as std::borrow::ToOwned >::Owned : Clone,
+//   // T : Clone,
+// {
+//   #[ inline( always ) ]
+//   fn into_maybe_as( self ) -> MaybeAs< 'a, T, Marker >
+//   {
+//     MaybeAs::< 'a, T, Marker >::new( self )
+//   }
+// }
 
 // impl< 'a, T, Marker > IntoMaybeAs< 'a, T, Marker > for &'a T
 // where
@@ -65,27 +65,39 @@ pub struct MaybeAs< 'a, T, Marker >( pub Option< Cow< 'a, T > >, ::core::marker:
 where
   T : std::borrow::ToOwned + ?Sized,
   < T as std::borrow::ToOwned >::Owned : Clone,
-  // T : Clone,
+  Marker : Clone + Copy + 'static,
 ;
-
-impl< 'a, T, Marker > Clone for MaybeAs< 'a, T, Marker >
-where
-  T : std::borrow::ToOwned + ?Sized,
-  < T as std::borrow::ToOwned >::Owned : Clone,
-{
-  fn clone( &self ) -> Self
-  {
-    Self( self.0.clone(), ::core::marker::PhantomData )
-  }
-}
 
 impl< 'a, T, Marker > MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
   < T as std::borrow::ToOwned >::Owned : Clone,
+  Marker : Clone + Copy + 'static,
 {
 
-  /// Just a constructor.
+  /// Check is it borrowed.
+  #[ inline( always ) ]
+  pub fn is_borrowed( &self ) -> bool
+  {
+    if self.0.is_none()
+    {
+      return false;
+    }
+    match self.0.as_ref().unwrap()
+    {
+      Cow::Borrowed( _ ) => true,
+      Cow::Owned( _ ) => false,
+    }
+  }
+
+  /// Check does it have some value.
+  #[ inline( always ) ]
+  pub fn is_some( &self ) -> bool
+  {
+    return self.0.is_some()
+  }
+
+  /// Constructor returning none.
   #[ inline( always ) ]
   pub fn none() -> Self
   {
@@ -99,6 +111,7 @@ where
     Self( Some( Cow::Owned( src ) ), ::core::marker::PhantomData )
   }
 
+  // xxx : review
   /// Just a constructor.
   #[ inline( always ) ]
   pub fn new_with_ref( src : &'a T ) -> Self
@@ -122,13 +135,24 @@ where
 
 }
 
+impl< 'a, T, Marker > Clone for MaybeAs< 'a, T, Marker >
+where
+  T : std::borrow::ToOwned + ?Sized,
+  < T as std::borrow::ToOwned >::Owned : Clone,
+  Marker : Clone + Copy + 'static,
+{
+  fn clone( &self ) -> Self
+  {
+    Self( self.0.clone(), ::core::marker::PhantomData )
+  }
+}
+
 impl< 'a, T, Marker > AsRef< Option< Cow< 'a, T > > > for MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
   < T as std::borrow::ToOwned >::Owned : Clone,
-  // T : Clone,
-
-  Self : 'a,
+  Marker : Clone + Copy + 'static,
+  // Self : 'a,
 {
   fn as_ref( &self ) -> &Option< Cow< 'a, T > >
   {
@@ -141,8 +165,7 @@ where
   T : std::borrow::ToOwned + ?Sized,
   < T as std::borrow::ToOwned >::Owned : Clone,
   // T : Clone,
-
-  Marker : 'static,
+  Marker : Clone + Copy + 'static,
 {
   type Target = Option< Cow< 'a, T > >;
   fn deref( &self ) -> &Option< Cow< 'a, T > >
@@ -215,6 +238,7 @@ for MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
   < T as std::borrow::ToOwned >::Owned : Clone,
+  Marker : Clone + Copy + 'static,
   // T : Clone,
 {
   fn from( src : Cow< 'a, T > ) -> Self
@@ -228,6 +252,7 @@ for MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
   < T as std::borrow::ToOwned >::Owned : Clone,
+  Marker : Clone + Copy + 'static,
   // T : Clone,
 {
   fn from( src : Option< Cow< 'a, T > > ) -> Self
@@ -241,7 +266,7 @@ for MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
   < T as std::borrow::ToOwned >::Owned : Clone,
-  // T : Clone,
+  Marker : Clone + Copy + 'static,
 {
   fn from( src : &'a T ) -> Self
   {
@@ -276,8 +301,7 @@ where
   T : std::borrow::ToOwned + ?Sized,
   < T as std::borrow::ToOwned >::Owned : Clone,
   < T as std::borrow::ToOwned >::Owned : Default,
-  // T : Clone,
-  // T : Default,
+  Marker : Clone + Copy + 'static,
 {
   fn default() -> Self
   {
@@ -289,8 +313,8 @@ impl< 'a, T, Marker > fmt::Debug for MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
   < T as std::borrow::ToOwned >::Owned : Clone + fmt::Debug,
+  Marker : Clone + Copy + 'static,
   T : fmt::Debug,
-  // T : Clone,
 {
   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
@@ -304,6 +328,7 @@ impl< 'a, T, Marker > PartialEq for MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
   < T as std::borrow::ToOwned >::Owned : Clone,
+  Marker : Clone + Copy + 'static,
   T : PartialEq,
 {
   fn eq( &self, other : &Self ) -> bool
@@ -316,6 +341,7 @@ impl< 'a, T, Marker > Eq for MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
   < T as std::borrow::ToOwned >::Owned : Clone,
+  Marker : Clone + Copy + 'static,
   T : Eq,
 {
 }
