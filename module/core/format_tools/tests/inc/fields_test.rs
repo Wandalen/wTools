@@ -40,15 +40,20 @@ where
 {
   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, str, How > ) >
   {
+    use the_module::to_string_with_fallback;
+    use the_module::to_string_with_fallback::ToStringWithFallback;
+
     let mut dst : Vec< ( &'static str, MaybeAs< 'a, str, How > ) > = Vec::new();
 
     fn from< 'a, V, How >( src : &'a V ) -> MaybeAs< 'a, str, How >
     where
       How : Clone + Copy + 'static,
       V : ToStringWith< 'a, How > + 'a,
+      to_string_with_fallback::Ref< 'a, V, How, How > : ToStringWithFallback< 'a, How, How > + 'a,
     {
       MaybeAs::< 'a, str, How >::from
       (
+        // to_string_with_fallback!( How, How, src )
         < V as ToStringWith< 'a, How > >::to_string_with( src )
       )
     }
