@@ -34,6 +34,7 @@ pub( crate ) mod private
     T : ToStringWith< 'a, Fallback >,
   {
     /// Converts the type to a string using the specified formatting.
+    #[ inline ]
     fn to_string_with_fallback( self ) -> Cow< 'a, str >
     {
       < T as ToStringWith< Fallback > >::to_string_with( self.0 )
@@ -46,6 +47,7 @@ pub( crate ) mod private
     T : ToStringWith< 'a, How >,
   {
     /// Converts the type to a string using the fallback formatting.
+    #[ inline ]
     fn to_string_with_fallback( self ) -> Cow< 'a, str >
     {
       < T as ToStringWith< How > >::to_string_with( self.0.0 )

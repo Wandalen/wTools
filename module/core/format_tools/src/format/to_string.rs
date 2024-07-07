@@ -74,38 +74,22 @@ pub( crate ) mod private
   where
     T : fmt::Display,
   {
+    #[ inline ]
     fn _display_string( self ) -> Cow< 'a, str >
     {
       Cow::Owned( format!( "{}", self.0 ) )
     }
   }
 
-  // impl< 'a, T > _DisplayString< 'a > for Ref< 'a, T, WithDisplay >
-  // where
-  //   T : fmt::Display,
-  // {
-  //   fn _display_string( self ) -> Cow< 'a, str >
-  //   {
-  //     Cow::Owned( format!( "{}", self.0.0 ) )
-  //   }
-  // }
-
+  // xxx : not only String
   impl< 'a > _DisplayString< 'a > for Ref< 'a, String, WithDisplay >
   {
+    #[ inline ]
     fn _display_string( self ) -> Cow< 'a, str >
     {
       Cow::Borrowed( self.0.0 )
     }
   }
-
-  // impl ToStringWith< WithDisplay > for String
-  // {
-  //   /// Converts the type to a string using Display formatting.
-  //   fn to_string_with( &self ) -> String
-  //   {
-  //     format!( "x{}", self )
-  //   }
-  // }
 
 }
 
