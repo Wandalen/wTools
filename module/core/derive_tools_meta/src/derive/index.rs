@@ -8,7 +8,8 @@ use macro_tools::
   Result
 };
 
-pub fn index( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream > {
+pub fn index( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream > 
+{
   let original_input = input.clone();
   let parsed = syn::parse::< StructLike >( input )?;
   let has_debug = attr::has_debug( parsed.attrs().iter() )?;
@@ -47,11 +48,11 @@ pub fn index( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
 /// An aggregator function to generate `Index` implementation for tuple and named structs 
 fn generate_struct
 (
-  item_name: &syn::Ident,
-  generics_impl: &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty: &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  fields: &syn::Fields,
+  item_name : &syn::Ident,
+  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  fields : &syn::Fields,
 ) 
 -> Result< proc_macro2::TokenStream > 
 {
@@ -86,16 +87,16 @@ fn generate_struct
 
 fn generate_struct_named_fields
 (
-  item_name: &syn::Ident,
-  generics_impl: &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty: &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  fields: &syn::FieldsNamed,
+  item_name : &syn::Ident,
+  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  fields : &syn::FieldsNamed,
 ) 
 -> Result< proc_macro2::TokenStream > 
 {
   let fields = fields.named.clone();
-  let non_empty_attrs : Vec<&syn::Field> = fields.iter().filter(| field | 
+  let non_empty_attrs : Vec< &syn::Field > = fields.iter().filter(| field | 
     !field.attrs.is_empty()
   ).collect();
 
@@ -149,16 +150,16 @@ fn generate_struct_named_fields
 
 fn generate_struct_tuple_fields
 (
-  item_name: &syn::Ident,
-  generics_impl: &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_ty: &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
-  generics_where: &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
-  fields: &syn::FieldsUnnamed,
+  item_name : &syn::Ident,
+  generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
+  generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
+  fields : &syn::FieldsUnnamed,
 ) 
 -> Result< proc_macro2::TokenStream > 
 {
   let fields = fields.unnamed.clone();
-  let non_empty_attrs : Vec<&syn::Field> = fields.iter().filter(|field| 
+  let non_empty_attrs : Vec< &syn::Field > = fields.iter().filter(| field | 
     !field.attrs.is_empty()
   ).collect();
 

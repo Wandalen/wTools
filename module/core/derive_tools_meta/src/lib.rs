@@ -615,9 +615,10 @@ pub fn phantom( _attr: proc_macro::TokenStream, input : proc_macro::TokenStream 
 #[ proc_macro_derive
 ( 
   Index, 
-  attributes( 
-    debug, 
-    index 
+  attributes
+  ( 
+    debug, // item 
+    index, // field
   ) 
 )]
 pub fn derive_index( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
