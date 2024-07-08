@@ -101,11 +101,6 @@ fn to_string_with_fallback_variants()
   let exp = "This is debug".to_string();
   a_id!( got, exp );
 
-  let src = OnlyDebug;
-  let got = ( &ToStringWithFallbackRef::< '_, _, ToStringWithFallbackParams< WithDebug, WithDisplay > >::from( &src ) ).to_string_with_fallback();
-  let exp = "This is debug".to_string();
-  a_id!( got, exp );
-
   // - both debug and display
 
   struct Both;

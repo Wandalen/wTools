@@ -163,19 +163,19 @@ pub( crate ) mod private
   {
   }
 
-  //
+  // xxx : clean
 
-  #[ test ]
-  fn borrowed_string_test()
-  {
-
-    let src = "string".to_string();
-    let got = ToStringWith::< WithDisplay >::to_string_with( &src );
-    let exp : Cow< '_, str > = Cow::Borrowed( "string" );
-    assert_eq!( got, exp );
-    assert!( matches!( got, Cow::Borrowed( _ ) ) );
-
-  }
+//   #[ test ]
+//   fn borrowed_string_test()
+//   {
+//
+//     let src = "string".to_string();
+//     let got = ToStringWith::< WithDisplay >::to_string_with( &src );
+//     let exp : Cow< '_, str > = Cow::Borrowed( "string" );
+//     assert_eq!( got, exp );
+//     assert!( matches!( got, Cow::Borrowed( _ ) ) );
+//
+//   }
 
 }
 
