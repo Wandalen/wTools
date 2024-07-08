@@ -13,6 +13,7 @@
     feature = "derive_deref",
     feature = "derive_deref_mut",
     feature = "derive_from",
+    feature = "derive_index",
     feature = "derive_inner_from",
     feature = "derive_variadic_from",
     feature = "derive_phantom"
@@ -29,6 +30,7 @@ mod derive;
 //     feature = "derive_deref",
 //     feature = "derive_deref_mut",
 //     feature = "derive_from",
+//     feature = "derive_index",
 //     feature = "derive_inner_from",
 //     feature = "derive_variadic_from",
 //     feature = "derive_phantom"
@@ -562,6 +564,66 @@ pub fn derive_variadic_from( input : proc_macro::TokenStream ) -> proc_macro::To
 pub fn phantom( _attr: proc_macro::TokenStream, input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::phantom::phantom( _attr, input );
+  match result
+  {
+    Ok( stream ) => stream.into(),
+    Err( err ) => err.to_compile_error().into(),
+  }
+}
+
+///
+/// Provides an automatic [Index](core::ops::Index) trait implementation when-ever it's possible.
+///
+/// This macro simplifies the indexing syntax of struct type.
+///
+/// ## Example Usage
+//
+/// Instead of manually implementing `Index< T >` for `IsTransparent`:
+///
+/// ```rust
+/// use core::ops::Index;
+/// pub struct IsTransparent< T >
+/// {
+///     a : Vec< T >,
+/// }
+///
+/// impl< T > Index< usize > for IsTransparent< T > 
+/// {
+///   type Output = T;
+///
+///   #[ inline( always ) ]
+///   fn index( &self, index : usize ) -> &Self::Output 
+///   {
+///     &self.a[ index ]
+///   }
+/// }
+/// ```
+///
+/// Use `#[ index ]` to automatically generate the implementation:
+///
+/// ```rust
+/// # use derive_tools_meta::*;
+/// pub struct IsTransparent< T > 
+/// {
+///   a : Vec< T >  
+/// };
+/// ```
+///
+
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_index" ) ]
+#[ proc_macro_derive
+( 
+  Index, 
+  attributes
+  ( 
+    debug, // item 
+    index, // field
+  ) 
+)]
+pub fn derive_index( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+{
+  let result = derive::index::index( input );
   match result
   {
     Ok( stream ) => stream.into(),

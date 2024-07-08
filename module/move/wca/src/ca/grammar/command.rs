@@ -106,7 +106,7 @@ pub( crate ) mod private
     // qqq : make it usable and remove default(?)
     /// The type `Routine` represents the specific implementation of the routine.
     #[ scalar( setter = false ) ]
-    #[ former( default = Routine::from( Handler::from( || { panic!( "No routine available: A handler function for the command is missing" ) } ) ) ) ]
+    #[ former( default = Routine::from( Handler::< _, std::convert::Infallible >::from( || { panic!( "No routine available: A handler function for the command is missing" ) } ) ) ) ]
     pub routine : Routine,
   }
 

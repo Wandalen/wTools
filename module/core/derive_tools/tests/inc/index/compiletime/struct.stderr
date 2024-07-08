@@ -1,0 +1,8 @@
+error: Only one field can include #[index] derive macro
+ --> tests/inc/index/compiletime/struct.rs:6:3
+  |
+6 | /   #[ index ]
+7 | |   a: Vec< T >,
+8 | |   #[ index ]
+9 | |   b : Vec< T >,
+  | |_______________^

@@ -225,7 +225,6 @@ pub mod exposed
   use super::*;
   #[ doc( inline ) ]
   pub use prelude::*;
-
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

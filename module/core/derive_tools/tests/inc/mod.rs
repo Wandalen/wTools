@@ -24,6 +24,7 @@ mod all_manual_test;
     feature = "derive_deref",
     feature = "derive_deref_mut",
     feature = "derive_from",
+    feature = "derive_index",
     feature = "derive_inner_from",
     feature = "derive_phantom"
   )
@@ -291,6 +292,41 @@ mod phantom_tests
 
       t.compile_fail( "tests/inc/phantom/compiletime/enum.rs" );
       t.compile_fail( "tests/inc/phantom/compiletime/invariant_type.rs" );
+    }
+  }
+}
+
+
+#[ cfg( feature = "derive_index" ) ]
+#[ path = "index" ]
+mod index_tests
+{
+  #[ allow( unused_imports ) ]
+  use super::*;
+    
+  mod struct_named;
+  mod struct_multiple_named;
+  mod struct_named_manual;
+  mod struct_multiple_named_manual;
+  mod struct_tuple;
+  mod struct_multiple_tuple;
+  mod struct_tuple_manual;
+  mod struct_multiple_tuple_manual;
+
+  only_for_terminal_module!
+  {
+    #[ test_tools::nightly ]
+    #[ test ]
+    fn index_trybuild()
+    {
+
+      println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+      let t = test_tools::compiletime::TestCases::new();
+
+      t.compile_fail( "tests/inc/index/compiletime/struct.rs" );
+      t.compile_fail( "tests/inc/index/compiletime/struct_unit.rs" );
+      t.compile_fail( "tests/inc/index/compiletime/struct_named_empty.rs" );
+      t.compile_fail( "tests/inc/index/compiletime/enum.rs" );
     }
   }
 }

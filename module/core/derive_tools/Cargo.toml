@@ -151,7 +151,7 @@ derive_error = [ "derive_more", "derive_more/std", "derive_more/error" ]
 # derive_from = [ "derive_tools_meta/derive_from" ]
 # derive_reflect = [ "derive_tools_meta/derive_reflect" ]
 
-derive_index = [ "derive_more", "derive_more/std", "derive_more/index" ]
+# derive_index = [ "derive_more", "derive_more/std", "derive_more/index" ]
 derive_index_mut = [ "derive_more", "derive_more/std", "derive_more/index_mut" ]
 # derive_inner_from = [ "derive_more", "derive_more/into" ]
 derive_into_iterator = [ "derive_more", "derive_more/std", "derive_more/into_iterator" ]
@@ -180,6 +180,7 @@ derive_clone_dyn = [ "clone_dyn/enabled" ]
 # derive_clone_dyn_use_alloc = [ "derive_clone_dyn", "clone_dyn/use_alloc" ]
 
 derive_from = [ "derive_tools_meta/derive_from" ]
+derive_index = [ "derive_tools_meta/derive_index" ]
 derive_inner_from = [ "derive_tools_meta/derive_inner_from" ]
 derive_new = [ "derive_tools_meta/derive_new" ]
 
