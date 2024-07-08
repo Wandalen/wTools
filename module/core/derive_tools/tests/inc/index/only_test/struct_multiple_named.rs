@@ -12,4 +12,3 @@ fn index()
   
   assert_eq!( got, exp );
 }
-

@@ -6,4 +6,3 @@ fn index()
   let got = ( x[ 0 ], x[ 1 ] );
   assert_eq!( got, exp );
 }
-

@@ -11,5 +11,3 @@ struct StructMultipleTuple< T >
 );
 
 include!( "./only_test/struct_multiple_tuple.rs" );
-
-

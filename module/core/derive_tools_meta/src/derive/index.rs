@@ -29,9 +29,9 @@ pub fn index( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
       &item.fields,
 
     ),
-    StructLike::Enum(_) => 
+    StructLike::Enum( _ ) => 
     unimplemented!( "Index not implemented for Enum" ),
-    StructLike::Unit(_) => 
+    StructLike::Unit( _ ) => 
     unimplemented!( "Index not implemented for Unit" ),
   }?;
 
@@ -43,8 +43,6 @@ pub fn index( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
 
   Ok( result )
 }
-
-
 
 /// An aggregator function to generate `Index` implementation for tuple and named structs 
 fn generate_struct
@@ -97,7 +95,7 @@ fn generate_struct_named_fields
 -> Result< proc_macro2::TokenStream > 
 {
   let fields = fields.named.clone();
-  let non_empty_attrs: Vec<&syn::Field> = fields.iter().filter(|field| 
+  let non_empty_attrs : Vec<&syn::Field> = fields.iter().filter(| field | 
     !field.attrs.is_empty()
   ).collect();
 
@@ -112,14 +110,15 @@ fn generate_struct_named_fields
     );
   }
 
-  let generated = fields.iter().map(|field| {
+  let generated = fields.iter().map(| field | 
+    {
     let field_name = &field.ident;
     
     if !field.attrs.is_empty() 
     {
       qt! 
       {
-        &self.#field_name[index]
+        &self.#field_name[ index ]
       }
     }
     else 
@@ -141,7 +140,7 @@ fn generate_struct_named_fields
         #[ inline( always ) ]
         fn index( &self, index : usize ) -> &Self::Output
         {
-          #(#generated)*
+          #( #generated )*
         }
       }
     }
@@ -159,7 +158,7 @@ fn generate_struct_tuple_fields
 -> Result< proc_macro2::TokenStream > 
 {
   let fields = fields.unnamed.clone();
-  let non_empty_attrs: Vec<&syn::Field> = fields.iter().filter(|field| 
+  let non_empty_attrs : Vec<&syn::Field> = fields.iter().filter(|field| 
     !field.attrs.is_empty()
   ).collect();
 
@@ -180,7 +179,7 @@ fn generate_struct_tuple_fields
     if !field.attrs.is_empty() {
       qt! 
       {
-        &self.#i[index]
+        &self.#i[ index ] 
       }
     } 
     else 
@@ -202,7 +201,7 @@ fn generate_struct_tuple_fields
         #[ inline( always ) ]
         fn index( &self, index : usize ) -> &Self::Output
         {
-          #(#generated)*
+          #( #generated )*
         }
       }
     }

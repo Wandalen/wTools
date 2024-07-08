@@ -11,5 +11,3 @@ enum Enum< T >
 fn main()
 {  
 }
-
-

@@ -8,7 +8,3 @@ struct EmptyStruct
 fn main()
 {  
 }
-
-
-
-

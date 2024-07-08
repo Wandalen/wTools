@@ -592,7 +592,7 @@ pub fn phantom( _attr: proc_macro::TokenStream, input : proc_macro::TokenStream 
 ///   type Output = T;
 ///
 ///   #[ inline( always ) ]
-///   fn index( &self, index: usize ) -> &Self::Output 
+///   fn index( &self, index : usize ) -> &Self::Output 
 ///   {
 ///     &self.a[ index ]
 ///   }
