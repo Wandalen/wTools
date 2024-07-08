@@ -249,7 +249,6 @@ mod inner_from_tests
 
 }
 
-  
 #[ cfg( feature = "derive_phantom" ) ]
 #[ path = "phantom" ]
 mod phantom_tests
@@ -304,11 +303,6 @@ mod index_tests
 {
   #[ allow( unused_imports ) ]
   use super::*;
-
-  // Must be implemented: 
-  // - Try-build test for Enum
-  // - Try-build test for Unit
-  // - Try-build test for Named Struct without fields
     
   mod struct_named;
   mod struct_multiple_named;
@@ -319,4 +313,20 @@ mod index_tests
   mod struct_tuple_manual;
   mod struct_multiple_tuple_manual;
 
+  only_for_terminal_module!
+  {
+    #[ test_tools::nightly ]
+    #[ test ]
+    fn index_trybuild()
+    {
+
+      println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+      let t = test_tools::compiletime::TestCases::new();
+
+      t.compile_fail( "tests/inc/index/compiletime/struct.rs" );
+      t.compile_fail( "tests/inc/index/compiletime/struct_unit.rs" );
+      t.compile_fail( "tests/inc/index/compiletime/struct_named_empty.rs" );
+      t.compile_fail( "tests/inc/index/compiletime/enum.rs" );
+    }
+  }
 }
