@@ -21,6 +21,12 @@ pub mod own
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
+  #[ doc( inline ) ]
+  pub use super::
+  {
+    aref::IntoRef,
+    aref::Ref,
+  };
 }
 
 /// Orphan namespace of the module.
@@ -38,11 +44,10 @@ pub mod exposed
 {
   use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::
   {
-    aref::IntoRef,
-    aref::Ref,
+    // aref::IntoRef,
+    // aref::Ref,
     // maybe_as::IntoMaybeAs,
     maybe_as::MaybeAs,
   };

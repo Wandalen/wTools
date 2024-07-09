@@ -9,7 +9,7 @@ use core::ops::{ Deref };
 #[ allow( missing_debug_implementations ) ]
 #[ repr( transparent ) ]
 pub struct Ref< 'a, T, How >
-( pub _Ref< 'a, T, How > )
+( pub Ref2< 'a, T, How > )
 where
   &'a T : Copy,
   T : ?Sized,
@@ -18,7 +18,7 @@ where
 /// Internal reference wrapper to make into string conversion with fallback.
 #[ allow( missing_debug_implementations ) ]
 #[ repr( transparent ) ]
-pub struct _Ref< 'a, T, How >
+pub struct Ref2< 'a, T, How >
 ( pub &'a T, ::core::marker::PhantomData< fn() -> How > )
 where
   ::core::marker::PhantomData< fn() -> How > : Copy,
@@ -54,7 +54,7 @@ impl< 'a, T, How > Clone for Ref< 'a, T, How >
   }
 }
 
-impl< 'a, T, How > Clone for _Ref< 'a, T, How >
+impl< 'a, T, How > Clone for Ref2< 'a, T, How >
 {
   #[ inline( always ) ]
   fn clone( &self ) -> Self
@@ -64,7 +64,7 @@ impl< 'a, T, How > Clone for _Ref< 'a, T, How >
 }
 
 impl< 'a, T, How > Copy for Ref< 'a, T, How > {}
-impl< 'a, T, How > Copy for _Ref< 'a, T, How > {}
+impl< 'a, T, How > Copy for Ref2< 'a, T, How > {}
 
 // impl< 'a, T, How > AsRef< T > for Ref< 'a, T, How >
 // {
@@ -76,7 +76,7 @@ impl< 'a, T, How > Copy for _Ref< 'a, T, How > {}
 
 impl< 'a, T, How > Deref for Ref< 'a, T, How >
 {
-  type Target = _Ref< 'a, T, How >;
+  type Target = Ref2< 'a, T, How >;
   fn deref( &self ) -> &Self::Target
   {
     // panic!( "deref" );
@@ -88,6 +88,6 @@ impl< 'a, T, How > From< &'a T > for Ref< 'a, T, How >
 {
   fn from( src : &'a T ) -> Self
   {
-    Ref( _Ref( src, std::marker::PhantomData ) )
+    Ref( Ref2( src, std::marker::PhantomData ) )
   }
 }

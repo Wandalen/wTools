@@ -9,7 +9,17 @@ use core::ops::{ Deref };
 #[ allow( missing_debug_implementations ) ]
 #[ repr( transparent ) ]
 pub struct Ref< 'a, T, How, Fallback >
-( pub _Ref< 'a, T, How, Fallback > )
+( pub Ref2< 'a, T, How, Fallback > )
+where
+  &'a T : Copy,
+;
+
+
+/// Internal reference wrapper to make into string conversion with fallback.
+#[ allow( missing_debug_implementations ) ]
+#[ repr( transparent ) ]
+pub struct Ref2< 'a, T, How, Fallback >
+( pub Ref3< 'a, T, How, Fallback > )
 where
   &'a T : Copy,
 ;
@@ -17,7 +27,16 @@ where
 /// Internal reference wrapper to make into string conversion with fallback.
 #[ allow( missing_debug_implementations ) ]
 #[ repr( transparent ) ]
-pub struct _Ref< 'a, T, How, Fallback >
+pub struct Ref3< 'a, T, How, Fallback >
+( pub Ref4< 'a, T, How, Fallback > )
+where
+  &'a T : Copy,
+;
+
+/// Internal reference wrapper to make into string conversion with fallback.
+#[ allow( missing_debug_implementations ) ]
+#[ repr( transparent ) ]
+pub struct Ref4< 'a, T, How, Fallback >
 ( pub &'a T, ::core::marker::PhantomData< fn() -> ( How, Fallback ) > )
 where
   ::core::marker::PhantomData< fn() -> ( How, Fallback ) > : Copy,
@@ -38,7 +57,7 @@ impl< 'a, T, How, Fallback > Ref< 'a, T, How, Fallback >
   #[ inline( always ) ]
   pub fn inner( self ) -> &'a T
   {
-    self.0.0
+    self.0.0.0.0
   }
 
 }
@@ -48,11 +67,30 @@ impl< 'a, T, How, Fallback > Clone for Ref< 'a, T, How, Fallback >
   #[ inline( always ) ]
   fn clone( &self ) -> Self
   {
+    // xxx : self?
     Self( self.0 )
   }
 }
 
-impl< 'a, T, How, Fallback > Clone for _Ref< 'a, T, How, Fallback >
+impl< 'a, T, How, Fallback > Clone for Ref2< 'a, T, How, Fallback >
+{
+  #[ inline( always ) ]
+  fn clone( &self ) -> Self
+  {
+    Self( self.0 )
+  }
+}
+
+impl< 'a, T, How, Fallback > Clone for Ref3< 'a, T, How, Fallback >
+{
+  #[ inline( always ) ]
+  fn clone( &self ) -> Self
+  {
+    Self( self.0 )
+  }
+}
+
+impl< 'a, T, How, Fallback > Clone for Ref4< 'a, T, How, Fallback >
 {
   #[ inline( always ) ]
   fn clone( &self ) -> Self
@@ -62,7 +100,9 @@ impl< 'a, T, How, Fallback > Clone for _Ref< 'a, T, How, Fallback >
 }
 
 impl< 'a, T, How, Fallback > Copy for Ref< 'a, T, How, Fallback > {}
-impl< 'a, T, How, Fallback > Copy for _Ref< 'a, T, How, Fallback > {}
+impl< 'a, T, How, Fallback > Copy for Ref2< 'a, T, How, Fallback > {}
+impl< 'a, T, How, Fallback > Copy for Ref3< 'a, T, How, Fallback > {}
+impl< 'a, T, How, Fallback > Copy for Ref4< 'a, T, How, Fallback > {}
 
 // impl< 'a, T, How, Fallback > AsRef< T > for Ref< 'a, T, How, Fallback >
 // {
@@ -74,7 +114,25 @@ impl< 'a, T, How, Fallback > Copy for _Ref< 'a, T, How, Fallback > {}
 
 impl< 'a, T, How, Fallback > Deref for Ref< 'a, T, How, Fallback >
 {
-  type Target = _Ref< 'a, T, How, Fallback >;
+  type Target = Ref2< 'a, T, How, Fallback >;
+  fn deref( &self ) -> &Self::Target
+  {
+    &self.0
+  }
+}
+
+impl< 'a, T, How, Fallback > Deref for Ref2< 'a, T, How, Fallback >
+{
+  type Target = Ref3< 'a, T, How, Fallback >;
+  fn deref( &self ) -> &Self::Target
+  {
+    &self.0
+  }
+}
+
+impl< 'a, T, How, Fallback > Deref for Ref3< 'a, T, How, Fallback >
+{
+  type Target = Ref4< 'a, T, How, Fallback >;
   fn deref( &self ) -> &Self::Target
   {
     &self.0
@@ -87,6 +145,6 @@ impl< 'a, T, How, Fallback > From< &'a T > for Ref< 'a, T, How, Fallback >
 {
   fn from( src : &'a T ) -> Self
   {
-    Ref( _Ref( src, std::marker::PhantomData ) )
+    Ref( Ref2( Ref3( Ref4( src, std::marker::PhantomData ) ) ) )
   }
 }

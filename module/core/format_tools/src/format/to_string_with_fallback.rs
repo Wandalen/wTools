@@ -5,12 +5,11 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-
   use crate::*;
 
   pub use super::
   {
-    aref::{ Ref, _Ref },
+    aref::{ Ref, Ref2, Ref3, Ref4 },
   };
 
   use std::
@@ -29,28 +28,66 @@ pub( crate ) mod private
   }
 
   impl< 'a, T, How, Fallback > ToStringWithFallback< 'a, How, Fallback >
-  for _Ref< 'a, T, How, Fallback >
-  where
-    T : ToStringWith< 'a, Fallback >,
-  {
-    /// Converts the type to a string using the specified formatting.
-    #[ inline ]
-    fn to_string_with_fallback( self ) -> Cow< 'a, str >
-    {
-      < T as ToStringWith< Fallback > >::to_string_with( self.0 )
-    }
-  }
-
-  impl< 'a, T, How, Fallback > ToStringWithFallback< 'a, How, Fallback >
   for Ref< 'a, T, How, Fallback >
   where
     T : ToStringWith< 'a, How >,
+    crate::to_string::Ref< 'a, T, How > : crate::to_string::ToStringWith< 'a, How >,
+    How : 'static,
+    Fallback : 'static,
+    Self : 'a,
   {
     /// Converts the type to a string using the fallback formatting.
     #[ inline ]
     fn to_string_with_fallback( self ) -> Cow< 'a, str >
     {
-      < T as ToStringWith< How > >::to_string_with( self.0.0 )
+      let r = crate::to_string::Ref::from( self.0.0.0.0 );
+      r.to_string_with()
+      // < crate::to_string::Ref< 'a, T, How > as ToStringWith< How > > ::to_string_with( &crate::to_string::Ref::from( self.0.0.0.0 ) )
+    }
+  }
+
+  impl< 'a, T, How, Fallback > ToStringWithFallback< 'a, How, Fallback >
+  for Ref2< 'a, T, How, Fallback >
+  where
+    T : ToStringWith< 'a, How >,
+    crate::to_string::Ref2< 'a, T, How > : crate::to_string::ToStringWith< 'a, How >,
+  {
+    /// Converts the type to a string using the fallback formatting.
+    #[ inline ]
+    fn to_string_with_fallback( self ) -> Cow< 'a, str >
+    {
+      crate::to_string::Ref::from( self.0.0.0 ).to_string_with()
+      // < crate::to_string::Ref< 'a, T, How > as ToStringWith< How > > ::to_string_with( &crate::to_string::Ref::from( self.0.0.0 ) )
+    }
+  }
+
+  impl< 'a, T, How, Fallback > ToStringWithFallback< 'a, How, Fallback >
+  for Ref3< 'a, T, How, Fallback >
+  where
+    T : ToStringWith< 'a, Fallback >,
+    crate::to_string::Ref< 'a, T, Fallback > : crate::to_string::ToStringWith< 'a, Fallback >,
+  {
+    /// Converts the type to a string using the specified formatting.
+    #[ inline ]
+    fn to_string_with_fallback( self ) -> Cow< 'a, str >
+    {
+      crate::to_string::Ref::from( self.0.0 ).to_string_with()
+      // < crate::to_string::Ref< 'a, T, Fallback > as ToStringWith< Fallback > > ::to_string_with( &crate::to_string::Ref::from( self.0.0 ) )
+    }
+  }
+
+  impl< 'a, T, How, Fallback > ToStringWithFallback< 'a, How, Fallback >
+  for Ref4< 'a, T, How, Fallback >
+  where
+    T : ToStringWith< 'a, Fallback >,
+    crate::to_string::Ref2< 'a, T, Fallback > : crate::to_string::ToStringWith< 'a, Fallback >,
+  {
+    /// Converts the type to a string using the specified formatting.
+    #[ inline ]
+    fn to_string_with_fallback( self ) -> Cow< 'a, str >
+    {
+      crate::to_string::Ref::from( self.0 ).to_string_with()
+      // < crate::to_string::Ref< 'a, T, Fallback > as ToStringWith< Fallback > > ::to_string_with( &crate::to_string::Ref::from( self.0 ) )
     }
   }
 
@@ -62,7 +99,7 @@ pub( crate ) mod private
   //   /// Converts the type to a string using the fallback formatting.
   //   fn to_string_with_fallback( self ) -> String
   //   {
-  //     < T as ToStringWith< How > >::to_string_with( self.0 )
+  //     < T as ToStringWith< How > > ::to_string_with( self.0 )
   //   }
   // }
 
@@ -142,7 +179,6 @@ pub( crate ) mod private
       ::to_string_with_fallback
       ::Ref
       ::< '_, _, $how, $fallback >
-      // ::< '_, _, format_tools::ToStringWithFallbackParams< $how, $fallback > >
       ::from( $src )
       .to_string_with_fallback()
     }};
@@ -162,12 +198,16 @@ pub use own::*;
 pub mod own
 {
   use super::*;
+
   #[ doc( inline ) ]
   pub use orphan::*;
   #[ doc( inline ) ]
   pub use private::
   {
     Ref,
+    Ref2,
+    Ref3,
+    Ref4,
     to_string_with_fallback,
   };
 }
@@ -177,13 +217,10 @@ pub mod own
 pub mod orphan
 {
   use super::*;
+  pub use super::super::to_string_with_fallback;
+
   #[ doc( inline ) ]
   pub use exposed::*;
-
-  // #[ doc( inline ) ]
-  // use crate::to_string_with_fallback;
-
-  pub use super::super::to_string_with_fallback;
 
   #[ doc( inline ) ]
   pub use private::

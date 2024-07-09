@@ -8,8 +8,8 @@ pub( crate ) mod private
 
   pub use super::
   {
-    aref::{ Ref, _Ref },
-    aref2::{ Ref2 },
+    aref::{ Ref, Ref2 },
+    // aref2::{ Ref2 },
   };
 
   use std::
@@ -53,7 +53,7 @@ pub( crate ) mod private
     }
   }
 
-  impl< 'a, T > ToStringWith< 'a, WithDebug > for _Ref< 'a, T, WithDebug >
+  impl< 'a, T > ToStringWith< 'a, WithDebug > for Ref2< 'a, T, WithDebug >
   where
     T : 'a,
     T : fmt::Debug,
@@ -80,7 +80,7 @@ pub( crate ) mod private
 
   impl< 'a, T > ToStringWith< 'a, WithDisplay > for T
   where
-    // _Ref::< 'a, T, WithDisplay > : _DisplayString< 'a >,
+    // Ref2::< 'a, T, WithDisplay > : _DisplayString< 'a >,
     T : 'a,
     T : fmt::Display,
   {
@@ -94,9 +94,9 @@ pub( crate ) mod private
     }
   }
 
-  impl< 'a, T > ToStringWith< 'a, WithDisplay > for _Ref< 'a, T, WithDisplay >
+  impl< 'a, T > ToStringWith< 'a, WithDisplay > for Ref2< 'a, T, WithDisplay >
   where
-    // _Ref::< 'a, T, WithDisplay > : _DisplayString< 'a >,
+    // Ref2::< 'a, T, WithDisplay > : _DisplayString< 'a >,
     T : 'a,
     T : fmt::Display,
   {
@@ -143,7 +143,7 @@ pub( crate ) mod private
     fn _display_string( self ) -> Cow< 'a, str >;
   }
 
-  impl< 'a, T > _DisplayString< 'a > for _Ref< 'a, T, WithDisplay >
+  impl< 'a, T > _DisplayString< 'a > for Ref2< 'a, T, WithDisplay >
   where
     T : fmt::Display,
   {
@@ -285,12 +285,14 @@ pub use own::*;
 pub mod own
 {
   use super::*;
+
   #[ doc( inline ) ]
   pub use orphan::*;
   #[ doc( inline ) ]
   pub use private::
   {
     Ref,
+    Ref2,
   };
 }
 
@@ -299,6 +301,8 @@ pub mod own
 pub mod orphan
 {
   use super::*;
+  pub use super::super::to_string;
+
   #[ doc( inline ) ]
   pub use exposed::*;
 
