@@ -1,0 +1,6 @@
+error: No attributes specified. You must to specify #[ index ] for fields or name for #[ index ( name = field_name ) ] for item derive macro
+ --> tests/inc/index/compiletime/struct_no_attrs.rs:7:3
+  |
+7 | /   a : Vec< T >,
+8 | |   b : Vec< T >,
+  | |_______________^

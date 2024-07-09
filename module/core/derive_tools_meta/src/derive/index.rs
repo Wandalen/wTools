@@ -8,12 +8,22 @@ use macro_tools::
   Result
 };
 
+#[ path = "index/item_attributes.rs" ]
+mod item_attributes;
+use item_attributes::*;
+#[ path = "index/field_attributes.rs" ]
+mod field_attributes;
+use field_attributes::*;
+
+
 pub fn index( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStream > 
 {
   let original_input = input.clone();
   let parsed = syn::parse::< StructLike >( input )?;
   let has_debug = attr::has_debug( parsed.attrs().iter() )?;
   let item_name = &parsed.ident();
+ 
+  let item_attrs = ItemAttributes::from_attrs( parsed.attrs().iter() )?;
 
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where ) 
   = generic_params::decompose( &parsed.generics() );
@@ -24,6 +34,7 @@ pub fn index( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
     generate_struct
     (
       item_name,
+      &item_attrs,
       &generics_impl,
       &generics_ty,
       &generics_where,
@@ -49,6 +60,7 @@ pub fn index( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
 fn generate_struct
 (
   item_name : &syn::Ident,
+  item_attrs : &ItemAttributes,
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
@@ -63,6 +75,7 @@ fn generate_struct
     generate_struct_named_fields
     (
       item_name, 
+      &item_attrs,
       generics_impl, 
       generics_ty, 
       generics_where, 
@@ -88,6 +101,7 @@ fn generate_struct
 fn generate_struct_named_fields
 (
   item_name : &syn::Ident,
+  item_attrs : &ItemAttributes,
   generics_impl : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
@@ -95,39 +109,73 @@ fn generate_struct_named_fields
 ) 
 -> Result< proc_macro2::TokenStream > 
 {
+
   let fields = fields.named.clone();
-  let non_empty_attrs : Vec< &syn::Field > = fields.iter().filter(| field | 
-    !field.attrs.is_empty()
+  let attr_name = &item_attrs.index.name.clone().internal();
+
+  let field_attrs : Vec< &syn::Field > = fields.iter().filter( | field | 
+    {
+      let field_attrs = FieldAttributes::from_attrs( field.attrs.iter() ).unwrap();
+      return field_attrs.index.value( false )
+    } 
   ).collect();
 
-  if non_empty_attrs.len() != 1 
-  {
-    return Err(
-      syn::Error::new_spanned
-      ( 
-        &fields, 
-        "Only one field can include #[index] derive macro" 
-      )
-    );
-  }
 
-  let generated = fields.iter().map(| field | 
+  let generated = if let Some(attr_name) = attr_name 
+  {
+    qt! 
     {
-    let field_name = &field.ident;
+      &self.#attr_name[ index ]
+    }
+  } 
+  else 
+  {
+    match field_attrs.len() 
+    {
+      0 =>
+      { 
+        return Err
+        (
+          syn::Error::new_spanned
+          ( 
+            &fields, 
+            "No attributes specified. You must to specify #[ index ] for fields or name for #[ index ( name = field_name ) ] for item derive macro" 
+          )
+        );
+      },
+      1 => field_attrs.iter().map
+      (
+        | field | 
+        {
+          let field_name = &field.ident;
     
-    if !field.attrs.is_empty() 
-    {
-      qt! 
+          if !field.attrs.is_empty() 
+          {
+            qt! 
+            {
+              &self.#field_name[ index ]
+            }
+          }
+          else 
+          {
+            qt!{ }
+          }
+        }
+      ).collect(),  
+      _ => 
       {
-        &self.#field_name[ index ]
+        return Err
+        (
+          syn::Error::new_spanned
+          ( 
+            &fields, 
+            "Only one field can include #[ index ] derive macro" 
+          )
+        );
       }
     }
-    else 
-    {
-      qt!{ }
-    }
-  });
-  
+  };
+
   Ok
   (
     qt! 
@@ -141,7 +189,7 @@ fn generate_struct_named_fields
         #[ inline( always ) ]
         fn index( &self, index : usize ) -> &Self::Output
         {
-          #( #generated )*
+           #generated 
         }
       }
     }
@@ -159,36 +207,52 @@ fn generate_struct_tuple_fields
 -> Result< proc_macro2::TokenStream > 
 {
   let fields = fields.unnamed.clone();
-  let non_empty_attrs : Vec< &syn::Field > = fields.iter().filter(| field | 
-    !field.attrs.is_empty()
-  ).collect();
-
-  if non_empty_attrs.len() != 1 
+  let non_empty_attrs : Vec< &syn::Field > = fields.iter().filter( | field | !field.attrs.is_empty() ).collect();
+  
+  let generated = match non_empty_attrs.len() 
   {
-    return Err(
-      syn::Error::new_spanned
-      ( 
-        &fields, 
-        "Only one field can include #[index] derive macro" 
-      )
-    );
-  }
-
-  let generated = fields.iter().enumerate().map(|( i, field )| 
-  { 
-    let i = syn::Index::from( i );  
-    if !field.attrs.is_empty() {
-      qt! 
-      {
-        &self.#i[ index ] 
+    0 =>
+    { 
+      return Err
+      (
+        syn::Error::new_spanned
+        ( 
+          &fields, 
+          "No attributes specified. You must to specify #[ index ] for fields or name for #[ index ( name = field_name ) ] for item derive macro" 
+        )
+      );
+    },
+    1 => fields.iter().enumerate().map
+    (
+      | ( i, field ) | 
+      { 
+        let i = syn::Index::from( i );  
+        if !field.attrs.is_empty() 
+        {
+          qt! 
+          {
+            &self.#i[ index ] 
+          }
+        } 
+        else 
+        {
+          qt!{ }
+        }
       }
-    } 
-    else 
+    ),  
+    _ => 
     {
-      qt!{ }
+      return Err
+      (
+        syn::Error::new_spanned
+        ( 
+          &fields, 
+          "Only one field can include #[ index ] derive macro" 
+        )
+      );
     }
-  });
-    
+  };
+  
   Ok
   (
     qt! 

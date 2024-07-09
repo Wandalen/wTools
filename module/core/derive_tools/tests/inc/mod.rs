@@ -305,14 +305,16 @@ mod index_tests
   use super::*;
     
   mod struct_named;
-  mod struct_multiple_named;
+  mod struct_multiple_named_field;
+  mod struct_multiple_named_item;
   mod struct_named_manual;
   mod struct_multiple_named_manual;
   mod struct_tuple;
   mod struct_multiple_tuple;
   mod struct_tuple_manual;
   mod struct_multiple_tuple_manual;
-
+  mod struct_collisions;
+  
   only_for_terminal_module!
   {
     #[ test_tools::nightly ]
@@ -325,6 +327,7 @@ mod index_tests
 
       t.compile_fail( "tests/inc/index/compiletime/struct.rs" );
       t.compile_fail( "tests/inc/index/compiletime/struct_unit.rs" );
+      t.compile_fail( "tests/inc/index/compiletime/struct_no_attrs.rs" );
       t.compile_fail( "tests/inc/index/compiletime/struct_named_empty.rs" );
       t.compile_fail( "tests/inc/index/compiletime/enum.rs" );
     }
