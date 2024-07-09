@@ -53,6 +53,19 @@ pub( crate ) mod private
     }
   }
 
+  impl< 'a, T > ToStringWith< 'a, WithDebug > for _Ref< 'a, T, WithDebug >
+  where
+    T : 'a,
+    T : fmt::Debug,
+  {
+    /// Converts the type to a string using Debug formatting.
+    #[ inline ]
+    fn to_string_with( &'a self ) -> Cow< 'a, str >
+    {
+      Cow::Owned( format!( "{:?}", self.0 ) )
+    }
+  }
+
   // impl< 'a, T > ToStringWith< 'a, WithDebug > for &T
   // where
   //   T : fmt::Debug,
@@ -67,17 +80,45 @@ pub( crate ) mod private
 
   impl< 'a, T > ToStringWith< 'a, WithDisplay > for T
   where
-    _Ref::< 'a, T, WithDisplay > : _DisplayString< 'a >,
+    // _Ref::< 'a, T, WithDisplay > : _DisplayString< 'a >,
     T : 'a,
-  //   T : fmt::Display,
+    T : fmt::Display,
   {
     /// Converts the type to a string using Display formatting.
     #[ inline ]
     fn to_string_with( &'a self ) -> Cow< 'a, str >
     {
       // ( &Ref2::< '_, T, WithDisplay >::from( self ) )._display_string()
-      Ref::< '_, T, WithDisplay >::from( self )._display_string()
-      // Cow::Owned( format!( "{}", self ) )
+      // Ref::< '_, T, WithDisplay >::from( self )._display_string()
+      Cow::Owned( format!( "{}", self ) )
+    }
+  }
+
+  impl< 'a, T > ToStringWith< 'a, WithDisplay > for _Ref< 'a, T, WithDisplay >
+  where
+    // _Ref::< 'a, T, WithDisplay > : _DisplayString< 'a >,
+    T : 'a,
+    T : fmt::Display,
+  {
+    /// Converts the type to a string using Display formatting.
+    #[ inline ]
+    fn to_string_with( &'a self ) -> Cow< 'a, str >
+    {
+      // ( &Ref2::< '_, T, WithDisplay >::from( self ) )._display_string()
+      // Ref::< '_, T, WithDisplay >::from( self )._display_string()
+      Cow::Owned( format!( "{}", self.0 ) )
+    }
+  }
+
+  impl< 'a, AsStr > ToStringWith< 'a, WithDisplay > for Ref< 'a, AsStr, WithDisplay >
+  where
+    AsStr : AsRef< str >,
+  {
+    /// Converts the type to a string using Display formatting.
+    #[ inline ]
+    fn to_string_with( &'a self ) -> Cow< 'a, str >
+    {
+      Cow::Borrowed( self.0.0.as_ref() )
     }
   }
 
