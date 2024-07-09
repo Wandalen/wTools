@@ -5,8 +5,8 @@ use macro_tools::
   Result,
   AttributeComponent,
   AttributePropertyComponent,
-  AttributePropertyOptionalSingletone,
   AttributePropertyOptionalSyn,
+  AttributePropertyOptionalSingletone,
 };
 
 /// Represents the attributes of a struct. Aggregates all its attributes.
@@ -15,7 +15,7 @@ pub struct ItemAttributes
 {
   /// Attribute for customizing generated code.
   pub index : ItemAttributeIndex,
-  /// Specifies whether to print a sketch of generated `Index` or not.
+  /// Specifies whether to provide a generated code as a hint.
   /// Defaults to `false`, which means no code is printed unless explicitly requested.
   pub debug : AttributePropertyDebug,
 }
@@ -201,7 +201,7 @@ impl syn::parse::Parse for ItemAttributeIndex
 // == Attribute properties
 
 /// Marker type for attribute property of optional identifier that names the setter. It is parsed from inputs
-/// like `name = my_field`.
+/// like `name = field_name`.
 #[ derive( Debug, Default, Clone, Copy ) ]
 pub struct NameMarker;
 
@@ -211,7 +211,7 @@ impl AttributePropertyComponent for NameMarker
 }
 
 /// An optional identifier that names the setter. It is parsed from inputs
-/// like `name = my_field`.
+/// like `name = field_name`.
 pub type AttributePropertyName = AttributePropertyOptionalSyn< syn::Ident, NameMarker >;
 
 // =
@@ -231,7 +231,3 @@ impl AttributePropertyComponent for AttributePropertyDebugMarker
 pub type AttributePropertyDebug = AttributePropertyOptionalSingletone< AttributePropertyDebugMarker >;
 
 // ==
-
-
-
-

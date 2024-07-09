@@ -113,12 +113,20 @@ fn generate_struct_named_fields
   let fields = fields.named.clone();
   let attr_name = &item_attrs.index.name.clone().internal();
 
-  let field_attrs : Vec< &syn::Field > = fields.iter().filter( | field | 
-    {
-      let field_attrs = FieldAttributes::from_attrs( field.attrs.iter() ).unwrap();
-      return field_attrs.index.value( false )
-    } 
-  ).collect();
+  let field_attrs: Vec<&syn::Field> = fields
+    .iter()
+    .filter
+    (
+      |field| 
+      {
+        FieldAttributes::from_attrs( field.attrs.iter() ).map_or
+        ( 
+          false, 
+          | attrs | attrs.index.value( false ) 
+        )
+      }
+    )
+    .collect();
 
 
   let generated = if let Some(attr_name) = attr_name 
@@ -189,7 +197,7 @@ fn generate_struct_named_fields
         #[ inline( always ) ]
         fn index( &self, index : usize ) -> &Self::Output
         {
-           #generated 
+          #generated 
         }
       }
     }
@@ -207,7 +215,10 @@ fn generate_struct_tuple_fields
 -> Result< proc_macro2::TokenStream > 
 {
   let fields = fields.unnamed.clone();
-  let non_empty_attrs : Vec< &syn::Field > = fields.iter().filter( | field | !field.attrs.is_empty() ).collect();
+  let non_empty_attrs : Vec< &syn::Field > = fields
+    .iter()
+    .filter( | field | !field.attrs.is_empty() )
+    .collect();
   
   let generated = match non_empty_attrs.len() 
   {
