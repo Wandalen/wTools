@@ -9,6 +9,7 @@ pub( crate ) mod private
   pub use super::
   {
     aref::{ Ref, _Ref },
+    aref2::{ Ref2 },
   };
 
   use std::
@@ -66,16 +67,35 @@ pub( crate ) mod private
 
   impl< 'a, T > ToStringWith< 'a, WithDisplay > for T
   where
-    T : fmt::Display,
+    _Ref::< 'a, T, WithDisplay > : _DisplayString< 'a >,
+    T : 'a,
+  //   T : fmt::Display,
   {
     /// Converts the type to a string using Display formatting.
     #[ inline ]
     fn to_string_with( &'a self ) -> Cow< 'a, str >
     {
-      ( &Ref::< 'a, T, WithDisplay >::from( self ) )._display_string()
+      // ( &Ref2::< '_, T, WithDisplay >::from( self ) )._display_string()
+      Ref::< '_, T, WithDisplay >::from( self )._display_string()
       // Cow::Owned( format!( "{}", self ) )
     }
   }
+
+  // impl< 'a, T > ToStringWith< 'a, WithDisplay > for T
+  // where
+  //   Ref::< 'a, T, WithDisplay > : _DisplayString< 'a >,
+  //   T : 'a,
+  // //   T : fmt::Display,
+  // {
+  //   /// Converts the type to a string using Display formatting.
+  //   #[ inline ]
+  //   fn to_string_with( &'a self ) -> Cow< 'a, str >
+  //   {
+  //     // ( &Ref2::< '_, T, WithDisplay >::from( self ) )._display_string()
+  //     Ref::< '_, T, WithDisplay >::from( self )._display_string()
+  //     // Cow::Owned( format!( "{}", self ) )
+  //   }
+  // }
 
   trait _DisplayString< 'a >
   {
@@ -94,93 +114,126 @@ pub( crate ) mod private
     }
   }
 
-  // xxx : not only String
+  // xxx
+
+  // impl< 'a, T > _DisplayString< 'a > for Ref2< 'a, T, WithDisplay >
+  // where
+  //   T : fmt::Display,
+  // {
+  //   #[ inline ]
+  //   fn _display_string( self ) -> Cow< 'a, str >
+  //   {
+  //     // panic!( "a" );
+  //     Cow::Owned( format!( "{}", self.0 ) )
+  //   }
+  // }
+
+//   impl< 'a > _DisplayString< 'a > for &Ref2< 'a, String, WithDisplay >
+//   // where
+//     // String : fmt::Display,
+//   {
+//     #[ inline ]
+//     fn _display_string( self ) -> Cow< 'a, str >
+//     {
+//       println!( "_DisplayString for &Ref2< 'a, String, WithDisplay >" );
+//       Cow::Borrowed( self.0 )
+//     }
+//   }
+//
+//   // xxx : not only String
 
   impl< 'a > _DisplayString< 'a > for Ref< 'a, String, WithDisplay >
-  where
-    String : fmt::Display,
+  // where
+    // String : fmt::Display,
   {
     #[ inline ]
     fn _display_string( self ) -> Cow< 'a, str >
     {
-      panic!( "xxx" );
+      println!( "_DisplayString for Ref< 'a, String, WithDisplay >" );
       Cow::Borrowed( self.0.0 )
     }
   }
 
-  impl< 'a > _DisplayString< 'a > for Ref< 'a, &String, WithDisplay >
-  where
-    String : fmt::Display,
-  {
-    #[ inline ]
-    fn _display_string( self ) -> Cow< 'a, str >
-    {
-      panic!( "yyy" );
-      Cow::Borrowed( self.0.0 )
-    }
-  }
-
-  impl< 'a > _DisplayString< 'a > for Ref< 'a, &&String, WithDisplay >
-  where
-    String : fmt::Display,
-  {
-    #[ inline ]
-    fn _display_string( self ) -> Cow< 'a, str >
-    {
-      panic!( "yyy" );
-      Cow::Borrowed( self.0.0 )
-    }
-  }
-
-  impl< 'a > _DisplayString< 'a > for Ref< 'a, str, WithDisplay >
-  where
-    str : fmt::Display,
-  {
-    #[ inline ]
-    fn _display_string( self ) -> Cow< 'a, str >
-    {
-      panic!( "zzz1" );
-      Cow::Borrowed( self.0.0 )
-    }
-  }
-
-  impl< 'a > _DisplayString< 'a > for Ref< 'a, &str, WithDisplay >
-  where
-    str : fmt::Display,
-  {
-    #[ inline ]
-    fn _display_string( self ) -> Cow< 'a, str >
-    {
-      panic!( "zzz2" );
-      Cow::Borrowed( self.0.0 )
-    }
-  }
-
-  // xxx
-  fn _f< 'a, T : 'a >()
-  where
-    Ref::< 'a, T, WithDisplay > : _DisplayString< 'a >,
-  {
-  }
+//   impl< 'a > _DisplayString< 'a > for Ref< 'a, &String, WithDisplay >
+//   // where
+//   //   String : fmt::Display,
+//   {
+//     #[ inline ]
+//     fn _display_string( self ) -> Cow< 'a, str >
+//     {
+//       panic!( "yyy" );
+//       Cow::Borrowed( self.0.0 )
+//     }
+//   }
+//
+//   impl< 'a > _DisplayString< 'a > for Ref< 'a, &&String, WithDisplay >
+//   // where
+//   //   String : fmt::Display,
+//   {
+//     #[ inline ]
+//     fn _display_string( self ) -> Cow< 'a, str >
+//     {
+//       panic!( "yyy" );
+//       Cow::Borrowed( self.0.0 )
+//     }
+//   }
+//
+//   impl< 'a > _DisplayString< 'a > for Ref< 'a, str, WithDisplay >
+//   where
+//     str : fmt::Display,
+//   {
+//     #[ inline ]
+//     fn _display_string( self ) -> Cow< 'a, str >
+//     {
+//       panic!( "zzz1" );
+//       Cow::Borrowed( self.0.0 )
+//     }
+//   }
+//
+//   impl< 'a > _DisplayString< 'a > for Ref< 'a, &str, WithDisplay >
+//   where
+//     str : fmt::Display,
+//   {
+//     #[ inline ]
+//     fn _display_string( self ) -> Cow< 'a, str >
+//     {
+//       panic!( "zzz2" );
+//       Cow::Borrowed( self.0.0 )
+//     }
+//   }
+//
+//   // xxx
+//   fn _f< 'a, T : 'a >()
+//   where
+//     Ref::< 'a, T, WithDisplay > : _DisplayString< 'a >,
+//   {
+//   }
 
   // xxx : clean
 
+  #[ test ]
+  fn borrowed_string_test()
+  {
 
-//   #[ test ]
-//   fn borrowed_string_test()
-//   {
-//
-//     let src = "string".to_string();
-//     let got = ToStringWith::< WithDisplay >::to_string_with( &src );
-//     let exp : Cow< '_, str > = Cow::Borrowed( "string" );
-//     assert_eq!( got, exp );
-//     assert!( matches!( got, Cow::Borrowed( _ ) ) );
-//
-//   }
+    let src = "string".to_string();
+    // let r : Ref< '_, String, WithDisplay > = Ref::from( &src );
+    let got = Ref::from( &src )._display_string();
+    let exp : Cow< '_, str > = Cow::Borrowed( "string" );
+    assert_eq!( got, exp );
+    assert!( matches!( got, Cow::Borrowed( _ ) ) );
+
+    let src = "string".to_string();
+    let got = ToStringWith::< WithDisplay >::to_string_with( &src );
+    let exp : Cow< '_, str > = Cow::Borrowed( "string" );
+    assert_eq!( got, exp );
+    // assert!( matches!( got, Cow::Borrowed( _ ) ) );
+
+  }
 
 }
 
 mod aref;
+mod aref2;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
