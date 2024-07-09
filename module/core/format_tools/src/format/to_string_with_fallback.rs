@@ -23,7 +23,7 @@ pub( crate ) mod private
   pub trait ToStringWithFallback< 'a, How, Fallback >
   {
     /// Converts the type to a string using the specified formatting or a fallback.
-    fn to_string_with_fallback( &'a self ) -> Cow< 'a, str >
+    fn to_string_with_fallback( &self ) -> Cow< 'a, str >
     where
       // Self : 'static,
     ;
@@ -39,7 +39,7 @@ pub( crate ) mod private
   {
     /// Converts the type to a string using the fallback formatting.
     #[ inline ]
-    fn to_string_with_fallback( &'a self ) -> Cow< 'a, str >
+    fn to_string_with_fallback( &self ) -> Cow< 'a, str >
     where
       // Self : 'a,
       // Self : 'static,
@@ -58,7 +58,7 @@ pub( crate ) mod private
   {
     /// Converts the type to a string using the fallback formatting.
     #[ inline ]
-    fn to_string_with_fallback( &'a self ) -> Cow< 'a, str >
+    fn to_string_with_fallback( &self ) -> Cow< 'a, str >
     {
       crate::to_string::Ref::from( self.0.0.0 ).to_string_with()
       // < crate::to_string::Ref< 'a, T, How > as ToStringWith< How > > ::to_string_with( &crate::to_string::Ref::from( self.0.0.0 ) )
@@ -73,7 +73,7 @@ pub( crate ) mod private
   {
     /// Converts the type to a string using the specified formatting.
     #[ inline ]
-    fn to_string_with_fallback( &'a self ) -> Cow< 'a, str >
+    fn to_string_with_fallback( &self ) -> Cow< 'a, str >
     {
       crate::to_string::Ref::from( self.0.0 ).to_string_with()
       // < crate::to_string::Ref< 'a, T, Fallback > as ToStringWith< Fallback > > ::to_string_with( &crate::to_string::Ref::from( self.0.0 ) )
@@ -88,7 +88,7 @@ pub( crate ) mod private
   {
     /// Converts the type to a string using the specified formatting.
     #[ inline ]
-    fn to_string_with_fallback( &'a self ) -> Cow< 'a, str >
+    fn to_string_with_fallback( &self ) -> Cow< 'a, str >
     {
       crate::to_string::Ref::from( self.0 ).to_string_with()
       // < crate::to_string::Ref< 'a, T, Fallback > as ToStringWith< Fallback > > ::to_string_with( &crate::to_string::Ref::from( self.0 ) )
