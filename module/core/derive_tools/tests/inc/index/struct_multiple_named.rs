@@ -3,10 +3,10 @@
 use super::*;
 
 #[ derive( the_module::Index ) ]
+#[ index ( name = b ) ]
 struct StructMultipleNamed< T > 
 {
   a : Vec< T >,
-  #[ index ]
   b : Vec< T >,
 }
 
