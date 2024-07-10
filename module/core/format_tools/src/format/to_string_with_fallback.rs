@@ -60,7 +60,7 @@ pub( crate ) mod private
     #[ inline ]
     fn to_string_with_fallback( &self ) -> Cow< 'a, str >
     {
-      crate::to_string::Ref::from( self.0.0.0 ).to_string_with()
+      crate::to_string::Ref::from( self.0.0.0 ).0.to_string_with()
       // < crate::to_string::Ref< 'a, T, How > as ToStringWith< How > > ::to_string_with( &crate::to_string::Ref::from( self.0.0.0 ) )
     }
   }
@@ -90,7 +90,7 @@ pub( crate ) mod private
     #[ inline ]
     fn to_string_with_fallback( &self ) -> Cow< 'a, str >
     {
-      crate::to_string::Ref::from( self.0 ).to_string_with()
+      crate::to_string::Ref::from( self.0 ).0.to_string_with()
       // < crate::to_string::Ref< 'a, T, Fallback > as ToStringWith< Fallback > > ::to_string_with( &crate::to_string::Ref::from( self.0 ) )
     }
   }
