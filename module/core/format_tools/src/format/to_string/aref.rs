@@ -85,6 +85,8 @@ impl< 'a, T, How > Deref for Ref< 'a, T, How >
 }
 
 impl< 'a, T, How > From< &'a T > for Ref< 'a, T, How >
+where
+  T : ?Sized,
 {
   fn from( src : &'a T ) -> Self
   {
