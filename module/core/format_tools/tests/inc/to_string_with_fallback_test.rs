@@ -218,4 +218,67 @@ fn display_is_not_implemented()
 
 }
 
-// xxx
+//
+
+// #[ test ]
+// fn borrowed_str()
+// {
+//   use the_module::{ to_string, ToStringWith };
+//
+//   let src = "str";
+//   let got = to_string::Ref::< '_, str, WithDisplay >::from( src ).to_string_with();
+//   let exp : Cow< '_, str > = Cow::Borrowed( "str" );
+//   a_id!( got, exp );
+//   a_true!( matches!( got, Cow::Borrowed( _ ) ) );
+//
+//   let src = "str";
+//   let got = ToStringWith::< WithDisplay >::to_string_with( &src );
+//   let exp : Cow< '_, str > = Cow::Borrowed( "str" );
+//   a_id!( got, exp );
+//   a_true!( !matches!( got, Cow::Borrowed( _ ) ) );
+//
+// }
+
+//
+
+#[ test ]
+fn borrowed_str()
+{
+  use the_module::{ to_string, ToStringWith };
+
+  let src = "str";
+  let got = format_tools::to_string_with_fallback!( WithDisplay, WithDebug, &src );
+  let exp : Cow< '_, str > = Cow::Borrowed( "str" );
+  a_id!( got, exp );
+  a_true!( matches!( got, Cow::Borrowed( _ ) ) );
+
+  let src = "str";
+  let got = format_tools::to_string_with_fallback!( WithDebug, WithDisplay, &src );
+  let exp : Cow< '_, str > = Cow::Owned( "\"str\"".to_string() );
+  a_id!( got, exp );
+  a_true!( matches!( got, Cow::Owned( _ ) ) );
+
+}
+
+//
+
+#[ test ]
+fn borrowed_string()
+{
+  use the_module::{ to_string, ToStringWith };
+
+  let src = "string".to_string();
+  let got = format_tools::to_string_with_fallback!( WithDisplay, WithDebug, &src );
+  let exp : Cow< '_, str > = Cow::Borrowed( "string" );
+  a_id!( got, exp );
+  a_true!( matches!( got, Cow::Borrowed( _ ) ) );
+
+  let src = "string".to_string();
+  let got = format_tools::to_string_with_fallback!( WithDebug, WithDisplay, &src );
+  let exp : Cow< '_, str > = Cow::Owned( "\"string\"".to_string() );
+  a_id!( got, exp );
+  a_true!( matches!( got, Cow::Owned( _ ) ) );
+
+}
+
+//

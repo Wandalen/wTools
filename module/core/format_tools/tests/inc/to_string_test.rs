@@ -74,11 +74,11 @@ fn borrowed_str()
   a_id!( got, exp );
   a_true!( matches!( got, Cow::Borrowed( _ ) ) );
 
-  // let src = "str";
-  // let got = ToStringWith::< WithDisplay >::to_string_with( &src );
-  // let exp : Cow< '_, str > = Cow::Borrowed( "str" );
-  // a_id!( got, exp );
-  // a_true!( matches!( got, Cow::Borrowed( _ ) ) );
+  let src = "str";
+  let got = ToStringWith::< WithDisplay >::to_string_with( &src );
+  let exp : Cow< '_, str > = Cow::Borrowed( "str" );
+  a_id!( got, exp );
+  a_true!( !matches!( got, Cow::Borrowed( _ ) ) );
 
 }
 
@@ -95,10 +95,10 @@ fn borrowed_string()
   a_id!( got, exp );
   a_true!( matches!( got, Cow::Borrowed( _ ) ) );
 
-  // let src = "string".to_string();
-  // let got = ToStringWith::< WithDisplay >::to_string_with( &src );
-  // let exp : Cow< '_, str > = Cow::Borrowed( "string" );
-  // a_id!( got, exp );
-  // a_true!( matches!( got, Cow::Borrowed( _ ) ) );
+  let src = "string".to_string();
+  let got = ToStringWith::< WithDisplay >::to_string_with( &src );
+  let exp : Cow< '_, str > = Cow::Borrowed( "string" );
+  a_id!( got, exp );
+  a_true!( !matches!( got, Cow::Borrowed( _ ) ) );
 
 }
