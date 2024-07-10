@@ -3,8 +3,8 @@ fn index()
 {
   let x = StructMultipleNamed
   { 
-    a: vec![ 12, 22 ], 
-    b: vec![ 33, 55 ] 
+    a : vec![ 12, 22 ], 
+    b : vec![ 33, 55 ] 
   };
   let v = vec![ 33, 55 ];
   let exp =  ( v[ 0 ], v[ 1 ] );
