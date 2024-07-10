@@ -97,7 +97,37 @@ fn generate_struct
   }
 }
 
-
+/// Generates `Index` implementation for named structs
+///
+/// # Example
+///
+/// ## Input
+/// # use derive_tools_meta::Index;
+/// #[ derive( Index ) ]
+/// pub struct IsTransparent
+/// {
+///   #[ index ]
+///   value : Vec< u8 >,
+/// }
+///
+/// ## Output
+/// ```rust
+/// pub struct IsTransparent
+/// {
+///   value : Vec< u8 >,
+/// }
+/// #[ automatically_derived ]
+/// impl ::core::ops::Index< usize > for IsTransparent
+/// {
+///   type Output = u8;
+///   #[ inline( always ) ]
+///   fn index( &self, index : usize ) -> &Self::Output
+///   {
+///     &self.value[ index ] 
+///   }
+/// }
+/// ```
+///
 fn generate_struct_named_fields
 (
   item_name : &syn::Ident,
@@ -204,6 +234,37 @@ fn generate_struct_named_fields
   )
 }
 
+/// Generates `Index` implementation for tuple structs
+///
+/// # Example
+///
+/// ## Input
+/// # use derive_tools_meta::Index;
+/// #[ derive( Index ) ]
+/// pub struct IsTransparent
+/// (
+///   #[ index ]
+///   Vec< u8 >
+/// );
+///
+/// ## Output
+/// ```rust
+/// pub struct IsTransparent
+/// (
+///   Vec< u8 >
+/// );
+/// #[ automatically_derived ]
+/// impl ::core::ops::Index< usize > for IsTransparent
+/// {
+///   type Output = u8;
+///   #[ inline( always ) ]
+///   fn index( &self, index : usize ) -> &Self::Output
+///   {
+///     &self.0[ index ] 
+///   }
+/// }
+/// ```
+///
 fn generate_struct_tuple_fields
 (
   item_name : &syn::Ident,
