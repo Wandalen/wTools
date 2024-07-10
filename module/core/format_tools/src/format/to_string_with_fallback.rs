@@ -32,10 +32,10 @@ pub( crate ) mod private
   impl< 'a, T, How, Fallback > ToStringWithFallback< 'a, How, Fallback >
   for Ref< 'a, T, How, Fallback >
   where
-    T : ToStringWith< 'a, How >,
+    T : ToStringWith< 'a, How > + ?Sized,
     crate::to_string::Ref< 'a, T, How > : crate::to_string::ToStringWith< 'a, How >,
-    How : 'static,
-    Fallback : 'static,
+    // How : 'static,
+    // Fallback : 'static,
   {
     /// Converts the type to a string using the fallback formatting.
     #[ inline ]
@@ -53,7 +53,7 @@ pub( crate ) mod private
   impl< 'a, T, How, Fallback > ToStringWithFallback< 'a, How, Fallback >
   for Ref2< 'a, T, How, Fallback >
   where
-    T : ToStringWith< 'a, How >,
+    T : ToStringWith< 'a, How > + ?Sized,
     crate::to_string::Ref2< 'a, T, How > : crate::to_string::ToStringWith< 'a, How >,
   {
     /// Converts the type to a string using the fallback formatting.
@@ -68,7 +68,7 @@ pub( crate ) mod private
   impl< 'a, T, How, Fallback > ToStringWithFallback< 'a, How, Fallback >
   for Ref3< 'a, T, How, Fallback >
   where
-    T : ToStringWith< 'a, Fallback >,
+    T : ToStringWith< 'a, Fallback > + ?Sized,
     crate::to_string::Ref< 'a, T, Fallback > : crate::to_string::ToStringWith< 'a, Fallback >,
   {
     /// Converts the type to a string using the specified formatting.
@@ -83,7 +83,7 @@ pub( crate ) mod private
   impl< 'a, T, How, Fallback > ToStringWithFallback< 'a, How, Fallback >
   for Ref4< 'a, T, How, Fallback >
   where
-    T : ToStringWith< 'a, Fallback >,
+    T : ToStringWith< 'a, Fallback > + ?Sized,
     crate::to_string::Ref2< 'a, T, Fallback > : crate::to_string::ToStringWith< 'a, Fallback >,
   {
     /// Converts the type to a string using the specified formatting.

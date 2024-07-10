@@ -12,6 +12,7 @@ pub struct Ref< 'a, T, How, Fallback >
 ( pub Ref2< 'a, T, How, Fallback > )
 where
   &'a T : Copy,
+  T : ?Sized,
 ;
 
 
@@ -22,6 +23,7 @@ pub struct Ref2< 'a, T, How, Fallback >
 ( pub Ref3< 'a, T, How, Fallback > )
 where
   &'a T : Copy,
+  T : ?Sized,
 ;
 
 /// Internal reference wrapper to make into string conversion with fallback.
@@ -31,6 +33,7 @@ pub struct Ref3< 'a, T, How, Fallback >
 ( pub Ref4< 'a, T, How, Fallback > )
 where
   &'a T : Copy,
+  T : ?Sized,
 ;
 
 /// Internal reference wrapper to make into string conversion with fallback.
@@ -41,6 +44,7 @@ pub struct Ref4< 'a, T, How, Fallback >
 where
   ::core::marker::PhantomData< fn() -> ( How, Fallback ) > : Copy,
   &'a T : Copy,
+  T : ?Sized,
 ;
 
 impl< 'a, T, How, Fallback > Ref< 'a, T, How, Fallback >
