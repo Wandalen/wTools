@@ -3,8 +3,8 @@ use core::ops::Index;
 #[ allow( dead_code ) ]
 struct StructMultipleNamed< T >
 {
-  a: Vec< T >,
-  b: Vec< T >,
+  a : Vec< T >,
+  b : Vec< T >,
 }
 
 impl< T > Index< usize > for StructMultipleNamed< T >

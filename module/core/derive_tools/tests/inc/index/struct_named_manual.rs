@@ -3,7 +3,7 @@ use core::ops::Index;
 #[ allow( dead_code ) ]
 struct StructNamed< T >
 {
-  a: Vec< T >
+  a : Vec< T >
 }
 
 impl< T > Index< usize > for StructNamed< T >
