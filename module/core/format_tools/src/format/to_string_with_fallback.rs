@@ -178,8 +178,8 @@ pub( crate ) mod private
     ( $how : ty, $fallback : ty, $src : expr )
     =>
     {{
-      use format_tools::ToStringWithFallback;
-      format_tools
+      use $crate::ToStringWithFallback;
+      $crate
       ::to_string_with_fallback
       ::Ref
       ::< '_, _, $how, $fallback >

@@ -31,14 +31,14 @@ pub struct TestObject
 use the_module::to_string_with_fallback;
 use the_module::to_string_with_fallback::ToStringWithFallback;
 
-impl< 'a, How > Fields< 'a, &'static str, MaybeAs< 'a, str, How > >
+impl< 'a > Fields< 'a, &'static str, MaybeAs< 'a, str, Display > >
 for TestObject
-where
-  How : Clone + Copy + 'static,
+// where
+  // How : Clone + Copy + 'static,
 {
-  fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, str, How > ) >
+  fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, str, Display > ) >
   {
-    let mut dst : Vec< ( &'static str, MaybeAs< 'a, str, How > ) > = Vec::new();
+    let mut dst : Vec< ( &'static str, MaybeAs< 'a, str, Display > ) > = Vec::new();
 
     #[ macro_export( local_inner_macros ) ]
     macro_rules! into_maybe_as
@@ -48,14 +48,25 @@ where
       )
       =>
       {{
-        format_tools::MaybeAs::< 'a, str, How >::from
+        format_tools::MaybeAs::< 'a, str, Display >::from
         (
-          format_tools::to_string_with_fallback!( WithDisplay, WithDebug, $src )
+          format_tools::to_string_with_fallback!( Display, WithDebug, $src )
         )
       }};
     }
 
-    panic!( "xxx2 : continue" );
+//     // panic!( "xxx2 : continue" );
+//
+//     println!( "how : {:?}", How::default() );
+//
+//     dst.push
+//     ((
+//       "id",
+//       format_tools::MaybeAs::< 'a, str, How >::from
+//       (
+//         format_tools::to_string_with_fallback!( How, WithDebug, &self.id )
+//       )
+//     ));
 
     dst.push( ( "id", into_maybe_as!( &self.id ) ) );
     dst.push( ( "created_at", into_maybe_as!( &self.created_at ) ) );
@@ -114,10 +125,10 @@ fn basic_with_debug()
     ),
   };
 
-  let fields : Vec< ( &str, MaybeAs< '_, str, WithDisplay > ) > =
-  Fields::< '_, &'static str, MaybeAs< '_, str, WithDisplay > >::fields( &test_object ).collect();
+  let fields : Vec< ( &str, MaybeAs< '_, str, WithDebug > ) > =
+  Fields::< '_, &'static str, MaybeAs< '_, str, WithDebug > >::fields( &test_object ).collect();
 
-  let fields : Vec< ( &str, MaybeAs< '_, str, WithDisplay > ) > = test_object.fields().collect();
+  let fields : Vec< ( &str, MaybeAs< '_, str, WithDebug > ) > = test_object.fields().collect();
 
   assert_eq!( fields.len(), 4 );
   assert!( !fields[ 0 ].1.is_borrowed() );
