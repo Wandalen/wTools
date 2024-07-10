@@ -34,52 +34,11 @@ use the_module::to_string_with_fallback::ToStringWithFallback;
 impl< 'a, How > Fields< 'a, &'static str, MaybeAs< 'a, str, How > >
 for TestObject
 where
-  // MaybeAs< 'a, str, How > : Clone, // xxx
   How : Clone + Copy + 'static,
-
-  // String : ToStringWith< 'a, How >,
-  // i64 : ToStringWith< 'a, How >,
-  // Vec< String > : ToStringWith< 'a, How >,
-  // Vec< HashMap< String, String > > : ToStringWith< 'a, How >,
-
-  // to_string_with_fallback::Ref< 'a, String, How, WithDebug > : ToStringWithFallback< 'a, How, WithDebug > + 'a,
-  // to_string_with_fallback::Ref< 'a, i64, How, WithDebug > : ToStringWithFallback< 'a, How, WithDebug > + 'a,
-  // to_string_with_fallback::Ref< 'a, Vec< String >, How, WithDebug > : ToStringWithFallback< 'a, How, WithDebug > + 'a,
-  // to_string_with_fallback::Ref< 'a, Vec< HashMap< String, String > >, How, WithDebug > : ToStringWithFallback< 'a, How, WithDebug > + 'a,
-
 {
   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, str, How > ) >
   {
-
     let mut dst : Vec< ( &'static str, MaybeAs< 'a, str, How > ) > = Vec::new();
-
-    // fn from< 'a, V, How >( src : &'a V ) -> MaybeAs< 'a, str, How >
-    // where
-    //   How : Clone + Copy + 'static,
-    //   // V : ToStringWith< 'a, How > + 'a,
-    //   // to_string_with_fallback::Ref< 'a, V, How, WithDebug > : ToStringWithFallback< 'a, How, WithDebug > + 'a,
-    // {
-    //   MaybeAs::< 'a, str, How >::from
-    //   (
-    //     to_string_with_fallback!( How, WithDebug, src )
-    //     // < V as ToStringWith< 'a, How > >::to_string_with( src )
-    //   )
-    // }
-
-//     fn add< 'a, V, How >
-//     (
-//       dst : &mut Vec< ( &'static str, MaybeAs< 'a, str, How > ) >,
-//       key : &'static str,
-//       src : &'a V
-//     )
-//     where
-//       How : Clone + Copy + 'static,
-//       // V : ToStringWith< 'a, How > + 'a,
-//       to_string_with_fallback::Ref< 'a, V, How, WithDebug > : ToStringWithFallback< 'a, How, WithDebug > + 'a,
-//     {
-//       let val = from( src );
-//       dst.push( ( key, val ) );
-//     }
 
     #[ macro_export( local_inner_macros ) ]
     macro_rules! into_maybe_as
@@ -91,10 +50,12 @@ where
       {{
         format_tools::MaybeAs::< 'a, str, How >::from
         (
-          format_tools::to_string_with_fallback!( How, WithDebug, $src )
+          format_tools::to_string_with_fallback!( WithDisplay, WithDebug, $src )
         )
       }};
     }
+
+    panic!( "xxx2 : continue" );
 
     dst.push( ( "id", into_maybe_as!( &self.id ) ) );
     dst.push( ( "created_at", into_maybe_as!( &self.created_at ) ) );
@@ -108,24 +69,6 @@ where
     {
       dst.push( ( "tools", MaybeAs::none() ) );
     }
-
-    // dst.push( ( "id", MaybeAs::< 'a, str, How >::from( to_string_with_fallback!( How, WithDebug, &self.id ) ) ) );
-
-    // dst.push( ( "id", from( &self.id ) ) );
-
-//     // add( &mut dst, "id", &self.id );
-//     // dst.push( ( "id", MaybeAs::< 'a, String, How >::from( &self.id ) ) );
-//     add( &mut dst, "created_at", &self.created_at );
-//     add( &mut dst, "file_ids", &self.file_ids );
-//
-//     if let Some( tools ) = &self.tools
-//     {
-//       add( &mut dst, "tools", tools );
-//     }
-//     else
-//     {
-//       dst.push( ( "tools", MaybeAs::none() ) );
-//     }
 
     dst.into_iter()
   }
@@ -171,10 +114,10 @@ fn basic_with_debug()
     ),
   };
 
-  let fields : Vec< ( &str, MaybeAs< '_, str, WithDebug > ) > =
-  Fields::< '_, &'static str, MaybeAs< '_, str, WithDebug > >::fields( &test_object ).collect();
+  let fields : Vec< ( &str, MaybeAs< '_, str, WithDisplay > ) > =
+  Fields::< '_, &'static str, MaybeAs< '_, str, WithDisplay > >::fields( &test_object ).collect();
 
-  let fields : Vec< ( &str, MaybeAs< '_, str, WithDebug > ) > = test_object.fields().collect();
+  let fields : Vec< ( &str, MaybeAs< '_, str, WithDisplay > ) > = test_object.fields().collect();
 
   assert_eq!( fields.len(), 4 );
   assert!( !fields[ 0 ].1.is_borrowed() );
@@ -214,15 +157,15 @@ fn basic_with_display()
   let fields : Vec< ( &str, MaybeAs< '_, str, WithDisplay > ) > =
   Fields::< '_, &'static str, MaybeAs< '_, str, WithDisplay > >::fields( &test_object ).collect();
 
-  let fields : Vec< ( &str, MaybeAs< '_, str, WithDisplay > ) > = test_object.fields().collect();
+  // let fields : Vec< ( &str, MaybeAs< '_, str, WithDisplay > ) > = test_object.fields().collect();
 
   assert_eq!( fields.len(), 4 );
   assert!( fields[ 0 ].1.is_borrowed() );
   assert!( !fields[ 1 ].1.is_borrowed() );
   assert!( !fields[ 2 ].1.is_borrowed() );
   assert!( !fields[ 3 ].1.is_borrowed() );
-  assert_eq!( fields[ 0 ], ( "id", Some( Cow::Borrowed( "\"12345\"" ) ).into() ) );
-  assert_eq!( fields[ 0 ], ( "id", Some( Cow::Owned( "\"12345\"".to_string() ) ).into() ) );
+  assert_eq!( fields[ 0 ], ( "id", Some( Cow::Borrowed( "12345" ) ).into() ) );
+  assert_eq!( fields[ 0 ], ( "id", Some( Cow::Owned( "12345".to_string() ) ).into() ) );
   assert_eq!( fields[ 1 ], ( "created_at", Some( Cow::Owned( "1627845583".to_string() ) ).into() ) );
   assert_eq!( fields[ 2 ], ( "file_ids", Some( Cow::Owned( "[\"file1\", \"file2\"]".to_string() ) ).into() ) );
   assert_eq!( fields[ 3 ].0, "tools" );
