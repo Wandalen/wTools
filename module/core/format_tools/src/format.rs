@@ -5,6 +5,83 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+
+  #[ macro_export( local_inner_macros ) ]
+  macro_rules! field_with_key
+  {
+    (
+      $src : expr,
+      $name : ident $(,)?
+    )
+    =>
+    {{
+      (
+        ::core::stringify!( $name ),
+        $crate::MaybeAs::< 'a, str, WithDisplay >::from
+        (
+          $crate::to_string_with_fallback!( WithDisplay, WithDebug, $src )
+        ),
+      )
+    }};
+  }
+
+  #[ macro_export( local_inner_macros ) ]
+  macro_rules! field
+  {
+
+    ( & $path:ident.$( $field:ident )+ ) =>
+    {{
+      field!( # ( & $path . ) ( $( $field )+ ) )
+    }};
+
+    ( $path:ident.$( $field:ident )+ ) =>
+    {{
+      field!( # ( $path . ) ( $( $field )+ ) )
+    }};
+
+    ( & $field:ident ) =>
+    {{
+      field!( # () ( $field ) )
+    }};
+
+    ( $field:ident ) =>
+    {{
+      field!( # () ( $field ) )
+    }};
+
+    // private
+
+    (
+      #
+      ( $( $prefix:tt )* )
+      ( $name:ident.$( $field:ident )+ )
+    ) =>
+    {{
+      field!( # ( $( $prefix )* $name . ) ( $( $field )+ ) )
+    }};
+
+    (
+      #
+      ( $( $prefix:tt )* )
+      ( $name:ident )
+    ) =>
+    {{
+      field!( # # ( $( $prefix )* ) ( $name ) )
+    }};
+
+    (
+      # #
+      ( $( $prefix:tt )* )
+      ( $name:ident )
+    ) =>
+    {{
+      $crate::field_with_key!( $( $prefix )* $name, $name )
+    }};
+
+  }
+
+  pub use field_with_key;
+  pub use field;
 }
 
 pub mod to_string;
@@ -27,26 +104,16 @@ pub mod own
 {
   use super::*;
 
-  // xxx : add features
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::to_string::orphan::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::to_string_with_fallback::orphan::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::wrapper::orphan::*;
-
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::as_table::orphan::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::print::orphan::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::table::orphan::*;
+  pub use super::
+  {
+    to_string::orphan::*,
+    to_string_with_fallback::orphan::*,
+    wrapper::orphan::*,
+    as_table::orphan::*,
+    print::orphan::*,
+    table::orphan::*,
+  };
 
 }
 
@@ -55,8 +122,16 @@ pub mod own
 pub mod orphan
 {
   use super::*;
+
   #[ doc( inline ) ]
   pub use exposed::*;
+
+  #[ doc( inline ) ]
+  pub use private::
+  {
+    field_with_key,
+    field,
+  };
 }
 
 /// Exposed namespace of the module.
@@ -66,24 +141,15 @@ pub mod exposed
   use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::to_string::exposed::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::to_string_with_fallback::exposed::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::wrapper::exposed::*;
-
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::as_table::exposed::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::print::exposed::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::table::exposed::*;
+  pub use super::
+  {
+    to_string::exposed::*,
+    to_string_with_fallback::exposed::*,
+    wrapper::exposed::*,
+    as_table::exposed::*,
+    print::exposed::*,
+    table::exposed::*,
+  };
 
 }
 
@@ -94,23 +160,14 @@ pub mod prelude
   use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::to_string::prelude::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::to_string_with_fallback::prelude::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::wrapper::prelude::*;
-
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::as_table::prelude::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::print::prelude::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::table::prelude::*;
+  pub use super::
+  {
+    to_string::prelude::*,
+    to_string_with_fallback::prelude::*,
+    wrapper::prelude::*,
+    as_table::prelude::*,
+    print::prelude::*,
+    table::prelude::*,
+  };
 
 }

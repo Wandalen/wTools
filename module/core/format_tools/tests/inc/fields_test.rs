@@ -9,6 +9,7 @@ use the_module::
   ToStringWith,
   WithDebug,
   WithDisplay,
+  field,
 };
 
 use std::
@@ -33,48 +34,18 @@ use the_module::to_string_with_fallback::ToStringWithFallback;
 
 impl< 'a > Fields< 'a, &'static str, MaybeAs< 'a, str, WithDisplay > >
 for TestObject
-// where
-  // How : Clone + Copy + 'static,
 {
   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, str, WithDisplay > ) >
   {
     let mut dst : Vec< ( &'static str, MaybeAs< 'a, str, WithDisplay > ) > = Vec::new();
 
-    #[ macro_export( local_inner_macros ) ]
-    macro_rules! into_maybe_as
-    {
-      (
-        $src : expr
-      )
-      =>
-      {{
-        format_tools::MaybeAs::< 'a, str, WithDisplay >::from
-        (
-          format_tools::to_string_with_fallback!( WithDisplay, WithDebug, $src )
-        )
-      }};
-    }
-
-//     // panic!( "xxx2 : continue" );
-//
-//     println!( "how : {:?}", How::default() );
-//
-//     dst.push
-//     ((
-//       "id",
-//       format_tools::MaybeAs::< 'a, str, How >::from
-//       (
-//         format_tools::to_string_with_fallback!( How, WithDebug, &self.id )
-//       )
-//     ));
-
-    dst.push( ( "id", into_maybe_as!( &self.id ) ) );
-    dst.push( ( "created_at", into_maybe_as!( &self.created_at ) ) );
-    dst.push( ( "file_ids", into_maybe_as!( &self.file_ids ) ) );
+    dst.push( field!( &self.id ) );
+    dst.push( field!( &self.created_at ) );
+    dst.push( field!( &self.file_ids ) );
 
     if let Some( tools ) = &self.tools
     {
-      dst.push( ( "tools", into_maybe_as!( tools ) ) );
+      dst.push( field!( tools ) );
     }
     else
     {
@@ -222,5 +193,3 @@ fn test_vec_fields()
   assert_eq!( fields[ 1 ].0, 1 );
 
 }
-
-// xxx : fix the test
