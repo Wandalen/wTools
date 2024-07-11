@@ -143,11 +143,11 @@ fn generate_struct_named_fields
   let fields = fields.named.clone();
   let attr_name = &item_attrs.index.name.clone().internal();
 
-  let field_attrs: Vec<&syn::Field> = fields
+  let field_attrs: Vec< &syn::Field > = fields
     .iter()
     .filter
     (
-      |field| 
+      | field | 
       {
         FieldAttributes::from_attrs( field.attrs.iter() ).map_or
         ( 
@@ -187,7 +187,7 @@ fn generate_struct_named_fields
           Some( field ) => 
           field.ident.as_ref().unwrap(),
           None => 
-          unimplemented!("IndexMut not implemented for Unit"),
+          unimplemented!( "IndexMut not implemented for Unit" ),
         };
           
         Ok
@@ -322,8 +322,8 @@ fn generate_struct_tuple_fields
     (
       syn::Error::new_spanned
       ( 
-       &fields, 
-      "Only one field can include #[ index ] derive macro" 
+        &fields, 
+        "Only one field can include #[ index ] derive macro" 
       )
     ),
   }?;
