@@ -14,6 +14,7 @@
     feature = "derive_deref_mut",
     feature = "derive_from",
     feature = "derive_index",
+    feature = "derive_index_mut",
     feature = "derive_inner_from",
     feature = "derive_variadic_from",
     feature = "derive_phantom"
@@ -31,6 +32,7 @@ mod derive;
 //     feature = "derive_deref_mut",
 //     feature = "derive_from",
 //     feature = "derive_index",
+//     feature = "derive_index_mut",
 //     feature = "derive_inner_from",
 //     feature = "derive_variadic_from",
 //     feature = "derive_phantom"
@@ -630,3 +632,75 @@ pub fn derive_index( input : proc_macro::TokenStream ) -> proc_macro::TokenStrea
     Err( err ) => err.to_compile_error().into(),
   }
 }
+
+///
+/// Provides an automatic [IndexMut](core::ops::IndexMut) trait implementation when-ever it's possible.
+///
+/// This macro simplifies the indexing syntax of struct type.
+///
+/// ## Example Usage
+//
+/// Instead of manually implementing `IndexMut< T >` for `IsTransparent`:
+///
+/// ```rust
+/// use core::ops::{ Index, IndexMut };
+/// pub struct IsTransparent< T >
+/// {
+///     a : Vec< T >,
+/// }
+///
+/// impl< T > Index< usize > for IsTransparent< T > 
+/// {
+///   type Output = T;
+///
+///   #[ inline( always ) ]
+///   fn index( &self, index : usize ) -> &Self::Output 
+///   {
+///     &self.a[ index ]
+///   }
+/// }
+///
+/// impl< T > IndexMut< usize > for IsTransparent< T >
+/// {
+///   fn index_mut( &mut self, index : usize ) -> &mut Self::Output 
+///   {
+///     &mut self.a[ index ]
+///   }
+/// }
+/// ```
+///
+/// Use `#[ index_mut ]` on field or `#[ index_mut( name = field_name )]` on named items to automatically generate the implementation:
+///
+/// ```rust
+/// use derive_tools_meta::*;
+/// #[derive( Index, IndexMut )]
+/// pub struct IsTransparent< T > 
+/// { 
+///   #[ index ]
+///   #[ index_mut ]
+///   a : Vec< T >  
+/// };
+/// ```
+///
+
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_index_mut" ) ]
+#[ proc_macro_derive
+( 
+  IndexMut, 
+  attributes
+  ( 
+    debug, // item 
+    index_mut, // field
+  ) 
+)]
+pub fn derive_index_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+{
+  let result = derive::index_mut::index_mut( input );
+  match result
+  {
+    Ok( stream ) => stream.into(),
+    Err( err ) => err.to_compile_error().into(),
+  }
+}
+

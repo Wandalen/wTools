@@ -2,10 +2,11 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-#[ derive( the_module::Index ) ]
+#[ derive( the_module::Index, the_module::IndexMut ) ]
 struct StructNamed< T > 
 {
-  // #[ index ]
+  #[ index ]
+  #[ index_mut ]
   a : Vec< T >,
 }
 

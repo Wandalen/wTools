@@ -338,12 +338,12 @@ mod index_mut_tests
 {
   #[ allow( unused_imports ) ]
   use super::*;
-  // mod struct_named; 
-  // mod struct_multiple_named; 
+  mod struct_named; 
+  mod struct_multiple_named; 
   mod struct_named_manual;
   mod struct_multiple_named_manual;
-  // mod struct_tuple;
-  // mod struct_multiple_tuple;
+  mod struct_tuple;
+  mod struct_multiple_tuple;
   mod struct_tuple_manual;
   mod struct_multiple_tuple_manual;
 } 

@@ -20,6 +20,8 @@ pub mod deref_mut;
 pub mod from;
 #[ cfg( feature = "derive_index" ) ]
 pub mod index;
+#[ cfg( feature = "derive_index_mut" ) ]
+pub mod index_mut;
 #[ cfg( feature = "derive_inner_from" ) ]
 pub mod inner_from;
 #[ cfg( feature = "derive_new" ) ]
