@@ -159,60 +159,56 @@ fn generate_struct_named_fields
     .collect();
 
 
-  let generated = if let Some(attr_name) = attr_name 
+  let generated = if let Some( attr_name ) = attr_name 
   {
-    qt! 
-    {
-      &self.#attr_name[ index ]
-    }
+    Ok
+    (
+      qt! 
+      {
+        &self.#attr_name[ index ]
+      }
+    )
   } 
   else 
   {
     match field_attrs.len() 
     {
-      0 =>
-      { 
-        return Err
-        (
-          syn::Error::new_spanned
-          ( 
-            &fields, 
-            "No attributes specified. You must to specify #[ index ] for fields or name for #[ index ( name = field_name ) ] for item derive macro" 
-          )
-        );
-      },
-      1 => field_attrs.iter().map
-      (
-        | field | 
-        {
-          let field_name = &field.ident;
-    
-          if !field.attrs.is_empty() 
-          {
-            qt! 
-            {
-              &self.#field_name[ index ]
-            }
-          }
-          else 
-          {
-            qt!{ }
-          }
-        }
-      ).collect(),  
-      _ => 
+      0 | 1 =>
       {
-        return Err
+        let field_name = 
+        match field_attrs
+          .first()
+          .copied()
+          .or_else
+          (
+            || fields.first()
+          ) 
+        {
+          Some( field ) => 
+          field.ident.as_ref().unwrap(),
+          None => 
+          unimplemented!("IndexMut not implemented for Unit"),
+        };
+          
+        Ok
         (
-          syn::Error::new_spanned
-          ( 
-            &fields, 
-            "Only one field can include #[ index ] derive macro" 
-          )
-        );
+          qt! 
+          {
+            &self.#field_name[ index ]
+          }
+        )
       }
+      _ => 
+      Err
+      (
+        syn::Error::new_spanned
+        ( 
+          &fields, 
+          "Only one field can include #[ index ] derive macro" 
+        )
+      ),
     }
-  };
+  }?;
 
   Ok
   (
@@ -284,46 +280,53 @@ fn generate_struct_tuple_fields
   let generated = match non_empty_attrs.len() 
   {
     0 =>
-    { 
-      return Err
+    {
+      Ok
       (
-        syn::Error::new_spanned
-        ( 
-          &fields, 
-          "No attributes specified. You must to specify #[ index ] for fields or name for #[ index ( name = field_name ) ] for item derive macro" 
-        )
-      );
+        qt! 
+        {
+          &self.0[ index ] 
+        }
+      )
     },
-    1 => fields.iter().enumerate().map
+    1 => 
+    fields
+      .iter()
+      .enumerate()
+      .map
     (
       | ( i, field ) | 
       { 
         let i = syn::Index::from( i );  
         if !field.attrs.is_empty() 
         {
+          Ok
+          (
           qt! 
-          {
-            &self.#i[ index ] 
-          }
+            {
+              &self.#i[ index ] 
+            }
+          )
         } 
         else 
         {
-          qt!{ }
+          Ok
+          (
+            qt!{ }
+          )
         }
       }
-    ),  
+    ).collect(),  
     _ => 
-    {
-      return Err
-      (
-        syn::Error::new_spanned
-        ( 
-          &fields, 
-          "Only one field can include #[ index ] derive macro" 
-        )
-      );
-    }
-  };
+    Err
+    (
+      syn::Error::new_spanned
+      ( 
+       &fields, 
+      "Only one field can include #[ index ] derive macro" 
+      )
+    ),
+  }?;
   
   Ok
   (
@@ -338,7 +341,7 @@ fn generate_struct_tuple_fields
         #[ inline( always ) ]
         fn index( &self, index : usize ) -> &Self::Output
         {
-          #( #generated )*
+          #generated 
         }
       }
     }
