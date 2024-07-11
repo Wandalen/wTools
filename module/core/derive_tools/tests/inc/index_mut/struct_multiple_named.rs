@@ -2,8 +2,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-#[ derive( the_module::Index, the_module::IndexMut ) ]
-#[ index_mut( name = b) ]
+#[ derive( the_module::IndexMut ) ]
 struct StructMultipleNamed< T > 
 {
   a : Vec< T >,

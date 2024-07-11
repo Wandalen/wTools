@@ -8,10 +8,10 @@ use macro_tools::
   Result
 };
 
-#[ path = "index_mut/item_attributes.rs" ]
+#[ path = "index/item_attributes.rs" ]
 mod item_attributes;
 use item_attributes::*;
-#[ path = "index_mut/field_attributes.rs" ]
+#[ path = "index/field_attributes.rs" ]
 mod field_attributes;
 use field_attributes::*;
 
@@ -111,7 +111,7 @@ fn generate_struct_named_fields
 {
 
   let fields = fields.named.clone();
-  let attr_name = &item_attrs.index_mut.name.clone().internal();
+  let attr_name = &item_attrs.index.name.clone().internal();
 
   let field_attrs: Vec<&syn::Field> = fields
     .iter()
@@ -122,72 +122,98 @@ fn generate_struct_named_fields
         FieldAttributes::from_attrs( field.attrs.iter() ).map_or
         ( 
           false, 
-          | attrs | attrs.index_mut.value( false ) 
+          | attrs | attrs.index.value( false ) 
         )
       }
     )
     .collect();
 
-
-  let generated = if let Some(attr_name) = attr_name 
+  let generate = | is_mut : bool | 
+  -> Result< proc_macro2::TokenStream >
   {
-    qt! 
+    if let Some( attr_name ) = attr_name 
     {
-      &mut self.#attr_name[ index ]
-    }
-  } 
-  else 
-  {
-    match field_attrs.len() 
-    {
-      0 =>
-      { 
-        return Err
-        (
-          syn::Error::new_spanned
-          ( 
-            &fields, 
-            "No attributes specified. You must to specify #[ index_mut ] for fields or name for #[ index_mut ( name = field_name ) ] for item derive macro" 
-          )
-        );
-      },
-      1 => field_attrs.iter().map
+      Ok
       (
-        | field | 
+        qt! 
         {
-          let field_name = &field.ident;
-    
-          if !field.attrs.is_empty() 
-          {
-            qt! 
-            {
-              &mut self.#field_name[ index ]
-            }
-          }
-          else 
-          {
-            qt!{ }
-          }
+          &self.#attr_name[index]
         }
-      ).collect(),  
-      _ => 
+      )
+    } 
+    else 
+    {
+      match field_attrs.len() 
       {
-        return Err
+        0 | 1 => 
+        {
+          let field_name = 
+            match field_attrs
+              .first()
+              .map(|&field| field)
+              .or_else
+              (
+                || fields.first()
+              ) 
+            {
+              Some( field ) => 
+              field.ident.as_ref().unwrap(),
+              None => 
+              unimplemented!("IndexMut not implemented for Unit"),
+            };
+          
+          Ok
+          (
+            if is_mut 
+            {
+              qt! 
+              {
+                &mut self.#field_name[ index ]
+              }
+            } 
+            else 
+            {
+              qt! 
+              {
+                &self.#field_name[ index ]
+              }
+            }
+          )
+        }
+        _ => 
+        Err
         (
           syn::Error::new_spanned
-          ( 
-            &fields, 
-            "Only one field can include #[ index_mut ] derive macro" 
+          (
+            &fields,
+            "Only one field can include #[ index ] derive macro",
           )
-        );
+        ),
       }
-    }
+    } 
   };
 
+
+  let generated_index = generate(false)?;
+  let generated_index_mut = generate(true)?;
+  
   Ok
   (
     qt! 
     {
+       #[ automatically_derived ]
+      impl< #generics_impl > ::core::ops::Index< usize > for #item_name< #generics_ty >
+      where
+        #generics_where
+      {
+        type Output = T;
+        #[ inline( always ) ]
+        fn index( &self, index : usize ) -> &Self::Output
+        {
+          #generated_index
+        }
+      }
+      
       #[ automatically_derived ]
       impl< #generics_impl > ::core::ops::IndexMut< usize > for #item_name< #generics_ty >
       where
@@ -196,7 +222,7 @@ fn generate_struct_named_fields
         #[ inline( always ) ]
         fn index_mut( &mut self, index : usize ) -> &mut Self::Output
         {
-          #generated 
+          #generated_index_mut 
         }
       }
     }
@@ -228,7 +254,7 @@ fn generate_struct_tuple_fields
         syn::Error::new_spanned
         ( 
           &fields, 
-          "No attributes specified. You must to specify #[ index_mut ] for fields or name for #[ index_mut ( name = field_name ) ] for item derive macro" 
+          "No attributes specified. You must to specify #[ index ] for fields or name for #[ index ( name = field_name ) ] for item derive macro" 
         )
       );
     },
@@ -257,7 +283,7 @@ fn generate_struct_tuple_fields
         syn::Error::new_spanned
         ( 
           &fields, 
-          "Only one field can include #[ index_mut ] derive macro" 
+          "Only one field can include #[ index ] derive macro" 
         )
       );
     }

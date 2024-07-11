@@ -691,7 +691,7 @@ pub fn derive_index( input : proc_macro::TokenStream ) -> proc_macro::TokenStrea
   attributes
   ( 
     debug, // item 
-    index_mut, // field
+    index, // field
   ) 
 )]
 pub fn derive_index_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
