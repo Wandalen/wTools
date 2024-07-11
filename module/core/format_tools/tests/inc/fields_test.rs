@@ -9,7 +9,7 @@ use the_module::
   ToStringWith,
   WithDebug,
   WithDisplay,
-  field,
+  ref_or_display_or_debug::field,
 };
 
 use std::

@@ -28,6 +28,7 @@ pub( crate ) mod private
     }};
   }
 
+  // #[macro_use]
   pub mod ref_or_display_or_debug
   {
 
@@ -235,6 +236,9 @@ pub mod orphan
   };
 
 }
+
+// use private::ref_or_display_or_debug::field as xxx;
+// use private::field as xxx;
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]
