@@ -3,12 +3,11 @@
 use super::*;
 
 
-#[ derive( the_module::Index, the_module::IndexMut ) ]
+#[ derive( the_module::IndexMut ) ]
 struct StructMultipleTuple< T >
 (
   bool,
   #[ index ]
-  #[ index_mut ]
   Vec< T >
 );
 

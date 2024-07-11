@@ -669,15 +669,14 @@ pub fn derive_index( input : proc_macro::TokenStream ) -> proc_macro::TokenStrea
 /// }
 /// ```
 ///
-/// Use `#[ index_mut ]` on field or `#[ index_mut( name = field_name )]` on named items to automatically generate the implementation:
+/// Use `#[ index ]` on field or `#[ index( name = field_name )]` on named items to automatically generate the implementation:
 ///
 /// ```rust
 /// use derive_tools_meta::*;
-/// #[derive( Index, IndexMut )]
+/// #[derive( IndexMut )]
 /// pub struct IsTransparent< T > 
 /// { 
 ///   #[ index ]
-///   #[ index_mut ]
 ///   a : Vec< T >  
 /// };
 /// ```

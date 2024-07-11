@@ -245,55 +245,98 @@ fn generate_struct_tuple_fields
     .filter( | field | !field.attrs.is_empty() )
     .collect();
   
-  let generated = match non_empty_attrs.len() 
+ 
+  let generate = | is_mut : bool |
+  ->  Result< proc_macro2::TokenStream >
   {
-    0 =>
-    { 
-      return Err
-      (
-        syn::Error::new_spanned
-        ( 
-          &fields, 
-          "No attributes specified. You must to specify #[ index ] for fields or name for #[ index ( name = field_name ) ] for item derive macro" 
+    match non_empty_attrs.len() 
+    {
+      0 =>
+      { 
+        Ok
+        (
+          if is_mut 
+          {
+            qt! 
+            {
+              &mut self.0[ index ] 
+            }
+          }
+          else 
+          {
+            qt! 
+            {
+              &self.0[ index ] 
+            }
+          }  
         )
-      );
-    },
-    1 => fields.iter().enumerate().map
+      },
+    1 => fields
+      .iter()
+      .enumerate()
+      .map
     (
       | ( i, field ) | 
       { 
         let i = syn::Index::from( i );  
         if !field.attrs.is_empty() 
         {
-          qt! 
-          {
-            &mut self.#i[ index ] 
-          }
+          Ok
+          (
+            if is_mut 
+            { 
+              qt!{&mut self.#i[ index ]} 
+            } 
+            else 
+            { 
+              qt!{&self.#i[ index ] }
+            } 
+          )
         } 
         else 
         {
-          qt!{ }
+          Ok
+          ( 
+            qt!{ } 
+          )
         }
       }
-    ),  
+    ).collect(),
     _ => 
-    {
-      return Err
+      Err
       (
         syn::Error::new_spanned
         ( 
           &fields, 
           "Only one field can include #[ index ] derive macro" 
         )
-      );
+      ),
     }
   };
-  
+
+
+
+  let generated = generate(false)?;
+  let generated_mut = generate(true)?;
+
   Ok
   (
     qt! 
     {
       #[ automatically_derived ]
+      impl< #generics_impl > ::core::ops::Index< usize > for #item_name< #generics_ty >
+      where
+        #generics_where
+      {
+        type Output = T;
+        #[ inline( always ) ]
+        fn index( &self, index : usize ) -> &Self::Output
+        {
+          #generated
+        }
+      }
+
+       #[ automatically_derived ]
       impl< #generics_impl > ::core::ops::IndexMut< usize > for #item_name< #generics_ty >
       where
         #generics_where
@@ -301,7 +344,7 @@ fn generate_struct_tuple_fields
         #[ inline( always ) ]
         fn index_mut( &mut self, index : usize ) -> &mut Self::Output
         {
-          #( #generated )*
+          #generated_mut
         }
       }
     }
