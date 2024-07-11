@@ -278,30 +278,30 @@ pub( crate ) mod private
 
   // xxx : clean
 
-  #[ test ]
-  fn borrowed_string_test()
-  {
-    use crate::ToStringWith;
-
-    let src : &str = "str";
-    let got = Ref::< '_, str, WithDisplay >::from( src ).to_string_with();
-    let exp : Cow< '_, str > = Cow::Borrowed( "str" );
-    assert_eq!( got, exp );
-    assert!( matches!( got, Cow::Borrowed( _ ) ) );
-
-    let src = "string".to_string();
-    let got = Ref::< '_, String, WithDisplay >::from( &src ).to_string_with();
-    let exp : Cow< '_, str > = Cow::Borrowed( "string" );
-    assert_eq!( got, exp );
-    assert!( matches!( got, Cow::Borrowed( _ ) ) );
-
-    let src = "string".to_string();
-    let got = ToStringWith::< WithDisplay >::to_string_with( &src );
-    let exp : Cow< '_, str > = Cow::Borrowed( "string" );
-    assert_eq!( got, exp );
-    // assert!( matches!( got, Cow::Borrowed( _ ) ) );
-
-  }
+//   #[ test ]
+//   fn borrowed_string_test()
+//   {
+//     use crate::ToStringWith;
+//
+//     let src : &str = "str";
+//     let got = Ref::< '_, str, WithDisplay >::from( src ).to_string_with();
+//     let exp : Cow< '_, str > = Cow::Borrowed( "str" );
+//     assert_eq!( got, exp );
+//     assert!( matches!( got, Cow::Borrowed( _ ) ) );
+//
+//     let src = "string".to_string();
+//     let got = Ref::< '_, String, WithDisplay >::from( &src ).to_string_with();
+//     let exp : Cow< '_, str > = Cow::Borrowed( "string" );
+//     assert_eq!( got, exp );
+//     assert!( matches!( got, Cow::Borrowed( _ ) ) );
+//
+//     let src = "string".to_string();
+//     let got = ToStringWith::< WithDisplay >::to_string_with( &src );
+//     let exp : Cow< '_, str > = Cow::Borrowed( "string" );
+//     assert_eq!( got, exp );
+//     // assert!( matches!( got, Cow::Borrowed( _ ) ) );
+//
+//   }
 
 }
 

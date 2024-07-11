@@ -15,7 +15,6 @@ where
   T : ?Sized,
 ;
 
-
 /// Internal reference wrapper to make into string conversion with fallback.
 #[ allow( missing_debug_implementations ) ]
 #[ repr( transparent ) ]

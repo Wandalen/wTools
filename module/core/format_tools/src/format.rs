@@ -6,82 +6,182 @@
 pub( crate ) mod private
 {
 
-  #[ macro_export( local_inner_macros ) ]
-  macro_rules! field_with_key
+  #[ macro_export ]
+  macro_rules! _field_with_key
   {
     (
       $src : expr,
-      $name : ident $(,)?
+      $name : ident,
+      $how : ty,
+      $fallback : ty
+      $(,)?
     )
     =>
     {{
       (
         ::core::stringify!( $name ),
-        $crate::MaybeAs::< 'a, str, WithDisplay >::from
+        $crate::MaybeAs::< 'a, str, $how >::from
         (
-          $crate::to_string_with_fallback!( WithDisplay, WithDebug, $src )
+          $crate::to_string_with_fallback!( $how, $fallback, $src )
         ),
       )
     }};
   }
 
-  #[ macro_export( local_inner_macros ) ]
-  macro_rules! field
+  pub mod ref_or_display_or_debug
   {
 
-    ( & $path:ident.$( $field:ident )+ ) =>
-    {{
-      field!( # ( & $path . ) ( $( $field )+ ) )
-    }};
+    #[ macro_export ]
+    // #[ macro_use ]
+    macro_rules! field_with_key
+    {
+      (
+        $src : expr,
+        $name : ident $(,)?
+      )
+      =>
+      {{
+        $crate::_field_with_key!( $src, $name, $crate::WithDisplay, $crate::WithDebug )
+      }};
+    }
 
-    ( $path:ident.$( $field:ident )+ ) =>
-    {{
-      field!( # ( $path . ) ( $( $field )+ ) )
-    }};
+    #[ macro_export ]
+    // #[ macro_use ]
+    macro_rules! field
+    {
 
-    ( & $field:ident ) =>
-    {{
-      field!( # () ( $field ) )
-    }};
+      ( & $path:ident.$( $field:ident )+ ) =>
+      {{
+        $crate::ref_or_display_or_debug::field!( # ( & $path . ) ( $( $field )+ ) )
+      }};
 
-    ( $field:ident ) =>
-    {{
-      field!( # () ( $field ) )
-    }};
+      ( $path:ident.$( $field:ident )+ ) =>
+      {{
+        $crate::ref_or_display_or_debug::field!( # ( $path . ) ( $( $field )+ ) )
+      }};
 
-    // private
+      ( & $field:ident ) =>
+      {{
+        $crate::ref_or_display_or_debug::field!( # () ( $field ) )
+      }};
 
-    (
-      #
-      ( $( $prefix:tt )* )
-      ( $name:ident.$( $field:ident )+ )
-    ) =>
-    {{
-      field!( # ( $( $prefix )* $name . ) ( $( $field )+ ) )
-    }};
+      ( $field:ident ) =>
+      {{
+        $crate::ref_or_display_or_debug::field!( # () ( $field ) )
+      }};
 
-    (
-      #
-      ( $( $prefix:tt )* )
-      ( $name:ident )
-    ) =>
-    {{
-      field!( # # ( $( $prefix )* ) ( $name ) )
-    }};
+      // private
 
-    (
-      # #
-      ( $( $prefix:tt )* )
-      ( $name:ident )
-    ) =>
-    {{
-      $crate::field_with_key!( $( $prefix )* $name, $name )
-    }};
+      (
+        #
+        ( $( $prefix:tt )* )
+        ( $name:ident.$( $field:ident )+ )
+      ) =>
+      {{
+        $crate::ref_or_display_or_debug::field!( # ( $( $prefix )* $name . ) ( $( $field )+ ) )
+      }};
+
+      (
+        #
+        ( $( $prefix:tt )* )
+        ( $name:ident )
+      ) =>
+      {{
+        $crate::ref_or_display_or_debug::field!( # # ( $( $prefix )* ) ( $name ) )
+      }};
+
+      (
+        # #
+        ( $( $prefix:tt )* )
+        ( $name:ident )
+      ) =>
+      {{
+        $crate::ref_or_display_or_debug::field_with_key!( $( $prefix )* $name, $name )
+      }};
+
+    }
+
+    pub use field_with_key;
+    pub use field;
 
   }
 
-  pub use field_with_key;
-  pub use field;
+//   pub mod debug
+//   {
+//
+//     // #[ macro_export( local_inner_macros ) ]
+//     macro_rules! field_with_key
+//     {
+//       (
+//         $src : expr,
+//         $name : ident $(,)?
+//       )
+//       =>
+//       {{
+//         $crate::_field_with_key!( $src, $name, $crate::WithDebug, $crate::WithDebug )
+//       }};
+//     }
+//
+//     // #[ macro_export( local_inner_macros ) ]
+//     macro_rules! field
+//     {
+//
+//       ( & $path:ident.$( $field:ident )+ ) =>
+//       {{
+//         $crate::debug::field!( # ( & $path . ) ( $( $field )+ ) )
+//       }};
+//
+//       ( $path:ident.$( $field:ident )+ ) =>
+//       {{
+//         $crate::debug::field!( # ( $path . ) ( $( $field )+ ) )
+//       }};
+//
+//       ( & $field:ident ) =>
+//       {{
+//         $crate::debug::field!( # () ( $field ) )
+//       }};
+//
+//       ( $field:ident ) =>
+//       {{
+//         $crate::debug::field!( # () ( $field ) )
+//       }};
+//
+//       // private
+//
+//       (
+//         #
+//         ( $( $prefix:tt )* )
+//         ( $name:ident.$( $field:ident )+ )
+//       ) =>
+//       {{
+//         $crate::debug::field!( # ( $( $prefix )* $name . ) ( $( $field )+ ) )
+//       }};
+//
+//       (
+//         #
+//         ( $( $prefix:tt )* )
+//         ( $name:ident )
+//       ) =>
+//       {{
+//         $crate::debug::field!( # # ( $( $prefix )* ) ( $name ) )
+//       }};
+//
+//       (
+//         # #
+//         ( $( $prefix:tt )* )
+//         ( $name:ident )
+//       ) =>
+//       {{
+//         $crate::debug::field_with_key!( $( $prefix )* $name, $name )
+//       }};
+//
+//     }
+//
+//     pub use field_with_key;
+//     pub use field;
+//
+//   }
+
 }
 
 pub mod to_string;
@@ -129,9 +229,11 @@ pub mod orphan
   #[ doc( inline ) ]
   pub use private::
   {
-    field_with_key,
-    field,
+    ref_or_display_or_debug,
+    // field_with_key,
+    // field,
   };
+
 }
 
 /// Exposed namespace of the module.
