@@ -110,13 +110,6 @@ fn generate_struct_named_fields
 -> Result< proc_macro2::TokenStream > 
 {
 
-
-// dbg!(&item_attrs.index_mut.name.clone().internal());
-  // if item_attrs.index_mut.name.internal( )
-  // {
-  //   return Ok( qt!{} )
-  // }
-
   let fields = fields.named.clone();
   let attr_name = &item_attrs.index_mut.name.clone().internal();
 
