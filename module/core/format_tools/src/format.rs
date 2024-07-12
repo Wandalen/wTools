@@ -28,13 +28,74 @@ pub( crate ) mod private
     }};
   }
 
+  #[ macro_export ]
+  macro_rules! _field
+  {
+
+    ( & $path:ident.$( $key:ident )+, $how : ty, $fallback : ty $(,)? ) =>
+    {{
+      $crate::_field!( # ( & $path . ) ( $( $key )+ ) ( $how, $fallback ) )
+    }};
+
+    ( $path:ident.$( $key:ident )+, $how : ty, $fallback : ty $(,)? ) =>
+    {{
+      $crate::_field!( # ( $path . ) ( $( $key )+ ) ( $how, $fallback ) )
+    }};
+
+    ( & $key:ident, $how : ty, $fallback : ty $(,)? ) =>
+    {{
+      $crate::_field!( # () ( $key ) ( $how, $fallback ) )
+    }};
+
+    ( $key:ident, $how : ty, $fallback : ty $(,)? ) =>
+    {{
+      $crate::_field!( # () ( $key ) ( $how, $fallback ) )
+    }};
+
+    // private
+
+    (
+      #
+      ( $( $prefix:tt )* )
+      ( $prekey:ident.$( $field:ident )+ )
+      ( $how : ty, $fallback : ty )
+    )
+    =>
+    {{
+      $crate::_field!( # ( $( $prefix )* $prekey . ) ( $( $field )+ ) ( $how, $fallback ) )
+    }};
+
+    (
+      #
+      ( $( $prefix:tt )* )
+      ( $key:ident )
+      ( $how : ty, $fallback : ty )
+    )
+    =>
+    {{
+      $crate::_field!( # # ( $( $prefix )* ) ( $key ) ( $how, $fallback ) )
+    }};
+
+    (
+      # #
+      ( $( $prefix:tt )* )
+      ( $key:ident )
+      ( $how : ty, $fallback : ty )
+    )
+    =>
+    {{
+      $crate::_field_with_key!( $key, $( $prefix )* $key, $how, $fallback )
+    }};
+
+  }
+
   // #[macro_use]
   pub mod ref_or_display_or_debug
   {
 
     #[ macro_export ]
     // #[ macro_use ]
-    macro_rules! field_with_key
+    macro_rules! ref_or_display_or_debug_field_with_key
     {
       (
         $key : ident,
@@ -49,62 +110,17 @@ pub( crate ) mod private
 
     #[ macro_export ]
     // #[ macro_use ]
-    macro_rules! field
+    macro_rules! ref_or_display_or_debug_field
     {
-
-      ( & $path:ident.$( $key:ident )+ ) =>
+      ( $( $t:tt )+ )
+      =>
       {{
-        $crate::ref_or_display_or_debug::field!( # ( & $path . ) ( $( $key )+ ) )
-      }};
-
-      ( $path:ident.$( $key:ident )+ ) =>
-      {{
-        $crate::ref_or_display_or_debug::field!( # ( $path . ) ( $( $key )+ ) )
-      }};
-
-      ( & $key:ident ) =>
-      {{
-        $crate::ref_or_display_or_debug::field!( # () ( $key ) )
-      }};
-
-      ( $key:ident ) =>
-      {{
-        $crate::ref_or_display_or_debug::field!( # () ( $key ) )
-      }};
-
-      // private
-
-      (
-        #
-        ( $( $prefix:tt )* )
-        ( $prekey:ident.$( $field:ident )+ )
-      ) =>
-      {{
-        $crate::ref_or_display_or_debug::field!( # ( $( $prefix )* $prekey . ) ( $( $field )+ ) )
-      }};
-
-      (
-        #
-        ( $( $prefix:tt )* )
-        ( $key:ident )
-      ) =>
-      {{
-        $crate::ref_or_display_or_debug::field!( # # ( $( $prefix )* ) ( $key ) )
-      }};
-
-      (
-        # #
-        ( $( $prefix:tt )* )
-        ( $key:ident )
-      ) =>
-      {{
-        $crate::ref_or_display_or_debug::field_with_key!( $key, $( $prefix )* $key )
-      }};
-
+        $crate::_field!( $( $t )+, $crate::WithDisplay, $crate::WithDebug )
+      }}
     }
 
-    pub use field_with_key;
-    pub use field;
+    pub use ref_or_display_or_debug_field_with_key as field_with_key;
+    pub use ref_or_display_or_debug_field as field;
 
   }
 
@@ -112,7 +128,7 @@ pub( crate ) mod private
 //   {
 //
 //     #[ macro_export ]
-//     macro_rules! field_with_key
+//     macro_rules! ref_or_display_or_debug_field_with_key
 //     {
 //       (
 //         $src : expr,
@@ -174,12 +190,12 @@ pub( crate ) mod private
 //         ( $key:ident )
 //       ) =>
 //       {{
-//         $crate::debug::field_with_key!( $( $prefix )* $key, $key )
+//         $crate::debug::ref_or_display_or_debug_field_with_key!( $( $prefix )* $key, $key )
 //       }};
 //
 //     }
 //
-//     pub use field_with_key;
+//     pub use ref_or_display_or_debug_field_with_key;
 //     pub use field;
 //
 //   }
@@ -232,7 +248,7 @@ pub mod orphan
   pub use private::
   {
     ref_or_display_or_debug,
-    // field_with_key,
+    // ref_or_display_or_debug_field_with_key,
     // field,
   };
 
