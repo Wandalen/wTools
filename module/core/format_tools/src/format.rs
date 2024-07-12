@@ -10,8 +10,8 @@ pub( crate ) mod private
   macro_rules! _field_with_key
   {
     (
+      $key : ident,
       $src : expr,
-      $name : ident,
       $how : ty,
       $fallback : ty
       $(,)?
@@ -19,7 +19,7 @@ pub( crate ) mod private
     =>
     {{
       (
-        ::core::stringify!( $name ),
+        ::core::stringify!( $key ),
         $crate::MaybeAs::< 'a, str, $how >::from
         (
           $crate::to_string_with_fallback!( $how, $fallback, $src )
@@ -37,12 +37,13 @@ pub( crate ) mod private
     macro_rules! field_with_key
     {
       (
-        $src : expr,
-        $name : ident $(,)?
+        $key : ident,
+        $src : expr
+        $(,)?
       )
       =>
       {{
-        $crate::_field_with_key!( $src, $name, $crate::WithDisplay, $crate::WithDebug )
+        $crate::_field_with_key!( $key, $src, $crate::WithDisplay, $crate::WithDebug )
       }};
     }
 
@@ -51,24 +52,24 @@ pub( crate ) mod private
     macro_rules! field
     {
 
-      ( & $path:ident.$( $field:ident )+ ) =>
+      ( & $path:ident.$( $key:ident )+ ) =>
       {{
-        $crate::ref_or_display_or_debug::field!( # ( & $path . ) ( $( $field )+ ) )
+        $crate::ref_or_display_or_debug::field!( # ( & $path . ) ( $( $key )+ ) )
       }};
 
-      ( $path:ident.$( $field:ident )+ ) =>
+      ( $path:ident.$( $key:ident )+ ) =>
       {{
-        $crate::ref_or_display_or_debug::field!( # ( $path . ) ( $( $field )+ ) )
+        $crate::ref_or_display_or_debug::field!( # ( $path . ) ( $( $key )+ ) )
       }};
 
-      ( & $field:ident ) =>
+      ( & $key:ident ) =>
       {{
-        $crate::ref_or_display_or_debug::field!( # () ( $field ) )
+        $crate::ref_or_display_or_debug::field!( # () ( $key ) )
       }};
 
-      ( $field:ident ) =>
+      ( $key:ident ) =>
       {{
-        $crate::ref_or_display_or_debug::field!( # () ( $field ) )
+        $crate::ref_or_display_or_debug::field!( # () ( $key ) )
       }};
 
       // private
@@ -76,28 +77,28 @@ pub( crate ) mod private
       (
         #
         ( $( $prefix:tt )* )
-        ( $name:ident.$( $field:ident )+ )
+        ( $prekey:ident.$( $field:ident )+ )
       ) =>
       {{
-        $crate::ref_or_display_or_debug::field!( # ( $( $prefix )* $name . ) ( $( $field )+ ) )
+        $crate::ref_or_display_or_debug::field!( # ( $( $prefix )* $prekey . ) ( $( $field )+ ) )
       }};
 
       (
         #
         ( $( $prefix:tt )* )
-        ( $name:ident )
+        ( $key:ident )
       ) =>
       {{
-        $crate::ref_or_display_or_debug::field!( # # ( $( $prefix )* ) ( $name ) )
+        $crate::ref_or_display_or_debug::field!( # # ( $( $prefix )* ) ( $key ) )
       }};
 
       (
         # #
         ( $( $prefix:tt )* )
-        ( $name:ident )
+        ( $key:ident )
       ) =>
       {{
-        $crate::ref_or_display_or_debug::field_with_key!( $( $prefix )* $name, $name )
+        $crate::ref_or_display_or_debug::field_with_key!( $key, $( $prefix )* $key )
       }};
 
     }
@@ -110,20 +111,20 @@ pub( crate ) mod private
 //   pub mod debug
 //   {
 //
-//     // #[ macro_export( local_inner_macros ) ]
+//     #[ macro_export ]
 //     macro_rules! field_with_key
 //     {
 //       (
 //         $src : expr,
-//         $name : ident $(,)?
+//         $key : ident $(,)?
 //       )
 //       =>
 //       {{
-//         $crate::_field_with_key!( $src, $name, $crate::WithDebug, $crate::WithDebug )
+//         $crate::_field_with_key!( $src, $key, $crate::WithDebug, $crate::WithDebug )
 //       }};
 //     }
 //
-//     // #[ macro_export( local_inner_macros ) ]
+//     #[ macro_export ]
 //     macro_rules! field
 //     {
 //
@@ -152,28 +153,28 @@ pub( crate ) mod private
 //       (
 //         #
 //         ( $( $prefix:tt )* )
-//         ( $name:ident.$( $field:ident )+ )
+//         ( $key:ident.$( $field:ident )+ )
 //       ) =>
 //       {{
-//         $crate::debug::field!( # ( $( $prefix )* $name . ) ( $( $field )+ ) )
+//         $crate::debug::field!( # ( $( $prefix )* $key . ) ( $( $field )+ ) )
 //       }};
 //
 //       (
 //         #
 //         ( $( $prefix:tt )* )
-//         ( $name:ident )
+//         ( $key:ident )
 //       ) =>
 //       {{
-//         $crate::debug::field!( # # ( $( $prefix )* ) ( $name ) )
+//         $crate::debug::field!( # # ( $( $prefix )* ) ( $key ) )
 //       }};
 //
 //       (
 //         # #
 //         ( $( $prefix:tt )* )
-//         ( $name:ident )
+//         ( $key:ident )
 //       ) =>
 //       {{
-//         $crate::debug::field_with_key!( $( $prefix )* $name, $name )
+//         $crate::debug::field_with_key!( $( $prefix )* $key, $key )
 //       }};
 //
 //     }
