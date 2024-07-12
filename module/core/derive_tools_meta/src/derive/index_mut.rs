@@ -113,11 +113,11 @@ fn generate_struct_named_fields
   let fields = fields.named.clone();
   let attr_name = &item_attrs.index.name.clone().internal();
 
-  let field_attrs: Vec<&syn::Field> = fields
+  let field_attrs: Vec< &syn::Field > = fields
     .iter()
     .filter
     (
-      |field| 
+      | field | 
       {
         FieldAttributes::from_attrs( field.attrs.iter() ).map_or
         ( 
@@ -135,9 +135,19 @@ fn generate_struct_named_fields
     {
       Ok
       (
-        qt! 
+        if is_mut
+        {   
+          qt! 
+          {
+            &mut self.#attr_name[ index ]
+          }
+        }
+        else 
         {
-          &self.#attr_name[index]
+          qt! 
+          {
+           &self.#attr_name[ index ]
+          }
         }
       )
     } 
@@ -150,7 +160,7 @@ fn generate_struct_named_fields
           let field_name = 
             match field_attrs
               .first()
-              .map(|&field| field)
+              .cloned()
               .or_else
               (
                 || fields.first()
@@ -159,7 +169,7 @@ fn generate_struct_named_fields
               Some( field ) => 
               field.ident.as_ref().unwrap(),
               None => 
-              unimplemented!("IndexMut not implemented for Unit"),
+              unimplemented!( "IndexMut not implemented for Unit" ),
             };
           
           Ok
@@ -194,8 +204,8 @@ fn generate_struct_named_fields
   };
 
 
-  let generated_index = generate(false)?;
-  let generated_index_mut = generate(true)?;
+  let generated_index = generate( false )?;
+  let generated_index_mut = generate( true )?;
   
   Ok
   (
@@ -316,8 +326,8 @@ fn generate_struct_tuple_fields
 
 
 
-  let generated = generate(false)?;
-  let generated_mut = generate(true)?;
+  let generated = generate( false )?;
+  let generated_mut = generate( true )?;
 
   Ok
   (
