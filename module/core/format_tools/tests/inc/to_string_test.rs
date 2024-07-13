@@ -70,6 +70,8 @@ fn borrowed_str()
 
   let src = "str";
   let got = to_string::Ref::< '_, str, WithDisplay >::from( src ).to_string_with();
+  // let binding = to_string::Ref::< '_, str, WithDisplay >::from( src );
+  // let got = binding.to_string_with();
   let exp : Cow< '_, str > = Cow::Borrowed( "str" );
   a_id!( got, exp );
   a_true!( matches!( got, Cow::Borrowed( _ ) ) );
