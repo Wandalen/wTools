@@ -61,7 +61,7 @@ enabled = [
   "iter_tools/enabled",
 ]
 
-attr = [ "diag" ]
+attr = [ "diag", "quantifier" ]
 attr_prop = [ "components" ]
 components = []
 ct = []
