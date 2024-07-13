@@ -2,7 +2,7 @@
 //! Wrapper to wrap argument for trait `ToStringWith`.
 //!
 
-// use core::fmt;
+// xxx : qqq : write derive for this with variable length
 use core::ops::{ Deref };
 
 /// Reference wrapper to make into string conversion with fallback.
@@ -28,13 +28,6 @@ where
 
 impl< 'a, T, How > Ref< 'a, T, How >
 {
-
-  // /// Just a constructor.
-  // #[ inline( always ) ]
-  // pub fn new( src : &'a T ) -> Self
-  // {
-  //   Self( src, ::core::marker::PhantomData )
-  // }
 
   /// Just a constructor.
   #[ inline( always ) ]
@@ -66,20 +59,11 @@ impl< 'a, T, How > Clone for Ref2< 'a, T, How >
 impl< 'a, T, How > Copy for Ref< 'a, T, How > {}
 impl< 'a, T, How > Copy for Ref2< 'a, T, How > {}
 
-// impl< 'a, T, How > AsRef< T > for Ref< 'a, T, How >
-// {
-//   fn as_ref( &self ) -> &T
-//   {
-//     &self.0
-//   }
-// }
-
 impl< 'a, T, How > Deref for Ref< 'a, T, How >
 {
   type Target = Ref2< 'a, T, How >;
   fn deref( &self ) -> &Self::Target
   {
-    // panic!( "deref" );
     &self.0
   }
 }

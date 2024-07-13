@@ -6,6 +6,7 @@
 pub( crate ) mod private
 {
 
+
   #[ macro_export ]
   macro_rules! _field_with_key
   {
@@ -13,7 +14,8 @@ pub( crate ) mod private
       $key : ident,
       $src : expr,
       $how : ty,
-      $fallback : ty
+      $fallback1 : ty,
+      $fallback2 : ty
       $(,)?
     )
     =>
@@ -22,7 +24,7 @@ pub( crate ) mod private
         ::core::stringify!( $key ),
         $crate::MaybeAs::< 'a, str, $how >::from
         (
-          $crate::to_string_with_fallback!( $how, $fallback, $src )
+          $crate::to_string_with_fallback!( $how, $fallback1, $fallback2, $src )
         ),
       )
     }};
@@ -32,24 +34,24 @@ pub( crate ) mod private
   macro_rules! _field
   {
 
-    ( & $path:ident.$( $key:ident )+, $how : ty, $fallback : ty $(,)? ) =>
+    ( & $path:ident.$( $key:ident )+, $how : ty, $fallback1 : ty, $fallback2 : ty $(,)? ) =>
     {{
-      $crate::_field!( # ( & $path . ) ( $( $key )+ ) ( $how, $fallback ) )
+      $crate::_field!( # ( & $path . ) ( $( $key )+ ) ( $how, $fallback1, $fallback2 ) )
     }};
 
-    ( $path:ident.$( $key:ident )+, $how : ty, $fallback : ty $(,)? ) =>
+    ( $path:ident.$( $key:ident )+, $how : ty, $fallback1 : ty, $fallback2 : ty $(,)? ) =>
     {{
-      $crate::_field!( # ( $path . ) ( $( $key )+ ) ( $how, $fallback ) )
+      $crate::_field!( # ( $path . ) ( $( $key )+ ) ( $how, $fallback1, $fallback2 ) )
     }};
 
-    ( & $key:ident, $how : ty, $fallback : ty $(,)? ) =>
+    ( & $key:ident, $how : ty, $fallback1 : ty, $fallback2 : ty $(,)? ) =>
     {{
-      $crate::_field!( # () ( $key ) ( $how, $fallback ) )
+      $crate::_field!( # () ( $key ) ( $how, $fallback1, $fallback2 ) )
     }};
 
-    ( $key:ident, $how : ty, $fallback : ty $(,)? ) =>
+    ( $key:ident, $how : ty, $fallback1 : ty, $fallback2 : ty $(,)? ) =>
     {{
-      $crate::_field!( # () ( $key ) ( $how, $fallback ) )
+      $crate::_field!( # () ( $key ) ( $how, $fallback1, $fallback2 ) )
     }};
 
     // private
@@ -58,33 +60,33 @@ pub( crate ) mod private
       #
       ( $( $prefix:tt )* )
       ( $prekey:ident.$( $field:ident )+ )
-      ( $how : ty, $fallback : ty )
+      ( $how : ty, $fallback1 : ty, $fallback2 : ty )
     )
     =>
     {{
-      $crate::_field!( # ( $( $prefix )* $prekey . ) ( $( $field )+ ) ( $how, $fallback ) )
+      $crate::_field!( # ( $( $prefix )* $prekey . ) ( $( $field )+ ) ( $how, $fallback1, $fallback2 ) )
     }};
 
     (
       #
       ( $( $prefix:tt )* )
       ( $key:ident )
-      ( $how : ty, $fallback : ty )
+      ( $how : ty, $fallback1 : ty, $fallback2 : ty )
     )
     =>
     {{
-      $crate::_field!( # # ( $( $prefix )* ) ( $key ) ( $how, $fallback ) )
+      $crate::_field!( # # ( $( $prefix )* ) ( $key ) ( $how, $fallback1, $fallback2 ) )
     }};
 
     (
       # #
       ( $( $prefix:tt )* )
       ( $key:ident )
-      ( $how : ty, $fallback : ty )
+      ( $how : ty, $fallback1 : ty, $fallback2 : ty )
     )
     =>
     {{
-      $crate::_field_with_key!( $key, $( $prefix )* $key, $how, $fallback )
+      $crate::_field_with_key!( $key, $( $prefix )* $key, $how, $fallback1, $fallback2 )
     }};
 
   }
@@ -102,7 +104,7 @@ pub( crate ) mod private
       )
       =>
       {{
-        $crate::_field_with_key!( $key, $src, $crate::WithDisplay, $crate::WithDebug )
+        $crate::_field_with_key!( $key, $src, $crate::WithRef, $crate::WithDisplay, $crate::WithDebug )
       }};
     }
 
@@ -112,7 +114,7 @@ pub( crate ) mod private
       ( $( $t:tt )+ )
       =>
       {{
-        $crate::_field!( $( $t )+, $crate::WithDisplay, $crate::WithDebug )
+        $crate::_field!( $( $t )+, $crate::WithRef, $crate::WithDisplay, $crate::WithDebug )
       }}
     }
 
@@ -121,11 +123,11 @@ pub( crate ) mod private
 
   }
 
-  pub mod ref_or_display
+  pub mod ref_or_debug
   {
 
     #[ macro_export ]
-    macro_rules! ref_or_display_field_with_key
+    macro_rules! ref_or_debug_field_with_key
     {
       (
         $key : ident,
@@ -134,22 +136,22 @@ pub( crate ) mod private
       )
       =>
       {{
-        $crate::_field_with_key!( $key, $src, $crate::WithDisplay, $crate::WithDebug )
+        $crate::_field_with_key!( $key, $src, $crate::WithRef, $crate::WithDebug, $crate::WithDebug )
       }};
     }
 
     #[ macro_export ]
-    macro_rules! ref_or_display_field
+    macro_rules! ref_or_debug_field
     {
       ( $( $t:tt )+ )
       =>
       {{
-        $crate::_field!( $( $t )+, $crate::WithDisplay, $crate::WithDebug )
+        $crate::_field!( $( $t )+, $crate::WithRef, $crate::WithDebug, $crate::WithDebug )
       }}
     }
 
-    pub use ref_or_display_field_with_key as field_with_key;
-    pub use ref_or_display_field as field;
+    pub use ref_or_debug_field_with_key as field_with_key;
+    pub use ref_or_debug_field as field;
 
   }
 
@@ -201,14 +203,10 @@ pub mod orphan
   pub use private::
   {
     ref_or_display_or_debug,
-    // ref_or_display_or_debug_field_with_key,
-    // field,
+    ref_or_debug,
   };
 
 }
-
-// use private::ref_or_display_or_debug::field as xxx;
-// use private::field as xxx;
 
 /// Exposed namespace of the module.
 #[ allow( unused_imports ) ]

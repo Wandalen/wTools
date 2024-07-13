@@ -6,12 +6,6 @@
 pub( crate ) mod private
 {
 
-  pub use super::
-  {
-    aref::{ Ref, Ref2 },
-    // aref2::{ Ref2 },
-  };
-
   use std::
   {
     fmt,
@@ -20,6 +14,10 @@ pub( crate ) mod private
 
   // ==
 
+  /// Marker type for returning reference representing instance instead of allocating new string.
+  #[ derive( Debug, Default, Clone, Copy ) ]
+  pub struct WithRef;
+
   /// Marker type for using Debug formatting.
   #[ derive( Debug, Default, Clone, Copy ) ]
   pub struct WithDebug;
@@ -27,10 +25,6 @@ pub( crate ) mod private
   /// Marker type for using Display formatting.
   #[ derive( Debug, Default, Clone, Copy ) ]
   pub struct WithDisplay;
-
-  /// Marker type for returning reference representing instance instead of allocating new string.
-  #[ derive( Debug, Default, Clone, Copy ) ]
-  pub struct WithRef;
 
   /// Marker type for usign Well formatting.
   #[ derive( Debug, Default, Clone, Copy ) ]
@@ -43,6 +37,20 @@ pub( crate ) mod private
   {
     /// Converts the type to a string using the specified formatting method.
     fn to_string_with< 's >( &'s self ) -> Cow< 's, str >;
+  }
+
+  impl< 'a, T > ToStringWith< WithRef > for T
+  where
+    T : 'a,
+    T : AsRef< str >,
+    T : ?Sized,
+  {
+    /// Converts the type to a string using Display formatting.
+    #[ inline ]
+    fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
+    {
+      Cow::Borrowed( self.as_ref() )
+    }
   }
 
   impl< 'a, T > ToStringWith< WithDebug > for T
@@ -59,21 +67,6 @@ pub( crate ) mod private
     }
   }
 
-  // impl< 'a, T > ToStringWith< WithDebug > for Ref< 'a, T, WithDebug >
-  // where
-  //   // T : 'a,
-  //   T : fmt::Debug,
-  //   T : ?Sized,
-  // {
-  //   /// Converts the type to a string using Debug formatting.
-  //   #[ inline ]
-  //   fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
-  //   {
-  //     // println!( " - WithDebug Ref2 {:?}", self.0 );
-  //     Cow::Owned( format!( "{:?}", self.0.0 ) )
-  //   }
-  // }
-
   impl< 'a, T > ToStringWith< WithDisplay > for T
   where
     T : 'a,
@@ -87,75 +80,6 @@ pub( crate ) mod private
       Cow::Owned( format!( "{}", self ) )
     }
   }
-
-  // impl< 'a, T > ToStringWith< WithDisplay > for Ref< 'a, T, WithDisplay >
-  // where
-  //   T : 'a,
-  //   T : fmt::Display,
-  //   T : ?Sized,
-  // {
-  //   /// Converts the type to a string using Display formatting.
-  //   #[ inline ]
-  //   fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
-  //   {
-  //     Cow::Owned( format!( "{}", self.0.0 ) )
-  //   }
-  // }
-
-  // impl< 'a, AsStr > ToStringWith< WithDisplay > for Ref< 'a, AsStr, WithDisplay >
-  // where
-  //   AsStr : AsRef< str >,
-  //   AsStr : ?Sized,
-  // {
-  //   /// Converts the type to a string using Display formatting.
-  //   #[ inline ]
-  //   fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
-  //   {
-  //     Cow::Borrowed( self.0.0.as_ref() )
-  //   }
-  // }
-
-  // impl< 'a, T > ToStringWith< WithDisplay > for Ref2< 'a, T, WithDisplay >
-  // where
-  //   T : 'a,
-  //   T : fmt::Display,
-  //   T : ?Sized,
-  // {
-  //   /// Converts the type to a string using Display formatting.
-  //   #[ inline ]
-  //   fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
-  //   {
-  //     println!( " - WithDisplay Ref2 {}", self.0 );
-  //     Cow::Owned( format!( "{}", self.0 ) )
-  //   }
-  // }
-
-  impl< 'a, T > ToStringWith< WithRef > for T
-  where
-    T : 'a,
-    T : AsRef< str >,
-    T : ?Sized,
-  {
-    /// Converts the type to a string using Display formatting.
-    #[ inline ]
-    fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
-    {
-      Cow::Borrowed( self.as_ref() )
-    }
-  }
-
-  // impl< 'a, AsStr > ToStringWith< WithRef > for Ref< 'a, AsStr, WithRef >
-  // where
-  //   AsStr : AsRef< str >,
-  //   AsStr : ?Sized,
-  // {
-  //   /// Converts the type to a string using Display formatting.
-  //   #[ inline ]
-  //   fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
-  //   {
-  //     Cow::Borrowed( self.0.0.as_ref() )
-  //   }
-  // }
 
 }
 
@@ -174,12 +98,7 @@ pub mod own
 
   #[ doc( inline ) ]
   pub use orphan::*;
-  #[ doc( inline ) ]
-  pub use private::
-  {
-    Ref,
-    Ref2,
-  };
+
 }
 
 /// Orphan namespace of the module.

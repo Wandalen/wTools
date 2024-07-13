@@ -87,7 +87,7 @@ fn borrowed_str()
 #[ test ]
 fn borrowed_string()
 {
-  use the_module::{ to_string, ToStringWith };
+  use the_module::{ ToStringWith };
 
   // let src = "string".to_string();
   // let got = to_string::Ref::< '_, String, WithDisplay >::from( &src ).to_string_with();
