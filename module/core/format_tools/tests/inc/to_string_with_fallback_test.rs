@@ -1,61 +1,61 @@
-// #[ allow( unused_imports ) ]
-// use super::*;
+#[ allow( unused_imports ) ]
+use super::*;
+
+use the_module::
+{
+  ToStringWithFallback,
+  // ToStringWithFallbackParams,
+  WithDebug,
+  WithDisplay,
+  // the_module::to_string_with_fallback::Ref,
+  to_string_with_fallback,
+};
+
+use std::
+{
+  // fmt,
+  // collections::HashMap,
+  borrow::Cow,
+};
+
 //
-// use the_module::
-// {
-//   ToStringWithFallback,
-//   // ToStringWithFallbackParams,
-//   WithDebug,
-//   WithDisplay,
-//   // the_module::to_string_with_fallback::Ref,
-//   to_string_with_fallback,
-// };
+
+#[ test ]
+fn to_string_with_fallback_basic()
+{
+
+  // - the_module::to_string_with_fallback::Ref should implement copy
+
+  fn f1( _src : the_module::to_string_with_fallback::Ref::< '_, Struct1, WithDisplay, WithDebug > )
+  where
+    for< 'a > the_module::to_string_with_fallback::Ref::< 'a, Struct1, WithDisplay, WithDebug > : Copy + Clone,
+  {}
+
+  struct Struct1;
+  let src = Struct1;
+  let ref1 = the_module::to_string_with_fallback::Ref::< '_, _, WithDisplay, WithDebug >::from( &src );
+  let ref2 = ref1;
+  f1( ref1 );
+  f1( ref2 );
+
+  // -
+
+  let src = 13i32;
+  let got = the_module::to_string_with_fallback::Ref::< '_, _, WithDisplay, WithDebug >::from( &src ).to_string_with_fallback();
+  let exp = "13".to_string();
+  a_id!( got, exp );
+
+  let src = "abc".to_string();
+  let got = the_module::to_string_with_fallback::Ref::< '_, _, WithDisplay, WithDebug >::from( &src ).to_string_with_fallback();
+  let exp = "abc".to_string();
+  a_id!( got, exp );
+
+  // -
+
+}
+
 //
-// use std::
-// {
-//   // fmt,
-//   // collections::HashMap,
-//   borrow::Cow,
-// };
-//
-// //
-//
-// #[ test ]
-// fn to_string_with_fallback_basic()
-// {
-//
-//   // - the_module::to_string_with_fallback::Ref should implement copy
-//
-//   fn f1( _src : the_module::to_string_with_fallback::Ref::< '_, Struct1, WithDisplay, WithDebug > )
-//   where
-//     for< 'a > the_module::to_string_with_fallback::Ref::< 'a, Struct1, WithDisplay, WithDebug > : Copy + Clone,
-//   {}
-//
-//   struct Struct1;
-//   let src = Struct1;
-//   let ref1 = the_module::to_string_with_fallback::Ref::< '_, _, WithDisplay, WithDebug >::from( &src );
-//   let ref2 = ref1;
-//   f1( ref1 );
-//   f1( ref2 );
-//
-//   // -
-//
-//   let src = 13i32;
-//   let got = the_module::to_string_with_fallback::Ref::< '_, _, WithDisplay, WithDebug >::from( &src ).to_string_with_fallback();
-//   let exp = "13".to_string();
-//   a_id!( got, exp );
-//
-//   let src = "abc".to_string();
-//   let got = the_module::to_string_with_fallback::Ref::< '_, _, WithDisplay, WithDebug >::from( &src ).to_string_with_fallback();
-//   let exp = "abc".to_string();
-//   a_id!( got, exp );
-//
-//   // -
-//
-// }
-//
-// //
-//
+
 // #[ test ]
 // fn to_string_with_fallback_variants()
 // {
@@ -280,7 +280,7 @@
 //   a_true!( matches!( got, Cow::Owned( _ ) ) );
 //
 // }
+
 //
-// //
 
 // xxx : fix
