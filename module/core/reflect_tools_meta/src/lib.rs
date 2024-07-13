@@ -5,15 +5,17 @@
 // #![ allow( non_upper_case_globals ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-#[ cfg
-(
-  any
-  (
-    feature = "reflect_derive",
-  )
-)]
 #[ cfg( feature = "enabled" ) ]
-mod implementation;
+use macro_tools::prelude::*;
+
+#[ cfg( feature = "enabled" ) ]
+mod implementation
+{
+  #[ cfg( feature = "reflect_derive" ) ]
+  pub mod reflect;
+  #[ cfg( feature = "reflect_derive" ) ]
+  pub use reflect::*;
+}
 
 #[ cfg
 (

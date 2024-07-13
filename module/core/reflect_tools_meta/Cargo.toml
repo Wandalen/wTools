@@ -41,6 +41,7 @@ enabled = []
 reflect_derive = []
 
 [dependencies]
+macro_tools = { workspace = true, features = [ "default" ] }
 # iter_tools = { workspace = true, features = [ "full" ] }
 # xxx : qqq : optimize features set
 
