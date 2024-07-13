@@ -51,8 +51,7 @@ impl< 'a, T, How, Fallback1, Fallback2 > Clone for Ref< 'a, T, How, Fallback1, F
   #[ inline( always ) ]
   fn clone( &self ) -> Self
   {
-    // xxx : self?
-    Self( self.0 )
+    *self
   }
 }
 
@@ -61,7 +60,7 @@ impl< 'a, T, How, Fallback1, Fallback2 > Clone for Ref2< 'a, T, How, Fallback1, 
   #[ inline( always ) ]
   fn clone( &self ) -> Self
   {
-    Self( self.0 )
+    *self
   }
 }
 
@@ -70,7 +69,7 @@ impl< 'a, T, How, Fallback1, Fallback2 > Clone for Ref3< 'a, T, How, Fallback1, 
   #[ inline( always ) ]
   fn clone( &self ) -> Self
   {
-    Self( self.0, std::marker::PhantomData )
+    *self
   }
 }
 

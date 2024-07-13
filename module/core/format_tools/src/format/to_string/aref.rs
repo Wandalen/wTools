@@ -2,7 +2,7 @@
 //! Wrapper to wrap argument for trait `ToStringWith`.
 //!
 
-// xxx : qqq : write derive for this with variable length
+// zzz : qqq : write derive for this with variable length
 use core::ops::{ Deref };
 
 /// Reference wrapper to make into string conversion with fallback.
@@ -43,7 +43,7 @@ impl< 'a, T, How > Clone for Ref< 'a, T, How >
   #[ inline( always ) ]
   fn clone( &self ) -> Self
   {
-    Self( self.0 )
+    *self
   }
 }
 
@@ -52,7 +52,7 @@ impl< 'a, T, How > Clone for Ref2< 'a, T, How >
   #[ inline( always ) ]
   fn clone( &self ) -> Self
   {
-    Self( self.0, std::marker::PhantomData )
+    *self
   }
 }
 

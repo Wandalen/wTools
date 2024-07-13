@@ -7,7 +7,6 @@ pub( crate ) mod private
 {
 }
 
-mod aref;
 mod maybe_as;
 
 #[ doc( inline ) ]
@@ -41,9 +40,6 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::
   {
-    // aref::IntoRef,
-    // aref::Ref,
-    // maybe_as::IntoMaybeAs,
     maybe_as::MaybeAs,
   };
 }

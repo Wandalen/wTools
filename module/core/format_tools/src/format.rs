@@ -205,8 +205,7 @@ pub( crate ) mod private
 
 pub mod to_string;
 pub mod to_string_with_fallback;
-pub mod wrapper;
-
+// pub mod wrapper;
 pub mod as_table;
 pub mod print;
 pub mod table;
@@ -226,7 +225,7 @@ pub mod own
   {
     to_string::orphan::*,
     to_string_with_fallback::orphan::*,
-    wrapper::orphan::*,
+    // wrapper::orphan::*,
     as_table::orphan::*,
     print::orphan::*,
     table::orphan::*,
@@ -259,11 +258,14 @@ pub mod exposed
   use super::*;
 
   #[ doc( inline ) ]
-  pub use super::
+  pub use reflect_tools::MaybeAs;
+
+  #[ doc( inline ) ]
+  pub use
   {
     to_string::exposed::*,
     to_string_with_fallback::exposed::*,
-    wrapper::exposed::*,
+    // wrapper::exposed::*,
     as_table::exposed::*,
     print::exposed::*,
     table::exposed::*,
@@ -278,11 +280,11 @@ pub mod prelude
   use super::*;
 
   #[ doc( inline ) ]
-  pub use super::
+  pub use
   {
     to_string::prelude::*,
     to_string_with_fallback::prelude::*,
-    wrapper::prelude::*,
+    // wrapper::prelude::*,
     as_table::prelude::*,
     print::prelude::*,
     table::prelude::*,
