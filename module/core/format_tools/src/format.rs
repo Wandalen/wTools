@@ -6,6 +6,12 @@
 pub( crate ) mod private
 {
 
+  /// Macro to create a field with a key and formatted value.
+  ///
+  /// This macro helps to convert a field of a structure into one or another string representation
+  /// depending on the parameters `how`, `fallback1`, and `fallback2`. Unlike `_field_with_key`,
+  /// the key is the path of the expression and is deduced from the last part of the expression.
+  /// For example, for `this.is.field`, the key is `field`.
 
   #[ macro_export ]
   macro_rules! _field_with_key
@@ -29,6 +35,14 @@ pub( crate ) mod private
       )
     }};
   }
+
+
+  /// Macro to create a field with optional fallbacks.
+  ///
+  /// This macro helps to convert a field of a structure into one or another string representation
+  /// depending on the parameters `how`, `fallback1`, and `fallback2`. Unlike `_field_with_key`,
+  /// the key is the path of the expression and is deduced from the last part of the expression.
+  /// For example, for `this.is.field`, the key is `field`.
 
   #[ macro_export ]
   macro_rules! _field
@@ -91,9 +105,21 @@ pub( crate ) mod private
 
   }
 
+  /// Converting representations to a reference on a string slice,
+  /// but if not possible, to a display string, and if that is also not possible, then to a debug string.
+  ///
+  /// Macros for converting fields to different string representations in a prioritized manner:
+  /// 1. Reference to a string slice.
+  /// 2. Display string.
+  /// 3. Debug string.
   pub mod ref_or_display_or_debug
   {
 
+    /// Macro to create a field with key using reference, display, or debug formatting.
+    ///
+    /// This macro attempts to convert the field to a reference to a string slice.
+    /// If that is not possible, it tries to use the Display trait for conversion.
+    /// If that also fails, it falls back to using the Debug trait.
     #[ macro_export ]
     macro_rules! ref_or_display_or_debug_field_with_key
     {
@@ -108,6 +134,11 @@ pub( crate ) mod private
       }};
     }
 
+    /// Macro to create a field using reference, display, or debug formatting.
+    ///
+    /// This macro attempts to convert the field to a reference to a string slice.
+    /// If that is not possible, it tries to use the Display trait for conversion.
+    /// If that also fails, it falls back to using the Debug trait.
     #[ macro_export ]
     macro_rules! ref_or_display_or_debug_field
     {
@@ -123,9 +154,20 @@ pub( crate ) mod private
 
   }
 
+  /// Converting representations to a reference on a string slice,
+  /// but if not possible, to a debug string.
+  ///
+  /// Macros for converting fields to different string representations in a prioritized manner:
+  /// 1. Reference to a string slice.
+  /// 2. Debug string.
+  ///
   pub mod ref_or_debug
   {
 
+    /// Macro to create a field with key using reference or debug formatting.
+    ///
+    /// This macro attempts to convert the field to a reference to a string slice.
+    /// If that is not possible, it falls back to using the Debug trait.
     #[ macro_export ]
     macro_rules! ref_or_debug_field_with_key
     {
@@ -140,6 +182,10 @@ pub( crate ) mod private
       }};
     }
 
+    /// Macro to create a field using reference or debug formatting.
+    ///
+    /// This macro attempts to convert the field to a reference to a string slice.
+    /// If that is not possible, it falls back to using the Debug trait.
     #[ macro_export ]
     macro_rules! ref_or_debug_field
     {

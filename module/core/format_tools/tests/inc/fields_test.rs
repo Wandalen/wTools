@@ -6,9 +6,9 @@ use the_module::
   Fields,
   IteratorTrait,
   MaybeAs,
-  ToStringWith,
-  WithDebug,
-  WithDisplay,
+  // ToStringWith,
+  // WithDebug,
+  // WithDisplay,
   WithRef,
   ref_or_display_or_debug::field,
 };
@@ -30,8 +30,8 @@ pub struct TestObject
   pub tools : Option< Vec< HashMap< String, String > > >,
 }
 
-use the_module::to_string_with_fallback;
-use the_module::to_string_with_fallback::ToStringWithFallback;
+// use the_module::to_string_with_fallback;
+// use the_module::to_string_with_fallback::ToStringWithFallback;
 
 impl< 'a > Fields< 'a, &'static str, MaybeAs< 'a, str, WithRef > >
 for TestObject

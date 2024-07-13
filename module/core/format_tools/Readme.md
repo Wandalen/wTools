@@ -6,18 +6,16 @@
 
 Collection of mechanisms for formatting and serialization into string.
 
-<!-- ### Basic use-case
-
 <!-- {{# generate.module{} #}} -->
 
 ```rust
-// xxx : qqq : write please
+
 ```
 
 ### To add to your project
 
 ```sh
-cargo add reflect_tools
+cargo add format_tools
 ```
 
 ### Try out from the repository
@@ -25,6 +23,6 @@ cargo add reflect_tools
 ```sh
 git clone https://github.com/Wandalen/wTools
 cd wTools
-cd examples/reflect_tools_trivial
+cd examples/foramt_tools_trivial
 cargo run
-``` -->
+```
