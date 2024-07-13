@@ -89,12 +89,10 @@ pub( crate ) mod private
 
   }
 
-  // #[macro_use]
   pub mod ref_or_display_or_debug
   {
 
     #[ macro_export ]
-    // #[ macro_use ]
     macro_rules! ref_or_display_or_debug_field_with_key
     {
       (
@@ -109,7 +107,6 @@ pub( crate ) mod private
     }
 
     #[ macro_export ]
-    // #[ macro_use ]
     macro_rules! ref_or_display_or_debug_field
     {
       ( $( $t:tt )+ )
@@ -124,81 +121,37 @@ pub( crate ) mod private
 
   }
 
-//   pub mod debug
-//   {
-//
-//     #[ macro_export ]
-//     macro_rules! ref_or_display_or_debug_field_with_key
-//     {
-//       (
-//         $src : expr,
-//         $key : ident $(,)?
-//       )
-//       =>
-//       {{
-//         $crate::_field_with_key!( $src, $key, $crate::WithDebug, $crate::WithDebug )
-//       }};
-//     }
-//
-//     #[ macro_export ]
-//     macro_rules! field
-//     {
-//
-//       ( & $path:ident.$( $field:ident )+ ) =>
-//       {{
-//         $crate::debug::field!( # ( & $path . ) ( $( $field )+ ) )
-//       }};
-//
-//       ( $path:ident.$( $field:ident )+ ) =>
-//       {{
-//         $crate::debug::field!( # ( $path . ) ( $( $field )+ ) )
-//       }};
-//
-//       ( & $field:ident ) =>
-//       {{
-//         $crate::debug::field!( # () ( $field ) )
-//       }};
-//
-//       ( $field:ident ) =>
-//       {{
-//         $crate::debug::field!( # () ( $field ) )
-//       }};
-//
-//       // private
-//
-//       (
-//         #
-//         ( $( $prefix:tt )* )
-//         ( $key:ident.$( $field:ident )+ )
-//       ) =>
-//       {{
-//         $crate::debug::field!( # ( $( $prefix )* $key . ) ( $( $field )+ ) )
-//       }};
-//
-//       (
-//         #
-//         ( $( $prefix:tt )* )
-//         ( $key:ident )
-//       ) =>
-//       {{
-//         $crate::debug::field!( # # ( $( $prefix )* ) ( $key ) )
-//       }};
-//
-//       (
-//         # #
-//         ( $( $prefix:tt )* )
-//         ( $key:ident )
-//       ) =>
-//       {{
-//         $crate::debug::ref_or_display_or_debug_field_with_key!( $( $prefix )* $key, $key )
-//       }};
-//
-//     }
-//
-//     pub use ref_or_display_or_debug_field_with_key;
-//     pub use field;
-//
-//   }
+  pub mod ref_or_display
+  {
+
+    #[ macro_export ]
+    macro_rules! ref_or_display_field_with_key
+    {
+      (
+        $key : ident,
+        $src : expr
+        $(,)?
+      )
+      =>
+      {{
+        $crate::_field_with_key!( $key, $src, $crate::WithDisplay, $crate::WithDebug )
+      }};
+    }
+
+    #[ macro_export ]
+    macro_rules! ref_or_display_field
+    {
+      ( $( $t:tt )+ )
+      =>
+      {{
+        $crate::_field!( $( $t )+, $crate::WithDisplay, $crate::WithDebug )
+      }}
+    }
+
+    pub use ref_or_display_field_with_key as field_with_key;
+    pub use ref_or_display_field as field;
+
+  }
 
 }
 
