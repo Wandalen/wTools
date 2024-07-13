@@ -75,12 +75,12 @@ pub( crate ) mod private
     fn table_to_string( &'a self ) -> String
     {
       let mut output = String::new();
-      let mut formatter = Context
+      let mut context = Context
       {
         buf : &mut output,
         styles : Styles::default(),
       };
-      T::fmt( self, &mut formatter ).expect( "Formatting failed" );
+      T::fmt( self, &mut context ).expect( "Formatting failed" );
       output
     }
   }
