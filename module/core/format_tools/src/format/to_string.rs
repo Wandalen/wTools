@@ -28,6 +28,10 @@ pub( crate ) mod private
   #[ derive( Debug, Default, Clone, Copy ) ]
   pub struct WithDisplay;
 
+  /// Marker type for returning reference representing instance instead of allocating new string.
+  #[ derive( Debug, Default, Clone, Copy ) ]
+  pub struct WithRef;
+
   /// Marker type for usign Well formatting.
   #[ derive( Debug, Default, Clone, Copy ) ]
   pub struct WithWell;
@@ -38,7 +42,7 @@ pub( crate ) mod private
   pub trait ToStringWith< 'a, How >
   {
     /// Converts the type to a string using the specified formatting method.
-    fn to_string_with( &self ) -> Cow< 'a, str >;
+    fn to_string_with( &'a self ) -> Cow< 'a, str >;
   }
 
   impl< 'a, T > ToStringWith< 'a, WithDebug > for T
@@ -48,14 +52,14 @@ pub( crate ) mod private
   {
     /// Converts the type to a string using Debug formatting.
     #[ inline ]
-    fn to_string_with( &self ) -> Cow< 'a, str >
+    fn to_string_with( &'a self ) -> Cow< 'a, str >
     {
       println!( " - WithDebug Ref {:?}", self );
       Cow::Owned( format!( "{:?}", self ) )
     }
   }
 
-  impl< 'a, T > ToStringWith< 'a, WithDebug > for Ref2< 'a, T, WithDebug >
+  impl< 'a, T > ToStringWith< 'a, WithDebug > for Ref< 'a, T, WithDebug >
   where
     // T : 'a,
     T : fmt::Debug,
@@ -63,245 +67,95 @@ pub( crate ) mod private
   {
     /// Converts the type to a string using Debug formatting.
     #[ inline ]
-    fn to_string_with( &self ) -> Cow< 'a, str >
+    fn to_string_with( &'a self ) -> Cow< 'a, str >
     {
-      println!( " - WithDebug Ref2 {:?}", self.0 );
-      Cow::Owned( format!( "{:?}", self.0 ) )
+      // println!( " - WithDebug Ref2 {:?}", self.0 );
+      Cow::Owned( format!( "{:?}", self.0.0 ) )
     }
   }
 
-  // impl< 'a, T > ToStringWith< 'a, WithDebug > for &T
-  // where
-  //   T : fmt::Debug,
-  // {
-  //   /// Converts the type to a string using Debug formatting.
-  //   #[ inline ]
-  //   fn to_string_with( &self ) -> Cow< 'a, str >
-  //   {
-  //     ToStringWith::< 'a, WithDebug >::to_string_with( *self )
-  //   }
-  // }
-
   impl< 'a, T > ToStringWith< 'a, WithDisplay > for T
   where
-    // Ref2::< 'a, T, WithDisplay > : _DisplayString< 'a >,
     T : 'a,
     T : fmt::Display,
     T : ?Sized,
   {
     /// Converts the type to a string using Display formatting.
     #[ inline ]
-    fn to_string_with( &self ) -> Cow< 'a, str >
+    fn to_string_with( &'a self ) -> Cow< 'a, str >
     {
-      // ( &Ref2::< '_, T, WithDisplay >::from( self ) )._display_string()
-      // Ref::< '_, T, WithDisplay >::from( self )._display_string()
       Cow::Owned( format!( "{}", self ) )
     }
   }
 
-  impl< 'a, AsStr > ToStringWith< 'a, WithDisplay > for Ref< 'a, AsStr, WithDisplay >
+  impl< 'a, T > ToStringWith< 'a, WithDisplay > for Ref< 'a, T, WithDisplay >
   where
-    AsStr : AsRef< str >,
-    AsStr : ?Sized,
-  {
-    /// Converts the type to a string using Display formatting.
-    #[ inline ]
-    fn to_string_with( &self ) -> Cow< 'a, str >
-    {
-      Cow::Borrowed( self.0.0.as_ref() )
-    }
-  }
-
-//   impl< 'a > ToStringWith< 'a, WithDisplay > for Ref< 'a, str, WithDisplay >
-//   {
-//     /// Converts the type to a string using Display formatting.
-//     #[ inline ]
-//     fn to_string_with( &self ) -> Cow< 'a, str >
-//     {
-//       Cow::Borrowed( self.0.0.as_ref() )
-//     }
-//   }
-//
-//   impl< 'a > ToStringWith< 'a, WithDisplay > for Ref< 'a, String, WithDisplay >
-//   {
-//     /// Converts the type to a string using Display formatting.
-//     #[ inline ]
-//     fn to_string_with( &self ) -> Cow< 'a, str >
-//     {
-//       Cow::Borrowed( self.0.0.as_ref() )
-//     }
-//   }
-
-  impl< 'a, T > ToStringWith< 'a, WithDisplay > for Ref2< 'a, T, WithDisplay >
-  where
-    // Ref2::< 'a, T, WithDisplay > : _DisplayString< 'a >,
     T : 'a,
     T : fmt::Display,
     T : ?Sized,
   {
     /// Converts the type to a string using Display formatting.
     #[ inline ]
-    fn to_string_with( &self ) -> Cow< 'a, str >
+    fn to_string_with( &'a self ) -> Cow< 'a, str >
     {
-      println!( " - WithDisplay Ref2 {}", self.0 );
-      Cow::Owned( format!( "{}", self.0 ) )
+      Cow::Owned( format!( "{}", self.0.0 ) )
     }
   }
 
-  // impl< 'a, T > ToStringWith< 'a, WithDisplay > for T
+  // impl< 'a, AsStr > ToStringWith< 'a, WithDisplay > for Ref< 'a, AsStr, WithDisplay >
   // where
-  //   Ref::< 'a, T, WithDisplay > : _DisplayString< 'a >,
-  //   T : 'a,
-  // //   T : fmt::Display,
+  //   AsStr : AsRef< str >,
+  //   AsStr : ?Sized,
   // {
   //   /// Converts the type to a string using Display formatting.
   //   #[ inline ]
-  //   fn to_string_with( &self ) -> Cow< 'a, str >
+  //   fn to_string_with( &'a self ) -> Cow< 'a, str >
   //   {
-  //     // ( &Ref2::< '_, T, WithDisplay >::from( self ) )._display_string()
-  //     Ref::< '_, T, WithDisplay >::from( self )._display_string()
-  //     // Cow::Owned( format!( "{}", self ) )
+  //     Cow::Borrowed( self.0.0.as_ref() )
   //   }
   // }
 
-//   trait _DisplayString< 'a >
-//   {
-//     fn _display_string( self ) -> Cow< 'a, str >;
-//   }
-//
-//   impl< 'a, T > _DisplayString< 'a > for Ref2< 'a, T, WithDisplay >
-//   where
-//     T : fmt::Display,
-//   {
-//     #[ inline ]
-//     fn _display_string( self ) -> Cow< 'a, str >
-//     {
-//       // panic!( "a" );
-//       Cow::Owned( format!( "{}", self.0 ) )
-//     }
-//   }
-
-  // xxx
-
-  // impl< 'a, T > _DisplayString< 'a > for Ref2< 'a, T, WithDisplay >
+  // impl< 'a, T > ToStringWith< 'a, WithDisplay > for Ref2< 'a, T, WithDisplay >
   // where
+  //   T : 'a,
   //   T : fmt::Display,
+  //   T : ?Sized,
   // {
+  //   /// Converts the type to a string using Display formatting.
   //   #[ inline ]
-  //   fn _display_string( self ) -> Cow< 'a, str >
+  //   fn to_string_with( &'a self ) -> Cow< 'a, str >
   //   {
-  //     // panic!( "a" );
+  //     println!( " - WithDisplay Ref2 {}", self.0 );
   //     Cow::Owned( format!( "{}", self.0 ) )
   //   }
   // }
 
-//   impl< 'a > _DisplayString< 'a > for &Ref2< 'a, String, WithDisplay >
-//   // where
-//     // String : fmt::Display,
-//   {
-//     #[ inline ]
-//     fn _display_string( self ) -> Cow< 'a, str >
-//     {
-//       println!( "_DisplayString for &Ref2< 'a, String, WithDisplay >" );
-//       Cow::Borrowed( self.0 )
-//     }
-//   }
-//
-//   // xxx : not only String
+  impl< 'a, T > ToStringWith< 'a, WithRef > for T
+  where
+    T : 'a,
+    T : AsRef< str >,
+    T : ?Sized,
+  {
+    /// Converts the type to a string using Display formatting.
+    #[ inline ]
+    fn to_string_with( &'a self ) -> Cow< 'a, str >
+    {
+      Cow::Borrowed( self.as_ref() )
+    }
+  }
 
-  // impl< 'a > _DisplayString< 'a > for Ref< 'a, String, WithDisplay >
-  // // where
-  //   // String : fmt::Display,
+  // impl< 'a, AsStr > ToStringWith< 'a, WithRef > for Ref< 'a, AsStr, WithRef >
+  // where
+  //   AsStr : AsRef< str >,
+  //   AsStr : ?Sized,
   // {
+  //   /// Converts the type to a string using Display formatting.
   //   #[ inline ]
-  //   fn _display_string( self ) -> Cow< 'a, str >
+  //   fn to_string_with( &'a self ) -> Cow< 'a, str >
   //   {
-  //     println!( "_DisplayString for Ref< 'a, String, WithDisplay >" );
-  //     Cow::Borrowed( self.0.0 )
+  //     Cow::Borrowed( self.0.0.as_ref() )
   //   }
   // }
-
-//   impl< 'a > _DisplayString< 'a > for Ref< 'a, &String, WithDisplay >
-//   // where
-//   //   String : fmt::Display,
-//   {
-//     #[ inline ]
-//     fn _display_string( self ) -> Cow< 'a, str >
-//     {
-//       panic!( "yyy" );
-//       Cow::Borrowed( self.0.0 )
-//     }
-//   }
-//
-//   impl< 'a > _DisplayString< 'a > for Ref< 'a, &&String, WithDisplay >
-//   // where
-//   //   String : fmt::Display,
-//   {
-//     #[ inline ]
-//     fn _display_string( self ) -> Cow< 'a, str >
-//     {
-//       panic!( "yyy" );
-//       Cow::Borrowed( self.0.0 )
-//     }
-//   }
-//
-//   impl< 'a > _DisplayString< 'a > for Ref< 'a, str, WithDisplay >
-//   where
-//     str : fmt::Display,
-//   {
-//     #[ inline ]
-//     fn _display_string( self ) -> Cow< 'a, str >
-//     {
-//       panic!( "zzz1" );
-//       Cow::Borrowed( self.0.0 )
-//     }
-//   }
-//
-//   impl< 'a > _DisplayString< 'a > for Ref< 'a, &str, WithDisplay >
-//   where
-//     str : fmt::Display,
-//   {
-//     #[ inline ]
-//     fn _display_string( self ) -> Cow< 'a, str >
-//     {
-//       panic!( "zzz2" );
-//       Cow::Borrowed( self.0.0 )
-//     }
-//   }
-//
-//   // xxx
-//   fn _f< 'a, T : 'a >()
-//   where
-//     Ref::< 'a, T, WithDisplay > : _DisplayString< 'a >,
-//   {
-//   }
-
-  // xxx : clean
-
-//   #[ test ]
-//   fn borrowed_string_test()
-//   {
-//     use crate::ToStringWith;
-//
-//     let src : &str = "str";
-//     let got = Ref::< '_, str, WithDisplay >::from( src ).to_string_with();
-//     let exp : Cow< '_, str > = Cow::Borrowed( "str" );
-//     assert_eq!( got, exp );
-//     assert!( matches!( got, Cow::Borrowed( _ ) ) );
-//
-//     let src = "string".to_string();
-//     let got = Ref::< '_, String, WithDisplay >::from( &src ).to_string_with();
-//     let exp : Cow< '_, str > = Cow::Borrowed( "string" );
-//     assert_eq!( got, exp );
-//     assert!( matches!( got, Cow::Borrowed( _ ) ) );
-//
-//     let src = "string".to_string();
-//     let got = ToStringWith::< WithDisplay >::to_string_with( &src );
-//     let exp : Cow< '_, str > = Cow::Borrowed( "string" );
-//     assert_eq!( got, exp );
-//     // assert!( matches!( got, Cow::Borrowed( _ ) ) );
-//
-//   }
 
 }
 
@@ -343,6 +197,7 @@ pub mod orphan
   {
     WithDebug,
     WithDisplay,
+    WithRef,
     WithWell,
     ToStringWith,
   };
