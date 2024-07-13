@@ -20,7 +20,7 @@ pub( crate ) mod private
     ::core::marker::PhantomData< ( &'a (), fn () -> ( RowKey, Row, CellKey, Cell, Title ) ) >,
   )
   where
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + Clone + 'a,
     CellKey : fmt::Debug + Clone,
@@ -28,7 +28,7 @@ pub( crate ) mod private
 
   impl< 'a, T, RowKey, Row, CellKey, Cell, Title > AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
   where
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + Clone + 'a,
     CellKey : fmt::Debug + Clone,
@@ -42,7 +42,7 @@ pub( crate ) mod private
 
   impl< 'a, T, RowKey, Row, CellKey, Cell, Title > AsRef< T > for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
   where
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + Clone + 'a,
     CellKey : fmt::Debug + Clone,
@@ -55,7 +55,7 @@ pub( crate ) mod private
 
   impl< 'a, T, RowKey, Row, CellKey, Cell, Title > Deref for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
   where
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + Clone + 'a,
     CellKey : fmt::Debug + Clone,
@@ -71,7 +71,7 @@ pub( crate ) mod private
   impl< 'a, T, RowKey, Row, CellKey, Cell, Title > From< &'a T >
   for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
   where
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + Clone + 'a,
     CellKey : fmt::Debug + Clone,
@@ -85,7 +85,7 @@ pub( crate ) mod private
   impl< 'a, T, RowKey, Row, CellKey, Cell, Title > fmt::Debug for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
   where
     T : fmt::Debug,
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + Clone + 'a,
     CellKey : fmt::Debug + Clone,

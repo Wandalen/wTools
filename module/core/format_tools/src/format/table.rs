@@ -27,7 +27,7 @@ pub( crate ) mod private
   /// A trait for iterating over all rows of a table.
   pub trait TableRows< 'a, RowKey, Row, CellKey, Cell >
   where
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Cell : fmt::Debug + Clone + 'a,
   {
     /// Returns an iterator over all rows of the table.
@@ -44,12 +44,14 @@ pub( crate ) mod private
   }
 
   /// A trait for iterating over all cells of a row.
-  pub trait Cells< 'a, CellKey, Cell >
+  pub trait Cells< 'a, CellKey, Cell, Kind >
   where
     Cell : fmt::Debug + Clone + 'a,
+    Kind : Copy + 'static,
   {
     /// Returns an iterator over all cells of the row.
-    fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, Option< Cell > ) >
+    fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, MaybeAs< 'a, Cell, Kind > ) >
+    // fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, Option< Cell > ) >
     ;
   }
 
@@ -59,7 +61,7 @@ pub( crate ) mod private
   for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
   where
     Self : TableRows< 'a, RowKey, Row, CellKey, Cell >,
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + Clone + 'a,
     CellKey : fmt::Debug + Clone,
@@ -85,7 +87,7 @@ pub( crate ) mod private
   for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
   where
     T : Fields< 'a, RowKey, Option< Cow< 'a, Row > > >,
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + Clone + 'a,
     CellKey : fmt::Debug + Clone,
@@ -109,7 +111,7 @@ pub( crate ) mod private
   for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKey >
   where
     Self : TableRows< 'a, RowKey, Row, CellKey, Cell >,
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     CellKey : fmt::Debug + Clone,
     Cell : fmt::Debug + Clone + 'a,
     CellKey : fmt::Debug + Clone,
@@ -138,23 +140,24 @@ pub( crate ) mod private
 
   }
 
-  impl< 'a, Row, CellKey, Cell > Cells< 'a, CellKey, Cell >
+  impl< 'a, Kind, Row, CellKey, Cell > Cells< 'a, CellKey, Cell, Kind >
   for Row
   where
-    Row : Fields< 'a, CellKey, Option< Cow< 'a, Cell > > > + 'a,
+    Row : Fields< 'a, CellKey, MaybeAs< 'a, Cell, Kind > > + 'a,
     Cell : fmt::Debug + Clone + 'a,
+    Kind : Copy + 'static,
   {
 
-    fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, Option< Cell > ) >
+    fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, MaybeAs< 'a, Cell, Kind > ) >
     {
       self.fields().map
       (
         move | ( key, cell ) |
         {
-          match cell
+          match cell.0
           {
-            Some( cell ) => ( key, Some( cell.into_owned() ) ),
-            None => ( key, None )
+            Some( cell ) => ( key, cell.into() ),
+            None => ( key, MaybeAs::none() )
           }
         }
       )
