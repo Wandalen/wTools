@@ -17,12 +17,13 @@ pub( crate ) mod private
   pub struct AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
   (
     &'a T,
-    ::core::marker::PhantomData< ( &'a (), fn () -> ( RowKey, Row, CellKey, Cell, Title ) ) >,
+    ::core::marker::PhantomData< ( &'a (), fn () -> ( RowKey, Row, CellKey, Box< Cell >, Title ) ) >,
   )
   where
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Title : fmt::Debug,
-    Cell : fmt::Debug + Clone + 'a,
+    Cell : fmt::Debug + 'a,
+    Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone,
   ;
 
@@ -30,7 +31,8 @@ pub( crate ) mod private
   where
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Title : fmt::Debug,
-    Cell : fmt::Debug + Clone + 'a,
+    Cell : fmt::Debug + 'a,
+    Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone,
   {
     /// Just a constructor.
@@ -44,7 +46,8 @@ pub( crate ) mod private
   where
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Title : fmt::Debug,
-    Cell : fmt::Debug + Clone + 'a,
+    Cell : fmt::Debug + 'a,
+    Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone,
   {
     fn as_ref( &self ) -> &T
@@ -57,7 +60,8 @@ pub( crate ) mod private
   where
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Title : fmt::Debug,
-    Cell : fmt::Debug + Clone + 'a,
+    Cell : fmt::Debug + 'a,
+    Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone,
   {
     type Target = T;
@@ -73,7 +77,8 @@ pub( crate ) mod private
   where
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Title : fmt::Debug,
-    Cell : fmt::Debug + Clone + 'a,
+    Cell : fmt::Debug + 'a,
+    Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone,
   {
     fn from( table : &'a T ) -> Self
@@ -87,7 +92,8 @@ pub( crate ) mod private
     T : fmt::Debug,
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Title : fmt::Debug,
-    Cell : fmt::Debug + Clone + 'a,
+    Cell : std::borrow::ToOwned + ?Sized,
+    Cell : fmt::Debug + 'a,
     CellKey : fmt::Debug + Clone,
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result

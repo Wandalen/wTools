@@ -28,7 +28,8 @@ pub( crate ) mod private
   pub trait TableRows< 'a, RowKey, Row, CellKey, Cell >
   where
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
-    Cell : fmt::Debug + Clone + 'a,
+    Cell : fmt::Debug + 'a,
+    Cell : std::borrow::ToOwned + ?Sized,
   {
     /// Returns an iterator over all rows of the table.
     fn rows( &'a self ) -> impl IteratorTrait< Item = Row >;
@@ -46,7 +47,9 @@ pub( crate ) mod private
   /// A trait for iterating over all cells of a row.
   pub trait Cells< 'a, CellKey, Cell, Kind >
   where
-    Cell : fmt::Debug + Clone + 'a,
+    Cell : fmt::Debug + 'a,
+    // &'a Cell : Clone,
+    Cell : std::borrow::ToOwned + ?Sized,
     Kind : Copy + 'static,
   {
     /// Returns an iterator over all cells of the row.
@@ -63,7 +66,8 @@ pub( crate ) mod private
     Self : TableRows< 'a, RowKey, Row, CellKey, Cell >,
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Title : fmt::Debug,
-    Cell : fmt::Debug + Clone + 'a,
+    Cell : fmt::Debug + 'a,
+    Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone,
   {
     fn table_size( &'a self ) -> [ usize ; 2 ]
@@ -89,7 +93,8 @@ pub( crate ) mod private
     T : Fields< 'a, RowKey, Option< Cow< 'a, Row > > >,
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Title : fmt::Debug,
-    Cell : fmt::Debug + Clone + 'a,
+    Cell : fmt::Debug + 'a,
+    Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone,
   {
 
@@ -107,43 +112,44 @@ pub( crate ) mod private
 
   }
 
-  impl< 'a, T, RowKey, Row, CellKey, Cell > TableHeader< 'a, CellKey, CellKey >
-  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKey >
-  where
-    Self : TableRows< 'a, RowKey, Row, CellKey, Cell >,
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
-    CellKey : fmt::Debug + Clone,
-    Cell : fmt::Debug + Clone + 'a,
-    CellKey : fmt::Debug + Clone,
-  {
-
-    fn header( &'a self ) -> Option< impl IteratorTrait< Item = ( CellKey, CellKey ) > >
-    {
-      let mut rows = self.rows();
-      let row = rows.next();
-      if let Some( row ) = row
-      {
-        Some
-        (
-          row
-          .cells()
-          .map( | ( key, _title ) | ( key.clone(), key ) )
-          .collect::< Vec< _ > >()
-          .into_iter()
-        )
-      }
-      else
-      {
-        None
-      }
-    }
-
-  }
+//   impl< 'a, T, RowKey, Row, CellKey, Cell > TableHeader< 'a, CellKey, CellKey >
+//   for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKey >
+//   where
+//     Self : TableRows< 'a, RowKey, Row, CellKey, Cell >,
+//     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
+//     CellKey : fmt::Debug + Clone,
+//     Cell : fmt::Debug + 'a,
+//     CellKey : fmt::Debug + Clone,
+//   {
+//
+//     fn header( &'a self ) -> Option< impl IteratorTrait< Item = ( CellKey, CellKey ) > >
+//     {
+//       let mut rows = self.rows();
+//       let row = rows.next();
+//       if let Some( row ) = row
+//       {
+//         Some
+//         (
+//           row
+//           .cells()
+//           .map( | ( key, _title ) | ( key.clone(), key ) )
+//           .collect::< Vec< _ > >()
+//           .into_iter()
+//         )
+//       }
+//       else
+//       {
+//         None
+//       }
+//     }
+//
+//   }
 
   impl< 'a, Kind, Row, CellKey, Cell > Cells< 'a, CellKey, Cell, Kind >
   for Row
   where
     Row : Fields< 'a, CellKey, MaybeAs< 'a, Cell, Kind > > + 'a,
+    MaybeAs< 'a, Cell, Kind > : Clone,
     Cell : fmt::Debug + Clone + 'a,
     Kind : Copy + 'static,
   {
