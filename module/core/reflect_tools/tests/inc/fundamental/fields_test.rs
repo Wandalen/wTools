@@ -10,6 +10,8 @@ use the_module::
   // WithDebug,
 };
 
+// xxx2 : check
+
 use std::
 {
   // fmt,
@@ -53,19 +55,19 @@ for TestObject
 
 //
 
-#[ allow( dead_code ) ]
-fn is_borrowed< 'a, T : Clone >( src : &Option< Cow< 'a, T > > ) -> bool
-{
-  if src.is_none()
-  {
-    return false;
-  }
-  match src.as_ref().unwrap()
-  {
-    Cow::Borrowed( _ ) => true,
-    Cow::Owned( _ ) => false,
-  }
-}
+// #[ allow( dead_code ) ]
+// fn is_borrowed< 'a, T : Clone >( src : &Option< Cow< 'a, T > > ) -> bool
+// {
+//   if src.is_none()
+//   {
+//     return false;
+//   }
+//   match src.as_ref().unwrap()
+//   {
+//     Cow::Borrowed( _ ) => true,
+//     Cow::Owned( _ ) => false,
+//   }
+// }
 
 //
 
@@ -92,10 +94,10 @@ fn basic()
   let fields : Vec< ( &str, MaybeAs< '_, String, () > ) > = test_object.fields().collect();
 
   assert_eq!( fields.len(), 4 );
-  assert!( is_borrowed( &fields[ 0 ].1 ) );
-  assert!( !is_borrowed( &fields[ 1 ].1 ) );
-  assert!( !is_borrowed( &fields[ 2 ].1 ) );
-  assert!( !is_borrowed( &fields[ 3 ].1 ) );
+  assert!( fields[ 0 ].1.is_borrowed() );
+  assert!( !fields[ 1 ].1.is_borrowed() );
+  assert!( !fields[ 2 ].1.is_borrowed() );
+  assert!( !fields[ 3 ].1.is_borrowed() );
   assert_eq!( fields[ 0 ], ( "id", Some( Cow::Borrowed( &"12345".to_string() ) ).into() ) );
   assert_eq!( fields[ 1 ], ( "created_at", Some( Cow::Owned( "1627845583".to_string() ) ).into() ) );
   assert_eq!( fields[ 2 ], ( "file_ids", Some( Cow::Owned( "[\"file1\", \"file2\"]".to_string() ) ).into() ) );

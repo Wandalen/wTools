@@ -75,12 +75,12 @@ pub( crate ) mod private
     fn table_to_string( &'a self ) -> String
     {
       let mut output = String::new();
-      let mut formatter = Context
+      let mut context = Context
       {
         buf : &mut output,
         styles : Styles::default(),
       };
-      T::fmt( self, &mut formatter ).expect( "Formatting failed" );
+      T::fmt( self, &mut context ).expect( "Formatting failed" );
       output
     }
   }
@@ -104,7 +104,7 @@ pub( crate ) mod private
     Self : TableRows< 'a, RowKey, Row, CellKey, Cell >,
     Self : TableHeader< 'a, CellKey, Title >,
     Self : TableSize< 'a >,
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + Clone + 'a,
     CellKey : fmt::Debug + Clone,
@@ -140,7 +140,7 @@ pub( crate ) mod private
         (
           | ( _key, cell ) |
           {
-            match cell
+            match cell.0
             {
               Some( cell ) => format!( "{:?}", &cell ),
               None => "".to_string(),

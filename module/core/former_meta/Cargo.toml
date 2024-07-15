@@ -1,6 +1,6 @@
 [package]
 name = "former_meta"
-version = "2.6.0"
+version = "2.7.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -51,7 +51,7 @@ derive_from_components = []
 proc-macro = true
 
 [dependencies]
-macro_tools = { workspace = true, features = [ "attr", "attr_prop", "item_struct", "container_kind", "diag", "phantom", "generic_params", "generic_args", "typ", "derive" ] } # qqq : xxx : optimize set of features
+macro_tools = { workspace = true, features = [ "attr", "attr_prop", "ct", "item_struct", "container_kind", "diag", "phantom", "generic_params", "generic_args", "typ", "derive" ] } # qqq : xxx : optimize set of features
 former_types = { workspace = true, features = [ "types_component_assign" ] }
 iter_tools = { workspace = true }
 convert_case = { version = "0.6.0", default-features = false, optional = true, features = [] }

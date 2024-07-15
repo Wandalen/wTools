@@ -1,6 +1,6 @@
 [package]
 name = "reflect_tools"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -28,20 +28,18 @@ all-features = false
 
 default = [
   "enabled",
-  "reflect_reflect",
+  "reflect_types",
   "reflect_newtype",
 ]
 
 full = [
-  "enabled",
-  "reflect_reflect",
-  "reflect_newtype",
+  "default",
 ]
 enabled = [
   "reflect_tools_meta/enabled",
   "derive_tools/enabled"
 ]
-reflect_reflect = []
+reflect_types = []
 reflect_newtype = []
 
 [dependencies]

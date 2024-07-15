@@ -9,9 +9,14 @@ pub( crate ) mod private
   use std::
   {
     fmt,
+    borrow::Cow,
   };
 
   // ==
+
+  /// Marker type for returning reference representing instance instead of allocating new string.
+  #[ derive( Debug, Default, Clone, Copy ) ]
+  pub struct WithRef;
 
   /// Marker type for using Debug formatting.
   #[ derive( Debug, Default, Clone, Copy ) ]
@@ -31,41 +36,55 @@ pub( crate ) mod private
   pub trait ToStringWith< How >
   {
     /// Converts the type to a string using the specified formatting method.
-    fn to_string_with( &self ) -> String;
+    fn to_string_with< 's >( &'s self ) -> Cow< 's, str >;
   }
 
-  impl< T > ToStringWith< WithDebug > for T
+  impl< 'a, T > ToStringWith< WithRef > for T
   where
-    T : fmt::Debug,
-  {
-    /// Converts the type to a string using Debug formatting.
-    fn to_string_with( &self ) -> String
-    {
-      format!( "{:?}", self )
-    }
-  }
-
-  impl< T > ToStringWith< WithDisplay > for T
-  where
-    T : fmt::Display,
+    T : 'a,
+    T : AsRef< str >,
+    T : ?Sized,
   {
     /// Converts the type to a string using Display formatting.
-    fn to_string_with( &self ) -> String
+    #[ inline ]
+    fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
     {
-      format!( "{}", self )
+      Cow::Borrowed( self.as_ref() )
     }
   }
 
-  // impl ToStringWith< WithDisplay > for String
-  // {
-  //   /// Converts the type to a string using Display formatting.
-  //   fn to_string_with( &self ) -> String
-  //   {
-  //     format!( "x{}", self )
-  //   }
-  // }
+  impl< 'a, T > ToStringWith< WithDebug > for T
+  where
+    T : fmt::Debug,
+    T : ?Sized,
+  {
+    /// Converts the type to a string using Debug formatting.
+    #[ inline ]
+    fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
+    {
+      println!( " - WithDebug Ref {:?}", self );
+      Cow::Owned( format!( "{:?}", self ) )
+    }
+  }
+
+  impl< 'a, T > ToStringWith< WithDisplay > for T
+  where
+    T : 'a,
+    T : fmt::Display,
+    T : ?Sized,
+  {
+    /// Converts the type to a string using Display formatting.
+    #[ inline ]
+    fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
+    {
+      Cow::Owned( format!( "{}", self ) )
+    }
+  }
 
 }
+
+mod aref;
+// mod aref2;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
@@ -76,8 +95,10 @@ pub use own::*;
 pub mod own
 {
   use super::*;
+
   #[ doc( inline ) ]
   pub use orphan::*;
+
 }
 
 /// Orphan namespace of the module.
@@ -85,8 +106,21 @@ pub mod own
 pub mod orphan
 {
   use super::*;
+  pub use super::super::to_string;
+
   #[ doc( inline ) ]
   pub use exposed::*;
+
+  #[ doc( inline ) ]
+  pub use private::
+  {
+    WithDebug,
+    WithDisplay,
+    WithRef,
+    WithWell,
+    ToStringWith,
+  };
+
 }
 
 /// Exposed namespace of the module.
@@ -95,13 +129,7 @@ pub mod exposed
 {
   use super::*;
   #[ doc( inline ) ]
-  pub use private::
-  {
-    WithDebug,
-    WithDisplay,
-    WithWell,
-    ToStringWith,
-  };
+  pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.

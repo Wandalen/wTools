@@ -1,6 +1,6 @@
 [package]
 name = "format_tools"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -40,9 +40,8 @@ enabled = [
 
 [dependencies]
 # derive_tools = { workspace = true, features = [ "derive_from", "derive_inner_from" ] }
-reflect_tools = { workspace = true, features = [ "reflect_reflect" ] }
-former = { workspace = true, features = [ "full" ] }
-# qqq : xxx : optmize set of features
+reflect_tools = { workspace = true, features = [ "reflect_types" ] }
+former = { workspace = true, features = [ "derive_former" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }

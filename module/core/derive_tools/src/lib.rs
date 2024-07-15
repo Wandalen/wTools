@@ -43,8 +43,6 @@ mod derive_more
   pub use ::derive_more::Constructor;
   #[ cfg( feature = "derive_error" ) ]
   pub use ::derive_more::Error;
-  #[ cfg( feature = "derive_index_mut" ) ]
-  pub use ::derive_more::IndexMut;
   #[ cfg( feature = "derive_into" ) ]
   pub use ::derive_more::Into;
   // #[ cfg( feature = "derive_iterator" ) ]

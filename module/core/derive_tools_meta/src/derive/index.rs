@@ -1,10 +1,10 @@
 use super::*;
 use macro_tools::
 {
-  attr, 
-  diag, 
+  attr,
+  diag,
   generic_params,
-  struct_like::StructLike, 
+  struct_like::StructLike,
   Result
 };
 
@@ -25,12 +25,12 @@ pub fn index( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
  
   let item_attrs = ItemAttributes::from_attrs( parsed.attrs().iter() )?;
 
-  let ( _generics_with_defaults, generics_impl, generics_ty, generics_where ) 
+  let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
   = generic_params::decompose( &parsed.generics() );
 
-  let result = match parsed 
+  let result = match parsed
   {
-    StructLike::Struct( ref item ) => 
+    StructLike::Struct( ref item ) =>
     generate_struct
     (
       item_name,
@@ -41,13 +41,13 @@ pub fn index( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
       &item.fields,
 
     ),
-    StructLike::Enum( _ ) => 
+    StructLike::Enum( _ ) =>
     unimplemented!( "Index not implemented for Enum" ),
-    StructLike::Unit( _ ) => 
+    StructLike::Unit( _ ) =>
     unimplemented!( "Index not implemented for Unit" ),
   }?;
 
-  if has_debug 
+  if has_debug
   {
     let about = format!( "derive : Not\nstructure : {item_name}" );
     diag::report_print( about, &original_input, &result );
@@ -56,7 +56,7 @@ pub fn index( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
   Ok( result )
 }
 
-/// An aggregator function to generate `Index` implementation for tuple and named structs 
+/// An aggregator function to generate `Index` implementation for tuple and named structs
 fn generate_struct
 (
   item_name : &syn::Ident,
@@ -65,13 +65,13 @@ fn generate_struct
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
   fields : &syn::Fields,
-) 
--> Result< proc_macro2::TokenStream > 
+)
+-> Result< proc_macro2::TokenStream >
 {
 
-  match fields 
+  match fields
   {
-    syn::Fields::Named( fields ) => 
+    syn::Fields::Named( fields ) =>
     generate_struct_named_fields
     (
       item_name, 
@@ -81,18 +81,18 @@ fn generate_struct
       generics_where, 
       fields
     ),
-    
-    syn::Fields::Unnamed( fields ) => 
+
+    syn::Fields::Unnamed( fields ) =>
     generate_struct_tuple_fields
     (
-      item_name, 
-      generics_impl, 
-      generics_ty, 
-      generics_where, 
+      item_name,
+      generics_impl,
+      generics_ty,
+      generics_where,
       fields
     ),
 
-    syn::Fields::Unit => 
+    syn::Fields::Unit =>
     unimplemented!( "Index not implemented for Unit" ),
   }
 }
@@ -136,8 +136,8 @@ fn generate_struct_named_fields
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
   fields : &syn::FieldsNamed,
-) 
--> Result< proc_macro2::TokenStream > 
+)
+-> Result< proc_macro2::TokenStream >
 {
 
   let fields = fields.named.clone();
@@ -212,7 +212,7 @@ fn generate_struct_named_fields
 
   Ok
   (
-    qt! 
+    qt!
     {
       #[ automatically_derived ]
       impl< #generics_impl > ::core::ops::Index< usize > for #item_name< #generics_ty >
@@ -268,8 +268,8 @@ fn generate_struct_tuple_fields
   generics_ty : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma >,
   generics_where : &syn::punctuated::Punctuated< syn::WherePredicate, syn::token::Comma >,
   fields : &syn::FieldsUnnamed,
-) 
--> Result< proc_macro2::TokenStream > 
+)
+-> Result< proc_macro2::TokenStream >
 {
   let fields = fields.unnamed.clone();
   let non_empty_attrs : Vec< &syn::Field > = fields
@@ -330,7 +330,7 @@ fn generate_struct_tuple_fields
   
   Ok
   (
-    qt! 
+    qt!
     {
       #[ automatically_derived ]
       impl< #generics_impl > ::core::ops::Index< usize > for #item_name< #generics_ty >

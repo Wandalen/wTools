@@ -6,9 +6,8 @@ use the_module::
   Fields,
   IteratorTrait,
   MaybeAs,
-  ToStringWith,
-  WithDebug,
-  WithDisplay,
+  WithRef,
+  ref_or_debug::field,
 };
 
 use std::
@@ -28,53 +27,20 @@ pub struct TestObject
   pub tools : Option< Vec< HashMap< String, String > > >,
 }
 
-impl< 'a, How > Fields< 'a, &'static str, MaybeAs< 'a, String, How > >
+impl< 'a > Fields< 'a, &'static str, MaybeAs< 'a, str, WithRef > >
 for TestObject
-where
-  How : Clone + Copy + 'static,
-  String : ToStringWith< How >,
-  i64 : ToStringWith< How >,
-  Vec< String > : ToStringWith< How >,
-  Vec< HashMap< String, String > > : ToStringWith< How >,
 {
-  fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, String, How > ) >
+  fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, str, WithRef > ) >
   {
-    let mut dst : Vec< ( &'static str, MaybeAs< 'a, String, How > ) > = Vec::new();
+    let mut dst : Vec< ( &'static str, MaybeAs< 'a, str, WithRef > ) > = Vec::new();
 
-    fn from< 'a, V, How >( src : &'a V ) -> MaybeAs< 'a, String, How >
-    where
-      How : Clone + Copy + 'static,
-      V : ToStringWith< How > + 'a,
-    {
-      MaybeAs::< 'a, String, How >::from
-      (
-        < V as ToStringWith< How > >::to_string_with( src )
-      )
-    }
-
-    fn add< 'a, V, How >
-    (
-      dst : &mut Vec< ( &'static str, MaybeAs< 'a, String, How > ) >,
-      key : &'static str,
-      src : &'a V
-    )
-    where
-      How : Clone + Copy + 'static,
-      V : ToStringWith< How > + 'a,
-    {
-      let val = from( src );
-      dst.push( ( key, val ) );
-    }
-
-    dst.push( ( "id", from( &self.id ) ) );
-    // add( &mut dst, "id", &self.id );
-    // dst.push( ( "id", MaybeAs::< 'a, String, How >::from( &self.id ) ) );
-    add( &mut dst, "created_at", &self.created_at );
-    add( &mut dst, "file_ids", &self.file_ids );
+    dst.push( field!( &self.id ) );
+    dst.push( field!( &self.created_at ) );
+    dst.push( field!( &self.file_ids ) );
 
     if let Some( tools ) = &self.tools
     {
-      add( &mut dst, "tools", tools );
+      dst.push( field!( tools ) );
     }
     else
     {
@@ -87,24 +53,8 @@ where
 
 //
 
-#[ allow( dead_code ) ]
-fn is_borrowed< 'a, T : Clone >( src : &Option< Cow< 'a, T > > ) -> bool
-{
-  if src.is_none()
-  {
-    return false;
-  }
-  match src.as_ref().unwrap()
-  {
-    Cow::Borrowed( _ ) => true,
-    Cow::Owned( _ ) => false,
-  }
-}
-
-//
-
 #[ test ]
-fn basic()
+fn basic_with_ref_display_debug()
 {
   let test_object = TestObject
   {
@@ -123,15 +73,18 @@ fn basic()
     ),
   };
 
-  let fields : Vec< ( &str, MaybeAs< '_, String, WithDebug > ) > = test_object.fields().collect();
+  let fields : Vec< ( &str, MaybeAs< '_, str, WithRef > ) > =
+  Fields::< '_, &'static str, MaybeAs< '_, str, WithRef > >::fields( &test_object ).collect();
+
+  // let fields : Vec< ( &str, MaybeAs< '_, str, WithRef > ) > = test_object.fields().collect();
 
   assert_eq!( fields.len(), 4 );
-  // assert!( is_borrowed( &fields[ 0 ].1 ) );
-  // assert!( !is_borrowed( &fields[ 1 ].1 ) );
-  // assert!( !is_borrowed( &fields[ 2 ].1 ) );
-  // assert!( !is_borrowed( &fields[ 3 ].1 ) );
-  // xxx
-  assert_eq!( fields[ 0 ], ( "id", Some( Cow::Borrowed( &"\"12345\"".to_string() ) ).into() ) );
+  assert!( fields[ 0 ].1.is_borrowed() );
+  assert!( !fields[ 1 ].1.is_borrowed() );
+  assert!( !fields[ 2 ].1.is_borrowed() );
+  assert!( !fields[ 3 ].1.is_borrowed() );
+  assert_eq!( fields[ 0 ], ( "id", Some( Cow::Borrowed( "12345" ) ).into() ) );
+  assert_eq!( fields[ 0 ], ( "id", Some( Cow::Owned( "12345".to_string() ) ).into() ) );
   assert_eq!( fields[ 1 ], ( "created_at", Some( Cow::Owned( "1627845583".to_string() ) ).into() ) );
   assert_eq!( fields[ 2 ], ( "file_ids", Some( Cow::Owned( "[\"file1\", \"file2\"]".to_string() ) ).into() ) );
   assert_eq!( fields[ 3 ].0, "tools" );

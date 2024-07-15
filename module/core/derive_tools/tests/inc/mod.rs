@@ -25,6 +25,7 @@ mod all_manual_test;
     feature = "derive_deref_mut",
     feature = "derive_from",
     feature = "derive_index",
+    feature = "derive_index_mut",
     feature = "derive_inner_from",
     feature = "derive_phantom"
   )
@@ -332,3 +333,39 @@ mod index_tests
     }
   }
 }
+
+#[ cfg( feature = "derive_index_mut" ) ]
+#[ path = "index_mut" ]
+mod index_mut_tests
+{
+  #[ allow( unused_imports ) ]
+  use super::*;
+  mod struct_named; 
+  mod struct_multiple_named_field; 
+  mod struct_multiple_named_item; 
+  mod struct_named_manual;
+  mod struct_multiple_named_manual;
+  mod struct_tuple;
+  mod struct_multiple_tuple;
+  mod struct_tuple_manual;
+  mod struct_multiple_tuple_manual;
+  mod struct_collisions;
+
+  only_for_terminal_module!
+  {
+    #[ test_tools::nightly ]
+    #[ test ]
+    fn index_mut_trybuild()
+    {
+
+      println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+      let t = test_tools::compiletime::TestCases::new();
+
+      t.compile_fail( "tests/inc/index_mut/compiletime/struct.rs" );
+      t.compile_fail( "tests/inc/index_mut/compiletime/struct_unit.rs" );
+      t.compile_fail( "tests/inc/index_mut/compiletime/struct_named_empty.rs" );
+      t.compile_fail( "tests/inc/index_mut/compiletime/enum.rs" );
+    }
+  }
+} 
+
