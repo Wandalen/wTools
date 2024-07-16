@@ -7,9 +7,12 @@ pub( crate ) mod private
 {
 
   use crate::*;
-  use core::ops::{ Deref };
-  use core::marker::PhantomData;
-  use core::fmt;
+  use core::
+  {
+    ops::{ Deref },
+    marker::PhantomData,
+    fmt,
+  };
 
   /// Transparent wrapper for table-like structures.
   #[ repr( transparent ) ]
