@@ -5,8 +5,8 @@ use super::tools::*;
 mod private
 {
 
-  /// layer_b_protected
-  pub fn layer_b_protected() -> bool
+  /// layer_b_own
+  pub fn layer_b_own() -> bool
   {
     true
   }
@@ -42,7 +42,7 @@ pub struct SubStruct2
 mod_interface!
 {
 
-  protected use layer_b_protected;
+  own use layer_b_own;
   orphan use { layer_b_orphan };
   exposed use { layer_b_exposed };
   prelude use layer_b_prelude;

@@ -37,33 +37,33 @@ pub mod private
     {
       true
     }
-  
+
     #[ inline( always ) ]
     fn len( &self ) -> usize
     {
       self.len
     }
-  
+
     #[ inline( always ) ]
     fn type_name( &self ) -> &'static str
     {
       core::any::type_name::< &'static [ T ] >()
     }
-  
+
     #[ inline( always ) ]
     fn type_id( &self ) -> core::any::TypeId
     {
       core::any::TypeId::of::< &'static [ T ] >()
     }
-  
+
     #[ inline( always ) ]
     fn elements( &self ) -> Box< dyn Iterator< Item = KeyVal > >
     {
-  
+
       let result : Vec< KeyVal > = ( 0 .. self.len() )
       .map( | k | KeyVal { key : Primitive::usize( k ), val : Box::new( < T as Instance >::Reflect() ) } )
       .collect();
-  
+
       Box::new( result.into_iter() )
     }
   }
@@ -71,33 +71,36 @@ pub mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
-  // pub use super::private::
+  pub use exposed::*;
+  // pub use private::
   // {
   // };
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 }
 
 #[ doc( inline ) ]
@@ -105,6 +108,8 @@ pub mod exposed
 pub use exposed::*;
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

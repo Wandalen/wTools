@@ -6,7 +6,7 @@ use super::*;
 #[test]
 fn named_fields_with_named_fields()
 {
-  use syn::{parse_quote, punctuated::Punctuated, Field, token::Comma};
+  use syn::{ parse_quote, punctuated::Punctuated, Field, token::Comma };
   use the_module::derive;
 
   let ast: syn::DeriveInput = parse_quote!

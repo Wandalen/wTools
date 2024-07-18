@@ -4,7 +4,7 @@
 //!
 
 use crate::*;
-use former_types::Assign;
+use components::Assign;
 
 /// Default marker for `AttributePropertyOptionalSingletone`.
 /// Used if no marker is defined as parameter.

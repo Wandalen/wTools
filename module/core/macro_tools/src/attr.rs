@@ -50,7 +50,7 @@ pub( crate ) mod private
   /// ```
   ///
 
-  pub fn has_debug< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> Result< bool >
+  pub fn has_debug< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> syn::Result< bool >
   {
     for attr in attrs
     {
@@ -211,7 +211,7 @@ pub( crate ) mod private
   impl syn::parse::Parse
   for AttributesInner
   {
-    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       // let mut result : Self = from!();
       let mut result : Self = Default::default();
@@ -286,7 +286,7 @@ pub( crate ) mod private
   impl syn::parse::Parse
   for AttributesOuter
   {
-    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       let mut result : Self = Default::default();
       loop
@@ -321,6 +321,46 @@ pub( crate ) mod private
     }
   }
 
+  impl syn::parse::Parse
+  for Many< AttributesInner >
+  {
+    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
+    {
+      let mut result = Self::new();
+      loop
+      {
+        // let lookahead = input.lookahead1();
+        if !input.peek( Token![ # ] )
+        {
+          break;
+        }
+        result.0.push( input.parse()? );
+      }
+      Ok( result )
+    }
+  }
+
+  impl syn::parse::Parse
+  for Many< AttributesOuter >
+  {
+    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
+    {
+      let mut result = Self::new();
+      loop
+      {
+        // let lookahead = input.lookahead1();
+        if !input.peek( Token![ # ] )
+        {
+          break;
+        }
+        result.0.push( input.parse()? );
+      }
+      Ok( result )
+    }
+  }
+
+  impl AsMuchAsPossibleNoDelimiter for syn::Item {}
+
   /// Trait for components of a structure aggregating attributes that can be constructed from a meta attribute.
   ///
   /// The `AttributeComponent` trait defines the interface for components that can be created
@@ -335,7 +375,7 @@ pub( crate ) mod private
   /// # Example
   ///
   /// ```rust
-  /// use macro_tools::{ AttributeComponent, Result };
+  /// use macro_tools::{ AttributeComponent, syn::Result };
   /// use syn::{ Attribute, Error };
   ///
   /// struct MyComponent;
@@ -344,7 +384,7 @@ pub( crate ) mod private
   /// {
   ///   const KEYWORD : &'static str = "my_component";
   ///
-  ///   fn from_meta( attr : &Attribute ) -> Result<Self>
+  ///   fn from_meta( attr : &Attribute ) -> syn::Result<Self>
   ///   {
   ///     // Parsing logic here
   ///     // Return Ok(MyComponent) if parsing is successful
@@ -360,7 +400,7 @@ pub( crate ) mod private
   ///
   /// # Returns
   ///
-  /// A `Result` containing the constructed component if successful, or an error if the parsing fails.
+  /// A `syn::Result` containing the constructed component if successful, or an error if the parsing fails.
   ///
   pub trait AttributeComponent
   where
@@ -384,59 +424,27 @@ pub( crate ) mod private
     ///
     /// # Returns
     ///
-    /// A `Result` containing the constructed component if successful, or an error if the parsing fails.
-    fn from_meta( attr : &syn::Attribute ) -> Result< Self >;
-  }
+    /// A `syn::Result` containing the constructed component if successful, or an error if the parsing fails.
+    fn from_meta( attr : &syn::Attribute ) -> syn::Result< Self >;
 
-  /// Trait for properties of an attribute component that can be identified by a keyword.
-  ///
-  /// The `AttributePropertyComponent` trait defines the interface for attribute properties
-  /// that can be identified by a specific keyword. Implementors of this trait are required
-  /// to define a constant `KEYWORD` that identifies the type of the property.
-  ///
-  /// This trait is useful in scenarios where attributes may have multiple properties
-  /// that need to be parsed and handled separately. By defining a unique keyword for each property,
-  /// the parsing logic can accurately identify and process each property.
-  ///
-  /// # Example
-  ///
-  /// ```rust
-  /// use macro_tools::AttributePropertyComponent;
-  ///
-  /// struct MyProperty;
-  ///
-  /// impl AttributePropertyComponent for MyProperty
-  /// {
-  ///   const KEYWORD : &'static str = "my_property";
-  /// }
-  /// ```
-  ///
-  pub trait AttributePropertyComponent
-  where
-    Self : Sized,
-  {
-    /// The keyword that identifies the component.
-    ///
-    /// This constant is used to match the attribute to the corresponding property.
-    /// Each implementor of this trait must provide a unique keyword for its type.
-    const KEYWORD : &'static str;
+    // zzz : redo maybe
   }
 
 }
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     // equation,
     has_debug,
@@ -445,33 +453,35 @@ pub mod protected
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as attr;
+  use super::*;
+  pub use super::super::attr;
+
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     AttributesInner,
     AttributesOuter,
-
     AttributeComponent,
-    AttributePropertyComponent,
   };
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

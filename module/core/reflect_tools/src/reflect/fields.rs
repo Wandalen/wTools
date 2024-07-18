@@ -49,20 +49,7 @@ pub( crate ) mod private
   {
     /// Returns an iterator over all fields of the specified type within the entity.
     fn fields( &'a self ) -> impl IteratorTrait< Item = ( K, V ) >;
-    // fn fields( &'a self ) -> impl IteratorTrait< Item = ( K, Option< Cow< 'a, V > > ) >;
   }
-
-  // /// Return number of fields convertible into a specified type withing an entity.
-  // ///
-  // /// # Type Parameters
-  // ///
-  // /// - `V`: The value type.
-  // ///
-  // pub trait FieldsLen< V >
-  // {
-  //   /// Return number of fields convertible into a specified type withing an entity.
-  //   fn len( &self ) -> usize;
-  // }
 
   /// Trait returning name of type of variable.
   pub trait TypeName
@@ -98,27 +85,31 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::*;
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     _IteratorTrait,
     IteratorTrait,
@@ -128,6 +119,8 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

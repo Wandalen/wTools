@@ -9,8 +9,8 @@ tests_impls!
 
     /* test.case( "root" ); */
     {
-      a_id!( layer_a::layer_a_protected(), true );
-      a_id!( layer_b::layer_b_protected(), true );
+      a_id!( layer_a::layer_a_own(), true );
+      a_id!( layer_b::layer_b_own(), true );
       a_id!( layer_a::layer_a_orphan(), true );
       a_id!( layer_b::layer_b_orphan(), true );
       a_id!( layer_a::layer_a_exposed(), true );
@@ -21,8 +21,8 @@ tests_impls!
 
     /* test.case( "root" ); */
     {
-      // a_id!( layer_a_protected(), true );
-      // a_id!( layer_b_protected(), true );
+      // a_id!( layer_a_own(), true );
+      // a_id!( layer_b_own(), true );
       a_id!( layer_a_orphan(), true );
       a_id!( layer_b_orphan(), true );
       a_id!( layer_a_exposed(), true );
@@ -33,20 +33,20 @@ tests_impls!
 
     /* test.case( "protected" ); */
     {
-      // a_id!( protected::layer_a_protected(), true );
-      // a_id!( protected::layer_b_protected(), true );
-      a_id!( protected::layer_a_orphan(), true );
-      a_id!( protected::layer_b_orphan(), true );
-      a_id!( protected::layer_a_exposed(), true );
-      a_id!( protected::layer_b_exposed(), true );
-      a_id!( protected::layer_a_prelude(), true );
-      a_id!( protected::layer_b_prelude(), true );
+      // a_id!( own::layer_a_own(), true );
+      // a_id!( own::layer_b_own(), true );
+      a_id!( own::layer_a_orphan(), true );
+      a_id!( own::layer_b_orphan(), true );
+      a_id!( own::layer_a_exposed(), true );
+      a_id!( own::layer_b_exposed(), true );
+      a_id!( own::layer_a_prelude(), true );
+      a_id!( own::layer_b_prelude(), true );
     }
 
     /* test.case( "orphan" ); */
     {
-      // a_id!( orphan::layer_a_protected(), true );
-      // a_id!( orphan::layer_b_protected(), true );
+      // a_id!( orphan::layer_a_own(), true );
+      // a_id!( orphan::layer_b_own(), true );
       // a_id!( orphan::layer_a_orphan(), true );
       // a_id!( orphan::layer_b_orphan(), true );
       a_id!( orphan::layer_a_exposed(), true );
@@ -57,8 +57,8 @@ tests_impls!
 
     /* test.case( "exposed" ); */
     {
-      // a_id!( exposed::layer_a_protected(), true );
-      // a_id!( exposed::layer_b_protected(), true );
+      // a_id!( exposed::layer_a_own(), true );
+      // a_id!( exposed::layer_b_own(), true );
       // a_id!( exposed::layer_a_orphan(), true );
       // a_id!( exposed::layer_b_orphan(), true );
       a_id!( exposed::layer_a_exposed(), true );
@@ -69,8 +69,8 @@ tests_impls!
 
     /* test.case( "prelude" ); */
     {
-      // a_id!( prelude::layer_a_protected(), true );
-      // a_id!( prelude::layer_b_protected(), true );
+      // a_id!( prelude::layer_a_own(), true );
+      // a_id!( prelude::layer_b_own(), true );
       // a_id!( prelude::layer_a_orphan(), true );
       // a_id!( prelude::layer_b_orphan(), true );
       // a_id!( prelude::layer_a_exposed(), true );

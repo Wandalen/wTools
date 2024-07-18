@@ -1,7 +1,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::protected::*;
+  use crate::own::*;
 
   /// Command to draw rectangle.
   #[ allow( dead_code ) ]

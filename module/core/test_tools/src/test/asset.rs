@@ -42,6 +42,6 @@ crate::mod_interface!
   // exposed use super;
   exposed use super::super::asset;
 
-  // protected use path_to_exe;
+  // own use path_to_exe;
 
 }

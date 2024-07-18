@@ -19,23 +19,24 @@ where
 
 //
 
-#[ derive( Debug, Clone ) ]
-struct Struct1< T1, T2 >
-where
-  T1 : ::core::fmt::Debug,
-  T2 : ::core::fmt::Debug,
-{
-  a : T1,
-  b : T2,
-}
-
-impl Trait1< i32, char > for Struct1< i32, char >
-{
-  fn dbg( &self ) -> String
-  {
-    format!( "{self:?}( {:?} {:?} )", self.a, self.b )
-  }
-}
+// xxx : review
+// #[ derive( Debug, Clone ) ]
+// struct Struct1< T1, T2 >
+// where
+//   T1 : ::core::fmt::Debug,
+//   T2 : ::core::fmt::Debug,
+// {
+//   a : T1,
+//   b : T2,
+// }
+//
+// impl Trait1< i32, char > for Struct1< i32, char >
+// {
+//   fn dbg( &self ) -> String
+//   {
+//     format!( "{self:?}( {:?} {:?} )", self.a, self.b )
+//   }
+// }
 
 //
 

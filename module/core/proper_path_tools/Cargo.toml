@@ -1,6 +1,6 @@
 [package]
 name = "proper_path_tools"
-version = "0.7.0"
+version = "0.8.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -24,19 +24,29 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = [ "enabled", "path_unique_folder_name" ]
-full = [ "enabled", "path_unique_folder_name", "derive_serde" ]
+default = [
+  "enabled",
+  "path_unique_folder_name",
+  "path_utf8",
+]
+full = [
+  "default",
+  "derive_serde",
+  "path_utf8",
+]
 no_std = []
 use_alloc = [ "no_std" ]
 enabled = [ "mod_interface/enabled" ]
 
 path_unique_folder_name = []
 derive_serde = [ "serde" ]
+path_utf8 = [ "camino" ]
 
 [dependencies]
 regex = { version = "1.10.3" }
 mod_interface = { workspace = true }
 serde = { version = "1.0.197", optional = true, features = [ "derive" ] }
+camino = { version = "1.1.7", optional = true, features = [] }
 
 [dev-dependencies]
 test_tools = { workspace = true }

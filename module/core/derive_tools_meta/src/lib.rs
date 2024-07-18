@@ -13,7 +13,10 @@
     feature = "derive_deref",
     feature = "derive_deref_mut",
     feature = "derive_from",
+    feature = "derive_index",
+    feature = "derive_index_mut",
     feature = "derive_inner_from",
+    feature = "derive_new",
     feature = "derive_variadic_from",
     feature = "derive_not",
     feature = "derive_phantom"
@@ -30,7 +33,10 @@ mod derive;
 //     feature = "derive_deref",
 //     feature = "derive_deref_mut",
 //     feature = "derive_from",
+//     feature = "derive_index",
+//     feature = "derive_index_mut",
 //     feature = "derive_inner_from",
+//     feature = "derive_new",
 //     feature = "derive_variadic_from",
 //     feature = "derive_not",
 //     feature = "derive_phantom"
@@ -618,3 +624,138 @@ pub fn phantom( _attr: proc_macro::TokenStream, input : proc_macro::TokenStream 
     Err( err ) => err.to_compile_error().into(),
   }
 }
+
+///
+/// Provides an automatic [Index](core::ops::Index) trait implementation when-ever it's possible.
+///
+/// This macro simplifies the indexing syntax of struct type.
+///
+/// ## Example Usage
+//
+/// Instead of manually implementing `Index< T >` for `IsTransparent`:
+///
+/// ```rust
+/// use core::ops::Index;
+///
+/// pub struct IsTransparent< T >
+/// {
+///     a : Vec< T >,
+/// }
+///
+/// impl< T > Index< usize > for IsTransparent< T > 
+/// {
+///   type Output = T;
+///
+///   #[ inline( always ) ]
+///   fn index( &self, index : usize ) -> &Self::Output 
+///   {
+///     &self.a[ index ]
+///   }
+/// }
+/// ```
+///
+/// Use `#[ index ]` to automatically generate the implementation:
+///
+/// ```rust
+/// use derive_tools_meta::*;
+/// 
+/// #[ derive( Index ) ]
+/// pub struct IsTransparent< T > 
+/// {
+///  #[ index ]
+///   a : Vec< T >  
+/// };
+/// ```
+///
+
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_index" ) ]
+#[ proc_macro_derive
+( 
+  Index, 
+  attributes
+  ( 
+    debug, // item 
+    index, // field
+  ) 
+)]
+pub fn derive_index( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+{
+  let result = derive::index::index( input );
+  match result
+  {
+    Ok( stream ) => stream.into(),
+    Err( err ) => err.to_compile_error().into(),
+  }
+}
+
+///
+/// Provides an automatic [IndexMut](core::ops::IndexMut) trait implementation when-ever it's possible.
+///
+/// This macro simplifies the indexing syntax of struct type.
+///
+/// ## Example Usage
+//
+/// Instead of manually implementing `IndexMut< T >` for `IsTransparent`:
+///
+/// ```rust
+/// use core::ops::{ Index, IndexMut };
+/// pub struct IsTransparent< T >
+/// {
+///     a : Vec< T >,
+/// }
+///
+/// impl< T > Index< usize > for IsTransparent< T > 
+/// {
+///   type Output = T;
+///
+///   #[ inline( always ) ]
+///   fn index( &self, index : usize ) -> &Self::Output 
+///   {
+///     &self.a[ index ]
+///   }
+/// }
+///
+/// impl< T > IndexMut< usize > for IsTransparent< T >
+/// {
+///   fn index_mut( &mut self, index : usize ) -> &mut Self::Output 
+///   {
+///     &mut self.a[ index ]
+///   }
+/// }
+/// ```
+///
+/// Use `#[ index ]` on field or `#[ index( name = field_name )]` on named items to automatically generate the implementation:
+///
+/// ```rust
+/// use derive_tools_meta::*;
+/// #[derive( IndexMut )]
+/// pub struct IsTransparent< T > 
+/// { 
+///   #[ index ]
+///   a : Vec< T >  
+/// };
+/// ```
+///
+
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "derive_index_mut" ) ]
+#[ proc_macro_derive
+( 
+  IndexMut, 
+  attributes
+  ( 
+    debug, // item 
+    index, // field
+  ) 
+)]
+pub fn derive_index_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
+{
+  let result = derive::index_mut::index_mut( input );
+  match result
+  {
+    Ok( stream ) => stream.into(),
+    Err( err ) => err.to_compile_error().into(),
+  }
+}
+

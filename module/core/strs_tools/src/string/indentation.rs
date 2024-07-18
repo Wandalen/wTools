@@ -79,42 +79,46 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
-  pub use super::orphan::*;
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  use super::*;
+  pub use orphan::*;
+  pub use private::
   {
   };
 }
 
 /// Parented namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  use super::*;
+  pub use exposed::*;
+  pub use private::
   {
   };
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as indentation;
+  use super::*;
+  pub use super::own as indentation;
 
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     indentation,
   };
 }
 
 /// Namespace of the module to include with `use module::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

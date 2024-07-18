@@ -221,43 +221,47 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::a_id as assert_eq;
+  pub use exposed::*;
+
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::a_not_id as assert_ne;
+  pub use private::a_id as assert_eq;
+  #[ doc( inline ) ]
+  pub use private::a_not_id as assert_ne;
 
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 
   // #[ doc( inline ) ]
   // #[ allow( unused_imports ) ]
@@ -268,14 +272,13 @@ pub mod prelude
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::a_id;
+  pub use private::a_id;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::private::a_not_id;
+  pub use private::a_not_id;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     a_true,
     a_false,

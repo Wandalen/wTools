@@ -1,0 +1,23 @@
+name : drawql
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # drawql
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/blank/drawql/Cargo.toml'
+      module_name : 'drawql'
+      commit_message : ${{ github.event.head_commit.message }}

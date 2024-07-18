@@ -5,7 +5,7 @@ pub( crate ) mod private
   use std::collections::{ HashMap };
   use indexmap::IndexMap;
   use former::{ Former, StoragePreform };
-  use wtools::Itertools;
+  use iter_tools::Itertools;
 
   /// A description of a Value in a command. Used to specify the expected type and provide a hint for the Value.
   ///
@@ -103,12 +103,10 @@ pub( crate ) mod private
     /// Map of aliases.
     // Aliased key -> Original key
     pub properties_aliases : HashMap< String, String >,
-    // aaa : for Bohdan : routine should also be here
-    // aaa : here it is
     // qqq : make it usable and remove default(?)
     /// The type `Routine` represents the specific implementation of the routine.
     #[ scalar( setter = false ) ]
-    #[ former( default = Routine::from( Handler::from( || { panic!( "No routine available: A handler function for the command is missing" ) } ) ) ) ]
+    #[ former( default = Routine::from( Handler::< _, std::convert::Infallible >::from( || { panic!( "No routine available: A handler function for the command is missing" ) } ) ) ) ]
     pub routine : Routine,
   }
 
@@ -250,7 +248,7 @@ crate::mod_interface!
 {
   exposed use Command;
   exposed use CommandFormer;
-  protected use ValueDescription;
+  own use ValueDescription;
 }
 
 // qqq : use orphan instead of exposed for ALL files in the folder, dont use prelude for structs

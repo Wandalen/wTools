@@ -1,0 +1,7 @@
+error: proc-macro derive panicked
+ --> tests/inc/index_mut/compiletime/enum.rs:3:12
+  |
+3 | #[ derive( IndexMut ) ]
+  |            ^^^^^^^^
+  |
+  = help: message: not implemented: IndexMut not implemented for Enum

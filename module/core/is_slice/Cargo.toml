@@ -24,13 +24,9 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-# exclude = [ "/tests", "/examples", "-*" ]
-
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-no_std = []
-use_alloc = [ "no_std" ]
 enabled = []
 
 [dependencies]

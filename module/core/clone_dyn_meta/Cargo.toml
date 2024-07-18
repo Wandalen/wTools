@@ -1,6 +1,6 @@
 [package]
 name = "clone_dyn_meta"
-version = "0.19.0"
+version = "0.22.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -23,7 +23,7 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-# exclude = [ "/tests", "/examples", "-*" ]
+
 
 [lib]
 proc-macro = true
@@ -34,11 +34,8 @@ full = [ "enabled" ]
 enabled = [ "macro_tools/enabled", "former_types/enabled" ]
 
 [dependencies]
-macro_tools = { workspace = true } # qqq : xxx : optimize set of features
+macro_tools = { workspace = true, features = [ "attr", "attr_prop", "ct", "diag", "generic_params", "punctuated", "phantom", "item_struct", "quantifier" ] } # qqq : optimize set of features
 former_types = { workspace = true, features = [ "types_component_assign" ] }
-# xxx : incapsulate into macro_tools
-const_format = { version = "0.2.32" }
-# xxx : incapsulate into macro_tools
 
 [dev-dependencies]
 test_tools = { workspace = true }

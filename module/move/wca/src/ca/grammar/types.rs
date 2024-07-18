@@ -2,13 +2,14 @@ pub( crate ) mod private
 {
   use crate::*;
   use std::fmt::
-  { 
-    Display, 
-    Formatter 
+  {
+    Display,
+    Formatter
   };
-  use wtools;
-  use wtools::{ error::Result, err };
-  use wtools::Itertools;
+  // use wtools;
+  // use wtools::{ error::Result, err };
+  use error::err;
+  use iter_tools::Itertools;
 
   /// Available types that can be converted to a `Value`
   ///
@@ -46,7 +47,7 @@ pub( crate ) mod private
   pub trait TryCast< T >
   {
     /// return casted value
-    fn try_cast( &self, value : String ) -> Result< T >;
+    fn try_cast( &self, value : String ) -> error::untyped::Result< T >;
   }
 
   /// Container for a `Value` of a specific type
@@ -180,7 +181,7 @@ pub( crate ) mod private
 
   impl TryCast< Value > for Type
   {
-    fn try_cast( &self, value : String ) -> Result< Value >
+    fn try_cast( &self, value : String ) -> error::untyped::Result< Value >
     {
       match self
       {
@@ -193,7 +194,8 @@ pub( crate ) mod private
           let values = value
           .split( *delimeter )
           .map( | val | kind.try_cast( val.into() ) )
-          .collect::< Result< Vec< Value > > >()?;
+          .collect::< error::untyped::Result< Vec< Value > > >()?;
+          // qqq : avoid using fish notation whenever possible. review whole crate
           Ok( Value::List( values ) )
         },
       }

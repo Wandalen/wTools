@@ -61,8 +61,8 @@ mod_interface!
   use super::exposed::dt;
   use super::exposed::diagnostics;
 
-  protected use super::dependency;
-  protected use super::dependency::*;
+  own use super::dependency;
+  own use super::dependency::*;
 
   prelude use ::meta_tools as meta;
   prelude use ::mem_tools as mem;

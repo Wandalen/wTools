@@ -15,14 +15,15 @@ pub mod layout;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
   #[ cfg( feature = "diagnostics_runtime_assertions" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -38,19 +39,21 @@ pub mod protected
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
   #[ cfg( feature = "diagnostics_runtime_assertions" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
@@ -66,8 +69,10 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   #[ cfg( feature = "diagnostics_runtime_assertions" ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

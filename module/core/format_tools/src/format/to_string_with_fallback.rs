@@ -5,46 +5,78 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
+  use crate::*;
 
   pub use super::
   {
-    aref::ToStringWithFallbackRef,
-    params::ToStringWithFallbackParams,
+    aref::{ Ref, Ref2, Ref3 },
   };
 
-  use crate::ToStringWith;
+  use std::
+  {
+    borrow::Cow,
+  };
 
   // ==
 
   /// Trait to convert a type to a string with a fallback formatting.
-  pub trait _ToStringWithFallback< How, Fallback >
+  pub trait ToStringWithFallback< 'a, How, Fallback1, Fallback2 >
+  where
+    How : 'static,
+    Fallback1 : 'static,
+    Fallback2 : 'static,
   {
     /// Converts the type to a string using the specified formatting or a fallback.
-    fn to_string_with_fallback( self ) -> String
+    fn to_string_with_fallback( self ) -> Cow< 'a, str >
     ;
   }
 
-  impl< T, How, Fallback > _ToStringWithFallback< How, Fallback >
-  for ToStringWithFallbackRef< '_, T, ToStringWithFallbackParams< How, Fallback > >
+  impl< 'a, T, How, Fallback1, Fallback2 > ToStringWithFallback< 'a, How, Fallback1, Fallback2 >
+  for Ref< 'a, T, How, Fallback1, Fallback2 >
   where
-    T : ToStringWith< Fallback >,
+    T : ToStringWith< How > + ?Sized,
+    How : 'static,
+    Fallback1 : 'static,
+    Fallback2 : 'static,
   {
-    /// Converts the type to a string using the specified formatting.
-    fn to_string_with_fallback( self ) -> String
+    /// Converts the type to a string using the fallback formatting.
+    #[ inline ]
+    fn to_string_with_fallback( self ) -> Cow< 'a, str >
+    where
     {
-      < T as ToStringWith< Fallback > >::to_string_with( self.0 )
+      self.0.0.0.to_string_with()
     }
   }
 
-  impl< T, How, Fallback > _ToStringWithFallback< How, Fallback >
-  for &ToStringWithFallbackRef< '_, T, ToStringWithFallbackParams< How, Fallback > >
+  impl< 'a, T, How, Fallback1, Fallback2 > ToStringWithFallback< 'a, How, Fallback1, Fallback2 >
+  for Ref2< 'a, T, How, Fallback1, Fallback2 >
   where
-    T : ToStringWith< How >,
+    T : ToStringWith< Fallback1 > + ?Sized,
+    How : 'static,
+    Fallback1 : 'static,
+    Fallback2 : 'static,
   {
     /// Converts the type to a string using the fallback formatting.
-    fn to_string_with_fallback( self ) -> String
+    #[ inline ]
+    fn to_string_with_fallback( self ) -> Cow< 'a, str >
     {
-      < T as ToStringWith< How > >::to_string_with( self.0 )
+      self.0.0.to_string_with()
+    }
+  }
+
+  impl< 'a, T, How, Fallback1, Fallback2 > ToStringWithFallback< 'a, How, Fallback1, Fallback2 >
+  for Ref3< 'a, T, How, Fallback1, Fallback2 >
+  where
+    T : ToStringWith< Fallback2 > + ?Sized,
+    How : 'static,
+    Fallback1 : 'static,
+    Fallback2 : 'static,
+  {
+    /// Converts the type to a string using the specified formatting.
+    #[ inline ]
+    fn to_string_with_fallback( self ) -> Cow< 'a, str >
+    {
+      self.0.to_string_with()
     }
   }
 
@@ -54,7 +86,8 @@ pub( crate ) mod private
   ///
   /// # Parameters
   /// - `$how`: The primary formatting type (e.g., `WithDebug`, `WithDisplay`).
-  /// - `$fallback`: The fallback formatting type.
+  /// - `$fallback1`: The first fallback formatting type.
+  /// - `$fallback2`: The second fallback formatting type (optional).
   /// - `$src`: The source value to format.
   ///
   /// # Example
@@ -62,6 +95,7 @@ pub( crate ) mod private
   /// use core::fmt;
   /// use format_tools::
   /// {
+  ///   WithRef,
   ///   WithDebug,
   ///   WithDisplay,
   ///   to_string_with_fallback,
@@ -99,75 +133,130 @@ pub( crate ) mod private
   ///
   /// // Example usage: Using Both which implements both Debug and Display.
   /// let src = Both;
-  /// let got = to_string_with_fallback!( WithDisplay, WithDebug, src );
+  /// let got = to_string_with_fallback!( WithDisplay, WithDebug, &src );
   /// let exp = "This is display".to_string();
   /// // The primary formatting method WithDisplay is used.
   /// assert_eq!( got, exp );
   ///
   /// // Example usage: Using OnlyDebug which implements only Debug.
   /// let src = OnlyDebug;
-  /// let got = to_string_with_fallback!( WithDisplay, WithDebug, src );
+  /// let got = to_string_with_fallback!( WithDisplay, WithDebug, &src );
   /// let exp = "This is debug".to_string();
   /// // The primary formatting method WithDisplay is not available, so the fallback WithDebug is used.
   /// assert_eq!( got, exp );
+  ///
+  /// // Example usage: Using a struct that might need a second fallback.
+  /// struct OnlyDebugFallback;
+  ///
+  /// impl fmt::Debug for OnlyDebugFallback
+  /// {
+  ///   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+  ///   {
+  ///     write!( f, "This is debug fallback" )
+  ///   }
+  /// }
+  ///
+  /// // Example usage: Using OnlyDebugFallback which implements only Debug.
+  /// let src = OnlyDebugFallback;
+  /// let got = to_string_with_fallback!( WithRef, WithDisplay, WithDebug, &src );
+  /// let exp = "This is debug fallback".to_string();
+  /// // The primary formatting method WithDisplay is not available, so the second fallback WithDebugFallback is used.
+  /// assert_eq!( got, exp );
   /// ```
 
-  #[ macro_export( local_inner_macros ) ]
+  #[ macro_export ]
   macro_rules! to_string_with_fallback
   {
-    ( $how : ty, $fallback : ty, $src : expr )
+
+    ( $how : ty, $fallback1 : ty, $src : expr )
     =>
     {{
-      use format_tools::_ToStringWithFallback;
-      (
-        &format_tools::ToStringWithFallbackRef::< '_, _, format_tools::ToStringWithFallbackParams< $how, $fallback > >::from( &$src )
-      )
+      use $crate::ToStringWithFallback;
+      $crate
+      ::to_string_with_fallback
+      ::Ref
+      ::< '_, _, $how, $fallback1, $fallback1 >
+      ::from( $src )
       .to_string_with_fallback()
     }};
+
+    ( $how : ty, $fallback1 : ty, $fallback2 : ty, $src : expr )
+    =>
+    {{
+      use $crate::ToStringWithFallback;
+      $crate
+      ::to_string_with_fallback
+      ::Ref
+      ::< '_, _, $how, $fallback1, $fallback2 >
+      ::from( $src )
+      .to_string_with_fallback()
+    }};
+
   }
 
+  pub use to_string_with_fallback;
 }
 
 mod aref;
-mod params;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::*;
+
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
+  #[ doc( inline ) ]
+  pub use private::
+  {
+    Ref,
+    Ref2,
+    Ref3,
+    to_string_with_fallback,
+  };
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
+  pub use super::super::to_string_with_fallback;
+
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
+
+  #[ doc( inline ) ]
+  pub use private::
+  {
+    ToStringWithFallback,
+  };
+
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use prelude::*;
+
+  #[ doc( inline ) ]
+  pub use private::
   {
-    ToStringWithFallbackRef,
-    ToStringWithFallbackParams,
-    _ToStringWithFallback,
   };
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  use crate::to_string_with_fallback;
+
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

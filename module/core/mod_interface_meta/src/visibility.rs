@@ -2,10 +2,10 @@
 pub( crate ) mod private
 {
   use macro_tools::prelude::*;
-  use macro_tools::Result;
+  // use macro_tools::syn::Result;
   use core::hash::{ Hash, Hasher };
 
-  pub const VALID_VISIBILITY_LIST_STR : &str = "[ private, protected, orphan, exposed, prelude ]";
+  pub const VALID_VISIBILITY_LIST_STR : &str = "[ private, own, orphan, exposed, prelude ]";
 
   ///
   /// Custom keywords
@@ -15,7 +15,7 @@ pub( crate ) mod private
   {
     use super::*;
     // syn::custom_keyword!( private );
-    syn::custom_keyword!( protected );
+    syn::custom_keyword!( own );
     syn::custom_keyword!( orphan );
     syn::custom_keyword!( exposed );
     syn::custom_keyword!( prelude );
@@ -217,7 +217,7 @@ pub( crate ) mod private
   }
 
   // Vis!( Private, VisPrivate, private, 1 );
-  Vis!( Protected, VisProtected, protected, Protected );
+  Vis!( Own, VisOwn, own, Own );
   Vis!( Orphan, VisOrphan, orphan, Orphan );
   Vis!( Exposed, VisExposed, exposed, Exposed );
   Vis!( Prelude, VisPrelude, prelude, Prelude );
@@ -230,7 +230,7 @@ pub( crate ) mod private
   Clause!( ClauseImmediates, Immadiate );
 
   // impl_valid_sub_namespace!( VisPrivate, false );
-  impl_valid_sub_namespace!( VisProtected, true );
+  impl_valid_sub_namespace!( VisOwn, true );
   impl_valid_sub_namespace!( VisOrphan, true );
   impl_valid_sub_namespace!( VisExposed, true );
   impl_valid_sub_namespace!( VisPrelude, true );
@@ -260,7 +260,7 @@ pub( crate ) mod private
     #[ default ]
     Private,
     /// Owned by current file entities.
-    Protected,
+    Own,
     /// Should be used by parent.
     Orphan,
     /// Should be used by all ascendants in the current crate.
@@ -283,7 +283,7 @@ pub( crate ) mod private
   pub enum Visibility
   {
     //Private( VisPrivate ),
-    Protected( VisProtected ),
+    Own( VisOwn ),
     Orphan( VisOrphan ),
     Exposed( VisExposed ),
     Prelude( VisPrelude ),
@@ -298,37 +298,37 @@ pub( crate ) mod private
   impl Visibility
   {
 
-    fn parse_protected( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse_own( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
-      Self::_parse_vis::< VisProtected >( input )
+      Self::_parse_vis::< VisOwn >( input )
     }
 
-    fn parse_orphan( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse_orphan( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       Self::_parse_vis::< VisOrphan >( input )
     }
 
-    fn parse_exposed( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse_exposed( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       Self::_parse_vis::< VisExposed >( input )
     }
 
-    fn parse_prelude( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse_prelude( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       Self::_parse_vis::< VisPrelude >( input )
     }
 
-    fn parse_pub( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse_pub( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       Self::_parse_vis::< VisPublic >( input )
     }
 
-    // fn parse_pub( input : ParseStream< '_ > ) -> Result< Self >
+    // fn parse_pub( input : ParseStream< '_ > ) -> syn::Result< Self >
     // {
     //   Ok( Visibility::Public( syn::VisPublic { pub_token : input.parse()? } ) )
     // }
 
-    fn _parse_vis< Vis >( input : ParseStream< '_ > ) -> Result< Self >
+    fn _parse_vis< Vis >( input : ParseStream< '_ > ) -> syn::Result< Self >
     where
       Vis : Into< Visibility > + VisibilityInterface,
     {
@@ -380,7 +380,7 @@ pub( crate ) mod private
       ).into() )
     }
 
-    // fn parse_in_crate( input : ParseStream< '_ > ) -> Result< Self >
+    // fn parse_in_crate( input : ParseStream< '_ > ) -> syn::Result< Self >
     // {
     //   if input.peek2( Token![ :: ] )
     //   {
@@ -403,7 +403,7 @@ pub( crate ) mod private
       {
         // Visibility::Private( e ) => e.kind(),
         // Visibility::Crate( e ) => e.kind(),
-        Visibility::Protected( e ) => e.kind(),
+        Visibility::Own( e ) => e.kind(),
         Visibility::Orphan( e ) => e.kind(),
         Visibility::Exposed( e ) => e.kind(),
         Visibility::Prelude( e ) => e.kind(),
@@ -421,7 +421,7 @@ pub( crate ) mod private
       {
         // Visibility::Private( e ) => e.restriction(),
         // Visibility::Crate( e ) => e.restriction(),
-        Visibility::Protected( e ) => e.restriction(),
+        Visibility::Own( e ) => e.restriction(),
         Visibility::Orphan( e ) => e.restriction(),
         Visibility::Exposed( e ) => e.restriction(),
         Visibility::Prelude( e ) => e.restriction(),
@@ -435,7 +435,7 @@ pub( crate ) mod private
 
   impl syn::parse::Parse for Visibility
   {
-    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       // Recognize an empty None-delimited group, as produced by a $:vis
       // matcher that matched no tokens.
@@ -454,7 +454,7 @@ pub( crate ) mod private
       match()
       {
         //_case if input.peek( kw::private ) => Self::parse_private( input ),
-        _case if input.peek( kw::protected ) => Self::parse_protected( input ),
+        _case if input.peek( kw::own ) => Self::parse_own( input ),
         _case if input.peek( kw::orphan ) => Self::parse_orphan( input ),
         _case if input.peek( kw::exposed ) => Self::parse_exposed( input ),
         _case if input.peek( kw::prelude ) => Self::parse_prelude( input ),
@@ -475,7 +475,7 @@ pub( crate ) mod private
       match self
       {
         //Visibility::Private( e ) => e.to_tokens( tokens ),
-        Visibility::Protected( e ) => e.to_tokens( tokens ),
+        Visibility::Own( e ) => e.to_tokens( tokens ),
         Visibility::Orphan( e ) => e.to_tokens( tokens ),
         Visibility::Exposed( e ) => e.to_tokens( tokens ),
         Visibility::Prelude( e ) => e.to_tokens( tokens ),
@@ -501,7 +501,7 @@ pub( crate ) mod private
       match self
       {
         //Visibility::Private( e ) => e.valid_sub_namespace(),
-        Visibility::Protected( e ) => e.valid_sub_namespace(),
+        Visibility::Own( e ) => e.valid_sub_namespace(),
         Visibility::Orphan( e ) => e.valid_sub_namespace(),
         Visibility::Exposed( e ) => e.valid_sub_namespace(),
         Visibility::Prelude( e ) => e.valid_sub_namespace(),
@@ -514,37 +514,39 @@ pub( crate ) mod private
 }
 
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  use super::*;
+  pub use orphan::*;
 }
 
 /// Parented namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  use super::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  use super::*;
+  pub use prelude::*;
 
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     kw,
     VALID_VISIBILITY_LIST_STR,
     ValidSubNamespace,
     HasClauseKind,
     // VisPrivate,
-    VisProtected,
+    VisOwn,
     VisOrphan,
     VisExposed,
     VisPrelude,
@@ -556,6 +558,8 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

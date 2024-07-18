@@ -7,10 +7,9 @@ use macro_tools::
   AttributePropertyComponent,
   diag,
   generic_params,
+  ct,
 };
 use former_types::{ Assign };
-// use const_format::concatcp;
-// xxx : incapsulate into macro_tools and put all that under features
 
 //
 
@@ -112,7 +111,7 @@ impl syn::parse::Parse for ItemAttributes
 
     let error = | ident : &syn::Ident | -> syn::Error
     {
-      let known = const_format::concatcp!
+      let known = ct::concatcp!
       (
         "Known properties of attribute `clone_dyn` are : ",
         AttributePropertyDebug::KEYWORD,

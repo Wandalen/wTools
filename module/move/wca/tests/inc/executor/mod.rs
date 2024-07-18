@@ -1,4 +1,6 @@
 use super::*;
+
+// qqq : rid of global uses in tests
 use the_module::
 {
   Parser,
@@ -8,7 +10,7 @@ use the_module::
   Verifier,
 
   Executor,
-  wtools
+  // wtools
 };
 
 mod command;

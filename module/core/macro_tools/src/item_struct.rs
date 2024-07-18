@@ -6,10 +6,12 @@
 pub( crate ) mod private
 {
   use crate::*;
+  // use iter_tools::{ IterTrait, BoxedIter };
 
   /// Extracts the types of each field into a vector.
   pub fn field_types< 'a >( t : &'a syn::ItemStruct )
-  -> impl IterTrait< 'a, &'a syn::Type >
+  ->
+  impl IterTrait< 'a, &'a syn::Type >
   // -> std::iter::Map
   // <
   //   syn::punctuated::Iter< 'a, syn::Field >,
@@ -76,19 +78,18 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
-    // fields_many,
     field_types,
     field_names,
     first_field_type,
@@ -97,23 +98,28 @@ pub mod protected
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as item_struct;
+  use super::*;
+  pub use super::super::item_struct;
+
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

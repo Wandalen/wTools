@@ -1,14 +1,19 @@
+/// Internal namespace.
 mod private
 {
-  use crate::*;
+  #[ allow( unused_imports ) ]
+  use crate::tool::*;
 
   use std::
   {
     str::FromStr,
-    collections::HashMap
   };
-  use error_tools::for_app::bail;
-  use wtools::error::{ for_app::{ Error }, Result };
+  use error::
+  {
+    untyped::{ Error, bail },
+    // Result,
+  };
+  use collection::HashMap;
 
   #[ derive( Debug, PartialEq, Eq, Clone ) ]
   /// Parser value enum
@@ -143,7 +148,8 @@ mod private
   /// expected_map.insert( "key".to_string(), Value::String( r#"hello\'test\'test"#.into() ) );
   /// assert_eq!( parse( r#"{ key : 'hello\'test\'test' }"# ).unwrap().into_map( vec![] ), expected_map );
   /// ```
-  pub fn parse( input_string : &str ) -> Result< ParseResult >
+  // qqq : use typed error
+  pub fn parse( input_string : &str ) -> error::untyped::Result< ParseResult >
   {
     if input_string.len() < 2
     {
@@ -194,7 +200,8 @@ mod private
     result
   }
 
-  fn parse_to_map(input : Vec< String > ) -> Result< HashMap< String, Value > >
+  // qqq : use typed error
+  fn parse_to_map(input : Vec< String > ) -> error::untyped::Result< HashMap< String, Value > >
   {
     let mut map = HashMap::new();
     for line in input
@@ -245,7 +252,8 @@ mod private
     Ok( map )
   }
 
-  fn parse_to_vec( input : Vec< String > ) -> Result< Vec< Value > >
+  // qqq : use typed error
+  fn parse_to_vec( input : Vec< String > ) -> error::untyped::Result< Vec< Value > >
   {
     Ok( input.into_iter().filter_map( | w | Value::from_str( w.trim() ).ok() ).collect() )
   }
@@ -253,7 +261,7 @@ mod private
 
 crate::mod_interface!
 {
-  protected use parse;
-  protected use Value;
-  protected use ParseResult;
+  own use parse;
+  own use Value;
+  own use ParseResult;
 }

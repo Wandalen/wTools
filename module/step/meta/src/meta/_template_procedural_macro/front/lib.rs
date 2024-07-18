@@ -23,24 +23,30 @@ pub mod dependency
   pub use procedural_macro_meta;
 }
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
-  pub use super::exposed::*;
+  use super::*;
+  pub use exposed::*;
   pub use procedural_macro_runtime as runtime;
   pub use procedural_macro_meta as meta;
 }
 
-pub use protected::*;
+pub use own::*;
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::prelude::*;
+  use super::*;
+  pub use prelude::*;
   pub use meta::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

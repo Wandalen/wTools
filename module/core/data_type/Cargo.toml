@@ -1,6 +1,6 @@
 [package]
 name = "data_type"
-version = "0.7.0"
+version = "0.8.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -34,7 +34,7 @@ default = [
   "dt_either",
   "dt_prelude",
   "dt_interval",
-  "dt_collections",
+  "dt_collection",
   # "dt_make",
   # "dt_vectorized_from",
   # "type_constructor/default",
@@ -45,7 +45,7 @@ full = [
   "dt_either",
   "dt_prelude",
   "dt_interval",
-  "dt_collections",
+  "dt_collection",
   # "dt_make",
   # "dt_vectorized_from",
   # "type_constructor/full",
@@ -55,9 +55,9 @@ use_alloc = [ "no_std" ]
 enabled = []
 
 # dt_prelude = [ "collection_tools/reexports" ]
-dt_prelude = [] # rid off maybe?
+dt_prelude = [] # rid of maybe?
 dt_interval = [ "interval_adapter/enabled" ]
-dt_collections = [ "collection_tools/enabled" ]
+dt_collection = [ "collection_tools/enabled" ]
 dt_either = [ "either" ]
 
 # qqq : for Anton : integrate all features of collection_tools into data_type and reuse tests

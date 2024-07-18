@@ -1,7 +1,7 @@
 
 // use macro_tools::proc_macro2::TokenStream;
-use super::*;
-use macro_tools::{ Result, format_ident, attr, diag };
+use crate::*;
+use macro_tools::{ Result, attr, diag };
 
 //
 

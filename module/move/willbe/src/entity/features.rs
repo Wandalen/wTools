@@ -1,12 +1,9 @@
 mod private
 {
   use crate::*;
-  use std::collections::{ BTreeSet, HashSet };
-  // aaa : for Petro : don't use cargo_metadata and Package directly, use facade
-  // aaa : ✅
-  use error_tools::for_app::{ bail, Result };
-  use wtools::iter::Itertools;
-  use workspace::WorkspacePackage;
+  use collection::{ BTreeSet, HashSet };
+  use error::untyped::{ bail }; // xxx
+  use iter::Itertools;
 
   /// Generates a powerset of the features available in the given `package`,
   /// filtered according to specified inclusion and exclusion criteria,
@@ -42,12 +39,9 @@ mod private
   /// // Use `feature_combinations` as needed.
   /// ```
 
-  // aaa : for Petro : bad, don't use ignore with need
-  // aaa : I have to ignore this test because the function accepts &Package as input, and to mock it requires a lot of lines
-
   pub fn features_powerset
   (
-    package : &WorkspacePackage,
+    package : WorkspacePackageRef< '_ >,
     power : usize,
     exclude_features : &[ String ],
     include_features : &[ String ],
@@ -56,7 +50,8 @@ mod private
     with_none_features : bool,
     variants_cap : u32,
   )
-    -> Result< HashSet< BTreeSet< String > > >
+  // qqq : for Petro : typed error
+  -> error::untyped::Result< HashSet< BTreeSet< String > > >
   {
     let mut features_powerset = HashSet::new();
 
@@ -109,14 +104,14 @@ mod private
     with_none_features : bool,
     enabled_features : &[ String ],
     total_features : usize
-  ) 
-    -> usize 
+  )
+    -> usize
   {
     let mut estimate = 0;
     let mut binom = 1;
     let power = power.min( n );
 
-    for k in 0..=power 
+    for k in 0..=power
     {
       estimate += binom;
       binom = binom * ( n - k ) / ( k + 1 );
@@ -125,13 +120,13 @@ mod private
     if with_all_features { estimate += 1; }
     if with_none_features { estimate += 1; }
 
-    if !enabled_features.is_empty() 
+    if !enabled_features.is_empty()
     {
       let len = enabled_features.len();
-      let combinations = ( 0..=len.min( total_features ) ).map( | k | 
+      let combinations = ( 0..=len.min( total_features ) ).map( | k |
       {
         let mut binom = 1;
-        for i in 0..k 
+        for i in 0..k
         {
           binom = binom * ( len - i ) / ( i + 1 );
         }
@@ -148,6 +143,6 @@ mod private
 crate::mod_interface!
 {
   /// Features
-  protected use features_powerset;
-  protected use estimate_with;
+  own use features_powerset;
+  own use estimate_with;
 }

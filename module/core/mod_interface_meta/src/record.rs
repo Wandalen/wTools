@@ -31,7 +31,7 @@ pub( crate ) mod private
   impl syn::parse::Parse for ElementType
   {
 
-    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       let lookahead = input.lookahead1();
       let element_type = match()
@@ -94,7 +94,7 @@ pub( crate ) mod private
   impl syn::parse::Parse for Record
   {
 
-    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
 
       let attrs = input.parse()?;
@@ -187,7 +187,7 @@ pub( crate ) mod private
   {
     /// Validate each inner attribute of the thesis.
     #[ allow ( dead_code ) ]
-    pub fn inner_attributes_validate( &self ) -> Result< () >
+    pub fn inner_attributes_validate( &self ) -> syn::Result< () >
     {
       self.head.iter().try_for_each( | attr |
       {
@@ -210,7 +210,7 @@ pub( crate ) mod private
           ));
         }
 
-        Result::Ok( () )
+        syn::Result::Ok( () )
       })?;
       Ok( () )
     }
@@ -229,7 +229,7 @@ pub( crate ) mod private
 
   impl syn::parse::Parse for Thesis
   {
-    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       let head = input.parse()?;
       // let head = Default::default();
@@ -256,29 +256,31 @@ pub( crate ) mod private
 }
 
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  use super::*;
+  pub use orphan::*;
 }
 
 /// Parented namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  use super::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  use super::*;
+  pub use prelude::*;
+  pub use private::
   {
     ElementType,
     Record,
@@ -288,10 +290,11 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  use super::*;
+  pub use private::
   {
   };
 }

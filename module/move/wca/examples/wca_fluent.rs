@@ -7,7 +7,7 @@
 //!
 
 
-use wca::{ Context, Type, VerifiedCommand };
+use wca::{ Context, Handler, Type, VerifiedCommand };
 use std::sync::{ Arc, Mutex };
 
 fn main()
@@ -38,7 +38,10 @@ fn main()
     .end()
   .command( "exit" )
     .hint( "just exit" )
-    .routine( || { println!( "exit" ); std::process::exit( 0 ) } )
+    .routine( Handler::< _, std::convert::Infallible >::from
+    (
+      || { println!( "exit" ); std::process::exit( 0 ) }
+    ) )
     .end()
   .perform();
 

@@ -14,92 +14,137 @@ pub mod assert;
 pub mod error;
 
 /// Namespace with dependencies.
-
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  #[ cfg( feature = "error_for_lib" ) ]
+  #[ cfg( feature = "error_typed" ) ]
   pub use ::thiserror;
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  #[ cfg( feature = "error_for_app" ) ]
+  #[ cfg( feature = "error_untyped" ) ]
   pub use ::anyhow;
 
 }
 
 #[ cfg( feature = "enabled" ) ]
-/// Exceptions handling mechanism for libs.
-pub mod for_lib
-{
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  #[ cfg( feature = "error_for_lib" ) ]
-  pub use ::thiserror::*;
-}
+#[ cfg( feature = "error_typed" ) ]
+/// Typed exceptions handling mechanism.
+pub mod typed;
 
 #[ cfg( feature = "enabled" ) ]
-// qqq : cover by simple test /* aaa : Dmytro : added trivial test routine `basic` */
-/// Exceptions handling mechanism for apps.
-pub mod for_app
-{
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  #[ cfg( feature = "error_for_app" ) ]
-  pub use ::anyhow::*;
-}
+#[ cfg( feature = "error_untyped" ) ]
+/// Untyped exceptions handling mechanism.
+pub mod untyped;
 
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
+/// Own namespace of the module.
 #[ cfg( feature = "enabled" ) ]
-pub mod protected
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::*;
+  #[ allow( unused_imports ) ]
+  use super::*;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use assert::orphan::*;
+
+  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use error::orphan::*;
+
+  #[ cfg( feature = "error_untyped" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use untyped::orphan::*;
+
+  #[ cfg( feature = "error_typed" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use typed::orphan::*;
+
 }
 
 /// Shared with parent namespace of the module
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
-
-  #[ cfg( feature = "error_for_app" ) ]
-  pub use super::for_app::Result;
+  pub use exposed::*;
 
 }
 
 /// Exposed namespace of the module.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
+
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::assert::exposed::*;
+  pub use assert::exposed::*;
 
   #[ cfg( not( feature = "no_std" ) ) ]
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use super::error::exposed::*;
+  pub use error::exposed::*;
+
+  #[ cfg( feature = "error_untyped" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use untyped::exposed::*;
+
+  #[ cfg( feature = "error_typed" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use typed::exposed::*;
 
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
+  #[ allow( unused_imports ) ]
+  use super::*;
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use assert::prelude::*;
+
+  #[ cfg( not( feature = "no_std" ) ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use error::prelude::*;
+
+  #[ cfg( feature = "error_untyped" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use untyped::prelude::*;
+
+  #[ cfg( feature = "error_typed" ) ]
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use typed::prelude::*;
+
 }

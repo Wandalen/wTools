@@ -25,7 +25,7 @@ features = [ "full" ]
 all-features = false
 # rustdoc-args = []
 
-# exclude = [ "/tests", "/examples", "-*" ]
+
 
 # = features
 
@@ -173,22 +173,22 @@ string_split = [ "string", "strs_tools/string_split", "strs_tools/string_parse_r
 error = [ "error_tools" ]
 error_default = [
   "error",
-  "error_for_lib",
-  "error_for_app",
+  "error_typed",
+  "error_untyped",
   # "error_use_std",
 ]
 error_full = [
   "error",
-  "error_for_lib",
-  "error_for_app",
+  "error_typed",
+  "error_untyped",
   # "error_use_std",
 ]
 # error_use_std = [ "error", "error_tools/use_std" ]
 error_no_std = [ "error", "error_tools/no_std" ]
 #error_use_alloc = [ "error", "error_tools/use_alloc" ]
 
-error_for_lib = [ "error", "error_tools/error_for_lib" ]
-error_for_app = [ "error", "error_tools/error_for_app" ]
+error_typed = [ "error", "error_tools/error_typed" ]
+error_untyped = [ "error", "error_tools/error_untyped" ]
 
 # derive
 

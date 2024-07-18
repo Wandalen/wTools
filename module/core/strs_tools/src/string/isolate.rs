@@ -175,8 +175,10 @@ pub( crate ) mod private
 }
 
 /// Owned namespace of the module.
-pub mod protected
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::*;
   use super::private as i;
 
   pub use i::IsolateOptions;
@@ -186,18 +188,22 @@ pub mod protected
   pub use i::isolate_right;
 }
 
-pub use protected::*;
+pub use own::*;
 
 /// Parented namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
-  pub use super::exposed::*;
+  use super::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as isolate;
+  use super::*;
+  pub use super::own as isolate;
 
   use super::private as i;
 
@@ -208,8 +214,10 @@ pub mod exposed
 }
 
 /// Namespace of the module to include with `use module::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   use super::private as i;
 
   pub use i::IsolateOptionsAdapter;

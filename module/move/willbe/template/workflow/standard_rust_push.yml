@@ -23,7 +23,7 @@ concurrency :
 
   group : standard_rust_push_${{ inputs.module_name }}_${{ github.ref }}_
     ${{ contains( inputs.commit_message, '+test' ) || startsWith( inputs.commit_message, 'merge' ) }}
-  cancel-in-progress : true
+  cancel-in-progress : ${{ contains( inputs.commit_message, '+test' ) || startsWith( inputs.commit_message, 'merge' ) }}
 
 env :
 

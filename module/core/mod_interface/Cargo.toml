@@ -1,6 +1,6 @@
 [package]
 name = "mod_interface"
-version = "0.21.0"
+version = "0.22.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -23,7 +23,7 @@ workspace = true
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
-# exclude = [ "/tests", "/examples", "-*" ]
+
 
 [features]
 default = [ "enabled" ]

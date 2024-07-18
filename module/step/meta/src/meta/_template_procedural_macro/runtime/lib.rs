@@ -18,21 +18,27 @@ pub mod dependency
 {
 }
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
-  pub use super::exposed::*;
+  use super::*;
+  pub use exposed::*;
 }
 
-pub use protected::*;
+pub use own::*;
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::prelude::*;
+  use super::*;
+  pub use prelude::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

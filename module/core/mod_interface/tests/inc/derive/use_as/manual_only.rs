@@ -5,9 +5,11 @@ use layer_x as layer_a;
 #[allow(unused_imports)]
 pub use protected :: * ;
 
-#[doc = r" Protected namespace of the module."]
-pub mod protected
+#[doc = r" Own namespace of the module."]
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::*;
 
   #[doc(inline)]
   #[allow(unused_imports)]
@@ -21,8 +23,10 @@ pub mod protected
 }
 
 #[doc = r" Orphan namespace of the module."]
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
 
   #[doc(inline)]
   #[allow(unused_imports)]
@@ -31,8 +35,10 @@ pub mod orphan
 }
 
 #[doc = r" Exposed namespace of the module."]
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
   #[doc(inline)]
   #[allow(unused_imports)]
   pub use super :: prelude :: * ;
@@ -44,8 +50,10 @@ pub mod exposed
 }
 
 #[doc = r" Prelude to use essentials: `use my_module::prelude::*`."]
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   #[doc(inline)]
   #[allow(unused_imports)]
   #[doc = " layer_a"]

@@ -38,7 +38,7 @@ tests_impls!
 
   fn use1()
   {
-    use std::error::Error as ErrorInterface;
+    use std::error::Error as ErrorTrait;
     use the_module::BasicError as Error;
 
     // test.case( "basic" );
@@ -54,7 +54,7 @@ tests_impls!
 
   fn use2()
   {
-    use the_module::{ BasicError, ErrorInterface };
+    use the_module::{ BasicError, ErrorTrait };
 
     // test.case( "basic" );
 
@@ -98,7 +98,7 @@ tests_impls!
   fn sample()
   {
     #[ cfg( not( feature = "no_std" ) ) ]
-    fn f1() -> the_module::Result< () >
+    fn f1() -> the_module::untyped::Result< () >
     {
       let _read = std::fs::read_to_string( "Cargo.toml" )?;
       Err( the_module::BasicError::new( "Some error" ).into() )

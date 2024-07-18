@@ -29,23 +29,23 @@ all-features = false
 [features]
 default = [
   "enabled",
-  "error_for_lib",
-  "error_for_app"
+  "error_typed",
+  "error_untyped"
 ]
 full = [
   "enabled",
-  "error_for_lib",
-  "error_for_app"
+  "error_typed",
+  "error_untyped"
 ]
 no_std = [ "error_tools/no_std" ]
 use_alloc = [ "error_tools/use_alloc" ]
 enabled = [ "error_tools/enabled" ]
 
-error_for_lib = [
-  "error_tools/error_for_lib"
+error_typed = [
+  "error_tools/error_typed"
 ]
-error_for_app = [
-  "error_tools/error_for_app"
+error_untyped = [
+  "error_tools/error_untyped"
 ]
 
 [dependencies]

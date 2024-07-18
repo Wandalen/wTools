@@ -1,3 +1,4 @@
+#![ feature( trace_macros ) ]
 
 #[ allow( unused_imports ) ]
 use format_tools as the_module;

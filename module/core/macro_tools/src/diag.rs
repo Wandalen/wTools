@@ -7,12 +7,6 @@ pub( crate ) mod private
 {
   use crate::*;
 
-  ///
-  /// Result with syn::Error.
-  ///
-
-  pub type Result< T > = std::result::Result< T, syn::Error >;
-
   /// Adds indentation and optional prefix/postfix to each line of the given string.
   ///
   /// This function iterates over each line in the input string and applies the specified
@@ -384,38 +378,49 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::*;
+
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
+
 }
 
 /// Parented namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
+
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use private::
+  // {
+  //   Result,
+  // };
+
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as diag;
+  use super::*;
+  pub use super::super::diag;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
-    Result,
     indentation,
     report_format,
     report_print,
@@ -424,12 +429,13 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     tree_print,
     code_print,
@@ -441,5 +447,5 @@ pub mod prelude
   };
 
   // #[ doc( inline ) ]
-  // pub use super::private::Result;
+  // pub use private::Result;
 }

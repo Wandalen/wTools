@@ -75,7 +75,7 @@ pub( crate ) mod private
     T1 : Element + syn::parse::Parse,
     T2 : Element + syn::parse::Parse,
   {
-    fn parse( input : ParseStream< '_ > ) -> Result< Self >
+    fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
       Ok( Self( input.parse()?, input.parse()? ) )
     }
@@ -195,7 +195,7 @@ pub( crate ) mod private
   where
     T : Element + syn::parse::Parse + AsMuchAsPossibleNoDelimiter,
   {
-    fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+    fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
     {
       let mut items = vec![];
       while !input.is_empty()
@@ -207,14 +207,14 @@ pub( crate ) mod private
     }
   }
 
-// zzz : make that working
+// qqq : zzz : make that working
 //
 //   impl< T > syn::parse::Parse
 //   for Many< T >
 //   where
 //     T : Element + WhileDelimiter,
 //   {
-//     fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
+//     fn parse( input : syn::parse::ParseStream< '_ > ) -> syn::Result< Self >
 //     {
 //       let mut result = Self::new();
 //       loop
@@ -242,94 +242,44 @@ pub( crate ) mod private
 //     type Delimiter = syn::token::Pound;
 //   }
 
-  impl syn::parse::Parse
-  for Many< AttributesInner >
-  {
-    fn parse( input : ParseStream< '_ > ) -> Result< Self >
-    {
-      let mut result = Self::new();
-      loop
-      {
-        // let lookahead = input.lookahead1();
-        if !input.peek( Token![ # ] )
-        {
-          break;
-        }
-        result.0.push( input.parse()? );
-      }
-      Ok( result )
-    }
-  }
-
-  impl syn::parse::Parse
-  for Many< AttributesOuter >
-  {
-    fn parse( input : ParseStream< '_ > ) -> Result< Self >
-    {
-      let mut result = Self::new();
-      loop
-      {
-        // let lookahead = input.lookahead1();
-        if !input.peek( Token![ # ] )
-        {
-          break;
-        }
-        result.0.push( input.parse()? );
-      }
-      Ok( result )
-    }
-  }
-
-  impl AsMuchAsPossibleNoDelimiter for syn::Item {}
-
-  // impl syn::parse::Parse
-  // for Many< syn::Item >
-  // {
-  //   fn parse( input : syn::parse::ParseStream< '_ > ) -> Result< Self >
-  //   {
-  //     let mut items = vec![];
-  //     while !input.is_empty()
-  //     {
-  //       let item : syn::Item = input.parse()?;
-  //       items.push( item );
-  //     }
-  //     Ok( Self( items ) )
-  //   }
-  // }
-
 }
 
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as quantifier;
+  use super::*;
+
+  pub use super::super::quantifier;
+  // pub use super::own as quantifier;
+
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::prelude::*;
+  pub use prelude::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     AsMuchAsPossibleNoDelimiter,
     Pair,
@@ -338,11 +288,12 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
   };
 }

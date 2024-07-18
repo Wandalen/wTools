@@ -1,0 +1,7 @@
+error: proc-macro derive panicked
+ --> tests/inc/index_mut/compiletime/struct_named_empty.rs:3:12
+  |
+3 | #[ derive( IndexMut ) ]
+  |            ^^^^^^^^
+  |
+  = help: message: not implemented: IndexMut not implemented for Unit

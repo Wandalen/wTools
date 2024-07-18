@@ -1,7 +1,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  use crate::protected::*;
+  use crate::own::*;
 
   /// StrokeBrush.
   #[ derive( Debug, Clone ) ]

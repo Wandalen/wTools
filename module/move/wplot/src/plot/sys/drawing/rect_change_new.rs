@@ -1,7 +1,7 @@
 /// Internal namespace.
 pub( crate ) mod private
 {
-  // use crate::protected::*;
+  // use crate::own::*;
   use crate::abs::{identity::private::Id, change::private::ChangeInterface};
 
   /// Command to draw rectangle.

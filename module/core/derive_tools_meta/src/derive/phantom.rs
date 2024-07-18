@@ -2,6 +2,7 @@ use super::*;
 use former_types::Assign;
 use macro_tools::
 {
+  ct,
   diag,
   Result,
   phantom::add_to_item,
@@ -47,15 +48,15 @@ impl syn::parse::Parse for ItemAttributes
     let mut result = Self::default();
 
     let error = | ident : &syn::Ident | -> syn::Error
-      {
-        let known = const_format::concatcp!
+    {
+        let known = ct::concatcp!
         (
         "Known properties of attribute `phantom` are : ",
         AttributePropertyDebug::KEYWORD,
         ".",
       );
-        syn_err!
-        (
+      syn_err!
+      (
         ident,
         r#"Expects an attribute of format '#[ phantom( {} ) ]'
   {known}
@@ -64,7 +65,7 @@ impl syn::parse::Parse for ItemAttributes
         AttributePropertyDebug::KEYWORD,
         qt!{ #ident }
       )
-      };
+    };
 
     while !input.is_empty()
     {

@@ -645,14 +645,15 @@ pub( crate ) mod private
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
-  pub use super::private::
+  use super::*;
+  pub use orphan::*;
+  pub use private::
   {
     Split,
     SplitType,
@@ -664,17 +665,21 @@ pub mod protected
 }
 
 /// Parented namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
-  pub use super::exposed::*;
+  use super::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
-  pub use super::protected as split;
+  use super::*;
+  pub use super::own as split;
 
-  pub use super::private::
+  pub use private::
   {
     SplitOptionsAdapter,
     split,
@@ -682,7 +687,9 @@ pub mod exposed
 }
 
 /// Namespace of the module to include with `use module::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
-  pub use super::private::SplitOptionsAdapter;
+  use super::*;
+  pub use private::SplitOptionsAdapter;
 }

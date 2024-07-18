@@ -21,7 +21,7 @@ pub use hrng_non_deterministic as hrng;
 mod_interface!
 {
 
-  protected use ::rand::*;
+  own use ::rand::*;
 
   use super::hrng;
 

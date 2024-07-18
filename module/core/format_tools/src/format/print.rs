@@ -75,12 +75,12 @@ pub( crate ) mod private
     fn table_to_string( &'a self ) -> String
     {
       let mut output = String::new();
-      let mut formatter = Context
+      let mut context = Context
       {
         buf : &mut output,
         styles : Styles::default(),
       };
-      T::fmt( self, &mut formatter ).expect( "Formatting failed" );
+      T::fmt( self, &mut context ).expect( "Formatting failed" );
       output
     }
   }
@@ -104,7 +104,7 @@ pub( crate ) mod private
     Self : TableRows< 'a, RowKey, Row, CellKey, Cell >,
     Self : TableHeader< 'a, CellKey, Title >,
     Self : TableSize< 'a >,
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + Clone + 'a,
     CellKey : fmt::Debug + Clone,
@@ -140,7 +140,7 @@ pub( crate ) mod private
         (
           | ( _key, cell ) |
           {
-            match cell
+            match cell.0
             {
               Some( cell ) => format!( "{:?}", &cell ),
               None => "".to_string(),
@@ -219,31 +219,34 @@ pub( crate ) mod private
 }
 
 #[ allow( unused_imports ) ]
-pub use protected::*;
+pub use own::*;
 
-/// Protected namespace of the module.
-pub mod protected
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::orphan::*;
+  pub use orphan::*;
 }
 
 /// Orphan namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod orphan
 {
+  use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::exposed::*;
+  pub use exposed::*;
 }
 
 /// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
 pub mod exposed
 {
+  use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::private::
+  pub use private::
   {
     Styles,
     Context,
@@ -254,6 +257,8 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
 pub mod prelude
 {
+  use super::*;
 }

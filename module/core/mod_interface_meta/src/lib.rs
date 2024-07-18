@@ -4,6 +4,10 @@
 #![ deny( dead_code ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
+// xxx : clean up, ad solve problems
+// - example based on simpified version of test::layer_have_layer with single sublayer
+// - example with attribute `#![ debug ]`
+
 // xxx : write good description and the main use-case
 
 // xxx : does not work. make it working
@@ -19,13 +23,13 @@
 //   // xxx : make it working
 //   // exposed use super;
 //   exposed use super::super::compiletime;
-//   protected use
+//   own use
 //   {
 //     *
 //   };
 // }
 
-// xxx : make use proper_path_tools::protected::path working
+// xxx : make use proper_path_tools::own::path working
 
 // xxx : put modular files into a namespace `file` maybe
 // #[ cfg( feature = "enabled" ) ]
@@ -36,6 +40,39 @@
 //   pub mod tokens;
 //   pub mod typ;
 //   pub mod item_struct;
+// }
+
+// xxx : check
+//
+// - does not work
+// exposed use
+// {
+//   ::former::Former,
+//   ::former::Assign,
+// };
+//
+// - work
+//
+// exposed use ::former::
+// {
+//   Former,
+//   Assign,
+// };
+
+// xxx : inherit all entities, somehow
+//
+// pub mod ca;
+//
+// crate::mod_interface!
+// {
+//   // #![ debug ]
+//
+//   // xxx : syntax for that, please
+//   use super::ca;
+//   own use super::ca::own::*;
+//
+//   // /// Commands aggregator library.
+//   // layer ca;
 // }
 
 mod impls;
@@ -73,7 +110,7 @@ mod_interface!
   pub mod file2;
 
   private mod micro_private;
-  protected mod micro_protected;
+  own mod micro_own;
   orphan mod micro_orphan;
   exposed mod micro_exposed;
   prelude mod micro_prelude;

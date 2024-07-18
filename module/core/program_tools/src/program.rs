@@ -143,7 +143,7 @@ crate::mod_interface!
     Program,
   };
 
-  protected use
+  own use
   {
     Plan,
     Call,

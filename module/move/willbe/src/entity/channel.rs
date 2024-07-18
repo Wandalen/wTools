@@ -4,12 +4,11 @@ mod private
   use std::
   {
     fmt::Formatter,
-    path::Path,
-    collections::HashSet,
+    ffi::OsString,
   };
-  use std::ffi::OsString;
-  use error_tools::for_app::Error;
-  use wtools::error::Result;
+  use path::Path;
+  use collection::HashSet;
+  use error::untyped::{ Error };
   use process_tools::process::*;
 
   /// The `Channel` enum represents different release channels for rust.
@@ -34,17 +33,17 @@ mod private
       }
     }
   }
-  
+
   impl TryFrom< String > for Channel
   {
-    type Error = error::for_app::Error;
+    type Error = error::untyped::Error;
     fn try_from( value : String ) -> Result< Self, Self::Error >
     {
       Ok( match value.as_ref()
       {
         "stable" => Self::Stable,
         "nightly" => Self::Nightly,
-        other => error::for_app::bail!( "Unexpected channel value. Expected [stable, channel]. Got: `{other}`" ),
+        other => error::untyped::bail!( "Unexpected channel value. Expected [stable, channel]. Got: `{other}`" ),
       })
     }
   }
@@ -52,7 +51,8 @@ mod private
   /// Retrieves a list of available channels.
   ///
   /// This function takes a path and returns a `Result` with a vector of strings representing the available channels.
-  pub fn available_channels< P >( path : P ) -> Result< HashSet< Channel > >
+  // qqq : typed error
+  pub fn available_channels< P >( path : P ) -> error::untyped::Result< HashSet< Channel > >
   where
     P : AsRef< Path >,
   {
@@ -66,8 +66,9 @@ mod private
     let list = report
     .out
     .lines()
-    .map( | l | l.split_once( '-' ).unwrap().0 )
-    .filter_map( | c | match c
+    // toolchain with a name without `-` may exist, but we are looking at specific ones
+    .filter_map( | l | l.split_once( '-' ) )
+    .filter_map( |( c, _ ) | match c
     {
       "stable" => Some( Channel::Stable ),
       "nightly" => Some( Channel::Nightly ),
@@ -83,6 +84,6 @@ mod private
 
 crate::mod_interface!
 {
-  protected use Channel;
-  protected use available_channels;
+  own use Channel;
+  own use available_channels;
 }

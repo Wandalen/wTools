@@ -17,17 +17,19 @@ mod variadic_from_test;
 mod all_manual_test;
 #[ cfg
 (
-	all
-	(
-		feature = "derive_as_mut",
-		feature = "derive_as_ref",
-		feature = "derive_deref",
-		feature = "derive_deref_mut",
-		feature = "derive_from",
-		feature = "derive_inner_from",
+  all
+  (
+    feature = "derive_as_mut",
+    feature = "derive_as_ref",
+    feature = "derive_deref",
+    feature = "derive_deref_mut",
+    feature = "derive_from",
+    feature = "derive_index",
+    feature = "derive_index_mut",
+    feature = "derive_inner_from",
     feature = "derive_not",
     feature = "derive_phantom"
-	)
+  )
 )]
 mod all_test;
 
@@ -163,8 +165,8 @@ mod deref_mut_tests
 #[ path = "new" ]
 mod new_tests
 {
-	#[ allow( unused_imports ) ]
-	use super::*;
+  #[ allow( unused_imports ) ]
+  use super::*;
 
   // qqq : for each branch add generic test
 
@@ -172,14 +174,14 @@ mod new_tests
 
   mod basic_manual_test;
   mod basic_test;
-	mod unit_manual_test;
-	mod unit_test;
-	mod named_manual_test;
-	mod named_test;
-	mod multiple_named_manual_test;
-	mod multiple_named_test;
-	mod multiple_unnamed_manual_test;
-	// mod multiple_unnamed_test;
+  mod unit_manual_test;
+  mod unit_test;
+  mod named_manual_test;
+  mod named_test;
+  mod multiple_named_manual_test;
+  mod multiple_named_test;
+  mod multiple_unnamed_manual_test;
+  // mod multiple_unnamed_test;
   // xxx : continue
 
   //
@@ -190,8 +192,8 @@ mod new_tests
 #[ path = "from" ]
 mod from_tests
 {
-	#[ allow( unused_imports ) ]
-	use super::*;
+  #[ allow( unused_imports ) ]
+  use super::*;
 
   // qqq : for each branch add generic test
 
@@ -202,26 +204,26 @@ mod from_tests
 
   //
 
-	mod named_test;
-	mod named_manual_test;
+  mod named_test;
+  mod named_manual_test;
 
-	mod multiple_named_manual_test;
-	mod multiple_unnamed_manual_test;
-	mod unit_manual_test;
-	mod multiple_named_test;
-	mod unit_test;
-	mod multiple_unnamed_test;
+  mod multiple_named_manual_test;
+  mod multiple_unnamed_manual_test;
+  mod unit_manual_test;
+  mod multiple_named_test;
+  mod unit_test;
+  mod multiple_unnamed_test;
 
-	mod variants_manual;
-	mod variants_derive;
+  mod variants_manual;
+  mod variants_derive;
 
-	mod variants_duplicates_all_off;
-	mod variants_duplicates_some_off;
-	mod variants_duplicates_some_off_default_off;
+  mod variants_duplicates_all_off;
+  mod variants_duplicates_some_off;
+  mod variants_duplicates_some_off_default_off;
 
-	mod variants_generics;
-	mod variants_generics_where;
-	mod variants_collisions;
+  mod variants_generics;
+  mod variants_generics_where;
+  mod variants_collisions;
 }
 
 #[ cfg( feature = "derive_not" ) ]
@@ -263,8 +265,8 @@ mod not_tests
 #[ path = "inner_from" ]
 mod inner_from_tests
 {
-	#[ allow( unused_imports ) ]
-	use super::*;
+  #[ allow( unused_imports ) ]
+  use super::*;
 
   //
 
@@ -273,14 +275,14 @@ mod inner_from_tests
 
   //
 
-	mod unit_test;
-	mod named_manual_test;
-	mod multiple_named_manual_test;
-	mod unit_manual_test;
-	mod named_test;
-	mod multiple_named_test;
-	mod multiple_unnamed_manual_test;
-	mod multiple_unnamed_test;
+  mod unit_test;
+  mod named_manual_test;
+  mod multiple_named_manual_test;
+  mod unit_manual_test;
+  mod named_test;
+  mod multiple_named_test;
+  mod multiple_unnamed_manual_test;
+  mod multiple_unnamed_test;
 
 }
 
@@ -314,15 +316,92 @@ mod phantom_tests
   mod contravariant_type_manual;
   mod send_sync_type;
   mod send_sync_type_manual;
-  #[ test_tools::nightly ]
-  #[ test ]
-  fn phantom_trybuild()
+
+  only_for_terminal_module!
   {
+    #[ test_tools::nightly ]
+    #[ test ]
+    fn phantom_trybuild()
+    {
 
-    println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
-    let t = test_tools::compiletime::TestCases::new();
+      println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+      let t = test_tools::compiletime::TestCases::new();
 
-    t.compile_fail( "tests/inc/phantom/compiletime/enum.rs" );
-    t.compile_fail( "tests/inc/phantom/compiletime/invariant_type.rs" );
+      t.compile_fail( "tests/inc/phantom/compiletime/enum.rs" );
+      t.compile_fail( "tests/inc/phantom/compiletime/invariant_type.rs" );
+    }
   }
 }
+
+
+#[ cfg( feature = "derive_index" ) ]
+#[ path = "index" ]
+mod index_tests
+{
+  #[ allow( unused_imports ) ]
+  use super::*;
+    
+  mod struct_named;
+  mod struct_multiple_named_field;
+  mod struct_multiple_named_item;
+  mod struct_named_manual;
+  mod struct_multiple_named_manual;
+  mod struct_tuple;
+  mod struct_multiple_tuple;
+  mod struct_tuple_manual;
+  mod struct_multiple_tuple_manual;
+  mod struct_collisions;
+  
+  only_for_terminal_module!
+  {
+    #[ test_tools::nightly ]
+    #[ test ]
+    fn index_trybuild()
+    {
+
+      println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+      let t = test_tools::compiletime::TestCases::new();
+
+      t.compile_fail( "tests/inc/index/compiletime/struct.rs" );
+      t.compile_fail( "tests/inc/index/compiletime/struct_unit.rs" );
+      t.compile_fail( "tests/inc/index/compiletime/struct_named_empty.rs" );
+      t.compile_fail( "tests/inc/index/compiletime/enum.rs" );
+    }
+  }
+}
+
+#[ cfg( feature = "derive_index_mut" ) ]
+#[ path = "index_mut" ]
+mod index_mut_tests
+{
+  #[ allow( unused_imports ) ]
+  use super::*;
+  mod struct_named; 
+  mod struct_multiple_named_field; 
+  mod struct_multiple_named_item; 
+  mod struct_named_manual;
+  mod struct_multiple_named_manual;
+  mod struct_tuple;
+  mod struct_multiple_tuple;
+  mod struct_tuple_manual;
+  mod struct_multiple_tuple_manual;
+  mod struct_collisions;
+
+  only_for_terminal_module!
+  {
+    #[ test_tools::nightly ]
+    #[ test ]
+    fn index_mut_trybuild()
+    {
+
+      println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
+      let t = test_tools::compiletime::TestCases::new();
+
+      t.compile_fail( "tests/inc/index_mut/compiletime/struct.rs" );
+      t.compile_fail( "tests/inc/index_mut/compiletime/struct_unit.rs" );
+      t.compile_fail( "tests/inc/index_mut/compiletime/struct_named_empty.rs" );
+      t.compile_fail( "tests/inc/index_mut/compiletime/enum.rs" );
+    }
+  }
+} 
+

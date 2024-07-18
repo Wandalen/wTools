@@ -14,8 +14,8 @@ pub( crate ) mod private
   use duct::cmd;
   use error_tools::
   {
-    for_app::{ Error, Context, anyhow },
-    Result,
+    untyped::{ Error, Context, format_err },
+    // Result,
   };
   use former::Former;
   use iter_tools::iter::Itertools;
@@ -197,7 +197,7 @@ pub( crate ) mod private
     }
     else
     {
-      report.error = Err( anyhow!( "Process was finished with error code : {}", output.status ) );
+      report.error = Err( format_err!( "Process was finished with error code : {}", output.status ) );
       Err( report )
     }
 
@@ -324,8 +324,8 @@ pub( crate ) mod private
 
 crate::mod_interface!
 {
-  // protected use run_with_shell;
-  protected use run;
-  protected use Run;
-  protected use Report;
+  // own use run_with_shell;
+  own use run;
+  own use Run;
+  own use Report;
 }

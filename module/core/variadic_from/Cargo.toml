@@ -1,6 +1,6 @@
 [package]
 name = "variadic_from"
-version = "0.19.0"
+version = "0.21.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -24,7 +24,7 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-# exclude = [ "/tests", "/examples", "-*" ]
+
 
 [features]
 

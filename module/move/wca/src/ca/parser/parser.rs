@@ -3,9 +3,9 @@ mod private
   use crate::*;
 
   use std::collections::HashMap;
-  
-  use error_tools::{ Result, return_err };
-  
+
+  use error::{ return_err };
+
   /// `Parser` is a struct used for parsing data.
   #[ derive( Debug ) ]
   pub struct Parser;
@@ -21,7 +21,8 @@ mod private
     /// # Returns
     ///
     /// Returns a `Result` with a `Program` containing the parsed commands if successful, or an error if parsing fails.
-    pub fn parse< As, A >( &self, args : As ) -> Result< Program< ParsedCommand > >
+    // qqq : use typed error
+    pub fn parse< As, A >( &self, args : As ) -> error::untyped::Result< Program< ParsedCommand > >
     where
       As : IntoIterator< Item = A >,
       A : Into< String >,
@@ -38,7 +39,7 @@ mod private
 
       Ok( Program { commands } )
     }
-    
+
     // with dot at the beginning
     fn valid_command_name( input : &str ) -> bool
     {
@@ -53,14 +54,15 @@ mod private
     }
 
     // returns ParsedCommand and relative position of the last parsed item
-    fn parse_command( args : &[ String ] ) -> Result< ( ParsedCommand, usize ) >
+    // qqq : use typed error
+    fn parse_command( args : &[ String ] ) -> error::untyped::Result< ( ParsedCommand, usize ) >
     {
       if args.is_empty() {
         return_err!( "Unexpected behaviour: Try to parse command without input" );
       }
 
       let mut i = 0;
-      
+
       if !Self::valid_command_name( &args[ i ] )
       {
         return_err!( "Unexpected input: Expected a command, found: `{}`", args[ i ] );
@@ -73,7 +75,7 @@ mod private
       };
       i += 1;
       let ( subjects, properties, relative_pos ) = Self::parse_command_args( &args[ i .. ] )?;
-      
+
       i += relative_pos;
 
       return Ok(
@@ -87,12 +89,13 @@ mod private
         i,
       ))
     }
-    
+
     // returns ( subjects, properties, relative_end_pos )
-    fn parse_command_args( args : &[ String ] ) -> Result< ( Vec< String >, HashMap< String, String >, usize ) >
+    // qqq : use typed error
+    fn parse_command_args( args : &[ String ] ) -> error::untyped::Result< ( Vec< String >, HashMap< String, String >, usize ) >
     {
       let mut i = 0;
-      
+
       let mut subjects = vec![];
       let mut properties = HashMap::new();
 
@@ -146,13 +149,13 @@ mod private
             return_err!( "Unexpected input '{} :': Detected a possible property key preceding the ':' character. However, no corresponding value was found.", item );
           }
         }
-          
+
         else if !properties_turn { subjects.push( item.to_string() ); }
-          
+
         else { return_err!( "Unexpected input: Expected `command` or `property`, found: `{}`", item ); }
         i += 1;
       }
-      
+
       Ok(( subjects, properties, i ))
     }
   }
