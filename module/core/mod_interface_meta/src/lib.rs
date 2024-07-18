@@ -119,7 +119,7 @@ mod_interface!
 
 }
 
-      private      <      protected      <      orphan      <      exposed      <      prelude
+      private      <       own         <      orphan      <      exposed      <      prelude
       itself               itself             its parent       its inter-module    its inter-module
       private              public               public             public              public
 

@@ -72,30 +72,35 @@ pub mod inner
     /// Routine of inner module.
     pub fn inner_is() -> bool { true }
   }
-
+  
+  pub use own::*;
+  
   /// Own namespace of the module.
   pub mod own
   {
+    use super::*;
     pub use orphan::*;
   }
-  pub use own::*;
 
   /// Orphan namespace of the module.
   pub mod orphan
   {
+    use super::*;
     pub use exposed::*;
   }
 
   /// Exposed namespace of the module.
   pub mod exposed
   {
+    use super::*;
     pub use prelude::*;
   }
 
   /// Prelude to use essentials: `use my_module::prelude::*`.
   pub mod prelude
   {
-    pub use private::inner_is;
+    use super::*;
+    pub use super::private::inner_is;
   }
 }
 
@@ -105,7 +110,7 @@ pub mod own
 {
   use super::*;
   pub use orphan::*;
-  pub use super::inner::orphan::*;
+  pub use inner::orphan::*;
 }
 pub use own::*;
 
@@ -123,7 +128,7 @@ pub mod exposed
 {
   use super::*;
   pub use prelude::*;
-  pub use super::inner::exposed::*;
+  pub use inner::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -131,7 +136,7 @@ pub mod exposed
 pub mod prelude
 {
   use super::*;
-  pub use super::inner::prelude::*;
+  pub use inner::prelude::*;
 }
 ```
 
@@ -154,15 +159,6 @@ Full sample see at [sample directory](https://github.com/Wandalen/wTools/tree/ma
 
 ```sh
 cargo add mod_interface
-```
-
-### Try out from the repository
-
-```sh
-git clone https://github.com/Wandalen/wTools
-cd wTools
-cd examples/mod_interface_trivial
-cargo run
 ```
 ### Try out from the repository
 
