@@ -259,6 +259,12 @@ mod not_tests
   mod bounds_where_manual;
   mod with_custom_type;
   mod name_collisions;
+  mod default_off;
+  mod default_off_manual;
+  mod default_off_some_on;
+  mod default_off_some_on_manual;
+  mod default_on_some_off;
+  mod default_on_some_off_manual;
 }
 
 #[ cfg( feature = "derive_inner_from" ) ]

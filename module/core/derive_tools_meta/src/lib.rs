@@ -565,7 +565,15 @@ pub fn derive_variadic_from( input : proc_macro::TokenStream ) -> proc_macro::To
 ///
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "derive_not" ) ]
-#[ proc_macro_derive( Not, attributes( debug ) ) ]
+#[ proc_macro_derive
+(
+  Not,
+  attributes
+  (
+    debug, // item
+    not, // field
+  )
+)]
 pub fn derive_not( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 {
   let result = derive::not::not( input );
