@@ -3,10 +3,12 @@ use core::ops::Not;
 #[ allow( dead_code ) ]
 struct TupleDefaultOnSomeOff( bool, u8 );
 
-impl Not for TupleDefaultOnSomeOff {
+impl Not for TupleDefaultOnSomeOff
+{
   type Output = Self;
 
-  fn not( self ) -> Self::Output {
+  fn not( self ) -> Self::Output
+  {
     Self( !self.0, self.1 )
   }
 }

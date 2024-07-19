@@ -261,12 +261,16 @@ mod not_tests
   mod name_collisions;
   mod named_default_off;
   mod named_default_off_manual;
+  mod named_default_off_reference_on;
+  mod named_default_off_reference_on_manual;
   mod named_default_off_some_on;
   mod named_default_off_some_on_manual;
   mod named_default_on_some_off;
   mod named_default_on_some_off_manual;
   mod tuple_default_off;
   mod tuple_default_off_manual;
+  mod tuple_default_off_reference_on;
+  mod tuple_default_off_reference_on_manual;
   mod tuple_default_off_some_on;
   mod tuple_default_off_some_on_manual;
   mod tuple_default_on_some_off;

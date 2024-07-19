@@ -7,10 +7,12 @@ struct NamedDefaultOff
   b : u8,
 }
 
-impl Not for NamedDefaultOff {
+impl Not for NamedDefaultOff
+{
   type Output = Self;
 
-  fn not( self ) -> Self::Output {
+  fn not( self ) -> Self::Output
+  {
     Self { a : self.a, b : self.b }
   }
 }
