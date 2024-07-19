@@ -265,6 +265,8 @@ mod not_tests
   mod named_default_off_reference_on_manual;
   mod named_default_off_some_on;
   mod named_default_off_some_on_manual;
+  mod named_default_on_mut_reference_off;
+  mod named_default_on_mut_reference_off_manual;
   mod named_default_on_some_off;
   mod named_default_on_some_off_manual;
   mod tuple_default_off;
@@ -273,6 +275,8 @@ mod not_tests
   mod tuple_default_off_reference_on_manual;
   mod tuple_default_off_some_on;
   mod tuple_default_off_some_on_manual;
+  mod tuple_default_on_mut_reference_off;
+  mod tuple_default_on_mut_reference_off_manual;
   mod tuple_default_on_some_off;
   mod tuple_default_on_some_off_manual;
 }

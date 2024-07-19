@@ -93,14 +93,18 @@ fn generate_for_named< 'a >
     {
       syn::Type::Reference( reference ) =>
       {
-        if reference.mutability.is_some() || !is_enabled
-        {
-          ( qt! { *self.#field_name = !*self.#field_name; }, qt! { #field_name: self.#field_name } )
-        }
-        else
-        {
-          ( qt! {}, qt! { #field_name: self.#field_name } )
-        }
+        (
+          // If the field is a mutable reference, then change it value by reference
+          if reference.mutability.is_some()
+          {
+            qt! { *self.#field_name = !*self.#field_name; }
+          }
+          else
+          {
+            qt! {}
+          },
+          qt! { #field_name: self.#field_name }
+        )
       }
       _ =>
       {
@@ -155,14 +159,18 @@ fn generate_for_tuple< 'a >
     {
       syn::Type::Reference( reference ) =>
       {
-        if reference.mutability.is_some() || !is_enabled
-        {
-          ( qt! { *self.#index = !*self.#index; }, qt! { self.#index } )
-        }
-        else
-        {
-          ( qt! {}, qt! { self.#index } )
-        }
+        (
+          // If the field is a mutable reference, then change it value by reference
+          if reference.mutability.is_some()
+          {
+            qt! { *self.#index = !*self.#index; }
+          }
+          else
+          {
+            qt! {}
+          },
+          qt! { self.#index }
+        )
       }
       _ =>
       {
