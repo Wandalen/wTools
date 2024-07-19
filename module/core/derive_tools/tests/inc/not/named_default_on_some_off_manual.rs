@@ -1,13 +1,13 @@
 use core::ops::Not;
 
 #[ allow( dead_code ) ]
-struct DefaultOnSomeOff
+struct NamedDefaultOnSomeOff
 {
   a : bool,
   b : u8,
 }
 
-impl Not for DefaultOnSomeOff {
+impl Not for NamedDefaultOnSomeOff {
   type Output = Self;
 
   fn not( self ) -> Self::Output {
@@ -15,4 +15,4 @@ impl Not for DefaultOnSomeOff {
   }
 }
 
-include!( "./only_test/default_on_some_off.rs" );
+include!( "only_test/named_default_on_some_off.rs" );

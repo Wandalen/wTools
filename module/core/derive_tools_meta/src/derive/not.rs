@@ -27,7 +27,7 @@ pub fn not( input : proc_macro::TokenStream  ) -> Result< proc_macro2::TokenStre
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
     = generic_params::decompose( &parsed.generics );
 
-  let field_attrs = parsed.fields.iter().map(| field | &field.attrs );
+  let field_attrs = parsed.fields.iter().map( | field | &field.attrs );
   let field_types = item_struct::field_types( &parsed );
   let field_names = item_struct::field_names( &parsed );
 
@@ -35,7 +35,7 @@ pub fn not( input : proc_macro::TokenStream  ) -> Result< proc_macro2::TokenStre
   {
     ( 0, _ ) => generate_for_unit(),
     ( _, Some( field_names ) ) => generate_for_named( field_attrs, field_types, field_names, &item_attrs )?,
-    ( _, None ) => generate_for_tuple( field_attrs, field_types, &item_attrs ),
+    ( _, None ) => generate_for_tuple( field_attrs, field_types, &item_attrs )?,
   };
 
   let result = qt!
@@ -69,16 +69,16 @@ fn generate_for_unit() -> proc_macro2::TokenStream
 
 fn generate_for_named< 'a >
 (
-  field_attributes: impl IterTrait< 'a, &'a Vec<syn::Attribute> >,
+  field_attributes: impl IterTrait< 'a, &'a Vec< syn::Attribute > >,
   field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type >,
   field_names : impl macro_tools::IterTrait< 'a, &'a syn::Ident >,
   item_attrs : &ItemAttributes,
 )
--> Result<proc_macro2::TokenStream>
+-> Result< proc_macro2::TokenStream >
 {
   let fields_enabled = field_attributes
   .map( | attrs| FieldAttributes::from_attrs( attrs.iter() ) )
-  .collect::<Result<Vec<_>>>()?
+  .collect::< Result< Vec< _ > > >()?
   .into_iter()
   .map( | fa | fa.config.enabled.value( item_attrs.config.enabled.value( item_attrs.config.enabled.value( true ) ) ) );
 
@@ -120,11 +120,13 @@ fn generate_for_named< 'a >
   })
   .unzip();
 
-  Ok(qt!
-  {
-    #(#mut_ref_transformations)*
-    Self { #(#values),* }
-  })
+  Ok(
+    qt!
+    {
+      #(#mut_ref_transformations)*
+      Self { #(#values),* }
+    }
+  )
 }
 
 fn generate_for_tuple< 'a >
@@ -133,20 +135,27 @@ fn generate_for_tuple< 'a >
   field_types : impl macro_tools::IterTrait< 'a, &'a syn::Type >,
   item_attrs : &ItemAttributes,
 )
--> proc_macro2::TokenStream
+-> Result<proc_macro2::TokenStream>
 {
+  let fields_enabled = field_attributes
+    .map( | attrs| FieldAttributes::from_attrs( attrs.iter() ) )
+    .collect::< Result< Vec< _ > > >()?
+    .into_iter()
+    .map( | fa | fa.config.enabled.value( item_attrs.config.enabled.value( item_attrs.config.enabled.value( true ) ) ) );
+
   let ( mut_ref_transformations, values ): (Vec< proc_macro2::TokenStream >, Vec< proc_macro2::TokenStream > ) =
   field_types
   .clone()
   .enumerate()
-  .map( | ( index, field_type ) |
+  .zip( fields_enabled )
+  .map( | ( ( index, field_type ), is_enabled ) |
   {
     let index = syn::Index::from( index );
     match field_type
     {
       syn::Type::Reference( reference ) =>
       {
-        if reference.mutability.is_some()
+        if reference.mutability.is_some() || !is_enabled
         {
           ( qt! { *self.#index = !*self.#index; }, qt! { self.#index } )
         }
@@ -155,14 +164,29 @@ fn generate_for_tuple< 'a >
           ( qt! {}, qt! { self.#index } )
         }
       }
-      _ => { ( qt!{}, qt! { !self.#index } ) }
+      _ =>
+      {
+        (
+          qt!{},
+          if is_enabled
+          {
+            qt! { !self.#index }
+          }
+          else
+          {
+            qt! { self.#index }
+          }
+        )
+      }
     }
   })
   .unzip();
 
-  qt!
-  {
-    #(#mut_ref_transformations)*
-    Self ( #(#values),* )
-  }
+  Ok(
+    qt!
+    {
+      #(#mut_ref_transformations)*
+      Self ( #(#values),* )
+    }
+  )
 }
