@@ -98,16 +98,17 @@ pub( crate ) mod private
   }
 
   /// A trait for formatting tables.
-  impl< 'a, T, RowKey, Row, CellKey, Cell, Title > TableFormatter< 'a >
-  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
+  impl< 'a, T, RowKey, Row, CellKey, Cell, Kind, Title > TableFormatter< 'a >
+  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Kind, Title >
   where
-    Self : TableRows< 'a, RowKey, Row, CellKey, Cell >,
+    Self : TableRows< 'a, RowKey, Row, CellKey, Cell, Kind >,
     Self : TableHeader< 'a, CellKey, Title >,
     Self : TableSize< 'a >,
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, Kind > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + Clone + 'a,
     CellKey : fmt::Debug + Clone,
+    Kind : Copy + 'static,
   {
     fn fmt( &'a self, f : &mut Context< '_ > ) -> fmt::Result
     {

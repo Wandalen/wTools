@@ -25,11 +25,12 @@ pub( crate ) mod private
   }
 
   /// A trait for iterating over all rows of a table.
-  pub trait TableRows< 'a, RowKey, Row, CellKey, Cell >
+  pub trait TableRows< 'a, RowKey, Row, CellKey, Cell, Kind >
   where
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, Kind > + 'a,
     Cell : fmt::Debug + 'a,
     Cell : std::borrow::ToOwned + ?Sized,
+    Kind : Copy + 'static,
   {
     /// Returns an iterator over all rows of the table.
     fn rows( &'a self ) -> impl IteratorTrait< Item = Row >;
@@ -86,15 +87,16 @@ pub( crate ) mod private
 
   // ==
 
-  impl< 'a, T, RowKey, Row, CellKey, Cell, Title > TableSize< 'a >
-  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
+  impl< 'a, T, RowKey, Row, CellKey, Cell, Kind, Title > TableSize< 'a >
+  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Kind, Title >
   where
-    Self : TableRows< 'a, RowKey, Row, CellKey, Cell >,
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
+    Self : TableRows< 'a, RowKey, Row, CellKey, Cell, Kind >,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, Kind > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + 'a,
     Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone,
+    Kind : Copy + 'static,
   {
     fn table_size( &'a self ) -> [ usize ; 2 ]
     {
@@ -113,15 +115,16 @@ pub( crate ) mod private
     }
   }
 
-  impl< 'a, T, RowKey, Row, CellKey, Cell, Title > TableRows< 'a, RowKey, Row, CellKey, Cell >
-  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
+  impl< 'a, T, RowKey, Row, CellKey, Cell, Kind, Title > TableRows< 'a, RowKey, Row, CellKey, Cell, Kind >
+  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Kind, Title >
   where
     T : Fields< 'a, RowKey, Option< Cow< 'a, Row > > >,
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, Kind > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + 'a,
     Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone,
+    Kind : Copy + 'static,
   {
 
     fn rows( &'a self ) -> impl IteratorTrait< Item = Row >

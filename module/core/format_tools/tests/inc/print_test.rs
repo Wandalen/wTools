@@ -122,12 +122,12 @@ fn test_table_to_string()
   ];
 
   let cells = Cells::< '_, &'static str, str, WithRef >::cells( &test_objects[ 0 ] );
-  // assert_eq!( cells.len(), 4 );
-  // let cells = Cells::< '_, &'static str, MaybeAs< '_, str, WithRef > >::cells( &test_objects[ 1 ] );
-  // assert_eq!( cells.len(), 4 );
-  // drop( cells );
+  assert_eq!( cells.len(), 4 );
+  let cells = Cells::< '_, &'static str, str, WithRef >::cells( &test_objects[ 1 ] );
+  assert_eq!( cells.len(), 4 );
+  drop( cells );
 
-//   let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, String, &str > = AsTable::new( &test_objects );
+  // let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, str, WithRef, &str > = AsTable::new( &test_objects );
 //   let size = TableSize::< '_ >::table_size( &as_table );
 //   assert_eq!( size, [ 2, 4 ] );
 //   let rows = TableRows::rows( &as_table );
