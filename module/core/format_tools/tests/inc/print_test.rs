@@ -121,7 +121,7 @@ fn test_table_to_string()
     },
   ];
 
-  // let cells = Cells::< '_, &'static str, str, WithRef >::cells( &test_objects[ 0 ] );
+  let cells = Cells::< '_, &'static str, str, WithRef >::cells( &test_objects[ 0 ] );
   // assert_eq!( cells.len(), 4 );
   // let cells = Cells::< '_, &'static str, MaybeAs< '_, str, WithRef > >::cells( &test_objects[ 1 ] );
   // assert_eq!( cells.len(), 4 );

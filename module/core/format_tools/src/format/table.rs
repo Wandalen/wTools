@@ -48,7 +48,6 @@ pub( crate ) mod private
   pub trait Cells< 'a, CellKey, Cell, Kind >
   where
     Cell : fmt::Debug + 'a,
-    // &'a Cell : Clone,
     Cell : std::borrow::ToOwned + ?Sized,
     Kind : Copy + 'static,
   {
@@ -56,6 +55,33 @@ pub( crate ) mod private
     fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, MaybeAs< 'a, Cell, Kind > ) >
     // fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, Option< Cell > ) >
     ;
+  }
+
+  impl< 'a, Kind, Row, CellKey, Cell > Cells< 'a, CellKey, Cell, Kind >
+  for Row
+  where
+    Row : Fields< 'a, CellKey, MaybeAs< 'a, Cell, Kind > > + 'a,
+    // MaybeAs< 'a, Cell, Kind > : Clone,
+    Cell : fmt::Debug + 'a,
+    Cell : std::borrow::ToOwned + ?Sized,
+    Kind : Copy + 'static,
+  {
+
+    fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, MaybeAs< 'a, Cell, Kind > ) >
+    {
+      self.fields().map
+      (
+        move | ( key, cell ) |
+        {
+          match cell.0
+          {
+            Some( cell ) => ( key, cell.into() ),
+            None => ( key, MaybeAs::none() )
+          }
+        }
+      )
+    }
+
   }
 
   // ==
@@ -144,32 +170,6 @@ pub( crate ) mod private
 //     }
 //
 //   }
-
-  impl< 'a, Kind, Row, CellKey, Cell > Cells< 'a, CellKey, Cell, Kind >
-  for Row
-  where
-    Row : Fields< 'a, CellKey, MaybeAs< 'a, Cell, Kind > > + 'a,
-    MaybeAs< 'a, Cell, Kind > : Clone,
-    Cell : fmt::Debug + Clone + 'a,
-    Kind : Copy + 'static,
-  {
-
-    fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, MaybeAs< 'a, Cell, Kind > ) >
-    {
-      self.fields().map
-      (
-        move | ( key, cell ) |
-        {
-          match cell.0
-          {
-            Some( cell ) => ( key, cell.into() ),
-            None => ( key, MaybeAs::none() )
-          }
-        }
-      )
-    }
-
-  }
 
 }
 

@@ -45,7 +45,8 @@ pub( crate ) mod private
     }
   }
 
-  impl< 'a, T, RowKey, Row, CellKey, Cell, Title > AsRef< T > for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
+  impl< 'a, T, RowKey, Row, CellKey, Cell, Title > AsRef< T >
+  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
   where
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Title : fmt::Debug,
@@ -59,7 +60,8 @@ pub( crate ) mod private
     }
   }
 
-  impl< 'a, T, RowKey, Row, CellKey, Cell, Title > Deref for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
+  impl< 'a, T, RowKey, Row, CellKey, Cell, Title > Deref
+  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
   where
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
     Title : fmt::Debug,
@@ -90,7 +92,8 @@ pub( crate ) mod private
     }
   }
 
-  impl< 'a, T, RowKey, Row, CellKey, Cell, Title > fmt::Debug for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
+  impl< 'a, T, RowKey, Row, CellKey, Cell, Title > fmt::Debug
+  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Title >
   where
     T : fmt::Debug,
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
@@ -101,7 +104,8 @@ pub( crate ) mod private
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
-      f.debug_struct( "AsTable" )
+      f
+      .debug_struct( "AsTable" )
       .field( "0", &self.0 )
       .finish()
     }
