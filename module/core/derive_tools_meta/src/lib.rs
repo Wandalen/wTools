@@ -16,6 +16,7 @@
     feature = "derive_index",
     feature = "derive_index_mut",
     feature = "derive_inner_from",
+    feature = "derive_new",
     feature = "derive_variadic_from",
     feature = "derive_phantom"
   )
@@ -34,6 +35,7 @@ mod derive;
 //     feature = "derive_index",
 //     feature = "derive_index_mut",
 //     feature = "derive_inner_from",
+//     feature = "derive_new",
 //     feature = "derive_variadic_from",
 //     feature = "derive_phantom"
 //   )

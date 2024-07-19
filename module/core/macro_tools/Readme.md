@@ -15,9 +15,9 @@ The purpose of `typ::type_parameters` is to extract type parameters from a given
 In this example, we generate a type `core::option::Option<i8, i16, i32, i64>` and extract its type parameters.
 
 ```rust
-#[ cfg( not( feature = "enabled" ) ) ]
+#[ cfg( not( all( feature = "enabled", feature = "typ" ) ) ) ]
 fn main(){}
-#[ cfg( feature = "enabled" ) ]
+#[ cfg( all( feature = "enabled", feature = "typ" ) ) ]
 fn main()
 {
   // Import necessary macros and modules from the `macro_tools` crate.
@@ -80,9 +80,9 @@ defined in other crates.
 
 ```rust
 
-#[ cfg( not( all( feature = "enabled", debug_assertions ) )  ) ]
+#[ cfg( not( all( feature = "enabled", feature = "attr_prop", debug_assertions ) )  ) ]
 fn main(){}
-#[ cfg( all( feature = "enabled", debug_assertions )  ) ]
+#[ cfg( all( feature = "enabled", feature = "attr_prop", debug_assertions )  ) ]
 fn main()
 {
 

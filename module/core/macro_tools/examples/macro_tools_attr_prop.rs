@@ -26,9 +26,9 @@
 //! defined in other crates.
 //!
 
-#[ cfg( not( all( feature = "enabled", debug_assertions ) )  ) ]
+#[ cfg( not( all( feature = "enabled", feature = "attr_prop", debug_assertions ) )  ) ]
 fn main(){}
-#[ cfg( all( feature = "enabled", debug_assertions )  ) ]
+#[ cfg( all( feature = "enabled", feature = "attr_prop",  debug_assertions )  ) ]
 fn main()
 {
 
