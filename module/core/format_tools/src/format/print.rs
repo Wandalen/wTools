@@ -106,8 +106,10 @@ pub( crate ) mod private
     Self : TableSize< 'a >,
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, Kind > + 'a,
     Title : fmt::Debug,
-    Cell : fmt::Debug + Clone + 'a,
     CellKey : fmt::Debug + Clone,
+    Cell : fmt::Debug + 'a,
+    Cell : std::borrow::ToOwned + ?Sized,
+    < Cell as ToOwned >::Owned : fmt::Debug,
     Kind : Copy + 'static,
   {
     fn fmt( &'a self, f : &mut Context< '_ > ) -> fmt::Result
