@@ -106,11 +106,7 @@ pub( crate ) mod private
       (
         move | ( key, cell ) |
         {
-          match cell.0
-          {
-            Some( cell ) => ( key, cell.into() ),
-            None => ( key, MaybeAs::none() )
-          }
+          ( key, cell.into() )
         }
       )
     }
