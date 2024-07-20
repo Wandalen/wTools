@@ -56,30 +56,30 @@ pub( crate ) mod private
   /// A trait for iterating over all rows of a table.
   pub trait TableRows< 'a, 'b, RowKey, Row, CellKey, Cell, CellKind >
   where
-    'b : 'a,
-    Row : Clone + Cells< 'a, CellKey, Cell, CellKind > + 'b,
-    Cell : std::borrow::ToOwned + ?Sized + 'a,
+    'a : 'b,
+    Row : Clone + Cells< 'b, CellKey, Cell, CellKind >,
+    Cell : std::borrow::ToOwned + ?Sized + 'b,
     CellKind : Copy + 'static,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
   {
     /// Returns an iterator over all rows of the table.
-    fn rows( &'b self ) -> impl IteratorTrait< Item = Row >;
+    fn rows( &'a self ) -> impl IteratorTrait< Item = Row >;
   }
 
   impl< 'a, 'b, T, RowKey, Row, CellKey, Cell, CellKind, Title > TableRows< 'a, 'b, RowKey, Row, CellKey, Cell, CellKind >
-  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title >
+  for AsTable< 'b, T, RowKey, Row, CellKey, Cell, CellKind, Title >
   where
-    'b : 'a,
-    T : Fields< 'b, RowKey, Option< Cow< 'b, Row > > >,
-    Row : Clone + Cells< 'a, CellKey, Cell, CellKind > + 'b,
+    'a : 'b,
+    T : Fields< 'a, RowKey, Option< Cow< 'a, Row > > >,
+    Row : Clone + Cells< 'b, CellKey, Cell, CellKind > + 'a,
     Title : fmt::Display,
     Cell : fmt::Display,
-    Cell : std::borrow::ToOwned + ?Sized + 'a,
+    Cell : std::borrow::ToOwned + ?Sized + 'b,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellKind : Copy + 'static,
   {
 
-    fn rows( &'b self ) -> impl IteratorTrait< Item = Row >
+    fn rows( &'a self ) -> impl IteratorTrait< Item = Row >
     {
       self.as_ref().fields()
       .filter_map( move | ( _k, e ) |
@@ -98,42 +98,51 @@ pub( crate ) mod private
   // =
 
   /// A trait for iterating over all rows of a table.
-  pub trait TableSize< 'a >
+  pub trait TableSize< 'a, 'b >
+  where
+    'a : 'b,
   {
     /// Returns size of a table.
-    fn table_size( &'a self ) -> [ usize ; 2 ];
+    fn table_size< 'c >( &'c self ) -> [ usize ; 2 ]
+    where
+      'c : 'a,
+      // 'a : 'b,
+      // 'b : 'a
+    ;
   }
 
-  // impl< 'a, 'b, T, RowKey, Row, CellKey, Cell, CellKind, Title > TableSize< 'b >
-  // for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title >
-  // where
-  //   'b : 'a,
-  //   Self : TableRows< 'a, 'b, RowKey, Row, CellKey, Cell, CellKind >,
-  //   Row : Clone + Cells< 'a, CellKey, Cell, CellKind > + 'b,
-  //   Title : fmt::Display,
-  //   Cell : fmt::Display,
-  //   Cell : std::borrow::ToOwned + ?Sized + 'a,
-  //   CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
-  //   CellKind : Copy + 'static,
-  // {
-  //   fn table_size( &'b self ) -> [ usize ; 2 ]
-  //   {
-  //     let mut rows = self.rows();
-  //     let nrows = rows.len();
-  //     let row = rows.next();
-  //     if let Some( row2 ) = row
-  //     {
-  //       let cit = row2.cells();
-  //       let ncells = cit.len();
-  //       [ nrows, ncells ]
-  //       // [ 0, 0 ]
-  //     }
-  //     else
-  //     {
-  //       [ 0, 0 ]
-  //     }
-  //   }
-  // }
+  impl< 'a, 'b, T, RowKey, Row, CellKey, Cell, CellKind, Title > TableSize< 'a, 'b >
+  for AsTable< 'b, T, RowKey, Row, CellKey, Cell, CellKind, Title >
+  where
+    'a : 'b,
+    Self : TableRows< 'a, 'b, RowKey, Row, CellKey, Cell, CellKind >,
+    Row : Clone + Cells< 'b, CellKey, Cell, CellKind > + 'a,
+    Title : fmt::Display,
+    Cell : fmt::Display,
+    Cell : std::borrow::ToOwned + ?Sized + 'b,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+    CellKind : Copy + 'static,
+  {
+    fn table_size< 'c >( &'c self ) -> [ usize ; 2 ]
+    where
+      'c : 'a
+    {
+      let mut rows = self.rows();
+      let nrows = rows.len();
+      let row = rows.clone().next();
+      if let Some( row2 ) = row
+      {
+        let cit = row2.cells().clone();
+        // let ncells = cit.len();
+        // [ nrows, ncells ]
+        [ 0, 0 ]
+      }
+      else
+      {
+        [ 0, 0 ]
+      }
+    }
+  }
 
 //   // =
 //

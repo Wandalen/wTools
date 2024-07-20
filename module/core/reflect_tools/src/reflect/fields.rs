@@ -35,24 +35,24 @@ pub( crate ) mod private
   {
   }
 
-  ///
-  /// A trait for iterating over all fields convertible into a specified type within an entity.
-  ///
-  /// # Type Parameters
-  ///
-  /// - `K`: The key type.
-  /// - `V`: The value type.
-  ///
-  pub trait Fields< 'a, K, V >
+///
+/// A trait for iterating over all fields convertible into a specified type within an entity.
+///
+/// # Type Parameters
+///
+/// - `K`: The key type.
+/// - `V`: The value type.
+///
+pub trait Fields< 'a, K, V >
+where
+  V : Clone + 'a,
+{
+  /// Returns an iterator over all fields of the specified type within the entity.
+  fn fields< 'b >( &'b self ) -> impl IteratorTrait< Item = ( K, V ) >
   where
-    V : Clone + 'a,
-  {
-    /// Returns an iterator over all fields of the specified type within the entity.
-    fn fields< 'b >( &'b self ) -> impl IteratorTrait< Item = ( K, V ) >
-    where
-      'b : 'a,
-    ;
-  }
+    'b : 'a,
+  ;
+}
 
   /// Trait returning name of type of variable.
   pub trait TypeName
