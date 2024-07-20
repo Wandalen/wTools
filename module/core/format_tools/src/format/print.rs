@@ -113,7 +113,7 @@ pub( crate ) mod private
     Title : fmt::Debug,
     Title : fmt::Display,
     CellKey : fmt::Debug + Clone,
-    Cell : fmt::Debug + 'a,
+    // Cell : fmt::Debug + 'a,
     Cell : fmt::Display + 'a,
     Cell : std::borrow::ToOwned + ?Sized,
     // < Cell as ToOwned >::Owned : fmt::Debug,

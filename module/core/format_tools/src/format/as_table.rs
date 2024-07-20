@@ -24,9 +24,9 @@ pub( crate ) mod private
   )
   where
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, CellKind > + 'a,
-    Title : fmt::Debug,
-    Cell : fmt::Debug + 'a,
-    Cell : std::borrow::ToOwned + ?Sized,
+    Title : fmt::Display,
+    Cell : fmt::Display,
+    Cell : std::borrow::ToOwned + ?Sized + 'a,
     CellKey : fmt::Debug + Clone,
     CellKind : Copy + 'static,
   ;
@@ -34,9 +34,9 @@ pub( crate ) mod private
   impl< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title > AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title >
   where
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, CellKind > + 'a,
-    Title : fmt::Debug,
-    Cell : fmt::Debug + 'a,
-    Cell : std::borrow::ToOwned + ?Sized,
+    Title : fmt::Display,
+    Cell : fmt::Display,
+    Cell : std::borrow::ToOwned + ?Sized + 'a,
     CellKey : fmt::Debug + Clone,
     CellKind : Copy + 'static,
   {
@@ -51,9 +51,9 @@ pub( crate ) mod private
   for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title >
   where
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, CellKind > + 'a,
-    Title : fmt::Debug,
-    Cell : fmt::Debug + 'a,
-    Cell : std::borrow::ToOwned + ?Sized,
+    Title : fmt::Display,
+    Cell : fmt::Display,
+    Cell : std::borrow::ToOwned + ?Sized + 'a,
     CellKey : fmt::Debug + Clone,
     CellKind : Copy + 'static,
   {
@@ -67,9 +67,9 @@ pub( crate ) mod private
   for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title >
   where
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, CellKind > + 'a,
-    Title : fmt::Debug,
-    Cell : fmt::Debug + 'a,
-    Cell : std::borrow::ToOwned + ?Sized,
+    Title : fmt::Display,
+    Cell : fmt::Display,
+    Cell : std::borrow::ToOwned + ?Sized + 'a,
     CellKey : fmt::Debug + Clone,
     CellKind : Copy + 'static,
   {
@@ -85,9 +85,9 @@ pub( crate ) mod private
   for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title >
   where
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, CellKind > + 'a,
-    Title : fmt::Debug,
-    Cell : fmt::Debug + 'a,
-    Cell : std::borrow::ToOwned + ?Sized,
+    Title : fmt::Display,
+    Cell : fmt::Display,
+    Cell : std::borrow::ToOwned + ?Sized + 'a,
     CellKey : fmt::Debug + Clone,
     CellKind : Copy + 'static,
   {
@@ -102,9 +102,9 @@ pub( crate ) mod private
   where
     T : fmt::Debug,
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, CellKind > + 'a,
-    Title : fmt::Debug,
-    Cell : std::borrow::ToOwned + ?Sized,
-    Cell : fmt::Debug + 'a,
+    Title : fmt::Display,
+    Cell : std::borrow::ToOwned + ?Sized + 'a,
+    Cell : fmt::Display,
     CellKey : fmt::Debug + Clone,
     CellKind : Copy + 'static,
   {
