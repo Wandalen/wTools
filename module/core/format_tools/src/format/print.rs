@@ -119,6 +119,7 @@ pub( crate ) mod private
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     Cell : fmt::Display + 'a,
     Cell : std::borrow::ToOwned + ?Sized,
+    Cell : AsRef< str >,
     CellKind : Copy + 'static,
   {
     fn fmt( &'a self, f : &mut Context< '_ > ) -> fmt::Result
@@ -156,6 +157,8 @@ pub( crate ) mod private
               // Some( cell ) => format!( "{}", cell.borrow() ),
               Some( cell ) => format!( "{}", < Cow< '_, Cell > as Borrow< Cell > >::borrow( &cell ) ),
               None => "".to_string(),
+              // Some( cell ) => < Cow< '_, Cell > as Borrow< Cell > >::borrow( &cell ).as_ref(),
+              // None => "",
             }
           }
         )
