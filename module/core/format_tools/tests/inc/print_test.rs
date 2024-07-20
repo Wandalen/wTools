@@ -37,7 +37,7 @@ for TestObject
 {
   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, str, WithRef > ) >
   {
-    use format_tools::ref_or_debug::field;
+    use format_tools::ref_or_display_or_debug::field;
     let mut dst : Vec< ( &'static str, MaybeAs< 'a, str, WithRef > ) > = Vec::new();
 
     dst.push( field!( &self.id ) );
@@ -133,12 +133,14 @@ fn table_to_string()
 
   // without explicit arguments
 
+  println!( "" );
   let as_table = AsTable::new( &test_objects );
   let table_string = as_table.table_to_string();
   assert!( table_string.contains( "id" ) );
   assert!( table_string.contains( "created_at" ) );
   assert!( table_string.contains( "file_ids" ) );
   assert!( table_string.contains( "tools" ) );
+  println!( "{table_string}" );
 
 }
 

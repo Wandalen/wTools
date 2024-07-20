@@ -7,7 +7,12 @@ pub( crate ) mod private
 {
 
   use crate::*;
-  use core::fmt;
+  use std::borrow::Cow;
+  use core::
+  {
+    fmt,
+    borrow::Borrow,
+  };
   use former::Former;
 
   //=
@@ -106,10 +111,13 @@ pub( crate ) mod private
     Self : TableSize< 'a >,
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, CellKind > + 'a,
     Title : fmt::Debug,
+    Title : fmt::Display,
     CellKey : fmt::Debug + Clone,
     Cell : fmt::Debug + 'a,
+    Cell : fmt::Display + 'a,
     Cell : std::borrow::ToOwned + ?Sized,
-    < Cell as ToOwned >::Owned : fmt::Debug,
+    // < Cell as ToOwned >::Owned : fmt::Debug,
+    // < Cell as Borrow >::Borrowed : fmt::Debug,
     CellKind : Copy + 'static,
   {
     fn fmt( &'a self, f : &mut Context< '_ > ) -> fmt::Result
@@ -125,7 +133,7 @@ pub( crate ) mod private
         let mut i = 0;
         for ( _key, title ) in header
         {
-          col_widths[ i ] = format!( "{:?}", title ).len();
+          col_widths[ i ] = format!( "{}", title ).len();
           i += 1;
         }
         writeln!( f.buf )?;
@@ -145,7 +153,8 @@ pub( crate ) mod private
           {
             match cell.0
             {
-              Some( cell ) => format!( "{:?}", &cell ),
+              // Some( cell ) => format!( "{}", cell.borrow() ),
+              Some( cell ) => format!( "{}", < Cow< '_, Cell > as Borrow< Cell > >::borrow( &cell ) ),
               None => "".to_string(),
             }
           }
@@ -179,7 +188,7 @@ pub( crate ) mod private
           {
             write!( f.buf, "{}", separator )?;
           }
-          write!( f.buf, "{:^width$}", format!( "{:?}", title ), width = col_widths[ i ] )?;
+          write!( f.buf, "{:^width$}", format!( "{}", title ), width = col_widths[ i ] )?;
           // write!( f.buf, "{:?}", title )?;
           i += 1;
         }
