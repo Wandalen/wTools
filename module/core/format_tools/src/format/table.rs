@@ -56,7 +56,7 @@ pub( crate ) mod private
   /// A trait for iterating over all rows of a table.
   pub trait TableRows< 'a, 'b, RowKey, Row, CellKey, Cell, CellKind >
   where
-    // 'b : 'a,
+    'b : 'a,
     Row : Clone + Cells< 'a, CellKey, Cell, CellKind > + 'b,
     Cell : std::borrow::ToOwned + ?Sized + 'a,
     CellKind : Copy + 'static,
@@ -69,7 +69,7 @@ pub( crate ) mod private
   impl< 'a, 'b, T, RowKey, Row, CellKey, Cell, CellKind, Title > TableRows< 'a, 'b, RowKey, Row, CellKey, Cell, CellKind >
   for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title >
   where
-    // 'b : 'a,
+    'b : 'a,
     T : Fields< 'b, RowKey, Option< Cow< 'b, Row > > >,
     Row : Clone + Cells< 'a, CellKey, Cell, CellKind > + 'b,
     Title : fmt::Display,
@@ -107,7 +107,7 @@ pub( crate ) mod private
   // impl< 'a, 'b, T, RowKey, Row, CellKey, Cell, CellKind, Title > TableSize< 'b >
   // for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title >
   // where
-  //   // 'b : 'a,
+  //   'b : 'a,
   //   Self : TableRows< 'a, 'b, RowKey, Row, CellKey, Cell, CellKind >,
   //   Row : Clone + Cells< 'a, CellKey, Cell, CellKind > + 'b,
   //   Title : fmt::Display,
@@ -121,10 +121,12 @@ pub( crate ) mod private
   //     let mut rows = self.rows();
   //     let nrows = rows.len();
   //     let row = rows.next();
-  //     if let Some( row ) = row
+  //     if let Some( row2 ) = row
   //     {
-  //       let ncells = row.cells().len();
+  //       let cit = row2.cells();
+  //       let ncells = cit.len();
   //       [ nrows, ncells ]
+  //       // [ 0, 0 ]
   //     }
   //     else
   //     {
