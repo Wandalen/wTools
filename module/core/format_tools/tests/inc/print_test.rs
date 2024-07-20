@@ -13,7 +13,6 @@ use the_module::
   // TableFormatter,
   Context,
   WithRef,
-  ref_or_debug::field,
   MaybeAs,
 };
 
@@ -38,6 +37,7 @@ for TestObject
 {
   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, str, WithRef > ) >
   {
+    use format_tools::ref_or_debug::field;
     let mut dst : Vec< ( &'static str, MaybeAs< 'a, str, WithRef > ) > = Vec::new();
 
     dst.push( field!( &self.id ) );

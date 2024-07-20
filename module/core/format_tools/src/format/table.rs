@@ -88,7 +88,6 @@ pub( crate ) mod private
   {
     /// Returns an iterator over all cells of the row.
     fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, MaybeAs< 'a, Cell, Kind > ) >
-    // fn cells( &'a self ) -> impl IteratorTrait< Item = ( CellKey, Option< Cell > ) >
     ;
   }
 
@@ -96,7 +95,6 @@ pub( crate ) mod private
   for Row
   where
     Row : Fields< 'a, CellKey, MaybeAs< 'a, Cell, Kind > > + 'a,
-    // MaybeAs< 'a, Cell, Kind > : Clone,
     Cell : fmt::Debug + 'a,
     Cell : std::borrow::ToOwned + ?Sized,
     Kind : Copy + 'static,
