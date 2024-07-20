@@ -68,7 +68,7 @@ pub( crate ) mod private
     Title : fmt::Display,
     Cell : fmt::Display,
     Cell : std::borrow::ToOwned + ?Sized + 'a,
-    CellKey : fmt::Debug + Clone,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     // CellKey : Clone,
     CellKind : Copy + 'static,
   {
@@ -100,7 +100,7 @@ pub( crate ) mod private
     CellKind : Copy + 'static,
     // Title : fmt::Debug,
     // Cell : fmt::Debug + 'a,
-    CellKey : fmt::Debug + Clone,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
   {
     /// Returns an iterator over all rows of the table.
     fn rows( &'a self ) -> impl IteratorTrait< Item = Row >;
@@ -116,7 +116,7 @@ pub( crate ) mod private
     Title : fmt::Display,
     Cell : fmt::Display,
     Cell : std::borrow::ToOwned + ?Sized + 'a,
-    CellKey : fmt::Debug + Clone,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     // CellKey : Clone,
     CellKind : Copy + 'static,
   {
@@ -154,7 +154,7 @@ pub( crate ) mod private
     Self : TableRows< 'a, RowKey, Row, CellKey, Cell, CellKind >,
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, CellKind > + 'a,
     // CellKey : Clone,
-    CellKey : fmt::Debug + Clone,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     Title : fmt::Display,
     Cell : fmt::Display,
     // Cell : fmt::Debug + 'a,

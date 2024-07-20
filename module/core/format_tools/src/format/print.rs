@@ -7,7 +7,11 @@ pub( crate ) mod private
 {
 
   use crate::*;
-  use std::borrow::Cow;
+  use std::
+  {
+    borrow::Cow,
+    collections::HashMap,
+  };
   use core::
   {
     fmt,
@@ -112,21 +116,17 @@ pub( crate ) mod private
     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, CellKind > + 'a,
     Title : fmt::Debug,
     Title : fmt::Display,
-    CellKey : fmt::Debug + Clone,
-    // Cell : fmt::Debug + 'a,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     Cell : fmt::Display + 'a,
     Cell : std::borrow::ToOwned + ?Sized,
-    // < Cell as ToOwned >::Owned : fmt::Debug,
-    // < Cell as Borrow >::Borrowed : fmt::Debug,
     CellKind : Copy + 'static,
   {
     fn fmt( &'a self, f : &mut Context< '_ > ) -> fmt::Result
     {
       let table_size = self.table_size();
       let mut col_widths : Vec< usize > = vec![ 0 ; table_size[ 1 ] ];
+      // let mut col_widths = HashMap::< CellKey, usize >::new();
       let separator = &f.styles.separator;
-
-      // println!( "{}", self.header().is_some() );
 
       if let Some( header ) = self.header()
       {

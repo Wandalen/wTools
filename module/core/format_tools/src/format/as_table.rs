@@ -27,7 +27,7 @@ pub( crate ) mod private
     Title : fmt::Display,
     Cell : fmt::Display,
     Cell : std::borrow::ToOwned + ?Sized + 'a,
-    CellKey : fmt::Debug + Clone,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellKind : Copy + 'static,
   ;
 
@@ -37,7 +37,7 @@ pub( crate ) mod private
     Title : fmt::Display,
     Cell : fmt::Display,
     Cell : std::borrow::ToOwned + ?Sized + 'a,
-    CellKey : fmt::Debug + Clone,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellKind : Copy + 'static,
   {
     /// Just a constructor.
@@ -54,7 +54,7 @@ pub( crate ) mod private
     Title : fmt::Display,
     Cell : fmt::Display,
     Cell : std::borrow::ToOwned + ?Sized + 'a,
-    CellKey : fmt::Debug + Clone,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellKind : Copy + 'static,
   {
     fn as_ref( &self ) -> &T
@@ -70,7 +70,7 @@ pub( crate ) mod private
     Title : fmt::Display,
     Cell : fmt::Display,
     Cell : std::borrow::ToOwned + ?Sized + 'a,
-    CellKey : fmt::Debug + Clone,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellKind : Copy + 'static,
   {
     type Target = T;
@@ -88,7 +88,7 @@ pub( crate ) mod private
     Title : fmt::Display,
     Cell : fmt::Display,
     Cell : std::borrow::ToOwned + ?Sized + 'a,
-    CellKey : fmt::Debug + Clone,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellKind : Copy + 'static,
   {
     fn from( table : &'a T ) -> Self
@@ -105,7 +105,7 @@ pub( crate ) mod private
     Title : fmt::Display,
     Cell : std::borrow::ToOwned + ?Sized + 'a,
     Cell : fmt::Display,
-    CellKey : fmt::Debug + Clone,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellKind : Copy + 'static,
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
