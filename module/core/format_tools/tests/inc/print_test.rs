@@ -57,32 +57,8 @@ for TestObject
   }
 }
 
-// impl< 'a > Fields< 'a, &'static str, Option< Cow< 'a, String > > >
-// for TestObject
-// {
-//   fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, Option< Cow< 'a, String > > ) >
-//   {
-//     let mut vec : Vec< ( &'static str, Option< Cow< 'a, String > > ) > = Vec::new();
-//
-//     vec.push( ( "id", Some( Cow::Borrowed( &self.id ) ) ) );
-//     vec.push( ( "created_at", Some( Cow::Owned( self.created_at.to_string() ) ) ) );
-//     vec.push( ( "file_ids", Some( Cow::Owned( format!( "{:?}", self.file_ids ) ) ) ) );
-//
-//     if let Some( tools ) = &self.tools
-//     {
-//       vec.push( ( "tools", Some( Cow::Owned( format!( "{:?}", tools ) ) ) ) );
-//     }
-//     else
-//     {
-//       vec.push( ( "tools", None ) );
-//     }
-//
-//     vec.into_iter()
-//   }
-// }
-
 #[ test ]
-fn test_table_to_string()
+fn table_to_string()
 // where
   // for< 'a > AsTable< 'a, Vec< TestObject >, usize, TestObject, &'static str, String, &'static str > : TableFormatter< 'a >,
 {
@@ -146,7 +122,18 @@ fn test_table_to_string()
   assert!( got.is_ok() );
   println!( "{}", &output );
 
+  // with explicit arguments
+
   let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, str, WithRef, &str > = AsTable::new( &test_objects );
+  let table_string = as_table.table_to_string();
+  assert!( table_string.contains( "id" ) );
+  assert!( table_string.contains( "created_at" ) );
+  assert!( table_string.contains( "file_ids" ) );
+  assert!( table_string.contains( "tools" ) );
+
+  // without explicit arguments
+
+  let as_table = AsTable::new( &test_objects );
   let table_string = as_table.table_to_string();
   assert!( table_string.contains( "id" ) );
   assert!( table_string.contains( "created_at" ) );
