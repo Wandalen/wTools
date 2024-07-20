@@ -17,28 +17,28 @@ pub( crate ) mod private
   /// Transparent wrapper for table-like structures.
   #[ repr( transparent ) ]
   #[ derive( Clone, Copy ) ]
-  pub struct AsTable< 'a, T, RowKey, Row, CellKey, Cell, Kind, Title >
+  pub struct AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title >
   (
     &'a T,
-    ::core::marker::PhantomData< ( &'a (), fn () -> ( RowKey, Row, CellKey, Box< Cell >, Kind, Title ) ) >,
+    ::core::marker::PhantomData< ( &'a (), fn () -> ( RowKey, Row, CellKey, Box< Cell >, CellKind, Title ) ) >,
   )
   where
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, Kind > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, CellKind > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + 'a,
     Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone,
-    Kind : Copy + 'static,
+    CellKind : Copy + 'static,
   ;
 
-  impl< 'a, T, RowKey, Row, CellKey, Cell, Kind, Title > AsTable< 'a, T, RowKey, Row, CellKey, Cell, Kind, Title >
+  impl< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title > AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title >
   where
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, Kind > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, CellKind > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + 'a,
     Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone,
-    Kind : Copy + 'static,
+    CellKind : Copy + 'static,
   {
     /// Just a constructor.
     pub fn new( src : &'a T ) -> Self
@@ -47,15 +47,15 @@ pub( crate ) mod private
     }
   }
 
-  impl< 'a, T, RowKey, Row, CellKey, Cell, Kind, Title > AsRef< T >
-  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Kind, Title >
+  impl< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title > AsRef< T >
+  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title >
   where
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, Kind > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, CellKind > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + 'a,
     Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone,
-    Kind : Copy + 'static,
+    CellKind : Copy + 'static,
   {
     fn as_ref( &self ) -> &T
     {
@@ -63,15 +63,15 @@ pub( crate ) mod private
     }
   }
 
-  impl< 'a, T, RowKey, Row, CellKey, Cell, Kind, Title > Deref
-  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Kind, Title >
+  impl< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title > Deref
+  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title >
   where
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, Kind > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, CellKind > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + 'a,
     Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone,
-    Kind : Copy + 'static,
+    CellKind : Copy + 'static,
   {
     type Target = T;
 
@@ -81,15 +81,15 @@ pub( crate ) mod private
     }
   }
 
-  impl< 'a, T, RowKey, Row, CellKey, Cell, Kind, Title > From< &'a T >
-  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Kind, Title >
+  impl< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title > From< &'a T >
+  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title >
   where
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, Kind > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, CellKind > + 'a,
     Title : fmt::Debug,
     Cell : fmt::Debug + 'a,
     Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone,
-    Kind : Copy + 'static,
+    CellKind : Copy + 'static,
   {
     fn from( table : &'a T ) -> Self
     {
@@ -97,16 +97,16 @@ pub( crate ) mod private
     }
   }
 
-  impl< 'a, T, RowKey, Row, CellKey, Cell, Kind, Title > fmt::Debug
-  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Kind, Title >
+  impl< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title > fmt::Debug
+  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title >
   where
     T : fmt::Debug,
-    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, Kind > + 'a,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, CellKind > + 'a,
     Title : fmt::Debug,
     Cell : std::borrow::ToOwned + ?Sized,
     Cell : fmt::Debug + 'a,
     CellKey : fmt::Debug + Clone,
-    Kind : Copy + 'static,
+    CellKind : Copy + 'static,
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
