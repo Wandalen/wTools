@@ -127,19 +127,19 @@ fn test_table_to_string()
   assert_eq!( cells.len(), 4 );
   drop( cells );
 
-  // let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, str, WithRef, &str > = AsTable::new( &test_objects );
-//   let size = TableSize::< '_ >::table_size( &as_table );
-//   assert_eq!( size, [ 2, 4 ] );
-//   let rows = TableRows::rows( &as_table );
-//   assert_eq!( rows.len(), 2 );
-//   // dbg!( rows.collect::< Vec< _ > >() );
-//   let header = TableHeader::header( &as_table );
-//   assert!( header.is_some() );
-//   let header = header.unwrap();
-//   assert_eq!( header.len(), 4 );
-//   assert_eq!( header.collect::< Vec< _ > >(), vec![ ( "id", "id" ), ( "created_at", "created_at" ), ( "file_ids", "file_ids" ), ( "tools", "tools" ) ] );
-//   // dbg!( header.collect::< Vec< _ > >() );
-//
+  let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, str, WithRef, &str > = AsTable::new( &test_objects );
+  let size = TableSize::< '_ >::table_size( &as_table );
+  assert_eq!( size, [ 2, 4 ] );
+  let rows = TableRows::rows( &as_table );
+  assert_eq!( rows.len(), 2 );
+  // dbg!( rows.collect::< Vec< _ > >() );
+  let header = TableHeader::header( &as_table );
+  assert!( header.is_some() );
+  let header = header.unwrap();
+  assert_eq!( header.len(), 4 );
+  assert_eq!( header.collect::< Vec< _ > >(), vec![ ( "id", "id" ), ( "created_at", "created_at" ), ( "file_ids", "file_ids" ), ( "tools", "tools" ) ] );
+  // dbg!( header.collect::< Vec< _ > >() );
+
 //   let mut output = String::new();
 //   let mut formatter = Context::new( &mut output, Default::default() );
 //   let got = the_module::TableFormatter::fmt( &as_table, &mut formatter );

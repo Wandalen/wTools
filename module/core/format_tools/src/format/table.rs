@@ -45,6 +45,40 @@ pub( crate ) mod private
     fn header( &'a self ) -> Option< impl IteratorTrait< Item = ( CellKey, Title ) > >;
   }
 
+  impl< 'a, T, RowKey, Row, CellKey, Cell, Kind > TableHeader< 'a, CellKey, CellKey >
+  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, Kind, CellKey >
+  where
+    Self : TableRows< 'a, RowKey, Row, CellKey, Cell, Kind >,
+    Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, Kind > + 'a,
+    CellKey : fmt::Debug + Clone,
+    Cell : fmt::Debug + 'a,
+    Cell : std::borrow::ToOwned + ?Sized,
+    Kind : Copy + 'static,
+  {
+
+    fn header( &'a self ) -> Option< impl IteratorTrait< Item = ( CellKey, CellKey ) > >
+    {
+      let mut rows = self.rows();
+      let row = rows.next();
+      if let Some( row ) = row
+      {
+        Some
+        (
+          row
+          .cells()
+          .map( | ( key, _title ) | ( key.clone(), key ) )
+          .collect::< Vec< _ > >()
+          .into_iter()
+        )
+      }
+      else
+      {
+        None
+      }
+    }
+
+  }
+
   /// A trait for iterating over all cells of a row.
   pub trait Cells< 'a, CellKey, Cell, Kind >
   where
@@ -140,39 +174,6 @@ pub( crate ) mod private
     }
 
   }
-
-//   impl< 'a, T, RowKey, Row, CellKey, Cell > TableHeader< 'a, CellKey, CellKey >
-//   for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKey >
-//   where
-//     Self : TableRows< 'a, RowKey, Row, CellKey, Cell >,
-//     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, () > + 'a,
-//     CellKey : fmt::Debug + Clone,
-//     Cell : fmt::Debug + 'a,
-//     CellKey : fmt::Debug + Clone,
-//   {
-//
-//     fn header( &'a self ) -> Option< impl IteratorTrait< Item = ( CellKey, CellKey ) > >
-//     {
-//       let mut rows = self.rows();
-//       let row = rows.next();
-//       if let Some( row ) = row
-//       {
-//         Some
-//         (
-//           row
-//           .cells()
-//           .map( | ( key, _title ) | ( key.clone(), key ) )
-//           .collect::< Vec< _ > >()
-//           .into_iter()
-//         )
-//       }
-//       else
-//       {
-//         None
-//       }
-//     }
-//
-//   }
 
 }
 
