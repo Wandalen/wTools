@@ -48,7 +48,10 @@ pub( crate ) mod private
     V : Clone + 'a,
   {
     /// Returns an iterator over all fields of the specified type within the entity.
-    fn fields( &'a self ) -> impl IteratorTrait< Item = ( K, V ) >;
+    fn fields< 'b >( &'b self ) -> impl IteratorTrait< Item = ( K, V ) >
+    where
+      'b : 'a,
+    ;
   }
 
   /// Trait returning name of type of variable.
@@ -75,7 +78,9 @@ pub( crate ) mod private
   where
     T : Clone
   {
-    fn fields( &'a self ) -> impl IteratorTrait< Item = ( usize, Option< Cow< 'a, T > > ) >
+    fn fields< 'b >( &'b self ) -> impl IteratorTrait< Item = ( usize, Option< Cow< 'a, T > > ) >
+    where
+      'b : 'a,
     {
       self.iter().enumerate().map( | ( key, val ) | ( key, Some( Cow::Borrowed( val ) ) ) )
     }

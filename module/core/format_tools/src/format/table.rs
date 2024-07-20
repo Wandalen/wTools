@@ -54,6 +54,50 @@ pub( crate ) mod private
   // =
 
   /// A trait for iterating over all rows of a table.
+  pub trait TableRows< 'a, 'b, RowKey, Row, CellKey, Cell, CellKind >
+  where
+    // 'b : 'a,
+    Row : Clone + Cells< 'a, CellKey, Cell, CellKind > + 'b,
+    Cell : std::borrow::ToOwned + ?Sized + 'a,
+    CellKind : Copy + 'static,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+  {
+    /// Returns an iterator over all rows of the table.
+    fn rows( &'b self ) -> impl IteratorTrait< Item = Row >;
+  }
+
+  impl< 'a, 'b, T, RowKey, Row, CellKey, Cell, CellKind, Title > TableRows< 'a, 'b, RowKey, Row, CellKey, Cell, CellKind >
+  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title >
+  where
+    // 'b : 'a,
+    T : Fields< 'b, RowKey, Option< Cow< 'b, Row > > >,
+    Row : Clone + Cells< 'a, CellKey, Cell, CellKind > + 'b,
+    Title : fmt::Display,
+    Cell : fmt::Display,
+    Cell : std::borrow::ToOwned + ?Sized + 'a,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+    CellKind : Copy + 'static,
+  {
+
+    fn rows( &'b self ) -> impl IteratorTrait< Item = Row >
+    {
+      self.as_ref().fields()
+      .filter_map( move | ( _k, e ) |
+      {
+        match e
+        {
+          Some( e ) => Some( e.into_owned() ),
+          None => None,
+        }
+      })
+      .collect::< Vec< _ > >().into_iter()
+    }
+
+  }
+
+  // =
+
+  /// A trait for iterating over all rows of a table.
   pub trait TableSize< 'a >
   {
     /// Returns size of a table.
@@ -63,14 +107,13 @@ pub( crate ) mod private
   // impl< 'a, 'b, T, RowKey, Row, CellKey, Cell, CellKind, Title > TableSize< 'b >
   // for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title >
   // where
-  //   'b : 'a,
-  //   Self : TableRows< 'b, RowKey, Row, CellKey, Cell, CellKind >,
+  //   // 'b : 'a,
+  //   Self : TableRows< 'a, 'b, RowKey, Row, CellKey, Cell, CellKind >,
   //   Row : Clone + Cells< 'a, CellKey, Cell, CellKind > + 'b,
   //   Title : fmt::Display,
   //   Cell : fmt::Display,
-  //   Cell : std::borrow::ToOwned + ?Sized,
+  //   Cell : std::borrow::ToOwned + ?Sized + 'a,
   //   CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
-  //   // CellKey : Clone,
   //   CellKind : Copy + 'static,
   // {
   //   fn table_size( &'b self ) -> [ usize ; 2 ]
@@ -89,50 +132,6 @@ pub( crate ) mod private
   //     }
   //   }
   // }
-
-  // =
-
-  /// A trait for iterating over all rows of a table.
-  pub trait TableRows< 'a, 'b, RowKey, Row, CellKey, Cell, CellKind >
-  where
-    'b : 'a,
-    Row : Clone + Cells< 'a, CellKey, Cell, CellKind >,
-    Cell : std::borrow::ToOwned + ?Sized + 'a,
-    CellKind : Copy + 'static,
-    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
-  {
-    /// Returns an iterator over all rows of the table.
-    fn rows( &'b self ) -> impl IteratorTrait< Item = Row >;
-  }
-
-//   impl< 'a, 'b, T, RowKey, Row, CellKey, Cell, CellKind, Title > TableRows< 'a, 'b, RowKey, Row, CellKey, Cell, CellKind >
-//   for AsTable< 'b, T, RowKey, Row, CellKey, Cell, CellKind, Title >
-//   where
-//     'b : 'a,
-//     T : Fields< 'a, RowKey, Option< Cow< 'b, Row > > >,
-//     Row : Clone + Cells< 'a, CellKey, Cell, CellKind >,
-//     Title : fmt::Display,
-//     Cell : fmt::Display,
-//     Cell : std::borrow::ToOwned + ?Sized + 'a,
-//     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
-//     CellKind : Copy + 'static,
-//   {
-//
-//     fn rows( &'b self ) -> impl IteratorTrait< Item = Row >
-//     {
-//       self.as_ref().fields()
-//       .filter_map( move | ( _k, e ) |
-//       {
-//         match e
-//         {
-//           Some( e ) => Some( e.into_owned() ),
-//           None => None,
-//         }
-//       })
-//       .collect::< Vec< _ > >().into_iter()
-//     }
-//
-//   }
 
 //   // =
 //
@@ -216,10 +215,10 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use private::
   {
-    TableSize,
-    TableRows,
-    // TableHeader,
     Cells,
+    TableRows,
+    TableSize,
+    // TableHeader,
   };
 
 }

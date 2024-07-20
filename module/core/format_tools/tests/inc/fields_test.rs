@@ -30,7 +30,9 @@ pub struct TestObject
 impl< 'a > Fields< 'a, &'static str, MaybeAs< 'a, str, WithRef > >
 for TestObject
 {
-  fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, str, WithRef > ) >
+  fn fields< 'b >( &'b self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, str, WithRef > ) >
+  where
+    'b : 'a,
   {
     let mut dst : Vec< ( &'static str, MaybeAs< 'a, str, WithRef > ) > = Vec::new();
 
