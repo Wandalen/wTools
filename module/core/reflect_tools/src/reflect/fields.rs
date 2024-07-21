@@ -72,6 +72,23 @@ pub( crate ) mod private
 
   // == implementations for collections
 
+//   impl< T, Marker > Fields< usize, Marker > for Vec< T >
+//   where
+//     T : std::borrow::ToOwned,
+//     Marker : for< 'a > From< &'a T >,
+//   //   T : Clone
+//   {
+//     type Value< 'v > = Marker
+//     where Self : 'v;
+//
+//     fn fields( &self ) -> impl IteratorTrait< Item = ( usize, Self::Value< '_ > ) >
+//     // where
+//       // 'a : 'b,
+//     {
+//       self.iter().enumerate().map( move | ( key, val ) | ( key, Marker::from( val ) ) )
+//     }
+//   }
+
   impl< T > Fields< usize, Option< Cow< '_, T > > > for Vec< T >
   where
     T : std::borrow::ToOwned,
@@ -87,6 +104,23 @@ pub( crate ) mod private
       self.iter().enumerate().map( move | ( key, val ) | ( key, Some( Cow::Borrowed( val ) ) ) )
     }
   }
+
+//   impl< T, Marker > Fields< usize, crate::MaybeAs< '_, T, Marker > > for Vec< T >
+//   where
+//     T : std::borrow::ToOwned,
+//     Marker : Clone + Copy + 'static,
+//   //   T : Clone
+//   {
+//     type Value< 'v > = crate::MaybeAs< 'v, T, Marker >
+//     where Self : 'v;
+//
+//     fn fields( &self ) -> impl IteratorTrait< Item = ( usize, Self::Value< '_ > ) >
+//     // where
+//       // 'a : 'b,
+//     {
+//       self.iter().enumerate().map( move | ( key, val ) | ( key, crate::MaybeAs::from( Cow::Borrowed( val ) ) ) )
+//     }
+//   }
 
 }
 

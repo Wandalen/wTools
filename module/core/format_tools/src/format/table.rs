@@ -140,53 +140,54 @@ pub( crate ) mod private
     }
   }
 
-//   // =
-//
-//   /// Trait returning headers of a table if any.
-//   pub trait TableHeader< 'table, CellKey, Title >
-//   where
-//     // Title : fmt::Debug,
-//   {
-//     /// Returns an iterator over all fields of the specified type within the entity.
-//     fn header( &'table self ) -> Option< impl IteratorTrait< Item = ( CellKey, Title ) > >;
-//   }
-//
-//   impl< 'table, T, RowKey, Row, CellKey, Cell, CellKind, Title > TableHeader< 'table, CellKey, CellKey >
-//   for AsTable< 'table, T, RowKey, Row, CellKey, Cell, CellKind, Title >
-//   where
-//     Self : TableRows< 'table, RowKey, Row, CellKey, Cell, CellKind >,
-//     Row : Clone + Cells< 'table, CellKey, Cell, CellKind > + 'table,
-//     // CellKey : Clone,
-//     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
-//     Title : fmt::Display,
-//     Cell : fmt::Display,
-//     // Cell : fmt::Debug + 'table,
-//     Cell : std::borrow::ToOwned + ?Sized,
-//     CellKind : Copy + 'static,
-//   {
-//
-//     fn header( &'table self ) -> Option< impl IteratorTrait< Item = ( CellKey, CellKey ) > >
-//     {
-//       let mut rows = self.rows();
-//       let row = rows.next();
-//       if let Some( row ) = row
-//       {
-//         Some
-//         (
-//           row
-//           .cells()
-//           .map( | ( key, _title ) | ( key.clone(), key ) )
-//           .collect::< Vec< _ > >()
-//           .into_iter()
-//         )
-//       }
-//       else
-//       {
-//         None
-//       }
-//     }
-//
-//   }
+  // =
+
+  /// Trait returning headers of a table if any.
+  pub trait TableHeader< CellKey, Title >
+  where
+    // Title : fmt::Debug,
+  {
+    /// Returns an iterator over all fields of the specified type within the entity.
+    fn header( &self ) -> Option< impl IteratorTrait< Item = ( CellKey, Title ) > >;
+  }
+
+  impl< T, RowKey, Row, CellKey, Cell, CellWrap, CellKind > TableHeader< CellKey, CellKey >
+  for AsTable< '_, T, RowKey, Row, CellKey, Cell, CellWrap, CellKind, CellKey >
+  where
+    Self : TableRows< RowKey, Row, CellKey, Cell, CellWrap, CellKind >,
+    Row : Clone + Cells< CellKey, Cell, CellWrap, CellKind >,
+    // CellKey : Clone,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+    CellKey : fmt::Display,
+    // Title : fmt::Display,
+    Cell : fmt::Display,
+    // Cell : fmt::Debug + 'table,
+    Cell : std::borrow::ToOwned + ?Sized,
+    CellKind : Copy + 'static,
+  {
+
+    fn header( &self ) -> Option< impl IteratorTrait< Item = ( CellKey, CellKey ) > >
+    {
+      let mut rows = self.rows();
+      let row = rows.next();
+      if let Some( row ) = row
+      {
+        Some
+        (
+          row
+          .cells()
+          .map( | ( key, _title ) | ( key.clone(), key ) )
+          .collect::< Vec< _ > >()
+          .into_iter()
+        )
+      }
+      else
+      {
+        None
+      }
+    }
+
+  }
 
   // =
 
@@ -225,7 +226,7 @@ pub mod exposed
     Cells,
     TableRows,
     TableSize,
-    // TableHeader,
+    TableHeader,
   };
 
 }
