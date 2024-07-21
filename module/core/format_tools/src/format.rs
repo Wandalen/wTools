@@ -28,7 +28,7 @@ pub( crate ) mod private
     {{
       (
         ::core::stringify!( $key ),
-        $crate::MaybeAs::< 'a, str, $how >::from
+        $crate::MaybeAs::< '_, str, $how >::from
         (
           $crate::to_string_with_fallback!( $how, $fallback1, $fallback2, $src )
         ),

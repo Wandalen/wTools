@@ -35,24 +35,22 @@ pub( crate ) mod private
   {
   }
 
-///
-/// A trait for iterating over all fields convertible into a specified type within an entity.
-///
-/// # Type Parameters
-///
-/// - `K`: The key type.
-/// - `V`: The value type.
-///
-pub trait Fields< 'a, K, V >
-where
-  V : Clone + 'a,
-{
-  /// Returns an iterator over all fields of the specified type within the entity.
-  fn fields( &'a self ) -> impl IteratorTrait< Item = ( K, V ) >
-  // where
-    // 'a : 'b,
-  ;
-}
+  ///
+  /// A trait for iterating over all fields convertible into a specified type within an entity.
+  ///
+  /// # Type Parameters
+  ///
+  /// - `K`: The key type.
+  /// - `V`: The value type.
+  ///
+  pub trait Fields< K, V >
+  {
+    type Value< 'v > where Self : 'v;
+
+    /// Returns an iterator over all fields of the specified type within the entity.
+    fn fields( &self ) -> impl IteratorTrait< Item = ( K, Self::Value< '_ > ) >
+    ;
+  }
 
   /// Trait returning name of type of variable.
   pub trait TypeName
@@ -74,11 +72,15 @@ where
 
   // == implementations for collections
 
-  impl< 'a, T > Fields< 'a, usize, Option< Cow< 'a, T > > > for Vec< T >
+  impl< T > Fields< usize, Option< Cow< '_, T > > > for Vec< T >
   where
-    T : Clone
+    T : std::borrow::ToOwned,
+  //   T : Clone
   {
-    fn fields( &'a self ) -> impl IteratorTrait< Item = ( usize, Option< Cow< 'a, T > > ) >
+    type Value< 'v > = Option< Cow< 'v, T > >
+    where Self : 'v;
+
+    fn fields( &self ) -> impl IteratorTrait< Item = ( usize, Self::Value< '_ > ) >
     // where
       // 'a : 'b,
     {

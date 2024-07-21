@@ -29,12 +29,16 @@ pub struct TestObject
   pub tools : Option< Vec< HashMap< String, String > > >,
 }
 
-impl< 'a > Fields< 'a, &'static str, MaybeAs< 'a, String, () > >
+// impl< 'a > Fields< 'a, &'static str, MaybeAs< 'a, String, () > >
+impl Fields< &'static str, MaybeAs< '_, String, () > >
 for TestObject
 {
-  fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, String, () > ) >
+  type Value< 'v > = MaybeAs< 'v, String, () >;
+
+  // fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, String, () > ) >
+  fn fields( &self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< '_, String, () > ) >
   {
-    let mut dst : Vec< ( &'static str, MaybeAs< 'a, String, () > ) > = Vec::new();
+    let mut dst : Vec< ( &'static str, MaybeAs< '_, String, () > ) > = Vec::new();
 
     dst.push( ( "id", Some( Cow::Borrowed( &self.id ) ).into() ) );
     dst.push( ( "created_at", Some( Cow::Owned( self.created_at.to_string() ) ).into() ) );

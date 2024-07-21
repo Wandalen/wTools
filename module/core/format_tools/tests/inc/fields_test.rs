@@ -7,7 +7,6 @@ use the_module::
   IteratorTrait,
   MaybeAs,
   WithRef,
-  ref_or_debug::field,
 };
 
 use std::
@@ -27,14 +26,15 @@ pub struct TestObject
   pub tools : Option< Vec< HashMap< String, String > > >,
 }
 
-impl< 'a > Fields< 'a, &'static str, MaybeAs< 'a, str, WithRef > >
+impl Fields< &'static str, MaybeAs< '_, str, WithRef > >
 for TestObject
 {
-  fn fields< 'b >( &'b self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, str, WithRef > ) >
-  where
-    'b : 'a,
+  type Value< 'v > = MaybeAs< 'v, str, WithRef >;
+
+  fn fields( &self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< '_, str, WithRef > ) >
   {
-    let mut dst : Vec< ( &'static str, MaybeAs< 'a, str, WithRef > ) > = Vec::new();
+    use format_tools::ref_or_display_or_debug::field;
+    let mut dst : Vec< ( &'static str, MaybeAs< '_, str, WithRef > ) > = Vec::new();
 
     dst.push( field!( &self.id ) );
     dst.push( field!( &self.created_at ) );
@@ -76,7 +76,7 @@ fn basic_with_ref_display_debug()
   };
 
   let fields : Vec< ( &str, MaybeAs< '_, str, WithRef > ) > =
-  Fields::< '_, &'static str, MaybeAs< '_, str, WithRef > >::fields( &test_object ).collect();
+  Fields::< &'static str, MaybeAs< '_, str, WithRef > >::fields( &test_object ).collect();
 
   // let fields : Vec< ( &str, MaybeAs< '_, str, WithRef > ) > = test_object.fields().collect();
 
