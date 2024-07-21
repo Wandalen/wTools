@@ -48,9 +48,9 @@ where
   V : Clone + 'a,
 {
   /// Returns an iterator over all fields of the specified type within the entity.
-  fn fields< 'b >( &'b self ) -> impl IteratorTrait< Item = ( K, V ) >
-  where
-    'b : 'a,
+  fn fields( &'a self ) -> impl IteratorTrait< Item = ( K, V ) >
+  // where
+    // 'a : 'b,
   ;
 }
 
@@ -78,11 +78,11 @@ where
   where
     T : Clone
   {
-    fn fields< 'b >( &'b self ) -> impl IteratorTrait< Item = ( usize, Option< Cow< 'a, T > > ) >
-    where
-      'b : 'a,
+    fn fields( &'a self ) -> impl IteratorTrait< Item = ( usize, Option< Cow< 'a, T > > ) >
+    // where
+      // 'a : 'b,
     {
-      self.iter().enumerate().map( | ( key, val ) | ( key, Some( Cow::Borrowed( val ) ) ) )
+      self.iter().enumerate().map( move | ( key, val ) | ( key, Some( Cow::Borrowed( val ) ) ) )
     }
   }
 
