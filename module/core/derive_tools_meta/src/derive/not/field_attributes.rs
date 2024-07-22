@@ -49,18 +49,10 @@ impl FieldAttributes
       let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
       let key_str = format!( "{}", key_ident );
 
-      // attributes does not have to be known
-      // if attr::is_standard( &key_str )
-      // {
-      //   continue;
-      // }
-
       match key_str.as_ref()
       {
         FieldAttributeConfig::KEYWORD => result.assign( FieldAttributeConfig::from_meta( attr )? ),
         _ => {},
-        // attributes does not have to be known
-        // _ => return Err( error( attr ) ),
       }
     }
 
@@ -69,10 +61,8 @@ impl FieldAttributes
 }
 
 ///
-/// Attribute to hold parameters of forming for a specific field.
-/// For example to avoid [Not](core::ops::Not) handling for it.
-///
-/// `#[ not( off ) ]`
+/// Attribute to hold parameters of handling for a specific field.
+/// For example to avoid [Not](core::ops::Not) handling for it use `#[ not( off ) ]`
 ///
 #[ derive( Debug, Default ) ]
 pub struct FieldAttributeConfig
@@ -98,7 +88,7 @@ impl AttributeComponent for FieldAttributeConfig
         {
           return Ok( Default::default() )
         },
-      _ => return_syn_err!( attr, "Expects an attribute of format `#[ not( on ) ]`. \nGot: {}", qt!{ #attr } ),
+      _ => return_syn_err!( attr, "Expects an attribute of format `#[ not( off ) ]`. \nGot: {}", qt!{ #attr } ),
     }
   }
 }
@@ -148,14 +138,14 @@ impl syn::parse::Parse for FieldAttributeConfig
       let known = ct::concatcp!
       (
         "Known entries of attribute ", FieldAttributeConfig::KEYWORD, " are : ",
-        ", ", EnabledMarker::KEYWORD_ON,
+        EnabledMarker::KEYWORD_ON,
         ", ", EnabledMarker::KEYWORD_OFF,
         ".",
       );
       syn_err!
       (
         ident,
-        r#"Expects an attribute of format '#[ from( on ) ]'
+        r#"Expects an attribute of format '#[ not( off ) ]'
   {known}
   But got: '{}'
 "#,

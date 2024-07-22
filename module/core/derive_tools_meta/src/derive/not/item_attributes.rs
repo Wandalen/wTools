@@ -9,7 +9,7 @@ use macro_tools::
 use former_types::Assign;
 
 ///
-/// Attributes of the whole item
+/// Attributes of the whole item.
 ///
 
 /// Represents the attributes of a struct. Aggregates all its attributes.
@@ -30,9 +30,8 @@ impl ItemAttributes
     {
       let known_attributes = ct::concatcp!
       (
-        "Known attirbutes are : ",
-        "debug",
-        ", ", ItemAttributeConfig::KEYWORD,
+        "Known attributes are : ",
+        ItemAttributeConfig::KEYWORD,
         ".",
       );
       syn_err!
@@ -49,19 +48,10 @@ impl ItemAttributes
       let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
       let key_str = format!( "{}", key_ident );
 
-      // attributes does not have to be known
-      // if attr::is_standard( &key_str )
-      // {
-      //   continue;
-      // }
-
       match key_str.as_ref()
       {
         ItemAttributeConfig::KEYWORD => result.assign( ItemAttributeConfig::from_meta( attr )? ),
-        "debug" => {}
         _ => {},
-        // attributes does not have to be known
-        // _ => return Err( error( attr ) ),
       }
     }
 
@@ -70,12 +60,9 @@ impl ItemAttributes
 }
 
 ///
-/// Attribute to hold parameters of forming for a specific field or variant.
-/// For example to avoid code From generation for it.
+/// Attribute to hold parameters of forming for a specific field.
+/// For example to avoid [Not](core::ops::Not) handling for it use `#[ not( off ) ]`
 ///
-/// `#[ not( on ) ]`
-///
-
 #[ derive( Debug, Default ) ]
 pub struct ItemAttributeConfig
 {
@@ -102,7 +89,7 @@ impl AttributeComponent for ItemAttributeConfig
       {
         return Ok( Default::default() )
       },
-      _ => return_syn_err!( attr, "Expects an attribute of format `#[ not( on ) ]`. \nGot: {}", qt!{ #attr } ),
+      _ => return_syn_err!( attr, "Expects an attribute of format `#[ not( off ) ]`. \nGot: {}", qt!{ #attr } ),
     }
   }
 
