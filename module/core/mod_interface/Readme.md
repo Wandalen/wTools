@@ -76,6 +76,7 @@ pub mod inner
   /// Own namespace of the module.
   pub mod own
   {
+    use super::*;
     pub use orphan::*;
   }
   pub use own::*;
@@ -83,19 +84,22 @@ pub mod inner
   /// Orphan namespace of the module.
   pub mod orphan
   {
+    use super::*;
     pub use exposed::*;
   }
 
   /// Exposed namespace of the module.
   pub mod exposed
   {
+    use super::*;
     pub use prelude::*;
   }
 
   /// Prelude to use essentials: `use my_module::prelude::*`.
   pub mod prelude
   {
-    pub use private::inner_is;
+    use super::*;
+    pub use super::private::inner_is;
   }
 }
 

@@ -16,7 +16,7 @@ pub( crate ) mod private
 // = ?
 
   // x
-  // protected protected1;
+  // own own1;
   // orphan orphan1;
   // exposed exposed1;
   // prelude prelude1;
@@ -33,7 +33,7 @@ pub( crate ) mod private
 
   // x
   // orphan macromod mod_orphan1;
-  // : protected -> protected
+  // : own -> own
   // : orphan -> orphan
   // : exposed -> orphan
   // : prelude -> orphan
@@ -42,14 +42,14 @@ pub( crate ) mod private
 
   // x
   // prelude exposed macromod mod_own1;
-  // : protected -> exposed
+  // : own -> exposed
   // : orphan -> exposed
   // : exposed -> exposed
   // : prelude -> prelude
 
   // x
-  // prelude protected macromod mod_exposed1;
-  // : protected -> protected
+  // prelude own macromod mod_exposed1;
+  // : own -> own
   // : orphan -> orphan
   // : exposed -> exposed
   // : prelude -> prelude
@@ -58,14 +58,14 @@ pub( crate ) mod private
 
   // x
   // exposed exposed macromod mod_exposed1;
-  // : protected -> exposed
+  // : own -> exposed
   // : orphan -> exposed
   // : exposed -> exposed
   // : prelude -> exposed
 
   // x
   // exposed orphan macromod mod_exposed1;
-  // : protected -> orphan
+  // : own -> orphan
   // : orphan -> orphan
   // : exposed -> exposed
   // : prelude -> exposed
@@ -263,7 +263,7 @@ pub( crate ) mod private
       #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
-      pub use #path;
+      pub use super::#path;
       // xxx : remove super?
     });
 
@@ -410,7 +410,7 @@ pub( crate ) mod private
     })?;
 
     let immediates_clause = clauses_map.get( &ClauseImmediates::Kind() ).unwrap();
-    let protected_clause = clauses_map.get( &VisOwn::Kind() ).unwrap();
+    let own_clause = clauses_map.get( &VisOwn::Kind() ).unwrap();
     let orphan_clause = clauses_map.get( &VisOrphan::Kind() ).unwrap();
     let exposed_clause = clauses_map.get( &VisExposed::Kind() ).unwrap();
     let prelude_clause = clauses_map.get( &VisPrelude::Kind() ).unwrap();
@@ -431,7 +431,7 @@ pub( crate ) mod private
         use super::*;
         #[ doc( inline ) ]
         pub use orphan::*;
-        #( #protected_clause )*
+        #( #own_clause )*
       }
 
       /// Orphan namespace of the module.
