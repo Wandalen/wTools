@@ -105,22 +105,22 @@ pub( crate ) mod private
     }
   }
 
-//   impl< T, Marker > Fields< usize, crate::MaybeAs< '_, T, Marker > > for Vec< T >
-//   where
-//     T : std::borrow::ToOwned,
-//     Marker : Clone + Copy + 'static,
-//   //   T : Clone
-//   {
-//     type Value< 'v > = crate::MaybeAs< 'v, T, Marker >
-//     where Self : 'v;
-//
-//     fn fields( &self ) -> impl IteratorTrait< Item = ( usize, Self::Value< '_ > ) >
-//     // where
-//       // 'a : 'b,
-//     {
-//       self.iter().enumerate().map( move | ( key, val ) | ( key, crate::MaybeAs::from( Cow::Borrowed( val ) ) ) )
-//     }
-//   }
+  impl< T, Marker > Fields< usize, crate::MaybeAs< '_, T, Marker > > for Vec< T >
+  where
+    T : std::borrow::ToOwned,
+    Marker : Clone + Copy + 'static,
+  //   T : Clone
+  {
+    type Value< 'v > = crate::MaybeAs< 'v, T, Marker >
+    where Self : 'v;
+
+    fn fields( &self ) -> impl IteratorTrait< Item = ( usize, Self::Value< '_ > ) >
+    // where
+      // 'a : 'b,
+    {
+      self.iter().enumerate().map( move | ( key, val ) | ( key, crate::MaybeAs::from( Cow::Borrowed( val ) ) ) )
+    }
+  }
 
 }
 
