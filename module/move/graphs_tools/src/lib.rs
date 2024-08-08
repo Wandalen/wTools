@@ -36,7 +36,7 @@ mod_interface!
   #[ cfg( not( feature = "no_std" ) ) ]
   layer algo;
 
-  protected( crate ) use ::meta_tools::prelude::*;
+  own use ::meta_tools::prelude::*;
 }
 
 // zzz : implement checks
