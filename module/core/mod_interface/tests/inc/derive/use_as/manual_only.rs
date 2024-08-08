@@ -1,9 +1,9 @@
 
 use layer_x as layer_a;
 
-#[doc(inline)]
-#[allow(unused_imports)]
-pub use protected :: * ;
+// #[doc(inline)]
+// #[allow(unused_imports)]
+// pub use protected :: * ;
 
 #[doc = r" Own namespace of the module."]
 #[ allow( unused_imports ) ]

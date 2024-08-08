@@ -52,7 +52,7 @@ mod_interface::mod_interface!
 
 It generates code :
 
-```rust
+```rust ignore
 use mod_interface::mod_interface;
 
 //

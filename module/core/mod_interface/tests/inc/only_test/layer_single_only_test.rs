@@ -18,9 +18,9 @@ tests_impls!
     /* test.case( "root" ); */
     {
       // a_id!( layer_a_own(), true );
-      a_id!( layer_a_orphan(), true );
-      a_id!( layer_a_exposed(), true );
-      a_id!( layer_a_prelude(), true );
+      a_id!( layer_a::layer_a_orphan(), true );
+      a_id!( layer_a::layer_a_exposed(), true );
+      a_id!( layer_a::layer_a_prelude(), true );
     }
 
     /* test.case( "protected" ); */
