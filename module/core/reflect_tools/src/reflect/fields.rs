@@ -89,6 +89,20 @@ pub( crate ) mod private
 //     }
 //   }
 
+  impl< T > Fields< usize, T > for Vec< T >
+  where
+    T : std::borrow::ToOwned,
+  {
+    type Value< 'v > = &'v T
+    where Self : 'v, T : 'v;
+
+    fn fields( &self ) -> impl IteratorTrait< Item = ( usize, Self::Value< '_ > ) >
+    {
+      self.into_iter().enumerate().map( move | ( key, val ) | ( key, val ) )
+    }
+
+  }
+
   impl< T > Fields< usize, Option< Cow< '_, T > > > for Vec< T >
   where
     T : std::borrow::ToOwned,
