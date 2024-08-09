@@ -3,6 +3,7 @@ pub( crate ) mod private
 {
 
   use crate::*;
+  #[ cfg( not( feature = "no_std" ) ) ]
   use std::env;
 
   /// Symbolize current path.
@@ -10,8 +11,10 @@ pub( crate ) mod private
   pub struct CurrentPath;
 
   #[ cfg( feature = "path_utf8" ) ]
+  #[ cfg( not( feature = "no_std" ) ) ]
   impl TryFrom< CurrentPath > for Utf8PathBuf
   {
+    #[ cfg( not( feature = "no_std" ) ) ]
     type Error = std::io::Error;
 
     #[ inline ]
@@ -22,6 +25,7 @@ pub( crate ) mod private
       (
         | err |
         {
+          #[ cfg( not( feature = "no_std" ) ) ]
           std::io::Error::new
           (
             std::io::ErrorKind::NotFound,
@@ -32,8 +36,10 @@ pub( crate ) mod private
     }
   }
 
+  #[ cfg( not( feature = "no_std" ) ) ]
   impl TryFrom< CurrentPath > for PathBuf
   {
+    #[ cfg( not( feature = "no_std" ) ) ]
     type Error = std::io::Error;
 
     #[ inline ]
@@ -42,9 +48,11 @@ pub( crate ) mod private
       env::current_dir()
     }
   }
-
+  
+  #[ cfg( not( feature = "no_std" ) ) ]
   impl TryFrom< CurrentPath > for AbsolutePath
   {
+    #[ cfg( not( feature = "no_std" ) ) ]
     type Error = std::io::Error;
 
     #[ inline ]

@@ -24,6 +24,9 @@ pub( crate ) mod private
   #[cfg(feature="no_std")]
   extern crate std;
 
+  #[cfg(feature="no_std")]
+  use alloc::string::String;
+
   #[ cfg( feature = "derive_serde" ) ]
   use serde::{ Serialize, Deserialize };
 

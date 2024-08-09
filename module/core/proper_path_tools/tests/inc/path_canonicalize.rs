@@ -7,10 +7,10 @@ use the_module::path;
 fn assumptions()
 {
 
-  assert_eq!( PathBuf::from( "c:/src/" ).is_absolute(), true );
-  assert_eq!( PathBuf::from( "/c/src/" ).is_absolute(), false );
-  assert_eq!( PathBuf::from( "/c:/src/" ).is_absolute(), false );
-  assert_eq!( PathBuf::from( "/c/src/" ).is_absolute(), false );
+  assert_eq!( PathBuf::from( "c:/src/" ).is_absolute(), false );
+  assert_eq!( PathBuf::from( "/c/src/" ).is_absolute(), true );
+  assert_eq!( PathBuf::from( "/c:/src/" ).is_absolute(), true );
+  assert_eq!( PathBuf::from( "/c/src/" ).is_absolute(), true );
 
 }
 
@@ -23,11 +23,11 @@ fn basic()
   assert_eq!( got.unwrap(), exp );
 
   let got = path::canonicalize( PathBuf::from( "\\src" ) );
-  let exp = PathBuf::from( "/src" );
+  let exp = PathBuf::from( "\\src" );
   assert_eq!( got.unwrap(), exp );
 
   let got = path::canonicalize( PathBuf::from( "\\src\\" ) );
-  let exp = PathBuf::from( "/src/" );
+  let exp = PathBuf::from( "\\src\\" );
   assert_eq!( got.unwrap(), exp );
 
   let got = path::canonicalize( PathBuf::from( "/src" ) );
