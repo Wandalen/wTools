@@ -18,25 +18,25 @@ pub( crate ) mod private
   /// Transparent wrapper for table-like structures.
   #[ repr( transparent ) ]
   #[ derive( Clone, Copy ) ]
-  pub struct AsTable< 'a, T, RowKey, Row, CellKey, CellFormat, Title > // xxx : remove CellWrap or CellFormat?
+  pub struct AsTable< 'a, T, RowKey, Row, CellKey, CellFormat > // xxx : remove CellWrap or CellFormat?
   (
     &'a T,
-    ::core::marker::PhantomData< ( &'a (), fn () -> ( RowKey, Row, CellKey, CellFormat, Title ) ) >,
+    ::core::marker::PhantomData< ( &'a (), fn () -> ( RowKey, Row, CellKey, CellFormat ) ) >,
   )
   where
     Row : Clone + Cells< CellKey, CellFormat >,
-    Title : fmt::Display,
+    // Title : fmt::Display,
     // Cell : fmt::Display,
     // Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellFormat : Copy + 'static,
   ;
 
-  impl< 'table, T, RowKey, Row, CellKey, CellFormat, Title >
-  AsTable< 'table, T, RowKey, Row, CellKey, CellFormat, Title >
+  impl< 'table, T, RowKey, Row, CellKey, CellFormat >
+  AsTable< 'table, T, RowKey, Row, CellKey, CellFormat >
   where
     Row : Clone + Cells< CellKey, CellFormat >,
-    Title : fmt::Display,
+    // Title : fmt::Display,
     // Cell : fmt::Display,
     // Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
@@ -49,13 +49,13 @@ pub( crate ) mod private
     }
   }
 
-  impl< 'table, T, RowKey, Row, CellKey, CellFormat, Title > AsRef< T >
-  for AsTable< 'table, T, RowKey, Row, CellKey, CellFormat, Title >
+  impl< 'table, T, RowKey, Row, CellKey, CellFormat > AsRef< T >
+  for AsTable< 'table, T, RowKey, Row, CellKey, CellFormat >
   where
     // 'table : 'row,
     // 'row : 'cell,
     Row : Clone + Cells< CellKey, CellFormat >,
-    Title : fmt::Display,
+    // Title : fmt::Display,
     // Cell : fmt::Display,
     // Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
@@ -67,13 +67,13 @@ pub( crate ) mod private
     }
   }
 
-  impl< 'table, T, RowKey, Row, CellKey, CellFormat, Title > Deref
-  for AsTable< 'table, T, RowKey, Row, CellKey, CellFormat, Title >
+  impl< 'table, T, RowKey, Row, CellKey, CellFormat > Deref
+  for AsTable< 'table, T, RowKey, Row, CellKey, CellFormat >
   where
     // 'table : 'row,
     // 'row : 'cell,
     Row : Clone + Cells< CellKey, CellFormat >,
-    Title : fmt::Display,
+    // Title : fmt::Display,
     // Cell : fmt::Display,
     // Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
@@ -87,13 +87,13 @@ pub( crate ) mod private
     }
   }
 
-  impl< 'table, T, RowKey, Row, CellKey, CellFormat, Title > From< &'table T >
-  for AsTable< 'table, T, RowKey, Row, CellKey, CellFormat, Title >
+  impl< 'table, T, RowKey, Row, CellKey, CellFormat > From< &'table T >
+  for AsTable< 'table, T, RowKey, Row, CellKey, CellFormat >
   where
     // 'table : 'row,
     // 'row : 'cell,
     Row : Clone + Cells< CellKey, CellFormat >,
-    Title : fmt::Display,
+    // Title : fmt::Display,
     // Cell : fmt::Display,
     // Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
@@ -105,14 +105,14 @@ pub( crate ) mod private
     }
   }
 
-  impl< 'table, T, RowKey, Row, CellKey, CellFormat, Title > fmt::Debug
-  for AsTable< 'table, T, RowKey, Row, CellKey, CellFormat, Title >
+  impl< 'table, T, RowKey, Row, CellKey, CellFormat > fmt::Debug
+  for AsTable< 'table, T, RowKey, Row, CellKey, CellFormat >
   where
     // 'table : 'row,
     // 'row : 'cell,
     T : fmt::Debug,
     Row : Clone + Cells< CellKey, CellFormat >,
-    Title : fmt::Display,
+    // Title : fmt::Display,
     // Cell : std::borrow::ToOwned + ?Sized,
     // Cell : fmt::Display,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,

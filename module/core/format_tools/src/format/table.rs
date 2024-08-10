@@ -69,13 +69,13 @@ pub( crate ) mod private
     where Row : 'a;
   }
 
-  impl< T, RowKey, Row, CellKey, CellFormat, Title >
+  impl< T, RowKey, Row, CellKey, CellFormat >
   TableRows< RowKey, Row, CellKey, CellFormat >
-  for AsTable< '_, T, RowKey, Row, CellKey, CellFormat, Title >
+  for AsTable< '_, T, RowKey, Row, CellKey, CellFormat >
   where
     for< 'a > T : Fields< RowKey, &'a Row, Value< 'a > = &'a Row > + 'a,
     Row : Clone + Cells< CellKey, CellFormat >,
-    Title : fmt::Display,
+    // Title : fmt::Display,
     // Cell : fmt::Display,
     // Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
@@ -110,12 +110,12 @@ pub( crate ) mod private
     ;
   }
 
-  impl< T, RowKey, Row, CellKey, CellFormat, Title > TableSize
-  for AsTable< '_, T, RowKey, Row, CellKey, CellFormat, Title >
+  impl< T, RowKey, Row, CellKey, CellFormat > TableSize
+  for AsTable< '_, T, RowKey, Row, CellKey, CellFormat >
   where
     Self : TableRows< RowKey, Row, CellKey, CellFormat >,
     Row : Clone + Cells< CellKey, CellFormat >,
-    Title : fmt::Display,
+    // Title : fmt::Display,
     // Cell : fmt::Display,
     // Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
@@ -143,25 +143,27 @@ pub( crate ) mod private
   // =
 
   /// Trait returning headers of a table if any.
-  pub trait TableHeader< CellKey, Title >
+  pub trait TableHeader< CellKey >
   {
     /// Returns an iterator over all fields of the specified type within the entity.
-    fn header( &self ) -> Option< impl IteratorTrait< Item = ( CellKey, Title ) > >;
+    fn header< 'a >( &'a self ) -> Option< impl IteratorTrait< Item = ( CellKey, Cow< 'a, str > ) > >;
   }
 
-  impl< T, RowKey, Row, CellKey, CellFormat > TableHeader< CellKey, CellKey >
-  for AsTable< '_, T, RowKey, Row, CellKey, CellFormat, CellKey >
+  impl< T, RowKey, Row, CellKey, CellFormat > TableHeader< CellKey >
+  for AsTable< '_, T, RowKey, Row, CellKey, CellFormat >
   where
     Self : TableRows< RowKey, Row, CellKey, CellFormat >,
     Row : Clone + Cells< CellKey, CellFormat >,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellKey : fmt::Display,
+    // CellKey : AsRef< str >,
     // Cell : fmt::Display,
     // Cell : std::borrow::ToOwned + ?Sized,
     CellFormat : Copy + 'static,
   {
 
-    fn header( &self ) -> Option< impl IteratorTrait< Item = ( CellKey, CellKey ) > >
+    // fn header( &self ) -> Option< impl IteratorTrait< Item = ( CellKey, CellKey ) > >
+    fn header< 'a >( &'a self ) -> Option< impl IteratorTrait< Item = ( CellKey, Cow< 'a, str > ) > >
     {
       let mut rows = self.rows();
       let row = rows.next();
@@ -171,7 +173,9 @@ pub( crate ) mod private
         (
           row
           .cells()
-          .map( | ( key, _title ) | ( key.clone(), key ) )
+          // .map( | ( key, _title ) | ( key.clone(), to_string_with_fallback!( WithRef, WithDebug, key ) ) )
+          .map( | ( key, _title ) | ( key.clone(), Cow::Owned( format!( "{}", key ) ) ) )
+          // .map( | ( key, _title ) | ( key.clone(), Cow::Borrow( format!( "{}", key ) ) ) )
           .collect::< Vec< _ > >()
           .into_iter()
         )

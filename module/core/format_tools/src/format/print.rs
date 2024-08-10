@@ -27,15 +27,15 @@ pub( crate ) mod private
   pub struct Styles
   {
     /// Delimiter for separating table columns.
-    pub separator : String,
+    pub cell_separator : String,
   }
 
   impl Default for Styles
   {
     fn default() -> Self
     {
-      let separator = " | ".to_string();
-      Styles { separator }
+      let cell_separator = " | ".to_string();
+      Styles { cell_separator }
     }
   }
 
@@ -108,14 +108,14 @@ pub( crate ) mod private
   }
 
   /// A trait for formatting tables.
-  impl< 'a, T, RowKey, Row, CellKey, CellFormat, Title > TableFormatter< 'a >
-  for AsTable< 'a, T, RowKey, Row, CellKey, CellFormat, Title >
+  impl< 'a, T, RowKey, Row, CellKey, CellFormat > TableFormatter< 'a >
+  for AsTable< 'a, T, RowKey, Row, CellKey, CellFormat >
   where
     Self : TableRows< RowKey, Row, CellKey, CellFormat >,
-    Self : TableHeader< CellKey, Title >,
+    Self : TableHeader< CellKey >,
     Self : TableSize,
     Row : Clone + Cells< CellKey, CellFormat >,
-    Title : fmt::Display,
+    // Title : fmt::Display,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellFormat : Copy + 'static,
   {
@@ -125,8 +125,7 @@ pub( crate ) mod private
       let table_size = self.table_size();
       let mut col_descriptors : HashMap< CellKey, ( usize, usize, Option< Cow< '_, str > > ) > = HashMap::new();
       let mut col_order : Vec< CellKey > = Vec::new();
-
-      let separator = &f.styles.separator;
+      let cell_separator = &f.styles.cell_separator;
 
       // dbg!( &widths );
 
@@ -199,7 +198,7 @@ pub( crate ) mod private
           let cell = descriptor.2.as_ref().unwrap_or( &Cow::Borrowed( "" ) );
           formatted_row.push( format!( "{:^width$}", cell, width = width ) );
         }
-        writeln!( f.buf, "{}", formatted_row.join( separator ) )?;
+        writeln!( f.buf, "{}", formatted_row.join( cell_separator ) )?;
       }
 
       // Write rows with proper alignment
@@ -213,7 +212,7 @@ pub( crate ) mod private
           let width = descriptor.1;
           formatted_row.push( format!( "{:^width$}", cell.as_ref(), width = width ) );
         }
-        writeln!( f.buf, "{}", formatted_row.join( separator ) )?;
+        writeln!( f.buf, "{}", formatted_row.join( cell_separator ) )?;
       }
 
       Ok(())

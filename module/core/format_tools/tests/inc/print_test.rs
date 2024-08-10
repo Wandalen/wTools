@@ -104,7 +104,7 @@ fn table_to_string()
   assert_eq!( cells.len(), 4 );
   drop( cells );
 
-  let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, WithRef, &str > = AsTable::new( &test_objects );
+  let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, WithRef > = AsTable::new( &test_objects );
   let size = TableSize::table_size( &as_table );
   assert_eq!( size, [ 2, 4 ] );
   let rows = TableRows::rows( &as_table );
@@ -114,7 +114,13 @@ fn table_to_string()
   assert!( header.is_some() );
   let header = header.unwrap();
   assert_eq!( header.len(), 4 );
-  assert_eq!( header.clone().collect::< Vec< _ > >(), vec![ ( "id", "id" ), ( "created_at", "created_at" ), ( "file_ids", "file_ids" ), ( "tools", "tools" ) ] );
+  assert_eq!( header.clone().collect::< Vec< _ > >(), vec!
+  [
+    ( "id", Cow::Owned( "id".to_string() ) ),
+    ( "created_at", Cow::Owned( "created_at".to_string() ) ),
+    ( "file_ids", Cow::Owned( "file_ids".to_string() ) ),
+    ( "tools", Cow::Owned( "tools".to_string() ) )
+  ]);
   dbg!( header.collect::< Vec< _ > >() );
 
   let mut output = String::new();
@@ -123,6 +129,7 @@ fn table_to_string()
   assert!( got.is_ok() );
   println!( "{}", &output );
 
+// xxx
 //   // with explicit arguments
 //
 //   let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, str, MaybeAs< '_, str, WithRef >, WithRef, &str > = AsTable::new( &test_objects );
