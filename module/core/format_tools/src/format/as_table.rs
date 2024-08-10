@@ -125,6 +125,84 @@ pub( crate ) mod private
     }
   }
 
+  // =
+
+  pub struct CellKeyWrap< CellKey >( pub CellKey, pub usize )
+  where
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+  ;
+
+  impl< CellKey > Clone for CellKeyWrap< CellKey >
+  where
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+  {
+    fn clone( &self ) -> Self
+    {
+      Self( self.0.clone(), self.1 )
+    }
+  }
+
+  impl< CellKey > AsRef< CellKey > for CellKeyWrap< CellKey >
+  where
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+  {
+    fn as_ref( &self ) -> &CellKey
+    {
+      &self.0
+    }
+  }
+
+  impl< CellKey > Deref for CellKeyWrap< CellKey >
+  where
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+  {
+    type Target = CellKey;
+    fn deref( &self ) -> &CellKey
+    {
+      &self.0
+    }
+  }
+
+  impl< CellKey > From< ( CellKey, usize ) >
+  for CellKeyWrap< CellKey >
+  where
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+  {
+    fn from( src : ( CellKey, usize ) ) -> Self
+    {
+      CellKeyWrap( src.0, src.1 )
+    }
+  }
+
+  impl< CellKey > fmt::Debug for CellKeyWrap< CellKey >
+  where
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+  {
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+    {
+      f.debug_struct( "CellKey" )
+      .field( "0", &self.0 )
+      .field( "1", &self.1 )
+      .finish()
+    }
+  }
+
+  impl< CellKey > PartialEq for CellKeyWrap< CellKey >
+  where
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash, // xxx : there should be std::cmp::PartialEq, probably
+  {
+    fn eq( &self, other : &Self ) -> bool
+    {
+      self.as_ref() == other.as_ref()
+    }
+  }
+
+  impl< CellKey > Eq for CellKeyWrap< CellKey >
+  where
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+  {
+  }
+
 }
 
 #[ allow( unused_imports ) ]
@@ -159,6 +237,7 @@ pub mod exposed
   pub use private::
   {
     AsTable,
+    CellKeyWrap,
   };
 
 }
