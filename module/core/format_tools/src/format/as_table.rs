@@ -23,8 +23,6 @@ pub( crate ) mod private
     ::core::marker::PhantomData< ( &'a (), fn () -> ( RowKey, Row, CellKey, Box< Cell >, Box< CellWrap >, CellKind, Title ) ) >,
   )
   where
-    // 'table : 'row,
-    // 'row : 'cell,
     Row : Clone + Cells< CellKey, Cell, CellWrap, CellKind >,
     Title : fmt::Display,
     Cell : fmt::Display,
@@ -35,8 +33,6 @@ pub( crate ) mod private
 
   impl< 'table, T, RowKey, Row, CellKey, Cell, CellWrap, CellKind, Title > AsTable< 'table, T, RowKey, Row, CellKey, Cell, CellWrap, CellKind, Title >
   where
-    // 'table : 'row,
-    // 'row : 'cell,
     Row : Clone + Cells< CellKey, Cell, CellWrap, CellKind >,
     Title : fmt::Display,
     Cell : fmt::Display,

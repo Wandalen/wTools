@@ -106,24 +106,26 @@ pub( crate ) mod private
     fn fmt< 'a >( &'b self, f : &mut Context< 'a > ) -> fmt::Result;
   }
 
-//   /// A trait for formatting tables.
-//   impl< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title > TableFormatter< 'a >
-//   for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellKind, Title >
-//   where
-//     Self : TableRows< 'a, RowKey, Row, CellKey, Cell, CellKind >,
-//     Self : TableHeader< 'a, CellKey, Title >,
-//     Self : TableSize< 'a >,
-//     Row : Clone + for< 'cell > Cells< 'cell, CellKey, Cell, CellKind > + 'a,
-//     Title : fmt::Debug,
-//     Title : fmt::Display,
-//     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
-//     Cell : fmt::Display + 'a,
-//     Cell : std::borrow::ToOwned + ?Sized,
-//     Cell : AsRef< str >,
-//     CellKind : Copy + 'static,
-//   {
-//     fn fmt( &'a self, f : &mut Context< '_ > ) -> fmt::Result
-//     {
+  /// A trait for formatting tables.
+  impl< 'a, T, RowKey, Row, CellKey, Cell, CellWrap, CellKind, Title > TableFormatter< 'a >
+  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellWrap, CellKind, Title >
+  where
+    Self : TableRows< RowKey, Row, CellKey, Cell, CellWrap, CellKind >,
+    Self : TableHeader< CellKey, Title >,
+    Self : TableSize,
+    Row : Clone + Cells< CellKey, Cell, CellWrap, CellKind > + 'a,
+    // Title : fmt::Debug,
+    Title : fmt::Display,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+    Cell : fmt::Display + 'a,
+    Cell : std::borrow::ToOwned + ?Sized,
+    Cell : AsRef< str >,
+    CellKind : Copy + 'static,
+  {
+    fn fmt( &'a self, f : &mut Context< '_ > ) -> fmt::Result
+    {
+      Ok( () )
+
 //       let table_size = self.table_size();
 //       let mut col_widths : Vec< usize > = vec![ 0 ; table_size[ 1 ] ];
 //       // let mut col_widths = HashMap::< CellKey, usize >::new();
@@ -228,8 +230,8 @@ pub( crate ) mod private
 //       // }
 //
 //       Ok(())
-//     }
-  // }
+    }
+  }
 
 }
 

@@ -65,13 +65,14 @@ pub( crate ) mod private
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
   {
     /// Returns an iterator over all rows of the table.
-    fn rows( &self ) -> impl IteratorTrait< Item = Row >;
+    fn rows< 'a >( &'a self ) -> impl IteratorTrait< Item = &'a Row >
+    where Row : 'a;
   }
 
   impl< T, RowKey, Row, CellKey, Cell, CellWrap, CellKind, Title > TableRows< RowKey, Row, CellKey, Cell, CellWrap, CellKind >
   for AsTable< '_, T, RowKey, Row, CellKey, Cell, CellWrap, CellKind, Title >
   where
-    for< 'a > T : Fields< RowKey, MaybeAs< 'a, Row, CellKind >, Value< 'a > = MaybeAs< 'a, Row, CellKind > > + 'a,
+    for< 'a > T : Fields< RowKey, &'a Row, Value< 'a > = &'a Row > + 'a,
     Row : Clone + Cells< CellKey, Cell, CellWrap, CellKind >,
     Title : fmt::Display,
     Cell : fmt::Display,
@@ -80,16 +81,18 @@ pub( crate ) mod private
     CellKind : Copy + 'static,
   {
 
-    fn rows( &self ) -> impl IteratorTrait< Item = Row >
+    fn rows< 'a >( &'a self ) -> impl IteratorTrait< Item = &'a Row >
+    where Row : 'a
     {
       self.as_ref().fields()
       .filter_map( move | ( _k, e ) |
       {
-        match e.0
-        {
-          Some( e ) => Some( e.into_owned() ),
-          None => None,
-        }
+        Some( e )
+        // match e.0
+        // {
+        //   Some( e ) => Some( e.into_owned() ),
+        //   None => None,
+        // }
       })
       .collect::< Vec< _ > >().into_iter()
     }
