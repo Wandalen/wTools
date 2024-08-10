@@ -114,7 +114,6 @@ pub( crate ) mod private
     Self : TableHeader< CellKey, Title >,
     Self : TableSize,
     Row : Clone + Cells< CellKey, Cell, CellWrap, CellKind >,
-    // Title : fmt::Debug,
     Title : fmt::Display,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     Cell : fmt::Display,
@@ -124,7 +123,6 @@ pub( crate ) mod private
   {
     fn fmt( &'a self, f : &mut Context< '_ > ) -> fmt::Result
     {
-      // Ok( () )
 
       let table_size = self.table_size();
       let mut col_widths : Vec< usize > = vec![ 0 ; table_size[ 1 ] ];
