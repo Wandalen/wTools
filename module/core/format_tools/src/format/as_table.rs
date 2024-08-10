@@ -12,6 +12,7 @@ pub( crate ) mod private
     ops::{ Deref },
     marker::PhantomData,
     fmt,
+    cmp::Ordering,
   };
 
   /// Transparent wrapper for table-like structures.
@@ -132,6 +133,17 @@ pub( crate ) mod private
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
   ;
 
+  impl< CellKey > CellKeyWrap< CellKey >
+  where
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+  {
+    /// Just a constructor.
+    pub fn new( key : CellKey, index : usize ) -> Self
+    {
+      Self( key, index )
+    }
+  }
+
   impl< CellKey > Clone for CellKeyWrap< CellKey >
   where
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
@@ -170,7 +182,7 @@ pub( crate ) mod private
   {
     fn from( src : ( CellKey, usize ) ) -> Self
     {
-      CellKeyWrap( src.0, src.1 )
+      CellKeyWrap::new( src.0, src.1 )
     }
   }
 
@@ -193,7 +205,8 @@ pub( crate ) mod private
   {
     fn eq( &self, other : &Self ) -> bool
     {
-      self.as_ref() == other.as_ref()
+      self.1 == other.1
+      // self.as_ref() == other.as_ref()
     }
   }
 
@@ -201,6 +214,34 @@ pub( crate ) mod private
   where
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
   {
+  }
+
+  // impl< CellKey > Ord for CellKeyWrap< CellKey >
+  // {
+  //   fn cmp( &self, other : &Self ) -> Ordering
+  //   {
+  //     self.1.cmp( &other.1 ).then_with( || self.0.cmp( &other.0 ) )
+  //   }
+  // }
+
+  impl< CellKey > PartialOrd for CellKeyWrap< CellKey >
+  where
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+  {
+    fn partial_cmp( &self, other : &Self ) -> Option< Ordering >
+    {
+      Some( self.1.cmp( &other.1 ) )
+    }
+  }
+
+  impl< CellKey > Ord for CellKeyWrap< CellKey >
+  where
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+  {
+    fn cmp( &self, other : &Self ) -> Ordering
+    {
+      self.1.cmp( &other.1 )
+    }
   }
 
 }
