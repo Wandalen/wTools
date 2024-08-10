@@ -117,12 +117,12 @@ fn table_to_string()
   assert_eq!( header.clone().collect::< Vec< _ > >(), vec![ ( "id", "id" ), ( "created_at", "created_at" ), ( "file_ids", "file_ids" ), ( "tools", "tools" ) ] );
   dbg!( header.collect::< Vec< _ > >() );
 
-//   let mut output = String::new();
-//   let mut formatter = Context::new( &mut output, Default::default() );
-//   let got = the_module::TableFormatter::fmt( &as_table, &mut formatter );
-//   assert!( got.is_ok() );
-//   println!( "{}", &output );
-//
+  let mut output = String::new();
+  let mut formatter = Context::new( &mut output, Default::default() );
+  let got = the_module::TableFormatter::fmt( &as_table, &mut formatter );
+  assert!( got.is_ok() );
+  println!( "{}", &output );
+
 //   // with explicit arguments
 //
 //   let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, str, MaybeAs< '_, str, WithRef >, WithRef, &str > = AsTable::new( &test_objects );

@@ -117,20 +117,14 @@ pub( crate ) mod private
     Row : Clone + Cells< CellKey, CellFormat >,
     Title : fmt::Display,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
-    // Cell : fmt::Display,
-    // Cell : std::borrow::ToOwned + ?Sized,
-    // Cell : AsRef< str >,
     CellFormat : Copy + 'static,
   {
     fn fmt( &'a self, f : &mut Context< '_ > ) -> fmt::Result
     {
 
       let table_size = self.table_size();
-      // let mut widths : Vec< usize > = vec![ 0 ; table_size[ 1 ] ];
-      // let mut widths : BTreeMap< CellKeyWrap< CellKey >, usize > = BTreeMap::new();
-      // let mut widths = HashMap::< CellKey, usize >::new();
-      let mut key_to_col : HashMap< CellKey, ( usize, usize, Option< Cow< '_, str > > ) > = HashMap::new();
-      let mut cols : Vec< CellKey > = Vec::new();
+      let mut col_descriptors : HashMap< CellKey, ( usize, usize, Option< Cow< '_, str > > ) > = HashMap::new();
+      let mut col_order : Vec< CellKey > = Vec::new();
 
       let separator = &f.styles.separator;
 
@@ -140,29 +134,25 @@ pub( crate ) mod private
 
       if let Some( header ) = self.header()
       {
-        // let mut i = 0;
         for ( key, title ) in header
         {
           let title_str : Cow< '_, str > = Cow::Owned( format!( "{}", title ) );
-          let l = key_to_col.len();
-          key_to_col
+          let l = col_descriptors.len();
+          col_descriptors
           .entry( key.clone() )
           .and_modify( | e | { e.1 = e.1.max( title_str.len() ) } )
-          .or_insert( ( l + 1, title_str.len(), Some( title_str ) ) );
-          // widths[ &( key, i ).into() ] = format!( "{}", title ).len();
-          // i += 1;
+          .or_insert_with( ||
+          {
+            col_order.push( key.clone() );
+            ( l + 1, title_str.len(), Some( title_str ) )
+          });
         }
-        writeln!( f.buf )?;
       }
 
       // Collect rows
-      // let mut data : Vec< BTreeMap< CellKeyWrap< CellKey >, Cow< '_, str > > > = Vec::new();
       let mut data : Vec< HashMap< CellKey, Cow< '_, str > > > = Vec::new();
       for row in self.rows()
       {
-        let mut i = 0;
-        // let fields : Vec< String > = row
-        // let fields : BTreeMap< CellKeyWrap< CellKey >, Cow< '_, str > > = row
         let fields : HashMap< CellKey, Cow< '_, str > > = row
         .cells()
         .map
@@ -171,109 +161,60 @@ pub( crate ) mod private
           {
             let r = match cell.0
             {
-              // Some( cell ) => ( ( key, 0 ).into(), format!( "{}", < Cow< '_, Cell > as Borrow< Cell > >::borrow( &cell ) ) ),
-              // None => ( ( key, 0 ).into(), "".to_string() ),
               Some( cell ) =>
               {
-                let l = key_to_col.len();
-                key_to_col
-                .entry( key.clone() )
-                .and_modify( | e | { e.1 = e.1.max( cell.len() ) } )
-                .or_insert( ( l + 1, cell.len(), None ) );
                 ( key, cell )
               }
-              // None => ( key, Cow::Borrowed( "" ) ),
               None =>
               {
-                let l = key_to_col.len();
-                key_to_col
-                .entry( key.clone() )
-                .or_insert( ( l + 1, 0, None ) );
                 ( key, Cow::Borrowed( "" ) )
               }
             };
-            i += 1;
+
+            let l = col_descriptors.len();
+            col_descriptors
+            .entry( r.0.clone() )
+            .and_modify( | e | { e.1 = e.1.max( r.1.len() ) } )
+            .or_insert_with( ||
+            {
+              col_order.push( r.0.clone() );
+              ( l + 1, r.1.len(), None )
+            });
+
             return r;
           }
         )
-        // .map
-        // (
-        //   | ( _key, cell ) |
-        //   {
-        //     match cell.0
-        //     {
-        //       // Some( cell ) => format!( "{}", cell.borrow() ),
-        //       Some( cell ) => format!( "{}", < Cow< '_, Cell > as Borrow< Cell > >::borrow( &cell ) ),
-        //       None => "".to_string(),
-        //       // Some( cell ) => < Cow< '_, Cell > as Borrow< Cell > >::borrow( &cell ).as_ref(),
-        //       // None => "",
-        //     }
-        //   }
-        // )
         .collect();
         data.push( fields );
       }
 
-      // for row in &data
-      // {
-      //   for ( i, cell ) in row.iter().enumerate()
-      //   {
-      //     if widths.len() <= i
-      //     {
-      //       widths.push( cell.data.len() );
-      //     }
-      //     else if cell.len() > widths[ i ]
-      //     {
-      //       widths[ i ] = cell.data.len();
-      //     }
-      //   }
-      // }
+      // Write head with proper alignment
+      if let Some( header ) = self.header()
+      {
+        let mut formatted_row : Vec< String > = Vec::with_capacity( col_order.len() );
+        for k in &col_order
+        {
+          let descriptor = &col_descriptors[ &k ];
+          let width = descriptor.1;
+          let cell = descriptor.2.as_ref().unwrap_or( &Cow::Borrowed( "" ) );
+          formatted_row.push( format!( "{:^width$}", cell, width = width ) );
+        }
+        writeln!( f.buf, "{}", formatted_row.join( separator ) )?;
+      }
 
-//       // Write the header if provided
-//       if let Some( header ) = self.header()
-//       {
-//         let mut i = 0;
-//         for ( _key, title ) in header
-//         {
-//           if i > 0
-//           {
-//             write!( f.buf, "{}", separator )?;
-//           }
-//           write!( f.buf, "{:^width$}", format!( "{}", title ), width = widths[ i ] )?;
-//           // write!( f.buf, "{:?}", title )?;
-//           i += 1;
-//         }
-//         writeln!( f.buf )?;
-//       }
-//
-//       // dbg!( &widths );
-//
-//       // Write rows with proper alignment
-//       for row in &data
-//       {
-//         let mut i = 0;
-//         for cell in row
-//         {
-//           if i > 0
-//           {
-//             write!( f.buf, "{}", separator )?;
-//           }
-//           write!( f.buf, "{:^width$}", cell, width = widths[ i ] )?;
-//           i += 1;
-//         }
-//         writeln!( f.buf )?;
-//       }
-
-      // // Write rows with proper alignment
-      // for row in data
-      // {
-      //   let formatted_row : Vec< String > = row
-      //   .iter()
-      //   .enumerate()
-      //   .map( | ( i, cell ) | format!( "{:?^width$}", cell, width = widths[ i ] ) )
-      //   .collect();
-      //   writeln!( f.buf, "{}", formatted_row.join( separator ) )?;
-      // }
+      // Write rows with proper alignment
+      for row in data
+      {
+        let mut formatted_row : Vec< String > = Vec::with_capacity( col_order.len() );
+        for k in &col_order
+        {
+          let cell = &row[ &k ];
+          let descriptor = &col_descriptors[ &k ];
+          let width = descriptor.1;
+          formatted_row.push( format!( "{:^width$}", cell.as_ref(), width = width ) );
+        }
+        writeln!( f.buf, "{}", formatted_row.join( separator ) )?;
+      }
 
       Ok(())
     }
