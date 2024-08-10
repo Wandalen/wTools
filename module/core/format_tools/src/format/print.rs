@@ -130,6 +130,8 @@ pub( crate ) mod private
       let mut col_descriptors : HashMap< CellKey, ( usize, usize, Option< Cow< '_, str > > ) > = HashMap::new();
       let mut col_order : Vec< CellKey > = Vec::new();
       let cell_separator = &f.styles.cell_separator;
+      let row_prefix = &f.styles.row_prefix;
+      let row_postfix = &f.styles.row_postfix;
 
       // dbg!( &widths );
 
@@ -202,7 +204,7 @@ pub( crate ) mod private
           let cell = descriptor.2.as_ref().unwrap_or( &Cow::Borrowed( "" ) );
           formatted_row.push( format!( "{:^width$}", cell, width = width ) );
         }
-        writeln!( f.buf, "{}", formatted_row.join( cell_separator ) )?;
+        writeln!( f.buf, "{}{}{}", row_prefix, formatted_row.join( cell_separator ), row_postfix )?;
       }
 
       // Write rows with proper alignment
@@ -214,9 +216,9 @@ pub( crate ) mod private
           let cell = &row[ &k ];
           let descriptor = &col_descriptors[ &k ];
           let width = descriptor.1;
-          formatted_row.push( format!( "{:^width$}", cell.as_ref(), width = width ) );
+          formatted_row.push( format!( "{:^width${}}", cell.as_ref(), width = width ) );
         }
-        writeln!( f.buf, "{}", formatted_row.join( cell_separator ) )?;
+        writeln!( f.buf, "{}{}{}", row_prefix, formatted_row.join( cell_separator ), row_postfix )?;
       }
 
       Ok(())
