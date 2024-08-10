@@ -61,7 +61,8 @@ pub( crate ) mod private
   where
     // 'table : 'row,
     // 'row : 'cell,
-    Row : Clone + Cells< CellKey, Cell, CellWrap, CellKind >,
+    Row : Clone + Cells< CellKey, Cell, CellWrap, CellKind >, // xxx
+    // Row : Clone,
     Cell : std::borrow::ToOwned + ?Sized,
     CellKind : Copy + 'static,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
@@ -75,8 +76,9 @@ pub( crate ) mod private
   where
     // 'table : 'row,
     // 'row : 'cell,
-    for< 'a > T : Fields< RowKey, CellWrap, Value< 'a > = Option< Cow< 'a, Row > > > + 'a,
-    Row : Clone + Cells< CellKey, Cell, CellWrap, CellKind >,
+    for< 'a > T : Fields< RowKey, MaybeAs< 'a, Row, CellKind >, Value< 'a > = MaybeAs< 'a, Row, CellKind > > + 'a,
+    Row : Clone + Cells< CellKey, Cell, CellWrap, CellKind >, // xxx
+    // Row : Clone,
     Title : fmt::Display,
     Cell : fmt::Display,
     Cell : std::borrow::ToOwned + ?Sized,
@@ -89,7 +91,7 @@ pub( crate ) mod private
       self.as_ref().fields()
       .filter_map( move | ( _k, e ) |
       {
-        match e
+        match e.0
         {
           Some( e ) => Some( e.into_owned() ),
           None => None,

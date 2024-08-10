@@ -107,7 +107,7 @@ fn table_to_string()
   let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, str, MaybeAs< '_, str, WithRef >, WithRef, &str > = AsTable::new( &test_objects );
   // let size = TableSize::table_size( &as_table );
   // assert_eq!( size, [ 2, 4 ] );
-  // let rows = TableRows::rows( &as_table );
+  let rows = TableRows::rows( &as_table );
   // assert_eq!( rows.len(), 2 );
   // // dbg!( rows.collect::< Vec< _ > >() );
   // let header = TableHeader::header( &as_table );

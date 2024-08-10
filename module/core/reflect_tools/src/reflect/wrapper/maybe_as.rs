@@ -82,6 +82,22 @@ where
 
 }
 
+// impl< 'a, T, Marker > std::borrow::ToOwned for MaybeAs< 'a, T, Marker >
+// where
+//   T : std::borrow::ToOwned + ?Sized,
+// {
+//   type Owned = MaybeAs< 'static, T::Owned, Marker >;
+//
+//   fn to_owned( &self ) -> Self::Owned
+//   {
+//     MaybeAs
+//     (
+//       self.0.as_ref().map( | cow | Cow::Owned( cow.to_owned() ) ),
+//       std::marker::PhantomData
+//     )
+//   }
+// }
+
 impl< 'a, T, Marker > Clone for MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
