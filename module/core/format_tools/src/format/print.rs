@@ -216,7 +216,7 @@ pub( crate ) mod private
           let cell = &row[ &k ];
           let descriptor = &col_descriptors[ &k ];
           let width = descriptor.1;
-          formatted_row.push( format!( "{:^width${}}", cell.as_ref(), width = width ) );
+          formatted_row.push( format!( "{:^width$}", cell.as_ref(), width = width ) );
         }
         writeln!( f.buf, "{}{}{}", row_prefix, formatted_row.join( cell_separator ), row_postfix )?;
       }
