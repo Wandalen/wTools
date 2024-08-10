@@ -59,10 +59,7 @@ pub( crate ) mod private
   /// A trait for iterating over all rows of a table.
   pub trait TableRows< RowKey, Row, CellKey, Cell, CellWrap, CellKind >
   where
-    // 'table : 'row,
-    // 'row : 'cell,
-    Row : Clone + Cells< CellKey, Cell, CellWrap, CellKind >, // xxx
-    // Row : Clone,
+    Row : Clone + Cells< CellKey, Cell, CellWrap, CellKind >,
     Cell : std::borrow::ToOwned + ?Sized,
     CellKind : Copy + 'static,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
@@ -74,11 +71,8 @@ pub( crate ) mod private
   impl< T, RowKey, Row, CellKey, Cell, CellWrap, CellKind, Title > TableRows< RowKey, Row, CellKey, Cell, CellWrap, CellKind >
   for AsTable< '_, T, RowKey, Row, CellKey, Cell, CellWrap, CellKind, Title >
   where
-    // 'table : 'row,
-    // 'row : 'cell,
     for< 'a > T : Fields< RowKey, MaybeAs< 'a, Row, CellKind >, Value< 'a > = MaybeAs< 'a, Row, CellKind > > + 'a,
-    Row : Clone + Cells< CellKey, Cell, CellWrap, CellKind >, // xxx
-    // Row : Clone,
+    Row : Clone + Cells< CellKey, Cell, CellWrap, CellKind >,
     Title : fmt::Display,
     Cell : fmt::Display,
     Cell : std::borrow::ToOwned + ?Sized,
@@ -131,9 +125,9 @@ pub( crate ) mod private
       if let Some( row2 ) = row
       {
         let cit = row2.cells().clone();
-        // let ncells = cit.len();
-        // [ nrows, ncells ]
-        [ 0, 0 ]
+        let ncells = cit.len();
+        [ nrows, ncells ]
+        // [ 0, 0 ]
       }
       else
       {
@@ -146,8 +140,6 @@ pub( crate ) mod private
 
   /// Trait returning headers of a table if any.
   pub trait TableHeader< CellKey, Title >
-  where
-    // Title : fmt::Debug,
   {
     /// Returns an iterator over all fields of the specified type within the entity.
     fn header( &self ) -> Option< impl IteratorTrait< Item = ( CellKey, Title ) > >;
@@ -158,12 +150,9 @@ pub( crate ) mod private
   where
     Self : TableRows< RowKey, Row, CellKey, Cell, CellWrap, CellKind >,
     Row : Clone + Cells< CellKey, Cell, CellWrap, CellKind >,
-    // CellKey : Clone,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellKey : fmt::Display,
-    // Title : fmt::Display,
     Cell : fmt::Display,
-    // Cell : fmt::Debug + 'table,
     Cell : std::borrow::ToOwned + ?Sized,
     CellKind : Copy + 'static,
   {

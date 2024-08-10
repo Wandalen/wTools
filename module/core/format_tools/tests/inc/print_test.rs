@@ -9,7 +9,7 @@ use the_module::
   Cells,
   TableSize,
   TableRows,
-  // TableHeader,
+  TableHeader,
   Context,
   WithRef,
   MaybeAs,
@@ -105,26 +105,26 @@ fn table_to_string()
   drop( cells );
 
   let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, str, MaybeAs< '_, str, WithRef >, WithRef, &str > = AsTable::new( &test_objects );
-  // let size = TableSize::table_size( &as_table );
-  // assert_eq!( size, [ 2, 4 ] );
+  let size = TableSize::table_size( &as_table );
+  assert_eq!( size, [ 2, 4 ] );
   let rows = TableRows::rows( &as_table );
-  // assert_eq!( rows.len(), 2 );
-  // // dbg!( rows.collect::< Vec< _ > >() );
-  // let header = TableHeader::header( &as_table );
-  // assert!( header.is_some() );
-  // let header = header.unwrap();
-  // assert_eq!( header.len(), 4 );
-  // assert_eq!( header.collect::< Vec< _ > >(), vec![ ( "id", "id" ), ( "created_at", "created_at" ), ( "file_ids", "file_ids" ), ( "tools", "tools" ) ] );
-  // // dbg!( header.collect::< Vec< _ > >() );
+  assert_eq!( rows.len(), 2 );
+  // dbg!( rows.collect::< Vec< _ > >() );
+  let header = TableHeader::header( &as_table );
+  assert!( header.is_some() );
+  let header = header.unwrap();
+  assert_eq!( header.len(), 4 );
+  assert_eq!( header.collect::< Vec< _ > >(), vec![ ( "id", "id" ), ( "created_at", "created_at" ), ( "file_ids", "file_ids" ), ( "tools", "tools" ) ] );
+  // dbg!( header.collect::< Vec< _ > >() );
 
-//   let mut output = String::new();
-//   let mut formatter = Context::new( &mut output, Default::default() );
-//   let got = the_module::TableFormatter::fmt( &as_table, &mut formatter );
-//   assert!( got.is_ok() );
-//   println!( "{}", &output );
-//
-//   // with explicit arguments
-//
+  // let mut output = String::new();
+  // let mut formatter = Context::new( &mut output, Default::default() );
+  // let got = the_module::TableFormatter::fmt( &as_table, &mut formatter );
+  // assert!( got.is_ok() );
+  // println!( "{}", &output );
+
+  // with explicit arguments
+
 //   let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, str, WithRef, &str > = AsTable::new( &test_objects );
 //   let table_string = as_table.table_to_string();
 //   assert!( table_string.contains( "id" ) );
