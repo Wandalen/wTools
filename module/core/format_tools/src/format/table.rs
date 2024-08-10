@@ -168,10 +168,6 @@ pub( crate ) mod private
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellKey : fmt::Display,
     CellKey : AsRef< str >,
-    // CellKey : Sized,
-    // CellKey : Borrow< str >,
-    // Cell : fmt::Display,
-    // Cell : std::borrow::ToOwned + ?Sized,
     CellFormat : Copy + 'static,
   {
 
@@ -185,10 +181,7 @@ pub( crate ) mod private
         (
           row
           .cells()
-          // .map( | ( key, _title ) | ( key.clone(), to_string_with_fallback!( WithRef, WithDebug, key ) ) )
           .map( | ( key, _title ) | ( key.clone(), Cow::Owned( format!( "{}", key ) ) ) )
-          // .map( | ( key, _title ) | ( key.clone(), Cow::Borrowed( key.borrow() ) ) )
-          // .map( | ( key, _title ) | ( key.clone(), Cow::Borrowed( key.as_ref() ) ) )
           .collect::< Vec< _ > >()
           .into_iter()
         )

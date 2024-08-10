@@ -129,26 +129,25 @@ fn table_to_string()
   assert!( got.is_ok() );
   println!( "{}", &output );
 
-// xxx
-//   // with explicit arguments
-//
-//   let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, str, MaybeAs< '_, str, WithRef >, WithRef, &str > = AsTable::new( &test_objects );
-//   let table_string = as_table.table_to_string();
-//   assert!( table_string.contains( "id" ) );
-//   assert!( table_string.contains( "created_at" ) );
-//   assert!( table_string.contains( "file_ids" ) );
-//   assert!( table_string.contains( "tools" ) );
-//
-//   // without explicit arguments
-//
-//   println!( "" );
-//   let as_table = AsTable::new( &test_objects );
-//   let table_string = as_table.table_to_string();
-//   assert!( table_string.contains( "id" ) );
-//   assert!( table_string.contains( "created_at" ) );
-//   assert!( table_string.contains( "file_ids" ) );
-//   assert!( table_string.contains( "tools" ) );
-//   println!( "{table_string}" );
+  // with explicit arguments
+
+  let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, WithRef > = AsTable::new( &test_objects );
+  let table_string = as_table.table_to_string();
+  assert!( table_string.contains( "id" ) );
+  assert!( table_string.contains( "created_at" ) );
+  assert!( table_string.contains( "file_ids" ) );
+  assert!( table_string.contains( "tools" ) );
+
+  // without explicit arguments
+
+  println!( "" );
+  let as_table = AsTable::new( &test_objects );
+  let table_string = as_table.table_to_string();
+  assert!( table_string.contains( "id" ) );
+  assert!( table_string.contains( "created_at" ) );
+  assert!( table_string.contains( "file_ids" ) );
+  assert!( table_string.contains( "tools" ) );
+  println!( "{table_string}" );
 
 }
 
