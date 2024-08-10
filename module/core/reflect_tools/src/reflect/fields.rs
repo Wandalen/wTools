@@ -89,7 +89,7 @@ pub( crate ) mod private
 //     }
 //   }
 
-  impl< T > Fields< usize, T > for Vec< T >
+  impl< T > Fields< usize, &'_ T > for Vec< T >
   where
     T : std::borrow::ToOwned,
   {
