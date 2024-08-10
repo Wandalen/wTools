@@ -126,76 +126,109 @@ pub( crate ) mod private
     {
 
       let table_size = self.table_size();
-      let mut col_widths : Vec< usize > = vec![ 0 ; table_size[ 1 ] ];
-      // let mut col_widths = HashMap::< CellKey, usize >::new();
+      // let mut widths : Vec< usize > = vec![ 0 ; table_size[ 1 ] ];
+      // let mut widths : BTreeMap< CellKeyWrap< CellKey >, usize > = BTreeMap::new();
+      // let mut widths = HashMap::< CellKey, usize >::new();
+      let mut key_to_col : HashMap< CellKey, ( usize, usize, Option< Cow< '_, str > > ) > = HashMap::new();
+      let mut cols : Vec< CellKey > = Vec::new();
+
       let separator = &f.styles.separator;
+
+      // dbg!( &widths );
+
+      // process header first
 
       if let Some( header ) = self.header()
       {
-        let mut i = 0;
-        for ( _key, title ) in header
+        // let mut i = 0;
+        for ( key, title ) in header
         {
-          col_widths[ i ] = format!( "{}", title ).len();
-          i += 1;
+          let title_str : Cow< '_, str > = Cow::Owned( format!( "{}", title ) );
+          let l = key_to_col.len();
+          key_to_col
+          .entry( key.clone() )
+          .and_modify( | e | { e.1 = e.1.max( title_str.len() ) } )
+          .or_insert( ( l + 1, title_str.len(), Some( title_str ) ) );
+          // widths[ &( key, i ).into() ] = format!( "{}", title ).len();
+          // i += 1;
         }
         writeln!( f.buf )?;
       }
 
-      // dbg!( &col_widths );
+      // Collect rows
+      // let mut data : Vec< BTreeMap< CellKeyWrap< CellKey >, Cow< '_, str > > > = Vec::new();
+      let mut data : Vec< HashMap< CellKey, Cow< '_, str > > > = Vec::new();
+      for row in self.rows()
+      {
+        let mut i = 0;
+        // let fields : Vec< String > = row
+        // let fields : BTreeMap< CellKeyWrap< CellKey >, Cow< '_, str > > = row
+        let fields : HashMap< CellKey, Cow< '_, str > > = row
+        .cells()
+        .map
+        (
+          | ( key, cell ) |
+          {
+            let r = match cell.0
+            {
+              // Some( cell ) => ( ( key, 0 ).into(), format!( "{}", < Cow< '_, Cell > as Borrow< Cell > >::borrow( &cell ) ) ),
+              // None => ( ( key, 0 ).into(), "".to_string() ),
+              Some( cell ) =>
+              {
+                let l = key_to_col.len();
+                key_to_col
+                .entry( key.clone() )
+                .and_modify( | e | { e.1 = e.1.max( cell.len() ) } )
+                .or_insert( ( l + 1, cell.len(), None ) );
+                ( key, cell )
+              }
+              // None => ( key, Cow::Borrowed( "" ) ),
+              None =>
+              {
+                let l = key_to_col.len();
+                key_to_col
+                .entry( key.clone() )
+                .or_insert( ( l + 1, 0, None ) );
+                ( key, Cow::Borrowed( "" ) )
+              }
+            };
+            i += 1;
+            return r;
+          }
+        )
+        // .map
+        // (
+        //   | ( _key, cell ) |
+        //   {
+        //     match cell.0
+        //     {
+        //       // Some( cell ) => format!( "{}", cell.borrow() ),
+        //       Some( cell ) => format!( "{}", < Cow< '_, Cell > as Borrow< Cell > >::borrow( &cell ) ),
+        //       None => "".to_string(),
+        //       // Some( cell ) => < Cow< '_, Cell > as Borrow< Cell > >::borrow( &cell ).as_ref(),
+        //       // None => "",
+        //     }
+        //   }
+        // )
+        .collect();
+        data.push( fields );
+      }
 
-      // // Collect rows
-      // let mut all_rows : Vec< BTreeMap< CellKeyWrap< CellKey >, Cow< '_, str > > > = Vec::new();
-      // for row in self.rows()
+      // for row in &data
       // {
-      //   // let fields : Vec< String > = row
-      //   let fields : BTreeMap< CellKeyWrap< CellKey >, Cow< '_, str > > = row
-      //   .cells()
-      //   .map
-      //   (
-      //     | ( key, cell ) |
+      //   for ( i, cell ) in row.iter().enumerate()
+      //   {
+      //     if widths.len() <= i
       //     {
-      //       match cell.0
-      //       {
-      //         // Some( cell ) => ( ( key, 0 ).into(), format!( "{}", < Cow< '_, Cell > as Borrow< Cell > >::borrow( &cell ) ) ),
-      //         // None => ( ( key, 0 ).into(), "".to_string() ),
-      //         Some( cell ) => ( ( key, 0 ).into(), cell ),
-      //         None => ( ( key, 0 ).into(), Cow::Borrowed( "" ) ),
-      //       }
+      //       widths.push( cell.data.len() );
       //     }
-      //   )
-      //   // .map
-      //   // (
-      //   //   | ( _key, cell ) |
-      //   //   {
-      //   //     match cell.0
-      //   //     {
-      //   //       // Some( cell ) => format!( "{}", cell.borrow() ),
-      //   //       Some( cell ) => format!( "{}", < Cow< '_, Cell > as Borrow< Cell > >::borrow( &cell ) ),
-      //   //       None => "".to_string(),
-      //   //       // Some( cell ) => < Cow< '_, Cell > as Borrow< Cell > >::borrow( &cell ).as_ref(),
-      //   //       // None => "",
-      //   //     }
-      //   //   }
-      //   // )
-      //   .collect();
-      //   all_rows.push( fields );
+      //     else if cell.len() > widths[ i ]
+      //     {
+      //       widths[ i ] = cell.data.len();
+      //     }
+      //   }
       // }
 
-//       for row in &all_rows
-//       {
-//         for ( i, cell ) in row.iter().enumerate()
-//         {
-//           if col_widths.len() <= i
-//           {
-//             col_widths.push( cell.len() );
-//           }
-//           else if cell.len() > col_widths[ i ]
-//           {
-//             col_widths[ i ] = cell.len();
-//           }
-//         }
-//       }
-//
 //       // Write the header if provided
 //       if let Some( header ) = self.header()
 //       {
@@ -206,17 +239,17 @@ pub( crate ) mod private
 //           {
 //             write!( f.buf, "{}", separator )?;
 //           }
-//           write!( f.buf, "{:^width$}", format!( "{}", title ), width = col_widths[ i ] )?;
+//           write!( f.buf, "{:^width$}", format!( "{}", title ), width = widths[ i ] )?;
 //           // write!( f.buf, "{:?}", title )?;
 //           i += 1;
 //         }
 //         writeln!( f.buf )?;
 //       }
 //
-//       // dbg!( &col_widths );
+//       // dbg!( &widths );
 //
 //       // Write rows with proper alignment
-//       for row in &all_rows
+//       for row in &data
 //       {
 //         let mut i = 0;
 //         for cell in row
@@ -225,19 +258,19 @@ pub( crate ) mod private
 //           {
 //             write!( f.buf, "{}", separator )?;
 //           }
-//           write!( f.buf, "{:^width$}", cell, width = col_widths[ i ] )?;
+//           write!( f.buf, "{:^width$}", cell, width = widths[ i ] )?;
 //           i += 1;
 //         }
 //         writeln!( f.buf )?;
 //       }
 
       // // Write rows with proper alignment
-      // for row in all_rows
+      // for row in data
       // {
       //   let formatted_row : Vec< String > = row
       //   .iter()
       //   .enumerate()
-      //   .map( | ( i, cell ) | format!( "{:?^width$}", cell, width = col_widths[ i ] ) )
+      //   .map( | ( i, cell ) | format!( "{:?^width$}", cell, width = widths[ i ] ) )
       //   .collect();
       //   writeln!( f.buf, "{}", formatted_row.join( separator ) )?;
       // }

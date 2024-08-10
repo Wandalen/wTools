@@ -36,7 +36,6 @@ pub( crate ) mod private
     }};
   }
 
-
   /// Macro to create a field with optional fallbacks.
   ///
   /// This macro helps to convert a field of a structure into one or another string representation

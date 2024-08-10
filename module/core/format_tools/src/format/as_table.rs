@@ -129,19 +129,22 @@ pub( crate ) mod private
 
   // =
 
-  pub struct CellKeyWrap< CellKey >( pub CellKey, pub usize )
+  pub struct CellKeyWrap< CellKey >
   where
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
-  ;
+  {
+    pub data : CellKey,
+    pub index : usize,
+  }
 
   impl< CellKey > CellKeyWrap< CellKey >
   where
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
   {
     /// Just a constructor.
-    pub fn new( key : CellKey, index : usize ) -> Self
+    pub fn new( data : CellKey, index : usize ) -> Self
     {
-      Self( key, index )
+      Self { data, index }
     }
   }
 
@@ -151,7 +154,7 @@ pub( crate ) mod private
   {
     fn clone( &self ) -> Self
     {
-      Self( self.0.clone(), self.1 )
+      Self::new( self.data.clone(), self.index )
     }
   }
 
@@ -161,7 +164,7 @@ pub( crate ) mod private
   {
     fn as_ref( &self ) -> &CellKey
     {
-      &self.0
+      &self.data
     }
   }
 
@@ -172,7 +175,7 @@ pub( crate ) mod private
     type Target = CellKey;
     fn deref( &self ) -> &CellKey
     {
-      &self.0
+      &self.data
     }
   }
 
@@ -194,8 +197,8 @@ pub( crate ) mod private
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
       f.debug_struct( "CellKey" )
-      .field( "0", &self.0 )
-      .field( "1", &self.1 )
+      .field( "data", &self.data )
+      .field( "index", &self.index )
       .finish()
     }
   }
@@ -206,7 +209,7 @@ pub( crate ) mod private
   {
     fn eq( &self, other : &Self ) -> bool
     {
-      self.1 == other.1
+      self.index == other.index
       // self.as_ref() == other.as_ref()
     }
   }
@@ -217,21 +220,13 @@ pub( crate ) mod private
   {
   }
 
-  // impl< CellKey > Ord for CellKeyWrap< CellKey >
-  // {
-  //   fn cmp( &self, other : &Self ) -> Ordering
-  //   {
-  //     self.1.cmp( &other.1 ).then_with( || self.0.cmp( &other.0 ) )
-  //   }
-  // }
-
   impl< CellKey > PartialOrd for CellKeyWrap< CellKey >
   where
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
   {
     fn partial_cmp( &self, other : &Self ) -> Option< Ordering >
     {
-      Some( self.1.cmp( &other.1 ) )
+      Some( self.index.cmp( &other.index ) )
     }
   }
 
@@ -241,7 +236,7 @@ pub( crate ) mod private
   {
     fn cmp( &self, other : &Self ) -> Ordering
     {
-      self.1.cmp( &other.1 )
+      self.index.cmp( &other.index )
     }
   }
 
