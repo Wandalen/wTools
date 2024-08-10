@@ -108,20 +108,19 @@ pub( crate ) mod private
   }
 
   /// A trait for formatting tables.
-  impl< 'a, T, RowKey, Row, CellKey, Cell, CellWrap, CellKind, Title > TableFormatter< 'a >
-  for AsTable< 'a, T, RowKey, Row, CellKey, Cell, CellWrap, CellKind, Title >
+  impl< 'a, T, RowKey, Row, CellKey, CellFormat, Title > TableFormatter< 'a >
+  for AsTable< 'a, T, RowKey, Row, CellKey, CellFormat, Title >
   where
-    Self : TableRows< RowKey, Row, CellKey, Cell, CellWrap, CellKind >,
+    Self : TableRows< RowKey, Row, CellKey, CellFormat >,
     Self : TableHeader< CellKey, Title >,
     Self : TableSize,
-    Row : Clone + Cells< CellKey, Cell, CellWrap, CellKind >,
+    Row : Clone + Cells< CellKey, CellFormat >,
     Title : fmt::Display,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
-    Cell : fmt::Display,
-    Cell : std::borrow::ToOwned + ?Sized,
-    // Cell : std::borrow::ToOwned,
-    Cell : AsRef< str >,
-    CellKind : Copy + 'static,
+    // Cell : fmt::Display,
+    // Cell : std::borrow::ToOwned + ?Sized,
+    // Cell : AsRef< str >,
+    CellFormat : Copy + 'static,
   {
     fn fmt( &'a self, f : &mut Context< '_ > ) -> fmt::Result
     {
@@ -144,41 +143,43 @@ pub( crate ) mod private
 
       // dbg!( &col_widths );
 
-      // Collect rows
-      let mut all_rows : Vec< BTreeMap< CellKeyWrap< CellKey >, String > > = Vec::new();
-      for row in self.rows()
-      {
-        // let fields : Vec< String > = row
-        let fields : BTreeMap< CellKeyWrap< CellKey >, String > = row
-        .cells()
-        .map
-        (
-          | ( key, cell ) |
-          {
-            match cell.0
-            {
-              Some( cell ) => ( ( key, 0 ).into(), format!( "{}", < Cow< '_, Cell > as Borrow< Cell > >::borrow( &cell ) ) ),
-              None => ( ( key, 0 ).into(), "".to_string() ),
-            }
-          }
-        )
-        // .map
-        // (
-        //   | ( _key, cell ) |
-        //   {
-        //     match cell.0
-        //     {
-        //       // Some( cell ) => format!( "{}", cell.borrow() ),
-        //       Some( cell ) => format!( "{}", < Cow< '_, Cell > as Borrow< Cell > >::borrow( &cell ) ),
-        //       None => "".to_string(),
-        //       // Some( cell ) => < Cow< '_, Cell > as Borrow< Cell > >::borrow( &cell ).as_ref(),
-        //       // None => "",
-        //     }
-        //   }
-        // )
-        .collect();
-        all_rows.push( fields );
-      }
+      // // Collect rows
+      // let mut all_rows : Vec< BTreeMap< CellKeyWrap< CellKey >, Cow< '_, str > > > = Vec::new();
+      // for row in self.rows()
+      // {
+      //   // let fields : Vec< String > = row
+      //   let fields : BTreeMap< CellKeyWrap< CellKey >, Cow< '_, str > > = row
+      //   .cells()
+      //   .map
+      //   (
+      //     | ( key, cell ) |
+      //     {
+      //       match cell.0
+      //       {
+      //         // Some( cell ) => ( ( key, 0 ).into(), format!( "{}", < Cow< '_, Cell > as Borrow< Cell > >::borrow( &cell ) ) ),
+      //         // None => ( ( key, 0 ).into(), "".to_string() ),
+      //         Some( cell ) => ( ( key, 0 ).into(), cell ),
+      //         None => ( ( key, 0 ).into(), Cow::Borrowed( "" ) ),
+      //       }
+      //     }
+      //   )
+      //   // .map
+      //   // (
+      //   //   | ( _key, cell ) |
+      //   //   {
+      //   //     match cell.0
+      //   //     {
+      //   //       // Some( cell ) => format!( "{}", cell.borrow() ),
+      //   //       Some( cell ) => format!( "{}", < Cow< '_, Cell > as Borrow< Cell > >::borrow( &cell ) ),
+      //   //       None => "".to_string(),
+      //   //       // Some( cell ) => < Cow< '_, Cell > as Borrow< Cell > >::borrow( &cell ).as_ref(),
+      //   //       // None => "",
+      //   //     }
+      //   //   }
+      //   // )
+      //   .collect();
+      //   all_rows.push( fields );
+      // }
 
 //       for row in &all_rows
 //       {

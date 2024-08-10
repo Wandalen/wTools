@@ -98,13 +98,13 @@ fn table_to_string()
     },
   ];
 
-  let cells = Cells::< &'static str, str, MaybeAs< '_, str, WithRef >, WithRef >::cells( &test_objects[ 0 ] );
+  let cells = Cells::< &'static str, WithRef >::cells( &test_objects[ 0 ] );
   assert_eq!( cells.len(), 4 );
-  let cells = Cells::< &'static str, str, MaybeAs< '_, str, WithRef >, WithRef >::cells( &test_objects[ 1 ] );
+  let cells = Cells::< &'static str, WithRef >::cells( &test_objects[ 1 ] );
   assert_eq!( cells.len(), 4 );
   drop( cells );
 
-  let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, str, MaybeAs< '_, str, WithRef >, WithRef, &str > = AsTable::new( &test_objects );
+  let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, WithRef, &str > = AsTable::new( &test_objects );
   let size = TableSize::table_size( &as_table );
   assert_eq!( size, [ 2, 4 ] );
   let rows = TableRows::rows( &as_table );
