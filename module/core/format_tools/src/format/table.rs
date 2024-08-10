@@ -7,7 +7,11 @@ pub( crate ) mod private
 {
 
   use crate::*;
-  use core::fmt;
+  use core::
+  {
+    fmt,
+    borrow::Borrow,
+  };
   use std::borrow::Cow;
   use reflect_tools::
   {
@@ -156,7 +160,7 @@ pub( crate ) mod private
     Row : Clone + Cells< CellKey, CellFormat >,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellKey : fmt::Display,
-    // CellKey : AsRef< str >,
+    // CellKey : Borrow< str >,
     // Cell : fmt::Display,
     // Cell : std::borrow::ToOwned + ?Sized,
     CellFormat : Copy + 'static,
@@ -175,7 +179,7 @@ pub( crate ) mod private
           .cells()
           // .map( | ( key, _title ) | ( key.clone(), to_string_with_fallback!( WithRef, WithDebug, key ) ) )
           .map( | ( key, _title ) | ( key.clone(), Cow::Owned( format!( "{}", key ) ) ) )
-          // .map( | ( key, _title ) | ( key.clone(), Cow::Borrow( format!( "{}", key ) ) ) )
+          // .map( | ( key, _title ) | ( key.clone(), Cow::Borrowed( key.borrow() ) ) )
           .collect::< Vec< _ > >()
           .into_iter()
         )
