@@ -18,7 +18,7 @@ pub( crate ) mod private
   /// Transparent wrapper for table-like structures.
   #[ repr( transparent ) ]
   #[ derive( Clone, Copy ) ]
-  pub struct AsTable< 'table, T, RowKey, Row, CellKey, CellFormat > // xxx : remove CellWrap or CellFormat?
+  pub struct AsTable< 'table, T, RowKey, Row, CellKey, CellFormat >
   (
     &'table T,
     ::core::marker::PhantomData< ( &'table (), fn () -> ( RowKey, Row, CellKey, CellFormat ) ) >,

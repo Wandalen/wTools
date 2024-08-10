@@ -58,14 +58,12 @@ for TestObject
   }
 }
 
-#[ test ]
-fn table_to_string()
-// where
-  // for< 'a > AsTable< 'a, Vec< TestObject >, usize, TestObject, &'static str, String, &'static str > : TableFormatter< 'a >,
-{
-  use the_module::TableToString;
+//
 
-  let test_objects = vec!
+fn test_objects_gen() -> Vec< TestObject >
+{
+
+  vec!
   [
     TestObject
     {
@@ -96,7 +94,19 @@ fn table_to_string()
         ]
       ),
     },
-  ];
+  ]
+
+}
+
+//
+
+#[ test ]
+fn table_to_string()
+// where
+  // for< 'a > AsTable< 'a, Vec< TestObject >, usize, TestObject, &'static str, String, &'static str > : TableFormatter< 'a >,
+{
+  use the_module::TableToString;
+  let test_objects = test_objects_gen();
 
   let cells = Cells::< &'static str, WithRef >::cells( &test_objects[ 0 ] );
   assert_eq!( cells.len(), 4 );
@@ -124,8 +134,8 @@ fn table_to_string()
   dbg!( header.collect::< Vec< _ > >() );
 
   let mut output = String::new();
-  let mut formatter = Context::new( &mut output, Default::default() );
-  let got = the_module::TableFormatter::fmt( &as_table, &mut formatter );
+  let mut context = Context::new( &mut output, Default::default() );
+  let got = the_module::TableFormatter::fmt( &as_table, &mut context );
   assert!( got.is_ok() );
   println!( "{}", &output );
 
@@ -148,6 +158,32 @@ fn table_to_string()
   assert!( table_string.contains( "file_ids" ) );
   assert!( table_string.contains( "tools" ) );
   println!( "{table_string}" );
+
+}
+
+#[ test ]
+fn custom_formatter()
+{
+  // use the_module::TableToString;
+  let test_objects = test_objects_gen();
+
+  let mut output = String::new();
+  let mut formatter = the_module::Styles::default();
+  formatter.cell_separator = " | ".into();
+  formatter.row_prefix = "l|".into();
+  formatter.row_postfix = "|r".into();
+
+  let as_table = AsTable::new( &test_objects );
+  let mut context = Context::new( &mut output, formatter );
+  let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  assert!( got.is_ok() );
+  // let table_string = got.unwrap();
+
+  assert!( output.contains( "id" ) );
+  assert!( output.contains( "created_at" ) );
+  assert!( output.contains( "file_ids" ) );
+  assert!( output.contains( "tools" ) );
+  println!( "{output}" );
 
 }
 

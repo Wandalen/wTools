@@ -28,14 +28,18 @@ pub( crate ) mod private
   {
     /// Delimiter for separating table columns.
     pub cell_separator : String,
+    pub row_prefix : String,
+    pub row_postfix : String,
   }
 
   impl Default for Styles
   {
     fn default() -> Self
     {
-      let cell_separator = " | ".to_string();
-      Styles { cell_separator }
+      let cell_separator = " ".to_string();
+      let row_prefix = "".to_string();
+      let row_postfix = "".to_string();
+      Styles { cell_separator, row_prefix, row_postfix }
     }
   }
 
@@ -90,7 +94,7 @@ pub( crate ) mod private
         buf : &mut output,
         styles : Styles::default(),
       };
-      T::fmt( self, &mut context ).expect( "Formatting failed" );
+      T::fmt( self, &mut context ).expect( "Table formatting failed" );
       output
     }
   }
