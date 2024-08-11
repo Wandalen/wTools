@@ -116,7 +116,7 @@ fn table_to_string()
   drop( cells );
 
   let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, WithRef > = AsTable::new( &test_objects );
-  let size = TableSize::table_size( &as_table );
+  let size = TableSize::mcells( &as_table );
   assert_eq!( size, [ 2, 4 ] );
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );

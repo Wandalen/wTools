@@ -116,8 +116,7 @@ pub( crate ) mod private
   pub trait TableSize
   {
     /// Returns size of a table.
-    fn ncells( &self ) -> [ usize ; 2 ]
-    ;
+    fn mcells( &self ) -> [ usize ; 2 ];
   }
 
   impl< T, RowKey, Row, CellKey, CellFormat > TableSize
@@ -131,7 +130,7 @@ pub( crate ) mod private
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellFormat : Copy + 'static,
   {
-    fn ncells( &self ) -> [ usize ; 2 ]
+    fn mcells( &self ) -> [ usize ; 2 ]
     {
       let mut rows = self.rows();
       let nrows = rows.len();
@@ -139,8 +138,8 @@ pub( crate ) mod private
       if let Some( row2 ) = row
       {
         let cit = row2.cells().clone();
-        let ncells = cit.len();
-        [ nrows, ncells ]
+        let mcells = cit.len();
+        [ nrows, mcells ]
         // [ 0, 0 ]
       }
       else
