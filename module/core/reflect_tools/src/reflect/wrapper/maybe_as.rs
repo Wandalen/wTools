@@ -11,14 +11,12 @@ use core::ops::{ Deref };
 pub struct MaybeAs< 'a, T, Marker >( pub Option< Cow< 'a, T > >, ::core::marker::PhantomData< fn() -> Marker > )
 where
   T : std::borrow::ToOwned + ?Sized,
-  // < T as std::borrow::ToOwned >::Owned : Clone,
   Marker : Clone + Copy + 'static,
 ;
 
 impl< 'a, T, Marker > MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
-  // < T as std::borrow::ToOwned >::Owned : Clone,
   Marker : Clone + Copy + 'static,
 {
 
@@ -101,7 +99,6 @@ where
 impl< 'a, T, Marker > Clone for MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
-  // < T as std::borrow::ToOwned >::Owned : Clone,
   Marker : Clone + Copy + 'static,
 {
   fn clone( &self ) -> Self
@@ -113,9 +110,7 @@ where
 impl< 'a, T, Marker > AsRef< Option< Cow< 'a, T > > > for MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
-  // < T as std::borrow::ToOwned >::Owned : Clone,
   Marker : Clone + Copy + 'static,
-  // Self : 'a,
 {
   fn as_ref( &self ) -> &Option< Cow< 'a, T > >
   {
@@ -126,8 +121,6 @@ where
 impl< 'a, T, Marker > Deref for MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
-  // < T as std::borrow::ToOwned >::Owned : Clone,
-  // T : Clone,
   Marker : Clone + Copy + 'static,
 {
   type Target = Option< Cow< 'a, T > >;
@@ -141,7 +134,6 @@ impl< 'a, T, Marker > From< Cow< 'a, T > >
 for MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
-  // < T as std::borrow::ToOwned >::Owned : Clone,
   Marker : Clone + Copy + 'static,
 {
   fn from( src : Cow< 'a, T > ) -> Self
@@ -154,7 +146,6 @@ impl< 'a, T, Marker > From< Option< Cow< 'a, T > > >
 for MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
-  // < T as std::borrow::ToOwned >::Owned : Clone,
   Marker : Clone + Copy + 'static,
 {
   fn from( src : Option< Cow< 'a, T > > ) -> Self
@@ -167,7 +158,6 @@ impl< 'a, T, Marker > From< &'a T >
 for MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
-  // < T as std::borrow::ToOwned >::Owned : Clone,
   Marker : Clone + Copy + 'static,
 {
   fn from( src : &'a T ) -> Self
@@ -179,7 +169,6 @@ where
 impl< 'a, T, Marker > Default for MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
-  // < T as std::borrow::ToOwned >::Owned : Clone,
   < T as std::borrow::ToOwned >::Owned : Default,
   Marker : Clone + Copy + 'static,
 {
@@ -192,7 +181,6 @@ where
 impl< 'a, T, Marker > fmt::Debug for MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
-  // < T as std::borrow::ToOwned >::Owned : Clone,
   < T as std::borrow::ToOwned >::Owned : fmt::Debug,
   Marker : Clone + Copy + 'static,
   T : fmt::Debug,
@@ -208,7 +196,6 @@ where
 impl< 'a, T, Marker > PartialEq for MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
-  // < T as std::borrow::ToOwned >::Owned : Clone,
   Marker : Clone + Copy + 'static,
   T : PartialEq,
 {
@@ -221,7 +208,6 @@ where
 impl< 'a, T, Marker > Eq for MaybeAs< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
-  // < T as std::borrow::ToOwned >::Owned : Clone,
   Marker : Clone + Copy + 'static,
   T : Eq,
 {

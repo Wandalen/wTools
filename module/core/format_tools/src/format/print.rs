@@ -126,7 +126,7 @@ pub( crate ) mod private
     {
 
       let table_size = self.table_size();
-      let mut col_descriptors : HashMap< CellKey, ( usize, usize, Option< Cow< '_, str > > ) > = HashMap::new();
+      let mut col_descriptors : HashMap< CellKey, ( usize, [ usize ; 2 ], Option< Cow< '_, str > > ) > = HashMap::new();
       let mut col_order : Vec< CellKey > = Vec::new();
       let cell_separator = &f.styles.cell_separator;
       let row_prefix = &f.styles.row_prefix;
@@ -142,11 +142,17 @@ pub( crate ) mod private
           let l = col_descriptors.len();
           col_descriptors
           .entry( key.clone() )
-          .and_modify( | e | { e.1 = e.1.max( title_str.len() ) } )
+          .and_modify( | e |
+          {
+            let sz = string::size( &title_str );
+            e.1[ 0 ] = e.1[ 0 ].max( sz[ 0 ] );
+            e.1[ 1 ] = e.1[ 1 ].max( sz[ 1 ] );
+          })
           .or_insert_with( ||
           {
             col_order.push( key.clone() );
-            ( l + 1, title_str.len(), Some( title_str ) )
+            let sz = string::size( &title_str );
+            ( l + 1, sz, Some( title_str ) )
           });
         }
       }
@@ -176,11 +182,17 @@ pub( crate ) mod private
             let l = col_descriptors.len();
             col_descriptors
             .entry( r.0.clone() )
-            .and_modify( | e | { e.1 = e.1.max( r.1.len() ) } )
+            .and_modify( | e |
+            {
+              let sz = string::size( &r.1 );
+              e.1[ 0 ] = e.1[ 0 ].max( sz[ 0 ] );
+              e.1[ 1 ] = e.1[ 1 ].max( sz[ 1 ] );
+            })
             .or_insert_with( ||
             {
               col_order.push( r.0.clone() );
-              ( l + 1, r.1.len(), None )
+              let sz = string::size( &r.1 );
+              ( l + 1, sz, None )
             });
 
             return r;
@@ -193,13 +205,14 @@ pub( crate ) mod private
       // Write head with proper alignment
       if let Some( header ) = self.header()
       {
+        // xxx : rid of vector
         let mut formatted_row : Vec< String > = Vec::with_capacity( col_order.len() );
         for k in &col_order
         {
           let descriptor = &col_descriptors[ &k ];
-          let width = descriptor.1;
+          let sz = descriptor.1;
           let cell = descriptor.2.as_ref().unwrap_or( &Cow::Borrowed( "" ) );
-          formatted_row.push( format!( "{:^width$}", cell, width = width ) );
+          formatted_row.push( format!( "{:^width$}", cell, width = sz[ 0 ] ) );
         }
         writeln!( f.buf, "{}{}{}", row_prefix, formatted_row.join( cell_separator ), row_postfix )?;
       }
@@ -207,13 +220,14 @@ pub( crate ) mod private
       // Write rows with proper alignment
       for row in data
       {
+        // xxx : rid of vector
         let mut formatted_row : Vec< String > = Vec::with_capacity( col_order.len() );
         for k in &col_order
         {
           let cell = &row[ &k ];
           let descriptor = &col_descriptors[ &k ];
-          let width = descriptor.1;
-          formatted_row.push( format!( "{:^width$}", cell.as_ref(), width = width ) );
+          let sz = descriptor.1;
+          formatted_row.push( format!( "{:^.width$}", cell.as_ref(), width = sz[ 0 ] ) );
         }
         writeln!( f.buf, "{}{}{}", row_prefix, formatted_row.join( cell_separator ), row_postfix )?;
       }
