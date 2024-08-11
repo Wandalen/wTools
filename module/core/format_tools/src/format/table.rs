@@ -116,7 +116,7 @@ pub( crate ) mod private
   pub trait TableSize
   {
     /// Returns size of a table.
-    fn table_size( &self ) -> [ usize ; 2 ]
+    fn ncells( &self ) -> [ usize ; 2 ]
     ;
   }
 
@@ -131,7 +131,7 @@ pub( crate ) mod private
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellFormat : Copy + 'static,
   {
-    fn table_size( &self ) -> [ usize ; 2 ]
+    fn ncells( &self ) -> [ usize ; 2 ]
     {
       let mut rows = self.rows();
       let nrows = rows.len();

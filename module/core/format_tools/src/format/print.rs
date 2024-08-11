@@ -125,13 +125,16 @@ pub( crate ) mod private
     fn fmt( &'a self, f : &mut Context< '_ > ) -> fmt::Result
     {
 
-      let table_size = self.table_size();
+      let ncells = self.ncells();
       //                                 key        string,                   size,          index
-      let mut col_descriptors : HashMap< CellKey, ( Option< Cow< '_, str > >, [ usize ; 2 ], usize ) > = HashMap::new();
+      let mut col_descriptors : HashMap< CellKey, ( Option< Cow< '_, str > >, usize,         usize ) > = HashMap::new();
+      let mut row_descriptors : Vec< [ usize ; 2 ] > = Vec::with_capacity( ncells[ 1 ] );
+
       let mut col_order : Vec< CellKey > = Vec::new();
       let cell_separator = &f.styles.cell_separator;
       let row_prefix = &f.styles.row_prefix;
       let row_postfix = &f.styles.row_postfix;
+      let dim = [ 0, 0, 0 ];
 
       // process header first
 
@@ -143,17 +146,16 @@ pub( crate ) mod private
           let l = col_descriptors.len();
           col_descriptors
           .entry( key.clone() )
-          .and_modify( | e |
+          .and_modify( | col |
           {
             let sz = string::size( &title_str );
-            e.1[ 0 ] = e.1[ 0 ].max( sz[ 0 ] );
-            e.1[ 1 ] = e.1[ 1 ].max( sz[ 1 ] );
+            col.1 = col.1.max( sz[ 0 ] );
           })
           .or_insert_with( ||
           {
             col_order.push( key.clone() );
             let sz = string::size( &title_str );
-            ( Some( title_str ), sz, l + 1 )
+            ( Some( title_str ), sz[ 0 ], l + 1 )
           });
         }
       }
@@ -161,7 +163,8 @@ pub( crate ) mod private
       // Collect rows
       //                           key,       string,         size,
 
-      let mut data : Vec< HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > > = Vec::new(); // xxx : continue
+      let mut data : Vec< HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > > = Vec::new();
+      // let slices = Vec< &'_ str > = Vec::with_capacity( ncells[ 0 ] * ncells[ 1 ] );
       for row in self.rows()
       {
         let fields : HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > = row
@@ -187,15 +190,14 @@ pub( crate ) mod private
 
             col_descriptors
             .entry( r.0.clone() )
-            .and_modify( | e |
+            .and_modify( | col |
             {
-              e.1[ 0 ] = e.1[ 0 ].max( sz[ 0 ] );
-              e.1[ 1 ] = e.1[ 1 ].max( sz[ 1 ] );
+              col.1 = col.1.max( sz[ 0 ] );
             })
             .or_insert_with( ||
             {
               col_order.push( r.0.clone() );
-              ( None, sz, l + 1 )
+              ( None, sz[ 0 ], l + 1 )
             });
 
             return ( r.0, ( r.1, sz ) );
@@ -213,9 +215,9 @@ pub( crate ) mod private
         for k in &col_order
         {
           let descriptor = &col_descriptors[ &k ];
-          let sz = descriptor.1;
+          let width = descriptor.1;
           let cell = descriptor.0.as_ref().unwrap_or( &Cow::Borrowed( "" ) );
-          formatted_row.push( format!( "{:^width$}", cell, width = sz[ 0 ] ) );
+          formatted_row.push( format!( "{:^width$}", cell, width = width ) );
         }
         writeln!( f.buf, "{}{}{}", row_prefix, formatted_row.join( cell_separator ), row_postfix )?;
       }
@@ -232,9 +234,9 @@ pub( crate ) mod private
         {
           let cell = &row[ &k ];
           let descriptor = &col_descriptors[ &k ];
-          let sz = descriptor.1;
-          println!( "sz : {sz:?}" );
-          formatted_row.push( format!( "{:^.width$}", cell.0.as_ref(), width = sz[ 0 ] ) );
+          let width = descriptor.1;
+          println!( "width : {width:?}" );
+          formatted_row.push( format!( "{:^width$}", cell.0.as_ref(), width = width ) );
         }
         writeln!( f.buf, "{}{}{}", row_prefix, formatted_row.join( cell_separator ), row_postfix )?;
       }
