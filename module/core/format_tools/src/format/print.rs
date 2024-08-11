@@ -126,7 +126,8 @@ pub( crate ) mod private
     {
 
       let table_size = self.table_size();
-      let mut col_descriptors : HashMap< CellKey, ( usize, [ usize ; 2 ], Option< Cow< '_, str > > ) > = HashMap::new();
+      //                                 key        string,                   size,          index
+      let mut col_descriptors : HashMap< CellKey, ( Option< Cow< '_, str > >, [ usize ; 2 ], usize ) > = HashMap::new();
       let mut col_order : Vec< CellKey > = Vec::new();
       let cell_separator = &f.styles.cell_separator;
       let row_prefix = &f.styles.row_prefix;
@@ -152,16 +153,18 @@ pub( crate ) mod private
           {
             col_order.push( key.clone() );
             let sz = string::size( &title_str );
-            ( l + 1, sz, Some( title_str ) )
+            ( Some( title_str ), sz, l + 1 )
           });
         }
       }
 
       // Collect rows
-      let mut data : Vec< HashMap< CellKey, Cow< '_, str > > > = Vec::new(); // xxx : continue
+      //                           key,       string,         size,
+
+      let mut data : Vec< HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > > = Vec::new(); // xxx : continue
       for row in self.rows()
       {
-        let fields : HashMap< CellKey, Cow< '_, str > > = row
+        let fields : HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > = row
         .cells()
         .map
         (
@@ -179,23 +182,23 @@ pub( crate ) mod private
               }
             };
 
+            let sz = string::size( &r.1 );
             let l = col_descriptors.len();
+
             col_descriptors
             .entry( r.0.clone() )
             .and_modify( | e |
             {
-              let sz = string::size( &r.1 );
               e.1[ 0 ] = e.1[ 0 ].max( sz[ 0 ] );
               e.1[ 1 ] = e.1[ 1 ].max( sz[ 1 ] );
             })
             .or_insert_with( ||
             {
               col_order.push( r.0.clone() );
-              let sz = string::size( &r.1 );
-              ( l + 1, sz, None )
+              ( None, sz, l + 1 )
             });
 
-            return r;
+            return ( r.0, ( r.1, sz ) );
           }
         )
         .collect();
@@ -211,7 +214,7 @@ pub( crate ) mod private
         {
           let descriptor = &col_descriptors[ &k ];
           let sz = descriptor.1;
-          let cell = descriptor.2.as_ref().unwrap_or( &Cow::Borrowed( "" ) );
+          let cell = descriptor.0.as_ref().unwrap_or( &Cow::Borrowed( "" ) );
           formatted_row.push( format!( "{:^width$}", cell, width = sz[ 0 ] ) );
         }
         writeln!( f.buf, "{}{}{}", row_prefix, formatted_row.join( cell_separator ), row_postfix )?;
@@ -230,7 +233,7 @@ pub( crate ) mod private
           let cell = &row[ &k ];
           let descriptor = &col_descriptors[ &k ];
           let sz = descriptor.1;
-          formatted_row.push( format!( "{:^.width$}", cell.as_ref(), width = sz[ 0 ] ) );
+          formatted_row.push( format!( "{:^.width$}", cell.0.as_ref(), width = sz[ 0 ] ) );
         }
         writeln!( f.buf, "{}{}{}", row_prefix, formatted_row.join( cell_separator ), row_postfix )?;
       }
