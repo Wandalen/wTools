@@ -245,125 +245,132 @@ pub( crate ) mod private
     }
   }
 
-//   pub struct FormatExtract< 'a, T, RowKey, Row, CellKey, CellFormat >
-//   where
-//     Row : Clone + Cells< CellKey, CellFormat >,
-//     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
-//     CellFormat : Copy + 'static,
-//   {
-//
-//     //
-//     pub mcells : [ usize ; 2 ];
-//
-//     //                             key        string,                   width,          index
-//     pub col_descriptors : HashMap< CellKey, ( Option< Cow< '_, str > >, usize,         usize ) >;
-//
-//     //                         height
-//     pub row_descriptors : Vec< usize >;
-//
-//     /// Either slices or strings extracted for further processsing.
-//     pub data : Vec< HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > >;
-//
-//   }
+  pub struct FormatExtract< 'a, CellKey >
+  where
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+  {
 
-//   impl FormatExtract< 'a, T, RowKey, Row, CellKey, CellFormat >
-//   where
-//     Row : Clone + Cells< CellKey, CellFormat >,
-//     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
-//     CellFormat : Copy + 'static,
-//   {
-//
-//     pub fn extract< Table >( src : &Table ) -> Self
-//     where
-//       Table : TableRows< RowKey, Row, CellKey, CellFormat >,
-//       Table : TableHeader< CellKey >,
-//       Table : TableSize,
-//     {
-//
-//       let mcells = self.mcells();
-//       let mut col_descriptors : HashMap< CellKey, ( Option< Cow< '_, str > >, usize,         usize ) > = HashMap::new();
-//       let mut row_descriptors : Vec< usize > = Vec::with_capacity( mcells[ 1 ] );
-//
-//       let mut col_order : Vec< CellKey > = Vec::new();
-//       let cell_separator = &f.styles.cell_separator;
-//       let row_prefix = &f.styles.row_prefix;
-//       let row_postfix = &f.styles.row_postfix;
-//       let dim = [ 0, 0, 0 ];
-//
-//       // process header first
-//
-//       if let Some( header ) = self.header()
-//       {
-//         for ( key, title ) in header
-//         {
-//           let title_str : Cow< '_, str > = Cow::Owned( format!( "{}", title ) );
-//           let l = col_descriptors.len();
-//           col_descriptors
-//           .entry( key.clone() )
-//           .and_modify( | col |
-//           {
-//             let sz = string::size( &title_str );
-//             col.1 = col.1.max( sz[ 0 ] );
-//           })
-//           .or_insert_with( ||
-//           {
-//             col_order.push( key.clone() );
-//             let sz = string::size( &title_str );
-//             ( Some( title_str ), sz[ 0 ], l + 1 )
-//           });
-//         }
-//       }
-//
-//       // Collect rows
-//       //                           key,       string,         size,
-//
-//       let mut data : Vec< HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > > = Vec::new();
-//       // let slices = Vec< &'_ str > = Vec::with_capacity( mcells[ 0 ] * mcells[ 1 ] );
-//       for row in self.rows()
-//       {
-//         let fields : HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > = row
-//         .cells()
-//         .map
-//         (
-//           | ( key, cell ) |
-//           {
-//             let r = match cell.0
-//             {
-//               Some( cell ) =>
-//               {
-//                 ( key, cell )
-//               }
-//               None =>
-//               {
-//                 ( key, Cow::Borrowed( "" ) )
-//               }
-//             };
-//
-//             let sz = string::size( &r.1 );
-//             let l = col_descriptors.len();
-//
-//             col_descriptors
-//             .entry( r.0.clone() )
-//             .and_modify( | col |
-//             {
-//               col.1 = col.1.max( sz[ 0 ] );
-//             })
-//             .or_insert_with( ||
-//             {
-//               col_order.push( r.0.clone() );
-//               ( None, sz[ 0 ], l + 1 )
-//             });
-//
-//             return ( r.0, ( r.1, sz ) );
-//           }
-//         )
-//         .collect();
-//         data.push( fields );
-//       }
-//
-//     }
-//
-//   }
+    //
+    pub mcells : [ usize ; 2 ],
+
+    /// Order of columns must be as stable as possible.
+    pub col_order : Vec< CellKey >,
+
+    //                             key        string,                   width,          index
+    pub col_descriptors : HashMap< CellKey, ( Option< Cow< 'a, str > >, usize,         usize ) >,
+
+    //                         height
+    pub row_descriptors : Vec< usize >,
+
+    /// Either slices or strings extracted for further processsing.
+    pub data : Vec< HashMap< CellKey, ( Cow< 'a, str >, [ usize ; 2 ] ) > >,
+
+  }
+
+  impl< 'a, CellKey > FormatExtract< 'a, CellKey >
+  where
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+  {
+
+    pub fn extract< Table, RowKey, Row, CellFormat >( table : &'a Table ) -> Self
+    where
+      Table : TableRows< RowKey, Row, CellKey, CellFormat >,
+      Table : TableHeader< CellKey >,
+      Table : TableSize,
+      Row : Clone + Cells< CellKey, CellFormat > + 'a,
+      CellFormat : Copy + 'static,
+    {
+
+      let mcells = table.mcells();
+      let mut col_descriptors : HashMap< CellKey, ( Option< Cow< '_, str > >, usize,         usize ) > = HashMap::new();
+      let mut row_descriptors : Vec< usize > = Vec::with_capacity( mcells[ 1 ] );
+
+      let mut col_order : Vec< CellKey > = Vec::new();
+      // let dim = [ 0, 0, 0 ];
+
+      // process header first
+
+      if let Some( header ) = table.header()
+      {
+        for ( key, title ) in header
+        {
+          let title_str : Cow< '_, str > = Cow::Owned( format!( "{}", title ) );
+          let l = col_descriptors.len();
+          col_descriptors
+          .entry( key.clone() )
+          .and_modify( | col |
+          {
+            let sz = string::size( &title_str );
+            col.1 = col.1.max( sz[ 0 ] );
+          })
+          .or_insert_with( ||
+          {
+            col_order.push( key.clone() );
+            let sz = string::size( &title_str );
+            ( Some( title_str ), sz[ 0 ], l + 1 )
+          });
+        }
+      }
+
+      // Collect rows
+      //                           key,       string,         size,
+
+      let mut data : Vec< HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > > = Vec::new();
+      // let slices = Vec< &'_ str > = Vec::with_capacity( mcells[ 0 ] * mcells[ 1 ] );
+      for row in table.rows()
+      {
+        let fields : HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > = row
+        .cells()
+        .map
+        (
+          | ( key, cell ) |
+          {
+            let r = match cell.0
+            {
+              Some( cell ) =>
+              {
+                ( key, cell )
+              }
+              None =>
+              {
+                ( key, Cow::Borrowed( "" ) )
+              }
+            };
+
+            let sz = string::size( &r.1 );
+            let l = col_descriptors.len();
+
+            col_descriptors
+            .entry( r.0.clone() )
+            .and_modify( | col |
+            {
+              col.1 = col.1.max( sz[ 0 ] );
+            })
+            .or_insert_with( ||
+            {
+              col_order.push( r.0.clone() );
+              ( None, sz[ 0 ], l + 1 )
+            });
+
+            return ( r.0, ( r.1, sz ) );
+          }
+        )
+        .collect();
+        data.push( fields );
+      }
+
+      Self
+      {
+        mcells,
+        col_order,
+        col_descriptors,
+        row_descriptors,
+        data,
+      }
+
+    }
+
+  }
 
 }
 
