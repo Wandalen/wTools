@@ -158,7 +158,7 @@ pub( crate ) mod private
       }
 
       // Collect rows
-      let mut data : Vec< HashMap< CellKey, Cow< '_, str > > > = Vec::new();
+      let mut data : Vec< HashMap< CellKey, Cow< '_, str > > > = Vec::new(); // xxx : continue
       for row in self.rows()
       {
         let fields : HashMap< CellKey, Cow< '_, str > > = row
@@ -221,6 +221,9 @@ pub( crate ) mod private
       for row in data
       {
         // xxx : rid of vector
+        // let height = row.iter().fold( 1, | acc, ( k, e ) | acc.max( e.1[ 1 ] ) );
+        // println!( "height : {height}" );
+
         let mut formatted_row : Vec< String > = Vec::with_capacity( col_order.len() );
         for k in &col_order
         {
