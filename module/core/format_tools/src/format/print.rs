@@ -125,6 +125,8 @@ pub( crate ) mod private
     fn fmt( &'a self, f : &mut Context< '_ > ) -> fmt::Result
     {
 
+      let mut extract = FormatExtract::extract( self );
+
       let mcells = self.mcells();
       //                                 key        string,                   size,          index
       let mut col_descriptors : HashMap< CellKey, ( Option< Cow< '_, str > >, usize,         usize ) > = HashMap::new();
