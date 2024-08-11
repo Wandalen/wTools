@@ -9,8 +9,9 @@ mod fundamental
   use super::*;
 
   mod fields_test;
+  mod print_test;
+  mod string_test;
   mod to_string_test;
   mod to_string_with_fallback_test;
-  mod print_test;
 
 }

@@ -7,20 +7,26 @@ pub( crate ) mod private
 {
 
   use crate::*;
-  // use std::
-  // {
-  //   borrow::Cow,
-  //   collections::HashMap,
-  //   collections::BTreeMap,
-  // };
-  // use core::
-  // {
-  //   fmt,
-  //   borrow::Borrow,
-  // };
-  // use former::Former;
 
-  // xxx : documentation and test
+  /// Returns the size of the text in `src` as a `[ width, height ]` array.
+  ///
+  /// The width is the length of the longest line, and the height is the number of lines.
+  ///
+  /// # Arguments
+  ///
+  /// * `src` - A string slice or any type that can be referenced as a string.
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// let text = "Hello\nWorld\nThis is a test";
+  /// let dimensions = format_tools::string::size( text );
+  /// assert_eq!( dimensions, [14, 3 ] );
+  /// ```
+  ///
+  /// The function returns `[ 14, 3 ]` because the longest line ("This is a test") has 14 characters,
+  /// and there are 3 lines in total.
+
   pub fn size< S : AsRef< str > >( src : S ) -> [ usize; 2 ]
   {
     let text = src.as_ref();
