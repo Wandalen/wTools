@@ -76,7 +76,7 @@ fn test_objects_gen() -> Vec< TestObject >
     {
       id : "2".to_string(),
       created_at : 13,
-      file_ids : vec![ "file3".to_string(), "file4".to_string() ],
+      file_ids : vec![ "file3".to_string(), "file4\nmore details".to_string() ],
       tools : Some
       (
         vec!

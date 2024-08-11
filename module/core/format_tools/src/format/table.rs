@@ -37,11 +37,10 @@ pub( crate ) mod private
     ;
   }
 
-  impl< CellFormat, Row, CellKey > Cells< CellKey, CellFormat >
+  impl< Row, CellKey, CellFormat > Cells< CellKey, CellFormat >
   for Row
   where
     for< 'b > Row : Fields< CellKey, MaybeAs< 'b, str, CellFormat > >,
-    // Cell : std::borrow::ToOwned + ?Sized,
     CellFormat : Copy + 'static,
     for< 'b > MaybeAs< 'b, str, CellFormat > : From< < Row as Fields< CellKey, MaybeAs< 'b, str, CellFormat > > >::Value< 'b > >,
   {

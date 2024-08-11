@@ -119,7 +119,6 @@ pub( crate ) mod private
     Self : TableHeader< CellKey >,
     Self : TableSize,
     Row : Clone + Cells< CellKey, CellFormat >,
-    // Title : fmt::Display,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellFormat : Copy + 'static,
   {
@@ -132,8 +131,6 @@ pub( crate ) mod private
       let cell_separator = &f.styles.cell_separator;
       let row_prefix = &f.styles.row_prefix;
       let row_postfix = &f.styles.row_postfix;
-
-      // dbg!( &widths );
 
       // process header first
 
