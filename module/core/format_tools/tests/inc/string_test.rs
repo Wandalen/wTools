@@ -6,7 +6,7 @@ fn test_empty_string()
 {
   use the_module::string;
   let input = "";
-  let exp = [ 0, 0 ];
+  let exp = [ 0, 1 ];
   let got = string::size( input );
   assert_eq!( exp, got );
 }
@@ -26,7 +26,7 @@ fn test_single_line_with_newline()
 {
   use the_module::string;
   let input = "Hello, World!\n";
-  let exp = [ 13, 1 ];
+  let exp = [ 13, 2 ];
   let got = string::size( input );
   assert_eq!( exp, got );
 }
@@ -46,7 +46,7 @@ fn test_only_newlines()
 {
   use the_module::string;
   let input = "\n\n\n";
-  let exp = [ 0, 3 ];
+  let exp = [ 0, 4 ];
   let got = string::size( input );
   assert_eq!( exp, got );
 }
@@ -66,7 +66,7 @@ fn test_special_characters_whitespace()
 {
   use the_module::string;
   let input = " \t\n \t\n";
-  let exp = [ 2, 2 ];
+  let exp = [ 2, 3 ];
   let got = string::size( input );
   assert_eq!( exp, got );
 }

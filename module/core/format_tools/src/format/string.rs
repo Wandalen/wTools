@@ -1,6 +1,8 @@
 //!
-//! Nice print.
+//! String tools.
 //!
+
+// xxx : move to crate string_tools
 
 /// Internal namespace.
 pub( crate ) mod private
@@ -27,7 +29,7 @@ pub( crate ) mod private
   /// The function returns `[ 14, 3 ]` because the longest line ("This is a test") has 14 characters,
   /// and there are 3 lines in total.
 
-  pub fn size< S : AsRef< str > >( src : S ) -> [ usize; 2 ]
+  pub fn size< S : AsRef< str > >( src : S ) -> [ usize ; 2 ]
   {
     let text = src.as_ref();
     let mut height = 0;
@@ -36,15 +38,46 @@ pub( crate ) mod private
     for line in text.lines()
     {
       height += 1;
-      let line_length = line.len();
+      let line_length = line.chars().count();
       if line_length > width
       {
         width = line_length;
       }
     }
 
+    // Handle the case where the input ends with a newline character
+    if text.ends_with( '\n' )
+    {
+      height += 1;
+    }
+
+    // Special case for an empty string
+    if text.is_empty()
+    {
+      height = 1;
+    }
+
     [ width, height ]
   }
+
+//   pub fn size< S : AsRef< str > >( src : S ) -> [ usize; 2 ]
+//   {
+//     let text = src.as_ref();
+//     let mut height = 0;
+//     let mut width = 0;
+//
+//     for line in text.lines()
+//     {
+//       height += 1;
+//       let line_length = line.len();
+//       if line_length > width
+//       {
+//         width = line_length;
+//       }
+//     }
+//
+//     [ width, height ]
+//   }
 
 }
 
