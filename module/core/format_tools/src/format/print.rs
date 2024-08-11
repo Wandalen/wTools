@@ -225,7 +225,7 @@ pub( crate ) mod private
       {
         // xxx : rid of vector
         let height = row.iter().fold( 1, | acc, ( k, e ) | acc.max( e.1[ 1 ] ) );
-        println!( "height : {height}" );
+        // println!( "height : {height}" );
 
         let mut formatted_row : Vec< String > = Vec::with_capacity( col_order.len() );
         for k in &col_order
@@ -233,6 +233,7 @@ pub( crate ) mod private
           let cell = &row[ &k ];
           let descriptor = &col_descriptors[ &k ];
           let sz = descriptor.1;
+          println!( "sz : {sz:?}" );
           formatted_row.push( format!( "{:^.width$}", cell.0.as_ref(), width = sz[ 0 ] ) );
         }
         writeln!( f.buf, "{}{}{}", row_prefix, formatted_row.join( cell_separator ), row_postfix )?;

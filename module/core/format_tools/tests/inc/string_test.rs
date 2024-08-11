@@ -15,10 +15,17 @@ fn test_empty_string()
 fn test_single_line_no_newline()
 {
   use the_module::string;
+
   let input = "Hello, World!";
   let exp = [ 13, 1 ];
   let got = string::size( input );
   assert_eq!( exp, got );
+
+  let input = "[\"file1\", \"file2\"]";
+  let exp = [ 18, 1 ];
+  let got = string::size( input );
+  assert_eq!( exp, got );
+
 }
 
 #[ test ]

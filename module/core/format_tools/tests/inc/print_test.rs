@@ -38,7 +38,8 @@ for TestObject
 
   fn fields( &self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< '_, str, WithRef > ) >
   {
-    use format_tools::ref_or_display_or_debug_multiline::field;
+    // use format_tools::ref_or_display_or_debug_multiline::field;
+    use format_tools::ref_or_display_or_debug::field;
     let mut dst : Vec< ( &'static str, MaybeAs< '_, str, WithRef > ) > = Vec::new();
 
     dst.push( field!( &self.id ) );
@@ -170,8 +171,8 @@ fn custom_formatter()
   let mut output = String::new();
   let mut formatter = the_module::Styles::default();
   formatter.cell_separator = " | ".into();
-  formatter.row_prefix = "l|".into();
-  formatter.row_postfix = "|r".into();
+  formatter.row_prefix = "> ".into();
+  formatter.row_postfix = " <".into();
 
   let as_table = AsTable::new( &test_objects );
   let mut context = Context::new( &mut output, formatter );
