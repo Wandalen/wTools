@@ -354,10 +354,6 @@ pub( crate ) mod private
       let slices_len = slices_dim[ 0 ] * slices_dim[ 1 ] * slices_dim[ 2 ];
       let mut slices : Vec< &str > = vec![ "" ; slices_len ];
 
-      let col : &( Option< Cow< '_, str > >, usize, usize ) = &col_descriptors[ &col_order[ 0 ] ];
-      // use std::borrow::Borrow;
-      // slices[ 0 ] = col.0.as_ref().unwrap();
-
       let mut irow : isize = -1;
       if has_header
       {
@@ -382,6 +378,11 @@ pub( crate ) mod private
 
         }
       }
+
+      let mut slices2 : Vec< &str > = vec![ "" ; slices_len ];
+      let col : &( Option< Cow< '_, str > >, usize, usize ) = &col_descriptors[ &col_order[ 0 ] ];
+      // use std::borrow::Borrow;
+      // slices2[ 0 ] = col.0.as_ref().unwrap();
 
 //       pub trait MdOffset
 //       {
