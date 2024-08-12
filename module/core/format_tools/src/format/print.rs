@@ -143,7 +143,7 @@ pub( crate ) mod private
     Self : TableHeader< CellKey >,
     Self : TableSize,
     Row : Clone + Cells< CellKey, CellFormat >,
-    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash + 'static,
     CellFormat : Copy + 'static,
   {
     fn fmt( &'a self, f : &mut Context< '_ > ) -> fmt::Result
@@ -202,9 +202,10 @@ pub( crate ) mod private
     }
   }
 
-  pub struct FormatExtract< 'a, CellKey >
+  pub struct FormatExtract< 'a, 'b, CellKey >
   where
-    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash + 'static, // xxx
+    'b : 'a,
   {
 
     /// Multidimensional size in number of columns per table and number of rows per table.
@@ -227,13 +228,14 @@ pub( crate ) mod private
     pub slices_dim : [ usize ; 3 ],
 
     /// Either slices or strings extracted for further processsing.
-    pub slices : Vec< &'a str >,
+    pub slices : Vec< &'b str >,
 
   }
 
-  impl< 'a, CellKey > FormatExtract< 'a, CellKey >
+  impl< 'a, 'b, CellKey > FormatExtract< 'a, 'b, CellKey >
   where
-    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash + 'static,
+    'b : 'a,
   {
 
     pub fn extract< Table, RowKey, Row, CellFormat >( table : &'a Table ) -> Self
@@ -350,18 +352,49 @@ pub( crate ) mod private
       ;
 
       let slices_len = slices_dim[ 0 ] * slices_dim[ 1 ] * slices_dim[ 2 ];
-      let slices : Vec< &str > = vec![ "" ; slices_len ];
+      let mut slices : Vec< &str > = vec![ "" ; slices_len ];
 
-//       let mut sub_row_number : isize = -1;
-//       if has_header
+      let col : &( Option< Cow< '_, str > >, usize, usize ) = &col_descriptors[ &col_order[ 0 ] ];
+      // use std::borrow::Borrow;
+      // slices[ 0 ] = col.0.as_ref().unwrap();
+
+      let mut irow : isize = -1;
+      if has_header
+      {
+
+        // let icol : isize = -1;
+        irow += 1;
+        for ( icol, k ) in col_order.iter().enumerate()
+        {
+          let col : &( _, _, _ ) = &col_descriptors[ k ];
+          let cell = &col.0;
+          let size = &col.1;
+
+          if let Some( cell ) = cell
+          {
+
+            string::lines( cell )
+            .enumerate()
+            // .for_each( | ( layer, s ) | slices[ 0 ] = s )
+            ;
+
+          }
+
+        }
+      }
+
+//       pub trait MdOffset
 //       {
+//         fn nd_offset( &self ) -> isize;
+//       }
 //
-//         for col in col_descriptors
+//       impl< T > MdOffset for [ T ; 3 ]
+//       {
+//         fn nd_offset( &self, nd_index : [ T ; 3 ] ) -> isize
 //         {
-//
-//
-//           slices[  ]
-//
+//           let m1 = self[ 1 ];
+//           let m2 = m1 * self[ 2 ];
+//           m1 * nd_index[ 1 ] + m2 * nd_index[ 2 ]
 //         }
 //       }
 
