@@ -223,10 +223,13 @@ pub( crate ) mod private
 
       // process header first
 
-      let row_number : usize = 0;
+      let mut row_number : isize = -1;
       if let Some( header ) = table.header()
       {
         assert!( header.len() <= usize::MAX, "Header of a table has too many cells" );
+        row_number = 0;
+        row_descriptors.push( ( 1, ) );
+
         for ( key, title ) in header
         {
           let title_str : Cow< '_, str > = Cow::Owned( format!( "{}", title ) );
@@ -245,15 +248,8 @@ pub( crate ) mod private
             ( Some( title_str ), sz[ 0 ], l + 1 )
           });
 
-          if row_number == row_descriptors.len()
-          {
-            row_descriptors.push( ( sz[ 1 ], ) );
-          }
-          else
-          {
-            row_descriptors[ row_number ] = ( row_descriptors[ row_number ].0.max( sz[ 1 ] ), );
-          }
-          debug_assert!( row_descriptors.len() == row_number + 1 );
+          row_descriptors[ row_number as usize ] = ( row_descriptors[ row_number as usize ].0.max( sz[ 1 ] ), );
+          debug_assert!( row_descriptors.len() == ( row_number as usize ) + 1 );
 
         }
       }
@@ -267,6 +263,10 @@ pub( crate ) mod private
       for row in table.rows()
       {
         assert!( row.cells().len() <= usize::MAX, "Row of a table has too many cells" );
+
+        row_number += 1;
+        row_descriptors.push( ( 1, ) );
+
         let fields : HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > = row
         .cells()
         .map
@@ -287,6 +287,7 @@ pub( crate ) mod private
 
             let sz = string::size( &r.1 );
             let l = col_descriptors.len();
+            row_descriptors[ row_number as usize ] = ( row_descriptors[ row_number as usize ].0.max( sz[ 1 ] ), );
 
             col_descriptors
             .entry( r.0.clone() )
