@@ -187,11 +187,11 @@ pub( crate ) mod private
     /// Order of columns must be as stable as possible.
     pub col_order : Vec< CellKey >,
 
-    //                             key        string,                   width,          index
-    pub col_descriptors : HashMap< CellKey, ( Option< Cow< 'a, str > >, usize,         usize ) >,
+    //                             key        string,                   width, index
+    pub col_descriptors : HashMap< CellKey, ( Option< Cow< 'a, str > >, usize, usize ) >,
 
     //                         height
-    pub row_descriptors : Vec< usize >,
+    pub row_descriptors : Vec< ( usize, ) >,
 
     /// Either slices or strings extracted for further processsing.
     pub data : Vec< HashMap< CellKey, ( Cow< 'a, str >, [ usize ; 2 ] ) > >,
@@ -213,33 +213,48 @@ pub( crate ) mod private
     {
 
       let mcells = table.mcells();
-      let mut col_descriptors : HashMap< CellKey, ( Option< Cow< '_, str > >, usize,         usize ) > = HashMap::new();
-      let mut row_descriptors : Vec< usize > = Vec::with_capacity( mcells[ 1 ] );
+      //                                 key        string,                   width, index
+      let mut col_descriptors : HashMap< CellKey, ( Option< Cow< '_, str > >, usize, usize ) > = HashMap::new();
+      //                             height
+      let mut row_descriptors : Vec< ( usize, ) > = Vec::with_capacity( mcells[ 1 ] );
 
       let mut col_order : Vec< CellKey > = Vec::new();
       // let dim = [ 0, 0, 0 ];
 
       // process header first
 
+      let row_number : usize = 0;
       if let Some( header ) = table.header()
       {
+        assert!( header.len() <= usize::MAX, "Header of a table has too many cells" );
         for ( key, title ) in header
         {
           let title_str : Cow< '_, str > = Cow::Owned( format!( "{}", title ) );
           let l = col_descriptors.len();
+          let sz = string::size( &title_str );
+
           col_descriptors
           .entry( key.clone() )
           .and_modify( | col |
           {
-            let sz = string::size( &title_str );
             col.1 = col.1.max( sz[ 0 ] );
           })
           .or_insert_with( ||
           {
             col_order.push( key.clone() );
-            let sz = string::size( &title_str );
             ( Some( title_str ), sz[ 0 ], l + 1 )
           });
+
+          if row_number == row_descriptors.len()
+          {
+            row_descriptors.push( ( sz[ 1 ], ) );
+          }
+          else
+          {
+            row_descriptors[ row_number ] = ( row_descriptors[ row_number ].0.max( sz[ 1 ] ), );
+          }
+          debug_assert!( row_descriptors.len() == row_number + 1 );
+
         }
       }
 
@@ -248,8 +263,10 @@ pub( crate ) mod private
 
       let mut data : Vec< HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > > = Vec::new();
       // let slices = Vec< &'_ str > = Vec::with_capacity( mcells[ 0 ] * mcells[ 1 ] );
+      assert!( table.rows().len() <= usize::MAX, "Table has too many rows" );
       for row in table.rows()
       {
+        assert!( row.cells().len() <= usize::MAX, "Row of a table has too many cells" );
         let fields : HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > = row
         .cells()
         .map
