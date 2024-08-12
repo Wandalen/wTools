@@ -254,6 +254,7 @@ pub( crate ) mod private
 pub mod to_string;
 pub mod to_string_with_fallback;
 pub mod as_table;
+pub mod md_math;
 pub mod print;
 pub mod string;
 pub mod table;
@@ -274,6 +275,7 @@ pub mod own
     to_string::orphan::*,
     to_string_with_fallback::orphan::*,
     as_table::orphan::*,
+    md_math::orphan::*,
     print::orphan::*,
     string::orphan::*,
     table::orphan::*,
@@ -315,6 +317,7 @@ pub mod exposed
     to_string::exposed::*,
     to_string_with_fallback::exposed::*,
     as_table::exposed::*,
+    md_math::exposed::*,
     print::exposed::*,
     string::exposed::*,
     table::exposed::*,
@@ -334,6 +337,7 @@ pub mod prelude
     to_string::prelude::*,
     to_string_with_fallback::prelude::*,
     as_table::prelude::*,
+    md_math::prelude::*,
     print::prelude::*,
     string::prelude::*,
     table::prelude::*,

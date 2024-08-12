@@ -9,6 +9,7 @@ mod fundamental
   use super::*;
 
   mod fields_test;
+  mod md_math_test;
   mod print_test;
   mod string_test;
   mod to_string_test;

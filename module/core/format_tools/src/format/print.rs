@@ -11,12 +11,10 @@ pub( crate ) mod private
   {
     borrow::Cow,
     collections::HashMap,
-    // collections::BTreeMap,
   };
   use core::
   {
     fmt,
-    // borrow::Borrow,
   };
   use former::Former;
 
@@ -237,9 +235,12 @@ pub( crate ) mod private
     pub fn extract_slices( &'a mut self )
     {
 
-      let slices_len = self.slices_dim[ 0 ] * self.slices_dim[ 1 ] * self.slices_dim[ 2 ];
+      // let slices_len = self.slices_dim[ 0 ] * self.slices_dim[ 1 ] * self.slices_dim[ 2 ];
+      // let mut slices : Vec< &str > = vec![ "" ; slices_len ];
 
-      let mut slices : Vec< &str > = vec![ "" ; slices_len ];
+      let mut slices : Vec< &str > = vec![];
+      std::mem::swap( &mut self.slices, &mut slices );
+
       let col : &( Option< Cow< '_, str > >, usize, usize ) = &self.col_descriptors[ &self.col_order[ 0 ] ];
       slices[ 0 ] = col.0.as_ref().unwrap();
 
@@ -268,7 +269,7 @@ pub( crate ) mod private
         }
       }
 
-      self.slices = slices;
+      std::mem::swap( &mut self.slices, &mut slices );
     }
 
     pub fn extract< Table, RowKey, Row, CellFormat >( table : &'a Table ) -> Self
@@ -387,51 +388,6 @@ pub( crate ) mod private
       let slices_len = slices_dim[ 0 ] * slices_dim[ 1 ] * slices_dim[ 2 ];
       let mut slices : Vec< &str > = vec![ "" ; slices_len ];
 
-//       let mut irow : isize = -1;
-//       if has_header
-//       {
-//
-//         // let icol : isize = -1;
-//         irow += 1;
-//         for ( icol, k ) in col_order.iter().enumerate()
-//         {
-//           let col : &( _, _, _ ) = &col_descriptors[ k ];
-//           let cell = &col.0;
-//           let size = &col.1;
-//
-//           if let Some( cell ) = cell
-//           {
-//
-//             string::lines( cell )
-//             .enumerate()
-//             // .for_each( | ( layer, s ) | slices[ 0 ] = s )
-//             ;
-//
-//           }
-//
-//         }
-//       }
-//
-//       let mut slices2 : Vec< &str > = vec![ "" ; slices_len ];
-//       let col : &( Option< Cow< '_, str > >, usize, usize ) = &col_descriptors[ &col_order[ 0 ] ];
-      // use std::borrow::Borrow;
-      // slices2[ 0 ] = col.0.as_ref().unwrap();
-
-//       pub trait MdOffset
-//       {
-//         fn nd_offset( &self ) -> isize;
-//       }
-//
-//       impl< T > MdOffset for [ T ; 3 ]
-//       {
-//         fn nd_offset( &self, nd_index : [ T ; 3 ] ) -> isize
-//         {
-//           let m1 = self[ 1 ];
-//           let m2 = m1 * self[ 2 ];
-//           m1 * nd_index[ 1 ] + m2 * nd_index[ 2 ]
-//         }
-//       }
-
       //
 
       Self
@@ -446,50 +402,6 @@ pub( crate ) mod private
         slices,
       }
 
-//       let mut x = Self
-//       {
-//         mcells,
-//         col_order,
-//         col_descriptors,
-//         row_descriptors,
-//         data,
-//         has_header,
-//         slices_dim,
-//         slices,
-//       };
-//
-//       let mut slices : Vec< &str > = vec![ "" ; slices_len ];
-//       let col : &( Option< Cow< '_, str > >, usize, usize ) = &x.col_descriptors[ &x.col_order[ 0 ] ];
-//       slices[ 0 ] = col.0.as_ref().unwrap();
-//
-//       let mut irow : isize = -1;
-//       if has_header
-//       {
-//
-//         // let icol : isize = -1;
-//         irow += 1;
-//         for ( icol, k ) in x.col_order.iter().enumerate()
-//         {
-//           let col : &( _, _, _ ) = &x.col_descriptors[ k ];
-//           let cell = &col.0;
-//           let size = &col.1;
-//
-//           if let Some( cell ) = cell
-//           {
-//
-//             string::lines( cell )
-//             .enumerate()
-//             .for_each( | ( layer, s ) | slices[ 0 ] = s )
-//             ;
-//
-//           }
-//
-//         }
-//       }
-//
-//       x.slices = slices;
-//
-//       x
     }
 
   }
@@ -540,3 +452,19 @@ pub mod prelude
 {
   use super::*;
 }
+
+
+//       pub trait MdOffset
+//       {
+//         fn nd_offset( &self ) -> isize;
+//       }
+//
+//       impl< T > MdOffset for [ T ; 3 ]
+//       {
+//         fn nd_offset( &self, nd_index : [ T ; 3 ] ) -> isize
+//         {
+//           let m1 = self[ 1 ];
+//           let m2 = m1 * self[ 2 ];
+//           m1 * nd_index[ 1 ] + m2 * nd_index[ 2 ]
+//         }
+//       }
