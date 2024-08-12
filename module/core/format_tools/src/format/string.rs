@@ -8,7 +8,7 @@
 pub( crate ) mod private
 {
 
-  use crate::*;
+  // use crate::*;
 
   /// Returns the size of the text in `src` as a `[ width, height ]` array.
   ///

@@ -11,24 +11,48 @@ pub( crate ) mod private
   {
     borrow::Cow,
     collections::HashMap,
-    collections::BTreeMap,
+    // collections::BTreeMap,
   };
   use core::
   {
     fmt,
-    borrow::Borrow,
+    // borrow::Borrow,
   };
   use former::Former;
 
   //=
 
-  /// Struct to hold options to print data as table.
+  /// A struct to configure options for printing data as a table.
+  ///
+  /// The `Styles` struct provides customizable delimiters for formatting table data. It allows
+  /// you to define how table data should be separated and formatted, making it adaptable to
+  /// various needs.
+  ///
+  /// # Fields
+  ///
+  /// - `cell_separator`: A `String` that specifies the delimiter used to separate columns
+  ///   within a table. This is the character or string that separates each column.
+  ///
+  /// - `row_prefix`: A `String` that specifies the prefix added to each row. This can be
+  ///   used to add a consistent start to each row.
+  ///
+  /// - `row_postfix`: A `String` that specifies the postfix added to each row. This can be
+  ///   used to add a consistent end to each row.
+  ///
+  /// - `row_postfix`: A `String` that specifies the postfix added to each row. This can be
+  ///   used to add a consistent end to each row.
+  ///
+  /// ```
   #[ derive( Debug, Former ) ]
   pub struct Styles
   {
     /// Delimiter for separating table columns.
     pub cell_separator : String,
+
+    /// Delimiter for adding prefix to a row.
     pub row_prefix : String,
+
+    /// Delimiter for adding postfix to a row.
     pub row_postfix : String,
   }
 
@@ -127,13 +151,13 @@ pub( crate ) mod private
 
       let FormatExtract
       {
-        mut mcells,
-        mut slices_dim,
-        mut col_order,
-        mut col_descriptors,
-        mut row_descriptors,
-        mut data,
-        mut slices,
+        mcells,
+        slices_dim : _slices_dim,
+        col_order,
+        col_descriptors,
+        row_descriptors,
+        data,
+        slices,
       } = FormatExtract::extract( self );
 
       let cell_separator = &f.styles.cell_separator;
@@ -159,7 +183,7 @@ pub( crate ) mod private
       for row in data
       {
         // xxx : rid of vector
-        let height = row.iter().fold( 1, | acc, ( k, e ) | acc.max( e.1[ 1 ] ) );
+        let height = row.iter().fold( 1, | acc, ( _k, e ) | acc.max( e.1[ 1 ] ) );
         // println!( "height : {height}" );
 
         let mut formatted_row : Vec< String > = Vec::with_capacity( col_order.len() );

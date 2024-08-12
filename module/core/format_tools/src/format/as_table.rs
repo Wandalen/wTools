@@ -12,7 +12,7 @@ pub( crate ) mod private
     ops::{ Deref },
     marker::PhantomData,
     fmt,
-    cmp::Ordering,
+    // cmp::Ordering,
   };
 
   /// Transparent wrapper for table-like structures.

@@ -36,20 +36,52 @@ pub( crate ) mod private
   }
 
   ///
-  /// A trait for iterating over all fields convertible into a specified type within an entity.
+  /// A trait for iterating over fields convertible to a specified type within an entity.
+  ///
+  /// This trait provides a mechanism for accessing fields in collections or entities, converting
+  /// them into a desired type for iteration.
   ///
   /// # Type Parameters
   ///
-  /// - `K`: The key type.
-  /// - `V`: The value type.
+  /// - `K`: The key type, typically representing the index or identifier of each field.
+  /// - `V`: The value type that fields are converted into during iteration.
   ///
+  /// # Associated Types
+  ///
+  /// - `Value<'v>`: The type of value yielded by the iterator, parameterized by a lifetime `'v`.
+  ///   This ensures the values' lifetimes are tied to the entity being iterated over.
+  ///
+  /// # Example
+  ///
+  /// ```rust
+  /// use reflect_tools::{ Fields, IteratorTrait };
+  ///
+  /// struct MyCollection< T >
+  /// {
+  ///   data : Vec< T >,
+  /// }
+  ///
+  /// impl< T > Fields< usize, & T > for MyCollection< T >
+  /// {
+  ///   type Value< 'v > = & 'v T where Self : 'v;
+  ///
+  ///   fn fields( & self ) -> impl IteratorTrait< Item = ( usize, Self::Value< '_ > ) >
+  ///   {
+  ///     self.data.iter().enumerate()
+  ///   }
+  /// }
+  /// ```
+  ///
+  /// This example shows `MyCollection` implementing `Fields`, allowing iteration over its elements
+  /// with both index and value.
   pub trait Fields< K, V >
   {
+    /// `Value<'v>`: The type of value yielded by the iterator, parameterized by a lifetime `'v`.
+    ///   This ensures the values' lifetimes are tied to the entity being iterated over.
     type Value< 'v > where Self : 'v;
 
-    /// Returns an iterator over all fields of the specified type within the entity.
-    fn fields( &self ) -> impl IteratorTrait< Item = ( K, Self::Value< '_ > ) >
-    ;
+    /// Returns an iterator over fields of the specified type within the entity.
+    fn fields( & self ) -> impl IteratorTrait< Item = ( K, Self::Value< '_ > ) >;
   }
 
   /// Trait returning name of type of variable.
