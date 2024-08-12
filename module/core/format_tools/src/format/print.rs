@@ -219,7 +219,6 @@ pub( crate ) mod private
       let mut row_descriptors : Vec< ( usize, ) > = Vec::with_capacity( mcells[ 1 ] );
 
       let mut col_order : Vec< CellKey > = Vec::new();
-      // let dim = [ 0, 0, 0 ];
 
       // process header first
 
@@ -307,6 +306,17 @@ pub( crate ) mod private
         .collect();
         data.push( fields );
       }
+
+      let mut mactual = [ 0, 0, 0 ];
+
+      mactual[ 1 ] = col_descriptors
+      .try_fold( 0, | acc, ( k, e ) | acc.checked_add( e.1[ 0 ] ) )
+      .expect( "Too large table: too wide" );
+
+      mactual[ 2 ] = row_descriptors
+      .try_fold( 0, | acc, e | acc.checked_add( e.1 ) )
+      .expect( "Too large table: too high" );
+      ;
 
       Self
       {
