@@ -2,7 +2,7 @@
 use super::*;
 
 #[ test ]
-fn test_empty_string()
+fn empty_string()
 {
   use the_module::string;
   let input = "";
@@ -12,7 +12,7 @@ fn test_empty_string()
 }
 
 #[ test ]
-fn test_single_line_no_newline()
+fn single_line_no_newline()
 {
   use the_module::string;
 
@@ -29,7 +29,7 @@ fn test_single_line_no_newline()
 }
 
 #[ test ]
-fn test_single_line_with_newline()
+fn single_line_with_newline()
 {
   use the_module::string;
   let input = "Hello, World!\n";
@@ -39,7 +39,7 @@ fn test_single_line_with_newline()
 }
 
 #[ test ]
-fn test_multiple_lines_varying_lengths()
+fn multiple_lines_varying_lengths()
 {
   use the_module::string;
   let input = "Hello\nWorld!\nThis is a test.";
@@ -49,7 +49,7 @@ fn test_multiple_lines_varying_lengths()
 }
 
 #[ test ]
-fn test_only_newlines()
+fn only_newlines()
 {
   use the_module::string;
   let input = "\n\n\n";
@@ -59,7 +59,7 @@ fn test_only_newlines()
 }
 
 #[ test ]
-fn test_very_long_lines()
+fn very_long_lines()
 {
   use the_module::string;
   let input = "a".repeat( 1000 );
@@ -69,11 +69,75 @@ fn test_very_long_lines()
 }
 
 #[ test ]
-fn test_special_characters_whitespace()
+fn special_characters_whitespace()
 {
   use the_module::string;
   let input = " \t\n \t\n";
   let exp = [ 2, 3 ];
   let got = string::size( input );
   assert_eq!( exp, got );
+}
+
+#[ test ]
+fn assumption_str_lines_skip_the_last_line()
+{
+
+  let src = "abc";
+  let got : Vec< &str > = src.lines().collect();
+  let exp = vec![ "abc" ];
+  assert_eq!( got, exp );
+
+  let src = "";
+  let got : Vec< &str > = src.lines().collect();
+  let exp : Vec< &str > = vec![];
+  // let exp = vec![ "" ]; // should be
+  assert_eq!( got, exp );
+
+  let src = "\n";
+  let got : Vec< &str > = src.lines().collect();
+  let exp = vec![ "" ];
+  // let exp = vec![ "", "" ]; // should be
+  assert_eq!( got, exp );
+
+  let src = "a\nb";
+  let got : Vec< &str > = src.lines().collect();
+  let exp = vec![ "a", "b" ];
+  assert_eq!( got, exp );
+
+  let src = "\na\nb\n";
+  let got : Vec< &str > = src.lines().collect();
+  let exp = vec![ "", "a", "b" ];
+  // let exp = vec![ "", "a", "b", "" ]; should be
+  assert_eq!( got, exp );
+
+}
+
+fn lines_basic()
+{
+  use the_module::string;
+
+  let src = "abc";
+  let got : Vec< & str > = string::lines( src ).collect();
+  let exp = vec![ "abc" ];
+  assert_eq!( got, exp );
+
+  let src = "";
+  let got : Vec< & str > = string::lines( src ).collect();
+  let exp = vec![ "" ];
+  assert_eq!( got, exp );
+
+  let src = "\n";
+  let got : Vec< & str > = string::lines( src ).collect();
+  let exp = vec![ "", "" ];
+  assert_eq!( got, exp );
+
+  let src = "a\nb";
+  let got : Vec< & str > = string::lines( src ).collect();
+  let exp = vec![ "a", "b" ];
+  assert_eq!( got, exp );
+
+  let src = "\na\nb\n";
+  let got : Vec< & str > = string::lines( src ).collect();
+  let exp = vec![ "", "a", "b", "" ];
+  assert_eq!( got, exp );
 }

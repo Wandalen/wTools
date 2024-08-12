@@ -60,24 +60,66 @@ pub( crate ) mod private
     [ width, height ]
   }
 
-//   pub fn size< S : AsRef< str > >( src : S ) -> [ usize; 2 ]
-//   {
-//     let text = src.as_ref();
-//     let mut height = 0;
-//     let mut width = 0;
-//
-//     for line in text.lines()
-//     {
-//       height += 1;
-//       let line_length = line.len();
-//       if line_length > width
-//       {
-//         width = line_length;
-//       }
-//     }
-//
-//     [ width, height ]
-//   }
+  pub fn lines( src : &str ) -> Lines< '_ >
+  {
+    Lines::new( src.as_ref() )
+  }
+
+  // pub fn lines2< 'a, 'b : 'a, S : AsRef< str > + 'b >( src : S ) -> Lines< 'a >
+  // {
+  //   Lines::new( src.as_ref() )
+  // }
+
+  pub struct Lines< 'a >
+  {
+    lines : std::str::Lines< 'a >,
+    has_trailing_newline : bool,
+    finished : bool,
+  }
+
+  impl< 'a > Lines< 'a >
+  {
+    fn new( input : &'a str ) -> Self
+    {
+      let has_trailing_newline = input.ends_with( '\n' );
+      Lines
+      {
+        lines : input.lines(),
+        has_trailing_newline,
+        finished : false,
+      }
+    }
+  }
+
+  impl< 'a > Iterator for Lines< 'a >
+  {
+    type Item = &'a str;
+
+    fn next( &mut self ) -> Option< Self::Item >
+    {
+      if self.finished
+      {
+        return None;
+      }
+
+      match self.lines.next()
+      {
+        Some( line ) => Some( line ),
+        None =>
+        {
+          if self.has_trailing_newline
+          {
+            self.finished = true;
+            Some( "" )
+          }
+          else
+          {
+            None
+          }
+        }
+      }
+    }
+  }
 
 }
 
@@ -96,6 +138,8 @@ pub mod own
   pub use private::
   {
     size,
+    lines,
+    Lines,
   };
 
 }
