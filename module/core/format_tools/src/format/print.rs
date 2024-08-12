@@ -446,6 +446,50 @@ pub( crate ) mod private
         slices,
       }
 
+//       let mut x = Self
+//       {
+//         mcells,
+//         col_order,
+//         col_descriptors,
+//         row_descriptors,
+//         data,
+//         has_header,
+//         slices_dim,
+//         slices,
+//       };
+//
+//       let mut slices : Vec< &str > = vec![ "" ; slices_len ];
+//       let col : &( Option< Cow< '_, str > >, usize, usize ) = &x.col_descriptors[ &x.col_order[ 0 ] ];
+//       slices[ 0 ] = col.0.as_ref().unwrap();
+//
+//       let mut irow : isize = -1;
+//       if has_header
+//       {
+//
+//         // let icol : isize = -1;
+//         irow += 1;
+//         for ( icol, k ) in x.col_order.iter().enumerate()
+//         {
+//           let col : &( _, _, _ ) = &x.col_descriptors[ k ];
+//           let cell = &col.0;
+//           let size = &col.1;
+//
+//           if let Some( cell ) = cell
+//           {
+//
+//             string::lines( cell )
+//             .enumerate()
+//             .for_each( | ( layer, s ) | slices[ 0 ] = s )
+//             ;
+//
+//           }
+//
+//         }
+//       }
+//
+//       x.slices = slices;
+//
+//       x
     }
 
   }
