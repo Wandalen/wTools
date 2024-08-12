@@ -221,6 +221,7 @@ pub( crate ) mod private
     pub row_descriptors : Vec< ( usize, ) >,
 
     /// Either slices or strings extracted for further processsing.
+    //                           key, string,           size,
     pub data : Vec< HashMap< CellKey, ( Cow< 'a, str >, [ usize ; 2 ] ) > >,
 
     /// Multidimensional size in number of subrows per row, number of columns per table and number of rows per table.
@@ -381,7 +382,6 @@ pub( crate ) mod private
 
       // Collect rows
       //                           key,       string,         size,
-
       let mut data : Vec< HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > > = Vec::new();
       assert!( table.rows().len() <= usize::MAX, "Table has too many rows" );
       for row in table.rows()
