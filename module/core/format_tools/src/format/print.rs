@@ -128,6 +128,7 @@ pub( crate ) mod private
       let FormatExtract
       {
         mut mcells,
+        mut slices_dim,
         mut col_order,
         mut col_descriptors,
         mut row_descriptors,
@@ -181,8 +182,12 @@ pub( crate ) mod private
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
   {
 
-    //
+    /// Multidimensional size in number of columns per table and number of rows per table.
     pub mcells : [ usize ; 2 ],
+
+    /// Multidimensional size in number of subrows per row, number of columns per table and number of rows per table.
+    /// Use it to retrive corresponding slice from multi-matrix of slices.
+    pub slices_dim : [ usize ; 3 ],
 
     /// Order of columns must be as stable as possible.
     pub col_order : Vec< CellKey >,
@@ -307,20 +312,20 @@ pub( crate ) mod private
         data.push( fields );
       }
 
-      let mut mactual = [ 0, 0, 0 ];
+      let mut slices_dim = [ 0, 0, 0 ];
 
-      mactual[ 1 ] = col_descriptors
-      .try_fold( 0, | acc, ( k, e ) | acc.checked_add( e.1[ 0 ] ) )
-      .expect( "Too large table: too wide" );
-
-      mactual[ 2 ] = row_descriptors
-      .try_fold( 0, | acc, e | acc.checked_add( e.1 ) )
-      .expect( "Too large table: too high" );
+      slices_dim[ 0 ] = row_descriptors
+      .iter()
+      .fold( 0, | acc : usize, e | acc.max( e.0 ) )
       ;
+
+      slices_dim[ 1 ] = mcells[ 0 ];
+      slices_dim[ 2 ] = mcells[ 1 ];
 
       Self
       {
         mcells,
+        slices_dim,
         col_order,
         col_descriptors,
         row_descriptors,
