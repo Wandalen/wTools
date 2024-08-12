@@ -5,8 +5,8 @@
 // #![ allow( non_upper_case_globals ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-#[ cfg( feature = "enabled" ) ]
-use macro_tools::prelude::*;
+// #[ cfg( feature = "enabled" ) ]
+// use macro_tools::prelude::*;
 
 #[ cfg( feature = "enabled" ) ]
 mod implementation
