@@ -133,6 +133,7 @@ pub( crate ) mod private
         mut col_descriptors,
         mut row_descriptors,
         mut data,
+        mut slices,
       } = FormatExtract::extract( self );
 
       let cell_separator = &f.styles.cell_separator;
@@ -185,21 +186,24 @@ pub( crate ) mod private
     /// Multidimensional size in number of columns per table and number of rows per table.
     pub mcells : [ usize ; 2 ],
 
-    /// Multidimensional size in number of subrows per row, number of columns per table and number of rows per table.
-    /// Use it to retrive corresponding slice from multi-matrix of slices.
-    pub slices_dim : [ usize ; 3 ],
-
     /// Order of columns must be as stable as possible.
     pub col_order : Vec< CellKey >,
 
     //                             key        string,                   width, index
     pub col_descriptors : HashMap< CellKey, ( Option< Cow< 'a, str > >, usize, usize ) >,
 
-    //                         height
+    //                          height
     pub row_descriptors : Vec< ( usize, ) >,
 
     /// Either slices or strings extracted for further processsing.
     pub data : Vec< HashMap< CellKey, ( Cow< 'a, str >, [ usize ; 2 ] ) > >,
+
+    /// Multidimensional size in number of subrows per row, number of columns per table and number of rows per table.
+    /// Use it to retrive corresponding slice from multi-matrix of slices.
+    pub slices_dim : [ usize ; 3 ],
+
+    /// Either slices or strings extracted for further processsing.
+    pub slices : Vec< &'a str >,
 
   }
 
@@ -224,6 +228,7 @@ pub( crate ) mod private
       let mut row_descriptors : Vec< ( usize, ) > = Vec::with_capacity( mcells[ 1 ] );
 
       let mut col_order : Vec< CellKey > = Vec::new();
+      let mut has_header = false;
 
       // process header first
 
@@ -231,6 +236,7 @@ pub( crate ) mod private
       if let Some( header ) = table.header()
       {
         assert!( header.len() <= usize::MAX, "Header of a table has too many cells" );
+        has_header = true;
         row_number = 0;
         row_descriptors.push( ( 1, ) );
 
@@ -262,7 +268,6 @@ pub( crate ) mod private
       //                           key,       string,         size,
 
       let mut data : Vec< HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > > = Vec::new();
-      // let slices = Vec< &'_ str > = Vec::with_capacity( mcells[ 0 ] * mcells[ 1 ] );
       assert!( table.rows().len() <= usize::MAX, "Table has too many rows" );
       for row in table.rows()
       {
@@ -312,24 +317,41 @@ pub( crate ) mod private
         data.push( fields );
       }
 
-      let mut slices_dim = [ 0, 0, 0 ];
+      // cook slices multi-matrix
 
+      let mut slices_dim = [ 1, mcells[ 0 ], mcells[ 1 ] + ( if has_header { 1 } else { 0 } ) ];
       slices_dim[ 0 ] = row_descriptors
       .iter()
       .fold( 0, | acc : usize, e | acc.max( e.0 ) )
       ;
 
-      slices_dim[ 1 ] = mcells[ 0 ];
-      slices_dim[ 2 ] = mcells[ 1 ];
+      let slices_len = slices_dim[ 0 ] * slices_dim[ 1 ] * slices_dim[ 2 ];
+      let slices : Vec< &str > = vec![ "" ; slices_len ];
+
+//       let mut sub_row_number : isize = -1;
+//       if has_header
+//       {
+//
+//         for col in col_descriptors
+//         {
+//
+//
+//           slices[  ]
+//
+//         }
+//       }
+
+      //
 
       Self
       {
         mcells,
-        slices_dim,
         col_order,
         col_descriptors,
         row_descriptors,
         data,
+        slices_dim,
+        slices,
       }
 
     }
