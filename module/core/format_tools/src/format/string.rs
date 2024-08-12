@@ -60,15 +60,10 @@ pub( crate ) mod private
     [ width, height ]
   }
 
-  pub fn lines( src : &str ) -> Lines< '_ >
+  pub fn lines< S : AsRef< str > + ?Sized >( src : &S ) -> Lines< '_ >
   {
     Lines::new( src.as_ref() )
   }
-
-  // pub fn lines2< 'a, 'b : 'a, S : AsRef< str > + 'b >( src : S ) -> Lines< 'a >
-  // {
-  //   Lines::new( src.as_ref() )
-  // }
 
   pub struct Lines< 'a >
   {
