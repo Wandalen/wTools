@@ -149,16 +149,7 @@ pub( crate ) mod private
     fn fmt( &'a self, f : &mut Context< '_ > ) -> fmt::Result
     {
 
-      let FormatExtract
-      {
-        mcells,
-        slices_dim : _slices_dim,
-        col_order,
-        col_descriptors,
-        row_descriptors,
-        data,
-        slices,
-      } = FormatExtract::extract( self );
+      let x = FormatExtract::extract( self );
 
       let cell_separator = &f.styles.cell_separator;
       let row_prefix = &f.styles.row_prefix;
@@ -168,10 +159,10 @@ pub( crate ) mod private
       if let Some( header ) = self.header()
       {
         // xxx : rid of vector
-        let mut formatted_row : Vec< String > = Vec::with_capacity( col_order.len() );
-        for k in &col_order
+        let mut formatted_row : Vec< String > = Vec::with_capacity( x.col_order.len() );
+        for k in &x.col_order
         {
-          let descriptor = &col_descriptors[ &k ];
+          let descriptor = &x.col_descriptors[ &k ];
           let width = descriptor.1;
           let cell = descriptor.0.as_ref().unwrap_or( &Cow::Borrowed( "" ) );
           formatted_row.push( format!( "{:^width$}", cell, width = width ) );
@@ -180,17 +171,17 @@ pub( crate ) mod private
       }
 
       // Write rows with proper alignment
-      for row in data
+      for row in x.data
       {
         // xxx : rid of vector
         let height = row.iter().fold( 1, | acc, ( _k, e ) | acc.max( e.1[ 1 ] ) );
         // println!( "height : {height}" );
 
-        let mut formatted_row : Vec< String > = Vec::with_capacity( col_order.len() );
-        for k in &col_order
+        let mut formatted_row : Vec< String > = Vec::with_capacity( x.col_order.len() );
+        for k in &x.col_order
         {
           let cell = &row[ &k ];
-          let descriptor = &col_descriptors[ &k ];
+          let descriptor = &x.col_descriptors[ &k ];
           let width = descriptor.1;
           println!( "width : {width:?}" );
           formatted_row.push( format!( "{:^width$}", cell.0.as_ref(), width = width ) );
@@ -205,7 +196,8 @@ pub( crate ) mod private
   pub struct FormatExtract< 'a, 'b, CellKey >
   where
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash + 'static, // xxx
-    'b : 'a,
+    'a : 'b,
+    // 'b : 'a,
   {
 
     /// Multidimensional size in number of columns per table and number of rows per table.
@@ -230,13 +222,54 @@ pub( crate ) mod private
     /// Either slices or strings extracted for further processsing.
     pub slices : Vec< &'b str >,
 
+    // Does table have the header.
+    pub has_header : bool,
+
   }
 
   impl< 'a, 'b, CellKey > FormatExtract< 'a, 'b, CellKey >
   where
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash + 'static,
+    // 'a : 'b,
     'b : 'a,
   {
+
+    pub fn extract_slices( &'a mut self )
+    {
+
+      let slices_len = self.slices_dim[ 0 ] * self.slices_dim[ 1 ] * self.slices_dim[ 2 ];
+
+      let mut slices : Vec< &str > = vec![ "" ; slices_len ];
+      let col : &( Option< Cow< '_, str > >, usize, usize ) = &self.col_descriptors[ &self.col_order[ 0 ] ];
+      slices[ 0 ] = col.0.as_ref().unwrap();
+
+      let mut irow : isize = -1;
+      if self.has_header
+      {
+
+        // let icol : isize = -1;
+        irow += 1;
+        for ( icol, k ) in self.col_order.iter().enumerate()
+        {
+          let col : &( _, _, _ ) = &self.col_descriptors[ k ];
+          let cell = &col.0;
+          let size = &col.1;
+
+          if let Some( cell ) = cell
+          {
+
+            string::lines( cell )
+            .enumerate()
+            .for_each( | ( layer, s ) | slices[ 0 ] = s )
+            ;
+
+          }
+
+        }
+      }
+
+      self.slices = slices;
+    }
 
     pub fn extract< Table, RowKey, Row, CellFormat >( table : &'a Table ) -> Self
     where
@@ -354,33 +387,33 @@ pub( crate ) mod private
       let slices_len = slices_dim[ 0 ] * slices_dim[ 1 ] * slices_dim[ 2 ];
       let mut slices : Vec< &str > = vec![ "" ; slices_len ];
 
-      let mut irow : isize = -1;
-      if has_header
-      {
-
-        // let icol : isize = -1;
-        irow += 1;
-        for ( icol, k ) in col_order.iter().enumerate()
-        {
-          let col : &( _, _, _ ) = &col_descriptors[ k ];
-          let cell = &col.0;
-          let size = &col.1;
-
-          if let Some( cell ) = cell
-          {
-
-            string::lines( cell )
-            .enumerate()
-            // .for_each( | ( layer, s ) | slices[ 0 ] = s )
-            ;
-
-          }
-
-        }
-      }
-
-      let mut slices2 : Vec< &str > = vec![ "" ; slices_len ];
-      let col : &( Option< Cow< '_, str > >, usize, usize ) = &col_descriptors[ &col_order[ 0 ] ];
+//       let mut irow : isize = -1;
+//       if has_header
+//       {
+//
+//         // let icol : isize = -1;
+//         irow += 1;
+//         for ( icol, k ) in col_order.iter().enumerate()
+//         {
+//           let col : &( _, _, _ ) = &col_descriptors[ k ];
+//           let cell = &col.0;
+//           let size = &col.1;
+//
+//           if let Some( cell ) = cell
+//           {
+//
+//             string::lines( cell )
+//             .enumerate()
+//             // .for_each( | ( layer, s ) | slices[ 0 ] = s )
+//             ;
+//
+//           }
+//
+//         }
+//       }
+//
+//       let mut slices2 : Vec< &str > = vec![ "" ; slices_len ];
+//       let col : &( Option< Cow< '_, str > >, usize, usize ) = &col_descriptors[ &col_order[ 0 ] ];
       // use std::borrow::Borrow;
       // slices2[ 0 ] = col.0.as_ref().unwrap();
 
@@ -408,6 +441,7 @@ pub( crate ) mod private
         col_descriptors,
         row_descriptors,
         data,
+        has_header,
         slices_dim,
         slices,
       }
