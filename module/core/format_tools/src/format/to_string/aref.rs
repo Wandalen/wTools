@@ -29,12 +29,12 @@ where
 impl< 'a, T, How > Ref< 'a, T, How >
 {
 
-  /// Just a constructor.
-  #[ inline( always ) ]
-  pub fn inner( self ) -> &'a T
-  {
-    self.0.0
-  }
+  // /// Retrive inner value.
+  // #[ inline( always ) ]
+  // pub fn inner( self ) -> &'a T
+  // {
+  //   self.0.0
+  // }
 
 }
 

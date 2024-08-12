@@ -121,6 +121,7 @@ pub( crate ) mod private
   /// newlines, ensuring that an additional empty line is returned if the input string
   /// ends with a newline character.
   /// ```
+  #[ derive( Debug ) ]
   pub struct Lines< 'a >
   {
     lines : std::str::Lines< 'a >,
