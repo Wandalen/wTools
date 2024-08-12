@@ -1,35 +1,45 @@
+//! Multidimensional math utilities.
 //!
-//! Nice print.
-//!
+//! Provides functionality for converting multidimensional indices into flat offsets,
+//! useful for operations involving multidimensional arrays or grids.
 
 /// Internal namespace.
 pub( crate ) mod private
 {
-
   use core::
   {
     ops::{ Add, Mul },
     cmp::PartialOrd,
   };
 
+  /// Trait for converting a multidimensional index into a flat offset.
+  ///
+  /// This trait is implemented for 3-dimensional arrays, allowing conversion of a
+  /// 3D index into a single linear offset. It is useful for mapping coordinates in
+  /// a 3D space to a flat array.
   pub trait MdOffset< T >
   {
-    fn md_offset( &self, md_index : [ T ; 3 ] ) -> T;
+    /// Converts a 3D index into a flat offset.
+    ///
+    /// # Arguments
+    ///
+    /// - `md_index`: A 3-element array representing the multidimensional index.
+    ///
+    /// # Returns
+    ///
+    /// A value of type `T` representing the flat offset.
+    fn md_offset( & self, md_index : [ T ; 3 ] ) -> T;
   }
 
   impl< T > MdOffset< T > for [ T ; 3 ]
   where
-    T : Mul< T, Output = T >,
-    T : Add< T, Output = T >,
-    T : PartialOrd,
-    T : Copy,
+    T : Mul< T, Output = T > + Add< T, Output = T > + PartialOrd + Copy,
   {
-    fn md_offset( &self, md_index : [ T ; 3 ] ) -> T
+    fn md_offset( & self, md_index : [ T ; 3 ] ) -> T
     {
       debug_assert!( md_index[ 0 ] < self[ 0 ] );
       debug_assert!( md_index[ 1 ] < self[ 1 ] );
       debug_assert!( md_index[ 2 ] < self[ 2 ] );
-
       let m1 = self[ 0 ];
       let m2 = m1 * self[ 1 ];
       md_index[ 0 ] + m1 * md_index[ 1 ] + m2 * md_index[ 2 ]

@@ -234,9 +234,7 @@ pub( crate ) mod private
 
     pub fn extract_slices( &'a mut self )
     {
-
-      // let slices_len = self.slices_dim[ 0 ] * self.slices_dim[ 1 ] * self.slices_dim[ 2 ];
-      // let mut slices : Vec< &str > = vec![ "" ; slices_len ];
+      use md_math::MdOffset;
 
       let mut slices : Vec< &str > = vec![];
       std::mem::swap( &mut self.slices, &mut slices );
@@ -261,7 +259,7 @@ pub( crate ) mod private
 
             string::lines( cell )
             .enumerate()
-            .for_each( | ( layer, s ) | slices[ 0 ] = s )
+            .for_each( | ( layer, s ) | slices[ [ layer, icol, irow as usize ].md_offset( self.slices_dim ) ] = s )
             ;
 
           }
@@ -310,15 +308,15 @@ pub( crate ) mod private
           .entry( key.clone() )
           .and_modify( | col |
           {
-            col.1 = col.1.max( sz[ 0 ] );
+            col.1 = col.1.max( sz[ 1 ] );
           })
           .or_insert_with( ||
           {
             col_order.push( key.clone() );
-            ( Some( title_str ), sz[ 0 ], l + 1 )
+            ( Some( title_str ), sz[ 1 ], l + 1 )
           });
 
-          row_descriptors[ row_number as usize ] = ( row_descriptors[ row_number as usize ].0.max( sz[ 1 ] ), );
+          row_descriptors[ row_number as usize ] = ( row_descriptors[ row_number as usize ].0.max( sz[ 0 ] ), );
           debug_assert!( row_descriptors.len() == ( row_number as usize ) + 1 );
 
         }
@@ -356,18 +354,18 @@ pub( crate ) mod private
 
             let sz = string::size( &r.1 );
             let l = col_descriptors.len();
-            row_descriptors[ row_number as usize ] = ( row_descriptors[ row_number as usize ].0.max( sz[ 1 ] ), );
+            row_descriptors[ row_number as usize ] = ( row_descriptors[ row_number as usize ].0.max( sz[ 0 ] ), );
 
             col_descriptors
             .entry( r.0.clone() )
             .and_modify( | col |
             {
-              col.1 = col.1.max( sz[ 0 ] );
+              col.1 = col.1.max( sz[ 1 ] );
             })
             .or_insert_with( ||
             {
               col_order.push( r.0.clone() );
-              ( None, sz[ 0 ], l + 1 )
+              ( None, sz[ 1 ], l + 1 )
             });
 
             return ( r.0, ( r.1, sz ) );
@@ -452,19 +450,3 @@ pub mod prelude
 {
   use super::*;
 }
-
-
-//       pub trait MdOffset
-//       {
-//         fn nd_offset( &self ) -> isize;
-//       }
-//
-//       impl< T > MdOffset for [ T ; 3 ]
-//       {
-//         fn nd_offset( &self, nd_index : [ T ; 3 ] ) -> isize
-//         {
-//           let m1 = self[ 1 ];
-//           let m2 = m1 * self[ 2 ];
-//           m1 * nd_index[ 1 ] + m2 * nd_index[ 2 ]
-//         }
-//       }
