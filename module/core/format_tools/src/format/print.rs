@@ -147,7 +147,17 @@ pub( crate ) mod private
     fn fmt( &'a self, f : &mut Context< '_ > ) -> fmt::Result
     {
 
-      let x = FormatExtract::extract( self );
+      let mut x = FormatExtract::extract( self );
+      // x.extract_slices();
+
+//       let FormatExtract
+//       {
+//         mcells,
+//         col_order,
+//         col_descriptors,
+//         data,
+//         ..
+//       } = x;
 
       let cell_separator = &f.styles.cell_separator;
       let row_prefix = &f.styles.row_prefix;
@@ -228,8 +238,8 @@ pub( crate ) mod private
   impl< 'a, 'b, CellKey > FormatExtract< 'a, 'b, CellKey >
   where
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash + 'static,
-    // 'a : 'b,
-    'b : 'a,
+    'a : 'b,
+    // 'b : 'a,
   {
 
     pub fn extract_slices( &'a mut self )
@@ -246,13 +256,12 @@ pub( crate ) mod private
       if self.has_header
       {
 
-        // let icol : isize = -1;
         irow += 1;
         for ( icol, k ) in self.col_order.iter().enumerate()
         {
           let col : &( _, _, _ ) = &self.col_descriptors[ k ];
           let cell = &col.0;
-          let size = &col.1;
+          // let size = &col.1;
 
           if let Some( cell ) = cell
           {
@@ -265,7 +274,55 @@ pub( crate ) mod private
           }
 
         }
+
       }
+
+      for row_data in self.data.iter()
+      {
+
+        irow += 1;
+        let row = &self.row_descriptors[ irow as usize ];
+
+        for ( icol, k ) in self.col_order.iter().enumerate()
+        {
+          let cell = &row_data[ &k ];
+          // let col : &( _, _, _ ) = &self.col_descriptors[ k ];
+          // let size = &col.1;
+
+          string::lines( cell.0.as_ref() )
+          .enumerate()
+          .for_each( | ( layer, s ) | slices[ [ layer, icol, irow as usize ].md_offset( self.slices_dim ) ] = s )
+          ;
+
+        }
+
+        // for k in &x.col_order
+        // {
+        //   let cell = &row[ &k ];
+        //   let descriptor = &x.col_descriptors[ &k ];
+        //   let width = descriptor.1;
+        //   println!( "width : {width:?}" );
+        //   formatted_row.push( format!( "{:^width$}", cell.0.as_ref(), width = width ) );
+        // }
+
+        // let
+        // xxx : rid of vector
+        // let height = row.iter().fold( 1, | acc, ( _k, e ) | acc.max( e.1[ 1 ] ) );
+        // println!( "height : {height}" );
+
+        // let mut formatted_row : Vec< String > = Vec::with_capacity( x.col_order.len() );
+        // for k in &x.col_order
+        // {
+        //   let cell = &row[ &k ];
+        //   let descriptor = &x.col_descriptors[ &k ];
+        //   let width = descriptor.1;
+        //   println!( "width : {width:?}" );
+        //   formatted_row.push( format!( "{:^width$}", cell.0.as_ref(), width = width ) );
+        // }
+        // writeln!( f.buf, "{}{}{}", row_prefix, formatted_row.join( cell_separator ), row_postfix )?;
+
+      }
+
 
       std::mem::swap( &mut self.slices, &mut slices );
     }
