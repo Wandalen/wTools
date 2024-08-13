@@ -116,8 +116,8 @@ fn table_to_string()
   drop( cells );
 
   let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, WithRef > = AsTable::new( &test_objects );
-  let size = TableSize::mcells( &as_table );
-  assert_eq!( size, [ 2, 4 ] );
+  let mcells = TableSize::mcells( &as_table );
+  assert_eq!( mcells, [ 4, 2 ] );
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
   dbg!( rows.collect::< Vec< _ > >() );
@@ -130,7 +130,7 @@ fn table_to_string()
     ( "id", Cow::Owned( "id".to_string() ) ),
     ( "created_at", Cow::Owned( "created_at".to_string() ) ),
     ( "file_ids", Cow::Owned( "file_ids".to_string() ) ),
-    ( "tools", Cow::Owned( "tools".to_string() ) )
+    ( "tools", Cow::Owned( "tools".to_string() ) ),
   ]);
   dbg!( header.collect::< Vec< _ > >() );
 
@@ -144,6 +144,7 @@ fn table_to_string()
 
   let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, WithRef > = AsTable::new( &test_objects );
   let table_string = as_table.table_to_string();
+  println!( "\ntable_string\n{table_string}" );
   assert!( table_string.contains( "id" ) );
   assert!( table_string.contains( "created_at" ) );
   assert!( table_string.contains( "file_ids" ) );
@@ -158,7 +159,7 @@ fn table_to_string()
   assert!( table_string.contains( "created_at" ) );
   assert!( table_string.contains( "file_ids" ) );
   assert!( table_string.contains( "tools" ) );
-  println!( "{table_string}" );
+  println!( "\ntable_string\n{table_string}" );
 
 }
 

@@ -124,9 +124,6 @@ pub( crate ) mod private
   where
     Self : TableRows< RowKey, Row, CellKey, CellFormat >,
     Row : Clone + Cells< CellKey, CellFormat >,
-    // Title : fmt::Display,
-    // Cell : fmt::Display,
-    // Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellFormat : Copy + 'static,
   {
@@ -139,8 +136,7 @@ pub( crate ) mod private
       {
         let cit = row2.cells().clone();
         let mcells = cit.len();
-        [ nrows, mcells ]
-        // [ 0, 0 ]
+        [ mcells, nrows ]
       }
       else
       {

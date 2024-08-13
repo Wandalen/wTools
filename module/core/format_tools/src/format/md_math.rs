@@ -8,6 +8,7 @@ pub( crate ) mod private
 {
   use core::
   {
+    fmt,
     ops::{ Add, Mul },
     cmp::PartialOrd,
   };
@@ -33,13 +34,13 @@ pub( crate ) mod private
 
   impl< T > MdOffset< T > for [ T ; 3 ]
   where
-    T : Mul< T, Output = T > + Add< T, Output = T > + PartialOrd + Copy,
+    T : Mul< T, Output = T > + Add< T, Output = T > + PartialOrd + Copy + fmt::Debug,
   {
     fn md_offset( & self, md_index : [ T ; 3 ] ) -> T
     {
-      debug_assert!( md_index[ 0 ] < self[ 0 ] );
-      debug_assert!( md_index[ 1 ] < self[ 1 ] );
-      debug_assert!( md_index[ 2 ] < self[ 2 ] );
+      debug_assert!( md_index[ 0 ] < self[ 0 ], "md_index : {md_index:?} | md_size : {self:?}" );
+      debug_assert!( md_index[ 1 ] < self[ 1 ], "md_index : {md_index:?} | md_size : {self:?}" );
+      debug_assert!( md_index[ 2 ] < self[ 2 ], "md_index : {md_index:?} | md_size : {self:?}" );
       let m1 = self[ 0 ];
       let m2 = m1 * self[ 1 ];
       md_index[ 0 ] + m1 * md_index[ 1 ] + m2 * md_index[ 2 ]
