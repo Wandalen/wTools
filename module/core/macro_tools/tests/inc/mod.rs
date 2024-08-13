@@ -4,7 +4,7 @@ use super::*;
 #[ allow( unused_imports ) ]
 use test_tools::exposed::*;
 #[ allow( unused_imports ) ]
-#[ cfg( any( feature = "default", feature = "full", feature = "enabled" ) ) ]
+#[ cfg( any( feature = "default", feature = "enabled" ) ) ]
 use the_module::protected::*;
 
 #[ allow( unused_imports ) ]
@@ -32,6 +32,6 @@ mod if_enabled
   mod struct_like_test;
   mod syntax_test;
   mod tokens_test;
-  mod typ_Test;
+  mod typ_test;
 
 }
