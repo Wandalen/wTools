@@ -179,7 +179,7 @@ pub( crate ) mod private
       }
 
       // Write rows with proper alignment
-      for row in x.data
+      for row in &x.data
       {
         // xxx : rid of vector
         let height = row.iter().fold( 1, | acc, ( _k, e ) | acc.max( e.1[ 1 ] ) );
@@ -243,7 +243,7 @@ pub( crate ) mod private
     // 'b : 'a,
   {
 
-    pub fn extract_slices( &'a mut self )
+    pub fn extract_slices< 'c : 'b >( &'c mut self )
     {
       use md_math::MdOffset;
 
@@ -262,7 +262,6 @@ pub( crate ) mod private
         {
           let col : &( _, _, _ ) = &self.col_descriptors[ k ];
           let cell = &col.0;
-          // let size = &col.1;
 
           if let Some( cell ) = cell
           {
@@ -287,43 +286,13 @@ pub( crate ) mod private
         for ( icol, k ) in self.col_order.iter().enumerate()
         {
           let cell = &row_data[ &k ];
-          // let col : &( _, _, _ ) = &self.col_descriptors[ k ];
-          // let size = &col.1;
-
           string::lines( cell.0.as_ref() )
           .enumerate()
           .for_each( | ( layer, s ) | slices[ [ layer, icol, irow as usize ].md_offset( self.slices_dim ) ] = s )
           ;
-
         }
 
-        // for k in &x.col_order
-        // {
-        //   let cell = &row[ &k ];
-        //   let descriptor = &x.col_descriptors[ &k ];
-        //   let width = descriptor.1;
-        //   println!( "width : {width:?}" );
-        //   formatted_row.push( format!( "{:^width$}", cell.0.as_ref(), width = width ) );
-        // }
-
-        // let
-        // xxx : rid of vector
-        // let height = row.iter().fold( 1, | acc, ( _k, e ) | acc.max( e.1[ 1 ] ) );
-        // println!( "height : {height}" );
-
-        // let mut formatted_row : Vec< String > = Vec::with_capacity( x.col_order.len() );
-        // for k in &x.col_order
-        // {
-        //   let cell = &row[ &k ];
-        //   let descriptor = &x.col_descriptors[ &k ];
-        //   let width = descriptor.1;
-        //   println!( "width : {width:?}" );
-        //   formatted_row.push( format!( "{:^width$}", cell.0.as_ref(), width = width ) );
-        // }
-        // writeln!( f.buf, "{}{}{}", row_prefix, formatted_row.join( cell_separator ), row_postfix )?;
-
       }
-
 
       std::mem::swap( &mut self.slices, &mut slices );
     }
@@ -445,7 +414,7 @@ pub( crate ) mod private
 
       //
 
-      Self
+      let mut r = Self
       {
         mcells,
         col_order,
@@ -455,8 +424,42 @@ pub( crate ) mod private
         has_header,
         slices_dim,
         slices,
-      }
+      };
 
+      r
+
+//       use md_math::MdOffset;
+//       let mut slices : Vec< &str > = vec![];
+//       std::mem::swap( &mut r.slices, &mut slices );
+//
+//       let col : &( Option< Cow< '_, str > >, usize, usize ) = &r.col_descriptors[ &r.col_order[ 0 ] ];
+//       slices[ 0 ] = col.0.as_ref().unwrap();
+//
+//       let mut irow : isize = -1;
+//       if r.has_header
+//       {
+//
+//         irow += 1;
+//         for ( icol, k ) in r.col_order.iter().enumerate()
+//         {
+//           let col : &( _, _, _ ) = &r.col_descriptors[ k ];
+//           let cell = &col.0;
+//
+//           if let Some( cell ) = cell
+//           {
+//
+//             string::lines( cell )
+//             .enumerate()
+//             .for_each( | ( layer, s ) | slices[ [ layer, icol, irow as usize ].md_offset( r.slices_dim ) ] = s )
+//             ;
+//
+//           }
+//
+//         }
+//
+//       }
+//
+//       r
     }
 
   }
