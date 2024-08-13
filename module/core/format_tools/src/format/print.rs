@@ -217,7 +217,7 @@ pub( crate ) mod private
     //                             key        string,                   width, index
     pub col_descriptors : HashMap< CellKey, ( Option< Cow< 'a, str > >, usize, usize ) >,
 
-    //                          height
+    //                           height
     pub row_descriptors : Vec< ( usize, ) >,
 
     /// Either slices or strings extracted for further processsing.
