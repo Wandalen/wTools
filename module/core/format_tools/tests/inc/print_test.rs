@@ -173,19 +173,18 @@ fn custom_formatter()
   let mut formatter = the_module::Styles::default();
   formatter.cell_separator = " | ".into();
   formatter.row_prefix = "> ".into();
-  formatter.row_postfix = " <".into();
+  formatter.row_postfix = " <\n".into();
 
   let as_table = AsTable::new( &test_objects );
   let mut context = Context::new( &mut output, formatter );
   let got = the_module::TableFormatter::fmt( &as_table, &mut context );
   assert!( got.is_ok() );
-  // let table_string = got.unwrap();
 
+  println!( "\noutput\n{output}" );
   assert!( output.contains( "id" ) );
   assert!( output.contains( "created_at" ) );
   assert!( output.contains( "file_ids" ) );
   assert!( output.contains( "tools" ) );
-  println!( "{output}" );
 
 }
 

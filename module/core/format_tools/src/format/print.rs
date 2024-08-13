@@ -60,7 +60,7 @@ pub( crate ) mod private
     {
       let cell_separator = " ".to_string();
       let row_prefix = "".to_string();
-      let row_postfix = "".to_string();
+      let row_postfix = "\n".to_string();
       Styles { cell_separator, row_prefix, row_postfix }
     }
   }
@@ -192,6 +192,7 @@ pub( crate ) mod private
               write!( f.buf, "{}", cell_separator )?;
             }
 
+            // println!( "width = {width}" );
             write!( f.buf, "{:^width$}", cell, width = width )?;
 
           }
@@ -387,15 +388,15 @@ pub( crate ) mod private
           .entry( key.clone() )
           .and_modify( | col |
           {
-            col.1 = col.1.max( sz[ 1 ] );
+            col.1 = col.1.max( sz[ 0 ] );
           })
           .or_insert_with( ||
           {
             col_order.push( key.clone() );
-            ( Some( title_str ), sz[ 1 ], l )
+            ( Some( title_str ), sz[ 0 ], l )
           });
 
-          row_descriptors[ row_number as usize ] = ( row_descriptors[ row_number as usize ].0.max( sz[ 0 ] ), );
+          row_descriptors[ row_number as usize ] = ( row_descriptors[ row_number as usize ].0.max( sz[ 1 ] ), );
           debug_assert!( row_descriptors.len() == ( row_number as usize ) + 1 );
 
         }
@@ -432,18 +433,18 @@ pub( crate ) mod private
 
             let sz = string::size( &r.1 );
             let l = col_descriptors.len();
-            row_descriptors[ row_number as usize ] = ( row_descriptors[ row_number as usize ].0.max( sz[ 0 ] ), );
+            row_descriptors[ row_number as usize ] = ( row_descriptors[ row_number as usize ].0.max( sz[ 1 ] ), );
 
             col_descriptors
             .entry( r.0.clone() )
             .and_modify( | col |
             {
-              col.1 = col.1.max( sz[ 1 ] );
+              col.1 = col.1.max( sz[ 0 ] );
             })
             .or_insert_with( ||
             {
               col_order.push( r.0.clone() );
-              ( None, sz[ 1 ], l + 1 )
+              ( None, sz[ 0 ], l + 1 )
             });
 
             return ( r.0, ( r.1, sz ) );
@@ -464,6 +465,7 @@ pub( crate ) mod private
       let slices_len = slices_dim[ 0 ] * slices_dim[ 1 ] * slices_dim[ 2 ];
       let mut slices : Vec< &str > = vec![ "" ; slices_len ];
 
+      println!( "row_descriptors : {row_descriptors:?}" );
       println!( "slices_dim : {slices_dim:?}" );
       println!( "slices_len : {slices_len:?}" );
 
