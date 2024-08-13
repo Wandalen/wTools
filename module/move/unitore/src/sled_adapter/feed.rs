@@ -2,7 +2,7 @@
 
 use crate::*;
 use std::time::Duration;
-use error_tools::{ Result, untyped::Context };
+use error_tools::{ untyped::Result, untyped::Context };
 use gluesql::
 {
   core::
@@ -25,7 +25,7 @@ use action::
   frame::{ UpdateReport, SelectedEntries, FramesReport },
 };
 use sled_adapter::FeedStorage;
-use wca::wtools::Itertools;
+use wca::iter_tools::Itertools;
 
 #[ async_trait::async_trait( ?Send ) ]
 impl FeedStore for FeedStorage< SledStorage >

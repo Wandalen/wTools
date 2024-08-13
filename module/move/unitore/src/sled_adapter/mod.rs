@@ -2,7 +2,7 @@
 
 use crate::*;
 use std::sync::Arc;
-use error_tools::{ untyped::Context, Result };
+use error_tools::{ untyped::Context, untyped::Result };
 use tokio::sync::Mutex;
 use gluesql::
 {

@@ -8,7 +8,7 @@ use unitore::
   sled_adapter::FeedStorage,
   entity::table::TableStore,
 };
-use error_tools::Result;
+use error_tools::untyped::Result;
 
 #[ tokio::test ]
 async fn table_list() -> Result< () >

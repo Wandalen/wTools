@@ -14,7 +14,7 @@ use gluesql::
   sled_storage::sled,
 };
 use wca::{ VerifiedCommand, CommandsAggregator, Type, Parser, Dictionary, Verifier, Executor };
-use error_tools::Result;
+use error_tools::untyped::Result;
 use mockall::predicate;
 use std::path::PathBuf;
 

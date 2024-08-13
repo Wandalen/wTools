@@ -1,6 +1,6 @@
 //! Functionality for storing and retrieving config files.
 
-use error_tools::Result;
+use error_tools::untyped::Result;
 use gluesql::core::executor::Payload;
 
 /// Config file path.

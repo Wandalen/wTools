@@ -56,7 +56,7 @@ mod component
 ///
 /// Below is a typical usage example where the macro is applied to a struct:
 ///
-/// ```rust
+/// ```rust, ignore
 ///
 /// # #[ cfg( all( feature = "derive_former", feature = "enabled" ) ) ]
 /// # fn main()
@@ -139,7 +139,9 @@ pub fn former( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 /// ```rust
 /// # fn main()
 /// # {
-/// #[ derive( former::ComponentFrom ) ]
+/// use former_meta::ComponentFrom;
+///
+/// #[ derive( ComponentFrom ) ]
 /// struct Person
 /// {
 ///   pub age : i32,
@@ -191,9 +193,10 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 /// Given a struct definition annotated with `#[ derive( Assign ) ]` :
 ///
 /// ```rust
-/// use former::Assign;
+/// use former_types::Assign;
+/// use former_meta::Assign;
 ///
-/// #[ derive( Default, PartialEq, Debug, former::Assign ) ]
+/// #[ derive( Default, PartialEq, Debug, Assign ) ]
 /// struct Person
 /// {
 ///   age : i32,
@@ -211,7 +214,8 @@ pub fn component_from( input : proc_macro::TokenStream ) -> proc_macro::TokenStr
 /// The procedural macro generates the following implementations for `Person` :
 ///
 /// ```rust
-/// use former::Assign;
+/// use former_types::Assign;
+/// use former_meta::Assign;
 ///
 /// #[ derive( Default, PartialEq, Debug ) ]
 /// struct Person
@@ -283,7 +287,7 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 ///
 /// An example when we encapsulate parameters passed to a function in a struct.
 ///
-/// ```rust
+/// ```rust, ignore
 /// use former::{ Assign, ComponentsAssign };
 ///
 /// #[ derive( Default, Assign, ComponentsAssign ) ]
@@ -342,7 +346,7 @@ pub fn component_assign( input : proc_macro::TokenStream ) -> proc_macro::TokenS
 ///
 /// Which expands approximately into :
 ///
-/// ```rust
+/// ```rust, ignore
 /// use former::{ Assign, ComponentsAssign };
 ///
 /// #[derive(Default)]
@@ -537,7 +541,7 @@ pub fn components_assign( input : proc_macro::TokenStream ) -> proc_macro::Token
 /// Given the structs `Options1` and `Options2`, where `Options2` is a subset of `Options1`:
 ///
 /// ```rust
-/// use former::FromComponents;
+/// use former_meta::FromComponents;
 ///
 /// #[ derive( Debug, Default, PartialEq ) ]
 /// pub struct Options1

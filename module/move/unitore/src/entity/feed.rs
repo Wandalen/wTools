@@ -2,7 +2,7 @@
 
 use crate::*;
 use std::time::Duration;
-use error_tools::Result;
+use error_tools::untyped::Result;
 use gluesql::core::
 {
   ast_builder::{ null, text, timestamp, ExprNode },

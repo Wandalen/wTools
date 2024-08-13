@@ -10,7 +10,7 @@ use entity::
 };
 use gluesql::prelude::{ Payload, Value, SledStorage };
 use feed_config;
-use error_tools::{ err, Result };
+use error_tools::{ err, untyped::Result };
 use action::Report;
 
 // qqq : review the whole project and make sure all names are consitant: actions, commands, its tests

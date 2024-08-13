@@ -3,7 +3,7 @@
 use std::path::PathBuf;
 
 use crate::*;
-use error_tools::{ untyped::Context, Result };
+use error_tools::{ untyped::Context, untyped::Result };
 use sled_adapter::FeedStorage;
 use entity::
 {

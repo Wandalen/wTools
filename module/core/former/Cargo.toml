@@ -44,15 +44,7 @@ default = [
   "types_component_assign",
 ]
 full = [
-  "enabled",
-  "derive_former",
-  "derive_components",
-  "derive_component_from",
-  "derive_component_assign",
-  "derive_components_assign",
-  "derive_from_components",
-  "types_former",
-  "types_component_assign",
+  "default",
 ]
 enabled = [ "former_meta/enabled", "former_types/enabled" ]
 

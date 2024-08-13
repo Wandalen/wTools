@@ -2,7 +2,6 @@
 pub( crate ) mod private
 {
   use crate::*;
-  use derive_tools::IsVariant;
   use macro_tools::exposed::*;
 
   ///
@@ -18,7 +17,7 @@ pub( crate ) mod private
   /// Kind of element.
   ///
 
-  #[ derive( IsVariant, Debug, PartialEq, Eq, Clone, Copy ) ]
+  #[ derive( Debug, PartialEq, Eq, Clone, Copy ) ]
   pub enum ElementType
   {
     MicroModule( syn::token::Mod ),

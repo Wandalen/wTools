@@ -47,6 +47,6 @@ pub mod dependency
 
   use super::math;
   own use ::wmath as math;
-  protected( crate ) use ::wtools::prelude::*;
+  own use ::wtools::prelude::*;
 
 }

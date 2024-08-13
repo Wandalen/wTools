@@ -2,6 +2,9 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-mod basic_manual;
-mod basic;
-mod parametrized;
+#[ cfg( feature = "clone_dyn_meta" ) ]
+pub mod basic_manual;
+#[ cfg( feature = "clone_dyn_meta" ) ]
+ pub mod basic;
+#[ cfg( feature = "clone_dyn_meta" ) ]
+pub mod parametrized;

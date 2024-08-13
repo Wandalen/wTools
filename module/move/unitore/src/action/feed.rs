@@ -4,7 +4,7 @@ use crate::*;
 use action::{ Report, frame::SelectedEntries };
 use sled_adapter::FeedStorage;
 use entity::feed::FeedStore;
-use error_tools::Result;
+use error_tools::untyped::Result;
 
 /// List all feeds from storage.
 pub async fn feeds_list( mut storage : FeedStorage< gluesql::sled_storage::SledStorage > ) -> Result< impl Report >

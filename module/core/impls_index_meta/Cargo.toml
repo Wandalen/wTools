@@ -34,6 +34,6 @@ enabled = [ "macro_tools/enabled" ]
 proc-macro = true
 
 [dependencies]
-macro_tools = { workspace = true }
+macro_tools = { workspace = true, features = [ "name", "quantifier" ] }
 
 [dev-dependencies]

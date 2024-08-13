@@ -8,14 +8,14 @@ use gluesql::
   },
   sled_storage::sled::Config,
 };
-use wca::wtools::Itertools;
+use wca::iter_tools::Itertools;
 use unitore::
 {
   feed_config::SubscriptionConfig,
   sled_adapter::FeedStorage,
   entity::{ frame::FrameStore, feed::FeedStore },
 };
-use error_tools::Result;
+use error_tools::untyped::Result;
 
 #[ tokio::test ]
 async fn test_save() -> Result< () >

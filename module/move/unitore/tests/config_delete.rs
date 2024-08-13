@@ -9,7 +9,7 @@ use unitore::
   entity::config::ConfigStore,
   action::config,
 };
-use error_tools::Result;
+use error_tools::untyped::Result;
 
 #[ tokio::test ]
 async fn config_delete() -> Result< () >

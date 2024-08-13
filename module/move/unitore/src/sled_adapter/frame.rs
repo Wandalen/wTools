@@ -2,7 +2,7 @@
 
 use crate::*;
 use std::collections::HashMap;
-use error_tools::{ Result, untyped::Context };
+use error_tools::{ untyped::Result, untyped::Context };
 use gluesql::
 {
   core::
@@ -16,7 +16,7 @@ use gluesql::
 use entity::frame::{ FrameStore, Frame };
 use action::frame::{ SelectedEntries, FramesReport, ListReport };
 use sled_adapter::FeedStorage;
-use wca::wtools::Itertools;
+use wca::iter_tools::Itertools;
 
 #[ async_trait::async_trait( ?Send ) ]
 impl FrameStore for FeedStorage< SledStorage >

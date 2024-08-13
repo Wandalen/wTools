@@ -6,7 +6,7 @@ use unitore::
   entity::feed::FeedStore,
   action::config,
 };
-use error_tools::Result;
+use error_tools::untyped::Result;
 
 #[ tokio::test ]
 async fn config_add() -> Result< () >

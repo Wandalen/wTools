@@ -2,7 +2,7 @@
 
 use crate::*;
 use wca::{ Dictionary, Executor, Parser, Verifier };
-use error_tools::Result;
+use error_tools::untyped::Result;
 
 /// Run feed updates.
 pub fn execute() -> Result< (), Box< dyn std::error::Error + Send + Sync > >

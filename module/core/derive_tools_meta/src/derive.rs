@@ -28,5 +28,7 @@ pub mod inner_from;
 pub mod new;
 #[ cfg( feature = "derive_variadic_from" ) ]
 pub mod variadic_from;
+#[ cfg( feature = "derive_not" ) ]
+pub mod not;
 #[ cfg( feature = "derive_phantom" ) ]
 pub mod phantom;

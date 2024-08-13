@@ -5,7 +5,7 @@ use gluesql::sled_storage::sled::Config;
 use wca::{ Command, Type, VerifiedCommand };
 use sled_adapter::FeedStorage;
 use action::{ Report, table::{ table_list, tables_list } };
-use error_tools::Result;
+use error_tools::untyped::Result;
 
 /// Struct that provides commands for table information.
 #[ derive( Debug ) ]

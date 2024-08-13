@@ -9,7 +9,7 @@ use hyper_util::
 use http_body_util::{ Empty, BodyExt };
 use hyper::body::Bytes;
 use feed_rs::parser as feed_parser;
-use error_tools::{ Result, untyped::Context };
+use error_tools::{ untyped::Result, untyped::Context };
 
 // qqq : purpose of trait if any?
 // aaa : removed unnecessary trait

@@ -40,6 +40,7 @@ default = [
   "derive_as_ref",
   "derive_as_mut",
   "derive_variadic_from",
+  "derive_not",
   "derive_phantom"
 ]
 full = [
@@ -54,6 +55,7 @@ full = [
   "derive_as_ref",
   "derive_as_mut",
   "derive_variadic_from",
+  "derive_not",
   "derive_phantom"
 ]
 enabled = [ "macro_tools/enabled", "iter_tools/enabled", "former_types/enabled" ]
@@ -68,6 +70,7 @@ derive_index = []
 derive_index_mut = []
 derive_inner_from = []
 derive_variadic_from = [ "iter_tools/iter_ext" ]
+derive_not = []
 derive_phantom = []
 
 [dependencies]

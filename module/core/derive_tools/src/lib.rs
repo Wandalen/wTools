@@ -53,8 +53,6 @@ mod derive_more
   pub use ::derive_more::{ Mul, Div };
   #[ cfg( feature = "derive_mul_assign" ) ]
   pub use ::derive_more::{ MulAssign, DivAssign };
-  #[ cfg( feature = "derive_not" ) ]
-  pub use ::derive_more::Not;
   #[ cfg( feature = "derive_sum" ) ]
   pub use ::derive_more::Sum;
   #[ cfg( feature = "derive_try_into" ) ]

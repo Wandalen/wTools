@@ -196,8 +196,6 @@ only_for_terminal_module!
   fn former_trybuild()
   {
 
-    assert!( false );
-
     println!( "current_dir : {:?}", std::env::current_dir().unwrap() );
     let t = test_tools::compiletime::TestCases::new();
 

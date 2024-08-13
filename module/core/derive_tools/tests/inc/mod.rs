@@ -27,6 +27,7 @@ mod all_manual_test;
     feature = "derive_index",
     feature = "derive_index_mut",
     feature = "derive_inner_from",
+    feature = "derive_not",
     feature = "derive_phantom"
   )
 )]
@@ -223,6 +224,61 @@ mod from_tests
   mod variants_generics;
   mod variants_generics_where;
   mod variants_collisions;
+}
+
+#[ cfg( feature = "derive_not" ) ]
+#[ path = "not" ]
+mod not_tests
+{
+  #[ allow( unused_imports ) ]
+  use super::*;
+
+  mod struct_named;
+  mod struct_named_manual;
+  mod struct_named_empty;
+  mod struct_named_empty_manual;
+  mod struct_tuple;
+  mod struct_tuple_manual;
+  mod struct_tuple_empty;
+  mod struct_tuple_empty_manual;
+  mod struct_unit;
+  mod struct_unit_manual;
+  mod named_reference_field;
+  mod named_reference_field_manual;
+  mod named_mut_reference_field;
+  mod named_mut_reference_field_manual;
+  mod tuple_reference_field;
+  mod tuple_reference_field_manual;
+  mod tuple_mut_reference_field;
+  mod tuple_mut_reference_field_manual;
+  mod bounds_inlined;
+  mod bounds_inlined_manual;
+  mod bounds_mixed;
+  mod bounds_mixed_manual;
+  mod bounds_where;
+  mod bounds_where_manual;
+  mod with_custom_type;
+  mod name_collisions;
+  mod named_default_off;
+  mod named_default_off_manual;
+  mod named_default_off_reference_on;
+  mod named_default_off_reference_on_manual;
+  mod named_default_off_some_on;
+  mod named_default_off_some_on_manual;
+  mod named_default_on_mut_reference_off;
+  mod named_default_on_mut_reference_off_manual;
+  mod named_default_on_some_off;
+  mod named_default_on_some_off_manual;
+  mod tuple_default_off;
+  mod tuple_default_off_manual;
+  mod tuple_default_off_reference_on;
+  mod tuple_default_off_reference_on_manual;
+  mod tuple_default_off_some_on;
+  mod tuple_default_off_some_on_manual;
+  mod tuple_default_on_mut_reference_off;
+  mod tuple_default_on_mut_reference_off_manual;
+  mod tuple_default_on_some_off;
+  mod tuple_default_on_some_off_manual;
 }
 
 #[ cfg( feature = "derive_inner_from" ) ]
