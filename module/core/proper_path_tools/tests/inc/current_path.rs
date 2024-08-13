@@ -1,7 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-#[cfg( not( feature="no_std" ) ) ]
+#[ cfg( not( feature="no_std" ) ) ]
 use the_module::
 {
   AbsolutePath,
@@ -13,7 +13,7 @@ use the_module::
 use the_module::Utf8PathBuf;
 
 #[ test ]
-#[cfg( not( feature="no_std" ) ) ]
+#[ cfg( not( feature="no_std" ) ) ]
 fn basic()
 {
 
@@ -26,7 +26,7 @@ fn basic()
   println!( "absolute_path : {absolute_path:?}" );
 
   #[ cfg( feature = "path_utf8" ) ]
-  #[cfg( not( feature="no_std" ) ) ]
+  #[ cfg( not( feature="no_std" ) ) ]
   {
     let cd = the_module::CurrentPath;
     let utf8_path : Utf8PathBuf = cd.try_into().unwrap();
