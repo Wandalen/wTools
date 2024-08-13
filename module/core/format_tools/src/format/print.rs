@@ -314,8 +314,8 @@ pub( crate ) mod private
             .for_each( | ( layer, s ) |
             {
               let md_index = [ layer, icol, irow as usize ];
-              println!( "s : {s} | md_index : {md_index:?}" );
-              slices[ self.slices_dim.md_offset( md_index ) ] = s
+              // println!( "s : {s} | md_index : {md_index:?}" );
+              slices[ self.slices_dim.md_offset( md_index ) ] = s;
             })
             ;
 
@@ -325,22 +325,27 @@ pub( crate ) mod private
 
       }
 
-//       for row_data in self.data.iter()
-//       {
-//
-//         irow += 1;
-//         let row = &self.row_descriptors[ irow as usize ];
-//
-//         for ( icol, k ) in self.col_order.iter().enumerate()
-//         {
-//           let cell = &row_data[ &k ];
-//           string::lines( cell.0.as_ref() )
-//           .enumerate()
-//           .for_each( | ( layer, s ) | slices[ [ layer, icol, irow as usize ].md_offset( self.slices_dim ) ] = s )
-//           ;
-//         }
-//
-//       }
+      for row_data in self.data.iter()
+      {
+
+        irow += 1;
+        let row = &self.row_descriptors[ irow as usize ];
+
+        for ( icol, k ) in self.col_order.iter().enumerate()
+        {
+          let cell = &row_data[ &k ];
+          string::lines( cell.0.as_ref() )
+          .enumerate()
+          .for_each( | ( layer, s ) |
+          {
+            let md_index = [ layer, icol, irow as usize ];
+            slices[ self.slices_dim.md_offset( md_index ) ] = s;
+            // slices[ [ layer, icol, irow as usize ].md_offset( self.slices_dim ) ] = s
+          })
+          ;
+        }
+
+      }
 
       std::mem::swap( &mut self.slices, &mut slices );
       // println!( "{:?}", self.slices );
