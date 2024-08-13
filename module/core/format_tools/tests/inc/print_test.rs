@@ -38,8 +38,8 @@ for TestObject
 
   fn fields( &self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< '_, str, WithRef > ) >
   {
-    // use format_tools::ref_or_display_or_debug_multiline::field;
-    use format_tools::ref_or_display_or_debug::field;
+    use format_tools::ref_or_display_or_debug_multiline::field;
+    // use format_tools::ref_or_display_or_debug::field;
     let mut dst : Vec< ( &'static str, MaybeAs< '_, str, WithRef > ) > = Vec::new();
 
     dst.push( field!( &self.id ) );

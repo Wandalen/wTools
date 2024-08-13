@@ -175,29 +175,35 @@ pub( crate ) mod private
 
         for ( irow, row ) in x.row_descriptors.iter().enumerate()
         {
-          write!( f.buf, "{}", row_prefix )?;
+          let height = row.0;
 
-          for k in &x.col_order
+          for layer in 0..height
           {
-            let col = &x.col_descriptors[ &k ];
-            let width = col.1;
-            let icol = col.2;
-            let md_index = [ 0, icol, irow as usize ];
-            let cell = x.slices[ x.slices_dim.md_offset( md_index ) ];
+            write!( f.buf, "{}", row_prefix )?;
 
-            // println!( "md_index : {md_index:?} | md_offset : {} | cell : {cell}", x.slices_dim.md_offset( md_index ) );
-
-            if icol > 0
+            for k in &x.col_order
             {
-              write!( f.buf, "{}", cell_separator )?;
+              let col = &x.col_descriptors[ &k ];
+              let width = col.1;
+              let icol = col.2;
+              let mut md_index = [ layer, icol, irow as usize ];
+
+              let cell = x.slices[ x.slices_dim.md_offset( md_index ) ];
+
+              // println!( "md_index : {md_index:?} | md_offset : {} | cell : {cell}", x.slices_dim.md_offset( md_index ) );
+
+              if icol > 0
+              {
+                write!( f.buf, "{}", cell_separator )?;
+              }
+
+              // println!( "width = {width}" );
+              write!( f.buf, "{:^width$}", cell, width = width )?;
+
             }
 
-            // println!( "width = {width}" );
-            write!( f.buf, "{:^width$}", cell, width = width )?;
-
+            write!( f.buf, "{}", row_postfix )?;
           }
-
-          write!( f.buf, "{}", row_postfix )?;
 
         }
 
