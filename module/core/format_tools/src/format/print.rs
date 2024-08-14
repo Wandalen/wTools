@@ -149,103 +149,59 @@ pub( crate ) mod private
       use md_math::MdOffset;
 
       let mut x = FormatExtract::extract( self );
-
-      // println!( "{:?}", x.slices );
-      // println!( "{x:#?}" );
-
-      x.extract_slices( | x |
-      {
-
-        // let FormatExtract
-        // {
-        //   mcells,
-        //   col_order,
-        //   col_descriptors,
-        //   data,
-        //   ..
-        // } = x;
-
-        // println!( "{:?}", x.slices );
-
-        let cell_separator = &f.styles.cell_separator;
-        let row_prefix = &f.styles.row_prefix;
-        let row_postfix = &f.styles.row_postfix;
-
-        let mut formatted_row : Vec< String > = Vec::with_capacity( x.col_order.len() );
-
-        for ( irow, row ) in x.row_descriptors.iter().enumerate()
+      x.extract_slices
+      // FormatExtract::extract
+      (
+        // self,
+        | x |
         {
-          let height = row.0;
 
-          for layer in 0..height
+          // println!( "{:?}", x.slices );
+
+          let cell_separator = &f.styles.cell_separator;
+          let row_prefix = &f.styles.row_prefix;
+          let row_postfix = &f.styles.row_postfix;
+
+          let mut formatted_row : Vec< String > = Vec::with_capacity( x.col_order.len() );
+
+          for ( irow, row ) in x.row_descriptors.iter().enumerate()
           {
-            write!( f.buf, "{}", row_prefix )?;
+            let height = row.0;
 
-            for k in &x.col_order
+            for layer in 0..height
             {
-              let col = &x.col_descriptors[ &k ];
-              let width = col.1;
-              let icol = col.2;
-              let mut md_index = [ layer, icol, irow as usize ];
+              write!( f.buf, "{}", row_prefix )?;
 
-              let cell = x.slices[ x.slices_dim.md_offset( md_index ) ];
-
-              // println!( "md_index : {md_index:?} | md_offset : {} | cell : {cell}", x.slices_dim.md_offset( md_index ) );
-
-              if icol > 0
+              for k in &x.col_order
               {
-                write!( f.buf, "{}", cell_separator )?;
+                let col = &x.col_descriptors[ &k ];
+                let width = col.1;
+                let icol = col.2;
+                let mut md_index = [ layer, icol, irow as usize ];
+
+                let cell = x.slices[ x.slices_dim.md_offset( md_index ) ];
+
+                // println!( "md_index : {md_index:?} | md_offset : {} | cell : {cell}", x.slices_dim.md_offset( md_index ) );
+
+                if icol > 0
+                {
+                  write!( f.buf, "{}", cell_separator )?;
+                }
+
+                // println!( "width = {width}" );
+                write!( f.buf, "{:^width$}", cell, width = width )?;
+
               }
 
-              // println!( "width = {width}" );
-              write!( f.buf, "{:^width$}", cell, width = width )?;
-
+              write!( f.buf, "{}", row_postfix )?;
             }
 
-            write!( f.buf, "{}", row_postfix )?;
           }
 
+          Ok(())
         }
+      )
 
-//         // Write head with proper alignment
-//         if let Some( header ) = self.header()
-//         {
-//           // xxx : rid of vector
-//           let mut formatted_row : Vec< String > = Vec::with_capacity( x.col_order.len() );
-//           for k in &x.col_order
-//           {
-//             let descriptor = &x.col_descriptors[ &k ];
-//             let width = descriptor.1;
-//             let cell = descriptor.0.as_ref().unwrap_or( &Cow::Borrowed( "" ) );
-//             formatted_row.push( format!( "{:^width$}", cell, width = width ) );
-//           }
-//           writeln!( f.buf, "{}{}{}", row_prefix, formatted_row.join( cell_separator ), row_postfix )?;
-//         }
-//
-//         // Write rows with proper alignment
-//         for row in &x.data
-//         {
-//           // xxx : rid of vector
-//           let height = row.iter().fold( 1, | acc, ( _k, e ) | acc.max( e.1[ 1 ] ) );
-//           // println!( "height : {height}" );
-//
-//           let mut formatted_row : Vec< String > = Vec::with_capacity( x.col_order.len() );
-//           for k in &x.col_order
-//           {
-//             let cell = &row[ &k ];
-//             let descriptor = &x.col_descriptors[ &k ];
-//             let width = descriptor.1;
-//             println!( "width : {width:?}" );
-//             formatted_row.push( format!( "{:^width$}", cell.0.as_ref(), width = width ) );
-//           }
-//
-//           writeln!( f.buf, "{}{}{}", row_prefix, formatted_row.join( cell_separator ), row_postfix )?;
-//         }
-
-        Ok(())
-      })?;
-
-      Ok(())
     }
   }
 
@@ -361,14 +317,26 @@ pub( crate ) mod private
       Ok(())
     }
 
-    pub fn extract< Table, RowKey, Row, CellFormat >( table : &'a Table ) -> Self
+    // pub fn extract< Table, RowKey, Row, CellFormat >( table : &'a Table ) -> Self
+    pub fn extract< /*'t : 'a,*/ Table, RowKey, Row, CellFormat >
+    (
+      table : &'a Table,
+      // callback : impl FnOnce( &Self ) -> fmt::Result,
+    )
+    // -> fmt::Result
+    -> Self
     where
       Table : TableRows< RowKey, Row, CellKey, CellFormat >,
       Table : TableHeader< CellKey >,
       Table : TableSize,
       Row : Clone + Cells< CellKey, CellFormat > + 'a,
       CellFormat : Copy + 'static,
+
+      // 'a : 't,
+      // 'b : 'a,
+
     {
+      use md_math::MdOffset;
 
       let mcells = table.mcells();
       //                                 key        string,                   width, index
@@ -411,6 +379,7 @@ pub( crate ) mod private
           debug_assert!( row_descriptors.len() == ( row_number as usize ) + 1 );
 
         }
+
       }
 
       // Collect rows
@@ -482,7 +451,65 @@ pub( crate ) mod private
 
       //
 
-      let mut r = Self
+      // let mut slices : Vec< &str > = vec![];
+      // std::mem::swap( &mut self.slices, &mut slices );
+
+//       let col : &( Option< Cow< '_, str > >, usize, usize ) = &col_descriptors[ &col_order[ 0 ] ];
+//       slices[ 0 ] = col.0.as_ref().unwrap();
+//
+//       let mut irow : isize = -1;
+//       if has_header
+//       {
+//
+//         irow += 1;
+//         for ( icol, k ) in col_order.iter().enumerate()
+//         {
+//           let col : &( _, _, _ ) = &col_descriptors[ k ];
+//           let cell = &col.0;
+//
+//           if let Some( cell ) = cell
+//           {
+//
+//             string::lines( cell )
+//             .enumerate()
+//             .for_each( | ( layer, s ) |
+//             {
+//               let md_index = [ layer, icol, irow as usize ];
+//               // println!( "s : {s} | md_index : {md_index:?}" );
+//               slices[ slices_dim.md_offset( md_index ) ] = s;
+//             })
+//             ;
+//
+//           }
+//
+//         }
+//
+//       }
+//
+//       for row_data in data.iter()
+//       {
+//
+//         irow += 1;
+//         let row = &row_descriptors[ irow as usize ];
+//
+//         for ( icol, k ) in col_order.iter().enumerate()
+//         {
+//           let cell = &row_data[ &k ];
+//           string::lines( cell.0.as_ref() )
+//           .enumerate()
+//           .for_each( | ( layer, s ) |
+//           {
+//             let md_index = [ layer, icol, irow as usize ];
+//             slices[ slices_dim.md_offset( md_index ) ] = s;
+//           })
+//           ;
+//         }
+//
+//       }
+
+      // println!( "{:?}", self.slices );
+
+      let mut x = Self
       {
         mcells,
         col_order,
@@ -494,40 +521,81 @@ pub( crate ) mod private
         slices,
       };
 
-      r
+      return x;
+      // return x.extract_slices( callback );
 
-//       use md_math::MdOffset;
-//       let mut slices : Vec< &str > = vec![];
-//       std::mem::swap( &mut r.slices, &mut slices );
+      // let f = move | x : &mut Self |
+      // {
+
+//         let mut slices : Vec< &str > = vec![];
+//         std::mem::swap( &mut x.slices, &mut slices );
 //
-//       let col : &( Option< Cow< '_, str > >, usize, usize ) = &r.col_descriptors[ &r.col_order[ 0 ] ];
-//       slices[ 0 ] = col.0.as_ref().unwrap();
+//         let col : &( Option< Cow< '_, str > >, usize, usize ) = &x.col_descriptors[ &x.col_order[ 0 ] ];
+//         slices[ 0 ] = col.0.as_ref().unwrap();
 //
-//       let mut irow : isize = -1;
-//       if r.has_header
-//       {
-//
-//         irow += 1;
-//         for ( icol, k ) in r.col_order.iter().enumerate()
+//         let mut irow : isize = -1;
+//         if x.has_header
 //         {
-//           let col : &( _, _, _ ) = &r.col_descriptors[ k ];
-//           let cell = &col.0;
 //
-//           if let Some( cell ) = cell
+//           irow += 1;
+//           for ( icol, k ) in x.col_order.iter().enumerate()
 //           {
+//             let col : &( _, _, _ ) = &x.col_descriptors[ k ];
+//             let cell = &col.0;
 //
-//             string::lines( cell )
-//             .enumerate()
-//             .for_each( | ( layer, s ) | slices[ [ layer, icol, irow as usize ].md_offset( r.slices_dim ) ] = s )
-//             ;
+//             if let Some( cell ) = cell
+//             {
 //
+//               string::lines( cell )
+//               .enumerate()
+//               .for_each( | ( layer, s ) |
+//               {
+//                 let md_index = [ layer, icol, irow as usize ];
+//                 // println!( "s : {s} | md_index : {md_index:?}" );
+//                 slices[ x.slices_dim.md_offset( md_index ) ] = s;
+//               })
+//               ;
+//
+//             }
 //           }
 //
 //         }
 //
-//       }
+//         for row_data in x.data.iter()
+//         {
 //
-//       r
+//           irow += 1;
+//           let row = &x.row_descriptors[ irow as usize ];
+//
+//           for ( icol, k ) in x.col_order.iter().enumerate()
+//           {
+//             let cell = &row_data[ &k ];
+//             string::lines( cell.0.as_ref() )
+//             .enumerate()
+//             .for_each( | ( layer, s ) |
+//             {
+//               let md_index = [ layer, icol, irow as usize ];
+//               slices[ x.slices_dim.md_offset( md_index ) ] = s;
+//             })
+//             ;
+//           }
+//
+//         }
+//
+//         callback( &x )
+
+      // };
+
+      // f( &mut x )
+
+      // drop( slices );
+
+      // std::mem::swap( &mut x.slices, &mut slices );
+      // println!( "{:?}", x.slices );
+
+      // return callback( &x );
+
+      // Ok( () )
     }
 
   }
