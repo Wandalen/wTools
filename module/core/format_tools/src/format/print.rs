@@ -245,10 +245,9 @@ pub( crate ) mod private
   where
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash + 'static,
     'a : 'b,
-    // 'b : 'a,
   {
 
-    pub fn extract_slices< 'c : 'b >( &'c mut self, callback : impl FnOnce( &Self ) -> fmt::Result ) -> fmt::Result
+    pub fn extract_slices( &'a mut self, callback : impl FnOnce( &Self ) -> fmt::Result ) -> fmt::Result
     {
       use md_math::MdOffset;
 
@@ -312,9 +311,7 @@ pub( crate ) mod private
       std::mem::swap( &mut self.slices, &mut slices );
       // println!( "{:?}", self.slices );
 
-      callback( self )?;
-
-      Ok(())
+      callback( self )
     }
 
     // pub fn extract< Table, RowKey, Row, CellFormat >( table : &'a Table ) -> Self
