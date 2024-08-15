@@ -148,11 +148,12 @@ pub( crate ) mod private
     {
       use md_math::MdOffset;
 
-      let mut x = FormatExtract::extract( self );
-      x.extract_slices
+      // let mut x = FormatExtract::extract( self );
+      // x.extract_slices
       // FormatExtract::extract
+      extract
       (
-        // self,
+        self,
         | x |
         {
 
@@ -202,6 +203,7 @@ pub( crate ) mod private
         }
       )
 
+      // Ok(())
     }
   }
 
@@ -245,9 +247,10 @@ pub( crate ) mod private
   where
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash + 'static,
     'a : 'b,
+    'b : 'a,
   {
 
-    pub fn extract_slices( &'a mut self, callback : impl FnOnce( &Self ) -> fmt::Result ) -> fmt::Result
+    pub fn extract_slices< 'c : 'a >( &'c mut self, callback : impl FnOnce( &'c Self ) -> fmt::Result ) -> fmt::Result
     {
       use md_math::MdOffset;
 
@@ -314,14 +317,16 @@ pub( crate ) mod private
       callback( self )
     }
 
+  }
+
     // pub fn extract< Table, RowKey, Row, CellFormat >( table : &'a Table ) -> Self
-    pub fn extract< /*'t : 'a,*/ Table, RowKey, Row, CellFormat >
+    pub fn extract< 't, 'a, 'b, Table, RowKey, Row, CellFormat, CellKey >
     (
-      table : &'a Table,
-      // callback : impl FnOnce( &Self ) -> fmt::Result,
+      table : &'t Table,
+      callback : impl for< 'a2 > FnOnce( &'a2 FormatExtract< 'a2, 'a2, CellKey > ) -> fmt::Result,
     )
-    // -> fmt::Result
-    -> Self
+    -> fmt::Result
+    // -> Self
     where
       Table : TableRows< RowKey, Row, CellKey, CellFormat >,
       Table : TableHeader< CellKey >,
@@ -329,8 +334,15 @@ pub( crate ) mod private
       Row : Clone + Cells< CellKey, CellFormat > + 'a,
       CellFormat : Copy + 'static,
 
+      't : 'a,
+      // 't : 'b,
+      // 't : 'b,
       // 'a : 't,
-      // 'b : 'a,
+      'b : 'a,
+
+
+      CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash + 'static,
+      'a : 'b,
 
     {
       use md_math::MdOffset;
@@ -506,7 +518,8 @@ pub( crate ) mod private
 
       // println!( "{:?}", self.slices );
 
-      let mut x = Self
+      // let mut x = Self
+      let mut x = FormatExtract::< '_, '_, CellKey >
       {
         mcells,
         col_order,
@@ -518,8 +531,8 @@ pub( crate ) mod private
         slices,
       };
 
-      return x;
-      // return x.extract_slices( callback );
+      // return x;
+      return x.extract_slices( callback );
 
       // let f = move | x : &mut Self |
       // {
@@ -592,10 +605,10 @@ pub( crate ) mod private
 
       // return callback( &x );
 
-      // Ok( () )
+      Ok( () )
     }
 
-  }
+  // }
 
 }
 
