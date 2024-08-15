@@ -66,16 +66,16 @@ pub( crate ) mod private
   }
 
   /// Struct for formatting tables.
-  pub struct Context< 'a >
+  pub struct Context< 'data >
   {
-    buf : &'a mut dyn fmt::Write,
+    buf : &'data mut dyn fmt::Write,
     styles : Styles,
   }
 
-  impl< 'a > Context< 'a >
+  impl< 'data > Context< 'data >
   {
     /// Just constructr.
-    pub fn new( buf : &'a mut dyn fmt::Write, styles : Styles ) -> Self
+    pub fn new( buf : &'data mut dyn fmt::Write, styles : Styles ) -> Self
     {
       Self { buf, styles }
     }
@@ -94,21 +94,21 @@ pub( crate ) mod private
   }
 
   /// A trait for converting tables to a string representation.
-  pub trait TableToString< 'a >
+  pub trait TableToString< 'data >
   {
     /// Converts the table to a string representation.
     ///
     /// # Returns
     ///
     /// A `String` containing the formatted table.
-    fn table_to_string( &'a self ) -> String;
+    fn table_to_string( &'data self ) -> String;
   }
 
-  impl< 'a, T > TableToString< 'a > for T
+  impl< 'data, T > TableToString< 'data > for T
   where
-    T : TableFormatter< 'a >
+    T : TableFormatter< 'data >
   {
-    fn table_to_string( &'a self ) -> String
+    fn table_to_string( &'data self ) -> String
     {
       let mut output = String::new();
       let mut context = Context
@@ -130,12 +130,12 @@ pub( crate ) mod private
   pub trait TableFormatter< 'b >
   {
     /// Formats the table and writes the result to the given formatter.
-    fn fmt< 'a >( &'b self, f : &mut Context< 'a > ) -> fmt::Result;
+    fn fmt< 'data >( &'b self, f : &mut Context< 'data > ) -> fmt::Result;
   }
 
   /// A trait for formatting tables.
-  impl< 'a, T, RowKey, Row, CellKey, CellFormat > TableFormatter< 'a >
-  for AsTable< 'a, T, RowKey, Row, CellKey, CellFormat >
+  impl< 'data, T, RowKey, Row, CellKey, CellFormat > TableFormatter< 'data >
+  for AsTable< 'data, T, RowKey, Row, CellKey, CellFormat >
   where
     Self : TableRows< RowKey, Row, CellKey, CellFormat >,
     Self : TableHeader< CellKey >,
@@ -144,7 +144,7 @@ pub( crate ) mod private
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash + 'static,
     CellFormat : Copy + 'static,
   {
-    fn fmt( &'a self, f : &mut Context< '_ > ) -> fmt::Result
+    fn fmt( &'data self, f : &mut Context< '_ > ) -> fmt::Result
     {
       use md_math::MdOffset;
 
@@ -208,11 +208,11 @@ pub( crate ) mod private
   }
 
   #[ derive( Debug ) ]
-  pub struct FormatExtract< 'a, 'b, CellKey >
+  pub struct FormatExtract< 'data, CellKey >
   where
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash + 'static, // xxx
-    'a : 'b,
-    // 'b : 'a,
+    // 'data : 'b,
+    // 'b : 'data,
   {
 
     /// Multidimensional size in number of columns per table and number of rows per table.
@@ -222,35 +222,35 @@ pub( crate ) mod private
     pub col_order : Vec< CellKey >,
 
     //                             key        string,                   width, index
-    pub col_descriptors : HashMap< CellKey, ( Option< Cow< 'a, str > >, usize, usize ) >,
+    pub col_descriptors : HashMap< CellKey, ( Option< Cow< 'data, str > >, usize, usize ) >,
 
     //                           height
     pub row_descriptors : Vec< ( usize, ) >,
 
     /// Either slices or strings extracted for further processsing.
     //                           key, string,           size,
-    pub data : Vec< HashMap< CellKey, ( Cow< 'a, str >, [ usize ; 2 ] ) > >,
+    pub data : Vec< HashMap< CellKey, ( Cow< 'data, str >, [ usize ; 2 ] ) > >,
 
     /// Multidimensional size in number of subrows per row, number of columns per table and number of rows per table.
     /// Use it to retrive corresponding slice from multi-matrix of slices.
     pub slices_dim : [ usize ; 3 ],
 
     /// Either slices or strings extracted for further processsing.
-    pub slices : Vec< &'b str >,
+    pub slices : Vec< &'data str >,
 
     // Does table have the header.
     pub has_header : bool,
 
   }
 
-  impl< 'a, 'b, CellKey > FormatExtract< 'a, 'b, CellKey >
+  impl< 'data, CellKey > FormatExtract< 'data, CellKey >
   where
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash + 'static,
-    'a : 'b,
-    'b : 'a,
+    // 'data : 'b,
+    // 'b : 'data,
   {
 
-    pub fn extract_slices< 'c : 'a >( &'c mut self, callback : impl FnOnce( &'c Self ) -> fmt::Result ) -> fmt::Result
+    pub fn extract_slices< 'c : 'data >( &'c mut self, callback : impl FnOnce( &'c Self ) -> fmt::Result ) -> fmt::Result
     {
       use md_math::MdOffset;
 
@@ -319,11 +319,11 @@ pub( crate ) mod private
 
   }
 
-    // pub fn extract< Table, RowKey, Row, CellFormat >( table : &'a Table ) -> Self
-    pub fn extract< 't, 'a, 'b, Table, RowKey, Row, CellFormat, CellKey >
+    // pub fn extract< Table, RowKey, Row, CellFormat >( table : &'data Table ) -> Self
+    pub fn extract< 't, 'data, Table, RowKey, Row, CellFormat, CellKey >
     (
       table : &'t Table,
-      callback : impl for< 'a2 > FnOnce( &'a2 FormatExtract< 'a2, 'a2, CellKey > ) -> fmt::Result,
+      callback : impl for< 'a2 > FnOnce( &'a2 FormatExtract< 'a2, CellKey > ) -> fmt::Result,
     )
     -> fmt::Result
     // -> Self
@@ -331,18 +331,18 @@ pub( crate ) mod private
       Table : TableRows< RowKey, Row, CellKey, CellFormat >,
       Table : TableHeader< CellKey >,
       Table : TableSize,
-      Row : Clone + Cells< CellKey, CellFormat > + 'a,
+      Row : Clone + Cells< CellKey, CellFormat > + 'data,
       CellFormat : Copy + 'static,
 
-      't : 'a,
+      't : 'data,
       // 't : 'b,
       // 't : 'b,
-      // 'a : 't,
-      'b : 'a,
+      // 'data : 't,
+      // 'b : 'data,
 
 
       CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash + 'static,
-      'a : 'b,
+      // 'data : 'b,
 
     {
       use md_math::MdOffset;
@@ -519,7 +519,7 @@ pub( crate ) mod private
       // println!( "{:?}", self.slices );
 
       // let mut x = Self
-      let mut x = FormatExtract::< '_, '_, CellKey >
+      let mut x = FormatExtract::< '_, CellKey >
       {
         mcells,
         col_order,
