@@ -1,5 +1,5 @@
 //!
-//! Nice print.
+//! Print data as table.
 //!
 
 /// Internal namespace.
@@ -148,10 +148,7 @@ pub( crate ) mod private
     {
       use md_math::MdOffset;
 
-      // let mut x = FormatExtract::extract( self );
-      // x.extract_slices
-      // FormatExtract::extract
-      extract
+      FormatExtract::extract
       (
         self,
         | x |
@@ -162,8 +159,6 @@ pub( crate ) mod private
           let cell_separator = &f.styles.cell_separator;
           let row_prefix = &f.styles.row_prefix;
           let row_postfix = &f.styles.row_postfix;
-
-          let mut formatted_row : Vec< String > = Vec::with_capacity( x.col_order.len() );
 
           for ( irow, row ) in x.row_descriptors.iter().enumerate()
           {
@@ -178,7 +173,7 @@ pub( crate ) mod private
                 let col = &x.col_descriptors[ &k ];
                 let width = col.1;
                 let icol = col.2;
-                let mut md_index = [ layer, icol, irow as usize ];
+                let md_index = [ layer, icol, irow as usize ];
 
                 let cell = x.slices[ x.slices_dim.md_offset( md_index ) ];
 
@@ -189,9 +184,7 @@ pub( crate ) mod private
                   write!( f.buf, "{}", cell_separator )?;
                 }
 
-                // println!( "width = {width}" );
                 write!( f.buf, "{:^width$}", cell, width = width )?;
-
               }
 
               write!( f.buf, "{}", row_postfix )?;
@@ -202,17 +195,14 @@ pub( crate ) mod private
           Ok(())
         }
       )
-
-      // Ok(())
     }
   }
 
+  #[ allow( dead_code ) ]
   #[ derive( Debug ) ]
   pub struct FormatExtract< 'data, CellKey >
   where
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash + 'static, // xxx
-    // 'data : 'b,
-    // 'b : 'data,
   {
 
     /// Multidimensional size in number of columns per table and number of rows per table.
@@ -243,107 +233,26 @@ pub( crate ) mod private
 
   }
 
+  //
+
   impl< 'data, CellKey > FormatExtract< 'data, CellKey >
   where
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash + 'static,
-    // 'data : 'b,
-    // 'b : 'data,
   {
 
-    pub fn extract_slices< 'c : 'data >( &'c mut self, callback : impl FnOnce( &'c Self ) -> fmt::Result ) -> fmt::Result
-    {
-      use md_math::MdOffset;
-
-      let mut slices : Vec< &str > = vec![];
-      std::mem::swap( &mut self.slices, &mut slices );
-
-      let col : &( Option< Cow< '_, str > >, usize, usize ) = &self.col_descriptors[ &self.col_order[ 0 ] ];
-      slices[ 0 ] = col.0.as_ref().unwrap();
-
-      let mut irow : isize = -1;
-      if self.has_header
-      {
-
-        irow += 1;
-        for ( icol, k ) in self.col_order.iter().enumerate()
-        {
-          let col : &( _, _, _ ) = &self.col_descriptors[ k ];
-          let cell = &col.0;
-
-          if let Some( cell ) = cell
-          {
-
-            string::lines( cell )
-            .enumerate()
-            .for_each( | ( layer, s ) |
-            {
-              let md_index = [ layer, icol, irow as usize ];
-              // println!( "s : {s} | md_index : {md_index:?}" );
-              slices[ self.slices_dim.md_offset( md_index ) ] = s;
-            })
-            ;
-
-          }
-
-        }
-
-      }
-
-      for row_data in self.data.iter()
-      {
-
-        irow += 1;
-        let row = &self.row_descriptors[ irow as usize ];
-
-        for ( icol, k ) in self.col_order.iter().enumerate()
-        {
-          let cell = &row_data[ &k ];
-          string::lines( cell.0.as_ref() )
-          .enumerate()
-          .for_each( | ( layer, s ) |
-          {
-            let md_index = [ layer, icol, irow as usize ];
-            slices[ self.slices_dim.md_offset( md_index ) ] = s;
-            // slices[ [ layer, icol, irow as usize ].md_offset( self.slices_dim ) ] = s
-          })
-          ;
-        }
-
-      }
-
-      std::mem::swap( &mut self.slices, &mut slices );
-      // println!( "{:?}", self.slices );
-
-      callback( self )
-    }
-
-  }
-
-    // pub fn extract< Table, RowKey, Row, CellFormat >( table : &'data Table ) -> Self
-    pub fn extract< 't, 'data, Table, RowKey, Row, CellFormat, CellKey >
+    pub fn extract< 't, Table, RowKey, Row, CellFormat >
     (
       table : &'t Table,
       callback : impl for< 'a2 > FnOnce( &'a2 FormatExtract< 'a2, CellKey > ) -> fmt::Result,
     )
     -> fmt::Result
-    // -> Self
     where
       Table : TableRows< RowKey, Row, CellKey, CellFormat >,
       Table : TableHeader< CellKey >,
       Table : TableSize,
       Row : Clone + Cells< CellKey, CellFormat > + 'data,
       CellFormat : Copy + 'static,
-
       't : 'data,
-      // 't : 'b,
-      // 't : 'b,
-      // 'data : 't,
-      // 'b : 'data,
-
-
-      CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash + 'static,
-      // 'data : 'b,
-
     {
       use md_math::MdOffset;
 
@@ -452,73 +361,14 @@ pub( crate ) mod private
       ;
 
       let slices_len = slices_dim[ 0 ] * slices_dim[ 1 ] * slices_dim[ 2 ];
-      let mut slices : Vec< &str > = vec![ "" ; slices_len ];
+      let slices : Vec< &str > = vec![ "" ; slices_len ];
 
       println!( "row_descriptors : {row_descriptors:?}" );
       println!( "slices_dim : {slices_dim:?}" );
       println!( "slices_len : {slices_len:?}" );
 
-      //
-
-      // let mut slices : Vec< &str > = vec![];
-      // std::mem::swap( &mut self.slices, &mut slices );
-
-//       let col : &( Option< Cow< '_, str > >, usize, usize ) = &col_descriptors[ &col_order[ 0 ] ];
-//       slices[ 0 ] = col.0.as_ref().unwrap();
-//
-//       let mut irow : isize = -1;
-//       if has_header
-//       {
-//
-//         irow += 1;
-//         for ( icol, k ) in col_order.iter().enumerate()
-//         {
-//           let col : &( _, _, _ ) = &col_descriptors[ k ];
-//           let cell = &col.0;
-//
-//           if let Some( cell ) = cell
-//           {
-//
-//             string::lines( cell )
-//             .enumerate()
-//             .for_each( | ( layer, s ) |
-//             {
-//               let md_index = [ layer, icol, irow as usize ];
-//               // println!( "s : {s} | md_index : {md_index:?}" );
-//               slices[ slices_dim.md_offset( md_index ) ] = s;
-//             })
-//             ;
-//
-//           }
-//
-//         }
-//
-//       }
-//
-//       for row_data in data.iter()
-//       {
-//
-//         irow += 1;
-//         let row = &row_descriptors[ irow as usize ];
-//
-//         for ( icol, k ) in col_order.iter().enumerate()
-//         {
-//           let cell = &row_data[ &k ];
-//           string::lines( cell.0.as_ref() )
-//           .enumerate()
-//           .for_each( | ( layer, s ) |
-//           {
-//             let md_index = [ layer, icol, irow as usize ];
-//             slices[ slices_dim.md_offset( md_index ) ] = s;
-//           })
-//           ;
-//         }
-//
-//       }
-
       // println!( "{:?}", self.slices );
 
-      // let mut x = Self
       let mut x = FormatExtract::< '_, CellKey >
       {
         mcells,
@@ -531,84 +381,68 @@ pub( crate ) mod private
         slices,
       };
 
-      // return x;
-      return x.extract_slices( callback );
+      // extract slices
 
-      // let f = move | x : &mut Self |
-      // {
+      let mut slices : Vec< &str > = vec![];
+      std::mem::swap( &mut x.slices, &mut slices );
 
-//         let mut slices : Vec< &str > = vec![];
-//         std::mem::swap( &mut x.slices, &mut slices );
-//
-//         let col : &( Option< Cow< '_, str > >, usize, usize ) = &x.col_descriptors[ &x.col_order[ 0 ] ];
-//         slices[ 0 ] = col.0.as_ref().unwrap();
-//
-//         let mut irow : isize = -1;
-//         if x.has_header
-//         {
-//
-//           irow += 1;
-//           for ( icol, k ) in x.col_order.iter().enumerate()
-//           {
-//             let col : &( _, _, _ ) = &x.col_descriptors[ k ];
-//             let cell = &col.0;
-//
-//             if let Some( cell ) = cell
-//             {
-//
-//               string::lines( cell )
-//               .enumerate()
-//               .for_each( | ( layer, s ) |
-//               {
-//                 let md_index = [ layer, icol, irow as usize ];
-//                 // println!( "s : {s} | md_index : {md_index:?}" );
-//                 slices[ x.slices_dim.md_offset( md_index ) ] = s;
-//               })
-//               ;
-//
-//             }
-//           }
-//
-//         }
-//
-//         for row_data in x.data.iter()
-//         {
-//
-//           irow += 1;
-//           let row = &x.row_descriptors[ irow as usize ];
-//
-//           for ( icol, k ) in x.col_order.iter().enumerate()
-//           {
-//             let cell = &row_data[ &k ];
-//             string::lines( cell.0.as_ref() )
-//             .enumerate()
-//             .for_each( | ( layer, s ) |
-//             {
-//               let md_index = [ layer, icol, irow as usize ];
-//               slices[ x.slices_dim.md_offset( md_index ) ] = s;
-//             })
-//             ;
-//           }
-//
-//         }
-//
-//         callback( &x )
+      let col : &( Option< Cow< '_, str > >, usize, usize ) = &x.col_descriptors[ &x.col_order[ 0 ] ];
+      slices[ 0 ] = col.0.as_ref().unwrap();
 
-      // };
+      let mut irow : isize = -1;
+      if x.has_header
+      {
 
-      // f( &mut x )
+        irow += 1;
+        for ( icol, k ) in x.col_order.iter().enumerate()
+        {
+          let col : &( _, _, _ ) = &x.col_descriptors[ k ];
+          let cell = &col.0;
 
-      // drop( slices );
+          if let Some( cell ) = cell
+          {
 
-      // std::mem::swap( &mut x.slices, &mut slices );
-      // println!( "{:?}", x.slices );
+            string::lines( cell )
+            .enumerate()
+            .for_each( | ( layer, s ) |
+            {
+              let md_index = [ layer, icol, irow as usize ];
+              // println!( "s : {s} | md_index : {md_index:?}" );
+              slices[ x.slices_dim.md_offset( md_index ) ] = s;
+            })
+            ;
 
-      // return callback( &x );
+          }
+        }
 
-      Ok( () )
+      }
+
+      for row_data in x.data.iter()
+      {
+
+        irow += 1;
+
+        for ( icol, k ) in x.col_order.iter().enumerate()
+        {
+          let cell = &row_data[ &k ];
+          string::lines( cell.0.as_ref() )
+          .enumerate()
+          .for_each( | ( layer, s ) |
+          {
+            let md_index = [ layer, icol, irow as usize ];
+            slices[ x.slices_dim.md_offset( md_index ) ] = s;
+          })
+          ;
+        }
+
+      }
+
+      std::mem::swap( &mut x.slices, &mut slices );
+
+      return callback( &x );
     }
 
-  // }
+  }
 
 }
 

@@ -129,7 +129,7 @@ pub( crate ) mod private
   {
     fn mcells( &self ) -> [ usize ; 2 ]
     {
-      let mut rows = self.rows();
+      let rows = self.rows();
       let nrows = rows.len();
       let row = rows.clone().next();
       if let Some( row2 ) = row
