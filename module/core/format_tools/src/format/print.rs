@@ -141,7 +141,7 @@ pub( crate ) mod private
     Self : TableHeader< CellKey >,
     Self : TableSize,
     Row : Clone + Cells< CellKey, CellFormat >,
-    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash + 'static,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellFormat : Copy + 'static,
   {
     fn fmt( &'data self, f : &mut Context< '_ > ) -> fmt::Result
@@ -198,11 +198,19 @@ pub( crate ) mod private
     }
   }
 
+  /// A struct for extracting and organizing table data for formatting.
+  ///
+  /// `FormatExtract` holds metadata and content necessary for formatting tables,
+  /// including dimensions, column order, and data slices. It facilitates the
+  /// transformation of raw table data into a structured format suitable for
+  /// rendering as a table.
+  ///
+
   #[ allow( dead_code ) ]
   #[ derive( Debug ) ]
   pub struct FormatExtract< 'data, CellKey >
   where
-    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash + 'static, // xxx
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash, // xxx
   {
 
     /// Multidimensional size in number of columns per table and number of rows per table.
@@ -211,24 +219,25 @@ pub( crate ) mod private
     /// Order of columns must be as stable as possible.
     pub col_order : Vec< CellKey >,
 
+    /// Descriptors for each column, including optional title, width, and index.
     //                             key        string,                   width, index
     pub col_descriptors : HashMap< CellKey, ( Option< Cow< 'data, str > >, usize, usize ) >,
 
+    /// Descriptors for each row, including height.
     //                           height
     pub row_descriptors : Vec< ( usize, ) >,
 
-    /// Either slices or strings extracted for further processsing.
+    /// Extracted data for each cell, including string content and size.
     //                           key, string,           size,
     pub data : Vec< HashMap< CellKey, ( Cow< 'data, str >, [ usize ; 2 ] ) > >,
 
-    /// Multidimensional size in number of subrows per row, number of columns per table and number of rows per table.
-    /// Use it to retrive corresponding slice from multi-matrix of slices.
+    /// Dimensions of slices for retrieving data from multi-matrix.
     pub slices_dim : [ usize ; 3 ],
 
-    /// Either slices or strings extracted for further processsing.
-    pub slices : Vec< &'data str >,
+    /// Extracted slices or strings for further processing.
+    pub slices : Vec< & 'data str >,
 
-    // Does table have the header.
+    /// Indicates if the table has a header.
     pub has_header : bool,
 
   }
@@ -237,7 +246,7 @@ pub( crate ) mod private
 
   impl< 'data, CellKey > FormatExtract< 'data, CellKey >
   where
-    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash + 'static,
+    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
   {
 
     pub fn extract< 't, Table, RowKey, Row, CellFormat >
