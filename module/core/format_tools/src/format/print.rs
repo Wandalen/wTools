@@ -279,8 +279,6 @@ pub( crate ) mod private
       let rows = table.rows();
       let mut irow : isize = -1;
 
-      // println!( "rows.len() : {}", rows.len() );
-
       let mut row_add = | row : &mut dyn _IteratorTrait< Item = ( CellKey, Cow< 'data, str > ) > |
       {
 
@@ -316,7 +314,6 @@ pub( crate ) mod private
         .collect();
         data.push( fields );
 
-        println!( "irow : {irow} | col_descriptors : {}", col_descriptors.len() );
 
       };
 
@@ -331,42 +328,26 @@ pub( crate ) mod private
         let mut row2 =  header.map( | ( key, title ) |
         {
           let title_str : Cow< '_, str > = Cow::Owned( format!( "{}", title ) );
+
+          // let l = col_descriptors.len();
+          // let sz = string::size( &title_str );
+          // col_descriptors
+          // .entry( key.clone() )
+          // .and_modify( | col |
+          // {
+          //   col.1 = col.1.max( sz[ 0 ] );
+          // })
+          // .or_insert_with( ||
+          // {
+          //   col_order.push( key.clone() );
+          //   ( Some( title_str ), sz[ 0 ], l )
+          // });
+
           ( key, title )
         });
 
         row_add( &mut row2 );
-
-//         irow += 1;
-//         row_descriptors.push( ( 1, ) );
-//
-//         for ( key, title ) in header
-//         {
-//           let title_str : Cow< '_, str > = Cow::Owned( format!( "{}", title ) );
-//           let l = col_descriptors.len();
-//           let sz = string::size( &title_str );
-//
-//           col_descriptors
-//           .entry( key.clone() )
-//           .and_modify( | col |
-//           {
-//             col.1 = col.1.max( sz[ 0 ] );
-//           })
-//           .or_insert_with( ||
-//           {
-//             col_order.push( key.clone() );
-//             ( Some( title_str ), sz[ 0 ], l )
-//           });
-//
-//           // xxx
-//
-//           row_descriptors[ irow as usize ] = ( row_descriptors[ irow as usize ].0.max( sz[ 1 ] ), );
-//           debug_assert!( row_descriptors.len() == ( irow as usize ) + 1 );
-//
-//         }
-
       }
-
-      // println!( "rows.len() : {}", rows.len() );
 
       // Collect rows
       //                           key,       string,           size,
