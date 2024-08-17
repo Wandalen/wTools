@@ -10,6 +10,8 @@ pub trait CloneAny{}
 pub trait Context{}
 pub trait Formed{}
 pub trait OnEnd{}
+pub struct None{}
+pub struct Some{}
 
 #[ derive( Debug, PartialEq ) ]
 struct HashMap< T >
@@ -21,6 +23,7 @@ struct HashMap< T >
 pub struct Struct1
 {
   f2 : HashMap< i32 >,
+  i : ::std::option::Option< i32 >,
 }
 
 tests_impls!
@@ -31,7 +34,7 @@ tests_impls!
   {
 
     let got = Struct1::former().f2( HashMap { f1 : 3 } ).form();
-    let expected = Struct1 { f2 : HashMap { f1 : 3 } };
+    let expected = Struct1 { f2 : HashMap { f1 : 3 }, i : ::std::option::Option::None };
     a_id!( got, expected );
 
   }

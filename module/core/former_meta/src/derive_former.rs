@@ -556,7 +556,7 @@ specific needs of the broader forming context. It mandates the implementation of
       #[ inline( always ) ]
       pub fn new( on_end : Definition::End ) -> Self
       {
-        Self::begin_coercing( None, None, on_end )
+        Self::begin_coercing( ::core::option::Option::None, ::core::option::Option::None, on_end )
       }
 
       ///
@@ -565,12 +565,12 @@ specific needs of the broader forming context. It mandates the implementation of
       #[ inline( always ) ]
       pub fn new_coercing< IntoEnd >( end : IntoEnd ) -> Self
       where
-        IntoEnd : Into< Definition::End >,
+        IntoEnd : ::core::convert::Into< Definition::End >,
       {
         Self::begin_coercing
         (
-          None,
-          None,
+          ::core::option::Option::None,
+          ::core::option::Option::None,
           end,
         )
       }
@@ -589,7 +589,7 @@ specific needs of the broader forming context. It mandates the implementation of
       {
         if storage.is_none()
         {
-          storage = Some( ::core::default::Default::default() );
+          storage = ::core::option::Option::Some( ::core::default::Default::default() );
         }
         Self
         {
@@ -614,7 +614,7 @@ specific needs of the broader forming context. It mandates the implementation of
       {
         if storage.is_none()
         {
-          storage = Some( ::core::default::Default::default() );
+          storage = ::core::option::Option::Some( ::core::default::Default::default() );
         }
         Self
         {
@@ -715,7 +715,7 @@ specific needs of the broader forming context. It mandates the implementation of
       -> Self
       {
         debug_assert!( storage.is_none() );
-        Self::begin( None, context, on_end )
+        Self::begin( ::core::option::Option::None, context, on_end )
       }
 
     }

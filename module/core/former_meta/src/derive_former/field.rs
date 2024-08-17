@@ -468,10 +468,10 @@ where
   #[ inline ]
   pub fn {field_ident}< Src >( mut self, src : Src ) -> Self
   where
-    Src : ::core::convert::Into< {0} >,
+    Src : Into< {0} >,
   {{
     debug_assert!( self.storage.{field_ident}.is_none() );
-    self.storage.{field_ident} = ::core::option::Option::Some( ::core::convert::Into::into( src ) );
+    self.storage.{field_ident} = Some( Into::into( src ) );
     self
   }}
 }}
@@ -610,7 +610,12 @@ field : {field_ident}"#,
           End = #subform_collection_end< Definition >,
         >,
       {
-        Former2::former_begin( None, Some( self ), #subform_collection_end::< Definition >::default() )
+        Former2::former_begin
+        (
+          ::core::option::Option::None,
+          ::core::option::Option::Some( self ),
+          #subform_collection_end::< Definition >::default(),
+        )
       }
 
       // #[ inline( always ) ]
@@ -786,7 +791,7 @@ with the new content generated during the subforming process.
         _phantom : core::marker::PhantomData< ( Definition, ) >,
       }
 
-      impl< Definition > Default
+      impl< Definition > ::core::default::Default
       for #subform_collection_end< Definition >
       {
 
@@ -934,7 +939,12 @@ allowing for dynamic and flexible construction of the `{item}` entity's {field_i
         >,
         Former2 : former::FormerBegin< Definition2 >,
       {
-        Former2::former_begin( None, Some( self ), #subform_entry_end::default() )
+        Former2::former_begin
+        (
+          ::core::option::Option::None,
+          ::core::option::Option::Some( self ),
+          #subform_entry_end::default(),
+        )
       }
 
     };
@@ -1070,7 +1080,7 @@ formation process of the `{item}`.
         _phantom : core::marker::PhantomData< fn( Definition ) >,
       }
 
-      impl< Definition > Default
+      impl< Definition > ::core::default::Default
       for #subform_entry_end< Definition >
       {
         #[ inline( always ) ]
@@ -1110,9 +1120,9 @@ formation process of the `{item}`.
           let mut super_former = super_former.unwrap();
           if super_former.storage.#field_ident.is_none()
           {
-            super_former.storage.#field_ident = Some( Default::default() );
+            super_former.storage.#field_ident = ::core::option::Option::Some( ::core::default::Default::default() );
           }
-          if let Some( ref mut field ) = super_former.storage.#field_ident
+          if let ::core::option::Option::Some( ref mut field ) = super_former.storage.#field_ident
           {
             former::CollectionAdd::add
             (
@@ -1228,7 +1238,12 @@ generics, providing a cleaner interface for initiating subform operations on sca
         >,
         Former2 : former::FormerBegin< Definition2 >,
       {
-        Former2::former_begin( None, Some( self ), #subform_scalar_end::default() )
+        Former2::former_begin
+        (
+          ::core::option::Option::None,
+          ::core::option::Option::Some( self ),
+          #subform_scalar_end::default(),
+        )
       }
 
       // #[ inline( always ) ]
@@ -1372,7 +1387,7 @@ Essentially, this end action integrates the individually formed scalar value bac
         _phantom : core::marker::PhantomData< fn( Definition ) >,
       }
 
-      impl< Definition > Default
+      impl< Definition > ::core::default::Default
       for #subform_scalar_end< Definition >
       {
         #[ inline( always ) ]
@@ -1411,7 +1426,7 @@ Essentially, this end action integrates the individually formed scalar value bac
         {
           let mut super_former = super_former.unwrap();
           debug_assert!( super_former.storage.#field_ident.is_none() );
-          super_former.storage.#field_ident = Some( ::core::convert::Into::into( former::StoragePreform::preform( substorage ) ) );
+          super_former.storage.#field_ident = ::core::option::Option::Some( ::core::convert::Into::into( former::StoragePreform::preform( substorage ) ) );
           super_former
         }
       }
@@ -1421,7 +1436,7 @@ Essentially, this end action integrates the individually formed scalar value bac
 //         _phantom : core::marker::PhantomData< fn( Definition ) >,
 //       }
 //
-//       impl< Definition > Default
+//       impl< Definition > ::core::default::Default
 //       for ParentFormerSubformScalarChildEnd< Definition >
 //       {
 //         #[ inline( always ) ]
