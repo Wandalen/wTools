@@ -70,7 +70,6 @@ pub( crate ) mod private
   pub trait TableRows< RowKey, Row, CellKey, CellFormat >
   where
     Row : Clone + Cells< CellKey, CellFormat >,
-    // Cell : std::borrow::ToOwned + ?Sized,
     CellFormat : Copy + 'static,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
   {
@@ -85,9 +84,6 @@ pub( crate ) mod private
   where
     for< 'a > T : Fields< RowKey, &'a Row, Value< 'a > = &'a Row > + 'a,
     Row : Clone + Cells< CellKey, CellFormat >,
-    // Title : fmt::Display,
-    // Cell : fmt::Display,
-    // Cell : std::borrow::ToOwned + ?Sized,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellFormat : Copy + 'static,
   {
@@ -99,11 +95,6 @@ pub( crate ) mod private
       .filter_map( move | ( _k, e ) |
       {
         Some( e )
-        // match e.0
-        // {
-        //   Some( e ) => Some( e.into_owned() ),
-        //   None => None,
-        // }
       })
       .collect::< Vec< _ > >().into_iter()
     }
