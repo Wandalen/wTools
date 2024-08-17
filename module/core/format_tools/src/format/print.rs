@@ -174,6 +174,7 @@ pub( crate ) mod private
                 // let cell_width = x.data[ irow ][ &k ].1[0];
                 let width = col.1;
                 let icol = col.2;
+                // println!( "col : {:?}", col );
                 let md_index = [ islice, icol, irow as usize ];
                 let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
 
@@ -262,7 +263,6 @@ pub( crate ) mod private
       Table : TableSize,
       Row : Clone + Cells< CellKey, CellFormat > + 'data,
       CellFormat : Copy + 'static,
-      // Cows : IteratorTrait< Item = Cow< 'data, str > >,
     {
       use md_math::MdOffset;
 
@@ -277,52 +277,14 @@ pub( crate ) mod private
 
       let mut data : Vec< HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > > = Vec::new();
       let rows = table.rows();
-      let mut row_number : isize = -1;
+      let mut irow : isize = -1;
 
-      // process header first
-
-      if let Some( header ) = table.header()
-      {
-        rows.len().checked_add( 1 ).expect( "Table has too many rows" );
-        // assert!( header.len() <= usize::MAX, "Header of a table has too many cells" );
-        has_header = true;
-
-        // row_add( header );
-
-        row_number += 1;
-        row_descriptors.push( ( 1, ) );
-
-        for ( key, title ) in header
-        {
-          let title_str : Cow< '_, str > = Cow::Owned( format!( "{}", title ) );
-          let l = col_descriptors.len();
-          let sz = string::size( &title_str );
-
-          col_descriptors
-          .entry( key.clone() )
-          .and_modify( | col |
-          {
-            col.1 = col.1.max( sz[ 0 ] );
-          })
-          .or_insert_with( ||
-          {
-            col_order.push( key.clone() );
-            ( Some( title_str ), sz[ 0 ], l )
-          });
-
-          // xxx
-
-          row_descriptors[ row_number as usize ] = ( row_descriptors[ row_number as usize ].0.max( sz[ 1 ] ), );
-          debug_assert!( row_descriptors.len() == ( row_number as usize ) + 1 );
-
-        }
-
-      }
+      // println!( "rows.len() : {}", rows.len() );
 
       let mut row_add = | row : &mut dyn _IteratorTrait< Item = ( CellKey, Cow< 'data, str > ) > |
       {
 
-        row_number += 1;
+        irow += 1;
         row_descriptors.push( ( 1, ) );
 
         let fields : HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > = row
@@ -334,7 +296,7 @@ pub( crate ) mod private
 
             let sz = string::size( &val );
             let l = col_descriptors.len();
-            row_descriptors[ row_number as usize ] = ( row_descriptors[ row_number as usize ].0.max( sz[ 1 ] ), );
+            row_descriptors[ irow as usize ] = ( row_descriptors[ irow as usize ].0.max( sz[ 1 ] ), );
 
             col_descriptors
             .entry( key.clone() )
@@ -345,7 +307,7 @@ pub( crate ) mod private
             .or_insert_with( ||
             {
               col_order.push( key.clone() );
-              ( None, sz[ 0 ], l + 1 )
+              ( None, sz[ 0 ], l )
             });
 
             return ( key, ( val, sz ) );
@@ -354,7 +316,57 @@ pub( crate ) mod private
         .collect();
         data.push( fields );
 
+        println!( "irow : {irow} | col_descriptors : {}", col_descriptors.len() );
+
       };
+
+      // process header first
+
+      if let Some( header ) = table.header()
+      {
+        rows.len().checked_add( 1 ).expect( "Table has too many rows" );
+        // assert!( header.len() <= usize::MAX, "Header of a table has too many cells" );
+        has_header = true;
+
+        let mut row2 =  header.map( | ( key, title ) |
+        {
+          let title_str : Cow< '_, str > = Cow::Owned( format!( "{}", title ) );
+          ( key, title )
+        });
+
+        row_add( &mut row2 );
+
+//         irow += 1;
+//         row_descriptors.push( ( 1, ) );
+//
+//         for ( key, title ) in header
+//         {
+//           let title_str : Cow< '_, str > = Cow::Owned( format!( "{}", title ) );
+//           let l = col_descriptors.len();
+//           let sz = string::size( &title_str );
+//
+//           col_descriptors
+//           .entry( key.clone() )
+//           .and_modify( | col |
+//           {
+//             col.1 = col.1.max( sz[ 0 ] );
+//           })
+//           .or_insert_with( ||
+//           {
+//             col_order.push( key.clone() );
+//             ( Some( title_str ), sz[ 0 ], l )
+//           });
+//
+//           // xxx
+//
+//           row_descriptors[ irow as usize ] = ( row_descriptors[ irow as usize ].0.max( sz[ 1 ] ), );
+//           debug_assert!( row_descriptors.len() == ( irow as usize ) + 1 );
+//
+//         }
+
+      }
+
+      // println!( "rows.len() : {}", rows.len() );
 
       // Collect rows
       //                           key,       string,           size,
@@ -381,7 +393,7 @@ pub( crate ) mod private
               }
             };
 
-            return ( key.clone(), val );
+            return ( key, val );
           }
         );
 
@@ -423,36 +435,42 @@ pub( crate ) mod private
       let mut slices : Vec< &str > = vec![];
       std::mem::swap( &mut x.slices, &mut slices );
 
-      let col : &( Option< Cow< '_, str > >, usize, usize ) = &x.col_descriptors[ &x.col_order[ 0 ] ];
-      slices[ 0 ] = col.0.as_ref().unwrap();
-
       let mut irow : isize = -1;
-      if x.has_header
-      {
 
-        irow += 1;
-        for ( icol, k ) in x.col_order.iter().enumerate()
-        {
-          let col : &( _, _, _ ) = &x.col_descriptors[ k ];
-          let cell = &col.0;
-
-          if let Some( cell ) = cell
-          {
-
-            string::lines( cell )
-            .enumerate()
-            .for_each( | ( layer, s ) |
-            {
-              let md_index = [ layer, icol, irow as usize ];
-              // println!( "s : {s} | md_index : {md_index:?}" );
-              slices[ x.slices_dim.md_offset( md_index ) ] = s;
-            })
-            ;
-
-          }
-        }
-
-      }
+//       println!( "col_order : {:?}", x.col_order );
+//       println!( "col_descriptors : {:?}", x.col_descriptors.keys() );
+//
+//       let col : &( Option< Cow< '_, str > >, usize, usize ) = &x.col_descriptors[ &x.col_order[ 0 ] ];
+//       println!( "col : {:?}", col );
+//       slices[ 0 ] = col.0.as_ref().unwrap();
+//
+//       let mut irow : isize = -1;
+//       if x.has_header
+//       {
+//
+//         irow += 1;
+//         for ( icol, k ) in x.col_order.iter().enumerate()
+//         {
+//           let col : &( _, _, _ ) = &x.col_descriptors[ k ];
+//           let cell = &col.0;
+//
+//           if let Some( cell ) = cell
+//           {
+//
+//             string::lines( cell )
+//             .enumerate()
+//             .for_each( | ( layer, s ) |
+//             {
+//               let md_index = [ layer, icol, irow as usize ];
+//               // println!( "s : {s} | md_index : {md_index:?}" );
+//               slices[ x.slices_dim.md_offset( md_index ) ] = s;
+//             })
+//             ;
+//
+//           }
+//         }
+//
+//       }
 
       for row_data in x.data.iter()
       {

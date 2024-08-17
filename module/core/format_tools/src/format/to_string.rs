@@ -53,7 +53,7 @@ pub( crate ) mod private
     #[ inline ]
     fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
     {
-      println!( " - WithRef" );
+      // println!( " - WithRef" );
       Cow::Borrowed( self.as_ref() )
     }
   }
@@ -67,7 +67,7 @@ pub( crate ) mod private
     #[ inline ]
     fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
     {
-      println!( " - WithDebug {:?}", self );
+      // println!( " - WithDebug {:?}", self );
       Cow::Owned( format!( "{:?}", self ) )
     }
   }
@@ -81,7 +81,7 @@ pub( crate ) mod private
     #[ inline ]
     fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
     {
-      println!( " - WithDebugMultiline {:#?}", self );
+      // println!( " - WithDebugMultiline {:#?}", self );
       Cow::Owned( format!( "{:#?}", self ) )
     }
   }
@@ -96,7 +96,7 @@ pub( crate ) mod private
     #[ inline ]
     fn to_string_with< 's >( &'s self ) -> Cow< 's, str >
     {
-      println!( " - WithDisplay {}", self );
+      // println!( " - WithDisplay {}", self );
       Cow::Owned( format!( "{}", self ) )
     }
   }
