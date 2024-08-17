@@ -226,8 +226,8 @@ fn filter_col()
   formatter.filter_col = print::No;
 
   let as_table = AsTable::new( &test_objects );
-  // let mut context : Context< '_, _ > = Context::new( &mut output, formatter );
-  let mut context = Context::new( &mut output, formatter );
+  let mut context : Context< '_, _ > = Context::new( &mut output, formatter );
+  // let mut context = Context::new( &mut output, formatter );
   let result = the_module::TableFormatter::fmt( &as_table, &mut context );
   assert!( result.is_ok() );
 

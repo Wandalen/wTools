@@ -43,7 +43,7 @@ pub( crate ) mod private
   /// ```
   #[ derive( Debug, Former ) ]
   // #[ debug ]
-  pub struct Styles< FilterColumnls >
+  pub struct Styles< FilterColumnls = All >
   where
     FilterColumnls : FilterCol,
   {
@@ -94,20 +94,20 @@ pub( crate ) mod private
   }
 
   /// Struct for formatting tables.
-  pub struct Context< 'data, FilterColumnls >
+  pub struct Context< 'buf, FilterColumnls = All >
   where
     FilterColumnls : FilterCol,
   {
-    buf : &'data mut dyn fmt::Write,
+    buf : &'buf mut dyn fmt::Write,
     styles : Styles< FilterColumnls >,
   }
 
-  impl< 'data, FilterColumnls > Context< 'data, FilterColumnls >
+  impl< 'buf, FilterColumnls > Context< 'buf, FilterColumnls >
   where
     FilterColumnls : FilterCol,
   {
     /// Just constructr.
-    pub fn new( buf : &'data mut dyn fmt::Write, styles : Styles< FilterColumnls > ) -> Self
+    pub fn new( buf : &'buf mut dyn fmt::Write, styles : Styles< FilterColumnls > ) -> Self
     {
       Self { buf, styles }
     }
@@ -166,7 +166,7 @@ pub( crate ) mod private
   pub trait TableFormatter< 'data >
   {
     /// Formats the table and writes the result to the given formatter.
-    fn fmt< 'a, FilterColumnls >( &'data self, f : &mut Context< 'a, FilterColumnls > ) -> fmt::Result
+    fn fmt< 'buf, FilterColumnls >( &'data self, f : &mut Context< 'buf, FilterColumnls > ) -> fmt::Result
     where
       FilterColumnls : FilterCol,
     ;
@@ -311,7 +311,7 @@ pub( crate ) mod private
   pub trait FilterCol : fmt::Debug
   {
     /// Filter columns of a table to print it only partially.
-    fn filter_col< CellKey >( &self, key : CellKey ) -> bool
+    fn filter_col< CellKey >( &self, key : &CellKey ) -> bool
     where
       CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     ;
@@ -322,7 +322,8 @@ pub( crate ) mod private
   pub struct All;
   impl FilterCol for All
   {
-    fn filter_col< CellKey >( &self, _key : CellKey ) -> bool
+    #[ inline( always ) ]
+    fn filter_col< CellKey >( &self, _key : &CellKey ) -> bool
     where
       CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     {
@@ -335,13 +336,27 @@ pub( crate ) mod private
   pub struct No;
   impl FilterCol for No
   {
-    fn filter_col< CellKey >( &self, _key : CellKey ) -> bool
+    #[ inline( always ) ]
+    fn filter_col< CellKey >( &self, _key : &CellKey ) -> bool
     where
       CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     {
       false
     }
   }
+
+  // impl< CellKey, F > FilterCol for F
+  // where
+  //   F : Fn( &CellKey ) -> bool,
+  //   CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+  // {
+  //   fn filter_col< CellKey >( &self, key : &CellKey ) -> bool
+  //   where
+  //     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+  //   {
+  //     self.call( key )
+  //   }
+  // }
 
   //
 
@@ -392,7 +407,7 @@ pub( crate ) mod private
           | ( key, val ) |
           {
 
-            if !filter_col.filter_col( key.clone() )
+            if !filter_col.filter_col( &key )
             {
               return None;
             }
