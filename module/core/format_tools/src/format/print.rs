@@ -422,9 +422,9 @@ pub( crate ) mod private
       let slices_len = slices_dim[ 0 ] * slices_dim[ 1 ] * slices_dim[ 2 ];
       let slices : Vec< &str > = vec![ "" ; slices_len ];
 
-      println!( "row_descriptors : {row_descriptors:?}" );
-      println!( "slices_dim : {slices_dim:?}" );
-      println!( "slices_len : {slices_len:?}" );
+      // println!( "row_descriptors : {row_descriptors:?}" );
+      // println!( "slices_dim : {slices_dim:?}" );
+      // println!( "slices_len : {slices_len:?}" );
 
       // println!( "{:?}", self.slices );
 
