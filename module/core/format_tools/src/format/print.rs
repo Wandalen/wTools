@@ -172,8 +172,8 @@ pub( crate ) mod private
               {
                 let col = &x.col_descriptors[ &k ];
                 // let cell_width = x.data[ irow ][ &k ].1[0];
-                let width = col.1;
-                let icol = col.2;
+                let width = col.0;
+                let icol = col.1;
                 // println!( "col : {:?}", col );
                 let md_index = [ islice, icol, irow as usize ];
                 let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
@@ -221,8 +221,8 @@ pub( crate ) mod private
     pub col_order : Vec< CellKey >,
 
     /// Descriptors for each column, including optional title, width, and index.
-    //                             key        string,                      width, index
-    pub col_descriptors : HashMap< CellKey, ( Option< &'data str >, usize, usize ) >,
+    //                             key        width, index
+    pub col_descriptors : HashMap< CellKey, ( usize, usize ) >,
 
     /// Descriptors for each row, including height.
     //                           height
@@ -267,8 +267,8 @@ pub( crate ) mod private
       use md_math::MdOffset;
 
       let mcells = table.mcells();
-      //                                 key        string,               width, index
-      let mut col_descriptors : HashMap< CellKey, ( Option< &'data str >, usize, usize ) > = HashMap::new();
+      //                                 key        width, index
+      let mut col_descriptors : HashMap< CellKey, ( usize, usize ) > = HashMap::new();
       //                               height
       let mut row_descriptors : Vec< ( usize, ) > = Vec::with_capacity( mcells[ 1 ] );
 
@@ -299,12 +299,12 @@ pub( crate ) mod private
             .entry( key.clone() )
             .and_modify( | col |
             {
-              col.1 = col.1.max( sz[ 0 ] );
+              col.0 = col.0.max( sz[ 0 ] );
             })
             .or_insert_with( ||
             {
               col_order.push( key.clone() );
-              ( None, sz[ 0 ], l )
+              ( sz[ 0 ], l )
               // let title = if is_title { Some( val.as_ref() ) } else { None };
               // ( title, sz[ 0 ], l )
             });
