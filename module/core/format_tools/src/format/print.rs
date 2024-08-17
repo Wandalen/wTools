@@ -222,7 +222,7 @@ pub( crate ) mod private
 
     /// Descriptors for each column, including optional title, width, and index.
     //                             key        string,                      width, index
-    pub col_descriptors : HashMap< CellKey, ( Option< Cow< 'data, str > >, usize, usize ) >,
+    pub col_descriptors : HashMap< CellKey, ( Option< &'data str >, usize, usize ) >,
 
     /// Descriptors for each row, including height.
     //                           height
@@ -267,26 +267,25 @@ pub( crate ) mod private
       use md_math::MdOffset;
 
       let mcells = table.mcells();
-      //                                 key        string,                   width, index
-      let mut col_descriptors : HashMap< CellKey, ( Option< Cow< '_, str > >, usize, usize ) > = HashMap::new();
+      //                                 key        string,               width, index
+      let mut col_descriptors : HashMap< CellKey, ( Option< &'data str >, usize, usize ) > = HashMap::new();
       //                               height
       let mut row_descriptors : Vec< ( usize, ) > = Vec::with_capacity( mcells[ 1 ] );
 
       let mut col_order : Vec< CellKey > = Vec::new();
       let mut has_header = false;
 
-      let mut data : Vec< HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > > = Vec::new();
+      let mut data : Vec< HashMap< CellKey, ( Cow< 'data, str >, [ usize ; 2 ] ) > > = Vec::new();
       let rows = table.rows();
       let mut irow : isize = -1;
 
-      let mut row_add = | row : &mut dyn _IteratorTrait< Item = ( CellKey, Cow< 'data, str > ) > |
+      let mut row_add = | row : &'_ mut dyn _IteratorTrait< Item = ( CellKey, Cow< 'data, str > ) > |
       {
 
         irow += 1;
         row_descriptors.push( ( 1, ) );
 
-        let fields : HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > = row
-        // .cells()
+        let fields : HashMap< CellKey, ( Cow< 'data, str >, [ usize ; 2 ] ) > = row
         .map
         (
           | ( key, val ) |
@@ -306,6 +305,8 @@ pub( crate ) mod private
             {
               col_order.push( key.clone() );
               ( None, sz[ 0 ], l )
+              // let title = if is_title { Some( val.as_ref() ) } else { None };
+              // ( title, sz[ 0 ], l )
             });
 
             return ( key, ( val, sz ) );
@@ -328,21 +329,6 @@ pub( crate ) mod private
         let mut row2 =  header.map( | ( key, title ) |
         {
           let title_str : Cow< '_, str > = Cow::Owned( format!( "{}", title ) );
-
-          // let l = col_descriptors.len();
-          // let sz = string::size( &title_str );
-          // col_descriptors
-          // .entry( key.clone() )
-          // .and_modify( | col |
-          // {
-          //   col.1 = col.1.max( sz[ 0 ] );
-          // })
-          // .or_insert_with( ||
-          // {
-          //   col_order.push( key.clone() );
-          //   ( Some( title_str ), sz[ 0 ], l )
-          // });
-
           ( key, title )
         });
 
