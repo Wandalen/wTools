@@ -172,8 +172,6 @@ pub( crate ) mod private
         | x |
         {
 
-          // println!( "{:?}", x.slices );
-
           let cell_prefix = &f.styles.cell_prefix;
           let cell_postfix = &f.styles.cell_postfix;
           let cell_separator = &f.styles.cell_separator;
@@ -201,7 +199,6 @@ pub( crate ) mod private
                 let cell_width = x.data[ irow ][ &k ].1[0];
                 let width = col.0;
                 let icol = col.1;
-                // println!( "col : {:?}", col );
                 let md_index = [ islice, icol, irow as usize ];
                 let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
 
@@ -422,12 +419,6 @@ pub( crate ) mod private
       let slices_len = slices_dim[ 0 ] * slices_dim[ 1 ] * slices_dim[ 2 ];
       let slices : Vec< &str > = vec![ "" ; slices_len ];
 
-      // println!( "row_descriptors : {row_descriptors:?}" );
-      // println!( "slices_dim : {slices_dim:?}" );
-      // println!( "slices_len : {slices_len:?}" );
-
-      // println!( "{:?}", self.slices );
-
       let mut x = FormatExtract::< '_, CellKey >
       {
         mcells,
@@ -446,41 +437,6 @@ pub( crate ) mod private
       std::mem::swap( &mut x.slices, &mut slices );
 
       let mut irow : isize = -1;
-
-//       println!( "col_order : {:?}", x.col_order );
-//       println!( "col_descriptors : {:?}", x.col_descriptors.keys() );
-//
-//       let col : &( Option< Cow< '_, str > >, usize, usize ) = &x.col_descriptors[ &x.col_order[ 0 ] ];
-//       println!( "col : {:?}", col );
-//       slices[ 0 ] = col.0.as_ref().unwrap();
-//
-//       let mut irow : isize = -1;
-//       if x.has_header
-//       {
-//
-//         irow += 1;
-//         for ( icol, k ) in x.col_order.iter().enumerate()
-//         {
-//           let col : &( _, _, _ ) = &x.col_descriptors[ k ];
-//           let cell = &col.0;
-//
-//           if let Some( cell ) = cell
-//           {
-//
-//             string::lines( cell )
-//             .enumerate()
-//             .for_each( | ( layer, s ) |
-//             {
-//               let md_index = [ layer, icol, irow as usize ];
-//               // println!( "s : {s} | md_index : {md_index:?}" );
-//               slices[ x.slices_dim.md_offset( md_index ) ] = s;
-//             })
-//             ;
-//
-//           }
-//         }
-//
-//       }
 
       for row_data in x.data.iter()
       {
