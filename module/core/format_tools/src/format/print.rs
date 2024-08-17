@@ -178,7 +178,7 @@ pub( crate ) mod private
   for AsTable< 'data, T, RowKey, Row, CellKey, CellFormat >
   where
     Self : TableRows< CellKey = CellKey, CellFormat = CellFormat, RowKey = RowKey, Row = Row >,
-    Self : TableHeader< CellKey >,
+    Self : TableHeader< CellKey = CellKey >,
     Self : TableSize,
     Row : Clone + Cells< CellKey, CellFormat >,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
@@ -377,7 +377,7 @@ pub( crate ) mod private
       't : 'data,
       // Table : TableRows< RowKey, Row, CellKey, CellFormat >,
       Table : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellFormat = CellFormat >,
-      Table : TableHeader< CellKey >,
+      Table : TableHeader< CellKey = CellKey >,
       Table : TableSize,
       Row : Clone + Cells< CellKey, CellFormat > + 'data,
       CellFormat : Copy + 'static,

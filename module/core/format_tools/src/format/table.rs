@@ -140,13 +140,16 @@ pub( crate ) mod private
   // =
 
   /// Trait returning headers of a table if any.
-  pub trait TableHeader< CellKey >
+  pub trait TableHeader
+  where
+    Self::CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
   {
+    type CellKey;
     /// Returns an iterator over all fields of the specified type within the entity.
-    fn header( &self ) -> Option< impl IteratorTrait< Item = ( CellKey, Cow< '_, str > ) > >;
+    fn header( &self ) -> Option< impl IteratorTrait< Item = ( Self::CellKey, Cow< '_, str > ) > >;
   }
 
-  impl< T, RowKey, Row, CellKey, CellFormat > TableHeader< CellKey >
+  impl< T, RowKey, Row, CellKey, CellFormat > TableHeader
   for AsTable< '_, T, RowKey, Row, CellKey, CellFormat >
   where
     Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellFormat = CellFormat >,
@@ -156,6 +159,7 @@ pub( crate ) mod private
     CellKey : AsRef< str >,
     CellFormat : Copy + 'static,
   {
+    type CellKey = CellKey;
 
     fn header( &self ) -> Option< impl IteratorTrait< Item = ( CellKey, Cow< '_, str > ) > >
     {
