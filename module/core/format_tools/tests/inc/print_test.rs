@@ -171,20 +171,42 @@ fn custom_formatter()
 
   let mut output = String::new();
   let mut formatter = the_module::Styles::default();
-  formatter.cell_separator = " | ".into();
+
+  formatter.cell_prefix = "( ".into();
+  formatter.cell_postfix = " )".into();
+  formatter.cell_separator = "|".into();
+
   formatter.row_prefix = "> ".into();
-  formatter.row_postfix = " <\n".into();
+  formatter.row_postfix = " <".into();
+  formatter.row_separator = "\n".into();
 
   let as_table = AsTable::new( &test_objects );
   let mut context = Context::new( &mut output, formatter );
-  let got = the_module::TableFormatter::fmt( &as_table, &mut context );
-  assert!( got.is_ok() );
+  let result = the_module::TableFormatter::fmt( &as_table, &mut context );
+  assert!( result.is_ok() );
 
   println!( "\noutput\n{output}" );
   assert!( output.contains( "id" ) );
   assert!( output.contains( "created_at" ) );
   assert!( output.contains( "file_ids" ) );
   assert!( output.contains( "tools" ) );
+
+  let exp = r#"> ( id )|( created_at )|(          file_ids          )|(           tools            ) <
+> ( 1  )|( 1627845583 )|(        [                   )|(                            ) <
+> (    )|(            )|(            "file1",        )|(                            ) <
+> (    )|(            )|(            "file2",        )|(                            ) <
+> (    )|(            )|(        ]                   )|(                            ) <
+> ( 2  )|(     13     )|( [                          )|( [                          ) <
+> (    )|(            )|(     "file3",               )|(     {                      ) <
+> (    )|(            )|(     "file4\nmore details", )|(         "tool1": "value1", ) <
+> (    )|(            )|( ]                          )|(     },                     ) <
+> (    )|(            )|(                            )|(     {                      ) <
+> (    )|(            )|(                            )|(         "tool2": "value2", ) <
+> (    )|(            )|(                            )|(     },                     ) <
+> (    )|(            )|(                            )|( ]                          ) <"#;
+
+  a_id!( output.as_str(), exp );
+
 
 }
 

@@ -44,24 +44,42 @@ pub( crate ) mod private
   #[ derive( Debug, Former ) ]
   pub struct Styles
   {
+
+    /// Delimiter for adding prefix to a cell.
+    pub cell_prefix : String,
+    /// Delimiter for adding postfix to a cell.
+    pub cell_postfix : String,
     /// Delimiter for separating table columns.
     pub cell_separator : String,
 
     /// Delimiter for adding prefix to a row.
     pub row_prefix : String,
-
     /// Delimiter for adding postfix to a row.
     pub row_postfix : String,
+    /// Delimiter for adding in between of rows.
+    pub row_separator : String,
+
   }
 
   impl Default for Styles
   {
     fn default() -> Self
     {
+      let cell_prefix = "".to_string();
+      let cell_postfix = "".to_string();
       let cell_separator = " ".to_string();
       let row_prefix = "".to_string();
-      let row_postfix = "\n".to_string();
-      Styles { cell_separator, row_prefix, row_postfix }
+      let row_postfix = "".to_string();
+      let row_separator = "\n".to_string();
+      Styles
+      {
+        cell_prefix,
+        cell_postfix,
+        cell_separator,
+        row_prefix,
+        row_postfix,
+        row_separator,
+      }
     }
   }
 
@@ -156,9 +174,12 @@ pub( crate ) mod private
 
           // println!( "{:?}", x.slices );
 
+          let cell_prefix = &f.styles.cell_prefix;
+          let cell_postfix = &f.styles.cell_postfix;
           let cell_separator = &f.styles.cell_separator;
           let row_prefix = &f.styles.row_prefix;
           let row_postfix = &f.styles.row_postfix;
+          let row_separator = &f.styles.row_separator;
 
           for ( irow, row ) in x.row_descriptors.iter().enumerate()
           {
@@ -166,6 +187,12 @@ pub( crate ) mod private
 
             for islice in 0..height
             {
+
+              if irow > 0
+              {
+                write!( f.buf, "{}", row_separator )?;
+              }
+
               write!( f.buf, "{}", row_prefix )?;
 
               for k in &x.col_order
@@ -185,6 +212,8 @@ pub( crate ) mod private
                   write!( f.buf, "{}", cell_separator )?;
                 }
 
+                write!( f.buf, "{}", cell_prefix )?;
+
                 let lspaces = ( width - cell_width ) / 2;
                 let rspaces = ( width - cell_width + 1 ) / 2 + cell_width - slice.len();
                 // println!( "icol : {icol} | irow : {irow} | width : {width} | cell_width : {cell_width} | lspaces : {lspaces} | rspaces : {rspaces}" );
@@ -198,6 +227,8 @@ pub( crate ) mod private
                 {
                   write!( f.buf, "{:>width$}", " ", width = rspaces )?;
                 }
+
+                write!( f.buf, "{}", cell_postfix )?;
               }
 
               write!( f.buf, "{}", row_postfix )?;
@@ -340,7 +371,7 @@ pub( crate ) mod private
 
         let mut row2 =  header.map( | ( key, title ) |
         {
-          let title_str : Cow< '_, str > = Cow::Owned( format!( "{}", title ) );
+          // let title_str : Cow< '_, str > = Cow::Owned( format!( "{}", title ) );
           ( key, title )
         });
 
