@@ -319,9 +319,7 @@ pub( crate ) mod private
 
       }
 
-      // let row : &mut IteratorTrait< Item = Cow< 'data, str > >;
-      let mut row_add = | row : &'data mut dyn _IteratorTrait< Item = ( CellKey, Cow< 'data, str > ) > |
-      // let mut row_add = | row |
+      let mut row_add = | row : &mut dyn _IteratorTrait< Item = ( CellKey, Cow< 'data, str > ) > |
       {
 
         row_number += 1;
@@ -333,18 +331,6 @@ pub( crate ) mod private
         (
           | ( key, val ) |
           {
-
-            // let val = match val.0
-            // {
-            //   Some( val ) =>
-            //   {
-            //     val
-            //   }
-            //   None =>
-            //   {
-            //     Cow::Borrowed( "" )
-            //   }
-            // };
 
             let sz = string::size( &val );
             let l = col_descriptors.len();
@@ -376,12 +362,7 @@ pub( crate ) mod private
       {
         // assert!( row.cells().len() <= usize::MAX, "Row of a table has too many cells" );
 
-        // row_add( row );
-
-        row_number += 1;
-        row_descriptors.push( ( 1, ) );
-
-        let fields : HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > = row
+        let mut row2 = row
         .cells()
         .map
         (
@@ -400,62 +381,11 @@ pub( crate ) mod private
               }
             };
 
-            let sz = string::size( &val );
-            let l = col_descriptors.len();
-            row_descriptors[ row_number as usize ] = ( row_descriptors[ row_number as usize ].0.max( sz[ 1 ] ), );
-
-            col_descriptors
-            .entry( key.clone() )
-            .and_modify( | col |
-            {
-              col.1 = col.1.max( sz[ 0 ] );
-            })
-            .or_insert_with( ||
-            {
-              col_order.push( key.clone() );
-              ( None, sz[ 0 ], l + 1 )
-            });
-
-            return ( key, ( val, sz ) );
+            return ( key.clone(), val );
           }
-        )
-//         .map
-//         (
-//           | ( key, cell ) |
-//           {
-//             let r = match cell.0
-//             {
-//               Some( cell ) =>
-//               {
-//                 ( key, cell )
-//               }
-//               None =>
-//               {
-//                 ( key, Cow::Borrowed( "" ) )
-//               }
-//             };
-//
-//             let sz = string::size( &r.1 );
-//             let l = col_descriptors.len();
-//             row_descriptors[ row_number as usize ] = ( row_descriptors[ row_number as usize ].0.max( sz[ 1 ] ), );
-//
-//             col_descriptors
-//             .entry( r.0.clone() )
-//             .and_modify( | col |
-//             {
-//               col.1 = col.1.max( sz[ 0 ] );
-//             })
-//             .or_insert_with( ||
-//             {
-//               col_order.push( r.0.clone() );
-//               ( None, sz[ 0 ], l + 1 )
-//             });
-//
-//             return ( r.0, ( r.1, sz ) );
-//           }
-//         )
-        .collect();
-        data.push( fields );
+        );
+
+        row_add( &mut row2 );
 
       }
 
