@@ -43,7 +43,9 @@ pub( crate ) mod private
   /// ```
   #[ derive( Debug, Former ) ]
   // #[ debug ]
-  pub struct Styles
+  pub struct Styles< FilterColumnls >
+  where
+    FilterColumnls : FilterCol,
   {
 
     /// Delimiter for adding prefix to a cell.
@@ -60,19 +62,25 @@ pub( crate ) mod private
     /// Delimiter for adding in between of rows.
     pub row_separator : String,
 
+    /// Filter columns out.
+    pub filter_col : FilterColumnls,
+
   }
 
-  impl Default for Styles
+  impl< FilterColumnls > Default for Styles< FilterColumnls >
+  where
+    FilterColumnls : FilterCol + Default,
   {
     fn default() -> Self
     {
       let cell_prefix = "".to_string();
       let cell_postfix = "".to_string();
-      let cell_separator = " ".to_string();
-      let row_prefix = "".to_string();
-      let row_postfix = "".to_string();
+      let cell_separator = " │ ".to_string();
+      let row_prefix = "│ ".to_string();
+      let row_postfix = " │".to_string();
       let row_separator = "\n".to_string();
-      Styles
+      let filter_col = FilterColumnls::default();
+      Self
       {
         cell_prefix,
         cell_postfix,
@@ -80,27 +88,34 @@ pub( crate ) mod private
         row_prefix,
         row_postfix,
         row_separator,
+        filter_col,
       }
     }
   }
 
   /// Struct for formatting tables.
-  pub struct Context< 'data >
+  pub struct Context< 'data, FilterColumnls >
+  where
+    FilterColumnls : FilterCol,
   {
     buf : &'data mut dyn fmt::Write,
-    styles : Styles,
+    styles : Styles< FilterColumnls >,
   }
 
-  impl< 'data > Context< 'data >
+  impl< 'data, FilterColumnls > Context< 'data, FilterColumnls >
+  where
+    FilterColumnls : FilterCol,
   {
     /// Just constructr.
-    pub fn new( buf : &'data mut dyn fmt::Write, styles : Styles ) -> Self
+    pub fn new( buf : &'data mut dyn fmt::Write, styles : Styles< FilterColumnls > ) -> Self
     {
       Self { buf, styles }
     }
   }
 
-  impl fmt::Debug for Context< '_ >
+  impl< FilterColumnls > fmt::Debug for Context< '_, FilterColumnls >
+  where
+    FilterColumnls : FilterCol,
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
@@ -130,7 +145,9 @@ pub( crate ) mod private
     fn table_to_string( &'data self ) -> String
     {
       let mut output = String::new();
-      let mut context = Context
+
+      let mut context: Context< '_, All > = Context
+      // let mut context = Context
       {
         buf : &mut output,
         styles : Styles::default(),
@@ -146,10 +163,13 @@ pub( crate ) mod private
   /// to specify how a table should be formatted and displayed.
   ///
 
-  pub trait TableFormatter< 'b >
+  pub trait TableFormatter< 'data >
   {
     /// Formats the table and writes the result to the given formatter.
-    fn fmt< 'data >( &'b self, f : &mut Context< 'data > ) -> fmt::Result;
+    fn fmt< 'a, FilterColumnls >( &'data self, f : &mut Context< 'a, FilterColumnls > ) -> fmt::Result
+    where
+      FilterColumnls : FilterCol,
+    ;
   }
 
   /// A trait for formatting tables.
@@ -163,7 +183,9 @@ pub( crate ) mod private
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellFormat : Copy + 'static,
   {
-    fn fmt( &'data self, f : &mut Context< '_ > ) -> fmt::Result
+    fn fmt< 'a, FilterColumnls >( &'data self, f : &mut Context< 'a, FilterColumnls > ) -> fmt::Result
+    where
+      FilterColumnls : FilterCol,
     {
       use md_math::MdOffset;
 
@@ -286,7 +308,7 @@ pub( crate ) mod private
   }
 
   /// Filter columns of a table to print it only partially.
-  pub trait FilterCol
+  pub trait FilterCol : fmt::Debug
   {
     /// Filter columns of a table to print it only partially.
     fn filter_col< CellKey >( &self, key : CellKey ) -> bool
@@ -296,6 +318,7 @@ pub( crate ) mod private
   }
 
   /// Filter passing all elements.
+  #[ derive( Debug, Default, PartialEq ) ]
   pub struct All;
   impl FilterCol for All
   {
@@ -308,6 +331,7 @@ pub( crate ) mod private
   }
 
   /// Filter skipping all elements.
+  #[ derive( Debug, Default, PartialEq ) ]
   pub struct No;
   impl FilterCol for No
   {
@@ -519,6 +543,14 @@ pub mod own
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
+
+  #[ doc( inline ) ]
+  pub use private::
+  {
+    All,
+    No,
+  };
+
 }
 
 /// Orphan namespace of the module.
@@ -535,6 +567,7 @@ pub mod orphan
 pub mod exposed
 {
   use super::*;
+  pub use super::super::print;
 
   #[ doc( inline ) ]
   pub use private::

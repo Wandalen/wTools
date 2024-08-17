@@ -3,6 +3,7 @@ use super::*;
 
 use the_module::
 {
+  print,
   Fields,
   IteratorTrait,
   AsTable,
@@ -135,7 +136,7 @@ fn table_to_string()
   dbg!( header.collect::< Vec< _ > >() );
 
   let mut output = String::new();
-  let mut context = Context::new( &mut output, Default::default() );
+  let mut context : Context< '_, print::All > = Context::new( &mut output, Default::default() );
   let got = the_module::TableFormatter::fmt( &as_table, &mut context );
   assert!( got.is_ok() );
   println!( "{}", &output );
@@ -163,6 +164,8 @@ fn table_to_string()
 
 }
 
+//
+
 #[ test ]
 fn custom_formatter()
 {
@@ -181,7 +184,7 @@ fn custom_formatter()
   formatter.row_separator = "\n".into();
 
   let as_table = AsTable::new( &test_objects );
-  let mut context = Context::new( &mut output, formatter );
+  let mut context : Context< '_, print::All > = Context::new( &mut output, formatter );
   let result = the_module::TableFormatter::fmt( &as_table, &mut context );
   assert!( result.is_ok() );
 
@@ -204,6 +207,42 @@ fn custom_formatter()
 >(    )|(            )|(                            )|(         "tool2": "value2", )<
 >(    )|(            )|(                            )|(     },                     )<
 >(    )|(            )|(                            )|( ]                          )<"#;
+
+  a_id!( output.as_str(), exp );
+
+
+}
+
+//
+
+#[ test ]
+fn filter_col()
+{
+  let test_objects = test_objects_gen();
+
+  let mut output = String::new();
+  let mut formatter = the_module::Styles::default();
+
+  // formatter.
+
+  let as_table = AsTable::new( &test_objects );
+  let mut context : Context< '_, print::All > = Context::new( &mut output, formatter );
+  let result = the_module::TableFormatter::fmt( &as_table, &mut context );
+  assert!( result.is_ok() );
+
+  let exp = r#"│ id │ created_at │          file_ids          │           tools            │
+│ 1  │ 1627845583 │        [                   │                            │
+│    │            │            "file1",        │                            │
+│    │            │            "file2",        │                            │
+│    │            │        ]                   │                            │
+│ 2  │     13     │ [                          │ [                          │
+│    │            │     "file3",               │     {                      │
+│    │            │     "file4\nmore details", │         "tool1": "value1", │
+│    │            │ ]                          │     },                     │
+│    │            │                            │     {                      │
+│    │            │                            │         "tool2": "value2", │
+│    │            │                            │     },                     │
+│    │            │                            │ ]                          │"#;
 
   a_id!( output.as_str(), exp );
 
