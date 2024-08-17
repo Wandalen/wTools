@@ -43,9 +43,9 @@ pub( crate ) mod private
   /// ```
   #[ derive( Debug, Former ) ]
   // #[ debug ]
-  pub struct Styles< FilterColumnls = All >
-  where
-    FilterColumnls : FilterCol,
+  pub struct Styles
+  // where
+    // FilterColumnls : FilterCol,
   {
 
     /// Delimiter for adding prefix to a cell.
@@ -62,14 +62,14 @@ pub( crate ) mod private
     /// Delimiter for adding in between of rows.
     pub row_separator : String,
 
-    /// Filter columns out.
-    pub filter_col : FilterColumnls,
+    // /// Filter columns out.
+    // pub filter_col : FilterColumnls,
 
   }
 
-  impl< FilterColumnls > Default for Styles< FilterColumnls >
-  where
-    FilterColumnls : FilterCol + Default,
+  impl Default for Styles
+  // where
+    // FilterColumnls : FilterCol + Default,
   {
     fn default() -> Self
     {
@@ -79,7 +79,7 @@ pub( crate ) mod private
       let row_prefix = "│ ".to_string();
       let row_postfix = " │".to_string();
       let row_separator = "\n".to_string();
-      let filter_col = FilterColumnls::default();
+      // let filter_col = FilterColumnls::default();
       Self
       {
         cell_prefix,
@@ -88,34 +88,35 @@ pub( crate ) mod private
         row_prefix,
         row_postfix,
         row_separator,
-        filter_col,
+        // filter_col,
       }
     }
   }
 
   /// Struct for formatting tables.
-  pub struct Context< 'buf, FilterColumnls = All >
-  where
-    FilterColumnls : FilterCol,
+  pub struct Context< 'buf >
+  // where
+  //   FilterColumnls : FilterCol,
   {
     buf : &'buf mut dyn fmt::Write,
-    styles : Styles< FilterColumnls >,
+    styles : Styles,
+    // styles : Styles< FilterColumnls >,
   }
 
-  impl< 'buf, FilterColumnls > Context< 'buf, FilterColumnls >
-  where
-    FilterColumnls : FilterCol,
+  impl< 'buf > Context< 'buf >
+  // where
+  //   FilterColumnls : FilterCol,
   {
     /// Just constructr.
-    pub fn new( buf : &'buf mut dyn fmt::Write, styles : Styles< FilterColumnls > ) -> Self
+    pub fn new( buf : &'buf mut dyn fmt::Write, styles : Styles ) -> Self
     {
       Self { buf, styles }
     }
   }
 
-  impl< FilterColumnls > fmt::Debug for Context< '_, FilterColumnls >
-  where
-    FilterColumnls : FilterCol,
+  impl fmt::Debug for Context< '_ >
+  // where
+  //   FilterColumnls : FilterCol,
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
@@ -146,8 +147,8 @@ pub( crate ) mod private
     {
       let mut output = String::new();
 
-      let mut context: Context< '_, All > = Context
-      // let mut context = Context
+      // let mut context: Context< '_, All > = Context
+      let mut context = Context
       {
         buf : &mut output,
         styles : Styles::default(),
@@ -166,9 +167,9 @@ pub( crate ) mod private
   pub trait TableFormatter< 'data >
   {
     /// Formats the table and writes the result to the given formatter.
-    fn fmt< 'buf, FilterColumnls >( &'data self, f : &mut Context< 'buf, FilterColumnls > ) -> fmt::Result
-    where
-      FilterColumnls : FilterCol,
+    fn fmt< 'buf >( &'data self, f : &mut Context< 'buf > ) -> fmt::Result
+    // where
+    //   FilterColumnls : FilterCol,
     ;
   }
 
@@ -183,9 +184,9 @@ pub( crate ) mod private
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellFormat : Copy + 'static,
   {
-    fn fmt< 'a, FilterColumnls >( &'data self, f : &mut Context< 'a, FilterColumnls > ) -> fmt::Result
-    where
-      FilterColumnls : FilterCol,
+    fn fmt< 'a >( &'data self, f : &mut Context< 'a > ) -> fmt::Result
+    // where
+    //   FilterColumnls : FilterCol,
     {
       use md_math::MdOffset;
 

@@ -136,7 +136,8 @@ fn table_to_string()
   dbg!( header.collect::< Vec< _ > >() );
 
   let mut output = String::new();
-  let mut context : Context< '_, print::All > = Context::new( &mut output, Default::default() );
+  let mut context = Context::new( &mut output, Default::default() );
+  // let mut context : Context< '_, print::All > = Context::new( &mut output, Default::default() );
   let got = the_module::TableFormatter::fmt( &as_table, &mut context );
   assert!( got.is_ok() );
   println!( "{}", &output );
@@ -184,7 +185,8 @@ fn custom_formatter()
   formatter.row_separator = "\n".into();
 
   let as_table = AsTable::new( &test_objects );
-  let mut context : Context< '_, print::All > = Context::new( &mut output, formatter );
+  // let mut context : Context< '_, print::All > = Context::new( &mut output, formatter );
+  let mut context = Context::new( &mut output, formatter );
   let result = the_module::TableFormatter::fmt( &as_table, &mut context );
   assert!( result.is_ok() );
 
@@ -223,11 +225,11 @@ fn filter_col()
   let mut output = String::new();
   let mut formatter = the_module::Styles::default();
 
-  formatter.filter_col = print::No;
+  // formatter.filter_col = print::No;
 
   let as_table = AsTable::new( &test_objects );
-  let mut context : Context< '_, _ > = Context::new( &mut output, formatter );
-  // let mut context = Context::new( &mut output, formatter );
+  // let mut context : Context< '_, _ > = Context::new( &mut output, formatter );
+  let mut context = Context::new( &mut output, formatter );
   let result = the_module::TableFormatter::fmt( &as_table, &mut context );
   assert!( result.is_ok() );
 
