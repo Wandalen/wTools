@@ -286,21 +286,22 @@ pub( crate ) mod private
   }
 
   /// Filter columns of a table to print it only partially.
-  pub trait FilterCol< CellKey >
-  where
-    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+  pub trait FilterCol
   {
     /// Filter columns of a table to print it only partially.
-    fn filter_col( &self, key : CellKey ) -> bool;
+    fn filter_col< CellKey >( &self, key : CellKey ) -> bool
+    where
+      CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+    ;
   }
 
   /// Filter passing all elements.
   pub struct All;
-  impl< CellKey > FilterCol< CellKey > for All
-  where
-    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+  impl FilterCol for All
   {
-    fn filter_col( &self, _key : CellKey ) -> bool
+    fn filter_col< CellKey >( &self, _key : CellKey ) -> bool
+    where
+      CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     {
       true
     }
@@ -308,11 +309,11 @@ pub( crate ) mod private
 
   /// Filter skipping all elements.
   pub struct No;
-  impl< CellKey > FilterCol< CellKey > for No
-  where
-    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+  impl FilterCol for No
   {
-    fn filter_col( &self, _key : CellKey ) -> bool
+    fn filter_col< CellKey >( &self, _key : CellKey ) -> bool
+    where
+      CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     {
       false
     }
@@ -328,7 +329,7 @@ pub( crate ) mod private
     pub fn extract< 't, Table, RowKey, Row, CellFormat > // xxx : RowKey?
     (
       table : &'t Table,
-      _filter_col : impl FilterCol< CellKey >,
+      filter_col : impl FilterCol,
       callback : impl for< 'a2 > FnOnce( &'a2 FormatExtract< 'a2, CellKey > ) -> fmt::Result,
     )
     -> fmt::Result
@@ -362,10 +363,15 @@ pub( crate ) mod private
         row_descriptors.push( ( 1, ) );
 
         let fields : HashMap< CellKey, ( Cow< 'data, str >, [ usize ; 2 ] ) > = row
-        .map
+        .filter_map
         (
           | ( key, val ) |
           {
+
+            if !filter_col.filter_col( key.clone() )
+            {
+              return None;
+            }
 
             let sz = string::size( &val );
             let l = col_descriptors.len();
@@ -385,7 +391,7 @@ pub( crate ) mod private
               // ( title, sz[ 0 ], l )
             });
 
-            return ( key, ( val, sz ) );
+            return Some( ( key, ( val, sz ) ) );
           }
         )
         .collect();
