@@ -164,27 +164,27 @@ pub( crate ) mod private
           {
             let height = row.0;
 
-            for layer in 0..height
+            for islice in 0..height
             {
               write!( f.buf, "{}", row_prefix )?;
 
               for k in &x.col_order
               {
                 let col = &x.col_descriptors[ &k ];
+                // let cell_width = x.data[ irow ][ &k ].1[0];
                 let width = col.1;
                 let icol = col.2;
-                let md_index = [ layer, icol, irow as usize ];
+                let md_index = [ islice, icol, irow as usize ];
+                let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
 
-                let cell = x.slices[ x.slices_dim.md_offset( md_index ) ];
-
-                // println!( "md_index : {md_index:?} | md_offset : {} | cell : {cell}", x.slices_dim.md_offset( md_index ) );
+                // println!( "md_index : {md_index:?} | md_offset : {} | slice : {slice}", x.slices_dim.md_offset( md_index ) );
 
                 if icol > 0
                 {
                   write!( f.buf, "{}", cell_separator )?;
                 }
 
-                write!( f.buf, "{:^width$}", cell, width = width )?;
+                write!( f.buf, "{:^width$}", slice, width = width )?;
               }
 
               write!( f.buf, "{}", row_postfix )?;
@@ -220,7 +220,7 @@ pub( crate ) mod private
     pub col_order : Vec< CellKey >,
 
     /// Descriptors for each column, including optional title, width, and index.
-    //                             key        string,                   width, index
+    //                             key        string,                      width, index
     pub col_descriptors : HashMap< CellKey, ( Option< Cow< 'data, str > >, usize, usize ) >,
 
     /// Descriptors for each row, including height.
@@ -228,7 +228,7 @@ pub( crate ) mod private
     pub row_descriptors : Vec< ( usize, ) >,
 
     /// Extracted data for each cell, including string content and size.
-    //                           key, string,           size,
+    //                        key,      string,              size,
     pub data : Vec< HashMap< CellKey, ( Cow< 'data, str >, [ usize ; 2 ] ) > >,
 
     /// Dimensions of slices for retrieving data from multi-matrix.
@@ -274,12 +274,16 @@ pub( crate ) mod private
       let mut col_order : Vec< CellKey > = Vec::new();
       let mut has_header = false;
 
+      let mut data : Vec< HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > > = Vec::new();
+      let rows = table.rows();
+
       // process header first
 
       let mut row_number : isize = -1;
       if let Some( header ) = table.header()
       {
-        assert!( header.len() <= usize::MAX, "Header of a table has too many cells" );
+        rows.len().checked_add( 1 ).expect( "Table has too many rows" );
+        // assert!( header.len() <= usize::MAX, "Header of a table has too many cells" );
         has_header = true;
         row_number = 0;
         row_descriptors.push( ( 1, ) );
@@ -302,6 +306,8 @@ pub( crate ) mod private
             ( Some( title_str ), sz[ 0 ], l )
           });
 
+          // xxx
+
           row_descriptors[ row_number as usize ] = ( row_descriptors[ row_number as usize ].0.max( sz[ 1 ] ), );
           debug_assert!( row_descriptors.len() == ( row_number as usize ) + 1 );
 
@@ -310,12 +316,10 @@ pub( crate ) mod private
       }
 
       // Collect rows
-      //                           key,       string,         size,
-      let mut data : Vec< HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > > = Vec::new();
-      assert!( table.rows().len() <= usize::MAX, "Table has too many rows" );
-      for row in table.rows()
+      //                           key,       string,           size,
+      for row in rows
       {
-        assert!( row.cells().len() <= usize::MAX, "Row of a table has too many cells" );
+        // assert!( row.cells().len() <= usize::MAX, "Row of a table has too many cells" );
 
         row_number += 1;
         row_descriptors.push( ( 1, ) );
