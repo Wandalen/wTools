@@ -178,7 +178,7 @@ pub( crate ) mod private
           let cell_postfix = &f.styles.cell_postfix;
           let cell_separator = &f.styles.cell_separator;
           let row_prefix = &f.styles.row_prefix;
-          let row_postfix = &f.styles.row_postfix;q
+          let row_postfix = &f.styles.row_postfix;
           let row_separator = &f.styles.row_separator;
 
           for ( irow, row ) in x.row_descriptors.iter().enumerate()
