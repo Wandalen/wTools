@@ -72,6 +72,7 @@ pub mod exposed
   {
     Fields,
     IteratorTrait,
+    _IteratorTrait,
   };
 
 }

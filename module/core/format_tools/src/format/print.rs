@@ -249,19 +249,20 @@ pub( crate ) mod private
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
   {
 
-    pub fn extract< 't, Table, RowKey, Row, CellFormat >
+    pub fn extract< 't, Table, RowKey, Row, CellFormat > // xxx : RowKey?
     (
       table : &'t Table,
       callback : impl for< 'a2 > FnOnce( &'a2 FormatExtract< 'a2, CellKey > ) -> fmt::Result,
     )
     -> fmt::Result
     where
+      't : 'data,
       Table : TableRows< RowKey, Row, CellKey, CellFormat >,
       Table : TableHeader< CellKey >,
       Table : TableSize,
       Row : Clone + Cells< CellKey, CellFormat > + 'data,
       CellFormat : Copy + 'static,
-      't : 'data,
+      // Cows : IteratorTrait< Item = Cow< 'data, str > >,
     {
       use md_math::MdOffset;
 
@@ -318,29 +319,32 @@ pub( crate ) mod private
 
       }
 
-      let mut row_add = | row : &'data Row |
+      // let row : &mut IteratorTrait< Item = Cow< 'data, str > >;
+      let mut row_add = | row : &'data mut dyn _IteratorTrait< Item = ( CellKey, Cow< 'data, str > ) > |
+      // let mut row_add = | row |
       {
 
         row_number += 1;
         row_descriptors.push( ( 1, ) );
 
         let fields : HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > = row
-        .cells()
+        // .cells()
         .map
         (
           | ( key, val ) |
           {
-            let val = match val.0
-            {
-              Some( val ) =>
-              {
-                val
-              }
-              None =>
-              {
-                Cow::Borrowed( "" )
-              }
-            };
+
+            // let val = match val.0
+            // {
+            //   Some( val ) =>
+            //   {
+            //     val
+            //   }
+            //   None =>
+            //   {
+            //     Cow::Borrowed( "" )
+            //   }
+            // };
 
             let sz = string::size( &val );
             let l = col_descriptors.len();
@@ -372,13 +376,49 @@ pub( crate ) mod private
       {
         // assert!( row.cells().len() <= usize::MAX, "Row of a table has too many cells" );
 
-        row_add( row );
+        // row_add( row );
 
-//         row_number += 1;
-//         row_descriptors.push( ( 1, ) );
-//
-//         let fields : HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > = row
-//         .cells()
+        row_number += 1;
+        row_descriptors.push( ( 1, ) );
+
+        let fields : HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > = row
+        .cells()
+        .map
+        (
+          | ( key, val ) |
+          {
+
+            let val = match val.0
+            {
+              Some( val ) =>
+              {
+                val
+              }
+              None =>
+              {
+                Cow::Borrowed( "" )
+              }
+            };
+
+            let sz = string::size( &val );
+            let l = col_descriptors.len();
+            row_descriptors[ row_number as usize ] = ( row_descriptors[ row_number as usize ].0.max( sz[ 1 ] ), );
+
+            col_descriptors
+            .entry( key.clone() )
+            .and_modify( | col |
+            {
+              col.1 = col.1.max( sz[ 0 ] );
+            })
+            .or_insert_with( ||
+            {
+              col_order.push( key.clone() );
+              ( None, sz[ 0 ], l + 1 )
+            });
+
+            return ( key, ( val, sz ) );
+          }
+        )
 //         .map
 //         (
 //           | ( key, cell ) |
@@ -414,8 +454,8 @@ pub( crate ) mod private
 //             return ( r.0, ( r.1, sz ) );
 //           }
 //         )
-//         .collect();
-//         data.push( fields );
+        .collect();
+        data.push( fields );
 
       }
 
