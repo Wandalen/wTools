@@ -24,16 +24,12 @@ pub( crate ) mod private
   /// A trait for iterating over all cells of a row.
   pub trait Cells< CellKey, CellFormat >
   where
-    // Cell : std::borrow::ToOwned + ?Sized,
     CellFormat : Copy + 'static,
   {
     /// Returns an iterator over all cells of the row.
-    // fn cells( &self ) -> impl IteratorTrait< Item = ( CellKey, MaybeAs< '_, str, CellFormat > ) >
-    // fn cells< 'a >( &'a self ) -> impl IteratorTrait< Item = ( CellKey, MaybeAs< 'a, str, CellFormat > ) >
     fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( CellKey, MaybeAs< 'b, str, CellFormat > ) >
     where
       'a : 'b,
-      // Cell : 'a,
     ;
   }
 
@@ -41,17 +37,13 @@ pub( crate ) mod private
   for Row
   where
     for< 'b > Row : Fields< CellKey, MaybeAs< 'b, str, CellFormat > >,
-    CellFormat : Copy + 'static,
     for< 'b > MaybeAs< 'b, str, CellFormat > : From< < Row as Fields< CellKey, MaybeAs< 'b, str, CellFormat > > >::Value< 'b > >,
+    CellFormat : Copy + 'static,
   {
 
-    // fn cells( &self ) -> impl IteratorTrait< Item = ( CellKey, MaybeAs< '_, str, CellFormat > ) >
-    // fn cells< 'a >( &'a self ) -> impl IteratorTrait< Item = ( CellKey, MaybeAs< 'a, str, CellFormat > ) >
     fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( CellKey, MaybeAs< 'b, str, CellFormat > ) >
     where
       'a : 'b,
-    // where
-      // Cell : 'a,
     {
       self.fields().map
       (
