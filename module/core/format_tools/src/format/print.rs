@@ -276,16 +276,19 @@ pub( crate ) mod private
 
       let mut data : Vec< HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > > = Vec::new();
       let rows = table.rows();
+      let mut row_number : isize = -1;
 
       // process header first
 
-      let mut row_number : isize = -1;
       if let Some( header ) = table.header()
       {
         rows.len().checked_add( 1 ).expect( "Table has too many rows" );
         // assert!( header.len() <= usize::MAX, "Header of a table has too many cells" );
         has_header = true;
-        row_number = 0;
+
+        // row_add( header );
+
+        row_number += 1;
         row_descriptors.push( ( 1, ) );
 
         for ( key, title ) in header
@@ -315,11 +318,8 @@ pub( crate ) mod private
 
       }
 
-      // Collect rows
-      //                           key,       string,           size,
-      for row in rows
+      let mut row_add = | row : &'data Row |
       {
-        // assert!( row.cells().len() <= usize::MAX, "Row of a table has too many cells" );
 
         row_number += 1;
         row_descriptors.push( ( 1, ) );
@@ -328,41 +328,95 @@ pub( crate ) mod private
         .cells()
         .map
         (
-          | ( key, cell ) |
+          | ( key, val ) |
           {
-            let r = match cell.0
+            let val = match val.0
             {
-              Some( cell ) =>
+              Some( val ) =>
               {
-                ( key, cell )
+                val
               }
               None =>
               {
-                ( key, Cow::Borrowed( "" ) )
+                Cow::Borrowed( "" )
               }
             };
 
-            let sz = string::size( &r.1 );
+            let sz = string::size( &val );
             let l = col_descriptors.len();
             row_descriptors[ row_number as usize ] = ( row_descriptors[ row_number as usize ].0.max( sz[ 1 ] ), );
 
             col_descriptors
-            .entry( r.0.clone() )
+            .entry( key.clone() )
             .and_modify( | col |
             {
               col.1 = col.1.max( sz[ 0 ] );
             })
             .or_insert_with( ||
             {
-              col_order.push( r.0.clone() );
+              col_order.push( key.clone() );
               ( None, sz[ 0 ], l + 1 )
             });
 
-            return ( r.0, ( r.1, sz ) );
+            return ( key, ( val, sz ) );
           }
         )
         .collect();
         data.push( fields );
+
+      };
+
+      // Collect rows
+      //                           key,       string,           size,
+      for row in rows
+      {
+        // assert!( row.cells().len() <= usize::MAX, "Row of a table has too many cells" );
+
+        row_add( row );
+
+//         row_number += 1;
+//         row_descriptors.push( ( 1, ) );
+//
+//         let fields : HashMap< CellKey, ( Cow< '_, str >, [ usize ; 2 ] ) > = row
+//         .cells()
+//         .map
+//         (
+//           | ( key, cell ) |
+//           {
+//             let r = match cell.0
+//             {
+//               Some( cell ) =>
+//               {
+//                 ( key, cell )
+//               }
+//               None =>
+//               {
+//                 ( key, Cow::Borrowed( "" ) )
+//               }
+//             };
+//
+//             let sz = string::size( &r.1 );
+//             let l = col_descriptors.len();
+//             row_descriptors[ row_number as usize ] = ( row_descriptors[ row_number as usize ].0.max( sz[ 1 ] ), );
+//
+//             col_descriptors
+//             .entry( r.0.clone() )
+//             .and_modify( | col |
+//             {
+//               col.1 = col.1.max( sz[ 0 ] );
+//             })
+//             .or_insert_with( ||
+//             {
+//               col_order.push( r.0.clone() );
+//               ( None, sz[ 0 ], l + 1 )
+//             });
+//
+//             return ( r.0, ( r.1, sz ) );
+//           }
+//         )
+//         .collect();
+//         data.push( fields );
+
       }
 
       // cook slices multi-matrix
