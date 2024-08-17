@@ -171,7 +171,7 @@ pub( crate ) mod private
               for k in &x.col_order
               {
                 let col = &x.col_descriptors[ &k ];
-                // let cell_width = x.data[ irow ][ &k ].1[0];
+                let cell_width = x.data[ irow ][ &k ].1[0];
                 let width = col.0;
                 let icol = col.1;
                 // println!( "col : {:?}", col );
@@ -185,7 +185,18 @@ pub( crate ) mod private
                   write!( f.buf, "{}", cell_separator )?;
                 }
 
-                write!( f.buf, "{:^width$}", slice, width = width )?;
+                println!( "icol : {icol} | irow : {irow} | width : {width} | cell_width : {cell_width}" );
+                let lspaces = ( width - cell_width ) / 2;
+                let rspaces = ( width - cell_width ) / 2 + cell_width - slice.len();
+                if lspaces > 0
+                {
+                  write!( f.buf, "{:<width$}", " ", width = lspaces )?;
+                }
+                write!( f.buf, "{}", slice )?;
+                if rspaces > 0
+                {
+                  write!( f.buf, "{:>width$}", " ", width = rspaces )?;
+                }
               }
 
               write!( f.buf, "{}", row_postfix )?;
