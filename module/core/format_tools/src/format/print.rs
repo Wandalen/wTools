@@ -177,7 +177,7 @@ pub( crate ) mod private
   impl< 'data, T, RowKey, Row, CellKey, CellFormat > TableFormatter< 'data >
   for AsTable< 'data, T, RowKey, Row, CellKey, CellFormat >
   where
-    Self : TableRows< RowKey, Row, CellKey, CellFormat >,
+    Self : TableRows< CellKey, CellFormat, RowKey = RowKey, Row = Row >,
     Self : TableHeader< CellKey >,
     Self : TableSize,
     Row : Clone + Cells< CellKey, CellFormat >,
@@ -375,7 +375,8 @@ pub( crate ) mod private
     -> fmt::Result
     where
       't : 'data,
-      Table : TableRows< RowKey, Row, CellKey, CellFormat >,
+      // Table : TableRows< RowKey, Row, CellKey, CellFormat >,
+      Table : TableRows< CellKey, CellFormat, RowKey = RowKey, Row = Row >,
       Table : TableHeader< CellKey >,
       Table : TableSize,
       Row : Clone + Cells< CellKey, CellFormat > + 'data,

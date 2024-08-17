@@ -67,19 +67,22 @@ pub( crate ) mod private
   // =
 
   /// A trait for iterating over all rows of a table.
-  pub trait TableRows< RowKey, Row, CellKey, CellFormat >
+  pub trait TableRows< CellKey, CellFormat >
   where
-    Row : Clone + Cells< CellKey, CellFormat >,
+    Self::Row : Clone + Cells< CellKey, CellFormat >,
     CellFormat : Copy + 'static,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
   {
+    type RowKey;
+    type Row;
+
     /// Returns an iterator over all rows of the table.
-    fn rows< 'a >( &'a self ) -> impl IteratorTrait< Item = &'a Row >
-    where Row : 'a;
+    fn rows< 'a >( &'a self ) -> impl IteratorTrait< Item = &'a Self::Row >
+    where Self::Row : 'a;
   }
 
   impl< T, RowKey, Row, CellKey, CellFormat >
-  TableRows< RowKey, Row, CellKey, CellFormat >
+  TableRows< CellKey, CellFormat >
   for AsTable< '_, T, RowKey, Row, CellKey, CellFormat >
   where
     for< 'a > T : Fields< RowKey, &'a Row, Value< 'a > = &'a Row > + 'a,
@@ -87,6 +90,8 @@ pub( crate ) mod private
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellFormat : Copy + 'static,
   {
+    type RowKey = RowKey;
+    type Row = Row;
 
     fn rows< 'a >( &'a self ) -> impl IteratorTrait< Item = &'a Row >
     where Row : 'a
@@ -113,7 +118,8 @@ pub( crate ) mod private
   impl< T, RowKey, Row, CellKey, CellFormat > TableSize
   for AsTable< '_, T, RowKey, Row, CellKey, CellFormat >
   where
-    Self : TableRows< RowKey, Row, CellKey, CellFormat >,
+    // Self : TableRows< RowKey, Row, CellKey, CellFormat >,
+    Self : TableRows< CellKey, CellFormat, RowKey = RowKey, Row = Row >,
     Row : Clone + Cells< CellKey, CellFormat >,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellFormat : Copy + 'static,
@@ -148,7 +154,8 @@ pub( crate ) mod private
   impl< T, RowKey, Row, CellKey, CellFormat > TableHeader< CellKey >
   for AsTable< '_, T, RowKey, Row, CellKey, CellFormat >
   where
-    Self : TableRows< RowKey, Row, CellKey, CellFormat >,
+    // Self : TableRows< RowKey, Row, CellKey, CellFormat >,
+    Self : TableRows< CellKey, CellFormat, RowKey = RowKey, Row = Row >,
     Row : Clone + Cells< CellKey, CellFormat >,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellKey : fmt::Display,
