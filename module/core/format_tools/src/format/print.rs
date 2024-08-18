@@ -174,15 +174,15 @@ pub( crate ) mod private
   }
 
   /// A trait for formatting tables.
-  impl< 'data, T, RowKey, Row, CellKey, CellFormat > TableFormatter< 'data >
-  for AsTable< 'data, T, RowKey, Row, CellKey, CellFormat >
+  impl< 'data, T, RowKey, Row, CellKey, CellRepr > TableFormatter< 'data >
+  for AsTable< 'data, T, RowKey, Row, CellKey, CellRepr >
   where
-    Self : TableRows< CellKey = CellKey, CellFormat = CellFormat, RowKey = RowKey, Row = Row >,
+    Self : TableRows< CellKey = CellKey, CellRepr = CellRepr, RowKey = RowKey, Row = Row >,
     Self : TableHeader< CellKey = CellKey >,
     Self : TableSize,
-    Row : Clone + Cells< CellKey, CellFormat >,
+    Row : Clone + Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellFormat : Copy + 'static,
+    CellRepr : Copy + 'static,
   {
     fn fmt< 'a >( &'data self, f : &mut Context< 'a > ) -> fmt::Result
     // where
@@ -355,7 +355,7 @@ pub( crate ) mod private
     // for< 'a > &'a CellKey : Copy,
   {
 
-    pub fn extract< 't, Table, RowKey, Row, CellFormat > // xxx : RowKey?
+    pub fn extract< 't, Table, RowKey, Row, CellRepr > // xxx : RowKey?
     (
       table : &'t Table,
       filter_col : impl FilterCol,
@@ -364,12 +364,12 @@ pub( crate ) mod private
     -> fmt::Result
     where
       't : 'data,
-      // Table : TableRows< RowKey, Row, CellKey, CellFormat >,
-      Table : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellFormat = CellFormat >,
+      // Table : TableRows< RowKey, Row, CellKey, CellRepr >,
+      Table : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
       Table : TableHeader< CellKey = CellKey >,
       Table : TableSize,
-      Row : Clone + Cells< CellKey, CellFormat > + 'data,
-      CellFormat : Copy + 'static,
+      Row : Clone + Cells< CellKey, CellRepr > + 'data,
+      CellRepr : Copy + 'static,
     {
       use md_math::MdOffset;
 

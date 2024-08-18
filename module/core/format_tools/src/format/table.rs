@@ -21,6 +21,7 @@ pub( crate ) mod private
 
   // =
 
+  /// Aggregates bounds on a Key of a Table.
   pub trait Key
   where
     Self : fmt::Debug + std::cmp::Eq + std::hash::Hash
@@ -34,23 +35,37 @@ pub( crate ) mod private
   {
   }
 
+  /// Aggregates bounds on a type specifying representation of cell of a Table.
+  pub trait CellRepr
+  where
+    Self : Copy + 'static
+  {
+  }
+
+  impl< T > CellRepr for T
+  where
+    Self : Copy + 'static,
+    T : ?Sized,
+  {
+  }
+
   // =
 
   /// A trait for iterating over all cells of a row.
-  pub trait Cells< CellKey, CellFormat >
+  pub trait Cells< CellKey, CellRepr >
   where
-    CellFormat : Copy + 'static,
+    CellRepr : Copy + 'static,
     CellKey : ?Sized,
   {
     /// Returns an iterator over all cells of the row.
-    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, MaybeAs< 'b, str, CellFormat > ) >
+    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, MaybeAs< 'b, str, CellRepr > ) >
     where
       'a : 'b,
       CellKey : 'b,
     ;
   }
 
-  impl< Row, CellKey, CellFormat > Cells< CellKey, CellFormat >
+  impl< Row, CellKey, CellRepr > Cells< CellKey, CellRepr >
   for Row
   where
     CellKey : ?Sized,
@@ -58,29 +73,29 @@ pub( crate ) mod private
     Row : Fields
     <
       &'k CellKey,
-      MaybeAs< 'v, str, CellFormat >,
+      MaybeAs< 'v, str, CellRepr >,
       Key< 'k > = &'k CellKey,
-      Val< 'v > = MaybeAs< 'v, str, CellFormat >,
+      Val< 'v > = MaybeAs< 'v, str, CellRepr >,
     > + 'k + 'v,
-    for< 'v > MaybeAs< 'v, str, CellFormat > : From
+    for< 'v > MaybeAs< 'v, str, CellRepr > : From
     <
-      MaybeAs< 'v, str, CellFormat >,
+      MaybeAs< 'v, str, CellRepr >,
       // <
-      //   // Row as Fields< &'b CellKey, MaybeAs< 'b, str, CellFormat > >
+      //   // Row as Fields< &'b CellKey, MaybeAs< 'b, str, CellRepr > >
       //   Row as Fields
       //   <
       //     &'b CellKey,
-      //     MaybeAs< 'b, str, CellFormat >,
+      //     MaybeAs< 'b, str, CellRepr >,
       //     Key< 'b > = &'b CellKey,
-      //     Val< 'b > = MaybeAs< 'b, str, CellFormat >,
+      //     Val< 'b > = MaybeAs< 'b, str, CellRepr >,
       //   >,
       // >::Val< 'b >
     >,
-    CellFormat : Copy + 'static,
+    CellRepr : Copy + 'static,
     // for< 'b > Row : 'b,
   {
 
-    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, MaybeAs< 'b, str, CellFormat > ) >
+    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, MaybeAs< 'b, str, CellRepr > ) >
     where
       'a : 'b,
       CellKey : 'b,
@@ -103,14 +118,14 @@ pub( crate ) mod private
   /// A trait for iterating over all rows of a table.
   pub trait TableRows<>
   where
-    Self::Row : Clone + Cells< Self::CellKey, Self::CellFormat >,
-    Self::CellFormat : Copy + 'static,
+    Self::Row : Clone + Cells< Self::CellKey, Self::CellRepr >,
+    Self::CellRepr : Copy + 'static,
     // Self::CellKey : table::Key + ?Sized,
   {
     type RowKey;
     type Row;
     type CellKey : table::Key + ?Sized;
-    type CellFormat;
+    type CellRepr;
 
     /// Returns an iterator over all rows of the table.
     fn rows< 'a >( &'a self ) -> impl IteratorTrait< Item = &'a Self::Row >
@@ -119,9 +134,9 @@ pub( crate ) mod private
     // where Self::Row : 'data;
   }
 
-  impl< T, RowKey, Row, CellKey, CellFormat >
+  impl< T, RowKey, Row, CellKey, CellRepr >
   TableRows<>
-  for AsTable< '_, T, RowKey, Row, CellKey, CellFormat >
+  for AsTable< '_, T, RowKey, Row, CellKey, CellRepr >
   where
 
     // for< 'a > T : Fields< RowKey, &'a Row, Key< 'a > = RowKey, Val< 'a > = &'a Row  >,
@@ -134,14 +149,14 @@ pub( crate ) mod private
       Val< 'v > = &'v Row,
     > + 'k + 'v,
 
-    Row : Clone + Cells< CellKey, CellFormat >,
+    Row : Clone + Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellFormat : Copy + 'static,
+    CellRepr : Copy + 'static,
   {
     type RowKey = RowKey;
     type Row = Row;
     type CellKey = CellKey;
-    type CellFormat = CellFormat;
+    type CellRepr = CellRepr;
 
     fn rows< 'a >( &'a self ) -> impl IteratorTrait< Item = &'a Self::Row >
     where Self::Row : 'a
@@ -167,13 +182,13 @@ pub( crate ) mod private
     fn mcells( &self ) -> [ usize ; 2 ];
   }
 
-  impl< T, RowKey, Row, CellKey, CellFormat > TableSize
-  for AsTable< '_, T, RowKey, Row, CellKey, CellFormat >
+  impl< T, RowKey, Row, CellKey, CellRepr > TableSize
+  for AsTable< '_, T, RowKey, Row, CellKey, CellRepr >
   where
-    Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellFormat = CellFormat >,
-    Row : Clone + Cells< CellKey, CellFormat >,
+    Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
+    Row : Clone + Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellFormat : Copy + 'static,
+    CellRepr : Copy + 'static,
   {
     fn mcells( &self ) -> [ usize ; 2 ]
     {
@@ -206,15 +221,15 @@ pub( crate ) mod private
     // fn header( &self ) -> Option< impl IteratorTrait< Item = ( Self::CellKey, Cow< '_, str > ) > >;
   }
 
-  impl< T, RowKey, Row, CellKey, CellFormat > TableHeader
-  for AsTable< '_, T, RowKey, Row, CellKey, CellFormat >
+  impl< T, RowKey, Row, CellKey, CellRepr > TableHeader
+  for AsTable< '_, T, RowKey, Row, CellKey, CellRepr >
   where
-    Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellFormat = CellFormat >,
-    Row : Clone + Cells< CellKey, CellFormat >,
+    Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
+    Row : Clone + Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
     CellKey : fmt::Display,
     CellKey : AsRef< str >,
-    CellFormat : Copy + 'static,
+    CellRepr : Copy + 'static,
   {
     type CellKey = CellKey;
 

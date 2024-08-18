@@ -20,23 +20,23 @@ pub( crate ) mod private
   /// Transparent wrapper for table-like structures.
   #[ repr( transparent ) ]
   #[ derive( Clone, Copy ) ]
-  pub struct AsTable< 'table, Table, RowKey, Row, CellKey, CellFormat >
+  pub struct AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   (
     &'table Table,
-    ::core::marker::PhantomData< ( &'table (), fn () -> ( RowKey, Row, &'table CellKey, CellFormat ) ) >,
+    ::core::marker::PhantomData< ( &'table (), fn () -> ( RowKey, Row, &'table CellKey, CellRepr ) ) >,
   )
   where
-    Row : Clone + Cells< CellKey, CellFormat >,
+    Row : Clone + Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellFormat : Copy + 'static,
+    CellRepr : Copy + 'static,
   ;
 
-  impl< 'table, Table, RowKey, Row, CellKey, CellFormat >
-  AsTable< 'table, Table, RowKey, Row, CellKey, CellFormat >
+  impl< 'table, Table, RowKey, Row, CellKey, CellRepr >
+  AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   where
-    Row : Clone + Cells< CellKey, CellFormat >,
+    Row : Clone + Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellFormat : Copy + 'static,
+    CellRepr : Copy + 'static,
   {
     /// Just a constructor.
     pub fn new( src : &'table Table ) -> Self
@@ -45,12 +45,12 @@ pub( crate ) mod private
     }
   }
 
-  impl< 'table, Table, RowKey, Row, CellKey, CellFormat > AsRef< Table >
-  for AsTable< 'table, Table, RowKey, Row, CellKey, CellFormat >
+  impl< 'table, Table, RowKey, Row, CellKey, CellRepr > AsRef< Table >
+  for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   where
-    Row : Clone + Cells< CellKey, CellFormat >,
+    Row : Clone + Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellFormat : Copy + 'static,
+    CellRepr : Copy + 'static,
   {
     fn as_ref( &self ) -> &Table
     {
@@ -58,12 +58,12 @@ pub( crate ) mod private
     }
   }
 
-  impl< 'table, Table, RowKey, Row, CellKey, CellFormat > Deref
-  for AsTable< 'table, Table, RowKey, Row, CellKey, CellFormat >
+  impl< 'table, Table, RowKey, Row, CellKey, CellRepr > Deref
+  for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   where
-    Row : Clone + Cells< CellKey, CellFormat >,
+    Row : Clone + Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellFormat : Copy + 'static,
+    CellRepr : Copy + 'static,
   {
     type Target = Table;
 
@@ -73,12 +73,12 @@ pub( crate ) mod private
     }
   }
 
-  impl< 'table, Table, RowKey, Row, CellKey, CellFormat > From< &'table Table >
-  for AsTable< 'table, Table, RowKey, Row, CellKey, CellFormat >
+  impl< 'table, Table, RowKey, Row, CellKey, CellRepr > From< &'table Table >
+  for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   where
-    Row : Clone + Cells< CellKey, CellFormat >,
+    Row : Clone + Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellFormat : Copy + 'static,
+    CellRepr : Copy + 'static,
   {
     fn from( table : &'table Table ) -> Self
     {
@@ -86,13 +86,13 @@ pub( crate ) mod private
     }
   }
 
-  impl< 'table, Table, RowKey, Row, CellKey, CellFormat > fmt::Debug
-  for AsTable< 'table, Table, RowKey, Row, CellKey, CellFormat >
+  impl< 'table, Table, RowKey, Row, CellKey, CellRepr > fmt::Debug
+  for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   where
     Table : fmt::Debug,
-    Row : Clone + Cells< CellKey, CellFormat >,
+    Row : Clone + Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellFormat : Copy + 'static, // xxx : maybe special trait?
+    CellRepr : Copy + 'static, // xxx : maybe special trait?
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
