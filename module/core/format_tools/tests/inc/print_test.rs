@@ -228,6 +228,7 @@ fn filter_col()
   let mut formatter = the_module::Styles::default();
 
   // formatter.filter_col = print::No;
+  // xxx : implement
 
   let as_table = AsTable::new( &test_objects );
   // let mut context : Context< '_, _ > = Context::new( &mut output, formatter );

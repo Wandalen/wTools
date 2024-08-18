@@ -63,7 +63,7 @@ pub( crate ) mod private
   pub trait Cells< CellKey, CellRepr >
   where
     CellRepr : table::CellRepr,
-    CellKey : ?Sized,
+    CellKey : ?Sized, // xxx : ?
   {
     /// Returns an iterator over all cells of the row.
     fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, MaybeAs< 'b, str, CellRepr > ) >
@@ -248,6 +248,7 @@ pub( crate ) mod private
     CellKey : table::Key + ?Sized,
     CellKey : fmt::Display,
     CellKey : AsRef< str >,
+    // xxx
     CellRepr : table::CellRepr,
   {
     type CellKey = CellKey;
@@ -272,6 +273,27 @@ pub( crate ) mod private
       {
         None
       }
+    }
+
+  }
+
+  impl< Row > IntoAsTable
+  for Vec< Row >
+  where
+    Row : Cells< Self::CellKey, Self::CellRepr >,
+    // CellKey : table::Key + ?Sized,
+    // CellRepr : table::CellRepr,
+  {
+
+    type Table = Self;
+    type RowKey = usize;
+    type Row = Row;
+    type CellKey = str;
+    type CellRepr = WithRef;
+
+    fn as_table( &self ) -> AsTable< '_, Self::Table, Self::RowKey, Self::Row, Self::CellKey, Self::CellRepr >
+    {
+      AsTable::from( self )
     }
 
   }
