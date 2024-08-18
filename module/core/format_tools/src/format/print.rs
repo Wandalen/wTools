@@ -182,7 +182,7 @@ pub( crate ) mod private
     Self : TableSize,
     Row : Clone + Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellRepr : Copy + 'static,
+    CellRepr : table::CellRepr,
   {
     fn fmt< 'a >( &'data self, f : &mut Context< 'a > ) -> fmt::Result
     // where
@@ -369,7 +369,7 @@ pub( crate ) mod private
       Table : TableHeader< CellKey = CellKey >,
       Table : TableSize,
       Row : Clone + Cells< CellKey, CellRepr > + 'data,
-      CellRepr : Copy + 'static,
+      CellRepr : table::CellRepr,
     {
       use md_math::MdOffset;
 

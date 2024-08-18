@@ -54,7 +54,7 @@ pub( crate ) mod private
   /// A trait for iterating over all cells of a row.
   pub trait Cells< CellKey, CellRepr >
   where
-    CellRepr : Copy + 'static,
+    CellRepr : table::CellRepr,
     CellKey : ?Sized,
   {
     /// Returns an iterator over all cells of the row.
@@ -91,7 +91,7 @@ pub( crate ) mod private
       //   >,
       // >::Val< 'b >
     >,
-    CellRepr : Copy + 'static,
+    CellRepr : table::CellRepr,
     // for< 'b > Row : 'b,
   {
 
@@ -119,7 +119,7 @@ pub( crate ) mod private
   pub trait TableRows<>
   where
     Self::Row : Clone + Cells< Self::CellKey, Self::CellRepr >,
-    Self::CellRepr : Copy + 'static,
+    Self::CellRepr : table::CellRepr,
     // Self::CellKey : table::Key + ?Sized,
   {
     type RowKey;
@@ -151,7 +151,7 @@ pub( crate ) mod private
 
     Row : Clone + Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellRepr : Copy + 'static,
+    CellRepr : table::CellRepr,
   {
     type RowKey = RowKey;
     type Row = Row;
@@ -188,7 +188,7 @@ pub( crate ) mod private
     Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
     Row : Clone + Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellRepr : Copy + 'static,
+    CellRepr : table::CellRepr,
   {
     fn mcells( &self ) -> [ usize ; 2 ]
     {
@@ -229,7 +229,7 @@ pub( crate ) mod private
     CellKey : table::Key + ?Sized,
     CellKey : fmt::Display,
     CellKey : AsRef< str >,
-    CellRepr : Copy + 'static,
+    CellRepr : table::CellRepr,
   {
     type CellKey = CellKey;
 
@@ -277,6 +277,7 @@ pub mod own
   pub use private::
   {
     Key,
+    CellRepr,
   };
 
 }

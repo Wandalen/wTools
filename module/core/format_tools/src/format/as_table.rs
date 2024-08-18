@@ -28,7 +28,7 @@ pub( crate ) mod private
   where
     Row : Clone + Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellRepr : Copy + 'static,
+    CellRepr : table::CellRepr,
   ;
 
   impl< 'table, Table, RowKey, Row, CellKey, CellRepr >
@@ -36,7 +36,7 @@ pub( crate ) mod private
   where
     Row : Clone + Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellRepr : Copy + 'static,
+    CellRepr : table::CellRepr,
   {
     /// Just a constructor.
     pub fn new( src : &'table Table ) -> Self
@@ -50,7 +50,7 @@ pub( crate ) mod private
   where
     Row : Clone + Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellRepr : Copy + 'static,
+    CellRepr : table::CellRepr,
   {
     fn as_ref( &self ) -> &Table
     {
@@ -63,7 +63,7 @@ pub( crate ) mod private
   where
     Row : Clone + Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellRepr : Copy + 'static,
+    CellRepr : table::CellRepr,
   {
     type Target = Table;
 
@@ -78,7 +78,7 @@ pub( crate ) mod private
   where
     Row : Clone + Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellRepr : Copy + 'static,
+    CellRepr : table::CellRepr,
   {
     fn from( table : &'table Table ) -> Self
     {
@@ -92,7 +92,7 @@ pub( crate ) mod private
     Table : fmt::Debug,
     Row : Clone + Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellRepr : Copy + 'static, // xxx : maybe special trait?
+    CellRepr : table::CellRepr, // xxx : maybe special trait?
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
