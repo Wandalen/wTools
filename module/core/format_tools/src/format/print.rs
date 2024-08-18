@@ -42,7 +42,6 @@ pub( crate ) mod private
   ///
   /// ```
   #[ derive( Debug, Former ) ]
-  // #[ debug ]
   pub struct Styles
   {
 
@@ -132,8 +131,6 @@ pub( crate ) mod private
     fn table_to_string( &'data self ) -> String
     {
       let mut output = String::new();
-
-      // let mut context: Context< '_, All > = Context
       let mut context = Context
       {
         buf : &mut output,
@@ -144,16 +141,19 @@ pub( crate ) mod private
     }
   }
 
-  /// A trait for formatting tables.
+  /// Trait for defining table formatting logic.
   ///
-  /// This trait defines a method for formatting tables, allowing implementations
-  /// to specify how a table should be formatted and displayed.
+  /// `TableFormatter` allows implementations to specify how tables are formatted
+  /// and displayed, providing flexibility in presentation.
   ///
-
+  /// # Type Parameters
+  ///
+  /// - `'data`: The lifetime of the data being formatted.
+  ///
   pub trait TableFormatter< 'data >
   {
-    fn fmt< 'buf >( &'data self, f : &mut Context< 'buf > ) -> fmt::Result
-    ;
+    /// Formats the table and writes the result to the provided context.
+    fn fmt< 'buf >( & 'data self, f : & mut Context< 'buf > ) -> fmt::Result;
   }
 
   /// A trait for formatting tables.
@@ -343,7 +343,6 @@ pub( crate ) mod private
     -> fmt::Result
     where
       't : 'data,
-      // Table : TableRows< RowKey, Row, CellKey, CellRepr >,
       Table : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
       Table : TableHeader< CellKey = CellKey >,
       Table : TableSize,

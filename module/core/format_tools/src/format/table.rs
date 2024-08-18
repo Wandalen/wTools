@@ -12,7 +12,7 @@ pub( crate ) mod private
     fmt,
     // borrow::Borrow,
   };
-  use std::borrow::Cow;
+  // use std::borrow::Cow;
   use reflect_tools::
   {
     IteratorTrait,
@@ -21,31 +21,39 @@ pub( crate ) mod private
 
   // =
 
-  /// Aggregates bounds on a Key of a Table.
+  /// Trait for types used as keys in table-like structures.
+  ///
+  /// The `Key` trait aggregates necessary bounds for keys, ensuring they support
+  /// debugging, equality comparison, and hashing.
+  ///
+
   pub trait Key
   where
-    Self : fmt::Debug + std::cmp::Eq + std::hash::Hash
+    Self : fmt::Debug + std::cmp::Eq + std::hash::Hash,
   {
   }
 
   impl< T > Key for T
   where
-    Self : fmt::Debug + std::cmp::Eq + std::hash::Hash,
-    T : ?Sized,
+    T : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
   {
   }
 
-  /// Aggregates bounds on a type specifying representation of cell of a Table.
+  /// Trait for types representing table cell content.
+  ///
+  /// `CellRepr` aggregates necessary bounds for types used as cell representations,
+  /// ensuring they are copyable and have a static lifetime.
+  ///
+
   pub trait CellRepr
   where
-    Self : Copy + 'static
+    Self : Copy + 'static,
   {
   }
 
   impl< T > CellRepr for T
   where
-    Self : Copy + 'static,
-    T : ?Sized,
+    T : Copy + 'static + ?Sized,
   {
   }
 
@@ -77,22 +85,11 @@ pub( crate ) mod private
       Key< 'k > = &'k CellKey,
       Val< 'v > = MaybeAs< 'v, str, CellRepr >,
     > + 'k + 'v,
-    for< 'v > MaybeAs< 'v, str, CellRepr > : From
-    <
-      MaybeAs< 'v, str, CellRepr >,
-      // <
-      //   // Row as Fields< &'b CellKey, MaybeAs< 'b, str, CellRepr > >
-      //   Row as Fields
-      //   <
-      //     &'b CellKey,
-      //     MaybeAs< 'b, str, CellRepr >,
-      //     Key< 'b > = &'b CellKey,
-      //     Val< 'b > = MaybeAs< 'b, str, CellRepr >,
-      //   >,
-      // >::Val< 'b >
-    >,
+    // for< 'v > MaybeAs< 'v, str, CellRepr > : From
+    // <
+    //   MaybeAs< 'v, str, CellRepr >,
+    // >,
     CellRepr : table::CellRepr,
-    // for< 'b > Row : 'b,
   {
 
     fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, MaybeAs< 'b, str, CellRepr > ) >
@@ -222,7 +219,6 @@ pub( crate ) mod private
   {
     type CellKey = CellKey;
 
-    // fn header( &self ) -> Option< impl IteratorTrait< Item = ( Self::CellKey, Cow< '_, str > ) > >
     fn header( &self ) -> Option< impl IteratorTrait< Item = ( &Self::CellKey, &'_ str ) > >
     {
       let mut rows = self.rows();
