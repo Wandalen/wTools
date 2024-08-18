@@ -136,6 +136,29 @@ pub( crate ) mod private
     fn as_table( &self ) -> AsTable< '_, Self::Table, Self::RowKey, Self::Row, Self::CellKey, Self::CellRepr >;
   }
 
+  impl< 'table, Table, RowKey, Row, CellKey, CellRepr > IntoAsTable
+  for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
+  where
+    Table : fmt::Debug,
+    Row : Cells< CellKey, CellRepr >,
+    CellKey : table::Key + ?Sized,
+    CellRepr : table::CellRepr,
+    Self : Copy,
+  {
+
+    type Table = Table;
+    type RowKey = RowKey;
+    type Row = Row;
+    type CellKey = CellKey;
+    type CellRepr = CellRepr;
+
+    fn as_table( &self ) -> AsTable< '_, Self::Table, Self::RowKey, Self::Row, Self::CellKey, Self::CellRepr >
+    {
+      *self
+    }
+
+  }
+
   // pub struct AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
 
 }
