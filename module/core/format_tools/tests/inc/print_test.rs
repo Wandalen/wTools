@@ -3,7 +3,7 @@ use super::*;
 
 use the_module::
 {
-  print,
+  // print,
   Fields,
   IteratorTrait,
   AsTable,
@@ -19,7 +19,7 @@ use the_module::
 use std::
 {
   collections::HashMap,
-  borrow::Cow,
+  // borrow::Cow,
 };
 
 /// Struct representing a test object with various fields.

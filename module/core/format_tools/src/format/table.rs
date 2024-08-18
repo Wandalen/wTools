@@ -112,17 +112,50 @@ pub( crate ) mod private
 
   // =
 
-  /// A trait for iterating over all rows of a table.
-  pub trait TableRows<>
+  /// Trait for iterating over rows in a table.
+  ///
+  /// `TableRows` provides an interface to access all rows in a table,
+  /// allowing iteration over the data structure.
+  ///
+  /// # Associated Types
+  ///
+  /// - `RowKey`: The type used to identify each row.
+  ///
+  /// - `Row`: The type representing a row, which must implement `Cells`
+  ///   for the specified `CellKey` and `CellRepr`.
+  ///
+  /// - `CellKey`: The type used to identify cells within a row, requiring
+  ///   implementation of the `Key` trait.
+  ///
+  /// - `CellRepr`: The type representing the content of a cell, requiring
+  ///   implementation of the `CellRepr` trait.
+  ///
+  /// # Required Methods
+  ///
+  /// - `rows(&self) -> impl IteratorTrait<Item = &Self::Row>`:
+  ///   Returns an iterator over all rows in the table.
+  pub trait TableRows
   {
+    ///
+    /// The type used to identify each row.
     type RowKey;
+    ///
+    /// The type representing a row, which must implement `Cells`
+    ///   for the specified `CellKey` and `CellRepr`.
     type Row : Cells< Self::CellKey, Self::CellRepr >;
+    ///
+    /// The type used to identify cells within a row, requiring
+    ///   implementation of the `Key` trait.
     type CellKey : table::Key + ?Sized;
+    ///
+    /// The type representing the content of a cell, requiring
+    ///   implementation of the `CellRepr` trait.
     type CellRepr : table::CellRepr;
 
     /// Returns an iterator over all rows of the table.
-    fn rows< 'a >( &'a self ) -> impl IteratorTrait< Item = &'a Self::Row >
-    where Self::Row : 'a;
+    fn rows< 'a >( & 'a self ) -> impl IteratorTrait< Item = & 'a Self::Row >
+    where
+      Self::Row : 'a;
   }
 
   impl< T, RowKey, Row, CellKey, CellRepr >
@@ -199,9 +232,9 @@ pub( crate ) mod private
 
   /// Trait returning headers of a table if any.
   pub trait TableHeader
-  where
-    // Self::CellKey : table::Key + ?Sized,
   {
+    /// The type used to identify cells within a row, requiring
+    ///   implementation of the `Key` trait.
     type CellKey : table::Key + ?Sized;
     /// Returns an iterator over all fields of the specified type within the entity.
     fn header( &self ) -> Option< impl IteratorTrait< Item = ( &Self::CellKey, &'_ str ) > >;
