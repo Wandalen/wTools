@@ -120,50 +120,50 @@ fn table_to_string()
 
   let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, str, WithRef > = AsTable::new( &test_objects );
   let mcells = TableSize::mcells( &as_table );
-//   assert_eq!( mcells, [ 4, 2 ] );
-//   let rows = TableRows::rows( &as_table );
-//   assert_eq!( rows.len(), 2 );
-//   dbg!( rows.collect::< Vec< _ > >() );
-//   let header = TableHeader::header( &as_table );
-//   assert!( header.is_some() );
-//   let header = header.unwrap();
-//   assert_eq!( header.len(), 4 );
-//   assert_eq!( header.clone().collect::< Vec< _ > >(), vec!
-//   [
-//     ( "id", Cow::Owned( "id".to_string() ) ),
-//     ( "created_at", Cow::Owned( "created_at".to_string() ) ),
-//     ( "file_ids", Cow::Owned( "file_ids".to_string() ) ),
-//     ( "tools", Cow::Owned( "tools".to_string() ) ),
-//   ]);
-//   dbg!( header.collect::< Vec< _ > >() );
-//
-//   let mut output = String::new();
-//   let mut context = Context::new( &mut output, Default::default() );
-//   // let mut context : Context< '_, print::All > = Context::new( &mut output, Default::default() );
-//   let got = the_module::TableFormatter::fmt( &as_table, &mut context );
-//   assert!( got.is_ok() );
-//   println!( "{}", &output );
-//
-//   // with explicit arguments
-//
-//   let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, &str, WithRef > = AsTable::new( &test_objects );
-//   let table_string = as_table.table_to_string();
-//   println!( "\ntable_string\n{table_string}" );
-//   assert!( table_string.contains( "id" ) );
-//   assert!( table_string.contains( "created_at" ) );
-//   assert!( table_string.contains( "file_ids" ) );
-//   assert!( table_string.contains( "tools" ) );
-//
-//   // without explicit arguments
-//
-//   println!( "" );
-//   let as_table = AsTable::new( &test_objects );
-//   let table_string = as_table.table_to_string();
-//   assert!( table_string.contains( "id" ) );
-//   assert!( table_string.contains( "created_at" ) );
-//   assert!( table_string.contains( "file_ids" ) );
-//   assert!( table_string.contains( "tools" ) );
-//   println!( "\ntable_string\n{table_string}" );
+  assert_eq!( mcells, [ 4, 2 ] );
+  let rows = TableRows::rows( &as_table );
+  assert_eq!( rows.len(), 2 );
+  dbg!( rows.collect::< Vec< _ > >() );
+  let header = TableHeader::header( &as_table );
+  assert!( header.is_some() );
+  let header = header.unwrap();
+  assert_eq!( header.len(), 4 );
+  assert_eq!( header.clone().collect::< Vec< _ > >(), vec!
+  [
+    ( "id", "id" ),
+    ( "created_at", "created_at" ),
+    ( "file_ids", "file_ids" ),
+    ( "tools", "tools" ),
+  ]);
+  dbg!( header.collect::< Vec< _ > >() );
+
+  let mut output = String::new();
+  let mut context = Context::new( &mut output, Default::default() );
+  // let mut context : Context< '_, print::All > = Context::new( &mut output, Default::default() );
+  let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  assert!( got.is_ok() );
+  println!( "{}", &output );
+
+  // with explicit arguments
+
+  let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, str, WithRef > = AsTable::new( &test_objects );
+  let table_string = as_table.table_to_string();
+  println!( "\ntable_string\n{table_string}" );
+  assert!( table_string.contains( "id" ) );
+  assert!( table_string.contains( "created_at" ) );
+  assert!( table_string.contains( "file_ids" ) );
+  assert!( table_string.contains( "tools" ) );
+
+  // without explicit arguments
+
+  println!( "" );
+  let as_table = AsTable::new( &test_objects );
+  let table_string = as_table.table_to_string();
+  assert!( table_string.contains( "id" ) );
+  assert!( table_string.contains( "created_at" ) );
+  assert!( table_string.contains( "file_ids" ) );
+  assert!( table_string.contains( "tools" ) );
+  println!( "\ntable_string\n{table_string}" );
 
 }
 
