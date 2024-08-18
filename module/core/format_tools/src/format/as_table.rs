@@ -159,6 +159,27 @@ pub( crate ) mod private
 
   }
 
+//   impl< Row > IntoAsTable
+//   for Vec< Row >
+//   where
+//     Row : Cells< Self::CellKey, Self::CellRepr >,
+//     // CellKey : table::Key + ?Sized,
+//     // CellRepr : table::CellRepr,
+//   {
+//
+//     type Table = Self;
+//     type RowKey = usize;
+//     type Row = Row;
+//     type CellKey = str;
+//     type CellRepr = WithRef;
+//
+//     fn as_table( &self ) -> AsTable< '_, Self::Table, Self::RowKey, Self::Row, Self::CellKey, Self::CellRepr >
+//     {
+//       AsTable::from( self )
+//     }
+//
+//   }
+
   // pub struct AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
 
 }
