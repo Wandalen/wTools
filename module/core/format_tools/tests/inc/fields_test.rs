@@ -29,7 +29,8 @@ pub struct TestObject
 impl Fields< &'static str, MaybeAs< '_, str, WithRef > >
 for TestObject
 {
-  type Value< 'v > = MaybeAs< 'v, str, WithRef >;
+  type Key< 'k > = &'static str;
+  type Val< 'v > = MaybeAs< 'v, str, WithRef >;
 
   fn fields( &self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< '_, str, WithRef > ) >
   {

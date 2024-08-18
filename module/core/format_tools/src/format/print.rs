@@ -220,8 +220,8 @@ pub( crate ) mod private
 
               for k in &x.col_order
               {
-                let col = &x.col_descriptors[ &k ];
-                let cell_width = x.data[ irow ][ &k ].1[0];
+                let col = &x.col_descriptors[ k ];
+                let cell_width = x.data[ irow ][ k ].1[0];
                 let width = col.0;
                 let icol = col.1;
                 let md_index = [ islice, icol, irow as usize ];
@@ -283,11 +283,11 @@ pub( crate ) mod private
     pub mcells : [ usize ; 2 ],
 
     /// Order of columns must be as stable as possible.
-    pub col_order : Vec< CellKey >,
+    pub col_order : Vec< &'data CellKey >,
 
     /// Descriptors for each column, including optional title, width, and index.
     //                             key        width, index
-    pub col_descriptors : HashMap< CellKey, ( usize, usize ) >,
+    pub col_descriptors : HashMap< &'data CellKey, ( usize, usize ) >,
 
     /// Descriptors for each row, including height.
     //                           height
@@ -295,7 +295,7 @@ pub( crate ) mod private
 
     /// Extracted data for each cell, including string content and size.
     //                        key,      string,              size,
-    pub data : Vec< HashMap< CellKey, ( Cow< 'data, str >, [ usize ; 2 ] ) > >,
+    pub data : Vec< HashMap< &'data CellKey, ( Cow< 'data, str >, [ usize ; 2 ] ) > >,
 
     /// Dimensions of slices for retrieving data from multi-matrix.
     pub slices_dim : [ usize ; 3 ],
@@ -364,6 +364,7 @@ pub( crate ) mod private
   impl< 'data, CellKey > FormatExtract< 'data, CellKey >
   where
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+    // for< 'a > &'a CellKey : Copy,
   {
 
     pub fn extract< 't, Table, RowKey, Row, CellFormat > // xxx : RowKey?
@@ -386,24 +387,24 @@ pub( crate ) mod private
 
       let mcells = table.mcells();
       //                                 key        width, index
-      let mut col_descriptors : HashMap< CellKey, ( usize, usize ) > = HashMap::new();
+      let mut col_descriptors : HashMap< &CellKey, ( usize, usize ) > = HashMap::new();
       //                               height
       let mut row_descriptors : Vec< ( usize, ) > = Vec::with_capacity( mcells[ 1 ] );
 
-      let mut col_order : Vec< CellKey > = Vec::new();
+      let mut col_order : Vec< &CellKey > = Vec::new();
       let mut has_header = false;
 
-      let mut data : Vec< HashMap< CellKey, ( Cow< 'data, str >, [ usize ; 2 ] ) > > = Vec::new();
+      let mut data : Vec< HashMap< &CellKey, ( Cow< 'data, str >, [ usize ; 2 ] ) > > = Vec::new();
       let rows = table.rows();
       let mut irow : isize = -1;
 
-      let mut row_add = | row : &'_ mut dyn _IteratorTrait< Item = ( CellKey, Cow< 'data, str > ) > |
+      let mut row_add = | row : &'_ mut dyn _IteratorTrait< Item = ( &'data CellKey, Cow< 'data, str > ) > |
       {
 
         irow += 1;
         row_descriptors.push( ( 1, ) );
 
-        let fields : HashMap< CellKey, ( Cow< 'data, str >, [ usize ; 2 ] ) > = row
+        let fields : HashMap< &CellKey, ( Cow< 'data, str >, [ usize ; 2 ] ) > = row
         .filter_map
         (
           | ( key, val ) |
@@ -419,14 +420,14 @@ pub( crate ) mod private
             row_descriptors[ irow as usize ] = ( row_descriptors[ irow as usize ].0.max( sz[ 1 ] ), );
 
             col_descriptors
-            .entry( key.clone() )
+            .entry( key )
             .and_modify( | col |
             {
               col.0 = col.0.max( sz[ 0 ] );
             })
             .or_insert_with( ||
             {
-              col_order.push( key.clone() );
+              col_order.push( key );
               ( sz[ 0 ], l )
               // let title = if is_title { Some( val.as_ref() ) } else { None };
               // ( title, sz[ 0 ], l )
@@ -452,7 +453,7 @@ pub( crate ) mod private
         let mut row2 =  header.map( | ( key, title ) |
         {
           // let title_str : Cow< '_, str > = Cow::Owned( format!( "{}", title ) );
-          ( key, title )
+          ( key, Cow::Borrowed( title ) )
         });
 
         row_add( &mut row2 );
@@ -528,7 +529,7 @@ pub( crate ) mod private
 
         for ( icol, k ) in x.col_order.iter().enumerate()
         {
-          let cell = &row_data[ &k ];
+          let cell = &row_data[ k ];
           string::lines( cell.0.as_ref() )
           .enumerate()
           .for_each( | ( layer, s ) |

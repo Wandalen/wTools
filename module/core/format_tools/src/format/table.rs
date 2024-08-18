@@ -25,31 +25,58 @@ pub( crate ) mod private
   pub trait Cells< CellKey, CellFormat >
   where
     CellFormat : Copy + 'static,
+    CellKey : ?Sized,
   {
     /// Returns an iterator over all cells of the row.
-    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( CellKey, MaybeAs< 'b, str, CellFormat > ) >
+    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, MaybeAs< 'b, str, CellFormat > ) >
     where
       'a : 'b,
+      CellKey : 'b,
     ;
   }
 
   impl< Row, CellKey, CellFormat > Cells< CellKey, CellFormat >
   for Row
   where
-    for< 'b > Row : Fields< CellKey, MaybeAs< 'b, str, CellFormat > >,
-    for< 'b > MaybeAs< 'b, str, CellFormat > : From< < Row as Fields< CellKey, MaybeAs< 'b, str, CellFormat > > >::Value< 'b > >,
+    CellKey : ?Sized,
+    for< 'k, 'v >
+    Row : Fields
+    <
+      &'k CellKey,
+      MaybeAs< 'v, str, CellFormat >,
+      Key< 'k > = &'k CellKey,
+      Val< 'v > = MaybeAs< 'v, str, CellFormat >,
+    > + 'k + 'v,
+    for< 'v > MaybeAs< 'v, str, CellFormat > : From
+    <
+      MaybeAs< 'v, str, CellFormat >,
+      // <
+      //   // Row as Fields< &'b CellKey, MaybeAs< 'b, str, CellFormat > >
+      //   Row as Fields
+      //   <
+      //     &'b CellKey,
+      //     MaybeAs< 'b, str, CellFormat >,
+      //     Key< 'b > = &'b CellKey,
+      //     Val< 'b > = MaybeAs< 'b, str, CellFormat >,
+      //   >,
+      // >::Val< 'b >
+    >,
     CellFormat : Copy + 'static,
+    // for< 'b > Row : 'b,
   {
 
-    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( CellKey, MaybeAs< 'b, str, CellFormat > ) >
+    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, MaybeAs< 'b, str, CellFormat > ) >
     where
       'a : 'b,
+      CellKey : 'b,
     {
       self.fields().map
       (
         move | ( key, cell ) |
         {
-          ( key, cell.into() )
+          ( key, cell )
+          // ( key.clone(), cell.clone() )
+          // ( key, cell.into() )
         }
       )
     }
@@ -59,7 +86,7 @@ pub( crate ) mod private
   // =
 
   /// A trait for iterating over all rows of a table.
-  pub trait TableRows
+  pub trait TableRows<>
   where
     Self::Row : Clone + Cells< Self::CellKey, Self::CellFormat >,
     Self::CellFormat : Copy + 'static,
@@ -73,13 +100,25 @@ pub( crate ) mod private
     /// Returns an iterator over all rows of the table.
     fn rows< 'a >( &'a self ) -> impl IteratorTrait< Item = &'a Self::Row >
     where Self::Row : 'a;
+    // fn rows( &'data self ) -> impl IteratorTrait< Item = &'data Self::Row >
+    // where Self::Row : 'data;
   }
 
   impl< T, RowKey, Row, CellKey, CellFormat >
-  TableRows
+  TableRows<>
   for AsTable< '_, T, RowKey, Row, CellKey, CellFormat >
   where
-    for< 'a > T : Fields< RowKey, &'a Row, Value< 'a > = &'a Row > + 'a,
+
+    // for< 'a > T : Fields< RowKey, &'a Row, Key< 'a > = RowKey, Val< 'a > = &'a Row  >,
+
+    for< 'k, 'v > T : Fields
+    <
+      RowKey,
+      &'v Row,
+      Key< 'k > = RowKey,
+      Val< 'v > = &'v Row,
+    > + 'k + 'v,
+
     Row : Clone + Cells< CellKey, CellFormat >,
     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
     CellFormat : Copy + 'static,
@@ -89,8 +128,10 @@ pub( crate ) mod private
     type CellKey = CellKey;
     type CellFormat = CellFormat;
 
-    fn rows< 'a >( &'a self ) -> impl IteratorTrait< Item = &'a Row >
-    where Row : 'a
+    fn rows< 'a >( &'a self ) -> impl IteratorTrait< Item = &'a Self::Row >
+    where Self::Row : 'a
+    // fn rows( &'data self ) -> impl IteratorTrait< Item = &'data Self::Row >
+    //   where Self::Row : 'data
     {
       self.as_ref().fields()
       .filter_map( move | ( _k, e ) |
@@ -146,7 +187,8 @@ pub( crate ) mod private
   {
     type CellKey;
     /// Returns an iterator over all fields of the specified type within the entity.
-    fn header( &self ) -> Option< impl IteratorTrait< Item = ( Self::CellKey, Cow< '_, str > ) > >;
+    fn header( &self ) -> Option< impl IteratorTrait< Item = ( &Self::CellKey, &'_ str ) > >;
+    // fn header( &self ) -> Option< impl IteratorTrait< Item = ( Self::CellKey, Cow< '_, str > ) > >;
   }
 
   impl< T, RowKey, Row, CellKey, CellFormat > TableHeader
@@ -161,7 +203,8 @@ pub( crate ) mod private
   {
     type CellKey = CellKey;
 
-    fn header( &self ) -> Option< impl IteratorTrait< Item = ( CellKey, Cow< '_, str > ) > >
+    // fn header( &self ) -> Option< impl IteratorTrait< Item = ( Self::CellKey, Cow< '_, str > ) > >
+    fn header( &self ) -> Option< impl IteratorTrait< Item = ( &Self::CellKey, &'_ str ) > >
     {
       let mut rows = self.rows();
       let row = rows.next();
@@ -171,7 +214,8 @@ pub( crate ) mod private
         (
           row
           .cells()
-          .map( | ( key, _title ) | ( key.clone(), Cow::Owned( format!( "{}", key ) ) ) )
+          // .map( | ( key, _title ) | ( key.clone(), Cow::Owned( format!( "{}", key ) ) ) )
+          .map( | ( key, _title ) | ( key, key.as_ref() ) )
           .collect::< Vec< _ > >()
           .into_iter()
         )

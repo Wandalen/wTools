@@ -29,13 +29,12 @@ pub struct TestObject
   pub tools : Option< Vec< HashMap< String, String > > >,
 }
 
-// impl< 'a > Fields< 'a, &'static str, MaybeAs< 'a, String, () > >
 impl Fields< &'static str, MaybeAs< '_, String, () > >
 for TestObject
 {
-  type Value< 'v > = MaybeAs< 'v, String, () >;
+  type Key< 'k > = &'static str;
+  type Val< 'v > = MaybeAs< 'v, String, () >;
 
-  // fn fields( &'a self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< 'a, String, () > ) >
   fn fields( &self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< '_, String, () > ) >
   {
     let mut dst : Vec< ( &'static str, MaybeAs< '_, String, () > ) > = Vec::new();
