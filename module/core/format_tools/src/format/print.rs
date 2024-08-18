@@ -44,8 +44,6 @@ pub( crate ) mod private
   #[ derive( Debug, Former ) ]
   // #[ debug ]
   pub struct Styles
-  // where
-    // FilterColumnls : FilterCol,
   {
 
     /// Delimiter for adding prefix to a cell.
@@ -62,14 +60,9 @@ pub( crate ) mod private
     /// Delimiter for adding in between of rows.
     pub row_separator : String,
 
-    // /// Filter columns out.
-    // pub filter_col : FilterColumnls,
-
   }
 
   impl Default for Styles
-  // where
-    // FilterColumnls : FilterCol + Default,
   {
     fn default() -> Self
     {
@@ -95,17 +88,12 @@ pub( crate ) mod private
 
   /// Struct for formatting tables.
   pub struct Context< 'buf >
-  // where
-  //   FilterColumnls : FilterCol,
   {
     buf : &'buf mut dyn fmt::Write,
     styles : Styles,
-    // styles : Styles< FilterColumnls >,
   }
 
   impl< 'buf > Context< 'buf >
-  // where
-  //   FilterColumnls : FilterCol,
   {
     /// Just constructr.
     pub fn new( buf : &'buf mut dyn fmt::Write, styles : Styles ) -> Self
@@ -115,8 +103,6 @@ pub( crate ) mod private
   }
 
   impl fmt::Debug for Context< '_ >
-  // where
-  //   FilterColumnls : FilterCol,
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
@@ -166,10 +152,7 @@ pub( crate ) mod private
 
   pub trait TableFormatter< 'data >
   {
-    /// Formats the table and writes the result to the given formatter.
     fn fmt< 'buf >( &'data self, f : &mut Context< 'buf > ) -> fmt::Result
-    // where
-    //   FilterColumnls : FilterCol,
     ;
   }
 
@@ -185,8 +168,6 @@ pub( crate ) mod private
     CellRepr : table::CellRepr,
   {
     fn fmt< 'a >( &'data self, f : &mut Context< 'a > ) -> fmt::Result
-    // where
-    //   FilterColumnls : FilterCol,
     {
       use md_math::MdOffset;
 
@@ -277,7 +258,6 @@ pub( crate ) mod private
   pub struct FormatExtract< 'data, CellKey >
   where
     CellKey : table::Key + ?Sized,
-    // &'table CellKey : Clone, // xxx
   {
 
     /// Multidimensional size in number of columns per table and number of rows per table.
@@ -352,7 +332,6 @@ pub( crate ) mod private
   impl< 'data, CellKey > FormatExtract< 'data, CellKey >
   where
     CellKey : table::Key + ?Sized,
-    // for< 'a > &'a CellKey : Copy,
   {
 
     pub fn extract< 't, Table, RowKey, Row, CellRepr > // xxx : RowKey?

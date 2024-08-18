@@ -152,8 +152,6 @@ pub( crate ) mod private
 
     fn rows< 'a >( &'a self ) -> impl IteratorTrait< Item = &'a Self::Row >
     where Self::Row : 'a
-    // fn rows( &'data self ) -> impl IteratorTrait< Item = &'data Self::Row >
-    //   where Self::Row : 'data
     {
       self.as_ref().fields()
       .filter_map( move | ( _k, e ) |
@@ -210,7 +208,6 @@ pub( crate ) mod private
     type CellKey : table::Key + ?Sized;
     /// Returns an iterator over all fields of the specified type within the entity.
     fn header( &self ) -> Option< impl IteratorTrait< Item = ( &Self::CellKey, &'_ str ) > >;
-    // fn header( &self ) -> Option< impl IteratorTrait< Item = ( Self::CellKey, Cow< '_, str > ) > >;
   }
 
   impl< T, RowKey, Row, CellKey, CellRepr > TableHeader
