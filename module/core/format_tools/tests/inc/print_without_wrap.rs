@@ -132,7 +132,7 @@ fn without_wrap()
   let test_objects = test_objects_gen();
 
   let mut output = String::new();
-  let mut formatter = the_module::Styles::default();
+  let formatter = the_module::Styles::default();
 
   let as_table = AsTable::new( &test_objects );
   // let mut context : Context< '_, _ > = Context::new( &mut output, formatter );

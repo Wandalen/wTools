@@ -376,7 +376,7 @@ pub( crate ) mod private
           | ( key, val ) |
           {
 
-            if !filter_col.filter_col( &key )
+            if !filter_col.filter_col( key )
             {
               return None;
             }

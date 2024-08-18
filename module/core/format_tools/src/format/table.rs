@@ -10,7 +10,7 @@ pub( crate ) mod private
   use core::
   {
     fmt,
-    // borrow::Borrow,
+    borrow::Borrow,
   };
   // use std::borrow::Cow;
   use reflect_tools::
@@ -29,13 +29,13 @@ pub( crate ) mod private
 
   pub trait Key
   where
-    Self : fmt::Debug + std::cmp::Eq + std::hash::Hash,
+    Self : fmt::Debug + std::cmp::Eq + std::hash::Hash + Borrow< str >,
   {
   }
 
   impl< T > Key for T
   where
-    T : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
+    T : fmt::Debug + std::cmp::Eq + std::hash::Hash + Borrow< str > + ?Sized,
   {
   }
 
@@ -246,8 +246,8 @@ pub( crate ) mod private
     Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
     Row : Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellKey : fmt::Display,
-    CellKey : AsRef< str >,
+    // CellKey : AsRef< str >,
+    // CellKey : Borrow< str >,
     // xxx
     CellRepr : table::CellRepr,
   {
@@ -264,7 +264,7 @@ pub( crate ) mod private
           row
           .cells()
           // .map( | ( key, _title ) | ( key.clone(), Cow::Owned( format!( "{}", key ) ) ) )
-          .map( | ( key, _title ) | ( key, key.as_ref() ) )
+          .map( | ( key, _title ) | ( key, key.borrow() ) )
           .collect::< Vec< _ > >()
           .into_iter()
         )
