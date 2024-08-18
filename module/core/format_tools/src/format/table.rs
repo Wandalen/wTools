@@ -29,7 +29,8 @@ pub( crate ) mod private
 
   impl< T > Key for T
   where
-    Self : fmt::Debug + std::cmp::Eq + std::hash::Hash
+    Self : fmt::Debug + std::cmp::Eq + std::hash::Hash,
+    T : ?Sized,
   {
   }
 
@@ -104,12 +105,11 @@ pub( crate ) mod private
   where
     Self::Row : Clone + Cells< Self::CellKey, Self::CellFormat >,
     Self::CellFormat : Copy + 'static,
-    // Self::CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
-    // &'table CellKey : Clone,
+    // Self::CellKey : table::Key + ?Sized,
   {
     type RowKey;
     type Row;
-    type CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized;
+    type CellKey : table::Key + ?Sized;
     type CellFormat;
 
     /// Returns an iterator over all rows of the table.
@@ -135,8 +135,7 @@ pub( crate ) mod private
     > + 'k + 'v,
 
     Row : Clone + Cells< CellKey, CellFormat >,
-    CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
-    // &'table CellKey : Clone,
+    CellKey : table::Key + ?Sized,
     CellFormat : Copy + 'static,
   {
     type RowKey = RowKey;
@@ -173,8 +172,7 @@ pub( crate ) mod private
   where
     Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellFormat = CellFormat >,
     Row : Clone + Cells< CellKey, CellFormat >,
-    CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
-    // &'table CellKey : Clone,
+    CellKey : table::Key + ?Sized,
     CellFormat : Copy + 'static,
   {
     fn mcells( &self ) -> [ usize ; 2 ]
@@ -200,10 +198,9 @@ pub( crate ) mod private
   /// Trait returning headers of a table if any.
   pub trait TableHeader
   where
-    // Self::CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
-    // &'table CellKey : Clone,
+    // Self::CellKey : table::Key + ?Sized,
   {
-    type CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized;
+    type CellKey : table::Key + ?Sized;
     /// Returns an iterator over all fields of the specified type within the entity.
     fn header( &self ) -> Option< impl IteratorTrait< Item = ( &Self::CellKey, &'_ str ) > >;
     // fn header( &self ) -> Option< impl IteratorTrait< Item = ( Self::CellKey, Cow< '_, str > ) > >;
@@ -214,8 +211,7 @@ pub( crate ) mod private
   where
     Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellFormat = CellFormat >,
     Row : Clone + Cells< CellKey, CellFormat >,
-    CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
-    // &'table CellKey : Clone,
+    CellKey : table::Key + ?Sized,
     CellKey : fmt::Display,
     CellKey : AsRef< str >,
     CellFormat : Copy + 'static,

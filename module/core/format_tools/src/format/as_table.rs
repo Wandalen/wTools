@@ -27,8 +27,7 @@ pub( crate ) mod private
   )
   where
     Row : Clone + Cells< CellKey, CellFormat >,
-    CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
-    // &'table CellKey : Clone,
+    CellKey : table::Key + ?Sized,
     CellFormat : Copy + 'static,
   ;
 
@@ -36,8 +35,7 @@ pub( crate ) mod private
   AsTable< 'table, Table, RowKey, Row, CellKey, CellFormat >
   where
     Row : Clone + Cells< CellKey, CellFormat >,
-    CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
-    // &'table CellKey : Clone,
+    CellKey : table::Key + ?Sized,
     CellFormat : Copy + 'static,
   {
     /// Just a constructor.
@@ -51,8 +49,7 @@ pub( crate ) mod private
   for AsTable< 'table, Table, RowKey, Row, CellKey, CellFormat >
   where
     Row : Clone + Cells< CellKey, CellFormat >,
-    CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
-    // &'table CellKey : Clone,
+    CellKey : table::Key + ?Sized,
     CellFormat : Copy + 'static,
   {
     fn as_ref( &self ) -> &Table
@@ -65,8 +62,7 @@ pub( crate ) mod private
   for AsTable< 'table, Table, RowKey, Row, CellKey, CellFormat >
   where
     Row : Clone + Cells< CellKey, CellFormat >,
-    CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
-    // &'table CellKey : Clone,
+    CellKey : table::Key + ?Sized,
     CellFormat : Copy + 'static,
   {
     type Target = Table;
@@ -81,8 +77,7 @@ pub( crate ) mod private
   for AsTable< 'table, Table, RowKey, Row, CellKey, CellFormat >
   where
     Row : Clone + Cells< CellKey, CellFormat >,
-    CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
-    // &'table CellKey : Clone,
+    CellKey : table::Key + ?Sized,
     CellFormat : Copy + 'static,
   {
     fn from( table : &'table Table ) -> Self
@@ -96,8 +91,7 @@ pub( crate ) mod private
   where
     Table : fmt::Debug,
     Row : Clone + Cells< CellKey, CellFormat >,
-    CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
-    // &'table CellKey : Clone,
+    CellKey : table::Key + ?Sized,
     CellFormat : Copy + 'static, // xxx : maybe special trait?
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result

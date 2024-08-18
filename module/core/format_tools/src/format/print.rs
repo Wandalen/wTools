@@ -181,8 +181,7 @@ pub( crate ) mod private
     Self : TableHeader< CellKey = CellKey >,
     Self : TableSize,
     Row : Clone + Cells< CellKey, CellFormat >,
-    CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
-    // &'table CellKey : Clone,
+    CellKey : table::Key + ?Sized,
     CellFormat : Copy + 'static,
   {
     fn fmt< 'a >( &'data self, f : &mut Context< 'a > ) -> fmt::Result
@@ -277,7 +276,7 @@ pub( crate ) mod private
   #[ derive( Debug ) ]
   pub struct FormatExtract< 'data, CellKey >
   where
-    CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
+    CellKey : table::Key + ?Sized,
     // &'table CellKey : Clone, // xxx
   {
 
@@ -316,8 +315,7 @@ pub( crate ) mod private
     /// Filter columns of a table to print it only partially.
     fn filter_col< CellKey >( &self, key : &CellKey ) -> bool
     where
-      CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
-    // &'table CellKey : Clone,
+      CellKey : table::Key + ?Sized,
     ;
   }
 
@@ -329,8 +327,7 @@ pub( crate ) mod private
     #[ inline( always ) ]
     fn filter_col< CellKey >( &self, _key : &CellKey ) -> bool
     where
-      CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
-    // &'table CellKey : Clone,
+      CellKey : table::Key + ?Sized,
     {
       true
     }
@@ -344,8 +341,7 @@ pub( crate ) mod private
     #[ inline( always ) ]
     fn filter_col< CellKey >( &self, _key : &CellKey ) -> bool
     where
-      CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
-    // &'table CellKey : Clone,
+      CellKey : table::Key + ?Sized,
     {
       false
     }
@@ -355,8 +351,7 @@ pub( crate ) mod private
 
   impl< 'data, CellKey > FormatExtract< 'data, CellKey >
   where
-    CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
-    // &'table CellKey : Clone,
+    CellKey : table::Key + ?Sized,
     // for< 'a > &'a CellKey : Copy,
   {
 
