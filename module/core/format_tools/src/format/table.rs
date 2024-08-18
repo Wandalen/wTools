@@ -117,29 +117,21 @@ pub( crate ) mod private
 
   /// A trait for iterating over all rows of a table.
   pub trait TableRows<>
-  where
-    Self::Row : Clone + Cells< Self::CellKey, Self::CellRepr >,
-    Self::CellRepr : table::CellRepr,
-    // Self::CellKey : table::Key + ?Sized,
   {
     type RowKey;
-    type Row;
+    type Row : Cells< Self::CellKey, Self::CellRepr >;
     type CellKey : table::Key + ?Sized;
-    type CellRepr;
+    type CellRepr : table::CellRepr;
 
     /// Returns an iterator over all rows of the table.
     fn rows< 'a >( &'a self ) -> impl IteratorTrait< Item = &'a Self::Row >
     where Self::Row : 'a;
-    // fn rows( &'data self ) -> impl IteratorTrait< Item = &'data Self::Row >
-    // where Self::Row : 'data;
   }
 
   impl< T, RowKey, Row, CellKey, CellRepr >
   TableRows<>
   for AsTable< '_, T, RowKey, Row, CellKey, CellRepr >
   where
-
-    // for< 'a > T : Fields< RowKey, &'a Row, Key< 'a > = RowKey, Val< 'a > = &'a Row  >,
 
     for< 'k, 'v > T : Fields
     <
@@ -149,7 +141,7 @@ pub( crate ) mod private
       Val< 'v > = &'v Row,
     > + 'k + 'v,
 
-    Row : Clone + Cells< CellKey, CellRepr >,
+    Row : Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
     CellRepr : table::CellRepr,
   {
@@ -186,7 +178,7 @@ pub( crate ) mod private
   for AsTable< '_, T, RowKey, Row, CellKey, CellRepr >
   where
     Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
-    Row : Clone + Cells< CellKey, CellRepr >,
+    Row : Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
     CellRepr : table::CellRepr,
   {
@@ -225,7 +217,7 @@ pub( crate ) mod private
   for AsTable< '_, T, RowKey, Row, CellKey, CellRepr >
   where
     Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
-    Row : Clone + Cells< CellKey, CellRepr >,
+    Row : Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
     CellKey : fmt::Display,
     CellKey : AsRef< str >,

@@ -26,7 +26,7 @@ pub( crate ) mod private
     ::core::marker::PhantomData< ( &'table (), fn () -> ( RowKey, Row, &'table CellKey, CellRepr ) ) >,
   )
   where
-    Row : Clone + Cells< CellKey, CellRepr >,
+    Row : Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
     CellRepr : table::CellRepr,
   ;
@@ -34,7 +34,7 @@ pub( crate ) mod private
   impl< 'table, Table, RowKey, Row, CellKey, CellRepr >
   AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   where
-    Row : Clone + Cells< CellKey, CellRepr >,
+    Row : Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
     CellRepr : table::CellRepr,
   {
@@ -48,7 +48,7 @@ pub( crate ) mod private
   impl< 'table, Table, RowKey, Row, CellKey, CellRepr > AsRef< Table >
   for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   where
-    Row : Clone + Cells< CellKey, CellRepr >,
+    Row : Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
     CellRepr : table::CellRepr,
   {
@@ -61,7 +61,7 @@ pub( crate ) mod private
   impl< 'table, Table, RowKey, Row, CellKey, CellRepr > Deref
   for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   where
-    Row : Clone + Cells< CellKey, CellRepr >,
+    Row : Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
     CellRepr : table::CellRepr,
   {
@@ -76,7 +76,7 @@ pub( crate ) mod private
   impl< 'table, Table, RowKey, Row, CellKey, CellRepr > From< &'table Table >
   for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   where
-    Row : Clone + Cells< CellKey, CellRepr >,
+    Row : Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
     CellRepr : table::CellRepr,
   {
@@ -90,7 +90,7 @@ pub( crate ) mod private
   for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   where
     Table : fmt::Debug,
-    Row : Clone + Cells< CellKey, CellRepr >,
+    Row : Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
     CellRepr : table::CellRepr, // xxx : maybe special trait?
   {

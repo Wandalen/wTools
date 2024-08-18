@@ -180,7 +180,7 @@ pub( crate ) mod private
     Self : TableRows< CellKey = CellKey, CellRepr = CellRepr, RowKey = RowKey, Row = Row >,
     Self : TableHeader< CellKey = CellKey >,
     Self : TableSize,
-    Row : Clone + Cells< CellKey, CellRepr >,
+    Row : Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
     CellRepr : table::CellRepr,
   {
@@ -368,7 +368,7 @@ pub( crate ) mod private
       Table : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
       Table : TableHeader< CellKey = CellKey >,
       Table : TableSize,
-      Row : Clone + Cells< CellKey, CellRepr > + 'data,
+      Row : Cells< CellKey, CellRepr > + 'data,
       CellRepr : table::CellRepr,
     {
       use md_math::MdOffset;
