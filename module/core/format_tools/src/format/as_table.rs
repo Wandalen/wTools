@@ -12,23 +12,28 @@ pub( crate ) mod private
     ops::{ Deref },
     marker::PhantomData,
     fmt,
-    // cmp::Ordering,
   };
 
-  // let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, str, WithRef > = AsTable::new( &test_objects );
-
-  /// Transparent wrapper for table-like structures.
+  /// Transparent wrapper for interpreting data as a table.
+  ///
+  /// `AsTable` provides a reference-based wrapper for table-like structures,
+  /// encapsulating type information needed to interpret data as a table.
+  ///
   #[ repr( transparent ) ]
   #[ derive( Clone, Copy ) ]
   pub struct AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   (
     &'table Table,
-    ::core::marker::PhantomData< ( &'table (), fn () -> ( RowKey, Row, &'table CellKey, CellRepr ) ) >,
+    ::core::marker::PhantomData
+    <(
+      &'table (),
+      fn() -> ( RowKey, Row, &'table CellKey, CellRepr ),
+    )>,
   )
   where
     Row : Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellRepr : table::CellRepr,
+    CellRepr : table::CellRepr
   ;
 
   impl< 'table, Table, RowKey, Row, CellKey, CellRepr >
@@ -89,7 +94,7 @@ pub( crate ) mod private
   impl< 'table, Table, RowKey, Row, CellKey, CellRepr > fmt::Debug
   for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   where
-    Table : fmt::Debug,
+    Table : fmt::Debug, // xxx : rid of the bound
     Row : Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
     CellRepr : table::CellRepr, // xxx : maybe special trait?
@@ -102,6 +107,36 @@ pub( crate ) mod private
       .finish()
     }
   }
+
+  // =
+
+  /// Trait for converting data references into `AsTable` references.
+  ///
+  /// `IntoAsTable` provides a way to interpret data as a table, encapsulating
+  /// the necessary type information for handling table-like structures.
+  ///
+  pub trait IntoAsTable
+  {
+    /// The type representing the table, must implement `fmt::Debug`.
+    type Table : fmt::Debug;
+
+    /// The type used to identify each row.
+    type RowKey;
+
+    /// The type representing a row, must implement `Cells`.
+    type Row : Cells< Self::CellKey, Self::CellRepr >;
+
+    /// The type used to identify cells within a row, must implement `Key` and can be unsized.
+    type CellKey : table::Key + ?Sized;
+
+    /// The type representing the content of a cell, must implement `CellRepr`.
+    type CellRepr : table::CellRepr;
+
+    /// Converts the data reference into an `AsTable` reference.
+    fn as_table( &self ) -> AsTable< '_, Self::Table, Self::RowKey, Self::Row, Self::CellKey, Self::CellRepr >;
+  }
+
+  // pub struct AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
 
 }
 
@@ -137,7 +172,7 @@ pub mod exposed
   pub use private::
   {
     AsTable,
-    // CellKeyWrap,
+    IntoAsTable,
   };
 
 }
