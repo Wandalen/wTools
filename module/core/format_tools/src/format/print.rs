@@ -181,7 +181,8 @@ pub( crate ) mod private
     Self : TableHeader< CellKey = CellKey >,
     Self : TableSize,
     Row : Clone + Cells< CellKey, CellFormat >,
-    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+    CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
+    // &'table CellKey : Clone,
     CellFormat : Copy + 'static,
   {
     fn fmt< 'a >( &'data self, f : &mut Context< 'a > ) -> fmt::Result
@@ -276,7 +277,8 @@ pub( crate ) mod private
   #[ derive( Debug ) ]
   pub struct FormatExtract< 'data, CellKey >
   where
-    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash, // xxx
+    CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
+    // &'table CellKey : Clone, // xxx
   {
 
     /// Multidimensional size in number of columns per table and number of rows per table.
@@ -314,7 +316,8 @@ pub( crate ) mod private
     /// Filter columns of a table to print it only partially.
     fn filter_col< CellKey >( &self, key : &CellKey ) -> bool
     where
-      CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+      CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
+    // &'table CellKey : Clone,
     ;
   }
 
@@ -326,7 +329,8 @@ pub( crate ) mod private
     #[ inline( always ) ]
     fn filter_col< CellKey >( &self, _key : &CellKey ) -> bool
     where
-      CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+      CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
+    // &'table CellKey : Clone,
     {
       true
     }
@@ -340,30 +344,19 @@ pub( crate ) mod private
     #[ inline( always ) ]
     fn filter_col< CellKey >( &self, _key : &CellKey ) -> bool
     where
-      CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+      CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
+    // &'table CellKey : Clone,
     {
       false
     }
   }
 
-  // impl< CellKey, F > FilterCol for F
-  // where
-  //   F : Fn( &CellKey ) -> bool,
-  //   CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
-  // {
-  //   fn filter_col< CellKey >( &self, key : &CellKey ) -> bool
-  //   where
-  //     CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
-  //   {
-  //     self.call( key )
-  //   }
-  // }
-
   //
 
   impl< 'data, CellKey > FormatExtract< 'data, CellKey >
   where
-    CellKey : fmt::Debug + Clone + std::cmp::Eq + std::hash::Hash,
+    CellKey : fmt::Debug + std::cmp::Eq + std::hash::Hash + ?Sized,
+    // &'table CellKey : Clone,
     // for< 'a > &'a CellKey : Copy,
   {
 

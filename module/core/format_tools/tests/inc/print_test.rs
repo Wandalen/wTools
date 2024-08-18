@@ -118,8 +118,8 @@ fn table_to_string()
   assert_eq!( cells.len(), 4 );
   drop( cells );
 
-  // let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, str, WithRef > = AsTable::new( &test_objects );
-  // let mcells = TableSize::mcells( &as_table );
+  let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, str, WithRef > = AsTable::new( &test_objects );
+  let mcells = TableSize::mcells( &as_table );
 //   assert_eq!( mcells, [ 4, 2 ] );
 //   let rows = TableRows::rows( &as_table );
 //   assert_eq!( rows.len(), 2 );
