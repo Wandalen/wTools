@@ -94,10 +94,10 @@ pub( crate ) mod private
   impl< 'table, Table, RowKey, Row, CellKey, CellRepr > fmt::Debug
   for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   where
-    Table : fmt::Debug, // xxx : rid of the bound
+    Table : fmt::Debug,
     Row : Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
-    CellRepr : table::CellRepr, // xxx : maybe special trait?
+    CellRepr : table::CellRepr,
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
@@ -117,8 +117,8 @@ pub( crate ) mod private
   ///
   pub trait IntoAsTable
   {
-    /// The type representing the table, must implement `fmt::Debug`.
-    type Table : fmt::Debug;
+    /// The type representing the table.
+    type Table;
 
     /// The type used to identify each row.
     type RowKey;
@@ -139,7 +139,6 @@ pub( crate ) mod private
   impl< 'table, Table, RowKey, Row, CellKey, CellRepr > IntoAsTable
   for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   where
-    Table : fmt::Debug,
     Row : Cells< CellKey, CellRepr >,
     CellKey : table::Key + ?Sized,
     CellRepr : table::CellRepr,
