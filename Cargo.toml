@@ -381,7 +381,7 @@ default-features = false
 
 [workspace.dependencies.process_tools_published]
 package = "process_tools"
-version = "~0.2.0"
+version = "~0.8.0"
 default-features = false
 
 
