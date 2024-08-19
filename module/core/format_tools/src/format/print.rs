@@ -347,6 +347,7 @@ pub( crate ) mod private
       Table : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
       Table : TableHeader< CellKey = CellKey >,
       Table : TableSize,
+      RowKey : table::RowKey,
       Row : Cells< CellKey, CellRepr > + 'data,
       CellRepr : table::CellRepr,
     {
