@@ -141,6 +141,23 @@ pub( crate ) mod private
     }
   }
 
+  pub trait TableStringer< CellKey >
+  where
+    CellKey : table::CellKey + ?Sized,
+  {
+    fn extract_to_buf< 'buf, 'data >( extract : &FormatExtract< 'data, CellKey >, f : &mut Context< 'buf > );
+  }
+
+  #[ derive( Debug, Default ) ]
+  pub struct TableStringerDefault;
+
+  // impl TableStringer for TableStringerDefault
+  // {
+  //   fn extract_to_buf< 'buf >( extract : &FormatExtract, f : &mut Context< 'a > ) -> fmt::Result
+  //   {
+  //   }
+  // }
+
   /// Trait for defining table formatting logic.
   ///
   /// `TableFormatter` allows implementations to specify how tables are formatted
