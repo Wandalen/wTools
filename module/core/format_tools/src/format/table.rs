@@ -21,19 +21,32 @@ pub( crate ) mod private
 
   // =
 
-  /// Trait for types used as keys in table-like structures.
+  /// Trait for types used as keys of rows in table-like structures.
   ///
-  /// The `Key` trait aggregates necessary bounds for keys, ensuring they support
+
+  pub trait RowKey
+  {
+  }
+
+  impl< T > RowKey for T
+  where
+    T : ?Sized,
+  {
+  }
+
+  /// Trait for types used as keys of cells in table-like structures.
+  ///
+  /// The `CellKey` trait aggregates necessary bounds for keys, ensuring they support
   /// debugging, equality comparison, and hashing.
   ///
 
-  pub trait Key
+  pub trait CellKey
   where
     Self : fmt::Debug + std::cmp::Eq + std::hash::Hash + Borrow< str >,
   {
   }
 
-  impl< T > Key for T
+  impl< T > CellKey for T
   where
     T : fmt::Debug + std::cmp::Eq + std::hash::Hash + Borrow< str > + ?Sized,
   {
@@ -63,7 +76,7 @@ pub( crate ) mod private
   pub trait Cells< CellKey, CellRepr >
   where
     CellRepr : table::CellRepr,
-    CellKey : table::Key + ?Sized,
+    CellKey : table::CellKey + ?Sized,
   {
     /// Returns an iterator over all cells of the row.
     fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, MaybeAs< 'b, str, CellRepr > ) >
@@ -76,7 +89,7 @@ pub( crate ) mod private
   impl< Row, CellKey, CellRepr > Cells< CellKey, CellRepr >
   for Row
   where
-    CellKey : table::Key + ?Sized,
+    CellKey : table::CellKey + ?Sized,
     for< 'k, 'v >
     Row : Fields
     <
@@ -146,7 +159,7 @@ pub( crate ) mod private
     ///
     /// The type used to identify cells within a row, requiring
     ///   implementation of the `Key` trait.
-    type CellKey : table::Key + ?Sized;
+    type CellKey : table::CellKey + ?Sized;
     ///
     /// The type representing the content of a cell, requiring
     ///   implementation of the `CellRepr` trait.
@@ -171,8 +184,9 @@ pub( crate ) mod private
       Val< 'v > = &'v Row,
     > + 'k + 'v,
 
+    RowKey : table::RowKey,
     Row : Cells< CellKey, CellRepr >,
-    CellKey : table::Key + ?Sized,
+    CellKey : table::CellKey + ?Sized,
     CellRepr : table::CellRepr,
   {
     type RowKey = RowKey;
@@ -181,10 +195,11 @@ pub( crate ) mod private
     type CellRepr = CellRepr;
 
     fn rows< 'a >( &'a self ) -> impl IteratorTrait< Item = &'a Self::Row >
-    where Self::Row : 'a
+    where
+      Self::Row : 'a
     {
       self.as_ref().fields()
-      .filter_map( move | ( _k, e ) |
+      .filter_map( move | ( _k, e ) : ( RowKey, &Row ) |
       {
         Some( e )
       })
@@ -206,8 +221,9 @@ pub( crate ) mod private
   for AsTable< '_, T, RowKey, Row, CellKey, CellRepr >
   where
     Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
+    RowKey : table::RowKey,
     Row : Cells< CellKey, CellRepr >,
-    CellKey : table::Key + ?Sized,
+    CellKey : table::CellKey + ?Sized,
     CellRepr : table::CellRepr,
   {
     fn mcells( &self ) -> [ usize ; 2 ]
@@ -235,7 +251,7 @@ pub( crate ) mod private
   {
     /// The type used to identify cells within a row, requiring
     ///   implementation of the `Key` trait.
-    type CellKey : table::Key + ?Sized;
+    type CellKey : table::CellKey + ?Sized;
     /// Returns an iterator over all fields of the specified type within the entity.
     fn header( &self ) -> Option< impl IteratorTrait< Item = ( &Self::CellKey, &'_ str ) > >;
   }
@@ -244,8 +260,9 @@ pub( crate ) mod private
   for AsTable< '_, T, RowKey, Row, CellKey, CellRepr >
   where
     Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
+    RowKey : table::RowKey,
     Row : Cells< CellKey, CellRepr >,
-    CellKey : table::Key + ?Sized,
+    CellKey : table::CellKey + ?Sized,
     CellRepr : table::CellRepr,
   {
     type CellKey = CellKey;
@@ -292,7 +309,8 @@ pub mod own
   #[ doc( inline ) ]
   pub use private::
   {
-    Key,
+    RowKey,
+    CellKey,
     CellRepr,
   };
 

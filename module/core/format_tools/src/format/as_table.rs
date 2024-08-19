@@ -27,20 +27,22 @@ pub( crate ) mod private
     ::core::marker::PhantomData
     <(
       &'table (),
-      fn() -> ( RowKey, Row, &'table CellKey, CellRepr ),
+      fn() -> ( &'table RowKey, Row, &'table CellKey, CellRepr ),
     )>,
   )
   where
+    RowKey : table::RowKey,
     Row : Cells< CellKey, CellRepr >,
-    CellKey : table::Key + ?Sized,
+    CellKey : table::CellKey + ?Sized,
     CellRepr : table::CellRepr
   ;
 
   impl< 'table, Table, RowKey, Row, CellKey, CellRepr >
   AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   where
+    RowKey : table::RowKey,
     Row : Cells< CellKey, CellRepr >,
-    CellKey : table::Key + ?Sized,
+    CellKey : table::CellKey + ?Sized,
     CellRepr : table::CellRepr,
   {
     /// Just a constructor.
@@ -53,8 +55,9 @@ pub( crate ) mod private
   impl< 'table, Table, RowKey, Row, CellKey, CellRepr > AsRef< Table >
   for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   where
+    RowKey : table::RowKey,
     Row : Cells< CellKey, CellRepr >,
-    CellKey : table::Key + ?Sized,
+    CellKey : table::CellKey + ?Sized,
     CellRepr : table::CellRepr,
   {
     fn as_ref( &self ) -> &Table
@@ -66,8 +69,9 @@ pub( crate ) mod private
   impl< 'table, Table, RowKey, Row, CellKey, CellRepr > Deref
   for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   where
+    RowKey : table::RowKey,
     Row : Cells< CellKey, CellRepr >,
-    CellKey : table::Key + ?Sized,
+    CellKey : table::CellKey + ?Sized,
     CellRepr : table::CellRepr,
   {
     type Target = Table;
@@ -81,8 +85,9 @@ pub( crate ) mod private
   impl< 'table, Table, RowKey, Row, CellKey, CellRepr > From< &'table Table >
   for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   where
+    RowKey : table::RowKey,
     Row : Cells< CellKey, CellRepr >,
-    CellKey : table::Key + ?Sized,
+    CellKey : table::CellKey + ?Sized,
     CellRepr : table::CellRepr,
   {
     fn from( table : &'table Table ) -> Self
@@ -95,8 +100,9 @@ pub( crate ) mod private
   for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   where
     Table : fmt::Debug,
+    RowKey : table::RowKey,
     Row : Cells< CellKey, CellRepr >,
-    CellKey : table::Key + ?Sized,
+    CellKey : table::CellKey + ?Sized,
     CellRepr : table::CellRepr,
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
@@ -121,13 +127,13 @@ pub( crate ) mod private
     type Table;
 
     /// The type used to identify each row.
-    type RowKey;
+    type RowKey : table::RowKey;
 
     /// The type representing a row, must implement `Cells`.
     type Row : Cells< Self::CellKey, Self::CellRepr >;
 
     /// The type used to identify cells within a row, must implement `Key` and can be unsized.
-    type CellKey : table::Key + ?Sized;
+    type CellKey : table::CellKey + ?Sized;
 
     /// The type representing the content of a cell, must implement `CellRepr`.
     type CellRepr : table::CellRepr;
@@ -139,8 +145,9 @@ pub( crate ) mod private
   impl< 'table, Table, RowKey, Row, CellKey, CellRepr > IntoAsTable
   for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
   where
+    RowKey : table::RowKey,
     Row : Cells< CellKey, CellRepr >,
-    CellKey : table::Key + ?Sized,
+    CellKey : table::CellKey + ?Sized,
     CellRepr : table::CellRepr,
     Self : Copy,
   {
@@ -162,7 +169,7 @@ pub( crate ) mod private
 //   for Vec< Row >
 //   where
 //     Row : Cells< Self::CellKey, Self::CellRepr >,
-//     // CellKey : table::Key + ?Sized,
+//     // CellKey : table::CellKey + ?Sized,
 //     // CellRepr : table::CellRepr,
 //   {
 //

@@ -163,8 +163,9 @@ pub( crate ) mod private
     Self : TableRows< CellKey = CellKey, CellRepr = CellRepr, RowKey = RowKey, Row = Row >,
     Self : TableHeader< CellKey = CellKey >,
     Self : TableSize,
+    RowKey : table::RowKey,
     Row : Cells< CellKey, CellRepr >,
-    CellKey : table::Key + ?Sized,
+    CellKey : table::CellKey + ?Sized,
     CellRepr : table::CellRepr,
   {
     fn fmt< 'a >( &'data self, f : &mut Context< 'a > ) -> fmt::Result
@@ -257,7 +258,7 @@ pub( crate ) mod private
   #[ derive( Debug ) ]
   pub struct FormatExtract< 'data, CellKey >
   where
-    CellKey : table::Key + ?Sized,
+    CellKey : table::CellKey + ?Sized,
   {
 
     /// Multidimensional size in number of columns per table and number of rows per table.
@@ -295,7 +296,7 @@ pub( crate ) mod private
     /// Filter columns of a table to print it only partially.
     fn filter_col< CellKey >( &self, key : &CellKey ) -> bool
     where
-      CellKey : table::Key + ?Sized,
+      CellKey : table::CellKey + ?Sized,
     ;
   }
 
@@ -307,7 +308,7 @@ pub( crate ) mod private
     #[ inline( always ) ]
     fn filter_col< CellKey >( &self, _key : &CellKey ) -> bool
     where
-      CellKey : table::Key + ?Sized,
+      CellKey : table::CellKey + ?Sized,
     {
       true
     }
@@ -321,7 +322,7 @@ pub( crate ) mod private
     #[ inline( always ) ]
     fn filter_col< CellKey >( &self, _key : &CellKey ) -> bool
     where
-      CellKey : table::Key + ?Sized,
+      CellKey : table::CellKey + ?Sized,
     {
       false
     }
@@ -331,7 +332,7 @@ pub( crate ) mod private
 
   impl< 'data, CellKey > FormatExtract< 'data, CellKey >
   where
-    CellKey : table::Key + ?Sized,
+    CellKey : table::CellKey + ?Sized,
   {
 
     pub fn extract< 't, Table, RowKey, Row, CellRepr > // xxx : RowKey?
