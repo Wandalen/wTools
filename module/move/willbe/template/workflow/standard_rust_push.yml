@@ -151,7 +151,7 @@ jobs :
           attempt_delay: 10000
       - uses: actions/checkout@v3
       - name: Install will
-        run: cargo install --git https://github.com/Wandalen/wTools --branch alpha willbe
+        run: cargo install willbe
       - name: Set MANIFEST_ROOT_PATH
         id: rootpath
         run: echo "::set-output name=path::$(dirname ${{ inputs.manifest_path }})"
