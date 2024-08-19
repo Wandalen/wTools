@@ -171,6 +171,7 @@ pub( crate ) mod private
       Self::Row : 'a;
   }
 
+
   impl< T, RowKey, Row, CellKey, CellRepr >
   TableRows<>
   for AsTable< '_, T, RowKey, Row, CellKey, CellRepr >
