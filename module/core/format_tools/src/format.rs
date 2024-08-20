@@ -252,6 +252,7 @@ pub( crate ) mod private
 }
 
 pub mod as_table;
+pub mod filter;
 pub mod md_math;
 pub mod output_format;
 pub mod print;
@@ -274,6 +275,7 @@ pub mod own
   pub use super::
   {
     as_table::orphan::*,
+    filter::orphan::*,
     md_math::orphan::*,
     output_format::orphan::*,
     print::orphan::*,
@@ -317,6 +319,7 @@ pub mod exposed
   pub use
   {
     as_table::exposed::*,
+    filter::exposed::*,
     md_math::exposed::*,
     output_format::exposed::*,
     print::exposed::*,
@@ -338,6 +341,7 @@ pub mod prelude
   pub use
   {
     as_table::prelude::*,
+    filter::prelude::*,
     md_math::prelude::*,
     output_format::prelude::*,
     print::prelude::*,

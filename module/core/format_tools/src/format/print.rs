@@ -258,83 +258,6 @@ pub( crate ) mod private
 
   }
 
-  /// Filter columns of a table to print it only partially.
-  pub trait FilterCol
-  {
-    /// Filter columns of a table to print it only partially.
-    fn filter_col( &self, key : &str ) -> bool;
-  }
-
-  /// Filter passing all elements.
-  #[ derive( Debug, Default, PartialEq, Clone, Copy ) ]
-  pub struct All;
-
-  impl All
-  {
-    /// Returns a reference to a static instance of `Ordinary`.
-    ///
-    /// This method provides access to a single shared instance of `Ordinary`,
-    /// ensuring efficient reuse of the classic table output format.
-    pub fn instance() -> & 'static dyn FilterCol
-    {
-      static INSTANCE : All = All;
-      &INSTANCE
-    }
-  }
-
-  impl Default for &'static dyn FilterCol
-  {
-    #[ inline( always ) ]
-    fn default() -> Self
-    {
-      All::instance()
-    }
-  }
-
-  impl FilterCol for All
-  {
-    #[ inline( always ) ]
-    fn filter_col( &self, key : &str ) -> bool
-    {
-      true
-    }
-  }
-
-  /// Filter skipping all elements.
-  #[ derive( Debug, Default, PartialEq, Clone, Copy ) ]
-  pub struct No;
-  impl FilterCol for No
-  {
-    #[ inline( always ) ]
-    fn filter_col( &self, _key : &str ) -> bool
-    {
-      false
-    }
-  }
-
-  impl No
-  {
-    /// Returns a reference to a static instance of `Ordinary`.
-    ///
-    /// This method provides access to a single shared instance of `Ordinary`,
-    /// ensuring efficient reuse of the classic table output format.
-    pub fn instance() -> & 'static dyn FilterCol
-    {
-      static INSTANCE : All = All;
-      &INSTANCE
-    }
-  }
-
-  impl< F : Fn( &str ) -> bool > FilterCol for F
-  {
-    #[ inline( always ) ]
-    fn filter_col( &self, key : &str ) -> bool
-    // fn filter_col( &self, key : &str ) -> bool
-    {
-      self( key )
-    }
-  }
-
   //
 
   impl< 'data > InputExtract< 'data >
@@ -545,8 +468,6 @@ pub mod own
   #[ doc( inline ) ]
   pub use private::
   {
-    All,
-    No,
     Context,
     Styles,
     InputExtract,

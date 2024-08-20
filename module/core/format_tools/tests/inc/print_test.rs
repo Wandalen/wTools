@@ -11,15 +11,10 @@ use the_module::
   TableSize,
   TableRows,
   TableHeader,
-  // Context,
   WithRef,
   MaybeAs,
+  filter,
   print,
-  // {
-  //   Context,
-  //   TableFormatter,
-  //   Styles,
-  // }
 };
 
 use std::
@@ -111,11 +106,10 @@ fn test_objects_gen() -> Vec< TestObject >
 //
 
 #[ test ]
-fn table_to_string()
+fn basic()
 // where
   // for< 'a > AsTable< 'a, Vec< TestObject >, usize, TestObject, &'static str, String, &'static str > : TableFormatter< 'a >,
 {
-  use the_module::TableToString;
   let test_objects = test_objects_gen();
 
   let cells = Cells::< str, WithRef >::cells( &test_objects[ 0 ] );
@@ -149,6 +143,16 @@ fn table_to_string()
   let got = the_module::TableFormatter::fmt( &as_table, &mut context );
   assert!( got.is_ok() );
   println!( "{}", &output );
+
+}
+
+//
+
+#[ test ]
+fn table_to_string()
+{
+  use the_module::TableToString;
+  let test_objects = test_objects_gen();
 
   // with explicit arguments
 
@@ -239,8 +243,7 @@ fn filter_col_none()
   formatter.row_postfix = "<".into();
   formatter.row_separator = "\n".into();
 
-  formatter.filter_col = &print::No;
-  // xxx : implement
+  formatter.filter_col = &filter::None;
 
   let as_table = AsTable::new( &test_objects );
   let mut context = print::Context::new( &mut output, formatter );
