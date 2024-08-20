@@ -41,8 +41,10 @@ pub( crate ) mod private
   ///   used to add a consistent end to each row.
   ///
   /// ```
-  #[ derive( Debug, Former ) ]
-  pub struct Styles
+  // xxx : enable
+  // #[ derive( Debug, Former ) ]
+  #[ derive( Debug ) ]
+  pub struct Styles< 'callback >
   {
 
     /// Delimiter for adding prefix to a cell.
@@ -62,11 +64,11 @@ pub( crate ) mod private
     /// Convert extract into a string, writing it into destination buffer.
     pub output_format : &'static dyn TableOutputFormat,
     /// Filter out columns.
-    pub filter_col : &'static dyn FilterCol,
+    pub filter_col : &'callback dyn FilterCol,
 
   }
 
-  impl Default for Styles
+  impl< 'callback > Default for Styles< 'callback >
   {
     fn default() -> Self
     {
@@ -106,13 +108,13 @@ pub( crate ) mod private
     ///
     /// An instance of `Styles` that defines the formatting
     ///   options, such as delimiters and prefixes.
-    pub styles : Styles,
+    pub styles : Styles< 'buf >,
   }
 
   impl< 'buf > Context< 'buf >
   {
     /// Just constructr.
-    pub fn new( buf : &'buf mut dyn fmt::Write, styles : Styles ) -> Self
+    pub fn new( buf : &'buf mut dyn fmt::Write, styles : Styles< 'buf > ) -> Self
     {
       Self { buf, styles }
     }
@@ -321,10 +323,10 @@ pub( crate ) mod private
   {
 
     /// Extract input data from and collect it in a format consumable by output formatter.
-    pub fn extract< 't, Table, RowKey, Row, CellKey, CellRepr >
+    pub fn extract< 't, 'context, Table, RowKey, Row, CellKey, CellRepr >
     (
       table : &'t Table,
-      filter_col : &'static dyn FilterCol,
+      filter_col : &'context dyn FilterCol,
       callback : impl for< 'a2 > FnOnce( &'a2 InputExtract< 'a2 > ) -> fmt::Result,
     )
     -> fmt::Result
