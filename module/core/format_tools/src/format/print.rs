@@ -99,22 +99,22 @@ pub( crate ) mod private
   /// `Context` holds the buffer and styling options used during table
   /// formatting, facilitating the writing of formatted table data.
   ///
-  pub struct Context< 'buf >
+  pub struct Context< 'context >
   {
     ///
     /// A mutable reference to a buffer implementing `fmt::Write`,
     ///   used to collect the formatted output.
-    pub buf : & 'buf mut dyn fmt::Write,
+    pub buf : &'context mut dyn fmt::Write,
     ///
     /// An instance of `Styles` that defines the formatting
     ///   options, such as delimiters and prefixes.
-    pub styles : Styles< 'buf >,
+    pub styles : Styles< 'context >,
   }
 
-  impl< 'buf > Context< 'buf >
+  impl< 'context > Context< 'context >
   {
     /// Just constructr.
-    pub fn new( buf : &'buf mut dyn fmt::Write, styles : Styles< 'buf > ) -> Self
+    pub fn new( buf : &'context mut dyn fmt::Write, styles : Styles< 'context > ) -> Self
     {
       Self { buf, styles }
     }
@@ -172,7 +172,7 @@ pub( crate ) mod private
   pub trait TableFormatter< 'data >
   {
     /// Formats the table and writes the result to the provided context.
-    fn fmt< 'buf >( &'data self, c : & mut Context< 'buf > ) -> fmt::Result;
+    fn fmt< 'context >( &'data self, c : & mut Context< 'context > ) -> fmt::Result;
   }
 
   /// A trait for formatting tables.
