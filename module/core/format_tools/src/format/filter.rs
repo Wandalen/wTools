@@ -160,6 +160,15 @@ pub( crate ) mod private
     }
   }
 
+  impl< F : Fn( usize, &[ ( Cow< '_, str >, [ usize ; 2 ] ) ], LineType ) -> bool > FilterRow for F
+  {
+    #[ inline( always ) ]
+    fn filter_row( &self, irow : usize, row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ], typ : LineType ) -> bool
+    {
+      self( irow, row, typ )
+    }
+  }
+
 }
 
 #[ allow( unused_imports ) ]
