@@ -59,6 +59,9 @@ pub( crate ) mod private
     /// Delimiter for adding in between of rows.
     pub row_separator : String,
 
+    // /// Convert extract into a string, writing it into destination buffer.
+    // pub writer : &'static dyn TableWriter,
+
   }
 
   impl Default for Styles
@@ -141,11 +144,14 @@ pub( crate ) mod private
     }
   }
 
+  // xxx : improvde documentatiopn
+  /// Convert extract into a string, writing it into destination buffer.
   pub trait TableWriter< CellKey >
   where
     CellKey : table::CellKey + ?Sized,
   {
-    fn extract_write< 'buf, 'data >( x : &FormatExtract< 'data, CellKey >, c : &mut Context< 'buf > ) -> fmt::Result;
+    /// Convert extract into a string, writing it into destination buffer.
+    fn extract_write< 'buf, 'data >( x : &FormatExtract< 'data >, c : &mut Context< 'buf > ) -> fmt::Result;
   }
 
   #[ derive( Debug, Default ) ]
@@ -155,7 +161,7 @@ pub( crate ) mod private
   where
     CellKey : table::CellKey + ?Sized,
   {
-    fn extract_write< 'buf, 'data >( x : &FormatExtract< 'data, CellKey >, c : &mut Context< 'buf > ) -> fmt::Result
+    fn extract_write< 'buf, 'data >( x : &FormatExtract< 'data >, c : &mut Context< 'buf > ) -> fmt::Result
     {
       use md_math::MdOffset;
 
@@ -180,12 +186,14 @@ pub( crate ) mod private
 
           write!( c.buf, "{}", row_prefix )?;
 
-          for k in &x.col_order
+          // for k in &x.col_order
+          // for k in &x.col_order
+          for icol in 0 .. x.col_descriptors.len()
           {
-            let col = &x.col_descriptors[ k ];
-            let cell_width = x.data[ irow ][ k ].1[0];
+            let col = &x.col_descriptors[ &icol ];
+            let cell_width = x.data[ irow ][ &icol ].1[0];
             let width = col.0;
-            let icol = col.1;
+            // let icol = col.1;
             let md_index = [ islice, icol, irow as usize ];
             let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
 
@@ -283,12 +291,13 @@ pub( crate ) mod private
 
               write!( c.buf, "{}", row_prefix )?;
 
-              for k in &x.col_order
+              // for k in &x.col_order
+              for icol in 0 .. x.col_descriptors.len()
               {
-                let col = &x.col_descriptors[ k ];
-                let cell_width = x.data[ irow ][ k ].1[0];
+                let col = &x.col_descriptors[ &icol ];
+                let cell_width = x.data[ irow ][ &icol ].1[0];
                 let width = col.0;
-                let icol = col.1;
+                // let icol = col.1;
                 let md_index = [ islice, icol, irow as usize ];
                 let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
 
@@ -339,20 +348,20 @@ pub( crate ) mod private
 
   #[ allow( dead_code ) ]
   #[ derive( Debug ) ]
-  pub struct FormatExtract< 'data, CellKey >
-  where
-    CellKey : table::CellKey + ?Sized,
+  pub struct FormatExtract< 'data >
+  // where
+    // CellKey : table::CellKey + ?Sized,
   {
 
     /// Multidimensional size in number of columns per table and number of rows per table.
     pub mcells : [ usize ; 2 ],
 
-    /// Order of columns must be as stable as possible.
-    pub col_order : Vec< &'data CellKey >,
+    // /// Order of columns must be as stable as possible.
+    // pub col_order : Vec< &'data CellKey >,
 
     /// Descriptors for each column, including optional title, width, and index.
     //                             key        width, index
-    pub col_descriptors : HashMap< &'data CellKey, ( usize, usize ) >,
+    pub col_descriptors : HashMap< usize, ( usize, usize ) >,
 
     /// Descriptors for each row, including height.
     //                           height
@@ -360,7 +369,7 @@ pub( crate ) mod private
 
     /// Extracted data for each cell, including string content and size.
     //                        key,      string,              size,
-    pub data : Vec< HashMap< &'data CellKey, ( Cow< 'data, str >, [ usize ; 2 ] ) > >,
+    pub data : Vec< HashMap< usize, ( Cow< 'data, str >, [ usize ; 2 ] ) > >,
 
     /// Dimensions of slices for retrieving data from multi-matrix.
     pub slices_dim : [ usize ; 3 ],
@@ -413,49 +422,51 @@ pub( crate ) mod private
 
   //
 
-  impl< 'data, CellKey > FormatExtract< 'data, CellKey >
-  where
-    CellKey : table::CellKey + ?Sized,
+  impl< 'data > FormatExtract< 'data >
+  // where
+    // CellKey : table::CellKey + ?Sized,
   {
 
-    pub fn extract< 't, Table, RowKey, Row, CellRepr > // xxx : RowKey?
+    pub fn extract< 't, Table, RowKey, Row, CellKey, CellRepr > // xxx : RowKey?
     (
       table : &'t Table,
       filter_col : impl FilterCol,
-      callback : impl for< 'a2 > FnOnce( &'a2 FormatExtract< 'a2, CellKey > ) -> fmt::Result,
+      callback : impl for< 'a2 > FnOnce( &'a2 FormatExtract< 'a2 > ) -> fmt::Result,
     )
     -> fmt::Result
     where
       't : 'data,
+      'data : 't,
       Table : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
       Table : TableHeader< CellKey = CellKey >,
       Table : TableSize,
       RowKey : table::RowKey,
       Row : Cells< CellKey, CellRepr > + 'data,
+      CellKey : table::CellKey + ?Sized + 't,
       CellRepr : table::CellRepr,
     {
       use md_math::MdOffset;
 
       let mcells = table.mcells();
       //                                 key        width, index
-      let mut col_descriptors : HashMap< &CellKey, ( usize, usize ) > = HashMap::new();
+      let mut col_descriptors : HashMap< usize, ( usize, usize ) > = HashMap::new();
       //                               height
       let mut row_descriptors : Vec< ( usize, ) > = Vec::with_capacity( mcells[ 1 ] );
 
-      let mut col_order : Vec< &CellKey > = Vec::new();
+      let mut col_order : Vec< &'t CellKey > = Vec::new();
       let mut has_header = false;
 
-      let mut data : Vec< HashMap< &CellKey, ( Cow< 'data, str >, [ usize ; 2 ] ) > > = Vec::new();
+      let mut data : Vec< HashMap< usize, ( Cow< 'data, str >, [ usize ; 2 ] ) > > = Vec::new();
       let rows = table.rows();
       let mut irow : isize = -1;
 
-      let mut row_add = | row : &'_ mut dyn _IteratorTrait< Item = ( &'data CellKey, Cow< 'data, str > ) > |
+      let mut row_add = | row : &'_ mut dyn _IteratorTrait< Item = ( &'t CellKey, Cow< 'data, str > ) > |
       {
 
         irow += 1;
         row_descriptors.push( ( 1, ) );
 
-        let fields : HashMap< &CellKey, ( Cow< 'data, str >, [ usize ; 2 ] ) > = row
+        let fields : HashMap< usize, ( Cow< 'data, str >, [ usize ; 2 ] ) > = row
         .filter_map
         (
           | ( key, val ) |
@@ -471,7 +482,7 @@ pub( crate ) mod private
             row_descriptors[ irow as usize ] = ( row_descriptors[ irow as usize ].0.max( sz[ 1 ] ), );
 
             col_descriptors
-            .entry( key )
+            .entry( l )
             .and_modify( | col |
             {
               col.0 = col.0.max( sz[ 0 ] );
@@ -484,7 +495,7 @@ pub( crate ) mod private
               // ( title, sz[ 0 ], l )
             });
 
-            return Some( ( key, ( val, sz ) ) );
+            return Some( ( l, ( val, sz ) ) );
           }
         )
         .collect();
@@ -492,6 +503,8 @@ pub( crate ) mod private
 
 
       };
+
+// xxx
 
       // process header first
 
@@ -554,10 +567,10 @@ pub( crate ) mod private
       let slices_len = slices_dim[ 0 ] * slices_dim[ 1 ] * slices_dim[ 2 ];
       let slices : Vec< &str > = vec![ "" ; slices_len ];
 
-      let mut x = FormatExtract::< '_, CellKey >
+      let mut x = FormatExtract::< '_ >
       {
         mcells,
-        col_order,
+        // col_order,
         col_descriptors,
         row_descriptors,
         data,
@@ -578,9 +591,10 @@ pub( crate ) mod private
 
         irow += 1;
 
-        for ( icol, k ) in x.col_order.iter().enumerate()
+        // for ( icol, k ) in x.col_order.iter().enumerate()
+        for icol in 0 .. x.col_descriptors.len()
         {
-          let cell = &row_data[ k ];
+          let cell = &row_data[ &icol ];
           string::lines( cell.0.as_ref() )
           .enumerate()
           .for_each( | ( layer, s ) |
