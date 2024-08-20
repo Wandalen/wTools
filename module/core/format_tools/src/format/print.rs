@@ -61,6 +61,8 @@ pub( crate ) mod private
 
     /// Convert extract into a string, writing it into destination buffer.
     pub output_format : &'static dyn TableOutputFormat,
+    /// Filter out columns.
+    pub filter_col : &'static dyn FilterCol,
 
   }
 
@@ -75,7 +77,7 @@ pub( crate ) mod private
       let row_postfix = " │".to_string();
       let row_separator = "\n".to_string();
       let output_format = Default::default();
-      // let filter_col = FilterColumnls::default();
+      let filter_col = Default::default();
       Self
       {
         cell_prefix,
@@ -85,7 +87,7 @@ pub( crate ) mod private
         row_postfix,
         row_separator,
         output_format,
-        // filter_col,
+        filter_col,
       }
     }
   }
@@ -238,8 +240,7 @@ pub( crate ) mod private
   }
 
   /// Filter columns of a table to print it only partially.
-  // xxx : rid of bound
-  pub trait FilterCol
+  pub trait FilterCol : fmt::Debug
   {
     /// Filter columns of a table to print it only partially.
     fn filter_col( &self, key : &str ) -> bool;
@@ -248,6 +249,29 @@ pub( crate ) mod private
   /// Filter passing all elements.
   #[ derive( Debug, Default, PartialEq ) ]
   pub struct All;
+
+  impl All
+  {
+    /// Returns a reference to a static instance of `Ordinary`.
+    ///
+    /// This method provides access to a single shared instance of `Ordinary`,
+    /// ensuring efficient reuse of the classic table output format.
+    pub fn instance() -> & 'static dyn FilterCol
+    {
+      static INSTANCE : All = All;
+      &INSTANCE
+    }
+  }
+
+  impl Default for &'static dyn FilterCol
+  {
+    #[ inline( always ) ]
+    fn default() -> Self
+    {
+      All::instance()
+    }
+  }
+
   impl FilterCol for All
   {
     #[ inline( always ) ]
@@ -269,7 +293,20 @@ pub( crate ) mod private
     }
   }
 
-  impl< F : Fn( &str ) -> bool > FilterCol for F
+  impl No
+  {
+    /// Returns a reference to a static instance of `Ordinary`.
+    ///
+    /// This method provides access to a single shared instance of `Ordinary`,
+    /// ensuring efficient reuse of the classic table output format.
+    pub fn instance() -> & 'static dyn FilterCol
+    {
+      static INSTANCE : All = All;
+      &INSTANCE
+    }
+  }
+
+  impl< F : Fn( &str ) -> bool + fmt::Debug > FilterCol for F
   {
     #[ inline( always ) ]
     fn filter_col( &self, key : &str ) -> bool

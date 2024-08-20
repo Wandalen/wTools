@@ -71,7 +71,7 @@ pub( crate ) mod private
     pub fn instance() -> & 'static dyn TableOutputFormat
     {
       static INSTANCE : Ordinary = Ordinary;
-      & INSTANCE
+      &INSTANCE
     }
   }
   impl Default for &'static dyn TableOutputFormat
