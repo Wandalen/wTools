@@ -302,3 +302,34 @@ fn filter_col_callback()
   a_id!( output.as_str(), exp );
 
 }
+
+//
+
+#[ test ]
+fn filter_row_none()
+{
+  let test_objects = test_objects_gen();
+
+  let mut output = String::new();
+  let mut formatter = print::Styles::default();
+
+  formatter.cell_prefix = "( ".into();
+  formatter.cell_postfix = " )".into();
+  formatter.cell_separator = "|".into();
+  formatter.row_prefix = ">".into();
+  formatter.row_postfix = "<".into();
+  formatter.row_separator = "\n".into();
+  formatter.filter_row = &filter::None;
+
+  let as_table = AsTable::new( &test_objects );
+  let mut context = print::Context::new( &mut output, formatter );
+  let result = the_module::TableFormatter::fmt( &as_table, &mut context );
+  assert!( result.is_ok() );
+
+  println!( "\noutput\n{output}" );
+
+  let exp = r#""#;
+
+  a_id!( output.as_str(), exp );
+
+}

@@ -303,12 +303,13 @@ pub( crate ) mod private
 
       let mut data : Vec< Vec< ( Cow< 't, str >, [ usize ; 2 ] ) > > = Vec::new();
       let rows = table.rows();
-      let mut irow : isize = -1;
+      // let mut irow : isize = -1;
+      let mut irow : usize = 0;
 
       let mut row_add = | row : &'_ mut dyn _IteratorTrait< Item = ( &'t CellKey, Cow< 't, str > ) >, typ : LineType |
       {
 
-        irow += 1;
+        irow = row_descriptors.len();
         row_descriptors.push( ( 1, ) );
 
         let fields : Vec< ( Cow< 't, str >, [ usize ; 2 ] ) > = row
@@ -352,6 +353,10 @@ pub( crate ) mod private
         if filter_row.filter_row( irow as usize, &fields, typ )
         {
           data.push( fields );
+        }
+        else
+        {
+          row_descriptors.pop();
         }
 
       };
