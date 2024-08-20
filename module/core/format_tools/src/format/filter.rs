@@ -6,17 +6,7 @@
 pub( crate ) mod private
 {
 
-  use crate::*;
-  // use std::
-  // {
-  //   borrow::Cow,
-  //   collections::HashMap,
-  // };
-  // use core::
-  // {
-  //   fmt,
-  // };
-  // use former::Former;
+  // use crate::*;
 
   /// Filter columns of a table to print it only partially.
   pub trait FilterCol
