@@ -31,7 +31,7 @@ pub( crate ) mod private
   /// and writing it into a specified buffer, providing flexibility in
   /// output style and format.
   ///
-  pub trait TableOutputFormat : fmt::Debug
+  pub trait TableOutputFormat
   {
     /// Formats the table extract and writes it into the destination buffer.
     ///

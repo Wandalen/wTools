@@ -43,7 +43,7 @@ pub( crate ) mod private
   /// ```
   // xxx : enable
   // #[ derive( Debug, Former ) ]
-  #[ derive( Debug ) ]
+  // #[ derive( Debug ) ]
   pub struct Styles< 'callback >
   {
 
@@ -64,16 +64,25 @@ pub( crate ) mod private
     /// Convert extract into a string, writing it into destination buffer.
     pub output_format : &'static dyn TableOutputFormat,
     /// Filter out columns.
-    pub filter_col : &'callback dyn FilterCol,
+    pub filter_col : &'callback ( dyn FilterCol + 'callback ),
 
   }
 
-  // #[ derive( Former ) ]
-  // #[ debug ]
-  pub struct Styles2< 'callback >
+  impl< 'callback > fmt::Debug for Styles< 'callback >
   {
-    /// Filter out columns.
-    pub filter_col : &'callback dyn FilterCol,
+    fn fmt( & self, f : & mut fmt::Formatter< '_ > ) -> fmt::Result
+    {
+      f.debug_struct( "Styles" )
+      .field( "cell_prefix", & self.cell_prefix )
+      .field( "cell_postfix", & self.cell_postfix )
+      .field( "cell_separator", & self.cell_separator )
+      .field( "row_prefix", & self.row_prefix )
+      .field( "row_postfix", & self.row_postfix )
+      .field( "row_separator", & self.row_separator )
+      // .field( "output_format", & format_args!( "{:?}", self.output_format ) )
+      // .field( "filter_col", & format_args!( "{:?}", self.filter_col ) )
+      .finish()
+    }
   }
 
   impl< 'callback > Default for Styles< 'callback >
@@ -250,10 +259,10 @@ pub( crate ) mod private
   }
 
   /// Filter columns of a table to print it only partially.
-  pub trait FilterCol : fmt::Debug
+  pub trait FilterCol
   {
     /// Filter columns of a table to print it only partially.
-    fn filter_col( &self, key : &str ) -> bool;
+    fn filter_col< 'a, 'b >( &'a self, key : &'b str ) -> bool;
   }
 
   /// Filter passing all elements.
@@ -285,7 +294,7 @@ pub( crate ) mod private
   impl FilterCol for All
   {
     #[ inline( always ) ]
-    fn filter_col( &self, _key : &str ) -> bool
+    fn filter_col< 'a, 'b >( &'a self, _key : &'b str ) -> bool
     {
       true
     }
@@ -297,7 +306,7 @@ pub( crate ) mod private
   impl FilterCol for No
   {
     #[ inline( always ) ]
-    fn filter_col( &self, _key : &str ) -> bool
+    fn filter_col< 'a, 'b >( &'a self, _key : &'b str ) -> bool
     {
       false
     }
@@ -316,10 +325,11 @@ pub( crate ) mod private
     }
   }
 
-  impl< F : Fn( &str ) -> bool + fmt::Debug > FilterCol for F
+  impl< F : Fn( &str ) -> bool > FilterCol for F
   {
     #[ inline( always ) ]
-    fn filter_col( &self, key : &str ) -> bool
+    fn filter_col< 'a, 'b >( &'a self, key : &'b str ) -> bool
+    // fn filter_col( &self, key : &str ) -> bool
     {
       self( key )
     }
@@ -334,7 +344,7 @@ pub( crate ) mod private
     pub fn extract< 't, 'context, Table, RowKey, Row, CellKey, CellRepr >
     (
       table : &'t Table,
-      filter_col : &'context dyn FilterCol,
+      filter_col : &'context ( dyn FilterCol + 'context ),
       callback : impl for< 'a2 > FnOnce( &'a2 InputExtract< 'a2 > ) -> fmt::Result,
     )
     -> fmt::Result
