@@ -103,9 +103,9 @@ pub( crate ) mod private
 
   impl fmt::Debug for Context< '_ >
   {
-    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
+    fn fmt( &self, c : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
-      f
+      c
       .debug_struct( "Context" )
       .field( "buf", &"dyn fmt::Write" )
       .field( "styles", &self.styles )
@@ -141,22 +141,88 @@ pub( crate ) mod private
     }
   }
 
-  pub trait TableStringer< CellKey >
+  pub trait TableWriter< CellKey >
   where
     CellKey : table::CellKey + ?Sized,
   {
-    fn extract_to_buf< 'buf, 'data >( extract : &FormatExtract< 'data, CellKey >, f : &mut Context< 'buf > );
+    fn extract_write< 'buf, 'data >( x : &FormatExtract< 'data, CellKey >, c : &mut Context< 'buf > ) -> fmt::Result;
   }
 
   #[ derive( Debug, Default ) ]
   pub struct TableStringerDefault;
 
-  // impl TableStringer for TableStringerDefault
-  // {
-  //   fn extract_to_buf< 'buf >( extract : &FormatExtract, f : &mut Context< 'a > ) -> fmt::Result
-  //   {
-  //   }
-  // }
+  impl< CellKey > TableWriter< CellKey > for TableStringerDefault
+  where
+    CellKey : table::CellKey + ?Sized,
+  {
+    fn extract_write< 'buf, 'data >( x : &FormatExtract< 'data, CellKey >, c : &mut Context< 'buf > ) -> fmt::Result
+    {
+      use md_math::MdOffset;
+
+      let cell_prefix = &c.styles.cell_prefix;
+      let cell_postfix = &c.styles.cell_postfix;
+      let cell_separator = &c.styles.cell_separator;
+      let row_prefix = &c.styles.row_prefix;
+      let row_postfix = &c.styles.row_postfix;
+      let row_separator = &c.styles.row_separator;
+
+      for ( irow, row ) in x.row_descriptors.iter().enumerate()
+      {
+        let height = row.0;
+
+        for islice in 0..height
+        {
+
+          if irow > 0
+          {
+            write!( c.buf, "{}", row_separator )?;
+          }
+
+          write!( c.buf, "{}", row_prefix )?;
+
+          for k in &x.col_order
+          {
+            let col = &x.col_descriptors[ k ];
+            let cell_width = x.data[ irow ][ k ].1[0];
+            let width = col.0;
+            let icol = col.1;
+            let md_index = [ islice, icol, irow as usize ];
+            let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
+
+            // println!( "md_index : {md_index:?} | md_offset : {} | slice : {slice}", x.slices_dim.md_offset( md_index ) );
+
+            if icol > 0
+            {
+              write!( c.buf, "{}", cell_separator )?;
+            }
+
+            write!( c.buf, "{}", cell_prefix )?;
+
+            let lspaces = ( width - cell_width ) / 2;
+            let rspaces = ( width - cell_width + 1 ) / 2 + cell_width - slice.len();
+            // println!( "icol : {icol} | irow : {irow} | width : {width} | cell_width : {cell_width} | lspaces : {lspaces} | rspaces : {rspaces}" );
+
+            if lspaces > 0
+            {
+              write!( c.buf, "{:<width$}", " ", width = lspaces )?;
+            }
+            write!( c.buf, "{}", slice )?;
+            if rspaces > 0
+            {
+              write!( c.buf, "{:>width$}", " ", width = rspaces )?;
+            }
+
+            write!( c.buf, "{}", cell_postfix )?;
+          }
+
+          write!( c.buf, "{}", row_postfix )?;
+        }
+
+      }
+
+      Ok(())
+    }
+  }
 
   /// Trait for defining table formatting logic.
   ///
@@ -170,7 +236,7 @@ pub( crate ) mod private
   pub trait TableFormatter< 'data >
   {
     /// Formats the table and writes the result to the provided context.
-    fn fmt< 'buf >( & 'data self, f : & mut Context< 'buf > ) -> fmt::Result;
+    fn fmt< 'buf >( &'data self, c : & mut Context< 'buf > ) -> fmt::Result;
   }
 
   /// A trait for formatting tables.
@@ -185,9 +251,8 @@ pub( crate ) mod private
     CellKey : table::CellKey + ?Sized,
     CellRepr : table::CellRepr,
   {
-    fn fmt< 'a >( &'data self, f : &mut Context< 'a > ) -> fmt::Result
+    fn fmt< 'a >( &'data self, c : &mut Context< 'a > ) -> fmt::Result
     {
-      use md_math::MdOffset;
 
       FormatExtract::extract
       (
@@ -195,13 +260,14 @@ pub( crate ) mod private
         All,
         | x |
         {
+          use md_math::MdOffset;
 
-          let cell_prefix = &f.styles.cell_prefix;
-          let cell_postfix = &f.styles.cell_postfix;
-          let cell_separator = &f.styles.cell_separator;
-          let row_prefix = &f.styles.row_prefix;
-          let row_postfix = &f.styles.row_postfix;
-          let row_separator = &f.styles.row_separator;
+          let cell_prefix = &c.styles.cell_prefix;
+          let cell_postfix = &c.styles.cell_postfix;
+          let cell_separator = &c.styles.cell_separator;
+          let row_prefix = &c.styles.row_prefix;
+          let row_postfix = &c.styles.row_postfix;
+          let row_separator = &c.styles.row_separator;
 
           for ( irow, row ) in x.row_descriptors.iter().enumerate()
           {
@@ -212,10 +278,10 @@ pub( crate ) mod private
 
               if irow > 0
               {
-                write!( f.buf, "{}", row_separator )?;
+                write!( c.buf, "{}", row_separator )?;
               }
 
-              write!( f.buf, "{}", row_prefix )?;
+              write!( c.buf, "{}", row_prefix )?;
 
               for k in &x.col_order
               {
@@ -230,10 +296,10 @@ pub( crate ) mod private
 
                 if icol > 0
                 {
-                  write!( f.buf, "{}", cell_separator )?;
+                  write!( c.buf, "{}", cell_separator )?;
                 }
 
-                write!( f.buf, "{}", cell_prefix )?;
+                write!( c.buf, "{}", cell_prefix )?;
 
                 let lspaces = ( width - cell_width ) / 2;
                 let rspaces = ( width - cell_width + 1 ) / 2 + cell_width - slice.len();
@@ -241,18 +307,18 @@ pub( crate ) mod private
 
                 if lspaces > 0
                 {
-                  write!( f.buf, "{:<width$}", " ", width = lspaces )?;
+                  write!( c.buf, "{:<width$}", " ", width = lspaces )?;
                 }
-                write!( f.buf, "{}", slice )?;
+                write!( c.buf, "{}", slice )?;
                 if rspaces > 0
                 {
-                  write!( f.buf, "{:>width$}", " ", width = rspaces )?;
+                  write!( c.buf, "{:>width$}", " ", width = rspaces )?;
                 }
 
-                write!( f.buf, "{}", cell_postfix )?;
+                write!( c.buf, "{}", cell_postfix )?;
               }
 
-              write!( f.buf, "{}", row_postfix )?;
+              write!( c.buf, "{}", row_postfix )?;
             }
 
           }
