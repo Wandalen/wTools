@@ -259,5 +259,3 @@ fn filter_col()
   a_id!( output.as_str(), exp );
 
 }
-
-

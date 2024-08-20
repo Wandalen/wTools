@@ -238,13 +238,11 @@ pub( crate ) mod private
   }
 
   /// Filter columns of a table to print it only partially.
+  // xxx : rid of bound
   pub trait FilterCol : fmt::Debug
   {
     /// Filter columns of a table to print it only partially.
-    fn filter_col< CellKey >( &self, key : &CellKey ) -> bool
-    where
-      CellKey : table::CellKey + ?Sized,
-    ;
+    fn filter_col( &self, key : &str ) -> bool;
   }
 
   /// Filter passing all elements.
@@ -253,9 +251,7 @@ pub( crate ) mod private
   impl FilterCol for All
   {
     #[ inline( always ) ]
-    fn filter_col< CellKey >( &self, _key : &CellKey ) -> bool
-    where
-      CellKey : table::CellKey + ?Sized,
+    fn filter_col( &self, _key : &str ) -> bool
     {
       true
     }
@@ -267,9 +263,7 @@ pub( crate ) mod private
   impl FilterCol for No
   {
     #[ inline( always ) ]
-    fn filter_col< CellKey >( &self, _key : &CellKey ) -> bool
-    where
-      CellKey : table::CellKey + ?Sized,
+    fn filter_col( &self, _key : &str ) -> bool
     {
       false
     }
@@ -328,7 +322,7 @@ pub( crate ) mod private
           | ( key, val ) |
           {
 
-            if !filter_col.filter_col( key )
+            if !filter_col.filter_col( key.borrow() )
             {
               return None;
             }
