@@ -65,6 +65,8 @@ pub( crate ) mod private
     pub output_format : &'static dyn TableOutputFormat,
     /// Filter out columns.
     pub filter_col : &'callback ( dyn FilterCol + 'callback ),
+    /// Filter out rows.
+    pub filter_row : &'callback ( dyn FilterRow + 'callback ),
 
   }
 
@@ -97,6 +99,7 @@ pub( crate ) mod private
       let row_separator = "\n".to_string();
       let output_format = Default::default();
       let filter_col = Default::default();
+      let filter_row = Default::default();
       Self
       {
         cell_prefix,
@@ -107,6 +110,7 @@ pub( crate ) mod private
         row_separator,
         output_format,
         filter_col,
+        filter_row
       }
     }
   }
@@ -211,6 +215,7 @@ pub( crate ) mod private
       (
         self,
         c.styles.filter_col,
+        c.styles.filter_row,
         | x |
         {
           c.styles.output_format.extract_write( x, c )
@@ -268,6 +273,7 @@ pub( crate ) mod private
     (
       table : &'t Table,
       filter_col : &'context ( dyn FilterCol + 'context ),
+      filter_row : &'context ( dyn FilterRow + 'context ),
       callback : impl for< 'a2 > FnOnce( &'a2 InputExtract< 'a2 > ) -> fmt::Result,
     )
     -> fmt::Result
@@ -299,7 +305,7 @@ pub( crate ) mod private
       let rows = table.rows();
       let mut irow : isize = -1;
 
-      let mut row_add = | row : &'_ mut dyn _IteratorTrait< Item = ( &'t CellKey, Cow< 't, str > ) > |
+      let mut row_add = | row : &'_ mut dyn _IteratorTrait< Item = ( &'t CellKey, Cow< 't, str > ) >, typ : LineType |
       {
 
         irow += 1;
@@ -342,7 +348,11 @@ pub( crate ) mod private
           }
         )
         .collect();
-        data.push( fields );
+
+        if filter_row.filter_row( irow as usize, &fields, typ )
+        {
+          data.push( fields );
+        }
 
       };
 
@@ -359,7 +369,7 @@ pub( crate ) mod private
           ( key, Cow::Borrowed( title ) )
         });
 
-        row_add( &mut row2 );
+        row_add( &mut row2, LineType::Header );
       }
 
       // Collect rows
@@ -391,8 +401,7 @@ pub( crate ) mod private
           }
         );
 
-        row_add( &mut row2 );
-
+        row_add( &mut row2, LineType::Regular );
       }
 
       // cook slices multi-matrix

@@ -8,6 +8,26 @@ pub( crate ) mod private
 
   // use crate::*;
 
+  use std::
+  {
+    borrow::Cow,
+  };
+
+  /// Represents a line type in a table, either a header or a regular row.
+  ///
+  /// `LineType` is used to distinguish between different types of lines
+  /// in a table structure, aiding in formatting and processing.
+  ///
+  #[ derive( Debug, Default, Copy, Clone ) ]
+  pub enum LineType
+  {
+    /// Represents a regular row of data in the table.
+    #[ default ]
+    Regular,
+    /// Represents a header line in the table.
+    Header,
+  }
+
   // = filters
 
   /// Filter passing all elements.
@@ -90,7 +110,7 @@ pub( crate ) mod private
   pub trait FilterRow
   {
     /// Filter rows of a table to print it only partially.
-    fn filter_row( &self, irow : usize, row : &[ &str ] ) -> bool;
+    fn filter_row( &self, irow : usize, row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ], typ : LineType ) -> bool;
   }
 
   impl Default for &'static dyn FilterRow
@@ -105,7 +125,7 @@ pub( crate ) mod private
   impl FilterRow for All
   {
     #[ inline( always ) ]
-    fn filter_row( &self, _irow : usize, _row : &[ &str ] ) -> bool
+    fn filter_row( &self, _irow : usize, _row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ], _typ : LineType ) -> bool
     {
       true
     }
@@ -124,7 +144,7 @@ pub( crate ) mod private
   impl FilterRow for None
   {
     #[ inline( always ) ]
-    fn filter_row( &self, _irow : usize, _row : &[ &str ] ) -> bool
+    fn filter_row( &self, _irow : usize, _row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ], _typ : LineType ) -> bool
     {
       false
     }
@@ -173,6 +193,7 @@ pub mod orphan
   #[ doc( inline ) ]
   pub use private::
   {
+    LineType,
     FilterCol,
     FilterRow,
   };
