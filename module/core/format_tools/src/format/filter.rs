@@ -8,6 +8,18 @@ pub( crate ) mod private
 
   // use crate::*;
 
+  // = filters
+
+  /// Filter passing all elements.
+  #[ derive( Debug, Default, PartialEq, Clone, Copy ) ]
+  pub struct All;
+
+  /// Filter skipping all elements.
+  #[ derive( Debug, Default, PartialEq, Clone, Copy ) ]
+  pub struct None;
+
+  // = FilterCol
+
   /// Filter columns of a table to print it only partially.
   pub trait FilterCol
   {
@@ -15,29 +27,22 @@ pub( crate ) mod private
     fn filter_col( &self, key : &str ) -> bool;
   }
 
-  /// Filter passing all elements.
-  #[ derive( Debug, Default, PartialEq, Clone, Copy ) ]
-  pub struct All;
-
-  impl All
-  {
-    /// Returns a reference to a static instance of `Ordinary`.
-    ///
-    /// This method provides access to a single shared instance of `Ordinary`,
-    /// ensuring efficient reuse of the classic table output format.
-    pub fn instance() -> & 'static dyn FilterCol
-    {
-      static INSTANCE : All = All;
-      &INSTANCE
-    }
-  }
-
   impl Default for &'static dyn FilterCol
   {
     #[ inline( always ) ]
     fn default() -> Self
     {
-      All::instance()
+      All::col()
+    }
+  }
+
+  impl All
+  {
+    /// Returns a reference to a static instance.
+    pub fn col() -> & 'static dyn FilterCol
+    {
+      static INSTANCE : All = All;
+      &INSTANCE
     }
   }
 
@@ -50,28 +55,22 @@ pub( crate ) mod private
     }
   }
 
-  /// Filter skipping all elements.
-  #[ derive( Debug, Default, PartialEq, Clone, Copy ) ]
-  pub struct None;
+  impl None
+  {
+    /// Returns a reference to a static instance.
+    pub fn col() -> & 'static dyn FilterCol
+    {
+      static INSTANCE : All = All;
+      &INSTANCE
+    }
+  }
+
   impl FilterCol for None
   {
     #[ inline( always ) ]
     fn filter_col( &self, _key : &str ) -> bool
     {
       false
-    }
-  }
-
-  impl None
-  {
-    /// Returns a reference to a static instance of `Ordinary`.
-    ///
-    /// This method provides access to a single shared instance of `Ordinary`,
-    /// ensuring efficient reuse of the classic table output format.
-    pub fn instance() -> & 'static dyn FilterCol
-    {
-      static INSTANCE : All = All;
-      &INSTANCE
     }
   }
 
@@ -85,7 +84,61 @@ pub( crate ) mod private
     }
   }
 
-  //
+  // = FilterRow
+
+  /// Filter columns of a table to print it only partially.
+  pub trait FilterRow
+  {
+    /// Filter rows of a table to print it only partially.
+    fn filter_row( &self, irow : usize, row : &[ &str ] ) -> bool;
+  }
+
+  impl Default for &'static dyn FilterRow
+  {
+    #[ inline( always ) ]
+    fn default() -> Self
+    {
+      All::row()
+    }
+  }
+
+  impl FilterRow for All
+  {
+    #[ inline( always ) ]
+    fn filter_row( &self, _irow : usize, _row : &[ &str ] ) -> bool
+    {
+      true
+    }
+  }
+
+  impl All
+  {
+    /// Returns a reference to a static instance.
+    pub fn row() -> & 'static dyn FilterRow
+    {
+      static INSTANCE : All = All;
+      &INSTANCE
+    }
+  }
+
+  impl FilterRow for None
+  {
+    #[ inline( always ) ]
+    fn filter_row( &self, _irow : usize, _row : &[ &str ] ) -> bool
+    {
+      false
+    }
+  }
+
+  impl None
+  {
+    /// Returns a reference to a static instance.
+    pub fn row() -> & 'static dyn FilterRow
+    {
+      static INSTANCE : All = All;
+      &INSTANCE
+    }
+  }
 
 }
 
@@ -121,6 +174,7 @@ pub mod orphan
   pub use private::
   {
     FilterCol,
+    FilterRow,
   };
 
 }
