@@ -239,7 +239,7 @@ pub( crate ) mod private
 
   /// Filter columns of a table to print it only partially.
   // xxx : rid of bound
-  pub trait FilterCol : fmt::Debug
+  pub trait FilterCol
   {
     /// Filter columns of a table to print it only partially.
     fn filter_col( &self, key : &str ) -> bool;
@@ -266,6 +266,15 @@ pub( crate ) mod private
     fn filter_col( &self, _key : &str ) -> bool
     {
       false
+    }
+  }
+
+  impl< F : Fn( &str ) -> bool > FilterCol for F
+  {
+    #[ inline( always ) ]
+    fn filter_col( &self, key : &str ) -> bool
+    {
+      self( key )
     }
   }
 
