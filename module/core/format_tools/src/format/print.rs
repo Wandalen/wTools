@@ -291,13 +291,11 @@ pub( crate ) mod private
 
               write!( c.buf, "{}", row_prefix )?;
 
-              // for k in &x.col_order
               for icol in 0 .. x.col_descriptors.len()
               {
                 let col = &x.col_descriptors[ icol ];
                 let cell_width = x.data[ irow ][ icol ].1[0];
                 let width = col.0;
-                // let icol = col.1;
                 let md_index = [ islice, icol, irow as usize ];
                 let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
 
@@ -350,20 +348,14 @@ pub( crate ) mod private
   #[ allow( dead_code ) ]
   #[ derive( Debug ) ]
   pub struct FormatExtract< 'data >
-  // where
-    // CellKey : table::CellKey + ?Sized,
   {
 
     /// Multidimensional size in number of columns per table and number of rows per table.
     pub mcells : [ usize ; 2 ],
 
-    // /// Order of columns must be as stable as possible.
-    // pub col_order : Vec< &'data CellKey >,
-
     /// Descriptors for each column, including optional title, width, and index.
     //                             key        width, index
     pub col_descriptors : Vec< ( usize, usize ) >,
-    // pub col_descriptors : HashMap< usize, ( usize, usize ) >,
 
     /// Descriptors for each row, including height.
     //                           height
@@ -425,8 +417,6 @@ pub( crate ) mod private
   //
 
   impl< 'data > FormatExtract< 'data >
-  // where
-    // CellKey : table::CellKey + ?Sized,
   {
 
     pub fn extract< 't, Table, RowKey, Row, CellKey, CellRepr > // xxx : RowKey?
@@ -452,10 +442,8 @@ pub( crate ) mod private
 
       //                                 key        width, index
       let mut key_to_ikey : HashMap< &'t CellKey, usize > = HashMap::new();
-      // let mut col_order : Vec< &'t CellKey > = Vec::new();
 
       //                               width, index
-      // let mut col_descriptors : Vec< ( usize, usize ) > = HashMap::new();
       let mut col_descriptors : Vec< ( usize, usize ) > = Vec::new();
       //                               height
       let mut row_descriptors : Vec< ( usize, ) > = Vec::with_capacity( mcells[ 1 ] );
@@ -493,61 +481,26 @@ pub( crate ) mod private
             {
               let col = &mut col_descriptors[ *_ikey ];
               col.0 = col.0.max( sz[ 0 ] );
-              // println!( "and_modify {col:?}" );
               ikey = *_ikey;
             })
             .or_insert_with( ||
             {
               let _ikey = l;
-              // col_order.push( key );
               ikey = _ikey;
               col_descriptors.push( ( sz[ 0 ], _ikey ) );
               let mut col = col_descriptors[ _ikey ];
-              // println!( "or_insert_with {col:?}" );
               _ikey
             });
 
-            //   {
-            //     let ikey = l;
-            //     col_order.push( key );
-            //     key_to_ikey.push( ( sz[ 0 ], ikey ) );
-            //     ikey
-            //   },
-            //   Some( &ikey ) =>
-            //   {
-            //     let col = col_descriptors[ ikey ];
-            //     col.0 = col.0.max( sz[ 0 ] );
-            //     ikey
-            //   },
-//
-//             };
-
             row_descriptors[ irow as usize ] = ( row_descriptors[ irow as usize ].0.max( sz[ 1 ] ), );
 
-            // col_descriptors
-            // .entry( l )
-            // .and_modify( | col |
-            // {
-            //   col.0 = col.0.max( sz[ 0 ] );
-            // })
-            // .or_insert_with( ||
-            // {
-            //   col_order.push( key );
-            //   ( sz[ 0 ], l )
-            //   // let title = if is_title { Some( val.as_ref() ) } else { None };
-            //   // ( title, sz[ 0 ], l )
-            // });
-
             return Some( ( val, sz ) );
-            // return Some( ( ikey, ( val, sz ) ) );
           }
         )
         .collect();
         data.push( fields );
 
       };
-
-// xxx
 
       // process header first
 
@@ -559,7 +512,6 @@ pub( crate ) mod private
 
         let mut row2 =  header.map( | ( key, title ) |
         {
-          // let title_str : Cow< '_, str > = Cow::Owned( format!( "{}", title ) );
           ( key, Cow::Borrowed( title ) )
         });
 
@@ -634,11 +586,8 @@ pub( crate ) mod private
 
         irow += 1;
 
-        // dbg!( x.col_descriptors.len() );
-        // for ( icol, k ) in x.col_order.iter().enumerate()
         for icol in 0 .. x.col_descriptors.len()
         {
-          // dbg!( &row_data, icol );
           let cell = &row_data[ icol ];
           string::lines( cell.0.as_ref() )
           .enumerate()
