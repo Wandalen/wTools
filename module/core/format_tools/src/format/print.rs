@@ -262,7 +262,7 @@ pub( crate ) mod private
   pub trait FilterCol
   {
     /// Filter columns of a table to print it only partially.
-    fn filter_col< 'a, 'b >( &'a self, key : &'b str ) -> bool;
+    fn filter_col( &self, key : &str ) -> bool;
   }
 
   /// Filter passing all elements.
@@ -294,7 +294,7 @@ pub( crate ) mod private
   impl FilterCol for All
   {
     #[ inline( always ) ]
-    fn filter_col< 'a, 'b >( &'a self, _key : &'b str ) -> bool
+    fn filter_col( &self, key : &str ) -> bool
     {
       true
     }
@@ -306,7 +306,7 @@ pub( crate ) mod private
   impl FilterCol for No
   {
     #[ inline( always ) ]
-    fn filter_col< 'a, 'b >( &'a self, _key : &'b str ) -> bool
+    fn filter_col( &self, _key : &str ) -> bool
     {
       false
     }
@@ -328,7 +328,7 @@ pub( crate ) mod private
   impl< F : Fn( &str ) -> bool > FilterCol for F
   {
     #[ inline( always ) ]
-    fn filter_col< 'a, 'b >( &'a self, key : &'b str ) -> bool
+    fn filter_col( &self, key : &str ) -> bool
     // fn filter_col( &self, key : &str ) -> bool
     {
       self( key )
