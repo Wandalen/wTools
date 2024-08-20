@@ -191,7 +191,7 @@ pub( crate ) mod private
       InputExtract::extract
       (
         self,
-        All,
+        c.styles.filter_col,
         | x |
         {
           c.styles.output_format.extract_write( x, c )
@@ -247,7 +247,7 @@ pub( crate ) mod private
   }
 
   /// Filter passing all elements.
-  #[ derive( Debug, Default, PartialEq ) ]
+  #[ derive( Debug, Default, PartialEq, Clone, Copy ) ]
   pub struct All;
 
   impl All
@@ -282,7 +282,7 @@ pub( crate ) mod private
   }
 
   /// Filter skipping all elements.
-  #[ derive( Debug, Default, PartialEq ) ]
+  #[ derive( Debug, Default, PartialEq, Clone, Copy ) ]
   pub struct No;
   impl FilterCol for No
   {
@@ -324,7 +324,7 @@ pub( crate ) mod private
     pub fn extract< 't, Table, RowKey, Row, CellKey, CellRepr >
     (
       table : &'t Table,
-      filter_col : impl FilterCol,
+      filter_col : &'static dyn FilterCol,
       callback : impl for< 'a2 > FnOnce( &'a2 InputExtract< 'a2 > ) -> fmt::Result,
     )
     -> fmt::Result
