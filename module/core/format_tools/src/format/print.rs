@@ -144,7 +144,7 @@ pub( crate ) mod private
     }
   }
 
-  // xxx : improvde documentatiopn
+  // xxx : improvde documentation
   /// Convert extract into a string, writing it into destination buffer.
   pub trait TableWriter< CellKey >
   where
@@ -157,80 +157,78 @@ pub( crate ) mod private
   #[ derive( Debug, Default ) ]
   pub struct TableStringerDefault;
 
-//   impl< CellKey > TableWriter< CellKey > for TableStringerDefault
-//   where
-//     CellKey : table::CellKey + ?Sized,
-//   {
-//     fn extract_write< 'buf, 'data >( x : &FormatExtract< 'data >, c : &mut Context< 'buf > ) -> fmt::Result
-//     {
-//       use md_math::MdOffset;
-//
-//       let cell_prefix = &c.styles.cell_prefix;
-//       let cell_postfix = &c.styles.cell_postfix;
-//       let cell_separator = &c.styles.cell_separator;
-//       let row_prefix = &c.styles.row_prefix;
-//       let row_postfix = &c.styles.row_postfix;
-//       let row_separator = &c.styles.row_separator;
-//
-//       for ( irow, row ) in x.row_descriptors.iter().enumerate()
-//       {
-//         let height = row.0;
-//
-//         for islice in 0..height
-//         {
-//
-//           if irow > 0
-//           {
-//             write!( c.buf, "{}", row_separator )?;
-//           }
-//
-//           write!( c.buf, "{}", row_prefix )?;
-//
-//           // for k in &x.col_order
-//           // for k in &x.col_order
-//           for icol in 0 .. x.col_descriptors.len()
-//           {
-//             let col = &x.col_descriptors[ icol ];
-//             let cell_width = x.data[ irow ][ icol ].1[0];
-//             let width = col.0;
-//             // let icol = col.1;
-//             let md_index = [ islice, icol, irow as usize ];
-//             let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
-//
-//             // println!( "md_index : {md_index:?} | md_offset : {} | slice : {slice}", x.slices_dim.md_offset( md_index ) );
-//
-//             if icol > 0
-//             {
-//               write!( c.buf, "{}", cell_separator )?;
-//             }
-//
-//             write!( c.buf, "{}", cell_prefix )?;
-//
-//             let lspaces = ( width - cell_width ) / 2;
-//             let rspaces = ( width - cell_width + 1 ) / 2 + cell_width - slice.len();
-//             // println!( "icol : {icol} | irow : {irow} | width : {width} | cell_width : {cell_width} | lspaces : {lspaces} | rspaces : {rspaces}" );
-//
-//             if lspaces > 0
-//             {
-//               write!( c.buf, "{:<width$}", " ", width = lspaces )?;
-//             }
-//             write!( c.buf, "{}", slice )?;
-//             if rspaces > 0
-//             {
-//               write!( c.buf, "{:>width$}", " ", width = rspaces )?;
-//             }
-//
-//             write!( c.buf, "{}", cell_postfix )?;
-//           }
-//
-//           write!( c.buf, "{}", row_postfix )?;
-//         }
-//
-//       }
-//
-//       Ok(())
-//     }
-//   }
+  impl< CellKey > TableWriter< CellKey > for TableStringerDefault
+  where
+    CellKey : table::CellKey + ?Sized,
+  {
+    fn extract_write< 'buf, 'data >( x : &FormatExtract< 'data >, c : &mut Context< 'buf > ) -> fmt::Result
+    {
+      use md_math::MdOffset;
+
+      let cell_prefix = &c.styles.cell_prefix;
+      let cell_postfix = &c.styles.cell_postfix;
+      let cell_separator = &c.styles.cell_separator;
+      let row_prefix = &c.styles.row_prefix;
+      let row_postfix = &c.styles.row_postfix;
+      let row_separator = &c.styles.row_separator;
+
+      for ( irow, row ) in x.row_descriptors.iter().enumerate()
+      {
+        let height = row.0;
+
+        for islice in 0..height
+        {
+
+          if irow > 0
+          {
+            write!( c.buf, "{}", row_separator )?;
+          }
+
+          write!( c.buf, "{}", row_prefix )?;
+
+          for icol in 0 .. x.col_descriptors.len()
+          {
+            let col = &x.col_descriptors[ icol ];
+            let cell_width = x.data[ irow ][ icol ].1[0];
+            let width = col.0;
+            let md_index = [ islice, icol, irow as usize ];
+            let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
+
+            // println!( "md_index : {md_index:?} | md_offset : {} | slice : {slice}", x.slices_dim.md_offset( md_index ) );
+
+            if icol > 0
+            {
+              write!( c.buf, "{}", cell_separator )?;
+            }
+
+            write!( c.buf, "{}", cell_prefix )?;
+
+            // println!( "icol : {icol} | irow : {irow} | width : {width} | cell_width : {cell_width}" );
+            let lspaces = ( width - cell_width ) / 2;
+            let rspaces = ( width - cell_width + 1 ) / 2 + cell_width - slice.len();
+            // println!( "icol : {icol} | irow : {irow} | width : {width} | cell_width : {cell_width} | lspaces : {lspaces} | rspaces : {rspaces}" );
+
+            if lspaces > 0
+            {
+              write!( c.buf, "{:<width$}", " ", width = lspaces )?;
+            }
+            write!( c.buf, "{}", slice )?;
+            if rspaces > 0
+            {
+              write!( c.buf, "{:>width$}", " ", width = rspaces )?;
+            }
+
+            write!( c.buf, "{}", cell_postfix )?;
+          }
+
+          write!( c.buf, "{}", row_postfix )?;
+        }
+
+      }
+
+      Ok(())
+    }
+  }
 
   /// Trait for defining table formatting logic.
   ///
@@ -419,7 +417,7 @@ pub( crate ) mod private
   impl< 'data > FormatExtract< 'data >
   {
 
-    pub fn extract< 't, Table, RowKey, Row, CellKey, CellRepr > // xxx : RowKey?
+    pub fn extract< 't, Table, RowKey, Row, CellKey, CellRepr >
     (
       table : &'t Table,
       filter_col : impl FilterCol,
