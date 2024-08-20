@@ -9,7 +9,7 @@ pub( crate ) mod private
   use crate::*;
   use core::
   {
-    fmt,
+    // fmt,
     borrow::Borrow,
   };
   // use std::borrow::Cow;

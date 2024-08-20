@@ -11,9 +11,15 @@ use the_module::
   TableSize,
   TableRows,
   TableHeader,
-  Context,
+  // Context,
   WithRef,
   MaybeAs,
+  print,
+  // {
+  //   Context,
+  //   TableFormatter,
+  //   Styles,
+  // }
 };
 
 use std::
@@ -138,7 +144,7 @@ fn table_to_string()
   dbg!( header.collect::< Vec< _ > >() );
 
   let mut output = String::new();
-  let mut context = Context::new( &mut output, Default::default() );
+  let mut context = print::Context::new( &mut output, Default::default() );
   // let mut context : Context< '_, print::All > = Context::new( &mut output, Default::default() );
   let got = the_module::TableFormatter::fmt( &as_table, &mut context );
   assert!( got.is_ok() );
@@ -176,7 +182,7 @@ fn custom_formatter()
   let test_objects = test_objects_gen();
 
   let mut output = String::new();
-  let mut formatter = the_module::Styles::default();
+  let mut formatter = print::Styles::default();
 
   formatter.cell_prefix = "( ".into();
   formatter.cell_postfix = " )".into();
@@ -188,7 +194,7 @@ fn custom_formatter()
 
   let as_table = AsTable::new( &test_objects );
   // let mut context : Context< '_, print::All > = Context::new( &mut output, formatter );
-  let mut context = Context::new( &mut output, formatter );
+  let mut context = print::Context::new( &mut output, formatter );
   let result = the_module::TableFormatter::fmt( &as_table, &mut context );
   assert!( result.is_ok() );
 
@@ -225,14 +231,14 @@ fn filter_col()
   let test_objects = test_objects_gen();
 
   let mut output = String::new();
-  let mut formatter = the_module::Styles::default();
+  let mut formatter = print::Styles::default();
 
   // formatter.filter_col = print::No;
   // xxx : implement
 
   let as_table = AsTable::new( &test_objects );
   // let mut context : Context< '_, _ > = Context::new( &mut output, formatter );
-  let mut context = Context::new( &mut output, formatter );
+  let mut context = print::Context::new( &mut output, formatter );
   let result = the_module::TableFormatter::fmt( &as_table, &mut context );
   assert!( result.is_ok() );
 
