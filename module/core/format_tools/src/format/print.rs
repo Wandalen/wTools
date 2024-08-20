@@ -68,6 +68,14 @@ pub( crate ) mod private
 
   }
 
+  // #[ derive( Former ) ]
+  // #[ debug ]
+  pub struct Styles2< 'callback >
+  {
+    /// Filter out columns.
+    pub filter_col : &'callback dyn FilterCol,
+  }
+
   impl< 'callback > Default for Styles< 'callback >
   {
     fn default() -> Self
@@ -234,7 +242,7 @@ pub( crate ) mod private
     pub slices_dim : [ usize ; 3 ],
 
     /// Extracted slices or strings for further processing.
-    pub slices : Vec< & 'data str >,
+    pub slices : Vec< &'data str >,
 
     /// Indicates if the table has a header.
     pub has_header : bool,

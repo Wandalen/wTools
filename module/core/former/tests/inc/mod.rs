@@ -53,6 +53,8 @@ mod former_tests
 
   // = parametrization
 
+  mod parametrized_dyn;
+
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
   mod parametrized_struct_manual;
   #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
