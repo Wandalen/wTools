@@ -146,9 +146,7 @@ pub( crate ) mod private
 
   // xxx : improvde documentation
   /// Convert extract into a string, writing it into destination buffer.
-  pub trait TableWriter< CellKey >
-  where
-    CellKey : table::CellKey + ?Sized,
+  pub trait TableWriter
   {
     /// Convert extract into a string, writing it into destination buffer.
     fn extract_write< 'buf, 'data >( x : &FormatExtract< 'data >, c : &mut Context< 'buf > ) -> fmt::Result;
@@ -157,9 +155,7 @@ pub( crate ) mod private
   #[ derive( Debug, Default ) ]
   pub struct TableStringerDefault;
 
-  impl< CellKey > TableWriter< CellKey > for TableStringerDefault
-  where
-    CellKey : table::CellKey + ?Sized,
+  impl TableWriter for TableStringerDefault
   {
     fn extract_write< 'buf, 'data >( x : &FormatExtract< 'data >, c : &mut Context< 'buf > ) -> fmt::Result
     {
