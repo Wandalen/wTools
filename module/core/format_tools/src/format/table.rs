@@ -236,11 +236,11 @@ pub( crate ) mod private
       {
         let cit = row2.cells().clone();
         let mcells = cit.len();
-        [ mcells, nrows ]
+        [ mcells, nrows + 1 ]
       }
       else
       {
-        [ 0, 0 ]
+        [ 0, 0 ] // xxx : test
       }
     }
   }

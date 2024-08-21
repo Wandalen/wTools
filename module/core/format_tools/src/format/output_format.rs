@@ -96,9 +96,13 @@ pub( crate ) mod private
       let row_postfix = &c.styles.row_postfix;
       let row_separator = &c.styles.row_separator;
 
+      dbg!( x.row_descriptors.len() );
+
       for ( irow, row ) in x.row_descriptors.iter().enumerate()
       {
         let height = row.height;
+
+        dbg!( row.height );
 
         for islice in 0..height
         {
