@@ -45,6 +45,11 @@ pub( crate ) mod private
   {
     /// Filter columns of a table to print it only partially.
     fn filter_col( &self, key : &str ) -> bool;
+    /// Determine is arguments needed for the filter or it can give answer even without arguments. Useful for optimization.
+    fn need_args( &self ) -> bool
+    {
+      true
+    }
   }
 
   impl Default for &'static dyn FilterCol
@@ -73,6 +78,11 @@ pub( crate ) mod private
     {
       true
     }
+    #[ inline( always ) ]
+    fn need_args( &self ) -> bool
+    {
+      false
+    }
   }
 
   impl None
@@ -92,13 +102,17 @@ pub( crate ) mod private
     {
       false
     }
+    #[ inline( always ) ]
+    fn need_args( &self ) -> bool
+    {
+      false
+    }
   }
 
   impl< F : Fn( &str ) -> bool > FilterCol for F
   {
     #[ inline( always ) ]
     fn filter_col( &self, key : &str ) -> bool
-    // fn filter_col( &self, key : &str ) -> bool
     {
       self( key )
     }
@@ -111,6 +125,11 @@ pub( crate ) mod private
   {
     /// Filter rows of a table to print it only partially.
     fn filter_row( &self, irow : usize, row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ], typ : LineType ) -> bool;
+    /// Determine is arguments needed for the filter or it can give answer even without arguments. Useful for optimization.
+    fn need_args( &self ) -> bool
+    {
+      true
+    }
   }
 
   impl Default for &'static dyn FilterRow
@@ -129,6 +148,11 @@ pub( crate ) mod private
     {
       true
     }
+    #[ inline( always ) ]
+    fn need_args( &self ) -> bool
+    {
+      false
+    }
   }
 
   impl All
@@ -145,6 +169,11 @@ pub( crate ) mod private
   {
     #[ inline( always ) ]
     fn filter_row( &self, _irow : usize, _row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ], _typ : LineType ) -> bool
+    {
+      false
+    }
+    #[ inline( always ) ]
+    fn need_args( &self ) -> bool
     {
       false
     }

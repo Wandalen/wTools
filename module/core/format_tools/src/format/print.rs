@@ -323,6 +323,8 @@ pub( crate ) mod private
       let mut data : Vec< Vec< ( Cow< 't, str >, [ usize ; 2 ] ) > > = Vec::new();
       let rows = table.rows();
       let mut irow : usize = 0;
+      let filter_col_need_args = filter_col.need_args();
+      let filter_row_need_args = filter_row.need_args();
 
       let mut row_add = | row_iter : &'_ mut dyn _IteratorTrait< Item = ( &'t CellKey, Cow< 't, str > ) >, typ : LineType |
       {
@@ -331,7 +333,6 @@ pub( crate ) mod private
         let vis = true;
         let height = 1;
         let mut row = RowDescriptor { height, typ, vis, irow };
-        // row_descriptors.push( ( 1, ) );
 
         let fields : Vec< ( Cow< 't, str >, [ usize ; 2 ] ) > = row_iter
         .filter_map
@@ -341,9 +342,19 @@ pub( crate ) mod private
             let l = col_descriptors.len();
             let _icol = key_to_ikey.get( key ).unwrap_or( &l ); // xxx
 
-            if !filter_col.filter_col( key.borrow() )
+            if filter_col_need_args
             {
-              return None;
+              if !filter_col.filter_col( key.borrow() )
+              {
+                return None;
+              }
+            }
+            else
+            {
+              if !filter_col.filter_col( "" )
+              {
+                return None;
+              }
             }
 
             let sz = string::size( &val );
@@ -365,7 +376,6 @@ pub( crate ) mod private
             });
 
             row.height = row.height.max( sz[ 1 ] );
-            // row_descriptors[ irow as usize ] = ( row_descriptors[ irow as usize ].0.max( sz[ 1 ] ), );
             return Some( ( val, sz ) );
           }
         )
