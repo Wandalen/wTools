@@ -363,7 +363,15 @@ fn filter_row_callback()
 
   println!( "\noutput\n{output}" );
 
-  let exp = r#""#;
+  let exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
+>( 2  )|(     13     )|( [                          )|( [                          )<
+>(    )|(            )|(     "file3",               )|(     {                      )<
+>(    )|(            )|(     "file4\nmore details", )|(         "tool1": "value1", )<
+>(    )|(            )|( ]                          )|(     },                     )<
+>(    )|(            )|(                            )|(     {                      )<
+>(    )|(            )|(                            )|(         "tool2": "value2", )<
+>(    )|(            )|(                            )|(     },                     )<
+>(    )|(            )|(                            )|( ]                          )<"#;
 
   a_id!( output.as_str(), exp );
 
