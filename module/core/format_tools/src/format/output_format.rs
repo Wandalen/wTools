@@ -98,7 +98,7 @@ pub( crate ) mod private
 
       for ( irow, row ) in x.row_descriptors.iter().enumerate()
       {
-        let height = row.0;
+        let height = row.height;
 
         for islice in 0..height
         {
@@ -114,7 +114,7 @@ pub( crate ) mod private
           {
             let col = &x.col_descriptors[ icol ];
             let cell_width = x.data[ irow ][ icol ].1[0];
-            let width = col.0;
+            let width = col.width;
             let md_index = [ islice, icol, irow as usize ];
             let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
 

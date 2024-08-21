@@ -224,6 +224,26 @@ pub( crate ) mod private
     }
   }
 
+  /// A struct for extracting and organizing row of table data for formatting.
+
+  #[ derive( Debug, Default ) ]
+  pub struct RowDescriptor
+  {
+    pub height : usize,
+    pub typ : LineType,
+    pub vis : bool,
+    pub irow : usize,
+  }
+
+  /// A struct for extracting and organizing row of table data for formatting.
+
+  #[ derive( Debug, Default ) ]
+  pub struct ColDescriptor
+  {
+    pub width : usize,
+    pub icol : usize,
+  }
+
   /// A struct for extracting and organizing table data for formatting.
   ///
   /// `InputExtract` holds metadata and content necessary for formatting tables,
@@ -241,15 +261,17 @@ pub( crate ) mod private
     pub mcells : [ usize ; 2 ],
 
     /// Descriptors for each column, including optional title, width, and index.
-    //                             key        width, index
-    pub col_descriptors : Vec< ( usize, usize ) >,
+    //                           width, index
+    // pub col_descriptors : Vec< ( usize, usize ) >,
+    pub col_descriptors : Vec< ColDescriptor >,
 
     /// Descriptors for each row, including height.
     //                           height
-    pub row_descriptors : Vec< ( usize, ) >,
+    // pub row_descriptors : Vec< ( usize, ) >,
+    pub row_descriptors : Vec< RowDescriptor >,
 
     /// Extracted data for each cell, including string content and size.
-    //                        key,      string,              size,
+    //                      string,              size,
     pub data : Vec< Vec< ( Cow< 'data, str >, [ usize ; 2 ] ) > >,
 
     /// Dimensions of slices for retrieving data from multi-matrix.
@@ -294,28 +316,30 @@ pub( crate ) mod private
       //                                 key        width, index
       let mut key_to_ikey : HashMap< &'t CellKey, usize > = HashMap::new();
 
-      //                               width, index
-      let mut col_descriptors : Vec< ( usize, usize ) > = Vec::new();
-      //                               height
-      let mut row_descriptors : Vec< ( usize, ) > = Vec::with_capacity( mcells[ 1 ] );
-
+      let mut col_descriptors : Vec< ColDescriptor > = Vec::with_capacity( mcells[ 0 ] );
+      let mut row_descriptors : Vec< RowDescriptor > = Vec::with_capacity( mcells[ 1 ] );
       let mut has_header = false;
 
       let mut data : Vec< Vec< ( Cow< 't, str >, [ usize ; 2 ] ) > > = Vec::new();
       let rows = table.rows();
       let mut irow : usize = 0;
 
-      let mut row_add = | row : &'_ mut dyn _IteratorTrait< Item = ( &'t CellKey, Cow< 't, str > ) >, typ : LineType |
+      let mut row_add = | row_iter : &'_ mut dyn _IteratorTrait< Item = ( &'t CellKey, Cow< 't, str > ) >, typ : LineType |
       {
 
         irow = row_descriptors.len();
-        row_descriptors.push( ( 1, ) );
+        let vis = true;
+        let height = 1;
+        let mut row = RowDescriptor { height, typ, vis, irow };
+        // row_descriptors.push( ( 1, ) );
 
-        let fields : Vec< ( Cow< 't, str >, [ usize ; 2 ] ) > = row
+        let fields : Vec< ( Cow< 't, str >, [ usize ; 2 ] ) > = row_iter
         .filter_map
         (
           | ( key, val ) |
           {
+            let l = col_descriptors.len();
+            let _icol = key_to_ikey.get( key ).unwrap_or( &l ); // xxx
 
             if !filter_col.filter_col( key.borrow() )
             {
@@ -323,27 +347,25 @@ pub( crate ) mod private
             }
 
             let sz = string::size( &val );
-            let l = col_descriptors.len();
-            let mut ikey = 0;
 
             key_to_ikey
             .entry( key )
-            .and_modify( | _ikey |
+            .and_modify( | icol |
             {
-              let col = &mut col_descriptors[ *_ikey ];
-              col.0 = col.0.max( sz[ 0 ] );
-              ikey = *_ikey;
+              let col = &mut col_descriptors[ *icol ];
+              col.width = col.width.max( sz[ 0 ] );
             })
             .or_insert_with( ||
             {
-              let _ikey = l;
-              ikey = _ikey;
-              col_descriptors.push( ( sz[ 0 ], _ikey ) );
-              _ikey
+              let icol = l;
+              let width = sz[ 0 ];
+              let col = ColDescriptor { width, icol };
+              col_descriptors.push( col );
+              icol
             });
 
-            row_descriptors[ irow as usize ] = ( row_descriptors[ irow as usize ].0.max( sz[ 1 ] ), );
-
+            row.height = row.height.max( sz[ 1 ] );
+            // row_descriptors[ irow as usize ] = ( row_descriptors[ irow as usize ].0.max( sz[ 1 ] ), );
             return Some( ( val, sz ) );
           }
         )
@@ -351,11 +373,12 @@ pub( crate ) mod private
 
         if filter_row.filter_row( irow as usize, &fields, typ )
         {
+          row_descriptors.push( row );
           data.push( fields );
         }
         else
         {
-          row_descriptors.pop();
+          row.vis = false;
         }
 
       };
@@ -413,7 +436,7 @@ pub( crate ) mod private
       let mut slices_dim = [ 1, mcells[ 0 ], mcells[ 1 ] + ( if has_header { 1 } else { 0 } ) ];
       slices_dim[ 0 ] = row_descriptors
       .iter()
-      .fold( 0, | acc : usize, e | acc.max( e.0 ) )
+      .fold( 0, | acc : usize, row | acc.max( row.height ) )
       ;
 
       let slices_len = slices_dim[ 0 ] * slices_dim[ 1 ] * slices_dim[ 2 ];

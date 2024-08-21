@@ -351,7 +351,7 @@ fn filter_row_callback()
   formatter.row_postfix = "<".into();
   formatter.row_separator = "\n".into();
 
-  formatter.filter_row = &| irow, row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ], typ |
+  formatter.filter_row = &| irow, _row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ], _typ |
   {
     irow != 1
   };
