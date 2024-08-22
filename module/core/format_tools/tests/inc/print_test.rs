@@ -1,6 +1,7 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
+use collection_tools::prelude::*;
 use the_module::
 {
   // print,
@@ -377,5 +378,53 @@ fn filter_row_callback()
 >(    )|(            )|(                            )|( ]                          )<"#;
 
   a_id!( output.as_str(), exp );
+
+}
+
+//
+
+#[ test ]
+fn hmap_basic()
+{
+
+  let data : collection_tools::HashMap< &str, TestObject > = hmap!
+  {
+    "a" => TestObject
+    {
+      id : "1".to_string(),
+      created_at : 1627845583,
+      file_ids : vec![ "file1".to_string(), "file2".to_string() ],
+      tools : None
+    },
+    "b" => TestObject
+    {
+      id : "2".to_string(),
+      created_at : 13,
+      file_ids : vec![ "file3".to_string(), "file4\nmore details".to_string() ],
+      tools : Some
+      (
+        vec!
+        [
+          {
+            let mut map = HashMap::new();
+            map.insert( "tool1".to_string(), "value1".to_string() );
+            map
+          },
+          {
+            let mut map = HashMap::new();
+            map.insert( "tool2".to_string(), "value2".to_string() );
+            map
+          }
+        ]
+      ),
+    },
+  };
+
+  use the_module::TableToString;
+  let as_table = AsTable::new( &data );
+  // let got = as_table.table_to_string();
+  // let exp = r#"xxx"#;
+  // a_id!( got.as_str(), exp );
+
 
 }

@@ -42,9 +42,11 @@ enabled = [
 # derive_tools = { workspace = true, features = [ "derive_from", "derive_inner_from" ] }
 reflect_tools = { workspace = true, features = [ "reflect_types" ] }
 former = { workspace = true, features = [ "derive_former" ] }
+collection_tools = { workspace = true, features = [] }
 
 [dev-dependencies]
 test_tools = { workspace = true }
+collection_tools = { workspace = true, features = [ "collection_constructors" ] }
 
 # [build-dependencies]
 # cfg_aliases = "0.1.1"
