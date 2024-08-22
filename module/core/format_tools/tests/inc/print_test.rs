@@ -8,7 +8,7 @@ use the_module::
   IteratorTrait,
   AsTable,
   Cells,
-  TableSize,
+  // TableSize,
   TableRows,
   TableHeader,
   WithRef,
@@ -119,8 +119,8 @@ fn basic()
   drop( cells );
 
   let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, str, WithRef > = AsTable::new( &test_objects );
-  let mcells = TableSize::mcells( &as_table );
-  assert_eq!( mcells, [ 4, 3 ] );
+  // let mcells = TableSize::mcells( &as_table );
+  // assert_eq!( mcells, [ 4, 3 ] );
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
   dbg!( rows.collect::< Vec< _ > >() );

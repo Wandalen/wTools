@@ -211,39 +211,39 @@ pub( crate ) mod private
 
   // =
 
-  /// A trait for iterating over all rows of a table.
-  pub trait TableSize
-  {
-    /// Returns multi-dimensional size of a table.
-    fn mcells( &self ) -> [ usize ; 2 ];
-  }
-
-  impl< T, RowKey, Row, CellKey, CellRepr > TableSize
-  for AsTable< '_, T, RowKey, Row, CellKey, CellRepr >
-  where
-    Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
-    RowKey : table::RowKey,
-    Row : Cells< CellKey, CellRepr >,
-    CellKey : table::CellKey + ?Sized,
-    CellRepr : table::CellRepr,
-  {
-    fn mcells( &self ) -> [ usize ; 2 ]
-    {
-      let rows = self.rows();
-      let nrows = rows.len();
-      let row = rows.clone().next();
-      if let Some( row2 ) = row
-      {
-        let cit = row2.cells().clone();
-        let mcells = cit.len();
-        [ mcells, nrows + 1 ]
-      }
-      else
-      {
-        [ 0, 0 ] // xxx : test
-      }
-    }
-  }
+//   /// A trait for iterating over all rows of a table.
+//   pub trait TableSize
+//   {
+//     /// Returns multi-dimensional size of a table.
+//     fn mcells( &self ) -> [ usize ; 2 ];
+//   }
+//
+//   impl< T, RowKey, Row, CellKey, CellRepr > TableSize
+//   for AsTable< '_, T, RowKey, Row, CellKey, CellRepr >
+//   where
+//     Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
+//     RowKey : table::RowKey,
+//     Row : Cells< CellKey, CellRepr >,
+//     CellKey : table::CellKey + ?Sized,
+//     CellRepr : table::CellRepr,
+//   {
+//     fn mcells( &self ) -> [ usize ; 2 ]
+//     {
+//       let rows = self.rows();
+//       let nrows = rows.len();
+//       let row = rows.clone().next();
+//       if let Some( row2 ) = row
+//       {
+//         let cit = row2.cells().clone();
+//         let mcells = cit.len();
+//         [ mcells, nrows + 1 ]
+//       }
+//       else
+//       {
+//         [ 0, 0 ] // xxx : test
+//       }
+//     }
+//   }
 
   // =
 
@@ -278,9 +278,8 @@ pub( crate ) mod private
         (
           row
           .cells()
-          // .map( | ( key, _title ) | ( key.clone(), Cow::Owned( format!( "{}", key ) ) ) )
           .map( | ( key, _title ) | ( key, key.borrow() ) )
-          .collect::< Vec< _ > >()
+          .collect::< Vec< _ > >() // xxx
           .into_iter()
         )
       }
@@ -338,7 +337,7 @@ pub mod exposed
   {
     Cells,
     TableRows,
-    TableSize,
+    // TableSize,
     TableHeader,
   };
 

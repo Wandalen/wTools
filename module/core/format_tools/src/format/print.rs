@@ -202,7 +202,7 @@ pub( crate ) mod private
   where
     Self : TableRows< CellKey = CellKey, CellRepr = CellRepr, RowKey = RowKey, Row = Row >,
     Self : TableHeader< CellKey = CellKey >,
-    Self : TableSize,
+    // Self : TableSize,
     RowKey : table::RowKey,
     Row : Cells< CellKey, CellRepr >,
     CellKey : table::CellKey + ?Sized,
@@ -306,7 +306,7 @@ pub( crate ) mod private
       'data : 't,
       Table : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
       Table : TableHeader< CellKey = CellKey >,
-      Table : TableSize,
+      // Table : TableSize,
       RowKey : table::RowKey,
       Row : Cells< CellKey, CellRepr > + 'data,
       CellKey : table::CellKey + ?Sized + 'data,
@@ -314,15 +314,15 @@ pub( crate ) mod private
     {
       use md_math::MdOffset;
 
-      let mcells = table.mcells();
+      // let mcells = table.mcells();
       let mut mcells_vis = [ 0 ; 2 ];
       let mut mcells_actual = [ 0 ; 2 ];
 
       //                                 key        width, index
       let mut key_to_ikey : HashMap< &'t CellKey, usize > = HashMap::new();
 
-      let mut col_descriptors : Vec< ColDescriptor > = Vec::with_capacity( mcells[ 0 ] );
-      let mut row_descriptors : Vec< RowDescriptor > = Vec::with_capacity( mcells[ 1 ] );
+      let mut col_descriptors : Vec< ColDescriptor > = Vec::with_capacity( mcells_actual[ 0 ] );
+      let mut row_descriptors : Vec< RowDescriptor > = Vec::with_capacity( mcells_actual[ 1 ] );
       let mut has_header = false;
 
       let mut data : Vec< Vec< ( Cow< 't, str >, [ usize ; 2 ] ) > > = Vec::new();
@@ -405,16 +405,6 @@ pub( crate ) mod private
         row_descriptors.push( row );
         data.push( fields );
 
-        // if row.vis
-        // {
-        //   row_descriptors.push( row );
-        //   data.push( fields );
-        // }
-        // else
-        // {
-        //   row.vis = false;
-        // }
-
       };
 
       // process header first
@@ -467,7 +457,8 @@ pub( crate ) mod private
 
       // cook slices multi-matrix
 
-      let mut slices_dim = [ 1, mcells[ 0 ], mcells[ 1 ] + ( if has_header { 1 } else { 0 } ) ];
+      // let mut slices_dim = [ 1, mcells_actual[ 0 ], mcells_actual[ 1 ] + ( if has_header { 1 } else { 0 } ) ];
+      let mut slices_dim = [ 1, mcells_actual[ 0 ], mcells_actual[ 1 ] ];
       slices_dim[ 0 ] = row_descriptors
       .iter()
       .fold( 0, | acc : usize, row | acc.max( row.height ) )
@@ -476,15 +467,14 @@ pub( crate ) mod private
       let slices_len = slices_dim[ 0 ] * slices_dim[ 1 ] * slices_dim[ 2 ];
       let slices : Vec< &str > = vec![ "" ; slices_len ];
 
-      assert_eq!( mcells, mcells_actual, r#"Incorrect multidimensional size of table
-  mcells <> mcells_actual
-  {mcells:?} <> {mcells_actual:?}"# );
-
-      println!( "mcells : {mcells:?} | mcells_actual : {mcells_actual:?} | mcells_vis : {mcells_vis:?}" );
+  //     assert_eq!( mcells, mcells_actual, r#"Incorrect multidimensional size of table
+  // mcells <> mcells_actual
+  // {mcells:?} <> {mcells_actual:?}"# );
+  //     println!( "mcells : {mcells:?} | mcells_actual : {mcells_actual:?} | mcells_vis : {mcells_vis:?}" );
 
       let mut x = InputExtract::< '_ >
       {
-        mcells,
+        mcells : mcells_actual,
         mcells_vis,
         col_descriptors,
         row_descriptors,
