@@ -421,7 +421,7 @@ fn hmap_basic()
   };
 
   use the_module::TableToString;
-  let as_table :  AsTable< '_, HashMap< &str, TestObject >, &str, TestObject, str, _ > = AsTable::new( &data );
+  let as_table : AsTable< '_, HashMap< &str, TestObject >, &&str, TestObject, str, WithRef > = AsTable::new( &data );
 
   let mut output = String::new();
   let mut context = print::Context::new( &mut output, Default::default() );
