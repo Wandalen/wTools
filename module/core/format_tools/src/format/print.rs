@@ -329,7 +329,7 @@ pub( crate ) mod private
       let rows = table.rows();
       let mut irow : usize = 0;
       let filter_col_need_args = filter_col.need_args();
-      let filter_row_need_args = filter_row.need_args();
+      // let filter_row_need_args = filter_row.need_args();
 
       let mut row_add = | row_iter : &'_ mut dyn _IteratorTrait< Item = ( &'t CellKey, Cow< 't, str > ) >, typ : LineType |
       {
@@ -347,7 +347,7 @@ pub( crate ) mod private
           | ( key, val ) |
           {
             let l = col_descriptors.len();
-            let _icol = key_to_ikey.get( key ).unwrap_or( &l ); // xxx
+            // let _icol = key_to_ikey.get( key ).unwrap_or( &l ); // xxx
 
             ncol += 1;
 

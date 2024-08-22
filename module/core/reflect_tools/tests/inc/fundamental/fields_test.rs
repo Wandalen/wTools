@@ -5,7 +5,7 @@ use the_module::
 {
   Fields,
   IteratorTrait,
-  MaybeAs,
+  OptionalCow,
   // ToStringWith,
   // WithDebug,
 };
@@ -29,15 +29,15 @@ pub struct TestObject
   pub tools : Option< Vec< HashMap< String, String > > >,
 }
 
-impl Fields< &'static str, MaybeAs< '_, String, () > >
+impl Fields< &'static str, OptionalCow< '_, String, () > >
 for TestObject
 {
   type Key< 'k > = &'static str;
-  type Val< 'v > = MaybeAs< 'v, String, () >;
+  type Val< 'v > = OptionalCow< 'v, String, () >;
 
-  fn fields( &self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< '_, String, () > ) >
+  fn fields( &self ) -> impl IteratorTrait< Item = ( &'static str, OptionalCow< '_, String, () > ) >
   {
-    let mut dst : Vec< ( &'static str, MaybeAs< '_, String, () > ) > = Vec::new();
+    let mut dst : Vec< ( &'static str, OptionalCow< '_, String, () > ) > = Vec::new();
 
     dst.push( ( "id", Some( Cow::Borrowed( &self.id ) ).into() ) );
     dst.push( ( "created_at", Some( Cow::Owned( self.created_at.to_string() ) ).into() ) );
@@ -94,7 +94,7 @@ fn basic()
     ),
   };
 
-  let fields : Vec< ( &str, MaybeAs< '_, String, () > ) > = test_object.fields().collect();
+  let fields : Vec< ( &str, OptionalCow< '_, String, () > ) > = test_object.fields().collect();
 
   assert_eq!( fields.len(), 4 );
   assert!( fields[ 0 ].1.is_borrowed() );

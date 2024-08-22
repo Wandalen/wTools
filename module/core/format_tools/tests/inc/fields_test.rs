@@ -5,7 +5,7 @@ use the_module::
 {
   Fields,
   IteratorTrait,
-  MaybeAs,
+  OptionalCow,
   WithRef,
 };
 
@@ -26,16 +26,16 @@ pub struct TestObject
   pub tools : Option< Vec< HashMap< String, String > > >,
 }
 
-impl Fields< &'static str, MaybeAs< '_, str, WithRef > >
+impl Fields< &'static str, OptionalCow< '_, str, WithRef > >
 for TestObject
 {
   type Key< 'k > = &'static str;
-  type Val< 'v > = MaybeAs< 'v, str, WithRef >;
+  type Val< 'v > = OptionalCow< 'v, str, WithRef >;
 
-  fn fields( &self ) -> impl IteratorTrait< Item = ( &'static str, MaybeAs< '_, str, WithRef > ) >
+  fn fields( &self ) -> impl IteratorTrait< Item = ( &'static str, OptionalCow< '_, str, WithRef > ) >
   {
     use format_tools::ref_or_display_or_debug::field;
-    let mut dst : Vec< ( &'static str, MaybeAs< '_, str, WithRef > ) > = Vec::new();
+    let mut dst : Vec< ( &'static str, OptionalCow< '_, str, WithRef > ) > = Vec::new();
 
     dst.push( field!( &self.id ) );
     dst.push( field!( &self.created_at ) );
@@ -47,7 +47,7 @@ for TestObject
     }
     else
     {
-      dst.push( ( "tools", MaybeAs::none() ) );
+      dst.push( ( "tools", OptionalCow::none() ) );
     }
 
     dst.into_iter()
@@ -76,10 +76,10 @@ fn basic_with_ref_display_debug()
     ),
   };
 
-  let fields : Vec< ( &str, MaybeAs< '_, str, WithRef > ) > =
-  Fields::< &'static str, MaybeAs< '_, str, WithRef > >::fields( &test_object ).collect();
+  let fields : Vec< ( &str, OptionalCow< '_, str, WithRef > ) > =
+  Fields::< &'static str, OptionalCow< '_, str, WithRef > >::fields( &test_object ).collect();
 
-  // let fields : Vec< ( &str, MaybeAs< '_, str, WithRef > ) > = test_object.fields().collect();
+  // let fields : Vec< ( &str, OptionalCow< '_, str, WithRef > ) > = test_object.fields().collect();
 
   assert_eq!( fields.len(), 4 );
   assert!( fields[ 0 ].1.is_borrowed() );

@@ -146,7 +146,7 @@ pub( crate ) mod private
     }
   }
 
-  impl< V, Marker > Fields< usize, crate::MaybeAs< '_, V, Marker > > for Vec< V >
+  impl< V, Marker > Fields< usize, crate::OptionalCow< '_, V, Marker > > for Vec< V >
   where
     V : std::borrow::ToOwned,
     Marker : Clone + Copy + 'static,
@@ -155,12 +155,12 @@ pub( crate ) mod private
     type Key< 'k > = usize
     where Self : 'k, usize : 'k;
 
-    type Val< 'v > = crate::MaybeAs< 'v, V, Marker >
+    type Val< 'v > = crate::OptionalCow< 'v, V, Marker >
     where Self : 'v;
 
     fn fields( &self ) -> impl IteratorTrait< Item = ( Self::Key< '_ >, Self::Val< '_ > ) >
     {
-      self.iter().enumerate().map( move | ( key, val ) | ( key, crate::MaybeAs::from( Cow::Borrowed( val ) ) ) )
+      self.iter().enumerate().map( move | ( key, val ) | ( key, crate::OptionalCow::from( Cow::Borrowed( val ) ) ) )
     }
   }
 

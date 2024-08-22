@@ -11,8 +11,9 @@ use the_module::
   // TableSize,
   TableRows,
   TableHeader,
+  TableWithFields,
   WithRef,
-  MaybeAs,
+  OptionalCow,
   filter,
   print,
 };
@@ -33,17 +34,19 @@ pub struct TestObject
   pub tools : Option< Vec< HashMap< String, String > > >,
 }
 
-impl Fields< &'_ str, MaybeAs< '_, str, WithRef > >
+impl TableWithFields for TestObject {}
+
+impl Fields< &'_ str, OptionalCow< '_, str, WithRef > >
 for TestObject
 {
   type Key< 'k > = &'k str;
-  type Val< 'v > = MaybeAs< 'v, str, WithRef >;
+  type Val< 'v > = OptionalCow< 'v, str, WithRef >;
 
-  fn fields( &self ) -> impl IteratorTrait< Item = ( &'_ str, MaybeAs< '_, str, WithRef > ) >
+  fn fields( &self ) -> impl IteratorTrait< Item = ( &'_ str, OptionalCow< '_, str, WithRef > ) >
   {
     use format_tools::ref_or_display_or_debug_multiline::field;
     // use format_tools::ref_or_display_or_debug::field;
-    let mut dst : Vec< ( &'_ str, MaybeAs< '_, str, WithRef > ) > = Vec::new();
+    let mut dst : Vec< ( &'_ str, OptionalCow< '_, str, WithRef > ) > = Vec::new();
 
     dst.push( field!( &self.id ) );
     dst.push( field!( &self.created_at ) );
@@ -55,7 +58,7 @@ for TestObject
     }
     else
     {
-      dst.push( ( "tools", MaybeAs::none() ) );
+      dst.push( ( "tools", OptionalCow::none() ) );
     }
 
     dst.into_iter()
@@ -351,6 +354,7 @@ fn filter_row_callback()
   formatter.row_postfix = "<".into();
   formatter.row_separator = "\n".into();
 
+  // xxx
   formatter.filter_row = &| irow, _row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ], _typ |
   {
     irow != 1

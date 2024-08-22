@@ -72,6 +72,11 @@ pub( crate ) mod private
 
   // =
 
+  /// Marker trait to tag structures for whcih table trait deducing should be done from trait Fields, which is reflection.
+  pub trait TableWithFields {}
+
+  // =
+
   /// A trait for iterating over all cells of a row.
   pub trait Cells< CellKey, CellRepr >
   where
@@ -79,7 +84,7 @@ pub( crate ) mod private
     CellKey : table::CellKey + ?Sized,
   {
     /// Returns an iterator over all cells of the row.
-    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, MaybeAs< 'b, str, CellRepr > ) >
+    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, OptionalCow< 'b, str, CellRepr > ) >
     where
       'a : 'b,
       CellKey : 'b,
@@ -91,21 +96,17 @@ pub( crate ) mod private
   where
     CellKey : table::CellKey + ?Sized,
     for< 'k, 'v >
-    Row : Fields
+    Row : TableWithFields + Fields
     <
       &'k CellKey,
-      MaybeAs< 'v, str, CellRepr >,
+      OptionalCow< 'v, str, CellRepr >,
       Key< 'k > = &'k CellKey,
-      Val< 'v > = MaybeAs< 'v, str, CellRepr >,
-    > + 'k + 'v,
-    // for< 'v > MaybeAs< 'v, str, CellRepr > : From
-    // <
-    //   MaybeAs< 'v, str, CellRepr >,
-    // >,
+      Val< 'v > = OptionalCow< 'v, str, CellRepr >,
+    > + 'k + 'v, // xxx
     CellRepr : table::CellRepr,
   {
 
-    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, MaybeAs< 'b, str, CellRepr > ) >
+    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, OptionalCow< 'b, str, CellRepr > ) >
     where
       'a : 'b,
       CellKey : 'b,
@@ -115,8 +116,6 @@ pub( crate ) mod private
         move | ( key, cell ) |
         {
           ( key, cell )
-          // ( key.clone(), cell.clone() )
-          // ( key, cell.into() )
         }
       )
     }
@@ -186,7 +185,7 @@ pub( crate ) mod private
     > + 'k + 'v,
 
     RowKey : table::RowKey,
-    Row : Cells< CellKey, CellRepr >,
+    Row : TableWithFields + Cells< CellKey, CellRepr >,
     CellKey : table::CellKey + ?Sized,
     CellRepr : table::CellRepr,
   {
@@ -262,7 +261,7 @@ pub( crate ) mod private
   where
     Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
     RowKey : table::RowKey,
-    Row : Cells< CellKey, CellRepr >,
+    Row : TableWithFields + Cells< CellKey, CellRepr >,
     CellKey : table::CellKey + ?Sized,
     CellRepr : table::CellRepr,
   {
@@ -335,6 +334,7 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use private::
   {
+    TableWithFields,
     Cells,
     TableRows,
     // TableSize,

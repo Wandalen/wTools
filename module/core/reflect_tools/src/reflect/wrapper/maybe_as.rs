@@ -8,13 +8,13 @@ use core::ops::{ Deref };
 
 /// Universal wrapper with transparent option of copy on write reference emphasizing a specific aspect of identity of its internal type.
 #[ repr( transparent ) ]
-pub struct MaybeAs< 'a, T, Marker >( pub Option< Cow< 'a, T > >, ::core::marker::PhantomData< fn() -> Marker > )
+pub struct OptionalCow< 'a, T, Marker >( pub Option< Cow< 'a, T > >, ::core::marker::PhantomData< fn() -> Marker > )
 where
   T : std::borrow::ToOwned + ?Sized,
   Marker : Clone + Copy + 'static,
 ;
 
-impl< 'a, T, Marker > MaybeAs< 'a, T, Marker >
+impl< 'a, T, Marker > OptionalCow< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
   Marker : Clone + Copy + 'static,
@@ -80,15 +80,15 @@ where
 
 }
 
-// impl< 'a, T, Marker > std::borrow::ToOwned for MaybeAs< 'a, T, Marker >
+// impl< 'a, T, Marker > std::borrow::ToOwned for OptionalCow< 'a, T, Marker >
 // where
 //   T : std::borrow::ToOwned + ?Sized,
 // {
-//   type Owned = MaybeAs< 'static, T::Owned, Marker >;
+//   type Owned = OptionalCow< 'static, T::Owned, Marker >;
 //
 //   fn to_owned( &self ) -> Self::Owned
 //   {
-//     MaybeAs
+//     OptionalCow
 //     (
 //       self.0.as_ref().map( | cow | Cow::Owned( cow.to_owned() ) ),
 //       std::marker::PhantomData
@@ -96,7 +96,7 @@ where
 //   }
 // }
 
-impl< 'a, T, Marker > Clone for MaybeAs< 'a, T, Marker >
+impl< 'a, T, Marker > Clone for OptionalCow< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
   Marker : Clone + Copy + 'static,
@@ -107,7 +107,7 @@ where
   }
 }
 
-impl< 'a, T, Marker > AsRef< Option< Cow< 'a, T > > > for MaybeAs< 'a, T, Marker >
+impl< 'a, T, Marker > AsRef< Option< Cow< 'a, T > > > for OptionalCow< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
   Marker : Clone + Copy + 'static,
@@ -118,7 +118,7 @@ where
   }
 }
 
-impl< 'a, T, Marker > Deref for MaybeAs< 'a, T, Marker >
+impl< 'a, T, Marker > Deref for OptionalCow< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
   Marker : Clone + Copy + 'static,
@@ -131,42 +131,42 @@ where
 }
 
 impl< 'a, T, Marker > From< Cow< 'a, T > >
-for MaybeAs< 'a, T, Marker >
+for OptionalCow< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
   Marker : Clone + Copy + 'static,
 {
   fn from( src : Cow< 'a, T > ) -> Self
   {
-    MaybeAs::new_with_inner( Some( src ) )
+    OptionalCow::new_with_inner( Some( src ) )
   }
 }
 
 impl< 'a, T, Marker > From< Option< Cow< 'a, T > > >
-for MaybeAs< 'a, T, Marker >
+for OptionalCow< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
   Marker : Clone + Copy + 'static,
 {
   fn from( src : Option< Cow< 'a, T > > ) -> Self
   {
-    MaybeAs::new_with_inner( src )
+    OptionalCow::new_with_inner( src )
   }
 }
 
 impl< 'a, T, Marker > From< &'a T >
-for MaybeAs< 'a, T, Marker >
+for OptionalCow< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
   Marker : Clone + Copy + 'static,
 {
   fn from( src : &'a T ) -> Self
   {
-    MaybeAs::new_with_ref( src )
+    OptionalCow::new_with_ref( src )
   }
 }
 
-impl< 'a, T, Marker > Default for MaybeAs< 'a, T, Marker >
+impl< 'a, T, Marker > Default for OptionalCow< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
   < T as std::borrow::ToOwned >::Owned : Default,
@@ -174,11 +174,11 @@ where
 {
   fn default() -> Self
   {
-    MaybeAs::new( < T as std::borrow::ToOwned >::Owned::default() )
+    OptionalCow::new( < T as std::borrow::ToOwned >::Owned::default() )
   }
 }
 
-impl< 'a, T, Marker > fmt::Debug for MaybeAs< 'a, T, Marker >
+impl< 'a, T, Marker > fmt::Debug for OptionalCow< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
   < T as std::borrow::ToOwned >::Owned : fmt::Debug,
@@ -187,13 +187,13 @@ where
 {
   fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
   {
-    f.debug_struct( "MaybeAs" )
+    f.debug_struct( "OptionalCow" )
     .field( "0", &self.0 )
     .finish()
   }
 }
 
-impl< 'a, T, Marker > PartialEq for MaybeAs< 'a, T, Marker >
+impl< 'a, T, Marker > PartialEq for OptionalCow< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
   Marker : Clone + Copy + 'static,
@@ -205,7 +205,7 @@ where
   }
 }
 
-impl< 'a, T, Marker > Eq for MaybeAs< 'a, T, Marker >
+impl< 'a, T, Marker > Eq for OptionalCow< 'a, T, Marker >
 where
   T : std::borrow::ToOwned + ?Sized,
   Marker : Clone + Copy + 'static,

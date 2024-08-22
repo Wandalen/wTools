@@ -40,7 +40,7 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::
   {
-    maybe_as::MaybeAs,
+    maybe_as::OptionalCow,
   };
 }
 

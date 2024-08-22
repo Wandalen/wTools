@@ -28,7 +28,7 @@ pub( crate ) mod private
     {{
       (
         ::core::stringify!( $key ),
-        $crate::MaybeAs::< '_, str, $how >::from
+        $crate::OptionalCow::< '_, str, $how >::from
         (
           $crate::to_string_with_fallback!( $how, $fallback1, $fallback2, $src )
         ),
@@ -313,7 +313,7 @@ pub mod exposed
   use super::*;
 
   #[ doc( inline ) ]
-  pub use reflect_tools::MaybeAs;
+  pub use reflect_tools::OptionalCow;
 
   #[ doc( inline ) ]
   pub use
