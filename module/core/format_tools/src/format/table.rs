@@ -95,14 +95,14 @@ pub( crate ) mod private
   for Row
   where
     CellKey : table::CellKey + ?Sized,
-    for< 'kv >
+    for< 'ckv >
     Row : TableWithFields + Fields
     <
-      &'kv CellKey,
-      OptionalCow< 'kv, str, CellRepr >,
-      Key< 'kv > = &'kv CellKey,
-      Val< 'kv > = OptionalCow< 'kv, str, CellRepr >,
-    > + 'kv, // xxx
+      &'ckv CellKey,
+      OptionalCow< 'ckv, str, CellRepr >,
+      Key< 'ckv > = &'ckv CellKey,
+      Val< 'ckv > = OptionalCow< 'ckv, str, CellRepr >,
+    > + 'ckv, // xxx
     CellRepr : table::CellRepr,
   {
 
@@ -177,13 +177,13 @@ pub( crate ) mod private
   for AsTable< '_, T, RowKey, Row, CellKey, CellRepr >
   where
 
-    for< 'kv > T : Fields
+    for< 'k, 'v > T : Fields
     <
       RowKey,
-      &'kv Row,
-      Key< 'kv > = RowKey,
-      Val< 'kv > = &'kv Row,
-    > + 'kv,
+      &'k Row,
+      Key< 'k > = RowKey,
+      Val< 'v > = &'v Row,
+    > + 'k + 'v,
 
     RowKey : table::RowKey,
     Row : TableWithFields + Cells< CellKey, CellRepr >,
