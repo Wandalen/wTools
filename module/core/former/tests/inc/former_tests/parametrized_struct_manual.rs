@@ -27,7 +27,7 @@ impl< Name > Property< Name >
 #[ derive( Debug, PartialEq ) ]
 pub struct Child< K >
 where
-  K : core::hash::Hash + std::cmp::Eq,
+  K : core::hash::Hash + core::cmp::Eq,
 {
   pub name : String,
   // #[ subform_collection( definition = former::HashMapDefinition ) ]
@@ -214,7 +214,7 @@ impl< K, > former :: StoragePreform for ChildFormerStorage< K, > where K : core 
 
 pub struct ChildFormer< K, Definition = ChildFormerDefinition< K, (), Child< K, >, former::ReturnPreformed >, >
 where
-  K : core::hash::Hash + std::cmp::Eq,
+  K : core::hash::Hash + core::cmp::Eq,
   Definition : former::FormerDefinition< Storage = ChildFormerStorage< K, > >,
   // Definition::Types : former::FormerDefinitionTypes< Storage = ChildFormerStorage< K, > >
 {
@@ -226,7 +226,7 @@ where
 #[ automatically_derived ]
 impl< K, Definition, > ChildFormer< K, Definition, >
 where
-  K : core::hash::Hash + std::cmp::Eq,
+  K : core::hash::Hash + core::cmp::Eq,
   Definition : former::FormerDefinition< Storage = ChildFormerStorage< K, > >
   // Definition::Types : former::FormerDefinitionTypes< Storage = ChildFormerStorage< K, > >,
 {
@@ -328,7 +328,7 @@ where
 
 impl< K, Definition, > ChildFormer< K, Definition, >
 where
-  K : core::hash::Hash + std::cmp::Eq,
+  K : core::hash::Hash + core::cmp::Eq,
   Definition : former::FormerDefinition< Storage = ChildFormerStorage< K, >, Formed = Child< K, > >,
   // Definition::Types : former::FormerDefinitionTypes< Storage = ChildFormerStorage< K, >, Formed = Child< K, > >,
   Definition::Storage : former::StoragePreform< Preformed = Child< K, > >
@@ -346,7 +346,7 @@ pub struct ChildFormerPropertiesEnd;
 impl< K, Definition, > former::FormingEnd< former::HashMapDefinitionTypes< K, Property< K >, ChildFormer< K, Definition, >, ChildFormer< K, Definition, > >, >
 for ChildFormerPropertiesEnd
 where
-  K : core::hash::Hash + std::cmp::Eq,
+  K : core::hash::Hash + core::cmp::Eq,
   Definition : former::FormerDefinition< Storage = ChildFormerStorage< K, > >,
   // Definition::Types : former::FormerDefinitionTypes< Storage = ChildFormerStorage< K, > >,
 {

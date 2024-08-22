@@ -4,6 +4,7 @@
 
 use crate::*;
 use std::borrow::Cow;
+use collection_tools::Vec;
 
 impl< V > Fields< usize, &'_ V > for Vec< V >
 where

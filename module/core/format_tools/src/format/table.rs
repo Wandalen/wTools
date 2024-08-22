@@ -42,13 +42,13 @@ pub( crate ) mod private
 
   pub trait CellKey
   where
-    Self : std::cmp::Eq + std::hash::Hash + Borrow< str >,
+    Self : core::cmp::Eq + std::hash::Hash + Borrow< str >,
   {
   }
 
   impl< T > CellKey for T
   where
-    T : std::cmp::Eq + std::hash::Hash + Borrow< str > + ?Sized,
+    T : core::cmp::Eq + std::hash::Hash + Borrow< str > + ?Sized,
   {
   }
 

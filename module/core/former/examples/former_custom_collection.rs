@@ -41,7 +41,7 @@ fn main()
   // Allow the custom collection to be converted into an iterator, to iterate over the elements.
   impl< K > IntoIterator for LoggingSet< K >
   where
-    K : std::cmp::Eq + std::hash::Hash,
+    K : core::cmp::Eq + std::hash::Hash,
   {
     type Item = K;
     type IntoIter = collection_tools::hset::IntoIter< K >;
@@ -55,7 +55,7 @@ fn main()
   // Similar iterator functionality but for borrowing the elements.
   impl<'a, K> IntoIterator for &'a LoggingSet< K >
   where
-    K : std::cmp::Eq + std::hash::Hash,
+    K : core::cmp::Eq + std::hash::Hash,
   {
     type Item = &'a K;
     type IntoIter = collection_tools::hset::Iter< 'a, K >;

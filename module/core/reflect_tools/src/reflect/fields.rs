@@ -12,13 +12,13 @@ pub( crate ) mod private
   /// A trait for iterators that are also `ExactSizeIterator`.
   pub trait _IteratorTrait
   where
-    Self : core::iter::Iterator + ExactSizeIterator + DoubleEndedIterator
+    Self : core::iter::Iterator + ExactSizeIterator
   {
   }
 
   impl< T > _IteratorTrait for T
   where
-    Self : core::iter::Iterator + ExactSizeIterator + DoubleEndedIterator
+    Self : core::iter::Iterator + ExactSizeIterator
   {
   }
 
@@ -112,6 +112,7 @@ pub( crate ) mod private
 }
 
 mod vec;
+mod hashmap;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
