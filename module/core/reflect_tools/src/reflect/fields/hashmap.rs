@@ -6,7 +6,7 @@ use crate::*;
 use std::borrow::Cow;
 use collection_tools::HashMap;
 
-impl< K, V > Fields< K, &'_ V > for HashMap< K, V >
+impl< K, V > Fields< &'_ K, &'_ V > for HashMap< K, V >
 where
   K : core::hash::Hash + core::cmp::Eq,
   V : std::borrow::ToOwned,
@@ -20,12 +20,12 @@ where
 
   fn fields( &self ) -> impl IteratorTrait< Item = ( Self::Key< '_ >, Self::Val< '_ > ) >
   {
-    self.into_iter()
+    self.iter()
   }
 
 }
 
-impl< K, V > Fields< K, Option< Cow< '_, V > > > for HashMap< K, V >
+impl< K, V > Fields< &'_ K, Option< Cow< '_, V > > > for HashMap< K, V >
 where
   K : core::hash::Hash + core::cmp::Eq,
   V : std::borrow::ToOwned,
@@ -39,12 +39,12 @@ where
 
   fn fields( &self ) -> impl IteratorTrait< Item = ( Self::Key< '_ >, Self::Val< '_ > ) >
   {
-    self.into_iter().map( move | ( key, val ) | ( key, Some( Cow::Borrowed( val ) ) ) )
+    self.iter().map( move | ( key, val ) | ( key, Some( Cow::Borrowed( val ) ) ) )
   }
 
 }
 
-impl< K, V, Marker > Fields< K, crate::OptionalCow< '_, V, Marker > > for HashMap< K, V >
+impl< K, V, Marker > Fields< &'_ K, crate::OptionalCow< '_, V, Marker > > for HashMap< K, V >
 where
   K : core::hash::Hash + core::cmp::Eq,
   V : std::borrow::ToOwned,
@@ -59,7 +59,7 @@ where
 
   fn fields( &self ) -> impl IteratorTrait< Item = ( Self::Key< '_ >, Self::Val< '_ > ) >
   {
-    self.into_iter().map( move | ( key, val ) | ( key, crate::OptionalCow::from( val ) ) )
+    self.iter().map( move | ( key, val ) | ( key, crate::OptionalCow::from( val ) ) )
   }
 
 }

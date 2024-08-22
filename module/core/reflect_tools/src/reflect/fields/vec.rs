@@ -19,7 +19,7 @@ where
 
   fn fields( &self ) -> impl IteratorTrait< Item = ( Self::Key< '_ >, Self::Val< '_ > ) >
   {
-    self.into_iter().enumerate().map( move | ( key, val ) | ( key, val ) )
+    self.iter().enumerate().map( move | ( key, val ) | ( key, val ) )
   }
 
 }

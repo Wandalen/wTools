@@ -95,14 +95,14 @@ pub( crate ) mod private
   for Row
   where
     CellKey : table::CellKey + ?Sized,
-    for< 'data >
+    for< 'kv >
     Row : TableWithFields + Fields
     <
-      &'data CellKey,
-      OptionalCow< 'data, str, CellRepr >,
-      Key< 'data > = &'data CellKey,
-      Val< 'data > = OptionalCow< 'data, str, CellRepr >,
-    > + 'data, // xxx
+      &'kv CellKey,
+      OptionalCow< 'kv, str, CellRepr >,
+      Key< 'kv > = &'kv CellKey,
+      Val< 'kv > = OptionalCow< 'kv, str, CellRepr >,
+    > + 'kv, // xxx
     CellRepr : table::CellRepr,
   {
 
@@ -165,9 +165,10 @@ pub( crate ) mod private
     type CellRepr : table::CellRepr;
 
     /// Returns an iterator over all rows of the table.
-    fn rows< 'a >( & 'a self ) -> impl IteratorTrait< Item = & 'a Self::Row >
-    where
-      Self::Row : 'a;
+    fn rows( &self ) -> impl IteratorTrait< Item = &Self::Row >;
+    // fn rows< 'a >( & 'a self ) -> impl IteratorTrait< Item = & 'a Self::Row >
+    // where
+    //   Self::Row : 'a;
   }
 
 
@@ -176,13 +177,13 @@ pub( crate ) mod private
   for AsTable< '_, T, RowKey, Row, CellKey, CellRepr >
   where
 
-    for< 'data > T : Fields
+    for< 'kv > T : Fields
     <
       RowKey,
-      &'data Row,
-      Key< 'data > = RowKey,
-      Val< 'data > = &'data Row,
-    > + 'data,
+      &'kv Row,
+      Key< 'kv > = RowKey,
+      Val< 'kv > = &'kv Row,
+    > + 'kv,
 
     RowKey : table::RowKey,
     Row : TableWithFields + Cells< CellKey, CellRepr >,
@@ -194,9 +195,10 @@ pub( crate ) mod private
     type CellKey = CellKey;
     type CellRepr = CellRepr;
 
-    fn rows< 'a >( &'a self ) -> impl IteratorTrait< Item = &'a Self::Row >
-    where
-      Self::Row : 'a
+    fn rows( &self ) -> impl IteratorTrait< Item = &Self::Row >
+    // fn rows< 'a >( &'a self ) -> impl IteratorTrait< Item = &'a Self::Row >
+    // where
+      // Self::Row : 'a
     {
       self.as_ref().fields()
       .map( move | ( _k, e ) : ( RowKey, &Row ) |
