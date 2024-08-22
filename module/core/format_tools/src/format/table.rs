@@ -199,11 +199,10 @@ pub( crate ) mod private
       Self::Row : 'a
     {
       self.as_ref().fields()
-      .filter_map( move | ( _k, e ) : ( RowKey, &Row ) |
+      .map( move | ( _k, e ) : ( RowKey, &Row ) |
       {
-        Some( e )
+        e
       })
-      .collect::< Vec< _ > >().into_iter()
     }
 
   }
@@ -278,8 +277,6 @@ pub( crate ) mod private
           row
           .cells()
           .map( | ( key, _title ) | ( key, key.borrow() ) )
-          .collect::< Vec< _ > >() // xxx
-          .into_iter()
         )
       }
       else

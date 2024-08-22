@@ -124,7 +124,7 @@ pub( crate ) mod private
   pub trait FilterRow
   {
     /// Filter rows of a table to print it only partially.
-    fn filter_row( &self, irow : usize, row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ], typ : LineType ) -> bool;
+    fn filter_row( &self, irow : usize, typ : LineType, row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] ) -> bool;
     /// Determine is arguments needed for the filter or it can give answer even without arguments. Useful for optimization.
     fn need_args( &self ) -> bool
     {
@@ -144,7 +144,7 @@ pub( crate ) mod private
   impl FilterRow for All
   {
     #[ inline( always ) ]
-    fn filter_row( &self, _irow : usize, _row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ], _typ : LineType ) -> bool
+    fn filter_row( &self, _irow : usize, _typ : LineType, _row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] ) -> bool
     {
       true
     }
@@ -168,7 +168,7 @@ pub( crate ) mod private
   impl FilterRow for None
   {
     #[ inline( always ) ]
-    fn filter_row( &self, _irow : usize, _row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ], _typ : LineType ) -> bool
+    fn filter_row( &self, _irow : usize, _typ : LineType, _row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] ) -> bool
     {
       false
     }
@@ -192,7 +192,7 @@ pub( crate ) mod private
   impl< F : Fn( usize, &[ ( Cow< '_, str >, [ usize ; 2 ] ) ], LineType ) -> bool > FilterRow for F
   {
     #[ inline( always ) ]
-    fn filter_row( &self, irow : usize, row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ], typ : LineType ) -> bool
+    fn filter_row( &self, irow : usize, typ : LineType, row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] ) -> bool
     {
       self( irow, row, typ )
     }
