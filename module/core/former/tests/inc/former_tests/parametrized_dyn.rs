@@ -37,7 +37,7 @@ impl FilterCol for All
 }
 
 #[ derive( Default ) ]
-// #[ derive( former::Former ) ]
+// #[ derive( former::Former ) ] // xxx : qqq : uncomment and fix problem with lifetime
 // #[ derive( former::Former ) ] #[ debug ]
 pub struct Styles< 'callback >
 {
