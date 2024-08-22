@@ -395,7 +395,7 @@ pub( crate ) mod private
         mcells_actual[ 0 ] = mcells_actual[ 0 ].max( ncol );
         mcells_vis[ 0 ] = mcells_vis[ 0 ].max( ncol_vis );
 
-        row.vis = filter_row.filter_row( irow, typ, &fields );
+        row.vis = filter_row.filter_row( typ, irow, &fields );
         if row.vis
         {
           mcells_vis[ 1 ] += 1;
