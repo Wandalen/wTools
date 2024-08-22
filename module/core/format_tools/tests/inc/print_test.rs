@@ -431,5 +431,6 @@ fn hmap_basic()
   // let exp = r#"xxx"#;
   // a_id!( got.as_str(), exp );
 
+  // xxx : implement
 
 }
