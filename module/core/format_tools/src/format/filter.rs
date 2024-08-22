@@ -184,7 +184,7 @@ pub( crate ) mod private
     /// Returns a reference to a static instance.
     pub fn row() -> & 'static dyn FilterRow
     {
-      static INSTANCE : All = All;
+      static INSTANCE : None = None;
       &INSTANCE
     }
   }
