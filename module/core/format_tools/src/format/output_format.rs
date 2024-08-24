@@ -123,13 +123,17 @@ pub( crate ) mod private
     }
   }
 
-// xxx
+// // xxx : implement
+//
 //   impl< 'context > From< &'context OrdinaryStyles > for &'context dyn TableOutputFormat
 //   {
 //
 //     fn from( src : &'context OrdinaryStyles ) -> Self
 //     {
-//       Ordinary( src )
+//       let format = Ordinary( src );
+//       let result : &'context dyn TableOutputFormat = &format;
+//       // &Ordinary( src )
+//       result
 //     }
 //
 //   }
