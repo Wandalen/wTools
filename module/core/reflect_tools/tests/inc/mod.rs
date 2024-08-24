@@ -11,6 +11,7 @@ mod fundamental
   mod fields_test;
   mod fields_vec;
   mod fields_hmap;
+  mod fields_bmap;
 
 }
 

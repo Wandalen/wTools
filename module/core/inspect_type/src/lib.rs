@@ -3,7 +3,8 @@
 #![ doc( html_root_url = "https://docs.rs/inspect_type/latest/inspect_type/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-#[ cfg( RUSTC_IS_NIGHTLY ) ]
+// #[ cfg( RUSTC_IS_NIGHTLY ) ]
+#[ cfg( not( RUSTC_IS_STABLE ) ) ]
 mod nightly
 {
 
@@ -92,7 +93,8 @@ pub mod prelude
   // #[ cfg( feature = "nightly" ) ]
   // #[ rustversion::nightly ]
   // #[ cfg( feature = "type_name_of_val" ) ]
-  #[ cfg( RUSTC_IS_NIGHTLY ) ]
+  // #[ cfg( RUSTC_IS_NIGHTLY ) ]
+  #[ cfg( not( RUSTC_IS_STABLE ) ) ]
   #[ doc( inline ) ]
   pub use super::nightly::*;
 }

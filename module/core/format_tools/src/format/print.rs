@@ -22,7 +22,7 @@ pub( crate ) mod private
 
   /// A struct to configure options for printing data as a table.
   ///
-  /// The `Styles` struct provides customizable delimiters for formatting table data. It allows
+  /// The `Printer` struct provides customizable delimiters for formatting table data. It allows
   /// you to define how table data should be separated and formatted, making it adaptable to
   /// various needs.
   ///
@@ -44,22 +44,22 @@ pub( crate ) mod private
   // xxx : enable
   // #[ derive( Debug, Former ) ]
   // #[ derive( Debug ) ]
-  pub struct Styles< 'callback >
+  pub struct Printer< 'callback >
   {
 
-    /// Delimiter for adding prefix to a cell.
-    pub cell_prefix : String,
-    /// Delimiter for adding postfix to a cell.
-    pub cell_postfix : String,
-    /// Delimiter for separating table columns.
-    pub cell_separator : String,
-
-    /// Delimiter for adding prefix to a row.
-    pub row_prefix : String,
-    /// Delimiter for adding postfix to a row.
-    pub row_postfix : String,
-    /// Delimiter for adding in between of rows.
-    pub row_separator : String,
+//     /// Delimiter for adding prefix to a cell.
+//     pub cell_prefix : String,
+//     /// Delimiter for adding postfix to a cell.
+//     pub cell_postfix : String,
+//     /// Delimiter for separating table columns.
+//     pub cell_separator : String,
+//
+//     /// Delimiter for adding prefix to a row.
+//     pub row_prefix : String,
+//     /// Delimiter for adding postfix to a row.
+//     pub row_postfix : String,
+//     /// Delimiter for adding in between of rows.
+//     pub row_separator : String,
 
     /// Convert extract into a string, writing it into destination buffer.
     pub output_format : &'callback dyn TableOutputFormat,
@@ -70,44 +70,44 @@ pub( crate ) mod private
 
   }
 
-  impl< 'callback > fmt::Debug for Styles< 'callback >
+  impl< 'callback > fmt::Debug for Printer< 'callback >
   {
     fn fmt( & self, f : & mut fmt::Formatter< '_ > ) -> fmt::Result
     {
-      f.debug_struct( "Styles" )
-      .field( "cell_prefix", & self.cell_prefix )
-      .field( "cell_postfix", & self.cell_postfix )
-      .field( "cell_separator", & self.cell_separator )
-      .field( "row_prefix", & self.row_prefix )
-      .field( "row_postfix", & self.row_postfix )
-      .field( "row_separator", & self.row_separator )
-      // .field( "output_format", & format_args!( "{:?}", self.output_format ) )
+      f.debug_struct( "Printer" )
+      // .field( "cell_prefix", & self.cell_prefix )
+      // .field( "cell_postfix", & self.cell_postfix )
+      // .field( "cell_separator", & self.cell_separator )
+      // .field( "row_prefix", & self.row_prefix )
+      // .field( "row_postfix", & self.row_postfix )
+      // .field( "row_separator", & self.row_separator )
+      // .field( "output_format", & format_args!( "{:?}", self.output_format ) ) // xxx
       // .field( "filter_col", & format_args!( "{:?}", self.filter_col ) )
       .finish()
     }
   }
 
-  impl< 'callback > Default for Styles< 'callback >
+  impl< 'callback > Default for Printer< 'callback >
   {
     fn default() -> Self
     {
-      let cell_prefix = "".to_string();
-      let cell_postfix = "".to_string();
-      let cell_separator = " │ ".to_string();
-      let row_prefix = "│ ".to_string();
-      let row_postfix = " │".to_string();
-      let row_separator = "\n".to_string();
+      // let cell_prefix = "".to_string();
+      // let cell_postfix = "".to_string();
+      // let cell_separator = " │ ".to_string();
+      // let row_prefix = "│ ".to_string();
+      // let row_postfix = " │".to_string();
+      // let row_separator = "\n".to_string();
       let output_format = Default::default();
       let filter_col = Default::default();
       let filter_row = Default::default();
       Self
       {
-        cell_prefix,
-        cell_postfix,
-        cell_separator,
-        row_prefix,
-        row_postfix,
-        row_separator,
+        // cell_prefix,
+        // cell_postfix,
+        // cell_separator,
+        // row_prefix,
+        // row_postfix,
+        // row_separator,
         output_format,
         filter_col,
         filter_row
@@ -127,15 +127,15 @@ pub( crate ) mod private
     ///   used to collect the formatted output.
     pub buf : &'context mut dyn fmt::Write,
     ///
-    /// An instance of `Styles` that defines the formatting
+    /// An instance of `Printer` that defines the formatting
     ///   options, such as delimiters and prefixes.
-    pub styles : Styles< 'context >,
+    pub styles : Printer< 'context >,
   }
 
   impl< 'context > Context< 'context >
   {
     /// Just constructr.
-    pub fn new( buf : &'context mut dyn fmt::Write, styles : Styles< 'context > ) -> Self
+    pub fn new( buf : &'context mut dyn fmt::Write, styles : Printer< 'context > ) -> Self
     {
       Self { buf, styles }
     }
@@ -174,7 +174,7 @@ pub( crate ) mod private
       let mut context = Context
       {
         buf : &mut output,
-        styles : Styles::default(),
+        styles : Printer::default(),
       };
       T::fmt( self, &mut context ).expect( "Table formatting failed" );
       output
@@ -535,7 +535,7 @@ pub mod own
   pub use private::
   {
     Context,
-    Styles,
+    Printer,
     InputExtract,
   };
 

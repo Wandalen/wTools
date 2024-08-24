@@ -15,8 +15,9 @@ pub( crate ) mod private
   use core::
   {
     fmt,
+    // sync::OnceLock,
   };
-
+  use std::sync::OnceLock;
 
   // Example of output formatting as table.
   //
@@ -59,12 +60,92 @@ pub( crate ) mod private
     ///
     /// # Returns
     /// A `fmt::Result` indicating success or failure of the write operation.
-    fn extract_write< 'buf, 'data >(
+    fn extract_write< 'buf, 'data >
+    (
       &self,
       x : &InputExtract< 'data >,
       c : &mut Context< 'buf >,
     ) -> fmt::Result;
   }
+
+  /// Styles for ordinary table output formatting.
+  #[ derive( Debug ) ]
+  pub struct OrdinaryStyles
+  {
+
+    /// Delimiter for adding prefix to a cell.
+    pub cell_prefix : String,
+    /// Delimiter for adding postfix to a cell.
+    pub cell_postfix : String,
+    /// Delimiter for separating table columns.
+    pub cell_separator : String,
+
+    /// Delimiter for adding prefix to a row.
+    pub row_prefix : String,
+    /// Delimiter for adding postfix to a row.
+    pub row_postfix : String,
+    /// Delimiter for adding in between of rows.
+    pub row_separator : String,
+
+  }
+
+  impl Default for OrdinaryStyles
+  {
+    fn default() -> Self
+    {
+      let cell_prefix = "".to_string();
+      let cell_postfix = "".to_string();
+      let cell_separator = " │ ".to_string();
+      let row_prefix = "│ ".to_string();
+      let row_postfix = " │".to_string();
+      let row_separator = "\n".to_string();
+      Self
+      {
+        cell_prefix,
+        cell_postfix,
+        cell_separator,
+        row_prefix,
+        row_postfix,
+        row_separator,
+      }
+    }
+  }
+
+  impl Default for &'static OrdinaryStyles
+  {
+    fn default() -> Self
+    {
+      static STYLES : OnceLock< OrdinaryStyles > = OnceLock::new();
+      STYLES.get_or_init( ||
+      {
+        OrdinaryStyles::default()
+      })
+    }
+  }
+
+//   impl OrdinaryStyles
+//   {
+//
+//     const fn _default() -> OrdinaryStyles
+//     {
+//       let cell_prefix = "".to_string();
+//       let cell_postfix = "".to_string();
+//       let cell_separator = " │ ".to_string();
+//       let row_prefix = "│ ".to_string();
+//       let row_postfix = " │".to_string();
+//       let row_separator = "\n".to_string();
+//       Self
+//       {
+//         cell_prefix,
+//         cell_postfix,
+//         cell_separator,
+//         row_prefix,
+//         row_postfix,
+//         row_separator,
+//       }
+//     }
+//
+//   }
 
   /// A struct representing the classic table output format.
   ///
@@ -78,41 +159,66 @@ pub( crate ) mod private
   /// - `Clone` and `Copy`: Enables copying of the `Ordinary` instance.
 
   #[derive( Debug, Default, Clone, Copy )]
-  pub struct Ordinary;
+  pub struct Ordinary< 'a >( &'a OrdinaryStyles );
 
-  impl Ordinary
+  impl< 'a > Ordinary< 'a >
   {
+
+    pub fn with_styles( styles : &'a OrdinaryStyles ) -> Self
+    {
+      Self( styles )
+    }
+
     /// Returns a reference to a static instance of `Ordinary`.
     ///
     /// This method provides access to a single shared instance of `Ordinary`,
     /// ensuring efficient reuse of the classic table output format.
     pub fn instance() -> & 'static dyn TableOutputFormat
     {
-      static INSTANCE : Ordinary = Ordinary;
-      &INSTANCE
+
+      // static STYLES : OnceLock< OrdinaryStyles > = OnceLock::new();
+      // let styles : &OrdinaryStyles = STYLES.get_or_init( ||
+      // {
+      //   OrdinaryStyles::Default()
+      // });
+
+      static INSTANCE : OnceLock< Ordinary< 'static > > = OnceLock::new();
+      INSTANCE.get_or_init( ||
+      {
+        let styles : &'static OrdinaryStyles = Default::default();
+        Ordinary( styles )
+      })
+
+      // static INSTANCE: OnceLock< Ordinary< 'static > > = OnceLock::new( || Ordinary( STYLES.get().unwrap() ) );
+      // INSTANCE.get().unwrap()
+
+      // static STYLES : OrdinaryStyles = OrdinaryStyles::default();
+      // static INSTANCE : Ordinary< 'static > = Ordinary( &STYLES );
+      // &INSTANCE
     }
   }
+
   impl Default for &'static dyn TableOutputFormat
   {
     #[ inline( always ) ]
     fn default() -> Self
     {
-      Ordinary::instance()
+      Ordinary::< 'static >::instance()
     }
   }
 
-  impl TableOutputFormat for Ordinary
+  impl< 'a > TableOutputFormat for Ordinary< 'a >
   {
     fn extract_write< 'buf, 'data >( &self, x : &InputExtract< 'data >, c : &mut Context< 'buf > ) -> fmt::Result
     {
       use md_math::MdOffset;
 
-      let cell_prefix = &c.styles.cell_prefix;
-      let cell_postfix = &c.styles.cell_postfix;
-      let cell_separator = &c.styles.cell_separator;
-      let row_prefix = &c.styles.row_prefix;
-      let row_postfix = &c.styles.row_postfix;
-      let row_separator = &c.styles.row_separator;
+      let cell_prefix = &self.0.cell_prefix;
+      let cell_postfix = &self.0.cell_postfix;
+      let cell_separator = &self.0.cell_separator;
+      let row_prefix = &self.0.row_prefix;
+      let row_postfix = &self.0.row_postfix;
+      let row_separator = &self.0.row_separator;
 
       // dbg!( x.row_descriptors.len() );
 
@@ -198,6 +304,7 @@ pub mod own
   pub use private::
   {
     Ordinary,
+    OrdinaryStyles,
   };
 
 }
