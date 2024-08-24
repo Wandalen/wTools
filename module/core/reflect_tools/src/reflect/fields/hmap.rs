@@ -1,5 +1,5 @@
 //!
-//! Implement fields for vector.
+//! Implement fields for hash map.
 //!
 
 use crate::*;
@@ -66,61 +66,3 @@ where
   }
 
 }
-
-// impl< K, V > Fields< &'_ K, &'_ V > for HashMap< K, V >
-// where
-//   K : core::hash::Hash + core::cmp::Eq,
-//   V : std::borrow::ToOwned,
-// {
-//
-//   type Key< 'k > = &'k K
-//   where Self : 'k, K : 'k;
-//
-//   type Val< 'v > = &'v V
-//   where Self : 'v, V : 'v;
-//
-//   fn fields( &self ) -> impl IteratorTrait< Item = ( Self::Key< '_ >, Self::Val< '_ > ) >
-//   {
-//     self.iter()
-//   }
-//
-// }
-//
-// impl< K, V > Fields< &'_ K, Option< Cow< '_, V > > > for HashMap< K, V >
-// where
-//   K : core::hash::Hash + core::cmp::Eq,
-//   V : std::borrow::ToOwned,
-// {
-//
-//   type Key< 'k > = &'k K
-//   where Self : 'k, K : 'k;
-//
-//   type Val< 'v > = Option< Cow< 'v, V > >
-//   where Self : 'v, V : 'v;
-//
-//   fn fields( &self ) -> impl IteratorTrait< Item = ( Self::Key< '_ >, Self::Val< '_ > ) >
-//   {
-//     self.iter().map( move | ( key, val ) | ( key, Some( Cow::Borrowed( val ) ) ) )
-//   }
-//
-// }
-//
-// impl< K, V, Marker > Fields< &'_ K, crate::OptionalCow< '_, V, Marker > > for HashMap< K, V >
-// where
-//   K : core::hash::Hash + core::cmp::Eq,
-//   V : std::borrow::ToOwned,
-//   Marker : Clone + Copy + 'static,
-// {
-//
-//   type Key< 'k > = &'k K
-//   where Self : 'k, K : 'k;
-//
-//   type Val< 'v > = crate::OptionalCow< 'v, V, Marker >
-//   where Self : 'v, V : 'v;
-//
-//   fn fields( &self ) -> impl IteratorTrait< Item = ( Self::Key< '_ >, Self::Val< '_ > ) >
-//   {
-//     self.iter().map( move | ( key, val ) | ( key, crate::OptionalCow::from( val ) ) )
-//   }
-//
-// }
