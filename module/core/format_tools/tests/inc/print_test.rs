@@ -427,13 +427,13 @@ fn hmap_basic()
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
 
-  // let mut output = String::new();
-  // let mut context = print::Context::new( &mut output, Default::default() );
-  // let got = the_module::TableFormatter::fmt( &as_table, &mut context );
-
-  // let got = as_table.table_to_string();
-  // let exp = r#"xxx"#;
-  // a_id!( got.as_str(), exp );
+  let mut output = String::new();
+  let mut context = print::Context::new( &mut output, Default::default() );
+  let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let got = as_table.table_to_string();
+  assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
+  assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
+  assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
 
   // xxx : implement
 
