@@ -109,7 +109,7 @@ pub mod prelude
   // pub use std::vec::
   // {
   //   Vec,
-  //   Vec as DynArray,
+  //   Vec as DynList,
   // };
 
   #[ cfg( feature = "dt_interval" ) ]

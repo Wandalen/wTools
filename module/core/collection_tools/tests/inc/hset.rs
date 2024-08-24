@@ -35,6 +35,9 @@ fn constructor()
   exp.insert( 13 );
   assert_eq!( got, exp );
 
+  let _got = the_module::hset!( "b" );
+  let _got = the_module::exposed::hset!( "b" );
+
 }
 
 #[ cfg( feature = "collection_into_constructors" ) ]
@@ -53,6 +56,9 @@ fn into_constructor()
   exp.insert( 11 );
   exp.insert( 13 );
   assert_eq!( got, exp );
+
+  let _got : Hset< &str > = the_module::into_hset!( "b" );
+  let _got : Hset< &str > = the_module::exposed::into_hset!( "b" );
 
 }
 

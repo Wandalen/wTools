@@ -15,8 +15,8 @@ tests_impls!
     let src = Vec::< i32 >::new();
     a_true!( src.is_empty() );
 
-    /* test.case( "DynArray" ) */
-    let src = DynArray::< i32 >::new();
+    /* test.case( "DynList" ) */
+    let src = DynList::< i32 >::new();
     a_true!( src.is_empty() );
 
     /* test.case( "HashMap" ) */

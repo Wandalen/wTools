@@ -12,7 +12,7 @@ fn reexport()
   let got = vec1.last().unwrap().clone();
   assert_eq!( got, 2 );
 
-  let mut vec2 : the_module::DynArray< i32 > = the_module::DynArray::new();
+  let mut vec2 : the_module::DynList< i32 > = the_module::DynList::new();
   vec2.push( 1 );
   vec2.push( 2 );
   let got = vec2.first().unwrap().clone();

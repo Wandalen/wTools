@@ -28,6 +28,9 @@ fn constructor()
   exp.push_front( 3 );
   assert_eq!( got, exp );
 
+  let _got = the_module::vecd!( "b" );
+  let _got = the_module::exposed::vecd!( "b" );
+
 }
 
 #[ cfg( feature = "collection_into_constructors" ) ]
@@ -46,6 +49,9 @@ fn into_constructor()
   exp.push_front( 13 );
   exp.push_front( 3 );
   assert_eq!( got, exp );
+
+  let _got : DequeList< &str > = the_module::vecd!( "b" );
+  let _got : DequeList< &str > = the_module::exposed::vecd!( "b" );
 
 }
 

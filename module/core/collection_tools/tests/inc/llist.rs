@@ -28,8 +28,8 @@ fn constructor()
   exp.push_front( 13 );
   assert_eq!(  got, exp );
 
-  let _got = the_module::hset!( "b" );
-  let _got = the_module::exposed::hset!( "b" );
+  let _got = the_module::llist!( "b" );
+  let _got = the_module::exposed::llist!( "b" );
 
 }
 
@@ -50,8 +50,8 @@ fn into_constructor()
   exp.push_front( 13 );
   assert_eq!( got, exp );
 
-  let _got : Hset< &str > = the_module::into_hset!( "b" );
-  let _got : Hset< &str > = the_module::exposed::into_hset!( "b" );
+  let _got : Llist< &str > = the_module::into_llist!( "b" );
+  let _got : Llist< &str > = the_module::exposed::into_llist!( "b" );
 
 }
 
