@@ -209,6 +209,42 @@ fn table_to_string()
 //
 
 #[ test ]
+fn table_to_string_with_styles()
+{
+  use the_module::TableToString;
+  let test_objects = test_objects_gen();
+
+  let mut styles = output_format::OrdinaryStyles::default();
+  styles.cell_prefix = "( ".into();
+  styles.cell_postfix = " )".into();
+  styles.cell_separator = "|".into();
+  styles.row_prefix = ">".into();
+  styles.row_postfix = "<".into();
+  styles.row_separator = "\n".into();
+
+//   let as_table = AsTable::new( &test_objects );
+//   let got = as_table.table_to_string_with_styles( &styles );
+//   let exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
+// >( 1  )|( 1627845583 )|(        [                   )|(                            )<
+// >(    )|(            )|(            "file1",        )|(                            )<
+// >(    )|(            )|(            "file2",        )|(                            )<
+// >(    )|(            )|(        ]                   )|(                            )<
+// >( 2  )|(     13     )|( [                          )|( [                          )<
+// >(    )|(            )|(     "file3",               )|(     {                      )<
+// >(    )|(            )|(     "file4\nmore details", )|(         "tool1": "value1", )<
+// >(    )|(            )|( ]                          )|(     },                     )<
+// >(    )|(            )|(                            )|(     {                      )<
+// >(    )|(            )|(                            )|(         "tool2": "value2", )<
+// >(    )|(            )|(                            )|(     },                     )<
+// >(    )|(            )|(                            )|( ]                          )<"#;
+//   a_id!( got, exp );
+
+  // xxx : implement
+}
+
+//
+
+#[ test ]
 fn custom_formatter()
 {
   // use the_module::TableToString;
@@ -251,9 +287,7 @@ fn custom_formatter()
 >(    )|(            )|(                            )|(         "tool2": "value2", )<
 >(    )|(            )|(                            )|(     },                     )<
 >(    )|(            )|(                            )|( ]                          )<"#;
-
   a_id!( output.as_str(), exp );
-
 
 }
 
