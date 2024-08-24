@@ -47,20 +47,6 @@ pub( crate ) mod private
   pub struct Printer< 'callback >
   {
 
-//     /// Delimiter for adding prefix to a cell.
-//     pub cell_prefix : String,
-//     /// Delimiter for adding postfix to a cell.
-//     pub cell_postfix : String,
-//     /// Delimiter for separating table columns.
-//     pub cell_separator : String,
-//
-//     /// Delimiter for adding prefix to a row.
-//     pub row_prefix : String,
-//     /// Delimiter for adding postfix to a row.
-//     pub row_postfix : String,
-//     /// Delimiter for adding in between of rows.
-//     pub row_separator : String,
-
     /// Convert extract into a string, writing it into destination buffer.
     pub output_format : &'callback dyn TableOutputFormat,
     /// Filter out columns.
@@ -91,23 +77,11 @@ pub( crate ) mod private
   {
     fn default() -> Self
     {
-      // let cell_prefix = "".to_string();
-      // let cell_postfix = "".to_string();
-      // let cell_separator = " │ ".to_string();
-      // let row_prefix = "│ ".to_string();
-      // let row_postfix = " │".to_string();
-      // let row_separator = "\n".to_string();
       let output_format = Default::default();
       let filter_col = Default::default();
       let filter_row = Default::default();
       Self
       {
-        // cell_prefix,
-        // cell_postfix,
-        // cell_separator,
-        // row_prefix,
-        // row_postfix,
-        // row_separator,
         output_format,
         filter_col,
         filter_row
@@ -153,55 +127,6 @@ pub( crate ) mod private
     }
   }
 
-//   /// A trait for converting tables to a string representation.
-//   pub trait TableToString< 'data >
-//   {
-//
-//     /// Converts the table to a string representation.
-//     ///
-//     /// # Returns
-//     ///
-//     /// A `String` containing the formatted table.
-//     fn table_to_string( &'data self ) -> String
-//     {
-//       let mut output = String::new();
-//       let mut context = Context
-//       {
-//         buf : &mut output,
-//         printer : Printer::default(),
-//       };
-//       Self::fmt( self, &mut context ).expect( "Table formatting failed" );
-//       output
-//     }
-//
-//     // /// Converts the table to a string representation using specified printer.
-//     // ///
-//     // /// # Returns
-//     // ///
-//     // /// A `String` containing the formatted table.
-//     // fn table_to_string< Styles : StylesToOutputFormatter >( &'data self, printer : &Styles ) -> String
-//     // {
-//     // }
-//
-//   }
-
-  // impl< 'data, T > TableToString< 'data > for T
-  // where
-  //   T : TableFormatter< 'data >
-  // {
-  //   // fn table_to_string( &'data self ) -> String
-  //   // {
-  //   //   let mut output = String::new();
-  //   //   let mut context = Context
-  //   //   {
-  //   //     buf : &mut output,
-  //   //     printer : Printer::default(),
-  //   //   };
-  //   //   T::fmt( self, &mut context ).expect( "Table formatting failed" );
-  //   //   output
-  //   // }
-  // }
-
   /// Trait for defining table formatting logic.
   ///
   /// `TableFormatter` allows implementations to specify how tables are formatted
@@ -223,6 +148,8 @@ pub( crate ) mod private
     /// A `String` containing the formatted table.
     fn table_to_string( &'data self ) -> String
     {
+      // xxx : uncomment
+      // self.table_to_string_with_styles( &Default::default() )
       let mut output = String::new();
       let mut context = Context
       {
@@ -244,8 +171,13 @@ pub( crate ) mod private
       &'context Styles : Into< &'context dyn TableOutputFormat >,
     {
       let mut output = String::new();
-      let mut printer : Printer< 'context > = Default::default();
-      printer.output_format = styles.into();
+      let mut printer : Printer< 'context > = Printer
+      {
+        output_format : styles.into(),
+        filter_col : Default::default(),
+        filter_row : Default::default(),
+      };
+      // printer.output_format = styles.into();
       let mut context = Context
       {
         buf : &mut output,

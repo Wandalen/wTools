@@ -123,29 +123,18 @@ pub( crate ) mod private
     }
   }
 
-//   impl OrdinaryStyles
+// xxx
+//   impl< 'context > From< &'context OrdinaryStyles > for &'context dyn TableOutputFormat
 //   {
 //
-//     const fn _default() -> OrdinaryStyles
+//     fn from( src : &'context OrdinaryStyles ) -> Self
 //     {
-//       let cell_prefix = "".to_string();
-//       let cell_postfix = "".to_string();
-//       let cell_separator = " │ ".to_string();
-//       let row_prefix = "│ ".to_string();
-//       let row_postfix = " │".to_string();
-//       let row_separator = "\n".to_string();
-//       Self
-//       {
-//         cell_prefix,
-//         cell_postfix,
-//         cell_separator,
-//         row_prefix,
-//         row_postfix,
-//         row_separator,
-//       }
+//       Ordinary( src )
 //     }
 //
 //   }
+
+  // &'context Styles : Into< &'context dyn TableOutputFormat >,
 
   /// A struct representing the classic table output format.
   ///
