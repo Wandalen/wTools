@@ -16,7 +16,7 @@ where
   where Self : 'k, usize : 'k;
 
   type Val< 'v > = &'v Borrowed
-  where Self : 'v;
+  where Self : 'v, V : 'v;
 
   fn fields< 's >( &'s self ) -> impl IteratorTrait< Item = ( Self::Key< 's >, Self::Val< 's > ) >
   {
