@@ -214,7 +214,6 @@ fn custom_formatter()
   // use the_module::TableToString;
   let test_objects = test_objects_gen();
 
-  let mut output = String::new();
   let mut styles = output_format::OrdinaryStyles::default();
   styles.cell_prefix = "( ".into();
   styles.cell_postfix = " )".into();
@@ -228,6 +227,7 @@ fn custom_formatter()
 
   let as_table = AsTable::new( &test_objects );
   // let mut context : Context< '_, print::All > = Context::new( &mut output, printer );
+  let mut output = String::new();
   let mut context = print::Context::new( &mut output, printer );
   let result = the_module::TableFormatter::fmt( &as_table, &mut context );
   assert!( result.is_ok() );
