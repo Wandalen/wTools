@@ -222,22 +222,22 @@ fn table_to_string_with_styles()
   styles.row_postfix = "<".into();
   styles.row_separator = "\n".into();
 
-//   let as_table = AsTable::new( &test_objects );
-//   let got = as_table.table_to_string_with_styles( &styles );
-//   let exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
-// >( 1  )|( 1627845583 )|(        [                   )|(                            )<
-// >(    )|(            )|(            "file1",        )|(                            )<
-// >(    )|(            )|(            "file2",        )|(                            )<
-// >(    )|(            )|(        ]                   )|(                            )<
-// >( 2  )|(     13     )|( [                          )|( [                          )<
-// >(    )|(            )|(     "file3",               )|(     {                      )<
-// >(    )|(            )|(     "file4\nmore details", )|(         "tool1": "value1", )<
-// >(    )|(            )|( ]                          )|(     },                     )<
-// >(    )|(            )|(                            )|(     {                      )<
-// >(    )|(            )|(                            )|(         "tool2": "value2", )<
-// >(    )|(            )|(                            )|(     },                     )<
-// >(    )|(            )|(                            )|( ]                          )<"#;
-//   a_id!( got, exp );
+  let as_table = AsTable::new( &test_objects );
+  let got = as_table.table_to_string_with_styles( &styles );
+  let exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
+>( 1  )|( 1627845583 )|(        [                   )|(                            )<
+>(    )|(            )|(            "file1",        )|(                            )<
+>(    )|(            )|(            "file2",        )|(                            )<
+>(    )|(            )|(        ]                   )|(                            )<
+>( 2  )|(     13     )|( [                          )|( [                          )<
+>(    )|(            )|(     "file3",               )|(     {                      )<
+>(    )|(            )|(     "file4\nmore details", )|(         "tool1": "value1", )<
+>(    )|(            )|( ]                          )|(     },                     )<
+>(    )|(            )|(                            )|(     {                      )<
+>(    )|(            )|(                            )|(         "tool2": "value2", )<
+>(    )|(            )|(                            )|(     },                     )<
+>(    )|(            )|(                            )|( ]                          )<"#;
+  a_id!( got, exp );
 
   // xxx : implement
 }
@@ -258,10 +258,7 @@ fn custom_formatter()
   styles.row_postfix = "<".into();
   styles.row_separator = "\n".into();
 
-  let format = output_format::Ordinary::with_styles( &styles );
-  let mut printer = print::Printer::default();
-  printer.output_format = &format;
-
+  let printer = print::Printer::with_styles( &styles );
   let as_table = AsTable::new( &test_objects );
   let mut output = String::new();
   let mut context = print::Context::new( &mut output, printer );
@@ -306,9 +303,7 @@ fn filter_col_none()
   styles.row_postfix = "<".into();
   styles.row_separator = "\n".into();
 
-  let format = output_format::Ordinary::with_styles( &styles );
-  let mut printer = print::Printer::default();
-  printer.output_format = &format;
+  let mut printer = print::Printer::with_styles( &styles );
   printer.filter_col = &filter::None;
 
   let as_table = AsTable::new( &test_objects );
@@ -342,9 +337,7 @@ fn filter_col_callback()
   styles.row_postfix = "<".into();
   styles.row_separator = "\n".into();
 
-  let format = output_format::Ordinary::with_styles( &styles );
-  let mut printer = print::Printer::default();
-  printer.output_format = &format;
+  let mut printer = print::Printer::with_styles( &styles );
   printer.filter_col = &| title : &str |
   {
     title != "tools"
@@ -387,9 +380,7 @@ fn filter_row_none()
   styles.row_postfix = "<".into();
   styles.row_separator = "\n".into();
 
-  let format = output_format::Ordinary::with_styles( &styles );
-  let mut printer = print::Printer::default();
-  printer.output_format = &format;
+  let mut printer = print::Printer::with_styles( &styles );
   printer.filter_row = &filter::None;
 
   let as_table = AsTable::new( &test_objects );
@@ -421,9 +412,7 @@ fn filter_row_callback()
   styles.row_postfix = "<".into();
   styles.row_separator = "\n".into();
 
-  let format = output_format::Ordinary::with_styles( &styles );
-  let mut printer = print::Printer::default();
-  printer.output_format = &format;
+  let mut printer = print::Printer::with_styles( &styles );
   printer.filter_row = &| _typ, irow, _row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] |
   {
     irow != 1

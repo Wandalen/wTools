@@ -15,7 +15,6 @@ pub( crate ) mod private
   use core::
   {
     fmt,
-    // sync::OnceLock,
   };
   use std::sync::OnceLock;
 
@@ -127,66 +126,8 @@ pub( crate ) mod private
     }
   }
 
-// // xxx : implement
-//
-//   /// Convert styles into format
-//   pub trait IntoFormat
-//   {
-//     type Format : TableOutputFormat;
-//     fn into_format( self ) -> Self::Format;
-//   }
-//
-//   impl< 'context > IntoFormat for &'context OrdinaryStyles
-//   {
-//     type Format = Ordinary< 'context >;
-//
-//     fn into_format( self ) -> Self::Format
-//     {
-//       let format = Ordinary( self );
-//       return format
-//     }
-//
-//   }
-//
-//   // impl< 'context > From< &'context OrdinaryStyles > for &'context dyn TableOutputFormat
-//   impl< 'context > From< &'context OrdinaryStyles > for Ordinary< 'context >
-//   {
-//
-//     fn from( src : &'context OrdinaryStyles ) -> Self
-//     {
-//       let format = Ordinary( src );
-//       return format
-//       // let result : &'context dyn TableOutputFormat = &format;
-//       // &Ordinary( src )
-//       // result
-//     }
-//
-//   }
-
-  // &'context Styles : Into< &'context dyn TableOutputFormat >,
-
-//   /// A struct representing the classic table output format.
-//   ///
-//   /// `Ordinary` provides a standard implementation for table formatting,
-//   /// supporting a classic style with default settings.
-//   ///
-//   /// # Traits
-//   ///
-//   /// - `Debug`: Allows the struct to be formatted using the `{:?}` formatter.
-//   /// - `Default`: Provides a default instance of `Ordinary`.
-//   /// - `Clone` and `Copy`: Enables copying of the `Ordinary` instance.
-//
-//   #[derive( Debug, Default, Clone, Copy )]
-//   pub struct Ordinary< 'a >( &'a OrdinaryStyles );
-
   impl OrdinaryStyles
   {
-
-    // /// Constructor accepting styles.
-    // pub fn with_styles( styles : &'a OrdinaryStyles ) -> Self
-    // {
-    //   Self( styles )
-    // }
 
     /// Returns a reference to a static instance of `Ordinary`.
     ///
@@ -195,26 +136,12 @@ pub( crate ) mod private
     pub fn instance() -> & 'static dyn TableOutputFormat
     {
 
-      // static STYLES : OnceLock< OrdinaryStyles > = OnceLock::new();
-      // let styles : &OrdinaryStyles = STYLES.get_or_init( ||
-      // {
-      //   OrdinaryStyles::Default()
-      // });
-
       static INSTANCE : OnceLock< OrdinaryStyles > = OnceLock::new();
       INSTANCE.get_or_init( ||
       {
         Self::default()
-        // let styles : &'static OrdinaryStyles = Default::default();
-        // Ordinary( styles )
       })
 
-      // static INSTANCE: OnceLock< Ordinary< 'static > > = OnceLock::new( || Ordinary( STYLES.get().unwrap() ) );
-      // INSTANCE.get().unwrap()
-
-      // static STYLES : OrdinaryStyles = OrdinaryStyles::default();
-      // static INSTANCE : Ordinary< 'static > = Ordinary( &STYLES );
-      // &INSTANCE
     }
   }
 

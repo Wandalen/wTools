@@ -56,6 +56,22 @@ pub( crate ) mod private
 
   }
 
+  impl< 'callback > Printer< 'callback >
+  {
+    /// Constructor accepting styles/foramt.
+    pub fn with_styles( output_format : &'callback dyn TableOutputFormat ) -> Self
+    {
+      let filter_col = Default::default();
+      let filter_row = Default::default();
+      Self
+      {
+        output_format,
+        filter_col,
+        filter_row
+      }
+    }
+  }
+
   impl< 'callback > fmt::Debug for Printer< 'callback >
   {
     fn fmt( & self, f : & mut fmt::Formatter< '_ > ) -> fmt::Result
@@ -148,16 +164,7 @@ pub( crate ) mod private
     /// A `String` containing the formatted table.
     fn table_to_string( &'data self ) -> String
     {
-      // xxx : uncomment
-      // self.table_to_string_with_styles( &Default::default() )
-      let mut output = String::new();
-      let mut context = Context
-      {
-        buf : &mut output,
-        printer : Printer::default(),
-      };
-      Self::fmt( self, &mut context ).expect( "Table formatting failed" );
-      output
+      self.table_to_string_with_styles( &output_format::OrdinaryStyles::default() )
     }
 
     /// Converts the table to a string representation specifying printer.
@@ -165,20 +172,17 @@ pub( crate ) mod private
     /// # Returns
     ///
     /// A `String` containing the formatted table.
-    fn table_to_string_with_styles< 'context, Styles, Format >( &'data self, styles : &'context Styles ) -> String
+    fn table_to_string_with_styles< 'context, Styles >( &'data self, styles : &'context Styles ) -> String
     where
-      Format : TableOutputFormat + 'context + From< &'context Styles >,
-      &'context Styles : Into< Format >,
+      Styles : TableOutputFormat,
     {
       let mut output = String::new();
-      let output_format = styles.into();
-      let mut printer = Printer
+      let printer = Printer
       {
-        output_format : &output_format,
+        output_format : styles,
         filter_col : Default::default(),
         filter_row : Default::default(),
       };
-      // printer.output_format = styles.into();
       let mut context = Context
       {
         buf : &mut output,
@@ -196,7 +200,6 @@ pub( crate ) mod private
   where
     Self : TableRows< CellKey = CellKey, CellRepr = CellRepr, RowKey = RowKey, Row = Row >,
     Self : TableHeader< CellKey = CellKey >,
-    // Self : TableSize,
     RowKey : table::RowKey,
     Row : Cells< CellKey, CellRepr >,
     CellKey : table::CellKey + ?Sized,
@@ -302,7 +305,6 @@ pub( crate ) mod private
       'data : 't,
       Table : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
       Table : TableHeader< CellKey = CellKey >,
-      // Table : TableSize,
       RowKey : table::RowKey,
       Row : Cells< CellKey, CellRepr > + 'data,
       CellKey : table::CellKey + ?Sized + 'data,
@@ -343,7 +345,6 @@ pub( crate ) mod private
           | ( key, val ) |
           {
             let l = col_descriptors.len();
-            // let _icol = key_to_ikey.get( key ).unwrap_or( &l ); // xxx
 
             ncol += 1;
 
