@@ -4,11 +4,11 @@ pub use alloc::collections::vec_deque::*;
 
 /// Creates a `VecDeque` from a list of elements.
 ///
-/// The `vecd` macro allows for the convenient creation of a `VecDeque` with initial elements.
+/// The `deque` macro allows for the convenient creation of a `VecDeque` with initial elements.
 /// Elements passed to the macro are automatically converted into the deque's element type
 /// using `.into()`, enabling the use of literals or values of different, but convertible types.
 ///
-/// Note: The `vecd` macro relies on the `.into()` method to convert each element into the target type
+/// Note: The `deque` macro relies on the `.into()` method to convert each element into the target type
 /// of the `VecDeque`. This means that the elements must be compatible with the `Into<T>` trait for the
 /// type `T` used in the `VecDeque`.
 ///
@@ -21,15 +21,15 @@ pub use alloc::collections::vec_deque::*;
 /// The macro can be called with a comma-separated list of elements. A trailing comma is optional.
 ///
 /// ```rust
-/// # use collection_tools::{ VecDeque, vecd };
+/// # use collection_tools::{ VecDeque, deque };
 /// // VecDeque of i32
-/// let vd1 = vecd!( 1, 2, 3, 4, 5 );
+/// let vd1 = deque!( 1, 2, 3, 4, 5 );
 ///
 /// // VecDeque of String
-/// let vd2 = vecd!{ "hello", "world", "rust" };
+/// let vd2 = deque!{ "hello", "world", "rust" };
 ///
 /// // With trailing comma
-/// let vd3 = vecd!( 1.1, 2.2, 3.3, );
+/// let vd3 = deque!( 1.1, 2.2, 3.3, );
 /// ```
 ///
 /// # Parameters
@@ -48,8 +48,8 @@ pub use alloc::collections::vec_deque::*;
 /// Basic usage with integers:
 ///
 /// ```rust
-/// # use collection_tools::{ VecDeque, vecd };
-/// let vd : VecDeque< i32 > = vecd!( 1, 2, 3 );
+/// # use collection_tools::{ VecDeque, deque };
+/// let vd : VecDeque< i32 > = deque!( 1, 2, 3 );
 /// assert_eq!( vd.front(), Some( &1 ) ); // The first element is 1
 /// assert_eq!( vd.back(), Some( &3 ) ); // The last element is 3
 /// ```
@@ -59,15 +59,15 @@ pub use alloc::collections::vec_deque::*;
 /// Creating a `VecDeque` of `&str` from string literals:
 ///
 /// ```rust
-/// # use collection_tools::{ VecDeque, vecd };
-/// let fruits = vecd!{ "apple", "banana", "cherry" };
+/// # use collection_tools::{ VecDeque, deque };
+/// let fruits = deque!{ "apple", "banana", "cherry" };
 /// assert_eq!( fruits.front(), Some( &"apple" ) ); // The first element
 /// assert_eq!( fruits.back(), Some( &"cherry" ) ); // The last element
 /// ```
 ///
 #[ cfg( feature = "collection_constructors" ) ]
 #[ macro_export( local_inner_macros ) ]
-macro_rules! vecd
+macro_rules! deque
 {
   (
     $( $key : expr ),* $( , )?
@@ -75,7 +75,7 @@ macro_rules! vecd
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _vecd = $crate::vecd::VecDeque::with_capacity( _cap );
+    let mut _vecd = $crate::deque::VecDeque::with_capacity( _cap );
     $(
       _vecd.push_back( $key );
     )*
@@ -168,7 +168,7 @@ macro_rules! into_vecd
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _vecd = $crate::vecd::VecDeque::with_capacity( _cap );
+    let mut _vecd = $crate::deque::VecDeque::with_capacity( _cap );
     $(
       _vecd.push_back( Into::into( $key ) );
     )*

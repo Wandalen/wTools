@@ -17,19 +17,19 @@ fn constructor()
 {
 
   // test.case( "empty" );
-  let got : the_module::VecDeque< i32 > = the_module::vecd!{};
+  let got : the_module::VecDeque< i32 > = the_module::deque!{};
   let exp = the_module::VecDeque::new();
   assert_eq!( got, exp );
 
   // test.case( "multiple entry" );
-  let got = the_module::vecd!{ 3, 13 };
+  let got = the_module::deque!{ 3, 13 };
   let mut exp = the_module::VecDeque::new();
   exp.push_front( 13 );
   exp.push_front( 3 );
   assert_eq!( got, exp );
 
-  let _got = the_module::vecd!( "b" );
-  let _got = the_module::exposed::vecd!( "b" );
+  let _got = the_module::deque!( "b" );
+  let _got = the_module::exposed::deque!( "b" );
 
 }
 
@@ -50,8 +50,8 @@ fn into_constructor()
   exp.push_front( 3 );
   assert_eq!( got, exp );
 
-  let _got : DequeList< &str > = the_module::vecd!( "b" );
-  let _got : DequeList< &str > = the_module::exposed::vecd!( "b" );
+  let _got : DequeList< &str > = the_module::deque!( "b" );
+  let _got : DequeList< &str > = the_module::exposed::deque!( "b" );
 
 }
 
@@ -66,7 +66,7 @@ fn iters()
   impl IntoIterator for MyContainer
   {
     type Item = i32;
-    type IntoIter = the_module::vecd::IntoIter< i32 >;
+    type IntoIter = the_module::deque::IntoIter< i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -77,7 +77,7 @@ fn iters()
   impl< 'a > IntoIterator for &'a MyContainer
   {
     type Item = &'a i32;
-    type IntoIter = the_module::vecd::Iter< 'a, i32 >;
+    type IntoIter = the_module::deque::Iter< 'a, i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -88,7 +88,7 @@ fn iters()
   impl< 'a > IntoIterator for &'a mut MyContainer
   {
     type Item = &'a mut i32;
-    type IntoIter = the_module::vecd::IterMut< 'a, i32 >;
+    type IntoIter = the_module::deque::IterMut< 'a, i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {

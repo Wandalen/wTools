@@ -29,4 +29,4 @@ pub mod llist;
 /// [Vec] macros
 pub mod vec;
 /// [std::collections::VecDeque] macros
-pub mod vecd;
+pub mod deque;

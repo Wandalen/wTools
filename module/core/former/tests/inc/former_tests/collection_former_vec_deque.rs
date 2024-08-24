@@ -19,7 +19,7 @@ fn add()
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = collection_tools::vecd!
+  let exp = collection_tools::deque!
   [
     "a".to_string(),
     "b".to_string(),
@@ -33,7 +33,7 @@ fn add()
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = collection_tools::vecd!
+  let exp = collection_tools::deque!
   [
     "a".to_string(),
     "b".to_string(),
@@ -46,7 +46,7 @@ fn add()
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = collection_tools::vecd!
+  let exp = collection_tools::deque!
   [
     "a".to_string(),
     "b".to_string(),
@@ -56,10 +56,10 @@ fn add()
   // with begin_coercing
 
   let got : VecDeque< String > = the_module::VecDequeFormer
-  ::begin( Some( collection_tools::vecd![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
+  ::begin( Some( collection_tools::deque![ "a".to_string() ] ), Some( () ), former::ReturnStorage )
   .add( "b" )
   .form();
-  let exp = collection_tools::vecd!
+  let exp = collection_tools::deque!
   [
     "a".to_string(),
     "b".to_string(),
@@ -73,7 +73,7 @@ fn add()
   .add( "a" )
   .add( "b" )
   .form();
-  let exp = collection_tools::vecd!
+  let exp = collection_tools::deque!
   [
     "a".to_string(),
     "b".to_string(),
@@ -92,9 +92,9 @@ fn replace()
 
   let got : VecDeque< String > = the_module::VecDequeFormer::new( former::ReturnStorage )
   .add( "x" )
-  .replace( collection_tools::vecd![ "a".to_string(), "b".to_string() ] )
+  .replace( collection_tools::deque![ "a".to_string(), "b".to_string() ] )
   .form();
-  let exp = collection_tools::vecd!
+  let exp = collection_tools::deque!
   [
     "a".to_string(),
     "b".to_string(),
@@ -115,7 +115,7 @@ fn entity_to()
   ::Former::new( former::ReturnStorage )
   .add( 13 )
   .form();
-  let exp = collection_tools::vecd![ 13 ];
+  let exp = collection_tools::deque![ 13 ];
   a_id!( got, exp );
 
   // qqq : uncomment and make it working
@@ -194,7 +194,7 @@ fn subformer()
     .end()
   .form();
 
-  let children = collection_tools::vecd!
+  let children = collection_tools::deque!
   [
     Child { name : "a".to_string(), data : false },
     Child { name : "b".to_string(), data : false },

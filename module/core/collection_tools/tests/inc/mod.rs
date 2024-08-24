@@ -7,7 +7,7 @@ mod hmap;
 mod hset;
 mod llist;
 mod vec;
-mod vecd;
+mod deque;
 
 mod components;
 

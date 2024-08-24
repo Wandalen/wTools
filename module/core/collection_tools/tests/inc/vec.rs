@@ -42,7 +42,8 @@ fn constructor()
   assert_eq!( got, exp );
 
   let _got = the_module::vec!( "b" );
-  let _got = the_module::exposed::vec!( "b" );
+  let _got = the_module::dlist!( "b" );
+  let _got = the_module::exposed::dlist!( "b" );
 
 }
 
@@ -65,6 +66,8 @@ fn into_constructor()
 
   let _got : Vec< &str > = the_module::into_vec!( "b" );
   let _got : Vec< &str > = the_module::exposed::into_vec!( "b" );
+  let _got : Vec< &str > = the_module::into_dlist!( "b" );
+  let _got : Vec< &str > = the_module::exposed::into_dlist!( "b" );
 
 }
 

@@ -67,8 +67,8 @@ pub mod exposed
   #[ cfg( feature = "collection_constructors" ) ]
   pub use crate::
   {
-    vec,
-    vecd,
+    vec as dlist,
+    deque,
     llist,
     hset,
     hmap,
@@ -81,6 +81,7 @@ pub mod exposed
   pub use crate::
   {
     into_vec,
+    into_vec as into_dlist,
     into_vecd,
     into_llist,
     into_hset,
@@ -102,7 +103,7 @@ pub mod exposed
     hset::HashSet,
     llist::LinkedList,
     vec::Vec,
-    vecd::VecDeque,
+    deque::VecDeque,
   };
 
   // #[ cfg( feature = "reexports" ) ]
