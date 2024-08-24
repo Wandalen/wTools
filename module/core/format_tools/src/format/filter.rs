@@ -18,7 +18,7 @@ pub( crate ) mod private
   /// `LineType` is used to distinguish between different types of lines
   /// in a table structure, aiding in formatting and processing.
   ///
-  #[ derive( Debug, Default, Copy, Clone ) ]
+  #[ derive( Debug, Default, PartialEq, Eq, Copy, Clone ) ]
   pub enum LineType
   {
     /// Represents a regular row of data in the table.

@@ -44,29 +44,6 @@ pub( crate ) mod private
   };
   use std::sync::OnceLock;
 
-  // Example of output formatting as table.
-  //
-  //  sid | sname | gap
-  // -----+-------+-----
-  //    3 | Alice |   5
-  //    6 | Joe   |   1
-  //   10 | Boris |   5
-  // (3 rows)
-
-  // Example of output formatting as list of rows.
-  // -[ RECORD 1 ]
-  // sid   | 3
-  // sname | Alice
-  // gap   | 5
-  // -[ RECORD 2 ]
-  // sid   | 6
-  // sname | Joe
-  // gap   | 1
-  // -[ RECORD 3 ]
-  // sid   | 10
-  // sname | Boris
-  // gap   | 5
-
   //=
 
   /// Trait for converting table extracts into string representations.
@@ -247,11 +224,23 @@ pub( crate ) mod private
       let row_postfix = &self.row_postfix;
       let row_separator = &self.row_separator;
 
+      let mut prev_typ : Option< LineType > = None;
+
       // dbg!( x.row_descriptors.len() );
 
       for ( irow, row ) in x.row_descriptors.iter().enumerate()
       {
         let height = row.height;
+
+        if let Some( prev_typ ) = prev_typ
+        {
+          if prev_typ == LineType::Header && row.typ == LineType::Regular
+          {
+            // write!( c.buf, "{}", row_separator )?;
+            // write!( c.buf, "{}", "---" )?;
+          }
+        }
+        prev_typ = Some( row.typ );
 
         if !row.vis
         {
