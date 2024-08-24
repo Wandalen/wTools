@@ -293,123 +293,130 @@ fn filter_col_none()
 
 }
 
-// //
 //
-// #[ test ]
-// fn filter_col_callback()
-// {
-//   let test_objects = test_objects_gen();
+
+#[ test ]
+fn filter_col_callback()
+{
+  let test_objects = test_objects_gen();
+
+  let mut styles = output_format::OrdinaryStyles::default();
+  styles.cell_prefix = "( ".into();
+  styles.cell_postfix = " )".into();
+  styles.cell_separator = "|".into();
+  styles.row_prefix = ">".into();
+  styles.row_postfix = "<".into();
+  styles.row_separator = "\n".into();
+
+  let format = output_format::Ordinary::with_styles( &styles );
+  let mut printer = print::Printer::default();
+  printer.output_format = &format;
+  printer.filter_col = &| title : &str |
+  {
+    title != "tools"
+  };
+
+  let as_table = AsTable::new( &test_objects );
+  let mut output = String::new();
+  let mut context = print::Context::new( &mut output, printer );
+  let result = the_module::TableFormatter::fmt( &as_table, &mut context );
+  assert!( result.is_ok() );
+
+  println!( "\noutput\n{output}" );
+
+  let exp = r#">( id )|( created_at )|(          file_ids          )<
+>( 1  )|( 1627845583 )|(        [                   )<
+>(    )|(            )|(            "file1",        )<
+>(    )|(            )|(            "file2",        )<
+>(    )|(            )|(        ]                   )<
+>( 2  )|(     13     )|( [                          )<
+>(    )|(            )|(     "file3",               )<
+>(    )|(            )|(     "file4\nmore details", )<
+>(    )|(            )|( ]                          )<"#;
+
+  a_id!( output.as_str(), exp );
+
+}
+
 //
-//   let mut output = String::new();
-//   let mut printer = print::Printer::default();
+
+#[ test ]
+fn filter_row_none()
+{
+  let test_objects = test_objects_gen();
+
+  let mut styles = output_format::OrdinaryStyles::default();
+  styles.cell_prefix = "( ".into();
+  styles.cell_postfix = " )".into();
+  styles.cell_separator = "|".into();
+  styles.row_prefix = ">".into();
+  styles.row_postfix = "<".into();
+  styles.row_separator = "\n".into();
+
+  let format = output_format::Ordinary::with_styles( &styles );
+  let mut printer = print::Printer::default();
+  printer.output_format = &format;
+  printer.filter_row = &filter::None;
+
+  let as_table = AsTable::new( &test_objects );
+  let mut output = String::new();
+  let mut context = print::Context::new( &mut output, printer );
+  let result = the_module::TableFormatter::fmt( &as_table, &mut context );
+  assert!( result.is_ok() );
+
+  println!( "\noutput\n{output}" );
+
+  let exp = r#""#;
+
+  a_id!( output.as_str(), exp );
+
+}
+
 //
-//   printer.cell_prefix = "( ".into();
-//   printer.cell_postfix = " )".into();
-//   printer.cell_separator = "|".into();
-//   printer.row_prefix = ">".into();
-//   printer.row_postfix = "<".into();
-//   printer.row_separator = "\n".into();
+
+#[ test ]
+fn filter_row_callback()
+{
+  let test_objects = test_objects_gen();
+
+  let mut styles = output_format::OrdinaryStyles::default();
+  styles.cell_prefix = "( ".into();
+  styles.cell_postfix = " )".into();
+  styles.cell_separator = "|".into();
+  styles.row_prefix = ">".into();
+  styles.row_postfix = "<".into();
+  styles.row_separator = "\n".into();
+
+  let format = output_format::Ordinary::with_styles( &styles );
+  let mut printer = print::Printer::default();
+  printer.output_format = &format;
+  printer.filter_row = &| _typ, irow, _row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] |
+  {
+    irow != 1
+  };
+
+  let as_table = AsTable::new( &test_objects );
+  let mut output = String::new();
+  let mut context = print::Context::new( &mut output, printer );
+  let result = the_module::TableFormatter::fmt( &as_table, &mut context );
+  assert!( result.is_ok() );
+
+  println!( "\noutput\n{output}" );
+
+  let exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
+>( 2  )|(     13     )|( [                          )|( [                          )<
+>(    )|(            )|(     "file3",               )|(     {                      )<
+>(    )|(            )|(     "file4\nmore details", )|(         "tool1": "value1", )<
+>(    )|(            )|( ]                          )|(     },                     )<
+>(    )|(            )|(                            )|(     {                      )<
+>(    )|(            )|(                            )|(         "tool2": "value2", )<
+>(    )|(            )|(                            )|(     },                     )<
+>(    )|(            )|(                            )|( ]                          )<"#;
+
+  a_id!( output.as_str(), exp );
+
+}
+
 //
-//   printer.filter_col = &| title : &str |
-//   {
-//     title != "tools"
-//   };
-//
-//   let as_table = AsTable::new( &test_objects );
-//   let mut context = print::Context::new( &mut output, printer );
-//   let result = the_module::TableFormatter::fmt( &as_table, &mut context );
-//   assert!( result.is_ok() );
-//
-//   println!( "\noutput\n{output}" );
-//
-//   let exp = r#">( id )|( created_at )|(          file_ids          )<
-// >( 1  )|( 1627845583 )|(        [                   )<
-// >(    )|(            )|(            "file1",        )<
-// >(    )|(            )|(            "file2",        )<
-// >(    )|(            )|(        ]                   )<
-// >( 2  )|(     13     )|( [                          )<
-// >(    )|(            )|(     "file3",               )<
-// >(    )|(            )|(     "file4\nmore details", )<
-// >(    )|(            )|( ]                          )<"#;
-//
-//   a_id!( output.as_str(), exp );
-//
-// }
-//
-// //
-//
-// #[ test ]
-// fn filter_row_none()
-// {
-//   let test_objects = test_objects_gen();
-//
-//   let mut output = String::new();
-//   let mut printer = print::Printer::default();
-//
-//   printer.cell_prefix = "( ".into();
-//   printer.cell_postfix = " )".into();
-//   printer.cell_separator = "|".into();
-//   printer.row_prefix = ">".into();
-//   printer.row_postfix = "<".into();
-//   printer.row_separator = "\n".into();
-//   printer.filter_row = &filter::None;
-//
-//   let as_table = AsTable::new( &test_objects );
-//   let mut context = print::Context::new( &mut output, printer );
-//   let result = the_module::TableFormatter::fmt( &as_table, &mut context );
-//   assert!( result.is_ok() );
-//
-//   println!( "\noutput\n{output}" );
-//
-//   let exp = r#""#;
-//
-//   a_id!( output.as_str(), exp );
-//
-// }
-//
-// //
-//
-// #[ test ]
-// fn filter_row_callback()
-// {
-//   let test_objects = test_objects_gen();
-//
-//   let mut output = String::new();
-//   let mut printer = print::Printer::default();
-//
-//   printer.cell_prefix = "( ".into();
-//   printer.cell_postfix = " )".into();
-//   printer.cell_separator = "|".into();
-//   printer.row_prefix = ">".into();
-//   printer.row_postfix = "<".into();
-//   printer.row_separator = "\n".into();
-//
-//   printer.filter_row = &| _typ, irow, _row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] |
-//   {
-//     irow != 1
-//   };
-//
-//   let as_table = AsTable::new( &test_objects );
-//   let mut context = print::Context::new( &mut output, printer );
-//   let result = the_module::TableFormatter::fmt( &as_table, &mut context );
-//   assert!( result.is_ok() );
-//
-//   println!( "\noutput\n{output}" );
-//
-//   let exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
-// >( 2  )|(     13     )|( [                          )|( [                          )<
-// >(    )|(            )|(     "file3",               )|(     {                      )<
-// >(    )|(            )|(     "file4\nmore details", )|(         "tool1": "value1", )<
-// >(    )|(            )|( ]                          )|(     },                     )<
-// >(    )|(            )|(                            )|(     {                      )<
-// >(    )|(            )|(                            )|(         "tool2": "value2", )<
-// >(    )|(            )|(                            )|(     },                     )<
-// >(    )|(            )|(                            )|( ]                          )<"#;
-//
-//   a_id!( output.as_str(), exp );
-//
-// }
-//
-// //
 
 // xxx
