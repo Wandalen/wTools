@@ -72,7 +72,7 @@ pub( crate ) mod private
   /// `Ordinary` provides a standard implementation for table formatting,
   /// supporting a classic style with default settings.
   #[ derive( Debug ) ]
-  pub struct OrdinaryStyles
+  pub struct Ordinary
   {
 
     /// Delimiter for adding prefix to a cell.
@@ -91,7 +91,7 @@ pub( crate ) mod private
 
   }
 
-  impl Default for OrdinaryStyles
+  impl Default for Ordinary
   {
     fn default() -> Self
     {
@@ -113,20 +113,20 @@ pub( crate ) mod private
     }
   }
 
-  impl Default for &'static OrdinaryStyles
+  impl Default for &'static Ordinary
   {
     fn default() -> Self
     {
       // qqq : find a better solution
-      static STYLES : OnceLock< OrdinaryStyles > = OnceLock::new();
+      static STYLES : OnceLock< Ordinary > = OnceLock::new();
       STYLES.get_or_init( ||
       {
-        OrdinaryStyles::default()
+        Ordinary::default()
       })
     }
   }
 
-  impl OrdinaryStyles
+  impl Ordinary
   {
 
     /// Returns a reference to a static instance of `Ordinary`.
@@ -136,7 +136,7 @@ pub( crate ) mod private
     pub fn instance() -> & 'static dyn TableOutputFormat
     {
 
-      static INSTANCE : OnceLock< OrdinaryStyles > = OnceLock::new();
+      static INSTANCE : OnceLock< Ordinary > = OnceLock::new();
       INSTANCE.get_or_init( ||
       {
         Self::default()
@@ -150,11 +150,11 @@ pub( crate ) mod private
     #[ inline( always ) ]
     fn default() -> Self
     {
-      OrdinaryStyles::instance()
+      Ordinary::instance()
     }
   }
 
-  impl TableOutputFormat for OrdinaryStyles
+  impl TableOutputFormat for Ordinary
   {
     fn extract_write< 'buf, 'data >( &self, x : &InputExtract< 'data >, c : &mut Context< 'buf > ) -> fmt::Result
     {
@@ -251,7 +251,7 @@ pub mod own
   pub use private::
   {
     // Ordinary,
-    OrdinaryStyles,
+    Ordinary,
   };
 
 }

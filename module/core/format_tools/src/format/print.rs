@@ -59,7 +59,7 @@ pub( crate ) mod private
   impl< 'callback > Printer< 'callback >
   {
     /// Constructor accepting styles/foramt.
-    pub fn with_styles( output_format : &'callback dyn TableOutputFormat ) -> Self
+    pub fn with_format( output_format : &'callback dyn TableOutputFormat ) -> Self
     {
       let filter_col = Default::default();
       let filter_row = Default::default();
@@ -164,7 +164,7 @@ pub( crate ) mod private
     /// A `String` containing the formatted table.
     fn table_to_string( &'data self ) -> String
     {
-      self.table_to_string_with_styles( &output_format::OrdinaryStyles::default() )
+      self.table_to_string_with_format( &output_format::Ordinary::default() )
     }
 
     /// Converts the table to a string representation specifying printer.
@@ -172,7 +172,7 @@ pub( crate ) mod private
     /// # Returns
     ///
     /// A `String` containing the formatted table.
-    fn table_to_string_with_styles< 'context, Styles >( &'data self, styles : &'context Styles ) -> String
+    fn table_to_string_with_format< 'context, Styles >( &'data self, styles : &'context Styles ) -> String
     where
       Styles : TableOutputFormat,
     {

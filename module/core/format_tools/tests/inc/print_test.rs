@@ -209,21 +209,21 @@ fn table_to_string()
 //
 
 #[ test ]
-fn table_to_string_with_styles()
+fn table_to_string_with_format()
 {
   use the_module::TableFormatter;
   let test_objects = test_objects_gen();
 
-  let mut styles = output_format::OrdinaryStyles::default();
-  styles.cell_prefix = "( ".into();
-  styles.cell_postfix = " )".into();
-  styles.cell_separator = "|".into();
-  styles.row_prefix = ">".into();
-  styles.row_postfix = "<".into();
-  styles.row_separator = "\n".into();
+  let mut format = output_format::Ordinary::default();
+  format.cell_prefix = "( ".into();
+  format.cell_postfix = " )".into();
+  format.cell_separator = "|".into();
+  format.row_prefix = ">".into();
+  format.row_postfix = "<".into();
+  format.row_separator = "\n".into();
 
   let as_table = AsTable::new( &test_objects );
-  let got = as_table.table_to_string_with_styles( &styles );
+  let got = as_table.table_to_string_with_format( &format );
   let exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
 >( 1  )|( 1627845583 )|(        [                   )|(                            )<
 >(    )|(            )|(            "file1",        )|(                            )<
@@ -250,15 +250,15 @@ fn custom_formatter()
   // use the_module::TableFormatter;
   let test_objects = test_objects_gen();
 
-  let mut styles = output_format::OrdinaryStyles::default();
-  styles.cell_prefix = "( ".into();
-  styles.cell_postfix = " )".into();
-  styles.cell_separator = "|".into();
-  styles.row_prefix = ">".into();
-  styles.row_postfix = "<".into();
-  styles.row_separator = "\n".into();
+  let mut format = output_format::Ordinary::default();
+  format.cell_prefix = "( ".into();
+  format.cell_postfix = " )".into();
+  format.cell_separator = "|".into();
+  format.row_prefix = ">".into();
+  format.row_postfix = "<".into();
+  format.row_separator = "\n".into();
 
-  let printer = print::Printer::with_styles( &styles );
+  let printer = print::Printer::with_format( &format );
   let as_table = AsTable::new( &test_objects );
   let mut output = String::new();
   let mut context = print::Context::new( &mut output, printer );
@@ -295,15 +295,15 @@ fn filter_col_none()
 {
   let test_objects = test_objects_gen();
 
-  let mut styles = output_format::OrdinaryStyles::default();
-  styles.cell_prefix = "( ".into();
-  styles.cell_postfix = " )".into();
-  styles.cell_separator = "|".into();
-  styles.row_prefix = ">".into();
-  styles.row_postfix = "<".into();
-  styles.row_separator = "\n".into();
+  let mut format = output_format::Ordinary::default();
+  format.cell_prefix = "( ".into();
+  format.cell_postfix = " )".into();
+  format.cell_separator = "|".into();
+  format.row_prefix = ">".into();
+  format.row_postfix = "<".into();
+  format.row_separator = "\n".into();
 
-  let mut printer = print::Printer::with_styles( &styles );
+  let mut printer = print::Printer::with_format( &format );
   printer.filter_col = &filter::None;
 
   let as_table = AsTable::new( &test_objects );
@@ -329,15 +329,15 @@ fn filter_col_callback()
 {
   let test_objects = test_objects_gen();
 
-  let mut styles = output_format::OrdinaryStyles::default();
-  styles.cell_prefix = "( ".into();
-  styles.cell_postfix = " )".into();
-  styles.cell_separator = "|".into();
-  styles.row_prefix = ">".into();
-  styles.row_postfix = "<".into();
-  styles.row_separator = "\n".into();
+  let mut format = output_format::Ordinary::default();
+  format.cell_prefix = "( ".into();
+  format.cell_postfix = " )".into();
+  format.cell_separator = "|".into();
+  format.row_prefix = ">".into();
+  format.row_postfix = "<".into();
+  format.row_separator = "\n".into();
 
-  let mut printer = print::Printer::with_styles( &styles );
+  let mut printer = print::Printer::with_format( &format );
   printer.filter_col = &| title : &str |
   {
     title != "tools"
@@ -372,15 +372,15 @@ fn filter_row_none()
 {
   let test_objects = test_objects_gen();
 
-  let mut styles = output_format::OrdinaryStyles::default();
-  styles.cell_prefix = "( ".into();
-  styles.cell_postfix = " )".into();
-  styles.cell_separator = "|".into();
-  styles.row_prefix = ">".into();
-  styles.row_postfix = "<".into();
-  styles.row_separator = "\n".into();
+  let mut format = output_format::Ordinary::default();
+  format.cell_prefix = "( ".into();
+  format.cell_postfix = " )".into();
+  format.cell_separator = "|".into();
+  format.row_prefix = ">".into();
+  format.row_postfix = "<".into();
+  format.row_separator = "\n".into();
 
-  let mut printer = print::Printer::with_styles( &styles );
+  let mut printer = print::Printer::with_format( &format );
   printer.filter_row = &filter::None;
 
   let as_table = AsTable::new( &test_objects );
@@ -404,15 +404,15 @@ fn filter_row_callback()
 {
   let test_objects = test_objects_gen();
 
-  let mut styles = output_format::OrdinaryStyles::default();
-  styles.cell_prefix = "( ".into();
-  styles.cell_postfix = " )".into();
-  styles.cell_separator = "|".into();
-  styles.row_prefix = ">".into();
-  styles.row_postfix = "<".into();
-  styles.row_separator = "\n".into();
+  let mut format = output_format::Ordinary::default();
+  format.cell_prefix = "( ".into();
+  format.cell_postfix = " )".into();
+  format.cell_separator = "|".into();
+  format.row_prefix = ">".into();
+  format.row_postfix = "<".into();
+  format.row_separator = "\n".into();
 
-  let mut printer = print::Printer::with_styles( &styles );
+  let mut printer = print::Printer::with_format( &format );
   printer.filter_row = &| _typ, irow, _row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] |
   {
     irow != 1
