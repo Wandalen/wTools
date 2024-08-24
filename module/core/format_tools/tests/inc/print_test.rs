@@ -221,12 +221,12 @@ fn custom_formatter()
   styles.row_prefix = ">".into();
   styles.row_postfix = "<".into();
   styles.row_separator = "\n".into();
+
   let format = output_format::Ordinary::with_styles( &styles );
   let mut printer = print::Printer::default();
   printer.output_format = &format;
 
   let as_table = AsTable::new( &test_objects );
-  // let mut context : Context< '_, print::All > = Context::new( &mut output, printer );
   let mut output = String::new();
   let mut context = print::Context::new( &mut output, printer );
   let result = the_module::TableFormatter::fmt( &as_table, &mut context );
@@ -257,40 +257,42 @@ fn custom_formatter()
 
 }
 
-//
-//
-// #[ test ]
-// fn filter_col_none()
-// {
-//   let test_objects = test_objects_gen();
-//
-//   let mut output = String::new();
-//   let mut printer = print::Printer::default();
-//
-//   printer.cell_prefix = "( ".into();
-//   printer.cell_postfix = " )".into();
-//   printer.cell_separator = "|".into();
-//   printer.row_prefix = ">".into();
-//   printer.row_postfix = "<".into();
-//   printer.row_separator = "\n".into();
-//
-//   printer.filter_col = &filter::None;
-//
-//   let as_table = AsTable::new( &test_objects );
-//   let mut context = print::Context::new( &mut output, printer );
-//   let result = the_module::TableFormatter::fmt( &as_table, &mut context );
-//   assert!( result.is_ok() );
-//
-//   println!( "\noutput\n{output}" );
-//
-//   let exp = r#"><
-// ><
-// ><"#;
-//
-//   a_id!( output.as_str(), exp );
-//
-// }
-//
+
+
+#[ test ]
+fn filter_col_none()
+{
+  let test_objects = test_objects_gen();
+
+  let mut styles = output_format::OrdinaryStyles::default();
+  styles.cell_prefix = "( ".into();
+  styles.cell_postfix = " )".into();
+  styles.cell_separator = "|".into();
+  styles.row_prefix = ">".into();
+  styles.row_postfix = "<".into();
+  styles.row_separator = "\n".into();
+
+  let format = output_format::Ordinary::with_styles( &styles );
+  let mut printer = print::Printer::default();
+  printer.output_format = &format;
+  printer.filter_col = &filter::None;
+
+  let as_table = AsTable::new( &test_objects );
+  let mut output = String::new();
+  let mut context = print::Context::new( &mut output, printer );
+  let result = the_module::TableFormatter::fmt( &as_table, &mut context );
+  assert!( result.is_ok() );
+
+  println!( "\noutput\n{output}" );
+
+  let exp = r#"><
+><
+><"#;
+
+  a_id!( output.as_str(), exp );
+
+}
+
 // //
 //
 // #[ test ]
