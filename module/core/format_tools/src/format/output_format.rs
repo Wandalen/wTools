@@ -87,6 +87,8 @@ pub( crate ) mod private
   #[derive( Debug )]
   pub struct Ordinary
   {
+    /// Delimitting header with grid line or not.
+    pub delimitting_header : bool,
     /// Prefix added to each cell.
     pub cell_prefix : String,
     /// Postfix added to each cell.
@@ -128,6 +130,8 @@ pub( crate ) mod private
     fn default() -> Self
     {
 
+      let delimitting_header = true;
+
       let cell_prefix = "".to_string();
       let cell_postfix = "".to_string();
       let cell_separator = " │ ".to_string();
@@ -149,6 +153,7 @@ pub( crate ) mod private
 
       Self
       {
+        delimitting_header,
         cell_prefix,
         cell_postfix,
         cell_separator,
@@ -223,7 +228,23 @@ pub( crate ) mod private
       let row_prefix = &self.row_prefix;
       let row_postfix = &self.row_postfix;
       let row_separator = &self.row_separator;
+      let h = self.h.to_string();
 
+      let mut delimitting_header = self.delimitting_header;
+      let row_width = if delimitting_header
+      {
+        let mut grid_width = x.mcells_vis[ 0 ] * ( cell_prefix.chars().count() + cell_postfix.chars().count() );
+        grid_width += row_prefix.chars().count() + row_postfix.chars().count();
+        if x.mcells_vis[ 0 ] > 0
+        {
+          grid_width += ( x.mcells_vis[ 0 ] - 1 ) * ( cell_separator.chars().count() );
+        }
+        x.mchars[ 0 ] + grid_width
+      }
+      else
+      {
+        0
+      };
       let mut prev_typ : Option< LineType > = None;
 
       // dbg!( x.row_descriptors.len() );
@@ -232,17 +253,22 @@ pub( crate ) mod private
       {
         let height = row.height;
 
-        if let Some( prev_typ ) = prev_typ
+        if delimitting_header
         {
-          if prev_typ == LineType::Header && row.typ == LineType::Regular
+          if let Some( prev_typ ) = prev_typ
           {
-            write!( c.buf, "{}", row_separator )?;
-            write!( c.buf, "{}", "-".repeat( x.mchars[ 0 ] ) )?;
-            // write!( c.buf, "{:<width$}", "-", width = x.mchars[ 0 ] )?;
-            // write!( c.buf, "{}", "---" )?;
+            if prev_typ == LineType::Header && row.typ == LineType::Regular
+            {
+              write!( c.buf, "{}", row_separator )?;
+              write!( c.buf, "{}", h.repeat( row_width ) )?;
+              delimitting_header = false
+            }
+          }
+          if row.vis
+          {
+            prev_typ = Some( row.typ );
           }
         }
-        prev_typ = Some( row.typ );
 
         if !row.vis
         {

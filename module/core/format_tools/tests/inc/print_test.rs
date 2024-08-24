@@ -159,6 +159,7 @@ fn basic()
   // (3 rows)
 
   let exp = r#"│ id │ created_at │          file_ids          │           tools            │
+─────────────────────────────────────────────────────────────────────────────
 │ 1  │ 1627845583 │        [                   │                            │
 │    │            │            "file1",        │                            │
 │    │            │            "file2",        │                            │
@@ -271,6 +272,7 @@ fn custom_formatter()
   assert!( output.contains( "tools" ) );
 
   let exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
+─────────────────────────────────────────────────────────────────────────────────────
 >( 1  )|( 1627845583 )|(        [                   )|(                            )<
 >(    )|(            )|(            "file1",        )|(                            )<
 >(    )|(            )|(            "file2",        )|(                            )<
@@ -314,6 +316,7 @@ fn filter_col_none()
   println!( "\noutput\n{output}" );
 
   let exp = r#"><
+──
 ><
 ><"#;
 
@@ -351,6 +354,7 @@ fn filter_col_callback()
   println!( "\noutput\n{output}" );
 
   let exp = r#">( id )|( created_at )|(          file_ids          )<
+──────────────────────────────────────────────────────
 >( 1  )|( 1627845583 )|(        [                   )<
 >(    )|(            )|(            "file1",        )<
 >(    )|(            )|(            "file2",        )<
