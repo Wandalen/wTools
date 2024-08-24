@@ -129,15 +129,15 @@ pub( crate ) mod private
     ///
     /// An instance of `Printer` that defines the formatting
     ///   options, such as delimiters and prefixes.
-    pub styles : Printer< 'context >,
+    pub printer : Printer< 'context >,
   }
 
   impl< 'context > Context< 'context >
   {
     /// Just constructr.
-    pub fn new( buf : &'context mut dyn fmt::Write, styles : Printer< 'context > ) -> Self
+    pub fn new( buf : &'context mut dyn fmt::Write, printer : Printer< 'context > ) -> Self
     {
-      Self { buf, styles }
+      Self { buf, printer }
     }
   }
 
@@ -148,38 +148,59 @@ pub( crate ) mod private
       c
       .debug_struct( "Context" )
       .field( "buf", &"dyn fmt::Write" )
-      .field( "styles", &self.styles )
+      .field( "printer", &self.printer )
       .finish()
     }
   }
 
-  /// A trait for converting tables to a string representation.
-  pub trait TableToString< 'data >
-  {
-    /// Converts the table to a string representation.
-    ///
-    /// # Returns
-    ///
-    /// A `String` containing the formatted table.
-    fn table_to_string( &'data self ) -> String;
-  }
+//   /// A trait for converting tables to a string representation.
+//   pub trait TableToString< 'data >
+//   {
+//
+//     /// Converts the table to a string representation.
+//     ///
+//     /// # Returns
+//     ///
+//     /// A `String` containing the formatted table.
+//     fn table_to_string( &'data self ) -> String
+//     {
+//       let mut output = String::new();
+//       let mut context = Context
+//       {
+//         buf : &mut output,
+//         printer : Printer::default(),
+//       };
+//       Self::fmt( self, &mut context ).expect( "Table formatting failed" );
+//       output
+//     }
+//
+//     // /// Converts the table to a string representation using specified printer.
+//     // ///
+//     // /// # Returns
+//     // ///
+//     // /// A `String` containing the formatted table.
+//     // fn table_to_string< Styles : StylesToOutputFormatter >( &'data self, printer : &Styles ) -> String
+//     // {
+//     // }
+//
+//   }
 
-  impl< 'data, T > TableToString< 'data > for T
-  where
-    T : TableFormatter< 'data >
-  {
-    fn table_to_string( &'data self ) -> String
-    {
-      let mut output = String::new();
-      let mut context = Context
-      {
-        buf : &mut output,
-        styles : Printer::default(),
-      };
-      T::fmt( self, &mut context ).expect( "Table formatting failed" );
-      output
-    }
-  }
+  // impl< 'data, T > TableToString< 'data > for T
+  // where
+  //   T : TableFormatter< 'data >
+  // {
+  //   // fn table_to_string( &'data self ) -> String
+  //   // {
+  //   //   let mut output = String::new();
+  //   //   let mut context = Context
+  //   //   {
+  //   //     buf : &mut output,
+  //   //     printer : Printer::default(),
+  //   //   };
+  //   //   T::fmt( self, &mut context ).expect( "Table formatting failed" );
+  //   //   output
+  //   // }
+  // }
 
   /// Trait for defining table formatting logic.
   ///
@@ -194,6 +215,46 @@ pub( crate ) mod private
   {
     /// Formats the table and writes the result to the provided context.
     fn fmt< 'context >( &'data self, c : & mut Context< 'context > ) -> fmt::Result;
+
+    /// Converts the table to a string representation.
+    ///
+    /// # Returns
+    ///
+    /// A `String` containing the formatted table.
+    fn table_to_string( &'data self ) -> String
+    {
+      let mut output = String::new();
+      let mut context = Context
+      {
+        buf : &mut output,
+        printer : Printer::default(),
+      };
+      Self::fmt( self, &mut context ).expect( "Table formatting failed" );
+      output
+    }
+
+    /// Converts the table to a string representation specifying printer.
+    ///
+    /// # Returns
+    ///
+    /// A `String` containing the formatted table.
+    fn table_to_string_with_styles< 'context, Styles >( &'data self, styles : &'context Styles ) -> String
+    where
+      Styles : 'context,
+      &'context Styles : Into< &'context dyn TableOutputFormat >,
+    {
+      let mut output = String::new();
+      let mut printer : Printer< 'context > = Default::default();
+      printer.output_format = styles.into();
+      let mut context = Context
+      {
+        buf : &mut output,
+        printer,
+      };
+      Self::fmt( self, &mut context ).expect( "Table formatting failed" );
+      output
+    }
+
   }
 
   /// A trait for formatting tables.
@@ -208,20 +269,22 @@ pub( crate ) mod private
     CellKey : table::CellKey + ?Sized,
     CellRepr : table::CellRepr,
   {
+
     fn fmt< 'a >( &'data self, c : &mut Context< 'a > ) -> fmt::Result
     {
 
       InputExtract::extract
       (
         self,
-        c.styles.filter_col,
-        c.styles.filter_row,
+        c.printer.filter_col,
+        c.printer.filter_row,
         | x |
         {
-          c.styles.output_format.extract_write( x, c )
+          c.printer.output_format.extract_write( x, c )
         }
       )
     }
+
   }
 
   /// A struct for extracting and organizing row of table data for formatting.
@@ -552,7 +615,7 @@ pub mod orphan
   #[ doc( inline ) ]
   pub use private::
   {
-    TableFormatter,
+    // TableFormatter,
   };
 
 }
@@ -567,7 +630,8 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use private::
   {
-    TableToString,
+    TableFormatter,
+    // TableToString,
   };
 
 }

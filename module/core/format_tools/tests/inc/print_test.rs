@@ -180,7 +180,7 @@ fn basic()
 #[ test ]
 fn table_to_string()
 {
-  use the_module::TableToString;
+  use the_module::TableFormatter;
   let test_objects = test_objects_gen();
 
   // with explicit arguments
@@ -211,7 +211,7 @@ fn table_to_string()
 #[ test ]
 fn table_to_string_with_styles()
 {
-  use the_module::TableToString;
+  use the_module::TableFormatter;
   let test_objects = test_objects_gen();
 
   let mut styles = output_format::OrdinaryStyles::default();
@@ -247,7 +247,7 @@ fn table_to_string_with_styles()
 #[ test ]
 fn custom_formatter()
 {
-  // use the_module::TableToString;
+  // use the_module::TableFormatter;
   let test_objects = test_objects_gen();
 
   let mut styles = output_format::OrdinaryStyles::default();

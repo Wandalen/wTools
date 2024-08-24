@@ -100,7 +100,7 @@ fn dlist_basic()
     },
   };
 
-  use the_module::TableToString;
+  use the_module::TableFormatter;
   let _as_table : AsTable< '_, Vec< TestObject >, &str, TestObject, str, WithRef > = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
@@ -156,7 +156,7 @@ fn hmap_basic()
     },
   };
 
-  use the_module::TableToString;
+  use the_module::TableFormatter;
   let _as_table : AsTable< '_, HashMap< &str, TestObject >, &str, TestObject, str, WithRef > = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
@@ -212,7 +212,7 @@ fn bmap_basic()
     },
   };
 
-  use the_module::TableToString;
+  use the_module::TableFormatter;
   let _as_table : AsTable< '_, Bmap< &str, TestObject >, &str, TestObject, str, WithRef > = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
