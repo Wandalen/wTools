@@ -62,7 +62,7 @@ pub( crate ) mod private
     pub row_separator : String,
 
     /// Convert extract into a string, writing it into destination buffer.
-    pub output_format : &'static dyn TableOutputFormat,
+    pub output_format : &'callback dyn TableOutputFormat,
     /// Filter out columns.
     pub filter_col : &'callback ( dyn FilterCol + 'callback ),
     /// Filter out rows.

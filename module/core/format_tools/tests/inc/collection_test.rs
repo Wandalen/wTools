@@ -1,21 +1,15 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-// use collection_tools::prelude::*;
 use the_module::
 {
-  // print,
   Fields,
   IteratorTrait,
   AsTable,
-  // Cells,
-  // TableSize,
   TableRows,
-  // TableHeader,
   TableWithFields,
   WithRef,
   OptionalCow,
-  // filter,
   print,
 };
 
@@ -234,3 +228,5 @@ fn bmap_basic()
   assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
 
 }
+
+// qqq : xxx : implement for other containers

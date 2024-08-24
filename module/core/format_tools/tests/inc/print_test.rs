@@ -148,6 +148,21 @@ fn basic()
   assert!( got.is_ok() );
   println!( "{}", &output );
 
+  let exp = r#"│ id │ created_at │          file_ids          │           tools            │
+│ 1  │ 1627845583 │        [                   │                            │
+│    │            │            "file1",        │                            │
+│    │            │            "file2",        │                            │
+│    │            │        ]                   │                            │
+│ 2  │     13     │ [                          │ [                          │
+│    │            │     "file3",               │     {                      │
+│    │            │     "file4\nmore details", │         "tool1": "value1", │
+│    │            │ ]                          │     },                     │
+│    │            │                            │     {                      │
+│    │            │                            │         "tool2": "value2", │
+│    │            │                            │     },                     │
+│    │            │                            │ ]                          │"#;
+  a_id!( output.as_str(), exp );
+
 }
 
 //

@@ -12,16 +12,34 @@ pub( crate ) mod private
     InputExtract,
     Context,
   };
-  // use std::
-  // {
-  //   borrow::Cow,
-  //   collections::HashMap,
-  // };
   use core::
   {
     fmt,
   };
-  // use former::Former;
+
+
+  // Example of output formatting as table.
+  //
+  //  sid | sname | gap
+  // -----+-------+-----
+  //    3 | Alice |   5
+  //    6 | Joe   |   1
+  //   10 | Boris |   5
+  // (3 rows)
+
+  // Example of output formatting as list of rows.
+  // -[ RECORD 1 ]
+  // sid   | 3
+  // sname | Alice
+  // gap   | 5
+  // -[ RECORD 2 ]
+  // sid   | 6
+  // sname | Joe
+  // gap   | 1
+  // -[ RECORD 3 ]
+  // sid   | 10
+  // sname | Boris
+  // gap   | 5
 
   //=
 
