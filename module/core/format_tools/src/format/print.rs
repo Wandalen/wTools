@@ -262,6 +262,9 @@ pub( crate ) mod private
     /// Multidimensional size in number of visible columns per table and number of visible rows per table.
     pub mcells_vis : [ usize ; 2 ],
 
+    /// Multidimensional size in number of character without taking into account grids.
+    pub mchars : [ usize ; 2 ],
+
     /// Indicates if the table has a header.
     pub has_header : bool,
 
@@ -314,13 +317,14 @@ pub( crate ) mod private
 
       // let mcells = table.mcells();
       let mut mcells_vis = [ 0 ; 2 ];
-      let mut mcells_actual = [ 0 ; 2 ];
+      let mut mcells = [ 0 ; 2 ];
+      let mut mchars = [ 0 ; 2 ];
 
       //                                 key        width, index
       let mut key_to_ikey : HashMap< &'t CellKey, usize > = HashMap::new();
 
-      let mut col_descriptors : Vec< ColDescriptor > = Vec::with_capacity( mcells_actual[ 0 ] );
-      let mut row_descriptors : Vec< RowDescriptor > = Vec::with_capacity( mcells_actual[ 1 ] );
+      let mut col_descriptors : Vec< ColDescriptor > = Vec::with_capacity( mcells[ 0 ] );
+      let mut row_descriptors : Vec< RowDescriptor > = Vec::with_capacity( mcells[ 1 ] );
       let mut has_header = false;
 
       let mut data : Vec< Vec< ( Cow< 't, str >, [ usize ; 2 ] ) > > = Vec::new();
@@ -389,7 +393,7 @@ pub( crate ) mod private
         )
         .collect();
 
-        mcells_actual[ 0 ] = mcells_actual[ 0 ].max( ncol );
+        mcells[ 0 ] = mcells[ 0 ].max( ncol );
         mcells_vis[ 0 ] = mcells_vis[ 0 ].max( ncol_vis );
 
         row.vis = filter_row.filter_row( typ, irow, &fields );
@@ -397,7 +401,7 @@ pub( crate ) mod private
         {
           mcells_vis[ 1 ] += 1;
         }
-        mcells_actual[ 1 ] += 1;
+        mcells[ 1 ] += 1;
 
         row_descriptors.push( row );
         data.push( fields );
@@ -452,10 +456,14 @@ pub( crate ) mod private
         row_add( &mut row2, LineType::Regular );
       }
 
+      // calculate size in chars
+
+      mchars[ 0 ] = col_descriptors.iter().fold( 0, | acc, col | acc + col.width );
+      mchars[ 1 ] = row_descriptors.iter().fold( 0, | acc, row | acc + row.height );
+
       // cook slices multi-matrix
 
-      // let mut slices_dim = [ 1, mcells_actual[ 0 ], mcells_actual[ 1 ] + ( if has_header { 1 } else { 0 } ) ];
-      let mut slices_dim = [ 1, mcells_actual[ 0 ], mcells_actual[ 1 ] ];
+      let mut slices_dim = [ 1, mcells[ 0 ], mcells[ 1 ] ];
       slices_dim[ 0 ] = row_descriptors
       .iter()
       .fold( 0, | acc : usize, row | acc.max( row.height ) )
@@ -464,15 +472,16 @@ pub( crate ) mod private
       let slices_len = slices_dim[ 0 ] * slices_dim[ 1 ] * slices_dim[ 2 ];
       let slices : Vec< &str > = vec![ "" ; slices_len ];
 
-  //     assert_eq!( mcells, mcells_actual, r#"Incorrect multidimensional size of table
-  // mcells <> mcells_actual
-  // {mcells:?} <> {mcells_actual:?}"# );
-  //     println!( "mcells : {mcells:?} | mcells_actual : {mcells_actual:?} | mcells_vis : {mcells_vis:?}" );
+  //     assert_eq!( mcells, mcells, r#"Incorrect multidimensional size of table
+  // mcells <> mcells
+  // {mcells:?} <> {mcells:?}"# );
+  //     println!( "mcells : {mcells:?} | mcells : {mcells:?} | mcells_vis : {mcells_vis:?}" );
 
       let mut x = InputExtract::< '_ >
       {
-        mcells : mcells_actual,
+        mcells,
         mcells_vis,
+        mchars,
         col_descriptors,
         row_descriptors,
         data,
