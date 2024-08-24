@@ -11,21 +11,20 @@ use the_module::
 
 use std::
 {
-  collections::HashMap,
   borrow::Cow,
 };
 
 #[ test ]
 fn vec_string_fields()
 {
-  let collection : HashMap< usize, String > = into_hmap!
+  let collection : Hmap< usize, String > = into_hmap!
   [
     1 as usize => "a".to_string(),
     2 as usize => "b".to_string(),
   ];
 
   // // k, v
-  // let got : HashMap< _ > = Fields::< &str, &str >::fields( &collection ).collect();
+  // let got : Hmap< _ > = Fields::< &str, &str >::fields( &collection ).collect();
   // assert_eq!( got.len(), 2 );
   // let exp = vec![ ( 0, "a" ), ( 1, "b" ) ];
   // assert_eq!( got, exp );

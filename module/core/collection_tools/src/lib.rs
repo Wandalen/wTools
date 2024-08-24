@@ -113,8 +113,8 @@ pub mod exposed
   pub use
   {
     LinkedList as Llist,
-    Vec as DynList,
-    VecDeque as DequeList,
+    Vec as Dlist,
+    VecDeque as Deque,
     HashMap as Map,
     HashMap as Hmap,
     HashSet as Set,
