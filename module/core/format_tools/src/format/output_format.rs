@@ -1,5 +1,31 @@
+//! Customizable format of printing table.
 //!
-//! Print data as table.
+//! # Example of ordinary format
+//!
+//! ```text
+//!  sid | sname | gap
+//! -----+-------+-----
+//!    3 | Alice |   5
+//!    6 | Joe   |   1
+//!   10 | Boris |   5
+//! ```
+//!
+//! # Example of list of rows format.
+//!
+//! ```text
+//! -[ RECORD 1 ]
+//! sid   | 3
+//! sname | Alice
+//! gap   | 5
+//! -[ RECORD 2 ]
+//! sid   | 6
+//! sname | Joe
+//! gap   | 1
+//! -[ RECORD 3 ]
+//! sid   | 10
+//! sname | Boris
+//! gap   | 5
+//! ```
 //!
 
 /// Internal namespace.
@@ -72,51 +98,59 @@ pub( crate ) mod private
   /// `Ordinary` provides a standard implementation for table formatting,
   /// supporting a classic style with default settings.
   ///
-  /// # Example of output format as ordinary table
+  /// # Example
   ///
+  /// ```text
   ///  sid | sname | gap
   /// -----+-------+-----
   ///    3 | Alice |   5
   ///    6 | Joe   |   1
   ///   10 | Boris |   5
-  ///
-
-  #[ derive( Debug ) ]
+  /// ```
+  #[derive( Debug )]
   pub struct Ordinary
   {
-
-    /// Delimiter for adding prefix to a cell.
+    /// Prefix added to each cell.
     pub cell_prefix : String,
-    /// Delimiter for adding postfix to a cell.
+    /// Postfix added to each cell.
     pub cell_postfix : String,
-    /// Delimiter for separating table columns.
+    /// Separator used between table columns.
     pub cell_separator : String,
-
-    /// Delimiter for adding prefix to a row.
+    /// Prefix added to each row.
     pub row_prefix : String,
-    /// Delimiter for adding postfix to a row.
+    /// Postfix added to each row.
     pub row_postfix : String,
-    /// Delimiter for adding in between of rows.
+    /// Separator used between rows.
     pub row_separator : String,
-
+    /// Horizontal line character.
     pub h : char,
+    /// Vertical line character.
     pub v : char,
+    /// Left T-junction character.
     pub t_l : char,
+    /// Right T-junction character.
     pub t_r : char,
+    /// Top T-junction character.
     pub t_t : char,
+    /// Bottom T-junction character.
     pub t_b : char,
+    /// Cross junction character.
     pub cross : char,
+    /// Top-left corner character.
     pub corner_lt : char,
+    /// Top-right corner character.
     pub corner_rt : char,
+    /// Bottom-left corner character.
     pub corner_lb : char,
+    /// Bottom-right corner character.
     pub corner_rb : char,
-
   }
 
   impl Default for Ordinary
   {
     fn default() -> Self
     {
+
       let cell_prefix = "".to_string();
       let cell_postfix = "".to_string();
       let cell_separator = " │ ".to_string();
@@ -124,17 +158,17 @@ pub( crate ) mod private
       let row_postfix = " │".to_string();
       let row_separator = "\n".to_string();
 
-      let h = "─";
-      let v = "|";
-      let t_l = "├";
-      let t_r = "┤";
-      let t_t = "┬";
-      let t_b = "┴";
-      let cross = "┼";
-      let corner_lt = "┌";
-      let corner_rt = "┐";
-      let corner_lb = "└";
-      let corner_rb = "┘";
+      let h = '─';
+      let v = '|';
+      let t_l = '├';
+      let t_r = '┤';
+      let t_t = '┬';
+      let t_b = '┴';
+      let cross = '┼';
+      let corner_lt = '┌';
+      let corner_rt = '┐';
+      let corner_lb = '└';
+      let corner_rb = '┘';
 
       Self
       {
@@ -144,6 +178,17 @@ pub( crate ) mod private
         row_prefix,
         row_postfix,
         row_separator,
+        h,
+        v,
+        t_l,
+        t_r,
+        t_t,
+        t_b,
+        cross,
+        corner_lt,
+        corner_rt,
+        corner_lb,
+        corner_rb,
       }
     }
   }
