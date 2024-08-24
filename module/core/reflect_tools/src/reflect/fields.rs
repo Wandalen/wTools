@@ -6,9 +6,6 @@
 pub( crate ) mod private
 {
 
-  // use core::fmt;
-  // use std::borrow::Cow;
-
   /// A trait for iterators that are also `ExactSizeIterator`.
   pub trait _IteratorTrait
   where
@@ -87,7 +84,8 @@ pub( crate ) mod private
     type Val< 'v > where Self : 'v;
 
     /// Returns an iterator over fields of the specified type within the entity.
-    fn fields( &self ) -> impl IteratorTrait< Item = ( Self::Key< '_ >, Self::Val< '_ > ) >;
+    fn fields< 's >( &'s self ) -> impl IteratorTrait< Item = ( Self::Key< 's >, Self::Val< 's > ) >;
+    // fn fields( &self ) -> impl IteratorTrait< Item = ( Self::Key< '_ >, Self::Val< '_ > ) >;
 
   }
 
@@ -112,7 +110,8 @@ pub( crate ) mod private
 }
 
 mod vec;
-mod hashmap;
+mod hmap;
+mod bmap;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
