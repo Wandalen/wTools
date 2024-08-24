@@ -2,13 +2,14 @@
 //! Implement fields for BTreeMap.
 //!
 
+// qqq : xxx : implement for other containers
+
 use crate::*;
 use std::borrow::Cow;
 use collection_tools::Bmap;
 
 impl< K, V, Borrowed > Fields< K, &'_ Borrowed > for Bmap< K, V >
 where
-  // K : core::hash::Hash + core::cmp::Eq,
   Borrowed : std::borrow::ToOwned + 'static + ?Sized,
   V : std::borrow::Borrow< Borrowed >,
 {
@@ -28,7 +29,6 @@ where
 
 impl< K, V, Borrowed > Fields< K, Option< Cow< '_, Borrowed > > > for Bmap< K, V >
 where
-  // K : core::hash::Hash + core::cmp::Eq,
   Borrowed : std::borrow::ToOwned + 'static + ?Sized,
   V : std::borrow::Borrow< Borrowed >,
 {
@@ -48,7 +48,6 @@ where
 
 impl< K, V, Borrowed, Marker > Fields< K, OptionalCow< '_, Borrowed, Marker > > for Bmap< K, V >
 where
-  // K : core::hash::Hash + core::cmp::Eq,
   Borrowed : std::borrow::ToOwned + 'static + ?Sized,
   V : std::borrow::Borrow< Borrowed >,
   Marker : Clone + Copy + 'static,
