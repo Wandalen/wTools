@@ -7,8 +7,6 @@ use the_module::
   OptionalCow,
 };
 
-// xxx : implement for other collections
-
 use std::
 {
   borrow::Cow,
@@ -23,51 +21,51 @@ fn vec_string_fields()
     2 as usize => "b".to_string(),
   ];
 
-  // // k, v
-  // let got : Hmap< _ > = Fields::< &str, &str >::fields( &collection ).collect();
-  // assert_eq!( got.len(), 2 );
-  // let exp = vec![ ( 0, "a" ), ( 1, "b" ) ];
-  // assert_eq!( got, exp );
+  // k, v
+  let got : Hmap< _, _ > = Fields::< usize, &str >::fields( &collection ).collect();
+  assert_eq!( got.len(), 2 );
+  let exp = into_hmap![ &1 => "a", &2 => "b" ];
+  assert_eq!( got, exp );
 
-//   // k, Option< Cow< '_, str > >
-//   let got : Vec< _ > = Fields::< usize, Option< Cow< '_, str > > >::fields( &collection ).collect();
-//   assert_eq!( got.len(), 2 );
-//   let exp = vec![ ( 0, Some( Cow::Borrowed( "a" ) ) ), ( 1, Some( Cow::Borrowed( "b" ) ) ) ];
-//   assert_eq!( got, exp );
-//
-//   // k, OptionalCow< '_, str, () >
-//   let got : Vec< _ > = Fields::< usize, OptionalCow< '_, str, () > >::fields( &collection ).collect();
-//   assert_eq!( got.len(), 2 );
-//   let exp = vec![ ( 0, OptionalCow::from( "a" ) ), ( 1, OptionalCow::from( "b" ) ) ];
-//   assert_eq!( got, exp );
+  // k, Option< Cow< '_, str > >
+  let got : Hmap< _, _ > = Fields::< usize, Option< Cow< '_, str > > >::fields( &collection ).collect();
+  assert_eq!( got.len(), 2 );
+  let exp = into_hmap![ &1 => Some( Cow::Borrowed( "a" ) ), &2 => Some( Cow::Borrowed( "b" ) ) ];
+  assert_eq!( got, exp );
+
+  // k, OptionalCow< '_, str, () >
+  let got : Hmap< _, _ > = Fields::< usize, OptionalCow< '_, str, () > >::fields( &collection ).collect();
+  assert_eq!( got.len(), 2 );
+  let exp = into_hmap![ &1 => OptionalCow::from( "a" ), &2 => OptionalCow::from( "b" ) ];
+  assert_eq!( got, exp );
 
 }
 
-// #[ test ]
-// fn vec_str_fields()
-// {
-//   let collection = hmap!
-//   [
-//     "a",
-//     "b",
-//   ];
-//
-//   // k, v
-//   let got : Vec< _ > = Fields::< usize, &str >::fields( &collection ).collect();
-//   assert_eq!( got.len(), 2 );
-//   let exp = vec![ ( 0, "a" ), ( 1, "b" ) ];
-//   assert_eq!( got, exp );
-//
-//   // k, Option< Cow< '_, str > >
-//   let got : Vec< _ > = Fields::< usize, Option< Cow< '_, str > > >::fields( &collection ).collect();
-//   assert_eq!( got.len(), 2 );
-//   let exp = vec![ ( 0, Some( Cow::Borrowed( "a" ) ) ), ( 1, Some( Cow::Borrowed( "b" ) ) ) ];
-//   assert_eq!( got, exp );
-//
-//   // k, OptionalCow< '_, str, () >
-//   let got : Vec< _ > = Fields::< usize, OptionalCow< '_, str, () > >::fields( &collection ).collect();
-//   assert_eq!( got.len(), 2 );
-//   let exp = vec![ ( 0, OptionalCow::from( "a" ) ), ( 1, OptionalCow::from( "b" ) ) ];
-//   assert_eq!( got, exp );
-//
-// }
+#[ test ]
+fn vec_str_fields()
+{
+  let collection : Hmap< usize, String > = into_hmap!
+  [
+    1 as usize => "a",
+    2 as usize => "b",
+  ];
+
+  // k, v
+  let got : Hmap< _, _ > = Fields::< usize, &str >::fields( &collection ).collect();
+  assert_eq!( got.len(), 2 );
+  let exp = into_hmap![ &1 => "a", &2 => "b" ];
+  assert_eq!( got, exp );
+
+  // k, Option< Cow< '_, str > >
+  let got : Hmap< _, _ > = Fields::< usize, Option< Cow< '_, str > > >::fields( &collection ).collect();
+  assert_eq!( got.len(), 2 );
+  let exp = into_hmap![ &1 => Some( Cow::Borrowed( "a" ) ), &2 => Some( Cow::Borrowed( "b" ) ) ];
+  assert_eq!( got, exp );
+
+  // k, OptionalCow< '_, str, () >
+  let got : Hmap< _, _ > = Fields::< usize, OptionalCow< '_, str, () > >::fields( &collection ).collect();
+  assert_eq!( got.len(), 2 );
+  let exp = into_hmap![ &1 => OptionalCow::from( "a" ), &2 => OptionalCow::from( "b" ) ];
+  assert_eq!( got, exp );
+
+}
