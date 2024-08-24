@@ -8,6 +8,7 @@ mod fundamental
   #[ allow( unused_imports ) ]
   use super::*;
 
+  mod collection_test;
   mod fields_test;
   mod md_math_test;
   mod print_test;
