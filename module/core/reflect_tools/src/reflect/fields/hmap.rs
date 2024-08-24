@@ -66,3 +66,26 @@ where
   }
 
 }
+
+// impl< K, V, Marker > Fields< K, OptionalCow< '_, V, Marker > > for HashMap< K, V >
+// where
+//   K : core::hash::Hash + core::cmp::Eq,
+//   Marker : Clone + Copy + 'static,
+//   V : std::borrow::ToOwned,
+// {
+//
+//   type Key< 'k > = &'k K
+//   where Self : 'k, K : 'k;
+//
+//   type Val< 'v > = OptionalCow< 'v, V, Marker >
+//   where Self : 'v, V : 'v;
+//
+//   fn fields< 's >( &'s self ) -> impl IteratorTrait< Item = ( Self::Key< 's >, Self::Val< 's > ) >
+//   {
+//     self.iter().map( move | ( key, val ) : ( _, &V ) | -> ( &K, OptionalCow< '_, V, Marker > )
+//     {
+//       ( key, OptionalCow::from( val ) )
+//     })
+//   }
+//
+// }
