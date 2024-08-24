@@ -236,7 +236,9 @@ pub( crate ) mod private
         {
           if prev_typ == LineType::Header && row.typ == LineType::Regular
           {
-            // write!( c.buf, "{}", row_separator )?;
+            write!( c.buf, "{}", row_separator )?;
+            write!( c.buf, "{}", "-".repeat( x.mchars[ 0 ] ) )?;
+            // write!( c.buf, "{:<width$}", "-", width = x.mchars[ 0 ] )?;
             // write!( c.buf, "{}", "---" )?;
           }
         }

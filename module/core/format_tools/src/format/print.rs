@@ -228,10 +228,10 @@ pub( crate ) mod private
   #[ derive( Debug, Default ) ]
   pub struct RowDescriptor
   {
+    pub irow : usize,
     pub height : usize,
     pub typ : LineType,
     pub vis : bool,
-    pub irow : usize,
   }
 
   /// A struct for extracting and organizing row of table data for formatting.
@@ -239,8 +239,8 @@ pub( crate ) mod private
   #[ derive( Debug, Default ) ]
   pub struct ColDescriptor
   {
-    pub width : usize,
     pub icol : usize,
+    pub width : usize,
   }
 
   /// A struct for extracting and organizing table data for formatting.
@@ -459,7 +459,7 @@ pub( crate ) mod private
       // calculate size in chars
 
       mchars[ 0 ] = col_descriptors.iter().fold( 0, | acc, col | acc + col.width );
-      mchars[ 1 ] = row_descriptors.iter().fold( 0, | acc, row | acc + row.height );
+      mchars[ 1 ] = row_descriptors.iter().fold( 0, | acc, row | acc + if row.vis { row.height } else { 0 } );
 
       // cook slices multi-matrix
 
