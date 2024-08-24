@@ -9,7 +9,8 @@ mod fundamental
   use super::*;
 
   mod fields_test;
-  mod fields_vec_test;
+  mod fields_vec;
+  mod fields_hmap;
 
 }
 

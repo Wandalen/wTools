@@ -17,16 +17,19 @@ fn constructor()
 {
 
   // test.case( "empty" );
-  let got : the_module::LinkedList< i32 > = the_module::list!{};
+  let got : the_module::LinkedList< i32 > = the_module::llist!{};
   let exp = the_module::LinkedList::new();
   assert_eq!( got, exp );
 
   // test.case( "multiple entry" );
-  let got = the_module::list!{ 13, 15 };
+  let got = the_module::llist!{ 13, 15 };
   let mut exp = the_module::LinkedList::new();
   exp.push_front( 15 );
   exp.push_front( 13 );
-  assert_eq!( got, exp );
+  assert_eq!(  got, exp );
+
+  let _got = the_module::hset!( "b" );
+  let _got = the_module::exposed::hset!( "b" );
 
 }
 
@@ -36,16 +39,19 @@ fn into_constructor()
 {
 
   // test.case( "empty" );
-  let got : the_module::LinkedList< i32 > = the_module::into_list!{};
+  let got : the_module::LinkedList< i32 > = the_module::into_llist!{};
   let exp = the_module::LinkedList::new();
   assert_eq!( got, exp );
 
   // test.case( "multiple entry" );
-  let got = the_module::into_list!{ 13, 15 };
+  let got = the_module::into_llist!{ 13, 15 };
   let mut exp = the_module::LinkedList::new();
   exp.push_front( 15 );
   exp.push_front( 13 );
   assert_eq!( got, exp );
+
+  let _got : Hset< &str > = the_module::into_hset!( "b" );
+  let _got : Hset< &str > = the_module::exposed::into_hset!( "b" );
 
 }
 
@@ -61,7 +67,7 @@ fn iters()
   impl IntoIterator for MyContainer
   {
     type Item = i32;
-    type IntoIter = the_module::list::IntoIter< i32 >;
+    type IntoIter = the_module::llist::IntoIter< i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -72,7 +78,7 @@ fn iters()
   impl< 'a > IntoIterator for &'a MyContainer
   {
     type Item = &'a i32;
-    type IntoIter = the_module::list::Iter< 'a, i32 >;
+    type IntoIter = the_module::llist::Iter< 'a, i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -83,7 +89,7 @@ fn iters()
   impl< 'a > IntoIterator for &'a mut MyContainer
   {
     type Item = &'a mut i32;
-    type IntoIter = the_module::list::IterMut< 'a, i32 >;
+    type IntoIter = the_module::llist::IterMut< 'a, i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {

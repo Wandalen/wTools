@@ -65,6 +65,7 @@ pub mod dependency
   use super::exposed::typing;
   use super::exposed::dt;
   use super::exposed::diagnostics;
+  use super::exposed::collection;
   // use super::exposed::process;
 
   // prelude use ::rustversion::{ nightly, stable };
@@ -79,6 +80,7 @@ pub mod dependency
   prelude use ::typing_tools as typing;
   prelude use ::data_type as dt;
   prelude use ::diagnostics_tools as diagnostics;
+  prelude use ::collection_tools as collection;
   // prelude use ::process_tools as process;
 
   prelude use ::meta_tools::

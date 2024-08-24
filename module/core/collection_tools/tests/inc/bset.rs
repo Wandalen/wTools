@@ -28,6 +28,9 @@ fn constructor()
   exp.insert(13);
   assert_eq!( got, exp );
 
+  let _got = the_module::bset!( "b" );
+  let _got = the_module::exposed::bset!( "b" );
+
 }
 
 #[ cfg( feature = "collection_into_constructors" ) ]
@@ -46,6 +49,9 @@ fn into_constructor()
   exp.insert(3);
   exp.insert(13);
   assert_eq!( got, exp );
+
+  let _got : Bset< &str > = the_module::into_bset!( "b" );
+  let _got : Bset< &str > = the_module::exposed::into_bset!( "b" );
 
 }
 

@@ -1,5 +1,6 @@
 use super::*;
 
+
 #[ test ]
 fn reexport()
 {
@@ -30,13 +31,15 @@ fn constructor()
   let exp = the_module::HashMap::new();
   assert_eq!( got, exp );
 
-
   // test.case( "multiple entry" );
   let got = the_module::hmap!{ 3 => 13, 4 => 1 };
   let mut exp = the_module::HashMap::new();
   exp.insert( 3, 13 );
   exp.insert( 4, 1 );
   assert_eq!( got, exp );
+
+  let _got = the_module::hmap!( "a" => "b" );
+  let _got = the_module::exposed::hmap!( "a" => "b" );
 
 }
 
@@ -50,13 +53,15 @@ fn into_constructor()
   let exp = the_module::HashMap::new();
   assert_eq!( got, exp );
 
-
   // test.case( "multiple entry" );
   let got = the_module::into_hmap!{ 3 => 13, 4 => 1 };
   let mut exp = the_module::HashMap::new();
   exp.insert( 3, 13 );
   exp.insert( 4, 1 );
   assert_eq!( got, exp );
+
+  let _got : Hmap< &str, &str > = the_module::into_hmap!( "a" => "b" );
+  let _got : Hmap< &str, &str > = the_module::exposed::into_hmap!( "a" => "b" );
 
 }
 

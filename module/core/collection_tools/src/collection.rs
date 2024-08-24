@@ -25,7 +25,7 @@ pub mod hmap;
 /// [std::collections::HashSet] macros
 pub mod hset;
 /// [std::collections::LinkedList] macros
-pub mod list;
+pub mod llist;
 /// [Vec] macros
 pub mod vec;
 /// [std::collections::VecDeque] macros

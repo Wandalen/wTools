@@ -49,7 +49,7 @@ assert_eq!( meta_set, std_set );
 # }
 ```
 
-Another example with `list!`:
+Another example with `llist!`:
 
 ```rust
 # #[ cfg( all( feature = "enabled", feature = "collection_constructors" ) ) ]
@@ -57,7 +57,7 @@ Another example with `list!`:
 # {
 use collection_tools::*;
 
-let meta_list : LinkedList< i32 > = list! { 3, 13 };
+let meta_list : LinkedList< i32 > = llist! { 3, 13 };
 
 // this `LinkedList` is just a reexport from `alloc`,
 // so it can be used in the same places as `alloc/std::LinkedList`

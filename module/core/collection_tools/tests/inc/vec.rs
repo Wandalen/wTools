@@ -41,6 +41,9 @@ fn constructor()
   exp.push( 13 );
   assert_eq!( got, exp );
 
+  let _got = the_module::vec!( "b" );
+  let _got = the_module::exposed::vec!( "b" );
+
 }
 
 #[ cfg( feature = "collection_into_constructors" ) ]
@@ -59,6 +62,9 @@ fn into_constructor()
   exp.push( 3 );
   exp.push( 13 );
   assert_eq!( got, exp );
+
+  let _got : Vec< &str > = the_module::into_vec!( "b" );
+  let _got : Vec< &str > = the_module::exposed::into_vec!( "b" );
 
 }
 

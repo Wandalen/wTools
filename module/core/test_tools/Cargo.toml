@@ -60,6 +60,7 @@ enabled = [
   "data_type/enabled",
   "diagnostics_tools/enabled",
   "process_tools_published/enabled",
+  "collection_tools/enabled",
 ]
 # nightly = [ "typing_tools/nightly" ]
 
@@ -83,6 +84,7 @@ typing_tools = { workspace = true, features = [ "full" ] }
 data_type = { workspace = true, features = [ "full" ] }
 diagnostics_tools = { workspace = true, features = [ "full" ] }
 process_tools_published = { workspace = true, features = [ "full" ] }
+collection_tools = { workspace = true, features = [ "full" ] }
 # former_stable = { workspace = true, features = [ "full" ] }
 
 [build-dependencies]

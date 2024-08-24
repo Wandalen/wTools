@@ -5,7 +5,7 @@ mod bset;
 mod heap;
 mod hmap;
 mod hset;
-mod list;
+mod llist;
 mod vec;
 mod vecd;
 

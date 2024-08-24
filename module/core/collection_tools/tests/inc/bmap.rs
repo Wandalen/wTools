@@ -29,6 +29,9 @@ fn constructor()
   exp.insert(4, 1);
   assert_eq!( got, exp );
 
+  let _got = the_module::bmap!( "a" => "b" );
+  let _got = the_module::exposed::bmap!( "a" => "b" );
+
 }
 
 #[ cfg( feature = "collection_into_constructors" ) ]
@@ -47,6 +50,9 @@ fn into_constructor()
   exp.insert(3, 13);
   exp.insert(4, 1);
   assert_eq!( got, exp );
+
+  let _got : Bmap< &str, &str > = the_module::into_bmap!( "a" => "b" );
+  let _got : Bmap< &str, &str > = the_module::exposed::into_bmap!( "a" => "b" );
 
 }
 

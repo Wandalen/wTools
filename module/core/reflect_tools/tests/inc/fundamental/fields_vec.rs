@@ -4,17 +4,13 @@ use super::*;
 use the_module::
 {
   Fields,
-  IteratorTrait,
   OptionalCow,
-  // ToStringWith,
-  // WithDebug,
 };
 
-// xxx2 : check
+// xxx : implement for other collections
 
 use std::
 {
-  // fmt,
   collections::HashMap,
   borrow::Cow,
 };

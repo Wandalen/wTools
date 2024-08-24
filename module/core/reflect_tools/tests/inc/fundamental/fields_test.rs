@@ -15,7 +15,7 @@ use the_module::
 use std::
 {
   // fmt,
-  collections::HashMap,
+  // collections::HashMap,
   borrow::Cow,
 };
 
@@ -140,13 +140,9 @@ fn test_vec_fields()
     },
   ];
 
-// xxx : uncomment
-
-  // // let fields : Vec< _ > = test_objects.fields().collect();
-  // // let fields : Vec< ( usize, Option< Cow< '_, TestObject > > ) > = test_objects.fields().collect();
-  // let fields : Vec< _ > = Fields::< usize, Option< _ > >::fields( &test_objects ).collect();
-  // assert_eq!( fields.len(), 2 );
-  // assert_eq!( fields[ 0 ].0, 0 );
-  // assert_eq!( fields[ 1 ].0, 1 );
+  let fields : Vec< _ > = Fields::< usize, Option< _ > >::fields( &test_objects ).collect();
+  assert_eq!( fields.len(), 2 );
+  assert_eq!( fields[ 0 ].0, 0 );
+  assert_eq!( fields[ 1 ].0, 1 );
 
 }
