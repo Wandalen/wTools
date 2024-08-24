@@ -226,6 +226,7 @@ fn table_to_string_with_format()
   let as_table = AsTable::new( &test_objects );
   let got = as_table.table_to_string_with_format( &format );
   let exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
+─────────────────────────────────────────────────────────────────────────────────────
 >( 1  )|( 1627845583 )|(        [                   )|(                            )<
 >(    )|(            )|(            "file1",        )|(                            )<
 >(    )|(            )|(            "file2",        )|(                            )<
@@ -430,6 +431,7 @@ fn filter_row_callback()
   println!( "\noutput\n{output}" );
 
   let exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
+─────────────────────────────────────────────────────────────────────────────────────
 >( 2  )|(     13     )|( [                          )|( [                          )<
 >(    )|(            )|(     "file3",               )|(     {                      )<
 >(    )|(            )|(     "file4\nmore details", )|(         "tool1": "value1", )<
