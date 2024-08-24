@@ -71,6 +71,16 @@ pub( crate ) mod private
   ///
   /// `Ordinary` provides a standard implementation for table formatting,
   /// supporting a classic style with default settings.
+  ///
+  /// # Example of output format as ordinary table
+  ///
+  ///  sid | sname | gap
+  /// -----+-------+-----
+  ///    3 | Alice |   5
+  ///    6 | Joe   |   1
+  ///   10 | Boris |   5
+  ///
+
   #[ derive( Debug ) ]
   pub struct Ordinary
   {
@@ -89,6 +99,18 @@ pub( crate ) mod private
     /// Delimiter for adding in between of rows.
     pub row_separator : String,
 
+    pub h : char,
+    pub v : char,
+    pub t_l : char,
+    pub t_r : char,
+    pub t_t : char,
+    pub t_b : char,
+    pub cross : char,
+    pub corner_lt : char,
+    pub corner_rt : char,
+    pub corner_lb : char,
+    pub corner_rb : char,
+
   }
 
   impl Default for Ordinary
@@ -101,6 +123,19 @@ pub( crate ) mod private
       let row_prefix = "│ ".to_string();
       let row_postfix = " │".to_string();
       let row_separator = "\n".to_string();
+
+      let h = "─";
+      let v = "|";
+      let t_l = "├";
+      let t_r = "┤";
+      let t_t = "┬";
+      let t_b = "┴";
+      let cross = "┼";
+      let corner_lt = "┌";
+      let corner_rt = "┐";
+      let corner_lb = "└";
+      let corner_rb = "┘";
+
       Self
       {
         cell_prefix,

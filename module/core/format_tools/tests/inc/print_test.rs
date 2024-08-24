@@ -239,7 +239,6 @@ fn table_to_string_with_format()
 >(    )|(            )|(                            )|( ]                          )<"#;
   a_id!( got, exp );
 
-  // xxx : implement
 }
 
 //
@@ -441,5 +440,3 @@ fn filter_row_callback()
 }
 
 //
-
-// xxx
