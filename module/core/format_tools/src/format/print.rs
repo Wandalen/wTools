@@ -165,15 +165,16 @@ pub( crate ) mod private
     /// # Returns
     ///
     /// A `String` containing the formatted table.
-    fn table_to_string_with_styles< 'context, Styles >( &'data self, styles : &'context Styles ) -> String
+    fn table_to_string_with_styles< 'context, Styles, Format >( &'data self, styles : &'context Styles ) -> String
     where
-      Styles : 'context,
-      &'context Styles : Into< &'context dyn TableOutputFormat >,
+      Format : TableOutputFormat + 'context + From< &'context Styles >,
+      &'context Styles : Into< Format >,
     {
       let mut output = String::new();
-      let mut printer : Printer< 'context > = Printer
+      let output_format = styles.into();
+      let mut printer = Printer
       {
-        output_format : styles.into(),
+        output_format : &output_format,
         filter_col : Default::default(),
         filter_row : Default::default(),
       };

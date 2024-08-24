@@ -68,7 +68,10 @@ pub( crate ) mod private
     ) -> fmt::Result;
   }
 
-  /// Styles for ordinary table output formatting.
+  /// A struct representing the classic table output format.
+  ///
+  /// `Ordinary` provides a standard implementation for table formatting,
+  /// supporting a classic style with default settings.
   #[ derive( Debug ) ]
   pub struct OrdinaryStyles
   {
@@ -115,6 +118,7 @@ pub( crate ) mod private
   {
     fn default() -> Self
     {
+      // qqq : find a better solution
       static STYLES : OnceLock< OrdinaryStyles > = OnceLock::new();
       STYLES.get_or_init( ||
       {
@@ -125,42 +129,64 @@ pub( crate ) mod private
 
 // // xxx : implement
 //
-//   impl< 'context > From< &'context OrdinaryStyles > for &'context dyn TableOutputFormat
+//   /// Convert styles into format
+//   pub trait IntoFormat
+//   {
+//     type Format : TableOutputFormat;
+//     fn into_format( self ) -> Self::Format;
+//   }
+//
+//   impl< 'context > IntoFormat for &'context OrdinaryStyles
+//   {
+//     type Format = Ordinary< 'context >;
+//
+//     fn into_format( self ) -> Self::Format
+//     {
+//       let format = Ordinary( self );
+//       return format
+//     }
+//
+//   }
+//
+//   // impl< 'context > From< &'context OrdinaryStyles > for &'context dyn TableOutputFormat
+//   impl< 'context > From< &'context OrdinaryStyles > for Ordinary< 'context >
 //   {
 //
 //     fn from( src : &'context OrdinaryStyles ) -> Self
 //     {
 //       let format = Ordinary( src );
-//       let result : &'context dyn TableOutputFormat = &format;
+//       return format
+//       // let result : &'context dyn TableOutputFormat = &format;
 //       // &Ordinary( src )
-//       result
+//       // result
 //     }
 //
 //   }
 
   // &'context Styles : Into< &'context dyn TableOutputFormat >,
 
-  /// A struct representing the classic table output format.
-  ///
-  /// `Ordinary` provides a standard implementation for table formatting,
-  /// supporting a classic style with default settings.
-  ///
-  /// # Traits
-  ///
-  /// - `Debug`: Allows the struct to be formatted using the `{:?}` formatter.
-  /// - `Default`: Provides a default instance of `Ordinary`.
-  /// - `Clone` and `Copy`: Enables copying of the `Ordinary` instance.
+//   /// A struct representing the classic table output format.
+//   ///
+//   /// `Ordinary` provides a standard implementation for table formatting,
+//   /// supporting a classic style with default settings.
+//   ///
+//   /// # Traits
+//   ///
+//   /// - `Debug`: Allows the struct to be formatted using the `{:?}` formatter.
+//   /// - `Default`: Provides a default instance of `Ordinary`.
+//   /// - `Clone` and `Copy`: Enables copying of the `Ordinary` instance.
+//
+//   #[derive( Debug, Default, Clone, Copy )]
+//   pub struct Ordinary< 'a >( &'a OrdinaryStyles );
 
-  #[derive( Debug, Default, Clone, Copy )]
-  pub struct Ordinary< 'a >( &'a OrdinaryStyles );
-
-  impl< 'a > Ordinary< 'a >
+  impl OrdinaryStyles
   {
 
-    pub fn with_styles( styles : &'a OrdinaryStyles ) -> Self
-    {
-      Self( styles )
-    }
+    // /// Constructor accepting styles.
+    // pub fn with_styles( styles : &'a OrdinaryStyles ) -> Self
+    // {
+    //   Self( styles )
+    // }
 
     /// Returns a reference to a static instance of `Ordinary`.
     ///
@@ -175,11 +201,12 @@ pub( crate ) mod private
       //   OrdinaryStyles::Default()
       // });
 
-      static INSTANCE : OnceLock< Ordinary< 'static > > = OnceLock::new();
+      static INSTANCE : OnceLock< OrdinaryStyles > = OnceLock::new();
       INSTANCE.get_or_init( ||
       {
-        let styles : &'static OrdinaryStyles = Default::default();
-        Ordinary( styles )
+        Self::default()
+        // let styles : &'static OrdinaryStyles = Default::default();
+        // Ordinary( styles )
       })
 
       // static INSTANCE: OnceLock< Ordinary< 'static > > = OnceLock::new( || Ordinary( STYLES.get().unwrap() ) );
@@ -196,22 +223,22 @@ pub( crate ) mod private
     #[ inline( always ) ]
     fn default() -> Self
     {
-      Ordinary::< 'static >::instance()
+      OrdinaryStyles::instance()
     }
   }
 
-  impl< 'a > TableOutputFormat for Ordinary< 'a >
+  impl TableOutputFormat for OrdinaryStyles
   {
     fn extract_write< 'buf, 'data >( &self, x : &InputExtract< 'data >, c : &mut Context< 'buf > ) -> fmt::Result
     {
       use md_math::MdOffset;
 
-      let cell_prefix = &self.0.cell_prefix;
-      let cell_postfix = &self.0.cell_postfix;
-      let cell_separator = &self.0.cell_separator;
-      let row_prefix = &self.0.row_prefix;
-      let row_postfix = &self.0.row_postfix;
-      let row_separator = &self.0.row_separator;
+      let cell_prefix = &self.cell_prefix;
+      let cell_postfix = &self.cell_postfix;
+      let cell_separator = &self.cell_separator;
+      let row_prefix = &self.row_prefix;
+      let row_postfix = &self.row_postfix;
+      let row_separator = &self.row_separator;
 
       // dbg!( x.row_descriptors.len() );
 
@@ -296,7 +323,7 @@ pub mod own
   #[ doc( inline ) ]
   pub use private::
   {
-    Ordinary,
+    // Ordinary,
     OrdinaryStyles,
   };
 
