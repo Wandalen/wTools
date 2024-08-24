@@ -171,7 +171,6 @@ pub( crate ) mod private
     //   Self::Row : 'a;
   }
 
-
   impl< T, RowKey, Row, CellKey, CellRepr >
   TableRows<>
   for AsTable< '_, T, RowKey, Row, CellKey, CellRepr >
@@ -181,7 +180,7 @@ pub( crate ) mod private
     <
       RowKey,
       &'k Row,
-      Key< 'k > = RowKey,
+      // Key< 'k > = RowKey,
       Val< 'v > = &'v Row,
     > + 'k + 'v,
 
@@ -201,7 +200,7 @@ pub( crate ) mod private
       // Self::Row : 'a
     {
       self.as_ref().fields()
-      .map( move | ( _k, e ) : ( RowKey, &Row ) |
+      .map( move | ( _k, e ) : ( _, &Row ) |
       {
         e
       })

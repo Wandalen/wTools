@@ -424,8 +424,8 @@ fn hmap_basic()
   let as_table : AsTable< '_, HashMap< &str, TestObject >, &&str, TestObject, str, WithRef > = AsTable::new( &data );
   // let as_table = AsTable::new( &data );
 
-  // let rows = TableRows::rows( &as_table );
-  // assert_eq!( rows.len(), 2 );
+  let rows = TableRows::rows( &as_table );
+  assert_eq!( rows.len(), 2 );
 
   // let mut output = String::new();
   // let mut context = print::Context::new( &mut output, Default::default() );
