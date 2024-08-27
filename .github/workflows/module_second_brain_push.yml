@@ -21,3 +21,4 @@ jobs :
       manifest_path : 'module/blank/second_brain/Cargo.toml'
       module_name : 'second_brain'
       commit_message : ${{ github.event.head_commit.message }}
+      commiter_username:  ${{ github.event.head_commit.committer.username }}

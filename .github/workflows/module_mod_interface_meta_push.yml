@@ -21,3 +21,4 @@ jobs :
       manifest_path : 'module/core/mod_interface_meta/Cargo.toml'
       module_name : 'mod_interface_meta'
       commit_message : ${{ github.event.head_commit.message }}
+      commiter_username:  ${{ github.event.head_commit.committer.username }}

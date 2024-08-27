@@ -21,3 +21,4 @@ jobs :
       manifest_path : 'module/blank/paths_tools/Cargo.toml'
       module_name : 'paths_tools'
       commit_message : ${{ github.event.head_commit.message }}
+      commiter_username:  ${{ github.event.head_commit.committer.username }}

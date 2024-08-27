@@ -21,3 +21,4 @@ jobs :
       manifest_path : 'step/Cargo.toml'
       module_name : 'step'
       commit_message : ${{ github.event.head_commit.message }}
+      commiter_username:  ${{ github.event.head_commit.committer.username }}

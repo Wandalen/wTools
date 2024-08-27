@@ -18,12 +18,16 @@ on :
         required : false
         type : string
         default : true
+      commiter_username:
+        type: string
+        default: true
+        required: false
 
 concurrency :
 
   group : standard_rust_push_${{ inputs.module_name }}_${{ github.ref }}_
-    ${{ contains( inputs.commit_message, '+test' ) || startsWith( inputs.commit_message, 'merge' ) }}
-  cancel-in-progress : ${{ contains( inputs.commit_message, '+test' ) || startsWith( inputs.commit_message, 'merge' ) }}
+    ${{ contains( inputs.commit_message, '+test' ) || inputs.commiter_username == 'web-flow' }}
+  cancel-in-progress : ${{ contains( inputs.commit_message, '+test' ) || inputs.commiter_username == 'web-flow' }}
 
 env :
 
@@ -34,7 +38,7 @@ env :
 jobs :
 
   checkmate:
-    if : contains( inputs.commit_message, '+test' ) || contains( inputs.commit_message, 'merge' )
+    if : contains( inputs.commit_message, '+test' ) || inputs.commiter_username == 'web-flow'
     runs-on: ubuntu-latest
     steps:
       - name: Install latest nightly toolchain
@@ -121,7 +125,7 @@ jobs :
   #        run: cargo miri test --manifest-path ${{ inputs.manifest_path }}
 
   will_test :
-    if : contains( inputs.commit_message, '+test' ) || contains( inputs.commit_message, 'merge' )
+    if : contains( inputs.commit_message, '+test' ) || inputs.commiter_username == 'web-flow'
     concurrency :
       group : standard_rust_push_${{ inputs.module_name }}_${{ github.ref }}_${{ matrix.os }}
       cancel-in-progress : true

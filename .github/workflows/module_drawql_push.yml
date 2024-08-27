@@ -21,3 +21,4 @@ jobs :
       manifest_path : 'module/blank/drawql/Cargo.toml'
       module_name : 'drawql'
       commit_message : ${{ github.event.head_commit.message }}
+      commiter_username:  ${{ github.event.head_commit.committer.username }}

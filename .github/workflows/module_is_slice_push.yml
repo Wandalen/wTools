@@ -21,3 +21,4 @@ jobs :
       manifest_path : 'module/core/is_slice/Cargo.toml'
       module_name : 'is_slice'
       commit_message : ${{ github.event.head_commit.message }}
+      commiter_username:  ${{ github.event.head_commit.committer.username }}

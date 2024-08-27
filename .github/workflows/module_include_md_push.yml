@@ -21,3 +21,4 @@ jobs :
       manifest_path : 'module/core/include_md/Cargo.toml'
       module_name : 'include_md'
       commit_message : ${{ github.event.head_commit.message }}
+      commiter_username:  ${{ github.event.head_commit.committer.username }}
