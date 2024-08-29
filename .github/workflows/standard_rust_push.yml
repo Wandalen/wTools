@@ -77,7 +77,7 @@ jobs :
         continue-on-error: true
       - name: Check the modules dependencies
         run: cargo +nightly udeps --all-targets --manifest-path ${{ inputs.manifest_path }}
-        continue-on-error: true
+        continue-on-error: false
 
 #  release:
 #    if: contains( inputs.commit_message, '+test' ) || contains( inputs.commit_message, 'merge' )
@@ -125,6 +125,8 @@ jobs :
   #        run: cargo miri test --manifest-path ${{ inputs.manifest_path }}
 
   will_test :
+    needs:
+      - checkmate
     if : contains( inputs.commit_message, '+test' ) || inputs.commiter_username == 'web-flow' || startsWith( inputs.commit_message, 'merge' )
     concurrency :
       group : standard_rust_push_${{ inputs.module_name }}_${{ github.ref }}_${{ matrix.os }}
