@@ -9,7 +9,7 @@ actions:
 - install nightly rust
 - install willbe
 - run tests with all features, but only on stable toolchain and in debug optimization mode
-z
+
 Groups creates by strategy:
 ```yml  
 for_pr_rust_push_${{ inputs.module_name }}_${{ github.ref }}_  
