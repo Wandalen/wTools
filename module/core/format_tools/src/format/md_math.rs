@@ -4,7 +4,7 @@
 //! useful for operations involving multidimensional arrays or grids.
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
   use core::
   {
