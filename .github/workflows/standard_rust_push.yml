@@ -77,6 +77,7 @@ jobs :
         continue-on-error: true
       - name: Check the modules dependencies
         run: cargo +nightly udeps --all-targets --manifest-path ${{ inputs.manifest_path }}
+#       This part means that all previous steps will be executed and workflow will not stop if they fail, but not this one.
         continue-on-error: false
 
 #  release:
@@ -125,6 +126,7 @@ jobs :
   #        run: cargo miri test --manifest-path ${{ inputs.manifest_path }}
 
   will_test :
+#    This section ensures that `job` `will_test` will only be executed after `checkmate` and if `checkmate` fails, no tests will be run.
     needs:
       - checkmate
     if : contains( inputs.commit_message, '+test' ) || inputs.commiter_username == 'web-flow' || startsWith( inputs.commit_message, 'merge' )
