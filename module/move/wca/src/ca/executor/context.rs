@@ -1,4 +1,4 @@
-pub( crate ) mod private
+mod private
 {
   use std::sync::Arc;
 
@@ -39,7 +39,7 @@ pub( crate ) mod private
   {
     inner : Arc< dyn std::any::Any + Send + Sync >,
   }
-  
+
   impl Default for Context
   {
     fn default() -> Self
@@ -47,7 +47,7 @@ pub( crate ) mod private
       Self::new( () )
     }
   }
-  
+
   impl Context
   {
     /// Creates a new `Context` object with the given value.

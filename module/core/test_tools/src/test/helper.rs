@@ -6,7 +6,7 @@
 // use super::*;
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
 
   // zzz : move here test tools

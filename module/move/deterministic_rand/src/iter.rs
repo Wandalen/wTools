@@ -4,9 +4,9 @@
 //!
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
-  
+
   use core::cmp::Ordering;
   #[ cfg( feature = "determinism" ) ]
   extern crate alloc;

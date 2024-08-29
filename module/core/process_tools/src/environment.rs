@@ -1,5 +1,5 @@
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
 
   /// Checks if the current execution environment is a Continuous Integration (CI) or Continuous Deployment (CD) pipeline.

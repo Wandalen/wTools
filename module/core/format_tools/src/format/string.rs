@@ -5,7 +5,7 @@
 // xxx : move to crate string_tools
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
 
   // use crate::*;

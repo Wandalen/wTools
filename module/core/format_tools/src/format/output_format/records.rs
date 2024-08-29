@@ -1,5 +1,8 @@
 //! Implement list of records ( rows ) output format.
 //!
+//! Implementation for table formatting that outputs
+//! each row as a separate table with 2 columns, first is name of column in the original data and second is cell value itself.
+//!
 //! # Example
 //!
 //! ```text
@@ -31,10 +34,10 @@ use core::
 };
 use std::sync::OnceLock;
 
-// A struct representing the list of records( rows ) output format.
-//
-// `Records` provides an implementation for table formatting that outputs
-// each row as a separate record, including a record number.
+/// A struct representing the list of records( rows ) output format.
+///
+/// `Records` provides an implementation for table formatting that outputs
+/// each row as a separate table with 2 columns, first is name of column in the original data and second is cell value itself.
 #[derive( Debug )]
 pub struct Records;
 

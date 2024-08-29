@@ -1,5 +1,5 @@
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
   ///
   /// Macro asserts that two expressions are identical to each other. Unlike std::assert_eq it is removed from a release build.

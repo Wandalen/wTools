@@ -3,7 +3,7 @@
 //!
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
 
   /// A trait for converting a reference to an existing type into a `syn::AngleBracketedGenericArguments`.

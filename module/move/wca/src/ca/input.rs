@@ -1,4 +1,4 @@
-pub( crate ) mod private
+mod private
 {
   use std::io;
   use std::io::Write;

@@ -53,7 +53,7 @@
 // qqq : make the example working. use tests for inpsisrations
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
 }
 

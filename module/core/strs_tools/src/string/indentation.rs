@@ -1,5 +1,5 @@
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
 
   /// Adds indentation and optional prefix/postfix to each line of the given string.

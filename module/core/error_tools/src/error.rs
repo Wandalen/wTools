@@ -1,5 +1,5 @@
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
   pub use std::error::Error as ErrorTrait;
 

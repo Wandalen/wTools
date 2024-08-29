@@ -1,7 +1,7 @@
-pub( crate ) mod private
+mod private
 {
   use std::collections::HashMap;
-  
+
   /// Represents a program that contains one or more namespaces, where each namespace contains a list of commands.
   ///
   /// A `Program` consists of one or more commannd
@@ -17,7 +17,7 @@ pub( crate ) mod private
     /// list of namespaces with commands
     pub commands : Vec< Command >,
   }
-  
+
   /// Represents a parsed command that has been extracted from an input string by a `Parser`.
   ///
   /// The `ParsedCommand` struct is designed to be flexible and allow for a wide variety of commands to be parsed and represented. However, this flexibility also means that a `ParsedCommand` may contain invalid or unexpected data.

@@ -5,7 +5,7 @@
 
 /// Internal namespace.
 #[ cfg( feature = "enabled" ) ]
-pub( crate ) mod private
+mod private
 {
   use std::collections::HashMap;
   use std::fmt::Formatter;

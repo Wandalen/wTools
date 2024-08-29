@@ -3,7 +3,7 @@
 //!
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
 
   /// Represents a general-purpose data container that can hold various primitive types

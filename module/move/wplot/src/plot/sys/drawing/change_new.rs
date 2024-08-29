@@ -1,5 +1,5 @@
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
   // use crate::own::*;
   use crate::abs::{change::private::ChangeInterface, identity::private::Id};

@@ -1,5 +1,5 @@
 /// Private namespace.
-pub( crate ) mod private
+mod private
 {
   /// Convert one Y'UV444 frame to RGB888
   pub fn yuv444_to_rgb( buffer : &[ u8 ] ) -> Vec< u8 >

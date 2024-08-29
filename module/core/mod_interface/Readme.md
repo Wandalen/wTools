@@ -12,7 +12,7 @@ Protocol of modularity unifying interface of a module and introducing layers.
 Library file with code `inner.rs`:
 
 ```rust ignore
-pub( crate ) mod private
+mod private
 {
   /// Routine of inner module.
   pub fn inner_is() -> bool
@@ -67,7 +67,7 @@ fn main()
 /// Inner.
 pub mod inner
 {
-  pub( crate ) mod private
+  mod private
   {
     /// Routine of inner module.
     pub fn inner_is() -> bool { true }

@@ -16,7 +16,7 @@
 mod implements_impl;
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
 
   ///

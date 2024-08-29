@@ -18,7 +18,7 @@ mod implements_impl;
 
 /// Internal namespace.
 #[ cfg( feature = "enabled" ) ]
-pub( crate ) mod private
+mod private
 {
 
   ///

@@ -1,6 +1,6 @@
 /// Internal namespace.
 #[ allow( unused_imports ) ]
-pub( crate ) mod private
+mod private
 {
   use crate::tool::*;
   use ::error_tools::own::*;

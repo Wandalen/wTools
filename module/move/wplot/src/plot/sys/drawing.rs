@@ -1,7 +1,7 @@
 pub(crate) mod changer;
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
   // use crate::own::*;
 

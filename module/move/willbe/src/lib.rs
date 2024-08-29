@@ -6,7 +6,7 @@
 pub use mod_interface::mod_interface;
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
   use crate::*;
 

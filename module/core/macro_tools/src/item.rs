@@ -4,7 +4,7 @@
 //! organizing the codebase into different access levels.
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
   use crate::*;
 

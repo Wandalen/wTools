@@ -1,5 +1,5 @@
 
-pub( crate ) mod private
+mod private
 {
 
   ///

@@ -1,6 +1,6 @@
 // /// Internal namespace.
 // #[ cfg( feature = "make" ) ]
-// pub( crate ) mod private
+// mod private
 // {
 //
 //   ///

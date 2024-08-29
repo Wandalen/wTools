@@ -29,7 +29,7 @@
 //!
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
 
   use crate::*;
@@ -42,7 +42,6 @@ pub( crate ) mod private
   {
     fmt,
   };
-  use std::sync::OnceLock;
 
   //=
 

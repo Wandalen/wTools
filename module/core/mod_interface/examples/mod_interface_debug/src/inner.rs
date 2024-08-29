@@ -1,4 +1,4 @@
-pub( crate ) mod private
+mod private
 {
   /// Routine of inner module.
   pub fn inner_is() -> bool

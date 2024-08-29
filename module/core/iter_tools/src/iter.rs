@@ -1,6 +1,6 @@
 
 // #[ cfg( not( feature = "no_std" ) ) ]
-pub( crate ) mod private
+mod private
 {
   #[ allow( unused_imports ) ]
   use crate::*;

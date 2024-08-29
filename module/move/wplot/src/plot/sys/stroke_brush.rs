@@ -2,7 +2,7 @@ mod change_width;
 mod change_new;
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
   use crate::own::*;
   use crate::abs::identity::private::Id;

@@ -1,5 +1,5 @@
 /// Private namespace of the module.
-pub( crate ) mod private
+mod private
 {
   use std::collections::HashMap;
 

@@ -1,6 +1,6 @@
 /// Internal namespace.
 #[ cfg( not( feature = "no_std" ) ) ]
-pub( crate ) mod private
+mod private
 {
   // use crate::own::*;
   use once_cell::sync::Lazy;

@@ -9,7 +9,7 @@
 // xxx2 : use process_tools to build and run rust programs, introduce program_
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
   use crate::*;
   use dependency::process_tools::environment;

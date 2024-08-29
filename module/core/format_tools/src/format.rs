@@ -3,7 +3,7 @@
 //!
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
 
   /// Macro to create a field with a key and formatted value.

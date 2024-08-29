@@ -1,5 +1,5 @@
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
   use crate::abs::registry::private::Registry;
   use crate::own::*;

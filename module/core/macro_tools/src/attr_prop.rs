@@ -103,7 +103,7 @@ mod syn;
 mod syn_optional;
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
   // use crate::*;
 

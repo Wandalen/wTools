@@ -1,5 +1,5 @@
 /// Private namespace.
-pub( crate ) mod private
+mod private
 {
   use std::fmt::{ Debug, Formatter };
   use crate::common::prelude::*;

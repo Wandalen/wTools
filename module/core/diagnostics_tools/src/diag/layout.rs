@@ -1,6 +1,6 @@
 
 #[ cfg( feature = "diagnostics_compiletime_assertions" ) ]
-pub( crate ) mod private
+mod private
 {
 
   ///

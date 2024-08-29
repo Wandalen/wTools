@@ -13,7 +13,7 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
 
   /// Macro to answer the question: is it a slice?

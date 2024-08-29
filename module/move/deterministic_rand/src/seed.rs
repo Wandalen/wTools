@@ -4,7 +4,7 @@
 //!
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
   #[ cfg( feature = "no_std" ) ]
   extern crate alloc;

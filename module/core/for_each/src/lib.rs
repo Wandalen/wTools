@@ -6,7 +6,7 @@
 
 /// Internal namespace.
 #[ cfg( feature = "enabled" ) ]
-pub( crate ) mod private
+mod private
 {
 
   #[ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/Readme.md" ) ) ]

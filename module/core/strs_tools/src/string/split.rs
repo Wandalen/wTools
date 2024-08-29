@@ -1,5 +1,5 @@
 /// Private namespace.
-pub( crate ) mod private
+mod private
 {
 
   use crate::string::parse_request::OpType;

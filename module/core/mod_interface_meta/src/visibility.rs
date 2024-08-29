@@ -1,5 +1,5 @@
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
   use macro_tools::prelude::*;
   // use macro_tools::syn::Result;

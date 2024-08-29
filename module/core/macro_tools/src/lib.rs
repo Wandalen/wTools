@@ -6,7 +6,7 @@
 
 /// Internal namespace.
 #[ cfg( feature = "enabled" ) ]
-pub( crate ) mod private
+mod private
 {
   use crate::*;
 

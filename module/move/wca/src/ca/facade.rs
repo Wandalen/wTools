@@ -1,4 +1,4 @@
-// pub( crate ) mod private
+// mod private
 // {
 //   use crate::*;
 //   use core::fmt;

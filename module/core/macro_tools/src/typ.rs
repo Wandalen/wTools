@@ -3,7 +3,7 @@
 //!
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
   use crate::*;
   use interval_adapter::BoundExt;

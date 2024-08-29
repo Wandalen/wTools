@@ -1,5 +1,5 @@
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
   #[ allow( unused_imports ) ]
   use crate::*;

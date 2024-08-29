@@ -3,7 +3,7 @@
 //!
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
 
   /// A trait for iterators that are also `ExactSizeIterator`.

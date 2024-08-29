@@ -1,5 +1,5 @@
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
 
   // zzz : use type_constructor::Enumberable for indexed access to color components

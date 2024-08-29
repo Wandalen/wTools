@@ -5,7 +5,7 @@
 //!
 
 /// Internal namespace.
-pub( crate ) mod private
+mod private
 {
 
   /// Ensures that a `syn::punctuated::Punctuated` collection ends with a comma if it contains elements.
