@@ -51,6 +51,16 @@ impl Records
   }
 }
 
+impl Default for Records
+{
+  fn default() -> Self
+  {
+    Self
+    {
+    }
+  }
+}
+
 impl TableOutputFormat for Records
 {
   fn extract_write< 'buf, 'data >

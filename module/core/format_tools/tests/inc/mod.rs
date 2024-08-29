@@ -12,6 +12,7 @@ mod fundamental
 
   mod table_test;
   mod format_ordinary_test;
+  mod format_records_test;
 
   mod collection_test;
   mod fields_test;
