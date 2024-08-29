@@ -69,7 +69,7 @@ impl TableOutputFormat for Records
       writeln!( c.buf, "-[ RECORD {} ]", i + 1 )?;
       for ( icol, col ) in x.col_descriptors.iter().enumerate()
       {
-        let cell_width = x.data[ i ][ icol ].1[ 0 ];
+        // let cell_width = x.data[ i ][ icol ].1[ 0 ];
         let md_index = [ 0, icol, i ];
         let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
         writeln!( c.buf, "{} | {}", col.width, slice )?;

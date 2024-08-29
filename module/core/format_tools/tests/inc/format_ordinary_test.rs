@@ -1,20 +1,10 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-// use collection_tools::prelude::*;
 use the_module::
 {
-  // print,
-  Fields,
-  IteratorTrait,
   AsTable,
-  Cells,
-  // TableSize,
-  TableRows,
-  TableHeader,
-  TableWithFields,
   WithRef,
-  OptionalCow,
   filter,
   print,
   output_format,
@@ -22,125 +12,19 @@ use the_module::
 
 use std::
 {
-  collections::HashMap,
+  // collections::HashMap,
   borrow::Cow,
 };
-
-/// Struct representing a test object with various fields.
-#[ derive( Clone, Debug ) ]
-pub struct TestObject
-{
-  pub id : String,
-  pub created_at : i64,
-  pub file_ids : Vec< String >,
-  pub tools : Option< Vec< HashMap< String, String > > >,
-}
-
-impl TableWithFields for TestObject {}
-
-impl Fields< &'_ str, OptionalCow< '_, str, WithRef > >
-for TestObject
-{
-  type Key< 'k > = &'k str;
-  type Val< 'v > = OptionalCow< 'v, str, WithRef >;
-
-  fn fields( &self ) -> impl IteratorTrait< Item = ( &'_ str, OptionalCow< '_, str, WithRef > ) >
-  {
-    use format_tools::ref_or_display_or_debug_multiline::field;
-    // use format_tools::ref_or_display_or_debug::field;
-    let mut dst : Vec< ( &'_ str, OptionalCow< '_, str, WithRef > ) > = Vec::new();
-
-    dst.push( field!( &self.id ) );
-    dst.push( field!( &self.created_at ) );
-    dst.push( field!( &self.file_ids ) );
-
-    if let Some( tools ) = &self.tools
-    {
-      dst.push( field!( tools ) );
-    }
-    else
-    {
-      dst.push( ( "tools", OptionalCow::none() ) );
-    }
-
-    dst.into_iter()
-  }
-
-}
-
-//
-
-fn test_objects_gen() -> Vec< TestObject >
-{
-
-  vec!
-  [
-    TestObject
-    {
-      id : "1".to_string(),
-      created_at : 1627845583,
-      file_ids : vec![ "file1".to_string(), "file2".to_string() ],
-      tools : None
-    },
-    TestObject
-    {
-      id : "2".to_string(),
-      created_at : 13,
-      file_ids : vec![ "file3".to_string(), "file4\nmore details".to_string() ],
-      tools : Some
-      (
-        vec!
-        [
-          {
-            let mut map = HashMap::new();
-            map.insert( "tool1".to_string(), "value1".to_string() );
-            map
-          },
-          {
-            let mut map = HashMap::new();
-            map.insert( "tool2".to_string(), "value2".to_string() );
-            map
-          }
-        ]
-      ),
-    },
-  ]
-
-}
 
 //
 
 #[ test ]
 fn basic()
-// where
-  // for< 'a > AsTable< 'a, Vec< TestObject >, usize, TestObject, &'static str, String, &'static str > : TableFormatter< 'a >,
 {
-  let test_objects = test_objects_gen();
+  let test_objects = test_object::test_objects_gen();
 
-  let cells = Cells::< str, WithRef >::cells( &test_objects[ 0 ] );
-  assert_eq!( cells.len(), 4 );
-  let cells = Cells::< str, WithRef >::cells( &test_objects[ 1 ] );
-  assert_eq!( cells.len(), 4 );
-  drop( cells );
-
-  let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, str, WithRef > = AsTable::new( &test_objects );
-  // let mcells = TableSize::mcells( &as_table );
-  // assert_eq!( mcells, [ 4, 3 ] );
-  let rows = TableRows::rows( &as_table );
-  assert_eq!( rows.len(), 2 );
-  dbg!( rows.collect::< Vec< _ > >() );
-  let header = TableHeader::header( &as_table );
-  assert!( header.is_some() );
-  let header = header.unwrap();
-  assert_eq!( header.len(), 4 );
-  assert_eq!( header.clone().collect::< Vec< _ > >(), vec!
-  [
-    ( "id", "id" ),
-    ( "created_at", "created_at" ),
-    ( "file_ids", "file_ids" ),
-    ( "tools", "tools" ),
-  ]);
-  dbg!( header.collect::< Vec< _ > >() );
+  let _as_table : AsTable< '_, Vec< test_object::TestObject >, usize, test_object::TestObject, str, WithRef > = AsTable::new( &test_objects );
+  let as_table = AsTable::new( &test_objects );
 
   let mut output = String::new();
   let mut context = print::Context::new( &mut output, Default::default() );
@@ -182,11 +66,11 @@ fn basic()
 fn table_to_string()
 {
   use the_module::TableFormatter;
-  let test_objects = test_objects_gen();
+  let test_objects = test_object::test_objects_gen();
 
   // with explicit arguments
 
-  let as_table : AsTable< '_, Vec< TestObject >, usize, TestObject, str, WithRef > = AsTable::new( &test_objects );
+  let as_table : AsTable< '_, Vec< test_object::TestObject >, usize, test_object::TestObject, str, WithRef > = AsTable::new( &test_objects );
   let table_string = as_table.table_to_string();
   println!( "\ntable_string\n{table_string}" );
   assert!( table_string.contains( "id" ) );
@@ -210,46 +94,10 @@ fn table_to_string()
 //
 
 #[ test ]
-fn table_to_string_with_format()
-{
-  use the_module::TableFormatter;
-  let test_objects = test_objects_gen();
-
-  let mut format = output_format::Ordinary::default();
-  format.cell_prefix = "( ".into();
-  format.cell_postfix = " )".into();
-  format.cell_separator = "|".into();
-  format.row_prefix = ">".into();
-  format.row_postfix = "<".into();
-  format.row_separator = "\n".into();
-
-  let as_table = AsTable::new( &test_objects );
-  let got = as_table.table_to_string_with_format( &format );
-  let exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
-─────────────────────────────────────────────────────────────────────────────────────
->( 1  )|( 1627845583 )|(        [                   )|(                            )<
->(    )|(            )|(            "file1",        )|(                            )<
->(    )|(            )|(            "file2",        )|(                            )<
->(    )|(            )|(        ]                   )|(                            )<
->( 2  )|(     13     )|( [                          )|( [                          )<
->(    )|(            )|(     "file3",               )|(     {                      )<
->(    )|(            )|(     "file4\nmore details", )|(         "tool1": "value1", )<
->(    )|(            )|( ]                          )|(     },                     )<
->(    )|(            )|(                            )|(     {                      )<
->(    )|(            )|(                            )|(         "tool2": "value2", )<
->(    )|(            )|(                            )|(     },                     )<
->(    )|(            )|(                            )|( ]                          )<"#;
-  a_id!( got, exp );
-
-}
-
-//
-
-#[ test ]
-fn custom_formatter()
+fn custom_format()
 {
   // use the_module::TableFormatter;
-  let test_objects = test_objects_gen();
+  let test_objects = test_object::test_objects_gen();
 
   let mut format = output_format::Ordinary::default();
   format.cell_prefix = "( ".into();
@@ -288,6 +136,36 @@ fn custom_formatter()
 >(    )|(            )|(                            )|( ]                          )<"#;
   a_id!( output.as_str(), exp );
 
+  // using table_to_string_with_format
+
+  use the_module::TableFormatter;
+
+  let mut format = output_format::Ordinary::default();
+  format.cell_prefix = "( ".into();
+  format.cell_postfix = " )".into();
+  format.cell_separator = "|".into();
+  format.row_prefix = ">".into();
+  format.row_postfix = "<".into();
+  format.row_separator = "\n".into();
+
+  // let as_table = AsTable::new( &test_objects );
+  let got = AsTable::new( &test_objects ).table_to_string_with_format( &format );
+  let exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
+─────────────────────────────────────────────────────────────────────────────────────
+>( 1  )|( 1627845583 )|(        [                   )|(                            )<
+>(    )|(            )|(            "file1",        )|(                            )<
+>(    )|(            )|(            "file2",        )|(                            )<
+>(    )|(            )|(        ]                   )|(                            )<
+>( 2  )|(     13     )|( [                          )|( [                          )<
+>(    )|(            )|(     "file3",               )|(     {                      )<
+>(    )|(            )|(     "file4\nmore details", )|(         "tool1": "value1", )<
+>(    )|(            )|( ]                          )|(     },                     )<
+>(    )|(            )|(                            )|(     {                      )<
+>(    )|(            )|(                            )|(         "tool2": "value2", )<
+>(    )|(            )|(                            )|(     },                     )<
+>(    )|(            )|(                            )|( ]                          )<"#;
+  a_id!( got, exp );
+
 }
 
 
@@ -295,7 +173,7 @@ fn custom_formatter()
 #[ test ]
 fn filter_col_none()
 {
-  let test_objects = test_objects_gen();
+  let test_objects = test_object::test_objects_gen();
 
   let mut format = output_format::Ordinary::default();
   format.cell_prefix = "( ".into();
@@ -330,7 +208,7 @@ fn filter_col_none()
 #[ test ]
 fn filter_col_callback()
 {
-  let test_objects = test_objects_gen();
+  let test_objects = test_object::test_objects_gen();
 
   let mut format = output_format::Ordinary::default();
   format.cell_prefix = "( ".into();
@@ -374,7 +252,7 @@ fn filter_col_callback()
 #[ test ]
 fn filter_row_none()
 {
-  let test_objects = test_objects_gen();
+  let test_objects = test_object::test_objects_gen();
 
   let mut format = output_format::Ordinary::default();
   format.cell_prefix = "( ".into();
@@ -406,7 +284,7 @@ fn filter_row_none()
 #[ test ]
 fn filter_row_callback()
 {
-  let test_objects = test_objects_gen();
+  let test_objects = test_object::test_objects_gen();
 
   let mut format = output_format::Ordinary::default();
   format.cell_prefix = "( ".into();

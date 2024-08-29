@@ -558,7 +558,6 @@ pub mod orphan
   #[ doc( inline ) ]
   pub use private::
   {
-    // TableFormatter,
   };
 
 }
@@ -574,7 +573,6 @@ pub mod exposed
   pub use private::
   {
     TableFormatter,
-    // TableToString,
   };
 
 }

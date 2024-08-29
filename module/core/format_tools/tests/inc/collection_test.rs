@@ -3,13 +3,9 @@ use super::*;
 
 use the_module::
 {
-  Fields,
-  IteratorTrait,
   AsTable,
   TableRows,
-  TableWithFields,
   WithRef,
-  OptionalCow,
   print,
 };
 
@@ -19,47 +15,7 @@ use std::
   // borrow::Cow,
 };
 
-/// Struct representing a test object with various fields.
-#[ derive( Clone, Debug ) ]
-pub struct TestObject
-{
-  pub id : String,
-  pub created_at : i64,
-  pub file_ids : Vec< String >,
-  pub tools : Option< Vec< HashMap< String, String > > >,
-}
-
-impl TableWithFields for TestObject {}
-
-impl Fields< &'_ str, OptionalCow< '_, str, WithRef > >
-for TestObject
-{
-  type Key< 'k > = &'k str;
-  type Val< 'v > = OptionalCow< 'v, str, WithRef >;
-
-  fn fields( &self ) -> impl IteratorTrait< Item = ( &'_ str, OptionalCow< '_, str, WithRef > ) >
-  {
-    use format_tools::ref_or_display_or_debug_multiline::field;
-    // use format_tools::ref_or_display_or_debug::field;
-    let mut dst : Vec< ( &'_ str, OptionalCow< '_, str, WithRef > ) > = Vec::new();
-
-    dst.push( field!( &self.id ) );
-    dst.push( field!( &self.created_at ) );
-    dst.push( field!( &self.file_ids ) );
-
-    if let Some( tools ) = &self.tools
-    {
-      dst.push( field!( tools ) );
-    }
-    else
-    {
-      dst.push( ( "tools", OptionalCow::none() ) );
-    }
-
-    dst.into_iter()
-  }
-
-}
+use test_object::TestObject;
 
 //
 
