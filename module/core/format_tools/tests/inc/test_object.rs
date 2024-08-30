@@ -106,19 +106,27 @@ impl Eq for TestObject
 {
 }
 
-impl PartialOrd for TestObject {
-  fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-      Some(self.cmp(other))
+impl PartialOrd for TestObject 
+{
+  
+  fn partial_cmp( &self, other: &Self ) -> Option< Ordering > 
+  {
+    Some( self.cmp( other ) )
   }
+
 }
 
-impl Ord for TestObject {
-  fn cmp(&self, other: &Self) -> Ordering {
-      self.id
-          .cmp(&other.id)
-          .then_with(|| self.created_at.cmp(&other.created_at))
-          .then_with(|| self.file_ids.cmp(&other.file_ids))
+impl Ord for TestObject 
+{
+
+  fn cmp( &self, other: &Self ) -> Ordering 
+  {
+    self.id
+    .cmp( &other.id )
+    .then_with( | | self.created_at.cmp( &other.created_at ) )
+    .then_with( | | self.file_ids.cmp( &other.file_ids ) )
   }
+  
 }
 
 //
