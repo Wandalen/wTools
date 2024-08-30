@@ -201,7 +201,7 @@ where
             T::default()
           }
         }
-        (&::core::marker::PhantomData::<&'callback dyn FilterCol>).maybe_default()
+        (&::core::marker::PhantomData::< _ >).maybe_default()
       }
     };
     let result = Styles::< 'callback > { filter };
