@@ -12,7 +12,6 @@ use the_module::
 use std::
 {
   collections::HashMap,
-  // borrow::Cow,
 };
 
 use test_object::TestObject;

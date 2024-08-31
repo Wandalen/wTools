@@ -63,28 +63,89 @@ impl Default for Records
 
 impl TableOutputFormat for Records
 {
-  fn extract_write< 'buf, 'data >
-  (
+
+  fn extract_write< 'buf, 'data >(
     & self,
     x : & InputExtract< 'data >,
     c : & mut Context< 'buf >,
   ) -> fmt::Result
   {
-    for ( i, row ) in x.row_descriptors.iter().enumerate()
+    // Calculate max width for each column
+    // let mut labels = vec![ "".to_string(); x.row_descriptors.len() ];
+    let mut max_widths = vec![ 0; x.col_descriptors.len() ];
+
+    for ( icol, _col ) in x.col_descriptors.iter().enumerate()
+    {
+      // labels[ icol ] = format!( " = {}\n", icol );
+      // println!( "labels[ icol ] : {}", labels[ icol ].len() );
+
+      // let label = &labels[ icol ];
+      max_widths[ icol ] = 0;
+      for row_data in &x.data
+      {
+        let sz = string::size( &row_data[ icol ].0 );
+        if sz[ 0 ] > max_widths[ icol ]
+        {
+          max_widths[ icol ] = sz[ 0 ];
+        }
+      }
+
+    }
+
+    //
+
+    // xxx : test with highest title
+
+    let mut slices_dim = [ 1, x.mcells[ 0 ], x.mcells[ 1 ] ];
+    slices_dim[ 0 ] = x.row_descriptors
+    .iter()
+    .fold( 0, | acc : usize, row | acc.max( row.height ) )
+    ;
+
+    let slices_len = slices_dim[ 0 ] * slices_dim[ 1 ] * slices_dim[ 2 ];
+    let slices : Vec< &str > = vec![ "" ; slices_len ];
+    let labels : Vec< &str > = vec![ "" ; slices_dim[ 0 ] ];
+
+//     let mut irow : isize = -1;
+//     for row_data in x.data.iter()
+//     {
+//
+//       irow += 1;
+//
+//       for icol in 0 .. x.col_descriptors.len()
+//       {
+//         let cell = &row_data[ icol ];
+//         string::lines( cell.0.as_ref() )
+//         .enumerate()
+//         .for_each( | ( layer, s ) |
+//         {
+//           let md_index = [ layer, icol, irow as usize ];
+//           slices[ x.slices_dim.md_offset( md_index ) ] = s;
+//         })
+//         ;
+//         x.col_descriptors[ icol ].label = cell.0.as_ref(); // xxx
+//       }
+//
+//     }
+
+    // Write each record
+    for ( irow, row ) in x.row_descriptors.iter().enumerate()
     {
       if !row.vis
       {
         continue;
       }
-      writeln!( c.buf, "-[ RECORD {} ]", i + 1 )?;
-      for ( icol, col ) in x.col_descriptors.iter().enumerate()
+      writeln!( c.buf, "{}", irow )?;
+      for ( icol, _col ) in x.col_descriptors.iter().enumerate()
       {
-        // let cell_width = x.data[ i ][ icol ].1[ 0 ];
-        let md_index = [ 0, icol, i ];
+        let md_index = [ 0, icol, irow ];
         let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
-        writeln!( c.buf, "{} | {}", col.width, slice )?;
+        let width = max_widths[ icol ];
+        writeln!( c.buf, "{:<width$} | {}", "", slice, width = width )?;
       }
     }
+
     Ok(())
   }
+
 }

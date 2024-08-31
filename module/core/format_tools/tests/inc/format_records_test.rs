@@ -48,7 +48,7 @@ fn basic()
   // gap   | 5
 
   let exp = r#"xxx"#;
-  // a_id!( output.as_str(), exp );
+  a_id!( output.as_str(), exp );
 
 }
 

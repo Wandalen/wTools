@@ -237,10 +237,11 @@ mod private
   /// A struct for extracting and organizing row of table data for formatting.
 
   #[ derive( Debug, Default ) ]
-  pub struct ColDescriptor
+  pub struct ColDescriptor< 'label >
   {
     pub icol : usize,
     pub width : usize,
+    pub label : &'label str,
   }
 
   /// A struct for extracting and organizing table data for formatting.
@@ -270,12 +271,9 @@ mod private
 
     /// Descriptors for each column, including optional title, width, and index.
     //                           width, index
-    // pub col_descriptors : Vec< ( usize, usize ) >,
-    pub col_descriptors : Vec< ColDescriptor >,
+    pub col_descriptors : Vec< ColDescriptor< 'data > >,
 
     /// Descriptors for each row, including height.
-    //                           height
-    // pub row_descriptors : Vec< ( usize, ) >,
     pub row_descriptors : Vec< RowDescriptor >,
 
     /// Extracted data for each cell, including string content and size.
@@ -306,6 +304,7 @@ mod private
     -> fmt::Result
     where
       'data : 't,
+      // 't : 'data,
       Table : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
       Table : TableHeader< CellKey = CellKey >,
       RowKey : table::RowKey,
@@ -323,7 +322,7 @@ mod private
       //                                 key        width, index
       let mut key_to_ikey : HashMap< &'t CellKey, usize > = HashMap::new();
 
-      let mut col_descriptors : Vec< ColDescriptor > = Vec::with_capacity( mcells[ 0 ] );
+      let mut col_descriptors : Vec< ColDescriptor< '_ > > = Vec::with_capacity( mcells[ 0 ] );
       let mut row_descriptors : Vec< RowDescriptor > = Vec::with_capacity( mcells[ 1 ] );
       let mut has_header = false;
 
@@ -377,12 +376,13 @@ mod private
             {
               let col = &mut col_descriptors[ *icol ];
               col.width = col.width.max( sz[ 0 ] );
+              col.label = ""; // xxx
             })
             .or_insert_with( ||
             {
               let icol = l;
               let width = sz[ 0 ];
-              let col = ColDescriptor { width, icol };
+              let col = ColDescriptor { width, icol, label : "" }; // xxx
               col_descriptors.push( col );
               icol
             });
@@ -496,7 +496,6 @@ mod private
       std::mem::swap( &mut x.slices, &mut slices );
 
       let mut irow : isize = -1;
-
       for row_data in x.data.iter()
       {
 
@@ -513,6 +512,7 @@ mod private
             slices[ x.slices_dim.md_offset( md_index ) ] = s;
           })
           ;
+          x.col_descriptors[ icol ].label = cell.0.as_ref(); // xxx
         }
 
       }
