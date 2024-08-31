@@ -39,7 +39,51 @@ use std::sync::OnceLock;
 /// `Records` provides an implementation for table formatting that outputs
 /// each row as a separate table with 2 columns, first is name of column in the original data and second is cell value itself.
 #[derive( Debug )]
-pub struct Records;
+pub struct Records
+{
+  /// Delimitting header with grid line or not.
+  pub delimitting_header : bool,
+  /// Prefix added to each row.
+  pub table_prefix : String,
+  /// Postfix added to each row.
+  pub table_postfix : String,
+  /// Separator used between rows.
+  pub table_separator : String,
+  /// Prefix added to each row.
+  pub row_prefix : String,
+  /// Postfix added to each row.
+  pub row_postfix : String,
+  /// Separator used between rows.
+  pub row_separator : String,
+  /// Prefix added to each cell.
+  pub cell_prefix : String,
+  /// Postfix added to each cell.
+  pub cell_postfix : String,
+  /// Separator used between table columns.
+  pub cell_separator : String,
+  /// Horizontal line character.
+  pub h : char,
+  /// Vertical line character.
+  pub v : char,
+  /// Left T-junction character.
+  pub t_l : char,
+  /// Right T-junction character.
+  pub t_r : char,
+  /// Top T-junction character.
+  pub t_t : char,
+  /// Bottom T-junction character.
+  pub t_b : char,
+  /// Cross junction character.
+  pub cross : char,
+  /// Top-left corner character.
+  pub corner_lt : char,
+  /// Top-right corner character.
+  pub corner_rt : char,
+  /// Bottom-left corner character.
+  pub corner_lb : char,
+  /// Bottom-right corner character.
+  pub corner_rb : char,
+}
 
 impl Records
 {
@@ -47,7 +91,7 @@ impl Records
   pub fn instance() -> & 'static dyn TableOutputFormat
   {
     static INSTANCE : OnceLock< Records > = OnceLock::new();
-    INSTANCE.get_or_init( || Records )
+    INSTANCE.get_or_init( || Records::default() )
   }
 }
 
@@ -55,11 +99,67 @@ impl Default for Records
 {
   fn default() -> Self
   {
+
+    let delimitting_header = true;
+
+    let cell_prefix = "".to_string();
+    let cell_postfix = "".to_string();
+    let cell_separator = " │ ".to_string();
+    let row_prefix = "│ ".to_string();
+    let row_postfix = " │".to_string();
+    let row_separator = "\n".to_string();
+    let table_prefix = "".to_string();
+    let table_postfix = "".to_string();
+    let table_separator = "\n".to_string();
+
+    let h = '─';
+    let v = '|';
+    let t_l = '├';
+    let t_r = '┤';
+    let t_t = '┬';
+    let t_b = '┴';
+    let cross = '┼';
+    let corner_lt = '┌';
+    let corner_rt = '┐';
+    let corner_lb = '└';
+    let corner_rb = '┘';
+
     Self
     {
+      delimitting_header,
+      table_prefix,
+      table_postfix,
+      table_separator,
+      row_prefix,
+      row_postfix,
+      row_separator,
+      cell_prefix,
+      cell_postfix,
+      cell_separator,
+      h,
+      v,
+      t_l,
+      t_r,
+      t_t,
+      t_b,
+      cross,
+      corner_lt,
+      corner_rt,
+      corner_lb,
+      corner_rb,
     }
   }
 }
+
+// impl Default for Records
+// {
+//   fn default() -> Self
+//   {
+//     Self
+//     {
+//     }
+//   }
+// }
 
 impl TableOutputFormat for Records
 {
@@ -70,80 +170,62 @@ impl TableOutputFormat for Records
     c : & mut Context< 'buf >,
   ) -> fmt::Result
   {
-    // Calculate max width for each column
-    // let mut labels = vec![ "".to_string(); x.row_descriptors.len() ];
-    let mut max_widths = vec![ 0; x.col_descriptors.len() ];
 
-    for ( icol, _col ) in x.col_descriptors.iter().enumerate()
-    {
-      // labels[ icol ] = format!( " = {}\n", icol );
-      // println!( "labels[ icol ] : {}", labels[ icol ].len() );
+    let label_width = x.header().fold( 0, | acc, cell | acc.max( cell.1[ 0 ] ) );
 
-      // let label = &labels[ icol ];
-      max_widths[ icol ] = 0;
-      for row_data in &x.data
-      {
-        let sz = string::size( &row_data[ icol ].0 );
-        if sz[ 0 ] > max_widths[ icol ]
-        {
-          max_widths[ icol ] = sz[ 0 ];
-        }
-      }
-
-    }
-
-    //
-
-    // xxx : test with highest title
-
-    let mut slices_dim = [ 1, x.mcells[ 0 ], x.mcells[ 1 ] ];
-    slices_dim[ 0 ] = x.row_descriptors
-    .iter()
-    .fold( 0, | acc : usize, row | acc.max( row.height ) )
-    ;
-
-    let slices_len = slices_dim[ 0 ] * slices_dim[ 1 ] * slices_dim[ 2 ];
-    let slices : Vec< &str > = vec![ "" ; slices_len ];
-    let labels : Vec< &str > = vec![ "" ; slices_dim[ 0 ] ];
-
-//     let mut irow : isize = -1;
-//     for row_data in x.data.iter()
-//     {
-//
-//       irow += 1;
-//
-//       for icol in 0 .. x.col_descriptors.len()
-//       {
-//         let cell = &row_data[ icol ];
-//         string::lines( cell.0.as_ref() )
-//         .enumerate()
-//         .for_each( | ( layer, s ) |
-//         {
-//           let md_index = [ layer, icol, irow as usize ];
-//           slices[ x.slices_dim.md_offset( md_index ) ] = s;
-//         })
-//         ;
-//         x.col_descriptors[ icol ].label = cell.0.as_ref(); // xxx
-//       }
-//
-//     }
+    write!( c.buf, "{}", self.table_prefix )?;
 
     // Write each record
-    for ( irow, row ) in x.row_descriptors.iter().enumerate()
+    for ( irow, row ) in x.rows()
     {
+
+      if irow > 0
+      {
+        write!( c.buf, "{}", self.table_separator )?;
+      }
+
+      let slice_width = x.data[ irow ].iter().fold( 0, | acc, cell | acc.max( cell.1[ 0 ] ) );
+
       if !row.vis
       {
         continue;
       }
-      writeln!( c.buf, "{}", irow )?;
+      writeln!( c.buf, " = {}", irow )?;
+
       for ( icol, _col ) in x.col_descriptors.iter().enumerate()
       {
-        let md_index = [ 0, icol, irow ];
-        let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
-        let width = max_widths[ icol ];
-        writeln!( c.buf, "{:<width$} | {}", "", slice, width = width )?;
+        let cell = &x.data[ irow ][ icol ];
+        let height = cell.1[ 1 ];
+
+        for islice in 0..height
+        {
+          let label = x.header_slice( islice, icol );
+          let md_index = [ islice, icol, irow ];
+          let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
+
+          if icol > 0 || islice > 0
+          {
+            write!( c.buf, "{}", self.row_separator )?;
+          }
+
+          write!( c.buf, "{}", self.row_prefix )?;
+
+          write!( c.buf, "{}", self.cell_prefix )?;
+          write!( c.buf, "{:<label_width$}", label )?;
+          write!( c.buf, "{}", self.cell_postfix )?;
+          write!( c.buf, "{}", self.cell_separator )?;
+          write!( c.buf, "{}", self.cell_prefix )?;
+          write!( c.buf, "{:<slice_width$}", slice )?;
+          write!( c.buf, "{}", self.cell_postfix )?;
+
+          write!( c.buf, "{}", self.row_postfix )?;
+        }
+
       }
+
     }
+
+    write!( c.buf, "{}", self.table_postfix )?;
 
     Ok(())
   }

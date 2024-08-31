@@ -47,7 +47,29 @@ fn basic()
   // sname | Boris
   // gap   | 5
 
-  let exp = r#"xxx"#;
+  let exp = r#" = 1
+│ id         │ 1            │
+│ created_at │ 1627845583   │
+│ file_ids   │ [            │
+│            │     "file1", │
+│            │     "file2", │
+│            │ ]            │
+│ tools      │              │
+ = 2
+│ id         │ 2                          │
+│ created_at │ 13                         │
+│ file_ids   │ [                          │
+│            │     "file3",               │
+│            │     "file4\nmore details", │
+│            │ ]                          │
+│ tools      │ [                          │
+│            │     {                      │
+│            │         "tool1": "value1", │
+│            │     },                     │
+│            │     {                      │
+│            │         "tool2": "value2", │
+│            │     },                     │
+│            │ ]                          │"#;
   a_id!( output.as_str(), exp );
 
 }

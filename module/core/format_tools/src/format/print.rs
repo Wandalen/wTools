@@ -7,6 +7,7 @@ mod private
 {
 
   use crate::*;
+  use md_math::MdOffset;
   use std::
   {
     borrow::Cow,
@@ -278,7 +279,7 @@ mod private
 
     /// Extracted data for each cell, including string content and size.
     //                      string,              size,
-    pub data : Vec< Vec< ( Cow< 'data, str >, [ usize ; 2 ] ) > >,
+    pub data : Vec< Vec< ( Cow< 'data, str >, [ usize ; 2 ] ) > >, // xxx : use maybe flat vector
 
     /// Dimensions of slices for retrieving data from multi-matrix.
     pub slices_dim : [ usize ; 3 ],
@@ -293,6 +294,76 @@ mod private
   impl< 'data > InputExtract< 'data >
   {
 
+    /// Returns an iterator over the row descriptors, skipping the header if present.
+    ///
+    /// This function provides an iterator that yields each row descriptor along with its index.
+    /// If the table has a header, the first row is skipped, ensuring that iteration starts from
+    /// the first data row.
+    ///
+    /// # Returns
+    ///
+    /// An iterator over tuples containing:
+    /// - `usize`: The index of the row.
+    /// - `&RowDescriptor`: A reference to the row descriptor.
+    ///
+    pub fn rows( & self ) -> impl _IteratorTrait< Item = ( usize, &RowDescriptor ) >
+    {
+      self.row_descriptors
+        .iter()
+        .enumerate()
+        .skip( if self.has_header { 1 } else { 0 } )
+    }
+
+    /// Returns an iterator over the header cells, or a default value if no header is present.
+    ///
+    /// This function provides an iterator that yields each cell in the header row. If the table
+    /// does not have a header, it returns an iterator over default values, which are empty strings
+    /// with a size of `[0, 1]`.
+    ///
+    /// # Returns
+    ///
+    /// A boxed iterator yielding tuples containing:
+    /// - `Cow<'data, str>`: A clone-on-write string representing the cell content.
+    /// - `[usize; 2]`: An array representing the size of the cell.
+    ///
+    pub fn header( & self ) -> Box< dyn Iterator< Item = ( Cow< 'data, str >, [ usize ; 2 ] ) > + '_ >
+    {
+      if self.has_header
+      {
+        Box::new( self.data[ 0 ].iter().cloned() )
+      }
+      else
+      {
+        Box::new( std::iter::repeat( ( Cow::Borrowed( "" ), [ 0, 1 ] ) ).take( self.mcells[ 0 ] ) )
+      }
+    }
+
+    /// Returns a slice from the header, or an empty string if no header is present.
+    ///
+    /// This function retrieves a specific slice from the header row based on the provided indices.
+    /// If the table does not have a header, it returns an empty string.
+    ///
+    /// # Arguments
+    ///
+    /// - `islice`: The slice index within the header cell.
+    /// - `icol`: The column index within the header row.
+    ///
+    /// # Returns
+    ///
+    /// A string slice representing the header content at the specified indices.
+    ///
+    pub fn header_slice( & self, islice : usize, icol : usize ) -> & str
+    {
+      if self.has_header
+      {
+        let md_index = [ islice, icol, 0 ];
+        self.slices[ self.slices_dim.md_offset( md_index ) ]
+      }
+      else
+      {
+        ""
+      }
+    }
     /// Extract input data from and collect it in a format consumable by output formatter.
     pub fn extract< 't, 'context, Table, RowKey, Row, CellKey, CellRepr >
     (
