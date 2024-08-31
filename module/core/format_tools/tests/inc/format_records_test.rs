@@ -34,19 +34,6 @@ fn basic()
   assert!( got.is_ok() );
   println!( "{}", &output );
 
-  // -[ RECORD 1 ]
-  // sid   | 3
-  // sname | Alice
-  // gap   | 5
-  // -[ RECORD 2 ]
-  // sid   | 6
-  // sname | Joe
-  // gap   | 1
-  // -[ RECORD 3 ]
-  // sid   | 10
-  // sname | Boris
-  // gap   | 5
-
   let exp = r#" = 1
 │ id         │ 1            │
 │ created_at │ 1627845583   │

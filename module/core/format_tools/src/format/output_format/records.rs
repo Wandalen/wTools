@@ -41,8 +41,6 @@ use std::sync::OnceLock;
 #[derive( Debug )]
 pub struct Records
 {
-  /// Delimitting header with grid line or not.
-  pub delimitting_header : bool,
   /// Prefix added to each row.
   pub table_prefix : String,
   /// Postfix added to each row.
@@ -100,8 +98,6 @@ impl Default for Records
   fn default() -> Self
   {
 
-    let delimitting_header = true;
-
     let cell_prefix = "".to_string();
     let cell_postfix = "".to_string();
     let cell_separator = " │ ".to_string();
@@ -126,7 +122,6 @@ impl Default for Records
 
     Self
     {
-      delimitting_header,
       table_prefix,
       table_postfix,
       table_separator,

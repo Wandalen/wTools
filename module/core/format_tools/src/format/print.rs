@@ -84,7 +84,7 @@ mod private
       // .field( "row_prefix", & self.row_prefix )
       // .field( "row_postfix", & self.row_postfix )
       // .field( "row_separator", & self.row_separator )
-      // .field( "output_format", & format_args!( "{:?}", self.output_format ) ) // xxx
+      // .field( "output_format", & format_args!( "{:?}", self.output_format ) )
       // .field( "filter_col", & format_args!( "{:?}", self.filter_col ) )
       .finish()
     }
@@ -285,7 +285,6 @@ mod private
     pub slices_dim : [ usize ; 3 ],
     /// Extracted slices or strings for further processing.
     pub slices : Vec< &'data str >,
-    // xxx : move out that maybe
 
   }
 
@@ -447,13 +446,13 @@ mod private
             {
               let col = &mut col_descriptors[ *icol ];
               col.width = col.width.max( sz[ 0 ] );
-              col.label = ""; // xxx
+              col.label = "";
             })
             .or_insert_with( ||
             {
               let icol = l;
               let width = sz[ 0 ];
-              let col = ColDescriptor { width, icol, label : "" }; // xxx
+              let col = ColDescriptor { width, icol, label : "" };
               col_descriptors.push( col );
               icol
             });
@@ -583,7 +582,7 @@ mod private
             slices[ x.slices_dim.md_offset( md_index ) ] = s;
           })
           ;
-          x.col_descriptors[ icol ].label = cell.0.as_ref(); // xxx
+          x.col_descriptors[ icol ].label = cell.0.as_ref();
         }
 
       }
