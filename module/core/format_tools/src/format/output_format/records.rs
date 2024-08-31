@@ -146,16 +146,6 @@ impl Default for Records
   }
 }
 
-// impl Default for Records
-// {
-//   fn default() -> Self
-//   {
-//     Self
-//     {
-//     }
-//   }
-// }
-
 impl TableOutputFormat for Records
 {
 
@@ -170,21 +160,27 @@ impl TableOutputFormat for Records
 
     write!( c.buf, "{}", self.table_prefix )?;
 
+    let mut first = true;
     // Write each record
     for ( irow, row ) in x.rows()
     {
 
-      if irow > 0
+      if !row.vis
+      {
+        continue;
+      }
+
+      if first
+      {
+        first = false;
+      }
+      else
       {
         write!( c.buf, "{}", self.table_separator )?;
       }
 
       let slice_width = x.data[ irow ].iter().fold( 0, | acc, cell | acc.max( cell.1[ 0 ] ) );
 
-      if !row.vis
-      {
-        continue;
-      }
       writeln!( c.buf, " = {}", irow )?;
 
       for ( icol, _col ) in x.col_descriptors.iter().enumerate()

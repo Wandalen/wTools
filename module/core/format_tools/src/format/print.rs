@@ -42,6 +42,7 @@ mod private
   ///   used to add a consistent end to each row.
   ///
   /// ```
+
   // xxx : enable
   // #[ derive( Debug, Former ) ]
   // #[ derive( Debug ) ]
