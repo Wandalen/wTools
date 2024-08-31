@@ -282,9 +282,9 @@ mod private
 
     /// Dimensions of slices for retrieving data from multi-matrix.
     pub slices_dim : [ usize ; 3 ],
-
     /// Extracted slices or strings for further processing.
     pub slices : Vec< &'data str >,
+    // xxx : move out that maybe
 
   }
 
