@@ -63,120 +63,103 @@ fn basic()
 
 //
 
-// #[ test ]
-// fn table_to_string()
-// {
-//   use the_module::TableFormatter;
-//   let test_objects = test_object::test_objects_gen();
+#[ test ]
+fn custom_format()
+{
+  // use the_module::TableFormatter;
+  let test_objects = test_object::test_objects_gen();
+
+  let mut format = output_format::Records::default();
+  format.cell_prefix = "( ".into();
+  format.cell_postfix = " )".into();
+  format.cell_separator = "|".into();
+  format.row_prefix = ">".into();
+  format.row_postfix = "<".into();
+  format.row_separator = "\n".into();
+
+  let printer = print::Printer::with_format( &format );
+  let as_table = AsTable::new( &test_objects );
+  let mut output = String::new();
+  let mut context = print::Context::new( &mut output, printer );
+  let result = the_module::TableFormatter::fmt( &as_table, &mut context );
+  assert!( result.is_ok() );
+
+  println!( "\noutput\n{output}" );
+
+  let exp = r#" = 1
+>( id         )|( 1            )<
+>( created_at )|( 1627845583   )<
+>( file_ids   )|( [            )<
+>(            )|(     "file1", )<
+>(            )|(     "file2", )<
+>(            )|( ]            )<
+>( tools      )|(              )<
+ = 2
+>( id         )|( 2                          )<
+>( created_at )|( 13                         )<
+>( file_ids   )|( [                          )<
+>(            )|(     "file3",               )<
+>(            )|(     "file4\nmore details", )<
+>(            )|( ]                          )<
+>( tools      )|( [                          )<
+>(            )|(     {                      )<
+>(            )|(         "tool1": "value1", )<
+>(            )|(     },                     )<
+>(            )|(     {                      )<
+>(            )|(         "tool2": "value2", )<
+>(            )|(     },                     )<
+>(            )|( ]                          )<"#;
+  a_id!( output.as_str(), exp );
+
+  // using table_to_string_with_format
+
+  use the_module::TableFormatter;
+
+  let mut format = output_format::Records::default();
+  format.cell_prefix = "( ".into();
+  format.cell_postfix = " )".into();
+  format.cell_separator = "|".into();
+  format.row_prefix = ">".into();
+  format.row_postfix = "<".into();
+  format.row_separator = "\n".into();
+
+  // let as_table = AsTable::new( &test_objects );
+  let got = AsTable::new( &test_objects ).table_to_string_with_format( &format );
+  let exp = r#" = 1
+>( id         )|( 1            )<
+>( created_at )|( 1627845583   )<
+>( file_ids   )|( [            )<
+>(            )|(     "file1", )<
+>(            )|(     "file2", )<
+>(            )|( ]            )<
+>( tools      )|(              )<
+ = 2
+>( id         )|( 2                          )<
+>( created_at )|( 13                         )<
+>( file_ids   )|( [                          )<
+>(            )|(     "file3",               )<
+>(            )|(     "file4\nmore details", )<
+>(            )|( ]                          )<
+>( tools      )|( [                          )<
+>(            )|(     {                      )<
+>(            )|(         "tool1": "value1", )<
+>(            )|(     },                     )<
+>(            )|(     {                      )<
+>(            )|(         "tool2": "value2", )<
+>(            )|(     },                     )<
+>(            )|( ]                          )<"#;
+  a_id!( got, exp );
+
+}
+
 //
-//   // with explicit arguments
-//
-//   let as_table : AsTable< '_, Vec< test_object::TestObject >, usize, test_object::TestObject, str, WithRef > = AsTable::new( &test_objects );
-//   let table_string = as_table.table_to_string();
-//   println!( "\ntable_string\n{table_string}" );
-//   assert!( table_string.contains( "id" ) );
-//   assert!( table_string.contains( "created_at" ) );
-//   assert!( table_string.contains( "file_ids" ) );
-//   assert!( table_string.contains( "tools" ) );
-//
-//   // without explicit arguments
-//
-//   println!( "" );
-//   let as_table = AsTable::new( &test_objects );
-//   let table_string = as_table.table_to_string();
-//   assert!( table_string.contains( "id" ) );
-//   assert!( table_string.contains( "created_at" ) );
-//   assert!( table_string.contains( "file_ids" ) );
-//   assert!( table_string.contains( "tools" ) );
-//   println!( "\ntable_string\n{table_string}" );
-//
-// }
-//
-// //
-//
-// #[ test ]
-// fn custom_format()
-// {
-//   // use the_module::TableFormatter;
-//   let test_objects = test_object::test_objects_gen();
-//
-//   let mut format = output_format::Ordinary::default();
-//   format.cell_prefix = "( ".into();
-//   format.cell_postfix = " )".into();
-//   format.cell_separator = "|".into();
-//   format.row_prefix = ">".into();
-//   format.row_postfix = "<".into();
-//   format.row_separator = "\n".into();
-//
-//   let printer = print::Printer::with_format( &format );
-//   let as_table = AsTable::new( &test_objects );
-//   let mut output = String::new();
-//   let mut context = print::Context::new( &mut output, printer );
-//   let result = the_module::TableFormatter::fmt( &as_table, &mut context );
-//   assert!( result.is_ok() );
-//
-//   println!( "\noutput\n{output}" );
-//   assert!( output.contains( "id" ) );
-//   assert!( output.contains( "created_at" ) );
-//   assert!( output.contains( "file_ids" ) );
-//   assert!( output.contains( "tools" ) );
-//
-//   let exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
-// ─────────────────────────────────────────────────────────────────────────────────────
-// >( 1  )|( 1627845583 )|(        [                   )|(                            )<
-// >(    )|(            )|(            "file1",        )|(                            )<
-// >(    )|(            )|(            "file2",        )|(                            )<
-// >(    )|(            )|(        ]                   )|(                            )<
-// >( 2  )|(     13     )|( [                          )|( [                          )<
-// >(    )|(            )|(     "file3",               )|(     {                      )<
-// >(    )|(            )|(     "file4\nmore details", )|(         "tool1": "value1", )<
-// >(    )|(            )|( ]                          )|(     },                     )<
-// >(    )|(            )|(                            )|(     {                      )<
-// >(    )|(            )|(                            )|(         "tool2": "value2", )<
-// >(    )|(            )|(                            )|(     },                     )<
-// >(    )|(            )|(                            )|( ]                          )<"#;
-//   a_id!( output.as_str(), exp );
-//
-//   // using table_to_string_with_format
-//
-//   use the_module::TableFormatter;
-//
-//   let mut format = output_format::Ordinary::default();
-//   format.cell_prefix = "( ".into();
-//   format.cell_postfix = " )".into();
-//   format.cell_separator = "|".into();
-//   format.row_prefix = ">".into();
-//   format.row_postfix = "<".into();
-//   format.row_separator = "\n".into();
-//
-//   // let as_table = AsTable::new( &test_objects );
-//   let got = AsTable::new( &test_objects ).table_to_string_with_format( &format );
-//   let exp = r#">( id )|( created_at )|(          file_ids          )|(           tools            )<
-// ─────────────────────────────────────────────────────────────────────────────────────
-// >( 1  )|( 1627845583 )|(        [                   )|(                            )<
-// >(    )|(            )|(            "file1",        )|(                            )<
-// >(    )|(            )|(            "file2",        )|(                            )<
-// >(    )|(            )|(        ]                   )|(                            )<
-// >( 2  )|(     13     )|( [                          )|( [                          )<
-// >(    )|(            )|(     "file3",               )|(     {                      )<
-// >(    )|(            )|(     "file4\nmore details", )|(         "tool1": "value1", )<
-// >(    )|(            )|( ]                          )|(     },                     )<
-// >(    )|(            )|(                            )|(     {                      )<
-// >(    )|(            )|(                            )|(         "tool2": "value2", )<
-// >(    )|(            )|(                            )|(     },                     )<
-// >(    )|(            )|(                            )|( ]                          )<"#;
-//   a_id!( got, exp );
-//
-// }
-//
-//
-//
+
 // #[ test ]
 // fn filter_col_none()
 // {
 //   let test_objects = test_object::test_objects_gen();
 //
-//   let mut format = output_format::Ordinary::default();
+//   let mut format = output_format::Records::default();
 //   format.cell_prefix = "( ".into();
 //   format.cell_postfix = " )".into();
 //   format.cell_separator = "|".into();
@@ -211,7 +194,7 @@ fn basic()
 // {
 //   let test_objects = test_object::test_objects_gen();
 //
-//   let mut format = output_format::Ordinary::default();
+//   let mut format = output_format::Records::default();
 //   format.cell_prefix = "( ".into();
 //   format.cell_postfix = " )".into();
 //   format.cell_separator = "|".into();
@@ -255,7 +238,7 @@ fn basic()
 // {
 //   let test_objects = test_object::test_objects_gen();
 //
-//   let mut format = output_format::Ordinary::default();
+//   let mut format = output_format::Records::default();
 //   format.cell_prefix = "( ".into();
 //   format.cell_postfix = " )".into();
 //   format.cell_separator = "|".into();
@@ -287,7 +270,7 @@ fn basic()
 // {
 //   let test_objects = test_object::test_objects_gen();
 //
-//   let mut format = output_format::Ordinary::default();
+//   let mut format = output_format::Records::default();
 //   format.cell_prefix = "( ".into();
 //   format.cell_postfix = " )".into();
 //   format.cell_separator = "|".into();
