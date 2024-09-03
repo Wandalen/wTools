@@ -59,28 +59,28 @@ pub struct Records
   pub cell_postfix : String,
   /// Separator used between table columns.
   pub cell_separator : String,
-  /// Horizontal line character.
-  pub h : char,
-  /// Vertical line character.
-  pub v : char,
-  /// Left T-junction character.
-  pub t_l : char,
-  /// Right T-junction character.
-  pub t_r : char,
-  /// Top T-junction character.
-  pub t_t : char,
-  /// Bottom T-junction character.
-  pub t_b : char,
-  /// Cross junction character.
-  pub cross : char,
-  /// Top-left corner character.
-  pub corner_lt : char,
-  /// Top-right corner character.
-  pub corner_rt : char,
-  /// Bottom-left corner character.
-  pub corner_lb : char,
-  /// Bottom-right corner character.
-  pub corner_rb : char,
+  // /// Horizontal line character.
+  // pub h : char,
+  // /// Vertical line character.
+  // pub v : char,
+  // /// Left T-junction character.
+  // pub t_l : char,
+  // /// Right T-junction character.
+  // pub t_r : char,
+  // /// Top T-junction character.
+  // pub t_t : char,
+  // /// Bottom T-junction character.
+  // pub t_b : char,
+  // /// Cross junction character.
+  // pub cross : char,
+  // /// Top-left corner character.
+  // pub corner_lt : char,
+  // /// Top-right corner character.
+  // pub corner_rt : char,
+  // /// Bottom-left corner character.
+  // pub corner_lb : char,
+  // /// Bottom-right corner character.
+  // pub corner_rb : char,
 }
 
 impl Records
@@ -108,17 +108,17 @@ impl Default for Records
     let table_postfix = "".to_string();
     let table_separator = "\n".to_string();
 
-    let h = '─';
-    let v = '|';
-    let t_l = '├';
-    let t_r = '┤';
-    let t_t = '┬';
-    let t_b = '┴';
-    let cross = '┼';
-    let corner_lt = '┌';
-    let corner_rt = '┐';
-    let corner_lb = '└';
-    let corner_rb = '┘';
+    // let h = '─';
+    // let v = '|';
+    // let t_l = '├';
+    // let t_r = '┤';
+    // let t_t = '┬';
+    // let t_b = '┴';
+    // let cross = '┼';
+    // let corner_lt = '┌';
+    // let corner_rt = '┐';
+    // let corner_lb = '└';
+    // let corner_rb = '┘';
 
     Self
     {
@@ -131,17 +131,17 @@ impl Default for Records
       cell_prefix,
       cell_postfix,
       cell_separator,
-      h,
-      v,
-      t_l,
-      t_r,
-      t_t,
-      t_b,
-      cross,
-      corner_lt,
-      corner_rt,
-      corner_lb,
-      corner_rb,
+      // h,
+      // v,
+      // t_l,
+      // t_r,
+      // t_t,
+      // t_b,
+      // cross,
+      // corner_lt,
+      // corner_rt,
+      // corner_lb,
+      // corner_rb,
     }
   }
 }
