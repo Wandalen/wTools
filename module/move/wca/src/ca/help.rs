@@ -6,7 +6,7 @@ mod private
     Command,
     Routine,
     Type,
-    formatter::private::
+    formatter::
     {
       HelpFormat,
       md_generator
@@ -64,7 +64,7 @@ mod private
   }
 
   // qqq : for Barsik : make possible to change properties order
-  pub( crate ) fn generate_help_content( dictionary : &Dictionary, o : HelpGeneratorOptions< '_ > ) -> String
+  pub fn generate_help_content( dictionary : &Dictionary, o : HelpGeneratorOptions< '_ > ) -> String
   {
     struct Row
     {
@@ -418,5 +418,9 @@ crate::mod_interface!
 {
   own use HelpGeneratorFn;
   own use HelpGeneratorOptions;
+  own use LevelOfDetail;
+  own use generate_help_content;
+
   prelude use HelpVariants;
+
 }

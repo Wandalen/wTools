@@ -3,7 +3,7 @@ mod private
 
   use crate::*;
   use iter_tools::Itertools;
-  use ca::aggregator::private::Order;
+  use ca::aggregator::Order;
 
   /// -
   #[ derive( Debug, Clone, PartialEq ) ]
@@ -91,5 +91,6 @@ mod private
 
 crate::mod_interface!
 {
-
+  own use HelpFormat;
+  own use md_generator;
 }

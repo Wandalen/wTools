@@ -4,7 +4,7 @@ mod private
 
   // use wtools::error::Result;
   use error::return_err;
-  use ca::help::private::{ HelpGeneratorOptions, LevelOfDetail, generate_help_content };
+  use ca::help::{ HelpGeneratorOptions, generate_help_content, LevelOfDetail };
 
   // aaa : for Bohdan : how is it useful? where is it used?
   // aaa : `ExecutorType` has been removed

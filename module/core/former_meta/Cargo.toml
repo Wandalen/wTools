@@ -1,6 +1,6 @@
 [package]
 name = "former_meta"
-version = "2.8.0"
+version = "2.9.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",

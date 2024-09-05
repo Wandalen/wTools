@@ -1,7 +1,8 @@
 use super::*;
 
-use the_module::*;
-use graph::toposort;
+// qqq : for Bohdan : bad. don't import the_module::*
+// use the_module::*;
+use the_module::graph::toposort;
 use collection::HashMap;
 use petgraph::Graph;
 use willbe::graph::topological_sort_with_grouping;

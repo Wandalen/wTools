@@ -5,7 +5,7 @@ mod private
   {
     Verifier,
     Executor,
-    grammar::command::private::
+    grammar::command::
     {
       CommandFormer,
       CommandAsSubformer,

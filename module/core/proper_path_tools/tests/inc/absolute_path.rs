@@ -1,12 +1,16 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
+#[ cfg( not( feature="no_std" ) ) ]
 use the_module::
 {
   AbsolutePath,
   Path,
   PathBuf,
 };
+
+#[ cfg( feature="no_std" ) ]
+use crate::the_module::AbsolutePath;
 
 // #[ cfg( feature = "path_utf8" ) ]
 // use the_module::Utf8PathBuf;
@@ -37,6 +41,7 @@ fn test_to_string_lossy_hard()
 }
 
 #[test]
+#[ cfg( not( feature="no_std" ) ) ]
 fn test_try_from_pathbuf()
 {
 
@@ -46,6 +51,7 @@ fn test_try_from_pathbuf()
 }
 
 #[test]
+#[ cfg( not( feature="no_std" ) ) ]
 fn test_try_from_path()
 {
   let path = Path::new( "/path/to/some/file.txt" );
@@ -79,6 +85,7 @@ fn test_relative_path_try_from_str()
 }
 
 #[test]
+#[ cfg( not( feature="no_std" ) ) ]
 fn test_relative_path_try_from_pathbuf()
 {
   let rel_path_buf = PathBuf::from( "src/main.rs" );
@@ -87,6 +94,7 @@ fn test_relative_path_try_from_pathbuf()
 }
 
 #[test]
+#[ cfg( not( feature="no_std" ) ) ]
 fn test_relative_path_try_from_path()
 {
   let rel_path = Path::new( "src/main.rs" );

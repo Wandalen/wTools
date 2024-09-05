@@ -50,8 +50,8 @@ fn into_constructor()
   exp.push_front( 3 );
   assert_eq!( got, exp );
 
-  let _got : DequeList< &str > = the_module::deque!( "b" );
-  let _got : DequeList< &str > = the_module::exposed::deque!( "b" );
+  let _got = the_module::deque!( "b" );
+  let _got = the_module::exposed::deque!( "b" );
 
 }
 
