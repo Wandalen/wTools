@@ -2,7 +2,6 @@ use super::*;
 // use the_module::*;
 
 // qqq : for Bohdan : bad. don't import the_module::*
-
 use inc::helper::
 {
   ProjectBuilder,
@@ -19,9 +18,9 @@ use collection::BTreeSet;
 // use path::{ Path, PathBuf };
 use assert_fs::TempDir;
 
-use action::test::{ test, TestsCommandOptions };
-use channel::*;
-use optimization::*;
+use the_module::action::test::{ test, TestsCommandOptions };
+use the_module::channel::*;
+use the_module::optimization::*;
 // qqq : for Petro : no astersisks import
 use willbe::test::TestVariant;
 
