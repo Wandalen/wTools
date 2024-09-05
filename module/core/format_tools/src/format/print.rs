@@ -7,6 +7,7 @@ mod private
 {
 
   use crate::*;
+  use md_math::MdOffset;
   use std::
   {
     borrow::Cow,
@@ -41,6 +42,7 @@ mod private
   ///   used to add a consistent end to each row.
   ///
   /// ```
+
   // xxx : enable
   // #[ derive( Debug, Former ) ]
   // #[ derive( Debug ) ]
@@ -83,7 +85,7 @@ mod private
       // .field( "row_prefix", & self.row_prefix )
       // .field( "row_postfix", & self.row_postfix )
       // .field( "row_separator", & self.row_separator )
-      // .field( "output_format", & format_args!( "{:?}", self.output_format ) ) // xxx
+      // .field( "output_format", & format_args!( "{:?}", self.output_format ) )
       // .field( "filter_col", & format_args!( "{:?}", self.filter_col ) )
       .finish()
     }
@@ -237,10 +239,11 @@ mod private
   /// A struct for extracting and organizing row of table data for formatting.
 
   #[ derive( Debug, Default ) ]
-  pub struct ColDescriptor
+  pub struct ColDescriptor< 'label >
   {
     pub icol : usize,
     pub width : usize,
+    pub label : &'label str,
   }
 
   /// A struct for extracting and organizing table data for formatting.
@@ -270,21 +273,17 @@ mod private
 
     /// Descriptors for each column, including optional title, width, and index.
     //                           width, index
-    // pub col_descriptors : Vec< ( usize, usize ) >,
-    pub col_descriptors : Vec< ColDescriptor >,
+    pub col_descriptors : Vec< ColDescriptor< 'data > >,
 
     /// Descriptors for each row, including height.
-    //                           height
-    // pub row_descriptors : Vec< ( usize, ) >,
     pub row_descriptors : Vec< RowDescriptor >,
 
     /// Extracted data for each cell, including string content and size.
     //                      string,              size,
-    pub data : Vec< Vec< ( Cow< 'data, str >, [ usize ; 2 ] ) > >,
+    pub data : Vec< Vec< ( Cow< 'data, str >, [ usize ; 2 ] ) > >, // xxx : use maybe flat vector
 
     /// Dimensions of slices for retrieving data from multi-matrix.
     pub slices_dim : [ usize ; 3 ],
-
     /// Extracted slices or strings for further processing.
     pub slices : Vec< &'data str >,
 
@@ -295,6 +294,76 @@ mod private
   impl< 'data > InputExtract< 'data >
   {
 
+    /// Returns an iterator over the row descriptors, skipping the header if present.
+    ///
+    /// This function provides an iterator that yields each row descriptor along with its index.
+    /// If the table has a header, the first row is skipped, ensuring that iteration starts from
+    /// the first data row.
+    ///
+    /// # Returns
+    ///
+    /// An iterator over tuples containing:
+    /// - `usize`: The index of the row.
+    /// - `&RowDescriptor`: A reference to the row descriptor.
+    ///
+    pub fn rows( & self ) -> impl _IteratorTrait< Item = ( usize, &RowDescriptor ) >
+    {
+      self.row_descriptors
+        .iter()
+        .enumerate()
+        .skip( if self.has_header { 1 } else { 0 } )
+    }
+
+    /// Returns an iterator over the header cells, or a default value if no header is present.
+    ///
+    /// This function provides an iterator that yields each cell in the header row. If the table
+    /// does not have a header, it returns an iterator over default values, which are empty strings
+    /// with a size of `[0, 1]`.
+    ///
+    /// # Returns
+    ///
+    /// A boxed iterator yielding tuples containing:
+    /// - `Cow<'data, str>`: A clone-on-write string representing the cell content.
+    /// - `[usize; 2]`: An array representing the size of the cell.
+    ///
+    pub fn header( & self ) -> Box< dyn Iterator< Item = ( Cow< 'data, str >, [ usize ; 2 ] ) > + '_ >
+    {
+      if self.has_header
+      {
+        Box::new( self.data[ 0 ].iter().cloned() )
+      }
+      else
+      {
+        Box::new( std::iter::repeat( ( Cow::Borrowed( "" ), [ 0, 1 ] ) ).take( self.mcells[ 0 ] ) )
+      }
+    }
+
+    /// Returns a slice from the header, or an empty string if no header is present.
+    ///
+    /// This function retrieves a specific slice from the header row based on the provided indices.
+    /// If the table does not have a header, it returns an empty string.
+    ///
+    /// # Arguments
+    ///
+    /// - `islice`: The slice index within the header cell.
+    /// - `icol`: The column index within the header row.
+    ///
+    /// # Returns
+    ///
+    /// A string slice representing the header content at the specified indices.
+    ///
+    pub fn header_slice( & self, islice : usize, icol : usize ) -> & str
+    {
+      if self.has_header
+      {
+        let md_index = [ islice, icol, 0 ];
+        self.slices[ self.slices_dim.md_offset( md_index ) ]
+      }
+      else
+      {
+        ""
+      }
+    }
     /// Extract input data from and collect it in a format consumable by output formatter.
     pub fn extract< 't, 'context, Table, RowKey, Row, CellKey, CellRepr >
     (
@@ -306,6 +375,7 @@ mod private
     -> fmt::Result
     where
       'data : 't,
+      // 't : 'data,
       Table : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
       Table : TableHeader< CellKey = CellKey >,
       RowKey : table::RowKey,
@@ -323,7 +393,7 @@ mod private
       //                                 key        width, index
       let mut key_to_ikey : HashMap< &'t CellKey, usize > = HashMap::new();
 
-      let mut col_descriptors : Vec< ColDescriptor > = Vec::with_capacity( mcells[ 0 ] );
+      let mut col_descriptors : Vec< ColDescriptor< '_ > > = Vec::with_capacity( mcells[ 0 ] );
       let mut row_descriptors : Vec< RowDescriptor > = Vec::with_capacity( mcells[ 1 ] );
       let mut has_header = false;
 
@@ -377,12 +447,13 @@ mod private
             {
               let col = &mut col_descriptors[ *icol ];
               col.width = col.width.max( sz[ 0 ] );
+              col.label = "";
             })
             .or_insert_with( ||
             {
               let icol = l;
               let width = sz[ 0 ];
-              let col = ColDescriptor { width, icol };
+              let col = ColDescriptor { width, icol, label : "" };
               col_descriptors.push( col );
               icol
             });
@@ -496,7 +567,6 @@ mod private
       std::mem::swap( &mut x.slices, &mut slices );
 
       let mut irow : isize = -1;
-
       for row_data in x.data.iter()
       {
 
@@ -513,6 +583,7 @@ mod private
             slices[ x.slices_dim.md_offset( md_index ) ] = s;
           })
           ;
+          x.col_descriptors[ icol ].label = cell.0.as_ref();
         }
 
       }

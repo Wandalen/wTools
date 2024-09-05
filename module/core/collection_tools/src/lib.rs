@@ -64,7 +64,7 @@ pub mod exposed
   pub use prelude::*;
 
   #[ doc( inline ) ]
-  #[ cfg( feature = "collection_constructors" ) ]
+  #[ cfg( any( feature = "use_alloc", all( feature = "collection_constructors", not( feature = "no_std" ) ) ) ) ]
   pub use crate::
   {
     vec as dlist,
@@ -77,7 +77,7 @@ pub mod exposed
   };
 
   #[ doc( inline ) ]
-  #[ cfg( feature = "collection_into_constructors" ) ]
+  #[ cfg( any( feature = "use_alloc", all( feature = "collection_into_constructors", not( feature = "no_std" ) ) ) ) ]
   pub use crate::
   {
     into_vec,
