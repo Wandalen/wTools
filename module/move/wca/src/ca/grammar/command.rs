@@ -249,6 +249,11 @@ crate::mod_interface!
   exposed use Command;
   exposed use CommandFormer;
   own use ValueDescription;
+
+  own use CommandAsSubformer;
+  own use CommandAsSubformerEnd;
+  own use CommandFormerStorage;
+
 }
 
 // qqq : use orphan instead of exposed for ALL files in the folder, dont use prelude for structs

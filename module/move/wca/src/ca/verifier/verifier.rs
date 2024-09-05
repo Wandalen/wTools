@@ -8,7 +8,7 @@ mod private
   use indexmap::IndexMap;
   // use wtools::{ error, error::Result, err };
   use error::err;
-  use ca::help::private::{ HelpGeneratorOptions, LevelOfDetail, generate_help_content };
+  use ca::help::{ HelpGeneratorOptions, LevelOfDetail, generate_help_content };
   // xxx
 
   /// Converts a `ParsedCommand` to a `VerifiedCommand` by performing validation and type casting on values.
@@ -249,4 +249,8 @@ mod private
 crate::mod_interface!
 {
   exposed use Verifier;
+
+  // own use LevelOfDetail;
+  // own use generate_help_content;
+
 }
