@@ -253,7 +253,7 @@ path = "module/core/mod_interface"
 default-features = false
 
 [workspace.dependencies.mod_interface_meta]
-version = "~0.23.0"
+version = "~0.24.0"
 path = "module/core/mod_interface_meta"
 default-features = false
 
