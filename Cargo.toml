@@ -436,7 +436,7 @@ path = "module/move/wcensor"
 ## willbe
 
 [workspace.dependencies.willbe]
-version = "~0.14.0"
+version = "~0.15.0"
 path = "module/move/willbe"
 
 
