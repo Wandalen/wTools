@@ -422,7 +422,7 @@ default-features = false
 ## ca
 
 [workspace.dependencies.wca]
-version = "~0.20.0"
+version = "~0.21.0"
 path = "module/move/wca"
 
 
