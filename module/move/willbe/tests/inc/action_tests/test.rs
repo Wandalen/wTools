@@ -20,7 +20,8 @@ use assert_fs::TempDir;
 
 use the_module::action::test::{ test, TestsCommandOptions };
 use the_module::channel::*;
-use the_module::optimization::*;
+// use the_module::optimization::*;
+use the_module::optimization::{ self, Optimization };
 use the_module::AbsolutePath;
 // qqq : for Petro : no astersisks import
 use willbe::test::TestVariant;
