@@ -201,3 +201,44 @@ pub mod prelude
   pub use ::variadic_from::prelude::*;
 
 }
+
+// xxx : minimize dependendencies
+// Adding aho-corasick v1.1.3
+// Adding cfg_aliases v0.1.1 (latest: v0.2.1)
+// Adding clone_dyn v0.24.0
+// Adding clone_dyn_meta v0.24.0
+// Adding clone_dyn_types v0.23.0
+// Adding collection_tools v0.12.0
+// Adding const_format v0.2.33
+// Adding const_format_proc_macros v0.2.33
+// Adding convert_case v0.6.0
+// Adding derive_more v1.0.0
+// Adding derive_more-impl v1.0.0
+// Adding derive_tools v0.28.0
+// Adding derive_tools_meta v0.27.0
+// Adding either v1.13.0
+// Adding former_types v2.8.0
+// Adding heck v0.4.1 (latest: v0.5.0)
+// Adding interval_adapter v0.24.0
+// Adding iter_tools v0.21.0
+// Adding itertools v0.11.0 (latest: v0.13.0)
+// Adding macro_tools v0.40.0
+// Adding parse-display v0.8.2 (latest: v0.10.0)
+// Adding parse-display-derive v0.8.2 (latest: v0.10.0)
+// Adding phf v0.10.1 (latest: v0.11.2)
+// Adding phf_generator v0.10.0 (latest: v0.11.2)
+// Adding phf_macros v0.10.0 (latest: v0.11.2)
+// Adding phf_shared v0.10.0 (latest: v0.11.2)
+// Adding proc-macro-hack v0.5.20+deprecated
+// Adding regex v1.10.6
+// Adding regex-automata v0.4.7
+// Adding regex-syntax v0.7.5 (latest: v0.8.4)
+// Adding regex-syntax v0.8.4
+// Adding rustversion v1.0.17
+// Adding structmeta v0.2.0 (latest: v0.3.0)
+// Adding structmeta-derive v0.2.0 (latest: v0.3.0)
+// Adding strum v0.25.0 (latest: v0.26.3)
+// Adding strum_macros v0.25.3 (latest: v0.26.4)
+// Adding unicode-segmentation v1.11.0
+// Adding unicode-xid v0.2.5
+// Adding variadic_from v0.23.0

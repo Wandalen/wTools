@@ -145,7 +145,7 @@ fn generate_unit
       #generics_where
     {
       #[ inline( always ) ]
-      fn new() -> Self
+      pub fn new() -> Self
       {
         Self
       }
@@ -175,8 +175,8 @@ fn generate_single_field_named
       #generics_where
     {
       #[ inline( always ) ]
-      // fn new( src : i32 ) -> Self
-      fn new( src : #field_type ) -> Self
+      // pub fn new( src : i32 ) -> Self
+      pub fn new( src : #field_type ) -> Self
       {
         // Self { a : src }
         Self { #field_name: src }
@@ -207,8 +207,8 @@ fn generate_single_field
       #generics_where
     {
       #[ inline( always ) ]
-      // fn new( src : bool ) -> Self
-      fn new( src : #field_type ) -> Self
+      // pub fn new( src : bool ) -> Self
+      pub fn new( src : #field_type ) -> Self
       {
         // Self( src )
         Self( src )
@@ -248,8 +248,8 @@ fn generate_multiple_fields_named< 'a >
       #generics_where
     {
       #[ inline( always ) ]
-      // fn new( src : ( i32, bool ) ) -> Self
-      fn new( #( #val_type ),* ) -> Self
+      // pub fn new( src : ( i32, bool ) ) -> Self
+      pub fn new( #( #val_type ),* ) -> Self
       {
         // StructNamedFields{ a : src.0, b : src.1 }
         #item_name { #( #field_names ),* }
@@ -287,8 +287,8 @@ fn generate_multiple_fields< 'a >
       #generics_where
     {
       #[ inline( always ) ]
-      // fn new( src : (i32, bool) ) -> Self
-      fn new( src : ( #( #field_types ),* ) ) -> Self
+      // pub fn new( src : (i32, bool) ) -> Self
+      pub fn new( src : ( #( #field_types ),* ) ) -> Self
       {
         // StructWithManyFields( src.0, src.1 )
         #item_name( #( #params ),* )
@@ -359,7 +359,7 @@ where
   {2}
 {{
   #[ inline ]
-  fn new( src : {args} ) -> Self
+  pub fn new( src : {args} ) -> Self
   {{
     Self::{variant_name}( {use_src} )
   }}
@@ -388,7 +388,7 @@ field : {variant_name}"#,
         #generics_where
       {
         #[ inline ]
-        fn new( src : #args ) -> Self
+        pub fn new( src : #args ) -> Self
         {
           Self::#variant_name( #use_src )
         }
