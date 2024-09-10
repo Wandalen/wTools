@@ -133,6 +133,7 @@ mod private
     // };
 
     let adjsuted_path = path.adjsuted_implicit_path()?;
+    let pure_path = path.pure_path()?;
 
     // println!( "adjsuted_path : {}", qt!{ #adjsuted_path } );
 
@@ -150,7 +151,8 @@ mod private
       #[ doc( inline ) ]
       #[ allow( unused_imports ) ]
       #attrs1
-      pub use #adjsuted_path::orphan::*;
+      pub use #pure_path::orphan::*;
+      // pub use #adjsuted_path::orphan::*;
     });
 
     c.clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
@@ -158,7 +160,8 @@ mod private
       #[ doc( inline ) ]
       #[ allow( unused_imports ) ]
       #attrs1
-      pub use #adjsuted_path::exposed::*;
+      pub use #pure_path::exposed::*;
+      // pub use #adjsuted_path::exposed::*;
     });
 
     c.clauses_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
@@ -166,7 +169,8 @@ mod private
       #[ doc( inline ) ]
       #[ allow( unused_imports ) ]
       #attrs1
-      pub use #adjsuted_path::prelude::*;
+      pub use #pure_path::prelude::*;
+      // pub use #adjsuted_path::prelude::*;
     });
 
     Ok( () )
@@ -201,6 +205,7 @@ mod private
     }
 
     let adjsuted_path = path.adjsuted_explicit_path();
+    // let pure_path = path.pure_path()?;
 
     let vis2 = if vis.restriction().is_some()
     {
@@ -216,6 +221,7 @@ mod private
       #[ doc( inline ) ]
       #[ allow( unused_imports ) ]
       #attrs1
+      // #vis2 use #path;
       #vis2 use #adjsuted_path;
     });
 
