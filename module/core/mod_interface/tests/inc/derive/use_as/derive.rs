@@ -4,6 +4,8 @@ use super::*;
 /// Layer X
 pub mod layer_x;
 
+mod private {}
+
 mod_interface!
 {
   // #![ debug ]

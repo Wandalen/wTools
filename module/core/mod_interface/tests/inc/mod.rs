@@ -35,13 +35,12 @@ mod derive
 
   mod use_layer;
   mod use_basic;
-//   #[ path = "./use_as/derive.rs" ]
-//   mod use_as_derive;
-//   #[ path = "./use_as/manual.rs" ]
-//   mod use_as_manual;
-//
-//   // attr
-//   mod attr_debug;
+  #[ path = "./use_as/derive.rs" ]
+  mod use_as_derive;
+  #[ path = "./use_as/manual.rs" ]
+  mod use_as_manual;
+  // attr
+  mod attr_debug;
 
 }
 

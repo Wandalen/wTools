@@ -1,6 +1,8 @@
 
 use super::*;
 
+mod private {}
+
 mod_interface!
 {
   #![ debug ]
