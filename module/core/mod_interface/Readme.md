@@ -9,95 +9,134 @@ Protocol of modularity unifying interface of a module and introducing layers.
 
 ### Basic use-case
 
-Library file with code `inner.rs`:
-
-```rust ignore
-mod private
-{
-  /// Routine of inner module.
-  pub fn inner_is() -> bool
-  {
-    true
-  }
-}
-
-//
-
-mod_interface::mod_interface!
-{
-  prelude use inner_is;
-}
-```
-
-Main file that generates modules and namespaces `main.rs` :
-
-```rust ignore
-use mod_interface::mod_interface;
-
-//
-
-fn main()
-{
-  assert_eq!( prelude::inner_is(), inner::prelude::inner_is() );
-}
-
-//
-
-mod_interface::mod_interface!
-{
-  /// Inner.
-  layer inner;
-}
-```
-
-It generates code :
+Library file with code `child.rs`:
 
 ```rust
 use mod_interface::mod_interface;
 
-//
-
-fn main()
+mod child
 {
-  assert_eq!( prelude::inner_is(), inner::prelude::inner_is() );
+
+  mod private
+  {
+    /// Only my thing.
+    pub fn my_thing() -> bool { true }
+    /// Parent module should also has this thing.
+    pub fn orphan_thing() -> bool { true }
+    /// This thing should be exposed.
+    pub fn exposed_thing() -> bool { true }
+    /// This thing should be in prelude.
+    pub fn prelude_thing() -> bool { true }
+  }
+
+  //
+
+  crate::mod_interface!
+  {
+    own use my_thing;
+    orphan use orphan_thing;
+    exposed use exposed_thing;
+    prelude use prelude_thing;
+  }
+
 }
 
 //
 
+crate::mod_interface!
+{
+  /// Inner.
+  use super::child;
+}
+
+
+fn main()
+{
+
+  assert!( child::prelude_thing(), "prelude thing of child is there" );
+  assert!( prelude_thing(), "and here" );
+  assert!( own::prelude_thing(), "and here" );
+  assert!( orphan::prelude_thing(), "and here" );
+  assert!( exposed::prelude_thing(), "and here" );
+  assert!( prelude::prelude_thing(), "and here" );
+
+  assert!( child::exposed_thing(), "exposed thing of child is there" );
+  assert!( exposed_thing(), "and here" );
+  assert!( own::exposed_thing(), "and here" );
+  assert!( orphan::exposed_thing(), "and here" );
+  assert!( exposed::exposed_thing(), "and here" );
+  // assert!( prelude::exposed_thing(), "but not here" );
+
+  assert!( child::orphan_thing(), "orphan thing of child is there" );
+  assert!( orphan_thing(), "orphan thing of child is here" );
+  assert!( own::orphan_thing(), "and here" );
+  // assert!( orphan::orphan_thing(), "but not here" );
+  // assert!( exposed::orphan_thing(), "and not here" );
+  // assert!( prelude::orphan_thing(), "and not here" );
+
+  assert!( child::my_thing(), "own thing of child is only there" );
+  // assert!( my_thing(), "and not here" );
+  // assert!( own::my_thing(), "and not here" );
+  // assert!( orphan::my_thing(), "and not here" );
+  // assert!( exposed::my_thing(), "and not here" );
+  // assert!( prelude::my_thing(), "and not here" );
+
+}
+
+```
+
+<details>
+<summary>The code above will be expanded to this</summary>
+
+```rust
+use mod_interface::mod_interface;
+
 /// Inner.
-pub mod inner
+pub mod child
 {
   mod private
   {
-    /// Routine of inner module.
-    pub fn inner_is() -> bool { true }
+    /// Only my thing.
+    pub fn my_thing() -> bool { true }
+    /// Parent module should also has this thing.
+    pub fn orphan_thing() -> bool { true }
+    /// This thing should be exposed.
+    pub fn exposed_thing() -> bool { true }
+    /// This thing should be in prelude.
+    pub fn prelude_thing() -> bool { true }
   }
+
+  pub use own::*;
 
   /// Own namespace of the module.
   pub mod own
   {
-    pub use orphan::*;
+    pub use super::orphan::*;
+    pub use super::private::my_thing;
   }
-  pub use own::*;
 
   /// Orphan namespace of the module.
   pub mod orphan
   {
-    pub use exposed::*;
+    pub use super::exposed::*;
+    pub use super::private::orphan_thing;
   }
 
   /// Exposed namespace of the module.
   pub mod exposed
   {
-    pub use prelude::*;
+    pub use super::prelude::*;
+    pub use super::private::exposed_thing;
   }
 
   /// Prelude to use essentials: `use my_module::prelude::*`.
   pub mod prelude
   {
-    pub use private::inner_is;
+    pub use super::private::prelude_thing;
   }
 }
+
+pub use own::*;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
@@ -105,9 +144,8 @@ pub mod own
 {
   use super::*;
   pub use orphan::*;
-  pub use super::inner::orphan::*;
+  pub use super::child::orphan::*;
 }
-pub use own::*;
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
@@ -123,7 +161,7 @@ pub mod exposed
 {
   use super::*;
   pub use prelude::*;
-  pub use super::inner::exposed::*;
+  pub use super::child::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -131,9 +169,47 @@ pub mod exposed
 pub mod prelude
 {
   use super::*;
-  pub use super::inner::prelude::*;
+  pub use super::child::prelude::*;
 }
+
+//
+
+fn main()
+{
+
+  assert!( child::prelude_thing(), "prelude thing of child is there" );
+  assert!( prelude_thing(), "and here" );
+  assert!( own::prelude_thing(), "and here" );
+  assert!( orphan::prelude_thing(), "and here" );
+  assert!( exposed::prelude_thing(), "and here" );
+  assert!( prelude::prelude_thing(), "and here" );
+
+  assert!( child::exposed_thing(), "exposed thing of child is there" );
+  assert!( exposed_thing(), "and here" );
+  assert!( own::exposed_thing(), "and here" );
+  assert!( orphan::exposed_thing(), "and here" );
+  assert!( exposed::exposed_thing(), "and here" );
+  // assert!( prelude::exposed_thing(), "but not here" );
+
+  assert!( child::orphan_thing(), "orphan thing of child is there" );
+  assert!( orphan_thing(), "orphan thing of child is here" );
+  assert!( own::orphan_thing(), "and here" );
+  // assert!( orphan::orphan_thing(), "but not here" );
+  // assert!( exposed::orphan_thing(), "and not here" );
+  // assert!( prelude::orphan_thing(), "and not here" );
+
+  assert!( child::my_thing(), "own thing of child is only there" );
+  // assert!( my_thing(), "and not here" );
+  // assert!( own::my_thing(), "and not here" );
+  // assert!( orphan::my_thing(), "and not here" );
+  // assert!( exposed::my_thing(), "and not here" );
+  // assert!( prelude::my_thing(), "and not here" );
+
+}
+
 ```
+
+</details>
 
 ### Debugging
 
@@ -144,7 +220,7 @@ mod_interface::mod_interface!
 {
   #![ debug ]
   /// Inner.
-  layer inner;
+  layer child;
 }
 ```
 
