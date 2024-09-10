@@ -248,7 +248,7 @@ version = "~0.7.0"
 path = "module/core/impls_index_meta"
 
 [workspace.dependencies.mod_interface]
-version = "~0.24.0"
+version = "~0.25.0"
 path = "module/core/mod_interface"
 default-features = false
 
