@@ -4,6 +4,8 @@ use super::*;
 mod layer_a;
 mod layer_b;
 
+mod private {}
+
 mod_interface!
 {
 
