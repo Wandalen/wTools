@@ -7,22 +7,22 @@ mod manual
   use super::*;
 
   mod micro_modules;
-  // mod micro_modules_two;
-  // mod layer;
-  // mod layer_use;
+  mod micro_modules_two;
+  mod layer;
+  mod layer_use;
 
 }
 
-// mod derive
-// {
-//
-//   use super::*;
-//
-//   // micro module
-//   mod micro_modules;
-//   mod micro_modules_two;
-//   mod micro_modules_two_joined;
-//
+mod derive
+{
+
+  use super::*;
+
+  // micro module
+  mod micro_modules;
+  // mod micro_modules_two;
+  // mod micro_modules_two_joined;
+
 //   // layer
 //   mod layer;
 //   mod layer_have_layer;
@@ -42,9 +42,9 @@ mod manual
 //
 //   // attr
 //   mod attr_debug;
-//
-// }
-//
+
+}
+
 // mod trybuild_test;
 
 // xxx : enable

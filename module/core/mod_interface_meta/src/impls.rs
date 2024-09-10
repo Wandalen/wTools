@@ -248,13 +248,16 @@ mod private
 
     if !record.vis.valid_sub_namespace()
     {
-      return Err( syn_err!
+      return Err
       (
-        record,
-        "To include a non-standard module use either {} visibility:\n  {}",
-        VALID_VISIBILITY_LIST_STR,
-        qt!{ #record },
-      ));
+        syn_err!
+        (
+          record,
+          "To include a non-standard module use either {} visibility:\n  {}",
+          VALID_VISIBILITY_LIST_STR,
+          qt!{ #record },
+        )
+      );
     }
 
     c.clauses_map.get_mut( &record.vis.kind() ).unwrap().push( qt!
