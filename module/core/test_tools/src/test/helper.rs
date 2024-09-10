@@ -75,10 +75,10 @@ mod private
   pub use doc_file_test;
 }
 
-//
-
 crate::mod_interface!
 {
+  // xxx
+  // #![ debug ]
   // exposed use super;
   exposed use super::super::helper;
 

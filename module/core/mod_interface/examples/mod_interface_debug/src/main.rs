@@ -16,7 +16,8 @@ mod private {}
 
 mod_interface!
 {
-  #![ debug ]
+  // Uncomment to see expanded code.
+  // #![ debug ]
   /// Child.
   layer child;
 }

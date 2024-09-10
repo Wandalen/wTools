@@ -2,6 +2,8 @@
 //! Commands aggregator library.
 //!
 
+mod private {}
+
 crate::mod_interface!
 {
 

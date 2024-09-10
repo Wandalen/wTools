@@ -132,27 +132,34 @@ mod private
     //   path
     // };
 
-    let adjsuted_path = path.adjsuted_implicit_path()?;
-    let pure_path = path.pure_path()?;
+    // let adjsuted_path = path.adjsuted_implicit_path()?;
+    // let adjsuted_path = path.prefixed_with_all();
+    // let adjsuted_path = path.pure_path()?;
 
     // println!( "adjsuted_path : {}", qt!{ #adjsuted_path } );
 
-    if let Some( rename ) = &path.rename
+    let adjsuted_path = if let Some( rename ) = &path.rename
     {
       let pure_path = path.pure_without_super_path()?;
       c.clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
       {
         pub use #pure_path as #rename;
       });
+      // path.adjsuted_implicit_path()?
+      let path1 : UseTree = parse_qt!{ #rename };
+      path1.prefixed_with_all()
     }
+    else
+    {
+      path.prefixed_with_all()
+    };
 
     c.clauses_map.get_mut( &VisOwn::Kind() ).unwrap().push( qt!
     {
       #[ doc( inline ) ]
       #[ allow( unused_imports ) ]
       #attrs1
-      pub use #pure_path::orphan::*;
-      // pub use #adjsuted_path::orphan::*;
+      pub use #adjsuted_path::orphan::*;
     });
 
     c.clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
@@ -160,8 +167,7 @@ mod private
       #[ doc( inline ) ]
       #[ allow( unused_imports ) ]
       #attrs1
-      pub use #pure_path::exposed::*;
-      // pub use #adjsuted_path::exposed::*;
+      pub use #adjsuted_path::exposed::*;
     });
 
     c.clauses_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
@@ -169,8 +175,7 @@ mod private
       #[ doc( inline ) ]
       #[ allow( unused_imports ) ]
       #attrs1
-      pub use #pure_path::prelude::*;
-      // pub use #adjsuted_path::prelude::*;
+      pub use #adjsuted_path::prelude::*;
     });
 
     Ok( () )
@@ -204,7 +209,8 @@ mod private
       ));
     }
 
-    let adjsuted_path = path.adjsuted_explicit_path();
+    // let adjsuted_path = path.adjsuted_explicit_path();
+    let adjsuted_path = path.prefixed_with_all();
     // let pure_path = path.pure_path()?;
 
     let vis2 = if vis.restriction().is_some()

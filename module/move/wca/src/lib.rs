@@ -11,6 +11,8 @@ use mod_interface::mod_interface;
 
 pub mod ca;
 
+mod private {}
+
 crate::mod_interface!
 {
   use super::ca;
