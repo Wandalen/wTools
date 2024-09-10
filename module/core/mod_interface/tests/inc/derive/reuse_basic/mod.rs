@@ -20,8 +20,15 @@ crate::mod_interface!
 #[ test ]
 fn basic()
 {
+
   let _ = child::Own;
   let _ = child::Orphan;
   let _ = child::Exposed;
   let _ = child::Prelude;
+
+  let _ = Own;
+  let _ = Orphan;
+  let _ = Exposed;
+  let _ = Prelude;
+
 }

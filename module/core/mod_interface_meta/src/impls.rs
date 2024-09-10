@@ -102,12 +102,10 @@ mod private
   ///
   /// Handle record "use" with implicit visibility.
   ///
-  #[ allow ( dead_code ) ]
-  fn record_use_implicit
+  fn record_reuse_implicit
   (
     record : &Record,
     c : &'_ mut RecordContext< '_ >,
-    // clauses_map : &mut HashMap< u32, Vec< proc_macro2::TokenStream > >,
   )
   ->
   syn::Result< () >
@@ -115,44 +113,88 @@ mod private
 
     let attrs1 = &record.attrs;
     let path = record.use_elements.as_ref().unwrap();
-    // let vis = record.vis.clone();
 
-    // if vis == Visibility::Inherited
-
-    // xxx
-
-    // let _path;
-    // let path2 = if path.prefix_is_needed()
-    // {
-    //   _path = parse_qt!{ super::private::#path };
-    //   &_path
-    // }
-    // else
-    // {
-    //   path
-    // };
-
-    // let adjsuted_path = path.adjsuted_implicit_path()?;
-    // let adjsuted_path = path.prefixed_with_all();
-    // let adjsuted_path = path.pure_path()?;
-
-    // println!( "adjsuted_path : {}", qt!{ #adjsuted_path } );
-
-    let adjsuted_path = if let Some( rename ) = &path.rename
+    let path = if let Some( rename ) = &path.rename
     {
       let pure_path = path.pure_without_super_path()?;
       c.clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
       {
         pub use #pure_path as #rename;
       });
-      // path.adjsuted_implicit_path()?
-      let path1 : UseTree = parse_qt!{ #rename };
-      path1.prefixed_with_all()
+      parse_qt!{ #rename }
     }
     else
     {
-      path.prefixed_with_all()
+      path.clone()
     };
+
+    let adjsuted_path = path.prefixed_with_all();
+
+    c.clauses_map.get_mut( &VisOwn::Kind() ).unwrap().push( qt!
+    {
+      #[ doc( inline ) ]
+      #[ allow( unused_imports ) ]
+      #attrs1
+      pub use #adjsuted_path::own::*;
+    });
+
+    c.clauses_map.get_mut( &VisOrphan::Kind() ).unwrap().push( qt!
+    {
+      #[ doc( inline ) ]
+      #[ allow( unused_imports ) ]
+      #attrs1
+      pub use #adjsuted_path::orphan::*;
+    });
+
+    c.clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
+    {
+      #[ doc( inline ) ]
+      #[ allow( unused_imports ) ]
+      #attrs1
+      pub use #adjsuted_path::exposed::*;
+    });
+
+    c.clauses_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
+    {
+      #[ doc( inline ) ]
+      #[ allow( unused_imports ) ]
+      #attrs1
+      pub use #adjsuted_path::prelude::*;
+    });
+
+    Ok( () )
+  }
+
+  ///
+  /// Handle record "use" with implicit visibility.
+  ///
+  fn record_use_implicit
+  (
+    record : &Record,
+    c : &'_ mut RecordContext< '_ >,
+  )
+  ->
+  syn::Result< () >
+  {
+
+    let attrs1 = &record.attrs;
+    let path = record.use_elements.as_ref().unwrap();
+
+    let path = if let Some( rename ) = &path.rename
+    {
+      let pure_path = path.pure_without_super_path()?;
+      c.clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
+      {
+        pub use #pure_path as #rename;
+      });
+      parse_qt!{ #rename }
+    }
+    else
+    {
+      path.clone()
+    };
+
+    let adjsuted_path = path.prefixed_with_all();
 
     c.clauses_map.get_mut( &VisOwn::Kind() ).unwrap().push( qt!
     {
@@ -184,12 +226,10 @@ mod private
   ///
   /// Handle record "use" with explicit visibility.
   ///
-  #[ allow ( dead_code ) ]
   fn record_use_explicit
   (
     record : &Record,
     c : &'_ mut RecordContext< '_ >,
-    // clauses_map : &mut HashMap< u32, Vec< proc_macro2::TokenStream > >,
   )
   ->
   syn::Result< () >
@@ -209,10 +249,7 @@ mod private
       ));
     }
 
-    // let adjsuted_path = path.adjsuted_explicit_path();
     let adjsuted_path = path.prefixed_with_all();
-    // let pure_path = path.pure_path()?;
-
     let vis2 = if vis.restriction().is_some()
     {
       qt!{ pub( crate ) }
@@ -227,7 +264,6 @@ mod private
       #[ doc( inline ) ]
       #[ allow( unused_imports ) ]
       #attrs1
-      // #vis2 use #path;
       #vis2 use #adjsuted_path;
     });
 
@@ -399,6 +435,23 @@ mod private
             record_use_explicit( record, &mut record_context )?;
           }
         },
+        Reuse( _ ) =>
+        {
+          let vis = &record.vis;
+          if vis == &Visibility::Inherited
+          {
+            record_reuse_implicit( record, &mut record_context )?;
+          }
+          else
+          {
+            return Err( syn_err!
+            (
+              record,
+              "Using visibility usesd before `reuse` is illegal\n{}",
+              qt!{ #record },
+            ));
+          }
+        },
         _ =>
         {
           record.elements.iter().try_for_each( | element | -> syn::Result::< () >
@@ -413,8 +466,9 @@ mod private
               {
                 record_layer( record, element, &mut record_context )?;
               },
-              Use( _ ) =>
+              _ =>
               {
+                panic!( "Unexpected" )
               },
             }
             syn::Result::Ok( () )
