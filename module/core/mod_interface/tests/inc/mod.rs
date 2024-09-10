@@ -34,12 +34,17 @@ mod derive
   mod layer_use_cfg;
   mod layer_use_macro;
 
+  // use
   mod use_layer;
   mod use_basic;
   #[ path = "./use_as/derive.rs" ]
   mod use_as_derive;
   #[ path = "./use_as/manual.rs" ]
   mod use_as_manual;
+
+  // reuse
+  mod reuse_basic;
+
   // attr
   mod attr_debug;
 
