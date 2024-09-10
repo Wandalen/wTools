@@ -266,7 +266,7 @@ mod private
       #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
-      pub use #path;
+      pub use __all__::#path;
       // pub use super::#path;
       // xxx : remove super?
     });
@@ -314,7 +314,7 @@ mod private
       #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
-      pub use #path::orphan::*;
+      pub use __all__::#path::orphan::*;
     });
 
     c.clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
@@ -323,7 +323,7 @@ mod private
       #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
-      pub use #path::exposed::*;
+      pub use __all__::#path::exposed::*;
     });
 
     c.clauses_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
@@ -332,7 +332,7 @@ mod private
       #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
-      pub use #path::prelude::*;
+      pub use __all__::#path::prelude::*;
     });
 
     Ok( () )
@@ -424,6 +424,8 @@ mod private
 
       #( #immediates_clause )*
 
+      // use private as __private__; // this line is necessary for readable error in case private namespace is not present
+
       #[ doc( inline ) ]
       #[ allow( unused_imports ) ]
       pub use own::*;
@@ -432,9 +434,19 @@ mod private
       #[ allow( unused_imports ) ]
       pub mod own
       {
-        use super::*;
+        // There must be internal private namespace
+        // Because it's not possible to direcly make `use super::*;`
+        // Because then items from super can't be exposed publicly complaining:
+        // `error[E0428]: the name `mod1` is defined multiple times`
+        // use super::*;
+        use super::private; // this line is necessary for readable error in case private namespace is not present
+        mod __all__
+        {
+          pub use super::super::*;
+          pub use super::super::private::*;
+        }
         #[ doc( inline ) ]
-        pub use orphan::*;
+        pub use super::orphan::*;
         #( #own_clause )*
       }
 
@@ -442,9 +454,14 @@ mod private
       #[ allow( unused_imports ) ]
       pub mod orphan
       {
-        use super::*;
+        // use super::*;
+        mod __all__
+        {
+          pub use super::super::*;
+          pub use super::super::private::*;
+        }
         #[ doc( inline ) ]
-        pub use exposed::*;
+        pub use super::exposed::*;
         #( #orphan_clause )*
       }
 
@@ -452,9 +469,14 @@ mod private
       #[ allow( unused_imports ) ]
       pub mod exposed
       {
-        use super::*;
+        // use super::*;
+        mod __all__
+        {
+          pub use super::super::*;
+          pub use super::super::private::*;
+        }
         #[ doc( inline ) ]
-        pub use prelude::*;
+        pub use super::prelude::*;
         #( #exposed_clause )*
       }
 
@@ -462,7 +484,12 @@ mod private
       #[ allow( unused_imports ) ]
       pub mod prelude
       {
-        use super::*;
+        // use super::*;
+        mod __all__
+        {
+          pub use super::super::*;
+          pub use super::super::private::*;
+        }
         #( #prelude_clause )*
       }
 

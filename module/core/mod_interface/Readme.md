@@ -43,6 +43,7 @@ mod child
 
 //
 
+mod private {}
 crate::mod_interface!
 {
   /// Inner.
@@ -136,6 +137,7 @@ pub mod child
   }
 }
 
+mod private {}
 pub use own::*;
 
 /// Own namespace of the module.

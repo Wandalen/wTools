@@ -11,11 +11,14 @@ fn main()
 
 //
 
+mod private {}
+
+//
+
 mod_interface!
 {
-  /// Inner.
-  layer inner;
+  /// Child.
+  layer child;
 }
 
 // qqq : rewrite sample
-/* aaa : Dmytro : sample with layer */

@@ -49,6 +49,10 @@ pub mod dependency
 
 }
 
+mod private {}
+
+//
+
 #[ cfg( feature = "enabled" ) ]
 // #[ cfg( not( feature = "no_std" ) ) ]
 ::meta_tools::mod_interface!

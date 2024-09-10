@@ -1,6 +1,6 @@
 mod private
 {
-  /// Routine of inner module.
+  /// Routine of child module.
   pub fn inner_is() -> bool
   {
     true
