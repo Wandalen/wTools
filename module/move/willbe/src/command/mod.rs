@@ -128,7 +128,7 @@ with_gitpod: If set to 1, a column with a link to Gitpod will be added. Clicking
       .end()
 
     .command( "test" )
-      .hint( "execute tests in specific packages" )
+      .hint( "Execute tests in specific packages with features combinations, different channels and different optimization levels." )
       .long_hint( "this command runs tests in designated packages based on the provided path. It allows for inclusion and exclusion of features, testing on different Rust version channels, parallel execution, and feature combination settings." )
       .subject().hint( "A path to directories with packages. If no path is provided, the current directory is used." ).kind( Type::Path ).optional( true ).end()
       .property( "dry" ).hint( "Enables 'dry run'. Does not run tests, only simulates. Default is `true`." ).kind( Type::Bool ).optional( true ).end()
