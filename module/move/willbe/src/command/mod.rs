@@ -128,8 +128,8 @@ with_gitpod: If set to 1, a column with a link to Gitpod will be added. Clicking
       .end()
 
     .command( "test" )
-      .hint( "execute tests in specific packages" )
-      .long_hint( "this command runs tests in designated packages based on the provided path. It allows for inclusion and exclusion of features, testing on different Rust version channels, parallel execution, and feature combination settings." )
+      .hint( "List crate features to run tests for each combination, aiming for full test coverage of the crate." )
+      .long_hint( "List crate features, different optimization level (Release & Debug) and toolchain (stable & nightly) to run tests for each combination. Сan be used for packages as well as workspaces. Supports parallel execution." )
       .subject().hint( "A path to directories with packages. If no path is provided, the current directory is used." ).kind( Type::Path ).optional( true ).end()
       .property( "dry" ).hint( "Enables 'dry run'. Does not run tests, only simulates. Default is `true`." ).kind( Type::Bool ).optional( true ).end()
       .property( "temp" ).hint( "If flag is `true` all test will be running in temporary directories. Default `true`." ).kind( Type::Bool ).optional( true ).end()
