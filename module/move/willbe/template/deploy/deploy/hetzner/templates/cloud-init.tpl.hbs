@@ -43,4 +43,4 @@ write_files:
 
 
 runcmd:
-- nohup /root/init.sh > /var/log/uaconf-instance-init.log 2>&1 &
+- nohup /root/init.sh > /var/log/{{docker_image_name}}-instance-init.log 2>&1 &

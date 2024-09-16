@@ -16,7 +16,7 @@ provider "hcloud" {
 
 # Static IP for the instance
 resource "hcloud_primary_ip" "primary_ip" {
-  name          = "uaconf-2024-ip"
+  name          = "{{docker_image_name}}-ip"
   datacenter    = "hel1-dc2"
   type          = "ipv4"
   assignee_type = "server"
@@ -24,10 +24,10 @@ resource "hcloud_primary_ip" "primary_ip" {
 }
 
 # Hetzner instance itself
-resource "hcloud_server" "uaconf" {
-  name        = "uaconf-2024"
+resource "hcloud_server" "{{docker_image_name}}" {
+  name        = "{{docker_image_name}}"
   image       = "ubuntu-22.04"
-  server_type = "cx11"
+  server_type = "cx22"
   datacenter  = "hel1-dc2"
 
   public_net {

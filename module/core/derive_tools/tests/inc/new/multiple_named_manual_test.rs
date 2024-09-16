@@ -1,19 +1,24 @@
 use super::*;
 
-#[ derive( Debug, PartialEq, Eq ) ]
-struct StructNamedFields
+mod mod1
 {
-  a : i32,
-  b : bool,
-}
 
-impl StructNamedFields
-{
-  #[ inline( always ) ]
-  fn new( a : i32, b : bool ) -> Self
+  #[ derive( Debug, PartialEq, Eq ) ]
+  pub struct Struct1
   {
-    Self{ a, b }
+    pub a : i32,
+    pub b : bool,
   }
+
+  impl Struct1
+  {
+    #[ inline( always ) ]
+    pub fn new( a : i32, b : bool ) -> Self
+    {
+      Self{ a, b }
+    }
+  }
+
 }
 
 include!( "./only_test/multiple_named.rs" );

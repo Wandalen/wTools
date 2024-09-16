@@ -1,5 +1,5 @@
 locals {
-  ip = hcloud_server.uaconf.ipv4_address
+  ip = hcloud_server.{{docker_image_name}}.ipv4_address
 }
 
 # Output that we get after applying.

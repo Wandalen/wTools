@@ -3,16 +3,18 @@ use mod_interface::mod_interface;
 
 //
 
-fn main()
+mod private {}
+mod_interface!
 {
-  assert_eq!( prelude::inner_is(), inner::prelude::inner_is() );
+  // Uncomment to see expanded code.
+  // #![ debug ]
+  /// Child.
+  layer child;
 }
 
 //
 
-mod_interface!
+fn main()
 {
-  #![ debug ]
-  /// Inner.
-  layer inner;
+  assert_eq!( prelude::inner_is(), child::prelude::inner_is() );
 }

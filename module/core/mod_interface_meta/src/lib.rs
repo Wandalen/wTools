@@ -1,8 +1,9 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/mod_interface_meta/latest/mod_interface_meta/" ) ]
-#![ deny( dead_code ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+
+#![ warn( dead_code ) ]
 
 // xxx : clean up, ad solve problems
 // - example based on simpified version of test::layer_have_layer with single sublayer

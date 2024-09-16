@@ -56,9 +56,9 @@
 //! The main function demonstrates the overall usage by creating a vector, obtaining an iterator, and using the iterator to print elements.
 //!
 
-#[ cfg( not( all( feature = "enabled", feature = "clone_dyn_meta" ) ) ) ]
+#[ cfg( not( all( feature = "enabled", feature = "derive_clone_dyn" ) ) ) ]
 fn main() {}
-#[ cfg( all( feature = "enabled", feature = "clone_dyn_meta" ) ) ]
+#[ cfg( all( feature = "enabled", feature = "derive_clone_dyn" ) ) ]
 fn main()
 {
   use clone_dyn::{ clone_dyn, CloneDyn };

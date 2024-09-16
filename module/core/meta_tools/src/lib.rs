@@ -29,12 +29,15 @@ pub mod dependency
 
 }
 
+mod private {}
+
 //
 
 // qqq : meta interface should be optional dependancy. please fix writing equivalent code manually
 #[ cfg( feature = "enabled" ) ]
 mod_interface::mod_interface!
 {
+  // #![ debug ]
 
   layer meta;
 

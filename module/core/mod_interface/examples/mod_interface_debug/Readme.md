@@ -6,8 +6,10 @@
 
 A sample demonstrates basic usage of macro `mod_interface`.
 
-In file `inner.rs` demonstrated how to generate module interface from namespace `private` and its public routine.
+In file `child.rs` demonstrated how to generate module interface from namespace `private` and its public routine.
 
 In file `main.rs` demonstrated how to generate module interface from layer ( file with full module interface ).
 
 The directive `#![ debug ]` in declaration of macro `mod_interface` allow to show generated module interface as the standard output in compile time.
+
+<!-- xxx : qqq : rewrite -->
