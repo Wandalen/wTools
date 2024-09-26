@@ -1,6 +1,6 @@
 [package]
 name = "mod_interface"
-version = "0.25.0"
+version = "0.26.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -28,8 +28,6 @@ all-features = false
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-no_std = []
-use_alloc = [ "no_std" ]
 enabled = [ "mod_interface_meta/enabled" ]
 
 # keep these examples in directories

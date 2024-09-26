@@ -5,6 +5,19 @@
 
 #![ warn( dead_code ) ]
 
+// /// Derives.
+// layer derive;
+// own use super::derive;
+// // xxx : change to remove need to write explicitly that
+
+// xxx : change to remove need to write explicitly that
+// crate::mod_interface!
+// {
+//   /// Derives.
+//   layer derive;
+//   own use super::derive; // xxx : change to remove need to write explicitly that
+// }
+
 // xxx : clean up, ad solve problems
 // - example based on simpified version of test::layer_have_layer with single sublayer
 // - example with attribute `#![ debug ]`

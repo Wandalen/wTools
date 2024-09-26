@@ -185,7 +185,7 @@ features = [ "enabled" ]
 ## mem
 
 [workspace.dependencies.mem_tools]
-version = "~0.6.0"
+version = "~0.7.0"
 path = "module/core/mem_tools"
 default-features = false
 
@@ -193,7 +193,7 @@ default-features = false
 ## diagnostics
 
 [workspace.dependencies.diagnostics_tools]
-version = "~0.8.0"
+version = "~0.9.0"
 path = "module/core/diagnostics_tools"
 default-features = false
 
@@ -209,12 +209,12 @@ default-features = false
 ## meta
 
 [workspace.dependencies.meta_tools]
-version = "~0.10.0"
+version = "~0.11.0"
 path = "module/core/meta_tools"
 default-features = false
 
 [workspace.dependencies.for_each]
-version = "~0.8.0"
+version = "~0.9.0"
 path = "module/core/for_each"
 default-features = false
 
@@ -239,16 +239,16 @@ path = "module/core/former_types"
 default-features = false
 
 [workspace.dependencies.impls_index]
-version = "~0.7.0"
+version = "~0.8.0"
 path = "module/core/impls_index"
 default-features = false
 
 [workspace.dependencies.impls_index_meta]
-version = "~0.7.0"
+version = "~0.8.0"
 path = "module/core/impls_index_meta"
 
 [workspace.dependencies.mod_interface]
-version = "~0.25.0"
+version = "~0.26.0"
 path = "module/core/mod_interface"
 default-features = false
 
@@ -305,12 +305,12 @@ default-features = false
 ## typing
 
 [workspace.dependencies.typing_tools]
-version = "~0.8.0"
+version = "~0.9.0"
 path = "module/core/typing_tools"
 default-features = false
 
 [workspace.dependencies.implements]
-version = "~0.8.0"
+version = "~0.9.0"
 path = "module/core/implements"
 default-features = false
 
@@ -320,12 +320,12 @@ path = "module/alias/instance_of"
 default-features = false
 
 [workspace.dependencies.inspect_type]
-version = "~0.10.0"
+version = "~0.11.0"
 path = "module/core/inspect_type"
 default-features = false
 
 [workspace.dependencies.is_slice]
-version = "~0.9.0"
+version = "~0.10.0"
 path = "module/core/is_slice"
 default-features = false
 
@@ -381,7 +381,7 @@ default-features = false
 
 [workspace.dependencies.process_tools_published]
 package = "process_tools"
-version = "~0.8.0"
+version = "~0.9.0"
 default-features = false
 
 
@@ -392,7 +392,7 @@ version = "~0.4.0"
 path = "module/alias/wtest"
 
 [workspace.dependencies.test_tools]
-version = "~0.9.0"
+version = "~0.10.0"
 path = "module/core/test_tools"
 
 [workspace.dependencies.wtest_basic]
