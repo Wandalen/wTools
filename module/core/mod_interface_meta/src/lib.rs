@@ -5,6 +5,10 @@
 
 #![ warn( dead_code ) ]
 
+// /// Derives.
+// layer derive;
+// own use super::derive;
+// // xxx : change to remove need to write explicitly that
 
 // xxx : change to remove need to write explicitly that
 // crate::mod_interface!
