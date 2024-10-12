@@ -175,8 +175,7 @@ mod private
     //   Self::Row : 'a;
   }
 
-  impl< T, RowKey, Row, CellKey >
-  TableRows<>
+  impl< T, RowKey, Row, CellKey > TableRows<>
   for AsTable< '_, T, RowKey, Row, CellKey >
   where
 

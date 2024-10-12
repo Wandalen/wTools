@@ -30,6 +30,7 @@ fn iterator_over_objects_without_impl()
     output_format,
   };
 
+  // xxx : Clone should not be required
   #[ derive( Debug, Clone ) ]
   pub struct TestObjecWrap( TestObjectWithoutImpl );
 

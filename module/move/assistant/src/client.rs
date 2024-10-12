@@ -6,9 +6,11 @@
 mod private
 {
 
+
   pub use openai_api_rs::v1::
   {
-    api::Client,
+    api::OpenAIClient as Client,
+    // api::Client,
     assistant::AssistantObject,
   };
 
@@ -32,65 +34,19 @@ mod private
   pub fn client() -> Result< Client, Box< dyn Error > >
   {
     let api_key = env::var( "OPENAI_API_KEY" )?;
+    println!( "api_key : {}", api_key );
     Ok( Client::new( api_key ) )
   }
 
-
 }
 
-#[ allow( unused_imports ) ]
-pub use own::*;
-
-/// Own namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod own
+crate::mod_interface!
 {
-  use super::*;
-
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use orphan::*;
-
-}
-
-/// Orphan namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod orphan
-{
-  use super::*;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use exposed::*;
-}
-
-/// Exposed namespace of the module.
-#[ allow( unused_imports ) ]
-pub mod exposed
-{
-  use super::*;
-
-  #[ doc( inline ) ]
-  pub use private::
+  exposed use
   {
+    Client,
     ClientOptions,
-    client,
     AssistantObject,
+    client,
   };
-
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use reflect_tools::
-  // {
-  //   Fields,
-  //   _IteratorTrait,
-  //   IteratorTrait,
-  // };
-
-}
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
-  use super::*;
 }
