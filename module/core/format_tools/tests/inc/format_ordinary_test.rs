@@ -23,7 +23,7 @@ fn basic()
 {
   let test_objects = test_object::test_objects_gen();
 
-  let _as_table : AsTable< '_, Vec< test_object::TestObject >, usize, test_object::TestObject, str, WithRef > = AsTable::new( &test_objects );
+  let _as_table : AsTable< '_, Vec< test_object::TestObject >, usize, test_object::TestObject, str> = AsTable::new( &test_objects );
   let as_table = AsTable::new( &test_objects );
 
   let mut output = String::new();
@@ -70,7 +70,7 @@ fn table_to_string()
 
   // with explicit arguments
 
-  let as_table : AsTable< '_, Vec< test_object::TestObject >, usize, test_object::TestObject, str, WithRef > = AsTable::new( &test_objects );
+  let as_table : AsTable< '_, Vec< test_object::TestObject >, usize, test_object::TestObject, str> = AsTable::new( &test_objects );
   let table_string = as_table.table_to_string();
   println!( "\ntable_string\n{table_string}" );
   assert!( table_string.contains( "id" ) );

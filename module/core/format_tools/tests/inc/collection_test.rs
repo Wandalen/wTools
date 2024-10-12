@@ -56,7 +56,7 @@ fn dlist_basic()
   };
 
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, Vec< TestObject >, &str, TestObject, str, WithRef > = AsTable::new( &data );
+  let _as_table : AsTable< '_, Vec< TestObject >, &str, TestObject, str> = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
@@ -112,7 +112,7 @@ fn hmap_basic()
   };
 
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, HashMap< &str, TestObject >, &str, TestObject, str, WithRef > = AsTable::new( &data );
+  let _as_table : AsTable< '_, HashMap< &str, TestObject >, &str, TestObject, str> = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
@@ -168,7 +168,7 @@ fn bmap_basic()
   };
 
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, Bmap< &str, TestObject >, &str, TestObject, str, WithRef > = AsTable::new( &data );
+  let _as_table : AsTable< '_, Bmap< &str, TestObject >, &str, TestObject, str> = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
@@ -222,7 +222,7 @@ fn bset_basic()
   };
 
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, BTreeSet< TestObject >, &str, TestObject, str, WithRef > = AsTable::new( &data );
+  let _as_table : AsTable< '_, BTreeSet< TestObject >, &str, TestObject, str> = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
@@ -276,7 +276,7 @@ fn deque_basic()
   };
 
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, VecDeque< TestObject >, &str, TestObject, str, WithRef > = AsTable::new( &data );
+  let _as_table : AsTable< '_, VecDeque< TestObject >, &str, TestObject, str> = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
@@ -330,7 +330,7 @@ fn hset_basic()
   };
 
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, HashSet< TestObject >, &str, TestObject, str, WithRef > = AsTable::new( &data );
+  let _as_table : AsTable< '_, HashSet< TestObject >, &str, TestObject, str> = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
@@ -384,7 +384,7 @@ fn llist_basic()
   };
 
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, LinkedList< TestObject >, &str, TestObject, str, WithRef > = AsTable::new( &data );
+  let _as_table : AsTable< '_, LinkedList< TestObject >, &str, TestObject, str> = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );

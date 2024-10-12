@@ -15,8 +15,8 @@ use std::
   collections::HashMap,
   hash::Hasher,
   hash::Hash,
-  cmp::Ordering
-  // borrow::Cow,
+  cmp::Ordering,
+  borrow::Cow,
 };
 
 /// Struct representing a test object with various fields.
@@ -31,17 +31,47 @@ pub struct TestObject
 
 impl TableWithFields for TestObject {}
 
-impl Fields< &'_ str, OptionalCow< '_, str, WithRef > >
+// impl Fields< &'_ str, Option< Cow< '_, str > > >
+// for TestObject
+// {
+//   type Key< 'k > = &'k str;
+//   type Val< 'v > = OptionalCow< 'v, str>;
+//
+//   fn fields( &self ) -> impl IteratorTrait< Item = ( &'_ str, Option< Cow< '_, str > > ) >
+//   {
+//     use format_tools::ref_or_display_or_debug_multiline::field;
+//     // use format_tools::ref_or_display_or_debug::field;
+//     let mut dst : Vec< ( &'_ str, Option< Cow< '_, str > > ) > = Vec::new();
+//
+//     dst.push( field!( &self.id ) );
+//     dst.push( field!( &self.created_at ) );
+//     dst.push( field!( &self.file_ids ) );
+//
+//     if let Some( tools ) = &self.tools
+//     {
+//       dst.push( field!( tools ) );
+//     }
+//     else
+//     {
+//       dst.push( ( "tools", OptionalCow::none() ) );
+//     }
+//
+//     dst.into_iter()
+//   }
+//
+// }
+
+impl Fields< &'_ str, Option< Cow< '_, str > > >
 for TestObject
 {
   type Key< 'k > = &'k str;
-  type Val< 'v > = OptionalCow< 'v, str, WithRef >;
+  type Val< 'v > = Option< Cow< 'v, str > >;
 
-  fn fields( &self ) -> impl IteratorTrait< Item = ( &'_ str, OptionalCow< '_, str, WithRef > ) >
+  fn fields( &self ) -> impl IteratorTrait< Item = ( &'_ str, Option< Cow< '_, str > > ) >
   {
     use format_tools::ref_or_display_or_debug_multiline::field;
     // use format_tools::ref_or_display_or_debug::field;
-    let mut dst : Vec< ( &'_ str, OptionalCow< '_, str, WithRef > ) > = Vec::new();
+    let mut dst : Vec< ( &'_ str, Option< Cow< '_, str > > ) > = Vec::new();
 
     dst.push( field!( &self.id ) );
     dst.push( field!( &self.created_at ) );
@@ -53,7 +83,7 @@ for TestObject
     }
     else
     {
-      dst.push( ( "tools", OptionalCow::none() ) );
+      dst.push( ( "tools", Option::None ) );
     }
 
     dst.into_iter()

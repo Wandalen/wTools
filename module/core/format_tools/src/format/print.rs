@@ -197,15 +197,15 @@ mod private
   }
 
   /// A trait for formatting tables.
-  impl< 'data, T, RowKey, Row, CellKey, CellRepr > TableFormatter< 'data >
-  for AsTable< 'data, T, RowKey, Row, CellKey, CellRepr >
+  impl< 'data, T, RowKey, Row, CellKey> TableFormatter< 'data >
+  for AsTable< 'data, T, RowKey, Row, CellKey>
   where
-    Self : TableRows< CellKey = CellKey, CellRepr = CellRepr, RowKey = RowKey, Row = Row >,
+    Self : TableRows< CellKey = CellKey, RowKey = RowKey, Row = Row >,
     Self : TableHeader< CellKey = CellKey >,
     RowKey : table::RowKey,
-    Row : Cells< CellKey, CellRepr >,
+    Row : Cells< CellKey>,
     CellKey : table::CellKey + ?Sized,
-    CellRepr : table::CellRepr,
+    // CellRepr : table::CellRepr,
   {
 
     fn fmt< 'a >( &'data self, c : &mut Context< 'a > ) -> fmt::Result
@@ -365,7 +365,7 @@ mod private
       }
     }
     /// Extract input data from and collect it in a format consumable by output formatter.
-    pub fn extract< 't, 'context, Table, RowKey, Row, CellKey, CellRepr >
+    pub fn extract< 't, 'context, Table, RowKey, Row, CellKey>
     (
       table : &'t Table,
       filter_col : &'context ( dyn FilterCol + 'context ),
@@ -376,12 +376,12 @@ mod private
     where
       'data : 't,
       // 't : 'data,
-      Table : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
+      Table : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey >,
       Table : TableHeader< CellKey = CellKey >,
       RowKey : table::RowKey,
-      Row : Cells< CellKey, CellRepr > + 'data,
+      Row : Cells< CellKey> + 'data,
       CellKey : table::CellKey + ?Sized + 'data,
-      CellRepr : table::CellRepr,
+      // CellRepr : table::CellRepr,
     {
       use md_math::MdOffset;
 
@@ -508,7 +508,7 @@ mod private
           | ( key, val ) |
           {
 
-            let val = match val.0
+            let val = match val
             {
               Some( val ) =>
               {

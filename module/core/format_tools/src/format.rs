@@ -28,7 +28,8 @@ mod private
     {{
       (
         ::core::stringify!( $key ),
-        $crate::OptionalCow::< '_, str, $how >::from
+        // $crate::OptionalCow::< '_, str, $how >::from
+        Option::Some
         (
           $crate::to_string_with_fallback!( $how, $fallback1, $fallback2, $src )
         ),

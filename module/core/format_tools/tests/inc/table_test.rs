@@ -10,6 +10,11 @@ use the_module::
   WithRef,
 };
 
+use std::
+{
+  borrow::Cow,
+};
+
 //
 
 #[ test ]
@@ -19,13 +24,13 @@ fn basic()
 {
   let test_objects = test_object::test_objects_gen();
 
-  let cells = Cells::< str, WithRef >::cells( &test_objects[ 0 ] );
+  let cells = Cells::< str>::cells( &test_objects[ 0 ] );
   assert_eq!( cells.len(), 4 );
-  let cells = Cells::< str, WithRef >::cells( &test_objects[ 1 ] );
+  let cells = Cells::< str>::cells( &test_objects[ 1 ] );
   assert_eq!( cells.len(), 4 );
   drop( cells );
 
-  let as_table : AsTable< '_, Vec< test_object::TestObject >, usize, test_object::TestObject, str, WithRef > = AsTable::new( &test_objects );
+  let as_table : AsTable< '_, Vec< test_object::TestObject >, usize, test_object::TestObject, str> = AsTable::new( &test_objects );
   // let mcells = TableSize::mcells( &as_table );
   // assert_eq!( mcells, [ 4, 3 ] );
   let rows = TableRows::rows( &as_table );
@@ -73,17 +78,47 @@ fn iterator_over_optional_cow()
 
   impl TableWithFields for TestObject2 {}
 
-  impl Fields< &'_ str, OptionalCow< '_, str, WithRef > >
+//   impl Fields< &'_ str, Option< Cow< '_, str > > >
+//   for TestObject2
+//   {
+//     type Key< 'k > = &'k str;
+//     type Val< 'v > = OptionalCow< 'v, str>;
+//
+//     fn fields( &self ) -> impl IteratorTrait< Item = ( &'_ str, Option< Cow< '_, str > > ) >
+//     {
+//       use format_tools::ref_or_display_or_debug_multiline::field;
+//       // use format_tools::ref_or_display_or_debug::field;
+//       let mut dst : Vec< ( &'_ str, Option< Cow< '_, str > > ) > = Vec::new();
+//
+//       dst.push( field!( &self.id ) );
+//       dst.push( field!( &self.created_at ) );
+//       dst.push( field!( &self.file_ids ) );
+//
+//       if let Some( tools ) = &self.tools
+//       {
+//         dst.push( field!( tools ) );
+//       }
+//       else
+//       {
+//         dst.push( ( "tools", OptionalCow::none() ) );
+//       }
+//
+//       dst.into_iter()
+//     }
+//
+//   }
+
+  impl Fields< &'_ str, Option< Cow< '_, str > > >
   for TestObject2
   {
     type Key< 'k > = &'k str;
-    type Val< 'v > = OptionalCow< 'v, str, WithRef >;
+    type Val< 'v > = Option< Cow< 'v, str > >;
 
-    fn fields( &self ) -> impl IteratorTrait< Item = ( &'_ str, OptionalCow< '_, str, WithRef > ) >
+    fn fields( &self ) -> impl IteratorTrait< Item = ( &'_ str, Option< Cow< '_, str > > ) >
     {
       use format_tools::ref_or_display_or_debug_multiline::field;
       // use format_tools::ref_or_display_or_debug::field;
-      let mut dst : Vec< ( &'_ str, OptionalCow< '_, str, WithRef > ) > = Vec::new();
+      let mut dst : Vec< ( &'_ str, Option< Cow< '_, str > > ) > = Vec::new();
 
       dst.push( field!( &self.id ) );
       dst.push( field!( &self.created_at ) );
@@ -95,7 +130,7 @@ fn iterator_over_optional_cow()
       }
       else
       {
-        dst.push( ( "tools", OptionalCow::none() ) );
+        dst.push( ( "tools", Option::None ) );
       }
 
       dst.into_iter()
@@ -137,7 +172,7 @@ fn iterator_over_optional_cow()
   };
 
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, Vec< TestObject2 >, &str, TestObject2, str, WithRef > = AsTable::new( &data );
+  let _as_table : AsTable< '_, Vec< TestObject2 >, &str, TestObject2, str> = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
@@ -210,7 +245,9 @@ fn iterator_over_strings()
       // use format_tools::ref_or_display_or_debug::field;
       let mut dst : Vec< ( &'_ str, Option< Cow< '_, str > > ) > = Vec::new();
 
-      dst.push( into( field!( &self.id ) ) );
+      dst.push( field!( &self.id ) );
+
+      // dst.push( into( field!( &self.id ) ) );
 //       dst.push( field!( &self.created_at ) );
 //       dst.push( field!( &self.file_ids ) );
 //
@@ -262,7 +299,7 @@ fn iterator_over_strings()
 //   };
 //
 //   use the_module::TableFormatter;
-//   let _as_table : AsTable< '_, Vec< TestObject3 >, &str, TestObject3, str, WithRef > = AsTable::new( &data );
+//   let _as_table : AsTable< '_, Vec< TestObject3 >, &str, TestObject3, str> = AsTable::new( &data );
 //   let as_table = AsTable::new( &data );
 //
 //   let rows = TableRows::rows( &as_table );
