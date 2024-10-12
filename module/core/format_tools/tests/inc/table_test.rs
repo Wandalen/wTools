@@ -78,36 +78,6 @@ fn iterator_over_optional_cow()
 
   impl TableWithFields for TestObject2 {}
 
-//   impl Fields< &'_ str, Option< Cow< '_, str > > >
-//   for TestObject2
-//   {
-//     type Key< 'k > = &'k str;
-//     type Val< 'v > = OptionalCow< 'v, str>;
-//
-//     fn fields( &self ) -> impl IteratorTrait< Item = ( &'_ str, Option< Cow< '_, str > > ) >
-//     {
-//       use format_tools::ref_or_display_or_debug_multiline::field;
-//       // use format_tools::ref_or_display_or_debug::field;
-//       let mut dst : Vec< ( &'_ str, Option< Cow< '_, str > > ) > = Vec::new();
-//
-//       dst.push( field!( &self.id ) );
-//       dst.push( field!( &self.created_at ) );
-//       dst.push( field!( &self.file_ids ) );
-//
-//       if let Some( tools ) = &self.tools
-//       {
-//         dst.push( field!( tools ) );
-//       }
-//       else
-//       {
-//         dst.push( ( "tools", OptionalCow::none() ) );
-//       }
-//
-//       dst.into_iter()
-//     }
-//
-//   }
-
   impl Fields< &'_ str, Option< Cow< '_, str > > >
   for TestObject2
   {
@@ -199,15 +169,20 @@ fn iterator_over_optional_cow()
 fn iterator_over_strings()
 {
 
-  // fn to_owned< 'a, T1, T2 : Copy >( src : ( T1, OptionalCow< 'a, str, T2 > ) ) -> ( T1, String )
-  // {
-  //   ( src.0, src.1.into_owned() )
-  // }
-
-  fn into< 'a, T1, T2 : Copy >( src : ( T1, OptionalCow< 'a, str, T2 > ) ) -> ( T1, Option< Cow< 'a, str > > )
+  fn to_owned< 'a, T1 >( src : ( T1, Option< Cow< 'a, str > > ) ) -> ( T1, String )
   {
-    ( src.0, src.1.into() )
+    let val = match src.1
+    {
+      Some( c ) => c.into_owned(),
+      None => String::default(),
+    };
+    ( src.0, val )
   }
+
+  // fn into< 'a, T1, T2 : Copy >( src : ( T1, OptionalCow< 'a, str, T2 > ) ) -> ( T1, Option< Cow< 'a, str > > )
+  // {
+  //   ( src.0, src.1.into() )
+  // }
 
   // use test_object::TestObject as TestObject3;
   use the_module::
@@ -237,71 +212,72 @@ fn iterator_over_strings()
   for TestObject3
   {
     type Key< 'k > = &'k str;
-    type Val< 'v > = Option< Cow< 'v, str > >;
+    type Val< 'v > = String;
 
-    fn fields( &self ) -> impl IteratorTrait< Item = ( &'_ str, Option< Cow< '_, str > > ) >
+    fn fields( &self ) -> impl IteratorTrait< Item = ( &'_ str, String ) >
     {
       use format_tools::ref_or_display_or_debug_multiline::field;
       // use format_tools::ref_or_display_or_debug::field;
-      let mut dst : Vec< ( &'_ str, Option< Cow< '_, str > > ) > = Vec::new();
+      let mut dst : Vec< ( &'_ str, String ) > = Vec::new();
 
-      dst.push( field!( &self.id ) );
+      dst.push( to_owned( field!( &self.id ) ) );
 
-      // dst.push( into( field!( &self.id ) ) );
-//       dst.push( field!( &self.created_at ) );
-//       dst.push( field!( &self.file_ids ) );
-//
-//       if let Some( tools ) = &self.tools
-//       {
-//         dst.push( field!( tools ) );
-//       }
-//       else
-//       {
-//         dst.push( ( "tools", OptionalCow::none() ) );
-//       }
+      dst.push( to_owned( field!( &self.created_at ) ) );
+      dst.push( to_owned( field!( &self.file_ids ) ) );
+
+      if let Some( tools ) = &self.tools
+      {
+        dst.push( to_owned( field!( tools ) ) );
+      }
+      else
+      {
+        dst.push( ( "tools", String::default() ) );
+      }
 
       dst.into_iter()
     }
 
   }
 
-//   let data : collection_tools::Vec< TestObject3 > = dlist!
-//   {
-//     TestObject3
-//     {
-//       id : "1".to_string(),
-//       created_at : 1627845583,
-//       file_ids : vec![ "file1".to_string(), "file2".to_string() ],
-//       tools : None
-//     },
-//     TestObject3
-//     {
-//       id : "2".to_string(),
-//       created_at : 13,
-//       file_ids : vec![ "file3".to_string(), "file4\nmore details".to_string() ],
-//       tools : Some
-//       (
-//         vec!
-//         [
-//           {
-//             let mut map = HashMap::new();
-//             map.insert( "tool1".to_string(), "value1".to_string() );
-//             map
-//           },
-//           {
-//             let mut map = HashMap::new();
-//             map.insert( "tool2".to_string(), "value2".to_string() );
-//             map
-//           }
-//         ]
-//       ),
-//     },
-//   };
-//
-//   use the_module::TableFormatter;
-//   let _as_table : AsTable< '_, Vec< TestObject3 >, &str, TestObject3, str> = AsTable::new( &data );
-//   let as_table = AsTable::new( &data );
-//
+  let data : collection_tools::Vec< TestObject3 > = dlist!
+  {
+    TestObject3
+    {
+      id : "1".to_string(),
+      created_at : 1627845583,
+      file_ids : vec![ "file1".to_string(), "file2".to_string() ],
+      tools : None
+    },
+    TestObject3
+    {
+      id : "2".to_string(),
+      created_at : 13,
+      file_ids : vec![ "file3".to_string(), "file4\nmore details".to_string() ],
+      tools : Some
+      (
+        vec!
+        [
+          {
+            let mut map = HashMap::new();
+            map.insert( "tool1".to_string(), "value1".to_string() );
+            map
+          },
+          {
+            let mut map = HashMap::new();
+            map.insert( "tool2".to_string(), "value2".to_string() );
+            map
+          }
+        ]
+      ),
+    },
+  };
+
+  // no variability in what Fields iterate over by design!
+
+  // use the_module::TableFormatter;
+  // let _as_table : AsTable< '_, Vec< TestObject3 >, &str, TestObject3, str> = AsTable::new( &data );
+  // let as_table = AsTable::new( &data );
+
 //   let rows = TableRows::rows( &as_table );
 //   assert_eq!( rows.len(), 2 );
 //
@@ -312,7 +288,7 @@ fn iterator_over_strings()
 //   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
 //   assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
 //   assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
-//
+
 //   let got = AsTable::new( &data ).table_to_string();
 //   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
 //   assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
