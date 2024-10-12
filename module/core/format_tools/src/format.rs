@@ -262,6 +262,11 @@ pub mod table;
 pub mod to_string;
 pub mod to_string_with_fallback;
 
+/// A strucutre for diagnostic and demonstration purpose.
+#[ doc( hidden ) ]
+#[ cfg( debug_assertions ) ]
+pub mod test_object_without_impl;
+
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use own::*;
@@ -303,6 +308,14 @@ pub mod orphan
     ref_or_display_or_debug,
     ref_or_display_or_debug_multiline,
     ref_or_debug,
+  };
+
+  #[ doc( hidden ) ]
+  #[ cfg( debug_assertions ) ]
+  pub use test_object_without_impl::
+  {
+    TestObjectWithoutImpl,
+    test_objects_gen,
   };
 
 }

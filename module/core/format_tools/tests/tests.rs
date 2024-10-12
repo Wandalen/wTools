@@ -1,3 +1,5 @@
+//! Primary tests.
+
 // #![ feature( trace_macros ) ]
 #![ allow( unused_imports ) ]
 

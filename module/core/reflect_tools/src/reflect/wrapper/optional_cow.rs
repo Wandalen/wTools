@@ -20,7 +20,7 @@ where
   Marker : Clone + Copy + 'static,
 {
 
-  // Creates owned data from borrowed data, usually by cloning.
+  /// Creates owned data from borrowed data, usually by cloning.
   #[ inline( always ) ]
   pub fn into_owned( &self ) -> < T as std::borrow::ToOwned >::Owned
   where

@@ -239,7 +239,7 @@ fn iterator_over_strings()
 
   }
 
-  let data : collection_tools::Vec< TestObject3 > = dlist!
+  let _data : collection_tools::Vec< TestObject3 > = dlist!
   {
     TestObject3
     {
