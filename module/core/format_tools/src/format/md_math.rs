@@ -3,6 +3,8 @@
 //! Provides functionality for converting multidimensional indices into flat offsets,
 //! useful for operations involving multidimensional arrays or grids.
 
+// xxx : use crate mdmath
+
 /// Internal namespace.
 mod private
 {

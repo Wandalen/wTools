@@ -6,7 +6,7 @@ use the_module::
   AsTable,
   TableRows,
   WithRef,
-  print,
+  // the_module::print,
 };
 
 use std::
@@ -63,7 +63,7 @@ fn dlist_basic()
   assert_eq!( rows.len(), 2 );
 
   let mut output = String::new();
-  let mut context = print::Context::new( &mut output, Default::default() );
+  let mut context = the_module::print::Context::new( &mut output, Default::default() );
   let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
@@ -119,7 +119,7 @@ fn hmap_basic()
   assert_eq!( rows.len(), 2 );
 
   let mut output = String::new();
-  let mut context = print::Context::new( &mut output, Default::default() );
+  let mut context = the_module::print::Context::new( &mut output, Default::default() );
   let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
@@ -175,7 +175,7 @@ fn bmap_basic()
   assert_eq!( rows.len(), 2 );
 
   let mut output = String::new();
-  let mut context = print::Context::new( &mut output, Default::default() );
+  let mut context = the_module::print::Context::new( &mut output, Default::default() );
   let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
@@ -229,7 +229,7 @@ fn bset_basic()
   assert_eq!( rows.len(), 2 );
 
   let mut output = String::new();
-  let mut context = print::Context::new( &mut output, Default::default() );
+  let mut context = the_module::print::Context::new( &mut output, Default::default() );
   let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
@@ -283,7 +283,7 @@ fn deque_basic()
   assert_eq!( rows.len(), 2 );
 
   let mut output = String::new();
-  let mut context = print::Context::new( &mut output, Default::default() );
+  let mut context = the_module::print::Context::new( &mut output, Default::default() );
   let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
@@ -337,7 +337,7 @@ fn hset_basic()
   assert_eq!( rows.len(), 2 );
 
   let mut output = String::new();
-  let mut context = print::Context::new( &mut output, Default::default() );
+  let mut context = the_module::print::Context::new( &mut output, Default::default() );
   let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
@@ -391,7 +391,7 @@ fn llist_basic()
   assert_eq!( rows.len(), 2 );
 
   let mut output = String::new();
-  let mut context = print::Context::new( &mut output, Default::default() );
+  let mut context = the_module::print::Context::new( &mut output, Default::default() );
   let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );

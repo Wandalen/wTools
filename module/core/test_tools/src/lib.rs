@@ -87,7 +87,7 @@ mod private {}
   prelude use ::collection_tools as collection;
   // prelude use ::process_tools as process;
 
-  use ::collection_tools;
+  use ::collection_tools; // xxx : do that for all dependencies
 
   prelude use ::meta_tools::
   {

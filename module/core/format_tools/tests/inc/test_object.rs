@@ -61,27 +61,27 @@ for TestObject
 
 }
 
-impl Hash for TestObject 
+impl Hash for TestObject
 {
 
-  fn hash< H: Hasher >( &self, state: &mut H ) 
+  fn hash< H: Hasher >( &self, state: &mut H )
   {
     self.id.hash( state );
     self.created_at.hash( state );
     self.file_ids.hash( state );
 
-    if let Some( tools ) = &self.tools 
+    if let Some( tools ) = &self.tools
     {
-      for tool in tools 
+      for tool in tools
       {
-        for ( key, value ) in tool 
+        for ( key, value ) in tool
         {
           key.hash( state );
           value.hash( state );
         }
       }
-    } 
-    else 
+    }
+    else
     {
       state.write_u8( 0 );
     }
@@ -89,10 +89,10 @@ impl Hash for TestObject
 
 }
 
-impl PartialEq for TestObject 
+impl PartialEq for TestObject
 {
 
-  fn eq( &self, other: &Self ) -> bool 
+  fn eq( &self, other: &Self ) -> bool
   {
     self.id == other.id &&
     self.created_at == other.created_at &&
@@ -102,31 +102,31 @@ impl PartialEq for TestObject
 
 }
 
-impl Eq for TestObject 
+impl Eq for TestObject
 {
 }
 
-impl PartialOrd for TestObject 
+impl PartialOrd for TestObject
 {
-  
-  fn partial_cmp( &self, other: &Self ) -> Option< Ordering > 
+
+  fn partial_cmp( &self, other: &Self ) -> Option< Ordering >
   {
     Some( self.cmp( other ) )
   }
 
 }
 
-impl Ord for TestObject 
+impl Ord for TestObject
 {
 
-  fn cmp( &self, other: &Self ) -> Ordering 
+  fn cmp( &self, other: &Self ) -> Ordering
   {
     self.id
     .cmp( &other.id )
     .then_with( | | self.created_at.cmp( &other.created_at ) )
     .then_with( | | self.file_ids.cmp( &other.file_ids ) )
   }
-  
+
 }
 
 //
