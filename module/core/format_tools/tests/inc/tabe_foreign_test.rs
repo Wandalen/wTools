@@ -33,9 +33,7 @@ fn iterator_over_optional_cow()
   #[ derive( Debug, Clone ) ]
   pub struct TestObjecWrap( TestObjectWithoutImpl );
 
-  // xxx : that should fail
   impl TableWithFields for TestObjecWrap {}
-
   impl Fields< &'_ str, Option< Cow< '_, str > > >
   for TestObjecWrap
   {
@@ -45,13 +43,9 @@ fn iterator_over_optional_cow()
     fn fields( &self ) -> impl IteratorTrait< Item = ( &'_ str, Option< Cow< '_, str > > ) >
     {
       use format_tools::ref_or_display_or_debug_multiline::field;
-      // use format_tools::ref_or_display_or_debug::field;
-      let mut dst : Vec< ( &'_ str, Option< Cow< '_, str > > ) > = Vec::new();
+      let mut dst = Vec::new();
 
-      // trace_macros!( true );
       dst.push( field!( &self.0.id ) );
-      // trace_macros!( false );
-
       dst.push( field!( &self.0.created_at ) );
       dst.push( field!( &self.0.file_ids ) );
 
