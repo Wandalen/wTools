@@ -404,7 +404,7 @@ path = "module/alias/wtest_basic"
 ## graphs tools
 
 [workspace.dependencies.graphs_tools]
-version = "~0.2.0"
+version = "~0.3.0"
 path = "module/move/graphs_tools"
 default-features = false
 
