@@ -49,20 +49,70 @@ fn basic()
 //
 
 #[ test ]
-fn dlist_basic()
+fn iterator_over_optional_cow()
 {
-  use test_object::TestObject;
-
-  let data : collection_tools::Vec< TestObject > = dlist!
+  // use test_object::TestObject2 as TestObject2;
+  use the_module::
   {
-    TestObject
+    Fields,
+    IteratorTrait,
+    TableWithFields,
+    WithRef,
+    OptionalCow,
+  };
+
+  /// Struct representing a test object with various fields.
+  #[ derive( Clone, Debug, PartialEq, Eq ) ]
+  pub struct TestObject2
+  {
+    pub id : String,
+    pub created_at : i64,
+    pub file_ids : Vec< String >,
+    pub tools : Option< Vec< HashMap< String, String > > >,
+  }
+
+  impl TableWithFields for TestObject2 {}
+
+  impl Fields< &'_ str, OptionalCow< '_, str, WithRef > >
+  for TestObject2
+  {
+    type Key< 'k > = &'k str;
+    type Val< 'v > = OptionalCow< 'v, str, WithRef >;
+
+    fn fields( &self ) -> impl IteratorTrait< Item = ( &'_ str, OptionalCow< '_, str, WithRef > ) >
+    {
+      use format_tools::ref_or_display_or_debug_multiline::field;
+      // use format_tools::ref_or_display_or_debug::field;
+      let mut dst : Vec< ( &'_ str, OptionalCow< '_, str, WithRef > ) > = Vec::new();
+
+      dst.push( field!( &self.id ) );
+      dst.push( field!( &self.created_at ) );
+      dst.push( field!( &self.file_ids ) );
+
+      if let Some( tools ) = &self.tools
+      {
+        dst.push( field!( tools ) );
+      }
+      else
+      {
+        dst.push( ( "tools", OptionalCow::none() ) );
+      }
+
+      dst.into_iter()
+    }
+
+  }
+
+  let data : collection_tools::Vec< TestObject2 > = dlist!
+  {
+    TestObject2
     {
       id : "1".to_string(),
       created_at : 1627845583,
       file_ids : vec![ "file1".to_string(), "file2".to_string() ],
       tools : None
     },
-    TestObject
+    TestObject2
     {
       id : "2".to_string(),
       created_at : 13,
@@ -87,7 +137,7 @@ fn dlist_basic()
   };
 
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, Vec< TestObject >, &str, TestObject, str, WithRef > = AsTable::new( &data );
+  let _as_table : AsTable< '_, Vec< TestObject2 >, &str, TestObject2, str, WithRef > = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
@@ -101,9 +151,134 @@ fn dlist_basic()
   assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
   assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
 
-  // let got = AsTable::new( &data ).table_to_string();
-  // assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
-  // assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
-  // assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
+  let got = AsTable::new( &data ).table_to_string();
+  assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
+  assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
+  assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
+
+}
+
+//
+
+#[ test ]
+fn iterator_over_strings()
+{
+
+  // fn to_owned< 'a, T1, T2 : Copy >( src : ( T1, OptionalCow< 'a, str, T2 > ) ) -> ( T1, String )
+  // {
+  //   ( src.0, src.1.into_owned() )
+  // }
+
+  fn into< 'a, T1, T2 : Copy >( src : ( T1, OptionalCow< 'a, str, T2 > ) ) -> ( T1, Option< Cow< 'a, str > > )
+  {
+    ( src.0, src.1.into() )
+  }
+
+  // use test_object::TestObject as TestObject3;
+  use the_module::
+  {
+    Fields,
+    IteratorTrait,
+    TableWithFields,
+    WithRef,
+    OptionalCow,
+  };
+
+  use std::borrow::Cow;
+
+  /// Struct representing a test object with various fields.
+  #[ derive( Clone, Debug, PartialEq, Eq ) ]
+  pub struct TestObject3
+  {
+    pub id : String,
+    pub created_at : i64,
+    pub file_ids : Vec< String >,
+    pub tools : Option< Vec< HashMap< String, String > > >,
+  }
+
+  impl TableWithFields for TestObject3 {}
+
+  impl Fields< &'_ str, String >
+  for TestObject3
+  {
+    type Key< 'k > = &'k str;
+    type Val< 'v > = Option< Cow< 'v, str > >;
+
+    fn fields( &self ) -> impl IteratorTrait< Item = ( &'_ str, Option< Cow< '_, str > > ) >
+    {
+      use format_tools::ref_or_display_or_debug_multiline::field;
+      // use format_tools::ref_or_display_or_debug::field;
+      let mut dst : Vec< ( &'_ str, Option< Cow< '_, str > > ) > = Vec::new();
+
+      dst.push( into( field!( &self.id ) ) );
+//       dst.push( field!( &self.created_at ) );
+//       dst.push( field!( &self.file_ids ) );
+//
+//       if let Some( tools ) = &self.tools
+//       {
+//         dst.push( field!( tools ) );
+//       }
+//       else
+//       {
+//         dst.push( ( "tools", OptionalCow::none() ) );
+//       }
+
+      dst.into_iter()
+    }
+
+  }
+
+//   let data : collection_tools::Vec< TestObject3 > = dlist!
+//   {
+//     TestObject3
+//     {
+//       id : "1".to_string(),
+//       created_at : 1627845583,
+//       file_ids : vec![ "file1".to_string(), "file2".to_string() ],
+//       tools : None
+//     },
+//     TestObject3
+//     {
+//       id : "2".to_string(),
+//       created_at : 13,
+//       file_ids : vec![ "file3".to_string(), "file4\nmore details".to_string() ],
+//       tools : Some
+//       (
+//         vec!
+//         [
+//           {
+//             let mut map = HashMap::new();
+//             map.insert( "tool1".to_string(), "value1".to_string() );
+//             map
+//           },
+//           {
+//             let mut map = HashMap::new();
+//             map.insert( "tool2".to_string(), "value2".to_string() );
+//             map
+//           }
+//         ]
+//       ),
+//     },
+//   };
+//
+//   use the_module::TableFormatter;
+//   let _as_table : AsTable< '_, Vec< TestObject3 >, &str, TestObject3, str, WithRef > = AsTable::new( &data );
+//   let as_table = AsTable::new( &data );
+//
+//   let rows = TableRows::rows( &as_table );
+//   assert_eq!( rows.len(), 2 );
+//
+//   let mut output = String::new();
+//   let mut context = the_module::print::Context::new( &mut output, Default::default() );
+//   let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
+//   let got = as_table.table_to_string();
+//   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
+//   assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
+//   assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
+//
+//   let got = AsTable::new( &data ).table_to_string();
+//   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
+//   assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
+//   assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
 
 }

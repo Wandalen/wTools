@@ -20,6 +20,19 @@ where
   Marker : Clone + Copy + 'static,
 {
 
+  // Creates owned data from borrowed data, usually by cloning.
+  #[ inline( always ) ]
+  pub fn into_owned( &self ) -> < T as std::borrow::ToOwned >::Owned
+  where
+    < T as std::borrow::ToOwned >::Owned : Default,
+  {
+    match self.0.as_ref()
+    {
+      Some( c ) => c.clone().into_owned(),
+      None => < T as std::borrow::ToOwned >::Owned::default(),
+    }
+  }
+
   /// Check is it borrowed.
   #[ inline( always ) ]
   pub fn is_borrowed( &self ) -> bool
@@ -211,4 +224,16 @@ where
   Marker : Clone + Copy + 'static,
   T : Eq,
 {
+}
+
+impl< 'a, T, Marker > From< OptionalCow< 'a, T, Marker > > for Option< Cow< 'a, T > >
+where
+  T : std::borrow::ToOwned + ?Sized,
+  Marker : Clone + Copy + 'static,
+{
+  #[ inline( always ) ]
+  fn from( src : OptionalCow< 'a, T, Marker > ) -> Self
+  {
+    src.0
+  }
 }

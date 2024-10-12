@@ -20,7 +20,7 @@ use std::
 };
 
 /// Struct representing a test object with various fields.
-#[ derive( Clone, Debug ) ]
+#[ derive( Clone, Debug, PartialEq, Eq ) ]
 pub struct TestObject
 {
   pub id : String,
@@ -89,22 +89,22 @@ impl Hash for TestObject
 
 }
 
-impl PartialEq for TestObject
-{
-
-  fn eq( &self, other: &Self ) -> bool
-  {
-    self.id == other.id &&
-    self.created_at == other.created_at &&
-    self.file_ids == other.file_ids &&
-    self.tools == other.tools
-  }
-
-}
-
-impl Eq for TestObject
-{
-}
+// impl PartialEq for TestObject
+// {
+//
+//   fn eq( &self, other: &Self ) -> bool
+//   {
+//     self.id == other.id &&
+//     self.created_at == other.created_at &&
+//     self.file_ids == other.file_ids &&
+//     self.tools == other.tools
+//   }
+//
+// }
+//
+// impl Eq for TestObject
+// {
+// }
 
 impl PartialOrd for TestObject
 {
