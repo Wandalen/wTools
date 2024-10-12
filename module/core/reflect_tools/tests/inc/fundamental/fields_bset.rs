@@ -4,7 +4,6 @@ use super::*;
 use the_module::
 {
   Fields,
-
 };
 
 // xxx : implement for other collections

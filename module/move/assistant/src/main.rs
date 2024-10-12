@@ -23,6 +23,8 @@ async fn main() -> Result< (), Box< dyn Error > >
   dotenv().ok();
   let client = client()?;
   let assistants = client.list_assistant( None, None, None, None )?;
+
   println!( "Assistants: {:?}", assistants.data );
+
   Ok( () )
 }

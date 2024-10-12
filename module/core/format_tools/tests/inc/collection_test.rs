@@ -328,7 +328,7 @@ fn hset_basic()
       ),
     },
   };
-  
+
   use the_module::TableFormatter;
   let _as_table : AsTable< '_, HashSet< TestObject >, &str, TestObject, str, WithRef > = AsTable::new( &data );
   let as_table = AsTable::new( &data );
