@@ -30,6 +30,7 @@ fn iterator_over_optional_cow()
     OptionalCow,
   };
 
+  #[ derive( Debug, Clone ) ]
   pub struct TestObjecWrap( TestObjectWithoutImpl );
 
   // xxx : that should fail
@@ -75,23 +76,23 @@ fn iterator_over_optional_cow()
   ;
 
   use the_module::TableFormatter;
-  // let _as_table : AsTable< '_, Vec< TestObjecWrap >, &str, TestObjectWithoutImpl, str> = AsTable::new( &data );
-  // let as_table = AsTable::new( &data );
+  let _as_table : AsTable< '_, Vec< TestObjecWrap >, &str, TestObjecWrap, str > = AsTable::new( &data );
+  let as_table = AsTable::new( &data );
 
-//   let rows = TableRows::rows( &as_table );
-//   assert_eq!( rows.len(), 2 );
-//
-//   let mut output = String::new();
-//   let mut context = the_module::print::Context::new( &mut output, Default::default() );
-//   let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
-//   let got = as_table.table_to_string();
-//   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
-//   assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
-//   assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
-//
-//   let got = AsTable::new( &data ).table_to_string();
-//   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
-//   assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
-//   assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
+  let rows = TableRows::rows( &as_table );
+  assert_eq!( rows.len(), 2 );
+
+  let mut output = String::new();
+  let mut context = the_module::print::Context::new( &mut output, Default::default() );
+  let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let got = as_table.table_to_string();
+  assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
+  assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
+  assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
+
+  let got = AsTable::new( &data ).table_to_string();
+  assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
+  assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
+  assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
 
 }
