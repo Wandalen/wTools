@@ -583,7 +583,10 @@ mod private
             slices[ x.slices_dim.md_offset( md_index ) ] = s;
           })
           ;
-          x.col_descriptors[ icol ].label = cell.0.as_ref();
+          if irow == 0
+          {
+            x.col_descriptors[ icol ].label = cell.0.as_ref();
+          }
         }
 
       }

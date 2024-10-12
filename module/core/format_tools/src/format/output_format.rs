@@ -82,6 +82,7 @@ mod private
 
 mod table;
 mod records;
+mod keys;
 
 #[ allow( unused_imports ) ]
 pub use own::*;
@@ -99,6 +100,7 @@ pub mod own
   {
     table::Table,
     records::Records,
+    keys::Keys,
   };
 
   #[ doc( inline ) ]

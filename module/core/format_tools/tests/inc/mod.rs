@@ -10,8 +10,10 @@ mod fundamental
 
   mod table_test;
   mod tabe_foreign_test;
-  mod format_ordinary_test;
+
+  mod format_table_test;
   mod format_records_test;
+  // mod format_keys_test; // qqq : xxx : implement
 
   mod collection_test;
   mod fields_test;

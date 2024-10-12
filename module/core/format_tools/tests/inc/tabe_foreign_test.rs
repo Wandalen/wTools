@@ -93,6 +93,7 @@ fn iterator_over_objects_without_impl()
   assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
 
   let got = AsTable::new( &data ).table_to_string_with_format( &output_format::Table::default() );
+  println!( "{}", &got );
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
   assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
   assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
@@ -106,13 +107,23 @@ fn iterator_over_objects_without_impl()
   let mut context = the_module::print::Context::new( &mut output, printer );
   let got = the_module::TableFormatter::fmt( &as_table, &mut context );
   assert!( got.is_ok() );
-  println!( "{}", &output );
 
   let got = AsTable::new( &data ).table_to_string_with_format( &output_format::Records::default() );
+  println!( "{}", &got );
   assert!( got.contains( "│ id         │ 1            │" ) );
   assert!( got.contains( "│ created_at │ 1627845583   │" ) );
   assert!( got.contains( "│ id         │ 2                          │" ) );
   assert!( got.contains( "│ created_at │ 13                         │" ) );
+
+  // = output as keys
+
+  let got = AsTable::new( &data ).table_to_string_with_format( &output_format::Keys::default() );
+  println!( "{}", &got );
+  assert!( got.contains( "- id" ) );
+  assert!( got.contains( "- created_at" ) );
+  assert!( got.contains( "- file_ids" ) );
+  assert!( got.contains( "- tools" ) );
+  assert!( got.contains( "4 fields" ) );
 
   // assert!( false );
 
