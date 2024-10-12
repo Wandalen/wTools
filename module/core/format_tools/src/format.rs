@@ -17,8 +17,8 @@ mod private
   macro_rules! _field_with_key
   {
     (
+      $path : expr,
       $key : ident,
-      $src : expr,
       $how : ty,
       $fallback1 : ty,
       $fallback2 : ty
@@ -31,7 +31,7 @@ mod private
         // $crate::OptionalCow::< '_, str, $how >::from
         Option::Some
         (
-          $crate::to_string_with_fallback!( $how, $fallback1, $fallback2, $src )
+          $crate::to_string_with_fallback!( $how, $fallback1, $fallback2, $path )
         ),
       )
     }};
@@ -48,32 +48,39 @@ mod private
   macro_rules! _field
   {
 
-    ( & $path:ident.$( $key:ident )+, $how : ty, $fallback1 : ty, $fallback2 : ty $(,)? ) =>
+    // dst.push( field!( &self.id ) );
+    ( ( & $pre:ident.$( $key:tt )+ ), $how : ty, $fallback1 : ty, $fallback2 : ty $(,)? ) =>
     {{
-      $crate::_field!( # ( & $path . ) ( $( $key )+ ) ( $how, $fallback1, $fallback2 ) )
+      $crate::_field!( # ( & $pre . ) ( $( $key )+ ) ( $how, $fallback1, $fallback2 ) )
     }};
 
-    ( $path:ident.$( $key:ident )+, $how : ty, $fallback1 : ty, $fallback2 : ty $(,)? ) =>
+    // dst.push( field!( self.id ) );
+    ( ( $pre:ident.$( $key:tt )+ ), $how : ty, $fallback1 : ty, $fallback2 : ty $(,)? ) =>
     {{
-      $crate::_field!( # ( $path . ) ( $( $key )+ ) ( $how, $fallback1, $fallback2 ) )
+      $crate::_field!( # ( $pre . ) ( $( $key )+ ) ( $how, $fallback1, $fallback2 ) )
     }};
 
-    ( & $key:ident, $how : ty, $fallback1 : ty, $fallback2 : ty $(,)? ) =>
+    // dst.push( field!( &tools ) );
+    ( ( & $key:ident ), $how : ty, $fallback1 : ty, $fallback2 : ty $(,)? ) =>
     {{
-      $crate::_field!( # () ( $key ) ( $how, $fallback1, $fallback2 ) )
+      $crate::_field!( # () ( & $key ) ( $how, $fallback1, $fallback2 ) )
     }};
 
-    ( $key:ident, $how : ty, $fallback1 : ty, $fallback2 : ty $(,)? ) =>
+    // dst.push( field!( tools ) );
+    ( ( $key:ident ), $how : ty, $fallback1 : ty, $fallback2 : ty $(,)? ) =>
     {{
       $crate::_field!( # () ( $key ) ( $how, $fallback1, $fallback2 ) )
     }};
 
     // private
 
+    // ( a.b. )
+    // ( c.d )
+    // ( $crate::WithRef, $crate::WithDebug, $crate::WithDebug )
     (
       #
       ( $( $prefix:tt )* )
-      ( $prekey:ident.$( $field:ident )+ )
+      ( $prekey:ident.$( $field:tt )+ )
       ( $how : ty, $fallback1 : ty, $fallback2 : ty )
     )
     =>
@@ -81,6 +88,23 @@ mod private
       $crate::_field!( # ( $( $prefix )* $prekey . ) ( $( $field )+ ) ( $how, $fallback1, $fallback2 ) )
     }};
 
+    // ( a.b. )
+    // ( 0.d )
+    // ( $crate::WithRef, $crate::WithDebug, $crate::WithDebug )
+    (
+      #
+      ( $( $prefix:tt )* )
+      ( $prekey:tt.$( $field:tt )+ )
+      ( $how : ty, $fallback1 : ty, $fallback2 : ty )
+    )
+    =>
+    {{
+      $crate::_field!( # ( $( $prefix )* $prekey . ) ( $( $field )+ ) ( $how, $fallback1, $fallback2 ) )
+    }};
+
+    // ( a.b.c. )
+    // ( d )
+    // ( $crate::WithRef, $crate::WithDebug, $crate::WithDebug )
     (
       #
       ( $( $prefix:tt )* )
@@ -92,6 +116,9 @@ mod private
       $crate::_field!( # # ( $( $prefix )* ) ( $key ) ( $how, $fallback1, $fallback2 ) )
     }};
 
+    // ( a.b.c )
+    // ( d )
+    // ( $crate::WithRef, $crate::WithDebug, $crate::WithDebug )
     (
       # #
       ( $( $prefix:tt )* )
@@ -100,7 +127,8 @@ mod private
     )
     =>
     {{
-      $crate::_field_with_key!( $key, $( $prefix )* $key, $how, $fallback1, $fallback2 )
+      // _field_with_key!( id, &self. id, $crate::WithRef, $crate::WithDisplay, $crate::WithDebugMultiline )
+      $crate::_field_with_key!( $( $prefix )* $key, $key, $how, $fallback1, $fallback2 )
     }};
 
   }
@@ -130,7 +158,7 @@ mod private
       )
       =>
       {{
-        $crate::_field_with_key!( $key, $src, $crate::WithRef, $crate::WithDisplay, $crate::WithDebugMultiline )
+        $crate::_field_with_key!( $src, $key, $crate::WithRef, $crate::WithDisplay, $crate::WithDebugMultiline )
       }};
     }
 
@@ -145,7 +173,7 @@ mod private
       ( $( $t:tt )+ )
       =>
       {{
-        $crate::_field!( $( $t )+, $crate::WithRef, $crate::WithDisplay, $crate::WithDebugMultiline )
+        $crate::_field!( ( $( $t )+ ), $crate::WithRef, $crate::WithDisplay, $crate::WithDebugMultiline )
       }}
     }
 
@@ -179,7 +207,7 @@ mod private
       )
       =>
       {{
-        $crate::_field_with_key!( $key, $src, $crate::WithRef, $crate::WithDisplay, $crate::WithDebug )
+        $crate::_field_with_key!( $src, $key, $crate::WithRef, $crate::WithDisplay, $crate::WithDebug )
       }};
     }
 
@@ -194,7 +222,7 @@ mod private
       ( $( $t:tt )+ )
       =>
       {{
-        $crate::_field!( $( $t )+, $crate::WithRef, $crate::WithDisplay, $crate::WithDebug )
+        $crate::_field!( ( $( $t )+ ), $crate::WithRef, $crate::WithDisplay, $crate::WithDebug )
       }}
     }
 
@@ -227,7 +255,7 @@ mod private
       )
       =>
       {{
-        $crate::_field_with_key!( $key, $src, $crate::WithRef, $crate::WithDebug, $crate::WithDebug )
+        $crate::_field_with_key!( $src, $key, $crate::WithRef, $crate::WithDebug, $crate::WithDebug )
       }};
     }
 
@@ -241,7 +269,7 @@ mod private
       ( $( $t:tt )+ )
       =>
       {{
-        $crate::_field!( $( $t )+, $crate::WithRef, $crate::WithDebug, $crate::WithDebug )
+        $crate::_field!( ( $( $t )+ ), $crate::WithRef, $crate::WithDebug, $crate::WithDebug )
       }}
     }
 

@@ -73,7 +73,9 @@ for TestObject
     // use format_tools::ref_or_display_or_debug::field;
     let mut dst : Vec< ( &'_ str, Option< Cow< '_, str > > ) > = Vec::new();
 
+    // trace_macros!( true );
     dst.push( field!( &self.id ) );
+    // trace_macros!( false );
     dst.push( field!( &self.created_at ) );
     dst.push( field!( &self.file_ids ) );
 

@@ -30,45 +30,54 @@ fn iterator_over_optional_cow()
     OptionalCow,
   };
 
-//   // xxx : that should fail
-//   impl TableWithFields for TestObjectWithoutImpl {}
-//
-//   impl Fields< &'_ str, Option< Cow< '_, str > > >
-//   for TestObjectWithoutImpl
-//   {
-//     type Key< 'k > = &'k str;
-//     type Val< 'v > = Option< Cow< 'v, str > >;
-//
-//     fn fields( &self ) -> impl IteratorTrait< Item = ( &'_ str, Option< Cow< '_, str > > ) >
-//     {
-//       use format_tools::ref_or_display_or_debug_multiline::field;
-//       // use format_tools::ref_or_display_or_debug::field;
-//       let mut dst : Vec< ( &'_ str, Option< Cow< '_, str > > ) > = Vec::new();
-//
-//       dst.push( field!( &self.id ) );
-//       dst.push( field!( &self.created_at ) );
-//       dst.push( field!( &self.file_ids ) );
-//
-//       if let Some( tools ) = &self.tools
-//       {
-//         dst.push( field!( tools ) );
-//       }
-//       else
-//       {
-//         dst.push( ( "tools", Option::None ) );
-//       }
-//
-//       dst.into_iter()
-//     }
-//
-//   }
+  pub struct TestObjecWrap( TestObjectWithoutImpl );
 
-  let data : collection_tools::Vec< TestObjectWithoutImpl > = the_module::test_objects_gen();
+  // xxx : that should fail
+  impl TableWithFields for TestObjecWrap {}
 
-//   use the_module::TableFormatter;
-//   let _as_table : AsTable< '_, Vec< TestObjectWithoutImpl >, &str, TestObjectWithoutImpl, str> = AsTable::new( &data );
-//   let as_table = AsTable::new( &data );
-//
+  impl Fields< &'_ str, Option< Cow< '_, str > > >
+  for TestObjecWrap
+  {
+    type Key< 'k > = &'k str;
+    type Val< 'v > = Option< Cow< 'v, str > >;
+
+    fn fields( &self ) -> impl IteratorTrait< Item = ( &'_ str, Option< Cow< '_, str > > ) >
+    {
+      use format_tools::ref_or_display_or_debug_multiline::field;
+      // use format_tools::ref_or_display_or_debug::field;
+      let mut dst : Vec< ( &'_ str, Option< Cow< '_, str > > ) > = Vec::new();
+
+      // trace_macros!( true );
+      dst.push( field!( &self.0.id ) );
+      // trace_macros!( false );
+
+      dst.push( field!( &self.0.created_at ) );
+      dst.push( field!( &self.0.file_ids ) );
+
+      if let Some( tools ) = &self.0.tools
+      {
+        dst.push( field!( tools ) );
+      }
+      else
+      {
+        dst.push( ( "tools", Option::None ) );
+      }
+
+      dst.into_iter()
+    }
+
+  }
+
+  let data : collection_tools::Vec< TestObjecWrap > = the_module::test_objects_gen()
+  .into_iter()
+  .map( | e | TestObjecWrap( e ) )
+  .collect()
+  ;
+
+  use the_module::TableFormatter;
+  // let _as_table : AsTable< '_, Vec< TestObjecWrap >, &str, TestObjectWithoutImpl, str> = AsTable::new( &data );
+  // let as_table = AsTable::new( &data );
+
 //   let rows = TableRows::rows( &as_table );
 //   assert_eq!( rows.len(), 2 );
 //
