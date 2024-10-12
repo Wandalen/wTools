@@ -1,4 +1,3 @@
-#[ allow( unused_imports ) ]
 use super::*;
 
 use the_module::
@@ -18,7 +17,7 @@ use std::
 //
 
 #[ test ]
-fn iterator_over_optional_cow()
+fn iterator_over_objects_without_impl()
 {
   use the_module::TestObjectWithoutImpl as TestObjectWithoutImpl;
   use the_module::
@@ -28,6 +27,7 @@ fn iterator_over_optional_cow()
     TableWithFields,
     WithRef,
     OptionalCow,
+    output_format,
   };
 
   #[ derive( Debug, Clone ) ]
@@ -78,7 +78,10 @@ fn iterator_over_optional_cow()
 
   let mut output = String::new();
   let mut context = the_module::print::Context::new( &mut output, Default::default() );
-  let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  let _result = the_module::TableFormatter::fmt( &as_table, &mut context );
+
+  // = output as table
+
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
   assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
@@ -88,5 +91,29 @@ fn iterator_over_optional_cow()
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
   assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
   assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
+
+  let got = AsTable::new( &data ).table_to_string_with_format( &output_format::Table::default() );
+  assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
+  assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
+  assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
+
+  // = output as records
+
+  // let format = output_format::Records::default();
+  let mut output = String::new();
+  let format = the_module::output_format::Records::default();
+  let printer = the_module::print::Printer::with_format( &format );
+  let mut context = the_module::print::Context::new( &mut output, printer );
+  let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  assert!( got.is_ok() );
+  println!( "{}", &output );
+
+  let got = AsTable::new( &data ).table_to_string_with_format( &output_format::Records::default() );
+  assert!( got.contains( "│ id         │ 1            │" ) );
+  assert!( got.contains( "│ created_at │ 1627845583   │" ) );
+  assert!( got.contains( "│ id         │ 2                          │" ) );
+  assert!( got.contains( "│ created_at │ 13                         │" ) );
+
+  // assert!( false );
 
 }

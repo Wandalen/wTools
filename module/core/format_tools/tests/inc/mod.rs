@@ -7,7 +7,6 @@ mod fundamental
   use super::*;
 
   mod test_object;
-  mod test_object_without_impl;
 
   mod table_test;
   mod tabe_foreign_test;

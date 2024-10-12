@@ -166,7 +166,7 @@ mod private
     /// A `String` containing the formatted table.
     fn table_to_string( &'data self ) -> String
     {
-      self.table_to_string_with_format( &output_format::Ordinary::default() )
+      self.table_to_string_with_format( &output_format::Table::default() )
     }
 
     /// Converts the table to a string representation specifying printer.

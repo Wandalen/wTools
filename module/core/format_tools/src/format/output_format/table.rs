@@ -24,7 +24,7 @@ use std::sync::OnceLock;
 
 /// A struct representing the classic table output format.
 ///
-/// `Ordinary` provides a standard implementation for table formatting,
+/// `Table` provides a standard implementation for table formatting,
 /// supporting a classic style with default settings.
 ///
 /// # Example
@@ -37,7 +37,7 @@ use std::sync::OnceLock;
 ///   10 | Boris |   5
 /// ```
 #[ derive( Debug ) ]
-pub struct Ordinary
+pub struct Table
 {
   /// Delimitting header with grid line or not.
   pub delimitting_header : bool,
@@ -77,7 +77,7 @@ pub struct Ordinary
   pub corner_rb : char,
 }
 
-impl Default for Ordinary
+impl Default for Table
 {
   fn default() -> Self
   {
@@ -127,30 +127,30 @@ impl Default for Ordinary
   }
 }
 
-impl Default for &'static Ordinary
+impl Default for &'static Table
 {
   fn default() -> Self
   {
     // qqq : find a better solution
-    static STYLES : OnceLock< Ordinary > = OnceLock::new();
+    static STYLES : OnceLock< Table > = OnceLock::new();
     STYLES.get_or_init( ||
     {
-      Ordinary::default()
+      Table::default()
     })
   }
 }
 
-impl Ordinary
+impl Table
 {
 
-  /// Returns a reference to a static instance of `Ordinary`.
+  /// Returns a reference to a static instance of `Table`.
   ///
-  /// This method provides access to a single shared instance of `Ordinary`,
+  /// This method provides access to a single shared instance of `Table`,
   /// ensuring efficient reuse of the classic table output format.
   pub fn instance() -> & 'static dyn TableOutputFormat
   {
 
-    static INSTANCE : OnceLock< Ordinary > = OnceLock::new();
+    static INSTANCE : OnceLock< Table > = OnceLock::new();
     INSTANCE.get_or_init( ||
     {
       Self::default()
@@ -159,7 +159,7 @@ impl Ordinary
   }
 }
 
-impl TableOutputFormat for Ordinary
+impl TableOutputFormat for Table
 {
   fn extract_write< 'buf, 'data >( &self, x : &InputExtract< 'data >, c : &mut Context< 'buf > ) -> fmt::Result
   {
