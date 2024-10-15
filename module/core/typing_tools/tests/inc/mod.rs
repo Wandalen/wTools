@@ -7,6 +7,7 @@ use the_module::typing as the_module;
 #[ path = "../../../../core/implements/tests/inc/mod.rs" ]
 mod implements_test;
 
+#[ cfg( nightly ) ]
 #[ path = "../../../../core/inspect_type/tests/inc/mod.rs" ]
 mod inspect_type_test;
 
