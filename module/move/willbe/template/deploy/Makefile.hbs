@@ -207,3 +207,7 @@ state_storage_pull:
 state_storage_init:
 	terraform -chdir=$(tf_dir)/gcs init
 	terraform -chdir=$(tf_dir)/gcs apply
+
+# Destroys GCS Bucket for terraform states
+state_storage_destroy:
+	terraform -chdir=$(tf_dir)/gcs destroy

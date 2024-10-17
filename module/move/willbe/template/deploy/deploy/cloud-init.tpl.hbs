@@ -1,18 +1,6 @@
 #cloud-config
 
 write_files:
-- path: /etc/systemd/system/${image_name}.service
-  permissions: 0644
-  owner: root
-  content: |
-    [Unit]
-    Description=Start ${image_name} docker container. Build: ${timestamp}
-    Wants=network-online.target
-    After=network-online.target
-
-    [Service]
-    Environment="HOME=/root"
-    ExecStart=/usr/bin/docker run -d -p 80:80 --name=${image_name} ${location}-docker.pkg.dev/${project_id}/${repo_name}/${image_name}
 - path: /root/service_account.json
   permissions: 0600
   owner: root
@@ -22,6 +10,10 @@ write_files:
   permissions: 0700
   owner: root
   content: |
+    # Configure env for redeploy script
+    echo "DOCKER_IMAGE=${location}-docker.pkg.dev/${project_id}/${repo_name}/${image_name}" >> /etc/environment
+    echo "DOCKER_IMAGE_NAME=${image_name}" >> /etc/environment
+
     # Install docker
     apt update
     apt install apt-transport-https ca-certificates curl software-properties-common -y
@@ -37,10 +29,7 @@ write_files:
     # Configure docker with gcloud
     gcloud auth activate-service-account --key-file=/root/service_account.json
     gcloud auth configure-docker ${location}-docker.pkg.dev --quiet
-    # Start docker container
-    systemctl daemon-reload
-    systemctl start ${image_name}.service
 
 
 runcmd:
-- nohup /root/init.sh > /var/log/{{docker_image_name}}-instance-init.log 2>&1 &
+- nohup /root/init.sh > /var/log/deploy-init.log 2>&1 &

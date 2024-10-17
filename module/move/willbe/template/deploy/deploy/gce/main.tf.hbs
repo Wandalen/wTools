@@ -1,9 +1,8 @@
 locals {
   # Helper var for formatting docker image name
-  image_name     = format("%s-docker.pkg.dev/%s/%s/%s", var.REGION, var.PROJECT_ID, var.REPO_NAME, var.IMAGE_NAME)
+  image_name = format("%s-docker.pkg.dev/%s/%s/%s", var.REGION, var.PROJECT_ID, var.REPO_NAME, var.IMAGE_NAME)
   # Helper var for formatting subnetwork for our instance
-  subnetwork     = format("projects/%s/regions/%s/subnetworks/default", var.PROJECT_ID, var.REGION)
-  instance_name  = format("ltsite-%s", formatdate("YYYYMMDDhhmmss", timestamp()))
+  subnetwork = format("projects/%s/regions/%s/subnetworks/default", var.PROJECT_ID, var.REGION)
 }
 
 # Provider for resource creation
@@ -18,10 +17,10 @@ resource "google_compute_address" "default" {
 }
 
 # GCE instance block.
-resource "google_compute_instance" "lts-container-vm" {
-  project      = var.PROJECT_ID
+resource "google_compute_instance" "{{docker_image_name}}" {
+  project = var.PROJECT_ID
   # Instance name
-  name         = local.instance_name
+  name = "{{docker_image_name}}"
   # Instance size. e2-micro is 0.25-2 vCPU & 1GB RAM
   machine_type = "e2-micro"
   zone         = var.ZONE
@@ -29,12 +28,12 @@ resource "google_compute_instance" "lts-container-vm" {
   # Main disk options
   boot_disk {
     initialize_params {
-      # Disk image name. We're using Container-optimised OS (COS).
-      image = "projects/cos-cloud/global/images/cos-stable-109-17800-147-15"
+      # Disk image name. We're using Ubuntu 24.04 distro.
+      image = "projects/ubuntu-os-cloud/global/images/ubuntu-2404-noble-amd64-v20241004"
       # Disk size in GB. 10GB is allowed minimum.
-      size  = 10
+      size = 10
       # Disk type. Possible values: pd-standard, pd-ssd, or pd-balanced.
-      type  = "pd-balanced"
+      type = "pd-balanced"
     }
   }
 
@@ -52,19 +51,20 @@ resource "google_compute_instance" "lts-container-vm" {
   metadata = {
     # Cloud-init startup script for configuring the instance with our docker container.
     user-data = "${data.cloudinit_config.conf.rendered}"
+    ssh-keys  = "root:${data.local_sensitive_file.ssh_public_key.content}"
   }
 
   allow_stopping_for_update = true
 
   scheduling {
     # Restart on failure.
-    automatic_restart   = true
+    automatic_restart = true
     # Describes maintenance behavior for the instance. Possible values: MIGRATE or TERMINATE.
     on_host_maintenance = "MIGRATE"
     # Configures whether to allow stopping instance at any moment for reduced cost.
-    preemptible         = false
+    preemptible = false
     # Configures spot instance. Possible values: SPOT or STANDARD. 
-    provisioning_model  = "STANDARD"
+    provisioning_model = "STANDARD"
   }
 
   # Configues service account scopes.
@@ -85,4 +85,30 @@ resource "google_compute_instance" "lts-container-vm" {
   # `http-server` automatically allows all http traffic on port 80.
   # Use `https-server` for https traffic on port 443.
   tags = ["http-server"]
+}
+
+resource "terraform_data" "redeploy" {
+  triggers_replace = timestamp()
+
+  connection {
+    type        = "ssh"
+    user        = "root"
+    private_key = data.local_sensitive_file.ssh_private_key.content
+    host        = google_compute_instance.{{docker_image_name}}.network_interface[0].access_config[0].nat_ip
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/../redeploy.sh"
+    destination = "/tmp/redeploy.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "#!/bin/bash",
+      "( tail -f -n1 /var/log/deploy-init.log & ) | grep -q 'Docker configuration file updated.'",
+      "source /etc/environment",
+      "chmod +x /tmp/redeploy.sh",
+      "/tmp/redeploy.sh"
+    ]
+  }
 }

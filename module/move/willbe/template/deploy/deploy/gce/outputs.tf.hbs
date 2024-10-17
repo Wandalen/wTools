@@ -1,5 +1,5 @@
 locals {
-  ip = google_compute_instance.lts-container-vm.network_interface[0].access_config[0].nat_ip
+  ip = google_compute_instance.{{docker_image_name}}.network_interface[0].access_config[0].nat_ip
 }
 
 # Output that we get after applying.

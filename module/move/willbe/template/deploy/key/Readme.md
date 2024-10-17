@@ -16,6 +16,8 @@ A list of all keys you'd need to deploy your project on different hosts.
 All secrets can be provided as files in current directory:
 
 - [service_account.json](./service_account.json) - default credentials for the service account to use in deployment.
+- [rsa_ssh_key](./rsa_ssh_key) - SSH Private key that will be used for redeployment.
+- [rsa_ssh_key.pub](./rsa_ssh_key.pub) - SSH Private key that will be used for redeployment.
 - [`SECRET_STATE_ARCHIVE_KEY`](./SECRET_STATE_ARCHIVE_KEY) - [📃] base64 encoded AES256 key to encrypt and decrypt .tfstate files.
 - [`SECRET_CSP_HETZNER`](./SECRET_CSP_HETZNER) - [📃] Hetzner token for deploying a server.
 - [`SECRET_AWS_ACCESS_KEY_ID`](./SECRET_AWS_ACCESS_KEY_ID) - [📃] Access Key ID from AWS Credentials. Created at the same time as the Access Key itself.
