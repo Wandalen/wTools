@@ -11,6 +11,8 @@ use mod_interface::mod_interface;
 #[ macro_use ]
 extern crate alloc;
 
+mod private {}
+
 #[ cfg( feature = "enabled" ) ]
 mod_interface!
 {

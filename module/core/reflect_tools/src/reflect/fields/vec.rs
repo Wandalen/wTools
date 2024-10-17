@@ -9,6 +9,7 @@ use collection_tools::Vec;
 impl< V, Borrowed > Fields< usize, &'_ Borrowed > for Vec< V >
 where
   Borrowed : std::borrow::ToOwned + 'static + ?Sized,
+  // Borrowed : ?Sized + 'static,
   V : std::borrow::Borrow< Borrowed >,
 {
 
@@ -28,6 +29,7 @@ where
 impl< V, Borrowed > Fields< usize, Option< Cow< '_, Borrowed > > > for Vec< V >
 where
   Borrowed : std::borrow::ToOwned + 'static + ?Sized,
+  // Borrowed : ?Sized + 'static,
   V : std::borrow::Borrow< Borrowed >,
 {
 
@@ -39,6 +41,7 @@ where
 
   fn fields< 's >( &'s self ) -> impl IteratorTrait< Item = ( Self::Key< 's >, Self::Val< 's > ) >
   {
+    // self.iter().enumerate().map( move | ( key, val ) | ( key, Some( Cow::Borrowed( &val ) ) ) )
     self.iter().enumerate().map( move | ( key, val ) | ( key, Some( Cow::Borrowed( val.borrow() ) ) ) )
   }
 
@@ -47,6 +50,7 @@ where
 impl< V, Borrowed, Marker > Fields< usize, OptionalCow< '_, Borrowed, Marker > > for Vec< V >
 where
   Borrowed : std::borrow::ToOwned + 'static + ?Sized,
+  // Borrowed : ?Sized + 'static,
   V : std::borrow::Borrow< Borrowed >,
   Marker : Clone + Copy + 'static,
 {

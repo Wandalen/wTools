@@ -70,9 +70,9 @@ The main function demonstrates the overall usage by creating a vector, obtaining
 
 
 ```rust
-# #[ cfg( not( all( feature = "enabled", feature = "clone_dyn_meta" ) ) ) ]
+# #[ cfg( not( all( feature = "enabled", feature = "derive_clone_dyn" ) ) ) ]
 # fn main() {}
-# #[ cfg( all( feature = "enabled", feature = "clone_dyn_meta" ) ) ]
+# #[ cfg( all( feature = "enabled", feature = "derive_clone_dyn" ) ) ]
 # fn main()
 # {
 

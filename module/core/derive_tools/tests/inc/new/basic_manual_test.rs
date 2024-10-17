@@ -1,15 +1,20 @@
 use super::*;
 
-#[ derive( Debug, Clone, Copy, PartialEq ) ]
-pub struct IsTransparent( bool );
-
-impl IsTransparent
+mod mod1
 {
-  #[ inline( always ) ]
-  fn new( src : bool ) -> Self
+
+  #[ derive( Debug, Clone, Copy, PartialEq ) ]
+  pub struct Struct1( pub bool );
+
+  impl Struct1
   {
-    Self( src )
+    #[ inline( always ) ]
+    pub fn new( src : bool ) -> Self
+    {
+      Self( src )
+    }
   }
+
 }
 
 include!( "./only_test/basic.rs" );

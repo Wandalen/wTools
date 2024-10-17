@@ -6,11 +6,6 @@ mod tools
   pub use super::super::*;
 }
 
-// /// Private namespace of the module.
-// mod private
-// {
-// }
-
 mod layer_a;
 
 /// SuperStruct1.
@@ -18,6 +13,8 @@ mod layer_a;
 pub struct SuperStruct1
 {
 }
+
+mod private {}
 
 mod_interface!
 {

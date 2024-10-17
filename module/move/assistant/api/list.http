@@ -1,3 +1,11 @@
+# use REST Client VSCode plugin
+# ctrl+l
+
 get https://api.openai.com/v1/models
 Authorization: Bearer {{openai_token}}
 # Content-Type: application/json
+
+get https://api.openai.com/v1/assistants
+Authorization: Bearer {{openai_token}}
+OpenAI-Beta: assistants=v2
+Content-Type: application/json

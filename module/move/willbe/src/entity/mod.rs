@@ -1,3 +1,5 @@
+mod private {}
+
 crate::mod_interface!
 {
   /// Rust toolchain channel: stable/nightly.

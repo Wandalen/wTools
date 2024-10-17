@@ -4,6 +4,8 @@ use super::*;
 /// Layer X
 pub mod layer_x;
 
+mod private {}
+
 mod_interface!
 {
   // #![ debug ]
@@ -13,7 +15,7 @@ mod_interface!
 
   // /// layer_a
   // pub use super::layer_x as layer_a;
-  // xxx : make that working
+  // zzz : make that working
 
 }
 

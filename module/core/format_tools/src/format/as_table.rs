@@ -21,29 +21,29 @@ mod private
   ///
   #[ repr( transparent ) ]
   #[ derive( Clone, Copy ) ]
-  pub struct AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
+  pub struct AsTable< 'table, Table, RowKey, Row, CellKey>
   (
     &'table Table,
     ::core::marker::PhantomData
     <(
       &'table (),
-      fn() -> ( &'table RowKey, Row, &'table CellKey, CellRepr ),
+      fn() -> ( &'table RowKey, Row, &'table CellKey ),
     )>,
   )
   where
     RowKey : table::RowKey,
-    Row : Cells< CellKey, CellRepr >,
+    Row : Cells< CellKey>,
     CellKey : table::CellKey + ?Sized,
-    CellRepr : table::CellRepr
+    // CellRepr : table::CellRepr
   ;
 
-  impl< 'table, Table, RowKey, Row, CellKey, CellRepr >
-  AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
+  impl< 'table, Table, RowKey, Row, CellKey>
+  AsTable< 'table, Table, RowKey, Row, CellKey>
   where
     RowKey : table::RowKey,
-    Row : Cells< CellKey, CellRepr >,
+    Row : Cells< CellKey>,
     CellKey : table::CellKey + ?Sized,
-    CellRepr : table::CellRepr,
+    // CellRepr : table::CellRepr,
   {
     /// Just a constructor.
     pub fn new( src : &'table Table ) -> Self
@@ -52,13 +52,13 @@ mod private
     }
   }
 
-  impl< 'table, Table, RowKey, Row, CellKey, CellRepr > AsRef< Table >
-  for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
+  impl< 'table, Table, RowKey, Row, CellKey> AsRef< Table >
+  for AsTable< 'table, Table, RowKey, Row, CellKey>
   where
     RowKey : table::RowKey,
-    Row : Cells< CellKey, CellRepr >,
+    Row : Cells< CellKey>,
     CellKey : table::CellKey + ?Sized,
-    CellRepr : table::CellRepr,
+    // CellRepr : table::CellRepr,
   {
     fn as_ref( &self ) -> &Table
     {
@@ -66,13 +66,13 @@ mod private
     }
   }
 
-  impl< 'table, Table, RowKey, Row, CellKey, CellRepr > Deref
-  for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
+  impl< 'table, Table, RowKey, Row, CellKey> Deref
+  for AsTable< 'table, Table, RowKey, Row, CellKey>
   where
     RowKey : table::RowKey,
-    Row : Cells< CellKey, CellRepr >,
+    Row : Cells< CellKey>,
     CellKey : table::CellKey + ?Sized,
-    CellRepr : table::CellRepr,
+    // CellRepr : table::CellRepr,
   {
     type Target = Table;
 
@@ -82,13 +82,13 @@ mod private
     }
   }
 
-  impl< 'table, Table, RowKey, Row, CellKey, CellRepr > From< &'table Table >
-  for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
+  impl< 'table, Table, RowKey, Row, CellKey> From< &'table Table >
+  for AsTable< 'table, Table, RowKey, Row, CellKey>
   where
     RowKey : table::RowKey,
-    Row : Cells< CellKey, CellRepr >,
+    Row : Cells< CellKey>,
     CellKey : table::CellKey + ?Sized,
-    CellRepr : table::CellRepr,
+    // CellRepr : table::CellRepr,
   {
     fn from( table : &'table Table ) -> Self
     {
@@ -96,14 +96,14 @@ mod private
     }
   }
 
-  impl< 'table, Table, RowKey, Row, CellKey, CellRepr > fmt::Debug
-  for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
+  impl< 'table, Table, RowKey, Row, CellKey> fmt::Debug
+  for AsTable< 'table, Table, RowKey, Row, CellKey>
   where
     Table : fmt::Debug,
     RowKey : table::RowKey,
-    Row : Cells< CellKey, CellRepr >,
+    Row : Cells< CellKey>,
     CellKey : table::CellKey + ?Sized,
-    CellRepr : table::CellRepr,
+    // CellRepr : table::CellRepr,
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
@@ -130,25 +130,25 @@ mod private
     type RowKey : table::RowKey;
 
     /// The type representing a row, must implement `Cells`.
-    type Row : Cells< Self::CellKey, Self::CellRepr >;
+    type Row : Cells< Self::CellKey >;
 
     /// The type used to identify cells within a row, must implement `Key` and can be unsized.
     type CellKey : table::CellKey + ?Sized;
 
-    /// The type representing the content of a cell, must implement `CellRepr`.
-    type CellRepr : table::CellRepr;
+    // /// The type representing the content of a cell, must implement `CellRepr`.
+    // type // CellRepr : table::CellRepr;
 
     /// Converts the data reference into an `AsTable` reference.
-    fn as_table( &self ) -> AsTable< '_, Self::Table, Self::RowKey, Self::Row, Self::CellKey, Self::CellRepr >;
+    fn as_table( &self ) -> AsTable< '_, Self::Table, Self::RowKey, Self::Row, Self::CellKey >;
   }
 
-  impl< 'table, Table, RowKey, Row, CellKey, CellRepr > IntoAsTable
-  for AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
+  impl< 'table, Table, RowKey, Row, CellKey> IntoAsTable
+  for AsTable< 'table, Table, RowKey, Row, CellKey>
   where
     RowKey : table::RowKey,
-    Row : Cells< CellKey, CellRepr >,
+    Row : Cells< CellKey>,
     CellKey : table::CellKey + ?Sized,
-    CellRepr : table::CellRepr,
+    // CellRepr : table::CellRepr,
     Self : Copy,
   {
 
@@ -156,9 +156,9 @@ mod private
     type RowKey = RowKey;
     type Row = Row;
     type CellKey = CellKey;
-    type CellRepr = CellRepr;
+    // type CellRepr = CellRepr;
 
-    fn as_table( &self ) -> AsTable< '_, Self::Table, Self::RowKey, Self::Row, Self::CellKey, Self::CellRepr >
+    fn as_table( &self ) -> AsTable< '_, Self::Table, Self::RowKey, Self::Row, Self::CellKey >
     {
       *self
     }
@@ -168,9 +168,9 @@ mod private
 //   impl< Row > IntoAsTable
 //   for Vec< Row >
 //   where
-//     Row : Cells< Self::CellKey, Self::CellRepr >,
+//     Row : Cells< Self::CellKey >,
 //     // CellKey : table::CellKey + ?Sized,
-//     // CellRepr : table::CellRepr,
+//     // // CellRepr : table::CellRepr,
 //   {
 //
 //     type Table = Self;
@@ -179,14 +179,14 @@ mod private
 //     type CellKey = str;
 //     type CellRepr = WithRef;
 //
-//     fn as_table( &self ) -> AsTable< '_, Self::Table, Self::RowKey, Self::Row, Self::CellKey, Self::CellRepr >
+//     fn as_table( &self ) -> AsTable< '_, Self::Table, Self::RowKey, Self::Row, Self::CellKey >
 //     {
 //       AsTable::from( self )
 //     }
 //
 //   }
 
-  // pub struct AsTable< 'table, Table, RowKey, Row, CellKey, CellRepr >
+  // pub struct AsTable< 'table, Table, RowKey, Row, CellKey>
 
 }
 

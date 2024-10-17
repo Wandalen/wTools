@@ -1,15 +1,20 @@
 use super::*;
 
-#[ derive( Debug, Clone, Copy, PartialEq ) ]
-struct UnitStruct;
-
-impl UnitStruct
+mod mod1
 {
-  #[ inline( always ) ]
-  fn new() -> Self
+
+  #[ derive( Debug, Clone, Copy, PartialEq ) ]
+  pub struct Struct1;
+
+  impl Struct1
   {
-    Self
+    #[ inline( always ) ]
+    pub fn new() -> Self
+    {
+      Self
+    }
   }
+
 }
 
 include!( "./only_test/unit.rs" );

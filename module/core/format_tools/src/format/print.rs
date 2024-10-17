@@ -166,7 +166,7 @@ mod private
     /// A `String` containing the formatted table.
     fn table_to_string( &'data self ) -> String
     {
-      self.table_to_string_with_format( &output_format::Ordinary::default() )
+      self.table_to_string_with_format( &output_format::Table::default() )
     }
 
     /// Converts the table to a string representation specifying printer.
@@ -197,15 +197,15 @@ mod private
   }
 
   /// A trait for formatting tables.
-  impl< 'data, T, RowKey, Row, CellKey, CellRepr > TableFormatter< 'data >
-  for AsTable< 'data, T, RowKey, Row, CellKey, CellRepr >
+  impl< 'data, T, RowKey, Row, CellKey> TableFormatter< 'data >
+  for AsTable< 'data, T, RowKey, Row, CellKey>
   where
-    Self : TableRows< CellKey = CellKey, CellRepr = CellRepr, RowKey = RowKey, Row = Row >,
+    Self : TableRows< CellKey = CellKey, RowKey = RowKey, Row = Row >,
     Self : TableHeader< CellKey = CellKey >,
     RowKey : table::RowKey,
-    Row : Cells< CellKey, CellRepr >,
+    Row : Cells< CellKey>,
     CellKey : table::CellKey + ?Sized,
-    CellRepr : table::CellRepr,
+    // CellRepr : table::CellRepr,
   {
 
     fn fmt< 'a >( &'data self, c : &mut Context< 'a > ) -> fmt::Result
@@ -365,7 +365,7 @@ mod private
       }
     }
     /// Extract input data from and collect it in a format consumable by output formatter.
-    pub fn extract< 't, 'context, Table, RowKey, Row, CellKey, CellRepr >
+    pub fn extract< 't, 'context, Table, RowKey, Row, CellKey>
     (
       table : &'t Table,
       filter_col : &'context ( dyn FilterCol + 'context ),
@@ -376,12 +376,12 @@ mod private
     where
       'data : 't,
       // 't : 'data,
-      Table : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
+      Table : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey >,
       Table : TableHeader< CellKey = CellKey >,
       RowKey : table::RowKey,
-      Row : Cells< CellKey, CellRepr > + 'data,
+      Row : Cells< CellKey> + 'data,
       CellKey : table::CellKey + ?Sized + 'data,
-      CellRepr : table::CellRepr,
+      // CellRepr : table::CellRepr,
     {
       use md_math::MdOffset;
 
@@ -508,7 +508,7 @@ mod private
           | ( key, val ) |
           {
 
-            let val = match val.0
+            let val = match val
             {
               Some( val ) =>
               {
@@ -583,7 +583,10 @@ mod private
             slices[ x.slices_dim.md_offset( md_index ) ] = s;
           })
           ;
-          x.col_descriptors[ icol ].label = cell.0.as_ref();
+          if irow == 0
+          {
+            x.col_descriptors[ icol ].label = cell.0.as_ref();
+          }
         }
 
       }
