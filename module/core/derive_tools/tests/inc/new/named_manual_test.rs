@@ -1,18 +1,23 @@
 use super::*;
 
-#[ derive( Debug, PartialEq, Eq ) ]
-struct MyStruct
+mod mod1
 {
-  a : i32,
-}
 
-impl MyStruct
-{
-  #[ inline( always ) ]
-  fn new( src : i32 ) -> Self
+  #[ derive( Debug, PartialEq, Eq ) ]
+  pub struct Struct1
   {
-    Self{ a : src }
+    pub a : i32,
   }
+
+  impl Struct1
+  {
+    #[ inline( always ) ]
+    pub fn new( src : i32 ) -> Self
+    {
+      Self{ a : src }
+    }
+  }
+
 }
 
 include!( "./only_test/named.rs" );

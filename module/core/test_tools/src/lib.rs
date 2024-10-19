@@ -49,6 +49,10 @@ pub mod dependency
 
 }
 
+mod private {}
+
+//
+
 #[ cfg( feature = "enabled" ) ]
 // #[ cfg( not( feature = "no_std" ) ) ]
 ::meta_tools::mod_interface!
@@ -83,6 +87,8 @@ pub mod dependency
   prelude use ::collection_tools as collection;
   // prelude use ::process_tools as process;
 
+  use ::collection_tools; // xxx : do that for all dependencies
+
   prelude use ::meta_tools::
   {
     impls,
@@ -91,6 +97,7 @@ pub mod dependency
     tests_impls_optional,
     tests_index,
   };
+
   prelude use ::typing_tools::{ implements };
 
 }

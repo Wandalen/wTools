@@ -18,7 +18,28 @@ impl ConfigCommand
   /// Create command for adding config.
   pub fn add() -> Result< Command >
   {
-    let rt  = tokio::runtime::Runtime::new()?;
+    #[ tokio::main ]
+    async fn add_command( o : VerifiedCommand )
+    {
+      // qqq: could we print something on None value?
+      let Some( path ) = o.args.get_owned::< PathBuf >( 0 ) else { return; };
+
+      let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" ).ok()
+      .unwrap_or_else( || String::from( "./_data" ) );
+      let config = Config::default().path( path_to_storage );
+      
+      let res = ( || async
+      {
+        let feed_storage = FeedStorage::init_storage( &config ).await?;
+        config_add( feed_storage, &path ).await
+      } )().await;
+    
+      match res
+      {
+        Ok( report ) => report.report(),
+        Err( err ) => println!( "{:?}", err ),
+      }
+    }
   
     Ok
     (
@@ -37,38 +58,7 @@ impl ConfigCommand
       "    link = \"https://feeds.bbci.co.uk/news/world/rss.xml\"\n",
       ))
       .subject().hint( "Path" ).kind( Type::Path ).optional( false ).end()
-      .routine( move | o : VerifiedCommand |
-      {
-        let path_arg = o.args
-        .get_owned::< wca::Value >( 0 );
-
-        if let Some( path ) = path_arg
-        {
-          let path : PathBuf = path.into();
-
-          let res = rt.block_on
-          ( async move
-            {
-              let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
-              .unwrap_or( String::from( "./_data" ) )
-              ;
-              
-              let config = Config::default()
-              .path( path_to_storage )
-              ;
-    
-              let feed_storage = FeedStorage::init_storage( &config ).await?;
-              config_add( feed_storage, &path ).await
-            }
-          );
-
-          match res
-          {
-            Ok( report ) => report.report(),
-            Err( err ) => println!( "{:?}", err ),
-          }
-        }
-      })
+      .routine( add_command )
       .end()
     )
   }
@@ -76,8 +66,29 @@ impl ConfigCommand
   /// Create command for deleting config.
   pub fn delete() -> Result< Command >
   {
-    let rt  = tokio::runtime::Runtime::new()?;
-  
+    #[ tokio::main ]
+    async fn delete_command( o : VerifiedCommand )
+    {
+      // qqq: could we print something on None value?
+      let Some( path ) = o.args.get_owned::< PathBuf >( 0 ) else { return; };
+      
+      let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" ).ok()
+      .unwrap_or_else( || String::from( "./_data" ) );
+      let config = Config::default().path( path_to_storage );
+
+      let res = ( || async
+      {
+        let feed_storage = FeedStorage::init_storage( &config ).await?;
+        config_delete( feed_storage, &path ).await
+      } )().await;
+
+      match res
+      {
+        Ok( report ) => report.report(),
+        Err( err ) => println!( "{:?}", err ),
+      }
+    }
+
     Ok(
       Command::former()
       .phrase( "config.delete" )
@@ -87,38 +98,7 @@ impl ConfigCommand
       "    Example: .config.delete ./config/feeds.toml",
       ))
       .subject().hint( "Path" ).kind( Type::Path ).optional( false ).end()
-      .routine( move | o : VerifiedCommand |
-        {
-          let path_arg = o.args
-          .get_owned::< wca::Value >( 0 );
-  
-          if let Some( path ) = path_arg
-          {
-            let path : PathBuf = path.into();
-  
-            let res = rt.block_on
-            ( async move
-              {
-                let path_to_storage = std::env::var( "UNITORE_STORAGE_PATH" )
-                .unwrap_or( String::from( "./_data" ) )
-                ;
-                
-                let config = Config::default()
-                .path( path_to_storage )
-                ;
-      
-                let feed_storage = FeedStorage::init_storage( &config ).await?;
-                config_delete( feed_storage, &path ).await
-              }
-            );
-  
-            match res
-            {
-              Ok( report ) => report.report(),
-              Err( err ) => println!( "{:?}", err ),
-            }
-          }
-        })
+      .routine( delete_command )
       .end()
     )
   }

@@ -1,11 +1,17 @@
 use super::*;
 
-#[ derive( Debug, PartialEq, Eq, the_module::New ) ]
-// #[ debug ]
-struct StructNamedFields
+mod mod1
 {
-  a : i32,
-  b : bool,
+  use super::*;
+
+  #[ derive( Debug, PartialEq, Eq, the_module::New ) ]
+  // #[ debug ]
+  pub struct Struct1
+  {
+    pub a : i32,
+    pub b : bool,
+  }
+
 }
 
 include!( "./only_test/multiple_named.rs" );

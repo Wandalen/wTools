@@ -1,6 +1,6 @@
 //! Customizable format of printing table.
 //!
-//! # Example of ordinary format
+//! # Example of table format
 //!
 //! ```text
 //!  sid | sname | gap
@@ -74,14 +74,15 @@ mod private
     #[ inline( always ) ]
     fn default() -> Self
     {
-      super::ordinary::Ordinary::instance()
+      super::table::Table::instance()
     }
   }
 
 }
 
-mod ordinary;
+mod table;
 mod records;
+mod keys;
 
 #[ allow( unused_imports ) ]
 pub use own::*;
@@ -97,8 +98,9 @@ pub mod own
   #[ doc( inline ) ]
   pub use
   {
-    ordinary::Ordinary,
+    table::Table,
     records::Records,
+    keys::Keys,
   };
 
   #[ doc( inline ) ]

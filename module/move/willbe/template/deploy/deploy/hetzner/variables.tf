@@ -27,3 +27,13 @@ variable "IMAGE_NAME" {
 data "local_sensitive_file" "service_account_creds" {
   filename = "${path.module}/../../key/service_account.json"
 }
+
+# Private key for SSH connection
+data "local_sensitive_file" "ssh_private_key" {
+  filename = "${path.module}/../../key/rsa_ssh_key"
+}
+
+# Public key for SSH connection
+data "local_sensitive_file" "ssh_public_key" {
+  filename = "${path.module}/../../key/rsa_ssh_key.pub"
+}

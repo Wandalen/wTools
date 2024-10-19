@@ -8,6 +8,7 @@ mod private
 
 mod_interface!
 {
+  // #![ debug ]
 
   /// mod_own
   own mod mod_own;

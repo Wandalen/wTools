@@ -1,6 +1,6 @@
 [package]
 name = "clone_dyn"
-version = "0.24.0"
+version = "0.25.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -26,12 +26,12 @@ all-features = false
 
 [features]
 
-default = [ "enabled", "clone_dyn_types", "clone_dyn_meta" ]
-full = [ "enabled", "clone_dyn_types", "clone_dyn_meta" ]
+default = [ "enabled", "clone_dyn_types", "derive_clone_dyn" ]
+full = [ "enabled", "clone_dyn_types", "derive_clone_dyn" ]
 enabled = []
 
 clone_dyn_types = [ "dep:clone_dyn_types", "clone_dyn_types/enabled" ]
-clone_dyn_meta = [ "dep:clone_dyn_meta", "clone_dyn_meta/enabled", "clone_dyn_types" ]
+derive_clone_dyn = [ "dep:clone_dyn_meta", "clone_dyn_meta/enabled", "clone_dyn_types" ]
 
 [dependencies]
 clone_dyn_meta = { workspace = true, optional = true }

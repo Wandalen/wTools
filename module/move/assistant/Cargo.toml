@@ -34,10 +34,11 @@ enabled = [
 
 [dependencies]
 # xxx : qqq : optimze features
+mod_interface = { workspace = true, features = [ "full" ] }
 former = { workspace = true, features = [ "full" ] }
 format_tools = { workspace = true, features = [ "full" ] }
 reflect_tools = { workspace = true, features = [ "full" ] }
-openai-api-rs = { version = "4.0.9" }
+openai-api-rs = { version = "=5.0.11" }
 tokio = { version = "1", features = ["full"] }
 dotenv = "0.15"
 
