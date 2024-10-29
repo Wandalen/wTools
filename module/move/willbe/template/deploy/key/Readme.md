@@ -1,50 +1,82 @@
-# Deploy credentials
+# Keys
 
-A list of all keys you'd need to deploy your project on different hosts.
+This document provides a concise example of an environment configuration script, used to set up environment variables for a project.
+These variables configure application behavior without altering the code.
 
-- [Deploy credentials](#deploy-credentials)
-  - [Files](#files)
-  - [Env vars](#env-vars)
+- [Keys](#keys)
+  - [Examples](#examples)
+    - [`-gcp.sh`](#-gcpsh)
+    - [`-hetzner.sh`](#-hetznersh)
+    - [`-aws.sh`](#-awssh)
+  - [How to Run](#how-to-run)
   - [Retrieving keys](#retrieving-keys)
     - [How to get `service_account.json`](#how-to-get-service_accountjson)
     - [How to get `SECRET_STATE_ARCHIVE_KEY`](#how-to-get-secret_state_archive_key)
     - [How to get `SECRET_CSP_HETZNER`](#how-to-get-secret_csp_hetzner)
     - [How to get `SECRET_AWS_ACCESS_KEY_ID` and `SECRET_AWS_ACCESS_KEY`](#how-to-get-secret_aws_access_key_id-and-secret_aws_access_key)
 
-## Files
 
-All secrets can be provided as files in current directory:
+## Examples
 
-- [service_account.json](./service_account.json) - default credentials for the service account to use in deployment.
-- [rsa_ssh_key](./rsa_ssh_key) - SSH Private key that will be used for redeployment.
-- [rsa_ssh_key.pub](./rsa_ssh_key.pub) - SSH Private key that will be used for redeployment.
-- [`SECRET_STATE_ARCHIVE_KEY`](./SECRET_STATE_ARCHIVE_KEY) - [📃] base64 encoded AES256 key to encrypt and decrypt .tfstate files.
-- [`SECRET_CSP_HETZNER`](./SECRET_CSP_HETZNER) - [📃] Hetzner token for deploying a server.
-- [`SECRET_AWS_ACCESS_KEY_ID`](./SECRET_AWS_ACCESS_KEY_ID) - [📃] Access Key ID from AWS Credentials. Created at the same time as the Access Key itself.
-- [`SECRET_AWS_ACCESS_KEY`](./SECRET_AWS_ACCESS_KEY) - [📃] Access Key for AWS API. Has to be accompanied with respectful Access Key ID.
+### `-gcp.sh`
 
-## Env vars
+Contents example for the file `-gcp.sh`. This is a required configuration for all deploy targets.
 
-Some secrets can be presented as an env var:
+```bash
+#!/bin/bash
+CSP=gce
+SECRET_STATE_ARCHIVE_KEY=qK1/4m60aZvclYi4bZFeBl8GxpyWcJ2iEevHN+uMy7w=
 
-- [`SECRET_STATE_ARCHIVE_KEY`](./SECRET_STATE_ARCHIVE_KEY) - [📃] base64 encoded AES256 key to encrypt and decrypt .tfstate files.
-- [`SECRET_CSP_HETZNER`](./SECRET_CSP_HETZNER) - [📃] Hetzner token for deploying a server.
-- [`SECRET_AWS_ACCESS_KEY_ID`](./SECRET_AWS_ACCESS_KEY_ID) - [📃] Access Key ID from AWS Credentials. Created at the same time as the Access Key itself.
-- [`SECRET_AWS_ACCESS_KEY`](./SECRET_AWS_ACCESS_KEY) - [📃] Access Key for AWS API. Has to be accompanied with respectful Access Key ID.
-
-Env vars have a higher priority then the files.
-
-For ENV [📃] secrets values can be placed in files in this directory for automatic exporting to env during deployment.
-
-Example of a file that will be pulled to env vars:
-
-File name: `SECRET_CSP_HETZNER`
-File contents:
-```
-hetzner_token_123
+FILE_PATH="$( realpath -qms "${BASH_SOURCE[0]:-$PWD}" )"
+DIR_PATH="${FILE_PATH%/*}"
+head -c -1 << EOF > ${DIR_PATH}/-service_account.json
+{
+  // Your service_account information
+}
+EOF
 ```
 
-Will export a variable to env like so `SECRET_CSP_HETZNER=hetzner_token_123`
+- `CSP`: (Optional) Specifies deployment to GCE.
+- `SECRET_STATE_ARCHIVE_KEY`: Base64 encoded AES256 key to encrypt and decrypt .tfstate files.
+- `-service_account.json`: Default credentials for the service account to use in deployment.
+
+### `-hetzner.sh`
+
+Contents example for the file `-hetzner.sh`:
+
+```bash
+CSP=hetzner
+SECRET_CSP_HETZNER=your_token_here
+```
+
+- `CSP`: Specifies deployment to Hetzner.
+- `SECRET_CSP_HETZNER`: Hetzner token for deploying a server.
+
+### `-aws.sh`
+
+Contents example for the file `-aws.sh`:
+
+```bash
+CSP=aws
+SECRET_AWS_ACCESS_KEY_ID=aws_credentials_here
+SECRET_AWS_ACCESS_KEY=aws_credentials_here
+```
+
+- `CSP`: Specifies deployment to AWS.
+- `SECRET_AWS_ACCESS_KEY_ID`: Access Key ID from AWS Credentials. Created at the same time as the Access Key itself.
+- `SECRET_AWS_ACCESS_KEY`: Access Key for AWS API. Has to be accompanied with respectful Access Key ID.
+
+## How to Run
+
+To apply these variables to your current shell session, use:
+
+```bash
+. ./key/-gcp.sh
+. ./key/-hetzner.sh
+```
+
+This command sources the script, making the variables available in your current session and allowing deployment to Hetzner.
+Ensure `-env.sh` is in the `key` directory relative to your current location.
 
 ## Retrieving keys
 
