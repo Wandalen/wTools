@@ -76,4 +76,4 @@ split = [ "strs_tools/string_split" ]
 strs_tools = { workspace = true }
 
 [dev-dependencies]
-# test_tools = { workspace = true }
+test_tools = { workspace = true }

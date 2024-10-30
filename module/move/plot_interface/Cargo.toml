@@ -66,4 +66,4 @@ path = "tests/smoke_test.rs"
 wplot = { workspace = true }
 
 [dev-dependencies]
-# test_tools = { workspace = true }
+test_tools = { workspace = true }

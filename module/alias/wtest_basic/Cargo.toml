@@ -77,4 +77,4 @@ test_tools = { workspace = true, default-features = true }
 # diagnostics_tools = { workspace = true, features = [ "full" ] }
 
 [dev-dependencies]
-# test_tools = { workspace = true }
+test_tools = { workspace = true }

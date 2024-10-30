@@ -48,7 +48,7 @@ mod private
       env::current_dir()
     }
   }
-  
+
   #[ cfg( not( feature = "no_std" ) ) ]
   impl TryFrom< CurrentPath > for AbsolutePath
   {

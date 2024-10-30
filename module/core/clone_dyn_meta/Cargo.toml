@@ -38,4 +38,4 @@ macro_tools = { workspace = true, features = [ "attr", "attr_prop", "ct", "diag"
 former_types = { workspace = true, features = [ "types_component_assign" ] }
 
 [dev-dependencies]
-# test_tools = { workspace = true }
+test_tools = { workspace = true }

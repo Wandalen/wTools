@@ -32,7 +32,7 @@ enabled = []
 [dependencies]
 
 [dev-dependencies]
-# test_tools = { workspace = true }
+test_tools = { workspace = true }
 
 [build-dependencies]
 rustc_version = "0.4"
