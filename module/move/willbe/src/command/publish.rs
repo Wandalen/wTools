@@ -16,6 +16,8 @@ mod private
     #[ former( default = Channel::Stable ) ]
     channel : Channel,
     #[ former( default = true ) ]
+    exclude_dev_dependencies : bool,
+    #[ former( default = true ) ]
     dry : bool,
     #[ former( default = true ) ]
     temp : bool,
@@ -52,10 +54,11 @@ mod private
     let PublishProperties
     {
       channel,
+      exclude_dev_dependencies,
       dry,
       temp
     } = o.props.try_into()?;
-    let plan = action::publish_plan( patterns, channel, dry, temp )
+    let plan = action::publish_plan( patterns, channel, exclude_dev_dependencies, dry, temp )
     .context( "Failed to plan the publication process" )?;
 
     let mut formatted_plan = String::new();
@@ -110,6 +113,8 @@ mod private
       else
       { this };
 
+      this = if let Some( v ) = value
+      .get_owned( "exclude_dev_dependencies" ) { this.exclude_dev_dependencies::< bool >( v ) } else { this };
       this = if let Some( v ) = value
       .get_owned( "dry" ) { this.dry::< bool >( v ) } else { this };
       this = if let Some( v ) = value

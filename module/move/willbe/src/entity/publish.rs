@@ -42,6 +42,7 @@ mod private
     package : package::Package< 'a >,
     channel : channel::Channel,
     base_temp_dir : Option< path::PathBuf >,
+    exclude_dev_dependencies : bool,
     #[ former( default = true ) ]
     dry : bool,
   }
@@ -58,6 +59,7 @@ mod private
         channel : self.channel,
         allow_dirty : self.dry,
         checking_consistency : !self.dry,
+        exclude_dev_dependencies : self.exclude_dev_dependencies,
         temp_path : self.base_temp_dir.clone(),
         dry : self.dry,
       };
@@ -84,6 +86,7 @@ mod private
       {
         path : crate_dir.clone().absolute_path().inner(),
         temp_path : self.base_temp_dir.clone(),
+        exclude_dev_dependencies : self.exclude_dev_dependencies,
         retry_count : 2,
         dry : self.dry,
       };
@@ -120,6 +123,10 @@ mod private
 
     /// Release channels for rust.
     pub channel : channel::Channel,
+
+    /// Setting this option to true will temporarily remove development dependencies before executing the command, then restore them afterward.
+    #[ allow( dead_code ) ] // former related
+    pub( crate ) exclude_dev_dependencies : bool,
 
     /// `dry` - A boolean value indicating whether to do a dry run. If set to `true`, the application performs
     /// a simulated run without making any actual changes. If set to `false`, the operations are actually executed.
@@ -245,6 +252,10 @@ mod private
       if let Some( dry ) = self.storage.dry
       {
         plan = plan.dry( dry );
+      }
+      if let Some( exclude_dev_dependencies ) = &self.storage.exclude_dev_dependencies
+      {
+        plan = plan.exclude_dev_dependencies( *exclude_dev_dependencies )
       }
       let plan = plan
       .channel( channel )

@@ -109,6 +109,7 @@ mod private
   ///
   /// # Arguments
   /// * `patterns` - A vector of patterns specifying the folders to search for packages.
+  /// * `exclude_dev_dependencies` - A boolean value indicating whether to exclude dev dependencies from manifest before publish.
   /// * `dry` - A boolean value indicating whether to perform a dry run.
   /// * `temp` - A boolean value indicating whether to use a temporary directory.
   ///
@@ -119,6 +120,7 @@ mod private
   (
     patterns : Vec< String >,
     channel : channel::Channel,
+    exclude_dev_dependencies : bool,
     dry : bool,
     temp : bool
   )
@@ -233,6 +235,7 @@ mod private
     .channel( channel )
     .workspace_dir( CrateDir::try_from( workspace_root_dir ).unwrap() )
     .option_base_temp_dir( dir.clone() )
+    .exclude_dev_dependencies( exclude_dev_dependencies )
     .dry( dry )
     .roots( roots )
     .packages( queue )
