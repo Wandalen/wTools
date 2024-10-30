@@ -30,8 +30,8 @@ mod private
   #[ cfg( feature = "derive_serde" ) ]
   use serde::{ Serialize, Deserialize };
 
-  #[ cfg( feature = "path_utf8" ) ]
-  use camino::{ Utf8Path, Utf8PathBuf };
+  // #[ cfg( feature = "path_utf8" ) ]
+  // use camino::{ Utf8Path, Utf8PathBuf };
 
   /// Caninical path.
   #[ cfg_attr( feature = "derive_serde", derive( Serialize, Deserialize ) ) ]

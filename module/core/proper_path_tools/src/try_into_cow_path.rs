@@ -8,7 +8,7 @@ mod private
     io,
     path::{ Component, Path, PathBuf },
   };
-  use camino::{ Utf8Path, Utf8PathBuf };
+  // use camino::{ Utf8Path, Utf8PathBuf };
 
   /// A trait for converting various types into a `Cow<Path>`.
   ///

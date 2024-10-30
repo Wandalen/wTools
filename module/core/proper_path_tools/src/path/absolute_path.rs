@@ -12,14 +12,15 @@ mod private
     fmt,
     ops::{ Deref, DerefMut },
   };
-  #[cfg( feature = "no_std" )]
+  #[ cfg( feature = "no_std" ) ]
   extern crate std;
-  #[cfg( feature = "no_std" )]
+  #[ cfg( feature = "no_std" ) ]
   use alloc::string::String;
-  #[cfg( feature = "derive_serde" )]
+  #[ cfg( feature = "derive_serde" ) ]
   use serde::{ Serialize, Deserialize };
-  #[cfg( feature = "path_utf8" )]
-  use camino::{ Utf8Path, Utf8PathBuf };
+
+  // #[ cfg( feature = "path_utf8" ) ]
+  // use camino::{ Utf8Path, Utf8PathBuf };
 
   /// A new type representing an absolute path.
   ///

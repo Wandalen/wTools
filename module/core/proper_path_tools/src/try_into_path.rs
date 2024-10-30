@@ -1,12 +1,14 @@
 /// Internal namespace.
 mod private
 {
+  #[ allow( unused_imports ) ]
+  use crate::*;
   use std::
   {
     io,
     path::{ Component, Path, PathBuf },
   };
-  use camino::{ Utf8Path, Utf8PathBuf };
+  // use camino::{ Utf8Path, Utf8PathBuf };
 
   /// A trait for converting various types into a `PathBuf`.
   ///

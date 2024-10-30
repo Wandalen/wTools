@@ -1,12 +1,12 @@
 /// Internal namespace.
 mod private
 {
-  // use crate::*;
-  #[cfg( feature = "no_std" )]
+  #[ allow( unused_imports ) ]
+  use crate::*;
+  #[ cfg( feature = "no_std" ) ]
   extern crate std;
 
   use std::path::Path;
-  use camino::Utf8Path;
 
   /// A trait for converting various types into a reference to a `Path`.
   ///
