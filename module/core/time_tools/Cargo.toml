@@ -67,5 +67,5 @@ time_now = [
 # name = "time_tools_trivial"
 # path = "examples/time_tools_trivial/src/main.rs"
 
-# [dev-dependencies]
+[dev-dependencies]
 # test_tools = { workspace = true }

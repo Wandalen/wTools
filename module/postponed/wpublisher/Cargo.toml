@@ -50,6 +50,6 @@ enabled = []
 # globwalk = "~0.8"
 # petgraph = "~0.6"
 
-# [dev-dependencies]
+[dev-dependencies]
 # test_tools = { workspace = true }
 

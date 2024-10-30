@@ -34,5 +34,5 @@ enabled = []
 error_tools ={ workspace = true, features = [ "full" ] }
 meta_tools = { workspace = true, features = [ "full" ] }
 
-# [dev-dependencies]
+[dev-dependencies]
 # test_tools = { workspace = true }

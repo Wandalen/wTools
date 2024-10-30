@@ -36,6 +36,6 @@ enabled = ["macro_tools/enabled"]
 [dependencies]
 macro_tools = { workspace = true }
 
-# [dev-dependencies]
+[dev-dependencies]
 # test_tools = { workspace = true }
 

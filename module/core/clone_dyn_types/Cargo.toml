@@ -31,6 +31,6 @@ enabled = []
 
 [dependencies]
 
-# [dev-dependencies]
+[dev-dependencies]
 # test_tools = { workspace = true }
 # inspect_type = { workspace = true, features = [ "full" ] }

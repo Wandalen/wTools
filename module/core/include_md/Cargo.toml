@@ -57,5 +57,5 @@ path = "src/_blank/standard_lib.rs"
 
 [dependencies]
 
-# [dev-dependencies]
+[dev-dependencies]
 # test_tools = { workspace = true }

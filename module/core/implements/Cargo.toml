@@ -35,5 +35,5 @@ enabled = []
 
 [dependencies]
 
-# [dev-dependencies]
+[dev-dependencies]
 # test_tools = { workspace = true }

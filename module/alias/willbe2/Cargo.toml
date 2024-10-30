@@ -34,5 +34,5 @@ enabled = []
 [dependencies]
 # willbe = { workspace = true }
 
-# [dev-dependencies]
+[dev-dependencies]
 # test_tools = { workspace = true }

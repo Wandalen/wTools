@@ -50,7 +50,7 @@ collection_tools = { workspace = true, features = [] }
 
 # qqq : xxx : optimize features set
 
-# [dev-dependencies]
+[dev-dependencies]
 # test_tools = { workspace = true }
 collection_tools = { workspace = true, features = [ "collection_constructors", "collection_into_constructors" ] }
 

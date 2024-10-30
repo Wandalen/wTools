@@ -37,6 +37,6 @@ derive_clone_dyn = [ "dep:clone_dyn_meta", "clone_dyn_meta/enabled", "clone_dyn_
 clone_dyn_meta = { workspace = true, optional = true }
 clone_dyn_types = { workspace = true, optional = true }
 
-# [dev-dependencies]
+[dev-dependencies]
 # test_tools = { workspace = true }
 inspect_type = { workspace = true, features = [ "full" ] }

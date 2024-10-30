@@ -51,5 +51,5 @@ error_untyped = [
 [dependencies]
 error_tools = { workspace = true }
 
-# [dev-dependencies]
+[dev-dependencies]
 # test_tools = { workspace = true }

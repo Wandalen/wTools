@@ -37,5 +37,5 @@ enabled = [ "macro_tools/enabled", "former_types/enabled" ]
 macro_tools = { workspace = true, features = [ "attr", "attr_prop", "ct", "diag", "generic_params", "punctuated", "phantom", "item_struct", "quantifier" ] } # qqq : optimize set of features
 former_types = { workspace = true, features = [ "types_component_assign" ] }
 
-# [dev-dependencies]
+[dev-dependencies]
 # test_tools = { workspace = true }

@@ -59,6 +59,6 @@ path = "tests/_integration_test/smoke_test.rs"
 procedural_macro_meta = { workspace = true }
 procedural_macro_runtime = { workspace = true }
 
-# [dev-dependencies]
+[dev-dependencies]
 # test_tools = { workspace = true }
 # trybuild = { version = "~1.0", features = [ "diff" ] }

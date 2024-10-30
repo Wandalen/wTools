@@ -60,5 +60,5 @@ inspect_type = { workspace = true }
 is_slice = { workspace = true }
 implements = { workspace = true }
 
-# [dev-dependencies]
+[dev-dependencies]
 # test_tools = { workspace = true }
