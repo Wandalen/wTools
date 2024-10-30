@@ -42,10 +42,10 @@ pub mod dependency
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use ::process_tools_published;
+  pub use ::process_tools;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use ::process_tools_published as process_tools;
+  pub use ::process_tools as process_tools;
 
 }
 

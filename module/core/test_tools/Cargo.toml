@@ -59,7 +59,7 @@ enabled = [
   "typing_tools/enabled",
   "data_type/enabled",
   "diagnostics_tools/enabled",
-  "process_tools_published/enabled",
+  "process_tools/enabled",
   "collection_tools/enabled",
 ]
 # nightly = [ "typing_tools/nightly" ]
@@ -83,7 +83,7 @@ mem_tools = { workspace = true, features = [ "full" ] }
 typing_tools = { workspace = true, features = [ "full" ] }
 data_type = { workspace = true, features = [ "full" ] }
 diagnostics_tools = { workspace = true, features = [ "full" ] }
-process_tools_published = { workspace = true, features = [ "full" ] }
+process_tools = { workspace = true, features = [ "full" ] }
 collection_tools = { workspace = true, features = [ "full" ] }
 # former_stable = { workspace = true, features = [ "full" ] }
 

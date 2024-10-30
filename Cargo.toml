@@ -379,10 +379,10 @@ version = "~0.10.0"
 path = "module/core/process_tools"
 default-features = false
 
-[workspace.dependencies.process_tools_published]
-package = "process_tools"
-version = "~0.9.0"
-default-features = false
+# [workspace.dependencies.process_tools_published]
+# package = "process_tools"
+# version = "~0.9.0"
+# default-features = false
 
 
 ## test
