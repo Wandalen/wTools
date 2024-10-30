@@ -1,4 +1,4 @@
-name : proper_path_tools
+name : graphtools
 
 on :
   push :
@@ -13,12 +13,12 @@ env :
 
 jobs :
 
-  # proper_path_tools
+  # graphtools
 
   test :
     uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
     with :
-      manifest_path : 'module/blank/proper_path_tools/Cargo.toml'
-      module_name : 'proper_path_tools'
+      manifest_path : 'module/blank/graphtools/Cargo.toml'
+      module_name : 'graphtools'
       commit_message : ${{ github.event.head_commit.message }}
       commiter_username:  ${{ github.event.head_commit.committer.username }}
