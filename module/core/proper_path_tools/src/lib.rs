@@ -20,12 +20,21 @@ mod_interface!
   /// Basic functionality.
   layer path;
 
+  /// AsPath trait.
+  layer as_path;
+  /// TryIntoPath trait.
+  layer try_into_path;
+  /// TryIntoPath trait.
+  layer try_into_cow_path;
+
   /// Transitive TryFrom and TryInto.
   layer transitive;
 
   #[ cfg( feature = "path_utf8" ) ]
   own use ::camino::{ Utf8Path, Utf8PathBuf };
   #[ cfg( not( feature = "no_std" ) ) ]
-  own use ::std::path::{ PathBuf, Path };
+  own use ::std::path::{ PathBuf, Path, Component };
+  #[ cfg( not( feature = "no_std" ) ) ]
+  own use ::std::borrow::Cow;
 
 }

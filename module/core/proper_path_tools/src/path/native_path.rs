@@ -231,6 +231,32 @@ mod private
     }
   }
 
+  impl TryIntoPath for NativePath
+  {
+    #[ inline ]
+    fn try_into_path( self ) -> Result< PathBuf, io::Error >
+    {
+      Ok( self.0 )
+    }
+  }
+
+  impl< 'a > TryIntoCowPath< 'a > for NativePath
+  {
+    #[ inline ]
+    fn try_into_cow_path( self ) -> Result< Cow<'a, Path>, io::Error >
+    {
+      Ok( Cow::Owned( self.0 ) )
+    }
+  }
+
+  // impl AsPath for NativePath
+  // {
+  //   fn as_path( &self ) -> &Path
+  //   {
+  //     self.0.as_path()
+  //   }
+  // }
+
 //   impl TryFrom< Utf8PathBuf > for NativePath
 //   {
 //     type Error = std::io::Error;

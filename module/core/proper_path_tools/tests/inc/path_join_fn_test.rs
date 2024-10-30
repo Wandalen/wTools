@@ -324,7 +324,7 @@ fn join_with_empty()
 #[ test ]
 fn join_windows_os_paths()
 {
-  let ( expected, paths ) : ( PathBuf, Vec< PathBuf > ) = ( "/c/foo/bar/".into(), vec![ "c:\\".into(), "foo\\".into(), "bar\\".into() ] );
+  let ( expected, paths ) : ( PathBuf, Vec< PathBuf > ) = ( "/c:/foo/bar/".into(), vec![ "c:\\".into(), "foo\\".into(), "bar\\".into() ] );
   let result = the_module::path::join_paths( paths.iter().map( |p| p.as_path() ) );
   assert_eq!
   (

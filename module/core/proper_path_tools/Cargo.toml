@@ -35,6 +35,8 @@ full = [
   "path_utf8",
 ]
 no_std = []
+# qqq : xxx : negate no_std
+# use_std = []
 use_alloc = [ "no_std" ]
 enabled = [ "mod_interface/enabled" ]
 

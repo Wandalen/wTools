@@ -4,7 +4,11 @@ mod private
 
   use crate::*;
   #[ cfg( not( feature = "no_std" ) ) ]
-  use std::env;
+  use std::
+  {
+    env,
+    io,
+  };
 
   /// Symbolize current path.
   #[ derive( Clone, Copy, Debug, Default, PartialEq, Eq ) ]
@@ -59,6 +63,39 @@ mod private
     fn try_from( src : CurrentPath ) -> Result< Self, Self::Error >
     {
       AbsolutePath::try_from( PathBuf::try_from( src )? )
+    }
+  }
+
+  impl TryIntoPath for &CurrentPath
+  {
+    fn try_into_path( self ) -> Result< PathBuf, io::Error >
+    {
+      env::current_dir()
+    }
+  }
+
+  impl TryIntoPath for CurrentPath
+  {
+    fn try_into_path( self ) -> Result< PathBuf, io::Error >
+    {
+      env::current_dir()
+    }
+  }
+
+  impl< 'a > TryIntoCowPath< 'a > for CurrentPath
+  {
+    fn try_into_cow_path( self ) -> Result< Cow<'a, Path>, io::Error >
+    {
+      let current_dir = env::current_dir()?;
+      Ok( Cow::Owned( current_dir ) )
+    }
+  }
+
+  impl< 'a > TryIntoCowPath< 'a > for &CurrentPath
+  {
+    fn try_into_cow_path( self ) -> Result< Cow<'a, Path>, io::Error >
+    {
+      TryIntoCowPath::try_into_cow_path( *self )
     }
   }
 

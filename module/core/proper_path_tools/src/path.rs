@@ -2,6 +2,8 @@
 
 mod private
 {
+  use crate::*;
+
   #[ cfg( feature = "no_std" ) ]
   extern crate std;
 
@@ -321,11 +323,10 @@ mod private
   ///
   /// ```
   // qqq : make macro paths_join!( ... )
-  pub fn join_paths< 'a, I >( paths : I ) -> std::path::PathBuf
+  pub fn join_paths< I, P >( paths : I ) -> PathBuf
   where
-    // AsPath : AsRef< std::path::Path >,
-    // I : Iterator< Item = AsPath >,
-    I : Iterator< Item = &'a std::path::Path >,
+    I : Iterator< Item = P >,
+    P : AsPath,
   {
     #[ cfg( feature = "no_std" ) ]
     extern crate alloc;
@@ -338,8 +339,11 @@ mod private
 
     for path in paths
     {
-      let mut path = path.to_string_lossy().replace( '\\', "/" );
-      path = path.replace( ':', "" );
+      // let mut path = path.to_string_lossy().replace( '\\', "/" );
+      let path = path.as_path().to_string_lossy().replace( '\\', "/" );
+      // qqq : xxx : avoid converting to String, keep it Path
+
+      // path = path.replace( ':', "" );
       // qqq : this is a bug
 
       let mut added_slah = false;
@@ -1071,5 +1075,8 @@ crate::mod_interface!
   layer current_path;
   /// Describe native path. Use to pass path to the platfrom.
   layer native_path;
+
+  /// Convenient joining.
+  layer join;
 
 }

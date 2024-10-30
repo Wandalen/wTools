@@ -1,55 +1,48 @@
 /// Internal namespace.
 mod private
 {
-
   use crate::*;
-
   use std::
   {
-    // borrow::Cow,
     path::{ Path, PathBuf },
     io,
   };
-
   use core::
   {
     fmt,
-    ops::
-    {
-      Deref,
-      DerefMut,
-    },
+    ops::{ Deref, DerefMut },
   };
-
-  #[ cfg( feature="no_std" ) ]
+  #[cfg( feature = "no_std" )]
   extern crate std;
-
-  #[ cfg( feature="no_std" ) ]
+  #[cfg( feature = "no_std" )]
   use alloc::string::String;
-
-  #[ cfg( feature = "derive_serde" ) ]
+  #[cfg( feature = "derive_serde" )]
   use serde::{ Serialize, Deserialize };
-
-  #[ cfg( feature = "path_utf8" ) ]
+  #[cfg( feature = "path_utf8" )]
   use camino::{ Utf8Path, Utf8PathBuf };
 
-  /// Absolute path.
-  #[ cfg_attr( feature = "derive_serde", derive( Serialize, Deserialize ) ) ]
-  #[ derive( Debug, Default, Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
+  /// A new type representing an absolute path.
+  ///
+  /// The `AbsolutePath` type ensures that paths are absolute, which helps reduce issues and maintenance costs associated with relative paths.
+  /// Relative paths can be problematic as they introduce additional variables and complexities, making code analysis, integration, refactoring, and testing more difficult.
+  /// By using absolute paths, software architecture can be improved, similar to how avoiding global variables can enhance code quality.
+  /// It is recommended to use relative paths only at the outskirts of an application.
+  #[cfg_attr( feature = "derive_serde", derive( Serialize, Deserialize ) )]
+  #[derive( Debug, Default, Clone, Ord, PartialOrd, Eq, PartialEq, Hash )]
   pub struct AbsolutePath( PathBuf );
 
   impl AbsolutePath
   {
-
-    /// Returns the Path without its final component, if there is one.
-    /// Returns None if the path terminates in a root or prefix, or if it's the empty string.
+    /// Returns the parent directory as an `AbsolutePath`, if it exists.
+    ///
+    /// Returns `None` if the path terminates in a root or prefix, or if it's the empty string.
     #[ inline ]
     pub fn parent( &self ) -> Option< AbsolutePath >
     {
       self.0.parent().map( PathBuf::from ).map( AbsolutePath )
     }
 
-    /// Creates an owned `AbsolutePath` with path adjoined to self.
+    /// Creates an owned `AbsolutePath` by joining a given path to `self`.
     #[ inline ]
     pub fn join< P >( &self, path : P ) -> AbsolutePath
     where
@@ -58,13 +51,7 @@ mod private
       Self::try_from( self.0.join( path ) ).unwrap()
     }
 
-    // /// Converts a `AbsolutePath` to a `Cow<str>`
-    // pub fn to_string_lossy( &self ) -> Cow< '_, str >
-    // {
-    //   self.0.to_string_lossy()
-    // }
-
-    /// Determines whether base is a prefix of self.
+    /// Checks if the path starts with a given base path.
     ///
     /// Only considers whole path components to match.
     #[ inline ]
@@ -73,27 +60,34 @@ mod private
       self.0.starts_with( base )
     }
 
-    /// Returns inner type which is PathBuf.
-    #[ inline( always ) ]
+    /// Returns the inner `PathBuf`.
+    #[inline(always)]
     pub fn inner( self ) -> PathBuf
     {
       self.0
     }
 
-    // qqq : xxx : cover by minimal tests
-    // qqq : xxx : make iterator over Paths also working
-    /// Joins a list of strs into a single absolute path.
-    pub fn from_strs< 'a, I >( iter : I ) -> Result< Self, io::Error >
+    /// Creates an `AbsolutePath` from an iterator over items that implement `AsPath`.
+    ///
+    /// This function joins all path segments into a single path and attempts to convert it
+    /// into an `AbsolutePath`. The resulting path must be absolute.
+    ///
+    /// # Arguments
+    ///
+    /// * `iter` - An iterator over path segments.
+    ///
+    /// # Returns
+    ///
+    /// * `Ok(AbsolutePath)` if the joined path is absolute.
+    /// * `Err(io::Error)` if the joined path is not absolute.
+    pub fn from_paths< I, P >( iter : I ) -> Result< Self, io::Error >
     where
-      I : Iterator< Item = &'a str >,
+      I : Iterator< Item = P >,
+      P : AsPath,
     {
-      // Join all the path segments using join_paths
-      let joined_path = path::join_paths( iter.map( Path::new ) );
-
-      // Convert the joined PathBuf into an AbsolutePath
+      let joined_path = join_paths( iter );
       AbsolutePath::try_from( joined_path )
     }
-
   }
 
   impl fmt::Display for AbsolutePath
@@ -108,8 +102,6 @@ mod private
   #[ inline ]
   fn is_absolute( path : &Path ) -> bool
   {
-    // None - not absolute
-    // with `.` or `..` at the first component - not absolute
     !path.components().next().is_some_and( | c | c.as_os_str() == "." || c.as_os_str() == ".." )
   }
 
@@ -120,7 +112,7 @@ mod private
     #[ inline ]
     fn try_from( src : PathBuf ) -> Result< Self, Self::Error >
     {
-      < Self as TryFrom< &Path > >::try_from( &src.as_path() )
+      <Self as TryFrom< &Path >>::try_from( &src.as_path() )
     }
   }
 
@@ -131,11 +123,10 @@ mod private
     #[ inline ]
     fn try_from( src : &PathBuf ) -> Result< Self, Self::Error >
     {
-      < Self as TryFrom< &Path > >::try_from( &src.as_path() )
+      <Self as TryFrom< &Path >>::try_from( &src.as_path() )
     }
   }
 
-  // xxx : qqq : use Into< Path >
   impl TryFrom< &Path > for AbsolutePath
   {
     type Error = std::io::Error;
@@ -143,43 +134,29 @@ mod private
     #[ inline ]
     fn try_from( src : &Path ) -> Result< Self, Self::Error >
     {
-      // < Self as TryFrom< &str > >::try_from( src.to_string_lossy() )
       let path = path::canonicalize( src )?;
 
-      // xxx
       if !is_absolute( &path )
       {
-        return Err( io::Error::new( io::ErrorKind::InvalidData, "Path expected to be absolute, but it's not {path}" ) )
+        return Err( io::Error::new( io::ErrorKind::InvalidData, "Path expected to be absolute, but it's not {path}" ) );
       }
 
       Ok( Self( path ) )
     }
   }
 
-  impl< 'a > TryFrom< &'a str > for AbsolutePath
+  impl<'a> TryFrom< &'a str > for AbsolutePath
   {
     type Error = std::io::Error;
 
     #[ inline ]
     fn try_from( src : &'a str ) -> Result< Self, Self::Error >
     {
-      < Self as TryFrom< &Path > >::try_from( src.as_ref() )
+      <Self as TryFrom< &Path >>::try_from( src.as_ref() )
     }
   }
 
-//   impl TryFrom< &str > for AbsolutePath
-//   {
-//     type Error = std::io::Error;
-//     // type Error = PathError;
-//
-//     #[ inline( always ) ]
-//     fn try_from( src : &str ) -> Result< Self, Self::Error >
-//     {
-//       Self::try_from( AbsolutePath::try_from( src )? )
-//     }
-//   }
-
-  #[ cfg( feature = "path_utf8" ) ]
+  #[cfg( feature = "path_utf8" )]
   impl TryFrom< Utf8PathBuf > for AbsolutePath
   {
     type Error = std::io::Error;
@@ -191,7 +168,7 @@ mod private
     }
   }
 
-  #[ cfg( feature = "path_utf8" ) ]
+  #[cfg( feature = "path_utf8" )]
   impl TryFrom< &Utf8PathBuf > for AbsolutePath
   {
     type Error = std::io::Error;
@@ -203,7 +180,7 @@ mod private
     }
   }
 
-  #[ cfg( feature = "path_utf8" ) ]
+  #[cfg( feature = "path_utf8" )]
   impl TryFrom< &Utf8Path > for AbsolutePath
   {
     type Error = std::io::Error;
@@ -224,24 +201,21 @@ mod private
     }
   }
 
-  impl< 'a > TryFrom< &'a AbsolutePath > for &'a str
+  impl<'a> TryFrom< &'a AbsolutePath > for &'a str
   {
     type Error = std::io::Error;
+
     #[ inline ]
     fn try_from( src : &'a AbsolutePath ) -> Result< &'a str, Self::Error >
     {
-      src
-      .to_str()
-      .ok_or_else
-      (
-        move || io::Error::new( io::ErrorKind::Other, format!( "Can't convert &PathBuf into &str {src}" ) )
-      )
+      src.to_str().ok_or_else( || io::Error::new( io::ErrorKind::Other, format!( "Can't convert &PathBuf into &str {src}" ) ) )
     }
   }
 
   impl TryFrom< &AbsolutePath > for String
   {
     type Error = std::io::Error;
+
     #[ inline ]
     fn try_from( src : &AbsolutePath ) -> Result< String, Self::Error >
     {
@@ -250,34 +224,23 @@ mod private
     }
   }
 
-//   impl TryFrom< Utf8PathBuf > for AbsolutePath
-//   {
-//     type Error = std::io::Error;
-//
-//     fn try_from( src : Utf8PathBuf ) -> Result< Self, Self::Error >
-//     {
-//       AbsolutePath::try_from( src.as_std_path() )
-//     }
-//   }
+  impl TryIntoPath for AbsolutePath
+  {
+    #[ inline ]
+    fn try_into_path( self ) -> Result< PathBuf, io::Error >
+    {
+      Ok( self.0 )
+    }
+  }
 
-//   impl TryFrom< &Utf8Path > for AbsolutePath
-//   {
-//     type Error = std::io::Error;
-//
-//     fn try_from( src : &Utf8Path ) -> Result< Self, Self::Error >
-//     {
-//       AbsolutePath::try_from( src.as_std_path() )
-//     }
-//   }
-
-  // // xxx : use derives
-  // impl AsRef< Path > for AbsolutePath
-  // {
-  //   fn as_ref( &self ) -> &Path
-  //   {
-  //     self.0.as_ref()
-  //   }
-  // }
+  impl< 'a > TryIntoCowPath< 'a > for AbsolutePath
+  {
+    #[ inline ]
+    fn try_into_cow_path( self ) -> Result< Cow<'a, Path>, io::Error >
+    {
+      Ok( Cow::Owned( self.0 ) )
+    }
+  }
 
   impl AsRef< Path > for AbsolutePath
   {
@@ -300,6 +263,7 @@ mod private
   impl Deref for AbsolutePath
   {
     type Target = Path;
+
     #[ inline ]
     fn deref( &self ) -> &Self::Target
     {
@@ -315,42 +279,9 @@ mod private
       &mut self.0
     }
   }
-
-//   /// Convertable into absolute path entity should implement the trait.
-//   pub trait TryIntoAbsolutePath
-//   {
-//     /// Error returned if conversion is failed.
-//     type Error;
-//     /// Method to convert the type into absolute path.
-//     fn into_absolute_path( self ) -> Result< AbsolutePath, Self::Error >;
-//   }
-//
-//   // impl TryIntoAbsolutePath for AbsolutePath
-//   // {
-//   //   type Error = std::io::Error;
-//   //   #[ inline ]
-//   //   fn into_absolute_path( self ) -> Result< AbsolutePath, Self::Error >
-//   //   {
-//   //     Ok( self )
-//   //   }
-//   // }
-//
-//   impl< TryIntoAbsolutePathType > TryIntoAbsolutePath for TryIntoAbsolutePathType
-//   where
-//     TryIntoAbsolutePathType : TryInto< AbsolutePath >,
-//   {
-//     type Error = < Self as TryInto< AbsolutePath > >::Error;
-//     #[ inline ]
-//     fn into_absolute_path( self ) -> Result< AbsolutePath, Self::Error >
-//     {
-//       self.try_into()
-//     }
-//   }
-
 }
 
 crate::mod_interface!
 {
   exposed use AbsolutePath;
-  // exposed use TryIntoAbsolutePath;
 }

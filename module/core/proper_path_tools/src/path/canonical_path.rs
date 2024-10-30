@@ -21,6 +21,7 @@ mod private
     },
   };
 
+  // qqq : xxx : redo
   #[ cfg( feature="no_std" ) ]
   extern crate std;
 
@@ -215,6 +216,32 @@ mod private
       Ok( src2.into() )
     }
   }
+
+  impl TryIntoPath for CanonicalPath
+  {
+    #[ inline ]
+    fn try_into_path( self ) -> Result< PathBuf, io::Error >
+    {
+      Ok( self.0 )
+    }
+  }
+
+  impl< 'a > TryIntoCowPath< 'a > for CanonicalPath
+  {
+    #[ inline ]
+    fn try_into_cow_path( self ) -> Result< Cow<'a, Path>, io::Error >
+    {
+      Ok( Cow::Owned( self.0 ) )
+    }
+  }
+
+  // impl AsPath for CanonicalPath
+  // {
+  //   fn as_path( &self ) -> &Path
+  //   {
+  //     self.0.as_path()
+  //   }
+  // }
 
 //   impl TryFrom< Utf8PathBuf > for CanonicalPath
 //   {
