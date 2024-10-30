@@ -209,7 +209,7 @@ default-features = false
 ## meta
 
 [workspace.dependencies.meta_tools]
-version = "~0.11.0"
+version = "~0.12.0"
 path = "module/core/meta_tools"
 default-features = false
 
