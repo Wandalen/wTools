@@ -179,7 +179,7 @@ mod private
         &self.module_name
       )
       {
-        let relative_path = proper_path_tools::path::path_relative
+        let relative_path = pth::path::path_relative
         (
           workspace_path.try_into().unwrap(),
           name

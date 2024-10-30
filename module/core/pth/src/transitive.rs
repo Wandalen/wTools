@@ -49,7 +49,7 @@ mod private
   /// # Example
   ///
   /// ```rust
-  /// use proper_path_tools::TransitiveTryFrom;
+  /// use pth::TransitiveTryFrom;
   /// use std::convert::TryFrom;
   ///
   /// struct InitialType;
@@ -132,7 +132,7 @@ mod private
   /// # Example
   ///
   /// ```rust
-  /// use proper_path_tools::TransitiveTryInto;
+  /// use pth::TransitiveTryInto;
   /// use std::convert::TryInto;
   ///
   /// struct InitialType;

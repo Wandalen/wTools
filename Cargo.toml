@@ -366,10 +366,15 @@ version = "~0.1.0"
 path = "module/alias/file_tools"
 default-features = false
 
-[workspace.dependencies.proper_path_tools]
+[workspace.dependencies.pth]
 version = "~0.15.0"
-path = "module/core/proper_path_tools"
+path = "module/core/pth"
 default-features = false
+
+# [workspace.dependencies.proper_path_tools]
+# version = "~0.15.0"
+# path = "module/core/proper_path_tools"
+# default-features = false
 
 
 ## process tools

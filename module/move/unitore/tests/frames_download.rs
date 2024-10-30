@@ -2,7 +2,7 @@ use feed_rs::parser as feed_parser;
 use gluesql::
 {
   core::
-  { 
+  {
     chrono::{ DateTime, Utc },
     data::Value
   },
@@ -20,7 +20,7 @@ use error_tools::untyped::Result;
 #[ tokio::test ]
 async fn test_save() -> Result< () >
 {
-  let temp_path = proper_path_tools::path::unique_folder_name().unwrap();
+  let temp_path = pth::path::unique_folder_name().unwrap();
 
   let config = Config::default()
   .path( format!( "./{}", temp_path ) )
@@ -52,7 +52,7 @@ async fn test_save() -> Result< () >
 #[ tokio::test ]
 async fn test_update() -> Result< () >
 {
-  let temp_path = proper_path_tools::path::unique_folder_name().unwrap();
+  let temp_path = pth::path::unique_folder_name().unwrap();
 
   let config = Config::default()
   .path( format!( "./{}", temp_path ) )

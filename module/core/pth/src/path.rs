@@ -27,7 +27,7 @@ mod private
   /// # Examples:
   ///
   /// ```
-  /// use proper_path_tools::path;
+  /// use pth::path;
   ///
   /// assert_eq!( path::is_glob( "file.txt" ), false ); // No glob patterns
   /// assert_eq!( path::is_glob( "*.txt" ), true ); // Contains unescaped glob character *
@@ -112,7 +112,7 @@ mod private
   ///
   /// ```
   /// use std::path::{ Path, PathBuf };
-  /// use proper_path_tools::path as path;
+  /// use pth::path as path;
   ///
   /// let path = Path::new( "/a/b/./c/../d" );
   /// let normalized_path = path::normalize( path );
@@ -262,7 +262,7 @@ mod private
   /// # Examples
   ///
   /// ```
-  /// use proper_path_tools::path::unique_folder_name;
+  /// use pth::path::unique_folder_name;
   /// let folder_name = unique_folder_name().unwrap();
   /// println!( "Generated folder name: {}", folder_name );
   /// ```
@@ -311,7 +311,7 @@ mod private
   ///
   /// ```
   /// use std::path::PathBuf;
-  /// use proper_path_tools::path;
+  /// use pth::path;
   ///
   /// let paths = vec![ PathBuf::from( "a/b/c" ), PathBuf::from( "/d/e" ), PathBuf::from( "f/g" ) ];
   /// let joined = path::join_paths( paths.iter().map( | p | p.as_path() ) );
@@ -454,7 +454,7 @@ mod private
   /// # Examples
   ///
   /// ```
-  /// use proper_path_tools::path::exts;
+  /// use pth::path::exts;
   ///
   /// let path = "/path/to/file.tar.gz";
   /// let extensions = exts( path );
@@ -462,7 +462,7 @@ mod private
   /// ```
   ///
   /// ```
-  /// use proper_path_tools::path::exts;
+  /// use pth::path::exts;
   ///
   /// let empty_path = "";
   /// let extensions = exts( empty_path );
@@ -517,7 +517,7 @@ mod private
   ///
   /// ```
   /// use std::path::PathBuf;
-  /// use proper_path_tools::path::without_ext;
+  /// use pth::path::without_ext;
   ///
   /// let path = "/path/to/file.txt";
   /// let modified_path = without_ext(path);
@@ -526,7 +526,7 @@ mod private
   ///
   /// ```
   /// use std::path::PathBuf;
-  /// use proper_path_tools::path::without_ext;
+  /// use pth::path::without_ext;
   ///
   /// let empty_path = "";
   /// let modified_path = without_ext(empty_path);
@@ -596,7 +596,7 @@ mod private
   ///
   /// ```
   /// use std::path::PathBuf;
-  /// use proper_path_tools::path::change_ext;
+  /// use pth::path::change_ext;
   ///
   /// let path = "/path/to/file.txt";
   /// let modified_path = change_ext( path, "json" );
@@ -605,7 +605,7 @@ mod private
   ///
   /// ```
   /// use std::path::PathBuf;
-  /// use proper_path_tools::path::change_ext;
+  /// use pth::path::change_ext;
   ///
   /// let empty_path = "";
   /// let modified_path = change_ext( empty_path, "txt" );
@@ -647,7 +647,7 @@ mod private
   /// # Examples
   ///
   /// ```
-  /// use proper_path_tools::path::path_common;
+  /// use pth::path::path_common;
   ///
   /// let paths = vec![ "/a/b/c", "/a/b/d", "/a/b/e" ];
   /// let common_path = path_common( paths.into_iter() );
@@ -839,7 +839,7 @@ mod private
   ///
   /// let file_path = "/home/user/documents/file.txt";
   /// let new_path = "/mnt/storage";
-  /// let rebased_path = proper_path_tools::path::rebase( file_path, new_path, None ).unwrap();
+  /// let rebased_path = pth::path::rebase( file_path, new_path, None ).unwrap();
   /// assert_eq!( rebased_path, PathBuf::from( "/mnt/storage/home/user/documents/file.txt" ) );
   /// ```
   ///
@@ -851,7 +851,7 @@ mod private
   /// let file_path = "/home/user/documents/file.txt";
   /// let new_path = "/mnt/storage";
   /// let old_path = "/home/user";
-  /// let rebased_path = proper_path_tools::path::rebase( file_path, new_path, Some( old_path ) ).unwrap();
+  /// let rebased_path = pth::path::rebase( file_path, new_path, Some( old_path ) ).unwrap();
   /// assert_eq!( rebased_path, PathBuf::from( "/mnt/storage/documents/file.txt" ) );
   /// ```
   ///
@@ -905,7 +905,7 @@ mod private
   ///
   /// let from = "/a/b";
   /// let to = "/a/c/d";
-  /// let relative_path = proper_path_tools::path::path_relative( from, to );
+  /// let relative_path = pth::path::path_relative( from, to );
   /// assert_eq!( relative_path, PathBuf::from( "../c/d" ) );
   /// ```
   pub fn path_relative< T : AsRef< std::path::Path > >( from : T, to : T ) -> std::path::PathBuf
@@ -1013,7 +1013,7 @@ mod private
   /// # Examples
   ///
   /// ```
-  /// use proper_path_tools::path::ext;
+  /// use pth::path::ext;
   ///
   /// let path = "/path/to/file.txt";
   /// let extension = ext( path );
@@ -1021,7 +1021,7 @@ mod private
   /// ```
   ///
   /// ```
-  /// use proper_path_tools::path::ext;
+  /// use pth::path::ext;
   ///
   /// let empty_path = "";
   /// let extension = ext( empty_path );

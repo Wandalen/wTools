@@ -4,7 +4,7 @@ use super::*;
 #[ test ]
 fn basic_from()
 {
-  use proper_path_tools::TransitiveTryFrom;
+  use pth::TransitiveTryFrom;
   use std::convert::TryFrom;
 
   struct InitialType;
@@ -42,7 +42,7 @@ fn basic_from()
 #[ test ]
 fn test_transitive_try_into()
 {
-  use proper_path_tools::TransitiveTryInto;
+  use pth::TransitiveTryInto;
 
   // Define NewType1 wrapping a String
   #[ derive( Debug, PartialEq ) ]

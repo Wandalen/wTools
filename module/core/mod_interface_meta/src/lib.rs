@@ -43,7 +43,7 @@
 //   };
 // }
 
-// xxx : make use proper_path_tools::own::path working
+// xxx : make use pth::own::path working
 
 // xxx : put modular files into a namespace `file` maybe
 // #[ cfg( feature = "enabled" ) ]
