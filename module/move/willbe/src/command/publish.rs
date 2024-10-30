@@ -17,7 +17,7 @@ mod private
     channel : Channel,
     #[ former( default = true ) ]
     exclude_dev_dependencies : bool,
-    #[ former( default = true ) ]
+    #[ former( default = false ) ]
     commit_changes : bool,
     #[ former( default = true ) ]
     dry : bool,
