@@ -32,8 +32,13 @@ mod_interface!
 
   #[ cfg( feature = "path_utf8" ) ]
   own use ::camino::{ Utf8Path, Utf8PathBuf };
+
+  // #[ cfg( not( feature = "no_std" ) ) ]
+  // own use ::std::path::{ PathBuf, Path, Component };
+
   #[ cfg( not( feature = "no_std" ) ) ]
-  own use ::std::path::{ PathBuf, Path, Component };
+  own use ::std::path::*;
+
   #[ cfg( not( feature = "no_std" ) ) ]
   own use ::std::borrow::Cow;
 
