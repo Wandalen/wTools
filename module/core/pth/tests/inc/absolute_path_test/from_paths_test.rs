@@ -9,7 +9,7 @@ fn test_from_paths_single_absolute_segment()
   use std::convert::TryFrom;
 
   let segments = vec![ "/single" ];
-  let got = AbsolutePath::from_paths( segments.iter().map( |s| *s ) ).unwrap();
+  let got = AbsolutePath::from_iter( segments.iter().map( |s| *s ) ).unwrap();
   let exp = AbsolutePath::try_from( "/single" ).unwrap();
 
   assert_eq!( got, exp );
@@ -22,7 +22,7 @@ fn test_from_paths_multiple_segments()
   use std::convert::TryFrom;
 
   let segments = vec![ "/path", "to", "file" ];
-  let got = AbsolutePath::from_paths( segments.iter().map( |s| *s ) ).unwrap();
+  let got = AbsolutePath::from_iter( segments.iter().map( |s| *s ) ).unwrap();
   let exp = AbsolutePath::try_from( "/path/to/file" ).unwrap();
 
   assert_eq!( got, exp );
@@ -34,7 +34,7 @@ fn test_from_paths_empty_segments()
   use the_module::AbsolutePath;
 
   let segments : Vec< &str > = vec![];
-  let result = AbsolutePath::from_paths( segments.iter().map( | s | *s ) );
+  let result = AbsolutePath::from_iter( segments.iter().map( | s | *s ) );
 
   assert!( result.is_err(), "Expected an error for empty segments" );
 }
@@ -46,7 +46,7 @@ fn test_from_paths_with_dot_segments()
   use std::convert::TryFrom;
 
   let segments = vec![ "/path", ".", "to", "file" ];
-  let got = AbsolutePath::from_paths( segments.iter().map( |s| *s ) ).unwrap();
+  let got = AbsolutePath::from_iter( segments.iter().map( |s| *s ) ).unwrap();
   let exp = AbsolutePath::try_from( "/path/to/file" ).unwrap();
 
   assert_eq!( got, exp );
@@ -59,7 +59,7 @@ fn test_from_paths_with_dotdot_segments()
   use std::convert::TryFrom;
 
   let segments = vec![ "/path", "to", "..", "file" ];
-  let got = AbsolutePath::from_paths( segments.iter().map( |s| *s ) ).unwrap();
+  let got = AbsolutePath::from_iter( segments.iter().map( |s| *s ) ).unwrap();
   let exp = AbsolutePath::try_from( "/path/file" ).unwrap();
 
   assert_eq!( got, exp );
@@ -72,7 +72,7 @@ fn test_from_paths_with_trailing_slash()
   use std::convert::TryFrom;
 
   let segments = vec![ "/path", "to", "file/" ];
-  let got = AbsolutePath::from_paths( segments.iter().map( |s| *s ) ).unwrap();
+  let got = AbsolutePath::from_iter( segments.iter().map( |s| *s ) ).unwrap();
   let exp = AbsolutePath::try_from( "/path/to/file/" ).unwrap();
 
   assert_eq!( got, exp );
@@ -85,7 +85,7 @@ fn test_from_paths_with_mixed_slashes()
   use std::convert::TryFrom;
 
   let segments = vec![ "/path\\to", "file" ];
-  let got = AbsolutePath::from_paths( segments.iter().map( |s| *s ) ).unwrap();
+  let got = AbsolutePath::from_iter( segments.iter().map( |s| *s ) ).unwrap();
   let exp = AbsolutePath::try_from( "/path/to/file" ).unwrap();
 
   assert_eq!( got, exp );

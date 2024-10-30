@@ -19,23 +19,23 @@ fn basic() -> Result< (), io::Error >
   let path5 : String = "components".into();
 
   // Test with a tuple of length 1
-  let joined1 : PathBuf = ( path1, ).join_paths()?;
+  let joined1 : PathBuf = ( path1, ).iter_join()?;
   println!( "Joined PathBuf (1): {:?}", joined1 );
 
   // Test with a tuple of length 2
-  let joined2 : PathBuf = ( path1, path2.clone() ).join_paths()?;
+  let joined2 : PathBuf = ( path1, path2.clone() ).iter_join()?;
   println!( "Joined PathBuf (2): {:?}", joined2 );
 
   // Test with a tuple of length 3
-  let joined3 : PathBuf = ( path1, path2.clone(), path3.clone() ).join_paths()?;
+  let joined3 : PathBuf = ( path1, path2.clone(), path3.clone() ).iter_join()?;
   println!( "Joined PathBuf (3): {:?}", joined3 );
 
   // Test with a tuple of length 4
-  let joined4 : PathBuf = ( path1, path2.clone(), path3.clone(), path4 ).join_paths()?;
+  let joined4 : PathBuf = ( path1, path2.clone(), path3.clone(), path4 ).iter_join()?;
   println!( "Joined PathBuf (4): {:?}", joined4 );
 
   // Test with a tuple of length 5
-  let joined5 : PathBuf = ( path1, path2, path3, path4, path5 ).join_paths()?;
+  let joined5 : PathBuf = ( path1, path2, path3, path4, path5 ).iter_join()?;
   println!( "Joined PathBuf (5): {:?}", joined5 );
 
   Ok( () )
@@ -50,7 +50,7 @@ fn array_join_paths_test() -> Result< (), io::Error >
   // Define a slice of path components
   let path_components : [ &str; 3 ] = [ "/some", "path", "to/file" ];
   // Join the path components into a PathBuf
-  let joined : PathBuf = path_components.join_paths()?;
+  let joined : PathBuf = path_components.iter_join()?;
   println!( "Joined PathBuf from slice: {:?}", joined );
   let expected = PathBuf::from( "/some/path/to/file" );
   assert_eq!( joined, expected );
@@ -68,7 +68,7 @@ fn slice_join_paths_test() -> Result< (), io::Error >
   let path_components : [ &str; 3 ] = [ "/some", "path", "to/file" ];
   let slice : &[ &str ] = &path_components[ .. ];
   // Join the path components into a PathBuf
-  let joined : PathBuf = slice.join_paths()?;
+  let joined : PathBuf = slice.iter_join()?;
   println!( "Joined PathBuf from slice: {:?}", joined );
   let expected = PathBuf::from( "/some/path/to/file" );
   assert_eq!( joined, expected );
@@ -87,7 +87,7 @@ fn all_types() -> Result< (), io::Error >
   {
     let absolute_path = AbsolutePath::try_from( "/absolute/path" ).unwrap();
     let current_path = CurrentPath;
-    let joined = ( absolute_path.clone(), current_path ).join_paths()?;
+    let joined = ( absolute_path.clone(), current_path ).iter_join()?;
     let expected = current_path.try_into_path()?;
     println!( "Joined PathBuf: {:?}", joined );
     assert_eq!( joined, expected );
@@ -97,7 +97,7 @@ fn all_types() -> Result< (), io::Error >
   // {
   //   let absolute_path = AbsolutePath::try_from( "/absolute/path" ).unwrap();
   //   let current_path = CurrentPath;
-  //   let joined = ( current_path, absolute_path.clone() ).join_paths()?;
+  //   let joined = ( current_path, absolute_path.clone() ).iter_join()?;
   //   let expected = absolute_path.as_path().to_path_buf();
   //   println!( "Joined PathBuf: {:?}", joined );
   //   assert_eq!( joined, expected );
@@ -109,7 +109,7 @@ fn all_types() -> Result< (), io::Error >
     let absolute_path = AbsolutePath::try_from( "/absolute/path" ).unwrap();
     let component = Path::new( "/component/path" ).components().next().unwrap();
     println!( "component : {component:?}" );
-    let joined = ( absolute_path, component ).join_paths()?;
+    let joined = ( absolute_path, component ).iter_join()?;
     let expected = component.as_path();
     println!( "Joined PathBuf: {:?}", joined );
     assert_eq!( joined, expected );
@@ -119,7 +119,7 @@ fn all_types() -> Result< (), io::Error >
   {
     let absolute_path = AbsolutePath::try_from( "/absolute/path" ).unwrap();
     let path_str : &str = "additional/str";
-    let joined = ( absolute_path, path_str ).join_paths()?;
+    let joined = ( absolute_path, path_str ).iter_join()?;
     let expected = PathBuf::from( "/absolute/path/additional/str" );
     println!( "Joined PathBuf: {:?}", joined );
     assert_eq!( joined, expected );
@@ -129,7 +129,7 @@ fn all_types() -> Result< (), io::Error >
   {
     let absolute_path = AbsolutePath::try_from( "/absolute/path" ).unwrap();
     let native_path = NativePath::try_from( PathBuf::from( "/native/path" ) ).unwrap();
-    let joined = ( absolute_path, native_path ).join_paths()?;
+    let joined = ( absolute_path, native_path ).iter_join()?;
     let expected = PathBuf::from( "/native/path" );
     println!( "Joined PathBuf: {:?}", joined );
     assert_eq!( joined, expected );
@@ -139,7 +139,7 @@ fn all_types() -> Result< (), io::Error >
   {
     let absolute_path = AbsolutePath::try_from( "/absolute/path" ).unwrap();
     let canonical_path = CanonicalPath::try_from( "/canonical/path" ).unwrap();
-    let joined = ( absolute_path, canonical_path ).join_paths()?;
+    let joined = ( absolute_path, canonical_path ).iter_join()?;
     let expected = PathBuf::from( "/canonical/path" );
     println!( "Joined PathBuf: {:?}", joined );
     assert_eq!( joined, expected );
@@ -149,7 +149,7 @@ fn all_types() -> Result< (), io::Error >
   {
     let native_path = NativePath::try_from( PathBuf::from( "/native/path" ) ).unwrap();
     let current_path = CurrentPath;
-    let joined = ( native_path, current_path ).join_paths()?;
+    let joined = ( native_path, current_path ).iter_join()?;
     let expected = current_path.try_into_path()?;
     println!( "Joined PathBuf: {:?}", joined );
     assert_eq!( joined, expected );
@@ -160,7 +160,7 @@ fn all_types() -> Result< (), io::Error >
     let canonical_path = CanonicalPath::try_from( "/canonical/path" ).unwrap();
     let component = Path::new( "/component/path" ).components().next().unwrap();
     println!( "component : {component:?}" );
-    let joined = ( canonical_path, component ).join_paths()?;
+    let joined = ( canonical_path, component ).iter_join()?;
     let expected = component.as_path();
     // let expected = PathBuf::from( "/canonical/component" );
     println!( "Joined PathBuf: {:?}", joined );

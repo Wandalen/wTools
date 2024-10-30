@@ -314,19 +314,19 @@ mod private
   /// use pth::path;
   ///
   /// let paths = vec![ PathBuf::from( "a/b/c" ), PathBuf::from( "/d/e" ), PathBuf::from( "f/g" ) ];
-  /// let joined = path::join_paths( paths.iter().map( | p | p.as_path() ) );
+  /// let joined = path::iter_join( paths.iter().map( | p | p.as_path() ) );
   /// assert_eq!( joined, std::path::PathBuf::from( "/d/e/f/g" ) );
   ///
   /// let paths = vec![ PathBuf::from( "" ), PathBuf::from( "a/b" ), PathBuf::from( "" ), PathBuf::from( "c" ), PathBuf::from( "" ) ];
-  /// let joined = path::join_paths( paths.iter().map( | p | p.as_path() ) );
+  /// let joined = path::iter_join( paths.iter().map( | p | p.as_path() ) );
   /// assert_eq!( joined, std::path::PathBuf::from( PathBuf::from( "/a/b/c" ) ) );
   ///
   /// ```
   // qqq : make macro paths_join!( ... )
-  pub fn join_paths< I, P >( paths : I ) -> PathBuf
+  pub fn iter_join< 'a ,I, P >( paths : I ) -> PathBuf
   where
     I : Iterator< Item = P >,
-    P : AsPath,
+    P : TryIntoCowPath< 'a >,
   {
     #[ cfg( feature = "no_std" ) ]
     extern crate alloc;
@@ -340,7 +340,8 @@ mod private
     for path in paths
     {
       // let mut path = path.to_string_lossy().replace( '\\', "/" );
-      let path = path.as_path().to_string_lossy().replace( '\\', "/" );
+      // qqq : xxx : avoid unwrap
+      let path = path.try_into_cow_path().unwrap().to_string_lossy().replace( '\\', "/" );
       // qqq : xxx : avoid converting to String, keep it Path
 
       // path = path.replace( ':', "" );
@@ -1052,17 +1053,20 @@ mod private
 crate::mod_interface!
 {
 
-  orphan use ext;
-  orphan use exts;
-  orphan use change_ext;
-  orphan use path_relative;
-  orphan use rebase;
-  orphan use path_common;
-  orphan use join_paths;
-  orphan use without_ext;
-  orphan use is_glob;
-  orphan use normalize;
-  orphan use canonicalize;
+  orphan use
+  {
+    ext,
+    exts,
+    change_ext,
+    path_relative,
+    rebase,
+    path_common,
+    iter_join,
+    without_ext,
+    is_glob,
+    normalize,
+    canonicalize,
+  };
 
   #[ cfg( feature = "path_unique_folder_name" ) ]
   orphan use unique_folder_name;

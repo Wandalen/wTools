@@ -1,18 +1,11 @@
 use super::*;
 
-#[ cfg( not( feature="no_std" ) ) ]
 use the_module::
 {
   AbsolutePath,
   Path,
   PathBuf,
 };
-
-#[ cfg( feature="no_std" ) ]
-use crate::the_module::AbsolutePath;
-
-// #[ cfg( feature = "path_utf8" ) ]
-// use the_module::Utf8PathBuf;
 
 #[ test ]
 fn basic()
@@ -73,7 +66,6 @@ fn test_join()
   let joined_path = abs_path.join( "file.txt" );
   assert_eq!( joined_path.to_string_lossy(), "/path/to/some/file.txt" );
 }
-
 
 #[test]
 fn test_relative_path_try_from_str()

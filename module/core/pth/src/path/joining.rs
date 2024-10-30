@@ -17,7 +17,7 @@ mod private
   /// * `Err(io::Error)` - An error if any component fails to convert.
   pub fn join< Paths : PathJoined >( paths : Paths ) -> Result< PathBuf, io::Error >
   {
-    paths.join_paths()
+    paths.iter_join()
   }
 
   /// A trait for joining path components into a `PathBuf`.
@@ -33,8 +33,25 @@ mod private
     ///
     /// * `Ok(PathBuf)` - The joined path as a `PathBuf`.
     /// * `Err(io::Error)` - An error if any component fails to convert.
-    fn join_paths( self ) -> Result< PathBuf, io::Error >;
+    fn iter_join( self ) -> Result< PathBuf, io::Error >;
   }
+
+  // // Implementation for an Iterator over items implementing TryIntoCowPath
+  // impl< 'a, I, T > PathJoined for I
+  // where
+  //   I : Iterator< Item = T >,
+  //   T : TryIntoCowPath< 'a >,
+  // {
+  //   fn iter_join( self ) -> Result< PathBuf, io::Error >
+  //   {
+  //     let mut result = PathBuf::new();
+  //     for item in self
+  //     {
+  //       result.push( item.try_into_cow_path()?.as_ref() );
+  //     }
+  //     Ok( result )
+  //   }
+  // }
 
   // Implementation for a tuple of length 1
   impl< 'a, T1 > PathJoined for ( T1, )
@@ -42,7 +59,7 @@ mod private
     T1 : TryIntoCowPath< 'a >,
   {
     #[ inline ]
-    fn join_paths( self ) -> Result< PathBuf, io::Error >
+    fn iter_join( self ) -> Result< PathBuf, io::Error >
     {
       let ( p1, ) = self;
       let mut result = PathBuf::new();
@@ -58,7 +75,7 @@ mod private
     T2 : TryIntoCowPath< 'a >,
   {
     #[ inline ]
-    fn join_paths( self ) -> Result< PathBuf, io::Error >
+    fn iter_join( self ) -> Result< PathBuf, io::Error >
     {
       let ( p1, p2 ) = self;
       let mut result = PathBuf::new();
@@ -76,7 +93,7 @@ mod private
     T3 : TryIntoCowPath< 'a >,
   {
     #[ inline ]
-    fn join_paths( self ) -> Result< PathBuf, io::Error >
+    fn iter_join( self ) -> Result< PathBuf, io::Error >
     {
       let ( p1, p2, p3 ) = self;
       let mut result = PathBuf::new();
@@ -96,7 +113,7 @@ mod private
     T4 : TryIntoCowPath< 'a >,
   {
     #[ inline ]
-    fn join_paths( self ) -> Result< PathBuf, io::Error >
+    fn iter_join( self ) -> Result< PathBuf, io::Error >
     {
       let ( p1, p2, p3, p4 ) = self;
       let mut result = PathBuf::new();
@@ -118,7 +135,7 @@ mod private
     T5 : TryIntoCowPath< 'a >,
   {
     #[ inline ]
-    fn join_paths( self ) -> Result< PathBuf, io::Error >
+    fn iter_join( self ) -> Result< PathBuf, io::Error >
     {
       let ( p1, p2, p3, p4, p5 ) = self;
       let mut result = PathBuf::new();
@@ -137,7 +154,7 @@ mod private
     T : TryIntoCowPath< 'a > + Clone,
   {
     #[ inline ]
-    fn join_paths( self ) -> Result< PathBuf, io::Error >
+    fn iter_join( self ) -> Result< PathBuf, io::Error >
     {
       let mut result = PathBuf::new();
       for item in self
@@ -154,7 +171,7 @@ mod private
     T : TryIntoCowPath< 'a > + Clone,
   {
     #[ inline ]
-    fn join_paths( self ) -> Result< PathBuf, io::Error >
+    fn iter_join( self ) -> Result< PathBuf, io::Error >
     {
       let mut result = PathBuf::new();
       for item in &self

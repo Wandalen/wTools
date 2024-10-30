@@ -367,7 +367,7 @@ path = "module/alias/file_tools"
 default-features = false
 
 [workspace.dependencies.pth]
-version = "~0.17.0"
+version = "~0.18.0"
 path = "module/core/pth"
 default-features = false
 

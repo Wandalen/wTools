@@ -68,7 +68,7 @@ mod private
       self.0
     }
 
-    /// Creates an `AbsolutePath` from an iterator over items that implement `AsPath`.
+    /// Creates an `AbsolutePath` from an iterator over items that implement `TryIntoCowPath`.
     ///
     /// This function joins all path segments into a single path and attempts to convert it
     /// into an `AbsolutePath`. The resulting path must be absolute.
@@ -81,14 +81,32 @@ mod private
     ///
     /// * `Ok(AbsolutePath)` if the joined path is absolute.
     /// * `Err(io::Error)` if the joined path is not absolute.
-    pub fn from_paths< I, P >( iter : I ) -> Result< Self, io::Error >
+    pub fn from_iter< 'a, I, P >( iter : I ) -> Result< Self, io::Error >
     where
       I : Iterator< Item = P >,
-      P : AsPath,
+      P : TryIntoCowPath< 'a >,
     {
-      let joined_path = join_paths( iter );
+      let joined_path = iter_join( iter );
       AbsolutePath::try_from( joined_path )
     }
+
+    /// Joins path components into a `PathBuf`.
+    ///
+    /// This function leverages the `PathJoined` trait to join multiple path components into a single `PathBuf`.
+    ///
+    /// # Arguments
+    ///
+    /// * `paths` - A tuple of path components implementing the `PathJoined` trait.
+    ///
+    /// # Returns
+    ///
+    /// * `Ok(PathBuf)` - The joined path as a `PathBuf`.
+    /// * `Err(io::Error)` - An error if any component fails to convert.
+    pub fn from_paths< Paths : PathJoined >( paths : Paths ) -> Result< Self, io::Error >
+    {
+      Self::try_from( paths.iter_join()? )
+    }
+
   }
 
   impl fmt::Display for AbsolutePath
