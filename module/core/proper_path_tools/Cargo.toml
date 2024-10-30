@@ -1,6 +1,6 @@
 [package]
 name = "proper_path_tools"
-version = "0.13.0"
+version = "0.14.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -50,5 +50,5 @@ mod_interface = { workspace = true }
 serde = { version = "1.0.197", optional = true, features = [ "derive" ] }
 camino = { version = "1.1.7", optional = true, features = [] }
 
-[dev-dependencies]
-test_tools = { workspace = true }
+# [dev-dependencies]
+# test_tools = { workspace = true }

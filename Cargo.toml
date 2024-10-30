@@ -367,7 +367,7 @@ path = "module/alias/file_tools"
 default-features = false
 
 [workspace.dependencies.proper_path_tools]
-version = "~0.13.0"
+version = "~0.14.0"
 path = "module/core/proper_path_tools"
 default-features = false
 
@@ -392,7 +392,7 @@ version = "~0.4.0"
 path = "module/alias/wtest"
 
 [workspace.dependencies.test_tools]
-version = "~0.10.0"
+version = "~0.11.0"
 path = "module/core/test_tools"
 features = [ "full" ]
 
