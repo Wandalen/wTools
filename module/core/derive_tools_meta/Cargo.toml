@@ -80,5 +80,5 @@ macro_tools = { workspace = true, features = [ "attr", "attr_prop", "container_k
 iter_tools = { workspace = true, features = [ "iter_trait" ] }
 former_types = { workspace = true, features = [ "types_component_assign" ] }
 
-[dev-dependencies]
-test_tools = { workspace = true }
+# [dev-dependencies]
+# test_tools = { workspace = true }

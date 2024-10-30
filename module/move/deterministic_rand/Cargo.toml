@@ -41,8 +41,8 @@ rand_chacha = { version = "0.3.1", optional = true }
 rand_seeder = { version = "0.2.3", optional = true }
 sealed = "0.5.0"
 
-[dev-dependencies]
-test_tools = { workspace = true }
+# [dev-dependencies]
+# test_tools = { workspace = true }
 rayon = "1.8.0"
 
 [[example]]

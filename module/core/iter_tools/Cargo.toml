@@ -49,5 +49,5 @@ itertools = { version = "~0.11.0", features = [ "use_std" ] }
 # internal
 clone_dyn_types = { workspace = true, features = [] }
 
-[dev-dependencies]
-test_tools = { workspace = true }
+# [dev-dependencies]
+# test_tools = { workspace = true }

@@ -95,8 +95,8 @@ data_type = { workspace = true, features = [ "either" ] }
 collection_tools = { workspace = true, features = [ "collection_constructors", "collection_into_constructors" ] }
 macro_tools = { workspace = true, features = [ "default" ] }
 
-[dev-dependencies]
-test_tools = { workspace = true }
+# [dev-dependencies]
+# test_tools = { workspace = true }
 assert_fs = "1.0"
 serde_yaml = "0.9"
 serde_json = "1.0.114"

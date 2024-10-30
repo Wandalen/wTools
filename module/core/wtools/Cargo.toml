@@ -446,5 +446,5 @@ diagnostics_tools = { workspace = true, optional = true, features = [ "default" 
 # external
 parse-display = { version = "~0.5", optional = true, features = [ "default" ] } # have to be here because of problem with FromStr
 
-[dev-dependencies]
-test_tools = { workspace = true }
+# [dev-dependencies]
+# test_tools = { workspace = true }

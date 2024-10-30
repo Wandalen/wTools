@@ -53,7 +53,7 @@ log = "0.4"
 textdistance = { version = "1.0", optional = true } # fuzzy commands search
 indexmap = "2.2.6"
 
-[dev-dependencies]
-test_tools = { workspace = true }
+# [dev-dependencies]
+# test_tools = { workspace = true }
 assert_fs = "1.0"
 criterion = "0.5"

@@ -50,6 +50,6 @@ mockall = "0.12.1"
 cli-table = "0.4.7"
 textwrap = "0.16.1"
 
-[dev-dependencies]
-test_tools = { workspace = true }
+# [dev-dependencies]
+# test_tools = { workspace = true }
 

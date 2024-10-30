@@ -57,6 +57,6 @@ path = "tests/wautomata_tests.rs"
 [dependencies]
 automata_tools = { workspace = true, features = [ "full" ] }
 
-[dev-dependencies]
-test_tools = { workspace = true }
+# [dev-dependencies]
+# test_tools = { workspace = true }
 wtools = { workspace = true }
