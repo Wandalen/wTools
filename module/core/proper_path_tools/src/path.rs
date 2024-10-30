@@ -1077,6 +1077,6 @@ crate::mod_interface!
   layer native_path;
 
   /// Convenient joining.
-  layer join;
+  layer joining;
 
 }
