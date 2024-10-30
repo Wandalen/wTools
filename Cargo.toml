@@ -214,7 +214,7 @@ path = "module/core/meta_tools"
 default-features = false
 
 [workspace.dependencies.for_each]
-version = "~0.9.0"
+version = "~0.10.0"
 path = "module/core/for_each"
 default-features = false
 
