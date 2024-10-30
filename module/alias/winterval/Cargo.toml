@@ -37,4 +37,4 @@ use_alloc = [ "no_std" ]
 interval_adapter = { workspace = true }
 
 [dev-dependencies]
-# test_tools_stable = { workspace = true }
+test_tools = { workspace = true }

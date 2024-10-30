@@ -32,4 +32,4 @@ enabled = []
 [dependencies]
 
 [dev-dependencies]
-# test_tools_stable = { workspace = true }
+test_tools = { workspace = true }

@@ -36,4 +36,4 @@ tar = "~0.4"
 ureq = {  version = "~2.9", optional = true }
 
 [dev-dependencies]
-# test_tools_stable = { workspace = true }
+test_tools = { workspace = true }

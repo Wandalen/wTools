@@ -52,4 +52,4 @@ derive_variadic_from = [ "type_variadic_from", "derive_tools_meta/derive_variadi
 derive_tools_meta = { workspace = true, features = [ "enabled", "derive_variadic_from" ] }
 
 [dev-dependencies]
-# test_tools_stable = { workspace = true }
+test_tools = { workspace = true }

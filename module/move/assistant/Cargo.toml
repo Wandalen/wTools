@@ -43,4 +43,4 @@ tokio = { version = "1", features = ["full"] }
 dotenv = "0.15"
 
 [dev-dependencies]
-# test_tools_stable = { workspace = true }
+test_tools = { workspace = true }
