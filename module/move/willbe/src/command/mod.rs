@@ -31,7 +31,7 @@ mod private
         .optional( true )
         .end()
       .property( "commit_changes" )
-        .hint( "Indicates whether changes should be committed. Default is `true`." )
+        .hint( "Indicates whether changes should be committed. Default is `false`." )
         .kind( Type::Bool )
         .optional( true )
         .end()
