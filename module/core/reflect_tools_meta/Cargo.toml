@@ -46,4 +46,4 @@ macro_tools = { workspace = true, features = [ "default" ] }
 # xxx : qqq : optimize features set
 
 [dev-dependencies]
-test_tools = { workspace = true }
+# test_tools_stable = { workspace = true }

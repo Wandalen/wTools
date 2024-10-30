@@ -115,4 +115,4 @@ derive_tools = { workspace = true, features = [ "enabled", "type_variadic_from",
 # type_constructor_derive_pair_meta = { workspace = true }
 
 [dev-dependencies]
-test_tools = { workspace = true }
+# test_tools_stable = { workspace = true }

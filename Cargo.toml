@@ -401,6 +401,11 @@ version = "~0.10.0"
 path = "module/core/test_tools"
 features = [ "full" ]
 
+[workspace.dependencies.test_tools_stable]
+package = "test_tools"
+version = "~0.10.0"
+features = [ "full" ]
+
 [workspace.dependencies.wtest_basic]
 version = "~0.4.0"
 path = "module/alias/wtest_basic"

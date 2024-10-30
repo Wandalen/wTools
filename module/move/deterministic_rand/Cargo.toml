@@ -42,7 +42,7 @@ rand_seeder = { version = "0.2.3", optional = true }
 sealed = "0.5.0"
 
 [dev-dependencies]
-test_tools = { workspace = true }
+# test_tools_stable = { workspace = true }
 rayon = "1.8.0"
 
 [[example]]

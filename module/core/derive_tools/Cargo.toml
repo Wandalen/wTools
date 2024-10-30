@@ -207,7 +207,7 @@ clone_dyn = { workspace = true, optional = true, features = [ "clone_dyn_types",
 
 
 [dev-dependencies]
-test_tools = { workspace = true }
+# test_tools_stable = { workspace = true }
 
 [build-dependencies]
 cfg_aliases = "0.1.1"

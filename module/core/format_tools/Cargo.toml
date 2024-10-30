@@ -45,7 +45,7 @@ former = { workspace = true, features = [ "derive_former" ] }
 collection_tools = { workspace = true, features = [] }
 
 [dev-dependencies]
-test_tools = { workspace = true }
+# test_tools_stable = { workspace = true }
 collection_tools = { workspace = true, features = [ "collection_constructors" ] }
 
 # [build-dependencies]
