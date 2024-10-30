@@ -305,7 +305,7 @@ default-features = false
 ## typing
 
 [workspace.dependencies.typing_tools]
-version = "~0.9.0"
+version = "~0.10.0"
 path = "module/core/typing_tools"
 default-features = false
 
