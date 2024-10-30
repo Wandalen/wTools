@@ -65,6 +65,6 @@ collection_into_constructors = []
 ## external
 hashbrown = { version = "~0.14.3", optional = true, default-features = false, features = [ "default" ] }
 
-# [dev-dependencies]
+[dev-dependencies]
 test_tools = { workspace = true }
 # former = { workspace = true }
