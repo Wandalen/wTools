@@ -121,6 +121,7 @@ mod private
     patterns : Vec< String >,
     channel : channel::Channel,
     exclude_dev_dependencies : bool,
+    commit_changes : bool,
     dry : bool,
     temp : bool
   )
@@ -236,6 +237,7 @@ mod private
     .workspace_dir( CrateDir::try_from( workspace_root_dir ).unwrap() )
     .option_base_temp_dir( dir.clone() )
     .exclude_dev_dependencies( exclude_dev_dependencies )
+    .commit_changes( commit_changes )
     .dry( dry )
     .roots( roots )
     .packages( queue )
