@@ -14,6 +14,7 @@ mod private
       SeekFrom,
     }
   };
+  use std::fs::File;
   use collection::BTreeSet;
   // use path::AbsolutePath;
   use action::readme_health_table_renew::{ Stability, stability_generate, find_example_file };
@@ -34,6 +35,7 @@ mod private
   use convert_case::{ Case, Casing };
   // use rayon::scope_fifo;
   use regex::Regex;
+  use toml_edit::Document;
   use entity::{ WorkspaceInitError, PathError };
   use package::PackageError;
   use error::typed::Error;
@@ -114,25 +116,30 @@ mod private
     /// Represents an error related to directory paths.
     #[ error( "Directory error: {0}" ) ]
     Directory( #[ from ] PathError ),
+    /// Represents an error related to toml editing.
+    #[ error( "Toml error: {0}" ) ]
+    Toml( #[ from ] toml_edit::TomlError ),
   }
 
   /// The `ModuleHeader` structure represents a set of parameters, used for creating url for header.
-  struct ModuleHeader
+  struct ModuleHeader< 'a >
   {
     module_path : PathBuf,
     stability : Stability,
     module_name : String,
     repository_url : String,
     discord_url : Option< String >,
+    branches : Option< &'a [ String ] >,
   }
 
-  impl ModuleHeader
+  impl< 'a > ModuleHeader < 'a >
   {
 
     /// Create `ModuleHeader` instance from the folder where Cargo.toml is stored.
-    fn from_cargo_toml< 'a >
+    fn from_cargo_toml< 'b >
     (
-      package : Package< 'a >,
+      package : Package< 'b >,
+      branches : Option< &'a [ String ] >,
       default_discord_url : &Option< String >,
     )
     -> Result< Self, ModulesHeadersRenewError >
@@ -154,6 +161,7 @@ mod private
             module_name : module_name.to_string(),
             repository_url,
             discord_url,
+            branches,
           }
         )
     }
@@ -203,13 +211,32 @@ mod private
       {
         "".into()
       };
+      let stable = if let Some( branches ) = self.branches
+      {
+        let mut base = "".to_string();
+        for branch in branches
+        {
+          base = format!
+          (
+            "{} \
+            {} [![rust-status](https://github.com/{}/actions/workflows/module_{}_push.yml/badge.svg?branch={})](https://github.com/{}/actions/workflows/module_{}_push.yml?query=branch%3A{})",
+            base,
+            branch, repo_url, self.module_name.to_case( Case::Snake ), branch, repo_url, self.module_name.to_case( Case::Snake ), branch, 
+          );
+        }
+        base
+      }
+      else
+      {
+        format!("[![rust-status](https://github.com/{}/actions/workflows/module_{}_push.yml/badge.svg)](https://github.com/{}/actions/workflows/module_{}_push.yml)", repo_url, self.module_name.to_case( Case::Snake ), repo_url, self.module_name.to_case( Case::Snake ) )
+      };
       Ok( format!
       (
         "{} \
-        [![rust-status](https://github.com/{}/actions/workflows/module_{}_push.yml/badge.svg)](https://github.com/{}/actions/workflows/module_{}_push.yml) \
+        {} \
         [![docs.rs](https://img.shields.io/docsrs/{}?color=e3e8f0&logo=docs.rs)](https://docs.rs/{}){}{}",
         stability_generate( &self.stability ),
-        repo_url, self.module_name.to_case( Case::Snake ), repo_url, self.module_name.to_case( Case::Snake ),
+        stable,
         self.module_name, self.module_name,
         example,
         discord,
@@ -261,6 +288,29 @@ mod private
     .map( | ap | ap.as_ref().to_path_buf() )
     .collect();
 
+    let mut contents = String::new();
+    File::open( workspace.workspace_root().join( "Cargo.toml" ) )
+    .err_with_report( &report )?
+    .read_to_string( &mut contents )
+    .err_with_report( &report )?;
+    
+    let doc = contents.parse::< Document >().err_with_report( &report )?;
+
+    let branches = doc
+    .get( "workspace" )
+    .and_then( | workspace | workspace.get( "metadata" ) )
+    .and_then( | metadata | metadata.get( "branches" ) )
+    .and_then( | branches | branches.as_array())
+    .map
+    (
+      | array |
+      array
+      .iter()
+      .filter_map( | value | value.as_str() )
+      .map( String::from )
+      .collect::< Vec< String > >()
+    );
+
     for path in paths
     {
       let read_me_path =  path
@@ -285,7 +335,7 @@ mod private
       )
       .err_with_report( &report )?;
 
-      let header = ModuleHeader::from_cargo_toml( pakage.into(), &discord_url )
+      let header = ModuleHeader::from_cargo_toml( pakage.into(), branches.as_ref().map( | b | b.as_slice() ), &discord_url )
       .err_with_report( &report )?;
 
       let mut file = OpenOptions::new()
@@ -327,7 +377,7 @@ mod private
   fn header_content_generate< 'a >
   (
     content : &'a str,
-    header : ModuleHeader,
+    header : ModuleHeader< 'a >,
     raw_params : &str,
     workspace_root : &str
   )
