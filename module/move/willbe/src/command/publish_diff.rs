@@ -13,7 +13,7 @@ mod private
   #[ derive( former::Former ) ]
   struct PublishDiffProperties
   {
-    #[ former( default = true ) ]
+    #[ former( default = false ) ]
     exclude_dev_dependencies : bool,
     keep_archive : Option< PathBuf >,
   }
