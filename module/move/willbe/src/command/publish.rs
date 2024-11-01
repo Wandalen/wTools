@@ -15,7 +15,7 @@ mod private
   {
     #[ former( default = Channel::Stable ) ]
     channel : Channel,
-    #[ former( default = true ) ]
+    #[ former( default = false ) ]
     exclude_dev_dependencies : bool,
     #[ former( default = false ) ]
     commit_changes : bool,
