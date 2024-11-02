@@ -131,7 +131,7 @@ mod private
     #[ inline ]
     fn try_from( src : PathBuf ) -> Result< Self, Self::Error >
     {
-      <Self as TryFrom< &Path >>::try_from( &src.as_path() )
+      < Self as TryFrom< &Path > >::try_from( &src.as_path() )
     }
   }
 
@@ -142,7 +142,7 @@ mod private
     #[ inline ]
     fn try_from( src : &PathBuf ) -> Result< Self, Self::Error >
     {
-      <Self as TryFrom< &Path >>::try_from( &src.as_path() )
+      < Self as TryFrom< &Path > >::try_from( &src.as_path() )
     }
   }
 
@@ -164,14 +164,36 @@ mod private
     }
   }
 
-  impl<'a> TryFrom< &'a str > for AbsolutePath
+  impl< 'a > TryFrom< &'a str > for AbsolutePath
   {
     type Error = std::io::Error;
 
     #[ inline ]
     fn try_from( src : &'a str ) -> Result< Self, Self::Error >
     {
-      <Self as TryFrom< &Path >>::try_from( src.as_ref() )
+      < Self as TryFrom< &Path > >::try_from( src.as_ref() )
+    }
+  }
+
+  impl< 'a > TryFrom< &'a String > for AbsolutePath
+  {
+    type Error = std::io::Error;
+
+    #[ inline ]
+    fn try_from( src : &'a String ) -> Result< Self, Self::Error >
+    {
+      < Self as TryFrom< &Path > >::try_from( src.as_ref() )
+    }
+  }
+
+  impl< 'a > TryFrom< String > for AbsolutePath
+  {
+    type Error = std::io::Error;
+
+    #[ inline ]
+    fn try_from( src : String ) -> Result< Self, Self::Error >
+    {
+      < Self as TryFrom< &Path > >::try_from( src.as_ref() )
     }
   }
 
@@ -220,7 +242,7 @@ mod private
     }
   }
 
-  impl<'a> TryFrom< &'a AbsolutePath > for &'a str
+  impl< 'a > TryFrom< &'a AbsolutePath > for &'a str
   {
     type Error = std::io::Error;
 

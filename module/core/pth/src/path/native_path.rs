@@ -114,6 +114,28 @@ mod private
     }
   }
 
+  impl< 'a > TryFrom< &'a String > for NativePath
+  {
+    type Error = std::io::Error;
+
+    #[ inline ]
+    fn try_from( src : &'a String ) -> Result< Self, Self::Error >
+    {
+      < Self as TryFrom< &Path > >::try_from( src.as_ref() )
+    }
+  }
+
+  impl< 'a > TryFrom< String > for NativePath
+  {
+    type Error = std::io::Error;
+
+    #[ inline ]
+    fn try_from( src : String ) -> Result< Self, Self::Error >
+    {
+      < Self as TryFrom< &Path > >::try_from( src.as_ref() )
+    }
+  }
+
   impl TryFrom< PathBuf > for NativePath
   {
     type Error = std::io::Error;
