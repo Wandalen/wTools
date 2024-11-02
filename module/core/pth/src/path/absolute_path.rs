@@ -28,8 +28,8 @@ mod private
   /// Relative paths can be problematic as they introduce additional variables and complexities, making code analysis, integration, refactoring, and testing more difficult.
   /// By using absolute paths, software architecture can be improved, similar to how avoiding global variables can enhance code quality.
   /// It is recommended to use relative paths only at the outskirts of an application.
-  #[cfg_attr( feature = "derive_serde", derive( Serialize, Deserialize ) )]
-  #[derive( Debug, Default, Clone, Ord, PartialOrd, Eq, PartialEq, Hash )]
+  #[ cfg_attr( feature = "derive_serde", derive( Serialize, Deserialize ) ) ]
+  #[ derive( Debug, Default, Clone, Ord, PartialOrd, Eq, PartialEq, Hash ) ]
   pub struct AbsolutePath( PathBuf );
 
   impl AbsolutePath
@@ -157,7 +157,7 @@ mod private
 
       if !is_absolute( &path )
       {
-        return Err( io::Error::new( io::ErrorKind::InvalidData, "Path expected to be absolute, but it's not {path}" ) );
+        return Err( io::Error::new( io::ErrorKind::Other, "Path expected to be absolute, but it's not {path}" ) );
       }
 
       Ok( Self( path ) )
