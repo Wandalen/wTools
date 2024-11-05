@@ -286,6 +286,9 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use prelude::*;
 
+  // Expose itself.
+  pub use super::super::error;
+
   #[ doc( inline ) ]
   pub use private::
   {

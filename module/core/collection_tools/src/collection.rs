@@ -43,9 +43,6 @@ pub mod own
 {
   use super::*;
 
-  #[ doc( inline ) ]
-  pub use super::super::collection;
-
   pub use super::super::collection::
   {
     btree_map,
@@ -83,19 +80,8 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use prelude::*;
 
-  // #[ doc( inline ) ]
-  // #[ cfg( any( feature = "use_alloc", all( feature = "collection_constructors", not( feature = "no_std" ) ) ) ) ]
-  // pub use crate::
-  // {
-  //   vec as dlist,
-  // };
-
-  // #[ doc( inline ) ]
-  // #[ cfg( any( feature = "use_alloc", all( feature = "collection_into_constructors", not( feature = "no_std" ) ) ) ) ]
-  // pub use crate::
-  // {
-  //   into_vec as into_dlist,
-  // };
+  #[ doc( inline ) ]
+  pub use super::super::collection;
 
   #[ doc( inline ) ]
   #[ cfg( any( feature = "use_alloc", all( feature = "collection_constructors", not( feature = "no_std" ) ) ) ) ]

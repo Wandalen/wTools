@@ -128,11 +128,11 @@ pub mod own
   pub use
   {
     error_tools::orphan::*,
+    collection_tools::orphan::*,
     // meta_tools::orphan::*,
     mem_tools::orphan::*,
     typing_tools::orphan::*,
     diagnostics_tools::orphan::*,
-    collection_tools::orphan::*,
   };
 
 }
@@ -169,11 +169,11 @@ pub mod exposed
   pub use
   {
     error_tools::exposed::*,
+    collection_tools::exposed::*,
     // meta_tools::exposed::*,
     mem_tools::exposed::*,
     typing_tools::exposed::*,
     diagnostics_tools::exposed::*,
-    collection_tools::exposed::*,
   };
 
 }
@@ -192,11 +192,11 @@ pub mod prelude
   pub use
   {
     error_tools::prelude::*,
+    collection_tools::prelude::*,
     // meta_tools::prelude::*,
     mem_tools::prelude::*,
     typing_tools::prelude::*,
     diagnostics_tools::prelude::*,
-    collection_tools::prelude::*,
   };
 
 }
