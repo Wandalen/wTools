@@ -24,14 +24,15 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = [ "enabled", "async_tools", "async_try_from" ]
+default = [ "enabled", "async_from", "async_try_from" ]
 full = [ "default" ]
 enabled = []
-async_tools = []
-async_try_from = []
+async_from = [ "async_from/async_from" ]
+async_try_from = [ "async_from/async_try_from" ]
 
 [dependencies]
 async-trait = { workspace = true }
+async_from = { workspace = true }
 
 [dev-dependencies]
 # test_tools = { workspace = true }
