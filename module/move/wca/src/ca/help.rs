@@ -21,12 +21,16 @@ mod private
 
   // qqq : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
 
+  /// Enum `LevelOfDetail` specifies the granularity of detail for rendering or processing:
   #[ derive( Debug, Default, Copy, Clone, PartialEq, Eq ) ]
   pub enum LevelOfDetail
   {
+    /// No detail (default).
     #[ default ]
     None,
+    /// Basic level of detail.
     Simple,
+    /// High level of detail.
     Detailed,
   }
 
@@ -64,6 +68,11 @@ mod private
   }
 
   // qqq : for Barsik : make possible to change properties order
+  /// Generates help content as a formatted string based on a given dictionary and options.
+  ///
+  /// This function takes a `Dictionary` of terms or commands and a `HelpGeneratorOptions`
+  /// struct to customize the help output, generating a user-friendly help message
+  /// or guide in `String` format.
   pub fn generate_help_content( dictionary : &Dictionary, o : HelpGeneratorOptions< '_ > ) -> String
   {
     struct Row
