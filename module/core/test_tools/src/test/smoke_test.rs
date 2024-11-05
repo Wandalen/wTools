@@ -11,8 +11,9 @@
 /// Internal namespace.
 mod private
 {
+  #[ allow( unused_imports ) ]
   use crate::*;
-  use dependency::process_tools::environment;
+  use process_tools::environment;
   // zzz : comment out
   // pub mod environment
   // {
@@ -316,17 +317,83 @@ mod private
 }
 
 
+// //
+// crate::mod_interface!
+// {
 //
-crate::mod_interface!
+//   // exposed use super;
+//   exposed use super::super::smoke_test;
+//
+//   exposed use SmokeModuleTest;
+//   exposed use smoke_test_run;
+//   exposed use smoke_tests_run;
+//   exposed use smoke_test_for_local_run;
+//   exposed use smoke_test_for_published_run;
+//
+// }
+
+
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use own::*;
+
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::*;
 
-  // exposed use super;
-  exposed use super::super::smoke_test;
+  #[ doc( inline ) ]
+  pub use
+  {
+    private::*,
+  };
 
-  exposed use SmokeModuleTest;
-  exposed use smoke_test_run;
-  exposed use smoke_tests_run;
-  exposed use smoke_test_for_local_run;
-  exposed use smoke_test_for_published_run;
+}
+
+/// Shared with parent namespace of the module
+#[ allow( unused_imports ) ]
+pub mod orphan
+{
+  use super::*;
+
+  #[ doc( inline ) ]
+  pub use exposed::*;
+
+  pub use super::super::smoke_test;
+
+}
+
+/// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod exposed
+{
+  use super::*;
+
+  #[ doc( inline ) ]
+  pub use prelude::*;
+
+  #[ doc( inline ) ]
+  pub use private::
+  {
+    SmokeModuleTest,
+    smoke_test_run,
+    smoke_tests_run,
+    smoke_test_for_local_run,
+    smoke_test_for_published_run,
+  };
+
+}
+
+/// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
+pub mod prelude
+{
+  use super::*;
+
+  #[ doc( inline ) ]
+  pub use
+  {
+  };
 
 }

@@ -73,14 +73,74 @@ mod private
 //   }
 // }
 
-crate::mod_interface!
+// crate::mod_interface!
+// {
+//   // #![ debug ]
+//   // xxx : make it working
+//   // exposed use super;
+//   exposed use super::super::compiletime;
+//   own use
+//   {
+//     *
+//   };
+// }
+
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use own::*;
+
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
-  // #![ debug ]
-  // xxx : make it working
-  // exposed use super;
-  exposed use super::super::compiletime;
-  own use
+  use super::*;
+
+  #[ doc( inline ) ]
+  pub use
   {
-    *
+    private::*,
   };
+
+}
+
+/// Shared with parent namespace of the module
+#[ allow( unused_imports ) ]
+pub mod orphan
+{
+  use super::*;
+
+  #[ doc( inline ) ]
+  pub use exposed::*;
+
+  pub use super::super::compiletime;
+
+}
+
+/// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod exposed
+{
+  use super::*;
+
+  #[ doc( inline ) ]
+  pub use prelude::*;
+
+  #[ doc( inline ) ]
+  pub use
+  {
+  };
+
+}
+
+/// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
+pub mod prelude
+{
+  use super::*;
+
+  #[ doc( inline ) ]
+  pub use
+  {
+  };
+
 }

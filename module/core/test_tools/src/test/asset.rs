@@ -34,14 +34,73 @@ mod private
 }
 
 
+// //
+// // #[ cfg( not( feature = "no_std" ) ) ]
+// crate::mod_interface!
+// {
 //
-// #[ cfg( not( feature = "no_std" ) ) ]
-crate::mod_interface!
+//   // exposed use super;
+//   exposed use super::super::asset;
+//
+//   // own use path_to_exe;
+//
+// }
+
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use own::*;
+
+/// Own namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod own
 {
+  use super::*;
 
-  // exposed use super;
-  exposed use super::super::asset;
+  #[ doc( inline ) ]
+  pub use
+  {
+  };
 
-  // own use path_to_exe;
+}
+
+/// Shared with parent namespace of the module
+#[ allow( unused_imports ) ]
+pub mod orphan
+{
+  use super::*;
+
+  #[ doc( inline ) ]
+  pub use exposed::*;
+
+  pub use super::super::asset;
+
+}
+
+/// Exposed namespace of the module.
+#[ allow( unused_imports ) ]
+pub mod exposed
+{
+  use super::*;
+
+  #[ doc( inline ) ]
+  pub use prelude::*;
+
+  #[ doc( inline ) ]
+  pub use
+  {
+  };
+
+}
+
+/// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
+pub mod prelude
+{
+  use super::*;
+
+  #[ doc( inline ) ]
+  pub use
+  {
+  };
 
 }
