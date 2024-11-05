@@ -13,6 +13,7 @@ pub use own::*;
 pub mod own
 {
   use super::*;
+
   #[ doc( inline ) ]
   pub use orphan::*;
 
@@ -24,6 +25,10 @@ pub mod own
     Error,
     Ok,
     Result,
+    format_err,
+    bail as return_err,
+    ensure,
+    bail,
   };
 
 }
@@ -39,13 +44,13 @@ pub mod orphan
   #[ doc( inline ) ]
   pub use exposed::*;
 
-  #[ doc( inline ) ]
-  pub use ::anyhow::
-  {
-    format_err,
-    ensure,
-    bail,
-  };
+  // #[ doc( inline ) ]
+  // pub use ::anyhow::
+  // {
+  //   format_err,
+  //   ensure,
+  //   bail,
+  // };
 
 }
 
