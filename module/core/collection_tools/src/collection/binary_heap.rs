@@ -1,6 +1,9 @@
+#[ allow( unused_imports ) ]
+use super::*;
+
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
- pub use alloc::collections::binary_heap::*;
+pub use alloc::collections::binary_heap::*;
 
 /// Creates a `BinaryHeap` from a list of elements.
 ///

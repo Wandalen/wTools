@@ -27,11 +27,10 @@ all-features = false
 [features]
 
 no_std = [
-  # "test_tools/no_std",
 ]
 
 use_alloc = [
-  "no_std", # qqq : use only use_alloc, eliminate feature no_std
+  "no_std",
   "hashbrown",
 ]
 
@@ -61,7 +60,7 @@ collection_into_constructors = []
 [dependencies]
 
 ## external
-hashbrown = { version = "~0.14.3", optional = true, default-features = false, features = [ "default" ] }
+hashbrown = { workspace = true, optional = true, default-features = false, features = [ "default" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }

@@ -71,7 +71,7 @@ assert_eq!( meta_list, meta_list );
 
 ### Basic Use Case :: `no_std` `HashSet` / `HashMap`
 
-When implementing a `no_std` environment with the `use_alloc` feature in your Rust project, you'll encounter a challenge: collections like `Vec` are imported differently depending on the availability of the `std` library. Moreover, to use data structures such as `HashSet` or `HashMap` in a `no_std` context, it's necessary to depend on third-party crates, as these are not provided by the `alloc` crate directly. This crate aims to simplify the process of designing Rust libraries or applications that require these collections in a `no_std` environment, offering a more streamlined approach to working with dynamic data structures without the standard library.
+When implementing a `no_std` ( `!use_std` ) environment with the `use_alloc` feature in your Rust project, you'll encounter a challenge: collections like `Vec` are imported differently depending on the availability of the `std` library. Moreover, to use data structures such as `HashSet` or `HashMap` in a `no_std` context, it's necessary to depend on third-party crates, as these are not provided by the `alloc` crate directly. This crate aims to simplify the process of designing Rust libraries or applications that require these collections in a `no_std` environment, offering a more streamlined approach to working with dynamic data structures without the standard library.
 
 You can do
 
@@ -98,7 +98,7 @@ Instead of
 # #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 # {
 
-#[ cfg( feature = "use_alloc" ) ]
+#[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
 use hashbrown::HashSet; // a `no_std` replacement for `HashSet`
 #[ cfg( not( feature = "no_std" ) ) ]
 use std::collections::HashSet;
@@ -120,7 +120,8 @@ While strict macros require you to have all members of the same type, more relax
 
 For example:
 ```rust
-# #[ cfg( all( feature = "enabled", feature = "collection_into_constructors", any( not( feature = "no_std" ), feature = "use_alloc" ) ) ) ]
+# #[ cfg( all( feature = "enabled", feature = "collection_into_constructors" ) ) ]
+# #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 # {
 use std::borrow::Cow;
 let vec : Vec< String > = collection_tools::into_vec!( "&str", "String".to_string(), Cow::from( "Cow" ) );

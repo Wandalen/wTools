@@ -30,6 +30,7 @@ all-features = false
 default = [
   "enabled",
   # "standalone",
+  "normal",
 ]
 full = [ "default" ]
 no_std = [
@@ -65,8 +66,27 @@ enabled = [
 ]
 # nightly = [ "typing_tools/nightly" ]
 
-standalone = [ "standalone_error_tools" ]
+normal = [
+  "dep:error_tools",
+  "dep:collection_tools",
+  "dep:meta_tools",
+  "dep:mem_tools",
+  "dep:typing_tools",
+  "dep:diagnostics_tools",
+  "dep:process_tools",
+]
+standalone = [
+  "standalone_error_tools",
+  "standalone_collection_tools",
+
+  "dep:meta_tools",
+  "dep:mem_tools",
+  "dep:typing_tools",
+  "dep:diagnostics_tools",
+  "dep:process_tools",
+]
 standalone_error_tools = [ "dep:anyhow", "dep:thiserror", "error_typed", "error_untyped" ]
+standalone_collection_tools = [ "dep:hashbrown" ]
 error_typed = []
 error_untyped = []
 
@@ -82,21 +102,24 @@ rand = "0.8.5"
 
 ## internal
 
-error_tools = { workspace = true, features = [ "full" ] }
-meta_tools = { workspace = true, features = [ "full" ] }
-mem_tools = { workspace = true, features = [ "full" ] }
-typing_tools = { workspace = true, features = [ "full" ] }
-diagnostics_tools = { workspace = true, features = [ "full" ] }
-process_tools = { workspace = true, features = [ "full" ] }
-collection_tools = { workspace = true, features = [ "full" ] }
+error_tools = { workspace = true, features = [ "full" ], optional = true }
+collection_tools = { workspace = true, features = [ "full" ], optional = true }
+
+meta_tools = { workspace = true, features = [ "full" ], optional = true }
+mem_tools = { workspace = true, features = [ "full" ], optional = true }
+typing_tools = { workspace = true, features = [ "full" ], optional = true }
+diagnostics_tools = { workspace = true, features = [ "full" ], optional = true }
+process_tools = { workspace = true, features = [ "full" ], optional = true }
 
 # former_stable = { workspace = true, features = [ "full" ] }
 
 ## transient
 
-# # error_tools
+# error_tools
 anyhow = { workspace = true, optional = true }
 thiserror = { workspace = true, optional = true }
+# collection_tools
+hashbrown = { workspace = true, optional = true }
 
 [build-dependencies]
 rustc_version = "0.4"

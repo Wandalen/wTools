@@ -106,6 +106,10 @@ pub mod test;
 #[ path = "../../../core/error_tools/src/error/mod.rs" ]
 pub mod error_tools;
 
+#[ cfg( feature = "standalone" ) ]
+#[ path = "../../../core/collection_tools/src/collection/mod.rs" ]
+pub mod collection_tools;
+
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]

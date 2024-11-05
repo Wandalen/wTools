@@ -14,6 +14,10 @@ macro_rules! count
   );
 }
 
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+extern crate alloc;
+
 /// [std::collections::BTreeMap] macros
 pub mod btree_map;
 /// [std::collections::BTreeSet] macros
@@ -43,7 +47,7 @@ pub mod own
 {
   use super::*;
 
-  pub use super::super::collection::
+  pub use super::
   {
     btree_map,
     btree_set,
@@ -84,7 +88,8 @@ pub mod exposed
   pub use super::super::collection;
 
   #[ doc( inline ) ]
-  #[ cfg( any( feature = "use_alloc", all( feature = "collection_constructors", not( feature = "no_std" ) ) ) ) ]
+  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+  #[ cfg( feature = "collection_constructors" ) ]
   pub use crate::
   {
     vec as dlist,
@@ -97,7 +102,8 @@ pub mod exposed
   };
 
   #[ doc( inline ) ]
-  #[ cfg( any( feature = "use_alloc", all( feature = "collection_into_constructors", not( feature = "no_std" ) ) ) ) ]
+  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+  #[ cfg( feature = "collection_into_constructors" ) ]
   pub use crate::
   {
     into_vec,

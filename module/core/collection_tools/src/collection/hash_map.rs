@@ -1,7 +1,12 @@
-#[ cfg( feature = "use_alloc" ) ]
+#[ allow( unused_imports ) ]
+use super::*;
+
+// xxx : qqq : wrong
+#[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use crate::dependency::hashbrown::hash_map::*;
+
 #[ cfg( not( feature = "no_std" ) ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
@@ -14,7 +19,7 @@ pub use std::collections::hash_map::*;
 /// # Origin
 ///
 /// This collection can be reexported from different crates:
-/// - from `std`, if `no_std` flag if off
+/// - from `std`, if `use_std` is on ( `no_std` flag if off )
 /// - from `hashbrown`, if `use_alloc` flag if on
 ///
 /// # Syntax
@@ -98,7 +103,7 @@ macro_rules! hmap
 /// # Origin
 ///
 /// This collection can be reexported from different crates:
-/// - from `std`, if `no_std` flag if off
+/// - from `std`, if `use_std` is on ( `no_std` flag if off )
 /// - from `hashbrown`, if `use_alloc` flag if on
 ///
 /// # Syntax

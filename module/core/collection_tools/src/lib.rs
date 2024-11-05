@@ -4,17 +4,17 @@
 #![ doc( html_root_url = "https://docs.rs/collection_tools/latest/collection_tools/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-extern crate alloc;
+// #[ cfg( feature = "enabled" ) ]
+// #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+// extern crate alloc;
 
 /// Module containing all collection macros
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 pub mod collection;
 
 // #[ cfg( feature = "enabled" ) ]
-// #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+// #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 // pub use collection::*;
 
 /// Namespace with dependencies.

@@ -1,7 +1,11 @@
+#[ allow( unused_imports ) ]
+use super::*;
+
 #[ cfg( feature = "use_alloc" ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use crate::dependency::hashbrown::hash_set::*;
+
 #[ cfg( not( feature = "no_std" ) ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
@@ -14,7 +18,7 @@ pub use std::collections::hash_set::*;
 /// # Origin
 ///
 /// This collection can be reexported from different crates:
-/// - from `std`, if `no_std` flag if off
+/// - from `std`, if `use_std` is on ( `no_std` flag if off )
 /// - from `hashbrown`, if `use_alloc` flag if on
 ///
 /// # Syntax
@@ -98,7 +102,7 @@ macro_rules! hset
 /// # Origin
 ///
 /// This collection can be reexported from different crates:
-/// - from `std`, if `no_std` flag if off
+/// - from `std`, if `use_std` is on ( `no_std` flag if off )
 /// - from `hashbrown`, if `use_alloc` flag if on
 ///
 /// # Syntax
