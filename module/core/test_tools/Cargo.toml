@@ -29,8 +29,8 @@ all-features = false
 [features]
 default = [
   "enabled",
-  # "standalone",
-  "normal",
+  "standalone",
+  # "normal",
 ]
 full = [ "default" ]
 no_std = [
@@ -86,9 +86,14 @@ standalone = [
   "dep:process_tools",
 ]
 standalone_error_tools = [ "dep:anyhow", "dep:thiserror", "error_typed", "error_untyped" ]
-standalone_collection_tools = [ "dep:hashbrown" ]
+standalone_collection_tools = [ "dep:hashbrown", "collection_constructors", "collection_into_constructors" ]
+
+# error_tools
 error_typed = []
 error_untyped = []
+# collection_tools
+collection_constructors = []
+collection_into_constructors = []
 
 [dependencies]
 

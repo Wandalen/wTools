@@ -102,13 +102,19 @@ mod private {}
 #[ cfg( feature = "enabled" ) ]
 pub mod test;
 
+/// Error tools.
 #[ cfg( feature = "standalone" ) ]
 #[ path = "../../../core/error_tools/src/error/mod.rs" ]
-pub mod error_tools;
+pub mod error;
+#[ cfg( feature = "standalone" ) ]
+pub use error as error_tools;
 
+/// Collection tools.
 #[ cfg( feature = "standalone" ) ]
 #[ path = "../../../core/collection_tools/src/collection/mod.rs" ]
-pub mod collection_tools;
+pub mod collection;
+#[ cfg( feature = "standalone" ) ]
+pub use collection as collection_tools;
 
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
