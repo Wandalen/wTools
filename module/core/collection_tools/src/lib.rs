@@ -37,13 +37,13 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  // use super::*;
 
   #[ doc( inline ) ]
-  pub use orphan::*;
+  pub use super::orphan::*;
 
   #[ doc( inline ) ]
-  pub use collection::own::*;
+  pub use super::collection::own::*;
 
 }
 
@@ -88,6 +88,7 @@ pub mod prelude
 
 }
 
+// pub use own::collection as xxx;
 // pub use hmap as xxx;
 // pub use own::HashMap as xxx;
 // pub fn x()
