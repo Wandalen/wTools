@@ -77,7 +77,7 @@ macro_rules! hset
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _set = $crate::hset::HashSet::with_capacity( _cap );
+    let mut _set = $crate::collection::HashSet::with_capacity( _cap );
     $(
       let _ = _set.insert( $key );
     )*
@@ -96,7 +96,7 @@ macro_rules! hset
 /// type `T` used in the `HashSet`. Also, this means that sometimes you must specify the type of collection's items.
 ///
 /// # Origin
-/// 
+///
 /// This collection can be reexported from different crates:
 /// - from `std`, if `no_std` flag if off
 /// - from `hashbrown`, if `use_alloc` flag if on
@@ -173,7 +173,7 @@ macro_rules! into_hset
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _set = $crate::hset::HashSet::with_capacity( _cap );
+    let mut _set = $crate::collection::HashSet::with_capacity( _cap );
     $(
       let _ = _set.insert( Into::into( $key ) );
     )*

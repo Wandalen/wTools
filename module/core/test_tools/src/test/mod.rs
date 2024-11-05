@@ -34,6 +34,9 @@ pub mod own
   use super::*;
 
   #[ doc( inline ) ]
+  pub use orphan::*;
+
+  #[ doc( inline ) ]
   pub use
   {
     asset::orphan::*,
@@ -75,6 +78,15 @@ pub mod exposed
     helper::exposed::*,
     smoke_test::exposed::*,
     version::exposed::*,
+  };
+
+  pub use meta_tools::
+  {
+    impls,
+    index,
+    tests_impls,
+    tests_impls_optional,
+    tests_index,
   };
 
 }

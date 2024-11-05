@@ -20,7 +20,6 @@ keywords = [ "fundamental", "general-purpose" ]
 [lints]
 workspace = true
 
-
 [package.metadata.docs.rs]
 features = [ "full" ]
 all-features = false
@@ -32,9 +31,8 @@ no_std = [
 ]
 
 use_alloc = [
-  "no_std", # qqq : for Anton : why is that better? -- use_alloc means that we do not use std, but alloc and hashbrown
+  "no_std", # qqq : use only use_alloc, eliminate feature no_std
   "hashbrown",
-  # "test_tools/use_alloc", // why is it needed? -- not needed, removed
 ]
 
 default = [

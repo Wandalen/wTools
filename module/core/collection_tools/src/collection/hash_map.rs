@@ -77,7 +77,7 @@ macro_rules! hmap
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _map = $crate::hmap::HashMap::with_capacity( _cap );
+    let mut _map = $crate::collection::HashMap::with_capacity( _cap );
     $(
       let _ = _map.insert( $key, $value );
     )*
@@ -172,7 +172,7 @@ macro_rules! into_hmap
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _map = $crate::hmap::HashMap::with_capacity( _cap );
+    let mut _map = $crate::collection::HashMap::with_capacity( _cap );
     $(
       let _ = _map.insert( Into::into( $key ), Into::into( $value ) );
     )*

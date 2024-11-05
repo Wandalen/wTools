@@ -56,7 +56,7 @@ macro_rules! bset
   )
   =>
   {{
-    let mut _set = $crate::bset::BTreeSet::new();
+    let mut _set = $crate::collection::BTreeSet::new();
     $(
       _set.insert( $key );
     )*
@@ -149,7 +149,7 @@ macro_rules! into_bset
   )
   =>
   {{
-    let mut _set = $crate::bset::BTreeSet::new();
+    let mut _set = $crate::collection::BTreeSet::new();
     $(
       _set.insert( Into::into( $key ) );
     )*

@@ -15,7 +15,6 @@
 use super::*;
 use ::test_tools as the_module;
 
-
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( not( feature = "no_std" ) ) ]
 the_module::tests_impls!

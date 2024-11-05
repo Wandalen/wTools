@@ -119,6 +119,9 @@ pub mod own
   use super::*;
 
   #[ doc( inline ) ]
+  pub use orphan::*;
+
+  #[ doc( inline ) ]
   pub use test::own::*;
 
   #[ doc( inline ) ]
@@ -173,15 +176,6 @@ pub mod exposed
     collection_tools::exposed::*,
   };
 
-  pub use meta_tools::
-  {
-    impls,
-    index,
-    tests_impls,
-    tests_impls_optional,
-    tests_index,
-  };
-
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -206,7 +200,3 @@ pub mod prelude
   };
 
 }
-
-// use test::prelude::hmap as xxx;
-// use prelude::hmap as xxx;
-// use meta_tools::prelude::hmap as xxx;

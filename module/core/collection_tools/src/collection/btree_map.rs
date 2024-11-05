@@ -70,7 +70,7 @@ macro_rules! bmap
   )
   =>
   {{
-    let mut _map = $crate::bmap::BTreeMap::new();
+    let mut _map = $crate::collection::BTreeMap::new();
     $(
       let _ = _map.insert( $key , $value );
     )*
@@ -163,7 +163,7 @@ macro_rules! into_bmap
   )
   =>
   {{
-    let mut _map = $crate::bmap::BTreeMap::new();
+    let mut _map = $crate::collection::BTreeMap::new();
     $(
       let _ = _map.insert( Into::into( $key ), Into::into( $value ) );
     )*
