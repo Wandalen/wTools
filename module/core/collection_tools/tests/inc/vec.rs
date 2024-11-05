@@ -86,7 +86,7 @@ fn iters()
   impl IntoIterator for MyContainer
   {
     type Item = i32;
-    type IntoIter = the_module::vec::IntoIter< i32 >;
+    type IntoIter = the_module::vector::IntoIter< i32 >;
     // qqq : should work -- works
 
     fn into_iter( self ) -> Self::IntoIter
@@ -98,7 +98,7 @@ fn iters()
   impl< 'a > IntoIterator for &'a MyContainer
   {
     type Item = &'a i32;
-    type IntoIter = the_module::vec::Iter< 'a, i32 >;
+    type IntoIter = the_module::vector::Iter< 'a, i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -109,7 +109,7 @@ fn iters()
   impl< 'a > IntoIterator for &'a mut MyContainer
   {
     type Item = &'a mut i32;
-    type IntoIter = the_module::vec::IterMut< 'a, i32 >;
+    type IntoIter = the_module::vector::IterMut< 'a, i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {
