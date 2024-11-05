@@ -411,6 +411,16 @@ version = "~0.4.0"
 path = "module/alias/wtest_basic"
 
 
+## async
+
+[workspace.dependencies.async_from]
+version = "~0.1.0"
+path = "module/core/async_from"
+
+# [workspace.dependencies.async_tools]
+# version = "~0.1.0"
+# path = "module/core/async_tools"
+
 ## graphs tools
 
 [workspace.dependencies.graphs_tools]
@@ -517,3 +527,12 @@ default-features = true
 version = "~0.3.0"
 path = "module/test/c"
 default-features = true
+
+## External
+
+[workspace.dependencies.async-trait]
+version = "0.1.83"
+
+[workspace.dependencies.tokio]
+version = "1.41.0"
+features = []

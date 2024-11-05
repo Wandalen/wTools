@@ -318,7 +318,6 @@ dt_default = [
   # "dt_use_std",
   "data_type/default",
   "dt_either",
-  "dt_prelude",
   # "dt_type_constructor",
   # "dt_make",
   # "dt_vectorized_from",
@@ -329,7 +328,6 @@ dt_full = [
   # "dt_use_std",
   "data_type/full",
   "dt_either",
-  "dt_prelude",
   # "dt_type_constructor",
   # "dt_make",
   # "dt_vectorized_from",
@@ -341,7 +339,6 @@ dt_full = [
 dt_use_alloc = [ "dt", "data_type/use_alloc" ]
 
 dt_either = [ "dt", "data_type/dt_either" ]
-dt_prelude = [ "dt", "data_type/dt_prelude" ]
 # dt_type_constructor = [ "dt", "data_type/dt_type_constructor" ]
 # dt_make = [ "dt", "data_type/dt_make" ]
 # dt_vectorized_from = [ "dt", "data_type/dt_vectorized_from" ]
