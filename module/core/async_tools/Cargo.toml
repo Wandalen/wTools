@@ -1,17 +1,17 @@
 [package]
-name = "async_from"
-version = "0.2.0"
+name = "async_tools"
+version = "0.1.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
 ]
 license = "MIT"
 readme = "Readme.md"
-documentation = "https://docs.rs/async_from"
-repository = "https://github.com/Wandalen/wTools/tree/master/module/core/async_from"
-homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/async_from"
+documentation = "https://docs.rs/async_tools"
+repository = "https://github.com/Wandalen/wTools/tree/master/module/core/async_tools"
+homepage = "https://github.com/Wandalen/wTools/tree/master/module/core/async_tools"
 description = """
-Async version of From, Into, TryFrom, TryInto.
+Toolkit for asynchronous programming.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
@@ -24,10 +24,10 @@ features = [ "full" ]
 all-features = false
 
 [features]
-default = [ "enabled", "async_from", "async_try_from" ]
+default = [ "enabled", "async_tools", "async_try_from" ]
 full = [ "default" ]
 enabled = []
-async_from = []
+async_tools = []
 async_try_from = []
 
 [dependencies]
@@ -35,4 +35,4 @@ async-trait = { workspace = true }
 
 [dev-dependencies]
 # test_tools = { workspace = true }
-tokio = { workspace = true, features = [ "rt-multi-thread", "time", "macros" ] }
+tokio = { workspace = true, default-features = false, features = [ "rt-multi-thread", "time", "macros" ] }

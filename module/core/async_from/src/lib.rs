@@ -47,6 +47,7 @@ mod private
   ///   println!( "Converted: {}", num.0 );
   /// }
   /// ```
+  #[ cfg( feature = "async_from" ) ]
   #[ async_trait ]
   pub trait AsyncFrom< T > : Sized
   {
@@ -91,6 +92,7 @@ mod private
   /// }
   /// ```
   #[ async_trait ]
+  #[ cfg( feature = "async_from" ) ]
   pub trait AsyncInto< T > : Sized
   {
     /// Asynchronously converts `Self` into a value of type `T`.
@@ -105,6 +107,7 @@ mod private
   ///
   /// This implementation allows any type `T` that implements `AsyncFrom<U>` to also implement `AsyncInto<U>`.
   #[ async_trait ]
+  #[ cfg( feature = "async_from" ) ]
   impl< T, U > AsyncInto< U > for T
   where
     U : AsyncFrom< T > + Send,
@@ -156,6 +159,7 @@ mod private
   /// }
   /// ```
   #[ async_trait ]
+  #[ cfg( feature = "async_try_from" ) ]
   pub trait AsyncTryFrom< T > : Sized
   {
     /// The error type returned if the conversion fails.
@@ -209,6 +213,7 @@ mod private
   /// }
   /// ```
   #[ async_trait ]
+  #[ cfg( feature = "async_try_from" ) ]
   pub trait AsyncTryInto< T > : Sized
   {
     /// The error type returned if the conversion fails.
@@ -226,6 +231,7 @@ mod private
   ///
   /// This implementation allows any type `T` that implements `AsyncTryFrom<U>` to also implement `AsyncTryInto<U>`.
   #[ async_trait ]
+  #[ cfg( feature = "async_try_from" ) ]
   impl< T, U > AsyncTryInto< U > for T
   where
     U : AsyncTryFrom< T > + Send,
@@ -283,14 +289,22 @@ pub mod exposed
   pub use prelude::*;
 
   #[ doc( inline ) ]
+  pub use ::async_trait::async_trait;
+
+  #[ cfg( feature = "async_from" ) ]
   pub use private::
   {
-    async_trait,
     AsyncFrom,
     AsyncInto,
+  };
+
+  #[ cfg( feature = "async_try_from" ) ]
+  pub use private::
+  {
     AsyncTryFrom,
     AsyncTryInto,
   };
+
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
