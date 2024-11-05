@@ -6,8 +6,8 @@ mod private
 
   use std::ffi::OsString;
   use std::path::PathBuf;
-  use error::err;
-  use error::untyped::format_err;
+  // use error::err;
+  // use error::untyped::format_err;
   use former::Former;
   use process_tools::process;
   // use process_tools::process::*;
@@ -118,7 +118,7 @@ mod private
       .bin_path( program )
       .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .current_path( args.path )
-      .run().map_err( | report | err!( report.to_string() ) )
+      .run().map_err( | report | error::untyped::format_err!( report.to_string() ) )
     }
   }
 
@@ -197,11 +197,11 @@ mod private
       }
       if args.retry_count > 0
       {
-        Err( format_err!( "It took {} attempts, but still failed. Here are the errors:\n{}", args.retry_count + 1, results.into_iter().map( | r | format!( "- {r}" ) ).collect::< Vec< _ > >().join( "\n" ) ) )
+        Err( error::untyped::format_err!( "It took {} attempts, but still failed. Here are the errors:\n{}", args.retry_count + 1, results.into_iter().map( | r | format!( "- {r}" ) ).collect::< Vec< _ > >().join( "\n" ) ) )
       }
       else
       {
-        Err( results.remove( 0 ) ).map_err( | report | err!( report.to_string() ) )
+        Err( results.remove( 0 ) ).map_err( | report | error::untyped::format_err!( report.to_string() ) )
       }
     }
   }

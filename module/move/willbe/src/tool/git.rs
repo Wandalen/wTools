@@ -7,7 +7,7 @@ mod private
   use std::ffi::OsString;
   use std::path::Path;
   use process_tools::process::*;
-  use error::err;
+  // use error::err;
   // qqq : group dependencies
 
   /// Adds changes to the Git staging area.
@@ -56,7 +56,7 @@ mod private
       .bin_path( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .current_path( path.as_ref().to_path_buf() )
-      .run().map_err( | report | err!( report.to_string() ) )
+      .run().map_err( | report | error::untyped::format_err!( report.to_string() ) )
     }
   }
 
@@ -102,7 +102,7 @@ mod private
       .bin_path( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .current_path( path.as_ref().to_path_buf() )
-      .run().map_err( | report | err!( report.to_string() ) )
+      .run().map_err( | report | error::untyped::format_err!( report.to_string() ) )
     }
   }
 
@@ -148,7 +148,7 @@ mod private
       .bin_path( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .current_path( path.as_ref().to_path_buf() )
-      .run().map_err( | report | err!( report.to_string() ) )
+      .run().map_err( | report | error::untyped::format_err!( report.to_string() ) )
     }
   }
 
@@ -173,7 +173,7 @@ mod private
   where
     P : AsRef< Path >,
   {
-    if commits_count < 1 { return Err( err!( "Cannot reset, the count of commits must be greater than 0" ) ) }
+    if commits_count < 1 { return Err( error::untyped::format_err!( "Cannot reset, the count of commits must be greater than 0" ) ) }
     let ( program, args ) : ( _, Vec< _ > ) =
     (
       "git",
@@ -205,7 +205,7 @@ mod private
       .bin_path( program )
       .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .current_path( path.as_ref().to_path_buf() )
-      .run().map_err( | report | err!( report.to_string() ) )
+      .run().map_err( | report | error::untyped::format_err!( report.to_string() ) )
     }
   }
 
@@ -232,7 +232,7 @@ mod private
     .bin_path( program )
     .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
     .current_path( path.as_ref().to_path_buf() )
-    .run().map_err( | report | err!( report.to_string() ) )
+    .run().map_err( | report | error::untyped::format_err!( report.to_string() ) )
   }
 }
 

@@ -20,11 +20,11 @@ mod private
   use package::Package;
   use error::
   {
-    err,
+    // err,
     untyped::
     {
       // Result,
-      Error as wError,
+      // Error as wError,
       Context,
     },
   };
@@ -101,7 +101,7 @@ mod private
   {
     /// Represents a common error.
     #[ error( "Common error: {0}" ) ]
-    Common(#[ from ] wError ),
+    Common(#[ from ] error::untyped::Error ), // qqq : rid of
     /// Represents an I/O error.
     #[ error( "I/O error: {0}" ) ]
     IO( #[ from ] std::io::Error ),
@@ -140,7 +140,7 @@ mod private
       let stability = package.stability()?;
       let module_name = package.name()?;
       let repository_url = package.repository()?
-      .ok_or_else::< wError, _ >( || err!( "Fail to find repository_url in module`s Cargo.toml" ) )?;
+      .ok_or_else::< error::untyped::Error, _ >( || error::untyped::format_err!( "Fail to find repository_url in module`s Cargo.toml" ) )?;
 
       let discord_url = package
       .discord_url()?
@@ -172,7 +172,7 @@ mod private
 
       let repo_url = url::repo_url_extract( &self.repository_url )
       .and_then( | r | url::git_info_extract( &r ).ok() )
-      .ok_or_else::< wError, _ >( || err!( "Fail to parse repository url" ) )?;
+      .ok_or_else::< error::untyped::Error, _ >( || error::untyped::format_err!( "Fail to parse repository url" ) )?;
       let example= if let Some( name ) = find_example_file
       (
         self.module_path.as_path(),
@@ -269,7 +269,7 @@ mod private
       .join
       (
         repository::readme_path( path.parent().unwrap().as_ref() )
-        // .ok_or_else::< wError, _ >( || err!( "Fail to find README.md at {}", &path ) )
+        // .ok_or_else::< error::untyped::Error, _ >( || error::untyped::format_err!( "Fail to find README.md at {}", &path ) )
         .err_with_report( &report )?
       );
 

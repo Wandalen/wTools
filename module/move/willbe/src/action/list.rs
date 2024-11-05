@@ -13,7 +13,7 @@ mod private
   };
   use error::
   {
-    ErrWith, err,
+    ErrWith,
     untyped::{ Context, format_err },
   };
   use tool::{ TreePrinter, ListNodeReport };
@@ -39,7 +39,7 @@ mod private
       {
         "tree" => ListFormat::Tree,
         "toposort" => ListFormat::Topological,
-        e => return Err( err!( "Unknown format '{}'. Available values : [tree, toposort]", e ))
+        e => return Err( error::untyped::format_err!( "Unknown format '{}'. Available values : [tree, toposort]", e ))
       };
 
       Ok( value )
@@ -105,7 +105,7 @@ mod private
       {
         "nothing" => ListFilter::Nothing,
         "local" => ListFilter::Local,
-        e => return Err( err!( "Unknown filter '{}'. Available values : [nothing, local]", e ) )
+        e => return Err( error::untyped::format_err!( "Unknown filter '{}'. Available values : [nothing, local]", e ) )
       };
 
       Ok( value )

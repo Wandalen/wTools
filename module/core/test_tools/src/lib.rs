@@ -11,9 +11,9 @@
 pub mod dependency
 {
 
-  // zzz : exclude later
-  #[ doc( inline ) ]
-  pub use ::paste;
+  // // zzz : exclude later
+  // #[ doc( inline ) ]
+  // pub use ::paste;
   #[ doc( inline ) ]
   pub use ::trybuild;
   #[ doc( inline ) ]
@@ -41,8 +41,8 @@ pub mod dependency
 
 }
 
-// #[ path = "../../../core/error_tools/src/lib.rs" ]
-// pub mod error_tools;
+#[ path = "../../../core/error_tools/src/error/mod.rs" ]
+pub mod error_tools;
 
 mod private {}
 

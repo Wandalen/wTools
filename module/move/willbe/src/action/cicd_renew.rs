@@ -19,7 +19,7 @@ mod private
   use error::
   {
     typed::Error,
-    err,
+    // err,
   };
 
   #[ derive( Debug, Error ) ]
@@ -375,7 +375,7 @@ mod private
         return url::repo_url_extract( &url )
         .and_then( | url | url::git_info_extract( &url ).ok() )
         .map( UsernameAndRepository )
-        .ok_or_else( || err!( "Fail to parse repository url from workspace Cargo.toml"))
+        .ok_or_else( || error::untyped::format_err!( "Fail to parse repository url from workspace Cargo.toml"))
       }
       else
       {
@@ -393,7 +393,7 @@ mod private
         .and_then( | url | url::repo_url_extract( &url ) )
         .and_then( | url | url::git_info_extract( &url ).ok() )
         .map( UsernameAndRepository )
-        .ok_or_else( || err!( "Fail to extract repository url") )
+        .ok_or_else( || error::untyped::format_err!( "Fail to extract repository url") )
       }
     }
 

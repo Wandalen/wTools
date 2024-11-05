@@ -537,3 +537,13 @@ version = "0.1.83"
 version = "1.41.0"
 features = []
 default-features = false
+
+[workspace.dependencies.anyhow]
+version = "~1.0"
+# features = []
+# default-features = false
+
+[workspace.dependencies.thiserror]
+version = "~1.0"
+# features = []
+# default-features = false

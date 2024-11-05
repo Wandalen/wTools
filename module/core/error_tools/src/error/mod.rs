@@ -223,11 +223,13 @@ pub mod typed;
 /// Untyped exceptions handling mechanism.
 pub mod untyped;
 
+#[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub mod own
 {
@@ -256,16 +258,16 @@ pub mod own
     // BasicError,
   };
 
-  pub use super::
-  {
-    assert,
-    typed,
-    untyped,
-  };
+  pub use super::assert;
+  #[ cfg( feature = "error_typed" ) ]
+  pub use super::typed;
+  #[ cfg( feature = "error_untyped" ) ]
+  pub use super::untyped;
 
 }
 
 /// Shared with parent namespace of the module
+#[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
@@ -275,6 +277,7 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
@@ -304,6 +307,7 @@ pub mod exposed
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub mod prelude
 {

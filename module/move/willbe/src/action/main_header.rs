@@ -18,8 +18,8 @@ mod private
   use entity::{ PathError, WorkspaceInitError };
   use error::
   {
-    err,
-    untyped::Error,
+    // err,
+    // untyped::Error,
   };
   use workspace_md_extension::WorkspaceMdExtension;
 
@@ -86,7 +86,7 @@ mod private
   {
     /// Represents a common error.
     #[ error( "Common error: {0}" ) ]
-    Common(#[ from ] Error ),
+    Common( #[ from ] error::untyped::Error ), // qqq : rid of
     /// Represents an I/O error.
     #[ error( "I/O error: {0}" ) ]
     IO( #[ from ] std::io::Error ),
@@ -116,14 +116,14 @@ mod private
       // aaa : done
       let repository_url = workspace
       .repository_url()
-      .ok_or_else::< Error, _ >
-      ( || err!( "repo_url not found in workspace Cargo.toml" ) )?;
+      .ok_or_else::< error::untyped::Error, _ >
+      ( || error::untyped::format_err!( "repo_url not found in workspace Cargo.toml" ) )?;
 
       let master_branch = workspace.master_branch().unwrap_or( "master".into() );
       let workspace_name = workspace
       .workspace_name()
-      .ok_or_else::< Error, _ >
-      ( || err!( "workspace_name not found in workspace Cargo.toml" ) )?;
+      .ok_or_else::< error::untyped::Error, _ >
+      ( || error::untyped::format_err!( "workspace_name not found in workspace Cargo.toml" ) )?;
 
       let discord_url = workspace.discord_url();
 

@@ -2,7 +2,7 @@ mod private
 {
   use crate::*;
   use action;
-  use error::{ err };
+  // use error::{ err };
   use std::fmt::{ Display, Formatter };
 
   #[ derive( Debug, Default ) ]
@@ -103,7 +103,7 @@ mod private
     if fail
     {
       eprintln!( "{report}" );
-      Err( err!( "Something went wrong" ) )
+      Err( error::untyped::format_err!( "Something went wrong" ) )
     }
     else
     {

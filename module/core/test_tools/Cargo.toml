@@ -27,8 +27,12 @@ all-features = false
 # = features
 
 [features]
-default = [ "enabled" ]
-full = [ "enabled" ]
+default = [
+  "enabled",
+  "error_typed",
+  "error_untyped",
+]
+full = [ "default" ]
 no_std = [
   # "error_tools/no_std",
   # "meta_tools/no_std",
@@ -62,20 +66,22 @@ enabled = [
 ]
 # nightly = [ "typing_tools/nightly" ]
 
+error_typed = []
+error_untyped = []
+
 [dependencies]
 
 ## external
 
-paste = "~1.0" # zzz : remove laster
+# paste = "~1.0" # zzz : remove later
 rustversion = "~1.0"
-# anyhow = "~1.0"
 num-traits = "~0.2"
 trybuild = { version = "1.0.85", features = [ "diff" ] }
 rand = "0.8.5"
 
 ## internal
 
-error_tools = { workspace = true, features = [ "full" ] }
+# error_tools = { workspace = true, features = [ "full" ] }
 meta_tools = { workspace = true, features = [ "full" ] }
 mem_tools = { workspace = true, features = [ "full" ] }
 typing_tools = { workspace = true, features = [ "full" ] }
@@ -85,6 +91,11 @@ process_tools = { workspace = true, features = [ "full" ] }
 collection_tools = { workspace = true, features = [ "full" ] }
 
 # former_stable = { workspace = true, features = [ "full" ] }
+
+## transient
+
+anyhow = { workspace = true }
+thiserror = { workspace = true }
 
 [build-dependencies]
 rustc_version = "0.4"
