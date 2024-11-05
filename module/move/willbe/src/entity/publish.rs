@@ -26,7 +26,7 @@ mod private
     /// Options for bumping the package version.
     pub bump : version::BumpOptions,
     /// Git options related to the package.
-    pub git_options : entity::git::GitOptions,
+    pub git_options : Option< entity::git::GitOptions >,
     /// Options for publishing the package using Cargo.
     pub publish : cargo::PublishOptions,
     /// Indicates whether the process should be dry-run (no actual publishing).
@@ -42,6 +42,9 @@ mod private
     package : package::Package< 'a >,
     channel : channel::Channel,
     base_temp_dir : Option< path::PathBuf >,
+    exclude_dev_dependencies : bool,
+    #[ former( default = true ) ]
+    commit_changes : bool,
     #[ former( default = true ) ]
     dry : bool,
   }
@@ -58,6 +61,7 @@ mod private
         channel : self.channel,
         allow_dirty : self.dry,
         checking_consistency : !self.dry,
+        exclude_dev_dependencies : self.exclude_dev_dependencies,
         temp_path : self.base_temp_dir.clone(),
         dry : self.dry,
       };
@@ -73,17 +77,21 @@ mod private
         dependencies : dependencies.clone(),
         dry : self.dry,
       };
-      let git_options = entity::git::GitOptions
+      let git_options = if self.commit_changes
       {
-        git_root : workspace_root,
-        items : dependencies.iter().chain([ &crate_dir ]).map( | d | d.clone().absolute_path().join( "Cargo.toml" ) ).collect(),
-        message : format!( "{}-v{}", self.package.name().unwrap(), new_version ),
-        dry : self.dry,
-      };
+        Some( entity::git::GitOptions
+        {
+          git_root : workspace_root,
+          items : dependencies.iter().chain([ &crate_dir ]).map( | d | d.clone().absolute_path().join( "Cargo.toml" ) ).collect(),
+          message : format!( "{}-v{}", self.package.name().unwrap(), new_version ),
+          dry : self.dry,
+        })
+      } else { None };
       let publish = cargo::PublishOptions
       {
         path : crate_dir.clone().absolute_path().inner(),
         temp_path : self.base_temp_dir.clone(),
+        exclude_dev_dependencies : self.exclude_dev_dependencies,
         retry_count : 2,
         dry : self.dry,
       };
@@ -120,6 +128,14 @@ mod private
 
     /// Release channels for rust.
     pub channel : channel::Channel,
+
+    /// Setting this option to true will temporarily remove development dependencies before executing the command, then restore them afterward.
+    #[ allow( dead_code ) ] // former related
+    pub exclude_dev_dependencies : bool,
+
+    /// Indicates whether changes should be committed.
+    #[ former( default = true ) ]
+    pub commit_changes : bool,
 
     /// `dry` - A boolean value indicating whether to do a dry run. If set to `true`, the application performs
     /// a simulated run without making any actual changes. If set to `false`, the operations are actually executed.
@@ -246,6 +262,14 @@ mod private
       {
         plan = plan.dry( dry );
       }
+      if let Some( exclude_dev_dependencies ) = &self.storage.exclude_dev_dependencies
+      {
+        plan = plan.exclude_dev_dependencies( *exclude_dev_dependencies )
+      }
+      if let Some( commit_changes ) = &self.storage.commit_changes
+      {
+        plan = plan.commit_changes( *commit_changes )
+      }
       let plan = plan
       .channel( channel )
       .package( package )
@@ -362,45 +386,55 @@ mod private
     } = instruction;
     pack.dry = dry;
     bump.dry = dry;
-    git_options.dry = dry;
+    git_options.as_mut().map( | d | d.dry = dry );
     publish.dry = dry;
 
     report.get_info = Some( cargo::pack( pack ).err_with_report( &report )? );
     // aaa : redundant field? // aaa : removed
     let bump_report = version::bump( bump ).err_with_report( &report )?;
     report.bump = Some( bump_report.clone() );
-    let git_root = git_options.git_root.clone();
-    let git = match entity::git::perform_git_commit( git_options )
+
+    let git_root = git_options.as_ref().map( | g | g.git_root.clone() );
+    if let Some( git_options ) = git_options
     {
-      Ok( git ) => git,
-      Err( e ) =>
+      let git = match entity::git::perform_git_commit( git_options )
       {
-        version::revert( &bump_report )
-        .map_err( | le | format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) ) )
-        .err_with_report( &report )?;
-        return Err(( report, e ));
-      }
-    };
-    report.add = git.add;
-    report.commit = git.commit;
+        Ok( git ) => git,
+        Err( e ) =>
+        {
+          version::revert( &bump_report )
+          .map_err( | le | format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) ) )
+          .err_with_report( &report )?;
+          return Err(( report, e ));
+        }
+      };
+      report.add = git.add;
+      report.commit = git.commit;
+    }
     report.publish = match cargo::publish( publish )
     {
       Ok( publish ) => Some( publish ),
       Err( e ) =>
       {
-        tool::git::reset( git_root.as_ref(), true, 1, false )
-        .map_err
-        (
-          | le |
-          format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) )
-        )
-        .err_with_report( &report )?;
+        if let Some( git_root ) = git_root.as_ref()
+        {
+          tool::git::reset( git_root.as_ref(), true, 1, false )
+          .map_err
+          (
+            | le |
+            format_err!( "Base error:\n{}\nRevert error:\n{}", e.to_string().replace( '\n', "\n\t" ), le.to_string().replace( '\n', "\n\t" ) )
+          )
+          .err_with_report( &report )?;
+        }
         return Err(( report, e ));
       }
     };
 
-    let res = tool::git::push( &git_root, dry ).err_with_report( &report )?;
-    report.push = Some( res );
+    if let Some( git_root ) = git_root.as_ref()
+    {
+      let res = tool::git::push( &git_root, dry ).err_with_report( &report )?;
+      report.push = Some( res );
+    }
 
     Ok( report )
   }
