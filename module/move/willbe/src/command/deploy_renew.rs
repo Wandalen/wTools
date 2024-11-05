@@ -4,9 +4,7 @@ mod private
 
   use wca::VerifiedCommand;
   use error::{ untyped::Context };
-  use tool::TemplateHolder;
-  //use tool::template::Template;
-  // use action::deploy_renew::*;
+  use action::deploy_renew::*;
 
   ///
   /// Create new deploy.
@@ -17,7 +15,7 @@ mod private
   {
     let current_dir = std::env::current_dir()?;
 
-    let mut template = TemplateHolder::default();
+    let mut template = DeployTemplate::default();
     _ = template.load_existing_params( &current_dir );
     let parameters = template.parameters();
     let mut values = parameters.values_from_props( &o.props );

@@ -64,21 +64,32 @@ jobs :
       - name: Build module
         run: cd ${{ steps.rootpath.outputs.path }} && cargo build && cd -
       - name: Audit the modules
+        id: audit
         run: make audit
         continue-on-error: true
       - name: Generate documentation for the modules
+        id: documentation
         run: make doc open=no manifest_path=${{ inputs.manifest_path }}
         continue-on-error: true
       - name: Lint the modules
+        id: lint
         run: make lint manifest_path=${{ inputs.manifest_path }} warnings=no
         continue-on-error: true
       - name: Check the modules
+        id: check
         run: make check manifest_path=${{ inputs.manifest_path }}
         continue-on-error: true
       - name: Check the modules dependencies
+        id: udeps
         run: cargo +nightly udeps --all-targets --manifest-path ${{ inputs.manifest_path }}
-        #       This part means that all previous steps will be executed and workflow will not stop if they fail, but not this one.
-        continue-on-error: false
+        continue-on-error: true
+         # Added IDs for each step in the test job: This allows referencing the result of each step later.
+        #
+        # "Check for errors" step: Now checks the outcome status for each step.
+        # If any of them have a value of 'failure', this step will fail the job by returning exit 1.
+      - name: Check for errors
+        if: steps.audit.outcome != 'success' || steps.documentation.outcome != 'success' || steps.lint.outcome != 'success' || steps.check.outcome != 'success' || steps.udeps.outcome != 'success'
+        run: exit 1
 
 #  release:
 #    if: contains( inputs.commit_message, '+test' ) || contains( inputs.commit_message, 'merge' )

@@ -6,7 +6,7 @@ use the_module::
   AsTable,
   TableRows,
   WithRef,
-  print,
+  // the_module::print,
 };
 
 use std::
@@ -56,14 +56,14 @@ fn dlist_basic()
   };
 
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, Vec< TestObject >, &str, TestObject, str, WithRef > = AsTable::new( &data );
+  let _as_table : AsTable< '_, Vec< TestObject >, &str, TestObject, str> = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
 
   let mut output = String::new();
-  let mut context = print::Context::new( &mut output, Default::default() );
+  let mut context = the_module::print::Context::new( &mut output, Default::default() );
   let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
@@ -112,14 +112,14 @@ fn hmap_basic()
   };
 
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, HashMap< &str, TestObject >, &str, TestObject, str, WithRef > = AsTable::new( &data );
+  let _as_table : AsTable< '_, HashMap< &str, TestObject >, &str, TestObject, str> = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
 
   let mut output = String::new();
-  let mut context = print::Context::new( &mut output, Default::default() );
+  let mut context = the_module::print::Context::new( &mut output, Default::default() );
   let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
@@ -168,14 +168,14 @@ fn bmap_basic()
   };
 
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, Bmap< &str, TestObject >, &str, TestObject, str, WithRef > = AsTable::new( &data );
+  let _as_table : AsTable< '_, Bmap< &str, TestObject >, &str, TestObject, str> = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
 
   let mut output = String::new();
-  let mut context = print::Context::new( &mut output, Default::default() );
+  let mut context = the_module::print::Context::new( &mut output, Default::default() );
   let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
@@ -222,14 +222,14 @@ fn bset_basic()
   };
 
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, BTreeSet< TestObject >, &str, TestObject, str, WithRef > = AsTable::new( &data );
+  let _as_table : AsTable< '_, BTreeSet< TestObject >, &str, TestObject, str> = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
 
   let mut output = String::new();
-  let mut context = print::Context::new( &mut output, Default::default() );
+  let mut context = the_module::print::Context::new( &mut output, Default::default() );
   let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
@@ -276,14 +276,14 @@ fn deque_basic()
   };
 
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, VecDeque< TestObject >, &str, TestObject, str, WithRef > = AsTable::new( &data );
+  let _as_table : AsTable< '_, VecDeque< TestObject >, &str, TestObject, str> = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
 
   let mut output = String::new();
-  let mut context = print::Context::new( &mut output, Default::default() );
+  let mut context = the_module::print::Context::new( &mut output, Default::default() );
   let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
@@ -328,16 +328,16 @@ fn hset_basic()
       ),
     },
   };
-  
+
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, HashSet< TestObject >, &str, TestObject, str, WithRef > = AsTable::new( &data );
+  let _as_table : AsTable< '_, HashSet< TestObject >, &str, TestObject, str> = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
 
   let mut output = String::new();
-  let mut context = print::Context::new( &mut output, Default::default() );
+  let mut context = the_module::print::Context::new( &mut output, Default::default() );
   let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
@@ -384,14 +384,14 @@ fn llist_basic()
   };
 
   use the_module::TableFormatter;
-  let _as_table : AsTable< '_, LinkedList< TestObject >, &str, TestObject, str, WithRef > = AsTable::new( &data );
+  let _as_table : AsTable< '_, LinkedList< TestObject >, &str, TestObject, str> = AsTable::new( &data );
   let as_table = AsTable::new( &data );
 
   let rows = TableRows::rows( &as_table );
   assert_eq!( rows.len(), 2 );
 
   let mut output = String::new();
-  let mut context = print::Context::new( &mut output, Default::default() );
+  let mut context = the_module::print::Context::new( &mut output, Default::default() );
   let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
   let got = as_table.table_to_string();
   assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );

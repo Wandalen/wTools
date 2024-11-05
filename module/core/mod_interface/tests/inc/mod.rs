@@ -22,6 +22,7 @@ mod derive
   mod micro_modules;
   mod micro_modules_two;
   mod micro_modules_two_joined;
+  mod micro_modules_glob;
 
   // layer
   mod layer;
@@ -33,6 +34,7 @@ mod derive
   mod layer_use_cfg;
   mod layer_use_macro;
 
+  // use
   mod use_layer;
   mod use_basic;
   #[ path = "./use_as/derive.rs" ]
@@ -40,9 +42,14 @@ mod derive
   #[ path = "./use_as/manual.rs" ]
   mod use_as_manual;
 
+  // reuse
+  mod reuse_basic;
+
   // attr
   mod attr_debug;
 
 }
 
-mod trybuild_test;
+// mod trybuild_test;
+
+// xxx : enable

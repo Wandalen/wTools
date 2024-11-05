@@ -11,6 +11,7 @@ mod private
   pub mod kw
   {
     super::syn::custom_keyword!( layer );
+    super::syn::custom_keyword!( reuse );
   }
 
   ///
@@ -23,6 +24,7 @@ mod private
     MicroModule( syn::token::Mod ),
     Layer( kw::layer ),
     Use( syn::token::Use ),
+    Reuse( kw::reuse ),
   }
 
   //
@@ -47,6 +49,10 @@ mod private
         {
           ElementType::Layer( input.parse()? )
         },
+        _case if lookahead.peek( kw::reuse ) =>
+        {
+          ElementType::Reuse( input.parse()? )
+        },
         _default =>
         {
           return Err( lookahead.error() )
@@ -69,6 +75,7 @@ mod private
         MicroModule( e ) => e.to_tokens( tokens ),
         Use( e ) => e.to_tokens( tokens ),
         Layer( e ) => e.to_tokens( tokens ),
+        Reuse( e ) => e.to_tokens( tokens ),
       }
     }
   }
@@ -104,7 +111,7 @@ mod private
 
       match element_type
       {
-        ElementType::Use( _ ) =>
+        ElementType::Use( _ ) | ElementType::Reuse( _ ) =>
         {
           use_elements = Some( input.parse()? );
           elements = syn::punctuated::Punctuated::new();

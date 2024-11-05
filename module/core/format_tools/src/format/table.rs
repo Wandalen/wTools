@@ -12,7 +12,7 @@ mod private
     // fmt,
     borrow::Borrow,
   };
-  // use std::borrow::Cow;
+  use std::borrow::Cow;
   use reflect_tools::
   {
     IteratorTrait,
@@ -78,20 +78,21 @@ mod private
   // =
 
   /// A trait for iterating over all cells of a row.
-  pub trait Cells< CellKey, CellRepr >
+  pub trait Cells< CellKey >
   where
-    CellRepr : table::CellRepr,
+    // CellRepr : table::CellRepr,
     CellKey : table::CellKey + ?Sized,
   {
     /// Returns an iterator over all cells of the row.
-    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, OptionalCow< 'b, str, CellRepr > ) >
+    // fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, OptionalCow< 'b, str > ) >
+    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, Option< Cow< 'b, str > > ) >
     where
       'a : 'b,
       CellKey : 'b,
     ;
   }
 
-  impl< Row, CellKey, CellRepr > Cells< CellKey, CellRepr >
+  impl< Row, CellKey > Cells< CellKey >
   for Row
   where
     CellKey : table::CellKey + ?Sized,
@@ -99,14 +100,17 @@ mod private
     Row : TableWithFields + Fields
     <
       &'ckv CellKey,
-      OptionalCow< 'ckv, str, CellRepr >,
+      // OptionalCow< 'ckv, str >,
+      Option< Cow< 'ckv, str > >,
       Key< 'ckv > = &'ckv CellKey,
-      Val< 'ckv > = OptionalCow< 'ckv, str, CellRepr >,
+      // Val< 'ckv > = OptionalCow< 'ckv, str >,
+      Val< 'ckv > = Option< Cow< 'ckv, str > >,
     > + 'ckv, // xxx
-    CellRepr : table::CellRepr,
+    // CellRepr : table::CellRepr,
   {
 
-    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, OptionalCow< 'b, str, CellRepr > ) >
+    // fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, OptionalCow< 'b, str > ) >
+    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, Option< Cow< 'b, str > > ) >
     where
       'a : 'b,
       CellKey : 'b,
@@ -154,15 +158,15 @@ mod private
     ///
     /// The type representing a row, which must implement `Cells`
     ///   for the specified `CellKey` and `CellRepr`.
-    type Row : Cells< Self::CellKey, Self::CellRepr >;
+    type Row : Cells< Self::CellKey >;
     ///
     /// The type used to identify cells within a row, requiring
     ///   implementation of the `Key` trait.
     type CellKey : table::CellKey + ?Sized;
     ///
-    /// The type representing the content of a cell, requiring
-    ///   implementation of the `CellRepr` trait.
-    type CellRepr : table::CellRepr;
+    // /// The type representing the content of a cell, requiring
+    // ///   implementation of the `CellRepr` trait.
+    // type // CellRepr : table::CellRepr;
 
     /// Returns an iterator over all rows of the table.
     fn rows( &self ) -> impl IteratorTrait< Item = &Self::Row >;
@@ -171,9 +175,8 @@ mod private
     //   Self::Row : 'a;
   }
 
-  impl< T, RowKey, Row, CellKey, CellRepr >
-  TableRows<>
-  for AsTable< '_, T, RowKey, Row, CellKey, CellRepr >
+  impl< T, RowKey, Row, CellKey > TableRows<>
+  for AsTable< '_, T, RowKey, Row, CellKey >
   where
 
     for< 'k, 'v > T : Fields
@@ -185,14 +188,14 @@ mod private
     > + 'k + 'v,
 
     RowKey : table::RowKey,
-    Row : TableWithFields + Cells< CellKey, CellRepr >,
+    Row : TableWithFields + Cells< CellKey >,
     CellKey : table::CellKey + ?Sized,
-    CellRepr : table::CellRepr,
+    // CellRepr : table::CellRepr,
   {
     type RowKey = RowKey;
     type Row = Row;
     type CellKey = CellKey;
-    type CellRepr = CellRepr;
+    // type CellRepr = CellRepr;
 
     fn rows( &self ) -> impl IteratorTrait< Item = &Self::Row >
     // fn rows< 'a >( &'a self ) -> impl IteratorTrait< Item = &'a Self::Row >
@@ -217,14 +220,14 @@ mod private
 //     fn mcells( &self ) -> [ usize ; 2 ];
 //   }
 //
-//   impl< T, RowKey, Row, CellKey, CellRepr > TableSize
-//   for AsTable< '_, T, RowKey, Row, CellKey, CellRepr >
+//   impl< T, RowKey, Row, CellKey > TableSize
+//   for AsTable< '_, T, RowKey, Row, CellKey >
 //   where
-//     Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
+//     Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey >,
 //     RowKey : table::RowKey,
-//     Row : Cells< CellKey, CellRepr >,
+//     Row : Cells< CellKey >,
 //     CellKey : table::CellKey + ?Sized,
-//     CellRepr : table::CellRepr,
+//     // CellRepr : table::CellRepr,
 //   {
 //     fn mcells( &self ) -> [ usize ; 2 ]
 //     {
@@ -256,14 +259,14 @@ mod private
     fn header( &self ) -> Option< impl IteratorTrait< Item = ( &Self::CellKey, &'_ str ) > >;
   }
 
-  impl< T, RowKey, Row, CellKey, CellRepr > TableHeader
-  for AsTable< '_, T, RowKey, Row, CellKey, CellRepr >
+  impl< T, RowKey, Row, CellKey > TableHeader
+  for AsTable< '_, T, RowKey, Row, CellKey >
   where
-    Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey, CellRepr = CellRepr >,
+    Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey >,
     RowKey : table::RowKey,
-    Row : TableWithFields + Cells< CellKey, CellRepr >,
+    Row : TableWithFields + Cells< CellKey >,
     CellKey : table::CellKey + ?Sized,
-    CellRepr : table::CellRepr,
+    // CellRepr : table::CellRepr,
   {
     type CellKey = CellKey;
 

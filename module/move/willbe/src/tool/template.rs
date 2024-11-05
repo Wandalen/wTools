@@ -15,15 +15,10 @@ mod private
   };
   use error::untyped::Context;
 
-  // qqq : for Nikita : is that trait really necessary?
-  // Template - remove
-  // DeployTemplate - move here
-  // DeployTemplateFiles - remove
-
-  /// Template for creating deploy files.
+  /// Container for templates.
   ///
-  /// Includes terraform deploy options to GCP, and Hetzner,
-  /// a Makefile for useful commands, and a key directory.
+  /// Includes files to create, parameters that those templates accept,
+  /// and values for those parameters.
   #[ derive( Debug ) ]
   pub struct TemplateHolder
   {
@@ -33,11 +28,15 @@ mod private
     pub parameters : TemplateParameters,
     /// The values associated with the template.
     pub values : TemplateValues,
+    /// Path to the parameter storage for recovering values
+    /// for already generated templated files. 
+    pub parameter_storage : &'static Path,
+    /// Name of the template to generate
+    pub template_name : &'static str,
   }
 
   impl TemplateFiles for Vec< TemplateFileDescriptor > {}
 
-  // qqq : for Viktor : why DeployTemplate can't be part of template.rs?
 
   impl TemplateHolder
   {
@@ -95,27 +94,6 @@ mod private
       &mut self.values
     }
 
-    /// Returns the path to the parameter storage file.
-    ///
-    /// # Returns
-    ///
-    /// A reference to a `Path` representing the parameter storage file.
-    pub fn parameter_storage( &self ) -> &Path
-    {
-      "./.deploy_template.toml".as_ref()
-      // qqq : for Mykyta : hardcode?
-    }
-
-    /// Returns the name of the template.
-    ///
-    /// # Returns
-    ///
-    /// A static string slice representing the template name.
-    pub fn template_name( &self ) -> &'static str
-    {
-      "deploy"
-    }
-
     /// Loads existing parameters from the specified path and updates the template values.
     ///
     /// # Parameters
@@ -127,10 +105,10 @@ mod private
     /// An `Option` which is `Some(())` if the parameters are loaded successfully, or `None` otherwise.
     pub fn load_existing_params( &mut self, path : &Path ) -> Option< () >
     {
-      let data = fs::read_to_string( path.join( self.parameter_storage() ) ).ok()?;
+      let data = fs::read_to_string( path.join( self.parameter_storage ) ).ok()?;
       let document = data.parse::< toml_edit::Document >().ok()?;
       let parameters : Vec< _ > = self.parameters().descriptors.iter().map( | d | &d.parameter ).cloned().collect();
-      let template_table = document.get( self.template_name() )?;
+      let template_table = document.get( self.template_name )?;
       for parameter in parameters
       {
         let value = template_table.get( &parameter )
@@ -161,26 +139,6 @@ mod private
       .into_iter()
       .filter( | key | values.0.get( *key ).map( | val | val.as_ref() ).flatten().is_none() )
       .collect()
-    }
-  }
-
-  impl Default for TemplateHolder
-  {
-    fn default() -> Self
-    {
-      let parameters = TemplateParameters::former()
-      .parameter( "gcp_project_id" ).is_mandatory( true ).end()
-      .parameter( "gcp_region" ).end()
-      .parameter( "gcp_artifact_repo_name" ).end()
-      .parameter( "docker_image_name" ).end()
-      .form();
-
-      Self
-      {
-        files : Default::default(),
-        parameters,
-        values : Default::default(),
-      }
     }
   }
 

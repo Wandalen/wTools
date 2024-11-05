@@ -1,6 +1,6 @@
 [package]
 name = "error_tools"
-version = "0.17.0"
+version = "0.19.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",

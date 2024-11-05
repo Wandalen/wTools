@@ -42,12 +42,17 @@ pub mod dependency
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  pub use ::process_tools_published;
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use ::process_tools_published as process_tools;
+  pub use ::process_tools;
+
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use ::process_tools as process_tools;
 
 }
+
+mod private {}
+
+//
 
 #[ cfg( feature = "enabled" ) ]
 // #[ cfg( not( feature = "no_std" ) ) ]
@@ -83,6 +88,8 @@ pub mod dependency
   prelude use ::collection_tools as collection;
   // prelude use ::process_tools as process;
 
+  use ::collection_tools; // xxx : do that for all dependencies
+
   prelude use ::meta_tools::
   {
     impls,
@@ -91,6 +98,7 @@ pub mod dependency
     tests_impls_optional,
     tests_index,
   };
+
   prelude use ::typing_tools::{ implements };
 
 }

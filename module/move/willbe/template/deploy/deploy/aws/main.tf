@@ -60,21 +60,50 @@ resource "aws_instance" "web" {
   associate_public_ip_address = true
 
   # Startup script for the instance
-  # Installs docker, gcloud CLI, downloads docker images and starts the container
-  user_data = templatefile("${path.module}/templates/cloud-init.tpl", {
+  # Installs docker and gcloud CLI
+  user_data = templatefile("${path.module}/../cloud-init.tpl", {
     location              = "${var.REGION}"
     project_id            = "${var.PROJECT_ID}"
     repo_name             = "${var.REPO_NAME}"
     image_name            = "${var.IMAGE_NAME}"
     service_account_creds = "${replace(data.local_sensitive_file.service_account_creds.content, "\n", "")}"
-    timestamp             = "${timestamp()}"
   })
 
-  user_data_replace_on_change = true
+  key_name = aws_key_pair.redeploy.key_name
 }
 
 # Static IP address for the instace that will persist on restarts and redeploys
 resource "aws_eip" "static" {
   instance = aws_instance.web.id
   domain   = "vpc"
+}
+
+resource "aws_key_pair" "redeploy" {
+  public_key = data.local_sensitive_file.ssh_public_key.content
+}
+
+resource "terraform_data" "redeploy" {
+  triggers_replace = timestamp()
+
+  connection {
+    type        = "ssh"
+    user        = "ubuntu"
+    private_key = data.local_sensitive_file.ssh_private_key.content
+    host        = aws_eip.static.public_ip
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/../redeploy.sh"
+    destination = "/tmp/redeploy.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "#!/bin/bash",
+      "( tail -f -n1 /var/log/deploy-init.log & ) | grep -q 'Docker configuration file updated.'",
+      "source /etc/environment",
+      "chmod +x /tmp/redeploy.sh",
+      "sudo /tmp/redeploy.sh"
+    ]
+  }
 }

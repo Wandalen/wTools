@@ -16,7 +16,7 @@ mod private
 // = ?
 
   // x
-  // protected protected1;
+  // own own1;
   // orphan orphan1;
   // exposed exposed1;
   // prelude prelude1;
@@ -33,7 +33,7 @@ mod private
 
   // x
   // orphan macromod mod_orphan1;
-  // : protected -> protected
+  // : own -> own
   // : orphan -> orphan
   // : exposed -> orphan
   // : prelude -> orphan
@@ -42,14 +42,14 @@ mod private
 
   // x
   // prelude exposed macromod mod_own1;
-  // : protected -> exposed
+  // : own -> exposed
   // : orphan -> exposed
   // : exposed -> exposed
   // : prelude -> prelude
 
   // x
-  // prelude protected macromod mod_exposed1;
-  // : protected -> protected
+  // prelude own macromod mod_exposed1;
+  // : own -> own
   // : orphan -> orphan
   // : exposed -> exposed
   // : prelude -> prelude
@@ -58,14 +58,14 @@ mod private
 
   // x
   // exposed exposed macromod mod_exposed1;
-  // : protected -> exposed
+  // : own -> exposed
   // : orphan -> exposed
   // : exposed -> exposed
   // : prelude -> exposed
 
   // x
   // exposed orphan macromod mod_exposed1;
-  // : protected -> orphan
+  // : own -> orphan
   // : orphan -> orphan
   // : exposed -> exposed
   // : prelude -> exposed
@@ -102,12 +102,10 @@ mod private
   ///
   /// Handle record "use" with implicit visibility.
   ///
-  #[ allow ( dead_code ) ]
-  fn record_use_implicit
+  fn record_reuse_implicit
   (
     record : &Record,
     c : &'_ mut RecordContext< '_ >,
-    // clauses_map : &mut HashMap< u32, Vec< proc_macro2::TokenStream > >,
   )
   ->
   syn::Result< () >
@@ -115,35 +113,88 @@ mod private
 
     let attrs1 = &record.attrs;
     let path = record.use_elements.as_ref().unwrap();
-    // let vis = record.vis.clone();
 
-    // if vis == Visibility::Inherited
-
-    // xxx
-
-    // let _path;
-    // let path2 = if path.prefix_is_needed()
-    // {
-    //   _path = parse_qt!{ super::private::#path };
-    //   &_path
-    // }
-    // else
-    // {
-    //   path
-    // };
-
-    let adjsuted_path = path.adjsuted_implicit_path()?;
-
-    // println!( "adjsuted_path : {}", qt!{ #adjsuted_path } );
-
-    if let Some( rename ) = &path.rename
+    let path = if let Some( rename ) = &path.rename
     {
       let pure_path = path.pure_without_super_path()?;
       c.clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
       {
         pub use #pure_path as #rename;
       });
+      parse_qt!{ #rename }
     }
+    else
+    {
+      path.clone()
+    };
+
+    let adjsuted_path = path.prefixed_with_all();
+
+    c.clauses_map.get_mut( &VisOwn::Kind() ).unwrap().push( qt!
+    {
+      #[ doc( inline ) ]
+      #[ allow( unused_imports ) ]
+      #attrs1
+      pub use #adjsuted_path::own::*;
+    });
+
+    c.clauses_map.get_mut( &VisOrphan::Kind() ).unwrap().push( qt!
+    {
+      #[ doc( inline ) ]
+      #[ allow( unused_imports ) ]
+      #attrs1
+      pub use #adjsuted_path::orphan::*;
+    });
+
+    c.clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
+    {
+      #[ doc( inline ) ]
+      #[ allow( unused_imports ) ]
+      #attrs1
+      pub use #adjsuted_path::exposed::*;
+    });
+
+    c.clauses_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
+    {
+      #[ doc( inline ) ]
+      #[ allow( unused_imports ) ]
+      #attrs1
+      pub use #adjsuted_path::prelude::*;
+    });
+
+    Ok( () )
+  }
+
+  ///
+  /// Handle record "use" with implicit visibility.
+  ///
+  fn record_use_implicit
+  (
+    record : &Record,
+    c : &'_ mut RecordContext< '_ >,
+  )
+  ->
+  syn::Result< () >
+  {
+
+    let attrs1 = &record.attrs;
+    let path = record.use_elements.as_ref().unwrap();
+
+    let path = if let Some( rename ) = &path.rename
+    {
+      let pure_path = path.pure_without_super_path()?;
+      c.clauses_map.get_mut( &ClauseImmediates::Kind() ).unwrap().push( qt!
+      {
+        pub use #pure_path as #rename;
+      });
+      parse_qt!{ #rename }
+    }
+    else
+    {
+      path.clone()
+    };
+
+    let adjsuted_path = path.prefixed_with_all();
 
     c.clauses_map.get_mut( &VisOwn::Kind() ).unwrap().push( qt!
     {
@@ -175,12 +226,10 @@ mod private
   ///
   /// Handle record "use" with explicit visibility.
   ///
-  #[ allow ( dead_code ) ]
   fn record_use_explicit
   (
     record : &Record,
     c : &'_ mut RecordContext< '_ >,
-    // clauses_map : &mut HashMap< u32, Vec< proc_macro2::TokenStream > >,
   )
   ->
   syn::Result< () >
@@ -200,8 +249,7 @@ mod private
       ));
     }
 
-    let adjsuted_path = path.adjsuted_explicit_path();
-
+    let adjsuted_path = path.prefixed_with_all();
     let vis2 = if vis.restriction().is_some()
     {
       qt!{ pub( crate ) }
@@ -248,13 +296,16 @@ mod private
 
     if !record.vis.valid_sub_namespace()
     {
-      return Err( syn_err!
+      return Err
       (
-        record,
-        "To include a non-standard module use either {} visibility:\n  {}",
-        VALID_VISIBILITY_LIST_STR,
-        qt!{ #record },
-      ));
+        syn_err!
+        (
+          record,
+          "To include a non-standard module use either {} visibility:\n  {}",
+          VALID_VISIBILITY_LIST_STR,
+          qt!{ #record },
+        )
+      );
     }
 
     c.clauses_map.get_mut( &record.vis.kind() ).unwrap().push( qt!
@@ -263,7 +314,8 @@ mod private
       #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
-      pub use #path;
+      pub use __all__::#path;
+      // pub use super::#path;
       // xxx : remove super?
     });
 
@@ -310,7 +362,7 @@ mod private
       #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
-      pub use #path::orphan::*;
+      pub use __all__::#path::orphan::*;
     });
 
     c.clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
@@ -319,7 +371,7 @@ mod private
       #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
-      pub use #path::exposed::*;
+      pub use __all__::#path::exposed::*;
     });
 
     c.clauses_map.get_mut( &VisPrelude::Kind() ).unwrap().push( qt!
@@ -328,7 +380,7 @@ mod private
       #[ allow( unused_imports ) ]
       #attrs1
       #attrs2
-      pub use #path::prelude::*;
+      pub use __all__::#path::prelude::*;
     });
 
     Ok( () )
@@ -383,6 +435,23 @@ mod private
             record_use_explicit( record, &mut record_context )?;
           }
         },
+        Reuse( _ ) =>
+        {
+          let vis = &record.vis;
+          if vis == &Visibility::Inherited
+          {
+            record_reuse_implicit( record, &mut record_context )?;
+          }
+          else
+          {
+            return Err( syn_err!
+            (
+              record,
+              "Using visibility usesd before `reuse` is illegal\n{}",
+              qt!{ #record },
+            ));
+          }
+        },
         _ =>
         {
           record.elements.iter().try_for_each( | element | -> syn::Result::< () >
@@ -397,8 +466,9 @@ mod private
               {
                 record_layer( record, element, &mut record_context )?;
               },
-              Use( _ ) =>
+              _ =>
               {
+                panic!( "Unexpected" )
               },
             }
             syn::Result::Ok( () )
@@ -410,7 +480,7 @@ mod private
     })?;
 
     let immediates_clause = clauses_map.get( &ClauseImmediates::Kind() ).unwrap();
-    let protected_clause = clauses_map.get( &VisOwn::Kind() ).unwrap();
+    let own_clause = clauses_map.get( &VisOwn::Kind() ).unwrap();
     let orphan_clause = clauses_map.get( &VisOrphan::Kind() ).unwrap();
     let exposed_clause = clauses_map.get( &VisExposed::Kind() ).unwrap();
     let prelude_clause = clauses_map.get( &VisPrelude::Kind() ).unwrap();
@@ -420,6 +490,8 @@ mod private
 
       #( #immediates_clause )*
 
+      // use private as __private__; // this line is necessary for readable error in case private namespace is not present
+
       #[ doc( inline ) ]
       #[ allow( unused_imports ) ]
       pub use own::*;
@@ -428,19 +500,34 @@ mod private
       #[ allow( unused_imports ) ]
       pub mod own
       {
-        use super::*;
+        // There must be internal private namespace
+        // Because it's not possible to direcly make `use super::*;`
+        // Because then items from super can't be exposed publicly complaining:
+        // `error[E0428]: the name `mod1` is defined multiple times`
+        // use super::*;
+        use super::private; // this line is necessary for readable error in case private namespace is not present
+        mod __all__
+        {
+          pub use super::super::*;
+          pub use super::super::private::*;
+        }
         #[ doc( inline ) ]
-        pub use orphan::*;
-        #( #protected_clause )*
+        pub use super::orphan::*;
+        #( #own_clause )*
       }
 
       /// Orphan namespace of the module.
       #[ allow( unused_imports ) ]
       pub mod orphan
       {
-        use super::*;
+        // use super::*;
+        mod __all__
+        {
+          pub use super::super::*;
+          pub use super::super::private::*;
+        }
         #[ doc( inline ) ]
-        pub use exposed::*;
+        pub use super::exposed::*;
         #( #orphan_clause )*
       }
 
@@ -448,9 +535,14 @@ mod private
       #[ allow( unused_imports ) ]
       pub mod exposed
       {
-        use super::*;
+        // use super::*;
+        mod __all__
+        {
+          pub use super::super::*;
+          pub use super::super::private::*;
+        }
         #[ doc( inline ) ]
-        pub use prelude::*;
+        pub use super::prelude::*;
         #( #exposed_clause )*
       }
 
@@ -458,7 +550,12 @@ mod private
       #[ allow( unused_imports ) ]
       pub mod prelude
       {
-        use super::*;
+        // use super::*;
+        mod __all__
+        {
+          pub use super::super::*;
+          pub use super::super::private::*;
+        }
         #( #prelude_clause )*
       }
 
