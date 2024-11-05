@@ -1,0 +1,21 @@
+graph TD
+    subgraph OpenAI
+      U[Users]
+      P[Projects]
+      PAK[Project API keys]
+      A[Assistants]
+      T[Threads]
+      M[Messages]
+      R[Runs]
+
+      P -- has (through Project Users) --> U
+      P -- has --> PAK
+
+      T -- has --> M
+
+      T -- has --> R
+
+      A -. are called in .-> R
+
+      R -. generate .-> M
+    end
