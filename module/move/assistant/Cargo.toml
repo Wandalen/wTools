@@ -42,6 +42,7 @@ openai-api-rs = { version = "=5.0.11" }
 tokio = { version = "1", features = ["full"] }
 dotenv = "0.15"
 clap = { version = "4.5.20", features = ["derive"] }
+thiserror = "2.0.0"
 
 [dev-dependencies]
 test_tools = { workspace = true }
