@@ -105,7 +105,7 @@ mod private
     let path = AbsolutePath::try_from( o.path )?;
     let dir = CrateDir::try_from( path.clone() )?;
 
-    let list = action::list
+    let list = action::list_all
     (
       action::list::ListOptions::former()
       .path_to_manifest( dir )

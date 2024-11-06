@@ -193,7 +193,7 @@ mod private
   /// [![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/wtools)
   /// <!--{ generate.main_header.end }-->
   /// ```
-  pub fn readme_header_renew( crate_dir : CrateDir )
+  pub fn action( crate_dir : CrateDir )
   // -> Result< MainHeaderRenewReport, ( MainHeaderRenewReport, MainHeaderRenewError ) >
   -> ResultWithReport< MainHeaderRenewReport, MainHeaderRenewError >
   {
@@ -265,7 +265,7 @@ mod private
 crate::mod_interface!
 {
   /// Generate header.
-  orphan use readme_header_renew;
+  own use action;
   /// Report.
   orphan use MainHeaderRenewReport;
   /// Error.

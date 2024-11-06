@@ -436,7 +436,7 @@ mod private
   /// - `Result<ListReport, (ListReport, Error)>` - A result containing the list report if successful,
   ///   or a tuple containing the list report and error if not successful.
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
-  pub fn list( args : ListOptions )
+  pub fn list_all( args : ListOptions )
   ->
   ResultWithReport< ListReport, error::untyped::Error > // qqq : should be specific error
   // qqq : use typed error
@@ -849,5 +849,5 @@ crate::mod_interface!
   /// Contains output of a single node of the action.
   // own use ListNodeReport;
   /// List packages in workspace.
-  orphan use list;
+  orphan use list_all;
 }

@@ -161,7 +161,7 @@ mod private
       .collect();
       for wanted in &self.roots
       {
-        let list = action::list
+        let list = action::list_all
         (
           action::list::ListOptions::former()
           .path_to_manifest( wanted.clone() )
