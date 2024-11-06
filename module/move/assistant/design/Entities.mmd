@@ -1,0 +1,68 @@
+---
+title: OpenAI API
+---
+erDiagram
+    User {
+        string id PK
+        string name
+        string email
+        string role
+    }
+
+    Project {
+        string id PK
+        string name
+        string status
+    }
+
+    ProjectUser {
+        string id
+        string name
+        string email
+        string role
+    }
+
+    ProjectApiKey {
+        string id PK
+        string name
+    }
+
+    Assistant {
+        string id PK
+        string model
+        string _name
+        string _description
+        string _instructions
+        tool[] _tools
+    }
+
+    Thread {
+        string id PK
+    }
+
+    Message {
+        string id PK
+        string thread_id FK
+        string status
+        string role
+        string content
+        string _assistant_id FK
+        string _run_id FK
+    }
+
+    Run {
+        string id PK
+        string thread_id FK
+        string assistant_id FK
+        string status
+    }
+
+    User |o--o{ ProjectUser : ""
+    Project |o--o{ ProjectUser : ""
+    Project |o--o{ ProjectApiKey : ""
+
+    Assistant |o--o{ Run : ""
+
+    Thread ||--o{ Message : ""
+    Thread ||--o{ Run: ""
+
