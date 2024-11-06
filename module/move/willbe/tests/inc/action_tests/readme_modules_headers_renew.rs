@@ -32,7 +32,7 @@ fn tags_should_stay()
   let temp = arrange( "single_module" );
 
   // Act
-  _ = action::main_header::action( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action::readme_modules_headers_renew::readme_modules_headers_renew( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
   // _ = action::main_header::action( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
 
   let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
@@ -53,7 +53,7 @@ fn default_stability()
   let temp = arrange( "single_module" );
 
   // Act
-  _ = action::main_header::action( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action::readme_modules_headers_renew::readme_modules_headers_renew( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
   let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
 
   let mut actual = String::new();
@@ -72,7 +72,7 @@ fn docs()
   let temp = arrange( "single_module" );
 
   // Act
-  _ = action::main_header::action( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action::readme_modules_headers_renew::readme_modules_headers_renew( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
   let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
 
   let mut actual = String::new();
@@ -90,7 +90,7 @@ fn no_gitpod()
   let temp = arrange("single_module");
 
   // Act
-  _ = action::main_header::action( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action::readme_modules_headers_renew::readme_modules_headers_renew( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
   let mut file = std::fs::File::open(temp.path().join("test_module").join("Readme.md")).unwrap();
 
   let mut actual = String::new();
@@ -107,7 +107,7 @@ fn with_gitpod()
   let temp = arrange( "single_module_with_example" );
 
   // Act
-  _ = action::main_header::action( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action::readme_modules_headers_renew::readme_modules_headers_renew( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
   let mut file = std::fs::File::open( temp.path().join( "module" ).join( "test_module" ).join( "Readme.md" ) ).unwrap();
 
   let mut actual = String::new();
@@ -125,7 +125,7 @@ fn discord()
   let temp = arrange( "single_module" );
 
   // Act
-  _ = action::main_header::action( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action::readme_modules_headers_renew::readme_modules_headers_renew(CrateDir::try_from(temp.path()).unwrap()).unwrap();
   let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
 
   let mut actual = String::new();
@@ -143,7 +143,7 @@ fn status()
   let temp = arrange( "single_module" );
 
   // Act
-  _ = action::main_header::action( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action::readme_modules_headers_renew::readme_modules_headers_renew( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
   let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
 
   let mut actual = String::new();
@@ -161,13 +161,13 @@ fn idempotency()
   let temp = arrange( "single_module" );
 
   // Act
-  _ = action::main_header::action( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action::readme_modules_headers_renew::readme_modules_headers_renew( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
   let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
   let mut actual1 = String::new();
   _ = file.read_to_string( &mut actual1 ).unwrap();
   drop( file );
 
-  _ = action::main_header::action( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action::readme_modules_headers_renew::readme_modules_headers_renew( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
   let mut file = std::fs::File::open( temp.path().join( "test_module" ).join( "Readme.md" ) ).unwrap();
   let mut actual2 = String::new();
   _ = file.read_to_string( &mut actual2 ).unwrap();
@@ -182,7 +182,7 @@ fn with_many_members_and_varius_config()
 {
   let temp = arrange( "three_packages" );
 
-  _ = action::main_header::action( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
+  _ = action::readme_modules_headers_renew::readme_modules_headers_renew( CrateDir::try_from( temp.path() ).unwrap() ).unwrap();
 
   let mut file_b = std::fs::File::open( temp.path().join( "b" ).join( "Readme.md" ) ).unwrap();
   let mut file_c = std::fs::File::open( temp.path().join( "c" ).join( "Readme.md" ) ).unwrap();

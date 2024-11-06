@@ -5,6 +5,7 @@ members = [
 ]
 
 [workspace.metadata]
+workspace_name = "single_module"
 master_branch = "test_branch"
 project_name = "test"
 repo_url = "https://github.com/Username/test"
