@@ -22,6 +22,9 @@ mod private
 
   use former::Former;
 
+  use crate::*;
+  use cli::*;
+
   /// Options for configuring the OpenAI API client.
   #[ derive( Former, Debug ) ]
   pub struct ClientOptions
@@ -38,6 +41,101 @@ mod private
     Ok( Client::new( api_key ) )
   }
 
+  /// Execute `OpenAiCommand`.
+  pub async fn execute_command(
+    client : &Client,
+    command : OpenAiCommand,
+  ) -> Result < (), Box< dyn Error > >
+  {
+    match command
+    {
+      OpenAiCommand::Assistants( assistants_command ) =>
+      {
+        execute_assistants_command(client, assistants_command ).await?;
+      }
+
+      OpenAiCommand::Threads( threads_command ) =>
+      {
+        execute_threads_command(client, threads_command ).await?;
+      }
+
+      OpenAiCommand::Runs( runs_command ) =>
+      {
+        execute_runs_command(client, runs_command ).await?;
+      }
+    }
+
+    Ok( () )
+  }
+
+  /// Execute `OpenAiAssistantsCommand`.
+  async fn execute_assistants_command(
+    client : &Client,
+    command : OpenAiAssistantsCommand,
+  ) -> Result < (), Box< dyn Error > >
+  {
+    match command
+    {
+      OpenAiAssistantsCommand::List =>
+      {
+        let assistants = client.list_assistant( None, None, None, None ).await?.data;
+
+        println!("Assistants: ");
+
+        if assistants.len() == 0
+        {
+          println!("No assistants.")
+        }
+        else
+        {
+          assistants
+          .into_iter()
+          .map(AssistantObjectWrap)
+          .for_each(|a| 
+          {
+            println!("{:?}", a);
+          });
+        }
+      }
+    }
+
+    Ok( () )
+  }
+
+  /// Execute `OpenAiThreadsCommand`.
+  async fn execute_threads_command(
+    client : &Client,
+    command : OpenAiThreadsCommand,
+  ) -> Result < (), Box< dyn Error > >
+  {
+    match command
+    {
+      OpenAiThreadsCommand::List =>
+      {
+        todo!()
+      }
+    }
+
+    Ok( () )
+  }
+
+  /// Execute `OpenAiRunsCommand`.
+  async fn execute_runs_command(
+    client : &Client,
+    command : OpenAiRunsCommand,
+  ) -> Result < (), Box< dyn Error > >
+  {
+    match command
+    {
+      OpenAiRunsCommand::List =>
+      {
+        todo!()
+      }
+    }
+
+    Ok( () )
+  }
+
 }
 
 crate::mod_interface!
@@ -48,5 +146,6 @@ crate::mod_interface!
     ClientOptions,
     AssistantObject,
     client,
+    execute_command
   };
 }

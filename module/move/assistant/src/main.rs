@@ -16,10 +16,13 @@ use format_tools::
   output_format,
 };
 use dotenv::dotenv;
+use clap::Parser;
 
 use assistant::
 {
   client,
+  execute_command,
+  cli::*
 };
 
 #[ tokio::main ]
@@ -29,24 +32,15 @@ async fn main() -> Result< (), Box< dyn Error > >
 
   let client = client()?;
 
-  let response = client.file_list().await?;
-  // println!( "Files: {:?}", response.data );
-  let files : Vec< _ > = response.data.into_iter().map( | e | assistant::FileDataWrap( e ) ).collect();
-  println!
-  (
-    "Files:\n{}",
-    AsTable::new( &files ).table_to_string_with_format( &output_format::Table::default() ),
-  );
+  let cli = Cli::parse();
 
-  let response = client.list_assistant( None, None, None, None ).await?;
-
-  // println!( "Assistants: {:?}", assistants.data );
-  let assistants : Vec< _ > = response.data.into_iter().map( | e | assistant::AssistantObjectWrap( e ) ).collect();
-  println!
-  (
-    "Assistants:\n{}",
-    AsTable::new( &assistants ).table_to_string_with_format( &output_format::Records::default() ),
-  );
+  match cli.command
+  {
+    CliCommand::OpenAi( openai_command ) =>
+    {
+      execute_command( & client, openai_command ).await?;
+    }
+  }
 
   Ok( () )
 }
