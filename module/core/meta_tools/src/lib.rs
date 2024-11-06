@@ -10,22 +10,13 @@
 pub mod dependency
 {
 
-  // #[ cfg( feature = "meta_mod_interface" ) ]
   pub use ::mod_interface;
   #[ cfg( feature = "meta_for_each" ) ]
   pub use ::for_each;
   #[ cfg( feature = "meta_impls_index" ) ]
   pub use ::impls_index;
-
-  // #[ cfg( feature = "meta_constructors" ) ]
-  // pub use ::literally;
   #[ cfg( feature = "meta_idents_concat" ) ]
   pub use ::paste;
-
-  // #[ cfg( feature = "former" ) ]
-  // pub use ::former;
-  // #[ cfg( feature = "options" ) ]
-  // pub use ::woptions;
 
 }
 
@@ -33,12 +24,55 @@ mod private {}
 
 //
 
-// qqq : meta interface should be optional dependancy. please fix writing equivalent code manually
+// // qqq : meta interface should be optional dependancy. please fix writing equivalent code manually
+// #[ cfg( feature = "enabled" ) ]
+// mod_interface::mod_interface!
+// {
+//   // #![ debug ]
+//
+//   layer meta;
+//
+// }
+
+pub mod meta;
+
 #[ cfg( feature = "enabled" ) ]
-mod_interface::mod_interface!
+#[ allow( unused_imports ) ]
+pub use own::*;
+
+/// Own namespace of the module.
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
+pub mod own
 {
-  // #![ debug ]
+  use super::*;
+  pub use meta::orphan::*;
+}
 
-  layer meta;
+/// Orphan namespace of the module.
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
+pub mod orphan
+{
+  use super::*;
+  pub use exposed::*;
+}
 
+/// Exposed namespace of the module.
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
+pub mod exposed
+{
+  use super::*;
+  pub use prelude::*;
+  pub use meta::exposed::*;
+}
+
+/// Prelude to use essentials: `use my_module::prelude::*`.
+#[ cfg( feature = "enabled" ) ]
+#[ allow( unused_imports ) ]
+pub mod prelude
+{
+  use super::*;
+  pub use meta::prelude::*;
 }

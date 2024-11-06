@@ -1,4 +1,4 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
   // xxx : move to derive_tools

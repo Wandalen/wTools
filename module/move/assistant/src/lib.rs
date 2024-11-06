@@ -5,7 +5,7 @@
 
 use mod_interface::mod_interface;
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 }

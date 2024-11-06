@@ -1,4 +1,4 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
   #[ allow( unused_imports ) ]
@@ -29,7 +29,7 @@ mod private
     /// The values associated with the template.
     pub values : TemplateValues,
     /// Path to the parameter storage for recovering values
-    /// for already generated templated files. 
+    /// for already generated templated files.
     pub parameter_storage : &'static Path,
     /// Name of the template to generate
     pub template_name : &'static str,

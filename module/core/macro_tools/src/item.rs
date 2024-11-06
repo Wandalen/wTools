@@ -3,7 +3,7 @@
 //! to manipulate the structure of items, handle different kinds of fields, and provide a structured approach to
 //! organizing the codebase into different access levels.
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
   use crate::*;

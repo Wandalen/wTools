@@ -2,7 +2,7 @@
 //! Define primitive and data types.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 
