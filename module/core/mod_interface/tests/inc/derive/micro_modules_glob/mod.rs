@@ -10,7 +10,7 @@ mod private
 
 //
 
-crate::mod_interface!
+crate::the_module::mod_interface!
 {
   own use
   {

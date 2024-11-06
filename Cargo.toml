@@ -551,5 +551,9 @@ version = "~1.0"
 [workspace.dependencies.hashbrown]
 version = "~0.14.3"
 # optional = true
-# default-features = false
+default-features = false
 # features = [ "default" ]
+
+[workspace.dependencies.paste]
+version = "~1.0.14"
+default-features = false

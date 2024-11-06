@@ -29,8 +29,8 @@ all-features = false
 [features]
 default = [
   "enabled",
-  "standalone",
-  # "normal",
+  # "standalone",
+  "normal",
 ]
 full = [ "default" ]
 no_std = [

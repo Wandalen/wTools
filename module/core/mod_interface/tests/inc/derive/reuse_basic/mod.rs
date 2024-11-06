@@ -10,7 +10,7 @@ mod child;
 
 //
 
-crate::mod_interface!
+crate::the_module::mod_interface!
 {
   reuse child;
 }

@@ -3,7 +3,7 @@
 use mod_interface::mod_interface;
 
 /// Children.
-mod child;
+pub mod child;
 
 // Priave namespaces is necessary.
 mod private {}

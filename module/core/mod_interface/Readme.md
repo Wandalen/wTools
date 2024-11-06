@@ -25,7 +25,7 @@ This example demonstrates how to use the `mod_interface` crate to organize a Rus
 use mod_interface::mod_interface;
 
 // Define a module named `child`.
-mod child
+pub mod child
 {
 
   // Define a private namespace for all its items.
@@ -162,6 +162,7 @@ pub mod own
   use super::*;
   pub use orphan::*;
   pub use super::child::orphan::*;
+  pub use super::child;
 }
 
 /// Orphan namespace of the module.

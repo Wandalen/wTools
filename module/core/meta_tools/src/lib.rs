@@ -17,8 +17,8 @@ pub mod dependency
   #[ cfg( feature = "meta_impls_index" ) ]
   pub use ::impls_index;
 
-  #[ cfg( feature = "meta_constructors" ) ]
-  pub use ::literally;
+  // #[ cfg( feature = "meta_constructors" ) ]
+  // pub use ::literally;
   #[ cfg( feature = "meta_idents_concat" ) ]
   pub use ::paste;
 

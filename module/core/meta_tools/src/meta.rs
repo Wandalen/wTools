@@ -22,8 +22,8 @@ mod_interface::mod_interface!
   // #[ cfg( feature = "meta_mod_interface" ) ]
   prelude use ::mod_interface::mod_interface;
 
-  #[ cfg( feature = "meta_constructors" ) ]
-  prelude use ::literally::*;
+  // #[ cfg( feature = "meta_constructors" ) ]
+  // prelude use ::literally::*;
   #[ cfg( feature = "meta_idents_concat" ) ]
   prelude use ::paste::paste as meta_idents_concat;
 
