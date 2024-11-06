@@ -18,26 +18,27 @@ macro_rules! count
 #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 extern crate alloc;
 
-/// [std::collections::BTreeMap] macros
+/// [`std::collections::BTreeMap`] macros
 pub mod btree_map;
-/// [std::collections::BTreeSet] macros
+/// [`std::collections::BTreeSet`] macros
 pub mod btree_set;
-/// [std::collections::BinaryHeap] macros
+/// [`std::collections::BinaryHeap`] macros
 pub mod binary_heap;
-/// [std::collections::HashMap] macros
+/// [`std::collections::HashMap`] macros
 pub mod hash_map;
-/// [std::collections::HashSet] macros
+/// [`std::collections::HashSet`] macros
 pub mod hash_set;
-/// [std::collections::LinkedList] macros
+/// [`std::collections::LinkedList`] macros
 pub mod linked_list;
 /// [Vec] macros
 pub mod vector;
-/// [std::collections::VecDeque] macros
+/// [`std::collections::VecDeque`] macros
 pub mod vec_deque;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 #[ cfg( feature = "enabled" ) ]
+#[ allow( clippy::pub_use ) ]
 pub use own::*;
 
 /// Own namespace of the module.
@@ -45,8 +46,10 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use super::
   {
     btree_map,
@@ -60,6 +63,7 @@ pub mod own
   };
 
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use orphan::*;
 
 }
@@ -69,8 +73,10 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use exposed::*;
 }
 
@@ -79,17 +85,21 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use prelude::*;
 
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use super::super::collection;
 
   #[ doc( inline ) ]
   #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
   #[ cfg( feature = "collection_constructors" ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use crate::
   {
     vec as dlist,
@@ -104,6 +114,7 @@ pub mod exposed
   #[ doc( inline ) ]
   #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
   #[ cfg( feature = "collection_into_constructors" ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use crate::
   {
     into_vec,
@@ -119,6 +130,7 @@ pub mod exposed
   // #[ cfg( feature = "reexports" ) ]
   #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use
   {
     btree_map::BTreeMap,
@@ -134,6 +146,7 @@ pub mod exposed
   // #[ cfg( feature = "reexports" ) ]
   #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use
   {
     LinkedList as Llist,

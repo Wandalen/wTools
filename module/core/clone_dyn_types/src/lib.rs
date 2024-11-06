@@ -39,6 +39,7 @@ mod private
     T : Clone,
   {
     #[ inline ]
+    #[ allow( clippy::implicit_return, clippy::as_conversions, clippy::ptr_as_ptr ) ]
     fn __clone_dyn( &self, _ : DontCallMe ) -> *mut ()
     {
       Box::< T >::into_raw( Box::new( self.clone() ) ) as *mut ()
@@ -51,6 +52,7 @@ mod private
     T : Clone,
   {
     #[ inline ]
+    #[ allow( clippy::implicit_return, clippy::as_conversions, clippy::ptr_as_ptr ) ]
     fn __clone_dyn( &self, _ : DontCallMe ) -> *mut ()
     {
       Box::< [ T ] >::into_raw( self.iter().cloned().collect() ) as *mut ()
@@ -61,6 +63,7 @@ mod private
   impl CloneDyn for str
   {
     #[ inline ]
+    #[ allow( clippy::as_conversions, clippy::ptr_as_ptr, clippy::implicit_return ) ]
     fn __clone_dyn( &self, _ : DontCallMe ) -> *mut ()
     {
       Box::< str >::into_raw( Box::from( self ) ) as *mut ()
@@ -68,7 +71,7 @@ mod private
   }
 
   ///
-  /// True clone which is applicable not only to clonable entities, but to trait objects implementing CloneDyn.
+  /// True clone which is applicable not only to clonable entities, but to trait objects implementing `CloneDyn`.
   ///
   /// # Example
   ///
@@ -100,7 +103,7 @@ mod private
     // that the `CloneDyn` trait is correctly implemented for the given type `T`, ensuring that `__clone_dyn` returns a
     // valid pointer to a cloned instance of `T`.
     //
-    #[ allow( unsafe_code ) ]
+    #[ allow( unsafe_code, clippy::as_conversions, clippy::ptr_as_ptr, clippy::implicit_return, clippy::undocumented_unsafe_blocks ) ]
     unsafe
     {
       *Box::from_raw( < T as CloneDyn >::__clone_dyn( src, DontCallMe ) as *mut T )
@@ -185,7 +188,7 @@ mod private
     // The safety of this function relies on the correct implementation of the `CloneDyn` trait for the given type `T`.
     // Specifically, `__clone_dyn` must return a valid pointer to a cloned instance of `T`.
     //
-    #[ allow( unsafe_code ) ]
+    #[ allow( unsafe_code, clippy::implicit_return, clippy::as_conversions, clippy::ptr_cast_constness, clippy::ptr_as_ptr, clippy::multiple_unsafe_ops_per_block, clippy::undocumented_unsafe_blocks, clippy::ref_as_ptr ) ]
     unsafe
     {
       let mut ptr = ref_dyn as *const T;
@@ -207,13 +210,14 @@ mod private
     impl< T : Clone > Sealed for [ T ] {}
     impl Sealed for str {}
   }
-  use sealed::*;
+  use sealed::{ DontCallMe, Sealed };
 
 }
 
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
+#[ allow( clippy::pub_use ) ]
 pub use own::*;
 
 /// Own namespace of the module.
@@ -221,8 +225,9 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  use super::orphan;
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use orphan::*;
 }
 
@@ -231,8 +236,9 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  use super::*;
+  use super::exposed;
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use exposed::*;
 }
 
@@ -241,8 +247,9 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
+  use super::prelude;
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use prelude::*;
 }
 
@@ -251,8 +258,9 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
+  use super::private;
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use private::
   {
     CloneDyn,

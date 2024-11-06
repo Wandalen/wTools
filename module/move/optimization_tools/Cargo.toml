@@ -17,8 +17,8 @@ categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
 
 # xxx : qqq : switch that on
-# [lints]
-# workspace = true
+#[lints]
+#workspace = true
 
 [package.metadata.docs.rs]
 features = [ "full" ]
@@ -60,7 +60,7 @@ plotters = { version = "0.3.5", default-features = false, features = [
   "bitmap_backend",
 ] }
 plotters-backend = { version = "0.3.5", optional = true }
-piston_window = { version = "0.120.0", optional = true }
+piston_window = { version = "0.132.0", optional = true }
 exmex = { version = "0.18.0", features = [ "partial" ], optional = true }
 rayon = "1.8.0"
 thiserror = "1.0.56"

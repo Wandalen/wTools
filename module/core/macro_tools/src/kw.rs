@@ -17,6 +17,7 @@ mod private
 
   // qqq : cover by test
   /// Check is string a keyword.
+  #[ must_use ]
   pub fn is( src : &str ) -> bool
   {
     KEYWORDS.contains( &src )
@@ -32,6 +33,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -41,6 +43,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
@@ -50,6 +53,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use super::super::kw;
 

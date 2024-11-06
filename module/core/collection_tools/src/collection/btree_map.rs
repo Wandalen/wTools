@@ -1,8 +1,9 @@
-#[ allow( unused_imports ) ]
+#[ allow( unused_imports, clippy::wildcard_imports ) ]
 use super::*;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
+#[ allow( clippy::pub_use ) ]
 pub use alloc::collections::btree_map::*;
 
 /// Creates a `BTreeMap` from a list of key-value pairs.
@@ -32,8 +33,8 @@ pub use alloc::collections::btree_map::*;
 /// # Parameters
 ///
 /// - `$( $key:expr => $value:expr ),* $( , )?`: A comma-separated list of key-value pairs to insert into the `BTreeMap`.
-/// Each key and value can be of any type that implements the `Into< K >` and `Into< V >` traits, where `K` and `V` are the
-/// types stored in the `BTreeMap` as keys and values, respectively.
+///   Each key and value can be of any type that implements the `Into< K >` and `Into< V >` traits, where `K` and `V` are the
+///   types stored in the `BTreeMap` as keys and values, respectively.
 ///
 /// # Returns
 ///
@@ -114,8 +115,8 @@ macro_rules! bmap
 /// # Parameters
 ///
 /// - `$( $key:expr => $value:expr ),* $( , )?`: A comma-separated list of key-value pairs to insert into the `BTreeMap`.
-/// Each key and value can be of any type that implements the `Into< K >` and `Into< V >` traits, where `K` and `V` are the
-/// types stored in the `BTreeMap` as keys and values, respectively.
+///   Each key and value can be of any type that implements the `Into< K >` and `Into< V >` traits, where `K` and `V` are the
+///   types stored in the `BTreeMap` as keys and values, respectively.
 ///
 /// # Returns
 ///

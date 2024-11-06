@@ -28,6 +28,7 @@ pub use own::*;
 /// Own namespace of the module.
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
   #[ doc( inline ) ]
@@ -43,6 +44,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;

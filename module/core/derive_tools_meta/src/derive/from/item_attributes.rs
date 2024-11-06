@@ -92,17 +92,18 @@ impl AttributeComponent for ItemAttributeConfig
 {
   const KEYWORD : &'static str = "from";
 
+  #[ allow( clippy::match_wildcard_for_single_variants ) ]
   fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
     match attr.meta
     {
       syn::Meta::List( ref meta_list ) =>
       {
-        return syn::parse2::< ItemAttributeConfig >( meta_list.tokens.clone() );
+        syn::parse2::< ItemAttributeConfig >( meta_list.tokens.clone() );
       },
       syn::Meta::Path( ref _path ) =>
       {
-        return Ok( Default::default() )
+        Ok( ItemAttributeConfig::default() )
       },
       _ => return_syn_err!( attr, "Expects an attribute of format `#[ from( on ) ]`. \nGot: {}", qt!{ #attr } ),
     }

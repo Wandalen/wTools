@@ -1,8 +1,9 @@
-#[ allow( unused_imports ) ]
+#[ allow( unused_imports, clippy::wildcard_imports ) ]
 use super::*;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
+#[ allow( clippy::pub_use ) ]
 pub use alloc::collections::binary_heap::*;
 
 /// Creates a `BinaryHeap` from a list of elements.
@@ -32,8 +33,8 @@ pub use alloc::collections::binary_heap::*;
 /// # Parameters
 ///
 /// - `$( $key:expr ),* $( , )?`: A comma-separated list of elements to insert into the `BinaryHeap`.
-/// Each element can be of any type that implements the `Into<T>` trait, where `T` is the
-/// type stored in the `BinaryHeap`.
+///   Each element can be of any type that implements the `Into<T>` trait, where `T` is the
+///   type stored in the `BinaryHeap`.
 ///
 /// # Returns
 ///
@@ -101,8 +102,8 @@ macro_rules! heap
 /// # Parameters
 ///
 /// - `$( $key:expr ),* $( , )?`: A comma-separated list of elements to insert into the `BinaryHeap`.
-/// Each element can be of any type that implements the `Into<T>` trait, where `T` is the
-/// type stored in the `BinaryHeap`.
+///   Each element can be of any type that implements the `Into<T>` trait, where `T` is the
+///   type stored in the `BinaryHeap`.
 ///
 /// # Returns
 ///

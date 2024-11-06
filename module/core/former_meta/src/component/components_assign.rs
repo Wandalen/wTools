@@ -137,6 +137,7 @@ fn generate_impl_bounds( field_type : &syn::Type ) -> Result< proc_macro2::Token
 /// former::Assign::< i32, _ >::assign( self.component.clone() );
 /// ```
 ///
+#[ allow( clippy::unnecessary_wraps ) ]
 fn generate_component_assign_call( field : &syn::Field ) -> Result< proc_macro2::TokenStream >
 {
   // let field_name = field.ident.as_ref().expect( "Expected the field to have a name" );

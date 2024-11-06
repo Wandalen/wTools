@@ -5,6 +5,7 @@
 /// Internal namespace.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   /// Represents an equation parsed from a procedural macro input.
@@ -85,7 +86,7 @@ mod private
 
   ///
   /// For attribute like `#[former( default = 31 ) ]` return key `default` and value `31`,
-  /// as well as syn::Meta as the last element of result tuple.
+  /// as well as `syn::Meta` as the last element of result tuple.
   ///
   /// ### Basic use-case.
   ///
@@ -96,19 +97,20 @@ mod private
   /// let got = equation::from_meta( &attr ).unwrap();
   /// assert_eq!( macro_tools::code_to_str!( got ), "default = 31".to_string() );
   /// ```
-
+  /// # Errors
+  /// qqq: doc
   pub fn from_meta( attr : &syn::Attribute ) -> Result< Equation >
   {
     let meta = &attr.meta;
-    return match meta
+    match meta
     {
       syn::Meta::List( ref meta_list ) =>
       {
         let eq : Equation = syn::parse2( meta_list.tokens.clone() )?;
         Ok( eq )
       }
-      _ => return Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected syn::Meta::List( meta_list )" ) ),
-    };
+      _ => Err( syn::Error::new( attr.span(), "Unknown format of attribute, expected syn::Meta::List( meta_list )" ) ),
+    }
   }
 
 }
@@ -121,6 +123,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -135,6 +138,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
@@ -144,6 +148,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use super::super::equation;
 

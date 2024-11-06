@@ -9,6 +9,7 @@ pub use crate::dependency::hashbrown::hash_set::*;
 #[ cfg( not( feature = "no_std" ) ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
+#[ allow( clippy::pub_use ) ]
 pub use std::collections::hash_set::*;
 
 /// Creates a `HashSet` from a list of elements.
@@ -40,8 +41,8 @@ pub use std::collections::hash_set::*;
 /// # Parameters
 ///
 /// - `$( $key:expr ),* $( , )?`: A comma-separated list of elements to insert into the `HashSet`.
-/// Each element can be of any type that implements the `Into< T >` trait, where `T` is the
-/// type stored in the `HashSet`.
+///   Each element can be of any type that implements the `Into< T >` trait, where `T` is the
+///   type stored in the `HashSet`.
 ///
 /// # Returns
 ///
@@ -124,8 +125,8 @@ macro_rules! hset
 /// # Parameters
 ///
 /// - `$( $key:expr ),* $( , )?`: A comma-separated list of elements to insert into the `HashSet`.
-/// Each element can be of any type that implements the `Into< T >` trait, where `T` is the
-/// type stored in the `HashSet`.
+///   Each element can be of any type that implements the `Into< T >` trait, where `T` is the
+///   type stored in the `HashSet`.
 ///
 /// # Returns
 ///

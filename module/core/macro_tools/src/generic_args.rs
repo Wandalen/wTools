@@ -24,6 +24,7 @@ mod private
     /// # Returns
     /// A new instance of `syn::AngleBracketedGenericArguments` representing the generic parameters
     /// of the original type.
+    #[ allow( clippy::wrong_self_convention ) ]
     fn into_generic_args( &self ) -> syn::AngleBracketedGenericArguments;
   }
 
@@ -98,6 +99,7 @@ mod private
   ///
   /// This example demonstrates how lifetimes `'a` and `'b` are placed before other generic parameters
   /// like `T`, `U`, and `V` in the merged result, adhering to the expected syntax order in Rust generics.
+  #[ must_use ]
   pub fn merge
   (
     a : &syn::AngleBracketedGenericArguments,
@@ -110,7 +112,7 @@ mod private
     // Function to categorize and collect arguments into lifetimes and others
     let mut categorize_and_collect = |args : &syn::punctuated::Punctuated<syn::GenericArgument, syn::token::Comma>|
     {
-      for arg in args.iter()
+      for arg in args
       {
         match arg
         {
@@ -148,6 +150,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
   #[ doc( inline ) ]
@@ -163,6 +166,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;

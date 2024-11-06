@@ -537,7 +537,7 @@ field : {field_ident}"#,
     let attr = self.attrs.subform_collection.as_ref().unwrap();
     let field_ident = &self.ident;
     let field_typ = &self.non_optional_ty;
-    let params = typ::type_parameters( &field_typ, .. );
+    let params = typ::type_parameters( &field_typ, &( .. ) );
 
     use convert_case::{ Case, Casing };
 

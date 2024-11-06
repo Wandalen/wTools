@@ -1,6 +1,7 @@
 /// Internal namespace.
 mod private
 {
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use std::error::Error as ErrorTrait;
 
   /// This trait allows adding extra context or information to an error, creating a tuple of the additional
@@ -26,6 +27,10 @@ mod private
     ///
     /// A `Result` of type `ReportOk` if the original result is `Ok`, or a tuple `(ReportErr, E)` containing the additional
     /// context and the original error if the original result is `Err`.
+    /// 
+    /// # Errors
+    /// 
+    /// qqq: errors
     ///
     /// # Example
     ///
@@ -34,7 +39,7 @@ mod private
     /// let result : Result< (), std::io::Error > = Err( std::io::Error::new( std::io::ErrorKind::Other, "an error occurred" ) );
     /// let result_with_context : Result< (), ( &str, std::io::Error ) > = result.err_with( || "additional context" );
     /// ```
-    fn err_with< F >( self, f : F ) -> std::result::Result< ReportOk, ( ReportErr, E ) >
+    fn err_with< F >( self, f : F ) -> core::result::Result< ReportOk, ( ReportErr, E ) >
     where
       F : FnOnce() -> ReportErr;
 
@@ -51,6 +56,10 @@ mod private
     ///
     /// A `Result` of type `ReportOk` if the original result is `Ok`, or a tuple `(ReportErr, E)` containing the additional
     /// context and the original error if the original result is `Err`.
+    /// 
+    /// # Errors
+    /// 
+    /// qqq: Errors
     ///
     /// # Example
     ///
@@ -60,32 +69,35 @@ mod private
     /// let report = "additional context";
     /// let result_with_report : Result< (), ( &str, std::io::Error ) > = result.err_with_report( &report );
     /// ```
-    fn err_with_report( self, report : &ReportErr ) -> std::result::Result< ReportOk, ( ReportErr, E ) >
+    fn err_with_report( self, report : &ReportErr ) -> core::result::Result< ReportOk, ( ReportErr, E ) >
     where
       ReportErr : Clone;
 
   }
 
   impl< ReportErr, ReportOk, E, IntoError > ErrWith< ReportErr, ReportOk, E >
-  for std::result::Result< ReportOk, IntoError >
+  for core::result::Result< ReportOk, IntoError >
   where
     IntoError : Into< E >,
   {
 
-    fn err_with< F >( self, f : F ) -> std::result::Result< ReportOk, ( ReportErr, E ) >
+    #[ allow( clippy::implicit_return, clippy::min_ident_chars ) ]
+    #[ inline ]
+    fn err_with< F >( self, f : F ) -> core::result::Result< ReportOk, ( ReportErr, E ) >
     where
       F : FnOnce() -> ReportErr,
     {
-      self.map_err( | e | ( f(), e.into() ) )
+      self.map_err( | error | ( f(), error.into() ) )
     }
 
     #[ inline( always ) ]
-    fn err_with_report( self, report : &ReportErr ) -> std::result::Result< ReportOk, ( ReportErr, E ) >
+    #[ allow( clippy::implicit_return ) ]
+    fn err_with_report( self, report : &ReportErr ) -> core::result::Result< ReportOk, ( ReportErr, E ) >
     where
       ReportErr : Clone,
       Self : Sized,
     {
-      self.map_err( | e | ( report.clone(), e.into() ) )
+      self.map_err( | error | ( report.clone(), error.into() ) )
     }
 
   }
@@ -226,6 +238,7 @@ pub mod untyped;
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
+#[ allow( clippy::pub_use ) ]
 pub use own::*;
 
 /// Own namespace of the module.
@@ -233,23 +246,29 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use orphan::*;
 
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use assert::orphan::*;
 
   #[ cfg( feature = "error_untyped" ) ]
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use untyped::orphan::*;
 
   #[ cfg( feature = "error_typed" ) ]
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use typed::orphan::*;
 
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use private::
   {
     // err,
@@ -258,10 +277,13 @@ pub mod own
     // BasicError,
   };
 
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use super::assert;
   #[ cfg( feature = "error_typed" ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use super::typed;
   #[ cfg( feature = "error_untyped" ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use super::untyped;
 
 }
@@ -271,8 +293,10 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use exposed::*;
 }
 
@@ -281,15 +305,19 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use prelude::*;
 
   // Expose itself.
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use super::super::error;
 
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use private::
   {
     ErrWith,
@@ -297,14 +325,17 @@ pub mod exposed
   };
 
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use assert::exposed::*;
 
   #[ cfg( feature = "error_untyped" ) ]
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use untyped::exposed::*;
 
   #[ cfg( feature = "error_typed" ) ]
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use typed::exposed::*;
 
 }
@@ -314,6 +345,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
   // #[ doc( inline ) ]
@@ -326,14 +358,17 @@ pub mod prelude
   // };
 
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use assert::prelude::*;
 
   #[ cfg( feature = "error_untyped" ) ]
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use untyped::prelude::*;
 
   #[ cfg( feature = "error_typed" ) ]
   #[ doc( inline ) ]
+  #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
   pub use typed::prelude::*;
 
 }

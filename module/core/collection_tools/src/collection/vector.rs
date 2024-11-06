@@ -1,12 +1,14 @@
-#[ allow( unused_imports ) ]
+#[ allow( unused_imports, clippy::wildcard_imports ) ]
 use super::*;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
+#[ allow( clippy::pub_use ) ]
 pub use alloc::vec::*;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
+#[ allow( clippy::pub_use ) ]
 pub use core::slice::{ Iter, IterMut };
 
 /// Creates a `Vec` from a list of elements.
@@ -36,8 +38,8 @@ pub use core::slice::{ Iter, IterMut };
 /// # Parameters
 ///
 /// - `$( $key : expr ),* $( , )?`: A comma-separated list of elements to insert into the `Vec`.
-/// Each element can be of any type that implements the `Into<T>` trait, where `T` is the
-/// type stored in the `Vec`.
+///   Each element can be of any type that implements the `Into<T>` trait, where `T` is the
+///   type stored in the `Vec`.
 ///
 /// # Returns
 ///
@@ -118,8 +120,8 @@ macro_rules! vec
 /// # Parameters
 ///
 /// - `$( $key : expr ),* $( , )?`: A comma-separated list of elements to insert into the `Vec`.
-/// Each element can be of any type that implements the `Into<T>` trait, where `T` is the
-/// type stored in the `Vec`.
+///   Each element can be of any type that implements the `Into<T>` trait, where `T` is the
+///   type stored in the `Vec`.
 ///
 /// # Returns
 ///

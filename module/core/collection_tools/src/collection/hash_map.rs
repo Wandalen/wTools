@@ -10,6 +10,7 @@ pub use crate::dependency::hashbrown::hash_map::*;
 #[ cfg( not( feature = "no_std" ) ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
+#[ allow( clippy::pub_use ) ]
 pub use std::collections::hash_map::*;
 
 /// Creates a `HashMap` from a list of key-value pairs.
@@ -41,8 +42,8 @@ pub use std::collections::hash_map::*;
 /// # Parameters
 ///
 /// - `$( $key:expr => $value:expr ),* $( , )?`: A comma-separated list of key-value pairs to insert into the `HashMap`.
-/// Each key and value can be of any type that implements the `Into<K>` and `Into<V>` traits, where `K` and `V` are the
-/// types stored in the `HashMap` as keys and values, respectively.
+///   Each key and value can be of any type that implements the `Into<K>` and `Into<V>` traits, where `K` and `V` are the
+///   types stored in the `HashMap` as keys and values, respectively.
 ///
 /// # Returns
 ///
@@ -125,8 +126,8 @@ macro_rules! hmap
 /// # Parameters
 ///
 /// - `$( $key:expr => $value:expr ),* $( , )?`: A comma-separated list of key-value pairs to insert into the `HashMap`.
-/// Each key and value can be of any type that implements the `Into<K>` and `Into<V>` traits, where `K` and `V` are the
-/// types stored in the `HashMap` as keys and values, respectively.
+///   Each key and value can be of any type that implements the `Into<K>` and `Into<V>` traits, where `K` and `V` are the
+///   types stored in the `HashMap` as keys and values, respectively.
 ///
 /// # Returns
 ///

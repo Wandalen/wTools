@@ -173,6 +173,8 @@ mod private
     Self : core::iter::Iterator,
   {
     /// Iterate each element and return `core::Result::Err` if any element is error.
+    /// # Errors
+    /// qqq: errors
     fn map_result< F, RE, El >( self, f : F ) -> core::result::Result< Vec< El >, RE >
     where
       Self : Sized + Clone,
@@ -209,6 +211,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -219,6 +222,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
   #[ doc( inline ) ]
@@ -269,7 +273,7 @@ pub mod orphan
 
   #[ cfg( not( feature = "no_std" ) ) ]
   #[ doc( inline ) ]
-  pub use std::iter::zip;
+  pub use core::iter::zip;
 
 }
 
@@ -277,6 +281,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
   #[ doc( inline ) ]
@@ -306,6 +311,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
   #[ doc( inline ) ]

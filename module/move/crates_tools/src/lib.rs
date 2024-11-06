@@ -8,19 +8,21 @@
 mod private
 {
   use std::collections::HashMap;
-  use std::fmt::Formatter;
+  use core::fmt::Formatter;
   use std::io::Read;
   use std::path::{ Path, PathBuf };
-  use std::time::Duration;
-  use ureq::{ Agent, AgentBuilder };
+  use core::time::Duration;
+  use ureq::AgentBuilder;
 
   /// Represents a `.crate` archive, which is a collection of files and their contents.
   #[ derive( Default, Clone, PartialEq ) ]
   pub struct CrateArchive( HashMap< PathBuf, Vec< u8 > > );
 
-  impl std::fmt::Debug for CrateArchive
+  impl core::fmt::Debug for CrateArchive
   {
-    fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
+    #[ allow( clippy::implicit_return, clippy::min_ident_chars ) ]
+    #[ inline]
+    fn fmt( &self, f : &mut Formatter< '_ > ) -> core::fmt::Result
     {
       f.debug_struct( "CrateArchive" ).field( "files", &self.0.keys() ).finish()
     }
@@ -29,24 +31,33 @@ mod private
   impl CrateArchive
   {
     /// Reads and decode a `.crate` archive from a given path.
+    /// # Errors
+    /// qqq: doc
+    #[ allow( clippy::question_mark_used, clippy::implicit_return ) ]
+    #[ inline ]
     pub fn read< P >( path : P ) -> std::io::Result< Self >
     where
       P : AsRef< Path >,
     {
       let mut file = std::fs::File::open( path )?;
       let mut buf = vec![];
+      #[ allow( clippy::verbose_file_reads ) ]
       file.read_to_end( &mut buf )?;
 
       Self::decode( buf )
     }
 
     #[ cfg( feature = "network" ) ]
+    #[ allow( clippy::question_mark_used, clippy::implicit_return, clippy::result_large_err ) ]
     /// Downloads and decodes a `.crate` archive from a given url.
+    /// # Errors
+    /// qqq: docs
+    #[ inline ]
     pub fn download< Url >( url : Url ) -> Result< Self, ureq::Error >
     where
       Url : AsRef< str >,
     {
-      let agent: Agent = AgentBuilder::new()
+      let agent = AgentBuilder::new()
       .timeout_read( Duration::from_secs( 5 ) )
       .timeout_write( Duration::from_secs( 5 ) )
       .build();
@@ -63,16 +74,24 @@ mod private
     /// Requires the full version of the package, in the format of `"x.y.z"`
     ///
     /// Returns error if the package with specified name and version - not exists.
+    /// # Errors
+    /// qqq: doc
     #[ cfg( feature = "network" ) ]
+    #[ allow( clippy::implicit_return, clippy::result_large_err ) ]
+    #[ inline ]
     pub fn download_crates_io< N, V >( name : N, version : V ) -> Result< Self, ureq::Error >
     where
-      N : std::fmt::Display,
-      V : std::fmt::Display,
+      N : core::fmt::Display,
+      V : core::fmt::Display,
     {
       Self::download( format!( "https://static.crates.io/crates/{name}/{name}-{version}.crate" ) )
     }
 
     /// Decodes a bytes that represents a `.crate` file.
+    /// # Errors
+    /// qqq: doc
+    #[ allow( clippy::question_mark_used, unknown_lints, clippy::implicit_return ) ]
+    #[ inline ]
     pub fn decode< B >( bytes : B ) -> std::io::Result< Self >
     where
       B : AsRef<[ u8 ]>,
@@ -81,43 +100,44 @@ mod private
       use flate2::bufread::GzDecoder;
       use tar::Archive;
 
-      let bytes = bytes.as_ref();
-      if bytes.is_empty()
+      let bytes_slice = bytes.as_ref();
+      if bytes_slice.is_empty()
       {
         return Ok( Self::default() )
       }
 
-      let gz = GzDecoder::new( bytes );
+      let gz = GzDecoder::new( bytes_slice );
       let mut archive = Archive::new( gz );
 
       let mut output = HashMap::new();
 
       for file in archive.entries()?
       {
-        let mut file = file?;
+        let mut archive_file = file?;
 
         let mut contents = vec![];
-        file.read_to_end( &mut contents )?;
+        archive_file.read_to_end( &mut contents )?;
 
-        output.insert( file.path()?.to_path_buf(), contents );
+        output.insert( archive_file.path()?.to_path_buf(), contents );
       }
 
       Ok( Self( output ) )
     }
-  }
 
-  impl CrateArchive
-  {
     /// Returns a list of files from the `.crate` file.
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline ]
     pub fn list( &self ) -> Vec< &Path >
     {
       self.0.keys().map( PathBuf::as_path ).collect()
     }
 
     /// Returns content of file by specified path from the `.crate` file in bytes representation.
+    #[ allow( clippy::implicit_return ) ]
+    #[ inline ]
     pub fn content_bytes< P >( &self, path : P ) -> Option< &[ u8 ] >
-    where
-      P : AsRef< Path >,
+      where
+        P : AsRef< Path >,
     {
       self.0.get( path.as_ref() ).map( Vec::as_ref )
     }
@@ -126,7 +146,7 @@ mod private
 
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
-#[ allow( unused_imports ) ]
+#[ allow( unused_imports, clippy::pub_use ) ]
 pub use own::*;
 
 /// Own namespace of the module.
@@ -134,9 +154,9 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  use super::orphan;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+  #[ allow( unused_imports, clippy::pub_use ) ]
   pub use orphan::*;
 }
 
@@ -145,9 +165,9 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
-  use super::*;
+  use super::exposed;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+  #[ allow( unused_imports, clippy::pub_use ) ]
   pub use exposed::*;
 }
 
@@ -156,9 +176,9 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
-  use super::*;
+  use super::prelude;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+  #[ allow( unused_imports, clippy::pub_use ) ]
   pub use prelude::*;
 }
 
@@ -167,8 +187,8 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
-  use super::*;
+  use super::private;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+  #[ allow( unused_imports, clippy::pub_use ) ]
   pub use private::CrateArchive;
 }

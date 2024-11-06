@@ -1,8 +1,9 @@
-#[ allow( unused_imports ) ]
+#[ allow( unused_imports, clippy::wildcard_imports ) ]
 use super::*;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
+#[ allow( clippy::pub_use ) ]
 pub use alloc::collections::linked_list::*;
 
 /// Creates a `LinkedList` from a llist of elements.
@@ -32,8 +33,8 @@ pub use alloc::collections::linked_list::*;
 /// # Parameters
 ///
 /// - `$( $key:expr ),* $( , )?`: A comma-separated llist of elements to insert into the `LinkedList`.
-/// Each element can be of any type that implements the `Into<T>` trait, where `T` is the
-/// type stored in the `LinkedList`.
+///   Each element can be of any type that implements the `Into<T>` trait, where `T` is the
+///   type stored in the `LinkedList`.
 ///
 /// # Returns
 ///
@@ -114,8 +115,8 @@ macro_rules! llist
 /// # Parameters
 ///
 /// - `$( $key:expr ),* $( , )?`: A comma-separated llist of elements to insert into the `LinkedList`.
-/// Each element can be of any type that implements the `Into<T>` trait, where `T` is the
-/// type stored in the `LinkedList`.
+///   Each element can be of any type that implements the `Into<T>` trait, where `T` is the
+///   type stored in the `LinkedList`.
 ///
 /// # Returns
 ///

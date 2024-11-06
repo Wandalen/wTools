@@ -9,6 +9,7 @@
 mod private
 {
 
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   /// Facilitates the conversion of collection entries to their corresponding value representations.
@@ -347,6 +348,8 @@ mod private
   {
     /// Begins the construction process of a collection with optional initial storage and context,
     /// setting up an `on_end` completion handler to finalize the collection's construction.
+    /// # Panics
+    /// qqq: doc
     #[ inline( always ) ]
     pub fn begin
     (
@@ -370,6 +373,8 @@ mod private
 
     /// Provides a variation of the `begin` method allowing for coercion of the end handler,
     /// facilitating ease of integration with different end conditions.
+    /// # Panics
+    /// qqq: docs
     #[ inline( always ) ]
     pub fn begin_coercing< IntoEnd >
     (
@@ -394,6 +399,8 @@ mod private
     }
 
     /// Finalizes the building process, returning the formed or a context incorporating it.
+    /// # Panics
+    /// qqq: doc
     #[ inline( always ) ]
     pub fn end( mut self ) -> Definition::Formed
     {
@@ -412,6 +419,7 @@ mod private
     /// Replaces the current storage with a provided storage, allowing for resetting or
     /// redirection of the building process.
     #[ inline( always ) ]
+    #[ must_use ]
     pub fn replace( mut self, storage : Definition::Storage ) -> Self
     {
       self.storage = storage;
@@ -462,6 +470,8 @@ mod private
 
     /// Appends an entry to the end of the storage, expanding the internal collection.
     #[ inline( always ) ]
+    #[ must_use ]
+    #[ allow( clippy::should_implement_trait ) ]
     pub fn add< IntoElement >( mut self, entry : IntoElement ) -> Self
     where IntoElement : core::convert::Into< E >,
     {
@@ -521,6 +531,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -530,6 +541,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
@@ -539,6 +551,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
   #[ doc( inline ) ]

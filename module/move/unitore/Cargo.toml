@@ -43,7 +43,7 @@ toml = "0.8.10"
 serde = "1.0.196"
 url = { version = "2.0", features = ["serde"] }
 humantime-serde = "1.1.1"
-gluesql = "0.15.0"
+gluesql = "0.16.2"
 async-trait = "0.1.41"
 wca = { workspace = true }
 mockall = "0.12.1"

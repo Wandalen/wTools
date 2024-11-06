@@ -163,6 +163,7 @@ use alloc::boxed::Box;
 /// a closure needs to be stored or passed around as an object implementing
 /// `FormingEnd`.
 #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[ allow( clippy::type_complexity ) ]
 pub struct FormingEndClosure< Definition : crate::FormerDefinitionTypes >
 {
   closure : Box< dyn Fn( Definition::Storage, Option< Definition::Context > ) -> Definition::Formed >,

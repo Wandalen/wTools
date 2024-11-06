@@ -8,13 +8,14 @@
 #[ cfg( feature = "enabled" ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   ///
-  /// Result with syn::Error.
+  /// Result with `syn::Error`.
   ///
 
-  pub type Result< T > = std::result::Result< T, syn::Error >;
+  pub type Result< T > = core::result::Result< T, syn::Error >;
 
 }
 
@@ -63,7 +64,7 @@ pub mod typ;
 #[ cfg( all( feature = "enabled", feature = "typed" ) ) ]
 pub mod typed;
 
-#[ cfg( all( feature = "enabled" ) ) ]
+#[ cfg( feature = "enabled" ) ]
 pub mod iter;
 
 ///
@@ -98,6 +99,7 @@ pub mod own
 
   mod _all
   {
+    #[ allow( clippy::wildcard_imports ) ]
     use super::super::*;
     pub use orphan::*;
 
@@ -167,6 +169,7 @@ pub mod orphan
 
   mod _all
   {
+    #[ allow( clippy::wildcard_imports ) ]
     use super::super::*;
     pub use exposed::*;
   }
@@ -185,6 +188,7 @@ pub mod exposed
 
   mod _all
   {
+    #[ allow( clippy::wildcard_imports ) ]
     use super::super::*;
     pub use prelude::*;
 
@@ -249,6 +253,7 @@ pub mod prelude
 
   mod _all
   {
+    #[ allow( clippy::wildcard_imports ) ]
     use super::super::*;
     // pub use prelude::*;
 

@@ -1,8 +1,9 @@
-#[ allow( unused_imports ) ]
+#[ allow( unused_imports, clippy::wildcard_imports ) ]
 use super::*;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
+#[ allow( clippy::pub_use ) ]
 pub use alloc::collections::vec_deque::*;
 
 /// Creates a `VecDeque` from a list of elements.
@@ -38,8 +39,8 @@ pub use alloc::collections::vec_deque::*;
 /// # Parameters
 ///
 /// - `$( $key:expr ),* $( , )?`: A comma-separated list of elements to insert into the `VecDeque`.
-/// Each element can be of any type that implements the `Into< T >` trait, where `T` is the
-/// type stored in the `VecDeque`.
+///   Each element can be of any type that implements the `Into< T >` trait, where `T` is the
+///   type stored in the `VecDeque`.
 ///
 /// # Returns
 ///
@@ -119,8 +120,8 @@ macro_rules! deque
 /// # Parameters
 ///
 /// - `$( $key:expr ),* $( , )?`: A comma-separated list of elements to insert into the `VecDeque`.
-/// Each element can be of any type that implements the `Into< T >` trait, where `T` is the
-/// type stored in the `VecDeque`.
+///   Each element can be of any type that implements the `Into< T >` trait, where `T` is the
+///   type stored in the `VecDeque`.
 ///
 /// # Returns
 ///

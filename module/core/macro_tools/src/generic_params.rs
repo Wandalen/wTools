@@ -5,6 +5,7 @@
 /// Internal namespace.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use crate::IterTrait;
   // use iter_tools::IterTrait;
@@ -36,12 +37,15 @@ mod private
   impl GenericsWithWhere
   {
     /// Unwraps the `GenericsWithWhere` to retrieve the inner `syn::Generics`.
+    #[ must_use ]
     pub fn unwrap( self ) -> syn::Generics
     {
       self.generics
     }
 
     /// Parses a string to a `GenericsWithWhere`, specifically designed to handle generics syntax with where clauses effectively.
+    /// # Errors
+    /// qqq: doc
     pub fn parse_from_str( s : &str ) -> syn::Result< GenericsWithWhere >
     {
       syn::parse_str::< GenericsWithWhere >( s )
@@ -109,27 +113,29 @@ mod private
   /// # Examples
   ///
   ///
-  /// # use syn::{Generics, parse_quote};
+  /// # use `syn::{Generics`, `parse_quote`};
   ///
-  /// let mut generics_a : syn::Generics = parse_quote!{ < T : Clone, U : Default > };
-  /// generics_a.where_clause = parse_quote!{ where T : Default };
-  /// let mut generics_b : syn::Generics = parse_quote!{ < V : core::fmt::Debug > };
-  /// generics_b.where_clause = parse_quote!{ where V : Sized };
-  /// let got = generic_params::merge( &generics_a, &generics_b );
+  /// let mut `generics_a` : `syn::Generics` = `parse_quote`!{ < T : Clone, U : Default > };
+  /// `generics_a.where_clause` = `parse_quote`!{ where T : Default };
+  /// let mut `generics_b` : `syn::Generics` = `parse_quote`!{ < V : `core::fmt::Debug` > };
+  /// `generics_b.where_clause` = `parse_quote`!{ where V : Sized };
+  /// let got = `generic_params::merge`( &`generics_a`, &`generics_b` );
   ///
-  /// let mut exp : syn::Generics = parse_quote!
+  /// let mut exp : `syn::Generics` = `parse_quote`!
   /// {
-  ///   < T : Clone, U : Default, V : core::fmt::Debug >
+  ///   < T : Clone, U : Default, V : `core::fmt::Debug` >
   /// };
-  /// exp.where_clause = parse_quote!
+  /// `exp.where_clause` = `parse_quote`!
   /// {
   ///   where
   ///     T : Default,
   ///     V : Sized
   /// };
   ///
-  /// assert_eq!( got, exp );
+  /// `assert_eq`!( got, exp );
 
+  #[ must_use ]
+  #[ allow( clippy::default_trait_access ) ]
   pub fn merge( a : &syn::Generics, b : &syn::Generics ) -> syn::Generics
   {
 
@@ -205,6 +211,8 @@ mod private
   /// assert!( simplified_generics.where_clause.is_none() ); // Where clause is removed
   /// ```
 
+  #[ allow( clippy::default_trait_access ) ]
+  #[ must_use ]
   pub fn only_names( generics : &syn::Generics ) -> syn::Generics
   {
     // use syn::{ Generics, GenericParam, LifetimeDef, TypeParam, ConstParam };
@@ -282,9 +290,9 @@ mod private
   ///   &syn::Ident::new( "N", proc_macro2::Span::call_site() )
   /// ]);
   /// ```
-
-  pub fn names< 'a >( generics : &'a syn::Generics )
-  -> impl IterTrait< 'a, &'a syn::Ident >
+  #[ must_use ]
+  pub fn names( generics : &syn::Generics )
+  -> impl IterTrait< '_, &syn::Ident >
   // -> std::iter::Map
   // <
   //   syn::punctuated::Iter< 'a, syn::GenericParam >,
@@ -388,6 +396,8 @@ mod private
   /// ```
   ///
 
+  #[ allow( clippy::type_complexity ) ]
+  #[ must_use ]
   pub fn decompose
   (
     generics : &syn::Generics,
@@ -512,6 +522,7 @@ pub use own::*;
 /// Own namespace of the module.
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
   #[ doc( inline ) ]
@@ -530,6 +541,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;

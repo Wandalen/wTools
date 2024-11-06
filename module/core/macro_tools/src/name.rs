@@ -39,7 +39,7 @@ mod private
         syn::Item::Union( item ) => item.name(),
         // syn::Item::Use( item ) => item.name(),
         // syn::Item::Verbatim( item ) => item.name(),
-        _ => "".into(),
+        _ => String::new(),
       }
     }
   }
@@ -51,7 +51,7 @@ mod private
       let first = self.segments.first();
       if first.is_none()
       {
-        return "".into()
+        return String::new()
       }
       let first = first.unwrap();
       first.ident.to_string()
@@ -104,7 +104,7 @@ mod private
     {
       if self.trait_.is_none()
       {
-        return "".into()
+        return String::new()
       }
       let t = self.trait_.as_ref().unwrap();
       t.1.name()
@@ -117,7 +117,7 @@ mod private
     {
       if self.ident.is_none()
       {
-        return "".to_string()
+        return String::new()
       }
       let ident = self.ident.as_ref().unwrap();
       ident.to_string()
@@ -232,6 +232,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -241,6 +242,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
@@ -250,6 +252,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
   pub use super::super::name;
@@ -263,6 +266,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]

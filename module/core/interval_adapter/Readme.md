@@ -1,11 +1,11 @@
 <!-- {{# generate.module_header{} #}} -->
 
-# Module :: interval_adapter
+# Module :: `interval_adapter`
 <!--{ generate.module_header.start() }-->
  [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_interval_adapter_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_interval_adapter_push.yml) [![docs.rs](https://img.shields.io/docsrs/interval_adapter?color=e3e8f0&logo=docs.rs)](https://docs.rs/interval_adapter) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fcore%2Finterval_adapter%2Fexamples%2Finterval_adapter_trivial.rs,RUN_POSTFIX=--example%20interval_adapter_trivial/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 <!--{ generate.module_header.end }-->
 
-Integer interval adapter for both Range and RangeInclusive.
+Integer interval adapter for both Range and `RangeInclusive`.
 
 Let's assume you have a function which should accept Interval. But you don't want to limit caller of the function to either half-open interval `core::ops::Range` or closed one `core::ops::RangeInclusive` you want allow to use anyone of iterable interval. To make that work smoothly use `IterableInterval`. Both `core::ops::Range` and `core::ops::RangeInclusive` implement the trait, also it's possible to work with non-iterable intervals, like ( -Infinity .. +Infinity ).
 

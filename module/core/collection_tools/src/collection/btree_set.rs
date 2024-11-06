@@ -1,8 +1,9 @@
-#[ allow( unused_imports ) ]
+#[ allow( unused_imports, clippy::wildcard_imports ) ]
 use super::*;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
+#[ allow( clippy::pub_use ) ]
 pub use alloc::collections::btree_set::*;
 
 /// Creates a `BTreeSet` from a list of elements.
@@ -29,8 +30,8 @@ pub use alloc::collections::btree_set::*;
 /// # Parameters
 ///
 /// - `$( $key:expr ),* $( , )?`: A comma-separated list of elements to insert into the `BTreeSet`.
-/// Each element can be of any type that implements the `Into<T>` trait, where `T` is the
-/// type stored in the `BTreeSet`.
+///   Each element can be of any type that implements the `Into<T>` trait, where `T` is the
+///   type stored in the `BTreeSet`.
 ///
 /// # Returns
 ///
@@ -100,8 +101,8 @@ macro_rules! bset
 /// # Parameters
 ///
 /// - `$( $key:expr ),* $( , )?`: A comma-separated list of elements to insert into the `BTreeSet`.
-/// Each element can be of any type that implements the `Into<T>` trait, where `T` is the
-/// type stored in the `BTreeSet`.
+///   Each element can be of any type that implements the `Into<T>` trait, where `T` is the
+///   type stored in the `BTreeSet`.
 ///
 /// # Returns
 ///

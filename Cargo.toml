@@ -29,9 +29,9 @@ discord_url = "https://discord.gg/m3YfbXpUUY"
 # Source :: https://github.com/obox-systems/conventions/blob/master/code_style.md#lints-and-warnings
 
 # Denies non-idiomatic code for Rust 2018 edition.
-rust_2018_idioms = "deny"
+rust_2018_idioms = { level = "deny", priority = -1 }
 # Denies using features that may break in future Rust versions.
-future_incompatible = "deny"
+future_incompatible = { level = "deny", priority = -1 }
 # Warns if public items lack documentation.
 missing_docs = "warn"
 # Warns for public types not implementing Debug.
@@ -41,9 +41,9 @@ unsafe-code = "warn"
 
 [workspace.lints.clippy]
 # Denies restrictive lints, limiting certain language features/patterns.
-restriction = "warn"
+#restriction = { level = "deny", priority = -1 }
 # Denies pedantic lints, enforcing strict coding styles and conventions.
-pedantic = "warn"
+pedantic = { level = "warn", priority = -1 }
 # Denies undocumented unsafe blocks.
 undocumented_unsafe_blocks = "deny"
 # xxx : check

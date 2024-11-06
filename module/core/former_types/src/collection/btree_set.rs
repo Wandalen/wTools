@@ -4,7 +4,7 @@
 //! this module abstracts the operations on binary tree set-like data structures, making them more flexible and easier to integrate as
 //! as subformer, enabling fluid and intuitive manipulation of binary tree sets via builder patterns.
 //!
-
+#[ allow( clippy::wildcard_imports ) ]
 use crate::*;
 #[ allow( unused ) ]
 use collection_tools::BTreeSet;
@@ -230,6 +230,7 @@ impl< E > BTreeSetExt< E > for BTreeSet< E >
 where
   E : Ord
 {
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn former() -> BTreeSetFormer< E, (), BTreeSet< E >, ReturnStorage >
   {
     BTreeSetFormer::< E, (), BTreeSet< E >, ReturnStorage >::new( ReturnStorage::default() )

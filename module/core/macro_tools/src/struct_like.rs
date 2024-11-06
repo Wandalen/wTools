@@ -5,6 +5,7 @@
 /// Internal namespace.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   /// Enum to encapsulate either a field from a struct or a variant from an enum.
@@ -59,6 +60,7 @@ mod private
   {
 
     /// Returns a reference to the attributes of the item.
+    #[ must_use ]
     pub fn attrs( &self ) -> &Vec< syn::Attribute >
     {
       match self
@@ -69,6 +71,7 @@ mod private
     }
 
     /// Returns a reference to the visibility of the item.
+    #[ must_use ]
     pub fn vis( &self ) -> Option< &syn::Visibility >
     {
       match self
@@ -79,6 +82,7 @@ mod private
     }
 
     /// Returns a reference to the mutability of the item.
+    #[ must_use ]
     pub fn mutability( &self ) -> Option< &syn::FieldMutability >
     {
       match self
@@ -89,6 +93,7 @@ mod private
     }
 
     /// Returns a reference to the identifier of the item.
+    #[ must_use]
     pub fn ident( &self ) -> Option< &syn::Ident >
     {
       match self
@@ -99,6 +104,7 @@ mod private
     }
 
     /// Returns an iterator over elements of the item.
+    #[ must_use ]
     pub fn typ( &self ) -> Option< &syn::Type >
     {
       match self
@@ -115,6 +121,7 @@ mod private
     }
 
     /// Returns a reference to the fields of the item.
+    #[ must_use ]
     pub fn fields( &self ) -> Option< &syn::Fields >
     {
       match self
@@ -125,6 +132,7 @@ mod private
     }
 
     /// Returns a reference to the discriminant of the item.
+    #[ must_use ]
     pub fn discriminant( &self ) -> Option< &( syn::token::Eq, syn::Expr ) >
     {
       match self
@@ -202,7 +210,7 @@ mod private
         // Parse ItemStruct
         let mut item_struct : ItemStruct = input.parse()?;
         item_struct.vis = visibility;
-        item_struct.attrs = attributes.into();
+        item_struct.attrs = attributes;
         if item_struct.fields.is_empty()
         {
           Ok( StructLike::Unit( item_struct ) )
@@ -217,7 +225,7 @@ mod private
         // Parse ItemEnum
         let mut item_enum : ItemEnum = input.parse()?;
         item_enum.vis = visibility;
-        item_enum.attrs = attributes.into();
+        item_enum.attrs = attributes;
         Ok( StructLike::Enum( item_enum ) )
       }
       else
@@ -274,14 +282,12 @@ mod private
     }
 
     /// Returns an iterator over elements of the item.
+    #[ must_use ]
     pub fn attrs( &self ) -> &Vec< syn::Attribute >
     {
       match self
       {
-        StructLike::Unit( item ) =>
-        {
-          &item.attrs
-        },
+        StructLike::Unit( item ) |
         StructLike::Struct( item ) =>
         {
           &item.attrs
@@ -294,14 +300,12 @@ mod private
     }
 
     /// Returns an iterator over elements of the item.
+    #[ must_use ]
     pub fn vis( &self ) -> &syn::Visibility
     {
       match self
       {
-        StructLike::Unit( item ) =>
-        {
-          &item.vis
-        },
+        StructLike::Unit( item ) |
         StructLike::Struct( item ) =>
         {
           &item.vis
@@ -314,14 +318,12 @@ mod private
     }
 
     /// Returns an iterator over elements of the item.
+    #[ must_use ]
     pub fn ident( &self ) -> &syn::Ident
     {
       match self
       {
-        StructLike::Unit( item ) =>
-        {
-          &item.ident
-        },
+        StructLike::Unit( item ) |
         StructLike::Struct( item ) =>
         {
           &item.ident
@@ -334,14 +336,12 @@ mod private
     }
 
     /// Returns an iterator over elements of the item.
+    #[ must_use ]
     pub fn generics( &self ) -> &syn::Generics
     {
       match self
       {
-        StructLike::Unit( item ) =>
-        {
-          &item.generics
-        },
+        StructLike::Unit( item ) |
         StructLike::Struct( item ) =>
         {
           &item.generics
@@ -355,13 +355,14 @@ mod private
 
     /// Returns an iterator over fields of the item.
     // pub fn fields< 'a >( &'a self ) -> impl IterTrait< 'a, &'a syn::Field >
+    #[ must_use ]
     pub fn fields< 'a >( &'a self ) -> BoxedIter< 'a, &'a syn::Field >
     {
       let result : BoxedIter< 'a, &'a syn::Field > = match self
       {
         StructLike::Unit( _item ) =>
         {
-          Box::new( std::iter::empty() )
+          Box::new( core::iter::empty() )
         },
         StructLike::Struct( item ) =>
         {
@@ -369,22 +370,22 @@ mod private
         },
         StructLike::Enum( _item ) =>
         {
-          Box::new( std::iter::empty() )
+          Box::new( core::iter::empty() )
         },
       };
       result
     }
 
     /// Extracts the name of each field.
+    /// # Panics
+    /// qqq: docs
     // pub fn field_names< 'a >( &'a self ) -> Option< impl IterTrait< 'a, &'a syn::Ident > + '_ >
-    pub fn field_names< 'a >( &'a self ) -> Option< BoxedIter< 'a, &'a syn::Ident >>
+    #[ must_use ]
+    pub fn field_names( &self ) -> Option< BoxedIter< '_, &syn::Ident >>
     {
       match self
       {
-        StructLike::Unit( item ) =>
-        {
-          item_struct::field_names( item )
-        },
+        StructLike::Unit( item ) |
         StructLike::Struct( item ) =>
         {
           item_struct::field_names( item )
@@ -398,8 +399,9 @@ mod private
     }
 
     /// Extracts the type of each field.
-    pub fn field_types<'a>( &'a self )
-    -> BoxedIter< 'a, &'a syn::Type >
+    #[ must_use ]
+    pub fn field_types( & self )
+    -> BoxedIter< '_, & syn::Type >
     // -> std::iter::Map
     // <
     //   std::boxed::Box< dyn _IterTrait< '_, &syn::Field > + 'a >,
@@ -411,8 +413,9 @@ mod private
 
     /// Extracts the name of each field.
     // pub fn field_attrs< 'a >( &'a self ) -> impl IterTrait< 'a, &'a Vec< syn::Attribute > >
-    pub fn field_attrs<'a>( &'a self )
-    -> BoxedIter< 'a, &'a Vec< syn::Attribute > >
+    #[ must_use ]
+    pub fn field_attrs( & self )
+    -> BoxedIter< '_, &Vec< syn::Attribute > >
     // -> std::iter::Map
     // <
     //   std::boxed::Box< dyn _IterTrait< '_, &syn::Field > + 'a >,
@@ -423,6 +426,7 @@ mod private
     }
 
     /// Extract the first field.
+    #[ must_use ]
     pub fn first_field( &self ) -> Option< &syn::Field >
     {
       self.fields().next()
@@ -443,6 +447,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -458,6 +463,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
@@ -467,6 +473,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use super::super::struct_like;
 

@@ -5,6 +5,7 @@
 /// Internal namespace.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   /// Checks if the given iterator of attributes contains an attribute named `debug`.
@@ -48,7 +49,8 @@ mod private
   ///
   /// assert!( contains_debug, "Expected to find 'debug' attribute" );
   /// ```
-  ///
+  /// # Errors
+  /// qqq: doc
 
   pub fn has_debug< 'a >( attrs : impl Iterator< Item = &'a syn::Attribute > ) -> syn::Result< bool >
   {
@@ -56,7 +58,7 @@ mod private
     {
       if let Some( ident ) = attr.path().get_ident()
       {
-        let ident_string = format!( "{}", ident );
+        let ident_string = format!( "{ident}" );
         if ident_string == "debug"
         {
           return Ok( true )
@@ -67,7 +69,7 @@ mod private
         return_syn_err!( "Unknown structure attribute:\n{}", qt!{ attr } );
       }
     }
-    return Ok( false )
+    Ok( false )
   }
 
   /// Checks if the given attribute name is a standard Rust attribute.
@@ -110,8 +112,9 @@ mod private
   /// assert_eq!( macro_tools::attr::is_standard( "my_attribute" ), false );
   /// ```
   ///
-
-  pub fn is_standard<'a>( attr_name : &'a str ) -> bool
+  #[ must_use ]
+  #[ allow( clippy::match_same_arms ) ]
+  pub fn is_standard( attr_name : &str ) -> bool
   {
     match attr_name
     {
@@ -199,6 +202,7 @@ mod private
     }
   }
 
+  #[ allow( clippy::iter_without_into_iter ) ]
   impl AttributesInner
   {
     /// Iterator
@@ -208,6 +212,7 @@ mod private
     }
   }
 
+  #[ allow( clippy::default_trait_access ) ]
   impl syn::parse::Parse
   for AttributesInner
   {
@@ -274,6 +279,7 @@ mod private
     }
   }
 
+  #[ allow( clippy::iter_without_into_iter ) ]
   impl AttributesOuter
   {
     /// Iterator
@@ -283,6 +289,7 @@ mod private
     }
   }
 
+  #[ allow( clippy::default_trait_access ) ]
   impl syn::parse::Parse
   for AttributesOuter
   {
@@ -425,6 +432,9 @@ mod private
     /// # Returns
     ///
     /// A `syn::Result` containing the constructed component if successful, or an error if the parsing fails.
+    /// 
+    /// # Errors
+    /// qqq: doc
     fn from_meta( attr : &syn::Attribute ) -> syn::Result< Self >;
 
     // zzz : redo maybe
@@ -440,6 +450,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -456,6 +467,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
@@ -465,6 +477,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use super::super::attr;
 
