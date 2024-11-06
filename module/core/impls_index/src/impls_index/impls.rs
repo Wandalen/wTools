@@ -384,7 +384,6 @@ pub mod exposed
   pub use prelude::*;
 }
 
-
 /// Prelude to use essentials: `use my_module::prelude::*`.
 #[ allow( unused_imports ) ]
 pub mod prelude
@@ -403,9 +402,7 @@ pub mod prelude
     _impls_callback,
   };
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::impls_index_meta::impls3;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use impls3 as impls;
 }

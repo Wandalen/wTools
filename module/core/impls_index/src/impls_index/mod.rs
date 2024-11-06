@@ -51,11 +51,9 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use prelude::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::impls::exposed::*;
+  pub use impls::exposed::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::func::exposed::*;
+  pub use func::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -64,13 +62,10 @@ pub mod prelude
 {
   use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::impls::prelude::*;
+  pub use impls::prelude::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::func::prelude::*;
+  pub use func::prelude::*;
   // #[ cfg( any( feature = "meta", feature = "impls_index_meta" ) ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::impls_index_meta::*;
 }
