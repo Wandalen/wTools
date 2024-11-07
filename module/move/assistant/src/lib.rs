@@ -5,6 +5,8 @@
 
 use mod_interface::mod_interface;
 
+use error_tools::thiserror;
+
 /// Internal namespace.
 mod private
 {
