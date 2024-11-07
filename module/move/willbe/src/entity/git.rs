@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use std::fmt;
@@ -53,6 +55,9 @@ mod private
   }
 
   /// Performs a Git commit operation using the provided options
+  /// # Errors
+  /// qqq: doc
+  #[ allow( clippy::needless_pass_by_value ) ]
   pub fn perform_git_commit( o : GitOptions ) -> error::untyped::Result< ExtendedGitReport >
   // qqq : use typed error
   {

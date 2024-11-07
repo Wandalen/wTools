@@ -11,7 +11,7 @@ All functions in the crate don't touch file system, but only process paths.
 
 ### Type `AbsolutePath`
 
-The AbsolutePath type ensures that paths are absolute, which helps reduce issues and maintenance costs associated with relative paths. Relative paths can be problematic as they introduce additional variables and complexities, making code analysis, integration, refactoring, and testing more difficult. By using absolute paths, software architecture can be improved, similar to how avoiding global variables can enhance code quality. It is recommended to use relative paths only at the outskirts of an application.
+The `AbsolutePath` type ensures that paths are absolute, which helps reduce issues and maintenance costs associated with relative paths. Relative paths can be problematic as they introduce additional variables and complexities, making code analysis, integration, refactoring, and testing more difficult. By using absolute paths, software architecture can be improved, similar to how avoiding global variables can enhance code quality. It is recommended to use relative paths only at the outskirts of an application.
 
 ### Trait `AsPath`
 
@@ -19,11 +19,11 @@ This trait is used to avoid redundant allocation of memory by providing a refere
 
 ### Trait `TryIntoPath`
 
-This trait is used to convert any path-like type into an owned PathBuf. Unlike `TryIntoCowPath`, it always returns an owned PathBuf, so there is no need to differentiate between borrowed and owned paths at runtime. Unlike `AsPath`, it is implemented for a wider range of path-like types, similar to `TryIntoCowPath`.
+This trait is used to convert any path-like type into an owned `PathBuf`. Unlike `TryIntoCowPath`, it always returns an owned `PathBuf`, so there is no need to differentiate between borrowed and owned paths at runtime. Unlike `AsPath`, it is implemented for a wider range of path-like types, similar to `TryIntoCowPath`.
 
 ### Trait `TryIntoCowPath`
 
-This trait is designed to avoid redundant memory allocation. Unlike TryIntoPath, it does not allocate memory on the heap if it’s not necessary. Unlike `AsPath`, it is implemented for a wider number of path-like types, similar to TryIntoPath. The drawback is the necessity to differentiate borrowed and owned paths at runtime.
+This trait is designed to avoid redundant memory allocation. Unlike `TryIntoPath`, it does not allocate memory on the heap if it’s not necessary. Unlike `AsPath`, it is implemented for a wider number of path-like types, similar to `TryIntoPath`. The drawback is the necessity to differentiate borrowed and owned paths at runtime.
 
 <!-- ### Basic use-case
 

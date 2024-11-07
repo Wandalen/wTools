@@ -39,7 +39,7 @@ mod private
   /// };
   /// ```
   ///
-  /// In the above example, a `ParsedCommand` instance is created with the name "command", a single subject "subject_value", and one property "prop_name" with a raw value of "raw_prop_value".
+  /// In the above example, a `ParsedCommand` instance is created with the name "command", a single subject "`subject_value`", and one property "`prop_name`" with a raw value of "`raw_prop_value`".
   ///
   #[ derive( Default, Debug, Clone, PartialEq, Eq ) ]
   pub struct ParsedCommand

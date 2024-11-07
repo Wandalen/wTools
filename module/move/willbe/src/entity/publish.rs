@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use std::fmt;
@@ -189,6 +191,7 @@ mod private
         .map_err( |( _, _e )| fmt::Error )?;
         let action::list::ListReport::Tree( list ) = list else { unreachable!() };
 
+        #[ allow( clippy::items_after_statements ) ]
         fn callback( name_bump_report : &collection::HashMap< &String, ( String, String ) >, mut r : tool::ListNodeReport ) -> tool::ListNodeReport
         {
           if let Some(( old, new )) = name_bump_report.get( &r.name )
@@ -204,10 +207,10 @@ mod private
         let printer = list;
         let rep : Vec< tool::ListNodeReport > = printer.iter().map( | printer | printer.info.clone() ).collect();
         let list: Vec< tool::ListNodeReport > = rep.into_iter().map( | r | callback( &name_bump_report, r ) ).collect();
-        let printer : Vec< tool::TreePrinter > = list.iter().map( | rep | tool::TreePrinter::new( rep ) ).collect();
+        let printer : Vec< tool::TreePrinter > = list.iter().map( tool::TreePrinter::new ).collect();
 
         let list = action::list::ListReport::Tree( printer );
-        writeln!( f, "{}", list )?;
+        writeln!( f, "{list}" )?;
       }
 
       Ok( () )
@@ -264,11 +267,11 @@ mod private
       }
       if let Some( exclude_dev_dependencies ) = &self.storage.exclude_dev_dependencies
       {
-        plan = plan.exclude_dev_dependencies( *exclude_dev_dependencies )
+        plan = plan.exclude_dev_dependencies( *exclude_dev_dependencies );
       }
       if let Some( commit_changes ) = &self.storage.commit_changes
       {
-        plan = plan.commit_changes( *commit_changes )
+        plan = plan.commit_changes( *commit_changes );
       }
       let plan = plan
       .channel( channel )
@@ -335,11 +338,11 @@ mod private
         return Ok( () )
       }
       let info = get_info.as_ref().unwrap();
-      write!( f, "{}", info )?;
+      write!( f, "{info}" )?;
 
       if let Some( bump ) = bump
       {
-        writeln!( f, "{}", bump )?;
+        writeln!( f, "{bump}" )?;
       }
       if let Some( add ) = add
       {
@@ -371,7 +374,10 @@ mod private
   /// # Returns
   ///
   /// * `Result<PublishReport>` - The result of the publishing operation, including information about the publish, version bump, and git operations.
-
+  ///
+  /// # Errors
+  /// qqq: doc
+  #[ allow( clippy::option_map_unit_fn ) ]
   pub fn perform_package_publish( instruction : PackagePublishInstruction ) -> ResultWithReport< PublishReport, Error >
   {
     let mut report = PublishReport::default();
@@ -432,7 +438,7 @@ mod private
 
     if let Some( git_root ) = git_root.as_ref()
     {
-      let res = tool::git::push( &git_root, dry ).err_with_report( &report )?;
+      let res = tool::git::push( git_root, dry ).err_with_report( &report )?;
       report.push = Some( res );
     }
 
@@ -448,6 +454,9 @@ mod private
   /// # Returns
   ///
   /// Returns a `Result` containing a vector of `PublishReport` if successful, else an error.
+  ///
+  /// # Errors
+  /// qqq: doc
   pub fn perform_packages_publish( plan : PublishPlan ) -> error::untyped::Result< Vec< PublishReport > >
   // qqq : use typed error
   {

@@ -1,3 +1,4 @@
+#[ allow( clippy::wildcard_imports ) ]
 use crate::*;
 use core::
 {
@@ -22,7 +23,8 @@ pub struct EitherDirOrFile( data_type::Either< CrateDir, ManifestFile > );
 
 impl EitherDirOrFile
 {
-  /// Returns inner type which is an data_type::Either< CrateDir, ManifestFile >.
+  /// Returns inner type which is an `data_type::Either`< `CrateDir`, `ManifestFile` >.
+  #[ must_use ]
   pub fn inner( self ) -> data_type::Either< CrateDir, ManifestFile >
   {
     self.0
@@ -75,6 +77,7 @@ impl Deref for EitherDirOrFile
 {
   type Target = Path;
 
+  #[ allow( clippy::explicit_deref_methods ) ]
   fn deref( &self ) -> &Self::Target
   {
     self.0.deref()
@@ -83,6 +86,7 @@ impl Deref for EitherDirOrFile
 
 impl DerefMut for EitherDirOrFile
 {
+  #[ allow( clippy::explicit_deref_methods ) ]
   fn deref_mut( &mut self ) -> &mut Self::Target
   {
     self.0.deref_mut()

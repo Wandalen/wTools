@@ -1,6 +1,7 @@
 /// Internal namespace.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use collection::HashSet;
@@ -17,6 +18,7 @@ mod private
   use optimization::Optimization;
 
   #[ derive( Former, Debug ) ]
+  #[ allow( clippy::struct_excessive_bools ) ]
   struct TestsProperties
   {
     #[ former( default = true ) ]
@@ -48,6 +50,8 @@ mod private
   }
 
   /// run tests in specified crate
+  /// # Errors
+  /// qqq: doc
   // qqq : don't use 1-prameter Result
   pub fn test( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
   {
@@ -60,15 +64,11 @@ mod private
       .unwrap_or( std::path::PathBuf::from( "" ) )
       .display()
     );
-    let prop_line = format!
-    (
-      "{}",
-      o
-      .props
-      .iter()
-      .map( | p | format!( "{}:{}", p.0, p.1.to_string() ) )
-      .collect::< Vec< _ > >().join(" ")
-    );
+    let prop_line = o
+    .props
+    .iter()
+    .map( | p | format!( "{}:{}", p.0, p.1 ) )
+    .collect::< Vec< _ > >().join(" ");
 
     let path : PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );
     let path = AbsolutePath::try_from( fs::canonicalize( path )? )?;
@@ -127,9 +127,9 @@ Set at least one of them to true." );
       {
         if dry
         {
-          let args = if args_line.is_empty() { String::new() } else { format!(" {}", args_line) };
-          let prop = if prop_line.is_empty() { String::new() } else { format!(" {}", prop_line) };
-          let line = format!("will .publish{}{} dry:0", args, prop);
+          let args = if args_line.is_empty() { String::new() } else { format!(" {args_line}" ) };
+          let prop = if prop_line.is_empty() { String::new() } else { format!(" {prop_line}" ) };
+          let line = format!( "will .publish{args}{prop} dry:0" );
           println!("To apply plan, call the command `{}`", line.blue());
         }
         else

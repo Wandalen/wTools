@@ -1,5 +1,6 @@
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use std::fs;
@@ -31,6 +32,9 @@ mod private
   /// # Errors
   ///
   /// Returns an error if there is an issue with the command.
+  ///
+  /// # Panics
+  /// qqq: doc
 
   pub fn publish_diff( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
   {

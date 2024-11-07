@@ -1,6 +1,7 @@
 mod private
 {
 
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use iter_tools::Itertools;
   use ca::aggregator::Order;
@@ -25,13 +26,14 @@ mod private
   /// The `md_generator` function takes a reference to a `Dictionary` and an `Order` to produce
   /// a help document in Markdown format. This function is useful for generating structured,
   /// readable help documentation suitable for Markdown-compatible platforms.
+  #[ must_use ]
   pub fn md_generator( grammar : &Dictionary, order: Order ) -> String
   {
     let text = grammar.commands()
     .into_iter()
     .map( |( name, cmd )|
     {
-      let subjects = cmd.subjects.iter().fold( String::new(), | _, _ | format!( " `[argument]`" ) );
+      let subjects = cmd.subjects.iter().fold( String::new(), | _, _ | " `[argument]`".to_string() );
       let properties = if cmd.properties.is_empty() { " " } else { " `[properties]` " };
       format!
       (
@@ -47,17 +49,17 @@ mod private
       format!( "{acc}\n- {cmd}" )
     });
 
-    let list_of_commands = format!( "## Commands\n\n{}", text );
+    let list_of_commands = format!( "## Commands\n\n{text}" );
 
     let about_each_command = grammar.commands()
     .into_iter()
     .map( |( name, cmd )|
     {
-      let subjects = cmd.subjects.iter().fold( String::new(), | _, _ | format!( " `[Subject]`" ) );
+      let subjects = cmd.subjects.iter().fold( String::new(), | _, _ | " `[Subject]`".to_string() );
       let properties = if cmd.properties.is_empty() { " " } else { " `[properties]` " };
       let hint = if cmd.hint.is_empty() { &cmd.long_hint } else { &cmd.hint };
 
-      let heading = format!( "## .{}{subjects}{properties}\n__{}__\n", name, hint );
+      let heading = format!( "## .{name}{subjects}{properties}\n__{hint}__\n" );
 
       let hint = if cmd.long_hint.is_empty() { &cmd.hint } else { &cmd.long_hint };
       let full_subjects = cmd
@@ -85,8 +87,8 @@ mod private
       format!
       (
         "{heading}\n{}{}\n\n{hint}\n",
-        if cmd.subjects.is_empty() { "".to_string() } else { format!( "\n\nSubjects:{}", &full_subjects ) },
-        if cmd.properties.is_empty() { "".to_string() } else { format!( "\n\nProperties:{}",&full_properties ) },
+        if cmd.subjects.is_empty() { String::new() } else { format!( "\n\nSubjects:{}", &full_subjects ) },
+        if cmd.properties.is_empty() { String::new() } else { format!( "\n\nProperties:{}",&full_properties ) },
       )
 
     })

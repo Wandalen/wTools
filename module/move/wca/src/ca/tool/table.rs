@@ -1,5 +1,6 @@
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   // use wtools::error::{ Result, err };
@@ -69,7 +70,7 @@ mod private
 
   fn max_column_lengths( table : &Table ) -> Vec< usize >
   {
-    let num_columns = table.0.get( 0 ).map_or( 0, | row | row.0.len() );
+    let num_columns = table.0.first().map_or( 0, | row | row.0.len() );
     ( 0 .. num_columns )
     .map( | column_index |
     {
@@ -90,6 +91,8 @@ mod private
   /// # Returns
   ///
   /// * `error::untyped::Result<String, Error>` - A `error::untyped::Result` containing the formatted table as a `String`, or an `Error` if the table is invalid.
+  /// # Errors
+  /// qqq: doc
   // qqq : use typed error
   pub fn format_table< IntoTable >( table : IntoTable ) -> error::untyped::Result< String >
   where

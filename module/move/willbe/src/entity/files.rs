@@ -1,6 +1,8 @@
 /// Internal namespace.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use std::

@@ -1,27 +1,42 @@
 /// Internal namespace.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   /// Md's extension for workspace
   pub trait PackageMdExtension
   {
     /// Package name
+    /// # Errors
+    /// qqq: doc
     fn name( &self ) -> Result< &str, package::PackageError >;
 
     /// Stability
+    /// # Errors
+    /// qqq: doc
     fn stability( &self ) -> Result< action::readme_health_table_renew::Stability, package::PackageError >;
 
     /// Repository
+    /// # Errors
+    /// qqq: doc
     fn repository( &self ) -> Result< Option< String >, package::PackageError >;
 
     /// Discord url
+    /// # Errors
+    /// qqq: doc
     fn discord_url( &self ) -> Result< Option< String >, package::PackageError >;
   }
 
   impl < 'a > package::Package< 'a >
   {
     /// Package name
+    /// # Errors
+    /// qqq: doc
+    ///
+    /// # Panics
+    /// qqq: doc
     pub fn name( &self ) -> Result< &str, package::PackageError >
     {
       match self
@@ -43,6 +58,9 @@ mod private
     }
 
     /// Stability
+    ///
+    /// # Errors
+    /// qqq: doc
     pub fn stability( &self ) -> Result< action::readme_health_table_renew::Stability, package::PackageError >
     {
       // aaa : for Petro : bad : first of all it should be in trait. also there is duplicated code
@@ -78,6 +96,9 @@ mod private
     }
 
     /// Repository
+    ///
+    /// # Errors
+    /// qqq: doc
     pub fn repository( &self ) -> Result< Option< String >, package::PackageError >
     {
       match self
@@ -93,7 +114,7 @@ mod private
             data[ "package" ]
             .get( "repository" )
             .and_then( | r | r.as_str() )
-            .map( | r | r.to_string())
+            .map( std::string::ToString::to_string )
           )
         }
         Self::WorkspacePackageRef( package ) =>
@@ -104,6 +125,9 @@ mod private
     }
 
     /// Discord url
+    ///
+    /// # Errors
+    /// qqq: doc
     pub fn discord_url( &self ) -> Result< Option< String >, package::PackageError >
     {
       match self
@@ -116,12 +140,12 @@ mod private
             self.package_metadata()
             .and_then( | m | m.get( "discord_url" ) )
             .and_then( | url | url.as_str() )
-            .map( | r | r.to_string() )
+            .map( std::string::ToString::to_string )
           )
         }
         Self::WorkspacePackageRef( package ) =>
         {
-          Ok( package.metadata()[ "discord_url" ].as_str().map( | url | url.to_string() ) )
+          Ok( package.metadata()[ "discord_url" ].as_str().map( std::string::ToString::to_string ) )
         }
       }
     }

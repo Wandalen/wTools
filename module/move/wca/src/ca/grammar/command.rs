@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use std::collections::{ HashMap };
@@ -118,11 +120,11 @@ mod private
       {
         Order::Nature =>
         {
-          self.properties.iter().map( | ( key, value ) | ( key, value ) ).collect()
+          self.properties.iter().collect()
         }
         Order::Lexicography =>
         {
-          self.properties.iter().map( | ( key, value ) | ( key, value ) ).sorted_by_key( | ( k, _ ) | *k ).collect()
+          self.properties.iter().sorted_by_key( | ( k, _ ) | *k ).collect()
         }
       }
     }
@@ -133,6 +135,7 @@ mod private
     Definition : former::FormerDefinition< Storage = < Command as former::EntityToStorage >::Storage >,
   {
     /// Setter for separate properties aliases.
+    #[ must_use ]
     pub fn property_alias< S : Into< String > >( mut self, key : S, alias : S ) -> Self
     {
       let key = key.into();
@@ -175,6 +178,7 @@ mod private
     /// # Returns
     ///
     /// Returns the `CommandFormer` instance with the new command routine set.
+    #[ must_use ]
     pub fn routine< I, R, F : Into< Handler< I, R > > >( mut self, f : F ) -> Self
     where
       Routine: From< Handler< I, R > >,
@@ -207,6 +211,8 @@ mod private
     /// # Arguments
     ///
     /// * `name` - The name of the property. It should implement the `Into< String >` trait.
+    /// # Panics
+    /// qqq: doc
     pub fn property< IntoName >( self, name : IntoName ) -> PropertyDescriptionAsSubformer< Self, impl PropertyDescriptionAsSubformerEnd< Self > >
     where
       IntoName : Into< String >,

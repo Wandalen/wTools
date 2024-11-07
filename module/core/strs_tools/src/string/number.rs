@@ -11,14 +11,15 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use orphan::*;
   pub use private::
   {
   };
-  #[ cfg( all( feature = "string_parse_number" ) ) ]
+  #[ cfg( feature = "string_parse_number" ) ]
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
+  #[ allow( unused_imports, clippy::wildcard_imports ) ]
   pub use lexical::*;
 }
 
@@ -26,6 +27,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use exposed::*;
   pub use private::
@@ -37,6 +39,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use super::own as number;
 

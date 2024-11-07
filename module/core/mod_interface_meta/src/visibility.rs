@@ -13,6 +13,7 @@ mod private
 
   pub mod kw
   {
+    #[ allow( clippy::wildcard_imports ) ]
     use super::*;
     // syn::custom_keyword!( private );
     syn::custom_keyword!( own );
@@ -425,7 +426,7 @@ mod private
         Visibility::Orphan( e ) => e.restriction(),
         Visibility::Exposed( e ) => e.restriction(),
         Visibility::Prelude( e ) => e.restriction(),
-        Visibility::Public( _ ) => None,
+        Visibility::Public( _ ) |
         // Visibility::Restricted( e ) => e.restriction(),
         Visibility::Inherited => None,
       }
@@ -485,12 +486,12 @@ mod private
     }
   }
 
-  #[ allow( clippy::derive_hash_xor_eq ) ]
+  #[ allow( clippy::derived_hash_with_manual_eq ) ]
   impl Hash for Visibility
   {
     fn hash< H : Hasher >( &self, state : &mut H )
     {
-      self.kind().hash( state )
+      self.kind().hash( state );
     }
   }
 
@@ -520,6 +521,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use orphan::*;
 }
@@ -528,6 +530,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use exposed::*;
 }
@@ -536,6 +539,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use prelude::*;
 

@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use former::Former;
 
@@ -17,6 +19,8 @@ mod private
   ///
   /// Create new workspace.
   ///
+  /// # Errors
+  /// qqq: doc
 
   // qqq : typed error
   pub fn workspace_renew( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error

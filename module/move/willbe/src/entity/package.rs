@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use std::
@@ -121,6 +123,9 @@ mod private
   {
 
     /// Path to `Cargo.toml`
+    /// # Panics
+    /// qqq: doc
+    #[ must_use ]
     pub fn manifest_file( &self ) -> ManifestFile
     {
       match self
@@ -131,6 +136,9 @@ mod private
     }
 
     /// Path to folder with `Cargo.toml`
+    /// # Panics
+    /// qqq: doc
+    #[ must_use ]
     pub fn crate_dir( &self ) -> CrateDir
     {
       match self
@@ -141,6 +149,10 @@ mod private
     }
 
     /// Package version
+    /// # Errors
+    /// qqq: doc
+    /// # Panics
+    /// qqq: doc
     pub fn version( &self ) -> Result< String, PackageError >
     {
       match self
@@ -161,6 +173,7 @@ mod private
     }
 
     /// Check that module is local.
+    #[ must_use ]
     pub fn local_is( &self ) -> bool
     {
       match self
@@ -179,6 +192,8 @@ mod private
     }
 
     /// Returns the `Manifest`
+    /// # Errors
+    /// qqq: doc
     pub fn manifest( &self ) -> Result< Manifest, PackageError >
     {
       match self
@@ -205,14 +220,16 @@ mod private
   /// - `false` if there is no need to publish the package.
   ///
   /// Panics if the package is not loaded or local package is not packed.
+  /// # Errors
+  /// qqq: doc
 
-  pub fn publish_need< 'a >( package : &Package< 'a >, path : Option< path::PathBuf > ) -> Result< bool, PackageError >
+  pub fn publish_need( package : &Package< '_ >, path : Option< path::PathBuf > ) -> Result< bool, PackageError >
   {
     let name = package.name()?;
     let version = package.version()?;
     let local_package_path = path
-    .map( | p | p.join( format!( "package/{0}-{1}.crate", name, version ) ) )
-    .unwrap_or( packed_crate::local_path( &name, &version, package.crate_dir() ).map_err( | _ | PackageError::LocalPath )? );
+    .map( | p | p.join( format!( "package/{name}-{version}.crate" ) ) )
+    .unwrap_or( packed_crate::local_path( name, &version, package.crate_dir() ).map_err( | _ | PackageError::LocalPath )? );
 
     let local_package = CrateArchive::read( local_package_path ).map_err( | _ | PackageError::ReadArchive )?;
     let remote_package = match CrateArchive::download_crates_io( name, version )

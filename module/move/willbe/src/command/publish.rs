@@ -1,6 +1,8 @@
 /// Internal namespace.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use colored::Colorize;
 
@@ -11,6 +13,7 @@ mod private
   use channel::Channel;
 
   #[ derive( Former ) ]
+  #[ allow( clippy::struct_excessive_bools ) ]
   struct PublishProperties
   {
     #[ former( default = Channel::Stable ) ]
@@ -28,6 +31,8 @@ mod private
   ///
   /// Publish package.
   ///
+  /// # Errors
+  /// qqq: doc
 
   pub fn publish( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
   {
@@ -39,14 +44,11 @@ mod private
       .get_owned( 0 )
       .unwrap_or( std::path::PathBuf::from( "" ) ).display()
     );
-    let prop_line = format!
-    (
-      "{}",
-      o
-      .props
-      .iter()
-      .map( | p | format!( "{}:{}", p.0, p.1.to_string() ) )
-      .collect::< Vec< _ > >().join(" ") );
+    let prop_line = o
+    .props
+    .iter()
+    .map( | p | format!( "{}:{}", p.0, p.1 ) )
+    .collect::< Vec< _ > >().join(" ");
 
     let patterns : Vec< _ > = o
     .args
@@ -83,9 +85,9 @@ mod private
 
         if dry && !report.packages.is_empty()
         {
-          let args = if args_line.is_empty() { String::new() } else { format!(" {}", args_line) };
-          let prop = if prop_line.is_empty() { String::new() } else { format!(" {}", prop_line) };
-          let line = format!("will .publish{}{} dry:0", args, prop );
+          let args = if args_line.is_empty() { String::new() } else { format!(" {args_line}" ) };
+          let prop = if prop_line.is_empty() { String::new() } else { format!(" {prop_line}" ) };
+          let line = format!("will .publish{args}{prop} dry:0" );
           println!("To apply plan, call the command `{}`", line.blue() );
           // aaa : for Petro : for Bohdan : bad. should be exact command with exact parameters
           // aaa : it`s already works

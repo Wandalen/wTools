@@ -1,3 +1,4 @@
+#[ allow( clippy::wildcard_imports ) ]
 use super::*;
 use macro_tools::
 {
@@ -10,6 +11,7 @@ use macro_tools::
 };
 
 mod field_attributes;
+#[ allow( clippy::wildcard_imports ) ]
 use field_attributes::*;
 mod item_attributes;
 #[ allow( clippy::wildcard_imports ) ]
@@ -464,7 +466,7 @@ fn variant_generate
     return Ok( qt!{} )
   }
 
-  if fields.len() == 0
+  if fields.is_empty()
   {
     return Ok( qt!{} )
   }

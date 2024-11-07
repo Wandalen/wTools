@@ -1,7 +1,8 @@
 /// Internal namespace.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( unused_imports ) ]
+  #[ allow( unused_imports, clippy::wildcard_imports ) ]
   use crate::tool::*;
 
   use std::
@@ -16,6 +17,12 @@ mod private
   ///
   /// Get data of remote package.
   ///
+  /// # Errors
+  /// qqq: doc
+  ///
+  /// # Panics
+  /// qqq: docs
+  ///
   // qqq : typed error
   pub fn download< 'a >( name : &'a str, version : &'a str ) -> error::untyped::Result< Vec< u8 > >
   {
@@ -24,7 +31,7 @@ mod private
     .timeout_write( Duration::from_secs( 5 ) )
     .build();
     let mut buf = String::new();
-    write!( &mut buf, "https://static.crates.io/crates/{0}/{0}-{1}.crate", name, version )?;
+    write!( &mut buf, "https://static.crates.io/crates/{name}/{name}-{version}.crate" )?;
 
     let resp = agent.get( &buf[ .. ] ).call().context( "Get data of remote package" )?;
 

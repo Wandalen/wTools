@@ -1,9 +1,11 @@
 /// Internal namespace.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
-  #[ allow( unused_imports ) ]
+  #[ allow( unused_imports, clippy::wildcard_imports ) ]
   use crate::tool::*;
 
   use std::ffi::OsString;
@@ -27,6 +29,7 @@ mod private
   /// The `PackOptions` struct encapsulates various options that can be configured when packaging a project,
   /// including the path to the project, the distribution channel, and various flags for controlling the behavior of the packaging process.
   #[ derive( Debug, Former, Clone ) ]
+  #[ allow( clippy::struct_excessive_bools ) ]
   pub struct PackOptions
   {
     /// The path to the project to be packaged.
@@ -73,6 +76,7 @@ mod private
 
   impl PackOptions
   {
+    #[ allow( clippy::if_not_else ) ]
     fn to_pack_args( &self ) -> Vec< String >
     {
       [ "run".to_string(), self.channel.to_string(), "cargo".into(), "package".into() ]
@@ -170,7 +174,7 @@ mod private
           command : format!( "{program} {}", options.join( " " ) ),
           out : String::new(),
           err : String::new(),
-          current_path: args.path.to_path_buf(),
+          current_path: args.path.clone(),
           error: Ok( () ),
         }
       )
@@ -248,7 +252,7 @@ mod private
             command : format!( "{program} {}", arguments.join( " " ) ),
             out : String::new(),
             err : String::new(),
-            current_path: args.path.to_path_buf(),
+            current_path: args.path.clone(),
             error: Ok( () ),
           }
         )
@@ -257,7 +261,7 @@ mod private
     {
       let mut results = Vec::with_capacity( args.retry_count + 1 );
       let run_args : Vec< _ > =  arguments.into_iter().map( OsString::from ).collect();
-      for _ in 0 .. args.retry_count + 1
+      for _ in 0 ..=args.retry_count
       {
         let result = process::Run::former()
         .bin_path( program )

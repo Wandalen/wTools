@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use std::
   {
@@ -9,6 +11,7 @@ mod private
   use path::Path;
   use collection::HashSet;
   use error::untyped::{ Error };
+  #[ allow( clippy::wildcard_imports ) ]
   use process_tools::process::*;
 
   /// The `Channel` enum represents different release channels for rust.
@@ -51,6 +54,9 @@ mod private
   /// Retrieves a list of available channels.
   ///
   /// This function takes a path and returns a `Result` with a vector of strings representing the available channels.
+  ///
+  /// # Errors
+  /// qqq: doc
   // qqq : typed error
   pub fn available_channels< P >( path : P ) -> error::untyped::Result< HashSet< Channel > >
   where

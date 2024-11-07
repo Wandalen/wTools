@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   // use action;
   // use error::{ err };
@@ -65,6 +67,8 @@ mod private
   }
 
   /// Aggregates two commands: `generate_modules_headers` & `generate_main_header`
+  /// # Errors
+  /// qqq: doc
   pub fn readme_headers_renew() -> error::untyped::Result< () > // qqq : use typed error
   {
     let mut report = ReadmeHeadersRenewReport::default();

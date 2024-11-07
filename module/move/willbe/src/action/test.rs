@@ -1,6 +1,7 @@
 /// Internal namespace.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use entity::test::{ TestPlan, TestOptions, TestsReport, tests_run };
 
@@ -31,6 +32,7 @@ mod private
   /// - The `exclude_features` field is a vector of strings representing the names of features to exclude when running tests.
   /// - The `include_features` field is a vector of strings representing the names of features to include when running tests.
   #[ derive( Debug, Former ) ]
+  #[ allow( clippy::struct_excessive_bools ) ]
   pub struct TestsCommandOptions
   {
     dir : AbsolutePath,
@@ -63,8 +65,14 @@ mod private
   /// It is possible to enable and disable various features of the crate.
   /// The function also has the ability to run tests in parallel using `Rayon` crate.
   /// The result of the tests is written to the structure `TestsReport` and returned as a result of the function execution.
+  /// # Errors
+  /// qqq: doc
+  ///
+  /// # Panics
+  /// qqq: doc
   // zzz : it probably should not be here
   // xxx : use newtype
+  #[ allow( clippy::too_many_lines ) ]
   pub fn test( o : TestsCommandOptions, dry : bool )
   -> ResultWithReport< TestsReport, Error >
   // qqq : for Petro : typed error
@@ -123,6 +131,7 @@ Try to install it with `rustup install {}` command(-s)",
       data_type::Either::Right( manifest ) => CrateDir::from( manifest )
     };
 
+    #[ allow( clippy::useless_conversion ) ]
     let workspace = Workspace
     ::try_from( CrateDir::try_from( path.clone() ).err_with_report( &report )? )
     .err_with_report( &report )?

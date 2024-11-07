@@ -2,6 +2,7 @@
 mod private
 {
 
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   #[ cfg( not( feature = "no_std" ) ) ]
   use std::
@@ -33,7 +34,7 @@ mod private
           std::io::Error::new
           (
             std::io::ErrorKind::NotFound,
-            format!( "Cant convert to utf8 {}", err ),
+            format!( "Cant convert to utf8 {err}" ),
           )
         }
       )

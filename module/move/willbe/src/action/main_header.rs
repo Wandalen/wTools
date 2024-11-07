@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use std::fmt::{ Display, Formatter };
   use std::fs::
@@ -16,6 +18,7 @@ mod private
   use std::path::PathBuf;
   use regex::Regex;
   use entity::{ PathError, WorkspaceInitError };
+  #[ allow( unused_imports ) ]
   use error::
   {
     // err,
@@ -48,6 +51,7 @@ mod private
 
   impl Display for MainHeaderRenewReport
   {
+    #[ allow( clippy::collapsible_else_if ) ]
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
       if self.success
@@ -140,6 +144,7 @@ mod private
     }
 
     /// Convert `Self`to header.
+    #[ allow( clippy::uninlined_format_args, clippy::wrong_self_convention ) ]
     fn to_header( self ) -> Result< String, MainHeaderRenewError >
     {
       let discord = self.discord_url
@@ -193,6 +198,13 @@ mod private
   /// [![docs.rs](https://raster.shields.io/static/v1?label=docs&message=online&color=eee&logo=docsdotrs&logoColor=eee)](https://docs.rs/wtools)
   /// <!--{ generate.main_header.end }-->
   /// ```
+  ///
+  /// # Errors
+  /// qqq: doc
+  ///
+  /// # Panics
+  /// qqq: doc
+  #[ allow( clippy::uninlined_format_args ) ]
   pub fn action( crate_dir : CrateDir )
   // -> Result< MainHeaderRenewReport, ( MainHeaderRenewReport, MainHeaderRenewError ) >
   -> ResultWithReport< MainHeaderRenewReport, MainHeaderRenewError >

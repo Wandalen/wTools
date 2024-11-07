@@ -1,6 +1,7 @@
 /// Internal namespace.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use std::
   {
@@ -44,7 +45,10 @@ mod private
     }
 
     /// Creates an owned `AbsolutePath` by joining a given path to `self`.
+    /// # Panics
+    /// qqq: doc
     #[ inline ]
+    #[ must_use ]
     pub fn join< P >( &self, path : P ) -> AbsolutePath
     where
       P : AsRef< Path >,
@@ -63,6 +67,7 @@ mod private
 
     /// Returns the inner `PathBuf`.
     #[inline(always)]
+    #[ must_use ]
     pub fn inner( self ) -> PathBuf
     {
       self.0
@@ -81,6 +86,9 @@ mod private
     ///
     /// * `Ok(AbsolutePath)` if the joined path is absolute.
     /// * `Err(io::Error)` if the joined path is not absolute.
+    /// # Errors
+    /// qqq: doc
+    #[ allow( clippy::should_implement_trait ) ]
     pub fn from_iter< 'a, I, P >( iter : I ) -> Result< Self, io::Error >
     where
       I : Iterator< Item = P >,
@@ -102,6 +110,8 @@ mod private
     ///
     /// * `Ok(PathBuf)` - The joined path as a `PathBuf`.
     /// * `Err(io::Error)` - An error if any component fails to convert.
+    /// # Errors
+    /// qqq: doc
     pub fn from_paths< Paths : PathJoined >( paths : Paths ) -> Result< Self, io::Error >
     {
       Self::try_from( paths.iter_join()? )
@@ -131,7 +141,7 @@ mod private
     #[ inline ]
     fn try_from( src : PathBuf ) -> Result< Self, Self::Error >
     {
-      < Self as TryFrom< &Path > >::try_from( &src.as_path() )
+      < Self as TryFrom< &Path > >::try_from( src.as_path() )
     }
   }
 
@@ -142,7 +152,7 @@ mod private
     #[ inline ]
     fn try_from( src : &PathBuf ) -> Result< Self, Self::Error >
     {
-      < Self as TryFrom< &Path > >::try_from( &src.as_path() )
+      < Self as TryFrom< &Path > >::try_from( src.as_path() )
     }
   }
 
@@ -186,6 +196,7 @@ mod private
     }
   }
 
+  #[ allow( clippy::extra_unused_lifetimes ) ]
   impl< 'a > TryFrom< String > for AbsolutePath
   {
     type Error = std::io::Error;

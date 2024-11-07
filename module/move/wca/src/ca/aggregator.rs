@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use ca::
   {
@@ -23,6 +25,7 @@ mod private
   // {
   // };
   // use wtools::thiserror;
+  #[ allow( clippy::wildcard_imports ) ]
   use error::
   {
     // Result,
@@ -80,6 +83,7 @@ mod private
   // xxx : qqq : qqq2 : for Bohdan : one level is obviously redundant
   // Program< Namespace< ExecutableCommand_ > > -> Program< ExecutableCommand_ >
   // aaa : done. The concept of `Namespace` has been removed
+  #[ allow( clippy::type_complexity ) ]
   struct CommandsAggregatorCallback( Box< dyn Fn( &str, &Program< VerifiedCommand > ) > );
 
   impl fmt::Debug for CommandsAggregatorCallback
@@ -93,7 +97,7 @@ mod private
   /// The `CommandsAggregator` struct is responsible for aggregating all commands that the user defines,
   /// and for parsing and executing them. It is the main entry point of the library.
   ///
-  /// CommandsAggregator component brings everything together. This component is responsible for configuring the `Parser`, `Grammar`, and `Executor` components based on the user’s needs. It also manages the entire pipeline of processing, from parsing the raw text input to executing the final command(parse -> validate -> execute).
+  /// `CommandsAggregator` component brings everything together. This component is responsible for configuring the `Parser`, `Grammar`, and `Executor` components based on the user’s needs. It also manages the entire pipeline of processing, from parsing the raw text input to executing the final command(parse -> validate -> execute).
   ///
   /// # Example:
   ///
@@ -144,8 +148,8 @@ mod private
       let dictionary = ca.dictionary.get_or_insert_with( Dictionary::default );
       dictionary.order = ca.order.unwrap_or_default();
 
-      let help_generator = std::mem::take( &mut ca.help_generator ).unwrap_or_default();
-      let help_variants = std::mem::take( &mut ca.help_variants ).unwrap_or_else( || HashSet::from([ HelpVariants::All ]) );
+      let help_generator = core::mem::take( &mut ca.help_generator ).unwrap_or_default();
+      let help_variants = core::mem::take( &mut ca.help_variants ).unwrap_or_else( || HashSet::from([ HelpVariants::All ]) );
 
       if help_variants.contains( &HelpVariants::All )
       {
@@ -170,6 +174,8 @@ mod private
     /// # Arguments
     ///
     /// * `name` - The name of the command.
+    /// # Panics
+    /// qqq: doc
     pub fn command< IntoName >( self, name : IntoName ) -> CommandAsSubformer< Self, impl CommandAsSubformerEnd< Self > >
     where
       IntoName : Into< String >,
@@ -203,6 +209,7 @@ mod private
     ///
     /// The modified instance of `Self`.
     // `'static` means that the value must be owned or live at least as a `Context'
+    #[ must_use ]
     pub fn with_context< T >( mut self, value : T ) -> Self
     where
       T : Sync + Send + 'static,
@@ -230,6 +237,7 @@ mod private
     /// ca.perform( ".help" )?;
     /// # Ok( () ) }
     /// ```
+    #[ must_use ]
     pub fn help< HelpFunction >( mut self, func : HelpFunction ) -> Self
     where
       HelpFunction : Fn( &Dictionary, HelpGeneratorOptions< '_ > ) -> String + 'static
@@ -255,6 +263,7 @@ mod private
     /// ca.perform( ".help" )?;
     /// # Ok( () ) }
     /// ```
+    #[ must_use ]
     pub fn callback< Callback >( mut self, callback : Callback ) -> Self
     where
       Callback : Fn( &str, &Program< VerifiedCommand > ) + 'static,
@@ -269,21 +278,23 @@ mod private
     /// Parse, converts and executes a program
     ///
     /// Takes a string with program and executes it
+    /// # Errors
+    /// qqq: doc
     pub fn perform< S >( &self, program : S ) -> Result< (), Error >
     where
       S : IntoInput
     {
       let Input( ref program ) = program.into_input();
 
-      let raw_program = self.parser.parse( program ).map_err( | e | Error::Validation( ValidationError::Parser { input : format!( "{:?}", program ), error : e } ) )?;
+      let raw_program = self.parser.parse( program ).map_err( | e | Error::Validation( ValidationError::Parser { input : format!( "{program:?}" ), error : e } ) )?;
       let grammar_program = self.verifier.to_program( &self.dictionary, raw_program ).map_err( | e | Error::Validation( ValidationError::Verifier( e ) ) )?;
 
       if let Some( callback ) = &self.callback_fn
       {
-        callback.0( &program.join( " " ), &grammar_program )
+        callback.0( &program.join( " " ), &grammar_program );
       }
 
-      self.executor.program( &self.dictionary, grammar_program ).map_err( | e | Error::Execution( e ) )
+      self.executor.program( &self.dictionary, grammar_program ).map_err( Error::Execution )
     }
   }
 }

@@ -1,3 +1,7 @@
+#![ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
+
+
+#[ allow( clippy::wildcard_imports ) ]
 use crate::*;
 
 use entity::
@@ -35,6 +39,7 @@ impl SourceFile
 
   /// Returns inner type which is an absolute path.
   #[ inline( always ) ]
+  #[ must_use ]
   pub fn inner( self ) -> AbsolutePath
   {
     self.0
@@ -229,15 +234,15 @@ impl CodeItems for SourceFile
   fn items( &self ) -> impl IterTrait< '_, syn::Item >
   {
     // xxx : use closures instead of expect
-    let content = fs::read_to_string( self.as_ref() ).expect( &format!( "Failed to parse file {self}" ) );
-    let parsed : syn::File = syn::parse_file( &content ).expect( &format!( "Failed to parse file {self}" ) );
+    let content = fs::read_to_string( self.as_ref() ).unwrap_or_else( | _ | panic!( "Failed to parse file {self}" ) );
+    let parsed : syn::File = syn::parse_file( &content ).unwrap_or_else( | _ |  panic!( "Failed to parse file {self}" ) );
     parsed.items.into_iter()
   }
 }
 
 impl AsCode for SourceFile
 {
-  fn as_code< 'a >( &'a self ) -> std::io::Result< Cow< 'a, str > >
+  fn as_code( &self ) -> std::io::Result< Cow< '_, str > >
   {
     Ok( Cow::Owned( std::fs::read_to_string( self.as_ref() )? ) )
   }

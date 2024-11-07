@@ -93,10 +93,13 @@ mod impls;
 #[ allow( unused_imports ) ]
 use impls::exposed::*;
 mod record;
+#[ allow( clippy::wildcard_imports ) ]
 use record::exposed::*;
 mod visibility;
+#[ allow( clippy::wildcard_imports ) ]
 use visibility::exposed::*;
 mod use_tree;
+#[ allow( clippy::wildcard_imports ) ]
 use use_tree::exposed::*;
 
 ///

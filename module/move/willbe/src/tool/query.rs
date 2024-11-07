@@ -1,7 +1,8 @@
 /// Internal namespace.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( unused_imports ) ]
+  #[ allow( unused_imports, clippy::wildcard_imports ) ]
   use crate::tool::*;
 
   use std::
@@ -36,10 +37,12 @@ mod private
       if let Ok( i ) = s.parse::< i32 >()
       {
         Ok( Value::Int( i ) )
-      } else if let Ok( b ) = s.parse::< bool >()
+      }
+      else if let Ok( b ) = s.parse::< bool >()
       {
         Ok( Value::Bool( b ) )
-      } else
+      }
+      else
       {
         let s = s.trim_matches( '\'' );
         Ok( Value::String( s.to_string() ) )
@@ -85,6 +88,7 @@ mod private
     /// assert!( result.contains( &Value::Int( 2 ) ) );
     /// assert!( result.contains( &Value::Int( 3 ) ) );
     /// ```
+    #[ must_use ]
     pub fn into_vec( self ) -> Vec< Value >
     {
       match self
@@ -111,6 +115,8 @@ mod private
     ///  assert_eq!( HashMap::from( [ ( "1".to_string(), Value::Int( 1 ) ), ( "2".to_string(),Value::Int( 2 ) ), ( "3".to_string(),Value::Int( 3 ) ) ] ), unnamed_map );
     ///  assert_eq!( HashMap::from( [ ( "var0".to_string(), Value::Int( 1 ) ), ( "1".to_string(),Value::Int( 2 ) ), ( "2".to_string(),Value::Int( 3 ) ) ] ), mixed_map );
     /// ```
+    #[ allow( clippy::needless_pass_by_value ) ]
+    #[ must_use ]
     pub fn into_map( self, names : Vec< String > ) -> HashMap< String, Value >
     {
       match self
@@ -148,6 +154,12 @@ mod private
   /// expected_map.insert( "key".to_string(), Value::String( r#"hello\'test\'test"#.into() ) );
   /// assert_eq!( parse( r#"{ key : 'hello\'test\'test' }"# ).unwrap().into_map( vec![] ), expected_map );
   /// ```
+  ///
+  /// # Errors
+  /// qqq: doc
+  ///
+  /// # Panics
+  /// qqq: doc
   // qqq : use typed error
   pub fn parse( input_string : &str ) -> error::untyped::Result< ParseResult >
   {
@@ -253,6 +265,7 @@ mod private
   }
 
   // qqq : use typed error
+  #[ allow( clippy::unnecessary_wraps ) ]
   fn parse_to_vec( input : Vec< String > ) -> error::untyped::Result< Vec< Value > >
   {
     Ok( input.into_iter().filter_map( | w | Value::from_str( w.trim() ).ok() ).collect() )

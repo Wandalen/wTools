@@ -99,6 +99,9 @@ mod private
     /// # Example
     ///
     /// See the trait-level documentation for an example.
+    ///
+    /// # Errors
+    /// qqq: doc
     #[ inline( always ) ]
     fn transitive_try_from< Transitive >( src : Initial ) -> Result< Self, Error >
     where
@@ -178,6 +181,8 @@ mod private
     /// # Example
     ///
     /// See the trait-level documentation for an example.
+    /// # Errors
+    /// qqq: doc
     #[ inline( always ) ]
     fn transitive_try_into< Transitive >( self ) -> Result< Final, Error >
     where

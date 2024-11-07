@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use std::
@@ -39,12 +41,13 @@ mod private
 
   impl fmt::Display for FeaturesReport
   {
+    #[ allow( clippy::match_bool ) ]
     fn fmt( &self, f : &mut fmt::Formatter< '_ >) -> Result< (), fmt::Error >
     {
       self.inner.iter().try_for_each
       ( | ( package, features ) |
       {
-        writeln!(f, "Package {}:", package)?;
+        writeln!(f, "Package {package}:")?;
         features.iter().try_for_each
         ( | ( feature, dependencies ) |
         {
@@ -67,6 +70,8 @@ mod private
   }
 
   /// List features
+  /// # Errors
+  /// qqq: doc
   pub fn features( FeaturesOptions { crate_dir, with_features_deps } : FeaturesOptions )
   -> error::untyped::Result< FeaturesReport >
   // qqq : typed error

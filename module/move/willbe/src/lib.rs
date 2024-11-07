@@ -8,6 +8,7 @@ pub use mod_interface::mod_interface;
 /// Internal namespace.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   /// Takes the command line arguments and perform associated function(s).
@@ -15,6 +16,9 @@ mod private
   /// It then terminates the program with an exit code of 1 to indicate an error due to the lack of input.
   ///
   /// Do not support interactive mode.
+  ///
+  /// # Errors
+  /// qqq: doc
   pub fn run( args : Vec< String > ) -> Result< (), error::untyped::Error >
   {
     #[ cfg( feature = "tracing" ) ]

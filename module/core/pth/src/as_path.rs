@@ -1,7 +1,7 @@
 /// Internal namespace.
 mod private
 {
-  #[ allow( unused_imports ) ]
+  #[ allow( unused_imports, clippy::wildcard_imports ) ]
   use crate::*;
   #[ cfg( feature = "no_std" ) ]
   extern crate std;

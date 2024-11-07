@@ -1,7 +1,7 @@
 /// Internal namespace.
 mod private
 {
-  #[ allow( unused_imports ) ]
+  #[ allow( unused_imports, clippy::wildcard_imports ) ]
   use crate::tool::*;
 
   use std::
@@ -49,6 +49,9 @@ mod private
     /// # Returns
     ///
     /// A `Result` which is `Ok` if the files are created successfully, or an `Err` otherwise.
+    ///
+    /// # Errors
+    /// qqq: doc
     pub fn create_all( self, path : &path::Path ) -> error::untyped::Result< () > // qqq : use typed error
     {
       self.files.create_all( path, &self.values )
@@ -59,6 +62,7 @@ mod private
     /// # Returns
     ///
     /// A reference to `TemplateParameters`.
+    #[ must_use ]
     pub fn parameters( &self ) -> &TemplateParameters
     {
       &self.parameters
@@ -71,7 +75,7 @@ mod private
     /// - `values`: The new `TemplateValues` to be set.
     pub fn set_values( &mut self, values : TemplateValues )
     {
-      self.values = values
+      self.values = values;
     }
 
     /// Returns a reference to the template values.
@@ -79,6 +83,7 @@ mod private
     /// # Returns
     ///
     /// A reference to `TemplateValues`.
+    #[ must_use ]
     pub fn get_values( &self ) -> &TemplateValues
     {
       &self.values
@@ -130,6 +135,7 @@ mod private
     }
 
     /// Fetches mandatory parameters that are not set yet.
+    #[ must_use ]
     pub fn get_missing_mandatory( &self ) -> Vec< &str >
     {
       let values = self.get_values();
@@ -137,7 +143,7 @@ mod private
       .parameters()
       .list_mandatory()
       .into_iter()
-      .filter( | key | values.0.get( *key ).map( | val | val.as_ref() ).flatten().is_none() )
+      .filter( | key | values.0.get( *key ).and_then( | val | val.as_ref() ).is_none() )
       .collect()
     }
   }
@@ -150,10 +156,13 @@ mod private
     /// Creates all files in provided path with values for required parameters.
     ///
     /// Consumes owner of the files.
+    ///
+    /// # Errors
+    /// qqq: doc
     fn create_all( self, path : &Path, values : &TemplateValues ) -> error::untyped::Result< () > // qqq : use typed error
     {
       let fsw = FileSystem;
-      for file in self.into_iter()
+      for file in self
       {
         file.create_file( &fsw, path, values )?;
       }
@@ -172,17 +181,19 @@ mod private
   impl TemplateParameters
   {
     /// Extracts template values from props for parameters required for this template.
+    #[ must_use ]
     pub fn values_from_props( &self, props : &wca::Props ) -> TemplateValues
     {
       let values = self.descriptors
       .iter()
       .map( | d | &d.parameter )
-      .map( | param | ( param.clone(), props.get( param ).map( wca::Value::clone ) ) )
+      .map( | param | ( param.clone(), props.get( param ).cloned() ) )
       .collect();
       TemplateValues( values )
     }
 
     /// Get a list of all mandatory parameters.
+    #[ must_use ]
     pub fn list_mandatory( &self ) -> Vec< &str >
     {
       self.descriptors.iter().filter( | d | d.is_mandatory ).map( | d | d.parameter.as_str() ).collect()
@@ -219,27 +230,28 @@ mod private
     /// Converts values to a serializable object.
     ///
     /// Currently only `String`, `Number`, and `Bool` are supported.
+    #[ must_use ]
     pub fn to_serializable( &self ) -> collection::BTreeMap< String, String >
     {
       self.0.iter().map
       (
         | ( key, value ) |
         {
-          let value = value.as_ref().map
+          let value = value.as_ref().map_or
           (
+            "___UNSPECIFIED___".to_string(),
             | value |
             {
               match value
               {
                 wca::Value::String( val ) => val.to_string(),
                 wca::Value::Number( val ) => val.to_string(),
-                wca::Value::Path( _ ) => "unsupported".to_string(),
                 wca::Value::Bool( val ) => val.to_string(),
+                wca::Value::Path( _ ) |
                 wca::Value::List( _ ) => "unsupported".to_string(),
               }
             }
-          )
-          .unwrap_or( "___UNSPECIFIED___".to_string() );
+          );
           ( key.to_owned(), value )
         }
       )
@@ -249,7 +261,7 @@ mod private
     /// Inserts new value if parameter wasn't initialized before.
     pub fn insert_if_empty( &mut self, key : &str, value : wca::Value )
     {
-      if let None = self.0.get( key ).and_then( | v | v.as_ref() )
+      if self.0.get( key ).and_then( | v | v.as_ref() ).is_none()
       {
         self.0.insert( key.into() , Some( value ) );
       }
@@ -258,7 +270,7 @@ mod private
     /// Interactively asks user to provide value for a parameter.
     pub fn interactive_if_empty( &mut self, key : &str )
     {
-      if let None = self.0.get( key ).and_then( | v | v.as_ref() )
+      if self.0.get( key ).and_then( | v | v.as_ref() ).is_none()
       {
         println! ("Parameter `{key}` is not set" );
         let answer = wca::ask( "Enter value" );
@@ -299,7 +311,7 @@ mod private
         WriteMode::TomlExtend =>
         {
           let instruction = FileReadInstruction { path : path.into() };
-          if let Some(existing_contents) = fs.read( &instruction ).ok()
+          if let Ok( existing_contents ) = fs.read( &instruction )
           {
             let document = contents.parse::< toml_edit::Document >().context( "Failed to parse template toml file" )?;
             let template_items = document.iter();
@@ -307,10 +319,10 @@ mod private
             let mut existing_document = existing_toml_contents.parse::< toml_edit::Document >().context( "Failed to parse existing toml file" )?;
             for ( template_key, template_item ) in template_items
             {
-              match existing_document.get_mut( &template_key )
+              match existing_document.get_mut( template_key )
               {
-                Some( item ) => *item = template_item.to_owned(),
-                None => existing_document[ &template_key ] = template_item.to_owned(),
+                Some( item ) => template_item.clone_into( item ),
+                None => template_item.clone_into( &mut existing_document[ template_key ] ),
               }
             }
             return Ok( existing_document.to_string() );
@@ -396,9 +408,13 @@ mod private
   pub trait FileSystemPort
   {
     /// Writing to file implementation.
+    /// # Errors
+    /// qqq: doc
     fn write( &self, instruction : &FileWriteInstruction ) -> error::untyped::Result< () >; // qqq : use typed error
 
     /// Reading from a file implementation.
+    /// # Errors
+    /// qqq: doc
     fn read( &self, instruction : &FileReadInstruction ) -> error::untyped::Result< Vec< u8 > >; // qqq : use typed error
   }
 

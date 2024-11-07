@@ -1,7 +1,9 @@
 /// Internal namespace.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
+  #[ allow( clippy::wildcard_imports ) ]
   use macro_tools::exposed::*;
   use std::collections::HashMap;
 
@@ -409,9 +411,10 @@ mod private
   ///
   /// Protocol of modularity unifying interface of a module and introducing layers.
   ///
-  #[ allow ( dead_code ) ]
+  #[ allow ( dead_code, clippy::too_many_lines ) ]
   pub fn mod_interface( input : proc_macro::TokenStream ) -> syn::Result< proc_macro2::TokenStream >
   {
+    #[ allow( clippy::enum_glob_use ) ]
     use ElementType::*;
 
     let original_input = input.clone();
@@ -583,7 +586,7 @@ mod private
 
     if has_debug
     {
-      let about = format!( "derive : mod_interface" );
+      let about = "derive : mod_interface";
       diag::report_print( about, &original_input, &result );
     }
 
@@ -601,6 +604,7 @@ mod private
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use orphan::*;
 }
@@ -611,6 +615,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use exposed::*;
 }
@@ -619,6 +624,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use prelude::*;
   pub use private::
@@ -630,6 +636,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use private::
   {

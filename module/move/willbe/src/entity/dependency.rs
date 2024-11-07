@@ -1,6 +1,7 @@
 mod private
 {
 
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   // use crates_tools::CrateArchive;
@@ -25,6 +26,7 @@ mod private
 
     /// The file system path for a local path dependency.
     /// Only produced on cargo 1.51+
+    #[ must_use ]
     pub fn crate_dir( &self ) -> Option< CrateDir >
     {
       match &self.inner.path
@@ -35,12 +37,14 @@ mod private
     }
 
     /// Name as given in the Cargo.toml.
+    #[ must_use ]
     pub fn name( &self ) -> String
     {
       self.inner.name.clone()
     }
 
     /// The kind of dependency this is.
+    #[ must_use ]
     pub fn kind( &self ) -> DependencyKind
     {
       match self.inner.kind
@@ -53,6 +57,7 @@ mod private
     }
 
     /// Required version
+    #[ must_use ]
     pub fn req( &self ) -> semver::VersionReq
     {
       self.inner.req.clone()
@@ -114,7 +119,7 @@ mod private
     {
       Self
       {
-        name : value.name().into(),
+        name : value.name(),
         crate_dir : value.crate_dir(),
         // path : value.path().clone().map( | path | AbsolutePath::try_from( path ).unwrap() ),
       }
@@ -161,10 +166,16 @@ mod private
 
   // qqq : for Bohdan : poor description
   /// Recursive implementation of the `list` function
-  pub fn _list< 'a >
+  /// # Errors
+  /// qqq: doc
+  ///
+  /// # Panics
+  /// qqq: doc
+  #[ allow( clippy::needless_pass_by_value, clippy::implicit_hasher ) ]
+  pub fn _list
   (
     workspace : &Workspace, // aaa : for Bohdan : no mut // aaa : no mut
-    package : &Package< 'a >,
+    package : &Package< '_ >,
     graph : &mut collection::HashMap< CrateId, collection::HashSet< CrateId > >,
     opts : DependenciesOptions
   )
@@ -183,7 +194,7 @@ mod private
     let manifest_file = &package.manifest_file();
 
     let package = workspace
-    .package_find_by_manifest( &manifest_file )
+    .package_find_by_manifest( manifest_file )
     .ok_or( format_err!( "Package not found in the workspace with path : `{}`", manifest_file.as_ref().display() ) )?;
 
     let deps : collection::HashSet< _ > = package
@@ -229,11 +240,14 @@ mod private
   /// # Returns
   ///
   /// If the operation is successful, returns a vector of `PathBuf` objects, where each `PathBuf` represents the path to a local dependency of the specified package.
+  /// # Errors
+  /// qqq: doc
   // qqq : typed error?
-  pub fn list< 'a >
+  #[ allow( clippy::needless_pass_by_value ) ]
+  pub fn list
   (
     workspace : &mut Workspace,
-    package : &Package< 'a >,
+    package : &Package< '_ >,
     opts : DependenciesOptions
   )
   // qqq : use typed error

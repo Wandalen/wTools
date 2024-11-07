@@ -1,3 +1,4 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
   use std::sync::Arc;
@@ -37,7 +38,7 @@ mod private
   #[ derive( Debug, Clone ) ]
   pub struct Context
   {
-    inner : Arc< dyn std::any::Any + Send + Sync >,
+    inner : Arc< dyn core::any::Any + Send + Sync >,
   }
 
   impl Default for Context
@@ -80,6 +81,7 @@ mod private
     /// An `Option` containing a reference-counted smart pointer (`Arc`) to the object of type `T` if it exists in the context.
     /// `None` is returned if the object does not exist or if it cannot be downcasted to type `T`.
     // `'static` means that the object must be owned or live at least as a `Context'
+    #[ must_use ]
     pub fn get< T : Send + Sync + 'static >( &self ) -> Option< Arc< T > >
     {
       self.inner.clone().downcast::< T >().ok()

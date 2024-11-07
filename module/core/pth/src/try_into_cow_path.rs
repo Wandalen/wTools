@@ -1,6 +1,8 @@
 /// Internal namespace.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use std::
   {
@@ -24,6 +26,8 @@ mod private
     ///
     /// * `Ok(Cow<Path>)` - A `Cow` that may be either borrowed or owned, depending on the input type.
     /// * `Err(io::Error)` - An error if the conversion fails.
+    /// # Errors
+    /// qqq: doc
     fn try_into_cow_path( self ) -> Result< Cow<'a, Path>, io::Error >;
   }
 

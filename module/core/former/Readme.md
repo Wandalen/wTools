@@ -23,7 +23,7 @@ This approach abstracts away the need for manually implementing a builder for ea
 
 ## Comparison
 
-The Former crate and the abstract Builder pattern concept share a common goal: to construct complex objects step-by-step, ensuring they are always in a valid state and hiding internal structures. Both use a fluent interface for setting fields and support default values for fields that aren't explicitly set. They also have a finalization method to return the constructed object (.form() in Former, build() in [traditional Builder](https://refactoring.guru/design-patterns/builder)).
+The Former crate and the abstract Builder pattern concept share a common goal: to construct complex objects step-by-step, ensuring they are always in a valid state and hiding internal structures. Both use a fluent interface for setting fields and support default values for fields that aren't explicitly set. They also have a finalization method to return the constructed object (`.form()` in Former, `build()` in [traditional Builder](https://refactoring.guru/design-patterns/builder)).
 
 However, the Former crate extends the traditional Builder pattern by automating the generation of builder methods using macros. This eliminates the need for manual implementation, which is often required in the abstract concept. Additionally, Former supports nested builders and subformers for complex data structures, allowing for more sophisticated object construction.
 
@@ -660,7 +660,7 @@ Storage is not just a passive collection; it is an active part of a larger ecosy
 
 - **Former as an Active Manager**: The former is responsible for managing the storage, utilizing it to keep track of the object's evolving configuration. It orchestrates the formation process by handling intermediate states and preparing the object for its final form.
 - **Contextual Flexibility**: The context associated with the former adds an additional layer of flexibility, allowing the former to adjust its behavior based on the broader circumstances of the object's formation. This is particularly useful when the forming process involves conditions or states external to the object itself.
-- **FormingEnd Callback**: The `FormingEnd` callback is a dynamic component that defines the final steps of the forming process. It can modify the storage based on final adjustments, validate the object's readiness, or integrate the object into a larger structure, such as embedding it as a subformer within another structure.
+- **`FormingEnd` Callback**: The `FormingEnd` callback is a dynamic component that defines the final steps of the forming process. It can modify the storage based on final adjustments, validate the object's readiness, or integrate the object into a larger structure, such as embedding it as a subformer within another structure.
 
 These elements work in concert to ensure that the forming process is not only about building an object step-by-step but also about integrating it seamlessly into larger, more complex structures or systems.
 

@@ -1,5 +1,6 @@
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   /// Represents a grammatically correct command with a phrase descriptor, a list of command subjects, and a set of command options.
@@ -22,7 +23,7 @@ mod private
   /// };
   /// ```
   ///
-  /// In the above example, a `VerifiedCommand` instance is created with the name "command", a single subject "subject_value", and one property "prop_name" with a typed values.
+  /// In the above example, a `VerifiedCommand` instance is created with the name "command", a single subject "`subject_value`", and one property "`prop_name`" with a typed values.
   ///
   #[ derive( Debug, Clone ) ]
   pub struct VerifiedCommand

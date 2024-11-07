@@ -1,8 +1,10 @@
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use std::path::Path;
   use error::{ untyped::Context };
+  #[ allow( clippy::wildcard_imports ) ]
   use tool::template::*;
 
   /// Template for creating deploy files.
@@ -17,6 +19,8 @@ mod private
     /// Creates am instance of `[TemplateHolder]` for deployment template.
     /// 
     /// Used for properly initializing a template 
+    #[ must_use ]
+    #[ allow( clippy::should_implement_trait ) ]
     pub fn default() -> TemplateHolder
     {
       let parameters = TemplateParameters::former()
@@ -30,7 +34,7 @@ mod private
       {
         files : get_deploy_template_files(),
         parameters,
-        values : Default::default(),
+        values : TemplateValues::default(),
         parameter_storage : "./.deploy_template.toml".as_ref(),
         template_name : "deploy",
       }
@@ -79,12 +83,13 @@ mod private
   fn dir_name_to_formatted( dir_name : &str, separator : &str ) -> String
   {
     dir_name
-    .replace( ' ', separator )
-    .replace( '_', separator )
+    .replace( [ ' ', '_' ], separator )
     .to_lowercase()
   }
 
   /// Creates deploy template
+  /// # Errors
+  /// qqq: doc
   pub fn deploy_renew
   (
     path : &Path,
@@ -93,7 +98,7 @@ mod private
   -> error::untyped::Result< () >
   // qqq : typed error
   {
-    if let None = template.load_existing_params( path )
+    if template.load_existing_params( path ).is_none()
     {
       let current_dir = std::env::current_dir()?;
       // qqq : for Petro : use file_name

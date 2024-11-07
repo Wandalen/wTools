@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use std::
@@ -73,6 +75,9 @@ mod private
     /// # Returns
     ///
     /// Returns a new instance of the struct with the excluded items removed from the internal report.
+    /// # Panics
+    /// qqq: doc
+    #[ must_use ]
     pub fn exclude< Is, I >( mut self, items : Is ) -> Self
     where
       Is : Into< HashSet< I > >,
@@ -89,11 +94,12 @@ mod private
       Self( map )
     }
 
-    /// Checks if there are any changes in the DiffItems.
+    /// Checks if there are any changes in the `DiffItems`.
     ///
     /// # Returns
-    /// * `true` if there are changes in any of the DiffItems.
-    /// * `false` if all DiffItems are the same.
+    /// * `true` if there are changes in any of the `DiffItems`.
+    /// * `false` if all `DiffItems` are the same.
+    #[ must_use ]
     pub fn has_changes( &self ) -> bool
     {
       !self.0.iter().all( |( _, item )| matches!( item, DiffItem::File( Diff::Same( () ) ) ))
@@ -112,9 +118,9 @@ mod private
           {
             match item
             {
-              Diff::Same( _ ) => writeln!( f, " {}", path.display() )?,
-              Diff::Add( _ ) => writeln!( f, "+ {} NEW", path.to_string_lossy().green() )?,
-              Diff::Rem( _ ) => writeln!( f, "- {} REMOVED", path.to_string_lossy().red() )?,
+              Diff::Same( () ) => writeln!( f, " {}", path.display() )?,
+              Diff::Add( () ) => writeln!( f, "+ {} NEW", path.to_string_lossy().green() )?,
+              Diff::Rem( () ) => writeln!( f, "- {} REMOVED", path.to_string_lossy().red() )?,
             };
           }
           DiffItem::Content( items ) =>
@@ -127,7 +133,7 @@ mod private
             {
               match item
               {
-                Diff::Same( t ) => write!( f, "|   {}", t )?,
+                Diff::Same( t ) => write!( f, "|   {t}" )?,
                 Diff::Add( t ) => write!( f, "| + {}", t.green() )?,
                 Diff::Rem( t ) => write!( f, "| - {}", t.red() )?,
               };
@@ -156,6 +162,9 @@ mod private
   /// # Returns
   ///
   /// A `DiffReport` struct, representing the unique and shared attributes of the two crate archives.
+  /// # Panics
+  /// qqq: doc
+  #[ must_use ]
   pub fn crate_diff( left : &CrateArchive, right : &CrateArchive ) -> DiffReport
   {
     let mut report = DiffReport::default();

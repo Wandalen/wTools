@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use std::
@@ -17,7 +19,9 @@ mod private
   pub trait AsCode
   {
     /// Converts the object to its code representation.
-    fn as_code< 'a >( &'a self ) -> std::io::Result< Cow< 'a, str > >;
+    /// # Errors
+    /// qqq: doc
+    fn as_code( &self ) -> std::io::Result< Cow< '_, str > >;
   }
 
   /// A trait for retrieving an iterator over items of a source file.

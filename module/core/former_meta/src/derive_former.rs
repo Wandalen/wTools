@@ -1,4 +1,4 @@
-
+#[ allow( clippy::wildcard_imports ) ]
 use super::*;
 use iter_tools::{ Itertools };
 use macro_tools::{ attr, diag, generic_params, generic_args, typ, derive, Result };
@@ -7,10 +7,13 @@ use proc_macro2::TokenStream;
 // qqq : implement interfaces for other collections
 
 mod field_attrs;
+#[ allow( clippy::wildcard_imports ) ]
 use field_attrs::*;
 mod field;
+#[ allow( clippy::wildcard_imports ) ]
 use field::*;
 mod struct_attrs;
+#[ allow( clippy::wildcard_imports ) ]
 use struct_attrs::*;
 
 /// Generates the code for implementing the `FormerMutator` trait for a specified former definition type.
@@ -40,7 +43,7 @@ use struct_attrs::*;
 /// }
 /// ```
 ///
-
+#[ allow( clippy::format_in_format_args, clippy::unnecessary_wraps ) ]
 pub fn mutator
 (
   item : &syn::Ident,
@@ -114,20 +117,18 @@ fn doc_generate( item : &syn::Ident ) -> ( String, String )
 
   let doc_former_mod = format!
   (
-r#" Implementation of former for [{}].
-"#,
-    item
+r#" Implementation of former for [{item}].
+"#
   );
 
   let doc_former_struct = format!
   (
 r#"
-Structure to form [{}]. Represents a forming entity designed to construct objects through a builder pattern.
+Structure to form [{item}]. Represents a forming entity designed to construct objects through a builder pattern.
 
 This structure holds temporary storage and context during the formation process and
 utilizes a defined end strategy to finalize the object creation.
-"#,
-    item
+"#
   );
 
   ( doc_former_mod, doc_former_struct )
@@ -138,7 +139,7 @@ utilizes a defined end strategy to finalize the object creation.
 ///
 /// Output examples can be found in [docs to former crate](https://docs.rs/former/latest/former/)
 ///
-
+#[ allow( clippy::too_many_lines ) ]
 pub fn former( input : proc_macro::TokenStream ) -> Result< TokenStream >
 {
   use macro_tools::IntoGenericArgs;
@@ -185,7 +186,7 @@ specific needs of the broader forming context. It mandates the implementation of
   {
     < (), #item < #struct_generics_ty >, former::ReturnPreformed >
   };
-  let former_definition_args = generic_args::merge( &generics.into_generic_args(), &extra.into() ).args;
+  let former_definition_args = generic_args::merge( &generics.into_generic_args(), &extra ).args;
 
   /* parameters for former */
 
@@ -196,7 +197,7 @@ specific needs of the broader forming context. It mandates the implementation of
       Definition : former::FormerDefinition< Storage = #former_storage < #struct_generics_ty > >,
       Definition::Types : former::FormerDefinitionTypes< Storage = #former_storage < #struct_generics_ty > >,
   };
-  let extra = generic_params::merge( &generics, &extra.into() );
+  let extra = generic_params::merge( generics, &extra.into() );
 
   let ( former_generics_with_defaults, former_generics_impl, former_generics_ty, former_generics_where )
   = generic_params::decompose( &extra );
@@ -218,7 +219,7 @@ specific needs of the broader forming context. It mandates the implementation of
         Formed = #item < #struct_generics_ty >,
       >,
   };
-  let extra = generic_params::merge( &generics, &extra.into() );
+  let extra = generic_params::merge( generics, &extra.into() );
 
   let ( _former_perform_generics_with_defaults, former_perform_generics_impl, former_perform_generics_ty, former_perform_generics_where )
   = generic_params::decompose( &extra );
@@ -229,7 +230,7 @@ specific needs of the broader forming context. It mandates the implementation of
   {
     < __Context = (), __Formed = #item < #struct_generics_ty > >
   };
-  let former_definition_types_generics = generic_params::merge( &generics, &extra.into() );
+  let former_definition_types_generics = generic_params::merge( generics, &extra.into() );
   let ( former_definition_types_generics_with_defaults, former_definition_types_generics_impl, former_definition_types_generics_ty, former_definition_types_generics_where )
   = generic_params::decompose( &former_definition_types_generics );
 
@@ -241,7 +242,7 @@ specific needs of the broader forming context. It mandates the implementation of
   {
     < __Context = (), __Formed = #item < #struct_generics_ty >, __End = former::ReturnPreformed >
   };
-  let generics_of_definition = generic_params::merge( &generics, &extra.into() );
+  let generics_of_definition = generic_params::merge( generics, &extra.into() );
   let ( former_definition_generics_with_defaults, former_definition_generics_impl, former_definition_generics_ty, former_definition_generics_where )
   = generic_params::decompose( &generics_of_definition );
 
@@ -294,7 +295,7 @@ specific needs of the broader forming context. It mandates the implementation of
     field.storage_field_preform(),
     field.former_field_setter
     (
-      &item,
+      item,
       &original_input,
       &struct_generics_impl,
       &struct_generics_ty,
@@ -317,7 +318,7 @@ specific needs of the broader forming context. It mandates the implementation of
 
   let former_mutator_code = mutator
   (
-    &item,
+    item,
     &original_input,
     &struct_attrs.mutator,
     &former_definition_types,

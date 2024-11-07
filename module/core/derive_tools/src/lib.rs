@@ -31,7 +31,7 @@
 // #[ cfg( feature = "enabled" ) ]
 // pub mod wtools;
 
-#[ cfg( all( feature = "derive_more" ) ) ]
+#[ cfg( feature = "derive_more" ) ]
 #[ allow( unused_imports ) ]
 mod derive_more
 {
@@ -110,6 +110,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -123,6 +124,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
@@ -133,11 +135,12 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use prelude::*;
 
-  #[ cfg( all( feature = "derive_more" ) ) ]
+  #[ cfg( feature = "derive_more" ) ]
   #[ doc( inline ) ]
   pub use super::derive_more::*;
 

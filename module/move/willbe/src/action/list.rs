@@ -1,6 +1,8 @@
 /// Internal namespace.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use std::{ fmt, str };
@@ -285,7 +287,7 @@ mod private
         (
           f,
           "{}",
-          v.iter().map( | l | l.to_string() ).collect::< Vec< _ > >().join( "\n" )
+          v.iter().map( std::string::ToString::to_string ).collect::< Vec< _ > >().join( "\n" )
         ),
 
         Self::List( v ) =>
@@ -321,6 +323,7 @@ mod private
     pub path : Option< ManifestFile >,
   }
 
+  #[ allow( clippy::trivially_copy_pass_by_ref, clippy::needless_lifetimes ) ]
   fn process_package_dependency< 'a >
   (
     workspace : &Workspace,
@@ -347,7 +350,7 @@ mod private
         name : dependency.name(),
         // unwrap should be safe because of `semver::VersionReq`
         version : dependency.req(),
-        path : dependency.crate_dir().map( | p | p.manifest_file() ),
+        path : dependency.crate_dir().map( CrateDir::manifest_file ),
       };
       // format!( "{}+{}+{}", dependency.name(), dependency.req(), dependency.crate_dir().unwrap().manifest_file() );
       // let dep_id = format!( "{}+{}+{}", dependency.name(), dependency.req(), dependency.path().as_ref().map( | p | p.join( "Cargo.toml" ) ).unwrap_or_default() );
@@ -402,7 +405,7 @@ mod private
       name : dep.name(),
       // unwrap should be safe because of `semver::VersionReq`
       version : dep.req(),
-      path : dep.crate_dir().map( | p | p.manifest_file() ),
+      path : dep.crate_dir().map( CrateDir::manifest_file ),
     };
     // if this is a cycle (we have visited this node before)
     if visited.contains( &dep_id )
@@ -527,7 +530,7 @@ mod private
         .collect();
         for package in packages
         {
-          tree_package_report( package.manifest_file().unwrap(), &mut report, &mut visited )?
+          tree_package_report( package.manifest_file().unwrap(), &mut report, &mut visited )?;
         }
         let ListReport::Tree( tree ) = report else { unreachable!() };
         let printer = merge_build_dependencies( tree );
@@ -611,12 +614,12 @@ mod private
               {
                 if args.info.contains( &PackageAdditionalInfo::Version )
                 {
-                  name.push_str( " " );
+                  name.push( ' ' );
                   name.push_str( &p.version().to_string() );
                 }
                 if args.info.contains( &PackageAdditionalInfo::Path )
                 {
-                  name.push_str( " " );
+                  name.push( ' ' );
                   name.push_str( &p.manifest_file()?.to_string() );
                   // aaa : is it safe to use unwrap here? // aaa : should be safe, but now returns an error
                 }
@@ -664,12 +667,12 @@ mod private
             {
               if args.info.contains( &PackageAdditionalInfo::Version )
               {
-                name.push_str( " " );
+                name.push( ' ' );
                 name.push_str( &p.version().to_string() );
               }
               if args.info.contains( &PackageAdditionalInfo::Path )
               {
-                name.push_str( " " );
+                name.push( ' ' );
                 name.push_str( &p.manifest_file().unwrap().to_string() );
               }
             }
@@ -742,7 +745,7 @@ mod private
     }
     let printer : Vec< TreePrinter > = report
     .iter()
-    .map( | rep | TreePrinter::new( rep ) )
+    .map( TreePrinter::new )
     .collect();
     printer
   }
@@ -774,15 +777,15 @@ mod private
   fn rearrange_duplicates( mut report : Vec< tool::ListNodeReport > ) -> Vec< tool::TreePrinter >
   {
     let mut required_normal : collection::HashMap< usize, Vec< tool::ListNodeReport > > = collection::HashMap::new();
-    for i in 0 .. report.len()
+    for (i, report) in report.iter_mut().enumerate()
     {
       let ( required, exist ) : ( Vec< _ >, Vec< _ > ) = std::mem::take
       (
-        &mut report[ i ].normal_dependencies
+        &mut report.normal_dependencies
       )
       .into_iter()
       .partition( | d | d.duplicate );
-      report[ i ].normal_dependencies = exist;
+      report.normal_dependencies = exist;
       required_normal.insert( i, required );
     }
 
@@ -794,7 +797,7 @@ mod private
 
     let printer : Vec< TreePrinter > = report
     .iter()
-    .map( | rep | TreePrinter::new( rep ) )
+    .map( TreePrinter::new )
     .collect();
 
     printer

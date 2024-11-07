@@ -2,6 +2,7 @@
 mod private
 {
 
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use std::
@@ -50,7 +51,10 @@ mod private
     }
 
     /// Creates an owned `NativePath` with path adjoined to self.
+    /// # Panics
+    /// qqq: doc
     #[ inline ]
+    #[ must_use ]
     pub fn join< P >( &self, path : P ) -> NativePath
     where
       P : AsRef< Path >,
@@ -73,8 +77,9 @@ mod private
       self.0.starts_with( base )
     }
 
-    /// Returns inner type which is PathBuf.
+    /// Returns inner type which is `PathBuf`.
     #[ inline( always ) ]
+    #[ must_use ]
     pub fn inner( self ) -> PathBuf
     {
       self.0
@@ -125,6 +130,7 @@ mod private
     }
   }
 
+  #[ allow( clippy::extra_unused_lifetimes ) ]
   impl< 'a > TryFrom< String > for NativePath
   {
     type Error = std::io::Error;

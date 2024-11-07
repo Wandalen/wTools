@@ -1,7 +1,10 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
 
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
+  #[ allow( clippy::wildcard_imports ) ]
   use table::*;
   // qqq : for Bohdan no asterisk imports, but in special cases
   use std::
@@ -10,6 +13,7 @@ mod private
     sync,
   };
   use colored::Colorize as _;
+  #[ allow( clippy::wildcard_imports ) ]
   use process_tools::process::*;
   use error::
   {
@@ -82,6 +86,10 @@ mod private
     /// `with_all_features` - If it's true - add to powerset one subset which contains all features.
     /// `with_none_features` - If it's true - add to powerset one empty subset.
     /// `variants_cap` - Maximum of subset in powerset
+    ///
+    /// # Errors
+    /// qqq: doc
+    #[ allow( clippy::needless_pass_by_value, clippy::too_many_arguments ) ]
     pub fn try_from< 'a >
     (
       packages : impl core::iter::Iterator< Item = WorkspacePackageRef< 'a > >,
@@ -148,7 +156,7 @@ mod private
         }
         all_features.extend( features );
       }
-      let mut ff = Vec::from_iter( self.enabled_features.iter().cloned() );
+      let mut ff: Vec< _ > = self.enabled_features.iter().cloned().collect();
       for feature in all_features
       {
         if !ff.contains( &feature )
@@ -184,7 +192,7 @@ mod private
       }
       // aaa : for Petro : bad, DRY
       // aaa : replace with method
-      writeln!( f, "{}", table )?;
+      writeln!( f, "{table}" )?;
       Ok( () )
     }
   }
@@ -202,9 +210,10 @@ mod private
     /// `with_all_features` - If it's true - add to powerset one subset which contains all features.
     /// `with_none_features` - If it's true - add to powerset one empty subset.
     /// `variants_cap` - Maximum of subset in powerset
-    fn try_from< 'a >
+    #[ allow( clippy::too_many_arguments ) ]
+    fn try_from
     (
-      package : WorkspacePackageRef< 'a >,
+      package : WorkspacePackageRef< '_ >,
       channels : &collection::HashSet< channel::Channel >,
       power : u32,
       include_features : &[ String ],
@@ -241,8 +250,8 @@ mod private
             (
               TestVariant
               {
-                channel : channel.clone(),
-                optimization : optimization.clone(),
+                channel : *channel,
+                optimization : *optimization,
                 features : feature.clone(),
               }
             );
@@ -314,10 +323,11 @@ mod private
 
   /// Represents the options for the test.
   #[ derive( Debug, former::Former, Clone ) ]
+  #[ allow( clippy::struct_excessive_bools ) ]
   pub struct SingleTestOptions
   {
     /// Specifies the release channels for rust.
-    /// More details : https://rust-lang.github.io/rustup/concepts/channels.html#:~:text=Rust%20is%20released%20to%20three,releases%20are%20made%20every%20night.
+    /// More details : <https://rust-lang.github.io/rustup/concepts/channels.html#:~:text=Rust%20is%20released%20to%20three,releases%20are%20made%20every%20night>.
     channel : channel::Channel,
     /// Specifies the optimization for rust.
     optimization : optimization::Optimization,
@@ -335,7 +345,7 @@ mod private
     temp_directory_path : Option< path::PathBuf >,
     /// A boolean indicating whether to perform a dry run or not.
     dry : bool,
-    /// RUST_BACKTRACE
+    /// `RUST_BACKTRACE`
     #[ former( default = true ) ]
     backtrace : bool,
   }
@@ -373,6 +383,10 @@ mod private
   ///
   /// Returns a `Result` containing a `Report` if the command is executed successfully,
   /// or an error if the command fails to execute.
+  ///
+  /// # Errors
+  /// qqq: doc
+  #[ allow( clippy::needless_pass_by_value ) ]
   pub fn _run< P >( path : P, options : SingleTestOptions ) -> Result< Report, Report >
   // xxx
   where
@@ -414,7 +428,7 @@ mod private
     /// Plan for testing
     pub plan : TestPlan,
 
-    /// `concurrent` - A usize value indicating how much test`s can be run at the same time.
+    /// `concurrent` - A usize value indicating how much test's can be run at the same time.
     pub concurrent : u32,
 
     /// `temp_path` - path to temp directory.
@@ -430,6 +444,7 @@ mod private
   // aaa : for Petro : remove after Former fix
   // aaa : done
 
+  #[ allow( clippy::missing_fields_in_debug ) ]
   impl fmt::Debug for TestOptions
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> std::fmt::Result
@@ -499,7 +514,7 @@ mod private
         }
         all_features.extend( features );
       }
-      let mut ff = Vec::from_iter( self.enabled_features.iter().cloned() );
+      let mut ff: Vec< _ > = self.enabled_features.iter().cloned().collect();
       for feature in all_features
       {
         if !ff.contains( &feature )
@@ -537,8 +552,8 @@ mod private
           Err( report ) =>
           {
             failed += 1;
-            let mut out = report.out.replace( "\n", "\n      " );
-            out.push_str( "\n" );
+            let mut out = report.out.replace( '\n', "\n      " );
+            out.push( '\n' );
             write!( f, " ❌  > {}\n\n{out}", report.command )?;
             "❌"
           },
@@ -555,7 +570,7 @@ mod private
       }
       // aaa : for Petro : bad, DRY
       // aaa : replace with method
-      writeln!( f, "{}", table )?;
+      writeln!( f, "{table}" )?;
       writeln!( f, "  {}", generate_summary_message( failed, success ) )?;
 
       Ok( () )
@@ -617,7 +632,7 @@ mod private
         writeln!( f, "Successful :" )?;
         for report in &self.success_reports
         {
-          writeln!( f, "{}", report )?;
+          writeln!( f, "{report}" )?;
         }
       }
       if !self.failure_reports.is_empty()
@@ -625,10 +640,11 @@ mod private
         writeln!( f, "Failure :" )?;
         for report in &self.failure_reports
         {
-          writeln!( f, "{}", report )?;
+          writeln!( f, "{report}" )?;
         }
       }
       writeln!( f, "Global report" )?;
+      #[ allow( clippy::cast_possible_wrap, clippy::cast_possible_truncation ) ]
       writeln!( f, "  {}", generate_summary_message( self.failure_reports.len() as i32, self.success_reports.len() as i32 ) )?;
 
       Ok( () )
@@ -637,13 +653,17 @@ mod private
 
   /// `tests_run` is a function that runs tests on a given package with specified arguments.
   /// It returns a `TestReport` on success, or a `TestReport` and an `Error` on failure.
+  ///
+  /// # Errors
+  /// qqq: doc
+  ///
+  /// # Panics
+  /// qqq: doc
   pub fn run( options : &PackageTestOptions< '_ > )
   -> ResultWithReport< TestReport, TestError >
   // -> Result< TestReport, ( TestReport, TestError ) >
   {
-    let mut report = TestReport::default();
-    report.dry = options.dry;
-    report.enabled_features = options.plan.enabled_features.clone();
+    let report = TestReport { dry: options.dry, enabled_features: options.plan.enabled_features.clone(), ..Default::default() };
     let report = sync::Arc::new( sync::Mutex::new( report ) );
     let crate_dir = options.plan.crate_dir.clone();
 
@@ -678,7 +698,7 @@ mod private
               {
                 let _s =
                 {
-                  let s = options.progress_bar.multi_progress.add( indicatif::ProgressBar::new_spinner().with_message( format!( "{}", variant ) ) );
+                  let s = options.progress_bar.multi_progress.add( indicatif::ProgressBar::new_spinner().with_message( format!( "{variant}" ) ) );
                   s.enable_steady_tick( std::time::Duration::from_millis( 100 ) );
                   s
                 };
@@ -712,6 +732,11 @@ mod private
   }
 
   /// Run tests for given packages.
+  /// # Errors
+  /// qqq: doc
+  ///
+  /// # Panics
+  /// qqq: doc
   pub fn tests_run( args : &TestOptions )
   -> ResultWithReport< TestsReport, TestError >
   // -> Result< TestsReport, ( TestsReport, TestError ) >
@@ -720,8 +745,7 @@ mod private
     let multi_progress = progress_bar::MultiProgress::default();
     #[ cfg( feature = "progress_bar" ) ]
     let mm = &multi_progress;
-    let mut report = TestsReport::default();
-    report.dry = args.dry;
+    let report = TestsReport { dry: args.dry, ..Default::default() };
     let report = sync::Arc::new( sync::Mutex::new( report ) );
     let pool = rayon::ThreadPoolBuilder::new().use_current_thread().num_threads( args.concurrent as usize ).build().unwrap();
     pool.scope

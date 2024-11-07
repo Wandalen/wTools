@@ -1,5 +1,6 @@
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use std::
@@ -42,6 +43,12 @@ mod private
 
   // qqq : for Petro : should return Report and typed error in Result
   /// Generate workflows for modules in .github/workflows directory.
+  /// # Errors
+  /// qqq: doc
+  ///
+  /// # Panics
+  /// qqq: doc
+  #[ allow( clippy::too_many_lines, clippy::result_large_err ) ]
   pub fn action( base_path : &Path ) -> Result< (), CiCdGenerateError >
   {
     let workspace_cache = Workspace::try_from( CrateDir::try_from( base_path )? )?;
@@ -131,13 +138,13 @@ mod private
       data.insert( "name", name.as_str() );
       data.insert( "username_and_repository", username_and_repository.0.as_str() );
       data.insert( "branch", "alpha" );
-      let manifest_file = manifest_file.to_string_lossy().replace( "\\", "/" );
+      let manifest_file = manifest_file.to_string_lossy().replace( '\\', "/" );
       let manifest_file = manifest_file.trim_start_matches( '/' );
       data.insert( "manifest_path", manifest_file );
       let content = handlebars.render( "module_push", &data )?;
       file_write( &workflow_file_name, &content )?;
 
-      println!( "file_write : {:?}", &workflow_file_name )
+      println!( "file_write : {:?}", &workflow_file_name );
     }
 
     dbg!( &workflow_root );
@@ -306,7 +313,7 @@ mod private
     Ok( () )
   }
 
-  /// Prepare params for render appropriative_branch_for template.
+  /// Prepare params for render `appropriative_branch_for` template.
   fn map_prepare_for_appropriative_branch< 'a >
   (
     branches : &'a str,
@@ -333,7 +340,7 @@ mod private
     {
       match std::fs::create_dir_all( folder )
       {
-        Ok( _ ) => {},
+        Ok( () ) => {},
         Err( e ) if e.kind() == std::io::ErrorKind::AlreadyExists => {},
         Err( e ) => return Err( e.into() ),
       }
@@ -372,7 +379,7 @@ mod private
       .map( String::from );
       if let Some( url ) = url
       {
-        return url::repo_url_extract( &url )
+        url::repo_url_extract( &url )
         .and_then( | url | url::git_info_extract( &url ).ok() )
         .map( UsernameAndRepository )
         .ok_or_else( || error::untyped::format_err!( "Fail to parse repository url from workspace Cargo.toml"))
@@ -389,7 +396,7 @@ mod private
             break;
           }
         }
-        return url
+        url
         .and_then( | url | url::repo_url_extract( &url ) )
         .and_then( | url | url::git_info_extract( &url ).ok() )
         .map( UsernameAndRepository )

@@ -1,8 +1,11 @@
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   /// Returns a graph of packages.
+  #[ allow( clippy::type_complexity ) ]
+  #[ must_use ]
   pub fn graph( workspace : &Workspace ) -> petgraph::Graph< String, String >
   {
     let packages = workspace.packages();

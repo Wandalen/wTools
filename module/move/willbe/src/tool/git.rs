@@ -1,11 +1,14 @@
 /// Internal namespace.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
-  #[ allow( unused_imports ) ]
+  #[ allow( unused_imports, clippy::wildcard_imports ) ]
   use crate::tool::*;
 
   use std::ffi::OsString;
   use std::path::Path;
+
+  #[ allow( clippy::wildcard_imports ) ]
   use process_tools::process::*;
   // use error::err;
   // qqq : group dependencies
@@ -31,7 +34,7 @@ mod private
     Os : AsRef< [ O ] >,
     O : AsRef< str >,
   {
-    let objects = objects.as_ref().iter().map( | x | x.as_ref() );
+    let objects = objects.as_ref().iter().map( std::convert::AsRef::as_ref );
 
     // qqq : for Bohdan : don't enlarge length of lines artificially
     let ( program, args ) : ( _, Vec< _ > ) = ( "git", Some( "add" ).into_iter().chain( objects ).collect() );
@@ -164,6 +167,9 @@ mod private
   /// # Returns :
   /// This function returns a `Result` containing a `Report` if the command is executed successfully. The `Report` contains the command executed, the output
   /// git reset command wrapper
+  ///
+  /// # Errors
+  /// qqq: doc
 
   // qqq : should be typed error, apply err_with
 
@@ -181,7 +187,7 @@ mod private
       .into_iter()
       .chain( if hard { Some( "--hard" ) } else { None } )
       .map( String::from )
-      .chain( Some( format!( "HEAD~{}", commits_count ) ) )
+      .chain( Some( format!( "HEAD~{commits_count}" ) ) )
       .collect()
     );
 
@@ -218,6 +224,9 @@ mod private
   /// # Returns
   ///
   /// A `Result` containing a `Report`, which represents the result of the command execution.
+  ///
+  /// # Errors
+  /// qqq: doc
 
   // qqq : should be typed error, apply err_with
   // qqq : don't use 1-prameter Result

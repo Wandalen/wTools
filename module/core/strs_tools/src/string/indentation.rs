@@ -57,17 +57,17 @@ mod private
     {
       if b.0 > 0
       {
-        a.push_str( "\n" );
+        a.push( '\n' );
       }
       a.push_str( prefix );
-      a.push_str( &b.1 );
+      a.push_str( b.1 );
       a.push_str( postfix );
       a
     });
 
-    if src.ends_with( "\n" ) || src.ends_with( "\n\r" ) || src.ends_with( "\r\n" )
+    if src.ends_with( '\n' ) || src.ends_with( "\n\r" ) || src.ends_with( "\r\n" )
     {
-      result.push_str( "\n" );
+      result.push( '\n' );
       result.push_str( prefix );
       result.push_str( postfix );
     }
@@ -85,6 +85,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use orphan::*;
   pub use private::
@@ -96,6 +97,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use exposed::*;
   pub use private::
@@ -107,6 +109,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use super::own as indentation;
 

@@ -1,5 +1,6 @@
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   // use wtools::error::Result;
@@ -35,7 +36,8 @@ mod private
     /// # Returns
     ///
     /// A `Result` with `Ok( () )` if the execution was successful, or an `Err` containing an error message if an error occurred.
-    ///
+    /// # Errors
+    /// qqq: doc
     // qqq : use typed error
     pub fn program( &self, dictionary : &Dictionary, program : Program< VerifiedCommand > )
     -> error::untyped::Result< () >
@@ -60,6 +62,10 @@ mod private
     /// # Returns
     ///
     /// Returns a Result indicating success or failure. If successful, returns `Ok(())`, otherwise returns an error.
+    /// # Errors
+    /// qqq: doc
+    /// # Panics
+    /// qqq: doc
     // qqq : use typed error
     pub fn command( &self, dictionary : &Dictionary, command : VerifiedCommand )
     -> error::untyped::Result< () >
@@ -91,6 +97,7 @@ mod private
   }
 
   // qqq : use typed error
+  #[ allow( clippy::needless_pass_by_value ) ]
   fn _exec_internal_command( dictionary : &Dictionary, command : VerifiedCommand )
   -> error::untyped::Result< () >
   {

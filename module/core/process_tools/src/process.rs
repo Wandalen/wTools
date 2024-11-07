@@ -1,4 +1,5 @@
 /// Internal namespace.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
   // use crate::*;
@@ -73,17 +74,20 @@ mod private
   /// Executes an external process in a specified directory without using a shell.
   ///
   /// # Arguments:
-  /// - `bin_path`: Path to the executable bin_path.
-  /// - `args`: Command-line arguments for the bin_path.
-  /// - `current_path`: Directory current_path to run the bin_path in.
+  /// - `bin_path`: Path to the executable `bin_path`.
+  /// - `args`: Command-line arguments for the `bin_path`.
+  /// - `current_path`: Directory `current_path` to run the `bin_path` in.
   ///
   /// # Returns:
   /// A `Result` containing `Report` on success, detailing execution output,
   /// or an error message on failure.
   ///
-  /// # Errors:
+  /// # Errors
   /// Returns an error if the process fails to spawn, complete, or if output
   /// cannot be decoded as UTF-8.
+  ///
+  /// # Panics
+  /// qqq: doc
   //
   // qqq : for Petro : use typed error
   // qqq : for Petro : write example
@@ -131,7 +135,7 @@ mod private
       .context( "failed to spawn process" )
       .map_err( | e |
       {
-        report.error = Err( e.into() );
+        report.error = Err( e );
         Err::< (), () >( () )
       });
 
@@ -141,16 +145,14 @@ mod private
       }
       let child = child.unwrap();
 
-      let output = child
+      child
       .wait_with_output()
       .context( "failed to wait on child" )
       .map_err( | e |
       {
-        report.error = Err( e.into() );
+        report.error = Err( e );
         Err::< (), () >( () )
-      });
-
-      output
+      })
     };
 
     if report.error.is_err()
@@ -163,7 +165,7 @@ mod private
     .context( "Found invalid UTF-8" )
     .map_err( | e |
     {
-      report.error = Err( e.into() );
+      report.error = Err( e );
       Err::< (), () >( () )
     });
 
@@ -179,7 +181,7 @@ mod private
     .context( "Found invalid UTF-8" )
     .map_err( | e |
       {
-        report.error = Err( e.into() );
+        report.error = Err( e );
         Err::< (), () >( () )
       });
 
@@ -290,10 +292,10 @@ mod private
     {
       Report
       {
-        command : Default::default(),
+        command : String::default(),
         current_path : PathBuf::new(),
-        out : Default::default(),
-        err : Default::default(),
+        out : String::default(),
+        err : String::default(),
         error : Ok( () ),
       }
     }

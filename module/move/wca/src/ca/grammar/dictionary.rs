@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use former::Former;
   use indexmap::IndexMap;
@@ -88,17 +90,18 @@ mod private
     }
 
     /// asd
+    #[ must_use ]
     pub fn commands( &self ) -> Vec< ( &String, &Command ) >
     {
       match self.order
       {
         Order::Nature =>
         {
-          self.commands.iter().map( | ( key, value ) | ( key, value ) ).collect()
+          self.commands.iter().collect()
         }
         Order::Lexicography =>
         {
-          self.commands.iter().map( | ( key, value ) | ( key, value ) ).sorted_by_key( | ( key, _ ) | *key ).collect()
+          self.commands.iter().sorted_by_key( | ( key, _ ) | *key ).collect()
         }
       }
     }

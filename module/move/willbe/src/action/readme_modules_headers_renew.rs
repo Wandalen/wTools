@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use std::
   {
@@ -130,9 +132,10 @@ mod private
   {
 
     /// Create `ModuleHeader` instance from the folder where Cargo.toml is stored.
-    fn from_cargo_toml< 'a >
+    #[ allow( clippy::needless_pass_by_value ) ]
+    fn from_cargo_toml
     (
-      package : Package< 'a >,
+      package : Package< '_ >,
       default_discord_url : &Option< String >,
     )
     -> Result< Self, ModulesHeadersRenewError >
@@ -159,6 +162,7 @@ mod private
     }
 
     /// Convert `ModuleHeader`to header.
+    #[ allow( clippy::uninlined_format_args, clippy::wrong_self_convention ) ]
     fn to_header( self, workspace_path : &str ) -> Result< String, ModulesHeadersRenewError >
     {
       let discord = self.discord_url.map( | discord_url |
@@ -181,7 +185,7 @@ mod private
       {
         let relative_path = pth::path::path_relative
         (
-          workspace_path.try_into().unwrap(),
+          workspace_path.into(),
           name
         )
         .to_string_lossy()
@@ -190,7 +194,7 @@ mod private
         let relative_path = relative_path.replace( "\\", "/" );
         // aaa : for Petro : use path_toools
         // aaa : used
-        let p = relative_path.replace( "/","%2F" );
+        let p = relative_path.replace( '/',"%2F" );
         format!
         (
           " [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE={},RUN_POSTFIX=--example%20{}/https://github.com/{})",
@@ -201,7 +205,7 @@ mod private
       }
       else
       {
-        "".into()
+        String::new()
       };
       Ok( format!
       (
@@ -239,6 +243,12 @@ mod private
   /// [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) | [![rust-status](https://github.com/Username/test/actions/workflows/ModuleChainOfPackagesAPush.yml/badge.svg)](https://github.com/Username/test/actions/workflows/ModuleChainOfPackagesAPush.yml)[![docs.rs](https://img.shields.io/docsrs/_chain_of_packages_a?color=e3e8f0&logo=docs.rs)](https://docs.rs/_chain_of_packages_a)[![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=sample%2Frust%2F_chain_of_packages_a_trivial%2Fsrc%2Fmain.rs,RUN_POSTFIX=--example%20_chain_of_packages_a_trivial/https://github.com/Username/test)
   /// <!--{ generate.module_header.end }-->
   /// ```
+  ///
+  /// # Errors
+  /// qqq: doc
+  ///
+  /// # Panics
+  /// qqq: doc
   pub fn readme_modules_headers_renew( crate_dir : CrateDir )
   -> ResultWithReport< ModulesHeadersRenewReport, ModulesHeadersRenewError >
   // -> Result< ModulesHeadersRenewReport, ( ModulesHeadersRenewReport, ModulesHeadersRenewError ) >
@@ -253,7 +263,7 @@ mod private
 
     let paths : Vec< AbsolutePath > = workspace
     .packages()
-    .filter_map( | p | p.manifest_file().ok().and_then( | a | Some( a.inner() ) ) )
+    .filter_map( | p | p.manifest_file().ok().map( crate::entity::files::ManifestFile::inner ) )
     .collect();
 
     report.found_files = paths
@@ -285,7 +295,7 @@ mod private
       )
       .err_with_report( &report )?;
 
-      let header = ModuleHeader::from_cargo_toml( pakage.into(), &discord_url )
+      let header = ModuleHeader::from_cargo_toml( pakage, &discord_url )
       .err_with_report( &report )?;
 
       let mut file = OpenOptions::new()
@@ -324,6 +334,7 @@ mod private
     Ok( report )
   }
 
+  #[ allow( clippy::uninlined_format_args ) ]
   fn header_content_generate< 'a >
   (
     content : &'a str,
@@ -340,7 +351,7 @@ mod private
     .unwrap()
     .replace
     (
-      &content,
+      content,
       &format!
       (
         "<!--{{ generate.module_header.start{} }}-->\n{}\n<!--{{ generate.module_header.end }}-->",

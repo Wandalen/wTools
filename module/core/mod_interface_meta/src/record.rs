@@ -1,7 +1,9 @@
 /// Internal namespace.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
+  #[ allow( clippy::wildcard_imports ) ]
   use macro_tools::exposed::*;
 
   ///
@@ -69,6 +71,7 @@ mod private
   {
     fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
     {
+      #[ allow( clippy::enum_glob_use ) ]
       use ElementType::*;
       match self
       {
@@ -128,7 +131,7 @@ mod private
           {
             let ident = input.parse()?;
             elements = syn::punctuated::Punctuated::new();
-            elements.push( Pair::new( Default::default(), ident ) );
+            elements.push( Pair::new( AttributesOuter::default(), ident ) );
           }
         },
       }
@@ -201,8 +204,7 @@ mod private
         // code_print!( attr.path() );
         // code_print!( attr.meta );
 
-        let good = true
-          && code_to_str!( attr.path() ) == "debug"
+        let good = code_to_str!( attr.path() ) == "debug"
           // && code_to_str!( attr.meta ).is_empty()
         ;
 
@@ -268,6 +270,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use orphan::*;
 }
@@ -276,6 +279,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use exposed::*;
 }
@@ -284,6 +288,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use prelude::*;
   pub use private::
@@ -299,6 +304,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use private::
   {

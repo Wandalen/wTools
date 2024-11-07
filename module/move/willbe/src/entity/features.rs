@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use collection::{ BTreeSet, HashSet };
   use error::untyped::{ bail }; // xxx
@@ -38,7 +40,10 @@ mod private
   /// let feature_combinations = features_powerset( &package, power, &exclude_features, &include_features, enabled_features, false, false );
   /// // Use `feature_combinations` as needed.
   /// ```
-
+  ///
+  /// # Errors
+  /// qqq: doc
+  #[ allow( clippy::too_many_arguments ) ]
   pub fn features_powerset
   (
     package : WorkspacePackageRef< '_ >,
@@ -96,6 +101,7 @@ mod private
   }
 
   /// Calculate estimate for `features_powerset.length`
+  #[ must_use ]
   pub fn estimate_with
   (
     n : usize,

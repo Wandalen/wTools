@@ -1,5 +1,6 @@
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use std::{ io, path::PathBuf };
 
@@ -15,6 +16,8 @@ mod private
   ///
   /// * `Ok(PathBuf)` - The joined path as a `PathBuf`.
   /// * `Err(io::Error)` - An error if any component fails to convert.
+  /// # Errors
+  /// qqq: doc
   pub fn join< Paths : PathJoined >( paths : Paths ) -> Result< PathBuf, io::Error >
   {
     paths.iter_join()
@@ -33,6 +36,8 @@ mod private
     ///
     /// * `Ok(PathBuf)` - The joined path as a `PathBuf`.
     /// * `Err(io::Error)` - An error if any component fails to convert.
+    /// # Errors
+    /// qqq: doc
     fn iter_join( self ) -> Result< PathBuf, io::Error >;
   }
 

@@ -1,6 +1,7 @@
 /// Internal namespace.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use wca::{ Type, CommandsAggregator, CommandsAggregatorFormer };
 
@@ -8,6 +9,7 @@ mod private
   /// Form CA commands grammar.
   ///
 
+  #[ allow( clippy::too_many_lines ) ]
   pub fn ca() -> CommandsAggregatorFormer
   {
     CommandsAggregator::former()
