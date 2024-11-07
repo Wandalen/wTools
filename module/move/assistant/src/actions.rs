@@ -1,5 +1,24 @@
+//!
+//! CLI actions of the tool.
+//!
+
 mod private
 {
+
+  use std::fmt;
+
+  use format_tools::
+  {
+    AsTable,
+    TableFormatter,
+    output_format,
+  };
+
+  use thiserror::Error;
+
+  use crate::*;
+  use client::Client;
+  use debug::{ AssistantObjectWrap, FileDataWrap, RunObjectWrap };
 
   /// Collective enum for errors in OpenAI actions.
   #[ derive( Debug, Error )]
@@ -11,9 +30,11 @@ mod private
   }
 
   /// Report for `openai_list_assistants`.
+  #[ derive( Debug ) ]
   pub struct OpenAiListAssistantsReport
   {
-    pub assistants: Vec<AssistantObject>
+    /// OpenAI assistants.
+    pub assistants: Vec<AssistantObjectWrap>
   }
 
   impl fmt::Display for OpenAiListAssistantsReport
@@ -30,14 +51,17 @@ mod private
     client : &Client,
   ) -> Result < OpenAiListAssistantsReport, OpenAiError >
   {
-    let assistants = client.list_assistant( None, None, None, None ).await?.data;
+    let response = client.list_assistant( None, None, None, None ).await?;
+    let assistants = response.data.into_iter().map(AssistantObjectWrap).collect();
     Ok( OpenAiListAssistantsReport { assistants } )
   }
 
   /// Report for `openai_list_files`.
+  #[ derive( Debug ) ]
   pub struct OpenAiListFilesReport
   {
-    pub files : Vec<FileData>
+    /// Files in OpenAI.
+    pub files : Vec<FileDataWrap>
   }
 
   impl fmt::Display for OpenAiListFilesReport
@@ -54,14 +78,17 @@ mod private
     client : &Client,
   ) -> Result < OpenAiListFilesReport, OpenAiError >
   {
-    let files = client.file_list().await?.data;
+    let response = client.file_list().await?;
+    let files = response.data.into_iter().map(FileDataWrap).collect();
     Ok( OpenAiListFilesReport { files } )
   }
 
   /// Report for `openai_list_runs`.
+  #[ derive( Debug ) ]
   pub struct OpenAiListRunsReport
   {
-    pub runs : Vec<RunObject>
+    /// Current OpenAI runs.
+    pub runs : Vec<RunObjectWrap>
   }
 
   impl fmt::Display for OpenAiListRunsReport
@@ -79,7 +106,8 @@ mod private
     thread_id : String,
   ) -> Result < OpenAiListRunsReport, OpenAiError >
   {
-    let runs = client.list_run( thread_id, None, None, None, None ).await?.data;
+    let response = client.list_run( thread_id, None, None, None, None ).await?;
+    let runs = response.data.into_iter().map(RunObjectWrap).collect();
     Ok( OpenAiListRunsReport { runs } )
   }
 

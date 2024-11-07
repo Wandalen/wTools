@@ -21,9 +21,6 @@ mod private
 
   use former::Former;
 
-  use crate::*;
-  use cli::*;
-
   /// Options for configuring the OpenAI API client.
   #[ derive( Former, Debug ) ]
   pub struct ClientOptions
@@ -36,7 +33,6 @@ mod private
   pub fn client() -> Result< Client, Box< dyn Error > >
   {
     let api_key = env::var( "OPENAI_API_KEY" )?;
-    println!( "api_key : {}", api_key );
     Ok( Client::new( api_key ) )
   }
 

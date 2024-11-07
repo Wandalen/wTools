@@ -11,13 +11,11 @@ mod private
 }
 
 // pub mod client;
-// pub mod clie;
 
 crate::mod_interface!
 {
 
   layer client;
-  layer cli;
   layer debug;
   layer commands;
   layer actions;

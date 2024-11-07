@@ -9,19 +9,13 @@ use std::
   error::Error,
 };
 
-use format_tools::
-{
-  AsTable,
-  TableFormatter,
-  output_format,
-};
 use dotenv::dotenv;
 use clap::Parser;
 
 use assistant::
 {
   client,
-  cli::*
+  commands,
 };
 
 #[ tokio::main ]
@@ -31,13 +25,13 @@ async fn main() -> Result< (), Box< dyn Error > >
 
   let client = client()?;
 
-  let cli = Cli::parse();
+  let cli = commands::Cli::parse();
 
   match cli.command
   {
-    CliCommand::OpenAi( openai_command ) =>
+    commands::CliCommand::OpenAi( openai_command ) =>
     {
-      commands::openai( & client, openai_command ).await?;
+      commands::openai( & client, openai_command ).await;
     }
   }
 

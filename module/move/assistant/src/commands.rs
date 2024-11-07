@@ -1,6 +1,6 @@
-///!
-///! CLI commands of the tool.
-///!
+//!
+//! CLI commands of the tool.
+//!
 
 /// Internal namespace.
 mod private
@@ -8,8 +8,11 @@ mod private
 
   use clap::{ Parser, Subcommand };
 
+  use crate::*;
+  use client::Client;
+
   /// CLI commands of the tool.
-  #[ derive ( Parser ) ]
+  #[ derive ( Debug,Parser ) ]
   pub struct Cli
   {
     /// Root of the CLI commands.
@@ -18,7 +21,7 @@ mod private
   }
 
   /// Root of the CLI commands.
-  #[ derive ( Subcommand ) ]
+  #[ derive ( Debug,Subcommand ) ]
   pub enum CliCommand
   {
     /// OpenAI API commands.
@@ -27,7 +30,7 @@ mod private
   }
 
   /// OpenAI API commands.
-  #[ derive ( Subcommand ) ]
+  #[ derive ( Debug,Subcommand ) ]
   pub enum OpenAiCommand
   {
     /// OpenAI assistants.
@@ -79,7 +82,7 @@ mod private
   }
 
   /// OpenAI assistants.
-  #[ derive ( Subcommand ) ]
+  #[ derive ( Debug, Subcommand ) ]
   pub enum OpenAiAssistantsCommand
   {
     /// List OpenAI assistants.
@@ -115,7 +118,7 @@ mod private
   }
 
   /// OpenAI files.
-  #[ derive ( Subcommand ) ]
+  #[ derive ( Debug,Subcommand ) ]
   pub enum OpenAiFilesCommand
   {
     /// List OpenAI files.
@@ -151,7 +154,7 @@ mod private
   }
 
   /// OpenAI runs.
-  #[ derive ( Subcommand ) ]
+  #[ derive ( Debug,Subcommand ) ]
   pub enum OpenAiRunsCommand
   {
     /// List OpenAI runs in a thread.
@@ -204,7 +207,7 @@ crate::mod_interface!
     CliCommand,
     OpenAiCommand,
     OpenAiAssistantsCommand,
-    OpenAiFilesommand,
+    OpenAiFilesCommand,
     OpenAiRunsCommand,
     openai,
     openai_assistants,
