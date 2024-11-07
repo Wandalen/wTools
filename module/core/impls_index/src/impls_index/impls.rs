@@ -382,13 +382,7 @@ pub mod exposed
   use super::*;
   #[ doc( inline ) ]
   pub use prelude::*;
-}
 
-/// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
-  use super::*;
   #[ doc( inline ) ]
   pub use private::
   {
@@ -405,4 +399,12 @@ pub mod prelude
   pub use ::impls_index_meta::impls3;
   #[ doc( inline ) ]
   pub use impls3 as impls;
+
+}
+
+/// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
+pub mod prelude
+{
+  use super::*;
 }

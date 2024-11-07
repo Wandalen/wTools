@@ -1,5 +1,10 @@
 
-use super::*;
+use super::
+{
+  the_module,
+  only_for_terminal_module,
+  a_id,
+};
 
 mod func_test;
 mod impls_basic_test;

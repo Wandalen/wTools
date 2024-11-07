@@ -31,6 +31,8 @@ pub mod own
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
+  #[ doc( inline ) ]
+  pub use ::impls_index_meta::*;
 }
 
 /// Shared with parent namespace of the module
@@ -40,7 +42,6 @@ pub mod orphan
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
-  // pub use super::dependency;
 }
 
 /// Exposed namespace of the module.
@@ -65,7 +66,4 @@ pub mod prelude
   pub use impls::prelude::*;
   #[ doc( inline ) ]
   pub use func::prelude::*;
-  // #[ cfg( any( feature = "meta", feature = "impls_index_meta" ) ) ]
-  #[ doc( inline ) ]
-  pub use ::impls_index_meta::*;
 }

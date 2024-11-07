@@ -557,3 +557,15 @@ default-features = false
 [workspace.dependencies.paste]
 version = "~1.0.14"
 default-features = false
+
+[workspace.dependencies.tempdir]
+version = "~0.3.7"
+
+[workspace.dependencies.rustversion]
+version = "~1.0"
+
+[workspace.dependencies.num-traits]
+version = "~0.2"
+
+[workspace.dependencies.rand]
+version = "0.8.5"
