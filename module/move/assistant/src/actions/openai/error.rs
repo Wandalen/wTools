@@ -1,3 +1,7 @@
+//!
+//! Errors in OpenAI actions.
+//!
+
 mod private 
 {
 

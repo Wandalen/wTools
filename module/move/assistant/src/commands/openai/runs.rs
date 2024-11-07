@@ -1,3 +1,7 @@
+//!
+//! Collection of runs commands for OpenAI API.
+//!
+
 mod private
 {
 

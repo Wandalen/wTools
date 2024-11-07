@@ -1,3 +1,7 @@
+//!
+//! Collection of assistants commands for OpenAI API.
+//!
+
 mod private
 {
 

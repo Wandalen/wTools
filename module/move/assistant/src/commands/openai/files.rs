@@ -1,3 +1,7 @@
+//!
+//! Collection of files commands for OpenAI API.
+//!
+
 mod private
 {
 

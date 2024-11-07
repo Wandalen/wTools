@@ -1,3 +1,7 @@
+//!
+//! List runs in OpenAI API (command part).
+//!
+
 mod private
 {
 

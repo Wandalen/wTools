@@ -1,3 +1,7 @@
+//!
+//! OpenAI API actions.
+//!
+
 mod private {}
 
 crate::mod_interface!

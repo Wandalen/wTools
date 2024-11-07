@@ -1,3 +1,7 @@
+//!
+//! List assistants in OpenAI API (action part).
+//!
+
 mod private
 {
 

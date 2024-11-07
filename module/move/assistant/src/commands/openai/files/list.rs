@@ -1,3 +1,7 @@
+//!
+//! List files in OpenAI API (command part).
+//!
+
 mod private
 {
 
