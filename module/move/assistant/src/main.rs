@@ -16,6 +16,7 @@ use assistant::
 {
   client,
   commands,
+  Secret
 };
 
 #[ tokio::main ]
@@ -23,7 +24,9 @@ async fn main() -> Result< (), Box< dyn Error > >
 {
   dotenv().ok();
 
-  let client = client()?;
+  let secret = Secret::load()?;
+
+  let client = client( &secret )?;
 
   let cli = commands::Cli::parse();
 

@@ -21,19 +21,13 @@ mod private
 
   use former::Former;
 
-  /// Options for configuring the OpenAI API client.
-  #[ derive( Former, Debug ) ]
-  pub struct ClientOptions
-  {
-    /// The API key for authenticating with the OpenAI API.
-    pub api_key : Option< String >,
-  }
+  use crate::*;
+  use secret::Secret;
 
-  /// Creates a new OpenAI API client using the API key from the environment variable `OPENAI_API_KEY`.
-  pub fn client() -> Result< Client, Box< dyn Error > >
+  /// Creates a new OpenAI API client using the secrets.
+  pub fn client(secrets: &Secret) -> Result< Client, Box< dyn Error > >
   {
-    let api_key = env::var( "OPENAI_API_KEY" )?;
-    Ok( Client::new( api_key ) )
+    Ok( Client::new( secrets.OPENAI_API_KEY.clone() ) )
   }
 
 }
@@ -43,7 +37,6 @@ crate::mod_interface!
   exposed use
   {
     Client,
-    ClientOptions,
     AssistantObject,
     client
   };

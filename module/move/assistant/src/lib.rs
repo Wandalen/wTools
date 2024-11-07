@@ -10,6 +10,16 @@ mod private
 {
 }
 
+pub mod ser
+{
+  pub use serde::
+  {
+    Serialize,
+    Deserialize,
+  };
+  pub use serde_with::*;
+}
+
 // pub mod client;
 
 crate::mod_interface!
@@ -19,6 +29,7 @@ crate::mod_interface!
   layer debug;
   layer commands;
   layer actions;
+  layer secret;
 
   exposed use ::reflect_tools::
   {
