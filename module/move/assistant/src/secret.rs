@@ -1,8 +1,11 @@
+//!
+//! Tool's secrets.
+//!
+
 /// Internal namespace.
 mod private
 {
   use crate::*;
-  use pth::AbsolutePath;
   use std::
   {
     env,
@@ -19,27 +22,29 @@ mod private
   pub enum Error
   {
 
-    // #[ error( "{0:?}" ) ]
-    // AddrParseError( #[ from ] #[ serde_as( as = "DisplayFromStr" ) ] std::net::AddrParseError ),
-
+    /// Secret file is illformed.
     #[ error( "Secret file is illformed\n{0}" ) ]
     SecretFileIllformed( #[ from ] #[ serde_as( as = "DisplayFromStr" ) ] dotenv::Error ),
 
+    /// Some variable in the secrets is missing.
     #[ error( "Secret misssing the variable {0}" ) ]
     VariableMissing( &'static str ),
 
-    // variable, reason
+    /// Some variable in the secrets is illformed.
     #[ error( "Secret error processing the variable {0}\n{1}" ) ]
     VariableIllformed( &'static str, String ),
 
   }
 
+  /// Result type for `Secret` methods.
   pub type Result< R > = core::result::Result< R, Error >;
 
   /// Represents the application secrets loaded from environment variables.
+  #[ derive( Debug ) ]
   #[ allow( non_snake_case ) ]
   pub struct Secret
   {
+    /// OpenAI API key.
     pub OPENAI_API_KEY : String,
   }
 
@@ -175,7 +180,7 @@ Either define missing environment variable or make sure `./.key/-env.toml` file 
   ///
   /// * `Result<pth::AbsolutePath>` - On success, returns the parsed `AbsolutePath`.
   /// * On failure, returns an error indicating the missing or ill-formed environment variable.
-  fn var_path( name : &'static str, default : Option< &'static str > ) -> Result< pth::AbsolutePath >
+  fn _var_path( name : &'static str, default : Option< &'static str > ) -> Result< pth::AbsolutePath >
   {
     let p = var( name, default )?;
     pth::AbsolutePath::from_paths( ( pth::CurrentPath, p ) )

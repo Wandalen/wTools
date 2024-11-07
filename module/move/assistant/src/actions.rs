@@ -13,20 +13,24 @@ mod private
     TableFormatter,
     output_format,
   };
+  use error_tools::typed::Error;
+  use derive_tools::{ AsRefStr };
 
-  use thiserror::Error;
+  use ser::DisplayFromStr;
 
   use crate::*;
   use client::Client;
   use debug::{ AssistantObjectWrap, FileDataWrap, RunObjectWrap };
 
   /// Collective enum for errors in OpenAI actions.
-  #[ derive( Debug, Error )]
+  #[ ser::serde_as ]
+  #[ derive( Debug, Error, AsRefStr, ser::Serialize ) ]
+  #[ serde( tag = "type", content = "data" ) ]
   pub enum OpenAiError
   {
     /// API error from the underlying implementation crate.
-    #[ error("OpenAI API returned error: {0}") ]
-    ApiError(#[ from ] openai_api_rs::v1::error::APIError )
+    #[ error( "OpenAI API returned error:\n{0}" ) ]
+    ApiError(#[ from ] #[ serde_as( as = "DisplayFromStr" ) ] openai_api_rs::v1::error::APIError )
   }
 
   /// Report for `openai_list_assistants`.

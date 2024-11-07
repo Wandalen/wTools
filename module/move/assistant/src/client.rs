@@ -15,11 +15,8 @@ mod private
 
   use std::
   {
-    env,
     error::Error,
   };
-
-  use former::Former;
 
   use crate::*;
   use secret::Secret;

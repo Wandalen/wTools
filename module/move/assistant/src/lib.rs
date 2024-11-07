@@ -10,6 +10,7 @@ mod private
 {
 }
 
+/// Serde-related exports.
 pub mod ser
 {
   pub use serde::
