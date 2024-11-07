@@ -46,7 +46,7 @@ mod private
   }
 
   /// List OpenAI assistants action.
-  pub async fn list
+  pub async fn action
   (
     client : &Client,
     show_records_as_tables : bool,
@@ -60,5 +60,5 @@ mod private
 
 crate::mod_interface!
 {
-  orphan use list;
+  orphan use action;
 }

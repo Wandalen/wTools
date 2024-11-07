@@ -10,7 +10,7 @@ mod private
 
   /// OpenAI files.
   #[ derive ( Debug, Subcommand ) ]
-  pub enum FilesCommand
+  pub enum Command
   {
     /// List OpenAI files.
     List
@@ -22,17 +22,17 @@ mod private
   }
 
   /// Execute OpenAI commands related to files.
-  pub async fn execute_files_command
+  pub async fn command
   (
     client : &Client,
-    command : FilesCommand,
+    command : Command,
   )
   {
     match command
     {
-      FilesCommand::List{ show_records_as_tables } => 
+      Command::List{ show_records_as_tables } => 
       {
-        list( client, show_records_as_tables ).await;
+        list::command( client, show_records_as_tables ).await;
       }
     }
   }
@@ -43,9 +43,9 @@ crate::mod_interface!
 {
   layer list;
 
-  orphan use
+  own use
   {
-    FilesCommand,
-    execute_files_command,
+    Command,
+    command,
   };
 }

@@ -10,7 +10,7 @@ mod private
 
   /// OpenAI runs.
   #[ derive ( Debug, Subcommand ) ]
-  pub enum RunsCommand
+  pub enum Command
   {
     /// List OpenAI runs in a thread.
     List
@@ -25,17 +25,17 @@ mod private
   }
 
   /// Execute OpenAI commands related to runs.
-  pub async fn execute_runs_command
+  pub async fn command
   (
     client : &Client,
-    command : RunsCommand,
+    command : Command,
   )
   {
     match command
     {
-      RunsCommand::List { thread_id, show_records_as_tables } => 
+      Command::List { thread_id, show_records_as_tables } => 
       {
-        list( client, thread_id, show_records_as_tables ).await;
+        list::command( client, thread_id, show_records_as_tables ).await;
       }
     }
   }
@@ -46,9 +46,9 @@ crate::mod_interface!
 {
   layer list;
 
-  orphan use
+  own use
   {
-    RunsCommand,
-    execute_runs_command,
+    Command,
+    command,
   };
 }

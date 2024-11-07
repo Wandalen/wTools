@@ -7,9 +7,9 @@ mod private
   use client::Client;
   use commands::openai::
   {
-    assistants::*,
-    files::*,
-    runs::*
+    assistants,
+    files,
+    runs,
   };
 
   /// OpenAI API commands.
@@ -20,26 +20,26 @@ mod private
     #[ command ( subcommand ) ]
     Assistants
     (
-      AssistantsCommand
+      assistants::Command
     ),
 
     /// OpenAI files.
     #[ command ( subcommand ) ]
     Files
     (
-      FilesCommand
+      files::Command
     ),
 
     /// OpenAI runs.
     #[ command ( subcommand ) ]
     Runs
     (
-      RunsCommand
+      runs::Command
     ),
   }
 
   /// Execute OpenAI command.
-  pub async fn execute_command
+  pub async fn command
   (
     client : &Client,
     command : Command,
@@ -49,17 +49,17 @@ mod private
     {
       Command::Assistants( assistants_command ) =>
       {
-        execute_assistants_command( client, assistants_command ).await;
+        assistants::command( client, assistants_command ).await;
       }
 
       Command::Files( files_command ) =>
       {
-        execute_files_command( client, files_command ).await;
+        files::command( client, files_command ).await;
       }
 
       Command::Runs( runs_command ) =>
       {
-        execute_runs_command( client, runs_command ).await;
+        runs::command( client, runs_command ).await;
       }
     }
   }
@@ -75,6 +75,6 @@ crate::mod_interface!
   orphan use
   {
     Command,
-    execute_command,
+    command,
   };
 }

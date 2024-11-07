@@ -5,13 +5,13 @@ mod private
   use client::Client;
 
   /// List files in your OpenAI API.
-  pub async fn list
+  pub async fn command
   ( 
     client : &Client,
     show_records_as_tables : bool,
   )
   {
-    let result = actions::openai::files::list( client, show_records_as_tables ).await;
+    let result = actions::openai::files::list::action( client, show_records_as_tables ).await;
 
     match result
     {
@@ -24,5 +24,5 @@ mod private
 
 crate::mod_interface!
 {
-  orphan use list;
+  own use command;
 }

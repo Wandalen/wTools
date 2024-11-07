@@ -5,14 +5,14 @@ mod private
   use client::Client;
 
   /// List runs in the thread in OpenAI API.
-  pub async fn list
+  pub async fn command
   ( 
     client : &Client, 
     thread_id : String,
     show_records_as_tables : bool,
   )
   {
-    let result = actions::openai::runs::list( client, thread_id, show_records_as_tables ).await;
+    let result = actions::openai::runs::list::action( client, thread_id, show_records_as_tables ).await;
 
     match result
     {
@@ -25,5 +25,5 @@ mod private
 
 crate::mod_interface!
 {
-  orphan use list;
+  own use command;
 }

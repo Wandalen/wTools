@@ -42,7 +42,7 @@ mod private
   }
 
   /// List OpenAI runs action.
-  pub async fn list
+  pub async fn action
   (
     client : &Client,
     thread_id : String,
@@ -58,5 +58,5 @@ mod private
 
 crate::mod_interface!
 {
-  orphan use list;
+  orphan use action;
 }

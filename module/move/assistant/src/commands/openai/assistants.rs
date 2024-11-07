@@ -10,7 +10,7 @@ mod private
 
   /// OpenAI assistants.
   #[ derive ( Debug, Subcommand ) ]
-  pub enum AssistantsCommand
+  pub enum Command
   {
     /// List OpenAI assistants.
     List
@@ -22,17 +22,17 @@ mod private
   }
 
   /// Execute OpenAI command related to assistants.
-  pub async fn execute_assistants_command
+  pub async fn command
   (
     client : &Client,
-    command : AssistantsCommand,
+    command : Command,
   )
   {
     match command
     {
-      AssistantsCommand::List{ show_records_as_tables } => 
+      Command::List{ show_records_as_tables } => 
       {
-        list( client, show_records_as_tables ).await;
+        list::command( client, show_records_as_tables ).await;
       }
     }
   }
@@ -43,9 +43,9 @@ crate::mod_interface!
 {
   layer list;
 
-  orphan use
+  own use
   {
-    AssistantsCommand,
-    execute_assistants_command,
+    Command,
+    command,
   };
 }

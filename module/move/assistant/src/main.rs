@@ -34,7 +34,7 @@ async fn main() -> Result< (), Box< dyn Error > >
   {
     CliCommand::OpenAi( openai_command ) =>
     {
-      commands::openai::execute_command( &client, openai_command ).await;
+      commands::openai::command( &client, openai_command ).await;
     }
   }
 

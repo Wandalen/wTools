@@ -35,7 +35,7 @@ enabled = [
 
 [[bin]]
 name = "list_resources"
-path = "src/list_resources.rs"
+path = "src/bin/list_resources.rs"
 
 [dependencies]
 # xxx : qqq : optimze features
