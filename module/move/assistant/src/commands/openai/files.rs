@@ -1,11 +1,15 @@
 mod private
 {
 
+  use clap::Subcommand;
+
   use crate::*;
   use client::Client;
+  
+  use super::list;
 
   /// OpenAI files.
-  #[ derive ( Debug,Subcommand ) ]
+  #[ derive ( Debug, Subcommand ) ]
   pub enum FilesCommand
   {
     /// List OpenAI files.
@@ -37,9 +41,11 @@ mod private
 
 crate::mod_interface!
 {
+  layer list;
+
   orphan use
   {
     FilesCommand,
     execute_files_command,
-  }
+  };
 }

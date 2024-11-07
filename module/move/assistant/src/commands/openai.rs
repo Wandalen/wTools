@@ -1,34 +1,40 @@
 mod private
 {
 
+  use clap::Subcommand;
+
   use crate::*;
   use client::Client;
-
-  use clap::Subcommand;
+  use commands::openai::
+  {
+    assistants::*,
+    files::*,
+    runs::*
+  };
 
   /// OpenAI API commands.
   #[ derive ( Debug, Subcommand ) ]
-  pub enum OpenAiCommand
+  pub enum Command
   {
     /// OpenAI assistants.
     #[ command ( subcommand ) ]
     Assistants
     (
-      OpenAiAssistantsCommand
+      AssistantsCommand
     ),
 
     /// OpenAI files.
     #[ command ( subcommand ) ]
     Files
     (
-      OpenAiFilesCommand
+      FilesCommand
     ),
 
     /// OpenAI runs.
     #[ command ( subcommand ) ]
     Runs
     (
-      OpenAiRunsCommand
+      RunsCommand
     ),
   }
 
@@ -36,22 +42,22 @@ mod private
   pub async fn execute_command
   (
     client : &Client,
-    command : OpenAiCommand,
+    command : Command,
   )
   {
     match command
     {
-      OpenAiCommand::Assistants( assistants_command ) =>
+      Command::Assistants( assistants_command ) =>
       {
         execute_assistants_command( client, assistants_command ).await;
       }
 
-      OpenAiCommand::Files( files_command ) =>
+      Command::Files( files_command ) =>
       {
         execute_files_command( client, files_command ).await;
       }
 
-      OpenAiCommand::Runs( runs_command ) =>
+      Command::Runs( runs_command ) =>
       {
         execute_runs_command( client, runs_command ).await;
       }
@@ -62,9 +68,13 @@ mod private
 
 crate::mod_interface!
 {
+  layer assistants;
+  layer files;
+  layer runs;
+
   orphan use
   {
-    OpenAiCommand,
+    Command,
     execute_command,
-  }
+  };
 }

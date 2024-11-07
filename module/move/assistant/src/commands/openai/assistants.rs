@@ -1,8 +1,12 @@
 mod private
 {
 
+  use clap::Subcommand;
+
   use crate::*;
   use client::Client;
+  
+  use super::list;
 
   /// OpenAI assistants.
   #[ derive ( Debug, Subcommand ) ]
@@ -37,9 +41,11 @@ mod private
 
 crate::mod_interface!
 {
+  layer list;
+
   orphan use
   {
     AssistantsCommand,
     execute_assistants_command,
-  }
+  };
 }

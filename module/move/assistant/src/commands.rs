@@ -9,7 +9,7 @@ mod private
   use clap::{ Parser, Subcommand };
 
   use crate::*;
-  use client::Client;
+  use commands::openai;
 
   /// CLI commands of the tool.
   #[ derive ( Debug,Parser ) ]
@@ -26,7 +26,7 @@ mod private
   {
     /// OpenAI API commands.
     #[ command ( subcommand, name = "openai" ) ]
-    OpenAi(OpenAiCommand),
+    OpenAi(openai::Command),
   }
 
 }

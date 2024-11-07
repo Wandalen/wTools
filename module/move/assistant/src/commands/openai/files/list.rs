@@ -11,7 +11,7 @@ mod private
     show_records_as_tables : bool,
   )
   {
-    let result = actions::files::list( client, show_records_as_tables ).await;
+    let result = actions::openai::files::list( client, show_records_as_tables ).await;
 
     match result
     {

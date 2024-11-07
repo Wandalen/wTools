@@ -15,7 +15,7 @@ use clap::Parser;
 use assistant::
 {
   client,
-  commands,
+  commands::{ Cli, CliCommand, self },
   Secret
 };
 
@@ -28,13 +28,13 @@ async fn main() -> Result< (), Box< dyn Error > >
 
   let client = client( &secret )?;
 
-  let cli = commands::Cli::parse();
+  let cli = Cli::parse();
 
   match cli.command
   {
-    commands::CliCommand::OpenAi( openai_command ) =>
+    CliCommand::OpenAi( openai_command ) =>
     {
-      commands::openai( & client, openai_command ).await;
+      commands::openai::execute_command( &client, openai_command ).await;
     }
   }
 

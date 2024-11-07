@@ -13,6 +13,7 @@ mod private
   use crate::*;
   use client::Client;
   use debug::AssistantObjectWrap;
+  use actions::openai::error::Result;
 
   /// Report for `openai assistants list`.
   #[ derive( Debug ) ]
@@ -27,7 +28,11 @@ mod private
 
   impl fmt::Display for ListReport
   {
-    fn fmt( &self, f : &mut fmt::Formatter< '_ >) -> Result< (), fmt::Error >
+    fn fmt
+    ( 
+      &self, 
+      f : &mut fmt::Formatter< '_ >
+    ) -> fmt::Result
     {
       if self.show_records_as_tables
       {

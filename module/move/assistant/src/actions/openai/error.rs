@@ -3,6 +3,8 @@ mod private
 
   use error_tools::typed::Error;
   use derive_tools::{ AsRefStr };
+
+  use crate::*;
   use ser::DisplayFromStr;
 
   /// Collective enum for errors in OpenAI actions.
@@ -22,7 +24,7 @@ mod private
   }
 
   /// Shorthand for `Result` in OpenAI actions.
-  pub type Result< T > = core::result::Result< T, OpenAiError >;
+  pub type Result< T > = core::result::Result< T, Error >;
 
 }
 
@@ -32,5 +34,5 @@ crate::mod_interface!
   {
     Error,
     Result
-  }
+  };
 }

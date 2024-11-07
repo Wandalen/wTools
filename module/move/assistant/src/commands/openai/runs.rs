@@ -1,11 +1,15 @@
 mod private
 {
 
+  use clap::Subcommand;
+
   use crate::*;
   use client::Client;
+  
+  use super::list;
 
   /// OpenAI runs.
-  #[ derive ( Debug,Subcommand ) ]
+  #[ derive ( Debug, Subcommand ) ]
   pub enum RunsCommand
   {
     /// List OpenAI runs in a thread.
@@ -24,7 +28,7 @@ mod private
   pub async fn execute_runs_command
   (
     client : &Client,
-    command RunsCommand,
+    command : RunsCommand,
   )
   {
     match command
@@ -40,9 +44,11 @@ mod private
 
 crate::mod_interface!
 {
+  layer list;
+
   orphan use
   {
     RunsCommand,
     execute_runs_command,
-  }
+  };
 }
