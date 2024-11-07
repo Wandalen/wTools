@@ -25,7 +25,7 @@ mod private
   pub enum OpenAiError
   {
     /// API error from the underlying implementation crate.
-    #[ error("OpenAI API returned error") ]
+    #[ error("OpenAI API returned error: {0}") ]
     ApiError(#[ from ] openai_api_rs::v1::error::APIError )
   }
 
