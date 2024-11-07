@@ -22,7 +22,7 @@ mod private
   use secret::Secret;
 
   /// Creates a new OpenAI API client using the secrets.
-  pub fn client(secrets: &Secret) -> Result< Client, Box< dyn Error > >
+  pub fn client( secrets : &Secret ) -> Result< Client, Box< dyn Error > >
   {
     Ok( Client::new( secrets.OPENAI_API_KEY.clone() ) )
   }

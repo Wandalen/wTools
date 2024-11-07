@@ -24,7 +24,12 @@ mod private
 
     /// Secret file is illformed.
     #[ error( "Secret file is illformed\n{0}" ) ]
-    SecretFileIllformed( #[ from ] #[ serde_as( as = "DisplayFromStr" ) ] dotenv::Error ),
+    SecretFileIllformed
+    ( 
+      #[ from ] 
+      #[ serde_as( as = "DisplayFromStr" ) ] 
+      dotenv::Error
+    ),
 
     /// Some variable in the secrets is missing.
     #[ error( "Secret misssing the variable {0}" ) ]
@@ -147,7 +152,11 @@ Either define missing environment variable or make sure `./.key/-env.toml` file 
   ///
   /// * `Result<String>` - On success, returns the value of the environment variable or the default value.
   /// * On failure, returns an error indicating the missing environment variable.
-  fn var( name : &'static str, default : Option< &'static str > ) -> Result< String >
+  fn var
+  (
+    name : &'static str, 
+    default : Option< &'static str >,
+  ) -> Result< String >
   {
     match env::var( name )
     {
@@ -180,7 +189,11 @@ Either define missing environment variable or make sure `./.key/-env.toml` file 
   ///
   /// * `Result<pth::AbsolutePath>` - On success, returns the parsed `AbsolutePath`.
   /// * On failure, returns an error indicating the missing or ill-formed environment variable.
-  fn _var_path( name : &'static str, default : Option< &'static str > ) -> Result< pth::AbsolutePath >
+  fn _var_path
+  (
+    name : &'static str, 
+    default : Option< &'static str >,
+  ) -> Result< pth::AbsolutePath >
   {
     let p = var( name, default )?;
     pth::AbsolutePath::from_paths( ( pth::CurrentPath, p ) )

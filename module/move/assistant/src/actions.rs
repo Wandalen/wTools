@@ -56,7 +56,7 @@ mod private
   ) -> Result < OpenAiListAssistantsReport, OpenAiError >
   {
     let response = client.list_assistant( None, None, None, None ).await?;
-    let assistants = response.data.into_iter().map(AssistantObjectWrap).collect();
+    let assistants = response.data.into_iter().map( AssistantObjectWrap ).collect();
     Ok( OpenAiListAssistantsReport { assistants } )
   }
 
@@ -83,7 +83,7 @@ mod private
   ) -> Result < OpenAiListFilesReport, OpenAiError >
   {
     let response = client.file_list().await?;
-    let files = response.data.into_iter().map(FileDataWrap).collect();
+    let files = response.data.into_iter().map( FileDataWrap ).collect();
     Ok( OpenAiListFilesReport { files } )
   }
 
@@ -111,7 +111,7 @@ mod private
   ) -> Result < OpenAiListRunsReport, OpenAiError >
   {
     let response = client.list_run( thread_id, None, None, None, None ).await?;
-    let runs = response.data.into_iter().map(RunObjectWrap).collect();
+    let runs = response.data.into_iter().map( RunObjectWrap ).collect();
     Ok( OpenAiListRunsReport { runs } )
   }
 
