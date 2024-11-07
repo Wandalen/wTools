@@ -25,7 +25,7 @@ mod private
   pub enum CliCommand
   {
     /// OpenAI API commands.
-    #[ command ( subcommand ) ]
+    #[ command ( subcommand, name = "openai" ) ]
     OpenAi(OpenAiCommand),
   }
 
