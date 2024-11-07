@@ -9,6 +9,16 @@
 
 ## OpenAI
 
+### Files
+
+```shell
+assistant openai files upload <path> <purpose>
+assistant openai files list
+assistant openai files retrieve <id>
+assistant openai files delete <id>
+assistant openai files retrieve-content <id>
+```
+
 ### Assistants
 
 ```shell
