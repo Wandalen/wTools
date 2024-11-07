@@ -69,7 +69,7 @@ enabled = [
 normal = [
   "dep:error_tools",
   "dep:collection_tools",
-  "dep:meta_tools",
+  "dep:impls_index",
   "dep:mem_tools",
   "dep:typing_tools",
   "dep:diagnostics_tools",
@@ -78,8 +78,8 @@ normal = [
 standalone = [
   "standalone_error_tools",
   "standalone_collection_tools",
-
-  "dep:meta_tools",
+  "standalone_impls_index",
+  "standalone_mem_tools",
   "dep:mem_tools",
   "dep:typing_tools",
   "dep:diagnostics_tools",
@@ -87,6 +87,8 @@ standalone = [
 ]
 standalone_error_tools = [ "dep:anyhow", "dep:thiserror", "error_typed", "error_untyped" ]
 standalone_collection_tools = [ "dep:hashbrown", "collection_constructors", "collection_into_constructors" ]
+standalone_impls_index = [ "dep:impls_index_meta" ]
+standalone_mem_tools = []
 
 # error_tools
 error_typed = []
@@ -99,18 +101,18 @@ collection_into_constructors = []
 
 ## external
 
-# paste = "~1.0" # zzz : remove later
-rustversion = "~1.0"
-num-traits = "~0.2"
 trybuild = { version = "1.0.85", features = [ "diff" ] }
-rand = "0.8.5"
+rustversion = { workspace = true }
+num-traits = { workspace = true }
+rand = { workspace = true }
+# tempdir = { workspace = true }
 
 ## internal
 
 error_tools = { workspace = true, features = [ "full" ], optional = true }
 collection_tools = { workspace = true, features = [ "full" ], optional = true }
+impls_index = { workspace = true, features = [ "full" ], optional = true }
 
-meta_tools = { workspace = true, features = [ "full" ], optional = true }
 mem_tools = { workspace = true, features = [ "full" ], optional = true }
 typing_tools = { workspace = true, features = [ "full" ], optional = true }
 diagnostics_tools = { workspace = true, features = [ "full" ], optional = true }
@@ -125,6 +127,9 @@ anyhow = { workspace = true, optional = true }
 thiserror = { workspace = true, optional = true }
 # collection_tools
 hashbrown = { workspace = true, optional = true }
+# impls_index
+impls_index_meta = { workspace = true, optional = true }
+# mem_tools
 
 [build-dependencies]
 rustc_version = "0.4"

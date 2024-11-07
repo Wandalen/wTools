@@ -3,7 +3,7 @@
 //! Try building a program for negative testing.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
   #[ doc( inline ) ]

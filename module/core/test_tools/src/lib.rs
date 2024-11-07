@@ -18,26 +18,20 @@ pub mod dependency
   pub use ::trybuild;
   #[ doc( inline ) ]
   pub use ::rustversion;
+  #[ doc( inline ) ]
+  pub use ::num_traits;
 
-  // #[ doc( inline ) ]
-  // pub use ::error_tools;
-//   #[ doc( inline ) ]
-//   pub use ::meta_tools;
-//   #[ doc( inline ) ]
-//   pub use ::mem_tools;
-//   #[ doc( inline ) ]
-//   pub use ::typing_tools;
-//   #[ doc( inline ) ]
-//   pub use ::num_traits;
-//   #[ doc( inline ) ]
-//   pub use ::diagnostics_tools;
-//
-//   #[ doc( inline ) ]
-//   pub use ::process_tools;
-
-  // #[ doc( inline ) ]
-  // #[ allow( unused_imports ) ]
-  // pub use ::process_tools as process_tools;
+  #[ doc( inline ) ]
+  pub use super::
+  {
+    error_tools,
+    collection_tools,
+    impls_index,
+    mem_tools,
+    typing_tools,
+    diagnostics_tools,
+    process_tools,
+  };
 
 }
 
@@ -103,18 +97,47 @@ mod private {}
 pub mod test;
 
 /// Error tools.
+#[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "standalone" ) ]
-#[ path = "../../../core/error_tools/src/error/mod.rs" ]
-pub mod error;
-#[ cfg( feature = "standalone" ) ]
-pub use error as error_tools;
+mod standalone
+{
 
-/// Collection tools.
+  /// Error tools.
+  #[ path = "../../../../core/error_tools/src/error/mod.rs" ]
+  pub mod error;
+  pub use error as error_tools;
+
+  /// Collection tools.
+  #[ path = "../../../../core/collection_tools/src/collection/mod.rs" ]
+  pub mod collection;
+  pub use collection as collection_tools;
+
+  /// impl index macroc.
+  #[ path = "../../../../core/impls_index/src/impls_index/mod.rs" ]
+  pub mod impls_index;
+
+}
+#[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "standalone" ) ]
-#[ path = "../../../core/collection_tools/src/collection/mod.rs" ]
-pub mod collection;
-#[ cfg( feature = "standalone" ) ]
-pub use collection as collection_tools;
+pub use standalone::*;
+
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( not( feature = "standalone" ) ) ]
+pub use ::
+{
+  error_tools,
+  collection_tools,
+  impls_index,
+};
+
+#[ cfg( feature = "enabled" ) ]
+pub use ::
+{
+  mem_tools,
+  typing_tools,
+  diagnostics_tools,
+  process_tools,
+};
 
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]

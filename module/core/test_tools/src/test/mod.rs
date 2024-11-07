@@ -80,7 +80,8 @@ pub mod exposed
     version::exposed::*,
   };
 
-  pub use meta_tools::
+  #[ doc( inline ) ]
+  pub use crate::impls_index::
   {
     impls,
     index,

@@ -8,7 +8,7 @@
 
 // xxx2 : use process_tools to build and run rust programs, introduce program_
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
   #[ allow( unused_imports ) ]

@@ -1,4 +1,4 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
   #[ allow( clippy::useless_attribute, clippy::pub_use ) ]

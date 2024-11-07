@@ -3,7 +3,7 @@
 //! Extensions of iterator for determinism.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 

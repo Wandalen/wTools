@@ -24,47 +24,45 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-
-
 [features]
 default = [
   "enabled",
   "meta_for_each",
   "meta_impls_index",
-  # "meta_mod_interface",
-  # "meta_constructors",
+  "mod_interface",
   "meta_idents_concat",
 ]
 full = [
   "enabled",
   "meta_for_each",
   "meta_impls_index",
-  # "meta_mod_interface",
-  # "meta_constructors",
+  "mod_interface",
   "meta_idents_concat",
 ]
 no_std = []
 use_alloc = [ "no_std" ]
-enabled = []
+enabled = [
+  "for_each/enabled",
+  "impls_index/enabled",
+  "mod_interface/enabled",
+]
 
-meta_for_each = [ "for_each/enabled" ]
-meta_impls_index = [ "impls_index/enabled" ]
-meta_mod_interface = [ "mod_interface/enabled" ]
-# xxx : qqq : make mod_interface optional maybe
+meta_for_each = [ "for_each/enabled", "dep:for_each" ]
+meta_impls_index = [ "impls_index/enabled", "dep:impls_index" ]
+mod_interface = [ "mod_interface/enabled", "dep:mod_interface" ]
 
 # meta_constructors = [ "literally" ]
-meta_idents_concat = [ "paste" ]
+meta_idents_concat = [ "dep:paste" ]
 
 [dependencies]
 
 # ## external
-# literally = { version = "~0.1.3", optional = true, default-features = false }
 paste = { workspace = true, optional = true, default-features = false }
 
 ## internal
-impls_index = { workspace = true }
-for_each = { workspace = true }
-mod_interface = { workspace = true, features = [ "default" ] }
+for_each = { workspace = true, optional = true }
+impls_index = { workspace = true, optional = true }
+mod_interface = { workspace = true, optional = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }

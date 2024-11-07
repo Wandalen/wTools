@@ -2,7 +2,7 @@
 //! Tait to getn name of an Item.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 

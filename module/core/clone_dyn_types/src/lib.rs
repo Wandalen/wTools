@@ -10,7 +10,7 @@ pub mod dependency
 {
 }
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
 #[ cfg( feature = "enabled" ) ]
 mod private

@@ -2,7 +2,7 @@
 //! Macro helpers.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
   #[ allow( clippy::wildcard_imports ) ]

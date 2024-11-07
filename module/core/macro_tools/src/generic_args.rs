@@ -2,7 +2,7 @@
 //! This module provides utilities to handle and manipulate generic arguments using the `syn` crate. It includes traits and functions for transforming, merging, and managing generic parameters within procedural macros, enabling seamless syntactic analysis and code generation.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 
