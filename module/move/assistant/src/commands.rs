@@ -86,7 +86,12 @@ mod private
   pub enum OpenAiAssistantsCommand
   {
     /// List OpenAI assistants.
-    List,
+    List
+    {
+      /// Show records as separate tables.
+      #[arg(long, default_value_t = false)]
+      show_records_as_tables : bool
+    },
   }
 
   /// Execute OpenAI command related to assistants.
@@ -98,17 +103,21 @@ mod private
   {
     match command
     {
-        OpenAiAssistantsCommand::List => 
+        OpenAiAssistantsCommand::List{ show_records_as_tables } => 
         {
-          openai_list_assistants( client ).await;
+          openai_list_assistants( client, show_records_as_tables ).await;
         }
     }
   }
 
   /// List OpenAI assistants.
-  pub async fn openai_list_assistants( client : &Client )
+  pub async fn openai_list_assistants
+  ( 
+    client : &Client,
+    show_records_as_tables : bool,
+  )
   {
-    let result = actions::openai_list_assistants( client ).await;
+    let result = actions::openai_list_assistants( client, show_records_as_tables ).await;
 
     match result
     {
@@ -122,7 +131,12 @@ mod private
   pub enum OpenAiFilesCommand
   {
     /// List OpenAI files.
-    List,
+    List
+    {
+      /// Show records as separate tables.
+      #[arg(long, default_value_t = false)]
+      show_records_as_tables : bool
+    },
   }
 
   /// Execute OpenAI commands related to files.
@@ -134,17 +148,21 @@ mod private
   {
     match command
     {
-      OpenAiFilesCommand::List => 
+      OpenAiFilesCommand::List{ show_records_as_tables } => 
       {
-        openai_list_files( client ).await;
+        openai_list_files( client, show_records_as_tables ).await;
       }
     }
   }
 
   /// List files in your OpenAI API.
-  pub async fn openai_list_files( client : &Client )
+  pub async fn openai_list_files
+  ( 
+    client : &Client,
+    show_records_as_tables : bool,
+  )
   {
-    let result = actions::openai_list_files( client ).await;
+    let result = actions::openai_list_files( client, show_records_as_tables ).await;
 
     match result
     {
@@ -162,6 +180,10 @@ mod private
     {
       /// Thread ID.
       thread_id : String,
+
+      /// Show records as separate tables.
+      #[arg(long, default_value_t = false)]
+      show_records_as_tables : bool
     },
   }
 
@@ -174,9 +196,9 @@ mod private
   {
     match command
     {
-      OpenAiRunsCommand::List { thread_id } => 
+      OpenAiRunsCommand::List { thread_id, show_records_as_tables } => 
       {
-        openai_list_runs( client, thread_id ).await;
+        openai_list_runs( client, thread_id, show_records_as_tables ).await;
       }
     }
   }
@@ -186,9 +208,10 @@ mod private
   ( 
     client : &Client, 
     thread_id : String,
+    show_records_as_tables : bool,
   )
   {
-    let result = actions::openai_list_runs( client, thread_id ).await;
+    let result = actions::openai_list_runs( client, thread_id, show_records_as_tables ).await;
 
     match result
     {

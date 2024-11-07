@@ -30,13 +30,21 @@ mod private
   {
     /// API error from the underlying implementation crate.
     #[ error( "OpenAI API returned error:\n{0}" ) ]
-    ApiError(#[ from ] #[ serde_as( as = "DisplayFromStr" ) ] openai_api_rs::v1::error::APIError )
+    ApiError
+    (
+      #[ from ] 
+      #[ serde_as( as = "DisplayFromStr" ) ] 
+      openai_api_rs::v1::error::APIError 
+    )
   }
 
   /// Report for `openai_list_assistants`.
   #[ derive( Debug ) ]
   pub struct OpenAiListAssistantsReport
   {
+    /// Show records as separate tables.
+    pub show_records_as_tables : bool,
+
     /// OpenAI assistants.
     pub assistants: Vec<AssistantObjectWrap>
   }
@@ -45,7 +53,14 @@ mod private
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ >) -> Result< (), fmt::Error >
     {
-      writeln!(f, "{}", AsTable::new( &self.assistants ).table_to_string_with_format( &output_format::Table::default() ) )
+      if self.show_records_as_tables
+      {
+        writeln!(f, "{}", AsTable::new( &self.assistants ).table_to_string_with_format( &output_format::Records::default() ) )
+      }
+      else
+      {
+        writeln!(f, "{}", AsTable::new( &self.assistants ).table_to_string_with_format( &output_format::Table::default() ) )
+      }
     }
   }
 
@@ -53,17 +68,21 @@ mod private
   pub async fn openai_list_assistants
   (
     client : &Client,
+    show_records_as_tables : bool,
   ) -> Result < OpenAiListAssistantsReport, OpenAiError >
   {
     let response = client.list_assistant( None, None, None, None ).await?;
     let assistants = response.data.into_iter().map( AssistantObjectWrap ).collect();
-    Ok( OpenAiListAssistantsReport { assistants } )
+    Ok( OpenAiListAssistantsReport { show_records_as_tables, assistants } )
   }
 
   /// Report for `openai_list_files`.
   #[ derive( Debug ) ]
   pub struct OpenAiListFilesReport
   {
+    /// Show records as separate tables.
+    pub show_records_as_tables : bool,
+
     /// Files in OpenAI.
     pub files : Vec<FileDataWrap>
   }
@@ -72,7 +91,14 @@ mod private
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ >) -> Result< (), fmt::Error >
     {
-      writeln!(f, "{}", AsTable::new( &self.files ).table_to_string_with_format( &output_format::Table::default() ) )
+      if self.show_records_as_tables
+      {
+        writeln!(f, "{}", AsTable::new( &self.files ).table_to_string_with_format( &output_format::Records::default() ) )
+      }
+      else
+      {
+        writeln!(f, "{}", AsTable::new( &self.files ).table_to_string_with_format( &output_format::Table::default() ) )
+      }
     }
   }
 
@@ -80,17 +106,21 @@ mod private
   pub async fn openai_list_files
   (
     client : &Client,
+    show_records_as_tables : bool,
   ) -> Result < OpenAiListFilesReport, OpenAiError >
   {
     let response = client.file_list().await?;
     let files = response.data.into_iter().map( FileDataWrap ).collect();
-    Ok( OpenAiListFilesReport { files } )
+    Ok( OpenAiListFilesReport { show_records_as_tables, files } )
   }
 
   /// Report for `openai_list_runs`.
   #[ derive( Debug ) ]
   pub struct OpenAiListRunsReport
   {
+    /// Show records as separate tables.
+    pub show_records_as_tables : bool,
+
     /// Current OpenAI runs.
     pub runs : Vec<RunObjectWrap>
   }
@@ -99,7 +129,14 @@ mod private
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ >) -> Result< (), fmt::Error >
     {
-      writeln!(f, "{}", AsTable::new( &self.runs ).table_to_string_with_format( &output_format::Table::default() ) )
+      if self.show_records_as_tables
+      {
+        writeln!(f, "{}", AsTable::new( &self.runs ).table_to_string_with_format( &output_format::Records::default() ) )
+      }
+      else
+      {
+        writeln!(f, "{}", AsTable::new( &self.runs ).table_to_string_with_format( &output_format::Table::default() ) )
+      }
     }
   }
 
@@ -108,11 +145,12 @@ mod private
   (
     client : &Client,
     thread_id : String,
+    show_records_as_tables : bool,
   ) -> Result < OpenAiListRunsReport, OpenAiError >
   {
     let response = client.list_run( thread_id, None, None, None, None ).await?;
     let runs = response.data.into_iter().map( RunObjectWrap ).collect();
-    Ok( OpenAiListRunsReport { runs } )
+    Ok( OpenAiListRunsReport { show_records_as_tables, runs } )
   }
 
 }
