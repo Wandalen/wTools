@@ -6,189 +6,193 @@
 mod private
 {
 
-    use clap::{ Parser, Subcommand };
+  use clap::{ Parser, Subcommand };
 
-    /// CLI commands of the tool.
-    #[ derive ( Parser ) ]
-    pub struct Cli
-    {
-        /// Root of the CLI commands.
-        #[ command ( subcommand ) ]
-        pub command: CliCommand,
-    }
-
+  /// CLI commands of the tool.
+  #[ derive ( Parser ) ]
+  pub struct Cli
+  {
     /// Root of the CLI commands.
-    #[ derive ( Subcommand ) ]
-    pub enum CliCommand
-    {
-        /// OpenAI API commands.
-        #[ command ( subcommand ) ]
-        OpenAi(OpenAiCommand),
-    }
+    #[ command ( subcommand ) ]
+    pub command : CliCommand,
+  }
 
+  /// Root of the CLI commands.
+  #[ derive ( Subcommand ) ]
+  pub enum CliCommand
+  {
     /// OpenAI API commands.
-    #[ derive ( Subcommand ) ]
-    pub enum OpenAiCommand
-    {
-        /// OpenAI assistants.
-        #[ command ( subcommand ) ]
-        Assistants
-        (
-            OpenAiAssistantsCommand
-        ),
+    #[ command ( subcommand ) ]
+    OpenAi(OpenAiCommand),
+  }
 
-        /// OpenAI files.
-        #[ command ( subcommand ) ]
-        Files
-        (
-            OpenAiFilesCommand
-        ),
-
-        /// OpenAI runs.
-        #[ command ( subcommand ) ]
-        Runs
-        (
-            OpenAiRunsCommand
-        ),
-    }
-
-    /// Execute OpenAI command.
-    pub async fn openai
-    (
-        client: &Client,
-        command: OpenAiCommand,
-    )
-    {
-        match command
-        {
-            OpenAiCommand::Assistants( assistants_command ) =>
-            {
-                openai_assistants( client, assistants_command ).await;
-            }
-
-            OpenAiCommand::Files( files_command ) =>
-            {
-                openai_files( client, files_command ).await;
-            }
-
-            OpenAiCommand::Runs( runs_command ) =>
-            {
-                openai_runs( client, runs_command ).await;
-            }
-        }
-    }
-
+  /// OpenAI API commands.
+  #[ derive ( Subcommand ) ]
+  pub enum OpenAiCommand
+  {
     /// OpenAI assistants.
-    #[ derive ( Subcommand ) ]
-    pub enum OpenAiAssistantsCommand
-    {
-        /// List OpenAI assistants.
-        List,
-    }
-
-    /// Execute OpenAI command related to assistants.
-    pub async fn openai_assistants
+    #[ command ( subcommand ) ]
+    Assistants
     (
-        client: &Client,
-        command: OpenAiAssistantsCommand,
-    )
-    {
-        match command
-        {
-            OpenAiAssistantsCommand::List => 
-            {
-                openai_list_assistants( client ).await;
-            }
-        }
-    }
-
-    /// List OpenAI assistants.
-    pub async fn openai_list_assistants( client: &Client )
-    {
-        let result = actions::openai_list_assistants( client ).await;
-
-        match result
-        {
-            Ok ( report ) => println!( "{}", report ),
-            Err ( error ) => println!( "{}", error )
-        }
-    }
+      OpenAiAssistantsCommand
+    ),
 
     /// OpenAI files.
-    #[ derive ( Subcommand ) ]
-    pub enum OpenAiFilesCommand
-    {
-        /// List OpenAI files.
-        List,
-    }
-
-    /// Execute OpenAI commands related to files.
-    pub async fn openai_files
+    #[ command ( subcommand ) ]
+    Files
     (
-        client: &Client,
-        command: OpenAiFilesCommand,
-    )
-    {
-        match command
-        {
-            OpenAiFilesCommand::List => 
-            {
-                openai_list_files( client ).await;
-            }
-        }
-    }
-
-    /// List files in your OpenAI API.
-    pub async fn openai_list_files( client: &Client )
-    {
-        let result = actions::openai_list_files( client ).await;
-
-        match result
-        {
-            Ok ( report ) => println!( "{}", report ),
-            Err ( error ) => println!( "{}", error )
-        }
-    }
+      OpenAiFilesCommand
+    ),
 
     /// OpenAI runs.
-    #[ derive ( Subcommand ) ]
-    pub enum OpenAiRunsCommand
-    {
-        /// List OpenAI runs in a thread.
-        List
-        {
-            /// Thread ID.
-            thread_id: String,
-        },
-    }
-
-    /// Execute OpenAI commands related to runs.
-    pub async fn openai_runs
+    #[ command ( subcommand ) ]
+    Runs
     (
-        client: &Client,
-        command: OpenAiRunsCommand,
-    )
+      OpenAiRunsCommand
+    ),
+  }
+
+  /// Execute OpenAI command.
+  pub async fn openai
+  (
+    client : &Client,
+    command : OpenAiCommand,
+  )
+  {
+    match command
     {
-        match command
+      OpenAiCommand::Assistants( assistants_command ) =>
+      {
+        openai_assistants( client, assistants_command ).await;
+      }
+
+      OpenAiCommand::Files( files_command ) =>
+      {
+        openai_files( client, files_command ).await;
+      }
+
+      OpenAiCommand::Runs( runs_command ) =>
+      {
+        openai_runs( client, runs_command ).await;
+      }
+    }
+  }
+
+  /// OpenAI assistants.
+  #[ derive ( Subcommand ) ]
+  pub enum OpenAiAssistantsCommand
+  {
+    /// List OpenAI assistants.
+    List,
+  }
+
+  /// Execute OpenAI command related to assistants.
+  pub async fn openai_assistants
+  (
+    client : &Client,
+    command : OpenAiAssistantsCommand,
+  )
+  {
+    match command
+    {
+        OpenAiAssistantsCommand::List => 
         {
-            OpenAiRunsCommand::List => 
-            {
-                openai_list_runs( client ).await;
-            }
+          openai_list_assistants( client ).await;
         }
     }
+  }
 
-    /// List runs in the thread in OpenAI API.
-    pub async fn openai_list_runs( client: &Client )
+  /// List OpenAI assistants.
+  pub async fn openai_list_assistants( client : &Client )
+  {
+    let result = actions::openai_list_assistants( client ).await;
+
+    match result
     {
-        let result = actions::openai_list_runs( client ).await;
-
-        match result
-        {
-            Ok ( report ) => println!( "{}", report ),
-            Err ( error ) => println!( "{}", error )
-        }
+      Ok ( report ) => println!( "{}", report ),
+      Err ( error ) => println!( "{}", error )
     }
+  }
+
+  /// OpenAI files.
+  #[ derive ( Subcommand ) ]
+  pub enum OpenAiFilesCommand
+  {
+    /// List OpenAI files.
+    List,
+  }
+
+  /// Execute OpenAI commands related to files.
+  pub async fn openai_files
+  (
+    client : &Client,
+    command : OpenAiFilesCommand,
+  )
+  {
+    match command
+    {
+      OpenAiFilesCommand::List => 
+      {
+        openai_list_files( client ).await;
+      }
+    }
+  }
+
+  /// List files in your OpenAI API.
+  pub async fn openai_list_files( client : &Client )
+  {
+    let result = actions::openai_list_files( client ).await;
+
+    match result
+    {
+      Ok ( report ) => println!( "{}", report ),
+      Err ( error ) => println!( "{}", error )
+    }
+  }
+
+  /// OpenAI runs.
+  #[ derive ( Subcommand ) ]
+  pub enum OpenAiRunsCommand
+  {
+    /// List OpenAI runs in a thread.
+    List
+    {
+      /// Thread ID.
+      thread_id : String,
+    },
+  }
+
+  /// Execute OpenAI commands related to runs.
+  pub async fn openai_runs
+  (
+    client : &Client,
+    command : OpenAiRunsCommand,
+  )
+  {
+    match command
+    {
+      OpenAiRunsCommand::List { thread_id } => 
+      {
+        openai_list_runs( client, thread_id ).await;
+      }
+    }
+  }
+
+  /// List runs in the thread in OpenAI API.
+  pub async fn openai_list_runs
+  ( 
+    client : &Client, 
+    thread_id : String,
+  )
+  {
+    let result = actions::openai_list_runs( client, thread_id ).await;
+
+    match result
+    {
+      Ok ( report ) => println!( "{}", report ),
+      Err ( error ) => println!( "{}", error )
+    }
+  }
 
 }
 
@@ -200,13 +204,13 @@ crate::mod_interface!
     CliCommand,
     OpenAiCommand,
     OpenAiAssistantsCommand,
-    OpenAiThreadsCommand,
+    OpenAiFilesommand,
     OpenAiRunsCommand,
     openai,
     openai_assistants,
     openai_list_assistants,
-    openai_threads,
-    openai_list_threads,
+    openai_files,
+    openai_list_files,
     openai_runs,
     openai_list_runs,
   };

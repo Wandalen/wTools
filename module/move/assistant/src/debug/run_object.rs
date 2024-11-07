@@ -8,6 +8,7 @@ use openai_api_rs::v1::run::RunObject;
 #[ derive( Debug ) ]
 pub struct RunObjectWrap( pub RunObject );
 
+/// Manually implemented `Clone`, as `RunObject` does not implement it.
 impl Clone for RunObjectWrap {
     fn clone(&self) -> Self {
         RunObjectWrap(RunObject {

@@ -19,6 +19,8 @@ crate::mod_interface!
   layer client;
   layer cli;
   layer debug;
+  layer commands;
+  layer actions;
 
   exposed use ::reflect_tools::
   {

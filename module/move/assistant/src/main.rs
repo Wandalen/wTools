@@ -21,7 +21,6 @@ use clap::Parser;
 use assistant::
 {
   client,
-  execute_command,
   cli::*
 };
 
@@ -38,7 +37,7 @@ async fn main() -> Result< (), Box< dyn Error > >
   {
     CliCommand::OpenAi( openai_command ) =>
     {
-      execute_command( & client, openai_command ).await?;
+      commands::openai( & client, openai_command ).await?;
     }
   }
 

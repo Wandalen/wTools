@@ -17,6 +17,7 @@ use std::borrow::Cow;
 
 mod assistant_object;
 mod file_data;
+mod run_object;
 
 crate::mod_interface!
 {
@@ -24,5 +25,6 @@ crate::mod_interface!
   {
     assistant_object::AssistantObjectWrap,
     file_data::FileDataWrap,
+    run_object::RunObjectWrap,
   };
 }
