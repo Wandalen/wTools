@@ -1,8 +1,7 @@
 use std::*;
 use std::io::Write;
 
-use crate::the_module::channel;
-use crate::the_module::action;
+use crate::the_module::{ action, channel, package };
 
 enum Dependency
 {
@@ -19,7 +18,7 @@ impl Dependency
       Dependency::Normal { name, path, is_macro } if !is_macro => 
       if let Some( path ) = path
       {
-        format!( "[dependencies.{name}]\npath = \"../../{}\"", path.display().to_string().replace( "\\", "/" ) )
+        format!( "[dependencies.{name}]\npath = \"../{}\"", path.display().to_string().replace( "\\", "/" ) )
       }
       else
       {
@@ -29,7 +28,7 @@ impl Dependency
       Dependency::Dev { name, path, is_macro } if !is_macro =>
       if let Some( path ) = path
       {
-        format!( "[dev-dependencies.{name}]\npath = \"../../{}\"", path.display().to_string().replace( "\\", "/" ) )
+        format!( "[dev-dependencies.{name}]\npath = \"../{}\"", path.display().to_string().replace( "\\", "/" ) )
       }
       else
       {
@@ -133,7 +132,7 @@ impl TestWorkspace
     let cargo = r#"[workspace]
 resolver = "2"
 members = [
-    "*",
+    "members/*",
 ]
 "#;
     () = fs::write( path.join( "Cargo.toml" ), cargo.as_bytes() )?;
@@ -172,6 +171,7 @@ members = [
           {
             if let Some( real_path ) = &package.path
             {
+              let real_path = real_path.strip_prefix( self.path.join( "members" ) ).unwrap_or( real_path );
               *path = Some( real_path.into() );
             }
           }
@@ -194,6 +194,7 @@ members = [
           {
             if let Some( real_path ) = &package.path
             {
+              let real_path = real_path.strip_prefix( self.path.join( "members" ) ).unwrap_or( real_path );
               *path = Some( real_path.into() );
             }
           }
@@ -206,10 +207,10 @@ members = [
       writeln!( cargo, 
         r#"[workspace.dependencies.{name}]
 version = "*"
-path = "./{name}""#,
+path = "members/{name}""#,
       )?;
     }
-    package.create( &self.path )?;
+    package.create( self.path.join( "members" ) )?;
     self.packages.push( package );
     
     Ok( self )
@@ -257,15 +258,53 @@ fn kos_plan()
   (
     the_patterns,
     channel::Channel::Stable,
+    false,
+    false,
     true,
     false,
   )
   .unwrap();
   
-  dbg!(&plan);
+  let queue: Vec< &package::PackageName > = plan.plans.iter().map( | i | &i.package_name ).collect();
+  dbg!(&queue);
   
-  todo!()
+  // We don’t consider dev dependencies when constructing the project graph, which results in this number of variations.
+  // If you'd like to modify this behavior, please check `entity/workspace_graph.rs` in the `module_dependency_filter`.
+  let expected_one_of=
+  [
+    [ "a", "b", "d", "c", "e" ],
+    [ "a", "b", "c", "d", "e" ],
+    [ "a", "d", "b", "c", "e" ],
+    [ "a", "c", "b", "d", "e" ],
+    [ "a", "d", "c", "b", "e" ],
+    [ "a", "c", "d", "b", "e" ],
+    [ "a", "b", "d", "e", "c" ],
+    [ "a", "d", "b", "e", "c" ],
+    [ "a", "b", "e", "d", "c" ],
+    [ "a", "e", "b", "d", "c" ],
+    [ "a", "d", "e", "b", "c" ],
+    [ "a", "e", "d", "b", "c" ],
+    [ "a", "b", "c", "e", "d" ],
+    [ "a", "c", "b", "e", "d" ],
+    [ "a", "b", "e", "c", "d" ],
+    [ "a", "e", "b", "c", "d" ],
+    [ "a", "c", "e", "b", "d" ],
+    [ "a", "e", "c", "b", "d" ],
+  ];
+  
+  let mut fail = true;
+  'sequences: for sequence in expected_one_of
+  {
+    for index in 0 .. 5
+    {
+      if *queue[ index ] != sequence[ index ].to_string().into() { continue 'sequences; }
+    }
+    fail = false;
+    break;
+  }
+  assert!( !fail );
 }
+
 // use super::*;
 // use the_module::
 // {
