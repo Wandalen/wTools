@@ -4,7 +4,7 @@
 #![ doc( html_root_url = "https://docs.rs/for_each/latest/for_each/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 #[ cfg( feature = "enabled" ) ]
 mod private
 {

@@ -67,7 +67,7 @@ fn iters()
   impl IntoIterator for MyContainer
   {
     type Item = i32;
-    type IntoIter = the_module::llist::IntoIter< i32 >;
+    type IntoIter = the_module::linked_list::IntoIter< i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -78,7 +78,7 @@ fn iters()
   impl< 'a > IntoIterator for &'a MyContainer
   {
     type Item = &'a i32;
-    type IntoIter = the_module::llist::Iter< 'a, i32 >;
+    type IntoIter = the_module::linked_list::Iter< 'a, i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -89,7 +89,7 @@ fn iters()
   impl< 'a > IntoIterator for &'a mut MyContainer
   {
     type Item = &'a mut i32;
-    type IntoIter = the_module::llist::IterMut< 'a, i32 >;
+    type IntoIter = the_module::linked_list::IterMut< 'a, i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {

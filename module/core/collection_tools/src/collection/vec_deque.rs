@@ -1,3 +1,6 @@
+#[ allow( unused_imports ) ]
+use super::*;
+
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use alloc::collections::vec_deque::*;
@@ -75,7 +78,7 @@ macro_rules! deque
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _vecd = $crate::deque::VecDeque::with_capacity( _cap );
+    let mut _vecd = $crate::collection::VecDeque::with_capacity( _cap );
     $(
       _vecd.push_back( $key );
     )*
@@ -168,7 +171,7 @@ macro_rules! into_vecd
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _vecd = $crate::deque::VecDeque::with_capacity( _cap );
+    let mut _vecd = $crate::collection::VecDeque::with_capacity( _cap );
     $(
       _vecd.push_back( Into::into( $key ) );
     )*

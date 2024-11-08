@@ -2,7 +2,7 @@
 //! Collection of mechanisms for formatting and serialization into string.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 

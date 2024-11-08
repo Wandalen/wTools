@@ -4,7 +4,7 @@
 //! Functions and structures to handle and manipulate `PhantomData` fields in structs using the `syn` crate. These utilities ensure that generic parameters are correctly accounted for in type checking, even if they are not directly used in the struct's fields.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
   use crate::*;

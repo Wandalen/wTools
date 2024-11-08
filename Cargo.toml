@@ -537,3 +537,35 @@ version = "0.1.83"
 version = "1.41.0"
 features = []
 default-features = false
+
+[workspace.dependencies.anyhow]
+version = "~1.0"
+# features = []
+# default-features = false
+
+[workspace.dependencies.thiserror]
+version = "~1.0"
+# features = []
+# default-features = false
+
+[workspace.dependencies.hashbrown]
+version = "~0.14.3"
+# optional = true
+default-features = false
+# features = [ "default" ]
+
+[workspace.dependencies.paste]
+version = "~1.0.14"
+default-features = false
+
+[workspace.dependencies.tempdir]
+version = "~0.3.7"
+
+[workspace.dependencies.rustversion]
+version = "~1.0"
+
+[workspace.dependencies.num-traits]
+version = "~0.2"
+
+[workspace.dependencies.rand]
+version = "0.8.5"

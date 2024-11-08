@@ -1,7 +1,12 @@
-#[ cfg( feature = "use_alloc" ) ]
+#[ allow( unused_imports ) ]
+use super::*;
+
+// xxx : qqq : wrong
+#[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use crate::dependency::hashbrown::hash_map::*;
+
 #[ cfg( not( feature = "no_std" ) ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
@@ -14,7 +19,7 @@ pub use std::collections::hash_map::*;
 /// # Origin
 ///
 /// This collection can be reexported from different crates:
-/// - from `std`, if `no_std` flag if off
+/// - from `std`, if `use_std` is on ( `no_std` flag if off )
 /// - from `hashbrown`, if `use_alloc` flag if on
 ///
 /// # Syntax
@@ -77,7 +82,7 @@ macro_rules! hmap
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _map = $crate::hmap::HashMap::with_capacity( _cap );
+    let mut _map = $crate::collection::HashMap::with_capacity( _cap );
     $(
       let _ = _map.insert( $key, $value );
     )*
@@ -98,7 +103,7 @@ macro_rules! hmap
 /// # Origin
 ///
 /// This collection can be reexported from different crates:
-/// - from `std`, if `no_std` flag if off
+/// - from `std`, if `use_std` is on ( `no_std` flag if off )
 /// - from `hashbrown`, if `use_alloc` flag if on
 ///
 /// # Syntax
@@ -172,7 +177,7 @@ macro_rules! into_hmap
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _map = $crate::hmap::HashMap::with_capacity( _cap );
+    let mut _map = $crate::collection::HashMap::with_capacity( _cap );
     $(
       let _ = _map.insert( Into::into( $key ), Into::into( $value ) );
     )*

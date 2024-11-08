@@ -11,7 +11,7 @@ pub mod dependency
   pub use ::async_trait;
 }
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 #[ cfg( feature = "enabled" ) ]
 mod private
 {

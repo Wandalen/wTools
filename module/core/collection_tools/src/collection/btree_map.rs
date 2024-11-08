@@ -1,3 +1,6 @@
+#[ allow( unused_imports ) ]
+use super::*;
+
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use alloc::collections::btree_map::*;
@@ -70,7 +73,7 @@ macro_rules! bmap
   )
   =>
   {{
-    let mut _map = $crate::bmap::BTreeMap::new();
+    let mut _map = $crate::collection::BTreeMap::new();
     $(
       let _ = _map.insert( $key , $value );
     )*
@@ -163,7 +166,7 @@ macro_rules! into_bmap
   )
   =>
   {{
-    let mut _map = $crate::bmap::BTreeMap::new();
+    let mut _map = $crate::collection::BTreeMap::new();
     $(
       let _ = _map.insert( Into::into( $key ), Into::into( $value ) );
     )*

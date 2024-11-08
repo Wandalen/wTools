@@ -3,7 +3,7 @@ mod private
   use crate::*;
 
   // use wtools::error::{ Result, err };
-  use error::err;
+  // use error::err;
 
   /// Represents a table composed of multiple rows.
   ///
@@ -98,7 +98,7 @@ mod private
     let table = table.into();
     if !table.validate()
     {
-      return Err( err!( "Invalid table" ) );
+      return Err( error::untyped::format_err!( "Invalid table" ) );
     }
 
     let max_lengths = max_column_lengths( &table );

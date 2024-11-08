@@ -27,8 +27,6 @@ all-features = false
 [features]
 default = [ "enabled" ]
 full = [ "enabled" ]
-no_std = []
-use_alloc = [ "no_std" ]
 enabled = [ "impls_index_meta/enabled" ]
 
 [dependencies]
@@ -36,4 +34,4 @@ impls_index_meta = { workspace = true }
 
 [dev-dependencies]
 test_tools = { workspace = true }
-tempdir = { version = "0.3.7" }
+tempdir = { workspace = true }

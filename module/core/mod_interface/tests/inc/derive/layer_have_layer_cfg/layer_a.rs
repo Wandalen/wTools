@@ -33,7 +33,7 @@ mod private
 
 //
 
-mod_interface!
+the_module::mod_interface!
 {
 
   // orphan use super::private::

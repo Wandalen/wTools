@@ -2,7 +2,7 @@
 //! Functions and structures to handle and manipulate generic parameters using the `syn` crate. It's designed to support macro-driven code generation by simplifying, merging, extracting, and decomposing `syn::Generics`.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
   use crate::*;

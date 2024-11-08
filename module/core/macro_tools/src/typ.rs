@@ -2,7 +2,7 @@
 //! Advanced syntax elements.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
   use crate::*;

@@ -58,7 +58,7 @@ meta_default = [
   "meta_mod_interface",
   # "meta_former",
   # "meta_options",
-  "meta_constructors",
+  # "meta_constructors",
   "meta_idents_concat",
 ]
 meta_full = [
@@ -68,7 +68,7 @@ meta_full = [
   "meta_mod_interface",
   # "meta_former",
   # "meta_options",
-  "meta_constructors",
+  # "meta_constructors",
   "meta_idents_concat",
 ]
 # meta_use_std = [ "meta", "meta_tools/use_std" ]
@@ -79,7 +79,7 @@ meta_for_each = [ "meta", "meta_tools/meta_for_each" ]
 meta_impls_index = [ "meta", "meta_tools/meta_impls_index" ]
 meta_mod_interface = [ "meta" ]
 # meta_mod_interface = [ "meta", "meta_tools/mod_interface" ]
-meta_constructors = [ "meta", "meta_tools/meta_constructors" ]
+# meta_constructors = [ "meta", "meta_tools/meta_constructors" ]
 meta_idents_concat = [ "meta", "meta_tools/meta_idents_concat" ]
 # meta_former = [ "meta", "meta_tools/former" ]
 # meta_options = [ "meta", "meta_tools/options" ]

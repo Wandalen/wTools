@@ -14,7 +14,7 @@ pub mod dependency
   pub use ::clone_dyn_types;
 }
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 #[ cfg( feature = "enabled" ) ]
 mod private
 {

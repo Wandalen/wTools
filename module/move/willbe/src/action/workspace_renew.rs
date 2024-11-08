@@ -134,7 +134,7 @@ mod private
   // qqq : for Petro : should return report
   // qqq : for Petro : should have typed error
   /// Creates workspace template
-  pub fn workspace_renew
+  pub fn action
   (
     path : &Path,
     mut template : WorkspaceTemplate,
@@ -172,6 +172,6 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use workspace_renew;
+  own use action;
   orphan use WorkspaceTemplate;
 }

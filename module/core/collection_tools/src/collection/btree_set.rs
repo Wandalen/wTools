@@ -1,3 +1,6 @@
+#[ allow( unused_imports ) ]
+use super::*;
+
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use alloc::collections::btree_set::*;
@@ -56,7 +59,7 @@ macro_rules! bset
   )
   =>
   {{
-    let mut _set = $crate::bset::BTreeSet::new();
+    let mut _set = $crate::collection::BTreeSet::new();
     $(
       _set.insert( $key );
     )*
@@ -149,7 +152,7 @@ macro_rules! into_bset
   )
   =>
   {{
-    let mut _set = $crate::bset::BTreeSet::new();
+    let mut _set = $crate::collection::BTreeSet::new();
     $(
       _set.insert( Into::into( $key ) );
     )*

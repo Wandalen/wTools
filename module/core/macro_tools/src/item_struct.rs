@@ -2,7 +2,7 @@
 //! Parse structures, like `struct { a : i32 }`.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
   use crate::*;

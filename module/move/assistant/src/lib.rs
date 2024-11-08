@@ -4,10 +4,9 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 use mod_interface::mod_interface;
-
 use error_tools::thiserror;
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 }

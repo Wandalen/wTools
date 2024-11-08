@@ -1,6 +1,10 @@
+#[ allow( unused_imports ) ]
+use super::*;
+
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use alloc::vec::*;
+
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use core::slice::{ Iter, IterMut };
@@ -73,7 +77,7 @@ macro_rules! vec
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _vec = $crate::vec::Vec::with_capacity( _cap );
+    let mut _vec = $crate::collection::Vec::with_capacity( _cap );
     $(
       _vec.push( $key );
     )*
@@ -167,7 +171,7 @@ macro_rules! into_vec
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _vec = $crate::vec::Vec::with_capacity( _cap );
+    let mut _vec = $crate::collection::Vec::with_capacity( _cap );
     $(
       _vec.push( Into::into( $key ) );
     )*

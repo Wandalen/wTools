@@ -4,10 +4,6 @@
 #![ doc( html_root_url = "https://docs.rs/error_tools/latest/error_tools/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-/// Assertions.
-#[ cfg( feature = "enabled" ) ]
-pub mod assert;
-
 /// Alias for std::error::BasicError.
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( not( feature = "no_std" ) ) ]
@@ -19,26 +15,14 @@ pub mod dependency
 {
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   #[ cfg( feature = "error_typed" ) ]
   pub use ::thiserror;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   #[ cfg( feature = "error_untyped" ) ]
   pub use ::anyhow;
 
 }
-
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "error_typed" ) ]
-/// Typed exceptions handling mechanism.
-pub mod typed;
-
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( feature = "error_untyped" ) ]
-/// Untyped exceptions handling mechanism.
-pub mod untyped;
 
 #[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
@@ -51,27 +35,9 @@ pub use own::*;
 pub mod own
 {
   use super::*;
-  #[ allow( unused_imports ) ]
-  use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use assert::orphan::*;
-
-  #[ cfg( not( feature = "no_std" ) ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use error::orphan::*;
-
-  #[ cfg( feature = "error_untyped" ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use untyped::orphan::*;
-
-  #[ cfg( feature = "error_typed" ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use typed::orphan::*;
+  pub use error::own::*;
 
 }
 
@@ -85,6 +51,9 @@ pub mod orphan
   #[ doc( inline ) ]
   pub use exposed::*;
 
+  #[ doc( inline ) ]
+  pub use error::orphan::*;
+
 }
 
 /// Exposed namespace of the module.
@@ -95,27 +64,10 @@ pub mod exposed
   use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use prelude::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use assert::exposed::*;
-
-  #[ cfg( not( feature = "no_std" ) ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use error::exposed::*;
-
-  #[ cfg( feature = "error_untyped" ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use untyped::exposed::*;
-
-  #[ cfg( feature = "error_typed" ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use typed::exposed::*;
 
 }
 
@@ -125,26 +77,8 @@ pub mod exposed
 pub mod prelude
 {
   use super::*;
-  #[ allow( unused_imports ) ]
-  use super::*;
 
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use assert::prelude::*;
-
-  #[ cfg( not( feature = "no_std" ) ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use error::prelude::*;
-
-  #[ cfg( feature = "error_untyped" ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use untyped::prelude::*;
-
-  #[ cfg( feature = "error_typed" ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use typed::prelude::*;
 
 }

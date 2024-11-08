@@ -9,6 +9,7 @@ mod llist;
 mod vec;
 mod deque;
 
+mod namespace_test;
 mod components;
 
 // qqq : make subdirectory for each container -- done

@@ -2,7 +2,7 @@
 //! Nice print's wrapper.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 

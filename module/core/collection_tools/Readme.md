@@ -5,7 +5,7 @@
  [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_collection_tools_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_collection_tools_push.yml) [![docs.rs](https://img.shields.io/docsrs/collection_tools?color=e3e8f0&logo=docs.rs)](https://docs.rs/collection_tools) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fcore%2Fcollection_tools%2Fexamples%2Fcollection_tools_trivial.rs,RUN_POSTFIX=--example%20collection_tools_trivial/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 <!--{ generate.module_header.end }-->
 
-Collection of general purpose tools to manipulate collections( containers like Vec/HashMap/HashSet... ).
+General purpose tools to manipulate collections( containers like Vec/HashMap/HashSet... ).
 
 ### Basic Use Case :: Variadic Constructors for Collections
 
@@ -71,7 +71,7 @@ assert_eq!( meta_list, meta_list );
 
 ### Basic Use Case :: `no_std` `HashSet` / `HashMap`
 
-When implementing a `no_std` environment with the `use_alloc` feature in your Rust project, you'll encounter a challenge: collections like `Vec` are imported differently depending on the availability of the `std` library. Moreover, to use data structures such as `HashSet` or `HashMap` in a `no_std` context, it's necessary to depend on third-party crates, as these are not provided by the `alloc` crate directly. This crate aims to simplify the process of designing Rust libraries or applications that require these collections in a `no_std` environment, offering a more streamlined approach to working with dynamic data structures without the standard library.
+When implementing a `no_std` ( `!use_std` ) environment with the `use_alloc` feature in your Rust project, you'll encounter a challenge: collections like `Vec` are imported differently depending on the availability of the `std` library. Moreover, to use data structures such as `HashSet` or `HashMap` in a `no_std` context, it's necessary to depend on third-party crates, as these are not provided by the `alloc` crate directly. This crate aims to simplify the process of designing Rust libraries or applications that require these collections in a `no_std` environment, offering a more streamlined approach to working with dynamic data structures without the standard library.
 
 You can do
 
@@ -98,7 +98,7 @@ Instead of
 # #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 # {
 
-#[ cfg( feature = "use_alloc" ) ]
+#[ cfg( all( feature = "no_std", feature = "use_alloc" ) ) ]
 use hashbrown::HashSet; // a `no_std` replacement for `HashSet`
 #[ cfg( not( feature = "no_std" ) ) ]
 use std::collections::HashSet;
@@ -120,7 +120,8 @@ While strict macros require you to have all members of the same type, more relax
 
 For example:
 ```rust
-# #[ cfg( all( feature = "enabled", feature = "collection_into_constructors", any( not( feature = "no_std" ), feature = "use_alloc" ) ) ) ]
+# #[ cfg( all( feature = "enabled", feature = "collection_into_constructors" ) ) ]
+# #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 # {
 use std::borrow::Cow;
 let vec : Vec< String > = collection_tools::into_vec!( "&str", "String".to_string(), Cow::from( "Cow" ) );

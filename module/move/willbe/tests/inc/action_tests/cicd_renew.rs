@@ -90,7 +90,7 @@ fn default_case()
   };
 
   // Act
-  _ = action::cicd_renew( &temp ).unwrap();
+  _ = action::cicd_renew::action( &temp ).unwrap();
   dbg!( &file_path );
 
   // Assert

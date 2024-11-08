@@ -2,7 +2,7 @@
 //! Client of API.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 

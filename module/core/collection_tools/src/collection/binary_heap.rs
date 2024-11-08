@@ -1,6 +1,9 @@
+#[ allow( unused_imports ) ]
+use super::*;
+
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
- pub use alloc::collections::binary_heap::*;
+pub use alloc::collections::binary_heap::*;
 
 /// Creates a `BinaryHeap` from a list of elements.
 ///
@@ -57,7 +60,7 @@ macro_rules! heap
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _heap = $crate::heap::BinaryHeap::with_capacity( _cap );
+    let mut _heap = $crate::collection::BinaryHeap::with_capacity( _cap );
     $(
       _heap.push( $key );
     )*
@@ -146,7 +149,7 @@ macro_rules! into_heap
   =>
   {{
     let _cap = count!( @count $( $key ),* );
-    let mut _heap = $crate::heap::BinaryHeap::with_capacity( _cap );
+    let mut _heap = $crate::collection::BinaryHeap::with_capacity( _cap );
     $(
       _heap.push( Into::into( $key ) );
     )*

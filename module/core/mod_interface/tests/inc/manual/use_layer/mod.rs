@@ -24,6 +24,10 @@ pub mod own
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
   pub use super::layer_b::orphan::*;
+  #[ doc( inline ) ]
+  pub use super::layer_a;
+  #[ doc( inline ) ]
+  pub use super::layer_b;
 }
 
 #[ doc( inline ) ]

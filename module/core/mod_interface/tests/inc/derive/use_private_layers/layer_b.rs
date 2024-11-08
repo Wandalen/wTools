@@ -1,12 +1,8 @@
-/// Internal namespace.
+
+/// Private namespace of the module.
 mod private
 {
-
 }
-
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-pub use own::*;
 
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
@@ -15,26 +11,29 @@ pub mod own
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
+  /// layer_b_own
+  pub fn layer_b_own() -> bool
+  {
+    true
+  }
 }
 
-/// Shared with parent namespace of the module
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use own::*;
+
+/// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
   use super::*;
-  pub use super::super::typed;
-  pub use super::super::typed as for_lib;
-
   #[ doc( inline ) ]
   pub use exposed::*;
-
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use ::thiserror::
+  /// layer_b_orphan
+  pub fn layer_b_orphan() -> bool
   {
-    Error,
-  };
-
+    true
+  }
 }
 
 /// Exposed namespace of the module.
@@ -42,10 +41,13 @@ pub mod orphan
 pub mod exposed
 {
   use super::*;
-
   #[ doc( inline ) ]
   pub use prelude::*;
-
+  /// layer_b_exposed
+  pub fn layer_b_exposed() -> bool
+  {
+    true
+  }
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -53,9 +55,9 @@ pub mod exposed
 pub mod prelude
 {
   use super::*;
-
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use thiserror;
-
+  /// layer_b_prelude
+  pub fn layer_b_prelude() -> bool
+  {
+    true
+  }
 }

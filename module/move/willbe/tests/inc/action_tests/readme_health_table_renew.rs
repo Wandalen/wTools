@@ -23,7 +23,7 @@ fn without_any_toml_configurations_test()
   // Arrange
   let temp = arrange( "without_any_toml_configurations" );
   // Act
-  _  = action::readme_health_table_renew( &temp ).unwrap();
+  _  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
 }
 
 #[ test ]
@@ -33,7 +33,7 @@ fn tags_should_stay()
   let temp = arrange( "without_module_toml_configurations" );
 
   // Act
-  _  = action::readme_health_table_renew( &temp ).unwrap();
+  _  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
   let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
@@ -52,7 +52,7 @@ fn stability_experimental_by_default()
   let temp = arrange( "without_module_toml_configurations" );
 
   // Act
-  _  = action::readme_health_table_renew( &temp ).unwrap();
+  _  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
   let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
@@ -70,7 +70,7 @@ fn stability_and_repository_from_module_toml()
   let temp = arrange( "without_workspace_toml_configurations" );
 
   // Act
-  _  = action::readme_health_table_renew( &temp ).unwrap();
+  _  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
   let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
@@ -101,7 +101,7 @@ fn variadic_tag_configuration_test()
   let temp = arrange( "variadic_tag_configurations" );
 
   // Act
-  _  = action::readme_health_table_renew( &temp ).unwrap();
+  _  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
   let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
@@ -121,7 +121,7 @@ fn module_cell()
   let temp = arrange( "full_config" );
 
   // Act
-  _  = action::readme_health_table_renew( &temp ).unwrap();
+  _  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
   let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
@@ -139,7 +139,7 @@ fn stability_cell()
   let temp = arrange( "full_config" );
 
   // Act
-  _  = action::readme_health_table_renew( &temp ).unwrap();
+  _  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
   let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
@@ -157,7 +157,7 @@ fn branches_cell()
   let temp = arrange( "full_config" );
 
   // Act
-  _  = action::readme_health_table_renew( &temp ).unwrap();
+  _  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
   let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
@@ -175,7 +175,7 @@ fn docs_cell()
   let temp = arrange( "full_config" );
 
   // Act
-  _  = action::readme_health_table_renew( &temp ).unwrap();
+  _  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
   let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();
@@ -193,7 +193,7 @@ fn sample_cell()
   let temp = arrange( "full_config" );
 
   // Act
-  _  = action::readme_health_table_renew( &temp ).unwrap();
+  _  = action::readme_health_table_renew::orphan::readme_health_table_renew( &temp ).unwrap();
 
   // Assert
   let mut file = std::fs::File::open( temp.path().join( "readme.md" ) ).unwrap();

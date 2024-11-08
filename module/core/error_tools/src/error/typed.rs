@@ -1,4 +1,4 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 
@@ -15,17 +15,6 @@ pub mod own
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
-
-  #[ doc( inline ) ]
-  pub use ::anyhow::
-  {
-    Chain,
-    Context,
-    Error,
-    Ok,
-    Result,
-  };
-
 }
 
 /// Shared with parent namespace of the module
@@ -33,18 +22,17 @@ pub mod own
 pub mod orphan
 {
   use super::*;
-  pub use super::super::untyped;
-  pub use super::super::untyped as for_app;
+  pub use super::super::typed;
+  pub use super::super::typed as for_lib;
 
   #[ doc( inline ) ]
   pub use exposed::*;
 
   #[ doc( inline ) ]
-  pub use ::anyhow::
+  #[ allow( unused_imports ) ]
+  pub use ::thiserror::
   {
-    format_err,
-    ensure,
-    bail,
+    Error,
   };
 
 }
@@ -65,4 +53,9 @@ pub mod exposed
 pub mod prelude
 {
   use super::*;
+
+  #[ doc( inline ) ]
+  #[ allow( unused_imports ) ]
+  pub use thiserror;
+
 }

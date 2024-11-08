@@ -1,4 +1,4 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
   pub use std::error::Error as ErrorTrait;
@@ -96,132 +96,178 @@ mod private
   /// helps in defining such results more concisely.
   pub type ResultWithReport< Report, Error > = Result< Report, ( Report, Error ) >;
 
-  ///
-  /// Macro to generate an error descriptor.
-  ///
-  /// ### Basic use-case.
-  /// ```rust
-  /// # use error_tools::{ BasicError, err };
-  /// fn f1() -> BasicError
-  /// {
-  ///   return err!( "No attr" );
-  /// }
-  /// ```
-  ///
-
-  #[ macro_export ]
-  macro_rules! err
-  {
-
-    ( $msg : expr ) =>
-    {
-      $crate::BasicError::new( $msg ).into()
-    };
-    ( $msg : expr, $( $arg : expr ),+ $(,)? ) =>
-    {
-      $crate::BasicError::new( format!( $msg, $( $arg ),+ ) ).into()
-    };
-
-  }
-
-  ///
-  /// Macro to return an Err( error ) generating error descriptor.
-  ///
-  /// ### Basic use-case.
-  /// ```rust
-  /// # use error_tools::{ BasicError, return_err };
-  /// fn f1() -> Result< (), BasicError >
-  /// {
-  ///   return_err!( "No attr" );
-  /// }
-  /// ```
-  ///
-
-  #[ macro_export ]
-  macro_rules! return_err
-  {
-
-    ( $msg : expr ) =>
-    {
-      return Result::Err( $crate::err!( $msg ) )
-    };
-    ( $msg : expr, $( $arg : expr ),+ $(,)? ) =>
-    {
-      return Result::Err( $crate::err!( $msg, $( $arg ),+ ) )
-    };
-
-  }
-
-  // zzz : review
-
-  /// baic implementation of generic BasicError
-
-  #[ derive( core::fmt::Debug, core::clone::Clone, core::cmp::PartialEq, core::cmp::Eq ) ]
-  pub struct BasicError
-  {
-    msg : String,
-  }
-
-  impl BasicError
-  {
-    /// Constructor expecting message with description.
-    pub fn new< Msg : Into< String > >( msg : Msg ) -> BasicError
-    {
-      BasicError { msg : msg.into() }
-    }
-    /// Message with description getter.
-    pub fn msg( &self ) -> &String
-    {
-      &self.msg
-    }
-  }
-
-  impl core::fmt::Display for BasicError
-  {
-    fn fmt(&self, f: &mut core::fmt::Formatter< '_ >) -> core::fmt::Result
-    {
-      write!( f, "{}", self.msg )
-    }
-  }
-
-  impl ErrorTrait for BasicError
-  {
-    fn description( &self ) -> &str
-    {
-      &self.msg
-    }
-  }
-
-  impl< T > From< BasicError > for Result< T, BasicError >
-  {
-    /// Returns the argument unchanged.
-    #[ inline( always ) ]
-    fn from( src : BasicError ) -> Self
-    {
-      Result::Err( src )
-    }
-  }
-
-  pub use err;
-  pub use return_err;
+//   ///
+//   /// Macro to generate an error descriptor.
+//   ///
+//   /// ### Basic use-case.
+//   /// ```rust
+//   /// # use error_tools::{ BasicError, err };
+//   /// fn f1() -> BasicError
+//   /// {
+//   ///   return err!( "No attr" );
+//   /// }
+//   /// ```
+//   ///
+//
+//   #[ macro_export ]
+//   macro_rules! err
+//   {
+//
+//     ( $msg : expr ) =>
+//     {
+//       $crate::BasicError::new( $msg ).into()
+//     };
+//     ( $msg : expr, $( $arg : expr ),+ $(,)? ) =>
+//     {
+//       $crate::BasicError::new( format!( $msg, $( $arg ),+ ) ).into()
+//     };
+//
+//   }
+//
+//   ///
+//   /// Macro to return an Err( error ) generating error descriptor.
+//   ///
+//   /// ### Basic use-case.
+//   /// ```rust
+//   /// # use error_tools::{ BasicError, return_err };
+//   /// fn f1() -> Result< (), BasicError >
+//   /// {
+//   ///   return_err!( "No attr" );
+//   /// }
+//   /// ```
+//   ///
+//
+//   #[ macro_export ]
+//   macro_rules! return_err
+//   {
+//
+//     ( $msg : expr ) =>
+//     {
+//       return Result::Err( $crate::err!( $msg ) )
+//     };
+//     ( $msg : expr, $( $arg : expr ),+ $(,)? ) =>
+//     {
+//       return Result::Err( $crate::err!( $msg, $( $arg ),+ ) )
+//     };
+//
+//   }
+//
+//   // zzz : review
+//   // xxx : rid of
+//
+//   /// baic implementation of generic BasicError
+//
+//   #[ derive( core::fmt::Debug, core::clone::Clone, core::cmp::PartialEq, core::cmp::Eq ) ]
+//   pub struct BasicError
+//   {
+//     msg : String,
+//   }
+//
+//   impl BasicError
+//   {
+//     /// Constructor expecting message with description.
+//     pub fn new< Msg : Into< String > >( msg : Msg ) -> BasicError
+//     {
+//       BasicError { msg : msg.into() }
+//     }
+//     /// Message with description getter.
+//     pub fn msg( &self ) -> &String
+//     {
+//       &self.msg
+//     }
+//   }
+//
+//   impl core::fmt::Display for BasicError
+//   {
+//     fn fmt(&self, f: &mut core::fmt::Formatter< '_ >) -> core::fmt::Result
+//     {
+//       write!( f, "{}", self.msg )
+//     }
+//   }
+//
+//   impl ErrorTrait for BasicError
+//   {
+//     fn description( &self ) -> &str
+//     {
+//       &self.msg
+//     }
+//   }
+//
+//   impl< T > From< BasicError > for Result< T, BasicError >
+//   {
+//     /// Returns the argument unchanged.
+//     #[ inline( always ) ]
+//     fn from( src : BasicError ) -> Self
+//     {
+//       Result::Err( src )
+//     }
+//   }
+//
+//   pub use err;
+//   pub use return_err;
 
   // qqq : write standard mod interface without using mod_interface /* aaa : Dmytro : added to each library file */
 }
 
+/// Assertions.
+#[ cfg( feature = "enabled" ) ]
+pub mod assert;
+
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "error_typed" ) ]
+/// Typed exceptions handling mechanism.
+pub mod typed;
+
+#[ cfg( feature = "enabled" ) ]
+#[ cfg( feature = "error_untyped" ) ]
+/// Untyped exceptions handling mechanism.
+pub mod untyped;
+
+#[ cfg( feature = "enabled" ) ]
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use own::*;
 
 /// Own namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub mod own
 {
   use super::*;
+
   #[ doc( inline ) ]
   pub use orphan::*;
+
+  #[ doc( inline ) ]
+  pub use assert::orphan::*;
+
+  #[ cfg( feature = "error_untyped" ) ]
+  #[ doc( inline ) ]
+  pub use untyped::orphan::*;
+
+  #[ cfg( feature = "error_typed" ) ]
+  #[ doc( inline ) ]
+  pub use typed::orphan::*;
+
+  #[ doc( inline ) ]
+  pub use private::
+  {
+    // err,
+    // return_err,
+    ErrorTrait,
+    // BasicError,
+  };
+
+  pub use super::assert;
+  #[ cfg( feature = "error_typed" ) ]
+  pub use super::typed;
+  #[ cfg( feature = "error_untyped" ) ]
+  pub use super::untyped;
+
 }
 
 /// Shared with parent namespace of the module
+#[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
@@ -231,10 +277,17 @@ pub mod orphan
 }
 
 /// Exposed namespace of the module.
+#[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
   use super::*;
+
+  #[ doc( inline ) ]
+  pub use prelude::*;
+
+  // Expose itself.
+  pub use super::super::error;
 
   #[ doc( inline ) ]
   pub use private::
@@ -244,22 +297,43 @@ pub mod exposed
   };
 
   #[ doc( inline ) ]
-  pub use prelude::*;
+  pub use assert::exposed::*;
+
+  #[ cfg( feature = "error_untyped" ) ]
+  #[ doc( inline ) ]
+  pub use untyped::exposed::*;
+
+  #[ cfg( feature = "error_typed" ) ]
+  #[ doc( inline ) ]
+  pub use typed::exposed::*;
+
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
+#[ cfg( feature = "enabled" ) ]
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
   use super::*;
 
+  // #[ doc( inline ) ]
+  // pub use private::
+  // {
+  //   // err,
+  //   // return_err,
+  //   ErrorTrait,
+  //   // BasicError,
+  // };
+
   #[ doc( inline ) ]
-  pub use private::
-  {
-    err,
-    return_err,
-    ErrorTrait,
-    BasicError,
-  };
+  pub use assert::prelude::*;
+
+  #[ cfg( feature = "error_untyped" ) ]
+  #[ doc( inline ) ]
+  pub use untyped::prelude::*;
+
+  #[ cfg( feature = "error_typed" ) ]
+  #[ doc( inline ) ]
+  pub use typed::prelude::*;
 
 }

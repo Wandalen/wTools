@@ -4,17 +4,18 @@
 #![ doc( html_root_url = "https://docs.rs/collection_tools/latest/collection_tools/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-extern crate alloc;
+// #[ cfg( feature = "enabled" ) ]
+// #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+// extern crate alloc;
 
 /// Module containing all collection macros
 #[ cfg( feature = "enabled" ) ]
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-mod collection;
-#[ cfg( feature = "enabled" ) ]
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-pub use collection::*;
+#[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+pub mod collection;
+
+// #[ cfg( feature = "enabled" ) ]
+// #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
+// pub use collection::*;
 
 /// Namespace with dependencies.
 #[ cfg( feature = "enabled" ) ]
@@ -36,10 +37,13 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
-  use super::*;
+  // use super::*;
 
   #[ doc( inline ) ]
-  pub use orphan::*;
+  pub use super::orphan::*;
+
+  #[ doc( inline ) ]
+  pub use super::collection::own::*;
 
 }
 
@@ -51,6 +55,10 @@ pub mod orphan
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
+
+  #[ doc( inline ) ]
+  pub use collection::orphan::*;
+
 }
 
 /// Exposed namespace of the module.
@@ -64,66 +72,7 @@ pub mod exposed
   pub use prelude::*;
 
   #[ doc( inline ) ]
-  #[ cfg( any( feature = "use_alloc", all( feature = "collection_constructors", not( feature = "no_std" ) ) ) ) ]
-  pub use crate::
-  {
-    vec as dlist,
-    deque,
-    llist,
-    hset,
-    hmap,
-    bmap,
-    bset,
-  };
-
-  #[ doc( inline ) ]
-  #[ cfg( any( feature = "use_alloc", all( feature = "collection_into_constructors", not( feature = "no_std" ) ) ) ) ]
-  pub use crate::
-  {
-    into_vec,
-    into_vec as into_dlist,
-    into_vecd,
-    into_llist,
-    into_hset,
-    into_hmap,
-    into_bmap,
-    into_bset,
-  };
-
-  // #[ cfg( feature = "reexports" ) ]
-  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use crate::
-  {
-    bmap::BTreeMap,
-    bset::BTreeSet,
-    heap::BinaryHeap,
-    hmap::HashMap,
-    hset::HashSet,
-    llist::LinkedList,
-    vec::Vec,
-    deque::VecDeque,
-  };
-
-  // #[ cfg( feature = "reexports" ) ]
-  #[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use
-  {
-    LinkedList as Llist,
-    Vec as Dlist,
-    VecDeque as Deque,
-    HashMap as Map,
-    HashMap as Hmap,
-    HashSet as Set,
-    HashSet as Hset,
-    BTreeMap as Bmap,
-    BTreeSet as Bset,
-  };
-
-  // qqq : cover by tests presence of all containers immidiately in collection_tools::* and in collection_tools::exposed::*
+  pub use collection::exposed::*;
 
 }
 
@@ -133,4 +82,16 @@ pub mod exposed
 pub mod prelude
 {
   use super::*;
+
+  #[ doc( inline ) ]
+  pub use collection::prelude::*;
+
 }
+
+// pub use own::collection as xxx;
+// pub use hmap as xxx;
+// pub use own::HashMap as xxx;
+// pub fn x()
+// {
+//   let x : HashMap< usize, usize > = hmap!{};
+// }

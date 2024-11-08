@@ -1,3 +1,6 @@
+#[ allow( unused_imports ) ]
+use super::*;
+
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
 pub use alloc::collections::linked_list::*;
@@ -70,7 +73,7 @@ macro_rules! llist
   {{
     // "The LinkedList allows pushing and popping elements at either end in constant time."
     // So no `with_capacity`
-    let mut _lst = $crate::llist::LinkedList::new();
+    let mut _lst = $crate::collection::LinkedList::new();
     $(
       _lst.push_back( $key );
     )*
@@ -164,7 +167,7 @@ macro_rules! into_llist
   {{
     // "The LinkedList allows pushing and popping elements at either end in constant time."
     // So no `with_capacity`
-    let mut _lst = $crate::llist::LinkedList::new();
+    let mut _lst = $crate::collection::LinkedList::new();
     $(
       _lst.push_back( Into::into( $key ) );
     )*

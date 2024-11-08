@@ -14,6 +14,8 @@ mod action_tests;
 
 mod helper;
 
+mod package;
+
 // aaa : for Petro : for Bohdan : for Nikita : sort out test files to be consistent with src files
 // sorted
 
