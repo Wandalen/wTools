@@ -1,6 +1,6 @@
 [package]
 name = "data_type"
-version = "0.10.0"
+version = "0.12.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -32,7 +32,6 @@ default = [
   # "use_std",
   "enabled",
   "dt_either",
-  "dt_prelude",
   "dt_interval",
   "dt_collection",
   # "dt_make",
@@ -43,7 +42,6 @@ full = [
   # "use_std",
   "enabled",
   "dt_either",
-  "dt_prelude",
   "dt_interval",
   "dt_collection",
   # "dt_make",
@@ -54,35 +52,11 @@ no_std = []
 use_alloc = [ "no_std" ]
 enabled = []
 
-# dt_prelude = [ "collection_tools/reexports" ]
-dt_prelude = [] # rid of maybe?
 dt_interval = [ "interval_adapter/enabled" ]
 dt_collection = [ "collection_tools/enabled" ]
 dt_either = [ "either" ]
 
 # qqq : for Anton : integrate all features of collection_tools into data_type and reuse tests
-
-# dt_type_constructor = [ "type_constructor/enabled" ]
-# dt_make = [ "type_constructor/make" ]
-# dt_vectorized_from = [ "type_constructor/vectorized_from" ]
-
-# = entries
-
-# [lib]
-# name = "data_type"
-# path = "src/dt/data_type_lib.rs"
-
-# [[test]]
-# name = "data_type_test"
-# path = "tests/dt/data_type_tests.rs"
-#
-# [[test]]
-# name = "data_type_smoke_test"
-# path = "tests/_integration_test/smoke_test.rs"
-#
-# [[example]]
-# name = "data_type_trivial"
-# path = "examples/data_type_trivial/src/main.rs"
 
 [dependencies]
 
@@ -90,7 +64,6 @@ dt_either = [ "either" ]
 either = { version = "~1.6", optional = true }
 
 ## internal
-# type_constructor = { workspace = true }
 interval_adapter = { workspace = true }
 collection_tools = { workspace = true }
 

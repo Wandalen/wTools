@@ -6,7 +6,7 @@ mod private
   pub struct Prelude;
 }
 
-crate::mod_interface!
+crate::the_module::mod_interface!
 {
   own use Own;
   orphan use Orphan;

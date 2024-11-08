@@ -32,7 +32,7 @@ enabled = []
 
 [dependencies]
 error_tools = { workspace = true, features = [ "default" ] }
-proper_path_tools = { workspace = true, features = [ "default" ] }
+pth = { workspace = true, features = [ "default" ] }
 tokio = { version = "1.36.0", features = [ "rt", "rt-multi-thread", "io-std", "macros" ] }
 hyper = { version = "1.1.0", features = [ "client" ] }
 hyper-tls = "0.6.0"

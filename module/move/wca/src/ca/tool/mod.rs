@@ -7,7 +7,10 @@ crate::mod_interface!
   layer table;
 
   orphan use super::super::tool;
-  orphan use ::error_tools as error;
+
+  // orphan use ::error_tools as error;
+  use ::error_tools;
+
   orphan use ::iter_tools;
 
   // use ::strs_tools as string; // xxx : check

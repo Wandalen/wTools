@@ -1,8 +1,8 @@
 mod private
 {
   use crate::*;
-  use action;
-  use error::{ err };
+  // use action;
+  // use error::{ err };
   use std::fmt::{ Display, Formatter };
 
   #[ derive( Debug, Default ) ]
@@ -64,7 +64,6 @@ mod private
     }
   }
 
-
   /// Aggregates two commands: `generate_modules_headers` & `generate_main_header`
   pub fn readme_headers_renew() -> error::untyped::Result< () > // qqq : use typed error
   {
@@ -73,7 +72,7 @@ mod private
     let crate_dir = CrateDir::transitive_try_from::< AbsolutePath >( CurrentPath )?;
     let mut fail = false;
 
-    match action::readme_header_renew( crate_dir.clone() )
+    match crate::action::main_header::action( crate_dir.clone() )
     {
       Ok( r ) =>
       {
@@ -103,7 +102,7 @@ mod private
     if fail
     {
       eprintln!( "{report}" );
-      Err( err!( "Something went wrong" ) )
+      Err( error::untyped::format_err!( "Something went wrong" ) )
     }
     else
     {

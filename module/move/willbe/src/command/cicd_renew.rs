@@ -10,7 +10,7 @@ mod private
   // qqq : typed error
   pub fn cicd_renew() -> error::untyped::Result< () >
   {
-    action::cicd_renew
+    action::cicd_renew::action
     (
       &std::env::current_dir()?
     )

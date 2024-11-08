@@ -39,7 +39,7 @@ pub struct SubStruct2
 
 //
 
-mod_interface!
+the_module::mod_interface!
 {
 
   own use layer_b_own;

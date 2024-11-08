@@ -23,7 +23,7 @@ mod private
   {
     let WorkspaceNewProperties { repository_url, branches } = o.props.try_into()?;
     let template = WorkspaceTemplate::default();
-    action::workspace_renew
+    action::workspace_renew::action
     (
       &std::env::current_dir()?,
       template,

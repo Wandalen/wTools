@@ -8,7 +8,7 @@ mod private
   };
   // use wtools;
   // use wtools::{ error::Result, err };
-  use error::err;
+  // use error::err;
   use iter_tools::Itertools;
 
   /// Available types that can be converted to a `Value`
@@ -186,9 +186,9 @@ mod private
       match self
       {
         Self::String => Ok( Value::String( value ) ),
-        Self::Number => value.parse().map_err( | _ | err!( "Can not parse number from `{}`", value ) ).map( Value::Number ),
+        Self::Number => value.parse().map_err( | _ | error::untyped::format_err!( "Can not parse number from `{}`", value ) ).map( Value::Number ),
         Self::Path => Ok( Value::Path( value.into() ) ),
-        Self::Bool => Ok( Value::Bool( match value.as_str() { "1" | "true" => true, "0" | "false" => false, _ => return Err( err!( "Can not parse bool from `{}`", value ) ) } ) ),
+        Self::Bool => Ok( Value::Bool( match value.as_str() { "1" | "true" => true, "0" | "false" => false, _ => return Err( error::untyped::format_err!( "Can not parse bool from `{}`", value ) ) } ) ),
         Self::List( kind, delimeter ) =>
         {
           let values = value

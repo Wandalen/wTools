@@ -1,12 +1,14 @@
 
 use super::*;
 
-mod layer_a;
-mod layer_b;
+// private layer
+pub mod layer_a;
+// private layer
+pub mod layer_b;
 
 mod private {}
 
-mod_interface!
+the_module::mod_interface!
 {
 
   /// layer_a

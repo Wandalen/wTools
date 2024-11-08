@@ -1,13 +1,15 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
+  use crate::*;
+
   #[ allow( unused_imports ) ]
   use crate::tool::*;
 
   use std::ffi::OsString;
   use std::path::PathBuf;
-  use error::err;
-  use error::untyped::format_err;
+  // use error::err;
+  // use error::untyped::format_err;
   use former::Former;
   use process_tools::process;
   // use process_tools::process::*;
@@ -47,6 +49,9 @@ mod private
     // aaa : don't abuse negative form, rename to checking_consistency
     // renamed and changed logic
     pub( crate ) checking_consistency : bool,
+    /// Setting this option to true will temporarily remove development dependencies before executing the command, then restore them afterward.
+    #[ former( default = true ) ]
+    pub( crate ) exclude_dev_dependencies : bool,
     /// An optional temporary path to be used during packaging.
     ///
     /// This field may contain a path to a temporary directory that will be used during the packaging process.
@@ -79,6 +84,53 @@ mod private
     }
   }
 
+  #[ derive( Debug ) ]
+  struct TemporaryManifestFile
+  {
+    original : PathBuf,
+    temporary : PathBuf,
+  }
+
+  impl TemporaryManifestFile
+  {
+    /// Creates a backup copy of the original file, allowing the original file location to serve as a temporary workspace.
+    /// When the object is dropped, the temporary file at the original location is replaced by the backup, restoring the original file.
+    fn new( path : impl Into< PathBuf > ) -> error::untyped::Result< Self >
+    {
+      let path = path.into();
+      if !path.ends_with( "Cargo.toml" )
+      {
+        error::untyped::bail!( "Wrong path to temporary manifest" );
+      }
+
+      let mut index = 0;
+      let original = loop
+      {
+        let temp_path = PathBuf::from( format!( "{}.temp_{index}", path.display() ) );
+        if !temp_path.exists()
+        {
+          _ = std::fs::copy( &path, &temp_path )?;
+          break temp_path;
+        }
+        index += 1;
+      };
+
+      Ok( Self
+      {
+        original,
+        temporary : path,
+      })
+    }
+  }
+
+  impl Drop for TemporaryManifestFile
+  {
+    fn drop( &mut self )
+    {
+      _ = std::fs::rename( &self.original, &self.temporary ).ok();
+    }
+  }
+
   ///
   /// Assemble the local package into a distributable tarball.
   ///
@@ -96,6 +148,17 @@ mod private
   // qqq : use typed error
   pub fn pack( args : PackOptions ) -> error::untyped::Result< process::Report >
   {
+    let _temp = if args.exclude_dev_dependencies
+    {
+      let manifest = TemporaryManifestFile::new( args.path.join( "Cargo.toml" ) )?;
+      let mut file = Manifest::try_from( ManifestFile::try_from( &manifest.temporary )? )?;
+      let data = file.data();
+
+      _ = data.remove( "dev-dependencies" );
+      file.store()?;
+
+      Some( manifest )
+    } else { None };
     let ( program, options ) = ( "rustup", args.to_pack_args() );
 
     if args.dry
@@ -118,7 +181,7 @@ mod private
       .bin_path( program )
       .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
       .current_path( args.path )
-      .run().map_err( | report | err!( report.to_string() ) )
+      .run().map_err( | report | error::untyped::format_err!( report.to_string() ) )
     }
   }
 
@@ -129,6 +192,7 @@ mod private
   {
     pub( crate ) path : PathBuf,
     pub( crate ) temp_path : Option< PathBuf >,
+    pub( crate ) exclude_dev_dependencies : bool,
     #[ former( default = 0usize ) ]
     pub( crate ) retry_count : usize,
     pub( crate ) dry : bool,
@@ -162,6 +226,17 @@ mod private
   pub fn publish( args : PublishOptions ) -> error::untyped::Result< process::Report >
   // qqq : use typed error
   {
+    let _temp = if args.exclude_dev_dependencies
+    {
+      let manifest = TemporaryManifestFile::new( args.path.join( "Cargo.toml" ) )?;
+      let mut file = Manifest::try_from( ManifestFile::try_from( &manifest.temporary )? )?;
+      let data = file.data();
+
+      _ = data.remove( "dev-dependencies" );
+      file.store()?;
+
+      Some( manifest )
+    } else { None };
     let ( program, arguments) = ( "cargo", args.as_publish_args() );
 
     if args.dry
@@ -197,11 +272,11 @@ mod private
       }
       if args.retry_count > 0
       {
-        Err( format_err!( "It took {} attempts, but still failed. Here are the errors:\n{}", args.retry_count + 1, results.into_iter().map( | r | format!( "- {r}" ) ).collect::< Vec< _ > >().join( "\n" ) ) )
+        Err( error::untyped::format_err!( "It took {} attempts, but still failed. Here are the errors:\n{}", args.retry_count + 1, results.into_iter().map( | r | format!( "- {r}" ) ).collect::< Vec< _ > >().join( "\n" ) ) )
       }
       else
       {
-        Err( results.remove( 0 ) ).map_err( | report | err!( report.to_string() ) )
+        Err( results.remove( 0 ) ).map_err( | report | error::untyped::format_err!( report.to_string() ) )
       }
     }
   }

@@ -1,6 +1,6 @@
 [package]
 name = "test_tools"
-version = "0.10.0"
+version = "0.11.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -24,13 +24,15 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-
-
 # = features
 
 [features]
-default = [ "enabled" ]
-full = [ "enabled" ]
+default = [
+  "enabled",
+  # "standalone",
+  "normal",
+]
+full = [ "default" ]
 no_std = [
   # "error_tools/no_std",
   # "meta_tools/no_std",
@@ -53,39 +55,81 @@ use_alloc = [
   # "former_stable/use_alloc",
 ]
 enabled = [
-  "error_tools/enabled",
-  "meta_tools/enabled",
-  "mem_tools/enabled",
-  "typing_tools/enabled",
-  "data_type/enabled",
-  "diagnostics_tools/enabled",
-  "process_tools/enabled",
-  "collection_tools/enabled",
+  # "error_tools/enabled",
+  # "meta_tools/enabled",
+  # "mem_tools/enabled",
+  # "typing_tools/enabled",
+  # "data_type/enabled",
+  # "diagnostics_tools/enabled",
+  # "process_tools/enabled",
+  # "collection_tools/enabled",
 ]
 # nightly = [ "typing_tools/nightly" ]
+
+normal = [
+  "dep:error_tools",
+  "dep:collection_tools",
+  "dep:impls_index",
+  "dep:mem_tools",
+  "dep:typing_tools",
+  "dep:diagnostics_tools",
+  "dep:process_tools",
+]
+standalone = [
+  "standalone_error_tools",
+  "standalone_collection_tools",
+  "standalone_impls_index",
+  "standalone_mem_tools",
+  "dep:mem_tools",
+  "dep:typing_tools",
+  "dep:diagnostics_tools",
+  "dep:process_tools",
+]
+standalone_error_tools = [ "dep:anyhow", "dep:thiserror", "error_typed", "error_untyped" ]
+standalone_collection_tools = [ "dep:hashbrown", "collection_constructors", "collection_into_constructors" ]
+standalone_impls_index = [ "dep:impls_index_meta" ]
+standalone_mem_tools = []
+
+# error_tools
+error_typed = []
+error_untyped = []
+# collection_tools
+collection_constructors = []
+collection_into_constructors = []
 
 [dependencies]
 
 ## external
 
-paste = "~1.0" # zzz : remove laster
-rustversion = "~1.0"
-# anyhow = "~1.0"
-num-traits = "~0.2"
 trybuild = { version = "1.0.85", features = [ "diff" ] }
-rand = "0.8.5"
+rustversion = { workspace = true }
+num-traits = { workspace = true }
+rand = { workspace = true }
+# tempdir = { workspace = true }
 
 ## internal
 
-error_tools = { workspace = true, features = [ "full" ] }
-meta_tools = { workspace = true, features = [ "full" ] }
-mem_tools = { workspace = true, features = [ "full" ] }
-typing_tools = { workspace = true, features = [ "full" ] }
-data_type = { workspace = true, features = [ "full" ] }
-diagnostics_tools = { workspace = true, features = [ "full" ] }
-process_tools = { workspace = true, features = [ "full" ] }
-collection_tools = { workspace = true, features = [ "full" ] }
+error_tools = { workspace = true, features = [ "full" ], optional = true }
+collection_tools = { workspace = true, features = [ "full" ], optional = true }
+impls_index = { workspace = true, features = [ "full" ], optional = true }
+
+mem_tools = { workspace = true, features = [ "full" ], optional = true }
+typing_tools = { workspace = true, features = [ "full" ], optional = true }
+diagnostics_tools = { workspace = true, features = [ "full" ], optional = true }
+process_tools = { workspace = true, features = [ "full" ], optional = true }
+
 # former_stable = { workspace = true, features = [ "full" ] }
+
+## transient
+
+# error_tools
+anyhow = { workspace = true, optional = true }
+thiserror = { workspace = true, optional = true }
+# collection_tools
+hashbrown = { workspace = true, optional = true }
+# impls_index
+impls_index_meta = { workspace = true, optional = true }
+# mem_tools
 
 [build-dependencies]
 rustc_version = "0.4"

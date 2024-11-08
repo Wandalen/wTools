@@ -1,17 +1,17 @@
 #[ allow( unused_imports ) ]
 use super::*;
 
-#[ cfg( any( feature = "meta_constructors", feature = "meta_constructors" ) ) ]
-mod meta_constructor_test;
+// #[ cfg( any( feature = "meta_constructors", feature = "meta_constructors" ) ) ]
+// mod meta_constructor_test;
 
 #[ cfg( any( feature = "meta_idents_concat", feature = "meta_idents_concat" ) ) ]
 mod indents_concat_test;
 
-#[ cfg( any( feature = "for_each", feature = "meta_for_each" ) ) ]
+#[ cfg( any( feature = "meta_for_each" ) ) ]
 #[ path = "../../../for_each/tests/inc/mod.rs" ]
 mod for_each_test;
 
-#[ cfg( any( feature = "impls_index", feature = "meta_impls_index" ) ) ]
+#[ cfg( any( feature = "meta_impls_index" ) ) ]
 #[ path = "../../../impls_index/tests/inc/mod.rs" ]
 mod impls_index;
 

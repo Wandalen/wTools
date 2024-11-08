@@ -1,6 +1,6 @@
 [package]
 name = "willbe"
-version = "0.19.0"
+version = "0.20.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -41,7 +41,7 @@ enabled = [
   "iter_tools/enabled",
   "mod_interface/enabled",
   "wca/enabled",
-  "proper_path_tools/enabled",
+  "pth/enabled",
   "process_tools/enabled",
   "derive_tools/enabled",
   "data_type/enabled",
@@ -88,7 +88,7 @@ former = { workspace = true, features = [ "default" ] }
 iter_tools = { workspace = true, features = [ "default" ] }
 mod_interface = { workspace = true, features = [ "default" ] }
 wca = { workspace = true, features = [ "default" ] }
-proper_path_tools = { workspace = true, features = [ "default", "path_utf8" ] }
+pth = { workspace = true, features = [ "default", "path_utf8" ] }
 process_tools = { workspace = true, features = [ "default" ] }
 derive_tools = { workspace = true, features = [ "derive_display", "derive_from_str", "derive_deref", "derive_from", "derive_as_ref" ] }
 data_type = { workspace = true, features = [ "either" ] }

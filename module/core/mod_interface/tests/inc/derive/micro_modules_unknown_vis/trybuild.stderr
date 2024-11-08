@@ -1,4 +1,4 @@
-error: expected one of: `mod`, `use`, `layer`
+error: expected one of: `mod`, `use`, `layer`, `reuse`
  --> tests/inc/derive/micro_modules_unknown_vis/mod.rs
   |
   |   not_vis mod mod_exposed;

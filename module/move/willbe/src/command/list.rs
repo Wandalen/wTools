@@ -1,4 +1,4 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
   use crate::*;
@@ -80,7 +80,7 @@ mod private
     .dependency_categories( categories )
     .form();
 
-    match action::list( o )
+    match action::list_all( o )
     {
       Ok( report ) =>
       {

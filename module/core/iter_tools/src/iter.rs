@@ -5,6 +5,8 @@ mod private
   #[ allow( unused_imports ) ]
   use crate::*;
   // use ::itertools::process_results;
+
+  #[ cfg( feature = "iter_trait" ) ]
   use clone_dyn_types::CloneDyn;
 
   /// Trait that encapsulates an iterator with specific characteristics and implemetning `CloneDyn`.

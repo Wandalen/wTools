@@ -19,7 +19,7 @@ mod private
   use error::
   {
     typed::Error,
-    err,
+    // err,
   };
 
   #[ derive( Debug, Error ) ]
@@ -42,7 +42,7 @@ mod private
 
   // qqq : for Petro : should return Report and typed error in Result
   /// Generate workflows for modules in .github/workflows directory.
-  pub fn cicd_renew( base_path : &Path ) -> Result< (), CiCdGenerateError >
+  pub fn action( base_path : &Path ) -> Result< (), CiCdGenerateError >
   {
     let workspace_cache = Workspace::try_from( CrateDir::try_from( base_path )? )?;
     let packages = workspace_cache.packages();
@@ -375,7 +375,7 @@ mod private
         return url::repo_url_extract( &url )
         .and_then( | url | url::git_info_extract( &url ).ok() )
         .map( UsernameAndRepository )
-        .ok_or_else( || err!( "Fail to parse repository url from workspace Cargo.toml"))
+        .ok_or_else( || error::untyped::format_err!( "Fail to parse repository url from workspace Cargo.toml"))
       }
       else
       {
@@ -393,7 +393,7 @@ mod private
         .and_then( | url | url::repo_url_extract( &url ) )
         .and_then( | url | url::git_info_extract( &url ).ok() )
         .map( UsernameAndRepository )
-        .ok_or_else( || err!( "Fail to extract repository url") )
+        .ok_or_else( || error::untyped::format_err!( "Fail to extract repository url") )
       }
     }
 
@@ -401,5 +401,5 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use cicd_renew;
+  own use action;
 }

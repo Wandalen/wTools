@@ -1,4 +1,4 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
   use crate::*;
@@ -204,6 +204,16 @@ mod private
       pub use #adjsuted_path::orphan::*;
     });
 
+    // export layer as own field of current layer
+    let prefixed_with_super_maybe = path.prefixed_with_super_maybe();
+    c.clauses_map.get_mut( &VisOwn::Kind() ).unwrap().push( qt!
+    {
+      #[ doc( inline ) ]
+      #[ allow( unused_imports ) ]
+      #attrs1
+      pub use #prefixed_with_super_maybe;
+    });
+
     c.clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!
     {
       #[ doc( inline ) ]
@@ -363,6 +373,16 @@ mod private
       #attrs1
       #attrs2
       pub use __all__::#path::orphan::*;
+    });
+
+    // export layer as own field of current layer
+    // let prefixed_with_super_maybe = path.prefixed_with_super_maybe();
+    c.clauses_map.get_mut( &VisOwn::Kind() ).unwrap().push( qt!
+    {
+      #[ doc( inline ) ]
+      #[ allow( unused_imports ) ]
+      #attrs1
+      pub use super::#path;
     });
 
     c.clauses_map.get_mut( &VisExposed::Kind() ).unwrap().push( qt!

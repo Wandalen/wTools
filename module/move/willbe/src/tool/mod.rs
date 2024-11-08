@@ -8,12 +8,15 @@ crate::mod_interface!
   orphan use super::cargo;
 
   /// Function and structures to work with collections.
-  layer collection;
-  orphan use super::collection;
+  // layer collection;
+  // orphan use super::collection;
+  use ::collection_tools;
+  // own use ::collection_tools::own::*;
 
   /// Errors handling.
-  layer error;
-  orphan use super::error;
+  // layer error;
+  // orphan use super::error;
+  use ::error_tools;
 
   /// Operate over files.
   layer files;

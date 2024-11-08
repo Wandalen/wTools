@@ -6,7 +6,7 @@ mod tools
   pub use super::super::*;
 }
 
-mod layer_a;
+pub mod layer_a;
 
 /// SuperStruct1.
 #[ derive( Debug, PartialEq ) ]
@@ -16,7 +16,7 @@ pub struct SuperStruct1
 
 mod private {}
 
-mod_interface!
+the_module::mod_interface!
 {
 
   /// layer_a

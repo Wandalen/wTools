@@ -4,7 +4,7 @@ mod private
 
   use std::collections::HashMap;
 
-  use error::{ return_err };
+  // use error::{ return_err };
 
   /// `Parser` is a struct used for parsing data.
   #[ derive( Debug ) ]
@@ -58,14 +58,14 @@ mod private
     fn parse_command( args : &[ String ] ) -> error::untyped::Result< ( ParsedCommand, usize ) >
     {
       if args.is_empty() {
-        return_err!( "Unexpected behaviour: Try to parse command without input" );
+        error::untyped::return_err!( "Unexpected behaviour: Try to parse command without input" );
       }
 
       let mut i = 0;
 
       if !Self::valid_command_name( &args[ i ] )
       {
-        return_err!( "Unexpected input: Expected a command, found: `{}`", args[ i ] );
+        error::untyped::return_err!( "Unexpected input: Expected a command, found: `{}`", args[ i ] );
       }
       let name = match args[ i ].strip_prefix( '.' ).unwrap()
       {
@@ -125,7 +125,7 @@ mod private
           // prop:
           else
           {
-            return_err!( "Unexpected input '{}': Detected a possible property key preceding the ':' character. However, no corresponding value was found.", item );
+            error::untyped::return_err!( "Unexpected input '{}': Detected a possible property key preceding the ':' character. However, no corresponding value was found.", item );
           }
         }
         // prop : value | prop :value
@@ -146,13 +146,22 @@ mod private
           // :
           else
           {
-            return_err!( "Unexpected input '{} :': Detected a possible property key preceding the ':' character. However, no corresponding value was found.", item );
+            error::untyped::return_err!
+            (
+              "Unexpected input '{} :': Detected a possible property key preceding the ':' character. However, no corresponding value was found.",
+              item,
+            );
           }
         }
 
-        else if !properties_turn { subjects.push( item.to_string() ); }
-
-        else { return_err!( "Unexpected input: Expected `command` or `property`, found: `{}`", item ); }
+        else if !properties_turn
+        {
+          subjects.push( item.to_string() );
+        }
+        else
+        {
+          error::untyped::return_err!( "Unexpected input: Expected `command` or `property`, found: `{}`", item );
+        }
         i += 1;
       }
 
