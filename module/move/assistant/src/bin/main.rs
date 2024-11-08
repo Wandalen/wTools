@@ -14,7 +14,7 @@ use clap::Parser;
 
 use assistant::
 {
-  client,
+  client::client,
   commands::{ Cli, CliCommand, self },
   Secret
 };
