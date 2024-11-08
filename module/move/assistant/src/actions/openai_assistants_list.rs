@@ -17,7 +17,7 @@ mod private
   use crate::*;
   use client::Client;
   use debug::AssistantObjectWrap;
-  use actions::openai::error::Result;
+  use actions::openai::Result;
 
   /// Report for `openai assistants list`.
   #[ derive( Debug ) ]
@@ -27,7 +27,7 @@ mod private
     pub show_records_as_tables : bool,
 
     /// OpenAI assistants.
-    pub assistants: Vec<AssistantObjectWrap>
+    pub assistants: Vec< AssistantObjectWrap >
   }
 
   impl fmt::Display for ListReport
@@ -64,5 +64,5 @@ mod private
 
 crate::mod_interface!
 {
-  orphan use action;
+  own use action;
 }

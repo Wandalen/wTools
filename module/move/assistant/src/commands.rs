@@ -12,7 +12,7 @@ mod private
   use commands::openai;
 
   /// CLI commands of the tool.
-  #[ derive ( Debug,Parser ) ]
+  #[ derive ( Debug, Parser ) ]
   pub struct Cli
   {
     /// Root of the CLI commands.
@@ -21,12 +21,12 @@ mod private
   }
 
   /// Root of the CLI commands.
-  #[ derive ( Debug,Subcommand ) ]
+  #[ derive ( Debug, Subcommand ) ]
   pub enum CliCommand
   {
     /// OpenAI API commands.
     #[ command ( subcommand, name = "openai" ) ]
-    OpenAi(openai::Command),
+    OpenAi( openai::Command ),
   }
 
 }
@@ -34,8 +34,14 @@ mod private
 crate::mod_interface!
 {
   layer openai;
+  layer openai_assistants;
+  layer openai_assistants_list;
+  layer openai_runs;
+  layer openai_runs_list;
+  layer openai_files;
+  layer openai_files_list;
 
-  orphan use
+  own use
   {
     Cli,
     CliCommand,

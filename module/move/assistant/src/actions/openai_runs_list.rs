@@ -17,7 +17,7 @@ mod private
   use crate::*;
   use client::Client;
   use debug::RunObjectWrap;
-  use actions::openai::error::Result;
+  use actions::openai::Result;
 
   /// Report for `openai runs list`.
   #[ derive( Debug ) ]
@@ -27,12 +27,16 @@ mod private
     pub show_records_as_tables : bool,
 
     /// Current OpenAI runs.
-    pub runs : Vec<RunObjectWrap>
+    pub runs : Vec< RunObjectWrap >
   }
 
   impl fmt::Display for ListReport
   {
-    fn fmt( &self, f : &mut fmt::Formatter< '_ >) -> fmt::Result
+    fn fmt
+    ( 
+      &self, 
+      f : &mut fmt::Formatter< '_ >
+    ) -> fmt::Result
     {
       if self.show_records_as_tables
       {
@@ -62,5 +66,5 @@ mod private
 
 crate::mod_interface!
 {
-  orphan use action;
+  own use action;
 }

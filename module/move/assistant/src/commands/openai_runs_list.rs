@@ -1,5 +1,5 @@
 //!
-//! List assistants in OpenAI API (command part).
+//! List runs in OpenAI API (command part).
 //!
 
 mod private
@@ -7,15 +7,17 @@ mod private
 
   use crate::*;
   use client::Client;
+  use actions;
 
-  /// List OpenAI assistants command.
+  /// List runs in the thread in OpenAI API.
   pub async fn command
   ( 
-    client : &Client,
+    client : &Client, 
+    thread_id : String,
     show_records_as_tables : bool,
   )
   {
-    let result = actions::openai::assistants::list::action( client, show_records_as_tables ).await;
+    let result = actions::openai_runs_list::action( client, thread_id, show_records_as_tables ).await;
 
     match result
     {

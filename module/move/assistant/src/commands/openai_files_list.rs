@@ -7,6 +7,7 @@ mod private
 
   use crate::*;
   use client::Client;
+  use actions;
 
   /// List files in your OpenAI API.
   pub async fn command
@@ -15,7 +16,7 @@ mod private
     show_records_as_tables : bool,
   )
   {
-    let result = actions::openai::files::list::action( client, show_records_as_tables ).await;
+    let result = actions::openai_files_list::action( client, show_records_as_tables ).await;
 
     match result
     {

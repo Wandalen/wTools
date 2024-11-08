@@ -9,7 +9,6 @@ mod private
   pub use openai_api_rs::v1::
   {
     api::OpenAIClient as Client,
-    // api::Client,
     assistant::AssistantObject,
   };
 

@@ -15,7 +15,7 @@ Assist AI in writing code.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
-default-run = "assistant"
+default-run = "main"
 
 [lints]
 workspace = true
@@ -32,6 +32,10 @@ enabled = [
   "format_tools/enabled",
   "reflect_tools/enabled",
 ]
+
+[[bin]]
+name = "main"
+path = "src/bin/main.rs"
 
 [[bin]]
 name = "list_resources"

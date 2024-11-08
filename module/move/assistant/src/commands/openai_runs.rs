@@ -1,5 +1,5 @@
 //!
-//! Collection of files commands for OpenAI API.
+//! Collection of runs commands for OpenAI API.
 //!
 
 mod private
@@ -9,23 +9,25 @@ mod private
 
   use crate::*;
   use client::Client;
+  use commands::openai_runs_list;
   
-  use super::list;
-
-  /// OpenAI files.
+  /// OpenAI runs.
   #[ derive ( Debug, Subcommand ) ]
   pub enum Command
   {
-    /// List OpenAI files.
+    /// List OpenAI runs in a thread.
     List
     {
+      /// Thread ID.
+      thread_id : String,
+
       /// Show records as separate tables.
       #[ arg( long, default_value_t = false ) ]
       show_records_as_tables : bool
     },
   }
 
-  /// Execute OpenAI commands related to files.
+  /// Execute OpenAI commands related to runs.
   pub async fn command
   (
     client : &Client,
@@ -34,9 +36,9 @@ mod private
   {
     match command
     {
-      Command::List{ show_records_as_tables } => 
+      Command::List { thread_id, show_records_as_tables } => 
       {
-        list::command( client, show_records_as_tables ).await;
+        openai_runs_list::command( client, thread_id, show_records_as_tables ).await;
       }
     }
   }
@@ -45,8 +47,6 @@ mod private
 
 crate::mod_interface!
 {
-  layer list;
-
   own use
   {
     Command,

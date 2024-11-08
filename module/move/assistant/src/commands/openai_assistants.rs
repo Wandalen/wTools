@@ -9,9 +9,8 @@ mod private
 
   use crate::*;
   use client::Client;
+  use commands::openai_assistants_list;
   
-  use super::list;
-
   /// OpenAI assistants.
   #[ derive ( Debug, Subcommand ) ]
   pub enum Command
@@ -36,7 +35,7 @@ mod private
     {
       Command::List{ show_records_as_tables } => 
       {
-        list::command( client, show_records_as_tables ).await;
+        openai_assistants_list::command( client, show_records_as_tables ).await;
       }
     }
   }
@@ -45,8 +44,6 @@ mod private
 
 crate::mod_interface!
 {
-  layer list;
-
   own use
   {
     Command,

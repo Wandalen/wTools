@@ -9,12 +9,7 @@ mod private
 
   use crate::*;
   use client::Client;
-  use commands::openai::
-  {
-    assistants,
-    files,
-    runs,
-  };
+  use commands::{ openai_assistants, openai_files, openai_runs };
 
   /// OpenAI API commands.
   #[ derive ( Debug, Subcommand ) ]
@@ -24,21 +19,21 @@ mod private
     #[ command ( subcommand ) ]
     Assistants
     (
-      assistants::Command
+      openai_assistants::Command
     ),
 
     /// OpenAI files.
     #[ command ( subcommand ) ]
     Files
     (
-      files::Command
+      openai_files::Command
     ),
 
     /// OpenAI runs.
     #[ command ( subcommand ) ]
     Runs
     (
-      runs::Command
+      openai_runs::Command
     ),
   }
 
@@ -53,17 +48,17 @@ mod private
     {
       Command::Assistants( assistants_command ) =>
       {
-        assistants::command( client, assistants_command ).await;
+        openai_assistants::command( client, assistants_command ).await;
       }
 
       Command::Files( files_command ) =>
       {
-        files::command( client, files_command ).await;
+        openai_files::command( client, files_command ).await;
       }
 
       Command::Runs( runs_command ) =>
       {
-        runs::command( client, runs_command ).await;
+        openai_runs::command( client, runs_command ).await;
       }
     }
   }
@@ -72,11 +67,7 @@ mod private
 
 crate::mod_interface!
 {
-  layer assistants;
-  layer files;
-  layer runs;
-
-  orphan use
+  own use
   {
     Command,
     command,

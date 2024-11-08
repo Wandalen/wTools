@@ -17,7 +17,7 @@ mod private
   use crate::*;
   use client::Client;
   use debug::FileDataWrap;
-  use actions::openai::error::Result;
+  use actions::openai::Result;
 
   /// Report for `openai files list`.
   #[ derive( Debug ) ]
@@ -27,7 +27,7 @@ mod private
     pub show_records_as_tables : bool,
 
     /// Files in OpenAI.
-    pub files : Vec<FileDataWrap>
+    pub files : Vec< FileDataWrap >
   }
 
   impl fmt::Display for ListReport
@@ -65,5 +65,5 @@ mod private
 
 crate::mod_interface!
 {
-  orphan use action;
+  own use action;
 }
