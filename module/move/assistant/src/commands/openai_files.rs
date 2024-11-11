@@ -9,19 +9,14 @@ mod private
 
   use crate::*;
   use client::Client;
-  use commands::openai_files_list;
+  use commands::{ openai_files_list, TableConfig };
   
   /// OpenAI files.
   #[ derive ( Debug, Subcommand ) ]
   pub enum Command
   {
     /// List OpenAI files.
-    List
-    {
-      /// Show records as separate tables.
-      #[ arg( long, default_value_t = false ) ]
-      show_records_as_tables : bool
-    },
+    List,
   }
 
   /// Execute OpenAI commands related to files.
@@ -29,13 +24,14 @@ mod private
   (
     client : &Client,
     command : Command,
+    table_config : TableConfig,
   )
   {
     match command
     {
-      Command::List{ show_records_as_tables } => 
+      Command::List => 
       {
-        openai_files_list::command( client, show_records_as_tables ).await;
+        openai_files_list::command( client, table_config ).await;
       }
     }
   }

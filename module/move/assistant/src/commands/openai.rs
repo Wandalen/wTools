@@ -9,7 +9,7 @@ mod private
 
   use crate::*;
   use client::Client;
-  use commands::{ openai_assistants, openai_files, openai_runs };
+  use commands::{ openai_assistants, openai_files, openai_runs, TableConfig };
 
   /// OpenAI API commands.
   #[ derive ( Debug, Subcommand ) ]
@@ -42,23 +42,24 @@ mod private
   (
     client : &Client,
     command : Command,
+    table_config : TableConfig,
   )
   {
     match command
     {
       Command::Assistants( assistants_command ) =>
       {
-        openai_assistants::command( client, assistants_command ).await;
+        openai_assistants::command( client, assistants_command, table_config ).await;
       }
 
       Command::Files( files_command ) =>
       {
-        openai_files::command( client, files_command ).await;
+        openai_files::command( client, files_command, table_config ).await;
       }
 
       Command::Runs( runs_command ) =>
       {
-        openai_runs::command( client, runs_command ).await;
+        openai_runs::command( client, runs_command, table_config ).await;
       }
     }
   }
