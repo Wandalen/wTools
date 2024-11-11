@@ -75,6 +75,8 @@ pub struct Table
   pub corner_lb : char,
   /// Bottom-right corner character.
   pub corner_rb : char,
+  /// Limit table size (0 - no limit).
+  pub max_width : usize,
 }
 
 impl Default for Table
@@ -103,6 +105,8 @@ impl Default for Table
     let corner_lb = '└';
     let corner_rb = '┘';
 
+    let max_width = 50;
+
     Self
     {
       delimitting_header,
@@ -123,6 +127,7 @@ impl Default for Table
       corner_rt,
       corner_lb,
       corner_rb,
+      max_width,
     }
   }
 }
@@ -192,6 +197,17 @@ impl TableOutputFormat for Table
 
     // dbg!( x.row_descriptors.len() );
 
+    let table_width: usize = x.col_descriptors.iter().map( |col| col.width ).sum();
+
+    let shrink_factor = if self.max_width == 0 || table_width <= self.max_width
+    {
+      1.0
+    }
+    else
+    {
+      ( self.max_width as f32 ) / ( table_width as f32 )
+    };
+
     for ( irow, row ) in x.row_descriptors.iter().enumerate()
     {
       let height = row.height;
@@ -203,7 +219,8 @@ impl TableOutputFormat for Table
           if prev_typ == LineType::Header && row.typ == LineType::Regular
           {
             write!( c.buf, "{}", row_separator )?;
-            write!( c.buf, "{}", h.repeat( row_width ) )?;
+            let new_row_width = ( ( row_width as f32 ) * shrink_factor ).floor() as usize;
+            write!( c.buf, "{}", h.repeat( new_row_width ) )?;
             delimitting_header = false
           }
         }
@@ -234,7 +251,7 @@ impl TableOutputFormat for Table
         {
           let col = &x.col_descriptors[ icol ];
           let cell_width = x.data[ irow ][ icol ].1[0];
-          let width = col.width;
+          let width = ( ( col.width as f32 ) * shrink_factor ).floor() as usize;
           let md_index = [ islice, icol, irow as usize ];
           let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
 
@@ -247,7 +264,7 @@ impl TableOutputFormat for Table
 
           write!( c.buf, "{}", cell_prefix )?;
 
-          println!( "icol : {icol} | irow : {irow} | width : {width} | cell_width : {cell_width} | slice.len() : {}", slice.len() );
+          // println!( "icol : {icol} | irow : {irow} | width : {width} | cell_width : {cell_width} | slice.len() : {}", slice.len() );
 
           let lspaces = if cell_width > width {
             0
