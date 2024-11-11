@@ -18,13 +18,14 @@ mod private
   use client::Client;
   use debug::FileDataWrap;
   use actions::openai::Result;
+  use commands::TableConfig;
 
   /// Report for `openai files list`.
   #[ derive( Debug ) ]
   pub struct ListReport
   {
-    /// Show records as separate tables.
-    pub show_records_as_tables : bool,
+    /// Configure table formatting.
+    pub table_config : TableConfig,
 
     /// Files in OpenAI.
     pub files : Vec< FileDataWrap >
@@ -38,7 +39,7 @@ mod private
       f : &mut fmt::Formatter< '_ >
     ) -> fmt::Result
     {
-      if self.show_records_as_tables
+      if self.table_config.as_records
       {
         writeln!(f, "{}", AsTable::new( &self.files ).table_to_string_with_format( &output_format::Records::default() ) )
       }
@@ -53,12 +54,12 @@ mod private
   pub async fn action
   (
     client : &Client,
-    show_records_as_tables : bool,
+    table_config : TableConfig,
   ) -> Result < ListReport >
   {
     let response = client.file_list().await?;
     let files = response.data.into_iter().map( FileDataWrap ).collect();
-    Ok( ListReport { show_records_as_tables, files } )
+    Ok( ListReport { table_config, files } )
   }
 
 }

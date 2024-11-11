@@ -8,15 +8,16 @@ mod private
   use crate::*;
   use client::Client;
   use actions;
+  use commands::TableConfig;
 
   /// List OpenAI assistants command.
   pub async fn command
   ( 
     client : &Client,
-    show_records_as_tables : bool,
+    table_config : TableConfig,
   )
   {
-    let result = actions::openai_assistants_list::action( client, show_records_as_tables ).await;
+    let result = actions::openai_assistants_list::action( client, table_config ).await;
 
     match result
     {

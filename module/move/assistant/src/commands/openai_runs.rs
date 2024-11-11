@@ -9,7 +9,7 @@ mod private
 
   use crate::*;
   use client::Client;
-  use commands::openai_runs_list;
+  use commands::{ openai_runs_list, TableConfig };
   
   /// OpenAI runs.
   #[ derive ( Debug, Subcommand ) ]
@@ -21,10 +21,10 @@ mod private
       /// Thread ID.
       thread_id : String,
 
-      /// Show records as separate tables.
-      #[ arg( long, default_value_t = false ) ]
-      show_records_as_tables : bool
-    },
+      /// Configure table formatting.
+      #[ clap( flatten ) ]
+      table_config : TableConfig,
+    }
   }
 
   /// Execute OpenAI commands related to runs.
@@ -36,9 +36,9 @@ mod private
   {
     match command
     {
-      Command::List { thread_id, show_records_as_tables } => 
+      Command::List { thread_id, table_config } => 
       {
-        openai_runs_list::command( client, thread_id, show_records_as_tables ).await;
+        openai_runs_list::command( client, thread_id, table_config ).await;
       }
     }
   }

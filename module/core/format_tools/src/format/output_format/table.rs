@@ -247,7 +247,7 @@ impl TableOutputFormat for Table
 
           write!( c.buf, "{}", cell_prefix )?;
 
-          println!( "icol : {icol} | irow : {irow} | width : {width} | cell_width : {cell_width} | slice.len() : {}", slice.len() );
+          // println!( "icol : {icol} | irow : {irow} | width : {width} | cell_width : {cell_width} | slice.len() : {}", slice.len() );
 
           let lspaces = if cell_width > width {
             0
