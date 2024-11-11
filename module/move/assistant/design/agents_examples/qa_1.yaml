@@ -1,0 +1,22 @@
+title: Multi-agent Q&A example
+
+nodes:
+  - id: input
+    type: stdin
+    prompt: 'Your question: '
+
+  - id: cleaner
+    type: agent
+    system_message: 'Correct the orthography and other English mistakes. Make the input clean and easy to understand.'
+    user_message: '{input}'
+
+  - id: answerer
+    type: agent
+    system_message: 'You are a helpful Q&A assistant.'
+    user_message: 'Question: {input}'
+
+  - id: output
+    type: stdout
+    prefix: 'Answer: '
+
+connections: [input, clearer, answerer, output]
