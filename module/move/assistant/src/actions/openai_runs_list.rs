@@ -18,13 +18,14 @@ mod private
   use client::Client;
   use debug::RunObjectWrap;
   use actions::openai::Result;
+  use commands::TableConfig;
 
   /// Report for `openai runs list`.
   #[ derive( Debug ) ]
   pub struct ListReport
   {
-    /// Show records as separate tables.
-    pub show_records_as_tables : bool,
+    /// Table config of the report.
+    pub table_config : TableConfig,
 
     /// Current OpenAI runs.
     pub runs : Vec< RunObjectWrap >
@@ -38,7 +39,7 @@ mod private
       f : &mut fmt::Formatter< '_ >
     ) -> fmt::Result
     {
-      if self.show_records_as_tables
+      if self.table_config.as_records
       {
         writeln!(f, "{}", AsTable::new( &self.runs ).table_to_string_with_format( &output_format::Records::default() ) )
       }
@@ -54,12 +55,12 @@ mod private
   (
     client : &Client,
     thread_id : String,
-    show_records_as_tables : bool,
+    table_config : TableConfig,
   ) -> Result < ListReport >
   {
     let response = client.list_run( thread_id, None, None, None, None ).await?;
     let runs = response.data.into_iter().map( RunObjectWrap ).collect();
-    Ok( ListReport { show_records_as_tables, runs } )
+    Ok( ListReport { table_config, runs } )
   }
 
 }

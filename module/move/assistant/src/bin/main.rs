@@ -12,31 +12,16 @@ use std::
 use dotenv::dotenv;
 use clap::Parser;
 
-use assistant::
-{
-  client::client,
-  commands::{ Cli, CliCommand, self },
-  Secret
-};
+use assistant::commands::{ Cli, self };
 
 #[ tokio::main ]
 async fn main() -> Result< (), Box< dyn Error > >
 {
   dotenv().ok();
 
-  let secret = Secret::load()?;
-
-  let client = client::client( &secret )?;
-
   let cli = Cli::parse();
 
-  match cli.command
-  {
-    CliCommand::OpenAi( openai_command ) =>
-    {
-      commands::openai::command( &client, openai_command ).await;
-    }
-  }
+  commands::execute(cli).await?;
 
   Ok( () )
 }
