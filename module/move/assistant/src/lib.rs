@@ -32,6 +32,7 @@ crate::mod_interface!
   layer commands;
   layer actions;
   layer secret;
+  layer util;
 
   exposed use ::reflect_tools::
   {

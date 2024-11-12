@@ -6,7 +6,9 @@
 mod private
 {
 
-  use clap::{ Parser, Subcommand };
+  use clap::{ Parser, Subcommand, ValueEnum };
+
+  use derive_tools::Display;
 
   use crate::*;
   use commands::openai;
@@ -39,9 +41,27 @@ mod private
     #[ arg( long, default_value_t = DEFAULT_MAX_TABLE_WIDTH ) ]
     pub max_table_width : usize,
 
-    /// Show records as separate tables.
-    #[ arg( long, default_value_t = false ) ]
-    pub as_records : bool,
+    /// Table style option.
+    #[ arg( long, default_value = "table" ) ]
+    pub style : TableStyle,
+
+    /// Filter columns of tabular data.
+    #[ arg( long, value_delimiter( ',' ) ) ]
+    pub filter_columns : Vec< String >,
+  }
+
+  /// Table style.
+  #[ derive( Debug, Clone, Display, ValueEnum ) ]
+  pub enum TableStyle
+  {
+    /// Show data as an ordinary table.
+    Table,
+
+    /// Show entities as separate tables.
+    AsRecords,
+
+    /// Show only columns of the tables, no records.
+    Columns
   }
 
 }
@@ -61,5 +81,6 @@ crate::mod_interface!
     Cli,
     CliCommand,
     TableConfig,
+    TableStyle,
   };
 }

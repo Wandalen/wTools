@@ -18,7 +18,8 @@ mod private
   use client::Client;
   use debug::FileDataWrap;
   use actions::openai::Result;
-  use commands::TableConfig;
+  use commands::{ TableConfig, TableStyle };
+  use util::display_table::display_tabular_data;
 
   /// Report for `openai files list`.
   #[ derive( Debug ) ]
@@ -39,14 +40,7 @@ mod private
       f : &mut fmt::Formatter< '_ >
     ) -> fmt::Result
     {
-      if self.table_config.as_records
-      {
-        writeln!(f, "{}", AsTable::new( &self.files ).table_to_string_with_format( &output_format::Records::default() ) )
-      }
-      else
-      {
-        writeln!(f, "{}", AsTable::new( &self.files ).table_to_string_with_format( &output_format::Table::default() ) )
-      }
+      display_tabular_data( &self.files, f, &self.table_config )
     }
   }
 
