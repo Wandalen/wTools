@@ -7,18 +7,16 @@ mod private
 
   use std::fmt;
 
-  use format_tools::
-  {
-    AsTable,
-    TableFormatter,
-    output_format,
-  };
+  use format_tools::AsTable;
 
   use crate::*;
   use client::Client;
+
   use debug::RunObjectWrap;
+
   use actions::openai::Result;
-  use commands::{ TableConfig, TableStyle };
+
+  use commands::TableConfig;
   use util::display_table::display_tabular_data;
 
   /// Report for `openai runs list`.
@@ -40,7 +38,7 @@ mod private
       f : &mut fmt::Formatter< '_ >
     ) -> fmt::Result
     {
-      display_tabular_data( &self.runs, f, &self.table_config )
+      display_tabular_data( &AsTable::new( &self.runs ), f, &self.table_config )
     }
   }
 

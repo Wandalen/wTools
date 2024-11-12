@@ -2,20 +2,13 @@
 //! Function for displaying tabular data according to `TableConfig`.
 //!
 
-use std::fmt;
-
 mod private
 {
   
-  use std::
-  {
-    fmt,
-    borrow::Cow
-  };
+  use std::fmt;
 
   use format_tools::
   {
-    AsTable,
     TableFormatter,
     output_format,
     print,
@@ -28,9 +21,9 @@ mod private
   /// Function for displaying tabular data according to `TableConfig`.
   pub fn display_tabular_data<'a>
   (
-    data: &impl Fields< &'a str, Option< Cow< 'a, str > > >,
+    data : &'a impl TableFormatter< 'a >,
     f : &mut fmt::Formatter< '_ >,
-    table_config : &TableConfig,
+    table_config : &'a TableConfig,
   ) -> fmt::Result
   {
       match table_config.style
@@ -54,9 +47,9 @@ mod private
 
   fn display_table<'a>
   (
-    data : &impl Fields< &'a str, Option< Cow< 'a, str > > >,
+    data : &'a impl TableFormatter< 'a >,
     f : &mut fmt::Formatter< '_ >,
-    filter_columns : &Vec< String >,
+    filter_columns : &'a Vec< String >,
   ) -> fmt::Result
   {
     display_data( data, f, filter_columns, output_format::Table::default() )
@@ -64,9 +57,9 @@ mod private
 
   fn display_records<'a>
   (
-    data : &impl Fields< &'a str, Option< Cow< 'a, str > > >,
+    data : &'a impl TableFormatter< 'a >,
     f : &mut fmt::Formatter< '_ >,
-    filter_columns : &Vec< String >,
+    filter_columns : &'a Vec< String >,
   ) -> fmt::Result
   {
     display_data( data, f, filter_columns, output_format::Records::default() )
@@ -74,9 +67,9 @@ mod private
 
   fn display_columns<'a>
   (
-    data : &impl Fields< &'a str, Option< Cow< 'a, str > > >,
+    data : &'a impl TableFormatter< 'a >,
     f : &mut fmt::Formatter< '_ >,
-    filter_columns : &Vec< String >,
+    filter_columns : &'a Vec< String >,
   ) -> fmt::Result
   {
     display_data( data, f, filter_columns, output_format::Keys::default() )
@@ -84,21 +77,21 @@ mod private
 
   fn display_data<'a>
   (
-    data : &impl Fields< &'a str, Option< Cow< 'a, str > > >,
+    data : &'a impl TableFormatter< 'a >,
     f : &mut fmt::Formatter< '_ >,
-    filter_columns : &Vec< String >,
+    filter_columns : &'a Vec< String >,
     format : impl TableOutputFormat,
   ) -> fmt::Result
   {
     let mut printer = print::Printer::with_format( &format );
-    printer.filter_col = &| title : &str |
+    let binding = | title : &str |
     {
-      filter_columns.iter().any( |c| c.as_str() == title )
+      filter_columns.is_empty() || filter_columns.iter().any( |c| c.as_str() == title )
     };
+    printer.filter_col = &binding;
 
-    let as_table = AsTable::new( &data );
     let mut context = print::Context::new( f, printer );
-    TableFormatter::fmt( &as_table, &mut context )
+    TableFormatter::fmt( data, &mut context )
   }
 
 }
