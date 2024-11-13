@@ -159,6 +159,10 @@ mod private
     /// Formats the table and writes the result to the provided context.
     fn fmt< 'context >( &'data self, c : & mut Context< 'context > ) -> fmt::Result;
 
+    /// Formats the table and writes the result to the provided context.
+    /// Also limits the table width.
+    fn fmt_limit< 'context >( &'data self, c : & mut Context< 'context >, limit_width : usize ) -> fmt::Result;
+
     /// Converts the table to a string representation.
     ///
     /// # Returns
@@ -167,6 +171,16 @@ mod private
     fn table_to_string( &'data self ) -> String
     {
       self.table_to_string_with_format( &output_format::Table::default() )
+    }
+
+    /// Converts the table to a string representation with limited width requirement.
+    ///
+    /// # Returns
+    ///
+    /// A `String` containing the formatted table.
+    fn table_to_string_limit( &'data self, limit_width : usize ) -> String
+    {
+      self.table_to_string_with_format_limit( &output_format::Table::default(), limit_width )
     }
 
     /// Converts the table to a string representation specifying printer.
@@ -194,6 +208,31 @@ mod private
       output
     }
 
+    /// Converts the table to a string representation specifying printer with limited width requirement.
+    ///
+    /// # Returns
+    ///
+    /// A `String` containing the formatted table.
+    fn table_to_string_with_format_limit< 'context, Styles >( &'data self, styles : &'context Styles, limit_width : usize ) -> String
+    where
+      Styles : TableOutputFormat,
+    {
+      let mut output = String::new();
+      let printer = Printer
+      {
+        output_format : styles,
+        filter_col : Default::default(),
+        filter_row : Default::default(),
+      };
+      let mut context = Context
+      {
+        buf : &mut output,
+        printer,
+      };
+      Self::fmt_limit( self, &mut context, limit_width ).expect( "Table formatting failed" );
+      output
+    }
+
   }
 
   /// A trait for formatting tables.
@@ -210,12 +249,27 @@ mod private
 
     fn fmt< 'a >( &'data self, c : &mut Context< 'a > ) -> fmt::Result
     {
-
       InputExtract::extract
       (
         self,
         c.printer.filter_col,
         c.printer.filter_row,
+        0,
+        | x |
+        {
+          c.printer.output_format.extract_write( x, c )
+        }
+      )
+    }
+
+    fn fmt_limit< 'a >( &'data self, c : &mut Context< 'a >, limit_width : usize ) -> fmt::Result
+    {
+      InputExtract::extract
+      (
+        self,
+        c.printer.filter_col,
+        c.printer.filter_row,
+        limit_width,
         | x |
         {
           c.printer.output_format.extract_write( x, c )
@@ -370,6 +424,7 @@ mod private
       table : &'t Table,
       filter_col : &'context ( dyn FilterCol + 'context ),
       filter_row : &'context ( dyn FilterRow + 'context ),
+      limit_width : usize,
       callback : impl for< 'a2 > FnOnce( &'a2 InputExtract< 'a2 > ) -> fmt::Result,
     )
     -> fmt::Result
@@ -402,6 +457,61 @@ mod private
       let mut irow : usize = 0;
       let filter_col_need_args = filter_col.need_args();
       // let filter_row_need_args = filter_row.need_args();
+
+      let col_count = if let Some( iter ) = table.header()
+      {
+        let mut r = 0;
+
+        for (_, col) in iter
+        {
+          if filter_col_need_args
+          {
+            if filter_col.filter_col( col )
+            {
+              r += 1;
+            }
+          }
+          else
+          {
+            if filter_col.filter_col( "" )
+            {
+              r += 1;
+            }
+          }
+        }
+
+        r
+      }
+      else if let Some( row ) = table.rows().next()
+      {
+        let mut r = 0;
+
+        for ( col, _ ) in row.cells()
+        {
+          if filter_col_need_args
+          {
+            if filter_col.filter_col( col.borrow() )
+            {
+              r += 1;
+            }
+          }
+          else
+          {
+            if filter_col.filter_col( "" )
+            {
+              r += 1;
+            }
+          }
+        }
+
+        r
+      }
+      else
+      {
+        0
+      };
+
+      let limit_column_width = limit_width / col_count.max(1);
 
       let mut row_add = | row_iter : &'_ mut dyn _IteratorTrait< Item = ( &'t CellKey, Cow< 't, str > ) >, typ : LineType |
       {
@@ -439,7 +549,7 @@ mod private
 
             ncol_vis += 1;
 
-            let sz = string::size( &val );
+            let sz = string::size_with_limit( &val, limit_column_width );
 
             key_to_ikey
             .entry( key )
@@ -575,7 +685,7 @@ mod private
         for icol in 0 .. x.col_descriptors.len()
         {
           let cell = &row_data[ icol ];
-          string::lines( cell.0.as_ref() )
+          string::lines_with_limit( cell.0.as_ref(), limit_column_width )
           .enumerate()
           .for_each( | ( layer, s ) |
           {

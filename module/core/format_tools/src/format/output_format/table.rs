@@ -223,7 +223,7 @@ impl TableOutputFormat for Table
       for islice in 0..height
       {
 
-        if irow > 0
+        if irow > 0 || islice > 0
         {
           write!( c.buf, "{}", row_separator )?;
         }
@@ -247,7 +247,7 @@ impl TableOutputFormat for Table
 
           write!( c.buf, "{}", cell_prefix )?;
 
-          println!( "icol : {icol} | irow : {irow} | width : {width} | cell_width : {cell_width} | slice.len() : {}", slice.len() );
+          // println!( "icol : {icol} | irow : {irow} | width : {width} | cell_width : {cell_width} | slice.len() : {}", slice.len() );
 
           let lspaces = if cell_width > width {
             0

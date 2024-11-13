@@ -84,6 +84,35 @@ mod private
     [ width, height ]
   }
 
+  pub fn size_with_limit< S : AsRef< str > >
+  (
+    src : S,
+    limit_width : usize,
+  ) 
+  -> [ usize; 2 ]
+  {
+    if limit_width == 0
+    {
+      return size( src );
+    }
+
+    let text = src.as_ref();
+    let mut height = 0;
+    let mut width = 0;
+
+    for line in lines_with_limit( text, limit_width )
+    {
+      height += 1;
+      let line_length = line.len();
+      if line_length > width
+      {
+        width = line_length;
+      }
+    }
+
+    [ width, height ]
+  }
+
   /// Returns an iterator over the lines of a string slice.
   ///
   /// This function provides an iterator that yields each line of the input string slice.
@@ -114,6 +143,16 @@ mod private
     Lines::new( src.as_ref() )
   }
 
+  pub fn lines_with_limit< S : AsRef< str > + ?Sized >
+  (
+    src : & S,
+    limit_width : usize
+  )
+  -> LinesWithLimit< '_ >
+  {
+    LinesWithLimit::new( src.as_ref(), limit_width )
+  }
+
   /// An iterator over the lines of a string slice.
   ///
   /// This struct implements the `Iterator` trait, allowing you to iterate over the lines
@@ -128,6 +167,7 @@ mod private
     has_trailing_newline : bool,
     finished : bool,
   }
+
   impl< 'a > Lines< 'a >
   {
     fn new( input : &'a str ) -> Self
@@ -172,6 +212,61 @@ mod private
     }
   }
 
+  #[ derive( Debug ) ]
+  pub struct LinesWithLimit< 'a >
+  {
+    lines : Lines< 'a >,
+    limit_width : usize,
+    cur : Option< &'a str >,
+  }
+
+  impl< 'a > LinesWithLimit< 'a >
+  {
+    fn new( input : &'a str, limit_width : usize ) -> Self
+    {
+      LinesWithLimit
+      {
+        lines : lines( input ),
+        limit_width,
+        cur : None,
+      }
+    }
+  }
+
+  impl< 'a > Iterator for LinesWithLimit< 'a >
+  {
+    type Item = &'a str;
+
+    fn next( &mut self ) -> Option< Self::Item >
+    {
+      if self.cur.is_none() || self.cur.is_some_and( str::is_empty )
+      {
+        self.cur = self.lines.next();
+      }
+
+      match self.cur
+      {
+        None => return None,
+
+        Some( cur ) =>
+        {
+          if self.limit_width == 0
+          {
+            self.cur = None;
+            Some( cur )
+          }
+          else
+          {
+            let (chunk, rest) = cur.split_at(self.limit_width.min(cur.len()));
+            self.cur = Some( rest );
+          
+            Some(chunk)
+          }
+        }
+      }
+    }
+  }
+
 }
 
 #[ allow( unused_imports ) ]
@@ -189,8 +284,11 @@ pub mod own
   pub use private::
   {
     size,
+    size_with_limit,
     lines,
     Lines,
+    lines_with_limit,
+    LinesWithLimit,
   };
 
 }
