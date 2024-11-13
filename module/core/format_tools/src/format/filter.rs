@@ -13,21 +13,6 @@ mod private
     borrow::Cow,
   };
 
-  /// Represents a line type in a table, either a header or a regular row.
-  ///
-  /// `LineType` is used to distinguish between different types of lines
-  /// in a table structure, aiding in formatting and processing.
-  ///
-  #[ derive( Debug, Default, PartialEq, Eq, Copy, Clone ) ]
-  pub enum LineType
-  {
-    /// Represents a regular row of data in the table.
-    #[ default ]
-    Regular,
-    /// Represents a header line in the table.
-    Header,
-  }
-
   // = filters
 
   /// Filter passing all elements.
@@ -45,11 +30,6 @@ mod private
   {
     /// Filter columns of a table to print it only partially.
     fn filter_col( &self, key : &str ) -> bool;
-    /// Determine is arguments needed for the filter or it can give answer even without arguments. Useful for optimization.
-    fn need_args( &self ) -> bool
-    {
-      true
-    }
   }
 
   impl Default for &'static dyn FilterCol
@@ -78,11 +58,6 @@ mod private
     {
       true
     }
-    #[ inline( always ) ]
-    fn need_args( &self ) -> bool
-    {
-      false
-    }
   }
 
   impl None
@@ -99,11 +74,6 @@ mod private
   {
     #[ inline( always ) ]
     fn filter_col( &self, _key : &str ) -> bool
-    {
-      false
-    }
-    #[ inline( always ) ]
-    fn need_args( &self ) -> bool
     {
       false
     }
@@ -124,12 +94,7 @@ mod private
   pub trait FilterRow
   {
     /// Filter rows of a table to print it only partially.
-    fn filter_row( &self, typ : LineType, irow : usize, row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] ) -> bool;
-    /// Determine is arguments needed for the filter or it can give answer even without arguments. Useful for optimization.
-    fn need_args( &self ) -> bool
-    {
-      true
-    }
+    fn filter_row( &self, row : &[ Cow< '_, str > ] ) -> bool;
   }
 
   impl Default for &'static dyn FilterRow
@@ -144,14 +109,9 @@ mod private
   impl FilterRow for All
   {
     #[ inline( always ) ]
-    fn filter_row( &self, _typ : LineType, _irow : usize, _row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] ) -> bool
+    fn filter_row( &self, _row : &[ Cow< '_, str > ] ) -> bool
     {
       true
-    }
-    #[ inline( always ) ]
-    fn need_args( &self ) -> bool
-    {
-      false
     }
   }
 
@@ -168,12 +128,7 @@ mod private
   impl FilterRow for None
   {
     #[ inline( always ) ]
-    fn filter_row( &self, _typ : LineType, _irow : usize, _row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] ) -> bool
-    {
-      false
-    }
-    #[ inline( always ) ]
-    fn need_args( &self ) -> bool
+    fn filter_row( &self, _row : &[ Cow< '_, str > ] ) -> bool
     {
       false
     }
@@ -189,12 +144,12 @@ mod private
     }
   }
 
-  impl< F : Fn( LineType, usize, &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] ) -> bool > FilterRow for F
+  impl< F : Fn( &[ Cow< '_, str > ] ) -> bool > FilterRow for F
   {
     #[ inline( always ) ]
-    fn filter_row( &self, typ : LineType, irow : usize, row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] ) -> bool
+    fn filter_row( &self, row : &[ Cow< '_, str > ] ) -> bool
     {
-      self( typ, irow, row )
+      self( row )
     }
   }
 
@@ -231,7 +186,6 @@ pub mod orphan
   #[ doc( inline ) ]
   pub use private::
   {
-    LineType,
     FilterCol,
     FilterRow,
   };

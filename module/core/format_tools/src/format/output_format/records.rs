@@ -22,12 +22,12 @@
 //!
 
 use crate::*;
-use md_math::MdOffset;
 use print::
 {
   InputExtract,
   Context,
 };
+use std::borrow::{ Cow, Borrow };
 use core::
 {
   fmt,
@@ -156,20 +156,15 @@ impl TableOutputFormat for Records
   ) -> fmt::Result
   {
 
-    let label_width = x.header().fold( 0, | acc, cell | acc.max( cell.1[ 0 ] ) );
+    let col_names : Vec< Cow< 'data, str > > = x.header().collect();
+    let key_width = x.header().fold( 0, | acc, cell | acc.max( cell.len() ) );
 
     write!( c.buf, "{}", self.table_prefix )?;
 
     let mut first = true;
-    // Write each record
-    for ( irow, row ) in x.rows()
+
+    for ( irow, row ) in x.rows().enumerate()
     {
-
-      if !row.vis
-      {
-        continue;
-      }
-
       if first
       {
         first = false;
@@ -179,46 +174,31 @@ impl TableOutputFormat for Records
         write!( c.buf, "{}", self.table_separator )?;
       }
 
-      let slice_width = x.data[ irow ].iter().fold( 0, | acc, cell | acc.max( cell.1[ 0 ] ) );
+      writeln!( c.buf, " = {}", irow + 1 )?;
 
-      writeln!( c.buf, " = {}", irow )?;
+      let value_width = row.iter().fold( 0, | acc, cell | acc.max( cell.len() ) );
 
-      for ( icol, _col ) in x.col_descriptors.iter().enumerate()
+      for ( icol, col ) in row.iter().enumerate()
       {
-        let cell = &x.data[ irow ][ icol ];
-        let height = cell.1[ 1 ];
+        let key = col_names.get(icol).map( Cow::borrow ).unwrap_or( "" );
+        
+        write!( c.buf, "{}", self.row_prefix )?;
 
-        for islice in 0..height
-        {
-          let label = x.header_slice( islice, icol );
-          let md_index = [ islice, icol, irow ];
-          let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
+        write!( c.buf, "{}", self.cell_prefix )?;
+        write!( c.buf, "{:<key_width$}", key )?;
+        write!( c.buf, "{}", self.cell_postfix )?;
+        write!( c.buf, "{}", self.cell_separator )?;
+        write!( c.buf, "{}", self.cell_prefix )?;
+        write!( c.buf, "{:<value_width$}", col )?;
+        write!( c.buf, "{}", self.cell_postfix )?;
 
-          if icol > 0 || islice > 0
-          {
-            write!( c.buf, "{}", self.row_separator )?;
-          }
-
-          write!( c.buf, "{}", self.row_prefix )?;
-
-          write!( c.buf, "{}", self.cell_prefix )?;
-          write!( c.buf, "{:<label_width$}", label )?;
-          write!( c.buf, "{}", self.cell_postfix )?;
-          write!( c.buf, "{}", self.cell_separator )?;
-          write!( c.buf, "{}", self.cell_prefix )?;
-          write!( c.buf, "{:<slice_width$}", slice )?;
-          write!( c.buf, "{}", self.cell_postfix )?;
-
-          write!( c.buf, "{}", self.row_postfix )?;
-        }
-
+        write!( c.buf, "{}", self.row_postfix )?;
       }
-
     }
 
     write!( c.buf, "{}", self.table_postfix )?;
 
-    Ok(())
+    Ok( () )
   }
 
 }

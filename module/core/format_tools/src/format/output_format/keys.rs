@@ -92,14 +92,18 @@ impl TableOutputFormat for Keys
   ) -> fmt::Result
   {
 
-    // dbg!( &x );
-
-    for col in &x.col_descriptors
+    if x.has_header && x.data.len() != 0 
     {
-      write!( c.buf, " - {}\n", col.label )?;
+      for col in &x.data[0]
+      {
+        write!( c.buf, " - {}\n", col )?;
+      }
     }
 
-    write!( c.buf, "  {} fields\n", x.col_descriptors.len() )?;
+    if x.data.len() != 0 
+    {
+      write!( c.buf, "  {} fields\n", x.data[0].len() )?;
+    }
 
     Ok(())
   }

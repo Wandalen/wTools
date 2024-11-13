@@ -295,9 +295,9 @@ fn filter_row_callback()
   format.row_separator = "\n".into();
 
   let mut printer = print::Printer::with_format( &format );
-  printer.filter_row = &| _typ, irow, _row : &[ ( Cow< '_, str >, [ usize ; 2 ] ) ] |
+  printer.filter_row = &| row : &[ Cow< '_, str > ] |
   {
-    irow != 1
+    row[0] != "1"
   };
 
   let as_table = AsTable::new( &test_objects );
