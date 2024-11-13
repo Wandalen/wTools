@@ -1,0 +1,73 @@
+//!
+//! Action for command "cell set"
+//!
+//! It updates a selected cell
+//!
+
+
+mod private
+{
+  use std::str::FromStr;
+
+  use google_sheets4::api::ValueRange;
+
+  use crate::*;
+  use actions::gspread::Result;
+  use client::SheetsType;
+  use ser::
+  {
+    JsonNumber,
+    JsonValue
+  };
+
+  fn str_to_number
+  (
+    val_str: &str
+  ) -> Option< JsonValue >
+  {
+    match JsonNumber::from_str( val_str )
+    {
+      Ok( val_number ) =>
+      {
+        Some( JsonValue::Number( val_number ) )
+      },
+
+      Err( e ) =>
+      {
+        eprintln!( "Failed to convert '{}' to a number: {}", val_str, e );
+        None
+      }
+    }
+  }
+
+  pub async fn action
+  (
+    hub: &SheetsType,
+    spreadsheet_id: &str,
+    table_name: &str,
+    cell_id: &str,
+    value: &str
+  ) -> Result< i32 >
+  {
+
+    let value_range = ValueRange
+    {
+      values: Some( vec![ vec![ str_to_number( value ).unwrap() ] ] ),
+      ..ValueRange::default()
+    };
+
+    let result = hub
+      .spreadsheets()
+      .values_update(value_range, spreadsheet_id, format!("{}!{}", table_name, cell_id).as_str())
+      .value_input_option("USER_ENTERED")
+      .doit()
+      .await?;
+
+    Ok( result.1.updated_cells.unwrap() )
+  }
+}
+
+pub use private::
+{
+  action,
+};

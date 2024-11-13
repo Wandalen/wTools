@@ -1,7 +1,0 @@
-
-[env]
-MODULES_PATH = { value = "module", relative = true }
-WORKSPACE_PATH = { value = ".", relative = true }
-
-[net]
-# offline = true

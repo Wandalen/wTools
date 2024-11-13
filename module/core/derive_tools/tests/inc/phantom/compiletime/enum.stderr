@@ -1,5 +1,0 @@
-error: expected `struct`
- --> tests/inc/phantom/compiletime/enum.rs:4:1
-  |
-4 | enum Enum< T >
-  | ^^^^
