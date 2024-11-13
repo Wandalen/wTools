@@ -34,6 +34,8 @@ use core::
 };
 use std::sync::OnceLock;
 
+use format::wrap_text::wrap_text;
+
 /// A struct representing the list of records( rows ) output format.
 ///
 /// `Records` provides an implementation for table formatting that outputs
@@ -181,6 +183,11 @@ impl TableOutputFormat for Records
       for ( icol, col ) in row.iter().enumerate()
       {
         let key = col_names.get(icol).map( Cow::borrow ).unwrap_or( "" );
+
+        if icol > 0
+        {
+          write!( c.buf, "{}", self.row_separator )?;
+        }
         
         write!( c.buf, "{}", self.row_prefix )?;
 

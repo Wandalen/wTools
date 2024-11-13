@@ -289,6 +289,7 @@ pub mod string;
 pub mod table;
 pub mod to_string;
 pub mod to_string_with_fallback;
+pub mod wrap_text;
 
 /// A strucutre for diagnostic and demonstration purpose.
 #[ doc( hidden ) ]
@@ -317,6 +318,7 @@ pub mod own
     table::orphan::*,
     to_string::orphan::*,
     to_string_with_fallback::orphan::*,
+    wrap_text::orphan::*,
   };
 
 }
@@ -369,6 +371,7 @@ pub mod exposed
     table::exposed::*,
     to_string::exposed::*,
     to_string_with_fallback::exposed::*,
+    wrap_text::exposed::*,
   };
 
 }
@@ -391,6 +394,7 @@ pub mod prelude
     table::prelude::*,
     to_string::prelude::*,
     to_string_with_fallback::prelude::*,
+    wrap_text::prelude::*,
   };
 
 }

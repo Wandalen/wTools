@@ -22,6 +22,8 @@ use core::
 };
 use std::sync::OnceLock;
 
+use format::wrap_text::wrap_text;
+
 /// A struct representing the classic table output format.
 ///
 /// `Table` provides a standard implementation for table formatting,
@@ -176,11 +178,13 @@ impl TableOutputFormat for Table
     let row_separator = &self.row_separator;
     let h = self.h.to_string();
 
+    let data = wrap_text( &x.data, 0 );
+
     let column_count = x.header().count();
 
     let mut col_width : Vec< usize > = vec![ 0; column_count ];
 
-    for ( _, row ) in x.data.iter().enumerate()
+    for ( _, row ) in data.iter().enumerate()
     {
       for ( icol, col ) in row.iter().enumerate()
       {
@@ -194,7 +198,7 @@ impl TableOutputFormat for Table
     + column_count * ( self.cell_postfix.chars().count() + self.cell_prefix.chars().count() )
     + if column_count == 0 { 0 } else { ( column_count - 1 ) * self.cell_separator.chars().count() };
 
-    for ( irow, row ) in x.data.iter().enumerate()
+    for ( irow, row ) in data.iter().enumerate()
     {
       if irow == 1 && x.has_header && self.delimitting_header
       {
