@@ -225,23 +225,8 @@ impl TableOutputFormat for Table
 
         write!( c.buf, "{}", cell_prefix )?;
         
-        let lspaces = if cell_width >= width
-        {
-          ( cell_width - width ) / 2
-        }
-        else
-        {
-          0
-        };
-
-        let rspaces = if cell_width >= width
-        {
-          ( ( cell_width - width ) as f32 / 2 as f32 ).round() as usize
-        }
-        else
-        {
-          0
-        };
+        let lspaces = ( cell_width - width ) / 2;
+        let rspaces = ( ( cell_width - width ) as f32 / 2 as f32 ).round() as usize;
 
         if lspaces > 0
         {
