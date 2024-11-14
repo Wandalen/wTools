@@ -94,7 +94,7 @@ impl TableOutputFormat for Keys
 
     if x.has_header && x.data.len() != 0 
     {
-      for col in &x.data[0]
+      for col in &x.data[0].1
       {
         write!( c.buf, " - {}\n", col )?;
       }
@@ -102,7 +102,7 @@ impl TableOutputFormat for Keys
 
     if x.data.len() != 0 
     {
-      write!( c.buf, "  {} fields\n", x.data[0].len() )?;
+      write!( c.buf, "  {} fields\n", x.data[0].1.len() )?;
     }
 
     Ok(())

@@ -161,14 +161,18 @@ impl TableOutputFormat for Records
 
     write!( c.buf, "{}", self.table_prefix )?;
 
-    for ( ientry, entry ) in x.rows().enumerate()
+    let mut actual_entries = 0;
+
+    for ( ientry, entry ) in x.rows()
     {
-      if ientry > 0
+      if actual_entries > 0
       {
         write!( c.buf, "{}", self.table_separator )?;
       }
 
-      writeln!( c.buf, " = {}", ientry + 1 )?;
+      actual_entries += 1;
+
+      writeln!( c.buf, " = {}", ientry )?;
 
       let row = wrap_text( entry, 0 );
 

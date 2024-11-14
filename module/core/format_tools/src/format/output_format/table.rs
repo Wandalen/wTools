@@ -183,7 +183,7 @@ impl TableOutputFormat for Table
 
     let mut col_width : Vec< usize > = vec![ 0; column_count ];
 
-    for ( _, row ) in data.iter().enumerate()
+    for ( _, row ) in data.iter()
     {
       for ( icol, col ) in row.iter().enumerate()
       {
@@ -197,18 +197,22 @@ impl TableOutputFormat for Table
     + column_count * ( self.cell_postfix.chars().count() + self.cell_prefix.chars().count() )
     + if column_count == 0 { 0 } else { ( column_count - 1 ) * self.cell_separator.chars().count() };
 
-    for ( irow, row ) in data.iter().enumerate()
+    let mut actual_rows = 0;
+
+    for ( _, row ) in data.iter()
     {
-      if irow == 1 && x.has_header && self.delimitting_header
+      if actual_rows == 1 && x.has_header && self.delimitting_header
       {
         write!( c.buf, "{}", row_separator )?;
         write!( c.buf, "{}", h.repeat( max_row_width ) )?;
       }
       
-      if irow > 0
+      if actual_rows > 0
       {
         write!( c.buf, "{}", row_separator )?;
       }
+
+      actual_rows += 1;
 
       write!( c.buf, "{}", row_prefix )?;
 
@@ -259,13 +263,14 @@ struct WrappedCell< 'data >
 
 fn wrap_text< 'data >
 (
-  data: &'data Vec< Vec< Cow< 'data, str > > >,
+  data: &'data Vec< ( usize, Vec< Cow< 'data, str > > ) >,
   _limit: usize
-) -> Vec< Vec< WrappedCell< 'data > > >
+) 
+-> Vec< ( usize, Vec< WrappedCell< 'data > > ) >
 {
   let mut new_data = Vec::new();
 
-  for row in data
+  for ( id, row ) in data
   {
     let unwrapped_text : Vec< Vec< Cow< 'data, str > > > = row.iter().map( |c| string::lines( c.as_ref() ).map( Cow::from ).collect() ).collect();
 
@@ -298,9 +303,11 @@ fn wrap_text< 'data >
       transposed.push( row_vec );
     }
 
-    new_data.extend( transposed );
+    for row in transposed
+    {
+      new_data.push( ( *id, row ) );
+    }
   }
 
-  dbg!(&new_data);
   new_data
 }

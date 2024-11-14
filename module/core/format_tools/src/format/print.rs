@@ -238,7 +238,8 @@ mod private
 
     /// Extracted data for each cell.
     /// If the table has a header, then the first row is treated as a header row with column names.
-    pub data : Vec< Vec< Cow< 'data, str > > >,
+    /// Each row is a tuple where the first element is original (unfiltered) row index, and the second are columns.
+    pub data : Vec< ( usize, Vec< Cow< 'data, str > > ) >,
 
   }
 
@@ -252,7 +253,7 @@ mod private
     /// This function provides an iterator that yields each row descriptor along with its index.
     /// If the table has a header, the first row is skipped, ensuring that iteration starts from
     /// the first data row.
-    pub fn rows( & self ) -> impl _IteratorTrait< Item = &Vec< Cow< 'data, str > > >
+    pub fn rows( & self ) -> impl _IteratorTrait< Item = &( usize, Vec< Cow< 'data, str > > ) >
     {
       self.data
         .iter()
@@ -267,11 +268,11 @@ mod private
     {
       if self.has_header && self.data.len() != 0
       {
-        Box::new( self.data[ 0 ].iter().cloned() )
+        Box::new( self.data[ 0 ].1.iter().cloned() )
       }
       else
       {
-        let col_count = if self.data.len() == 0 { 0 } else { self.data[0].len() };
+        let col_count = if self.data.len() == 0 { 0 } else { self.data[0].1.len() };
         Box::new( std::iter::repeat( Cow::Borrowed( "" ) ).take( col_count ) )
       }
     }
@@ -297,10 +298,10 @@ mod private
     {
       let mut has_header = false;
 
-      let mut data : Vec< Vec< Cow< 't, str > > > = Vec::new();
+      let mut data : Vec< ( usize, Vec< Cow< 't, str > > ) > = Vec::new();
       let rows = table.rows();
 
-      let mut row_add = | row_iter : &'_ mut dyn _IteratorTrait< Item = ( &'t CellKey, Cow< 't, str > ) > |
+      let mut row_add = | id: usize, row_iter : &'_ mut dyn _IteratorTrait< Item = ( &'t CellKey, Cow< 't, str > ) > |
       {
         let fields : Vec< Cow< 't, str > > = row_iter
         .filter_map
@@ -319,9 +320,11 @@ mod private
 
         if filter_row.filter_row( &fields )
         {
-          data.push( fields );
+          data.push( ( id, fields ) );
         }
       };
+
+      let mut row_id = 0;
 
       if let Some( header ) = table.header()
       {
@@ -332,7 +335,9 @@ mod private
           ( key, Cow::Borrowed( title ) )
         });
 
-        row_add( &mut row2 );
+        row_add( row_id, &mut row2 );
+
+        row_id += 1;
       }
 
       for row in rows
@@ -360,7 +365,9 @@ mod private
           }
         );
 
-        row_add( &mut row2 );
+        row_add( row_id, &mut row2 );
+
+        row_id += 1;
       }
 
       let x = InputExtract::< '_ >
