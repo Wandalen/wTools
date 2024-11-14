@@ -264,7 +264,7 @@ struct WrappedCell< 'data >
 fn wrap_text< 'data >
 (
   data: &'data Vec< ( usize, Vec< Cow< 'data, str > > ) >,
-  _limit: usize
+  limit: usize
 ) 
 -> Vec< ( usize, Vec< WrappedCell< 'data > > ) >
 {
@@ -272,7 +272,7 @@ fn wrap_text< 'data >
 
   for ( id, row ) in data
   {
-    let unwrapped_text : Vec< Vec< Cow< 'data, str > > > = row.iter().map( |c| string::lines( c.as_ref() ).map( Cow::from ).collect() ).collect();
+    let unwrapped_text : Vec< Vec< Cow< 'data, str > > > = row.iter().map( |c| string::lines_with_limit( c.as_ref(), limit ).map( Cow::from ).collect() ).collect();
 
     let max_rows = unwrapped_text.iter().map( Vec::len ).max().unwrap_or(0);
 
