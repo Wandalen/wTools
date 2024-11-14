@@ -16,13 +16,12 @@ use print::
   InputExtract,
   Context,
 };
+use std::borrow::Cow;
 use core::
 {
   fmt,
 };
 use std::sync::OnceLock;
-
-use format::wrap_text::wrap_text;
 
 /// A struct representing the classic table output format.
 ///
@@ -188,7 +187,7 @@ impl TableOutputFormat for Table
     {
       for ( icol, col ) in row.iter().enumerate()
       {
-        col_width[ icol ] = col_width[ icol ].max( col.chars().count() );
+        col_width[ icol ] = col_width[ icol ].max( col.content.chars().count() );
       }
     }
 
@@ -215,8 +214,9 @@ impl TableOutputFormat for Table
 
       for ( icol, col ) in row.iter().enumerate()
       {
-        let cell_width = col_width[ icol ];
-        let width = col.len();
+        let cell_width = col.wrap_width;
+        let col_width = col_width[ icol ];
+        let slice_width = col.content.chars().count();
 
         if icol > 0
         {
@@ -225,15 +225,15 @@ impl TableOutputFormat for Table
 
         write!( c.buf, "{}", cell_prefix )?;
         
-        let lspaces = ( cell_width - width ) / 2;
-        let rspaces = ( ( cell_width - width ) as f32 / 2 as f32 ).round() as usize;
+        let lspaces = ( col_width - cell_width ) / 2;
+        let rspaces = ( ( col_width - cell_width ) as f32 / 2 as f32 ).round() as usize + cell_width - slice_width;
 
         if lspaces > 0
         {
           write!( c.buf, "{:<width$}", " ", width = lspaces )?;
         }
         
-        write!( c.buf, "{}", col )?;
+        write!( c.buf, "{}", col.content )?;
 
         if rspaces > 0
         {
@@ -248,4 +248,52 @@ impl TableOutputFormat for Table
 
     Ok(())
   }
+}
+
+struct WrappedCell< 'data >
+{
+  wrap_width : usize,
+  content : Cow< 'data, str >
+}
+
+fn wrap_text< 'data >
+(
+  data: &'data Vec< Vec< Cow< 'data, str > > >,
+  _limit: usize
+) -> Vec< Vec< WrappedCell< 'data > > >
+{
+  let mut new_data = Vec::new();
+
+  for row in data
+  {
+    let unwrapped_text : Vec< Vec< Cow< 'data, str > > > = row.iter().map( |c| string::lines( c.as_ref() ).map( Cow::from ).collect() ).collect();
+
+    let max_rows = unwrapped_text.iter().map( Vec::len ).max().unwrap_or(0);
+    
+    let mut transposed : Vec< Vec< WrappedCell< 'data > > > = Vec::new();
+
+    for i in 0..max_rows
+    {
+      let mut row_vec : Vec< WrappedCell< 'data > > = Vec::new();
+
+      for col_lines in &unwrapped_text
+      {
+        if col_lines.len() > i
+        {
+          let wrap_width = col_lines.iter().map( |c| c.len() ).max().unwrap_or(0);
+          row_vec.push( WrappedCell { wrap_width , content : col_lines[ i ].clone() } );
+        }
+        else
+        {
+          row_vec.push( WrappedCell { wrap_width : 0, content : Cow::from( "" ) } );
+        }
+      }
+
+      transposed.push( row_vec );
+    }
+
+    new_data.extend( transposed );
+  }
+
+  new_data
 }

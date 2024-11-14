@@ -34,8 +34,6 @@ use core::
 };
 use std::sync::OnceLock;
 
-use format::wrap_text::wrap_text;
-
 /// A struct representing the list of records( rows ) output format.
 ///
 /// `Records` provides an implementation for table formatting that outputs
@@ -158,48 +156,57 @@ impl TableOutputFormat for Records
   ) -> fmt::Result
   {
 
-    let col_names : Vec< Cow< 'data, str > > = x.header().collect();
+    let field_names : Vec< Cow< 'data, str > > = x.header().collect();
     let key_width = x.header().fold( 0, | acc, cell | acc.max( cell.len() ) );
 
     write!( c.buf, "{}", self.table_prefix )?;
 
-    let mut first = true;
-
-    for ( irow, row ) in x.rows().enumerate()
+    for ( ientry, entry ) in x.rows().enumerate()
     {
-      if first
-      {
-        first = false;
-      }
-      else
+      if ientry > 0
       {
         write!( c.buf, "{}", self.table_separator )?;
       }
 
-      writeln!( c.buf, " = {}", irow + 1 )?;
+      writeln!( c.buf, " = {}", ientry + 1 )?;
 
-      let value_width = row.iter().fold( 0, | acc, cell | acc.max( cell.len() ) );
+      let row = wrap_text( entry, 0 );
 
-      for ( icol, col ) in row.iter().enumerate()
+      let value_width = row.iter().map( |sr| sr.iter().map( |c| c.chars().count() ).max().unwrap_or(0) ).max().unwrap_or(0);
+
+      let mut row_count = 0;
+
+      for ( ifield, field ) in row.iter().enumerate()
       {
-        let key = col_names.get(icol).map( Cow::borrow ).unwrap_or( "" );
-
-        if icol > 0
+        for ( irow, row ) in field.iter().enumerate()
         {
-          write!( c.buf, "{}", self.row_separator )?;
+          if row_count > 0
+          {
+            write!( c.buf, "{}", self.row_separator )?;
+          }
+          row_count += 1;
+
+          let key = if irow > 0
+          {
+            ""
+          }
+          else
+          {
+            field_names.get( ifield ).map( Cow::borrow ).unwrap_or( "" )
+          };
+          
+          write!( c.buf, "{}", self.row_prefix )?;
+
+          write!( c.buf, "{}", self.cell_prefix )?;
+          write!( c.buf, "{:<key_width$}", key )?;
+          write!( c.buf, "{}", self.cell_postfix )?;
+          write!( c.buf, "{}", self.cell_separator )?;
+          write!( c.buf, "{}", self.cell_prefix )?;
+          write!( c.buf, "{:<value_width$}", row )?;
+          write!( c.buf, "{}", self.cell_postfix )?;
+
+          write!( c.buf, "{}", self.row_postfix )?;
         }
-        
-        write!( c.buf, "{}", self.row_prefix )?;
-
-        write!( c.buf, "{}", self.cell_prefix )?;
-        write!( c.buf, "{:<key_width$}", key )?;
-        write!( c.buf, "{}", self.cell_postfix )?;
-        write!( c.buf, "{}", self.cell_separator )?;
-        write!( c.buf, "{}", self.cell_prefix )?;
-        write!( c.buf, "{:<value_width$}", col )?;
-        write!( c.buf, "{}", self.cell_postfix )?;
-
-        write!( c.buf, "{}", self.row_postfix )?;
       }
     }
 
@@ -208,4 +215,14 @@ impl TableOutputFormat for Records
     Ok( () )
   }
 
+}
+
+fn wrap_text<'data>
+(
+  data: &'data Vec< Cow< 'data, str > >,
+  _limit: usize
+)
+-> Vec< Vec< &'data str > >
+{
+  data.iter().map( |c| string::lines( c ).collect() ).collect()
 }
