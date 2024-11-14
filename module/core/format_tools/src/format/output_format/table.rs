@@ -177,7 +177,7 @@ impl TableOutputFormat for Table
     let row_separator = &self.row_separator;
     let h = self.h.to_string();
 
-    let data = wrap_text( &x.data, 0 );
+    let data = wrap_text( &x.data, self.max_width );
 
     let column_count = x.header().count();
 
