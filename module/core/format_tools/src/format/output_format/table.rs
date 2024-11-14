@@ -250,6 +250,7 @@ impl TableOutputFormat for Table
   }
 }
 
+#[ derive( Debug ) ]
 struct WrappedCell< 'data >
 {
   wrap_width : usize,
@@ -269,9 +270,14 @@ fn wrap_text< 'data >
     let unwrapped_text : Vec< Vec< Cow< 'data, str > > > = row.iter().map( |c| string::lines( c.as_ref() ).map( Cow::from ).collect() ).collect();
 
     let max_rows = unwrapped_text.iter().map( Vec::len ).max().unwrap_or(0);
-    
+
     let mut transposed : Vec< Vec< WrappedCell< 'data > > > = Vec::new();
 
+    if max_rows == 0 
+    {
+      transposed.push( vec![] );
+    }
+    
     for i in 0..max_rows
     {
       let mut row_vec : Vec< WrappedCell< 'data > > = Vec::new();
@@ -295,5 +301,6 @@ fn wrap_text< 'data >
     new_data.extend( transposed );
   }
 
+  dbg!(&new_data);
   new_data
 }
