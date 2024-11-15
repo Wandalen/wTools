@@ -282,11 +282,6 @@ mod private
     //                      string,              size,
     pub data : Vec< Vec< ( Cow< 'data, str >, [ usize ; 2 ] ) > >, // xxx : use maybe flat vector
 
-    /// Dimensions of slices for retrieving data from multi-matrix.
-    pub slices_dim : [ usize ; 3 ],
-    /// Extracted slices or strings for further processing.
-    pub slices : Vec< &'data str >,
-
   }
 
   //
