@@ -1,8 +1,4 @@
 title: DB information extractor
-description: >
-  This system accepts user query for the DB in natural language and converts it into SQL code, which is then passed to a script that will
-  execute this SQL and present the output.
-  This example requires that the script is correctly configured to the real DB.
 
 nodes:
   - id: question_input
@@ -10,23 +6,22 @@ nodes:
     prompt: 'Your query: '
     next: translator
 
-  - id: translator
+  - id: thinker
     type: agent.completion
     # In real life scenario you should specify here:
     # - Which DB is used?
     # - What are the tables and columns?
     # - Schema of the DB.
-    system_message: 'Your task is to translate user query into SQL code for the database.'
+    system_message: 'Your task is to think about how to translate the user query in natural langauge in SQL langauge. Think step by steps.'
     user_message: '{{question_input}}'
     next: query
 
   - id: query
-    type: script
-    # In real life scenario you should add parameters for contacting the DB.
-    cmd: 'query_db {{translator}}'
-    next: output
+    type: agent.completion
+    system_message: 'Your task to make an SQL code based on user query in natural language and the results of thinking on that query'.
+    user_message: 'Query: {{question_input}}. Thoughts: {{thinker}}'
 
   - id: output
     type: event.stdout
-    output: 'Output: {{query}}'
+    output: '{{query}}'
     next: scenario.termination
