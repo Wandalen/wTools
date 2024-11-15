@@ -9,7 +9,7 @@ mod manual
   mod micro_modules;
   mod micro_modules_two;
   mod layer;
-  mod layer_use;
+  mod use_layer;
 
 }
 
@@ -37,6 +37,7 @@ mod derive
   // use
   mod use_layer;
   mod use_basic;
+  mod use_private_layers;
   #[ path = "./use_as/derive.rs" ]
   mod use_as_derive;
   #[ path = "./use_as/manual.rs" ]
@@ -50,6 +51,6 @@ mod derive
 
 }
 
-// mod trybuild_test;
+mod trybuild_test;
 
 // xxx : enable

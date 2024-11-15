@@ -1,7 +1,7 @@
 
 // use super::*;
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 }
@@ -10,7 +10,7 @@ mod child;
 
 //
 
-crate::mod_interface!
+crate::the_module::mod_interface!
 {
   reuse child;
 }

@@ -102,7 +102,7 @@ mod boolean_optional;
 mod syn;
 mod syn_optional;
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
   // use crate::*;

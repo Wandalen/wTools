@@ -33,7 +33,7 @@ mod private
 
 //
 
-mod_interface!
+the_module::mod_interface!
 {
 
   own use { layer_a_own };

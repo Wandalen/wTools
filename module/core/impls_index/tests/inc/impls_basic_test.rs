@@ -1,6 +1,5 @@
 use super::*;
-#[ allow( unused_imports ) ]
-use the_module::prelude::*;
+use the_module::exposed::*;
 
 // trace_macros!( true );
 tests_impls!

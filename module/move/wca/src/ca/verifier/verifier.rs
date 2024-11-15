@@ -9,6 +9,7 @@ mod private
   };
   use std::collections::HashMap;
   use indexmap::IndexMap;
+  
   // xxx
 
   /// Converts a `ParsedCommand` to a `VerifiedCommand` by performing validation and type casting on values.
@@ -134,12 +135,12 @@ mod private
         {
           Some( v ) => v,
           None if *optional => continue,
-          _ => return Err( err!( "Missing not optional subject" ) ),
+          _ => return Err( error::untyped::format_err!( "Missing not optional subject" ) ),
         };
         subjects.push( value );
         current = rc_subjects_iter.next();
       }
-      if let Some( value ) = current { return Err( err!( "Can not identify a subject: `{}`", value ) ) }
+      if let Some( value ) = current { return Err( error::untyped::format_err!( "Can not identify a subject: `{}`", value ) ) }
 
       Ok( subjects )
     }
@@ -214,8 +215,10 @@ mod private
         {
           #[ cfg( feature = "on_unknown_suggest" ) ]
           if let Some( phrase ) = Self::suggest_command( dictionary, &raw_command.name )
-          { return err!( "Command not found. Maybe you mean `.{}`?", phrase ) }
-          err!( "Command not found. Please use `.` command to see the list of available commands." )
+          {
+            return error::untyped::format_err!( "Command not found. Maybe you mean `.{}`?", phrase )
+          }
+          error::untyped::format_err!( "Command not found. Please use `.` command to see the list of available commands." )
         }
       )?;
 

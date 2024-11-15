@@ -19,18 +19,15 @@
 //! a `HashMap`, making your code cleaner and more concise. This is particularly useful in cases
 //! where you need to define a map with a known set of key-value pairs upfront.
 
-#[ cfg( not( all
-(
-//   not( feature = "use_alloc" ) ) ],
-  all( feature = "enabled", feature = "collection_constructors" ),
-  any( not( feature = "no_std" ), feature = "use_alloc" )
+#[ cfg( not( all(
+  feature = "enabled",
+  feature = "collection_constructors",
+  any( feature = "use_alloc", not( feature = "no_std" ) )
 )))]
-fn main(){}
+fn main() {}
 
-// zzz : aaa : rid of `#[ cfg( not( feature = "use_alloc" ) ) ]` -- Rid of by not relying on std
-// #[ cfg( not( feature = "use_alloc" ) ) ]
 #[ cfg( all( feature = "enabled", feature = "collection_constructors" ) ) ]
-#[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
+#[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 fn main()
 {
   use collection_tools::*;

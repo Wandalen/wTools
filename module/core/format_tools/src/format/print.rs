@@ -2,7 +2,7 @@
 //! Print data as table.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 
@@ -617,6 +617,8 @@ pub mod own
     Context,
     Printer,
     InputExtract,
+    RowDescriptor,
+    ColDescriptor,
   };
 
 }

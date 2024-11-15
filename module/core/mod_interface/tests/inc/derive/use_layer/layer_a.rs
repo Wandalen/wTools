@@ -34,7 +34,7 @@ pub struct SubStruct4
 
 //
 
-mod_interface!
+the_module::mod_interface!
 {
 
   orphan use ::std::vec::Vec;

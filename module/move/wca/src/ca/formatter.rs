@@ -5,14 +5,26 @@ mod private
   use iter_tools::Itertools;
   use ca::aggregator::Order;
 
-  /// -
+  /// Enum representing the format options for generating help content.
+  ///
+  /// `HelpFormat` defines the output format of help content, enabling the choice
+  /// between different styles, such as `Markdown` for structured text, or other
+  /// custom formats.
   #[ derive( Debug, Clone, PartialEq ) ]
   pub enum HelpFormat
   {
+    /// Generates help content in Markdown format, suitable for environments
+    ///   that support Markdown rendering (e.g., documentation platforms, text editors).
     Markdown,
+    /// Represents an alternative format, customizable for different needs.
     Another,
   }
 
+  /// Generates Markdown-formatted help content based on a dictionary of terms and a specified order.
+  ///
+  /// The `md_generator` function takes a reference to a `Dictionary` and an `Order` to produce
+  /// a help document in Markdown format. This function is useful for generating structured,
+  /// readable help documentation suitable for Markdown-compatible platforms.
   pub fn md_generator( grammar : &Dictionary, order: Order ) -> String
   {
     let text = grammar.commands()

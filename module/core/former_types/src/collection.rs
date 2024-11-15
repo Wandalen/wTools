@@ -5,7 +5,7 @@
 //! such as vectors, hash maps, and custom collection implementations.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 

@@ -61,7 +61,7 @@ mod private
     .bin_path( program )
     .args( options.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
     .current_path( path.as_ref().to_path_buf() )
-    .run().map_err::< Error, _ >( | report | err!( report.to_string() ) )?;
+    .run().map_err::< Error, _ >( | report | error::untyped::format_err!( report.to_string() ) )?;
 
     let list = report
     .out

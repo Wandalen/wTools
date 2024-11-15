@@ -40,7 +40,9 @@ lp_parse = [ "dep:exmex" ]
 derive_tools = { workspace = true, features = [ "derive_more", "full", "strum" ] }
 deterministic_rand = { workspace = true, features = [ "default" ] }
 iter_tools = { workspace = true, features = [ "default" ] }
-meta_tools = { workspace = true, features = [ "meta_constructors" ] }
+# meta_tools = { workspace = true, features = [ "meta_constructors" ] }
+meta_tools = { workspace = true, features = [] }
+collection_tools = { workspace = true } # qqq : use intead of meta_tools
 error_tools = { workspace = true, features = ["default"] }
 env_logger = "0.10.1"
 log = "0.4.20"

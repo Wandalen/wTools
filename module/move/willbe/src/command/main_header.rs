@@ -1,14 +1,14 @@
 mod private
 {
   use crate::*;
-  use action;
+  // use action;
   use error::untyped::{ Error };
 
   /// Generates header to main Readme.md file.
   // qqq : typed error
   pub fn readme_header_renew() -> error::untyped::Result< () >
   {
-    match action::readme_header_renew
+    match crate::action::main_header::action
     (
       CrateDir::transitive_try_from::< AbsolutePath >( CurrentPath )?
     )

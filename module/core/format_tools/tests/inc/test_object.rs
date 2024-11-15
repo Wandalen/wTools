@@ -200,3 +200,17 @@ pub fn test_objects_gen() -> Vec< TestObject >
   ]
 
 }
+
+pub fn test_objects_gen_with_unicode() -> Vec< TestObject >
+{
+  vec!
+  [
+    TestObject
+    {
+      id : "Юнікод".to_string(),
+      created_at : 100,
+      file_ids : vec![],
+      tools : None,
+    }
+  ]
+}

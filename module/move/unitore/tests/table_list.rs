@@ -13,7 +13,7 @@ use error_tools::untyped::Result;
 #[ tokio::test ]
 async fn table_list() -> Result< () >
 {
-  let temp_path = proper_path_tools::path::unique_folder_name().unwrap();
+  let temp_path = pth::path::unique_folder_name().unwrap();
 
   let config = Config::default()
   .path( format!( "./{}", temp_path ) )
@@ -30,7 +30,7 @@ async fn table_list() -> Result< () >
     .map( | row | row[ 1 ].clone() )
     .collect::< Vec< _ > >()
     ;
-  
+
     assert_eq!( column_names.len(), 9 );
     assert!( column_names.contains( &Str( String::from( "published") ) ) );
     assert!( column_names.contains( &Str( String::from( "authors") ) ) );

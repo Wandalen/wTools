@@ -120,7 +120,7 @@ mod private
         let commands = dictionary.search( name.strip_prefix( '.' ).unwrap_or( name ) );
         if commands.is_empty()
         {
-          return_err!( "Not found command that starts with `.{}`.", name );
+          error::untyped::return_err!( "Not found command that starts with `.{}`.", name );
         }
         let generator_args = HelpGeneratorOptions::former()
         .command_prefix( "." )
@@ -149,10 +149,10 @@ mod private
         }
         else
         {
-          return_err!( "Not found command that starts with `.{}`.", name );
+          error::untyped::return_err!( "Not found command that starts with `.{}`.", name );
         }
       }
-      unexpected => return_err!( "Encountered an unrecognized internal command: `.{}`.", unexpected ),
+      unexpected => error::untyped::return_err!( "Encountered an unrecognized internal command: `.{}`.", unexpected ),
     }
 
     Ok( () )

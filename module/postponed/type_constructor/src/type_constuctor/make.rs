@@ -1,4 +1,4 @@
-// /// Internal namespace.
+// /// Define a private namespace for all its items.
 // #[ cfg( feature = "make" ) ]
 // mod private
 // {

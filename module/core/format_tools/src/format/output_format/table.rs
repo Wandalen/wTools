@@ -247,9 +247,11 @@ impl TableOutputFormat for Table
 
           write!( c.buf, "{}", cell_prefix )?;
 
-          // println!( "icol : {icol} | irow : {irow} | width : {width} | cell_width : {cell_width}" );
+          // println!( "icol : {icol} | irow : {irow} | width : {width} | cell_width : {cell_width} | slice.len() : {}", slice.len() );
+
           let lspaces = ( width - cell_width ) / 2;
-          let rspaces = ( width - cell_width + 1 ) / 2 + cell_width - slice.len();
+          let rspaces = ( width - cell_width + 1 ) / 2 + cell_width - slice.chars().count();
+          
           // println!( "icol : {icol} | irow : {irow} | width : {width} | cell_width : {cell_width} | lspaces : {lspaces} | rspaces : {rspaces}" );
 
           if lspaces > 0

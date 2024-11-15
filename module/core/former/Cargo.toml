@@ -1,6 +1,6 @@
 [package]
 name = "former"
-version = "2.9.0"
+version = "2.11.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
@@ -65,5 +65,5 @@ former_types = { workspace = true }
 
 
 [dev-dependencies]
-test_tools = { workspace = true, features = [ "full" ] }
+test_tools = { workspace = true }
 collection_tools = { workspace = true, features = [ "collection_constructors" ] }

@@ -6,7 +6,7 @@ pub mod layer_x;
 
 mod private {}
 
-mod_interface!
+the_module::mod_interface!
 {
   // #![ debug ]
 

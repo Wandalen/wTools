@@ -3,7 +3,7 @@ use super::*;
 
 mod private {}
 
-mod_interface!
+the_module::mod_interface!
 {
   // #![ debug ]
 

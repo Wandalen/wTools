@@ -1,4 +1,4 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
   use crate::*;
@@ -22,6 +22,7 @@ mod private
   pub struct PublishDiffOptions
   {
     path : PathBuf,
+    exclude_dev_dependencies : bool,
     keep_archive : Option< PathBuf >,
   }
 
@@ -105,7 +106,7 @@ mod private
     let path = AbsolutePath::try_from( o.path )?;
     let dir = CrateDir::try_from( path.clone() )?;
 
-    let list = action::list
+    let list = action::list_all
     (
       action::list::ListOptions::former()
       .path_to_manifest( dir )
@@ -141,16 +142,17 @@ mod private
       let name = &package.name()?;
       let version = &package.version()?;
 
-    _ = cargo::pack
-    (
-      cargo::PackOptions::former()
-      .path( dir.as_ref() )
-      .allow_dirty( true )
-      .checking_consistency( false )
-      .dry( false ).form()
-    )?;
-    let l = CrateArchive::read( packed_crate::local_path( name, version, dir )? )?;
-    let r = CrateArchive::download_crates_io( name, version ).unwrap();
+      _ = cargo::pack
+      (
+        cargo::PackOptions::former()
+        .path( dir.as_ref() )
+        .allow_dirty( true )
+        .checking_consistency( false )
+        .exclude_dev_dependencies( o.exclude_dev_dependencies)
+        .dry( false ).form()
+      )?;
+      let l = CrateArchive::read( packed_crate::local_path( name, version, dir )? )?;
+      let r = CrateArchive::download_crates_io( name, version ).unwrap();
 
 
       if let Some( out_path ) = &o.keep_archive

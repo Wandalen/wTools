@@ -16,7 +16,7 @@
 #[ cfg( feature = "enabled" ) ]
 mod implements_impl;
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 #[ cfg( feature = "enabled" ) ]
 mod private
 {

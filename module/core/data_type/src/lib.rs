@@ -123,13 +123,13 @@ pub mod prelude
   pub use crate::dependency::collection_tools::prelude::*;
 
   // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  #[ cfg( feature = "dt_prelude" ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use core::
-  {
-    fmt,
-  };
+  // #[ cfg( feature = "dt_prelude" ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use core::
+  // {
+  //   fmt,
+  // };
 
 }
 

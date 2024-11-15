@@ -24,7 +24,7 @@ fn package_no_features()
   .form();
 
   // Act
-  let report = willbe::action::features( options ).unwrap().to_string();
+  let report = willbe::action::features::orphan::features( options ).unwrap().to_string();
 
   // Assert
   assert!( report.contains(
@@ -43,7 +43,7 @@ fn package_features()
   .form();
 
   // Act
-  let report = willbe::action::features( options ).unwrap().to_string();
+  let report = willbe::action::features::orphan::features( options ).unwrap().to_string();
 
   // Assert
   assert!( report.contains(
@@ -66,7 +66,7 @@ fn package_features_with_features_deps()
   .form();
 
   // Act
-  let report = willbe::action::features( options ).unwrap().to_string();
+  let report = willbe::action::features::orphan::features( options ).unwrap().to_string();
 
   // Assert
   assert!( report.contains(
@@ -89,7 +89,7 @@ fn workspace_no_features()
   .form();
 
   // Act
-  let report = willbe::action::features( options ).unwrap().to_string();
+  let report = willbe::action::features::orphan::features( options ).unwrap().to_string();
 
   // Assert
   assert!( report.contains(
@@ -118,7 +118,7 @@ fn workspace_features()
   .form();
 
   // Act
-  let report = willbe::action::features( options ).unwrap().to_string();
+  let report = willbe::action::features::orphan::features( options ).unwrap().to_string();
 
   // Assert
   assert!( report.contains(
@@ -156,7 +156,7 @@ fn workspace_features_with_features_deps()
   .form();
 
   // Act
-  let report = willbe::action::features( options ).unwrap().to_string();
+  let report = willbe::action::features::orphan::features( options ).unwrap().to_string();
 
   // Assert
   assert!( report.contains(

@@ -2,7 +2,7 @@
 //! Quantifiers like Pair and Many.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
   use crate::*;
