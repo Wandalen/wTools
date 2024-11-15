@@ -14,7 +14,7 @@ mod private
     help::{ HelpGeneratorFn, HelpGeneratorOptions, HelpVariants },
   };
   use verifier::{ Verifier, VerifiedCommand };
-  use parser::{ Program, Parser };
+  use parser::{ Program, Parser, ParserError };
   use grammar::Dictionary;
   use executor::Context;
 
@@ -55,7 +55,7 @@ mod private
       /// source of the program
       input : String,
       /// original error
-      error : wError,
+      error : ParserError,
     },
     /// This variant represents errors that occur during grammar conversion.
     #[ error( "Can not identify a command.\nDetails: {0}" ) ]
@@ -71,10 +71,10 @@ mod private
   {
     /// This variant is used to represent validation errors.
     /// It carries a `ValidationError` payload that provides additional information about the error.
-    #[ error( "Validation error. {0}" ) ]
+    #[ error( "Validation error\n{0}" ) ]
     Validation( ValidationError ),
     /// This variant represents execution errors.
-    #[ error( "Execution failed. {0:?}" ) ]
+    #[ error( "Execution failed\n{0:?}" ) ]
     Execution( wError ),
   }
 
@@ -284,7 +284,7 @@ mod private
         callback.0( &program.join( " " ), &grammar_program )
       }
 
-      self.executor.program( &self.dictionary, grammar_program ).map_err( | e | Error::Execution( e ) )
+      self.executor.program( &self.dictionary, grammar_program ).map_err( | e | Error::Execution( e.into() ) )
     }
   }
 }

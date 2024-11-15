@@ -44,7 +44,8 @@ error_tools = { workspace = true, features = [ "enabled", "error_typed", "error_
 mod_interface = { workspace = true, features = [ "enabled" ] }
 iter_tools = { workspace = true, features = [ "enabled" ] }
 former = { workspace = true, features = [ "enabled", "derive_former" ] }
-# xxx : qqq : optimize set of features
+# xxx : aaa : optimize set of features
+# aaa : done.
 
 ## external
 log = "0.4"

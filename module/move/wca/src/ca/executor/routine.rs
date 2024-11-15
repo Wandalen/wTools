@@ -337,12 +337,21 @@ mod private
   // aaa : This is an untyped error because we want to provide a common interface for all commands, while also allowing users to propagate their own specific custom errors.
   impl IntoResult for std::convert::Infallible { fn into_result( self ) -> error::untyped::Result< () > { Ok( () ) } }
   impl IntoResult for () { fn into_result( self ) -> error::untyped::Result< () > { Ok( () ) } }
-  impl< E : std::fmt::Debug > IntoResult
+  impl< E : std::fmt::Debug + std::fmt::Display + 'static > IntoResult
   for error::untyped::Result< (), E >
   {
     fn into_result( self ) -> error::untyped::Result< () >
     {
-      self.map_err( | e | error::untyped::format_err!( "{e:?}" ))
+      use std::any::TypeId;
+      // if it's anyhow error we want to have full context(debug), and if it's not(this error) we want to display
+      if TypeId::of::< error::untyped::Error >() == TypeId::of::< E >()
+      {
+        self.map_err( | e | error::untyped::format_err!( "{e:?}" ))
+      }
+      else
+      {
+        self.map_err( | e | error::untyped::format_err!( "{e}" ))
+      }
       // xxx : aaa : ?
     }
   }

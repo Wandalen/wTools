@@ -81,6 +81,10 @@ mod private
     .collect()
   }
 
+  #[ derive( Debug, error::typed::Error ) ]
+  #[ error( "Invalid table" ) ]
+  pub struct FormatTableError;
+
   /// Formats a table into a readable string representation.
   ///
   /// # Arguments
@@ -90,15 +94,16 @@ mod private
   /// # Returns
   ///
   /// * `error::untyped::Result<String, Error>` - A `error::untyped::Result` containing the formatted table as a `String`, or an `Error` if the table is invalid.
-  // qqq : use typed error
-  pub fn format_table< IntoTable >( table : IntoTable ) -> error::untyped::Result< String >
+  // aaa : use typed error
+  // aaa : done
+  pub fn format_table< IntoTable >( table : IntoTable ) -> Result< String, FormatTableError >
   where
     IntoTable : Into< Table >,
   {
     let table = table.into();
     if !table.validate()
     {
-      return Err( error::untyped::format_err!( "Invalid table" ) );
+      return Err( FormatTableError );
     }
 
     let max_lengths = max_column_lengths( &table );

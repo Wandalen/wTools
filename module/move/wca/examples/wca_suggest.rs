@@ -22,7 +22,7 @@
 
 use wca::{ CommandsAggregator, Type, VerifiedCommand };
 
-fn main()
+fn main() -> error_tools::error::untyped::Result< () >
 {
 
   let ca = CommandsAggregator::former()
@@ -34,14 +34,11 @@ fn main()
     {
       println!( "= Args\n{:?}\n\n= Properties\n{:?}\n", o.args, o.props );
     })
-    .end()
+  .end()
   .perform();
 
   let args: Vec< String > = std::env::args().skip( 1 ).collect();
-  match ca.perform( args.join( " " ) )
-  {
-    Ok( _ ) => {}
-    Err( err ) => println!( "{err}" ),
-  };
+  ca.perform( args.join( " " ) )?;
 
+  Ok( () )
 }

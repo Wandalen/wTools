@@ -11,6 +11,14 @@ mod private
   // aaa : for Bohdan : how is it useful? where is it used?
   // aaa : `ExecutorType` has been removed
 
+  #[ derive( Debug, error::typed::Error ) ]
+  pub enum CommandError
+  {
+    #[ error( "Internal command: `.{}` failed with: {}", command.phrase, error ) ]
+    Internal { command: VerifiedCommand, error: InternalCommandError },
+    #[ error( "Command: `.{}` failed with: {}", command.phrase, error ) ]
+    User { command: VerifiedCommand, error: error::untyped::Error },
+  }
 
   /// Executor that is responsible for executing the program's commands.
   /// It uses the given `Context` to store and retrieve values during runtime.
@@ -38,9 +46,10 @@ mod private
     ///
     /// A `Result` with `Ok( () )` if the execution was successful, or an `Err` containing an error message if an error occurred.
     ///
-    // qqq : use typed error
+    // aaa : use typed error
+    // aaa : done
     pub fn program( &self, dictionary : &Dictionary, program : Program< VerifiedCommand > )
-    -> error::untyped::Result< () >
+    -> Result< (), CommandError >
     {
       for command in program.commands
       {
@@ -62,18 +71,21 @@ mod private
     /// # Returns
     ///
     /// Returns a Result indicating success or failure. If successful, returns `Ok(())`, otherwise returns an error.
-    // qqq : use typed error
+    // aaa : use typed error
+    // aaa : done
     pub fn command( &self, dictionary : &Dictionary, command : VerifiedCommand )
-    -> error::untyped::Result< () >
+    -> Result< (), CommandError >
     {
       if command.internal_command
       {
-        _exec_internal_command( dictionary, command )
+        _exec_internal_command( dictionary, command.clone() )
+        .map_err( | error | CommandError::Internal { command, error } )
       }
       else
       {
         let routine = dictionary.command( &command.phrase ).unwrap().routine.clone();
-        _exec_command( command, routine, self.context.clone() )
+        _exec_command( command.clone(), routine, self.context.clone() )
+        .map_err( | error | CommandError::User { command, error } )
       }
     }
 
@@ -82,6 +94,7 @@ mod private
   }
 
   // qqq : use typed error
+  // aaa : should it be typed? it is user command with unknown error type
   fn _exec_command( command : VerifiedCommand, routine : Routine, ctx : Context )
   -> error::untyped::Result< () >
   {
@@ -92,9 +105,19 @@ mod private
     }
   }
 
-  // qqq : use typed error
+  #[ derive( Debug, error::typed::Error ) ]
+  pub enum InternalCommandError
+  {
+    #[ error( "Encountered an unrecognized internal command: `.{user_input}`." ) ]
+    UnknownInternalCommand { user_input: String },
+    #[ error( "Not found command that starts with `.{user_input}`." ) ]
+    CommandNotFound { user_input: String },
+  }
+
+  // aaa : use typed error
+  // aaa : done
   fn _exec_internal_command( dictionary : &Dictionary, command : VerifiedCommand )
-  -> error::untyped::Result< () >
+  -> Result< (), InternalCommandError >
   {
     match command.phrase.as_str()
     {
@@ -124,7 +147,7 @@ mod private
         let commands = dictionary.search( name.strip_prefix( '.' ).unwrap_or( name ) );
         if commands.is_empty()
         {
-          error::untyped::return_err!( "Not found command that starts with `.{}`.", name );
+          return Err( InternalCommandError::CommandNotFound { user_input : name.into() } );
         }
         let generator_args = HelpGeneratorOptions::former()
         .command_prefix( "." )
@@ -153,10 +176,10 @@ mod private
         }
         else
         {
-          error::untyped::return_err!( "Not found command that starts with `.{}`.", name );
+          return Err( InternalCommandError::CommandNotFound { user_input : name.into() } );
         }
       }
-      unexpected => error::untyped::return_err!( "Encountered an unrecognized internal command: `.{}`.", unexpected ),
+      unexpected => return Err( InternalCommandError::UnknownInternalCommand { user_input: unexpected.into() }),
     }
 
     Ok( () )

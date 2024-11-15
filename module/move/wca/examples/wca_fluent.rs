@@ -10,7 +10,7 @@
 use wca::{ executor::{ Context, Handler }, Type, VerifiedCommand };
 use std::sync::{ Arc, Mutex };
 
-fn main()
+fn main() -> error_tools::error::untyped::Result< () >
 {
 
   let ca = wca::CommandsAggregator::former()
@@ -46,6 +46,7 @@ fn main()
   .perform();
 
   let args: Vec< String > = std::env::args().skip( 1 ).collect();
-  ca.perform( args ).unwrap();
+  ca.perform( args )?;
 
+  Ok( () )
 }

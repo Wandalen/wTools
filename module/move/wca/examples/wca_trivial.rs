@@ -16,7 +16,7 @@ fn exit()
   std::process::exit( 0 )
 }
 
-fn main()
+fn main() -> error_tools::error::untyped::Result< () >
 {
   let ca = CommandsAggregator::former()
   .command( "exit" )
@@ -51,5 +51,7 @@ fn main()
   //aaa: works
 
   let input: Vec< String > = std::env::args().skip( 1 ).collect();
-  ca.perform( input ).unwrap();
+  ca.perform( input )?;
+  
+  Ok( () )
 }
