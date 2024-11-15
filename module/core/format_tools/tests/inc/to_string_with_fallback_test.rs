@@ -14,7 +14,7 @@ use the_module::
 
 use std::
 {
-  // fmt,
+  fmt,
   // collections::HashMap,
   borrow::Cow,
 };

@@ -519,7 +519,7 @@ mod private
       mchars[ 0 ] = col_descriptors.iter().fold( 0, | acc, col | acc + col.width );
       mchars[ 1 ] = row_descriptors.iter().fold( 0, | acc, row | acc + if row.vis { row.height } else { 0 } );
 
-      let x = InputExtract::< '_ >
+      let mut x = InputExtract::< '_ >
       {
         mcells,
         mcells_vis,
@@ -529,6 +529,14 @@ mod private
         data,
         has_header,
       };
+
+      if x.data.len() > 0
+      {
+        for icol in 0 .. x.col_descriptors.len()
+        {
+          x.col_descriptors[ icol ].label = x.data[ 0 ][ icol ].0.as_ref();
+        }
+      }
 
       return callback( &x );
     }
@@ -554,6 +562,7 @@ pub mod own
     Context,
     Printer,
     InputExtract,
+    RowDescriptor,
   };
 
 }

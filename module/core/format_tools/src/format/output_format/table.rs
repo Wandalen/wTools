@@ -14,6 +14,7 @@ use crate::*;
 use print::
 {
   InputExtract,
+  RowDescriptor,
   Context,
 };
 use std::borrow::Cow;
@@ -76,6 +77,8 @@ pub struct Table
   pub corner_lb : char,
   /// Bottom-right corner character.
   pub corner_rb : char,
+  /// Limit table width. If the value is zero, then no limitation.
+  pub max_width: usize,
 }
 
 impl Default for Table
@@ -103,6 +106,7 @@ impl Default for Table
     let corner_rt = '┐';
     let corner_lb = '└';
     let corner_rb = '┘';
+    let max_width = 0;
 
     Self
     {
@@ -124,6 +128,7 @@ impl Default for Table
       corner_rt,
       corner_lb,
       corner_rb,
+      max_width
     }
   }
 }
@@ -172,7 +177,7 @@ impl TableOutputFormat for Table
     let row_separator = &self.row_separator;
     let h = self.h.to_string();
 
-    let data = wrap_text( &x.data, self.max_width );
+    let data = wrap_text( &x.data, &x.row_descriptors, self.max_width );
 
     let column_count = x.header().count();
 
@@ -258,16 +263,24 @@ struct WrappedCell< 'data >
 
 fn wrap_text< 'data >
 (
-  data: &'data Vec< Vec< Cow< 'data, str > > >,
-  limit: usize
+  data : &'data Vec< Vec< ( Cow< 'data, str >, [ usize; 2 ] ) > >,
+  row_descriptors : &Vec< RowDescriptor >,
+  limit : usize
 ) 
 -> Vec< Vec< WrappedCell< 'data > > >
 {
   let mut new_data = Vec::new();
 
-  for ( id, row ) in data
+  for ( irow, row ) in data.iter().enumerate()
   {
-    let unwrapped_text : Vec< Vec< Cow< 'data, str > > > = row.iter().map( |c| string::lines_with_limit( c.as_ref(), limit ).map( Cow::from ).collect() ).collect();
+    let row_descriptor = &row_descriptors[ irow ];
+
+    if !row_descriptor.vis
+    {
+      continue;
+    }
+
+    let unwrapped_text : Vec< Vec< Cow< 'data, str > > > = row.iter().map( |c| string::lines_with_limit( c.0.as_ref(), limit ).map( Cow::from ).collect() ).collect();
 
     let max_rows = unwrapped_text.iter().map( Vec::len ).max().unwrap_or(0);
 

@@ -22,12 +22,12 @@
 //!
 
 use crate::*;
-use md_math::MdOffset;
 use print::
 {
   InputExtract,
   Context,
 };
+use std::borrow::Cow;
 use core::
 {
   fmt,
@@ -59,6 +59,8 @@ pub struct Records
   pub cell_postfix : String,
   /// Separator used between table columns.
   pub cell_separator : String,
+  /// Limit table width. If the value is zero, then no limitation.
+  pub max_width: usize,
   // /// Horizontal line character.
   // pub h : char,
   // /// Vertical line character.
@@ -108,6 +110,8 @@ impl Default for Records
     let table_postfix = "".to_string();
     let table_separator = "\n".to_string();
 
+    let max_width = 0;
+
     // let h = '─';
     // let v = '|';
     // let t_l = '├';
@@ -131,6 +135,7 @@ impl Default for Records
       cell_prefix,
       cell_postfix,
       cell_separator,
+      max_width,
       // h,
       // v,
       // t_l,
@@ -155,70 +160,82 @@ impl TableOutputFormat for Records
     c : & mut Context< 'buf >,
   ) -> fmt::Result
   {
-
-    let label_width = x.header().fold( 0, | acc, cell | acc.max( cell.1[ 0 ] ) );
+    let field_names : Vec< ( Cow< 'data, str >, [ usize; 2 ] ) > = x.header().collect();
+    let key_width = x.header().fold( 0, | acc, cell | acc.max( cell.0.chars().count() ) );
 
     write!( c.buf, "{}", self.table_prefix )?;
 
-    let mut first = true;
-    // Write each record
-    for ( irow, row ) in x.rows()
-    {
+    let mut actual_entries = 0;
 
-      if !row.vis
+    for ( ientry_descriptor, entry_descriptor ) in x.row_descriptors.iter().enumerate()
+    {
+      if !entry_descriptor.vis || ( x.has_header && ientry_descriptor == 0 )
       {
         continue;
       }
 
-      if first
-      {
-        first = false;
-      }
-      else
+      if actual_entries > 0
       {
         write!( c.buf, "{}", self.table_separator )?;
       }
 
-      let slice_width = x.data[ irow ].iter().fold( 0, | acc, cell | acc.max( cell.1[ 0 ] ) );
+      actual_entries += 1;
 
-      writeln!( c.buf, " = {}", irow )?;
+      writeln!( c.buf, " = {}", entry_descriptor.irow )?;
 
-      for ( icol, _col ) in x.col_descriptors.iter().enumerate()
+      let row = wrap_text( &x.data[ ientry_descriptor ], 0 );
+
+      let value_width = row.iter().map( |sr| sr.iter().map( |c| c.chars().count() ).max().unwrap_or(0) ).max().unwrap_or(0);
+
+      let mut row_count = 0;
+
+      for ( ifield, field ) in row.iter().enumerate()
       {
-        let cell = &x.data[ irow ][ icol ];
-        let height = cell.1[ 1 ];
-
-        for islice in 0..height
+        for ( irow, row ) in field.iter().enumerate()
         {
-          let label = x.header_slice( icol );
-          let md_index = [ islice, icol, irow ];
-          let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
-
-          if icol > 0 || islice > 0
+          if row_count > 0
           {
             write!( c.buf, "{}", self.row_separator )?;
           }
+          row_count += 1;
 
+          let key = if irow > 0
+          {
+            ""
+          }
+          else
+          {
+            field_names.get( ifield ).map( |c| c.0.as_ref() ).unwrap_or( "" )
+          };
+          
           write!( c.buf, "{}", self.row_prefix )?;
 
           write!( c.buf, "{}", self.cell_prefix )?;
-          write!( c.buf, "{:<label_width$}", label )?;
+          write!( c.buf, "{:<key_width$}", key )?;
           write!( c.buf, "{}", self.cell_postfix )?;
           write!( c.buf, "{}", self.cell_separator )?;
           write!( c.buf, "{}", self.cell_prefix )?;
-          write!( c.buf, "{:<slice_width$}", slice )?;
+          write!( c.buf, "{:<value_width$}", row )?;
           write!( c.buf, "{}", self.cell_postfix )?;
 
           write!( c.buf, "{}", self.row_postfix )?;
         }
-
       }
-
     }
 
     write!( c.buf, "{}", self.table_postfix )?;
 
-    Ok(())
+    Ok( () )
   }
 
+}
+
+fn wrap_text<'data>
+(
+  data: &'data Vec< ( Cow< 'data, str >, [ usize; 2 ] ) >,
+  limit: usize
+)
+-> Vec< Vec< &'data str > >
+{
+  data.iter().map( |c| string::lines_with_limit( c.0.as_ref(), limit ).collect() ).collect()
 }
