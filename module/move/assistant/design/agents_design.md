@@ -56,7 +56,7 @@ Those nodes perform intermediate processing of information. It can be either a m
 
 **Paramters**:
 
-- `path`: path to the executable.
+- `cmd`: command to execute with path to the executable and arguments.
 
 #### Agent completion node
 
