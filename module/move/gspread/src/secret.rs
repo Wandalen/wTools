@@ -41,7 +41,7 @@ mod private
   #[ allow( non_snake_case ) ]
   pub struct Secret
   {
-    pub CLIENT_SECRET : String,
+    pub CLIENT_SECRET: String,
     pub CLIENT_ID: String,
     pub AUTH_URI : String,
     pub TOKEN_URI : String,
@@ -137,23 +137,9 @@ Either define missing environment variable or make sure `./.key/-env.toml` file 
   {
     let p = var( name, default )?;
     pth::AbsolutePath::from_paths( ( pth::CurrentPath, p ) )
-    .map_err( |e| Error::VariableIllformed( name, e.to_string() ) )
+      .map_err( |e| Error::VariableIllformed( name, e.to_string() ) )
   }
 
 }
 
-crate::mod_interface!
-{
-
-  own use
-  {
-    Error,
-    Result,
-  };
-
-  orphan use
-  {
-    Secret,
-  };
-
-}
+pub use private::Secret;

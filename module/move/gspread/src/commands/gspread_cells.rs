@@ -1,7 +1,7 @@
 //!
 //! Cells commands.
 //! set command -> set specified values in specified columns in specified row.
-//! 
+//!
 
 mod private
 {
@@ -42,7 +42,7 @@ mod private
       Commands::Set { select_row_by_key, json, url, tab } =>
       {
         let spreadsheet_id = get_spreadsheet_id_from_url( url.as_str() ).unwrap();
-        
+
         let result = actions::gspread_cells_set::action
         (
           &hub,
@@ -64,7 +64,7 @@ mod private
 
 crate::mod_interface!
 {
-  own use 
+  own use
   {
     command,
     Commands
