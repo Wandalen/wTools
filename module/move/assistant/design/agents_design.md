@@ -8,13 +8,15 @@ Main description of such system is writen using **YAML**.
 
 The system consists of **nodes** and **edges**.
 
-Currently, we assume that the only information type passed between nodes is **single text** and nodes are connected in one way like a **pipeline**.
+Currently, we assume that the only information type passed between nodes is **single text** and nodes are connected as a direct acyclic graph (DAC). Node can take input from several nodes, but it can generate only 1 output.
 
 In future, we can support other types like *list of strings*. *booleans*; we can deliver input to several nodes *in parallel*, etc.
 
 ## Nodes
 
-Each node has an `id` property (its name).
+Each node has an `id` property (its name) and a `type` property.
+
+`type` specifies node type in a special format - `category.type`. Number of levels separated by dots may vary.
 
 ### Input nodes
 
@@ -22,8 +24,8 @@ These nodes read an input from external environment and pass it to the graph.
 
 Current **types**:
 
-- Stding input node.
-- File input node.
+- `trigger.stdin`: stdin input node.
+- `trigger.file`: file input node.
 
 #### Stdin input node
 
@@ -45,6 +47,9 @@ Current **types**:
 
 Those nodes perform intermediate processing of information. It can be either a mechanical one using an external program, or a real LLM agent.
 
+- `script`: script node.
+- `agent.completion`: agent completion node.
+
 #### Script node
 
 **Description**: takes input from the node, runs the specified program, passes the input to the program's stdin, reads the programs output and passes it to the next node (this refs UNIX philosophy).
@@ -53,7 +58,7 @@ Those nodes perform intermediate processing of information. It can be either a m
 
 - `path`: path to the executable.
 
-#### Agent node
+#### Agent completion node
 
 **Description**: the core node type, represents an LLM agent that transforms text in one from to another.
 
@@ -64,7 +69,7 @@ Those nodes perform intermediate processing of information. It can be either a m
 - `system_message`: system message template.
 - `user_message`: user message template.
 
-`system_message` and `user_message` are templates that have a variable called `{input}`.
+`system_message` and `user_message` are templates. Variables available to those templates are **node names**.
 
 ### Output nodes
 
@@ -72,8 +77,8 @@ These nodes take an input from other node and present it to the external world.
 
 Current **types**:
 
-- Stdout output node.
-- File output node.
+- `event.stdout`: stdout output node.
+- `event.file`: file output node.
 
 #### Stdout output node
 
@@ -90,6 +95,20 @@ Current **types**:
 **Parameters**:
 
 - `path`: path to save the input.
+
+### Utility nodes
+
+These nodes are special nodes for various purposes.
+
+Current **types**:
+
+- `scenario.termination`: scenario termination node.
+
+#### Scenario termination node
+
+**Description**: when the process of execution is passed to this node, the whole program of the multi-agent system terminates.
+
+This node is **implicitly present in every graph**, and to call it you just need to fill `next:` with the `scenario.terminate`.
 
 ## YAML description structure
 

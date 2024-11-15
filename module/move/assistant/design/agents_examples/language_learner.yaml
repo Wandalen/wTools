@@ -1,0 +1,42 @@
+title: Help in language learning
+description: >
+  This file demonstrates a simple system that will guide user in learning languages.
+  Its main purpose consists of answering user question using another language + providing translation to
+  user's mother tongue + set of used unique words with their translations.
+  For example: user may ask in their language - "why the sky is blue?", the model will then explain it in
+  the target language, then provide a translation of its output in original language, and additionaly
+  the system will provide a set of used frases with their translations.
+  Currently, system is set for English learning for Ukrainian speakers.
+
+nodes:
+  - id: question_input
+    type: trigger.stdin
+    prompt: 'Your question: '
+    next: answer
+
+  - id: answer
+    type: agent.completion
+    system_message: 'You are a helpful Q&A assistant. Answer in English'
+    user_message: 'Question: {{question_input}}'
+    next: 
+      - translator
+      - frases_extractor
+      - output # TODO: What will happen if output would be called first (or in paralel to other "next"s) but there is no output of `translator` or `frases_extractor`?
+
+  - id: translator
+    type: agent.completion
+    system_message: 'Translate the input in Ukrainian language'
+    user_message: '{{answer}}'
+    
+  - id: frases_extractor
+    type: agent.completion
+    system_message: >
+      You have a text in English. Extract unique and interesting frases or words from the text
+      that would be useful for English language learner. Present the output as a list of pairs:
+      the first element is English phrase and the second is Ukrainian translation.
+    user_message: '{{answer}}'
+
+  - id: output
+    type: event.stdout
+    output: 'Answer: {{answer}}'
+    next: scenario.termination

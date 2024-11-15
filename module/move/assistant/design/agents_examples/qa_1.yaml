@@ -1,22 +1,27 @@
 title: Multi-agent Q&A example
+description: >
+  Demonstrates cleaning of user data, as the user may type fast or include only keywords. 
+  The first agent will turn user query into a valid question, and the second agent will answer it.
 
 nodes:
-  - id: input
-    type: stdin
+  - id: question_input
+    type: trigger.stdin
     prompt: 'Your question: '
+    next: cleaner
 
   - id: cleaner
-    type: agent
+    type: agent.completion
     system_message: 'Correct the orthography and other English mistakes. Make the input clean and easy to understand.'
-    user_message: '{input}'
+    user_message: '{{question_input}}'
+    next: answer
 
-  - id: answerer
-    type: agent
+  - id: answer
+    type: agent.completion
     system_message: 'You are a helpful Q&A assistant.'
-    user_message: 'Question: {input}'
+    user_message: 'Question: {{cleaner}}'
+    next: output
 
   - id: output
-    type: stdout
-    prefix: 'Answer: '
-
-connections: [input, clearer, answerer, output]
+    type: event.stdout
+    output: 'Answer: {{answer}}'
+    next: scenario.termination
