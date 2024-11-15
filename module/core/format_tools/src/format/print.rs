@@ -7,10 +7,9 @@ mod private
 {
 
   use crate::*;
-  use md_math::MdOffset;
   use std::
   {
-    borrow::Cow,
+    borrow::{ Cow, Borrow },
     collections::HashMap,
   };
   use core::
@@ -335,24 +334,19 @@ mod private
 
     /// Returns a slice from the header, or an empty string if no header is present.
     ///
-    /// This function retrieves a specific slice from the header row based on the provided indices.
-    /// If the table does not have a header, it returns an empty string.
-    ///
     /// # Arguments
     ///
-    /// - `islice`: The slice index within the header cell.
     /// - `icol`: The column index within the header row.
     ///
     /// # Returns
     ///
-    /// A string slice representing the header content at the specified indices.
+    /// A string slice representing the header content.
     ///
-    pub fn header_slice( & self, islice : usize, icol : usize ) -> & str
+    pub fn header_slice( & self, icol : usize ) -> & str
     {
       if self.has_header
       {
-        let md_index = [ islice, icol, 0 ];
-        self.slices[ self.slices_dim.md_offset( md_index ) ]
+        self.data[0][icol].0.borrow()
       }
       else
       {
@@ -378,8 +372,6 @@ mod private
       CellKey : table::CellKey + ?Sized + 'data,
       // CellRepr : table::CellRepr,
     {
-      use md_math::MdOffset;
-
       // let mcells = table.mcells();
       let mut mcells_vis = [ 0 ; 2 ];
       let mut mcells = [ 0 ; 2 ];
@@ -527,23 +519,7 @@ mod private
       mchars[ 0 ] = col_descriptors.iter().fold( 0, | acc, col | acc + col.width );
       mchars[ 1 ] = row_descriptors.iter().fold( 0, | acc, row | acc + if row.vis { row.height } else { 0 } );
 
-      // cook slices multi-matrix
-
-      let mut slices_dim = [ 1, mcells[ 0 ], mcells[ 1 ] ];
-      slices_dim[ 0 ] = row_descriptors
-      .iter()
-      .fold( 0, | acc : usize, row | acc.max( row.height ) )
-      ;
-
-      let slices_len = slices_dim[ 0 ] * slices_dim[ 1 ] * slices_dim[ 2 ];
-      let slices : Vec< &str > = vec![ "" ; slices_len ];
-
-  //     assert_eq!( mcells, mcells, r#"Incorrect multidimensional size of table
-  // mcells <> mcells
-  // {mcells:?} <> {mcells:?}"# );
-  //     println!( "mcells : {mcells:?} | mcells : {mcells:?} | mcells_vis : {mcells_vis:?}" );
-
-      let mut x = InputExtract::< '_ >
+      let x = InputExtract::< '_ >
       {
         mcells,
         mcells_vis,
@@ -552,41 +528,7 @@ mod private
         row_descriptors,
         data,
         has_header,
-        slices_dim,
-        slices,
       };
-
-      // extract slices
-
-      let mut slices : Vec< &str > = vec![];
-      std::mem::swap( &mut x.slices, &mut slices );
-
-      let mut irow : isize = -1;
-      for row_data in x.data.iter()
-      {
-
-        irow += 1;
-
-        for icol in 0 .. x.col_descriptors.len()
-        {
-          let cell = &row_data[ icol ];
-          string::lines( cell.0.as_ref() )
-          .enumerate()
-          .for_each( | ( layer, s ) |
-          {
-            let md_index = [ layer, icol, irow as usize ];
-            slices[ x.slices_dim.md_offset( md_index ) ] = s;
-          })
-          ;
-          if irow == 0
-          {
-            x.col_descriptors[ icol ].label = cell.0.as_ref();
-          }
-        }
-
-      }
-
-      std::mem::swap( &mut x.slices, &mut slices );
 
       return callback( &x );
     }

@@ -16,6 +16,7 @@ use print::
   InputExtract,
   Context,
 };
+use std::borrow::Cow;
 use core::
 {
   fmt,
@@ -163,8 +164,6 @@ impl TableOutputFormat for Table
 {
   fn extract_write< 'buf, 'data >( &self, x : &InputExtract< 'data >, c : &mut Context< 'buf > ) -> fmt::Result
   {
-    use md_math::MdOffset;
-
     let cell_prefix = &self.cell_prefix;
     let cell_postfix = &self.cell_postfix;
     let cell_separator = &self.cell_separator;
@@ -173,114 +172,134 @@ impl TableOutputFormat for Table
     let row_separator = &self.row_separator;
     let h = self.h.to_string();
 
-    let mut delimitting_header = self.delimitting_header;
-    let row_width = if delimitting_header
+    let data = wrap_text( &x.data, self.max_width );
+
+    let column_count = x.header().count();
+
+    let mut col_width : Vec< usize > = vec![ 0; column_count ];
+
+    for row in data.iter()
     {
-      let mut grid_width = x.mcells_vis[ 0 ] * ( cell_prefix.chars().count() + cell_postfix.chars().count() );
-      grid_width += row_prefix.chars().count() + row_postfix.chars().count();
-      if x.mcells_vis[ 0 ] > 0
+      for ( icol, col ) in row.iter().enumerate()
       {
-        grid_width += ( x.mcells_vis[ 0 ] - 1 ) * ( cell_separator.chars().count() );
+        col_width[ icol ] = col_width[ icol ].max( col.content.chars().count() );
       }
-      x.mchars[ 0 ] + grid_width
     }
-    else
+
+    let max_row_width = col_width.iter().sum::<usize>()
+    + self.row_prefix.chars().count()
+    + self.row_postfix.chars().count()
+    + column_count * ( self.cell_postfix.chars().count() + self.cell_prefix.chars().count() )
+    + if column_count == 0 { 0 } else { ( column_count - 1 ) * self.cell_separator.chars().count() };
+
+    let mut actual_rows = 0;
+
+    for row in data.iter()
     {
-      0
-    };
-    let mut prev_typ : Option< LineType > = None;
-
-    // dbg!( x.row_descriptors.len() );
-
-    for ( irow, row ) in x.row_descriptors.iter().enumerate()
-    {
-      let height = row.height;
-
-      if delimitting_header
+      if actual_rows == 1 && x.has_header && self.delimitting_header
       {
-        if let Some( prev_typ ) = prev_typ
-        {
-          if prev_typ == LineType::Header && row.typ == LineType::Regular
-          {
-            write!( c.buf, "{}", row_separator )?;
-            write!( c.buf, "{}", h.repeat( row_width ) )?;
-            delimitting_header = false
-          }
-        }
-        if row.vis
-        {
-          prev_typ = Some( row.typ );
-        }
+        write!( c.buf, "{}", row_separator )?;
+        write!( c.buf, "{}", h.repeat( max_row_width ) )?;
+      }
+      
+      if actual_rows > 0
+      {
+        write!( c.buf, "{}", row_separator )?;
       }
 
-      if !row.vis
+      actual_rows += 1;
+
+      write!( c.buf, "{}", row_prefix )?;
+
+      for ( icol, col ) in row.iter().enumerate()
       {
-        continue;
-      }
+        let cell_width = col.wrap_width;
+        let col_width = col_width[ icol ];
+        let slice_width = col.content.chars().count();
 
-      // dbg!( row.height );
-
-      for islice in 0..height
-      {
-
-        if irow > 0
+        if icol > 0
         {
-          write!( c.buf, "{}", row_separator )?;
+          write!( c.buf, "{}", cell_separator )?;
         }
 
-        write!( c.buf, "{}", row_prefix )?;
+        write!( c.buf, "{}", cell_prefix )?;
+        
+        let lspaces = ( col_width - cell_width ) / 2;
+        let rspaces = ( ( col_width - cell_width ) as f32 / 2 as f32 ).round() as usize + cell_width - slice_width;
 
-        for icol in 0 .. x.col_descriptors.len()
+        if lspaces > 0
         {
-          let col = &x.col_descriptors[ icol ];
-          let cell_width = x.data[ irow ][ icol ].1[0];
-          let width = col.width;
-          let md_index = [ islice, icol, irow as usize ];
-          let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
+          write!( c.buf, "{:<width$}", " ", width = lspaces )?;
+        }
+        
+        write!( c.buf, "{}", col.content )?;
 
-          // println!( "md_index : {md_index:?} | md_offset : {} | slice : {slice}", x.slices_dim.md_offset( md_index ) );
-
-          if icol > 0
-          {
-            write!( c.buf, "{}", cell_separator )?;
-          }
-
-          write!( c.buf, "{}", cell_prefix )?;
-
-          println!( "icol : {icol} | irow : {irow} | width : {width} | cell_width : {cell_width} | slice.len() : {}", slice.len() );
-
-          let lspaces = if cell_width > width {
-            0
-          } else {
-            ( width - cell_width ) / 2
-          };
-          
-          let rspaces = if (cell_width > width) || (slice.len() > cell_width) {
-            0
-          } else {
-            ( width - cell_width + 1 ) / 2 + cell_width - slice.len()
-          };
-          
-          // println!( "icol : {icol} | irow : {irow} | width : {width} | cell_width : {cell_width} | lspaces : {lspaces} | rspaces : {rspaces}" );
-
-          if lspaces > 0
-          {
-            write!( c.buf, "{:<width$}", " ", width = lspaces )?;
-          }
-          write!( c.buf, "{}", slice )?;
-          if rspaces > 0
-          {
-            write!( c.buf, "{:>width$}", " ", width = rspaces )?;
-          }
-
-          write!( c.buf, "{}", cell_postfix )?;
+        if rspaces > 0
+        {
+          write!( c.buf, "{:>width$}", " ", width = rspaces )?;
         }
 
-        write!( c.buf, "{}", row_postfix )?;
+        write!( c.buf, "{}", cell_postfix )?;
       }
 
+      write!( c.buf, "{}", row_postfix )?;
     }
 
     Ok(())
   }
+}
+
+#[ derive( Debug ) ]
+struct WrappedCell< 'data >
+{
+  wrap_width : usize,
+  content : Cow< 'data, str >
+}
+
+fn wrap_text< 'data >
+(
+  data: &'data Vec< Vec< Cow< 'data, str > > >,
+  limit: usize
+) 
+-> Vec< Vec< WrappedCell< 'data > > >
+{
+  let mut new_data = Vec::new();
+
+  for ( id, row ) in data
+  {
+    let unwrapped_text : Vec< Vec< Cow< 'data, str > > > = row.iter().map( |c| string::lines_with_limit( c.as_ref(), limit ).map( Cow::from ).collect() ).collect();
+
+    let max_rows = unwrapped_text.iter().map( Vec::len ).max().unwrap_or(0);
+
+    let mut transposed : Vec< Vec< WrappedCell< 'data > > > = Vec::new();
+
+    if max_rows == 0 
+    {
+      transposed.push( vec![] );
+    }
+    
+    for i in 0..max_rows
+    {
+      let mut row_vec : Vec< WrappedCell< 'data > > = Vec::new();
+
+      for col_lines in &unwrapped_text
+      {
+        if col_lines.len() > i
+        {
+          let wrap_width = col_lines.iter().map( |c| c.len() ).max().unwrap_or(0);
+          row_vec.push( WrappedCell { wrap_width , content : col_lines[ i ].clone() } );
+        }
+        else
+        {
+          row_vec.push( WrappedCell { wrap_width : 0, content : Cow::from( "" ) } );
+        }
+      }
+
+      transposed.push( row_vec );
+    }
+
+    new_data.extend(transposed);
+  }
+
+  new_data
 }

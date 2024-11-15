@@ -190,7 +190,7 @@ impl TableOutputFormat for Records
 
         for islice in 0..height
         {
-          let label = x.header_slice( islice, icol );
+          let label = x.header_slice( icol );
           let md_index = [ islice, icol, irow ];
           let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
 
