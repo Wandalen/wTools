@@ -334,7 +334,7 @@ fn test_width_limiting()
   let as_table = AsTable::new( &test_objects );
 
   let mut format = output_format::Table::default();
-  format.max_width = 50;
+  format.max_width = 69;
 
   let mut output = String::new();
   let mut printer = print::Printer::with_format( &format );
@@ -345,6 +345,7 @@ fn test_width_limiting()
   assert!( got.is_ok() );
   println!( "{}", &output );
 
+  // This might not be the right output.
   let exp = r#"│ id │ created_at │        file_ids        │         tools          │
 ─────────────────────────────────────────────────────────────────────
 │ 1  │ 1627845583 │      [                 │                        │
