@@ -1,27 +1,23 @@
-title: DB information extractor
-
-nodes:
-  - id: question_input
-    type: trigger.stdin
+ nodes:
+  - id: input
+    type: trigger::stdin
     prompt: 'Your query: '
-    next: translator
+    next: node::translator
 
-  - id: thinker
-    type: agent.completion
-    # In real life scenario you should specify here:
-    # - Which DB is used?
-    # - What are the tables and columns?
-    # - Schema of the DB.
+  - id: sql_generator_stage1
+    type: agent::completion
     system_message: 'Your task is to think about how to translate the user query in natural langauge in SQL langauge. Think step by steps.'
-    user_message: '{{question_input}}'
-    next: query
+    user_message: '{{input}}'
+    next: node::sql_generator_stage2
 
-  - id: query
-    type: agent.completion
+  - id: sql_generator_stage2
+    type: agent::completion
     system_message: 'Your task to make an SQL code based on user query in natural language and the results of thinking on that query'.
-    user_message: 'Query: {{question_input}}. Thoughts: {{thinker}}'
+    user_message: '{{sql_generator_stage1}}'
+    agent_reuse: node::sql_generator_stage2
+    next: node::output
 
   - id: output
-    type: event.stdout
-    output: '{{query}}'
-    next: scenario.termination
+    type: event::stdout
+    output: '{{sql_generator_stage2}}'
+    next: scenario::termination

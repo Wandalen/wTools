@@ -10,33 +10,32 @@ description: >
 
 nodes:
   - id: question_input
-    type: trigger.stdin
+    type: trigger::stdin
     prompt: 'Your question: '
     next: answer
 
   - id: answer
-    type: agent.completion
+    type: agent::completion
     system_message: 'You are a helpful Q&A assistant. Answer in English'
     user_message: 'Question: {{question_input}}'
-    next: 
-      - translator
-      - frases_extractor
-      - output # TODO: What will happen if output would be called first (or in paralel to other "next"s) but there is no output of `translator` or `frases_extractor`?
+    next: translator
 
   - id: translator
-    type: agent.completion
+    type: agent::completion
     system_message: 'Translate the input in Ukrainian language'
     user_message: '{{answer}}'
+    next: frases_extractor
     
   - id: frases_extractor
-    type: agent.completion
+    type: agent::completion
     system_message: >
       You have a text in English. Extract unique and interesting frases or words from the text
       that would be useful for English language learner. Present the output as a list of pairs:
       the first element is English phrase and the second is Ukrainian translation.
-    user_message: '{{answer}}'
+    user_message: '{{translator}}'
+    next: output
 
   - id: output
-    type: event.stdout
-    output: 'Answer: {{answer}}'
+    type: event::stdout
+    output: 'Answer: {{answer}}. In Ukrainian: {{translator}}. Words: {{frases_extractor}}'
     next: scenario.termination

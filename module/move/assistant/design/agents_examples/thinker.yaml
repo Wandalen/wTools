@@ -6,21 +6,21 @@ description: >
 
 nodes:
   - id: question_input
-    type: trigger.stdin
+    type: trigger::stdin
     prompt: 'Your question: '
     next: cleaner
 
   - id: thinker
-    type: agent.completion
+    type: agent::completion
     system_message: > # This system prompt could be improved more, but for the sake of the example, we will leave it simple.
       You are a methodical and knowledgeable assistant tasked with answering user questions thoroughly using a
       chain-of-thought approach. Break down complex queries into components, outline a logical plan, and explain
       each step in detail with examples or analogies as needed.
     user_message: '{{question_input}}'
-    next: answer
+    next: summarizer
 
   - id: summarizer
-    type: agent.completion
+    type: agent::completion
     system_message: >
       You are a summarizer tasked with distilling detailed responses into clear, concise summaries.
       Capture key points and main conclusions, removing unnecessary details while preserving essential meaning and logical flow.
@@ -31,4 +31,4 @@ nodes:
   - id: output
     type: event.stdout
     output: 'Answer: {{summarizer}}'
-    next: scenario.termination
+    next: scenario::termination

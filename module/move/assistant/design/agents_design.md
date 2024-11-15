@@ -8,11 +8,45 @@ Main description of such system is writen using **YAML**.
 
 The system consists of **nodes** and **edges**.
 
-Currently, we assume that the only information type passed between nodes is **single text** and nodes are connected as a direct acyclic graph (DAC). Node can take input from several nodes, but it can generate only 1 output.
+Currently, we assume that the only information type passed between nodes is **single text** and nodes are connected as a direct acyclic graph (DAC). Node can take input from other nodes, but it can generate only 1 output.
 
 In future, we can support other types like *list of strings*. *booleans*; we can deliver input to several nodes *in parallel*, etc.
 
-## Nodes
+## YAML description structure
+
+Please refer to `examples/` directory.
+
+## Paths
+
+In several places in YAML file there are values of **paths**. Paths resemble paths in a real file system, parts are delimited with `::`. Absolute path starts from `::`.\
+
+Examples of paths:
+
+- `output`: relative path to single element `output`.
+- `event::stdout`: relative path to `stdout` through `event`.
+- `::trigger::stdin`: absolute path to `stdin` through `trigger`.
+
+Places where paths are used:
+
+- In nodes - `type`: type of the node. Different types of nodes live in different dirs.
+- In nodes - `next`: to which node pass the execution. Nodes live in `::nodes` dir.
+- In nodes - `agent_reuse`: reuse conversation history of previous agent.
+- In templates - `{{...}}`: take output from the node. Output of nodes live in `::output` dir.
+
+All paths (expect absolute) **are subject to absolutization**. This means that every relative path will be implicitly turned out to absolute path. In case of any ambiguities an error will be thrown. Absolutization also depends on the context: in `next` fields paths are absolutized to `::nodes` dir, in templates - to `::output` and so on.
+
+## Execution
+
+YAML file contains section about `nodes:`. You can think of them as statements in a programming language. Next statement is encoded in `next:` field. Output of the nodes are stored in `::output` dir.
+
+## Scenarios referencing
+
+There are two builtin scenarios:
+
+- `::scenario::entry`
+- `::scenario::termination`
+
+## Detailed description of nodes
 
 Each node has an `id` property (its name) and a `type` property.
 
@@ -109,7 +143,3 @@ Current **types**:
 **Description**: when the process of execution is passed to this node, the whole program of the multi-agent system terminates.
 
 This node is **implicitly present in every graph**, and to call it you just need to fill `next:` with the `scenario.terminate`.
-
-## YAML description structure
-
-Please refer to `examples/` directory.
