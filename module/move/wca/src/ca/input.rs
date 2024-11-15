@@ -1,7 +1,6 @@
 mod private
 {
-  use std::io;
-  use std::io::Write;
+  use std::io::{ self, Write };
 
   /// Ask use input from standard input.
   pub fn ask( request : &str ) -> String

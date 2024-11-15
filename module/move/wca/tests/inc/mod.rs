@@ -15,6 +15,5 @@ mod executor;
 #[ cfg( not( feature = "no_std" ) ) ]
 mod commands_aggregator;
 
-// qqq : for Bohdan : why commented out? resolve
-// #[ cfg( not( feature = "no_std" ) ) ]
-// mod adapter;
+// aaa : for Bohdan : why commented out? resolve
+// aaa : no longer relevant, so removed

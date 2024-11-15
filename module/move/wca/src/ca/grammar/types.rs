@@ -6,9 +6,6 @@ mod private
     Display,
     Formatter
   };
-  // use wtools;
-  // use wtools::{ error::Result, err };
-  use error::err;
   use iter_tools::Itertools;
 
   /// Available types that can be converted to a `Value`
@@ -119,7 +116,7 @@ mod private
         }
         Value::List( list ) =>
         {
-          let list = list.iter().map( | element | element.to_string() ).join( "," ); // qqq : don't hardcode ", " find way to get original separator
+          let list = list.iter().map( | element | element.to_string() ).join( "," );
           write!( f, "{list}" )?;
         }
       }

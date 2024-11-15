@@ -33,7 +33,7 @@ fn main()
   .perform()
   ;
 
-  // aaa : qqq2 : for Bohdan : that should work
+  // aaa : aaa2 : for Bohdan : that should work
   // let ca = wca::CommandsAggregator::former()
   // .command( "echo" )
   //   .hint( "prints all subjects and properties" )

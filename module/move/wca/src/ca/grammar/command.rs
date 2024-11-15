@@ -2,7 +2,7 @@ mod private
 {
   use crate::*;
 
-  use std::collections::{ HashMap };
+  use std::collections::HashMap;
   use indexmap::IndexMap;
   use former::{ Former, StoragePreform };
   use iter_tools::Itertools;
@@ -35,7 +35,7 @@ mod private
   pub struct PropertyDescription
   {
     name : String,
-    // qqq : how to re-use ValueDescriptionFormer without additional end?
+    // xxx : how to re-use ValueDescriptionFormer without additional end?
     // #[subform_scalar]
     // value : ValueDescription,
     /// providing guidance to the user for entering a valid value
@@ -103,7 +103,8 @@ mod private
     /// Map of aliases.
     // Aliased key -> Original key
     pub properties_aliases : HashMap< String, String >,
-    // qqq : make it usable and remove default(?)
+    // aaa : make it usable and remove default(?)
+    // aaa : it is usable
     /// The type `Routine` represents the specific implementation of the routine.
     #[ scalar( setter = false ) ]
     #[ former( default = Routine::from( Handler::< _, std::convert::Infallible >::from( || { panic!( "No routine available: A handler function for the command is missing" ) } ) ) ) ]

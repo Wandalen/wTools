@@ -2,13 +2,13 @@ mod private
 {
   use crate::*;
 
-  use ca::grammar::command::ValueDescription;
-  // use former::Former;
+  use ca::
+  {
+    grammar::command::ValueDescription,
+    help::{ HelpGeneratorOptions, LevelOfDetail, generate_help_content },
+  };
   use std::collections::HashMap;
   use indexmap::IndexMap;
-  // use wtools::{ error, error::Result, err };
-  use error::err;
-  use ca::help::{ HelpGeneratorOptions, LevelOfDetail, generate_help_content };
   // xxx
 
   /// Converts a `ParsedCommand` to a `VerifiedCommand` by performing validation and type casting on values.

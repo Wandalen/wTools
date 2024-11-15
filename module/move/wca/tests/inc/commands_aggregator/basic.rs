@@ -52,8 +52,7 @@ tests_impls!
     .perform();
 
     a_id!( (), ca.perform( "." ).unwrap() );
-    // qqq : this use case is disabled
-    // a_id!( (), ca.perform( ".cmd." ).unwrap() );
+    a_id!( (), ca.perform( ".cmd." ).unwrap() );
   }
 
   fn error_types()
@@ -216,7 +215,8 @@ tests_impls!
     a_id!( (), executor.command( dictionary, grammar_command ).unwrap() );
   }
 
-  // qqq : make the following test work
+  // aaa : make the following test work
+  // aaa : works
   fn subject_with_spaces()
   {
     let query = "SELECT title, links, MIN( published ) FROM Frames";

@@ -33,7 +33,7 @@ mod private
   /// }
   /// assert_eq!( 1, *ctx.get::< Mutex< i32 > >().unwrap().lock().unwrap() );
   /// ```
-  // qqq : ?
+  // xxx clarification is needed qqq : поточнити
   #[ derive( Debug, Clone ) ]
   pub struct Context
   {

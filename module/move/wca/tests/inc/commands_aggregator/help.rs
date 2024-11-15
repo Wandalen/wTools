@@ -1,7 +1,10 @@
-use std::fs::{DirBuilder, File};
-use std::io::Write;
-use std::path::Path;
-use std::process::{Command, Stdio};
+use std::
+{
+  io::Write,
+  path::Path,
+  fs::{ DirBuilder, File },
+  process::{ Command, Stdio },
+};
 
 pub fn start_sync< AP, Args, Arg, P >
 (

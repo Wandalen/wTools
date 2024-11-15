@@ -2,13 +2,15 @@ mod private
 {
   use crate::*;
 
-  // qqq : group
+  // aaa : group
+  // aaa : done
 
-  use std::collections::HashMap;
-  // use wtools::error::Result;
-
-  use std::{ fmt::Formatter, rc::Rc };
-  // use wtools::anyhow::anyhow;
+  use std::
+  {
+    collections::HashMap,
+    fmt::Formatter,
+    rc::Rc,
+  };
 
   /// Command Args
   ///
@@ -243,7 +245,7 @@ mod private
   ///
   /// - `WithoutContext`: A routine that does not require any context.
   /// - `WithContext`: A routine that requires a context.
-// qqq : for Bohdan : instead of array of Enums, lets better have 5 different arrays of different Routine and no enum
+// xxx clarification is needed : for Bohdan : instead of array of Enums, lets better have 5 different arrays of different Routine and no enum
   // to use statical dispatch
   #[ derive( Clone ) ]
   pub enum Routine
@@ -335,7 +337,7 @@ mod private
     fn into_result( self ) -> error::untyped::Result< () >
     {
       self.map_err( | e | error::untyped::format_err!( "{e:?}" ))
-      // xxx : qqq : ?
+      // xxx : qqq : ? пояснити чому не типізована помилка
     }
   }
 }

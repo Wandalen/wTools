@@ -15,14 +15,12 @@ mod private
     help::{ HelpGeneratorFn, HelpGeneratorOptions, HelpVariants },
   };
 
-  // qqq : group uses
-  use std::collections::HashSet;
-  use std::fmt;
+  use std::
+  {
+    fmt,
+    collections::HashSet
+  };
   use former::StoragePreform;
-  // use wtools::
-  // {
-  // };
-  // use wtools::thiserror;
   use error::
   {
     // Result,
@@ -77,7 +75,7 @@ mod private
     Execution( wError ),
   }
 
-  // xxx : qqq : qqq2 : for Bohdan : one level is obviously redundant
+  // xxx : aaa : aaa2 : for Bohdan : one level is obviously redundant
   // Program< Namespace< ExecutableCommand_ > > -> Program< ExecutableCommand_ >
   // aaa : done. The concept of `Namespace` has been removed
   struct CommandsAggregatorCallback( Box< dyn Fn( &str, &Program< VerifiedCommand > ) > );

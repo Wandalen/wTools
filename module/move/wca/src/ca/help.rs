@@ -19,7 +19,8 @@ mod private
   use error::untyped::format_err;
   use former::Former;
 
-  // qqq : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
+  // aaa : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
+  // aaa : it is
 
   #[ derive( Debug, Default, Copy, Clone, PartialEq, Eq ) ]
   pub enum LevelOfDetail
@@ -63,7 +64,8 @@ mod private
     pub order : Order,
   }
 
-  // qqq : for Barsik : make possible to change properties order
+  // aaa : for Barsik : make possible to change properties order
+  // aaa : order option
   pub fn generate_help_content( dictionary : &Dictionary, o : HelpGeneratorOptions< '_ > ) -> String
   {
     struct Row
