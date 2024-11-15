@@ -326,3 +326,41 @@ fn filter_row_callback()
 //
 
 // xxx : implement test for vector of vectors
+
+#[ test ]
+fn test_width_limiting()
+{
+  let test_objects = test_object::test_objects_gen();
+  let as_table = AsTable::new( &test_objects );
+
+  let mut format = output_format::Table::default();
+  format.max_width = 50;
+
+  let mut output = String::new();
+  let mut printer = print::Printer::with_format( &format );
+  let mut context = print::Context::new( &mut output, printer );
+
+  let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+
+  assert!( got.is_ok() );
+  println!( "{}", &output );
+
+  let exp = r#"│ id │ created_at │        file_ids        │         tools          │
+─────────────────────────────────────────────────────────────────────
+│ 1  │ 1627845583 │      [                 │                        │
+│    │            │          "file1",      │                        │
+│    │            │          "file2",      │                        │
+│    │            │      ]                 │                        │
+│ 2  │     13     │ [                      │ [                      │
+│    │            │     "file3",           │     {                  │
+│    │            │     "file4\nmore detai │         "tool1": "valu │
+│    │            │ ls",                   │ e1",                   │
+│    │            │ ]                      │     },                 │
+│    │            │                        │     {                  │
+│    │            │                        │         "tool2": "valu │
+│    │            │                        │ e2",                   │
+│    │            │                        │     },                 │
+│    │            │                        │ ]                      │"#;
+
+  a_id!( output.as_str(), exp );
+}

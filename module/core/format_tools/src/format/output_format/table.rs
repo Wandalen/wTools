@@ -14,7 +14,6 @@ use crate::*;
 use print::
 {
   InputExtract,
-  RowDescriptor,
   Context,
 };
 use std::borrow::Cow;
@@ -177,34 +176,27 @@ impl TableOutputFormat for Table
     let row_separator = &self.row_separator;
     let h = self.h.to_string();
 
-    let data = wrap_text( &x.data, &x.row_descriptors, self.max_width );
+    let column_count = x.col_descriptors.len();
 
-    let column_count = x.header().count();
-
-    let mut col_width : Vec< usize > = vec![ 0; column_count ];
-
-    for row in data.iter()
-    {
-      for ( icol, col ) in row.iter().enumerate()
-      {
-        col_width[ icol ] = col_width[ icol ].max( col.content.chars().count() );
-      }
-    }
-
-    let max_row_width = col_width.iter().sum::<usize>()
-    + self.row_prefix.chars().count()
+    let unchangable_width = self.row_prefix.chars().count()
     + self.row_postfix.chars().count()
     + column_count * ( self.cell_postfix.chars().count() + self.cell_prefix.chars().count() )
     + if column_count == 0 { 0 } else { ( column_count - 1 ) * self.cell_separator.chars().count() };
 
+    let original_row_width = x.col_descriptors.iter().map( |c| c.width ).sum::<usize>() + unchangable_width;
+
+    let wrapped_text = wrap_text( &x, self.max_width, original_row_width );
+
+    let new_row_width = wrapped_text.col_widthes.iter().sum::<usize>() + unchangable_width;
+
     let mut actual_rows = 0;
 
-    for row in data.iter()
+    for row in wrapped_text.data.iter()
     {
-      if actual_rows == 1 && x.has_header && self.delimitting_header
+      if actual_rows == wrapped_text.first_row_height && x.has_header && self.delimitting_header
       {
         write!( c.buf, "{}", row_separator )?;
-        write!( c.buf, "{}", h.repeat( max_row_width ) )?;
+        write!( c.buf, "{}", h.repeat( new_row_width ) )?;
       }
       
       if actual_rows > 0
@@ -219,9 +211,9 @@ impl TableOutputFormat for Table
       for ( icol, col ) in row.iter().enumerate()
       {
         let cell_width = col.wrap_width;
-        let col_width = col_width[ icol ];
+        let col_width = wrapped_text.col_widthes[ icol ];
         let slice_width = col.content.chars().count();
-
+        
         if icol > 0
         {
           write!( c.buf, "{}", cell_separator )?;
@@ -255,6 +247,14 @@ impl TableOutputFormat for Table
 }
 
 #[ derive( Debug ) ]
+struct WrappedInputExtract< 'data >
+{
+  data: Vec< Vec< WrappedCell< 'data > > >,
+  col_widthes : Vec< usize >,
+  first_row_height : usize,
+}
+
+#[ derive( Debug ) ]
 struct WrappedCell< 'data >
 {
   wrap_width : usize,
@@ -263,26 +263,43 @@ struct WrappedCell< 'data >
 
 fn wrap_text< 'data >
 (
-  data : &'data Vec< Vec< ( Cow< 'data, str >, [ usize; 2 ] ) > >,
-  row_descriptors : &Vec< RowDescriptor >,
-  limit : usize
+  x : &'data InputExtract< 'data >,
+  limit : usize,
+  orig_table_width : usize,
 ) 
--> Vec< Vec< WrappedCell< 'data > > >
+-> WrappedInputExtract< 'data >
 {
+  let mut first_row_height = 0;
   let mut new_data = Vec::new();
+  
+  let mut col_widthes = Vec::new();
 
-  for ( irow, row ) in data.iter().enumerate()
+  for col in &x.col_descriptors
   {
-    let row_descriptor = &row_descriptors[ irow ];
+    let col_width = col.width;
+    let col_limit = ( limit as f32 * ( col_width as f32 / orig_table_width as f32 ) ) as usize;
+    col_widthes.push( if limit == 0 { col_width } else { col_limit.max(1) } );
+  }
+
+  for ( irow, row ) in x.data.iter().enumerate()
+  {
+    let row_descriptor = &x.row_descriptors[ irow ];
 
     if !row_descriptor.vis
     {
       continue;
     }
 
-    let unwrapped_text : Vec< Vec< Cow< 'data, str > > > = row.iter().map( |c| string::lines_with_limit( c.0.as_ref(), limit ).map( Cow::from ).collect() ).collect();
+    let mut wrapped_rows : Vec< Vec< Cow< 'data, str > > > = vec![];
 
-    let max_rows = unwrapped_text.iter().map( Vec::len ).max().unwrap_or(0);
+    for ( icol, col ) in row.iter().enumerate()
+    {
+      let col_limit = col_widthes[ icol ];
+      let wrapped_col = string::lines_with_limit( col.0.as_ref(), col_limit ).map( Cow::from ).collect();
+      wrapped_rows.push( wrapped_col );
+    }
+
+    let max_rows = wrapped_rows.iter().map( Vec::len ).max().unwrap_or(0);
 
     let mut transposed : Vec< Vec< WrappedCell< 'data > > > = Vec::new();
 
@@ -295,7 +312,7 @@ fn wrap_text< 'data >
     {
       let mut row_vec : Vec< WrappedCell< 'data > > = Vec::new();
 
-      for col_lines in &unwrapped_text
+      for col_lines in &wrapped_rows
       {
         if col_lines.len() > i
         {
@@ -311,8 +328,18 @@ fn wrap_text< 'data >
       transposed.push( row_vec );
     }
 
+    if irow == 0
+    {
+      first_row_height += transposed.len();
+    }
+
     new_data.extend(transposed);
   }
 
-  new_data
+  WrappedInputExtract
+  {
+    data: new_data,
+    first_row_height,
+    col_widthes
+  }
 }
