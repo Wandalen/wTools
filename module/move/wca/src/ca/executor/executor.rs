@@ -3,6 +3,10 @@ mod private
   use crate::*;
 
   use ca::help::{ HelpGeneratorOptions, generate_help_content, LevelOfDetail };
+  use verifier::VerifiedCommand;
+  use parser::Program;
+  use grammar::Dictionary;
+  use executor::{ Routine, Context };
 
   // aaa : for Bohdan : how is it useful? where is it used?
   // aaa : `ExecutorType` has been removed

@@ -3,7 +3,6 @@ mod private
   use crate::*;
   use ca::
   {
-    Verifier,
     Executor,
     grammar::command::
     {
@@ -14,6 +13,10 @@ mod private
     },
     help::{ HelpGeneratorFn, HelpGeneratorOptions, HelpVariants },
   };
+  use verifier::{ Verifier, VerifiedCommand };
+  use parser::{ Program, Parser };
+  use grammar::Dictionary;
+  use executor::Context;
 
   use std::
   {
@@ -291,8 +294,8 @@ mod private
 crate::mod_interface!
 {
   exposed use CommandsAggregator;
-  exposed use CommandsAggregatorFormer;
-  exposed use Error;
-  exposed use ValidationError;
+  orphan use CommandsAggregatorFormer;
+  orphan use Error;
+  orphan use ValidationError;
   exposed use Order;
 }

@@ -56,7 +56,7 @@ mod private
   /// # Example:
   ///
   /// ```
-  /// # use wca::{ VerifiedCommand, Value, Args, Props };
+  /// # use wca::{ VerifiedCommand, Value, executor::{ Args, Props } };
   /// # use std::collections::HashMap;
   /// let command = VerifiedCommand
   /// {
@@ -188,11 +188,13 @@ mod private
         Self::Bool => Ok( Value::Bool( match value.as_str() { "1" | "true" => true, "0" | "false" => false, _ => return Err( error::untyped::format_err!( "Can not parse bool from `{}`", value ) ) } ) ),
         Self::List( kind, delimeter ) =>
         {
-          let values = value
+          let values: error::untyped::Result< Vec< Value > > = value
           .split( *delimeter )
           .map( | val | kind.try_cast( val.into() ) )
-          .collect::< error::untyped::Result< Vec< Value > > >()?;
-          // qqq : avoid using fish notation whenever possible. review whole crate
+          .collect();
+          let values = values?;
+          // aaa : avoid using fish notation whenever possible. review whole crate
+          // aaa : done
           Ok( Value::List( values ) )
         },
       }

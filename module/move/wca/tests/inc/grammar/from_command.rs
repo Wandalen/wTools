@@ -1,5 +1,14 @@
 use super::*;
 
+use the_module::
+{
+  parser::Parser,
+
+  Type, Value,
+  grammar::Dictionary,
+  verifier::Verifier,
+};
+
 //
 
 tests_impls!
@@ -13,7 +22,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -45,7 +54,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -92,7 +101,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -121,7 +130,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -156,7 +165,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -184,7 +193,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -223,7 +232,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -268,7 +277,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -297,7 +306,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -328,7 +337,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -369,7 +378,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )

@@ -4,6 +4,7 @@ mod private
   use crate::*;
   use iter_tools::Itertools;
   use ca::aggregator::Order;
+  use grammar::Dictionary;
 
   /// Enum representing the format options for generating help content.
   ///

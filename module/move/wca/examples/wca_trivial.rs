@@ -50,6 +50,6 @@ fn main()
   // ca.execute( input ).unwrap();
   //aaa: works
 
-  let input = std::env::args().skip( 1 ).collect::< Vec< String > >();
+  let input: Vec< String > = std::env::args().skip( 1 ).collect();
   ca.perform( input ).unwrap();
 }

@@ -3,6 +3,7 @@ mod private
   use crate::*;
 
   use std::collections::HashMap;
+  use parser::{ Program, ParsedCommand };
 
   // use error::{ return_err };
 
@@ -27,7 +28,7 @@ mod private
       As : IntoIterator< Item = A >,
       A : Into< String >,
     {
-      let args = args.into_iter().map( Into::into ).collect::< Vec< _ > >();
+      let args: Vec< _ > = args.into_iter().map( Into::into ).collect();
       let mut commands = vec![];
       let mut i = 0;
       while i < args.len()
@@ -174,5 +175,5 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use Parser;
+  orphan use Parser;
 }

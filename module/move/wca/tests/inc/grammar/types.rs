@@ -1,5 +1,5 @@
 use super::*;
-use wca::TryCast;
+use the_module::{ TryCast, Type, Value };
 
 //
 

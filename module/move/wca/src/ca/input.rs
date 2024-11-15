@@ -77,6 +77,6 @@ mod private
 crate::mod_interface!
 {
   exposed use ask;
-  exposed use Input;
-  exposed use IntoInput;
+  orphan use Input;
+  orphan use IntoInput;
 }

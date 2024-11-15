@@ -6,6 +6,7 @@ mod private
   use indexmap::IndexMap;
   use former::{ Former, StoragePreform };
   use iter_tools::Itertools;
+  use executor::{ Routine, Handler };
 
   /// A description of a Value in a command. Used to specify the expected type and provide a hint for the Value.
   ///
@@ -74,7 +75,7 @@ mod private
   /// # Example:
   ///
   /// ```
-  /// # use wca::{ Command, Type };
+  /// # use wca::{ grammar::Command, Type };
   /// let command = Command::former()
   /// .hint( "hint" )
   /// .long_hint( "long_hint" )
@@ -247,8 +248,8 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use Command;
-  exposed use CommandFormer;
+  orphan use Command;
+  orphan use CommandFormer;
   own use ValueDescription;
 
   own use CommandAsSubformer;
@@ -257,4 +258,5 @@ crate::mod_interface!
 
 }
 
-// qqq : use orphan instead of exposed for ALL files in the folder, dont use prelude for structs
+// aaa : use orphan instead of exposed for ALL files in the folder, dont use prelude for structs
+// aaa : done.

@@ -7,15 +7,19 @@ mod private
     grammar::command::ValueDescription,
     help::{ HelpGeneratorOptions, LevelOfDetail, generate_help_content },
   };
+  use grammar::{ Dictionary, Command };
+  use executor::{ Args, Props };
   use std::collections::HashMap;
   use indexmap::IndexMap;
-  
+  use verifier::VerifiedCommand;
+  use parser::{ Program, ParsedCommand };
+
   // xxx
 
   /// Converts a `ParsedCommand` to a `VerifiedCommand` by performing validation and type casting on values.
   ///
   /// ```
-  /// # use wca::{ Command, Type, Verifier, Dictionary, ParsedCommand };
+  /// # use wca::{ Type, verifier::Verifier, grammar::{ Dictionary, Command }, parser::ParsedCommand };
   /// # use std::collections::HashMap;
   /// # fn main() -> Result< (), Box< dyn std::error::Error > >
   /// # {
@@ -52,10 +56,11 @@ mod private
     -> error::untyped::Result< Program< VerifiedCommand > >
     // qqq : use typed error
     {
-      let commands = raw_program.commands
+      let commands: error::untyped::Result< Vec< VerifiedCommand > > = raw_program.commands
       .into_iter()
       .map( | n | self.to_command( dictionary, n ) )
-      .collect::< error::untyped::Result< Vec< VerifiedCommand > > >()?;
+      .collect();
+      let commands = commands?;
 
       Ok( Program { commands } )
     }
@@ -117,7 +122,7 @@ mod private
     {
       let mut subjects = vec![];
 
-      let all_subjects = raw_command
+      let all_subjects: Vec< _ > = raw_command
       .subjects.clone().into_iter()
       .chain
       (
@@ -125,7 +130,7 @@ mod private
         .filter( |( key, _ )| !used_properties.contains( key ) )
         .map( |( key, value )| format!( "{key}:{value}" ) )
       )
-      .collect::< Vec< _ > >();
+      .collect();
       let mut rc_subjects_iter = all_subjects.iter();
       let mut current = rc_subjects_iter.next();
 
@@ -166,7 +171,7 @@ mod private
         |( value_description, key, value )|
         value_description.kind.try_cast( value ).map( | v | ( key.clone(), v ) )
       )
-      .collect::< error::untyped::Result< HashMap< _, _ > > >()
+      .collect()
     }
 
     fn group_properties_and_their_aliases< 'a, Ks >( aliases : &'a HashMap< String, String >, used_keys :  Ks ) -> Vec< &String >
@@ -187,7 +192,7 @@ mod private
       {
         reverse_aliases.get( key ).into_iter().flatten().map( | k | *k ).chain( Some( key ) )
       })
-      .collect::< Vec< _ > >()
+      .collect()
     }
 
     /// Converts raw command to grammatically correct
@@ -251,7 +256,7 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use Verifier;
+  orphan use Verifier;
 
   // own use LevelOfDetail;
   // own use generate_help_content;

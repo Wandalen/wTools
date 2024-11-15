@@ -7,7 +7,7 @@ mod private
   /// # Examples:
   ///
   /// ```
-  /// # use wca::{ Routine, Handler, Context, Value, Args, Props, VerifiedCommand };
+  /// # use wca::{ executor::{ Routine, Handler, Args, Props, Context },  Value, VerifiedCommand };
   /// # use std::sync::{ Arc, Mutex };
   /// let routine = Routine::from( Handler::from
   /// (
@@ -91,5 +91,5 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use Context;
+  orphan use Context;
 }

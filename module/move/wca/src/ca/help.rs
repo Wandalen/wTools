@@ -3,8 +3,6 @@ mod private
   use crate::*;
   use ca::
   {
-    Command,
-    Routine,
     Type,
     formatter::
     {
@@ -13,6 +11,9 @@ mod private
     },
     tool::table::format_table,
   };
+  use verifier::VerifiedCommand;
+  use grammar::{ Command, Dictionary };
+  use executor::Routine;
 
   use iter_tools::Itertools;
   use std::rc::Rc;
@@ -369,7 +370,7 @@ mod private
   ///
   /// ```
   /// # use wca::ca::help::{ HelpGeneratorOptions, HelpGeneratorFn };
-  /// use wca::{ Command, Dictionary };
+  /// use wca::grammar::{ Command, Dictionary };
   ///
   /// fn my_help_generator( dictionary : &Dictionary, args : HelpGeneratorOptions< '_ > ) -> String
   /// {

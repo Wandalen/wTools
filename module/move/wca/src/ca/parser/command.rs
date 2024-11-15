@@ -25,7 +25,7 @@ mod private
   /// # Example:
   ///
   /// ```
-  /// # use wca::ParsedCommand;
+  /// # use wca::parser::ParsedCommand;
   /// # use std::collections::HashMap;
   /// ParsedCommand
   /// {
@@ -57,6 +57,6 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use Program;
-  exposed use ParsedCommand;
+  orphan use Program;
+  orphan use ParsedCommand;
 }

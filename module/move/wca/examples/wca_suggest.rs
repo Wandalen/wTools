@@ -37,7 +37,7 @@ fn main()
     .end()
   .perform();
 
-  let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
+  let args: Vec< String > = std::env::args().skip( 1 ).collect();
   match ca.perform( args.join( " " ) )
   {
     Ok( _ ) => {}
