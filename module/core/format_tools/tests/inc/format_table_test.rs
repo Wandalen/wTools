@@ -343,7 +343,7 @@ fn test_width_limiting()
     format.max_width = width;
 
     let mut output = String::new();
-    let mut printer = print::Printer::with_format( &format );
+    let printer = print::Printer::with_format( &format );
     let mut context = print::Context::new( &mut output, printer );
 
     let got = the_module::TableFormatter::fmt( &as_table, &mut context );
@@ -372,7 +372,7 @@ fn test_error_on_unsatisfiable_limit()
     format.max_width = width;
 
     let mut output = String::new();
-    let mut printer = print::Printer::with_format( &format );
+    let printer = print::Printer::with_format( &format );
     let mut context = print::Context::new( &mut output, printer );
 
     let got = the_module::TableFormatter::fmt( &as_table, &mut context );
@@ -398,7 +398,7 @@ fn test_table_not_grows()
     format.max_width = width;
 
     let mut output = String::new();
-    let mut printer = print::Printer::with_format( &format );
+    let printer = print::Printer::with_format( &format );
     let mut context = print::Context::new( &mut output, printer );
 
     let got = the_module::TableFormatter::fmt( &as_table, &mut context );
@@ -430,10 +430,10 @@ fn calculate_maximum_width() -> usize
   let test_objects = test_object::test_objects_gen();
   let as_table = AsTable::new( &test_objects );
 
-  let mut format = output_format::Table::default();
+  let format = output_format::Table::default();
 
   let mut output = String::new();
-  let mut printer = print::Printer::with_format( &format );
+  let printer = print::Printer::with_format( &format );
   let mut context = print::Context::new( &mut output, printer );
 
   let got = the_module::TableFormatter::fmt( &as_table, &mut context );

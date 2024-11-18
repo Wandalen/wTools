@@ -93,6 +93,20 @@ impl Records
     static INSTANCE : OnceLock< Records > = OnceLock::new();
     INSTANCE.get_or_init( || Records::default() )
   }
+
+  /// Calculate minimum width of the output.
+  pub fn calculate_minimum_width
+  (
+    &self,
+  ) -> usize
+  {
+    self.row_prefix.chars().count()
+    + self.row_postfix.chars().count()
+    + 2 * ( self.cell_postfix.chars().count() + self.cell_prefix.chars().count() )
+    + self.cell_separator.chars().count()
+    + 2
+    // 2 because there are only 2 columns: key and value.
+  }
 }
 
 impl Default for Records
@@ -160,8 +174,15 @@ impl TableOutputFormat for Records
     c : & mut Context< 'buf >,
   ) -> fmt::Result
   {
+    if self.max_width != 0 && self.max_width < self.calculate_minimum_width()
+    {
+      return Err( fmt::Error );
+    }
+
+    // 2 because there are only 2 columns: key and value.
+    let allowed_cell_space = if self.max_width == 0 { 0 } else { self.max_width - self.calculate_minimum_width() + 2 };
+
     let field_names : Vec< ( Cow< 'data, str >, [ usize; 2 ] ) > = x.header().collect();
-    let key_width = x.header().fold( 0, | acc, cell | acc.max( cell.0.chars().count() ) );
 
     write!( c.buf, "{}", self.table_prefix )?;
 
@@ -183,43 +204,29 @@ impl TableOutputFormat for Records
 
       writeln!( c.buf, " = {}", entry_descriptor.irow )?;
 
-      let row = wrap_text( &x.data[ ientry_descriptor ], 0 );
+      let mut wrapped_text = wrap_text( &field_names, &x.data[ ientry_descriptor ], allowed_cell_space );
 
-      let value_width = row.iter().map( |sr| sr.iter().map( |c| c.chars().count() ).max().unwrap_or(0) ).max().unwrap_or(0);
-
-      let mut row_count = 0;
-
-      for ( ifield, field ) in row.iter().enumerate()
+      for ( irow, ( key, value ) ) in wrapped_text.data.iter().enumerate()
       {
-        for ( irow, row ) in field.iter().enumerate()
+        if irow != 0
         {
-          if row_count > 0
-          {
-            write!( c.buf, "{}", self.row_separator )?;
-          }
-          row_count += 1;
-
-          let key = if irow > 0
-          {
-            ""
-          }
-          else
-          {
-            field_names.get( ifield ).map( |c| c.0.as_ref() ).unwrap_or( "" )
-          };
-          
-          write!( c.buf, "{}", self.row_prefix )?;
-
-          write!( c.buf, "{}", self.cell_prefix )?;
-          write!( c.buf, "{:<key_width$}", key )?;
-          write!( c.buf, "{}", self.cell_postfix )?;
-          write!( c.buf, "{}", self.cell_separator )?;
-          write!( c.buf, "{}", self.cell_prefix )?;
-          write!( c.buf, "{:<value_width$}", row )?;
-          write!( c.buf, "{}", self.cell_postfix )?;
-
-          write!( c.buf, "{}", self.row_postfix )?;
+          write!( c.buf, "{}", self.row_separator )?;
         }
+
+        let key_width = wrapped_text.key_width;
+        let value_width = wrapped_text.value_width;
+
+        write!( c.buf, "{}", self.row_prefix )?;
+
+        write!( c.buf, "{}", self.cell_prefix )?;
+        write!( c.buf, "{:<key_width$}", key )?;
+        write!( c.buf, "{}", self.cell_postfix )?;
+        write!( c.buf, "{}", self.cell_separator )?;
+        write!( c.buf, "{}", self.cell_prefix )?;
+        write!( c.buf, "{:<value_width$}", value )?;
+        write!( c.buf, "{}", self.cell_postfix )?;
+
+        write!( c.buf, "{}", self.row_postfix )?;
       }
     }
 
@@ -230,12 +237,68 @@ impl TableOutputFormat for Records
 
 }
 
+#[ derive( Debug ) ]
+struct WrappedInputExtract< 'data >
+{
+  data : Vec< ( &'data str, &'data str ) >,
+  key_width : usize,
+  value_width : usize,
+}
+
 fn wrap_text<'data>
 (
-  data: &'data Vec< ( Cow< 'data, str >, [ usize; 2 ] ) >,
-  limit: usize
+  keys : &'data Vec< ( Cow< 'data, str >, [ usize; 2 ] ) >,
+  values : &'data Vec< ( Cow< 'data, str >, [ usize; 2 ] ) >,
+  allowed_cell_space : usize,
 )
--> Vec< Vec< &'data str > >
+-> WrappedInputExtract< 'data >
 {
-  data.iter().map( |c| string::lines_with_limit( c.0.as_ref(), limit ).collect() ).collect()
+  let mut data = Vec::new();
+  let mut key_width = calculate_width( keys );
+  let mut value_width = calculate_width( values );
+
+  let orig_cell_space = key_width + value_width;
+
+  if allowed_cell_space != 0 && orig_cell_space > allowed_cell_space 
+  {
+    let factor = ( allowed_cell_space as f32 ) / ( orig_cell_space as f32 );
+    key_width = ( ( key_width as f32 ) * factor ).round() as usize;
+    value_width = allowed_cell_space - key_width;
+  }
+
+  for i in 0..values.len()
+  {
+    let key = &keys[ i ];
+    let value = &values[ i ];
+
+    let key_wrapped : Vec< &'data str > = string::lines_with_limit( key.0.as_ref(), key_width ).collect();
+    let value_wrapped : Vec< &'data str > = string::lines_with_limit( value.0.as_ref(), value_width ).collect();
+
+    for j in 0..( key_wrapped.len().max( value_wrapped.len() ) )
+    {
+      let key = key_wrapped.get( j ).copied().unwrap_or( "" );
+      let value = value_wrapped.get( j ).copied().unwrap_or( "" );
+
+      data.push( ( key, value ) );
+    }
+  }
+
+  WrappedInputExtract
+  {
+    data,
+    key_width,
+    value_width,
+  }
+}
+
+fn calculate_width< 'data >
+( 
+  vec : &'data Vec< ( Cow< 'data, str >, [ usize; 2 ] ) >
+)
+-> usize
+{
+  vec.iter().map( |k| 
+  {
+    string::lines( k.0.as_ref() ).map( |l| l.chars().count() ).max().unwrap_or( 0 )
+  } ).max().unwrap_or( 0 )
 }
