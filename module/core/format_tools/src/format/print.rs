@@ -562,6 +562,8 @@ pub mod own
     Context,
     Printer,
     InputExtract,
+    RowDescriptor,
+    ColDescriptor,
   };
 
 }

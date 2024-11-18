@@ -7,24 +7,24 @@ mod private
 
   use std::fmt;
 
-  use format_tools::
-  {
-    AsTable,
-    TableFormatter,
-    output_format,
-  };
+  use format_tools::AsTable;
 
   use crate::*;
   use client::Client;
+
   use debug::FileDataWrap;
-  use actions::openai::Result;
+
+  use actions::openai::{ Result, check_table_style };
+
+  use commands::TableConfig;
+  use util::display_table::display_tabular_data;
 
   /// Report for `openai files list`.
   #[ derive( Debug ) ]
   pub struct ListReport
   {
-    /// Show records as separate tables.
-    pub show_records_as_tables : bool,
+    /// Configure table formatting.
+    pub table_config : TableConfig,
 
     /// Files in OpenAI.
     pub files : Vec< FileDataWrap >
@@ -38,14 +38,7 @@ mod private
       f : &mut fmt::Formatter< '_ >
     ) -> fmt::Result
     {
-      if self.show_records_as_tables
-      {
-        writeln!(f, "{}", AsTable::new( &self.files ).table_to_string_with_format( &output_format::Records::default() ) )
-      }
-      else
-      {
-        writeln!(f, "{}", AsTable::new( &self.files ).table_to_string_with_format( &output_format::Table::default() ) )
-      }
+      display_tabular_data( &AsTable::new( &self.files ), f, &self.table_config )
     }
   }
 
@@ -53,12 +46,14 @@ mod private
   pub async fn action
   (
     client : &Client,
-    show_records_as_tables : bool,
+    table_config : TableConfig,
   ) -> Result < ListReport >
   {
+    check_table_style( &table_config )?;
+
     let response = client.file_list().await?;
     let files = response.data.into_iter().map( FileDataWrap ).collect();
-    Ok( ListReport { show_records_as_tables, files } )
+    Ok( ListReport { table_config, files } )
   }
 
 }

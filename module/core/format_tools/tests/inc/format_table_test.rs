@@ -329,6 +329,25 @@ fn filter_row_callback()
 
 // xxx : implement test for vector of vectors
 
+//
+
+#[ test ]
+fn no_subtract_with_overflow()
+{
+  let test_objects = test_object::test_objects_gen_with_unicode();
+
+  let format = output_format::Table::default();
+  let printer = print::Printer::with_format( &format );
+
+  let as_table = AsTable::new( &test_objects );
+  let mut output = String::new();
+  let mut context = print::Context::new( &mut output, printer );
+
+  let result = the_module::TableFormatter::fmt( &as_table, &mut context );
+
+  assert!( result.is_ok() );
+}
+
 #[ test ]
 fn test_width_limiting()
 {

@@ -9,7 +9,7 @@ mod private
 
   use crate::*;
   use client::Client;
-  use commands::openai_assistants_list;
+  use commands::{ openai_assistants_list, TableConfig };
   
   /// OpenAI assistants.
   #[ derive ( Debug, Subcommand ) ]
@@ -18,9 +18,9 @@ mod private
     /// List OpenAI assistants.
     List
     {
-      /// Show records as separate tables.
-      #[ arg( long, default_value_t = false ) ]
-      show_records_as_tables : bool
+      /// Configure table formatting.
+      #[ clap( flatten ) ]
+      table_config : TableConfig,
     },
   }
 
@@ -33,9 +33,9 @@ mod private
   {
     match command
     {
-      Command::List{ show_records_as_tables } => 
+      Command::List{ table_config } => 
       {
-        openai_assistants_list::command( client, show_records_as_tables ).await;
+        openai_assistants_list::command( client, table_config ).await;
       }
     }
   }

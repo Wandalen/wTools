@@ -26,7 +26,7 @@ async fn main() -> Result< (), Box< dyn Error > >
 
   let secret = Secret::load()?;
 
-  let client = client::client( &secret )?;
+  let client = client( &secret )?;
 
   let cli = Cli::parse();
 

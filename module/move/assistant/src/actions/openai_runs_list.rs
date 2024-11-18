@@ -7,27 +7,27 @@ mod private
 
   use std::fmt;
 
-  use format_tools::
-  {
-    AsTable,
-    TableFormatter,
-    output_format,
-  };
+  use format_tools::AsTable;
 
   use crate::*;
   use client::Client;
+
   use debug::RunObjectWrap;
-  use actions::openai::Result;
+
+  use actions::openai::{ Result, check_table_style };
+
+  use commands::TableConfig;
+  use util::display_table::display_tabular_data;
 
   /// Report for `openai runs list`.
   #[ derive( Debug ) ]
   pub struct ListReport
   {
-    /// Show records as separate tables.
-    pub show_records_as_tables : bool,
+    /// Configure table formatting.
+    pub table_config : TableConfig,
 
     /// Current OpenAI runs.
-    pub runs : Vec< RunObjectWrap >
+    pub runs : Vec< RunObjectWrap >,
   }
 
   impl fmt::Display for ListReport
@@ -38,14 +38,7 @@ mod private
       f : &mut fmt::Formatter< '_ >
     ) -> fmt::Result
     {
-      if self.show_records_as_tables
-      {
-        writeln!(f, "{}", AsTable::new( &self.runs ).table_to_string_with_format( &output_format::Records::default() ) )
-      }
-      else
-      {
-        writeln!(f, "{}", AsTable::new( &self.runs ).table_to_string_with_format( &output_format::Table::default() ) )
-      }
+      display_tabular_data( &AsTable::new( &self.runs ), f, &self.table_config )
     }
   }
 
@@ -54,12 +47,14 @@ mod private
   (
     client : &Client,
     thread_id : String,
-    show_records_as_tables : bool,
+    table_config : TableConfig,
   ) -> Result < ListReport >
   {
+    check_table_style( &table_config )?;
+
     let response = client.list_run( thread_id, None, None, None, None ).await?;
     let runs = response.data.into_iter().map( RunObjectWrap ).collect();
-    Ok( ListReport { show_records_as_tables, runs } )
+    Ok( ListReport { table_config, runs } )
   }
 
 }

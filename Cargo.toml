@@ -492,7 +492,7 @@ version = "~0.2.0"
 path = "module/move/sqlx_query"
 
 [workspace.dependencies.deterministic_rand]
-version = "~0.5.0"
+version = "~0.6.0"
 path = "module/move/deterministic_rand"
 
 [workspace.dependencies.crates_tools]
