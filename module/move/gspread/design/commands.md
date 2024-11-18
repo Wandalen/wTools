@@ -12,16 +12,16 @@ C represents the column (Column)`
 ### Header
 
 ```shell
-main gspread header --url <url> --tab <name>
+gspread header --url <url> --tab <name>
 ```
 
 ### Rows
 ```shell
-main gspread rows --url <url> --tab <name>
+gspread rows --url <url> --tab <name>
 ```
 
 ### Cell
 ```shell
-main gspread cell get --url <url> --tab <name> --cel <notation>
-main gspread cell set --url <url> --tab <name> --cel <notation> --val <value>
+gspread cell get --url <url> --tab <name> --cel <notation>
+gspread cell set --url <url> --tab <name> --cel <notation> --val <value>
 ```

@@ -8,6 +8,7 @@
 mod private
 {
   use crate::*;
+  use debug::row_wrapper::RowWrapper;
   use client::SheetsType;
   use actions::gspread::Result;
   use ser::JsonValue;
