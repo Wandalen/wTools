@@ -13,7 +13,7 @@ mod private
     },
     help::{ HelpGeneratorFn, HelpGeneratorOptions, HelpVariants },
   };
-  use verifier::{ Verifier, VerifiedCommand };
+  use verifier::{ Verifier, VerificationError, VerifiedCommand };
   use parser::{ Program, Parser, ParserError };
   use grammar::Dictionary;
   use executor::Context;
@@ -59,7 +59,7 @@ mod private
     },
     /// This variant represents errors that occur during grammar conversion.
     #[ error( "Can not identify a command.\nDetails: {0}" ) ]
-    Verifier( wError ),
+    Verifier( VerificationError ),
     /// This variant is used to represent errors that occur during executor conversion.
     #[ error( "Can not find a routine for a command.\nDetails: {0}" ) ]
     ExecutorConverter( wError ),
