@@ -102,6 +102,7 @@ Those nodes perform intermediate processing of information. It can be either a m
 - `model`: LLM model name, e.g.: `gpt-4o-mini`, `claude`, etc.
 - `system_message`: system message template.
 - `user_message`: user message template.
+- `agent_reuse`: reuse conversation history from other agent.
 
 `system_message` and `user_message` are templates. Variables available to those templates are **node names**.
 
