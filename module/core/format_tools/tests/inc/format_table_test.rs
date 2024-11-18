@@ -5,9 +5,11 @@ use the_module::
 {
   AsTable,
   WithRef,
+  Fields,
   filter,
   print,
   output_format,
+  string
 };
 
 use std::
@@ -330,38 +332,117 @@ fn filter_row_callback()
 #[ test ]
 fn test_width_limiting()
 {
+  for width in calculate_minimum_width()..calculate_maximum_width()
+  {
+    println!("width: {}", width);
+
+    let test_objects = test_object::test_objects_gen();
+    let as_table = AsTable::new( &test_objects );
+
+    let mut format = output_format::Table::default();
+    format.max_width = width;
+
+    let mut output = String::new();
+    let mut printer = print::Printer::with_format( &format );
+    let mut context = print::Context::new( &mut output, printer );
+
+    let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+
+    assert!( got.is_ok() );
+    
+    for line in string::lines( &output )
+    {
+      assert_eq!( width, line.chars().count() );
+    }
+  }
+}
+
+#[ test ]
+fn test_error_on_unsatisfiable_limit()
+{
+  // 0 is a special value that signifies no limit.
+  for width in 1..( calculate_minimum_width() )
+  {
+    println!( "width: {}", width );
+
+    let test_objects = test_object::test_objects_gen();
+    let as_table = AsTable::new( &test_objects );
+
+    let mut format = output_format::Table::default();
+    format.max_width = width;
+
+    let mut output = String::new();
+    let mut printer = print::Printer::with_format( &format );
+    let mut context = print::Context::new( &mut output, printer );
+
+    let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+
+    assert!( got.is_err() );
+  }
+}
+
+#[ test ]
+fn test_table_not_grows()
+{
+  let expected_width = calculate_maximum_width();
+  
+  // The upper bound was chosen arbitrarily.
+  for width in ( expected_width + 1 )..500
+  {
+    println!( "width: {}", width );
+
+    let test_objects = test_object::test_objects_gen();
+    let as_table = AsTable::new( &test_objects );
+
+    let mut format = output_format::Table::default();
+    format.max_width = width;
+
+    let mut output = String::new();
+    let mut printer = print::Printer::with_format( &format );
+    let mut context = print::Context::new( &mut output, printer );
+
+    let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+
+    assert!( got.is_ok() );
+
+    for line in string::lines( &output )
+    {
+      assert_eq!( expected_width, line.chars().count() );
+    }
+  }
+}
+
+/// Utility function for calculating minimum table width with `test_objects_gen()` with
+/// the default table style.
+fn calculate_minimum_width() -> usize
+{
+  let format = output_format::Table::default();
+  let test_objects = test_object::test_objects_gen();
+  let col_count = test_objects[0].fields().count();
+  
+  format.calculate_minimum_width( col_count )
+}
+
+/// Utility function for calculating default table width with `test_objects_gen()` with
+/// the default table style with table width limit equals to 0.
+fn calculate_maximum_width() -> usize
+{
   let test_objects = test_object::test_objects_gen();
   let as_table = AsTable::new( &test_objects );
 
   let mut format = output_format::Table::default();
-  format.max_width = 69;
 
   let mut output = String::new();
   let mut printer = print::Printer::with_format( &format );
   let mut context = print::Context::new( &mut output, printer );
 
   let got = the_module::TableFormatter::fmt( &as_table, &mut context );
-
   assert!( got.is_ok() );
-  println!( "{}", &output );
 
-  // This might not be the right output.
-  let exp = r#"│ id │ created_at │        file_ids        │         tools          │
-─────────────────────────────────────────────────────────────────────
-│ 1  │ 1627845583 │      [                 │                        │
-│    │            │          "file1",      │                        │
-│    │            │          "file2",      │                        │
-│    │            │      ]                 │                        │
-│ 2  │     13     │ [                      │ [                      │
-│    │            │     "file3",           │     {                  │
-│    │            │     "file4\nmore detai │         "tool1": "valu │
-│    │            │ ls",                   │ e1",                   │
-│    │            │ ]                      │     },                 │
-│    │            │                        │     {                  │
-│    │            │                        │         "tool2": "valu │
-│    │            │                        │ e2",                   │
-│    │            │                        │     },                 │
-│    │            │                        │ ]                      │"#;
+  for line in string::lines( &output )
+  {
+    return line.chars().count();
+  }
 
-  a_id!( output.as_str(), exp );
+  0
 }

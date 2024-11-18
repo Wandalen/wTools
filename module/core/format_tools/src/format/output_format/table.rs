@@ -162,6 +162,20 @@ impl Table
     })
 
   }
+
+  /// Calculate minimum width of the table with specified numbers of columns.
+  pub fn calculate_minimum_width
+  (
+    &self,
+    column_count : usize,
+  ) -> usize
+  {
+    self.row_prefix.chars().count()
+    + self.row_postfix.chars().count()
+    + column_count * ( self.cell_postfix.chars().count() + self.cell_prefix.chars().count() )
+    + if column_count == 0 { 0 } else { ( column_count - 1 ) * self.cell_separator.chars().count() }
+    + column_count
+  }
 }
 
 impl TableOutputFormat for Table
@@ -183,11 +197,20 @@ impl TableOutputFormat for Table
     + column_count * ( self.cell_postfix.chars().count() + self.cell_prefix.chars().count() )
     + if column_count == 0 { 0 } else { ( column_count - 1 ) * self.cell_separator.chars().count() };
 
-    let original_row_width = x.col_descriptors.iter().map( |c| c.width ).sum::<usize>() + unchangable_width;
+    let minimum_acceptable_width = column_count + unchangable_width;
 
-    let wrapped_text = wrap_text( &x, self.max_width, original_row_width );
+    if self.max_width != 0 && ( unchangable_width + column_count > self.max_width )
+    {
+      return Err( fmt::Error );
+    }
 
-    let new_row_width = wrapped_text.col_widthes.iter().sum::<usize>() + unchangable_width;
+    let orig_column_space = x.col_descriptors.iter().map( |c| c.width ).sum::<usize>();
+    
+    let wrapped_text = wrap_text( &x, if self.max_width == 0 { 0 } else { self.max_width - unchangable_width }, orig_column_space );
+
+    let new_column_space = wrapped_text.col_widthes.iter().sum::<usize>();
+
+    let new_row_width = new_column_space + unchangable_width;
 
     let mut actual_rows = 0;
 
@@ -264,21 +287,41 @@ struct WrappedCell< 'data >
 fn wrap_text< 'data >
 (
   x : &'data InputExtract< 'data >,
-  limit : usize,
-  orig_table_width : usize,
+  limit_column_space : usize,
+  orig_column_space : usize,
 ) 
 -> WrappedInputExtract< 'data >
 {
   let mut first_row_height = 0;
   let mut new_data = Vec::new();
-  
   let mut col_widthes = Vec::new();
 
-  for col in &x.col_descriptors
+  if limit_column_space == 0 || limit_column_space >= orig_column_space
   {
-    let col_width = col.width;
-    let col_limit = ( limit as f32 * ( col_width as f32 / orig_table_width as f32 ) ) as usize;
-    col_widthes.push( if limit == 0 { col_width } else { col_limit.max(1) } );
+    col_widthes.extend( x.col_descriptors.iter().map( |d| d.width ) );
+  }
+  else
+  {
+    let shrink_factor: f32 = ( limit_column_space as f32 ) / ( orig_column_space as f32 );
+
+    for ( icol, col ) in x.col_descriptors.iter().enumerate()
+    {
+      let col_width = col.width;
+
+      let col_limit_float = ( col_width as f32 ) * shrink_factor;
+      let col_limit = col_limit_float.floor() as usize;
+
+      let col_width_to_put = if icol == x.col_descriptors.len() - 1
+      {
+        limit_column_space - col_widthes.iter().sum::<usize>()
+      }
+      else
+      {
+        col_limit.max(1)
+      };
+
+      col_widthes.push( col_width_to_put );
+    }
   }
 
   for ( irow, row ) in x.data.iter().enumerate()
