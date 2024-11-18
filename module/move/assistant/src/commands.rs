@@ -6,9 +6,7 @@
 mod private
 {
 
-  use clap::{ Parser, Subcommand, ValueEnum };
-
-  use derive_tools::Display;
+  use clap::{ Parser, Subcommand };
 
   use crate::*;
   use commands::openai;
@@ -31,37 +29,33 @@ mod private
     OpenAi( openai::Command ),
   }
 
-  const DEFAULT_MAX_TABLE_WIDTH: usize = 130;
+  // const DEFAULT_MAX_TABLE_WIDTH: usize = 130;
+  // Commented out as not yet implemented in `format_tools`.
 
   /// Common collection of arguments for formatting tabular data.
   #[ derive( Debug, Parser ) ]
   pub struct TableConfig
   {
     /// Limit table widht.
-    #[ arg( long, default_value_t = DEFAULT_MAX_TABLE_WIDTH ) ]
-    pub max_table_width : usize,
+    // #[ arg( long, default_value_t = DEFAULT_MAX_TABLE_WIDTH ) ]
+    // pub max_table_width : usize,
+    // Commented out as not yet implemented in `format_tools`.
 
-    /// Table style option.
-    #[ arg( long, default_value = "table" ) ]
-    pub style : TableStyle,
+    /// Show tabular data as an ordinary table.
+    #[ arg( long ) ]
+    pub as_table : bool,
+
+    /// Show each record of a tabular data as a separate table.
+    #[ arg( long ) ]
+    pub as_records : bool,
+
+    /// Show only keys (columns) of tabular data.
+    #[ arg( long ) ]
+    pub columns : bool,
 
     /// Filter columns of tabular data.
     #[ arg( long, value_delimiter( ',' ) ) ]
     pub filter_columns : Vec< String >,
-  }
-
-  /// Table style.
-  #[ derive( Debug, Clone, Display, ValueEnum ) ]
-  pub enum TableStyle
-  {
-    /// Show data as an ordinary table.
-    Table,
-
-    /// Show entities as separate tables.
-    AsRecords,
-
-    /// Show only columns of the tables, no records.
-    Columns
   }
 
 }
@@ -81,6 +75,5 @@ crate::mod_interface!
     Cli,
     CliCommand,
     TableConfig,
-    TableStyle,
   };
 }

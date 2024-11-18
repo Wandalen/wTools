@@ -14,7 +14,7 @@ mod private
 
   use debug::RunObjectWrap;
 
-  use actions::openai::Result;
+  use actions::openai::{ Result, check_table_style };
 
   use commands::TableConfig;
   use util::display_table::display_tabular_data;
@@ -50,6 +50,8 @@ mod private
     table_config : TableConfig,
   ) -> Result < ListReport >
   {
+    check_table_style( &table_config )?;
+
     let response = client.list_run( thread_id, None, None, None, None ).await?;
     let runs = response.data.into_iter().map( RunObjectWrap ).collect();
     Ok( ListReport { table_config, runs } )

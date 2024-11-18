@@ -14,7 +14,7 @@ mod private
 
   use debug::FileDataWrap;
 
-  use actions::openai::Result;
+  use actions::openai::{ Result, check_table_style };
 
   use commands::TableConfig;
   use util::display_table::display_tabular_data;
@@ -49,6 +49,8 @@ mod private
     table_config : TableConfig,
   ) -> Result < ListReport >
   {
+    check_table_style( &table_config )?;
+
     let response = client.file_list().await?;
     let files = response.data.into_iter().map( FileDataWrap ).collect();
     Ok( ListReport { table_config, files } )

@@ -16,7 +16,7 @@ mod private
   };
 
   use crate::*;
-  use commands::{ TableConfig, TableStyle };
+  use commands::{ TableConfig };
 
   /// Function for displaying tabular data according to `TableConfig`.
   pub fn display_tabular_data<'a>
@@ -26,23 +26,22 @@ mod private
     table_config : &'a TableConfig,
   ) -> fmt::Result
   {
-      match table_config.style
-      {
-        TableStyle::Table =>
-        {
-          display_table( data, f, &table_config.filter_columns )
-        }
-
-        TableStyle::AsRecords =>
-        {
-          display_records( data, f, &table_config.filter_columns )
-        }
-
-        TableStyle::Columns =>
-        {
-          display_columns( data, f, &table_config.filter_columns )
-        }
-      }
+    if table_config.as_table 
+    {
+      display_table( data, f, &table_config.filter_columns )
+    }
+    else if table_config.as_records
+    {
+      display_records( data, f, &table_config.filter_columns )
+    }
+    else if table_config.columns
+    {
+      display_columns( data, f, &table_config.filter_columns )
+    }
+    else
+    {
+      display_table( data, f, &table_config.filter_columns )
+    }
   }
 
   fn display_table<'a>
