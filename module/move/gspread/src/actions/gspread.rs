@@ -9,13 +9,8 @@ mod private
   use regex::Regex;
   use error_tools::typed::Error;
   use derive_tools::AsRefStr;
-
   use crate::*;
-  use ser::
-  {
-    JsonValue,
-    DisplayFromStr
-  };
+  use ser::DisplayFromStr;
 
   #[ ser::serde_as ]
   #[ derive( Debug, Error, AsRefStr, ser::Serialize ) ]
@@ -50,12 +45,13 @@ mod private
   }
 
   pub type Result< T > = core::result::Result< T, Error >;
-  pub type Value = Vec< Vec< JsonValue > >;
 }
 
-pub use private::
+crate::mod_interface!
 {
-  Result,
-  Value,
-  get_sheetspread_id_from_url
-};
+  own use
+  {
+    Result,
+    get_sheetspread_id_from_url,
+  };
+}

@@ -10,7 +10,6 @@ mod private
   use client::SheetsType;
   use actions;
   use actions::gspread::get_sheetspread_id_from_url;
-  use debug::table_wrapper::Table;
 
   pub async fn command
   (
@@ -23,15 +22,16 @@ mod private
       CommonArgs { url, tab } =>
       {
         let sheetspread_id = get_sheetspread_id_from_url(url.as_str()).unwrap();
-        let result = actions::gspread_get_header::action( hub, sheetspread_id, tab.as_str() ).await;
+        let result = actions::gspread_get_header::action
+          (
+            hub,
+            sheetspread_id,
+            tab.as_str()
+          ).await;
 
         match result
         {
-          Ok( ValueRange ) =>
-          {
-            let table = Table::new( ValueRange );
-            table.display();
-          },
+          Ok( header ) => println!( "Header: \n {}", header ),
           Err( error ) => println!( "Error: {}", error ),
         }
       }
@@ -39,8 +39,11 @@ mod private
   }
 }
 
-pub use private::
+crate::mod_interface!
 {
-  command
-};
+  own use
+  {
+    command
+  };
+}
 

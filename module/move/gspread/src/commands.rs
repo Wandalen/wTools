@@ -2,10 +2,6 @@
 //! Commands
 //!
 
-pub mod gspread;
-pub mod gspread_header;
-mod gspread_rows;
-mod gspread_cells;
 
 mod private
 {
@@ -35,10 +31,17 @@ mod private
 
 }
 
-pub use private::
+crate::mod_interface!
 {
-  Cli,
-  CliCommand,
-};
+  layer gspread;
+  layer gspread_header;
+  layer gspread_rows;
+  layer gspread_cells;
 
+  own use
+  {
+    Cli,
+    CliCommand,
+  };
+}
 

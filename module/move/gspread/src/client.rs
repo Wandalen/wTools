@@ -57,9 +57,12 @@ mod private
 
 }
 
-pub use private::
+crate::mod_interface!
 {
-  hub,
-  Client,
-  SheetsType
-};
+  exposed use
+  {
+    hub,
+    Client,
+    SheetsType
+  };
+}

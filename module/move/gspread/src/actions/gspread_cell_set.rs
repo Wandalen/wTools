@@ -67,7 +67,7 @@ mod private
   }
 }
 
-pub use private::
+crate::mod_interface!
 {
-  action,
-};
+  own use action;
+}

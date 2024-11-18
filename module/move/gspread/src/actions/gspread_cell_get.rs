@@ -7,8 +7,15 @@
 mod private
 {
   use crate::*;
-  use actions::gspread::{ Value, Result };
+  use actions::gspread::Result;
   use client::SheetsType;
+  use crate::ser::JsonValue;
+
+  #[ derive( Debug ) ]
+  pub struct TableReport
+  {
+
+  }
 
   pub async fn action
   (
@@ -16,7 +23,7 @@ mod private
     spreadsheet_id: &str,
     table_name: &str,
     cell_id: &str,
-  ) -> Result< Value >
+  ) -> Result< Vec< Vec< JsonValue > > >
   {
     let result = hub
       .spreadsheets()
@@ -28,7 +35,7 @@ mod private
   }
 }
 
-pub use private::
+crate::mod_interface!
 {
-  action,
-};
+  own use action;
+}

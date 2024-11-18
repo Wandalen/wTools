@@ -79,9 +79,12 @@ mod private
 
 }
 
-pub use private::
+crate::mod_interface!
 {
-  CommonArgs,
-  Command,
-  command,
-};
+  own use
+  {
+    CommonArgs,
+    Command,
+    command,
+  };
+}

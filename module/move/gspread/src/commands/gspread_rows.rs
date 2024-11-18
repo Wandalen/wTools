@@ -10,7 +10,6 @@ mod private
   use client::SheetsType;
   use actions;
   use actions::gspread::get_sheetspread_id_from_url;
-  use debug::table_wrapper::Table;
 
   pub async fn command
   (
@@ -33,11 +32,7 @@ mod private
 
         match result
         {
-          Ok( ValueRange ) =>
-          {
-            let table = Table::new( ValueRange );
-            table.display();
-          },
+          Ok( report ) => println!( "Report: \n {}", report ),
           Err( error ) => println!( "Error: {}", error ),
         }
       }
@@ -45,7 +40,10 @@ mod private
   }
 }
 
-pub use private::
+crate::mod_interface!
 {
-  command,
-};
+  own use
+  {
+    command
+  };
+}

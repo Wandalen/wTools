@@ -1,8 +1,9 @@
-pub mod client;
-pub mod secret;
-pub mod commands;
-pub mod actions;
-mod debug;
+use mod_interface::mod_interface;
+use error_tools::thiserror;
+
+mod private
+{
+}
 
 pub mod ser
 {
@@ -14,4 +15,23 @@ pub mod ser
   pub use serde_json::value::Value as JsonValue;
   pub use serde_json::value::Number as JsonNumber;
   pub use serde_with::*;
+}
+
+crate::mod_interface!
+{
+
+  layer client;
+  layer debug;
+  layer commands;
+  layer actions;
+  layer secret;
+  layer util;
+
+  exposed use ::reflect_tools::
+  {
+    Fields,
+    _IteratorTrait,
+    IteratorTrait,
+  };
+
 }

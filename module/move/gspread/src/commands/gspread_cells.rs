@@ -96,8 +96,11 @@ mod private
   }
 }
 
-pub use private::
+crate::mod_interface!
 {
-  command,
-  Commands,
-};
+  own use
+  {
+    command,
+    Commands,
+  };
+}

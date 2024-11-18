@@ -142,4 +142,18 @@ Either define missing environment variable or make sure `./.key/-env.toml` file 
 
 }
 
-pub use private::Secret;
+crate::mod_interface!
+{
+
+  own use
+  {
+    Error,
+    Result,
+  };
+
+  orphan use
+  {
+    Secret,
+  };
+
+}

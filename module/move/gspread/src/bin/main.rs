@@ -1,5 +1,5 @@
 use std::error::Error;
-
+use std::env;
 use clap::Parser;
 use dotenv::dotenv;
 
