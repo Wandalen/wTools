@@ -202,10 +202,10 @@ impl TableOutputFormat for Table
       return Err( fmt::Error );
     }
 
-    let orig_columns_width = x.col_descriptors.iter().map( |c| c.width ).sum::<usize>();
+    let columns_nowrap_width = x.col_descriptors.iter().map( |c| c.width ).sum::<usize>();
     let visual_elements_width = self.min_width( column_count ) - column_count;
     
-    let wrapped_text = wrap_text( &x, if self.max_width == 0 { 0 } else { self.max_width - visual_elements_width }, orig_columns_width );
+    let wrapped_text = wrap_text( &x, if self.max_width == 0 { 0 } else { self.max_width - visual_elements_width }, columns_nowrap_width );
 
     let new_columns_widthes = wrapped_text.col_widthes.iter().sum::<usize>();
     let new_row_width = new_columns_widthes + visual_elements_width;
@@ -318,28 +318,28 @@ struct WrappedCell< 'data >
 /// Wrap cells in `InputExtract`.
 ///
 /// `InputExtract` contains cells with full content, so it represents the logical
-/// structure of the table.
+/// structure of the table. `WrappedInputExtract` wraps original cells to smaller 
+/// cells. The resulting data is more low-level and corresponds to the table that
+/// will be actually printed to the console (or other output type).
 ///
-/// `WrappedInputExtract` wraps original cells to smaller cells. The resulting data
-/// is more low-level and corresponds to the table that will be actually printed to
-/// the console (or other output type).
+/// Wrapping is controlled by `columns_max_width` and `columns_nowrap_width` parameters.
 ///
-/// Wrapping is controlled by `max_columns_width` and `orig_columns_width` parameters.
-/// `max_columns_width` is the size space that is allowed to be occupied by columns.
+/// - `columns_max_width` is the size space that is allowed to be occupied by columns.
 /// It equals to maximum table width minus lengthes of visual elements (prefixes,
 /// postfixes, separators, etc.).
-/// `orig_columns_width` is the sum of column widthes of cells without wrapping (basically,
+///
+/// - `columns_nowrap_width` is the sum of column widthes of cells without wrapping (basically,
 /// the sum of widthes of column descriptors in `InputExtract`).
 ///
 /// The function will perform wrapping and shrink the columns so that they occupy not
-/// more than `max_columns_width`.
+/// more than `columns_max_width`.
 ///
-/// If `max_columns_width` is equal to 0, then no wrapping will be performed. 
+/// If `columns_max_width` is equal to 0, then no wrapping will be performed. 
 fn wrap_text< 'data >
 (
   x : &'data InputExtract< 'data >,
-  max_columns_width : usize,
-  orig_columns_width : usize,
+  columns_max_width : usize,
+  columns_nowrap_width : usize,
 ) 
 -> WrappedInputExtract< 'data >
 {
@@ -347,13 +347,13 @@ fn wrap_text< 'data >
   let mut new_data = Vec::new();
   let mut col_widthes = Vec::new();
 
-  if max_columns_width == 0 || max_columns_width >= orig_columns_width
+  if columns_max_width == 0 || columns_max_width >= columns_nowrap_width
   {
     col_widthes.extend( x.col_descriptors.iter().map( |d| d.width ) );
   }
   else
   {
-    let shrink_factor : f32 = ( max_columns_width as f32 ) / ( orig_columns_width as f32 );
+    let shrink_factor : f32 = ( columns_max_width as f32 ) / ( columns_nowrap_width as f32 );
 
     for ( icol, col ) in x.col_descriptors.iter().enumerate()
     {
@@ -364,7 +364,7 @@ fn wrap_text< 'data >
 
       let col_width_to_put = if icol == x.col_descriptors.len() - 1
       {
-        max_columns_width - col_widthes.iter().sum::<usize>()
+        columns_max_width - col_widthes.iter().sum::<usize>()
       }
       else
       {

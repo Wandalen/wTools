@@ -185,7 +185,7 @@ impl TableOutputFormat for Records
     }
 
     // 2 because there are only 2 columns: key and value.
-    let max_columns_width = if self.max_width == 0 { 0 } else { self.max_width - self.min_width() + 2 };
+    let columns_max_width = if self.max_width == 0 { 0 } else { self.max_width - self.min_width() + 2 };
 
     let field_names : Vec< ( Cow< 'data, str >, [ usize; 2 ] ) > = x.header().collect();
 
@@ -209,7 +209,7 @@ impl TableOutputFormat for Records
 
       writeln!( c.buf, " = {}", table_descriptor.irow )?;
 
-      let wrapped_text = text_wrap( &field_names, &x.data[ itable_descriptor ], max_columns_width );
+      let wrapped_text = text_wrap( &field_names, &x.data[ itable_descriptor ], columns_max_width );
 
       for ( irow, ( key, value ) ) in wrapped_text.data.iter().enumerate()
       {
@@ -266,26 +266,24 @@ struct WrappedInputExtract< 'data >
 /// Wrap cells in `InputExtract`.
 ///
 /// `InputExtract` contains cells with full content, so it represents the logical
-/// structure of the table.
+/// structure of the table. `WrappedInputExtract` wraps original cells to smaller 
+/// cells. The resulting data is more low-level and corresponds to the table that
+/// will be actually printed to the console (or other output type).
 ///
-/// `WrappedInputExtract` wraps original cells to smaller cells. The resulting data
-/// is more low-level and corresponds to the table that will be actually printed to
-/// the console (or other output type).
-///
-/// Wrapping is controlled by `max_columns_width` parameter.
-/// `max_columns_width` is the size space that is allowed to be occupied by columns.
+/// Wrapping is controlled by `columns_max_width` parameter.
+/// `columns_max_width` is the size space that is allowed to be occupied by columns.
 /// It equals to maximum table width minus lengthes of visual elements (prefixes,
 /// postfixes, separators, etc.).
 ///
 /// The function will perform wrapping and shrink the columns so that they occupy not
-/// more than `max_columns_width`.
+/// more than `columns_max_width`.
 ///
-/// If `max_columns_width` is equal to 0, then no wrapping will be performed. 
+/// If `columns_max_width` is equal to 0, then no wrapping will be performed. 
 fn text_wrap<'data>
 (
   keys : &'data Vec< ( Cow< 'data, str >, [ usize; 2 ] ) >,
   values : &'data Vec< ( Cow< 'data, str >, [ usize; 2 ] ) >,
-  max_columns_width : usize,
+  columns_max_width : usize,
 )
 -> WrappedInputExtract< 'data >
 {
@@ -295,11 +293,11 @@ fn text_wrap<'data>
 
   let orig_columns_width = key_width + value_width;
 
-  if max_columns_width != 0 && orig_columns_width > max_columns_width 
+  if columns_max_width != 0 && orig_columns_width > columns_max_width 
   {
-    let factor = ( max_columns_width as f32 ) / ( orig_columns_width as f32 );
+    let factor = ( columns_max_width as f32 ) / ( orig_columns_width as f32 );
     key_width = ( ( key_width as f32 ) * factor ).round() as usize;
-    value_width = max_columns_width - key_width;
+    value_width = columns_max_width - key_width;
   }
 
   for i in 0..values.len()
@@ -327,7 +325,7 @@ fn text_wrap<'data>
   }
 }
 
-/// Calculate how much width a column of cells occupy without wrapping.
+/// Calculate width of the column without wrapping.
 fn width_calculate< 'data >
 ( 
   column : &'data Vec< ( Cow< 'data, str >, [ usize; 2 ] ) >
