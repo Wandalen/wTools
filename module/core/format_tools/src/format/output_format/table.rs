@@ -163,17 +163,9 @@ impl Table
 
   }
 
-  /// Calculate how much space is needed in order to generate a table output with the specified
+  /// Calculate how much space is minimally needed in order to generate a table output with the specified
   /// number of columns. It will be impossible to render table smaller than the result of
-  /// `min_width`.
-  ///
-  /// Is is the sum of:
-  /// - Length of `row_prefix`.
-  /// - Length of `row_postfix`.
-  /// - Length of `cell_prefix` and `cell_postfix` multiplied by column count.
-  /// - Length of `cell_separator` multiplied by `column_count - 1`.
-  /// - Count of columns (multiplied by 1, because at least one cell should be available to render
-  ///   meaningful information).
+  /// `min_width()`.
   ///
   /// This function is similar to `output_format::Records::min_width`, but it contains a `column_count`
   /// parameter, and it aslo uses the `output_format::Table` style parameters.
@@ -205,47 +197,42 @@ impl TableOutputFormat for Table
 
     let column_count = x.col_descriptors.len();
 
-    let unchangable_width = self.row_prefix.chars().count()
-    + self.row_postfix.chars().count()
-    + column_count * ( self.cell_postfix.chars().count() + self.cell_prefix.chars().count() )
-    + if column_count == 0 { 0 } else { ( column_count - 1 ) * self.cell_separator.chars().count() };
-
-    if self.max_width != 0 && ( unchangable_width + column_count > self.max_width )
+    if self.max_width != 0 && ( self.min_width( column_count ) > self.max_width )
     {
       return Err( fmt::Error );
     }
 
-    let orig_column_space = x.col_descriptors.iter().map( |c| c.width ).sum::<usize>();
+    let orig_columns_width = x.col_descriptors.iter().map( |c| c.width ).sum::<usize>();
+    let visual_elements_width = self.min_width( column_count ) - column_count;
     
-    let wrapped_text = wrap_text( &x, if self.max_width == 0 { 0 } else { self.max_width - unchangable_width }, orig_column_space );
+    let wrapped_text = wrap_text( &x, if self.max_width == 0 { 0 } else { self.max_width - visual_elements_width }, orig_columns_width );
 
-    let new_column_space = wrapped_text.col_widthes.iter().sum::<usize>();
+    let new_columns_widthes = wrapped_text.col_widthes.iter().sum::<usize>();
+    let new_row_width = new_columns_widthes + visual_elements_width;
 
-    let new_row_width = new_column_space + unchangable_width;
-
-    let mut actual_rows = 0;
+    let mut printed_row_count = 0;
 
     for row in wrapped_text.data.iter()
     {
-      if actual_rows == wrapped_text.first_row_height && x.has_header && self.delimitting_header
+      if printed_row_count == wrapped_text.first_row_height && x.has_header && self.delimitting_header
       {
         write!( c.buf, "{}", row_separator )?;
         write!( c.buf, "{}", h.repeat( new_row_width ) )?;
       }
       
-      if actual_rows > 0
+      if printed_row_count > 0
       {
         write!( c.buf, "{}", row_separator )?;
       }
 
-      actual_rows += 1;
+      printed_row_count += 1;
 
       write!( c.buf, "{}", row_prefix )?;
 
       for ( icol, col ) in row.iter().enumerate()
       {
-        let cell_width = col.wrap_width;
-        let col_width = wrapped_text.col_widthes[ icol ];
+        let cell_wrapped_width = col.wrap_width;
+        let column_width = wrapped_text.col_widthes[ icol ];
         let slice_width = col.content.chars().count();
         
         if icol > 0
@@ -255,8 +242,8 @@ impl TableOutputFormat for Table
 
         write!( c.buf, "{}", cell_prefix )?;
         
-        let lspaces = ( col_width - cell_width ) / 2;
-        let rspaces = ( ( col_width - cell_width ) as f32 / 2 as f32 ).round() as usize + cell_width - slice_width;
+        let lspaces = ( column_width - cell_wrapped_width ) / 2;
+        let rspaces = ( ( column_width - cell_wrapped_width ) as f32 / 2 as f32 ).round() as usize + cell_wrapped_width - slice_width;
 
         if lspaces > 0
         {
@@ -320,7 +307,7 @@ struct WrappedInputExtract< 'data >
 ///
 /// The first case seems to be properly formatted, while the second case took centering
 /// too literally. That is why `wrap_width` is introduced, and additional spaces to the 
-/// right side will be included in the output formatter.
+/// right side will be included by the output formatter.
 #[ derive( Debug ) ]
 struct WrappedCell< 'data >
 {
@@ -328,25 +315,31 @@ struct WrappedCell< 'data >
   content : Cow< 'data, str >
 }
 
-/// Convert `InputExtract` data to properly wrapped table that is suitable for displaying.
-/// `InputExtract` contains logical data of the table but it does not perform wrapping of
-/// the cells (as wrapped text will be represented by new rows).
+/// Wrap cells in `InputExtract`.
 ///
-/// Wrapping is controlled by `limit_column_space` and `orig_column_space` parameters.
-/// `orig_column_space` is the size occupied column widthes of original tabular data.
-/// `limit_column_space` is the size space that is allowed to be occupied by columns.
+/// `InputExtract` contains cells with full content, so it represents the logical
+/// structure of the table.
+///
+/// `WrappedInputExtract` wraps original cells to smaller cells. The resulting data
+/// is more low-level and corresponds to the table that will be actually printed to
+/// the console (or other output type).
+///
+/// Wrapping is controlled by `max_columns_width` and `orig_columns_width` parameters.
+/// `max_columns_width` is the size space that is allowed to be occupied by columns.
+/// It equals to maximum table width minus lengthes of visual elements (prefixes,
+/// postfixes, separators, etc.).
+/// `orig_columns_width` is the sum of column widthes of cells without wrapping (basically,
+/// the sum of widthes of column descriptors in `InputExtract`).
 ///
 /// The function will perform wrapping and shrink the columns so that they occupy not
-/// more than `limit_column_space`.
+/// more than `max_columns_width`.
 ///
-/// When you use this function, do not forget that it accepts column space, but not the
-/// maximum width of the table. It means that to calculate allowed space you need to subtract
-/// lengthes of visual elements (prefixes, postfixes, separators, etc.) from the maximum width.
+/// If `max_columns_width` is equal to 0, then no wrapping will be performed. 
 fn wrap_text< 'data >
 (
   x : &'data InputExtract< 'data >,
-  limit_column_space : usize,
-  orig_column_space : usize,
+  max_columns_width : usize,
+  orig_columns_width : usize,
 ) 
 -> WrappedInputExtract< 'data >
 {
@@ -354,13 +347,13 @@ fn wrap_text< 'data >
   let mut new_data = Vec::new();
   let mut col_widthes = Vec::new();
 
-  if limit_column_space == 0 || limit_column_space >= orig_column_space
+  if max_columns_width == 0 || max_columns_width >= orig_columns_width
   {
     col_widthes.extend( x.col_descriptors.iter().map( |d| d.width ) );
   }
   else
   {
-    let shrink_factor: f32 = ( limit_column_space as f32 ) / ( orig_column_space as f32 );
+    let shrink_factor : f32 = ( max_columns_width as f32 ) / ( orig_columns_width as f32 );
 
     for ( icol, col ) in x.col_descriptors.iter().enumerate()
     {
@@ -371,7 +364,7 @@ fn wrap_text< 'data >
 
       let col_width_to_put = if icol == x.col_descriptors.len() - 1
       {
-        limit_column_space - col_widthes.iter().sum::<usize>()
+        max_columns_width - col_widthes.iter().sum::<usize>()
       }
       else
       {

@@ -351,15 +351,15 @@ fn test_width_limiting()
 {
   use the_module::string;
 
-  for width in min_width()..max_width()
+  for max_width in min_width()..max_width()
   {
-    println!("width: {}", width);
+    println!("max_width: {}", max_width);
 
     let test_objects = test_object::test_objects_gen();
     let as_table = AsTable::new( &test_objects );
 
     let mut format = output_format::Table::default();
-    format.max_width = width;
+    format.max_width = max_width;
 
     let mut output = String::new();
     let printer = print::Printer::with_format( &format );
@@ -371,7 +371,7 @@ fn test_width_limiting()
     
     for line in string::lines( &output )
     {
-      assert_eq!( width, line.chars().count() );
+      assert_eq!( max_width, line.chars().count() );
     }
   }
 }
@@ -379,16 +379,16 @@ fn test_width_limiting()
 #[ test ]
 fn test_error_on_unsatisfiable_limit()
 {
-  // 0 is a special value that signifies no limit.
-  for width in 1..( min_width() )
+  // 0 is a special value that signifies no limit. Therefore, the lower bound is 1.
+  for max_width in 1..( min_width() )
   {
-    println!( "width: {}", width );
+    println!( "max_width: {}", max_width );
 
     let test_objects = test_object::test_objects_gen();
     let as_table = AsTable::new( &test_objects );
 
     let mut format = output_format::Table::default();
-    format.max_width = width;
+    format.max_width = max_width;
 
     let mut output = String::new();
     let printer = print::Printer::with_format( &format );
@@ -408,15 +408,15 @@ fn test_table_not_grows()
   let expected_width = max_width();
   
   // The upper bound was chosen arbitrarily.
-  for width in ( expected_width + 1 )..500
+  for max_width in ( expected_width + 1 )..500
   {
-    println!( "width: {}", width );
+    println!( "max_width: {}", max_width );
 
     let test_objects = test_object::test_objects_gen();
     let as_table = AsTable::new( &test_objects );
 
     let mut format = output_format::Table::default();
-    format.max_width = width;
+    format.max_width = max_width;
 
     let mut output = String::new();
     let printer = print::Printer::with_format( &format );
