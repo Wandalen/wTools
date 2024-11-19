@@ -1,6 +1,6 @@
 //! Primary tests.
 
-#![ feature( trace_macros ) ]
+// #![ feature( trace_macros ) ]
 #![ allow( unused_imports ) ]
 
 use format_tools as the_module;
