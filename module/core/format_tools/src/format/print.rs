@@ -414,6 +414,11 @@ mod private
       )
     }
 
+    /// Extract input data from a table that is constructed with vectors and `Cow`s and collect
+    /// it in a format consumable by output formatter.
+    ///
+    /// `rows` should not contain header of the table, it will be automatically added if `has_header`
+    /// is true.
     pub fn extract_from_raw_table< 'context >
     (
       column_names : Vec< Cow< 'data, str > >,

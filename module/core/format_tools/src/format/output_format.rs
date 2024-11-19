@@ -32,6 +32,8 @@
 mod private
 {
 
+  use std::borrow::Cow;
+
   use crate::*;
   use print::
   {
@@ -78,56 +80,30 @@ mod private
     }
   }
 
-  /*
-  pub fn table_data_write< 'buf, 'data, 'context >
+  /// Print table, which is constructed with vectors and `Cow`s, with the
+  /// specified output formatter.
+  ///
+  /// This function is useful when you do not want to use `AsTable`, or implement `Fields`, and
+  /// other traits, but you just have string slices in vectors.
+  ///
+  /// `rows` should not contain header of the table, it will be automatically added if `has_header`
+  /// is true.
+  pub fn vector_table_write< 'buf, 'data, 'context >
   (
-    table : &Vec< Vec< Cow< 'data, str > > >,
+    column_names : Vec< Cow< 'data, str > >,
     has_header : bool,
+    rows : Vec< Vec< Cow< 'data, str > > >,
     filter_col : &'context ( dyn FilterCol + 'context ),
     filter_row : &'context ( dyn FilterRow + 'context ),
-    output_format : impl TableOutputFormat,
+    output_format : &impl TableOutputFormat,
     c : &mut Context< 'buf >,
   ) -> fmt::Result
   {
-    struct TableWrapper< 'data >
-    {
-      has_header : bool,
-      data : &'data Vec< Vec< Cow< 'data, str > > >,
-    }
-
-    struct CellsWrapper< 'data >
-    {
-      header : Option< &'data Vec< Cow< 'data, str
-      data : &'data Vec< Cow< 'data, str > >,
-    }
-
-    impl Cells< str > for CellsWrapper
-    {
-      fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, Option< Cow< 'b, str > > ) >
-      where
-        'a : 'b,
-        CellKey : 'b,
-      {
-        self.data.iter().map( | c |  )
-      }
-    }
-
-    impl TableRows for TableWrapper
-    {
-      fn rows( &self ) -> impl IteratorTrait< Item = &Self::Row >
-      {
-        self.data.iter().skip( if self.has_header { 1 } else { 0 } )
-      }
-    }
-
-    let wrapped_table = TableWrapper { has_header, data : table };
-
-    InputExtract::extract( &wrapped_table, filter_col, filter_row, | x |
+    InputExtract::extract_from_raw_table( column_names, has_header, rows, filter_col, filter_row, | x |
     {
       output_format.extract_write( x, c )
     })
   }
-  */
 
 }
 
@@ -157,6 +133,7 @@ pub mod own
   #[ doc( inline ) ]
   pub use private::
   {
+    vector_table_write,
   };
 
 }
