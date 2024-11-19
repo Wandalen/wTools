@@ -346,13 +346,14 @@ mod private
     {
       if self.has_header
       {
-        self.data[0][icol].0.borrow()
+        self.data[ 0 ][ icol ].0.borrow()
       }
       else
       {
         ""
       }
     }
+
     /// Extract input data from and collect it in a format consumable by output formatter.
     pub fn extract< 't, 'context, Table, RowKey, Row, CellKey>
     (
@@ -368,7 +369,7 @@ mod private
       Table : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey >,
       Table : TableHeader< CellKey = CellKey >,
       RowKey : table::RowKey,
-      Row : Cells< CellKey> + 'data,
+      Row : Cells< CellKey > + 'data,
       CellKey : table::CellKey + ?Sized + 'data,
       // CellRepr : table::CellRepr,
     {

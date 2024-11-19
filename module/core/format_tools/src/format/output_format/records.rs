@@ -94,8 +94,23 @@ impl Records
     INSTANCE.get_or_init( || Records::default() )
   }
 
-  /// Calculate minimum width of the output.
-  pub fn calculate_minimum_width
+  /// Calculate how much space is needed in order to generate an output with this output formatter
+  /// It will be impossible to render tables smaller than the result of `min_width`.
+  ///
+  /// Is is the sum of:
+  /// - Length of `row_prefix`.
+  /// - Length of `row_postfix`.
+  /// - Length of `cell_prefix` and `cell_postfix` multiplied by 2.
+  /// - Length of `cell_separator`
+  /// - Just 2.
+  ///
+  /// 2 here is used as a constant because `output_format::Records` will generate tables only with
+  /// two columns (key and value).
+  ///
+  /// This function is similar to `output_format::Table::min_width`, but it does not contain a
+  /// `column_count` as it always equal to 2, and it aslo uses the `output_format::Table` 
+  /// style parameters.
+  pub fn min_width
   (
     &self,
   ) -> usize
@@ -105,7 +120,6 @@ impl Records
     + 2 * ( self.cell_postfix.chars().count() + self.cell_prefix.chars().count() )
     + self.cell_separator.chars().count()
     + 2
-    // 2 because there are only 2 columns: key and value.
   }
 }
 
@@ -174,13 +188,13 @@ impl TableOutputFormat for Records
     c : & mut Context< 'buf >,
   ) -> fmt::Result
   {
-    if self.max_width != 0 && self.max_width < self.calculate_minimum_width()
+    if self.max_width != 0 && self.max_width < self.min_width()
     {
       return Err( fmt::Error );
     }
 
     // 2 because there are only 2 columns: key and value.
-    let allowed_cell_space = if self.max_width == 0 { 0 } else { self.max_width - self.calculate_minimum_width() + 2 };
+    let allowed_cell_space = if self.max_width == 0 { 0 } else { self.max_width - self.min_width() + 2 };
 
     let field_names : Vec< ( Cow< 'data, str >, [ usize; 2 ] ) > = x.header().collect();
 
@@ -204,7 +218,7 @@ impl TableOutputFormat for Records
 
       writeln!( c.buf, " = {}", entry_descriptor.irow )?;
 
-      let mut wrapped_text = wrap_text( &field_names, &x.data[ ientry_descriptor ], allowed_cell_space );
+      let wrapped_text = text_wrap( &field_names, &x.data[ ientry_descriptor ], allowed_cell_space );
 
       for ( irow, ( key, value ) ) in wrapped_text.data.iter().enumerate()
       {
@@ -237,15 +251,41 @@ impl TableOutputFormat for Records
 
 }
 
+/// Struct that represents a wrapped tabular data. It is similar to `InputExtract`,
+/// but we cannot use it as it does not wrap the text and it contains wrong column
+/// widthes and height (as they are dependent on wrapping, too).
+///
+/// This struct is similar to `output_format::Table::WrappedInputExtract` (which is
+/// private, too), but it is made only for 2 columns, as tables in `Records` contain
+/// only key and value columns.
 #[ derive( Debug ) ]
 struct WrappedInputExtract< 'data >
 {
+  /// Tabular data for display, as `Records` only show 2 columns, we used a tuple here
+  /// instead of a vector.
   data : Vec< ( &'data str, &'data str ) >,
+
+  /// Width of key column.
   key_width : usize,
+
+  /// Width of value column.
   value_width : usize,
 }
 
-fn wrap_text<'data>
+/// Convert `InputExtract` data to properly wrapped table that is suitable for displaying.
+/// `InputExtract` contains logical data of the table but it does not perform wrapping of
+/// the cells (as wrapped text will be represented by new rows).
+///
+/// Wrapping is controlled by `allowed_column_space` parameter.
+/// `allowed_cell_space` is the size space that is allowed to be occupied by columns.
+///
+/// The function will perform wrapping and shrink the columns so that they occupy not
+/// more than `allowed_cell_space`.
+///
+/// When you use this function, do not forget that it accepts column space, but not the
+/// maximum width of the table. It means that to calculate allowed space you need to subtract
+/// lengthes of visual elements (prefixes, postfixes, separators, etc.) from the maximum width.
+fn text_wrap<'data>
 (
   keys : &'data Vec< ( Cow< 'data, str >, [ usize; 2 ] ) >,
   values : &'data Vec< ( Cow< 'data, str >, [ usize; 2 ] ) >,
@@ -254,8 +294,8 @@ fn wrap_text<'data>
 -> WrappedInputExtract< 'data >
 {
   let mut data = Vec::new();
-  let mut key_width = calculate_width( keys );
-  let mut value_width = calculate_width( values );
+  let mut key_width = width_calculate( keys );
+  let mut value_width = width_calculate( values );
 
   let orig_cell_space = key_width + value_width;
 
@@ -291,7 +331,8 @@ fn wrap_text<'data>
   }
 }
 
-fn calculate_width< 'data >
+/// Calculate how much space will a column of cells occupy without wrapping.
+fn width_calculate< 'data >
 ( 
   vec : &'data Vec< ( Cow< 'data, str >, [ usize; 2 ] ) >
 )

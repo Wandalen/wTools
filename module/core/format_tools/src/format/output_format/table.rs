@@ -163,8 +163,21 @@ impl Table
 
   }
 
-  /// Calculate minimum width of the table with specified numbers of columns.
-  pub fn calculate_minimum_width
+  /// Calculate how much space is needed in order to generate a table output with the specified
+  /// number of columns. It will be impossible to render table smaller than the result of
+  /// `min_width`.
+  ///
+  /// Is is the sum of:
+  /// - Length of `row_prefix`.
+  /// - Length of `row_postfix`.
+  /// - Length of `cell_prefix` and `cell_postfix` multiplied by column count.
+  /// - Length of `cell_separator` multiplied by `column_count - 1`.
+  /// - Count of columns (multiplied by 1, because at least one cell should be available to render
+  ///   meaningful information).
+  ///
+  /// This function is similar to `output_format::Records::min_width`, but it contains a `column_count`
+  /// parameter, and it aslo uses the `output_format::Table` style parameters.
+  pub fn min_width
   (
     &self,
     column_count : usize,
@@ -196,8 +209,6 @@ impl TableOutputFormat for Table
     + self.row_postfix.chars().count()
     + column_count * ( self.cell_postfix.chars().count() + self.cell_prefix.chars().count() )
     + if column_count == 0 { 0 } else { ( column_count - 1 ) * self.cell_separator.chars().count() };
-
-    let minimum_acceptable_width = column_count + unchangable_width;
 
     if self.max_width != 0 && ( unchangable_width + column_count > self.max_width )
     {
@@ -269,14 +280,47 @@ impl TableOutputFormat for Table
   }
 }
 
+/// Struct that represents a wrapped tabular data. It is similar to `InputExtract`,
+/// but we cannot use it as it does not wrap the text and it contains wrong column
+/// widthes and height (as they are dependent on wrapping, too).
+///
+/// This struct is similar to `output_format::Records::WrappedInputExtract` (which is
+/// private, too), but it is suited for tabular data with several columns.
 #[ derive( Debug ) ]
 struct WrappedInputExtract< 'data >
 {
+  /// Tabular data of rows and columns.
+  /// Note: these cells does not represent the actual information cells in the 
+  /// original table. These cells are wrapped and used only for displaying. This also
+  /// means that one row in original table can be represented here with one or more
+  /// rows.
   data: Vec< Vec< WrappedCell< 'data > > >,
+
+  /// New widthes of columns that include wrapping.
   col_widthes : Vec< usize >,
+
+  /// Size of the first row of the table.
+  /// This parameter is used in case header of the table should be displayed.
   first_row_height : usize,
 }
 
+/// Struct that represents a content of a wrapped cell.
+/// It contains the slice of the cell as well as its original width.
+///
+/// Parameter `wrap_width` is needed as text in `output_format::Table` is centered.
+/// However it is centered according to whole cell size and not the size of wrapped
+/// text slice.
+/// 
+/// Example that depicts the importance of `wrap_width` parameter:
+/// 
+/// 1) | [        |  2) |    [     |
+///    |   line1, |     |   line1, |
+///    |   line2  |     |   line2  |
+///    | ]        |     |    ]     |
+///
+/// The first case seems to be properly formatted, while the second case took centering
+/// too literally. That is why `wrap_width` is introduced, and additional spaces to the 
+/// right side will be included in the output formatter.
 #[ derive( Debug ) ]
 struct WrappedCell< 'data >
 {
@@ -284,6 +328,20 @@ struct WrappedCell< 'data >
   content : Cow< 'data, str >
 }
 
+/// Convert `InputExtract` data to properly wrapped table that is suitable for displaying.
+/// `InputExtract` contains logical data of the table but it does not perform wrapping of
+/// the cells (as wrapped text will be represented by new rows).
+///
+/// Wrapping is controlled by `limit_column_space` and `orig_column_space` parameters.
+/// `orig_column_space` is the size occupied column widthes of original tabular data.
+/// `limit_column_space` is the size space that is allowed to be occupied by columns.
+///
+/// The function will perform wrapping and shrink the columns so that they occupy not
+/// more than `limit_column_space`.
+///
+/// When you use this function, do not forget that it accepts column space, but not the
+/// maximum width of the table. It means that to calculate allowed space you need to subtract
+/// lengthes of visual elements (prefixes, postfixes, separators, etc.) from the maximum width.
 fn wrap_text< 'data >
 (
   x : &'data InputExtract< 'data >,

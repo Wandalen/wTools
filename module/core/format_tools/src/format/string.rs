@@ -84,35 +84,6 @@ mod private
     [ width, height ]
   }
 
-  pub fn size_with_limit< S : AsRef< str > >
-  (
-    src : S,
-    limit_width : usize,
-  ) 
-  -> [ usize; 2 ]
-  {
-    if limit_width == 0
-    {
-      return size( src );
-    }
-
-    let text = src.as_ref();
-    let mut height = 0;
-    let mut width = 0;
-
-    for line in lines_with_limit( text, limit_width )
-    {
-      height += 1;
-      let line_length = line.len();
-      if line_length > width
-      {
-        width = line_length;
-      }
-    }
-
-    [ width, height ]
-  }
-
   /// Returns an iterator over the lines of a string slice.
   ///
   /// This function provides an iterator that yields each line of the input string slice.
@@ -143,6 +114,37 @@ mod private
     Lines::new( src.as_ref() )
   }
 
+  /// Returns an iterator over the lines of a string slice with text wrapping.
+  ///
+  /// This function provides an iterator that yields each line of the input string slice.
+  /// It is based on previous iterator `lines` but it also includes text wrapping that is
+  /// controlled via `limit_width` argument. If the string contains a trailing new line,
+  /// then an empty string will be yielded in this iterator.
+  ///
+  /// # Arguments
+  ///
+  /// * `src` - A reference to a type that can be converted to a string slice. This allows
+  ///   for flexibility in passing various string-like types.
+  ///
+  /// * `limit_width` - text wrapping limit. Lines that are longer than this parameter will
+  //    be split into smaller lines.
+  ///
+  /// # Returns
+  ///
+  /// An iterator of type `LinesWithLimit` that yields each line as a `&str`.
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// let text = "Hello\nWorld\n";
+  /// let mut lines = format_tools::string::lines_with_limit( text, 3 );
+  /// assert_eq!( lines.next(), Some( "Hel" ) );
+  /// assert_eq!( lines.next(), Some( "lo" ) );
+  /// assert_eq!( lines.next(), Some( "Wor" ) );
+  /// assert_eq!( lines.next(), Some( "ld" ) );
+  /// assert_eq!( lines.next(), Some( "" ) );
+  /// assert_eq!( lines.next(), None );
+  /// ```
   pub fn lines_with_limit< S : AsRef< str > + ?Sized >
   (
     src : & S,
@@ -212,6 +214,15 @@ mod private
     }
   }
 
+  /// An iterator over the lines of a string slice with text wrapping.
+  ///
+  /// This struct implements the `Iterator` trait, allowing you to iterate over the parts
+  /// of a string. It uses `Lines` iterator and splits lines if they are longer that the
+  /// `limit_width` parameter. If the string contains a trailing new line, then an empty
+  /// string will be yielded in this iterator.
+  ///
+  /// If `limit_width` is equal to 0, then no wrapping is applied, and behaviour of this
+  /// iterator is equals to `Lines` iterator.
   #[ derive( Debug ) ]
   pub struct LinesWithLimit< 'a >
   {
@@ -284,7 +295,6 @@ pub mod own
   pub use private::
   {
     size,
-    size_with_limit,
     lines,
     Lines,
     lines_with_limit,

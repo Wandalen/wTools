@@ -5,11 +5,9 @@ use the_module::
 {
   AsTable,
   WithRef,
-  Fields,
   filter,
   print,
   output_format,
-  string,
 };
 
 use std::
@@ -323,7 +321,9 @@ fn filter_row_callback()
 #[ test ]
 fn test_width_limiting()
 {
-  for width in calculate_minimum_width()..calculate_maximum_width()
+  use the_module::string;
+
+  for width in min_width()..max_width()
   {
     println!("width: {}", width);
 
@@ -334,7 +334,7 @@ fn test_width_limiting()
     format.max_width = width;
 
     let mut output = String::new();
-    let mut printer = print::Printer::with_format( &format );
+    let printer = print::Printer::with_format( &format );
     let mut context = print::Context::new( &mut output, printer );
 
     let got = the_module::TableFormatter::fmt( &as_table, &mut context );
@@ -362,7 +362,7 @@ fn test_width_limiting()
 fn test_error_on_unsatisfiable_limit()
 {
   // 0 is a special value that signifies no limit.
-  for width in 1..( calculate_minimum_width() )
+  for width in 1..( min_width() )
   {
     println!( "width: {}", width );
 
@@ -385,7 +385,9 @@ fn test_error_on_unsatisfiable_limit()
 #[ test ]
 fn test_table_not_grows()
 {
-  let expected_width = calculate_maximum_width();
+  use the_module::string;
+
+  let expected_width = max_width();
   
   // The upper bound was chosen arbitrarily.
   for width in ( expected_width + 1 )..500
@@ -421,16 +423,18 @@ fn test_table_not_grows()
 
 /// Utility function for calculating minimum table width with `test_objects_gen()` with
 /// the default table style.
-fn calculate_minimum_width() -> usize
+fn min_width() -> usize
 {
   let format = output_format::Records::default();
-  format.calculate_minimum_width()
+  format.min_width()
 }
 
 /// Utility function for calculating default table width with `test_objects_gen()` with
 /// the default table style with table width limit equals to 0.
-fn calculate_maximum_width() -> usize
+fn max_width() -> usize
 {
+  use the_module::string;
+
   let test_objects = test_object::test_objects_gen();
   let as_table = AsTable::new( &test_objects );
 

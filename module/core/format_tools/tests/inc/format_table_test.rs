@@ -5,11 +5,9 @@ use the_module::
 {
   AsTable,
   WithRef,
-  Fields,
   filter,
   print,
   output_format,
-  string
 };
 
 use std::
@@ -351,7 +349,9 @@ fn no_subtract_with_overflow()
 #[ test ]
 fn test_width_limiting()
 {
-  for width in calculate_minimum_width()..calculate_maximum_width()
+  use the_module::string;
+
+  for width in min_width()..max_width()
   {
     println!("width: {}", width);
 
@@ -380,7 +380,7 @@ fn test_width_limiting()
 fn test_error_on_unsatisfiable_limit()
 {
   // 0 is a special value that signifies no limit.
-  for width in 1..( calculate_minimum_width() )
+  for width in 1..( min_width() )
   {
     println!( "width: {}", width );
 
@@ -403,7 +403,9 @@ fn test_error_on_unsatisfiable_limit()
 #[ test ]
 fn test_table_not_grows()
 {
-  let expected_width = calculate_maximum_width();
+  use the_module::string;
+
+  let expected_width = max_width();
   
   // The upper bound was chosen arbitrarily.
   for width in ( expected_width + 1 )..500
@@ -433,19 +435,23 @@ fn test_table_not_grows()
 
 /// Utility function for calculating minimum table width with `test_objects_gen()` with
 /// the default table style.
-fn calculate_minimum_width() -> usize
+fn min_width() -> usize
 {
+  use the_module::Fields;
+
   let format = output_format::Table::default();
   let test_objects = test_object::test_objects_gen();
   let col_count = test_objects[0].fields().count();
   
-  format.calculate_minimum_width( col_count )
+  format.min_width( col_count )
 }
 
 /// Utility function for calculating default table width with `test_objects_gen()` with
-/// the default table style with table width limit equals to 0.
-fn calculate_maximum_width() -> usize
+/// the default table style without any maximum width.
+fn max_width() -> usize
 {
+  use the_module::string;
+
   let test_objects = test_object::test_objects_gen();
   let as_table = AsTable::new( &test_objects );
 
