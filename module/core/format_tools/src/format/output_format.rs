@@ -32,6 +32,8 @@
 mod private
 {
 
+  use std::borrow::Cow;
+
   use crate::*;
   use print::
   {
@@ -77,6 +79,57 @@ mod private
       super::table::Table::instance()
     }
   }
+
+  /*
+  pub fn table_data_write< 'buf, 'data, 'context >
+  (
+    table : &Vec< Vec< Cow< 'data, str > > >,
+    has_header : bool,
+    filter_col : &'context ( dyn FilterCol + 'context ),
+    filter_row : &'context ( dyn FilterRow + 'context ),
+    output_format : impl TableOutputFormat,
+    c : &mut Context< 'buf >,
+  ) -> fmt::Result
+  {
+    struct TableWrapper< 'data >
+    {
+      has_header : bool,
+      data : &'data Vec< Vec< Cow< 'data, str > > >,
+    }
+
+    struct CellsWrapper< 'data >
+    {
+      header : Option< &'data Vec< Cow< 'data, str
+      data : &'data Vec< Cow< 'data, str > >,
+    }
+
+    impl Cells< str > for CellsWrapper
+    {
+      fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b CellKey, Option< Cow< 'b, str > > ) >
+      where
+        'a : 'b,
+        CellKey : 'b,
+      {
+        self.data.iter().map( | c |  )
+      }
+    }
+
+    impl TableRows for TableWrapper
+    {
+      fn rows( &self ) -> impl IteratorTrait< Item = &Self::Row >
+      {
+        self.data.iter().skip( if self.has_header { 1 } else { 0 } )
+      }
+    }
+
+    let wrapped_table = TableWrapper { has_header, data : table };
+
+    InputExtract::extract( &wrapped_table, filter_col, filter_row, | x |
+    {
+      output_format.extract_write( x, c )
+    })
+  }
+  */
 
 }
 
