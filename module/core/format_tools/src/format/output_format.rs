@@ -32,8 +32,6 @@
 mod private
 {
 
-  use std::borrow::Cow;
-
   use crate::*;
   use print::
   {

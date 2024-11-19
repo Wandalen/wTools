@@ -366,17 +366,15 @@ mod private
     }
 
     /// Extract input data from and collect it in a format consumable by output formatter.
-    pub fn extract< 't, 'context, Table, RowKey, Row, CellKey>
+    pub fn extract< 'context, Table, RowKey, Row, CellKey>
     (
-      table : &'t Table,
+      table : &'data Table,
       filter_col : &'context ( dyn FilterCol + 'context ),
       filter_row : &'context ( dyn FilterRow + 'context ),
       callback : impl for< 'a2 > FnOnce( &'a2 InputExtract< 'a2 > ) -> fmt::Result,
     )
     -> fmt::Result
     where
-      'data : 't,
-      // 't : 'data,
       Table : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey >,
       Table : TableHeader< CellKey = CellKey >,
       RowKey : table::RowKey,
@@ -384,8 +382,32 @@ mod private
       CellKey : table::CellKey + ?Sized + 'data,
       // CellRepr : table::CellRepr,
     {
+      let rows = table.rows().map( | r | r.cells().map( | ( _, c ) | {
+        match c
+        {
+          Some( c ) => c,
+          None => Cow::from( "" ),
+        }
+      }).collect()).collect();
+
+      let has_header = table.header().is_some();
+
+      let column_names = match table.header()
+      {
+        Some( header ) => header.map( | ( k, _ ) | Cow::from( k.borrow() ) ).collect(),
+
+        None => match table.rows().next()
+        {
+          Some( r ) => r.cells().map( | ( k, _ ) | Cow::from( k.borrow() ) ).collect(),
+          None => Vec::new()
+        }
+      };
+
       Self::extract_from_raw_table
       (
+        column_names,
+        has_header,
+        rows,
         filter_col,
         filter_row,
         callback,
