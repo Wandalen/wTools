@@ -401,3 +401,105 @@ fn llist_basic()
 }
 
 // qqq : xxx : implement for other containers
+
+#[ test ]
+fn vec_of_hashmap()
+{
+  let data : Vec< HashMap< String, String > > = vec!
+  [
+    {
+      let mut map = HashMap::new();
+      map.insert( "id".to_string(), "1".to_string() );
+      map.insert( "created_at".to_string(), "1627845583".to_string() );
+      map.insert( "file_ids".to_string(), "[ file1, file2 ]".to_string() );
+      map.insert( "tools".to_string(), "".to_string() );
+      map
+    },
+    {
+      let mut map = HashMap::new();
+      map.insert( "id".to_string(), "2".to_string() );
+      map.insert( "created_at".to_string(), "13".to_string() );
+      map.insert( "file_ids".to_string(), "[ file3, file4 ]".to_string() );
+      map.insert( "tools".to_string(), "tool1".to_string() );
+      map
+    },
+  ];
+
+  use the_module::Fields;
+
+  use std::borrow::Cow;
+
+  // let _ = <HashMap<std::string::String, std::string::String> as Fields<String, Option<Cow<'_, str>>>>::fields(&map);
+
+  use the_module::TableFormatter;
+  let _as_table : AsTable< '_, Vec< HashMap< String, String > >, &str, HashMap< String, String >, str> = AsTable::new( &data );
+
+  /*
+  let as_table = AsTable::new( &data );
+
+  let rows = TableRows::rows( &as_table );
+  assert_eq!( rows.len(), 2 );
+
+  let mut output = String::new();
+  let mut context = the_module::print::Context::new( &mut output, Default::default() );
+
+  let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
+
+  let got = as_table.table_to_string();
+
+  assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
+  assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
+  assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
+  */
+}
+
+#[ test ]
+fn vec_of_hashmap_str()
+{
+  let data : Vec< HashMap< &str, String > > = vec!
+  [
+    {
+      let mut map = HashMap::new();
+      map.insert( "id", "1".to_string() );
+      map.insert( "created_at", "1627845583".to_string() );
+      map.insert( "file_ids", "[ file1, file2 ]".to_string() );
+      map.insert( "tools", "".to_string() );
+      map
+    },
+    {
+      let mut map = HashMap::new();
+      map.insert( "id", "2".to_string() );
+      map.insert( "created_at", "13".to_string() );
+      map.insert( "file_ids", "[ file3, file4 ]".to_string() );
+      map.insert( "tools", "tool1".to_string() );
+      map
+    },
+  ];
+
+  use the_module::Fields;
+
+  use std::borrow::Cow;
+
+  // let _ = <HashMap<std::string::String, std::string::String> as Fields<String, Option<Cow<'_, str>>>>::fields(&map);
+
+  use the_module::TableFormatter;
+  //let _as_table : AsTable< '_, Vec< HashMap< &str, String > >, &str, HashMap< &str, String >, str> = AsTable::new( &data );
+
+  /*
+  let as_table = AsTable::new( &data );
+
+  let rows = TableRows::rows( &as_table );
+  assert_eq!( rows.len(), 2 );
+
+  let mut output = String::new();
+  let mut context = the_module::print::Context::new( &mut output, Default::default() );
+
+  let _got = the_module::TableFormatter::fmt( &as_table, &mut context );
+
+  let got = as_table.table_to_string();
+
+  assert!( got.contains( "│ id │ created_at │          file_ids          │           tools            │" ) );
+  assert!( got.contains( "│     13     │ [                          │ [                          │" ) );
+  assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
+  */
+}

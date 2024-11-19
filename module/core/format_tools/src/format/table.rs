@@ -12,7 +12,11 @@ mod private
     // fmt,
     borrow::Borrow,
   };
-  use std::borrow::Cow;
+  use std::
+  {
+    borrow::Cow,
+    collections::HashMap,
+  };
   use reflect_tools::
   {
     IteratorTrait,
@@ -72,8 +76,11 @@ mod private
 
   // =
 
-  /// Marker trait to tag structures for whcih table trait deducing should be done from trait Fields, which is reflection.
+  /// Marker trait to tag structures for which table trait deducing should be done from trait Fields, which is reflection.
   pub trait TableWithFields {}
+
+  impl TableWithFields for HashMap< String, String > {}
+  impl TableWithFields for HashMap< &str, String > {}
 
   // =
 
