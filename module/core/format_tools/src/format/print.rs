@@ -416,10 +416,9 @@ mod private
         // This type stores these data:
         //                      index     cell data     size of cell
         //                   of the column
-        //
+        let mut fields : Vec< ( usize, Cow< 't, str >, [ usize ; 2 ] ) > = row_iter
         // We have to store index of the column in order to NOT rely on order of the
         // `Cells::cells`.
-        let mut fields : Vec< ( usize, Cow< 't, str >, [ usize ; 2 ] ) > = row_iter
         .filter_map
         (
           | ( key, val ) |
