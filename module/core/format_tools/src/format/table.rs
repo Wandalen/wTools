@@ -79,9 +79,6 @@ mod private
   /// Marker trait to tag structures for which table trait deducing should be done from trait Fields, which is reflection.
   pub trait TableWithFields {}
 
-  impl TableWithFields for HashMap< String, String > {}
-  impl TableWithFields for HashMap< &str, String > {}
-
   // =
 
   /// A trait for iterating over all cells of a row.
@@ -97,6 +94,16 @@ mod private
       'a : 'b,
       CellKey : 'b,
     ;
+  }
+
+  impl Cells< str > for HashMap< String, String >
+  {
+    fn cells< 'a, 'b >( &'a self ) -> impl IteratorTrait< Item = ( &'b str, Option< Cow< 'b, str > > ) >
+    where
+      'a : 'b,
+    {
+      self.iter().map( | ( k, v ) | ( k.as_str(), Some( Cow::from( v ) ) ) )
+    }
   }
 
   impl< Row, CellKey > Cells< CellKey >
@@ -195,7 +202,7 @@ mod private
     > + 'k + 'v,
 
     RowKey : table::RowKey,
-    Row : TableWithFields + Cells< CellKey >,
+    Row : Cells< CellKey >,
     CellKey : table::CellKey + ?Sized,
     // CellRepr : table::CellRepr,
   {
@@ -271,7 +278,7 @@ mod private
   where
     Self : TableRows< RowKey = RowKey, Row = Row, CellKey = CellKey >,
     RowKey : table::RowKey,
-    Row : TableWithFields + Cells< CellKey >,
+    Row : Cells< CellKey >,
     CellKey : table::CellKey + ?Sized,
     // CellRepr : table::CellRepr,
   {

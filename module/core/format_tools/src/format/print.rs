@@ -413,7 +413,13 @@ mod private
         let mut ncol = 0;
         let mut ncol_vis = 0;
 
-        let fields : Vec< ( Cow< 't, str >, [ usize ; 2 ] ) > = row_iter
+        // This type stores these data:
+        //                      index     cell data     size of cell
+        //                   of the column
+        //
+        // We have to store index of the column in order to NOT rely on order of the
+        // `Cells::cells`.
+        let mut fields : Vec< ( usize, Cow< 't, str >, [ usize ; 2 ] ) > = row_iter
         .filter_map
         (
           | ( key, val ) |
@@ -459,10 +465,13 @@ mod private
             });
 
             row.height = row.height.max( sz[ 1 ] );
-            return Some( ( val, sz ) );
+            return Some( ( key_to_ikey[ key ], val, sz ) );
           }
         )
         .collect();
+
+        fields.sort_by( | ( i1, _, _ ), ( i2, _, _ ) | i1.cmp( i2 ) );
+        let fields : Vec< ( Cow< 't, str >, [ usize ; 2 ] ) > = fields.into_iter().map( | ( _, k, v ) | ( k, v ) ).collect();
 
         mcells[ 0 ] = mcells[ 0 ].max( ncol );
         mcells_vis[ 0 ] = mcells_vis[ 0 ].max( ncol_vis );
