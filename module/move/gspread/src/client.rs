@@ -9,7 +9,11 @@ mod private
   use sheets4::Sheets;
   use sheets4::hyper_rustls;
   use sheets4::hyper_util;
-  use sheets4::yup_oauth2::{ self, ApplicationSecret };
+  use sheets4::yup_oauth2::
+  {
+    self,
+    ApplicationSecret
+  };
   use hyper_util::client::legacy::connect::HttpConnector;
 
   pub use hyper_util::client::legacy::Client;
@@ -26,7 +30,8 @@ mod private
 
   pub async fn hub( secrets: &Secret ) -> Result< SheetsType, Box< dyn Error > >
   {
-    let secret: yup_oauth2::ApplicationSecret = ApplicationSecret {
+    let secret: yup_oauth2::ApplicationSecret = ApplicationSecret
+    {
       client_id : secrets.CLIENT_ID.clone(),
       auth_uri : secrets.AUTH_URI.clone(),
       token_uri : secrets.TOKEN_URI.clone(),
@@ -34,15 +39,21 @@ mod private
       .. Default::default()
     };
 
-    let auth = yup_oauth2::InstalledFlowAuthenticator::builder(
+    let auth = yup_oauth2::InstalledFlowAuthenticator::builder
+    (
       secret,
       yup_oauth2::InstalledFlowReturnMethod::HTTPRedirect,
-    ).build().await.unwrap();
+    )
+    .build()
+    .await
+    .unwrap();
 
-    let client = Client::builder(
+    let client = Client::builder
+    (
       hyper_util::rt::TokioExecutor::new()
     )
-    .build(
+    .build
+    (
       hyper_rustls::HttpsConnectorBuilder::new()
       .with_native_roots()
       .unwrap()

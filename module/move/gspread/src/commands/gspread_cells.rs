@@ -47,8 +47,8 @@ mod private
 
   pub async fn command
   (
-    hub: &SheetsType,
-    commands: Commands
+    hub : &SheetsType,
+    commands : Commands
   )
   {
     match commands
