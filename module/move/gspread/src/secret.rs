@@ -137,7 +137,7 @@ Either define missing environment variable or make sure `./.key/-env.toml` file 
   {
     let p = var( name, default )?;
     pth::AbsolutePath::from_paths( ( pth::CurrentPath, p ) )
-      .map_err( |e| Error::VariableIllformed( name, e.to_string() ) )
+    .map_err( |e| Error::VariableIllformed( name, e.to_string() ) )
   }
 
 }
