@@ -41,7 +41,7 @@ mod private
   #[ allow( non_snake_case ) ]
   pub struct Secret
   {
-    pub CLIENT_SECRET: String,
+    pub CLIENT_SECRET : String,
     pub CLIENT_ID: String,
     pub AUTH_URI : String,
     pub TOKEN_URI : String,
