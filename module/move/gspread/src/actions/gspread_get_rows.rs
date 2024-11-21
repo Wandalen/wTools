@@ -17,7 +17,7 @@ mod private
 
   pub struct Report
   {
-    pub rows: Vec< RowWrapper >
+    pub rows : Vec< RowWrapper >
   }
 
   impl fmt::Display for Report
@@ -25,7 +25,7 @@ mod private
     fn fmt
     (
       &self,
-      f: &mut fmt::Formatter
+      f : &mut fmt::Formatter
     ) -> fmt::Result
     {
       display_rows( &AsTable::new( &self.rows ), f )
@@ -34,19 +34,19 @@ mod private
 
   pub async fn action
   (
-    hub: &SheetsType,
-    spreadsheet_id: &str,
-    table_name: &str
+    hub : &SheetsType,
+    spreadsheet_id : &str,
+    table_name : &str
   ) -> Result< Report >
   {
     let result = hub
-      .spreadsheets()
-      .values_get(spreadsheet_id, format!("{}!A2:Z", table_name).as_str())
-      .doit()
-      .await?
-      .1
-      .values
-      .unwrap();
+    .spreadsheets()
+    .values_get( spreadsheet_id, format!( "{}!A2:Z", table_name).as_str() )
+    .doit()
+    .await?
+    .1
+    .values
+    .unwrap();
 
     let rows = result.into_iter().map( RowWrapper ).collect();
 

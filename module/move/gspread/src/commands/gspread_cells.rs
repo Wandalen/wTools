@@ -19,29 +19,29 @@ mod private
     Get
     {
       #[ arg( long ) ]
-      url: String,
+      url : String,
 
       #[ arg( long ) ]
-      tab: String,
+      tab : String,
 
       #[ arg( long ) ]
-      cel: String,
+      cel : String,
     },
 
     #[ command( name = "set" ) ]
     Set
     {
       #[ arg( long ) ]
-      url: String,
+      url : String,
 
       #[ arg( long ) ]
-      tab: String,
+      tab : String,
 
       #[ arg( long ) ]
-      cel: String,
+      cel : String,
 
       #[ arg( long ) ]
-      val: String
+      val : String
     }
   }
 

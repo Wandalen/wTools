@@ -27,10 +27,10 @@ mod private
   pub async fn hub( secrets: &Secret ) -> Result< SheetsType, Box< dyn Error > >
   {
     let secret: yup_oauth2::ApplicationSecret = ApplicationSecret {
-      client_id: secrets.CLIENT_ID.clone(),
-      auth_uri: secrets.AUTH_URI.clone(),
-      token_uri: secrets.TOKEN_URI.clone(),
-      client_secret: secrets.CLIENT_SECRET.clone(),
+      client_id : secrets.CLIENT_ID.clone(),
+      auth_uri : secrets.AUTH_URI.clone(),
+      token_uri : secrets.TOKEN_URI.clone(),
+      client_secret : secrets.CLIENT_SECRET.clone(),
       .. Default::default()
     };
 
@@ -44,14 +44,14 @@ mod private
     )
     .build(
       hyper_rustls::HttpsConnectorBuilder::new()
-        .with_native_roots()
-        .unwrap()
-        .https_or_http()
-        .enable_http1()
-        .build()
+      .with_native_roots()
+      .unwrap()
+      .https_or_http()
+      .enable_http1()
+      .build()
     );
 
-    Ok(Sheets::new(client, auth))
+    Ok( Sheets::new( client, auth ) )
   }
 
 

@@ -28,7 +28,7 @@ mod private
 
   pub fn get_sheetspread_id_from_url
   (
-    url: &str
+    url : &str
   ) -> Option< &str >
   {
 

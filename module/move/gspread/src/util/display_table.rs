@@ -15,8 +15,8 @@ mod private
 
   pub fn display_rows< 'a >
   (
-    data: &'a impl TableFormatter< 'a >,
-    f: &mut fmt::Formatter< '_ >
+    data :  &'a impl TableFormatter< 'a >,
+    f : &mut fmt::Formatter< '_ >
   ) -> fmt::Result
   {
     display_data( data, f, output_format::Table::default() )
@@ -24,7 +24,7 @@ mod private
 
   pub fn display_header < 'a >
   (
-    data: &'a impl TableFormatter< 'a >,
+    data : &'a impl TableFormatter< 'a >,
     f : &mut fmt::Formatter< '_ >
   ) -> fmt::Result
   {
@@ -33,7 +33,7 @@ mod private
 
   pub fn display_data < 'a >
   (
-    data: &'a impl TableFormatter< 'a >,
+    data : &'a impl TableFormatter< 'a >,
     f : &mut fmt::Formatter< '_ >,
     format : impl TableOutputFormat,
   ) -> fmt::Result

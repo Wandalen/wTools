@@ -16,7 +16,7 @@ use std::
 //   Result,
 // };
 
-/// Wrapper over `data_type::Either< CrateDir, ManifestFile >` with utils methods.
+/// Wrapper over `data_type::Either< CrateDir, ManifestFile >` with util methods.
 #[ derive( Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug ) ]
 pub struct EitherDirOrFile( data_type::Either< CrateDir, ManifestFile > );
 

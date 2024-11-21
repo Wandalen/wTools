@@ -13,15 +13,15 @@ mod private
 
   pub async fn command
   (
-    hub: &SheetsType,
-    args: CommonArgs,
+    hub : &SheetsType,
+    args : CommonArgs,
   )
   {
     match args
     {
       CommonArgs { url, tab } =>
       {
-        let sheetspread_id = get_sheetspread_id_from_url(url.as_str()).unwrap();
+        let sheetspread_id = get_sheetspread_id_from_url( url.as_str() ).unwrap();
         let result = actions::gspread_get_header::action
           (
             hub,
