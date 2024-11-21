@@ -22,10 +22,10 @@ mod private
   pub struct CommonArgs
   {
     #[ arg( long ) ]
-    pub url: String,
+    pub url : String,
 
     #[ arg( long ) ]
-    pub tab: String
+    pub tab : String
   }
 
   #[ derive( Debug, Subcommand ) ]

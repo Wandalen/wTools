@@ -17,7 +17,7 @@ async fn main() -> Result< (), Box< dyn Error > >
 
   let secret = Secret::load()?;
 
-  let hub = hub(&secret).await?;
+  let hub = hub( &secret ).await?;
 
   let cli = Cli::parse();
 
@@ -25,7 +25,7 @@ async fn main() -> Result< (), Box< dyn Error > >
   {
     CliCommand::GSpread( cmd ) =>
     {
-      commands::gspread::command( &hub, cmd).await;
+      commands::gspread::command( &hub, cmd ).await;
     }
   }
 
