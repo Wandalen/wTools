@@ -22,12 +22,12 @@
 //!
 
 use crate::*;
-use md_math::MdOffset;
 use print::
 {
   InputExtract,
   Context,
 };
+use std::borrow::Cow;
 use core::
 {
   fmt,
@@ -59,6 +59,8 @@ pub struct Records
   pub cell_postfix : String,
   /// Separator used between table columns.
   pub cell_separator : String,
+  /// Limit table width. If the value is zero, then no limitation.
+  pub max_width: usize,
   // /// Horizontal line character.
   // pub h : char,
   // /// Vertical line character.
@@ -91,6 +93,25 @@ impl Records
     static INSTANCE : OnceLock< Records > = OnceLock::new();
     INSTANCE.get_or_init( || Records::default() )
   }
+
+  /// Calculate how much space is minimally needed in order to generate an output with this output formatter.
+  /// It will be impossible to render tables smaller than the result of `min_width()`.
+  ///
+  /// This function is similar to `output_format::Table::min_width`, but it does not contain a
+  /// `column_count` as it always equal to 2, and it aslo uses the `output_format::Records` 
+  /// style parameters.
+  pub fn min_width
+  (
+    &self,
+  ) -> usize
+  {
+    // 2 is used here, because `Records` displays 2 columns: keys and values.
+    self.row_prefix.chars().count()
+    + self.row_postfix.chars().count()
+    + 2 * ( self.cell_postfix.chars().count() + self.cell_prefix.chars().count() )
+    + self.cell_separator.chars().count()
+    + 2
+  }
 }
 
 impl Default for Records
@@ -107,6 +128,8 @@ impl Default for Records
     let table_prefix = "".to_string();
     let table_postfix = "".to_string();
     let table_separator = "\n".to_string();
+
+    let max_width = 0;
 
     // let h = '─';
     // let v = '|';
@@ -131,6 +154,7 @@ impl Default for Records
       cell_prefix,
       cell_postfix,
       cell_separator,
+      max_width,
       // h,
       // v,
       // t_l,
@@ -155,70 +179,88 @@ impl TableOutputFormat for Records
     c : & mut Context< 'buf >,
   ) -> fmt::Result
   {
+    use format::text_wrap::{ text_wrap, width_calculate };
 
-    let label_width = x.header().fold( 0, | acc, cell | acc.max( cell.1[ 0 ] ) );
+    if self.max_width != 0 && self.max_width < self.min_width()
+    {
+      return Err( fmt::Error );
+    }
+
+    // 2 because there are only 2 columns: key and value.
+    let columns_max_width = if self.max_width == 0 { 0 } else { self.max_width - self.min_width() + 2 };
+
+    let keys : Vec< ( Cow< 'data, str >, [ usize; 2 ] ) > = x.header().collect();
+    let keys_width = width_calculate( &keys );
 
     write!( c.buf, "{}", self.table_prefix )?;
 
-    let mut first = true;
-    // Write each record
-    for ( irow, row ) in x.rows()
-    {
+    let mut printed_tables_count = 0;
 
-      if !row.vis
+    for ( itable_descriptor, table_descriptor ) in x.row_descriptors.iter().enumerate()
+    {
+      if !table_descriptor.vis || ( x.has_header && itable_descriptor == 0 )
       {
         continue;
       }
 
-      if first
-      {
-        first = false;
-      }
-      else
+      if printed_tables_count > 0
       {
         write!( c.buf, "{}", self.table_separator )?;
       }
 
-      let slice_width = x.data[ irow ].iter().fold( 0, | acc, cell | acc.max( cell.1[ 0 ] ) );
+      printed_tables_count += 1;
 
-      writeln!( c.buf, " = {}", irow )?;
+      writeln!( c.buf, " = {}", table_descriptor.irow )?;
 
-      for ( icol, _col ) in x.col_descriptors.iter().enumerate()
+      let values = &x.data[ itable_descriptor ];
+      let values_width = width_calculate( &values );
+
+      let table_for_wrapping : Vec< Vec< ( Cow< 'data, str >, [ usize; 2] ) > > =
+      keys.iter().enumerate().map( | ( ikey, key ) |
       {
-        let cell = &x.data[ irow ][ icol ];
-        let height = cell.1[ 1 ];
+        vec![ key.clone(), values[ ikey ].clone() ]
+      }).collect();
 
-        for islice in 0..height
+      let wrapped_text = text_wrap
+      (
+        table_for_wrapping.iter(),
+        &[ keys_width, values_width ],
+        columns_max_width,
+        keys_width + values_width,
+      );
+
+      for ( irow, cols ) in wrapped_text.data.into_iter().enumerate()
+      {
+        if irow != 0
         {
-          let label = x.header_slice( islice, icol );
-          let md_index = [ islice, icol, irow ];
-          let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
-
-          if icol > 0 || islice > 0
-          {
-            write!( c.buf, "{}", self.row_separator )?;
-          }
-
-          write!( c.buf, "{}", self.row_prefix )?;
-
-          write!( c.buf, "{}", self.cell_prefix )?;
-          write!( c.buf, "{:<label_width$}", label )?;
-          write!( c.buf, "{}", self.cell_postfix )?;
-          write!( c.buf, "{}", self.cell_separator )?;
-          write!( c.buf, "{}", self.cell_prefix )?;
-          write!( c.buf, "{:<slice_width$}", slice )?;
-          write!( c.buf, "{}", self.cell_postfix )?;
-
-          write!( c.buf, "{}", self.row_postfix )?;
+          write!( c.buf, "{}", self.row_separator )?;
         }
 
-      }
+        let key = &cols[ 0 ];
+        let value = &cols[ 1 ];
 
+        let key_width = wrapped_text.column_widthes[ 0 ];
+        let value_width = wrapped_text.column_widthes[ 1 ];
+
+        write!( c.buf, "{}", self.row_prefix )?;
+
+        write!( c.buf, "{}", self.cell_prefix )?;
+        write!( c.buf, "{:<key_width$}", key.content )?;
+        write!( c.buf, "{}", self.cell_postfix )?;
+        write!( c.buf, "{}", self.cell_separator )?;
+        write!( c.buf, "{}", self.cell_prefix )?;
+        // No need to use `wrap_width` of `WrappedCell`, as `output_format::Records`
+        // does not center values in cells (they are always left aligned).
+        write!( c.buf, "{:<value_width$}", value.content )?;
+        write!( c.buf, "{}", self.cell_postfix )?;
+
+        write!( c.buf, "{}", self.row_postfix )?;
+      }
     }
 
     write!( c.buf, "{}", self.table_postfix )?;
 
-    Ok(())
+    Ok( () )
   }
 
 }
