@@ -420,58 +420,6 @@ mod private
       callback : impl for< 'a2 > FnOnce( &'a2 InputExtract< 'a2 > ) -> fmt::Result,
     ) -> fmt::Result
     {
-<<<<<<< HEAD
-      let rows = table.rows().map( | r | r.cells().map( | ( _, c ) | {
-        match c
-        {
-          Some( c ) => c,
-          None => Cow::from( "" ),
-        }
-      }).collect()).collect();
-
-      let has_header = table.header().is_some();
-
-      let column_names = match table.header()
-      {
-        Some( header ) => header.map( | ( k, _ ) | Cow::from( k.borrow() ) ).collect(),
-
-        None => match table.rows().next()
-        {
-          Some( r ) => r.cells().map( | ( k, _ ) | Cow::from( k.borrow() ) ).collect(),
-          None => Vec::new()
-        }
-      };
-
-      Self::extract_from_raw_table
-      (
-        column_names,
-        has_header,
-        rows,
-        filter_col,
-        filter_row,
-        callback,
-      )
-    }
-
-    /// Extract input data from a table that is constructed with vectors and `Cow`s and collect
-    /// it in a format consumable by output formatter.
-    ///
-    /// `rows` should not contain header of the table, it will be automatically added if `has_header`
-    /// is true.
-    pub fn extract_from_raw_table< 'context >
-    (
-      column_names : Vec< Cow< 'data, str > >,
-      has_header : bool,
-      rows : Vec< Vec< Cow< 'data, str > > >,
-      filter_col : &'context ( dyn FilterCol + 'context ),
-      filter_row : &'context ( dyn FilterRow + 'context ),
-      callback : impl for< 'a2 > FnOnce( &'a2 InputExtract< 'a2 > ) -> fmt::Result,
-    ) -> fmt::Result
-    {
-      use md_math::MdOffset;
-
-=======
->>>>>>> alpha
       // let mcells = table.mcells();
       let mut mcells_vis = [ 0 ; 2 ];
       let mut mcells = [ 0 ; 2 ];
