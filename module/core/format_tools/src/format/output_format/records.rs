@@ -179,6 +179,8 @@ impl TableOutputFormat for Records
     c : & mut Context< 'buf >,
   ) -> fmt::Result
   {
+    use format::text_wrap::{ text_wrap, width_calculate };
+
     if self.max_width != 0 && self.max_width < self.min_width()
     {
       return Err( fmt::Error );
@@ -187,7 +189,8 @@ impl TableOutputFormat for Records
     // 2 because there are only 2 columns: key and value.
     let columns_max_width = if self.max_width == 0 { 0 } else { self.max_width - self.min_width() + 2 };
 
-    let field_names : Vec< ( Cow< 'data, str >, [ usize; 2 ] ) > = x.header().collect();
+    let keys : Vec< ( Cow< 'data, str >, [ usize; 2 ] ) > = x.header().collect();
+    let keys_width = width_calculate( &keys );
 
     write!( c.buf, "{}", self.table_prefix )?;
 
@@ -209,26 +212,46 @@ impl TableOutputFormat for Records
 
       writeln!( c.buf, " = {}", table_descriptor.irow )?;
 
-      let wrapped_text = text_wrap( &field_names, &x.data[ itable_descriptor ], columns_max_width );
+      let values = &x.data[ itable_descriptor ];
+      let values_width = width_calculate( &values );
 
-      for ( irow, ( key, value ) ) in wrapped_text.data.iter().enumerate()
+      let table_for_wrapping : Vec< Vec< ( Cow< 'data, str >, [ usize; 2] ) > > =
+      keys.iter().enumerate().map( | ( ikey, key ) |
+      {
+        vec![ key.clone(), values[ ikey ].clone() ]
+      }).collect();
+
+      let wrapped_text = text_wrap
+      (
+        table_for_wrapping.iter(),
+        &[ keys_width, values_width ],
+        columns_max_width,
+        keys_width + values_width,
+      );
+
+      for ( irow, cols ) in wrapped_text.data.into_iter().enumerate()
       {
         if irow != 0
         {
           write!( c.buf, "{}", self.row_separator )?;
         }
 
-        let key_width = wrapped_text.key_width;
-        let value_width = wrapped_text.value_width;
+        let key = &cols[ 0 ];
+        let value = &cols[ 1 ];
+
+        let key_width = wrapped_text.column_widthes[ 0 ];
+        let value_width = wrapped_text.column_widthes[ 1 ];
 
         write!( c.buf, "{}", self.row_prefix )?;
 
         write!( c.buf, "{}", self.cell_prefix )?;
-        write!( c.buf, "{:<key_width$}", key )?;
+        write!( c.buf, "{:<key_width$}", key.content )?;
         write!( c.buf, "{}", self.cell_postfix )?;
         write!( c.buf, "{}", self.cell_separator )?;
         write!( c.buf, "{}", self.cell_prefix )?;
-        write!( c.buf, "{:<value_width$}", value )?;
+        // No need to use `wrap_width` of `WrappedCell`, as `output_format::Records`
+        // does not center values in cells (they are always left aligned).
+        write!( c.buf, "{:<value_width$}", value.content )?;
         write!( c.buf, "{}", self.cell_postfix )?;
 
         write!( c.buf, "{}", self.row_postfix )?;
@@ -240,100 +263,4 @@ impl TableOutputFormat for Records
     Ok( () )
   }
 
-}
-
-/// Struct that represents a wrapped tabular data. It is similar to `InputExtract`,
-/// but we cannot use it as it does not wrap the text and it contains wrong column
-/// widthes and height (as they are dependent on wrapping too).
-///
-/// This struct is similar to `output_format::Table::WrappedInputExtract` (which is
-/// private, too), but it is made only for 2 columns, as tables in `Records` contain
-/// only key and value columns.
-#[ derive( Debug ) ]
-struct WrappedInputExtract< 'data >
-{
-  /// Tabular data for display. Because `Records` only show 2 columns, we used a tuple 
-  /// here instead of a vector.
-  data : Vec< ( &'data str, &'data str ) >,
-
-  /// Width of key column.
-  key_width : usize,
-
-  /// Width of value column.
-  value_width : usize,
-}
-
-/// Wrap cells in `InputExtract`.
-///
-/// `InputExtract` contains cells with full content, so it represents the logical
-/// structure of the table. `WrappedInputExtract` wraps original cells to smaller 
-/// cells. The resulting data is more low-level and corresponds to the table that
-/// will be actually printed to the console (or other output type).
-///
-/// Wrapping is controlled by `columns_max_width` parameter.
-/// `columns_max_width` is the size space that is allowed to be occupied by columns.
-/// It equals to maximum table width minus lengthes of visual elements (prefixes,
-/// postfixes, separators, etc.).
-///
-/// The function will perform wrapping and shrink the columns so that they occupy not
-/// more than `columns_max_width`.
-///
-/// If `columns_max_width` is equal to 0, then no wrapping will be performed. 
-fn text_wrap<'data>
-(
-  keys : &'data Vec< ( Cow< 'data, str >, [ usize; 2 ] ) >,
-  values : &'data Vec< ( Cow< 'data, str >, [ usize; 2 ] ) >,
-  columns_max_width : usize,
-)
--> WrappedInputExtract< 'data >
-{
-  let mut data = Vec::new();
-  let mut key_width = width_calculate( keys );
-  let mut value_width = width_calculate( values );
-
-  let orig_columns_width = key_width + value_width;
-
-  if columns_max_width != 0 && orig_columns_width > columns_max_width 
-  {
-    let factor = ( columns_max_width as f32 ) / ( orig_columns_width as f32 );
-    key_width = ( ( key_width as f32 ) * factor ).round() as usize;
-    value_width = columns_max_width - key_width;
-  }
-
-  for i in 0..values.len()
-  {
-    let key = &keys[ i ];
-    let value = &values[ i ];
-
-    let key_wrapped : Vec< &'data str > = string::lines_with_limit( key.0.as_ref(), key_width ).collect();
-    let value_wrapped : Vec< &'data str > = string::lines_with_limit( value.0.as_ref(), value_width ).collect();
-
-    for j in 0..( key_wrapped.len().max( value_wrapped.len() ) )
-    {
-      let key = key_wrapped.get( j ).copied().unwrap_or( "" );
-      let value = value_wrapped.get( j ).copied().unwrap_or( "" );
-
-      data.push( ( key, value ) );
-    }
-  }
-
-  WrappedInputExtract
-  {
-    data,
-    key_width,
-    value_width,
-  }
-}
-
-/// Calculate width of the column without wrapping.
-fn width_calculate< 'data >
-( 
-  column : &'data Vec< ( Cow< 'data, str >, [ usize; 2 ] ) >
-)
--> usize
-{
-  column.iter().map( |k| 
-  {
-    string::lines( k.0.as_ref() ).map( |l| l.chars().count() ).max().unwrap_or( 0 )
-  } ).max().unwrap_or( 0 )
 }

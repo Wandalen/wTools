@@ -221,12 +221,12 @@ impl TableOutputFormat for Table
     let wrapped_text = text_wrap
     (
       filtered_data,
-      x.col_descriptors.iter().map( | c | c.width ).collect(),
+      x.col_descriptors.iter().map( | c | c.width ).collect::< Vec< usize > >(),
       if self.max_width == 0 { 0 } else { self.max_width - visual_elements_width }, 
       columns_nowrap_width 
     );
 
-    let new_columns_widthes = wrapped_text.col_widthes.iter().sum::<usize>();
+    let new_columns_widthes = wrapped_text.column_widthes.iter().sum::<usize>();
     let new_row_width = new_columns_widthes + visual_elements_width;
 
     let mut printed_row_count = 0;
@@ -251,7 +251,7 @@ impl TableOutputFormat for Table
       for ( icol, col ) in row.iter().enumerate()
       {
         let cell_wrapped_width = col.wrap_width;
-        let column_width = wrapped_text.col_widthes[ icol ];
+        let column_width = wrapped_text.column_widthes[ icol ];
         let slice_width = col.content.chars().count();
         
         if icol > 0
