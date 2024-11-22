@@ -244,7 +244,7 @@ impl TableOutputFormat for Records
 
 /// Struct that represents a wrapped tabular data. It is similar to `InputExtract`,
 /// but we cannot use it as it does not wrap the text and it contains wrong column
-/// widthes and height (as they are dependent on wrapping, too).
+/// widthes and height (as they are dependent on wrapping too).
 ///
 /// This struct is similar to `output_format::Table::WrappedInputExtract` (which is
 /// private, too), but it is made only for 2 columns, as tables in `Records` contain
