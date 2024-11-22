@@ -75,6 +75,8 @@ pub struct Table
   pub corner_lb : char,
   /// Bottom-right corner character.
   pub corner_rb : char,
+  /// Limit table width. If the value is zero, then no limitation.
+  pub max_width: usize,
 }
 
 impl Default for Table
@@ -102,6 +104,7 @@ impl Default for Table
     let corner_rt = '┐';
     let corner_lb = '└';
     let corner_rb = '┘';
+    let max_width = 0;
 
     Self
     {
@@ -123,6 +126,7 @@ impl Default for Table
       corner_rt,
       corner_lb,
       corner_rb,
+      max_width
     }
   }
 }
@@ -157,13 +161,32 @@ impl Table
     })
 
   }
+
+  /// Calculate how much space is minimally needed in order to generate a table output with the specified
+  /// number of columns. It will be impossible to render table smaller than the result of
+  /// `min_width()`.
+  ///
+  /// This function is similar to `output_format::Records::min_width`, but it contains a `column_count`
+  /// parameter, and it aslo uses the `output_format::Table` style parameters.
+  pub fn min_width
+  (
+    &self,
+    column_count : usize,
+  ) -> usize
+  {
+    self.row_prefix.chars().count()
+    + self.row_postfix.chars().count()
+    + column_count * ( self.cell_postfix.chars().count() + self.cell_prefix.chars().count() )
+    + if column_count == 0 { 0 } else { ( column_count - 1 ) * self.cell_separator.chars().count() }
+    + column_count
+  }
 }
 
 impl TableOutputFormat for Table
 {
   fn extract_write< 'buf, 'data >( &self, x : &InputExtract< 'data >, c : &mut Context< 'buf > ) -> fmt::Result
   {
-    use md_math::MdOffset;
+    use format::text_wrap::text_wrap;
 
     let cell_prefix = &self.cell_prefix;
     let cell_postfix = &self.cell_postfix;
@@ -173,103 +196,90 @@ impl TableOutputFormat for Table
     let row_separator = &self.row_separator;
     let h = self.h.to_string();
 
-    let mut delimitting_header = self.delimitting_header;
-    let row_width = if delimitting_header
+    let column_count = x.col_descriptors.len();
+
+    if self.max_width != 0 && ( self.min_width( column_count ) > self.max_width )
     {
-      let mut grid_width = x.mcells_vis[ 0 ] * ( cell_prefix.chars().count() + cell_postfix.chars().count() );
-      grid_width += row_prefix.chars().count() + row_postfix.chars().count();
-      if x.mcells_vis[ 0 ] > 0
-      {
-        grid_width += ( x.mcells_vis[ 0 ] - 1 ) * ( cell_separator.chars().count() );
-      }
-      x.mchars[ 0 ] + grid_width
+      return Err( fmt::Error );
     }
-    else
+
+    let columns_nowrap_width = x.col_descriptors.iter().map( |c| c.width ).sum::<usize>();
+    let visual_elements_width = self.min_width( column_count ) - column_count;
+    
+    let filtered_data = x.row_descriptors.iter().filter_map( | r | 
     {
-      0
-    };
-    let mut prev_typ : Option< LineType > = None;
+      if r.vis
+      {
+        Some( &x.data[ r.irow ] )
+      }
+      else
+      {
+        None
+      }
+    });
+    
+    let wrapped_text = text_wrap
+    (
+      filtered_data,
+      x.col_descriptors.iter().map( | c | c.width ).collect::< Vec< usize > >(),
+      if self.max_width == 0 { 0 } else { self.max_width - visual_elements_width }, 
+      columns_nowrap_width 
+    );
 
-    // dbg!( x.row_descriptors.len() );
+    let new_columns_widthes = wrapped_text.column_widthes.iter().sum::<usize>();
+    let new_row_width = new_columns_widthes + visual_elements_width;
 
-    for ( irow, row ) in x.row_descriptors.iter().enumerate()
+    let mut printed_row_count = 0;
+
+    for row in wrapped_text.data.iter()
     {
-      let height = row.height;
-
-      if delimitting_header
+      if printed_row_count == wrapped_text.first_row_height && x.has_header && self.delimitting_header
       {
-        if let Some( prev_typ ) = prev_typ
-        {
-          if prev_typ == LineType::Header && row.typ == LineType::Regular
-          {
-            write!( c.buf, "{}", row_separator )?;
-            write!( c.buf, "{}", h.repeat( row_width ) )?;
-            delimitting_header = false
-          }
-        }
-        if row.vis
-        {
-          prev_typ = Some( row.typ );
-        }
+        write!( c.buf, "{}", row_separator )?;
+        write!( c.buf, "{}", h.repeat( new_row_width ) )?;
+      }
+      
+      if printed_row_count > 0
+      {
+        write!( c.buf, "{}", row_separator )?;
       }
 
-      if !row.vis
+      printed_row_count += 1;
+
+      write!( c.buf, "{}", row_prefix )?;
+
+      for ( icol, col ) in row.iter().enumerate()
       {
-        continue;
-      }
-
-      // dbg!( row.height );
-
-      for islice in 0..height
-      {
-
-        if irow > 0
+        let cell_wrapped_width = col.wrap_width;
+        let column_width = wrapped_text.column_widthes[ icol ];
+        let slice_width = col.content.chars().count();
+        
+        if icol > 0
         {
-          write!( c.buf, "{}", row_separator )?;
+          write!( c.buf, "{}", cell_separator )?;
         }
 
-        write!( c.buf, "{}", row_prefix )?;
+        write!( c.buf, "{}", cell_prefix )?;
+        
+        let lspaces = ( column_width - cell_wrapped_width ) / 2;
+        let rspaces = ( ( column_width - cell_wrapped_width ) as f32 / 2 as f32 ).round() as usize + cell_wrapped_width - slice_width;
 
-        for icol in 0 .. x.col_descriptors.len()
+        if lspaces > 0
         {
-          let col = &x.col_descriptors[ icol ];
-          let cell_width = x.data[ irow ][ icol ].1[0];
-          let width = col.width;
-          let md_index = [ islice, icol, irow as usize ];
-          let slice = x.slices[ x.slices_dim.md_offset( md_index ) ];
+          write!( c.buf, "{:<width$}", " ", width = lspaces )?;
+        }
+        
+        write!( c.buf, "{}", col.content )?;
 
-          // println!( "md_index : {md_index:?} | md_offset : {} | slice : {slice}", x.slices_dim.md_offset( md_index ) );
-
-          if icol > 0
-          {
-            write!( c.buf, "{}", cell_separator )?;
-          }
-
-          write!( c.buf, "{}", cell_prefix )?;
-
-          // println!( "icol : {icol} | irow : {irow} | width : {width} | cell_width : {cell_width} | slice.len() : {}", slice.len() );
-
-          let lspaces = ( width - cell_width ) / 2;
-          let rspaces = ( width - cell_width + 1 ) / 2 + cell_width - slice.chars().count();
-          
-          // println!( "icol : {icol} | irow : {irow} | width : {width} | cell_width : {cell_width} | lspaces : {lspaces} | rspaces : {rspaces}" );
-
-          if lspaces > 0
-          {
-            write!( c.buf, "{:<width$}", " ", width = lspaces )?;
-          }
-          write!( c.buf, "{}", slice )?;
-          if rspaces > 0
-          {
-            write!( c.buf, "{:>width$}", " ", width = rspaces )?;
-          }
-
-          write!( c.buf, "{}", cell_postfix )?;
+        if rspaces > 0
+        {
+          write!( c.buf, "{:>width$}", " ", width = rspaces )?;
         }
 
-        write!( c.buf, "{}", row_postfix )?;
+        write!( c.buf, "{}", cell_postfix )?;
       }
 
+      write!( c.buf, "{}", row_postfix )?;
     }
 
     Ok(())

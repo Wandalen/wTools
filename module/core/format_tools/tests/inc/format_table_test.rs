@@ -8,9 +8,6 @@ use the_module::
   filter,
   print,
   output_format,
-  print::{ InputExtract, RowDescriptor, ColDescriptor },
-  TableOutputFormat,
-  filter::LineType
 };
 
 use std::
@@ -347,4 +344,130 @@ fn no_subtract_with_overflow()
   let result = the_module::TableFormatter::fmt( &as_table, &mut context );
 
   assert!( result.is_ok() );
+}
+
+#[ test ]
+fn test_width_limiting()
+{
+  use the_module::string;
+
+  for max_width in min_width()..max_width()
+  {
+    println!("max_width: {}", max_width);
+
+    let test_objects = test_object::test_objects_gen();
+    let as_table = AsTable::new( &test_objects );
+
+    let mut format = output_format::Table::default();
+    format.max_width = max_width;
+
+    let mut output = String::new();
+    let printer = print::Printer::with_format( &format );
+    let mut context = print::Context::new( &mut output, printer );
+
+    let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+
+    assert!( got.is_ok() );
+    
+    for line in string::lines( &output )
+    {
+      assert_eq!( max_width, line.chars().count() );
+    }
+  }
+}
+
+#[ test ]
+fn test_error_on_unsatisfiable_limit()
+{
+  // 0 is a special value that signifies no limit. Therefore, the lower bound is 1.
+  for max_width in 1..( min_width() )
+  {
+    println!( "max_width: {}", max_width );
+
+    let test_objects = test_object::test_objects_gen();
+    let as_table = AsTable::new( &test_objects );
+
+    let mut format = output_format::Table::default();
+    format.max_width = max_width;
+
+    let mut output = String::new();
+    let printer = print::Printer::with_format( &format );
+    let mut context = print::Context::new( &mut output, printer );
+
+    let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+
+    assert!( got.is_err() );
+  }
+}
+
+#[ test ]
+fn test_table_not_grows()
+{
+  use the_module::string;
+
+  let expected_width = max_width();
+  
+  // The upper bound was chosen arbitrarily.
+  for max_width in ( expected_width + 1 )..500
+  {
+    println!( "max_width: {}", max_width );
+
+    let test_objects = test_object::test_objects_gen();
+    let as_table = AsTable::new( &test_objects );
+
+    let mut format = output_format::Table::default();
+    format.max_width = max_width;
+
+    let mut output = String::new();
+    let printer = print::Printer::with_format( &format );
+    let mut context = print::Context::new( &mut output, printer );
+
+    let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+
+    assert!( got.is_ok() );
+
+    for line in string::lines( &output )
+    {
+      assert_eq!( expected_width, line.chars().count() );
+    }
+  }
+}
+
+/// Utility function for calculating minimum table width with `test_objects_gen()` with
+/// the default table style.
+fn min_width() -> usize
+{
+  use the_module::Fields;
+
+  let format = output_format::Table::default();
+  let test_objects = test_object::test_objects_gen();
+  let col_count = test_objects[0].fields().count();
+  
+  format.min_width( col_count )
+}
+
+/// Utility function for calculating default table width with `test_objects_gen()` with
+/// the default table style without any maximum width.
+fn max_width() -> usize
+{
+  use the_module::string;
+
+  let test_objects = test_object::test_objects_gen();
+  let as_table = AsTable::new( &test_objects );
+
+  let format = output_format::Table::default();
+
+  let mut output = String::new();
+  let printer = print::Printer::with_format( &format );
+  let mut context = print::Context::new( &mut output, printer );
+
+  let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  assert!( got.is_ok() );
+
+  for line in string::lines( &output )
+  {
+    return line.chars().count();
+  }
+
+  0
 }

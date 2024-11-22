@@ -1,0 +1,23 @@
+ nodes:
+  - id: input
+    type: trigger::stdin
+    prompt: 'Your query: '
+    next: node::translator
+
+  - id: sql_generator_stage1
+    type: agent::completion
+    system_message: 'Your task is to think about how to translate the user query in natural langauge in SQL langauge. Think step by steps.'
+    user_message: '{{input}}'
+    next: node::sql_generator_stage2
+
+  - id: sql_generator_stage2
+    type: agent::completion
+    system_message: 'Your task to make an SQL code based on user query in natural language and the results of thinking on that query'.
+    user_message: '{{sql_generator_stage1}}'
+    agent_reuse: node::sql_generator_stage2
+    next: node::output
+
+  - id: output
+    type: event::stdout
+    output: '{{sql_generator_stage2}}'
+    next: scenario::termination
