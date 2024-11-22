@@ -373,13 +373,26 @@ mod private
       CellKey : table::CellKey + ?Sized + 'data,
       // CellRepr : table::CellRepr,
     {
-      let rows = table.rows().map( | r | r.cells().map( | ( _, c ) | {
-        match c
+      let mut key_to_ikey : HashMap< Cow< 'data, str >, usize > = HashMap::new();
+      let mut keys_count = 0;
+
+      let rows = table.rows().map( | r |
+      {
+        let mut unsorted : Vec< ( usize, Cow< 'data, str > ) > = r.cells().map( | ( key, c ) | 
         {
-          Some( c ) => c,
-          None => Cow::from( "" ),
-        }
-      }).collect()).collect();
+          if !key_to_ikey.contains_key( key.borrow() )
+          {
+            key_to_ikey.insert( key.borrow().into(), keys_count );
+            keys_count += 1;
+          }
+
+          ( key_to_ikey[ key.borrow() ], c.unwrap_or( Cow::from( "" ) ) )
+        } ).collect();
+
+        unsorted.sort_by( | ( i1, _ ), ( i2, _ ) | i1.cmp(i2) );
+
+        unsorted.into_iter().map( | ( _, c ) | c).collect()
+      } ).collect();
 
       let has_header = table.header().is_some();
 
@@ -446,12 +459,7 @@ mod private
         let mut ncol = 0;
         let mut ncol_vis = 0;
 
-        // This type stores these data:
-        //                      index     cell data     size of cell
-        //                   of the column
-        let mut fields : Vec< ( usize, Cow< 'data, str >, [ usize ; 2 ] ) > = row_data
-        // We have to store index of the column in order to NOT rely on order of the
-        // `Cells::cells`.
+        let fields : Vec< ( Cow< 'data, str >, [ usize ; 2 ] ) > = row_data
         .into_iter()
         .enumerate()
         .filter_map
@@ -500,13 +508,10 @@ mod private
             });
 
             row.height = row.height.max( sz[ 1 ] );
-            return Some( ( key_to_ikey[ key ], val, sz ) );
+            return Some( ( val, sz ) );
           }
         )
         .collect();
-
-        fields.sort_by( | ( i1, _, _ ), ( i2, _, _ ) | i1.cmp( i2 ) );
-        let fields : Vec< ( Cow< 't, str >, [ usize ; 2 ] ) > = fields.into_iter().map( | ( _, k, v ) | ( k, v ) ).collect();
 
         mcells[ 0 ] = mcells[ 0 ].max( ncol );
         mcells_vis[ 0 ] = mcells_vis[ 0 ].max( ncol_vis );
@@ -543,7 +548,7 @@ mod private
 
       mchars[ 0 ] = col_descriptors.iter().fold( 0, | acc, col | acc + col.width );
       mchars[ 1 ] = row_descriptors.iter().fold( 0, | acc, row | acc + if row.vis { row.height } else { 0 } );
-
+      
       let mut x = InputExtract::< '_ >
       {
         mcells,
