@@ -343,9 +343,6 @@ fn test_vector_table()
     column_names,
     true,
     rows,
-    &filter::All,
-    &filter::All,
-    &output_format::Table::default(),
     &mut context,
   );
 

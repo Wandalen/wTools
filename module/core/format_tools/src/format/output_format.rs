@@ -88,21 +88,26 @@ mod private
   ///
   /// `rows` should not contain header of the table, it will be automatically added if `has_header`
   /// is true.
-  pub fn vector_table_write< 'buf, 'data, 'context >
+  pub fn vector_table_write< 'data, 'context >
   (
     column_names : Vec< Cow< 'data, str > >,
     has_header : bool,
     rows : Vec< Vec< Cow< 'data, str > > >,
-    filter_col : &'context ( dyn FilterCol + 'context ),
-    filter_row : &'context ( dyn FilterRow + 'context ),
-    output_format : &impl TableOutputFormat,
-    c : &mut Context< 'buf >,
+    c : &mut Context< 'context >,
   ) -> fmt::Result
   {
-    InputExtract::extract_from_raw_table( column_names, has_header, rows, filter_col, filter_row, | x |
-    {
-      output_format.extract_write( x, c )
-    })
+    InputExtract::extract_from_raw_table
+    ( 
+      column_names,
+      has_header,
+      rows,
+      c.printer.filter_col,
+      c.printer.filter_row,
+      | x |
+      {
+        c.printer.output_format.extract_write( x, c )
+      }
+    )
   }
 
 }
