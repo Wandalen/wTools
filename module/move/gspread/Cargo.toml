@@ -42,3 +42,6 @@ error_tools = "0.19.0"
 derive_tools = { version = "0.32.0", features = ["full"] }
 serde_json = "1.0.132"
 regex = "1.11.1"
+
+[dev-dependencies]
+test_tools = { workspace = true }
