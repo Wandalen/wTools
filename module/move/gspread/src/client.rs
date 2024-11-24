@@ -30,7 +30,7 @@ mod private
 
   pub async fn hub( secrets: &Secret ) -> Result< SheetsType, Box< dyn Error > >
   {
-    let secret: yup_oauth2::ApplicationSecret = ApplicationSecret
+    let secret: ApplicationSecret = ApplicationSecret
     {
       client_id : secrets.CLIENT_ID.clone(),
       auth_uri : secrets.AUTH_URI.clone(),

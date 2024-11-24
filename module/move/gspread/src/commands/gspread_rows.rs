@@ -4,12 +4,31 @@
 
 mod private
 {
-
+  use std::fmt;
   use crate::*;
   use commands::gspread::CommonArgs;
   use client::SheetsType;
   use actions;
-  use actions::gspread::get_sheetspread_id_from_url;
+  use actions::gspread::get_spreadsheet_id_from_url;
+  use format_tools::AsTable;
+  use util::display_table::display_rows;
+
+  pub struct Report
+  {
+    pub rows : Vec< RowWrapper >
+  }
+
+  impl fmt::Display for Report
+  {
+    fn fmt
+    (
+      &self,
+      f : &mut fmt::Formatter
+    ) -> fmt::Result
+    {
+      display_rows( &AsTable::new( &self.rows ), f )
+    }
+  }
 
   pub async fn command
   (
@@ -21,18 +40,27 @@ mod private
     {
       CommonArgs { url, tab } =>
       {
-        let sheetspread_id = get_sheetspread_id_from_url( url.as_str() ).unwrap();
+        let spreadsheet_id = get_spreadsheet_id_from_url( url.as_str() ).unwrap();
 
         let result = actions::gspread_get_rows::action
         (
           hub,
-          sheetspread_id,
+          spreadsheet_id,
           tab.as_str()
         ).await;
 
         match result
         {
-          Ok( report ) => println!( "Report: \n {}", report ),
+          Ok( rows ) =>
+          {
+            let max_len = rows.iter().map(|row| row.len()).max().unwrap_or(0);
+            let rows_wrapped: Vec<RowWrapper> = rows
+              .into_iter()
+              .map(|row| RowWrapper { row, max_len })
+              .collect();
+
+            println!( "Rows: \n {}", Report{ rows: rows_wrapped } );
+          }
           Err( error ) => println!( "Error: {}", error ),
         }
       }

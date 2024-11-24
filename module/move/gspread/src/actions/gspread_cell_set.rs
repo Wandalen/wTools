@@ -7,36 +7,11 @@
 
 mod private
 {
-  use std::str::FromStr;
   use google_sheets4::api::ValueRange;
   use crate::*;
   use actions::gspread::Result;
   use client::SheetsType;
-  use ser::
-  {
-    JsonNumber,
-    JsonValue
-  };
-
-  fn str_to_number
-  (
-    val_str : &str
-  ) -> Option< JsonValue >
-  {
-    match JsonNumber::from_str( val_str )
-    {
-      Ok( val_number ) =>
-      {
-        Some( JsonValue::Number( val_number ) )
-      },
-
-      Err( e ) =>
-      {
-        eprintln!( "Failed to convert '{}' to a number: {}", val_str, e );
-        None
-      }
-    }
-  }
+  use ser::JsonValue;
 
   pub async fn action
   (
@@ -48,9 +23,10 @@ mod private
   ) -> Result< i32 >
   {
 
+    let value = JsonValue::String( value.to_string() );
     let value_range = ValueRange
     {
-      values : Some( vec![ vec![ str_to_number( value ).unwrap() ] ] ),
+      values : Some( vec![ vec![ value ] ] ),
       ..ValueRange::default()
     };
 
@@ -59,9 +35,12 @@ mod private
     .values_update( value_range, spreadsheet_id, format!( "{}!{}", table_name, cell_id ).as_str() )
     .value_input_option( "USER_ENTERED" )
     .doit()
-    .await?;
+    .await?
+    .1
+    .updated_cells
+    .unwrap();
 
-    Ok( result.1.updated_cells.unwrap() )
+    Ok( result )
   }
 }
 

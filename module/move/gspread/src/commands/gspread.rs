@@ -15,7 +15,7 @@ mod private
   {
     gspread_header,
     gspread_rows,
-    gspread_cells
+    gspread_cells,
   };
 
   #[ derive( Debug, Parser ) ]
@@ -31,6 +31,7 @@ mod private
   #[ derive( Debug, Subcommand ) ]
   pub enum Command
   {
+
     #[ command ( name = "header" ) ]
     Header
     (
@@ -59,6 +60,7 @@ mod private
   {
     match command
     {
+
       Command::Header( header_command ) =>
       {
         gspread_header::command( hub, header_command ).await;

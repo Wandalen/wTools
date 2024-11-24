@@ -9,7 +9,7 @@ mod private
 
   use crate::*;
   use actions;
-  use actions::gspread::get_sheetspread_id_from_url;
+  use actions::gspread::get_spreadsheet_id_from_url;
   use client::SheetsType;
 
   #[ derive( Debug, Subcommand ) ]
@@ -55,31 +55,31 @@ mod private
     {
       Commands::Get { url, tab, cel } =>
       {
-        let sheetspread_id = get_sheetspread_id_from_url( url.as_str() ).unwrap();
+        let spreadsheet_id = get_spreadsheet_id_from_url( url.as_str() ).unwrap();
 
         let result = actions::gspread_cell_get::action
         (
           hub,
-          sheetspread_id,
+          spreadsheet_id,
           tab.as_str(),
           cel.as_str()
         ).await;
 
         match result
         {
-          Ok( ValueRange ) => println!( "Value: {}", ValueRange.get( 0 ).unwrap().get( 0 ).unwrap() ),
+          Ok( value ) => println!( "Value: {}", value ),
           Err( error ) => println!( "Error: {}", error ),
         }
       },
 
       Commands::Set { url, tab, cel, val } =>
       {
-        let sheetspread_id = get_sheetspread_id_from_url( url.as_str() ).unwrap();
+        let spreadsheet_id = get_spreadsheet_id_from_url( url.as_str() ).unwrap();
 
         let result = actions::gspread_cell_set::action
         (
           hub,
-          sheetspread_id,
+          spreadsheet_id,
           tab.as_str(),
           cel.as_str(),
           val.as_str()

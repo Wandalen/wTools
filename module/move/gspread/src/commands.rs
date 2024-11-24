@@ -6,7 +6,11 @@
 mod private
 {
 
-  use clap::{ Parser, Subcommand };
+  use clap::
+  {
+    Parser,
+    Subcommand
+  };
 
   use crate::*;
   use commands::gspread;

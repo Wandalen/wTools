@@ -13,7 +13,9 @@ mod private
   use actions::gspread::Result;
   use format_tools::AsTable;
   use util::display_table::display_header;
+  use ser::JsonValue;
 
+  #[ derive( Debug ) ]
   pub struct Report
   {
     pub rows : Vec< RowWrapper >
@@ -35,7 +37,7 @@ mod private
   (
     hub : &SheetsType,
     spreadsheet_id : &str,
-    table_name: &str) -> Result< Report >
+    table_name: &str) -> Result< Vec< Vec< JsonValue > > >
   {
     let result = hub
     .spreadsheets()
@@ -44,12 +46,9 @@ mod private
     .await?
     .1
     .values
-    .unwrap();
+    .unwrap_or_else( | | Vec::new() );
 
-
-    let rows = result.into_iter().map( RowWrapper ).collect();
-
-    Ok( Report { rows } )
+    Ok( result )
   }
 }
 

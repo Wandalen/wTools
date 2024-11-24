@@ -26,7 +26,7 @@ mod private
     )
   }
 
-  pub fn get_sheetspread_id_from_url
+  pub fn get_spreadsheet_id_from_url
   (
     url : &str
   ) -> Option< &str >
@@ -52,6 +52,6 @@ crate::mod_interface!
   own use
   {
     Result,
-    get_sheetspread_id_from_url,
+    get_spreadsheet_id_from_url,
   };
 }

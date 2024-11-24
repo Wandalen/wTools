@@ -28,7 +28,7 @@ mod private
     f : &mut fmt::Formatter< '_ >
   ) -> fmt::Result
   {
-    display_data( data, f, output_format::Records::default() )
+    display_data( data, f, output_format::Table::default() )
   }
 
   pub fn display_data < 'a >
