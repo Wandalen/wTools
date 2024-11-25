@@ -1,3 +1,9 @@
+//!
+//! Context representation. Can be used as compile-time context and as a runtime-context.
+//!
+//! Represents a simplistic "filesystem" with directories and terminal objects.
+//!
+
 mod private
 {
   use std::collections::HashMap;
@@ -8,6 +14,7 @@ mod private
   /// Simplistic in-memory "filesystem". Represents the root of the filesystem.
   ///
   /// `T` is the type of terminal object.
+  #[ derive( Debug ) ]
   pub struct Context< T >
   {
     root : ContextDir< T >,
@@ -55,6 +62,7 @@ mod private
   /// terminal objects.
   ///
   /// `T` is the type of terminal object.
+  #[ derive( Debug ) ]
   pub struct ContextDir< T >
   {
     /// Internal map of entry names and entries data (a directory or a terminal object).
@@ -102,6 +110,7 @@ mod private
   /// Entry in `Context`: either a directory or a terminal object `T`.
   ///
   /// Notice, this struct does not store the name of the entry.
+  #[ derive( Debug ) ]
   pub enum ContextEntry< T >
   {
     /// Directory in context.
@@ -141,5 +150,10 @@ mod private
 
 crate::mod_interface!
 {
-
+  own use
+  {
+    Context,
+    ContextDir,
+    ContextEntry,
+  };
 }

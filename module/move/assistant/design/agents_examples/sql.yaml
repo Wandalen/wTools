@@ -1,4 +1,4 @@
- nodes:
+nodes:
   - id: input
     type: trigger::stdin
     prompt: 'Your query: '
