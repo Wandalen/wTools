@@ -29,17 +29,15 @@ mod private
     OpenAi( openai::Command ),
   }
 
-  // const DEFAULT_MAX_TABLE_WIDTH: usize = 130;
-  // Commented out as not yet implemented in `format_tools`.
+  const DEFAULT_MAX_TABLE_WIDTH : usize = 130;
 
   /// Common collection of arguments for formatting tabular data.
   #[ derive( Debug, Parser ) ]
   pub struct TableConfig
   {
     /// Limit table widht.
-    // #[ arg( long, default_value_t = DEFAULT_MAX_TABLE_WIDTH ) ]
-    // pub max_table_width : usize,
-    // Commented out as not yet implemented in `format_tools`.
+    #[ arg( long, default_value_t = DEFAULT_MAX_TABLE_WIDTH ) ]
+    pub max_table_width : usize,
 
     /// Show tabular data as an ordinary table.
     #[ arg( long ) ]

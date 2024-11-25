@@ -19,7 +19,7 @@ use dotenv::dotenv;
 
 use assistant::
 {
-  client,
+  client::client,
   Secret
 };
 

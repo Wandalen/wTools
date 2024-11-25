@@ -28,19 +28,19 @@ mod private
   {
     if table_config.as_table 
     {
-      display_table( data, f, &table_config.filter_columns )
+      display_table( data, f, table_config )
     }
     else if table_config.as_records
     {
-      display_records( data, f, &table_config.filter_columns )
+      display_records( data, f, table_config )
     }
     else if table_config.columns
     {
-      display_columns( data, f, &table_config.filter_columns )
+      display_columns( data, f, table_config )
     }
     else
     {
-      display_table( data, f, &table_config.filter_columns )
+      display_table( data, f, table_config )
     }
   }
 
@@ -48,38 +48,65 @@ mod private
   (
     data : &'a impl TableFormatter< 'a >,
     f : &mut fmt::Formatter< '_ >,
-    filter_columns : &'a Vec< String >,
+    table_config : &'a TableConfig,
   ) -> fmt::Result
   {
-    display_data( data, f, filter_columns, output_format::Table::default() )
+    let mut format = output_format::Table::default();
+    format.max_width = table_config.max_table_width;
+
+    display_data
+    ( 
+      data, 
+      f, 
+      format,
+      &table_config.filter_columns,
+    )
   }
 
   fn display_records<'a>
   (
     data : &'a impl TableFormatter< 'a >,
     f : &mut fmt::Formatter< '_ >,
-    filter_columns : &'a Vec< String >,
+    table_config : &'a TableConfig,
   ) -> fmt::Result
   {
-    display_data( data, f, filter_columns, output_format::Records::default() )
+    let mut format = output_format::Records::default();
+    format.max_width = table_config.max_table_width;
+
+    display_data
+    ( 
+      data, 
+      f, 
+      format,
+      &table_config.filter_columns,
+    )
   }
 
   fn display_columns<'a>
   (
     data : &'a impl TableFormatter< 'a >,
     f : &mut fmt::Formatter< '_ >,
-    filter_columns : &'a Vec< String >,
+    table_config : &'a TableConfig,
   ) -> fmt::Result
   {
-    display_data( data, f, filter_columns, output_format::Keys::default() )
+    let mut format = output_format::Records::default();
+    format.max_width = table_config.max_table_width;
+
+    display_data
+    ( 
+      data, 
+      f, 
+      format,
+      &table_config.filter_columns,
+    )
   }
 
   fn display_data<'a>
   (
     data : &'a impl TableFormatter< 'a >,
     f : &mut fmt::Formatter< '_ >,
-    filter_columns : &'a Vec< String >,
     format : impl TableOutputFormat,
+    filter_columns : &'a Vec< String >,
   ) -> fmt::Result
   {
     let mut printer = print::Printer::with_format( &format );
