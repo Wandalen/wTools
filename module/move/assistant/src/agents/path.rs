@@ -8,6 +8,7 @@ mod private
   {
     io,
     fmt,
+    ops::Deref,
   };
 
   /// New type for paths in agents graph. Use `TryFrom` implementation
@@ -45,9 +46,7 @@ mod private
     ///
     /// Returns `Err(io::Error)` is the `path` is an absolute path.
     #[ inline ]
-    pub fn join< P >( &self, path : P ) -> Result< Self, io::Err >
-    where
-      P : AsRef< Path >,
+    pub fn join( &self, path : &Path ) -> Result< Self, io::Error >
     {
       todo!()
     }
@@ -56,9 +55,7 @@ mod private
     ///
     /// Only considers whole path components to match.
     #[ inline ]
-    pub fn starts_with< P >( &self, base : P ) -> bool
-    where
-      P : AsRef< Path >,
+    pub fn starts_with( &self, base : &Path ) -> bool
     {
       todo!()
     }
@@ -87,17 +84,15 @@ mod private
     #[ inline ]
     fn fmt( &self, f : &mut fmt::Formatter<'_> ) -> fmt::Result
     {
-      write!( f, "{}", self.0.display() )
+      write!( f, "{}", self.0 )
     }
   }
 
-  impl TryFrom< S > for Path
-  where
-    S : AsRef< str >,
+  impl TryFrom< &str > for Path
   {
     type Error = io::Error;
 
-    fn try_from( src : S ) -> Result< Self, Self::Error >
+    fn try_from( src : &str ) -> Result< Self, Self::Error >
     {
       todo!()
     }
