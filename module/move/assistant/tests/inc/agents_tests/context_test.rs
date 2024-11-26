@@ -96,9 +96,9 @@ fn context_dir_get_by_path_relative()
   ctx.add( "dir_1", dir_1.into() );
   ctx.add( "dir_2", dir_2.into() );
 
-  let got_value_1 = ctx.get_by_path( Path::try_from( "dir_1::value_1" ).unwrap() );
-  let got_value_2 = ctx.get_by_path( Path::try_from( "dir_1::value_2" ).unwrap() );
-  let got_value_3 = ctx.get_by_path( Path::try_from( "dir_2::dir_3::value_3" ).unwrap() );
+  let got_value_1 = ctx.get_by_path( &Path::try_from( "dir_1::value_1" ).unwrap() );
+  let got_value_2 = ctx.get_by_path( &Path::try_from( "dir_1::value_2" ).unwrap() );
+  let got_value_3 = ctx.get_by_path( &Path::try_from( "dir_2::dir_3::value_3" ).unwrap() );
 
   assert_eq!( got_value_1, Some( &value_1 ) );
   assert_eq!( got_value_2, Some( &value_2 ) );
@@ -111,7 +111,7 @@ fn context_dir_get_by_path_absolute()
   let mut ctx : ContextDir< () > = ContextDir::new();
   ctx.add( "test", ContextEntry::Terminal( () ) );
 
-  let res = ctx.get_by_path( Path::try_from( "::test" ).unwrap() );
+  let res = ctx.get_by_path( &&Path::try_from( "::test" ).unwrap() );
 
   assert!( res.is_none() );
 }
@@ -121,7 +121,7 @@ fn context_dir_get_by_path_non_existing()
 {
   let ctx : ContextDir< () > = ContextDir::new();
 
-  let res = ctx.get_by_path( Path::try_from( "test" ).unwrap() );
+  let res = ctx.get_by_path( &Path::try_from( "test" ).unwrap() );
 
   assert!( res.is_none() );
 }
@@ -133,7 +133,7 @@ fn context_get_by_path_absolute()
   let entry = ContextEntry::Terminal( () );
   ctx.add( "test", entry.clone() );
 
-  let res = ctx.get_by_path( Path::try_from( "::test" ).unwrap() );
+  let res = ctx.get_by_path( &Path::try_from( "::test" ).unwrap() );
 
   assert_eq!( res, Some( &entry ) );
 }

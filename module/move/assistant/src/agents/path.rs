@@ -183,6 +183,25 @@ mod private
         Self( res )
       })
     }
+
+    /// Iterate over components of a `Path`. If the `Path` is absolute, then the first
+    /// element will be `::`.
+    pub fn components( &self ) -> impl Iterator< Item = &str >
+    {
+      use std::iter;
+
+      self.0.split( PATH_SEPARATOR ).map( | c |
+      {
+        if c.is_empty()
+        {
+          PATH_SEPARATOR
+        }
+        else
+        {
+          c
+        }
+      })
+    }
   }
 
   /// Find parent of a `Path`.

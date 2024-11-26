@@ -25,7 +25,10 @@ mod private
     /// Create an empty `Context`.
     pub fn new() -> Self
     {
-      todo!()
+      Self
+      {
+        root : ContextDir::new()
+      }
     }
 
     /// Add new entry to the directory.
@@ -54,9 +57,9 @@ mod private
     ///
     /// This function can accept absolute `Path`s as `Context` represents the root of the
     /// filesystem.
-    pub fn get_by_path( &self, path : Path ) -> Option< &ContextEntry< T > >
+    pub fn get_by_path( &self, path : &Path ) -> Option< &ContextEntry< T > >
     {
-      self.root.get_by_path( path.remove_absolute() )
+      self.root.get_by_path( &path.remove_absolute() )
     }
   }
 
@@ -118,9 +121,43 @@ mod private
     ///
     /// This function does not accept absolute `Path`, as `ContextDir` does not know
     /// whether it is root or not. For absolute `Path`s use `Context::get_by_path`.
-    pub fn get_by_path( &self, path : Path ) -> Option< &ContextEntry< T > >
+    pub fn get_by_path( &self, path : &Path ) -> Option< &ContextEntry< T > >
     {
-      todo!()
+      let mut cur : Option< &ContextEntry< T > > = None;
+
+      for component in path.components()
+      {
+        match cur
+        {
+          None =>
+          {
+            cur = self.get( component );
+          },
+
+          Some( entry ) =>
+          {
+            match entry
+            {
+              ContextEntry::Terminal( _ ) =>
+              {
+                return None;
+              },
+
+              ContextEntry::Dir( dir ) => 
+              {
+                cur = dir.get( component );
+              }
+            }
+          }
+        }
+
+        if cur.is_none()
+        {
+          return None;
+        }
+      }
+
+      cur
     }
   }
 
@@ -144,16 +181,6 @@ mod private
       ContextEntry::Dir( self )
     }
   }
-
-  /*
-  impl< T > Into< ContextEntry< T > > for T
-  {
-    fn into( self ) -> ContextEntry< T >
-    {
-      ContextEntry::Terminal( self )
-    }
-  }
-  */
 }
 
 crate::mod_interface!

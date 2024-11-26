@@ -318,3 +318,13 @@ fn path_remove_absolute_from_rel()
 
   assert_eq!( got_path.inner(), "agents::completion" );
 }
+
+#[ test ]
+fn path_components()
+{
+  let path = Path::try_from( "::agents::completion" ).unwrap();
+
+  let components : Vec< &str > = path.components().collect();
+
+  assert_eq!( components, vec![ "::", "agents", "completion" ] );
+}
