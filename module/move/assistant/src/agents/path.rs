@@ -9,7 +9,47 @@ mod private
     io,
     fmt,
     ops::Deref,
+    sync::LazyLock,
   };
+
+  use itertools::Itertools;
+  use regex::Regex;
+
+  /// Path separator string.
+  pub const PATH_SEPARATOR : &str = "::";
+
+  /// Regular expression for `Path` items. Represented in `&str`. 
+  /// It is not anchored to start and end of the string.
+  ///
+  /// If you want to match against this expression, use `PATH_ITEM_REGEX`.
+  pub const PATH_ITEM_REGEX_STR : &str = r"[a-zA-Z0-9_ -]+";
+
+  /// Regular expression for `Path` items. You can match whole `&str` with this type.
+  ///
+  /// To match whole `Path` in strings, use `PATH_REGEX`.
+  pub static PATH_ITEM_REGEX : LazyLock< Regex > = LazyLock::new( ||
+  {
+    let regex = format!
+    (
+      r"^{}$",
+      PATH_ITEM_REGEX_STR
+    );
+
+    Regex::new( &regex ).unwrap()
+  });
+
+  /// Regular expression for `Path`. You can match whole `&str` with this type.
+  pub static PATH_REGEX : LazyLock< Regex > = LazyLock::new( || 
+  {
+    let regex = format!
+    (
+        r"^({sep})?({item}({sep}{item})*({sep})?)?$",
+        sep = PATH_SEPARATOR,
+        item = PATH_ITEM_REGEX_STR,
+    );
+
+    Regex::new( &regex ).unwrap()
+  });
 
   /// New type for paths in agents graph. Use `TryFrom` implementation
   /// to create `Path`s.
@@ -27,7 +67,8 @@ mod private
     #[ inline ]
     pub fn parent( &self ) -> Option< Path >
     {
-      todo!()
+      find_parent( self.0.as_str() )
+      .map( | s | Self( s.to_string() ) )
     }
 
     /// Returns whether the `Path` is relative (does not start with `::`).
@@ -39,7 +80,7 @@ mod private
     /// Returns whether the `Path` is absolute (starts with `::`).
     pub fn is_absolute( &self ) -> bool
     {
-      todo!()
+      self.0.starts_with( PATH_SEPARATOR )
     }
 
     /// Creates an owned `Path` by joining a given path to `self`.
@@ -48,16 +89,28 @@ mod private
     #[ inline ]
     pub fn join( &self, path : &Path ) -> Result< Self, io::Error >
     {
-      todo!()
+      if path.is_absolute()
+      {
+        Err( io::Error::from( io::ErrorKind::InvalidData ) )
+      }
+      else
+      {
+        if self.0.ends_with( PATH_SEPARATOR )
+        {
+          Ok( Self( format!( "{}{}", self.0, path.0 ) ) )
+        }
+        else
+        {
+          Ok( Self( format!( "{}::{}", self.0, path.0 ) ) )
+        }
+      }
     }
 
     /// Checks if the `Path` starts with a given base path.
-    ///
-    /// Only considers whole path components to match.
     #[ inline ]
     pub fn starts_with( &self, base : &Path ) -> bool
     {
-      todo!()
+      self.0.starts_with( base.0.as_str() )
     }
 
     /// Returns the inner `String`.
@@ -67,16 +120,81 @@ mod private
       self.0
     }
 
-    /// Creates an `Path` from an iterator over items that implement `AsRef<str>`.
+    /// Creates a relative `Path` from an iterator over items that implement `AsRef<str>`.
+    /// To create an absolute `Path`, use `from_iter_abs` method.
     ///
-    /// Returns `Err(io::Error)` is the `Path` is not well-formed.
-    pub fn from_iter< I, P >( iter : I ) -> Result< Self, io::Error >
-    where
-      I : Iterator< Item = P >,
-      P : AsRef< str >,
+    /// Returns `Err(io::Error)` if the items are not valid `Path` items.
+    pub fn from_iter_rel< 'a >( iter : impl Iterator< Item = &'a str > ) -> Result< Self, io::Error >
     {
-      todo!()
+      iter.map( | path_element_str |
+      {
+        if PATH_ITEM_REGEX.is_match( path_element_str )
+        {
+          Ok ( path_element_str )
+        }
+        else
+        {
+          Err ( io::Error::from( io::ErrorKind::InvalidData ) )
+        }
+      })
+      .process_results( | mut item_iter |
+      {
+        Self( item_iter.join( PATH_SEPARATOR ) )
+      })
     }
+
+    /// Creates an absolute `Path` from an iterator over strings.
+    /// To create a relative `Path`, use `from_iter_rel` method.
+    ///
+    /// Returns `Err(io::Error)` if the items are not valid `Path` items.
+    pub fn from_iter_abs< 'a >( iter : impl Iterator< Item = &'a str > ) -> Result< Self, io::Error >
+    {
+      iter.map( | path_element_str |
+      {
+        if PATH_ITEM_REGEX.is_match( path_element_str )
+        {
+          Ok ( path_element_str )
+        }
+        else
+        {
+          Err ( io::Error::from( io::ErrorKind::InvalidData ) )
+        }
+      })
+      .process_results( | mut item_iter |
+      {
+        let mut res = item_iter.join( PATH_SEPARATOR );
+        res.insert_str( 0, PATH_SEPARATOR );
+        Self( res )
+      })
+    }
+  }
+
+  /// Find parent of a `Path`.
+  ///
+  /// This method uses `&str` as an argument instead of `Path`
+  /// in order to be more general and handle trailing `::` case.
+  fn find_parent( s : &str ) -> Option< &str >
+  {
+    s.rfind( PATH_SEPARATOR )
+    .map( | sep_pos | 
+    {
+      if sep_pos == 0
+      {
+        // We found root. We should not return string before `::`,
+        // as it will be empty.
+        Some( PATH_SEPARATOR )
+      }
+      else if sep_pos == s.len() - PATH_SEPARATOR.len()
+      {
+        // We found trailing `::`. We should continue looking for last separator.
+        find_parent( &s[ .. sep_pos ] )
+      }
+      else
+      {
+        Some( &s[ .. sep_pos ] )
+      }
+    })
+    .flatten()
   }
 
   impl fmt::Display for Path
@@ -88,13 +206,37 @@ mod private
     }
   }
 
+  impl TryFrom< String > for Path
+  {
+    type Error = io::Error;
+
+    fn try_from( src : String ) -> Result< Self, Self::Error >
+    {
+      if PATH_REGEX.is_match( src.as_str() )
+      {
+        Ok( Self ( src ) )
+      }
+      else
+      {
+        Err( io::Error::from( io::ErrorKind::InvalidData ) )
+      }
+    }
+  }
+
   impl TryFrom< &str > for Path
   {
     type Error = io::Error;
 
     fn try_from( src : &str ) -> Result< Self, Self::Error >
     {
-      todo!()
+      if PATH_REGEX.is_match( src )
+      {
+        Ok( Self ( src.to_string() ) )
+      }
+      else
+      {
+        Err( io::Error::from( io::ErrorKind::InvalidData ) )
+      }
     }
   }
 
