@@ -40,6 +40,8 @@ mod private
 
     /// Get an entry by its name. Returns `None` is there is no such entry.
     ///
+    /// `name` must be a valid path item. Refer to `path::PATH_ITEM_REGEX_STR` for syntax.
+    ///
     /// This method is useful for quickly getting an entry only by its name.
     /// For complex paths, where your object is located in several consecutives directories,
     /// you can use `Path` type and use method `Context::get_by_path`.
@@ -62,7 +64,7 @@ mod private
   /// terminal objects.
   ///
   /// `T` is the type of terminal object.
-  #[ derive( Debug ) ]
+  #[ derive( Debug, PartialEq, Clone ) ]
   pub struct ContextDir< T >
   {
     /// Internal map of entry names and entries data (a directory or a terminal object).
@@ -89,6 +91,8 @@ mod private
 
     /// Get an entry by its name. Returns `None` is there is no such entry.
     ///
+    /// `name` must be a valid path item. Refer to `path::PATH_ITEM_REGEX_STR` for syntax.
+    ///
     /// This method is useful for quickly getting an entry only by its name.
     /// For complex paths, where your object is located in several consecutives directories,
     /// you can use `Path` type and use method `ContextDir::get_by_path`.
@@ -110,7 +114,7 @@ mod private
   /// Entry in `Context`: either a directory or a terminal object `T`.
   ///
   /// Notice, this struct does not store the name of the entry.
-  #[ derive( Debug ) ]
+  #[ derive( Debug, PartialEq, Clone ) ]
   pub enum ContextEntry< T >
   {
     /// Directory in context.
@@ -118,15 +122,6 @@ mod private
 
     /// Terminal object.
     Terminal( T ),
-  }
-
-  impl< T > ContextEntry< T >
-  {
-    /// Make a terminal object `ContextEntry`.
-    pub fn terminal( obj : T ) -> Self
-    {
-      Self::Terminal( obj )
-    }
   }
 
   impl< T > Into< ContextEntry< T > > for ContextDir< T >
