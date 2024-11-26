@@ -83,6 +83,22 @@ mod private
       self.0.starts_with( PATH_SEPARATOR )
     }
 
+    /// Turn an absolute `Path` into a relative one by removing leading `::`.
+    ///
+    /// If the `Path` is not absolute, a clone will be returned without any
+    /// changes.
+    pub fn remove_absolute( &self ) -> Path
+    {
+      if self.is_absolute()
+      {
+        Self( self.0.strip_prefix( PATH_SEPARATOR ).unwrap_or( "" ).to_string() )
+      }
+      else
+      {
+        Self( self.0.clone() )
+      }
+    }
+
     /// Creates an owned `Path` by joining a given path to `self`.
     ///
     /// Returns `Err(io::Error)` is the `path` is an absolute path.

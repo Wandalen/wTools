@@ -298,3 +298,23 @@ fn path_from_iter_abs()
   assert!( path.is_absolute() );
   assert_eq!( path.inner(), expected );
 }
+
+#[ test ]
+fn path_remove_absolute()
+{
+  let path = Path::try_from( "::agents::completion" ).unwrap();
+
+  let got_path = path.remove_absolute();
+
+  assert_eq!( got_path.inner(), "agents::completion" );
+}
+
+#[ test ]
+fn path_remove_absolute_from_rel()
+{
+  let path = Path::try_from( "agents::completion" ).unwrap();
+
+  let got_path = path.remove_absolute();
+
+  assert_eq!( got_path.inner(), "agents::completion" );
+}

@@ -40,14 +40,16 @@ fn context_dir_add_dir()
 #[ test ]
 fn context_dir_add_duplicate()
 {
-  let mut ctx : ContextDir< () > = ContextDir::new();
-  let entry = ContextEntry::Terminal( () );
   let name = "test";
-  ctx.add( name, entry.clone() );
+  let orig_entry = ContextEntry::Terminal( 1 );
 
-  let res = ctx.add( name, entry );
+  let mut ctx : ContextDir< usize > = ContextDir::new();
+  ctx.add( name, orig_entry.clone() );
+
+  let res = ctx.add( name, ContextEntry::Terminal( 2 ) );
 
   assert!( !res );
+  assert_eq!( ctx.get( name ), Some( &orig_entry ) );
 }
 
 #[ test ]

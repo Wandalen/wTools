@@ -14,7 +14,7 @@ mod private
   /// Simplistic in-memory "filesystem". Represents the root of the filesystem.
   ///
   /// `T` is the type of terminal object.
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Default ) ]
   pub struct Context< T >
   {
     root : ContextDir< T >,
@@ -47,7 +47,7 @@ mod private
     /// you can use `Path` type and use method `Context::get_by_path`.
     pub fn get( &self, name : impl AsRef< str > ) -> Option< &ContextEntry< T > >
     {
-      todo!()
+      self.root.get( name )
     }
 
     /// Get an entry by its path. Returns `None` is there is no such entry.
@@ -56,7 +56,7 @@ mod private
     /// filesystem.
     pub fn get_by_path( &self, path : Path ) -> Option< &ContextEntry< T > >
     {
-      todo!()
+      self.root.get_by_path( path.remove_absolute() )
     }
   }
 
@@ -64,7 +64,7 @@ mod private
   /// terminal objects.
   ///
   /// `T` is the type of terminal object.
-  #[ derive( Debug, PartialEq, Clone ) ]
+  #[ derive( Debug, PartialEq, Clone, Default ) ]
   pub struct ContextDir< T >
   {
     /// Internal map of entry names and entries data (a directory or a terminal object).
@@ -76,7 +76,10 @@ mod private
     /// Create an empty `ContextDir`.
     pub fn new() -> Self
     {
-      todo!()
+      Self
+      {
+        map : HashMap::new()
+      }
     }
 
     /// Add new entry to the directory.
@@ -86,7 +89,17 @@ mod private
     /// Old entry will not be overriden.
     pub fn add( &mut self, name : impl Into< String >, entry : ContextEntry< T > ) -> bool
     {
-      todo!()
+      let name = name.into();
+
+      if self.map.contains_key( name.as_str() )
+      {
+        false
+      }
+      else
+      {
+        self.map.insert( name, entry );
+        true
+      }
     }
 
     /// Get an entry by its name. Returns `None` is there is no such entry.
@@ -98,7 +111,7 @@ mod private
     /// you can use `Path` type and use method `ContextDir::get_by_path`.
     pub fn get( &self, name : impl AsRef< str > ) -> Option< &ContextEntry< T > >
     {
-      todo!()
+      self.map.get( name.as_ref() )
     }
 
     /// Get an entry by its path. Returns `None` is there is no such entry.
