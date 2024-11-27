@@ -1,13 +1,13 @@
 //!
-//! Format scenario in YAML format (pretty-printing).
+//! Format scenario in PlantUML diagram.
 //!
 
 mod private
 {
   use std::io;
 
-  /// Represent scenarios as a graph in MermaidJS syntax.
-  pub fn mermaid_formatter
+  /// Format scenario in PlantUML diagram.
+  pub fn plantuml_formatter
   (
     scenario : &ScenarioRaw,
     writer : impl io::Write,
@@ -19,5 +19,5 @@ mod private
 
 crate::mod_interface!
 {
-  own use mermaid_formatter;
+  own use plantuml_formatter;
 }
