@@ -6,6 +6,8 @@
 
 mod private
 {
+  use std::io::Read;
+
   use former::Former;
 
   /// Struct that represents user written scenarios.
@@ -17,6 +19,15 @@ mod private
   {
     /// Nodes in the scenario.
     pub nodes: Vec< NodeRaw >,
+  }
+
+  impl ScenarioRaw
+  {
+    /// Read scenario file in YAML format.
+    pub fn read( reader : impl Read ) -> Result< Self, serde_yaml::Error >
+    {
+      serde_yaml::from_reader( reader )
+    }
   }
 
   /// Node representation in a scenario file.
