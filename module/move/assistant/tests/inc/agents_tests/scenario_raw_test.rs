@@ -22,7 +22,7 @@ fn scenario_read()
 
   let expected_scenario_raw = gen_test_scenario_raw();
 
-  let scenario_raw = ScenarioRaw::read( scenario_text );
+  let scenario_raw = ScenarioRaw::read( scenario_text.as_bytes() );
 
   assert!( scenario_raw.is_ok() );
 
@@ -43,7 +43,7 @@ fn scenario_wrong()
         node_2
   "#;
 
-  let scenario_raw = ScenarioRaw::read( scenario_text );
+  let scenario_raw = ScenarioRaw::read( scenario_text.as_bytes() );
 
   assert!( scenario_raw.is_err() );
 }

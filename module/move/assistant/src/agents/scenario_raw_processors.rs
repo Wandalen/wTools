@@ -9,5 +9,5 @@ mod private {}
 crate::mod_interface!
 {
   layer yaml_formatter;
-  layer mermaid_formatter;
+  layer plantuml_formatter;
 }

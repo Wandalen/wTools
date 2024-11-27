@@ -1,4 +1,4 @@
 use super::*;
 
-mod plantuml_formatter;
-mod yaml_formatter;
+mod plantuml_formatter_test;
+mod yaml_formatter_test;

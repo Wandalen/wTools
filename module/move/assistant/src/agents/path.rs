@@ -188,8 +188,6 @@ mod private
     /// element will be `::`.
     pub fn components( &self ) -> impl Iterator< Item = &str >
     {
-      use std::iter;
-
       self.0.split( PATH_SEPARATOR ).map( | c |
       {
         if c.is_empty()

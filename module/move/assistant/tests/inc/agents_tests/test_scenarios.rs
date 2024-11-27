@@ -1,6 +1,10 @@
 use super::*;
 
-use the_module::agents::scenario_raw::ScenarioRaw;
+use the_module::agents::scenario_raw::
+{
+  ScenarioRaw,
+  NodeRaw,
+};
 
 pub fn gen_test_scenario_raw() -> ScenarioRaw
 {
@@ -10,14 +14,26 @@ pub fn gen_test_scenario_raw() -> ScenarioRaw
     NodeRaw::former()
     .id( "node_1".to_string() )
     .r#type( "agents::completion".to_string() )
-    .model( "gpt-4o-mini".to_string() )
+    .params(
+      {
+        let mut map : HashMap< String, String > = HashMap::new();
+        map.insert( "model".into(), "gpt-4o-mini".into() );
+        map
+      }
+    )
     .next( "node_2".to_string() )
     .form(),
 
     NodeRaw::former()
     .id( "node_2".to_string() )
     .r#type( "agents::classify".to_string() )
-    .model( "gpt-4o".to_string() )
+    .params(
+      {
+        let mut map : HashMap< String, String > = HashMap::new();
+        map.insert( "model".into(), "gpt-4o".into() );
+        map
+      }
+    )
     .next( "::scenario::termination".to_string() )
     .form(),
   ] )
