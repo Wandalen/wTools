@@ -9,62 +9,14 @@ mod private
   use std::collections::HashMap;
 
   use crate::*;
-  use agents::path::Path;
-
-  /// Simplistic in-memory "filesystem". Represents the root of the filesystem.
-  ///
-  /// `T` is the type of terminal object.
-  #[ derive( Debug, Default ) ]
-  pub struct Context< T >
+  use agents::path::
   {
-    root : ContextDir< T >,
-  }
+    Path,
+    PATH_SEPARATOR,
+  };
 
-  impl< T > Context< T >
-  {
-    /// Create an empty `Context`.
-    pub fn new() -> Self
-    {
-      Self
-      {
-        root : ContextDir::new()
-      }
-    }
-
-    /// Add new entry to the directory.
-    ///
-    /// Returns `true` if entry was successfully added.
-    /// Returns `false` if there is already and entry with such name.
-    /// Old entry will not be overriden.
-    pub fn add( &mut self, name : impl Into< String >, entry : ContextEntry< T > ) -> bool
-    {
-      self.root.add( name, entry )
-    }
-
-    /// Get an entry by its name. Returns `None` is there is no such entry.
-    ///
-    /// `name` must be a valid path item. Refer to `path::PATH_ITEM_REGEX_STR` for syntax.
-    ///
-    /// This method is useful for quickly getting an entry only by its name.
-    /// For complex paths, where your object is located in several consecutives directories,
-    /// you can use `Path` type and use method `Context::get_by_path`.
-    pub fn get( &self, name : impl AsRef< str > ) -> Option< &ContextEntry< T > >
-    {
-      self.root.get( name )
-    }
-
-    /// Get an entry by its path. Returns `None` is there is no such entry.
-    ///
-    /// This function can accept absolute `Path`s as `Context` represents the root of the
-    /// filesystem.
-    pub fn get_by_path( &self, path : &Path ) -> Option< &ContextEntry< T > >
-    {
-      self.root.get_by_path( &path.remove_absolute() )
-    }
-  }
-
-  /// Represents a directory in `Context` with other directories and
-  /// terminal objects.
+  /// Represents a directory in a simplistic in-memory "filesystem"
+  /// with other directories and terminal objects.
   ///
   /// `T` is the type of terminal object.
   #[ derive( Debug, PartialEq, Clone, Default ) ]
@@ -119,14 +71,19 @@ mod private
 
     /// Get an entry by its path. Returns `None` is there is no such entry.
     ///
-    /// This function does not accept absolute `Path`, as `ContextDir` does not know
-    /// whether it is root or not. For absolute `Path`s use `Context::get_by_path`.
+    /// This function accepts both relative and absolute paths and it will
+    /// treat itself as the root.
     pub fn get_by_path( &self, path : &Path ) -> Option< &ContextEntry< T > >
     {
       let mut cur : Option< &ContextEntry< T > > = None;
 
       for component in path.components()
       {
+        if component == PATH_SEPARATOR 
+        {
+          continue;
+        }
+
         match cur
         {
           None =>
@@ -161,7 +118,7 @@ mod private
     }
   }
 
-  /// Entry in `Context`: either a directory or a terminal object `T`.
+  /// Entry in a simplistic in-memory "filesystem": either a directory or a terminal object `T`.
   ///
   /// Notice, this struct does not store the name of the entry.
   #[ derive( Debug, PartialEq, Clone ) ]
@@ -187,7 +144,6 @@ crate::mod_interface!
 {
   own use
   {
-    Context,
     ContextDir,
     ContextEntry,
   };

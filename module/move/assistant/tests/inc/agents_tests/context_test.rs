@@ -7,7 +7,6 @@ use the_module::agents::
   {
     ContextDir,
     ContextEntry,
-    Context,
   },
 };
 
@@ -108,12 +107,14 @@ fn context_dir_get_by_path_relative()
 #[ test ]
 fn context_dir_get_by_path_absolute()
 {
+  let entry = ContextEntry::Terminal( () );
   let mut ctx : ContextDir< () > = ContextDir::new();
-  ctx.add( "test", ContextEntry::Terminal( () ) );
+  ctx.add( "test", entry.clone() );
 
   let res = ctx.get_by_path( &&Path::try_from( "::test" ).unwrap() );
 
-  assert!( res.is_none() );
+  assert!( res.is_some() );
+  assert_eq!( res.unwrap(), &entry );
 }
 
 #[ test ]
@@ -124,16 +125,4 @@ fn context_dir_get_by_path_non_existing()
   let res = ctx.get_by_path( &Path::try_from( "test" ).unwrap() );
 
   assert!( res.is_none() );
-}
-
-#[ test ]
-fn context_get_by_path_absolute()
-{
-  let mut ctx : Context< () > = Context::new();
-  let entry = ContextEntry::Terminal( () );
-  ctx.add( "test", entry.clone() );
-
-  let res = ctx.get_by_path( &Path::try_from( "::test" ).unwrap() );
-
-  assert_eq!( res, Some( &entry ) );
 }
