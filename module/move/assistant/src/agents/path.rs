@@ -24,20 +24,6 @@ mod private
   /// If you want to match against this expression, use `PATH_ITEM_REGEX`.
   pub const PATH_ITEM_REGEX_STR : &str = r"[a-zA-Z0-9_ -]+";
 
-  /// Regular expression for `Path` items. You can match whole `&str` with this type.
-  ///
-  /// To match whole `Path` in strings, use `PATH_REGEX`.
-  pub static PATH_ITEM_REGEX : LazyLock< Regex > = LazyLock::new( ||
-  {
-    let regex = format!
-    (
-      r"^{}$",
-      PATH_ITEM_REGEX_STR
-    );
-
-    Regex::new( &regex ).unwrap()
-  });
-
   /// Regular expression for `Path`. You can match whole `&str` with this type.
   pub static PATH_REGEX : LazyLock< Regex > = LazyLock::new( || 
   {
@@ -146,54 +132,6 @@ mod private
     pub fn inner( self ) -> String
     {
       self.0
-    }
-
-    /// Creates a relative `Path` from an iterator over items that implement `AsRef<str>`.
-    /// To create an absolute `Path`, use `from_iter_abs` method.
-    ///
-    /// Returns `Err(io::Error)` if the items are not valid `Path` items.
-    pub fn from_iter_rel< 'a >( iter : impl Iterator< Item = &'a str > ) -> Result< Self, io::Error >
-    {
-      iter.map( | path_element_str |
-      {
-        if PATH_ITEM_REGEX.is_match( path_element_str )
-        {
-          Ok ( path_element_str )
-        }
-        else
-        {
-          Err ( io::Error::from( io::ErrorKind::InvalidData ) )
-        }
-      })
-      .process_results( | mut item_iter |
-      {
-        Self( item_iter.join( PATH_SEPARATOR ) )
-      })
-    }
-
-    /// Creates an absolute `Path` from an iterator over strings.
-    /// To create a relative `Path`, use `from_iter_rel` method.
-    ///
-    /// Returns `Err(io::Error)` if the items are not valid `Path` items.
-    pub fn from_iter_abs< 'a >( iter : impl Iterator< Item = &'a str > ) -> Result< Self, io::Error >
-    {
-      iter.map( | path_element_str |
-      {
-        if PATH_ITEM_REGEX.is_match( path_element_str )
-        {
-          Ok ( path_element_str )
-        }
-        else
-        {
-          Err ( io::Error::from( io::ErrorKind::InvalidData ) )
-        }
-      })
-      .process_results( | mut item_iter |
-      {
-        let mut res = item_iter.join( PATH_SEPARATOR );
-        res.insert_str( 0, PATH_SEPARATOR );
-        Self( res )
-      })
     }
 
     /// Iterate over components of a `Path`. If the `Path` is absolute, then the first
