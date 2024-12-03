@@ -15,7 +15,8 @@ mod private
   {
     gspread_header,
     gspread_rows,
-    gspread_cells,
+    gspread_cell,
+    gspread_cells
   };
 
   #[ derive( Debug, Parser ) ]
@@ -45,10 +46,16 @@ mod private
     ),
 
     #[ command ( subcommand, name = "cell" ) ]
+    Cell
+    (
+      gspread_cell::Commands
+    ),
+
+    #[ command ( subcommand, name = "cells" ) ]
     Cells
     (
       gspread_cells::Commands
-    ),
+    )
 
   }
 
@@ -71,10 +78,15 @@ mod private
         gspread_rows::command( hub, rows_command ).await;
       },
 
-      Command::Cells( cells_command ) =>
+      Command::Cell( cell_command ) =>
+      {
+        gspread_cell::command( hub, cell_command ).await;
+      },
+
+      Command::Cells( cells_command) =>
       {
         gspread_cells::command( hub, cells_command ).await;
-      }
+      },
 
     }
   }

@@ -1,48 +1,34 @@
 //!
-//! Collection of subcommands fo command "cell"
-//!
+//! Cells commands.
+//! set command -> set specified values in specified columns in specified row.
+//! 
 
 mod private
 {
-
   use clap::Subcommand;
 
   use crate::*;
-  use actions;
   use actions::gspread::get_spreadsheet_id_from_url;
-  use client::SheetsType;
 
   #[ derive( Debug, Subcommand ) ]
   pub enum Commands
   {
-    #[ command( name = "get" ) ]
-    Get
-    {
-      #[ arg( long ) ]
-      url : String,
-
-      #[ arg( long ) ]
-      tab : String,
-
-      #[ arg( long ) ]
-      cel : String,
-    },
-
     #[ command( name = "set" ) ]
     Set
     {
       #[ arg( long ) ]
+      select_row_by_key : String,
+
+      #[ arg( long ) ]
+      json : String,
+
+      #[ arg( long ) ]
       url : String,
 
       #[ arg( long ) ]
-      tab : String,
-
-      #[ arg( long ) ]
-      cel : String,
-
-      #[ arg( long ) ]
-      val : String
+      tab : String
     }
+
   }
 
   pub async fn command
@@ -53,54 +39,34 @@ mod private
   {
     match commands
     {
-      Commands::Get { url, tab, cel } =>
+      Commands::Set { select_row_by_key, json, url, tab } =>
       {
         let spreadsheet_id = get_spreadsheet_id_from_url( url.as_str() ).unwrap();
-
-        let result = actions::gspread_cell_get::action
+        
+        let result = actions::gspread_cells_set::action
         (
-          hub,
+          &hub,
+          select_row_by_key.as_str(),
+          json.as_str(),
           spreadsheet_id,
-          tab.as_str(),
-          cel.as_str()
+          tab.as_str()
         ).await;
 
         match result
         {
-          Ok( value ) => println!( "Value: {}", value ),
-          Err( error ) => println!( "Error: {}", error ),
-        }
-      },
-
-      Commands::Set { url, tab, cel, val } =>
-      {
-        let spreadsheet_id = get_spreadsheet_id_from_url( url.as_str() ).unwrap();
-
-        let result = actions::gspread_cell_set::action
-        (
-          hub,
-          spreadsheet_id,
-          tab.as_str(),
-          cel.as_str(),
-          val.as_str()
-        ).await;
-
-        match result
-        {
-          Ok( Value ) => println!( "Success: {:?}", Value ),
-          Err( error ) => println!( "Error: {}", error ),
+          Ok( msg ) => println!( "{}", msg ),
+          Err( error ) => println!( "{}", error )
         }
       }
-
     }
   }
 }
 
 crate::mod_interface!
 {
-  own use
+  own use 
   {
     command,
-    Commands,
+    Commands
   };
 }

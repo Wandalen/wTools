@@ -40,6 +40,7 @@ crate::mod_interface!
   layer gspread;
   layer gspread_header;
   layer gspread_rows;
+  layer gspread_cell;
   layer gspread_cells;
 
   own use
