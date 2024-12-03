@@ -239,7 +239,7 @@ mod private
       let ( program, args ) =
       if cfg!( target_os = "windows" )
       {
-        ( "gspread", [ "/C", exec_path ] )
+        ( "cmd", [ "/C", exec_path ] )
       }
       else
       {
