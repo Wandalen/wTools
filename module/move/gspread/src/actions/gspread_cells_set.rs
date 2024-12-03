@@ -33,7 +33,7 @@ mod private
   {
     serde_json::from_str::< ParsedJson >( json_str ).map_err
     (
-      | err | format!("Failed to parse JSON: {}", err)
+      | err | format!( "Failed to parse JSON: {}", err )
     )
   }
 
@@ -51,7 +51,7 @@ mod private
     } 
     else 
     {
-      Err( format!( "Invalid select_row_by_key: '{}'. Allowed keys: {:?}", key, keys) )
+      Err( format!( "Invalid select_row_by_key: '{}'. Allowed keys: {:?}", key, keys ) )
     }
   }
 
@@ -114,7 +114,7 @@ mod private
 
     let result = hub
     .spreadsheets()
-    .values_batch_update(req, spreadsheet_id )
+    .values_batch_update( req, spreadsheet_id )
     .doit()
     .await;
 
