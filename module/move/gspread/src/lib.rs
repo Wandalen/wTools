@@ -12,8 +12,6 @@ pub mod ser
     Serialize,
     Deserialize,
   };
-  // pub use serde_json::value::Value as JsonValue;
-  // pub use serde_json::value::Number as JsonNumber;
   pub use serde_json::
   {
     value::{ Value as JsonValue, Number as JsonNumber },
