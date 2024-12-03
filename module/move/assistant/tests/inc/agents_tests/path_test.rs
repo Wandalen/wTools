@@ -135,8 +135,7 @@ fn path_join_relative()
 
   let combined = orig_path.join( &append );
 
-  assert!( combined.is_ok() );
-  assert_eq!( combined.unwrap().inner(), "agent::completion" );
+  assert_eq!( combined.inner(), "agent::completion" );
 }
 
 #[ test ]
@@ -147,7 +146,7 @@ fn path_join_absolute()
 
   let combined = orig_path.join( &append );
 
-  assert!( combined.is_err() );
+  assert_eq!( combined.inner(), "::completion" );
 }
 
 #[ test ]
@@ -158,8 +157,7 @@ fn path_join_root()
 
   let combined = orig_path.join( &append );
 
-  assert!( combined.is_ok() );
-  assert_eq!( combined.unwrap().inner(), "::agent" );
+  assert_eq!( combined.inner(), "::agent" );
 }
 
 #[ test ]
@@ -170,8 +168,7 @@ fn path_join_trailing()
 
   let combined = orig_path.join( &append );
 
-  assert!( combined.is_ok() );
-  assert_eq!( combined.unwrap().inner(), "agents::completion" );
+  assert_eq!( combined.inner(), "agents::completion" );
 }
 
 #[ test ]

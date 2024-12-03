@@ -12,7 +12,6 @@ mod private
     sync::LazyLock,
   };
 
-  use itertools::Itertools;
   use regex::Regex;
 
   /// Path separator string.
@@ -99,23 +98,24 @@ mod private
 
     /// Creates an owned `Path` by joining a given path to `self`.
     ///
-    /// Returns `Err(io::Error)` is the `path` is an absolute path.
+    /// If path is joined with an absolute path, then this absolute
+    /// path will be returned.
     #[ inline ]
-    pub fn join( &self, path : &Path ) -> Result< Self, io::Error >
+    pub fn join( &self, path : &Path ) ->  Self
     {
       if path.is_absolute()
       {
-        Err( io::Error::from( io::ErrorKind::InvalidData ) )
+        path.clone()
       }
       else
       {
         if self.0.ends_with( PATH_SEPARATOR )
         {
-          Ok( Self( format!( "{}{}", self.0, path.0 ) ) )
+          Self( format!( "{}{}", self.0, path.0 ) )
         }
         else
         {
-          Ok( Self( format!( "{}::{}", self.0, path.0 ) ) )
+          Self( format!( "{}::{}", self.0, path.0 ) )
         }
       }
     }
