@@ -11,5 +11,6 @@ crate::mod_interface!
   layer context;
   layer scenario_raw;
   layer scenario_raw_processors;
+  layer scenario_processed;
 
 }

@@ -12,6 +12,12 @@ mod private
     sync::LazyLock,
   };
 
+  use serde::
+  {
+    Serialize,
+    Deserialize,
+  };
+
   use regex::Regex;
 
   /// Path separator string.
@@ -41,7 +47,7 @@ mod private
   ///
   /// Paths resemble filesystem path, path separator is `::`.
   /// Absolute path starts with `::`.
-  #[ derive( Debug, Clone, Eq, PartialEq, Hash ) ]
+  #[ derive( Debug, Clone, Eq, PartialEq, Hash, Serialize, Deserialize ) ]
   pub struct Path( String );
 
   impl Path
