@@ -229,9 +229,13 @@ mod private
   #[ derive( Debug, Default ) ]
   pub struct RowDescriptor
   {
+    /// Index of the row.
     pub irow : usize,
+    /// Height of the row.
     pub height : usize,
+    /// Type of the line: header or regular.
     pub typ : LineType,
+    /// Visibility of the row.
     pub vis : bool,
   }
 
@@ -240,8 +244,11 @@ mod private
   #[ derive( Debug, Default ) ]
   pub struct ColDescriptor< 'label >
   {
+    /// Index of the column.
     pub icol : usize,
+    /// Column width.
     pub width : usize,
+    /// Label of the column.
     pub label : &'label str,
   }
 
