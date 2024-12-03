@@ -67,6 +67,34 @@ mod private
     #[ inline ]
     pub fn parent( &self ) -> Option< Path >
     {
+      /// Find parent of a `Path`.
+      ///
+      /// This method uses `&str` as an argument instead of `Path`
+      /// in order to be more general and handle trailing `::` case.
+      fn find_parent( s : &str ) -> Option< &str >
+      {
+        s.rfind( PATH_SEPARATOR )
+        .map( | sep_pos | 
+        {
+          if sep_pos == 0
+          {
+            // We found root. We should not return string before `::`,
+            // as it will be empty.
+            Some( PATH_SEPARATOR )
+          }
+          else if sep_pos == s.len() - PATH_SEPARATOR.len()
+          {
+            // We found trailing `::`. We should continue looking for last separator.
+            find_parent( &s[ .. sep_pos ] )
+          }
+          else
+          {
+            Some( &s[ .. sep_pos ] )
+          }
+        })
+        .flatten()
+      }
+
       find_parent( self.0.as_str() )
       .map( | s | Self( s.to_string() ) )
     }
@@ -200,34 +228,6 @@ mod private
         }
       })
     }
-  }
-
-  /// Find parent of a `Path`.
-  ///
-  /// This method uses `&str` as an argument instead of `Path`
-  /// in order to be more general and handle trailing `::` case.
-  fn find_parent( s : &str ) -> Option< &str >
-  {
-    s.rfind( PATH_SEPARATOR )
-    .map( | sep_pos | 
-    {
-      if sep_pos == 0
-      {
-        // We found root. We should not return string before `::`,
-        // as it will be empty.
-        Some( PATH_SEPARATOR )
-      }
-      else if sep_pos == s.len() - PATH_SEPARATOR.len()
-      {
-        // We found trailing `::`. We should continue looking for last separator.
-        find_parent( &s[ .. sep_pos ] )
-      }
-      else
-      {
-        Some( &s[ .. sep_pos ] )
-      }
-    })
-    .flatten()
   }
 
   impl fmt::Display for Path
