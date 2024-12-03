@@ -223,17 +223,17 @@ mod private
       run( self.form() )
     }
 
-    /// Executes an external process using the system shell.
-    ///
-    /// This function abstracts over the differences between shells on Windows and Unix-based
-    /// systems, allowing for a unified interface to execute shell commands.
-    ///
-    /// # Parameters:
-    /// - `exec_path`: The command line string to execute in the shell.
-    ///
-    /// # Returns:
-    /// A `Result` containing a `Report` on success, which includes the command's output,
-    /// or an error if the command fails to execute or complete.
+    // Executes an external process using the system shell.
+    //
+    // This function abstracts over the differences between shells on Windows and Unix-based
+    // systems, allowing for a unified interface to execute shell commands.
+    //
+    // # Parameters:
+    // - `exec_path`: The command line string to execute in the shell.
+    //
+    // # Returns:
+    // A `Result` containing a `Report` on success, which includes the command's output,
+    // or an error if the command fails to execute or complete.
     // pub fn run_with_shell( self, exec_path : &str, ) -> Result< Report, Report >
     // {
     //   let ( program, args ) =
