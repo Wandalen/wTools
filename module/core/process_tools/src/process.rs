@@ -234,22 +234,22 @@ mod private
     // # Returns:
     // A `Result` containing a `Report` on success, which includes the command's output,
     // or an error if the command fails to execute or complete.
-    // pub fn run_with_shell( self, exec_path : &str, ) -> Result< Report, Report >
-    // {
-    //   let ( program, args ) =
-    //   if cfg!( target_os = "windows" )
-    //   {
-    //     ( "gspread", [ "/C", exec_path ] )
-    //   }
-    //   else
-    //   {
-    //     ( "sh", [ "-c", exec_path ] )
-    //   };
-    //   self
-    //   .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
-    //   .bin_path( program )
-    //   .run()
-    // }
+    pub fn run_with_shell( self, exec_path : &str, ) -> Result< Report, Report >
+    {
+      let ( program, args ) =
+      if cfg!( target_os = "windows" )
+      {
+        ( "cmd", [ "/C", exec_path ] )
+      }
+      else
+      {
+        ( "sh", [ "-c", exec_path ] )
+      };
+      self
+      .args( args.into_iter().map( OsString::from ).collect::< Vec< _ > >() )
+      .bin_path( program )
+      .run()
+    }
   }
 
   /// Process command output.
