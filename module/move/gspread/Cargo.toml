@@ -33,7 +33,10 @@ format_tools = { workspace = true, features = ["full"] }
 reflect_tools = { workspace = true, features = [ "full" ] }
 clap = { version = "4.5.20", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
-google-sheets4 = "*"
+google-sheets4 = "6.0.0"
+hyper = "1.5.1"
+hyper-util = "0.1.10"
+yup-oauth2 = "11.0.0"
 pth = "0.21.0"
 dotenv = "0.15"
 serde = { version = "1.0.213", features = ["derive"] }

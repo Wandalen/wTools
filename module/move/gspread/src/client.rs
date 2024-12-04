@@ -18,10 +18,7 @@ mod private
 
   pub use hyper_util::client::legacy::Client;
 
-  use std::
-  {
-    error::Error,
-  };
+  use std::error::Error;
 
   use crate::*;
   use secret::Secret;
