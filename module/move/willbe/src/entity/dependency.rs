@@ -260,8 +260,13 @@ mod private
       }
       DependenciesSort::Topological =>
       {
-        // qqq : too long line
-        graph::toposort( graph::construct( &graph ) ).map_err( | err | format_err!( "{}", err ) )?.into_iter().filter( | x | x != &root ).collect()
+        // aaa : too long line
+        // aaa : splited
+        graph::toposort( graph::construct( &graph ) )
+        .map_err( | err | format_err!( "{}", err ) )?
+        .into_iter()
+        .filter( | x | x != &root )
+        .collect()
       },
     };
 

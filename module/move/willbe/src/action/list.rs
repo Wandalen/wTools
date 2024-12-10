@@ -462,17 +462,32 @@ mod private
       .package_find_by_manifest( manifest_file )
       .ok_or_else( || format_err!( "Package not found in the workspace" ) )
       .err_with_report( report )?;
+      let version = if args.info.contains( &PackageAdditionalInfo::Version )
+      {
+        Some( package.version().to_string() )
+      }
+      else
+      {
+        None
+      };
+      let crate_dir = if args.info.contains( &PackageAdditionalInfo::Path )
+      {
+        Some( package.crate_dir() ).transpose()
+      }
+      else
+      {
+        Ok( None )
+      }
+      .err_with_report( report )?;
       let mut package_report = tool::ListNodeReport
       {
         name : package.name().to_string(),
-        // qqq : for Bohdan : too long lines
-        version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( package.version().to_string() ) } else { None },
-        // qqq : for Bohdan : don't put multiline if into struct constructor
-        crate_dir : if args.info.contains( &PackageAdditionalInfo::Path )
-        { Some( package.crate_dir() ).transpose() }
-        else
-        { Ok( None ) }
-        .err_with_report( report )?,
+        // aaa : for Bohdan : too long lines
+        // aaa : moved out
+        version,
+        // aaa : for Bohdan : don't put multiline if into struct constructor
+        // aaa : moved out
+        crate_dir,
         duplicate : false,
         normal_dependencies : vec![],
         dev_dependencies : vec![],
