@@ -33,11 +33,11 @@ mod private
     .context( "Fail to create workspace" )
   }
 
-  impl TryFrom< wca::Props > for WorkspaceNewProperties
+  impl TryFrom< wca::executor::Props > for WorkspaceNewProperties
   {
     type Error = error::untyped::Error;
 
-    fn try_from( value : wca::Props ) -> std::result::Result< Self, Self::Error >
+    fn try_from( value : wca::executor::Props ) -> std::result::Result< Self, Self::Error >
     {
       let mut this = Self::former();
 

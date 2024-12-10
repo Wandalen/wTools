@@ -36,12 +36,12 @@ mod private
     /// Represents the optimization setting for the test variant.
     optimization : optimization::Optimization,
     /// Contains additional features or characteristics of the test variant.
-    features : collection::BTreeSet<String>,
+    features : collection::BTreeSet< String >,
   }
 
   impl fmt::Display for TestVariant
   {
-    fn fmt( &self, f : &mut fmt::Formatter< '_ >) -> fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
       let features = if self.features.is_empty() { " ".to_string() } else { self.features.iter().join( " " ) };
       writeln!( f, "{} {} {}", self.optimization, self.channel, features )?;
@@ -58,7 +58,7 @@ mod private
 
   impl fmt::Display for TestPlan
   {
-    fn fmt( &self, f : &mut fmt::Formatter< '_ >) -> std::fmt::Result
+    fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> std::fmt::Result
     {
       writeln!( f, "Plan: " )?;
       for plan in &self.packages_plan

@@ -97,10 +97,10 @@ mod private
     Ok( () )
   }
 
-  impl TryFrom< wca::Props > for ListProperties
+  impl TryFrom< wca::executor::Props > for ListProperties
   {
     type Error = error::untyped::Error;
-    fn try_from( value : wca::Props ) -> Result< Self, Self::Error >
+    fn try_from( value : wca::executor::Props ) -> Result< Self, Self::Error >
     {
       let mut this = Self::former();
 

@@ -101,10 +101,10 @@ mod private
     }
   }
 
-  impl TryFrom< wca::Props > for PublishProperties
+  impl TryFrom< wca::executor::Props > for PublishProperties
   {
     type Error = error::untyped::Error;
-    fn try_from( value : wca::Props ) -> Result< Self, Self::Error >
+    fn try_from( value : wca::executor::Props ) -> Result< Self, Self::Error >
     {
       let mut this = Self::former();
 

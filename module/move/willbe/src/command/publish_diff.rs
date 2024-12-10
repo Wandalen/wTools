@@ -53,10 +53,10 @@ mod private
     Ok( () )
   }
 
-  impl TryFrom< wca::Props > for PublishDiffProperties
+  impl TryFrom< wca::executor::Props > for PublishDiffProperties
   {
     type Error = error::untyped::Error;
-    fn try_from( value : wca::Props ) -> Result< Self, Self::Error >
+    fn try_from( value : wca::executor::Props ) -> Result< Self, Self::Error >
     {
       let mut this = Self::former();
 

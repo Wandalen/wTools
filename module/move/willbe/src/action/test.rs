@@ -71,7 +71,7 @@ mod private
   // -> Result< TestsReport, ( TestsReport, Error ) >
   {
 
-    // qqq : incapsulate progress bar logic into some function of struct. don't keep it here
+    // aaa : incapsulate progress bar logic into some function of struct. don't keep it here
     // aaa : done
 
     let mut report = TestsReport::default();
@@ -164,7 +164,7 @@ Try to install it with `rustup install {}` command(-s)",
     ).err_with_report( &report )?;
 
     println!( "{plan}" );
-      // aaa : split on two functions for create plan and for execute
+    // aaa : split on two functions for create plan and for execute
     // aaa : it's already separated, look line: 203 : let result = tests_run( &options );
 
     let temp_path =  if temp
