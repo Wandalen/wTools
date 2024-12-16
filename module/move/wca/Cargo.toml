@@ -40,12 +40,12 @@ harness = false
 [dependencies]
 
 ## internal
-error_tools = { workspace = true, features = [ "default" ] }
-strs_tools = { workspace = true, features = [ "default" ] }
-mod_interface = { workspace = true, features = [ "default" ] }
-iter_tools = { workspace = true, features = [ "default" ] }
-former = { workspace = true, features = [ "default" ] }
-# xxx : qqq : optimize set of features
+error_tools = { workspace = true, features = [ "enabled", "error_typed", "error_untyped" ] }
+mod_interface = { workspace = true, features = [ "enabled" ] }
+iter_tools = { workspace = true, features = [ "enabled" ] }
+former = { workspace = true, features = [ "enabled", "derive_former" ] }
+# xxx : aaa : optimize set of features
+# aaa : done.
 
 ## external
 log = "0.4"

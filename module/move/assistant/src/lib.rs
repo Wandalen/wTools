@@ -4,10 +4,22 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 use mod_interface::mod_interface;
+use error_tools::thiserror;
 
 /// Define a private namespace for all its items.
 mod private
 {
+}
+
+/// Serde-related exports.
+pub mod ser
+{
+  pub use serde::
+  {
+    Serialize,
+    Deserialize,
+  };
+  pub use serde_with::*;
 }
 
 // pub mod client;
@@ -17,6 +29,11 @@ crate::mod_interface!
 
   layer client;
   layer debug;
+  layer commands;
+  layer actions;
+  layer secret;
+  layer util;
+  layer agents;
 
   exposed use ::reflect_tools::
   {

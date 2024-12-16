@@ -1,5 +1,14 @@
 use super::*;
-use the_module::VerifiedCommand;
+use the_module::
+{
+  parser::Parser,
+  VerifiedCommand,
+  CommandsAggregator,
+  HelpVariants,
+  Type,
+  Error,
+  ValidationError,
+};
 
 //
 
@@ -52,8 +61,7 @@ tests_impls!
     .perform();
 
     a_id!( (), ca.perform( "." ).unwrap() );
-    // qqq : this use case is disabled
-    // a_id!( (), ca.perform( ".cmd." ).unwrap() );
+    a_id!( (), ca.perform( ".cmd." ).unwrap() );
   }
 
   fn error_types()
@@ -136,10 +144,10 @@ tests_impls!
 
   fn string_subject_with_colon()
   {
-    let dictionary = &the_module::Dictionary::former()
+    let dictionary = &the_module::grammar::Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -150,7 +158,7 @@ tests_impls!
     )
     .perform();
     let parser = Parser;
-    let grammar = the_module::Verifier;
+    let grammar = the_module::verifier::Verifier;
     let executor = the_module::Executor::former().form();
 
     let raw_command = parser.parse( [ ".command", "qwe:rty", "nightly:true" ] ).unwrap().commands.remove( 0 );
@@ -163,10 +171,10 @@ tests_impls!
 
   fn no_prop_subject_with_colon()
   {
-    let dictionary = &the_module::Dictionary::former()
+    let dictionary = &the_module::grammar::Dictionary::former()
     .command
     (
-      the_module::Command::former()
+      the_module::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -177,7 +185,7 @@ tests_impls!
     .form();
 
     let parser = Parser;
-    let grammar = the_module::Verifier;
+    let grammar = the_module::verifier::Verifier;
     let executor = the_module::Executor::former().form();
 
     let raw_command = parser.parse( [ ".command", "qwe:rty" ] ).unwrap().commands.remove( 0 );
@@ -190,10 +198,10 @@ tests_impls!
 
   fn optional_prop_subject_with_colon()
   {
-    let dictionary = &the_module::Dictionary::former()
+    let dictionary = &the_module::grammar::Dictionary::former()
     .command
     (
-      the_module::Command::former()
+      the_module::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -205,7 +213,7 @@ tests_impls!
     .form();
 
     let parser = Parser;
-    let grammar = the_module::Verifier;
+    let grammar = the_module::verifier::Verifier;
     let executor = the_module::Executor::former().form();
 
     let raw_command = parser.parse( [ ".command", "qwe:rty" ] ).unwrap().commands.remove( 0 );
@@ -216,7 +224,8 @@ tests_impls!
     a_id!( (), executor.command( dictionary, grammar_command ).unwrap() );
   }
 
-  // qqq : make the following test work
+  // aaa : make the following test work
+  // aaa : works
   fn subject_with_spaces()
   {
     let query = "SELECT title, links, MIN( published ) FROM Frames";

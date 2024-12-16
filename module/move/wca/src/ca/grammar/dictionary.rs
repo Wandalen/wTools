@@ -6,8 +6,9 @@ mod private
   use former::Former;
   use indexmap::IndexMap;
   use iter_tools::Itertools;
+  use grammar::Command;
 
-  // qqq : `Former` does not handle this situation well
+  // xxx : `Former` does not handle this situation well
 
   // /// A collection of commands.
   // ///
@@ -27,8 +28,6 @@ mod private
     pub( crate ) order : Order,
   }
 
-  // qqq : IDK how to integrate it into the `CommandsAggregatorFormer`
-  //
   impl DictionaryFormer
   {
     pub fn command( mut self, command : Command ) -> Self
@@ -112,5 +111,5 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use Dictionary;
+  orphan use Dictionary;
 }

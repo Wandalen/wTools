@@ -64,22 +64,21 @@ mod private
 
 }
 
+#[ doc( inline ) ]
+#[ allow( unused_imports ) ]
+pub use own::*;
+
 /// Own namespace of the module.
 #[ allow( unused_imports ) ]
 pub mod own
 {
   use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::
   {
     orphan::*,
   };
 }
-
-#[ doc( inline ) ]
-#[ allow( unused_imports ) ]
-pub use own::*;
 
 /// Orphan namespace of the module.
 #[ allow( unused_imports ) ]
@@ -87,7 +86,6 @@ pub mod orphan
 {
   use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use super::
   {
     exposed::*,
@@ -103,6 +101,9 @@ pub mod orphan
 pub mod exposed
 {
   use super::*;
+  // Expose itself.
+  pub use super::super::mem;
+
   #[ doc( inline ) ]
   pub use prelude::*;
 }

@@ -5,8 +5,6 @@ mod private
   use crate::*;
   use ca::
   {
-    Command,
-    Routine,
     Type,
     formatter::
     {
@@ -15,13 +13,17 @@ mod private
     },
     tool::table::format_table,
   };
+  use verifier::VerifiedCommand;
+  use grammar::{ Command, Dictionary };
+  use executor::Routine;
 
   use iter_tools::Itertools;
   use std::rc::Rc;
   use error::untyped::format_err;
   use former::Former;
 
-  // qqq : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
+  // aaa : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
+  // aaa : it is
 
   /// Enum `LevelOfDetail` specifies the granularity of detail for rendering or processing:
   #[ derive( Debug, Default, Copy, Clone, PartialEq, Eq ) ]
@@ -69,7 +71,9 @@ mod private
     pub order : Order,
   }
 
-  // qqq : for Barsik : make possible to change properties order
+  // aaa : for Barsik : make possible to change properties order
+  // aaa : order option
+
   /// Generates help content as a formatted string based on a given dictionary and options.
   ///
   /// This function takes a `Dictionary` of terms or commands and a `HelpGeneratorOptions`
@@ -375,7 +379,7 @@ mod private
   ///
   /// ```
   /// # use wca::ca::help::{ HelpGeneratorOptions, HelpGeneratorFn };
-  /// use wca::{ Command, Dictionary };
+  /// use wca::grammar::{ Command, Dictionary };
   ///
   /// fn my_help_generator( dictionary : &Dictionary, args : HelpGeneratorOptions< '_ > ) -> String
   /// {

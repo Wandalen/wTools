@@ -80,7 +80,7 @@ standalone = [
   "standalone_collection_tools",
   "standalone_impls_index",
   "standalone_mem_tools",
-  "dep:mem_tools",
+  # "dep:mem_tools",
   "dep:typing_tools",
   "dep:diagnostics_tools",
   "dep:process_tools",
@@ -112,8 +112,8 @@ rand = { workspace = true }
 error_tools = { workspace = true, features = [ "full" ], optional = true }
 collection_tools = { workspace = true, features = [ "full" ], optional = true }
 impls_index = { workspace = true, features = [ "full" ], optional = true }
-
 mem_tools = { workspace = true, features = [ "full" ], optional = true }
+
 typing_tools = { workspace = true, features = [ "full" ], optional = true }
 diagnostics_tools = { workspace = true, features = [ "full" ], optional = true }
 process_tools = { workspace = true, features = [ "full" ], optional = true }
@@ -129,7 +129,6 @@ thiserror = { workspace = true, optional = true }
 hashbrown = { workspace = true, optional = true }
 # impls_index
 impls_index_meta = { workspace = true, optional = true }
-# mem_tools
 
 [build-dependencies]
 rustc_version = "0.4"

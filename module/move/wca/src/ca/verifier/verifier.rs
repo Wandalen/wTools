@@ -3,19 +3,55 @@ mod private
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
-  use ca::grammar::command::ValueDescription;
-  // use former::Former;
+  use help::{ HelpGeneratorOptions, LevelOfDetail, generate_help_content };
+  use grammar::{ Dictionary, Command, command::ValueDescription };
+  use executor::{ Args, Props };
   use std::collections::HashMap;
   use indexmap::IndexMap;
-  // use wtools::{ error, error::Result, err };
-  // use error::err;
-  use ca::help::{ HelpGeneratorOptions, LevelOfDetail, generate_help_content };
+  use verifier::VerifiedCommand;
+  use parser::{ Program, ParsedCommand };
+
+  #[ allow( missing_docs ) ]
+  #[ derive( Debug, error::typed::Error ) ]
+  pub enum VerificationError
+  {
+    #[ error
+    (
+      "Command not found. {} {}",
+      if let Some( phrase ) = name_suggestion { format!( "Maybe you mean `.{phrase}`?" ) } else { "Please use `.` command to see the list of available commands.".into() },
+      if let Some( info ) = command_info { format!( "Command info: `{info}`" ) } else { "".into() }
+    )]
+    CommandNotFound { name_suggestion: Option< String >, command_info: Option< String > },
+    #[ error( "Fail in command `.{command_name}` while processing subjects. {error}" ) ]
+    Subject { command_name: String, error: SubjectError },
+    #[ error( "Fail in command `.{command_name}` while processing properties. {error}" ) ]
+    Property { command_name: String, error: PropertyError },
+  }
+
+  #[ allow( missing_docs ) ]
+  #[ derive( Debug, error::typed::Error ) ]
+  pub enum SubjectError
+  {
+    #[ error( "Missing not optional subject" ) ]
+    MissingNotOptional,
+    #[ error( "Can not identify a subject: `{value}`" ) ]
+    CanNotIdentify { value: String },
+  }
+
+  #[ allow( missing_docs ) ]
+  #[ derive( Debug, error::typed::Error ) ]
+  pub enum PropertyError
+  {
+    #[ error( "Expected: {description:?}. Found: {input}" ) ]
+    Cast { description: ValueDescription, input: String },
+  }
+
   // xxx
 
   /// Converts a `ParsedCommand` to a `VerifiedCommand` by performing validation and type casting on values.
   ///
   /// ```
-  /// # use wca::{ Command, Type, Verifier, Dictionary, ParsedCommand };
+  /// # use wca::{ Type, verifier::Verifier, grammar::{ Dictionary, Command }, parser::ParsedCommand };
   /// # use std::collections::HashMap;
   /// # fn main() -> Result< (), Box< dyn std::error::Error > >
   /// # {
@@ -51,13 +87,15 @@ mod private
       dictionary : &Dictionary,
       raw_program : Program< ParsedCommand >
     )
-    -> error::untyped::Result< Program< VerifiedCommand > >
-    // qqq : use typed error
+    -> Result< Program< VerifiedCommand >, VerificationError >
+    // aaa : use typed error
+    // aaa : done
     {
-      let commands = raw_program.commands
+      let commands: Result< Vec< VerifiedCommand >, VerificationError > = raw_program.commands
       .into_iter()
       .map( | n | self.to_command( dictionary, n ) )
-      .collect::< error::untyped::Result< Vec< VerifiedCommand > > >()?;
+      .collect();
+      let commands = commands?;
 
       Ok( Program { commands } )
     }
@@ -112,14 +150,15 @@ mod private
       if Self::is_valid_command_variant( expected_subjects_count, raw_subjects_count, possible_subjects_count ) { Some( variant ) } else { None }
     }
 
-    // qqq : use typed error
+    // aaa : use typed error
+    // aaa : done.
     fn extract_subjects( command : &Command, raw_command : &ParsedCommand, used_properties : &[ &String ] )
     ->
-    error::untyped::Result< Vec< Value > >
+    Result< Vec< Value >, SubjectError >
     {
       let mut subjects = vec![];
 
-      let all_subjects = raw_command
+      let all_subjects: Vec< _ > = raw_command
       .subjects.clone().into_iter()
       .chain
       (
@@ -127,7 +166,7 @@ mod private
         .filter( |( key, _ )| !used_properties.contains( key ) )
         .map( |( key, value )| format!( "{key}:{value}" ) )
       )
-      .collect::< Vec< _ > >();
+      .collect();
       let mut rc_subjects_iter = all_subjects.iter();
       let mut current = rc_subjects_iter.next();
 
@@ -137,21 +176,22 @@ mod private
         {
           Some( v ) => v,
           None if *optional => continue,
-          _ => return Err( error::untyped::format_err!( "Missing not optional subject" ) ),
+          _ => return Err( SubjectError::MissingNotOptional ),
         };
         subjects.push( value );
         current = rc_subjects_iter.next();
       }
-      if let Some( value ) = current { return Err( error::untyped::format_err!( "Can not identify a subject: `{}`", value ) ) }
+      if let Some( value ) = current { return Err( SubjectError::CanNotIdentify { value: value.clone() } ) }
 
       Ok( subjects )
     }
 
-    // qqq : use typed error
+      // aaa : use typed error
+      // aaa : done.
     #[ allow( clippy::manual_map ) ]
     fn extract_properties( command: &Command, raw_command : HashMap< String, String > )
     ->
-    error::untyped::Result< HashMap< String, Value > >
+    Result< HashMap< String, Value >, PropertyError >
     {
       raw_command.into_iter()
       .filter_map
@@ -167,9 +207,9 @@ mod private
       .map
       (
         |( value_description, key, value )|
-        value_description.kind.try_cast( value ).map( | v | ( key.clone(), v ) )
+        value_description.kind.try_cast( value.clone() ).map( | v | ( key.clone(), v ) ).map_err( | _ | PropertyError::Cast { description: value_description.clone(), input: format!( "{key}: {value}" ) } )
       )
-      .collect::< error::untyped::Result< HashMap< _, _ > > >()
+      .collect()
     }
 
     fn group_properties_and_their_aliases< 'a, Ks >( aliases : &'a HashMap< String, String >, used_keys :  Ks ) -> Vec< &String >
@@ -190,7 +230,7 @@ mod private
       {
         reverse_aliases.get( key ).into_iter().flatten().copied().chain( Some( key ) )
       })
-      .collect::< Vec< _ > >()
+      .collect()
     }
 
     /// Converts raw command to grammatically correct
@@ -200,10 +240,11 @@ mod private
     /// qqq: doc
     /// # Panics
     /// qqq: doc
-    // qqq : use typed error
+    // aaa : use typed error
+    // aaa : done.
     pub fn to_command( &self, dictionary : &Dictionary, raw_command : ParsedCommand )
     ->
-    error::untyped::Result< VerifiedCommand >
+    Result< VerifiedCommand, VerificationError >
     {
       if raw_command.name.ends_with( '.' ) | raw_command.name.ends_with( ".?" )
       {
@@ -216,32 +257,31 @@ mod private
         });
       }
       let command = dictionary.command( &raw_command.name )
-      .ok_or_else::< error::untyped::Error, _ >
+      .ok_or_else::< VerificationError, _ >
       (
         ||
         {
           #[ cfg( feature = "on_unknown_suggest" ) ]
           if let Some( phrase ) = Self::suggest_command( dictionary, &raw_command.name )
           {
-            return error::untyped::format_err!( "Command not found. Maybe you mean `.{}`?", phrase )
+            return VerificationError::CommandNotFound { name_suggestion: Some( phrase ), command_info: None };
           }
-          error::untyped::format_err!( "Command not found. Please use `.` command to see the list of available commands." )
+          VerificationError::CommandNotFound { name_suggestion: None, command_info: None }
         }
       )?;
 
       let Some( cmd ) = Self::check_command( command, &raw_command ) else
       {
-        error::untyped::bail!
-        (
-          "`{}` command with specified subjects not found. Command info: `{}`",
-          &raw_command.name,
-          generate_help_content( dictionary, HelpGeneratorOptions::former().for_commands([ dictionary.command( &raw_command.name ).unwrap() ]).command_prefix( "." ).subject_detailing( LevelOfDetail::Detailed ).form() ).strip_suffix( "  " ).unwrap()
-        );
+        return Err( VerificationError::CommandNotFound
+        {
+          name_suggestion: Some( command.phrase.clone() ),
+          command_info: Some( generate_help_content( dictionary, HelpGeneratorOptions::former().for_commands([ dictionary.command( &raw_command.name ).unwrap() ]).command_prefix( "." ).subject_detailing( LevelOfDetail::Detailed ).form() ).strip_suffix( "  " ).unwrap().into() ),
+        } );
       };
 
-      let properties = Self::extract_properties( cmd, raw_command.properties.clone() )?;
+      let properties = Self::extract_properties( cmd, raw_command.properties.clone() ).map_err( | e | VerificationError::Property { command_name: cmd.phrase.clone(), error: e } )?;
       let used_properties_with_their_aliases = Self::group_properties_and_their_aliases( &cmd.properties_aliases, properties.keys() );
-      let subjects = Self::extract_subjects( cmd, &raw_command, &used_properties_with_their_aliases )?;
+      let subjects = Self::extract_subjects( cmd, &raw_command, &used_properties_with_their_aliases ).map_err( | e | VerificationError::Subject { command_name: cmd.phrase.clone(), error: e } )?;
 
       Ok( VerifiedCommand
       {
@@ -258,7 +298,8 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use Verifier;
+  orphan use Verifier;
+  orphan use VerificationError;
 
   // own use LevelOfDetail;
   // own use generate_help_content;
