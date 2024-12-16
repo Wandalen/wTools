@@ -182,7 +182,7 @@ mod private
   {
     /// Extracts template values from props for parameters required for this template.
     #[ must_use ]
-    pub fn values_from_props( &self, props : &wca::Props ) -> TemplateValues
+    pub fn values_from_props( &self, props : &wca::executor::Props ) -> TemplateValues
     {
       let values = self.descriptors
       .iter()

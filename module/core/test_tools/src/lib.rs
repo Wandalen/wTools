@@ -112,11 +112,16 @@ mod standalone
   pub mod collection;
   pub use collection as collection_tools;
 
-  /// impl index macroc.
+  /// impl and index macros.
   #[ path = "../../../../core/impls_index/src/impls_index/mod.rs" ]
   pub mod impls_index;
 
+  /// Memory tools.
+  #[ path = "../../../../core/mem_tools/src/mem.rs" ]
+  pub mod mem_tools;
+
 }
+
 #[ cfg( feature = "enabled" ) ]
 #[ cfg( feature = "standalone" ) ]
 pub use standalone::*;
@@ -128,12 +133,12 @@ pub use ::
   error_tools,
   collection_tools,
   impls_index,
+  mem_tools,
 };
 
 #[ cfg( feature = "enabled" ) ]
 pub use ::
 {
-  mem_tools,
   typing_tools,
   diagnostics_tools,
   process_tools,
@@ -162,7 +167,7 @@ pub mod own
   {
     error_tools::orphan::*,
     collection_tools::orphan::*,
-    // meta_tools::orphan::*,
+    impls_index::orphan::*,
     mem_tools::orphan::*,
     typing_tools::orphan::*,
     diagnostics_tools::orphan::*,
@@ -203,7 +208,7 @@ pub mod exposed
   {
     error_tools::exposed::*,
     collection_tools::exposed::*,
-    // meta_tools::exposed::*,
+    impls_index::exposed::*,
     mem_tools::exposed::*,
     typing_tools::exposed::*,
     diagnostics_tools::exposed::*,
@@ -226,7 +231,7 @@ pub mod prelude
   {
     error_tools::prelude::*,
     collection_tools::prelude::*,
-    // meta_tools::prelude::*,
+    impls_index::prelude::*,
     mem_tools::prelude::*,
     typing_tools::prelude::*,
     diagnostics_tools::prelude::*,

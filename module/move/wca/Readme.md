@@ -14,7 +14,7 @@ The tool to make CLI ( commands user interface ). It is able to aggregate extern
 ```rust
 #[ cfg( not( feature = "no_std" ) ) ]
 {
-    use wca::{ VerifiedCommand, Context, Type };
+    use wca::{ VerifiedCommand, Type };
 
     fn main()
     {
@@ -37,7 +37,7 @@ The tool to make CLI ( commands user interface ). It is able to aggregate extern
         .end()
       .perform();
 
-      let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
+      let args: Vec< String > = std::env::args().skip( 1 ).collect();
       ca.perform( args ).unwrap();
 
     }

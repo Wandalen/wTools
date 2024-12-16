@@ -4,13 +4,17 @@ mod private
   #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
-  // qqq : group
+  // aaa : group
+  // aaa : done
 
-  use std::collections::HashMap;
-  // use wtools::error::Result;
-
-  use std::{ fmt::Formatter, rc::Rc };
-  // use wtools::anyhow::anyhow;
+  use std::
+  {
+    collections::HashMap,
+    fmt::Formatter,
+    rc::Rc,
+  };
+  use verifier::VerifiedCommand;
+  use executor::Context;
 
   /// Command Args
   ///
@@ -19,7 +23,7 @@ mod private
   /// # Example:
   ///
   /// ```
-  /// use wca::{ Args, Value };
+  /// use wca::{ executor::Args, Value };
   ///
   /// let args = Args( vec![ Value::String( "Hello, World!".to_string() ) ] );
   ///
@@ -32,7 +36,7 @@ mod private
   ///
   /// ## Use case
   /// ```
-  /// # use wca::{ Routine, Handler, VerifiedCommand };
+  /// # use wca::{ executor::{ Routine, Handler }, VerifiedCommand };
   /// let routine = Routine::from( Handler::from
   /// (
   ///   | o : VerifiedCommand |
@@ -49,7 +53,7 @@ mod private
     /// Returns owned casted value by its index
     ///
     /// ```
-    /// # use wca::{ Args, Value };
+    /// # use wca::{ executor::Args, Value };
     ///
     /// let args = Args( vec![ Value::String( "Hello, World!".to_string() ) ] );
     ///
@@ -82,7 +86,7 @@ mod private
   /// # Example:
   ///
   /// ```
-  /// use wca::{ Props, Value };
+  /// use wca::{ executor::Props, Value };
   ///
   /// let props = Props( [ ( "hello".to_string(), Value::String( "World!".to_string() ) ) ].into() );
   /// let hello_prop : &str = props.get_owned( "hello" ).unwrap();
@@ -92,7 +96,7 @@ mod private
   ///
   /// ## Use case
   /// ```
-  /// # use wca::{ Routine, Handler, Props, VerifiedCommand };
+  /// # use wca::{ executor::{ Routine, Handler, Props }, VerifiedCommand };
   /// let routine = Routine::from( Handler::from
   /// (
   ///   | o : VerifiedCommand |
@@ -109,7 +113,7 @@ mod private
     /// Returns owned casted value by its key
     ///
     /// ```
-    /// # use wca::{ Props, Value };
+    /// # use wca::{ executor::Props, Value };
     ///
     /// let props = Props( [ ( "hello".to_string(), Value::String( "World!".to_string() ) ) ].into() );
     /// let hello_prop : &str = props.get_owned( "hello" ).unwrap();
@@ -135,7 +139,10 @@ mod private
   // aaa : done. now it works with the following variants:
   // fn(), fn(args), fn(props), fn(args, props), fn(context), fn(context, args), fn(context, props), fn(context, args, props)
 
-  // qqq : why not public?
+  // aaa : why not public? // aaa : described
+
+  // These type aliases are kept private to hide implementation details and prevent misuse.
+  // Exposing them would risk complicating the API and limit future refactoring flexibility.
   type RoutineWithoutContextFn = dyn Fn( VerifiedCommand ) -> error::untyped::Result< () >;
   type RoutineWithContextFn = dyn Fn( Context, VerifiedCommand ) -> error::untyped::Result< () >;
 
@@ -143,7 +150,7 @@ mod private
   /// Routine handle.
   ///
   /// ```
-  /// # use wca::{ Handler, Routine };
+  /// # use wca::executor::{ Handler, Routine };
   /// let routine = Routine::from( Handler::from
   /// (
   ///   ||
@@ -154,7 +161,7 @@ mod private
   /// ```
   ///
   /// ```
-  /// # use wca::{ Handler, Routine, VerifiedCommand };
+  /// # use wca::{ executor::{ Handler, Routine }, VerifiedCommand };
   /// let routine = Routine::from( Handler::from
   /// (
   ///   | o : VerifiedCommand |
@@ -165,7 +172,7 @@ mod private
   /// ```
   ///
   /// ```
-  /// # use wca::{ Handler, Routine };
+  /// # use wca::executor::{ Handler, Routine };
   /// let routine = Routine::from( Handler::from
   /// (
   ///   | ctx, o |
@@ -246,7 +253,7 @@ mod private
   ///
   /// - `WithoutContext`: A routine that does not require any context.
   /// - `WithContext`: A routine that requires a context.
-// qqq : for Bohdan : instead of array of Enums, lets better have 5 different arrays of different Routine and no enum
+// xxx clarification is needed : for Bohdan : instead of array of Enums, lets better have 5 different arrays of different Routine and no enum
   // to use statical dispatch
   #[ derive( Clone ) ]
   pub enum Routine
@@ -330,15 +337,25 @@ mod private
   }
 
   // xxx
+  // aaa : This is an untyped error because we want to provide a common interface for all commands, while also allowing users to propagate their own specific custom errors.
   impl IntoResult for core::convert::Infallible { fn into_result( self ) -> error::untyped::Result< () > { Ok( () ) } }
   impl IntoResult for () { fn into_result( self ) -> error::untyped::Result< () > { Ok( () ) } }
-  impl< E : core::fmt::Debug > IntoResult
+  impl< E : core::fmt::Debug + std::fmt::Display + 'static > IntoResult
   for error::untyped::Result< (), E >
   {
     fn into_result( self ) -> error::untyped::Result< () >
     {
-      self.map_err( | e | error::untyped::format_err!( "{e:?}" ))
-      // xxx : qqq : ?
+      use std::any::TypeId;
+      // if it's anyhow error we want to have full context(debug), and if it's not(this error) we want to display
+      if TypeId::of::< error::untyped::Error >() == TypeId::of::< E >()
+      {
+        self.map_err( | e | error::untyped::format_err!( "{e:?}" ))
+      }
+      else
+      {
+        self.map_err( | e | error::untyped::format_err!( "{e}" ))
+      }
+      // xxx : aaa : ?
     }
   }
 }
@@ -347,8 +364,8 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use Routine;
-  exposed use Handler;
-  exposed use Args;
-  exposed use Props;
+  orphan use Routine;
+  orphan use Handler;
+  orphan use Args;
+  orphan use Props;
 }

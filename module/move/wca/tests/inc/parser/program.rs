@@ -1,4 +1,5 @@
 use super::*;
+use the_module::parser::{ Program, ParsedCommand, Parser };
 
 //
 

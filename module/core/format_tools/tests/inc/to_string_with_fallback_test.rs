@@ -9,12 +9,12 @@ use the_module::
   WithDebug,
   WithDisplay,
   // the_module::to_string_with_fallback::Ref,
-  to_string_with_fallback,
+  to_string_with_fallback
 };
 
 use std::
 {
-  // fmt,
+  fmt,
   // collections::HashMap,
   borrow::Cow,
 };

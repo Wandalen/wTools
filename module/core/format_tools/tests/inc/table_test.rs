@@ -298,3 +298,62 @@ fn iterator_over_strings()
 //   assert!( got.contains( "│ 1627845583 │        [                   │                            │" ) );
 
 }
+
+#[ test ]
+fn test_vector_table()
+{
+  let column_names : Vec< Cow< 'static, str > > = vec![
+    "id".into(),
+    "created_at".into(),
+    "file_ids".into(),
+    "tools".into(),
+  ];
+
+  let rows : Vec< Vec< Cow< 'static, str > > > = vec!
+  [
+    vec!
+    [
+      "1".into(),
+      "1627845583".into(),
+      "[ file1, file2 ]".into(),
+      "".into(),
+    ],
+
+    vec!
+    [
+      "2".into(),
+      "13".into(),
+      "[ file3, file4 ]".into(),
+      "[ tool1 ]".into(),
+    ],
+  ];
+
+  use the_module::
+  {
+    output_format,
+    filter,
+    print,
+  };
+
+  let mut output = String::new();
+  let mut context = print::Context::new( &mut output, Default::default() );
+
+  let res = output_format::vector_table_write
+  (
+    column_names,
+    true,
+    rows,
+    &mut context,
+  );
+
+  assert!( res.is_ok() );
+
+  println!( "{}", output );
+
+  let exp = r#"│ id │ created_at │     file_ids     │   tools   │
+──────────────────────────────────────────────────
+│ 1  │ 1627845583 │ [ file1, file2 ] │           │
+│ 2  │     13     │ [ file3, file4 ] │ [ tool1 ] │"#;
+
+  a_id!( output.as_str(), exp );
+}

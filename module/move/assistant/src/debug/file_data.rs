@@ -8,6 +8,7 @@ use openai_api_rs::v1::file::FileData;
 #[ derive( Debug ) ]
 pub struct FileDataWrap( pub FileData );
 
+/// Manually implemented `Clone`, as `FileData` does not implement it.
 impl Clone for FileDataWrap
 {
   fn clone( &self ) -> Self

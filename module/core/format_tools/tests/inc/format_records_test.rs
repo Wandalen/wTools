@@ -317,3 +317,135 @@ fn filter_row_callback()
 //
 
 // xxx : enable
+
+#[ test ]
+fn test_width_limiting()
+{
+  use the_module::string;
+
+  for width in min_width()..max_width()
+  {
+    println!("width: {}", width);
+
+    let test_objects = test_object::test_objects_gen();
+    let as_table = AsTable::new( &test_objects );
+
+    let mut format = output_format::Records::default();
+    format.max_width = width;
+
+    let mut output = String::new();
+    let printer = print::Printer::with_format( &format );
+    let mut context = print::Context::new( &mut output, printer );
+
+    let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+
+    assert!( got.is_ok() );
+    
+    for line in string::lines( &output )
+    {
+      if line.starts_with(" = ") 
+      {
+        continue;
+      }
+
+      if line.chars().count() > width 
+      {
+        println!("{}", output);
+      }
+
+      assert!( line.chars().count() <= width );
+    }
+  }
+}
+
+#[ test ]
+fn test_error_on_unsatisfiable_limit()
+{
+  // 0 is a special value that signifies no limit.
+  for width in 1..( min_width() )
+  {
+    println!( "width: {}", width );
+
+    let test_objects = test_object::test_objects_gen();
+    let as_table = AsTable::new( &test_objects );
+
+    let mut format = output_format::Records::default();
+    format.max_width = width;
+
+    let mut output = String::new();
+    let printer = print::Printer::with_format( &format );
+    let mut context = print::Context::new( &mut output, printer );
+
+    let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+
+    assert!( got.is_err() );
+  }
+}
+
+#[ test ]
+fn test_table_not_grows()
+{
+  use the_module::string;
+
+  let expected_width = max_width();
+  
+  // The upper bound was chosen arbitrarily.
+  for width in ( expected_width + 1 )..500
+  {
+    println!( "width: {}", width );
+
+    let test_objects = test_object::test_objects_gen();
+    let as_table = AsTable::new( &test_objects );
+
+    let mut format = output_format::Records::default();
+    format.max_width = width;
+
+    let mut output = String::new();
+    let printer = print::Printer::with_format( &format );
+    let mut context = print::Context::new( &mut output, printer );
+
+    let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+
+    assert!( got.is_ok() );
+    println!("{}", output);
+
+    for line in string::lines( &output )
+    {
+      if line.starts_with(" = ") 
+      {
+        continue;
+      }
+
+      assert!( line.chars().count() <= expected_width );
+    }
+  }
+}
+
+/// Utility function for calculating minimum table width with `test_objects_gen()` with
+/// the default table style.
+fn min_width() -> usize
+{
+  let format = output_format::Records::default();
+  format.min_width()
+}
+
+/// Utility function for calculating default table width with `test_objects_gen()` with
+/// the default table style with table width limit equals to 0.
+fn max_width() -> usize
+{
+  use the_module::string;
+
+  let test_objects = test_object::test_objects_gen();
+  let as_table = AsTable::new( &test_objects );
+
+  let format = output_format::Records::default();
+
+  let mut output = String::new();
+  let printer = print::Printer::with_format( &format );
+  let mut context = print::Context::new( &mut output, printer );
+
+  let got = the_module::TableFormatter::fmt( &as_table, &mut context );
+  assert!( got.is_ok() );
+
+  string::lines( &output ).map( |s| s.chars().count() ).max().unwrap_or(0)
+}

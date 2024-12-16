@@ -15,6 +15,7 @@ Assist AI in writing code.
 """
 categories = [ "algorithms", "development-tools" ]
 keywords = [ "fundamental", "general-purpose" ]
+default-run = "main"
 
 [lints]
 workspace = true
@@ -32,15 +33,31 @@ enabled = [
   "reflect_tools/enabled",
 ]
 
+[[bin]]
+name = "main"
+path = "src/bin/main.rs"
+
+[[bin]]
+name = "list_resources"
+path = "src/bin/list_resources.rs"
+
 [dependencies]
 # xxx : qqq : optimze features
 mod_interface = { workspace = true, features = [ "full" ] }
 former = { workspace = true, features = [ "full" ] }
 format_tools = { workspace = true, features = [ "full" ] }
 reflect_tools = { workspace = true, features = [ "full" ] }
-openai-api-rs = { version = "=5.0.11" }
+openai-api-rs = { version = "=5.0.14" }
 tokio = { version = "1", features = ["full"] }
 dotenv = "0.15"
+clap = { version = "4.5.20", features = ["derive"] }
+pth = "0.21.0"
+serde = { version = "1.0.213", features = ["derive"] }
+serde_with = "3.11.0"
+error_tools = "0.17.0"
+derive_tools = { version = "0.32.0", features = ["full"] }
+regex = { version = "1.10.3" }
+serde_yaml = "0.9"
 
 [dev-dependencies]
 test_tools = { workspace = true }

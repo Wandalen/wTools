@@ -8,7 +8,7 @@ mod private
   /// # Examples:
   ///
   /// ```
-  /// # use wca::{ Routine, Handler, Context, Value, Args, Props, VerifiedCommand };
+  /// # use wca::{ executor::{ Routine, Handler, Args, Props, Context },  Value, VerifiedCommand };
   /// # use std::sync::{ Arc, Mutex };
   /// let routine = Routine::from( Handler::from
   /// (
@@ -34,7 +34,7 @@ mod private
   /// }
   /// assert_eq!( 1, *ctx.get::< Mutex< i32 > >().unwrap().lock().unwrap() );
   /// ```
-  // qqq : ?
+  // xxx clarification is needed qqq : поточнити
   #[ derive( Debug, Clone ) ]
   pub struct Context
   {
@@ -93,5 +93,5 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use Context;
+  orphan use Context;
 }

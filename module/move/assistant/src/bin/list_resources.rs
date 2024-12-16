@@ -19,7 +19,8 @@ use dotenv::dotenv;
 
 use assistant::
 {
-  client,
+  client::client,
+  Secret
 };
 
 #[ tokio::main ]
@@ -27,7 +28,9 @@ async fn main() -> Result< (), Box< dyn Error > >
 {
   dotenv().ok();
 
-  let client = client()?;
+  let secret = Secret::load()?;
+
+  let client = client( &secret )?;
 
   let response = client.file_list().await?;
   // println!( "Files: {:?}", response.data );

@@ -5,6 +5,7 @@ use openai_api_rs::v1::assistant;
 #[ derive( Debug ) ]
 pub struct AssistantObjectWrap( pub assistant::AssistantObject );
 
+/// Manually implemented `Clone`, as `FileData` does not implement it.
 impl Clone for AssistantObjectWrap
 {
   fn clone( &self ) -> Self

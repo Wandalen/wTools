@@ -147,10 +147,10 @@ Set at least one of them to true." );
     }
   }
 
-  impl TryFrom< wca::Props > for TestsProperties
+  impl TryFrom< wca::executor::Props > for TestsProperties
   {
     type Error = error::untyped::Error;
-    fn try_from( value : wca::Props ) -> Result< Self, Self::Error >
+    fn try_from( value : wca::executor::Props ) -> Result< Self, Self::Error >
     {
       let mut this = Self::former();
 

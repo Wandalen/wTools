@@ -114,6 +114,47 @@ mod private
     Lines::new( src.as_ref() )
   }
 
+  /// Returns an iterator over the lines of a string slice with text wrapping.
+  ///
+  /// This function provides an iterator that yields each line of the input string slice.
+  /// It is based on previous iterator `lines` but it also includes text wrapping that is
+  /// controlled via `limit_width` argument. If the string contains a trailing new line,
+  /// then an empty string will be yielded in this iterator.
+  ///
+  /// # Arguments
+  ///
+  /// * `src` - A reference to a type that can be converted to a string slice. This allows
+  ///   for flexibility in passing various string-like types.
+  ///
+  /// * `limit_width` - text wrapping limit. Lines that are longer than this parameter will
+  //    be split into smaller lines.
+  ///
+  /// # Returns
+  ///
+  /// An iterator of type `LinesWithLimit` that yields each line as a `&str`.
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// let text = "Hello\nWorld\n";
+  /// let mut lines = format_tools::string::lines_with_limit( text, 3 );
+  /// assert_eq!( lines.next(), Some( "Hel" ) );
+  /// assert_eq!( lines.next(), Some( "lo" ) );
+  /// assert_eq!( lines.next(), Some( "Wor" ) );
+  /// assert_eq!( lines.next(), Some( "ld" ) );
+  /// assert_eq!( lines.next(), Some( "" ) );
+  /// assert_eq!( lines.next(), None );
+  /// ```
+  pub fn lines_with_limit< S : AsRef< str > + ?Sized >
+  (
+    src : & S,
+    limit_width : usize
+  )
+  -> LinesWithLimit< '_ >
+  {
+    LinesWithLimit::new( src.as_ref(), limit_width )
+  }
+
   /// An iterator over the lines of a string slice.
   ///
   /// This struct implements the `Iterator` trait, allowing you to iterate over the lines
@@ -128,6 +169,7 @@ mod private
     has_trailing_newline : bool,
     finished : bool,
   }
+
   impl< 'a > Lines< 'a >
   {
     fn new( input : &'a str ) -> Self
@@ -172,6 +214,70 @@ mod private
     }
   }
 
+  /// An iterator over the lines of a string slice with text wrapping.
+  ///
+  /// This struct implements the `Iterator` trait, allowing you to iterate over the parts
+  /// of a string. It uses `Lines` iterator and splits lines if they are longer that the
+  /// `limit_width` parameter. If the string contains a trailing new line, then an empty
+  /// string will be yielded in this iterator.
+  ///
+  /// If `limit_width` is equal to 0, then no wrapping is applied, and behaviour of this
+  /// iterator is equals to `Lines` iterator.
+  #[ derive( Debug ) ]
+  pub struct LinesWithLimit< 'a >
+  {
+    lines : Lines< 'a >,
+    limit_width : usize,
+    cur : Option< &'a str >,
+  }
+
+  impl< 'a > LinesWithLimit< 'a >
+  {
+    fn new( input : &'a str, limit_width : usize ) -> Self
+    {
+      LinesWithLimit
+      {
+        lines : lines( input ),
+        limit_width,
+        cur : None,
+      }
+    }
+  }
+
+  impl< 'a > Iterator for LinesWithLimit< 'a >
+  {
+    type Item = &'a str;
+
+    fn next( &mut self ) -> Option< Self::Item >
+    {
+      if self.cur.is_none() || self.cur.is_some_and( str::is_empty )
+      {
+        self.cur = self.lines.next();
+      }
+
+      match self.cur
+      {
+        None => return None,
+
+        Some( cur ) =>
+        {
+          if self.limit_width == 0
+          {
+            self.cur = None;
+            Some( cur )
+          }
+          else
+          {
+            let (chunk, rest) = cur.split_at(self.limit_width.min(cur.len()));
+            self.cur = Some( rest );
+          
+            Some(chunk)
+          }
+        }
+      }
+    }
+  }
+
 }
 
 #[ allow( unused_imports ) ]
@@ -191,6 +297,8 @@ pub mod own
     size,
     lines,
     Lines,
+    lines_with_limit,
+    LinesWithLimit,
   };
 
 }

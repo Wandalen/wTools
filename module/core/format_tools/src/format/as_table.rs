@@ -32,7 +32,7 @@ mod private
   )
   where
     RowKey : table::RowKey,
-    Row : Cells< CellKey>,
+    Row : Cells< CellKey >,
     CellKey : table::CellKey + ?Sized,
     // CellRepr : table::CellRepr
   ;
@@ -41,7 +41,7 @@ mod private
   AsTable< 'table, Table, RowKey, Row, CellKey>
   where
     RowKey : table::RowKey,
-    Row : Cells< CellKey>,
+    Row : Cells< CellKey >,
     CellKey : table::CellKey + ?Sized,
     // CellRepr : table::CellRepr,
   {
@@ -56,7 +56,7 @@ mod private
   for AsTable< 'table, Table, RowKey, Row, CellKey>
   where
     RowKey : table::RowKey,
-    Row : Cells< CellKey>,
+    Row : Cells< CellKey >,
     CellKey : table::CellKey + ?Sized,
     // CellRepr : table::CellRepr,
   {
@@ -70,7 +70,7 @@ mod private
   for AsTable< 'table, Table, RowKey, Row, CellKey>
   where
     RowKey : table::RowKey,
-    Row : Cells< CellKey>,
+    Row : Cells< CellKey >,
     CellKey : table::CellKey + ?Sized,
     // CellRepr : table::CellRepr,
   {
@@ -86,7 +86,7 @@ mod private
   for AsTable< 'table, Table, RowKey, Row, CellKey>
   where
     RowKey : table::RowKey,
-    Row : Cells< CellKey>,
+    Row : Cells< CellKey >,
     CellKey : table::CellKey + ?Sized,
     // CellRepr : table::CellRepr,
   {
@@ -101,7 +101,7 @@ mod private
   where
     Table : fmt::Debug,
     RowKey : table::RowKey,
-    Row : Cells< CellKey>,
+    Row : Cells< CellKey >,
     CellKey : table::CellKey + ?Sized,
     // CellRepr : table::CellRepr,
   {
@@ -146,7 +146,7 @@ mod private
   for AsTable< 'table, Table, RowKey, Row, CellKey>
   where
     RowKey : table::RowKey,
-    Row : Cells< CellKey>,
+    Row : Cells< CellKey >,
     CellKey : table::CellKey + ?Sized,
     // CellRepr : table::CellRepr,
     Self : Copy,

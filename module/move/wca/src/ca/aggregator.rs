@@ -5,7 +5,6 @@ mod private
   use crate::*;
   use ca::
   {
-    Verifier,
     Executor,
     grammar::command::
     {
@@ -16,16 +15,17 @@ mod private
     },
     help::{ HelpGeneratorFn, HelpGeneratorOptions, HelpVariants },
   };
+  use verifier::{ Verifier, VerificationError, VerifiedCommand };
+  use parser::{ Program, Parser, ParserError };
+  use grammar::Dictionary;
+  use executor::Context;
 
-  // qqq : group uses
-  use std::collections::HashSet;
-  use std::fmt;
+  use std::
+  {
+    fmt,
+    collections::HashSet
+  };
   use former::StoragePreform;
-  // use wtools::
-  // {
-  // };
-  // use wtools::thiserror;
-  #[ allow( clippy::wildcard_imports ) ]
   use error::
   {
     // Result,
@@ -57,11 +57,11 @@ mod private
       /// source of the program
       input : String,
       /// original error
-      error : wError,
+      error : ParserError,
     },
     /// This variant represents errors that occur during grammar conversion.
     #[ error( "Can not identify a command.\nDetails: {0}" ) ]
-    Verifier( wError ),
+    Verifier( VerificationError ),
     /// This variant is used to represent errors that occur during executor conversion.
     #[ error( "Can not find a routine for a command.\nDetails: {0}" ) ]
     ExecutorConverter( wError ),
@@ -73,14 +73,14 @@ mod private
   {
     /// This variant is used to represent validation errors.
     /// It carries a `ValidationError` payload that provides additional information about the error.
-    #[ error( "Validation error. {0}" ) ]
+    #[ error( "Validation error\n{0}" ) ]
     Validation( ValidationError ),
     /// This variant represents execution errors.
-    #[ error( "Execution failed. {0:?}" ) ]
+    #[ error( "Execution failed\n{0:?}" ) ]
     Execution( wError ),
   }
 
-  // xxx : qqq : qqq2 : for Bohdan : one level is obviously redundant
+  // xxx : aaa : aaa2 : for Bohdan : one level is obviously redundant
   // Program< Namespace< ExecutableCommand_ > > -> Program< ExecutableCommand_ >
   // aaa : done. The concept of `Namespace` has been removed
   #[ allow( clippy::type_complexity ) ]
@@ -294,7 +294,7 @@ mod private
         callback.0( &program.join( " " ), &grammar_program );
       }
 
-      self.executor.program( &self.dictionary, grammar_program ).map_err( Error::Execution )
+      self.executor.program( &self.dictionary, grammar_program ).map_err( | e | Error::Execution( e.into() ) )
     }
   }
 }
@@ -304,8 +304,8 @@ mod private
 crate::mod_interface!
 {
   exposed use CommandsAggregator;
-  exposed use CommandsAggregatorFormer;
-  exposed use Error;
-  exposed use ValidationError;
+  orphan use CommandsAggregatorFormer;
+  orphan use Error;
+  orphan use ValidationError;
   exposed use Order;
 }
