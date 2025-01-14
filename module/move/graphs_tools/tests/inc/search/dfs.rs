@@ -126,13 +126,14 @@ fn test_dfs()
   };
 
   // Create search options
-  let search_options : search::Options< '_, search::Dfs, _, _ > = search::Options
-  // let search_options = search::Options
+  let search_options = search::Options
   {
     start_id : NodeId( 1 ),
     visit,
+    method : search::Dfs,
+    // ..Default::default()
     _extra : (),
-    _phantom : std::marker::PhantomData,
+    _phantom : Default::default(),
   };
 
   // Perform DFS

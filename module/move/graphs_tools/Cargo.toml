@@ -37,6 +37,7 @@ enabled = [
   # "data_type/enabled",
   # "strs_tools/enabled",
   "collection_tools/enabled",
+  "former/enabled",
 ]
 debug = []
 
@@ -49,6 +50,7 @@ collection_tools = { workspace = true, features = [ "default" ] }
 # strs_tools = { workspace = true, features = [ "default" ] }
 derive_tools = { workspace = true, features = [ "default" ] }
 # type_constructor ={ workspace = true, features = [ "default" ] }
+former = { workspace = true, features = [ "default" ] }
 
 [dev-dependencies]
 test_tools = { workspace = true }

@@ -1,14 +1,13 @@
 mod private
 {
+  use crate::*;
 
   // xxx : write setters and default
   /// Options for configuring a graph search.
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Default, Former ) ]
   pub struct Options< 'a, Method, Graph, Visit >
   where
     Graph : crate::abs::GraphDirected< 'a > + ?Sized,
-    // NodeId : Graph::NodeId,
-    // Node : Graph::Node + 'a,
     Visit : FnMut( &'a Graph::Node ),
     Method : super::Method,
   {
@@ -16,10 +15,12 @@ mod private
     pub start_id : Graph::NodeId,
     /// Function to call on each visited node.
     pub visit : Visit,
+    /// Method of searhcing.
+    pub method : Method,
     /// Additional options specific to the search method.
     pub _extra : Method::ExtraOptions,
     /// Phantom data to associate types and lifetimes.
-    pub _phantom : std::marker::PhantomData< ( Method, Graph::Node, &'a () ) >,
+    pub _phantom : std::marker::PhantomData< ( &'a (), ) >,
   }
 
   /// Trait for performing searches on directed graphs.
@@ -46,7 +47,7 @@ mod private
   }
 
   /// Trait for defining specific search strategies like DFS or BFS.
-  pub trait Method
+  pub trait Method : Default
   {
     /// Additional options for the search method.
     type ExtraOptions;
@@ -64,7 +65,7 @@ mod private
   }
 
   /// Depth-first search strategy.
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Default ) ]
   pub struct Dfs;
 
   impl Method for Dfs
@@ -101,7 +102,7 @@ mod private
   }
 
   /// Breadth-first search strategy.
-  #[ derive( Debug ) ]
+  #[ derive( Debug, Default ) ]
   pub struct Bfs;
 
   impl Method for Bfs

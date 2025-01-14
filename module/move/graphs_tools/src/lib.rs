@@ -16,6 +16,7 @@ use iter_tools::iter;
 // use meta_tools::meta;
 // use strs_tools::string;
 use meta_tools::mod_interface;
+use former::Former;
 
 /// Define a private namespace for all its items.
 mod private
