@@ -1,9 +1,10 @@
 [package]
-name = "graphs_tools"
+name = "graphs_tools_deprecated"
 version = "0.3.0"
 edition = "2021"
 authors = [
   "Kostiantyn Wandalen <wandalen@obox.systems>",
+  "Dmytro Kryvoruchko <dmytro.kr@obox.systems>",
 ]
 license = "MIT"
 readme = "Readme.md"

@@ -71,7 +71,6 @@ mod private
   where
     NodeId : IdentityInterface,
     EdgeId : IdentityInterface,
-
   {
     index!
     {
@@ -88,7 +87,6 @@ mod private
   where
     EdgeId : IdentityInterface,
     NodeId : IdentityInterface,
-
   {
     index!
     {

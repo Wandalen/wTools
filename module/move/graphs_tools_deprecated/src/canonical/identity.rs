@@ -54,7 +54,6 @@ mod private
   //
 
   // zzz : implement IdentityGenerableInterface for other identities. make it working
-  // zzz : use type constructors
 
   // types!
   // {

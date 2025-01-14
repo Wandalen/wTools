@@ -109,7 +109,6 @@ mod private
   where
     NodeId : IdentityInterface,
     EdgeId : IdentityInterface,
-
   {
   }
 
@@ -160,7 +159,6 @@ mod private
   where
     NodeId : IdentityInterface,
     EdgeId : IdentityInterface,
-
   {
     fn eq( &self, other : &Self ) -> bool
     {
@@ -173,7 +171,6 @@ mod private
   where
     NodeId : IdentityInterface,
     EdgeId : IdentityInterface,
-
   {}
 
 }
