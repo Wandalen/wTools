@@ -2,7 +2,16 @@ mod private
 {
   use crate::*;
 
-  // xxx : write setters and default
+  /// Former of Options for searching.
+  pub fn options< 'a, Method, Graph, Visit >() -> OptionsFormer< 'a, Method, Graph, Visit >
+  where
+    Graph : crate::abs::GraphDirected< 'a > + ?Sized,
+    Visit : FnMut( &'a Graph::Node ),
+    Method : super::Method,
+  {
+    Options::former()
+  }
+
   /// Options for configuring a graph search.
   #[ derive( Debug, Default, Former ) ]
   pub struct Options< 'a, Method, Graph, Visit >
@@ -21,6 +30,37 @@ mod private
     pub _extra : Method::ExtraOptions,
     /// Phantom data to associate types and lifetimes.
     pub _phantom : std::marker::PhantomData< ( &'a (), ) >,
+  }
+
+  impl< 'a, Method, Graph, Visit > Options< 'a, Method, Graph, Visit >
+  where
+    Graph : ForGraphDirected< 'a > + ?Sized,
+    Visit : FnMut( &'a Graph::Node ),
+    Method : super::Method,
+  {
+    pub fn search( self, graph : &'a Graph )
+    {
+      graph.search( self )
+    }
+  }
+
+  // xxx : adjust Former to eliminate need in this
+  impl< 'a, Method, Graph, Visit > OptionsFormer< 'a, Method, Graph, Visit >
+  where
+    Graph : ForGraphDirected< 'a > + ?Sized,
+    Visit : FnMut( &'a Graph::Node ),
+    Method : super::Method,
+  {
+    pub fn visit_set( mut self, visit : Visit ) -> Self
+    {
+      self.storage.visit = Some( visit );
+      self
+    }
+    pub fn method_set( mut self, method : Method ) -> Self
+    {
+      self.storage.method = Some( method );
+      self
+    }
   }
 
   /// Trait for performing searches on directed graphs.
@@ -50,7 +90,7 @@ mod private
   pub trait Method : Default
   {
     /// Additional options for the search method.
-    type ExtraOptions;
+    type ExtraOptions : Default;
 
     /// Execute the search on a graph.
     fn _search< 'a, Graph, Visit >
@@ -60,7 +100,7 @@ mod private
     )
     where
       Visit : FnMut( &'a Graph::Node ),
-      Graph : crate::abs::GraphDirected< 'a > + ?Sized,
+      Graph : ForGraphDirected< 'a > + ?Sized,
       Self : Sized;
   }
 
@@ -80,7 +120,7 @@ mod private
     )
     where
       Visit : FnMut( &'a Graph::Node ),
-      Graph : crate::abs::GraphDirected< 'a > + ?Sized,
+      Graph : ForGraphDirected< 'a > + ?Sized,
     {
       let mut visited = collection_tools::HashSet::new();
       let mut stack = collection_tools::Vec::new();
@@ -117,7 +157,7 @@ mod private
     )
     where
       Visit : FnMut( &'a Graph::Node ),
-      Graph : crate::abs::GraphDirected< 'a > + ?Sized,
+      Graph : ForGraphDirected< 'a > + ?Sized,
     {
       let mut visited = collection_tools::HashSet::new();
       let mut queue = collection_tools::VecDeque::new();
@@ -144,6 +184,7 @@ crate::mod_interface!
 {
   own use
   {
+    options,
     Method,
     Options,
     ForGraphDirected,

@@ -125,19 +125,39 @@ fn test_dfs()
     visited_nodes.push( node.id );
   };
 
-  // Create search options
-  let search_options = search::Options
-  {
-    start_id : NodeId( 1 ),
-    visit,
-    method : search::Dfs,
-    // ..Default::default()
-    _extra : (),
-    _phantom : Default::default(),
-  };
+  // // Create search options
+  // let search_options = search::Options
+  // {
+  //   start_id : NodeId( 1 ),
+  //   visit,
+  //   method : search::Dfs,
+  //   // ..Default::default()
+  //   _extra : (),
+  //   _phantom : Default::default(),
+  // };
 
-  // Perform DFS
-  graph.search( search_options );
+//   // Create search options
+//   let search_options = search::options()
+//   .start_id( 1 )
+//   .visit_set( visit )
+//   .method_set( search::Dfs )
+//   .form()
+//   ;
+//
+//   // Perform DFS
+//   graph.search( search_options );
+//
+//   // Assert the order of visited nodes
+//   assert_eq!( visited_nodes, vec![ NodeId( 1 ), NodeId( 4 ), NodeId( 3 ), NodeId( 2 ) ] );
+
+  // Create search options
+  let search_options = search::options()
+  .start_id( 1 )
+  .visit_set( visit )
+  .method_set( search::Dfs )
+  .form()
+  .search( &graph )
+  ;
 
   // Assert the order of visited nodes
   assert_eq!( visited_nodes, vec![ NodeId( 1 ), NodeId( 4 ), NodeId( 3 ), NodeId( 2 ) ] );
