@@ -1,22 +1,25 @@
 mod private
 {
+
+  // xxx : write setters and default
   /// Options for configuring a graph search.
   #[ derive( Debug ) ]
-  pub struct Options< 'a, Method, NodeId, Node, Visit >
+  pub struct Options< 'a, Method, Graph, Visit >
   where
-    NodeId : crate::abs::NodeId,
-    Node : crate::abs::Node + 'a,
-    Visit : FnMut( &'a Node ),
+    Graph : crate::abs::GraphDirected< 'a > + ?Sized,
+    // NodeId : Graph::NodeId,
+    // Node : Graph::Node + 'a,
+    Visit : FnMut( &'a Graph::Node ),
     Method : super::Method,
   {
     /// Starting node ID for the search.
-    pub start_id : NodeId,
+    pub start_id : Graph::NodeId,
     /// Function to call on each visited node.
     pub visit : Visit,
     /// Additional options specific to the search method.
     pub _extra : Method::ExtraOptions,
     /// Phantom data to associate types and lifetimes.
-    pub _phantom : std::marker::PhantomData< ( Method, Node, &'a () ) >,
+    pub _phantom : std::marker::PhantomData< ( Method, Graph::Node, &'a () ) >,
   }
 
   /// Trait for performing searches on directed graphs.
@@ -26,7 +29,7 @@ mod private
     fn search< Visit, Method >
     (
       &'a self,
-      o : Options< 'a, Method, Self::NodeId, Self::Node, Visit >,
+      o : Options< 'a, Method, Self, Visit >,
     )
     where
       Visit : FnMut( &'a Self::Node ),
@@ -52,7 +55,7 @@ mod private
     fn _search< 'a, Graph, Visit >
     (
       graph : &'a Graph,
-      o : Options< 'a, Self, Graph::NodeId, Graph::Node, Visit >,
+      o : Options< 'a, Self, Graph, Visit >,
     )
     where
       Visit : FnMut( &'a Graph::Node ),
@@ -72,7 +75,7 @@ mod private
     fn _search< 'a, Graph, Visit >
     (
       graph : &'a Graph,
-      mut o : Options< 'a, Self, Graph::NodeId, Graph::Node, Visit >,
+      mut o : Options< 'a, Self, Graph, Visit >,
     )
     where
       Visit : FnMut( &'a Graph::Node ),
@@ -109,7 +112,7 @@ mod private
     fn _search< 'a, Graph, Visit >
     (
       graph : &'a Graph,
-      mut o : Options< 'a, Self, Graph::NodeId, Graph::Node, Visit >,
+      mut o : Options< 'a, Self, Graph, Visit >,
     )
     where
       Visit : FnMut( &'a Graph::Node ),
@@ -133,6 +136,7 @@ mod private
       }
     }
   }
+
 }
 
 crate::mod_interface!

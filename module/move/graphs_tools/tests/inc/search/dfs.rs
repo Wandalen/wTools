@@ -126,7 +126,8 @@ fn test_dfs()
   };
 
   // Create search options
-  let search_options : search::Options< '_, search::Dfs, _, _, _ > = search::Options
+  let search_options : search::Options< '_, search::Dfs, _, _ > = search::Options
+  // let search_options = search::Options
   {
     start_id : NodeId( 1 ),
     visit,
@@ -134,11 +135,10 @@ fn test_dfs()
     _phantom : std::marker::PhantomData,
   };
 
-// xxx
-//   // Perform DFS
-//   graph.search( search_options );
-//
-//   // Assert the order of visited nodes
-//   assert_eq!( visited_nodes, vec![ NodeId( 1 ), NodeId( 4 ), NodeId( 3 ), NodeId( 2 ) ] );
+  // Perform DFS
+  graph.search( search_options );
+
+  // Assert the order of visited nodes
+  assert_eq!( visited_nodes, vec![ NodeId( 1 ), NodeId( 4 ), NodeId( 3 ), NodeId( 2 ) ] );
 
 }
