@@ -23,24 +23,30 @@ workspace = true
 features = [ "full" ]
 all-features = false
 
-
 [features]
 default = [
-  "enabled"
+  "enabled",
+  "debug",
 ]
 full = [
-  "enabled",
+  "default",
 ]
-no_std = []
-use_alloc = [ "no_std" ]
-enabled = [ "meta_tools/enabled", "iter_tools/enabled", "data_type/enabled", "strs_tools/enabled" ]
+enabled = [
+  "meta_tools/enabled",
+  "iter_tools/enabled",
+  # "data_type/enabled",
+  # "strs_tools/enabled",
+  "collection_tools/enabled",
+]
+debug = []
 
 [dependencies]
-indexmap = "~1.8"
+# indexmap = "~1.8"
 meta_tools = { workspace = true, features = [ "default" ] }
 iter_tools = { workspace = true, features = [ "default" ] }
-data_type = { workspace = true, features = [ "default" ] }
-strs_tools = { workspace = true, features = [ "default" ] }
+# data_type = { workspace = true, features = [ "default" ] }
+collection_tools = { workspace = true, features = [ "default" ] }
+# strs_tools = { workspace = true, features = [ "default" ] }
 derive_tools = { workspace = true, features = [ "default" ] }
 # type_constructor ={ workspace = true, features = [ "default" ] }
 
