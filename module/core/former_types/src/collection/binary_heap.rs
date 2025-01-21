@@ -5,6 +5,7 @@
 //! as subformer, enabling fluid and intuitive manipulation of binary heaps via builder patterns.
 //!
 
+#[ allow( clippy::wildcard_imports ) ]
 use crate::*;
 #[ allow( unused ) ]
 use collection_tools::BinaryHeap;
@@ -241,6 +242,7 @@ impl< E > BinaryHeapExt< E > for BinaryHeap< E >
 where
   E : Ord
 {
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn former() -> BinaryHeapFormer< E, (), BinaryHeap< E >, ReturnStorage >
   {
     BinaryHeapFormer::< E, (), BinaryHeap< E >, ReturnStorage >::new( ReturnStorage::default() )

@@ -1,7 +1,9 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
+  #[ allow( clippy::wildcard_imports ) ]
   use macro_tools::exposed::*;
 
   ///
@@ -11,6 +13,7 @@ mod private
   pub mod kw
   {
     super::syn::custom_keyword!( layer );
+    super::syn::custom_keyword!( reuse );
   }
 
   ///
@@ -23,6 +26,7 @@ mod private
     MicroModule( syn::token::Mod ),
     Layer( kw::layer ),
     Use( syn::token::Use ),
+    Reuse( kw::reuse ),
   }
 
   //
@@ -47,6 +51,10 @@ mod private
         {
           ElementType::Layer( input.parse()? )
         },
+        _case if lookahead.peek( kw::reuse ) =>
+        {
+          ElementType::Reuse( input.parse()? )
+        },
         _default =>
         {
           return Err( lookahead.error() )
@@ -63,12 +71,14 @@ mod private
   {
     fn to_tokens( &self, tokens : &mut proc_macro2::TokenStream )
     {
+      #[ allow( clippy::enum_glob_use ) ]
       use ElementType::*;
       match self
       {
         MicroModule( e ) => e.to_tokens( tokens ),
         Use( e ) => e.to_tokens( tokens ),
         Layer( e ) => e.to_tokens( tokens ),
+        Reuse( e ) => e.to_tokens( tokens ),
       }
     }
   }
@@ -104,7 +114,7 @@ mod private
 
       match element_type
       {
-        ElementType::Use( _ ) =>
+        ElementType::Use( _ ) | ElementType::Reuse( _ ) =>
         {
           use_elements = Some( input.parse()? );
           elements = syn::punctuated::Punctuated::new();
@@ -121,7 +131,7 @@ mod private
           {
             let ident = input.parse()?;
             elements = syn::punctuated::Punctuated::new();
-            elements.push( Pair::new( Default::default(), ident ) );
+            elements.push( Pair::new( AttributesOuter::default(), ident ) );
           }
         },
       }
@@ -194,8 +204,7 @@ mod private
         // code_print!( attr.path() );
         // code_print!( attr.meta );
 
-        let good = true
-          && code_to_str!( attr.path() ) == "debug"
+        let good = code_to_str!( attr.path() ) == "debug"
           // && code_to_str!( attr.meta ).is_empty()
         ;
 
@@ -261,6 +270,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use orphan::*;
 }
@@ -269,6 +279,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use exposed::*;
 }
@@ -277,6 +288,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use prelude::*;
   pub use private::
@@ -292,6 +304,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use private::
   {

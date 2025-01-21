@@ -11,6 +11,8 @@
 //!
 //! This is useful for attributes that need to enable or disable features or flags.
 
+use core::marker::PhantomData;
+#[ allow( clippy::wildcard_imports ) ]
 use crate::*;
 // use former_types::Assign;
 
@@ -35,6 +37,7 @@ impl< Marker > AttributePropertySingletone< Marker >
 {
 
   /// Unwraps and returns the internal optional boolean value.
+  #[ must_use ]
   #[ inline( always ) ]
   pub fn internal( self ) -> bool
   {
@@ -42,6 +45,7 @@ impl< Marker > AttributePropertySingletone< Marker >
   }
 
   /// Returns a reference to the internal optional boolean value.
+  #[ must_use ]
   #[ inline( always ) ]
   pub fn ref_internal( &self ) -> &bool
   {
@@ -72,9 +76,10 @@ where
 impl< Marker > From< bool > for AttributePropertySingletone< Marker >
 {
   #[ inline( always ) ]
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn from( src : bool ) -> Self
   {
-    Self( src, Default::default() )
+    Self( src, PhantomData::default() )
   }
 }
 

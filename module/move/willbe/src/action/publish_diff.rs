@@ -1,6 +1,8 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use path::PathBuf;
@@ -22,6 +24,7 @@ mod private
   pub struct PublishDiffOptions
   {
     path : PathBuf,
+    exclude_dev_dependencies : bool,
     keep_archive : Option< PathBuf >,
   }
 
@@ -42,6 +45,7 @@ mod private
       let root_name = tree.name.clone();
       let root_version = tree.version.as_ref().unwrap().clone();
 
+      #[ allow( clippy::items_after_statements, clippy::option_map_unit_fn ) ]
       fn modify( diffs : &HashMap< AbsolutePath, DiffReport >, tree : &mut ListNodeReport )
       {
         let path = tree.crate_dir.take().unwrap();
@@ -74,7 +78,7 @@ mod private
 
         for dep in &mut tree.normal_dependencies
         {
-          modify( diffs, dep )
+          modify( diffs, dep );
         }
       }
       modify( &self.diffs, &mut tree );
@@ -82,7 +86,7 @@ mod private
       let root = AbsolutePath::from( root_path );
       let diff = self.diffs.get( &root ).unwrap();
       let printer = TreePrinter::new( &tree );
-      writeln!( f, "Tree:\n{}", printer )?;
+      writeln!( f, "Tree:\n{printer}" )?;
       if diff.has_changes()
       {
         writeln!( f, "Changes detected in `{root_name} {root_version}`:" )?;
@@ -91,7 +95,7 @@ mod private
       {
         writeln!( f, "No changes found in `{root_name} {root_version}`. Files:" )?;
       }
-      write!( f, "{}", diff )?;
+      write!( f, "{diff}" )?;
 
       Ok( () )
     }
@@ -105,7 +109,7 @@ mod private
     let path = AbsolutePath::try_from( o.path )?;
     let dir = CrateDir::try_from( path.clone() )?;
 
-    let list = action::list
+    let list = action::list_all
     (
       action::list::ListOptions::former()
       .path_to_manifest( dir )
@@ -141,21 +145,22 @@ mod private
       let name = &package.name()?;
       let version = &package.version()?;
 
-    _ = cargo::pack
-    (
-      cargo::PackOptions::former()
-      .path( dir.as_ref() )
-      .allow_dirty( true )
-      .checking_consistency( false )
-      .dry( false ).form()
-    )?;
-    let l = CrateArchive::read( packed_crate::local_path( name, version, dir )? )?;
-    let r = CrateArchive::download_crates_io( name, version ).unwrap();
+      _ = cargo::pack
+      (
+        cargo::PackOptions::former()
+        .path( dir.as_ref() )
+        .allow_dirty( true )
+        .checking_consistency( false )
+        .exclude_dev_dependencies( o.exclude_dev_dependencies)
+        .dry( false ).form()
+      )?;
+      let l = CrateArchive::read( packed_crate::local_path( name, version, dir )? )?;
+      let r = CrateArchive::download_crates_io( name, version ).unwrap();
 
 
       if let Some( out_path ) = &o.keep_archive
       {
-        _ = std::fs::create_dir_all( &out_path );
+        _ = std::fs::create_dir_all( out_path );
         for path in r.list()
         {
           let local_path = out_path.join( path );
@@ -171,7 +176,7 @@ mod private
       let report = tasks[ current_idx ].info.normal_dependencies.clone();
       let printer : Vec< TreePrinter > = report
       .iter()
-      .map( | rep | TreePrinter::new( rep ) )
+      .map( TreePrinter::new )
       .collect();
       tasks.extend( printer );
 

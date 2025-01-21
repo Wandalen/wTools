@@ -1,6 +1,6 @@
 <!-- {{# generate.module_header{} #}} -->
 
-# Module :: proc_macro_tools
+# Module :: `proc_macro_tools`
 <!--{ generate.module_header.start() }-->
  [![experimental](https://raster.shields.io/static/v1?label=&message=experimental&color=orange)](https://github.com/emersion/stability-badges#experimental) [![rust-status](https://github.com/Wandalen/wTools/actions/workflows/module_macro_tools_push.yml/badge.svg)](https://github.com/Wandalen/wTools/actions/workflows/module_macro_tools_push.yml) [![docs.rs](https://img.shields.io/docsrs/macro_tools?color=e3e8f0&logo=docs.rs)](https://docs.rs/macro_tools) [![Open in Gitpod](https://raster.shields.io/static/v1?label=try&message=online&color=eee&logo=gitpod&logoColor=eee)](https://gitpod.io/#RUN_PATH=.,SAMPLE_FILE=module%2Fcore%2Fmacro_tools%2Fexamples%2Fmacro_tools_trivial.rs,RUN_POSTFIX=--example%20macro_tools_trivial/https://github.com/Wandalen/wTools) [![discord](https://img.shields.io/discord/872391416519737405?color=eee&logo=discord&logoColor=eee&label=ask)](https://discord.gg/m3YfbXpUUY)
 <!--{ generate.module_header.end }-->
@@ -67,10 +67,10 @@ using reusable components like `AttributePropertyBoolean`.
 - `AttributeComponent`: A trait that defines how an attribute should be parsed from a `syn::Attribute`.
 - `AttributePropertyComponent`: A trait that defines a marker for attribute properties.
 - `Assign`: A trait that simplifies the logic of assigning fields to a struct. Using a
-component-based approach requires each field to have a unique type, which aligns with the
-strengths of strongly-typed languages. This method ensures that the logic of
-assigning values to fields is encapsulated within the fields themselves, promoting modularity
-and reusability.
+  component-based approach requires each field to have a unique type, which aligns with the
+  strengths of strongly-typed languages. This method ensures that the logic of
+  assigning values to fields is encapsulated within the fields themselves, promoting modularity
+  and reusability.
 
 The reusable property components from the library come with parameters that distinguish
 different properties of the same type. This is useful when an attribute has multiple boolean

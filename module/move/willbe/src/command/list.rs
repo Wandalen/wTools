@@ -1,6 +1,8 @@
 /// Internal namespace.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use std::
@@ -20,6 +22,7 @@ mod private
   use former::Former;
 
   #[ derive( Former ) ]
+  #[ allow( clippy::struct_excessive_bools ) ]
   struct ListProperties
   {
     #[ former( default = ListFormat::Tree ) ]
@@ -46,6 +49,8 @@ mod private
   ///
   /// List workspace packages.
   ///
+  /// # Errors
+  /// qqq: doc
 
   // qqq : typed error
   pub fn list( o : VerifiedCommand ) -> error::untyped::Result< () >
@@ -80,7 +85,7 @@ mod private
     .dependency_categories( categories )
     .form();
 
-    match action::list( o )
+    match action::list_all( o )
     {
       Ok( report ) =>
       {
@@ -97,10 +102,10 @@ mod private
     Ok( () )
   }
 
-  impl TryFrom< wca::Props > for ListProperties
+  impl TryFrom< wca::executor::Props > for ListProperties
   {
     type Error = error::untyped::Error;
-    fn try_from( value : wca::Props ) -> Result< Self, Self::Error >
+    fn try_from( value : wca::executor::Props ) -> Result< Self, Self::Error >
     {
       let mut this = Self::former();
 

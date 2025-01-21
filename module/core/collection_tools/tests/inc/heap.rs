@@ -62,7 +62,7 @@ fn iters()
   impl IntoIterator for MyContainer
   {
     type Item = i32;
-    type IntoIter = the_module::heap::IntoIter< i32 >;
+    type IntoIter = the_module::binary_heap::IntoIter< i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -73,7 +73,7 @@ fn iters()
   impl< 'a > IntoIterator for &'a MyContainer
   {
     type Item = &'a i32;
-    type IntoIter = the_module::heap::Iter< 'a, i32 >;
+    type IntoIter = the_module::binary_heap::Iter< 'a, i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {

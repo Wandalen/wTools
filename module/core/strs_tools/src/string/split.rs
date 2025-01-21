@@ -72,7 +72,7 @@ mod private
       {
         if let Some( x ) =  src.find( pat )
         {
-          r.push( ( x, x + pat.len() ) )
+          r.push( ( x, x + pat.len() ) );
         }
       }
 
@@ -116,7 +116,7 @@ mod private
 
   impl< 'a, D : Searcher + Clone > SplitFastIterator< 'a, D >
   {
-    #[ allow( dead_code ) ]
+    #[ allow( dead_code, clippy::needless_pass_by_value ) ]
     fn new( o : impl SplitOptionsAdapter< 'a, D > ) -> Self
     {
       Self
@@ -154,12 +154,10 @@ mod private
             {
               return None;
             }
-            else
-            {
-              self.counter -= 1;
-              self.stop_empty = true;
-              return Some( Split { string : "", typ : SplitType::Delimeted } );
-            }
+
+            self.counter -= 1;
+            self.stop_empty = true;
+            return Some( Split { string : "", typ : SplitType::Delimeted } );
           }
 
           if start == 0 && end != 0
@@ -170,7 +168,7 @@ mod private
           let mut next = &self.iterable[ ..start ];
           if start == end && self.counter >= 3
           {
-            next = &self.iterable[ ..start + 1 ];
+            next = &self.iterable[ ..=start ];
             start += 1;
           }
 
@@ -229,6 +227,7 @@ mod private
   ///
 
   #[ derive( Debug ) ]
+  #[ allow( clippy::struct_excessive_bools ) ]
   pub struct SplitIterator< 'a >
   {
     iterator : SplitFastIterator< 'a, Vec< &'a str > >,
@@ -247,6 +246,7 @@ mod private
 
   impl< 'a > SplitIterator< 'a >
   {
+    #[ allow( clippy::needless_pass_by_value ) ]
     fn new( o : impl SplitOptionsAdapter< 'a, Vec< &'a str > > ) -> Self
     {
       let iterator;
@@ -338,10 +338,7 @@ mod private
               {
                 return self.next();
               }
-              else
-              {
-                return Some( split );
-              }
+              return Some( split );
             },
             None =>
             {
@@ -405,6 +402,7 @@ mod private
   ///
 
   #[ derive( Debug ) ]
+  #[ allow( clippy::struct_excessive_bools ) ]
   pub struct SplitOptions< 'a, D >
   where
     D : Searcher + Default + Clone,
@@ -422,7 +420,8 @@ mod private
 
   impl< 'a > SplitOptions< 'a, Vec< &'a str > >
   {
-    /// Produces SplitIterator.
+    /// Produces `SplitIterator`.
+    #[ must_use ]
     pub fn split( self ) -> SplitIterator< 'a >
     where
       Self : Sized,
@@ -435,7 +434,7 @@ mod private
   where
     D : Searcher + Default + Clone
   {
-    /// Produces SplitFastIterator.
+    /// Produces `SplitFastIterator`.
     pub fn split_fast( self ) -> SplitFastIterator< 'a, D >
     where
       Self : Sized,
@@ -561,9 +560,10 @@ mod private
   }
 
   ///
-  /// Former for SplitOptions.
+  /// Former for `SplitOptions`.
   ///
 
+  #[ allow( clippy::struct_excessive_bools ) ]
   #[ derive( Debug ) ]
   pub struct SplitOptionsFormer< 'a >
   {
@@ -637,6 +637,7 @@ mod private
   ///   .perform();
   /// ```
 
+  #[ must_use ]
   pub fn split< 'a >() -> SplitOptionsFormer< 'a >
   {
     SplitOptionsFormer::new( < &str >::default() )
@@ -651,6 +652,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use orphan::*;
   pub use private::
@@ -668,6 +670,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use exposed::*;
 }
@@ -676,6 +679,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use super::own as split;
 
@@ -690,6 +694,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use private::SplitOptionsAdapter;
 }

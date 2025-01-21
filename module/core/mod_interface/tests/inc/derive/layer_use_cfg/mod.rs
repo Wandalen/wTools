@@ -12,12 +12,13 @@ mod private
 }
 
 /// layer_a
-mod layer_a;
+pub mod layer_a;
 /// layer_b
-mod layer_b;
+pub mod layer_b;
 
-mod_interface!
+the_module::mod_interface!
 {
+  // #![ debug ]
 
   /// layer_a
   use super::layer_a;
@@ -33,4 +34,3 @@ mod_interface!
 //
 
 include!( "../../only_test/layer_simple_only_test.rs" );
-

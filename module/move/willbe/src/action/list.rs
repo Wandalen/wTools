@@ -1,6 +1,8 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use std::{ fmt, str };
@@ -13,7 +15,7 @@ mod private
   };
   use error::
   {
-    ErrWith, err,
+    ErrWith,
     untyped::{ Context, format_err },
   };
   use tool::{ TreePrinter, ListNodeReport };
@@ -39,7 +41,7 @@ mod private
       {
         "tree" => ListFormat::Tree,
         "toposort" => ListFormat::Topological,
-        e => return Err( err!( "Unknown format '{}'. Available values : [tree, toposort]", e ))
+        e => return Err( error::untyped::format_err!( "Unknown format '{}'. Available values : [tree, toposort]", e ))
       };
 
       Ok( value )
@@ -105,7 +107,7 @@ mod private
       {
         "nothing" => ListFilter::Nothing,
         "local" => ListFilter::Local,
-        e => return Err( err!( "Unknown filter '{}'. Available values : [nothing, local]", e ) )
+        e => return Err( error::untyped::format_err!( "Unknown filter '{}'. Available values : [nothing, local]", e ) )
       };
 
       Ok( value )
@@ -285,7 +287,7 @@ mod private
         (
           f,
           "{}",
-          v.iter().map( | l | l.to_string() ).collect::< Vec< _ > >().join( "\n" )
+          v.iter().map( std::string::ToString::to_string ).collect::< Vec< _ > >().join( "\n" )
         ),
 
         Self::List( v ) =>
@@ -321,6 +323,7 @@ mod private
     pub path : Option< ManifestFile >,
   }
 
+  #[ allow( clippy::trivially_copy_pass_by_ref, clippy::needless_lifetimes ) ]
   fn process_package_dependency< 'a >
   (
     workspace : &Workspace,
@@ -347,7 +350,7 @@ mod private
         name : dependency.name(),
         // unwrap should be safe because of `semver::VersionReq`
         version : dependency.req(),
-        path : dependency.crate_dir().map( | p | p.manifest_file() ),
+        path : dependency.crate_dir().map( CrateDir::manifest_file ),
       };
       // format!( "{}+{}+{}", dependency.name(), dependency.req(), dependency.crate_dir().unwrap().manifest_file() );
       // let dep_id = format!( "{}+{}+{}", dependency.name(), dependency.req(), dependency.path().as_ref().map( | p | p.join( "Cargo.toml" ) ).unwrap_or_default() );
@@ -402,7 +405,7 @@ mod private
       name : dep.name(),
       // unwrap should be safe because of `semver::VersionReq`
       version : dep.req(),
-      path : dep.crate_dir().map( | p | p.manifest_file() ),
+      path : dep.crate_dir().map( CrateDir::manifest_file ),
     };
     // if this is a cycle (we have visited this node before)
     if visited.contains( &dep_id )
@@ -436,7 +439,7 @@ mod private
   /// - `Result<ListReport, (ListReport, Error)>` - A result containing the list report if successful,
   ///   or a tuple containing the list report and error if not successful.
   #[ cfg_attr( feature = "tracing", tracing::instrument ) ]
-  pub fn list( args : ListOptions )
+  pub fn list_all( args : ListOptions )
   ->
   ResultWithReport< ListReport, error::untyped::Error > // qqq : should be specific error
   // qqq : use typed error
@@ -462,17 +465,32 @@ mod private
       .package_find_by_manifest( manifest_file )
       .ok_or_else( || format_err!( "Package not found in the workspace" ) )
       .err_with_report( report )?;
+      let version = if args.info.contains( &PackageAdditionalInfo::Version )
+      {
+        Some( package.version().to_string() )
+      }
+      else
+      {
+        None
+      };
+      let crate_dir = if args.info.contains( &PackageAdditionalInfo::Path )
+      {
+        Some( package.crate_dir() ).transpose()
+      }
+      else
+      {
+        Ok( None )
+      }
+      .err_with_report( report )?;
       let mut package_report = tool::ListNodeReport
       {
         name : package.name().to_string(),
-        // qqq : for Bohdan : too long lines
-        version : if args.info.contains( &PackageAdditionalInfo::Version ) { Some( package.version().to_string() ) } else { None },
-        // qqq : for Bohdan : don't put multiline if into struct constructor
-        crate_dir : if args.info.contains( &PackageAdditionalInfo::Path )
-        { Some( package.crate_dir() ).transpose() }
-        else
-        { Ok( None ) }
-        .err_with_report( report )?,
+        // aaa : for Bohdan : too long lines
+        // aaa : moved out
+        version,
+        // aaa : for Bohdan : don't put multiline if into struct constructor
+        // aaa : moved out
+        crate_dir,
         duplicate : false,
         normal_dependencies : vec![],
         dev_dependencies : vec![],
@@ -527,7 +545,7 @@ mod private
         .collect();
         for package in packages
         {
-          tree_package_report( package.manifest_file().unwrap(), &mut report, &mut visited )?
+          tree_package_report( package.manifest_file().unwrap(), &mut report, &mut visited )?;
         }
         let ListReport::Tree( tree ) = report else { unreachable!() };
         let printer = merge_build_dependencies( tree );
@@ -611,12 +629,12 @@ mod private
               {
                 if args.info.contains( &PackageAdditionalInfo::Version )
                 {
-                  name.push_str( " " );
+                  name.push( ' ' );
                   name.push_str( &p.version().to_string() );
                 }
                 if args.info.contains( &PackageAdditionalInfo::Path )
                 {
-                  name.push_str( " " );
+                  name.push( ' ' );
                   name.push_str( &p.manifest_file()?.to_string() );
                   // aaa : is it safe to use unwrap here? // aaa : should be safe, but now returns an error
                 }
@@ -664,12 +682,12 @@ mod private
             {
               if args.info.contains( &PackageAdditionalInfo::Version )
               {
-                name.push_str( " " );
+                name.push( ' ' );
                 name.push_str( &p.version().to_string() );
               }
               if args.info.contains( &PackageAdditionalInfo::Path )
               {
-                name.push_str( " " );
+                name.push( ' ' );
                 name.push_str( &p.manifest_file().unwrap().to_string() );
               }
             }
@@ -742,7 +760,7 @@ mod private
     }
     let printer : Vec< TreePrinter > = report
     .iter()
-    .map( | rep | TreePrinter::new( rep ) )
+    .map( TreePrinter::new )
     .collect();
     printer
   }
@@ -774,15 +792,15 @@ mod private
   fn rearrange_duplicates( mut report : Vec< tool::ListNodeReport > ) -> Vec< tool::TreePrinter >
   {
     let mut required_normal : collection::HashMap< usize, Vec< tool::ListNodeReport > > = collection::HashMap::new();
-    for i in 0 .. report.len()
+    for (i, report) in report.iter_mut().enumerate()
     {
       let ( required, exist ) : ( Vec< _ >, Vec< _ > ) = std::mem::take
       (
-        &mut report[ i ].normal_dependencies
+        &mut report.normal_dependencies
       )
       .into_iter()
       .partition( | d | d.duplicate );
-      report[ i ].normal_dependencies = exist;
+      report.normal_dependencies = exist;
       required_normal.insert( i, required );
     }
 
@@ -794,7 +812,7 @@ mod private
 
     let printer : Vec< TreePrinter > = report
     .iter()
-    .map( | rep | TreePrinter::new( rep ) )
+    .map( TreePrinter::new )
     .collect();
 
     printer
@@ -849,5 +867,5 @@ crate::mod_interface!
   /// Contains output of a single node of the action.
   // own use ListNodeReport;
   /// List packages in workspace.
-  orphan use list;
+  orphan use list_all;
 }

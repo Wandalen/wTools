@@ -26,16 +26,16 @@ pub struct TestObject
   pub tools : Option< Vec< HashMap< String, String > > >,
 }
 
-impl Fields< &'static str, OptionalCow< '_, str, WithRef > >
+impl Fields< &'_ str, Option< Cow< '_, str > > >
 for TestObject
 {
-  type Key< 'k > = &'static str;
-  type Val< 'v > = OptionalCow< 'v, str, WithRef >;
+  type Key< 'k > = &'k str;
+  type Val< 'v > = Option< Cow< 'v, str > >;
 
-  fn fields( &self ) -> impl IteratorTrait< Item = ( &'static str, OptionalCow< '_, str, WithRef > ) >
+  fn fields( &self ) -> impl IteratorTrait< Item = ( &'_ str, Option< Cow< '_, str > > ) >
   {
     use format_tools::ref_or_display_or_debug::field;
-    let mut dst : Vec< ( &'static str, OptionalCow< '_, str, WithRef > ) > = Vec::new();
+    let mut dst : Vec< ( &'_ str, Option< Cow< '_, str > > ) > = Vec::new();
 
     dst.push( field!( &self.id ) );
     dst.push( field!( &self.created_at ) );
@@ -47,11 +47,17 @@ for TestObject
     }
     else
     {
-      dst.push( ( "tools", OptionalCow::none() ) );
+      dst.push( ( "tools", Option::None ) );
     }
 
     dst.into_iter()
   }
+
+}
+
+pub fn is_borrowed( cow : &Option< Cow< '_, str > > ) -> bool
+{
+  matches!( cow, Some( Cow::Borrowed( _ ) ) )
 }
 
 //
@@ -76,16 +82,16 @@ fn basic_with_ref_display_debug()
     ),
   };
 
-  let fields : Vec< ( &str, OptionalCow< '_, str, WithRef > ) > =
-  Fields::< &'static str, OptionalCow< '_, str, WithRef > >::fields( &test_object ).collect();
+  let fields : Vec< ( &str, Option< Cow< '_, str > > ) > =
+  Fields::< &'static str, Option< Cow< '_, str > > >::fields( &test_object ).collect();
 
-  // let fields : Vec< ( &str, OptionalCow< '_, str, WithRef > ) > = test_object.fields().collect();
+  // let fields : Vec< ( &str, Option< Cow< '_, str > > ) > = test_object.fields().collect();
 
   assert_eq!( fields.len(), 4 );
-  assert!( fields[ 0 ].1.is_borrowed() );
-  assert!( !fields[ 1 ].1.is_borrowed() );
-  assert!( !fields[ 2 ].1.is_borrowed() );
-  assert!( !fields[ 3 ].1.is_borrowed() );
+  assert!( is_borrowed( &fields[ 0 ].1 ) );
+  assert!( !is_borrowed( &fields[ 1 ].1 ) );
+  assert!( !is_borrowed( &fields[ 2 ].1 ) );
+  assert!( !is_borrowed( &fields[ 3 ].1 ) );
   assert_eq!( fields[ 0 ], ( "id", Some( Cow::Borrowed( "12345" ) ).into() ) );
   assert_eq!( fields[ 0 ], ( "id", Some( Cow::Owned( "12345".to_string() ) ).into() ) );
   assert_eq!( fields[ 1 ], ( "created_at", Some( Cow::Owned( "1627845583".to_string() ) ).into() ) );

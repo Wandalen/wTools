@@ -1,6 +1,8 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use std::
@@ -100,12 +102,16 @@ mod private
     }
 
     /// Returns path to `Cargo.toml`.
+    #[ must_use ]
     pub fn manifest_file( &self ) -> &AbsolutePath
     {
       &self.manifest_file
     }
 
     /// Path to directory where `Cargo.toml` located.
+    /// # Panics
+    /// qqq: doc
+    #[ must_use ]
     pub fn crate_dir( &self ) -> CrateDir
     {
       self.manifest_file.parent().unwrap().try_into().unwrap()
@@ -113,6 +119,8 @@ mod private
     }
 
     /// Store manifest.
+    /// # Errors
+    /// qqq: doc
     pub fn store( &self ) -> io::Result< () >
     {
       fs::write( &self.manifest_file, self.data.to_string() )?;
@@ -121,6 +129,7 @@ mod private
     }
 
     /// Check that the current manifest is the manifest of the package (can also be a virtual workspace).
+    #[ must_use ]
     pub fn package_is( &self ) -> bool
     {
       // let data = self.data.as_ref().ok_or_else( || ManifestError::EmptyManifestData )?;
@@ -129,7 +138,8 @@ mod private
     }
 
     /// Check that module is local.
-    /// The package is defined as local if the `publish` field is set to `false' or the registers are specified.
+    /// The package is defined as local if the `publish` field is set to `false` or the registers are specified.
+    #[ must_use ]
     pub fn local_is( &self ) -> bool
     {
       // let data = self.data.as_ref().ok_or_else( || ManifestError::EmptyManifestData )?;
@@ -137,7 +147,7 @@ mod private
       if data.get( "package" ).is_some() && data[ "package" ].get( "name" ).is_some()
       {
         let remote = data[ "package" ].get( "publish" ).is_none()
-        || data[ "package" ][ "publish" ].as_bool().or( Some( true ) ).unwrap();
+        || data[ "package" ][ "publish" ].as_bool().unwrap_or( true );
 
         return !remote;
       }
@@ -146,6 +156,8 @@ mod private
   }
 
   /// Retrieves the repository URL of a package from its `Cargo.toml` file.
+  /// # Errors
+  /// qqq: doc
   // qqq : use typed error
   pub fn repo_url( crate_dir : &CrateDir ) -> error::untyped::Result< String >
   {
@@ -168,7 +180,7 @@ mod private
       else
       {
         let report = tool::git::ls_remote_url( crate_dir.clone().absolute_path() )?;
-        url::repo_url_extract( &report.out.trim() ).ok_or_else( || format_err!( "Fail to extract repository url from git remote.") )
+        url::repo_url_extract( report.out.trim() ).ok_or_else( || format_err!( "Fail to extract repository url from git remote.") )
       }
     }
     else

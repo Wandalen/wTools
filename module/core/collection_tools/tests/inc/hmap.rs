@@ -77,7 +77,7 @@ fn iters()
   impl IntoIterator for MyContainer
   {
     type Item = ( i32, i32 );
-    type IntoIter = the_module::hmap::IntoIter< i32, i32 >;
+    type IntoIter = the_module::hash_map::IntoIter< i32, i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -88,7 +88,7 @@ fn iters()
   impl< 'a > IntoIterator for &'a MyContainer
   {
     type Item = ( &'a i32, &'a i32 );
-    type IntoIter = the_module::hmap::Iter< 'a, i32, i32 >;
+    type IntoIter = the_module::hash_map::Iter< 'a, i32, i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -99,7 +99,7 @@ fn iters()
   impl< 'a > IntoIterator for &'a mut MyContainer
   {
     type Item = ( &'a i32, &'a mut i32 );
-    type IntoIter = the_module::hmap::IterMut< 'a, i32, i32 >;
+    type IntoIter = the_module::hash_map::IterMut< 'a, i32, i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {

@@ -7,10 +7,10 @@
 //!
 
 
-use wca::{ Context, Handler, Type, VerifiedCommand };
+use wca::{ executor::{ Context, Handler }, Type, VerifiedCommand };
 use std::sync::{ Arc, Mutex };
 
-fn main()
+fn main() -> error_tools::error::untyped::Result< () >
 {
 
   let ca = wca::CommandsAggregator::former()
@@ -45,7 +45,8 @@ fn main()
     .end()
   .perform();
 
-  let args = std::env::args().skip( 1 ).collect::< Vec< String > >();
-  ca.perform( args ).unwrap();
+  let args: Vec< String > = std::env::args().skip( 1 ).collect();
+  ca.perform( args )?;
 
+  Ok( () )
 }

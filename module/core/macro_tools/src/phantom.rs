@@ -4,9 +4,10 @@
 //! Functions and structures to handle and manipulate `PhantomData` fields in structs using the `syn` crate. These utilities ensure that generic parameters are correctly accounted for in type checking, even if they are not directly used in the struct's fields.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   /// Adds a `PhantomData` field to a struct to manage generic parameter usage.
@@ -42,7 +43,8 @@ mod private
   /// // Output will include a _phantom field of type `PhantomData< ( T, U ) >`
   /// ```
   ///
-
+  #[ allow( clippy::default_trait_access, clippy::semicolon_if_nothing_returned ) ]
+  #[ must_use ]
   pub fn add_to_item( input : &syn::ItemStruct ) -> syn::ItemStruct
   {
 
@@ -136,6 +138,8 @@ mod private
   /// // Output : ::core::marker::PhantomData< ( &'a (), *const T, N ) >
   /// ```
   ///
+  #[ must_use ]
+  #[ allow( clippy::default_trait_access ) ]
   pub fn tuple( input : &syn::punctuated::Punctuated< syn::GenericParam, syn::token::Comma > ) -> syn::Type
   {
     use proc_macro2::Span;
@@ -198,6 +202,7 @@ pub use own::*;
 /// Own namespace of the module.
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
   #[ doc( inline ) ]
@@ -214,6 +219,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;

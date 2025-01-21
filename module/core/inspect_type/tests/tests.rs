@@ -1,3 +1,5 @@
+// #![ allow( unexpected_cfgs ) ]
+
 // #![ no_std ]
 
 // #![ cfg_attr( feature = "no_std", no_std ) ]

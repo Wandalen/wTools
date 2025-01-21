@@ -1,6 +1,8 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use std::{ env, fmt, fs };
@@ -34,10 +36,10 @@ mod private
       writeln!( f, "Actions :" )?;
       for ( path, report ) in &self.packages
       {
-        let report = report.to_string().replace("\n", "\n  ");
+        let report = report.to_string().replace('\n', "\n  ");
         let path = if let Some( wrd ) = &self.workspace_root_dir
         {
-          path.as_ref().strip_prefix( &wrd.as_ref() ).unwrap()
+          path.as_ref().strip_prefix( wrd.as_ref() ).unwrap()
         }
         else
         {
@@ -109,6 +111,7 @@ mod private
   ///
   /// # Arguments
   /// * `patterns` - A vector of patterns specifying the folders to search for packages.
+  /// * `exclude_dev_dependencies` - A boolean value indicating whether to exclude dev dependencies from manifest before publish.
   /// * `dry` - A boolean value indicating whether to perform a dry run.
   /// * `temp` - A boolean value indicating whether to use a temporary directory.
   ///
@@ -119,6 +122,8 @@ mod private
   (
     patterns : Vec< String >,
     channel : channel::Channel,
+    exclude_dev_dependencies : bool,
+    commit_changes : bool,
     dry : bool,
     temp : bool
   )
@@ -155,7 +160,7 @@ mod private
 
     let workspace_root_dir : AbsolutePath = workspace
     .workspace_root()
-    .try_into()?;
+    .into();
 
     let packages = workspace.packages();
     let packages_to_publish : Vec< String > = packages
@@ -233,6 +238,8 @@ mod private
     .channel( channel )
     .workspace_dir( CrateDir::try_from( workspace_root_dir ).unwrap() )
     .option_base_temp_dir( dir.clone() )
+    .exclude_dev_dependencies( exclude_dev_dependencies )
+    .commit_changes( commit_changes )
     .dry( dry )
     .roots( roots )
     .packages( queue )

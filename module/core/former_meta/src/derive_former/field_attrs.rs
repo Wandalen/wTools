@@ -1,5 +1,5 @@
 //! Attributes of a field.
-
+#[ allow( clippy::wildcard_imports ) ]
 use super::*;
 use macro_tools::
 {
@@ -85,7 +85,7 @@ impl FieldAttributes
     {
       // Get the attribute key as a string
       let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
-      let key_str = format!( "{}", key_ident );
+      let key_str = format!( "{key_ident}" );
 
       // // Skip standard attributes
       // if attr::is_standard( &key_str )
@@ -102,7 +102,7 @@ impl FieldAttributes
         AttributeSubformScalarSetter::KEYWORD => result.assign( AttributeSubformScalarSetter::from_meta( attr )? ),
         AttributeSubformCollectionSetter::KEYWORD => result.assign( AttributeSubformCollectionSetter::from_meta( attr )? ),
         AttributeSubformEntrySetter::KEYWORD => result.assign( AttributeSubformEntrySetter::from_meta( attr )? ),
-        "debug" => {},
+        // "debug" => {},
         _ => {},
         // _ => return Err( error( attr ) ),
         // attributes does not have to be known
@@ -134,6 +134,7 @@ impl AttributeComponent for AttributeConfig
 
   const KEYWORD : &'static str = "former";
 
+  #[ allow( clippy::match_wildcard_for_single_variants ) ]
   fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
     match attr.meta
@@ -144,7 +145,7 @@ impl AttributeComponent for AttributeConfig
       },
       syn::Meta::Path( ref _path ) =>
       {
-        syn::parse2::< AttributeConfig >( Default::default() )
+        syn::parse2::< AttributeConfig >( TokenStream::default() )
       },
       _ => return_syn_err!( attr, "Expects an attribute of format #[ former( default = 13 ) ].\nGot: {}", qt!{ #attr } ),
     }
@@ -270,6 +271,7 @@ impl AttributeComponent for AttributeScalarSetter
 
   const KEYWORD : &'static str = "scalar";
 
+  #[ allow( clippy::match_wildcard_for_single_variants ) ]
   fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
     match attr.meta
@@ -280,7 +282,7 @@ impl AttributeComponent for AttributeScalarSetter
       },
       syn::Meta::Path( ref _path ) =>
       {
-        syn::parse2::< AttributeScalarSetter >( Default::default() )
+        syn::parse2::< AttributeScalarSetter >( TokenStream::default() )
       },
       _ => return_syn_err!( attr, "Expects an attribute of format `#[ scalar( setter = false ) ]` or `#[ scalar( setter = true, name = my_name ) ]`. \nGot: {}", qt!{ #attr } ),
     }
@@ -445,6 +447,7 @@ impl AttributeComponent for AttributeSubformScalarSetter
 
   const KEYWORD : &'static str = "subform_scalar";
 
+  #[ allow( clippy::match_wildcard_for_single_variants ) ]
   fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
     match attr.meta
@@ -455,7 +458,7 @@ impl AttributeComponent for AttributeSubformScalarSetter
       },
       syn::Meta::Path( ref _path ) =>
       {
-        syn::parse2::< AttributeSubformScalarSetter >( Default::default() )
+        syn::parse2::< AttributeSubformScalarSetter >( TokenStream::default() )
       },
       _ => return_syn_err!( attr, "Expects an attribute of format `#[ subform_scalar( setter = false ) ]` or `#[ subform_scalar( setter = true, name = my_name ) ]`. \nGot: {}", qt!{ #attr } ),
     }
@@ -622,6 +625,7 @@ impl AttributeComponent for AttributeSubformCollectionSetter
 
   const KEYWORD : &'static str = "subform_collection";
 
+  #[ allow( clippy::match_wildcard_for_single_variants ) ]
   fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
     match attr.meta
@@ -632,7 +636,7 @@ impl AttributeComponent for AttributeSubformCollectionSetter
       },
       syn::Meta::Path( ref _path ) =>
       {
-        syn::parse2::< AttributeSubformCollectionSetter >( Default::default() )
+        syn::parse2::< AttributeSubformCollectionSetter >( TokenStream::default() )
       },
       _ => return_syn_err!( attr, "Expects an attribute of format `#[ subform_collection ]` or `#[ subform_collection( definition = former::VectorDefinition ) ]` if you want to use default collection defition. \nGot: {}", qt!{ #attr } ),
     }
@@ -818,6 +822,7 @@ impl AttributeComponent for AttributeSubformEntrySetter
 
   const KEYWORD : &'static str = "subform_entry";
 
+  #[ allow( clippy::match_wildcard_for_single_variants ) ]
   fn from_meta( attr : &syn::Attribute ) -> Result< Self >
   {
     match attr.meta
@@ -828,7 +833,7 @@ impl AttributeComponent for AttributeSubformEntrySetter
       },
       syn::Meta::Path( ref _path ) =>
       {
-        syn::parse2::< AttributeSubformEntrySetter >( Default::default() )
+        syn::parse2::< AttributeSubformEntrySetter >( TokenStream::default() )
       },
       _ => return_syn_err!( attr, "Expects an attribute of format `#[ subform_entry ]` or `#[ subform_entry( name : child )` ], \nGot: {}", qt!{ #attr } ),
     }

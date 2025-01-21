@@ -26,7 +26,7 @@ mod private
   }
 
   ///
-  /// Adapter for IsolateOptions.
+  /// Adapter for `IsolateOptions`.
   ///
 
   pub trait IsolateOptionsAdapter< 'a >
@@ -144,6 +144,7 @@ mod private
   /// It produces former. To convert former into options and run algorithm of splitting call `perform()`.
   ///
 
+  #[ must_use ]
   pub fn isolate<'a>() -> IsolateOptionsFormer<'a>
   {
     IsolateOptions::former()
@@ -155,6 +156,7 @@ mod private
   /// It produces former. To convert former into options and run algorithm of splitting call `perform()`.
   ///
 
+  #[ must_use ]
   pub fn isolate_left<'a>() -> IsolateOptionsFormer<'a>
   {
     IsolateOptions::former()
@@ -167,6 +169,7 @@ mod private
   /// It produces former. To convert former into options and run algorithm of splitting call `perform()`.
   ///
 
+  #[ must_use ]
   pub fn isolate_right<'a>() -> IsolateOptionsFormer<'a>
   {
     IsolateOptions::former()
@@ -194,6 +197,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use exposed::*;
 }

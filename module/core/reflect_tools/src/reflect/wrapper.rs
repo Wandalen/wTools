@@ -2,12 +2,12 @@
 //! Collection of wrappers.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 }
 
-mod maybe_as;
+mod optional_cow;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]
@@ -40,7 +40,7 @@ pub mod exposed
   #[ allow( unused_imports ) ]
   pub use super::
   {
-    maybe_as::OptionalCow,
+    optional_cow::OptionalCow,
   };
 }
 

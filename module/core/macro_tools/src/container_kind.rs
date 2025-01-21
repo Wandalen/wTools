@@ -2,9 +2,10 @@
 //! Determine kind of a container.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   // use crate::type_rightmost;
 
@@ -39,7 +40,9 @@ mod private
   /// let kind = container_kind::of_type( &tree_type );
   /// assert_eq!( kind, container_kind::ContainerKind::HashMap );
   /// ```
-
+  /// # Panics 
+  /// qqq: doc
+  #[ must_use ]
   pub fn of_type( ty : &syn::Type ) -> ContainerKind
   {
 
@@ -61,7 +64,7 @@ mod private
     ContainerKind::No
   }
 
-  /// Return kind of container specified by type. Unlike [of_type] it also understand optional types.
+  /// Return kind of container specified by type. Unlike [`of_type`] it also understand optional types.
   ///
   /// Good to verify `Option< alloc::vec::Vec< i32 > >` is optional vector.
   ///
@@ -75,13 +78,16 @@ mod private
   /// assert_eq!( kind, container_kind::ContainerKind::HashMap );
   /// assert_eq!( optional, true );
   /// ```
+  /// # Panics
+  /// qqq: doc
 
+  #[ must_use ]
   pub fn of_optional( ty : &syn::Type ) -> ( ContainerKind, bool )
   {
 
     if typ::type_rightmost( ty ) == Some( "Option".to_string() )
     {
-      let ty2 = typ::type_parameters( ty, 0 ..= 0 ).first().copied();
+      let ty2 = typ::type_parameters( ty, &( 0 ..= 0 ) ).first().copied();
       // inspect_type::inspect_type_of!( ty2 );
       if ty2.is_none()
       {
@@ -104,6 +110,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -122,6 +129,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
@@ -131,6 +139,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use super::super::container_kind;
 

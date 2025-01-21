@@ -72,7 +72,7 @@ meta_default = [
   "meta_mod_interface",
   # "meta_former",
   # "meta_options",
-  "meta_constructors",
+  #"meta_constructors",
   "meta_idents_concat",
 ]
 meta_full = [
@@ -82,7 +82,7 @@ meta_full = [
   "meta_mod_interface",
   # "meta_former",
   # "meta_options",
-  "meta_constructors",
+  #"meta_constructors",
   "meta_idents_concat",
 ]
 meta_no_std = [ "wtools/meta_no_std" ]

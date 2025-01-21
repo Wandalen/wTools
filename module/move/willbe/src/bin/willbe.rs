@@ -3,10 +3,10 @@
 #![ doc( html_root_url = "https://docs.rs/willbe/" ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
-#[ allow( unused_imports ) ]
+#[ allow( unused_imports, clippy::wildcard_imports ) ]
 use::willbe::*;
 
 fn main() -> Result< (), error::untyped::Error >
 {
-  Ok( willbe::run( std::env::args().collect() )? )
+  willbe::run( std::env::args().collect() )
 }

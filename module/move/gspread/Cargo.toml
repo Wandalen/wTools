@@ -1,0 +1,53 @@
+[package]
+name = "gspread"
+version = "0.1.0"
+edition = "2021"
+authors = [
+    "Vsevolod Bakutov <sevabakutov322@gmail.com>"
+]
+license = "MIT"
+description = """
+    Google Sheets Cli API
+"""
+categories = [ "algorithms", "development-tools" ]
+keywords = [ "fundamental", "general-purpose" ]
+default-run = "main"
+
+[[bin]]
+name = "main"
+path = "src/bin/main.rs"
+
+[features]
+with_online = []
+default = [ "enabled" ]
+full = [ "enabled" ]
+enabled = [
+    "former/enabled",
+    "format_tools/enabled",
+    "reflect_tools/enabled",
+]
+
+[dependencies]
+mod_interface = { workspace = true, features = ["full"] }
+former = { workspace = true, features = ["full"] }
+format_tools = { workspace = true, features = ["full"] }
+reflect_tools = { workspace = true, features = [ "full" ] }
+clap = { version = "4.5.20", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
+google-sheets4 = "6.0.0"
+hyper-util = "0.1.10"
+yup-oauth2 = "11.0.0"
+pth = "0.21.0"
+dotenv = "0.15"
+serde = { version = "1.0.213", features = ["derive"] }
+serde_with = "3.11.0"
+error_tools = "0.19.0"
+derive_tools = { version = "0.32.0", features = ["full"] }
+serde_json = "1.0.132"
+regex = "1.11.1"
+unicode-width = "0.2.0"
+
+[dev-dependencies]
+test_tools = { workspace = true }
+httpmock = "0.7.0-rc.1"
+reqwest = "0.12.9"

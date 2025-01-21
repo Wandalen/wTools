@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use std::
   {
@@ -16,6 +18,7 @@ mod private
   /// A configuration struct for specifying optional filters when using the
   /// `filter` function. It allows users to provide custom filtering
   /// functions for packages and dependencies.
+  #[ allow( clippy::type_complexity ) ]
   #[ derive( Default ) ]
   pub struct FilterMapOptions
   {

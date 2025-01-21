@@ -2,9 +2,10 @@
 //! Macro helpers.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   /// Adds indentation and optional prefix/postfix to each line of the given string.
@@ -62,17 +63,17 @@ mod private
     {
       if b.0 > 0
       {
-        a.push_str( "\n" );
+        a.push( '\n' );
       }
       a.push_str( prefix );
-      a.push_str( &b.1 );
+      a.push_str( b.1 );
       a.push_str( postfix );
       a
     });
 
-    if src.ends_with( "\n" ) || src.ends_with( "\n\r" ) || src.ends_with( "\r\n" )
+    if src.ends_with( '\n' ) || src.ends_with( "\n\r" ) || src.ends_with( "\r\n" )
     {
-      result.push_str( "\n" );
+      result.push( '\n' );
       result.push_str( prefix );
       result.push_str( postfix );
     }
@@ -128,11 +129,12 @@ mod private
   /// };
   ///
   /// // Format the debug report for printing or logging
-  /// let formatted_report = report_format( "Code Transformation for MyStruct", original_input, generated_code );
+  /// let formatted_report = report_format( &"Code Transformation for MyStruct", &original_input, generated_code );
   /// println!( "{}", formatted_report );
   /// ```
   ///
 
+  #[ allow( clippy::needless_pass_by_value ) ]
   pub fn report_format< IntoAbout, IntoInput, IntoOutput >
   (
     about : IntoAbout, input : IntoInput, output : IntoOutput
@@ -142,7 +144,7 @@ mod private
     IntoInput : ToString,
     IntoOutput : ToString,
   {
-    format!( "\n" ) +
+    "\n".to_string() +
     &format!( " = context\n\n{}\n\n", indentation( "  ", about.to_string(), "" ) ) +
     &format!( " = original\n\n{}\n\n", indentation( "  ", input.to_string(), "" ) ) +
     &format!( " = generated\n\n{}\n", indentation( "  ", output.to_string(), "" ) )
@@ -384,6 +386,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
   #[ doc( inline ) ]
@@ -395,6 +398,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
@@ -412,6 +416,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use super::super::diag;
 
@@ -432,6 +437,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
   #[ doc( inline ) ]

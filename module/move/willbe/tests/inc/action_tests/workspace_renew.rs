@@ -26,7 +26,7 @@ fn default_case()
   create_dir(temp.join("test_project_name" )).unwrap();
 
   // Act
-  _ = workspace_renew( &temp.path().join( "test_project_name" ), WorkspaceTemplate::default(), "https://github.con/Username/TestRepository".to_string(), vec![ "master".to_string() ] ).unwrap();
+  _ = workspace_renew::action( &temp.path().join( "test_project_name" ), WorkspaceTemplate::default(), "https://github.con/Username/TestRepository".to_string(), vec![ "master".to_string() ] ).unwrap();
 
   // Assets
   assert!( temp_path.join( "module" ).exists() );
@@ -57,7 +57,7 @@ fn non_empty_dir()
   let temp = arrange( "single_module" );
 
   // Act
-  let r = workspace_renew( temp.path(), WorkspaceTemplate::default(), "".to_string(), vec![] );
+  let r = workspace_renew::action( temp.path(), WorkspaceTemplate::default(), "".to_string(), vec![] );
 
   // Assert
   assert!( r.is_err() );

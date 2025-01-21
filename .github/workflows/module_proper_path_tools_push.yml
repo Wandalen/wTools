@@ -18,7 +18,7 @@ jobs :
   test :
     uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
     with :
-      manifest_path : 'module/core/proper_path_tools/Cargo.toml'
+      manifest_path : 'module/blank/proper_path_tools/Cargo.toml'
       module_name : 'proper_path_tools'
       commit_message : ${{ github.event.head_commit.message }}
       commiter_username:  ${{ github.event.head_commit.committer.username }}

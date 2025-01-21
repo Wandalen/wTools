@@ -12,7 +12,8 @@
 //! ```
 //!
 //! This is useful for attributes that need to enable or disable features or flags.
-
+use core::marker::PhantomData;
+#[ allow( clippy::wildcard_imports ) ]
 use crate::*;
 // use former_types::Assign;
 
@@ -39,7 +40,10 @@ impl< Marker > AttributePropertyOptionalSingletone< Marker >
 {
 
   /// Return bool value: on/off, use argument as default if it's `None`.
+  /// # Panics
+  /// qqq: doc
   #[ inline ]
+  #[ must_use ]
   pub fn value( self, default : bool ) -> bool
   {
     if self.0.is_none()
@@ -51,12 +55,14 @@ impl< Marker > AttributePropertyOptionalSingletone< Marker >
 
   /// Unwraps and returns the internal optional boolean value.
   #[ inline( always ) ]
+  #[ must_use ]
   pub fn internal( self ) -> Option< bool >
   {
     self.0
   }
 
   /// Returns a reference to the internal optional boolean value.
+  #[ must_use ]
   #[ inline( always ) ]
   pub fn ref_internal( &self ) -> Option< &bool >
   {
@@ -73,6 +79,7 @@ where
   /// Inserts value of another instance into the option if it is None, then returns a mutable reference to the contained value.
   /// If another instance does is None then do nothing.
   #[ inline( always ) ]
+  #[ allow( clippy::single_match ) ]
   fn assign( &mut self, component : IntoT )
   {
     let component = component.into();
@@ -94,18 +101,20 @@ where
 impl< Marker > From< bool > for AttributePropertyOptionalSingletone< Marker >
 {
   #[ inline( always ) ]
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn from( src : bool ) -> Self
   {
-    Self( Some( src ), Default::default() )
+    Self( Some( src ), PhantomData::default() )
   }
 }
 
 impl< Marker > From< Option< bool > > for AttributePropertyOptionalSingletone< Marker >
 {
   #[ inline( always ) ]
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn from( src : Option< bool > ) -> Self
   {
-    Self( src, Default::default() )
+    Self( src, PhantomData::default() )
   }
 }
 

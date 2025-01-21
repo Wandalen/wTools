@@ -5,17 +5,16 @@
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
 
 /// Namespace with dependencies.
-
 #[ cfg( feature = "enabled" ) ]
 pub mod dependency
 {
-  #[ cfg( feature = "clone_dyn_meta" ) ]
+  #[ cfg( feature = "derive_clone_dyn" ) ]
   pub use ::clone_dyn_meta;
   #[ cfg( feature = "clone_dyn_types" ) ]
   pub use ::clone_dyn_types;
 }
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 #[ cfg( feature = "enabled" ) ]
 mod private
 {
@@ -72,7 +71,7 @@ pub mod prelude
 
   #[ doc( inline ) ]
   #[ allow( unused_imports ) ]
-  #[ cfg( feature = "clone_dyn_meta" ) ]
+  #[ cfg( feature = "derive_clone_dyn" ) ]
   pub use ::clone_dyn_meta::clone_dyn;
 
   #[ doc( inline ) ]

@@ -1,6 +1,7 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use wca::{ Type, CommandsAggregator, CommandsAggregatorFormer };
 
@@ -8,6 +9,7 @@ mod private
   /// Form CA commands grammar.
   ///
 
+  #[ allow( clippy::too_many_lines ) ]
   pub fn ca() -> CommandsAggregatorFormer
   {
     CommandsAggregator::former()
@@ -23,6 +25,16 @@ mod private
       .property( "channel" )
         .hint( "Release channels for rust." )
         .kind( Type::String )
+        .optional( true )
+        .end()
+      .property( "exclude_dev_dependencies" )
+        .hint( "Setting this option to true will temporarily remove development dependencies before executing the command, then restore them afterward. Default is `true`." )
+        .kind( Type::Bool )
+        .optional( true )
+        .end()
+      .property( "commit_changes" )
+        .hint( "Indicates whether changes should be committed. Default is `false`." )
+        .kind( Type::Bool )
         .optional( true )
         .end()
       .property( "dry" )
@@ -45,6 +57,11 @@ mod private
       .subject()
         .hint( "Provide path to the package that you want to check.\n\t  The path should point to a directory that contains a `Cargo.toml` file." )
         .kind( Type::Path )
+        .optional( true )
+        .end()
+      .property( "exclude_dev_dependencies" )
+        .hint( "Setting this option to true will temporarily remove development dependencies before executing the command, then restore them afterward. Default is `true`." )
+        .kind( Type::Bool )
         .optional( true )
         .end()
       .property( "keep_archive" )
@@ -128,8 +145,8 @@ with_gitpod: If set to 1, a column with a link to Gitpod will be added. Clicking
       .end()
 
     .command( "test" )
-      .hint( "execute tests in specific packages" )
-      .long_hint( "this command runs tests in designated packages based on the provided path. It allows for inclusion and exclusion of features, testing on different Rust version channels, parallel execution, and feature combination settings." )
+      .hint( "List crate features to run tests for each combination, aiming for full test coverage of the crate." )
+      .long_hint( "List crate features, different optimization level (Release & Debug) and toolchain (stable & nightly) to run tests for each combination. Сan be used for packages as well as workspaces. Supports parallel execution." )
       .subject().hint( "A path to directories with packages. If no path is provided, the current directory is used." ).kind( Type::Path ).optional( true ).end()
       .property( "dry" ).hint( "Enables 'dry run'. Does not run tests, only simulates. Default is `true`." ).kind( Type::Bool ).optional( true ).end()
       .property( "temp" ).hint( "If flag is `true` all test will be running in temporary directories. Default `true`." ).kind( Type::Bool ).optional( true ).end()
@@ -225,7 +242,7 @@ with_gitpod: If set to 1, a column with a link to Gitpod will be added. Clicking
 
     .command( "deploy.renew" )
       .hint( "Create deploy template" )
-      .long_hint( "Creates static files and directories.\nDeployment to different hosts is done via Makefile." )
+      .long_hint( "Creates static files and directories.\nDeployment to different hosts is done via Makefile.\n\nUsage example: deploy.renew gcp_project_id:wtools" )
       .property( "gcp_project_id" )
         .hint( "Google Cloud Platform Project id for image deployment, terraform state bucket, and, if specified, GCE instance deployment." )
         .kind( Type::String )
@@ -239,12 +256,12 @@ with_gitpod: If set to 1, a column with a link to Gitpod will be added. Clicking
       .property( "gcp_artifact_repo_name" )
         .hint( "Google Cloud Platform Artifact Repository to store docker image in. Will be generated from current directory name if unspecified." )
         .kind( Type::String )
-        .optional( false )
+        .optional( true )
         .end()
       .property( "docker_image_name" )
         .hint( "Docker image name to build and deploy. Will be generated from current directory name if unspecified." )
         .kind( Type::String )
-        .optional( false )
+        .optional( true )
         .end()
       .routine( command::deploy_renew )
       .end()

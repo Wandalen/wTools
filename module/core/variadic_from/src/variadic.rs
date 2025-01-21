@@ -2,7 +2,7 @@
 //! Variadic constructor. Constructor with n arguments. Like Default, but with arguments.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 

@@ -1,7 +1,8 @@
 //!
 //! Property of an attribute which simply wraps one of the standard `syn` types and keeps it optional.
 //!
-
+use core::marker::PhantomData;
+#[ allow( clippy::wildcard_imports ) ]
 use crate::*;
 // use former_types::Assign;
 
@@ -46,6 +47,7 @@ where
 {
   /// Inserts value of another instance into the option if it is None, then returns a mutable reference to the contained value.
   /// If another instance does is None then do nothing.
+  #[ allow( clippy::single_match ) ]
   #[ inline( always ) ]
   fn assign( &mut self, component : IntoT )
   {
@@ -70,9 +72,10 @@ impl< T, Marker > Default for AttributePropertyOptionalSyn< T, Marker >
 where
   T : syn::parse::Parse + quote::ToTokens,
 {
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn default() -> Self
   {
-    Self( None, Default::default() )
+    Self( None, PhantomData::default() )
   }
 }
 
@@ -123,9 +126,10 @@ impl< T, Marker > From< T > for AttributePropertyOptionalSyn< T, Marker >
 where T : syn::parse::Parse + quote::ToTokens
 {
   #[ inline( always ) ]
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn from( src : T ) -> Self
   {
-    Self( Some( src ), Default::default() )
+    Self( Some( src ), PhantomData::default() )
   }
 }
 
@@ -133,9 +137,10 @@ impl< T, Marker > From< Option< T > > for AttributePropertyOptionalSyn< T, Marke
 where T : syn::parse::Parse + quote::ToTokens
 {
   #[ inline( always ) ]
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn from( src : Option< T > ) -> Self
   {
-    Self( src, Default::default() )
+    Self( src, PhantomData::default() )
   }
 }
 

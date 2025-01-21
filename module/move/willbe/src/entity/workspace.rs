@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   // qqq : for Bohdan : bad
@@ -97,6 +99,10 @@ mod private
     }
 
     /// Returns the path to workspace root
+    ///
+    /// # Panics
+    /// qqq: doc
+    #[ must_use ]
     pub fn workspace_root( &self ) -> CrateDir
     {
       // Safe because workspace_root.as_std_path() is always a path to a directory
@@ -104,13 +110,17 @@ mod private
     }
 
     /// Returns the path to target directory
+    #[ must_use ]
     pub fn target_directory( &self ) -> &std::path::Path
     {
       self.metadata.target_directory.as_std_path()
     }
 
     /// Find a package by its manifest file path
-    pub fn package_find_by_manifest< 'a, P >( &'a self, manifest_file : P ) -> Option< WorkspacePackageRef< 'a > >
+    ///
+    /// # Panics
+    /// qqq: doc
+    pub fn package_find_by_manifest< P >( &self, manifest_file : P ) -> Option< WorkspacePackageRef< '_ > >
     where
       P : AsRef< std::path::Path >,
     {
@@ -120,7 +130,8 @@ mod private
     }
 
     /// Filter of packages.
-    pub fn packages_which< 'a >( &'a self ) -> PackagesFilterFormer< 'a >
+    #[ must_use ]
+    pub fn packages_which( &self ) -> PackagesFilterFormer< '_ >
     {
       // PackagesFilter::new( self )
       PackagesFilter::former().workspace( self )
@@ -208,12 +219,13 @@ mod private
       Self
       {
         workspace,
-        crate_dir : Default::default(),
-        manifest_file : Default::default(),
+        crate_dir : Box::default(),
+        manifest_file : Box::default(),
       }
     }
 
     #[ inline( always ) ]
+    #[ allow( clippy::unused_self ) ]
     pub fn iter( &'a self ) -> impl Iterator< Item = WorkspacePackageRef< 'a > > + Clone
     {
 
@@ -247,9 +259,8 @@ mod private
       {
         if !formed.crate_dir.include( p ) { return false };
         if !formed.manifest_file.include( p ) { return false };
-        return true;
+        true
       })
-      .clone()
       // .unwrap()
 
       // let filter_crate_dir = if Some( crate_dir ) = self.crate_dir

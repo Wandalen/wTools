@@ -15,7 +15,7 @@
 // #[ macro_use ]
 mod implements_impl;
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 

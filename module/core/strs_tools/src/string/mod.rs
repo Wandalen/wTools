@@ -33,7 +33,9 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
+  #[ allow( clippy::wildcard_imports ) ]
   pub use orphan::*;
   #[ cfg( all( feature = "string_indentation", not( feature = "no_std" ) ) ) ]
   pub use super::indentation::orphan::*;
@@ -52,6 +54,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use exposed::*;
 }

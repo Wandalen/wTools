@@ -4,7 +4,7 @@
 //! this module abstracts the operations on binary tree map-like data structures, making them more flexible and easier to integrate as
 //! as subformer, enabling fluid and intuitive manipulation of binary tree maps via builder patterns.
 //!
-
+#[ allow( clippy::wildcard_imports ) ]
 use crate::*;
 use collection_tools::BTreeMap;
 
@@ -238,6 +238,7 @@ impl< K, E > BTreeMapExt< K, E > for BTreeMap< K, E >
 where
   K : Ord,
 {
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn former() -> BTreeMapFormer< K, E, (), BTreeMap< K, E >, ReturnStorage >
   {
     BTreeMapFormer::< K, E, (), BTreeMap< K, E >, ReturnStorage >::new( ReturnStorage::default() )

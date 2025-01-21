@@ -1,5 +1,6 @@
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use action::features::FeaturesOptions;
@@ -13,7 +14,10 @@ mod private
   ///
   /// List features of a package.
   ///
+  /// # Errors
+  /// qqq: doc
 
+  #[ allow( clippy::needless_pass_by_value ) ]
   pub fn features( o : VerifiedCommand ) -> error::untyped::Result< () > // qqq : use typed error
   {
     let path : PathBuf = o.args.get_owned( 0 ).unwrap_or_else( || "./".into() );

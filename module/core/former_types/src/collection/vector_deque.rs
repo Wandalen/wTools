@@ -4,7 +4,7 @@
 //! this module abstracts the operations on vector deque-like data structures, making them more flexible and easier to integrate as
 //! as subformer, enabling fluid and intuitive manipulation of vector deques via builder patterns.
 //!
-
+#[ allow( clippy::wildcard_imports ) ]
 use crate::*;
 #[ allow( unused ) ]
 use collection_tools::VecDeque;
@@ -221,6 +221,7 @@ pub trait VecDequeExt< E > : sealed::Sealed
 
 impl< E > VecDequeExt< E > for VecDeque< E >
 {
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn former() -> VecDequeFormer< E, (), VecDeque< E >, ReturnStorage >
   {
     VecDequeFormer::< E, (), VecDeque< E >, ReturnStorage >::new( ReturnStorage::default() )

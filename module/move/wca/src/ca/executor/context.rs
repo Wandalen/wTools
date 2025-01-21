@@ -1,3 +1,4 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
   use std::sync::Arc;
@@ -7,7 +8,7 @@ mod private
   /// # Examples:
   ///
   /// ```
-  /// # use wca::{ Routine, Handler, Context, Value, Args, Props, VerifiedCommand };
+  /// # use wca::{ executor::{ Routine, Handler, Args, Props, Context },  Value, VerifiedCommand };
   /// # use std::sync::{ Arc, Mutex };
   /// let routine = Routine::from( Handler::from
   /// (
@@ -33,11 +34,11 @@ mod private
   /// }
   /// assert_eq!( 1, *ctx.get::< Mutex< i32 > >().unwrap().lock().unwrap() );
   /// ```
-  // qqq : ?
+  // xxx clarification is needed qqq : поточнити
   #[ derive( Debug, Clone ) ]
   pub struct Context
   {
-    inner : Arc< dyn std::any::Any + Send + Sync >,
+    inner : Arc< dyn core::any::Any + Send + Sync >,
   }
 
   impl Default for Context
@@ -80,6 +81,7 @@ mod private
     /// An `Option` containing a reference-counted smart pointer (`Arc`) to the object of type `T` if it exists in the context.
     /// `None` is returned if the object does not exist or if it cannot be downcasted to type `T`.
     // `'static` means that the object must be owned or live at least as a `Context'
+    #[ must_use ]
     pub fn get< T : Send + Sync + 'static >( &self ) -> Option< Arc< T > >
     {
       self.inner.clone().downcast::< T >().ok()
@@ -91,5 +93,5 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use Context;
+  orphan use Context;
 }

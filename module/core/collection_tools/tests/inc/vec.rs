@@ -1,6 +1,7 @@
 use super::*;
 
 #[ test ]
+#[ cfg( any( feature = "use_alloc", not( feature = "no_std" ) ) ) ]
 fn reexport()
 {
 
@@ -12,7 +13,8 @@ fn reexport()
   let got = vec1.last().unwrap().clone();
   assert_eq!( got, 2 );
 
-  let mut vec2 : the_module::DynList< i32 > = the_module::DynList::new();
+  use std::vec::Vec as DynList;
+  let mut vec2 : DynList< i32 > = DynList::new();
   vec2.push( 1 );
   vec2.push( 2 );
   let got = vec2.first().unwrap().clone();
@@ -84,7 +86,7 @@ fn iters()
   impl IntoIterator for MyContainer
   {
     type Item = i32;
-    type IntoIter = the_module::vec::IntoIter< i32 >;
+    type IntoIter = the_module::vector::IntoIter< i32 >;
     // qqq : should work -- works
 
     fn into_iter( self ) -> Self::IntoIter
@@ -96,7 +98,7 @@ fn iters()
   impl< 'a > IntoIterator for &'a MyContainer
   {
     type Item = &'a i32;
-    type IntoIter = the_module::vec::Iter< 'a, i32 >;
+    type IntoIter = the_module::vector::Iter< 'a, i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -107,7 +109,7 @@ fn iters()
   impl< 'a > IntoIterator for &'a mut MyContainer
   {
     type Item = &'a mut i32;
-    type IntoIter = the_module::vec::IterMut< 'a, i32 >;
+    type IntoIter = the_module::vector::IterMut< 'a, i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {

@@ -1,14 +1,13 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use std::fmt::
   {
     Display,
     Formatter
   };
-  // use wtools;
-  // use wtools::{ error::Result, err };
-  use error::err;
   use iter_tools::Itertools;
 
   /// Available types that can be converted to a `Value`
@@ -47,6 +46,8 @@ mod private
   pub trait TryCast< T >
   {
     /// return casted value
+    /// # Errors
+    /// qqq: doc
     fn try_cast( &self, value : String ) -> error::untyped::Result< T >;
   }
 
@@ -59,7 +60,7 @@ mod private
   /// # Example:
   ///
   /// ```
-  /// # use wca::{ VerifiedCommand, Value, Args, Props };
+  /// # use wca::{ VerifiedCommand, Value, executor::{ Args, Props } };
   /// # use std::collections::HashMap;
   /// let command = VerifiedCommand
   /// {
@@ -119,7 +120,7 @@ mod private
         }
         Value::List( list ) =>
         {
-          let list = list.iter().map( | element | element.to_string() ).join( "," ); // qqq : don't hardcode ", " find way to get original separator
+          let list = list.iter().map( std::string::ToString::to_string ).join( "," );
           write!( f, "{list}" )?;
         }
       }
@@ -138,7 +139,7 @@ mod private
           {
             match value
             {
-              #[ allow( clippy::redundant_closure_call ) ] // ok because of it improve understanding what is `value` at macro call
+              #[ allow( clippy::redundant_closure_call, clippy::cast_possible_truncation, clippy::cast_sign_loss ) ] // ok because of it improve understanding what is `value` at macro call
               $value_kind( value ) => ( $cast )( value ),
               _ => panic!( "Unknown cast variant. Got `{value:?}` and try to cast to `{}`", stringify!( $kind ) )
             }
@@ -173,8 +174,8 @@ mod private
     {
       match value
       {
-        Value::List( value ) => value.into_iter().map( | x | x.into() ).collect(),
-        _ => panic!( "Unknown cast variant. Got `{value:?}` and try to cast to `Vec<{}>`", std::any::type_name::< T >() )
+        Value::List( value ) => value.into_iter().map( std::convert::Into::into ).collect(),
+        _ => panic!( "Unknown cast variant. Got `{value:?}` and try to cast to `Vec<{}>`", core::any::type_name::< T >() )
       }
     }
   }
@@ -186,16 +187,18 @@ mod private
       match self
       {
         Self::String => Ok( Value::String( value ) ),
-        Self::Number => value.parse().map_err( | _ | err!( "Can not parse number from `{}`", value ) ).map( Value::Number ),
+        Self::Number => value.parse().map_err( | _ | error::untyped::format_err!( "Can not parse number from `{}`", value ) ).map( Value::Number ),
         Self::Path => Ok( Value::Path( value.into() ) ),
-        Self::Bool => Ok( Value::Bool( match value.as_str() { "1" | "true" => true, "0" | "false" => false, _ => return Err( err!( "Can not parse bool from `{}`", value ) ) } ) ),
+        Self::Bool => Ok( Value::Bool( match value.as_str() { "1" | "true" => true, "0" | "false" => false, _ => return Err( error::untyped::format_err!( "Can not parse bool from `{}`", value ) ) } ) ),
         Self::List( kind, delimeter ) =>
         {
-          let values = value
+          let values: error::untyped::Result< Vec< Value > > = value
           .split( *delimeter )
           .map( | val | kind.try_cast( val.into() ) )
-          .collect::< error::untyped::Result< Vec< Value > > >()?;
-          // qqq : avoid using fish notation whenever possible. review whole crate
+          .collect();
+          let values = values?;
+          // aaa : avoid using fish notation whenever possible. review whole crate
+          // aaa : done
           Ok( Value::List( values ) )
         },
       }

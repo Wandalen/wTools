@@ -1,10 +1,14 @@
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   // use path::AbsolutePath;
   // use error::{ untyped::Error };
 
   /// Generate headers for workspace members
+  ///
+  /// # Errors
+  /// qqq: doc
   // qqq : typed error
   pub fn readme_modules_headers_renew() -> error::untyped::Result< () >
   {

@@ -1,11 +1,14 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use former::Former;
   use indexmap::IndexMap;
   use iter_tools::Itertools;
+  use grammar::Command;
 
-  // qqq : `Former` does not handle this situation well
+  // xxx : `Former` does not handle this situation well
 
   // /// A collection of commands.
   // ///
@@ -25,8 +28,6 @@ mod private
     pub( crate ) order : Order,
   }
 
-  // qqq : IDK how to integrate it into the `CommandsAggregatorFormer`
-  //
   impl DictionaryFormer
   {
     pub fn command( mut self, command : Command ) -> Self
@@ -88,17 +89,18 @@ mod private
     }
 
     /// asd
+    #[ must_use ]
     pub fn commands( &self ) -> Vec< ( &String, &Command ) >
     {
       match self.order
       {
         Order::Nature =>
         {
-          self.commands.iter().map( | ( key, value ) | ( key, value ) ).collect()
+          self.commands.iter().collect()
         }
         Order::Lexicography =>
         {
-          self.commands.iter().map( | ( key, value ) | ( key, value ) ).sorted_by_key( | ( key, _ ) | *key ).collect()
+          self.commands.iter().sorted_by_key( | ( key, _ ) | *key ).collect()
         }
       }
     }
@@ -109,5 +111,5 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use Dictionary;
+  orphan use Dictionary;
 }

@@ -1,4 +1,4 @@
-# Module :: derive_tools
+# Module :: `derive_tools`
 
 <!--{ generate.module_header{} }-->
 <!--{ generate.module_header.start() }-->

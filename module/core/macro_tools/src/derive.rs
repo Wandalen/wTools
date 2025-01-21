@@ -2,9 +2,10 @@
 //! Macro helpers around derive macro and structure [`syn::DeriveInput`].
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use syn::punctuated::Punctuated;
 
@@ -24,8 +25,10 @@ mod private
   /// };
   /// let fields = derive.named_fields( &ast );
   /// ```
+  /// # Errors
+  /// qqq: doc
 
-  pub fn named_fields< 'a >( ast : &'a syn::DeriveInput ) -> crate::Result< &'a Punctuated< syn::Field, syn::token::Comma > >
+  pub fn named_fields( ast : &syn::DeriveInput ) -> crate::Result< &Punctuated< syn::Field, syn::token::Comma > >
   {
 
     let fields = match ast.data
@@ -54,6 +57,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -70,6 +74,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
@@ -79,6 +84,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use super::super::derive;
 
@@ -96,6 +102,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
   #[ doc( inline ) ]

@@ -1,9 +1,11 @@
 
 use super::*;
 
-mod_interface!
+mod private {}
+
+the_module::mod_interface!
 {
-  #![ debug ]
+  // #![ debug ]
 
   /// layer_a
   layer layer_a;
