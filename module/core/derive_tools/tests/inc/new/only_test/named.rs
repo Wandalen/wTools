@@ -1,7 +1,9 @@
 #[ test ]
 fn from_named()
 {
-  let got : MyStruct = MyStruct::new( 13 );
-  let exp = MyStruct { a : 13 };
+  use mod1::Struct1;
+
+  let got : Struct1 = Struct1::new( 13 );
+  let exp = Struct1 { a : 13 };
   a_id!( got, exp );
 }

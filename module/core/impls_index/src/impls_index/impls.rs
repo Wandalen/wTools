@@ -1,4 +1,4 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 
@@ -382,14 +382,7 @@ pub mod exposed
   use super::*;
   #[ doc( inline ) ]
   pub use prelude::*;
-}
 
-
-/// Prelude to use essentials: `use my_module::prelude::*`.
-#[ allow( unused_imports ) ]
-pub mod prelude
-{
-  use super::*;
   #[ doc( inline ) ]
   pub use private::
   {
@@ -403,9 +396,15 @@ pub mod prelude
     _impls_callback,
   };
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use ::impls_index_meta::impls3;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
   pub use impls3 as impls;
+
+}
+
+/// Prelude to use essentials: `use my_module::prelude::*`.
+#[ allow( unused_imports ) ]
+pub mod prelude
+{
+  use super::*;
 }

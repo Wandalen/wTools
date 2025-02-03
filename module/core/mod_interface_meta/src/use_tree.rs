@@ -1,4 +1,4 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
   use macro_tools::prelude::*;
@@ -24,12 +24,13 @@ mod private
 
     /// Is adding prefix to the tree path required?
     /// Add `super::private::` to path unless it starts from `::` or `super` or `crate`.
-    pub fn prefix_is_needed( &self ) -> bool
+    pub fn private_prefix_is_needed( &self ) -> bool
     {
+      #[ allow( clippy::wildcard_imports, clippy::enum_glob_use ) ]
       use syn::UseTree::*;
 
-      // println!( "prefix_is_needed : {:?}", self );
-      // println!( "prefix_is_needed : self.leading_colon : {:?}", self.leading_colon );
+      // println!( "private_prefix_is_needed : {:?}", self );
+      // println!( "private_prefix_is_needed : self.leading_colon : {:?}", self.leading_colon );
 
       if self.leading_colon.is_some()
       {
@@ -46,6 +47,7 @@ mod private
     /// Get pure path, cutting off `as module2` from `use module1 as module2`.
     pub fn pure_path( &self ) -> syn::Result< syn::punctuated::Punctuated< syn::Ident, Token![::] > >
     {
+      #[ allow( clippy::wildcard_imports, clippy::enum_glob_use ) ]
       use syn::UseTree::*;
 
       // let leading_colon = None;
@@ -92,11 +94,11 @@ mod private
     pub fn pure_without_super_path( &self ) -> syn::Result< syn::punctuated::Punctuated< syn::Ident, Token![::] > >
     {
       let path = self.pure_path()?;
-      if path.len() < 1
+      if path.is_empty()
       {
         return Ok( path );
       }
-      if path[ 0 ].to_string() == "super"
+      if path[ 0 ] == "super"
       {
         // let mut path2 = syn::punctuated::Punctuated::< syn::Ident, Token![::] >::new();
         let path2 : syn::punctuated::Punctuated< syn::Ident, Token![::] > = path.into_iter().skip(1).collect();
@@ -105,32 +107,15 @@ mod private
       Ok( path )
     }
 
-    /// Adjusted path.
-    /// Add `super::private::` to path unless it starts from `::` or `super` or `crate`.
-    pub fn adjsuted_implicit_path( &self ) -> syn::Result< syn::punctuated::Punctuated< syn::Ident, Token![::] > >
+    /// Prefix path with __all__ if it's appropriate.
+    pub fn prefixed_with_all( &self ) -> Self
     {
-      // use syn::UseTree::*;
-      let pure_path = self.pure_path()?;
-      if self.prefix_is_needed()
-      {
-        Ok( parse_qt!{ super::private::#pure_path } )
-      }
-      else
-      {
-        Ok( pure_path )
-      }
-    }
 
-    /// Adjusted path.
-    /// Add `super::private::` to path unless it starts from `::` or `super` or `crate`.
-    // pub fn adjsuted_explicit_path( &self ) -> syn::UseTree
-    pub fn adjsuted_explicit_path( &self ) -> Self
-    {
       // use syn::UseTree::*;
-      if self.prefix_is_needed()
+      if self.private_prefix_is_needed()
       {
         let mut clone = self.clone();
-        let tree = parse_qt!{ super::private::#self };
+        let tree = parse_qt!{ __all__::#self };
         clone.tree = tree;
         clone
       }
@@ -138,6 +123,26 @@ mod private
       {
         self.clone()
       }
+
+    }
+
+    /// Prefix path with `super::` if it's appropriate to avoid "re-export of crate public `child`" problem.
+    pub fn prefixed_with_super_maybe( &self ) -> Self
+    {
+
+      // use syn::UseTree::*;
+      if self.private_prefix_is_needed()
+      {
+        let mut clone = self.clone();
+        let tree = parse_qt!{ super::#self };
+        clone.tree = tree;
+        clone
+      }
+      else
+      {
+        self.clone()
+      }
+
     }
 
   }
@@ -146,6 +151,7 @@ mod private
   {
     fn parse( input : ParseStream< '_ > ) -> syn::Result< Self >
     {
+      #[ allow( clippy::wildcard_imports, clippy::enum_glob_use ) ]
       use syn::UseTree::*;
       let leading_colon = input.parse()?;
       let tree = input.parse()?;
@@ -213,6 +219,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use orphan::*;
 }
@@ -221,6 +228,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use exposed::*;
 }
@@ -229,6 +237,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use prelude::*;
 

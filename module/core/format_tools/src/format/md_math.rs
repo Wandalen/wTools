@@ -3,7 +3,9 @@
 //! Provides functionality for converting multidimensional indices into flat offsets,
 //! useful for operations involving multidimensional arrays or grids.
 
-/// Internal namespace.
+// xxx : use crate mdmath
+
+/// Define a private namespace for all its items.
 mod private
 {
   use core::
@@ -29,7 +31,20 @@ mod private
     /// # Returns
     ///
     /// A value of type `T` representing the flat offset.
-    fn md_offset( & self, md_index : [ T ; 3 ] ) -> T;
+    fn md_offset( & self, md_index : Self ) -> T;
+  }
+
+  impl< T > MdOffset< T > for [ T ; 2 ]
+  where
+    T : Mul< T, Output = T > + Add< T, Output = T > + PartialOrd + Copy + fmt::Debug,
+  {
+    fn md_offset( & self, md_index : [ T ; 2 ] ) -> T
+    {
+      debug_assert!( md_index[ 0 ] < self[ 0 ], "md_index : {md_index:?} | md_size : {self:?}" );
+      debug_assert!( md_index[ 1 ] < self[ 1 ], "md_index : {md_index:?} | md_size : {self:?}" );
+      let m1 = self[ 0 ];
+      md_index[ 0 ] + m1 * md_index[ 1 ]
+    }
   }
 
   impl< T > MdOffset< T > for [ T ; 3 ]

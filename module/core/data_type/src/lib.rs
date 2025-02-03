@@ -33,6 +33,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -45,6 +46,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
@@ -54,6 +56,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
   #[ doc( inline ) ]
@@ -123,13 +126,13 @@ pub mod prelude
   pub use crate::dependency::collection_tools::prelude::*;
 
   // #[ cfg( any( not( feature = "no_std" ), feature = "use_alloc" ) ) ]
-  #[ cfg( feature = "dt_prelude" ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use core::
-  {
-    fmt,
-  };
+  // #[ cfg( feature = "dt_prelude" ) ]
+  // #[ doc( inline ) ]
+  // #[ allow( unused_imports ) ]
+  // pub use core::
+  // {
+  //   fmt,
+  // };
 
 }
 

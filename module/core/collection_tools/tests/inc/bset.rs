@@ -67,7 +67,7 @@ fn iters()
   impl IntoIterator for MyContainer
   {
     type Item = i32;
-    type IntoIter = the_module::bset::IntoIter< i32 >;
+    type IntoIter = the_module::btree_set::IntoIter< i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -78,7 +78,7 @@ fn iters()
   impl< 'a > IntoIterator for &'a MyContainer
   {
     type Item = &'a i32;
-    type IntoIter = the_module::bset::Iter< 'a, i32 >;
+    type IntoIter = the_module::btree_set::Iter< 'a, i32 >;
 
     fn into_iter( self ) -> Self::IntoIter
     {

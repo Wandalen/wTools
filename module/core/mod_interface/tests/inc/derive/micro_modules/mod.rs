@@ -6,8 +6,9 @@ mod private
 {
 }
 
-mod_interface!
+the_module::mod_interface!
 {
+  // #![ debug ]
 
   /// mod_own
   own mod mod_own;

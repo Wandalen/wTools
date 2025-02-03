@@ -1,3 +1,4 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
   use std::fmt::Write;
@@ -26,7 +27,8 @@ mod private
     /// # Returns
     ///
     /// A new instance of `TreePrinter`.
-    pub fn new(info : &ListNodeReport) -> Self 
+    #[ must_use ]
+    pub fn new(info : &ListNodeReport) -> Self
     {
       TreePrinter
       {
@@ -44,15 +46,21 @@ mod private
     /// # Returns
     ///
     /// * A `Result` containing the formatted string or a `std::fmt::Error` if formatting fails.
+    ///
+    /// # Errors
+    /// qqq: doc
+    ///
+    /// # Panics
+    /// qqq: doc
     pub fn display_with_spacer( &self, spacer : &str ) -> Result< String, std::fmt::Error >
     {
       let mut f = String::new();
 
       write!( f, "{}", self.info.name )?;
       if let Some( version ) = &self.info.version { write!( f, " {version}" )? }
-      if let Some( crate_dir ) = &self.info.crate_dir { write!( f, " {}", crate_dir )? }
+      if let Some( crate_dir ) = &self.info.crate_dir { write!( f, " {crate_dir}" )? }
       if self.info.duplicate { write!( f, "(*)" )? }
-      write!( f, "\n" )?;
+      writeln!( f )?;
 
       let mut new_spacer = format!( "{spacer}{}  ", if self.info.normal_dependencies.len() < 2 { " " } else { self.symbols.down } );
 
@@ -72,7 +80,7 @@ mod private
       {
         let mut dev_dependencies_iter = self.info.dev_dependencies.iter();
         let last = dev_dependencies_iter.next_back();
-        write!( f, "{spacer}[dev-dependencies]\n" )?;
+        writeln!( f, "{spacer}[dev-dependencies]" )?;
         for dep in dev_dependencies_iter
         {
           write!( f, "{spacer}{}{} {}", self.symbols.tee, self.symbols.right, Self::display_with_spacer( &TreePrinter::new( dep ), &new_spacer )? )?;
@@ -84,7 +92,7 @@ mod private
       {
         let mut build_dependencies_iter = self.info.build_dependencies.iter();
         let last = build_dependencies_iter.next_back();
-        write!( f, "{spacer}[build-dependencies]\n" )?;
+        writeln!( f, "{spacer}[build-dependencies]" )?;
         for dep in build_dependencies_iter
         {
           write!( f, "{spacer}{}{} {}", self.symbols.tee, self.symbols.right, Self::display_with_spacer( &TreePrinter::new( dep ), &new_spacer )? )?;
@@ -146,15 +154,15 @@ mod private
     /// This field is a flag indicating whether the Node is a duplicate or not.
     pub duplicate : bool,
     /// A list that stores normal dependencies.
-    /// Each element in the list is also of the same 'ListNodeReport' type to allow
+    /// Each element in the list is also of the same '`ListNodeReport`' type to allow
     /// storage of nested dependencies.
     pub normal_dependencies : Vec< ListNodeReport >,
     /// A list that stores dev dependencies(dependencies required for tests or examples).
-    /// Each element in the list is also of the same 'ListNodeReport' type to allow
+    /// Each element in the list is also of the same '`ListNodeReport`' type to allow
     /// storage of nested dependencies.
     pub dev_dependencies : Vec< ListNodeReport >,
     /// A list that stores build dependencies.
-    /// Each element in the list is also of the same 'ListNodeReport' type to allow
+    /// Each element in the list is also of the same '`ListNodeReport`' type to allow
     /// storage of nested dependencies.
     pub build_dependencies : Vec< ListNodeReport >,
   }

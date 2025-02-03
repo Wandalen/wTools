@@ -1,3 +1,7 @@
+#![ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
+
+
+#[ allow( clippy::wildcard_imports ) ]
 use crate::*;
 
 use entity::
@@ -34,6 +38,7 @@ impl CrateDir
 
   /// Returns inner type which is an absolute path.
   #[ inline( always ) ]
+  #[ must_use ]
   pub fn absolute_path( self ) -> AbsolutePath
   {
     self.0
@@ -41,6 +46,7 @@ impl CrateDir
 
   /// Returns path to manifest aka cargo file.
   #[ inline( always ) ]
+  #[ must_use ]
   pub fn manifest_file( self ) -> ManifestFile
   {
     self.into()

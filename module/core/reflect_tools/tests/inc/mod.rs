@@ -12,6 +12,10 @@ mod fundamental
   mod fields_vec;
   mod fields_hmap;
   mod fields_bmap;
+  mod fields_bset;
+  mod fields_deque;
+  mod fields_hset;
+  mod fields_llist;
 
 }
 

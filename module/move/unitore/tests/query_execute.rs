@@ -41,14 +41,14 @@ fn query_execute() -> Result< () >
   assert!( res.is_ok() );
 
   // test action
-  let rt  = tokio::runtime::Runtime::new()?;  
+  let rt  = tokio::runtime::Runtime::new()?;
   let ca = CommandsAggregator::former()
   .command( "query.execute" )
     .hint( "hint" )
     .long_hint( "long_hint" )
     .subject().hint( "SQL query" ).kind( Type::String ).optional( false ).end()
     .routine( move | o : VerifiedCommand |
-      {  
+      {
         let mut f_store = MockStore::new();
         f_store
         .expect_query_execute()
@@ -62,19 +62,19 @@ fn query_execute() -> Result< () >
             ]
           )
         ) )
-        ;  
+        ;
         _ = rt.block_on( async move
         {
           let query_arg = o.args
           .get_owned::< String >( 0 )
           ;
-  
+
           let query_str = query_arg.unwrap();
           query::query_execute( f_store, query_str ).await
-        } );  
+        } );
       } )
     .end()
-  .perform();  
+  .perform();
   let entries = ca.perform( vec![ ".query.execute".to_string(), "SELECT title FROM frame".into() ] );
   assert!( entries.is_ok() );
   Ok( () )
@@ -84,7 +84,7 @@ fn query_execute() -> Result< () >
 async fn query_feeds() -> Result< () >
 {
   let path = PathBuf::from( "./tests/fixtures/test_config.toml" );
-  let temp_path = proper_path_tools::path::unique_folder_name().unwrap();
+  let temp_path = pth::path::unique_folder_name().unwrap();
 
   let config = sled::Config::default()
   .path( format!( "./{}", temp_path ) )
@@ -114,7 +114,7 @@ async fn query_feeds() -> Result< () >
 #[ tokio::test ]
 async fn query_frames() -> Result< () >
 {
-  let temp_path = proper_path_tools::path::unique_folder_name().unwrap();
+  let temp_path = pth::path::unique_folder_name().unwrap();
 
   let config = sled::Config::default()
   .path( format!( "./{}", temp_path ) )
@@ -160,7 +160,7 @@ async fn query_frames() -> Result< () >
 async fn query_configs() -> Result< () >
 {
   let path = PathBuf::from( "./tests/fixtures/test_config.toml" );
-  let temp_path = proper_path_tools::path::unique_folder_name().unwrap();
+  let temp_path = pth::path::unique_folder_name().unwrap();
 
   let config = sled::Config::default()
   .path( format!( "./{}", temp_path ) )
@@ -182,6 +182,6 @@ async fn query_configs() -> Result< () >
   {
     assert!( false );
   }
-  
+
   Ok( () )
 }

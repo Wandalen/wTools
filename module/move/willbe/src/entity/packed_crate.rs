@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use std::
@@ -21,10 +23,13 @@ mod private
   ///
   /// # Returns :
   /// The local packed `.crate` file of the package
+  ///
+  /// # Errors
+  /// qqq: doc
   // qqq : typed error
   pub fn local_path< 'a >( name : &'a str, version : &'a str, crate_dir : CrateDir ) -> error::untyped::Result< PathBuf >
   {
-    let buf = format!( "package/{0}-{1}.crate", name, version );
+    let buf = format!( "package/{name}-{version}.crate" );
     let workspace = Workspace::try_from( crate_dir )?;
 
     let mut local_package_path = PathBuf::new();
@@ -37,6 +42,11 @@ mod private
   ///
   /// Get data of remote package from crates.io.
   ///
+  /// # Errors
+  /// qqq: doc
+  ///
+  /// # Panics
+  /// qqq: doc
   // qqq : typed error
   pub fn download< 'a >( name : &'a str, version : &'a str ) -> error::untyped::Result< Vec< u8 > >
   {
@@ -45,7 +55,7 @@ mod private
     .timeout_write( Duration::from_secs( 5 ) )
     .build();
     let mut buf = String::new();
-    write!( &mut buf, "https://static.crates.io/crates/{0}/{0}-{1}.crate", name, version )?;
+    write!( &mut buf, "https://static.crates.io/crates/{name}/{name}-{version}.crate" )?;
 
     let resp = agent.get( &buf[ .. ] ).call().context( "Get data of remote package" )?;
 

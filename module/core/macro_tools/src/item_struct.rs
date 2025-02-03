@@ -2,16 +2,18 @@
 //! Parse structures, like `struct { a : i32 }`.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   // use iter_tools::{ IterTrait, BoxedIter };
 
   /// Extracts the types of each field into a vector.
-  pub fn field_types< 'a >( t : &'a syn::ItemStruct )
+  #[ must_use ]
+  pub fn field_types( t : &syn::ItemStruct )
   ->
-  impl IterTrait< 'a, &'a syn::Type >
+  impl IterTrait< '_, &syn::Type >
   // -> std::iter::Map
   // <
   //   syn::punctuated::Iter< 'a, syn::Field >,
@@ -22,7 +24,13 @@ mod private
   }
 
   /// Retrieves the names of each field, if they exist.
-  pub fn field_names< 'a >( t : &'a syn::ItemStruct ) -> Option< BoxedIter< 'a, &'a syn::Ident > >
+  /// # Errors
+  /// qqq: doc
+  /// # Panics
+  /// qqq: error
+  #[ allow( clippy::match_wildcard_for_single_variants ) ]
+  #[ must_use ]
+  pub fn field_names( t : &syn::ItemStruct ) -> Option< BoxedIter< '_, &syn::Ident > >
   {
     match &t.fields
     {
@@ -35,6 +43,9 @@ mod private
   /// Retrieves the type of the first field of the struct.
   ///
   /// Returns the type if the struct has at least one field, otherwise returns an error.
+  /// # Errors
+  /// qqq
+  #[ allow( clippy::match_wildcard_for_single_variants ) ]
   pub fn first_field_type( t : &syn::ItemStruct ) -> Result< syn::Type >
   {
     let maybe_field = match t.fields
@@ -49,13 +60,16 @@ mod private
       return Ok( field.ty.clone() )
     }
 
-    return Err( syn_err!( t.span(), "Expects at least one field" ) );
+    Err( syn_err!( t.span(), "Expects at least one field" ) )
   }
 
   /// Retrieves the name of the first field of the struct, if available.
   ///
   /// Returns `Some` with the field identifier for named fields, or `None` for unnamed fields.
   /// Returns an error if the struct has no fields
+  /// # Errors
+  /// qqq: doc
+  #[ allow( clippy::match_wildcard_for_single_variants ) ]
   pub fn first_field_name( t : &syn::ItemStruct ) -> Result< Option< syn::Ident > >
   {
     let maybe_field = match t.fields
@@ -70,7 +84,7 @@ mod private
       return Ok( field.ident.clone() )
     }
 
-    return Err( syn_err!( t.span(), "Expects type for fields" ) );
+    Err( syn_err!( t.span(), "Expects type for fields" ) )
   }
 
 
@@ -84,6 +98,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -101,6 +116,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
@@ -110,6 +126,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   pub use super::super::item_struct;
 

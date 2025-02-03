@@ -1,4 +1,4 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 
@@ -31,6 +31,8 @@ pub mod own
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
+  #[ doc( inline ) ]
+  pub use ::impls_index_meta::*;
 }
 
 /// Shared with parent namespace of the module
@@ -40,7 +42,6 @@ pub mod orphan
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
-  // pub use super::dependency;
 }
 
 /// Exposed namespace of the module.
@@ -51,11 +52,9 @@ pub mod exposed
   #[ doc( inline ) ]
   pub use prelude::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::impls::exposed::*;
+  pub use impls::exposed::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::func::exposed::*;
+  pub use func::exposed::*;
 }
 
 /// Prelude to use essentials: `use my_module::prelude::*`.
@@ -64,13 +63,7 @@ pub mod prelude
 {
   use super::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::impls::prelude::*;
+  pub use impls::prelude::*;
   #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use super::func::prelude::*;
-  // #[ cfg( any( feature = "meta", feature = "impls_index_meta" ) ) ]
-  #[ doc( inline ) ]
-  #[ allow( unused_imports ) ]
-  pub use ::impls_index_meta::*;
+  pub use func::prelude::*;
 }

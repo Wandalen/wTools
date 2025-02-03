@@ -2,9 +2,10 @@
 //! Quantifiers like Pair and Many.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   ///
@@ -105,11 +106,13 @@ mod private
     T : Element,
   {
     /// Constructor.
+    #[ must_use ]
     pub fn new() -> Self
     {
       Self( Vec::new() )
     }
     /// Constructor.
+    #[ must_use ]
     pub fn new_with( src : Vec< T > ) -> Self
     {
       Self( src )
@@ -148,6 +151,7 @@ mod private
     T : quote::ToTokens,
   {
     type Item = T;
+    #[ allow( clippy::std_instead_of_alloc ) ]
     type IntoIter = std::vec::IntoIter< Self::Item >;
     fn into_iter( self ) -> Self::IntoIter
     {
@@ -253,6 +257,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -262,6 +267,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
@@ -271,6 +277,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
   pub use super::super::quantifier;
@@ -291,6 +298,7 @@ pub mod exposed
 #[ allow( unused_imports ) ]
 pub mod prelude
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use private::

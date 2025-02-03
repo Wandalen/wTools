@@ -1,11 +1,14 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
-  use std::collections::{ HashMap };
+  use std::collections::HashMap;
   use indexmap::IndexMap;
   use former::{ Former, StoragePreform };
   use iter_tools::Itertools;
+  use executor::{ Routine, Handler };
 
   /// A description of a Value in a command. Used to specify the expected type and provide a hint for the Value.
   ///
@@ -35,7 +38,7 @@ mod private
   pub struct PropertyDescription
   {
     name : String,
-    // qqq : how to re-use ValueDescriptionFormer without additional end?
+    // xxx : how to re-use ValueDescriptionFormer without additional end?
     // #[subform_scalar]
     // value : ValueDescription,
     /// providing guidance to the user for entering a valid value
@@ -74,7 +77,7 @@ mod private
   /// # Example:
   ///
   /// ```
-  /// # use wca::{ Command, Type };
+  /// # use wca::{ grammar::Command, Type };
   /// let command = Command::former()
   /// .hint( "hint" )
   /// .long_hint( "long_hint" )
@@ -103,7 +106,8 @@ mod private
     /// Map of aliases.
     // Aliased key -> Original key
     pub properties_aliases : HashMap< String, String >,
-    // qqq : make it usable and remove default(?)
+    // aaa : make it usable and remove default(?)
+    // aaa : it is usable
     /// The type `Routine` represents the specific implementation of the routine.
     #[ scalar( setter = false ) ]
     #[ former( default = Routine::from( Handler::< _, std::convert::Infallible >::from( || { panic!( "No routine available: A handler function for the command is missing" ) } ) ) ) ]
@@ -118,11 +122,11 @@ mod private
       {
         Order::Nature =>
         {
-          self.properties.iter().map( | ( key, value ) | ( key, value ) ).collect()
+          self.properties.iter().collect()
         }
         Order::Lexicography =>
         {
-          self.properties.iter().map( | ( key, value ) | ( key, value ) ).sorted_by_key( | ( k, _ ) | *k ).collect()
+          self.properties.iter().sorted_by_key( | ( k, _ ) | *k ).collect()
         }
       }
     }
@@ -133,6 +137,7 @@ mod private
     Definition : former::FormerDefinition< Storage = < Command as former::EntityToStorage >::Storage >,
   {
     /// Setter for separate properties aliases.
+    #[ must_use ]
     pub fn property_alias< S : Into< String > >( mut self, key : S, alias : S ) -> Self
     {
       let key = key.into();
@@ -175,6 +180,7 @@ mod private
     /// # Returns
     ///
     /// Returns the `CommandFormer` instance with the new command routine set.
+    #[ must_use ]
     pub fn routine< I, R, F : Into< Handler< I, R > > >( mut self, f : F ) -> Self
     where
       Routine: From< Handler< I, R > >,
@@ -207,6 +213,8 @@ mod private
     /// # Arguments
     ///
     /// * `name` - The name of the property. It should implement the `Into< String >` trait.
+    /// # Panics
+    /// qqq: doc
     pub fn property< IntoName >( self, name : IntoName ) -> PropertyDescriptionAsSubformer< Self, impl PropertyDescriptionAsSubformerEnd< Self > >
     where
       IntoName : Into< String >,
@@ -246,9 +254,15 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use Command;
-  exposed use CommandFormer;
+  orphan use Command;
+  orphan use CommandFormer;
   own use ValueDescription;
+
+  own use CommandAsSubformer;
+  own use CommandAsSubformerEnd;
+  own use CommandFormerStorage;
+
 }
 
-// qqq : use orphan instead of exposed for ALL files in the folder, dont use prelude for structs
+// aaa : use orphan instead of exposed for ALL files in the folder, dont use prelude for structs
+// aaa : done.

@@ -1,4 +1,4 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
 #[ cfg( not( feature = "no_std" ) ) ]
 mod private
 {

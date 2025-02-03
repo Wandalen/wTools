@@ -345,7 +345,7 @@ pub fn deref_mut( input : proc_macro::TokenStream ) -> proc_macro::TokenStream
 }
 
 ///
-/// Derive macro to implement AsRef when-ever it's possible to do automatically.
+/// Derive macro to implement `AsRef` when-ever it's possible to do automatically.
 ///
 /// ### Sample :: struct instead of macro.
 ///

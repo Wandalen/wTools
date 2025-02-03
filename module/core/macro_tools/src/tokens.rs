@@ -2,9 +2,10 @@
 //! Attributes analyzys and manipulation.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use core::fmt;
 
@@ -32,6 +33,7 @@ mod private
   impl Tokens
   {
     /// Constructor from `proc_macro2::TokenStream`.
+    #[ must_use ]
     pub fn new( inner : proc_macro2::TokenStream ) -> Self
     {
       Tokens { inner }
@@ -59,7 +61,7 @@ mod private
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
-      write!( f, "{}", self.inner.to_string() )
+      write!( f, "{}", self.inner )
     }
   }
 
@@ -67,7 +69,7 @@ mod private
   {
     fn fmt( &self, f : &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
     {
-      write!( f, "{}", self.inner.to_string() )
+      write!( f, "{}", self.inner )
     }
   }
 
@@ -81,6 +83,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -90,6 +93,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;
@@ -99,6 +103,7 @@ pub mod orphan
 #[ allow( unused_imports ) ]
 pub mod exposed
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
 
   pub use super::super::tokens;

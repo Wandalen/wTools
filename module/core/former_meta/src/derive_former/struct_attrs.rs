@@ -1,7 +1,7 @@
 //!
 //! Attributes of the whole item.
 //!
-
+#[ allow( clippy::wildcard_imports ) ]
 use super::*;
 
 use macro_tools::
@@ -63,7 +63,7 @@ impl ItemAttributes
     {
 
       let key_ident = attr.path().get_ident().ok_or_else( || error( attr ) )?;
-      let key_str = format!( "{}", key_ident );
+      let key_str = format!( "{key_ident}" );
 
       // attributes does not have to be known
       // if attr::is_standard( &key_str )
@@ -76,7 +76,7 @@ impl ItemAttributes
         AttributeStorageFields::KEYWORD => result.assign( AttributeStorageFields::from_meta( attr )? ),
         AttributeMutator::KEYWORD => result.assign( AttributeMutator::from_meta( attr )? ),
         AttributePerform::KEYWORD => result.assign( AttributePerform::from_meta( attr )? ),
-        "debug" => {}
+        // "debug" => {}
         _ => {},
         // _ => return Err( error( attr ) ),
         // attributes does not have to be known
@@ -87,7 +87,7 @@ impl ItemAttributes
   }
 
   ///
-  /// Generate parts, used for generating `perform()`` method.
+  /// Generate parts, used for generating `perform()` method.
   ///
   /// Similar to `form()`, but will also invoke function from `perform` attribute, if specified.
   ///
@@ -96,13 +96,13 @@ impl ItemAttributes
   /// ## perform :
   /// return result;
   ///
-  /// ## perform_output :
-  /// < T : ::core::default::Default >
+  /// ## `perform_output` :
+  /// < T : `::core::default::Default` >
   ///
-  /// ## perform_generics :
+  /// ## `perform_generics` :
   /// Vec< T >
   ///
-
+  #[ allow( clippy::unnecessary_wraps ) ]
   pub fn performer( &self )
   -> Result< ( TokenStream, TokenStream, TokenStream ) >
   {
@@ -190,7 +190,7 @@ impl AttributeComponent for AttributeStorageFields
     {
       syn::Meta::List( ref meta_list ) =>
       {
-        return syn::parse2::< AttributeStorageFields >( meta_list.tokens.clone() );
+        syn::parse2::< AttributeStorageFields >( meta_list.tokens.clone() )
       },
       _ => return_syn_err!( attr, "Expects an attribute of format #[ storage_fields( a : i32, b : Option< String > ) ]
 .\nGot: {}", qt!{ #attr } ),
@@ -260,6 +260,7 @@ pub struct AttributeMutator
   pub debug : AttributePropertyDebug,
 }
 
+#[ allow( clippy::match_wildcard_for_single_variants ) ]
 impl AttributeComponent for AttributeMutator
 {
   const KEYWORD : &'static str = "mutator";
@@ -270,11 +271,11 @@ impl AttributeComponent for AttributeMutator
     {
       syn::Meta::List( ref meta_list ) =>
       {
-        return syn::parse2::< AttributeMutator >( meta_list.tokens.clone() );
+        syn::parse2::< AttributeMutator >( meta_list.tokens.clone() )
       },
       syn::Meta::Path( ref _path ) =>
       {
-        return Ok( Default::default() )
+        Ok( AttributeMutator::default() )
       },
       _ => return_syn_err!( attr, "Expects an attribute of format `#[ mutator( custom ) ]`. \nGot: {}", qt!{ #attr } ),
     }
@@ -407,7 +408,7 @@ impl AttributeComponent for AttributePerform
     {
       syn::Meta::List( ref meta_list ) =>
       {
-        return syn::parse2::< AttributePerform >( meta_list.tokens.clone() );
+        syn::parse2::< AttributePerform >( meta_list.tokens.clone() )
       },
       _ => return_syn_err!( attr, "Expects an attribute of format #[ perform( fn parse( mut self ) -> Request ) ]
 .\nGot: {}", qt!{ #attr } ),

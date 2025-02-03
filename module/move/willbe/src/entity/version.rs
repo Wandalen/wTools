@@ -1,6 +1,8 @@
-/// Internal namespace.
+/// Define a private namespace for all its items.
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use std::
@@ -17,7 +19,7 @@ mod private
   use package::Package;
   use { error::untyped::format_err, iter::Itertools };
 
-  /// Wrapper for a SemVer structure
+  /// Wrapper for a `SemVer` structure
   #[ derive( Debug, Clone, Eq, PartialEq, Ord, PartialOrd ) ]
   pub struct Version( SemVersion );
 
@@ -55,7 +57,7 @@ mod private
   {
     fn fmt( &self, f : &mut fmt::Formatter< '_ > ) -> fmt::Result
     {
-      write!( f, "{}", self.0.to_string() )
+      write!( f, "{}", self.0 )
     }
   }
 
@@ -64,6 +66,7 @@ mod private
     /// Bump a version with default strategy
     ///
     /// This function increases first not 0 number
+    #[ must_use ]
     pub fn bump( self ) -> Self
     {
       let mut ver = self.0;
@@ -187,6 +190,9 @@ mod private
   ///
   /// Returns a result containing the extended bump report if successful.
   ///
+  ///
+  /// # Errors
+  /// qqq: doc
   // qqq : should be typed error, apply err_with
   // qqq : don't use 1-prameter Result
   pub fn bump( o : BumpOptions ) -> Result< ExtendedBumpReport >
@@ -211,7 +217,7 @@ mod private
     {
       // let data = package_manifest.data.as_mut().unwrap();
       let data = &mut package_manifest.data;
-      data[ "package" ][ "version" ] = value( &o.new_version.to_string() );
+      data[ "package" ][ "version" ] = value( o.new_version.to_string() );
       package_manifest.store()?;
     }
     report.changed_files = vec![ manifest_file ];
@@ -226,9 +232,9 @@ mod private
       let item = if let Some( item ) = data.get_mut( "package" ) { item }
       else if let Some( item ) = data.get_mut( "workspace" ) { item }
       else { return Err( format_err!( "{report:?}\nThe manifest nor the package and nor the workspace" ) ); };
-      if let Some( dependency ) = item.get_mut( "dependencies" ).and_then( | ds | ds.get_mut( &name ) )
+      if let Some( dependency ) = item.get_mut( "dependencies" ).and_then( | ds | ds.get_mut( name ) )
       {
-        if let Some( previous_version ) = dependency.get( "version" ).and_then( | v | v.as_str() ).map( | v | v.to_string() )
+        if let Some( previous_version ) = dependency.get( "version" ).and_then( | v | v.as_str() ).map( std::string::ToString::to_string )
         {
           if previous_version.starts_with('~')
           {
@@ -256,6 +262,12 @@ mod private
   /// # Returns
   ///
   /// Returns `Ok(())` if the version is reverted successfully. Returns `Err` with an error message if there is any issue with reverting the version.
+  ///
+  /// # Errors
+  /// qqq: doc
+  ///
+  /// # Panics
+  /// qqq: doc
   // qqq : don't use 1-prameter Result
   pub fn revert( report : &ExtendedBumpReport ) -> error::untyped::Result< () > // qqq : use typed error
   {
@@ -267,13 +279,13 @@ mod private
     {
       if let Some( dependency ) = item_maybe_with_dependencies.get_mut( "dependencies" ).and_then( | ds | ds.get_mut( name ) )
       {
-        if let Some( current_version ) = dependency.get( "version" ).and_then( | v | v.as_str() ).map( | v | v.to_string() )
+        if let Some( current_version ) = dependency.get( "version" ).and_then( | v | v.as_str() ).map( std::string::ToString::to_string )
         {
           let version = &mut dependency[ "version" ];
           if let Some( current_version ) = current_version.strip_prefix( '~' )
           {
             if current_version != new_version { return Err( format_err!( "The current version of the package does not match the expected one. Expected: `{new_version}` Current: `{}`", version.as_str().unwrap_or_default() ) ); }
-            *version = value( format!( "~{}", old_version ) );
+            *version = value( format!( "~{old_version}" ) );
           }
           else
           {
@@ -327,6 +339,12 @@ mod private
   /// # Returns :
   /// - `Ok` - the new version number as a string;
   /// - `Err` - if the manifest file cannot be read, written, parsed.
+  ///
+  /// # Errors
+  /// qqq: doc
+  ///
+  /// # Panics
+  /// qqq: doc
   pub fn manifest_bump( manifest : &mut Manifest, dry : bool ) -> Result< BumpReport, manifest::ManifestError >
   {
     let mut report = BumpReport::default();

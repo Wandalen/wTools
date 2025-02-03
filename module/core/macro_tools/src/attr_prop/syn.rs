@@ -2,6 +2,8 @@
 //! Property of an attribute which simply wraps one of the standard `syn` types.
 //!
 
+use core::marker::PhantomData;
+#[ allow( clippy::wildcard_imports ) ]
 use crate::*;
 // use former_types::Assign;
 
@@ -108,8 +110,9 @@ impl< T, Marker > From< T > for AttributePropertySyn< T, Marker >
 where T : syn::parse::Parse + quote::ToTokens
 {
   #[ inline( always ) ]
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn from( src : T ) -> Self
   {
-    Self( src, Default::default() )
+    Self( src, PhantomData::default() )
   }
 }

@@ -1,3 +1,4 @@
+#[ allow( clippy::wildcard_imports ) ]
 use super::*;
 use macro_tools::
 {
@@ -10,8 +11,10 @@ use macro_tools::
 };
 
 mod field_attributes;
+#[ allow( clippy::wildcard_imports ) ]
 use field_attributes::*;
 mod item_attributes;
+#[ allow( clippy::wildcard_imports ) ]
 use item_attributes::*;
 
 //
@@ -27,15 +30,15 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
   let item_name = &parsed.ident();
 
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
-  = generic_params::decompose( &parsed.generics() );
+  = generic_params::decompose( parsed.generics() );
 
   let result = match parsed
   {
     StructLike::Unit( ref item ) | StructLike::Struct( ref item ) =>
     {
 
-      let mut field_types = item_struct::field_types( &item );
-      let field_names = item_struct::field_names( &item );
+      let mut field_types = item_struct::field_types( item );
+      let field_names = item_struct::field_names( item );
 
       match ( field_types.len(), field_names )
       {
@@ -55,7 +58,7 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
           &generics_ty,
           &generics_where,
           field_names.next().unwrap(),
-          &field_types.next().unwrap(),
+          field_types.next().unwrap(),
         ),
         ( 1, None ) =>
         generate_single_field
@@ -64,7 +67,7 @@ pub fn from( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStre
           &generics_impl,
           &generics_ty,
           &generics_where,
-          &field_types.next().unwrap(),
+          field_types.next().unwrap(),
         ),
         ( _, Some( field_names ) ) =>
         generate_multiple_fields_named
@@ -252,7 +255,7 @@ fn generate_single_field_named
 }
 
 // qqq  : document, add example of generated code -- done
-/// Generates `From`` implementation for structs with a single named field
+/// Generates `From` implementation for structs with a single named field
 ///
 /// # Example of generated code
 ///
@@ -441,6 +444,7 @@ fn generate_multiple_fields< 'a >
 }
 
 // qqq : document, add example of generated code
+#[ allow ( clippy::format_in_format_args ) ]
 fn variant_generate
 (
   item_name : &syn::Ident,
@@ -462,7 +466,7 @@ fn variant_generate
     return Ok( qt!{} )
   }
 
-  if fields.len() <= 0
+  if fields.is_empty()
   {
     return Ok( qt!{} )
   }

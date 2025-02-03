@@ -1,3 +1,4 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
   use std::fmt::{Display, Formatter};
@@ -13,13 +14,14 @@ mod private
   {
     fn fmt( &self, f : &mut Formatter< '_ > ) -> std::fmt::Result
     {
-      writeln!( f, "{}", self.inner.to_string() )
+      writeln!( f, "{}", self.inner )
     }
   }
 
   impl Table
   {
     /// Create an empty table.
+    #[ must_use ]
     pub fn new() -> Self
     {
       Self
@@ -57,7 +59,7 @@ mod private
 
   fn default_format() -> prettytable::format::TableFormat
   {
-    let format = prettytable::format::FormatBuilder::new()
+    prettytable::format::FormatBuilder::new()
     .column_separator( ' ' )
     .borders( ' ' )
     .separators
@@ -66,8 +68,7 @@ mod private
       prettytable::format::LineSeparator::new( '-', '+', '+', '+' )
     )
     .padding( 1, 1 )
-    .build();
-    format
+    .build()
   }
 
   /// Represent a table row made of cells.
@@ -89,9 +90,11 @@ mod private
     }
   }
 
+  #[ allow( clippy::new_without_default ) ]
   impl Row
   {
     /// Create an row of length size, with empty strings stored.
+    #[ must_use ]
     pub fn new() -> Self
     {
       Self

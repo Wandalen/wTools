@@ -1,0 +1,24 @@
+name : minwebgpu
+
+on :
+  push :
+    branches :
+      - 'alpha'
+      - 'beta'
+      - 'master'
+
+
+env :
+  CARGO_TERM_COLOR : always
+
+jobs :
+
+  # minwebgpu
+
+  test :
+    uses : Wandalen/wTools/.github/workflows/standard_rust_push.yml@alpha
+    with :
+      manifest_path : 'module/blank/minwebgpu/Cargo.toml'
+      module_name : 'minwebgpu'
+      commit_message : ${{ github.event.head_commit.message }}
+      commiter_username:  ${{ github.event.head_commit.committer.username }}

@@ -2,7 +2,7 @@
 //! Iterator over fields.
 //!
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
 
@@ -112,6 +112,10 @@ mod private
 mod vec;
 mod hmap;
 mod bmap;
+mod hset;
+mod bset;
+mod deque;
+mod llist;
 
 #[ doc( inline ) ]
 #[ allow( unused_imports ) ]

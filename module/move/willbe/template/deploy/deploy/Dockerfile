@@ -3,7 +3,7 @@ ENV TF_VERSION=1.7.4
 
 WORKDIR /
 
-# Installation terraform
+# Install terraform
 RUN apt update --allow-releaseinfo-change \
     && apt install wget unzip \
     && mkdir -p /usr/lib/terraform/${TF_VERSION} \

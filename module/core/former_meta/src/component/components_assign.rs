@@ -1,3 +1,4 @@
+#[ allow( clippy::wildcard_imports ) ]
 use super::*;
 use macro_tools::{ attr, diag, Result, format_ident };
 use iter_tools::{ Itertools };
@@ -44,7 +45,7 @@ pub fn components_assign( input : proc_macro::TokenStream ) -> Result< proc_macr
   let component_assigns : Vec< _ > = component_assigns.into_iter().collect::< Result< _ > >()?;
 
   // code
-  let doc = format!( "Interface to assign instance from set of components exposed by a single argument." );
+  let doc = "Interface to assign instance from set of components exposed by a single argument.".to_string();
   let trait_bounds = qt! { #( #bounds1 )* IntoT : Clone };
   let impl_bounds = qt! { #( #bounds2 )* #( #bounds1 )* IntoT : Clone };
   let component_assigns = qt! { #( #component_assigns )* };
@@ -75,7 +76,7 @@ pub fn components_assign( input : proc_macro::TokenStream ) -> Result< proc_macr
 
   if has_debug
   {
-    let about = format!( "derive : ComponentsAssign\nstructure : {0}", item_name );
+    let about = format!( "derive : ComponentsAssign\nstructure : {item_name}" );
     diag::report_print( about, &original_input, &result );
   }
 
@@ -96,6 +97,7 @@ pub fn components_assign( input : proc_macro::TokenStream ) -> Result< proc_macr
 /// IntoT : Into< i32 >
 /// ```
 ///
+#[ allow( clippy::unnecessary_wraps ) ]
 fn generate_trait_bounds( field_type : &syn::Type ) -> Result< proc_macro2::TokenStream >
 {
   Ok
@@ -116,6 +118,7 @@ fn generate_trait_bounds( field_type : &syn::Type ) -> Result< proc_macro2::Toke
 /// T : former::Assign< i32, IntoT >,
 /// ```
 ///
+#[ allow( clippy::unnecessary_wraps ) ]
 fn generate_impl_bounds( field_type : &syn::Type ) -> Result< proc_macro2::TokenStream >
 {
   Ok
@@ -137,6 +140,7 @@ fn generate_impl_bounds( field_type : &syn::Type ) -> Result< proc_macro2::Token
 /// former::Assign::< i32, _ >::assign( self.component.clone() );
 /// ```
 ///
+#[ allow( clippy::unnecessary_wraps ) ]
 fn generate_component_assign_call( field : &syn::Field ) -> Result< proc_macro2::TokenStream >
 {
   // let field_name = field.ident.as_ref().expect( "Expected the field to have a name" );

@@ -1,3 +1,4 @@
+#[ allow( clippy::wildcard_imports ) ]
 use super::*;
 use macro_tools::{ attr, diag, generic_params, Result, struct_like::StructLike };
 
@@ -11,7 +12,7 @@ pub fn deref( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
   let item_name = &parsed.ident();
 
   let ( _generics_with_defaults, generics_impl, generics_ty, generics_where )
-  = generic_params::decompose( &parsed.generics() );
+  = generic_params::decompose( parsed.generics() );
 
   let result = match parsed
   {
@@ -84,6 +85,7 @@ pub fn deref( input : proc_macro::TokenStream ) -> Result< proc_macro2::TokenStr
 /// }
 /// ```
 ///
+#[ allow( clippy::unnecessary_wraps ) ]
 fn generate_unit
 (
   item_name : &syn::Ident,
@@ -322,9 +324,9 @@ fn generate_enum
     None => return generate_unit
     (
       item_name,
-      &generics_impl,
-      &generics_ty,
-      &generics_where,
+      generics_impl,
+      generics_ty,
+      generics_where,
     ),
   };
 
@@ -343,18 +345,18 @@ fn generate_enum
     generate_unit
     (
       item_name,
-      &generics_impl,
-      &generics_ty,
-      &generics_where,
+      generics_impl,
+      generics_ty,
+      generics_where,
     ),
 
     syn::Fields::Unnamed( ref item ) =>
     generate_enum_tuple_variants
     (
       item_name,
-      &generics_impl,
-      &generics_ty,
-      &generics_where,
+      generics_impl,
+      generics_ty,
+      generics_where,
       &idents,
       item,
     ),
@@ -363,9 +365,9 @@ fn generate_enum
     generate_enum_named_variants
     (
       item_name,
-      &generics_impl,
-      &generics_ty,
-      &generics_where,
+      generics_impl,
+      generics_ty,
+      generics_where,
       &idents,
       item,
     ),

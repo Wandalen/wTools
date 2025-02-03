@@ -58,7 +58,7 @@ enabled = [ "test_tools/enabled" ]
 
 [dependencies]
 
-test_tools = { workspace = true, features = [ "full" ] }
+test_tools = { workspace = true, default-features = true }
 
 # ## external
 #
@@ -76,5 +76,5 @@ test_tools = { workspace = true, features = [ "full" ] }
 # data_type = { workspace = true, features = [ "full" ] }
 # diagnostics_tools = { workspace = true, features = [ "full" ] }
 
-# [dev-dependencies]
-# test_tools = { workspace = true }
+[dev-dependencies]
+test_tools = { workspace = true }

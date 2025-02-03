@@ -18,6 +18,8 @@ pub use hrng_deterministic as hrng;
 #[ cfg( any( not( feature = "determinism" ), feature = "no_std" ) ) ]
 pub use hrng_non_deterministic as hrng;
 
+mod private {}
+
 mod_interface!
 {
 

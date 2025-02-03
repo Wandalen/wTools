@@ -1,8 +1,22 @@
 #![ doc( html_logo_url = "https://raw.githubusercontent.com/Wandalen/wTools/master/asset/img/logo_v3_trans_square.png" ) ]
 #![ doc( html_favicon_url = "https://raw.githubusercontent.com/Wandalen/wTools/alpha/asset/img/logo_v3_trans_square_icon_small_v2.ico" ) ]
 #![ doc( html_root_url = "https://docs.rs/mod_interface_meta/latest/mod_interface_meta/" ) ]
-#![ deny( dead_code ) ]
 #![ doc = include_str!( concat!( env!( "CARGO_MANIFEST_DIR" ), "/", "Readme.md" ) ) ]
+
+#![ warn( dead_code ) ]
+
+// /// Derives.
+// layer derive;
+// own use super::derive;
+// // xxx : change to remove need to write explicitly that
+
+// xxx : change to remove need to write explicitly that
+// crate::mod_interface!
+// {
+//   /// Derives.
+//   layer derive;
+//   own use super::derive; // xxx : change to remove need to write explicitly that
+// }
 
 // xxx : clean up, ad solve problems
 // - example based on simpified version of test::layer_have_layer with single sublayer
@@ -29,7 +43,7 @@
 //   };
 // }
 
-// xxx : make use proper_path_tools::own::path working
+// xxx : make use pth::own::path working
 
 // xxx : put modular files into a namespace `file` maybe
 // #[ cfg( feature = "enabled" ) ]
@@ -79,10 +93,13 @@ mod impls;
 #[ allow( unused_imports ) ]
 use impls::exposed::*;
 mod record;
+#[ allow( clippy::wildcard_imports ) ]
 use record::exposed::*;
 mod visibility;
+#[ allow( clippy::wildcard_imports ) ]
 use visibility::exposed::*;
 mod use_tree;
+#[ allow( clippy::wildcard_imports ) ]
 use use_tree::exposed::*;
 
 ///

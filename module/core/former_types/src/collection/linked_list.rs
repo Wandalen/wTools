@@ -4,7 +4,7 @@
 //! this module abstracts the operations on list-like data structures, making them more flexible and easier to integrate as
 //! as subformer, enabling fluid and intuitive manipulation of lists via builder patterns.
 //!
-
+#[ allow( clippy::wildcard_imports ) ]
 use crate::*;
 #[ allow( unused ) ]
 use collection_tools::LinkedList;
@@ -221,6 +221,7 @@ pub trait LinkedListExt< E > : sealed::Sealed
 
 impl< E > LinkedListExt< E > for LinkedList< E >
 {
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn former() -> LinkedListFormer< E, (), LinkedList< E >, ReturnStorage >
   {
     LinkedListFormer::< E, (), LinkedList< E >, ReturnStorage >::new( ReturnStorage::default() )

@@ -1,5 +1,6 @@
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   use error::{ untyped::Context };
@@ -7,6 +8,8 @@ mod private
   ///
   /// Generate table.
   ///
+  /// # Errors
+  /// qqq: doc
   // qqq : typed error
   pub fn readme_health_table_renew() -> error::untyped::Result< () >
   {

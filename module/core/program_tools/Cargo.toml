@@ -36,7 +36,7 @@ full = [
 enabled = [
   "mod_interface/enabled",
   "former/enabled",
-  "proper_path_tools/enabled",
+  "pth/enabled",
   "error_tools/enabled",
   "iter_tools/enabled",
 ]
@@ -44,7 +44,7 @@ enabled = [
 [dependencies]
 mod_interface = { workspace = true }
 former = { workspace = true, features = [ "derive_former" ] }
-proper_path_tools = { workspace = true }
+pth = { workspace = true }
 error_tools = { workspace = true, features = [ "error_untyped" ] } # qqq : xxx : rid of error_untyped
 iter_tools = { workspace = true }
 

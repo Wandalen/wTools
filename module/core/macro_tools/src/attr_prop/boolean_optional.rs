@@ -2,7 +2,8 @@
 //! A generic optional boolean attribute property: `Option< bool >`.
 //! Defaults to `false`.
 //!
-
+use core::marker::PhantomData;
+#[ allow( clippy::wildcard_imports ) ]
 use crate::*;
 use components::Assign;
 
@@ -19,6 +20,7 @@ pub struct AttributePropertyOptionalBoolean< Marker = AttributePropertyOptionalB
 impl< Marker > AttributePropertyOptionalBoolean< Marker >
 {
   /// Just unwraps and returns the internal data.
+  #[ must_use ]
   #[ inline( always ) ]
   pub fn internal( self ) -> Option< bool >
   {
@@ -26,6 +28,7 @@ impl< Marker > AttributePropertyOptionalBoolean< Marker >
   }
 
   /// Returns a reference to the internal optional boolean value.
+  #[ must_use ]
   #[ inline( always ) ]
   pub fn ref_internal( &self ) -> Option< &bool >
   {
@@ -42,6 +45,7 @@ where
   /// Inserts value of another instance into the option if it is None, then returns a mutable reference to the contained value.
   /// If another instance does is None then do nothing.
   #[ inline( always ) ]
+  #[ allow( clippy::single_match ) ]
   fn assign( &mut self, component : IntoT )
   {
     let component = component.into();
@@ -73,18 +77,20 @@ impl< Marker > syn::parse::Parse for AttributePropertyOptionalBoolean< Marker >
 impl< Marker > From< bool > for AttributePropertyOptionalBoolean< Marker >
 {
   #[ inline( always ) ]
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn from( src : bool ) -> Self
   {
-    Self( Some( src ), Default::default() )
+    Self( Some( src ), PhantomData::default() )
   }
 }
 
 impl< Marker > From< Option< bool > > for AttributePropertyOptionalBoolean< Marker >
 {
   #[ inline( always ) ]
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn from( src : Option< bool > ) -> Self
   {
-    Self( src, Default::default() )
+    Self( src, PhantomData::default() )
   }
 }
 

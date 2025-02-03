@@ -3,9 +3,10 @@
 //! to manipulate the structure of items, handle different kinds of fields, and provide a structured approach to
 //! organizing the codebase into different access levels.
 
-/// Internal namespace.
+/// Define a private namespace for all its items.
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
 
   /// Ensures the last field in a struct has a trailing comma.
@@ -56,7 +57,7 @@ mod private
   ///   }
   /// }.to_string() );
   /// ```
-
+  #[ must_use ]
   pub fn ensure_comma( input : &syn::ItemStruct ) -> syn::ItemStruct
   {
     let mut new_input = input.clone(); // Clone the input to modify it
@@ -66,16 +67,16 @@ mod private
       // Handle named fields
       syn::Fields::Named( syn::FieldsNamed { named, .. } ) =>
       {
-        punctuated::ensure_trailing_comma( named )
+        punctuated::ensure_trailing_comma( named );
       },
       // Handle unnamed fields (tuples)
       syn::Fields::Unnamed( syn::FieldsUnnamed { unnamed, .. } ) =>
       {
-        punctuated::ensure_trailing_comma( unnamed )
+        punctuated::ensure_trailing_comma( unnamed );
       },
       // Do nothing for unit structs
       syn::Fields::Unit => {}
-    }
+    };
 
     new_input
   }
@@ -90,6 +91,7 @@ pub use own::*;
 #[ allow( unused_imports ) ]
 pub mod own
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use orphan::*;
@@ -104,6 +106,7 @@ pub mod own
 #[ allow( unused_imports ) ]
 pub mod orphan
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use super::*;
   #[ doc( inline ) ]
   pub use exposed::*;

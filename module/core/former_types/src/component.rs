@@ -37,7 +37,7 @@
 /// obj.assign( "New Name" );
 /// assert_eq!( obj.name, "New Name" );
 /// ```
-#[ cfg( any( feature = "types_component_assign" ) ) ]
+#[ cfg( feature = "types_component_assign" ) ]
 pub trait Assign< T, IntoT >
 where
   IntoT : Into< T >,
@@ -51,6 +51,7 @@ where
   /// Sets or replaces the component on the object with the given value.
   /// Unlike function (`assing`) function (`impute`) also consumes self and return it what is useful for builder pattern.
   #[ inline( always ) ]
+  #[ must_use ]
   fn impute( mut self, component : IntoT ) -> Self
   where
     Self : Sized,
@@ -94,7 +95,7 @@ where
 /// opt_struct.option_assign( MyStruct { name: "New Name".to_string() } );
 /// assert_eq!( opt_struct.unwrap().name, "New Name" );
 /// ```
-#[ cfg( any( feature = "types_component_assign" ) ) ]
+#[ cfg( feature = "types_component_assign" ) ]
 pub trait OptionExt< T > : sealed::Sealed
 where
   T : Sized + Assign< T, T >,
@@ -109,7 +110,7 @@ where
   fn option_assign( & mut self, src : T );
 }
 
-#[ cfg( any( feature = "types_component_assign" ) ) ]
+#[ cfg( feature = "types_component_assign" ) ]
 impl< T > OptionExt< T > for Option< T >
 where
   T : Sized + Assign< T, T >,
@@ -125,7 +126,7 @@ where
   }
 }
 
-#[ cfg( any( feature = "types_component_assign" ) ) ]
+#[ cfg( feature = "types_component_assign" ) ]
 mod sealed
 {
   pub trait Sealed {}
@@ -172,7 +173,7 @@ mod sealed
 ///
 /// assert_eq!( user_profile.username, "john_doe" );
 /// ```
-#[ cfg( any( feature = "types_component_assign" ) ) ]
+#[ cfg( feature = "types_component_assign" ) ]
 pub trait AssignWithType
 {
   /// Sets the value of a component by its type.
@@ -196,7 +197,7 @@ pub trait AssignWithType
     Self : Assign< T, IntoT >;
 }
 
-#[ cfg( any( feature = "types_component_assign" ) ) ]
+#[ cfg( feature = "types_component_assign" ) ]
 impl< S > AssignWithType for S
 {
   #[ inline( always ) ]

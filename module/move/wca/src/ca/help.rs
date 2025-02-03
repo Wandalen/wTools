@@ -1,32 +1,40 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use ca::
   {
-    Command,
-    Routine,
     Type,
-    formatter::private::
+    formatter::
     {
       HelpFormat,
       md_generator
     },
     tool::table::format_table,
   };
+  use verifier::VerifiedCommand;
+  use grammar::{ Command, Dictionary };
+  use executor::Routine;
 
   use iter_tools::Itertools;
   use std::rc::Rc;
   use error::untyped::format_err;
   use former::Former;
 
-  // qqq : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
+  // aaa : for Bohdan : it should transparent mechanist which patch list of commands, not a stand-alone mechanism
+  // aaa : it is
 
+  /// Enum `LevelOfDetail` specifies the granularity of detail for rendering or processing:
   #[ derive( Debug, Default, Copy, Clone, PartialEq, Eq ) ]
   pub enum LevelOfDetail
   {
+    /// No detail (default).
     #[ default ]
     None,
+    /// Basic level of detail.
     Simple,
+    /// High level of detail.
     Detailed,
   }
 
@@ -63,8 +71,19 @@ mod private
     pub order : Order,
   }
 
-  // qqq : for Barsik : make possible to change properties order
-  pub( crate ) fn generate_help_content( dictionary : &Dictionary, o : HelpGeneratorOptions< '_ > ) -> String
+  // aaa : for Barsik : make possible to change properties order
+  // aaa : order option
+
+  /// Generates help content as a formatted string based on a given dictionary and options.
+  ///
+  /// This function takes a `Dictionary` of terms or commands and a `HelpGeneratorOptions`
+  /// struct to customize the help output, generating a user-friendly help message
+  /// or guide in `String` format.
+  /// # Panics
+  /// qqq: doc
+  #[ must_use ]
+  #[ allow( clippy::match_same_arms ) ]
+  pub fn generate_help_content( dictionary : &Dictionary, o : HelpGeneratorOptions< '_ > ) -> String
   {
     struct Row
     {
@@ -88,15 +107,15 @@ mod private
       };
       let subjects = match o.subject_detailing
       {
-        LevelOfDetail::None => "".into(),
-        _ if command.subjects.is_empty() => "".into(),
+        LevelOfDetail::None => String::new(),
+        _ if command.subjects.is_empty() => String::new(),
         LevelOfDetail::Simple => "< subjects >".into(),
         LevelOfDetail::Detailed => command.subjects.iter().map( | v | format!( "< {}{:?} >", if v.optional { "?" } else { "" }, v.kind ) ).collect::< Vec< _ > >().join( " " ),
       };
       let properties = match o.property_detailing
       {
-        LevelOfDetail::None => "".into(),
-        _ if command.subjects.is_empty() => "".into(),
+        LevelOfDetail::None => String::new(),
+        _ if command.subjects.is_empty() => String::new(),
         LevelOfDetail::Simple => "< properties >".into(),
         LevelOfDetail::Detailed => command.properties( dictionary.order ).iter().map( |( n, v )| format!( "< {}:{}{:?} >", if v.optional { "?" } else { "" }, n, v.kind ) ).collect::< Vec< _ > >().join( " " ),
       };
@@ -109,10 +128,10 @@ mod private
         format!
         (
           "{}{}",
-          if command.subjects.is_empty() { "".to_string() } else { format!( "\nSubjects:\n\t{}", &full_subjects ) },
-          if command.properties.is_empty() { "".to_string() } else { format!( "\nProperties:\n\t{}",&full_properties ) }
+          if command.subjects.is_empty() { String::new() } else { format!( "\nSubjects:\n\t{}", &full_subjects ) },
+          if command.properties.is_empty() { String::new() } else { format!( "\nProperties:\n\t{}",&full_properties ) }
         )
-      } else { "".into() };
+      } else { String::new() };
 
       Row
       {
@@ -165,6 +184,7 @@ mod private
   impl HelpVariants
   {
     /// Generates help commands
+    #[ allow( clippy::match_wildcard_for_single_variants ) ]
     pub fn generate( &self, helper : &HelpGeneratorFn, dictionary : &mut Dictionary, order : Order )
     {
       match self
@@ -183,6 +203,7 @@ mod private
     }
 
     // .help
+    #[ allow( clippy::unused_self ) ]
     fn general_help( &self, helper : &HelpGeneratorFn, dictionary : &mut Dictionary, order : Order )
     {
       let phrase = "help".to_string();
@@ -247,6 +268,7 @@ mod private
     }
 
     // .help command_name
+    #[ allow( clippy::unused_self ) ]
     fn subject_command_help( &self, helper : &HelpGeneratorFn, dictionary : &mut Dictionary )
     {
       let phrase = "help".to_string();
@@ -357,7 +379,7 @@ mod private
   ///
   /// ```
   /// # use wca::ca::help::{ HelpGeneratorOptions, HelpGeneratorFn };
-  /// use wca::{ Command, Dictionary };
+  /// use wca::grammar::{ Command, Dictionary };
   ///
   /// fn my_help_generator( dictionary : &Dictionary, args : HelpGeneratorOptions< '_ > ) -> String
   /// {
@@ -397,15 +419,16 @@ mod private
   impl HelpGeneratorFn
   {
     /// Executes the function to generate help content
+    #[ must_use ]
     pub fn exec( &self, dictionary : &Dictionary, args : HelpGeneratorOptions< '_ > ) -> String
     {
       self.0( dictionary, args )
     }
   }
 
-  impl std::fmt::Debug for HelpGeneratorFn
+  impl core::fmt::Debug for HelpGeneratorFn
   {
-    fn fmt( &self, f : &mut std::fmt::Formatter< '_ > ) -> std::fmt::Result
+    fn fmt( &self, f : &mut core::fmt::Formatter< '_ > ) -> core::fmt::Result
     {
       f.write_str( "HelpGenerator" )
     }
@@ -418,5 +441,9 @@ crate::mod_interface!
 {
   own use HelpGeneratorFn;
   own use HelpGeneratorOptions;
+  own use LevelOfDetail;
+  own use generate_help_content;
+
   prelude use HelpVariants;
+
 }

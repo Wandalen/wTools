@@ -1,5 +1,7 @@
+#[ allow( clippy::std_instead_of_alloc, clippy::std_instead_of_core ) ]
 mod private
 {
+  #[ allow( clippy::wildcard_imports ) ]
   use crate::*;
   use std::fs;
   use std::path::Path;
@@ -24,6 +26,7 @@ mod private
   impl WorkspaceTemplate
   {
     /// Returns template parameters
+    #[ must_use ]
     pub fn get_parameters( &self ) -> &TemplateParameters
     {
       &self.parameters
@@ -41,9 +44,9 @@ mod private
       .form();
       Self
       {
-        files : Default::default(),
+        files : WorkspaceTemplateFiles::default(),
         parameters,
-        values : Default::default(),
+        values : TemplateValues::default(),
       }
     }
   }
@@ -134,7 +137,11 @@ mod private
   // qqq : for Petro : should return report
   // qqq : for Petro : should have typed error
   /// Creates workspace template
-  pub fn workspace_renew
+  /// # Errors
+  /// qqq: doc
+  /// # Panics
+  /// qqq: doc
+  pub fn action
   (
     path : &Path,
     mut template : WorkspaceTemplate,
@@ -162,7 +169,7 @@ mod private
       "branches",
       wca::Value::String
       (
-        branches.into_iter().map( | b | format!( r#""{}""#, b ) ).join( ", " )
+        branches.into_iter().map( | b | format!( r#""{b}""# ) ).join( ", " )
       )
     );
     template.files.create_all( path, &template.values )?;
@@ -172,6 +179,6 @@ mod private
 
 crate::mod_interface!
 {
-  exposed use workspace_renew;
+  own use action;
   orphan use WorkspaceTemplate;
 }

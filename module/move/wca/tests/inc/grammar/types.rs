@@ -1,5 +1,5 @@
 use super::*;
-use wca::TryCast;
+use the_module::{ TryCast, Type, Value };
 
 //
 
@@ -134,7 +134,7 @@ tests_impls!
     let string = Type::List( Type::String.into(), ',' ).try_cast( origin_string.into() ).unwrap();
     a_id!( origin_string, string.to_string() );
 
-    // xxx : qqq : that fails now. suggest solution
+    // xxx clarification is needed : qqq : that fails now. suggest solution
     // let origin_string = "100;3.14";
     // let string = Type::List( Type::Number.into(), ';' ).try_cast( origin_string.into() ).unwrap();
     // a_id!( origin_string, string.to_string() );

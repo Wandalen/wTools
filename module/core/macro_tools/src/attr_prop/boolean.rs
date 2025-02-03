@@ -3,6 +3,8 @@
 //! Defaults to `false`.
 //!
 
+use core::marker::PhantomData;
+#[ allow( clippy::wildcard_imports ) ]
 use crate::*;
 // use former_types::Assign;
 
@@ -114,6 +116,7 @@ pub struct AttributePropertyBoolean< Marker = AttributePropertyBooleanMarker >( 
 impl< Marker > AttributePropertyBoolean< Marker >
 {
   /// Just unwraps and returns the internal data.
+  #[ must_use ]
   #[ inline( always ) ]
   pub fn internal( self ) -> bool
   {
@@ -122,6 +125,7 @@ impl< Marker > AttributePropertyBoolean< Marker >
 
   /// Returns a reference to the internal boolean value.
   #[ inline( always ) ]
+  #[ must_use ]
   pub fn ref_internal( &self ) -> &bool
   {
     &self.0
@@ -160,9 +164,10 @@ impl< Marker > syn::parse::Parse for AttributePropertyBoolean< Marker >
 impl< Marker > From< bool > for AttributePropertyBoolean< Marker >
 {
   #[ inline( always ) ]
+  #[ allow( clippy::default_constructed_unit_structs ) ]
   fn from( src : bool ) -> Self
   {
-    Self( src, Default::default() )
+    Self( src, PhantomData::default() )
   }
 }
 

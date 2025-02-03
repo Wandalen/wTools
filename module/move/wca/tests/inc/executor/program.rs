@@ -1,5 +1,15 @@
 use super::*;
-use the_module::VerifiedCommand;
+use the_module::
+{
+  parser::Parser,
+  VerifiedCommand,
+  executor::Context, Type,
+  grammar::Dictionary,
+  verifier::Verifier,
+
+  Executor,
+  // wtools
+};
 
 //
 
@@ -14,7 +24,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "command" )
@@ -47,7 +57,7 @@ tests_impls!
     let dictionary = &Dictionary::former()
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "inc" )
@@ -63,7 +73,7 @@ tests_impls!
     )
     .command
     (
-      wca::Command::former()
+      wca::grammar::Command::former()
       .hint( "hint" )
       .long_hint( "long_hint" )
       .phrase( "eq" )
@@ -91,7 +101,7 @@ tests_impls!
     let verifier = Verifier;
 
     // starts with 0
-    let ctx = wca::Context::new( Mutex::new( 0 ) );
+    let ctx = wca::executor::Context::new( Mutex::new( 0 ) );
     // init simple executor
     let executor = Executor::former()
     .context( ctx )
