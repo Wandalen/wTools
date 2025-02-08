@@ -2,6 +2,8 @@
 
 use super::*;
 
+pub mod graph;
+
 mod basic_test;
-mod nodes;
-mod search;
+mod nodes_test;
+mod search_test;
