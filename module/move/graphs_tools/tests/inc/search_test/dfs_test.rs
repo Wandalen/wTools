@@ -128,7 +128,7 @@ fn test_dfs()
   let mut visited_nodes = Vec::new();
 
   // Define the visit function
-  let visit = | node : &'_ Node< '_ > |
+  let visit = | node : &Node |
   {
     visited_nodes.push( node.id );
     println!( "visiting {:?}", node.id );

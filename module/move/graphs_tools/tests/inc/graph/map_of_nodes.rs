@@ -5,17 +5,17 @@ use the_module::abs;
 use iter_tools::{ _IterTrait, IterTrait, BoxedIter };
 
 #[ derive( Debug ) ]
-pub struct Node< 'a >
+pub struct Node
 {
   pub id : NodeId,
-  pub children : Vec< &'a Node< 'a > >,
+  pub children : Vec< NodeId >,
 }
 
-impl< 'a > the_module::abs::Node for Node< 'a > {}
+impl the_module::abs::Node for Node {}
 
-impl< 'a > Node< 'a >
+impl Node
 {
-  pub fn new< IntoId : Into< NodeId > >( id : IntoId ) -> Node< 'a >
+  pub fn new< IntoId : Into< NodeId > >( id : IntoId ) -> Node
   {
     Node
     {
@@ -24,9 +24,9 @@ impl< 'a > Node< 'a >
     }
   }
 
-  pub fn add_child( &mut self, child : &'a Node< 'a > ) -> &mut Self
+  pub fn add_child( &mut self, child : &Node ) -> &mut Self
   {
-    self.children.push( child );
+    self.children.push( child.id );
     self
   }
 }
@@ -34,13 +34,13 @@ impl< 'a > Node< 'a >
 #[ derive( Default ) ]
 pub struct Graph< 'a >
 {
-  nodes : HashMap< NodeId, &'a Node< 'a > >,
+  nodes : HashMap< NodeId, &'a Node >,
 }
 
 impl< 'a > Graph< 'a >
 {
 
-  pub fn add_node( &mut self, node : &'a Node< 'a > )
+  pub fn add_node( &mut self, node : &'a Node )
   {
     self.nodes.insert( node.id, node );
   }
@@ -51,14 +51,14 @@ impl< 'a > abs::GraphDirected< 'a > for Graph< 'a >
 {
 
   type NodeId = NodeId;
-  type Node = Node< 'a >;
+  type Node = Node;
 
-  fn node_ref( &self, node_id : NodeId ) -> &'a Node< 'a >
+  fn node_ref( &self, node_id : NodeId ) -> &'a Node
   {
     self.nodes.get( &node_id ).expect( "If id exist then node shoudl also exist" )
   }
 
-  fn node_id( &self, node : &'a Node< 'a > ) -> NodeId
+  fn node_id( &self, node : &Node ) -> NodeId
   {
     node.id
   }
@@ -67,7 +67,7 @@ impl< 'a > abs::GraphDirected< 'a > for Graph< 'a >
   {
     if let Some( node ) = self.nodes.get( &node_id )
     {
-      Box::new( node.children.iter().map( | child | child.id ) )
+      Box::new( node.children.iter().cloned() )
     }
     else
     {
@@ -80,3 +80,33 @@ impl< 'a > abs::GraphDirected< 'a > for Graph< 'a >
 pub struct NodeId( usize );
 
 impl the_module::abs::NodeId for NodeId {}
+
+// xxx
+
+impl< 'a > Graph< 'a >
+{
+
+//   pub fn duplet() -> ( Vec< Node >, Self )
+//   {
+//
+//     // Create nodes
+//     let mut nodes_darray : Vec< Node > = vec![ 1, 2, 3 ].into_iter().map( | id | Node::new( id ) ).collect();
+//     let mut node1 = Node::new( 1 );
+//     let node2 = Node::new( 2 );
+//     let node3 = Node::new( 3 );
+//
+//     // Set up the graph structure
+//     node1
+//     .add_child( &node2 )
+//     .add_child( &node3 )
+//     ;
+//
+//     let mut graph = Self::default();
+//     graph.add_node( &node1 );
+//     graph.add_node( &node2 );
+//     graph.add_node( &node3 );
+//
+//     return ( nodes_darray, graph );
+//   }
+
+}
