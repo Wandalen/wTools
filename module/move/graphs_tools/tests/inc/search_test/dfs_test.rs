@@ -105,24 +105,7 @@ fn test_dfs()
   // use the_module::search;
   // use the_module::abs;
   use the_module::search::ForGraphDirected;
-
-  // Create nodes
-  let mut node1 = Node::new( 1 );
-  let node2 = Node::new( 2 );
-  let node3 = Node::new( 3 );
-  let node4 = Node::new( 4 );
-
-  // Set up the graph structure
-  node1
-  .add_child( &node2 )
-  .add_child( &node3 )
-  .add_child( &node4 );
-
-  let mut graph = Graph::default();
-  graph.add_node( &node1 );
-  graph.add_node( &node2 );
-  graph.add_node( &node3 );
-  graph.add_node( &node4 );
+  let mut graph = Graph::duplet();
 
   // Prepare a vector to collect visited nodes
   let mut visited_nodes = Vec::new();
@@ -161,7 +144,7 @@ fn test_dfs()
 
   // Create search options
   the_module::search::options()
-  .start_id( 1 )
+  .start_id( 0 )
   .visit_set( visit )
   .method_set( the_module::search::Dfs )
   .form()
@@ -169,6 +152,6 @@ fn test_dfs()
   ;
 
   // Assert the order of visited nodes
-  assert_eq!( visited_nodes, into_vec![ 1, 4, 3, 2 ] );
+  assert_eq!( visited_nodes, into_vec![ 0, 2, 1 ] );
 
 }

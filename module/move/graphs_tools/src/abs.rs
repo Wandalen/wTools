@@ -60,12 +60,12 @@ mod private
     type Node : Node + 'a;
 
     /// Get a reference on a node by its id.
-    fn node_ref( &self, node_id : Self::NodeId ) -> &'a Self::Node;
+    fn node_ref( &'a self, node_id : Self::NodeId ) -> &'a Self::Node;
     /// Get id by its node reference.
     fn node_id( &self, node_id : &'a Self::Node ) -> Self::NodeId;
 
     /// Iterate over out nodes of
-    fn node_out_nodes( &self, node_id : Self::NodeId ) -> BoxedIter< 'a, Self::NodeId >;
+    fn node_out_nodes( &'a self, node_id : Self::NodeId ) -> BoxedIter< 'a, Self::NodeId >;
     // fn node_out_nodes( &self, node_id : Self::NodeId ) -> impl _IterTrait< 'a, Self::NodeId >;
 
   }

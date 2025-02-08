@@ -32,28 +32,28 @@ impl Node
 }
 
 #[ derive( Default ) ]
-pub struct Graph< 'a >
+pub struct Graph
 {
-  nodes : HashMap< NodeId, &'a Node >,
+  nodes : HashMap< NodeId, Node >,
 }
 
-impl< 'a > Graph< 'a >
+impl Graph
 {
 
-  pub fn add_node( &mut self, node : &'a Node )
+  pub fn add_node( &mut self, node : Node )
   {
     self.nodes.insert( node.id, node );
   }
 
 }
 
-impl< 'a > abs::GraphDirected< 'a > for Graph< 'a >
+impl< 'a > abs::GraphDirected< 'a > for Graph
 {
 
   type NodeId = NodeId;
   type Node = Node;
 
-  fn node_ref( &self, node_id : NodeId ) -> &'a Node
+  fn node_ref( &'a self, node_id : NodeId ) -> &'a Node
   {
     self.nodes.get( &node_id ).expect( "If id exist then node shoudl also exist" )
   }
@@ -63,7 +63,7 @@ impl< 'a > abs::GraphDirected< 'a > for Graph< 'a >
     node.id
   }
 
-  fn node_out_nodes( &self, node_id : NodeId ) -> BoxedIter< 'a, Self::NodeId >
+  fn node_out_nodes( &'a self, node_id : NodeId ) -> BoxedIter< 'a, Self::NodeId >
   {
     if let Some( node ) = self.nodes.get( &node_id )
     {
@@ -83,35 +83,30 @@ impl the_module::abs::NodeId for NodeId {}
 
 // xxx
 
-impl< 'a > Graph< 'a >
+use std::cell::RefCell;
+impl Graph
 {
 
-//   pub fn duplet() -> ( Vec< Node >, Self )
-//   {
-//
-//     // Create nodes
-//     let mut node0 = Node::new( 0 );
-//     let node1 = Node::new( 1 );
-//     let node2 = Node::new( 2 );
-//
-//     // Set up the graph structure
-//     node0
-//     .add_child( &node1 )
-//     .add_child( &node2 )
-//     ;
-//
-//     let mut nodes_darray = vec![ node0, node1, node2 ];
-//     let mut result = ( nodes_darray, Self::default() );
-//
-//     let mut graph = Self::default();
-//     graph.add_node( &result.0[ 0 ] );
-//     graph.add_node( &result.0[ 1 ] );
-//     graph.add_node( &result.0[ 2 ] );
-//     core::mem::swap( &mut result.1, &mut graph );
-//
-//     // return ( Default::default(), Default::default() );
-//     return result;
-//     // return ( nodes_darray, graph );
-//   }
+  pub fn duplet() -> Self
+  {
+
+    // Create nodes
+    let mut node0 = Node::new( 0 );
+    let node1 = Node::new( 1 );
+    let node2 = Node::new( 2 );
+
+    // Set up the graph structure
+    node0
+    .add_child( &node1 )
+    .add_child( &node2 )
+    ;
+
+    let mut graph = Self::default();
+    graph.add_node( node0 );
+    graph.add_node( node1 );
+    graph.add_node( node2 );
+
+    graph
+  }
 
 }
