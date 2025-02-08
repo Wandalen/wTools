@@ -90,23 +90,28 @@ impl< 'a > Graph< 'a >
 //   {
 //
 //     // Create nodes
-//     let mut nodes_darray : Vec< Node > = vec![ 1, 2, 3 ].into_iter().map( | id | Node::new( id ) ).collect();
-//     let mut node1 = Node::new( 1 );
+//     let mut node0 = Node::new( 0 );
+//     let node1 = Node::new( 1 );
 //     let node2 = Node::new( 2 );
-//     let node3 = Node::new( 3 );
 //
 //     // Set up the graph structure
-//     node1
+//     node0
+//     .add_child( &node1 )
 //     .add_child( &node2 )
-//     .add_child( &node3 )
 //     ;
 //
-//     let mut graph = Self::default();
-//     graph.add_node( &node1 );
-//     graph.add_node( &node2 );
-//     graph.add_node( &node3 );
+//     let mut nodes_darray = vec![ node0, node1, node2 ];
+//     let mut result = ( nodes_darray, Self::default() );
 //
-//     return ( nodes_darray, graph );
+//     let mut graph = Self::default();
+//     graph.add_node( &result.0[ 0 ] );
+//     graph.add_node( &result.0[ 1 ] );
+//     graph.add_node( &result.0[ 2 ] );
+//     core::mem::swap( &mut result.1, &mut graph );
+//
+//     // return ( Default::default(), Default::default() );
+//     return result;
+//     // return ( nodes_darray, graph );
 //   }
 
 }
