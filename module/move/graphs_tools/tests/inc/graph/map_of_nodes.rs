@@ -3,6 +3,7 @@ use super::*;
 use derive_tools::From;
 use the_module::abs;
 use iter_tools::{ _IterTrait, IterTrait, BoxedIter };
+use std::fmt;
 
 #[ derive( Debug ) ]
 pub struct Node
@@ -13,6 +14,7 @@ pub struct Node
 
 impl the_module::abs::Node for Node {}
 
+#[ allow( dead_code ) ]
 impl Node
 {
   pub fn new< IntoId : Into< NodeId > >( id : IntoId ) -> Node
@@ -49,6 +51,7 @@ pub struct Graph
   nodes : HashMap< NodeId, Node >,
 }
 
+#[ allow( dead_code ) ]
 impl Graph
 {
 
@@ -99,14 +102,23 @@ impl< 'a > abs::GraphDirected< 'a > for Graph
   }
 }
 
-#[ derive( Debug, Copy, Clone, Hash, PartialEq, Eq, From ) ]
+#[ derive( Copy, Clone, Hash, PartialEq, Eq, From ) ]
 pub struct NodeId( usize );
+
+impl fmt::Debug for NodeId
+{
+  fn fmt( &self, c : &mut fmt::Formatter< '_ > ) -> fmt::Result
+  {
+    c
+    .write_fmt( format_args!( "node::{:?}", self.0 ) )
+  }
+}
 
 impl the_module::abs::NodeId for NodeId {}
 
-// xxx
+// Constructors
 
-use std::cell::RefCell;
+#[ allow( dead_code ) ]
 impl Graph
 {
 

@@ -43,6 +43,9 @@ mod_interface!
   // #[ cfg( not( feature = "no_std" ) ) ]
   // layer algo;
 
+  /// Print tree.
+  layer tree_print;
+
   // own use ::meta_tools::prelude::*;
 }
 

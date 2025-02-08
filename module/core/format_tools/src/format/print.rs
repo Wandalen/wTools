@@ -230,7 +230,7 @@ mod private
   pub struct RowDescriptor
   {
 
-    
+
     /// Index of the row.
     pub irow : usize,
     /// Height of the row.
@@ -387,7 +387,7 @@ mod private
 
       let rows = table.rows().map( | r |
       {
-        let mut unsorted : Vec< ( usize, Cow< 'data, str > ) > = r.cells().map( | ( key, c ) | 
+        let mut unsorted : Vec< ( usize, Cow< 'data, str > ) > = r.cells().map( | ( key, c ) |
         {
           if !key_to_ikey.contains_key( key.borrow() )
           {
@@ -557,7 +557,7 @@ mod private
 
       mchars[ 0 ] = col_descriptors.iter().fold( 0, | acc, col | acc + col.width );
       mchars[ 1 ] = row_descriptors.iter().fold( 0, | acc, row | acc + if row.vis { row.height } else { 0 } );
-      
+
       let mut x = InputExtract::< '_ >
       {
         mcells,

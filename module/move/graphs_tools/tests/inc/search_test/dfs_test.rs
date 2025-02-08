@@ -105,7 +105,7 @@ fn test_dfs()
   // use the_module::search;
   // use the_module::abs;
   use the_module::search::ForGraphDirected;
-  let mut graph = Graph::duplet();
+  let graph = Graph::duplet();
 
   // Prepare a vector to collect visited nodes
   let mut visited_nodes = Vec::new();
