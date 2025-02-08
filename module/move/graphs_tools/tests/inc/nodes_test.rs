@@ -20,7 +20,7 @@
 //     }
 //   }
 //
-//   fn add_child( &mut self, child : &'a Node< 'a > ) -> &mut Self
+//   fn child_add( &mut self, child : &'a Node< 'a > ) -> &mut Self
 //   {
 //     self.children.push( child );
 //     self
@@ -87,9 +87,9 @@
 //   let node4 = Node::new( NodeId( 4 ) );
 //
 //   node1
-//   .add_child( &node2 )
-//   .add_child( &node3 )
-//   .add_child( &node4 );
+//   .child_add( &node2 )
+//   .child_add( &node3 )
+//   .child_add( &node4 );
 //
 //   let mut graph = Graph::new();
 //   graph.add_node( &node1 );

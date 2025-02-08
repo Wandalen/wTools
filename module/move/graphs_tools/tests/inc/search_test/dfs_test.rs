@@ -32,7 +32,7 @@ use graph::map_of_nodes::
 //     }
 //   }
 //
-//   fn add_child( &mut self, child : &'a Node< 'a > ) -> &mut Self
+//   fn child_add( &mut self, child : &'a Node< 'a > ) -> &mut Self
 //   {
 //     self.children.push( child );
 //     self

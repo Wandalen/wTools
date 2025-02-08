@@ -66,7 +66,6 @@ mod private
 
     /// Iterate over out nodes of
     fn node_out_nodes( &'a self, node_id : Self::NodeId ) -> BoxedIter< 'a, Self::NodeId >;
-    // fn node_out_nodes( &self, node_id : Self::NodeId ) -> impl _IterTrait< 'a, Self::NodeId >;
 
   }
 

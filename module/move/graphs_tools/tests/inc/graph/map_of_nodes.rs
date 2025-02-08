@@ -24,11 +24,23 @@ impl Node
     }
   }
 
-  pub fn add_child( &mut self, child : &Node ) -> &mut Self
+  pub fn child_add( &mut self, child : &Node ) -> &mut Self
   {
     self.children.push( child.id );
     self
   }
+
+  pub fn children_add< 'a, I >( &mut self, nodes : I ) -> &mut Self
+  where
+    I : IntoIterator< Item = &'a Node >,
+  {
+    for node in nodes
+    {
+      self.children.push( node.id );
+    }
+    self
+  }
+
 }
 
 #[ derive( Default ) ]
@@ -40,9 +52,20 @@ pub struct Graph
 impl Graph
 {
 
-  pub fn add_node( &mut self, node : Node )
+  pub fn node_add( &mut self, node : Node )
   {
     self.nodes.insert( node.id, node );
+  }
+
+  pub fn nodes_add< 'a, I >( &mut self, nodes : I ) -> &mut Self
+  where
+    I : IntoIterator< Item = Node >,
+  {
+    for node in nodes
+    {
+      self.nodes.insert( node.id, node );
+    }
+    self
   }
 
 }
@@ -96,15 +119,28 @@ impl Graph
     let node2 = Node::new( 2 );
 
     // Set up the graph structure
-    node0
-    .add_child( &node1 )
-    .add_child( &node2 )
-    ;
+    node0.children_add([ &node1, &node2 ]);
 
     let mut graph = Self::default();
-    graph.add_node( node0 );
-    graph.add_node( node1 );
-    graph.add_node( node2 );
+    graph.nodes_add([ node0, node1, node2 ]);
+
+    graph
+  }
+
+  pub fn duplet_assymetric() -> Self
+  {
+
+    // Create nodes
+    let mut node0 = Node::new( 0 );
+    let node1 = Node::new( 1 );
+    let mut node2 = Node::new( 2 );
+    let node3 = Node::new( 3 );
+
+    node0.children_add([ &node1, &node2 ]);
+    node2.children_add([ &node3 ]);
+
+    let mut graph = Self::default();
+    graph.nodes_add([ node0, node1, node2, node3 ]);
 
     graph
   }
