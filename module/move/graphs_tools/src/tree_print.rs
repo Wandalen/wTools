@@ -37,7 +37,7 @@ mod private
   {
 
     /// Print directed graph as a tree.
-    fn _print_as_tree< 'w >( &'g self, write : &'w mut ( dyn core::fmt::Write + 'w ), node_id : Self::NodeId ) -> fmt::Result
+    fn write_as_dfs_tree< 'w >( &'g self, write : &'w mut ( dyn core::fmt::Write + 'w ), node_id : Self::NodeId ) -> fmt::Result
     {
       #![ allow( non_upper_case_globals ) ]
       use iter_tools::Itertools;
@@ -102,11 +102,11 @@ mod private
     }
 
     /// Print directed graph as a tree.
-    fn print_as_tree< 'w >( &'g self, node : Self::NodeId ) -> String
+    fn string_with_dfs_tree< 'w >( &'g self, node : Self::NodeId ) -> String
     {
       // let node = self.node_ref( node );
       let mut result = String::new();
-      self._print_as_tree( &mut result, node ).unwrap();
+      self.write_as_dfs_tree( &mut result, node ).unwrap();
       result
     }
 
