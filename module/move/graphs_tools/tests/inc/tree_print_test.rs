@@ -30,8 +30,39 @@ fn string_with_dfs_tree()
   let graph = Graph::triplet_with_double_legs();
 
   let got = graph.string_with_dfs_tree( 0.into() );
-  let exp = "node::1";
   println!( "{}", got );
+  let exp = r#"node::0
+├─ node::1
+│  ├─ node::4
+│  ├─ node::5
+├─ node::2
+├─ node::3
+│  ├─ node::6
+│  ├─ node::7
+"#;
+  assert_eq!( got, exp );
+
+}
+
+//
+
+#[ test ]
+fn string_with_bfs_tree()
+{
+  use the_module::tree_print::GraphDirectedPrintAsTree;
+  let graph = Graph::triplet_with_double_legs();
+
+  let got = graph.string_with_bfs_tree( 0.into() );
+  println!( "{}", got );
+  let exp = r#"node::0
+├─ node::1
+│  ├─ node::4
+│  ├─ node::5
+├─ node::2
+├─ node::3
+│  ├─ node::6
+│  ├─ node::7
+"#;
   assert_eq!( got, exp );
 
 }
