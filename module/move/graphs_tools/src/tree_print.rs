@@ -70,24 +70,30 @@ mod private
         return format!( "{}{}", left, right );
       };
 
-      let push = | stack : &mut collection_tools::Vec< ( Self::NodeId, isize ) >, node_id, level |
+      let push = | stack : &mut collection_tools::Vec< ( Self::NodeId, isize, bool ) >, node_id, level, preorder |
       {
-        // println!( "push {:?} level:{}", node_id, level );
-        stack.push( ( node_id, level ) );
+        // println!( "push {:?} level:{} preorder:{}", node_id, level, preorder );
+        stack.push( ( node_id, level, preorder ) );
       };
 
-      push( &mut stack, node_id, 0 );
+      push( &mut stack, node_id, 0, true );
 
-      while let Some( ( node_id, level ) ) = stack.pop()
+      while let Some( ( node_id, level, _preorder ) ) = stack.pop()
       {
+        // if !preorder
+        // {
+        //   write.write_fmt( format_args!( "{}{:?}\n", prefix( level ), node_id ) )?;
+        //   continue;
+        // }
 
         if visited.insert( node_id )
         {
+          // push( &mut stack, node_id, level, false );
           write.write_fmt( format_args!( "{}{:?}\n", prefix( level ), node_id ) )?;
 
           for child_id in self.node_out_nodes( node_id ).rev()
           {
-            push( &mut stack, child_id, level + 1 );
+            push( &mut stack, child_id, level + 1, true );
           }
         }
       }
