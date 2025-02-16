@@ -41,10 +41,10 @@ mod private
     {
       #![ allow( non_upper_case_globals ) ]
       use iter_tools::Itertools;
-      const _up_down : &str = "│  ";
-      const _up_down_right : &str = "├─ ";
-      const _left_right : &str = "─";
-      const _down_right : &str = "┌─";
+      const up_down : &str = "│  ";
+      const up_down_right : &str = "├─ ";
+      // const _left_right : &str = "─";
+      // const _down_right : &str = "┌─";
 
       let mut visited = collection_tools::HashSet::new();
       let mut stack = collection_tools::Vec::new();
@@ -53,7 +53,7 @@ mod private
       {
         let left = if level > 0
         {
-          std::iter::repeat( _up_down ).take( ( level - 1 ) as usize ).join( " " )
+          std::iter::repeat( up_down ).take( ( level - 1 ) as usize ).join( " " )
         }
         else
         {
@@ -61,7 +61,7 @@ mod private
         };
         let right = if level > 0
         {
-          _up_down_right
+          up_down_right
         }
         else
         {
@@ -72,7 +72,7 @@ mod private
 
       let push = | stack : &mut collection_tools::Vec< ( Self::NodeId, isize ) >, node_id, level |
       {
-        println!( "push {:?} level:{}", node_id, level );
+        // println!( "push {:?} level:{}", node_id, level );
         stack.push( ( node_id, level ) );
       };
 
