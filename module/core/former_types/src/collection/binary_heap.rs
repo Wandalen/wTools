@@ -217,7 +217,6 @@ where
 /// It is particularly useful in scenarios where binary heaps are repeatedly used or configured in similar ways across different
 /// parts of an application.
 ///
-
 pub type BinaryHeapFormer< E, Context, Formed, End > =
 CollectionFormer::< E, BinaryHeapDefinition< E, Context, Formed, End > >;
 

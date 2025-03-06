@@ -26,7 +26,6 @@
 /// - Storage-specific fields which are not present in formed structure.
 ///
 /// Look example `former_custom_mutator.rs`
-
 pub trait FormerMutator
 where
   Self : crate::FormerDefinitionTypes,
@@ -59,7 +58,6 @@ where
 /// # Parameters
 /// - `Storage`: The type of the collection being processed.
 /// - `Context`: The type of the context that might be altered or returned upon completion.
-
 pub trait FormingEnd< Definition : crate::FormerDefinitionTypes >
 {
   /// Called at the end of the subforming process to return the modified or original context.
@@ -251,7 +249,6 @@ for FormingEndClosure< Definition >
 /// are aligned from the onset, particularly when one former is nested within another, facilitating the creation
 /// of complex hierarchical data structures.
 ///
-
 pub trait FormerBegin< Definition :  >
 where
   Definition : crate::FormerDefinition,

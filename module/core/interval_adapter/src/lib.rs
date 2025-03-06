@@ -155,7 +155,6 @@ mod private
   /// `NonIterableInterval` it does not implement iterator unlike `IterableInterval`.
   /// `IterableInterval` inherits all methods of `NonIterableInterval`.
   ///
-
   pub trait IterableInterval< T = isize >
   where
     Self : IntoIterator< Item = T > + NonIterableInterval< T >,
@@ -179,7 +178,6 @@ mod private
   ///
   /// Both [`core::ops::Range`], [`core::ops::RangeInclusive`] are convertable to [`crate::Interval`]
   ///
-
   #[ allow( clippy::used_underscore_binding ) ]
   #[ derive( PartialEq, Eq, Debug, Clone, Copy ) ]
   pub struct Interval< T = isize >

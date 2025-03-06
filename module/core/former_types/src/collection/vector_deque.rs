@@ -200,7 +200,6 @@ for VecDeque< E >
 /// It is particularly useful in scenarios where vector deques are repeatedly used or configured in similar ways across different
 /// parts of an application.
 ///
-
 pub type VecDequeFormer< E, Context, Formed, End > =
 CollectionFormer::< E, VecDequeDefinition< E, Context, Formed, End > >;
 

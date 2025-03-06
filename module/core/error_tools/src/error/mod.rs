@@ -2,7 +2,7 @@
 mod private
 {
   #[ allow( clippy::useless_attribute, clippy::pub_use ) ]
-  pub use std::error::Error as ErrorTrait;
+  pub use core::error::Error as ErrorTrait;
 
   /// This trait allows adding extra context or information to an error, creating a tuple of the additional
   /// context and the original error. This is particularly useful for error handling when you want to include
