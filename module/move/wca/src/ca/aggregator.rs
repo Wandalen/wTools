@@ -30,7 +30,7 @@ mod private
   {
     // Result,
     untyped::Error as wError, // xxx
-    for_lib::*,
+    for_lib::Error,
   };
   use iter_tools::Itertools;
 

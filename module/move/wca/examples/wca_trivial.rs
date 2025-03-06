@@ -21,7 +21,7 @@ fn main() -> error_tools::error::untyped::Result< () >
   let ca = CommandsAggregator::former()
   .command( "exit" )
     .hint( "just exit" )
-    .routine( || exit() )
+    .routine( exit )
     .end()
   .command( "echo" )
     .hint( "prints all subjects and properties" )

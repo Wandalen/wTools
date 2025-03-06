@@ -1,5 +1,5 @@
 //!
-//! # Handling Errors with CommandsAggregator
+//! # Handling Errors with `CommandsAggregator`
 //!
 //! This module provides an example of how to use `wca::CommandsAggregator` to manage error handling in a command-line interface. The `CommandsAggregator` offers a fluent interface for defining commands and associating them with various error types, making it straightforward to handle and present errors in a structured way.
 //!

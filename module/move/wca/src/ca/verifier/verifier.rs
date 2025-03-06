@@ -19,7 +19,7 @@ mod private
     (
       "Command not found. {} {}",
       if let Some( phrase ) = name_suggestion { format!( "Maybe you mean `.{phrase}`?" ) } else { "Please use `.` command to see the list of available commands.".into() },
-      if let Some( info ) = command_info { format!( "Command info: `{info}`" ) } else { "".into() }
+      if let Some( info ) = command_info { format!( "Command info: `{info}`" ) } else { String::new() }
     )]
     CommandNotFound { name_suggestion: Option< String >, command_info: Option< String > },
     #[ error( "Fail in command `.{command_name}` while processing subjects. {error}" ) ]
