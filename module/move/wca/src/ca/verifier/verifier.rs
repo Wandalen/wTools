@@ -212,7 +212,7 @@ mod private
       .collect()
     }
 
-    fn group_properties_and_their_aliases< 'a, Ks >( aliases : &'a HashMap< String, String >, used_keys :  Ks ) -> Vec< &String >
+    fn group_properties_and_their_aliases< 'a, Ks >( aliases : &'a HashMap< String, String >, used_keys :  Ks ) -> Vec<&'a String >
     where
       Ks : Iterator< Item = &'a String >
     {
@@ -264,7 +264,7 @@ mod private
           #[ cfg( feature = "on_unknown_suggest" ) ]
           if let Some( phrase ) = Self::suggest_command( dictionary, &raw_command.name )
           {
-            return VerificationError::CommandNotFound { name_suggestion: Some( phrase ), command_info: None };
+            return VerificationError::CommandNotFound { name_suggestion: Some( phrase.to_string() ), command_info: None };
           }
           VerificationError::CommandNotFound { name_suggestion: None, command_info: None }
         }
