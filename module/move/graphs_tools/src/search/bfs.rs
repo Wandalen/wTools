@@ -3,7 +3,7 @@
 mod private
 {
   use crate::*;
-  use search::{ Method, ForGraphDirected, Options };
+  use search::{ Method, ForGraphDirected, Options, OnVisit };
 
   /// Breadth-first search strategy.
   #[ derive( Debug, Default ) ]
@@ -14,13 +14,16 @@ mod private
     type ExtraOptions = ();
 
     /// Perform breadth-first search on a graph.
-    fn _search< 'a, Graph, Visit >
+    fn _search< 'a, Graph, PreVisit, PostVisit >
     (
       graph : &'a Graph,
-      mut o : Options< 'a, Self, Graph, Visit >,
+      mut o : Options< 'a, Self, Graph, PreVisit, PostVisit >,
     )
     where
-      Visit : FnMut( &'a Graph::Node ),
+      // PreVisit : FnMut( &'a Graph::Node ),
+      // PostVisit : FnMut( &'a Graph::Node ),
+      PreVisit : OnVisit< 'a, Graph::Node >,
+      PostVisit : OnVisit< 'a, Graph::Node >,
       Graph : ForGraphDirected< 'a > + ?Sized,
     {
       let mut visited = collection_tools::HashSet::new();
@@ -32,7 +35,7 @@ mod private
         let node = graph.node_ref( node_id );
         if visited.insert( node_id )
         {
-          ( o.visit )( node );
+          o.pre_visit.call( node );
           for child_id in graph.node_out_nodes( node_id )
           {
             queue.push_back( child_id );

@@ -70,17 +70,17 @@ mod private
         return format!( "{}{}", left, right );
       };
 
-      let push = | stack : &mut collection_tools::Vec< ( Self::NodeId, isize, bool ) >, node_id, level, preorder |
+      let push = | stack : &mut collection_tools::Vec< ( Self::NodeId, isize, bool ) >, node_id, level, is_preorder |
       {
-        // println!( "push {:?} level:{} preorder:{}", node_id, level, if preorder { 1 } else { 0 } );
-        stack.push( ( node_id, level, preorder ) );
+        // println!( "push {:?} level:{} is_preorder:{}", node_id, level, if is_preorder { 1 } else { 0 } );
+        stack.push( ( node_id, level, is_preorder ) );
       };
 
       push( &mut stack, node_id, 0, true );
 
       while let Some( ( node_id, level, _preorder ) ) = stack.pop()
       {
-        // if !preorder
+        // if !is_preorder
         // {
         //   write.write_fmt( format_args!( "{}{:?}\n", prefix( level ), node_id ) )?;
         //   continue;
