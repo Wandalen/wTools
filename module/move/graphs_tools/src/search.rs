@@ -15,7 +15,7 @@ mod private
 
   /// Options for configuring a graph search.
   #[ derive( Debug, Default, Former ) ]
-  pub struct Options< 'a, Method, Graph, PreVisit = PassVisit, PostVisit = PassVisit >
+  pub struct Options< 'a, Method, Graph, PreVisit = NopVisit, PostVisit = NopVisit >
   where
     Graph : crate::abs::GraphDirected< 'a > + ?Sized,
     Method : super::Method,
@@ -127,11 +127,14 @@ mod private
   /// A function to call on visit, either pre-order or post-order.
   pub trait OnVisit< 'a, Node >
   {
+    /// Call itself.
     fn call( &mut self, node : &'a Node );
   }
 
-  pub struct PassVisit;
-  impl< 'a, Node > OnVisit< 'a, Node > for PassVisit
+  /// No-op visit
+  #[ derive( Debug, Default ) ]
+  pub struct NopVisit;
+  impl< 'a, Node > OnVisit< 'a, Node > for NopVisit
   {
     fn call( &mut self, _node : &'a Node )
     {
@@ -165,6 +168,6 @@ crate::mod_interface!
     Options,
     ForGraphDirected,
     OnVisit,
-    PassVisit
+    NopVisit
   };
 }
