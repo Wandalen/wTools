@@ -2,21 +2,34 @@ use std::error::Error;
 use clap::Parser;
 use dotenv::dotenv;
 
-use gspread::
+use gspread::*;
+use gcore::ApplicationSecret;
+use gcore::client::
 {
-  client::hub,
-  commands::{ Cli, CliCommand, self },
-  secret::Secret,
+  Auth,
+  Client
 };
+
+use commands::
+{
+  self,
+  Cli,
+  CliCommand
+};
+
 
 #[ tokio::main ]
 async fn main() -> Result< (), Box< dyn Error > >
 {
   dotenv().ok();
 
-  let secret = Secret::read();
-
-  let hub = hub( &secret ).await?;
+  let secret = ApplicationSecret::read();
+  
+  let auth = Auth::new( &secret );
+  
+  let client = Client::former()
+  .auth( auth )
+  .form();
 
   let cli = Cli::parse();
 
@@ -24,7 +37,7 @@ async fn main() -> Result< (), Box< dyn Error > >
   {
     CliCommand::GSpread( cmd ) =>
     {
-      commands::gspread::command( &hub, cmd ).await;
+      commands::gspread::command( &client, cmd ).await;
     }
   }
 

@@ -1,23 +1,7 @@
-mod private
-{
-}
-
-use format_tools::
-{
-  Fields,
-  TableWithFields,
-};
-use std::borrow::Cow;
-
-pub mod row_wrapper;
+mod private {}
 
 crate::mod_interface!
 {
-  exposed use
-  {
-    row_wrapper::
-    {
-      RowWrapper
-    }
-  };
+  layer report;
+  layer row_wrapper;
 }

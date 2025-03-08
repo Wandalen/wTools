@@ -4,35 +4,28 @@
 
 mod private
 {
-  use std::fmt;
   use crate::*;
-  use commands::gspread::CommonArgs;
-  use client::SheetsType;
   use actions;
-  use actions::gspread::get_spreadsheet_id_from_url;
-  use format_tools::AsTable;
-  use util::display_table::display_rows;
+  use gcore::Secret;
+  use gcore::client::Client;
+  use commands::gspread::CommonArgs;
+  use actions::utils::get_spreadsheet_id_from_url;
+  use debug::
+  { 
+    Report, 
+    RowWrapper 
+  };
 
-  pub struct Report
-  {
-    pub rows : Vec< RowWrapper >
-  }
-
-  impl fmt::Display for Report
-  {
-    fn fmt
-    (
-      &self,
-      f : &mut fmt::Formatter
-    ) -> fmt::Result
-    {
-      display_rows( &AsTable::new( &self.rows ), f )
-    }
-  }
-
-  pub async fn command
+  /// # `command`
+  ///
+  /// Processes the `rows` command by retrieving rows from a specified Google Sheet
+  /// and displaying them in a table format in the console.
+  ///
+  /// ## Errors:
+  /// - Prints an error message if the spreadsheet ID extraction or row retrieval fails.
+  pub async fn command< S : Secret >
   (
-    hub : &SheetsType,
+    client : &Client< '_, S >,
     args : CommonArgs
   )
   {
@@ -50,9 +43,9 @@ mod private
           }
         };
 
-        match actions::gspread_get_rows::action
+        match actions::gspread_rows_get::action
         (
-          hub,
+          client,
           spreadsheet_id,
           tab.as_str()
         )
@@ -60,13 +53,18 @@ mod private
         {
           Ok( rows ) =>
           {
-            let max_len = rows.iter().map(|row| row.len()).max().unwrap_or(0);
-            let rows_wrapped: Vec<RowWrapper> = rows
+            let max_len = rows
+            .iter()
+            .map( | row | row.len() )
+            .max()
+            .unwrap_or( 0 );
+
+            let rows_wrapped: Vec< RowWrapper > = rows
             .into_iter()
-            .map(|row| RowWrapper { row, max_len })
+            .map( | row | RowWrapper { row, max_len } )
             .collect();
 
-            println!( "Rows:\n{}", Report{ rows: rows_wrapped } );
+            println!( "Rows:\n{}", Report{ rows : rows_wrapped } );
           }
           Err( error ) => eprintln!( "Error:\n{}", error ),
         }

@@ -1,7 +1,7 @@
 //!
-//! Action for command "cell get"
+//! Action for the command "cell get".
 //!
-//! It returns a selected cell
+//! Retrieves the value of a selected cell from the specified Google Sheet.
 //!
 
 mod private
@@ -9,37 +9,24 @@ mod private
   
 
   use crate::*;
-  use actions::gspread::
-  {
-    Error,
-    Result
-  };
-  use client::SheetsType;
-  use ser::JsonValue;
+  use actions::gspread::get_cell;
+  use gcore::Secret;
+  use gcore::error::Result;
+  use gcore::client::Client;
 
-  pub async fn action
+  pub async fn action< S : Secret >
   (
-    hub : &SheetsType,
+    client : &Client< '_, S >,
     spreadsheet_id : &str,
-    table_name : &str,
+    sheet_name : &str,
     cell_id : &str,
-  ) -> Result< JsonValue >
+  ) -> Result< serde_json::Value >
   {
-    match hub
-    .spreadsheets()
-    .values_get( spreadsheet_id, format!( "{}!{}", table_name, cell_id ).as_str() )
-    .doit()
-    .await
+    match get_cell( client, spreadsheet_id, sheet_name, cell_id ).await
     {
-      Ok( (_, response ) ) => 
-      match response.values
-      {
-        Some( values ) => Ok( values.get( 0 ).unwrap().get( 0 ).unwrap().clone() ),
-        None => Ok( JsonValue::Null.clone() )
-      }
-      Err( error ) => Err( Error::ApiError( error ) )
+      Ok( value ) => Ok( value ),
+      Err( error ) => Err( error )
     }
-
   }
 }
 
