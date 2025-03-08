@@ -20,8 +20,6 @@ mod private
       mut o : Options< 'a, Self, Graph, PreVisit, PostVisit >,
     )
     where
-      // PreVisit : FnMut( &'a Graph::Node ),
-      // PostVisit : FnMut( &'a Graph::Node ),
       PreVisit : OnVisit< 'a, Graph::Node >,
       PostVisit : OnVisit< 'a, Graph::Node >,
       Graph : ForGraphDirected< 'a > + ?Sized,
