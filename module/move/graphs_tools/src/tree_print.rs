@@ -149,7 +149,7 @@ mod private
       let push = | next : &mut collection_tools::Vec< Self::NodeId >, node_id |
       {
         // println!( "push {:?}", node_id );
-        next.push( node_id );
+        next.insert( 0, node_id );
       };
 
       push( &mut next, node_id );
@@ -167,7 +167,6 @@ mod private
           if visited.insert( node_id )
           {
             write.write_fmt( format_args!( "{}{:?}\n", prefix( level ), node_id ) )?;
-
             for child_id in self.node_out_nodes( node_id )
             {
               push( &mut next, child_id );

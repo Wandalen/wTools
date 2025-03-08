@@ -60,13 +60,13 @@ fn string_with_bfs_tree()
   let got = graph.string_with_bfs_tree( 0.into() );
   println!( "{}", got );
   let exp = r#"node::0
-├─ node::3
-├─ node::2
 ├─ node::1
-│  ├─ node::5
+├─ node::2
+├─ node::3
 │  ├─ node::4
-│  ├─ node::7
+│  ├─ node::5
 │  ├─ node::6
+│  ├─ node::7
 "#;
   println!( "{}", got );
   assert_eq!( got, exp );
