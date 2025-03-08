@@ -15,7 +15,12 @@ fn write_as_dfs_tree()
 
   let mut got = String::new();
   let r = graph.write_as_dfs_tree( &mut got, 0.into() );
-  let exp = "node::1";
+  let exp = r#"node::0
+├─ node::1
+├─ node::2
+│  ├─ node::3
+"#;
+  println!( "{}", got );
   assert_eq!( got, exp );
   assert!( r.is_ok() );
 
@@ -56,13 +61,14 @@ fn string_with_bfs_tree()
   println!( "{}", got );
   let exp = r#"node::0
 ├─ node::1
-│  ├─ node::4
-│  ├─ node::5
 ├─ node::2
 ├─ node::3
+│  ├─ node::4
+│  ├─ node::5
 │  ├─ node::6
 │  ├─ node::7
 "#;
+  println!( "{}", got );
   assert_eq!( got, exp );
 
 }

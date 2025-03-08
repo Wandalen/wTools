@@ -70,17 +70,17 @@ mod private
         return format!( "{}{}", left, right );
       };
 
-      let push = | stack : &mut collection_tools::Vec< ( Self::NodeId, isize, bool ) >, node_id, level, preorder |
+      let push = | stack : &mut collection_tools::Vec< ( Self::NodeId, isize, bool ) >, node_id, level, is_preorder |
       {
-        // println!( "push {:?} level:{} preorder:{}", node_id, level, if preorder { 1 } else { 0 } );
-        stack.push( ( node_id, level, preorder ) );
+        // println!( "push {:?} level:{} is_preorder:{}", node_id, level, if is_preorder { 1 } else { 0 } );
+        stack.push( ( node_id, level, is_preorder ) );
       };
 
       push( &mut stack, node_id, 0, true );
 
       while let Some( ( node_id, level, _preorder ) ) = stack.pop()
       {
-        // if !preorder
+        // if !is_preorder
         // {
         //   write.write_fmt( format_args!( "{}{:?}\n", prefix( level ), node_id ) )?;
         //   continue;
@@ -149,7 +149,7 @@ mod private
       let push = | next : &mut collection_tools::Vec< Self::NodeId >, node_id |
       {
         // println!( "push {:?}", node_id );
-        next.push( node_id );
+        next.insert( 0, node_id );
       };
 
       push( &mut next, node_id );
@@ -167,7 +167,6 @@ mod private
           if visited.insert( node_id )
           {
             write.write_fmt( format_args!( "{}{:?}\n", prefix( level ), node_id ) )?;
-
             for child_id in self.node_out_nodes( node_id )
             {
               push( &mut next, child_id );
